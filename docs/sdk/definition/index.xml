@@ -24,11 +24,20 @@
 <dt id="Graphicsbmp"><img src="../../images/icon_image.gif" width="16" height="16" />Graphics.bmp</dt>
 <dd><text>Das BMP-Format für Grafikelemente ist veraltet, wird aber weiterhin unterstützt. In einem 256 Farb-Bitmap (8 Bit) dürfen nur die Farben 16 bis 103 der festen Clonk-Palette verwendet werden (siehe Originalobjekte).</text></dd>
 
+<dt id="Graphicsmesh"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" /><emlink href="definition/meshes.html">Graphics.mesh</emlink></dt>
+<dd><text>Ab OC kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein.</text></dd>
+
+<dt id="Graphicsskeleton"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" />*.skeleton</dt>
+<dd><text>Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden.</text></dd>
+
 <dt id="Graphicsex"><img src="../../images/icon_image.gif" width="16" height="16" />Graphics*.png/Overlay*.png/Graphics*.bmp</dt>
 <dd><text>Objekte können auch alternative Grafiksätze bereitstellen, die während des Spiels mit Hilfe des Scriptbefehls <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>() zugewiesen werden können. Der Name der Grafik entspricht dabei dem Dateinamensteil zwischen "Graphics" und der Dateiendung; das entsprechende Overlay wird automatisch mit verwendet. Für Beispiele siehe <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>().</text></dd>
 
 <dt id="Titlepng"><img src="../../images/icon_image.gif" width="16" height="16" />Title.png/Title.bmp</dt>
 <dd><text>Objektdefinitionen können ein zusätzliches Titelbild enthalten (ähnlich Szenarien). Dieses wird im Menüsystem anstelle des Pictures der Objektdefinition angezeigt. Empfohlene Größe: 150x150 Pixel, sofern die vorhandene Titelgrafik dies hergibt. Für Titelbilder wird ebenfalls das veraltete BMP-Format mit 256 Farben weiterhin unterstützt.</text></dd>
+
+<dt id="MaterialScripts"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" /><emlink href="definition/meshes.html#MaterialScripts">*.material</emlink></dt>
+<dd><text>OGRE Materialskripte sind einfache Textdateien die Informationen über das Material eines 3D-Modells beinhalten. Jedem Modell ist ein Material zugeordnet, das sein Erscheinen festlegt. In der Regel werden diese Skripte auch vom Exporter generiert, sie können aber für zusätzliche Effekte auch einfach mit einem Texteditor nachträglich bearbeitet werden.</text></dd>
 
 <dt id="ScriptcScript__c"><img src="../../images/icon_text.gif" width="16" height="16" /><emlink href="definition/script.html">Script.c</emlink></dt>
 <dd><text>Das Objektscript. Siehe <emlink href="script/index.html">Script-Dokumentation</emlink> und <emlink href="lang.html">Sprachanpassung</emlink>.</text></dd>

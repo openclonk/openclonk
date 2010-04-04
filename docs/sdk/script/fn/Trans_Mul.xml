@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Trans_Mul</title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>array</rtype>
+			<params>
+				<param><type>array</type><name>first</name><desc>Erste Matrix wie von <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> oder <funclink>Trans_Scale</funclink> zurückgegeben.</desc></param>
+				<param><type>array</type><name>second</name><desc>Zweite Matrix.</desc></param>
+				<param><type>array</type><name>...</name><desc>Beliebig viele weitere Matrizen.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Multipliziert zwei oder mehr 3x4-Transformationsmatrizen in der gegegebenen Reihenfolge. Somit können die Effekte mehrerer Transformationen miteinander kombiniert werden. Das Ergebnis kann als Transformation für <funclink>AttachMesh</funclink> oder für die "PictureTransformation" oder "MeshTransformation"-Eigenschaften (siehe <emlink href="definition/meshes.html#Picture">Meshes</emlink>) verwendet werden.</desc>
+		<examples>
+			<example>
+				<code><funclink>this</funclink>["PictureTransformation"] = <funclink>Trans_Mul</funclink>(<funclink>Trans_Translate</funclink>(7000), <funclink>Trans_Rotate</funclink>(20, 0, 1, 0));</code>
+				<text>Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse und verschiebt sie dann um 7 Einheiten in Z-Richtung der Kamera entgegen.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Trans_Identity</funclink>
+			<funclink>Trans_Translate</funclink>
+			<funclink>Trans_Rotate</funclink>
+			<funclink>Trans_Scale</funclink>
+			<funclink>AttachMesh</funclink>
+			<funclink>SetAttachTransform</funclink>
+		</related>
+	</func>
+	<author>Clonk-Karl</author><date>April 2010</date>
+</funcs>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetMeshMaterial</title>
+		<category>Objekte</category><subcat>Darstellung</subcat>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>string</rtype>
+			<params>
+				<param><type>int</type><name>submesh</name><desc>Besteht das Mesh aus mehreren SubMeshes, so kann durch diesen Parameter angegeben werden das Material welches SubMeshes abgefragt werden soll.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Gibt zurück, welches Material das Mesh des aufrufenden Objekts gerade gesetzt hat.</desc>
+		<examples>
+			<example>
+				<code><funclink>if</funclink>(<funclink>GetMeshMaterial</funclink>() == "Clonk_Body")
+	<funclink>SetMeshMaterial</funclink>("Clonk_Body_EyesClosed")
+else
+	<funclink>SetMeshMaterial</funclink>("Clonk_Body");</code>
+				<text>Wenn ein Clonk die Augen gerade geöffnet hat lässt dieses Script sie schließen, andernfalls werden sie geöffnet.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetMeshMaterial</funclink>
+		</related>
+		</func>
+	<author>Clonk-Karl</author><date>April 2010</date>
+</funcs>
+

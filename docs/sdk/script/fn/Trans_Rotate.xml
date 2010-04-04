@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Trans_Rotate</title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>array</rtype>
+			<params>
+				<param><type>int</type><name>angle</name><desc>Drehwinkel. Positive Werte drehen entgegen dem Uhrzeigersinn wenn man in Richtung der Drehachse blickt, negative Werte drehen im Uhrzeigersinn.</desc></param>
+				<param><type>int</type><name>rx</name><desc>X-Koordinate der Drehachse.</desc></param>
+				<param><type>int</type><name>ry</name><desc>Y-Koordinate der Drehachse.</desc></param>
+				<param><type>int</type><name>rz</name><desc>Z-Koordinate der Drehachse.</desc></param>
+			</params>
+		</syntax>
+		<desc>Liefert eine 3x4-Rotationsmatrix welche eine Drehung um die Achse (<code>rx</code>, <code>ry</code>, <code>rz</code>) um <code>angle</code> Grad beschreibt. Sie kann als Transformation für <funclink>AttachMesh</funclink> oder für die "PictureTransformation" oder "MeshTransformation"-Eigenschaften (siehe <emlink href="definition/meshes.html#Picture">Meshes</emlink>) verwendet werden.</desc>
+		<examples>
+			<example>
+				<code><funclink>this</funclink>["PictureTransformation"] = <funclink>Trans_Rotate</funclink>(20, 0, 1, 0);</code>
+				<text>Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Trans_Identity</funclink>
+			<funclink>Trans_Translate</funclink>
+			<funclink>Trans_Scale</funclink>
+			<funclink>Trans_Mul</funclink>
+			<funclink>AttachMesh</funclink>
+			<funclink>SetAttachTransform</funclink>
+		</related>
+	</func>
+	<author>Clonk-Karl</author><date>April 2010</date>
+</funcs>

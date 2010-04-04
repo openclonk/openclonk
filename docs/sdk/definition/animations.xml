@@ -3,10 +3,9 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
 <title>Animationen</title>
-<!-- TODO: Explain how to use a mesh for an object in general -->
-<h id="Controls">Animationen</h>
+<h id="Animations">Animationen</h>
 <part>
-	<text>Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Eine der neuen Möglichkeiten die diese Funktionalität bietet ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen.</text>
+	<text>Eine der ab OC neuen Möglichkeiten, 3D-Modelle als Objektgrafik zu verwenden (siehe <emlink href="definition/meshes.html">Meshes</emlink>), ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen.</text>
 	<text>Jedes Objekt hat dazu einen sogenannten "Animation-Stack". Dieser besteht aus beliebig vielen Einträgen mit eindeutiger Priorität, die im folgenden Slots genannt werden. Slots mit höherer Priorität überschreiben Slots mit niedriger Priorität, dies gilt jedoch nur für Bones die von der Animation des höheren Slots überhaupt betroffen sind. Um obiges Beispiel aufzugreifen kann somit also die Werf-Animation eine höhere Priorität als der Lauf- oder Spring-Animation eingeräumt werden, so dass die Armbewegung der Werfanimation die der anderen Animation überschreibt. Da die Werfanimation aber keine Beinbewegung beschreibt wird diese vom Laufen oder Springen übernommen.</text>
 	<text>Bleibt noch zu klären, wie die Animationen in den einzelnen Slots zustande kommen. Ein Slot kann entweder eine einzelne Animation sein, oder eine Interpolation zwischen zwei anderen Animationen (von denen eine oder beide wieder Interpolationen zweier anderer Animationen sein können). Wird eine solche Interpolation verwendet, so kann zusätzlich eine Gewichtung angegeben werden, das heißt wie sehr die jeweils beiden Animationen zur Gesamtanimation beitragen. Eine Gewichtung von 0 bedeutet, dass nur die erste Animation beiträgt (als ob die zweite gar nicht vorhaden wäre), und eine Gewichtung von 1000 bedeutet, dass nur die zweite Animation beiträgt. Werte dazwischen bewirken einen Übergang zwischen den Animationen. Um erneut auf das Beispiel von oben zurückzukommen: Wenn der Clonk zum Zeitpunkt des Werfens steht, dann aber beginnt loszulaufen bevor die Wurfanimation fertig ist, so liegt es nahe, zu der Stehen-Animation noch eine Laufen-Animation hinzuzufügen, die mit der Zeit immer mehr gewichtet wird bis die Gewichtung 1000 erreicht und der Übergang zum Laufen somit beendet ist. Da die Wurf-Animation in einem anderen Slot stattfindet ist sie von dem Übergang nicht betroffen und wird ganz normal abgespielt.</text>
 	<text>Folgende Grafik veranschaulicht das Konzept anhand des gewählten Beispiels:</text>
@@ -31,7 +30,7 @@
 	</row>
 	<row>
 		<col><funclink>Anim_Linear</funclink></col>
-		<col>Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwedet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen.</col>
+		<col>Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwendet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen.</col>
 	</row>
 	<row>
 		<col><funclink>Anim_X</funclink></col>
@@ -59,14 +58,14 @@
 	</row>
 	<row>
 		<col><funclink>Anim_Action</funclink></col>
-		<col>Proportional zur Phase der aktuell ausgeführten Action.</col>
+		<col>Proportional zur Phase der aktuell ausgeführten Aktivität.</col>
 	</row>
 	<!-- TODO: There are some more, but I am not convinced they are actually useful -->
 </table></text>
 <text>Für Beispiele zu den einzelnen AVPs siehe die Dokumentation zu den entsprechenden Scriptfunktion.</text>
 
 <h id="ActMap">Animationen der ActMap</h>
-<text>Einzelnen Actions in der <emlink href="definition/actmap.html">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <funclink>StopAnimation</funclink> oder <funclink>SetAnimationPosition</funclink> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <funclink>GetAnimationPosition</funclink>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann.</text>
+<text>Einzelnen Aktivitäten in der <emlink href="definition/actmap.html">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <funclink>StopAnimation</funclink> oder <funclink>SetAnimationPosition</funclink> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <funclink>GetAnimationPosition</funclink>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann.</text>
 
 </part>
 <author>Clonk-Karl</author><date>Januar 2010</date>

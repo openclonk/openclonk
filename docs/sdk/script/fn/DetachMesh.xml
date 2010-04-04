@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>DetachMesh</title>
+		<category>Objekte</category><subcat>Darstellung</subcat>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>attach_number</name><desc>Nummer des zu entfernenden angehängten Meshes. Der Rückgabewert von <funclink>AttachMesh</funclink> bildet solch eine Nummer.</desc></param>
+			</params>
+		</syntax>
+		<desc>Wurde zuvor mit <funclink>AttachMesh</funclink> ein Mesh an einem anderen befestigt, so kann es mit dieser Funktion wieder gelöst werden.</desc>
+		<examples>
+			<example>
+				<code>func FxIntCarryBowStart(object target, int number)
+{
+	<funclink>EffectVar</funclink>(0, target, number) = target-><funclink>AttachMesh</funclink>(Bow, "pos_hand1", "main");
+}
+
+func FxIntCarryBowStop(object target, int number)
+{
+	target-><funclink>DetachMesh</funclink>(<funclink>EffectVar</funclink>(0, target, number));
+}</code>
+				<text>Script für einen <emlink href="script/Effects.html">Effekt</emlink>: Während der Effekt aktiv ist trägt das Effektziel einen Bogen.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>AttachMesh</funclink>
+		</related>
+		</func>
+	<author>Clonk-Karl</author><date>April 2010</date>
+</funcs>
+
