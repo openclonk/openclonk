@@ -30,6 +30,10 @@ std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstanc
 
 namespace
 {
+	// TODO: Avoid duplication with StdGL.cpp. This should not be here but possibly a parameter to ReorderFaces(),
+	// which should then be called from StdDDraw::RenderMesh. That way it can also include MeshTransformation.
+	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
+
 	// Helper to sort faces for FaceOrdering
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
@@ -50,8 +54,8 @@ namespace
 			case StdMeshInstance::FO_FarthestToNearest:
 			case StdMeshInstance::FO_NearestToFarthest:
 			{
-				float z1 = m_vertices[face1.Vertices[0]].z + m_vertices[face1.Vertices[1]].z + m_vertices[face1.Vertices[2]].z;
-				float z2 = m_vertices[face2.Vertices[0]].z + m_vertices[face2.Vertices[1]].z + m_vertices[face2.Vertices[2]].z;
+				float z1 = (OgreToClonk*(m_vertices[face1.Vertices[0]] + m_vertices[face1.Vertices[1]] + m_vertices[face1.Vertices[2]])).z;
+				float z2 = (OgreToClonk*(m_vertices[face2.Vertices[0]] + m_vertices[face2.Vertices[1]] + m_vertices[face2.Vertices[2]])).z;
 				if (m_inst.GetFaceOrdering() == StdMeshInstance::FO_FarthestToNearest)
 					return z1 < z2;
 				else

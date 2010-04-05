@@ -137,7 +137,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 			GLint max_texture_units;
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
 			assert(max_texture_units >= 1);
-			if (pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for FoW/ClrModMap
+			if (pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for clrmodmap as soon as we apply clrmodmap with a shader for meshes
 				technique.Available = false;
 
 			for (unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
@@ -677,7 +677,7 @@ namespace
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
 
-	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
+	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, bool fMod2, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
@@ -691,32 +691,85 @@ namespace
 			glDepthMask(pass.DepthWrite ? GL_TRUE : GL_FALSE);
 
 			// Apply ClrMod to material
-			// TODO: ClrModMap is not taken into account by this; can maybe be done
-			// by a vertex shader if required.
-			float Ambient[4], Diffuse[4], Specular[4];
-			// TODO: We might also want to modulate emissive
+			// TODO: ClrModMap is not taken into account by this; we should just check
+			// mesh center.
+			// TODO: Or in case we have shaders enabled use the shader... note the
+			// clrmodmap texture needs to be the last texture in that case... we should
+			// change the index to maxtextures-1 instead of 3.
 
-			// TODO: Pass pass.Ambient, pass.Diffuse, pass.Specular directly to the GL if dwModClr==0xffffffff
-			Ambient[0] = pass.Ambient[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-			Ambient[1] = pass.Ambient[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-			Ambient[2] = pass.Ambient[2] * ((dwModClr      ) & 0xff) / 255.0f;
-			Ambient[3] = pass.Ambient[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+			if(!fMod2 && dwModClr == 0xffffffff)
+			{
+				// Fastpath for the easy case
+				glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
+				glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
+				glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
+				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+			}
+			else
+			{
+				float Ambient[4], Diffuse[4], Specular[4], Emissive[4];
+				const float dwMod[4] = {
+					((dwModClr >> 16) & 0xff) / 255.0f,
+					((dwModClr >>  8) & 0xff) / 255.0f,
+					((dwModClr      ) & 0xff) / 255.0f,
+					((dwModClr >> 24) & 0xff) / 255.0f
+				};
 
-			Diffuse[0] = pass.Diffuse[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-			Diffuse[1] = pass.Diffuse[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-			Diffuse[2] = pass.Diffuse[2] * ((dwModClr      ) & 0xff) / 255.0f;
-			Diffuse[3] = pass.Diffuse[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+				// TODO: We could also consider applying dwmod using an additional
+				// texture unit, maybe we can even re-use the one which is reserved for
+				// the clrmodmap texture anyway (+adapt the shader).
+				if(!fMod2)
+				{
+					Ambient[0] = pass.Ambient[0] * dwMod[0];
+					Ambient[1] = pass.Ambient[1] * dwMod[1];
+					Ambient[2] = pass.Ambient[2] * dwMod[2];
+					Ambient[3] = pass.Ambient[3] * dwMod[3];
 
-			Specular[0] = pass.Specular[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-			Specular[1] = pass.Specular[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-			Specular[2] = pass.Specular[2] * ((dwModClr      ) & 0xff) / 255.0f;
-			Specular[3] = pass.Specular[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+					Diffuse[0] = pass.Diffuse[0] * dwMod[0];
+					Diffuse[1] = pass.Diffuse[1] * dwMod[1];
+					Diffuse[2] = pass.Diffuse[2] * dwMod[2];
+					Diffuse[3] = pass.Diffuse[3] * dwMod[3];
 
-			glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
-			glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
-			glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
-			glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+					Specular[0] = pass.Specular[0] * dwMod[0];
+					Specular[1] = pass.Specular[1] * dwMod[1];
+					Specular[2] = pass.Specular[2] * dwMod[2];
+					Specular[3] = pass.Specular[3] * dwMod[3];
+
+					Emissive[0] = pass.Emissive[0] * dwMod[0];
+					Emissive[1] = pass.Emissive[1] * dwMod[1];
+					Emissive[2] = pass.Emissive[2] * dwMod[2];
+					Emissive[3] = pass.Emissive[3] * dwMod[3];
+				}
+				else
+				{
+					Ambient[0] = BoundBy<float>(pass.Ambient[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
+					Ambient[1] = BoundBy<float>(pass.Ambient[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
+					Ambient[2] = BoundBy<float>(pass.Ambient[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
+					Ambient[3] = BoundBy<float>(pass.Ambient[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+
+					Diffuse[0] = BoundBy<float>(pass.Diffuse[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
+					Diffuse[1] = BoundBy<float>(pass.Diffuse[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
+					Diffuse[2] = BoundBy<float>(pass.Diffuse[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
+					Diffuse[3] = BoundBy<float>(pass.Diffuse[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+
+					Specular[0] = BoundBy<float>(pass.Specular[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
+					Specular[1] = BoundBy<float>(pass.Specular[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
+					Specular[2] = BoundBy<float>(pass.Specular[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
+					Specular[3] = BoundBy<float>(pass.Specular[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+
+					Emissive[0] = BoundBy<float>(pass.Emissive[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
+					Emissive[1] = BoundBy<float>(pass.Emissive[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
+					Emissive[2] = BoundBy<float>(pass.Emissive[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
+					Emissive[3] = BoundBy<float>(pass.Emissive[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+				}
+
+				glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
+				glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
+				glMaterialfv(GL_FRONT, GL_EMISSION, Emissive);
+				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+			}
 
 			switch (pass.CullHardware)
 			{
@@ -748,13 +801,12 @@ namespace
 			{
 				// Note that it is guaranteed that the GL_TEXTUREn
 				// constants are contiguous.
-				// GL_TEXTURE3 is reserved for FoW/ClrModMap
-				if (j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
-				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
+				glActiveTexture(GL_TEXTURE0+j);
+				glClientActiveTexture(GL_TEXTURE0+j);
 
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
 
-				glEnable(GL_TEXTURE_2D);
+				glEnable(GL_TEXTURE_2D);;
 				if (texunit.HasTexture())
 				{
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
@@ -764,8 +816,9 @@ namespace
 				else
 				{
 					// We need to bind a valid texture here, even if the texture unit
-					// does not access the texture. TODO: Use a dummy texture. OGRE uses
-					// a "warning" texture containing black and yellow stripes.
+					// does not access the texture.
+					// TODO: Could use StdGL::lines_tex... this function should be a
+					// member of StdGL anyway.
 					glBindTexture(GL_TEXTURE_2D, have_texture);
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -900,27 +953,28 @@ namespace
 
 				SetTexColor(texunit, dwPlayerColor);
 			}
+
 			glMatrixMode(GL_MODELVIEW);
 
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
-				if (j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
-				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
+				glActiveTexture(GL_TEXTURE0+j);
+				glClientActiveTexture(GL_TEXTURE0+j);
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, bool fMod2, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMesh& mesh = instance.Mesh;
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, fMod2, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone
@@ -961,7 +1015,7 @@ namespace
 			// TODO: Take attach transform's parity into account
 			glPushMatrix();
 			glMultMatrixf(attach_trans_gl);
-			RenderMeshImpl(*attach->Child, dwModClr, dwPlayerColor, parity);
+			RenderMeshImpl(*attach->Child, dwModClr, fMod2, dwPlayerColor, parity);
 			glPopMatrix();
 
 #if 0
@@ -1058,6 +1112,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
+	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
+	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_CULL_FACE);
 
 	// Set up projection matrix first. We do transform and Zoom with the
@@ -1243,7 +1299,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
 #endif
 
-	RenderMeshImpl(instance, dwModClr, dwPlayerColor, parity);
+	RenderMeshImpl(instance, dwModClr, dwBlitMode & C4GFXBLIT_MOD2, dwPlayerColor, parity);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
