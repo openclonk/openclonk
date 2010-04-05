@@ -106,12 +106,6 @@ global func VerticesStuck()
 	return vertices;
 }
 
-// Checks whether the indicated definition is available.
-global func FindDefinition(id def)
-{
-	return def->GetDefCoreVal("id", "DefCore");
-}
-
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material. 
 // Returns the number of iterations needed, or -1 when the placement failed.
 global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
