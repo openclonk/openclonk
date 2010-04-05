@@ -1,3 +1,7 @@
 Name=Rette die Windräder
 ShotScore=%d abgeschossen
 Shots=Treffer
+ScoreCaption=Die beste Hüter
+WaveCount=Wave %d
+WaveBoss=Boss wave
+MsgEval=You have shot %d windmill-eating rockets.

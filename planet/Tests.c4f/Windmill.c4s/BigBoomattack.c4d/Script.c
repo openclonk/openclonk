@@ -57,11 +57,15 @@ public func OnProjectileHit(object shot)
 	CreateObject(Rock,AbsX(shot->GetX()),AbsY(shot->GetY()))->Explode(10);
 	
 	if(hits > 10 * GetPlayerCount())
+	{
+		var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
+		if(gol)	gol->DoEvaluationData();
 		DoFireworks();
-	
+	}
+		
 	++hits;
 	var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-	if(gol)	gol->IncShotScore(shot->GetOwner());
+	if(gol)	gol->IncShotScore(shot->GetController());
 }
 
 /* Contact */

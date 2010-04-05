@@ -37,6 +37,9 @@ global func FxBoomAttackTimer(object target, int effect, int time)
 
 	if(time/35 % Boomattack_wave_delay == 1)
 	{
+		var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
+		if(gol)	
+			gol->SetWave(wave);
 		if (wave < 13)
 		{
 			Message("                   $MsgWave$                   ",nil,wave);

@@ -3,7 +3,7 @@
 	Author: Newton
 	
 	The arrow is the standard ammo for the bow and base object for all other
-	types of arrows. This object is stackable (up to 20) as it is required
+	types of arrows. This object is stackable (up to 15) as it is required
 	from the bow.
 	The arrow employs the HitCheck effect (in System.c4g/HitChecks.c) originally
 	from Hazard to search for targets during flight.
@@ -34,6 +34,8 @@ public func Launch(int angle, int str, object shooter)
 	SetYDir(ydir);
 	SetR(angle);
 	Sound("ArrowShoot*.ogg");
+	// Shooter controls the arrow.
+	SetController(shooter->GetOwner());
 	
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 	AddEffect("InFlight", this, 1,1, this);
@@ -69,10 +71,10 @@ public func HitObject(object obj)
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
-	Stick();
-
 	var dmg = ArrowStrength()*speed/100;
 	ProjectileHit(obj,dmg,true);
+	// Stick does something unwanted to controller.
+	Stick();
 }
 
 // called by successful hit of object after from ProjectileHit(...)

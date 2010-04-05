@@ -62,7 +62,7 @@ public func OnProjectileHit(object shot)
 {
 	DoFireworks();
 	var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-	if(gol)	gol->IncShotScore(shot->GetOwner());
+	if(gol)	gol->IncShotScore(shot->GetController());
 	return 1;
 }
 

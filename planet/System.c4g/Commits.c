@@ -293,7 +293,7 @@ global func MaterialDepthCheck(int x, int y, string mat, int depth)
 
 
 
-global func LaunchProjectile(int angle, int dist, speed, int x, int y, bool rel_x)
+global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
 {
 	// dist: Distance object travels on angle. Offset from calling object.
 	// x: X offset from container's center

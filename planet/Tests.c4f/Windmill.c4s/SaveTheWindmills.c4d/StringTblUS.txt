@@ -1,3 +1,7 @@
 Name=Save the windmills
 ShotScore=shot %d
 Shots=Shot
+ScoreCaption=The best guardian
+WaveCount=Wave %d
+WaveBoss=Boss wave
+MsgEval=You have shot %d windmill-eating rockets.

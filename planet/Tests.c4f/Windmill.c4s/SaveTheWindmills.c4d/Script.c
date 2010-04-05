@@ -2,12 +2,19 @@
 
 #include Library_Goal
 
-local score, boss;
+static const SBRD_Rockets = 1;
+local score, boss, wave;
 
 func Initialize()
 {
-	score = CreateArray();
+	score = [];
 	boss = false;
+	wave = 1;
+	// Set scoreboard caption.
+	SetScoreboardData(SBRD_Caption, SBRD_Caption, "$ScoreCaption$", SBRD_Caption);
+	SetScoreboardData(SBRD_Caption, SBRD_Rockets, "{{Goal_SaveTheWindmills}}", SBRD_Caption);
+	// Remove settlement eval data.
+	HideSettlementScoreInEvaluation(true); 
 	inherited(...);
 }
 
@@ -37,8 +44,19 @@ public func Activate(int byplr)
 
 public func IncShotScore(int plr)
 {
-	score[GetPlayerID(plr)]++;
+	var plrid = GetPlayerID(plr);
+	score[plrid]++;
+	if (plr != NO_OWNER)
+	{
+		SetScoreboardData(plrid, SBRD_Rockets, Format("%d", score[plrid]), score[plrid]);
+		SortScoreboard(SBRD_Rockets, true);
+	}
 	NotifyHUD();
+}
+
+public func SetWave(int num)
+{
+	wave = num;
 }
 
 public func BossAttacks()
@@ -48,11 +66,41 @@ public func BossAttacks()
 
 public func GetShortDescription(int plr)
 {
-	var allscore = 0;
-	for(var i=0; i<GetLength(score); ++i)
-		allscore += score[i];
-		
-	return Format("$ShotScore$",allscore);
+	//var allscore = 0;
+	//for(var i=0; i<GetLength(score); ++i)
+	//	allscore += score[i];
+	//return Format("$ShotScore$",allscore);
+	if (wave < 13)
+		return Format("$WaveCount$", wave);
+	else if (wave == 13)
+		return "$WaveBoss$";
+}
+
+protected func InitializePlayer(int plr)
+{
+	var plrid = GetPlayerID(plr);
+	score[plrid] = 0;
+	// Create scoreboard player entry for this player.
+	SetScoreboardData(plrid, SBRD_Caption, GetTaggedPlayerName(plr), SBRD_Caption);
+	SetScoreboardData(plrid, SBRD_Rockets, Format("%d", score[plrid]), score[plrid]);
+	return _inherited(plr, ...);
+}
+
+protected func RemovePlayer(int plr)
+{
+	var plrid = GetPlayerID(plr);
+	AddEvaluationData(Format("$MsgEval$", score[plrid]), plrid);
+	return _inherited(plr, ...);
+}
+
+public func DoEvaluationData() 
+{
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plrid = GetPlayerID(GetPlayerByIndex(i));
+		AddEvaluationData(Format("$MsgEval$", score[plrid]), plrid);
+	}
+	return true;
 }
 
 func Definition(def) {
