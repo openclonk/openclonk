@@ -253,6 +253,30 @@ C4ValueArray * C4ValueArray::IncRef()
 	return this;
 }
 
+C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
+{
+	// adjust indices so that the default end index works and that negative numbers count backwards from the end of the string
+	if (startIndex > iSize) startIndex = iSize;
+	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid start index");
+	else if (startIndex < 0) startIndex += iSize;
+
+	if (endIndex > iSize) endIndex = iSize;
+	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid end index");
+	else if (endIndex < 0) endIndex += iSize;
+
+	if (startIndex == 0 && endIndex == iSize)
+	{
+		return IncRef();
+	}
+	else
+	{
+		C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
+		for (int i = startIndex; i < endIndex; ++i)
+			NewArray->pData[i - startIndex] = pData[i];
+		return NewArray;
+	}
+}
+
 C4ValueArray * C4ValueArray::SetLength(int32_t size)
 {
 	if (iRefCnt > 1)

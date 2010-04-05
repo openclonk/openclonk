@@ -81,6 +81,8 @@ public:
 	// Add Reference, return self or new copy if necessary
 	C4ValueArray * IncRef();
 	C4ValueArray * IncElementRef();
+	// Return sub-array [startIndex, endIndex), or reference for [0, iSize)
+	C4ValueArray * GetSlice(int32_t startIndex, int32_t endIndex);
 	// Change length, return self or new copy if necessary
 	C4ValueArray * SetLength(int32_t size);
 	void DecRef();

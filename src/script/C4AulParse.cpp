@@ -833,6 +833,7 @@ static const char * GetTTName(C4AulBCCType e)
 	{
 	case AB_ARRAYA_R: return "ARRAYA_R";  // array access
 	case AB_ARRAYA_V: return "ARRAYA_V";  // not creating a reference
+	case AB_ARRAY_SLICE: return "ARRAY_SLICE";
 	case AB_VARN_R: return "VARN_R";    // a named var
 	case AB_VARN_V: return "VARN_V";
 	case AB_PARN_R: return "PARN_R";    // a named parameter
@@ -1103,6 +1104,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		iStack-=X-1;
 		break;
 
+	case AB_ARRAY_SLICE:
 	case AB_PROPSET:
 		iStack -= 2;
 		break;
@@ -1940,7 +1942,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				{
 				case AB_INT: from = (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 				case AB_STRING: from = C4V_String; break;
-				case AB_ARRAY: from = C4V_Array; break;
+				case AB_ARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 				case AB_BOOL: from = C4V_Bool; break;
 //          case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
 				case AB_FUNC:
@@ -2594,11 +2596,37 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 		}
 		case ATT_BOPEN2:
 		{
-			// Access the array
+			// parse either [index], or [start:end] in which case either index is optional
 			Shift();
-			Parse_Expression();
-			Match(ATT_BCLOSE2);
-			AddBCC(AB_ARRAYA_R);
+			if (TokenType == ATT_COLON)
+				AddBCC(AB_INT, 0); // slice with first index missing -> implicit start index zero
+			else
+				Parse_Expression();
+
+			if (TokenType == ATT_BCLOSE2)
+			{
+				Shift();
+				AddBCC(AB_ARRAYA_R);
+			}
+			else if (TokenType == ATT_COLON)
+			{
+				Shift();
+				if (TokenType == ATT_BCLOSE2)
+				{
+					Shift();
+					AddBCC(AB_INT, INT_MAX); // second index missing -> implicit end index GetLength()
+				}
+				else
+				{
+					Parse_Expression();
+					Match(ATT_BCLOSE2);
+				}
+				AddBCC(AB_ARRAY_SLICE);
+			}
+			else
+			{
+				UnexpectedToken("']' or ':'");
+			}
 			break;
 		}
 		case ATT_CALL:

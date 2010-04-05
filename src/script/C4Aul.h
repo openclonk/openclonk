@@ -132,6 +132,7 @@ enum C4AulBCCType
 {
 	AB_ARRAYA_R,  // array access
 	AB_ARRAYA_V,  // not creating a reference
+	AB_ARRAY_SLICE, // array slicing
 	AB_VARN_R,    // a named var
 	AB_VARN_V,
 	AB_PARN_R,    // a named parameter
