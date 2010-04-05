@@ -8,13 +8,11 @@
 
 local maxreach;
 local swingtime;
-local held;
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform()
-{ 
-	if(held==false);
+{
 	return Trans_Rotate(-90, 0, 1, 0);
 }
 
@@ -44,7 +42,6 @@ private func Hit()
 
 func ControlUseStart(object clonk, int ix, int iy)
 {
-	held=true;
 	return true;
 }
 
@@ -72,7 +69,6 @@ func ControlUseHolding(object clonk, int ix, int iy)
 
 func ControlUseStop(object clonk, int ix, int iy)
 {
-	held=false;
 	swingtime=0;
 	return true;
 }
@@ -115,7 +111,6 @@ protected func DoSwing(object clonk, int ix, int iy)
 
 protected func ControlUseCancel(object clonk, int ix, int iy)
 {
-	held=false;
 	swingtime=0;
 	return true;
 }
