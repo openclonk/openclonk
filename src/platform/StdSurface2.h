@@ -162,7 +162,7 @@ public:
 	bool GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
 	bool SetPix(int iX, int iY, BYTE byCol);  // set 8bit-px
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
-	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value 0xff?
+	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
 	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
 	bool BltPix(int iX, int iY, CSurface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)

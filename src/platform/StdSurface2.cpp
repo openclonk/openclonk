@@ -993,7 +993,7 @@ bool CSurface::IsPixTransparent(int iX, int iY)
 	// get pixel value
 	DWORD dwPix=GetPixDw(iX, iY, false);
 	// get alpha value
-	return (dwPix>>24) >= 128;
+	return (dwPix>>24) < 128;
 }
 
 /*bool CSurface::SetPixEx(int iX, int iY, BYTE byCol, DWORD dwClr)
