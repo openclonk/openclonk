@@ -956,7 +956,12 @@ void C4StartupPlrSelDlg::SetCrewMode(PlayerListItem *pSel)
 {
 	// change view to listing crew of a player
 	CurrPlayer.Core = pSel->GetCore();
-	if (!CurrPlayer.Grp.Open(pSel->GetFilename().getData())) return;
+
+	StdStrBuf Path(Config.General.UserDataPath); // start at local path
+//  Path.Append(Config.General.PlayerPath);
+	Path.Append(pSel->GetFilename());
+
+	if (!CurrPlayer.Grp.Open(Path.getData())) return;
 	if (!CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles))
 	{
 		StdCopyStrBuf strCrew(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName));
@@ -986,10 +991,14 @@ void C4StartupPlrSelDlg::OnDelBtn(C4GUI::Control *btn)
 
 void C4StartupPlrSelDlg::OnDelBtnConfirm(ListItem *pSel)
 {
+	StdStrBuf Path(Config.General.UserDataPath); // start at local path
+//  Path.Append(Config.General.PlayerPath);
+	Path.Append(pSel->GetFilename());
+
 	switch (eMode)
 	{
 	case PSDM_Player:
-		if (!C4Group_DeleteItem(pSel->GetFilename().getData()))
+		if (!C4Group_DeleteItem(Path.getData()))
 		{
 			StdStrBuf sMsg; sMsg.Copy(LoadResStr("IDS_FAIL_DELETE"));
 			GetScreen()->ShowMessage(sMsg.getData(), LoadResStr("IDS_DLG_CLEAR"), C4GUI::Ico_Error);
@@ -997,7 +1006,7 @@ void C4StartupPlrSelDlg::OnDelBtnConfirm(ListItem *pSel)
 		break;
 
 	case PSDM_Crew:
-		if (!CurrPlayer.Grp.Delete(pSel->GetFilename().getData()))
+		if (!CurrPlayer.Grp.Delete(Path.getData()))
 		{
 			StdStrBuf sMsg; sMsg.Copy(LoadResStr("IDS_FAIL_DELETE"));
 			GetScreen()->ShowMessage(sMsg.getData(), LoadResStr("IDS_DLG_CLEAR"), C4GUI::Ico_Error);
