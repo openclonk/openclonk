@@ -38,11 +38,14 @@ public func GetGeneratorPriority()
 }
 
 // Returns whether this object is a power genarator connected to pConsumer.
-// The other two parameters pNext and pOldLine are only used for recursive purposes.
-public func IsPowerGeneratorFor(object pConsumer, object pNext, object pOldLine)
+// The other three Parameters pNext, pOldLine and aOld are only used for recursive purposes.
+public func IsPowerGeneratorFor(object pConsumer, object pNext, object pOldLine, array aOld)
 {
 	if(!pNext) // Initial call to this function.
+	{
 		pNext = pConsumer;
+		aOld = [];
+	}
 	for(var pLine in FindObjects(Find_PowerLine(pNext))) // Check all lines connected to pNext.
 	{
 		if(pLine == pOldLine) // Recursive -> Not backwards<->forwards through lines.
@@ -54,9 +57,12 @@ public func IsPowerGeneratorFor(object pConsumer, object pNext, object pOldLine)
 			continue;		
 		if(pEnd == pConsumer) // End of a recursive loop.
 			continue;
+		if(GetIndexOf(pEnd, aOld) != -1) // We already know this
+			continue;
 		if(pEnd == this) // Found this object, i.e. the generator.
 			return true;
-		if(IsPowerGeneratorFor(pConsumer, pEnd, pLine)) // This building is not found, continue with next pEnd as next building.
+		aOld[GetLength(aOld)] = pEnd;
+		if(IsPowerGeneratorFor(pConsumer, pEnd, pLine, aOld)) // This building is not found, continue with next pEnd as next building.
 			return true;		
 	}
 	return false;
