@@ -1299,7 +1299,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
 #endif
 
-	RenderMeshImpl(instance, dwModClr, dwBlitMode & C4GFXBLIT_MOD2, dwPlayerColor, parity);
+	RenderMeshImpl(instance, dwModClr, !!(dwBlitMode & C4GFXBLIT_MOD2), dwPlayerColor, parity);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

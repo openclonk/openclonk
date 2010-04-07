@@ -234,7 +234,7 @@ void C4Object::DoMovement()
 			if (pActionDef->GetPropertyInt(P_DigFree)==1)
 			{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
+				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,!!Action.Data,this);
 			}
 			// Free size round (variable size)
 			else
@@ -242,7 +242,7 @@ void C4Object::DoMovement()
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
 				int32_t rad = pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
-				::Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
+				::Landscape.DigFree(ctcox,ctcoy-1,rad,!!Action.Data,this);
 			}
 		}
 

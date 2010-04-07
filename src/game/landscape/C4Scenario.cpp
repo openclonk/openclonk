@@ -146,8 +146,9 @@ void C4SHead::Default()
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
 	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
-	Difficulty = StartupPlayerCount = RandomSeed = SaveGame = Replay =
-	                                    Film = NoInitialize = ForcedFairCrew = FairCrewStrength = 0;
+	Difficulty = StartupPlayerCount = RandomSeed = 0;
+	SaveGame = Replay = NoInitialize = false;
+	Film = ForcedFairCrew = FairCrewStrength = 0;
 	NetworkGame = NetworkRuntimeJoin = false;
 
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
@@ -170,7 +171,7 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(MinPlayer,                 "MinPlayer",            0));
 		pComp->Value(mkNamingAdapt(SaveGame,                  "SaveGame",             false));
 		pComp->Value(mkNamingAdapt(Replay,                    "Replay",               false));
-		pComp->Value(mkNamingAdapt(Film,                      "Film",                 false));
+		pComp->Value(mkNamingAdapt(Film,                      "Film",                 0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,        "StartupPlayerCount",   0));
 	}
 	pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         false));
@@ -337,7 +338,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoScan,                  "NoScan",                false));
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
-	pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     false));
+	pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     0));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(CClrModAddMap::DefResolutionX)));
 }
 

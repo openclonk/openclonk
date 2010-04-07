@@ -752,7 +752,7 @@ void C4EditCursor::ApplyToolPicker()
 			{
 				Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
 				Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-				Console.ToolsDlg.SetIFT(byIndex & ~(IFT-1));
+				Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
 			}
 		}
 		else
