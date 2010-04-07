@@ -338,6 +338,20 @@ template <> struct C4ValueConv<C4Value *>
 	inline static C4Value *_FromC4V(C4Value &v) { return v._getRef(); }
 	inline static C4Value ToC4V(C4Value *v) { return C4VRef(v); }
 };
+template <> struct C4ValueConv<const C4Value &>
+{
+	inline static C4V_Type Type() { return C4V_Any; }
+	inline static const C4Value &FromC4V(C4Value &v) { return v; }
+	inline static const C4Value &_FromC4V(C4Value &v) { return v; }
+	inline static C4Value ToC4V(const C4Value &v) { return v; }
+};
+template <> struct C4ValueConv<C4Value>
+{
+	inline static C4V_Type Type() { return C4V_Any; }
+	inline static C4Value FromC4V(C4Value &v) { return v; }
+	inline static C4Value _FromC4V(C4Value &v) { return v; }
+	inline static C4Value ToC4V(C4Value v) { return v; }
+};
 
 // aliases
 template <> struct C4ValueConv<long> : public C4ValueConv<int32_t> { };

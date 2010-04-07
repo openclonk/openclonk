@@ -4979,19 +4979,29 @@ static long FnGetEffectCount(C4AulContext *ctx, C4String *psEffectName, C4Object
 	return pEffect->GetCount(szEffect, iMaxPriority);
 }
 
-static C4Value FnEffectVar_C4V(C4AulContext *cthr, C4Value *pviVarIndex, C4Value *pvpObj, C4Value *pviEffectNumber)
+static C4Value FnEffectVar(C4AulContext *cthr, int32_t iVarIndex, C4Object *pObj, int32_t iEffectNumber)
 {
-	// get parameters
-	C4Object *pObj = pvpObj->getObj();
-	long iVarIndex = pviVarIndex->getInt(), iEffectNumber = pviEffectNumber->getInt();
 	// safety
 	if (iVarIndex<0) return C4Value();
 	// get effect
 	C4Effect *pEffect = pObj ? pObj->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
 	if (!(pEffect = pEffect->Get(iEffectNumber, true))) return C4Value();
-	// return ref to var
-	return pEffect->EffectVars[iVarIndex].GetRef();
+	// return var
+	return pEffect->EffectVars[iVarIndex];
+}
+
+static C4Value FnSetEffectVar(C4AulContext *cthr, int32_t iVarIndex, C4Object *pObj, int32_t iEffectNumber, const C4Value &Value)
+{
+	// safety
+	if (iVarIndex<0) return C4Value();
+	// get effect
+	C4Effect *pEffect = pObj ? pObj->pEffects : Game.pGlobalEffects;
+	if (!pEffect) return C4Value();
+	if (!(pEffect = pEffect->Get(iEffectNumber, true))) return C4Value();
+	// set and return value
+	pEffect->EffectVars[iVarIndex] = Value;
+	return Value;
 }
 
 static C4Value FnEffectCall_C4V(C4AulContext *ctx, C4Value *pvpTarget, C4Value *pviNumber, C4Value *pvsCallFn, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4, C4Value *pvVal5, C4Value *pvVal6, C4Value *pvVal7)
@@ -6361,6 +6371,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FatalError", FnFatalError, false);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
+	AddFunc(pEngine, "EffectVar", FnEffectVar);
+	AddFunc(pEngine, "SetEffectVar", FnSetEffectVar);
 	AddFunc(pEngine, "PlayVideo", FnPlayVideo);
 	AddFunc(pEngine, "StartCallTrace", FnStartCallTrace);
 	AddFunc(pEngine, "StartScriptProfiler", FnStartScriptProfiler);
@@ -6829,7 +6841,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },
 	{ "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
 	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
-	{ "EffectVar",            1  ,C4V_Ref      ,{ C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectVar_C4V,             0 },
 
 	{ "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
 

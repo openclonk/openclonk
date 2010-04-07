@@ -130,32 +130,27 @@ struct C4AulParSet
 // some special script functions defined hard-coded to reduce the exec context
 enum C4AulBCCType
 {
-	AB_ARRAYA_R,  // array access
-	AB_ARRAYA_V,  // not creating a reference
+	AB_ARRAYA,  // array or proplist access
+	AB_ARRAYA_SET,
 	AB_ARRAY_SLICE, // array slicing
-	AB_VARN_R,    // a named var
-	AB_VARN_V,
-	AB_PARN_R,    // a named parameter
-	AB_PARN_V,
-	AB_LOCALN_R,  // a named local
-	AB_LOCALN_V,
-	AB_GLOBALN_R, // a named global
-	AB_GLOBALN_V,
-	AB_PAR_R,     // Par statement
-	AB_PAR_V,
+	AB_VARN,    // a named var
+	AB_VARN_SET,
+	AB_PARN,    // a named parameter
+	AB_PARN_SET,
+	AB_LOCALN,  // a named local
+	AB_LOCALN_SET,
+	AB_GLOBALN, // a named global
+	AB_GLOBALN_SET,
+	AB_PAR,     // Par statement
+	AB_PAR_SET,
 	AB_FUNC,    // function
 
 // prefix
-	AB_Inc1,  // ++
-	AB_Dec1,  // --
+	AB_Inc,  // ++
+	AB_Dec,  // --
 	AB_BitNot,  // ~
 	AB_Not,   // !
-	// +
 	AB_Neg,   // -
-
-// postfix (whithout second statement)
-	AB_Inc1_Postfix,  // ++
-	AB_Dec1_Postfix,  // --
 
 // postfix
 	AB_Pow,   // **
@@ -175,15 +170,6 @@ enum C4AulBCCType
 	AB_BitAnd,  // &
 	AB_BitXOr,  // ^
 	AB_BitOr, // |
-	AB_MulIt, // *=
-	AB_DivIt, // /=
-	AB_ModIt, // %=
-	AB_Inc,   // +=
-	AB_Dec,   // -=
-	AB_AndIt, // &=
-	AB_OrIt,  // |=
-	AB_XOrIt, // ^=
-	AB_Set,   // =
 
 	AB_CALL,    // direct object call
 	AB_CALLFS,  // failsafe direct call
@@ -194,6 +180,7 @@ enum C4AulBCCType
 	AB_C4ID,    // constant: C4ID
 	AB_NIL,     // constant: nil
 	AB_ARRAY,   // semi-constant: array
+	AB_DUP,     // duplicate value from stack
 	AB_PROPLIST,    // create a new proplist
 	AB_PROPSET,   // set a property of a proplist
 	AB_IVARN,   // initialization of named var
@@ -220,7 +207,7 @@ struct C4ScriptOpDef
 	const char* Identifier;
 	C4AulBCCType Code;
 	bool Postfix;
-	bool RightAssociative; // right oder left-associative?
+	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
 	bool NoSecondStatement; // no second statement expected (++/-- postfix)
 	C4V_Type RetType; // type returned. ignored by C4V
 	C4V_Type Type1;
@@ -470,6 +457,7 @@ protected:
 	C4AulFunc *GetFunc(const char *pIdtf); // get local function by name
 
 	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
 	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
 	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false); // parse single script function
