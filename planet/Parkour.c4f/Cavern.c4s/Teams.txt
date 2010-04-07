@@ -1,0 +1,5 @@
+[Teams]
+Active=1
+AllowHostilityChange=0
+AllowTeamSwitch=0
+AutoGenerateTeams=1
