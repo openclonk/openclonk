@@ -271,7 +271,7 @@ global func FxShakeEffectTimer(object target, int fxnum, int fxtime)
 		if ((strength = level / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400) <= 0)
 			continue;
 
-		// FxME: Use GetViewOffset, make this relative, not absolute
+		// FixME: Use GetViewOffset, make this relative, not absolute
 		SetViewOffset(plr, Sin(fxtime * 100, strength), Cos(fxtime * 100, strength));
 	}
 

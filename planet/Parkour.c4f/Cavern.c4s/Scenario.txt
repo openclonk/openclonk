@@ -34,5 +34,8 @@ StartSeason=0,0,0,100
 YearSpeed=0,0,0,100
 Wind=1,100,-100,100
 
+[Environment]
+Objects=Earthquake=10
+
 [Animals]
 Nest=Loam=50;Firestone=20
