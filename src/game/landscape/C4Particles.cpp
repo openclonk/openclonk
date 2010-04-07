@@ -763,9 +763,9 @@ bool fxStdExec(C4Particle *particle, C4Object *target)
 	// outside landscape range?
 	bool kp;
 	if (dxdir > 0)
-		kp = (dx - (particle->a < GBackWdt));
+		kp = (dx - particle->a < GBackWdt);
 	else
-		kp = (dx + (particle->a > 0));
+		kp = (dx + particle->a > 0);
 
 	if (dydir > 0)
 		kp = kp && (dy - particle->a < GBackHgt);
