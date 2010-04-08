@@ -21,13 +21,16 @@ protected func Construction()
 	myid = nil;
 	// visibility
 	this["Visibility"] = VIS_Owner;
+	size=1000;
 }
 
 public func SetSize(int s)
 {
-	SetObjDrawTransform(s,0,0,0,s,0,0);
-	SetObjDrawTransform(s,0,0,0,s,0,1);
 	size=s;
+	SetObjDrawTransform(size,0,0,0,size,0,0);
+	SetObjDrawTransform(size,0,0,0,size,0,1);
+	SetAmount(GetAmount());
+	SetHotkey(GetHotkey());
 }
 
 public func ResetSize() { SetSize(1000); }
@@ -71,7 +74,7 @@ if(hotkey > 10 || hotkey <= 0)
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,5,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(150,0,6500,0,150,-15000, 5);
+		SetObjDrawTransform(150*size/1000,0,6500*size/1000,0,150*size/1000,-15000*size/1000, 5);
 		SetClrModulation(RGB(160,0,0),5);
 	}
 }
@@ -89,29 +92,36 @@ public func SetAmount(Amount)
 	var ten = (Amount/10)%10;
 	var hun = (Amount/100)%10;
 	
-	var s = 200;
-	var yoffs = 7000;
-	var xoffs = 11000;
-	var spacing = 7000;
+	var s = (200*size)/1000;
+	var yoffs = (10000*size)/1000;
+	var xoffs = (13000*size)/1000;
+	var spacing = (5000*size)/1000;
+	SetGraphics(Format("10"),Icon_SlimNumber,9,GFXOV_MODE_IngamePicture); //10 == "x"
 
-	if(hun > 0)
-	{
-		SetGraphics(Format("%d",hun),Icon_Number,10,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
-	}
-	else
-		SetGraphics(nil,nil,10);
+	SetGraphics(Format("%d",one),Icon_SlimNumber,12,GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(s,0,xoffs-spacing-500,0,s,yoffs+300, 9);
+	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
 
-	if(ten > 0 || hun > 0)
+	
+		if(ten > 0 || hun > 0)
 	{
-		SetGraphics(Format("%d",ten),Icon_Number,11,GFXOV_MODE_IngamePicture);
+		SetGraphics(Format("%d",ten),Icon_SlimNumber,11,GFXOV_MODE_IngamePicture);
+		SetObjDrawTransform(s,0,xoffs-spacing*2-500,0,s,yoffs+300, 9);
 		SetObjDrawTransform(s,0,xoffs-spacing,0,s,yoffs, 11);
+
 	}
 	else
 		SetGraphics(nil,nil,11);
 		
-	SetGraphics(Format("%d",one),Icon_Number,12,GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
-}
+	if(hun > 0)
+	{
+		SetGraphics(Format("%d",hun),Icon_SlimNumber,10,GFXOV_MODE_IngamePicture);
+		SetObjDrawTransform(s,0,xoffs-spacing*3-500,0,s,yoffs+300, 9);	
+		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
+
+	}
+	else
+		SetGraphics(nil,nil,10);
+		}
 
 

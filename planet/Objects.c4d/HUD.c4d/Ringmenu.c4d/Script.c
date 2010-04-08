@@ -124,8 +124,6 @@ func Show()
 	
 	var x=GetX();
 	var y=GetY();
-	var stat=false;
-	if(item_count<=10) stat=true;
 	for(var i=0; i<(GetLength(menu_icons)); i++) 
 	{	
 		if(menu_icons[i])
@@ -134,8 +132,13 @@ func Show()
 			if(GetLength(menu_icons)==1) angle=90;
 			menu_icons[i]->SetPosition(x+Sin(angle,100),y-Cos(angle,100));
 			menu_icons[i]["Visibility"] = VIS_Owner;
-			if(!stat) menu_icons[i]->SetSize(((620000)/item_count)/64);
-			else      menu_icons[i]->SetSize(1950);
+			menu_icons[i]->	SetSize(((620000)/Max(item_count,12))/64);
+							//620000~=u*1000;  u=r*pi*2; r=100px;
+							//620000 is almost the circumference of the ringmenu with 200px radius
+							//this divided by the itemcount (or 12, if too less items,
+							//it guarantees no oversized icons)
+							//and then divided by the diameter of the icons, 64 pixels
+							//gives the value, with that the icons can be stretched/compressed (1000 standard)
 		}
 	}
 	this["Visibility"] = VIS_Owner;
@@ -149,14 +152,11 @@ public func UpdateCursor(int angle)
 	if(!item_count) item_count = 1;
 	var segment=360/item_count;
 	var dvar=0;
-	var stat=false;
-	if(item_count<=10) stat=true;
 	for(var i=0; i<=item_count ; i++)
 	{ 
 		if(menu_icons[i])
 		{
-			if(!stat) menu_icons[i]->SetSize(((600000)/item_count)/64);
-			else      menu_icons[i]->SetSize(1950);
+				menu_icons[i]->	SetSize(((620000)/Max(item_count,12))/64); //see Show()
 		}
 		if(i==item_count) var miss=360-(segment*item_count);
 		if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
@@ -164,8 +164,7 @@ public func UpdateCursor(int angle)
 	if(dvar==item_count+1) dvar=item_count;
 	if(menu_icons[dvar-1])
 	{
-		if(!stat) menu_icons[dvar-1]->SetSize(((((600000)/item_count)/64)*16) /10);
-		else      menu_icons[dvar-1]->SetSize(1950*14 /10);
+			menu_icons[dvar-1]->	SetSize(((620000)/Max(item_count,12))/64 *3/2); //see Show()
 	}
 
 }
