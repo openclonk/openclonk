@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-16 00:24+0100\n"
+"POT-Creation-Date: 2010-04-07 22:30+0200\n"
 "PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
@@ -258,9 +258,6 @@ msgstr "Yields the power of a to b."
 #: sdk/script/operatoren.xml:236(col)
 #: sdk/script/operatoren.xml:243(col)
 #: sdk/script/operatoren.xml:250(col)
-#: sdk/script/operatoren.xml:257(col)
-#: sdk/script/operatoren.xml:264(col)
-#: sdk/script/operatoren.xml:271(col)
 msgid "postfix"
 msgstr "postfix"
 
@@ -272,9 +269,9 @@ msgstr "postfix"
 #: sdk/script/operatoren.xml:118(col)
 #: sdk/script/operatoren.xml:125(col)
 #: sdk/script/operatoren.xml:132(col)
-#: sdk/script/operatoren.xml:202(col)
-#: sdk/script/operatoren.xml:209(col)
-#: sdk/script/operatoren.xml:216(col)
+#: sdk/script/operatoren.xml:181(col)
+#: sdk/script/operatoren.xml:188(col)
+#: sdk/script/operatoren.xml:195(col)
 msgid "int, int/int"
 msgstr "int, int/int"
 
@@ -391,9 +388,6 @@ msgstr "Returns whether the first value is greater than or equal to the second."
 
 #: sdk/script/operatoren.xml:163(col)
 #: sdk/script/operatoren.xml:170(col)
-#: sdk/script/operatoren.xml:177(col)
-#: sdk/script/operatoren.xml:184(col)
-#: sdk/script/operatoren.xml:191(col)
 msgid "9l"
 msgstr "9l"
 
@@ -418,157 +412,127 @@ msgstr "!="
 msgid "gibt zurück, ob zwei Werte nicht gleich sind."
 msgstr "Returns whether a is unequal to b."
 
-#: sdk/script/operatoren.xml:178(col)
-msgid "S="
-msgstr "S="
-
-#: sdk/script/operatoren.xml:179(col)
-msgid "gibt zurück, ob zwei Strings gleich sind"
-msgstr "Returns whether two strings are identical."
-
-#: sdk/script/operatoren.xml:181(col)
-#: sdk/script/operatoren.xml:188(col)
-#: sdk/script/operatoren.xml:195(col)
-msgid "bool, String/String"
-msgstr "bool, string/string"
-
-#: sdk/script/operatoren.xml:185(col)
-msgid "eq"
-msgstr "eq"
-
-#: sdk/script/operatoren.xml:186(col)
-msgid "gibt ebenfalls zurück, ob zwei Strings gleich sind"
-msgstr "Also returns whether two strings are identical."
-
-#: sdk/script/operatoren.xml:192(col)
-msgid "ne"
-msgstr "ne"
-
-#: sdk/script/operatoren.xml:193(col)
-msgid "gibt ebenfalls zurück, ob zwei Strings nicht gleich sind"
-msgstr "Also returns whether two strings are not identical."
-
-#: sdk/script/operatoren.xml:198(col)
+#: sdk/script/operatoren.xml:177(col)
 msgid "8l"
 msgstr "8l"
 
-#: sdk/script/operatoren.xml:199(col)
+#: sdk/script/operatoren.xml:178(col)
 #: sdk/script/fn/C4D_Knowledge.xml:16(emlink)
 msgid "&amp;"
 msgstr "&amp;"
 
-#: sdk/script/operatoren.xml:200(col)
+#: sdk/script/operatoren.xml:179(col)
 msgid "führt ein bitweises And aus"
 msgstr "Performs a bitwise AND operation."
 
-#: sdk/script/operatoren.xml:205(col)
-#: sdk/script/operatoren.xml:212(col)
+#: sdk/script/operatoren.xml:184(col)
+#: sdk/script/operatoren.xml:191(col)
 msgid "6l"
 msgstr "6l"
 
-#: sdk/script/operatoren.xml:206(col)
+#: sdk/script/operatoren.xml:185(col)
 msgid "^"
 msgstr "^"
 
-#: sdk/script/operatoren.xml:207(col)
+#: sdk/script/operatoren.xml:186(col)
 msgid "führt ein bitweises XOr aus"
 msgstr "Performs a bitwise XOR operation."
 
-#: sdk/script/operatoren.xml:213(col)
+#: sdk/script/operatoren.xml:192(col)
 msgid "|"
 msgstr "|"
 
-#: sdk/script/operatoren.xml:214(col)
+#: sdk/script/operatoren.xml:193(col)
 msgid "führt ein bitweises Or aus"
 msgstr "Performs a bitwise OR operation."
 
-#: sdk/script/operatoren.xml:219(col)
+#: sdk/script/operatoren.xml:198(col)
 msgid "5l"
 msgstr "5l"
 
-#: sdk/script/operatoren.xml:220(col)
+#: sdk/script/operatoren.xml:199(col)
 msgid "&amp;&amp;"
 msgstr "&amp;&amp;"
 
-#: sdk/script/operatoren.xml:221(col)
+#: sdk/script/operatoren.xml:200(col)
 msgid "führt ein logisches And aus"
 msgstr "Performs a logical AND operation."
 
-#: sdk/script/operatoren.xml:223(col)
-#: sdk/script/operatoren.xml:230(col)
+#: sdk/script/operatoren.xml:202(col)
+#: sdk/script/operatoren.xml:209(col)
 msgid "any, any/any"
 msgstr "any, any/any"
 
-#: sdk/script/operatoren.xml:226(col)
+#: sdk/script/operatoren.xml:205(col)
 msgid "4l"
 msgstr "4l"
 
-#: sdk/script/operatoren.xml:227(col)
+#: sdk/script/operatoren.xml:206(col)
 msgid "||"
 msgstr "||"
 
-#: sdk/script/operatoren.xml:228(col)
+#: sdk/script/operatoren.xml:207(col)
 msgid "führt ein logisches Or aus"
 msgstr "Performs a logical OR operation."
 
+#: sdk/script/operatoren.xml:212(col)
+#: sdk/script/operatoren.xml:219(col)
+#: sdk/script/operatoren.xml:226(col)
 #: sdk/script/operatoren.xml:233(col)
 #: sdk/script/operatoren.xml:240(col)
 #: sdk/script/operatoren.xml:247(col)
-#: sdk/script/operatoren.xml:254(col)
-#: sdk/script/operatoren.xml:261(col)
-#: sdk/script/operatoren.xml:268(col)
 msgid "2r"
 msgstr "2r"
 
-#: sdk/script/operatoren.xml:234(col)
+#: sdk/script/operatoren.xml:213(col)
 msgid "*="
 msgstr "*="
 
-#: sdk/script/operatoren.xml:235(col)
+#: sdk/script/operatoren.xml:214(col)
 msgid "vervielfacht die vorangestellte Variable mit dem nachgestellten Wert"
 msgstr "Multiplies the preceeding variables by the following value."
 
+#: sdk/script/operatoren.xml:216(col)
+#: sdk/script/operatoren.xml:223(col)
+#: sdk/script/operatoren.xml:230(col)
 #: sdk/script/operatoren.xml:237(col)
 #: sdk/script/operatoren.xml:244(col)
-#: sdk/script/operatoren.xml:251(col)
-#: sdk/script/operatoren.xml:258(col)
-#: sdk/script/operatoren.xml:265(col)
 msgid "Referenz, Referenz/int"
 msgstr "reference, reference/int"
 
-#: sdk/script/operatoren.xml:241(col)
+#: sdk/script/operatoren.xml:220(col)
 msgid "/="
 msgstr "/="
 
-#: sdk/script/operatoren.xml:242(col)
+#: sdk/script/operatoren.xml:221(col)
 msgid "teilt den Wert der vorangestellten Variable durch den nachgestellten Wert"
 msgstr "Divides the preceeding variable by the following value."
 
-#: sdk/script/operatoren.xml:248(col)
+#: sdk/script/operatoren.xml:227(col)
 msgid "%="
 msgstr "%="
 
-#: sdk/script/operatoren.xml:249(col)
+#: sdk/script/operatoren.xml:228(col)
 msgid "Schreibt den Divisionrest der Division des Wertes vorangestellten Variable mit dem nachgestellten Wert in die Variable"
 msgstr "Sets the preceeding variable to the remainder of the devision of that variable by the following value."
 
-#: sdk/script/operatoren.xml:255(col)
+#: sdk/script/operatoren.xml:234(col)
 msgid "+="
 msgstr "+="
 
-#: sdk/script/operatoren.xml:256(col)
+#: sdk/script/operatoren.xml:235(col)
 msgid "erhöht die vorangestellte Variable um den nachgestellten Wert"
 msgstr "Increases the preceeding variable by the following value."
 
-#: sdk/script/operatoren.xml:262(col)
+#: sdk/script/operatoren.xml:241(col)
 msgid "-="
 msgstr "-="
 
-#: sdk/script/operatoren.xml:263(col)
+#: sdk/script/operatoren.xml:242(col)
 msgid "vermindert den Wert der vorangestellten Variable um den nachgestellten Wert"
 msgstr "Decreases the preeceding variable by the following value."
 
-#: sdk/script/operatoren.xml:269(col)
+#: sdk/script/operatoren.xml:248(col)
 #: sdk/script/fn/SetPlrMagic.xml:20(emlink)
 #: sdk/script/fn/SetPlrMagic.xml:21(emlink)
 #: sdk/script/fn/LocalN.xml:19(emlink)
@@ -576,125 +540,125 @@ msgstr "Decreases the preeceding variable by the following value."
 msgid "="
 msgstr "="
 
-#: sdk/script/operatoren.xml:270(col)
+#: sdk/script/operatoren.xml:249(col)
 msgid "weist der vorangestellten Variable den nachgestellten Wert zu"
 msgstr "Assigns the following value to the preceeding variable."
 
-#: sdk/script/operatoren.xml:272(col)
+#: sdk/script/operatoren.xml:251(col)
 msgid "Referenz, Referenz/any"
 msgstr "reference, reference/any"
 
-#: sdk/script/operatoren.xml:276(h)
+#: sdk/script/operatoren.xml:255(h)
 msgid "Erklärungen und Beispiele:"
 msgstr "Explanation and examples:"
 
-#: sdk/script/operatoren.xml:278(h)
+#: sdk/script/operatoren.xml:257(h)
 msgid "Postfix oder prefix?"
 msgstr "Postfix or prefix?"
 
-#: sdk/script/operatoren.xml:280(text)
+#: sdk/script/operatoren.xml:259(text)
 msgid "Diese Eigenschaft eines Operators gibt an, ob er <em>vor</em>(pre) oder <em>nach</em>(post) seinem ersten Parameter steht."
 msgstr "This property of an operator determines whether it is used <em>before</em> (pre) or <em>after</em> (post) its parameter."
 
-#: sdk/script/operatoren.xml:281(text)
+#: sdk/script/operatoren.xml:260(text)
 msgid "Prefix - Operatoren haben immer nur einen Parameter (nach dem Operator), während Postfix - Operatoren in der Regel 2 Parameter haben, einen vor und einen danach. (siehe auch <a href=\"#opppmm\">Operatoren ++/--</a>)"
 msgstr "Prefix operators only have one parameter while postfix operators usually have two parameters (one preceeding and one following). See also <a href=\"#opppmm\">operators ++/--</a>."
 
-#: sdk/script/operatoren.xml:283(h)
+#: sdk/script/operatoren.xml:262(h)
 msgid "Beispiel 1:"
 msgstr "Example 1:"
 
-#: sdk/script/operatoren.xml:289(h)
-#: sdk/script/operatoren.xml:303(h)
+#: sdk/script/operatoren.xml:268(h)
+#: sdk/script/operatoren.xml:282(h)
 #: sdk/script/BreakContinue.xml:25(h)
 msgid "Ausgabe:"
 msgstr "Output:"
 
-#: sdk/script/operatoren.xml:295(text)
+#: sdk/script/operatoren.xml:274(text)
 msgid "Plus, Minus, Multiplikation u.ä. Operatoren bilden die Klasse der Postfix - Operatoren. Es werden jeweils zwei Werte (die vor bzw. nach dem Operator stehen) verrechnet."
 msgstr "Addition, subtraction, multiplication, division, and similar form the group of postfix operators. They combine the two values preceeding and following the operator."
 
-#: sdk/script/operatoren.xml:297(h)
+#: sdk/script/operatoren.xml:276(h)
 msgid "Beispiel 2:"
 msgstr "Example 2:"
 
-#: sdk/script/operatoren.xml:309(text)
+#: sdk/script/operatoren.xml:288(text)
 msgid "Bei diesen Operatoren handelt es sich um sogenannte Prefix - Operatoren. Sie stehen jeweils vor dem zu verarbeitenden Wert."
 msgstr "Prefix operators are located before the value to which they are applied."
 
-#: sdk/script/operatoren.xml:312(h)
+#: sdk/script/operatoren.xml:291(h)
 msgid "Die Operatoren ++ und --"
 msgstr "Operators ++ and --"
 
-#: sdk/script/operatoren.xml:314(text)
+#: sdk/script/operatoren.xml:293(text)
 msgid "Die Operatoren ++ bzw. -- existierten sowohl als postfix- als auch als prefix-Operatoren. Dabei haben die postfix-Varianten noch die Besonderheit, dass sie keinen nachgestellten Wert benötigen."
 msgstr "Operators ++ and -- exist as both postfix and prefix operators. The postfix version of these operators does not have a second parameter."
 
-#: sdk/script/operatoren.xml:316(h)
+#: sdk/script/operatoren.xml:295(h)
 msgid "Beispiel: (postfix)"
 msgstr "Example 1 (postfix):"
 
-#: sdk/script/operatoren.xml:319(strong)
+#: sdk/script/operatoren.xml:298(strong)
 msgid "somevar++"
 msgstr ""
 
-#: sdk/script/operatoren.xml:322(h)
+#: sdk/script/operatoren.xml:301(h)
 msgid "Beispiel 2: (prefix)"
 msgstr "Example 2 (prefix):"
 
-#: sdk/script/operatoren.xml:325(strong)
+#: sdk/script/operatoren.xml:304(strong)
 msgid "++somevar"
 msgstr ""
 
-#: sdk/script/operatoren.xml:328(text)
+#: sdk/script/operatoren.xml:307(text)
 #, fuzzy
 msgid "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung somevar um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
 msgstr "These two examples are almost identical. In both cases the value of Var(0) is increased by one per loop repetition. The result is compared to 10 in each case."
 
-#: sdk/script/operatoren.xml:329(text)
+#: sdk/script/operatoren.xml:308(text)
 #, fuzzy
 msgid "Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben. D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist somevar am Anfang 9. Dann wird sie um eins erhöht (somevar ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben."
 msgstr "Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of Var(0) is 9. It is then increased by one (Var(0) is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed."
 
-#: sdk/script/operatoren.xml:330(text)
+#: sdk/script/operatoren.xml:309(text)
 #, fuzzy
 msgid "Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn somevar 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen."
 msgstr "In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When Var(0) is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends."
 
-#: sdk/script/operatoren.xml:333(h)
+#: sdk/script/operatoren.xml:312(h)
 msgid "Die Operatoren &amp;&amp; und ||"
 msgstr "The Operators &amp;&amp; and ||"
 
-#: sdk/script/operatoren.xml:335(text)
+#: sdk/script/operatoren.xml:314(text)
 #, fuzzy
 msgid "Diese beiden Operatoren haben (ab <emlink href=\"script/Strict.html\"> 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
 msgstr "These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:"
 
-#: sdk/script/operatoren.xml:337(text)
+#: sdk/script/operatoren.xml:316(text)
 msgid "Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:"
 msgstr "Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:"
 
-#: sdk/script/operatoren.xml:341(h)
+#: sdk/script/operatoren.xml:320(h)
 msgid "Prioritäten und Assoziativität"
 msgstr "Priority and Associating"
 
-#: sdk/script/operatoren.xml:343(text)
+#: sdk/script/operatoren.xml:322(text)
 msgid "Dieses Thema ist nicht unbedingt zum Verständnis der Operatoren vonnöten. Es soll nur zeigen, wie die Mechanismen wie Punkt-vor-Strich u.ä. im Detail funktionieren."
 msgstr "This subject shows how operator priority is evaluated in detail."
 
-#: sdk/script/operatoren.xml:344(text)
+#: sdk/script/operatoren.xml:323(text)
 msgid "Um einen längeren Ausdruck mit mehreren Operatoren ausrechnen zu können, muss entschieden werden, in welcher Reinfolge die Operatoren ausgeführt werden und welches Ergebnis welchem anderem Operator zu übergeben ist."
 msgstr "To calculate the result of a complex term, first we have to decide in which order to evaluate the individual operations and to which other operator the result is to be passed."
 
-#: sdk/script/operatoren.xml:345(text)
+#: sdk/script/operatoren.xml:324(text)
 msgid "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren mit niedriger Priorität ausgeführt. Anmerkung: das gilt <strong>nicht</strong> für die Reihenfolge der Ausführung der Parameter. Diese werden ganz \"normal\" von links nach rechts ausgeführt."
 msgstr "Generally, operators with a higher priority are evaluate before operators with a lower priority. Notice: this does not apply to the evaluation of parameters - those are normally evaluated from left to right."
 
-#: sdk/script/operatoren.xml:347(h)
-#: sdk/script/operatoren.xml:354(h)
-#: sdk/script/operatoren.xml:382(h)
-#: sdk/script/operatoren.xml:511(h)
-#: sdk/script/operatoren.xml:640(h)
+#: sdk/script/operatoren.xml:326(h)
+#: sdk/script/operatoren.xml:333(h)
+#: sdk/script/operatoren.xml:361(h)
+#: sdk/script/operatoren.xml:490(h)
+#: sdk/script/operatoren.xml:619(h)
 #: sdk/script/NamedVar.xml:44(h)
 #: sdk/script/Funcs.xml:78(h)
 #: sdk/script/Funcs.xml:132(h)
@@ -705,88 +669,88 @@ msgstr "Generally, operators with a higher priority are evaluate before operator
 msgid "Beispiel:"
 msgstr "Example:"
 
-#: sdk/script/operatoren.xml:349(text)
-#: sdk/script/operatoren.xml:356(text)
+#: sdk/script/operatoren.xml:328(text)
+#: sdk/script/operatoren.xml:335(text)
 msgid "entspricht:"
 msgstr "evaluated as:"
 
-#: sdk/script/operatoren.xml:352(text)
+#: sdk/script/operatoren.xml:331(text)
 msgid "Dabei taucht aber noch ein Problem auf: was ist zu tun, wenn \"benachbarte\" Operatoren dieselbe Priorität haben? Ist dann der linke oder der rechte Ausdruck zu klammern? Über diese Frage entscheidet die sog. Assoziativität. Ist ein Operator links-assoziativ, so hat jeweils der linke Operator Priorität (übrigens auch der Regelfall, denn meistens wird von links nach rechts gerechnet). Anders bei den rechts-assoziativen Operatoren, wo jeweils der rechte Operator Priorität hat."
 msgstr "Here we have another problem: what to do when 'neighbouring' operators have the same priority? Should we first process the left or the right term? This is decided by the so called associativity. If an operator is left-associative then the term on the left is evaluated first (this is the usual case). With right-associative operators the term on the right is evaluated first."
 
-#: sdk/script/operatoren.xml:359(text)
+#: sdk/script/operatoren.xml:338(text)
 msgid "Hier sieht man deutlich, dass der Operator \"+\" links-assoziativ ist, der Ausdruck \"<code>1 + 2 + 3</code>\" wird zu \"<code>(1 + 2) + 3</code>\"."
 msgstr "Here you can see that the operator \"+\" is left-associative, the term \"<code>1 + 2 + 3</code>\" is evaluated as \"<code>(1 + 2) + 3</code>\"."
 
-#: sdk/script/operatoren.xml:360(text)
+#: sdk/script/operatoren.xml:339(text)
 #, fuzzy
 msgid "Dagegen wird der Ausdruck \"<code>somevar = othervar = x</code>\" zu \"<code>somevar = (othervar = x)</code>\", da der Operator \"=\" rechts-assoziativ ist."
 msgstr "As opposed to this, the term \"<code>Var(0) = Var(1) = x</code>\" becomes \"<code>Var(0) = (Var(1) = x)</code>\", since the operator \"=\" is right-associative."
 
-#: sdk/script/operatoren.xml:361(text)
+#: sdk/script/operatoren.xml:340(text)
 msgid "Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste."
 msgstr "To find out about an operator's associativity, see the table above."
 
-#: sdk/script/operatoren.xml:364(h)
+#: sdk/script/operatoren.xml:343(h)
 msgid "Bitweise Operatoren"
 msgstr "Bit Manipulation Operators"
 
-#: sdk/script/operatoren.xml:365(text)
+#: sdk/script/operatoren.xml:344(text)
 msgid "In der Liste der Operatoren fallen einige Operatoren auf, die bitweise Opererationen oder Bitschieben durchführen."
 msgstr "In the operator list you will have noticed some operators which perform bitwise operations or bit shift."
 
-#: sdk/script/operatoren.xml:366(text)
+#: sdk/script/operatoren.xml:345(text)
 msgid "Erst mal eine kurze Beschreibung von Bits: der Computer rechnet intern im sog. binären Zahlensystem. In diesem System gibt es nur zwei Ziffern, nämlich 0 und 1. (wir rechnen üblicherweise im 10er-System, wir haben 10 Ziffern von 0 bis 9). Damit lassen sich die Zahlen folgendermaßen darstellen:"
 msgstr "To start out, a short description of bits: any computer internally works with 'binary numbers'. In this system there are only two digits: 0 and 1. Humans, by the way, usually work with 10 digits: 0 to 9. With the binary system, number can be represented as follows:"
 
-#: sdk/script/operatoren.xml:368(h)
+#: sdk/script/operatoren.xml:347(h)
 msgid "Das Binärsystem"
 msgstr "The Binary System"
 
-#: sdk/script/operatoren.xml:370(text)
+#: sdk/script/operatoren.xml:349(text)
 msgid "(jeweils erst im Zehnersystem, dann im Binärsystem)"
 msgstr "(each number is presented in the decimal system first, then binary)"
 
-#: sdk/script/operatoren.xml:379(text)
+#: sdk/script/operatoren.xml:358(text)
 msgid "Dabei wird jede Ziffer als \"Bit\" bezeichnet. Eine Folge von 8 Bits (s.o.) nennt man ein \"Byte\"."
 msgstr "Each digit in the binary system is called a \"bit\". A sequence of 8 bits (see above) is called a \"byte\"."
 
-#: sdk/script/operatoren.xml:380(text)
+#: sdk/script/operatoren.xml:359(text)
 msgid "Bitweise Operatoren bearbeiten Zahlen nun bitweise."
 msgstr "Bitwise operatiors perform actions on the bits of a number."
 
-#: sdk/script/operatoren.xml:388(text)
+#: sdk/script/operatoren.xml:367(text)
 msgid "In diesem Beispiel handelt es sich um bitweises Not. D.h. jedes Bit wird einzeln negiert (aus 0 wird 1, aus 1 wird 0)."
 msgstr "This example shows a binary NOT. That means, each bit of the number is negated individually (0 becomes 1, 1 becomes 0)."
 
-#: sdk/script/operatoren.xml:389(text)
+#: sdk/script/operatoren.xml:368(text)
 msgid "Bitweise Operatoren mit 2 Parametern verrechnen nun jeweils die Bits zweier Zahlen."
 msgstr "Bitwise operators with two parameters combine the bits of two numbers."
 
-#: sdk/script/operatoren.xml:391(h)
+#: sdk/script/operatoren.xml:370(h)
 msgid "Beispiele:"
 msgstr "Examples:"
 
-#: sdk/script/operatoren.xml:438(text)
+#: sdk/script/operatoren.xml:417(text)
 msgid "Diese drei Operatoren sind (der Reihe nach) Und (&amp;), Oder (|) und Exklusiv-Oder (^)."
 msgstr "These three operators are (in order) AND (&amp;), OR (|) and EXCLUSIVE-OR (^)."
 
-#: sdk/script/operatoren.xml:439(text)
+#: sdk/script/operatoren.xml:418(text)
 msgid "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn in beiden Eingaben an der entsprechenden Stelle ebenfalls eine 1 steht. \"Und\" hat also die folgende Wahrheitstabelle (senkrecht bzw. waagerecht sind die beiden möglichen Parameter jeweils gelistet, in der Tabelle selbst das Ergebnis):"
 msgstr "With the AND operator, the resulting bit will only be 1 if both incoming bits are 1. AND gives the following result:"
 
-#: sdk/script/operatoren.xml:444(col)
+#: sdk/script/operatoren.xml:423(col)
+#: sdk/script/operatoren.xml:427(col)
+#: sdk/script/operatoren.xml:428(col)
+#: sdk/script/operatoren.xml:429(col)
+#: sdk/script/operatoren.xml:433(col)
+#: sdk/script/operatoren.xml:443(col)
+#: sdk/script/operatoren.xml:447(col)
 #: sdk/script/operatoren.xml:448(col)
-#: sdk/script/operatoren.xml:449(col)
-#: sdk/script/operatoren.xml:450(col)
-#: sdk/script/operatoren.xml:454(col)
-#: sdk/script/operatoren.xml:464(col)
+#: sdk/script/operatoren.xml:463(col)
+#: sdk/script/operatoren.xml:467(col)
 #: sdk/script/operatoren.xml:468(col)
-#: sdk/script/operatoren.xml:469(col)
-#: sdk/script/operatoren.xml:484(col)
-#: sdk/script/operatoren.xml:488(col)
-#: sdk/script/operatoren.xml:489(col)
-#: sdk/script/operatoren.xml:495(col)
+#: sdk/script/operatoren.xml:474(col)
 #: sdk/script/fn/SetRGBaValue.xml:21(col)
 #: sdk/script/fn/SetPhysical.xml:16(col)
 #: sdk/script/fn/SetGraphics.xml:19(col)
@@ -817,18 +781,18 @@ msgstr "With the AND operator, the resulting bit will only be 1 if both incoming
 msgid "0"
 msgstr "0"
 
-#: sdk/script/operatoren.xml:445(col)
+#: sdk/script/operatoren.xml:424(col)
+#: sdk/script/operatoren.xml:432(col)
+#: sdk/script/operatoren.xml:434(col)
+#: sdk/script/operatoren.xml:444(col)
+#: sdk/script/operatoren.xml:449(col)
+#: sdk/script/operatoren.xml:452(col)
 #: sdk/script/operatoren.xml:453(col)
-#: sdk/script/operatoren.xml:455(col)
-#: sdk/script/operatoren.xml:465(col)
-#: sdk/script/operatoren.xml:470(col)
+#: sdk/script/operatoren.xml:454(col)
+#: sdk/script/operatoren.xml:464(col)
+#: sdk/script/operatoren.xml:469(col)
+#: sdk/script/operatoren.xml:472(col)
 #: sdk/script/operatoren.xml:473(col)
-#: sdk/script/operatoren.xml:474(col)
-#: sdk/script/operatoren.xml:475(col)
-#: sdk/script/operatoren.xml:485(col)
-#: sdk/script/operatoren.xml:490(col)
-#: sdk/script/operatoren.xml:493(col)
-#: sdk/script/operatoren.xml:494(col)
 #: sdk/script/fn/SetRGBaValue.xml:22(col)
 #: sdk/script/fn/SetPhysical.xml:17(col)
 #: sdk/script/fn/SetObjectBlitMode.xml:19(col)
@@ -860,107 +824,107 @@ msgstr "0"
 msgid "1"
 msgstr "1"
 
-#: sdk/script/operatoren.xml:459(text)
+#: sdk/script/operatoren.xml:438(text)
 msgid "Der Operator \"Oder\" gibt 1 zurück, wenn eins (oder beide) der Eingaben 1 sind:"
 msgstr "The OR operator results in 1 if one or both of the incoming bits are 1:"
 
-#: sdk/script/operatoren.xml:479(text)
+#: sdk/script/operatoren.xml:458(text)
 msgid "Der Operator \"Exklusiv-Oder\" (XOr) verhält sich wie das \"Oder\", doch wird 0 zurückgegeben, wenn beide Parameter 0 sind."
 msgstr "The XOR operator results in 1 if either (but not both) of the incoming bits are 1:"
 
-#: sdk/script/operatoren.xml:499(h)
+#: sdk/script/operatoren.xml:478(h)
 msgid "Anwendungen"
 msgstr "Applications:"
 
-#: sdk/script/operatoren.xml:500(text)
+#: sdk/script/operatoren.xml:479(text)
 msgid "In Clonk werden häufig Bitoperationen benutzt, wenn es darum geht, verschiedene Eigenschaften eines Objekts in einem Wert zu speichern. Das prominenteste Beispiel sind hier wohl die C4D(Category)-Werte. Hier repräsentiert jedes Bit des C4D-Wertes eine bestimmte Eigenschaft (für Einzelheiten siehe Entwickler-Dokumentation)."
 msgstr "Clonk  often uses bitwise operations when storing the characteristics of an object in a single value. The best known example is the category (\"C4D\" values) of an object. Here, each bit of the category value represents a certain class or characteristic."
 
-#: sdk/script/operatoren.xml:501(text)
+#: sdk/script/operatoren.xml:480(text)
 msgid "Auf diese Bits kann man recht bequem über die bitweisen Operatoren zugreifen. Ein C4D-Wert kann z.B. folgendermaßen aussehen:"
 msgstr "To access or sort out the individual characteristics, you can easily access a C4D value with bitwise operators:"
 
-#: sdk/script/operatoren.xml:503(h)
+#: sdk/script/operatoren.xml:482(h)
 msgid "Beispiel: (Wipf)"
 msgstr "Example (wipf):"
 
-#: sdk/script/operatoren.xml:505(text)
+#: sdk/script/operatoren.xml:484(text)
 msgid "Dieser Wert ergibt im Binär-System: (kann mit Windows-Taschenrechner umgerechnet werden)"
 msgstr "This value in binary system:"
 
-#: sdk/script/operatoren.xml:507(text)
+#: sdk/script/operatoren.xml:486(text)
 msgid "Hier sieht man, dass Bit 3, Bit 12 und Bit 16 gesetzt sind (es wird von rechts gezählt und mit 0 begonnen)"
 msgstr "You can see that bit 3, 12, and 16 are set (counting from left to right, starting with 0)."
 
-#: sdk/script/operatoren.xml:508(text)
+#: sdk/script/operatoren.xml:487(text)
 msgid "Dies entspricht der Reihe nach den C4D-Werten <placeholder-1/> (Objekt ist ein Lebewesen), C4D_SelectAnimal (Objekt kann im Menu für Lebewesen hinzugefügt werden) und C4D_TradeLiving (Objekt ist ein Lebewesen, darf aber trotzdem verkauft werden)."
 msgstr "This represents the C4D values <placeholder-1/> (objects is a living being), C4D_SelectAnimal (living being can be selected in the menu system) and C4D_TradeLiving (living being can be bought or sold)."
 
-#: sdk/script/operatoren.xml:509(text)
+#: sdk/script/operatoren.xml:488(text)
 msgid "Im Script kann nun recht einfach geprüft werden, ob ein bestimmtes Bit gesetzt ist: man benutzt den Operator \"Und\" (<code>&amp;</code>), dem man den Wert und die \"Maske\" übergibt. In der Maske ist nur das Bit gesetzt, dass von Interesse ist. Auf diese Weise müssen im Ergebnis alle Bits, die nicht interessieren, 0 sein (denn sie sind es in der Maske). Ist nun das Bit, das interressiert, 1, so wird diese in das Ergebnis übernommen, ist es 0, so wird im Ergebnis dort auch 0 stehen. Im letzteren Fall ist sogar das gesamte Ergebnis 0, da alle anderen Bits ja auch 0 sind. Es genügt also zu überprüfen, ob das Ergebnis von <code>[Val] &amp; [Mask]</code> ungleich null ist, um herauszufinden, ob ein bestimmtes Bit gesetzt ist."
 msgstr "In script you can now easily check whether a given bit is set: simply use the AND operator (&amp) with a second parameter (\"mask\"). In this mask, only a single bit is set, representing the category value which we we like to test for. In the result of the AND operation all bits that do not interest us, will be 0. Only the one bit that does interest us, has the chance of being 1 - that is, if it is set in the original value. Since a single bit set in a number will already cause that number's value to be different from 0, all you have to do now is to compare the resulting number to 0: if it is different from 0, the characteristic we have been looking for is given; if the result is equal to 0, the characteristic is not given."
 
-#: sdk/script/operatoren.xml:517(col)
-#: sdk/script/operatoren.xml:537(col)
-#: sdk/script/operatoren.xml:563(col)
-#: sdk/script/operatoren.xml:583(col)
-#: sdk/script/operatoren.xml:603(col)
-#: sdk/script/operatoren.xml:621(col)
+#: sdk/script/operatoren.xml:496(col)
+#: sdk/script/operatoren.xml:516(col)
+#: sdk/script/operatoren.xml:542(col)
+#: sdk/script/operatoren.xml:562(col)
+#: sdk/script/operatoren.xml:582(col)
+#: sdk/script/operatoren.xml:600(col)
 msgid "(Wert)"
 msgstr "(value)"
 
-#: sdk/script/operatoren.xml:522(col)
-#: sdk/script/operatoren.xml:542(col)
-#: sdk/script/operatoren.xml:568(col)
-#: sdk/script/operatoren.xml:608(col)
-#: sdk/script/operatoren.xml:626(col)
+#: sdk/script/operatoren.xml:501(col)
+#: sdk/script/operatoren.xml:521(col)
+#: sdk/script/operatoren.xml:547(col)
+#: sdk/script/operatoren.xml:587(col)
+#: sdk/script/operatoren.xml:605(col)
 msgid "(Maske)"
 msgstr "(mask)"
 
-#: sdk/script/operatoren.xml:531(text)
+#: sdk/script/operatoren.xml:510(text)
 msgid "Das Ergebnis ist in diesem Fall nicht 0, also ist das Bit, dass in der Maske gesetzt ist, auch im Wert gesetzt."
 msgstr "In this case, the result is unequal to 0, so we know the bit we have set in the mask is also set in the original value."
 
-#: sdk/script/operatoren.xml:551(text)
+#: sdk/script/operatoren.xml:530(text)
 msgid "Hier ist das Ergebnis 0, denn das Bit in der Maske ist nicht beim Wert gesetzt."
 msgstr "Here the result is equal to 0, meaning the bit we are looking for was not set in the original value."
 
-#: sdk/script/operatoren.xml:552(text)
+#: sdk/script/operatoren.xml:531(text)
 msgid "Es bleibt noch die Frage zu klären, wo man die entsprechende Maske denn herbekommt. Im Fall der Category-Werte sind diese bereits mit Namen mitgeliefert, sie können über <code>C4D_[XXX]</code> abgerufen werden. Wollte man z.B. herausfinden, ob es sich bei einem Objekt um ein Lebewesen handelt, so sähe der Script folgendermaßen aus:"
 msgstr "The question remains where to get the proper mask from. In the case of the C4D categories, there are predefined values we can use. They are called <code>C4D_xxx</code>. So to find out whether an object is a living being we use the following code:"
 
-#: sdk/script/operatoren.xml:557(text)
+#: sdk/script/operatoren.xml:536(text)
 msgid "Auf diese Weise kann man also einzelne Bits gezielt prüfen. Doch wie soll man diese nun bearbeiten? Will man ein einzelnes Bit <strong>setzen</strong>, so wird der Operator \"Oder\" (<code>|</code>) benutzt. Dieser wird wieder auf Wert und Maske angewendet:"
 msgstr "Now we can test whether an individual bit is set. But how can we change bits, for example <strong>set</strong> them? For this, we can use the OR operator (|). Again, it is applied using a value and a mask as a second parameter:"
 
-#: sdk/script/operatoren.xml:573(col)
-#: sdk/script/operatoren.xml:593(col)
-#: sdk/script/operatoren.xml:613(col)
-#: sdk/script/operatoren.xml:631(col)
+#: sdk/script/operatoren.xml:552(col)
+#: sdk/script/operatoren.xml:572(col)
+#: sdk/script/operatoren.xml:592(col)
+#: sdk/script/operatoren.xml:610(col)
 msgid "(neuer Wert)"
 msgstr "(new value)"
 
-#: sdk/script/operatoren.xml:577(text)
+#: sdk/script/operatoren.xml:556(text)
 msgid "Auf diese Weise ist es allerdings immer nur möglich, ein bestimmtes Bit auf 1 zu setzen. War dieses bereits gesetzt, so bleibt der Wert unverändert. Will man nun ein bestimmtes Bit auf 0 setzen, so benutzt man wieder den \"Und\"-Operator und die <strong>inverse</strong>(logisch Not) Maske, also <code>[Wert] &amp; ~[Maske]</code>:"
 msgstr "In this way it is only possible to set a certain bit to 1. If the bit was already set, the value will remain unchanged. To set a certain bit to 0 we have to use the AND operator and the <strong>inverse</strong> (logical NOT) mask, or <code>[value] &amp;~[mask]</code>."
 
-#: sdk/script/operatoren.xml:597(text)
+#: sdk/script/operatoren.xml:576(text)
 msgid "Es ist auch möglich, ein bestimmtes Bit gezielt umzuschalten, also von 1 auf 0 und von 0 nach 1. Dies leistet der bitweise \"Exklusiv-Oder\"-Operator (<code>^</code>):"
 msgstr "It is also possibly to toggle a certain bit from 1 to 0 or 0 to 1, whichever way it is set. This is done with the XOR operator (^):"
 
-#: sdk/script/operatoren.xml:636(h)
+#: sdk/script/operatoren.xml:615(h)
 msgid "Bitschiebereien"
 msgstr "Bit Shifts"
 
-#: sdk/script/operatoren.xml:638(text)
+#: sdk/script/operatoren.xml:617(text)
 msgid "Außer den Operatoren, die bitweises Manipulieren von Werten erlauben (s.o.) gibt es noch sog. <strong>Bitschiebe-Operatoren</strong>. Die Funktion dieser Operatoren beschränkt sich darauf (anschaulich gesprochen), an einen Bit-Wert Nullen anzuhängen (&lt;&lt;) bzw. Ziffern abzuschneiden (&gt;&gt;)."
 msgstr "Besides operators for bitwise combination of values there are also the <strong>bit shift</strong> operators. All these operators do is move all the bits in a number from left to right (adding a new 0 on the left) or from right to left (adding a new 0 on the right)."
 
-#: sdk/script/operatoren.xml:648(text)
+#: sdk/script/operatoren.xml:627(text)
 msgid "Mathematisch entspricht der Operator &lt;&lt; der Multiplikation mit <code>2 ^ X</code> (genau wie im Zehnersystem das Anhängen einer Null mit einer Multiplikation mit 10 gleichkommt) und der Operator &gt;&gt; einer Division mit <code>2 ^ X</code> (mit anschließendem Abrunden)."
 msgstr "Mathematically, the operator &lt;&lt; performs a multiplication by 2 (exactly in the same way that in the decimal system appending a 0 performs a multiplication by 10) and the operator &gt;&gt; is a division by 2 (including some rounding)."
 
-#: sdk/script/operatoren.xml:649(text)
+#: sdk/script/operatoren.xml:628(text)
 msgid "Mit den Operatoren können vor allem Masken erstellt (1 &lt;&lt; BitNr), und <placeholder-1/>-Farbwerte zusammengesetzt und auseinandergenommen werden."
 msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) and mix or take apart <placeholder-1/> color values."
 
@@ -1066,21 +1030,16 @@ msgid "#appendto: Zum nachträglichen Erweitern fremder Scripte"
 msgstr "#appendto: for appending code to existing scripts"
 
 #: sdk/script/index.xml:58(emlink)
-#, fuzzy
-msgid ": Der neue Standard"
-msgstr "#strict: the new coding standard"
-
-#: sdk/script/index.xml:59(emlink)
 msgid "Befehle zur Schleifenkontrolle"
 msgstr "Loop Control"
 
-#: sdk/script/index.xml:60(emlink)
+#: sdk/script/index.xml:59(emlink)
 #: sdk/script/FuncCall.xml:5(title)
 #: sdk/script/FuncCall.xml:7(h)
 msgid "Aufruf von Scriptfunktionen"
 msgstr "Calling Script Functions"
 
-#: sdk/script/index.xml:61(emlink)
+#: sdk/script/index.xml:60(emlink)
 #: sdk/script/fn/Sound.xml:7(category)
 #: sdk/script/fn/Smoke.xml:7(subcat)
 #: sdk/script/fn/RemoveEffect.xml:7(category)
@@ -1097,23 +1056,23 @@ msgstr "Calling Script Functions"
 msgid "Effekte"
 msgstr "Effects"
 
-#: sdk/script/index.xml:62(emlink)
+#: sdk/script/index.xml:61(emlink)
 msgid "Abfrage von Spieldaten"
 msgstr "Querying Game Data"
 
-#: sdk/script/index.xml:63(emlink)
+#: sdk/script/index.xml:62(emlink)
 msgid "Benannte Variablen und ihre Geltungsbereiche"
 msgstr "Named variables and their scope"
 
-#: sdk/script/index.xml:64(emlink)
+#: sdk/script/index.xml:63(emlink)
 msgid "Operatoren: +, -, = etc. in C4Script"
 msgstr "Operators: +, -, = etc. in C4Script"
 
-#: sdk/script/index.xml:65(emlink)
+#: sdk/script/index.xml:64(emlink)
 msgid "Überprüfung von Datentypen zur Laufzeit"
 msgstr "Data type checking at runtime"
 
-#: sdk/script/index.xml:66(emlink)
+#: sdk/script/index.xml:65(emlink)
 msgid "Scriptspieler (z.B. KI-Spieler)"
 msgstr "Script Player (i.e. AI player)"
 
@@ -1238,6 +1197,7 @@ msgstr "Removes all objects."
 #: sdk/script/fn/SetObjectBlitMode.xml:7(category)
 #: sdk/script/fn/SetObjDrawTransform.xml:7(category)
 #: sdk/script/fn/SetName.xml:7(category)
+#: sdk/script/fn/SetMeshMaterial.xml:7(category)
 #: sdk/script/fn/SetMenuSize.xml:7(category)
 #: sdk/script/fn/SetMass.xml:7(category)
 #: sdk/script/fn/SetGraphics.xml:7(category)
@@ -1255,6 +1215,8 @@ msgstr "Removes all objects."
 #: sdk/script/fn/SetClrModulation.xml:7(category)
 #: sdk/script/fn/SetCategory.xml:7(category)
 #: sdk/script/fn/SetBridgeActionData.xml:7(category)
+#: sdk/script/fn/SetAttachTransform.xml:7(category)
+#: sdk/script/fn/SetAttachBones.xml:7(category)
 #: sdk/script/fn/SetAlive.xml:7(category)
 #: sdk/script/fn/SetActionTargets.xml:7(category)
 #: sdk/script/fn/SetActionData.xml:7(category)
@@ -1336,6 +1298,7 @@ msgstr "Removes all objects."
 #: sdk/script/fn/GetOCF.xml:7(category)
 #: sdk/script/fn/GetNeededMatStr.xml:7(category)
 #: sdk/script/fn/GetName.xml:7(category)
+#: sdk/script/fn/GetMeshMaterial.xml:7(category)
 #: sdk/script/fn/GetMenuSelection.xml:7(category)
 #: sdk/script/fn/GetMenu.xml:7(category)
 #: sdk/script/fn/GetMass.xml:7(category)
@@ -1392,7 +1355,6 @@ msgstr "Removes all objects."
 #: sdk/script/fn/FindOtherContents.xml:7(category)
 #: sdk/script/fn/FindObjects.xml:7(category)
 #: sdk/script/fn/FindObject.xml:7(category)
-#: sdk/script/fn/FindDefinition.xml:7(category)
 #: sdk/script/fn/FindContents.xml:7(category)
 #: sdk/script/fn/FindBase.xml:7(category)
 #: sdk/script/fn/FightWith.xml:7(category)
@@ -1407,6 +1369,7 @@ msgstr "Removes all objects."
 #: sdk/script/fn/DoCrewExp.xml:7(category)
 #: sdk/script/fn/DoCon.xml:7(category)
 #: sdk/script/fn/DoBreath.xml:7(category)
+#: sdk/script/fn/DetachMesh.xml:7(category)
 #: sdk/script/fn/DeathAnnounce.xml:7(category)
 #: sdk/script/fn/DIR_Right.xml:7(category)
 #: sdk/script/fn/DIR_Left.xml:7(category)
@@ -1451,6 +1414,7 @@ msgstr "Removes all objects."
 #: sdk/script/fn/C4D_All.xml:7(category)
 #: sdk/script/fn/Buy.xml:7(category)
 #: sdk/script/fn/BlastObjects.xml:7(category)
+#: sdk/script/fn/AttachMesh.xml:7(category)
 #: sdk/script/fn/AppendCommand.xml:7(category)
 #: sdk/script/fn/AnyContainer.xml:7(category)
 #: sdk/script/fn/AddVertex.xml:7(category)
@@ -1867,6 +1831,150 @@ msgstr ""
 msgid "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
 msgstr ""
 
+#: sdk/script/fn/Trans_Translate.xml:7(category)
+#: sdk/script/fn/Trans_Scale.xml:7(category)
+#: sdk/script/fn/Trans_Rotate.xml:7(category)
+#: sdk/script/fn/Trans_Mul.xml:7(category)
+#: sdk/script/fn/Trans_Identity.xml:7(category)
+#: sdk/script/fn/ToggleBit.xml:7(category)
+#: sdk/script/fn/Tan.xml:7(category)
+#: sdk/script/fn/Sqrt.xml:7(category)
+#: sdk/script/fn/SplitRGBaValue.xml:7(category)
+#: sdk/script/fn/Sin.xml:7(category)
+#: sdk/script/fn/SetRGBaValue.xml:7(category)
+#: sdk/script/fn/SetBit.xml:7(category)
+#: sdk/script/fn/RandomX.xml:7(category)
+#: sdk/script/fn/Random.xml:7(category)
+#: sdk/script/fn/RGBa.xml:7(category)
+#: sdk/script/fn/RGB2HSL.xml:7(category)
+#: sdk/script/fn/RGB.xml:7(category)
+#: sdk/script/fn/Pow.xml:7(category)
+#: sdk/script/fn/Min.xml:7(category)
+#: sdk/script/fn/Max.xml:7(category)
+#: sdk/script/fn/Inside.xml:7(category)
+#: sdk/script/fn/HSLa.xml:7(category)
+#: sdk/script/fn/HSL2RGB.xml:7(category)
+#: sdk/script/fn/HSL.xml:7(category)
+#: sdk/script/fn/GetRGBaValue.xml:7(category)
+#: sdk/script/fn/GetBit.xml:7(category)
+#: sdk/script/fn/DoRGBaValue.xml:7(category)
+#: sdk/script/fn/Distance.xml:7(category)
+#: sdk/script/fn/Cos.xml:7(category)
+#: sdk/script/fn/BoundBy.xml:7(category)
+#: sdk/script/fn/ArcSin.xml:7(category)
+#: sdk/script/fn/ArcCos.xml:7(category)
+#: sdk/script/fn/Angle.xml:7(category)
+#: sdk/script/fn/Abs.xml:7(category)
+msgid "Arithmetik"
+msgstr "Arithmetics"
+
+#: sdk/script/fn/Trans_Translate.xml:12(desc)
+msgid "Verschiebung in X-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Translate.xml:13(desc)
+msgid "Verschiebung in Y-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Translate.xml:14(desc)
+msgid "Verschiebung in Z-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Translate.xml:17(desc)
+msgid "Liefert eine 3x4-Verschiebungsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/Trans_Translate.xml:18(remark)
+msgid "Bei einer Angabe von 1000 für <code>dx</code>, <code>dy</code> oder <code>dz</code> wird die Grafik um einen Pixel nach rechts, unten bzw. vorne verschoben, bei negativen Angaben in die jeweils entgegengesetzte Richtung. Für Grafiken, die direkt im Spiel dargestellt werden (wie von der \"MeshTransformation\"-Eigenschaft beeinflusst), entspricht eine Einheit in X oder Y einem Pixel. Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Fließkommazahlen gibt."
+msgstr ""
+
+#: sdk/script/fn/Trans_Translate.xml:22(text)
+msgid "Verschiebt die Repräsentativgrafik des Objekts 7 Einheiten näher an die Kamera. Dadurch wird es wegen der perspektivischen Projektion größer dargestellt."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:12(desc)
+msgid "Vergrößerung in X-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:13(desc)
+msgid "Vergrößerung in Y-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:14(desc)
+msgid "Vergrößerung in Z-Richtung."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:17(desc)
+msgid "Liefert eine 3x4-Skalierungsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:18(remark)
+msgid "When <code>sy</code> und <code>sz</code> nicht angegeben werden oder 0 sind, dann wird eine Streckung um <code>sx</code> in alle drei Richtungen gemacht. Ein Wert von 1000 bewirkt keine Veränderung, niedrigere Werte verkleinern die Grafik, größere vergrößern sie. Negative Werte bewirken eine Spiegelung um die entsprechende Achse."
+msgstr ""
+
+#: sdk/script/fn/Trans_Scale.xml:22(text)
+#, fuzzy
+msgid "Macht die Repräsentativgrafik des aufrufenden Objekts doppelt so groß."
+msgstr "Transforms the image of the object."
+
+#: sdk/script/fn/Trans_Rotate.xml:12(desc)
+msgid "Drehwinkel. Positive Werte drehen entgegen dem Uhrzeigersinn wenn man in Richtung der Drehachse blickt, negative Werte drehen im Uhrzeigersinn."
+msgstr ""
+
+#: sdk/script/fn/Trans_Rotate.xml:13(desc)
+#, fuzzy
+msgid "X-Koordinate der Drehachse."
+msgstr "X coordinate of the vertex."
+
+#: sdk/script/fn/Trans_Rotate.xml:14(desc)
+#, fuzzy
+msgid "Y-Koordinate der Drehachse."
+msgstr "Y coordinate of the vertex"
+
+#: sdk/script/fn/Trans_Rotate.xml:15(desc)
+#, fuzzy
+msgid "Z-Koordinate der Drehachse."
+msgstr "X coordinate of the vertex."
+
+#: sdk/script/fn/Trans_Rotate.xml:18(desc)
+msgid "Liefert eine 3x4-Rotationsmatrix welche eine Drehung um die Achse (<code>rx</code>, <code>ry</code>, <code>rz</code>) um <code>angle</code> Grad beschreibt. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/Trans_Rotate.xml:22(text)
+msgid "Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse."
+msgstr ""
+
+#: sdk/script/fn/Trans_Mul.xml:12(desc)
+msgid "Erste Matrix wie von <placeholder-1/>, <placeholder-2/>, <placeholder-3/> oder <placeholder-4/> zurückgegeben."
+msgstr ""
+
+#: sdk/script/fn/Trans_Mul.xml:13(desc)
+#, fuzzy
+msgid "Zweite Matrix."
+msgstr "Second object."
+
+#: sdk/script/fn/Trans_Mul.xml:14(desc)
+#, fuzzy
+msgid "Beliebig viele weitere Matrizen."
+msgstr "Any number of sections [Action]"
+
+#: sdk/script/fn/Trans_Mul.xml:17(desc)
+msgid "Multipliziert zwei oder mehr 3x4-Transformationsmatrizen in der gegegebenen Reihenfolge. Somit können die Effekte mehrerer Transformationen miteinander kombiniert werden. Das Ergebnis kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/Trans_Mul.xml:21(text)
+msgid "Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse und verschiebt sie dann um 7 Einheiten in Z-Richtung der Kamera entgegen."
+msgstr ""
+
+#: sdk/script/fn/Trans_Identity.xml:12(desc)
+msgid "Liefert eine 3x4-Einheitsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/Trans_Identity.xml:16(text)
+#, fuzzy
+msgid "Setzt die MeshTransformation für das aufrufende Objekt zurück."
+msgstr "Resets all transformation."
+
 #: sdk/script/fn/TrainPhysical.xml:7(subcat)
 #: sdk/script/fn/Stuck.xml:7(subcat)
 #: sdk/script/fn/SetTransferZone.xml:7(subcat)
@@ -1929,38 +2037,6 @@ msgstr "Example from System.c4g: improves the sorcerer's magic physical value af
 #: sdk/script/fn/SetPhysical.xml:50(emlink)
 msgid "DefCore.txt, [Physical]"
 msgstr "DefCore.txt, [Physical]"
-
-#: sdk/script/fn/ToggleBit.xml:7(category)
-#: sdk/script/fn/Tan.xml:7(category)
-#: sdk/script/fn/Sqrt.xml:7(category)
-#: sdk/script/fn/SplitRGBaValue.xml:7(category)
-#: sdk/script/fn/Sin.xml:7(category)
-#: sdk/script/fn/SetRGBaValue.xml:7(category)
-#: sdk/script/fn/SetBit.xml:7(category)
-#: sdk/script/fn/RandomX.xml:7(category)
-#: sdk/script/fn/Random.xml:7(category)
-#: sdk/script/fn/RGBa.xml:7(category)
-#: sdk/script/fn/RGB2HSL.xml:7(category)
-#: sdk/script/fn/RGB.xml:7(category)
-#: sdk/script/fn/Pow.xml:7(category)
-#: sdk/script/fn/Min.xml:7(category)
-#: sdk/script/fn/Max.xml:7(category)
-#: sdk/script/fn/Inside.xml:7(category)
-#: sdk/script/fn/HSLa.xml:7(category)
-#: sdk/script/fn/HSL2RGB.xml:7(category)
-#: sdk/script/fn/HSL.xml:7(category)
-#: sdk/script/fn/GetRGBaValue.xml:7(category)
-#: sdk/script/fn/GetBit.xml:7(category)
-#: sdk/script/fn/DoRGBaValue.xml:7(category)
-#: sdk/script/fn/Distance.xml:7(category)
-#: sdk/script/fn/Cos.xml:7(category)
-#: sdk/script/fn/BoundBy.xml:7(category)
-#: sdk/script/fn/ArcSin.xml:7(category)
-#: sdk/script/fn/ArcCos.xml:7(category)
-#: sdk/script/fn/Angle.xml:7(category)
-#: sdk/script/fn/Abs.xml:7(category)
-msgid "Arithmetik"
-msgstr "Arithmetics"
 
 #: sdk/script/fn/ToggleBit.xml:12(desc)
 #: sdk/script/fn/SetBit.xml:12(desc)
@@ -2041,7 +2117,6 @@ msgstr "\"game DeployPlayer\" is a call in the scenario script. \"Direct exec\" 
 msgid "Es ist zu beachten, dass rechenintensive Scripte nicht die einzigen Bremsen im Spiel sind. Wenn ein Objekt zum Beispiel sehr viele Partikel erzeugt, kann dies das Spiel bremsen, ohne in der Scriptengine aufzutauchen. Ein anderes Beispiel wäre das Erzeugen von sehr vielen Objekten."
 msgstr "Notice that scripting functions may not be the only parts causing program execution to slow down. If an object creates large numbers of particles, this can also slow down the game without causing extra scripting execution time. Large numbers of objects would cause similar delays."
 
-#. TODO: Explain how to use a mesh for an object in general
 #: sdk/script/fn/StopAnimation.xml:7(category)
 #: sdk/script/fn/SetAnimationWeight.xml:7(category)
 #: sdk/script/fn/SetAnimationPosition.xml:7(category)
@@ -2060,8 +2135,9 @@ msgstr "Notice that scripting functions may not be the only parts causing progra
 #: sdk/script/fn/Anim_Action.xml:7(category)
 #: sdk/script/fn/Anim_AbsY.xml:7(category)
 #: sdk/script/fn/Anim_AbsX.xml:7(category)
+#: sdk/definition/meshes.xml:21(h)
 #: sdk/definition/animations.xml:5(title)
-#: sdk/definition/animations.xml:7(h)
+#: sdk/definition/animations.xml:6(h)
 #, fuzzy
 msgid "Animationen"
 msgstr "ColorAnimation"
@@ -2250,7 +2326,7 @@ msgstr "Sort criterion: Sorts the found objects by their value. The cheapest obj
 #: sdk/script/fn/Sort_Value.xml:13(remark)
 #: sdk/script/fn/Sort_Speed.xml:13(remark)
 #: sdk/script/fn/Sort_Reverse.xml:16(remark)
-#: sdk/script/fn/Sort_Random.xml:13(remark)
+#: sdk/script/fn/Sort_Random.xml:14(remark)
 #: sdk/script/fn/Sort_Multiple.xml:17(remark)
 #: sdk/script/fn/Sort_Mass.xml:13(remark)
 #: sdk/script/fn/Sort_Func.xml:18(remark)
@@ -2293,6 +2369,10 @@ msgstr "Sort modificator: "
 #: sdk/script/fn/Sort_Random.xml:12(desc)
 msgid "Sortierkriterium: Sortiert die gefundenen Objekte zufällig."
 msgstr "Sort criterion: Sorts the found objects randomly."
+
+#: sdk/script/fn/Sort_Random.xml:13(remark)
+msgid "Sort_Random sollte nicht in Verbindung mit <placeholder-1/> verwendet werden, um ein zufälliges, passendes Objekt zu ermitteln. Stattdessen kann zum Beispiel das erste Element einer <placeholder-2/>-Suche mit SortRandom-Parameter verwendet werden."
+msgstr ""
 
 #: sdk/script/fn/Sort_Multiple.xml:12(desc)
 msgid "Sortierkriterium in Form einer Sort_*-Funktion"
@@ -3339,14 +3419,20 @@ msgstr "Moves the object to the specified position. This will set the exact pixe
 #: sdk/script/fn/SetPicture.xml:7(subcat)
 #: sdk/script/fn/SetObjectBlitMode.xml:7(subcat)
 #: sdk/script/fn/SetObjDrawTransform.xml:7(subcat)
+#: sdk/script/fn/SetMeshMaterial.xml:7(subcat)
 #: sdk/script/fn/SetGraphics.xml:7(subcat)
 #: sdk/script/fn/SetColor.xml:7(subcat)
 #: sdk/script/fn/SetClrModulation.xml:7(subcat)
+#: sdk/script/fn/SetAttachTransform.xml:7(subcat)
+#: sdk/script/fn/SetAttachBones.xml:7(subcat)
 #: sdk/script/fn/GetUnusedOverlayID.xml:7(subcat)
 #: sdk/script/fn/GetPortrait.xml:7(subcat)
 #: sdk/script/fn/GetObjectBlitMode.xml:7(subcat)
+#: sdk/script/fn/GetMeshMaterial.xml:7(subcat)
 #: sdk/script/fn/GetColor.xml:7(subcat)
 #: sdk/script/fn/GetClrModulation.xml:7(subcat)
+#: sdk/script/fn/DetachMesh.xml:7(subcat)
+#: sdk/script/fn/AttachMesh.xml:7(subcat)
 msgid "Darstellung"
 msgstr "Display"
 
@@ -3928,6 +4014,23 @@ msgstr "Scenario script: the highest ranking clonks of joining players get diffe
 msgid "Szenarioscript: Holz wird in dieser Runde Baumstamm genannt."
 msgstr "Scenario script: In this round, wood will be called \"Baumstamm\"."
 
+#: sdk/script/fn/SetMeshMaterial.xml:12(desc)
+msgid "Name des zu setzenden Materials. Es muss beim Start der Engine bereits geladen sein, d.h. in einer *.material-Datei definiert worden sein die sich in einem geladenen Objekt befindet."
+msgstr ""
+
+#: sdk/script/fn/SetMeshMaterial.xml:13(desc)
+msgid "Besteht das Mesh aus mehreren SubMeshes, so kann durch diesen Parameter angegeben werden das Material welches SubMeshes geändert werden soll."
+msgstr ""
+
+#: sdk/script/fn/SetMeshMaterial.xml:16(desc)
+#, fuzzy
+msgid "Ändert das Material des Meshes des aufrufenden Objekts zur Laufzeit."
+msgstr "Changes the category of an object."
+
+#: sdk/script/fn/SetMeshMaterial.xml:21(text)
+msgid "Lässt einen Clonk blinzeln."
+msgstr ""
+
 #: sdk/script/fn/SetMenuSize.xml:12(desc)
 msgid "0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll"
 msgstr "0-50: number of entries to be displayed per line"
@@ -4230,7 +4333,7 @@ msgstr "iRampIndex"
 #: sdk/script/NamedVar.xml:22(col)
 #: sdk/script/GetXXVal.xml:24(col)
 #: sdk/definition/script.xml:67(col)
-#: sdk/definition/animations.xml:25(col)
+#: sdk/definition/animations.xml:24(col)
 msgid "Funktion"
 msgstr "Function"
 
@@ -5138,6 +5241,42 @@ msgstr ""
 #, fuzzy
 msgid "Gibt die neue Bitmaske mit dem an bit_number durch bit ersetzten Bit zurück."
 msgstr "Returns the new bit masc with the bit at the indicated position flipped"
+
+#: sdk/script/fn/SetAttachTransform.xml:12(desc)
+msgid "Nummer des angehängten Meshes dessen Transformation geändert werden soll. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
+msgstr ""
+
+#: sdk/script/fn/SetAttachTransform.xml:13(desc)
+msgid "Neue Transformation im Koordinatensystem des angehängten Meshes, die auf selbiges angewandt wird. Das Array sollte 12 Integer-Einträge haben die eine 3x4-Matrix beschreiben wobei jeder Wert in Promille (1000 = 100%) angegeben ist. Die Matrizen können auch mit <placeholder-1/>, <placeholder-2/>, <placeholder-3/> und <placeholder-4/> erzeugt und mit <placeholder-5/> kombiniert werden."
+msgstr ""
+
+#: sdk/script/fn/SetAttachTransform.xml:16(desc)
+msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann mit dieser Funktion die Transformation des angehängten Meshes geändert werden."
+msgstr ""
+
+#: sdk/script/fn/SetAttachTransform.xml:20(text)
+msgid "Setzt die Transformation für das angehängte Mesh mit der Nummer <code>attach_number</code> zurück. Es wird davon ausgegangen dass eine Variable namens <code>attach_number</code> mit einer gültigen Nummer, wie sie von <placeholder-1/> zurückgegeben wird, existiert."
+msgstr ""
+
+#: sdk/script/fn/SetAttachBones.xml:12(desc)
+msgid "Nummer des angehängten Meshes. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
+msgstr ""
+
+#: sdk/script/fn/SetAttachBones.xml:13(desc)
+msgid "Bone am aufrufenden Objekt an den das Mesh angehängt werden soll."
+msgstr ""
+
+#: sdk/script/fn/SetAttachBones.xml:14(desc)
+msgid "Bone des anzuhängenden Meshes mit dem es befestigt werden soll."
+msgstr ""
+
+#: sdk/script/fn/SetAttachBones.xml:17(desc)
+msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann mit dieser Funktion einer oder beide der Bones geändert werden mit denen sie aneinander hängen. Um nur einen Bone zu ändern kann für den anderen Parameter <code>nil</code> angegeben werden."
+msgstr ""
+
+#: sdk/script/fn/SetAttachBones.xml:34(text)
+msgid "Script für einen <emlink href=\"script/Effects.html\">Effekt</emlink>: Bei Start trägt der Clonk einen Bogen in einer Hand um bei jedem Timer-Aufruf nimmt der Clonk den Bogen von der rechten in die linke Hand oder umgekehrt."
+msgstr ""
 
 #: sdk/script/fn/SetAnimationWeight.xml:15(desc)
 #: sdk/script/fn/SetAnimationPosition.xml:15(desc)
@@ -7663,6 +7802,19 @@ msgstr "In a network game, this function always returns 0. Otherwise differing l
 msgid "Gibt eine Nachricht nur aus, wenn der Missionszugang \"DasWarHarteArbeit\" noch nie erreicht wurde, und gibt dann den Zugang."
 msgstr "Displays a message if the mission access password \"DasWarHarteArbeit\" was not yet gained and then gives this mission access."
 
+#: sdk/script/fn/GetMeshMaterial.xml:12(desc)
+msgid "Besteht das Mesh aus mehreren SubMeshes, so kann durch diesen Parameter angegeben werden das Material welches SubMeshes abgefragt werden soll."
+msgstr ""
+
+#: sdk/script/fn/GetMeshMaterial.xml:15(desc)
+#, fuzzy
+msgid "Gibt zurück, welches Material das Mesh des aufrufenden Objekts gerade gesetzt hat."
+msgstr "Returns whether an object is on fire."
+
+#: sdk/script/fn/GetMeshMaterial.xml:22(text)
+msgid "Wenn ein Clonk die Augen gerade geöffnet hat lässt dieses Script sie schließen, andernfalls werden sie geöffnet."
+msgstr ""
+
 #: sdk/script/fn/GetMenuSelection.xml:12(desc)
 #, fuzzy
 msgid "Ermittelt den gerade ausgewählten Menüeintrag des geöffneten Menüs des aufrufenden Objekts, oder nil, wenn kein Menü geöffnet ist."
@@ -8875,15 +9027,6 @@ msgstr "As opposed to <placeholder-1/>, an object using FindObjects in local cal
 msgid "Wenn sich ein feindlicher Clonk näher als 10 Pixel an das Objekt heranwagt, explodiert dieses."
 msgstr "If an enemy clonk gets closer than 10 pixel to the object, it explodes."
 
-#: sdk/script/fn/FindDefinition.xml:12(desc)
-#, fuzzy
-msgid "Die ID die überprüft wird"
-msgstr "Mission access to be checked."
-
-#: sdk/script/fn/FindDefinition.xml:15(desc)
-msgid "Überprüft ob eine ID existiert (=im Spiel geladen ist)."
-msgstr ""
-
 #: sdk/script/fn/FindContents.xml:12(desc)
 msgid "Objekttyp, von dem das Inhaltsobjekt sein soll"
 msgstr "Object type to be found."
@@ -9566,6 +9709,18 @@ msgstr "Makes a circular hole in semi-solid materials."
 #: sdk/script/fn/DigFree.xml:21(text)
 msgid "Gräbt ein kleines Loch mitten in der Landschaft."
 msgstr "Makes a small hole in the middle of the landscape."
+
+#: sdk/script/fn/DetachMesh.xml:12(desc)
+msgid "Nummer des zu entfernenden angehängten Meshes. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
+msgstr ""
+
+#: sdk/script/fn/DetachMesh.xml:15(desc)
+msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann es mit dieser Funktion wieder gelöst werden."
+msgstr ""
+
+#: sdk/script/fn/DetachMesh.xml:27(text)
+msgid "Script für einen <emlink href=\"script/Effects.html\">Effekt</emlink>: Während der Effekt aktiv ist trägt das Effektziel einen Bogen."
+msgstr ""
 
 #: sdk/script/fn/DefinitionCall.xml:12(desc)
 msgid "ID der Definition, in dessen Script die Funktion aufgerufen wird"
@@ -10649,6 +10804,35 @@ msgstr "Applies explosion damage to all objects at the specified position. iX an
 #: sdk/script/fn/BlastObjects.xml:23(text)
 msgid "Das aufrufende Objekt fügt enthaltenen Objekten Explosionsschaden der Stärke 60 zu."
 msgstr "The calling object causes explosion damage of level 60 to its contents."
+
+#: sdk/script/fn/AttachMesh.xml:12(desc)
+#, fuzzy
+msgid "ID oder Objekt des Meshes das angehängt werden soll."
+msgstr "Object to check."
+
+#: sdk/script/fn/AttachMesh.xml:13(desc)
+msgid "Bone am Mesh des aufrufenden Objekts an dem das anzuhängende Mesh befestigt werden soll."
+msgstr ""
+
+#: sdk/script/fn/AttachMesh.xml:14(desc)
+msgid "Bone am Mesh des anzuhängenden Objekts mit dem es befestigt werden soll."
+msgstr ""
+
+#: sdk/script/fn/AttachMesh.xml:15(desc)
+msgid "Transformation im Koordinatensystem des anzuhängenden Meshes, die auf selbiges angewandt wird. Das Array sollte 12 Integer-Einträge haben die eine 3x4-Matrix beschreiben wobei jeder Wert in Promille (1000 = 100%) angegeben ist. Die Matrizen können auch mit <placeholder-1/>, <placeholder-2/>, <placeholder-3/> und <placeholder-4/> erzeugt und mit <placeholder-5/> kombiniert werden."
+msgstr ""
+
+#: sdk/script/fn/AttachMesh.xml:18(desc)
+msgid "Befestigt ein Mesh an einem anderen. Wenn für <code>mesh</code> eine ID angegeben wird, so wird das Mesh der entsprechenden Definition verwendet. Wenn für <code>mesh</code> ein Objekt angegeben wird, so wird dessen aktuelles Mesh verwendet, inklusive aller Animationen oder weiterer angehängter Meshes. Dabei wird jedoch nur die Grafik angehangen, das Objekt selbst bleibt weiter an seiner gegenwärtigen Position. Der Rückgabewert ist eine Nummer mit Hilfe derer das Mesh mit <placeholder-1/> wieder gelöst werden kann."
+msgstr ""
+
+#: sdk/script/fn/AttachMesh.xml:19(remark)
+msgid "Wird für mesh ein Objekt angegeben, so wird die \"MeshTransformation\"-Eigenschaft nicht auf das angehängte Mesh angewandt. Stattdessen kann der Parameter <code>transformation</code> angegeben werden um das angehängte Mesh zu transformieren."
+msgstr ""
+
+#: sdk/script/fn/AttachMesh.xml:23(text)
+msgid "Gibt einem Clonk einen Bogen in die Hand wenn im Clonkscript ausgeführt. Der Bogen wird mit seinem Bone \"main\" an den Bone \"pos_hand1\" des Clonks gehängt."
+msgstr ""
 
 #: sdk/script/fn/ArcSin.xml:12(desc)
 msgid "Länge der Gegenkathete"
@@ -13674,7 +13858,7 @@ msgstr "Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR."
 
 #: sdk/scenario/index.xml:19(dt)
 #: sdk/folder/index.xml:19(dt)
-#: sdk/definition/index.xml:30(dt)
+#: sdk/definition/index.xml:36(dt)
 msgid "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Title.png/Title.bmp"
 msgstr "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Title.png / Title.bmp"
 
@@ -13743,7 +13927,7 @@ msgid "Wichtig: es sollten keine Anführungszeichen oder Sonderzeichen verwendet
 msgstr "Important: No quotation marks and special characters should be used."
 
 #: sdk/scenario/index.xml:42(emlink)
-#: sdk/definition/index.xml:33(emlink)
+#: sdk/definition/index.xml:42(emlink)
 msgid "Script.c"
 msgstr "Script.c"
 
@@ -13814,7 +13998,7 @@ msgid "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.c4g �
 msgstr "Scenarios can overload individual entries of the global Graphics.c4g group. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
 
 #: sdk/scenario/index.xml:67(dt)
-#: sdk/definition/index.xml:48(dt)
+#: sdk/definition/index.xml:57(dt)
 msgid "<img src=\"../../images/icon_sound.gif\" width=\"16\" height=\"16\"/>*.wav"
 msgstr "<img src=\"../../images/icon_sound.gif\" width=\"16\" height=\"16\"/>*.wav"
 
@@ -13854,7 +14038,7 @@ msgid "Die Engine durchsucht auch alle übergeordneten Rundenordner (c4f) des Sz
 msgstr "The engine will also search all parent folders (c4f) of the scenario for additional local object definitions. In this way, a scenario folder can contain object definitions which are then available in all its contents scenarios."
 
 #: sdk/scenario/index.xml:80(dt)
-#: sdk/definition/index.xml:36(dt)
+#: sdk/definition/index.xml:45(dt)
 msgid "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Names.txt"
 msgstr "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Names.txt"
 
@@ -13864,7 +14048,7 @@ msgstr "These names are used for clonks created in this scenario."
 
 #: sdk/scenario/index.xml:83(dt)
 #: sdk/folder/index.xml:54(dt)
-#: sdk/definition/index.xml:54(dt)
+#: sdk/definition/index.xml:63(dt)
 msgid "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Info.txt"
 msgstr "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Info.txt"
 
@@ -13874,7 +14058,7 @@ msgstr "Here an author can store additional information about the development of
 
 #: sdk/scenario/index.xml:86(dt)
 #: sdk/folder/index.xml:57(dt)
-#: sdk/definition/index.xml:57(dt)
+#: sdk/definition/index.xml:66(dt)
 msgid "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Author.txt"
 msgstr "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Author.txt"
 
@@ -14927,7 +15111,7 @@ msgid "Wenn wahr, ist das Kommando im Normalfall deaktiviert und muss erst per S
 msgstr ""
 
 #: sdk/playercontrols.xml:64(col)
-#: sdk/playercontrols.xml:221(h)
+#: sdk/playercontrols.xml:234(h)
 msgid "ExtraData"
 msgstr ""
 
@@ -15099,6 +15283,14 @@ msgstr ""
 msgid "Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
 msgstr ""
 
+#: sdk/playercontrols.xml:176(col)
+msgid "OverrideAssignments"
+msgstr ""
+
+#: sdk/playercontrols.xml:177(col)
+msgid "Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Control mit gleichem Press/Release-Triggermodus."
+msgstr ""
+
 #: sdk/playercontrols.xml:149(col)
 #, fuzzy
 msgid "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
@@ -15108,120 +15300,124 @@ msgstr "Bit mask composed of the following values: <placeholder-1/>"
 msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
 msgstr ""
 
-#: sdk/playercontrols.xml:181(h)
+#: sdk/playercontrols.xml:185(h)
 #, fuzzy
 msgid "Script-Callbacks"
 msgstr "Callbacks"
 
-#: sdk/playercontrols.xml:182(text)
+#: sdk/playercontrols.xml:186(text)
+msgid "Zum Initialisieren der Spielersteuerung wird für jeden gesteuerten Spieler die Funktion InitializePlayerControl aufgerufen. Dieser Aufruf erfolgt gegebenenfalls einige Frames verspätet nach InitializePlayer, da die Initialisierung der Steuerung im Netzwerk übertragen werden muss. Beim Fortsetzen von Spielständen wird InitializePlayerControl wiederholt aufgerufen. Die gewählte Steuerung kann sich hier von der ursprünglichen Steuerung unterscheiden. Gleiches gilt, falls der Spieler mitten im Spiel die Steuerung wechselt."
+msgstr ""
+
+#: sdk/playercontrols.xml:195(text)
 msgid "Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:"
 msgstr ""
 
-#: sdk/playercontrols.xml:184(text)
+#: sdk/playercontrols.xml:197(text)
 msgid "Fuer eine Erlaeuterung der Parameter siehe <placeholder-1/>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in player, sowie das ausgefuehrte Kommando in iControl."
 msgstr ""
 
-#: sdk/playercontrols.xml:185(text)
+#: sdk/playercontrols.xml:198(text)
 msgid "Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:"
 msgstr ""
 
-#: sdk/playercontrols.xml:202(text)
+#: sdk/playercontrols.xml:215(text)
 msgid "Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:"
 msgstr ""
 
-#: sdk/playercontrols.xml:222(text)
+#: sdk/playercontrols.xml:235(text)
 msgid "Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:"
 msgstr ""
 
-#: sdk/playercontrols.xml:229(text)
+#: sdk/playercontrols.xml:242(text)
 msgid "Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
 msgstr ""
 
-#: sdk/playercontrols.xml:239(text)
+#: sdk/playercontrols.xml:252(text)
 msgid "Und im Script der Schaufel:"
 msgstr ""
 
-#: sdk/playercontrols.xml:257(h)
+#: sdk/playercontrols.xml:270(h)
 msgid "Gehaltene Tasten"
 msgstr ""
 
-#: sdk/playercontrols.xml:258(text)
+#: sdk/playercontrols.xml:271(text)
 msgid "Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:"
 msgstr ""
 
-#: sdk/playercontrols.xml:260(li)
+#: sdk/playercontrols.xml:273(li)
 msgid "Sie generieren auch beim Loslassen <placeholder-1/>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script."
 msgstr ""
 
-#: sdk/playercontrols.xml:261(li)
+#: sdk/playercontrols.xml:274(li)
 msgid "Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren."
 msgstr ""
 
-#: sdk/playercontrols.xml:262(li)
+#: sdk/playercontrols.xml:275(li)
 msgid "<emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink> werden erzeugt."
 msgstr ""
 
-#: sdk/playercontrols.xml:263(li)
+#: sdk/playercontrols.xml:276(li)
 msgid "Der Haltezustand der Taste kann mit <placeholder-1/> im Script abgefragt werden."
 msgstr ""
 
-#: sdk/playercontrols.xml:265(text)
+#: sdk/playercontrols.xml:278(text)
 msgid "Bestes Beispiel hierfuer ist ein Richtungskommando:"
 msgstr ""
 
-#: sdk/playercontrols.xml:271(text)
+#: sdk/playercontrols.xml:284(text)
 msgid "Im Script wird die Richtung dann auf den Clonk uebertragen:"
 msgstr ""
 
-#: sdk/playercontrols.xml:294(text)
+#: sdk/playercontrols.xml:307(text)
 msgid "Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:"
-msgstr ""
-
-#: sdk/playercontrols.xml:305(h)
-#, fuzzy
-msgid "Globale Definitionen"
-msgstr "Global Functions"
-
-#: sdk/playercontrols.xml:306(text)
-#: sdk/playercontrols.xml:319(text)
-#: sdk/playercontrols.xml:321(text)
-#: sdk/playercontrols.xml:323(text)
-msgid "..."
-msgstr ""
-
-#: sdk/playercontrols.xml:307(h)
-#, fuzzy
-msgid "Tastenwiederholungen"
-msgstr "Number of retries"
-
-#: sdk/playercontrols.xml:308(text)
-msgid "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
-msgstr ""
-
-#: sdk/playercontrols.xml:316(text)
-msgid "Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt."
-msgstr ""
-
-#: sdk/playercontrols.xml:317(text)
-msgid "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat."
 msgstr ""
 
 #: sdk/playercontrols.xml:318(h)
 #, fuzzy
+msgid "Globale Definitionen"
+msgstr "Global Functions"
+
+#: sdk/playercontrols.xml:319(text)
+#: sdk/playercontrols.xml:332(text)
+#: sdk/playercontrols.xml:334(text)
+#: sdk/playercontrols.xml:336(text)
+msgid "..."
+msgstr ""
+
+#: sdk/playercontrols.xml:320(h)
+#, fuzzy
+msgid "Tastenwiederholungen"
+msgstr "Number of retries"
+
+#: sdk/playercontrols.xml:321(text)
+msgid "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
+msgstr ""
+
+#: sdk/playercontrols.xml:329(text)
+msgid "Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt."
+msgstr ""
+
+#: sdk/playercontrols.xml:330(text)
+msgid "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat."
+msgstr ""
+
+#: sdk/playercontrols.xml:331(h)
+#, fuzzy
 msgid "Deaktivierte Kommandos**"
 msgstr "Deactivates all gamma ramps."
 
-#: sdk/playercontrols.xml:320(h)
+#: sdk/playercontrols.xml:333(h)
 #, fuzzy
 msgid "Tastenbelegungen"
 msgstr "Keyboard shortcuts:"
 
-#: sdk/playercontrols.xml:322(h)
+#: sdk/playercontrols.xml:335(h)
 #, fuzzy
 msgid "Prioritaeten"
 msgstr "Priorities"
 
-#: sdk/playercontrols.xml:325(em)
+#: sdk/playercontrols.xml:338(em)
 msgid "** - noch nicht implementiert"
 msgstr ""
 
@@ -17958,6 +18154,107 @@ msgstr "The following OCFs are defined in C4Script:"
 msgid "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>, <placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
 msgstr "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>, <placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
 
+#: sdk/definition/meshes.xml:5(title)
+#: sdk/definition/meshes.xml:6(h)
+#, fuzzy
+msgid "Meshes"
+msgstr "Message"
+
+#: sdk/definition/meshes.xml:8(text)
+msgid "Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Dazu müssen sie im OGRE-Format vorliegen. Für gängige Modellierungstools gibt es entsprechende Exporter, eine Liste befindet sich auf dem <a href=\"http://www.ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Es werden sowohl das OGRE-Binär-Format (*.mesh) als auch das OGRE-XML-Format (*.mesh.xml) unterstützt, jedoch wird empfohlen wann immer möglich das Binärformat zu verwenden, da es eine kleinere Dateigröße hat und schneller von der Engine geladen werden kann. Das Tool <a href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> kann zwischen beiden Formaten umwandeln."
+msgstr ""
+
+#: sdk/definition/meshes.xml:10(text)
+msgid "Der Exporter erzeugt in der Regel eine Mesh-Datei (*.mesh oder *.mesh.xml), falls das Mesh Bones enthält eine Skelett-Datei (*.skeleton oder *.skeleton.xml), ein Materialskript (*.material) und eventuell verwendete Texturen. Um das Mesh für ein Clonk-Objekt zu verwenden müssen alle erzeugten Dateien in die <emlink href=\"definition/index.html\">Objektdefinition</emlink> (*.c4d) kopiert werden und die Mesh-Datei muss in Graphics.mesh bzw. Graphics.mesh.xml umbenannt werden. Texturen werden im PNG-, JPG- und BMP-Format unterstützt."
+msgstr ""
+
+#: sdk/definition/meshes.xml:12(text)
+msgid "Das Mesh wird nicht automatisch auf die Größe des Shapes (d.h. die Width- und Height-Werte aus der <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>) skaliert. Stattdessen entspricht eine Einheit im Modellierungstool ein Pixel in Clonk. Dies erleichtert die Größenverhältnisse zwischen verschiedenen Meshes einzuhalten, was insbesondere beim Aneinanderhängen von Meshes (siehe unten) hilfreich ist. Auch auf das Koordinatensystem ist acht zu geben: Die X-Achse im Mesh-Koordinatensystem zeigt in Clonk nach vorne, die Y-Achse nach rechts und die Z-Achse nach oben."
+msgstr ""
+
+#: sdk/definition/meshes.xml:14(h)
+#, fuzzy
+msgid "Materialskripte"
+msgstr "Materials"
+
+#: sdk/definition/meshes.xml:15(text)
+msgid "Alle Materialskripte (*.material-Dateien) werden von der Engine geladen bevor das eigentliche Mesh geladen wird. Dabei handelt es sich um einfache Textdateien die Materialeigenschaften (Farben für verschiedene Lichter, Texturen, etc.) bestimmen die dann von Meshes verwenden werden können. Jedem Material ist ein Name zugeordnet der in der Regel im Modellierungstool bestimmt werden kann. Dabei sollte darauf geachtet werden, dass dieser möglichst eindeutig ist (also zum Beispiel den Objektnamen enthält), da alle geladenen Materialien direkt von jedem Mesh verwendet werden können und es ansonsten leicht zu Namenskonflikten kommen kann."
+msgstr ""
+
+#: sdk/definition/meshes.xml:17(text)
+msgid "Materialskripte können auch von Hand erstellt oder nachbearbeitet werden. Das Format wird im <a href=\"http://www.ogre3d.org/docs/manual/manual_14.html\">OGRE-Handbuch</a> beschrieben. Es werden jedoch (noch) nicht alle dort beschriebenen Features von Clonk unterstützt: Insbesondere Pixel-, Vertex- und Geometrie-Shader können derzeit nicht verwendet werden. Auch die Verwendung von LOD (Level of Detail) ist noch nicht möglich. Für das Feld colour_op_ex in Textureinheiten kann für source1 oder source2 zusätzlich noch der Wert src_player_colour angegeben werden was der Spielerfarbe des Besitzers entspricht. Auf diese Weise ist es möglich, Objekte (teilweise) mit ihrer Spielerfarbe einzufärben."
+msgstr ""
+
+#: sdk/definition/meshes.xml:19(text)
+msgid "Zur Laufzeit kann das Materialskript auch mit der C4Script-Funktion <placeholder-1/> geändert werden."
+msgstr ""
+
+#: sdk/definition/meshes.xml:22(text)
+msgid "Wei bei Bitmap-basierten Grafiken kann ein Objekt während einer Aktivität eine Animation abspielen. Dazu muss zuerst ein Rig für das Modell erstellt und anschließend die Animation erzeugt werden. Beim Export wird sie in der *.skeleton (bzw. *.skeleton.xml im OGRE-XML-Format) gespeichert. Um sie während einer Aktivität abzuspielen muss das Animation-Feld in der <emlink href=\"definition/actmap.html\">ActMap</emlink> gesetzt sein. Die Facet-Felder werden bei Mesh-Grafiken ignoriert."
+msgstr ""
+
+#: sdk/definition/meshes.xml:24(text)
+#, fuzzy
+msgid "Per Script ist es auch möglich, mehrere Animationen gleichzeitig abzuspielen bzw. Übergänge zwischen Animationen zu machen. Um mehr darüber zu erfahren siehe <emlink href=\"definition/animations.html\">Animationen</emlink>."
+msgstr "Sets the activity of the specified object. Also see <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
+
+#: sdk/definition/meshes.xml:26(h)
+msgid "Aneinanderhängen von Meshes"
+msgstr ""
+
+#: sdk/definition/meshes.xml:27(text)
+msgid "Meshes können aneinandergehängt werden, sodass sie sich immer miteinander bewegen. Auf diese Weise kann der Clonk zum Beispiel Sachen tragen oder mit dem Bogen Zielen. Um zwei Meshes zu verbinden gibt es die C4Script-Funktion <placeholder-1/>, um sie wieder zu lösen kann <placeholder-2/> verwendet werden. Beim Anhängen wird dabei jeweils ein Bone von den beiden Meshes angegeben. Das angehängte Mesh wird dann so positioniert, dass sein Bone immer die gleiche Position und Orientierung hat wie der Bone mit dem es verbunden wird."
+msgstr ""
+
+#: sdk/definition/meshes.xml:29(text)
+msgid "Dabei ist jedoch darauf zu achten, dass lediglich die Meshes, also die Grafiken der Objekte, verbunden werden. Die wirkliche Position des angehängten Objekts (also was die Funktionen <placeholder-1/> und <placeholder-2/> zurückgeben oder den Bereich in dem das Objekt von <placeholder-3/>, <placeholder-4/> oder <placeholder-5/> gefunden wird) ändert sich <em>nicht</em>."
+msgstr ""
+
+#: sdk/definition/meshes.xml:31(h)
+msgid "Repräsentativgrafik"
+msgstr ""
+
+#: sdk/definition/meshes.xml:32(text)
+msgid "Wird ein Mesh verwendet so bleibt der Picture-Eintrag aus der <emlink href=\"definition/defcore.html\">DefCore.txt</emlink> ohne Wirkung. Stattdessen wird eine perspektivische Projektion des Meshes verwendet. Die Kamera befindet sich dabei vor dem Mesh in einer geeigneten Entfernung so dass das Mesh vollständig erfasst wird."
+msgstr ""
+
+#: sdk/definition/meshes.xml:34(text)
+msgid "Die Position und Ausrichtung des Meshes relativ zur Kamera kann mit der \"PictureTransformation\"-Eigenschaft geändert werden. So kann es gedreht, versetzt und vergrößert dargestellt werden. Der Eigenschaft sollte ein Array mit 12 Integer-Einträgen zugewiesen werden, die eine 3x4-Matrix bilden. Die ersten vier Werte bilden die erste Zeile, die nächsten vier die zweite und die letzten vier Werte die dritte Zeile. Mit Hilfe der Skriptfunktionen <placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/> und <placeholder-5/> lassen sich diese Matrizen sehr bequem generieren."
+msgstr ""
+
+#: sdk/definition/meshes.xml:36(text)
+msgid "Wie bei <placeholder-1/> werden die einzelnen Matrixelemente in Promille (1000 = 100%) angegeben, da es in Clonk keine Fließkommazahlen gibt."
+msgstr ""
+
+#: sdk/definition/meshes.xml:38(text)
+msgid "Als Beispiel hier die Transformation für die Werkzeughütte:"
+msgstr ""
+
+#: sdk/definition/meshes.xml:42(text)
+msgid "Zuerst wird die Werkzeughütte um 30 Grad gegen den Uhrzeigersinn um die Y-Achse gedreht, danach um 20 Grad im Uhrzeigersinn um die X-Achse. Anschließend wird sie noch um 7 Einheiten in positive Z-Richtung verschoben sodass sie näher an der Kamera ist."
+msgstr ""
+
+#: sdk/definition/meshes.xml:44(h)
+#, fuzzy
+msgid "MeshTransformation"
+msgstr "Additional Information"
+
+#: sdk/definition/meshes.xml:45(text)
+msgid "Genauso wie die Eigenschaft \"PictureTransformation\" das Erscheinungsbild der Repräsentativgrafik ändert gibt es auch die Eigenschaft \"MeshTransformation\", die auf die normale Grafik im Spiel wirkt. Dies wirkt sich sehr ähnlich wie <placeholder-1/> aus, jedoch gibt es einige Unterschiede:"
+msgstr ""
+
+#: sdk/definition/meshes.xml:48(li)
+msgid "Mit der \"MeshTransformation\"-Eigenschaft kann auch die Z-Koordinate beeinflusst werden. Das Mesh kann also zum Beispiel um die X- oder Y-Achse gedreht werden."
+msgstr ""
+
+#: sdk/definition/meshes.xml:49(li)
+msgid "<placeholder-1/> wird auch nach der Beleuchtung angewandt. Die transformierten Koordinaten haben also keinen Einfluss auf die Beleuchtung mehr. Wird das Mesh zum Beispiel von unten beleuchtet und wird es dann mit <placeholder-2/> auf den Kopf gestellt, so bleibt die Beleuchtung an der gleichen Stelle auf dem Mesh, wird also mitgedreht. Bei der \"MeshTransformation\"-Eigenschaft wird die Beleuchtung jedoch hinterher gemacht, sodass das Mesh immer von unten beleuchtet wird, egal wie es ausgerichtet ist."
+msgstr ""
+
+#: sdk/definition/meshes.xml:50(li)
+msgid "Sind sowohl \"MeshTransformation\" als auch <placeholder-1/> gesetzt, so wird zuerst die \"MeshTransformation\" auf das Mesh angewandt und dann <placeholder-2/>."
+msgstr ""
+
 #: sdk/definition/lineconnect.xml:5(title)
 #: sdk/definition/lineconnect.xml:6(h)
 #: sdk/definition/defcore.xml:88(col)
@@ -18082,83 +18379,109 @@ msgstr "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Gra
 msgid "Das BMP-Format für Grafikelemente ist veraltet, wird aber weiterhin unterstützt. In einem 256 Farb-Bitmap (8 Bit) dürfen nur die Farben 16 bis 103 der festen Clonk-Palette verwendet werden (siehe Originalobjekte)."
 msgstr "The bmp format for graphics elements is obsolete but still supported. In a 256 color bitmap (8 bit) only the predefined colors 15 through 103 of the fixed Clonk color palette may be used."
 
-#: sdk/definition/index.xml:27(dt)
+#: sdk/definition/index.xml:27(emlink)
+msgid "Graphics.mesh"
+msgstr ""
+
+#: sdk/definition/index.xml:28(text)
+msgid "Ab OC kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein."
+msgstr ""
+
+#: sdk/definition/index.xml:30(dt)
+#, fuzzy
+msgid "<img src=\"../../images/icon_ogre_mesh.gif\" width=\"16\" height=\"16\"/>*.skeleton"
+msgstr "<img src=\"../../images/icon_sound.gif\" width=\"16\" height=\"16\"/>*.wav"
+
+#: sdk/definition/index.xml:31(text)
+msgid "Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden."
+msgstr ""
+
+#: sdk/definition/index.xml:33(dt)
 msgid "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Graphics*.png/Overlay*.png/Graphics*.bmp"
 msgstr "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Graphics*.png / Overlay*.png / Graphics*.bmp"
 
-#: sdk/definition/index.xml:28(text)
+#: sdk/definition/index.xml:34(text)
 msgid "Objekte können auch alternative Grafiksätze bereitstellen, die während des Spiels mit Hilfe des Scriptbefehls <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>() zugewiesen werden können. Der Name der Grafik entspricht dabei dem Dateinamensteil zwischen \"Graphics\" und der Dateiendung; das entsprechende Overlay wird automatisch mit verwendet. Für Beispiele siehe <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
 msgstr "Objects can also contain alternative sets of graphics which can be selected ingame using the script command <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>(). The name corresponds to the file name portion following \"Graphics\". The matching overlay is automatically selected. For more information see <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
 
-#: sdk/definition/index.xml:31(text)
+#: sdk/definition/index.xml:37(text)
 msgid "Objektdefinitionen können ein zusätzliches Titelbild enthalten (ähnlich Szenarien). Dieses wird im Menüsystem anstelle des Pictures der Objektdefinition angezeigt. Empfohlene Größe: 150x150 Pixel, sofern die vorhandene Titelgrafik dies hergibt. Für Titelbilder wird ebenfalls das veraltete BMP-Format mit 256 Farben weiterhin unterstützt."
 msgstr "Object definitions can contain an additional title image (as scenarios do). This will be displayed in the menu system instead of the picture section of the object definition. Recommended size: 150x150 pixels, as long as your image is actually worth it."
 
-#: sdk/definition/index.xml:34(text)
+#: sdk/definition/index.xml:39(emlink)
+#, fuzzy
+msgid "*.material"
+msgstr "Material"
+
+#: sdk/definition/index.xml:40(text)
+msgid "OGRE Materialskripte sind einfache Textdateien die Informationen über das Material eines 3D-Modells beinhalten. Jedem Modell ist ein Material zugeordnet, das sein Erscheinen festlegt. In der Regel werden diese Skripte auch vom Exporter generiert, sie können aber für zusätzliche Effekte auch einfach mit einem Texteditor nachträglich bearbeitet werden."
+msgstr ""
+
+#: sdk/definition/index.xml:43(text)
 msgid "Das Objektscript. Siehe <emlink href=\"script/index.html\">Script-Dokumentation</emlink> und <emlink href=\"lang.html\">Sprachanpassung</emlink>."
 msgstr "The object script. See <emlink href=\"script/index.html\">script documentation</emlink> and <emlink href=\"lang.html\">localization</emlink>."
 
-#: sdk/definition/index.xml:37(text)
+#: sdk/definition/index.xml:46(text)
 msgid "Mehrsprachige Namenstabelle (siehe Title.txt bei Szenarien)."
 msgstr "Multilingual name table (see Title.txt in scenarios)."
 
-#: sdk/definition/index.xml:39(dt)
+#: sdk/definition/index.xml:48(dt)
 msgid "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Desc*.txt"
 msgstr "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Desc*.txt"
 
-#: sdk/definition/index.xml:40(text)
+#: sdk/definition/index.xml:49(text)
 msgid "Kurzbeschreibung. Für sprachliche Unterscheidung siehe Szenario-Beschreibungstexte."
 msgstr "Short description. For multilingual descriptions see scenario descriptions."
 
-#: sdk/definition/index.xml:42(dt)
+#: sdk/definition/index.xml:51(dt)
 msgid "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Rank.txt/Rank*.txt"
 msgstr "<img src=\"../../images/icon_text.gif\" width=\"16\" height=\"16\"/>Rank.txt/Rank*.txt"
 
-#: sdk/definition/index.xml:43(text)
+#: sdk/definition/index.xml:52(text)
 msgid "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.c4d. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
 msgstr "For object definitions defining a clonk type you can specify custom rank names for this clonk type here. The rank names will then also replace rank names of existing crew members of this type. The file should contain a simple text list of names of maximum 30 characters each. For an example see the knight in the Knights pack. By using the approriate language codes you can create language dependent sets of rank names."
 
-#: sdk/definition/index.xml:45(dt)
+#: sdk/definition/index.xml:54(dt)
 msgid "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Rank.png/Rank.bmp"
 msgstr "<img src=\"../../images/icon_image.gif\" width=\"16\" height=\"16\"/>Rank.png / Rank.bmp"
 
-#: sdk/definition/index.xml:46(text)
+#: sdk/definition/index.xml:55(text)
 msgid "Für Clonktypen können außerdem spezifische Rangsymbole definiert werden, die dann im Spiel anstelle der Standardsymbole benutzt werden. Ein Rangsymbol muss immer so breit wie hoch sein, und es sollten ausreichend Symbole für alle Ränge vorhanden sein. Bei höheren Rängen als der Anzahl vorhandener Rangsymbole wird von vorne begonnen und ein Stern daneben gezeichnet."
 msgstr "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.c4g. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
 
-#: sdk/definition/index.xml:49(text)
+#: sdk/definition/index.xml:58(text)
 msgid "Objektlokale Sounds. Da diese statisch geladen und nicht wie szenariolokale Sounds dynamisch entladen werden, sollten objektlokale Sounds möglichst klein sein."
 msgstr "Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only."
 
-#: sdk/definition/index.xml:51(dt)
+#: sdk/definition/index.xml:60(dt)
 msgid "<img src=\"../../images/icon_object_definition.gif\" width=\"16\" height=\"16\"/>*.c4d"
 msgstr "<img src=\"../../images/icon_object_definition.gif\" width=\"16\" height=\"16\"/>*.c4d"
 
-#: sdk/definition/index.xml:52(text)
+#: sdk/definition/index.xml:61(text)
 msgid "Die Engine durchsucht alle gültigen c4d-Unterverzeichnisse nach weiteren Definitionen. Objektdefinitionen sollten so in sinnvollen Gruppierungen zusammen gefasst werden."
 msgstr "The engine will also search all valid c4d subdirectories for additional object definitions. Object definitions should be grouped by category."
 
-#: sdk/definition/index.xml:55(text)
+#: sdk/definition/index.xml:64(text)
 msgid "Diese Komponente wird nicht von der Engine verarbeitet. Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seines Objekts, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte."
 msgstr "This component is not processed by the engine. Here the author can store additional information he wants to share with other developers."
 
-#: sdk/definition/index.xml:58(text)
+#: sdk/definition/index.xml:67(text)
 msgid "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung dieser Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht."
 msgstr "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the group was edited by RedWolf Design. This feature is mainly used for contest scenarios. "
 
-#: sdk/definition/index.xml:60(h)
+#: sdk/definition/index.xml:69(h)
 msgid "Objekt-Identifikation"
 msgstr "Object Identification"
 
-#: sdk/definition/index.xml:61(text)
+#: sdk/definition/index.xml:70(text)
 msgid "Objektdefinitionen werden über ein ID identifiziert, das sich aus vier Zeichen zusammen setzt (z.B. C4ID). Nur Originalobjekte von RedWolf Design nutzen hierbei alle vier Zeichen: ABCD oder ABC1."
 msgstr "Object definitions are identified by an id which consists of four characters (e.g. C4ID). Original objects use four characters: ABCD or ABC1."
 
-#: sdk/definition/index.xml:62(text)
+#: sdk/definition/index.xml:71(text)
 msgid "Lokale Objektdefinitionen, die nur als Teil eines Szenarios verbreitet werden, erhalten IDs vom Format _ABC."
 msgstr "Local object definitions which are only available in one scenario should use the id format _ABC."
 
-#: sdk/definition/index.xml:63(text)
+#: sdk/definition/index.xml:72(text)
 msgid "Von Spielern erstellte Objektdefinitionen, die auch einzeln veröffentlicht werden, sollten das Format AB3C nutzen, wobei nur die ersten beiden Zeichen frei vergeben werden können und die letzten beiden Zeichen (1 Ziffer und 1 Buchstabe) das Entwickler-ID des Spielers darstellen, welches frei wählbar ist, wobei allerdings Überschneidungen mit bereits von anderen Entwicklern benutzten IDs vermieden werden sollten."
 msgstr "Object definitions created by community players but publicly released should use the format AB3C of which the first two characters should identify the object and the second two (one digit and one character) should identify the developer. This is to avoid id conflicts with other developers."
 
@@ -19109,103 +19432,103 @@ msgstr "Object is drawn above fog of war. Useful for creating status displays or
 msgid "Kategorie für eine Regel."
 msgstr ""
 
-#: sdk/definition/animations.xml:9(text)
-msgid "Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Eine der neuen Möglichkeiten die diese Funktionalität bietet ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen."
+#: sdk/definition/animations.xml:8(text)
+msgid "Eine der ab OC neuen Möglichkeiten, 3D-Modelle als Objektgrafik zu verwenden (siehe <emlink href=\"definition/meshes.html\">Meshes</emlink>), ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen."
 msgstr ""
 
-#: sdk/definition/animations.xml:10(text)
+#: sdk/definition/animations.xml:9(text)
 msgid "Jedes Objekt hat dazu einen sogenannten \"Animation-Stack\". Dieser besteht aus beliebig vielen Einträgen mit eindeutiger Priorität, die im folgenden Slots genannt werden. Slots mit höherer Priorität überschreiben Slots mit niedriger Priorität, dies gilt jedoch nur für Bones die von der Animation des höheren Slots überhaupt betroffen sind. Um obiges Beispiel aufzugreifen kann somit also die Werf-Animation eine höhere Priorität als der Lauf- oder Spring-Animation eingeräumt werden, so dass die Armbewegung der Werfanimation die der anderen Animation überschreibt. Da die Werfanimation aber keine Beinbewegung beschreibt wird diese vom Laufen oder Springen übernommen."
 msgstr ""
 
-#: sdk/definition/animations.xml:11(text)
+#: sdk/definition/animations.xml:10(text)
 msgid "Bleibt noch zu klären, wie die Animationen in den einzelnen Slots zustande kommen. Ein Slot kann entweder eine einzelne Animation sein, oder eine Interpolation zwischen zwei anderen Animationen (von denen eine oder beide wieder Interpolationen zweier anderer Animationen sein können). Wird eine solche Interpolation verwendet, so kann zusätzlich eine Gewichtung angegeben werden, das heißt wie sehr die jeweils beiden Animationen zur Gesamtanimation beitragen. Eine Gewichtung von 0 bedeutet, dass nur die erste Animation beiträgt (als ob die zweite gar nicht vorhaden wäre), und eine Gewichtung von 1000 bedeutet, dass nur die zweite Animation beiträgt. Werte dazwischen bewirken einen Übergang zwischen den Animationen. Um erneut auf das Beispiel von oben zurückzukommen: Wenn der Clonk zum Zeitpunkt des Werfens steht, dann aber beginnt loszulaufen bevor die Wurfanimation fertig ist, so liegt es nahe, zu der Stehen-Animation noch eine Laufen-Animation hinzuzufügen, die mit der Zeit immer mehr gewichtet wird bis die Gewichtung 1000 erreicht und der Übergang zum Laufen somit beendet ist. Da die Wurf-Animation in einem anderen Slot stattfindet ist sie von dem Übergang nicht betroffen und wird ganz normal abgespielt."
 msgstr ""
 
-#: sdk/definition/animations.xml:12(text)
+#: sdk/definition/animations.xml:11(text)
 msgid "Folgende Grafik veranschaulicht das Konzept anhand des gewählten Beispiels:"
 msgstr ""
 
-#: sdk/definition/animations.xml:14(text)
+#: sdk/definition/animations.xml:13(text)
 msgid "Zuerst werden die Animationen \"Walk\" und \"Stand\" kombiniert. Das Ergebnis dieser Kombination wird als Animation für Slot 5 verwendet, die einzelne Animation \"Throw\" hingegen für Slot 10. Da 10 größer als 5 ist überschreibt Throw das Ergebnis der Kombination in Slot 5 (für von \"Throw\" betroffene Bones). Das Ergebnis davon wird dann schlussendlich auf dem Bildschirm angezeigt."
 msgstr ""
 
-#: sdk/definition/animations.xml:16(h)
+#: sdk/definition/animations.xml:15(h)
 msgid "Abspielen von Animationen"
 msgstr ""
 
-#: sdk/definition/animations.xml:18(text)
+#: sdk/definition/animations.xml:17(text)
 msgid "Der Animation Stack kann durch Scriptfunktionen beeinflusst, das heißt Animationen hinzugefügt oder gelöscht werden. Dazu wird jedem Beitrag (im folgenden Knoten genannt) zu einer Animation - das heißt jede Animation selbst, aber auch jede Kombination von zwei anderen Animationen - eine eindeutige Nummer, die Animationsnummer, zugeordnet. Beim Einfügen einer Animation entstehen nun ein oder zwei neue Knoten (ein Animationsknoten wenn der betreffende Slot leer ist, oder ein Animations- und ein Kombinationsknoten wenn der betroffende Slot bereits Knoten enthält)."
 msgstr ""
 
-#: sdk/definition/animations.xml:19(text)
+#: sdk/definition/animations.xml:18(text)
 msgid "Beide Knotentypen haben unterschiedliche Eigenschaften, für Animationsknoten spielt die aktuelle Animationsposition eine Rolle und für Kombinationsknoten die aktuelle Gewichtung. Beide Werte müssen je nach Art der Animation mehr oder weniger oft geändert werden. Hierbei gibt es mehrere Möglichkeiten: Simple Animationen sollen einfach mit der Zeit fortlaufen, andere (zum Beispiel die Laufanimation des Clonks) hängen von der Geschwindigkeit oder der Richtung eines Objekts ab, von der Mausposition (Zielanimationen) oder von der Windgeschwindigkeit (Windrad)."
 msgstr ""
 
-#: sdk/definition/animations.xml:20(text)
+#: sdk/definition/animations.xml:19(text)
 msgid "Um sowohl einfache Animationen ohne viel Scriptaufwand abspielen zu können, zum anderen aber auch komplexe Kombinationen zu ermöglichen gibt es sogenannte Animations-Wertquellen (AVPs, von engl. Animation Value Provider). Sie legen fest, wie die gerade zu verwendende Animationsposition oder das Interpolationsgewicht zu bestimmen sind. An die Scriptfunktion <placeholder-1/>, die eine neue Animation startet, werden zwei solcher AVPs für Position und Gewicht übergeben. Mit <placeholder-2/> und <placeholder-3/> können die beiden im Nachhinein geändert werden."
 msgstr ""
 
-#: sdk/definition/animations.xml:21(text)
+#: sdk/definition/animations.xml:20(text)
 msgid "Folgende AVPs stehen zur Auswahl:"
 msgstr ""
 
-#: sdk/definition/animations.xml:23(caption)
+#: sdk/definition/animations.xml:22(caption)
 msgid "Verfügbare Wertquellen"
 msgstr ""
 
-#: sdk/definition/animations.xml:26(col)
+#: sdk/definition/animations.xml:25(col)
 #, fuzzy
 msgid "Kurzbeschreibung"
 msgstr "Description"
 
-#: sdk/definition/animations.xml:30(col)
+#: sdk/definition/animations.xml:29(col)
 msgid "Ein vorher festgelegter konstanter Wert wird verwendet. Dies ist nützlich wenn sich der Wert nicht ändern soll, oder sich keiner der anderen AVPs eignet, wenn jeden Frame ein neuer AVP diesen Typs mit einem anderen Wert gesetzt wird."
 msgstr ""
 
-#: sdk/definition/animations.xml:34(col)
-msgid "Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwedet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen."
+#: sdk/definition/animations.xml:33(col)
+msgid "Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwendet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen."
 msgstr ""
 
-#: sdk/definition/animations.xml:38(col)
+#: sdk/definition/animations.xml:37(col)
 msgid "Linear mit der X-Position. Bewegung des Objekts nach Links spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner horizontalen Bewegung stattfinden soll."
 msgstr ""
 
-#: sdk/definition/animations.xml:42(col)
+#: sdk/definition/animations.xml:41(col)
 msgid "Linear mit der Y-Position. Bewegung des Objekts nach Oben spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner vertikalen Bewegung stattfinden soll."
 msgstr ""
 
-#: sdk/definition/animations.xml:46(col)
+#: sdk/definition/animations.xml:45(col)
 msgid "Linear mit der X-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach rechts oder nach links bewegt."
 msgstr ""
 
-#: sdk/definition/animations.xml:50(col)
+#: sdk/definition/animations.xml:49(col)
 msgid "Linear mit der Y-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach oben oder nach unten bewegt."
 msgstr ""
 
-#: sdk/definition/animations.xml:54(col)
+#: sdk/definition/animations.xml:53(col)
 #, fuzzy
 msgid "Proportional zur X-Geschwindigkeit eines Objekts."
 msgstr "Sets the vertical speed of the object."
 
-#: sdk/definition/animations.xml:58(col)
+#: sdk/definition/animations.xml:57(col)
 #, fuzzy
 msgid "Proportional zur Y-Geschwindigkeit eines Objekts."
 msgstr "Sets the vertical speed of the object."
 
-#: sdk/definition/animations.xml:62(col)
-msgid "Proportional zur Phase der aktuell ausgeführten Action."
+#: sdk/definition/animations.xml:61(col)
+msgid "Proportional zur Phase der aktuell ausgeführten Aktivität."
 msgstr ""
 
-#: sdk/definition/animations.xml:66(text)
+#: sdk/definition/animations.xml:65(text)
 msgid "Für Beispiele zu den einzelnen AVPs siehe die Dokumentation zu den entsprechenden Scriptfunktion."
 msgstr ""
 
-#: sdk/definition/animations.xml:68(h)
+#: sdk/definition/animations.xml:67(h)
 msgid "Animationen der ActMap"
 msgstr ""
 
-#: sdk/definition/animations.xml:69(text)
-msgid "Einzelnen Actions in der <emlink href=\"definition/actmap.html\">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <placeholder-1/> oder <placeholder-2/> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <placeholder-3/>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann."
+#: sdk/definition/animations.xml:68(text)
+msgid "Einzelnen Aktivitäten in der <emlink href=\"definition/actmap.html\">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <placeholder-1/> oder <placeholder-2/> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <placeholder-3/>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann."
 msgstr ""
 
 #: sdk/definition/actmap.xml:6(h)
@@ -19730,6 +20053,35 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:73(text)
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
+
+#~ msgid "S="
+#~ msgstr "S="
+
+#~ msgid "gibt zurück, ob zwei Strings gleich sind"
+#~ msgstr "Returns whether two strings are identical."
+
+#~ msgid "bool, String/String"
+#~ msgstr "bool, string/string"
+
+#~ msgid "eq"
+#~ msgstr "eq"
+
+#~ msgid "gibt ebenfalls zurück, ob zwei Strings gleich sind"
+#~ msgstr "Also returns whether two strings are identical."
+
+#~ msgid "ne"
+#~ msgstr "ne"
+
+#~ msgid "gibt ebenfalls zurück, ob zwei Strings nicht gleich sind"
+#~ msgstr "Also returns whether two strings are not identical."
+
+#, fuzzy
+#~ msgid ": Der neue Standard"
+#~ msgstr "#strict: the new coding standard"
+
+#, fuzzy
+#~ msgid "Die ID die überprüft wird"
+#~ msgstr "Mission access to be checked."
 
 #~ msgid "Var(0)++"
 #~ msgstr "Var(0)++"
@@ -20627,9 +20979,6 @@ msgstr "This command line program is used for processing group files. A list of 
 
 #~ msgid "Zu prüfende Heimatbasis. Null bei lokalem Aufruf."
 #~ msgstr "Home base object to check. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Zustand geprüft werden soll."
-#~ msgstr "Object to check."
 
 #~ msgid "Objekt, 0 bei lokalem Aufruf."
 #~ msgstr "Object. Can be 0 in local calls."

@@ -6,16 +6,6 @@ clonk.xsl also uses it to match the processing for it. -->
 	<!-- header -->
 	<div id="nav_header">
 
-		<!-- search -->
-		<div id="nav_search">
-			<!-- clonk.xsl will add the relative path here -->
-			<form  id="searchform" action="search.php"><div>
-				<input name="search" value="" type="text"/>
-				<input name="func" value="s" type="hidden"/>
-				<input value="Search" type="submit" class="nav_searchButton" id="searchButton"/>
-			</div></form>
-		</div>
-
 		<!-- logo -->
 		<div id="nav_logo">
 			<a href="http://wiki.openclonk.org/"><img src="http://www.openclonk.org/header/logo.png" alt="OpenClonk"/></a>
@@ -26,6 +16,24 @@ clonk.xsl also uses it to match the processing for it. -->
 	<!-- Navigation Menu -->
 	<div id="nav_navigation">
 
+		<!-- search -->
+		<div id="nav_search">
+		<form action="http://www.openclonk.org/header/search.php" id="searchform" method="get"><div>
+				search <input id="searchInput" name="s" type="text" value="" /> in the
+				<select name="p">
+					<option value="blog">blog</option>
+					<option selected="selected" value="functions">c4script function list</option>
+					<option value="docs">c4script reference</option>
+					<option value="bugtrack">bugtracker</option>
+					<option value="forum">forum</option>
+					<option value="hg">hg changelog</option>
+					<option value="hg-resources">hg resources changelog</option>
+					<option value="wiki">website</option>
+				</select>
+				<input type='submit' class="nav_searchButton" id="searchButton" value="Go" title="Search" />
+			</div></form>
+		</div>
+	
 	<ul>
 	<li><a  href="http://wiki.openclonk.org/">Home</a>
 	<ul>

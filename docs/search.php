@@ -107,7 +107,7 @@ text-decoration: none;
 <body>
 <?php
 if ($lang == 'de') {
-	readfile("http://www.openclonk.org/header/header.php?p=docsde");
+	readfile("http://www.openclonk.org/header/header.php?p=docs");
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
