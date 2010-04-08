@@ -73,12 +73,6 @@ private:
 		(++pCurVal)->Set(rVal);
 	}
 
-	void PushValueRef(C4Value &rVal)
-	{
-		CheckOverflow(1);
-		(++pCurVal)->SetRef(&rVal);
-	}
-
 	void PushNullVals(int iCnt)
 	{
 		CheckOverflow(iCnt);

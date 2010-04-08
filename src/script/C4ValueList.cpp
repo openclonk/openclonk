@@ -109,23 +109,23 @@ C4Value &C4ValueList::GetItem(int32_t iElem)
 	else if (iElem < 0)
 		iElem = iSize + iElem;
 	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
-	// out-of-memory? This might not be catched, but it's better than a segfault
+	// out-of-memory? This might not get caught, but it's better than a segfault
 	if (iElem >= iSize)
 		throw new C4AulExecError(NULL,"out of memory");
 	// return
 	return pData[iElem];
 }
 
-void C4ValueList::SetItem(int32_t iElemNr, C4Value iValue)
+void C4ValueList::SetItem(int32_t iElemNr, const C4Value &Value)
 {
 	// enlarge
 	if (iElemNr < 0) iElemNr = 0;
 	if (iElemNr >= iSize && iElemNr < MaxSize) this->SetSize(iElemNr + 1);
-	// out-of-memory? This might not be catched, but it's better than a segfault
+	// out-of-memory? This might not get caught, but it's better than a segfault
 	if (iElemNr >= iSize)
 		throw new C4AulExecError(NULL,"out of memory");
 	// set
-	pData[iElemNr]=iValue;
+	pData[iElemNr]=Value;
 }
 
 void C4ValueList::SetSize(int32_t inSize)
@@ -142,14 +142,14 @@ void C4ValueList::SetSize(int32_t inSize)
 	// bounds check
 	if (inSize > MaxSize) return;
 
-	// create new array (initialises)
+	// create new array
 	C4Value* pnData = new C4Value [inSize];
 	if (!pnData) return;
 
 	// move existing values
 	int32_t i;
 	for (i=0; i<iSize; i++)
-		pData[i].Move(&pnData[i]);
+		pnData[i] = pData[i];
 
 	// replace
 	delete[] pData;
@@ -195,17 +195,12 @@ void C4ValueList::CompileFunc(class StdCompiler *pComp)
 }
 
 C4ValueArray::C4ValueArray()
-		: C4ValueList(), iRefCnt(0), iElementReferences(0)
+		: C4ValueList(), iRefCnt(0)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: C4ValueList(inSize), iRefCnt(0), iElementReferences(0)
-{
-}
-
-C4ValueArray::C4ValueArray(const C4ValueArray &Array2)
-		: C4ValueList(Array2), iRefCnt(1), iElementReferences(0)
+		: C4ValueList(inSize), iRefCnt(0)
 {
 }
 
@@ -214,44 +209,6 @@ C4ValueArray::~C4ValueArray()
 }
 
 enum { C4VALUEARRAY_DEBUG = 0 };
-
-C4ValueArray * C4ValueArray::IncElementRef()
-{
-	if (iRefCnt > 1)
-	{
-		C4ValueArray * pNew = new C4ValueArray(*this);
-		pNew->iElementReferences = 1;
-		if (C4VALUEARRAY_DEBUG) printf("%p IncElementRef at %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		--iRefCnt;
-		return pNew;
-	}
-	else
-	{
-		if (C4VALUEARRAY_DEBUG) printf("%p IncElementRef at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-		++iElementReferences;
-		return this;
-	}
-}
-
-void C4ValueArray::DecElementRef()
-{
-	if (C4VALUEARRAY_DEBUG) printf("%p DecElementRef at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-	assert(iElementReferences > 0);
-	--iElementReferences;
-}
-
-C4ValueArray * C4ValueArray::IncRef()
-{
-	if (iRefCnt >= 1 && iElementReferences)
-	{
-		C4ValueArray * pNew = new C4ValueArray(*this);
-		if (C4VALUEARRAY_DEBUG) printf("%p IncRef from %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		return pNew;
-	}
-	if (C4VALUEARRAY_DEBUG) printf("%p IncRef from %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-	iRefCnt++;
-	return this;
-}
 
 C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 {
@@ -265,9 +222,7 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 	else if (endIndex < 0) endIndex += iSize;
 
 	if (startIndex == 0 && endIndex == iSize)
-	{
-		return IncRef();
-	}
+		return this;
 	else
 	{
 		C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
@@ -277,31 +232,3 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 	}
 }
 
-C4ValueArray * C4ValueArray::SetLength(int32_t size)
-{
-	if (iRefCnt > 1)
-	{
-		C4ValueArray * pNew = (new C4ValueArray(size))->IncRef();
-		for (int32_t i = 0; i < size; i++)
-			pNew->pData[i].Set(pData[i]);
-		if (C4VALUEARRAY_DEBUG) printf("%p SetLength at %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		--iRefCnt;
-		return pNew;
-	}
-	else
-	{
-		if (C4VALUEARRAY_DEBUG) printf("%p SetLength at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-		SetSize(size);
-		return this;
-	}
-}
-
-void C4ValueArray::DecRef()
-{
-	if (C4VALUEARRAY_DEBUG) printf("%p DecRef from %d, %d%s\n", static_cast<void*>(this), iRefCnt, iElementReferences, iRefCnt == 1 ? " - Deleting" : "");
-	assert(iRefCnt);
-	if (!--iRefCnt)
-	{
-		delete this;
-	}
-}

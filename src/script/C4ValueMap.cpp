@@ -211,16 +211,16 @@ void C4ValueMapData::OnNameListChanged(const char **pOldNames, int32_t iOldSize)
 		//FIXME: This optimization is ugly.
 		if (i < pNames->iSize && SEqual(pNames->pNames[i], pOldNames[i]))
 		{
-			pOldData[i].Move(&pData[i]);
+			pData[i] = pOldData[i];
 		}
 		else for (j = 0; j < pNames->iSize; j++)
+		{
+			if (SEqual(pNames->pNames[j], pOldNames[i]))
 			{
-				if (SEqual(pNames->pNames[j], pOldNames[i]))
-				{
-					pOldData[i].Move(&pData[j]);
-					break;
-				}
+				pData[j] = pOldData[i];
+				break;
 			}
+		}
 	}
 	// delete old data array
 	delete[] pOldData;

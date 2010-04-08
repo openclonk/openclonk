@@ -206,6 +206,7 @@ struct C4ScriptOpDef
 	unsigned short Priority;
 	const char* Identifier;
 	C4AulBCCType Code;
+	C4AulBCCType ResultModifier; // code to apply to result after it was calculated
 	bool Postfix;
 	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
 	bool NoSecondStatement; // no second statement expected (++/-- postfix)
@@ -316,12 +317,11 @@ public:
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	bool bReturnRef; // return reference
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
 			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All),
-			bReturnRef(false), tProfileTime(0)
+			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
 	} // constructor
@@ -330,7 +330,7 @@ public:
 
 	virtual bool GetPublic() { return true; }
 	virtual C4V_Type *GetParType() { return ParType; }
-	virtual C4V_Type GetRetType() { return bReturnRef ? C4V_Ref : C4V_Any; }
+	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
 	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 

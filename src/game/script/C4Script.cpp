@@ -194,7 +194,6 @@ typedef bool t_bool;
 typedef C4ID t_id;
 typedef C4Object *t_object;
 typedef C4String *t_string;
-typedef C4Value &t_ref;
 typedef C4Value t_any;
 typedef C4ValueArray *t_array;
 
@@ -203,8 +202,7 @@ inline t_bool getPar_bool(C4Value *pVal) { return pVal->getBool(); }
 inline t_id getPar_id(C4Value *pVal) { return pVal->getC4ID(); }
 inline t_object getPar_object(C4Value *pVal) { return pVal->getObj(); }
 inline t_string getPar_string(C4Value *pVal) { return pVal->getStr(); }
-//inline t_ref getPar_ref(C4Value *pVal) { return pVal->GetRefVal(); }
-inline t_any getPar_any(C4Value *pVal) { return pVal->GetRefValConst(); }
+inline t_any getPar_any(C4Value *pVal) { return *pVal; }
 inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
 
 #define PAR(type, name) t_##type name = getPar_##type(pPars++)
@@ -1011,7 +1009,7 @@ static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 	C4String * key = key_C4V->_getStr();
 	if (!key) return C4VNull;
 	C4Value r;
-	pObj->GetPropertyRef(key, r);
+	pObj->GetPropertyVal(key, &r);
 	return r;
 }
 
@@ -1924,26 +1922,25 @@ static C4Object *FnComposeContents(C4AulObjectContext *cthr, C4ID c_id)
 	return cthr->Obj->ComposeContents(c_id);
 }
 
-static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4Value * VarX, C4Value * VarY)
+static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, int32_t v1, int32_t v2)
 {
-	// Get def                                      Old-style implementation (fixed)...
+	// Get def
 	C4Def *pDef;
 	if (!(pDef=PropList->GetDef())) return false;
 	// Get thread vars
 	if (!cthr->Caller) return false;
-	C4Value V1 = VarX->GetRefValConst();
-	C4Value V2 = VarY->GetRefValConst();
 	// Construction check at starting position
-	if (ConstructionCheck(PropList,V1.getInt(),V2.getInt()))
-		return true;
+	if (ConstructionCheck(PropList,v1,v2))
+		return NULL;
 	// Search for real
-	int32_t v1 = V1.getInt(), v2 = V2.getInt();
 	bool result = !!FindConSiteSpot(v1, v2,
 	                                pDef->Shape.Wdt,pDef->Shape.Hgt,
 	                                pDef->Category,
 	                                20);
-	*VarX = C4VInt(v1); *VarY = C4VInt(v2);
-	return result;
+	C4ValueArray *pArray = new C4ValueArray(2);
+	pArray->SetItem(0, C4VInt(v1));
+	pArray->SetItem(1, C4VInt(v2));
+	return pArray;
 }
 
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs)
@@ -2919,18 +2916,19 @@ static bool FnPathFree(C4AulContext *cthr, long X1, long Y1, long X2, long Y2)
 	return !!PathFree(X1, Y1, X2, Y2);
 }
 
-static C4Value FnPathFree2_C4V(C4AulContext *cthr, C4Value * X1, C4Value * Y1, C4Value * X2, C4Value * Y2)
+static C4Value FnPathFree2(C4AulContext *cthr, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
 	int32_t x = -1, y = -1;
-	C4Value x1 = X1->GetRefValConst(), y1 = Y1->GetRefValConst();
 	// Do not use getInt on the references, because it destroys them.
-	bool r = !!PathFree(x1.getInt(), y1.getInt(), X2->getInt(), Y2->getInt(), &x, &y);
+	bool r = !!PathFree(x1, y1, x2, y2, &x, &y);
 	if (!r)
 	{
-		*X1 = C4VInt(x);
-		*Y1 = C4VInt(y);
+		C4ValueArray *pArray = new C4ValueArray(2);
+		pArray->SetItem(0, C4VInt(x));
+		pArray->SetItem(1, C4VInt(y));
+		return C4VArray(pArray);
 	}
-	return C4VBool(r);
+	return C4VBool(true);
 }
 
 static long FnSetTransferZone(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt)
@@ -3353,11 +3351,6 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	return String(ProcedureName[iProc]);
 }
 
-static C4Value FnIsRef(C4AulContext *cthr, C4Value* Value)
-{
-	return C4VBool(Value->IsRef());
-}
-
 static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)
 {
 	return C4VInt(Value->GetType());
@@ -3403,14 +3396,14 @@ static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 	return C4VInt(-1);
 }
 
-static C4Void FnSetLength(C4AulContext *cthr, C4Value *pArrayRef, int iNewSize)
+static C4Void FnSetLength(C4AulContext *cthr, C4ValueArray *pArray, int iNewSize)
 {
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
 		throw new C4AulExecError(cthr->Obj, FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
 
 	// set new size
-	pArrayRef->SetArrayLength(iNewSize, cthr);
+	pArray->SetSize(iNewSize);
 	return C4VNull;
 }
 
@@ -4025,8 +4018,8 @@ static C4Value FnVarN(C4AulContext *cthr, C4Value *strName_C4V)
 	if (iID < 0)
 		return C4VNull;
 
-	// return reference on variable
-	return cthr->Caller->Vars[iID].GetRef();
+	// return variable value
+	return cthr->Caller->Vars[iID];
 }
 
 static C4Value FnLocalN(C4AulContext* cthr, C4Value* strName_C4V)
@@ -4037,10 +4030,9 @@ static C4Value FnLocalN(C4AulContext* cthr, C4Value* strName_C4V)
 	C4String * key = strName_C4V->getStr();
 	if (!key) return C4VNull;
 
-	// get reference on variable
+	// get variable
 	C4Value r;
-	cthr->Obj->GetPropertyRef(key, r);
-
+	cthr->Obj->GetPropertyVal(key, &r);
 	return r;
 }
 
@@ -4053,8 +4045,8 @@ static C4Value FnGlobalN(C4AulContext* cthr, C4Value* strName_C4V)
 
 	if (!pVarN) return C4Value();
 
-	// return reference on variable
-	return pVarN->GetRef();
+	// return variable value
+	return *pVarN;
 }
 
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
@@ -4724,11 +4716,13 @@ static C4Value FnSimFlight(C4AulContext *ctx, C4Value *pvrX, C4Value *pvrY, C4Va
 	if (!SimFlight(x, y, xdir, ydir, iDensityMin, iDensityMax, iIter))
 		return C4VFalse;
 
-	// write results back
-	*pvrX = C4VInt(fixtoi(x)); *pvrY = C4VInt(fixtoi(y));
-	*pvrXDir = C4VInt(fixtoi(xdir * iPrec)); *pvrYDir = C4VInt(fixtoi(ydir * iPrec));
-
-	return C4VTrue;
+	// write results to array
+	C4ValueArray *pResults = new C4ValueArray(4);
+	pResults->SetItem(0, C4VInt(fixtoi(x)));
+	pResults->SetItem(1, C4VInt(fixtoi(y)));
+	pResults->SetItem(2, C4VInt(fixtoi(xdir * iPrec)));
+	pResults->SetItem(3, C4VInt(fixtoi(ydir * iPrec)));
+	return C4VArray(pResults);
 }
 #undef COPY_C4V_PAR
 static bool FnSetPortrait(C4AulObjectContext *ctx, C4String *pstrPortrait, C4ID idSourceDef, bool fPermanent, bool fCopyGfx)
@@ -6382,6 +6376,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
 	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
 	AddFunc(pEngine, "PathFree", FnPathFree);
+	AddFunc(pEngine, "PathFree2", FnPathFree2);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
 	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
@@ -6791,7 +6786,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
 	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
-	{ "PathFree2",            1  ,C4V_Bool     ,{ C4V_Ref     ,C4V_Ref     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnPathFree2_C4V ,             0 },
 	{ "FindObject",           1  ,C4V_C4Object ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObject },
 	{ "FindObjects",          1  ,C4V_Array    ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObjects },
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
@@ -6816,7 +6810,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetHomebaseMaterial",  1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
 	{ "GetHomebaseProduction",1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V , 0 },
 
-	{ "IsRef",                1  ,C4V_Bool     ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnIsRef,                     0 },
 	{ "GetType",              1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetType,                   0 },
 
 	{ "CreateArray",          1  ,C4V_Array    ,{ C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnCreateArray },
@@ -6835,7 +6828,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetPlrExtraData",      1  ,C4V_Any      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPlrExtraData,           0 },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
-	{ "SimFlight",            1  ,C4V_Bool     ,{ C4V_Ref     ,C4V_Ref     ,C4V_Ref     ,C4V_Ref     ,C4V_Int     ,C4V_Int     ,C4V_Int    ,C4V_Int    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSimFlight,                 0 },
+	{ "SimFlight",            1  ,C4V_Bool     ,{ C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int    ,C4V_Int    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSimFlight,                 0 },
 	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "AddEffect",            1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnAddEffect_C4V,             0 },
 	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },

@@ -217,7 +217,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!pCurCtx->Obj)
 					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call!");
 				PushNullVals(1);
-				pCurCtx->Obj->GetPropertyVal(pCPos->Par.s, pCurVal[0]);
+				pCurCtx->Obj->GetPropertyVal(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
 				if (!pCurCtx->Obj)
@@ -439,13 +439,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				// Typcheck to determine whether it's an array or a proplist
 				if(CheckArrayAccess(pStruct, pIndex) == C4V_Array)
 				{
-					pStruct->GetArrayElement(pIndex->_getInt(), *pResult, pCurCtx, true);
+					*pResult = pStruct->_getArray()->GetItem(pIndex->_getInt());
 				}
 				else
 				{
-					C4PropList *pPropList = pStruct->getPropList();
-					assert(pPropList);
-					if (!pPropList->GetPropertyVal(pIndex->_getStr(), *pResult))
+					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
+					C4PropList *pPropList = pStruct->_getPropList();
+					if (!pPropList->GetPropertyVal(pIndex->_getStr(), pResult))
 						pResult->Set0();
 				}
 				// Remove index
@@ -458,15 +458,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				// Typcheck to determine whether it's an array or a proplist
 				if(CheckArrayAccess(pStruct, pIndex) == C4V_Array)
 				{
-					// TODO: Does not work, because array gets copied here!
-					C4Value Ref;
-					pStruct->GetArrayElement(pIndex->_getInt(), Ref, pCurCtx, false);
-					Ref.getRef()->Set(*pValue);
+					pStruct->_getArray()->SetItem(pIndex->_getInt(), *pValue);
 				}
 				else
 				{
-					C4PropList *pPropList = pStruct->getPropList();
-					assert(pPropList);
+					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
+					C4PropList *pPropList = pStruct->_getPropList();
 					pPropList->SetProperty(pIndex->_getStr(), *pValue);
 				}
 				// Set result, remove array and index from stack
@@ -551,10 +548,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 			case AB_RETURN:
 			{
-				// Resolve reference
-				if (!pCurCtx->Func->SFunc()->bReturnRef)
-					pCurVal->Deref();
-
 				// Trace
 				if (iTraceStart >= 0)
 				{

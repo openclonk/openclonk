@@ -49,8 +49,6 @@ public:
 	int32_t Status;
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
-	void IncElementRef() { ++iElementReferences; }
-	void DecElementRef();
 	void AssignRemoval();
 	const char *GetName();
 	virtual void SetName (const char *NewName = 0);
@@ -60,12 +58,9 @@ public:
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() { return prototype; }
 
-	void GetPropertyRef(C4String * k, C4Value & to);
 	bool HasProperty(C4String * k) const;
-	C4Value * GetRefToProperty(C4String * k);
-	const C4Value * GetRefToPropertyConst(C4String * k) const;
-	bool GetPropertyVal(C4String * k, C4Value & to);
-	bool GetPropertyVal(C4PropertyName k, C4Value & to) { return GetPropertyVal(Strings.P[k], to); }
+	bool GetPropertyVal(C4String *k, C4Value *pResult);
+	bool GetPropertyVal(C4PropertyName k, C4Value *pResult) { return GetPropertyVal(Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k);
 	int32_t GetPropertyInt(C4PropertyName k);
 	void SetProperty(C4String * k, const C4Value & to);
@@ -85,7 +80,6 @@ protected:
 private:
 	C4Value *FirstRef; // No-Save
 	bool constant; // if true, this proplist is neither saved nor changeable FIXME: implement
-	unsigned int iElementReferences;
 
 	C4PropList * prototype;
 	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
