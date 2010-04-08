@@ -89,12 +89,11 @@ protected func PlaceStars()
 	var maxamount=(LandscapeWidth()*LandscapeHeight())/40000;
 	var amount=0;
 
-	var iX;
-	var iY;
 	while(amount!=maxamount)
 	{
-		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
-			CreateObject(Star,iX,iY); //Places stars around like PlacesObjects should, but that function is broken
+		var pos;
+		if(pos = FindPosInMat("Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
+			CreateObject(Star,pos[0],pos[1]); //Places stars around like PlacesObjects should, but that function is broken
 		amount=++amount;
 	}
 }

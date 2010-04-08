@@ -5,36 +5,40 @@ protected func Initialize()
 	// Create the parkour goal.
 	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.
-	var x, y;
+	var x, y, pos;
 	var d = 100;
-	while(!FindPosInMat(x, y, "Sky", 0, LandscapeHeight() - d - 40, LandscapeWidth(), 40, 20) && d < LandscapeHeight())
+	while(!(pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 40, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
 		d += 10;
+	x = pos[0]; y = pos[1];
 	goal->SetStartpoint(x, y);
 	// Set some checkpoints.
 	while (d < LandscapeHeight() - 350)
 	{
 		var mode = RACE_CP_Check;
 		d += RandomX(150, 250);
-		if (!FindPosInMat(x, y, "Tunnel", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20) || !Random(3))
-			FindPosInMat(x, y, "Sky", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20);
+		if (!(pos = FindPosInMat("Tunnel", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20)) || !Random(3))
+			pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20);
 		else
 			mode = mode | RACE_CP_Respawn;
+		x = pos[0]; y = pos[1];
 		// All checkpoints ordered.
 		mode = mode | RACE_CP_Ordered;
 		goal->AddCheckpoint(x, y, mode);
 	}
 	// Set finish point.
 	d = 0;
-	while(!FindPosInMat(x, y, "Sky", 0, 20 + d, LandscapeWidth(), 40, 20) && d < LandscapeHeight())
+	while(!(pos = FindPosInMat("Sky", 0, 20 + d, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
 		d += 10;
+	x = pos[0]; y = pos[1];
 	goal->SetFinishpoint(x, y);
 	// Place chests.
 	d = 300; 
 	while (d < LandscapeHeight() - 300)
 	{
 		var i = 0;
-		while (!FindPosInMat(x, y, "Tunnel", 0, d, LandscapeWidth(), 300, 15) && i < 25)
+		while (!(pos = FindPosInMat("Tunnel", 0, d, LandscapeWidth(), 300, 15)) && i < 25)
 			i++; // Max 25 attempts.
+		x = pos[0]; y = pos[1];
 		CreateObject(Chest, x, y + 8, NO_OWNER);
 		d += RandomX(250, 300); 
 	}
@@ -50,9 +54,8 @@ protected func Initialize()
 	return;
 }
 
-protected func FindPosInMat(int &tx, int &ty, string mat, int rx, int ry, int wdt, int hgt, int size)
+protected func FindPosInMat(string mat, int rx, int ry, int wdt, int hgt, int size)
 {
-	var x, y;
 	for (var i = 0; i < 500; i++)
 	{
 		x = rx + Random(wdt);
@@ -63,11 +66,10 @@ protected func FindPosInMat(int &tx, int &ty, string mat, int rx, int ry, int wd
 			GetMaterial(AbsX(x-size), AbsY(y-size)) == Material(mat) &&
 			GetMaterial(AbsX(x-size), AbsY(y+size)) == Material(mat))
 		{
-			tx = x; ty = y;
-			return true; // Location found.
+			return [x, y];
 		}
 	}
-	return false; // No location found.
+	return 0;
 }
 
 // Gamecall from parkour goal, on respawning.

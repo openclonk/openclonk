@@ -1,7 +1,7 @@
 /*-- Cloud Placer --*/
 
 //Great thanks to Maikel for the following function provided 
-global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
+global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {
 	var iX, iY;
 	for(var i = 0; i < 500; i++)
@@ -14,21 +14,20 @@ global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYS
 		   GetMaterial(AbsX(iX-iSize),AbsY(iY-iSize))==Material(sMat) &&
 		   GetMaterial(AbsX(iX-iSize),AbsY(iY+iSize))==Material(sMat)
 		) {
-			iToX = iX; iToY = iY;
-			return true; // Location found.
+			return [iX, iY]; // Location found.
 		}
 	}
-	return false; // No location found.
+	return 0; // No location found.
 }
 protected func Initialize()
 {
-	var iX, iY;
 	var iCount = LandscapeWidth()/65; //Determines how many clouds should be on a map
 
 	while(iCount!=0)
 	{
-		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && MaterialDepthCheck(iX,iY,"Sky",200)==true) {
-			CreateObject(Cloud, iX, iY, NO_OWNER);
+		var pos;
+		if((pos = FindPosInMat("Sky", 0,0,LandscapeWidth(), LandscapeHeight())) && MaterialDepthCheck(pos[0],pos[1],"Sky",200)) {
+			CreateObject(Cloud, pos[0], pos[1], NO_OWNER);
 			iCount--;
 		}
 	}
