@@ -1146,8 +1146,15 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 			// not changing font size is not fatal - just keep old size
 			iNewFontSize = iOldFontSize;
 		}
+	// Set new resolution in config before dialog recreation so that the initial combo box value is correct (#230)
+	Config.Graphics.ResX = iResX;
+	Config.Graphics.ResY = iResY;
 	// since the resolution was changed, everything needs to be moved around a bit
 	RecreateDialog(false);
+	// Now set old resolution again to make sure config is restored even if the program is closed during the confirmation dialog
+	Config.Graphics.ResX = iOldResX;
+	Config.Graphics.ResY = iOldResY;
+	// Show confirmation dialog
 	ResChangeConfirmDlg *pConfirmDlg = new ResChangeConfirmDlg();
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
 	{
@@ -1160,11 +1167,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 				RecreateDialog(false);
 			}
 		}
-		else
-		{
-			// make sure config is restored even if the program is closed during the confirmation dialog
-			Config.Graphics.ResX = iOldResX, Config.Graphics.ResY = iOldResY;
-		}
+
 		return false;
 	}
 	// resolution may be kept!
