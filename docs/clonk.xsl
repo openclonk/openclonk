@@ -71,9 +71,9 @@
       <xsl:apply-templates select="document('header.xml')" />
     </xsl:if>
   </xsl:template>
-  <xsl:template match="header//@action">
+<!--  <xsl:template match="header//@action">
     <xsl:attribute name="action"><xsl:value-of select="concat($relpath, current())" /></xsl:attribute>
-  </xsl:template>
+  </xsl:template>-->
   <xsl:template match="header|header//*|header//@*">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
