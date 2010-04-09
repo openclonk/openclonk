@@ -51,6 +51,7 @@ protected func Construction()
 
 	AddEffect("IntTurn", this, 1, 1, this);
 	AddEffect("IntEyes", this, 1, 35*3, this);
+	AddEffect("Bubble", this, 1, 72, this);
 }
 
 
@@ -1521,6 +1522,11 @@ func FxIntRidingStop(pTarget, iNumber, fTmp)
 	var pMount = EffectVar(1,pTarget,iNumber);
 	if(pMount)
 		pMount->~OnUnmount(this);
+}
+
+func FxBubbleTimer(pTarget, iNumber, iTime)
+{
+	if(GBackLiquid(0,-4)) Bubble();
 }
 
 /* Act Map */

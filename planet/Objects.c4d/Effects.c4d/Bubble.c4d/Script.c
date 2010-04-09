@@ -3,11 +3,16 @@
 local time;
 local alpha;
 
-global func Bubble(int iamount)
+global func Bubble(int iamount, int x, int y)
 {
 	if(iamount==nil || iamount==0) iamount=3;
 
-	CastObjects(Bubble1,iamount);
+	var i = 0;
+	while(i<iamount)
+	{
+		CreateObject(Bubble1, x, y);
+		++i;
+	}		
 }
 
 protected func Initialize()
@@ -19,13 +24,14 @@ protected func Initialize()
 
 public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(GBackLiquid(0,-3)==false)
+	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this))
 	{
 		AddEffect("Fade",pTarget,1,1,pTarget);
 	}
 
 	SetYDir(GetYDir()+Random(2));
 
+	//Bubbles burst into smaller bubles
 	if(Random(30)==1 && pTarget->GetCon()>100)
 	{
 		var i=3;
