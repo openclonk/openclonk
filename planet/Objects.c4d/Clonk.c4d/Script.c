@@ -308,7 +308,7 @@ protected func Death(int killed_by)
 	// If the last crewmember died, do another broadcast.
 	if (!GetCrew(GetOwner()))
 		GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
-	return;
+	return _inherited(...);
 }
 
 protected func Destruction()
@@ -322,7 +322,7 @@ protected func Destruction()
 		// Only if the player is still alive and not yet elimnated.
 			if (GetPlayerName(GetOwner()))
 				GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
-	return;
+	return _inherited(...);
 }
 
 protected func DeepBreath()

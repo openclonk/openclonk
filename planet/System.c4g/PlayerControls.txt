@@ -13,6 +13,8 @@
 	# Left Right Up Down Jump
 	# Throw Drop Use
 	# ThrowAlt DropAlt UseAlt
+	# 
+	# CancelUse CancelMenu
 	#
 	# NextItem PreviousItem
 	# NextAltItem PreviousAltItem
@@ -36,7 +38,7 @@
 	#
 	# Gamepad controls
 	# -------------------------------------
-	# CancelUse ThrowDelayed ThrowAltDelayed
+	# ThrowDelayed ThrowAltDelayed
 	# UseDelayed UseAltDelayed
 	# AimUp AimDown AimLeft AimRight
 	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
@@ -198,6 +200,11 @@
 	Identifier=CancelUse
 	GUIName=Cancel Use
 	GUIDesc=Cancel usage of selected or controlled item
+	
+	[ControlDef]
+	Identifier=CancelMenu
+	GUIName=Close Menu
+	GUIDesc=Close a menu
 	
 	[ControlDef]
 	Identifier=UseAlt
@@ -1154,3 +1161,7 @@
 		Priority=90
 		Control=ObjectMenuCancel
 		
+		[Assignment]
+		Key=CON_MenuCancel
+		Priority=80
+		Control=CancelMenu

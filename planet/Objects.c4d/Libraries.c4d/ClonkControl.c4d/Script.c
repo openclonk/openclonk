@@ -3,27 +3,32 @@
 	Author: Newton
 	
 	This object provides handling of the clonk controls including item
-	management and standard throwing behaviour. It should be included
-	into any clonk definition.
+	management, backpack controls and standard throwing behaviour. It
+	should be included into any clonk definition.
 	The controls in System.c4g/PlayerControl.c only provide basic movement
 	handling, namely the movement left, right, up and down. The rest is
 	handled here:
 	Grabbing, ungrabbing, shifting and pushing vehicles into buildings;
-	entering and exiting buildings; throwing, dropping; inventory shifting,
-	hotkey controls	and it's callbacks and forwards to script.
+	entering and exiting buildings; throwing, dropping; backpack control,
+	(object) menu control, hotkey controls, usage and it's callbacks and
+	forwards to script. Also handled by this library is the aiming with
+	the gamepad conrols.
 	
 	Objects that inherit this object need to return _inherited() in the
 	following callbacks (if defined):
 		Construction, Collection2, Ejection, RejectCollect, Departure,
-		Entrance, AttachTargetLost, GrabLost, CrewSelection
+		Entrance, AttachTargetLost, GrabLost, CrewSelection, Death,
+		Destruction
 	
 	The following callbacks are made to other objects:
 		*Stop
 		*Left, *Right, *Up, *Down
-		*Use, *UseStop, *UseHolding
+		*Use, *UseStop, *UseStart, *UseHolding, *UseCancel
 	wheras * is 'Contained' if the clonk is contained and otherwise (riding,
 	pushing, to self) it is 'Control'. 	The item in the inventory only gets
 	the Use*-calls. If the callback is handled, you should return true.
+	Currently, this is explained more in detail here:
+	http://forum.openclonk.org/topic_show.pl?tid=337
 	
 	The inventory management:
 	The objects in the inventory are saved (parallel to Contents()) in the
@@ -387,8 +392,30 @@ protected func GrabLost()         { CancelUse(); return _inherited(...); }
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
 {
-	if (unselect) CancelUse();
+	if (unselect) 
+	{
+		// cancel usage on unselect first...
+		CancelUse();
+		// and if there is still a menu, cancel it too...
+		CancelMenu();
+	}
 	return _inherited(unselect,...);
+}
+
+protected func Destruction()
+{
+	// close open menus, cancel usage...
+	CancelUse();
+	CancelMenu();
+	return _inherited(...);
+}
+
+protected func Death()
+{
+	// close open menus, cancel usage...
+	CancelUse();
+	CancelMenu();
+	return _inherited(...);
 }
 
 // TODO: what is missing here is a callback for when the clonk StarTs a attach or push
@@ -416,6 +443,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
+	// open / close backpack
 	if (ctrl == CON_Backpack)
 	{
 		if (menu)
@@ -424,14 +452,20 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		else if(MaxContentsCount() > 2)
 		{
-			menu = CreateRingMenu(nil,0,0,this);
+			CreateRingMenu(nil,0,0,this);
+			// CreateRingMenu calls SetMenu(this) in the clonk,
+			// so after this call menu = the created menu
+			
+			// for all contents in the clonks except the first two (hand slots)
 			for(var i = 2; i < MaxContentsCount(); ++i)
 			{
+				// put them in the menu
 				var item = GetItem(i);
 				var item_id = nil;
 				if (item) item_id = item->GetID();
 				menu->AddItem(item_id,nil,i);
 			}
+			// finally, show the menu.
 			menu->Show();
 		}
 		return true;
@@ -515,6 +549,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (using && ctrl == CON_CancelUse)
 	{
 		CancelUse();
+		return true;
+	}
+	
+	// cancel menu
+	if (menu && ctrl == CON_CancelMenu)
+	{
+		CancelMenu();
 		return true;
 	}
 	
@@ -1214,6 +1255,11 @@ func SetMenu(object m)
 func GetMenu()
 {
 	return menu;
+}
+
+func CancelMenu()
+{
+	if (menu) menu->Close();
 }
 
 func ReinitializeControls()
