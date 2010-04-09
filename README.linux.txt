@@ -1,13 +1,20 @@
 Requirements
 ============
 
-To build on Linux you need the following packages (Debian names given):
-
+To build on DEB-based Linux distributions (Debian, Ubuntu etc.) you need the following packages:
 make gcc g++
 automake autoconf
 libc6-dev libx11-dev libxxf86vm-dev libxrandr-dev libxpm-dev libglew1.5-dev
 libgl1-mesa-dev libpng12-dev libssl-dev libsdl1.2-dev libsdl-mixer1.2-dev
 libgtk2.0-dev libjpeg62-dev zlib1g-dev libboost-dev
+
+To build on RPM-based Linux distributions (Red Hat, Fedora, Mandariva, SuSE etc.) you need the following packages:
+make gcc gcc-c++
+automake autoconf
+libX11-devel libXxf86vm-devel libXrandr-devel libXpm-devel glew-devel
+mesa-libGL-devel libpng-devel openssl-devel SDL-devel SDL_mixer1.2-dev
+gtk2-devel libjpeg-devel zlib-devel boost-devel
+
 
 Build
 =====
