@@ -2105,6 +2105,17 @@ static C4String *FnGetTexture(C4AulContext* cthr, long x, long y)
 	return String(pTex->GetTextureName());
 }
 
+// Note: Might be async in case of 16<->32 bit textures!
+static Nillable<long> FnGetAverageTextureColor(C4AulContext* cthr, C4String* Texture)
+{
+	// Safety
+	if(!Texture) return C4VNull;
+	// Check texture
+	C4Texture* Tex = ::TextureMap.GetTexture(Texture->GetData().getData());
+	if(!Tex) return C4VNull;
+	return Tex->GetAverageColor();
+}
+
 static bool FnGBackSolid(C4AulContext *cthr, long x, long y)
 {
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
@@ -6214,6 +6225,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
 	AddFunc(pEngine, "GetTexture", FnGetTexture);
+	AddFunc(pEngine, "GetAverageTextureColor", FnGetAverageTextureColor);
 	AddFunc(pEngine, "GetMaterialCount", FnGetMaterialCount);
 	AddFunc(pEngine, "GBackSolid", FnGBackSolid);
 	AddFunc(pEngine, "GBackSemiSolid", FnGBackSemiSolid);

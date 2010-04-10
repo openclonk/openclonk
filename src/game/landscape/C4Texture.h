@@ -34,8 +34,11 @@ public:
 	C4Texture();
 	~C4Texture();
 	CSurface * Surface32;
+
+	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
 	char Name[C4M_MaxName+1];
+	uint32_t AvgColor;
 	C4Texture *Next;
 };
 
