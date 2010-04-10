@@ -89,7 +89,7 @@ public:
 	int32_t BorderLeft, BorderTop, BorderRight, BorderBottom;
 	int32_t DrawX,DrawY;
 	// facets used for last drawing operations
-	C4Facet last_game_draw_cgo, last_gui_draw_cgo;
+	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;
 	// factor between "landscape" and "display"
 	float Zoom;
 	float ZoomTarget;

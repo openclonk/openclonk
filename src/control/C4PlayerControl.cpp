@@ -48,6 +48,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iInitialRepeatDelay, "InitialRepeatDelay", 0));
 	pComp->Value(mkNamingAdapt(fDefaultDisabled, "DefaultDisabled", false));
 	pComp->Value(mkNamingAdapt(idControlExtraData, "ExtraData", C4ID::None));
+	pComp->Value(mkNamingAdapt(fSendCursorPos, "SendCursorPos", false));
 	const StdEnumEntry<Actions> ActionNames[] =
 	{
 		{ "None",        CDA_None        },
@@ -86,6 +87,7 @@ bool C4PlayerControlDef::operator ==(const C4PlayerControlDef &cmp) const
 	       && iInitialRepeatDelay == cmp.iInitialRepeatDelay
 	       && fDefaultDisabled == cmp.fDefaultDisabled
 	       && idControlExtraData == cmp.idControlExtraData
+	       && fSendCursorPos == cmp.fSendCursorPos
 	       && eAction == cmp.eAction;
 }
 
@@ -759,9 +761,25 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControlIndex);
 		if (pControlDef && pControlDef->IsValid() && (!fUp || pControlDef->IsHoldKey()))
 		{
+			// extra data from key or overwrite by current cursor pos if definition requires it
+			const C4KeyEventData *pKeyExtraData = &rKeyExtraData;
+			C4KeyEventData CustomKeyExtraData;
+			if (pControlDef->IsSendCursorPos())
+			{
+				CustomKeyExtraData = rKeyExtraData;
+				if (!GetCurrentPlayerCursorPos(&(CustomKeyExtraData.x), &(CustomKeyExtraData.y)))
+				{
+					// no cursor position is known. set it to -1/-1 so scripters get a hint
+					CustomKeyExtraData.x = CustomKeyExtraData.y = -1;
+				}
+				if (!pControlPacket)
+					pKeyExtraData = &CustomKeyExtraData;
+				else
+					pControlPacket->SetExtraData(CustomKeyExtraData);
+			}
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
-				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
+				if (ExecuteControl(iControlIndex, fUp, *pKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
 					return true;
 			}
 			else
@@ -771,7 +789,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 				if (pressed_key.IsRepeated()) return false;
 				// sync control has higher priority - no more async execution then
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
-				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
+				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, *pKeyExtraData);
 				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode());
 			}
 		}
@@ -1110,4 +1128,30 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	else
 		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
 	return result;
+}
+
+bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
+{
+	// prefer mouse position if this is a mouse control
+	if (pControlSet && pControlSet->HasMouse())
+	{
+		if (MouseControl.GetLastGUIPos(x_out, y_out))
+			return true;
+		// if getting the mouse position failed, better fall back to cursor pos
+	}
+	// no mouse position known. Use cursor.
+	C4Player *plr = Players.Get(iPlr);
+	if (!plr) return false;
+	C4Object *cursor_obj = plr->Cursor;
+	if (!cursor_obj) return false;
+	C4Viewport *vp = GraphicsSystem.GetViewport(iPlr);
+	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
+	// game coordinate to screen coordinates...
+	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->Zoom;
+	float screen_y = (float(game_y) - vp->last_game_draw_cgo.TargetY - vp->last_game_draw_cgo.Y) * vp->Zoom;
+	// ...and screen coordinates to GUI coordinates (might push this into a helper function of C4Viewport?)
+	float gui_x = (screen_x - vp->last_game_draw_cgo.X) / C4GUI::GetZoom() + vp->last_game_draw_cgo.X;
+	float gui_y = (screen_y - vp->last_game_draw_cgo.Y) / C4GUI::GetZoom() + vp->last_game_draw_cgo.Y;
+	*x_out = int32_t(gui_x); *y_out = int32_t(gui_y);
+	return true;
 }

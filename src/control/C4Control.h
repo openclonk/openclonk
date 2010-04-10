@@ -199,6 +199,7 @@ public:
 	const ControlItemVec &GetControlItems() const { return ControlItems; }
 	bool IsReleaseControl() const { return fRelease; }
 	const C4KeyEventData &GetExtraData() const { return ExtraData; }
+	void SetExtraData(const C4KeyEventData &new_extra_data) { ExtraData = new_extra_data; }
 };
 
 class C4ControlPlayerCommand : public C4ControlPacket // sync

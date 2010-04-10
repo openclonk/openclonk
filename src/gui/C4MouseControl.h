@@ -26,15 +26,15 @@
 #include "C4Region.h"
 
 const int32_t C4MC_Button_None        = 0,
-                                        C4MC_Button_LeftDown    = 1,
-                                                                  C4MC_Button_LeftUp      = 2,
-                                                                                            C4MC_Button_RightDown   = 3,
-                                                                                                                      C4MC_Button_RightUp     = 4,
-                                                                                                                                                C4MC_Button_LeftDouble  = 5,
-                                                                                                                                                                          C4MC_Button_RightDouble = 6,
-                                                                                                                                                                                                    C4MC_Button_Wheel       = 7,
-                                                                                                                                                                                                                              C4MC_Button_MiddleDown    = 8,
-                                                                                                                                                                                                                                                          C4MC_Button_MiddleUp    = 9;
+              C4MC_Button_LeftDown    = 1,
+              C4MC_Button_LeftUp      = 2,
+              C4MC_Button_RightDown   = 3,
+              C4MC_Button_RightUp     = 4,
+              C4MC_Button_LeftDouble  = 5,
+              C4MC_Button_RightDouble = 6,
+              C4MC_Button_Wheel       = 7,
+              C4MC_Button_MiddleDown    = 8,
+              C4MC_Button_MiddleUp    = 9;
 
 const int32_t C4MC_DragSensitivity = 5;
 
@@ -108,6 +108,7 @@ public:
 	void SetOwnedMouse(bool fToVal) { fMouseOwned = fToVal; }
 	bool IsMouseOwned() { return fMouseOwned; }
 	bool IsActive() { return !!Active; }
+	bool GetLastGUIPos(int32_t *x_out, int32_t *y_out) const;
 protected:
 	void SendPlayerSelectNext();
 	void UpdateFogOfWar();

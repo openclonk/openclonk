@@ -1167,3 +1167,16 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 	CreateDragImage(DragID,NULL,false);
 	Selection.Clear();
 }
+
+bool C4MouseControl::GetLastGUIPos(int32_t *x_out, int32_t *y_out) const
+{
+	// safety
+	if (!Active || !fMouseOwned) return false;
+	// OK; assign last known pos
+	*x_out = GuiX; *y_out = GuiY;
+	if (!GuiX)
+	{
+		int i=10;
+	}
+	return true;
+}

@@ -38,6 +38,7 @@ private:
 	int32_t iInitialRepeatDelay; // delay after which KeyRepeat will be enabled
 	bool fDefaultDisabled;    // if true, the control is disabled by default and needs to be enabled by script
 	C4ID idControlExtraData;  // extra data to be passed to script function
+	bool fSendCursorPos;      // if true, x/y parameters will be set by current GUI mouse cursor pos (or GetCursor()-GUI coordinate pos for gamepad)
 public:
 	enum Actions //action to be performed when control is triggered
 	{
@@ -52,7 +53,7 @@ private:
 	Actions eAction;
 
 public:
-	C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), eAction(CDA_Script) {}
+	C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), eAction(CDA_Script), fSendCursorPos(false) {}
 	~C4PlayerControlDef() {};
 
 	void CompileFunc(StdCompiler *pComp);
@@ -67,6 +68,7 @@ public:
 	int32_t GetRepeatDelay() const { return iRepeatDelay; }
 	int32_t GetInitialRepeatDelay() const { return iInitialRepeatDelay; }
 	bool IsDefaultDisabled() const { return fDefaultDisabled; }
+	bool IsSendCursorPos() const { return fSendCursorPos; }
 
 	//C4PlayerControlDef &operator =(const C4PlayerControlDef &src);
 	bool operator ==(const C4PlayerControlDef &cmp) const;
@@ -338,6 +340,10 @@ private:
 
 	// init
 	void AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx);
+
+	// helper function: get current cursor position of controlling player in GUI coordinates
+	// used e.g. to open menus at cursor pos
+	bool GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out);
 
 public:
 	C4PlayerControl();

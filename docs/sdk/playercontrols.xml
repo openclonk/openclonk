@@ -66,6 +66,11 @@
 		<col>Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href="playercontrols.xml#ExtraData">ExtraData</emlink>.</col>
 	</row>
 	<row>
+		<col>SendCursorPos</col>
+		<col>Boolean</col>
+		<col>Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des Ausloesens des Kommandos gesendet. Ist keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen.</col>
+	</row>
+	<row>
 		<col>Action</col>
 		<col>Zeichenfolge</col>
 		<col>Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte:
