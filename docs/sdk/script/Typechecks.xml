@@ -40,12 +40,6 @@
 		  <col><code>"Dies ist ein Text!" </code></col>
 		</row>
 		<row>
-		  <col><code>object</code></col>
-		  <col>Objektzeiger</col>
-		  <col>Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <funclink>FindObject</funclink>()</col>
-		  <col>-</col>
-		</row>
-		<row>
 		  <col><code>array</code></col>
 		  <col>Array</col>
 		  <col>Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <funclink>GetLength</funclink> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR.</col>
@@ -56,7 +50,13 @@
 		  <col>Objekt</col>
 		  <col>Ein allgemeiner Objekttyp. Mit <funclink>GetProperty</funclink> und <funclink>SetProperty</funclink> können Eigenschaften abgefragt bzw. gesetzt werden.
 		  Wenn die Eigenschaft <code>"Prototype"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt.</col>
-		  <col><code>[0,42,Clonk] </code></col>
+		  <col><code>{ foo = 0, "bar baz" = 42, Prototype = Clonk }</code></col>
+		</row>
+		<row>
+		  <col><code>object</code></col>
+		  <col>Spielobjekt</col>
+		  <col>Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <funclink>FindObject</funclink>()</col>
+		  <col>CreateObject(Clonk)</col>
 		</row>
 	</table></text>
 	
@@ -172,7 +172,7 @@
 	
 </part>
 
-<author>Günther</author><date>April 2006</date>
+<author>Günther</author><date>2006-2010</date>
 <author>PeterW</author><date>April 2006</date>
 
 </doc>
