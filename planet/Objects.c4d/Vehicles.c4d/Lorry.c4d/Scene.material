@@ -14,7 +14,6 @@ material Lorry
 				texture lorry.png
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
 			}
 		}
 	}

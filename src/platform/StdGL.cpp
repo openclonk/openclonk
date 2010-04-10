@@ -1114,7 +1114,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_CULL_FACE);
 
 	// Set up projection matrix first. We do transform and Zoom with the
 	// projection matrix, so that lighting is applied to the untransformed/unzoomed
@@ -1157,7 +1156,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		// Don't scale by Z extents since mesh might be transformed
 		// by MeshTransformation, so use GetBoundingRadius to be safe.
-		// Note this still fails if mesh is scaled in Z direction.
+		// Note this still fails if mesh is scaled in Z direction or
+		// there are attached meshes.
 		const float scz = 1.0/mesh.GetBoundingRadius();
 
 		// Keep aspect ratio:
@@ -1250,7 +1250,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		gluLookAt(EyeX, EyeY, EyeZ, MeshCenter.x, MeshCenter.y, MeshCenter.z, UpX, UpY, UpZ);
 	}
 
-
 	// Apply mesh transformation matrix
 	if (MeshTransform)
 	{
@@ -1283,21 +1282,18 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
-#if 0
-	// Create a transformation which transfers a vertex from mesh
-	// coordinates to screen coordinates. This is basically the same
-	// as the current GL modelview matrix, but we need it to access the
-	// ClrModMap for each vertex with the correct coordinates.
-	CBltTransform Transform;
-	Transform.SetMoveScale(dx, dy, scx, scy);
-	if (pTransform) Transform *= *pTransform;
+	if(fUseClrModMap)
+	{
+		float x = tx + twdt/2.0f;
+		float y = ty + thgt/2.0f;
 
-	Transform.MoveScale(-ZoomX, -ZoomY, 1.0f, 1.0f);
-	Transform.MoveScale(0.0f, 0.0f, Zoom, Zoom);
-	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);
+		if(pTransform)
+			pTransform->TransformPoint(x,y);
 
-	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
-#endif
+		ApplyZoom(x, y);
+		DWORD c = pClrModMap->GetModAt(int(x), int(y));
+		ModulateClr(dwModClr, c);
+	}
 
 	RenderMeshImpl(instance, dwModClr, !!(dwBlitMode & C4GFXBLIT_MOD2), dwPlayerColor, parity);
 
