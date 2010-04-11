@@ -1145,6 +1145,7 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	C4Object *cursor_obj = plr->Cursor;
 	if (!cursor_obj) return false;
 	C4Viewport *vp = GraphicsSystem.GetViewport(iPlr);
+	if (!vp) return false;
 	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
 	// game coordinate to screen coordinates...
 	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->Zoom;
