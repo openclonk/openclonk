@@ -92,8 +92,8 @@ public func IsRiding() { return (WildcardMatch(GetAction(), "Ride*")); }
 public func HasConstructMenu() { return HasKnowledge() && GetPhysical("CanConstruct"); }
 public func HasKnowledge() { return GetPlrKnowledge(GetOwner(),nil,0,C4D_Structure); }
 public func HasBase()      { return FindBase(GetOwner()) && Contained()->GetBase() != GetOwner(); }
-public func ReleaseAllowed() { return ObjectCount(C4Id("REAC")); }
-public func AtConstructionSite() { return !Contained() && FindConstructionSite() && ObjectCount(C4Id("CNMT")); }
+public func ReleaseAllowed() { return ObjectCount(Find_ID(C4Id("REAC"))); }
+public func AtConstructionSite() { return !Contained() && FindConstructionSite() && ObjectCount(Find_ID(C4Id("CNMT"))); }
 public func AtEnergySite() { return !Contained() && FindEnergySite(); }
 public func AtTreeToChop() { return !Contained() && FindTree() && GetPhysical("CanChop"); }
 
