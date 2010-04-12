@@ -88,6 +88,28 @@ func FxIntAimCheckProcedureStart(target, number, tmp)
 
 func FxIntAimCheckProcedureTimer()
 {
+	// Care about the aim schedules
+	if(aim_schedule_timer != nil)
+	{
+		aim_schedule_timer--;
+		if(aim_schedule_timer == 0)
+		{
+			Call(aim_schedule_call);
+			aim_schedule_call = nil;
+			aim_schedule_timer = nil;
+		}
+	}
+	if(aim_schedule_timer2 != nil)
+	{
+		aim_schedule_timer2--;
+		if(aim_schedule_timer2 == 0)
+		{
+			Call(aim_schedule_call2);
+			aim_schedule_call2 = nil;
+			aim_schedule_timer2 = nil;
+		}
+	}
+	
 	// check procedure
 	if(!ReadyToAction())
 	{
@@ -122,26 +144,6 @@ func FxIntAimCheckProcedureTimer()
 				return -1;
 			}
 			aim_pause = 0;
-		}
-	}
-	if(aim_schedule_timer != nil)
-	{
-		aim_schedule_timer--;
-		if(aim_schedule_timer == 0)
-		{
-			Call(aim_schedule_call);
-			aim_schedule_call = nil;
-			aim_schedule_timer = nil;
-		}
-	}
-	if(aim_schedule_timer2 != nil)
-	{
-		aim_schedule_timer2--;
-		if(aim_schedule_timer2 == 0)
-		{
-			Call(aim_schedule_call2);
-			aim_schedule_call2 = nil;
-			aim_schedule_timer2 = nil;
 		}
 	}
 }

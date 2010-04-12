@@ -40,13 +40,13 @@ protected func Construction()
 	if (!Collect(shov,false,1))
 		shov->RemoveObject();
 
-	// Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
+	// Fix clonks with magic physical from erroneous scenarios
 	if (GetID () == Clonk)
 		if (GetPhysical ("Magic", 1))
 			SetPhysical ("Magic", 0, 1);
 	SetAction("Walk");
 	SetDir(Random(2));
-	// Broadcast für Spielregeln
+	// Broadcast for rules
 	GameCallEx("OnClonkCreation", this);
 
 	AddEffect("IntTurn", this, 1, 1, this);
@@ -56,17 +56,17 @@ protected func Construction()
 
 
 
-/* Bei Hinzuf�gen zu der Crew eines Spielers */
+/* When adding to the crew of a player */
 
 protected func Recruitment(int iPlr) {
-	// Broadcast f�r Crew
+	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
 	
 	return _inherited(iPlr,...);
 }
 
 protected func DeRecruitment(int iPlr) {
-	// Broadcast f�r Crew
+	// Broadcast for crew
 	GameCallEx("OnClonkDeRecruitment", this, iPlr);
 	
 	return _inherited(iPlr,...);
@@ -75,18 +75,8 @@ protected func DeRecruitment(int iPlr) {
 
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
-/*	// Kommando MoveTo an Pferd weiterleiten
-	if (szCommand == "MoveTo")
-		if (IsRiding())
-			return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
-	// Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
-	if (IsRiding() && szCommand != "Context")
-	{
-		GetActionTarget()->SetComDir(COMD_Stop);
-		GetActionTarget()->~ControlDownDouble(this);
-	}
-	*/
-	// RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
+	// RejectConstruction Callback for building via Drag'n'Drop form a building menu
+	// TODO: Check if we still need this with the new system
 	if(szCommand == "Construct")
 	{
 		if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
@@ -94,22 +84,22 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 			return 1;
 		}
 	}
-	// Kein �berladenes Kommando
+	// No overloaded command
 	return 0;
 }
 
 
-/* Verwandlung */
+/* Transformation */
 
 private func RedefinePhysical(szPhys, idTo)
 {
-	// Physical-Werte ermitteln
+	// Get values of the physicals
 	var physDefFrom = GetID()->GetPhysical(szPhys),
 	    physDefTo   = idTo->GetPhysical(szPhys),
 	    physCurr    = GetPhysical(szPhys);
-	// Neuen Wert berechnen
+	// Calculate new value
 	var physNew; if (physDefTo) physNew=BoundBy(physDefTo-physDefFrom+physCurr, 0, 100000);
-	// Neuen Wert f�r den Reset immer tempor�r setzen, selbst wenn keine �nderung besteht, damit der Reset richtig funktioniert
+	// Set new value for the reset always temporary, even if it doesn't change. Otherwise the reset wouldn't work
 	SetPhysical(szPhys, physNew, PHYS_StackTemporary);
 	// Fertig
 	return 1;
@@ -117,7 +107,7 @@ private func RedefinePhysical(szPhys, idTo)
 
 protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
 {
-	// Ziel-ID in Effektvariable
+	// Goal-ID in the effect variable
 	if (tmp)
 		idTo = EffectVar(0, trg, num);
 	else
@@ -125,7 +115,7 @@ protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
 		EffectVar(0, trg, num) = idTo;
 		EffectVar(1, trg, num) = GetID();
 	}
-	// Physicals anpassen
+	// Adapt physicals
 	RedefinePhysical("Energy", idTo);
 	RedefinePhysical("Breath", idTo);
 	RedefinePhysical("Walk", idTo);
@@ -140,25 +130,25 @@ protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
 	RedefinePhysical("Magic", idTo);
 	RedefinePhysical("Float", idTo);
 	/*if (GetRank()<4) RedefinePhysical("CanScale", idTo);
-	if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // z.Z. k�nnen es alle
+	if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // now everyone can scale and hangle
 	RedefinePhysical("CanDig", idTo);
 	RedefinePhysical("CanConstruct", idTo);
 	RedefinePhysical("CanChop", idTo);
 	RedefinePhysical("CanSwimDig", idTo);
 	RedefinePhysical("CorrosionResist", idTo);
 	RedefinePhysical("BreatheWater", idTo);
-	// Damit Aufwertungen zu nicht-Magiern keine Zauberenergie �brig lassen
+	// Tranformation to a non-mage shouldn't leave the clonk with remaining magical energy
 	if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
-	// Echtes Redefine nur bei echten Aufrufen (hat zu viele Nebenwirkungen)
+	// Real redefine only for real calls (has to many side effects)
 	if (tmp) return FX_OK;
 	Redefine(idTo);
-	// Fertig
+	// Done
 	return FX_OK;
 }
 
 protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
 {
-	// Physicals wiederherstellen
+	// Restore physicals
 	ResetPhysical("BreatheWater");
 	ResetPhysical("CorrosionResist");
 	ResetPhysical("CanSwimDig");
@@ -178,11 +168,11 @@ protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
 	ResetPhysical("Walk");
 	ResetPhysical("Breath");
 	ResetPhysical("Energy");
-	// Keine R�ck�nderung bei tempor�ren Aufrufen oder beim Tod/L�schen
+	// No reset for temporary calls of for death/deletion
 	if (tmp || iReason) return;
-	// Damit Aufwertungen von nicht-Magiern keine Zauberenergie �brig lassen
+	// Remove all remaining magical energy
 	if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
-	// OK; alte Definition wiederherstellen
+	// OK, restor old definition
 	Redefine(EffectVar(1, trg, num));
 }
 
@@ -196,77 +186,19 @@ public func Redefine2(idTo)
 
 public func Redefine(idTo)
 {
-	// Aktivit�tsdaten sichern
+	// save data of activity
 	var phs=GetPhase(),act=GetAction();
-	// Umwandeln
+	// Transform
 	ChangeDef(idTo);
-	// Aktivit�t wiederherstellen
+	// restore action
 	var chg=SetAction(act);
 	if (!chg) SetAction("Walk");
 	if (chg) SetPhase(phs);
-	// Fertig
+	// Done
 	return 1;
 }
 
-
-/* Food and drinks :-) */
-
-public func Drink(object pDrink)
-{
-	// Trinkaktion setzen, wenn vorhanden
-	if (GetActMapVal("Name", "Drink"))
-		SetAction("Drink");
-	// Attention: don't do anything with the potion
-	// normally it deletes itself.
-}
-
-/* Actions */
-
-private func Fighting()
-{
-	if (!Random(2)) SetAction("Punch");
-}
-
-private func Punching()
-{
-	if (!Random(3)) Sound("Kime*");
-	if (!Random(5)) Sound("Punch*");
-	if (!Random(2)) return;
-	GetActionTarget()->Punch();
-	return;
-}
-
-private func Chopping()
-{
-	if (!GetActTime()) return;
-	Sound("Chop*");
-	CastParticles("Dust",Random(3)+1,6,-8+16*GetDir(),1,10,12);
-}
-
-private func Building()
-{
-	if (!Random(2)) Sound("Build*");
-}
-
-private func Processing()
-{
-	Sound("Build1");
-}
-
-private func Digging()
-{
-	Sound("Dig*");
-}
-
-protected func Scaling()
-{
-	var szDesiredAction;
-	if (GetYDir()>0) szDesiredAction = "ScaleDown"; else szDesiredAction = "Scale";
-	if (GetAction() != szDesiredAction) SetAction(szDesiredAction);
-}
-
-
-/* Ereignisse */
+/* Events */
 
 protected func CatchBlow()
 {
@@ -332,7 +264,7 @@ protected func DeepBreath()
 
 protected func CheckStuck()
 {
-	// Verhindert Festh�ngen am Mittelvertex
+	// Prevents getting stuck on middle vertex
 	if(!GetXDir()) if(Abs(GetYDir()) < 5)
 		if(GBackSolid(0, 3))
 			SetPosition(GetX(), GetY() + 1);
@@ -866,7 +798,8 @@ func FxIntWalkTimer(pTarget, iNumber)
 		EffectVar(0, pTarget, iNumber) = anim;
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
-	else if(anim == Clonk_WalkStand && !EffectVar(2, pTarget, iNumber))
+	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
+	else if(anim == Clonk_WalkStand && !EffectVar(2, pTarget, iNumber) && !GetHandAction())
 	{
 		if(Random(200) == 0)
 		{
@@ -1385,7 +1318,7 @@ func FxIntDigStart(pTarget, iNumber, fTmp)
 	UpdateAttach();
 
 	// Sound
-	Digging();
+	Sound("Dig*");
 
 	// Set proper turn type
 	SetTurnType(0);
@@ -1395,7 +1328,7 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 {
 	if(iTime % 36 == 0)
 	{
-		Digging();
+		Sound("Dig*");
 	}
 	if( (iTime-18) % 36 == 0)
 	{

@@ -171,7 +171,7 @@ public func Reset(clonk)
 {
 	fAiming = 0;
 
-	if(iArrowMesh != nil) clonk->DetachMesh(iArrowMesh);
+	clonk->DetachMesh(iArrowMesh);
 	iArrowMesh = nil;
 	
 	clonk->StopAnimation(clonk->GetRootAnimation(11));
