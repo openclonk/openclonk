@@ -21,6 +21,7 @@ func Initialize()
 		AnimationShoot3 = "SpearThrow3Arms",
 		ShootTime       = 16,
 		ShootTime2      =  8,
+		WalkBack        =  0,
 	};
 }
 

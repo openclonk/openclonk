@@ -36,6 +36,7 @@ func Initialize()
 		ShootTime      = 20,
 		TurnType       = 1,
 		WalkSpeed      = 30000,
+		WalkBack       = 20000,
 		AnimationReplacements = [
 			["Walk", "BowWalk"],
 			["Walk_Position", 20],

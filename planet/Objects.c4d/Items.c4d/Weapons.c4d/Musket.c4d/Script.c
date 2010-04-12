@@ -37,6 +37,7 @@ func Initialize()
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		WalkSpeed      = 30000,
+		WalkBack       = 20000,
 	};
 }
 

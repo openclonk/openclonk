@@ -544,6 +544,8 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 		// Save new ComDir
 		EffectVar(0, pTarget, iNumber) = GetDirection();
 		EffectVar(1, pTarget, iNumber) = CLONK_TurnTime;
+		// Notify effects
+		ResetAnimationEffects();
 	}
 	// Turning
 	if(EffectVar(1, pTarget, iNumber))
@@ -698,6 +700,41 @@ func CloseEyes(iCounter)
 		SetMeshMaterial("Clonk_Body");
 }
 
+/* Walking backwards */
+func SetBackwardsSpeed(int value)
+{
+	BackwardsSpeed = value;
+	UpdateBackwardsSpeed();
+}
+
+local BackwardsSpeed;
+local Backwards;
+
+func UpdateBackwardsSpeed()
+{
+	if(GetComDir() != GetDirection() && Backwards != 1 && BackwardsSpeed != nil)
+	{
+		AddEffect("IntWalkBack", this, 1, 0, this, 0, BackwardsSpeed);
+		Backwards = 1;
+	}
+	if( (GetComDir() == GetDirection() && Backwards == 1) || BackwardsSpeed == nil)
+	{
+		RemoveEffect("IntWalkBack", this);
+		Backwards = nil;
+	}
+}
+
+func FxIntWalkBackStart(pTarget, iNumber, fTmp, iValue)
+{
+	if(iValue == nil) iValue = 30000;
+	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+}
+
+func FxIntWalkBackStop(pTarget, iNumber)
+{
+	pTarget->ResetPhysical("Walk");
+}
+
 /* Walk */
 
 static const Clonk_WalkInside = "Inside";
@@ -786,6 +823,8 @@ func FxIntWalkTimer(pTarget, iNumber)
 		if(EffectVar(4, pTarget, iNumber) == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}*/
+	if(BackwardsSpeed != nil)
+		UpdateBackwardsSpeed();
 	if(EffectVar(2, pTarget, iNumber))
 	{
 		EffectVar(2, pTarget, iNumber)--;

@@ -379,6 +379,9 @@ public func ApplySet(set)
 
 	if(set["WalkSpeed"] != nil)
 		AddEffect("IntWalkSlow", this, 1, 0, this, 0, set["WalkSpeed"]);
+
+	if(set["WalkBack"] != nil)
+		SetBackwardsSpeed(set["WalkBack"]);
 }
 
 public func ResetHands(bool pause)
@@ -398,7 +401,8 @@ public func ResetHands(bool pause)
 	StopAnimation(GetRootAnimation(10));
 
 	RemoveEffect("IntWalkSlow", this);
-
+	SetBackwardsSpeed(nil);
+	
 	RemoveEffect("IntAim", this);
 
 	SetTurnForced(-1);
