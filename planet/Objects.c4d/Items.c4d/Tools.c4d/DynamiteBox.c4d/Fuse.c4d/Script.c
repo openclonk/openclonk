@@ -35,6 +35,50 @@ private func GetLineLength()
 	return iDist;
 }
 
+local fuse_vertex;
+local fuse_x;
+local fuse_y;
+local fuse_call;
+
+public func StartFusing(object controler)
+{
+	fuse_call = controler;
+	fuse_vertex = GetVertexNum()-1;
+	fuse_x = GetVertex(fuse_vertex, 0)*10;
+	fuse_y = GetVertex(fuse_vertex, 1)*10;
+	AddEffect("IntFusing", this, 1, 1, this);
+	SetAction("Fusing");
+}
+
+func FxIntFusingTimer()
+{
+	var target_x = GetVertex(fuse_vertex-1, 0)*10, target_y = GetVertex(fuse_vertex-1, 1)*10;
+
+	var speed = 20;
+	if(Distance(fuse_x, fuse_y, target_x, target_y) < speed)
+	{
+		RemoveVertex(fuse_vertex);
+		fuse_vertex--;
+		speed -= Distance(fuse_x, fuse_y, target_x, target_y);
+		if(fuse_vertex == 0)
+		{
+			fuse_call->~OnFuseFinished(this);
+			RemoveObject(this);
+			return -1;
+		}
+		fuse_x = GetVertex(fuse_vertex, 0)*10;
+		fuse_y = GetVertex(fuse_vertex, 1)*10;
+	}
+	// Move spark position
+	var iAngle = Angle(fuse_x, fuse_y, target_x, target_y);
+	fuse_x += Sin(iAngle, speed);
+	fuse_y +=-Cos(iAngle, speed);
+
+	CastParticles("Spark",1,20,fuse_x/10-GetX(), fuse_y/10-GetY(),15,25,RGB(255,200,0),RGB(255,255,150));
+	
+	SetVertexXY(fuse_vertex, fuse_x/10, fuse_y/10);
+}
+
 func Definition(def) {
 	SetProperty("ActMap", {
 		Connect = {
@@ -44,6 +88,14 @@ func Definition(def) {
 		Delay = 0,
 		Procedure = DFA_CONNECT,
 		NextAction = "Connect",
+		},
+		Fusing = {
+		Prototype = Action,
+		Name = "Fusing",
+		Length = 0,
+		Delay = 0,
+		Procedure = DFA_NONE,//CONNECT,
+		NextAction = "Fusing",
 	},  }, def);
 	SetProperty("Name", "$Name$", def);
 }

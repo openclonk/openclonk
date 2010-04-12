@@ -78,6 +78,7 @@ func SetHandAction() { return _inherited(...); }
 func ReplaceAction() { return _inherited(...); }
 func SetTurnType  () { return _inherited(...); }
 func SetTurnForced() { return _inherited(...); }
+func SetBackwardsSpeed() { return _inherited(...); }
 
 func FxIntAimCheckProcedureStart(target, number, tmp)
 {
