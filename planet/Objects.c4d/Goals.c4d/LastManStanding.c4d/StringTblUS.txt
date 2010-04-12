@@ -1,4 +1,4 @@
-Name=Micromelee
+Name=Last Man Standing
 
 MsgKill=%s was killed by %s, and has
 MsgSelfKill=%s died, and has
@@ -8,3 +8,6 @@ MsgRelaunch0=no relaunches left.
 MsgRelaunch1=one relaunch left.
 MsgRelaunchX=%d relaunches left.
 MsgFail=lost.
+
+MsgGoalFulfilled=All opponents eliminated.
+MsgGoalUnfulfilled=Still %d opponents in the game.

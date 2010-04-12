@@ -2,7 +2,7 @@
 
 protected func Initialize()
 {
-	CreateObject(Rule_MicroMelee, 0, 0, NO_OWNER);
+	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	SetSkyAdjust (RGB(230,210,150), RGB(150,100,0));
 	// Chests.
 	CreateObject(Chest, 500, 470, NO_OWNER);
@@ -21,7 +21,7 @@ protected func OnPlrRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->Contents()->RemoveObject();
-	var relaunch = CreateObject(MicroMelee_Relaunch, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
+	var relaunch = CreateObject(Goal_Relaunch, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
 	clonk->Enter(relaunch);
 	relaunch->~WeaponMenu(clonk);
 	return;

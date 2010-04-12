@@ -1,14 +1,16 @@
 /*--
-		Micromeleee
+		Last Man Standing
 		Author: Maikel
 	
-		Premade goal for simple micro melees.
+		Premade goal for simple melees with relaunches.
 		Callbacks made to scenario script:
 			* OnPlrRelaunch(int plr) made when the player is relaunched and at game start plr init.
 			* RelaunchCount() should return the number of relaunches.
 			* KillsToRelaunch() should return how many kills will earn the player an extra relaunch.
 --*/
 
+// Based on the regular melee goal.
+#include Goal_Melee
 
 // Include modular scoreboard columns, notice the reverse order.
 #include Scoreboard_KillStreak
@@ -25,8 +27,8 @@ static const MIME_ShowBoardTime = 5; // Duration in seconds the scoreboard will 
 protected func Initialize()
 {
 	// Create melee goal if there isn't any.
-	if (!ObjectCount(Find_ID(Goal_Melee)))
-		CreateObject(Goal_Melee, 0, 0, NO_OWNER);
+	//if (!ObjectCount(Find_ID(Goal_Melee)))
+	//	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	return _inherited(...);
 }
 

@@ -1,7 +1,7 @@
 [DefCore]
-id=Rule_MicroMelee
+id=Goal_LastManStanding
 Version=4,10,0,0
-Category=C4D_StaticBack|C4D_Rule
+Category=C4D_StaticBack|C4D_Goal
 Width=1
 Height=1
 Picture=0,0,128,128
