@@ -1086,6 +1086,19 @@ func FxIntScaleTimer(target, number, time)
 			}
 		}
 	}
+	else if(!GBackSolid(-6+14*GetDir(), 6))
+	{
+		if(EffectVar(0, target, number) != 2)
+		{
+			var pos = GetAnimationPosition(EffectVar(1, target, number));
+			EffectVar(1, target, number) = PlayAnimation("ScaleHands" , 5, Anim_Y(pos, GetAnimationLength("ScaleHands"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			EffectVar(4, target, number) = PlayAnimation("ScaleHands2", 5, Anim_Y(pos, GetAnimationLength("ScaleHands2"), 0, 15), Anim_Const(1000), EffectVar(1, target, number));
+			EffectVar(4, target, number)++;
+//			SetAnimationWeight(EffectVar(4, target, number), Anim_Const(Cos(time, 1000)));
+			EffectVar(0, target, number) = 2;
+		}
+		SetAnimationWeight(EffectVar(4, target, number), Anim_Const(Cos(time*2, 500)+500));
+	}
 	// If not play the normal scale animation
 	else if(EffectVar(0, target, number) != 0)
 	{
@@ -1095,7 +1108,9 @@ func FxIntScaleTimer(target, number, time)
 			SetComDir(COMD_Stop);
 			EffectVar(3, target, number) = 0;
 		}
-		PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		var pos = 0;
+		if(EffectVar(0, target, number) == 2) pos = GetAnimationPosition(EffectVar(1, target, number));
+		EffectVar(1, target, number) =PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		EffectVar(0, target, number) = 0;
 	}
 }
