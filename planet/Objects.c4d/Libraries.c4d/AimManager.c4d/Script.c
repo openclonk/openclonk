@@ -19,6 +19,7 @@
 		ShootTime2      =  5,           // For a callback ShootTime2 frames after StartShoot: DuringShoot
 		TurnType        = 1,            // Specify a special turn type (0: turn 120 degrees, 1: turn 180 degrees, 2: turn 220 degrees) see SetTurnType in clonk
 		WalkSpeed       = 30000,        // Reduce the walk speed during aiming
+		WalkBack        = 20000,        // Reduce the walk speed for walking backwards (speed 0 means no walking backwards at all)
 		AimSpeed        = 5,            // the speed of aiming default 5° per frame
 		AnimationReplacements = [      // Replace some animations with others during load/aim/shoot
 			["Walk", "BowWalk"],
@@ -147,6 +148,13 @@ func FxIntAimCheckProcedureTimer()
 			aim_pause = 0;
 		}
 	}
+}
+
+func FxIntAimCheckProcedureStop(target, number, reason, tmp)
+{
+	if(tmp) return;
+	if(reason == 4)
+		CancelAiming();
 }
 
 func PauseAim()
