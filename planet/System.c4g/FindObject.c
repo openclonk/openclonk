@@ -93,6 +93,11 @@ global func Find_ActionTarget2(object target)
 	return [C4FO_ActionTarget, target, 1];
 }
 
+global func Find_ActionTargets(object target)
+{
+	return [C4FO_Or, Find_ActionTarget(target), Find_ActionTarget2(target)];
+}
+
 global func Find_Procedure(int procedure)
 {
 	return [C4FO_Procedure, procedure];
