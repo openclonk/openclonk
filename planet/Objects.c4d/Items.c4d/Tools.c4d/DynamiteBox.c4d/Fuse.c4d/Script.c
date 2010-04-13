@@ -67,7 +67,7 @@ func FxIntFusingTimer()
 {
 	var target_x = GetVertex(fuse_vertex+fuse_dir, 0)*10, target_y = GetVertex(fuse_vertex+fuse_dir, 1)*10;
 
-	var speed = 5;
+	var speed = 20;
 	if(Distance(fuse_x, fuse_y, target_x, target_y) < speed)
 	{
 		RemoveVertex(fuse_vertex);
