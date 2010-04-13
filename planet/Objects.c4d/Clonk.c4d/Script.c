@@ -1025,12 +1025,105 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 
 func StartScale()
 {
-	// TODO: Tweak animation speed
-	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	if(!GetEffect("IntScale", this))
+		AddEffect("IntScale", this, 1, 1, this);
 	// Set proper turn type
 	SetTurnType(1);
 	// Update carried items
 	UpdateAttach();
+}
+
+func StopScale()
+{
+	if(GetAction() != "Scale") RemoveEffect("IntScale", this);
+}
+
+func FxIntScaleStart(target, number, tmp)
+{
+	if(tmp) return;
+//	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	EffectVar(0, target, number) = -1;
+	EffectVar(3, target, number) = 0;
+	FxIntScaleTimer(target, number, 0);
+}
+
+func FxIntScaleTimer(target, number, time)
+{
+	// When the clonk reaches the top play an extra animation
+	if(!GBackSolid(-8+16*GetDir(),-8))
+	{
+		// If the animation is not already set
+		if(EffectVar(0, target, number) != 1)
+		{
+			var dist = 0;
+			while(!GBackSolid(-8+16*GetDir(),dist-8) && dist < 7) dist++;
+			EffectVar(1, target, number) = PlayAnimation("ScaleTop", 5, Anim_Linear(GetAnimationLength("ScaleTop")*dist/10,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			EffectVar(0, target, number) = 1;
+			EffectVar(2, target, number) = COMD_Up;
+		}
+		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
+		var pos = GetAnimationPosition(EffectVar(1, target, number));
+		var percent = pos*1000/GetAnimationLength("ScaleTop");
+		SetObjDrawTransform(1000, 0, 3*(-1+2*GetDir())*percent, 0, 1000, 3*percent);
+		// If the Comdir has changed...
+		if(EffectVar(2, target, number) != GetComDir())
+		{
+			// Go on if the user has stopped. Stopping here doesn't look good
+			if(GetComDir() == COMD_Stop || GetComDir() == -1)
+			{
+				SetComDir(EffectVar(2, target, number));
+				EffectVar(3, target, number) = 1;
+			}
+			// Or adjust the animation to the turn of direction
+			else
+			{
+				EffectVar(3, target, number) = 0;
+				var anim = Anim_Linear(pos,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold);
+				if(ComDirLike(GetComDir(), COMD_Down))
+					anim = Anim_Linear(pos,0, GetAnimationLength("ScaleTop"),-20, ANIM_Hold);
+				SetAnimationPosition(EffectVar(1, target, number), anim);
+				EffectVar(2, target, number) = GetComDir();
+			}
+		}
+	}
+	// If not play the normal scale animation
+	else if(EffectVar(0, target, number) != 0)
+	{
+		SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
+		if(EffectVar(3, target, number))
+		{
+			SetComDir(COMD_Stop);
+			EffectVar(3, target, number) = 0;
+		}
+		PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		EffectVar(0, target, number) = 0;
+	}
+}
+
+func FxIntScaleStop(target, number, reason, tmp)
+{
+	if(tmp) return;
+	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
+	if(EffectVar(0, target, number) == 1) PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
+	// Finally stop if the user has scheduled a stop
+	if(EffectVar(3, target, number)) SetComDir(COMD_Stop);
+	// and reset the transform
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
+}
+
+// This is just for test... TODO RemoveMe
+func NameComDir(comdir)
+{
+	if(comdir == COMD_Stop) return "COMD_Stop";
+	if(comdir == COMD_Up) return "COMD_Up";
+	if(comdir == COMD_UpRight) return "COMD_UpRight";
+	if(comdir == COMD_UpLeft) return "COMD_UpLeft";
+	if(comdir == COMD_Right) return "COMD_Right";
+	if(comdir == COMD_Left) return "COMD_Left";
+	if(comdir == COMD_Down) return "COMD_Down";
+	if(comdir == COMD_DownRight) return "COMD_DownRight";
+	if(comdir == COMD_DownLeft) return "COMD_DownLeft";
+	if(comdir == COMD_None) return "COMD_None";
 }
 
 /* Jump */
@@ -1567,6 +1660,7 @@ Scale = {
 	OffX = 0,
 	OffY = 0,
 	StartCall = "StartScale",
+	AbortCall = "StopScale",
 },
 Tumble = {
 	Prototype = Action,
