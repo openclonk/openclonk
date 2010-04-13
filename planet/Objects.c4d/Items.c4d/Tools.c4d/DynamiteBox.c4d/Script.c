@@ -117,6 +117,25 @@ func FxIntLengthTimer(pTarget, iNumber, iTime)
 	}
 }
 
+public func OnFuseFinished()
+{
+	DoExplode();
+}
+
+public func DoExplode()
+{
+	// Activate all fuses
+	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTarget(this)))
+		obj->~StartFusing(this);
+	// Explode, calc the radius out of the area of a explosion of a single dynamite times the amount of dynamite
+	// This results to 18, 25, 31, 36, and 40
+	Explode(Sqrt(18**2*iCount));
+}
+
+protected func Incineration() { DoExplode(); }
+
+protected func Damage() { DoExplode(); }
+
 func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
 {
 	for(var i = 0; i < GetLength(aWires); i++)

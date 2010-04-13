@@ -47,17 +47,14 @@ public func Ignite(clonk)
 
 	pIgniteClonk = clonk;
 	aWires[iIgniteNumber]->StartFusing(this);
+
+	ScheduleCall(this, "ResetClonk", 35, 1, clonk);
 }
 
 public func OnFuseFinished()
 {
-	iIgniteNumber++;
-	// End of the line?
-	if(iIgniteNumber == GetLength(aDynamites))
-		ResetClonk(pIgniteClonk);
-	else
-		aWires[iIgniteNumber]->StartFusing(this);
-	aDynamites[iIgniteNumber-1]->DoExplode();
+	if(Contained() != nil) ResetClonk(Contained());
+	else RemoveObject();
 }
 
 public func ResetClonk(clonk)

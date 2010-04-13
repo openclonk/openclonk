@@ -108,8 +108,16 @@ private func Fusing()
 		DoExplode();
 }
 
+public func OnFuseFinished()
+{
+	DoExplode();
+}
+
 public func DoExplode()
 {
+	// Activate all fuses
+	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTarget(this)))
+		obj->~StartFusing(this);
 	Explode(18);
 }
 

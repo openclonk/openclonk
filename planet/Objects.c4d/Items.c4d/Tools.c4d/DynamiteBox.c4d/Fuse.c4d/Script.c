@@ -8,6 +8,7 @@ protected func Initialize ()
 	// Put the first to vertices on the actual position
 	SetVertex(0,0,GetX()); SetVertex(0,1,GetY());
 	SetVertex(1,0,GetX()); SetVertex(1,1,GetY());
+	fuse_dir = 0;
 }
 
 public func SetColorWarning(fOn)
@@ -39,11 +40,23 @@ local fuse_vertex;
 local fuse_x;
 local fuse_y;
 local fuse_call;
+local fuse_dir;
 
 public func StartFusing(object controler)
 {
-	fuse_call = controler;
-	fuse_vertex = GetVertexNum()-1;
+	if(fuse_dir != 0) return RemoveObject();
+	if(GetActionTarget(0) == controler)
+	{
+		fuse_dir = +1;
+		fuse_call = GetActionTarget(1);
+		fuse_vertex = 0;
+	}
+	else
+	{
+		fuse_dir = -1;
+		fuse_call = GetActionTarget(0);
+		fuse_vertex = GetVertexNum()-1;
+	}
 	fuse_x = GetVertex(fuse_vertex, 0)*10;
 	fuse_y = GetVertex(fuse_vertex, 1)*10;
 	AddEffect("IntFusing", this, 1, 1, this);
@@ -52,15 +65,15 @@ public func StartFusing(object controler)
 
 func FxIntFusingTimer()
 {
-	var target_x = GetVertex(fuse_vertex-1, 0)*10, target_y = GetVertex(fuse_vertex-1, 1)*10;
+	var target_x = GetVertex(fuse_vertex+fuse_dir, 0)*10, target_y = GetVertex(fuse_vertex+fuse_dir, 1)*10;
 
-	var speed = 20;
+	var speed = 5;
 	if(Distance(fuse_x, fuse_y, target_x, target_y) < speed)
 	{
 		RemoveVertex(fuse_vertex);
-		fuse_vertex--;
+		if(fuse_dir == -1) fuse_vertex--;
 		speed -= Distance(fuse_x, fuse_y, target_x, target_y);
-		if(fuse_vertex == 0)
+		if( (fuse_vertex == 0 && fuse_dir == -1) || fuse_vertex == GetVertexNum()-1)
 		{
 			fuse_call->~OnFuseFinished(this);
 			RemoveObject(this);
@@ -68,6 +81,8 @@ func FxIntFusingTimer()
 		}
 		fuse_x = GetVertex(fuse_vertex, 0)*10;
 		fuse_y = GetVertex(fuse_vertex, 1)*10;
+		target_x = GetVertex(fuse_vertex+fuse_dir, 0)*10;
+		target_y = GetVertex(fuse_vertex+fuse_dir, 1)*10;
 	}
 	// Move spark position
 	var iAngle = Angle(fuse_x, fuse_y, target_x, target_y);
@@ -78,6 +93,8 @@ func FxIntFusingTimer()
 	
 	SetVertexXY(fuse_vertex, fuse_x/10, fuse_y/10);
 }
+
+public func IsFuse() { return true; }
 
 func Definition(def) {
 	SetProperty("ActMap", {
