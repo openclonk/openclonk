@@ -63,7 +63,6 @@ union C4V_Data
 	// cheat a little - assume that all members have the same length
 	operator void * () { return Ref; }
 	operator const void * () const { return Ref; }
-	bool operator== (C4V_Data b) { return Ref == b.Ref; }
 	C4V_Data& operator= (C4Value * p) { Ref = p; return *this; }
 };
 
