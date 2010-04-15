@@ -677,7 +677,7 @@ public func GetAnimationLength(string animation)
 /* Eyes */
 func FxIntEyesTimer(target, number, time)
 {
-	AddEffect("IntEyesClosed", this, 10, 5, this);
+	AddEffect("IntEyesClosed", this, 10, 6, this);
 }
 
 func FxIntEyesClosedStart(target, number, tmp)
@@ -693,11 +693,15 @@ func FxIntEyesClosedStop(target, number, reason, tmp)
 local closed_eyes;
 func CloseEyes(iCounter)
 {
+	StopAnimation(GetRootAnimation(3));
+//	PlayAnimation("CloseEyes", 6, Anim_Linear(0, 0, GetAnimationLength("CloseEyes")/2, 3, ANIM_Hold), Anim_Const(1000));
 	closed_eyes += iCounter;
 	if(closed_eyes >= 1)
-		SetMeshMaterial("Clonk_Body_EyesClosed");
+		PlayAnimation("CloseEyes" , 3, Anim_Linear(0, 0, GetAnimationLength("CloseEyes")/2, 3, ANIM_Hold), Anim_Const(1000));
+//		SetMeshMaterial("Clonk_Body_EyesClosed");
 	else
-		SetMeshMaterial("Clonk_Body");
+		PlayAnimation("CloseEyes" , 3, Anim_Linear(GetAnimationLength("CloseEyes")/2, GetAnimationLength("CloseEyes")/2, GetAnimationLength("CloseEyes"), 3, ANIM_Remove), Anim_Const(1000));
+//		SetMeshMaterial("Clonk_Body");
 }
 
 /* Walking backwards */
