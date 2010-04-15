@@ -68,6 +68,7 @@ const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 
 #define C4GroupFileID "RedWolf Design GrpFolder"
 
+bool C4Group_TestIgnore(const char *szFilename);
 void C4Group_SetMaker(const char *szMaker);
 void C4Group_SetPasswords(const char *szPassword);
 void C4Group_SetTempPath(const char *szPath);
@@ -131,9 +132,9 @@ public:
 #pragma pack (pop)
 
 const int C4GRES_InGroup  = 0,
-                            C4GRES_OnDisk   = 1,
-                                              C4GRES_InMemory = 2,
-                                                                C4GRES_Deleted  = 3;
+          C4GRES_OnDisk   = 1,
+          C4GRES_InMemory = 2,
+          C4GRES_Deleted  = 3;
 
 class C4GroupEntry: public C4GroupEntryCore
 {

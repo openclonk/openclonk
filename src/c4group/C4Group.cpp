@@ -6,6 +6,7 @@
  * Copyright (c) 2002-2008  Peter Wortmann
  * Copyright (c) 2004-2008  Günther Brammer
  * Copyright (c) 2005  Armin Burgmeier
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -82,7 +83,7 @@ int iC4GroupRewindFilePtrNoWarn=0;
 char C4Group_Maker[C4GroupMaxMaker+1]="";
 char C4Group_Passwords[CFG_MaxString+1]="";
 char C4Group_TempPath[_MAX_PATH+1]="";
-char C4Group_Ignore[_MAX_PATH+1]="cvs;Thumbs.db";
+char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db";
 const char **C4Group_SortList = NULL;
 time_t C4Group_AssumeTimeOffset=0;
 bool (*C4Group_ProcessCallback)(const char *, int)=NULL;
@@ -122,7 +123,11 @@ const char *C4Group_GetTempPath()
 
 bool C4Group_TestIgnore(const char *szFilename)
 {
-	return *GetFilename(szFilename) == '.' || SIsModule(C4Group_Ignore,GetFilename(szFilename));
+	if(!*szFilename) return true; //poke out empty strings
+	const char* name = GetFilename(szFilename);
+	return *name == '.' //no hidden files and the directory itself
+		|| name[strlen(name) - 1] == '~' //no temp files
+		|| SIsModule(C4Group_Ignore,name); //not on Blacklist
 }
 
 bool C4Group_IsGroup(const char *szFilename)
@@ -2010,7 +2015,7 @@ bool C4Group::Add(const char *szFiles)
 				if (fdt.attrib & lAttrib)
 				{
 					// ignore
-					if (fdt.name[0] == '.') continue;
+					if (C4Group_TestIgnore(fdt.name)) continue;
 					// Compose item path
 					SCopy(szFiles,szFileName,_MAX_FNAME); *GetFilename(szFileName) = 0;
 					SAppend(fdt.name, szFileName, _MAX_FNAME);
@@ -2054,7 +2059,7 @@ bool C4Group::Move(const char *szFiles)
 				if (fdt.attrib & lAttrib)
 				{
 					// ignore
-					if (fdt.name[0] == '.') continue;
+					if (C4Group_Ignore(fdt.name)) continue;
 					// Compose item path
 					SCopy(szFiles,szFileName,_MAX_FNAME); *GetFilename(szFileName) = 0;
 					SAppend(fdt.name, szFileName, _MAX_FNAME);

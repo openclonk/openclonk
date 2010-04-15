@@ -7,6 +7,7 @@
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -567,8 +568,7 @@ bool DirContainsScenarios(const char *szDir)
 	for (; (szChildFilename = **pIter); ++*pIter)
 	{
 		// Ignore directory navigation entries and CVS folders
-		if (!*szChildFilename || *GetFilename(szChildFilename)=='.') continue;
-		if (SEqualNoCase(GetFilename(szChildFilename), "CVS")) continue;
+		if (C4Group_TestIgnore(szChildFilename)) continue;
 		if (WildcardMatch(C4CFN_ScenarioFiles, szChildFilename) || WildcardMatch(C4CFN_FolderFiles, szChildFilename)) break;
 		if (DirectoryExists(szChildFilename))
 			if (DirContainsScenarios(szChildFilename))
@@ -1092,8 +1092,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 			szChildFilename = GetFilename(szChildFilename);
 
 			// Ignore directory navigation entries and CVS folders
-			if (!*szChildFilename || *szChildFilename=='.') continue;
-			if (SEqualNoCase(szChildFilename, "CVS")) continue;
+			if (C4Group_TestIgnore(szChildFilename)) continue;
 			if (names.find(szChildFilename) != names.end()) continue;
 			names.insert(szChildFilename);
 			// filename okay; create this item
