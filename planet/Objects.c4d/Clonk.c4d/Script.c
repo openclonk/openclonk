@@ -50,7 +50,7 @@ protected func Construction()
 	GameCallEx("OnClonkCreation", this);
 
 	AddEffect("IntTurn", this, 1, 1, this);
-	AddEffect("IntEyes", this, 1, 35*3, this);
+	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 	AddEffect("Bubble", this, 1, 72, this);
 }
 
@@ -677,7 +677,8 @@ public func GetAnimationLength(string animation)
 /* Eyes */
 func FxIntEyesTimer(target, number, time)
 {
-	AddEffect("IntEyesClosed", this, 10, 6, this);
+	if(!Random(4))
+		AddEffect("IntEyesClosed", this, 10, 6, this);
 }
 
 func FxIntEyesClosedStart(target, number, tmp)
