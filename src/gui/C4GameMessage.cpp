@@ -321,7 +321,7 @@ bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pT
 		// Clear messages with same target
 		if (pTarget) ClearPointers(pTarget);
 
-		// Clear other player messages
+		// Clear other global messages for the given player
 		if (iType == C4GM_Global || iType == C4GM_GlobalPlayer) ClearPlayers(iPlayer, dwFlags & C4GM_PositioningFlags);
 	}
 
@@ -372,7 +372,7 @@ void C4GameMessageList::ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags
 	for (cmsg=First; cmsg; cmsg=next)
 	{
 		next=cmsg->Next;
-		if (cmsg->Player==iPlayer && cmsg->GetPositioningFlags() == dwPositioningFlags)
+		if ( (cmsg->Type == C4GM_Global || cmsg->Type == C4GM_GlobalPlayer) && cmsg->Player==iPlayer && cmsg->GetPositioningFlags() == dwPositioningFlags)
 			{ delete cmsg; if (prev) prev->Next=next; else First=next; }
 		else
 			prev=cmsg;
