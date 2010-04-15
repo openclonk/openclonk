@@ -18,7 +18,7 @@
 <code>protected func ControlDig (clonk)
 {
 	var obj; if (!(obj = <funclink>Contents</funclink>())) <funclink>return</funclink> 1;
-	if (!clonk->Collect(obj)) <funclink>Message</funclink>("Herausnehmen nicht möglich", clonk);
+	if (!clonk->Collect(obj)) clonk-><funclink>Message</funclink>("Herausnehmen nicht möglich");
 	<funclink>return</funclink> 1;
 }
 </code>

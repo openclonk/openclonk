@@ -18,7 +18,7 @@
 		<desc>Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt((x2-x1)^2 + (y2-y1)^2;).</desc>
 		<examples>
 			<example>
-				<code>Message("Schnell, noch %d Clonks trennen dich vom Ziel!", 0, Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
+				<code><funclink>GetCursor</funclink>(0)->Message("Schnell, noch %d Clonks trennen dich vom Ziel!", Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
 				<text>Gibt an, wie weit der ausgewählte Clonk noch vom Punkt 1000/200 entfernt ist.</text>
 			</example>
 		</examples>

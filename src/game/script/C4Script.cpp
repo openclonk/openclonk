@@ -2285,31 +2285,7 @@ static C4ID FnC4Id(C4AulContext *cthr, C4String *szID)
 	return(C4ID(FnStringPar(szID)));
 }
 
-static C4Value FnPlayerMessage_C4V(C4AulContext *cthr, C4Value * iPlayer, C4Value *c4vMessage, C4Value *c4vObj, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6)
-{
-	char buf[MaxFnStringParLen+1];
-	C4String * szMessage = c4vMessage->getStr();
-	C4Object * pObj = c4vObj->getObj();
-	if (!szMessage) return C4VBool(false);
-
-	// Speech
-	bool fSpoken=false;
-	if (SCopySegment(FnStringPar(szMessage),1,buf,'$'))
-		if (StartSoundEffect(buf,false,100,pObj ? pObj : cthr->Obj))
-			fSpoken=true;
-
-	// Text
-	if (!fSpoken)
-		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6).getData(),0,buf,'$'))
-		{
-			if (pObj) GameMsgObjectPlayer(buf,pObj,iPlayer->getInt());
-			else GameMsgPlayer(buf, iPlayer->getInt());
-		}
-
-	return C4VBool(true);
-}
-
-static C4Value FnMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value *c4vObj, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
+static C4Value FnPlayerMessage_C4V(C4AulObjectContext *cthr, C4Value * iPlayer, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
 {
 	char buf[MaxFnStringParLen+1];
 	C4String * szMessage = c4vMessage->getStr();
@@ -2318,34 +2294,20 @@ static C4Value FnMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value *c
 	// Speech
 	bool fSpoken=false;
 	if (SCopySegment(FnStringPar(szMessage),1,buf,'$'))
-		if (StartSoundEffect(buf,false,100,cthr->Obj))
+		if (StartSoundEffect(buf,false,100, cthr->Obj))
 			fSpoken=true;
 
 	// Text
-	C4Object * pObj = c4vObj->getObj();
 	if (!fSpoken)
 		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,buf,'$'))
 		{
-			if (pObj) GameMsgObject(buf,pObj);
-			else GameMsgGlobal(buf);
+			GameMsgObjectPlayer(buf,cthr->Obj,iPlayer->getInt());
 		}
 
 	return C4VBool(true);
 }
 
-static C4Value FnAddMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value *c4vObj, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
-{
-	C4String * szMessage = c4vMessage->getStr();
-	if (!szMessage) return C4VBool(false);
-
-	C4Object * pObj = c4vObj->getObj();
-	if (pObj) ::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),pObj,NO_OWNER,0,0,FWhite);
-	else ::Messages.Append(C4GM_Global,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,ANY_OWNER,0,0,FWhite);
-
-	return C4VBool(true);
-}
-
-static C4Value FnPlrMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value * iPlr, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
+static C4Value FnMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
 {
 	char buf[MaxFnStringParLen+1];
 	C4String * szMessage = c4vMessage->getStr();
@@ -2359,11 +2321,20 @@ static C4Value FnPlrMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value
 
 	// Text
 	if (!fSpoken)
-		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,buf,'$'))
+		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData(),0,buf,'$'))
 		{
-			if (ValidPlr(iPlr->getInt())) GameMsgPlayer(buf,iPlr->getInt());
-			else GameMsgGlobal(buf);
+			GameMsgObject(buf,cthr->Obj);
 		}
+
+	return C4VBool(true);
+}
+
+static C4Value FnAddMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+{
+	C4String * szMessage = c4vMessage->getStr();
+	if (!szMessage) return C4VBool(false);
+
+	::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData(),cthr->Obj,NO_OWNER,0,0,FWhite);
 
 	return C4VBool(true);
 }
@@ -6813,10 +6784,9 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetPlrKnowledge",      1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
 	{ "GetPlrMagic",          1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrMagic_C4V ,           0 },
 	{ "GetComponent",         1  ,C4V_Int      ,{ C4V_PropList,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
-	{ "PlayerMessage",        1  ,C4V_Int      ,{ C4V_Int     ,C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,         0 },
-	{ "Message",              1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnMessage_C4V,               0 },
-	{ "AddMessage",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnAddMessage_C4V,            0 },
-	{ "PlrMessage",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlrMessage_C4V,            0 },
+	{ "PlayerMessage",        1  ,C4V_Int      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,         0 },
+	{ "Message",              1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnMessage_C4V,               0 },
+	{ "AddMessage",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnAddMessage_C4V,            0 },
 	{ "Log",                  1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnLog_C4V,                   0 },
 	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },

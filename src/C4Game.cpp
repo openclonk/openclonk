@@ -1984,7 +1984,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	if (ItemIdentical(ScenarioFilename, strSavePath.getData()))
 	{
 		StartSoundEffect("Error");
-		GameMsgGlobal(LoadResStr("IDS_GAME_NOSAVEONCURR"), FRed);
+		::GraphicsSystem.FlashMessage(LoadResStr("IDS_GAME_NOSAVEONCURR"));
 		Log(LoadResStr("IDS_GAME_FAILSAVEGAME"));
 		return false;
 	}

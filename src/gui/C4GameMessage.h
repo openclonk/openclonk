@@ -113,16 +113,6 @@ inline void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t i
 	::Messages.New(C4GM_TargetPlayer,szText,pTarget,iPlayer,0,0,(uint8_t) iFCol);
 }
 
-inline void GameMsgGlobal(const char *szText, int32_t iFCol=FWhite)
-{
-	::Messages.New(C4GM_Global,szText,NULL,ANY_OWNER,0,0,(uint8_t) iFCol);
-}
-
-inline void GameMsgPlayer(const char *szText, int32_t iPlayer, int32_t iFCol=FWhite)
-{
-	::Messages.New(C4GM_GlobalPlayer,szText,NULL,iPlayer,0,0,(uint8_t) iFCol);
-}
-
 inline void GameMsgObjectDw(const char *szText, C4Object *pTarget, uint32_t dwClr)
 {
 	::Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,dwClr);

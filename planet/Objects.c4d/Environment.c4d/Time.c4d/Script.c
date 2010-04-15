@@ -101,7 +101,7 @@ protected func PlaceStars()
 
 global func FxIntTimePassTimer(object pTarget,int iNumber,int iTime)
 {
-	Message("%d",0,GetTime(true));
+	//Log("%d",GetTime(true));
 
 	if(GetTime()==299) AddEffect("IntSunrise",0,1,1);
 	if(GetTime()==1140) AddEffect("IntSunset",0,1,1);

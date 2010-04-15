@@ -284,7 +284,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 		// Show needed material (if construction site)
 		if (pTarget->OCF & OCF_Construct && Object->r==0 && (Game.Rules & C4RULE_ConstructionNeedsMaterial))
 		{
-			sprintf(szCommand, "PlayerMessage(GetOwner(), Object(%d)->GetNeededMatStr(), Object(%d))", pTarget->Number, pTarget->Number);
+			sprintf(szCommand, "Object(%d)->PlayerMessage(GetOwner(), Object(%d)->GetNeededMatStr())", pTarget->Number, pTarget->Number);
 			fctSymbol.Create(16,16); GfxR->fctConstruction.Draw(fctSymbol,true);
 			Add(LoadResStr("IDS_CON_BUILDINFO"),fctSymbol,szCommand);
 			fctSymbol.Default();

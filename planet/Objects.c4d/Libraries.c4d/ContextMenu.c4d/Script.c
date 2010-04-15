@@ -52,7 +52,7 @@ public func ContextConstructionSite(pCaller)
 	[$CtxConstructionMaterial$|Image=CXCM|Condition=AtConstructionSite]
 	var pSite; 
 	if (pSite = FindConstructionSite())
-		PlayerMessage(GetOwner(), pSite->GetNeededMatStr(), pSite);
+		pSite->PlayerMessage(GetOwner(), pSite->GetNeededMatStr());
 	return 1;
 }
 

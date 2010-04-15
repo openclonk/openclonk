@@ -26,7 +26,7 @@
 if (<funclink>GetAction</funclink>()eq"Jump")
   if (SimFlight(x, y, xdir, ydir))
     if (ydir >= 80)
-      <funclink>Message</funclink>("Oh oh, das wird ein harter Aufprall!", <funclink>this</funclink>());</code>
+      <funclink>Message</funclink>("Oh oh, das wird ein harter Aufprall!");</code>
 				<text>Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen ist, dass er mit hoher Geschwindigkeit auf den Boden aufprallen wird, ruft dies der Clonk aus. Bei einer Aufprallgeschwindigkeit von mindestens 8 Pixeln pro Frame landet der Clonk nicht mehr auf seinen Füßen und muss sich erst wieder aufrichten.<br/>Die ersten vier Parameter von SimFlight sind <emlink href="script/Funcs.html#referenzen">Referenzen</emlink>.</text>
 			</example>
 		</examples>

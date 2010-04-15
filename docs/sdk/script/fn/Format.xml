@@ -32,7 +32,7 @@
     </desc>
     <examples>
       <example>
-        <code><funclink>Message</funclink>(Format("Hallo, %s. Du hast %d Clonks!", <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
+        <code><funclink>Log</funclink>(Format("Hallo, %s. Du hast %d Clonks!", <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
         <text>Gibt zum Beispiel "Hallo Twonky, du hast 3 Clonks!" auf dem Bildschirm aus.</text>
       </example>
       <example>

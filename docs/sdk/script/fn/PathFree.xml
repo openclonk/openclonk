@@ -28,10 +28,10 @@
   while (base=FindBase(GetOwner(), i++))
     if (PathFree(GetX(), GetY(), GetX(base), GetY(base)))
       {
-      Message("Ich sehe meine Basis!", this());
+      Message("Ich sehe meine Basis!");
       break;
       }
-  if (!base) Message("Ich sehe meine Basis nicht :/", this());
+  if (!base) Message("Ich sehe meine Basis nicht :/");
   }</code>
       <text>Script eines Spezialclonks: Auf Spezial2 sagt er, ob er eine seiner Basen sehen kann.</text>
     </example>

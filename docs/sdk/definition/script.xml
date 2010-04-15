@@ -254,10 +254,10 @@ gegeben wurden (z.B. durch Maussteuerung).</text>
 {
   // Ein Kommando mit Zielobjekt
   <emlink href="script/fn/if.html">if</emlink> (target)
-    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Ziel: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), command, target->GetName(), x, y);
+    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Ziel: %s Koordinaten: %d/%d&quot;, command, target->GetName(), x, y);
   // Ein Kommando ohne Zielobjekt
   else
-    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), command, x, y);
+    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Koordinaten: %d/%d&quot;, command, x, y);
   // Kommando nicht abfangen
   <emlink href="script/fn/return.html">return</emlink>(0);
 }  

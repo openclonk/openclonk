@@ -11,20 +11,18 @@
 			<params>
 				<param><type>int</type><name>player</name><desc>Nummer des Spielers, bei dem die Nachricht ausgegeben wird</desc></param>
 				<param><type>string</type><name>message</name><desc>Nachricht, die ausgegeben wird</desc></param>
-				<param><type>object</type><name>obj</name><desc>Objekt, bei dem die Nachricht ausgegeben wird. Ohne angegebenes Objekt wird die Nachricht global (analog zu <funclink>PlrMessage</funclink>) ausgegeben.</desc><optional /></param>
 				<param><type></type><name>...</name><desc>Zusatzparameter, die die Nachricht formatieren. Siehe dazu auch <funclink>Format</funclink></desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Gibt eine Nachricht nur im Viewport eines Spielers aus. Die Nachrichtenformatierung erfolgt analog zu <funclink>Message</funclink>.</desc>
 		<examples>
 			<example>
-				<code>var cursor; PlayerMessage(0, "Hallo, ich bin %s!", cursor=<funclink>GetCursor</funclink>(0), <funclink>GetName</funclink>(cursor));</code>
+				<code>var cursor=<funclink>GetCursor</funclink>(0); cursor->PlayerMessage(0, "Hallo, ich bin %s!", <funclink>GetName</funclink>(cursor));</code>
 				<text>Lässt den ausgewählten Clonk des ersten Spielers nur selbigen den Namen verraten.</text>
 			</example>
 		</examples>
 		<related>
 			<funclink>Message</funclink>
-			<funclink>PlrMessage</funclink>
 			<funclink>CustomMessage</funclink>
 		</related>
 	</func>

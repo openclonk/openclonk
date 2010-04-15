@@ -42,13 +42,13 @@ global func FxBoomAttackTimer(object target, int effect, int time)
 			gol->SetWave(wave);
 		if (wave < 13)
 		{
-			Message("                   $MsgWave$                   ",nil,wave);
+			CustomMessage(Format("                   $MsgWave$                   ",wave),nil,NO_OWNER);
 			var wave_strength = Sqrt(9+GetPlayerCount()*time/Boomattack_attack_growth);
 			CreateAttackWave( Random(360) , wave_strength,Boomattack_angle_spread);
 		}
 		else if (wave == 13)
 		{
-			Message("                   $MsgBoss$                   ");
+			CustomMessage("                   $MsgBoss$                   ",nil,NO_OWNER);
 			CreateAttackWave( Random(360) , -1, Boomattack_angle_spread);
 			var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
 			if(gol) gol->BossAttacks();

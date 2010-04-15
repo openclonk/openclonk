@@ -19,10 +19,10 @@
 		<examples>
 			<example>
 				<code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))
-	<funclink>Message</funclink>("Spieler %s kann Bambushütten bauen",0,<funclink>GetPlayerName</funclink>(0));</code>
+	<funclink>Log</funclink>("Spieler %s kann Bambushütten bauen",<funclink>GetPlayerName</funclink>(0));</code>
 				<text>Gibt einen Text aus, falls der erste Spieler sich im Besitz des Bauplanes für Bambushütten befindet.</text>
 				<code>var def = GetPlrKnowledge( 0,0,4,<funclink>C4D_Structure</funclink>()) );
-<funclink>Message</funclink>("Der fünfte Gebäude-Bauplan des Spielers ist %i",0,def);</code>
+<funclink>Log</funclink>("Der fünfte Gebäude-Bauplan des Spielers ist %i",def);</code>
 				<text></text>
 			</example>
 		</examples>

@@ -21,7 +21,7 @@
 				<text>Wählt den höchstrangigen Clonk des ersten Spielers aus, wenn ansonsten gerade kein anderer Clonk ausgewählt ist.</text>
 			</example>
 			<example>
-				<code>var crew,i; <funclink>while</funclink> (crew=GetCursor(0,i++)) <funclink>Message</funclink>("Hurra!", i);</code>
+				<code>var crew,i; <funclink>while</funclink> (crew=GetCursor(0,i++)) crew-><funclink>Message</funclink>("Hurra!");</code>
 				<text>Gibt eine Nachricht über allen ausgewählten Clonks des ersten Spielers aus.</text>
 			</example>
 		</examples>

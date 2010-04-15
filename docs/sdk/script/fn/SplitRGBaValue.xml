@@ -23,7 +23,7 @@
 			<example>
 				<code>var red, green, blue;
 SplitRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),red,green,blue);
-<funclink>Message</funclink>("Rot: %d|Grün %d|Blau %d",GetCursor(),red, green, blue);
+<funclink>GetCursor</funclink>()-><funclink>Message</funclink>("Rot: %d|Grün %d|Blau %d",red, green, blue);
 				</code>
 				<text>Schreibt die 3 Farbwerte des aktuell ausgewählten Clonks als Text über den Clonk</text>
 			</example>

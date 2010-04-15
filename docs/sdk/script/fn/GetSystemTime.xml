@@ -33,7 +33,7 @@
 			<example>
 				<code>func SageUhrzeit()
 {
-	<funclink>Message</funclink>("Die momentane Uhrzeit ist: %02d:%02d:%02d", <funclink>this</funclink>(), GetSystemTime(4), GetSystemTime(5), GetSystemTime(6));
+	<funclink>Message</funclink>("Die momentane Uhrzeit ist: %02d:%02d:%02d", GetSystemTime(4), GetSystemTime(5), GetSystemTime(6));
 }</code>
 			</example>
 		</examples>

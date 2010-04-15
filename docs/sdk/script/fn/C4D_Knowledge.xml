@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>( <funclink>GetCategory</funclink>( 0, <funclink>GetHomebaseMaterial</funclink>( )) <emlink href="script/operatoren.html">&amp;</emlink> C4D_Knowledge()) <funclink>Message</funclink>("Spieler 1 kann etwas kaufen, was er auch erforschen oder bauen könnte.");</code>
+				<code><funclink>if</funclink>( <funclink>GetCategory</funclink>( 0, <funclink>GetHomebaseMaterial</funclink>( )) <emlink href="script/operatoren.html">&amp;</emlink> C4D_Knowledge()) <funclink>Log</funclink>("Spieler 1 kann etwas kaufen, was er auch erforschen oder bauen könnte.");</code>
 				<text>Mit einem bitweisen And kann man überprüfen, ob zwei Kategorien in mindestens einer Kategorie übereinstimmen.</text>
 			</example>
 		</examples>

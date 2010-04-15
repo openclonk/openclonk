@@ -256,7 +256,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 		if(fShowErrors)
 		{
 			Sound("Error", 0, 100, iForPlr+1);
-			PlayerMessage(iForPlr, "$TxtNotEnoughtMoney$", this);
+			PlayerMessage(iForPlr, "$TxtNotEnoughtMoney$");
 		}
 		return -1;
 	}

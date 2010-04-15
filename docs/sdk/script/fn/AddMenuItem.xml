@@ -51,7 +51,7 @@ func Activate()
 /* Diese Kommados werden vom Menü aufgerufen */
 func SayHello()
 {
-	Message("Hallo",this);
+	Message("Hallo");
 }
 
 func DoMagic()

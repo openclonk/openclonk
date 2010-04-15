@@ -23,8 +23,8 @@
 				<code>protected func Death()
 {
 	var killer = GetKiller();
-	if (killer == <funclink>GetController</funclink>()) <funclink>Message</funclink>("%s hat sich selbst umgebracht.", <funclink>this</funclink>(), <funclink>GetName</funclink>());
-	else if (killer > NO_OWNER) <funclink>Message</funclink>("%s wurde von %s geplättet!", <funclink>this</funclink>(), <funclink>GetName</funclink>(), <funclink>GetPlayerName</funclink>(killer));
+	if (killer == <funclink>GetController</funclink>()) <funclink>Message</funclink>("%s hat sich selbst umgebracht.", <funclink>GetName</funclink>());
+	else if (killer > NO_OWNER) <funclink>Message</funclink>("%s wurde von %s geplättet!", <funclink>GetName</funclink>(), <funclink>GetPlayerName</funclink>(killer));
 	else <funclink>DeathAnnounce</funclink>();
 	<funclink>return</funclink>(true);
 }</code>

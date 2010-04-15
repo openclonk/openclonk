@@ -41,7 +41,7 @@ private func BreakMessage()
 	var pLine = GetActionTarget(0);
 	if(pLine->GetID() != CableReel) pLine = GetActionTarget(1);
 
-	Message("$TxtLinebroke$", pLine);
+	pLine->Message("$TxtLinebroke$");
 }
 
 func Definition(def) {

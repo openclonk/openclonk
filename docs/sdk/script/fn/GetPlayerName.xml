@@ -18,7 +18,7 @@
 <code>protected func Activate(clonk)
   {
   // Begrüßen
-  <funclink>Message</funclink>("Moin, %s. Was macht %s?", <funclink>this</funclink>(), <funclink>GetName</funclink>(clonk), GetPlayerName(<funclink>GetOwner</funclink>(clonk)));
+  <funclink>Message</funclink>("Moin, %s. Was macht %s?", <funclink>GetName</funclink>(clonk), GetPlayerName(<funclink>GetOwner</funclink>(clonk)));
   // Fertig
   <funclink>return</funclink>(1);
   }</code>

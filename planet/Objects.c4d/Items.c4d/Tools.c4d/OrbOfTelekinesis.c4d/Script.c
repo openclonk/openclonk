@@ -59,7 +59,7 @@ public func ControlUseHolding(object pClonk, ix, iy)
 		if(Distance(target->GetX(),target->GetY(),pClonk->GetX()+ix,pClonk->GetY()+iy)<5)
 		{
 			target->SetVelocity(angle,Distance(target->GetX(),target->GetY(),pClonk->GetX()+ix,pClonk->GetY()+iy));
-			Message("Stop",pClonk);
+			pClonk->Message("Stop");
 			return 1;
 		}
 			
@@ -82,7 +82,7 @@ protected func FxChargeTimer(object pTarget, int iEffectNumber, int iEffectTime)
 {
 	if(magic<500)
 	{
-		PlayerMessage(Contained()->GetOwner(),"%d",Contained(),magic);	
+		Contained()->PlayerMessage(Contained()->GetOwner(),"%d",magic);
 		magic=magic+5;
 
 		CastParticles("Magic",1,10,0,0,40,90,RGB(0,100,255),RGB(255,255,255));

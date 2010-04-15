@@ -16,7 +16,7 @@
     <desc>Gibt den (internen, englischen) Namen eines Materials zurück.</desc>
     <examples>
       <example>
-        <code><funclink>Message</funclink>("Dein Clonk steht auf %s.", 0, MaterialName(<funclink>GetMaterial</funclink>(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0))+12)));</code>
+        <code><funclink>GetCursor</funclink>(0)-><funclink>Message</funclink>("Dein Clonk steht auf %s.", MaterialName(<funclink>GetMaterial</funclink>(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0))+12)));</code>
         <text>Zeigt an, auf welchem Material der ausgewählte Clonk des ersten Spielers steht.</text>
       </example>
     </examples>

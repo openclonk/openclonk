@@ -16,7 +16,7 @@
 	
 	<code>func MeineFunktion()
 {
-  <funclink>Message</funclink>("Meine Funktion wurde aufgerufen!");
+  <funclink>Log</funclink>("Meine Funktion wurde aufgerufen!");
 }</code>	
 
 	<text>Das Script der Funktion steht in einem sogenannten Block (der Bereich zwischen '{' und '}' ). Vor diesem Block steht die <strong>Funktionsdeklaration</strong>. Diese beginnt mit "<code>func</code>", gefolgt von dem <strong>Funktionsnamen</strong> (hier: "MeineFunktion"). In der Klammer nach dem Funktionsnamen können Funktionsparameter definiert werden (s.u.).</text>
@@ -24,7 +24,7 @@
 	
 	<code>func ZeigeZahl(int zahl)
 {
-  <funclink>Message</funclink>("ZeigeZahl wurde mit dem Parameter %d aufgerufen!", 0, zahl);
+  <funclink>Log</funclink>("ZeigeZahl wurde mit dem Parameter %d aufgerufen!", zahl);
 }</code>
 	
 	<text>Hier wurde ein Parameter mit dem Namen "zahl" vom Typ "int" definiert. Wird beim Aufruf der Funktion ein Parameter angegeben, so erhält "zahl" den übergebenen Wert. Der übergebene Wert wird in diesem Fall in einer entsprechenden Nachricht ausgegeben.</text>
@@ -37,7 +37,7 @@
 	
 	<code>func ZeigeSumme(zahl1, zahl2, zahl3, zahl4)
 {
-  <funclink>Message</funclink>("Die Summe der ersten 4 Parameter ist %d.", 0, zahl1 + zahl2 + zahl3 + zahl4);
+  <funclink>Log</funclink>("Die Summe der ersten 4 Parameter ist %d.", zahl1 + zahl2 + zahl3 + zahl4);
 }</code>
 	
 	<text>In diesem Fall wurden vier Parameter benannt. Ihnen wurden die Namen "zahl1" bis "zahl4" zugewiesen (die Parameternamen werden jeweils durch Kommata getrennt).</text>
@@ -54,7 +54,7 @@
 {
   <emlink href="for.html">for</emlink>(var i = 0; i &lt; anzahl; i++)
     <funclink>CreateContents</funclink>(def, Clonk);
-  <funclink>Message</funclink>(msg, Clonk);
+  Clonk-><funclink>Message</funclink>(msg);
 }</code>
 	
 	<text>Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href="script/Typechecks.html">Typechecks</emlink>).</text>
@@ -86,7 +86,7 @@ ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
 		
 		<code>func ZeigeDifferenz(Zahl1, Zahl2)
 {
-  <funclink>Message</funclink>("Die Differenz zwischen %d und %d beträgt %d!", Zahl1, Zahl2, Differenz(Zahl1, Zahl2));
+  <funclink>Log</funclink>("Die Differenz zwischen %d und %d beträgt %d!", Zahl1, Zahl2, Differenz(Zahl1, Zahl2));
 }	</code>
 	
 		<text>Der Aufruf "ZeigeDifferenz(5, 2)" würde also die Meldung "Die Differenz zwischen 5 und 2 beträgt 3!" erzeugen.</text>
@@ -176,7 +176,7 @@ func Aufruf()
 {
   var hiRankX, hiRankY;
   GetHiRankPosition(0, hiRankX, hiRankY);
-  <funclink>Message</funclink>("Die Position des HiRanks von Spieler 1 ist: %d/%d", 0, hiRankX, hiRankY);
+  <funclink>Log</funclink>("Die Position des HiRanks von Spieler 1 ist: %d/%d", hiRankX, hiRankY);
 }</code>
 	
 	<text><code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die Variablen gesetzt, die man als Parameter angab (in diesem Fall <code>hiRankX</code> und <code>hiRankY</code>). Man beachte, dass ein Aufruf wie "<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>" zu einem Typfehler führt, da "<code>hiRankX + 1</code>" keine Variable, sondern eine Zahl ist!</text>

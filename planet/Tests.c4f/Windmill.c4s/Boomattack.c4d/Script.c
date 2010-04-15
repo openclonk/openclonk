@@ -75,7 +75,7 @@ protected func ContactRight() { return Hit(); }
 
 protected func Hit()
 {
-	//Message("I have hit something",this);
+	//Message("I have hit something");
 	if(GetEffect("Flight",this)) DoFireworks();
 	else Sound("WoodHit");
 }

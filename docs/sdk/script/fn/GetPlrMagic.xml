@@ -18,7 +18,7 @@
 		<examples>
 			<example>
 				<code><funclink>if</funclink> (GetPlrMagic(0,MLGT))
-	<funclink>Message</funclink>("Spieler %s kann Blitze zaubern",0,<funclink>GetPlayerName</funclink>(0));
+	<funclink>Log</funclink>("Spieler %s kann Blitze zaubern",<funclink>GetPlayerName</funclink>(0));
 				</code>
 				<text>Wenn Spieler 0 Blitze zaubern (MLGT) kann, wird eine entsprechende Botschaft ausgegeben.</text>
 			</example>
@@ -26,7 +26,7 @@
 				<code>var spell;
 
 spell = GetPlrMagic(0,0,4);
-<funclink>Message</funclink>("Der fünfte Zauberspruch des Spielers ist %i",0,spell);
+<funclink>Log</funclink>("Der fünfte Zauberspruch des Spielers ist %i",spell);
 				</code>
 				<text>Gibt die ID des 5. Zauberspruchs des ersten Spielers aus.</text>
 			</example>

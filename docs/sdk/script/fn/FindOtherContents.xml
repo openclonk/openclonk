@@ -15,7 +15,7 @@
     <desc>Liefert das erste Inhaltsobjekt eines Beh‰lters, das nicht vom angegebenen Typ ist.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (!FindOtherContents(GUNP)) <funclink>Message</funclink>("Kein Projektil", <funclink>this</funclink>());</code>
+        <code><funclink>if</funclink> (!FindOtherContents(GUNP)) <funclink>Message</funclink>("Kein Projektil");</code>
         <text>Gibt eine Meldung aus, wenn ein Objekt nichts anderes als Schieﬂpulver enth‰lt.</text>
       </example>
     </examples>

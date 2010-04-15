@@ -12,20 +12,20 @@ public func GetCarryTransform()	{	return Trans_Rotate(90,0,1,0);	}
 
 public func ControlUse(object clonk, int ix, int iy)
 { 
-	Message("Using hammer", clonk);
+	clonk->Message("Using hammer");
 	// Stop clonk
 	clonk->SetComDir(COMD_Stop);
 
 	// Is the clonk able to build?
 	if (clonk && !clonk->GetPhysical("CanConstruct", PHYS_Current) && CheckCanUse(clonk)==true)
 	{ 
-		PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", this, clonk->GetName()); 
+		PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", clonk->GetName()); 
 		return 1; 
 	}
 
 	if(clonk->GetAction()=="Build") //Stop building
 	{
-		Message("Cancelling building",clonk);
+		clonk->Message("Cancelling building");
 		clonk->SetAction("Walk");
 		clonk->SetActionTargets(0,0);
 		return 1;
@@ -36,7 +36,7 @@ public func ControlUse(object clonk, int ix, int iy)
 	if(structure) {
 		if(structure->GetCon()<100)
 		{
-			Message("Building",clonk);
+			clonk->Message("Building");
 			clonk->SetAction("Build",structure);
 			return 1;
 		}}
@@ -62,7 +62,7 @@ protected func CreateConstructionSite(idType)
 	var pSite;
 	if (!(pSite = CreateConstruction(idType, 0, 10, Contained()->GetOwner(), 1, 1,1))) return 0;
 	// Message
-	Message("$TxtConstructions$", Contained(), pSite->GetName());
+	Contained()->Message("$TxtConstructions$", pSite->GetName());
 	return 1;
 }
 

@@ -22,7 +22,7 @@
         <text>Setzt die horizontale Geschwindigkeit des Objekts auf einen Zufallswert zwischen -20 und +20.</text>
       </example>
       <example>
-<code><funclink>Message</funclink>("Daniel hat %d Brötchen!", 0, RandomX(42,23));</code>
+<code><funclink>Message</funclink>("Daniel hat %d Brötchen!", RandomX(42,23));</code>
 
         <text>Gibt die Anzahl von Daniels zufälligen Brötchen aus. Das können Werte zwischen 23 und 42 sein.</text>
       </example>

@@ -17,7 +17,7 @@ public func ControlUse(object clonk, int iX, int iY, bool fBox)
 		if(!GetWall(iAngle, iX, iY, clonk))
 		{
 			//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
-			Message("Can't place dynamite here!", clonk);
+			clonk->Message("Can't place dynamite here!");
 			if(fBox) return false;
 			return true;
 		}

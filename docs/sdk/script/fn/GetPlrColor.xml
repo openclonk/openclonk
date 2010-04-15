@@ -16,7 +16,7 @@
     <examples>
       <example>
 
-<code><funclink>Message</funclink>("&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.", 0, GetPlrColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
+<code><funclink>Log</funclink>("&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.", GetPlrColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
 
         <text>Gibt Statusinformationen über den ersten Spieler aus, wobei dessen Spielername in seiner Spielerfarbe gefärbt wird.</text>
       </example>

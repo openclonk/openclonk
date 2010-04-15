@@ -108,6 +108,6 @@ protected func Initialize()
 
 private func FxShowPowerTimer(object pTarget, int iEffectNumber, int iEffectTime)
 {
-	Message("P:%d", pTarget, pTarget->GetPower());
+	Message("P:%d", pTarget->GetPower());
 	return true;
 }

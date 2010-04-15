@@ -85,7 +85,7 @@ func FxIntLengthTimer(pTarget, iNumber, iTime)
 	if(iLength > DYNA_MaxLength*4/5)
 	{
 		fWarning = 1;
-		Message("Line too long! %d%%", this, iLength*100/DYNA_MaxLength);
+		Message("Line too long! %d%%", iLength*100/DYNA_MaxLength);
 		if( (iTime % 5) == 0)
 		{
 			var fOn = 1;
@@ -108,10 +108,10 @@ func FxIntLengthTimer(pTarget, iNumber, iTime)
 		aDynamites[iMax]->Reset();
 		SetLength(aWires, iMax);
 		SetLength(aDynamites, iMax);
-		Message("Line too long,|lost dynamite!|%d left.", this, iMax);
+		Message("Line too long,|lost dynamite!|%d left.", iMax);
 		if(iMax == 0)
 		{
-			Message("Line broken.", Contained());
+			Contained()->Message("Line broken.");
 			RemoveObject();
 		}
 	}

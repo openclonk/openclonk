@@ -101,7 +101,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 
 	if(GBackSolid(x2,y2))
 	{
-		Message("Hit %s",this, MaterialName(GetMaterial(x2,y2))); //for debug
+		Message("Hit %s", MaterialName(GetMaterial(x2,y2))); //for debug
 		
 		//special effects
 		if(GetMaterialVal("DigFree","Material",GetMaterial(x2,y2))==0)
@@ -118,7 +118,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 			resources->SetSpeed();
 	}
 	else
-		Message("Hit nothing",this); //for debug
+		Message("Hit nothing"); //for debug
 }
 
 func FxIntPickaxeTimer(clonk, number, time)

@@ -39,7 +39,7 @@ private func Check()
 		szLiquid=nil;
 	}
 	//Debug/Testing Purposes
-	if(debug == 1) Message("Volume:|%d|Liquid:|%s", this(), iVolume, szLiquid);
+	if(debug == 1) Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
 private func FillBarrel(string szMat)

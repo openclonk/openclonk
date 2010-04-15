@@ -13,7 +13,7 @@
 
 	<code>func Initialize()
 {
-  <funclink>Message</funclink>("Hallo"); 
+  <funclink>Log</funclink>("Hallo"); 
   <funclink>CreateObject</funclink>(HUT1,250,200,0);
   <funclink>ScriptGo</funclink>(1);
 }</code>
@@ -22,7 +22,7 @@
 	
 	<code>func Script26()
 {
-  <funclink>Message</funclink>("Diese Funktion wird nach 260 Frames ausgeführt.");
+  <funclink>Log</funclink>("Diese Funktion wird nach 260 Frames ausgeführt.");
 }</code>
 
 	<text>Der Scriptzähler kann mit dem Befehl <funclink>goto</funclink>() auch manuell auf einen bestimmten Wert gesetzt werden.</text>
@@ -31,7 +31,7 @@
 	<code>func InitializePlayer(player)
 {
   // Eine Meldung für diesen Spieler
-  <funclink>Message</funclink>( "Spieler Nr. %d ist beigetreten", 0, player );
+  <funclink>Log</funclink>( "Spieler Nr. %d ist beigetreten", player );
   <funclink>Sound</funclink>("Ding");
   // Ersten Clonk des Spielers doch an einer anderen Stelle starten lassen
   <funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()), <funclink>GetCrew</funclink>(player));

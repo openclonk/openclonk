@@ -214,7 +214,7 @@ public func Activate(caster, caster2)
 protected func FxReincarnationPSpellStart(target, num, temporary)
 {
   // Nur beim ersten Start: Meldung
-  if (!temporary) Message("%s bekommt|ein Extraleben", target, GetName(target));
+  if (!temporary) target->Message("%s bekommt|ein Extraleben", GetName(target));
   return true;
 }
 
@@ -230,7 +230,7 @@ protected func FxReincarnationPSpellStop(target, num, reason, temporary)
   DoEnergy(100, target);
   // Nachricht
   Sound("Magic*", 0, target);
-  Message("%s|wurde wiederbelebt.", target, GetName(target));
+  target->Message("%s|wurde wiederbelebt.", GetName(target));
   // Effekt wirkt nur einmal: Entfernen
   return true;
 }</code>

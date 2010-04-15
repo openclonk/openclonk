@@ -33,11 +33,11 @@ func FxIntTimeLimitTimer(target, num, time)
 	{    
 		RelaunchClonk();
 		menu->Close();
-		PlayerMessage(clonk->GetOwner(), "", this);
+		PlayerMessage(clonk->GetOwner(), "");
 		this->RemoveObject();
 		return -1;
 	}
-	PlayerMessage(clonk->GetOwner(), Format("%d seconds remaining.", (350 - time) / 35), this);
+	PlayerMessage(clonk->GetOwner(), Format("%d seconds remaining.", (350 - time) / 35));
 	return 1;
 }
 

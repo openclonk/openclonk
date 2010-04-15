@@ -20,7 +20,7 @@ protected func Activate(object pClonk)
 	var pObj = FindObject(Find_AtPoint(), Find_Func("CanPowerConnect"));
 	// No such object -> message.
 	if(!pObj) 
-		return Message("$TxtNoNewLine$", pClonk);
+		return pClonk->Message("$TxtNoNewLine$");
 	// Is there a power line connected to this wire roll?
 	var pLine = FindObject(Find_PowerLine());
 		
@@ -30,7 +30,7 @@ protected func Activate(object pClonk)
 		{
 			pLine->RemoveObject();
 			Sound("Connect");
-			Message("$TxtLineRemoval$", pClonk);
+			pClonk->Message("$TxtLineRemoval$");
 			return true;
 		} 
 		else // Connect existing power line to pObj.
@@ -42,7 +42,7 @@ protected func Activate(object pClonk)
 			else
 				return;
 			Sound("Connect");
-			Message("$TxtConnect$", pClonk, pObj->GetName());
+			pClonk->Message("$TxtConnect$", pObj->GetName());
 			RemoveObject();
 			return true;
 		}
@@ -52,7 +52,7 @@ protected func Activate(object pClonk)
 		pLine = CreateObject(PowerLine, 0, 0, NO_OWNER);
 		pLine->SetActionTargets(this, pObj);
 		Sound("Connect");
-		Message("$TxtConnect$", pClonk, pObj->GetName());
+		pClonk->Message("$TxtConnect$", pObj->GetName());
 		return true;
 	}
 	return true;

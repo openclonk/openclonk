@@ -20,7 +20,7 @@
 
 <code>var c=GetChar(<funclink>GetPlayerName</funclink>(0), 0);
 <funclink>if</funclink> (<funclink>Inside</funclink>(c, 97, 122)) c-=32;
-<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Message</funclink>("Dein Name beginnt mit dem %d. Buchstaben des Alphabets.", 0, c-64)</code>
+<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Log</funclink>("Dein Name beginnt mit dem %d. Buchstaben des Alphabets.", c-64)</code>
 
 				<text>Ermittelt den Anfangsbuchstaben des Spielernamens des ersten Spielers.</text>
 			</example>

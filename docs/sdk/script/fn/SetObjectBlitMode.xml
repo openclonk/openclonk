@@ -40,7 +40,7 @@ protected func Script100()
   g_pCursor->SetObjectBlitMode(6);
   g_pCursor-><funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
   // Nachricht
-  <funclink>Message</funclink>("Schau her, ich kann leuchten!", g_pCursor);
+  g_pCursor-><funclink>Message</funclink>("Schau her, ich kann leuchten!");
   return true;
   }
 
@@ -50,7 +50,7 @@ protected func Script200()
   g_pCursor->SetObjectBlitMode(g_dwPrevBlitMode);
   g_pCursor-><funclink>SetClrModulation</funclink>(g_dwPrevMod);
   // Nachricht
-  <funclink>Message</funclink>("Schon vorbei :/", g_pCursor);
+  g_pCursor-><funclink>Message</funclink>("Schon vorbei :/");
   <funclink>return</funclink> 1;
   }</code>
 				<text>Teil eines Szenarioscripts: Färbt den ausgewählten Clonk des ersten Spielers für eine Weile teilweise leuchtend grün.<br />

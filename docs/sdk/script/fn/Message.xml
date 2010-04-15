@@ -15,12 +15,6 @@
      <desc>Nachricht, die angezeigt werden soll.</desc>
     </param>
     <param>
-     <type>object</type>
-     <name>obj</name>
-     <optional/>
-     <desc>Objekt, über dem die Nachricht angezeigt werden soll. Wenn nicht angegeben oder 0 wird die Nachricht global angezeigt.</desc>
-    </param>
-    <param>
      <name>...</name>
      <optional/>
      <desc>Zusätzliche Formatierungsparameter</desc>
@@ -34,7 +28,7 @@
 
   <examples>
    <example>
-    <code>Message("Hallo %s!|Ich bin dein Clonk %s!", <funclink>this</funclink>(), <funclink>GetPlayerName</funclink>(<funclink>GetOwner</funclink>()), <funclink>GetName</funclink>());</code>
+    <code>Message("Hallo %s!|Ich bin dein Clonk %s!", <funclink>GetPlayerName</funclink>(<funclink>GetOwner</funclink>()), <funclink>GetName</funclink>());</code>
     <text>
     Wird dieser Script in einem Clonk ausgeführt, so erscheint über seinem Kopf der entsprechende Text (z.B. "Hallo Twonky! Ich bin dein Clonk Yoki!")
     </text>
@@ -42,7 +36,9 @@
   </examples>
 
   <related>
-   <funclink>Log</funclink><funclink>PlayerMessage</funclink><funclink>PlrMessage</funclink><funclink>CustomMessage</funclink>
+   <funclink>Log</funclink>
+   <funclink>PlayerMessage</funclink>
+   <funclink>CustomMessage</funclink>
   </related>
  </func>
  <author>PeterW</author><date>Dezember 2001</date>

@@ -39,7 +39,7 @@ protected func Timer()
     {
       // Noch einige ständige Effekte bei Alarm
       <funclink>Sound</funclink>("Bing");
-      <funclink>Message</funclink>("!!! FEIND !!!", <funclink>this</funclink>());
+      <funclink>Message</funclink>("!!! FEIND !!!");
     }
     else
     {

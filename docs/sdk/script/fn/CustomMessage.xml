@@ -26,7 +26,7 @@
 			</params>
 		</syntax>
 		<desc>Gibt eine Nachricht aus.</desc>
-		<remark>Diese Funktion vereinigt die Funktionialitäten von <funclink>Message</funclink>, <funclink>PlrMessage</funclink> und <funclink>PlayerMessage</funclink> und bietet zusätzliche Optionen an. Um in der Zukunft weitere Parameter einfügen zu können ohne eine neue Funktion zu erschaffen, enthält sie bewusst keine zusätzlichen Format-Parameter. Diese können über die Funktion <funclink>Format</funclink> erreicht werden.</remark>
+		<remark>Diese Funktion vereinigt die Funktionialitäten von <funclink>Message</funclink> und <funclink>PlayerMessage</funclink> und bietet zusätzliche Optionen an. Um in der Zukunft weitere Parameter einfügen zu können ohne eine neue Funktion zu erschaffen, enthält sie bewusst keine zusätzlichen Format-Parameter. Diese können über die Funktion <funclink>Format</funclink> erreicht werden.</remark>
 		<remark>Es gelten die üblichen Nachrichtenformatierungen. Beginnt die Nachricht mit einem "@", so wird die Nachricht dauerhaft angezeigt bis sie durch eine andere ersetzt wird. Das Zeichen "|" steht für einen Zeilenumbruch. Es können Nachrichtenformatierungen mit den Tags &lt;i&gt; (kursiv) und &lt;c&gt; (farbig) genutzt werden.</remark>
 		<remark>Nachrichten werden grundsätzlich angezeigt, bis eine von der Nachrichtenlänge abhängige Zeit vergangen ist oder sie durch eine zweite Nachricht gleicher Klasse ersetzt werden. Eine globale Nachricht (d.h. obj=0) ersetzt alle anderen globalen Nachrichten, und eine Objektnachricht (obj!=0) ersetzt alle anderen Objektnachrichten. Um mehrere Nachrichten gleicher Klasse anzuzeigen, sollte das Flag MSG_Multiple verwendet werden.</remark>
 		<examples>
@@ -42,7 +42,6 @@
 		<related>
 			<funclink>Message</funclink>
 			<funclink>PlayerMessage</funclink>
-			<funclink>PlrMessage</funclink>
 		</related>
 	</func>
 	<author>Sven2</author><date>Juli 2008</date>

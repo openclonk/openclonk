@@ -18,10 +18,10 @@
                         <example>
 <code>protected func Activate(clonk)
   {
-  <funclink>Message</funclink>("%s hat das Objekt aktiviert!", 0, GetTaggedPlayerName(<funclink>GetController</funclink>(clonk)));
+  <funclink>Log</funclink>("%s hat das Objekt aktiviert!", GetTaggedPlayerName(<funclink>GetController</funclink>(clonk)));
   <funclink>return</funclink>(1);
   }</code>
-                                <text>Objektscript: Beim Aktivieren wird eine globale Nachricht ausgegeben, die den Spieler verpetzt.</text>
+                                <text>Objektscript: Beim Aktivieren wird eine Meldung ausgegeben, die den Spieler verpetzt.</text>
                         </example>
                 </examples>
                 <related>

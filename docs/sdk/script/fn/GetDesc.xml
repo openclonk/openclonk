@@ -13,7 +13,7 @@
 		<desc>Gibt die Beschreibung eines Objekts oder einer Objektdefinition zurück. Die Beschreibung wird in Objektdefinitionen in der Desc**.txt angegeben.</desc>
 		<examples>
 			<example>
-				<code><funclink>Message</funclink>("%s|&lt;c ff0000&gt;%s&lt;/c&gt;", nil, <funclink>GetCursor</funclink>()-><funclink>GetName</funclink>(), <funclink>GetCursor</funclink>()->GetDesc());</code>
+				<code><funclink>Log</funclink>("%s|&lt;c ff0000&gt;%s&lt;/c&gt;", <funclink>GetCursor</funclink>()-><funclink>GetName</funclink>(), <funclink>GetCursor</funclink>()->GetDesc());</code>
 				<text>Gibt eine Meldung auf dem Bildschirm aus, die den Namen des gerade ausgewählten Clonks des ersten Spielers, sowie den Beschreibungstext seines Clonktyps enthält.</text>
 			</example>
 		</examples>

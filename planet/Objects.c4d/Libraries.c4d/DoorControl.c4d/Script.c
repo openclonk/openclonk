@@ -11,7 +11,7 @@ protected func ActivateEntrance(pObj)
 		if(Hostile(GetOwner(), pObj->GetOwner()))
 		{
 			Sound("Error", 0, 100, pObj->GetOwner()+1);
-			PlayerMessage(pObj->GetOwner(), "$TxtNoEntryEnemy$", this, GetPlayerName(GetOwner()));
+			PlayerMessage(pObj->GetOwner(), "$TxtNoEntryEnemy$", GetPlayerName(GetOwner()));
 			return 1;
 		}
 	if (ActIdle()) SetAction("OpenDoor");

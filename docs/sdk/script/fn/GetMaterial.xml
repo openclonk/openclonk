@@ -18,7 +18,7 @@
 		<remark>Die Funktion erfasst nur feste Materialpixel, also beispielsweise keinen herunterrieselnden Schnee. Materialflächen, die nur über den MassMover in Bewegung sind, werden natürlich erfasst.</remark>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>("Oil")) <funclink>Message</funclink>("Ich bin reich!", <funclink>this</funclink>());</code>
+				<code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>("Oil")) <funclink>Message</funclink>("Ich bin reich!");</code>
 				<text>Teil eines Clonkscripts: Wenn 200 Pixel unterhalb des aufrufenden Objekts Öl ist, wird eine entsprechende Meldung über dem Objekt ausgegeben.</text>
 			</example>
 		</examples>

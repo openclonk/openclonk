@@ -81,7 +81,7 @@ private func MaxContents() { return 50; }
 protected func RejectCollect(id idObj,object pObj)
 {
 	if(ContentsCount() < MaxContents()) { Sound("Clonk"); return 0; }
-	if(pObj->Contained()) return Message("$TxtLorryisfull$", this);
+	if(pObj->Contained()) return Message("$TxtLorryisfull$");
 	if(Abs(pObj->GetXDir())>6) pObj->SetYDir(-5);
 	Sound("WoodHit*");
 	return 1;

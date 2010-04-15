@@ -13,7 +13,7 @@
     <examples>
     <example>
 <code>var cursor = EditCursor();
-<funclink>Message</funclink>("%s|x: %d y: %d|xdir: %d ydir: %d", cursor, <funclink>GetName</funclink>(cursor), <funclink>GetX</funclink>(cursor), <funclink>GetY</funclink>(cursor),
+cursor-><funclink>Message</funclink>("%s|x: %d y: %d|xdir: %d ydir: %d", <funclink>GetName</funclink>(cursor), <funclink>GetX</funclink>(cursor), <funclink>GetY</funclink>(cursor),
   <funclink>GetXDir</funclink>(cursor), <funclink>GetYDir</funclink>(cursor));</code>
       <text>Zeigt einige Informationen über das Objekt an, über dem gerade der Mauscursor schwebt.</text>
     </example>

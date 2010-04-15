@@ -44,7 +44,7 @@ protected func ControlUse(object pClonk, iX, iY)
 	}
 	else
 	{
-		Message("Reloading!",pClonk);
+		pClonk->Message("Reloading!");
 		return true;
 	}	
 	ChargeSoundStop();

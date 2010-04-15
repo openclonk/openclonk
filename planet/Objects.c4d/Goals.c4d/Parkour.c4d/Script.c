@@ -110,7 +110,7 @@ public func SetPlrRespawnCP(int plr, object cp)
 	if (respawn_list[plr] == cp)
 		return;
 	respawn_list[plr] = cp;
-	PlrMessage("$MsgNewRespawn$", plr);
+	cp->PlayerMessage(plr, "$MsgNewRespawn$");
 	return;
 }
 

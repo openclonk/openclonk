@@ -20,7 +20,7 @@ public func CanStrikeWithWeapon(clonk)
 	
 	if(GetEffect("*WeaponCooldown*", clonk))
 	{
-		Message("cooldown!", this);
+		Message("cooldown!");
 		return false;
 	}
 	
