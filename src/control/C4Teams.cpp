@@ -186,7 +186,7 @@ void C4Team::RecheckColor(C4TeamList &rForList)
 		if (iID >=1 && iID <=defTeamColorCount+1)
 		{
 			// default colors
-			dwClr = defTeamColorRGB[iID-1];
+			dwClr = defTeamColorRGB[iID-1] | 0xff000000;
 		}
 		else
 		{

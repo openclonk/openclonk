@@ -36,7 +36,7 @@ DWORD GenerateRandomPlayerColor(int32_t iTry) // generate a random player color 
 {
 	// generate a random one biased towards max channel luminance
 	// (for greater color difference and less gray-ish colors)
-	return RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
+	return RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256)) | 0xff000000;
 }
 
 bool IsColorConflict(DWORD dwClr1, DWORD dwClr2) // return whether dwClr1 and dwClr2 are closely together
