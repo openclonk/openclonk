@@ -1047,10 +1047,27 @@ func FxIntScaleStart(target, number, tmp)
 	FxIntScaleTimer(target, number, 0);
 }
 
+func CheckPosition(int off_x, int off_y)
+{
+	var free = 1;
+	SetPosition(GetX()+off_x, GetY()+off_y);
+	if(Stuck()) free = 0;
+	SetPosition(GetX()-off_x, GetY()-off_y);
+	return free;
+}
+
+func CheckScaleTop()
+{
+	// Test whether the clonk has reached a top corner
+	if(GBackSolid(-8+16*GetDir(),-8)) return false;
+	if(!CheckPosition(-7*(-1+2*GetDir()),-17)) return false;
+	return true;
+}
+
 func FxIntScaleTimer(target, number, time)
 {
 	// When the clonk reaches the top play an extra animation
-	if(!GBackSolid(-8+16*GetDir(),-8))
+	if(CheckScaleTop())
 	{
 		// If the animation is not already set
 		if(EffectVar(0, target, number) != 1)
@@ -1110,9 +1127,30 @@ func FxIntScaleTimer(target, number, time)
 		}
 		var pos = 0;
 		if(EffectVar(0, target, number) == 2) pos = GetAnimationPosition(EffectVar(1, target, number));
-		EffectVar(1, target, number) =PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		EffectVar(1, target, number) = PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		EffectVar(0, target, number) = 0;
 	}
+	if(EffectVar(0, target, number) == 0)
+	{
+		var x, x2;
+		var y = -7, y2 = 8;
+		for(x = 0; x < 10; x++)
+			if(GBackSolid(x*(-1+2*GetDir()), y)) break;
+		for(x2 = 0; x2 < 10; x2++)
+			if(GBackSolid(x2*(-1+2*GetDir()), y2)) break;
+		var angle = Angle(x2, y2, x, y)*(+1-2*GetDir());
+		var mid = (x+x2)*1000/2 - 5000;
+		SetScaleRotation(angle, mid*(-1+2*GetDir()));
+	}
+}
+
+func SetScaleRotation (int r, int xoff, int yoff) {
+	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	// set matrix values
+	SetObjDrawTransform (
+		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
+		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
+	);
 }
 
 func FxIntScaleStop(target, number, reason, tmp)
