@@ -2059,7 +2059,7 @@ bool C4Group::Move(const char *szFiles)
 				if (fdt.attrib & lAttrib)
 				{
 					// ignore
-					if (C4Group_Ignore(fdt.name)) continue;
+					if (C4Group_TestIgnore(fdt.name)) continue;
 					// Compose item path
 					SCopy(szFiles,szFileName,_MAX_FNAME); *GetFilename(szFileName) = 0;
 					SAppend(fdt.name, szFileName, _MAX_FNAME);
