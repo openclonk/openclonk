@@ -58,8 +58,8 @@ protected func FindPosInMat(string mat, int rx, int ry, int wdt, int hgt, int si
 {
 	for (var i = 0; i < 500; i++)
 	{
-		x = rx + Random(wdt);
-		y = ry + Random(hgt);
+		var x = rx + Random(wdt);
+		var y = ry + Random(hgt);
 		if(GetMaterial(AbsX(x), AbsY(y)) == Material(mat) &&
 			GetMaterial(AbsX(x+size), AbsY(y+size)) == Material(mat) &&
 			GetMaterial(AbsX(x+size), AbsY(y-size)) == Material(mat) &&
