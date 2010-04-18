@@ -759,23 +759,6 @@ target_link_libraries(c4group
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
-
-############################################################################
-# hgrevision as part of MSVC resources
-############################################################################
-if(WIN32)
-	if(MSVC)
-		add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id --id > hgrevision WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	else()
-		if(BUILD_TO_PLANET) 
-			add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id --id > hgrevision)
-		else()
-			add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id --id > hgrevision)
-		endif()
-	endif()
-endif()
-
-
 ############################################################################
 # build to planet
 ############################################################################
