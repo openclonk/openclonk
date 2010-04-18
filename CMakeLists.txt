@@ -46,6 +46,7 @@ if(NOT USE_GL AND NOT USE_DIRECTX)
 endif()
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
 option(DEBUGREC "Debug records" OFF)
+option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -73,7 +74,11 @@ endif()
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
-	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
+	if(OC_BUILD_MULTIPROCESSOR)
+		list(APPEND OC_CXX_FLAGS /MP)
+	else()
+		list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
+	endif()
 	if (NOT CMAKE_CL_64)
 		# Activate edit-and-continue
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
