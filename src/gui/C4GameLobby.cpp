@@ -540,7 +540,7 @@ namespace C4GameLobby
 							else
 							{
 								// color validation
-								dwNewClr &= 0xffffff;
+								dwNewClr |= 0xff000000;
 								if (!dwNewClr) ++dwNewClr;
 								// request a color change to this color
 								C4ClientPlayerInfos LocalInfoRequest = *pCltNfo;

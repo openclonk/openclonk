@@ -807,6 +807,12 @@ void C4PlayerInfoList::UpdatePlayerAttributes(C4ClientPlayerInfos *pForInfo, boo
 				pInfo->SetColor(dwForceClr);
 				pForInfo->SetUpdated();
 			}
+			// make sure colors have correct alpha (modified engines might send malformed packages of transparent colors)
+			if ((pInfo->GetColor() & 0xff000000u) != 0xff000000u)
+			{
+				pInfo->SetColor(pInfo->GetColor() | 0xff000000u);
+				pForInfo->SetUpdated();
+			}
 		}
 	if (fResolveConflicts) ResolvePlayerAttributeConflicts(pForInfo);
 }
