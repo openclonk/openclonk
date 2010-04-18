@@ -127,6 +127,13 @@ public func IsActiveForTeam(int team)
 	return false;
 }
 
+public func ResetCleared() // reset progress done by players
+{
+	aDoneByPlr = [];
+	aDoneByTeam = [];
+	UpdateGraphics();
+}
+
 /*-- Checkpoint activity --*/
 
 protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
@@ -162,12 +169,12 @@ protected func CheckForClonks()
 			Sound("Cleared", false, nil, plr);
 			if (!team)
 				if (cp_con)
-					cp_con->AddPlrClearedCP(plr); // Notify parkour goal.
+					cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
 			if (team && !aDoneByTeam[team])
 			{
 				aDoneByTeam[team] = true;
 				if (cp_con)
-					cp_con->AddPlrClearedCP(plr); // Notify parkour goal.
+					cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
 			}
 		}
 		// Check finish status.
@@ -178,7 +185,7 @@ protected func CheckForClonks()
 			if (team)
 				aDoneByTeam[team] = true;
 			if (cp_con)
-				cp_con->PlrReachedFinishCP(plr); // Notify parkour goal.
+				cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
 		}
 		// Check bonus.
 		if (cp_mode & RACE_CP_Bonus)
@@ -188,6 +195,14 @@ protected func CheckForClonks()
 }
 
 /*-- Checkpoint appearance --*/
+
+public func SetBaseGraphics(id gfx, int mod)
+{
+  // Update base graphics in overlay layer 1
+  SetGraphics("", gfx, 1, GFXOV_MODE_Base);
+  SetClrModulation(mod , 1);
+  return true;
+}
 
 // Mode graphics.
 protected func DoGraphics()

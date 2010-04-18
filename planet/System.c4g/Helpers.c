@@ -22,10 +22,11 @@ global func MessageWindow(string msg, int for_plr, id icon, string caption)
 	return true;
 }
 
-global func RemoveAll()
+global func RemoveAll(p)
 {
 	var cnt;
-	for (var obj in FindObjects(...))
+	if (GetType(p) == C4V_PropList) p = Find_ID(p); // RemoveAll(ID) shortcut
+	for (var obj in FindObjects(p, ...))
 	{
 		if (obj) 
 		{

@@ -88,7 +88,7 @@ public func AddCheckpoint(int x, int y, int mode)
 /*-- Checkpoint interaction --*/
 
 // Called from a finish CP to indicate that plr has reached it.
-public func PlrReachedFinishCP(int plr)
+public func PlrReachedFinishCP(int plr, object cp)
 {
 	if (finished)
 		return;
@@ -115,7 +115,7 @@ public func SetPlrRespawnCP(int plr, object cp)
 }
 
 // Called from a check CP to indicate that plr has cleared it.
-public func AddPlrClearedCP(int plr)
+public func AddPlrClearedCP(int plr, object cp)
 {
 	if (finished)
 		return;
