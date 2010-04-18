@@ -2101,6 +2101,8 @@ static long FnGetMaterial(C4AulContext *cthr, long x, long y)
 
 static C4String *FnGetTexture(C4AulContext* cthr, long x, long y)
 {
+	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
+
 	// Get texture
 	int32_t iTex = PixCol2Tex(GBackPix(x, y));
 	if (!iTex) return NULL;

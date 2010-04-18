@@ -123,8 +123,13 @@ public func FxShovelDustTimer(object target, int num, int time)
 	var groundx = Sin(angle,15);
 	var groundy = -Cos(angle,15);
 	var mat = GetMaterial(groundx, groundy);
+	var tex = GetTexture(groundx,groundy);
 	if(GetMaterialVal("DigFree","Material",mat))
-		CreateParticle("Dust",groundx,groundy,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),RGBa(181,137,90,80));
+	{
+		var clr = GetAverageTextureColor(tex);
+		var a = 80;
+		CreateParticle("Dust",groundx,groundy,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),DoRGBaValue(clr,-255+a,0));
+	}
 }
 
 public func IsTool() { return 1; }
