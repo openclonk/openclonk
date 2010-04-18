@@ -22,7 +22,7 @@ option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINL
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
-		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
+		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
 		if(CMAKE_CL_64)
 			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
 		else()
