@@ -41,52 +41,53 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
-const int32_t C4MC_Drag_None          = 0,
-                                        C4MC_Drag_Selecting     = 1,
-                                                                  C4MC_Drag_Moving        = 2,
-                                                                                            //C4MC_Drag_Menu          = 3,
-                                                                                            //C4MC_Drag_MenuScroll    = 4,
-                                                                                            C4MC_Drag_Construct     = 5,
-                                                                                                                      C4MC_Drag_Script            = 6,
+const int32_t C4MC_Drag_None            = 0,
+              C4MC_Drag_Selecting       = 1,
+              C4MC_Drag_Moving          = 2,
+              //C4MC_Drag_Menu          = 3,
+              //C4MC_Drag_MenuScroll    = 4,
+              C4MC_Drag_Construct       = 5,
+              C4MC_Drag_Script          = 6,
+              C4MC_Drag_Unhandled       = 7,
 
-                                                                                                                                                    C4MC_Selecting_Unknown  = 0;
+              C4MC_Selecting_Unknown  = 0;
 
 const int32_t C4MC_Cursor_Region      = 0,
-                                        C4MC_Cursor_Crosshair   = 1,
-                                                                  C4MC_Cursor_Enter       = 2,
-                                                                                            C4MC_Cursor_Grab        = 3,
-                                                                                                                      C4MC_Cursor_Chop        = 4,
-                                                                                                                                                C4MC_Cursor_Dig         = 5,
-                                                                                                                                                                          C4MC_Cursor_Build       = 6,
-                                                                                                                                                                                                    C4MC_Cursor_Select      = 7,
-                                                                                                                                                                                                                              C4MC_Cursor_Object      = 8,
-                                                                                                                                                                                                                                                        C4MC_Cursor_Ungrab      = 9,
-                                                                                                                                                                                                                                                                                  C4MC_Cursor_Up          = 10,
-                                                                                                                                                                                                                                                                                                            C4MC_Cursor_Down        = 11,
-                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_Left        = 12,
-                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_Right       = 13,
-                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_UpLeft      = 14,
-                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_UpRight     = 15,
-                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_DownLeft    = 16,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_DownRight   = 17,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_JumpLeft    = 18,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            C4MC_Cursor_JumpRight   = 19,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_Drop        = 20,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_ThrowRight  = 21,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_Put         = 22,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //C4MC_Cursor_DragMenu    = 23,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_Vehicle     = 24,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_VehiclePut  = 25,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_ThrowLeft   = 26,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_DragDrop    = 26,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            C4MC_Cursor_Point       = 27,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_DigObject   = 28,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_Help        = 29,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_DigMaterial = 30,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_Add         = 31,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_Construct   = 32,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_Attack      = 33,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_Nothing     = 34;
+              C4MC_Cursor_Crosshair   = 1,
+              C4MC_Cursor_Enter       = 2,
+              C4MC_Cursor_Grab        = 3,
+              C4MC_Cursor_Chop        = 4,
+              C4MC_Cursor_Dig         = 5,
+              C4MC_Cursor_Build       = 6,
+              C4MC_Cursor_Select      = 7,
+              C4MC_Cursor_Object      = 8,
+              C4MC_Cursor_Ungrab      = 9,
+              C4MC_Cursor_Up          = 10,
+              C4MC_Cursor_Down        = 11,
+              C4MC_Cursor_Left        = 12,
+              C4MC_Cursor_Right       = 13,
+              C4MC_Cursor_UpLeft      = 14,
+              C4MC_Cursor_UpRight     = 15,
+              C4MC_Cursor_DownLeft    = 16,
+              C4MC_Cursor_DownRight   = 17,
+              C4MC_Cursor_JumpLeft    = 18,
+              C4MC_Cursor_JumpRight   = 19,
+              C4MC_Cursor_Drop        = 20,
+              C4MC_Cursor_ThrowRight  = 21,
+              C4MC_Cursor_Put         = 22,
+              //C4MC_Cursor_DragMenu    = 23,
+              C4MC_Cursor_Vehicle     = 24,
+              C4MC_Cursor_VehiclePut  = 25,
+              C4MC_Cursor_ThrowLeft   = 26,
+              C4MC_Cursor_DragDrop    = 26,
+              C4MC_Cursor_Point       = 27,
+              C4MC_Cursor_DigObject   = 28,
+              C4MC_Cursor_Help        = 29,
+              C4MC_Cursor_DigMaterial = 30,
+              C4MC_Cursor_Add         = 31,
+              C4MC_Cursor_Construct   = 32,
+              C4MC_Cursor_Attack      = 33,
+              C4MC_Cursor_Nothing     = 34;
 
 const int32_t C4MC_Time_on_Target     = 10;
 
@@ -331,6 +332,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	case C4MC_Button_None:
 		switch (Drag)
 		{
+		case C4MC_Drag_Unhandled: break; // nothing to do
 		case C4MC_Drag_None: DragNone(); break;
 		case C4MC_Drag_Selecting: DragSelect(); break;
 		case C4MC_Drag_Moving: DragMoving(); break;
@@ -399,7 +401,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	switch (Drag)
 	{
 		//------------------------------------------------------------------------------------------
-	case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct: case C4MC_Drag_Script:
+	case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct: case C4MC_Drag_Script: case C4MC_Drag_Unhandled:
 		// Hotspot offset: Usually, hotspot is in center
 		iOffsetX = GfxR->fctMouseCursor.Wdt/2;
 		iOffsetY = GfxR->fctMouseCursor.Hgt/2;
@@ -734,6 +736,7 @@ void C4MouseControl::LeftUp()
 	switch (Drag)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4MC_Drag_Unhandled: // nobreak
 	case C4MC_Drag_None: LeftUpDragNone(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
@@ -799,7 +802,7 @@ void C4MouseControl::DragNone()
 			break;
 		}
 		// check if target object allows scripted dragging
-		if (TargetObject)
+		if (fAllowDrag && TargetObject)
 		{
 			C4Object *drag_image_obj; C4ID drag_image_id;
 			if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
@@ -809,6 +812,12 @@ void C4MouseControl::DragNone()
 				DragObject = TargetObject;
 				DragImagePhase=0;
 			}
+		}
+
+		// dragging somewhere unhandled - mark drag process so moving over a draggable object won't start a drag
+		if (Drag == C4MC_Drag_None)
+		{
+			Drag=C4MC_Drag_Unhandled;
 		}
 	}
 }
@@ -855,6 +864,7 @@ void C4MouseControl::RightUp()
 	switch (Drag)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4MC_Drag_Unhandled: // nobreak
 	case C4MC_Drag_None: RightUpDragNone(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
@@ -969,6 +979,8 @@ void C4MouseControl::DragScript()
 
 void C4MouseControl::LeftUpDragNone()
 {
+	// might be in Drag_Unknown
+	Drag = C4MC_Drag_None;
 	// Single left click (might be on a target)
 	switch (Cursor)
 	{
@@ -1076,6 +1088,9 @@ void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Obj
 void C4MouseControl::RightUpDragNone()
 {
 
+	// might be in Drag_Unknown
+	Drag = C4MC_Drag_None;
+
 	// Region: send control
 	if (Cursor==C4MC_Cursor_Region)
 		{ SendControl(DownRegion.RightCom); return; }
@@ -1157,7 +1172,7 @@ void C4MouseControl::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t
 bool C4MouseControl::IsDragging()
 {
 	// no selection drag; return true for object drag only
-	return Active && (Drag == C4MC_Drag_Moving || Drag == C4MC_Drag_Construct);
+	return Active && (Drag == C4MC_Drag_Moving || Drag == C4MC_Drag_Construct || Drag == C4MC_Drag_Script);
 }
 
 void C4MouseControl::StartConstructionDrag(C4ID id)
@@ -1174,9 +1189,5 @@ bool C4MouseControl::GetLastGUIPos(int32_t *x_out, int32_t *y_out) const
 	if (!Active || !fMouseOwned) return false;
 	// OK; assign last known pos
 	*x_out = GuiX; *y_out = GuiY;
-	if (!GuiX)
-	{
-		int i=10;
-	}
 	return true;
 }
