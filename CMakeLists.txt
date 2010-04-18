@@ -74,6 +74,13 @@ if(HAVE_NULLPTR)
 	template<class T> void f(T &&); template<> void f(std::nullptr_t &&) {} int main() { f(NULL); }" NULL_IS_NULLPTR_T)
 endif()
 
+if (WIN32)
+	# Avoid double boolean defined in both MinGW and jpeg headers
+	CHECK_CXX_SOURCE_COMPILES("#include <windows.h>
+	#include <shlobj.h>
+	int main() { boolean a; }" HAVE_BOOLEAN)
+endif ()
+
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
 	if(OC_BUILD_MULTIPROCESSOR)
@@ -767,6 +774,10 @@ target_link_libraries(c4group
 )
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+
+if (HAVE_BOOLEAN)
+	set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BOOLEAN)
+endif ()
 
 ############################################################################
 # build to planet

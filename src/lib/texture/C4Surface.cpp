@@ -286,15 +286,16 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 
 /* JPEG loading */
 
+// So that HAVE_BOOLEAN matches the reality not depending on what headers
+// we end up including directly or indirectly:
+#ifdef _WIN32
+# include <windows.h>
+# include <shlobj.h>
+#endif
+
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
-// Sigh... is it really so hard to just fucking prefix your own data types?
-// TODO: Should probably do a proper cmake check for this.
-#ifdef __MINGW32__
-# define HAVE_BOOLEAN
-#endif
-
 #include <jpeglib.h>
 }
 #include <setjmp.h>
