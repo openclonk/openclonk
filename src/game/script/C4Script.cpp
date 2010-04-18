@@ -4486,7 +4486,7 @@ static long FnGetPathLength(C4AulContext* ctx, long iFromX, long iFromY, long iT
 	PathInfo.ilx = iFromX;
 	PathInfo.ily = iFromY;
 	PathInfo.ilen = 0;
-	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, &SumPathLength, (long) &PathInfo))
+	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, &SumPathLength, (intptr_t) &PathInfo))
 		return 0;
 	return PathInfo.ilen + Distance(PathInfo.ilx, PathInfo.ily, iToX, iToY);
 }

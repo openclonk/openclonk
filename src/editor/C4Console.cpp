@@ -1548,7 +1548,7 @@ void C4Console::UpdateNetMenu()
 	ClearNetMenu();
 	// Insert menu
 #ifdef _WIN32
-	if (!InsertMenu(GetMenu(hWindow),MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
+	if (!InsertMenu(GetMenu(hWindow),MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT_PTR)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
 #elif defined(WITH_DEVELOPER_MODE)
 	itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
 	GtkWidget* menuNet = gtk_menu_new();

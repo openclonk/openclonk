@@ -167,6 +167,8 @@ namespace std { template<typename T> inline T &move (T &t) { return t; } }
 #ifndef _INC_WINDOWS
 #define _WIN32_WINDOWS 0x0500
 #define _WIN32_WINNT  0x0501
+// For shlobj.h:
+#define _WIN32_IE 0x0501
 #define WINVER 0x0500
 //#define _WIN32_WINNT 0x0500
 #define WIN32_LEAN_AND_MEAN

@@ -289,6 +289,12 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
+// Sigh... is it really so hard to just fucking prefix your own data types?
+// TODO: Should probably do a proper cmake check for this.
+#ifdef __MINGW32__
+# define HAVE_BOOLEAN
+#endif
+
 #include <jpeglib.h>
 }
 #include <setjmp.h>

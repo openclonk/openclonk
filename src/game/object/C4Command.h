@@ -24,6 +24,7 @@
 #ifndef INC_C4Command
 #define INC_C4Command
 
+#include "C4ObjectPtr.h"
 #include "C4Value.h"
 
 const int32_t C4CMD_None      = 0,
@@ -86,7 +87,7 @@ public:
 	int32_t Command;
 	C4Value Tx;
 	int32_t Ty;
-	C4Object *Target,*Target2;
+	C4ObjectPtr Target,Target2;
 	C4Value Data;
 	int32_t UpdateInterval;
 	int32_t Evaluated,PathChecked,Finished;

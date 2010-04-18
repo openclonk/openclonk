@@ -752,7 +752,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
 				pString->IncRef();
 				// return pointer on string object
-				*pInt = (long) pString;
+				*pInt = (intptr_t) pString;
 				return ATT_STRING;
 			}
 			else
@@ -2367,7 +2367,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			{
 				// add direct call to byte code
 				Parse_Params(Fn->OwnerOverloaded->GetParCount(), NULL, Fn->OwnerOverloaded);
-				AddBCC(AB_FUNC, (long) Fn->OwnerOverloaded);
+				AddBCC(AB_FUNC, (intptr_t) Fn->OwnerOverloaded);
 			}
 			else
 				// not found? raise an error, if it's not a safe call
@@ -2405,7 +2405,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					Parse_Params(FoundFn->GetParCount(), FoundFn->Name, FoundFn);
 				else
 					AddBCC(AB_STACK, FoundFn->GetParCount());
-				AddBCC(AB_FUNC, (long) FoundFn);
+				AddBCC(AB_FUNC, (intptr_t) FoundFn);
 			}
 			else
 			{
@@ -2952,7 +2952,7 @@ bool C4AulScript::Parse()
 			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 		}
 		if (Fn)
-			Fn->Code = Code + (long) Fn->Code;
+			Fn->Code = Code + (intptr_t) Fn->Code;
 	}
 
 	// save line count

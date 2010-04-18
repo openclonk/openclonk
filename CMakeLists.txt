@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8.1)
 project (clonk CXX C)
 
 set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
@@ -28,6 +28,8 @@ if(WIN32)
 		else()
 			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
 		endif()
+	else()
+		
 	endif()
 else()
 	SET(USE_DIRECTX OFF)
@@ -713,6 +715,8 @@ macro(FINDLIB lib)
 endmacro(FINDLIB)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
+include(FindOpenSSL)
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
@@ -822,17 +826,25 @@ endforeach()
 if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
+	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
 	target_link_libraries(clonk
 		${GLEW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
+	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_DIRECTX)
 	FINDLIB(DIRECT3D_LIBRARIES d3d9)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
+	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
+	FIND_PATH(DIRECT3DX_INCLUDE_DIR NAMES d3dx9.h)
 	target_link_libraries(clonk
 		${DIRECT3D_LIBRARIES}
 		${DIRECT3DX_LIBRARIES}
+	)
+	include_directories(
+		${DIRECT3D_INCLUDE_DIR}
+		${DIRECT3DX_INCLUDE_DIR}
 	)
 endif()
 if(USE_GTK)
@@ -865,7 +877,16 @@ endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
 	# So just pretend that everything is fine
-	target_link_libraries(clonk vfw32 ws2_32 winmm)
+	FINDLIB(VFW32_LIBRARIES vfw32)
+	if (VFW32_LIBRARIES)
+		target_link_libraries(clonk vfw32)
+	else()
+		# Mingw64 has the AviStream* and _DrawDibDraw* symbols in
+		# other library files
+		target_link_libraries(clonk wavifil32 msvfw32)
+	endif()
+
+	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 
 	if(MSVC_VERSION)

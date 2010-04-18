@@ -220,7 +220,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (hwnd) PostMessage(hwnd, WM_CLOSE, 0, 0);
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
 	StdStrBuf strUpdateArgs; strUpdateArgs.Format("\"%s\" /p -w \"" C4ENGINECAPTION "\" -w \"" C4EDITORCAPTION "\" -w 2000 %s", strUpdateFile, fDeleteUpdate ? "-yd" : "-y");
-	int iError = (int)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
+	int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
 	if (iError <= 32) return false;
 	// must quit ourselves for update program to work
 	if (succeeded) Application.Quit();

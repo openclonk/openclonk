@@ -43,7 +43,7 @@ void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 
 	assert(data.nptr < std::numeric_limits<int32_t>::max());
 	int32_t nptr = static_cast<int32_t>(data.nptr);
-	pComp->Value(nptr);
+	pComp->Value(nptr); // TODO: Use mkIntPackAdapt?
 	data.nptr = nptr;
 
 #ifndef NDEBUG

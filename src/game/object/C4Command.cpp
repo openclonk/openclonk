@@ -2186,14 +2186,9 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	// Target X/Y
 	pComp->Value(Tx); pComp->Separator(StdCompiler::SEP_SEP);
 	pComp->Value(mkIntPackAdapt(Ty)); pComp->Separator(StdCompiler::SEP_SEP);
-	int32_t iPtr;
 	// Target
-	iPtr = reinterpret_cast<intptr_t>(Target);
-	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Separator(StdCompiler::SEP_SEP);
-	Target = reinterpret_cast<C4Object*>(iPtr);
-	iPtr = reinterpret_cast<intptr_t>(Target2);
-	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Separator(StdCompiler::SEP_SEP);
-	Target2 = reinterpret_cast<C4Object*>(iPtr);
+	pComp->Value(Target); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(Target2); pComp->Separator(StdCompiler::SEP_SEP);
 	// Data
 	pComp->Value(Data); pComp->Separator(StdCompiler::SEP_SEP);
 	// Update interval
@@ -2234,15 +2229,15 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 
 void C4Command::DenumeratePointers()
 {
-	Target = ::Objects.ObjectPointer((long)Target);
-	Target2 = ::Objects.ObjectPointer((long)Target2);
+	Target.DenumeratePointers();
+	Target2.DenumeratePointers();
 	Tx.DenumeratePointer();
 }
 
 void C4Command::EnumeratePointers()
 {
-	Target = (C4Object*) ::Objects.ObjectNumber(Target);
-	Target2 = (C4Object*) ::Objects.ObjectNumber(Target2);
+	Target.EnumeratePointers();
+	Target2.EnumeratePointers();
 }
 
 int32_t C4Command::CallFailed()
