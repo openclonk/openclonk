@@ -40,7 +40,7 @@ global func GetTaggedPlayerName(int plr)
 	var plr_name = GetPlayerName(plr);
 	if (!plr_name) 
 		return;
-	var plr_color = MakeColorReadable(GetPlrColor(plr));
+	var plr_color = MakeColorReadable(GetPlayerColor(plr));
 	var tagged_plr_name = Format("<c %x>%s</c>", plr_color, plr_name);
 	return tagged_plr_name;
 }

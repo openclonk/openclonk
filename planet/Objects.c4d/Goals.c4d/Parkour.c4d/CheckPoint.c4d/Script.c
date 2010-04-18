@@ -252,7 +252,7 @@ protected func GetColorByAngle(int angle)
 		if (ClearedByPlr(plr) || (cp_mode & RACE_CP_Start))
 		{
 			if (angle >= j * prt && angle < (j + 1) * prt)
-				return GetPlrColor(plr);
+				return GetPlayerColor(plr);
 			j++;
 		}
 	}

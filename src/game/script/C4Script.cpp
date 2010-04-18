@@ -1116,6 +1116,12 @@ static long FnGetPlayerType(C4AulContext *cthr, long iPlayer)
 	return pPlr->GetType();
 }
 
+static long FnGetPlayerColor(C4AulContext *cthr, long iPlayer)
+{
+	C4Player *plr = ::Players.Get(iPlayer);
+	return plr ? plr->ColorDw : 0;
+}
+
 static C4Object *FnGetActionTarget(C4AulObjectContext *cthr, long target_index)
 {
 	if (target_index==0) return cthr->Obj->Action.Target;
@@ -6148,6 +6154,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetDesc", FnGetDesc);
 	AddFunc(pEngine, "GetPlayerName", FnGetPlayerName);
 	AddFunc(pEngine, "GetPlayerType", FnGetPlayerType);
+	AddFunc(pEngine, "GetPlayerColor", FnGetPlayerColor);
 	AddFunc(pEngine, "SetXDir", FnSetXDir);
 	AddFunc(pEngine, "SetYDir", FnSetYDir);
 	AddFunc(pEngine, "SetR", FnSetR);
