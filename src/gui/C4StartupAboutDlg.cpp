@@ -50,10 +50,14 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	Application.Add(this);
 	OnSec1Timer();
 
-	// bottom line buttons
+	// bottom line buttons and copyright messages
 	C4GUI::ComponentAligner caMain(rcClient, 0,0, true);
 	C4GUI::ComponentAligner caButtons(caMain.GetFromBottom(caMain.GetHeight()*1/8), 0,0, false);
 	C4GUI::CallbackButton<C4StartupAboutDlg> *btn;
+#ifdef HAVE_FMOD
+	AddElement(new C4GUI::Label("Using FMOD Sound System, copyright (c) Firelight Technologies Pty, Ltd., 1994-2010.",
+		caMain.GetFromBottom(rUseFont.GetLineHeight())));
+#endif
 	int32_t iButtonWidth = caButtons.GetInnerWidth() / 4;
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_BACK"), caButtons.GetGridCell(0,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
