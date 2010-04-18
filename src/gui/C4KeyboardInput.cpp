@@ -108,7 +108,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 {
 	{ VK_CANCEL         , "Cancel"        , NULL },
 
-	{ VK_BACK           , "Back"          , NULL },
+	{ VK_BACK           , "Backspace"     , NULL },
 	{ VK_TAB            , "Tab"           , NULL },
 	{ VK_CLEAR          , "Clear"         , NULL },
 	{ VK_RETURN         , "Return"        , NULL },

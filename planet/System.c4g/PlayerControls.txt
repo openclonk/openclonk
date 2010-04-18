@@ -515,7 +515,7 @@
 		Control=MenuOK
 		
 		[Assignment]
-		Key=Back
+		Key=Backspace
 		Priority=100
 		Control=MenuCancel
 
@@ -623,7 +623,7 @@
 		Control=MenuOK
 		
 		[Assignment]
-		Key=Back
+		Key=Backspace
 		Priority=100
 		Control=MenuCancel
 		
