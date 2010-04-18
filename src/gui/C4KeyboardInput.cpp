@@ -440,6 +440,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		StdCopyStrBuf sName2(sName);
 		sName2.ToLowerCase();
 		result = XStringToKeysym(sName2.getData());
+		if(!result)
+			return KEY_Undefined;
 	}
 
 	// Use the lowercase keysym in case there is a difference because this
@@ -453,9 +455,9 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		if (SEqualNoCase(sName.getData(), getKeyName(k).c_str()))
 			return k;
 	}
-	return KEY_Default;
+	return KEY_Undefined;
 #else
-	return KEY_Default;
+	return KEY_Undefined;
 #endif
 }
 
