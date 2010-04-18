@@ -1,0 +1,8 @@
+[DefCore]
+id=_DCO
+Version=4,9,5,4
+Category=1
+MaxUserSelect=0
+Width=1
+Height=1
+Mass=1

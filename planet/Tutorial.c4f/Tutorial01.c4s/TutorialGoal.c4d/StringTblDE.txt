@@ -1,0 +1,9 @@
+Name=Tutorial
+
+#Respawn
+MsgRespawn0=%s probiert es nochmal.
+MsgRespawn1=%s ist gestorben.
+MsgRespawn2=Haha, %s!
+MsgRespawn3=Wir trauern um %s.
+MsgNewRespawn=Respawnpunkt erreicht.
+

@@ -1,0 +1,2 @@
+MsgIntro0=Welcome to OpenClonk!
+MsgIntro1=This is your Clonk.
