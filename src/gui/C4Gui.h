@@ -1181,6 +1181,7 @@ namespace C4GUI
 
 	private:
 		enum CursorOperation { COP_BACK, COP_DELETE, COP_LEFT, COP_RIGHT, COP_HOME, COP_END };
+		static const char *CursorRepresentation;
 
 		bool KeyCursorOp(const C4KeyCodeEx &key, const CursorOperation &op);
 		bool KeyEnter();
