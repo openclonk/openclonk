@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.1)
+cmake_minimum_required (VERSION 2.6.0)
 project (clonk CXX C)
 
 set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
@@ -722,7 +722,13 @@ macro(FINDLIB lib)
 endmacro(FINDLIB)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
-include(FindOpenSSL)
+if(DEFINED CMAKE_VERSION)
+	if("${CMAKE_VERSION}" VERSION_GREATER "2.8.0")
+		# In, CMake < 2.8.1 strange things happen in FindOpenSSL
+		# yet we can't require 2.8.1 since that would break Debian Lenny
+		include(FindOpenSSL)
+	endif()
+endif()
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 ############################################################################
