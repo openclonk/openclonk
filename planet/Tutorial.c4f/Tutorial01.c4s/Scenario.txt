@@ -12,7 +12,7 @@ Definition1=Objects.c4d
 
 [Game]
 Goals=Goal_Tutorial=1
-Rules=RSTR=1
+Rules=Rule_Restart=1
 
 [Player1]
 Wealth=42

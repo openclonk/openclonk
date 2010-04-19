@@ -92,3 +92,6 @@ xcode/build
 planet/Clonk.app
 *.exe
 
+# Development files explicitely excluded
+planet/nohg*
+
