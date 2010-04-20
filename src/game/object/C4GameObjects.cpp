@@ -26,7 +26,6 @@
 #include <C4Object.h>
 #include <C4ObjectCom.h>
 #include <C4Random.h>
-#include <C4SolidMask.h>
 #include <C4Network2Stats.h>
 #include <C4Game.h>
 #include <C4Log.h>
@@ -380,8 +379,7 @@ void C4GameObjects::Synchronize()
 	ResortUnsorted();
 	ExecuteResorts();
 	// synchronize solidmasks
-	RemoveSolidMasks();
-	PutSolidMasks();
+	UpdateSolidMasks();
 }
 
 C4Object *C4GameObjects::FindInternal(C4ID id)
@@ -434,16 +432,7 @@ C4ObjectList &C4GameObjects::ObjectsInt()
 	return *this;
 }
 
-void C4GameObjects::RemoveSolidMasks()
-{
-	C4ObjectLink *cLnk;
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			if (cLnk->Obj->pSolidMaskData)
-				cLnk->Obj->pSolidMaskData->Remove(false, false);
-}
-
-void C4GameObjects::PutSolidMasks()
+void C4GameObjects::UpdateSolidMasks()
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)

@@ -183,7 +183,6 @@ public:
 	C4Shape Shape;
 	bool fOwnVertices; // if set, vertices aren't restored from def but from end of own vtx list
 	C4TargetRect SolidMask;
-	C4SolidMask *pSolidMaskData; // NoSave //
 	C4IDList Component;
 	C4Rect PictureRect;
 	C4NotifyingObjectList Contents;
@@ -210,6 +209,7 @@ protected:
 	bool OnFire;
 	int32_t Con;
 	bool Alive;
+	C4SolidMask *pSolidMaskData; // NoSave //
 public:
 	void Resort();
 	int32_t GetAudible();

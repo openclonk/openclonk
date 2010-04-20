@@ -233,7 +233,7 @@ int32_t C4SolidMask::DensityProvider::GetDensity(int32_t x, int32_t y) const
 	}
 }
 
-void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
+void C4SolidMask::Remove(bool fBackupAttachment)
 {
 	// If put, restore background pixels from buffer
 
@@ -259,8 +259,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 				assert(_GBackPix(iTx,iTy) == MCVehic);
 				_SBackPixIfMask(iTx,iTy,*pPix,MCVehic);
 				// Instability
-				if (fCauseInstability)
-					::Landscape.CheckInstabilityRange(iTx,iTy);
+				::Landscape.CheckInstabilityRange(iTx,iTy);
 			}
 	}
 	// Mask not put flag
@@ -311,18 +310,6 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 	}
 
 	CheckConsistency();
-}
-
-void C4SolidMask::Clear()
-{
-	// free mask+mat-buffer
-	if (pSolidMask) { delete [] pSolidMask; pSolidMask = NULL; }
-	if (pSolidMaskMatBuff) { delete [] pSolidMaskMatBuff; pSolidMaskMatBuff = NULL; }
-	// safety: mask cannot be removed now
-	MaskPut = false;
-	// clear attaching objects
-	delete [] ppAttachingObjects; ppAttachingObjects = NULL;
-	iAttachingObjectsCount = iAttachingObjectsCapacity = 0;
 }
 
 void C4SolidMask::Draw(C4TargetFacet &cgo)
@@ -439,13 +426,36 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 
 C4SolidMask::~C4SolidMask()
 {
+	Remove(false);
 	// Update linked list
 	if (Next) Next->Prev = Prev;
 	if (Prev) Prev->Next = Next;
 	if (First == this) First = Next;
 	if (Last == this) Last = Prev;
-	// clear fields
-	Clear();
+	delete [] pSolidMask;
+	delete [] pSolidMaskMatBuff;
+	delete [] ppAttachingObjects;
+}
+
+void C4SolidMask::RemoveSolidMasks()
+{
+	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4SolidMask *pSolid;
+	for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
+	{
+		pSolid->RemoveTemporary(SolidMaskRect);
+	}
+}
+
+void C4SolidMask::PutSolidMasks()
+{
+	C4Rect SolidMaskRect(0,0,GBackWdt,GBackHgt);
+	C4SolidMask *pSolid;
+	// Restore Solidmasks
+	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
+	{
+		pSolid->PutTemporary(SolidMaskRect);
+	}
 }
 
 C4SolidMask * C4SolidMask::First = 0;

@@ -56,9 +56,11 @@ protected:
 
 		virtual int32_t GetDensity(int32_t x, int32_t y) const;
 	};
-	// Remove the solidmask temporary
+	// Remove the solidmask temporarily
 	void RemoveTemporary(C4Rect where);
 	void PutTemporary(C4Rect where);
+	static void RemoveSolidMasks();
+	static void PutSolidMasks();
 	// Reput and update Matbuf after landscape change underneath
 	void Repair(C4Rect where);
 	friend class C4Landscape;
@@ -73,8 +75,7 @@ public:
 	C4SolidMask * Next;
 
 	void Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment);    // put mask to landscape
-	void Remove(bool fCauseInstability, bool fBackupAttachment); // remove mask from landscape
-	void Clear();                     // clear any SolidMask-data
+	void Remove(bool fBackupAttachment); // remove mask from landscape
 	void Draw(C4TargetFacet &cgo);           // draw the solidmask (dbg display)
 
 	bool IsPut() { return MaskPut; }

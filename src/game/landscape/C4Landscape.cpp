@@ -1472,7 +1472,14 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 
 bool C4Landscape::Save(C4Group &hGroup)
 {
+	C4SolidMask::RemoveSolidMasks();
+	bool r = SaveInternal(hGroup);
+	C4SolidMask::PutSolidMasks();
+	return r;
+}
 
+bool C4Landscape::SaveInternal(C4Group &hGroup)
+{
 	// Save members
 	if (!Sky.Save(hGroup))
 		return false;
@@ -1492,18 +1499,29 @@ bool C4Landscape::Save(C4Group &hGroup)
 	MakeTempFilename(szTempLandscape);
 	if (!Surface32->SavePNG(szTempLandscape, true, false, false))
 		return false;
-	if (!hGroup.Move( szTempLandscape, C4CFN_LandscapePNG )) return false;
+	if (!hGroup.Move( szTempLandscape, C4CFN_LandscapePNG ))
+		return false;
 
 	if (fMapChanged && Map)
-		if (!SaveMap(hGroup)) return false;
+		if (!SaveMap(hGroup))
+			return false;
 
 	// save textures (if changed)
-	if (!SaveTextures(hGroup)) return false;
+	if (!SaveTextures(hGroup))
+		return false;
 
 	return true;
 }
 
 bool C4Landscape::SaveDiff(C4Group &hGroup, bool fSyncSave)
+{
+	C4SolidMask::RemoveSolidMasks();
+	bool r = SaveDiffInternal(hGroup, fSyncSave);
+	C4SolidMask::PutSolidMasks();
+	return r;
+}
+
+bool C4Landscape::SaveDiffInternal(C4Group &hGroup, bool fSyncSave)
 {
 	assert(pInitial);
 	if (!pInitial) return false;

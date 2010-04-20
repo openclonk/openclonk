@@ -243,6 +243,8 @@ protected:
 	void FinishChange(C4Rect BoundingBox);
 	static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
 	uint8_t *GetBridgeMatConversion(int for_material);
+	bool SaveInternal(C4Group &hGroup);
+	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
 	bool DebugSave(const char *szFilename);

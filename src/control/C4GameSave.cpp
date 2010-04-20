@@ -151,13 +151,11 @@ bool C4GameSave::SaveLandscape()
 	{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
-		::Objects.RemoveSolidMasks();
 		bool fSuccess;
 		if (::Landscape.Mode == C4LSC_Exact)
 			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
 			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
-		::Objects.PutSolidMasks();
 		if (!fSuccess) return false;
 		DBGRECOFF.Clear();
 		// PXS

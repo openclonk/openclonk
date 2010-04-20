@@ -57,6 +57,7 @@ public:
 	void CrossCheck(); // various collision-checks
 	C4Object *AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude=NULL); // find object at ctx/cty
 	void Synchronize(); // network synchronization
+	void UpdateSolidMasks();
 
 	C4Object *FindInternal(C4ID id); // find object in first sector
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
@@ -65,10 +66,6 @@ public:
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	C4ObjectList &ObjectsInt(); // return object list containing system objects
-
-	void PutSolidMasks();
-	void RemoveSolidMasks();
-	void RecheckSolidMasks();
 
 	int Load(C4Group &hGroup, bool fKeepInactive);
 	bool Save(const char *szFilename, bool fSaveGame, bool fSaveInactive);

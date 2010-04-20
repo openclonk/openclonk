@@ -3661,13 +3661,11 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			// landscape
 			{
 				C4DebugRecOff DBGRECOFF;
-				Objects.RemoveSolidMasks();
 				if (!Landscape.Save(*pGrp))
 				{
 					DebugLog("LoadScenarioSection: Error saving Landscape");
 					return false;
 				}
-				Objects.PutSolidMasks();
 			}
 			// PXS
 			if (!PXS.Save(*pGrp))

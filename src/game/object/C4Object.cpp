@@ -399,7 +399,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 	ClearCommands();
 	if (pSolidMaskData)
 	{
-		pSolidMaskData->Remove(true, false);
 		delete pSolidMaskData;
 		pSolidMaskData = NULL;
 	}
@@ -478,9 +477,6 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		// update solid
 		if (pSolidMaskData && !fTemp)
 		{
-			// remove if put
-			pSolidMaskData->Remove(true, false);
-			// delete
 			delete pSolidMaskData; pSolidMaskData = NULL;
 			// ensure SolidMask-rect lies within new graphics-rect
 			CheckSolidMaskRect();
@@ -1290,7 +1286,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	SetAction(0);
 	ResetProperty(::Strings.P[P_Action]); // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
-	if (pSolidMaskData) { pSolidMaskData->Remove(true, false); delete pSolidMaskData; pSolidMaskData=NULL; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	Def->Count--;
 	// Def change
 	Def=pDef;
@@ -1473,7 +1469,7 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 		UpdateMass();
 		// Decay from full remove mask before face is changed
 		if (fWasFull && (Con<FullCon))
-			if (pSolidMaskData) pSolidMaskData->Remove(true, false);
+			if (pSolidMaskData) pSolidMaskData->Remove(false);
 		// Face
 		UpdateFace(true);
 		// component update
@@ -3107,7 +3103,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
 {
 	// remove osld
-	if (pSolidMaskData) { pSolidMaskData->Remove(true, false); delete pSolidMaskData; pSolidMaskData=NULL; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	// set new data
 	SolidMask.Set(iX,iY,iWdt,iHgt,iTX,iTY);
 	// re-put if valid
@@ -4893,7 +4889,7 @@ void C4Object::SetRotation(int32_t nr)
 {
 	while (nr<0) nr+=360; nr%=360;
 	// remove solid mask
-	if (pSolidMaskData) pSolidMaskData->Remove(true, false);
+	if (pSolidMaskData) pSolidMaskData->Remove(false);
 	// set rotation
 	r=nr;
 	fix_r=itofix(nr);
@@ -4941,13 +4937,12 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 			pSolidMaskData = new C4SolidMask(this);
 		}
 		else
-			pSolidMaskData->Remove(true, false);
+			pSolidMaskData->Remove(false);
 		pSolidMaskData->Put(true, NULL, fRestoreAttachedObjects);
 	}
 	// Otherwise, remove and destroy mask
 	else if (pSolidMaskData)
 	{
-		pSolidMaskData->Remove(true, false);
 		delete pSolidMaskData; pSolidMaskData = NULL;
 	}
 }

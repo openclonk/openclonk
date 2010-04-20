@@ -129,7 +129,7 @@ bool C4Object::Contact(int32_t iCNAT)
 
 void C4Object::DoMotion(int32_t mx, int32_t my)
 {
-	if (pSolidMaskData) pSolidMaskData->Remove(true, true);
+	if (pSolidMaskData) pSolidMaskData->Remove(true);
 	fix_x += mx; fix_y += my;
 }
 
@@ -514,7 +514,7 @@ void C4Object::ForcePosition(int32_t tx, int32_t ty)
 void C4Object::MovePosition(int32_t dx, int32_t dy)
 {
 	// move object position; repositions SolidMask
-	if (pSolidMaskData) pSolidMaskData->Remove(true, true);
+	if (pSolidMaskData) pSolidMaskData->Remove(true);
 	fix_x+=dx;
 	fix_y+=dy;
 	UpdatePos();
