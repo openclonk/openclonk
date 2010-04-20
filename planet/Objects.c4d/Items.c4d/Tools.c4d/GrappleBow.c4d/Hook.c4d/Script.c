@@ -20,11 +20,6 @@ protected func Construction()
 public func Launch(int angle, int str, object shooter, object bow)
 {
 	Exit();
-	SetGraphics(0, HelpArrow);
-	SetShape(-2,-2,4,11);
-	SetVertex(0, 1, 4, 2);
-	SetVertex(1, 1, 8, 2);
-	SetVertex(2, 1, 0, 2);
 		
 	// Create rope and helper object.
 	rope = CreateObject(GrappleRope, 0, 0, NO_OWNER);
@@ -123,6 +118,7 @@ public func FxInFlightTimer(object target, int effect, int time)
 
 public func Entrance(object container)
 {
+	if(container->GetID() == GrappleBow) return;
 	if (rope)
 		rope->BreakRope();
 	RemoveObject();

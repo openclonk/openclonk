@@ -251,7 +251,7 @@ public func StartAim(object weapon)
 func FxIntAimTimer(target, number, time)
 {
 	var angle, delta_angle, length;
-	var speed = aim_set["AimSpeed"];
+	var speed = aim_set["AimSpeed"]*10;
 	if(speed == nil) speed = 50;
 	if(aim_angle < 0) SetTurnForced(DIR_Left);
 	if(aim_angle > 0) SetTurnForced(DIR_Right);

@@ -60,6 +60,7 @@ public func HangClonkOntoMe()
 // Called from the rope to notify the helper that the rope snapped.
 public func OnRopeBreak()
 {
+	bow->OnRopeBreak();
 	RemoveObject();
 	return;
 }

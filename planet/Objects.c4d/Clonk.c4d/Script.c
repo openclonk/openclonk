@@ -347,7 +347,10 @@ func DoUpdateAttach(bool sec)
 	}
 
 	var bone = "main";
-	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone(this);
+	var bone2;
+	if(obj->~GetCarryBone())  bone  = obj->~GetCarryBone(this);
+	if(obj->~GetCarryBone2()) bone2 = obj->~GetCarryBone2(this);
+	else bone2 = bone;
 	var nohand = 0;
 	if(!HasHandAction(sec)) nohand = 1;
 	var trans = obj->~GetCarryTransform(this, sec, nohand);
@@ -386,7 +389,7 @@ func DoUpdateAttach(bool sec)
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 		}
 		else
-			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
 	}
 	else if(iAttachMode == CARRY_HandAlways)
 	{
@@ -395,7 +398,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Back)
 	{
-		iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
+		iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
 	}
 	else if(iAttachMode == CARRY_BothHands)
 	{
@@ -416,7 +419,7 @@ func DoUpdateAttach(bool sec)
 			PlayAnimation("CarrySpear", 6, Anim_Const(0), Anim_Const(1000));
 		}
 		else
-			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
 	}
 	else if(iAttachMode == CARRY_Musket)
 	{
@@ -427,7 +430,18 @@ func DoUpdateAttach(bool sec)
 			fBothHanded = 1;
 		}
 		else
-			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
+	}
+	else if(iAttachMode == CARRY_Grappler)
+	{
+		if(HasHandAction(sec) && !sec)
+		{
+			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
+			PlayAnimation("CarryCrossbow", 6, Anim_Const(0), Anim_Const(1000));
+			fBothHanded = 1;
+		}
+		else
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone2, trans);
 	}
 }//AttachMesh(DynamiteBox, "pos_tool1", "main", Trans_Translate(0,0,0));
 
@@ -447,6 +461,7 @@ static const CARRY_Back         = 4;
 static const CARRY_BothHands    = 5;
 static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
+static const CARRY_Grappler     = 8;
 
 func HasHandAction(sec)
 {
@@ -1357,7 +1372,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 	// TODO: Smaller transition time between dive<->swim, keep 15 for swimstand<->swim/swimstand<->dive
 
 	// Play stand animation when not moving
-	if(Abs(GetXDir()) < 1 && !GBackSemiSolid(0, -4))
+	if(Abs(GetXDir()) < 1 && !GBackSemiSolid(0, -5))
 	{
 		if(EffectVar(0, pTarget, iNumber) != "SwimStand")
 		{
@@ -1367,7 +1382,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		SetAnimationWeight(iTurnKnot1, Anim_Const(0));
 	}
 	// Swimming
-	else if(!GBackSemiSolid(0, -4))
+	else if(!GBackSemiSolid(0, -5))
 	{
 		// Animation speed by X
 		if(EffectVar(0, pTarget, iNumber) != "Swim")
@@ -1671,7 +1686,7 @@ Walk = {
 	Hgt = 20,
 	StartCall = "StartWalk",
 	AbortCall = "StopWalk",
-	InLiquidAction = "Swim",
+//	InLiquidAction = "Swim",
 },
 Stand = {
 	Prototype = Action,
@@ -1783,7 +1798,8 @@ Swim = {
 	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
-	OffY = 2,
+	OffY = 0,
+//	SwimOffset = -5,
 	StartCall = "StartSwim",
 	AbortCall = "StopSwim",
 },
