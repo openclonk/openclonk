@@ -1,19 +1,16 @@
 /*
 	Grapple Bow
 	Author: Maikel
-	
+
 	A crossbow which is enabled to fire grappling hooks, also has a winching system.
 */
 
-local aimtime;
 local fAiming;
 
-local iArrowMesh;
-local iAnimLoad;
-local iDrawAnim;
-local iCloseAnim;
-
 local help; // Help object, the clonk is attached to this object.
+
+local hook;
+local hook_attach;
 
 public func SetHelp(object tohelp)
 {
@@ -24,26 +21,46 @@ public func SetHelp(object tohelp)
 public func GetCarryMode() { return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
+public func GetCarryBone2(clonk) { return "main2"; }
+public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Grappler; }
 
 /* +++++++++++ Controls ++++++++++++++ */
 
 // holding callbacks are made
 public func HoldingEnabled() { return true; }
 
-public func ControlUseCancel(object clonk, int x, int y)
+local animation_set;
+
+func Initialize()
 {
-	// Cut rope, or otherwise remove helper object.
-	if (help)
-	{
-		var rope = help->GetRope();
-		if (rope)
-			rope->BreakRope();
-		else
-			help->RemoveObject();
-		return true;
-	}
-	return true;
+	animation_set = {
+		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
+		AnimationAim   = "CrossbowAimArms",
+//		AnimationLoad  = "BowLoadArms",
+//		LoadTime       = 10,
+//		LoadTime2      = 5*10/20,
+		AnimationShoot = nil,
+		ShootTime      = 20,
+		TurnType       = 1,
+		WalkSpeed      = 30000,
+		WalkBack       = 20000,
+		AimSpeed       = 20,            // the speed of aiming
+	};
+	OnRopeBreak();
 }
+
+public func OnRopeBreak()
+{
+	if(hook_attach)
+		DetachMesh(hook_attach);
+
+	hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	hook->Enter(this);
+	hook_attach = AttachMesh(hook, "bolt", "main");
+	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
+}
+
+public func GetAnimationSet() { return animation_set; }
 
 public func ControlUseStart(object clonk, int x, int y)
 {
@@ -58,181 +75,101 @@ public func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 
-	// Reset the clonk (important, if the last aiming wasn't finished)
-	ClearScheduleCall(this, "Shoot");
-	ResetClonk(clonk);
-	
-	aimtime = 5;
-	
-	// Start aiming
-	fAiming = 1;
-	// walk slow
-	AddEffect("IntWalkSlow", clonk, 1, 0, this);
-	
-	// Setting the hands as blocked, so that no other items are carried in the hands
-	clonk->SetHandAction(1);
-	// Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
-	clonk->UpdateAttach();
-	// Attach the arrow during the animation
-	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk);
-	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
-	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
-
-	clonk->SetTurnType(1, 1);
-	
-	return true;
-}
-
-public func ControlUseHolding(object clonk, int x, int y)
-{
-	// check procedure
-	if(!ClonkCanAim(clonk))
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
 	{
-		clonk->CancelUse();
 		return true;
 	}
 
-	// angle
+	// Start aiming
+	fAiming = 1;
+
+	FinishedLoading(clonk);
+//	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
+
+//	clonk->StartLoad(this);
+
+	return true;
+}
+
+// Callback from the clonk when loading is finished
+public func FinishedLoading(object clonk)
+{
+	clonk->~StartAim(this);
+	return true;
+}
+
+// Update the angle on mouse movement
+public func ControlUseHolding(object clonk, int x, int y)
+{
+	// Save new angle
 	var angle = Angle(0,0,x,y);
 	angle = Normalize(angle,-180);
 
-	if(aimtime > 0)
-	{
-		if(aimtime == 30) Sound("GetArrow*.ogg");
-		if(aimtime == 12) Sound("BowLoad*.ogg");
-	
-		aimtime--;
-		if(aimtime == 1)
-		{
-			// Stop loading and start aiming
-			StopAnimation(iDrawAnim);
-			iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
-			iDrawAnim = PlayAnimation("Draw", 6, Anim_Const(GetAnimationLength("Draw")), Anim_Const(1000));
-			clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(90)/180));
-		}
-	}
-	else 
-	{
-		if(Abs(angle) > 160) angle = 160;
-		// Adjust the aiming position
-		var pos = clonk->GetAnimationPosition(iAnimLoad);
-		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
-		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(pos));
-	}
+	if(angle >  160) angle =  160;
+	if(angle < -160) angle = -160;
+
+	clonk->SetAimPosition(angle);
+
 	return true;
 }
 
+// Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
 public func ControlUseStop(object clonk, int x, int y)
 {
-	if (!fAiming)
-		return true;
-	fAiming = 0;
-	StopAnimation(iDrawAnim);
-	clonk->DetachMesh(iArrowMesh);
-	// not done reloading or out of range: cancel
-	var angle = clonk->GetAnimationPosition(iAnimLoad)*180/2000;
-	if(!clonk->GetDir()) angle = 360-angle;
-	if(aimtime > 0 || !ClonkAimLimit(clonk,angle))
-	{
-		ResetClonk(clonk);
-		return true;
-	}
+	clonk->StopAim();
+	return true;
+}
+
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
+{
+	DetachMesh(hook_attach);
+	hook_attach = nil;
 
 	// shoot
-	var hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+//	var hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	hook->Exit();
 	hook->Launch(angle, 100, clonk, this);
+	DetachMesh(hook_attach);
 	Sound("BowShoot*.ogg");
 
-
 	// Open the hand to let the string go and play the fire animation
-	var iShootTime = 20;
-	iDrawAnim = PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), iShootTime, ANIM_Hold), Anim_Const(1000));
-	iCloseAnim = clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
-	// Reset everything after the animation
-	ScheduleCall(this, "Shoot", iShootTime, 0, clonk);
+	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
+	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
+	clonk->StartShoot(this);
 	return true;
 }
 
 public func ControlUseCancel(object clonk, int x, int y)
 {
-	fAiming = 0;
-	ResetClonk(clonk);
+	clonk->CancelAiming(this);
 	return true;
 }
 
+public func OnPauseAim(object clonk)
+{
+	Reset(clonk);
+}
+
+public func OnRestartAim(object clonk)
+{
+	ControlUseStart(clonk);
+	if(fAiming) return true;
+	return false;
+}
 
 /* ++++++++ Animation functions ++++++++ */
 
-public func ResetClonk(clonk)
+public func Reset(clonk)
 {
-	// Already aiming angain? Don't remove Actions
-	if(fAiming) return;
+	fAiming = 0;
 
-	clonk->SetTurnType(0, -1);
-
-	clonk->SetHandAction(0);
-	
-	if(iArrowMesh != nil)
-		clonk->DetachMesh(iArrowMesh);
-	iArrowMesh = nil;
-
-	if(iCloseAnim != nil)
-		clonk->StopAnimation(iCloseAnim);
-	iCloseAnim = nil;
-	
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	if(iDrawAnim != nil)
-		StopAnimation(iDrawAnim);
-	iDrawAnim = nil;
-	
-	clonk->UpdateAttach();
-	RemoveEffect("IntWalkSlow", clonk);
+	clonk->StopAnimation(clonk->GetRootAnimation(11));
+	StopAnimation(GetRootAnimation(6));
 }
 
-public func Shoot(object clonk, int x, int y)
-{
-	ResetClonk(clonk);
-}
-
-public func AddArrow(clonk)
-{
-	if(!fAiming) return;
-	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
-}
-
-/* ++++++++ Helper functions ++++++++ */
-
-private func ClonkAimLimit(object clonk, int angle)
-{
-	angle = Normalize(angle,-180);
-	if(Abs(angle) > 160) return false;
-	if(clonk->GetDir() == 1 && angle < 0) return false;
-	if(clonk->GetDir() == 0 && angle > 0) return false;
-	return true;
-}
-
-private func ClonkCanAim(object clonk)
-{
-	var p = clonk->GetProcedure();
-	//if(clonk->GetHandAction()) return false;
-	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return false;
-	return true;
-}
-
-/* +++++++++++ Slow walk +++++++++++ */
-
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp)
-{
-	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
-}
-
-func FxIntWalkSlowStop(pTarget, iNumber)
-{
-	pTarget->ResetPhysical("Walk");
-}
-
-
-protected func Definition(def) {
+func Definition(def) {
 	SetProperty("Name", "$Name$", def);
-	SetProperty("PerspectiveR", 15000, def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-700,400),Trans_Scale(1150),Trans_Rotate(180,0,1,0),Trans_Rotate(-30,-1,0,-1)),def);
 }
