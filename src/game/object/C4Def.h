@@ -213,7 +213,6 @@ public:
 	int32_t NoSell;           // if set, object can't be sold (doesn't even appear in sell-menu)
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
 	int32_t NoFight;          // if set, object is never OCF_FightReady
-	int32_t RotatedSolidmasks;// if set, solidmasks can be rotated
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;

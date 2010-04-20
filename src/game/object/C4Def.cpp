@@ -140,7 +140,6 @@ void C4Def::DefaultDefCore()
 	ConSizeOff=0;
 	NoSell=NoGet=0;
 	NoFight=0;
-	RotatedSolidmasks=0;
 	NeededGfxMode=0;
 	NoTransferZones=0;
 }
@@ -381,7 +380,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoSell,                        "NoSell",             0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoFight,                       "NoFight",            0                 ));
-	pComp->Value(mkNamingAdapt(RotatedSolidmasks,             "RotatedSolidmasks",  0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
 	pComp->Value(mkNamingAdapt(AutoContextMenu,               "AutoContextMenu",    0                 ));
 	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));

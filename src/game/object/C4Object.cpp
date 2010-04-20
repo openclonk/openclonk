@@ -4932,24 +4932,20 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 	//  do not reset it!)
 	if (!Status) return;
 	// Determine necessity, update cSolidMask, put or remove mask
-	// Mask if enabled, fullcon, no rotation, not contained
-	if (SolidMask.Wdt>0)
-		if (Con>=FullCon)
-			if (!Contained)
-				if (!r || Def->RotatedSolidmasks)
-				{
-					// Recheck and put mask
-					if (!pSolidMaskData)
-					{
-						pSolidMaskData = new C4SolidMask(this);
-					}
-					else
-						pSolidMaskData->Remove(true, false);
-					pSolidMaskData->Put(true, NULL, fRestoreAttachedObjects);
-					return;
-				}
+	// Mask if enabled, fullcon, not contained
+	if (SolidMask.Wdt > 0 && Con >= FullCon && !Contained)
+	{
+		// Recheck and put mask
+		if (!pSolidMaskData)
+		{
+			pSolidMaskData = new C4SolidMask(this);
+		}
+		else
+			pSolidMaskData->Remove(true, false);
+		pSolidMaskData->Put(true, NULL, fRestoreAttachedObjects);
+	}
 	// Otherwise, remove and destroy mask
-	if (pSolidMaskData)
+	else if (pSolidMaskData)
 	{
 		pSolidMaskData->Remove(true, false);
 		delete pSolidMaskData; pSolidMaskData = NULL;
