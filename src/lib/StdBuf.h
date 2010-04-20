@@ -261,7 +261,7 @@ public:
 	}
 
 	// Append data from address
-	void Append(const void *pnData, int inSize)
+	void Append(const void *pnData, size_t inSize)
 	{
 		Grow(inSize);
 		Write(pnData, inSize, iSize - inSize);
@@ -546,7 +546,7 @@ public:
 	// less-than operation for map
 	inline bool operator <(const StdStrBuf &v2) const
 	{
-		int iLen = getLength(), iLen2 = v2.getLength();
+		size_t iLen = getLength(), iLen2 = v2.getLength();
 		if (iLen == iLen2)
 			return iLen ? (std::strcmp(getData(), v2.getData())<0) : false;
 		else

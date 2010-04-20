@@ -254,8 +254,8 @@ public:
 	const char *GetName();
 	StdStrBuf GetFullName() const;
 	int EntryCount(const char *szWildCard=NULL);
-	int EntrySize(const char *szWildCard=NULL);
-	int AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
+	size_t EntrySize(const char *szWildCard=NULL);
+	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
 	int EntryTime(const char *szFilename);
 	unsigned int EntryCRC32(const char *szWildCard=NULL);
 	int GetVersion();

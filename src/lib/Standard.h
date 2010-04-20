@@ -34,7 +34,7 @@
 template <class T> inline T Max(T val1, T val2) { return val1 > val2 ? val1 : val2; }
 template <class T> inline T Min(T val1, T val2) { return val1 < val2 ? val1 : val2; }
 template <class T> inline T Abs(T val) { return val > 0 ? val : -val; }
-template <class T> inline bool Inside(T ival, T lbound, T rbound) { return ival >= lbound && ival <= rbound; }
+template <class T, class U, class V> inline bool Inside(T ival, U lbound, V rbound) { return ival >= lbound && ival <= rbound; }
 template <class T> inline T BoundBy(T bval, T lbound, T rbound) { return bval < lbound ? lbound : bval > rbound ? rbound : bval; }
 template <class T> inline int Sign(T val) { return val < 0 ? -1 : val > 0 ? 1 : 0; }
 template <class T> inline void Swap(T &v1, T &v2) { T t = v1; v1 = v2; v2 = t; }
@@ -72,8 +72,8 @@ inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);
 inline bool IsWhiteSpace(char cChar) { return !!std::isspace((unsigned char)cChar); }
 
-inline int SLen(const char *sptr) { return sptr?std::strlen(sptr):0; }
-inline int SLenUntil(const char *szStr, char cUntil)
+inline size_t SLen(const char *sptr) { return sptr?std::strlen(sptr):0; }
+inline size_t SLenUntil(const char *szStr, char cUntil)
 {
 	if (!szStr) return 0;
 	const char *end = std::strchr(szStr, cUntil);
@@ -88,7 +88,8 @@ bool SEqual2NoCase(const char *szStr1, const char *szStr2, int iLen = -1);
 
 inline int SCompare(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?std::strcmp(szStr1,szStr2):0; }
 
-void SCopy(const char *szSource, char *sTarget, int iMaxL=-1);
+void SCopy(const char *szSource, char *sTarget);
+void SCopy(const char *szSource, char *sTarget, size_t iMaxL);
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL=-1, int iIndex=0);
 void SCopyUntil(const char *szSource, char *sTarget, const char * sUntil, size_t iMaxL);
 void SCopyIdentifier(const char *szSource, char *sTarget, int iMaxL=0);

@@ -157,8 +157,8 @@ public:
 
 	const StdMeshBone* GetParent() const { return Parent; }
 
-	const StdMeshBone& GetChild(unsigned int i) const { return *Children[i]; }
-	unsigned int GetNumChildren() const { return Children.size(); }
+	const StdMeshBone& GetChild(size_t i) const { return *Children[i]; }
+	size_t GetNumChildren() const { return Children.size(); }
 
 private:
 	StdMeshBone* Parent; // Parent bone
@@ -236,11 +236,11 @@ public:
 		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
 	};
 
-	const Vertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-	unsigned int GetNumVertices() const { return Vertices.size(); }
+	const Vertex& GetVertex(size_t i) const { return Vertices[i]; }
+	size_t GetNumVertices() const { return Vertices.size(); }
 
-	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
-	unsigned int GetNumFaces() const { return Faces.size(); }
+	const StdMeshFace& GetFace(size_t i) const { return Faces[i]; }
+	size_t GetNumFaces() const { return Faces.size(); }
 
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
@@ -260,11 +260,11 @@ class StdMesh
 public:
 	~StdMesh();
 
-	const StdSubMesh& GetSubMesh(unsigned int i) const { return SubMeshes[i]; }
-	unsigned int GetNumSubMeshes() const { return SubMeshes.size(); }
+	const StdSubMesh& GetSubMesh(size_t i) const { return SubMeshes[i]; }
+	size_t GetNumSubMeshes() const { return SubMeshes.size(); }
 
-	const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
-	unsigned int GetNumBones() const { return Bones.size(); }
+	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
+	size_t GetNumBones() const { return Bones.size(); }
 	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
@@ -296,16 +296,16 @@ public:
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const StdMeshVertex* GetVertices() const { return &Vertices[0]; }
-	unsigned int GetNumVertices() const { return Vertices.size(); }
+	size_t GetNumVertices() const { return Vertices.size(); }
 
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
 	const StdMeshFace* GetFaces() const { return &Faces[0]; }
-	unsigned int GetNumFaces() const { return Faces.size(); }
+	size_t GetNumFaces() const { return Faces.size(); }
 
-	unsigned int GetTexturePhase(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
-	double GetTexturePosition(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Position; }
+	unsigned int GetTexturePhase(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
+	double GetTexturePosition(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Position; }
 
 	void SetMaterial(const StdMeshMaterial& material);
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
@@ -576,11 +576,11 @@ public:
 	AttachedMeshIter AttachedMeshesEnd() const { return AttachChildren.end(); }
 	AttachedMesh* GetAttachParent() const { return AttachParent; }
 
-	unsigned int GetNumSubMeshes() const { return SubMeshInstances.size(); }
-	StdSubMeshInstance& GetSubMesh(unsigned int i) { return *SubMeshInstances[i]; }
-	const StdSubMeshInstance& GetSubMesh(unsigned int i) const { return *SubMeshInstances[i]; }
+	size_t GetNumSubMeshes() const { return SubMeshInstances.size(); }
+	StdSubMeshInstance& GetSubMesh(size_t i) { return *SubMeshInstances[i]; }
+	const StdSubMeshInstance& GetSubMesh(size_t i) const { return *SubMeshInstances[i]; }
 
-	const StdMeshMatrix& GetBoneTransform(unsigned int i) const { return BoneTransforms[i]; }
+	const StdMeshMatrix& GetBoneTransform(size_t i) const { return BoneTransforms[i]; }
 
 	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
 	// This is called recursively for attached children, so there is no need to call it on attached children only

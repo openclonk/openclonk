@@ -107,8 +107,8 @@ public:
 	void RemoveIndexedRect(int32_t idx)
 	{ if (idx<GetCount()-1) Get(idx)=Get(GetCount()-1); pop_back(); }
 	void Clear() { clear(); }
-	int32_t GetCount() const { return size(); }
-	C4Rect &Get(int32_t idx) { return (*this)[idx]; } // access w/o range check
+	size_t GetCount() const { return size(); }
+	C4Rect &Get(size_t idx) { return (*this)[idx]; } // access w/o range check
 
 	void ClipByRect(const C4Rect &rClip); // split up rectangles
 };

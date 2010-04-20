@@ -317,7 +317,7 @@ int UncompressedFileSize(const char *szFilename)
 	return rval;
 }
 
-int CStdFile::AccessedEntrySize()
+size_t CStdFile::AccessedEntrySize()
 {
 	if (hFile)
 		return FileSize(fileno(hFile));

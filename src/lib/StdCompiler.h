@@ -517,8 +517,8 @@ public:
 	virtual void Begin();
 
 	// Data
-	int getPosition() { return iPos; }
-	int getRemainingBytes() { return Buf.getSize() - iPos; }
+	size_t getPosition() { return iPos; }
+	size_t getRemainingBytes() { return Buf.getSize() - iPos; }
 
 protected:
 	// Process data

@@ -138,7 +138,7 @@ bool IsIdentifier(char cChar)
 
 //------------------------------- Strings ------------------------------------------------
 
-void SCopyL(const char *szSource, char *sTarget, int iMaxL)
+void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 {
 	if (szSource == sTarget) return;
 	if (!sTarget) return; *sTarget=0; if (!szSource) return;
@@ -147,16 +147,11 @@ void SCopyL(const char *szSource, char *sTarget, int iMaxL)
 	*sTarget=0;
 }
 
-void SCopy(const char *szSource, char *sTarget, int iMaxL)
+void SCopy(const char *szSource, char *sTarget)
 {
 	if (szSource == sTarget) return;
-	if (iMaxL==-1)
-	{
 		if (!sTarget) return; *sTarget=0; if (!szSource) return;
 		strcpy(sTarget,szSource);
-	}
-	else
-		SCopyL(szSource,sTarget,iMaxL);
 }
 
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL, int iIndex)
@@ -374,7 +369,7 @@ const char *SSearchIdentifier(const char *szString, const char *szIndex)
 	// Does not check whether szIndex itself is an identifier.
 	// Just checks for space in front and back.
 	const char *cscr;
-	int indexlen,match=0;
+	size_t indexlen,match=0;
 	bool frontok=true;
 	if (!szString || !szIndex) return NULL;
 	indexlen=SLen(szIndex);
@@ -401,7 +396,7 @@ const char *SSearchIdentifier(const char *szString, const char *szIndex)
 const char *SSearch(const char *szString, const char *szIndex)
 {
 	const char *cscr;
-	int indexlen,match=0;
+	size_t indexlen,match=0;
 	if (!szString || !szIndex) return NULL;
 	indexlen=SLen(szIndex);
 	for (cscr=szString; cscr && *cscr; cscr++)
@@ -416,7 +411,7 @@ const char *SSearch(const char *szString, const char *szIndex)
 const char *SSearchNoCase(const char *szString, const char *szIndex)
 {
 	const char *cscr;
-	int indexlen,match=0;
+	size_t indexlen,match=0;
 	if (!szString || !szIndex) return NULL;
 	indexlen=SLen(szIndex);
 	for (cscr=szString; cscr && *cscr; cscr++)
@@ -773,7 +768,7 @@ const char* SGetParameter(const char *strCommandLine, int iParameter, char *strT
 		{
 			bool fWrongQuote = (SCharPos('"', c) > -1) && (SCharPos('"', c) < SCharPos(' ', c));
 			SCopyUntil(c, strParameter, fWrongQuote ? '"' : ' ', 2048);
-			c += Max(SLen(strParameter), 1);
+			c += Max<size_t>(SLen(strParameter), 1);
 		}
 		// Process (non-empty) parameter
 		if (strParameter[0])

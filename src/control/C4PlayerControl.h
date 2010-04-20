@@ -111,7 +111,7 @@ public:
 
 	const C4PlayerControlDef *GetControlByIndex(int32_t idx) const;
 	int32_t GetControlIndexByIdentifier(const char *szIdentifier) const; // return CON_None for not found
-	int32_t GetCount() const { return Defs.size(); }
+	size_t GetCount() const { return Defs.size(); }
 
 	bool operator ==(const C4PlayerControlDefs &cmp) const { return Defs == cmp.Defs; }
 };
@@ -253,7 +253,7 @@ public:
 	C4PlayerControlAssignmentSet *GetDefaultSet();
 	int32_t GetSetIndex(const C4PlayerControlAssignmentSet *set) const;
 	C4PlayerControlAssignmentSet *GetSetByIndex(int32_t index);
-	int32_t GetSetCount() const { return Sets.size(); }
+	size_t GetSetCount() const { return Sets.size(); }
 };
 
 // contents of one PlayerControls.txt file

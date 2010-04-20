@@ -199,7 +199,7 @@ public:
 	void Load(StdMeshMaterialParserCtx& ctx);
 
 	bool HasTexture() const { return !Textures.empty(); }
-	unsigned int GetNumTextures() const { return Textures.size(); }
+	size_t GetNumTextures() const { return Textures.size(); }
 	const CTexRef& GetTexture(unsigned int i) const { return Textures[i].pTex->Texture; }
 	bool HasFrameAnimation() const { return Duration > 0; }
 	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
