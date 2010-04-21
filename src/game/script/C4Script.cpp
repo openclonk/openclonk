@@ -1531,7 +1531,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	}
 
 	// New Style: native script command
-	int i = 0;
+	size_t i = 0;
 	for (; i < SLen(FnStringPar(szCommand)); i++)
 		if (!IsIdentifier(FnStringPar(szCommand)[i]))
 			break;
@@ -2605,28 +2605,22 @@ static bool FnSetWealth(C4AulContext *cthr, long iPlr, long iValue)
 	return true;
 }
 
-static long FnDoScore(C4AulContext *cthr, long iPlr, long iChange)
+static long FnDoPlayerScore(C4AulContext *cthr, long iPlr, long iChange)
 {
 	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->DoPoints(iChange);
+	return ::Players.Get(iPlr)->DoScore(iChange);
 }
 
-static long FnGetPlrValue(C4AulContext *cthr, long iPlr)
+static long FnGetPlayerScore(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->Value;
+	return ::Players.Get(iPlr)->CurrentScore;
 }
 
-static long FnGetPlrValueGain(C4AulContext *cthr, long iPlr)
+static long FnGetPlayerScoreGain(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->ValueGain;
-}
-
-static long FnGetScore(C4AulContext *cthr, long iPlr)
-{
-	if (!ValidPlr(iPlr)) return 0;
-	return ::Players.Get(iPlr)->Points;
+	return ::Players.Get(iPlr)->CurrentScore - ::Players.Get(iPlr)->InitialScore;
 }
 
 static C4Object *FnGetHiRank(C4AulContext *cthr, long iPlr)
@@ -5553,7 +5547,7 @@ static bool FnSetPlayerControlEnabled(C4AulContext *ctx, long iplr, long ctrl, b
 	// invalid player or no controls
 	if (!plrctrl) return false;
 	// invalid control
-	if (ctrl >= Game.PlayerControlDefs.GetCount()) return false;
+	if (ctrl >= int32_t(Game.PlayerControlDefs.GetCount())) return false;
 	// query
 	return plrctrl->SetControlDisabled(ctrl, !is_enabled);
 }
@@ -6164,10 +6158,9 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetWealth", FnGetWealth);
 	AddFunc(pEngine, "SetWealth", FnSetWealth);
 	AddFunc(pEngine, "SetComponent", FnSetComponent);
-	AddFunc(pEngine, "DoScore", FnDoScore);
-	AddFunc(pEngine, "GetScore", FnGetScore);
-	AddFunc(pEngine, "GetPlrValue", FnGetPlrValue);
-	AddFunc(pEngine, "GetPlrValueGain", FnGetPlrValueGain);
+	AddFunc(pEngine, "DoPlayerScore", FnDoPlayerScore);
+	AddFunc(pEngine, "GetPlayerScore", FnGetPlayerScore);
+	AddFunc(pEngine, "GetPlayerScoreGain", FnGetPlayerScoreGain);
 	AddFunc(pEngine, "GetPlrControlName", FnGetPlrControlName);
 	AddFunc(pEngine, "GetWind", FnGetWind);
 	AddFunc(pEngine, "SetWind", FnSetWind);

@@ -189,7 +189,7 @@ public:
 	char Comment[C4MaxComment+1];
 	int32_t  Rank;
 	char RankName[C4MaxName+1];
-	int32_t  Score;
+	int32_t  TotalScore;
 	int32_t  Rounds,RoundsWon,RoundsLost;
 	int32_t  TotalPlayingTime;
 	C4RoundResult LastRound;

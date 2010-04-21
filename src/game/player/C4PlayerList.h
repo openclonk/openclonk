@@ -47,7 +47,7 @@ public:
 	int GetCount(C4PlayerType eType) const;
 	int GetIndex(C4Player *pPlr) const;
 	int GetCountNotEliminated() const;
-	int AverageValueGain() const;
+	int AverageScoreGain() const;
 	C4Player *Get(int iPlayer) const;
 	C4Player *GetByIndex(int iIndex) const;
 	C4Player *GetByIndex(int iIndex, C4PlayerType eType) const;

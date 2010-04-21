@@ -122,7 +122,7 @@ void C4PlayerInfoCore::Promote(int32_t iRank, C4RankSystem &rRanks)
 
 bool C4PlayerInfoCore::CheckPromotion(C4RankSystem &rRanks)
 {
-	if (Score>=rRanks.Experience(Rank+1))
+	if (TotalScore>=rRanks.Experience(Rank+1))
 	{
 		Promote(Rank+1,rRanks);
 		return true;
@@ -138,7 +138,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(toC4CStr(Comment), "Comment",              ""));
 	pComp->Value(mkNamingAdapt(Rank,              "Rank",                 0));
 	pComp->Value(mkNamingAdapt(toC4CStr(RankName),"RankName",             /*pRanks ? pRanks->Name(Rank,false) :*/ LoadResStr("IDS_MSG_RANK"))); // TODO: check if this would be desirable
-	pComp->Value(mkNamingAdapt(Score,             "Score",                0));
+	pComp->Value(mkNamingAdapt(TotalScore,        "Score",                0));
 	pComp->Value(mkNamingAdapt(Rounds,            "Rounds",               0));
 	pComp->Value(mkNamingAdapt(RoundsWon,         "RoundsWon",            0));
 	pComp->Value(mkNamingAdapt(RoundsLost,        "RoundsLost",           0));
@@ -255,7 +255,7 @@ const char *C4PhysicalInfo::GetNameByOffset(Offset mpiOff)
 const char *C4PhysicalInfo::GetNameByIndex(int32_t iIdx, Offset *pmpiOut)
 {
 	// query map
-	if (!Inside<int32_t>(iIdx, 0, sizeof(C4PhysInfoNameMap)/sizeof(C4PhysInfoNameMap_t))) return NULL;
+	if (!Inside<int32_t>(iIdx, 0, int32_t(sizeof(C4PhysInfoNameMap)/sizeof(C4PhysInfoNameMap_t)))) return NULL;
 	if (pmpiOut) *pmpiOut = C4PhysInfoNameMap[iIdx].off;
 	return C4PhysInfoNameMap[iIdx].szName;
 }

@@ -998,7 +998,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 void C4PlayerControl::Execute()
 {
 	// sync execution: Do keyrepeat
-	for (int32_t i=0; i<ControlDefs.GetCount(); ++i)
+	for (size_t i=0; i<ControlDefs.GetCount(); ++i)
 	{
 		const CSync::ControlDownState *pControlDownState = Sync.GetControlDownState(i);
 		if (pControlDownState && pControlDownState->IsDown())

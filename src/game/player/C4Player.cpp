@@ -95,33 +95,6 @@ void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
 	RemoveMessageBoardQuery(pObj);
 }
 
-void C4Player::UpdateValue()
-{
-	int32_t lval=ValueGain,lobj=ObjectsOwned;
-	Value=0; ObjectsOwned=0;
-
-	// Points
-	Value+=Points;
-
-	// Wealth
-	Value+=Wealth;
-
-	// Asset all owned objects
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		if (cobj->Owner==Number && cobj->Status)
-		{
-			ObjectsOwned++;
-			Value+=cobj->GetValue(NULL, Number);
-		}
-
-	// Value gain (always positive)
-	ValueGain=Value-InitialValue;
-
-	// Update
-	if ((ValueGain!=lval) || (ObjectsOwned!=lobj)) ViewValue=C4ViewDelay;
-}
-
 bool C4Player::ScenarioAndTeamInit(int32_t idTeam)
 {
 	C4PlayerInfo *pInfo = GetInfo();
@@ -242,7 +215,6 @@ void C4Player::Execute()
 	if (!::Game.iTick35 && Status==PS_Normal)
 	{
 		ExecHomeBaseProduction();
-		UpdateValue();
 		CheckElimination();
 		if (pMsgBoardQuery && LocalControl) ExecMsgBoardQueries();
 	}
@@ -251,7 +223,7 @@ void C4Player::Execute()
 	if (MessageStatus>0) MessageStatus--;
 	if (RetireDelay>0) RetireDelay--;
 	if (ViewWealth>0) ViewWealth--;
-	if (ViewValue>0) ViewValue--;
+	if (ViewScore>0) ViewScore--;
 	if (CursorFlash>0) CursorFlash--;
 	if (SelectFlash>0) SelectFlash--;
 }
@@ -766,7 +738,7 @@ bool C4Player::ScenarioInit()
 	return true;
 }
 
-bool C4Player::FinalInit(bool fInitialValue)
+bool C4Player::FinalInit(bool fInitialScore)
 {
 	if (!Status) return true;
 
@@ -775,15 +747,16 @@ bool C4Player::FinalInit(bool fInitialValue)
 		if (MouseControl)
 			::MouseControl.Init(Number);
 
-	// Set initial value
-	if (fInitialValue)
-		{ UpdateValue(); InitialValue=Value; }
+	// Set initial score
+	if (fInitialScore)
+	{
+		InitialScore=CurrentScore;
+	}
 
 	// Cursor
 	if (!Cursor) AdjustCursorCommand();
 
-	// Update counts, pointers, views, value
-	UpdateValue();
+	// Update counts, pointers, views
 	Execute();
 
 	// Restore FoW after savegame
@@ -856,18 +829,18 @@ void C4Player::Evaluate()
 	LastRound.Duration = Game.Time;
 	LastRound.Won = !Eliminated;
 	// Melee: personal value gain score ...check ::Objects(C4D_Goal)
-	if (Game.C4S.Game.IsMelee()) LastRound.Score = Max<int32_t>(ValueGain,0);
+	if (Game.C4S.Game.IsMelee()) LastRound.Score = Max<int32_t>(CurrentScore-InitialScore,0);
 	// Cooperative: shared score
-	else LastRound.Score = Max(::Players.AverageValueGain(),0);
+	else LastRound.Score = Max(::Players.AverageScoreGain(),0);
 	LastRound.Level = 0; // unknown...
 	LastRound.Bonus = SuccessBonus * LastRound.Won;
 	LastRound.FinalScore = LastRound.Score + LastRound.Bonus;
-	LastRound.TotalScore = Score + LastRound.FinalScore;
+	LastRound.TotalScore = TotalScore + LastRound.FinalScore;
 
 	// Update player
 	Rounds++;
 	if (LastRound.Won) RoundsWon++; else RoundsLost++;
-	Score=LastRound.TotalScore;
+	TotalScore=LastRound.TotalScore;
 	TotalPlayingTime+=Game.Time-GameJoinTime;
 
 	// Crew
@@ -1388,16 +1361,14 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(ViewX,               "ViewX",                0));
 	pComp->Value(mkNamingAdapt(ViewY,               "ViewY",                0));
 	pComp->Value(mkNamingAdapt(ViewWealth,          "ViewWealth",           0));
-	pComp->Value(mkNamingAdapt(ViewValue,           "ViewValue",            0));
+	pComp->Value(mkNamingAdapt(ViewScore,           "ViewScore",            0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
 	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
 	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
-	pComp->Value(mkNamingAdapt(Points,              "Points",               0));
-	pComp->Value(mkNamingAdapt(Value,               "Value",                0));
-	pComp->Value(mkNamingAdapt(InitialValue,        "InitialValue",         0));
-	pComp->Value(mkNamingAdapt(ValueGain,           "ValueGain",            0));
+	pComp->Value(mkNamingAdapt(CurrentScore,        "Score",                0));
+	pComp->Value(mkNamingAdapt(InitialScore,        "InitialScore",         0));
 	pComp->Value(mkNamingAdapt(ObjectsOwned,        "ObjectsOwned",         0));
 	pComp->Value(mkNamingAdapt(Hostility,           "Hostile"               ));
 	pComp->Value(mkNamingAdapt(ProductionDelay,     "ProductionDelay",      0));
@@ -1528,10 +1499,9 @@ void C4Player::DefaultRuntimeData()
 	CursorSelection=CursorToggled=0;
 	ShowStartup=true;
 	CrewCnt=0;
-	ViewWealth=ViewValue=0;
+	ViewWealth=ViewScore=0;
 	Wealth=0;
-	Points=0;
-	Value=InitialValue=ValueGain=0;
+	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
 	ProductionDelay=ProductionUnit=0;
 	Cursor=ViewCursor=NULL;
@@ -1617,10 +1587,10 @@ void C4Player::NotifyOwnedObjects()
 				}
 }
 
-bool C4Player::DoPoints(int32_t iChange)
+bool C4Player::DoScore(int32_t iChange)
 {
-	Points = BoundBy<int32_t>( Points+iChange, -100000, 100000 );
-	ViewValue = C4ViewDelay;
+	CurrentScore = BoundBy<int32_t>( CurrentScore+iChange, -100000, 100000 );
+	ViewScore = C4ViewDelay;
 	return true;
 }
 

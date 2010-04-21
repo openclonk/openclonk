@@ -440,13 +440,13 @@ bool C4PlayerList::Retire(C4Player *pPlr)
 	return true;
 }
 
-int C4PlayerList::AverageValueGain() const
+int C4PlayerList::AverageScoreGain() const
 {
 	int iResult=0;
 	if (First)
 	{
 		for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-			iResult+=Max<int32_t>(pPlr->ValueGain,0);
+			iResult+=Max<int32_t>(pPlr->CurrentScore-pPlr->InitialScore,0);
 		iResult/=GetCount();
 	}
 	return iResult;

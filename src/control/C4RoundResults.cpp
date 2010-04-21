@@ -58,13 +58,13 @@ void C4RoundResultsPlayer::EvaluatePlayer(C4Player *pPlr)
 	iTotalPlayingTime = pPlr->TotalPlayingTime;
 	if (pPlr->Evaluated)
 	{
-		iScoreNew = pPlr->Score;
+		iScoreNew = pPlr->TotalScore;
 		iScoreOld = iScoreNew - pPlr->LastRound.FinalScore;
 	}
 	else
 	{
 		// player not evaluated (e.g., removed by disconnect): Old score known only
-		iScoreOld = pPlr->Score;
+		iScoreOld = pPlr->TotalScore;
 	}
 	// load icon from player
 	fctBigIcon.Clear();

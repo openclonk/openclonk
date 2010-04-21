@@ -72,6 +72,7 @@ public:
 	explicit C4ID(const std::string &s);
 	template<size_t N>
 	DEPRECATED explicit C4ID(const char (&s)[N]) { assign(s); }
+	explicit C4ID(const StdStrBuf &s) { assign(s.getData()); }
 
 	explicit inline C4ID(Handle i): v(i)
 	{

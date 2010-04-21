@@ -543,7 +543,7 @@ bool MakeOriginalFilename(char *szFilename)
 	if (!szFilename) return false;
 #ifdef _WIN32
 	// root-directory?
-	if (Inside(SLen(szFilename), 2, 3)) if (szFilename[1]==':')
+	if (Inside(SLen(szFilename), 2u, 3u)) if (szFilename[1]==':')
 		{
 			szFilename[2]='\\'; szFilename[3]=0;
 			if (GetDriveType(szFilename) == DRIVE_NO_ROOT_DIR) return false;

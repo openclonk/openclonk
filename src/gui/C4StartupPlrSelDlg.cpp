@@ -307,7 +307,7 @@ void C4StartupPlrSelDlg::PlayerListItem::SetSelectionInfo(C4GUI::TextWindow *pSe
 	pSelectionInfo->ClearText(false);
 	//pSelectionInfo->AddTextLine(FormatString("%s %s", Core.RankName, Core.PrefName).getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrPlayerItem, false, false);
 	pSelectionInfo->AddTextLine(FormatString("%s", Core.PrefName).getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DESC_PLAYER"), (int)Core.Score, (int)Core.Rounds, (int)Core.RoundsWon, (int)Core.RoundsLost, TimeString(Core.TotalPlayingTime).getData(), Core.Comment).getData(), &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
+	pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DESC_PLAYER"), (int)Core.TotalScore, (int)Core.Rounds, (int)Core.RoundsWon, (int)Core.RoundsLost, TimeString(Core.TotalPlayingTime).getData(), Core.Comment).getData(), &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	if (Core.LastRound.Title[0])
 		pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DESC_LASTGAME"),Core.LastRound.Title.getData(),DateString(Core.LastRound.Date).getData(),TimeString(Core.LastRound.Duration).getData(),(int)Core.LastRound.FinalScore).getData(), &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	pSelectionInfo->UpdateHeight();
@@ -1382,7 +1382,7 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeRight(C4GUI::Control *pBtn)
 	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
 	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
 	if (index < 0) index = 0; // defined control set not found - probably an old CR player file
-	if (++index >= Game.PlayerControlAssignmentSets.GetSetCount()) index = 0;
+	if (++index >= int32_t(Game.PlayerControlAssignmentSets.GetSetCount())) index = 0;
 	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
 	if (control_set) C4P.PrefControl = control_set->GetName();
 	UpdatePlayerControl();

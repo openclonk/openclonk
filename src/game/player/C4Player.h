@@ -101,15 +101,15 @@ public:
 	int32_t ViewMode;
 	int32_t ViewX,ViewY;
 	C4Object *ViewTarget; // NoSave //
-	int32_t ViewWealth,ViewValue;
+	int32_t ViewWealth,ViewScore;
 	bool ShowStartup;
 	int32_t FlashCom; // NoSave //
 	bool fFogOfWar;
 	bool fFogOfWarInitialized; // No Save //
 	C4ObjectList FoWViewObjs; // No Save //
 	// Game
-	int32_t Wealth,Points;
-	int32_t Value,InitialValue,ValueGain;
+	int32_t Wealth;
+	int32_t CurrentScore,InitialScore;
 	int32_t ObjectsOwned;
 	HostilitySet Hostility;
 	// Home Base
@@ -157,7 +157,6 @@ public:
 	void ClearPointers(C4Object *tptr, bool fDeath);
 	void Execute();
 	void ExecuteControl();
-	void UpdateValue();
 	void SetViewMode(int32_t iMode, C4Object *pTarget=NULL);
 	void ResetCursorView(); // reset view to cursor if any cursor exists
 	void Evaluate();
@@ -181,11 +180,11 @@ public:
 
 	bool ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
 	void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
-	bool DoPoints(int32_t iChange);
+	bool DoScore(int32_t iChange);
 	bool Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo);
 	bool ScenarioAndTeamInit(int32_t idTeam);
 	bool ScenarioInit();
-	bool FinalInit(bool fInitialValue);
+	bool FinalInit(bool fInitialScore);
 	bool Save();
 	bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny);
 	bool MakeCrewMember(C4Object *pObj, bool fForceInfo=true, bool fDoCalls=true);

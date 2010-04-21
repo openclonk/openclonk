@@ -1344,7 +1344,7 @@ void C4AulParseState::Parse_Script()
 					// get id of script to include
 					if (TokenType != ATT_IDTF)
 						UnexpectedToken("identifier");
-					C4ID Id(Idtf);
+					C4ID Id = C4ID(StdStrBuf(Idtf));
 					Shift();
 					// add to include list
 					C4AListEntry *e = a->Engine->itbl.push(Id);
@@ -1360,7 +1360,7 @@ void C4AulParseState::Parse_Script()
 					switch (TokenType)
 					{
 					case ATT_IDTF:
-						Id = C4ID(Idtf);
+						Id = C4ID(StdStrBuf(Idtf));
 						Shift();
 						break;
 					case ATT_STAR: // "*"
