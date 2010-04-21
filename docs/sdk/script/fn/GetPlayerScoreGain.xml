@@ -3,22 +3,22 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
         <func>
-                <title>GetPlrValue</title>
+                <title>GetPlayerScoreGain</title>
                 <category>Spieler</category>
                 <version>4.6.5.0 CP</version>
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>player</name><desc>Spieler, dessen Spielerwert gesucht wird.</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spieler, dessen Spielerpunktegewinn gesucht wird.</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert den Spielerwert (Wert aller Objekte im Besitz) eines Spielers.</desc>
+                <desc>Liefert die Änderung der Spielerpunkte seit Beginn der Runde.</desc>
                 <related>
-                        <funclink>SetPlrValue</funclink>
-			<funclink>GetPlrValueGain</funclink>
-                        <funclink>GetWealth</funclink>
+                        <funclink>DoPlayerScore</funclink>
+                        <funclink>GetPlayerScore</funclink>
                 </related>
         </func>
         <author>Cucaracha</author><date>Mai 2002</date>
+        <author>Sven2</author><date>April 2010</date>
 </funcs>
 

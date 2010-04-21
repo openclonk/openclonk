@@ -3,7 +3,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
 	<func>
-		<title>DoScore</title>
+		<title>DoPlayerScore</title>
 		<category>Spieler</category>
 		<version>4.6.5.0 CP</version>
 		<syntax>
@@ -13,7 +13,7 @@
 				<param><type>int</type><name>change</name><desc>Positiv oder negativ: Die Veränderung des Punktewertes</desc></param>
 			</params>
 		</syntax>
-		<desc>Verändert den Punktewert eines Spielers. Dieser Wert ergibt zusammen mit dem Spielerwert (Wert aller Objekte im Besitz) die Gesamtpunktezahl des Spielers.</desc>
+		<desc>Verändert den Punktewert eines Spielers.</desc>
 		<examples>
 			<example>
 				<code>DoScore(0, -100);</code>
@@ -21,9 +21,10 @@
 			</example>
 		</examples>
 		<related>
-			<funclink>GetScore</funclink>
-			<funclink>GetPlrValue</funclink>
+			<funclink>GetPlayerScore</funclink>
+			<funclink>GetPlayerScoreGain</funclink>
 		</related>
 	</func>
 	<author>Sven2</author><date>November 2001</date>
+	<author>Sven2</author><date>April 2010</date>
 </funcs>
