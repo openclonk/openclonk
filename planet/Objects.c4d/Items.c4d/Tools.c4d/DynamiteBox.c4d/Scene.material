@@ -14,7 +14,6 @@ material Dynamite_Box
 				texture box.png
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
 			}
 		}
 	}

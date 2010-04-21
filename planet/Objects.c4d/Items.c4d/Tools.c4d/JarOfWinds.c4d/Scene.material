@@ -16,7 +16,6 @@ material WindJar
 				texture WindJar.png
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
 			}
 		}
 	}
