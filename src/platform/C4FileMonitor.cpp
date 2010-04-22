@@ -288,7 +288,7 @@ void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventDat
 {
 	if (eEvent != Ev_FileChange) return;
 	pCallback((const char *)pEventData, 0);
-	free(pEventData);
+	StdBuf::DeletePointer(pEventData);
 }
 
 HANDLE C4FileMonitor::GetEvent()
