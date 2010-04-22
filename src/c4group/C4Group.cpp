@@ -1380,10 +1380,9 @@ bool C4Group::RewindFilePtr()
 
 bool C4Group::View(const char *szFiles)
 {
-	char oformat[100];
 	C4GroupEntry *centry;
 	int fcount=0,bcount=0; // Virtual counts
-	size_t maxfnlen=0;
+	int maxfnlen=0;
 
 	if (!StdOutput) return false;
 
@@ -1397,10 +1396,8 @@ bool C4Group::View(const char *szFiles)
 	{
 		fcount++;
 		bcount+=centry->Size;
-		maxfnlen=Max<size_t>(maxfnlen,SLen(centry->FileName));
+		maxfnlen=Max<int>(maxfnlen, static_cast<int>(SLen(centry->FileName)));
 	}
-	sprintf(oformat,"%%%zds %%8ld Bytes %%02d.%%02d.%%02d %%02d:%%02d:%%02d %%s%%08X %%s\n",maxfnlen);
-
 	printf("Maker: %s  Creation: %i  %s\n\rVersion: %d.%d  CRC: %u (%X)\n",
 	       GetMaker(),
 	       Head.Creation,
@@ -1417,7 +1414,9 @@ bool C4Group::View(const char *szFiles)
 		if (pcoretm) coretm = *pcoretm; else printf("(invalid timestamp) ");
 		centry->Time = cur_time;
 
-		printf(oformat, centry->FileName,
+		printf("%*s %8d Bytes %02d.%02d.%02d %02d:%02d:%02d %s%08X %s\n",
+		       maxfnlen,
+		       centry->FileName,
 		       centry->Size,
 		       coretm.tm_mday,coretm.tm_mon+1,coretm.tm_year%100,
 		       coretm.tm_hour,coretm.tm_min,coretm.tm_sec,
