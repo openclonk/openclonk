@@ -991,13 +991,13 @@ void C4StartupPlrSelDlg::OnDelBtn(C4GUI::Control *btn)
 
 void C4StartupPlrSelDlg::OnDelBtnConfirm(ListItem *pSel)
 {
-	StdStrBuf Path(Config.General.UserDataPath); // start at local path
-//  Path.Append(Config.General.PlayerPath);
-	Path.Append(pSel->GetFilename());
+	StdStrBuf Path;
 
 	switch (eMode)
 	{
 	case PSDM_Player:
+		Path.Append(Config.General.UserDataPath); // start at local path
+		Path.Append(pSel->GetFilename());
 		if (!C4Group_DeleteItem(Path.getData()))
 		{
 			StdStrBuf sMsg; sMsg.Copy(LoadResStr("IDS_FAIL_DELETE"));
@@ -1006,7 +1006,7 @@ void C4StartupPlrSelDlg::OnDelBtnConfirm(ListItem *pSel)
 		break;
 
 	case PSDM_Crew:
-		if (!CurrPlayer.Grp.Delete(Path.getData()))
+		if (!CurrPlayer.Grp.DeleteEntry(pSel->GetFilename().getData()))
 		{
 			StdStrBuf sMsg; sMsg.Copy(LoadResStr("IDS_FAIL_DELETE"));
 			GetScreen()->ShowMessage(sMsg.getData(), LoadResStr("IDS_DLG_CLEAR"), C4GUI::Ico_Error);
