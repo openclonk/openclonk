@@ -53,7 +53,7 @@ private:
 	Actions eAction;
 
 public:
-	C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), eAction(CDA_Script), fSendCursorPos(false) {}
+	C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), fSendCursorPos(false), eAction(CDA_Script) {}
 	~C4PlayerControlDef() {};
 
 	void CompileFunc(StdCompiler *pComp);
