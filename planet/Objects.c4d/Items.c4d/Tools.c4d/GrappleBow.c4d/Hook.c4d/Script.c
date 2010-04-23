@@ -17,19 +17,21 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func GetRope() { return rope; }
+
 public func Launch(int angle, int str, object shooter, object bow)
 {
 	Exit();
 		
 	// Create rope and helper object.
 	rope = CreateObject(GrappleRope, 0, 0, NO_OWNER);
-	help = CreateObject(GrappleHelp, 0, 0, NO_OWNER);
+//	help = CreateObject(GrappleHelp, 0, 0, NO_OWNER);
 
-	rope->ConnectFree(this, help);
-	help->SetBow(bow);
+	rope->Connect(this, bow);
+/*	help->SetBow(bow);
 	help->SetClonk(shooter);
 	help->SetRope(rope);
-	bow->SetHelp(help);
+	bow->SetHelp(help);*/
 
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
@@ -39,6 +41,8 @@ public func Launch(int angle, int str, object shooter, object bow)
 	Sound("ArrowShoot*.ogg");
 	
 	AddEffect("InFlight", this, 1, 1, this);
+
+	AddEffect("IntGrappleControl", shooter, 1, 1, this);
 }
 
 private func Stick()
@@ -71,7 +75,8 @@ private func Stick()
 		}
 
 		if (rope)
-			rope->ConnectPull();
+			ScheduleCall(rope, "ConnectPull", 5);
+//			rope->ConnectPull();
 		if (help)
 			help->HangClonkOntoMe();
 	}
@@ -133,4 +138,54 @@ public func OnRopeBreak()
 
 protected func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+}
+
+
+/*-- Grapple rope controls --*/
+
+public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,strength, repeat, release)
+{
+	if(ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return;
+
+	if(ctrl == CON_Right)
+	{
+//		target->SetDir(DIR_Right);
+		EffectVar(3, target, fxnum) = !release;
+	}
+	if(ctrl == CON_Left)
+	{
+//		target->SetDir(DIR_Right);
+		EffectVar(2, target, fxnum) = !release;
+	}
+	if(ctrl == CON_Up)
+	{
+//		target->SetDir(DIR_Right);
+		EffectVar(0, target, fxnum) = !release;
+	}
+	if(ctrl == CON_Down)
+	{
+//		target->SetDir(DIR_Right);
+		EffectVar(1, target, fxnum) = !release;
+	}
+}
+
+// Effect for smooth movement.
+public func FxIntGrappleControlTimer(object target, int fxnum)
+{
+	if (!EffectVar(0, target, fxnum) && !EffectVar(1, target, fxnum)
+		&& !EffectVar(2, target, fxnum) && !EffectVar(3, target, fxnum))
+		return 0;
+
+	// Movement.
+	if (EffectVar(0, target, fxnum))
+		if (rope)
+			rope->DoLength(-1);
+	if (EffectVar(1, target, fxnum))
+		if (rope)
+			rope->DoLength(+1);
+	if (EffectVar(2, target, fxnum))
+		SetXDir(GetXDir(100) - 20, 100);
+	if (EffectVar(3, target, fxnum))
+		SetXDir(GetXDir(100) + 20, 100);
+	return FX_OK;
 }

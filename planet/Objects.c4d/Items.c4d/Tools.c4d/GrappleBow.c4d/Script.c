@@ -65,13 +65,11 @@ public func GetAnimationSet() { return animation_set; }
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// Cut rope, or otherwise remove helper object.
-	if (help)
+	if (hook->Contained() != this)
 	{
-		var rope = help->GetRope();
+		var rope = hook->GetRope();
 		if (rope)
 			rope->BreakRope();
-		else
-			help->RemoveObject();
 		return true;
 	}
 

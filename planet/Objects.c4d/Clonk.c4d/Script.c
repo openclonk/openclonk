@@ -1667,6 +1667,25 @@ func FxBubbleTimer(pTarget, iNumber, iTime)
 	if(GBackLiquid(0,-4)) Bubble();
 }
 
+func StartHangOnto()
+{
+//	if(GetEffect("IntTumble", this)) return;
+	// Close eyes
+	PlayAnimation("OnRope", 5, Anim_Linear(0, 0, GetAnimationLength("OnRope"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(1);
+//	AddEffect("IntTumble", this, 1, 0);
+}
+
+protected func AbortHangOnto()
+{
+	if (GetActionTarget(0))
+		GetActionTarget(0)->~HangOntoLost(this);
+	return;
+}
+
 /* Act Map */
 
 func Definition(def) {
@@ -1923,7 +1942,7 @@ HangOnto = {
 	Y = 120,
 	Wdt = 8,
 	Hgt = 20,
-	//StartCall = "StartRiding",
+	StartCall = "StartHangOnto",
 	AbortCall = "AbortHangOnto",
 	InLiquidAction = "Swim",
 },
@@ -1934,11 +1953,4 @@ HangOnto = {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
 
 	_inherited(def);
-}
-
-protected func AbortHangOnto()
-{
-	if (GetActionTarget(0)) 
-		GetActionTarget(0)->~HangOntoLost(this);
-	return;
 }

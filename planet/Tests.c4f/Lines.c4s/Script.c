@@ -2,9 +2,9 @@
 
 func Initialize()
 {
-	CreateObject(Ropeladder, 174, 445)->Unroll(-1);
-	CreateObject(Ropeladder, 328, 564);
-	CreateObject(Ropeladder, 226, 330);
+//	CreateObject(Ropeladder, 174, 445)->Unroll(-1);
+//	CreateObject(Ropeladder, 328, 564);
+//	CreateObject(Ropeladder, 226, 330);
 }
 
  func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
@@ -28,7 +28,7 @@ func Initialize()
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(50, 490);
-	clonk->CreateContents(Pickaxe);
+	clonk->CreateContents(GrappleBow);
 //	clonk->Collect(CreateObject(Arrow));
 	return;
 }
