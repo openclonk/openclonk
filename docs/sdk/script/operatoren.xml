@@ -304,9 +304,9 @@ while(<strong>somevar++</strong> &lt; 10)
 while(<strong>++somevar</strong> &lt; 10)
   Log("%d", somevar )</code>
 	
-			<text>Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung somevar um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen.</text>
-			<text>Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben.	D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist somevar am Anfang 9. Dann wird sie um eins erhöht (somevar ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben.</text>
-			<text>Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn somevar 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen.</text>
+			<text>Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung <code>somevar</code> um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen.</text>
+			<text>Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben.	D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist <code>somevar</code> am Anfang 9. Dann wird sie um eins erhöht (<code>somevar</code> ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben.</text>
+			<text>Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn <code>somevar</code> 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen.</text>
 		</part>
 			
 		<h id="andor">Die Operatoren &amp;&amp; und ||</h>

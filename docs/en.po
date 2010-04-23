@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-23 11:47+0200\n"
+"POT-Creation-Date: 2010-04-23 12:03+0200\n"
 "PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
@@ -609,27 +609,23 @@ msgid "++somevar"
 msgstr ""
 
 #: sdk/script/operatoren.xml:307(text)
-#, fuzzy
-msgid "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung somevar um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
-msgstr "These two examples are almost identical. In both cases the value of Var(0) is increased by one per loop repetition. The result is compared to 10 in each case."
+msgid "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung <code>somevar</code> um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
+msgstr "These two examples are almost identical. In both cases the value of <code>somevar</code> is increased by one per loop repetition. The result is compared to 10 in each case."
 
 #: sdk/script/operatoren.xml:308(text)
-#, fuzzy
-msgid "Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben. D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist somevar am Anfang 9. Dann wird sie um eins erhöht (somevar ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben."
-msgstr "Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of Var(0) is 9. It is then increased by one (Var(0) is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed."
+msgid "Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben. D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist <code>somevar</code> am Anfang 9. Dann wird sie um eins erhöht (<code>somevar</code> ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben."
+msgstr "Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of <code>somevar</code> is 9. It is then increased by one (<code>somevar</code> is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed."
 
 #: sdk/script/operatoren.xml:309(text)
-#, fuzzy
-msgid "Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn somevar 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen."
-msgstr "In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When Var(0) is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends."
+msgid "Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn <code>somevar</code> 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen."
+msgstr "In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When <code>somevar</code> is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends."
 
 #: sdk/script/operatoren.xml:312(h)
 msgid "Die Operatoren &amp;&amp; und ||"
 msgstr "The Operators &amp;&amp; and ||"
 
 #: sdk/script/operatoren.xml:314(text)
-#, fuzzy
-msgid "Diese beiden Operatoren haben (ab <emlink href=\"script/Strict.html\"> 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
+msgid "Diese beiden Operatoren haben eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
 msgstr "These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:"
 
 #: sdk/script/operatoren.xml:316(text)
@@ -681,9 +677,8 @@ msgid "Hier sieht man deutlich, dass der Operator \"+\" links-assoziativ ist, de
 msgstr "Here you can see that the operator \"+\" is left-associative, the term \"<code>1 + 2 + 3</code>\" is evaluated as \"<code>(1 + 2) + 3</code>\"."
 
 #: sdk/script/operatoren.xml:339(text)
-#, fuzzy
 msgid "Dagegen wird der Ausdruck \"<code>somevar = othervar = x</code>\" zu \"<code>somevar = (othervar = x)</code>\", da der Operator \"=\" rechts-assoziativ ist."
-msgstr "As opposed to this, the term \"<code>Var(0) = Var(1) = x</code>\" becomes \"<code>Var(0) = (Var(1) = x)</code>\", since the operator \"=\" is right-associative."
+msgstr "As opposed to this, the term \"<code>somevar = othervar = x</code>\" becomes \"<code>somevar = (othervar = x)</code>\", since the operator \"=\" is right-associative."
 
 #: sdk/script/operatoren.xml:340(text)
 msgid "Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste."
@@ -1140,9 +1135,8 @@ msgid "Bedingung"
 msgstr "Condition"
 
 #: sdk/script/fn/while.xml:15(desc)
-#, fuzzy
 msgid "Solange condition ungleich Null ist, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung ausgeführt."
-msgstr "If fCondition is true the following command or block of code will be executed."
+msgstr "If condition is true the following command or block of code will be executed."
 
 #: sdk/script/fn/while.xml:19(text)
 msgid "Entfernt alle Objekte."
@@ -1464,9 +1458,8 @@ msgid "So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basi
 msgstr "This could be the script of a new clonk type. It derives its basic functionality from the normal clonk (Clonk) and extends the Initialize function."
 
 #: sdk/script/fn/if.xml:15(desc)
-#, fuzzy
 msgid "Wenn condition ungleich Null, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung einmal ausgeführt."
-msgstr "If fCondition is non-zero the directly following command or script block will be executed."
+msgstr "If condition is non-zero the directly following command or script block will be executed."
 
 #: sdk/script/fn/if.xml:19(text)
 msgid "Erstellt einen Stein, wenn sonst keine Objekte vorhanden sind."
@@ -1603,9 +1596,8 @@ msgid "Zielobjekt"
 msgstr "Target object"
 
 #: sdk/script/fn/VerticesStuck.xml:21(desc)
-#, fuzzy
 msgid "Liefert die Anzahl feststeckender Vertices von *obj"
-msgstr "Returns the number of stuck vertices of *pObj"
+msgstr "Returns the number of stuck vertices of *obj"
 
 #: sdk/script/fn/VerticesStuck.xml:27(text)
 msgid "Entfernt obj wenn einer seiner Vertices feststeckt"
@@ -1817,17 +1809,16 @@ msgid "Wählt nur den höchstrangigen Clonk des ersten Spielers an. Siehe dazu a
 msgstr "Selects only the highest ranking clonk of the first player. See also <placeholder-1/>."
 
 #: sdk/script/fn/Translate.xml:12(desc)
-#, fuzzy
 msgid "Zeichenkette, die übersetzt werden soll"
-msgstr "String into which to insert values."
+msgstr "String to translate"
 
 #: sdk/script/fn/Translate.xml:15(desc)
 msgid "Schlägt einen Text in der <emlink href=\"lang.html\">StringTbl??.txt</emlink> des aufrufenden Skripts nach, und gibt die Übersetzung zurück."
-msgstr ""
+msgstr "Looks up text in the <emlink href=\"lang.html\">StringTbl??.txt</emlink> of the calling script and returns the translation."
 
 #: sdk/script/fn/Translate.xml:21(text)
 msgid "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
-msgstr ""
+msgstr "Displays \"Ich benötige ein besseres Beispiel\" for German users."
 
 #: sdk/script/fn/Trans_Translate.xml:7(category)
 #: sdk/script/fn/Trans_Scale.xml:7(category)
@@ -11672,79 +11663,79 @@ msgstr "Example 3"
 msgid "Diese Funktion ruft <code>DoExplode()</code> auf die sechs naheliegendsten Dynamit-Objekte auf."
 msgstr "This function calls <code>DoExplode()</code> on the six nearest Dynamite objects."
 
-#: sdk/script/Typechecks.xml:106(h)
+#: sdk/script/Typechecks.xml:107(h)
 msgid "Konvertierung"
 msgstr "Conversion"
 
-#: sdk/script/Typechecks.xml:108(text)
+#: sdk/script/Typechecks.xml:109(text)
 msgid "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
 msgstr "Consult the following table to determine which types can be converted and which conversions might cause errors:"
 
-#: sdk/script/Typechecks.xml:112(col)
+#: sdk/script/Typechecks.xml:113(col)
 msgid "nach -&gt;"
 msgstr "to -&gt;"
 
-#: sdk/script/Typechecks.xml:122(col)
 #: sdk/script/Typechecks.xml:123(col)
-#: sdk/script/Typechecks.xml:131(col)
+#: sdk/script/Typechecks.xml:124(col)
 #: sdk/script/Typechecks.xml:132(col)
-#: sdk/script/Typechecks.xml:141(col)
+#: sdk/script/Typechecks.xml:133(col)
 #: sdk/script/Typechecks.xml:142(col)
-#: sdk/script/Typechecks.xml:145(col)
-#: sdk/script/Typechecks.xml:150(col)
-#: sdk/script/Typechecks.xml:152(col)
-#: sdk/script/Typechecks.xml:159(col)
-#: sdk/script/Typechecks.xml:162(col)
-#: sdk/script/Typechecks.xml:168(col)
-#: sdk/script/Typechecks.xml:172(col)
+#: sdk/script/Typechecks.xml:143(col)
+#: sdk/script/Typechecks.xml:146(col)
+#: sdk/script/Typechecks.xml:151(col)
+#: sdk/script/Typechecks.xml:153(col)
+#: sdk/script/Typechecks.xml:160(col)
+#: sdk/script/Typechecks.xml:163(col)
+#: sdk/script/Typechecks.xml:169(col)
+#: sdk/script/Typechecks.xml:173(col)
 msgid "OK"
 msgstr "OK"
 
-#: sdk/script/Typechecks.xml:124(col)
 #: sdk/script/Typechecks.xml:125(col)
 #: sdk/script/Typechecks.xml:126(col)
 #: sdk/script/Typechecks.xml:127(col)
+#: sdk/script/Typechecks.xml:128(col)
 msgid "wenn 0"
 msgstr "if 0"
 
-#: sdk/script/Typechecks.xml:133(col)
 #: sdk/script/Typechecks.xml:134(col)
 #: sdk/script/Typechecks.xml:135(col)
 #: sdk/script/Typechecks.xml:136(col)
-#: sdk/script/Typechecks.xml:140(col)
-#: sdk/script/Typechecks.xml:143(col)
+#: sdk/script/Typechecks.xml:137(col)
+#: sdk/script/Typechecks.xml:141(col)
 #: sdk/script/Typechecks.xml:144(col)
-#: sdk/script/Typechecks.xml:149(col)
-#: sdk/script/Typechecks.xml:151(col)
-#: sdk/script/Typechecks.xml:153(col)
+#: sdk/script/Typechecks.xml:145(col)
+#: sdk/script/Typechecks.xml:150(col)
+#: sdk/script/Typechecks.xml:152(col)
 #: sdk/script/Typechecks.xml:154(col)
-#: sdk/script/Typechecks.xml:158(col)
-#: sdk/script/Typechecks.xml:160(col)
+#: sdk/script/Typechecks.xml:155(col)
+#: sdk/script/Typechecks.xml:159(col)
 #: sdk/script/Typechecks.xml:161(col)
-#: sdk/script/Typechecks.xml:163(col)
-#: sdk/script/Typechecks.xml:167(col)
-#: sdk/script/Typechecks.xml:170(col)
+#: sdk/script/Typechecks.xml:162(col)
+#: sdk/script/Typechecks.xml:164(col)
+#: sdk/script/Typechecks.xml:168(col)
 #: sdk/script/Typechecks.xml:171(col)
+#: sdk/script/Typechecks.xml:172(col)
 msgid "Error"
 msgstr "Error"
 
-#: sdk/script/Typechecks.xml:169(col)
+#: sdk/script/Typechecks.xml:170(col)
 msgid "maybe"
 msgstr ""
 
-#: sdk/script/Typechecks.xml:176(h)
+#: sdk/script/Typechecks.xml:177(h)
 msgid "Erklärung der Tabelle:"
 msgstr "Additional information:"
 
-#: sdk/script/Typechecks.xml:178(li)
+#: sdk/script/Typechecks.xml:179(li)
 msgid "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
 msgstr "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
 
-#: sdk/script/Typechecks.xml:179(li)
+#: sdk/script/Typechecks.xml:180(li)
 msgid "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
 msgstr ""
 
-#: sdk/script/Typechecks.xml:180(li)
+#: sdk/script/Typechecks.xml:181(li)
 msgid "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 msgstr ""
 
@@ -15411,12 +15402,10 @@ msgid "Deaktivierte Kommandos**"
 msgstr "Deactivates all gamma ramps."
 
 #: sdk/playercontrols.xml:338(h)
-#, fuzzy
 msgid "Tastenbelegungen"
 msgstr "Keyboard shortcuts:"
 
 #: sdk/playercontrols.xml:340(h)
-#, fuzzy
 msgid "Prioritaeten"
 msgstr "Priorities"
 
@@ -15672,9 +15661,8 @@ msgid "0 bis 40. Ausfaden pro FadeDelay. Wenn das Partikel vollends ausgefadet i
 msgstr "0 to 40. Rate of fade out per frame. A fully faded particle is removed."
 
 #: sdk/particle/index.xml:143(col)
-#, fuzzy
 msgid "FadeDelay"
-msgstr "FadeOutDelay"
+msgstr "FadeDelay"
 
 #: sdk/particle/index.xml:145(col)
 msgid "Default ist 1."
@@ -16493,9 +16481,8 @@ msgid "1,2"
 msgstr "1,2"
 
 #: sdk/material/c4m.xml:320(col)
-#, fuzzy
 msgid "x, y"
-msgstr "ox, oy"
+msgstr "x, y"
 
 #: sdk/material/c4m.xml:320(col)
 msgid "Position des losen Materials. Die Parameter können verändert werden, um das Materialpixel zu verschieben."
@@ -16526,9 +16513,8 @@ msgid "Geschwindigkeit (in 1/100px) der Bewegung des Materials. Kann geändert w
 msgstr "Speed (in 1/100px) of the movement of the material. May be modified in order to change the material speed. Not for MassMover."
 
 #: sdk/material/c4m.xml:323(col)
-#, fuzzy
 msgid "pxs_material"
-msgstr "Material"
+msgstr "pxs_material"
 
 #: sdk/material/c4m.xml:323(col)
 msgid "Materialnummer des losen Materials. Nützlich, wenn die gleiche Funktion für Reaktionen mehrerer Materialen verwendet wird"
@@ -16547,9 +16533,8 @@ msgid "9"
 msgstr "9"
 
 #: sdk/material/c4m.xml:325(col)
-#, fuzzy
 msgid "event"
-msgstr "iEvent"
+msgstr "event"
 
 #: sdk/material/c4m.xml:325(col)
 msgid "Siehe <emlink href=\"material/c4m.html#ReactEvents\">Reaktionsereignisse</emlink>."
@@ -17169,9 +17154,8 @@ msgstr "Construction"
 #: sdk/definition/script.xml:114(col)
 #: sdk/definition/script.xml:117(col)
 #: sdk/definition/script.xml:192(col)
-#, fuzzy
 msgid "object by_object"
-msgstr "object pByObj"
+msgstr "object by_object"
 
 #: sdk/definition/script.xml:74(col)
 msgid "Wenn das Objekt erzeugt wird. Als Parameter wird das Objekt übergeben, in dem das erzeugende Script steht. Siehe auch <emlink href=\"script/fn/Construction.html\">Construction</emlink>"
@@ -17210,9 +17194,8 @@ msgid "Wie Hit, bei Geschwindigkeiten &gt;= 60 (siehe <emlink href=\"script/fn/O
 msgstr "Like Hit, with speeds &gt;= 60 (see <emlink href=\"script/fn/OCF_HitSpeed3.html\">OCF_HitSpeed3</emlink>)."
 
 #: sdk/definition/script.xml:86(col)
-#, fuzzy
 msgid "object target, bool grab"
-msgstr "object pTarget, bool fGrab"
+msgstr "object target, bool grab"
 
 #: sdk/definition/script.xml:87(col)
 msgid "Wenn das Objekt ein anderes Objekt anfasst oder loslässt."
@@ -17223,18 +17206,16 @@ msgid "Grabbed"
 msgstr "Grabbed"
 
 #: sdk/definition/script.xml:88(col)
-#, fuzzy
 msgid "object by_object, bool grab"
-msgstr "object pByObject, bool fGrab"
+msgstr "object by_object, bool grab"
 
 #: sdk/definition/script.xml:89(col)
 msgid "Wenn das Objekt durch ein anderes Objekt angefasst oder losgelassen wird. Ab 4.9.8.4."
 msgstr "When the object is grabbed or let go by another object. Since 4.9.8.4."
 
 #: sdk/definition/script.xml:90(col)
-#, fuzzy
 msgid "object target"
-msgstr "object pTarget"
+msgstr "object target"
 
 #: sdk/definition/script.xml:91(col)
 msgid "Wenn das Objekt ein Objekt aus einem anderen Objekt herausnimmt."
@@ -17249,9 +17230,8 @@ msgid "Damage"
 msgstr "Damage"
 
 #: sdk/definition/script.xml:94(col)
-#, fuzzy
 msgid "int change, int by_player"
-msgstr "int iChange, int iByPlayer"
+msgstr "int change, int by_player"
 
 #: sdk/definition/script.xml:95(col)
 msgid "Wenn das Objekt beschädigt wird."
@@ -17273,9 +17253,8 @@ msgstr "Incineration"
 #: sdk/definition/script.xml:102(col)
 #: sdk/definition/script.xml:203(col)
 #: sdk/definition/script.xml:206(col)
-#, fuzzy
 msgid "int by_player"
-msgstr "int iByPlayer"
+msgstr "int by_player"
 
 #: sdk/definition/script.xml:100(col)
 msgid "Wenn das Objekt entzündet wird. Achtung: Bei Objekten, die ihre Definition mit BurnTo ändern, findet der Aufruf im verbrannten Objekt statt!"
@@ -17330,9 +17309,8 @@ msgid "ControlCommand"
 msgstr "ControlCommand"
 
 #: sdk/definition/script.xml:119(col)
-#, fuzzy
 msgid "string command, object target, int x, int y, object target2, int data, object command_object"
-msgstr "string strCommand, object pTarget, int iTx, int iTy, object pTarget2, int iData, object pCmdObj"
+msgstr "string command, object target, int x, int y, object target2, int data, object command_object"
 
 #: sdk/definition/script.xml:120(col)
 msgid "Wenn dem Objekt durch den Spieler ein selbständig auszuführender Befehl gegeben wurde. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
@@ -17343,9 +17321,8 @@ msgid "ControlCommandFinished"
 msgstr "ControlCommandFinished"
 
 #: sdk/definition/script.xml:122(col)
-#, fuzzy
 msgid "string command, object target, int x, int y, object target2, any Data"
-msgstr "string strCommand, object pTarget, int iTx, int iTy, object pTarget2, C4Value Data"
+msgstr "string command, object target, int x, int y, object target2, any Data"
 
 #: sdk/definition/script.xml:123(col)
 msgid "Wenn das Objekt einen selbständigen auszuführenden Befehl vollendet hat oder die Ausführung des Befehls fehlgeschlagen ist."
@@ -17356,14 +17333,12 @@ msgid "ControlTransfer"
 msgstr "ControlTransfer"
 
 #: sdk/definition/script.xml:125(col)
-#, fuzzy
 msgid "object obj, int x, int y"
-msgstr "object pObj, int iTx, int iTy"
+msgstr "object obj, int x, int y"
 
 #: sdk/definition/script.xml:126(col)
-#, fuzzy
 msgid "Wenn ein durch die Wegfindungsroutine gesteuertes Objekt (obj) die Transferzone dieses Objekts zum Zielpunkt x/y passieren möchte. Die Transferfunktion kann dem Objekt entsprechende Kommandos geben und sollte bei erfolgreicher Bearbeitung TRUE zurückliefern. Siehe auch <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
-msgstr "When an object (pObj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point iTx/iTy. The transfer function can then help the object along by giving special script commands and returning true. Also see <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
+msgstr "When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning true. Also see <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 
 #: sdk/definition/script.xml:130(col)
 msgid "UpdateTransferZone"
@@ -17378,9 +17353,8 @@ msgid "MenuQueryCancel"
 msgstr "MenuQueryCancel"
 
 #: sdk/definition/script.xml:134(col)
-#, fuzzy
 msgid "int selection, object menu_object"
-msgstr "int iSelection, object pMenuObj"
+msgstr "int selection, object menu_object"
 
 #: sdk/definition/script.xml:135(col)
 msgid "Wird in einem Objekt aufgerufen, wenn der Spieler ein benutzerdefiniertes Menu schließen will. Bei Rückgabewert TRUE bleibt das Menu geöffnet."
@@ -17399,9 +17373,8 @@ msgid "ControlContents"
 msgstr "ControlContents"
 
 #: sdk/definition/script.xml:139(col)
-#, fuzzy
 msgid "id target"
-msgstr "id idTarget"
+msgstr "id target"
 
 #: sdk/definition/script.xml:140(col)
 msgid "Wenn ein neues Inhaltsobjekt angewählt wird. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
@@ -17414,9 +17387,8 @@ msgstr "Selection"
 #: sdk/definition/script.xml:141(col)
 #: sdk/definition/script.xml:185(col)
 #: sdk/definition/script.xml:190(col)
-#, fuzzy
 msgid "object container"
-msgstr "object pContainer"
+msgstr "object container"
 
 #: sdk/definition/script.xml:142(col)
 msgid "Wenn das Objekt durch einen Inventarwechsel ausgewählt wird. Wenn die Funktion abgefangen wird, sollte ein eigener Auswahlsound abgespielt werden."
@@ -17427,9 +17399,8 @@ msgid "CatchBlow"
 msgstr "CatchBlow"
 
 #: sdk/definition/script.xml:144(col)
-#, fuzzy
 msgid "int level, object by"
-msgstr "int iLevel, object pBy"
+msgstr "int level, object by"
 
 #: sdk/definition/script.xml:145(col)
 msgid "Wenn das Objekt von einem anderen Objekt geschlagen oder getroffen wird."
@@ -17440,9 +17411,8 @@ msgid "QueryCatchBlow"
 msgstr "QueryCatchBlow"
 
 #: sdk/definition/script.xml:146(col)
-#, fuzzy
 msgid "object by"
-msgstr "object pBy"
+msgstr "object by"
 
 #: sdk/definition/script.xml:147(col)
 msgid "Bevor das Objekt von einem anderen Objekt geschlagen oder getroffen wird. Wenn QueryCatchBlow TRUE zurückgibt, können damit physikalische Treffer abgefangen werden."
@@ -17453,23 +17423,20 @@ msgid "LineBreak"
 msgstr "LineBreak"
 
 #: sdk/definition/script.xml:149(col)
-#, fuzzy
 msgid "int cause"
-msgstr "int iCause"
+msgstr "int cause"
 
 #: sdk/definition/script.xml:150(col)
-#, fuzzy
 msgid "Wenn ein Leitungsobjekt unterbrochen wird. cause: 0 durch Bewegung, 1 durch fehlendes oder unvollständiges Zielobjekt."
-msgstr "When a line object is broken. iCause: 0 by movement, 1 because of a damaged or destroyed target object."
+msgstr "When a line object is broken. cause: 0 by movement, 1 because of a missing or incomplete target object."
 
 #: sdk/definition/script.xml:151(col)
 msgid "BuildNeedsMaterial"
 msgstr "BuildNeedsMaterial"
 
 #: sdk/definition/script.xml:151(col)
-#, fuzzy
 msgid "id material_definition, int amount"
-msgstr "id idMaterial, int iAmount"
+msgstr "id material_definition, int amount"
 
 #: sdk/definition/script.xml:152(col)
 msgid "Wenn das Objekt ein anderes Objekt baut und noch Baumaterial benötigt wird. Parameter sind Typ und Menge des ersten noch benötigten Baustoffs. Durch Rückgabewert TRUE kann die Textmeldung über fehlendes Material abgefangen werden."
@@ -17488,23 +17455,20 @@ msgid "CrewSelection"
 msgstr "CrewSelection"
 
 #: sdk/definition/script.xml:158(col)
-#, fuzzy
 msgid "bool deselect, bool cursor_only"
-msgstr "bool fDeselect, bool fCursorOnly"
+msgstr "bool deselect, bool cursor_only"
 
 #: sdk/definition/script.xml:159(col)
-#, fuzzy
 msgid "Bei Änderung der Crewauswahl. cursor_only gibt an, ob nur das Mannschaftsmitglied angewählt wurde, welches den Cursor hat."
-msgstr "When crew selection is changed. fCursorOnly specifies whether only that crew member has been selected which is also the cursor."
+msgstr "When crew selection is changed. cursor_only specifies whether only that crew member has been selected which is also the cursor."
 
 #: sdk/definition/script.xml:160(col)
 msgid "GetObject2Drop"
 msgstr "GetObject2Drop"
 
 #: sdk/definition/script.xml:160(col)
-#, fuzzy
 msgid "object for_collection_of_object"
-msgstr "object pForCollectionOfObj"
+msgstr "object for_collection_of_object"
 
 #: sdk/definition/script.xml:161(col)
 msgid "Zur Ermittlung des am wenigsten gebrauchten Objekts, wenn der Clonk versucht, ein neues aufzunehmen. Die Funktion sollte das abzulegende Objekt zurückliefern, oder 0 für keins."
@@ -17515,9 +17479,8 @@ msgid "OnMenuSelection"
 msgstr "OnMenuSelection"
 
 #: sdk/definition/script.xml:164(col)
-#, fuzzy
 msgid "int index, object menu_object"
-msgstr "int iItemIndex, object pMenuObject"
+msgstr "int index, object menu_object"
 
 #: sdk/definition/script.xml:165(col)
 msgid "Wenn ein Menueintrag ausgewählt wurde."
@@ -17529,9 +17492,8 @@ msgstr "CalcValue"
 
 #: sdk/definition/script.xml:166(col)
 #: sdk/definition/script.xml:168(col)
-#, fuzzy
 msgid "object in_base, int for_player"
-msgstr "object pInBase, int iForPlayer"
+msgstr "object in_base, int for_player"
 
 #: sdk/definition/script.xml:167(col)
 msgid "Ermittelt den Wert eines Objekts. Siehe auch <emlink href=\"script/fn/GetValue.html\">GetValue</emlink>()."
@@ -17550,9 +17512,8 @@ msgid "CalcBuyValue"
 msgstr "CalcBuyValue"
 
 #: sdk/definition/script.xml:170(col)
-#, fuzzy
 msgid "id item, int value"
-msgstr "id idItem, int iDefValue"
+msgstr "id item, int value"
 
 #: sdk/definition/script.xml:171(col)
 msgid "Rückgabewert ist Einkaufspreis des Objekttyps."
@@ -17563,9 +17524,8 @@ msgid "CalcSellValue"
 msgstr "CalcSellValue"
 
 #: sdk/definition/script.xml:172(col)
-#, fuzzy
 msgid "object obj, int object_value"
-msgstr "object pObj, int iObjValue"
+msgstr "object obj, int object_value"
 
 #: sdk/definition/script.xml:173(col)
 msgid "Rückgabewert ist Verkaufspreis des Objekttyps."
@@ -17602,14 +17562,12 @@ msgid "Collection"
 msgstr "Collection"
 
 #: sdk/definition/script.xml:180(col)
-#, fuzzy
 msgid "object obj, bool put"
-msgstr "object pObj, bool fPut"
+msgstr "object obj, bool put"
 
 #: sdk/definition/script.xml:181(col)
-#, fuzzy
 msgid "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (nur durch einsammeln oder anfassen und ablegen)."
-msgstr "When the object has collected another object (by ingame collection or grabbing and getting)."
+msgstr "When the object has collected another object (obj) (by ingame collection or grabbing and getting)."
 
 #: sdk/definition/script.xml:182(col)
 msgid "Collection2"
@@ -17617,32 +17575,28 @@ msgstr "Collection2"
 
 #: sdk/definition/script.xml:182(col)
 #: sdk/definition/script.xml:187(col)
-#, fuzzy
 msgid "object obj"
-msgstr "object pObj"
+msgstr "object obj"
 
 #: sdk/definition/script.xml:183(col)
-#, fuzzy
 msgid "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (immer, auch durch Scriptbefehl Enter)"
-msgstr "When the object has collected another object (in all cases, even in script controlled collection or entering)."
+msgstr "When the object has collected another object (obj) (in all cases, even in script controlled collection or entering)."
 
 #: sdk/definition/script.xml:185(col)
 msgid "Departure"
 msgstr "Departure"
 
 #: sdk/definition/script.xml:186(col)
-#, fuzzy
 msgid "Wenn das Objekt ein anderes Objekt (container) verlassen hat."
-msgstr "When this object has left another object (pContainer)."
+msgstr "When this object has left another object (container)."
 
 #: sdk/definition/script.xml:187(col)
 msgid "Ejection"
 msgstr "Ejection"
 
 #: sdk/definition/script.xml:188(col)
-#, fuzzy
 msgid "Wenn ein Objekt (obj) dieses Objekt verlassen hat (auch durch Scriptbefehl Exit)."
-msgstr "When another object has left the contents of this object (also see script command Exit)."
+msgstr "When another object (obj) has left the contents of this object (also see script command Exit)."
 
 #: sdk/definition/script.xml:190(col)
 #: sdk/definition/defcore.xml:69(col)
@@ -17650,9 +17604,8 @@ msgid "Entrance"
 msgstr "Entrance"
 
 #: sdk/definition/script.xml:191(col)
-#, fuzzy
 msgid "Wenn das Objekt ein anderes Objekt (container) betreten hat."
-msgstr "When the object has enteres another object (pContainer)."
+msgstr "When the object has entered another object (container)."
 
 #: sdk/definition/script.xml:192(col)
 msgid "ActivateEntrance"
@@ -17667,9 +17620,8 @@ msgid "RejectCollect"
 msgstr "RejectCollect"
 
 #: sdk/definition/script.xml:194(col)
-#, fuzzy
 msgid "id def, object obj"
-msgstr "id idObj, object pObj"
+msgstr "id def, object obj"
 
 #: sdk/definition/script.xml:195(col)
 msgid "Wird vor Collection aufgerufen. Wenn RejectCollect TRUE zurückgibt, kann damit die Aufnahme des anderen Objekts verhindert werden."
@@ -17680,9 +17632,8 @@ msgid "RejectEntrance"
 msgstr "RejectEntrance"
 
 #: sdk/definition/script.xml:197(col)
-#, fuzzy
 msgid "object into_object"
-msgstr "object pIntoObj"
+msgstr "object into_object"
 
 #: sdk/definition/script.xml:198(col)
 msgid "Wird vor Entrance aufgerufen. Wenn RejectEntrance TRUE zurückgibt, kann damit das Hineinversetzen in das andere Objekt verhindert werden."
@@ -17696,7 +17647,7 @@ msgstr "InitializePlayer"
 #: sdk/definition/script.xml:210(col)
 #, fuzzy
 msgid "int player"
-msgstr "int iByPlayer"
+msgstr "int player"
 
 #: sdk/definition/script.xml:201(col)
 msgid "Aufruf in Spielziel, -regel und Umweltobjekten nach der Platzierung eines beitretenden Spielers, und vor dem entsprechenden Aufruf im Szenarioscript."
@@ -17744,9 +17695,8 @@ msgid "RejectTeamSwitch"
 msgstr "RejectTeamSwitch"
 
 #: sdk/definition/script.xml:212(col)
-#, fuzzy
 msgid "int player, int new_team"
-msgstr "int iPlr, int iNewTeam"
+msgstr "int player, int new_team"
 
 #: sdk/definition/script.xml:213(col)
 msgid "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch TRUE zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden. Ab 4.9.6.0 CR."
@@ -17757,14 +17707,12 @@ msgid "OnTeamSwitch"
 msgstr "OnTeamSwitch"
 
 #: sdk/definition/script.xml:214(col)
-#, fuzzy
 msgid "int player, int new_team, int old_team"
-msgstr "int iPlr, int iNewTeam, int iOldTeam"
+msgstr "int player, int new_team, int old_team"
 
 #: sdk/definition/script.xml:215(col)
-#, fuzzy
 msgid "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <placeholder-1/>). Ab 4.9.6.0 CR."
-msgstr "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from iOldTeam to iNewTeam (see <placeholder-1/>). From 4.9.6.0 CR."
+msgstr "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>). Since 4.9.6.0 CR."
 
 #: sdk/definition/script.xml:65(text)
 msgid "Die Engine ruft zu Zeiten die folgenden Funktionen in Objektscripten auf. <placeholder-1/>"
@@ -17812,9 +17760,8 @@ msgid "ControlCommand: die Engine führt auch <a href=\"#ObjektCallsderEngine\">
 msgstr "ControlCommnd: the engine also performs <a href=\"#ObjektCallsderEngine\">object calls</a> for independently executed commands which have been given directly by the player (i.e. by mouse control)."
 
 #: sdk/definition/script.xml:266(text)
-#, fuzzy
 msgid "Durch Rückgabe des Werts 1 kann der Befehl abgefangen und die interne Verarbeitung verhindert werden. \"command_object\" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden soll, auch wenn der Aufruf von einem enthaltenen Objekt kommt (siehe VehicleControl in der <emlink href=\"definition/defcore.html\">DefCore</emlink>). Der Script-Befehl <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> verursacht keinen ControlCommand-Aufruf."
-msgstr "By returning true the command can be intercepted and internal handling can be prevented. \"pCmdObj\" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href=\"definition/defcore.html\">DefCore</emlink>). The script command <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> does not cause ControlCommand calls."
+msgstr "By returning true the command can be intercepted and internal handling can be prevented. \"command_object\" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href=\"definition/defcore.html\">DefCore</emlink>). The script command <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> does not cause ControlCommand calls."
 
 #: sdk/definition/script.xml:271(text)
 msgid "ControlCommand-Aufrufe werden an angefasste oder von innen gesteuerte Fahrzeuge weitergeleitet, wenn diese ein entsprechendes VehicleControl-Flag besitzen. Diese Weiterleitung wird nach dem ControlCommand-Aufruf des Clonk-Scripts durchgeführt, aber noch vor der internen Verarbeitung, so dass auch das gesteuerte Fahrzeug bei Bedarf den Befehl auswerten und abfangen (überladen) kann."
@@ -19398,9 +19345,8 @@ msgid "C4D_MouseSelect"
 msgstr "C4D_MouseSelect"
 
 #: sdk/definition/category.xml:66(col)
-#, fuzzy
 msgid "Objekt mit der Maus anwählbar, MouseSelection(int player)-Callback im Objekt."
-msgstr "Object can be clicked with the mouse, causing a MouseSelection(int iPlr) callback in the object."
+msgstr "Object can be clicked with the mouse, causing a MouseSelection(int player) callback in the object."
 
 #: sdk/definition/category.xml:69(col)
 msgid "C4D_Foreground"
