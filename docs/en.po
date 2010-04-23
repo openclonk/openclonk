@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-16 00:35+0200\n"
+"POT-Creation-Date: 2010-04-23 11:47+0200\n"
 "PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
@@ -2780,11 +2780,8 @@ msgstr "Blowing clonk"
 #: sdk/script/fn/GetWealth.xml:7(category)
 #: sdk/script/fn/GetTaggedPlayerName.xml:7(category)
 #: sdk/script/fn/GetSelectCount.xml:7(category)
-#: sdk/script/fn/GetScore.xml:7(category)
 #: sdk/script/fn/GetPlrViewMode.xml:7(category)
 #: sdk/script/fn/GetPlrView.xml:7(category)
-#: sdk/script/fn/GetPlrValueGain.xml:7(category)
-#: sdk/script/fn/GetPlrValue.xml:7(category)
 #: sdk/script/fn/GetPlrMagic.xml:7(category)
 #: sdk/script/fn/GetPlrKnowledge.xml:7(category)
 #: sdk/script/fn/GetPlrExtraData.xml:7(category)
@@ -2792,6 +2789,8 @@ msgstr "Blowing clonk"
 #: sdk/script/fn/GetPlrColor.xml:7(category)
 #: sdk/script/fn/GetPlayerType.xml:7(category)
 #: sdk/script/fn/GetPlayerTeam.xml:7(category)
+#: sdk/script/fn/GetPlayerScoreGain.xml:7(category)
+#: sdk/script/fn/GetPlayerScore.xml:7(category)
 #: sdk/script/fn/GetPlayerName.xml:7(category)
 #: sdk/script/fn/GetPlayerID.xml:7(category)
 #: sdk/script/fn/GetPlayerCount.xml:7(category)
@@ -2804,7 +2803,7 @@ msgstr "Blowing clonk"
 #: sdk/script/fn/GetBase.xml:7(category)
 #: sdk/script/fn/EliminatePlayer.xml:7(category)
 #: sdk/script/fn/DoWealth.xml:7(category)
-#: sdk/script/fn/DoScore.xml:7(category)
+#: sdk/script/fn/DoPlayerScore.xml:7(category)
 #: sdk/script/fn/DoHomebaseProduction.xml:7(category)
 #: sdk/script/fn/DoHomebaseMaterial.xml:7(category)
 #: sdk/script/fn/CreateScriptPlayer.xml:7(category)
@@ -7219,15 +7218,6 @@ msgstr "Returns the number of selected clonks of the specified player."
 msgid "Liefert die aktuelle Jahreszeit. 0 ist Winter, 50 Sommer."
 msgstr "Returns the current season. From 0 = winter through 50 = summer to 99 = again winter."
 
-#: sdk/script/fn/GetScore.xml:12(desc)
-msgid "Spieler-Nummer dessen Punkte zurück gegeben werden sollen."
-msgstr "Number of the player whose score you want to determine."
-
-#: sdk/script/fn/GetScore.xml:15(desc)
-#, fuzzy
-msgid "Liefert die Punkte die player hat."
-msgstr "Returns a player's score."
-
 #: sdk/script/fn/GetScenarioVal.xml:7(category)
 #: sdk/script/fn/GetPlayerVal.xml:7(category)
 #: sdk/script/fn/GetPlayerInfoCoreVal.xml:7(category)
@@ -7404,22 +7394,6 @@ msgstr "Returns the object which is followed by a player's view. If the player v
 msgid "Wurde die Sicht nicht durch den Script gesetzt (<placeholder-1/>), so folgt die Sicht dem aktuell selektiertem Clonk (außer im Sichtmodus \"Scroll\", siehe <placeholder-2/>). Dieser kann mit der Funktion <placeholder-3/> abgefragt werden."
 msgstr "If player view has been set using (<placeholder-1/>), the view will follow the selected clonk (unless in view mode \"Scroll\", see <placeholder-2/>). This can be determined using <placeholder-3/>."
 
-#: sdk/script/fn/GetPlrValueGain.xml:12(desc)
-msgid "Spieler, dessen Spielerwertgewinn gesucht wird."
-msgstr "Player whose value gain you want to determine."
-
-#: sdk/script/fn/GetPlrValueGain.xml:15(desc)
-msgid "Liefert die Änderung des Spielerwerts seit Beginn der Runde."
-msgstr "Returns the gain of player value since the beginning of the round."
-
-#: sdk/script/fn/GetPlrValue.xml:12(desc)
-msgid "Spieler, dessen Spielerwert gesucht wird."
-msgstr "Number of the player to check."
-
-#: sdk/script/fn/GetPlrValue.xml:15(desc)
-msgid "Liefert den Spielerwert (Wert aller Objekte im Besitz) eines Spielers."
-msgstr "Returns the player value (sum of all objects the player owns)."
-
 #: sdk/script/fn/GetPlrMagic.xml:12(desc)
 msgid "Spieler, dessen Magiewissen abgefragt wird."
 msgstr "Player whose magic knowledge you want to determine."
@@ -7559,6 +7533,25 @@ msgstr "Number of the player whose team you want to determine."
 #: sdk/script/fn/GetPlayerTeam.xml:15(desc)
 msgid "Liefert das Team eines Spielers. Hat der Spieler kein Team, wird 0 zurückgegeben."
 msgstr "Returns the team number of a player. If the player is not in a team, 0 is returned."
+
+#: sdk/script/fn/GetPlayerScoreGain.xml:12(desc)
+#, fuzzy
+msgid "Spieler, dessen Spielerpunktegewinn gesucht wird."
+msgstr "Player whose value gain you want to determine."
+
+#: sdk/script/fn/GetPlayerScoreGain.xml:15(desc)
+#, fuzzy
+msgid "Liefert die Änderung der Spielerpunkte seit Beginn der Runde."
+msgstr "Returns the gain of player value since the beginning of the round."
+
+#: sdk/script/fn/GetPlayerScore.xml:12(desc)
+msgid "Spieler-Nummer dessen Punkte zurück gegeben werden sollen."
+msgstr "Number of the player whose score you want to determine."
+
+#: sdk/script/fn/GetPlayerScore.xml:15(desc)
+#, fuzzy
+msgid "Liefert die Punkte die player hat."
+msgstr "Returns a player's score."
 
 #: sdk/script/fn/GetPlayerName.xml:15(desc)
 msgid "Liefert den Namen eines Spielers. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist."
@@ -9433,22 +9426,6 @@ msgstr "If greater than 0, this is the player number + 1 of the player for which
 msgid "Ändert den Sichtbarkeitszähler für das Scoreboard. Der intern verwaltete Zähler beginnt bei 0. Ist er größer als 0, wird das Scoreboard gezeigt. Ist er kleiner als 0, wird es verborgen. Ist er gleich 0, wird das Scoreboard nur dann gezeigt, wenn der Spieler die entsprechende Taste (normalweise Tab) drückt."
 msgstr "Sets the visibility counter of the scoreboard. This internal counter starts at 0. If the counter value is greater than 0, the scoreboard is visible. If it is less than 0, it is removed. If it is equal to 0, the scoreboard is visible when the player presses the corresponding keyboard key (usually Tab)."
 
-#: sdk/script/fn/DoScore.xml:12(desc)
-msgid "Spielernummer des Spielers, dessen Punktewert verändert werden soll"
-msgstr "Number of the player whose score you want to change."
-
-#: sdk/script/fn/DoScore.xml:13(desc)
-msgid "Positiv oder negativ: Die Veränderung des Punktewertes"
-msgstr "Change of score (positive or negative)."
-
-#: sdk/script/fn/DoScore.xml:16(desc)
-msgid "Verändert den Punktewert eines Spielers. Dieser Wert ergibt zusammen mit dem Spielerwert (Wert aller Objekte im Besitz) die Gesamtpunktezahl des Spielers."
-msgstr "Adjusts the score of a player. The score value combined with the player value (sum of all objects owned by a player) yields the total score for a scenario."
-
-#: sdk/script/fn/DoScore.xml:20(text)
-msgid "Zieht dem Spieler 100 Punkte ab."
-msgstr "Deducts 100 points from this player."
-
 #: sdk/script/fn/DoRGBaValue.xml:13(desc)
 msgid "Farbwert, der dazuaddiert werden soll."
 msgstr "Color value to be added."
@@ -9464,6 +9441,23 @@ msgstr "This function does not ensure maximum or minimum limits of color values.
 #: sdk/script/fn/DoRGBaValue.xml:33(text)
 msgid "Erniedriegt den Rotanteil des aktuell ausgewählten Clonks um 20."
 msgstr "Reduces the red part of the currently selected clonk by 20."
+
+#: sdk/script/fn/DoPlayerScore.xml:12(desc)
+msgid "Spielernummer des Spielers, dessen Punktewert verändert werden soll"
+msgstr "Number of the player whose score you want to change."
+
+#: sdk/script/fn/DoPlayerScore.xml:13(desc)
+msgid "Positiv oder negativ: Die Veränderung des Punktewertes"
+msgstr "Change of score (positive or negative)."
+
+#: sdk/script/fn/DoPlayerScore.xml:16(desc)
+#, fuzzy
+msgid "Verändert den Punktewert eines Spielers."
+msgstr "Changes the breath value of an object."
+
+#: sdk/script/fn/DoPlayerScore.xml:20(text)
+msgid "Zieht dem Spieler 100 Punkte ab."
+msgstr "Deducts 100 points from this player."
 
 #: sdk/script/fn/DoMagicEnergy.xml:12(desc)
 msgid "Veränderung des Magiewertes; positiv oder negativ"
@@ -11601,9 +11595,8 @@ msgid "Ein beliebiger Text."
 msgstr "Any text."
 
 #: sdk/script/Typechecks.xml:44(col)
-#, fuzzy
 msgid "Array"
-msgstr "Arrays"
+msgstr "Array"
 
 #: sdk/script/Typechecks.xml:45(col)
 msgid "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR."
@@ -11648,98 +11641,110 @@ msgid "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausd
 msgstr "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used."
 
 #: sdk/script/Typechecks.xml:74(text)
-msgid "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element."
-msgstr "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element."
+msgid "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element. Für negative Indizes wird vom Ende des Arrays gezählt, so dass <code>a[-1]</code> auf das letzte Element des Arrays zugreift."
+msgstr "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array."
 
-#: sdk/script/Typechecks.xml:75(h)
+#: sdk/script/Typechecks.xml:75(text)
+msgid "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code>-1</code> aufgefasst, falls sie nicht angegeben sind."
+msgstr "A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code>1<code> respectively if not given."
+
+#: sdk/script/Typechecks.xml:76(h)
 msgid "Beispiel 1"
 msgstr "Example 1"
 
-#: sdk/script/Typechecks.xml:86(text)
+#: sdk/script/Typechecks.xml:87(text)
 msgid "Diese Funktion summiert alle Elemente eines Arrays."
 msgstr "This function adds up all elements of an array."
 
-#: sdk/script/Typechecks.xml:87(h)
+#: sdk/script/Typechecks.xml:88(h)
 msgid "Beispiel 2"
 msgstr "Example 2"
 
-#: sdk/script/Typechecks.xml:93(text)
+#: sdk/script/Typechecks.xml:94(text)
 msgid "Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück."
 msgstr "This function randomly chooses one out of four ids and returns it."
 
-#: sdk/script/Typechecks.xml:96(h)
+#: sdk/script/Typechecks.xml:95(h)
+msgid "Beispiel 3"
+msgstr "Example 3"
+
+#: sdk/script/Typechecks.xml:104(text)
+msgid "Diese Funktion ruft <code>DoExplode()</code> auf die sechs naheliegendsten Dynamit-Objekte auf."
+msgstr "This function calls <code>DoExplode()</code> on the six nearest Dynamite objects."
+
+#: sdk/script/Typechecks.xml:106(h)
 msgid "Konvertierung"
 msgstr "Conversion"
 
-#: sdk/script/Typechecks.xml:98(text)
+#: sdk/script/Typechecks.xml:108(text)
 msgid "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
 msgstr "Consult the following table to determine which types can be converted and which conversions might cause errors:"
 
-#: sdk/script/Typechecks.xml:102(col)
+#: sdk/script/Typechecks.xml:112(col)
 msgid "nach -&gt;"
 msgstr "to -&gt;"
 
-#: sdk/script/Typechecks.xml:112(col)
-#: sdk/script/Typechecks.xml:113(col)
-#: sdk/script/Typechecks.xml:121(col)
 #: sdk/script/Typechecks.xml:122(col)
+#: sdk/script/Typechecks.xml:123(col)
 #: sdk/script/Typechecks.xml:131(col)
 #: sdk/script/Typechecks.xml:132(col)
-#: sdk/script/Typechecks.xml:135(col)
-#: sdk/script/Typechecks.xml:140(col)
+#: sdk/script/Typechecks.xml:141(col)
 #: sdk/script/Typechecks.xml:142(col)
-#: sdk/script/Typechecks.xml:149(col)
+#: sdk/script/Typechecks.xml:145(col)
+#: sdk/script/Typechecks.xml:150(col)
 #: sdk/script/Typechecks.xml:152(col)
-#: sdk/script/Typechecks.xml:158(col)
+#: sdk/script/Typechecks.xml:159(col)
 #: sdk/script/Typechecks.xml:162(col)
+#: sdk/script/Typechecks.xml:168(col)
+#: sdk/script/Typechecks.xml:172(col)
 msgid "OK"
 msgstr "OK"
 
-#: sdk/script/Typechecks.xml:114(col)
-#: sdk/script/Typechecks.xml:115(col)
-#: sdk/script/Typechecks.xml:116(col)
-#: sdk/script/Typechecks.xml:117(col)
-msgid "wenn 0"
-msgstr "if 0"
-
-#: sdk/script/Typechecks.xml:123(col)
 #: sdk/script/Typechecks.xml:124(col)
 #: sdk/script/Typechecks.xml:125(col)
 #: sdk/script/Typechecks.xml:126(col)
-#: sdk/script/Typechecks.xml:130(col)
+#: sdk/script/Typechecks.xml:127(col)
+msgid "wenn 0"
+msgstr "if 0"
+
 #: sdk/script/Typechecks.xml:133(col)
 #: sdk/script/Typechecks.xml:134(col)
-#: sdk/script/Typechecks.xml:139(col)
-#: sdk/script/Typechecks.xml:141(col)
+#: sdk/script/Typechecks.xml:135(col)
+#: sdk/script/Typechecks.xml:136(col)
+#: sdk/script/Typechecks.xml:140(col)
 #: sdk/script/Typechecks.xml:143(col)
 #: sdk/script/Typechecks.xml:144(col)
-#: sdk/script/Typechecks.xml:148(col)
-#: sdk/script/Typechecks.xml:150(col)
+#: sdk/script/Typechecks.xml:149(col)
 #: sdk/script/Typechecks.xml:151(col)
 #: sdk/script/Typechecks.xml:153(col)
-#: sdk/script/Typechecks.xml:157(col)
+#: sdk/script/Typechecks.xml:154(col)
+#: sdk/script/Typechecks.xml:158(col)
 #: sdk/script/Typechecks.xml:160(col)
 #: sdk/script/Typechecks.xml:161(col)
+#: sdk/script/Typechecks.xml:163(col)
+#: sdk/script/Typechecks.xml:167(col)
+#: sdk/script/Typechecks.xml:170(col)
+#: sdk/script/Typechecks.xml:171(col)
 msgid "Error"
 msgstr "Error"
 
-#: sdk/script/Typechecks.xml:159(col)
+#: sdk/script/Typechecks.xml:169(col)
 msgid "maybe"
 msgstr ""
 
-#: sdk/script/Typechecks.xml:166(h)
+#: sdk/script/Typechecks.xml:176(h)
 msgid "Erklärung der Tabelle:"
 msgstr "Additional information:"
 
-#: sdk/script/Typechecks.xml:168(li)
+#: sdk/script/Typechecks.xml:178(li)
 msgid "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
 msgstr "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
 
-#: sdk/script/Typechecks.xml:169(li)
+#: sdk/script/Typechecks.xml:179(li)
 msgid "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
 msgstr ""
 
-#: sdk/script/Typechecks.xml:170(li)
+#: sdk/script/Typechecks.xml:180(li)
 msgid "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 msgstr ""
 
@@ -20046,6 +20051,15 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:73(text)
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
+
+#~ msgid "Spieler, dessen Spielerwert gesucht wird."
+#~ msgstr "Number of the player to check."
+
+#~ msgid "Liefert den Spielerwert (Wert aller Objekte im Besitz) eines Spielers."
+#~ msgstr "Returns the player value (sum of all objects the player owns)."
+
+#~ msgid "Verändert den Punktewert eines Spielers. Dieser Wert ergibt zusammen mit dem Spielerwert (Wert aller Objekte im Besitz) die Gesamtpunktezahl des Spielers."
+#~ msgstr "Adjusts the score of a player. The score value combined with the player value (sum of all objects owned by a player) yields the total score for a scenario."
 
 #~ msgid "Gibt den Namen des zweiten Spielers beim ersten Spieler aus."
 #~ msgstr "Displays the name of the second player for the first player."
