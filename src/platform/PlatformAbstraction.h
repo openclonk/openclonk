@@ -29,6 +29,27 @@
 #include <config.h>
 #endif // HAVE_CONFIG_H
 
+#ifdef _WIN32
+# ifndef _INC_WINDOWS
+#  ifdef _WIN64
+#   define WINVER 0x0501
+#   define _WIN32_WINDOWS 0x0501
+#   define _WIN32_WINNT  0x0501
+#   define _WIN32_IE 0x0501
+#  else
+#   define WINVER 0x0500
+#   define _WIN32_WINDOWS 0x0500
+#   define _WIN32_WINNT  0x0501
+#   define _WIN32_IE 0x0501
+#  endif
+#  define WIN32_LEAN_AND_MEAN
+#  ifndef NOMINMAX
+#   define NOMINMAX
+#  endif
+#  include <windows.h>
+#  include <mmsystem.h>
+# endif
+#endif
 
 
 #ifdef _MSC_VER
@@ -162,22 +183,7 @@ namespace std { template<typename T> inline T &move (T &t) { return t; } }
 
 
 
-#ifdef _WIN32
-
-#ifndef _INC_WINDOWS
-#define _WIN32_WINDOWS 0x0500
-#define _WIN32_WINNT  0x0501
-// For shlobj.h:
-#define _WIN32_IE 0x0501
-#define WINVER 0x0500
-//#define _WIN32_WINNT 0x0500
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <mmsystem.h>
-#endif
-
-#else // _WIN32
+#ifndef _WIN32
 
 // Windows integer types
 typedef uint32_t       DWORD;
