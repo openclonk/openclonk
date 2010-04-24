@@ -290,6 +290,7 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 extern "C"
 {
 /* avoid conflict with conflicting boolean typedefs */
+#undef __RPCNDR_H__
 #define boolean jpeg_boolean
 #include <jpeglib.h>
 #undef boolean
