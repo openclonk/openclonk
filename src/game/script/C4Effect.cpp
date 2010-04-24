@@ -698,8 +698,8 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	float fRot[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	if (pObj->r && pObj->Def->Rotateable)
 	{
-		fRot[0] = (float) cosf((float) (pObj->r * pi/180.0));
-		fRot[1] = (float) -sinf((float) (pObj->r * pi/180.0));
+		fRot[0] = (float) cosf((float) (pObj->r * M_PI/180.0));
+		fRot[1] = (float) -sinf((float) (pObj->r * M_PI/180.0));
 		fRot[2] = -fRot[1];
 		fRot[3] = fRot[0];
 		// rotated objects usually better burn from the center

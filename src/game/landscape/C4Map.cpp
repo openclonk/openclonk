@@ -86,7 +86,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
                           C4SLandscape &rLScape, C4TextureMap &rTexMap,
                           bool fLayers, int32_t iPlayerNum)
 {
-	double fullperiod= 20.0 * pi;
+	double fullperiod= 20.0 * M_PI;
 	BYTE ccol;
 	int32_t cx,cy;
 
@@ -128,7 +128,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
 		cy_natural=rnd_cy*natural/100.0;
 		cy_curve=sin(fullperiod*period/100.0*(float)cx/(float)MapWdt
-		             +2.0*pi*phase/100.0) * amplitude/100.0;
+		             +2.0*M_PI*phase/100.0) * amplitude/100.0;
 
 		cy=level0+BoundBy((int32_t)((float)maxrange*(cy_curve+cy_natural)),
 		                  -maxrange,+maxrange);

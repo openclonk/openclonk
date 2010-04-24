@@ -24,6 +24,11 @@
 #ifndef INC_C4Include
 #define INC_C4Include
 
+#ifdef _MSC_VER
+// Get non-standard <cmath> constants (M_PI etc.)
+#	define _USE_MATH_DEFINES
+#endif
+
 #include "PlatformAbstraction.h"
 #include "Standard.h"
 #include "C4Prototypes.h"
@@ -54,6 +59,7 @@
 #include <cctype>
 #include <cerrno>
 #include <climits>
+
 #include <cmath>
 #include <cstdarg>
 #include <cstddef>

@@ -33,7 +33,6 @@
 #include "StdMesh.h"
 
 #include <stdio.h>
-#include <math.h>
 #include <limits.h>
 
 // Global access pointer
@@ -819,7 +818,7 @@ bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 
 	default:
 		// Calculate rotation matrix
-		dang=pi*iAngle/18000.0;
+		dang=M_PI*iAngle/18000.0;
 		mtx[0]=cos(dang); mtx[1]=-sin(dang);
 		mtx[2]=sin(dang); mtx[3]= cos(dang);
 		// Blit source rect

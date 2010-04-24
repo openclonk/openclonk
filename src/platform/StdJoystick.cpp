@@ -33,7 +33,6 @@ static uint32_t dwStdGamepadMinY = 0;
 
 #include <windows.h>
 #include <windowsx.h>
-#include <math.h>
 
 uint32_t POV2Position(DWORD dwPOV, bool fVertical)
 {
@@ -44,7 +43,7 @@ uint32_t POV2Position(DWORD dwPOV, bool fVertical)
 		dAxis = 0.0;
 	// Angle: convert to linear value -100 to +100
 	else
-		dAxis = (fVertical ? -cos((dwPOV/100) * pi / 180.0) : sin((dwPOV/100) * pi / 180.0)) * 100.0;
+		dAxis = (fVertical ? -cos((dwPOV/100) * M_PI / 180.0) : sin((dwPOV/100) * M_PI / 180.0)) * 100.0;
 	// Gamepad configuration wants unsigned and gets 0 to 200
 	return (uint32_t) (dAxis + 100.0);
 }

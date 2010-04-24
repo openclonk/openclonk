@@ -2977,7 +2977,7 @@ static long FnAngle(C4AulContext *cthr, long iX1, long iY1, long iX2, long iY2, 
 		else return 270 * iPrec;
 	}
 
-	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / pi);
+	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
 
 	if (iX2>iX1 )
 	{
@@ -3000,7 +3000,7 @@ static long FnArcSin(C4AulContext *cthr, long iVal, long iRadius)
 	if (iVal > iRadius) return 0;
 	// calc arcsin
 	double f1 = iVal;
-	f1 = asin(f1/iRadius)*180.0/pi;
+	f1 = asin(f1/iRadius)*180.0/M_PI;
 	// return rounded angle
 	return (long) floor(f1+0.5);
 }
@@ -3012,7 +3012,7 @@ static long FnArcCos(C4AulContext *cthr, long iVal, long iRadius)
 	if (iVal > iRadius) return 0;
 	// calc arccos
 	double f1 = iVal;
-	f1 = acos(f1/iRadius)*180.0/pi;
+	f1 = acos(f1/iRadius)*180.0/M_PI;
 	// return rounded angle
 	return (long) floor(f1+0.5);
 }

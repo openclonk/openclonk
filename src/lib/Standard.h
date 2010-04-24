@@ -40,8 +40,6 @@ template <class T> inline int Sign(T val) { return val < 0 ? -1 : val > 0 ? 1 : 
 template <class T> inline void Swap(T &v1, T &v2) { T t = v1; v1 = v2; v2 = t; }
 template <class T> inline void Toggle(T &v) { v = !v; }
 
-const double pi = 3.14159265358979323846;
-
 inline int DWordAligned(int val)
 {
 	if (val%4) { val>>=2; val<<=2; val+=4; }
