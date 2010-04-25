@@ -320,9 +320,9 @@ bool SCopyNamedSegment(const char *szString, const char *szName, char *sTarget,
 	return true;
 }
 
-int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
+unsigned int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
 {
-	int iResult=0;
+	unsigned int iResult=0;
 	// Scan string
 	while (*szInStr)
 	{
@@ -337,9 +337,9 @@ int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
 	return iResult;
 }
 
-int SCharCountEx(const char *szString, const char *szCharList)
+unsigned int SCharCountEx(const char *szString, const char *szCharList)
 {
-	int iResult = 0;
+	unsigned int iResult = 0;
 	while ( *szCharList )
 	{
 		iResult += SCharCount( *szCharList, szString );

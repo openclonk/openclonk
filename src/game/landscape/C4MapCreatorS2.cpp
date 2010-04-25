@@ -518,7 +518,7 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 		for (int32_t i=10; i<=Turbulence; i*=10)
 		{
 			int32_t Seed2; Seed2=Seed;
-			for (int32_t l=0; l<=Lambda; ++l)
+			for (int32_t l=0; l<Lambda+1; ++l)
 			{
 				for (FIXED d=itofix(2); d<6; d+=FIXED10(15))
 				{

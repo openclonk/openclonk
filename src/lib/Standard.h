@@ -105,8 +105,8 @@ void SDelete(char *szString, int iLen, int iPosition=0);
 
 int  SCharPos(char cTarget, const char *szInStr, int iIndex=0);
 int  SCharLastPos(char cTarget, const char *szInStr);
-int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=NULL);
-int  SCharCountEx(const char *szString, const char *szCharList);
+unsigned int  SCharCount(char cTarget, const char *szInStr, const char *cpUntil=NULL);
+unsigned int  SCharCountEx(const char *szString, const char *szCharList);
 
 void SReplaceChar(char *str, char fc, char tc);
 
