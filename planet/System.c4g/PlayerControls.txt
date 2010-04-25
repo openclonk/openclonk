@@ -34,7 +34,7 @@
 	#
 	# with Mouse
 	# ---------------
-	# Aim
+	# Aim GUICursor GUIClick1 GUIClick2
 	#
 	# Gamepad controls
 	# -------------------------------------
@@ -54,6 +54,10 @@
 	
 	[ControlDef]
 	Identifier=Aim
+	DefaultDisabled=1
+
+	[ControlDef]
+	Identifier=GUICursor
 	DefaultDisabled=1
 	
 	[ControlDef]
@@ -222,6 +226,7 @@
 	Identifier=Backpack
 	GUIName=Backpack
 	GUIDesc=Open/close backpack
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Grab
@@ -346,6 +351,18 @@
 	
 	
 	# Menu control
+	
+	[ControlDef]
+	Identifier=GUIClick1
+	GUIName=Click
+	GUIDesc=Click selected or controlled GUI item
+	Hold=1
+
+	[ControlDef]
+	Identifier=GUIClick2
+	GUIName=Right click
+	GUIDesc=Right click selected or controlled GUI item
+	Hold=1
 	
 	[ControlDef]
 	Identifier=MenuOK
@@ -575,6 +592,18 @@
 		Priority=100
 		Control=UseAlt
 		
+		# click in gui
+		
+		[Assignment]
+		Key=Mouse1ButtonLeft
+		Priority=300
+		Control=GUIClick1
+
+		[Assignment]
+		Key=Mouse1ButtonRight
+		Priority=300
+		Control=GUIClick2
+		
 		# Zoom
 		
 		[Assignment]
@@ -682,6 +711,19 @@
 		Key=GameMouse1ButtonRight
 		Priority=100
 		Control=UseAlt
+		
+
+		# click in gui
+		
+		[Assignment]
+		Key=Mouse1ButtonLeft
+		Priority=300
+		Control=GUIClick1
+
+		[Assignment]
+		Key=Mouse1ButtonRight
+		Priority=300
+		Control=GUIClick2
 		
 		# Zoom
 		
@@ -938,6 +980,12 @@
 		[Assignment]
 		Key=GameMouse1Move
 		Control=Aim
+		Priority=50
+		
+		[Assignment]
+		Key=Mouse1Move
+		Control=GUICursor
+		Priority=100
 		
 		# Forced Throw
 		
@@ -974,7 +1022,7 @@
 		Key=CON_Down,CON_Use
 		Priority=150
 		Control=Drop
-
+		
 	# ======================================================================= #
 	#                              Interaction queue                          #
 	# ======================================================================= #

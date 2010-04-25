@@ -446,13 +446,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// open / close backpack
 	if (ctrl == CON_Backpack)
 	{
-		if (menu)
+		if (GetMenu())
 		{
-			menu->Close();
+			GetMenu()->Close();
 		}
 		else if(MaxContentsCount() > 2)
 		{
-			CreateRingMenu(nil,0,0,this);
+			// the x,y pos is wrong because the local coordinates of the clonk have been substracted
+			x += GetX();
+			y += GetY();
+			CreateRingMenu(nil,x,y,this);
 			// CreateRingMenu calls SetMenu(this) in the clonk,
 			// so after this call menu = the created menu
 			
@@ -461,12 +464,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				// put them in the menu
 				var item = GetItem(i);
-				var item_id = nil;
-				if (item) item_id = item->GetID();
-				menu->AddItem(item_id,nil,i);
+				GetMenu()->AddItem(item,nil,i);
 			}
 			// finally, show the menu.
-			menu->Show();
+			GetMenu()->Show();
 		}
 		return true;
 	}
@@ -480,7 +481,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	   For the rest of the control code, it looks like the x,y coordinates
 	   came from CON_Use.
 	  */
-	if ((using || menu) && ctrl == CON_Aim)
+	if (using && ctrl == CON_Aim)
 	{
 		if (alt) ctrl = CON_UseAlt;
 		else     ctrl = CON_Use;
@@ -533,13 +534,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	// if a menu is available, the control is forwarded to the menu
 	if (hot > 0)
 	{
-		if (this->~GetMenu())
-			this->GetMenu()->~SelectHotkey(hot-1);
-		else
-			this->~ControlHotkey(hot-1);
+		this->~ControlHotkey(hot-1);
 		return true;
 	}
 	
@@ -549,13 +546,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (using && ctrl == CON_CancelUse)
 	{
 		CancelUse();
-		return true;
-	}
-	
-	// cancel menu
-	if (menu && ctrl == CON_CancelMenu)
-	{
-		CancelMenu();
 		return true;
 	}
 	
@@ -911,28 +901,29 @@ private func StopUseDelayedControl(control, object obj)
 private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
 
-	// determine angle by control type
-	var angle;
-	if (PlayerHasVirtualCursor(GetOwner()))
-		angle = Angle(0,0,mlastx,mlasty);
-	else
-		angle = Angle(0,0,x,y);
+	/* all this stuff is already done on a higher layer - in playercontrol.c
+	   now this is just the same for gamepad control */
+	   
+	if (!PlayerHasVirtualCursor(GetOwner()))
+		return false;
+
+
+	// fix pos of x and y
+	var mex = mlastx+GetX()-GetMenu()->GetX();
+	var mey = mlasty+GetY()-GetMenu()->GetY();
 	
 	// update angle for visual effect on the menu
 	if (repeat)
 	{	
-		if (ctrl == CON_Use || ctrl == CON_UseDelayed
-		 || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->~UpdateCursor(angle);
+		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+			this->GetMenu()->~UpdateCursor(mex,mey);
 	}
 	// click on menu
 	if (release)
 	{
 		// select
-		if (ctrl == CON_Use || ctrl == CON_UseDelayed)
-			this->GetMenu()->Select(angle, false);
-		if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->Select(angle, true);
+		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+			this->GetMenu()->Select(mex,mey, ctrl == CON_UseAltDelayed);
 	}
 	
 	return true;
@@ -1174,7 +1165,7 @@ private func VirtualCursor()
 	}
 	if (!virtual_cursor)
 	{
-		virtual_cursor=CreateObject(GUI_Crosshair,0,0,GetOwner());
+		virtual_cursor = CreateObject(GUI_Crosshair,0,0,GetOwner());
 	}
 	
 	return virtual_cursor;
@@ -1225,7 +1216,7 @@ func HasMenuControl()
 
 func SetMenu(object m)
 {
-	// multiple menus are currently not supported (yet)
+	// multiple menus are not supported
 	if (menu && m)
 	{
 		menu->Close();
@@ -1238,17 +1229,23 @@ func SetMenu(object m)
 		SetComDir(COMD_Stop);
 	
 		if (PlayerHasVirtualCursor(GetOwner()))
-			VirtualCursor()->StartAim(this);
+			VirtualCursor()->StartAim(this,false,menu);
 		else
-			SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+		{
+			SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+			SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
+			SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
+		}
 	}
 	// close menu
 	if (!menu)
 	{
 		if (PlayerHasVirtualCursor(GetOwner()))
 			VirtualCursor()->StopAim();
-		else
-			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+		
+		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
+		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
+		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
 	}
 }
 
@@ -1269,7 +1266,7 @@ func ReinitializeControls()
 		// if is aiming or in menu and no virtual cursor is there? Create one
 		if (!virtual_cursor)
 			if (menu || using)
-				VirtualCursor()->StartAim(this);
+				VirtualCursor()->StartAim(this,false,menu);
 	}
 	else
 	{

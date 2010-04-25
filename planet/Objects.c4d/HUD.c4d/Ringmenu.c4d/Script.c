@@ -16,6 +16,8 @@ func Construction()
 	menu_icons=[];
 	command_object=nil;
 	shown=false;
+	// parallaxity
+	this["Parallaxity"] = [0,0];
 }
 
 
@@ -25,7 +27,8 @@ global func CreateRingMenu(id symbol, int x, int y, object commander)
 {
 	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
 	if(!(this->~HasMenuControl())) return nil;
-	var menu=CreateObject(GUI_RingMenu,x,y+32,this->GetOwner());
+	var menu = CreateObject(GUI_RingMenu,0,0,this->GetOwner());
+	menu->SetPosition(x,y);
 	menu->SetMenu(this,commander);
 	menu->SetMenuIcon(symbol);
 	menu->Hide();
@@ -64,7 +67,7 @@ func SetMenuIcon(id symbol)
 }
 
 //adds an item, icon, amount, extra
-public func AddItem(id new_item, int amount, extra) 
+public func AddItem(new_item, int amount, extra) 
 { 
 	var index=GetLength(menu_icons);
 	menu_icons[index]=CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
@@ -83,13 +86,14 @@ public func AddItem(id new_item, int amount, extra)
 	return index;
 }
 
-//selects by angle alt=alternative selection
-public func Select(int angle, bool alt)
+//selects by dx,dy and alt=alternative selection
+public func Select(int dx, int dy, bool alt)
 {
 	var item_count=GetLength(menu_icons); 
 	if(!item_count) item_count = 1;
 	var segment=360/item_count;
 	var dvar=0;
+	var angle = Angle(0,0,dx,dy);
 	
 	for(var i=0; i<=item_count ; i++)
 	{ 
@@ -146,8 +150,9 @@ func Show()
 	shown=true;
 }
 
-public func UpdateCursor(int angle)
+public func UpdateCursor(int dx, int dy)
 {	
+	var angle = Angle(0,0,dx,dy);
 	var item_count=GetLength(menu_icons); 
 	if(!item_count) item_count = 1;
 	var segment=360/item_count;

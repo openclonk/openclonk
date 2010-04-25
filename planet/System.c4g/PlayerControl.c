@@ -29,6 +29,58 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		// Object controlled by plr
 		cursor->SetController(plr);
 		
+		// menu controls:
+		
+		if (cursor->~GetMenu())
+		{
+			// cancel menu
+			if (ctrl == CON_CancelMenu)
+			{
+				cursor->GetMenu()->Close();
+				return true;
+			}
+	
+			// hotkey to menu
+			var hot = 0;
+			if (ctrl == CON_Hotkey0) hot = 10;
+			if (ctrl == CON_Hotkey1) hot = 1;
+			if (ctrl == CON_Hotkey2) hot = 2;
+			if (ctrl == CON_Hotkey3) hot = 3;
+			if (ctrl == CON_Hotkey4) hot = 4;
+			if (ctrl == CON_Hotkey5) hot = 5;
+			if (ctrl == CON_Hotkey6) hot = 6;
+			if (ctrl == CON_Hotkey7) hot = 7;
+			if (ctrl == CON_Hotkey8) hot = 8;
+			if (ctrl == CON_Hotkey9) hot = 9;
+	
+			// forwarded to the menu
+			if (hot > 0)
+			{
+				cursor->GetMenu()->~SelectHotkey(hot-1);
+				return true;
+			}
+
+			if (ctrl == CON_GUIClick1 || ctrl == CON_GUIClick2 || ctrl == CON_GUICursor)
+			{
+				var menux = cursor->GetMenu()->GetX();
+				var menuy = cursor->GetMenu()->GetY();
+				
+				var dx = x-menux;
+				var dy = y-menuy;
+
+				if (ctrl == CON_GUICursor)
+				{
+					cursor->GetMenu()->~UpdateCursor(dx,dy);
+					return true;
+				}
+				else if (release == true)
+				{
+					cursor->GetMenu()->Select(dx,dy,ctrl == CON_GUIClick2);
+					return true;
+				}
+			}		
+		}
+		
 		// local coordinates
 		var cursorX = x, cursorY = y;
 		if(x != nil || y != nil)

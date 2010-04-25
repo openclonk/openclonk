@@ -21,6 +21,8 @@ protected func Construction()
 	myid = nil;
 	// visibility
 	this["Visibility"] = VIS_Owner;
+	// parallaxity
+	this["Parallaxity"] = [0,0];
 	size=1000;
 }
 
@@ -30,29 +32,30 @@ public func SetSize(int s)
 	SetObjDrawTransform(size,0,0,0,size,0,0);
 	SetObjDrawTransform(size,0,0,0,size,0,1);
 	SetAmount(GetAmount());
-	SetHotkey(GetHotkey());
 }
 
 public func ResetSize() { SetSize(1000); }
 
 
-public func SetSymbol(id obj)
+public func SetSymbol(obj)
 {
 
 	this["Visibility"] = VIS_Owner;
-	myid = obj;
 		
-	if(!myid) 
+	if(!obj) 
 	{	
 		SetGraphics(nil,nil,1);
 	}
 	else
 	{
-		SetGraphics(nil,myid,1,GFXOV_MODE_IngamePicture);
+		if (GetType(obj) == C4V_C4Object)
+			SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, obj);
+		else
+			SetGraphics(nil,obj,1,GFXOV_MODE_IngamePicture);
 		
-		SetName(myid->GetName());
+		SetName(obj->GetName());
 	}
-
+	myid = obj;
 }
 
 public func GetAmount()    { return amnt; }
@@ -63,7 +66,7 @@ public func GetSize()      { return size; }
 
 public func SetHotkey(int hotkey)
 {
-if(hotkey > 10 || hotkey <= 0)
+	if(hotkey > 10 || hotkey <= 0)
 	{
 		SetGraphics(nil,nil,5);
 	}
@@ -74,7 +77,7 @@ if(hotkey > 10 || hotkey <= 0)
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,5,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(150*size/1000,0,6500*size/1000,0,150*size/1000,-15000*size/1000, 5);
+		SetObjDrawTransform(300,0,6500,0,300,-15000, 5);
 		SetClrModulation(RGB(160,0,0),5);
 	}
 }
@@ -122,6 +125,7 @@ public func SetAmount(Amount)
 	}
 	else
 		SetGraphics(nil,nil,10);
-		}
+}
+
 
 

@@ -5,7 +5,7 @@
 	Virtual cursor for gamepad controls
 */
 
-local crew, angle, dirx, diry, xpos,ypos, analogaim, aiming;
+local crew, angle, dirx, diry, xpos,ypos, analogaim, aiming, menu;
 
 static const CURSOR_Radius = 100;
 
@@ -59,13 +59,26 @@ private func UpdateAnalogpadPos()
 	ypos = Cos(angle/10,-100);
 }
 
-public func StartAim(object clonk, bool stealth)
+public func StartAim(object clonk, bool stealth, object GUImenu)
 {
 	// only reinitialize angle if the crosshair hasn't been there before
 	if(!GetEffect("Move",this))
 	{
 		// which should basically be only the case on the first time aiming
 		angle = 800*(clonk->GetDir()*2-1);
+	}
+	
+	// gui or landscape mode:
+	if (GUImenu)
+	{
+		SetCategory(C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
+		menu = GUImenu;
+		this["Parallaxity"] = [0,0];
+	}
+	else
+	{
+		SetCategory(C4D_StaticBack | C4D_IgnoreFoW);
+		menu = nil;
 	}
 	
 	// set starting position for analog pad
@@ -90,7 +103,11 @@ private func UpdatePosition()
 	var x = +Sin(angle,CURSOR_Radius,10);
 	var y = -Cos(angle,CURSOR_Radius,10);
 	
-	SetPosition(crew->GetX()+x,crew->GetY()+y);
+	if (menu)
+		SetPosition(menu->GetX()+x,menu->GetY()+y);
+	else
+		SetPosition(crew->GetX()+x,crew->GetY()+y);
+		
 	crew->UpdateVirtualCursorPos();
 }
 
