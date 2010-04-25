@@ -1,2 +1,0 @@
-DE:Zielen
-US:Targets

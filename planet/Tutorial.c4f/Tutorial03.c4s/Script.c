@@ -1,17 +1,24 @@
-/* Targets */
+/* Tutorial 3 - Targets */
 
 func Initialize()
 {
+	CreateObject(Goal_ShootTheTargets,10,10);
+	ScriptGo(true);
 	CreateObject(Environment_Grass, 10, 10);
+	PlaceGrass(85);
 	CreateObject(Butterfly, 10, 10);
-	//CreateObject(PracticeTarget);
-	CreateObject(PracticeTarget,629,165,NO_OWNER);
-	CreateObject(PracticeTarget,332,295,NO_OWNER);
-	CreateObject(PracticeTarget,126,359,NO_OWNER);
-	CreateObject(PracticeTarget,788,531,NO_OWNER);
-	CreateObject(PracticeTarget,54,573,NO_OWNER);
-	CreateObject(PracticeTarget,853,396,NO_OWNER);
+	var balloon = CreateObject(TargetBalloon,332,295,NO_OWNER);
+	CreateObject(PracticeTarget,332,295,NO_OWNER)->SetAction("Attach",balloon);
+}
 
+func Script1()
+{
+	TutMsg("$MsgIntro0$");
+}
+
+func Script20()
+{
+	TutMsg("$MsgIntro1$");
 }
 
 func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)

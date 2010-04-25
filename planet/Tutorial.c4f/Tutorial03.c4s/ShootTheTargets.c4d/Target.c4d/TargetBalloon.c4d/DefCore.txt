@@ -1,0 +1,14 @@
+[DefCore]
+id=TargetBalloon
+Version=4,9,8
+Category=C4D_Vehicle
+MaxUserSelect=10
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=2
+VertexX=0,0
+VertexY=32,-32
+VertexFriction=50
+Value=10
+Mass=15

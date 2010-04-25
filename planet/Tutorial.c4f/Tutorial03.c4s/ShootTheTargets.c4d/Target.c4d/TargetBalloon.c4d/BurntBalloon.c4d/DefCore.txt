@@ -1,0 +1,15 @@
+[DefCore]
+id=BurntBalloon
+Version=4,9,8
+Category=C4D_Vehicle
+MaxUserSelect=10
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=2
+VertexX=0,0
+VertexY=10,-32
+VertexFriction=100
+Value=10
+Mass=15
+Rotate=1

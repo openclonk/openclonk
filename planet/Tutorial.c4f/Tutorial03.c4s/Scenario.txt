@@ -1,6 +1,6 @@
 [Head]
 Icon=26
-Title=Targets
+Title=Tutorial 3
 Version=4,10
 Difficulty=10
 Access=1

@@ -1,0 +1,2 @@
+MsgIntro0=Welcome to the firing range. Here, you'll learn the basics of ranged combat, primarily how to use the bow.
+MsgIntro1=Hold down the mouse button to draw an arrow. Fire the arrow by releasing the mouse button.
