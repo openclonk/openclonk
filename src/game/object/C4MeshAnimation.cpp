@@ -512,9 +512,9 @@ bool C4ValueProviderAction::Execute()
 	const int32_t delay = pActionDef->GetPropertyInt(P_Delay);
 
 	if (delay)
-		Value = itofix(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ftofix(animation->Length);
+		Value = itofix(Action.Phase * delay + Action.PhaseDelay) * ftofix(animation->Length) / (delay * length);
 	else
-		Value = itofix(Action.Phase) / length * ftofix(animation->Length);
+		Value = itofix(Action.Phase) * ftofix(animation->Length) / length;
 
 	return true;
 }
