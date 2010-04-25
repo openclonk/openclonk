@@ -7,7 +7,7 @@ local count;
 func Initialize()
 {
 	SetPosition(); //remove silly offset
-	count=1;
+	count=0;
 	HideSettlementScoreInEvaluation(true); 
 	inherited(...);
 }
@@ -15,17 +15,20 @@ func Initialize()
 global func HasHitTarget()
 {
 	FindObject(Find_ID(Goal_ShootTheTargets))->TargetCounter();
+	OnTargetDeath(FindObject(Find_ID(Goal_ShootTheTargets))->LocalN("count"));
 }
 
 public func TargetCounter()
 {
 	++count;
 	var i = count;
-	if(i == 2) MakeTarget(126,359,true);
-	if(i == 3) MakeTarget(629,185,true);
-	if(i == 4) MakeTarget(54,573,false);
-	if(i == 5) MakeTarget(853,396,true);
-	if(i == 6) MakeTarget(788,531,true);
+	if(i == 1) MakeTarget(349,349,true);
+	if(i == 2) MakeTarget(538,362,true);
+	if(i == 3) MakeTarget(1253,310,true);
+	if(i == 4) MakeTarget(982,247,true);
+	if(i == 5) MakeTarget(720,578,false);
+	if(i == 6) MakeTarget(1380,239,true);
+	if(i == 7) MakeTarget(1413,530,true);
 }
 
 protected func MakeTarget(int ix, int iy, bool flying)
@@ -49,7 +52,7 @@ protected func MakeTarget(int ix, int iy, bool flying)
 
 public func IsFulfilled()
 {
-	if(count==7) return true;
+	if(count == 8) return true;
 	else
 		return false;
 }

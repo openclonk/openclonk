@@ -1,4 +1,5 @@
 #appendto Arrow
+#appendto Javelin
 
 public func SetStackCount(int amount)
 {

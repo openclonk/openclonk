@@ -1,8 +1,0 @@
-Name=Tutorial
-
-#Respawn
-MsgRespawn0=%s tries again.
-MsgRespawn1=%s has died.
-MsgRespawn2=Haha, %s!
-MsgRespawn3=We're mourning %s.
-MsgNewRespawn=You'll now respawn here.

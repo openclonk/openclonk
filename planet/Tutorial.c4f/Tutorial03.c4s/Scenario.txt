@@ -1,11 +1,9 @@
 [Head]
-Icon=26
+Icon=4
 Title=Tutorial 3
 Version=4,10
-Difficulty=10
 Access=1
-MaxPlayer=8
-NoInitialize=0
+MaxPlayer=1
 ForcedGfxMode=1
 
 [Definitions]
