@@ -24,7 +24,7 @@ material Clonk_Body
 				texture Clonk.png
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op_ex blend_texture_alpha src_texture src_current
+				colour_op_ex blend_current_alpha src_current src_texture
 				// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
 				alpha_op_ex add src_current src_texture
 			}
