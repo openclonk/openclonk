@@ -157,8 +157,26 @@ public func Connect(object obj1, object obj2)
 	return;
 }
 
-func CheckLenghtAuto()
+func AccumulateForces()
 {
+	var obj = objects[1];
+	if(obj->Contained()) obj = obj->Contained();//Log("----------------");
+	for(var i = 0; i < point_count; i++)
+	{
+		var fx = 0, fy = 0, angle;
+		if(i < point_count-2)
+		{
+			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i+1][0][0], particles[i+1][0][1]);
+			fx = Sin(angle, 5*Rope_Precision);
+			fy =-Cos(angle, 5*Rope_Precision);
+//			Log("%d %d - %d°", fx, fy, angle);
+		}
+		particles[i][2] = [fx,fy+1*Rope_Precision];
+	}
+}
+
+func CheckLenghtAuto()
+{//return;
 	if(length_auto == 2) return;
 	var obj = objects[1];
 	if(obj == nil) return;
@@ -176,7 +194,20 @@ func ConnectLoose()
 
 func ConnectPull()
 {
-	if(length_auto != 0) wait_pull = 10;;
+	if(length_auto == 2)
+	{
+		var obj = objects[1];
+		if(obj->Contained()) obj = obj->Contained();
+		// Vector r of the last segment
+		var r = Vec_Sub(particles[-1][0],particles[-3][0]);
+		r = [-r[1], r[0]]; // Get the orthogonal vector
+		r = Vec_Normalize(r, 100); // Make it lenght 0
+		var v = [obj->GetXDir(Rope_Precision), obj->GetYDir(Rope_Precision)]; // Get the speed vector
+		var projection = Vec_Dot(r, Vec_Mul(v, 100))/10000; // Projekt the speed on the orthogonal vector
+		obj->SetXDir(r[0]*projection/100, Rope_Precision);
+		obj->SetYDir(r[1]*projection/100, Rope_Precision);
+	}
+//	if(length_auto != 0) wait_pull = 10;;
 	length_auto = 0;
 	particles[point_count-1][3] = Weight;
 }
@@ -217,11 +248,12 @@ func Verlet(fFirst)
 		particles[i][1] = temp;
 	}
 }
+local length_vertex;
 
 func UpdateLines()
 {
 	var fTimeStep = 1;
-	var length_all = 0;//Log("----");
+	length_vertex = 0;//Log("----");
 	var redo = 0;
 	for(var i=0; i < point_count; i++)
 	{
@@ -234,7 +266,7 @@ func UpdateLines()
 		{
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
 			distance = Distance(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
-			length_all += distance;
+			length_vertex += distance;
 //			Log("%d %d", distance, Rope_PointDistance*Rope_Precision);
 		}
 		SetSegmentTransform(segments[i], -angle, particles[i][0][0]*10-GetPartX(i)*1000,particles[i][0][1]*10-GetPartY(i)*1000, distance+200);
@@ -243,9 +275,10 @@ func UpdateLines()
 //	Log("=== %d %d", length_all, Rope_PointDistance*Rope_Precision*point_count);
 	var obj = objects[1];
 	if(obj->Contained()) obj = obj->Contained();
-	var percent = length_all*100/(length*Rope_Precision);
-//	obj->Message("%d %d|%d", percent, wait_pull,point_count);
-	if(length_auto && percent > 120) { DoLength(1, 1); redo = 1;}
+	var percent = length_vertex*100/(length*Rope_Precision);
+	var normal_percent = length*4/10 + 62; // Adapt the length to the normal bending of the rope (values are from tests ingame)
+//	obj->Message("%d %d|%d", percent, normal_percent,point_count);
+	if(length_auto && percent > normal_percent) { DoLength(1, 1); redo = 1;}
 //	else if(length_auto && Distance(particles[-2][0][0], particles[-2][0][1], particles[-1][0][0], particles[-1][0][1]) <
 //		Rope_PointDistance*Rope_Precision*3/4) DoLength(-1);
 //	else if(length_auto && Distance(particles[-3][0][0], particles[-3][0][1], particles[-1][0][0], particles[-1][0][1]) <
@@ -355,12 +388,12 @@ func SatisfyConstraints()
 			var x2 = particles[i+1][0];
 			var invmass1 = particles[i][3];
 			var invmass2 = particles[i+1][3];
-			if(invmass1 != 0 && invmass2 != 0)
+/*			if(invmass1 != 0 && invmass2 != 0)
 			{
 				var tmp = invmass1;
 				invmass1 = invmass2;
 				invmass2 = tmp;
-			}
+			}*/
 			// calculate difference
 			var delta = Vec_Sub(x2,x1);
 			var deltalength = Sqrt(Vec_Dot(delta,delta));
@@ -419,6 +452,7 @@ func LogArray()
 }
 
 func TimeStep() {
+	AccumulateForces();
 	CheckLenghtAuto();
 	Verlet();
 	if(length_auto) DoLength(-1);
@@ -432,6 +466,8 @@ func Vec_Add(array x, array y) { return [x[0]+y[0], x[1]+y[1]]; }
 func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
 func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
 func Vec_Dot(array x, array y) { return x[0]*y[0]+x[1]*y[1];    }
+func Vec_Length(array x) { return Sqrt(x[0]*x[0]+x[1]*x[1]); }
+func Vec_Normalize(array x, int precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
 
 protected func Definition(def) {
 	SetProperty("Name", "$Name$", def);
