@@ -1,3 +1,9 @@
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
 #Intro: Clonk selection
 MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the gold plateau on the far right side with both your clonks.
 MsgTutClonks=In this tutorial you have two clonks, the clonk you are currently controlling can not do a lot since it is trapped.
@@ -22,7 +28,7 @@ MsgTutRopeladder=Grab a ropeladder from the chest. Go to the location indicated 
 MsgTutUnfold=Move slowly to the edge of the cliff. You can use the ropeladder by clicking in the landscape. Use the left mousebutton if you are holding the ladder in your left hand or the right button otherwise. Click to the left of your clonk to roll the ropeladder over the edge of the cliff
 
 #Part XX: Dynamite Box
-MsgTutUpwards=Ah good, your other clonk can get into the cave. There seems to be some blasting work ahead so don't forget to grab some dynamite from the chest. Move your clonk with some dynamite to the rock indicated by the arrow.
+MsgTutUpwards=Ah good, your other clonk can get into the cave. There seems to be some blasting work ahead so don't forget to grab some dynamite from the chest. Move your clonk with some dynamite to the location indicated by the arrow.
 MsgTutBroughtDyna=Ok you've brought the dynamite. You can place up to five dynamite sticks into the landscape, this is done by pressing the mousebutton somewhere near the clonk. 
 MsgTutPlaceDyna=In order to blow up the rock place five dynamite sticks around the position indicated by the arrow. Do not click again after that!
 MsgTutDetonate=Ok now you've placed the five dynamite sticks, move away a little, and then press the mousebutton again to detonate the dynamite.

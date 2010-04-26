@@ -1,2 +1,8 @@
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
 MsgIntro0=Welcome to OpenClonk!
 MsgIntro1=This is your Clonk.

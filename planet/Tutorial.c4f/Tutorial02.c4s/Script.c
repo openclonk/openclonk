@@ -44,6 +44,8 @@ protected func Initialize()
 	
 	// Scriptcounter.
 	ScriptGo(true);
+	// Dialogue options -> repeat round.
+	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -239,12 +241,14 @@ func Script340()
 {
 	if (!FindObject(Find_Distance(20, 820, 390), Find_OCF(OCF_CrewMember)))
 		goto(339);
-	else
-		TutMsg("@$MsgTutGrappleBows$");
+	TutMsg("@$MsgTutGrappleBows$");
+	TutArrowClear();	
 }
 
 func Script360()
 {
 	TutMsg("@$MsgTutSwingAcross$");
+	// Dialogue options -> next round. //TODO somewhere else
+	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 }
 

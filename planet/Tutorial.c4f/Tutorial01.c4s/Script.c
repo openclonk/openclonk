@@ -25,6 +25,9 @@ private func ScenarioInit()
 	goal->AddCheckpoint(880, 650);
 	
 	g_wasinit = true;
+	
+	// Dialogue options -> repeat round.
+	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return true;
 }
 

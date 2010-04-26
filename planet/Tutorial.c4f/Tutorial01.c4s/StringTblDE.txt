@@ -1,2 +1,8 @@
+# Dialogue options
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=Runde &wiederholen
+MsgRepeatRoundDesc=Diese Runde wiederholen.
+
 MsgIntro0=Willkommen bei OpenClonk!
 MsgIntro1=Dies ist dein Clonk.

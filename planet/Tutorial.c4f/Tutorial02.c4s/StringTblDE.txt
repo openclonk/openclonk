@@ -1,3 +1,9 @@
+# Dialogue options
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=Runde &wiederholen
+MsgRepeatRoundDesc=Diese Runde wiederholen.
+
 #Intro: Clonk selection
 MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the gold plateau on the far right side with both your clonks.
 MsgTutClonks=In this tutorial you have two clonks, the clonk you are currently controlling can not do a lot since it is trapped.
