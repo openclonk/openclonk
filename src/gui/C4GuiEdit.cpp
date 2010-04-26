@@ -605,9 +605,12 @@ namespace C4GUI
 			// default frame color
 			Draw3DFrame(cgo);
 		// clipping
-		float cx0,cy0,cx1,cy1; bool fClip, fOwnClip;
+		int cx0,cy0,cx1,cy1; bool fClip, fOwnClip;
 		fClip = lpDDraw->GetPrimaryClipper(cx0,cy0,cx1,cy1);
-		fOwnClip = lpDDraw->SetPrimaryClipper(rcClientRect.x+cgo.TargetX-2,rcClientRect.y+cgo.TargetY,rcClientRect.x+rcClientRect.Wdt+cgo.TargetX+1,rcClientRect.y+rcClientRect.Hgt+cgo.TargetY);
+		float nclx1 = rcClientRect.x+cgo.TargetX-2, ncly1 = rcClientRect.y+cgo.TargetY, nclx2 = rcClientRect.x+rcClientRect.Wdt+cgo.TargetX+1, ncly2 = rcClientRect.y+rcClientRect.Hgt+cgo.TargetY;
+		lpDDraw->ApplyZoom(nclx1, ncly1);
+		lpDDraw->ApplyZoom(nclx2, ncly2);
+		fOwnClip = lpDDraw->SetPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
 		// get usable height of edit field
 		int32_t iHgt = pFont->GetLineHeight(), iY0;
 		if (rcClientRect.Hgt <= iHgt)

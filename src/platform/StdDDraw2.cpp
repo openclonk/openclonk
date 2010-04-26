@@ -426,10 +426,10 @@ bool CStdDDraw::SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf)
 	return true;
 }
 
-bool CStdDDraw::SubPrimaryClipper(float iX1, float iY1, float iX2, float iY2)
+bool CStdDDraw::SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 {
 	// Set sub primary clipper
-	SetPrimaryClipper(Max(iX1,fClipX1),Max(iY1,fClipY1),Min(iX2,fClipX2),Min(iY2,fClipY2));
+	SetPrimaryClipper(Max(iX1,iClipX1),Max(iY1,iClipY1),Min(iX2,iClipX2),Min(iY2,iClipY2));
 	return true;
 }
 
@@ -447,13 +447,11 @@ bool CStdDDraw::RestorePrimaryClipper()
 	return true;
 }
 
-bool CStdDDraw::SetPrimaryClipper(float iX1, float iY1, float iX2, float iY2)
+bool CStdDDraw::SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 {
 	// set clipper
 	fClipX1=iX1; fClipY1=iY1; fClipX2=iX2; fClipY2=iY2;
-	float fZClipX1=fClipX1, fZClipY1=fClipY1, fZClipX2=fClipX2, fZClipY2=fClipY2;
-	ApplyZoom(fZClipX1, fZClipY1); ApplyZoom(fZClipX2, fZClipY2);
-	iClipX1=int32_t(fZClipX1); iClipY1=int32_t(fZClipY1); iClipX2=int32_t(fZClipX2); iClipY2=int32_t(fZClipY2);
+	iClipX1=iX1; iClipY1=iY1; iClipX2=iX2; iClipY2=iY2;
 	UpdateClipper();
 	// Done
 	return true;
@@ -861,7 +859,7 @@ bool CStdDDraw::CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes)
 	// simply setup primary viewport
 	// assume no zoom has been set yet
 	assert(Zoom==1.0f);
-	SetPrimaryClipper(0, 0, float(iXRes - 1), float(iYRes - 1));
+	SetPrimaryClipper(0, 0, iXRes - 1, iYRes - 1);
 	StorePrimaryClipper();
 	return true;
 }
@@ -1266,7 +1264,7 @@ void CStdDDraw::Grayscale(SURFACE sfcSfc, int32_t iOffset)
 	sfcSfc->Unlock();
 }
 
-bool CStdDDraw::GetPrimaryClipper(float &rX1, float &rY1, float &rX2, float &rY2)
+bool CStdDDraw::GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2)
 {
 	// Store drawing clip values
 	rX1=fClipX1; rY1=fClipY1; rX2=fClipX2; rY2=fClipY2;

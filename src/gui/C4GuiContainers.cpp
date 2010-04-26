@@ -285,9 +285,12 @@ namespace C4GUI
 		C4Rect &rcClientRect = GetClientRect();
 		C4Rect &rcClipArea = (IsComponentOutsideClientArea() ? GetBounds() : GetClientRect());
 		// clip to window area
-		float clx1, cly1, clx2, cly2;
+		int clx1, cly1, clx2, cly2;
 		lpDDraw->GetPrimaryClipper(clx1, cly1, clx2, cly2);
-		lpDDraw->SubPrimaryClipper(cgo.TargetX+rcClipArea.x, cgo.TargetY+rcClipArea.y, cgo.TargetX+rcClipArea.x+rcClipArea.Wdt-1, cgo.TargetY+rcClipArea.y+rcClipArea.Hgt-1);
+		float nclx1 = cgo.TargetX+rcClipArea.x, ncly1 = cgo.TargetY+rcClipArea.y, nclx2 = cgo.TargetX+rcClipArea.x+rcClipArea.Wdt-1, ncly2 = cgo.TargetY+rcClipArea.y+rcClipArea.Hgt-1;
+		lpDDraw->ApplyZoom(nclx1, ncly1);
+		lpDDraw->ApplyZoom(nclx2, ncly2);
+		lpDDraw->SubPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
 		// update target area
 		cgo.TargetX += rcClientRect.x; cgo.TargetY += rcClientRect.y;
 		// draw contents

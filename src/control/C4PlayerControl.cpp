@@ -1148,8 +1148,8 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	if (!vp) return false;
 	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
 	// game coordinate to screen coordinates...
-	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->Zoom;
-	float screen_y = (float(game_y) - vp->last_game_draw_cgo.TargetY - vp->last_game_draw_cgo.Y) * vp->Zoom;
+	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->GetZoom();
+	float screen_y = (float(game_y) - vp->last_game_draw_cgo.TargetY - vp->last_game_draw_cgo.Y) * vp->GetZoom();
 	// ...and screen coordinates to GUI coordinates (might push this into a helper function of C4Viewport?)
 	float gui_x = (screen_x - vp->last_game_draw_cgo.X) / C4GUI::GetZoom() + vp->last_game_draw_cgo.X;
 	float gui_y = (screen_y - vp->last_game_draw_cgo.Y) / C4GUI::GetZoom() + vp->last_game_draw_cgo.Y;

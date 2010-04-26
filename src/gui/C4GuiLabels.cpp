@@ -212,7 +212,7 @@ namespace C4GUI
 	void MultilineLabel::DrawElement(C4TargetFacet &cgo)
 	{
 		// get clipping
-		float iClipX, iClipY, iClipX2, iClipY2;
+		int iClipX, iClipY, iClipX2, iClipY2;
 		lpDDraw->GetPrimaryClipper(iClipX, iClipY, iClipX2, iClipY2);
 		// draw all lines
 		int32_t iIndex = 0; const char *szLine;

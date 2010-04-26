@@ -36,6 +36,8 @@ extern C4Game Game;
 
 const float C4GFX_ZoomStep = 1.1040895f;
 
+#define C4FOW_Def_View_RangeX 500
+
 class C4GraphicsSystem
 {
 public:

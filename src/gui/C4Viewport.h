@@ -91,9 +91,8 @@ public:
 	// facets used for last drawing operations
 	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;
 	// factor between "landscape" and "display"
-	float Zoom;
-	float ZoomTarget;
 	bool fIsNoOwnerViewport; // this viewport is found for searches of NO_OWNER-viewports; even if it has a player assigned (for network obs)
+	float GetZoom() { return Zoom; }
 	void Default();
 	void Clear();
 	void Execute();
@@ -114,6 +113,8 @@ public:
 	int32_t GetPlayer() { return Player; }
 	void CenterPosition();
 protected:
+	float Zoom;
+	float ZoomTarget;
 	int32_t Player;
 	bool PlayerLock;
 	int32_t OutX,OutY;

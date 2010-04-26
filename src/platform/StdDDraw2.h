@@ -258,9 +258,9 @@ public:
 	bool SetPrimaryPaletteQuad(BYTE *pBuf);
 	bool AttachPrimaryPalette(SURFACE sfcSurface);
 	// Clipper
-	bool GetPrimaryClipper(float &rX1, float &rY1, float &rX2, float &rY2);
-	bool SetPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
-	bool SubPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
+	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
+	bool SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
+	bool SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
 	bool StorePrimaryClipper();
 	bool RestorePrimaryClipper();
 	bool NoPrimaryClipper();

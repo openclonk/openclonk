@@ -2012,8 +2012,8 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		Menu->SetPermanent(true);
 		Menu->SetAlignment(C4MN_Align_Free);
 		C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
-		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->Zoom,
-			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->Zoom);
+		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->GetZoom(),
+			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->GetZoom());
 		// Add info item
 		fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, false, pTarget->Color, pTarget);
 		Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, NULL, pTarget->GetInfoString().getData());

@@ -49,8 +49,6 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
-#define C4FOW_Def_View_RangeX 500
-
 C4Player::C4Player() : C4PlayerInfoCore()
 {
 	Default();
