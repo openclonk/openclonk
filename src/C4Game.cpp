@@ -2239,6 +2239,16 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		}
 	}
 
+	// Denumerate game data pointers
+	if (!fLoadSection) ScriptEngine.DenumerateVariablePointers();
+	if (!fLoadSection && pGlobalEffects) pGlobalEffects->DenumeratePointers();
+
+	// Check object enumeration
+	if (!CheckObjectEnumeration()) return false;
+
+	// Okay; everything in denumerated state from now on
+	PointersDenumerated = true;
+
 	// Environment
 	if (!C4S.Head.NoInitialize && fLandscapeLoaded)
 	{
@@ -2259,16 +2269,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 
 	// FoW-color
 	FoWColor = C4S.Game.FoWColor;
-
-	// Denumerate game data pointers
-	if (!fLoadSection) ScriptEngine.DenumerateVariablePointers();
-	if (!fLoadSection && pGlobalEffects) pGlobalEffects->DenumeratePointers();
-
-	// Check object enumeration
-	if (!CheckObjectEnumeration()) return false;
-
-	// Okay; everything in denumerated state from now on
-	PointersDenumerated = true;
 
 	SetInitProgress(96);
 
