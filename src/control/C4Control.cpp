@@ -45,6 +45,10 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
+#ifndef NOAULDEBUG
+#include <C4AulDebug.h>
+#endif
+
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()
 		: iByClient(::Control.ClientID())
@@ -285,6 +289,13 @@ void C4ControlScript::Execute() const
 		// default: Fallback to global context
 		pScript = &::ScriptEngine;
 	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script"));
+#ifndef NOAULDEBUG
+	C4AulDebug* pDebug;
+	if (pDebug = ::ScriptEngine.GetDebugger())
+	{
+		pDebug->ControlScriptEvaluated(szScript, rVal.GetDataString().getData());
+	}
+#endif
 	// show messages
 	if (!fInternal)
 	{

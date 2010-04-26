@@ -58,6 +58,8 @@ public:
 	bool Init(uint16_t iPort);
 	virtual bool Close();
 	virtual bool Close(const addr_t &addr);
+	
+	void ControlScriptEvaluated(const char* script, const char* result);
 
 	void OnLog(const char *szLine);
 	void DebugStep(C4AulBCC *pCPos);

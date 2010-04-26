@@ -179,7 +179,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "STR") || SEqualNoCase(szCmd, "R"))
 		eState = DS_StepOut;
 	else if (SEqualNoCase(szCmd, "EXC") || SEqualNoCase(szCmd, "E"))
-		::Control.DoInput(CID_Script, new C4ControlScript(szData, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(szData, C4ControlScript::SCOPE_Console, true), CDT_Decide);
 	else if (SEqualNoCase(szCmd, "PSE"))
 		if (Game.IsPaused())
 		{
@@ -428,6 +428,11 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 
 	// Do whatever we've been told.
 	Game.HaltCount--;
+}
+
+void C4AulDebug::ControlScriptEvaluated(const char* script, const char* result)
+{
+	SendLine("EVR", FormatString("%s=%s", script, result).getData());
 }
 
 const char* C4AulDebug::RelativePath(StdStrBuf &path)
