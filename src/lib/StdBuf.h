@@ -283,16 +283,10 @@ public:
 		return StdBuf(getData(), getSize());
 	}
 	// take over another buffer's contents
-	void Take(StdBuf & Buf2)
-	{
-		Take(Buf2.GrabPointer(), Buf2.getSize());
-	}
-#ifdef HAVE_RVALUE_REF
 	void Take(StdBuf RREF Buf2)
 	{
 		Take(Buf2.GrabPointer(), Buf2.getSize());
 	}
-#endif
 
 	// * File support
 	bool LoadFromFile(const char *szFile);
@@ -403,14 +397,13 @@ public:
 	// the StdBuf constructor. Without it, the const lvalue
 	// StdBuf constructor will be used, which will ref the contents
 	// instead of moving them.
-	StdStrBuf(StdStrBuf & Buf2, bool fCopy = false)
-//			: StdBuf(static_cast<StdStrBuf &>(Buf2), fCopy)
-			: StdBuf(Buf2, fCopy)
+	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+			: StdBuf(static_cast<StdStrBuf RREF>(Buf2), fCopy)
 	{ }
 
 #ifdef HAVE_RVALUE_REF
-	StdStrBuf(const StdStrBuf RREF Buf2, bool fCopy = true)
-			: StdBuf(std::move(Buf2), fCopy)
+	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
+			: StdBuf(Buf2, fCopy)
 	{ }
 #endif
 
@@ -455,11 +448,8 @@ public:
 
 	void Ref(const StdStrBuf &Buf2) { StdBuf::Ref(Buf2.getData(), Buf2.getSize()); }
 	StdStrBuf getRef() const { return StdStrBuf(getData(), getLength()); }
-	void Take(StdStrBuf & Buf2) { StdBuf::Take(Buf2); }
-#ifdef HAVE_RVALUE_REF
 	void Take(StdStrBuf RREF Buf2) { StdBuf::Take(std::move(Buf2)); }
-#endif
-	
+
 	void Clear() { StdBuf::Clear(); }
 	void Copy() { StdBuf::Copy(); }
 	void Copy(const char *pnData) { StdBuf::Copy(pnData, pnData ? std::strlen(pnData) + 1 : 0); }
