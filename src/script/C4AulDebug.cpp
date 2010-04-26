@@ -4,6 +4,7 @@
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4Log.h>
+#include <C4Object.h>
 
 #include "C4AulDebug.h"
 #include "C4AulExec.h"
@@ -179,7 +180,11 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "STR") || SEqualNoCase(szCmd, "R"))
 		eState = DS_StepOut;
 	else if (SEqualNoCase(szCmd, "EXC") || SEqualNoCase(szCmd, "E"))
-		::Control.DoInput(CID_Script, new C4ControlScript(szData, C4ControlScript::SCOPE_Console, true), CDT_Decide);
+	{
+		C4AulScriptContext* context = pExec->GetContext(pExec->GetContextDepth()-1);
+		int32_t objectNum = context && context->Obj ? context->Obj->Number : C4ControlScript::SCOPE_Global;
+		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true, true), CDT_Decide);
+	}
 	else if (SEqualNoCase(szCmd, "PSE"))
 		if (Game.IsPaused())
 		{
