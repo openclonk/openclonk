@@ -145,6 +145,9 @@ enum C4AulBCCType
 	AB_PAR_V,
 	AB_FUNC,    // function
 
+	AB_PARN_CONTEXT,
+	AB_VARN_CONTEXT,
+
 // prefix
 	AB_Inc1,  // ++
 	AB_Dec1,  // --
@@ -472,7 +475,7 @@ protected:
 	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
 	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
-	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false); // parse single script function
+	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false, C4AulScriptContext* context = NULL); // parse single script function
 
 	bool Parse(); // parse preparsed script; return if successfull
 	void ParseDescs(); // parse function descs
@@ -509,7 +512,7 @@ public:
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
 public:
-	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, enum Strict Strict = MAXSTRICT); // directly parse uncompiled script (WARG! CYCLES!)
+	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, enum Strict Strict = MAXSTRICT, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
 	void ResetProfilerTimes(); // zero all profiler times of owned functions
 	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 

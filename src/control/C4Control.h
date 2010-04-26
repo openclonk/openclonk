@@ -140,12 +140,13 @@ public:
 	C4ControlScript()
 			: iTargetObj(-1), fInternal(true)
 	{ }
-	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true)
-			: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true)
+	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true, bool fUseVarsFromCallerContext = false)
+			: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true), fUseVarsFromCallerContext(fUseVarsFromCallerContext)
 	{ }
 protected:
 	int32_t iTargetObj;
 	bool fInternal;         // silent execute
+	bool fUseVarsFromCallerContext;
 	StdStrBuf Script;
 public:
 	void SetTargetObj(int32_t iObj) { iTargetObj = iObj; }

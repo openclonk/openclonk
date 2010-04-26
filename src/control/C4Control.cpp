@@ -49,6 +49,8 @@
 #include <C4AulDebug.h>
 #endif
 
+#include <C4AulExec.h>
+
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()
 		: iByClient(::Control.ClientID())
@@ -288,7 +290,7 @@ void C4ControlScript::Execute() const
 	else
 		// default: Fallback to global context
 		pScript = &::ScriptEngine;
-	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script"));
+	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, C4AulScript::MAXSTRICT, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if (pDebug = ::ScriptEngine.GetDebugger())
@@ -324,6 +326,7 @@ void C4ControlScript::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
 	pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
+	pComp->Value(mkNamingAdapt(fUseVarsFromCallerContext, "UseVarsFromCallerContext", false));
 	pComp->Value(mkNamingAdapt(Script, "Script", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }

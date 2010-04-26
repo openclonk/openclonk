@@ -201,6 +201,14 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_PARN_V:
 				PushValue(pCurCtx->Pars[pCPos->Par.i]);
 				break;
+			
+			case AB_PARN_CONTEXT:
+				PushValueRef(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
+				break;
+
+			case AB_VARN_CONTEXT:
+				PushValueRef(AulExec.GetContext(AulExec.GetContextDepth()-2)->Vars[pCPos->Par.i]);
+				break;
 
 			case AB_VARN_R:
 				PushValueRef(pCurCtx->Vars[pCPos->Par.i]);
@@ -1206,7 +1214,7 @@ C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPass
 
 }
 
-C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, enum Strict Strict)
+C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, enum Strict Strict, C4AulScriptContext* context)
 {
 #ifdef DEBUGREC_SCRIPT
 	AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
@@ -1240,7 +1248,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// Parse function
 	try
 	{
-		pScript->ParseFn(pFunc, true);
+		pScript->ParseFn(pFunc, true, context);
 	}
 	catch (C4AulError *ex)
 	{

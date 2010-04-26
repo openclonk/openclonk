@@ -131,7 +131,8 @@ public:
 			Type(Type),
 			fJump(false),
 			iStack(0),
-			pLoopStack(NULL)
+			pLoopStack(NULL),
+			ContextToExecIn(NULL)
 	{ }
 	~C4AulParseState()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
@@ -142,6 +143,7 @@ public:
 	long cInt; // current int constant (long for compatibility with x86_64)
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
+	C4AulScriptContext* ContextToExecIn;
 	void Parse_Script();
 	void Parse_FuncHead();
 	void Parse_Desc();
@@ -846,6 +848,9 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_PAR_V: return "PAR_V";
 	case AB_FUNC: return "FUNC";    // function
 
+	case AB_PARN_CONTEXT: return "AB_PARN_CONTEXT";
+	case AB_VARN_CONTEXT: return "AB_VARN_CONTEXT";
+
 // prefix
 	case AB_Inc1: return "Inc1";  // ++
 	case AB_Dec1: return "Dec1";  // --
@@ -1028,6 +1033,8 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 	case AB_LOCALN_V:
 	case AB_GLOBALN_R:
 	case AB_GLOBALN_V:
+	case AB_PARN_CONTEXT:
+	case AB_VARN_CONTEXT:
 		iStack++;
 		break;
 
@@ -1290,7 +1297,7 @@ void C4AulParseState::UnexpectedToken(const char * Expected)
 	throw new C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly)
+void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContext* context)
 {
 	// check if fn overloads other fn (all func tables are built now)
 	// *MUST* check Fn->Owner-list, because it may be the engine (due to linked globals)
@@ -1303,6 +1310,7 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly)
 	Fn->Code = (C4AulBCC *) (CPos - Code);
 	// parse
 	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
+	state.ContextToExecIn = context;
 	// get first token
 	state.Shift();
 	if (!fExprOnly)
@@ -2299,6 +2307,7 @@ void C4AulParseState::Parse_ForEach()
 
 void C4AulParseState::Parse_Expression(int iParentPrio)
 {
+	int ndx;
 	switch (TokenType)
 	{
 	case ATT_IDTF:
@@ -2315,6 +2324,16 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		{
 			// insert variable by id
 			AddBCC(AB_VARN_R, Fn->VarNamed.GetItemNr(Idtf));
+			Shift();
+		}
+		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->ParNamed.GetItemNr(Idtf)) != -1)
+		{
+			AddBCC(AB_PARN_CONTEXT, ndx);
+			Shift();
+		}
+		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->VarNamed.GetItemNr(Idtf)) != -1)
+		{
+			AddBCC(AB_VARN_CONTEXT, ndx);
 			Shift();
 		}
 		// check for variable (local)
