@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-23 12:03+0200\n"
+"POT-Creation-Date: 2010-04-27 22:01+0200\n"
 "PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
@@ -94,6 +94,11 @@ msgstr "Operator"
 #: sdk/definition/cnat.xml:16(col)
 #: sdk/definition/category.xml:11(col)
 #: sdk/definition/actmap.xml:23(col)
+#: sdk/animation.xml:21(col)
+#: sdk/animation.xml:75(col)
+#: sdk/animation.xml:111(col)
+#: sdk/animation.xml:124(col)
+#: sdk/animation.xml:153(col)
 msgid "Beschreibung"
 msgstr "Description"
 
@@ -598,7 +603,7 @@ msgstr "Example 1 (postfix):"
 
 #: sdk/script/operatoren.xml:298(strong)
 msgid "somevar++"
-msgstr ""
+msgstr "somevar++"
 
 #: sdk/script/operatoren.xml:301(h)
 msgid "Beispiel 2: (prefix)"
@@ -606,7 +611,7 @@ msgstr "Example 2 (prefix):"
 
 #: sdk/script/operatoren.xml:304(strong)
 msgid "++somevar"
-msgstr ""
+msgstr "++somevar"
 
 #: sdk/script/operatoren.xml:307(text)
 msgid "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung <code>somevar</code> um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
@@ -625,7 +630,8 @@ msgid "Die Operatoren &amp;&amp; und ||"
 msgstr "The Operators &amp;&amp; and ||"
 
 #: sdk/script/operatoren.xml:314(text)
-msgid "Diese beiden Operatoren haben eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
+#, fuzzy
+msgid "Diese beiden Operatoren haben (ab <emlink href=\"script/Strict.html\"> 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
 msgstr "These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:"
 
 #: sdk/script/operatoren.xml:316(text)
@@ -1814,7 +1820,7 @@ msgstr "String to translate"
 
 #: sdk/script/fn/Translate.xml:15(desc)
 msgid "Schlägt einen Text in der <emlink href=\"lang.html\">StringTbl??.txt</emlink> des aufrufenden Skripts nach, und gibt die Übersetzung zurück."
-msgstr "Looks up text in the <emlink href=\"lang.html\">StringTbl??.txt</emlink> of the calling script and returns the translation."
+msgstr "Looks up a text in <emlink href=\"lang.html\">StringTbl??.txt</emlink> of the calling script and returns its translation."
 
 #: sdk/script/fn/Translate.xml:21(text)
 msgid "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
@@ -1859,110 +1865,103 @@ msgstr "Arithmetics"
 
 #: sdk/script/fn/Trans_Translate.xml:12(desc)
 msgid "Verschiebung in X-Richtung."
-msgstr ""
+msgstr "Displacement in X direction"
 
 #: sdk/script/fn/Trans_Translate.xml:13(desc)
 msgid "Verschiebung in Y-Richtung."
-msgstr ""
+msgstr "Displacement in Y direction."
 
 #: sdk/script/fn/Trans_Translate.xml:14(desc)
 msgid "Verschiebung in Z-Richtung."
-msgstr ""
+msgstr "Displacement in Z direction."
 
 #: sdk/script/fn/Trans_Translate.xml:17(desc)
 msgid "Liefert eine 3x4-Verschiebungsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
-msgstr ""
+msgstr "Returns a 3x4 translation matrix. It can be used as a transformation for <placeholder-1/> or for the \"PictureTransformation\" or \"MeshTransformation\" properties (see <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>)."
 
 #: sdk/script/fn/Trans_Translate.xml:18(remark)
-msgid "Bei einer Angabe von 1000 für <code>dx</code>, <code>dy</code> oder <code>dz</code> wird die Grafik um einen Pixel nach rechts, unten bzw. vorne verschoben, bei negativen Angaben in die jeweils entgegengesetzte Richtung. Für Grafiken, die direkt im Spiel dargestellt werden (wie von der \"MeshTransformation\"-Eigenschaft beeinflusst), entspricht eine Einheit in X oder Y einem Pixel. Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Fließkommazahlen gibt."
-msgstr ""
+msgid "Bei einer Angabe von 1000 für <code>dx</code>, <code>dy</code> oder <code>dz</code> wird die Grafik um eine Einheit nach rechts, unten bzw. vorne verschoben, bei negativen Angaben in die jeweils entgegengesetzte Richtung. Für Grafiken, die direkt im Spiel dargestellt werden (wie von der \"MeshTransformation\"-Eigenschaft beeinflusst), entspricht eine Einheit in X oder Y einem Pixel. Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Fließkommazahlen gibt."
+msgstr "A value of 1000 for <code>dx</code>, <code>dy</code> or <code>dz</code> displaces the graphics by one unit to the right, to the bottom or to the front, respectively. For negative values displacement goes into the opposite direction. For graphics that are rendered directly in the game (such as the one influenced by the \"MeshTransformation\" property) one unit in X or Y corresponds to one pixel. All parameter values are given in one-tenth of a percent (1000 = 100%) since there are no floating point numbers in Clonk."
 
 #: sdk/script/fn/Trans_Translate.xml:22(text)
 msgid "Verschiebt die Repräsentativgrafik des Objekts 7 Einheiten näher an die Kamera. Dadurch wird es wegen der perspektivischen Projektion größer dargestellt."
-msgstr ""
+msgstr "Displaces the picture graphics of the calling object by 7 units towards the camera. This causes it to be displayed larger because of the perspective projection."
 
 #: sdk/script/fn/Trans_Scale.xml:12(desc)
 msgid "Vergrößerung in X-Richtung."
-msgstr ""
+msgstr "Magnification factor in X direction."
 
 #: sdk/script/fn/Trans_Scale.xml:13(desc)
 msgid "Vergrößerung in Y-Richtung."
-msgstr ""
+msgstr "Magnification factor in Y direction."
 
 #: sdk/script/fn/Trans_Scale.xml:14(desc)
 msgid "Vergrößerung in Z-Richtung."
-msgstr ""
+msgstr "Magnification factor in Z direction."
 
 #: sdk/script/fn/Trans_Scale.xml:17(desc)
 msgid "Liefert eine 3x4-Skalierungsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
-msgstr ""
+msgstr "Returns a 3x4 scaling matrix. It can be used as a transformation for <placeholder-1/> or for the \"PictureTransformation\" or \"MeshTransformation\" properties (see <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>)."
 
 #: sdk/script/fn/Trans_Scale.xml:18(remark)
 msgid "When <code>sy</code> und <code>sz</code> nicht angegeben werden oder 0 sind, dann wird eine Streckung um <code>sx</code> in alle drei Richtungen gemacht. Ein Wert von 1000 bewirkt keine Veränderung, niedrigere Werte verkleinern die Grafik, größere vergrößern sie. Negative Werte bewirken eine Spiegelung um die entsprechende Achse."
-msgstr ""
+msgstr "If both <code>sy</code> and <code>sz</code> are not given or are given as 0 then the factor <code>sx</code> is used for all three axes. A value of 1000 does not cause any change, smaller values shrink the graphics, larger values enlarge it. Negative values can be used to mirror the graphics with respect to the corresponding axis."
 
 #: sdk/script/fn/Trans_Scale.xml:22(text)
-#, fuzzy
 msgid "Macht die Repräsentativgrafik des aufrufenden Objekts doppelt so groß."
-msgstr "Transforms the image of the object."
+msgstr "Doubles the picture graphics of the calling object."
 
 #: sdk/script/fn/Trans_Rotate.xml:12(desc)
 msgid "Drehwinkel. Positive Werte drehen entgegen dem Uhrzeigersinn wenn man in Richtung der Drehachse blickt, negative Werte drehen im Uhrzeigersinn."
-msgstr ""
+msgstr "Rotation angle. When looking into the same direction as the rotation axis then positive angles do anti-clockwise rotation and negative angles do clockwise rotation."
 
 #: sdk/script/fn/Trans_Rotate.xml:13(desc)
-#, fuzzy
 msgid "X-Koordinate der Drehachse."
-msgstr "X coordinate of the vertex."
+msgstr "X coordinate of the rotation axis."
 
 #: sdk/script/fn/Trans_Rotate.xml:14(desc)
-#, fuzzy
 msgid "Y-Koordinate der Drehachse."
-msgstr "Y coordinate of the vertex"
+msgstr "Y coordinate of the rotation axis."
 
 #: sdk/script/fn/Trans_Rotate.xml:15(desc)
-#, fuzzy
 msgid "Z-Koordinate der Drehachse."
-msgstr "X coordinate of the vertex."
+msgstr "Z coordinate of the rotation axis."
 
 #: sdk/script/fn/Trans_Rotate.xml:18(desc)
 msgid "Liefert eine 3x4-Rotationsmatrix welche eine Drehung um die Achse (<code>rx</code>, <code>ry</code>, <code>rz</code>) um <code>angle</code> Grad beschreibt. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
-msgstr ""
+msgstr "Returns a 3x4 rotation matrix around the axis given by the vector (<code>rx</code>, <code>ry</code>, <code>rz</code>) by <code>angle</code> degrees. It can be used as a transformation for <placeholder-1/> or for the \"PictureTransformation\" or \"MeshTransformation\" properties (see <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>)."
 
 #: sdk/script/fn/Trans_Rotate.xml:22(text)
 msgid "Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse."
-msgstr ""
+msgstr "Rotates the picture graphics of the calling object by 20 degrees around the Y axis."
 
 #: sdk/script/fn/Trans_Mul.xml:12(desc)
 msgid "Erste Matrix wie von <placeholder-1/>, <placeholder-2/>, <placeholder-3/> oder <placeholder-4/> zurückgegeben."
-msgstr ""
+msgstr "First matrix as returned by <placeholder-1/>, <placeholder-2/>, <placeholder-3/> or <placeholder-4/>."
 
 #: sdk/script/fn/Trans_Mul.xml:13(desc)
-#, fuzzy
 msgid "Zweite Matrix."
-msgstr "Second object."
+msgstr "Second matrix."
 
 #: sdk/script/fn/Trans_Mul.xml:14(desc)
-#, fuzzy
 msgid "Beliebig viele weitere Matrizen."
-msgstr "Any number of sections [Action]"
+msgstr "An arbitrary number of other matrices."
 
 #: sdk/script/fn/Trans_Mul.xml:17(desc)
 msgid "Multipliziert zwei oder mehr 3x4-Transformationsmatrizen in der gegegebenen Reihenfolge. Somit können die Effekte mehrerer Transformationen miteinander kombiniert werden. Das Ergebnis kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
-msgstr ""
+msgstr "Multiplies two or more 3x4 transformation matrices in the given order. This way the effects of more than one transformation can be combined. The result can be used as a transformation for <placeholder-1/> or for the \"PictureTransformation\" or \"MeshTransformation\" properties (see <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>)."
 
 #: sdk/script/fn/Trans_Mul.xml:21(text)
 msgid "Dreht die Repräsentativgrafik des aufrufenden Objekts um 20 Grad um die Y-Achse und verschiebt sie dann um 7 Einheiten in Z-Richtung der Kamera entgegen."
-msgstr ""
+msgstr "Rotates the picture graphics of the calling object by 20 degrees around the Y axis and afterwards displaces it by 7 units into Z direction towards the camera."
 
 #: sdk/script/fn/Trans_Identity.xml:12(desc)
 msgid "Liefert eine 3x4-Einheitsmatrix. Sie kann als Transformation für <placeholder-1/> oder für die \"PictureTransformation\" oder \"MeshTransformation\"-Eigenschaften (siehe <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>) verwendet werden."
-msgstr ""
+msgstr "Returns a 3x4 identity matrix. It can be used as a transformation for <placeholder-1/> or for the \"PictureTransformation\" or \"MeshTransformation\" properties (see <emlink href=\"definition/meshes.html#Picture\">Meshes</emlink>)."
 
 #: sdk/script/fn/Trans_Identity.xml:16(text)
-#, fuzzy
 msgid "Setzt die MeshTransformation für das aufrufende Objekt zurück."
-msgstr "Resets all transformation."
+msgstr "Resets the MeshTransformation for the calling object."
 
 #: sdk/script/fn/TrainPhysical.xml:7(subcat)
 #: sdk/script/fn/Stuck.xml:7(subcat)
@@ -2061,9 +2060,8 @@ msgid "Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch dies
 msgstr "If specified, the angle will be divided by this value. An angle of 445° and a precision value of 10 will thus result in a more precise angle of 45,5° internally."
 
 #: sdk/script/fn/Tan.xml:17(desc)
-#, fuzzy
 msgid "Liefert tan(angle) * radius."
-msgstr "Returns tan(iAngle) * iRadius."
+msgstr "Returns tan(angle) * radius."
 
 #: sdk/script/fn/Stuck.xml:12(desc)
 msgid "Ermittelt, ob das aufrufende Objekt feststeckt, d.h., ob sich einer seiner Vertices in festem Material befindet."
@@ -2127,17 +2125,16 @@ msgstr "Notice that scripting functions may not be the only parts causing progra
 #: sdk/definition/meshes.xml:21(h)
 #: sdk/definition/animations.xml:5(title)
 #: sdk/definition/animations.xml:6(h)
-#, fuzzy
 msgid "Animationen"
-msgstr "ColorAnimation"
+msgstr "Animations"
 
 #: sdk/script/fn/StopAnimation.xml:15(desc)
 msgid "Nummer der zu stoppenden Animation."
-msgstr ""
+msgstr "Number of the animation to stop."
 
 #: sdk/script/fn/StopAnimation.xml:20(desc)
 msgid "Stoppt die Animation mit der angegeben Nummer (wie sie von <placeholder-1/> zurückgegeben wird) und entfernt die Animation aus dem zugehörigen Slot im Animations-Stack. Gehört ein Kombinationsknoten zur Nummer, so werden beide Animationen entfernt die kombiniert werden; wenn eine oder beide davon wieder Kombinationen sind werden auch deren Animationen entfernt, und so weiter. Wird die gestoppte Animation mit einer anderen kombiniert, so wird auch der zugehörige Kombinationsknoten entfernt, da es nun nichts mehr zu kombinieren gibt. Gibt true zurück wenn die Animation entfernt wurde, oder 0 wenn dies nicht möglich war (zum Beispiel wenn es keine Animation zur gegebenen Nummer gibt, oder die Animation zu Slot 0 gehört)."
-msgstr ""
+msgstr "Stops the animation corresponding to the given number (such as returned by <placeholder-1/>) and removes it from the corresponding slot in the animation stack. If there is a combination node associated to that number then both of the anmiations being combined are removed as well; if either or both of those are combination nodes again then they are also removed and so on. If the node to be removed is combined with another node then the combining node is also removed because there is not anything to combine anymore. The function returns true if the animation was removed or 0 otherwise (for example if there is no animation for the given number or if belongs to slot 0)."
 
 #: sdk/script/fn/StopAnimation.xml:22(remark)
 #: sdk/script/fn/SetAnimationWeight.xml:27(remark)
@@ -2158,12 +2155,12 @@ msgstr ""
 #: sdk/script/fn/Anim_AbsY.xml:37(remark)
 #: sdk/script/fn/Anim_AbsX.xml:37(remark)
 msgid "Siehe die <emlink href=\"definition/animations.html\">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems."
-msgstr ""
+msgstr "See the <emlink href=\"definition/animations.html\">animation documentation</emlink> for further explanations of the animation system."
 
 #: sdk/script/fn/StopAnimation.xml:27(text)
 #: sdk/script/fn/GetRootAnimation.xml:27(text)
 msgid "Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält."
-msgstr ""
+msgstr "Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards."
 
 #: sdk/script/fn/StartScriptProfiler.xml:12(desc)
 msgid "Wenn angegeben, werden nur Scriptfunktionen einer bestimmten Objektdefinition gemessen."
@@ -2244,7 +2241,7 @@ msgstr "Script for a clonk: He splits the first object he carries on double dig.
 
 #: sdk/script/fn/Sound.xml:12(desc)
 msgid "Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden."
-msgstr ""
+msgstr "Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided."
 
 #: sdk/script/fn/Sound.xml:13(desc)
 msgid "Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll."
@@ -2351,9 +2348,8 @@ msgid "Sortierfunktion"
 msgstr "Sort Function"
 
 #: sdk/script/fn/Sort_Reverse.xml:15(desc)
-#, fuzzy
 msgid "Sortiermodifikator: Kehrt die Sortierung der angegebenen Sortierfunktion um."
-msgstr "Sort modificator: "
+msgstr "Sort modificator: Reverses the sorting of the given sort function."
 
 #: sdk/script/fn/Sort_Random.xml:12(desc)
 msgid "Sortierkriterium: Sortiert die gefundenen Objekte zufällig."
@@ -2361,7 +2357,7 @@ msgstr "Sort criterion: Sorts the found objects randomly."
 
 #: sdk/script/fn/Sort_Random.xml:13(remark)
 msgid "Sort_Random sollte nicht in Verbindung mit <placeholder-1/> verwendet werden, um ein zufälliges, passendes Objekt zu ermitteln. Stattdessen kann zum Beispiel das erste Element einer <placeholder-2/>-Suche mit SortRandom-Parameter verwendet werden."
-msgstr ""
+msgstr "Sort_Random should not be used together with <placeholder-1> to find a random, matching object. Instead the first object of a <placeholder-2> search with a SortRandom parameter can be used for instance."
 
 #: sdk/script/fn/Sort_Multiple.xml:12(desc)
 msgid "Sortierkriterium in Form einer Sort_*-Funktion"
@@ -2489,9 +2485,8 @@ msgid "Konstante für <placeholder-1/>."
 msgstr "Constant for <placeholder-1/>."
 
 #: sdk/script/fn/Sin.xml:17(desc)
-#, fuzzy
 msgid "Liefert sin(angle) * radius."
-msgstr "Returns sin(iAngle) * iRadius."
+msgstr "Returns sin(angle) * radius."
 
 #: sdk/script/fn/SimFlight.xml:7(subcat)
 #: sdk/script/fn/SetYDir.xml:7(subcat)
@@ -2558,9 +2553,8 @@ msgid "Genauigkeit. Keine Angabe oder Null entspricht 10."
 msgstr "Precision. Default 10 if not specified or 0."
 
 #: sdk/script/fn/SimFlight.xml:22(desc)
-#, fuzzy
 msgid "Simuliert die Bewegung eines freien Falles mit Anfangsgeschwindigkeit in die angegebene Richtung. Wenn die simulierte Bewegung ein Material mit der gewünschten Dichte durchläuft, gibt diese Funktion true zurück, ansonsten false.<br/> Bei true wird die X- und Y-Position des Aufpralls in den angegebenen Variablen für x und y gespeichert, die Aufprallgeschwindigkeit in den angegebenen Variablen fü xdir und ydir. Siehe dazu <emlink href=\"script/Funcs.html#referenzen\">Referenzen</emlink>."
-msgstr "Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for iX and iY, the horizontal and vertical speed at the time of interception in iXDir and iYDir respectively. See <emlink href=\"script/Funcs.html#referenzen\">references</emlink> for details."
+msgstr "Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for x and y, the horizontal and vertical speed at the time of interception in xdir and ydir respectively. See <emlink href=\"script/Funcs.html#referenzen\">references</emlink> for details."
 
 #: sdk/script/fn/SimFlight.xml:30(text)
 msgid "Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen ist, dass er mit hoher Geschwindigkeit auf den Boden aufprallen wird, ruft dies der Clonk aus. Bei einer Aufprallgeschwindigkeit von mindestens 8 Pixeln pro Frame landet der Clonk nicht mehr auf seinen Füßen und muss sich erst wieder aufrichten.<br/>Die ersten vier Parameter von SimFlight sind <emlink href=\"script/Funcs.html#referenzen\">Referenzen</emlink>."
@@ -2936,6 +2930,11 @@ msgstr "Index of the vertex to be changed."
 #: sdk/definition/defcore.xml:204(col)
 #: sdk/definition/cnat.xml:16(col)
 #: sdk/definition/actmap.xml:21(col)
+#: sdk/animation.xml:19(col)
+#: sdk/animation.xml:74(col)
+#: sdk/animation.xml:109(col)
+#: sdk/animation.xml:122(col)
+#: sdk/animation.xml:152(col)
 msgid "Wert"
 msgstr "Value"
 
@@ -4004,20 +4003,19 @@ msgstr "Scenario script: In this round, wood will be called \"Baumstamm\"."
 
 #: sdk/script/fn/SetMeshMaterial.xml:12(desc)
 msgid "Name des zu setzenden Materials. Es muss beim Start der Engine bereits geladen sein, d.h. in einer *.material-Datei definiert worden sein die sich in einem geladenen Objekt befindet."
-msgstr ""
+msgstr "Name of the material to set. It needs to be loaded at engine startup, i.e. it needs to be defined in a *.material file being located in an object that was loaded."
 
 #: sdk/script/fn/SetMeshMaterial.xml:13(desc)
 msgid "Besteht das Mesh aus mehreren SubMeshes, so kann durch diesen Parameter angegeben werden das Material welches SubMeshes geändert werden soll."
-msgstr ""
+msgstr "If the mesh is composed of multiple submeshes then this parameter can be used to specify the submesh whose material is to be changed."
 
 #: sdk/script/fn/SetMeshMaterial.xml:16(desc)
-#, fuzzy
 msgid "Ändert das Material des Meshes des aufrufenden Objekts zur Laufzeit."
-msgstr "Changes the category of an object."
+msgstr "Changes the material of the calling object's mesh at runtime."
 
 #: sdk/script/fn/SetMeshMaterial.xml:21(text)
 msgid "Lässt einen Clonk blinzeln."
-msgstr ""
+msgstr "Makes a clonk blink."
 
 #: sdk/script/fn/SetMenuSize.xml:12(desc)
 msgid "0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll"
@@ -4132,6 +4130,7 @@ msgstr "Makes the first two players enemies without causing a message."
 #: sdk/script/fn/GameOver.xml:7(category)
 #: sdk/script/fn/FrameCounter.xml:7(category)
 #: sdk/playercontrols.xml:39(col)
+#: sdk/animation.xml:39(col)
 msgid "Global"
 msgstr "Global"
 
@@ -4990,6 +4989,7 @@ msgstr "Move to the target position. Set iData to true to avoid automatic adjust
 
 #: sdk/script/fn/SetCommand.xml:97(col)
 #: sdk/playercontrols.xml:83(col)
+#: sdk/animation.xml:78(col)
 msgid "None"
 msgstr "None"
 
@@ -5213,91 +5213,88 @@ msgid "Materialnummer des Materials aus dem die Brücke bestehen soll."
 msgstr "Material number of the material to be used for the bridge."
 
 #: sdk/script/fn/SetBridgeActionData.xml:18(desc)
-#, fuzzy
 msgid "Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur des aufrufenden Objekts."
-msgstr "Sets additional parameters for a currently executed BRIDGE procedure."
+msgstr "Sets additional parameters for a currently executed BRIDGE procedure of the calling object."
 
 #: sdk/script/fn/SetBit.xml:13(desc)
 msgid "Das zu verändernde Bit"
-msgstr ""
+msgstr "The bit to change"
 
 #: sdk/script/fn/SetBit.xml:14(desc)
 msgid "Der neue Wert des Bits"
-msgstr ""
+msgstr "The new value of the bit"
 
 #: sdk/script/fn/SetBit.xml:17(desc)
-#, fuzzy
 msgid "Gibt die neue Bitmaske mit dem an bit_number durch bit ersetzten Bit zurück."
-msgstr "Returns the new bit masc with the bit at the indicated position flipped"
+msgstr "Returns the new bit mask with the bit at position bit_number replaced by bit."
 
 #: sdk/script/fn/SetAttachTransform.xml:12(desc)
 msgid "Nummer des angehängten Meshes dessen Transformation geändert werden soll. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
-msgstr ""
+msgstr "Number of the attached mesh whose transformation is to be changed. The return value of <placeholder-1/> provides such a number."
 
 #: sdk/script/fn/SetAttachTransform.xml:13(desc)
 msgid "Neue Transformation im Koordinatensystem des angehängten Meshes, die auf selbiges angewandt wird. Das Array sollte 12 Integer-Einträge haben die eine 3x4-Matrix beschreiben wobei jeder Wert in Promille (1000 = 100%) angegeben ist. Die Matrizen können auch mit <placeholder-1/>, <placeholder-2/>, <placeholder-3/> und <placeholder-4/> erzeugt und mit <placeholder-5/> kombiniert werden."
-msgstr ""
+msgstr "New transformation to be applied on the attached mesh in its own frame of reference. The array should consist of 12 integer entries which make up a 3x4 matrix in which each vaule is given in promille (1000 = 100%). These matrices can be created via <placeholder-1/>, <placeholder-2/>, <placeholder-3/> and <placeholder-4/> or they can be combined via <placeholder-5/>."
 
 #: sdk/script/fn/SetAttachTransform.xml:16(desc)
 msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann mit dieser Funktion die Transformation des angehängten Meshes geändert werden."
-msgstr ""
+msgstr "If a mesh was previously attached to another one via <placeholder-1/> then the transformation of the attached mesh can be changed using this function."
 
 #: sdk/script/fn/SetAttachTransform.xml:20(text)
 msgid "Setzt die Transformation für das angehängte Mesh mit der Nummer <code>attach_number</code> zurück. Es wird davon ausgegangen dass eine Variable namens <code>attach_number</code> mit einer gültigen Nummer, wie sie von <placeholder-1/> zurückgegeben wird, existiert."
-msgstr ""
+msgstr "Resets the transformation of the attached mesh with number <code>attach_number</code>. It is assumed that there is a variable named <code>attach_number</code> containing a valid number such as returned by <placeholder-1/>."
 
 #: sdk/script/fn/SetAttachBones.xml:12(desc)
 msgid "Nummer des angehängten Meshes. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
-msgstr ""
+msgstr "Number of the attached mesh. The return value of <placeholder-1/> provides such a number."
 
 #: sdk/script/fn/SetAttachBones.xml:13(desc)
 msgid "Bone am aufrufenden Objekt an den das Mesh angehängt werden soll."
-msgstr ""
+msgstr "Bone of the calling object at which to attach the mesh."
 
 #: sdk/script/fn/SetAttachBones.xml:14(desc)
 msgid "Bone des anzuhängenden Meshes mit dem es befestigt werden soll."
-msgstr ""
+msgstr "Bone of the object to be attached."
 
 #: sdk/script/fn/SetAttachBones.xml:17(desc)
 msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann mit dieser Funktion einer oder beide der Bones geändert werden mit denen sie aneinander hängen. Um nur einen Bone zu ändern kann für den anderen Parameter <code>nil</code> angegeben werden."
-msgstr ""
+msgstr "If a mesh was previously attached to another mesh then this function can be used to change one or both of the bones at which they are attached. To only change a single bone the other parameter can be set to <code>nil</code>."
 
 #: sdk/script/fn/SetAttachBones.xml:34(text)
 msgid "Script für einen <emlink href=\"script/Effects.html\">Effekt</emlink>: Bei Start trägt der Clonk einen Bogen in einer Hand um bei jedem Timer-Aufruf nimmt der Clonk den Bogen von der rechten in die linke Hand oder umgekehrt."
-msgstr ""
+msgstr "Script for an <emlink href=\"script/Effects.html\">effect</emlink>: Initially the clonk carries a bow and for each timer call the bow is switched from its left hand to its right hand or vice versa."
 
 #: sdk/script/fn/SetAnimationWeight.xml:15(desc)
 #: sdk/script/fn/SetAnimationPosition.xml:15(desc)
-#, fuzzy
 msgid "Animationsnummer der Animation deren Position gesetzt werden soll."
-msgstr "Player whose view distance to want to set."
+msgstr "Animation number of the animation whose position to set."
 
 #: sdk/script/fn/SetAnimationWeight.xml:20(desc)
 #: sdk/script/fn/PlayAnimation.xml:30(desc)
 msgid "Bestimmt, wie die aktuelle Gewichtung der Animation berechnet wird, falls die Animation mit einer anderen Animation im gegebenen Slot kombiniert wird. Diese wird mittels Animationsfunktionen der Form \"Anim_\" angegeben."
-msgstr ""
+msgstr "Specifies how to compute the weight of the animation in case the animation is combined with another animation in the given slot. The value needs to be created with one of the \"Anim_\" animation functions."
 
 #: sdk/script/fn/SetAnimationWeight.xml:25(desc)
 msgid "Setzt die Gewichtung der angegebenen Animation neu. Rückgabewert true falls der neue AVP gesetzt wurde oder false wenn es keine Animation mit der angegebenen Nummer gibt oder es sich bei ihr um einen Animationsknoten handelt."
-msgstr ""
+msgstr "Sets a new weight for the given animation. Returns true if the new AVP was set or false if there is no such animation with the given number or the refernced node is an animation node."
 
 #: sdk/script/fn/SetAnimationWeight.xml:34(text)
 msgid "Ist in swim_comb die Animationsnummer eines Animationsknoten gespeichert, welcher eine Nach-Oben-Schwimmen- und eine Nach-Unten-Schwimmen-Animation kombiniert (siehe Beispiel zu <placeholder-1/>), so wird hier das Gewicht kosinusförmig abhängig von der aktuellen Schwimmrichtung gesetzt."
-msgstr ""
+msgstr "If swim_comb contains the number of an animation node combining a \"swim up\" and \"swim down\" animation (refer to the example of <placeholder-1/>), then this script sets the a weight depending on the cosine of the current swimming direction."
 
 #: sdk/script/fn/SetAnimationPosition.xml:20(desc)
 #: sdk/script/fn/PlayAnimation.xml:25(desc)
 msgid "Bestimmt, wie die aktuelle Position der Animation berechnet wird. Diese wird mittels Animationsfunktionen der Form \"Anim_\" angegeben."
-msgstr ""
+msgstr "Specifies how to compute the position of the animation. The value needs to be created with one of the \"Anim_\" animation functions."
 
 #: sdk/script/fn/SetAnimationPosition.xml:25(desc)
 msgid "Setzt die Position der angegebenen Animation neu. Rückgabewert true falls der neue AVP gesetzt wurde oder false wenn es keine Animation mit der angegebenen Nummer gibt oder es sich bei ihr um einen Kombinationsknoten handelt."
-msgstr ""
+msgstr "Sets a new position for the given animation. Returns true if the new AVP was set or false if there is no such animation with the given number or the number refers to a combination node."
 
 #: sdk/script/fn/SetAnimationPosition.xml:32(text)
 #: sdk/script/fn/GetAnimationPosition.xml:27(text)
 msgid "Script für einen Timer: Bei jeder Durchführung wird die Animation um 100 Millisekunden weitergespielt. Falls der Timer im gleichen Abstand aufgerufen wird kann stattdessen auch <placeholder-1/> verwendet werden."
-msgstr ""
+msgstr "Script for a timer: For each call the animation is advanced by 100 milliseconds. If the timer is called periodically in same intervals <placeholder-1/> can be used instead."
 
 #: sdk/script/fn/SetAlive.xml:7(subcat)
 #: sdk/script/fn/Punch.xml:7(subcat)
@@ -5944,19 +5941,19 @@ msgstr "Sets the activity of the specified object. Also see <emlink href=\"defin
 
 #: sdk/script/fn/PlayAnimation.xml:35(desc)
 msgid "Falls die Animation mit einer anderen Animation kombiniert wird, dann gibt dies den Knoten an, mit dem die neue Animation kombiniert wird. Falls nicht angegeben oder nil wird die Animation mit der obersten Animation des Slots verknüpft wie sie von <placeholder-1/> zurückgeliefert wird."
-msgstr ""
+msgstr "If the animation is combined with another animation then this refers to the node with which the new node is combined. If not given or nil then the animation is combined with the animation at the top of the slot as returned by <placeholder-1/>."
 
 #: sdk/script/fn/PlayAnimation.xml:41(desc)
 msgid "Spielt eine neue neue Animation ab. Der Rückgabewert der Funktion ist die Animationsnummer des eingefügten Animationsknotens, mit der die Animation später manipuliert oder wieder entfernt werden kann. Falls im angegebenen Slot bereits Animationen vorhanden sind, so wird auch ein Kombinationsknoten erstellt. Dieser erhält die zurückgegebene Nummer plus 1."
-msgstr ""
+msgstr "Starts playing a new animation. The return value of this function is the animation number of the animation node inserted which can be used to manipulate or remove the animation later. If there are already animations in the given slot then additionally a combination node is created. This combination node is assigned the returned number plus 1."
 
 #: sdk/script/fn/PlayAnimation.xml:48(text)
 msgid "Spielt die Animation \"Scale\" ab und überschreibt dabei eventuell bereits existierende Animationen in Slot 5 ohne sie zu entfernen. Die Animationsposition wird nach der Y-Position des Objekts gewählt, so dass die Animation mit der Fortbewegung des Clonks während des Kletterns synchronisiert ist."
-msgstr ""
+msgstr "Plays the animation \"Scale\" and overwrites any potentially existing animations in slot 5 without removing them. The animation position is chosen by the Y coordinate of the object so that the animation is synchronized with the movement of the clonk climbing."
 
 #: sdk/script/fn/PlayAnimation.xml:54(text)
 msgid "Überlagert eine SwimDiveUp- mit einer SwimDiveDown-Animation so, dass beide Animationen gleich viel Gewicht haben. Das Ergebnis ist, dass der Clonk waagerecht im Wasser liegt. Falls zuvor eine andere Animation in Slot 5 abgespielt wurde, so wird ein 15 Frames dauernder Übergang gemacht an dessen Ende die vorherige Animation entfernt wird. Mithilfe der Variablen swim_comb kann das Gewicht zwischen den beiden Animationen in weiteren Code der Schwimmrichtung angepasst werden."
-msgstr ""
+msgstr "Superimposes a SwimDiveUp and a SwimDiveDown animation in such a way that both animations have the same weight. The result will be that lies horizontally in the water. If there is another animation being played in slot 5 then a transition lasting 15 frames is performed. At its end the previous animation will be removed. Using the variables swim_comb the weight of the two animations can be adapted to the swimming direction with additional code."
 
 #: sdk/script/fn/PlaceVegetation.xml:12(desc)
 msgid "ID des zu erstellenden Objekts."
@@ -6622,7 +6619,7 @@ msgstr "Returns a reference to an object local variable. This reference can be u
 
 #: sdk/script/fn/LocalN.xml:20(text)
 msgid "Lässt ein Fundament eines Zauberturms explodieren."
-msgstr ""
+msgstr "Makes the basement of a magic tower explode."
 
 #: sdk/script/fn/LocalN.xml:23(emlink)
 #: sdk/definition/script.xml:68(col)
@@ -6660,16 +6657,15 @@ msgstr "X position"
 
 #: sdk/script/fn/LaunchVolcano.xml:13(desc)
 msgid "Y-Zielposition. Default: am unteren Ende der Landschaft"
-msgstr ""
+msgstr "Y target position. Default: Bottom of the landscape."
 
 #: sdk/script/fn/LaunchVolcano.xml:14(desc)
 msgid "Stärke. Default: relativ zur Höhe der Landschaft"
-msgstr ""
+msgstr "Strength. Default: Relative to the height of the landscape"
 
 #: sdk/script/fn/LaunchVolcano.xml:15(desc)
-#, fuzzy
 msgid "Name des Materials. Default ist \"Lava\""
-msgstr "Name of material."
+msgstr "Name of the material. The default is \"Lava\""
 
 #: sdk/script/fn/LaunchVolcano.xml:18(desc)
 #, fuzzy
@@ -6686,18 +6682,16 @@ msgid "horizontale mittlere Geschwindigkeit des Blitzes"
 msgstr "Horizontal average speed of the lightning bolt."
 
 #: sdk/script/fn/LaunchLightning.xml:30(desc)
-#, fuzzy
 msgid "maximale Abweichung von xspeed"
-msgstr "Maximum deviation of iXAdvance."
+msgstr "Maximum deviation of xspeed."
 
 #: sdk/script/fn/LaunchLightning.xml:35(desc)
 msgid "vertikale mittlere Geschwindigkeit des Blitzes"
 msgstr "Vertical average speed of the lightning bolt."
 
 #: sdk/script/fn/LaunchLightning.xml:40(desc)
-#, fuzzy
 msgid "maximale Abweichung von yspeed"
-msgstr "Maximum deviation of iXAdvance."
+msgstr "Maximum deviation of yspeed."
 
 #: sdk/script/fn/LaunchLightning.xml:45(desc)
 msgid "Wenn gesetzt, bewirkt dieser Blitz ein Aufflackern des Bildschirms bei allen Spielern."
@@ -7279,12 +7273,11 @@ msgstr "Number of the player whose score you want to determine."
 
 #: sdk/script/fn/GetRootAnimation.xml:20(desc)
 msgid "Gibt die Nummer der obersten Animation im angegebenen Slot zurück. Diese Animation wird mit der Animation der nächstkleineren Slotnummer kombiniert um dann mit der obersten Animation der nächsthöheren Slotnummer kombiniert zu werden, oder, falls es keinen nächsthöheren Slot gibt, auf dem Bildschirm angezeigt zu werden. Enthält der Slot mehr als eine Animation, so ist die oberste Animation immer ein Kombinationsknoten, der die Einzelanimationen oder Kombinationen derselben zu dem Gesamtergebnis des Slots kombiniert. Gibt nil zurück wenn der angegebene Slot gar keine Animation enthält."
-msgstr ""
+msgstr "Returns the number of the animation at the top of the given slot. This animation is combined with the animation of the next smaller slot number and the result of this combination will be combined with the animation at the top of the slot with the next higher slot number, or, if there is no such slot, be the final output displayed on the screen. If the slot contains more than one animation then the animation at the top is always a combination node which combines multiple animations or other combinations of animations to the result of the slot. Returns nil if there are no animations in the given slot."
 
 #: sdk/script/fn/GetRank.xml:12(desc)
-#, fuzzy
 msgid "Liefert die Rang-Nummer des aufrufenden Objekts. 0 ist ein unbeförderter Clonk."
-msgstr "Returns the rank of the specified object. 0 is a freshly recruited clonk. pObj can be 0 in local calls."
+msgstr "Returns the rank of the specified object. 0 is a freshly recruited clonk."
 
 #: sdk/script/fn/GetRGBaValue.xml:13(desc)
 msgid "0-3: Auswahl des gewünschten Rückgabewerts"
@@ -7320,7 +7313,7 @@ msgstr "Object being sold. Can be 0 in local calls."
 
 #: sdk/script/fn/GetProperty.xml:16(desc)
 msgid "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
-msgstr ""
+msgstr "Returns the property <code>key</code> of <code>object</code>."
 
 #: sdk/script/fn/GetProcedure.xml:12(desc)
 #, fuzzy
@@ -7597,13 +7590,12 @@ msgid "Siehe <placeholder-1/>."
 msgstr "See <placeholder-1/>."
 
 #: sdk/script/fn/GetPlayerByName.xml:12(desc)
-#, fuzzy
 msgid "Name des Spielers"
-msgstr "Player number."
+msgstr "Name of the player"
 
 #: sdk/script/fn/GetPlayerByName.xml:15(desc)
 msgid "Gibt die Spielernummer des angegebenen Spielers oder -1 wenn kein solcher Spieler gefunden wurde zurück."
-msgstr ""
+msgstr "Returns the number of the given player or -1 if there is no such player."
 
 #: sdk/script/fn/GetPlayerByIndex.xml:12(desc)
 msgid "Index in der Spielerliste"
@@ -7631,34 +7623,31 @@ msgstr "Name of the physical property requested."
 
 #: sdk/script/fn/GetPhysical.xml:15(col)
 msgid "Im Objektkontext: Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes abgefragt. Dieser Modus funktioniert als einziger auch bei Objekten ohne Objektinfo. Im Definitionskontext: Die Standardwerte der Definition werden abgefragt."
-msgstr ""
+msgstr "In object context: The properties are queried in the currently active mode (temporary or permanent) of the object. This mode is the only one working also for objects without object info. In definition context: The standard values of the definitions are queried."
 
 #: sdk/script/fn/GetPhysical.xml:16(col)
 msgid "Die permanenten Eigenschaften aus der Spielerdatei werden abgefragt. Dies ist nur bei Spielercrew-Mitgliedern möglich."
-msgstr ""
+msgstr "The permanent properties stored in the player file are queried. This is only possible for player crew members."
 
 #: sdk/script/fn/GetPhysical.xml:17(col)
 msgid "Die temporären Eigenschaften werden abgefragt, wenn sie existieren."
-msgstr ""
+msgstr "The temporary properties are queried if they exist."
 
 #: sdk/script/fn/GetPhysical.xml:13(desc)
-#, fuzzy
 msgid "Änderungsmodus (symbolische Konstanten ab CR):<br/><placeholder-1/>"
-msgstr "Physical attribute change mode (symbolical constants since CR):<br/><placeholder-1/><br/>"
+msgstr "Change mode (symbolical constants since CR):<br/><placeholder-1/>"
 
 #: sdk/script/fn/GetPhysical.xml:22(desc)
-#, fuzzy
 msgid "Liefert die physischen Eigenschaften des Objekts oder der Definition im Aufrufkontext."
-msgstr "Returns physical properties of an object."
+msgstr "Returns physical properties of the object or the definition in the calling context"
 
 #: sdk/script/fn/GetPhysical.xml:26(text)
 msgid "Der ausgewählte Clonk des ersten Spielers freut sich, wenn er gerade Zauberenergie aufnehmen kann."
 msgstr "The selected clonk is happy if he's currently able to accept magical energy."
 
 #: sdk/script/fn/GetPhase.xml:12(desc)
-#, fuzzy
 msgid "Liefert die Aktivitätsphase des aufrufenden Objekts."
-msgstr "Sets the animation phase of an object."
+msgstr "Returns the animation phase of the calling object."
 
 #: sdk/script/fn/GetPathLength.xml:15(desc)
 msgid "X-Koordiante der Startposition"
@@ -7771,21 +7760,19 @@ msgstr "Displays a message if the mission access password \"DasWarHarteArbeit\" 
 
 #: sdk/script/fn/GetMeshMaterial.xml:12(desc)
 msgid "Besteht das Mesh aus mehreren SubMeshes, so kann durch diesen Parameter angegeben werden das Material welches SubMeshes abgefragt werden soll."
-msgstr ""
+msgstr "If the mesh is composed of multiple submeshes then this parameter can be used to specify the submesh whose material to query."
 
 #: sdk/script/fn/GetMeshMaterial.xml:15(desc)
-#, fuzzy
 msgid "Gibt zurück, welches Material das Mesh des aufrufenden Objekts gerade gesetzt hat."
-msgstr "Returns whether an object is on fire."
+msgstr "Returns the material currently set for the calling object."
 
 #: sdk/script/fn/GetMeshMaterial.xml:22(text)
 msgid "Wenn ein Clonk die Augen gerade geöffnet hat lässt dieses Script sie schließen, andernfalls werden sie geöffnet."
-msgstr ""
+msgstr "If a clonk has its eyes open then this script makes it close them, otherwise they are opened."
 
 #: sdk/script/fn/GetMenuSelection.xml:12(desc)
-#, fuzzy
 msgid "Ermittelt den gerade ausgewählten Menüeintrag des geöffneten Menüs des aufrufenden Objekts, oder nil, wenn kein Menü geöffnet ist."
-msgstr "Determines the currently selected menu entry of the currently open menu of an object."
+msgstr "Determines the currently selected menu entry of the currently open menu of an object, or nil if no menu is open."
 
 #: sdk/script/fn/GetMenuSelection.xml:16(text)
 msgid "Gibt ins Log aus, welchen Menüpunkt der Spieler gerade gewählt hat."
@@ -7855,29 +7842,25 @@ msgstr "Part of a clonk script: if 200 pixels below the calling object oil is fo
 
 #: sdk/script/fn/GetMass.xml:12(desc)
 msgid "Liefert die Masse des aufrufenden Objekts (inklusive aller Inhaltsobjekte) oder der aufrufenden Definition."
-msgstr ""
+msgstr "Returns the mass of the calling objects (including the mass of all its contents) or the calling definition."
 
 #: sdk/script/fn/GetMass.xml:25(text)
 msgid "Magersucht"
 msgstr "Twiggy"
 
 #: sdk/script/fn/GetMagicEnergy.xml:12(desc)
-#, fuzzy
 msgid "Liefert den aktuellen Zauberenergiewert des aufrufenden Objekts."
-msgstr "Returns the current blit mode of an object."
+msgstr "Returns the current magic energy value of the calling object."
 
 #: sdk/script/fn/GetLength.xml:12(desc)
-#, fuzzy
 msgid "Zeichenkette oder Array, von der die Länge abgefragt wird"
-msgstr "String or array of which to get the length."
+msgstr "String or array of which to get the length"
 
 #: sdk/script/fn/GetLength.xml:15(desc)
-#, fuzzy
 msgid "Ermittelt die Länge einer Zeichenkette oder eines Arrays."
-msgstr "Returns the length of a string or array."
+msgstr "Returns the length of a string or an array."
 
 #: sdk/script/fn/GetKiller.xml:12(desc)
-#, fuzzy
 msgid "Liefert den Spieler, der zuletzt Energieabzug am aufrufenden Objekt verursacht hat."
 msgstr "Returns the player who has lastly caused energy loss to an object."
 
@@ -7975,12 +7958,11 @@ msgstr "Returns the current gravity in percent."
 
 #: sdk/script/fn/GetGravity.xml:17(text)
 msgid "Hebt die Gravitation in einem Radius von 100 Pixeln auf, wenn jeden Frame aufgerufen."
-msgstr ""
+msgstr "Makes the gravitation within a radius of 100 pixels vanish if called every frame."
 
 #: sdk/script/fn/GetEntrance.xml:12(desc)
-#, fuzzy
 msgid "Liefert den aktuellen Eintrittsstatus des aufrufenden Objekts. TRUE bei erlaubtem Eintritt, FALSE bei verbotenem Eintritt."
-msgstr "Returns the current entrance status of an object. True if entering the object is currently allowed."
+msgstr "Returns the current entrance status of an object. TRUE if entering the object is currently allowed or FALSE if it is disallowed."
 
 #: sdk/script/fn/GetEntrance.xml:27(text)
 msgid "Extreme Klaustrophobie: Bei geschlossener Tür Selbstmord begehen."
@@ -8054,6 +8036,7 @@ msgstr "Effect number"
 #: sdk/definition/lineconnect.xml:11(col)
 #: sdk/definition/defcore.xml:25(col)
 #: sdk/definition/actmap.xml:26(col)
+#: sdk/animation.xml:114(col)
 msgid "Name"
 msgstr "Name"
 
@@ -8381,7 +8364,7 @@ msgstr "Determines the ASCII character code of a character in a string."
 
 #: sdk/script/fn/GetChar.xml:17(remark)
 msgid "Mit <code><placeholder-1/>(\"%c\")</code> lässt sich das Zeichen in einen String umwandeln."
-msgstr ""
+msgstr "<code><placeholder-1/>(\"%c\")</code> can be used to convert the character to a string."
 
 #: sdk/script/fn/GetChar.xml:25(text)
 msgid "Ermittelt den Anfangsbuchstaben des Spielernamens des ersten Spielers."
@@ -8423,65 +8406,59 @@ msgstr "Name of the activity of which to get an entry."
 
 #: sdk/script/fn/GetAnimationWeight.xml:20(desc)
 msgid "Gibt die Gewichtung eines Kombinationsknotens zurück. Die Gewichtung bestimmt, zu welchem Anteil die beiden kombinierten Animationen in die Gesamtanimation einfließen. Die Zahl liegt immer zwischen 0 (erste Animation geht voll ein) und 1000 (zweite Animation geht voll ein). Gibt nil zurück falls es keine Animation mit der angegebenen Nummer gibt, oder falls es sich dabei um einen Animationsknoten handelt."
-msgstr ""
+msgstr "Returns the weight of a combination node. The weight specifies the relative portion the combined animations contribute to the resulting animation. The number is always between 0 (only the first animation contributes) and 1000 (only the second animation contributes). Returns nil if there is no such animation with the calling number or if the number refers to an animation node."
 
 #: sdk/script/fn/GetAnimationWeight.xml:27(text)
 msgid "Entfernt den Kombinationsknoten \"animation_number\" wenn seine Gewichtung 1000 erreicht hat."
-msgstr ""
+msgstr "Removes the combination node \"animation_number\" if its weight has reached the value 1000."
 
 #: sdk/script/fn/GetAnimationPosition.xml:15(desc)
-#, fuzzy
 msgid "Animationsnummer der Animation deren Position abgefragt werden soll."
-msgstr "Name of the activity of which to get an entry."
+msgstr "Animation number of the animation whose position to retrieve."
 
 #: sdk/script/fn/GetAnimationPosition.xml:20(desc)
 msgid "Gibt die Stelle zurück an der die Animation mit der angegebenen Nummer gerade ist. Die Zahl liegt zwischen 0 und <placeholder-1/>(<placeholder-2/>(animation_number)). Falls es keine Animation mit der angegebenen Nummer gibt oder es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück."
-msgstr ""
+msgstr "Retuerns the position of the animation refered to by the given number. The returned value lies between 0 and <placeholder-1/>(<placeholder-2/>(animation_number)). If there is no such animation with the given number or the number refers to a combination node then this function returns nil."
 
 #: sdk/script/fn/GetAnimationName.xml:15(desc)
-#, fuzzy
 msgid "Animationsnummer der Animation deren Name abgefragt werden soll."
-msgstr "Number of the team whose name to get."
+msgstr "Animation number of the animation whose name to retrieve."
 
 #: sdk/script/fn/GetAnimationName.xml:20(desc)
 msgid "Gibt den Namen der Animation mit der angegebenen Nummer zurück. Falls keine Animation mit der angegebenen Nummer existiert, oder falls es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück."
-msgstr ""
+msgstr "Returns the name of the animation with the given number. If there is no such animation with the given number or the number refers to a combination node then this function returns nil."
 
 #: sdk/script/fn/GetAnimationName.xml:27(text)
 msgid "Falls in Slot 5 derzeit nur eine Animation gespielt wird, und falls diese \"Walk\" ist, dann wird sie gestoppt."
-msgstr ""
+msgstr "If there is only one animation being played in slot 5 and its name is \"Walk\" then that animation is stopped."
 
 #: sdk/script/fn/GetAnimationLength.xml:15(desc)
-#, fuzzy
 msgid "Name der Animation deren Länge abgefragt werden soll."
-msgstr "Name of the activity of which to get an entry."
+msgstr "Name of the animation whose length to retrieve."
 
 #: sdk/script/fn/GetAnimationLength.xml:20(desc)
 msgid "Gibt die Länge der Animation mit dem angegebenen Namen zurück, oder nil wenn keine solche Animation existiert. Gültige Positionen (für <placeholder-1/> und <placeholder-2/>) liegen zwischen 0 und der Länge der Animation. Die zurückgegebene Zahl entspricht der Animationslänge (wie sie im Modellierungstool eingestellt wurde) in Millisekunden."
-msgstr ""
+msgstr "Returns the length of the animation with the given name, or nil if there is no such animation. Valid positions (for <placeholder-1/> and <placeholder-2/>) include values between 0 and the animation length. The returned number corresponds to the animation length (as specified in the modelling tool) in milliseconds."
 
 #: sdk/script/fn/GetAnimationLength.xml:27(text)
 msgid "Spielt eine neue Animation namens \"Turn\" in Slot 5 ab, die eventuell andere Animationen in Slot 5 überlagert. Ein Animationsdurchgang dauert 50 Frames. Danach fängt die Animation wieder von vorne an."
-msgstr ""
+msgstr "Plays a new animation named \"Turn\" in slot 5 which superimposes other animations in slot 5. One animation cycle lasts 50 frames. After that time the animation restarts from the beginning."
 
 #: sdk/script/fn/GetAlive.xml:12(desc)
-#, fuzzy
 msgid "Gibt zurück, ob das aufrufende Objekt noch am Leben ist."
-msgstr "Returns whether the object is still alive."
+msgstr "Returns whether the calling object is still alive."
 
 #: sdk/script/fn/GetAlive.xml:16(text)
 msgid "Eliminiert den ersten Spieler, wenn der erste Zauberclonk getötet wurde. Achtung: In einem echten Skript würde zuvor die Existenz des ersten Spielers geprüft."
 msgstr "Eliminates the first player if the first found magiclonk was killed. Warning: in real application check for the existence of the player first."
 
 #: sdk/script/fn/GetActionTarget.xml:12(desc)
-#, fuzzy
 msgid "0 für target oder 1 für target2"
-msgstr "0 for pTarget, 1 for pTarget2"
+msgstr "0 for target, or 1 for target2"
 
 #: sdk/script/fn/GetActionTarget.xml:15(desc)
-#, fuzzy
 msgid "Liefert die aktuellen Aktivitätszielobjekte des aufrufenden Objekts."
-msgstr "Returns the current action targets of an object."
+msgstr "Returns the current action targets of the calling object."
 
 #: sdk/script/fn/GetActionTarget.xml:19(text)
 msgid "Im StartCall der Fällen-Aktivität eines Clonks ausgeführt, fällt es die meisten Bäume sofort."
@@ -9128,11 +9105,11 @@ msgstr "The first player's highest ranking clonk explodes."
 
 #: sdk/script/fn/Exit.xml:12(desc)
 msgid "Offset der X-Austrittsposition."
-msgstr ""
+msgstr "Offset of the X exit position."
 
 #: sdk/script/fn/Exit.xml:13(desc)
 msgid "Offset der Y-Austrittsposition."
-msgstr ""
+msgstr "Offset of the Y exit position."
 
 #: sdk/script/fn/Exit.xml:14(desc)
 msgid "Rotation des Austrittsobjekts in Grad."
@@ -9680,15 +9657,15 @@ msgstr "Makes a small hole in the middle of the landscape."
 
 #: sdk/script/fn/DetachMesh.xml:12(desc)
 msgid "Nummer des zu entfernenden angehängten Meshes. Der Rückgabewert von <placeholder-1/> bildet solch eine Nummer."
-msgstr ""
+msgstr "Number of the mesh to detach. <placeholder-1/> returns such a number."
 
 #: sdk/script/fn/DetachMesh.xml:15(desc)
 msgid "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so kann es mit dieser Funktion wieder gelöst werden."
-msgstr ""
+msgstr "If a mesh was previously attached to another one via <placeholder-1/> then it can be detached again using this function."
 
 #: sdk/script/fn/DetachMesh.xml:27(text)
 msgid "Script für einen <emlink href=\"script/Effects.html\">Effekt</emlink>: Während der Effekt aktiv ist trägt das Effektziel einen Bogen."
-msgstr ""
+msgstr "Script for an <emlink href=\"script/Effects.html\">effect</emlink>: The effect target carries a bow as long as the effect remains active."
 
 #: sdk/script/fn/DefinitionCall.xml:12(desc)
 msgid "ID der Definition, in dessen Script die Funktion aufgerufen wird"
@@ -9719,11 +9696,11 @@ msgstr "definition id"
 
 #: sdk/script/fn/Definition.xml:13(desc)
 msgid "Definition, die initialisiert wird."
-msgstr ""
+msgstr "The definition being initialized."
 
 #: sdk/script/fn/Definition.xml:16(desc)
 msgid "Wird nach dem Laden der Definitionen aufgerufen. Sollte nur die aktuelle Definiton Ã¤ndern."
-msgstr ""
+msgstr "Called after loading of the calling definition. This should only change the definition."
 
 #: sdk/script/fn/DeathAnnounce.xml:12(desc)
 msgid "Gibt eine Botschaft a la \"[name] ist von uns gegangen\" über dem aufrufenden Objekt aus."
@@ -9762,23 +9739,23 @@ msgstr "Object above which the message is to be displayed. If no object is speci
 
 #: sdk/script/fn/CustomMessage.xml:15(desc)
 msgid "x-Offset der Nachrichtenposition. Bei globalen Nachrichten ist dies die Viewportmitte. Bei Objektnachrichten ist dies relativ zur Standard-Nachrichtenposition über dem Objekt. Bei Portrait-Nachrichten (portrait!=0) ist das Offset relativ zur oberen, linken Viewportecke."
-msgstr ""
+msgstr "x offset of the message position. For global messages this refers to the viewport center. For object messages this is relative to the standard message position above the object. For portrait messages (portrait!=0) the offset is relative to the upper left viewport corner."
 
 #: sdk/script/fn/CustomMessage.xml:16(desc)
 msgid "y-Offset der Nachrichtenposition."
-msgstr ""
+msgstr "y offset of the message position."
 
 #: sdk/script/fn/CustomMessage.xml:17(desc)
 msgid "Farbe der Nachricht. Bei 0 Default auf 0xffffff (weiß)."
-msgstr ""
+msgstr "Color of the message. 0 defaults to 0xffffff (white)."
 
 #: sdk/script/fn/CustomMessage.xml:18(desc)
 msgid "ID der Objektdefinition, die für Dekoration der Nachricht verwendet wird. Wenn angegeben, wird die Nachricht von einem Rahmen umgeben. Nur gültig bei angegebenem Portrait."
-msgstr ""
+msgstr "ID of the object definition which is used for decoration of the message. If given the message will be surrounded by a border. Only valid for given portrait."
 
 #: sdk/script/fn/CustomMessage.xml:19(desc)
 msgid "Bildspezifikation für ein Bild links neben der Nachricht im Dekorationsrahmen."
-msgstr ""
+msgstr "Picture specification for a picture to the left of the message within the decoration frame."
 
 #: sdk/script/fn/CustomMessage.xml:21(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:16(col)
@@ -9789,59 +9766,56 @@ msgid "Bit"
 msgstr "Bit"
 
 #: sdk/script/fn/CustomMessage.xml:22(col)
-#, fuzzy
 msgid "MSG_NoBreak"
-msgstr "NoBreath"
+msgstr "MSG_NoBreak"
 
 #: sdk/script/fn/CustomMessage.xml:22(col)
 msgid "Wenn gesetzt, werden keine automatischen Zeilenumbruch bei langen Nachrichten eingefügt."
-msgstr ""
+msgstr "If set no automatic line breaks are inserted for long messages."
 
 #: sdk/script/fn/CustomMessage.xml:23(col)
-#, fuzzy
 msgid "MSG_Bottom"
-msgstr "CNAT_Bottom"
+msgstr "MSG_Bottom"
 
 #: sdk/script/fn/CustomMessage.xml:23(col)
 msgid "Nur globale Nachrichten. Für Portraitnachrichten mit Dekorationsrahmen: Das Nachrichtenoffset gibt die Verschiebung zur unteren Bildschirmkante anstatt zur oberen Bildschirmkante an. Für nicht-Portraitnachrichten setzt das Flag die Nachricht etwas tiefer."
-msgstr ""
+msgstr "Global messages only. For portrait messages with decoration frame: The message offset specifies the displacement relative to the bottom of the screen instead of relative to the top. For non-portrait messages the flag displaces the message a bit to the bottom."
 
 #: sdk/script/fn/CustomMessage.xml:24(col)
 msgid "MSG_Multiple"
-msgstr ""
+msgstr "MSG_Multiple"
 
 #: sdk/script/fn/CustomMessage.xml:24(col)
 msgid "Wenn gesetzt, werden vorherige Nachrichten des gleichen Typs nicht gelöscht."
-msgstr ""
+msgstr "If set previous messages of the same type will not be removed."
 
 #: sdk/script/fn/CustomMessage.xml:20(desc)
-#, fuzzy
 msgid "Bitmaske zusätzlicher Optionen. Mögliche Werte: <placeholder-1/>"
-msgstr "Bit mask composed of the following values: <placeholder-1/>"
+msgstr "Bit mask specifying additional options. Possible values: <placeholder-1/>"
 
 #: sdk/script/fn/CustomMessage.xml:28(desc)
 msgid "Gibt eine Nachricht aus."
-msgstr ""
+msgstr "Displays a message."
 
 #: sdk/script/fn/CustomMessage.xml:29(remark)
 msgid "Diese Funktion vereinigt die Funktionialitäten von <placeholder-1/> und <placeholder-2/> und bietet zusätzliche Optionen an. Um in der Zukunft weitere Parameter einfügen zu können ohne eine neue Funktion zu erschaffen, enthält sie bewusst keine zusätzlichen Format-Parameter. Diese können über die Funktion <placeholder-3/> erreicht werden."
-msgstr ""
+msgstr "This function unifies the functionalities of <placeholder-1/> and <placeholder-2/> and offers additional options. To be able to add more parameters in future without having to define a new function it intentionally does not have additionaly format parameters. Instead they can be used via the function <placeholder-3/>."
 
 #: sdk/script/fn/CustomMessage.xml:30(remark)
 msgid "Es gelten die üblichen Nachrichtenformatierungen. Beginnt die Nachricht mit einem \"@\", so wird die Nachricht dauerhaft angezeigt bis sie durch eine andere ersetzt wird. Das Zeichen \"|\" steht für einen Zeilenumbruch. Es können Nachrichtenformatierungen mit den Tags &lt;i&gt; (kursiv) und &lt;c&gt; (farbig) genutzt werden."
-msgstr ""
+msgstr "The usual message formating rules apply. If the message starts with an \"@\" then the message is displayed permanently until it is replaced by another message. The character \"|\" causes a line break. The message can be formatted using the tags &lt;i&gt; (italic) or &lt;c&gt; (colored)."
 
 #: sdk/script/fn/CustomMessage.xml:31(remark)
 msgid "Nachrichten werden grundsätzlich angezeigt, bis eine von der Nachrichtenlänge abhängige Zeit vergangen ist oder sie durch eine zweite Nachricht gleicher Klasse ersetzt werden. Eine globale Nachricht (d.h. obj=0) ersetzt alle anderen globalen Nachrichten, und eine Objektnachricht (obj!=0) ersetzt alle anderen Objektnachrichten. Um mehrere Nachrichten gleicher Klasse anzuzeigen, sollte das Flag MSG_Multiple verwendet werden."
-msgstr ""
+msgstr "Messages are displayed until a certain time which depends on the length of the message has passed, or the message is replaced by another message of the same class. A global message (i.e. obj=0) replaces all other global messages, and an object message (obj!=0) replaces all other object messages. To display multiple messages of the same class the flag MSG_Multiple can be used."
 
 #: sdk/script/fn/CustomMessage.xml:35(text)
 msgid "Gibt die Nachricht \"This is madness!\" nur für Spieler 0 aus, wobei das Wort \"madness\" in kursiver Schrift angezeigt wird."
-msgstr ""
+msgstr "Shows the message \"This is madness!\" for player 0 only with the word \"madness\" being written in italic."
 
 #: sdk/script/fn/CustomMessage.xml:39(text)
 msgid "Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein grünes Clonk-Portrait angezeigt. Es muss die Dekorationsdefinition MD69 geladen sein."
-msgstr ""
+msgstr "Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition MD69 needs to be loaded."
 
 #: sdk/script/fn/CreateScriptPlayer.xml:12(desc)
 msgid "Name für den Scriptspieler. Muss angegeben werden."
@@ -10263,16 +10237,14 @@ msgid "Öffnet zunächst ein Textfenster mit dem Inhalt \"Alter Text\" für den 
 msgstr "Opens a text window containing the entry \"Old Text\" for the selected clonk. Then changes the entry to \"New Text\"."
 
 #: sdk/script/fn/CheckVisibility.xml:12(desc)
-#, fuzzy
 msgid "Spieler für den die Sichtbarkeit abgefragt wird."
-msgstr "Player whose magic knowledge you want to determine."
+msgstr "Player whose visibility to determine."
 
 #: sdk/script/fn/CheckVisibility.xml:16(desc)
 msgid "Prüft ob das angegebene Objekt für den angegebenen Spieler sichtbar ist."
-msgstr ""
+msgstr "Checks whether the given object is visible for the given player."
 
 #: sdk/script/fn/CheckEnergyNeedChain.xml:13(desc)
-#, fuzzy
 msgid "Überprüft, ob ein an das aufrufende Objekt angeschlossener Verbraucher Energie benötigt. Dabei werden auch indirekt (also über mehrere Leitungen über einen weiteren Verbraucher) angeschlossene Verbraucher überprüft."
 msgstr "Checks whether any energy user connected to the specified object currently requires energy. The search will also include indirectly connected objects (via multiple lines)."
 
@@ -10413,13 +10385,12 @@ msgid "Stärke"
 msgstr "Strength."
 
 #: sdk/script/fn/CastPXS.xml:17(desc)
-#, fuzzy
 msgid "Winkel in den die Materialpixel verschleudert werden."
-msgstr "Velocity at which to cast the particles."
+msgstr "Angle into which the material pixels are casted."
 
 #: sdk/script/fn/CastPXS.xml:18(desc)
 msgid "Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Materialpixel in alle Richtungen verschleudert."
-msgstr ""
+msgstr "Maximum deviation from that angle. If not given the material pixels will all be casted into all directions."
 
 #: sdk/script/fn/CastPXS.xml:21(desc)
 msgid "Verschleudert namentlich angegebene Materialpixel an angegebener Position. Bei einem lokalen Aufruf gelten die Koordinaten als Offset zum aufrufenden Objekt."
@@ -10450,35 +10421,32 @@ msgid "Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf."
 msgstr "Y casting position. In local calls offset to the calling object."
 
 #: sdk/script/fn/CastObjects.xml:17(desc)
-#, fuzzy
 msgid "Winkel in den die Objekte verschleudert werden."
-msgstr "Type of objects."
+msgstr "Angle into which to cast the objects."
 
 #: sdk/script/fn/CastObjects.xml:18(desc)
 msgid "Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Objekte in alle Richtungen verschleudert."
-msgstr ""
+msgstr "Maximum deviation from that angle. If not given objects will be cast into all directions."
 
 #: sdk/script/fn/CastObjects.xml:21(desc)
-#, fuzzy
 msgid "Verschleudert number Objekte an angegebener Position mit einer Geschwindigkeit von level. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt."
-msgstr "Casts the specified amount of objects at the specified position at the given speed. In local calls the created objects will have the owner of the calling object."
+msgstr "Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object."
 
 #: sdk/script/fn/CastObjects.xml:27(text)
 msgid "Erzeugt am letzten Vertex einer Linie einen Funken. Bei mehrmaligem Aufruf erzielt man damit den gleichen Effekt wie bei einem Blitzeinschlag."
 msgstr "Creates a spark at the last vertex of a line. With multiple calls this will create the same effect as a lightning strike."
 
 #: sdk/script/fn/CanConcatPictureWith.xml:12(desc)
-#, fuzzy
 msgid "Das Object mit dem verglichen werden soll."
-msgstr "Velocity at which to cast the particles."
+msgstr "The object with which to compare."
 
 #: sdk/script/fn/CanConcatPictureWith.xml:15(desc)
 msgid "Tested ob die Bilder zweier Objekte gleich sind und sie somit in Inhaltsanzeigen gestapelt werden können."
-msgstr ""
+msgstr "Checks whether the pictures of two objects are the same and therefore can be stacked in contents menus."
 
 #: sdk/script/fn/Call.xml:16(desc)
 msgid "Ruft die lokale Funktion function auf. Wird \"~\" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt."
-msgstr ""
+msgstr "Calls the local function function. If \"~\" is prepended to the function name then the call does not fail if the function does not exist."
 
 #: sdk/script/fn/COMD_UpRight.xml:12(desc)
 msgid "Bewegungsrichtung: Schräg nach oben rechts. Für weitere Hinweise siehe <placeholder-1/>."
@@ -10573,13 +10541,12 @@ msgid "Gibt x im Log aus, wenn es ein boolscher Wert ist."
 msgstr "Writes x to the log if it is a boolean value."
 
 #: sdk/script/fn/C4V_Array.xml:12(desc)
-#, fuzzy
 msgid "Datentyp: Array."
-msgstr "Data type: id."
+msgstr "Data type: array."
 
 #: sdk/script/fn/C4V_Array.xml:17(text)
 msgid "Speichert ein neues, leeres Array in x wenn es noch kein Array ist."
-msgstr ""
+msgstr "Saves a new, empty array in x if it is not already an array."
 
 #: sdk/script/fn/C4V_Any.xml:12(desc)
 msgid "Datentyp: Unbekannter Datentyp."
@@ -10780,27 +10747,27 @@ msgstr "Object to check."
 
 #: sdk/script/fn/AttachMesh.xml:13(desc)
 msgid "Bone am Mesh des aufrufenden Objekts an dem das anzuhängende Mesh befestigt werden soll."
-msgstr ""
+msgstr "Bone of the calling object's mesh at which to fix the mesh to be attached."
 
 #: sdk/script/fn/AttachMesh.xml:14(desc)
 msgid "Bone am Mesh des anzuhängenden Objekts mit dem es befestigt werden soll."
-msgstr ""
+msgstr "Bone of the object to be attached with which to fix it."
 
 #: sdk/script/fn/AttachMesh.xml:15(desc)
 msgid "Transformation im Koordinatensystem des anzuhängenden Meshes, die auf selbiges angewandt wird. Das Array sollte 12 Integer-Einträge haben die eine 3x4-Matrix beschreiben wobei jeder Wert in Promille (1000 = 100%) angegeben ist. Die Matrizen können auch mit <placeholder-1/>, <placeholder-2/>, <placeholder-3/> und <placeholder-4/> erzeugt und mit <placeholder-5/> kombiniert werden."
-msgstr ""
+msgstr "Transformation to be applied on the attached mesh in its own frame of reference. The array should consist of 12 integer entries which make up a 3x4 matrix in which each vaule is given in promille (1000 = 100%). These matrices can be created via <placeholder-1/>, <placeholder-2/>, <placeholder-3/> and <placeholder-4/> or they can be combined via <placeholder-5/>."
 
 #: sdk/script/fn/AttachMesh.xml:18(desc)
 msgid "Befestigt ein Mesh an einem anderen. Wenn für <code>mesh</code> eine ID angegeben wird, so wird das Mesh der entsprechenden Definition verwendet. Wenn für <code>mesh</code> ein Objekt angegeben wird, so wird dessen aktuelles Mesh verwendet, inklusive aller Animationen oder weiterer angehängter Meshes. Dabei wird jedoch nur die Grafik angehangen, das Objekt selbst bleibt weiter an seiner gegenwärtigen Position. Der Rückgabewert ist eine Nummer mit Hilfe derer das Mesh mit <placeholder-1/> wieder gelöst werden kann."
-msgstr ""
+msgstr "Attaches a mesh to another mesh. If <code>mesh</code> is an ID then the mesh of the corresponding definition is used. If <code>mesh</code> is an object then the current mesh of that object is used, including all its animations and attached meshes. However, in that case only the graphics will be attached - the object itself stays at its current position. The return value is a number that can be used to detach the mesh again via <placeholder-1/>."
 
 #: sdk/script/fn/AttachMesh.xml:19(remark)
 msgid "Wird für mesh ein Objekt angegeben, so wird die \"MeshTransformation\"-Eigenschaft nicht auf das angehängte Mesh angewandt. Stattdessen kann der Parameter <code>transformation</code> angegeben werden um das angehängte Mesh zu transformieren."
-msgstr ""
+msgstr "If an object is used for a mesh then the \"MeshTransformation\" property of teh attached mesh will not be applied. Instead the parameter <code>transformation</code> can be used to transform the attached mesh."
 
 #: sdk/script/fn/AttachMesh.xml:23(text)
 msgid "Gibt einem Clonk einen Bogen in die Hand wenn im Clonkscript ausgeführt. Der Bogen wird mit seinem Bone \"main\" an den Bone \"pos_hand1\" des Clonks gehängt."
-msgstr ""
+msgstr "If executed in the context of a clonk this script makes him carry a bow. The bow will be attached with its Bone \"main\" to the bone \"pos_hand1\" of the clonk."
 
 #: sdk/script/fn/ArcSin.xml:12(desc)
 msgid "Länge der Gegenkathete"
@@ -10862,26 +10829,25 @@ msgstr "Hits a hiding wipf."
 #: sdk/script/fn/Anim_Linear.xml:20(desc)
 #: sdk/script/fn/Anim_AbsY.xml:20(desc)
 #: sdk/script/fn/Anim_AbsX.xml:20(desc)
-#, fuzzy
 msgid "Beginn des Intervalls."
-msgstr "Name of material."
+msgstr "Start of the interval."
 
 #: sdk/script/fn/Anim_YDir.xml:20(desc)
 #: sdk/script/fn/Anim_XDir.xml:20(desc)
 msgid "Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit größerer XDir zu, sonst nimmt er ab."
-msgstr ""
+msgstr "End of the interval. If end is greater than begin then the value increases with increases XDir, otherwise it decreases."
 
 #: sdk/script/fn/Anim_YDir.xml:25(desc)
 msgid "Größter Wert der YDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (end)."
-msgstr ""
+msgstr "Highest value of the YDir to be mapped. All larger velocities lead to the same animation value (end)."
 
 #: sdk/script/fn/Anim_YDir.xml:30(desc)
 msgid "Der Wert ist proportional zur Y-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis max_dir werden linear auf den Wertebereich von begin bis end abgebildet."
-msgstr ""
+msgstr "The value is proportional to the object's velocity in Y direction. The velocities 0 to max_dir are mapped linearly to the interval given by begin and end."
 
 #: sdk/script/fn/Anim_YDir.xml:37(text)
 msgid "Spielt die Animation \"ShowSpeed\" in Slot 10 ab. Diese könnte eine Geschwindigkeitsanzeige in einem Aufzug darstellen."
-msgstr ""
+msgstr "Plays the animation \"ShowSpeed\" in slot 10. This could be a velocity display in an elevator."
 
 #: sdk/script/fn/Anim_Y.xml:15(desc)
 #: sdk/script/fn/Anim_X.xml:15(desc)
@@ -10889,139 +10855,138 @@ msgstr ""
 #: sdk/script/fn/Anim_AbsY.xml:15(desc)
 #: sdk/script/fn/Anim_AbsX.xml:15(desc)
 msgid "Startwert. Sollte innerhalb des von begin und end aufgespannten Intervalls liegen."
-msgstr ""
+msgstr "Start value. Should be inside the interval given by begin and end."
 
 #: sdk/script/fn/Anim_Y.xml:25(desc)
 msgid "Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit Bewegung des Objekts in positiver Y-Richtung zu, andernfalls nimmt er ab."
-msgstr ""
+msgstr "End of the interval. If end is greater than begin then the value increases with movement into positive Y direction, otherwise it decreases in that case."
 
 #: sdk/script/fn/Anim_Y.xml:30(desc)
 #: sdk/script/fn/Anim_AbsY.xml:30(desc)
 msgid "Anzahl Pixel die in Y-Richtung zurückgelegt werden müssen um die Animation von begin bis nach end durchzuspielen."
-msgstr ""
+msgstr "Number of pixels that need to be moved in Y direction for the animation to be played from begin to end."
 
 #: sdk/script/fn/Anim_Y.xml:35(desc)
 msgid "Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in positiver Y-Richtung bewegt erhöht den Wert etwas, und jeder Pixel in negative Y-Richtung verringert ihn etwas. Wenn end erreicht wurde wird der Wert wieder auf begin zurückgesetzt, und wenn begin erreicht wurde wird er auf end gesetzt."
-msgstr ""
+msgstr "The value depends on the movement of the object in Y direction. Each pixel the object moves into positive Y direction increases the value a little bit, and each pixel in negative Y direction decreases it. If end is reached then the value is reset to begin, and if begin is reached then the value is reset to end."
 
 #: sdk/script/fn/Anim_Y.xml:42(text)
 msgid "Spielt die Animation \"Scale\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in Y-Richtung bewegt. Nachdem es 15 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an. Hier wird <placeholder-1/> anstelle von <placeholder-2/> verwendet, da beim Runterklettern die Animation in die andere Richtung abgespielt werden soll wie beim Raufklettern. begin wurde größer als end gewählt, da die Animation in bei Bewegung in negative Y-Richtung (Raufklettern) vorwärts und bei Bewegung in positive Y-Richtung (Herabklettern) rückwärts abgespielt werden soll."
-msgstr ""
+msgstr "Plays the animation \"Scale\" in slot 5, superimposing any other potential animations in slot 5. The animation is being played the faster the faster the object moves into Y direction. After the object moved 15 pixels the animation has been played form start to end and restarts from the beginning. Here we use <placeholder-1/> instead of <placeholder-2/> so that the animation is played in the opposite direction if scaling downwards. begin was chosen to be greater than end so that the animation is played forwards for movement in negative Y direction (climbing upwards) and so that it is played backwards for movement in positive Y direction (climbing downwards)."
 
 #: sdk/script/fn/Anim_XDir.xml:25(desc)
 msgid "Größter Wert der XDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (end)."
-msgstr ""
+msgstr "Largest value of XDir to be mapped. Even larger velocities lead to the same animation value (end)."
 
 #: sdk/script/fn/Anim_XDir.xml:30(desc)
 msgid "Der Wert ist proportional zur X-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis max_dir werden linear auf den Wertebereich von begin bis end abgebildet."
-msgstr ""
+msgstr "The value is proportional to the object's velocity in X direction. The velocities from 0 to max_dir are mapped linearily to the interval from begin to end."
 
 #: sdk/script/fn/Anim_XDir.xml:37(text)
 msgid "Spielt die Animation \"ShowSpeed\" in Slot 10 ab. Diese könnte eine Geschwindigkeitsanzeige in einem Fahrzeug darstellen."
-msgstr ""
+msgstr "Plays the animation \"ShowSpeed\" in slot 10. This could be a tachoometer in a vehicle."
 
 #: sdk/script/fn/Anim_X.xml:25(desc)
 msgid "Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit der Bewegung des Objekts in positiver X-Richtung zu, andernfalls nimmt er ab."
-msgstr ""
+msgstr "End of the interval. If end is chosen to be greater than begin then the value increases with movement into positive X direction, otherwise it decreases."
 
 #: sdk/script/fn/Anim_X.xml:30(desc)
 #: sdk/script/fn/Anim_AbsX.xml:30(desc)
 msgid "Anzahl Pixel die in X-Richtung zurückgelegt werden müssen um die Animation von begin bis nach end durchzuspielen."
-msgstr ""
+msgstr "Number of pixels to be moved into X direction for the animation to be played from begin to end."
 
 #: sdk/script/fn/Anim_X.xml:35(desc)
 msgid "Der Wert hängt von der Bewegung des Objekts in X-Richtung ab. Jeder Pixel den sich das Objekt in positiver X-Richtung bewegt erhöht den Wert etwas, und jeder Pixel in negative X-Richtung verringert ihn etwas. Wenn end erreicht wurde wird der Wert wieder auf begin zurückgesetzt, und wenn begin erreicht wurde wird er auf end gesetzt."
-msgstr ""
+msgstr "The value depends on the movement into X direction. Every pixel moved into positive X direction increases the value a little bit, and each pixel moved into negative X direction decreases it. If end was reached then the value is reset to begin and if begin was reached then the value is reset to end."
 
 #: sdk/script/fn/Anim_X.xml:42(text)
 msgid "Spielt die Animation \"Drive\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in X-Richtung bewegt. Nachdem es 15 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an. Hier wird <placeholder-1/> anstelle von <placeholder-2/> verwendet, da sich die Räder eines Fahrzeugs beim Rückwärtsfahren auch rückwärts drehen sollen."
-msgstr ""
+msgstr "Plays the animation \"Drive\" in slot 5 and superimposes any other potential animations in slot 5. The animation is played the faster the faster the object moves into X direction. Once the object moved 15 pixels the animation will have been played from begin to end and it restarts from the beginning. Here we use <placeholder-1/> instead of <placeholder-2/> so that the wheels of a vehicle turn backwards when driving backwards."
 
 #: sdk/script/fn/Anim_Linear.xml:25(desc)
 msgid "Schluss des Intervalls. Wenn end größer als begin ist, so steigt der Wert mit der Zeit an, andernfalls nimmt er ab."
-msgstr ""
+msgstr "End of the interval. If end is larger than begin then the value increases linearily with time, otherwise it decreases."
 
 #: sdk/script/fn/Anim_Linear.xml:30(desc)
 msgid "Anzahl Frames die ein Durchspielen von begin bis end dauert."
-msgstr ""
+msgstr "Number of frames for the animation to be played from begin to end."
 
 #: sdk/script/fn/Anim_Linear.xml:38(col)
 msgid "ANIM_Loop"
-msgstr ""
+msgstr "ANIM_Loop"
 
 #: sdk/script/fn/Anim_Linear.xml:38(col)
 msgid "Der Wert wird nach dem Erreichen von end wieder auf begin gesetzt und der Durchgang beginnt von neuem."
-msgstr ""
+msgstr "The value is reset to begin if it reaches end and the cycle is restarted."
 
 #: sdk/script/fn/Anim_Linear.xml:39(col)
-#, fuzzy
 msgid "ANIM_Hold"
-msgstr "solid"
+msgstr "ANIM_Hold"
 
 #: sdk/script/fn/Anim_Linear.xml:39(col)
 msgid "Nach Erreichen von end bleibt der Wert konstant auf end."
-msgstr ""
+msgstr "As soon as end has been reached the value remains constantly at end."
 
 #: sdk/script/fn/Anim_Linear.xml:40(col)
 msgid "ANIM_Remove"
-msgstr ""
+msgstr "ANIM_Remove"
 
 #: sdk/script/fn/Anim_Linear.xml:40(col)
 msgid "Nach Erreichen von end wird die zugehörige Animation entfernt wie wenn zum entsprechenden Zeitpunkt <placeholder-1/> aufgerufen würde. Bei Kombinationsknoten wird der Kindknoten mit der kleineren Gewichtung entfernt."
-msgstr ""
+msgstr "Once end has been reached the coresponding animation will be removed as if <placeholder-1/> was called at the time end was reached. For combination nodes the child node with smaller weight will be removed."
 
 #: sdk/script/fn/Anim_Linear.xml:35(desc)
 msgid "Bestimmt, was nach dem Erreichen von end geschieht. Folgende Möglichkeiten existieren: <placeholder-1/>"
-msgstr ""
+msgstr "Specifies what happens once end is reached. There are the following possibilities:"
 
 #: sdk/script/fn/Anim_Linear.xml:47(desc)
 msgid "Der Wert nimmt linear mit der Zeit (in Frames) zu oder ab (je nachdem ob end größer oder kleiner als begin ist). Anfangs beträgt der Wert position und läuft dann Richtung end. Ein Durchgang von begin bis nach end dauert length Frames. Wenn position von begin abweicht dann wird end bereits früher erreicht sein. on_ending bestimmt, was passiert, wenn das Ende erreicht ist."
-msgstr ""
+msgstr "The value increases or decreases (depending on whether end is smaller or larger than begin) linearily in time (in frames). Initially the value is set to position and it is moving towards end. One cycle from begin to end lasts for length frames. If position and begin are not the same then end will be reached earlier already. on_ending specifies what happens once the end is reached."
 
 #: sdk/script/fn/Anim_Linear.xml:65(text)
 msgid "Setzt die Geschwindigkeit mit der die Animation im Slot 5 abgespielt wird abhängig von der Windgeschwindigkeit. Weht der Wind nach links so wird die Animation rückwärts abgespielt. Es wäre auch möglich die Position jeden Frame mit <placeholder-1/> zu setzen, bei der Lösung mit <placeholder-2/> reicht es aber aus wenn die Funktion nur alle paar Frames aufgerufen wird, da sich das Windrad in der Zwischenzeit mit konstanter Geschwindigkeit weiter dreht (es wird also die Näherung gemacht, dass die Windgeschwindigkeit für kleine Zeitintervalle konstant ist)."
-msgstr ""
+msgstr "Sets the speed with which the animation in slot 5 is played depending on the wind speed. If the wind blows to the left then the animation is played backwards. Another possibility would be to set the position each frame using <placeholder-1/>, however with the solution using <placeholder-2/> it is enough to call the function every couple of frames since the windmill continues to turn with contstant speed between calls (in other words, it is assumed that the wind speed will not change much for small time intervals)."
 
 #: sdk/script/fn/Anim_Const.xml:15(desc)
 msgid "Zu verwendender Wert."
-msgstr ""
+msgstr "Value to use."
 
 #: sdk/script/fn/Anim_Const.xml:20(desc)
 msgid "Wertangabe für <placeholder-1/>, <placeholder-2/> oder <placeholder-3/>: Über die komplette Zeitdauer der Animation wird der gegebene konstante Wert verwendet."
-msgstr ""
+msgstr "Value provider for <placeholder-1/>, <placeholder-2/> or <placeholder-3/>: For the whole animation the given constant value will be used."
 
 #: sdk/script/fn/Anim_Const.xml:27(text)
 msgid "Spielt die Animation \"HangleStand\" ab und verwendet dabei kontant den Wert 1000 als Gewicht (volles Gewicht). Die Position der Animation ist nicht konstant sondern verändert sich (linear) mit der Zeit, siehe <placeholder-1/>."
-msgstr ""
+msgstr "Plays the animation \"HangleStand\" and uses the value 1000 constantly for the animation's weight (full weight). The position of the animation is not contant but changes (linearily) with time, see <placeholder-1/>."
 
 #: sdk/script/fn/Anim_Action.xml:15(desc)
 msgid "Der Wert hängt von der Phase der aktuellen Action ab. Die Phase wird linear auf die von der Action zur Zeit abgespielte Animation abgebildet (siehe <emlink href=\"definition/actmap.html\">ActMap</emlink>). Dies kann verwendet werden um Animationen synchron zur ActMap-Animation zu spielen."
-msgstr ""
+msgstr "The value depends on the phase of the current action. The phase is mapped linearily to the length of the animation the current action is playing. This can be used to play animations synchronized to the ActMap animation."
 
 #: sdk/script/fn/Anim_Action.xml:22(text)
 msgid "Spielt die Animation \"Walk\" in Slot 10 synchron zur aktuellen Action ab."
-msgstr ""
+msgstr "Plays the animation \"Walk in slot 10 synchroned to the current action."
 
 #: sdk/script/fn/Anim_AbsY.xml:25(desc)
 #: sdk/script/fn/Anim_AbsX.xml:25(desc)
 msgid "Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit der Bewegung des Objekts zu, andernfalls nimmt er ab."
-msgstr ""
+msgstr "End of the interval. If end is greater than begin then the value increases with every movement of the object, otherwise it decreases."
 
 #: sdk/script/fn/Anim_AbsY.xml:35(desc)
 msgid "Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in Y-Richtung bewegt erhöht den Wert etwas. Wenn end erreicht wurde wird der Wert wieder auf begin zurückgesetzt. Im Gegensatz zu <placeholder-1/> bewegt sich der Wert immer auf end zu, egal in welche Richtung sich das Objekt bewegt."
-msgstr ""
+msgstr "The value depends on the movement of the object into Y direction. Every pixel the object moves into Y direction increases the value a little bit. Once end is reached the value is reset to begin. In contrast to <placeholder-1/> the value always moves towards end, not depending on whether the object moves upwards or downwards."
 
 #: sdk/script/fn/Anim_AbsY.xml:42(text)
 msgid "Spielt die Animation \"Lift\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in Y-Richtung bewegt. Nachdem es 25 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an."
-msgstr ""
+msgstr "Plays the animation \"Lift\" in slot 5 and superimposes any other potential animations played in slot 5. The animation is playdethe faster the faster the object moves into Y direction. After it moved 25 pixels the animation has been played from its beginning to its end and will be restarted."
 
 #: sdk/script/fn/Anim_AbsX.xml:35(desc)
 msgid "Der Wert hängt von der Bewegung des Objekts in X-Richtung ab. Jeder Pixel den sich das Objekt in X-Richtung bewegt erhöht den Wert etwas. Wenn end erreicht wurde wird der Wert wieder auf begin zurückgesetzt. Im Gegensatz zu <placeholder-1/> bewegt sich der Wert immer auf end zu, egal in welche Richtung sich das Objekt bewegt."
-msgstr ""
+msgstr "The value depends on the movement of the object into X direction. Every pixel the object moves into X direction increases the value a little bit. Once end has been reached the value is reset to begin. In contrast to <placeholder-1/> the value moves towards end not depending on whether the object moves to the left or to the right."
 
 #: sdk/script/fn/Anim_AbsX.xml:42(text)
 msgid "Spielt die Animation \"Walk\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in X-Richtung bewegt. Nachdem es 20 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an."
-msgstr ""
+msgstr "Plays the animation \"Walk\" in slot 5, superimposing any other potential animations in slot 5. The animation is played the faster the faster the object moves into X direction. Once it moved 20 pixels the animation has been played from begin to end and restarts at its beginning."
 
 #: sdk/script/fn/Angle.xml:12(desc)
 msgid "X-Koordinate des ersten Punktes"
@@ -11540,6 +11505,9 @@ msgstr "Example"
 #: sdk/definition/actmap.xml:134(col)
 #: sdk/definition/actmap.xml:139(col)
 #: sdk/definition/actmap.xml:144(col)
+#: sdk/animation.xml:50(col)
+#: sdk/animation.xml:55(col)
+#: sdk/animation.xml:143(col)
 msgid "Integer"
 msgstr "Integer"
 
@@ -11562,6 +11530,10 @@ msgstr "A whole number from -2.147.483.648 to +2.147.483.647."
 #: sdk/material/c4m.xml:265(col)
 #: sdk/folder/foldermap.xml:126(col)
 #: sdk/definition/actmap.xml:89(col)
+#: sdk/animation.xml:40(col)
+#: sdk/animation.xml:45(col)
+#: sdk/animation.xml:60(col)
+#: sdk/animation.xml:133(col)
 msgid "Boolean"
 msgstr "Boolean"
 
@@ -11636,7 +11608,8 @@ msgid "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolg
 msgstr "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array."
 
 #: sdk/script/Typechecks.xml:75(text)
-msgid "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code>-1</code> aufgefasst, falls sie nicht angegeben sind."
+#, fuzzy
+msgid "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code><placeholder-1/>(a)</code> aufgefasst, falls sie nicht angegeben sind."
 msgstr "A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code>1<code> respectively if not given."
 
 #: sdk/script/Typechecks.xml:76(h)
@@ -11721,7 +11694,7 @@ msgstr "Error"
 
 #: sdk/script/Typechecks.xml:170(col)
 msgid "maybe"
-msgstr ""
+msgstr "maybe"
 
 #: sdk/script/Typechecks.xml:177(h)
 msgid "Erklärung der Tabelle:"
@@ -13113,6 +13086,9 @@ msgstr "Section [Head]"
 #: sdk/definition/defcore.xml:19(col)
 #: sdk/definition/defcore.xml:204(col)
 #: sdk/definition/actmap.xml:22(col)
+#: sdk/animation.xml:20(col)
+#: sdk/animation.xml:110(col)
+#: sdk/animation.xml:123(col)
 msgid "Datentyp"
 msgstr "File type"
 
@@ -13230,6 +13206,12 @@ msgstr "Layers"
 #: sdk/folder/foldermap.xml:81(col)
 #: sdk/folder/foldermap.xml:91(col)
 #: sdk/definition/actmap.xml:149(col)
+#: sdk/animation.xml:30(col)
+#: sdk/animation.xml:35(col)
+#: sdk/animation.xml:70(col)
+#: sdk/animation.xml:115(col)
+#: sdk/animation.xml:128(col)
+#: sdk/animation.xml:138(col)
 msgid "Zeichenfolge"
 msgstr "String"
 
@@ -14876,6 +14858,7 @@ msgstr ""
 
 #: sdk/renderclonk.xml:42(h)
 #: sdk/playercontrols.xml:74(col)
+#: sdk/animation.xml:69(col)
 msgid "Action"
 msgstr "Action"
 
@@ -14993,121 +14976,150 @@ msgstr ""
 
 #: sdk/playercontrols.xml:5(title)
 #: sdk/playercontrols.xml:6(h)
+#: sdk/animation.xml:5(title)
+#: sdk/animation.xml:6(h)
 #, fuzzy
 msgid "Spielersteuerung"
 msgstr "Player number"
 
 #: sdk/playercontrols.xml:8(text)
+#: sdk/animation.xml:8(text)
 msgid "Ab OC erlaubt die Engine, Steuerungskommandos fuer Spieler komplett frei zu definieren. Eigene Tastaturkommandos koennen hinzugefuegt oder veraendert werden. Alle unterstuetzten Eingabegeraete wie Maus, Tastatur und Gamepads koennen frei belegt werden und Kommandos koennen aus beliebigen Tastenkombinationen oder Sequenzen bestehen."
 msgstr ""
 
 #: sdk/playercontrols.xml:9(h)
+#: sdk/animation.xml:9(h)
 #, fuzzy
 msgid "PlayerControls.txt"
 msgstr "Player.txt"
 
 #: sdk/playercontrols.xml:10(text)
+#: sdk/animation.xml:10(text)
 msgid "Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.c4g. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.c4g hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**."
 msgstr ""
 
 #: sdk/playercontrols.xml:11(text)
+#: sdk/animation.xml:11(text)
 msgid "Zusaetzliche Dateien PlayerControls.txt koennen in Sprachpaketen abgelegt werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen Sprachen an die Tastaturen des jeweiligen Landes anzupassen**."
 msgstr ""
 
 #: sdk/playercontrols.xml:14(h)
+#: sdk/animation.xml:14(h)
 #, fuzzy
 msgid "Sektion [ControlDefs]"
 msgstr "Section [DefCore]"
 
 #: sdk/playercontrols.xml:17(caption)
+#: sdk/animation.xml:17(caption)
 #, fuzzy
 msgid "Beliebig viele Sektionen [ControlDef]"
 msgstr "Any number of sections [Scenario]"
 
 #: sdk/playercontrols.xml:24(col)
+#: sdk/animation.xml:24(col)
 #, fuzzy
 msgid "Identifier"
 msgstr "Identifier"
 
 #: sdk/playercontrols.xml:25(col)
+#: sdk/animation.xml:25(col)
 #, fuzzy
 msgid "Zeichenfolge (Max. 96 Zeichen)"
 msgstr "String (max. 30 chars)"
 
 #: sdk/playercontrols.xml:26(col)
+#: sdk/animation.xml:26(col)
 msgid "Intern benutzter Name zur Identifikation des Kommandos. Das Kommando wird unter diesem Namen in Standardbelegungen referenziert und im Script als CON_Name-Konstante vordefiniert. Der Name sollte folglich im Script gueltig sein, d.h. nur aus Buchstaben, Zahlen sowie _ bestehen. Insbesondere sollten keine Leerzeichen oder deutsche Umlaute verwendet werden. Zur Vermeidung von Konflikten gelten in szenarienlokalen sowie Objektpaketlokalen Definitionen dieselben Benennungsregeln wie zur Vergabe von Objekt-IDs."
 msgstr ""
 
 #: sdk/playercontrols.xml:29(col)
+#: sdk/animation.xml:29(col)
 #, fuzzy
 msgid "GUIName"
 msgstr "Name"
 
 #: sdk/playercontrols.xml:31(col)
+#: sdk/animation.xml:31(col)
 msgid "Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
 msgstr ""
 
 #: sdk/playercontrols.xml:34(col)
+#: sdk/animation.xml:34(col)
 msgid "GUIDesc"
 msgstr ""
 
 #: sdk/playercontrols.xml:36(col)
+#: sdk/animation.xml:36(col)
 msgid "Erlaeuternde Beschreibung, die dem Spieler im Steuerungskonfigurationsdialog angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
 msgstr ""
 
 #: sdk/playercontrols.xml:41(col)
+#: sdk/animation.xml:41(col)
 msgid "Wenn wahr, ist dies eine globale, d.h. keinem Spieler zugeordnete Definition. Siehe <emlink href=\"playercontrols.xml#Globals\">Globale Definitionen</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:44(col)
 #: sdk/playercontrols.xml:165(col)
+#: sdk/animation.xml:44(col)
+#: sdk/animation.xml:160(col)
 #, fuzzy
 msgid "Hold"
 msgstr "solid"
 
 #: sdk/playercontrols.xml:46(col)
+#: sdk/animation.xml:46(col)
 msgid "Wenn wahr, wird das Kommando als ein gehaltenes Kommando interpretiert. Ein solches Kommando speichert, ob die Steuerungstaste gedrueckt ist und generiert beim Loslassen ein zusaetzliches Scriptereignis. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:49(col)
+#: sdk/animation.xml:49(col)
 #, fuzzy
 msgid "RepeatDelay"
 msgstr "Replay"
 
 #: sdk/playercontrols.xml:51(col)
+#: sdk/animation.xml:51(col)
 msgid "Nur gueltig wenn <em>Hold</em> wahr. Wenn groesser 0, generiert die Taste im gehaltenen Zustand im angegebenen Abstand (in Frames) weitere Scriptereignisse. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:54(col)
+#: sdk/animation.xml:54(col)
 #, fuzzy
 msgid "InitialRepeatDelay"
 msgstr "InitializePlayer"
 
 #: sdk/playercontrols.xml:56(col)
+#: sdk/animation.xml:56(col)
 msgid "Wenn angegeben, kann die Wartezeit fuer das erste Tastenwiederholungsereignis geaendert werden. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:59(col)
+#: sdk/animation.xml:59(col)
 #, fuzzy
 msgid "DefaultDisabled"
 msgstr "ObjectDisabled"
 
 #: sdk/playercontrols.xml:61(col)
+#: sdk/animation.xml:61(col)
 msgid "Wenn wahr, ist das Kommando im Normalfall deaktiviert und muss erst per Script aktiviert werden. Nuetzlich fuer Kommandos, die nur in sehr speziellen Situationen benoetigt werden. Siehe <emlink href=\"playercontrols.xml#Deactivate\">Deaktivierte Kommandos</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:64(col)
 #: sdk/playercontrols.xml:239(h)
+#: sdk/animation.xml:64(col)
+#: sdk/animation.xml:221(h)
 msgid "ExtraData"
 msgstr ""
 
 #: sdk/playercontrols.xml:65(col)
 #: sdk/definition/defcore.xml:83(col)
 #: sdk/definition/defcore.xml:105(col)
+#: sdk/animation.xml:65(col)
 msgid "C4ID"
 msgstr "C4ID"
 
 #: sdk/playercontrols.xml:66(col)
+#: sdk/animation.xml:66(col)
 msgid "Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href=\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
 msgstr ""
 
@@ -15120,160 +15132,196 @@ msgid "Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des A
 msgstr ""
 
 #: sdk/playercontrols.xml:84(col)
+#: sdk/animation.xml:79(col)
 #, fuzzy
 msgid "Keine Aktion."
 msgstr "New animation phase."
 
 #: sdk/playercontrols.xml:87(col)
+#: sdk/animation.xml:82(col)
 #, fuzzy
 msgid "Script (Standardwert)"
 msgstr "Default value"
 
 #: sdk/playercontrols.xml:88(col)
+#: sdk/animation.xml:83(col)
 msgid "Ausfuehrung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href=\"playercontrols.xml#Script\">Script-Callbacks</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:91(col)
+#: sdk/animation.xml:86(col)
 #, fuzzy
 msgid "Menu"
 msgstr "Menu"
 
 #: sdk/playercontrols.xml:92(col)
+#: sdk/animation.xml:87(col)
 msgid "Oeffnen des Spielermenues (asynchrones Kommando)."
 msgstr ""
 
 #: sdk/playercontrols.xml:95(col)
+#: sdk/animation.xml:90(col)
 msgid "MenuOK"
 msgstr ""
 
 #: sdk/playercontrols.xml:96(col)
+#: sdk/animation.xml:91(col)
 msgid "Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones Kommando)."
 msgstr ""
 
 #: sdk/playercontrols.xml:99(col)
+#: sdk/animation.xml:94(col)
 #, fuzzy
 msgid "MenuCancel"
 msgstr "MenuQueryCancel"
 
 #: sdk/playercontrols.xml:100(col)
+#: sdk/animation.xml:95(col)
 msgid "Schliessen des Spielermenues (asynchrones Kommando)."
 msgstr ""
 
 #: sdk/playercontrols.xml:103(col)
+#: sdk/animation.xml:98(col)
 msgid "MenuLeft / MenuUp / MenuRight / MenuDown"
 msgstr ""
 
 #: sdk/playercontrols.xml:104(col)
+#: sdk/animation.xml:99(col)
 msgid "Navigation im Spielermenu (asynchrones Kommando)."
 msgstr ""
 
 #: sdk/playercontrols.xml:76(col)
+#: sdk/animation.xml:71(col)
 #, fuzzy
 msgid "Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte: <placeholder-1/>"
 msgstr "Bit mask composed of the following values: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:15(text)
+#: sdk/animation.xml:15(text)
 msgid "Definition der moeglichen Spielerkommandos. Nicht gueltig in Sprachpaketen. Dieser Sektion untergeordnet: <placeholder-1/>"
 msgstr ""
 
 #: sdk/playercontrols.xml:109(h)
+#: sdk/animation.xml:104(h)
 #, fuzzy
 msgid "Sektion [ControlSets]"
 msgstr "Section [DefCore]"
 
 #: sdk/playercontrols.xml:112(caption)
+#: sdk/animation.xml:107(caption)
 #, fuzzy
 msgid "Beliebig viele Sektionen [ControlSet]"
 msgstr "Any number of sections [Scenario]"
 
 #: sdk/playercontrols.xml:121(col)
+#: sdk/animation.xml:116(col)
 msgid "Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. Ueber Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert werden**."
 msgstr ""
 
 #: sdk/playercontrols.xml:125(caption)
+#: sdk/animation.xml:120(caption)
 #, fuzzy
 msgid "Beliebig viele Sektionen [Assignment]"
 msgstr "Any number of sections [Action]"
 
 #: sdk/playercontrols.xml:132(col)
+#: sdk/animation.xml:127(col)
 msgid "Key"
 msgstr ""
 
 #: sdk/playercontrols.xml:134(col)
+#: sdk/animation.xml:129(col)
 msgid "Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:137(col)
+#: sdk/animation.xml:132(col)
 msgid "ComboIsSequence"
 msgstr ""
 
 #: sdk/playercontrols.xml:139(col)
+#: sdk/animation.xml:134(col)
 msgid "Wenn wahr, werden mehrfache Tasten als Sequenz interpretiert. Das heisst, sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:142(col)
+#: sdk/animation.xml:137(col)
 #, fuzzy
 msgid "Control"
 msgstr "Control_"
 
 #: sdk/playercontrols.xml:144(col)
+#: sdk/animation.xml:139(col)
 msgid "Kommando, das mit dieser Belegung verknuepft wird. Der Name sollte dem <em>Identifier</em> eines in einer <emlink href=\"playercontrols.xml#ControlDef\">[ControlDef]</emlink> definierten Kommandos entsprechen."
 msgstr ""
 
 #: sdk/playercontrols.xml:147(col)
+#: sdk/animation.xml:142(col)
 #, fuzzy
 msgid "Priority"
 msgstr "Priority"
 
 #: sdk/playercontrols.xml:149(col)
+#: sdk/animation.xml:144(col)
 msgid "Prioritaet der Belegung. Nutzen mehrere Belegungen die gleichen Tasten, so wird zunaechst die Taste mit der hoeheren Prioritaet ausgefuehrt, bis ein Kommando als behandelt gilt."
 msgstr ""
 
 #: sdk/playercontrols.xml:152(col)
+#: sdk/animation.xml:147(col)
 #, fuzzy
 msgid "TriggerMode"
 msgstr "iBaseMode"
 
 #: sdk/playercontrols.xml:153(col)
+#: sdk/animation.xml:148(col)
 #, fuzzy
 msgid "Bitmaske"
 msgstr "mask"
 
 #: sdk/playercontrols.xml:161(col)
+#: sdk/animation.xml:156(col)
 #, fuzzy
 msgid "Default (Standardwert)"
 msgstr "Default value"
 
 #: sdk/playercontrols.xml:162(col)
+#: sdk/animation.xml:157(col)
 msgid "Keine besondere Aktion."
 msgstr ""
 
 #: sdk/playercontrols.xml:166(col)
+#: sdk/animation.xml:161(col)
 msgid "Die Taste versetzt das verlinkte Kommando in den gedrueckten Zustand, selbst wenn die Taste selbst nur angeschlagen wird. Nur gueltig, wenn das Kommando das <em>Hold</em>-Attribut gesetzt hat. Dieser Zustand bleibt erhalten, bis eine entsprechende Belegung mit Ausloesemodus <em>Release</em> gedrueckt wird. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:169(col)
+#: sdk/animation.xml:164(col)
 #, fuzzy
 msgid "Release"
 msgstr "Repeats"
 
 #: sdk/playercontrols.xml:170(col)
+#: sdk/animation.xml:165(col)
 msgid "Die Taste entfernt den gedrueckten Zustand. Eine Taste kann auch sowohl Hold als auch Release setzen, um zwischen den Zustaenden hin und her zu schalten. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 msgstr ""
 
 #: sdk/playercontrols.xml:173(col)
+#: sdk/animation.xml:168(col)
 msgid "AlwaysUnhandled"
 msgstr ""
 
 #: sdk/playercontrols.xml:174(col)
+#: sdk/animation.xml:169(col)
 msgid "Der Tastendruck wird immer an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, unabhaengig davon, ob das vorherige Kommando erfolgreich ausgefuehrt wurde."
 msgstr ""
 
 #: sdk/playercontrols.xml:177(col)
+#: sdk/animation.xml:172(col)
 msgid "ToggleUnhandled"
 msgstr ""
 
 #: sdk/playercontrols.xml:178(col)
+#: sdk/animation.xml:173(col)
 msgid "Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
 msgstr ""
 
@@ -15286,15 +15334,18 @@ msgid "Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Contro
 msgstr ""
 
 #: sdk/playercontrols.xml:154(col)
+#: sdk/animation.xml:149(col)
 #, fuzzy
 msgid "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
 msgstr "Bit mask composed of the following values: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:110(text)
+#: sdk/animation.xml:105(text)
 msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
 msgstr ""
 
 #: sdk/playercontrols.xml:190(h)
+#: sdk/animation.xml:181(h)
 #, fuzzy
 msgid "Script-Callbacks"
 msgstr "Callbacks"
@@ -15304,6 +15355,7 @@ msgid "Zum Initialisieren der Spielersteuerung wird für jeden gesteuerten Spiel
 msgstr ""
 
 #: sdk/playercontrols.xml:200(text)
+#: sdk/animation.xml:182(text)
 msgid "Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:"
 msgstr ""
 
@@ -15312,14 +15364,17 @@ msgid "Fuer eine Erlaeuterung der Parameter siehe <placeholder-1/>. Die Funktion
 msgstr ""
 
 #: sdk/playercontrols.xml:203(text)
+#: sdk/animation.xml:185(text)
 msgid "Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:"
 msgstr ""
 
 #: sdk/playercontrols.xml:220(text)
+#: sdk/animation.xml:202(text)
 msgid "Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:"
 msgstr ""
 
 #: sdk/playercontrols.xml:240(text)
+#: sdk/animation.xml:222(text)
 msgid "Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:"
 msgstr ""
 
@@ -15328,46 +15383,57 @@ msgid "Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann z
 msgstr ""
 
 #: sdk/playercontrols.xml:257(text)
+#: sdk/animation.xml:239(text)
 msgid "Und im Script der Schaufel:"
 msgstr ""
 
 #: sdk/playercontrols.xml:275(h)
+#: sdk/animation.xml:257(h)
 msgid "Gehaltene Tasten"
 msgstr ""
 
 #: sdk/playercontrols.xml:276(text)
+#: sdk/animation.xml:258(text)
 msgid "Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:"
 msgstr ""
 
 #: sdk/playercontrols.xml:278(li)
+#: sdk/animation.xml:260(li)
 msgid "Sie generieren auch beim Loslassen <placeholder-1/>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script."
 msgstr ""
 
 #: sdk/playercontrols.xml:279(li)
+#: sdk/animation.xml:261(li)
 msgid "Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren."
 msgstr ""
 
 #: sdk/playercontrols.xml:280(li)
+#: sdk/animation.xml:262(li)
 msgid "<emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink> werden erzeugt."
 msgstr ""
 
 #: sdk/playercontrols.xml:281(li)
+#: sdk/animation.xml:263(li)
 msgid "Der Haltezustand der Taste kann mit <placeholder-1/> im Script abgefragt werden."
 msgstr ""
 
 #: sdk/playercontrols.xml:283(text)
+#: sdk/animation.xml:265(text)
 msgid "Bestes Beispiel hierfuer ist ein Richtungskommando:"
 msgstr ""
 
 #: sdk/playercontrols.xml:289(text)
+#: sdk/animation.xml:271(text)
 msgid "Im Script wird die Richtung dann auf den Clonk uebertragen:"
 msgstr ""
 
 #: sdk/playercontrols.xml:312(text)
+#: sdk/animation.xml:294(text)
 msgid "Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:"
 msgstr ""
 
 #: sdk/playercontrols.xml:323(h)
+#: sdk/animation.xml:305(h)
 #, fuzzy
 msgid "Globale Definitionen"
 msgstr "Global Functions"
@@ -15376,40 +15442,52 @@ msgstr "Global Functions"
 #: sdk/playercontrols.xml:337(text)
 #: sdk/playercontrols.xml:339(text)
 #: sdk/playercontrols.xml:341(text)
+#: sdk/animation.xml:306(text)
+#: sdk/animation.xml:319(text)
+#: sdk/animation.xml:321(text)
+#: sdk/animation.xml:323(text)
 msgid "..."
 msgstr ""
 
 #: sdk/playercontrols.xml:325(h)
+#: sdk/animation.xml:307(h)
 #, fuzzy
 msgid "Tastenwiederholungen"
 msgstr "Number of retries"
 
 #: sdk/playercontrols.xml:326(text)
+#: sdk/animation.xml:308(text)
 msgid "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
 msgstr ""
 
 #: sdk/playercontrols.xml:334(text)
+#: sdk/animation.xml:316(text)
 msgid "Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt."
 msgstr ""
 
 #: sdk/playercontrols.xml:335(text)
+#: sdk/animation.xml:317(text)
 msgid "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat."
 msgstr ""
 
 #: sdk/playercontrols.xml:336(h)
+#: sdk/animation.xml:318(h)
 #, fuzzy
 msgid "Deaktivierte Kommandos**"
 msgstr "Deactivates all gamma ramps."
 
 #: sdk/playercontrols.xml:338(h)
+#: sdk/animation.xml:320(h)
 msgid "Tastenbelegungen"
-msgstr "Keyboard shortcuts:"
+msgstr "Keyboard shortcuts"
 
 #: sdk/playercontrols.xml:340(h)
+#: sdk/animation.xml:322(h)
 msgid "Prioritaeten"
 msgstr "Priorities"
 
 #: sdk/playercontrols.xml:343(em)
+#: sdk/animation.xml:325(em)
 msgid "** - noch nicht implementiert"
 msgstr ""
 
@@ -19998,523 +20076,13 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 
-#~ msgid "Spieler, dessen Spielerwert gesucht wird."
-#~ msgstr "Number of the player to check."
-
-#~ msgid "Liefert den Spielerwert (Wert aller Objekte im Besitz) eines Spielers."
-#~ msgstr "Returns the player value (sum of all objects the player owns)."
-
-#~ msgid "Verändert den Punktewert eines Spielers. Dieser Wert ergibt zusammen mit dem Spielerwert (Wert aller Objekte im Besitz) die Gesamtpunktezahl des Spielers."
-#~ msgstr "Adjusts the score of a player. The score value combined with the player value (sum of all objects owned by a player) yields the total score for a scenario."
-
-#~ msgid "Gibt den Namen des zweiten Spielers beim ersten Spieler aus."
-#~ msgstr "Displays the name of the second player for the first player."
-
-#~ msgid "Objekt, bei dem die Nachricht ausgegeben wird. Ohne angegebenes Objekt wird die Nachricht global (analog zu <placeholder-1/>) ausgegeben."
-#~ msgstr "Object above which the message is to be displayed. If no object is specified, the message is displayed globally (as with <placeholder-1/>)."
-
-#~ msgid "Objekt, über dem die Nachricht angezeigt werden soll. Wenn nicht angegeben oder 0 wird die Nachricht global angezeigt."
-#~ msgstr "Object above which to display the message. If unspecified or 0, the message is displayed globally."
-
-#~ msgid "Objektzeiger"
-#~ msgstr "Object pointer"
-
-#~ msgid "this"
-#~ msgstr "this"
-
-#~ msgid "S="
-#~ msgstr "S="
-
-#~ msgid "gibt zurück, ob zwei Strings gleich sind"
-#~ msgstr "Returns whether two strings are identical."
-
-#~ msgid "bool, String/String"
-#~ msgstr "bool, string/string"
-
-#~ msgid "eq"
-#~ msgstr "eq"
-
-#~ msgid "gibt ebenfalls zurück, ob zwei Strings gleich sind"
-#~ msgstr "Also returns whether two strings are identical."
-
-#~ msgid "ne"
-#~ msgstr "ne"
-
-#~ msgid "gibt ebenfalls zurück, ob zwei Strings nicht gleich sind"
-#~ msgstr "Also returns whether two strings are not identical."
-
-#, fuzzy
-#~ msgid ": Der neue Standard"
-#~ msgstr "#strict: the new coding standard"
-
-#, fuzzy
-#~ msgid "Die ID die überprüft wird"
-#~ msgstr "Mission access to be checked."
-
-#~ msgid "Var(0)++"
-#~ msgstr "Var(0)++"
-
-#~ msgid "++Var(0)"
-#~ msgstr "++Var(0)"
-
-#~ msgid "Gibt die lokalen nummerierten Variablen (siehe <code><placeholder-1/>()</code>) aus, bis die erste 3 gefunden wird. Im Beispiel wird also folgende Ausgabe erzeugt:"
-#~ msgstr "Prints the indexe local variables (see <code><placeholder-1/>()</code>), until the value '3' is encountered. The result would be:"
-
-#~ msgid "Name des Soundeffekts (ohne .wav-Endung)"
-#~ msgstr "Name of the sound effect (without .wav ending)"
-
-#~ msgid "Spieler, für den die Darstellungsposition der Tasten geändert werden soll."
-#~ msgstr "Player for whom you want to set key display options."
-
-#~ msgid "Positionsnummer. 0 für Oben Mitte (Standard), 1 für Unten Rechts."
-#~ msgstr "Position number. 0 top center (default); 1 bottom right."
-
-#~ msgid "Setzt die Position der grafischen Darstellung des Steuerungsblocks eines Spielers (siehe <placeholder-1/>)."
-#~ msgstr "Enables the visual display of the keyboard control block for a player (siehe <placeholder-1/>)."
-
-#~ msgid "Spieler, dessen Tasten darzustellen sind."
-#~ msgstr "Player for whom to display the keys."
-
-#~ msgid "Spezifikation der darzustellenden Tasten."
-#~ msgstr "Specification of the keys to be displayed."
-
-#~ msgid "Nummer"
-#~ msgstr "Number"
-
-#~ msgid "Cursor Rechts"
-#~ msgstr "Cursor Right"
-
-#~ msgid "Cursor Umschalt"
-#~ msgstr "Cursor Toggle"
-
-#~ msgid "Cursor Links"
-#~ msgstr "Cursor Left"
-
-#~ msgid "Springen"
-#~ msgstr "Jump"
-
-#~ msgid "Links"
-#~ msgstr "Left"
-
-#~ msgid "Stopp"
-#~ msgstr "Stop"
-
-#~ msgid "Rechts"
-#~ msgstr "Right"
-
-#~ msgid "Optionen"
-#~ msgstr "Options"
-
-#~ msgid "Ob sie angezeigt werden soll"
-#~ msgstr "display on or off"
-
-#~ msgid "Ob die Taste beschriftet sein soll"
-#~ msgstr "text display of the key's name"
-
-#~ msgid "Ob die Beschriftung blinken soll"
-#~ msgstr "flashing text display"
-
-#~ msgid "Steuert die grafische Darstellung der Clonk-Steuerungstasten eines Spielers in seinem Sichtfenster.<br/><br/> Es können die folgenden Tasten angezeigt werden: <placeholder-1/> Für jede Taste kann einzeln angegeben werden, ob und wie sie angezeigt werden soll. Dabei gibt es für jede Taste drei Optionen, die angegeben werden können: <placeholder-2/> Entsprechend gibt es 3 Blocks von Optionen. Jeder dieser Blocks besteht dabei aus 10 Buchstaben, wobei \"_\" und \" \" für \"Nein\" und jeder andere Buchstabe für \"Ja\" steht (siehe Beispiel)."
-#~ msgstr "Controls the visual display of the keyboard control block of a given player.<br/><br/>The following keys can be displayed: <placeholder-1/> For each key you can specify whether and how it is to be displayed. For each key there are three options: <placeholder-2/> Accordingly, there are three option blocks in the string. Each block consists of 10 characters, of which \"_\" and \" \" mean \"No\" and any other character means \"Yes\" (see example)."
-
-#~ msgid "Zeigt für Spieler 0 die Tasten \"Springen\", \"Links\", \"Stopp\" und \"Rechts\" an. Die Nummern werden zur Verdeutlichung der angezeigten Tasten verwendet (vergleiche Tabelle). Um die Blöcke voneinander abzuheben, wird im 1. und 3. \"_\", im 2. dagegen \" \" benutzt."
-#~ msgstr "Displays the keys \"Jump\", \"Left\", \"Stop\", and \"Right\" for player 0. The numbers in the string are used for readability (see table). To separate the blocks, \"_\" or \" \" is used."
-
-#~ msgid "Ergänzt die Darstellung um eine blinkende Beschriftung."
-#~ msgstr "Enhances the display using flashing text."
-
-#~ msgid "Nur die Beschriftung der Taste \"Springen\" blinkt."
-#~ msgstr "Only the text of the \"Jump\" key will flash."
-
-#~ msgid "Der gesamte Steuerungsblock wird mit Beschriftung angezeigt."
-#~ msgstr "The complete set of keys will be displayed with text."
-
-#~ msgid "Zu markierendes Spielerkommando."
-#~ msgstr "Player command to be marked."
-
-#~ msgid "Special"
-#~ msgstr "Special"
-
-#~ msgid "Special 2"
-#~ msgstr "Special 2"
-
-#~ msgid "Markiert für einen Spieler ein bestimmtes Kommando. Ist die Darstellung deaktiviert, so wird sie aktiviert. Das markierte Kommando wird dann (so verfügbar) blinkend dargestellt.<br/><br/> Spielerkommandonummern: <placeholder-1/> Für Doppelkommandos (z.B. Doppel-Graben) muss jeweils 128 auf den Kommandowert aufaddiert werden."
-#~ msgstr "Marks the specified control command in the lower right corner of a player's viewport. Command display will be activated if necessary. The marked command will be displayed flashing.<br/><br/>Player command numbers: <placeholder-1/> For double click commands (e.g. double dig) add 128 to each command number."
-
-#~ msgid "Diese Funktion beeinflusst nicht die Darstellung des Steuerungsblocks (siehe <placeholder-1/>)."
-#~ msgstr "This function does not affect display of the keyboard control block (see <placeholder-1/>)."
-
-#~ msgid "szCommand"
-#~ msgstr "szCommand"
-
-#~ msgid "iX,iY"
-#~ msgstr "iX,iY"
-
-#~ msgid "iMat"
-#~ msgstr "iMat"
-
-#~ msgid "maximale Abweichung von iYAdvance"
-#~ msgstr "Maximum deviation of iYAdvance."
-
-#~ msgid "#strict"
-#~ msgstr "#strict"
-
-#~ msgid "Neu geschriebene Scripte sollten #strict sein. Dabei werden einige Altlasten der Engine ignoriert und es können unter anderem strengere Typüberprüfungen angesetzt werden. Scripte ohne #strict werden nur aus Gründen der Abwärtskompatibilität akzeptiert."
-#~ msgstr "Any new script should be #strict. In this way various old scripting inaccuracies will be ignored and proper type checking can be applied. Scripts without #strict are accepted only for backwards compatibility reasons."
-
-#~ msgid "#strict muss als Direktive an den Anfang des Scriptes geschrieben werden. Bei #include und #appendto gilt jeweils der Modus des Scriptes, zu dem includet/angehängt wird."
-#~ msgstr "The #strict directive has to be placed at the beginning of each script. #include or #appendto will follow the strictness of the script to be included or to which is to be appended."
-
-#~ msgid "Auswirkungen"
-#~ msgstr "Results"
-
-#~ msgid "Ein Funktionsaufruf auf denselben Funktionsnamen bedeutet immer einen rekursiven Aufruf"
-#~ msgstr "A function call to the same function name is always a recursive call."
-
-#~ msgid "<placeholder-1/>() und <placeholder-2/>() werden verfügbar"
-#~ msgstr "<placeholder-1/>() and <placeholder-2/>() become available"
-
-#~ msgid "<placeholder-1/>() impliziert kein <placeholder-2/>()"
-#~ msgstr "<placeholder-1/>() does not imply <placeholder-2/>()"
-
-#~ msgid "Strengere Datentyp-Prüfung"
-#~ msgstr "Strict data type checking"
-
-#~ msgid "<placeholder-1/>() und <placeholder-2/>() überschreiben bei objektlokalem Aufruf nicht mehr den Besitzer"
-#~ msgstr "<placeholder-1/>() and <placeholder-2/>() will not override the owner in an object local function call"
-
-#~ msgid "#strict 2"
-#~ msgstr "#strict 2"
-
-#~ msgid "Neu geschriebene Scripte sollten <code>#strict 2</code> sein. Dabei werden einige Altlasten der Engine ignoriert und es können unter anderem strengere Typüberprüfungen angesetzt werden. Scripte ohne <code>#strict 2</code> werden nur aus Gründen der Abwärtskompatibilität akzeptiert."
-#~ msgstr "Any new script should be <code>#strict 2</code>. In this way various old scripting inaccuracies will be ignored and proper type checking can be applied. Scripts without <code>#strict 2</code> are accepted only for backwards compatibility reasons."
-
-#~ msgid "<code>#strict 2</code> muss als Direktive an den Anfang des Scriptes geschrieben werden. Bei <code>#include</code> und <code>#appendto</code> gilt jeweils der Modus des Scriptes, in dem die Funktion definiert wurde."
-#~ msgstr "The <code>#strict 2</code> directive has to be placed at the beginning of each script. With <code>#include</code> or <code>#appendto</code> the strictness of the script in which a function was defined is used."
-
-#~ msgid "<code>&amp;&amp;</code> und <code>||</code> führen den zweiten Parameter nicht aus, wenn das Ergebnis schon nach Auswertung des ersten feststeht."
-#~ msgstr "<code>&amp;&amp;</code> and <code>||</code> do not evaluate the second operand if the result is already determined by the first operand."
-
-#~ msgid "<code>return</code>, <code>if</code> und <code>while</code> nehmen nur noch einen Parameter. Auch an anderen Stellen nimmt der Parser Ausdrücke nicht mehr an, vor denen früher nur gewarnt wurde."
-#~ msgstr "<code>return</code>, <code>if</code> and <code>while</code> only accept one parameter. Also some other expressions which used to cause a warning only are now no longer accepted."
-
-#~ msgid "<code>==</code> und <code>!=</code> vergleichen nicht mehr die Identität von Werten, sondern ihren Inhalt und Typ. Beispielsweise gilt jetzt [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" und CastInt(Clonk)!=Clonk."
-#~ msgstr "<code>==</code> and <code>!=</code> do not compare identity of two values, but their type and contents. Example: [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" and CastInt(Clonk)!=Clonk."
-
-#~ msgid "Funktions- und Variablennamen dürfen nur noch die Zeichen a-z, A-Z und _, sowie 0-9 in der Mitte des Namens enthalten."
-#~ msgstr "Function and variable names may only contain the character a-z, A-Z, 0-9, and '_'."
-
-#~ msgid "<code>eq</code>, <code>ne</code>, <code>S=</code> gibt es nicht mehr. Man kann jetzt Funktionen und Variablen <code>eq</code> und <code>ne</code> nennen oder eine Variable namens <code>S</code> mit <code>S=42;</code> ändern."
-#~ msgstr "<code>eq</code>, <code>ne</code>, <code>S=</code> are not available anymore. <code>eq</code> and <code>ne</code> can now be used as names of functions or variables or a variable of name <code>S</code> can be assigned via <code>S=42;</code>."
-
-#~ msgid "RoundOptions"
-#~ msgstr "RoundOptions"
-
-#~ msgid "0 oder 1. Freigabe der Szenarioeigenschaften im Menüsystem für andere Spieler."
-#~ msgstr "0 or 1. Allow other players to change scenario properties in the menu system."
-
-#~ msgid "Replay"
-#~ msgstr "Replay"
-
-#~ msgid "Wird von der Engine automatisch gesetzt, und markiert eine Aufnahme."
-#~ msgstr "Set automatically be the engine. Marks the scenario as record."
-
-#~ msgid "ForcedGfxMode"
-#~ msgstr "ForcedGfxMode"
-
-#~ msgid "0-2. 0: Jede Engine möglich; 1: Nur NewGfx (OpenGL/D3D); 2: Nur OldGfx (8Bit-DDraw)."
-#~ msgstr "0-2. 0: All engines possible; 1: NewGfx only (OpenGL/D3D); 2: OldGfx only (8bit-DDraw)."
-
-#~ msgid "Bitmaske, die angibt, welche Funktionen eine Basis erfüllt. Siehe <emlink href=\"scenario/basefunc.html\">Basisfunktionalitäten</emlink>. Ab CR."
-#~ msgstr "A bit mask that defines which functionality a home base object will offer. See <emlink href=\"scenario/basefunc.html\">Homebase Functionality</emlink>. From CR."
-
-#~ msgid "BaseRegenerateEnergyPrice"
-#~ msgstr "BaseRegenerateEnergyPrice"
-
-#~ msgid "Kosten, die aufgewendet werden, um einen Clonk in einer Basis um 100 Energiepunkte zu heilen. Standard ist 5; bei 0 ist die Heilung kostenlos. Ab CR."
-#~ msgstr "The cost of recharging a clonk to 100% life energy in the home base. Default is 5. Value 0 will yield free recharging. From CR."
-
-#~ msgid "Lightning"
-#~ msgstr "Lightning"
-
-#~ msgid "0-100 und Abweichung. Blitzwahrscheinlichkeit."
-#~ msgstr "0-100 with tolerance. Probability for lightnings."
-
-#~ msgid "Sektion [Disasters]"
-#~ msgstr "Section [Disasters]"
-
-#~ msgid "Meteorite"
-#~ msgstr "Meteorite"
-
-#~ msgid "0-100 und Abweichung. Meteoritenwahrscheinlichkeit."
-#~ msgstr "0-100 with tolerance. Probability for meteorites."
-
-#~ msgid "Volcano"
-#~ msgstr "Volcano"
-
-#~ msgid "0-100 und Abweichung. Vulkanwahrscheinlichkeit."
-#~ msgstr "0-100 with tolerance. Probability for volcanos."
-
-#~ msgid "Earthquake"
-#~ msgstr "Earthquake"
-
-#~ msgid "0-100 und Abweichung. Erdbebenwahrscheinlichkeit."
-#~ msgstr "0-100 with tolerance. Probability for earthquakes."
-
-#~ msgid "iX, iY"
-#~ msgstr "iX, iY"
-
-#~ msgid "iLSPosX, iLSPosY"
-#~ msgstr "iLSPosX, iLSPosY"
-
-#~ msgid "iXDir, iYDir"
-#~ msgstr "iXDir, iYDir"
-
-#~ msgid "iPxsMat"
-#~ msgstr "iPxsMat"
-
-#~ msgid "iLsMat"
-#~ msgstr "iLsMat"
-
-#~ msgid "int iPlr"
-#~ msgstr "int iPlr"
-
-#~ msgid "int iByPlr"
-#~ msgstr "int iByPlr"
-
-#~ msgid "CollectionLimit"
-#~ msgstr "CollectionLimit"
-
-#~ msgid "Anzahl der maximal aufnehmbaren Objekte, 0 für uneingeschränkt."
-#~ msgstr "How many objects can be collected, or 0 for no limitation."
-
-#~ msgid "Ruft die öffentliche Funktion szFunction in pObj auf. Stattdessen sollte die neue Syntax [pObj]-&gt;[szFunction]() oder [pObj]-&gt;[idObj]::[szFunction]() genutzt werden."
-#~ msgstr "Calls a public function in the target object, You should use the new syntax [pObj]-&gt;[szFunction]() or [pObj]-&gt;[idObj]::[szFunction]() instead."
-
-#~ msgid "Der Entwicklermodus ist über den Editor erreichbar."
-#~ msgstr "The Editor (Windows only) represents the easiest way to use the developer mode."
-
-#~ msgid "Im Editor können per Drag &amp; Drop alle Einzelkomponenten der Spieldaten bearbeitet werden. In der Engine können Objekte per Mausklick in der Landschaft platziert und Landkarten pixelgenau bearbeitet und abgespeichert werden."
-#~ msgstr "The editor can be used to modify the components of all game objects or scenarios. When the engine is in developer mode, objects within a running scenario can be created and moved around by mouse, and landscapes can be edited and saved."
-
-#~ msgid "Nutzungsbedingungen"
-#~ msgstr "Terms of Use"
-
-#~ msgid "Von Spielern erstelltes Material für Clonk darf in keinem Fall kommerziell genutzt werden. Für Szenarien, Objekte oder andere Spieldaten darf kein Entgelt verlangt werden."
-#~ msgstr "Game content created by players using the developer mode may not be used commercially."
-
-#~ msgid "Im Rahmen des Entwicklermodus zur Bearbeitung freigegebene Daten dürfen bei der Entwicklung neuer Spielerweiterungen für Clonk (und ausschließlich zu diesem Zweck) verwendet werden. Alle Rechte an den verwendeten Daten verbleiben jedoch beim Hersteller."
-#~ msgstr "Game content of the original package may be modified and used to create free game extensions and for this purpose only. All rights of the original game content remain with RedWolf Design."
-
-#~ msgid "Das Passwort für die Aktivierung des Entwicklermodus lautet: Siedlerclonk"
-#~ msgstr "The password for the activation of the developer mode is: Siedlerclonk"
-
-#~ msgid "Die Kategorie eines Objekts ist eine DWord-Bitmaske, die sich aus den folgenden Werten zusammen setzt. Die ersten 5 Kategorien erlauben keine Kombination, von den Bits 0-4 darf und muss immer genau eines zur Zeit gesetzt sein."
-#~ msgstr "The category of an object is a DWord bit mask composed of the following values. The first 5 categories must not be combined - of the bits 0-4 only one may be set at a time."
-
-#~ msgid "C4D_SelectBuilding"
-#~ msgstr "C4D_SelectBuilding"
-
-#~ msgid "Menüsystem Auswahl Gebäude."
-#~ msgstr "Scenario options: Object can be selected as a player-owned building at startup."
-
-#~ msgid "C4D_SelectVehicle"
-#~ msgstr "C4D_SelectVehicle"
-
-#~ msgid "Menüsystem Auswahl Fahrzeuge."
-#~ msgstr "Scenario options: Object can be selected as a player-owned vehicle at startup."
-
-#~ msgid "512"
-#~ msgstr "512"
-
-#~ msgid "C4D_SelectMaterial"
-#~ msgstr "C4D_SelectMaterial"
-
-#~ msgid "Menüsystem Auswahl Material."
-#~ msgstr "Scenario options: Object can be selected as a player-owned material at startup."
-
-#~ msgid "10"
-#~ msgstr "10"
-
-#~ msgid "1024"
-#~ msgstr "1024"
-
-#~ msgid "C4D_SelectKnowledge"
-#~ msgstr "C4D_SelectKnowledge"
-
-#~ msgid "Menüsystem Auswahl herstellbare Objekte."
-#~ msgstr "Scenario options: Object can be selected as an available construction plan."
-
-#~ msgid "11"
-#~ msgstr "11"
-
-#~ msgid "2048"
-#~ msgstr "2048"
-
-#~ msgid "C4D_SelectHomebase"
-#~ msgstr "C4D_SelectHomebase"
-
-#~ msgid "Menüsystem Auswahl Heimatbasismaterial."
-#~ msgstr "Scenario options: Object can be selected as home base material."
-
-#~ msgid "12"
-#~ msgstr "12"
-
-#~ msgid "4096"
-#~ msgstr "4096"
-
-#~ msgid "C4D_SelectAnimal"
-#~ msgstr "C4D_SelectAnimal"
-
-#~ msgid "Menüsystem Auswahl Tiere."
-#~ msgstr "Scenario options: Object can be selected as placed animal."
-
-#~ msgid "13"
-#~ msgstr "13"
-
-#~ msgid "8192"
-#~ msgstr "8192"
-
-#~ msgid "C4D_SelectNest"
-#~ msgstr "C4D_SelectNest"
-
-#~ msgid "Menüsystem Auswahl Nester."
-#~ msgstr "Scenario options: Object can be selected as a nest."
-
-#~ msgid "14"
-#~ msgstr "14"
-
-#~ msgid "16384"
-#~ msgstr "16384"
-
-#~ msgid "C4D_SelectInEarth"
-#~ msgstr "C4D_SelectInEarth"
-
-#~ msgid "Menüsystem Auswahl Erdreich-Objekte."
-#~ msgstr "Scenario options: Object can be selected for underground placement."
-
-#~ msgid "32768"
-#~ msgstr "32768"
-
-#~ msgid "C4D_SelectVegetation"
-#~ msgstr "C4D_SelectVegetation"
-
-#~ msgid "Menüsystem Auswahl Vegetation."
-#~ msgstr "Scenario options: Object can be selected as vegetation."
-
-#~ msgid "17"
-#~ msgstr "17"
-
-#~ msgid "131072"
-#~ msgstr "131072"
-
-#~ msgid "18"
-#~ msgstr "18"
-
-#~ msgid "262144"
-#~ msgstr "262144"
-
-#~ msgid "19"
-#~ msgstr "19"
-
-#~ msgid "524288"
-#~ msgstr "524288"
-
-#~ msgid "20"
-#~ msgstr "20"
-
-#~ msgid "1048576"
-#~ msgstr "1048576"
-
-#~ msgid "21"
-#~ msgstr "21"
-
-#~ msgid "2097152"
-#~ msgstr "2097152"
-
-#~ msgid "22"
-#~ msgstr "22"
-
-#~ msgid "4194304"
-#~ msgstr "4194304"
-
-#~ msgid "23"
-#~ msgstr "23"
-
-#~ msgid "8388608"
-#~ msgstr "8388608"
-
-#~ msgid "24"
-#~ msgstr "24"
-
-#~ msgid "16777216"
-#~ msgstr "16777216"
-
-#~ msgid "25"
-#~ msgstr "25"
-
-#~ msgid "33554432"
-#~ msgstr "33554432"
-
-#~ msgid "Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <placeholder-1/>(0,0,1); verwendet werden."
-#~ msgstr "New color which is used for color modulation. If 0, modulation is deactivated. To create a 'black' color, use a value slightly higher than 0 such as <placeholder-1/>(0,0,1)."
-
-#~ msgid "Liefert den Captain von iPlayer. Nur bei der Spielregel \"Verlust Captain\"."
-#~ msgstr "Returns the captain of the specified player. Only with game rule \"Kill the Captain\"."
-
-#~ msgid "Tötet den Captain des dritten Spielers. (Die Zählung beginnt mit 0)"
-#~ msgstr "Kills the captain of the third player."
-
-#~ msgid "Objekt, das pItem aufsammeln soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object which is to collect. Can be 0 in local calls."
-
-#~ msgid "Ruft die lokale Funktion szFunction auf. Stattdessen sollte dieselbe Syntax wie bei engineinternen Funktionen genutzt werden."
-#~ msgstr "Calls the local function 'szFunction'. You should use direct calling as with engine functions instead."
-
-#~ msgid "Mode"
-#~ msgstr "Mode"
-
-#~ msgid "Veraltet. 0 Kooperativ, 1 Melee, 2 Teamwork-Melee."
-#~ msgstr "Obsolete. 0 Cooperative, 1 Melee, 2 Teamwork-Melee."
-
-#~ msgid "Elimination"
-#~ msgstr "Elimination"
-
-#~ msgid "Veraltet. Spielereliminierung durch 0 Verlust Captain, 1 Verlust Crew, 2 Verlust Flagge."
-#~ msgstr "Obsolete. Player elimination by: 0 Loss of captain, 1 Loss of crew, 2 Loss of flag."
-
-#~ msgid "CooperativeGoal"
-#~ msgstr "CooperativeGoal"
-
-#~ msgid "Veraltet. Wert der Auswahl Spielziel im Menüsystem (0-4)."
-#~ msgstr "Obsolete. Value for goal in the menu system (0-4)"
-
-#~ msgid "Veraltet. Spielziel: Diese Objekte müssen mindestens vorhanden sein."
-#~ msgstr "Obsolete. Game goal: These objects must be created."
-
-#~ msgid "ClearObjects"
-#~ msgstr "ClearObjects"
-
-#~ msgid "Veraltet. Spielziel: Diese Objekte müssen auf x reduziert werden."
-#~ msgstr "Obsolete. Game goal: The object counts must be reduced to x."
-
-#~ msgid "ClearMaterials"
-#~ msgstr "ClearMaterials"
-
-#~ msgid "Veraltet. Spielziel: Diese Materialien müssen auf x reduziert werden."
-#~ msgstr "Obsolete. Game goal: The material count must be reduced to x."
-
-#~ msgid "if &lt;= 9999"
-#~ msgstr "if &lt;= 9999"
-
-#~ msgid "Wo #strict steht, wird nur ein Fehler ausgelöst wenn der Script <emlink href=\"script/Strict.html\">#strict</emlink> ist. Hierbei handelt es sich um \"ungefährliche\" aber sinnlose Konvertierungen, die nur in einigen \"trickreichen\" Scripts zur Anwendung kamen."
-#~ msgstr "Conversions marked #strict will only throw an error if the script is <emlink href=\"script/Strict.html\">#strict</emlink>. This only concerns harmless but nonsense conversions which might have appeared in older scripts."
-
-#~ msgid "Die Konvertierung int zu id ist nur erlaubt, wenn die Zahl größer gleich 0 und kleiner gleich 9999 ist. Auf diese Weise werden auch IDs, die nur aus Zahlen bestehen, unterstützt (z.B. 0001)"
-#~ msgstr "Conversion to id is valid only if the number is greater than or equal to 0 and less that or equal to 9999. This procedure also supports IDs that contain digits only."
-
-#~ msgid "In älteren Versionen implizierte goto() ein <placeholder-1/>(). Dieses Verhalten wird bei Nicht-Angabe von <emlink href=\"script/Strict.html\">#strict</emlink> emuliert."
-#~ msgstr "In older script versions goto() would also cause an immediate <placeholder-1/>(). This behaviour has changed with the <emlink href=\"script/Strict.html\">#strict</emlink> standard. Now you have to write your <placeholder-1/>() separately."
+#: sdk/animation.xml:184(text)
+msgid "Fuer eine Erlaeuterung der Parameter siehe <placeholder-1/>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in iPlr, sowie das ausgefuehrte Kommando in iControl."
+msgstr ""
+
+#: sdk/animation.xml:229(text)
+msgid "Dabei sei SHVL die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
+msgstr ""
 
 #~ msgid "ID der Definition, dessen Wert ermittelt werden soll."
 #~ msgstr "ID of the definition of which you want to request a property."
@@ -20525,11 +20093,8 @@ msgstr "This command line program is used for processing group files. A list of 
 #~ msgid "Der Aufruf von Value() verursacht keine CalcDefValue-Aufrufe, sondern gibt direkt den DefCore-Wert (eventuell überladen in der Scenario.txt) zurück. Statt dieser Funktion sollte <placeholder-1/> mit entsprechenden Parametern verwendet werden."
 #~ msgstr "Calling Value() does not invoke a call to CalcDefValue() but directly returns the DefCore value of the definition (notice this might have been overloaded in Scenario.txt). You should use <placeholder-1/> instead with proper parameters."
 
-#~ msgid "Objekt, dessen Physical trainiert werden soll. 0 bei lokalen Aufrufen."
-#~ msgstr "Object the physicals of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, von dem ermittelt werden soll, ob es feststeckt. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which you want to know if it's stuck. Can be 0 in local calls."
+#~ msgid "Name des Soundeffekts (ohne .wav-Endung)"
+#~ msgstr "Name of the sound effect (without .wav ending)"
 
 #~ msgid "0-100: Lautstärke, in der der Sound abgespielt wird. Bei 0 wird die Abspielung dieses Soundeffektes gestoppt."
 #~ msgstr "0-100: volume for playback of the sound. A volume value of 0 stops playback."
@@ -20549,143 +20114,12 @@ msgstr "This command line program is used for processing group files. A list of 
 #~ msgid "Nervige Geheimwaffe: der ausgewählte Clonk des ersten Spielers spielt dauerhaft Explosionsgeräusche ab."
 #~ msgstr "Annoying secret weapon: the selected clonk of the first player continuously playes an explosion sound."
 
-#~ msgid "Objekt, bei dem der Sound abgespielt werden soll. 0 bei lokalem Aufruf. Die Position des Objekts relativ zum Viewport des Spielers ist entscheidend für die Lautstärke, in der der Sound abgespielt wird."
-#~ msgstr "Object which is to play back the specified sound. Can be 0 in local calls. The object's visible position relative to a player's viewport is responsible for audible volume."
-
-#~ msgid "Objekt, dessen Inhaltsobjekte rotiert werden sollen. 0 bei lokalem Aufruf."
-#~ msgstr "Object the content of which is to be shifted. Can be 0 in local calls."
-
-#~ msgid "Zielobjekt. 0 bei lokalem Aufruf."
-#~ msgstr "Target object. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Vertices gesetzt werden. 0 bei lokalem Aufruf."
-#~ msgstr "Object the vertices of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Transferzone geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the transfer zone of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen fester Bereich geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the solid area of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Position geändert werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object the position of which you want to set. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Portrait geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the portrait of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Sichtweite gesetzt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object the view distance of which you want to set. Can be 0 in locall calls."
-
-#~ msgid "Objekt, dessen Bildgrafik geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the graphics of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Physical gesetzt werden soll. 0 bei lokalen Aufrufen."
-#~ msgstr "Object the physicals of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Besitzer geändert wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object the owner of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Zeichenstil geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which you want to change the drawing mode. Can be 0 in local calls."
-
-#~ msgid "Das Objekt dessen Grafik transformiert dargestellt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which you want to perform an image transformation. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Name geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object you want to rename. Can be 0 in local calls."
-
-#~ msgid "Wenn angegeben, wird pObj ignoriert, und stattdessen der Name der Definition geändert."
-#~ msgstr "If specified, the pObj value is ignored and the name of the definition is changed instead."
-
-#~ msgid "Menüobjekt für das die Menügröße geändert werden soll. 0 wenn sich das Menu im aufrufenden Objekt befindet."
-#~ msgstr "Menu object for which to want to adjust menu size. Can be 0 if the menu is open for the calling object."
-
-#~ msgid "Objekt, dessen Eigenmasse geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the mass of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Grafik geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the graphics of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Richtung gesetzt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the direction of which you want to set. Can be 0 in local calls."
-
-#~ msgid "CrewMember-Objekt welches hinzugefügt oder entfernt werden soll."
-#~ msgstr "CrewMember object to be added or removed."
-
-#~ msgid "Crewobjekt, für dessen Infosektion zusätzliche Daten gespeichert werden sollen. 0 für lokalen Aufruf."
-#~ msgstr "Object for which extra data is to be saved. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Status verändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which you want to change the status. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen steuernder Spieler geändert wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which the controller is to be changed. Can be 0 in local calls."
-
-#~ msgid "Zielobjekt (bei lokalen Aufrufen Null)"
-#~ msgstr "Target object. Can be 0 in local calls."
-
-#~ msgid "Zu veränderndes Objekt. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be modified. Can be 0 in local calls."
-
-#~ msgid "Objekt, dem das Kommando gegeben wird."
-#~ msgstr "Object for which the command is given."
-
-#~ msgid "Objekt, dessen Befehlsrichtung gesetzt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the order direction of which you want to set. Can be 0 in local calls."
-
-#~ msgid "Setzt die ColorByOwner-Färbung eines Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <placeholder-1/> bei einem Spieler mit der Spielerfarbe iColor."
-#~ msgstr "Sets the ColorByOwner color of an object. This call corresponds to setting the owner using <placeholder-1/> to a player with player color iColor."
-
-#~ msgid "Färbt die nach dem Besitzer gefärbten Flächen des ausgewählten Clonk des ersten Spielers rot."
-#~ msgstr "Colors the owner areas of the currently selected clonk of the first player red."
-
-#~ msgid "Objekt, dessen Färbung verändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the coloration of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Aktionsdaten geändert werden sollen. Kann bei lokalen Aufrufen 0 sein."
-#~ msgstr "Object for which to change action data. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Zustand gesetzt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be modified. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Zielobjekte gesetzt werden sollen. 0 bei lokalem Aufruf."
-#~ msgstr "Object the target objects of which you want to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, für das die Aktivitätsdaten geändert werden sollen. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which you want to change activity data. Can be 0 in local calls."
-
-#~ msgid "Um die Aktivität eines Fremdobjektes zu setzen, sollte <placeholder-1/> oder fremdobjekt-&gt;SetAction() benutzt werden."
-#~ msgstr "To set the action of another object, use <placeholder-1/> or obj-&gt;SetAction()."
-
-#~ msgid "Objekt, das verkauft wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object being sold. Can be 0 in local calls."
-
-#~ msgid "Menüobjekt für das die Selektion geändert werden soll. 0 wenn sich das Menu im aufrufenden Objekt befindet."
-#~ msgstr "Menu object for which to change menu selection. Can be 0 if the menu is open for the calling object."
-
-#~ msgid "Objekt, dessen Inhalt rotiert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object the content of which is to be shifted. Can be 0 in local calls."
-
-#~ msgid "Neu einzusortierendes Objekt. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be resorted. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Physicals zurückgesetzt werden sollen. Bei lokalem Aufruf 0."
-#~ msgstr "Object of which you want to reset physicals. Can be 0 in local calls."
-
-#~ msgid "Objekt, von dem ein Vertex entfernt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which you want to remove a vertex. Can be 0 in local calls."
-
-#~ msgid "Entfernt einen Vertex von einem Objekt."
-#~ msgstr "Removes a single vertex from an object."
-
-#~ msgid "Objekt, das entfernt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be removed. Can be 0 in local calls."
-
-#~ msgid "Entfernt ein Objekt."
-#~ msgstr "Removes an object from the game."
-
 #~ msgid "Objekttyp"
 #~ msgstr "Object type"
+
+#, fuzzy
+#~ msgid "Anzahl Wiederholungen"
+#~ msgstr "Number of retries"
 
 #~ msgid "Erzeugt ein Objekt des gewünschten Typs irgendwo in der Landscape im gewünschten Material und liefert es zurück."
 #~ msgstr "Creates an object of the specified type somewhere in the landscape and returns a pointer to the created object."
@@ -20696,146 +20130,21 @@ msgstr "This command line program is used for processing group files. A list of 
 #~ msgid "Versucht eine Flagge in Gold zu erzeugen und sie in den Besitz von Spieler 0 zu übergeben. Gelingt es nicht die Flagge zu erzeugen, wird eine Fehlermeldung geloggt"
 #~ msgstr "Attempts to create a flag in a gold vein and make player 0 its owner. If the creation fails, an error message is logged."
 
-#~ msgid "Zu prüfendes Objekt."
-#~ msgstr "Object to be checked."
-
 #~ msgid "Objekt, dessen Aktivität geändert werden soll. Achtung: Anders als bei vielen anderen Funktionen, darf dieser Parameter nicht ausgelassen werden, um die Aktivität des aufrufenden Objekts zu ändern. Dafür sollte stattdessen <placeholder-1/> verwendet werden."
 #~ msgstr "Object for which to set an activity. Notice: unlike in many other functions this parameter may not be omitted in local calls. Use <placeholder-1/> instead."
 
 #~ msgid "Wenn gesetzt, wird die Aktivität direkt, ohne Start/AbortCalls und unter Umgehung des NoOtherAction-Flags gesetzt. Ab CE."
 #~ msgstr "If set, the activity is set directly, bypassing any Start- or AbortCalls and overriding the NoOtherAction flag."
 
+#, fuzzy
+#~ msgid "Setzt die Aktivität des angegebenen Objekts. Siehe auch <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
+#~ msgstr "Sets the activity of the calling object. Also see <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
+
 #~ msgid "Wird pTarget1 bzw. pTarget2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <placeholder-1/> benutzt werden. Ist fDirect ungleich 0, werden die angegebenen Actiontargets allerdings auch dann gesetzt, wenn sie 0 sind."
 #~ msgstr "If pTarget1 or pTarget2 is not specified or 0, the previous value of these action targets will be kept. To actually clear action targets use <placeholder-1/>. Exception: if fDirect is set, the action targets are set even if the parameter was 0."
 
 #~ msgid "Der ausgewählte Clonk des ersten Spielers wird scheintot."
 #~ msgstr "The currently selected clonk of the first player pretends to be dead."
-
-#~ msgid "Objektpointer, von dem die Nummer abgefragt wird."
-#~ msgstr "Object of which you want to determine the object number."
-
-#~ msgid "Suchrechteck Breite"
-#~ msgstr "Width of search rectangle"
-
-#~ msgid "Suchrechteck Höhe"
-#~ msgstr "Height of search rectangle"
-
-#~ msgid "Objektattribute. Es werden nur Objekte gefunden, die alle angegebenen Objektattribute besitzen. 0 findet alle Objekte."
-#~ msgstr "Object attributes. Only objects with all specfied attributes will be returned in the search. 0 finds all objects."
-
-#~ msgid "Aktivität des zu findenden Objekts"
-#~ msgstr "Activity of the object."
-
-#~ msgid "Aktivitätsziel, das das Objekt besitzen muss. Siehe dazu auch <placeholder-1/>, <placeholder-2/>"
-#~ msgstr "Activity target of the object. Also see <placeholder-1/>, <placeholder-2/>."
-
-#~ msgid "Containerobjekt. Wenn angegeben, wird nur dieser Behälter durchsucht. Möglich sind auch <placeholder-1/> (Objekt befindet sich im Freien), und <placeholder-2/> (Objekt ist in einem beliebigen Behälter enthalten)."
-#~ msgstr "Container object. If specified, only this container will be searched. Also possible: <placeholder-1/> (object is not contained) or <placeholder-2/> (object is contained in any container)."
-
-#~ msgid "Sucht Objekte, und gibt deren Anzahl zurück. Sind iWdt und iHgt beide -1, so wird das nächstliegende Objekt gefunden. Sind sie beide 0, wird nur am Punkt iX/iY gesucht. Sind iX, iY, iWdt und iHgt alle 0, gilt als Suchrechteck die gesamte Karte (auch bei lokalen Aufrufen). Es müssen stets die Bedingungen aller Parameter erfüllt sein, die angegeben und nicht 0 sind."
-#~ msgstr "Searched objects by certain criteria and returns the number of objects found. If iWdt and iHgt are both -1, the closest object is found. If iWdt and iHgt are both 0, only the point iX/iY will be checked. If iX, iY, iWdt and iHgt are all 0, the whole map will be searched (even in local calls). All other criteria have to be fulfilled if they are not 0."
-
-#~ msgid "Objekt (Clonk), das der Crew hinzugefügt werden soll"
-#~ msgstr "Object (clonk) to be added to the crew."
-
-#~ msgid "Objekt, dessen Variable abgefragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which you want to retrieve a variable. Can be 0 in local calls."
-
-#~ msgid "Lässt ein Fundament eines Zauberturms explodieren. Funktioniert nur bei einem Zauberturm, alle anderen Objekte benutzen <placeholder-1/> (9) zum Speichern des Fundamentobjektes."
-#~ msgstr "Explodes the basement of a wizard tower. Only works with a magic tower - all other objects use <placeholder-1/>(9) to store a pointer to their basement."
-
-#~ msgid "Erzeugt einen Vulkan an angegebener Position. Da Vulkane immer von der Unterseite der Landschaft ausgehen, wird hier kein Y-Parameter benötigt."
-#~ msgstr "Creates a volcano at the specified position. As volcanoes are always created at the bottom of the landscape, no Y parameter is given."
-
-#~ msgid "Objekt, das getötet wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be killed. Can be 0 in local calls."
-
-#~ msgid "Objekt, das springen soll."
-#~ msgstr "Object which shall jump."
-
-#~ msgid "Objekt, welches entzündet werden soll."
-#~ msgstr "Object to be incinerated."
-
-#~ msgid "Objekt (Clonk), das die Infosektion übernehmen soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object (clonk) of which to set the info section. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Geschwindigkeit zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which to retrieve the current speed. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Y-Wert zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which to get the position. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen X-Wert zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which to get the position. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Vertices ausgelesen werden. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to retrieve vertices. Can be 0 in local calls."
-
-#~ msgid "Bei fY 0 wird die X-Koordinate, bei fY 1 die Y-Koordinate zurückgegeben."
-#~ msgstr "With fY = 0 the x coordinate is returned, with fY = 1 the y coordinate is returned."
-
-#~ msgid "Objekt, von dem der aktuelle Wert abgefragt werden soll. 0 bei lokalem Aufruf oder angegebenem idDef."
-#~ msgstr "Object of which to request a value. 0 if a local call or if idDef is specified."
-
-#~ msgid "Wenn angegeben: Definition, von der der Standardwert abgefragt werden soll. Ansonsten wird pObj ausgewertet."
-#~ msgstr "If specified: the definition of which to request the standard value. Otherwise the given object is evaluated."
-
-#~ msgid "Objekt, dessen Overlays durchsucht werden sollen. Kann bei lokalen Aufrufen 0 sein."
-#~ msgstr "Object whose overlays you want to modify. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Rang zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which you want to get the rank. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Rotations-Geschwindigkeit zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which you want to determine rotation speed. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Rotation zurück gegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which you want to determine rotation. Can be 0 in local calls."
-
-#~ msgid "Abzufragendes Objekt. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be checked. Can be 0 in local calls."
-
-#~ msgid "Objekt, über dessen Portrait Informationen abgefragt werden sollen. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which you want to retrieve portrait information. Can be 0 in local calls."
-
-#~ msgid "iMode 0 liefert die gerade aktuellen Eigenschaften (permanent oder temporär) und kann auch bei Objekten ohne Objektinfo (z.B. Fahrzeugen oder Gebäuden) angewendet werden. iMode 1 liefert die permanenten Eigenschaften aus der Objektinfo. iMode 2 liefert die temporären Eigenschaften, allerdings nur wenn sich die Eigenschaften auch gerade im temporären Modus befinden."
-#~ msgstr "iMode 0 yields the currently used physical properties (those may be permanent or temporary) and can also be used for objects without object info (e.g. vehicles or structures). iMode 1 yields the permanent properties from the object info. iMode 2 yields the temporary properties, in case the object is currently using temporary properties."
-
-#~ msgid "Das Objekt, dessen Physical festgestellt wird. Null bei lokalen Aufrufen."
-#~ msgstr "The object of which to request properties. Can be 0 in local calls."
-
-#~ msgid "Wenn angegeben, wird stattdessen der Definitionswert der angegebenen Definition aus der DefCore.txt, Sektion [Physical] zurückgegeben."
-#~ msgstr "If specified, the function will access the original physical value of the specified definition (from DefCore section [Physical])."
-
-#~ msgid "Objekt dessen Aktivitätsphase zurückgegeben werden soll. Null bei lokalem Aufruf."
-#~ msgstr "Object of which to deterine the activity phase. Can be 0 in local calls."
-
-#~ msgid "Liefert die Aktivitätsphase von *pObj. *pObj ist Null bei lokalem Aufruf."
-#~ msgstr "Returns the activity phase of an object."
-
-#~ msgid "Objekt, von dem der Besitzer ermittelt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the owner. Can be 0 in local calls."
-
-#~ msgid "Objekt, von dem der Eintrag abgefragt werden soll. Null bei lokalen Aufrufen."
-#~ msgstr "Object of which you want to retrieve an entry. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Zeichenstil abgefragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object to get the blit mode from. Can be 0 at local call."
-
-#~ msgid "Objekt, dessen OCF abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the OCF. Can be 0 in local calls."
-
-#~ msgid "Das Objekt, dessen Name gesucht wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which you want to get the name. Can be 0 in local calls."
-
-#~ msgid "Falls angegeben, wird stattdessen der Name dieser Definition zurückgegeben."
-#~ msgstr "If specified, the name of the definition is returned instead."
-
-#~ msgid "Objekt, dessen Menü abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to access the menu. Can be 0 in local calls."
-
-#~ msgid "Menüobjekt"
-#~ msgstr "Menu object."
 
 #~ msgid "Index des Materials, von dem eine Farbe ermittelt wird"
 #~ msgstr "Index of the material of which to determine color."
@@ -20855,113 +20164,23 @@ msgstr "This command line program is used for processing group files. A list of 
 #~ msgid "Setzt die Himmelsfarben nach dem Material, auf dem der geraude ausgewählte Clonks des ersten Spielers steht."
 #~ msgstr "Sets sky colors according to the material on which the selected clonk of the first player is standing."
 
-#~ msgid "Gewogenes Objekt. 0 bei lokalem Aufruf oder angegebenem idDef."
-#~ msgstr "Object to be weighed. 0 in local calls or with specified definition."
-
-#~ msgid "Objektdefinition, von der das Standardgewicht ermittelt werden soll. 0 bei angegebenem pObj"
-#~ msgstr "Object definition of which to determine original weight. 0 with specified object pointer."
-
-#~ msgid "Liefert die Masse eines Objekts inklusive aller Inhaltsobjekte. Bei angegebenem idDef wird pObj ignoriert und stattdessen die Standardmasse der Objektdefinition zurückgegeben. Sind idDef und pObj 0, gilt das aufrufende Objekt als pObj."
-#~ msgstr "Returns the mass of an object including the mass of all contained objects. With idDef specified pObj is ignored and the original mass of the object definition is returned. If neither pObj nor idDef are specified, the current mass of the calling object is returned."
-
-#~ msgid "Das Objekt, dessen Zauberenergiewert gesucht wird."
-#~ msgstr "Object of which to determine the magic value."
-
-#~ msgid "Liefert den aktuellen Zauberenergiewert eines Objekts. pObj Null bei lokalem Aufruf."
-#~ msgstr "Returns the current magic energy level of an object. pObj can be 0 in local calls."
-
-#~ msgid "Das Objekt, dessen ID gesucht wird."
-#~ msgstr "Object of which to determine the definition id."
-
-#~ msgid "Objekt, dessen Entrance-Wert abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the entrance value. Can be 0 in local calls."
-
-#~ msgid "Das Objekt, dessen Energiewert gesucht wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the energy value. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Richtung abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the direction. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Beschreibung gesucht wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the description. Can be 0 in local calls."
-
-#~ msgid "Falls angegeben, wird stattdessen die Beschreibung dieser Definition zurückgegeben."
-#~ msgstr "If specified, the description of the object definition is returned instead."
-
-#~ msgid "Objektdefinition, von der der Eintrag abgefragt werden soll. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen."
-#~ msgstr "Object definition of which to get an entry. If 0, the definition of the calling object is used."
-
-#~ msgid "Ermittelt die Breite des Objekts. Die beiden letzten Parameter könnten in diesem Fall weggelassen werden."
-#~ msgstr "Determines the width of an object. The last two parameters might be omitted in this case."
-
-#~ msgid "Objekt, dessen Unterkante ermittelt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the lower limit."
-
-#~ msgid "Objekt, dessen Schadenswert abgefragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the damage level. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Status abgefragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the status. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen kontrollierender Spieler abgegfragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the controller. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Kontaktstatus ermittelt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get collision information. Can be 0 in local calls."
-
-#~ msgid "Objekt dessen Fertigstellung abgefragt werden soll."
-#~ msgstr "Object of which to determine completion."
-
-#~ msgid "Objekt, von dem ein Kommando abgefragt wird."
-#~ msgstr "Object of which to get commands."
-
-#~ msgid "Objekt dessen ComDir abgefragt werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the ComDir. Can be 0 in local calls."
-
-#~ msgid "Abgefragtes Objekt. 0 bei lokalem Aufruf."
-#~ msgstr "The object. Can be 0 in local calls."
-
-#~ msgid "Fragt den indizierten Farbwert eines Objekts ab, nach dem die ColorByOwner-Flächern eingefärbt sind. Dieser konnte beispielsweise durch <placeholder-1/> oder <placeholder-2/> gesetzt worden sein."
-#~ msgstr "Gets the indicated color value of the ColorByOwner areas of an object. These are controlled by <placeholder-1/>, <placeholder-2/>."
-
-#~ msgid "Die Funktion ist nur noch für das 8 Bit-Grafiksystem relevant. Normalerweise sollte der Farbwert eines Objekts mit <placeholder-1/> abgefragt werden."
-#~ msgstr "This function is obsolete. Current aspects are controlled using <placeholder-1/>."
-
-#~ msgid "Färbt das aufrufende Objekt auf die nächste Spielerfarbe um."
-#~ msgstr "Changes the object's color to the next player color."
-
-#~ msgid "Objekt, dessen Färbung abgefragt werden soll. 0 bei lokalen Aufruf."
-#~ msgstr "Object of which to get the color. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Kategorie abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to get the category. Can be 0 in local calls."
-
-#~ msgid "Wenn angegeben, wird die Kategorie dieser Definition zurückgegeben."
-#~ msgstr "If specified, the category of this definition is returned."
-
-#~ msgid "Das Objekt, dessen Atemwert gesucht wird."
-#~ msgstr "The object you want to check. Can be 0 in local calls."
-
-#~ msgid "Zu prüfende Heimatbasis. Null bei lokalem Aufruf."
-#~ msgstr "Home base object to check. Can be 0 in local calls."
-
-#~ msgid "Objekt, 0 bei lokalem Aufruf."
-#~ msgstr "Object. Can be 0 in local calls."
-
-#~ msgid "Objekt, Null bei lokalem Aufruf."
-#~ msgstr "Object. Can be 0 in local calls."
-
-#~ msgid "Objekt, das weggeschleudert wird. Muss angegeben werden."
-#~ msgstr "Object to be flung. This parameter must be specified."
-
-#~ msgid "Objekt, dessen Kommando beendet wird."
-#~ msgstr "Object of which to stop the command."
-
-#~ msgid "Behälter, der durchsucht wird. 0 bei lokalem Aufruf."
-#~ msgstr "Container to be searched. Can be 0 in local calls."
-
 #~ msgid "Besitzer, den das gefundene Objekt haben soll"
 #~ msgstr "Owner value for which to search."
+
+#~ msgid "Suchrechteck Breite"
+#~ msgstr "Width of search rectangle"
+
+#~ msgid "Suchrechteck Höhe"
+#~ msgstr "Height of search rectangle"
+
+#~ msgid "Objektattribute. Es werden nur Objekte gefunden, die alle angegebenen Objektattribute besitzen. 0 findet alle Objekte."
+#~ msgstr "Object attributes. Only objects with all specfied attributes will be returned in the search. 0 finds all objects."
+
+#~ msgid "Aktivität des zu findenden Objekts"
+#~ msgstr "Activity of the object."
+
+#~ msgid "Aktivitätsziel, das das Objekt besitzen muss. Siehe dazu auch <placeholder-1/>, <placeholder-2/>"
+#~ msgstr "Activity target of the object. Also see <placeholder-1/>, <placeholder-2/>."
 
 #~ msgid "Objekt, hinter dem die Suche begonnen wird. Über diesen Parameter können in einer Schleife alle Objekte gefunden werden, die den Suchkriterien entsprechen."
 #~ msgstr "List object after which the search is to be continued. This is used to search through all objects in a loop."
@@ -20974,696 +20193,3 @@ msgstr "This command line program is used for processing group files. A list of 
 
 #~ msgid "Anders als bei <placeholder-1/> findet sich bei objektlokalen Aufrufen von FindObject2 das aufrufende Objekt selbst. Dies kann durch <placeholder-2/>() verhindert werden."
 #~ msgstr "As opposed to <placeholder-1/>, an object using FindObjects in local calls will also find itself. This can be avoided through use of <placeholder-2/>()."
-
-#~ msgid "Suchposition bzw. linker Rand des Suchrechtecks. Bei lokalem Aufruf Offset zum aufrufenden Objekt."
-#~ msgstr "Search position or left boundary of the search rectangle respectively. Relative to the calling object if applicable."
-
-#~ msgid "Suchposition bzw. oberer Rand des Suchrechtecks. Bei lokalem Aufruf Offset zum aufrufenden Objekt."
-#~ msgstr "Search position or upper boundary of the search rectangle, respectively. Relative to the calling object, if applicable."
-
-#~ msgid "Breite des Suchrechtecks. Siehe auch Hinweis unten."
-#~ msgstr "Width of the search rectangle. See remark below."
-
-#~ msgid "Höhe des Suchrechtecks. Siehe auch Hinweis unten."
-#~ msgstr "Height of the search rectangle. See remark below."
-
-#~ msgid "Bitmaske von Objektattributen. Es werden alle Objekte gefunden, die mindestens eines der übergebenen Objektattribute besitzen. 0 findet alle Objekte."
-#~ msgstr "Bit mask of object character flags. All objects which have at least one of the given flags are found. 0 for all objects."
-
-#~ msgid "Aktivität des zu findenden Objekts."
-#~ msgstr "Activity of the object to be found."
-
-#~ msgid "Aktivitätsziel des zu findenden Objekts. Siehe dazu auch <placeholder-1/>, <placeholder-2/>"
-#~ msgstr "Activity target of the object to be found. See also <placeholder-1/>, <placeholder-2/>"
-
-#~ msgid "Behälter des zu findenden Objekts. Wenn angegeben, wird nur dieser Behälter durchsucht. Möglich sind auch <placeholder-1/> für Objekte, die sich im Freien befinden und <placeholder-2/> für alle Objekte."
-#~ msgstr "Container of the object to be found. If given, only this container will be searched. Also possible is <placeholder-1/> for objects outside and <placeholder-2/> for all contained objects."
-
-#~ msgid "Objekt, nach dem die Suche begonnen wird. Über diesen Parameter können in einer Schleife nacheinander alle Objekte gefunden werden, die den Suchkriterien entsprechen."
-#~ msgstr "Object after which the search will begin. With this parameter and a loop all objects matching the criteria can be found."
-
-#~ msgid "Liefert das erste gefundene Objekt, das den angegebenen Suchkriterien entspricht. Sind iWdt und iHgt beide -1, so wird das nächstliegende Objekt gefunden. Sind sie beide 0, wird nur am Punkt iX/iY gesucht. Sind iX, iY, iWdt und iHgt alle 0, gilt als Suchrechteck die gesamte Karte (auch bei lokalen Aufrufen). Es müssen stets die Bedingungen aller Parameter erfüllt sein, die angegeben und nicht 0 sind."
-#~ msgstr "Returns the first object matching the search criteria. If iWdt and iHgt are both -1, the closest object will be found. If both are 0, only the point iX/iY will be searched. If iX, iY, iWdt and iHgt are 0, the whole landscape will be searched (even if called from an object). All criteria which are specified and not 0 have to be fulfilled."
-
-#~ msgid "Bei objektlokalem Aufruf findet sich das aufrufende Objekt nicht selber."
-#~ msgstr "If called from an object, the calling object will not be found."
-
-#~ msgid "Wird ein vollständiges Suchrechteck angegeben, so werden Objekte gefunden, deren Mittelpunkt sich innerhalb dieses Rechtecks befindet. Sind alle vier Werte des Suchrechtecks (iX, iY, iWdt, iHgt) gleich 0 oder wurden nicht angegeben, so wird immer die gesamte Spielfläche durchsucht. Sind Breite und Höhe des Suchrechtecks (iWdt, iHgt) gleich 0, so gelten die Koordinaten (iX, iY) als Suchpunkt und es werden nur Objekte gefunden, die diesen Suchpunkt überlappen. Sind Breite und Höhe des Suchrechtecks beide gleich -1, so wird vom Suchpunkt ausgehend das jeweils nächstliegende Objekt gefunden."
-#~ msgstr "If a full search rectangle is provided (i.e. width and height larger than zero), objects match if their center point lies within this rectangle. If all four values of the search rectangle (iX, iY, iWdt, iHgt) are zero or not provided, the complete landscape area is searched. If both width and height (iWdt, iHgt) of the search rectangle are zero, the position (iX, iY) is interpreted as a search point and objects match if their shape overlaps that point. If both width and height of the search rectangle are -1, the object nearest to the search point is found."
-
-#~ msgid "Die Funktion ist veraltet. Es wird empfohlen, FindObjects bzw. FindObject2 zu verwenden, da diese Funktionen mehr Suchparameter unterstützen und für viele Fälle besser optimiert sind."
-#~ msgstr "This function is deprecated. It is recommended that FindObject2 or FindObjects is used instead, because those functions support assitional search criterions, and they are often faster."
-
-#~ msgid "Lässt den Clonk realisieren, dass die Landschaft am rechten Rand endlich ist."
-#~ msgstr "The clonk realizes the landscape is finite at the right border."
-
-#~ msgid "Entzündet den nächstliegenden Clonk."
-#~ msgstr "Inflames the closest clonk."
-
-#~ msgid "Lässt einen Clonk explodieren, der sich an Position 100/100 befindet, und springt."
-#~ msgstr "If a clonk is at position 100/100 and jumping (or falling), he explodes."
-
-#~ msgid "Entzündet alle Wipfe, die nirgends enthalten sind."
-#~ msgstr "Inflames all Wipfs outside."
-
-#~ msgid "Durchsuchter Behälter. 0 bei lokalem Aufruf."
-#~ msgstr "Container to be searched. Can be 0 in local calls."
-
-#~ msgid "Objekt, das kämpfen soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object which is to start fighting. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Feuer gelöscht werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be extinguished. Can be 0 in local calls."
-
-#~ msgid "Objekt, das explodiert. 0 bei lokalem Aufruf."
-#~ msgstr "Object which explodes. Can be 0 in local calls."
-
-#~ msgid "Nach draußen zu bewegendes Objekt. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be moved outside. Can be 0 in local calls."
-
-#~ msgid "X-Austrittsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf."
-#~ msgstr "X exit position. Offset to the calling object in local calls."
-
-#~ msgid "Y-Austrittsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf."
-#~ msgstr "Y exit position. Offset to the calling object in local calls."
-
-#~ msgid "Objekt, das in pTarget hineinversetzt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object to be moved into the target container. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Energiezustand abgefragt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to determine the energy value. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Magiewert verändert wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to change the magic value. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Energiewert verändert wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object of which to change the energy value. Can be 0 in local calls."
-
-#~ msgid "Objekt, das beschädigt wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object to adjust. Can be 0 in local calls."
-
-#~ msgid "Crewobjekt, dem Erfahrung gegeben werden soll"
-#~ msgstr "Crew member object which to give experience to."
-
-#~ msgid "Objekt, dessen Fertigstellung geändert werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object to change. Can be 0 in local calls."
-
-#~ msgid "Zu prüfende Objektdefinition."
-#~ msgstr "Object definition to check."
-
-#~ msgid "Liefert den Wert von \"CrewMember\" aus der DefCore von id."
-#~ msgstr "Returns the value of \"CrewMember\" from the DefCore of id."
-
-#~ msgid "Objekt, in welchem das Menü geöffnet wird; kann bei lokalen Aufrufen Null sein"
-#~ msgstr "Object in which to open the menu. Can be 0 in local calls."
-
-#~ msgid "Hierin wird das Objekt erstellt"
-#~ msgstr "Taget container."
-
-#~ msgid "Anzahl zu erstellender Objekte. Ab 4.9.6.0 CR"
-#~ msgstr "Number of objects to be created. From 4.9.6.0 CR."
-
-#~ msgid "Objekt, in dessen Inhalt gezählt werden soll"
-#~ msgstr "Object of which to count contents."
-
-#~ msgid "Objekt, in welchem gesucht werden soll; null für lokale Aufrufe"
-#~ msgstr "Object in which to search. Can be 0 in local calls."
-
-#~ msgid "Objekt, für welches die Überprüfung durchgeführt werden soll; Null für lokale Aufrufe"
-#~ msgstr "Object to examine. Can be 0 in local calls."
-
-#~ msgid "Objekt, welches die benötigten Komponenten enthält"
-#~ msgstr "Object which contains the required components."
-
-#~ msgid "Das Objekt, dessen Components geprüft werden sollen."
-#~ msgstr "Object of which to check components."
-
-#~ msgid "Objekt, dessen Menü geschlossen wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which to close the menu. Can be 0 in local calls."
-
-#~ msgid "Objekt, aus dessen Menü alle Einträge geleert werden sollen. 0 bei lokalem Aufruf."
-#~ msgstr "Object for which to clear all menu entries. Can be 0 in local calls."
-
-#~ msgid "Objekt, von dem aus gesucht werden soll. 0 bei lokalem Aufruf."
-#~ msgstr "Object from which to start the search. Can be 0 in local calls."
-
-#~ msgid "Objekt, dessen Typ geändert wird. 0 bei lokalem Aufruf."
-#~ msgstr "Object to change. Can be 0 in local calls."
-
-#~ msgid "Objekt, dem der Vertex hinzugefügt werden soll."
-#~ msgstr "Object to receive the new vertex."
-
-#~ msgid "Objekt, dessen Menü der Eintrag hinzugefügt werden soll. Kann bei lokalen Aufrufen 0 sein."
-#~ msgstr "Object holding the menu to which to add the entry. Can be 0 in local calls."
-
-#~ msgid "Menü für ein Schrumpfobjekt."
-#~ msgstr "Menu for a shrinking object."
-
-#~ msgid "Zu überprüfendes Objekt"
-#~ msgstr "Object to check. Can be 0 in local calls."
-
-#~ msgid "Feld"
-#~ msgstr "array"
-
-#~ msgid "IncVar"
-#~ msgstr "IncVar"
-
-#~ msgid "DecVar"
-#~ msgstr "DecVar"
-
-#~ msgid "Not"
-#~ msgstr "Not"
-
-#~ msgid "Pow"
-#~ msgstr "Pow"
-
-#~ msgid "Div"
-#~ msgstr "Div"
-
-#~ msgid "Mul"
-#~ msgstr "Mul"
-
-#~ msgid "Mod"
-#~ msgstr "Mod"
-
-#~ msgid "Sub"
-#~ msgstr "Sub"
-
-#~ msgid "Sum"
-#~ msgstr "Sum"
-
-#~ msgid "LessThan"
-#~ msgstr "LessThan"
-
-#~ msgid "GreaterThan"
-#~ msgstr "GreaterThan"
-
-#~ msgid "Equal"
-#~ msgstr "Equal"
-
-#~ msgid "Not Equal"
-#~ msgstr "Not Equal"
-
-#~ msgid "SEqual"
-#~ msgstr "SEqual"
-
-#~ msgid "Not SEqual"
-#~ msgstr "Not SEqual"
-
-#~ msgid "BitAnd"
-#~ msgstr "BitAnd"
-
-#~ msgid "And"
-#~ msgstr "And"
-
-#~ msgid "bool, bool/bool"
-#~ msgstr "bool, bool/bool"
-
-#~ msgid "Or"
-#~ msgstr "Or"
-
-#~ msgid "Index der Variable, zu der eine Referenz zurückgegeben werden soll"
-#~ msgstr "Index of the variable to which a reference is to be returned."
-
-#~ msgid "Normalerweise sollten statt dieser Funktion benannte, threadlokale Variablen (var) benutzt werden. Manchmal ist die Funktion jedoch praktisch, um lokale Arrays zu emulieren."
-#~ msgstr "Usually, you should use named local variables instead of using this function. Sometimes, however, it is convenient to used indexed variables to emulate a local array."
-
-#~ msgid "Berechnet pi auf 800 Stellen genau und gibt den Wert in zwei Logzeilen aus."
-#~ msgstr "Calculates pi exact to 800 decimals and returns the value in two log entries."
-
-#~ msgid "1. Summand"
-#~ msgstr "first operand"
-
-#~ msgid "2. Summand"
-#~ msgstr "secod operand"
-
-#~ msgid "3. Summand"
-#~ msgstr "third operand"
-
-#~ msgid "4. Summand"
-#~ msgstr "fourth operand"
-
-#~ msgid "Bildet die Summe von iVal1, iVal2, iVal3 und iVal4 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"+\" ersetzt werden."
-#~ msgstr "Adds iVal1, iVal2, iVal3, and iVal4 and returns the sum. You should really use the '+' operator instead."
-
-#~ msgid "Gibt das Ergebnis von 10 + 5 im Log aus."
-#~ msgstr "Prints the result of 10 + 5 to the log."
-
-#~ msgid "Minuend"
-#~ msgstr "value"
-
-#~ msgid "Subtrahend 1"
-#~ msgstr "first subtracted value"
-
-#~ msgid "Subtrahend 2"
-#~ msgstr "second subtracted value"
-
-#~ msgid "Subtrahend 3"
-#~ msgstr "third subtracted value"
-
-#~ msgid "Subtrahiert die Summe von iVal2, 3 und 4 von iVal1 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"-\" ersetzt werden."
-#~ msgstr "Subtracts iVal2, iVal3, and iVal4 from iVal1 and returns the result. You should really use the '-' operator instead."
-
-#~ msgid "Gibt das Ergebnis von 10 - 5 im Log aus."
-#~ msgstr "Prints the result of 10 - 5 to the log."
-
-#~ msgid "Die threadlokale Variable, die gesetzt werden soll."
-#~ msgstr "Thread local variable to be set."
-
-#~ msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. Numerierte Variablen wurden durch Variablen mit Namen abgelöst, sind aber für Arrays nützlich."
-#~ msgstr "Assigns a value to an indexed thread local variable. The data type is variant. Thread local variables are valid for the duration of a function execution only. Indexed variables are more old-fashioned than named variables but are still good for emulating local arrays."
-
-#~ msgid "Rot-Wert der Anfangsfarbe"
-#~ msgstr "Red value of the initial color."
-
-#~ msgid "Grün-Wert der Anfangsfarbe"
-#~ msgstr "Green value of the initial color."
-
-#~ msgid "Blau-Wert der Anfangsfarbe"
-#~ msgstr "Blue value of the initial color."
-
-#~ msgid "Rot-Wert der Endfarbe"
-#~ msgstr "Red value of the destination color."
-
-#~ msgid "Grün-Wert der Endfarbe"
-#~ msgstr "Green value of the destination color."
-
-#~ msgid "Blau-Wert der Endfarbe"
-#~ msgstr "Blue value of the destination color."
-
-#~ msgid "Verändert die Himmelsfarben. Dabei werden im 8Bit-Modus die Palettenfarben 0 (Anfangsfarbe) bis 19 (Endfartbe) auf einen Verlauf zwischen den angegebenen Farbwerten gesetzt. Das macht natürlich nur dann Sinn, wenn der Himmel aus einem Farbverlauf besteht."
-#~ msgstr "Changes the color of the sky. This will set the 8 bit palette colors 0 (initial) to 10 (destination) to a gradient from the initial to the destination color. Obviously, this only makes sense with color gradient skies."
-
-#~ msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig (für NewGfx wird sie notdürftig emuliert). Stattdessen sollte <placeholder-1/> verwendet werden."
-#~ msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
-
-#~ msgid "Setzt den Himmel auf einen Verlauf zwischen schwarz und weiß."
-#~ msgstr "Sets the sky to a gradient from black to white."
-
-#~ msgid "0-19: Himmelsfarbenindex"
-#~ msgstr "0-19: Sky color index"
-
-#~ msgid "Rot-Wert der Farbe"
-#~ msgstr "Red value of the color"
-
-#~ msgid "Grün-Wert der Farbe"
-#~ msgstr "Green value of the color"
-
-#~ msgid "Blau-Wert der Farbe"
-#~ msgstr "Blue value of the color"
-
-#~ msgid "Verändert eine Himmelsfarben. Dabei wird im 8Bit-Modus der entsprechende Paletteneintrag geändert."
-#~ msgstr "Changes a single sky color. This will set a single palette color in 8 bit color mode."
-
-#~ msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig. Für NewGfx wird sie notdürftig emuliert, wenn iIndex=0. Stattdessen sollte <placeholder-1/> verwendet werden."
-#~ msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
-
-#~ msgid "Macht den Himmel ziemlich bunt."
-#~ msgstr "Makes a colorful sky."
-
-#~ msgid "Index des Materials, dessen Farben gesetzt werden"
-#~ msgstr "Index of the material for which you want to set the colors."
-
-#~ msgid "Roter Kanal der ersten Materialfarbe"
-#~ msgstr "Red value of the first material color"
-
-#~ msgid "Grüner Kanal der ersten Materialfarbe"
-#~ msgstr "Green value of the first material color"
-
-#~ msgid "Blauer Kanal der ersten Materialfarbe"
-#~ msgstr "Blue value of the first material color"
-
-#~ msgid "Roter Kanal der zweiten Materialfarbe"
-#~ msgstr "Red value of the second material color"
-
-#~ msgid "Grüner Kanal der zweiten Materialfarbe"
-#~ msgstr "Green value of the second material color"
-
-#~ msgid "Blauer Kanal der zweiten Materialfarbe"
-#~ msgstr "Blue value of the second material color"
-
-#~ msgid "Roter Kanal der dritten Materialfarbe"
-#~ msgstr "Red value of the third material color"
-
-#~ msgid "Grüner Kanal der dritten Materialfarbe"
-#~ msgstr "Green value of the third material color"
-
-#~ msgid "Blauer Kanal der dritten Materialfarbe"
-#~ msgstr "Blue value of the third material color"
-
-#~ msgid "Setzt die Farben eines Materials in der Palette. Dadurch werden alle Vorkommen dieses Materials auf der Karte in der neuen Farbe dargestellt."
-#~ msgstr "Sets the colors of a material causing all occurences of this material in the landscape to be drawn using the new color."
-
-#~ msgid "Färbt Gold schwarz."
-#~ msgstr "Makes gold black."
-
-#~ msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &lt;=0 erlaubt"
-#~ msgstr "Nuber of the variable to be set."
-
-#~ msgid "Objekt, in der die Variable gesetzt werden soll"
-#~ msgstr "Object in which the variable is to be set"
-
-#~ msgid "Setzt eine <placeholder-1/>-Variable in einem Objekt (wenn nicht angegeben, wird die Variable in dem aufrufenden Objekt gesetzt)."
-#~ msgstr "Sets a <placeholder-1/> variable in an object (if no object is specified the variable is set in the calling object)."
-
-#~ msgid "SetLocal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
-#~ msgstr "If successful, SetLocal will return the newly set value (or 0 otherwise)."
-
-#~ msgid "Statt SetLocal sollte zum Zugriff auf Local-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
-#~ msgstr "With local variables you should use the <code><placeholder-1/>(x) = y</code> syntax instead of SetLocal."
-
-#~ msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &gt;=0 erlaubt"
-#~ msgstr "Nuber of the variable to be set. Every index bigger than 0 is allowed."
-
-#~ msgid "Setzt eine <placeholder-1/>-Variable."
-#~ msgstr "Sets a <placeholder-1/> variable."
-
-#~ msgid "SetGlobal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
-#~ msgstr "If successful, SetGlobal returns the newly set value (otherwise 0)."
-
-#~ msgid "Statt SetGlobal sollte zum Zugriff auf Global-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
-#~ msgstr "Instead of SetGlobal you should use code such as <code><placeholder-1/>(x) = y</code> to access global variables."
-
-#~ msgid "Erste Zeichenkette zum Vergleichen"
-#~ msgstr "First string to compare."
-
-#~ msgid "Zweite Zeichenkette zum Vergleichen"
-#~ msgstr "Second string to compare."
-
-#~ msgid "Vergleicht zwei Zeichenketten, und gibt zurück, ob sie gleich sind. Dieser Vergleich beachtet Groß-/Kleinschreibung, und entfernt keine vorangehenden oder nachfolgenden Leerzeichen."
-#~ msgstr "Compares two strings and returns whether they are identical. This comparison is case sensitive and does not ignore leading or trailing space."
-
-#~ msgid "Zur einfacheren Schreibweise und schnelleren Ausführung stehen inzwischen die Operatoren S=, eq und ne zur Verfügung"
-#~ msgstr "For simpler syntax, there are also the operators S=, eq, and ne available for string comparison."
-
-#~ msgid "Setzt die Aktivität \"Floating\" im aufrufenden Objekt, wenn sie noch nicht gesetzt war."
-#~ msgstr "Sets action \"Floating\" in the calling object if it was not set already."
-
-#~ msgid "Logik"
-#~ msgstr "Logic"
-
-#~ msgid "1. Bedingung"
-#~ msgstr "First condition"
-
-#~ msgid "2. Bedingung"
-#~ msgstr "Second condition"
-
-#~ msgid "3. Bedingung"
-#~ msgstr "Third condition"
-
-#~ msgid "4. Bedingung"
-#~ msgstr "Fourth condition"
-
-#~ msgid "5. Bedingung"
-#~ msgstr "Fifth condition"
-
-#~ msgid "Gibt TRUE zurück, wenn einer der Parameter ungleich Null ist (Logisches Oder). Sollte in neueren Scripts durch den Operator \"||\" ersetzt werden."
-#~ msgstr "Returns true if one of the specified parameters in unequal to zero (logical OR). You should use the operator \"||\" instead."
-
-#~ msgid "Alles außer Kohle, Öl-Fässern und Holz aus dem Gebäude entfernen. (Beispiel aus PowerPlant.c4d übernommen)"
-#~ msgstr "Removes everything except coal, oil barrels, and wood from the building (example taken from PowerPlant.c4d)."
-
-#~ msgid "Gibt true zurück, wenn Value false ist, false, wenn Value true ist."
-#~ msgstr "Returns true if Value is false and vice versa."
-
-#~ msgid "Ruft FooBarFunc() auf, wenn x falsch ist."
-#~ msgstr "Calls FooBarFunc() if x is false."
-
-#~ msgid "Ruft FooBarFunc() auf, wenn x falsch ist. Neue Schreibweise."
-#~ msgstr "Calls FooBarFunc() if x is false. New syntax."
-
-#~ msgid "Faktor 1"
-#~ msgstr "Factor 1"
-
-#~ msgid "Faktor 2"
-#~ msgstr "Factor 2"
-
-#~ msgid "Multipliziert iVal1 mit iVal2 und gibt das Ergebnis zurück."
-#~ msgstr "Multiplies iVal1 with iVal2 and returns the result."
-
-#~ msgid "Statt <code>Mul(x, y)</code> sollte die Operatorenschreibweise <code>x * y</code> benutzt werden."
-#~ msgstr "Instead of <code>Mul(x, y)</code> you should use the operator <code>x * y</code>."
-
-#~ msgid "Divident"
-#~ msgstr "Dividend"
-
-#~ msgid "Divisor"
-#~ msgstr "Divisor"
-
-#~ msgid "Gibt den Divisionsrest von iVal1 / iVal2 zurück."
-#~ msgstr "Returns the division rest (modulo) of iVal1 / iVal2."
-
-#~ msgid "Statt <code>Mod(x, y)</code> sollte die Operatorenschreibweise <code>x % y</code> benutzt werden."
-#~ msgstr "Instead of <code>Mod(x, y)</code> you should use the operator <code>x % y</code>."
-
-#~ msgid "Nummer der Variable, die abgefragt werden soll. Jede positive Zahl (einschließlich 0) erlaubt"
-#~ msgstr "Index of the variable to be accessed. Can be any positive number including 0."
-
-#~ msgid "Objekt, in der sich die Variable befindet"
-#~ msgstr "Object holding the variable."
-
-#~ msgid "Gibt den Wert einer lokalen Variable (als Referenz) zurück. Jedes Objekt kann eine beliebige Anzahl lokaler Variablen besitzen. Diese werden für jedes Objekt dauerhaft gespeichert und gehen erst verloren, wenn das Objekt gelöscht wird. Eine lokale Variable hat bei Erstellung des Objekts immer den Wert 0."
-#~ msgstr "Returns the value of an object local variable (as reference). Each object can hold any number of local variables. This are stored in the object until the object is deleted. A newly created local variable always has the value 0."
-
-#~ msgid "Da Local eine Referenz zurückgibt, kann der Wert einer Variable über Operatoren verändert werden ( Local(0) = 20; Local(1)++; u.ä.)"
-#~ msgstr "Since Local() returns a reference, the variable can be modified using operators such as Local(0) = 20 or Local(1)++"
-
-#~ msgid "Wo möglich, sollte statt einer Local-Variable eine lokale benannte Variable eingesetzt werden."
-#~ msgstr "Whenever possible, you should use named variables instead of indexed ones."
-
-#~ msgid "Dieser Script hat eine Ereignisfunktion (Hit), welche aufgerufen wird, wenn das Objekt auf den Boden aufschlägt. <br/> Hier wird die lokale Variable Nr. 0 auf 1 und die lokale Variable Nr. 1 auf 10 gesetzt. <br/> Die zweite Scriptfunktion, die definiert wird, heißt \"Timer\". Hierbei sollte es sich um eine Funktion handeln, die periodisch aufgerufen wird (Einstellung \"Timer\" in der DefCore.txt). Hier wird erst geprüft, ob das Objekt aktiviert ist [Local(0)]. Wenn nicht, wird die Funktion sofort beendet, es passiert also nichts. Wurde das Objekt aber aktiviert (dann ist Local(0) = 1), so wird ein Sound ausgegeben. Darauf wird die lokale Variable 1 eins heruntergezählt und der neue Wert über dem Objekt angezeigt. <br/> D.h. die Aktivierung in Hit startet einen Countdown von 10 aus. Ist der Zähler bei 0 angekommen, so explodiert das Objekt."
-#~ msgstr "This script is invoked through the engine callback 'Hit' which occurs when the object hits the ground.<br/>The script sets the local variable 0 to value 1 and the variable 1 to value 10.<br/>The second script function is called 'Timer' and should be called periodically (see Timer entry in DefCore). This function will check whether the object has already hit the ground (Local(0) ist set). If this is the case, a sound is played and the counter variable 1 is decreased. When the counter reaches zero, the object explodes. Ergo: a timed grenade activated by impact."
-
-#~ msgid "Gibt TRUE zurück, wenn der erste übergebene Wert kleiner ist als der zweite (iValue1 &lt; iValue2)"
-#~ msgstr "Returns true if the first passed value is less than the second (iValue1 &lt; iValue2)."
-
-#~ msgid "Gibt zurück, ob das 32 Bit/16 Bit-Grafiksystem aktiviert ist. Bei Rückgabewert FALSE befindet sich die Engine im 8 Bit-Modus. Diese Funktion ist veraltet. Ab 4.9.5.0 CE läuft die Engine ausschließlich im 32 Bit/16 Bit-Modus."
-#~ msgstr "Returns whether the graphics system operates in 8 Bit or 32/16 Bit mode. This function is obsolete. From 4.9.5.0 CE the engine will run in 32/16 Bit mode only."
-
-#~ msgid "Beendet das Spiel, wenn nicht der neue Grafikmodus aktiviert ist."
-#~ msgstr "Ends the game if the new graphics mode is not enabled."
-
-#~ msgid "Index der lokalen Variable, die erhöht werden soll"
-#~ msgstr "Index of the local variable to be increased."
-
-#~ msgid "Erhöht die angegebene, threadlokale Variable. Neuere Scripte sollten den \"++\"-Operator und benannte Variablen benutzen."
-#~ msgstr "Increases the specified, thread local variable. You should use the \"++\" operator instead."
-
-#~ msgid "Variable"
-#~ msgstr "Variable"
-
-#~ msgid "Erhöht die Variable Var um 1. Bitte den \"++\"-Operator verwenden."
-#~ msgstr "Increases the variable by 1. You should use the \"++\" operator instead."
-
-#~ msgid "Erster Wert zum Vergleichen."
-#~ msgstr "First value to be compared."
-
-#~ msgid "Zweiter Wert zum Vergleichen."
-#~ msgstr "Second value to be compared."
-
-#~ msgid "Gibt True zurück wenn iVal1 größer als iVal2 ist."
-#~ msgstr "Returns true if iVal is greater than iVal2."
-
-#~ msgid "Nummer der globalen Variable."
-#~ msgstr "Number of the global variable."
-
-#~ msgid "Liefert den Inhalt der globalen Variable iVarIndex."
-#~ msgstr "Returns the value of the global variable iVarIndex."
-
-#~ msgid "Zahl 1"
-#~ msgstr "Value 1"
-
-#~ msgid "Zahl 2"
-#~ msgstr "Value 2"
-
-#~ msgid "Gibt true zurück, wenn iVal1 == iVal2, false, wenn nicht."
-#~ msgstr "Returns true if iVal1 == iVal2. Otherwise false."
-
-#~ msgid "Ruft FooBarFunc() auf, wenn x == y. Alte Schreibweise."
-#~ msgstr "Calls FooBarFunc() if x == y. Old syntax."
-
-#~ msgid "Ruft FooBarFunc() auf, wenn x == y. Neue Schreibweise."
-#~ msgstr "Calls FooBarFunc() if x == y. New syntax."
-
-#~ msgid "Dividend"
-#~ msgstr "Dividend"
-
-#~ msgid "Führt eine Division durch, wobei eine Division durch 0 einfach 0 zurückgibt. Statt dieser Funktion sollte der Operator \"/\" verwendet werden."
-#~ msgstr "Performs a division. A division by 0 will return 0 (and not cause an error). You should use the operator \"/\" instead."
-
-#~ msgid "Index der lokalen Variable, die verringert werden soll"
-#~ msgstr "Index of the variable to be decreased."
-
-#~ msgid "Verringert die angegebene, threadlokale Variable. Neuere Scripte sollten den \"--\"-Operator und benannte Variablen benutzen."
-#~ msgstr "Decreases the specified, thread local variable. New scripts should use the \"--\" operator and named variables instead."
-
-#~ msgid "Erniedrigt die Variable Var um 1. Bitte den \"--\"-Operator verwenden."
-#~ msgstr "Decreases the variable. You should use \"--\" instead."
-
-#~ msgid "Gibt (iVal1 &amp; iVal2) zurück (Bitweises And). Sollte in neuen Scripts durch den Operator \"&amp;\" ersetzt werden."
-#~ msgstr "Returns bitwise AND (iVal1 &amp; iVal2). You should use operator \"&amp;\" instead."
-
-#~ msgid "Gibt FALSE zurück, wenn in der aktuellen Kategorie des Objekts das Flag für C4D_Vehicle() gesetzt ist. (Aus dem Tree.c4d Script)"
-#~ msgstr "Returns false, if the current category of the object contains the C4D_Vehicle bit (from the tree script)."
-
-#~ msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. AssignVar wurde durch <placeholder-1/> abgelöst."
-#~ msgstr "Assigns a value to a thread local variable. The data type is variant. Thread local variables exist only for the duration of the function execution. This function was replaced by <placeholder-1/>."
-
-#~ msgid "Gibt TRUE zurück, wenn beide Parameter ungleich Null sind (Logisches And). Sollte in neueren Scripts durch den <emlink href=\"script/operatoren.html\">Operator</emlink> \"&amp;&amp;\" ersetzt werden."
-#~ msgstr "Returns true if both parameters are unequal to zero (logical AND). You should use the <emlink href=\"script/operatoren.html\">operator</emlink> \"&amp;&amp;\" instead."
-
-#~ msgid "Gibt Null zurück, wenn das Objekt, welches als erster Parameter übergeben wurde, sich sowohl in dem lokalen Objekt befindet, als auch ein Crew-Member ist."
-#~ msgstr "Returns 0 if the specified object is contained in this object and is also a crew member."
-
-#~ msgid "Die ID wird als <placeholder-1/>(0) des szCommand übergeben und als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden."
-#~ msgstr "The id is passed as <placeholder-1/>(0) of szCommand and used as image for the menu entry. The name of the definition can be used through %s in szCaption."
-
-#~ msgid "Der Entwicklermodus kann in der registrierten Version des Spiels den Optionen des Menüsystems aktiviert werden."
-#~ msgstr "The developer mode can be activated in the registered version of the game in the options dialog of the menu system."
-
-#~ msgid "/network"
-#~ msgstr "/network"
-
-#~ msgid "/nosignup"
-#~ msgstr "/nosignup"
-
-#~ msgid "Kein Internetspiel, kein Ligaspiel."
-#~ msgstr "No internet game, no league game."
-
-#~ msgid "/signup"
-#~ msgstr "/signup"
-
-#~ msgid "Internetspiel, aber kein Ligaspiel. Impliziert /network."
-#~ msgstr "Internet game, but no league game. Implies /network."
-
-#~ msgid "/league"
-#~ msgstr "/league"
-
-#~ msgid "/ncrw oder /faircrew"
-#~ msgstr "/ncrw or /faircrew"
-
-#~ msgid "Aktiviert faire Crew. Alle Clonks starten mit gleichen physischen Eigenschaften."
-#~ msgstr "Enables Fair Crew. All clonks start with the same physical properties."
-
-#~ msgid "Deaktiviert faire Crew. Clonks starten mit ihren individuell trainierten physischen Eigenschaften."
-#~ msgstr "Disables Fair Crew. Clonks start with their individually trained physical properties."
-
-#~ msgid "/runtimejoin"
-#~ msgstr "/runtimejoin"
-
-#~ msgid "Gibt den Laufzeitbeitritt frei. Dies ändert den Konfigurationswert permanent."
-#~ msgstr "Enables runtime join. This will adjust the corresponding configuration value permanently."
-
-#~ msgid "Anmerkung:"
-#~ msgstr "Remark:"
-
-#~ msgid "Anmerkung 1:"
-#~ msgstr "Remark 1:"
-
-#~ msgid "Anmerkung 2:"
-#~ msgstr "Remark 2:"
-
-#~ msgid "this muss wie eine Variable, das heißt ohne Klammern für den Funktionsaufruf, benutzt werden."
-#~ msgstr "this must be used without parentheses."
-
-#~ msgid "Liefert das erste im Editormodus ausgewählte Objekt."
-#~ msgstr "Returns the (first) object currently selected in engine's developer mode."
-
-#~ msgid "Anzeigen: F5 Vertices, F6 Action, F7 Commands, F8 Entrance/Collection, Alt-F7 Pathfinder, Alt-F8 SolidMasks"
-#~ msgstr "Displays: F5 Vertices, F6 Action, F7 Commands, F8 Entrance/Collection, Alt-F7 Pathfinder, Alt-F8 SolidMasks"
-
-#~ msgid "Achtung! Der Wert dieser Funktion sollte nur verwendet werden, um direkt an <placeholder-1/> oder <placeholder-2/> übergeben zu werden. Jede andere Verwendung kann zu Problemen mit dem Typechecksystem führen"
-#~ msgstr "Warning: you should use this value only in calls to <placeholder-1/> or <placeholder-2/>. Any other use might cause type checking errors."
-
-#~ msgid "Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht. Ab 4.9.5.0 CE."
-#~ msgstr "Target object for object local particles. Object local particles are drawn directly on top of the object and are removed when the object is deleted. From 4.9.5.0 CE."
-
-#~ msgid "Noch in der Testphase. Funktion bitte nicht benutzen."
-#~ msgstr "Still in beta phase. Do not use this function yet."
-
-#~ msgid "Meldet das Spiel nicht als Internetspiel an."
-#~ msgstr "Does not register the game as an internet game."
-
-#~ msgid "Gibt dem ausgewählten Clonk jedes Spielers einen Flint ins Inventar."
-#~ msgstr "Gives a flint to the selected clonk of each player."
-
-#~ msgid "Die Variable, die umgewandelt werden soll."
-#~ msgstr "Variable to be converted."
-
-#~ msgid "Erzwingt die Variablenumwandlung in den Typ \"int\"."
-#~ msgstr "Forces conversion to type \"int\"."
-
-#~ msgid "Erzwingt die Variablenumwandlung in den Typ \"object\"."
-#~ msgstr "Forces conversion to type \"object\"."
-
-#~ msgid "Erzwingt die Variablenumwandlung in den Typ \"id\"."
-#~ msgstr "Forces conversion to type \"id\"."
-
-#~ msgid "Erzwingt die Variablenumwandlung in den Typ \"bool\"."
-#~ msgstr "Forces conversion to type \"bool\"."
-
-#~ msgid "Erzwingt die Variablenumwandlung in den Typ \"any\"."
-#~ msgstr "Forces conversion to type \"any\"."
-
-#~ msgid "/ncrw"
-#~ msgstr "/ncrw"
-
-#~ msgid "/ucrw"
-#~ msgstr "/ucrw"
-
-#~ msgid "Deaktiviert faire Crew."
-#~ msgstr "Deactivates fair crew mode."
-
-#~ msgid "Gleich /join."
-#~ msgstr "Same as /join."
-
-#~ msgid "X-Position des Suchpunktes"
-#~ msgstr "X coordinate of search point"
-
-#~ msgid "Y-Position des Suchpunktes"
-#~ msgstr "Y coordinate of the search point"
-
-#~ msgid "Wenn das Objekt erzeugt wird."
-#~ msgstr "When the object is competed."
-
-#~ msgid "/nonetwork"
-#~ msgstr "/nonetwork"
-
-#~ msgid "Deaktiviert den Netzwermodus."
-#~ msgstr "Deactivates network mode."
-
-#~ msgid "Gleich wie /Join, allerdings wird /network impliziert."
-#~ msgstr "Like /Join, but /network is implied."
-
-#~ msgid "Liefert die ID des Menüsymbols (idSymbol), falls das Objekt ein Menü geöffnet hat. 0 bei keinem Menü oder bei keinem Symbol."
-#~ msgstr "Returns the id of the menu symbol if the object has an active menu. Returns 0 if no menu is open or no symbol is set."
-
-#~ msgid "0 Normal, 1 Kontext, 2 Info."
-#~ msgstr "0 normal, 1 context, 2 info."
-
-#~ msgid "FreeForAll"
-#~ msgstr "FreeForAll"
-
-#~ msgid "Im Installationsordner von Clonk befinden sich vier ausführbare Dateien: Clonk.exe, Editor.exe und C4Group.exe und Update.exe. Klickt man die Dateien einfach im Explorer an, werden sie ohne Startparameter ausgeführt. Über Batchdateien bzw. die Kommandozeile lassen sich jedoch diverse Parameter angeben, um den Start zu automatisieren:"
-#~ msgstr "The installation folder of Clonk contains four executable files: Clonk.exe, Editor.exe, C4Group.exe and Update.exe. If you just start those files in Windows Explorer, they will be startet without startup parameters. Using batch files or the command line, you can specify a variety of command line parameters in order to automate startup:"
-
-#~ msgid "Editor.exe"
-#~ msgstr "Editor.exe"
-
-#~ msgid "C4Group.exe"
-#~ msgstr "C4Group.exe"
-
-#~ msgid "Update.exe"
-#~ msgstr "Update.exe"
-
-#~ msgid "Sollte ohne Parameter gestartet werden, und wendet alle im Clonkverzeichnis vorhandenen Updategruppen (*.c4u) auf die entsprechenden Pakete an. Normalerweise wird dieses Programm direkt über den integrierten Updateprozess in Clonk aufgerufen."
-#~ msgstr "Should be started without parameters. All updates present in the Clonk folder (*.c4u) are applied to their respective packages. Usually, this program will be called automatically by the integrated update process in the game."
-
-#~ msgid "Auszuschließendes Objekt"
-#~ msgstr "Object to be excluded."
-
-#~ msgid "Objekt bewegt sich parallax nach Local 0 und 1."
-#~ msgstr "Object is moving parallax according to Local 0 and 1."
-
-#~ msgid "OCF_CrewMember"
-#~ msgstr "OCF_CrewMember"
