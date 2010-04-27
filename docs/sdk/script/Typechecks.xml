@@ -72,11 +72,11 @@
 		<text>Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <funclink>CreateArray</funclink>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden.
 		</text>
 		<text>Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element. Für negative Indizes wird vom Ende des Arrays gezählt, so dass <code>a[-1]</code> auf das letzte Element des Arrays zugreift.</text>
-		<text>Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code>-1</code> aufgefasst, falls sie nicht angegeben sind.</text>
+		<text>Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code><funclink>GetLength</funclink>(a)</code> aufgefasst, falls sie nicht angegeben sind.</text>
 		<h>Beispiel 1</h>
 <code>func ArraySum(array a)
 {
-  var l = GetLength(a);
+  var l = <funclink>GetLength</funclink>(a);
   var result = 0;
   for (var i = 0; i &lt; l; ++i)
   {
@@ -89,13 +89,13 @@
 <code>func RandomID()
 {
   var a = [Clonk, WIPF, BIRD, HUT1];
-  return (a[Random(4)]);
+  return (a[<funclink>Random</funclink>(4)]);
 }</code>
 		<text>Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück.</text>
 		<h>Beispiel 3</h>
 <code>func DetonateNearest()
 {
-  var a = <funclink>FindObjects</funclink>(<funclink>Find_ID</funclink>(Dynamite), Sort_Distance());
+  var a = <funclink>FindObjects</funclink>(<funclink>Find_ID</funclink>(Dynamite), <funclink>Sort_Distance</funclink>());
   for (var dyna in a[:6])
   {
     dyna->DoExplode();
