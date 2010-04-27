@@ -1,11 +1,9 @@
 [Head]
 Icon=2
-Title=Tutorial
-Version=4,10
-Difficulty=1
-Access=1
+Title=Tutorial01
+Version=4,10,0,0
 MaxPlayer=1
-NoInitialize=0
+Difficulty=1
 
 [Definitions]
 Definition1=Objects.c4d

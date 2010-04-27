@@ -27,7 +27,7 @@ private func ScenarioInit()
 	g_wasinit = true;
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.c4f\\Tutorial01.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return true;
 }
 

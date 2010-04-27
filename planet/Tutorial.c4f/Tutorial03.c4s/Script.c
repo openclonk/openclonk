@@ -13,7 +13,7 @@ func Initialize()
 	TutGoal->AddCheckpoint(300,463,"Javelin");
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 }
 
 func Script1()

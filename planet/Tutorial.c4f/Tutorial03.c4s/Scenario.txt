@@ -1,10 +1,9 @@
 [Head]
 Icon=4
-Title=Tutorial 3
-Version=4,10
-Access=1
+Title=Tutorial03
+Version=4,10,0,0
 MaxPlayer=1
-ForcedGfxMode=1
+Difficulty=3
 
 [Definitions]
 Definition1=Objects.c4d
