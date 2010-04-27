@@ -220,32 +220,6 @@ void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(AllowAllChannels,        "AllowAllChannels",     0                     , false, true));
 }
 
-void C4ConfigExplorer::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(Mode,                    "Mode",                 0             ));
-	pComp->Value(mkNamingAdapt(Run,                     "Run",                  0             ));
-	pComp->Value(mkNamingAdapt(EditorUseShell,          "EditorUseShell",       1             ));
-	pComp->Value(mkNamingAdapt(Kindersicherung,         "Kindersicherung",      1             ));
-	pComp->Value(mkNamingAdapt(IDListSortColumn,        "IDListSortColumn",     0             ));
-	pComp->Value(mkNamingAdapt(IDListViewMode,          "IDListViewMode",       0             ));
-	pComp->Value(mkNamingAdapt(LicenseAccepted,         "LicenseAccepted",      0             ));
-	pComp->Value(mkNamingAdapt(DontShowLanguageDisclaimer,"DontShowLanguageDisclaimer", 0     ));
-	pComp->Value(mkNamingAdapt(s(Definitions),          "Definitions",          ""            ));
-	pComp->Value(mkNamingAdapt(s(Engines),              "Engines",              ""            ));
-	pComp->Value(mkNamingAdapt(s(EditorBitmap),         "EditorBitmap",         "MSPaint.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorPNG),            "EditorPNG",            ""            ));
-	pComp->Value(mkNamingAdapt(s(EditorMusic),          "EditorMusic",          "MPlayer.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorRichText),       "EditorRichText",       "Wordpad.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorScript),         "EditorScript",         "Notepad.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorText),           "EditorText",           "Notepad.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorSound),          "EditorSound",          "MPlayer.exe" ));
-	pComp->Value(mkNamingAdapt(s(EditorZip),            "EditorZip",            "WinZip32.exe"));
-	pComp->Value(mkNamingAdapt(s(EditorDefinition),     "EditorDefinition",     ""            ));
-	pComp->Value(mkNamingAdapt(s(EditorHtml),           "EditorHtml",           "iexplore.exe"));
-	pComp->Value(mkNamingAdapt(s(Reload),               "Reload",               ""            ));
-	pComp->Value(mkNamingAdapt(s(CommandLine),          "CommandLine",          "Clonk.exe /console /nonetwork", false, true));
-}
-
 void C4ConfigSecurity::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(WasRegistered,           "WasRegistered",        0                   ));

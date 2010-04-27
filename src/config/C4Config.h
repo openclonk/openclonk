@@ -228,35 +228,6 @@ public:
 	int32_t AllowAllChannels;
 };
 
-class C4ConfigExplorer
-{
-public:
-	int32_t Mode;
-	int32_t Run;
-	char Definitions[CFG_MaxString+1];
-	char Engines[CFG_MaxString+1];
-	char EditorBitmap[CFG_MaxString+1];
-	char EditorPNG[CFG_MaxString+1];
-	char EditorMusic[CFG_MaxString+1];
-	char EditorRichText[CFG_MaxString+1];
-	char EditorScript[CFG_MaxString+1];
-	char EditorText[CFG_MaxString+1];
-	char EditorSound[CFG_MaxString+1];
-	char EditorZip[CFG_MaxString+1];
-	char EditorDefinition[CFG_MaxString+1];
-	char EditorHtml[CFG_MaxString+1];
-	char CommandLine[CFG_MaxString+1];
-	int32_t EditorUseShell;
-	int32_t Kindersicherung;
-	int32_t DontShowLanguageDisclaimer;
-	int32_t IDListSortColumn;
-	int32_t IDListViewMode;
-	int32_t LicenseAccepted;
-	char Reload[CFG_MaxString+1];
-public:
-	void CompileFunc(StdCompiler *pComp);
-};
-
 const int C4ConfigMaxGamepads = 4;
 
 class C4ConfigGamepad
@@ -301,7 +272,6 @@ public:
 	C4ConfigNetwork   Network;
 	C4ConfigLobby     Lobby;
 	C4ConfigIRC       IRC;
-	C4ConfigExplorer  Explorer;
 	C4ConfigGamepad   Gamepads[C4ConfigMaxGamepads];
 	C4ConfigControls  Controls;
 	C4ConfigStartup   Startup;

@@ -1972,8 +1972,6 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 		SCopyUntil(strFilename, strSaveFolder + SLen(strSaveFolder), DirectorySeparator, _MAX_PATH, i);
 		if (!Config.General.CreateSaveFolder(strSaveFolder, strTitle))
 			{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }
-		else
-			SAddModule(Config.Explorer.Reload, strSaveFolder);
 	}
 
 	// Compose savegame filename
@@ -1999,9 +1997,6 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	if (!pGameSave->Save(strSavePath.getData()))
 		{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); delete pGameSave; return false; }
 	delete pGameSave;
-
-	// Add to reload list
-	SAddModule(Config.Explorer.Reload, strSavePath.getData());
 
 	// Success
 	Log(LoadResStr("IDS_CNS_GAMESAVED"));

@@ -423,8 +423,6 @@ bool C4Player::Save()
 	if (!C4Group_MoveItem(szPath, Filename)) return false;
 	// finish update
 	if (pDRes && fOfficial) pDRes->FinishDerive();
-	// Add to reload list
-	if (LocalControl) SAddModule(Config.Explorer.Reload,Filename);
 	// Success
 	return true;
 }
