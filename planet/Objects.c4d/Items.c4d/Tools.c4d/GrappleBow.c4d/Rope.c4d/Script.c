@@ -325,6 +325,8 @@ func LogSpeed()
 
 func GetPartX(index, old) { return (particles[index][old][0]+Rope_Precision/2)/Rope_Precision; }
 func GetPartY(index, old) { return (particles[index][old][1]+Rope_Precision/2)/Rope_Precision; }
+func GetPartXOffset(index) { return particles[index][0][0]-GetPartX(index)*Rope_Precision; }
+func GetPartYOffset(index) { return particles[index][0][1]-GetPartY(index)*Rope_Precision; }
 
 public func OnLadderGrab(clonk, index)
 {

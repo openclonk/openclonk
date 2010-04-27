@@ -170,11 +170,11 @@ public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,stren
 }
 
 // Effect for smooth movement.
-public func FxIntGrappleControlTimer(object target, int fxnum)
+public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 {
-	if (!EffectVar(0, target, fxnum) && !EffectVar(1, target, fxnum)
+/*	if (!EffectVar(0, target, fxnum) && !EffectVar(1, target, fxnum)
 		&& !EffectVar(2, target, fxnum) && !EffectVar(3, target, fxnum))
-		return 0;
+		return 0;*/
 
 	// Movement.
 	if (EffectVar(0, target, fxnum))
@@ -187,5 +187,33 @@ public func FxIntGrappleControlTimer(object target, int fxnum)
 		SetXDir(GetXDir(100) - 20, 100);
 	if (EffectVar(3, target, fxnum))
 		SetXDir(GetXDir(100) + 20, 100);
+
+	if(target->GetAction() == "Jump")
+	{
+		if(!EffectVar(4, target, fxnum))
+		{
+			target->SetTurnType(1);
+			target->SetObjDrawTransform(1000, 0, 3000*(1-2*target->GetDir()), 0, 1000);
+		}
+		var xoff = +rope->GetPartXOffset(-1)*10, yoff = rope->GetPartYOffset(-1)*10;
+		target->SetObjDrawTransform(1000, 0, 3000*(1-2*target->GetDir())+xoff, 0, 1000, yoff);
+
+		if(EffectVar(4, target, fxnum) != 2 && EffectVar(0, target, fxnum))
+		{
+			EffectVar(4, target, fxnum) = 2;
+			target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		}
+		if(EffectVar(4, target, fxnum) != 1 && !EffectVar(0, target, fxnum))
+		{
+			EffectVar(4, target, fxnum) = 1;
+			target->PlayAnimation("OnRope", 10, Anim_Const(0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		}
+	}
+	else if(EffectVar(4, target, fxnum))
+	{
+		target->StopAnimation(target->GetRootAnimation(10));
+		EffectVar(4, target, fxnum) = 0;
+	}
+	
 	return FX_OK;
 }

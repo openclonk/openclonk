@@ -1084,8 +1084,16 @@ func CheckScaleTop()
 	return true;
 }
 
+func FxIntScaleStart(target, number, tmp)
+{
+	if(tmp) return;
+	EffectVar(1, target, number) = PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	EffectVar(0, target, number) = 0;
+}
+
 func FxIntScaleTimer(target, number, time)
 {
+	if(GetAction() != "Scale") return;
 	// When the clonk reaches the top play an extra animation
 	if(CheckScaleTop())
 	{
@@ -1374,6 +1382,11 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 	// Play stand animation when not moving
 	if(Abs(GetXDir()) < 1 && !GBackSemiSolid(0, -5))
 	{
+		if (GetContact(-1) & CNAT_Bottom)
+		{
+			SetAction("Walk");
+			return -1;
+		}
 		if(EffectVar(0, pTarget, iNumber) != "SwimStand")
 		{
 			EffectVar(0, pTarget, iNumber) = "SwimStand";
@@ -1787,7 +1800,7 @@ Dig = {
 	StartCall = "StartDigging",
 	AbortCall = "StopDigging",
 	DigFree = 11,
-	InLiquidAction = "Swim",
+//	InLiquidAction = "Swim",
 	Attach = CNAT_Left | CNAT_Right | CNAT_Bottom,
 },
 Bridge = {
