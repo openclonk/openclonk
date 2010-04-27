@@ -101,7 +101,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 #ifdef _WIN32
 	pComp->Value(mkNamingAdapt(MMTimer,             "MMTimer",            1              ));
 #endif
-	pComp->Value(mkNamingAdapt(s(RXFontName),       "FontName",           "Endeavour",   false, true));
+	pComp->Value(mkNamingAdapt(s(RXFontName),       "FontName",           C4DEFAULT_FONT_NAME,   false, true));
 	pComp->Value(mkNamingAdapt(RXFontSize,          "FontSize",           14,            false, true));
 	pComp->Value(mkNamingAdapt(GamepadEnabled,      "GamepadEnabled",     true           ));
 	pComp->Value(mkNamingAdapt(FirstStart,          "FirstStart",         true           ));

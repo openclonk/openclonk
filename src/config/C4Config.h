@@ -32,6 +32,8 @@
 
 const char *CfgAtTempPath(const char *szFilename);
 
+#define C4DEFAULT_FONT_NAME "Endeavour"
+
 class C4ConfigGeneral
 {
 public:

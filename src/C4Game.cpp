@@ -3122,7 +3122,8 @@ bool C4Game::InitSystem()
 	// Peter wouldn't like this...
 #ifndef USE_CONSOLE
 	if (!FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-		return false;
+		if (!FontLoader.InitFont(::GraphicsResource.FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
+			return false;
 #endif
 	// init message input (default commands)
 	MessageInput.Init();

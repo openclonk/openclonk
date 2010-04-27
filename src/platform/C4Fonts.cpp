@@ -299,9 +299,10 @@ bool C4FontLoader::InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize
 bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow)
 {
 	// safety
+	assert(szFontName);
 	if (!szFontName || !*szFontName)
 	{
-		LogFatal(LoadResStr("IDS_ERR_INITFONTS"));
+		LogFatal(FormatString("%s (\"%s\")", LoadResStr("IDS_ERR_INITFONTS"), szFontName ? szFontName : "(null)").getData());
 		return false;
 	}
 	// get font to load
@@ -333,9 +334,11 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 		case C4FT_Main:     szFontString = pFontDef->Font.getData(); break;
 		case C4FT_Caption:  szFontString = pFontDef->CaptionFont.getData(); break;
 		case C4FT_Title:    szFontString = pFontDef->TitleFont.getData(); break;
-		default: LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
+		default: assert(false);
+			LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
 		}
 	// font not assigned?
+	assert(*szFontString);
 	if (!*szFontString)
 	{
 		// invalid call or spec
@@ -350,6 +353,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 	{
 		// image file name: load bitmap font from image file
 		// if no graphics group is given, do not load yet
+		assert(pGfxGroups);
 		if (!pGfxGroups)
 		{
 			LogFatal(LoadResStr("IDS_ERR_INITFONTS"));
@@ -362,6 +366,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 		// load font face from gfx group
 		int32_t iGrpId;
 		C4Group *pGrp = pGfxGroups->FindEntry(FontFaceName, NULL, &iGrpId);
+		assert(pGrp);
 		if (!pGrp)
 		{
 			LogFatal(LoadResStr("IDS_ERR_INITFONTS"));
@@ -380,6 +385,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 			C4Surface sfc;
 			if (!sfc.Load(*pGrp, FontFaceName))
 			{
+				LogF("surface couldn't load %s", FontFaceName);
 				LogFatal(LoadResStr("IDS_ERR_INITFONTS"));
 				return false;
 			}
@@ -408,7 +414,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 		case C4FT_Main:    iDefFontSize = iSize+4; break;
 		case C4FT_Caption: iDefFontSize = iSize+6; dwDefWeight = FW_BOLD; break;
 		case C4FT_Title:   iDefFontSize = iSize*3; break;
-		default: LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
+		default: assert(false); LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
 		}
 #else
 		switch (eType)
@@ -418,7 +424,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 		case C4FT_Main:    iDefFontSize = iSize; break;
 		case C4FT_Caption: iDefFontSize = iSize*16/14; /*dwDefWeight = FW_MEDIUM;*/ break;
 		case C4FT_Title:   iDefFontSize = iSize*22/14; /*dwDefWeight = FW_MEDIUM;*/ break;
-		default: LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
+		default: assert(false); LogFatal(LoadResStr("IDS_ERR_INITFONTS")); return false; // invalid call
 		}
 #endif
 		// regular font name: let WinGDI or Freetype draw a font with the given parameters
