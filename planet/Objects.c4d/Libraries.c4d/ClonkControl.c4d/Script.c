@@ -1344,7 +1344,7 @@ public func ControlJump()
 	}
 	else if (InLiquid())
 	{
-		if (!GBackSemiSolid(0,-1))
+		if (!GBackSemiSolid(0,-5))
 			ydir = BoundBy(GetPhysical("Swim")/2500,24,38);
 	}		
 	

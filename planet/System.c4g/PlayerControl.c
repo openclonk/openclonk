@@ -182,7 +182,7 @@ global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Movement controls
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
-		return ObjectControlMovement(plr, ctrl, strength, release);
+		return ObjectControlMovement(plr, ctrl, strength, release, repeat);
 	
 	// Unhandled control
 	return false;
@@ -209,10 +209,22 @@ global func GetEntranceObject()
 	
 	return obj;
 }
-
+global func NameComDir(comdir)
+{
+	if(comdir == COMD_Stop) return "COMD_Stop";
+	if(comdir == COMD_Up) return "COMD_Up";
+	if(comdir == COMD_UpRight) return "COMD_UpRight";
+	if(comdir == COMD_UpLeft) return "COMD_UpLeft";
+	if(comdir == COMD_Right) return "COMD_Right";
+	if(comdir == COMD_Left) return "COMD_Left";
+	if(comdir == COMD_Down) return "COMD_Down";
+	if(comdir == COMD_DownRight) return "COMD_DownRight";
+	if(comdir == COMD_DownLeft) return "COMD_DownLeft";
+	if(comdir == COMD_None) return "COMD_None";
+}
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
-global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
+global func ObjectControlMovement(int plr, int ctrl, int strength, bool release, bool repeat)
 {
 	if (!this) return false;
 
@@ -229,6 +241,10 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 		if (ctrl == CON_Jump)
 		{
 			return PlayerObjectCommand(plr, false, "Jump");
+		}
+		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
+		{
+			if (ctrl == CON_Up) return false;
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
