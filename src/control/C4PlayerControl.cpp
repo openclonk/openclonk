@@ -759,7 +759,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		assert(pAssignment);
 		int32_t iControlIndex = pAssignment->GetControl();
 		const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControlIndex);
-		if (pControlDef && pControlDef->IsValid() && (!fUp || pControlDef->IsHoldKey()))
+		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (!fUp || pControlDef->IsHoldKey()))
 		{
 			// extra data from key or overwrite by current cursor pos if definition requires it
 			const C4KeyEventData *pKeyExtraData = &rKeyExtraData;
