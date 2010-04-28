@@ -1076,6 +1076,27 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 
 			fctBlit.DrawT(cgo.Surface, iTx - fctBlit.Wdt/2 + fctBlit.TargetX, iTy - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
+		else if(eMode == MODE_Base || eMode == MODE_Action)
+		{
+			C4Def *pDef = pSourceGfx->pDef;
+
+			// draw there
+			C4DrawTransform trf(Transform, float(iTx), float(iTy));
+			if (fZoomToShape)
+			{
+				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(pDef->Shape.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(pDef->Shape.Hgt,1));
+				trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
+			}
+
+			C4Value value;
+			pDef->GetPropertyVal(P_MeshTransformation, value);
+			StdMeshMatrix matrix;
+			if (C4ValueToMatrix(value, &matrix))
+				lpDDraw->SetMeshTransform(&matrix);
+
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - pDef->Shape.Wdt/2.0, iTy - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
+			lpDDraw->SetMeshTransform(NULL);
+		}
 		else
 		{
 			C4Def *pDef = pSourceGfx->pDef;
