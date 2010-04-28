@@ -35,25 +35,19 @@ class C4MessageBoard
 public:
 	C4MessageBoard();
 	~C4MessageBoard();
-public:
-	C4Facet Output;
 
+	C4Facet Output;
+	
 	bool Active;
 protected:
-	int ScreenFader;
+	float ScreenFader;
 	bool Startup;
-	int iMode;  // 0 = one line (std), 1 = > 1 lines, 2 = invisible
 	// mode 0:
 	int Delay;  // how long the curr msg will stay
 	int Fader;  // =0: hold curr msg until Delay == 0
-	// <0: fade curr msg out
 	// >0: fade curr msg in
 	int Speed;  // fade/delay speed
-	bool Empty; // msgboard empty?
-	// mode 1:
-	int iLines; // how many lines are visible? (+ one line for typin! )
 	int iBackScroll; // how many lines scrolled back?
-	// all modes:
 	int iLineHgt; // line height
 
 	C4LogBuffer LogBuffer; // backbuffer for log
@@ -70,9 +64,7 @@ public:
 	void EnsureLastMessage();
 	bool ControlScrollUp();
 	bool ControlScrollDown();
-	bool ControlChangeMode();
 	C4Player* GetMessagePlayer(const char *szMessage);
-	void ChangeMode(int inMode);
 
 	friend class C4MessageInput;
 };

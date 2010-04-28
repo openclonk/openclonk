@@ -59,10 +59,7 @@ void C4MessageBoard::Default()
 	Speed=2;
 	Output.Default();
 	Startup=false;
-	Empty=true;
 	ScreenFader=0;
-	iMode = 0;
-	iLines = 4;
 	iBackScroll = -1;
 }
 
@@ -73,69 +70,6 @@ void C4MessageBoard::Clear()
 	LogBuffer.SetLBWidth(0);
 }
 
-void C4MessageBoard::ChangeMode(int inMode)
-{
-	if (iMode < 0 || iMode >= 3) return;
-
-	// prepare msg board
-	int iHeight = 0;
-	switch (inMode)
-	{
-	case 0: // one line, std
-
-		Config.Graphics.MsgBoard = 1;
-		iHeight = iLineHgt; // one line
-
-		// from mode 2?
-		if (iMode == 2)
-		{
-			// move to end of log
-			iBackScroll = -1;
-			// show nothing
-			Empty = true;
-			break;
-		}
-
-		// set msg pointer to end of log
-		iBackScroll = -1;
-		Fader = -1;
-		Empty = false;
-		Speed = 2;
-		ScreenFader = C4MSGB_MaxMsgFading * iLineHgt; // msgs faded out
-
-		break;
-
-	case 1: // >= 2 lines
-
-		iLines = Max(iLines, 2);
-		Config.Graphics.MsgBoard = iLines;
-		// calc position; go to end
-		iBackScroll = -1;
-		// ok
-		iHeight = (iLines + 1) * iLineHgt;
-		Fader = 0;
-		iBackScroll = -1;
-		break;
-
-	case 2: // show nothing
-
-		Config.Graphics.MsgBoard = 0;
-		iHeight = 0;
-
-		break;
-	}
-	// set mode
-	iMode = inMode;
-	// recalc output facet
-	Output.X = 0;
-	Output.Y = C4GUI::GetScreenHgt() - iHeight;
-	Output.Wdt = C4GUI::GetScreenWdt();
-	Output.Hgt = iHeight;
-	LogBuffer.SetLBWidth(Output.Wdt);
-	// recalc viewports
-	::GraphicsSystem.RecalculateViewports();
-}
-
 void C4MessageBoard::Execute()
 {
 	if (!Active) return;
@@ -143,91 +77,46 @@ void C4MessageBoard::Execute()
 	// Startup? draw only
 	if (Startup) { Draw(Output); return; }
 
-	// which mode?
-	switch (iMode)
+	// typein or messages waiting? fade in
+	if (::MessageInput.IsTypeIn() || iBackScroll >= 0)
+		ScreenFader = Max(ScreenFader - 0.20f, -1.0f);
+
+	// no curr msg?
+	if (iBackScroll<0)
 	{
-
-	case 2: // show nothing
-
-		// TypeIn: Act as in mode 0
+		// draw anyway
+		Draw(Output);
 		if (!::MessageInput.IsTypeIn())
+			ScreenFader = Min(ScreenFader + 0.05f, 1.0f);
+		return;
+	}
+
+	// recalc fade/delay speed
+	Speed = Max(1, iBackScroll / 5);
+	// fade msg in?
+	if (Fader > 0)
+		Fader = Max(Fader - Speed, 0);
+	// hold curr msg? (delay)
+	if (Fader <= 0)
+	{
+		// no delay set yet?
+		if (Delay == -1)
 		{
-			ScreenFader = 100;
-			iBackScroll = -1;
-			break;
+			// set delay based on msg length
+			const char *szCurrMsg = LogBuffer.GetLine(Min(-iBackScroll, -1), NULL, NULL, NULL);
+			if (szCurrMsg) Delay = strlen(szCurrMsg); else Delay = 0;
 		}
-
-	case 0: // one msg
-
-		// typein? fade in
-		if (::MessageInput.IsTypeIn())
-			ScreenFader = Max(ScreenFader - 20, -100);
-
-		// no curr msg?
-		if (iBackScroll<0)
-		{
-			// ok, it is empty
-			Empty = true;
-			// draw anyway
-			Draw(Output);
-			if (!::MessageInput.IsTypeIn())
-				ScreenFader += 5;
-			return;
-		}
-		// got new msg?
-		if (Empty)
-		{
-			// start fade in
-			Fader = iLineHgt;
-			Delay = -1;
-			// now we have a msg
-			Empty = false;
-		}
-
-		// recalc fade/delay speed
-		Speed = Max(1, iBackScroll / 5);
-		// fade msg in?
-		if (Fader>0)
-			Fader=Max(Fader-Speed,0);
-		// fade msg out?
-		if (Fader<0)
-			Fader=Max(Fader-Speed,-iLineHgt);
-		// hold curr msg? (delay)
-		if (Fader==0)
-		{
-			// no delay set yet?
-			if (Delay == -1)
-			{
-				// set delay based on msg length
-				const char *szCurrMsg = LogBuffer.GetLine(Min(-iBackScroll,-1), NULL, NULL, NULL);
-				if (szCurrMsg) Delay = strlen(szCurrMsg); else Delay=0;
-			}
-			// wait...
-			if (Delay>0) Delay=Max(Delay-Speed,0);
-			// end of delay
-			if (Delay==0)
-			{
-				Fader = Max(-Speed, -iLineHgt); // start fade out
-				Delay = -1;
-			}
-		}
-
-		ScreenFader = Max(ScreenFader - 20, -100);
-
-		// go to next msg? (last msg is completely faded out)
-		if (Fader == -iLineHgt)
+		// wait...
+		if (Delay > 0) Delay = Max(Delay - Speed, 0);
+		// end of delay
+		if (Delay == 0)
 		{
 			// set cursor to next msg (or at end of log)
-			iBackScroll = Max(iBackScroll-1, -1);
+			iBackScroll = Max(iBackScroll - 1, -1);
 			// reset fade
-			Fader=0;
+			Fader = iLineHgt;
+			Delay = -1;
 		}
-
-		break;
-
-	case 1: // > 2 msgs
-		break;
-
 	}
 
 	// Draw
@@ -246,11 +135,11 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	{
 		// set cursor to end of log
 		iBackScroll = -1;
-		// load msgboard mode from config
-		iLines = Config.Graphics.MsgBoard;
-		if (iLines == 0) ChangeMode(2);
-		if (iLines == 1) ChangeMode(0);
-		if (iLines >= 2) ChangeMode(1);
+		Fader = 0;
+		Speed = 2;
+		ScreenFader = 1.0f; // msgs faded out
+
+		LogBuffer.SetLBWidth(Output.Wdt);
 	}
 
 }
@@ -271,52 +160,46 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	}
 
 	// Game running: message fader
-	// Background
-	Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,-cgo.X,-cgo.Y);
 
 	// draw messages
-	if (iMode != 2 || C4ChatInputDialog::IsShown())
+	// how many "extra" messages should be shown?
+	int iMsgFader = C4MSGB_MaxMsgFading;
+	// check screenfader range
+	if (ScreenFader >= 1.0f)
 	{
-		// how many "extra" messages should be shown?
-		int iMsgFader = iMode == 1 ? 0 : C4MSGB_MaxMsgFading;
-		// check screenfader range
-		if (ScreenFader >= C4MSGB_MaxMsgFading*iLineHgt)
-		{
-			ScreenFader = C4MSGB_MaxMsgFading*iLineHgt;
-			iMsgFader = 0;
-		}
-		// show all msgs
-		int iLines = (iMode == 1) ? this->iLines : 2;
-		for (int iMsg = -iMsgFader-iLines; iMsg < 0; iMsg++)
-		{
-			// get message at pos
-			if (iMsg-iBackScroll >= 0) break;
-			const char *Message = LogBuffer.GetLine(iMsg-iBackScroll, NULL, NULL, NULL);
-			if (!Message || !*Message) continue;
-			// calc target position (y)
-			int iMsgY = cgo.Y + (iMsg+(iLines-1)) * iLineHgt + Fader;
+		return;
+	}
+	::GraphicsSystem.OverwriteBg();
+	// show msgs
+	for (int iMsg = -iMsgFader; iMsg < 0; iMsg++)
+	{
+		// get message at pos
+		if (iMsg-iBackScroll >= 0) break;
+		const char *Message = LogBuffer.GetLine(iMsg-iBackScroll, NULL, NULL, NULL);
+		if (!Message || !*Message) continue;
+		// calc target position (y)
+		int iMsgY = cgo.Y + cgo.Hgt + iMsg * iLineHgt + Fader;
 
-			// player message color?
-			C4Player *pPlr = GetMessagePlayer(Message);
+		// player message color?
+		C4Player *pPlr = GetMessagePlayer(Message);
 
-			DWORD dwColor;
-			if (pPlr)
-				dwColor = PlrClr2TxtClr(pPlr->ColorDw) & 0xffffff;
-			else
-				dwColor = 0xffffff;
-			// fade out (msg fade)
-			DWORD dwFade;
-			if (iMsgY < cgo.Y)
-			{
-				dwFade = (0xff - BoundBy((cgo.Y - iMsgY + Max(ScreenFader, 0)) * 256 / Max(iMsgFader, 1) / iLineHgt, 0, 0xff)) << 24;
-				::GraphicsSystem.OverwriteBg();
-			}
-			else
-				dwFade = 0xff000000;
-			dwColor |= dwFade;
-			// Draw
-			Application.DDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
-		}
+		DWORD dwColor;
+		if (pPlr)
+			dwColor = PlrClr2TxtClr(pPlr->ColorDw) & 0xffffff;
+		else
+			dwColor = 0xffffff;
+		// fade out (msg fade)
+		DWORD dwFade;
+		//if (iMsgY < cgo.Y)
+		//{
+			float fade = Max(ScreenFader, 0.0f) + ((iMsg + 2.0f + float(Fader) / iLineHgt) / Min(2-iMsgFader, -1));
+			dwFade = (0xff - BoundBy(int(fade * 0xff), 0, 0xff)) << 24;
+		//}
+		//else
+		//	dwFade = 0xff000000;
+		dwColor |= dwFade;
+		// Draw
+		Application.DDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
 	}
 }
 
@@ -324,11 +207,7 @@ void C4MessageBoard::EnsureLastMessage()
 {
 	// Ingore if startup or typein
 	if (!Active || Startup) return;
-	// not active: do nothing
-	if (iMode == 2) return;
-	// "console" mode: just set BackScroll to 0 and draw
-	if (iMode == 1) { iBackScroll = 0; ::GraphicsSystem.Execute(); return; }
-	// scroll mode: scroll until end of log
+	// scroll until end of log
 	for (int i = 0; i < 100; i++)
 	{
 		::GraphicsSystem.Execute();
@@ -390,7 +269,7 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 bool C4MessageBoard::ControlScrollUp()
 {
 	if (!Active) return false;
-	Delay=-1; Fader=0; Empty=false;
+	Delay=-1; Fader=0;
 	iBackScroll++;
 	return true;
 }
@@ -398,15 +277,7 @@ bool C4MessageBoard::ControlScrollUp()
 bool C4MessageBoard::ControlScrollDown()
 {
 	if (!Active) return false;
-	Delay=-1; Fader=0; Empty=false;
+	Delay=-1; Fader=0;
 	if (iBackScroll > -1) iBackScroll--;
-	return true;
-}
-
-bool C4MessageBoard::ControlChangeMode()
-{
-	if (!Active) return false;
-	// toggle messageboard size
-	ChangeMode((iMode+1)%3);
 	return true;
 }

@@ -627,23 +627,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		return true;
 	}
 
-	if (SEqual(szCmdName, "msgboard"))
-	{
-		if (!Game.IsRunning) return false;
-		// get line cnt
-		int32_t iLineCnt = BoundBy(atoi(pCmdPar), 0, 20);
-		if (iLineCnt == 0)
-			::GraphicsSystem.MessageBoard.ChangeMode(2);
-		else if (iLineCnt == 1)
-			::GraphicsSystem.MessageBoard.ChangeMode(0);
-		else
-		{
-			::GraphicsSystem.MessageBoard.iLines = iLineCnt;
-			::GraphicsSystem.MessageBoard.ChangeMode(1);
-		}
-		return true;
-	}
-
 	// kick/activate/deactivate/observer
 	if (SEqual(szCmdName, "activate") || SEqual(szCmdName, "deactivate") || SEqual(szCmdName, "observer"))
 	{

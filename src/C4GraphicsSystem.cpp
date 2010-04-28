@@ -423,8 +423,7 @@ void C4GraphicsSystem::RecalculateViewports()
 	int32_t iBorderTop = 0, iBorderBottom = 0;
 	if (Config.Graphics.UpperBoard)
 		iBorderTop = C4UpperBoardHeight;
-	iBorderBottom = MessageBoard.Output.Hgt;
-	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop-iBorderBottom);
+	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop);
 
 	// Redraw flag
 	InvalidateBg();
