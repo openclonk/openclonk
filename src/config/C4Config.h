@@ -139,7 +139,6 @@ public:
 	int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
 	int32_t EnableShaders; // enable pixel shaders on engines that support them
 	void CompileFunc(StdCompiler *pComp);
-	void ApplyResolutionConstraints();
 };
 
 class C4ConfigSound
