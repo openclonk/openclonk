@@ -186,9 +186,12 @@ func Close()
 	for(var i=0; i<GetLength(menu_icons); i++)
 		if(menu_icons[i])
 			menu_icons[i]->RemoveObject();
-			
+	
 	if(menu_object)
 		menu_object->SetMenu(nil);
+	
+	if(command_object)
+		command_object->~MenuClosed(this);
 
 	RemoveObject(); 
 }

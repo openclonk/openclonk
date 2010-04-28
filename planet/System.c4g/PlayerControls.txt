@@ -356,12 +356,14 @@
 	Identifier=GUIClick1
 	GUIName=Click
 	GUIDesc=Click selected or controlled GUI item
+	DefaultDisabled=1
 	Hold=1
 
 	[ControlDef]
 	Identifier=GUIClick2
 	GUIName=Right click
 	GUIDesc=Right click selected or controlled GUI item
+	DefaultDisabled=1
 	Hold=1
 	
 	[ControlDef]

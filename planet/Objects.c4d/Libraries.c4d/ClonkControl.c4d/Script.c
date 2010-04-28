@@ -1249,6 +1249,11 @@ func SetMenu(object m)
 	}
 }
 
+func MenuClosed()
+{
+	SetMenu(nil);
+}
+
 func GetMenu()
 {
 	return menu;
