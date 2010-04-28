@@ -129,10 +129,10 @@ public:
 			TokenType(ATT_INVALID),
 			Done(false),
 			Type(Type),
+			ContextToExecIn(NULL),
 			fJump(false),
 			iStack(0),
-			pLoopStack(NULL),
-			ContextToExecIn(NULL)
+			pLoopStack(NULL)
 	{ }
 	~C4AulParseState()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
@@ -3000,7 +3000,7 @@ bool C4AulScript::Parse()
 					case AB_STRING: case AB_CALL: case AB_CALLFS:
 						LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.s->GetCStr()); break;
 					default:
-						LogSilentF("%s\t%ld\n", GetTTName(eType), pBCC->Par.X); break;
+						LogSilentF("%s\t%ld\n", GetTTName(eType), static_cast<long>(pBCC->Par.X)); break;
 					}
 					if (eType == AB_EOFN) break;
 				}

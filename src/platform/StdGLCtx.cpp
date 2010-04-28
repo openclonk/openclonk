@@ -43,7 +43,7 @@ void CStdGLCtx::SelectCommon()
 }
 
 #ifdef _WIN32
-CStdGLCtx::CStdGLCtx(): hrc(0), pWindow(0), hDC(0), cx(0), cy(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hrc(0), hDC(0), cx(0), cy(0) { }
 
 void CStdGLCtx::Clear()
 {

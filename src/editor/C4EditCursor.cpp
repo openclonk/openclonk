@@ -425,14 +425,14 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
-			ZoomData zd;
+			ZoomData zd = { 0 };
 			if (~cobj->Category & C4D_Foreground)
 			{
 				lpDDraw->GetZoom(&zd);
 				lpDDraw->SetZoom(cgo.X, cgo.Y, Zoom);
 			}
 			
-			StdMeshInstance::FaceOrdering old_fo;
+			StdMeshInstance::FaceOrdering old_fo = StdMeshInstance::FO_Fixed;
 			if(cobj->pMeshInstance)
 			{
 				old_fo = cobj->pMeshInstance->GetFaceOrdering();

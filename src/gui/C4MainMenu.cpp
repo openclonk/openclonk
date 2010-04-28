@@ -260,7 +260,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 				// Message
 				StdStrBuf sMsg;
 				DWORD dwClr = pPlr->ColorDw;
-				sMsg.Format("<c %x>%s</c>", C4GUI::MakeColorReadableOnBlack(dwClr), pPlr->GetName());
+				sMsg.Format("<c %x>%s</c>", (unsigned int)C4GUI::MakeColorReadableOnBlack(dwClr), pPlr->GetName());
 				// Command
 				StdStrBuf sCommand;
 				sCommand.Format("Observe:%d", (int)pPlr->Number);

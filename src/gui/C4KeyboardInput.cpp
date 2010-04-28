@@ -329,7 +329,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	// direct key code?
 	if (sName.getLength() > 2)
 	{
-		DWORD dwRVal;
+		unsigned int dwRVal;
 		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
 		// direct gamepad code
 #ifdef _WIN32
@@ -541,7 +541,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	while (pCheck->szName)
 			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
 	// not found: Compose as direct code
-	return FormatString("\\x%x", (DWORD) wCode);
+	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
 #elif defined(USE_X11)
 	return StdStrBuf(XKeysymToString(wCode));
 #elif defined(USE_SDL_MAINLOOP)

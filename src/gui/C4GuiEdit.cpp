@@ -417,9 +417,9 @@ namespace C4GUI
 		// movement or regular/word deletion
 		int32_t iMoveDir = 0, iMoveLength = 0;
 		if (op == COP_LEFT && iCursorPos) iMoveDir = -1;
-		else if (op == COP_RIGHT && iCursorPos < SLen(Text)) iMoveDir = +1;
+		else if (op == COP_RIGHT && (uint32_t)iCursorPos < SLen(Text)) iMoveDir = +1;
 		else if (op == COP_BACK && iCursorPos && !fShift) iMoveDir = -1;
-		else if (op == COP_DELETE && iCursorPos < SLen(Text) && !fShift) iMoveDir = +1;
+		else if (op == COP_DELETE && (uint32_t)iCursorPos < SLen(Text) && !fShift) iMoveDir = +1;
 		else if (op == COP_HOME) iMoveLength = -iCursorPos;
 		else if (op == COP_END) iMoveLength = SLen(Text)-iCursorPos;
 		if (iMoveDir || iMoveLength)
@@ -432,7 +432,7 @@ namespace C4GUI
 					// move one word
 					iMoveLength = 0;
 					bool fNoneSpaceFound = false, fSpaceFound = false;;
-					while (iCursorPos + iMoveLength + iMoveDir >= 0 && iCursorPos + iMoveLength + iMoveDir <= SLen(Text))
+					while (iCursorPos + iMoveLength + iMoveDir >= 0 && (uint32_t)(iCursorPos + iMoveLength + iMoveDir) <= SLen(Text))
 						if (IsWholeWordSpacer(Text[iCursorPos + iMoveLength + (iMoveDir-1)/2]))
 						{
 							// stop left of a complete word
@@ -685,7 +685,7 @@ namespace C4GUI
 		ContextMenu *pCtx = new ContextMenu();
 		// fill with any valid items
 		// get selected range
-		int32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
+		uint32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
 		bool fAnythingSelected = (iSelBegin != iSelEnd);
 		if (fAnythingSelected)
 		{

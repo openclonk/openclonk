@@ -53,7 +53,7 @@
 #define C4FullScreenClassName "C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-CStdWindow::CStdWindow (): Active(false), hWindow(0), pSurface(0)
+CStdWindow::CStdWindow (): Active(false), pSurface(0), hWindow(0)
 {
 }
 CStdWindow::~CStdWindow ()
@@ -152,8 +152,8 @@ void CStdWindow::FlashWindow()
 int CStdMultimediaTimerProc::iTimePeriod = 0;
 
 CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
-		idCriticalTimer(0),
 		uCriticalTimerDelay(28),
+		idCriticalTimer(0),
 		uCriticalTimerResolution(5),
 		Event(true)
 {
@@ -233,7 +233,7 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 /* CStdApp */
 
 CStdApp::CStdApp() :
-		Active(false), hInstance(NULL), fQuitMsgReceived(false),
+		Active(false), fQuitMsgReceived(false), hInstance(NULL),
 		fDspModeSet(false)
 {
 	ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);

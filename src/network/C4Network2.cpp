@@ -969,9 +969,9 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 	// Streaming statistics
 	if (fStreaming)
 		Stat.AppendFormat( "|Streaming: %lu waiting, %u in, %lu out, %lu sent",
-		                   pStreamedRecord ? pStreamedRecord->GetStreamingBuf().getSize() : 0,
+		                   static_cast<unsigned long>(pStreamedRecord ? pStreamedRecord->GetStreamingBuf().getSize() : 0),
 		                   pStreamedRecord ? pStreamedRecord->GetStreamingPos() : 0,
-		                   getPendingStreamData(),
+		                   static_cast<unsigned long>(getPendingStreamData()),
 		                   static_cast<unsigned long>(iCurrentStreamPosition));
 
 	// clients

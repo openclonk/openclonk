@@ -490,7 +490,7 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	fPrerenderedFont = false;
 	if (0) for (int i = 0; i < iNumFontSfcs; ++i)
 		{
-			StdStrBuf pngfilename = FormatString("%s%i%s_%d.png",szFontName,dwHeight,fDoShadow ? "_shadow" : "",i);
+			StdStrBuf pngfilename = FormatString("%s%u%s_%d.png",szFontName,static_cast<unsigned int>(dwHeight),fDoShadow ? "_shadow" : "",i);
 			psfcFontData[i]->SavePNG(pngfilename.getData(), true, false, false);
 		}
 }

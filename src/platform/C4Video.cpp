@@ -304,7 +304,7 @@ void C4Video::Draw()
 	if (!Active) return;
 	// Get viewport
 	C4Viewport *pViewport;
-	if (pViewport = ::GraphicsSystem.GetFirstViewport())
+	if ( (pViewport = ::GraphicsSystem.GetFirstViewport()) )
 	{
 		C4TargetFacet cgo;
 		cgo.Set(Surface,pViewport->DrawX,pViewport->DrawY,pViewport->ViewWdt,pViewport->ViewHgt,pViewport->ViewX,pViewport->ViewY);

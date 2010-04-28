@@ -1966,7 +1966,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 	// Create savegame subfolder(s)
 	char strSaveFolder[_MAX_PATH + 1];
-	for (int i = 0; i < SCharCount(DirectorySeparator, strFilename); i++)
+	for (uint32_t i = 0; i < SCharCount(DirectorySeparator, strFilename); i++)
 	{
 		SCopy(Config.General.SaveGameFolder.getData(), strSaveFolder); AppendBackslash(strSaveFolder);
 		SCopyUntil(strFilename, strSaveFolder + SLen(strSaveFolder), DirectorySeparator, _MAX_PATH, i);

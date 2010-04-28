@@ -171,8 +171,8 @@ void AVICloseGrab(PAVISTREAM *ppAviStream,
 // ----------------------------------------
 
 CStdAVIFile::CStdAVIFile()
-		: pStream(NULL), pGetFrame(NULL), hOutDib(NULL), hBitmap(NULL), hDD(NULL), hWnd(NULL), hDC(NULL), pbmi(NULL),
-		iAudioBufferLength(0), pAudioData(NULL), pAudioStream(NULL), pAudioInfo(NULL), pAVIFile(NULL)
+		: pAVIFile(NULL), pStream(NULL), pGetFrame(NULL), pbmi(NULL), hOutDib(NULL), hBitmap(NULL), hDD(NULL), hDC(NULL), hWnd(NULL),
+		pAudioStream(NULL), pAudioData(NULL), iAudioBufferLength(0), pAudioInfo(NULL)
 {
 	AVIFileInit();
 }

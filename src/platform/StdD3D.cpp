@@ -700,6 +700,7 @@ void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
 		pPix32=(DWORD *) (pBits+iY*iPitch+iX*4);
 		BltAlpha(*pPix32, dwClr);
 		break;
+	default: assert(false); break; // should not happen
 	}
 }
 

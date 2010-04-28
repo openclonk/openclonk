@@ -225,6 +225,7 @@ void C4MusicSystem::Load(const char *szFile)
 		if (MODInitialized)
 			NewSong = new C4MusicFileMID;
 		break;
+	default: return; // safety
 	}
 #elif defined HAVE_LIBSDL_MIXER
 	if (GetMusicFileTypeByExtension(GetExtension(szFile)) == MUSICTYPE_UNKNOWN) return;
@@ -365,10 +366,12 @@ void C4MusicSystem::Execute()
 #ifndef HAVE_LIBSDL_MIXER
 	if (!::Game.iTick35)
 #endif
+	{
 		if (!PlayMusicFile)
 			Play();
 		else
 			PlayMusicFile->CheckIfPlaying();
+	}
 }
 
 bool C4MusicSystem::Play(const char *szSongname, bool fLoop)

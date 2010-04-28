@@ -109,7 +109,7 @@ void C4MusicFileMID::SetVolume(int iLevel)
 /* MOD */
 
 C4MusicFileMOD::C4MusicFileMOD()
-		: Data(NULL), mod(NULL)
+		: mod(NULL), Data(NULL)
 {
 
 }
@@ -166,7 +166,7 @@ void C4MusicFileMOD::SetVolume(int iLevel)
 /* MP3 */
 
 C4MusicFileMP3::C4MusicFileMP3()
-		: Data(NULL), stream(NULL), Channel(-1)
+		: stream(NULL), Data(NULL), Channel(-1)
 {
 
 }
@@ -228,7 +228,7 @@ void C4MusicFileMP3::SetVolume(int iLevel)
 /* Ogg Vobis */
 
 C4MusicFileOgg::C4MusicFileOgg()
-		: Data(NULL), stream(NULL), Channel(-1), Playing(false)
+		: stream(NULL), Data(NULL), Channel(-1), Playing(false)
 {
 
 }

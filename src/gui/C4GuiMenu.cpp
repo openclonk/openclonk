@@ -307,7 +307,7 @@ namespace C4GUI
 		if (pSubmenu) return false;
 		Element *pPrevSelectedItem = pSelectedItem;
 		C4KeyCode wKey = TOUPPERIFX11(key.Key);
-		if (Inside<C4KeyCode>(wKey, 'A', 'Z') || Inside<C4KeyCode>(wKey, '0', '9'))
+		if (Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, 'A', 'Z') || Inside<C4KeyCode, C4KeyCode, C4KeyCode>(wKey, '0', '9'))
 		{
 			// process hotkeys
 			char ch=char(wKey);

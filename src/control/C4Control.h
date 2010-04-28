@@ -141,7 +141,7 @@ public:
 			: iTargetObj(-1), fInternal(true)
 	{ }
 	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true, bool fUseVarsFromCallerContext = false)
-			: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true), fUseVarsFromCallerContext(fUseVarsFromCallerContext)
+			: iTargetObj(iTargetObj), fInternal(fInternal), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
 	{ }
 protected:
 	int32_t iTargetObj;

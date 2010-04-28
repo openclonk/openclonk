@@ -361,8 +361,8 @@ bool StoreWindowPosition(HWND hwnd,
 	if (IsIconic(hwnd))
 		return SetRegistryString(szSubKey,szWindowName,"Minimized");
 	if (!GetWindowRect(hwnd,&winpos)) return false;
-	if (fStoreSize) sprintf(regstr,"%i,%i,%i,%i",winpos.left,winpos.top,winpos.right-winpos.left,winpos.bottom-winpos.top);
-	else sprintf(regstr,"%i,%i",winpos.left,winpos.top);
+	if (fStoreSize) sprintf(regstr,"%ld,%ld,%ld,%ld",winpos.left,winpos.top,winpos.right-winpos.left,winpos.bottom-winpos.top);
+	else sprintf(regstr,"%ld,%ld",winpos.left,winpos.top);
 	return SetRegistryString(szSubKey,szWindowName,regstr);
 }
 
@@ -405,7 +405,7 @@ bool RestoreWindowPosition(HWND hwnd,
 // *** StdCompilerConfigWrite
 
 StdCompilerConfigWrite::StdCompilerConfigWrite(HKEY hRoot, const char *szPath)
-		: pKey(new Key()), iDepth(0)
+		: iDepth(0), pKey(new Key())
 {
 	pKey->Name = szPath;
 	pKey->Handle = 0;
@@ -537,7 +537,7 @@ void StdCompilerConfigWrite::CreateKey(HKEY hParent)
 	                   0, "", REG_OPTION_NON_VOLATILE,
 	                   KEY_WRITE, NULL,
 	                   &pKey->Handle, NULL) != ERROR_SUCCESS)
-		excCorrupt(0, FormatString("Could not create key %s!", pKey->Name.getData()));
+		excCorrupt("Could not create key %s!", pKey->Name.getData());
 }
 
 void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
@@ -546,7 +546,7 @@ void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
 	if (RegSetValueEx(pKey->Parent->Handle, pKey->Name.getData(),
 	                  0, REG_DWORD, reinterpret_cast<const BYTE *>(&iVal),
 	                  sizeof(iVal)) != ERROR_SUCCESS)
-		excCorrupt(0, FormatString("Could not write key %s!", pKey->Name.getData()));
+		excCorrupt("Could not write key %s!", pKey->Name.getData());
 }
 
 void StdCompilerConfigWrite::WriteString(const char *szString)
@@ -555,13 +555,13 @@ void StdCompilerConfigWrite::WriteString(const char *szString)
 	if (RegSetValueEx(pKey->Parent->Handle, pKey->Name.getData(),
 	                  0, REG_SZ, reinterpret_cast<const BYTE *>(szString),
 	                  strlen(szString) + 1) != ERROR_SUCCESS)
-		excCorrupt(0, FormatString("Could not write key %s!", pKey->Name.getData()));
+		excCorrupt("Could not write key %s!", pKey->Name.getData());
 }
 
 // *** StdCompilerConfigRead
 
 StdCompilerConfigRead::StdCompilerConfigRead(HKEY hRoot, const char *szPath)
-		: pKey(new Key()), iDepth(0)
+		: iDepth(0), pKey(new Key())
 {
 	pKey->Name = szPath;
 	pKey->Virtual = false;

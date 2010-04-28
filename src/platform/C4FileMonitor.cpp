@@ -187,7 +187,7 @@ void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
 #elif defined(_WIN32)
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
-		: pCallback(pCallback), pWatches(NULL), fStarted(false)
+		: fStarted(false), pCallback(pCallback), pWatches(NULL)
 {
 	hEvent = CreateEvent(NULL, true, false, NULL);
 }

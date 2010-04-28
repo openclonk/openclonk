@@ -260,7 +260,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
 			ba.Weight /= sum;
 		}
-		DebugLogF("Loaded submesh with %d faces, %d vertices, material %s", sm.GetNumFaces(), sm.GetNumVertices(), sm.GetMaterial().Name.getData());
+		DebugLogF("Loaded submesh with %u faces, %u vertices, material %s", static_cast<unsigned int>(sm.GetNumFaces()), static_cast<unsigned int>(sm.GetNumVertices()), sm.GetMaterial().Name.getData());
 	}
 	return mesh.release();
 }
@@ -381,5 +381,5 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		}
 	}
 
-	DebugLogF("Loaded skeleton with %u bones, %u animations", mesh->GetNumBones(), static_cast<unsigned int>(animations.size()));
+	DebugLogF("Loaded skeleton with %u bones, %u animations", static_cast<unsigned int>(mesh->GetNumBones()), static_cast<unsigned int>(animations.size()));
 }

@@ -278,10 +278,10 @@ C4NetIOTCP::C4NetIOTCP()
 		PeerListCSec(this),
 		fInit(false),
 		iListenPort(~0), lsock(INVALID_SOCKET),
-		pCB(NULL)
 #ifdef STDSCHEDULER_USE_EVENTS
-		, Event(NULL)
+		Event(NULL),
 #endif
+		pCB(NULL)
 {
 
 }
@@ -1293,10 +1293,11 @@ void C4NetIOTCP::Peer::ClearStatistics() // (mt-safe)
 // *** C4NetIOSimpleUDP
 
 C4NetIOSimpleUDP::C4NetIOSimpleUDP()
-		: fInit(false), fMultiCast(false), iPort(~0), sock(INVALID_SOCKET), fAllowReUse(false)
+		: fInit(false), fMultiCast(false), iPort(~0), sock(INVALID_SOCKET),
 #ifdef STDSCHEDULER_USE_EVENTS
-		, hEvent(NULL)
+		hEvent(NULL),
 #endif
+		fAllowReUse(false)
 {
 
 }

@@ -129,10 +129,10 @@ bool CStdD3DShader::Compile(bool fMod2, bool fColoredFoW)
 	if (hr != D3D_OK)
 	{
 		StdStrBuf errmsg;
-		errmsg.Format("D3DXCompileShaderFromFile error %x", hr);
+		errmsg.Format("D3DXCompileShaderFromFile error %x", static_cast<unsigned int>(hr));
 		if (pErrMsg)
 		{
-			errmsg.AppendFormat(": %*s", pErrMsg->GetBufferSize(), pErrMsg->GetBufferPointer());
+			errmsg.AppendFormat(": %*s", static_cast<int>(pErrMsg->GetBufferSize()), static_cast<char*>(pErrMsg->GetBufferPointer()));
 			pErrMsg->Release();
 		}
 		return Error(errmsg.getData());
@@ -159,7 +159,7 @@ bool CStdD3DShader::CreateShader()
 {
 	// creating actual DX shader!
 	HRESULT hr = pDevice->CreatePixelShader((const DWORD *)pCodeBuffer->GetBufferPointer(), &pInterface);
-	if (hr != D3D_OK) return Error(FormatString("CreatePixelShader error %x", hr).getData());
+	if (hr != D3D_OK) return Error(FormatString("CreatePixelShader error %x", static_cast<unsigned int>(hr)).getData());
 	return true;
 }
 

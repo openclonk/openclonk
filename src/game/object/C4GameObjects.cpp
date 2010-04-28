@@ -779,7 +779,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 			else
 				InactiveObjects.First = cLnk;
 			InactiveObjects.Last = cLnk; cLnk->Next = NULL;
-			Mass-=pObj->Mass;
+			Mass-=cLnk->Obj->Mass;
 		}
 	}
 

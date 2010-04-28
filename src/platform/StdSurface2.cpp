@@ -915,6 +915,7 @@ DWORD CSurface::GetPixDw(int iX, int iY, bool fApplyModulation)
 			case D3DFMT_X8R8G8B8:
 				// 32 bit
 				return * (DWORD *) (((BYTE *) PrimarySurfaceLockBits)+iY*PrimarySurfaceLockPitch+iX*4);
+			default: assert(false); return 0; // should not happen
 			}
 		}
 #endif
@@ -1345,7 +1346,7 @@ CTexRef::~CTexRef()
 		if (texName && pGL->pCurrCtx) glDeleteTextures(1, &texName);
 	}
 #endif
-	if (lpDDraw) delete [] texLock.pBits; texLock.pBits = 0;
+	if (lpDDraw) delete [] static_cast<unsigned char*>(texLock.pBits); texLock.pBits = 0;
 	// remove from texture manager
 	pTexMgr->UnregTex(this);
 }
@@ -1482,7 +1483,7 @@ void CTexRef::Unlock()
 				                LockSize.left, LockSize.top, LockSize.right - LockSize.left, LockSize.bottom - LockSize.top,
 				                GL_BGRA, lpDDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 			}
-			delete[] texLock.pBits; texLock.pBits=NULL;
+			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
 			// switch back to original context
 		}
 		else

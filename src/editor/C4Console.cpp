@@ -1391,7 +1391,7 @@ void C4Console::UpdateInputCtrl()
 		}
 	// Add scenario script functions
 #ifdef _WIN32
-	if (pRef=Game.Script.GetSFunc(0))
+	if ( (pRef=Game.Script.GetSFunc(0)) )
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------");
 #endif
 	for (cnt=0; (pRef=Game.Script.GetSFunc(cnt)); cnt++)

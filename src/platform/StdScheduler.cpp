@@ -190,7 +190,8 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	int iEventCnt = 0; HANDLE hEvent;
 	StdSchedulerProc *pMessageProc = NULL;
 	for (i = 0; i < iProcCnt; i++)
-		if (hEvent = ppProcs[i]->GetEvent())
+		if ( (hEvent = ppProcs[i]->GetEvent()) )
+		{
 			if (hEvent == STDSCHEDULER_EVENT_MESSAGE)
 				pMessageProc = ppProcs[i];
 			else
@@ -199,6 +200,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 				ppEventProcs[iEventCnt] = ppProcs[i];
 				iEventCnt++;
 			}
+		}
 
 	// Wait for something to happen
 	DWORD ret; DWORD dwMsec = iTimeout < 0 ? INFINITE : iTimeout;

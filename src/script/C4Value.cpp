@@ -528,7 +528,7 @@ StdStrBuf C4Value::GetDataString()
 	switch (GetType())
 	{
 	case C4V_Int:
-		return FormatString("%ld", Data.Int);
+		return FormatString("%ld", static_cast<long>(Data.Int));
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
 	case C4V_C4Object:
@@ -536,7 +536,7 @@ StdStrBuf C4Value::GetDataString()
 	{
 		// obj exists?
 		if (!::Objects.ObjectNumber(Data.PropList))
-			return FormatString("%ld", Data.Int);
+			return FormatString("%ld", static_cast<long>(Data.Int));
 		else if (Data.PropList)
 			if (Data.Obj->Status == C4OS_NORMAL)
 				return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
