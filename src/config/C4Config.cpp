@@ -924,9 +924,6 @@ void C4Config::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Lobby,       "Lobby"       ));
 	pComp->Value(mkNamingAdapt(IRC,         "IRC"         ));
 	pComp->Value(mkNamingAdapt(Developer,   "Developer"   ));
-#ifdef _WIN32
-	pComp->Value(mkNamingAdapt(Explorer,    "Explorer"    ));
-#endif
 	pComp->Value(mkNamingAdapt(Startup,     "Startup"     ));
 	pComp->Value(mkNamingAdapt(Security,    "Security"    ));
 }
