@@ -1183,14 +1183,21 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		if (!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
 			parity = !parity;
 
-		// Compensate for 1.0f aspect (TODO: Can we do that directly in gluPerspective?)
-		glTranslatef(twdt/2+tx,thgt/2+ty, 0.0f);
-		glScalef((twdt>thgt)?(thgt/twdt):1.0f,(twdt>thgt)?(1.0f):(twdt/thgt), 1.0f);
-		glTranslatef(-twdt/2-tx,-thgt/2-ty, 0.0f);
+		// Move to target location and compensate for 1.0f aspect
+		float ttx = tx, tty = ty, ttwdt = twdt, tthgt = thgt;
+		if(twdt > thgt)
+		{
+			tty += (thgt-twdt)/2.0;
+			tthgt = twdt;
+		}
+		else
+		{
+			ttx += (twdt-thgt)/2.0;
+			ttwdt = thgt;
+		}
 
-		// Move to target location
-		glTranslatef(tx, ty, 0.0f);
-		glScalef(((float)twdt)/iWdt, ((float)thgt)/iHgt, 1.0f);
+		glTranslatef(ttx, tty, 0.0f);
+		glScalef(((float)ttwdt)/iWdt, ((float)tthgt)/iHgt, 1.0f);
 
 		// Return to Clonk coordinate frame
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
@@ -1198,8 +1205,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		// Apply perspective projection. After this, x and y range from
 		// -1 to 1, and this is mapped into tx/ty/twdt/thgt by the above code.
-		// aspect is 1.0f since it needs to be applied after zoom/transform,
-		// this is also done above.
+		// Aspect is 1.0f which is accounted for above.
 		gluPerspective(FOV, 1.0f, 0.1f, 100.0f);
 	}
 
@@ -1225,7 +1231,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// Setup camera position so that the mesh with uniform transformation
 		// fits well into the rectangle twdt/thgt (without distortion).
 		float EyeR;
-		if (thgt > twdt)
+		if (thgt < twdt)
 			EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV * twdt/thgt);
 		else
 			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
