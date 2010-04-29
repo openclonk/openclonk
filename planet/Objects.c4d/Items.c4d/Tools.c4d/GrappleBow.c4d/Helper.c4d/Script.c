@@ -172,9 +172,9 @@ public func FxIntGrappleControlTimer(object target, int fxnum)
 		if (rope)
 			rope->DoLength(+1);
 	if (EffectVar(2, this, fxnum))
-		SetXDir(GetXDir(100) - 10, 100);
+		SetXDir(GetXDir(100) - 5, 100);
 	if (EffectVar(3, this, fxnum))
-		SetXDir(GetXDir(100) + 10, 100);
+		SetXDir(GetXDir(100) + 5, 100);
 	return FX_OK;
 }
 

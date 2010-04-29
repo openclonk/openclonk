@@ -18,7 +18,7 @@ public func SetHelp(object tohelp)
 	return;
 }
 
-public func GetCarryMode() {  if(hook->Contained() == 0) return CARRY_Back; return CARRY_HandBack; }
+public func GetCarryMode() { return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 public func GetCarryBone2(clonk) { return "main2"; }
@@ -60,23 +60,18 @@ public func OnRopeBreak()
 	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
 }
 
-protected func Destruction()
-{
-	var rope = hook->GetRope();
-	if (rope)
-		rope->BreakRope();
-}
-
 public func GetAnimationSet() { return animation_set; }
 
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// Cut rope, or otherwise remove helper object.
-	if (hook->Contained() != this)
+	if (help)
 	{
-		var rope = hook->GetRope();
+		var rope = help->GetRope();
 		if (rope)
 			rope->BreakRope();
+		else
+			help->RemoveObject();
 		return true;
 	}
 
