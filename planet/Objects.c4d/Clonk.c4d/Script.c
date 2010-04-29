@@ -1095,7 +1095,7 @@ func FxIntScaleTimer(target, number, time)
 {
 	if(GetAction() != "Scale") return;
 	// When the clonk reaches the top play an extra animation
-	if(CheckScaleTop())
+/*	if(CheckScaleTop())
 	{
 		// If the animation is not already set
 		if(EffectVar(0, target, number) != 1)
@@ -1169,9 +1169,9 @@ func FxIntScaleTimer(target, number, time)
 		var angle = Angle(x2, y2, x, y)*(+1-2*GetDir());
 		var mid = (x+x2)*1000/2 - 5000;
 		SetScaleRotation(angle, mid*(-1+2*GetDir()));
-	}
+	}*/
 }
-
+/*
 func SetScaleRotation (int r, int xoff, int yoff) {
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
@@ -1179,17 +1179,17 @@ func SetScaleRotation (int r, int xoff, int yoff) {
 		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
 		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
 	);
-}
+}*/
 
 func FxIntScaleStop(target, number, reason, tmp)
 {
 	if(tmp) return;
-	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
+/*	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
 	if(EffectVar(0, target, number) == 1) PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
 	// Finally stop if the user has scheduled a stop
 	if(EffectVar(3, target, number)) SetComDir(COMD_Stop);
 	// and reset the transform
-	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);*/
 }
 
 // This is just for test... TODO RemoveMe
