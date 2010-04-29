@@ -26,15 +26,15 @@ protected func Construction()
 	size=1000;
 }
 
-public func SetSize(int s)
+public func SetSize(int s) // in px *1000
 {
-	size=s;
+	size=s/96;
 	SetObjDrawTransform(size,0,0,0,size,0,0);
 	SetObjDrawTransform(size,0,0,0,size,0,1);
 	SetAmount(GetAmount());
 }
 
-public func ResetSize() { SetSize(1000); }
+public func ResetSize() { SetSize(64000); }
 
 
 public func SetSymbol(obj)
@@ -77,7 +77,7 @@ public func SetHotkey(int hotkey)
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,5,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(300,0,6500,0,300,-15000, 5);
+		SetObjDrawTransform(200,0,6500,0,200,-15000, 5);
 		SetClrModulation(RGB(160,0,0),5);
 	}
 }

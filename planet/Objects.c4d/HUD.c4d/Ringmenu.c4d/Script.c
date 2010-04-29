@@ -1,6 +1,6 @@
 /*
 		The Ringmenu
-		Made by Mimmo
+		Authors: Mimmo, Newton
 */
 
 
@@ -10,6 +10,7 @@ local menu_icons;     //array for the icons
 local menu_object;    //the clonk which the menu is for
 local shown;          //am i visible?
 
+static const GUI_Ringmenu_Radius = 100;
 
 func Construction()
 {
@@ -20,15 +21,18 @@ func Construction()
 	this["Parallaxity"] = [0,0];
 }
 
-
-
 // rinmenu certain position for the calling object
 global func CreateRingMenu(id symbol, int x, int y, object commander)
 {
 	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
 	if(!(this->~HasMenuControl())) return nil;
 	var menu = CreateObject(GUI_RingMenu,0,0,this->GetOwner());
-	menu->SetPosition(x,y);
+	
+	// minimum padding:
+	var paddingy = GUI_Ringmenu_Radius + 175;
+	var paddingx = GUI_Ringmenu_Radius + 50;
+	
+	menu->SetPosition(Max(paddingx,x),Max(paddingy,y));
 	menu->SetMenu(this,commander);
 	menu->SetMenuIcon(symbol);
 	menu->Hide();
@@ -48,7 +52,6 @@ public func SetMenu(object menuobject, object commandobject)
 	
 }	
 
-
 //re-set icon
 func SetMenuIcon(id symbol)
 {
@@ -66,15 +69,15 @@ func SetMenuIcon(id symbol)
 	}
 }
 
-//adds an item, icon, amount, extra
+//adds an item, icon, amount, extra (the item can be an object too)
 public func AddItem(new_item, int amount, extra) 
 { 
-	var index=GetLength(menu_icons);
-	menu_icons[index]=CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
+	var index = GetLength(menu_icons);
+	menu_icons[index] = CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
 	menu_icons[index]->SetSymbol(new_item);
 	menu_icons[index]->SetExtraData(extra);	
 	menu_icons[index]->SetHotkey(index+1);
-	if(amount==nil)
+	if(amount == nil)
 	{
 		menu_icons[index]->SetAmount(1);
 	}
@@ -90,29 +93,27 @@ public func AddItem(new_item, int amount, extra)
 public func Select(int dx, int dy, bool alt)
 {
 	var item_count=GetLength(menu_icons); 
-	if(!item_count) item_count = 1;
-	var segment=360/item_count;
-	var dvar=0;
-	var angle = Angle(0,0,dx,dy);
+	if(!item_count)
+		if(command_object->Selected(this,nil,alt))
+			Close();
 	
-	for(var i=0; i<=item_count ; i++)
-	{ 
-		if(i==item_count) var miss=360-(segment*item_count);
-		if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
-	}
-	if(dvar==item_count+1) dvar=item_count;
-
-	if(command_object->Selected(this,menu_icons[dvar-1],alt)) Close();
-	return 1;
+	var segment=360/item_count;
+	if(!segment) segment = 1;
+	var angle = Angle(0,0,dx,dy);
+	var item = BoundBy(angle/segment,0,item_count-1);
+	
+	if(command_object->Selected(this,menu_icons[item],alt))
+		Close();
 }
 
 
 //...
 public func SelectHotkey(int key, bool alt)
-{	
+{
+	if(GetLength(menu_icons) <= key) return false;
+
 	if(command_object->Selected(this,menu_icons[key],alt)) Close();
-	return 1;
-	
+	return true;
 }
 
 
@@ -122,60 +123,62 @@ func IsVisible() { return shown; }
 //makes me visible/updates me
 func Show() 
 {
-	var item_count=GetLength(menu_icons); 
-	if(!item_count) item_count = 1;
+	var item_count = GetLength(menu_icons); 
+	if(!item_count) return;
+	
 	var segment=360/item_count;
 	
-	var x=GetX();
-	var y=GetY();
-	for(var i=0; i<(GetLength(menu_icons)); i++) 
+	var x = GetX();
+	var y = GetY();
+	for(var i=0; i<item_count; i++) 
 	{	
 		if(menu_icons[i])
 		{
 			var angle=(i*segment)+(segment/2);
-			if(GetLength(menu_icons)==1) angle=90;
-			menu_icons[i]->SetPosition(x+Sin(angle,100),y-Cos(angle,100));
+			if(item_count == 1)
+				menu_icons[i]->SetPosition(x,y);
+			else
+				menu_icons[i]->SetPosition(x+Sin(angle,GUI_Ringmenu_Radius),y-Cos(angle,GUI_Ringmenu_Radius));
 			menu_icons[i]["Visibility"] = VIS_Owner;
-			menu_icons[i]->	SetSize(((620000)/Max(item_count,12))/64);
-							//620000~=u*1000;  u=r*pi*2; r=100px;
-							//620000 is almost the circumference of the ringmenu with 200px radius
-							//this divided by the itemcount (or 12, if too less items,
-							//it guarantees no oversized icons)
-							//and then divided by the diameter of the icons, 64 pixels
-							//gives the value, with that the icons can be stretched/compressed (1000 standard)
+			//420000~=u*1000*2/3;  u=r*pi*2; r=100px;
+			// Size will never get bigger as if there were 5 items shown
+			menu_icons[i]->SetSize(420000/Max(item_count,5));
 		}
 	}
 	this["Visibility"] = VIS_Owner;
 
-	shown=true;
+	shown = true;
 }
 
 public func UpdateCursor(int dx, int dy)
 {	
 	var angle = Angle(0,0,dx,dy);
-	var item_count=GetLength(menu_icons); 
-	if(!item_count) item_count = 1;
-	var segment=360/item_count;
-	var dvar=0;
-	for(var i=0; i<=item_count ; i++)
+	var item_count = GetLength(menu_icons); 
+	if(!item_count) return;
+	
+	var segment = 360 / item_count;
+	if(!segment) segment = 1;
+	var item = BoundBy(angle/segment,0,item_count-1);
+	
+	for(var i=0; i<= item_count; i++)
 	{ 
 		if(menu_icons[i])
 		{
-				menu_icons[i]->	SetSize(((620000)/Max(item_count,12))/64); //see Show()
+				// calculate distance to angle
+				var dist = Normalize(angle - (segment*i + segment/2),-180);
+				dist = BoundBy(dist*240/segment,-180,180);
+				var siz = (Cos(dist,1000)+1000)/2; // 0..1000
+				menu_icons[i]->SetSize((siz+2000)*420000/Max(item_count,5)/2000); //see Show()
+				if(i == item)
+					menu_icons[i]->CustomMessage(Format("%s",menu_icons[i]->GetName()),this,menu_object->GetOwner(),0,64,RGB(255,0,0));
 		}
-		if(i==item_count) var miss=360-(segment*item_count);
-		if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
 	}
-	if(dvar==item_count+1) dvar=item_count;
-	if(menu_icons[dvar-1])
-	{
-			menu_icons[dvar-1]->	SetSize(((620000)/Max(item_count,12))/64 *3/2); //see Show()
-	}
-
 }
 
 public func Hide() {
-	for(var i=0; i<GetLength(menu_icons); i++)if(menu_icons[i]) menu_icons[i]["Visibility"] = VIS_None;
+	for(var i=0; i<GetLength(menu_icons); i++)
+		if(menu_icons[i])
+			menu_icons[i]["Visibility"] = VIS_None;
 	this["Visibility"] = VIS_None;
 	shown=false;
 }

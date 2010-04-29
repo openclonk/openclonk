@@ -51,7 +51,7 @@ local inventory;
 /* Item limit */
 
 private func HandObjects() { return 2; }
-public func MaxContentsCount() { return 5; }
+public func MaxContentsCount() { return 7; }
 
 /* Item select access*/
 
@@ -452,6 +452,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		else if(MaxContentsCount() > 2)
 		{
+			// Cancel usage
+			CancelUse();
+		
 			// the x,y pos is wrong because the local coordinates of the clonk have been substracted
 			x += GetX();
 			y += GetY();
