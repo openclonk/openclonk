@@ -14,7 +14,7 @@ func Initialize()
 		iy=y-50+Random(100); ix=x-125+Random(250);
 		var l=0,u=125;
 		while(GBackSolid(ix,iy)) {++l;u+=5;iy=y-50+Random(100); ix=x-u+Random(2*u);if(l>50){break;};}
-		var mode = RACE_CP_Check | RACE_CP_Respawn;
+		var mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn;
 		pGoal->AddCheckpoint(ix, iy, mode);
 		y-=LandscapeHeight()/7;
 	}

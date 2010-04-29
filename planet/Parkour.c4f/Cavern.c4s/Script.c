@@ -13,14 +13,14 @@ protected func Initialize()
 	// Set some checkpoints.
 	while (d < LandscapeHeight() - 350)
 	{
-		var mode = RACE_CP_Check;
+		var mode = PARKOUR_CP_Check;
 		d += RandomX(150, 250);
 		if (!FindPosInMat(x, y, "Tunnel", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20) || !Random(3))
 			FindPosInMat(x, y, "Sky", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20);
 		else
-			mode = mode | RACE_CP_Respawn;
+			mode = mode | PARKOUR_CP_Respawn;
 		// All checkpoints ordered.
-		mode = mode | RACE_CP_Ordered;
+		mode = mode | PARKOUR_CP_Ordered;
 		goal->AddCheckpoint(x, y, mode);
 	}
 	// Set finish point.

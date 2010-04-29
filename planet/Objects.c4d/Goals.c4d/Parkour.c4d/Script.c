@@ -53,7 +53,7 @@ public func SetStartpoint(int x, int y)
 {
 	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
-	cp->SetCPMode(RACE_CP_Start);
+	cp->SetCPMode(PARKOUR_CP_Start);
 	cp->SetCPController(this);
 	cp_list[0] = cp;
 	return;
@@ -63,7 +63,7 @@ public func SetFinishpoint(int x, int y)
 {
 	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
-	cp->SetCPMode(RACE_CP_Finish);
+	cp->SetCPMode(PARKOUR_CP_Finish);
 	cp->SetCPController(this);
 	cp_count++;
 	cp_list[cp_count] = cp;
@@ -76,7 +76,7 @@ public func AddCheckpoint(int x, int y, int mode)
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
 	cp->SetCPController(this);
-	if (mode & RACE_CP_Check || mode & RACE_CP_Ordered)
+	if (mode & PARKOUR_CP_Check || mode & PARKOUR_CP_Ordered)
 	{
 		cp_count++;
 		cp_list[cp_count + 1] = cp_list[cp_count]; // Finish 1 place further.
@@ -233,7 +233,7 @@ private func GetTeamPosition(int team)
 private func IsWinner(int plr)
 {
 	var team = GetPlayerTeam(plr);
-	var finish = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Finish));
+	var finish = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
 	if (!finish)
 		return false;
 	if (team)
@@ -374,7 +374,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	var team = GetPlayerTeam(plr);
 	// Find nearest CP.
 	var nextcp;
-	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
+	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
 		if (!cp->ClearedByPlr(plr) && (cp->IsActiveForPlr(plr) || cp->IsActiveForTeam(GetPlayerTeam(plr))))
 		{
 			nextcp = cp;

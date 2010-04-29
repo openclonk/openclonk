@@ -16,23 +16,23 @@
 
 /*-- Checkpoint modes --*/
 local cp_mode;
-static const RACE_CP_None = 0;
-static const RACE_CP_Start = 1;
-static const RACE_CP_Finish = 2;
-static const RACE_CP_Respawn = 4;
-static const RACE_CP_Check = 8;
-static const RACE_CP_Ordered = 16;
-static const RACE_CP_Bonus = 32;
+static const PARKOUR_CP_None = 0;
+static const PARKOUR_CP_Start = 1;
+static const PARKOUR_CP_Finish = 2;
+static const PARKOUR_CP_Respawn = 4;
+static const PARKOUR_CP_Check = 8;
+static const PARKOUR_CP_Ordered = 16;
+static const PARKOUR_CP_Bonus = 32;
 
 public func SetCPMode(int mode) 
 {
-	if (mode & RACE_CP_Start) // Start always occurs alone.
-		mode = RACE_CP_Start;
-	if (mode & RACE_CP_Finish) // Start always occurs alone.
-		mode = RACE_CP_Finish;
-	if (mode & RACE_CP_Ordered) // Ordered checkpoints must have RACE_CP_Check.
+	if (mode & PARKOUR_CP_Start) // Start always occurs alone.
+		mode = PARKOUR_CP_Start;
+	if (mode & PARKOUR_CP_Finish) // Start always occurs alone.
+		mode = PARKOUR_CP_Finish;
+	if (mode & PARKOUR_CP_Ordered) // Ordered checkpoints must have PARKOUR_CP_Check.
 	{
-		mode = mode | RACE_CP_Check;
+		mode = mode | PARKOUR_CP_Check;
 		// Set CP number.
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
@@ -74,7 +74,7 @@ protected func Initialize()
 {
 	aDoneByPlr = [];
 	aDoneByTeam = [];
-	cp_mode = RACE_CP_Check;
+	cp_mode = PARKOUR_CP_Check;
 	UpdateGraphics();
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
@@ -95,15 +95,15 @@ public func ClearedByTeam(int team)
 
 public func IsActiveForPlr(int plr)
 {
-	if (cp_mode & RACE_CP_Finish) // Check all checkpoints.
+	if (cp_mode & PARKOUR_CP_Finish) // Check all checkpoints.
 	{
 		for (var cp in FindObjects(Find_ID(GetID())))
-			if (cp->GetCPMode() & RACE_CP_Check)
+			if (cp->GetCPMode() & PARKOUR_CP_Check)
 				if (!cp->ClearedByPlr(plr))
 					return false;
 		return true;
 	}
-	if (cp_mode & RACE_CP_Ordered) 
+	if (cp_mode & PARKOUR_CP_Ordered) 
 	{
 		if (GetCPNumber() == 1) // First ordered checkpoint is always active.
 			return true;
@@ -156,14 +156,14 @@ protected func CheckForClonks()
 		if (!IsActiveForPlr(plr) && !IsActiveForTeam(team))
 			continue;
 		// Check respawn status.
-		if (cp_mode & RACE_CP_Respawn) 
+		if (cp_mode & PARKOUR_CP_Respawn) 
 			if (cp_con)
 				cp_con->SetPlrRespawnCP(plr, this); // Notify race goal.
 		// If already done by player -> continue.
 		if (aDoneByPlr[plrid])
 			continue;
 		// Check checkpoint status.
-		if (cp_mode & RACE_CP_Check)
+		if (cp_mode & PARKOUR_CP_Check)
 		{
 			aDoneByPlr[plrid] = true;
 			Sound("Cleared", false, nil, plr);
@@ -178,7 +178,7 @@ protected func CheckForClonks()
 			}
 		}
 		// Check finish status.
-		if (cp_mode & RACE_CP_Finish) 
+		if (cp_mode & PARKOUR_CP_Finish) 
 		{
 			Sound("Cleared", false, nil, plr);
 			aDoneByPlr[plrid] = true;
@@ -188,7 +188,7 @@ protected func CheckForClonks()
 				cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
 		}
 		// Check bonus.
-		if (cp_mode & RACE_CP_Bonus)
+		if (cp_mode & PARKOUR_CP_Bonus)
 			GameCall("GivePlrBonus", plr, this);
 	}
 	return;
@@ -211,14 +211,14 @@ protected func DoGraphics()
 	for (var i = 1; i <= 3; i++)
 		SetGraphics(0, 0, i);
 	// Start & Finish.
-	if (cp_mode & RACE_CP_Start || cp_mode & RACE_CP_Finish)
+	if (cp_mode & PARKOUR_CP_Start || cp_mode & PARKOUR_CP_Finish)
 	{
 		SetGraphics("", ParkourFlag, 1, GFXOV_MODE_Base);
 		SetObjDrawTransform(350, 0, 2000, 0, 350, 2000, 1);
 		SetClrModulation(RGBa(255, 255, 255, 160) , 1);
 	}
 	// Ordered, display numbers up to 99.
-	if (cp_mode & RACE_CP_Ordered)
+	if (cp_mode & PARKOUR_CP_Ordered)
 	{
 		var shift = 0;
 		if (GetCPNumber() >= 10)
@@ -253,7 +253,7 @@ protected func GetColorByAngle(int angle)
 	// Get cleared count.
 	var cnt = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & RACE_CP_Start))
+		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & PARKOUR_CP_Start))
 			cnt++;
 	if (!cnt) 
 		return RGBa(255, 255, 255, 192);
@@ -264,7 +264,7 @@ protected func GetColorByAngle(int angle)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (ClearedByPlr(plr) || (cp_mode & RACE_CP_Start))
+		if (ClearedByPlr(plr) || (cp_mode & PARKOUR_CP_Start))
 		{
 			if (angle >= j * prt && angle < (j + 1) * prt)
 				return GetPlayerColor(plr);

@@ -13,7 +13,7 @@ func Initialize()
 		iy=y-250+Random(500); ix=x-75+Random(150);
 		var l=0;
 		while(GBackSolid(ix,iy)) {++l;iy=y-250+Random(500); ix=x-75+Random(150);if(l>50){break;};}
-		var mode = RACE_CP_Check | RACE_CP_Respawn;
+		var mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn;
 		pGoal->AddCheckpoint(ix, iy, mode);
 		x+=LandscapeWidth()/7;
 	}

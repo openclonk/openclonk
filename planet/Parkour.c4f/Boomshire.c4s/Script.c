@@ -34,20 +34,20 @@ func Initialize()
 	// Create the race goal.
 	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(20, 1000);
-	pGoal->AddCheckpoint(760,950,  RACE_CP_Ordered);
-	pGoal->AddCheckpoint(400,660,  RACE_CP_Ordered);
-	pGoal->AddCheckpoint(870,460,  RACE_CP_Respawn);
-	pGoal->AddCheckpoint(1200,1020,RACE_CP_Ordered);
-	pGoal->AddCheckpoint(1665,1070,RACE_CP_Ordered);
-	pGoal->AddCheckpoint(1120,1010,RACE_CP_Ordered);
-	pGoal->AddCheckpoint(1485,800, RACE_CP_Ordered);
-	pGoal->AddCheckpoint(1735,1410,RACE_CP_Ordered);
-	pGoal->AddCheckpoint(2110,1180,RACE_CP_Respawn);
-	pGoal->AddCheckpoint(3350,1240,RACE_CP_Ordered);
-	pGoal->AddCheckpoint(3040,720, RACE_CP_Respawn);
-	pGoal->AddCheckpoint(2530,520, RACE_CP_Ordered);
-	pGoal->AddCheckpoint(2150,510, RACE_CP_Ordered);
-	pGoal->AddCheckpoint(2740,350, RACE_CP_Ordered);
+	pGoal->AddCheckpoint(760,950,  PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(400,660,  PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(870,460,  PARKOUR_CP_Respawn);
+	pGoal->AddCheckpoint(1200,1020,PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(1665,1070,PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(1120,1010,PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(1485,800, PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(1735,1410,PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(2110,1180,PARKOUR_CP_Respawn);
+	pGoal->AddCheckpoint(3350,1240,PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(3040,720, PARKOUR_CP_Respawn);
+	pGoal->AddCheckpoint(2530,520, PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(2150,510, PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(2740,350, PARKOUR_CP_Ordered);
 	pGoal->SetFinishpoint(3490,100);
 	
 	
