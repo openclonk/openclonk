@@ -1,39 +1,14 @@
 # Dialogue options
-MsgNextTutorial=&Nächste Lernrunde
-MsgNextTutorialDesc=Die nächste Lernrunde starten.
-MsgRepeatRound=Runde &wiederholen
-MsgRepeatRoundDesc=Diese Runde wiederholen.
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
 
-#Intro: Clonk selection
-MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the gold plateau on the far right side with both your clonks.
-MsgTutClonks=In this tutorial you have two clonks, the clonk you are currently controlling can not do a lot since it is trapped.
-MsgTutSelection=For a starter let's shift between clonks, this is done by pressing Shift + the number key corresponding to the clonk you want to select. In this case press \"Shift + 2\".
-
-#Part two: chest backpack control.
-MsgTut04=Well done! With this clonk you must find a way to get up to the second clonk. You need to blast the rock covering the cave entrance.
-MsgTut05=Let's first not worry about getting up there. Hey there is catapult(invisible) and a chest.
-MsgTut06=TODO: script/explain chest put and get.
-MsgTut07=TODO: script/texture/explain catapult.
-MsgTut08=Nice job, you blasted the rock covering the entrance into the cave. But without the help of the second clonk you can't get your first one up there.
-MsgTut09=Select your second clonk. By now you must know how to do that.
-
-#Part Z: Blast rock
-
-
-#Part Y: Ropeladder
-MsgTutRockBlasted=Nice job, you blasted the rock covering the entrance into the cave. But without the help of the second clonk you can't get your first one up there.
-MsgTutSelectOther=Select your second clonk. By now you must know how to do that.
-MsgTutSelectedOther=Ok with this clonk you can help the other clonk getting up here. The ropeladder is the tool for this job, it aids the clonk in its manouverability through landscapes.
-MsgTutRopeladder=Grab a ropeladder from the chest. Go to the location indicated by the arrow.
-MsgTutUnfold=Move slowly to the edge of the cliff. You can use the ropeladder by clicking in the landscape. Use the left mousebutton if you are holding the ladder in your left hand or the right button otherwise. Click to the left of your clonk to roll the ropeladder over the edge of the cliff
-
-#Part XX: Dynamite Box
-MsgTutUpwards=Ah good, your other clonk can get into the cave. There seems to be some blasting work ahead so don't forget to grab some dynamite from the chest. Move your clonk with some dynamite to the rock indicated by the arrow.
-MsgTutBroughtDyna=Ok you've brought the dynamite. You can place up to five dynamite sticks into the landscape, this is done by pressing the mousebutton somewhere near the clonk. 
-MsgTutPlaceDyna=In order to blow up the rock place five dynamite sticks around the position indicated by the arrow. Do not click again after that!
-MsgTutDetonate=Ok now you've placed the five dynamite sticks, move away a little, and then press the mousebutton again to detonate the dynamite.
-MsgTutSmokeCleared=Now that the smoke has cleared walk with your clonk to the arrow, new instructions are awaiting you there.
-
-#Part X: Grapple Bow
-MsgTutGrappleBows=You now have two grapple bows in your backpack. These are the first objects where aiming is required. With the grappling bow your can shoot a hook with attached rope. 
-MsgTutSwingAcross=Using two grapple bows swing across the pit by shooting hooks to the sky islands continuously.
+# Tutorial messages
+MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the gold plateau on the far right side with both your clonks. First make yourself familiar with the landscape and try to figure out a way to get there. At any time you can click on the professor for helpful hints. Close this window by clicking on the red cross.
+MsgTutCrewSelection=Since you have two clonks and can only control one clonk at a time, it might be useful to switch between clonks. You can either click on the clonk you want to control in the upperleft part of the HUD, or by pressing Shift + the number key corresponding to the clonk.
+MsgTutBackpack=One of your clonks has a shovel in its backpack. The backpack can be opened and closed with Q, when the backpack is opened you can interchange one of your hand items with a backpack item by left or right clicking on that respective item. With the use of the shovel find the abandoned mine.
+MsgTutLorry=Some mining equipment may have been left behind in the lorry, grab it!
+MsgTutRopeladder=Your second clonk has some rope ladders, these are very useful in aiding other clonks to overcome obstacles in the landscape. When using the rope ladder the ladder will be unrolled towards the location of the click.
+MsgTutDynamiteBox=The dynamitebox can be used to blast through large amounts of material. When using the dynamite box you can stick 5 dynamite pieces into some material, the sixth time you click you will detonate the dynamite. Before doing that you really want to be somehwere distant.
+MsgTutGrappleBow=The last hurdle, a dangerous cliff to get over. With the grapple bow your can shoot a hook with attached rope, the clonk will hang onto the rope. Using two grapple bows swing across the pit by shooting hooks to the sky islands continuously.

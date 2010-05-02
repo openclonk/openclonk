@@ -9,7 +9,7 @@ Difficulty=2
 Definition1=Objects.c4d
 
 [Game]
-Goals=Goal_Tutorial
+Goals=Goal_Script=1
 
 [Player1]
 Crew=Clonk=2
@@ -24,6 +24,8 @@ Crew=Clonk=2
 Crew=Clonk=2
 
 [Landscape]
+InEarth=Rock=1;Firestone=1
+InEarthLevel=45
 Sky=Clouds1
 MapWidth=150
 MapHeight=60
@@ -31,7 +33,6 @@ TopOpen=0
 BottomOpen=1
 NewStyleLandscape=2
 SkyScrollMode=2
-
 
 [Weather]
 Climate=100,0,0,100
