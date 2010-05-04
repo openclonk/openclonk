@@ -49,7 +49,7 @@ public func Ignite(clonk)
 	if (aWires[iIgniteNumber])
 		aWires[iIgniteNumber]->StartFusing(this);
 	else 
-		for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_Or(Find_ActionTarget(this), Find_ActionTarget2(this))))
+		for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 			obj->~StartFusing(this);
 
 	ScheduleCall(this, "ResetClonk", 35, 1, clonk);

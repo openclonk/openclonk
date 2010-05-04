@@ -125,7 +125,7 @@ public func OnFuseFinished()
 public func DoExplode()
 {
 	// Activate all fuses
-	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_Or(Find_ActionTarget(this), Find_ActionTarget2(this))))
+	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 		obj->~StartFusing(this);
 	// Explode, calc the radius out of the area of a explosion of a single dynamite times the amount of dynamite
 	// This results to 18, 25, 31, 36, and 40
