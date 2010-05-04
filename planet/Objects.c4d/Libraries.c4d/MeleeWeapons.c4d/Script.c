@@ -1,4 +1,9 @@
-/*-- generic weapon template --*/
+/*-- 
+	Melee weapons
+	Author: Zapper
+	
+	Generic weapon template 
+--*/
 
 
 /*local fDrawn;

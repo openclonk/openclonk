@@ -1,10 +1,14 @@
-/*-- Goal control --*/
+/*-- 
+	Goal control 
+	Author: Sven2
+	
+	Include this to all C4D_Goal objects
+	Functions to be overloaded:
+		bool IsFullfilled(); - is the goal fulfilled?
+--*/
 
-// Include this to all C4D_Goal objects
-// Functions to be overloaded:
-//   bool IsFullfilled(); - is the goal fulfilled
 
-local missionPassword; // mission password to be gained when the goal is fulfilled
+local mission_password; // mission password to be gained when the goal is fulfilled
 
 // Initialization
 func Initialize()
@@ -34,27 +38,30 @@ func RecheckGoalTimer()
 	if (!GetEffect("IntGoalCheck", 0))
 	{
 		var timer_interval = 35;
-		if(GetLeague()) timer_interval = 2; // league has more frequent checks
+		if (GetLeague()) 
+			timer_interval = 2; // league has more frequent checks
 		var num = AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
-	FxIntGoalCheckTimer(nil, num);
+		FxIntGoalCheckTimer(nil, num);
 	}
 }
 
 public func NotifyHUD()
 {
 	// create hud objects for all players
-	for(var i = 0; i < GetPlayerCount(); ++i)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
-	var plr = GetPlayerByIndex(i);
-	var HUD = FindObject(Find_ID(GUI_Controller),Find_Owner(plr));
-	if(HUD) HUD->OnGoalUpdate(this);
+		var plr = GetPlayerByIndex(i);
+		var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+		if (HUD) 
+			HUD->OnGoalUpdate(this);
 	}
 }
 
 protected func InitializePlayer(int plr)
 {
-	var HUD = FindObject(Find_ID(GUI_Controller),Find_Owner(plr));
-	if(HUD) HUD->OnGoalUpdate(this);
+	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	if (HUD) 
+		HUD->OnGoalUpdate(this);
 }
 
 global func FxIntGoalCheckTimer(object trg, int num, int time)
@@ -71,7 +78,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 	}
 	// Current goal is fulfilled/destroyed - check all others
 	var goal_count = 0;
-	for (curr_goal in FindObjects(Find_Category(C4D_Goal))) if (curr_goal)
+	for (curr_goal in FindObjects(Find_Category(C4D_Goal)))
 	{
 		++goal_count;
 		if (!curr_goal->~IsFulfilled())
@@ -82,7 +89,8 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 		}
 	}
 	// No goal object? Kill timer
-	if (!goal_count) return FX_Execute_Kill;
+	if (!goal_count) 
+		return FX_Execute_Kill;
 	// Game over :(
 	AllGoalsFulfilled();
 	return FX_Execute_Kill;
@@ -92,8 +100,8 @@ global func AllGoalsFulfilled()
 {
 	// Goals fulfilled: Set mission password(s)
 	for (var goal in FindObjects(Find_Category(C4D_Goal)))
-		if (goal->LocalN("missionPassword"))
-			GainMissionAccess(goal->LocalN("missionPassword"));
+		if (goal->LocalN("mission_password"))
+			GainMissionAccess(goal->LocalN("mission_password"));
 	// Custom scenario goal evaluation?
 	if (GameCall("OnGoalsFulfilled")) return true;
 	// We're done. Play some sound and schedule game over call
@@ -106,22 +114,19 @@ global func FxIntGoalDoneStop()
 	GameOver();
 }
 
-
-
-
-
 // Set mission password to be gained when all goals are fulfilled
-public func SetMissionAccess(string strPassword)
+public func SetMissionAccess(string str_password)
 {
-	missionPassword = strPassword;
+	mission_password = str_password;
 }
 
 // Base implementations to be overloaded by goal objects
 
 public func IsFulfilled() { return true; }
 
-protected func Activate(iPlr)
+protected func Activate(plr)
 {
-	if (IsFulfilled()) return(MessageWindow("$MsgGoalFulfilled$",iPlr));
-	return MessageWindow(GetDesc(),iPlr);
+	if (IsFulfilled()) 
+		return(MessageWindow("$MsgGoalFulfilled$", plr));
+	return MessageWindow(GetDesc(), plr);
 }

@@ -1,4 +1,4 @@
-/*
+/*--
 	Stackable
 	Author: Newton
 	
@@ -34,12 +34,13 @@
 	Most objects which can be stacked might want to set different pictures
 	and ingame graphics for different counts of objects. This can be done
 	by overloading UpdatePicture(), but remember to write _inherited() then.
-*/
+--*/
+
 
 local count;
 
 public func IsStackable() { return true; }
-public func GetStackCount() { return Max(1,count); }
+public func GetStackCount() { return Max(1, count); }
 public func MaxStackCount() { return 20; }
 
 protected func Construction()
@@ -49,34 +50,36 @@ protected func Construction()
 
 public func Stack(object obj)
 {
-	if(obj->GetID() != GetID())	return 0;
+	if (obj->GetID() != GetID())
+		return 0;
 	
-	var howmany = Min(obj->GetStackCount(),MaxStackCount()-GetStackCount());
+	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
-	if(count+howmany > 999) return 0;
+	if (count + howmany > 999)
+		return 0;
 	
-	SetStackCount(count+howmany);
+	SetStackCount(count + howmany);
 
 	return howmany;
 }
 
 public func SetStackCount(int amount)
 {
-	count = BoundBy(amount,0,999);
+	count = BoundBy(amount, 0, 999);
 	Update();
 }
 
 public func TakeObject()
 {
-	if(count == 1)
+	if (count == 1)
 	{
 		Exit();
 		return this;
 	}
-	else if(count > 1)
+	else if (count > 1)
 	{
-		SetStackCount(count-1);
-		var take = CreateObject(GetID(),0,0,GetOwner());
+		SetStackCount(count - 1);
+		var take = CreateObject(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
 		Update();
 		return take;
@@ -89,96 +92,99 @@ public func Update()
 	UpdateMass();
 	UpdateName();
 	// notify hud
-	if(Contained())
+	var container = Contained();
+	if (container)
 	{
 		// has an extra slot
-		if(Contained()->~HasExtraSlot())
-			Contained()->~NotifyHUD();
+		if (container->~HasExtraSlot())
+			container->~NotifyHUD();
 		// is a clonk with new inventory system
-		else if(Contained()->~GetSelected())
+		else if (container->~GetSelected())
 		{
-			var pos = Contained()->GetItemPos(this);
-			Contained()->~OnSlotFull(pos);
+			var pos = container->GetItemPos(this);
+			container->~OnSlotFull(pos);
 		}
 	}
 }
 
 private func UpdatePicture()
 {
-	var one = GetStackCount()%10;
-	var ten = (GetStackCount()/10)%10;
-	var hun = (GetStackCount()/100)%10;
+	var one = GetStackCount() % 10;
+	var ten = (GetStackCount() / 10) % 10;
+	var hun = (GetStackCount() / 100) % 10;
 	
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
 	var spacing = 14000;
 	
-	if(hun > 0)
+	if (hun > 0)
 	{
-		SetGraphics(Format("%d",hun),Icon_Number,10,GFXOV_MODE_Picture);
-		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
+		SetGraphics(Format("%d", hun), Icon_Number, 10, GFXOV_MODE_Picture);
+		SetObjDrawTransform(s, 0, xoffs - 2 * spacing, 0, s, yoffs, 10);
 	}
 	else
-		SetGraphics(nil,nil,10);
+		SetGraphics(nil, nil, 10);
 
-	if(ten > 0 || hun > 0)
+	if (ten > 0 || hun > 0)
 	{
-		SetGraphics(Format("%d",ten),Icon_Number,11,GFXOV_MODE_Picture);
-		SetObjDrawTransform(s,0,xoffs-spacing,0,s,yoffs, 11);
+		SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
+		SetObjDrawTransform(s, 0, xoffs - spacing, 0, s, yoffs, 11);
 	}
 	else
-		SetGraphics(nil,nil,11);
+		SetGraphics(nil, nil, 11);
 		
-	SetGraphics(Format("%d",one),Icon_Number,12,GFXOV_MODE_Picture);
-	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
+	SetGraphics(Format("%d", one), Icon_Number, 12, GFXOV_MODE_Picture);
+	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
 }
 
 private func UpdateName()
 {
-	SetName(Format("%dx %s",GetStackCount(),GetID()->GetName()));
+	SetName(Format("%dx %s", GetStackCount(), GetID()->GetName()));
 }
 
 private func UpdateMass()
 {
-	SetMass(GetID()->GetMass()*Max(GetStackCount(),1)/MaxStackCount());
+	SetMass(GetID()->GetMass() * Max(GetStackCount(), 1) / MaxStackCount());
 }
 
 protected func RejectEntrance(object into)
 {
-	if(TryPutInto(into)) return true;
-	return _inherited(into,...);
+	if (TryPutInto(into))
+		return true;
+	return _inherited(into, ...);
 }
 
 /* Value */
 
-public func CalcValue(object pInBase, int iForPlayer)
+public func CalcValue(object in_base, int for_plr)
 {
-	// Je nach Anzahl
-	return GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount();
+	return GetID()->GetValue() * Max(GetStackCount(), 1) / MaxStackCount();
 }
 
-private func TryPutInto( object into )
+private func TryPutInto(object into)
 {
 	var contents = FindObjects(Find_Container(into));
 
-	// first check if stackable can be put into object with extrea slot
-	for(var content in contents)
+	// first check if stackable can be put into object with extra slot
+	for (var content in contents)
 	{
-		if(!content) continue;
-		if(content->~HasExtraSlot())
-			if(TryPutInto(content))
+		if (!content) 
+			continue;
+		if (content->~HasExtraSlot())
+			if (TryPutInto(content))
 				return true;
 	}
 
 	// then check this object
-	for(var content in contents)
+	for (var content in contents)
 	{
 		var howmany = 0;
-		if(!content) continue;
-		if(content->~IsStackable())
-			if(content->GetID() == GetID())
-				if(howmany = content->Stack(this))
+		if (!content) 
+			continue;
+		if (content->~IsStackable())
+			if (content->GetID() == GetID())
+				if (howmany = content->Stack(this))
 				{
 					count -= howmany;
 					if(count <= 0)
@@ -189,7 +195,6 @@ private func TryPutInto( object into )
 				}
 	}
 	
-	Update();
-	
+	Update();	
 	return false;
 }

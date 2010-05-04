@@ -14,10 +14,10 @@ public func IsLadder() { return true; }
 public func GetLadderData(&startx, &starty, &endx, &endy, &angle)
 {
 	// Normally (if not overloaded) interpret the first vertex as start and the second as end
-	startx = GetX()+GetVertex(0, 0);
-	starty = GetY()+GetVertex(0, 1);
-	endx   = GetX()+GetVertex(1, 0);
-	endy   = GetY()+GetVertex(1, 1);
+	startx = GetX() + GetVertex(0, 0);
+	starty = GetY() + GetVertex(0, 1);
+	endx   = GetX() + GetVertex(1, 0);
+	endy   = GetY() + GetVertex(1, 1);
 	angle  = 0;
 }
 
