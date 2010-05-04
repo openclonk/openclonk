@@ -30,7 +30,7 @@ class C4PXS
 	friend class C4PXSSystem;
 protected:
 	int32_t Mat;
-	FIXED x,y,xdir,ydir;
+	C4Real x,y,xdir,ydir;
 protected:
 	void Execute();
 	void Deactivate();
@@ -57,7 +57,7 @@ public:
 	void Synchronize();
 	void SyncClearance();
 	void Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t level);
-	bool Create(int32_t mat, FIXED ix, FIXED iy, FIXED ixdir=Fix0, FIXED iydir=Fix0);
+	bool Create(int32_t mat, C4Real ix, C4Real iy, C4Real ixdir=Fix0, C4Real iydir=Fix0);
 	bool Load(C4Group &hGroup);
 	bool Save(C4Group &hGroup);
 protected:

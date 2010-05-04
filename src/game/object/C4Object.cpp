@@ -227,7 +227,7 @@ void C4Object::Default()
 bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
                     int32_t iOwner, C4ObjectInfo *pInfo,
                     int32_t nx, int32_t ny, int32_t nr,
-                    FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController)
+                    C4Real nxdir, C4Real nydir, C4Real nrdir, int32_t iController)
 {
 	C4PropListNumbered::AcquireNumber();
 	// currently initializing
@@ -729,7 +729,7 @@ void C4Object::SetOCF()
 	uint32_t dwOCFOld = OCF;
 #endif
 	// Update the object character flag according to the object's current situation
-	FIXED cspeed=GetSpeed();
+	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
 	if (Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
@@ -868,7 +868,7 @@ void C4Object::UpdateOCF()
 	uint32_t dwOCFOld = OCF;
 #endif
 	// Update the object character flag according to the object's current situation
-	FIXED cspeed=GetSpeed();
+	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
 	if (Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
@@ -1449,7 +1449,7 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 	int32_t iStepSize=FullCon/100;
 	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
 	int32_t iLastStep=Con/iStepSize;
-	FIXED strgt_con_b = fix_y + Shape.GetY() + Shape.Hgt;
+	C4Real strgt_con_b = fix_y + Shape.GetY() + Shape.Hgt;
 	bool fWasFull = (Con>=FullCon);
 
 	// Change con
@@ -1549,7 +1549,7 @@ void C4Object::DoExperience(int32_t change)
 			Promote(Info->Rank+1, false, false);
 }
 
-bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir, FIXED iRDir, bool fCalls)
+bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYDir, C4Real iRDir, bool fCalls)
 {
 	// 1. Exit the current container.
 	// 2. Update Contents of container object and set Contained to NULL.
@@ -1652,7 +1652,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	return true;
 }
 
-void C4Object::Fling(FIXED txdir, FIXED tydir, bool fAddSpeed)
+void C4Object::Fling(C4Real txdir, C4Real tydir, bool fAddSpeed)
 {
 	if (fAddSpeed) { txdir+=xdir/2; tydir+=ydir/2; }
 	if (!ObjectActionTumble(this,(txdir<0),txdir,tydir))
@@ -1779,7 +1779,7 @@ bool C4Object::Chop(C4Object *pByObject)
 	return true;
 }
 
-bool C4Object::Push(FIXED txdir, FIXED dforce, bool fStraighten)
+bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 {
 	// Valid check
 	if (!Status || !Def || Contained || !(OCF & OCF_Grab)) return false;
@@ -1829,7 +1829,7 @@ bool C4Object::Push(FIXED txdir, FIXED dforce, bool fStraighten)
 	return true;
 }
 
-bool C4Object::Lift(FIXED tydir, FIXED dforce)
+bool C4Object::Lift(C4Real tydir, C4Real dforce)
 {
 	// Valid check
 	if (!Status || !Def || Contained) return false;
@@ -2088,7 +2088,7 @@ BYTE C4Object::GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t 
 	return 1;
 }
 
-BYTE C4Object::GetMomentum(FIXED &rxdir, FIXED &rydir)
+BYTE C4Object::GetMomentum(C4Real &rxdir, C4Real &rydir)
 {
 	rxdir=rydir=0;
 	if (!Status || !Def) return 0;
@@ -2096,9 +2096,9 @@ BYTE C4Object::GetMomentum(FIXED &rxdir, FIXED &rydir)
 	return 1;
 }
 
-FIXED C4Object::GetSpeed()
+C4Real C4Object::GetSpeed()
 {
-	FIXED cobjspd=Fix0;
+	C4Real cobjspd=Fix0;
 	if (xdir<0) cobjspd-=xdir; else cobjspd+=xdir;
 	if (ydir<0) cobjspd-=ydir; else cobjspd+=ydir;
 	return cobjspd;
@@ -3569,7 +3569,7 @@ bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir);
 void C4Object::ContactAction()
 {
 	// Take certain action on contact. Evaluate t_contact-CNAT and Procedure.
-	FIXED last_xdir;
+	C4Real last_xdir;
 
 	int32_t iDir;
 	C4PhysicalInfo *pPhysical=GetPhysical();
@@ -3796,7 +3796,7 @@ void C4Object::ContactAction()
 	}
 }
 
-void Towards(FIXED &val, FIXED target, FIXED step)
+void Towards(C4Real &val, C4Real target, C4Real step)
 {
 	if (val==target) return;
 	if (Abs(val-target)<=step) { val=target; return; }
@@ -3925,8 +3925,8 @@ void C4Object::ExecAction()
 {
 	Action.t_attach=CNAT_None;
 	DWORD ocf;
-	FIXED iTXDir;
-	FIXED lftspeed,tydir;
+	C4Real iTXDir;
+	C4Real lftspeed,tydir;
 	int32_t iTargetX;
 	int32_t iPushRange,iPushDistance;
 
@@ -3957,8 +3957,8 @@ void C4Object::ExecAction()
 	// Determine ActDef & Physical Info
 	//C4PropList * pAction = Action.pActionDef;
 	C4PhysicalInfo *pPhysical=GetPhysical();
-	FIXED lLimit;
-	FIXED fWalk,fMove;
+	C4Real lLimit;
+	C4Real fWalk,fMove;
 	int32_t smpx,smpy;
 
 	// Energy usage
@@ -4003,14 +4003,14 @@ void C4Object::ExecAction()
 	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
 	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
 	int32_t dir = Action.Dir;
-	FIXED accel = WalkAccel;
+	C4Real accel = WalkAccel;
 
-	FIXED xlFloatAccel;
-	FIXED xrFloatAccel;
-	FIXED yuFloatAccel;
-	FIXED ydFloatAccel;
-	FIXED lFloatAccel;
-	FIXED rFloatAccel;
+	C4Real xlFloatAccel;
+	C4Real xrFloatAccel;
+	C4Real yuFloatAccel;
+	C4Real ydFloatAccel;
+	C4Real lFloatAccel;
+	C4Real rFloatAccel;
 
 	switch (pActionDef->GetPropertyInt(P_Procedure))
 	{

@@ -33,13 +33,13 @@
    floating point code, leading to desyncs between linux and windows
    engines. */
 
-#ifndef FIXED_H_INC
-#define FIXED_H_INC
+#ifndef INC_C4Real
+#define INC_C4Real
 
 #include <math.h>
 
 // activate to switch to classic fixed-point math
-#define USE_FIXED 1
+#define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE
 #define FIXED_EMULATE_64BIT
 
@@ -47,7 +47,7 @@
 //       any more. It is used to convert old-format fixed values
 //       to the new-format float ones.
 
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 extern long SineTable[9001]; // external table of sine values
 #endif
 
@@ -58,7 +58,7 @@ extern long SineTable[9001]; // external table of sine values
 
 class C4Fixed
 {
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 	friend int fixtoi(const C4Fixed &x);
 	friend int fixtoi(const C4Fixed &x, int32_t prec);
 	friend C4Fixed itofix(int32_t x);
@@ -223,7 +223,7 @@ public:
 	inline bool operator != (int iVal2) const { return operator != (C4Fixed(int32_t(iVal2))); }
 #endif
 
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 	C4Fixed sin_deg() const
 	{
 		// adjust angle
@@ -258,11 +258,9 @@ public:
 
 };
 
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 
-// *** wrap FIXED to C4Fixed
-
-#define FIXED C4Fixed
+typedef C4Fixed C4Real;
 
 // conversion
 inline float fixtof(const C4Fixed &x) { return x.to_float(); }
@@ -273,21 +271,21 @@ inline C4Fixed itofix(int32_t x) { return C4Fixed(x); }
 inline C4Fixed itofix(int32_t x, int32_t prec) { return C4Fixed(x, prec); }
 
 // additional functions
-inline FIXED Sin(const FIXED &fAngle) { return fAngle.sin_deg(); }
-inline FIXED Cos(const FIXED &fAngle) { return fAngle.cos_deg(); }
-inline FIXED FIXED100(int x) { return itofix(x, 100); }
-//inline FIXED FIXED256(int x) { return itofix(x, 256); }
-inline FIXED FIXED256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
-inline FIXED FIXED10(int x) { return itofix(x, 10); }
+inline C4Real Sin(const C4Real &fAngle) { return fAngle.sin_deg(); }
+inline C4Real Cos(const C4Real &fAngle) { return fAngle.cos_deg(); }
+inline C4Real FIXED100(int x) { return itofix(x, 100); }
+//inline C4Real FIXED256(int x) { return itofix(x, 256); }
+inline C4Real FIXED256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
+inline C4Real FIXED10(int x) { return itofix(x, 10); }
 
 #else
 
-// *** wrap FIXED to float
+// *** wrap C4Real to float
 
-#define FIXED float
+typedef float C4Real;
 
 // fixtoi: use asm fistp, round up
-inline int fixtoi(FIXED x)
+inline int fixtoi(C4Real x)
 {
 	int e;
 #ifdef _MSC_VER
@@ -306,33 +304,33 @@ asm ("fistp%z0 %0" : "=om" (e) : "t" (x) : "st");
 }
 
 // conversion
-inline int fixtoi(const FIXED &x, int32_t prec) { return fixtoi(x*prec); }
-inline FIXED itofix(int x) { return static_cast<FIXED>(x); }
-inline FIXED itofix(int x, int prec) { return static_cast<FIXED>(x) / prec; }
-inline float fixtof(const FIXED &x) { return x; }
-inline FIXED ftofix(float x) { return x; }
+inline int fixtoi(const C4Real &x, int32_t prec) { return fixtoi(x*prec); }
+inline C4Real itofix(int x) { return static_cast<C4Real>(x); }
+inline C4Real itofix(int x, int prec) { return static_cast<C4Real>(x) / prec; }
+inline float fixtof(const C4Real &x) { return x; }
+inline C4Real ftofix(float x) { return x; }
 
 // additional functions
-inline FIXED Sin(FIXED x) { return float(sin(x * 3.141592f / 180)); }
-inline FIXED Cos(FIXED x) { return float(cos(x * 3.141592f / 180)); }
-inline FIXED FIXED100(int x) { return float(x) / 100; }
-inline FIXED FIXED256(int x) { return float(x) / 256; }
-inline FIXED FIXED10(int x) { return float(x) / 10; }
+inline C4Real Sin(C4Real x) { return float(sin(x * 3.141592f / 180)); }
+inline C4Real Cos(C4Real x) { return float(cos(x * 3.141592f / 180)); }
+inline C4Real FIXED100(int x) { return float(x) / 100; }
+inline C4Real FIXED256(int x) { return float(x) / 256; }
+inline C4Real FIXED10(int x) { return float(x) / 10; }
 
 #endif
 
 // define 0
-const FIXED Fix0 = itofix(0);
+const C4Real Fix0 = itofix(0);
 
 // conversion...
 // note: keep out! really dirty casts!
-#ifdef USE_FIXED
-inline void FLOAT_TO_FIXED(FIXED *pVal)
+#ifdef C4REAL_USE_FIXNUM
+inline void FLOAT_TO_FIXED(C4Real *pVal)
 {
 	*pVal = ftofix (*reinterpret_cast<float *>(pVal));
 }
 #else
-inline void FIXED_TO_FLOAT(FIXED *pVal)
+inline void FIXED_TO_FLOAT(C4Real *pVal)
 {
 	*pVal = reinterpret_cast<C4Fixed *>(pVal)->to_float();
 }
@@ -340,7 +338,7 @@ inline void FIXED_TO_FLOAT(FIXED *pVal)
 
 #undef inline
 
-// CompileFunc for FIXED
-void CompileFunc(FIXED &rValue, StdCompiler *pComp);
+// CompileFunc for C4Real
+void CompileFunc(C4Real &rValue, StdCompiler *pComp);
 
 #endif //FIXED_H_INC

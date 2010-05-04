@@ -18,12 +18,12 @@
 // fixed numbers - sine functions
 
 #include "C4Include.h"
-#include <Fixed.h>
+#include "C4Real.h"
 
 #include "StdCompiler.h"
 #include "StdAdaptors.h"
 
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 
 // static table with sinus values from 0.00 degree to 90.00 degree inclusively
 long SineTable[9001] =
@@ -9030,11 +9030,11 @@ long SineTable[9001] =
 	65535,
 	65536
 };
-#endif // USE_FIXED
+#endif // C4REAL_USE_FIXNUM
 
-void CompileFunc(FIXED &rValue, StdCompiler *pComp)
+void CompileFunc(C4Real &rValue, StdCompiler *pComp)
 {
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 	char cFormat = 'F';
 #else
 	char cFormat = 'f';
@@ -9054,7 +9054,7 @@ void CompileFunc(FIXED &rValue, StdCompiler *pComp)
 	// Read value (as int32_t)
 	pComp->Value(mkCastAdapt<int32_t>(rValue));
 	// convert, if neccessary
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 	if (cFormat == 'f')
 		FLOAT_TO_FIXED(&rValue);
 #else

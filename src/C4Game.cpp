@@ -978,7 +978,7 @@ bool C4Game::IsPaused()
 C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
                              int32_t iOwner, C4ObjectInfo *pInfo,
                              int32_t iX, int32_t iY, int32_t iR,
-                             FIXED xdir, FIXED ydir, FIXED rdir,
+                             C4Real xdir, C4Real ydir, C4Real rdir,
                              int32_t iCon, int32_t iController)
 {
 	// Safety
@@ -1021,7 +1021,7 @@ void C4Game::DeleteObjects(bool fDeleteInactive)
 
 C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
                                int32_t x, int32_t y, int32_t r,
-                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)
+                               C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
 {
 	C4Def *pDef;
 	// Get pDef
@@ -1036,7 +1036,7 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
 
 C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_t iOwner,
                                int32_t x, int32_t y, int32_t r,
-                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)
+                               C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
 {
 	C4Def *pDef;
 	// Get pDef

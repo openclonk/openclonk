@@ -387,9 +387,9 @@ void C4Command::MoveTo()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLOAT:
 	{
-		FIXED dx = itofix(Tx._getInt()) - cObj->fix_x, dy = itofix(Ty) - cObj->fix_y;
+		C4Real dx = itofix(Tx._getInt()) - cObj->fix_x, dy = itofix(Ty) - cObj->fix_y;
 		// normalize
-		FIXED dScale = FIXED100(cObj->GetPhysical()->Float) / Max(Abs(dx), Abs(dy));
+		C4Real dScale = FIXED100(cObj->GetPhysical()->Float) / Max(Abs(dx), Abs(dy));
 		dx *= dScale; dy *= dScale;
 		// difference to momentum
 		dx -= cObj->xdir; dy -= cObj->ydir;
@@ -883,7 +883,7 @@ void C4Command::Throw()
 
 		// Find throwing position
 		int32_t iTx,iTy;
-		FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+		C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
 		int32_t iHeight = cObj->Shape.Hgt;
 		if (!FindThrowingPosition(Tx._getInt(),Ty,pthrow*iDir,-pthrow,iHeight,iTx,iTy))
 			if (!FindThrowingPosition(Tx._getInt(),Ty,pthrow*iDir*-1,-pthrow,iHeight,iTx,iTy))
@@ -1374,7 +1374,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 			{
 				int32_t iTx = Target->GetX() + Target->Def->Collection.x + Target->Def->Collection.Wdt/2;
 				int32_t iTy = Target->GetY() + Target->Def->Collection.y + Target->Def->Collection.Hgt/2;
-				FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+				C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
 				int32_t iHeight = cObj->Shape.Hgt;
 				int32_t iPosX,iPosY;
 				int32_t iObjDist = Distance(cObj->GetX(),cObj->GetY(),Target->GetX(),Target->GetY());

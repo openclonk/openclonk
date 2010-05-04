@@ -30,7 +30,7 @@
 #include <C4Game.h>
 #include <C4Record.h>
 
-static const FIXED WindDrift_Factor = itofix(1, 800);
+static const C4Real WindDrift_Factor = itofix(1, 800);
 
 void C4PXS::Execute()
 {
@@ -66,8 +66,8 @@ void C4PXS::Execute()
 	{
 		// Air speed: Wind plus some random
 		int32_t iWind = GBackWind(iX, iY);
-		FIXED txdir = itofix(iWind, 15) + FIXED256(Random(1200) - 600);
-		FIXED tydir = FIXED256(Random(1200) - 600);
+		C4Real txdir = itofix(iWind, 15) + FIXED256(Random(1200) - 600);
+		C4Real tydir = FIXED256(Random(1200) - 600);
 
 		// Air friction, based on WindDrift. MaxSpeed is ignored.
 		int32_t iWindDrift = Max(::MaterialMap.Map[Mat].WindDrift - 20, 0);
@@ -75,8 +75,8 @@ void C4PXS::Execute()
 		ydir += ((tydir - ydir) * iWindDrift) * WindDrift_Factor;
 	}
 
-	FIXED ctcox = x + xdir;
-	FIXED ctcoy = y + ydir;
+	C4Real ctcox = x + xdir;
+	C4Real ctcoy = y + ydir;
 
 	int32_t iToX = fixtoi(ctcox), iToY = fixtoi(ctcoy);
 
@@ -202,7 +202,7 @@ C4PXS* C4PXSSystem::New()
 	return NULL;
 }
 
-bool C4PXSSystem::Create(int32_t mat, FIXED ix, FIXED iy, FIXED ixdir, FIXED iydir)
+bool C4PXSSystem::Create(int32_t mat, C4Real ix, C4Real iy, C4Real ixdir, C4Real iydir)
 {
 	C4PXS *pxp;
 	if (!MatValid(mat)) return false;
@@ -349,7 +349,7 @@ bool C4PXSSystem::Save(C4Group &hGroup)
 	CStdFile hTempFile;
 	if (!hTempFile.Create(Config.AtTempPath(C4CFN_TempPXS)))
 		return false;
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 	int32_t iNumFormat = 1;
 #else
 	int32_t iNumFormat = 2;
@@ -380,7 +380,7 @@ bool C4PXSSystem::Load(C4Group &hGroup)
 	if (!hGroup.AccessEntry(C4CFN_PXS,&iBinSize)) return false;
 	// clear previous
 	Clear();
-	// using FIXED or float?
+	// using C4Real or float?
 	int32_t iNumForm = 1;
 	if (iBinSize % iChunkSize == 4)
 	{
@@ -405,7 +405,7 @@ bool C4PXSSystem::Load(C4Group &hGroup)
 			{
 				++iChunkPXS[cnt];
 				// convert number format
-#ifdef USE_FIXED
+#ifdef C4REAL_USE_FIXNUM
 				if (iNumForm == 2) { FLOAT_TO_FIXED(&pxp->x); FLOAT_TO_FIXED(&pxp->y); FLOAT_TO_FIXED(&pxp->xdir); FLOAT_TO_FIXED(&pxp->ydir); }
 #else
 				if (iNumForm == 1) { FIXED_TO_FLOAT(&pxp->x); FIXED_TO_FLOAT(&pxp->y); FIXED_TO_FLOAT(&pxp->xdir); FIXED_TO_FLOAT(&pxp->ydir); }

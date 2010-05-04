@@ -24,7 +24,7 @@
 
 #include <C4Id.h>
 #include <C4ValueMap.h>
-#include <Fixed.h>
+#include "C4Real.h"
 #include "C4InputValidation.h"
 
 const int32_t C4MaxPhysical = 100000,
@@ -217,7 +217,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-inline FIXED ValByPhysical(int32_t iPercent, int32_t iPhysical) // get percentage of max physical value
+inline C4Real ValByPhysical(int32_t iPercent, int32_t iPhysical) // get percentage of max physical value
 {
 	return itofix(iPhysical * (iPercent / 5),C4MaxPhysical * 20);
 }

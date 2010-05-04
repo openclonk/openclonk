@@ -22,7 +22,7 @@
 #ifndef INC_C4ObjectCom
 #define INC_C4ObjectCom
 
-#include <Fixed.h>
+#include "C4Real.h"
 #include <C4Id.h>
 
 class C4Facet;
@@ -42,10 +42,10 @@ bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget=NULL, int3
 
 bool ObjectActionWalk(C4Object *cObj);
 bool ObjectActionStand(C4Object *cObj);
-bool ObjectActionJump(C4Object *cObj, FIXED xdir, FIXED ydir, bool fByCom);
-bool ObjectActionDive(C4Object *cObj, FIXED xdir, FIXED ydir);
-bool ObjectActionTumble(C4Object *cObj, int32_t dir, FIXED xdir, FIXED ydir);
-bool ObjectActionGetPunched(C4Object *cObj, FIXED xdir, FIXED ydir);
+bool ObjectActionJump(C4Object *cObj, C4Real xdir, C4Real ydir, bool fByCom);
+bool ObjectActionDive(C4Object *cObj, C4Real xdir, C4Real ydir);
+bool ObjectActionTumble(C4Object *cObj, int32_t dir, C4Real xdir, C4Real ydir);
+bool ObjectActionGetPunched(C4Object *cObj, C4Real xdir, C4Real ydir);
 bool ObjectActionKneel(C4Object *cObj);
 bool ObjectActionFlat(C4Object *cObj, int32_t dir);
 bool ObjectActionScale(C4Object *cObj, int32_t dir);

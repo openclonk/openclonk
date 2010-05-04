@@ -136,7 +136,7 @@ struct C4RCSetPix
 struct C4RCExecObj
 {
 	int Number; // object number
-	FIXED fx,fy,fr;
+	C4Real fx,fy,fr;
 };
 
 struct C4RCMassMover
@@ -175,7 +175,7 @@ struct C4RCRotVtx
 struct C4RCExecPXS
 {
 	// pos
-	FIXED x,y;
+	C4Real x,y;
 	// mat
 	int32_t iMat;
 	// execution pos

@@ -1237,7 +1237,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 	C4MaterialReaction *pReact; int32_t tmat;
 	if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel)))))
 	{
-		FIXED fvx=FIXED10(vx), fvy=FIXED10(vy);
+		C4Real fvx=FIXED10(vx), fvy=FIXED10(vy);
 		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
 		{
 			// the material to be inserted killed itself in some material reaction below
@@ -2070,11 +2070,11 @@ bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32
 	return ForLine(x1,y1,x2,y2,&PathFreeIgnoreVehiclePix,0,ix,iy);
 }
 
-int32_t TrajectoryDistance(int32_t iFx, int32_t iFy, FIXED iXDir, FIXED iYDir, int32_t iTx, int32_t iTy)
+int32_t TrajectoryDistance(int32_t iFx, int32_t iFy, C4Real iXDir, C4Real iYDir, int32_t iTx, int32_t iTy)
 {
 	int32_t iClosest = Distance(iFx,iFy,iTx,iTy);
 	// Follow free trajectory, take closest point distance
-	FIXED cx = itofix(iFx), cy = itofix(iFy);
+	C4Real cx = itofix(iFx), cy = itofix(iFy);
 	int32_t cdis;
 	while (Inside(fixtoi(cx),0,GBackWdt-1) && Inside(fixtoi(cy),0,GBackHgt-1) && !GBackSolid(fixtoi(cx), fixtoi(cy)))
 	{
@@ -2088,7 +2088,7 @@ int32_t TrajectoryDistance(int32_t iFx, int32_t iFy, FIXED iXDir, FIXED iYDir, i
 const int32_t C4LSC_Throwing_MaxVertical = 50,
     C4LSC_Throwing_MaxHorizontal = 60;
 
-bool FindThrowingPosition(int32_t iTx, int32_t iTy, FIXED fXDir, FIXED fYDir, int32_t iHeight, int32_t &rX, int32_t &rY)
+bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, int32_t iHeight, int32_t &rX, int32_t &rY)
 {
 
 	// Start underneath throwing target

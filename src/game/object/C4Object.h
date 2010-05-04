@@ -155,8 +155,8 @@ public:
 	int32_t ViewEnergy; // NoSave //
 	int32_t Audible, AudiblePan; // NoSave //
 	int32_t PlrViewRange;
-	FIXED fix_x,fix_y,fix_r; // SyncClearance-Fix //
-	FIXED xdir,ydir,rdir;
+	C4Real fix_x,fix_y,fix_r; // SyncClearance-Fix //
+	C4Real xdir,ydir,rdir;
 	int32_t iLastAttachMovementFrame; // last frame in which Attach-movement by a SolidMask was done
 	bool Mobile;
 	bool Select;
@@ -250,7 +250,7 @@ public:
 	bool Init(C4PropList *ndef, C4Object *pCreator,
 	          int32_t owner, C4ObjectInfo *info,
 	          int32_t nx, int32_t ny, int32_t nr,
-	          FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController);
+	          C4Real nxdir, C4Real nydir, C4Real nrdir, int32_t iController);
 	void CompileFunc(StdCompiler *pComp);
 	void DrawLine(C4TargetFacet &cgo);
 	bool SetPhase(int32_t iPhase);
@@ -294,7 +294,7 @@ public:
 	void AutoContextMenu(int32_t iMenuSelect);
 	int32_t ContactCheck(int32_t atx, int32_t aty);
 	bool Contact(int32_t cnat);
-	void TargetBounds(FIXED &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
+	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 	C4PropList* GetAction();
 	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
@@ -304,7 +304,7 @@ public:
 	void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }
 	int32_t GetProcedure();
 	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=NULL);
-	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, FIXED iXDir=Fix0, FIXED iYDir=Fix0, FIXED iRDir=Fix0, bool fCalls=true);
+	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
 	void ForcePosition(int32_t tx, int32_t ty);
 	void MovePosition(int32_t dx, int32_t dy);
@@ -323,9 +323,9 @@ public:
 	void Blast(int32_t iLevel, int32_t iCausedBy);
 	bool Build(int32_t iLevel, C4Object *pBuilder);
 	bool Chop(C4Object *pByObject);
-	bool Push(FIXED txdir, FIXED dforce, bool fStraighten);
-	bool Lift(FIXED tydir, FIXED dforce);
-	void Fling(FIXED txdir, FIXED tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
+	bool Push(C4Real txdir, C4Real dforce, bool fStraighten);
+	bool Lift(C4Real tydir, C4Real dforce);
+	void Fling(C4Real txdir, C4Real tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
 	C4Object* CreateContents(C4PropList *);
 	bool CreateContentsByList(C4IDList &idlist);
 	BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
@@ -336,11 +336,11 @@ public:
 	inline int32_t Height() { return Shape.Hgt+addtop(); } // height of shape (+build-top)
 	inline int32_t GetX() { return fixtoi(fix_x); }
 	inline int32_t GetY() { return fixtoi(fix_y); }
-	inline FIXED GetFixedX() { return fix_x; }
-	inline FIXED GetFixedY() { return fix_y; }
+	inline C4Real GetFixedX() { return fix_x; }
+	inline C4Real GetFixedY() { return fix_y; }
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
-	BYTE GetMomentum(FIXED &rxdir, FIXED &rydir);
-	FIXED GetSpeed();
+	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
+	C4Real GetSpeed();
 	C4PhysicalInfo *GetPhysical(bool fPermanent=false);
 	bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 	void SetName (const char *NewName = 0);
@@ -372,11 +372,11 @@ public:
 	bool GetDragImage(C4Object **drag_object, C4ID *drag_id); // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
 
 protected:
-	void SideBounds(FIXED &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
-	void VerticalBounds(FIXED &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
+	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
+	void VerticalBounds(C4Real &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
 
 public:
-	void BoundsCheck(FIXED &ctcox, FIXED &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
+	void BoundsCheck(C4Real &ctcox, C4Real &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
 	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
 public:

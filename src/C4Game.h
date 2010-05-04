@@ -200,10 +200,10 @@ public:
 	void ClearPointers(C4PropList *cobj);
 	C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
 	                       int32_t x=50, int32_t y=50, int32_t r=0,
-	                       FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
+	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
 	C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
 	                       int32_t x=50, int32_t y=50, int32_t r=0,
-	                       FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
+	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
 	C4Object *CreateObjectConstruction(C4PropList * type,
 	                                   C4Object *pCreator,
 	                                   int32_t owner,
@@ -306,7 +306,7 @@ protected:
 	C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
 	                     int32_t owner, C4ObjectInfo *info,
 	                     int32_t tx, int32_t ty, int32_t tr,
-	                     FIXED xdir, FIXED ydir, FIXED rdir,
+	                     C4Real xdir, C4Real ydir, C4Real rdir,
 	                     int32_t con, int32_t iController);
 	void ClearObjectPtrs(C4Object *tptr);
 	void ObjectRemovalCheck();

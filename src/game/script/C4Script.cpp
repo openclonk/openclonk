@@ -474,8 +474,8 @@ static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCh
 {
 	if (fCheckBounds)
 	{
-		// BoundsCheck takes ref to FIXED and not to long
-		FIXED i_x = itofix(iX), i_y = itofix(iY);
+		// BoundsCheck takes ref to C4Real and not to long
+		C4Real i_x = itofix(iX), i_y = itofix(iY);
 		cthr->Obj->BoundsCheck(i_x, i_y);
 		iX = fixtoi(i_x); iY = fixtoi(i_y);
 	}
@@ -4688,7 +4688,7 @@ static bool FnSetObjDrawTransform2(C4AulObjectContext *ctx, long iA, long iB, lo
          ? Par->GetData().Int \
          : Std)
 
-bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter);
+bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter);
 
 static C4Value FnSimFlight(C4AulContext *ctx, C4Value *pvrX, C4Value *pvrY, C4Value *pvrXDir, C4Value *pvrYDir, C4Value *pviDensityMin, C4Value *pviDensityMax, C4Value *pviIter, C4Value *pviPrec)
 {
@@ -4700,8 +4700,8 @@ static C4Value FnSimFlight(C4AulContext *ctx, C4Value *pvrX, C4Value *pvrY, C4Va
 	COPY_C4V_PAR(int iIter, pviIter, C4V_Int, -1);
 	COPY_C4V_PAR(int iPrec, pviPrec, C4V_Int, 10);
 
-	// convert to FIXED
-	FIXED x = itofix(pvrX->GetData().Int), y = itofix(pvrY->GetData().Int),
+	// convert to C4Real
+	C4Real x = itofix(pvrX->GetData().Int), y = itofix(pvrY->GetData().Int),
 	          xdir = itofix(pvrXDir->GetData().Int, iPrec), ydir = itofix(pvrYDir->GetData().Int, iPrec);
 
 	// simulate

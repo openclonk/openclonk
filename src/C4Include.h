@@ -32,7 +32,7 @@
 #include "PlatformAbstraction.h"
 #include "Standard.h"
 #include "C4Prototypes.h"
-#include "Fixed.h"
+#include "C4Real.h"
 #include "StdBuf.h"
 #include "StdFile.h"
 #include "StdResStr2.h"

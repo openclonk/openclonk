@@ -31,34 +31,34 @@
 
 /* Some physical constants */
 
-const FIXED FRedirect=FIXED100(50);
-const FIXED FFriction=FIXED100(30);
-const FIXED FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
-const FIXED FloatFriction=FIXED100(2);
-const FIXED RotateAccel=FIXED100(20);
-const FIXED FloatAccel=FIXED100(10);
-const FIXED WalkAccel=FIXED100(8);
-const FIXED WalkBreak=FIXED100(16);
-const FIXED ScaleAccel=FIXED100(20);
-const FIXED SwimAccel=FIXED100(7);
-const FIXED HitSpeed1=FIXED100(150); // Hit Event
-const FIXED HitSpeed2=itofix(2); // Cross Check Hit
-const FIXED HitSpeed3=itofix(6); // Scale disable, kneel
-const FIXED HitSpeed4=itofix(8); // Flat
+const C4Real FRedirect=FIXED100(50);
+const C4Real FFriction=FIXED100(30);
+const C4Real FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
+const C4Real FloatFriction=FIXED100(2);
+const C4Real RotateAccel=FIXED100(20);
+const C4Real FloatAccel=FIXED100(10);
+const C4Real WalkAccel=FIXED100(8);
+const C4Real WalkBreak=FIXED100(16);
+const C4Real ScaleAccel=FIXED100(20);
+const C4Real SwimAccel=FIXED100(7);
+const C4Real HitSpeed1=FIXED100(150); // Hit Event
+const C4Real HitSpeed2=itofix(2); // Cross Check Hit
+const C4Real HitSpeed3=itofix(6); // Scale disable, kneel
+const C4Real HitSpeed4=itofix(8); // Flat
 
 /* Some helper functions */
 
-void RedirectForce(FIXED &from, FIXED &to, int32_t tdir)
+void RedirectForce(C4Real &from, C4Real &to, int32_t tdir)
 {
-	FIXED fred;
+	C4Real fred;
 	fred=Min(Abs(from), FRedirect);
 	from-=fred*Sign(from);
 	to+=fred*tdir;
 }
 
-void ApplyFriction(FIXED &tval, int32_t percent)
+void ApplyFriction(C4Real &tval, int32_t percent)
 {
-	FIXED ffric=FFriction*percent/100;
+	C4Real ffric=FFriction*percent/100;
 	if (tval>+ffric) { tval-=ffric; return; }
 	if (tval<-ffric) { tval+=ffric; return; }
 	tval=0;
@@ -133,14 +133,14 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
 	fix_x += mx; fix_y += my;
 }
 
-static inline int32_t ForceLimits(FIXED &rVal, int32_t iLow, int32_t iHi)
+static inline int32_t ForceLimits(C4Real &rVal, int32_t iLow, int32_t iHi)
 {
 	if (rVal<iLow) { rVal=iLow; return -1; }
 	if (rVal>iHi)  { rVal=iHi;  return +1; }
 	return 0;
 }
 
-void C4Object::TargetBounds(FIXED &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
+void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
 {
 	switch (ForceLimits(ctco,limit_low,limit_hi))
 	{
@@ -178,7 +178,7 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
 	return Shape.ContactCount;
 }
 
-void C4Object::SideBounds(FIXED &ctcox)
+void C4Object::SideBounds(C4Real &ctcox)
 {
 	// layer bounds
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
@@ -197,7 +197,7 @@ void C4Object::SideBounds(FIXED &ctcox)
 		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
 }
 
-void C4Object::VerticalBounds(FIXED &ctcoy)
+void C4Object::VerticalBounds(C4Real &ctcoy)
 {
 	// layer bounds
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
@@ -250,11 +250,11 @@ void C4Object::DoMovement()
 	int32_t ix0=GetX(); int32_t iy0=GetY();
 
 	// store previous movement and ocf
-	FIXED oldxdir(xdir), oldydir(ydir);
+	C4Real oldxdir(xdir), oldydir(ydir);
 	uint32_t old_ocf = OCF;
 
-	FIXED new_x = fix_x + xdir;
-	FIXED new_y = fix_y + ydir;
+	C4Real new_x = fix_x + xdir;
+	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
 	ctcox = fixtoi(new_x);
 
@@ -262,10 +262,10 @@ void C4Object::DoMovement()
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<FIXED>(fix_x - ctcox) > FIXED10(5))
+		while (Abs<C4Real>(fix_x - ctcox) > FIXED10(5))
 		{
 			// Next step
-			int step = Sign<FIXED>(new_x - fix_x);
+			int step = Sign<C4Real>(new_x - fix_x);
 			if ((iContact=ContactCheck(GetX() + step, GetY())))
 			{
 				fAnyContact=true; iContacts |= t_contact;
@@ -286,10 +286,10 @@ void C4Object::DoMovement()
 		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<FIXED>(fix_y - ctcoy) > FIXED10(5))
+		while (Abs<C4Real>(fix_y - ctcoy) > FIXED10(5))
 		{
 			// Next step
-			int step = Sign<FIXED>(new_y - fix_y);
+			int step = Sign<C4Real>(new_y - fix_y);
 			if ((iContact=ContactCheck(GetX(), GetY() + step)))
 			{
 				fAnyContact=true; iContacts |= t_contact;
@@ -326,10 +326,10 @@ void C4Object::DoMovement()
 			bool at_xovr = false, at_yovr = false;
 			// Set next step target
 			int step_x = 0, step_y = 0;
-			if (Abs<FIXED>(fix_x - ctcox) > FIXED10(5))
-				step_x = Sign<FIXED>(new_x - fix_x);
-			if (Abs<FIXED>(fix_y - ctcoy) > FIXED10(5))
-				step_y = Sign<FIXED>(new_y - fix_y);
+			if (Abs<C4Real>(fix_x - ctcox) > FIXED10(5))
+				step_x = Sign<C4Real>(new_x - fix_x);
+			if (Abs<C4Real>(fix_y - ctcoy) > FIXED10(5))
+				step_y = Sign<C4Real>(new_y - fix_y);
 			int32_t ctx = GetX() + step_x; int32_t cty = GetY() + step_y;
 			// Attachment check
 			if (!Shape.Attach(ctx,cty,Action.t_attach))
@@ -353,7 +353,7 @@ void C4Object::DoMovement()
 			if (at_xovr) { ctcox=GetX(); xdir=Fix0; new_x = fix_x; }
 			if (at_yovr) { ctcoy=GetY(); ydir=Fix0; new_y = fix_y; }
 		}
-		while (Abs<FIXED>(fix_x - ctcox) > FIXED10(5) || Abs<FIXED>(fix_y - ctcoy) > FIXED10(5));
+		while (Abs<C4Real>(fix_x - ctcox) > FIXED10(5) || Abs<C4Real>(fix_y - ctcoy) > FIXED10(5));
 	}
 	fix_x = new_x;
 	fix_y = new_y;
@@ -592,7 +592,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	return true;
 }
 
-bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter)
+bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter)
 {
 	bool fBreak = false;
 	int32_t ctcox,ctcoy,cx,cy;
@@ -626,7 +626,7 @@ bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin
 	return true;
 }
 
-bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir)
+bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir)
 {
 	// Start in water?
 	if (DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))

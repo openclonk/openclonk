@@ -186,7 +186,7 @@ bool C4MassMover::Corrosion(int32_t dx, int32_t dy)
 	C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, tmat);
 	if (pReact)
 	{
-		FIXED xdir=Fix0, ydir=Fix0;
+		C4Real xdir=Fix0, ydir=Fix0;
 		if ((*pReact->pFunc)(pReact, x,y, x+dx,y+dy, xdir,ydir, Mat,tmat, meeMassMove, NULL))
 			return true;
 	}

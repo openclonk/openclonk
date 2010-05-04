@@ -132,13 +132,13 @@ namespace
 					
 					if(pComp->isCompiler())
 					{
-						FIXED f;
+						C4Real f;
 						pComp->Value(f);
 						Matrix(i,j) = fixtof(f);
 					}
 					else
 					{
-						FIXED f = ftofix(Matrix(i,j));
+						C4Real f = ftofix(Matrix(i,j));
 						pComp->Value(f);
 					}
 				}
@@ -1711,8 +1711,8 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 {
 	ValueProvider* provider = NULL;
-	FIXED min;
-	FIXED max;
+	C4Real min;
+	C4Real max;
 
 	switch (node->GetType())
 	{
@@ -1728,7 +1728,7 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 		break;
 	}
 
-	const FIXED old_value = provider->Value;
+	const C4Real old_value = provider->Value;
 	if (!provider->Execute())
 	{
 		if (node->GetType() == AnimationNode::LeafNode) return false;

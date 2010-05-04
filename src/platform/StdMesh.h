@@ -369,7 +369,7 @@ public:
 		// otherwise.
 		virtual bool Execute() = 0;
 
-		FIXED Value; // Current provider value
+		C4Real Value; // Current provider value
 	};
 
 	// Serializable value providers need to be registered with SerializeableValueProvider::Register.
@@ -459,12 +459,12 @@ public:
 
 		const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
 		ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
-		FIXED GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
+		C4Real GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
 
 		AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
 		AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
 		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
-		FIXED GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
+		C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
 
 		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
 		void EnumeratePointers();

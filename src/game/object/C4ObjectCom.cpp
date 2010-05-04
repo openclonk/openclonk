@@ -40,7 +40,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 
-bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
+bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir);
 bool CreateConstructionSite(int32_t ctx, int32_t bty, C4ID strid, int32_t owner, C4Object *pByObj);
 
 bool ObjectActionWalk(C4Object *cObj)
@@ -57,7 +57,7 @@ bool ObjectActionStand(C4Object *cObj)
 	return true;
 }
 
-bool ObjectActionJump(C4Object *cObj, FIXED xdir, FIXED ydir, bool fByCom)
+bool ObjectActionJump(C4Object *cObj, C4Real xdir, C4Real ydir, bool fByCom)
 {
 	// scripted jump?
 	assert(cObj);
@@ -73,7 +73,7 @@ bool ObjectActionJump(C4Object *cObj, FIXED xdir, FIXED ydir, bool fByCom)
 	return true;
 }
 
-bool ObjectActionDive(C4Object *cObj, FIXED xdir, FIXED ydir)
+bool ObjectActionDive(C4Object *cObj, C4Real xdir, C4Real ydir)
 {
 	if (!cObj->SetActionByName("Dive")) return false;
 	cObj->xdir=xdir; cObj->ydir=ydir;
@@ -84,7 +84,7 @@ bool ObjectActionDive(C4Object *cObj, FIXED xdir, FIXED ydir)
 	return true;
 }
 
-bool ObjectActionTumble(C4Object *cObj, int32_t dir, FIXED xdir, FIXED ydir)
+bool ObjectActionTumble(C4Object *cObj, int32_t dir, C4Real xdir, C4Real ydir)
 {
 	if (!cObj->SetActionByName("Tumble")) return false;
 	cObj->SetDir(dir);
@@ -92,7 +92,7 @@ bool ObjectActionTumble(C4Object *cObj, int32_t dir, FIXED xdir, FIXED ydir)
 	return true;
 }
 
-bool ObjectActionGetPunched(C4Object *cObj, FIXED xdir, FIXED ydir)
+bool ObjectActionGetPunched(C4Object *cObj, C4Real xdir, C4Real ydir)
 {
 	if (!cObj->SetActionByName("GetPunched")) return false;
 	cObj->xdir=xdir; cObj->ydir=ydir;
@@ -137,7 +137,7 @@ bool ObjectActionThrow(C4Object *cObj, C4Object *pThing)
 	// Nothing to throw
 	if (!pThing) return false;
 	// Force and direction
-	FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
 	int32_t iDir=1; if (cObj->Action.Dir==DIR_Left) iDir=-1;
 	// Set action
 	if (!cObj->SetActionByName("Throw")) return false;
@@ -301,10 +301,10 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 	// Only if walking
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	// Calculate direction & forces
-	FIXED TXDir=Fix0;
+	C4Real TXDir=Fix0;
 	C4PhysicalInfo *pPhysical=cObj->GetPhysical();
-	FIXED iPhysicalWalk = ValByPhysical(280, pPhysical->Walk) * itofix(cObj->GetCon(), FullCon);
-	FIXED iPhysicalJump = ValByPhysical(1000, pPhysical->Jump) * itofix(cObj->GetCon(), FullCon);
+	C4Real iPhysicalWalk = ValByPhysical(280, pPhysical->Walk) * itofix(cObj->GetCon(), FullCon);
+	C4Real iPhysicalJump = ValByPhysical(1000, pPhysical->Jump) * itofix(cObj->GetCon(), FullCon);
 
 	if (cObj->Action.ComDir==COMD_Left || cObj->Action.ComDir==COMD_UpLeft)  TXDir=-iPhysicalWalk;
 	else if (cObj->Action.ComDir==COMD_Right || cObj->Action.ComDir==COMD_UpRight) TXDir=+iPhysicalWalk;
@@ -313,7 +313,7 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 		if (cObj->Action.Dir==DIR_Left)  TXDir=-iPhysicalWalk;
 		if (cObj->Action.Dir==DIR_Right) TXDir=+iPhysicalWalk;
 	}
-	FIXED x = cObj->fix_x, y = cObj->fix_y;
+	C4Real x = cObj->fix_x, y = cObj->fix_y;
 	// find bottom-most vertex, correct starting position for simulation
 	int32_t iBtmVtx = cObj->Shape.GetBottomVertex();
 	if (iBtmVtx != -1) { x += cObj->Shape.GetVertexX(iBtmVtx); y += cObj->Shape.GetVertexY(iBtmVtx); }
@@ -659,7 +659,7 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	// When dropping diagonally, drop from edge of shape
 	// When doing a diagonal forward drop during flight, exit a bit closer to the Clonk to allow planned tumbling
 	// Except when hangling, so you can mine effectively form the ceiling, and when swimming because you cannot tumble then
-	FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
 	int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = DFA_NONE;
@@ -788,7 +788,7 @@ bool ObjectComCancelAttach(C4Object *cObj)
 void ObjectComStopDig(C4Object *cObj)
 {
 	// Stand - but keep momentum to allow more dyanamic digging
-	FIXED o_xdir = cObj->xdir, o_ydir = cObj->ydir;
+	C4Real o_xdir = cObj->xdir, o_ydir = cObj->ydir;
 	ObjectActionStand(cObj);
 	cObj->xdir = o_xdir; cObj->ydir = o_ydir;
 	// Clear digging command

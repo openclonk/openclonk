@@ -23,7 +23,7 @@
 #ifndef INC_C4Sky
 #define INC_C4Sky
 
-#include <Fixed.h>
+#include "C4Real.h"
 
 #define C4SkyPM_Fixed     0   // sky parallax mode: fixed
 #define C4SkyPM_Wind      1   // sky parallax mode: blown by the wind
@@ -57,8 +57,8 @@ protected:
 	bool BackClrEnabled;    // is the background color enabled?
 public:
 	class C4Surface * Surface;
-	FIXED xdir,ydir;  // sky movement speed
-	FIXED x,y;        // sky movement pos
+	C4Real xdir,ydir;  // sky movement speed
+	C4Real x,y;        // sky movement pos
 	int32_t ParX, ParY; // parallax movement in xdir/ydir
 	uint32_t FadeClr1, FadeClr2;
 	int32_t ParallaxMode;     // sky scrolling mode

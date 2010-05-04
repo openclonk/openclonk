@@ -68,8 +68,8 @@ void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
 
 	//int32_t *vtx=VtxX;
 	//int32_t *vty=VtxY;
-	FIXED mtx[4];
-	FIXED fAngle = itofix(iAngle);
+	C4Real mtx[4];
+	C4Real fAngle = itofix(iAngle);
 
 	if (bUpdateVertices)
 	{

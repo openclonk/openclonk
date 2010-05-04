@@ -91,7 +91,7 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 	}
 }
 
-C4ValueProviderConst::C4ValueProviderConst(FIXED value)
+C4ValueProviderConst::C4ValueProviderConst(C4Real value)
 {
 	Value = value;
 }
@@ -102,7 +102,7 @@ bool C4ValueProviderConst::Execute()
 	return true;
 }
 
-C4ValueProviderLinear::C4ValueProviderLinear(FIXED pos, FIXED begin, FIXED end, int32_t length, C4AnimationEnding ending):
+C4ValueProviderLinear::C4ValueProviderLinear(C4Real pos, C4Real begin, C4Real end, int32_t length, C4AnimationEnding ending):
 		Begin(begin), End(end), Length(length), Ending(ending), LastTick(Game.FrameCounter)
 {
 	Value = pos;
@@ -157,7 +157,7 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	pComp->Value(LastTick);
 }
 
-C4ValueProviderX::C4ValueProviderX(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+C4ValueProviderX::C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
@@ -165,7 +165,7 @@ C4ValueProviderX::C4ValueProviderX(C4Object* object, FIXED pos, FIXED begin, FIX
 
 bool C4ValueProviderX::Execute()
 {
-	//const FIXED obj_x = fixtof(Object->fix_x);
+	//const C4Real obj_x = fixtof(Object->fix_x);
 	Value += (End - Begin) * (Object->fix_x - LastX) / Length; // TODO: Use xdir instead?
 	LastX = Object->fix_x;
 
@@ -202,7 +202,7 @@ void C4ValueProviderX::CompileFunc(StdCompiler* pComp)
 	pComp->Value(LastX);
 }
 
-C4ValueProviderY::C4ValueProviderY(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+C4ValueProviderY::C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
@@ -210,7 +210,7 @@ C4ValueProviderY::C4ValueProviderY(C4Object* object, FIXED pos, FIXED begin, FIX
 
 bool C4ValueProviderY::Execute()
 {
-	//const FIXED obj_y = fixtof(Object->fix_y);
+	//const C4Real obj_y = fixtof(Object->fix_y);
 	Value += (End - Begin) * (Object->fix_y - LastY) / Length; // TODO: Use ydir instead?
 	LastY = Object->fix_y;
 
@@ -247,7 +247,7 @@ void C4ValueProviderY::CompileFunc(StdCompiler* pComp)
 	pComp->Value(LastY);
 }
 
-C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
@@ -280,7 +280,7 @@ void C4ValueProviderAbsX::CompileFunc(StdCompiler* pComp)
 	pComp->Value(LastX);
 }
 
-C4ValueProviderAbsY::C4ValueProviderAbsY(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+C4ValueProviderAbsY::C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
@@ -313,7 +313,7 @@ void C4ValueProviderAbsY::CompileFunc(StdCompiler* pComp)
 	pComp->Value(LastY);
 }
 
-C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, FIXED begin, FIXED end, FIXED max_xdir):
+C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, C4Real begin, C4Real end, C4Real max_xdir):
 		Object(object), Begin(begin), End(end), MaxXDir(max_xdir)
 {
 	Execute();
@@ -321,7 +321,7 @@ C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, FIXED begin, FIXED en
 
 bool C4ValueProviderXDir::Execute()
 {
-	Value = Begin + (End - Begin) * Min<FIXED>(Abs(Object->xdir/MaxXDir), itofix(1));
+	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->xdir/MaxXDir), itofix(1));
 	return true;
 }
 
@@ -338,7 +338,7 @@ void C4ValueProviderXDir::CompileFunc(StdCompiler* pComp)
 	pComp->Value(MaxXDir);
 }
 
-C4ValueProviderYDir::C4ValueProviderYDir(C4Object* object, FIXED begin, FIXED end, FIXED max_ydir):
+C4ValueProviderYDir::C4ValueProviderYDir(C4Object* object, C4Real begin, C4Real end, C4Real max_ydir):
 		Object(object), Begin(begin), End(end), MaxYDir(max_ydir)
 {
 	Execute();
@@ -346,7 +346,7 @@ C4ValueProviderYDir::C4ValueProviderYDir(C4Object* object, FIXED begin, FIXED en
 
 bool C4ValueProviderYDir::Execute()
 {
-	Value = Begin + (End - Begin) * Min<FIXED>(Abs(Object->ydir/MaxYDir), itofix(1));
+	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->ydir/MaxYDir), itofix(1));
 	return true;
 }
 
@@ -363,7 +363,7 @@ void C4ValueProviderYDir::CompileFunc(StdCompiler* pComp)
 	pComp->Value(MaxYDir);
 }
 
-C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, FIXED begin, FIXED end, FIXED max_rdir):
+C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real max_rdir):
 		Object(object), Begin(begin), End(end), MaxRDir(max_rdir)
 {
 	Execute();
@@ -371,7 +371,7 @@ C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, FIXED begin, FIXED en
 
 bool C4ValueProviderRDir::Execute()
 {
-	Value = Begin + (End - Begin) * Min<FIXED>(Abs(Object->rdir/MaxRDir), itofix(1));
+	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->rdir/MaxRDir), itofix(1));
 	return true;
 }
 
@@ -388,7 +388,7 @@ void C4ValueProviderRDir::CompileFunc(StdCompiler* pComp)
 	pComp->Value(MaxRDir);
 }
 
-C4ValueProviderCosR::C4ValueProviderCosR(C4Object* object, FIXED begin, FIXED end, FIXED offset):
+C4ValueProviderCosR::C4ValueProviderCosR(C4Object* object, C4Real begin, C4Real end, C4Real offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -413,7 +413,7 @@ void C4ValueProviderCosR::CompileFunc(StdCompiler* pComp)
 	pComp->Value(Offset);
 }
 
-C4ValueProviderSinR::C4ValueProviderSinR(C4Object* object, FIXED begin, FIXED end, FIXED offset):
+C4ValueProviderSinR::C4ValueProviderSinR(C4Object* object, C4Real begin, C4Real end, C4Real offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -438,7 +438,7 @@ void C4ValueProviderSinR::CompileFunc(StdCompiler* pComp)
 	pComp->Value(Offset);
 }
 
-C4ValueProviderCosV::C4ValueProviderCosV(C4Object* object, FIXED begin, FIXED end, FIXED offset):
+C4ValueProviderCosV::C4ValueProviderCosV(C4Object* object, C4Real begin, C4Real end, C4Real offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -467,7 +467,7 @@ void C4ValueProviderCosV::CompileFunc(StdCompiler* pComp)
 	pComp->Value(Offset);
 }
 
-C4ValueProviderSinV::C4ValueProviderSinV(C4Object* object, FIXED begin, FIXED end, FIXED offset):
+C4ValueProviderSinV::C4ValueProviderSinV(C4Object* object, C4Real begin, C4Real end, C4Real offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();

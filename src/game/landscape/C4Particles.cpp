@@ -712,9 +712,9 @@ bool fxStdExec(C4Particle *particle, C4Object *target)
 	{
 		// Air speed: Wind plus some random
 		int32_t wind_speed = GBackWind(int32_t(dx), int32_t(dy));
-		//FIXED txdir = itofix(wind_speed, 15) + FIXED256(Random(1200) - 600);
+		//C4Real txdir = itofix(wind_speed, 15) + FIXED256(Random(1200) - 600);
 		float txdir = wind_speed / 15.0f;
-		//FIXED tydir = FIXED256(Random(1200) - 600);
+		//C4Real tydir = FIXED256(Random(1200) - 600);
 		float tydir = 0;
 
 		// Air friction, based on WindDrift.
