@@ -8,7 +8,6 @@ func Definition(def) {
 
 protected func Initialize()
 {
-	Message("Debug",this);
 	SetProperty("Collectible",1,this);
 	SetAction("Item");
 	SquishVertices(true);
@@ -20,7 +19,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 
 	rider = clonk;
 	SetProperty("Collectible",0,this);
-	Exit();
+	Exit(0,-3);
 	SetAction("Inflate");
 	SetSpeed(clonk->GetXDir(),clonk->GetYDir());
 	clonk->SetAction("HangOnto",this);
@@ -58,31 +57,39 @@ protected func SquishVertices(bool squish)
 	//Reshapes the vertices from a vehicle to an item and back
 	if(squish == true)
 	{
-		SetVertex(0,VTX_X,-2,2);
-		SetVertex(0,VTX_Y,2,2);
-		SetVertex(1,VTX_X,2,2);
-		SetVertex(1,VTX_Y,2,2);
+		SetVertex(0,VTX_X,-4,2);
+		SetVertex(0,VTX_Y,1,2);
+		SetVertex(1,VTX_X,4,2);
+		SetVertex(1,VTX_Y,1,2);
 		SetVertex(2,VTX_X,0,2);
-		SetVertex(2,VTX_Y,0,2);
+		SetVertex(2,VTX_Y,-5,2);
 		SetVertex(3,VTX_X,0,2);
-		SetVertex(3,VTX_Y,0,2);
+		SetVertex(3,VTX_Y,-5,2);
 		SetVertex(4,VTX_X,0,2);
-		SetVertex(4,VTX_Y,14,2);
+		SetVertex(4,VTX_Y,7,2);
+		SetVertex(5,VTX_X,0,2);
+		SetVertex(5,VTX_Y,0,2);
+		SetVertex(6,VTX_X,0,2);
+		SetVertex(6,VTX_Y,0,2);
 	return 1;
 	}
 
 	if(squish != true)
 	{
 		SetVertex(0,VTX_X,0,2);
-		SetVertex(0,VTX_Y,40,2);
+		SetVertex(0,VTX_Y,38,2);
 		SetVertex(1,VTX_X,0,2);
 		SetVertex(1,VTX_Y,-16,2);
-		SetVertex(2,VTX_X,-15,2);
+		SetVertex(2,VTX_X,-13,2);
 		SetVertex(2,VTX_Y,0,2);
-		SetVertex(3,VTX_X,15,2);
+		SetVertex(3,VTX_X,13,2);
 		SetVertex(3,VTX_Y,0,2);
-		SetVertex(4,VTX_X,0,2);
-		SetVertex(4,VTX_Y,48,2);
+		SetVertex(4,VTX_X,-6,2);
+		SetVertex(4,VTX_Y,40,2);
+		SetVertex(5,VTX_X,6,2);
+		SetVertex(5,VTX_Y,40,2);
+		SetVertex(6,VTX_X,0,2);
+		SetVertex(6,VTX_Y,48,2);
 	return 0;
 	}
 }
