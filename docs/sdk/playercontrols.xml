@@ -68,7 +68,7 @@
 	<row>
 		<col>SendCursorPos</col>
 		<col>Boolean</col>
-		<col>Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des Ausloesens des Kommandos gesendet. Ist keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen.</col>
+		<col>Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des Ausloesens des Kommandos als separates CON_CursorPos-Kommando gesendet. Ist keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen.</col>
 	</row>
 	<row>
 		<col>Action</col>
