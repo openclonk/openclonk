@@ -93,8 +93,8 @@ private:
 public:
 	struct CInternalCons
 	{
-		int32_t CON_ObjectMenuSelect, CON_ObjectMenuOKAll, CON_ObjectMenuOK, CON_ObjectMenuCancel;
-		CInternalCons() : CON_ObjectMenuSelect(CON_None), CON_ObjectMenuOKAll(CON_None), CON_ObjectMenuOK(CON_None), CON_ObjectMenuCancel(CON_None) {}
+		int32_t CON_ObjectMenuSelect, CON_ObjectMenuOKAll, CON_ObjectMenuOK, CON_ObjectMenuCancel, CON_CursorPos;
+		CInternalCons() : CON_ObjectMenuSelect(CON_None), CON_ObjectMenuOKAll(CON_None), CON_ObjectMenuOK(CON_None), CON_ObjectMenuCancel(CON_None), CON_CursorPos(CON_None) {}
 	} InternalCons;
 
 	void UpdateInternalCons();
@@ -290,6 +290,7 @@ private:
 	KeyBindingList KeyBindings;     // keys registered into Game.KeyboardInput
 	C4PlayerControlRecentKeyList RecentKeys;           // keys pressed recently; for combinations
 	C4PlayerControlRecentKeyList DownKeys;         // keys currently held down
+	bool IsCursorPosRequested;                     // set to true when a SendCursorPos-control had been issued
 
 public:
 	// sync values
@@ -376,6 +377,8 @@ public:
 	bool SetControlDisabled(int ctrl, bool is_disabled) { return Sync.SetControlDisabled(ctrl, is_disabled); }
 	bool IsControlDisabled(int ctrl) const { return Sync.IsControlDisabled(ctrl); }
 
+	// callback from C4GameControl when the next control packet is finalized
+	void PrepareInput();
 
 };
 

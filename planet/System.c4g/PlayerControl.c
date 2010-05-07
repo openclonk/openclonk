@@ -8,6 +8,7 @@
 
 static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
+static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. last cursor pos as sent by CON_CursorPos
 
 // PlayerControlRelease
 // Called by engine whenever a control is issued
@@ -177,6 +178,14 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		}
 		StopSelected(plr);
 	}
+	// cursor pos info - store in player values
+	if (ctrl == CON_CursorPos)
+	{
+		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr+1);
+		g_player_cursor_pos[plr] = [x, y];
+		
+		return true;
+	}
 	/*
 	if (ctrl == CON_Test)
 	{
@@ -185,6 +194,13 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	}
 	*/
 	return false;
+}
+
+/* return info of last sent CON_CursorPos packet for that player as [x, y] */
+global func GetPlayerCursorPos(int plr)
+{
+	if (!g_player_cursor_pos) return 0;
+	return g_player_cursor_pos[plr];
 }
 
 global func StopSelected(int plr)

@@ -30,6 +30,8 @@
 	# ObjectMenuDown ObjectMenuUp ObjectMenuLeft ObjectMenuRight
 	# PlayerMenu 
 	#
+	# CursorPos
+	#
 	# Backpack
 	#
 	# with Mouse
@@ -193,12 +195,14 @@
 	GUIName=Use
 	GUIDesc=Use selected or controlled item
 	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=UseDelayed
 	GUIName=Use
 	GUIDesc=Use selected or controlled item
 	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=CancelUse
@@ -215,12 +219,14 @@
 	GUIName=Use 2
 	GUIDesc=Use secondary selected or controlled item
 	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=UseAltDelayed
 	GUIName=Use 2
 	GUIDesc=Use secondary selected or controlled item
 	Hold=1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Backpack
@@ -232,6 +238,7 @@
 	Identifier=Grab
 	GUIName=Grab
 	GUIDesc=Grab vehicle
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Ungrab
@@ -257,11 +264,13 @@
 	Identifier=Interact
 	GUIName=Interact
 	GUIDesc=Interact with object in landscape
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Enter
 	GUIName=Enter
 	GUIDesc=Go into the building
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Exit
@@ -431,6 +440,10 @@
 	[ControlDef]
 	Identifier=ObjectMenuDown
 	Action=ObjectMenuDown
+	
+	# control sent by engine along controls with SendCursorPos=1
+	[ControlDef]
+	Identifier=CursorPos
 	
 	# Extra buttons...
 	

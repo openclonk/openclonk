@@ -100,6 +100,7 @@ void C4PlayerControlDefs::UpdateInternalCons()
 	InternalCons.CON_ObjectMenuOK       = GetControlIndexByIdentifier("ObjectMenuOK");
 	InternalCons.CON_ObjectMenuOKAll    = GetControlIndexByIdentifier("ObjectMenuOKAll");
 	InternalCons.CON_ObjectMenuCancel   = GetControlIndexByIdentifier("ObjectMenuCancel");
+	InternalCons.CON_CursorPos          = GetControlIndexByIdentifier("CursorPos");
 }
 
 void C4PlayerControlDefs::Clear()
@@ -762,24 +763,10 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (!fUp || pControlDef->IsHoldKey()))
 		{
 			// extra data from key or overwrite by current cursor pos if definition requires it
-			const C4KeyEventData *pKeyExtraData = &rKeyExtraData;
-			C4KeyEventData CustomKeyExtraData;
-			if (pControlDef->IsSendCursorPos())
-			{
-				CustomKeyExtraData = rKeyExtraData;
-				if (!GetCurrentPlayerCursorPos(&(CustomKeyExtraData.x), &(CustomKeyExtraData.y)))
-				{
-					// no cursor position is known. set it to -1/-1 so scripters get a hint
-					CustomKeyExtraData.x = CustomKeyExtraData.y = -1;
-				}
-				if (!pControlPacket)
-					pKeyExtraData = &CustomKeyExtraData;
-				else
-					pControlPacket->SetExtraData(CustomKeyExtraData);
-			}
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
-				if (ExecuteControl(iControlIndex, fUp, *pKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
+				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true; // async cursor pos request - doesn't really make sense to set this flag for async controls
+				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
 					return true;
 			}
 			else
@@ -789,8 +776,10 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 				if (pressed_key.IsRepeated()) return false;
 				// sync control has higher priority - no more async execution then
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
-				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, *pKeyExtraData);
+				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
 				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode());
+				// sync cursor pos request; pos will be added to control before it is synced/executed
+				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true;
 			}
 		}
 	}
@@ -1032,7 +1021,7 @@ void C4PlayerControl::Execute()
 	if (irk != RecentKeys.begin()) RecentKeys.erase(RecentKeys.begin(), irk);
 }
 
-C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(NULL)
+C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(NULL), IsCursorPosRequested(false)
 {
 }
 
@@ -1045,6 +1034,7 @@ void C4PlayerControl::Clear()
 	RecentKeys.clear();
 	DownKeys.clear();
 	Sync.Clear();
+	IsCursorPosRequested = false;
 }
 
 void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset)
@@ -1155,4 +1145,35 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	float gui_y = (screen_y - vp->last_game_draw_cgo.Y) / C4GUI::GetZoom() + vp->last_game_draw_cgo.Y;
 	*x_out = int32_t(gui_x); *y_out = int32_t(gui_y);
 	return true;
+}
+
+void C4PlayerControl::PrepareInput()
+{
+	if (IsCursorPosRequested)
+	{
+		int32_t x, y;
+		// add current cursor pos in GUI coordinates to input
+		if (GetCurrentPlayerCursorPos(&x, &y))
+		{
+			// CON_CursorPos might not have been defined in definition file
+			if (ControlDefs.InternalCons.CON_CursorPos != CON_None)
+			{
+				C4KeyEventData ev;
+				ev.iStrength = 0;
+				ev.x = x;
+				ev.y = y;
+				C4ControlPlayerControl *pControlPacket = new C4ControlPlayerControl(iPlr, false, ev);
+				pControlPacket->AddControl(ControlDefs.InternalCons.CON_CursorPos, C4PlayerControlAssignment::CTM_Default);
+				// make sure it's added at head, because controls that have SendCursorPos=1 set will follow, which will rely
+				// on the cursor pos being known
+				Game.Input.AddHead(CID_PlrControl, pControlPacket);
+			}
+		}
+		else
+		{
+			// no cursor is known (e.g.: Cursor Clonk dead, etc.). Don't create a control.
+			// Script will probably fall back to last known cursor pos
+		}
+		IsCursorPosRequested = false;
+	}
 }

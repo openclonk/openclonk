@@ -315,7 +315,7 @@ void C4PacketList::Add(C4PacketType eType, C4PacketBase *pPkt)
 
 void C4PacketList::AddHead(C4PacketType eType, C4PacketBase *pPkt)
 {
-	Add(new C4IDPacket(eType, pPkt));
+	AddHead(new C4IDPacket(eType, pPkt));
 }
 
 void C4PacketList::Take(C4PacketList &List)

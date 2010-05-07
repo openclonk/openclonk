@@ -30,6 +30,8 @@
 #include <C4Network2Stats.h>
 #include <C4MouseControl.h>
 #include <C4GamePadCon.h>
+#include <C4PlayerList.h>
+#include <C4Player.h>
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)
@@ -532,6 +534,10 @@ void C4GameControl::PrepareInput()
 	// add per-controlframe input
 	::MouseControl.DoMoveInput();
 	if (Application.pGamePadControl) Application.pGamePadControl->DoAxisInput();
+	// per-player input
+	C4Player *plr; int32_t i=0;
+	while (plr = ::Players.GetLocalByIndex(i++))
+		plr->Control.PrepareInput();
 }
 
 C4GameControl Control;

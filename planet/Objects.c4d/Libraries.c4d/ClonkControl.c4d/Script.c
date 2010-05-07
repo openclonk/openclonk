@@ -454,10 +454,18 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			// Cancel usage
 			CancelUse();
-		
-			// the x,y pos is wrong because the local coordinates of the clonk have been substracted
-			x += GetX();
-			y += GetY();
+			// use x/y coordinates from last known cursor pos
+			var plr_cursor_pos = GetPlayerCursorPos(plr);
+			if (plr_cursor_pos)
+			{
+				x = plr_cursor_pos[0];
+				y = plr_cursor_pos[1];
+			}
+			else
+			{
+				// Cursor pos unknown? This can't really happen
+				x = y = 300;
+			}
 			CreateRingMenu(nil,x,y,this);
 			// CreateRingMenu calls SetMenu(this) in the clonk,
 			// so after this call menu = the created menu
