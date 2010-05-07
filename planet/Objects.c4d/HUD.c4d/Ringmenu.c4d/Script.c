@@ -22,7 +22,7 @@ func Construction()
 }
 
 // rinmenu certain position for the calling object
-global func CreateRingMenu(id symbol, int x, int y, object commander)
+global func CreateRingMenu(id symbol, object commander)
 {
 	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
 	if(!(this->~HasMenuControl())) return nil;
@@ -31,6 +31,20 @@ global func CreateRingMenu(id symbol, int x, int y, object commander)
 	// minimum padding:
 	var paddingy = GUI_Ringmenu_Radius + 175;
 	var paddingx = GUI_Ringmenu_Radius + 50;
+	
+	// use x/y coordinates from last known cursor pos
+	var plr_cursor_pos = GetPlayerCursorPos(GetOwner());
+	var x, y;
+	if (plr_cursor_pos)
+	{
+		x = plr_cursor_pos[0];
+		y = plr_cursor_pos[1];
+	}
+	else
+	{
+		// Cursor pos unknown? This can't really happen
+		x = y = 300;
+	}
 	
 	menu->SetPosition(Max(paddingx,x),Max(paddingy,y));
 	menu->SetMenu(this,commander);
@@ -152,26 +166,29 @@ func Show()
 
 public func UpdateCursor(int dx, int dy)
 {	
-	var angle = Angle(0,0,dx,dy);
-	var item_count = GetLength(menu_icons); 
-	if(!item_count) return;
-	
-	var segment = 360 / item_count;
-	if(!segment) segment = 1;
-	var item = BoundBy(angle/segment,0,item_count-1);
-	
-	for(var i=0; i<= item_count; i++)
-	{ 
-		if(menu_icons[i])
-		{
-				// calculate distance to angle
-				var dist = Normalize(angle - (segment*i + segment/2),-180);
-				dist = BoundBy(dist*240/segment,-180,180);
-				dist = (dist**3)/(180**2);
-				var siz = (Cos(dist,1000)+1000)/2; // 0..1000
-				menu_icons[i]->SetSize((siz+2000)*420000/Max(item_count,5)/2000); //see Show()
-				if(i == item)
-					menu_icons[i]->CustomMessage(Format("%s",menu_icons[i]->GetName()),this,menu_object->GetOwner(),0,64,RGB(255,0,0));
+	if(shown)
+	{
+		var angle = Angle(0,0,dx,dy);
+		var item_count = GetLength(menu_icons); 
+		if(!item_count) return;
+		
+		var segment = 360 / item_count;
+		if(!segment) segment = 1;
+		var item = BoundBy(angle/segment,0,item_count-1);
+		
+		for(var i=0; i<= item_count; i++)
+		{ 
+			if(menu_icons[i])
+			{
+					// calculate distance to angle
+					var dist = Normalize(angle - (segment*i + segment/2),-180);
+					dist = BoundBy(dist*240/segment,-180,180);
+					dist = (dist**3)/(180**2);
+					var siz = (Cos(dist,1000)+1000)/2; // 0..1000
+					menu_icons[i]->SetSize((siz+2000)*420000/Max(item_count,5)/2000); //see Show()
+					if(i == item)
+						CustomMessage(Format("%s",menu_icons[i]->GetName()),this,menu_object->GetOwner(),0,64,RGB(255,0,0));
+			}
 		}
 	}
 }
@@ -181,6 +198,7 @@ public func Hide() {
 		if(menu_icons[i])
 			menu_icons[i]["Visibility"] = VIS_None;
 	this["Visibility"] = VIS_None;
+	CustomMessage("",this,menu_object->GetOwner());
 	shown=false;
 }
 

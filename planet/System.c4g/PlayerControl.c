@@ -77,7 +77,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 				else if (release == true)
 				{
 					cursor->GetMenu()->Select(dx,dy,ctrl == CON_GUIClick2);
-					return true;
+					return false;
 				}
 			}		
 		}
@@ -556,12 +556,12 @@ global func ObjectComLetGo(int vx, int vy)
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
-	var src_drag = source->MouseDrag(plr);
+	var src_drag = source->~MouseDrag(plr);
 	if (!src_drag) return false;
 	if (target)
 	{
-		if (!target->MouseDrop(plr, src_drag)) return false;
+		if (!target->~MouseDrop(plr, src_drag)) return false;
 	}
-	if (source) source->MouseDragDone(src_drag, target);
+	if (source) source->~MouseDragDone(src_drag, target);
 	return true;
 }
