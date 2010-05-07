@@ -1,21 +1,17 @@
-/*-- Shoot the Targets --*/
-
-#include Library_Goal
+/*-- Target Helper Object --*/
 
 local count;
 
 func Initialize()
 {
-	SetPosition(); //remove silly offset
+	SetPosition();
 	count=0;
-	HideSettlementScoreInEvaluation(true); 
-	inherited(...);
 }
 
 global func HasHitTarget()
 {
-	FindObject(Find_ID(Goal_ShootTheTargets))->TargetCounter();
-	OnTargetDeath(FindObject(Find_ID(Goal_ShootTheTargets))->LocalN("count"));
+	FindObject(Find_ID(ShootTheTargets))->TargetCounter();
+	OnTargetDeath(FindObject(Find_ID(ShootTheTargets))->LocalN("count"));
 }
 
 public func TargetCounter()
@@ -48,19 +44,6 @@ protected func MakeTarget(int ix, int iy, bool flying)
 		CreateParticle("Flash",ix,iy,0,0,500,RGB(255,255,255));
 		target->SetAction("Float");
 	}
-}
-
-public func IsFulfilled()
-{
-	if(count == 8) return true;
-	else
-		return false;
-}
-
-public func Activate(int byplr)
-{
-	MessageWindow(GetDesc(), byplr);
-	return;
 }
 
 func Definition(def) {

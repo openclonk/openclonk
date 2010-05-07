@@ -29,7 +29,8 @@ public func OnProjectileHit()
 
 public func Burst()
 {
-	HasHitTarget();
+	var helper = FindObject(Find_ID(ShootTheTargets));
+	if(helper) HasHitTarget();
 	RemoveObject();
 	CastParticles("Straw",130,30,0,-3,30,40,RGB(255,255,255),RGB(255,255,255));
 }
