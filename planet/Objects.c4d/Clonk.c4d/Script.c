@@ -284,7 +284,6 @@ public func IsWalking(){return GetProcedure() == "WALK";}
 local iHandMesh;
 local fHandAction;
 local fBothHanded;
-// GetSelected
 
 func OnSelectionChanged(int oldslot, int newslot, bool secondaryslot)
 {
@@ -293,22 +292,20 @@ func OnSelectionChanged(int oldslot, int newslot, bool secondaryslot)
 }
 func OnSlotEmpty(int slot)
 {
-	if(GetSelected(0) == slot) AttachHandItem(0);
-	if(GetSelected(1) == slot) AttachHandItem(1);
+	AttachHandItem(slot);
 	return _inherited(slot);
 }
 func OnSlotFull(int slot)
 {
-	if(GetSelected(0) == slot) AttachHandItem(0);
-	if(GetSelected(1) == slot) AttachHandItem(1);
+	AttachHandItem(slot);
 	return _inherited(slot);
 }
 
 public func DetachObject(object obj)
 {
-	if(GetSelectedItem(0) == obj)
+	if(GetItem(0) == obj)
 		DetachHandItem(0);
-	if(GetSelectedItem(1) == obj)
+	if(GetItem(1) == obj)
 		DetachHandItem(1);
 }
 
@@ -335,7 +332,7 @@ func UpdateAttach()
 
 func DoUpdateAttach(bool sec)
 {
-	var obj = GetSelectedItem(sec);
+	var obj = GetItem(sec);
 	if(!obj) return;
 	var iAttachMode = obj->~GetCarryMode(this);
 	if(iAttachMode == CARRY_None) return;
@@ -447,9 +444,9 @@ func DoUpdateAttach(bool sec)
 
 public func GetHandMesh(object obj)
 {
-	if(GetSelectedItem() == obj)
+	if(GetItem(0) == obj)
 		return iHandMesh[0];
-	if(GetSelectedItem(1) == obj)
+	if(GetItem(1) == obj)
 		return iHandMesh[1];
 }
 

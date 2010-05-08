@@ -452,10 +452,6 @@ global func GetPlayerControlName(int ctrl)
 	if (ctrl == CON_MenuOK)		return "MenuOK";
 	if (ctrl == CON_MenuUp)		return "MenuUp";
 	if (ctrl == CON_MenuDown)	return "MenuDown";
-	if (ctrl == CON_NextItem)	return "NextItem";
-	if (ctrl == CON_PreviousItem) return "PreviousItem";
-	if (ctrl == CON_NextAltItem)	return "NextAltItem";
-	if (ctrl == CON_PreviousAltItem) return "PreviousAltItem";
 	if (ctrl == CON_Use)		return "Use";
 	if (ctrl == CON_Drop)		return "Drop";
 	if (ctrl == CON_UseAlt)		return "UseAlt";

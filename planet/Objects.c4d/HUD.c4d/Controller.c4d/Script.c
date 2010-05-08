@@ -223,8 +223,8 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	
 	// if a vehicle or structure is selected, the hands need to be removed
 	// from the inventory
-	actionbar[target->GetSelected()]->UpdateHands();
-	actionbar[target->GetSelected(true)]->UpdateHands();
+	if(actionbar[0]) actionbar[0]->UpdateHands();
+	if(actionbar[1]) actionbar[1]->UpdateHands();
 	
 	return;
 }
@@ -290,8 +290,8 @@ public func ControlHotkey(int hotindex)
 {
 	if(GetLength(actionbar) <= hotindex) return false;
 	// only if it is not already used
-	if(GetCursor(GetOwner())->GetSelected() != hotindex)
-		if(GetCursor(GetOwner())->GetSelected(true) != hotindex)
+	if(0 != hotindex)
+		if(1 != hotindex)
 			actionbar[hotindex]->~MouseSelection(GetOwner());
 	
 	return true;

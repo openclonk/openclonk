@@ -73,15 +73,6 @@ protected func CrewSelection(bool unselect)
 	return _inherited(unselect, ...); 
 }
 
-// call from ClonkControl.c4d (self)
-protected func OnSelectionChanged(int old, int new)
-{
-	// update selection status in hud
-	if (HUDcontroller) 
-		HUDcontroller->OnSelectionChanged(old, new);
-	return _inherited(old, new, ...); 
-}
-
 // calls to controller
 protected func OnCrewEnabled()
 {

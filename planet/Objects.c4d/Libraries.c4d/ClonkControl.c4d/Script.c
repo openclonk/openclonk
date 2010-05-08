@@ -32,18 +32,13 @@
 	
 	The inventory management:
 	The objects in the inventory are saved (parallel to Contents()) in the
-	array 'inventory' while the variable 'selected' is the index of the
-	currently selected item. The currently selected item is thus retrieved by
-	'inventory[selected]' or better by using the public function
-	GetSelectedItem();
+	array 'inventory'. They are accessed via GetItem(i) and GetItemPos(obj).
 	Other functions are MaxContentsCount() (defines the maximum number of
-	contents) and SelectItem(object or index) (selects inventory by index
-	or directly)
+	contents)
 */
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local selected, selected2;
 local indexed_inventory;
 local disableautosort;
 local inventory;
@@ -53,81 +48,13 @@ local inventory;
 private func HandObjects() { return 2; }
 public func MaxContentsCount() { return 7; }
 
-/* Item select access*/
-
-public func SelectItem(selection, bool second)
-{
-	var oldnum = GetSelected(second);
-	var item = inventory[oldnum];
-	
-	selection = BoundBy(selection,0,MaxContentsCount()-1);
-	
-	// selection didnt change
-	if (oldnum == selection) return;
-	
-	// set new selected
-	if (!second) selected = selection;
-	else selected2 = selection;
-	
-	// cancel the use of another item
-	if (item)
-		if (using == item)
-			CancelUse();
-	
-	// de-select previous (if any)
-	if (item) item->~Deselection(this,second);
-	
-	// select new (if any)
-	if (!second) item = inventory[selected];
-	else item = inventory[selected2];
-	
-	if (item)
-		if (!item->~Selection(this,second))
-			Sound("Grab");
-			
-	// callback to clonk (self):
-	// OnSelectionChanged(oldslotnumber, newslotnumber)
-	this->~OnSelectionChanged(oldnum, GetSelected(second),second);
-}
-
-public func ShiftSelectedItem(int dir, bool second)
-{
-	var sel = selected;
-	if (second) sel = selected2;
-
-	if (dir < 0)
-	{
-		sel--;
-		if (sel <= 0) sel = MaxContentsCount()-1;
-		
-		SelectItem(sel,second);
-	}
-	else if (dir > 0)
-	{
-		SelectItem((sel+1) % MaxContentsCount(),second);
-	}
-}
-
-/* Get selected index */
-
-public func GetSelected(bool second)
-{
-	if (!second) return selected;
-	return selected2;
-}
-
-/* Get selected item */
-
-public func GetSelectedItem(bool second)
-{
-	if (!second) return inventory[selected];
-	return inventory[selected2];
-}
-
 /* Get the ith item in the inventory */
-
+// the first two are in the hands
 public func GetItem(int i)
 {
+	if (i >= GetLength(inventory))
+		return nil;
+		
 	return inventory[i];
 }
 
@@ -166,15 +93,15 @@ public func Switch2Items(int one, int two)
 		CancelUse();
 	
 	// callbacks: (de)selection
-	if (one == selected)       if (inventory[two]) inventory[two]->~Deselection(this,false);
-	else if (one == selected2) if (inventory[two]) inventory[two]->~Deselection(this,true);
-	if (two == selected)       if (inventory[one]) inventory[one]->~Deselection(this,false);
-	else if (two == selected2) if (inventory[one]) inventory[one]->~Deselection(this,true);
-
-	if (one == selected)       if (inventory[one]) inventory[one]->~Selection(this,false);
-	else if (one == selected2) if (inventory[one]) inventory[one]->~Selection(this,true);
-	if (two == selected)       if (inventory[two]) inventory[two]->~Selection(this,false);
-	else if (two == selected2) if (inventory[two]) inventory[two]->~Selection(this,true);
+	if (one < HandObjects())
+		if (inventory[two]) inventory[two]->~Deselection(this,one);
+	if (two < HandObjects())
+		if (inventory[one]) inventory[one]->~Deselection(this,two);
+		
+	if (one < HandObjects())
+		if (inventory[one]) inventory[one]->~Selection(this,one);
+	if (two < HandObjects())
+		if (inventory[two]) inventory[two]->~Selection(this,two);
 	
 	// callbacks: to self, for HUD
 	if (one < HandObjects())
@@ -227,7 +154,7 @@ public func Collect(object item, bool ignoreOCF, int pos)
 global func ShiftContents()
 {
 	if (this)
-		if (this->~GetSelected() != nil)
+		if (this->~HandObjects() != nil)
 			return false;
 	return _inherited(...);
 }
@@ -239,8 +166,6 @@ protected func Construction()
 	menu = nil;
 
 	// inventory variables
-	selected = 0;
-	selected2 = Min(1,MaxContentsCount()-1);
 	indexed_inventory = 0;
 	inventory = CreateArray();
 
@@ -261,10 +186,9 @@ protected func Collection2(object obj)
 	var success = false;
 	
 	// into selected area if empty
-	if (!inventory[selected])
+	if (!inventory[0])
 	{
-		inventory[selected] = obj;
-		sel = selected;
+		inventory[0] = obj;
 		success = true;
 	}
 	// otherwise, next if empty
@@ -272,7 +196,7 @@ protected func Collection2(object obj)
 	{
 		for(var i = 1; i < MaxContentsCount(); ++i)
 		{
-			sel = (selected+i) % MaxContentsCount();
+			sel = i % MaxContentsCount();
 			if (!inventory[sel])
 			{
 				indexed_inventory++;
@@ -287,8 +211,8 @@ protected func Collection2(object obj)
 		if (sel < HandObjects())
 			this->~OnSlotFull(sel);
 	
-	if (sel == selected || sel == selected2)
-		obj->~Selection(this,sel == selected2);
+	if (sel == 0 || sel == 1)
+		obj->~Selection(this,sel == 1);
 
 	return _inherited(obj,...);
 }
@@ -318,8 +242,8 @@ protected func Ejection(object obj)
 		if (i < HandObjects())
 			this->~OnSlotEmpty(i);
 	
-	if (i == selected || i == selected2)
-		obj->~Deselection(this,i == selected2);
+	if (i == 0 || i == 1)
+		obj->~Deselection(this,i == 1);
 	
 	// we have over-weight? Put the next unindexed object inside that slot
 	// this happens if the clonk is stuffed full with items he can not
@@ -337,8 +261,8 @@ protected func Ejection(object obj)
 				if (i < HandObjects())
 					this->~OnSlotFull(i);
 				
-				if (i == selected || i == selected2)
-					Contents(c)->~Selection(this,i == selected2);
+				if (i == 0 || i == 1)
+					Contents(c)->~Selection(this,i == 1);
 					
 				break;
 			}
@@ -551,8 +475,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// building, vehicle, contents menu control
 	var house = Contained();
 	var vehicle = GetActionTarget();
-	var contents = GetSelectedItem();
-	var contents2 = GetSelectedItem(true);
+	var contents = GetItem(0);
+	var contents2 = GetItem(1);
 	
 	if (menu)
 	{
@@ -605,17 +529,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Entrance controls
 	if (ctrl == CON_Enter || ctrl == CON_Exit)
 		return ObjectControlEntrance(plr,ctrl);
-
-	// Inventory control
-	// TODO: probably not used anymore
-	var inv_control = true;
-	if (ctrl == CON_NextItem)              { ShiftSelectedItem(+1); }
-	else if (ctrl == CON_PreviousItem)     { ShiftSelectedItem(-1); }
-	else if (ctrl == CON_NextAltItem)      { ShiftSelectedItem(+1,true); }
-	else if (ctrl == CON_PreviousAltItem)  { ShiftSelectedItem(-1,true); }
-	else { inv_control = false; }
-	
-	if (inv_control) return true;
 
 	// only if not in house, not grabbing a vehicle and an item selected
 	if (!house && (!vehicle || proc != "PUSH"))

@@ -16,9 +16,6 @@
 	# 
 	# CancelUse CancelMenu
 	#
-	# NextItem PreviousItem
-	# NextAltItem PreviousAltItem
-	#
 	# Grab Ungrab GrabPrevious GrabNext PushEnter
 	#
 	# Enter Exit
@@ -166,27 +163,6 @@
 	GUIName=Drop 2
 	GUIDesc=Drop secondary selected inventory item
 	Hold=1
-	
-	[ControlDef]
-	Identifier=NextItem
-	GUIName=Select next
-	GUIDesc=Select next inventory item
-	
-	[ControlDef]
-	Identifier=PreviousItem
-	GUIName=Select previous
-	GUIDesc=Select previous inventory item
-	
-	[ControlDef]
-	Identifier=NextAltItem
-	GUIName=Select next 2
-	GUIDesc=Select next as secondary inventory item
-	
-	[ControlDef]
-	Identifier=PreviousAltItem
-	GUIName=Select previous 2
-	GUIDesc=Select previous as secondary inventory item
-	
 	
 	# Controlling (contents, vehicles, structures)
 	

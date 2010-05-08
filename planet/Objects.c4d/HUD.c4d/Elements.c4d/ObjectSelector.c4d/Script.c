@@ -58,32 +58,10 @@ protected func Destruction()
 		subselector->RemoveObject();
 }
 
-public func MouseSelectionAlt(int plr)
-{
-	if(!crew) return false;
-	if(plr != GetOwner()) return false;
-
-	// object is in inventory
-	if(actiontype == ACTIONTYPE_INVENTORY)
-	{
-		if(myobject != crew->GetSelectedItem())
-			crew->SelectItem(hotkey-1,true);
-		return true;
-	}
-}
-
 public func MouseSelection(int plr)
 {
 	if(!crew) return false;
 	if(plr != GetOwner()) return false;
-	
-	// object is in inventory
-	if(actiontype == ACTIONTYPE_INVENTORY)
-	{
-		if(myobject != crew->GetSelectedItem(true))
-			crew->SelectItem(hotkey-1);
-		return true;
-	}
 
 	// no object
 	if(!myobject) return false;
@@ -369,9 +347,9 @@ public func UpdateSelectionStatus()
 
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		if(crew->GetSelected() == hotkey-1)
+		if(0 == hotkey-1)
 			sel += 1;
-		if(crew->GetSelected(true) == hotkey-1)
+		if(1 == hotkey-1)
 			sel += 2;
 	}
 			

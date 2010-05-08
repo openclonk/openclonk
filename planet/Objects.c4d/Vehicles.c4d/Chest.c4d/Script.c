@@ -16,7 +16,7 @@ protected func Grabbed(object by_object, bool grab)
 	ctrl_clonk = by_object;
 	if (grab) // If grabbed show content menu.
 	{
-		content_menu = by_object->CreateRingMenu(GetID(), 0, 0, this);
+		content_menu = by_object->CreateRingMenu(GetID(), this);
 		for (var content in FindObjects(Find_Container(this)))
 			content_menu->AddItem(content->GetID());
 		content_menu->AddItem(GetID());
@@ -33,14 +33,13 @@ protected func Grabbed(object by_object, bool grab)
 // Callback from ringmenu.
 public func Selected(object menu, object selected, bool alt)
 {
-	var clonk = menu->LocalN("command_object");
 	if (!selected) 
 		return false;
 	var content_id = selected->GetSymbol();
 	if (content_id == GetID()) 
-		return ctrl_clonk->SetCommand("UnGrab");;
+		return ctrl_clonk->SetCommand("UnGrab");
 	var chest_content = FindObject(Find_Container(this), Find_ID(content_id));
-	var clonk_content = ctrl_clonk->GetSelectedItem(alt);
+	var clonk_content = ctrl_clonk->GetItem(alt);
 	Exchange(chest_content, clonk_content, ctrl_clonk);
 	selected->RemoveObject();
 	menu->Show();
