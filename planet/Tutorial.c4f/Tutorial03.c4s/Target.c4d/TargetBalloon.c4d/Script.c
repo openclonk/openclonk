@@ -1,6 +1,6 @@
 /*-- Target Balloon --*/
 
-local oldy;
+local ysin;
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
@@ -8,15 +8,19 @@ func Definition(def) {
 
 protected func Initialize()
 {
-	oldy = GetY();
+	ysin = 0;
 	SetAction("Float");
 	AddEffect("Float",this,1,1,this);
 }
 
 func FxFloatTimer(object target, int num, int time)
 {
-	if(GetY() >= oldy) SetYDir(-1);
-	if(GetY() < oldy - 10) SetYDir(1);
+	if(ysin >= 360) ysin = 0;
+	if(ysin <= 360)
+	{
+	++ysin;
+	}
+	target->SetYDir(Sin(ysin,2));
 }
 
 public func IsProjectileTarget(target,shooter)
