@@ -49,10 +49,10 @@
 #define C4REAL_MODE_SOFTWARE   1
 //#define C4REAL_MODE_SOFT_FLOAT 2
 #define C4REAL_MODE_FPU_FLOAT  3
-//#define C4REAL_MODE_SSE_FLOAT  4
+#define C4REAL_MODE_SSE_FLOAT  4
 
 #ifndef C4REAL_MODE
-#define C4REAL_MODE C4REAL_MODE_SOFTWARE
+#define C4REAL_MODE C4REAL_MODE_SSE_FLOAT
 #endif
 
 template<class C4RealImpl>
@@ -131,9 +131,11 @@ public:
 
 typedef C4RealBase<class C4RealImpl_Fixed> C4Real_Fixed;
 typedef C4RealBase<float> C4Real_FPU_Float;
+typedef C4RealBase<class C4RealImpl_SSE> C4Real_SSE_Float;
 
 #include "C4RealImpl_Fixed.h"
 #include "C4RealImpl_FPU.h"
+#include "C4RealImpl_SSE.h"
 
 // *** wrap C4Real to requested C4RealBase instantiation
 
@@ -141,11 +143,14 @@ typedef C4RealBase<float> C4Real_FPU_Float;
 typedef C4Real_Fixed C4Real;
 #elif C4REAL_MODE == C4REAL_MODE_FPU_FLOAT
 typedef C4Real_FPU_Float C4Real;
+#elif C4REAL_MODE == C4REAL_MODE_SSE_FLOAT
+typedef C4Real_SSE_Float C4Real;
 #endif
 
 // Instantiate other C4RealBases as well
 template class C4RealBase<C4RealImpl_Fixed>;
 template class C4RealBase<float>;
+template class C4RealBase<C4RealImpl_SSE>;
 
 // conversion
 inline float fixtof(const C4Real &x) { return static_cast<float>(x); }
