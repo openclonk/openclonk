@@ -3671,7 +3671,7 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Left,FIXED100(+150),Fix0); break; }
+				{ ObjectActionTumble(this,DIR_Left,C4REAL100(+150),Fix0); break; }
 			// Else
 			else if (pPhysical->CanScale)
 				{ ObjectActionScale(this,DIR_Left); return; }
@@ -3722,7 +3722,7 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Right,FIXED100(-150),Fix0); break; }
+				{ ObjectActionTumble(this,DIR_Right,C4REAL100(-150),Fix0); break; }
 			// Else Scale
 			else if (pPhysical->CanScale)
 				{ ObjectActionScale(this,DIR_Right); return; }
@@ -4509,7 +4509,7 @@ void C4Object::ExecAction()
 		case COMD_Down: tydir=+lftspeed; break;
 		}
 		// Lift object
-		if (!Action.Target->Lift(tydir,FIXED100(50)))
+		if (!Action.Target->Lift(tydir,C4REAL100(50)))
 			{ SetAction(0); return; }
 		// Check LiftTop
 		if (Def->LiftTop)
@@ -4522,7 +4522,7 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLOAT:
 		// Float speed
-		lLimit=FIXED100(pPhysical->Float);
+		lLimit=C4REAL100(pPhysical->Float);
 		xlFloatAccel = Max(Min(lLimit+xdir,FloatAccel),itofix(0));
 		xrFloatAccel = Max(Min(lLimit-xdir,FloatAccel),itofix(0));
 		yuFloatAccel = Max(Min(lLimit+ydir,FloatAccel),itofix(0));

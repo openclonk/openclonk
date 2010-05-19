@@ -66,8 +66,8 @@ void C4PXS::Execute()
 	{
 		// Air speed: Wind plus some random
 		int32_t iWind = GBackWind(iX, iY);
-		C4Real txdir = itofix(iWind, 15) + FIXED256(Random(1200) - 600);
-		C4Real tydir = FIXED256(Random(1200) - 600);
+		C4Real txdir = itofix(iWind, 15) + C4REAL256(Random(1200) - 600);
+		C4Real tydir = C4REAL256(Random(1200) - 600);
 
 		// Air friction, based on WindDrift. MaxSpeed is ignored.
 		int32_t iWindDrift = Max(::MaterialMap.Map[Mat].WindDrift - 20, 0);

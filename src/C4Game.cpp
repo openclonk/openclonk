@@ -1505,8 +1505,8 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 	{
 		CreateObject(id,pCreator,iOwner,
 		             tx,ty,Random(360),
-		             FIXED10(Random(2*level+1)-level),
-		             FIXED10(Random(2*level+1)-level),
+		             C4REAL10(Random(2*level+1)-level),
+		             C4REAL10(Random(2*level+1)-level),
 		             itofix(Random(3)+1), iController);
 	}
 }
@@ -1518,7 +1518,7 @@ void C4Game::BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t 
 	{
 		CreateObject(id,pCreator,NO_OWNER,
 		             tx,ty,Random(360),
-		             FIXED10(Random(61)-30), FIXED10(Random(61)-40),
+		             C4REAL10(Random(61)-30), C4REAL10(Random(61)-40),
 		             itofix(Random(3)+1), iController);
 	}
 }

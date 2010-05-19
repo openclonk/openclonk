@@ -672,8 +672,8 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	int32_t iOutposReduction = 1; // don't exit object too far forward during jump
 	if (iProc != DFA_SCALE) // never diagonal during scaling (can have com into wall during scaling!)
 	{
-		if (ComDirLike(cObj->Action.ComDir, COMD_Left)) { tdir=-1; right = 0; if (cObj->xdir < FIXED10(15) && !isHanglingOrSwimming) --iOutposReduction; }
-		if (ComDirLike(cObj->Action.ComDir, COMD_Right)) { tdir=+1; right = 1;  if (cObj->xdir > FIXED10(-15) && !isHanglingOrSwimming) --iOutposReduction; }
+		if (ComDirLike(cObj->Action.ComDir, COMD_Left)) { tdir=-1; right = 0; if (cObj->xdir < C4REAL10(15) && !isHanglingOrSwimming) --iOutposReduction; }
+		if (ComDirLike(cObj->Action.ComDir, COMD_Right)) { tdir=+1; right = 1;  if (cObj->xdir > C4REAL10(-15) && !isHanglingOrSwimming) --iOutposReduction; }
 	}
 	// Exit object
 	pThing->Exit(cObj->GetX() + (cObj->Shape.x + cObj->Shape.Wdt * right) * !!tdir * iOutposReduction,
@@ -760,7 +760,7 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 	if (fBlowStopped) return false;
 	// Hard punch
 	if (punch>=10)
-		if (ObjectActionTumble(pTarget,pTarget->Action.Dir,FIXED100(150)*tdir,itofix(-2)))
+		if (ObjectActionTumble(pTarget,pTarget->Action.Dir,C4REAL100(150)*tdir,itofix(-2)))
 		{
 			pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
 			              C4VObj(cObj)));
@@ -768,7 +768,7 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 		}
 
 	// Regular punch
-	if (ObjectActionGetPunched(pTarget,FIXED100(250)*tdir,Fix0))
+	if (ObjectActionGetPunched(pTarget,C4REAL100(250)*tdir,Fix0))
 	{
 		pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
 		              C4VObj(cObj)));

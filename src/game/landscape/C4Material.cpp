@@ -603,7 +603,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 		if (::MaterialMap.Map[iPxsMat].SplashRate && !Random(::MaterialMap.Map[iPxsMat].SplashRate))
 		{
 			fYDir = -fYDir/8;
-			fXDir = fXDir/8 + FIXED100(Random(200) - 100);
+			fXDir = fXDir/8 + C4REAL100(Random(200) - 100);
 			if (fYDir) return false;
 		}
 
@@ -621,7 +621,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 		if (iPxsMat == iLsMat)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
 		// Accelerate into the direction
-		fXDir = (fXDir * 10 + Sign(iSlideX - iX)) / 11 + FIXED10(Random(5)-2);
+		fXDir = (fXDir * 10 + Sign(iSlideX - iX)) / 11 + C4REAL10(Random(5)-2);
 		// Slide target in range? Move there directly.
 		if (Abs(iX - iSlideX) <= Abs(fixtoi(fXDir)))
 		{
@@ -849,8 +849,8 @@ bool C4MaterialMap::mrfScript(C4MaterialReaction *pReaction, int32_t &iX, int32_
 		// changes to pos/speed detected
 		if (pfPosChanged) *pfPosChanged = true;
 		iX=iX2; iY=iY2;
-		fXDir = FIXED100(iXDir2);
-		fYDir = FIXED100(iYDir2);
+		fXDir = C4REAL100(iXDir2);
+		fYDir = C4REAL100(iYDir2);
 	}
 	// OK; done
 	return false;

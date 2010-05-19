@@ -520,7 +520,7 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 			int32_t Seed2; Seed2=Seed;
 			for (int32_t l=0; l<Lambda+1; ++l)
 			{
-				for (C4Real d=itofix(2); d<6; d+=FIXED10(15))
+				for (C4Real d=itofix(2); d<6; d+=C4REAL10(15))
 				{
 					dX += Sin(((dX / 7 + itofix(Seed2) / ZoomX + dY) / j + d) * Rad2Grad) * j / 2;
 					dY += Cos(((dY / 7 + itofix(Seed2) / ZoomY + dX) / j - d) * Rad2Grad) * j / 2;

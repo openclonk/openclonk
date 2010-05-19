@@ -273,10 +273,10 @@ inline C4Fixed itofix(int32_t x, int32_t prec) { return C4Fixed(x, prec); }
 // additional functions
 inline C4Real Sin(const C4Real &fAngle) { return fAngle.sin_deg(); }
 inline C4Real Cos(const C4Real &fAngle) { return fAngle.cos_deg(); }
-inline C4Real FIXED100(int x) { return itofix(x, 100); }
-//inline C4Real FIXED256(int x) { return itofix(x, 256); }
-inline C4Real FIXED256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
-inline C4Real FIXED10(int x) { return itofix(x, 10); }
+inline C4Real C4REAL100(int x) { return itofix(x, 100); }
+//inline C4Real C4REAL256(int x) { return itofix(x, 256); }
+inline C4Real C4REAL256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
+inline C4Real C4REAL10(int x) { return itofix(x, 10); }
 
 #else
 
@@ -313,12 +313,11 @@ inline C4Real ftofix(float x) { return x; }
 // additional functions
 inline C4Real Sin(C4Real x) { return float(sin(x * 3.141592f / 180)); }
 inline C4Real Cos(C4Real x) { return float(cos(x * 3.141592f / 180)); }
-inline C4Real FIXED100(int x) { return float(x) / 100; }
-inline C4Real FIXED256(int x) { return float(x) / 256; }
-inline C4Real FIXED10(int x) { return float(x) / 10; }
+inline C4Real C4REAL100(int x) { return float(x) / 100; }
+inline C4Real C4REAL256(int x) { return float(x) / 256; }
+inline C4Real C4REAL10(int x) { return float(x) / 10; }
 
 #endif
-
 // define 0
 const C4Real Fix0 = itofix(0);
 

@@ -808,8 +808,8 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
 					::PXS.Create(::Landscape.ExtractMaterial(tx,ty),
 					             itofix(tx),itofix(sy),
-					             FIXED100(Random(151)-75),
-					             FIXED100(-Random(200)));
+					             C4REAL100(Random(151)-75),
+					             C4REAL100(-Random(200)));
 			}
 		}
 	// Splash sound

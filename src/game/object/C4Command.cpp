@@ -389,12 +389,12 @@ void C4Command::MoveTo()
 	{
 		C4Real dx = itofix(Tx._getInt()) - cObj->fix_x, dy = itofix(Ty) - cObj->fix_y;
 		// normalize
-		C4Real dScale = FIXED100(cObj->GetPhysical()->Float) / Max(Abs(dx), Abs(dy));
+		C4Real dScale = C4REAL100(cObj->GetPhysical()->Float) / Max(Abs(dx), Abs(dy));
 		dx *= dScale; dy *= dScale;
 		// difference to momentum
 		dx -= cObj->xdir; dy -= cObj->ydir;
 		// steer
-		if (Abs(dx)+Abs(dy) < FIXED100(20)) cObj->Action.ComDir = COMD_None;
+		if (Abs(dx)+Abs(dy) < C4REAL100(20)) cObj->Action.ComDir = COMD_None;
 		else if (Abs(dy) * 3 <  dx) cObj->Action.ComDir = COMD_Right;
 		else if (Abs(dy) * 3 < -dx) cObj->Action.ComDir = COMD_Left;
 		else if (Abs(dx) * 3 <  dy) cObj->Action.ComDir = COMD_Down;

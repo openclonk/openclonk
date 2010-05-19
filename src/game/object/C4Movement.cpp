@@ -31,17 +31,17 @@
 
 /* Some physical constants */
 
-const C4Real FRedirect=FIXED100(50);
-const C4Real FFriction=FIXED100(30);
+const C4Real FRedirect=C4REAL100(50);
+const C4Real FFriction=C4REAL100(30);
 const C4Real FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
-const C4Real FloatFriction=FIXED100(2);
-const C4Real RotateAccel=FIXED100(20);
-const C4Real FloatAccel=FIXED100(10);
-const C4Real WalkAccel=FIXED100(8);
-const C4Real WalkBreak=FIXED100(16);
-const C4Real ScaleAccel=FIXED100(20);
-const C4Real SwimAccel=FIXED100(7);
-const C4Real HitSpeed1=FIXED100(150); // Hit Event
+const C4Real FloatFriction=C4REAL100(2);
+const C4Real RotateAccel=C4REAL100(20);
+const C4Real FloatAccel=C4REAL100(10);
+const C4Real WalkAccel=C4REAL100(8);
+const C4Real WalkBreak=C4REAL100(16);
+const C4Real ScaleAccel=C4REAL100(20);
+const C4Real SwimAccel=C4REAL100(7);
+const C4Real HitSpeed1=C4REAL100(150); // Hit Event
 const C4Real HitSpeed2=itofix(2); // Cross Check Hit
 const C4Real HitSpeed3=itofix(6); // Scale disable, kneel
 const C4Real HitSpeed4=itofix(8); // Flat
@@ -262,7 +262,7 @@ void C4Object::DoMovement()
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) > FIXED10(5))
+		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
 		{
 			// Next step
 			int step = Sign<C4Real>(new_x - fix_x);
@@ -286,7 +286,7 @@ void C4Object::DoMovement()
 		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) > FIXED10(5))
+		while (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
 		{
 			// Next step
 			int step = Sign<C4Real>(new_y - fix_y);
@@ -326,9 +326,9 @@ void C4Object::DoMovement()
 			bool at_xovr = false, at_yovr = false;
 			// Set next step target
 			int step_x = 0, step_y = 0;
-			if (Abs<C4Real>(fix_x - ctcox) > FIXED10(5))
+			if (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
 				step_x = Sign<C4Real>(new_x - fix_x);
-			if (Abs<C4Real>(fix_y - ctcoy) > FIXED10(5))
+			if (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
 				step_y = Sign<C4Real>(new_y - fix_y);
 			int32_t ctx = GetX() + step_x; int32_t cty = GetY() + step_y;
 			// Attachment check
@@ -353,7 +353,7 @@ void C4Object::DoMovement()
 			if (at_xovr) { ctcox=GetX(); xdir=Fix0; new_x = fix_x; }
 			if (at_yovr) { ctcoy=GetY(); ydir=Fix0; new_y = fix_y; }
 		}
-		while (Abs<C4Real>(fix_x - ctcox) > FIXED10(5) || Abs<C4Real>(fix_y - ctcoy) > FIXED10(5));
+		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5) || Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5));
 	}
 	fix_x = new_x;
 	fix_y = new_y;

@@ -217,7 +217,7 @@ void C4Sky::Execute()
 	if (x>=itofix(Width)) x-=itofix(Width);
 	if (y>=itofix(Height)) y-=itofix(Height);
 	// update speed
-	if (ParallaxMode == C4SkyPM_Wind) xdir=FIXED100(::Weather.Wind);
+	if (ParallaxMode == C4SkyPM_Wind) xdir=C4REAL100(::Weather.Wind);
 }
 
 void C4Sky::Draw(C4TargetFacet &cgo)

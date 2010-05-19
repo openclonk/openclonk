@@ -68,7 +68,7 @@ C4Landscape::~C4Landscape()
 void C4Landscape::ScenarioInit()
 {
 	// Gravity
-	Gravity = FIXED100(Game.C4S.Landscape.Gravity.Evaluate()) /5;
+	Gravity = C4REAL100(Game.C4S.Landscape.Gravity.Evaluate()) /5;
 	// Opens
 	LeftOpen=Game.C4S.Landscape.LeftOpen;
 	RightOpen=Game.C4S.Landscape.RightOpen;
@@ -1231,13 +1231,13 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 	// Try slide
 	while (FindMatSlide(tx,ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
 		if (GetDensity(tx,ty+1)<mdens)
-			{ ::PXS.Create(mat,itofix(tx),itofix(ty),FIXED10(vx),FIXED10(vy)); return true; }
+			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
 	// Try reaction with material below
 	C4MaterialReaction *pReact; int32_t tmat;
 	if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel)))))
 	{
-		C4Real fvx=FIXED10(vx), fvy=FIXED10(vy);
+		C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
 		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
 		{
 			// the material to be inserted killed itself in some material reaction below
@@ -1695,7 +1695,7 @@ void C4Landscape::Default()
 	ScanX=0;
 	ScanSpeed=2;
 	LeftOpen=RightOpen=TopOpen=BottomOpen=0;
-	Gravity=FIXED100(20); // == 0.2
+	Gravity=C4REAL100(20); // == 0.2
 	MapSeed=0; NoScan=false;
 	pMapCreator=NULL;
 	Modulation=0;
@@ -3027,7 +3027,7 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RightOpen,           "RightOpen",             0));
 	pComp->Value(mkNamingAdapt(TopOpen,             "TopOpen",               0));
 	pComp->Value(mkNamingAdapt(BottomOpen,          "BottomOpen",            0));
-	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           FIXED100(20)));
+	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           C4REAL100(20)));
 	pComp->Value(mkNamingAdapt(Modulation,          "MatModulation",         0U));
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
 }
