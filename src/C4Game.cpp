@@ -1961,14 +1961,14 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	SetWorkingDirectory(Config.General.ExePath);
 
 	// Create savegame folder
-	if (!Config.General.CreateSaveFolder(Config.General.SaveGameFolder.getData(), LoadResStr("IDS_GAME_SAVEGAMESTITLE")))
+	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), LoadResStr("IDS_GAME_SAVEGAMESTITLE")))
 		{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }
 
 	// Create savegame subfolder(s)
 	char strSaveFolder[_MAX_PATH + 1];
 	for (uint32_t i = 0; i < SCharCount(DirectorySeparator, strFilename); i++)
 	{
-		SCopy(Config.General.SaveGameFolder.getData(), strSaveFolder); AppendBackslash(strSaveFolder);
+		SCopy(Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), strSaveFolder); AppendBackslash(strSaveFolder);
 		SCopyUntil(strFilename, strSaveFolder + SLen(strSaveFolder), DirectorySeparator, _MAX_PATH, i);
 		if (!Config.General.CreateSaveFolder(strSaveFolder, strTitle))
 			{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }
@@ -1976,7 +1976,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 	// Compose savegame filename
 	StdStrBuf strSavePath;
-	strSavePath.Format("%s%c%s", Config.General.SaveGameFolder.getData(), DirectorySeparator, strFilename);
+	strSavePath.Format("%s%c%s", Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), DirectorySeparator, strFilename);
 
 	// Must not be the scenario file that is currently open
 	if (ItemIdentical(ScenarioFilename, strSavePath.getData()))

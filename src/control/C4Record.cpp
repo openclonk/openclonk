@@ -130,7 +130,7 @@ bool C4Record::Start(bool fInitial)
 	if (fRecording) return false;
 
 	// create demos folder
-	if (!Config.General.CreateSaveFolder(Config.General.SaveDemoFolder.getData(), LoadResStr("IDS_GAME_RECORDSTITLE")))
+	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData()), LoadResStr("IDS_GAME_RECORDSTITLE")))
 		return false;
 
 	// various infos
@@ -146,12 +146,12 @@ bool C4Record::Start(bool fInitial)
 
 	// determine index (by total number of records)
 	Index = 1;
-	for (DirectoryIterator i(Config.General.SaveDemoFolder.getData()); *i; ++i)
+	for (DirectoryIterator i(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData())); *i; ++i)
 		if (WildcardMatch(C4CFN_ScenarioFiles, *i))
 			Index++;
 
 	// compose record filename
-	sFilename.Format("%s" DirSep "%03i-%s.c4s", sDemoFolder.getData(), Index, sScenName);
+	sFilename.Format("%s" DirSep "%03i-%s.c4s", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
 
 	// log
 	StdStrBuf sLog; sLog.Format(LoadResStr("IDS_PRC_RECORDINGTO"),sFilename.getData());

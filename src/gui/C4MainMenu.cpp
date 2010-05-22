@@ -475,7 +475,7 @@ bool C4MainMenu::ActivateSavegame(int32_t iPlayer)
 		// Compose commmand
 		strCommand.Format("Save:Game:%s:%s", strFilenameIndexed.getData(), strTitle.getData()); // Notice: the language title might contain ':' and thus confuse the segment list - but C4Menu::MenuCommand will try to handle this...
 		// Check free slot
-		strSavePath.Format("%s%c%s", Config.General.SaveGameFolder.getData(), DirectorySeparator, strFilenameIndexed.getData());
+		strSavePath.Format("%s%c%s", Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), DirectorySeparator, strFilenameIndexed.getData());
 		bool fFree = !C4Group_IsGroup(strSavePath.getData());
 		// Item caption
 		strCaption = LoadResStr("IDS_MENU_CPSAVEGAME");
