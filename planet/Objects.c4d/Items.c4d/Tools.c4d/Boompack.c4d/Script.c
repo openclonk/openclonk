@@ -55,20 +55,21 @@ func ControlJump(object clonk)
 	return true;
 }
 
-func ControlUse(object clonk, ix, iy)
+func ControlUseStart(object clonk, int x, int y)
+{
+	// forward control to item
+	if(clonk->GetProcedure()=="ATTACH") return false;
+}
+
+func ControlUse(object clonk, int x, int y)
 {	
-	// already riding? Use ControlUse to jump off
-	if(clonk->GetProcedure()=="ATTACH") return true;
-	/*if(clonk->GetProcedure()=="ATTACH" && clonk->GetActionTarget() == this)
-	{
-		JumpOff(clonk,60);
-		return true;
-	}*/
+	// forward control to item
+	if(clonk->GetProcedure()=="ATTACH") return false;
 
 	// only use during walk or jump
 	if(clonk->GetProcedure()!="WALK" && clonk->GetProcedure()!="FLIGHT") return true;
 
-	var angle=Angle(0,0,ix,iy);
+	var angle=Angle(0,0,x,y);
 	Launch(angle,clonk);
 
 	return true;
@@ -111,7 +112,11 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 
 private func JumpOff(object clonk, int speed)
 {
+	rider = nil;
+
 	if(!clonk) return;
+	if(!(clonk->GetProcedure() == "ATTACH")) return;
+	if(!(clonk->GetActionTarget() == this)) return;
 	
 	var xdir = 20;
 	var ydir = clonk->GetPhysical("Jump")/1000;
@@ -122,8 +127,6 @@ private func JumpOff(object clonk, int speed)
 	clonk->SetAction("Tumble");
 	clonk->SetXDir(GetXDir()/2+speed*xdir/100);
 	clonk->SetYDir(GetYDir()/2-speed*ydir/100);
-	
-	rider = nil;
 }
 
 protected func Hit()

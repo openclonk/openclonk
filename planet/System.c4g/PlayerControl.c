@@ -103,6 +103,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 			}
 			return true;
 		}
+		//else Log("-- not handled");
 
 	}
 	// No cursor? Nothing to handle control then

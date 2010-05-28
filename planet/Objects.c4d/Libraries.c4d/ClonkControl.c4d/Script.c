@@ -493,11 +493,36 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	if (vehicle && proc == "ATTACH")
 	{
-		// control to horse or something
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
-			return true;
-		// only if the horse does handle the control, it is not forwarded
-		// to the items in the clonk
+		/* objects to which clonks are attached (like horses, mechs,...) have
+		   a special handling:
+		   movement controls are forwarded normally to the horse as if it is a 
+		   pushed vehicle. Use controls however are, too, forwarded to the
+		   horse but if the control is considered unhandled (return false) on 
+		   the start of the usage, the control is forwarded further to the 
+		   item. If the item then returns true on the call, that item is
+		   regarded as the used item for the subsequent ControlUse* calls.
+		   BUT the horse always gets the ControlUse*-calls that'd go to the used
+		   item, too and before it so it can decide at any time to cancel its
+		   usage via CancelUse().
+		  */
+		
+		var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
+
+		var handled = Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+		
+		if (handled) return true;
+		
+		// handled normally if movement control
+		if (use)
+		{
+			// handled if the horse is the used object
+			// ("using" is set to the object in StartUse(Delayed)Control - when the
+			// object returns true on that callback. Exactly what we want)
+			if (using == vehicle) return true;
+			// has been cancelled (it is not the start of the usage but no object is used)
+			if (!using && (repeat || release)) return true;
+		}
+		
 	}
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
@@ -558,6 +583,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				else
 				{
 					VirtualCursor()->StartAim(this);
+					return true;
 				}
 			}
 			// drop
@@ -592,6 +618,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				else
 				{
 					VirtualCursor()->StartAim(this);
+					return true;
 				}
 			}
 			// drop
@@ -648,8 +675,15 @@ public func CancelUse()
 		control = "Contained";
 	
 	// use the saved x,y coordinates for canceling
-	CancelUseControl(control, mlastx, mlasty, using);
+	CancelUseControl(control, mlastx, mlasty);
 }
+
+// for testing if the calls in control2script are issued correctly
+//global func Call(string call)
+//{
+//	Log("calling %s to %s",call,GetName());
+//	return inherited(call,...);
+//}
 
 private func StartUseControl(int ctrl, control, int x, int y, object obj)
 {
@@ -704,9 +738,14 @@ private func StartUseDelayedControl(int ctrl, control, object obj)
 	return handled;
 }
 
-private func CancelUseControl(control, int x, int y, object obj)
+private func CancelUseControl(control, int x, int y)
 {
-	return StopUseControl(control, x, y, obj, true);
+	// to horse first (if there is one)
+	var horse = GetActionTarget();
+	if(horse && GetProcedure() == "ATTACH" && using != horse)
+		StopUseControl(control, x, y, horse, true);
+
+	return StopUseControl(control, x, y, using, true);
 }
 
 private func StopUseControl(control, int x, int y, object obj, bool cancel)
@@ -721,14 +760,17 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
 	var handled = obj->Call(Format("~%sUse%s%s",control,estr,stop),this,x,y);
-	using = nil;
-	alt = false;
-	noholdingcallbacks = false;
-			
-	SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+	if (obj == using)
+	{
+		using = nil;
+		alt = false;
+		noholdingcallbacks = false;
+		
+		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 
-	if (virtual_cursor)
-		virtual_cursor->StopAim();
+		if (virtual_cursor)
+			virtual_cursor->StopAim();
+	}
 		
 	return handled;
 }
@@ -800,10 +842,13 @@ private func StopUseDelayedControl(control, object obj)
 
 	//Log("called %sUse%sStop(this,%d,%d)",control,estr,mlastx,mlasty);
 	
-	VirtualCursor()->StopAim();
-	using = nil;
-	alt = false;
-	noholdingcallbacks = false;
+	if (obj == using)
+	{
+		VirtualCursor()->StopAim();
+		using = nil;
+		alt = false;
+		noholdingcallbacks = false;
+	}
 		
 	return handled;
 }
@@ -851,7 +896,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt
 		||  ctrl == CON_UseDelayed && alt || ctrl == CON_UseAltDelayed && !alt)
 		{
-			CancelUseControl(control, x, y, using);
+			CancelUseControl(control, x, y);
 			return true;
 		}
 	}
