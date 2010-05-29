@@ -73,6 +73,7 @@ if(HAVE_NULLPTR)
 	CHECK_CXX_SOURCE_COMPILES("#include <cstddef>
 	template<class T> void f(T &&); template<> void f(std::nullptr_t &&) {} int main() { f(NULL); }" NULL_IS_NULLPTR_T)
 endif()
+CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
