@@ -117,6 +117,13 @@ typedef ptrdiff_t ssize_t;
 
 
 
+#ifndef HAVE_STATIC_ASSERT
+#include <boost/static_assert.hpp>
+#define static_assert(x, y) BOOST_STATIC_ASSERT(x)
+#endif
+
+
+
 #if defined(__GNUC__)
 // Allow checks for correct printf-usage
 #define GNUC_FORMAT_ATTRIBUTE __attribute__ ((format (printf, 1, 2)))

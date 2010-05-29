@@ -203,5 +203,8 @@
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
 
+/* Define to 1 if your compiler supports static_assert */
+#cmakedefine HAVE_STATIC_ASSERT 1
+
 /* Generate minidumps on crash */
 #cmakedefine GENERATE_MINI_DUMP 1
