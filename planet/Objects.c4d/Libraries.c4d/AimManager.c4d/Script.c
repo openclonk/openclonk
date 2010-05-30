@@ -232,6 +232,8 @@ public func StartAim(object weapon)
 		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
 	}
 
+	aim_stop = 0;
+
 	if(aim_set["AnimationAim"] != nil)
 	{
 		if(aim_set["AimMode"] == AIM_Position)
