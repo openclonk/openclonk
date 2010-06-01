@@ -21,7 +21,6 @@ func Definition(def) {
 		Wdt = 8,
 		Hgt = 20,
 		Procedure = DFA_FLOAT,
-		StartCall = "StartScale",
 	}, GetProperty("ActMap"));
 	// save old phasecall of jump
 	var jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
@@ -49,6 +48,13 @@ func StartSearchLadder()
 	FxIntSearchLadderTimer();
 }
 
+func GetLadderScaleAnimation()
+{
+	var animation = _inherited(...);
+	if(animation) return animation;
+	return "Scale";
+}
+
 func FxIntSearchLadderTimer(target, number, time)
 {
 	if (GetAction() != "Jump") return -1;
@@ -62,6 +68,7 @@ func FxIntSearchLadderTimer(target, number, time)
 	{
 		SetAction("Climb");
 		ladder->~OnLadderGrab(this);
+		PlayAnimation(GetLadderScaleAnimation(), 5, Anim_Y(0, GetAnimationLength(GetLadderScaleAnimation()), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		AddEffect("IntClimbControl", this, 1, 1, this, 0, ladder);
 		return -1;
 	}

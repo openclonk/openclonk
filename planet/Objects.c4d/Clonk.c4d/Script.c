@@ -1058,10 +1058,10 @@ func StopScale()
 func FxIntScaleStart(target, number, tmp)
 {
 	if(tmp) return;
-//	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	EffectVar(0, target, number) = -1;
 	EffectVar(3, target, number) = 0;
-	FxIntScaleTimer(target, number, 0);
+//	FxIntScaleTimer(target, number, 0);
 }
 
 func CheckPosition(int off_x, int off_y)
