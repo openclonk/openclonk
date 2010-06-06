@@ -18,13 +18,43 @@ public func TargetCounter()
 {
 	++count;
 	var i = count;
-	if(i == 1) MakeTarget(349,349,true);
-	if(i == 2) MakeTarget(538,362,true);
-	if(i == 3) MakeTarget(1253,310,true);
-	if(i == 4) MakeTarget(982,247,true);
-	if(i == 5) MakeTarget(720,578,false);
-	if(i == 6) MakeTarget(1380,239,true);
-	if(i == 7) MakeTarget(1413,530,true);
+	//Javelin Targets
+	if(i == 1) MakeTarget(300,530,true);
+	if(i == 2)
+	{
+		var target2 = MakeTarget(510,510,true);
+		AddEffect("FlintDrop",target2,1,0,target2);
+	}
+	if(i == 3) MakeTarget(360,360,true);
+	if(i == 4)
+	{
+		var target4 = MakeTarget(1030,244,true)->GetActionTarget();
+		AddEffect("Moving",target4,1,1,target4);
+	}
+	if(i == 5)
+	{
+		var target5 = MakeTarget(1525,150,true);
+		AddEffect("FlintDrop",target5,1,0,target5);
+	}
+	if(i == 6) MakeTarget(1908,362,true);
+
+	//Bow Targets
+	if(i == 7) MakeTarget(2352,247,true);
+	if(i == 8) MakeTarget(2623,310,true);
+	if(i == 9) MakeTarget(2090,578,false);
+	if(i == 10) MakeTarget(2165,310,true);
+	if(i == 11) MakeTarget(2750,239,true);
+	if(i == 12) MakeTarget(2783,530,true);
+}
+
+global func FxMovingTimer(object target, int num, int time)
+{
+	target->SetXDir(Sin(time,20));
+}
+
+global func FxFlintDropStop(object target, int num, int reason, bool temporary)
+{
+	CreateObject(Firestone);
 }
 
 protected func MakeTarget(int ix, int iy, bool flying)
@@ -44,6 +74,7 @@ protected func MakeTarget(int ix, int iy, bool flying)
 		CreateParticle("Flash",ix,iy,0,0,500,RGB(255,255,255));
 		target->SetAction("Float");
 	}
+	return target;
 }
 
 func Definition(def) {
