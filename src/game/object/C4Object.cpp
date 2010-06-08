@@ -251,8 +251,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 	{
 		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-		if ( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
-			pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+		pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 	}
 	else
 	{
@@ -486,8 +485,7 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 		{
 			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-			if ( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 		}
 		else
 		{
@@ -2847,12 +2845,11 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		  Action.PhaseDelay=iPhaseDelay;
 		  }*/
 
-		// Set Action animation by slot 0
 		if (pMeshInstance)
 		{
+			// Set Action animation by slot 0		
 			Action.Animation = pMeshInstance->GetRootAnimationForSlot(0);
-			if ( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 		}
 
 		// if on fire but no effect is present (old-style savegames), re-incinerate

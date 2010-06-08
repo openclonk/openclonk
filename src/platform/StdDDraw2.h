@@ -210,6 +210,8 @@ struct ZoomData
 class CStdDDraw
 {
 public:
+	static const StdMeshMatrix OgreToClonk;
+
 	CStdDDraw(): MaxTexSize(0), Saturation(255) { lpDDrawPal=&Pal; }
 	virtual ~CStdDDraw() { lpDDraw=NULL; }
 public:

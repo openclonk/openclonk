@@ -996,12 +996,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
-		{
-			if ( ((dwClrModulation >> 24) & 0xff) != 0xff)
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-			else
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
-		}
+			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
 	}
 	if (eMode == MODE_Rank)
 	{
@@ -1174,12 +1169,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
-		{
-			if ( ((dwClrModulation >> 24) & 0xff) != 0xff)
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-			else
-				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
-		}
+			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
 	}
 	// draw at given rect
 	if (!pMeshInstance)

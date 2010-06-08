@@ -126,7 +126,8 @@ namespace
 		{ "scroll_y", StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y },
 		{ "rotate", StdMeshMaterialTextureUnit::Transformation::XF_ROTATE },
 		{ "scale_x", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X },
-		{ "scale_y", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y }
+		{ "scale_y", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y },
+		{ NULL }
 	};
 
 	const Enumerator<StdMeshMaterialTextureUnit::Transformation::WaveType> WaveTypeEnumerators[] =
@@ -135,14 +136,40 @@ namespace
 		{ "triangle", StdMeshMaterialTextureUnit::Transformation::W_TRIANGLE },
 		{ "square", StdMeshMaterialTextureUnit::Transformation::W_SQUARE },
 		{ "sawtooth", StdMeshMaterialTextureUnit::Transformation::W_SAWTOOTH },
-		{ "inverse_sawtooth", StdMeshMaterialTextureUnit::Transformation::W_INVERSE_SAWTOOTH }
+		{ "inverse_sawtooth", StdMeshMaterialTextureUnit::Transformation::W_INVERSE_SAWTOOTH },
+		{ NULL }
 	};
 
 	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] =
 	{
 		{ "clockwise", StdMeshMaterialPass::CH_Clockwise },
 		{ "anticlockwise", StdMeshMaterialPass::CH_CounterClockwise },
-		{ "none", StdMeshMaterialPass::CH_None }
+		{ "none", StdMeshMaterialPass::CH_None },
+		{ NULL }
+	};
+
+	const Enumerator<StdMeshMaterialPass::SceneBlendType> SceneBlendEnumerators[] =
+	{
+		{ "one", StdMeshMaterialPass::SB_One },
+		{ "zero", StdMeshMaterialPass::SB_Zero },
+		{ "dest_colour", StdMeshMaterialPass::SB_DestColor },
+		{ "src_colour", StdMeshMaterialPass::SB_SrcColor },
+		{ "one_minus_dest_colour", StdMeshMaterialPass::SB_OneMinusDestColor },
+		{ "one_minus_src_colour", StdMeshMaterialPass::SB_OneMinusSrcColor },
+		{ "dest_alpha", StdMeshMaterialPass::SB_DestAlpha },
+		{ "src_alpha", StdMeshMaterialPass::SB_SrcAlpha },
+		{ "one_minus_dest_alpha", StdMeshMaterialPass::SB_OneMinusDestAlpha },
+		{ "one_minus_src_alpha", StdMeshMaterialPass::SB_OneMinusSrcAlpha },
+		{ NULL }
+	};
+
+	const EnumeratorShortcut<2, StdMeshMaterialPass::SceneBlendType> SceneBlendShortcuts[] =
+	{
+		{ "add", { StdMeshMaterialPass::SB_One, StdMeshMaterialPass::SB_One } },
+		{ "modulate", { StdMeshMaterialPass::SB_DestColor, StdMeshMaterialPass::SB_Zero } },
+		{ "colour_blend", { StdMeshMaterialPass::SB_SrcColor, StdMeshMaterialPass::SB_OneMinusSrcColor } },
+		{ "alpha_blend", { StdMeshMaterialPass::SB_SrcAlpha, StdMeshMaterialPass::SB_OneMinusSrcAlpha } },
+		{ NULL }
 	};
 }
 
@@ -802,6 +829,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	Specular[0] = Specular[1] = Specular[2] = 0.0f; Specular[3] = 0.0f;
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
+	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
 }
 
 void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
@@ -855,6 +883,10 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			CullHardware = ctx.AdvanceEnum(CullHardwareEnumerators);
 		}
+		else if (token_name == "scene_blend")
+		{
+			ctx.AdvanceEnums<2, StdMeshMaterialPass::SceneBlendType>(SceneBlendEnumerators, SceneBlendShortcuts, SceneBlendFactors);
+		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
@@ -885,6 +917,18 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 
 	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
+}
+
+bool StdMeshMaterialTechnique::IsOpaque() const
+{
+	// Technique is opaque if one of the passes is opaque (subsequent
+	// non-opaque passes will just depend on the opaque value drawn in
+	// the previous pass; total result will not depend on original
+	// frame buffer value).
+	for(unsigned int i = 0; i < Passes.size(); ++i)
+		if(Passes[i].IsOpaque())
+			return true;
+	return false;
 }
 
 StdMeshMaterial::StdMeshMaterial():

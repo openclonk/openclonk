@@ -6,6 +6,7 @@ material RopeBalloon
 		pass
 		{
 			cull_hardware none
+			scene_blend src_alpha one_minus_src_alpha
 		
 			ambient 1.500000 1.500000 1.500000 1.000000
 			diffuse 0.640000 0.640000 0.640000 1.000000

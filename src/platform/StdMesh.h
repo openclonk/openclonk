@@ -108,6 +108,7 @@ private:
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator*(float lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs);
+StdMeshMatrix& operator*=(StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshQuaternion operator-(const StdMeshQuaternion& rhs);
 StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
@@ -357,6 +358,7 @@ public:
 
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 	void SetFaceOrdering(FaceOrdering ordering);
+	void SetFaceOrderingForClrModulation(uint32_t clrmod);
 
 	// Provider for animation position or weight.
 	class ValueProvider
@@ -584,8 +586,22 @@ public:
 
 	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
 	// This is called recursively for attached children, so there is no need to call it on attached children only
-	// which would also not update its attach transformation. Call this once before rendering.
-	void UpdateBoneTransforms();
+	// which would also not update its attach transformation. Call this once before rendering. Returns true if the
+	// mesh was deformed since the last execution, or false otherwise.
+	bool UpdateBoneTransforms();
+
+	// Orders faces according to current face ordering. Clal this once before rendering if one of the following is true:
+	//
+	// a) the call to UpdateBoneTransforms returns true
+	// b) a submesh's material was changed
+	// c) the global transformation changed since previous call to ReorderFaces()
+	// d) some other obscure state change occurred (?)
+	//
+	// global_trans is a global transformation that is applied when rendering the mesh, and this is used
+	// to correctly do face ordering.
+	//
+	// TODO: Should maybe introduce a FaceOrderingDirty flag
+	void ReorderFaces(StdMeshMatrix* global_trans);
 
 	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
 	void EnumeratePointers();
@@ -598,7 +614,6 @@ protected:
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
 	bool ExecuteAnimationNode(AnimationNode* node);
-	void ReorderFaces();
 
 	FaceOrdering CurrentFaceOrdering;
 

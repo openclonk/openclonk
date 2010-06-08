@@ -30,18 +30,15 @@ std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstanc
 
 namespace
 {
-	// TODO: Avoid duplication with StdGL.cpp. This should not be here but possibly a parameter to ReorderFaces(),
-	// which should then be called from StdDDraw::RenderMesh. That way it can also include MeshTransformation.
-	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
-
 	// Helper to sort faces for FaceOrdering
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
 		const StdMeshInstance& m_inst;
 		const StdMeshVertex* m_vertices;
+		const StdMeshMatrix& m_global_trans;
 
-		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst, unsigned int submesh):
-				m_inst(inst), m_vertices(m_inst.GetSubMesh(submesh).GetVertices()) {}
+		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst, unsigned int submesh, const StdMeshMatrix& global_trans):
+				m_inst(inst), m_vertices(m_inst.GetSubMesh(submesh).GetVertices()), m_global_trans(global_trans) {}
 
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
@@ -54,8 +51,9 @@ namespace
 			case StdMeshInstance::FO_FarthestToNearest:
 			case StdMeshInstance::FO_NearestToFarthest:
 			{
-				float z1 = (OgreToClonk*(m_vertices[face1.Vertices[0]] + m_vertices[face1.Vertices[1]] + m_vertices[face1.Vertices[2]])).z;
-				float z2 = (OgreToClonk*(m_vertices[face2.Vertices[0]] + m_vertices[face2.Vertices[1]] + m_vertices[face2.Vertices[2]])).z;
+				float z1 = (m_global_trans*(m_vertices[face1.Vertices[0]] + m_vertices[face1.Vertices[1]] + m_vertices[face1.Vertices[2]])).z;
+				float z2 = (m_global_trans*(m_vertices[face2.Vertices[0]] + m_vertices[face2.Vertices[1]] + m_vertices[face2.Vertices[2]])).z;
+
 				if (m_inst.GetFaceOrdering() == StdMeshInstance::FO_FarthestToNearest)
 					return z1 < z2;
 				else
@@ -532,6 +530,12 @@ StdMeshMatrix operator*(float lhs, const StdMeshMatrix& rhs)
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs)
 {
 	return rhs * lhs;
+}
+
+StdMeshMatrix& operator*=(StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
+{
+	lhs = lhs * rhs;
+	return lhs;
 }
 
 StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
@@ -1195,7 +1199,7 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 			}
 		}
 
-		BoneTransformsDirty = true;
+		//BoneTransformsDirty = true;
 
 		// Update attachments (only own meshes for now... others might be displayed both attached and non-attached...)
 		// still not optimal.
@@ -1203,6 +1207,23 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 			if ((*iter)->OwnChild)
 				(*iter)->Child->SetFaceOrdering(ordering);
 	}
+}
+
+void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
+{
+	// TODO: This could do face ordering only for non-opaque submeshes
+
+	bool opaque = true;
+	for(unsigned int i = 0; i < SubMeshInstances.size(); ++i)
+		if(!SubMeshInstances[i]->Material->IsOpaque())
+			{ opaque = false; break; }
+
+	if(!opaque)
+		SetFaceOrdering(FO_FarthestToNearest);
+	else if( ((clrmod >> 24) & 0xff) != 0xff)
+		SetFaceOrdering(FO_NearestToFarthest);
+	else
+		SetFaceOrdering(FO_Fixed);
 }
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
@@ -1483,8 +1504,10 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::GetAttachedMeshByNumber(unsigned
 	return NULL;
 }
 
-void StdMeshInstance::UpdateBoneTransforms()
+bool StdMeshInstance::UpdateBoneTransforms()
 {
+	bool was_dirty = BoneTransformsDirty;
+
 	// Nothing changed since last time
 	if (BoneTransformsDirty)
 	{
@@ -1558,9 +1581,6 @@ void StdMeshInstance::UpdateBoneTransforms()
 				}
 			}
 		}
-
-		if (CurrentFaceOrdering != FO_Fixed)
-			ReorderFaces();
 	}
 
 	// Update attachment's attach transformations. Note this is done recursively.
@@ -1572,6 +1592,8 @@ void StdMeshInstance::UpdateBoneTransforms()
 
 		if (BoneTransformsDirty || ChildBoneTransformsDirty || attach->FinalTransformDirty)
 		{
+			was_dirty = true;
+
 			// Compute matrix to change the coordinate system to the one of the attached bone:
 			// The idea is that a vertex at the child bone's position transforms to the parent bone's position.
 			// Therefore (read from right to left) we first apply the inverse of the child bone transformation,
@@ -1594,6 +1616,21 @@ void StdMeshInstance::UpdateBoneTransforms()
 	}
 
 	BoneTransformsDirty = false;
+	return was_dirty;
+}
+
+void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
+{
+	if(CurrentFaceOrdering != FO_Fixed)
+	{
+		for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
+		{
+			StdMeshInstanceFaceOrderingCmpPred pred(*this, i, global_trans ? *global_trans : StdMeshMatrix::Identity());
+			std::sort(SubMeshInstances[i]->Faces.begin(), SubMeshInstances[i]->Faces.end(), pred);
+		}
+	}
+
+	// TODO: Also reorder submeshes, attached meshes and include AttachTransformation for attached meshes...
 }
 
 void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory)
@@ -1779,16 +1816,3 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 	return true;
 }
 
-void StdMeshInstance::ReorderFaces()
-{
-	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
-	{
-		StdMeshInstanceFaceOrderingCmpPred pred(*this, i);
-		std::sort(SubMeshInstances[i]->Faces.begin(), SubMeshInstances[i]->Faces.end(), pred);
-	}
-
-	// TODO: Also reorder submeshes and attached meshes... maybe this face ordering
-	// is not a good idea after all. Another possibility to obtain the effect would be
-	// to first render to an offscreen texture, then render to screen (only for meshes
-	// with halftransparent clrmod applied)
-}

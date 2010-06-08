@@ -3421,12 +3421,7 @@ static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, l
 		// set it
 		cthr->Obj->ColorMod=clr;
 		if (cthr->Obj->pMeshInstance)
-		{
-			if ( ((clr >> 24) & 0xff) != 0xff)
-				cthr->Obj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-			else
-				cthr->Obj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
-		}
+			cthr->Obj->pMeshInstance->SetFaceOrderingForClrModulation(clr);
 	}
 	// success
 	return true;

@@ -240,8 +240,24 @@ public:
 		CH_None
 	};
 
+	enum SceneBlendType
+	{
+		SB_One,
+		SB_Zero,
+		SB_DestColor,
+		SB_SrcColor,
+		SB_OneMinusDestColor,
+		SB_OneMinusSrcColor,
+		SB_DestAlpha,
+		SB_SrcAlpha,
+		SB_OneMinusDestAlpha,
+		SB_OneMinusSrcAlpha
+	};
+
 	StdMeshMaterialPass();
 	void Load(StdMeshMaterialParserCtx& ctx);
+
+	bool IsOpaque() const { return SceneBlendFactors[1] == SB_Zero; }
 
 	StdCopyStrBuf Name;
 	std::vector<StdMeshMaterialTextureUnit> TextureUnits;
@@ -254,6 +270,7 @@ public:
 
 	bool DepthWrite;
 	CullHardwareType CullHardware;
+	SceneBlendType SceneBlendFactors[2];
 };
 
 class StdMeshMaterialTechnique
@@ -262,6 +279,8 @@ public:
 	StdMeshMaterialTechnique();
 
 	void Load(StdMeshMaterialParserCtx& ctx);
+
+	bool IsOpaque() const;
 
 	StdCopyStrBuf Name;
 	std::vector<StdMeshMaterialPass> Passes;
@@ -276,6 +295,8 @@ class StdMeshMaterial
 public:
 	StdMeshMaterial();
 	void Load(StdMeshMaterialParserCtx& ctx);
+
+	bool IsOpaque() const { assert(BestTechniqueIndex >= 0); return Techniques[BestTechniqueIndex].IsOpaque(); }
 
 	// Location the Material was loaded from
 	StdCopyStrBuf FileName;

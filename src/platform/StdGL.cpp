@@ -677,7 +677,25 @@ namespace
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
 
-	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, bool fMod2, DWORD dwPlayerColor, bool parity)
+	inline GLenum OgreBlendTypeToGL(StdMeshMaterialPass::SceneBlendType blend)
+	{
+		switch(blend)
+		{
+		case StdMeshMaterialPass::SB_One: return GL_ONE;
+		case StdMeshMaterialPass::SB_Zero: return GL_ZERO;
+		case StdMeshMaterialPass::SB_DestColor: return GL_DST_COLOR;
+		case StdMeshMaterialPass::SB_SrcColor: return GL_SRC_COLOR;
+		case StdMeshMaterialPass::SB_OneMinusDestColor: return GL_ONE_MINUS_DST_COLOR;
+		case StdMeshMaterialPass::SB_OneMinusSrcColor: return GL_ONE_MINUS_SRC_COLOR;
+		case StdMeshMaterialPass::SB_DestAlpha: return GL_DST_ALPHA;
+		case StdMeshMaterialPass::SB_SrcAlpha: return GL_SRC_ALPHA;
+		case StdMeshMaterialPass::SB_OneMinusDestAlpha: return GL_ONE_MINUS_DST_ALPHA;
+		case StdMeshMaterialPass::SB_OneMinusSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
+		default: assert(false); return GL_ZERO;
+		}
+	}
+
+	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
@@ -697,7 +715,7 @@ namespace
 			// clrmodmap texture needs to be the last texture in that case... we should
 			// change the index to maxtextures-1 instead of 3.
 
-			if(!fMod2 && dwModClr == 0xffffffff)
+			if(!(dwBlitMode & C4GFXBLIT_MOD2) && dwModClr == 0xffffffff)
 			{
 				// Fastpath for the easy case
 				glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
@@ -719,7 +737,7 @@ namespace
 				// TODO: We could also consider applying dwmod using an additional
 				// texture unit, maybe we can even re-use the one which is reserved for
 				// the clrmodmap texture anyway (+adapt the shader).
-				if(!fMod2)
+				if(!(dwBlitMode & C4GFXBLIT_MOD2))
 				{
 					Ambient[0] = pass.Ambient[0] * dwMod[0];
 					Ambient[1] = pass.Ambient[1] * dwMod[1];
@@ -784,6 +802,16 @@ namespace
 			case StdMeshMaterialPass::CH_None:
 				glDisable(GL_CULL_FACE);
 				break;
+			}
+
+			if(!(dwBlitMode & C4GFXBLIT_ADDITIVE))
+			{
+				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
+					    OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
+			}
+			else
+			{
+				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
 			// TODO: Use vbo if available.
@@ -968,13 +996,13 @@ namespace
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, bool fMod2, DWORD dwPlayerColor, bool parity)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMesh& mesh = instance.Mesh;
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, fMod2, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone
@@ -1015,7 +1043,7 @@ namespace
 			// TODO: Take attach transform's parity into account
 			glPushMatrix();
 			glMultMatrixf(attach_trans_gl);
-			RenderMeshImpl(*attach->Child, dwModClr, fMod2, dwPlayerColor, parity);
+			RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, parity);
 			glPopMatrix();
 
 #if 0
@@ -1068,28 +1096,24 @@ namespace
 	}
 }
 
-namespace
-{
-	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
-	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
-
-	// Convert to column-major order
-	const float OgreToClonkGL[16] =
-	{
-		OgreToClonk(0,0), OgreToClonk(1,0), OgreToClonk(2,0), 0,
-		OgreToClonk(0,1), OgreToClonk(1,1), OgreToClonk(2,1), 0,
-		OgreToClonk(0,2), OgreToClonk(1,2), OgreToClonk(2,2), 0,
-		OgreToClonk(0,3), OgreToClonk(1,3), OgreToClonk(2,3), 1
-	};
-
-	const bool OgreToClonkParity = OgreToClonk.Determinant() > 0.0f;
-}
-
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
+
+	// Convert OgreToClonk matrix to column-major order
+	// TODO: This must be executed after CStdDDraw::OgreToClonk was
+	// initialized - is this guaranteed at this position?
+	static const float OgreToClonkGL[16] =
+	{
+		CStdDDraw::OgreToClonk(0,0), CStdDDraw::OgreToClonk(1,0), CStdDDraw::OgreToClonk(2,0), 0,
+		CStdDDraw::OgreToClonk(0,1), CStdDDraw::OgreToClonk(1,1), CStdDDraw::OgreToClonk(2,1), 0,
+		CStdDDraw::OgreToClonk(0,2), CStdDDraw::OgreToClonk(1,2), CStdDDraw::OgreToClonk(2,2), 0,
+		CStdDDraw::OgreToClonk(0,3), CStdDDraw::OgreToClonk(1,3), CStdDDraw::OgreToClonk(2,3), 1
+	};
+
+	static const bool OgreToClonkParity = CStdDDraw::OgreToClonk.Determinant() > 0.0f;
 
 	const StdMesh& mesh = instance.Mesh;
 
@@ -1112,8 +1136,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
-	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
+	// TODO: We ignore the additive drawing flag for meshes but instead
+	// set the blending mode of the corresponding material. I'm not sure
+	// how the two could be combined.
+	//int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
+	//glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
 	// Set up projection matrix first. We do transform and Zoom with the
 	// projection matrix, so that lighting is applied to the untransformed/unzoomed
@@ -1301,7 +1329,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		ModulateClr(dwModClr, c);
 	}
 
-	RenderMeshImpl(instance, dwModClr, !!(dwBlitMode & C4GFXBLIT_MOD2), dwPlayerColor, parity);
+	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, parity);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
