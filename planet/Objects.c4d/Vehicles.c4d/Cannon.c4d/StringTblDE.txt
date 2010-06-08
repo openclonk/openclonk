@@ -1,0 +1,5 @@
+TxtControl=Control
+TxtCannonisfull=Cannon is already loaded!
+TxtNeedspowder=Cannon requires black powder.
+TxtNeedsammo=Cannon has no ammo.
+Name=Cannon
