@@ -10,6 +10,8 @@ local olddir;
 local aimangle;
 local aimdir;
 
+static const Fire_Velocity = 175;
+
 public func IsToolProduct() { return 1; }
 
 protected func Initialize()
@@ -51,12 +53,12 @@ public func ControlUseStart(object clonk, int ix, int iy)
 	//ammo requirements
 	if(!FindObject(Find_Container(this),Find_ID(Blackpowder)))//needs some powder
 	{
-		PlayerMessage(clonk->GetOwner(),"TxtNeedspowder");
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedspowder$");
 		return 1;
 	}
 	if(!FindObject(Find_Container(this),Find_Category(C4D_Object),Find_Not(Find_ID(Blackpowder))))//needs a shot
 	{
-		PlayerMessage(clonk->GetOwner(),"TxtNeedsammo");
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsammo$");
 		return 1;
 	}
 
@@ -66,7 +68,7 @@ public func ControlUseStart(object clonk, int ix, int iy)
 	if(FindObject(Find_Container(this),Find_ID(Blackpowder)) &&
 		FindObject(Find_Container(this),Find_Category(C4D_Object), Find_Not(Find_ID(Blackpowder))))
 	{
-		DoFire(FindObject(Find_Container(this),Find_Category(C4D_Object), Find_Not(Find_ID(Blackpowder))));
+		DoFire(FindObject(Find_Container(this),Find_Category(C4D_Object), Find_Not(Find_ID(Blackpowder))),clonk);
 		FindContents(Blackpowder)->RemoveObject();
 		AddEffect("Cooldown",this,1,1,this);
 	}
@@ -112,31 +114,32 @@ func ControlRight(object clonk)
 	SetDir(1);
 }
 
-protected func DoFire(object iammo)
+protected func DoFire(object iammo, object clonk)
 {
 	if(iammo == nil) iammo = FindContents(Rock); //debug only!
 	iammo->Exit();
 
-	//convert, and adapt angle to direction
-	var iangle = (aimangle - GetR()); //modifies angle when the cannon's chassis rotates
-	if(GetDir() == 0) iangle = (aimangle + GetR());
-	var angle = (90 - iangle);//angle modifier which acknowledges direction
-	if(GetDir() == 0) angle = (270 + iangle);
+	if(iammo->GetID() == Dynamite)
+	{
+		iammo->Fuse();
+	}
+
+	var r = ConvertAngle();
 
 	//Send ammo flying
 	var spread = -1 + Random(3);
-	iammo->LaunchProjectile(angle + spread, 17, 175);
-	//TODO: Add HitCheck.
+	iammo->SetR(r);
+	iammo->SetRDir(-4 + Random(9));
+	iammo->LaunchProjectile(r + spread, 17, Fire_Velocity);
 
 	//Particles
 	var dist = 25;
-	var px = Cos(angle - 90,dist);
-	var py = Sin(angle - 90,dist) - 4;
+	var px = Cos(r - 90,dist);
+	var py = Sin(r - 90,dist) - 4;
 	CreateParticle("Flash",px,py,0,0,420,RGB(255,255,255));
 	for(var i=0; i<15; ++i) //liberated from musket script... I'm horrible at particles :p
 	{
 		var speed = RandomX(0,10);
-		var r = angle;
 		CreateParticle("ExploSmoke",px,py,+Sin(r,speed)+RandomX(-2,2),-Cos(r,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,75));
 	}
 	CreateParticle("MuzzleFlash",px,py,px,py+4,700,RGB(255,255,255)); //muzzle flash uses speed as Rotation... so I negate the -4
@@ -146,7 +149,45 @@ protected func DoFire(object iammo)
 
 	//Recoil
 	if(aimangle < 88) aimangle = aimangle + Random(3);
-	PlayAnimation("Fire", 10, Anim_Linear(0,0, GetAnimationLength("Fire"), 30, ANIM_Remove), Anim_Const(1000));
+	PlayAnimation("Fire", 5, Anim_Linear(0,0, GetAnimationLength("Fire"), 30, ANIM_Remove), Anim_Const(500));
+}
+
+public func Grabbed(object clonk, bool grabbed)
+{
+	if(grabbed)
+	{
+		if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
+		AddEffect("TrajAngle", this, 50, 1, this);
+		return 1;
+	}
+
+	if(!grabbed)
+	{
+		RemoveTrajectory(this);
+		RemoveEffect("TrajAngle",this);		
+	return 1;
+	}
+}
+
+public func GrabLost(object clonk)
+{
+	Grabbed(clonk, false);
+	return 1;
+}
+
+public func FxTrajAngleTimer(object target, int num, int timer)
+{
+	var clonk = FindObject(Find_ActionTarget(target));
+	if(!clonk)
+	{
+		Grabbed(0, false);
+	}
+	
+	var r = ConvertAngle();
+
+	var iColor = RGB(255,255,255);
+	if(!FindContents(Blackpowder) || FindObject(Find_Category(C4D_Object),Find_Not(Find_ID(Blackpowder))) == nil ) iColor = RGB(255,0,0);
+	target->AddTrajectory(target, target->GetX(), target->GetY()-3, Cos(r-90, Fire_Velocity), Sin(r-90, Fire_Velocity), iColor, 20);
 }
 
 
@@ -177,6 +218,16 @@ func Timer()
 		aimangle = aimangle + aimdir;
 	}
 	SetAnimationPosition(aim_anim, Anim_Const(aimangle*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
+}
+
+private func ConvertAngle()
+{
+	//Finds the angle based on chassis rotation and direction.
+	var iangle = (aimangle - GetR()); //modifies angle when the cannon's chassis rotates
+	if(GetDir() == 0) iangle = (aimangle + GetR());
+	var angle = (90 - iangle);//angle modifier which acknowledges direction
+	if(GetDir() == 0) angle = (270 + iangle);
+	return angle;
 }
 
 func Definition(def) {
