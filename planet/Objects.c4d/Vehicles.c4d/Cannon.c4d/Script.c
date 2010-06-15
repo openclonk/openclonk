@@ -9,6 +9,7 @@ local aim_anim;
 local olddir;
 local aimangle;
 local aimdir;
+local grabber;
 
 static const Fire_Velocity = 175;
 
@@ -156,6 +157,7 @@ public func Grabbed(object clonk, bool grabbed)
 {
 	if(grabbed)
 	{
+		if(!grabber) grabber = clonk;
 		if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
 		AddEffect("TrajAngle", this, 50, 1, this);
 		return 1;
@@ -163,24 +165,20 @@ public func Grabbed(object clonk, bool grabbed)
 
 	if(!grabbed)
 	{
+		grabber = nil;
+		RemoveEffect("TrajAngle",this);	
 		RemoveTrajectory(this);
-		RemoveEffect("TrajAngle",this);		
 	return 1;
 	}
 }
 
-public func GrabLost(object clonk)
-{
-	Grabbed(clonk, false);
-	return 1;
-}
-
 public func FxTrajAngleTimer(object target, int num, int timer)
 {
-	var clonk = FindObject(Find_ActionTarget(target));
-	if(!clonk)
+	if(grabber->GetProcedure() != "PUSH")
 	{
-		Grabbed(0, false);
+		RemoveTrajectory(this);
+		grabber = nil;
+		return -1;
 	}
 	
 	var r = ConvertAngle();
