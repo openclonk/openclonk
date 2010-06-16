@@ -62,7 +62,8 @@ func ControlUseHolding(object clonk, ix, iy)
 
 protected func ControlUseStop(object clonk, ix, iy)
 {
-	clonk->StopAim();
+	if(fAiming)
+		clonk->StopAim();
 	return true;
 }
 
@@ -73,7 +74,7 @@ public func FinishedAiming(object clonk, int angle)
 	return true;
 }
 
-protected func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming(this);
 	return true;
