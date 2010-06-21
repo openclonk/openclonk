@@ -161,11 +161,11 @@
 //      (0x09 VDET_UByte4)
 //        Four 8-bit integers
 //      0x0A VDET_Color_ARGB
-//        Four 32-bit floats, describing a color in the order Alpha, Red, Green, Blue.
-//        Acceptable values range from 0.0 to 1.0.
+//        Four 8-bit integers, describing a color in the order Alpha, Red, Green, Blue.
+//        Acceptable values range from 0 to 255.
 //      0x0B VDET_Color_ABGR
-//        Four 32-bit floats, describing a color in the order Alpha, Blue, Green, Red.
-//        Acceptable values range from 0.0 to 1.0.
+//        Four 8-bit integers, describing a color in the order Alpha, Blue, Green, Red.
+//        Acceptable values range from 0 to 255.
 //  uint16_t semantic
 //    The semantic of the data this element contains.
 //    Acceptable values:
