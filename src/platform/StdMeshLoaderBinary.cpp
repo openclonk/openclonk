@@ -18,7 +18,6 @@
 // A loader for the OGRE .mesh binary file format
 
 #include "C4Include.h"
-#include "C4Log.h"
 #include "StdMesh.h"
 #include "StdMeshLoader.h"
 #include "StdMeshLoaderBinaryChunks.h"
@@ -260,7 +259,6 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
 			ba.Weight /= sum;
 		}
-		DebugLogF("Loaded submesh with %u faces, %u vertices, material %s", static_cast<unsigned int>(sm.GetNumFaces()), static_cast<unsigned int>(sm.GetNumVertices()), sm.GetMaterial().Name.getData());
 	}
 	return mesh.release();
 }
@@ -328,8 +326,6 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 	{
 		if (!it->second->Parent)
 		{
-			if (master)
-				DebugLogF("More than one master bone: %s has no parent, but %s already master", it->second->Name.getData(), master->Name.getData());
 			master = it->second;
 			mesh->AddMasterBone(master);
 		}
@@ -380,6 +376,4 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
 		}
 	}
-
-	DebugLogF("Loaded skeleton with %u bones, %u animations", static_cast<unsigned int>(mesh->GetNumBones()), static_cast<unsigned int>(animations.size()));
 }
