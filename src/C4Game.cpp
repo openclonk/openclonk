@@ -572,6 +572,7 @@ void C4Game::Clear()
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
 	GraphicsResource.Clear();
+	GraphicsResource.ClearFonts(); // need to clear fonts since they keep FontLoader state, they will be reinitialized on time (#261)
 	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();
