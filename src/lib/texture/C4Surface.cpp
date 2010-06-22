@@ -289,8 +289,9 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
-/* avoid conflict with conflicting boolean typedefs */
+/* avoid conflict with conflicting boolean and FAR typedefs */
 #undef __RPCNDR_H__
+#undef FAR
 #define boolean jpeg_boolean
 #include <jpeglib.h>
 #undef boolean
