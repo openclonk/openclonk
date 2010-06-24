@@ -42,6 +42,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 			else if (ctrl == CON_Up)    cursor->GetMenu()->~ControlUp(release);
 			else if (ctrl == CON_Down)  cursor->GetMenu()->~ControlDown(release);
 			else handled = false;
+			if (handled) return true;
 		
 			// cancel menu
 			if (ctrl == CON_CancelMenu)
