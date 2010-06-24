@@ -704,7 +704,7 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	if (alt && !(obj->Contained())) estr = "Alt";
 	
 	// first call UseStart. If unhandled, call Use (mousecontrol)
-	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,x,y);
+	var handled = obj->Call(Format("~%sUse%sStart",control,estr),this,x,y);
 	if (!handled)
 	{
 		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
@@ -735,7 +735,7 @@ private func StartUseDelayedControl(int ctrl, control, object obj)
 	VirtualCursor()->StartAim(this);
 			
 	// call UseStart
-	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,mlastx,mlasty);
+	var handled = obj->Call(Format("~%sUse%sStart",control,estr),this,mlastx,mlasty);
 	if (!handled) noholdingcallbacks = true;
 	else noholdingcallbacks = false;
 	
