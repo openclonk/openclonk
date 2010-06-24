@@ -12,7 +12,7 @@ protected func Initialize()
 	CreateObject(Chest, 431, 137, NO_OWNER);
 	CreateObject(Chest, 958, 466, NO_OWNER);
 	CreateObject(Chest, 919, 219, NO_OWNER);
-	AddEffect("IntFillChests", nil, 100, 70, this);
+	AddEffect("IntFillChests", nil, 200, 70, this);
 	return;
 }
 
@@ -27,22 +27,24 @@ protected func OnPlrRelaunch(int plr)
 	return;
 }
 
-// Refill chests.
+// Refill/fill chests.
+global func FxIntFillChestsStart()
+{
+	var chests = FindObjects(Find_ID(Chest));
+	var w_list = [Shovel,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox];
+	
+	for(var chest in chests)
+		for(var i=0; i<4; ++i)
+			chest->CreateContents(w_list[Random(GetLength(w_list))]);
+}
+
 global func FxIntFillChestsTimer()
 {
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	if (ObjectCount(Find_Container(chest)) > 5)
-		chest->Contents(Random(6))->RemoveObject();
-	var w_list = [Shovel,Bow,Arrow,Musket,LeadShot,Shield,Sword,Club,Javelin,Boompack,DynamiteBox,Dynamite,Loam,Firestone,Fireglobe];
-	if (chest)
+	var w_list = [LeadShot,Boompack,Dynamite,Loam,Firestone,Arrow];
+	
+	if (chest->ContentsCount() < 5)
 		chest->CreateContents(w_list[Random(GetLength(w_list))]);
-	return;
-}
-
-// The weapons available to the players. Needed by MicroMelee_Relaunch
-func GetMicroMeleeWeaponList()
-{
-	return[Shovel,Bow,Arrow,Musket,LeadShot,Shield,Sword,Club,Javelin,Boompack,DynamiteBox,Dynamite,Loam,Firestone,Fireglobe];
 }
 
 // GameCall from MicroMelee_Relaunch

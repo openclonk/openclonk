@@ -17,10 +17,14 @@ public func WeaponMenu(object clonk)
 {
 	if (!menu)
 	{
-		menu = clonk->CreateRingMenu(Clonk, 0, 0, this);
-		for (var weapon in WeaponList())
-			menu->AddItem(weapon);
-		menu->Show();
+		var weapons = WeaponList();
+		if(weapons)
+		{
+			menu = clonk->CreateRingMenu(Clonk, 0, 0, this);
+			for (var weapon in weapons)
+				menu->AddItem(weapon);
+			menu->Show();
+		}
 	}
 	AddEffect("IntTimeLimit", this, 100, 10, this);
 	return true;
@@ -32,7 +36,7 @@ func FxIntTimeLimitTimer(target, num, time)
 	if (time > 350)
 	{    
 		RelaunchClonk();
-		menu->Close();
+		if(menu) menu->Close();
 		PlayerMessage(clonk->GetOwner(), "");
 		this->RemoveObject();
 		return -1;
@@ -50,7 +54,6 @@ public func Selected(object menu, object selector)
 		var newobj = CreateObject(selector->GetSymbol());
 		newobj->Enter(Contents());
 	}
-	selector->RemoveObject();
 	menu->Show();
 	if (choses > 0)
 	{
