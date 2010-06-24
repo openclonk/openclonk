@@ -12,6 +12,8 @@ local shown;          //am i visible?
 
 static const GUI_Ringmenu_Radius = 100;
 
+static const GUI_Ringmenu_Ring = 70;
+
 func Construction()
 {
 	menu_icons=[];
@@ -122,7 +124,7 @@ public func Select(int dx, int dy, bool alt)
 	var item = BoundBy(angle/segment,0,item_count-1);
 	
 	// center selected: close
-	if(distance <= 40) Close();
+	if(Abs(distance - GUI_Ringmenu_Radius) >= GUI_Ringmenu_Ring) Close();
 	// otherwise, select something
 	else if(command_object->Selected(this,menu_icons[item],alt))
 		Close();
@@ -170,7 +172,8 @@ public func UpdateCursor(int dx, int dy)
 		if(!item_count) return;
 		
 		var distance = Sqrt(dx*dx+dy*dy);
-		if(distance <= 40)
+		var outside = (Abs(distance - GUI_Ringmenu_Radius) >= GUI_Ringmenu_Ring);
+		if(outside)
 		{
 			CustomMessage("",this,menu_object->GetOwner(),0,64,RGB(255,0,0));
 			SetGraphics("Close",GetID(),2,GFXOV_MODE_Base);
@@ -182,7 +185,7 @@ public func UpdateCursor(int dx, int dy)
 		var segment = 360 / item_count;
 		if(!segment) segment = 1;
 		var item = BoundBy(angle/segment,0,item_count-1);
-		if(distance <= 40) item = -1;
+		if(outside) item = -1;
 		
 		for(var i=0; i<= item_count; i++)
 		{ 
@@ -193,7 +196,7 @@ public func UpdateCursor(int dx, int dy)
 					dist = BoundBy(dist*240/segment,-180,180);
 					dist = (dist**3)/(180**2);
 					var siz = (Cos(dist,1000)+1000)/2; // 0..1000
-					if(distance <= 40) siz = Max(0,siz-(1000-distance*25));
+					if(outside) siz = Max(0,siz-Abs(distance - GUI_Ringmenu_Radius)*10);
 					menu_icons[i]->SetSize((siz+2000)*420000/Max(item_count,5)/2000); //see Show()
 					if(i == item)
 						CustomMessage(Format("%s",menu_icons[i]->GetName()),this,menu_object->GetOwner(),0,64,RGB(255,0,0));
