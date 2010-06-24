@@ -161,7 +161,7 @@ public func FxIntSearchInteractionObjectsStart(object target, int num, int temp,
 public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 {
 
-	// find vehicles & structures
+	// find vehicles & structures & script interactables
 	var startAt = EffectVar(0,target,num);
 	var i = startAt;
 	
@@ -217,6 +217,13 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 		++i;
 	}
 
+	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable"),Find_NoContainer());
+	for(var interactable in interactables)
+	{
+		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT);
+		++i;
+	}
+	
 	//Message("found %d vehicles and %d structures",target,GetLength(vehicles),GetLength(structures));
 	
 	ClearButtons(i);

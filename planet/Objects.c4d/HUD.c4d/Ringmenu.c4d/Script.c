@@ -54,6 +54,10 @@ global func CreateRingMenu(id symbol, object commander)
 }
 
 
+public func GetMenuObject()
+{
+	return menu_object;
+}
 
 //re-set clonk and commandobject
 public func SetMenu(object menuobject, object commandobject)
@@ -78,8 +82,8 @@ func SetMenuIcon(id symbol)
 	else
 	{
 		SetGraphics(nil,symbol,1,4);
-		SetObjDrawTransform(750,0,0,0,750,0,1);
-		SetObjDrawTransform(750,0,0,0,750,0,0);
+		SetObjDrawTransform(2000,0,0,0,2000,0,1);
+		SetObjDrawTransform(2000,0,0,0,2000,0,0);
 	}
 }
 
@@ -90,7 +94,6 @@ public func AddItem(new_item, int amount, extra)
 	menu_icons[index] = CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
 	menu_icons[index]->SetSymbol(new_item);
 	menu_icons[index]->SetExtraData(extra);	
-	menu_icons[index]->SetHotkey(index+1);
 	if(amount == nil)
 	{
 		menu_icons[index]->SetAmount(1);
@@ -111,25 +114,19 @@ public func Select(int dx, int dy, bool alt)
 		if(command_object->Selected(this,nil,alt))
 			Close();
 	
+	var distance = Sqrt(dx*dx+dy*dy);
+	
 	var segment=360/item_count;
 	if(!segment) segment = 1;
 	var angle = Angle(0,0,dx,dy);
 	var item = BoundBy(angle/segment,0,item_count-1);
 	
-	if(command_object->Selected(this,menu_icons[item],alt))
+	// center selected: close
+	if(distance <= 40) Close();
+	// otherwise, select something
+	else if(command_object->Selected(this,menu_icons[item],alt))
 		Close();
 }
-
-
-//...
-public func SelectHotkey(int key, bool alt)
-{
-	if(GetLength(menu_icons) <= key) return false;
-
-	if(command_object->Selected(this,menu_icons[key],alt)) Close();
-	return true;
-}
-
 
 //am i visible?
 func IsVisible() { return shown; }
@@ -172,9 +169,20 @@ public func UpdateCursor(int dx, int dy)
 		var item_count = GetLength(menu_icons); 
 		if(!item_count) return;
 		
+		var distance = Sqrt(dx*dx+dy*dy);
+		if(distance <= 40)
+		{
+			CustomMessage("",this,menu_object->GetOwner(),0,64,RGB(255,0,0));
+			SetGraphics("Close",GetID(),2,GFXOV_MODE_Base);
+			SetObjDrawTransform(1000,0,16000,0,1000,16000,2);
+		}
+		else
+			SetGraphics(nil,nil,2);
+		
 		var segment = 360 / item_count;
 		if(!segment) segment = 1;
 		var item = BoundBy(angle/segment,0,item_count-1);
+		if(distance <= 40) item = -1;
 		
 		for(var i=0; i<= item_count; i++)
 		{ 
@@ -185,6 +193,7 @@ public func UpdateCursor(int dx, int dy)
 					dist = BoundBy(dist*240/segment,-180,180);
 					dist = (dist**3)/(180**2);
 					var siz = (Cos(dist,1000)+1000)/2; // 0..1000
+					if(distance <= 40) siz = Max(0,siz-(1000-distance*25));
 					menu_icons[i]->SetSize((siz+2000)*420000/Max(item_count,5)/2000); //see Show()
 					if(i == item)
 						CustomMessage(Format("%s",menu_icons[i]->GetName()),this,menu_object->GetOwner(),0,64,RGB(255,0,0));

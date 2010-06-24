@@ -32,6 +32,7 @@ local selected, crew, hotkey, myobject, actiontype, subselector;
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
+static const ACTIONTYPE_SCRIPT = 3;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
@@ -112,7 +113,14 @@ public func MouseSelection(int plr)
 			return true;
 		}
 	}
-	// TODO: more script choices... Selection-Callbacks for  all objects
+	if(actiontype == ACTIONTYPE_SCRIPT)
+	{
+		if(myobject->~IsInteractable())
+		{
+			myobject->Interact(crew);
+			return true;
+		}	
+	}
 }
 
 public func MouseDragDone(obj, object target)
@@ -153,8 +161,13 @@ public func MouseDrop(int plr, obj)
 	if(GetType(obj) != C4V_C4Object) return false;
 	if(!crew) return false;
 
+	// anything theoretically can be dropped on script objects
+	if(actiontype == ACTIONTYPE_SCRIPT)
+	{
+		return myobject->~DropObject(obj);
+	}
 	// a collectible object
-	if(obj->GetOCF() & OCF_Collectible)
+	else if(obj->GetOCF() & OCF_Collectible)
 	{
 		if(actiontype == ACTIONTYPE_INVENTORY)
 		{
@@ -259,6 +272,7 @@ public func SetObject(object obj, int type, int pos)
 		if(actiontype == nil)
 		{
 			if(myobject->Contained() == crew) actiontype = ACTIONTYPE_INVENTORY;
+			else if(myobject->~IsInteractable()) actiontype = ACTIONTYPE_SCRIPT;
 			else if(myobject->GetDefGrab()) actiontype = ACTIONTYPE_VEHICLE;
 			else if(myobject->GetDefCoreVal("Entrance","DefCore",2) != nil) actiontype = ACTIONTYPE_STRUCTURE;
 		}
@@ -334,6 +348,25 @@ public func UpdateSelectionStatus()
 {
 	if(!crew) return;
 
+	// script...
+	if(actiontype == ACTIONTYPE_SCRIPT)
+	{
+		var metainfo = myobject->~GetInteractionMetaInfo(crew);
+		if(metainfo)
+		{
+			SetGraphics(metainfo["IconName"],metainfo["IconID"],2,GFXOV_MODE_IngamePicture);
+			SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
+		}
+		var desc = metainfo["Description"];
+		if(desc) SetName(desc);
+		
+		if(metainfo["Selected"])
+			SetObjDrawTransform(1200,0,0,0,1200,0,1);
+		
+		return;
+	}
+	
+	
 	// determine...
 	var sel = 0;
 	
@@ -369,8 +402,7 @@ public func UpdateSelectionStatus()
 			SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
 			SetName(Format("$TxtUnGrab$",myobject->GetName()));
 		}
-			
-		if(actiontype == ACTIONTYPE_STRUCTURE)
+		else if(actiontype == ACTIONTYPE_STRUCTURE)
 		{
 			SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
 			SetName(Format("$TxtExit$",myobject->GetName()));

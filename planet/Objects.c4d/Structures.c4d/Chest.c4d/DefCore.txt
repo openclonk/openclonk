@@ -12,6 +12,4 @@ VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Value=15
 Mass=10
-Grab=2
-GrabPutGet=C4D_GrabGet|C4D_GrabPut
 ContainBlast=1

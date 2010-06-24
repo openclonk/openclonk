@@ -4,7 +4,6 @@
 		Overlays:
 		0=Grey Circle
 		1=Icon of the Object
-		5=hotkey
 		10,11,12: Amount 
 */
 
@@ -12,7 +11,6 @@
 local myid;
 local amnt;
 local data;
-local hot;
 local size;
 
 
@@ -61,26 +59,7 @@ public func SetSymbol(obj)
 public func GetAmount()    { return amnt; }
 public func GetExtraData() { return data; }
 public func GetSymbol()    { return myid; }
-public func GetHotkey()    { return hot;  }
 public func GetSize()      { return size; }
-
-public func SetHotkey(int hotkey)
-{
-	if(hotkey > 10 || hotkey <= 0)
-	{
-		SetGraphics(nil,nil,5);
-	}
-	else
-	{
-		hot=hotkey;
-		var num = hotkey;
-		if(hotkey == 10) num = 0;
-		var name = Format("%d",num);
-		SetGraphics(name,Icon_Number,5,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(200,0,6500,0,200,-15000, 5);
-		SetClrModulation(RGB(160,0,0),5);
-	}
-}
 
 public func SetExtraData(extradata)
 {

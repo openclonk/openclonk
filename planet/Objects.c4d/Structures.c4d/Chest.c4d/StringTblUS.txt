@@ -1,0 +1,3 @@
+Name=Chest
+OpenChest=Open chest
+CloseChest=Close chest

@@ -472,7 +472,26 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	// building, vehicle, contents menu control
+	// standard controls that are called if not overloaded via script
+	
+	// Movement controls (defined in PlayerControl.c, partly overloaded here)
+	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+		return ObjectControlMovement(plr, ctrl, strength, release);
+
+	// Push controls
+	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
+		return ObjectControlPush(plr, ctrl);
+
+	// Entrance controls
+	if (ctrl == CON_Enter || ctrl == CON_Exit)
+		return ObjectControlEntrance(plr,ctrl);
+		
+	// Interact controls
+	if (ctrl == CON_Interact)
+		return ObjectControlInteract(plr,ctrl);
+	
+	
+	// building, vehicle, mount, contents, menu control
 	var house = Contained();
 	var vehicle = GetActionTarget();
 	var contents = GetItem(0);
@@ -539,21 +558,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
 	}
-	
-	// everything down from here:
-	// standard controls that are called if not overloaded via script
-	
-	// Movement controls (defined in PlayerControl.c, partly overloaded here)
-	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
-		return ObjectControlMovement(plr, ctrl, strength, release);
-
-	// Push controls
-	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
-		return ObjectControlPush(plr, ctrl);
-
-	// Entrance controls
-	if (ctrl == CON_Enter || ctrl == CON_Exit)
-		return ObjectControlEntrance(plr,ctrl);
 
 	// only if not in house, not grabbing a vehicle and an item selected
 	if (!house && (!vehicle || proc != "PUSH"))
@@ -1011,6 +1015,15 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	}
 	
 	return false;
+}
+
+private func ObjectControlInteract(int plr, int ctrl)
+{
+	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable"), Find_NoContainer());
+	// if there are several interactable objects, just call the first that returns true
+	for (var interactable in interactables)
+		if (interactable->~Interact(this))
+			break;
 }
 
 // Handles push controls

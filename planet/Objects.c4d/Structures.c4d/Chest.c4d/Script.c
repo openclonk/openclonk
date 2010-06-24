@@ -6,96 +6,101 @@
 */
 
 local content_menu;
-local ctrl_clonk;
 
-protected func Initialize()
+protected func Construction()
 {
 	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
 }
 
-// Opens a menu when the clonk grabs this chest.
-protected func Grabbed(object by_object, bool grab)
+func IsInteractable() { return true; }
+
+// Opens a menu when the clonk interacts with the chest
+func Interact(object clonk)
 {
-	//if (FindObject(Find_Action("Push"), Find_ActionTarget(this)))
-	//	return;//by_object->SetCommand("UnGrab"); 
-	ctrl_clonk = by_object;
-	if (grab) // If grabbed show content menu.
+	// not opened yet
+	if (!content_menu && clonk->GetProcedure() == "WALK") 
 	{
-		content_menu = by_object->CreateRingMenu(GetID(), this);
-		for (var content in FindObjects(Find_Container(this)))
-			content_menu->AddItem(content->GetID());
-		content_menu->AddItem(GetID());
-		content_menu->Show();    
-		OpenClose(true);
+		content_menu = clonk->CreateRingMenu(GetID(), this);
+		// all contents into the menu
+		for (var i=0; i<5; ++i)
+			content_menu->AddItem(Contents(i));
+		content_menu->Show();
+		Open();
 	}
-	else // If let go close content menu.
+	else if(clonk == content_menu->GetMenuObject())
 	{
-		if (content_menu) 
-			content_menu->Close();
-		OpenClose();
+		content_menu->Close();
+		Close();
 	}
-	return;
+	// otherwise, fail
+	else
+		return false;
+		
+	return true;
 }
 
-private func OpenClose(bool open)
+func GetInteractionMetaInfo(object clonk)
 {
-	if(open == true) //On open
-	{
-		PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 40, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
-		Sound("Open.ogg");
-	}
+	if(content_menu)
+		return { Description = "$CloseChest$", IconName = nil, IconID = nil, Selected = true };
+	else
+		return { Description = "$OpenChest$", IconName = nil, IconID = nil, Selected = false };
+}
 
-	if(open != true) //On close
-	{
-		PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 40, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
-		Sound("Close.ogg");
-	}
+// callback: menu was closed
+func MenuClosed()
+{
+	Close();
+}
+
+private func Open()
+{
+	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+	Sound("Open.ogg");
+}
+
+private func Close()
+{
+	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+	Sound("Close.ogg");
 }
 
 // Callback from ringmenu.
 public func Selected(object menu, object selected, bool alt)
 {
-	if (!selected) 
-		return false;
-	var content_id = selected->GetSymbol();
-	if (content_id == GetID()) 
-		return ctrl_clonk->SetCommand("UnGrab");
-	var chest_content = FindObject(Find_Container(this), Find_ID(content_id));
-	var clonk_content = ctrl_clonk->GetItem(alt);
-	Exchange(chest_content, clonk_content, ctrl_clonk);
-	selected->RemoveObject();
-	menu->Show();
+	var chest_content = selected->GetSymbol();
+	var clonk_content = menu->GetMenuObject()->GetItem(alt);
 
-	ctrl_clonk->SetCommand("UnGrab");
-	return true;
+	Exchange(chest_content, clonk_content, menu->GetMenuObject(), alt);
+	selected->SetSymbol(clonk_content);
+	menu->Show();
+	return false;
 }
 
-private func Exchange(object chest_content, object clonk_content, object clonk)
+private func Exchange(object chest_content, object clonk_content, object clonk, int alt)
 {
-	if (chest_content)
+	if(chest_content)
 		chest_content->Exit();
 	if (clonk_content)
 		clonk_content->Exit();
 
-	if (chest_content)
-		chest_content->Enter(clonk);
+	if(chest_content)
+		clonk->Collect(chest_content,nil,alt);
 	if (clonk_content)
 		clonk_content->Enter(this);
-	return;
 }
 
 /*-- Contents --*/
 
 private func MaxContentsCount()
 {
-	return 20;
+	return 5;
 }
 
-protected func RejectCollect(id def, object obj)
+protected func RejectCollect()
 {
-	if (def == GetID())
-		return true;
-	if (ObjectCount(Find_Container(this)) >= MaxContentsCount())
+	if (ContentsCount() >= MaxContentsCount())
 		return true;
 	return false;
 }
@@ -103,6 +108,6 @@ protected func RejectCollect(id def, object obj)
 
 protected func Definition(def) 
 {
-	SetProperty("Name", "Chest", def);
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-20,1,0,0),Trans_Rotate(20,0,1,0),Trans_Scale(950),Trans_Translate(1000,1,0,0)),def);
+	SetProperty("Name", "$Name$", def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-30,1,0,0),Trans_Rotate(30,0,1,0),Trans_Translate(1000,1,0,0)),def);
 }

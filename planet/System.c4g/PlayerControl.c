@@ -34,30 +34,19 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		
 		if (cursor->~GetMenu())
 		{
+			// direction keys are always forwarded to the menu
+			// (because the clonk shall not move while the menu is open)
+			var handled = true;
+			if (ctrl == CON_Left)       cursor->GetMenu()->~ControlLeft(release);
+			else if (ctrl == CON_Right) cursor->GetMenu()->~ControlRight(release);
+			else if (ctrl == CON_Up)    cursor->GetMenu()->~ControlUp(release);
+			else if (ctrl == CON_Down)  cursor->GetMenu()->~ControlDown(release);
+			else handled = false;
+		
 			// cancel menu
 			if (ctrl == CON_CancelMenu)
 			{
 				cursor->GetMenu()->Close();
-				return true;
-			}
-	
-			// hotkey to menu
-			var hot = 0;
-			if (ctrl == CON_Hotkey0) hot = 10;
-			if (ctrl == CON_Hotkey1) hot = 1;
-			if (ctrl == CON_Hotkey2) hot = 2;
-			if (ctrl == CON_Hotkey3) hot = 3;
-			if (ctrl == CON_Hotkey4) hot = 4;
-			if (ctrl == CON_Hotkey5) hot = 5;
-			if (ctrl == CON_Hotkey6) hot = 6;
-			if (ctrl == CON_Hotkey7) hot = 7;
-			if (ctrl == CON_Hotkey8) hot = 8;
-			if (ctrl == CON_Hotkey9) hot = 9;
-	
-			// forwarded to the menu
-			if (hot > 0)
-			{
-				cursor->GetMenu()->~SelectHotkey(hot-1);
 				return true;
 			}
 

@@ -259,33 +259,43 @@
 	
 	[ControlDef]
 	Identifier=Hotkey1
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey2
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey3
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey4
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey5
-
+	SendCursorPos=1
+	
 	[ControlDef]
 	Identifier=Hotkey6
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey7
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey8
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey9
+	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=Hotkey0
+	SendCursorPos=1
 	
 	# Crew 
 	
