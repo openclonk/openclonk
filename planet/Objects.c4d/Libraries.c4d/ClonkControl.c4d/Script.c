@@ -672,7 +672,7 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 public func CancelUse()
 {
 	if (!using) return;
-	
+
 	var control = "Control";
 	if (Contained() == using)
 		control = "Contained";
@@ -1201,6 +1201,7 @@ func SetMenu(object m)
 	menu = m;
 	if (menu)
 	{	
+		CancelUse();
 		// stop clonk
 		SetComDir(COMD_Stop);
 	
