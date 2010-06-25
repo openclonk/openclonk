@@ -178,7 +178,7 @@ protected func Construction()
 
 protected func Collection2(object obj)
 {
-	var sel;
+	var sel = 0;
 
 	// See Collect()
 	if (disableautosort) return _inherited(obj,...);
@@ -471,12 +471,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		CancelUse();
 		return true;
 	}
-	
-	// standard controls that are called if not overloaded via script
-	
-	// Movement controls (defined in PlayerControl.c, partly overloaded here)
-	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
-		return ObjectControlMovement(plr, ctrl, strength, release);
 
 	// Push controls
 	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
@@ -489,7 +483,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Interact controls
 	if (ctrl == CON_Interact)
 		return ObjectControlInteract(plr,ctrl);
-	
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -632,6 +625,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			}
 		}
 	}
+	
+	// standard controls that are called if not overloaded via script
+	
+	// Movement controls (defined in PlayerControl.c, partly overloaded here)
+	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+		return ObjectControlMovement(plr, ctrl, strength, release);
 	
 	// Unhandled control
 	return false;
@@ -1174,6 +1173,8 @@ public func TriggerHoldingControl()
 	}
 
 }
+
+public func IsMounted() { return GetProcedure() == "ATTACH"; }
 
 /* +++++++++++++++++++++++ Menu control +++++++++++++++++++++++ */
 

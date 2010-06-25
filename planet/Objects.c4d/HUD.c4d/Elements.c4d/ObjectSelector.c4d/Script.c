@@ -27,7 +27,7 @@
 
 */
 
-local selected, crew, hotkey, myobject, actiontype, subselector;
+local selected, crew, hotkey, myobject, actiontype, subselector, position;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
@@ -43,6 +43,7 @@ protected func Construction()
 	
 	selected = 0;
 	hotkey = 0;
+	position = 0;
 	myobject = nil;
 	subselector = nil;
 	
@@ -176,7 +177,7 @@ public func MouseDrop(int plr, obj)
 			// object container is the clonk too? Just switch
 			if(objcontainer == crew)
 			{
-				crew->Switch2Items(hotkey-1, crew->GetItemPos(obj));
+				crew->Switch2Items(position, crew->GetItemPos(obj));
 				return true;
 			}
 		
@@ -188,21 +189,21 @@ public func MouseDrop(int plr, obj)
 				// 1. exit my object
 				myoldobject->Exit();
 				// 2. try to enter the other object
-				if(crew->Collect(obj,false,hotkey-1))
+				if(crew->Collect(obj,false,position))
 				{
 					// 3. try to enter my object into other container
 					if(!(objcontainer->Collect(myoldobject,true)))
 						// -> otherwise, recollect my object
-						crew->Collect(myoldobject,false,hotkey-1);
+						crew->Collect(myoldobject,false,position);
 				}
 				// -> otherwise, recollect my object
 				else
-					crew->Collect(myoldobject,false,hotkey-1);
+					crew->Collect(myoldobject,false,position);
 			}
 			// otherwise, just collect
 			else
 			{
-				crew->Collect(obj,false,hotkey-1);
+				crew->Collect(obj,false,position);
 			}
 			return true;
 		}
@@ -235,12 +236,13 @@ public func Clear()
 	myobject = nil;
 	actiontype = -1;
 	hotkey = 0;
+	position = 0;
 	this["Visibility"] = VIS_None;
 	if(subselector)
 		subselector->RemoveObject();
 }
 
-public func SetObject(object obj, int type, int pos)
+public func SetObject(object obj, int type, int pos, int hot)
 {
 	if(actiontype != ACTIONTYPE_INVENTORY)
 		if(obj == myobject)
@@ -250,32 +252,25 @@ public func SetObject(object obj, int type, int pos)
 
 	this["Visibility"] = VIS_Owner;
 
+	position = pos;
 	actiontype = type;
 	myobject = obj;
-	hotkey = pos+1;
+	hotkey = hot;
 	
 	RemoveEffect("IntRemoveGuard",myobject);
 	
 	if(!myobject) 
 	{	
 		SetGraphics(nil,nil,1);
-		SetName(Format("$TxtSlot$",hotkey));
+		SetName(Format("$TxtSlot$",pos+1));
 		this["MouseDragImage"] = nil;
 		if(subselector)
 			subselector->RemoveObject();
 	}
 	else
 	{
-//		SetGraphics(nil,myobject->GetID(),1,GFXOV_MODE_IngamePicture);
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, myobject);
 		this["MouseDragImage"] = myobject;
-		if(actiontype == nil)
-		{
-			if(myobject->Contained() == crew) actiontype = ACTIONTYPE_INVENTORY;
-			else if(myobject->~IsInteractable()) actiontype = ACTIONTYPE_SCRIPT;
-			else if(myobject->GetDefGrab()) actiontype = ACTIONTYPE_VEHICLE;
-			else if(myobject->GetDefCoreVal("Entrance","DefCore",2) != nil) actiontype = ACTIONTYPE_STRUCTURE;
-		}
 		
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		
@@ -309,7 +304,7 @@ public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
 {
 	if(reason == 3)
 		if(target == myobject)
-			SetObject(nil,0,hotkey-1);
+			SetObject(nil,0,position);
 }
 
 public func SetCrew(object c)
@@ -321,6 +316,8 @@ public func SetCrew(object c)
 	
 	this["Visibility"] = VIS_Owner;
 }
+
+public func GetCrew() { return crew; }
 
 public func ShowHotkey()
 {
@@ -380,9 +377,9 @@ public func UpdateSelectionStatus()
 
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		if(0 == hotkey-1)
+		if(0 == position)
 			sel += 1;
-		if(1 == hotkey-1)
+		if(1 == position)
 			sel += 2;
 	}
 			

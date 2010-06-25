@@ -31,7 +31,6 @@ func Interact(object clonk)
 	else if(clonk == content_menu->GetMenuObject())
 	{
 		content_menu->Close();
-		Close();
 	}
 	// otherwise, fail
 	else

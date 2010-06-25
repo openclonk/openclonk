@@ -133,7 +133,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 		// fill actionbar
 		// inventory
 		var i;
-		for(i = 0; i < Min(2,clonk->MaxContentsCount()); ++i)
+		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
 			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
 		}		
@@ -169,12 +169,10 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	var pushed = nil;
 	
 	var exclusive = false;
+	var hotkey = i+1-target->HandObjects();
 	
 	if((!target->Contained()))
 	{
-		// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
-		// doesnt work!! -> BUG! (TODO)
-	
 		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
 		
 		// don't forget the vehicle that the clonk is pushing (might not be found
@@ -190,41 +188,37 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 			// otherwise we must add it before the rest
 			if(!inside)
 			{
-				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE);
+				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey);
 				if(actionbar[i]->Selected()) exclusive = true;
 				++i;
 			}
 		}
 	}
-	// if contained, search for vehicles that are inside the buildings to push out
-/*	else
-	{
-		vehicles = FindObjects(Find_OCF(OCF_Grab),Find_Container(target->Contained()));
-	}*/
 	
+	// search vehicles
 	for(var vehicle in vehicles)
 	{
-		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE);
+		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
 
+	// search structures
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
 	for(var structure in structures)
 	{
-		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE);
+		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
 
+	// search interactables (script interface)
 	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable"),Find_NoContainer());
 	for(var interactable in interactables)
 	{
-		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT);
+		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey);
 		++i;
 	}
-	
-	//Message("found %d vehicles and %d structures",target,GetLength(vehicles),GetLength(structures));
 	
 	ClearButtons(i);
 	
@@ -255,14 +249,14 @@ public func OnSlotObjectChanged(int slot)
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 }
 
-private func ActionButton(object forClonk, int pos, object interaction, int actiontype)
+private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
 {
 	var size = GUI_ObjectSelector->GetDefWidth();
 	var spacing = 12 + size;
 
 	// don't forget the spacings between inventory - vehicle,structure
 	var extra = 0;
-	if(forClonk->MaxContentsCount() <= pos) extra = 80;
+	if(forClonk->HandObjects() <= pos) extra = 80;
 	
 	var bt = actionbar[pos];
 	// no object yet... create it
@@ -274,7 +268,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	bt->SetPosition(64 + pos * spacing + extra, -16 - size/2);
 	
 	bt->SetCrew(forClonk);
-	bt->SetObject(interaction,actiontype,pos);
+	bt->SetObject(interaction,actiontype,pos,hotkey);
 	
 	actionbar[pos] = bt;
 	return bt;
@@ -295,11 +289,13 @@ private func ClearButtons(int start)
 // hotkey control
 public func ControlHotkey(int hotindex)
 {
+	if(!actionbar[0]) return false;
+	var clonk = actionbar[hotindex]->GetCrew();
+	if(!clonk) return false;
+	hotindex += clonk->HandObjects();
 	if(GetLength(actionbar) <= hotindex) return false;
 	// only if it is not already used
-	if(0 != hotindex)
-		if(1 != hotindex)
-			actionbar[hotindex]->~MouseSelection(GetOwner());
+	actionbar[hotindex]->~MouseSelection(GetOwner());
 	
 	return true;
 }
