@@ -259,14 +259,14 @@ func FxIntAimTimer(target, number, time)
 	if(aim_set["AimMode"] == AIM_Position)
 	{
 		length = GetAnimationLength(aim_set["AnimationAim"]);
-		angle = GetAnimationPosition(aim_animation_index)*1800/length;
-		delta_angle = BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
+		angle = Abs(aim_angle)*10;//GetAnimationPosition(aim_animation_index)*1800/length;
+		delta_angle = 0;//BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
 		SetAnimationPosition(aim_animation_index, Anim_Const( (angle+delta_angle)*length/1800 ));
 	}
 	if(aim_set["AimMode"] == AIM_Weight)
 	{
-		angle = GetAnimationWeight(aim_animation_index)*1800/1000;
-		delta_angle = BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
+		angle = Abs(aim_angle)*10;//GetAnimationWeight(aim_animation_index)*1800/1000;
+		delta_angle = 0;//BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
 		SetAnimationWeight(aim_animation_index, Anim_Const( (angle+delta_angle)*1000/1800 ));
 	}
 	// We have reached the angle and we want to stop
