@@ -51,8 +51,15 @@ namespace
 			case StdMeshInstance::FO_FarthestToNearest:
 			case StdMeshInstance::FO_NearestToFarthest:
 			{
-				float z1 = (m_global_trans*(m_vertices[face1.Vertices[0]] + m_vertices[face1.Vertices[1]] + m_vertices[face1.Vertices[2]])).z;
-				float z2 = (m_global_trans*(m_vertices[face2.Vertices[0]] + m_vertices[face2.Vertices[1]] + m_vertices[face2.Vertices[2]])).z;
+				float z11 = (m_global_trans*m_vertices[face1.Vertices[0]]).z;
+				float z12 = (m_global_trans*m_vertices[face1.Vertices[1]]).z;
+				float z13 = (m_global_trans*m_vertices[face1.Vertices[2]]).z;
+				float z21 = (m_global_trans*m_vertices[face2.Vertices[0]]).z;
+				float z22 = (m_global_trans*m_vertices[face2.Vertices[1]]).z;
+				float z23 = (m_global_trans*m_vertices[face2.Vertices[2]]).z;
+
+				float z1 = std::max(std::max(z11, z12), z13);
+				float z2 = std::max(std::max(z21, z22), z23);
 
 				if (m_inst.GetFaceOrdering() == StdMeshInstance::FO_FarthestToNearest)
 					return z1 < z2;
