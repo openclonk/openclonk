@@ -60,11 +60,6 @@ public func ControlUseStartAlt(object clonk, int ix, int iy)
 		Contents(0)->Exit();
 }
 
-private func Selected(object menu, object pObj, bool alt)
-{
-	ammo = pObj;
-}
-
 public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int ix, int iy)
@@ -118,9 +113,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	
 	if(Contents(0))
 	{
-		if(ammo == nil) ammo = Contents(0);
-		DoFire(ammo, clonk, Angle(0,0,ix,iy));
-		ammo = nil;
+		DoFire(Contents(0), clonk, Angle(0,0,ix,iy));
 		AddEffect("Cooldown",this,1,1,this);
 	}
 	return 1;
