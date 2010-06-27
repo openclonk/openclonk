@@ -194,6 +194,30 @@ C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32
 	return NULL;
 }
 
+C4Group *C4GroupSet::FindSuitableFile(const char *szName, const char * const extensions[], char *szFileName, int32_t *pID)
+{
+	C4Group *pGrp = 0;
+	C4Group *pGrp2;
+	int iPrio = -1;
+	int32_t iPrio2;
+	int32_t GroupID;
+	char FileName[_MAX_FNAME];
+	SCopy(szName, FileName);
+	for (int i = 0; extensions[i]; ++i)
+	{
+		EnforceExtension(FileName, extensions[i]);
+		pGrp2=FindEntry(FileName, &iPrio2, &GroupID);
+		if ((!pGrp || iPrio2 >= iPrio) && pGrp2)
+		{
+			if (pID) *pID = GroupID;
+			pGrp = pGrp2;
+			SCopy(FileName, szFileName);
+		}
+	}
+	// return found group, if any
+	return pGrp;
+}
+
 bool C4GroupSet::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize, int32_t iAppendZeros)
 {
 	// Load the entry from the first group that has it

@@ -378,36 +378,17 @@ void C4GraphicsResource::CloseFiles()
 	idRegisteredMainGroupSetFiles=-1;
 }
 
-C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *szFileName, int32_t &rGroupID)
+static C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *szFileName, int32_t * pID)
 {
-	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png" };
+	const char * const extensions[] = { "bmp", "jpeg", "jpg", "png", NULL };
 
-	C4Group *pGrp = 0;
-	C4Group *pGrp2;
-	int iPrio = -1;
-	int iPrio2;
-	int GroupID;
-	char FileName[_MAX_FNAME];
-	SCopy(szName, FileName);
-	for (int i = 0; i < 4; ++i)
-	{
-		EnforceExtension(FileName, extensions[i]);
-		pGrp2=rGfxSet.FindEntry(FileName, reinterpret_cast<int32_t *>(&iPrio2), reinterpret_cast<int32_t *>(&GroupID));
-		if ((!pGrp || iPrio2 >= iPrio) && pGrp2)
-		{
-			rGroupID = GroupID;
-			pGrp = pGrp2;
-			SCopy(FileName, szFileName);
-		}
-	}
-	// return found group, if any
-	return pGrp;
+	return rGfxSet.FindSuitableFile(szName, extensions, szFileName, pID);
 }
 
 bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt, int32_t iHgt, bool fNoWarnIfNotFound)
 {
 	char FileName[_MAX_FNAME]; int32_t ID = 0;
-	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, ID);
+	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, &ID);
 	if (!pGrp)
 	{
 		// FIXME: Use LogFatal here
@@ -435,7 +416,7 @@ bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet
 {
 	// find
 	char FileName[_MAX_FNAME]; int32_t ID = 0;
-	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, ID);
+	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, &ID);
 	if (!pGrp)
 	{
 		LogF(LoadResStr("IDS_PRC_NOGFXFILE"), szName, LoadResStr("IDS_PRC_FILENOTFOUND"));

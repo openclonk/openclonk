@@ -3107,11 +3107,6 @@ bool C4Game::InitSystem()
 	//Log(LoadResStr("IDS_PRC_INITFONTS"));
 	// open graphics group now for font-init
 	if (!GraphicsResource.RegisterGlobalGraphics()) return false;
-	// load font list
-#ifndef USE_CONSOLE
-	if (!::FontLoader.LoadDefs(Application.SystemGroup, Config))
-		{ LogFatal(LoadResStr("IDS_ERR_FONTDEFS")); return false; }
-#endif
 	// init extra root group
 	// this loads font definitions in this group as well
 	// the function may return false, if no extra group is present - that is OK
