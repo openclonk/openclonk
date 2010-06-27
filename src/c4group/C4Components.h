@@ -116,7 +116,6 @@
 #define C4CFN_ClonkRank       "Rank.png" // custom rank in info file: One rank image only
 #define C4CFN_Strings         "Strings.txt"
 #define C4CFN_LeagueInfo      "League.txt" // read by frontend only
-#define C4CFN_FontDefs        "Fonts.txt"
 #define C4CFN_PlayerInfos     "PlayerInfos.txt"
 #define C4CFN_SavePlayerInfos "SavePlayerInfos.txt"
 #define C4CFN_RecPlayerInfos  "RecPlayerInfos.txt"

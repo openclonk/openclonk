@@ -106,13 +106,6 @@ bool C4GroupSet::RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, 
 	pNewNode->Priority = Priority;
 	pNewNode->Contents = Contents;
 
-#if !defined(USE_CONSOLE)
-	// always add fonts directly
-	if (Contents & C4GSCnt_FontDefs)
-		Game.FontLoader.LoadDefs(rGroup, Config);
-	// success
-#endif
-
 	return true;
 }
 
@@ -133,7 +126,7 @@ int32_t C4GroupSet::CheckGroupContents(C4Group &rGroup, int32_t Contents)
 	if (Contents & C4GSCnt_Material) if (!rGroup.FindEntry(C4CFN_Material)) Contents=Contents&~C4GSCnt_Material;
 	if (Contents & C4GSCnt_Music) if (!rGroup.FindEntry(C4CFN_Music)) Contents=Contents&~C4GSCnt_Music;
 	if (Contents & C4GSCnt_Definitions) if (!rGroup.FindEntry(C4CFN_DefFiles)) Contents=Contents&~C4GSCnt_Definitions;
-	if (Contents & C4GSCnt_FontDefs) if (!rGroup.FindEntry(C4CFN_FontFiles)) if (!rGroup.FindEntry(C4CFN_FontDefs)) Contents=Contents&~C4GSCnt_FontDefs;
+	if (Contents & C4GSCnt_FontDefs) if (!rGroup.FindEntry(C4CFN_FontFiles)) Contents=Contents&~C4GSCnt_FontDefs;
 	// return it
 	return Contents;
 }

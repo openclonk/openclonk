@@ -23,23 +23,6 @@
 
 #include <vector>
 
-
-// font definition to be read
-class C4FontDef
-{
-public:
-	StdCopyStrBuf Name;        // font name
-	int32_t iSize;             // average font height of base font
-	StdCopyStrBuf LogFont;     // very small font used for log messages
-	StdCopyStrBuf SmallFont;   // pretty small font used in tiny dialogs
-	StdCopyStrBuf Font;        // base font used for anything
-	StdCopyStrBuf CaptionFont; // caption font used in GUI
-	StdCopyStrBuf TitleFont;   // font used to draw the loader caption
-
-	C4FontDef(): iSize(0) { }  // ctor
-	void CompileFunc(StdCompiler * pComp);
-};
-
 // holder class for loaded ttf fonts
 class C4VectorFont
 {
@@ -68,7 +51,6 @@ public:
 class C4FontLoader
 {
 protected:
-	std::vector<C4FontDef> FontDefs; // array of loaded font definitions
 	C4VectorFont *pVectorFonts; // vector fonts loaded and extracted to temp store
 
 public:
@@ -81,9 +63,6 @@ public:
 
 	void Clear();                   // clear loaded fonts
 	int32_t LoadDefs(C4Group &hGroup, C4Config &rCfg); // load font definitions from group file; return number of loaded font defs
-	bool IsFontLoaded(const char *szFontName); // return whether given font name is found in the list
-	const char *GetFontNameByIndex(int32_t iIndex); // get indexed font name; not doubling fonts of same name
-	int32_t GetClosestAvailableSize(const char *szFontName, int32_t iWantedSize); // return possible font size that mathces the desired value closest
 	void AddVectorFont(C4VectorFont *pAddFont); // adds a new font to the list
 
 	bool InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize, uint32_t dwWeight, bool fDoShadow);
