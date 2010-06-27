@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 #include <C4Def.h>
+#include <C4Fonts.h>
 
 #include <StdGL.h>
 
@@ -156,15 +157,15 @@ bool C4GraphicsResource::InitFonts()
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
 #ifndef USE_CONSOLE
-	if (!Game.FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
+	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
 		return false;
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&::Definitions);
 	// load additional fonts
-	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false)) return false;
+	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false)) return false;
 #endif
 	// done, success
 	return true;

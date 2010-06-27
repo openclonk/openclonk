@@ -72,6 +72,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4Fonts.h>
 
 #include <StdFile.h>
 
@@ -586,7 +587,7 @@ void C4Game::Clear()
 	PathFinder.Clear();
 	TransferZones.Clear();
 #ifndef USE_CONSOLE
-	FontLoader.Clear();
+	::FontLoader.Clear();
 #endif
 
 	ScriptEngine.Clear();
@@ -3108,7 +3109,7 @@ bool C4Game::InitSystem()
 	if (!GraphicsResource.RegisterGlobalGraphics()) return false;
 	// load font list
 #ifndef USE_CONSOLE
-	if (!FontLoader.LoadDefs(Application.SystemGroup, Config))
+	if (!::FontLoader.LoadDefs(Application.SystemGroup, Config))
 		{ LogFatal(LoadResStr("IDS_ERR_FONTDEFS")); return false; }
 #endif
 	// init extra root group
@@ -3122,8 +3123,8 @@ bool C4Game::InitSystem()
 	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
 	// Peter wouldn't like this...
 #ifndef USE_CONSOLE
-	if (!FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-		if (!FontLoader.InitFont(::GraphicsResource.FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
+	if (!::FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
+		if (!::FontLoader.InitFont(::GraphicsResource.FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
 			return false;
 #endif
 	// init message input (default commands)

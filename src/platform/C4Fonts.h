@@ -71,5 +71,6 @@ public:
 	bool InitFont(CStdFont &rFont, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow=true);
 };
 
+extern C4FontLoader FontLoader;
 
 #endif // INC_C4Fonts

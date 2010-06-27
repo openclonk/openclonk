@@ -319,5 +319,4 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 	return true;
 }
 
-
-
+C4FontLoader FontLoader;
