@@ -777,23 +777,17 @@ bool C4Game::Execute() // Returns true if the game is over
 
 void C4Game::InitFullscreenComponents(bool fRunning)
 {
+	// fullscreen message board
+	C4Facet cgo;
+	cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+	GraphicsSystem.MessageBoard.Init(cgo, !fRunning);
 	if (fRunning)
 	{
 		// running game: Message board upper board and viewports
-		C4Facet cgo;
-		cgo.Set(FullScreen.pSurface, 0, C4GUI::GetScreenHgt() - ::GraphicsResource.FontRegular.iLineHgt,
-		        C4GUI::GetScreenWdt(), ::GraphicsResource.FontRegular.iLineHgt);
-		GraphicsSystem.MessageBoard.Init(cgo,false);
 		C4Facet cgo2;
 		cgo2.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
 		GraphicsSystem.UpperBoard.Init(cgo2);
 		GraphicsSystem.RecalculateViewports();
-	}
-	else
-	{
-		// startup game: Just fullscreen message board
-		C4Facet cgo; cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-		GraphicsSystem.MessageBoard.Init(cgo, true);
 	}
 }
 
