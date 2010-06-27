@@ -522,7 +522,7 @@ namespace C4GUI
 	int32_t Dialog::GetDefaultTitleHeight()
 	{
 		// default title font
-		return Min<int32_t>(GetRes()->TextFont.GetLineHeight(), C4GUI_MinWoodBarHgt);
+		return Min<int32_t>(::GraphicsResource.TextFont.GetLineHeight(), C4GUI_MinWoodBarHgt);
 	}
 
 	void Dialog::SetTitle(const char *szTitle, bool fShowCloseButton)
@@ -538,7 +538,7 @@ namespace C4GUI
 		// set new
 		if (szTitle && *szTitle)
 		{
-			int32_t iTextHgt = WoodenLabel::GetDefaultHeight(&GetRes()->TextFont);
+			int32_t iTextHgt = WoodenLabel::GetDefaultHeight(&::GraphicsResource.TextFont);
 			if (pTitle)
 			{
 				pTitle->GetBounds() = C4Rect(-GetMarginLeft(), -iTextHgt, rcBounds.Wdt, iTextHgt);
@@ -547,7 +547,7 @@ namespace C4GUI
 				pTitle->SetText(szTitle);
 			}
 			else
-				AddElement(pTitle = new WoodenLabel(szTitle, C4Rect(-GetMarginLeft(), -iTextHgt, rcBounds.Wdt, iTextHgt), C4GUI_CaptionFontClr, &GetRes()->TextFont, ALeft, false));
+				AddElement(pTitle = new WoodenLabel(szTitle, C4Rect(-GetMarginLeft(), -iTextHgt, rcBounds.Wdt, iTextHgt), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont, ALeft, false));
 			pTitle->SetToolTip(szTitle);
 			pTitle->SetDragTarget(this);
 			pTitle->SetAutoScrollTime(C4GUI_TitleAutoScrollTime);
@@ -592,7 +592,7 @@ namespace C4GUI
 		// update title bar position
 		if (pTitle)
 		{
-			int32_t iTextHgt = WoodenLabel::GetDefaultHeight(&GetRes()->TextFont);
+			int32_t iTextHgt = WoodenLabel::GetDefaultHeight(&::GraphicsResource.TextFont);
 			pTitle->SetBounds(C4Rect(-GetMarginLeft(), -iTextHgt, rcBounds.Wdt, iTextHgt));
 			if (pCloseBtn) pCloseBtn->SetBounds(pTitle->GetToprightCornerRect(16,16,4,4,0));
 		}
@@ -983,7 +983,7 @@ namespace C4GUI
 		// create subtitle (only with upperboard)
 		if (szSubtitle && *szSubtitle && HasUpperBoard())
 		{
-			AddElement(pSubTitle = new Label(szSubtitle, rcClientRect.Wdt, C4UpperBoardHeight-GetRes()->CaptionFont.GetLineHeight()/2-25-GetMarginTop(), ARight, C4GUI_CaptionFontClr, &GetRes()->TextFont));
+			AddElement(pSubTitle = new Label(szSubtitle, rcClientRect.Wdt, C4UpperBoardHeight-::GraphicsResource.CaptionFont.GetLineHeight()/2-25-GetMarginTop(), ARight, C4GUI_CaptionFontClr, &::GraphicsResource.TextFont));
 			pSubTitle->SetToolTip(szTitle);
 		}
 		else pSubTitle = NULL;
@@ -1009,10 +1009,10 @@ namespace C4GUI
 		{
 			// not using dlg label, which is a wooden label
 			if (HasUpperBoard())
-				pFullscreenTitle = new Label(szTitle, 0, C4UpperBoardHeight/2 - GetRes()->TitleFont.GetLineHeight()/2-GetMarginTop(), ALeft, C4GUI_CaptionFontClr, &GetRes()->TitleFont);
+				pFullscreenTitle = new Label(szTitle, 0, C4UpperBoardHeight/2 - ::GraphicsResource.TitleFont.GetLineHeight()/2-GetMarginTop(), ALeft, C4GUI_CaptionFontClr, &::GraphicsResource.TitleFont);
 			else
 				// non-woodbar: Title is centered and in big font
-				pFullscreenTitle = new Label(szTitle, GetClientRect().Wdt/2, C4UpperBoardHeight/2 - GetRes()->TitleFont.GetLineHeight()/2-GetMarginTop(), ACenter, C4GUI_FullscreenCaptionFontClr, &GetRes()->TitleFont);
+				pFullscreenTitle = new Label(szTitle, GetClientRect().Wdt/2, C4UpperBoardHeight/2 - ::GraphicsResource.TitleFont.GetLineHeight()/2-GetMarginTop(), ACenter, C4GUI_FullscreenCaptionFontClr, &::GraphicsResource.TitleFont);
 			AddElement(pFullscreenTitle);
 			pFullscreenTitle->SetToolTip(szTitle);
 		}
@@ -1062,7 +1062,7 @@ namespace C4GUI
 	MessageDialog::MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize, int32_t *piConfigDontShowAgainSetting, bool fDefaultNo)
 			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting)
 	{
-		CStdFont &rUseFont = GetRes()->TextFont;
+		CStdFont &rUseFont = ::GraphicsResource.TextFont;
 		// get positions
 		ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
 		// place icon
@@ -1189,7 +1189,7 @@ namespace C4GUI
 // ProgressDialog
 
 	ProgressDialog::ProgressDialog(const char *szMessage, const char *szCaption, int32_t iMaxProgress, int32_t iInitialProgress, Icons icoIcon)
-			: Dialog(C4GUI_ProgressDlgWdt, Max(GetRes()->TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, 0, 0, true), C4GUI_IconHgt) + C4GUI_ProgressDlgVRoom, szCaption, false)
+			: Dialog(C4GUI_ProgressDlgWdt, Max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, 0, 0, true), C4GUI_IconHgt) + C4GUI_ProgressDlgVRoom, szCaption, false)
 	{
 		// get positions
 		ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
@@ -1201,8 +1201,8 @@ namespace C4GUI
 		// place message label
 		// use text with line breaks
 		StdStrBuf str;
-		GetRes()->TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, &str, true);
-		Label *pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &GetRes()->TextFont);
+		::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_ProgressDlgWdt-3*C4GUI_DefDlgIndent-C4GUI_IconWdt, &str, true);
+		Label *pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont);
 		AddElement(pLblMessage);
 		// place progress bar
 		pBar = new ProgressBar(rtProgressBar, iMaxProgress);
@@ -1297,7 +1297,7 @@ namespace C4GUI
 	InputDialog::InputDialog(const char *szMessage, const char *szCaption, Icons icoIcon, BaseInputCallback *pCB, bool fChatLayout)
 			: Dialog(fChatLayout ? C4GUI::GetScreenWdt()*4/5 : C4GUI_InputDlgWdt,
 			         fChatLayout ? C4GUI::Edit::GetDefaultEditHeight() + 2 :
-			         Max(GetRes()->TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, 0, 0, true),
+			         Max(::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, 0, 0, true),
 			             C4GUI_IconHgt) + C4GUI_InputDlgVRoom, szCaption, false),
 			pEdit(NULL), pCB(pCB), fChatLayout(fChatLayout), pChatLbl(NULL)
 	{
@@ -1307,8 +1307,8 @@ namespace C4GUI
 			C4GUI::ComponentAligner caChat(GetContainedClientRect(), 1,1);
 			// normal chatbox layout: Left chat label
 			int32_t w=40,h;
-			C4GUI::GetRes()->TextFont.GetTextExtent(szMessage, w,h, true);
-			pChatLbl = new C4GUI::WoodenLabel(szMessage, caChat.GetFromLeft(w+4), C4GUI_CaptionFontClr, &C4GUI::GetRes()->TextFont);
+			::GraphicsResource.TextFont.GetTextExtent(szMessage, w,h, true);
+			pChatLbl = new C4GUI::WoodenLabel(szMessage, caChat.GetFromLeft(w+4), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont);
 			caChat.ExpandLeft(2); // undo margin
 			rcEditBounds = caChat.GetAll();
 			SetCustomEdit(new Edit(rcEditBounds));
@@ -1328,8 +1328,8 @@ namespace C4GUI
 			// place message label
 			// use text with line breaks
 			StdStrBuf str;
-			GetRes()->TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, &str, true);
-			Label *pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &GetRes()->TextFont);
+			::GraphicsResource.TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, &str, true);
+			Label *pLblMessage = new Label(str.getData(), caMain.GetAll().GetMiddleX(), caMain.GetAll().y, ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont);
 			AddElement(pLblMessage);
 			// place input edit
 			SetCustomEdit(new Edit(rcEditBounds));
@@ -1380,7 +1380,7 @@ namespace C4GUI
 // InfoDialog
 
 	InfoDialog::InfoDialog(const char *szCaption, int32_t iLineCount)
-			: Dialog(C4GUI_InfoDlgWdt, GetRes()->TextFont.GetLineHeight()*iLineCount + C4GUI_InfoDlgVRoom, szCaption, false), iScroll(0)
+			: Dialog(C4GUI_InfoDlgWdt, ::GraphicsResource.TextFont.GetLineHeight()*iLineCount + C4GUI_InfoDlgVRoom, szCaption, false), iScroll(0)
 	{
 		// timer
 		Application.Add(this);
@@ -1388,7 +1388,7 @@ namespace C4GUI
 	}
 
 	InfoDialog::InfoDialog(const char *szCaption, int iLineCount, const StdStrBuf &sText)
-			: Dialog(C4GUI_InfoDlgWdt, GetRes()->TextFont.GetLineHeight()*iLineCount + C4GUI_InfoDlgVRoom, szCaption, false), iScroll(0)
+			: Dialog(C4GUI_InfoDlgWdt, ::GraphicsResource.TextFont.GetLineHeight()*iLineCount + C4GUI_InfoDlgVRoom, szCaption, false), iScroll(0)
 	{
 		// ctor - init w/o timer
 		CreateSubComponents();
@@ -1398,7 +1398,7 @@ namespace C4GUI
 			size_t i0 = i;
 			while (sText[i] != '|' && sText[i]) ++i;
 			StdStrBuf sLine = sText.copyPart(i0, i-i0);
-			pTextWin->AddTextLine(sLine.getData(), &GetRes()->TextFont, C4GUI_MessageFontClr, false, true);
+			pTextWin->AddTextLine(sLine.getData(), &::GraphicsResource.TextFont, C4GUI_MessageFontClr, false, true);
 		}
 		pTextWin->UpdateHeight();
 		//pTextWin->ScrollToBottom();
@@ -1421,7 +1421,7 @@ namespace C4GUI
 	{
 		// add line to text window
 		if (!pTextWin) return;
-		pTextWin->AddTextLine(szText, &GetRes()->TextFont, C4GUI_MessageFontClr, false, true);
+		pTextWin->AddTextLine(szText, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, false, true);
 	}
 
 	void InfoDialog::AddLineFmt(const char *szFmtString, ...)

@@ -22,6 +22,7 @@
 #include <C4Gui.h>
 #include <C4FacetEx.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 #include <StdWindow.h>
 
@@ -114,9 +115,9 @@ namespace C4GUI
 		// left side: check facet (squared)
 		int x0 = rcBounds.x + cgo.TargetX;
 		int y0 = rcBounds.y + cgo.TargetY;
-		GetRes()->fctCheckbox.GetPhase(fChecked + 2*!fEnabled).DrawX(cgo.Surface, x0, y0, rcBounds.Hgt, rcBounds.Hgt);
+		::GraphicsResource.fctCheckbox.GetPhase(fChecked + 2*!fEnabled).DrawX(cgo.Surface, x0, y0, rcBounds.Hgt, rcBounds.Hgt);
 		// right of it: checkbox text
-		CStdFont *pUseFont = pFont ? pFont : &(GetRes()->TextFont);
+		CStdFont *pUseFont = pFont ? pFont : &(::GraphicsResource.TextFont);
 		int32_t yOff; float fZoom;
 		if (pUseFont->GetLineHeight() <= rcBounds.Hgt)
 		{
@@ -133,7 +134,7 @@ namespace C4GUI
 		if ((fMouseOn && IsInActiveDlg(false)) || HasDrawFocus())
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0+rcBounds.Hgt*1/4, y0+rcBounds.Hgt*1/4, rcBounds.Hgt*1/2, rcBounds.Hgt*1/2);
+			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+rcBounds.Hgt*1/4, y0+rcBounds.Hgt*1/4, rcBounds.Hgt*1/2, rcBounds.Hgt*1/2);
 			lpDDraw->ResetBlitMode();
 		}
 	}
@@ -147,7 +148,7 @@ namespace C4GUI
 	bool CheckBox::GetStandardCheckBoxSize(int *piWdt, int *piHgt, const char *szForCaptionText, CStdFont *pUseFont)
 	{
 		// get needed text size
-		if (!pUseFont) pUseFont = &(GetRes()->TextFont);
+		if (!pUseFont) pUseFont = &(::GraphicsResource.TextFont);
 		int32_t iWdt=100, iHgt=32;
 		pUseFont->GetTextExtent(szForCaptionText, iWdt, iHgt, true);
 		// check box height equals text height

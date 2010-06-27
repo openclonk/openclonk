@@ -67,7 +67,7 @@ C4FileSelDlg::DefaultListItem::DefaultListItem(const char *szFilename, bool fTru
 		RemoveExtension(szFilename);
 		sLabel.Take(szFilename);
 	}
-	rcBounds.Hgt = C4GUI::GetRes()->TextFont.GetLineHeight();
+	rcBounds.Hgt = ::GraphicsResource.TextFont.GetLineHeight();
 	UpdateSize();
 	C4GUI::ComponentAligner caMain(GetContainedClientRect(),0,0);
 	int32_t iHeight = caMain.GetInnerHeight();
@@ -144,7 +144,7 @@ C4FileSelDlg::C4FileSelDlg(const char *szRootPath, const char *szTitle, C4FileSe
 void C4FileSelDlg::InitElements()
 {
 	UpdateSize();
-	CStdFont *pUseFont = &(C4GUI::GetRes()->TextFont);
+	CStdFont *pUseFont = &(::GraphicsResource.TextFont);
 	// main calcs
 	bool fHasOptions = HasExtraOptions();
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
@@ -306,7 +306,7 @@ void C4FileSelDlg::UpdateSelection()
 		if (!pSelection) { pSelectionInfoBox->UpdateHeight(); return; }
 		// add selection description
 		if (pSelection->GetFilename())
-			pSelectionInfoBox->AddTextLine(pSelection->GetFilename(), &C4GUI::GetRes()->TextFont, C4GUI_MessageFontClr, true, false);
+			pSelectionInfoBox->AddTextLine(pSelection->GetFilename(), &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false);
 	}
 }
 
@@ -448,7 +448,7 @@ bool C4DefinitionSelDlg::SelectDefinitions(C4GUI::Screen *pOnScreen, StdStrBuf *
 C4PortraitSelDlg::ListItem::ListItem(const char *szFilename) : C4FileSelDlg::ListItem(szFilename)
 		, fError(false), fLoaded(false)
 {
-	CStdFont *pUseFont = &(C4GUI::GetRes()->MiniFont);
+	CStdFont *pUseFont = &(::GraphicsResource.MiniFont);
 	// determine label text
 	StdStrBuf sDisplayLabel;
 	if (szFilename)
@@ -501,7 +501,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		fctLoadedImage.Clear();
 	}
 	// Draw picture
-	CStdFont *pUseFont = &(C4GUI::GetRes()->MiniFont);
+	CStdFont *pUseFont = &(::GraphicsResource.MiniFont);
 	C4Facet cgoPicture(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, ImagePreviewSize, ImagePreviewSize);
 	if (fError || !sFilename)
 	{
@@ -513,7 +513,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		if (!fctImage.Surface)
 		{
 			// not loaded yet
-			lpDDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), C4GUI::GetRes()->MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-C4GUI::GetRes()->MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
+			lpDDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), ::GraphicsResource.MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-::GraphicsResource.MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
 		}
 		else
 		{
@@ -597,7 +597,7 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPict
 void C4PortraitSelDlg::AddExtraOptions(const C4Rect &rcOptionsRect)
 {
 	C4GUI::ComponentAligner caOptions(rcOptionsRect, C4GUI_DefDlgIndent,C4GUI_DefDlgSmallIndent,false);
-	CStdFont *pUseFont = &(C4GUI::GetRes()->TextFont);
+	CStdFont *pUseFont = &(::GraphicsResource.TextFont);
 	AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_IMPORTIMAGEAS"), caOptions.GetGridCell(0,3, 0,1, -1,pUseFont->GetLineHeight(), true), ALeft));
 	AddElement(pCheckSetPicture = new C4GUI::CheckBox(caOptions.GetGridCell(1,3, 0,1, -1,pUseFont->GetLineHeight(), true), LoadResStr("IDS_TEXT_PLAYERIMAGE"), fDefSetPicture));
 	pCheckSetPicture->SetToolTip(LoadResStr("IDS_DESC_CHANGESTHEIMAGEYOUSEEINTH"));

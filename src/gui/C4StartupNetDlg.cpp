@@ -32,6 +32,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4Game.h>
 #include <C4Log.h>
 #include "C4ChatDlg.h"
+#include <C4GraphicsResource.h>
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -43,7 +44,7 @@ C4StartupNetListEntry::C4StartupNetListEntry(C4GUI::ListBox *pForListBox, C4GUI:
 		: pNetDlg(pNetDlg), pList(pForListBox), pRefClient(NULL), pRef(NULL), fError(false), eQueryType(NRQT_Unknown), iTimeout(0), iInfoIconCount(0), iSortOrder(0), fIsSmall(false), fIsCollapsed(false), fIsEnabled(true), fIsImportant(false)
 {
 	// calc height
-	int32_t iLineHgt = C4GUI::GetRes()->TextFont.GetLineHeight(), iHeight = iLineHgt * 2 + 4;
+	int32_t iLineHgt = ::GraphicsResource.TextFont.GetLineHeight(), iHeight = iLineHgt * 2 + 4;
 	// add icons - normal icons use small size, only animated netgetref uses full size
 	rctIconLarge.Set(0, 0, iHeight, iHeight);
 	int32_t iSmallIcon = iHeight * 2 / 3; rctIconSmall.Set((iHeight - iSmallIcon)/2, (iHeight - iSmallIcon)/2, iSmallIcon, iSmallIcon);
@@ -53,7 +54,7 @@ C4StartupNetListEntry::C4StartupNetListEntry(C4GUI::ListBox *pForListBox, C4GUI:
 	// add to listbox (will get resized horizontally and moved)
 	pForListBox->InsertElement(this, pInsertBefore);
 	// add status icons and text labels now that width is known
-	CStdFont *pUseFont = &(C4GUI::GetRes()->TextFont);
+	CStdFont *pUseFont = &(::GraphicsResource.TextFont);
 	int32_t iIconSize = pUseFont->GetLineHeight();
 	C4Rect rcIconRect = GetContainedClientRect();
 	int32_t iThisWdt = rcIconRect.Wdt;
@@ -342,7 +343,7 @@ void C4StartupNetListEntry::UpdateEntrySize()
 void C4StartupNetListEntry::UpdateText()
 {
 	bool fRestackElements=false;
-	CStdFont *pUseFont = &(C4GUI::GetRes()->TextFont);
+	CStdFont *pUseFont = &(::GraphicsResource.TextFont);
 	// adjust icons
 	int32_t sx=iInfoIconCount*pUseFont->GetLineHeight();
 	int32_t i;
@@ -591,7 +592,7 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	int32_t iIconSize = C4GUI_IconExWdt;
 	int32_t iButtonWidth,iCaptionFontHgt, iSideSize = Max<int32_t>(GetBounds().Wdt/6, iIconSize);
 	int32_t iButtonHeight = C4GUI_ButtonHgt, iButtonIndent = GetBounds().Wdt/40;
-	C4GUI::GetRes()->CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
+	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/7),0,0);
@@ -625,8 +626,8 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	// main area: game selection sheet
 	C4GUI::Tabular::Sheet *pSheetGameList = pMainTabular->AddSheet(NULL);
 	C4GUI::ComponentAligner caGameList(pSheetGameList->GetContainedClientRect(), 0,0, false);
-	C4GUI::WoodenLabel *pGameListLbl; int32_t iCaptHgt = C4GUI::WoodenLabel::GetDefaultHeight(&C4GUI::GetRes()->TextFont);
-	pGameListLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_NET_GAMELIST"), caGameList.GetFromTop(iCaptHgt), C4GUI_Caption2FontClr, &C4GUI::GetRes()->TextFont, ALeft);
+	C4GUI::WoodenLabel *pGameListLbl; int32_t iCaptHgt = C4GUI::WoodenLabel::GetDefaultHeight(&::GraphicsResource.TextFont);
+	pGameListLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_NET_GAMELIST"), caGameList.GetFromTop(iCaptHgt), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont, ALeft);
 	//const char *szGameSelListTip = LoadResStr("IDS_NET_GAMELIST_INFO"); disabled this tooltip, it's mainly disturbing when browsing the list
 	//pGameListLbl->SetToolTip(szGameSelListTip);
 	pSheetGameList->AddElement(pGameListLbl);
@@ -641,8 +642,8 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	C4GUI::WoodenLabel *pIPLbl;
 	const char *szIPLblText = LoadResStr("IDS_NET_IP");
 	int32_t iIPWdt=100, Q;
-	C4GUI::GetRes()->TextFont.GetTextExtent(szIPLblText, iIPWdt, Q, true);
-	pIPLbl = new C4GUI::WoodenLabel(szIPLblText, caIP.GetFromLeft(iIPWdt+10), C4GUI_Caption2FontClr, &C4GUI::GetRes()->TextFont);
+	::GraphicsResource.TextFont.GetTextExtent(szIPLblText, iIPWdt, Q, true);
+	pIPLbl = new C4GUI::WoodenLabel(szIPLblText, caIP.GetFromLeft(iIPWdt+10), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont);
 	const char *szIPTip = LoadResStr("IDS_NET_IP_DESC");
 	pIPLbl->SetToolTip(szIPTip);
 	pSheetGameList->AddElement(pIPLbl);
@@ -655,7 +656,7 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	{
 		C4GUI::Tabular::Sheet *pSheetChat = pMainTabular->AddSheet(NULL);
 		C4GUI::ComponentAligner caChat(pSheetChat->GetContainedClientRect(), 0,0, false);
-		pSheetChat->AddElement(pChatTitleLabel = new C4GUI::WoodenLabel("", caChat.GetFromTop(iCaptHgt), C4GUI_Caption2FontClr, &C4GUI::GetRes()->TextFont, ALeft, false));
+		pSheetChat->AddElement(pChatTitleLabel = new C4GUI::WoodenLabel("", caChat.GetFromTop(iCaptHgt), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont, ALeft, false));
 		C4GUI::GroupBox *pChatGroup = new C4GUI::GroupBox(caChat.GetAll());
 		pChatGroup->SetColors(0u, C4GUI_CaptionFontClr, C4GUI_StandardBGColor);
 		pChatGroup->SetMargin(2);

@@ -90,7 +90,7 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 	// league account name? Overwrite the shown name
 	StdStrBuf sPlayerName(pInfo->GetLobbyName());
 	// calc height
-	int32_t iHeight = C4GUI::GetRes()->TextFont.GetLineHeight() + C4GUI::ComboBox::GetDefaultHeight() + 3 * IconLabelSpacing;
+	int32_t iHeight = ::GraphicsResource.TextFont.GetLineHeight() + C4GUI::ComboBox::GetDefaultHeight() + 3 * IconLabelSpacing;
 	// create subcomponents
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iHeight, iHeight), C4GUI::Ico_UnknownPlayer);
 	if (Game.Parameters.isLeague())
@@ -139,7 +139,7 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 			if (szCustomEval && *szCustomEval)
 			{
 				pExtraLabel = new C4GUI::Label(szCustomEval, 0,0, ARight); // positioned later
-				iHeight += C4GUI::GetRes()->TextFont.GetLineHeight();
+				iHeight += ::GraphicsResource.TextFont.GetLineHeight();
 			}
 		}
 	}
@@ -184,7 +184,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateOwnPos()
 	if (pTeamPic) caBounds.GetFromLeft(pTeamPic->GetBounds().Wdt - IconLabelSpacing);
 	C4Rect rcExtraDataRect;
 	// extra data label area
-	if (pExtraLabel) rcExtraDataRect = caBounds.GetFromBottom(C4GUI::GetRes()->TextFont.GetLineHeight());
+	if (pExtraLabel) rcExtraDataRect = caBounds.GetFromBottom(::GraphicsResource.TextFont.GetLineHeight());
 	// second line (team+rank)
 	C4GUI::ComponentAligner caTeamArea(caBounds.GetFromBottom(C4GUI::ComboBox::GetDefaultHeight()), 0,0);
 	C4Rect rcRankIcon;
@@ -457,14 +457,14 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateCollapsed()
 	if ((fShownCollapsed = fShouldBeCollapsed))
 	{
 		// calc height
-		iHeight = C4GUI::GetRes()->TextFont.GetLineHeight() + 2 * IconLabelSpacing;
+		iHeight = ::GraphicsResource.TextFont.GetLineHeight() + 2 * IconLabelSpacing;
 		// teamcombo not visible if collapsed
 		if (pTeamCombo) pTeamCombo->SetVisibility(false);
 	}
 	else
 	{
 		// calc height
-		iHeight = C4GUI::GetRes()->TextFont.GetLineHeight() + C4GUI::ComboBox::GetDefaultHeight() + 3 * IconLabelSpacing;
+		iHeight = ::GraphicsResource.TextFont.GetLineHeight() + C4GUI::ComboBox::GetDefaultHeight() + 3 * IconLabelSpacing;
 		// teamcombo visible if not collapsed
 		if (pTeamCombo) pTeamCombo->SetVisibility(true);
 	}
@@ -728,7 +728,7 @@ C4PlayerInfoListBox::ClientListItem::ClientListItem(C4PlayerInfoListBox *pForLis
 	idListItemID.idType = ListItem::ID::PLI_CLIENT;
 	idListItemID.id = idClient;
 	// get height
-	int32_t iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int32_t iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	// create subcomponents
 	pStatusIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), GetCurrentStatusIcon());
 	pNameLabel = new C4GUI::Label(rClientInfo.getName(), iIconSize + IconLabelSpacing,0, ALeft, dwClientClr | C4GUI_MessageFontAlpha, NULL, true, false);
@@ -982,12 +982,12 @@ C4PlayerInfoListBox::TeamListItem::TeamListItem(C4PlayerInfoListBox *pForListBox
 	int32_t iIconSize; CStdFont *pFont;
 	if (!fEvaluation)
 	{
-		pFont = &C4GUI::GetRes()->TextFont;
+		pFont = &::GraphicsResource.TextFont;
 		iIconSize = pFont->GetLineHeight();
 	}
 	else
 	{
-		pFont = &C4GUI::GetRes()->TitleFont;
+		pFont = &::GraphicsResource.TitleFont;
 		iIconSize = C4SymbolSize; // C4PictureSize doesn't fit...
 	}
 	// create subcomponents
@@ -1030,11 +1030,11 @@ void C4PlayerInfoListBox::TeamListItem::UpdateOwnPos()
 	// evaluation: Center team label
 	if (pList->IsEvaluation())
 	{
-		int32_t iTotalWdt = pIcon->GetBounds().Wdt + IconLabelSpacing + C4GUI::GetRes()->TitleFont.GetTextWidth(pNameLabel->GetText());
+		int32_t iTotalWdt = pIcon->GetBounds().Wdt + IconLabelSpacing + ::GraphicsResource.TitleFont.GetTextWidth(pNameLabel->GetText());
 		C4GUI::ComponentAligner caAll(GetContainedClientRect(), 0,0);
 		C4GUI::ComponentAligner caBounds(caAll.GetCentered(iTotalWdt, caAll.GetInnerHeight()), 0,0);
 		pIcon->SetBounds(caBounds.GetFromLeft(pIcon->GetBounds().Wdt, pIcon->GetBounds().Hgt));
-		pNameLabel->SetBounds(caBounds.GetCentered(caBounds.GetInnerWidth(), C4GUI::GetRes()->TitleFont.GetLineHeight()));
+		pNameLabel->SetBounds(caBounds.GetCentered(caBounds.GetInnerWidth(), ::GraphicsResource.TitleFont.GetLineHeight()));
 	}
 }
 
@@ -1095,7 +1095,7 @@ C4PlayerInfoListBox::FreeSavegamePlayersListItem::FreeSavegamePlayersListItem(C4
 	idListItemID.idType = ListItem::ID::PLI_SAVEGAMEPLR;
 	idListItemID.id = 0;
 	// get height
-	int32_t iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int32_t iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	// create subcomponents
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_SavegamePlayer);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), iIconSize + IconLabelSpacing,0, ALeft);
@@ -1130,7 +1130,7 @@ C4PlayerInfoListBox::ScriptPlayersListItem::ScriptPlayersListItem(C4PlayerInfoLi
 	idListItemID.idType = ListItem::ID::PLI_SCRIPTPLR;
 	idListItemID.id = 0;
 	// get height
-	int32_t iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int32_t iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	// create subcomponents
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_Record);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_CTL_SCRIPTPLAYERS"), iIconSize + IconLabelSpacing,0, ALeft);
@@ -1197,7 +1197,7 @@ C4PlayerInfoListBox::ReplayPlayersListItem::ReplayPlayersListItem(C4PlayerInfoLi
 	idListItemID.idType = ListItem::ID::PLI_REPLAY;
 	idListItemID.id = 0;
 	// get height
-	int32_t iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int32_t iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	// create subcomponents
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_Record);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_MSG_REPLAYPLRS"), iIconSize + IconLabelSpacing,0, ALeft);

@@ -28,6 +28,7 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 namespace C4GUI
 {
@@ -55,7 +56,7 @@ namespace C4GUI
 		int32_t iTxtHgt, iTxtWdt;
 		GetCaptionSize(&iTxtWdt, &iTxtHgt, fLarge, fActive, pfctClip, pfctIcon, pUseFont);
 		if (pfctClip) iMaxWdt = iTxtWdt;
-		CStdFont &rUseFont = pUseFont ? *pUseFont : (fLarge ? GetRes()->CaptionFont : GetRes()->TextFont);
+		CStdFont &rUseFont = pUseFont ? *pUseFont : (fLarge ? ::GraphicsResource.CaptionFont : ::GraphicsResource.TextFont);
 		if (pfctClip && pfctIcon)
 		{
 			// tab with clip gfx: Icon on top of text
@@ -71,7 +72,7 @@ namespace C4GUI
 		if (fFocus)
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			GetRes()->fctButtonHighlight.DrawX(cgo.Surface, (fLarge ? x : x - iTxtWdt/2)+5, y+3, (fLarge ? iMaxWdt : iTxtWdt)-10, iTxtHgt-6);
+			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, (fLarge ? x : x - iTxtWdt/2)+5, y+3, (fLarge ? iMaxWdt : iTxtWdt)-10, iTxtHgt-6);
 			lpDDraw->ResetBlitMode();
 		}
 		if (!(pfctClip && pfctIcon))
@@ -124,7 +125,7 @@ namespace C4GUI
 		}
 		// caption by text
 		int32_t iWdt, iHgt;
-		CStdFont &rUseFont = pUseFont ? *pUseFont : (fLarge ? GetRes()->CaptionFont : GetRes()->TextFont);
+		CStdFont &rUseFont = pUseFont ? *pUseFont : (fLarge ? ::GraphicsResource.CaptionFont : ::GraphicsResource.TextFont);
 		if (!rUseFont.GetTextExtent(sTitle.getData(), iWdt, iHgt, fTitleMarkup))
 		{
 			iWdt=70; iHgt=rUseFont.GetLineHeight();
@@ -393,7 +394,7 @@ namespace C4GUI
 		// scrolling in captions
 		int32_t iScrollSize = GetTopSize();
 		if (fScrollingLeft) d -= iCaptionScrollPos + iScrollSize;
-		//DrawBar(cgo, GetRes()->fctCaptionLeft, GetRes()->fctCaptionBar, GetRes()->fctCaptionRight);
+		//DrawBar(cgo, ::GraphicsResource.fctCaptionLeft, ::GraphicsResource.fctCaptionBar, ::GraphicsResource.fctCaptionRight);
 		// tabs
 		for (Sheet *pSheet = (Sheet *) GetFirst(); pSheet; pSheet = (Sheet *) pSheet->GetNext())
 		{
@@ -467,8 +468,8 @@ namespace C4GUI
 				pActiveSheet->DrawCaption(cgo, aCptTxX, aCptTxY, iMaxTabWidth, fLeft, true, HasDrawFocus(), pfctClip, pfctIcons, pSheetCaptionFont);
 		}
 		// scrolling
-		if (fScrollingLeft) GetRes()->fctBigArrows.DrawX(cgo.Surface, x0+iSheetOff,y0-iScrollSize, iScrollSize,iScrollSize, fScrollingLeftDown*2);
-		if (fScrollingRight) GetRes()->fctBigArrows.DrawX(cgo.Surface, x1-iScrollSize,y0-iScrollSize, iScrollSize,iScrollSize, 1+fScrollingRightDown*2);
+		if (fScrollingLeft) ::GraphicsResource.fctBigArrows.DrawX(cgo.Surface, x0+iSheetOff,y0-iScrollSize, iScrollSize,iScrollSize, fScrollingLeftDown*2);
+		if (fScrollingRight) ::GraphicsResource.fctBigArrows.DrawX(cgo.Surface, x1-iScrollSize,y0-iScrollSize, iScrollSize,iScrollSize, 1+fScrollingRightDown*2);
 	}
 
 	void Tabular::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)

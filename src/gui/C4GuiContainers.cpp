@@ -26,6 +26,7 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 namespace C4GUI
 {
@@ -464,7 +465,7 @@ namespace C4GUI
 			if (iScrollPos < GetMaxScroll()) { ++iScrollPos; OnPosChanged(); }
 		}
 		// draw bar
-		ScrollBarFacets &rUseGfx = pCustomGfx ? *pCustomGfx : GetRes()->sfctScroll;
+		ScrollBarFacets &rUseGfx = pCustomGfx ? *pCustomGfx : ::GraphicsResource.sfctScroll;
 		DynBarFacet bar = rUseGfx.barScroll;
 		if (fTopDown) bar.fctBegin = rUseGfx.fctScrollDTop;
 		if (fBottomDown) bar.fctEnd = rUseGfx.fctScrollDBottom;
@@ -641,7 +642,7 @@ namespace C4GUI
 	CStdFont *GroupBox::GetTitleFont() const
 	{
 		// get font; fallback to GUI caption font
-		return pFont ? pFont : &(GetRes()->CaptionFont);
+		return pFont ? pFont : &(::GraphicsResource.CaptionFont);
 	}
 
 	void GroupBox::DrawElement(C4TargetFacet &cgo)

@@ -25,6 +25,7 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 namespace C4GUI
 {
@@ -44,7 +45,7 @@ namespace C4GUI
 		// make color readable
 		if (fMakeReadableOnBlack) MakeColorReadableOnBlack(dwFgClr);
 		// default font
-		if (!this->pFont) this->pFont = &GetRes()->TextFont;
+		if (!this->pFont) this->pFont = &::GraphicsResource.TextFont;
 		// set top
 		rcBounds.y = iTop;
 		// update text
@@ -58,7 +59,7 @@ namespace C4GUI
 		if (fMakeReadableOnBlack) MakeColorReadableOnBlack(dwFgClr);
 		this->rcBounds = rcBounds;
 		// default font
-		if (!this->pFont) this->pFont = &GetRes()->TextFont;
+		if (!this->pFont) this->pFont = &::GraphicsResource.TextFont;
 		// set x0
 		UpdateOwnPos();
 		// update text
@@ -139,7 +140,7 @@ namespace C4GUI
 	void WoodenLabel::DrawElement(C4TargetFacet &cgo)
 	{
 		// draw wood
-		DrawBar(cgo, GetRes()->barCaption);
+		DrawBar(cgo, ::GraphicsResource.barCaption);
 		// draw symbol
 		if (fctIcon.Surface)
 		{
@@ -180,7 +181,7 @@ namespace C4GUI
 
 	int32_t WoodenLabel::GetDefaultHeight(CStdFont *pUseFont)
 	{
-		if (!pUseFont) pUseFont = &(GetRes()->TextFont);
+		if (!pUseFont) pUseFont = &(::GraphicsResource.TextFont);
 		return Max<int32_t>(pUseFont->GetLineHeight(), C4GUI_MinWoodBarHgt);
 	}
 
@@ -302,14 +303,14 @@ namespace C4GUI
 	{
 		// do not draw in negative progress
 		if (iProgress<0) return;
-		CStdFont &rFont = GetRes()->TextFont;
+		CStdFont &rFont = ::GraphicsResource.TextFont;
 		// draw border
 		Draw3DFrame(cgo);
 		// calc progress width
 		int32_t iProgressWdt = (rcBounds.Wdt-4) * iProgress / iMax;
 		// draw progress
 		//lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, cgo.TargetX+rcBounds.x+iProgressWdt, cgo.TargetY+rcBounds.y+rcBounds.Hgt-2, C4GUI_ProgressBarColor);
-		GetRes()->fctProgressBar.DrawX(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, iProgressWdt, rcBounds.Hgt-2);
+		::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, iProgressWdt, rcBounds.Hgt-2);
 		// print out progress text
 		char szPrg[32+1];
 		sprintf(szPrg, "%i%%", 100 * iProgress / iMax);
@@ -431,7 +432,7 @@ namespace C4GUI
 	C4Facet Icon::GetIconFacet(Icons icoIconIndex)
 	{
 		if (icoIconIndex == Ico_None) return C4Facet();
-		C4Facet &rFacet = (icoIconIndex & Ico_Extended) ? GetRes()->fctIconsEx : GetRes()->fctIcons;
+		C4Facet &rFacet = (icoIconIndex & Ico_Extended) ? ::GraphicsResource.fctIconsEx : ::GraphicsResource.fctIcons;
 		icoIconIndex = Icons(icoIconIndex & (Ico_Extended-1));
 		int32_t iXMax, iYMax;
 		rFacet.GetPhaseNum(iXMax, iYMax);

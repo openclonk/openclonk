@@ -28,6 +28,7 @@
 #include "C4InputValidation.h"
 #include "C4Network2IRC.h"
 #include "C4MessageInput.h"
+#include "C4GraphicsResource.h"
 
 void ConvWindowsToUTF8(StdStrBuf &sText)
 {
@@ -50,7 +51,7 @@ C4ChatControl::ChatSheet::NickItem::NickItem(class C4Network2IRCUser *pByUser) :
 	AddElement(pStatusIcon = new C4GUI::Icon(rcDefault, C4GUI::Ico_None));
 	AddElement(pNameLabel = new C4GUI::Label("", rcDefault, ALeft, C4GUI_CaptionFontClr, NULL, false, false, false));
 	// set height (pos and width set when added to the list)
-	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
+	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	rcBounds.Set(0,0, 100,pUseFont->GetLineHeight());
 	// initial update
 	Update(pByUser);
@@ -121,7 +122,7 @@ C4ChatControl::ChatSheet::ChatSheet(C4ChatControl *pChatControl, const char *szT
 		AddElement(pNickList);
 	}
 	if (eType != CS_Server)
-		pInputLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_DLG_CHAT"), rcDefault, C4GUI_CaptionFontClr, &C4GUI::GetRes()->TextFont);
+		pInputLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_DLG_CHAT"), rcDefault, C4GUI_CaptionFontClr, &::GraphicsResource.TextFont);
 	pInputEdit = new C4GUI::CallbackEdit<C4ChatControl::ChatSheet>(rcDefault, this, &C4ChatControl::ChatSheet::OnChatInput);
 	pInputEdit->SetToolTip(LoadResStr("IDS_DLGTIP_CHAT"));
 	if (pInputLbl)
@@ -224,7 +225,7 @@ void C4ChatControl::ChatSheet::AddTextLine(const char *szText, uint32_t dwClr)
 	// convert incoming Windows-1252
 	ConvWindowsToUTF8(sText);
 	// add text line to chat box
-	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
+	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	pChatBox->AddTextLine(sText.getData(), pUseFont, dwClr, true, false);
 	pChatBox->ScrollToBottom();
 	// sheet now has unread messages if not selected
@@ -364,7 +365,7 @@ C4ChatControl::C4ChatControl(C4Network2IRCClient *pnIRCClient) : C4GUI::Window()
 	C4GUI::Tabular::Sheet *pSheetLogin = pTabMain->AddSheet(NULL);
 	C4GUI::Tabular::Sheet *pSheetChats = pTabMain->AddSheet(NULL);
 	// login sheet
-	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
+	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	pSheetLogin->AddElement(pLblLoginNick = new C4GUI::Label(LoadResStr("IDS_CTL_NICK"), rcDefault, ALeft, C4GUI_CaptionFontClr, pUseFont, false, true));
 	pSheetLogin->AddElement(pEdtLoginNick = new C4GUI::CallbackEdit<C4ChatControl>(rcDefault, this, &C4ChatControl::OnLoginDataEnter));
 	pSheetLogin->AddElement(pLblLoginPass = new C4GUI::Label(LoadResStr("IDS_CTL_PASSWORDOPTIONAL"), rcDefault, ALeft, C4GUI_CaptionFontClr, pUseFont, false, true));
@@ -416,7 +417,7 @@ void C4ChatControl::UpdateSize()
 	pTabChats->SetBounds(pTabChats->GetParent()->GetContainedClientRect());
 	C4GUI::Tabular::Sheet *pSheetLogin = pTabMain->GetSheet(0);
 	C4GUI::ComponentAligner caLoginSheet(pSheetLogin->GetContainedClientRect(), 0,0, false);
-	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
+	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	int32_t iIndent1 = C4GUI_DefDlgSmallIndent/2, iIndent2 = C4GUI_DefDlgIndent/2;
 	int32_t iLoginHgt = pUseFont->GetLineHeight() * 8 + iIndent1*10 + iIndent2*10 + C4GUI_ButtonHgt + 20;
 	int32_t iLoginWdt = iLoginHgt*2/3;

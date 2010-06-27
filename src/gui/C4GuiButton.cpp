@@ -25,6 +25,7 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 namespace C4GUI
 {
@@ -86,10 +87,10 @@ namespace C4GUI
 		// draw base
 		if (fDown)
 			// pressed
-			DrawBar(cgo, pCustomGfxDown ? *pCustomGfxDown : GetRes()->barButtonD);
+			DrawBar(cgo, pCustomGfxDown ? *pCustomGfxDown : ::GraphicsResource.barButtonD);
 		else
 			// released
-			DrawBar(cgo, pCustomGfx ? *pCustomGfx : GetRes()->barButton);
+			DrawBar(cgo, pCustomGfx ? *pCustomGfx : ::GraphicsResource.barButton);
 		// get text pos
 		int32_t x0 = cgo.TargetX + rcBounds.x, y0 = cgo.TargetY + rcBounds.y, x1 = cgo.TargetX + rcBounds.x + rcBounds.Wdt - 1, y1 = cgo.TargetY + rcBounds.y + rcBounds.Hgt - 1;
 		int32_t iTxtOff = fDown ? 1 : 0;
@@ -97,17 +98,17 @@ namespace C4GUI
 		if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0+5, y0+3, rcBounds.Wdt-10, rcBounds.Hgt-6);
+				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+5, y0+3, rcBounds.Wdt-10, rcBounds.Hgt-6);
 				lpDDraw->ResetBlitMode();
 			}
 		// draw text
 		int32_t iTextHgt = rcBounds.Hgt-2;
 		CStdFont &rUseFont =
-		  (GetRes()->TitleFont.GetLineHeight() > iTextHgt ?
-		   (GetRes()->CaptionFont.GetLineHeight() > iTextHgt ?
-		    GetRes()->TextFont :
-		    GetRes()->CaptionFont) :
-				   GetRes()->TitleFont);
+		  (::GraphicsResource.TitleFont.GetLineHeight() > iTextHgt ?
+		   (::GraphicsResource.CaptionFont.GetLineHeight() > iTextHgt ?
+		    ::GraphicsResource.TextFont :
+		    ::GraphicsResource.CaptionFont) :
+				   ::GraphicsResource.TitleFont);
 		iTextHgt = rUseFont.GetLineHeight();
 		//CStdFont &rShadowFont = GetRes()->MiniFont;
 		//lpDDraw->TextOut(Text, rShadowFont, (float) iTextHgt/rShadowFont.GetLineHeight(), cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontShadowClr, ACenter, true);
@@ -218,7 +219,7 @@ namespace C4GUI
 		if (fEnabled) if (fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// draw the icon
@@ -228,13 +229,13 @@ namespace C4GUI
 		if (fEnabled) if (fDown || fHighlight)
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// some icon buttons have captions. draw caption below button
 		if (sText.getLength())
 		{
-			CStdFont &rUseFont = GetRes()->TextFont;
+			CStdFont &rUseFont = ::GraphicsResource.TextFont;
 			lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt-rUseFont.GetLineHeight()*4/5, C4GUI_CaptionFontClr, ACenter);
 		}
 	}
@@ -272,26 +273,26 @@ namespace C4GUI
 		if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// draw the arrow - down if pressed
 		int32_t iFctIdx = eDir;
 		if (fDown) iFctIdx += Down;
-		GetRes()->fctBigArrows.GetPhase(iFctIdx).DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+		::GraphicsResource.fctBigArrows.GetPhase(iFctIdx).DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 	}
 
 
 	int32_t ArrowButton::GetDefaultWidth()
 	{
 		// default by gfx size
-		return GetRes()->fctBigArrows.Wdt;
+		return ::GraphicsResource.fctBigArrows.Wdt;
 	}
 
 	int32_t ArrowButton::GetDefaultHeight()
 	{
 		// default by gfx size
-		return GetRes()->fctBigArrows.Hgt;
+		return ::GraphicsResource.fctBigArrows.Hgt;
 	}
 
 
@@ -326,7 +327,7 @@ namespace C4GUI
 		// draw caption text
 		if (sText.getLength()>0)
 		{
-			CStdFont *pUseFont = pFont ? pFont : &(GetRes()->GetFontByHeight(rcBounds.Hgt, &fFontZoom));
+			CStdFont *pUseFont = pFont ? pFont : &(::GraphicsResource.GetFontByHeight(rcBounds.Hgt, &fFontZoom));
 			lpDDraw->TextOut(sText.getData(), *pUseFont, fFontZoom, cgo.Surface, (int)(x0+iTxtOffX), (int)(y0+iTxtOffY), dwTextClr, byTxtAlign, true);
 		}
 		/*

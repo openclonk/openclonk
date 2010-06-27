@@ -26,6 +26,7 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 namespace C4GUI
 {
@@ -45,7 +46,7 @@ namespace C4GUI
 		iMaxTextLength = 255;
 		iCursorPos = iSelectionStart = iSelectionEnd = 0;
 		iXScroll = 0;
-		pFont = &GetRes()->TextFont;
+		pFont = &::GraphicsResource.TextFont;
 		dwBGClr = C4GUI_EditBGColor;
 		dwFontClr = C4GUI_EditFontColor;
 		dwBorderColor = 0; // default border
@@ -104,7 +105,7 @@ namespace C4GUI
 	int32_t Edit::GetDefaultEditHeight()
 	{
 		// edit height for default font
-		return GetCustomEditHeight(&C4GUI::GetRes()->TextFont);
+		return GetCustomEditHeight(&::GraphicsResource.TextFont);
 	}
 
 	int32_t Edit::GetCustomEditHeight(CStdFont *pUseFont)
@@ -818,7 +819,7 @@ namespace C4GUI
 	LabeledEdit::LabeledEdit(const C4Rect &rcBounds, const char *szName, bool fMultiline, const char *szPrefText, CStdFont *pUseFont, uint32_t dwTextClr)
 			: C4GUI::Window()
 	{
-		if (!pUseFont) pUseFont = &(GetRes()->TextFont);
+		if (!pUseFont) pUseFont = &(::GraphicsResource.TextFont);
 		SetBounds(rcBounds);
 		ComponentAligner caMain(GetClientRect(), 0,0, true);
 		int32_t iLabelWdt=100, iLabelHgt=24;
@@ -845,7 +846,7 @@ namespace C4GUI
 
 	bool LabeledEdit::GetControlSize(int *piWdt, int *piHgt, const char *szForText, CStdFont *pForFont, bool fMultiline)
 	{
-		CStdFont *pUseFont = pForFont ? pForFont : &(GetRes()->TextFont);
+		CStdFont *pUseFont = pForFont ? pForFont : &(::GraphicsResource.TextFont);
 		int32_t iLabelWdt=100, iLabelHgt=24;
 		pUseFont->GetTextExtent(szForText, iLabelWdt, iLabelHgt, true);
 		int32_t iEditWdt = 100, iEditHgt = Edit::GetCustomEditHeight(pUseFont);

@@ -23,6 +23,7 @@
 #include "C4DownloadDlg.h"
 
 #include "C4Log.h"
+#include "C4GraphicsResource.h"
 
 C4Network2HTTPClient HTTPClient;
 
@@ -37,7 +38,7 @@ C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_Progres
 #endif
 	// add all elements - will be reposisioned when text is displayed
 	AddElement(pIcon = new C4GUI::Icon(C4Rect(), C4GUI::Ico_NetWait));
-	AddElement(pStatusLabel = new C4GUI::Label("", C4Rect(), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false));
+	AddElement(pStatusLabel = new C4GUI::Label("", C4Rect(), ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont, false));
 	pProgressBar = NULL; // created when necessary
 	AddElement(pCancelBtn = new C4GUI::CancelButton(C4Rect()));
 }
@@ -58,7 +59,7 @@ void C4DownloadDlg::SetStatus(const char *szNewText, int32_t iProgressPercent)
 	// place message label
 	// use text with line breaks
 	StdStrBuf sMsgBroken;
-	int iMsgHeight = C4GUI::GetRes()->TextFont.BreakMessage(szNewText, caMain.GetInnerWidth(), &sMsgBroken, true);
+	int iMsgHeight = ::GraphicsResource.TextFont.BreakMessage(szNewText, caMain.GetInnerWidth(), &sMsgBroken, true);
 	pStatusLabel->SetBounds(caMain.GetFromTop(iMsgHeight));
 	pStatusLabel->SetText(sMsgBroken.getData());
 	// place progress bar

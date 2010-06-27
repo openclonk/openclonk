@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4GraphicsResource.h>
 
-#include <C4Gui.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
@@ -34,7 +33,9 @@
 
 #include <StdGL.h>
 
-C4GraphicsResource::C4GraphicsResource()
+C4GraphicsResource::C4GraphicsResource():
+	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),
+	CaptionFont(FontCaption), TitleFont(FontTitle), TextFont(FontRegular), MiniFont(FontTiny), TooltipFont(FontTooltip)
 {
 	Default();
 }
@@ -99,8 +100,6 @@ void C4GraphicsResource::Default()
 void C4GraphicsResource::Clear()
 {
 	fInitialized = false;
-	// GUI data
-	C4GUI::Resource::Unload();
 
 	sfcControl.Clear();
 	idSfcControl = 0;
@@ -134,6 +133,16 @@ void C4GraphicsResource::Clear()
 	fctHand.Clear();
 	fctGamepad.Clear();
 	fctBuild.Clear();
+	// GUI data
+	sfcCaption.Clear(); sfcButton.Clear(); sfcButtonD.Clear(); sfcScroll.Clear(); sfcContext.Clear();
+	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
+	barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
+	fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
+	fctSubmenu.Clear();
+	fctCheckbox.Clear();
+	fctBigArrows.Clear();
+	fctProgressBar.Clear();
+	fctContext.Default();
 
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
@@ -173,15 +182,15 @@ bool C4GraphicsResource::InitFonts()
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(17.0f);
+	Game.SetInitProgress(33.0f);
 	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(17.5f);
+	Game.SetInitProgress(33.5f);
 	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(18.0f);
+	Game.SetInitProgress(34.0f);
 	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(18.5f);
+	Game.SetInitProgress(34.5f);
 	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files, false)) return false;
-	Game.SetInitProgress(19.0f);
+	Game.SetInitProgress(35.0f);
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&::Definitions);
 	return true;
@@ -198,8 +207,6 @@ void C4GraphicsResource::ClearFonts()
 
 bool C4GraphicsResource::Init()
 {
-	// (re)init main font
-	if (!InitFonts()) return false;
 	// Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
@@ -223,8 +230,33 @@ bool C4GraphicsResource::Init()
 		idPalGrp = idNewPalGrp;
 	}
 
-	Game.SetInitProgress(19.5f);
-	ProgressStart = 20; ProgressIncrement = 0.4;
+	Game.SetInitProgress(16.5f);
+	ProgressStart = 17; ProgressIncrement = 0.4;
+
+	// load GUI files
+	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;
+	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
+	if (!LoadFile(sfcCaption, "GUICaption", Files, idSfcCaption)) return false;
+	barCaption.SetHorizontal(sfcCaption, sfcCaption.Hgt, 32);
+	if (!LoadFile(sfcButton, "GUIButton", Files, idSfcButton)) return false;
+	barButton.SetHorizontal(sfcButton);
+	if (!LoadFile(sfcButtonD, "GUIButtonDown", Files, idSfcButtonD)) return false;
+	barButtonD.SetHorizontal(sfcButtonD);
+	if (!LoadFile(fctButtonHighlight, "GUIButtonHighlight", Files)) return false;
+	if (!LoadFile(fctIcons, "GUIIcons", Files)) return false;
+	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
+	if (!LoadFile(fctIconsEx, "GUIIcons2", Files)) return false;
+	fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
+	if (!LoadFile(sfcScroll, "GUIScroll", Files, idSfcScroll)) return false;
+	sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
+	if (!LoadFile(sfcContext, "GUIContext", Files, idSfcContext)) return false;
+	fctContext.Set(&sfcContext,0,0,16,16);
+	if (!LoadFile(fctSubmenu, "GUISubmenu", Files)) return false;
+	if (!LoadFile(fctCheckbox, "GUICheckbox", Files)) return false;
+	fctCheckbox.Set(fctCheckbox.Surface, 0,0,fctCheckbox.Hgt,fctCheckbox.Hgt);
+	if (!LoadFile(fctBigArrows, "GUIBigArrows", Files)) return false;
+	fctBigArrows.Set(fctBigArrows.Surface, 0,0, fctBigArrows.Wdt/4, fctBigArrows.Hgt);
+
 	// Control
 	if (!LoadFile(sfcControl, "Control", Files, idSfcControl)) return false;
 	fctKeyboard.Set(&sfcControl,0,0,80,36);
@@ -292,10 +324,8 @@ bool C4GraphicsResource::Init()
 	int32_t Q; fctRank.GetPhaseNum(iNumRanks, Q);
 	if (!iNumRanks) iNumRanks=1;
 
-	// load GUI files
-	C4GUI::Resource *pRes = C4GUI::GetRes();
-	if (!pRes) pRes = new C4GUI::Resource(FontCaption, FontTitle, FontRegular, FontTiny, FontTooltip);
-	if (!pRes->Load(Files)) { delete pRes; return false; }
+	// (re)init main font
+	if (!InitFonts()) return false;
 
 	// CloseFiles() must not be called now:
 	// The sky still needs to be loaded from the global graphics
@@ -454,6 +484,26 @@ bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet
 	return true;
 }
 
+CStdFont &C4GraphicsResource::GetFontByHeight(int32_t iHgt, float *pfZoom)
+{
+	// get optimal font for given control size
+	CStdFont *pUseFont;
+	if (iHgt <= MiniFont.GetLineHeight()) pUseFont = &MiniFont;
+	else if (iHgt <= TextFont.GetLineHeight()) pUseFont = &TextFont;
+	else if (iHgt <= CaptionFont.GetLineHeight()) pUseFont = &CaptionFont;
+	else pUseFont = &TitleFont;
+	// determine zoom
+	if (pfZoom)
+	{
+		int32_t iLineHgt = pUseFont->GetLineHeight();
+		if (iLineHgt)
+			*pfZoom = (float) iHgt / (float) iLineHgt;
+		else
+			*pfZoom = 1.0f; // error
+	}
+	return *pUseFont;
+}
+
 int32_t C4GraphicsResource::GetColorIndex(int32_t iColor, bool fLast)
 {
 	// Returns first or last (hardcoded) index into the clonk color palette.
@@ -490,6 +540,7 @@ int32_t C4GraphicsResource::GetColorIndex(int32_t iColor, bool fLast)
 
 bool C4GraphicsResource::ReloadResolutionDependantFiles()
 {
+	if(!fInitialized) return false;
 	// reload any files that depend on the current resolution
 	// reloads the cursor
 	fctMouseCursor.idSourceGroup = 0;
