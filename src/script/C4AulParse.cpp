@@ -2670,7 +2670,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			{
 				// not failsafe?
 				if (eCallType != AB_CALLFS && Type == PARSER)
-					throw new C4AulParseError(this, FormatString("direct object call: function %s not found", Idtf).getData());
+					Warn(FormatString("direct object call: function %s not found", Idtf).getData());
 				// otherwise: nothing to call - just execute parameters and discard them
 				Shift();
 				Parse_Params(0, NULL);
