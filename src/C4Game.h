@@ -248,7 +248,6 @@ public:
 	bool InitPlayerControlSettings();
 
 protected:
-	bool InitSystem();
 	void InitInEarth();
 	void InitVegetation();
 	void InitAnimals();

@@ -144,30 +144,46 @@ void C4GraphicsResource::Clear()
 	CloseFiles();
 }
 
-bool C4GraphicsResource::InitFonts()
+bool C4GraphicsResource::PreInit()
 {
+	if (!RegisterGlobalGraphics())
+		return false;
 	// update group set
 	if (!RegisterMainGroups())
 	{
 		LogFatal(LoadResStr("IDS_ERR_GFX_REGISTERMAIN"));
 		return false;
 	}
-	// reinit main font
+	// init main system font
+	// This is preliminary, because it might be overloaded after scenario opening and Extra.c4g-initialization.
+	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
+	if (!::FontLoader.InitFont(FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
+		if (!::FontLoader.InitFont(FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
+			return false;
+	if (!::FontLoader.InitFont(FontTiny, Config.General.RXFontName, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files))
+		if (!::FontLoader.InitFont(FontTiny, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files))
+			return false;
+	// done, success
+	return true;
+}
+
+bool C4GraphicsResource::InitFonts()
+{
 	// this regards scenario-specific fonts or overloads in Extra.c4g
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
-#ifndef USE_CONSOLE
-	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
-		return false;
+	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
+	Game.SetInitProgress(17.0f);
+	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
+	Game.SetInitProgress(17.5f);
+	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Files)) return false;
+	Game.SetInitProgress(18.0f);
+	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Files)) return false;
+	Game.SetInitProgress(18.5f);
+	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files, false)) return false;
+	Game.SetInitProgress(19.0f);
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&::Definitions);
-	// load additional fonts
-	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
-	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false)) return false;
-#endif
-	// done, success
 	return true;
 }
 
@@ -180,11 +196,10 @@ void C4GraphicsResource::ClearFonts()
 	FontTooltip.Clear();
 }
 
-bool C4GraphicsResource::Init(bool fInitGUI)
+bool C4GraphicsResource::Init()
 {
-	// Init fonts (double init will never if groups didnt change)
-	if (!InitFonts())
-		return false;
+	// (re)init main font
+	if (!InitFonts()) return false;
 	// Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
@@ -208,6 +223,8 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 		idPalGrp = idNewPalGrp;
 	}
 
+	Game.SetInitProgress(19.5f);
+	ProgressStart = 20; ProgressIncrement = 0.4;
 	// Control
 	if (!LoadFile(sfcControl, "Control", Files, idSfcControl)) return false;
 	fctKeyboard.Set(&sfcControl,0,0,80,36);
@@ -275,13 +292,10 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 	int32_t Q; fctRank.GetPhaseNum(iNumRanks, Q);
 	if (!iNumRanks) iNumRanks=1;
 
-	// load GUI files, if desired
-	if (fInitGUI)
-	{
-		C4GUI::Resource *pRes = C4GUI::GetRes();
-		if (!pRes) pRes = new C4GUI::Resource(FontCaption, FontTitle, FontRegular, FontTiny, FontTooltip);
-		if (!pRes->Load(Files)) { delete pRes; return false; }
-	}
+	// load GUI files
+	C4GUI::Resource *pRes = C4GUI::GetRes();
+	if (!pRes) pRes = new C4GUI::Resource(FontCaption, FontTitle, FontRegular, FontTiny, FontTooltip);
+	if (!pRes->Load(Files)) { delete pRes; return false; }
 
 	// CloseFiles() must not be called now:
 	// The sky still needs to be loaded from the global graphics
@@ -409,6 +423,8 @@ bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet
 		return false;
 	}
 	fct.idSourceGroup = ID;
+	Game.SetInitProgress(ProgressStart);
+	ProgressStart += ProgressIncrement;
 	return true;
 }
 
@@ -433,6 +449,8 @@ bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet
 		return false;
 	}
 	ridCurrSfc = ID;
+	Game.SetInitProgress(ProgressStart);
+	ProgressStart += ProgressIncrement;
 	return true;
 }
 

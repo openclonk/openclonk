@@ -42,23 +42,22 @@ bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 
 bool C4StartupGraphics::Init()
 {
+	::GraphicsResource.ProgressStart = 50;
+	::GraphicsResource.ProgressIncrement = 8;
 	// load startup specific graphics from gfxsys groupset
 	fctScenSelBG.GetFace().SetBackground();
+	Game.SetInitProgress(40.0f);
 	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
-	Game.SetInitProgress(45);
 	if (!LoadFile(fctPlrSelBG, "StartupPlrSelBG")) return false;
-	Game.SetInitProgress(50);
 	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
-	Game.SetInitProgress(55);
 	if (!LoadFile(fctNetBG, "StartupNetworkBG")) return false;
-	Game.SetInitProgress(57);
 	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
-	Game.SetInitProgress(60);
+	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
+	::GraphicsResource.ProgressStart = 92;
+	::GraphicsResource.ProgressIncrement = 0.5;
 	if (!LoadFile(fctMainButtons, "StartupBigButton")) return false;
-	Game.SetInitProgress(62);
 	barMainButtons.SetHorizontal(fctMainButtons);
 	if (!LoadFile(fctMainButtonsDown, "StartupBigButtonDown")) return false;
-	Game.SetInitProgress(64);
 	barMainButtonsDown.SetHorizontal(fctMainButtonsDown);
 	if (!LoadFile(fctBookScroll, "StartupBookScroll")) return false;
 	sfctBookScroll.Set(fctBookScroll);
@@ -73,26 +72,17 @@ bool C4StartupGraphics::Init()
 	    fctCrewClr.Hgt=fctCrew.Hgt;
 	    fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
 	    }*/
-	Game.SetInitProgress(66);
 	if (!LoadFile(fctContext, "StartupContext")) return false;
 	fctContext.Set(fctContext.Surface,0,0,fctContext.Hgt,fctContext.Hgt);
-	Game.SetInitProgress(67);
 	if (!LoadFile(fctScenSelIcons, "StartupScenSelIcons")) return false;
-	Game.SetInitProgress(68);
 	fctScenSelIcons.Wdt = fctScenSelIcons.Hgt; // icon width is determined by icon height
 	if (!LoadFile(fctScenSelTitleOverlay, "StartupScenSelTitleOv")) return false;
-	Game.SetInitProgress(72);
-	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
-	Game.SetInitProgress(74);
 	if (!LoadFile(fctOptionsIcons, "StartupOptionIcons")) return false;
 	fctOptionsIcons.Set(fctOptionsIcons.Surface, 0,0,fctOptionsIcons.Hgt,fctOptionsIcons.Hgt);
-	Game.SetInitProgress(76);
 	if (!LoadFile(fctOptionsTabClip, "StartupTabClip")) return false;
-	Game.SetInitProgress(80);
 	if (!LoadFile(fctNetGetRef, "StartupNetGetRef")) return false;
 	fctNetGetRef.Wdt = 40;
 #ifndef USE_CONSOLE
-	Game.SetInitProgress(82);
 	if (!InitFonts()) return false;
 #endif
 	Game.SetInitProgress(100);
@@ -105,13 +95,13 @@ bool C4StartupGraphics::InitFonts()
 	const char *szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (1)"); return false; }
-	Game.SetInitProgress(85);
+	Game.SetInitProgress(97);
 	if (!::FontLoader.InitFont(BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (2)"); return false; }
-	Game.SetInitProgress(90);
+	Game.SetInitProgress(98);
 	if (!::FontLoader.InitFont(BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (3)"); return false; }
-	Game.SetInitProgress(95);
+	Game.SetInitProgress(99);
 	if (!::FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (4)"); return false; }
 	return true;
@@ -360,8 +350,9 @@ C4Startup *C4Startup::EnsureLoaded()
 	assert(::pGUI);
 	if (!pInstance)
 	{
-		Game.SetInitProgress(40);
+		Game.SetInitProgress(38.0f);
 		C4Startup *pStartup = new C4Startup();
+		Game.SetInitProgress(39.0f);
 		// load startup specific gfx
 		if (!pStartup->Graphics.Init())
 			{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); delete pStartup; return NULL; }

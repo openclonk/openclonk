@@ -48,6 +48,7 @@ public:
 	C4GroupSet Files;
 	BYTE GamePalette[256*3];
 	BYTE AlphaPalette[256*3]; // TODO: alphapal: Why *3?
+	float ProgressStart, ProgressIncrement;
 	C4FacetID fctPlayer;
 	C4FacetID fctFlag;
 	C4FacetID fctCrew;
@@ -96,9 +97,10 @@ public:
 	int32_t GetColorIndex(int32_t iColor, bool fLast=false);
 	void Default();
 	void Clear();
-	bool InitFonts(); // init fonts only (early init done by loader screen)
+	bool InitFonts();
 	void ClearFonts(); // clear fonts ()
-	bool Init(bool fInitGUI);
+	bool PreInit();
+	bool Init();
 
 	bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)
 

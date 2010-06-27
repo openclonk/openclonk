@@ -295,21 +295,40 @@ void C4Game::CloseScenario()
 
 bool C4Game::PreInit()
 {
-	// System
-	if (!InitSystem())
-		{ LogFatal(FormatString("%s(InitSystem)", LoadResStr("IDS_PRC_FAIL")).getData()); return false; }
+	if (!GraphicsResource.PreInit()) return false;
+	Game.SetInitProgress(13.0f);
 
-	// Startup message board
-	if (Application.isFullScreen)
-		if (Config.Graphics.ShowStartupMessages || NetworkActive)
-		{
-			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-			GraphicsSystem.MessageBoard.Init(cgo,true);
-		}
+	RandomSeed = time(NULL);
+	// Randomize
+	FixRandom(RandomSeed);
+	// Timer flags
+	GameGo=false;
+	// set gamma
+	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	// init extra root group
+	// this loads font definitions in this group as well
+	// the function may return false, if no extra group is present - that is OK
+	if (Extra.InitGroup())
+		// add any Graphics.c4g-files in Extra.c4g-root
+		GraphicsResource.RegisterMainGroups();
+	// init message input (default commands)
+	MessageInput.Init();
+	Game.SetInitProgress(14.0f);
+	// init keyboard input (default keys, plus overloads)
+	if (!InitKeyboard())
+		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
+	// Load string table
+	UpdateLanguage();
+	// Player keyboard input: Key definitions and default sets
+	if (!InitPlayerControlSettings()) return false;
+	Game.SetInitProgress(15.0f);
+	// Rank system
+	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
+	Game.SetInitProgress(16.0f);
 
 	// gfx resource file preinit (global files only)
 	Log(LoadResStr("IDS_PRC_GFXRES"));
-	if (!GraphicsResource.Init(true))
+	if (!GraphicsResource.Init())
 		// Error was already logged
 		return false;
 
@@ -2146,7 +2165,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		// Graphics and fonts (may reinit main font, too)
 		// redundant call in NETWORK2; but it may do scenario local overloads
 		Log(LoadResStr("IDS_PRC_GFXRES"));
-		if (!GraphicsResource.Init(true))
+		if (!GraphicsResource.Init())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(10);
 
@@ -3087,52 +3106,6 @@ bool C4Game::InitKeyboard()
 	// load any custom keysboard overloads
 	KeyboardInput.LoadCustomConfig();
 
-	// done, success
-	return true;
-}
-
-bool C4Game::InitSystem()
-{
-	// Random seed (host)
-	/*if (Config.Network.Active) RandomSeed = 0;
-	else*/
-	RandomSeed = time(NULL);
-	// Randomize
-	FixRandom(RandomSeed);
-	// Timer flags
-	GameGo=false;
-	// set gamma
-	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
-	// first time font-init
-	//Log(LoadResStr("IDS_PRC_INITFONTS"));
-	// open graphics group now for font-init
-	if (!GraphicsResource.RegisterGlobalGraphics()) return false;
-	// init extra root group
-	// this loads font definitions in this group as well
-	// the function may return false, if no extra group is present - that is OK
-	if (Extra.InitGroup())
-		// add any Graphics.c4g-files in Extra.c4g-root
-		GraphicsResource.RegisterMainGroups();
-	// init main system font
-	// This is preliminary, because it's not unlikely to be overloaded after scenario opening and Extra.c4g-initialization.
-	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
-	// Peter wouldn't like this...
-#ifndef USE_CONSOLE
-	if (!::FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-		if (!::FontLoader.InitFont(::GraphicsResource.FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-			return false;
-#endif
-	// init message input (default commands)
-	MessageInput.Init();
-	// init keyboard input (default keys, plus overloads)
-	if (!InitKeyboard())
-		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
-	// Load string table
-	UpdateLanguage();
-	// Player keyboard input: Key definitions and default sets
-	if (!InitPlayerControlSettings()) return false;
-	// Rank system
-	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
 	// done, success
 	return true;
 }

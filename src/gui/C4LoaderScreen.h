@@ -25,8 +25,6 @@
 class C4LoaderScreen
 {
 public:
-	CStdFont &TitleFont; // font used for title output
-	CStdFont &LogFont;   // font used for logging
 	C4FacetSurface fctBackground; // background image
 	char *szInfo;      // info text to be drawn on loader screen
 	bool fBlackScreen; // if set, a black screen is drawn instead of a loader

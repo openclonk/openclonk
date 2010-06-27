@@ -40,6 +40,9 @@ void C4FontLoader::Clear()
 
 bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow)
 {
+#ifdef USE_CONSOLE
+	return true;
+#endif
 	// safety
 	assert(szFontName);
 	if (!szFontName || !*szFontName)
