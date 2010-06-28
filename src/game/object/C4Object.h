@@ -242,7 +242,7 @@ public:
 	bool AssignInfo();
 	bool ValidateOwner();
 	bool AssignPlrViewRange();
-	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4RegionList *pRegions=NULL);
+	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4RegionList *pRegions=NULL,C4DrawTransform* transform=NULL);
 	void Picture2Facet(C4FacetSurface &cgo); // set picture to facet, or create facet in current size and draw if specific states are being needed
 	void DenumeratePointers();
 	void EnumeratePointers();

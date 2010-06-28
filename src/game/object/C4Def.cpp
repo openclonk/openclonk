@@ -651,7 +651,7 @@ bool C4Def::Load(C4Group &hGroup,
 	return true;
 }
 
-void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY)
+void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
 {
 
 	// default: def picture rect
@@ -673,7 +673,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	{
 	case C4DefGraphics::TYPE_Bitmap:
 		fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-		fctPicture.Draw(cgo,true,iPhaseX,iPhaseY,true);
+		fctPicture.DrawT(cgo,true,iPhaseX,iPhaseY,trans);
 		break;
 	case C4DefGraphics::TYPE_Mesh:
 		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
@@ -699,7 +699,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			lpDDraw->SetMeshTransform(&matrix);
 
 		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, NULL);
+		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
 		lpDDraw->SetPerspective(false);
 		lpDDraw->SetMeshTransform(NULL);
 

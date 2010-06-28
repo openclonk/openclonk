@@ -2923,10 +2923,10 @@ void C4Object::DenumeratePointers()
 	if (pMeshInstance) pMeshInstance->DenumeratePointers();
 }
 
-void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions)
+void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions, C4DrawTransform* transform)
 {
 	// Draw def picture with object color
-	Def->Draw(cgo,fSelected,Color,this);
+	Def->Draw(cgo,fSelected,Color,this,0,0,transform);
 	// Region
 	if (pRegions) pRegions->Add(cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,GetName(),COM_None,this);
 }
