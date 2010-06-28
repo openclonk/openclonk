@@ -295,8 +295,14 @@ void C4Game::CloseScenario()
 
 bool C4Game::PreInit()
 {
-	if (!GraphicsResource.PreInit()) return false;
-	Game.SetInitProgress(13.0f);
+	// init extra root group
+	// this loads font definitions in this group as well
+	// the function may return false, if no extra group is present - that is OK
+	Extra.InitGroup();
+	
+	Log(LoadResStr("IDS_PRC_GFXRES"));
+	if (!GraphicsResource.Init()) return false;
+	Game.SetInitProgress(30.0f);
 
 	RandomSeed = time(NULL);
 	// Randomize
@@ -305,15 +311,9 @@ bool C4Game::PreInit()
 	GameGo=false;
 	// set gamma
 	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
-	// init extra root group
-	// this loads font definitions in this group as well
-	// the function may return false, if no extra group is present - that is OK
-	if (Extra.InitGroup())
-		// add any Graphics.c4g-files in Extra.c4g-root
-		GraphicsResource.RegisterMainGroups();
 	// init message input (default commands)
 	MessageInput.Init();
-	Game.SetInitProgress(14.0f);
+	Game.SetInitProgress(31.0f);
 	// init keyboard input (default keys, plus overloads)
 	if (!InitKeyboard())
 		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
@@ -321,16 +321,10 @@ bool C4Game::PreInit()
 	UpdateLanguage();
 	// Player keyboard input: Key definitions and default sets
 	if (!InitPlayerControlSettings()) return false;
-	Game.SetInitProgress(15.0f);
+	Game.SetInitProgress(32.0f);
 	// Rank system
 	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
-	Game.SetInitProgress(16.0f);
-
-	// gfx resource file preinit (global files only)
-	Log(LoadResStr("IDS_PRC_GFXRES"));
-	if (!GraphicsResource.Init())
-		// Error was already logged
-		return false;
+	Game.SetInitProgress(33.0f);
 
 	// Graphics system (required for GUI)
 	if (!GraphicsSystem.Init())
@@ -1556,7 +1550,7 @@ void C4Game::Default()
 	DirectJoinAddress[0]=0;
 	pJoinReference=NULL;
 	StartupPlayerCount=0;
-	ScenarioTitle.Ref("Loading...");
+	ScenarioTitle.Ref("");
 	HaltCount=0;
 	fReferenceDefinitionOverride=false;
 	Evaluated=false;

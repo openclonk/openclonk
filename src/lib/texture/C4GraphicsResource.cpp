@@ -153,38 +153,21 @@ void C4GraphicsResource::Clear()
 	CloseFiles();
 }
 
-bool C4GraphicsResource::PreInit()
-{
-	if (!RegisterGlobalGraphics())
-		return false;
-	// init main system font
-	// This is preliminary, because it might be overloaded after scenario opening and Extra.c4g-initialization.
-	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
-	if (!::FontLoader.InitFont(FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
-		if (!::FontLoader.InitFont(FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
-			return false;
-	if (!::FontLoader.InitFont(FontTiny, Config.General.RXFontName, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files))
-		if (!::FontLoader.InitFont(FontTiny, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files))
-			return false;
-	// done, success
-	return true;
-}
-
 bool C4GraphicsResource::InitFonts()
 {
 	// this regards scenario-specific fonts or overloads in Extra.c4g
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(33.0f);
+	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(33.5f);
+	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(34.0f);
+	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Files)) return false;
-	Game.SetInitProgress(34.5f);
+	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	if (!::FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files, false)) return false;
-	Game.SetInitProgress(35.0f);
+	Game.SetInitProgress(ProgressStart); ProgressStart += ProgressIncrement;
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&::Definitions);
 	return true;
@@ -201,12 +184,24 @@ void C4GraphicsResource::ClearFonts()
 
 bool C4GraphicsResource::Init()
 {
+	if (!RegisterGlobalGraphics())
+		return false;
 	// update group set
 	if (!RegisterMainGroups())
 	{
 		LogFatal(LoadResStr("IDS_ERR_GFX_REGISTERMAIN"));
 		return false;
 	}
+
+	Game.SetInitProgress(11.0f);
+	ProgressStart = 12; ProgressIncrement = 0.4;
+	// The progress bar is the only graphic besides the background that is
+	// used during startup, so load it early
+	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;
+	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
+
+	if (!InitFonts()) return false;
+
 	// Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
@@ -216,7 +211,7 @@ bool C4GraphicsResource::Init()
 		if (!pPalGrp->AccessEntry("C4.pal")) { LogFatal("Pal error!"); return false; }
 		if (!pPalGrp->Read(GamePalette,256*3)) { LogFatal("Pal error!"); return false; }
 		for (int32_t cnt=0; cnt<256*3; cnt++) GamePalette[cnt]<<=2;
-		for (int32_t cnt=0; cnt<256; cnt++)     AlphaPalette[cnt]=0xff;
+		for (int32_t cnt=0; cnt<256; cnt++) AlphaPalette[cnt]=0xff;
 		// Set default force field color
 		GamePalette[191*3+0]=0;
 		GamePalette[191*3+1]=0;
@@ -230,12 +225,7 @@ bool C4GraphicsResource::Init()
 		idPalGrp = idNewPalGrp;
 	}
 
-	Game.SetInitProgress(16.5f);
-	ProgressStart = 17; ProgressIncrement = 0.4;
-
 	// load GUI files
-	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;
-	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
 	if (!LoadFile(sfcCaption, "GUICaption", Files, idSfcCaption)) return false;
 	barCaption.SetHorizontal(sfcCaption, sfcCaption.Hgt, 32);
 	if (!LoadFile(sfcButton, "GUIButton", Files, idSfcButton)) return false;
@@ -323,9 +313,6 @@ bool C4GraphicsResource::Init()
 	// get number of ranks
 	int32_t Q; fctRank.GetPhaseNum(iNumRanks, Q);
 	if (!iNumRanks) iNumRanks=1;
-
-	// (re)init main font
-	if (!InitFonts()) return false;
 
 	// CloseFiles() must not be called now:
 	// The sky still needs to be loaded from the global graphics

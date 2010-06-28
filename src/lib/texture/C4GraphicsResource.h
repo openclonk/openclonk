@@ -117,7 +117,6 @@ public:
 	void Clear();
 	bool InitFonts();
 	void ClearFonts(); // clear fonts ()
-	bool PreInit();
 	bool Init();
 
 	bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)

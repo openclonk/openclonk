@@ -268,7 +268,7 @@ bool C4Application::PreInit()
 		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
-	Game.SetInitProgress(fDoUseStartupDialog ? 12.0f : 1.0f);
+	Game.SetInitProgress(fDoUseStartupDialog ? 10.0f : 1.0f);
 
 	if (!Game.PreInit()) return false;
 
@@ -276,13 +276,13 @@ bool C4Application::PreInit()
 	if (!MusicSystem.Init("Frontend.*"))
 		Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 36.0f : 2.0f);
+	Game.SetInitProgress(fDoUseStartupDialog ? 34.0f : 2.0f);
 
 	// Sound
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 37.0f : 3.0f);
+	Game.SetInitProgress(fDoUseStartupDialog ? 35.0f : 3.0f);
 
 	AppState = fDoUseStartupDialog ? C4AS_Startup : C4AS_StartGame;
 
@@ -404,7 +404,6 @@ void C4Application::GameTick()
 	case C4AS_Startup:
 		AppState = C4AS_Game;
 		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
-		Game.ScenarioTitle.Copy(LoadResStr("IDS_PRC_INITIALIZE"));
 		if (!C4Startup::Execute()) { Quit(); return; }
 		AppState = C4AS_StartGame;
 		break;

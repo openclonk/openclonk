@@ -46,7 +46,7 @@ bool C4StartupGraphics::Init()
 	::GraphicsResource.ProgressIncrement = 8;
 	// load startup specific graphics from gfxsys groupset
 	fctScenSelBG.GetFace().SetBackground();
-	Game.SetInitProgress(40.0f);
+	Game.SetInitProgress(38.0f);
 	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
 	if (!LoadFile(fctPlrSelBG, "StartupPlrSelBG")) return false;
 	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
@@ -350,9 +350,9 @@ C4Startup *C4Startup::EnsureLoaded()
 	assert(::pGUI);
 	if (!pInstance)
 	{
-		Game.SetInitProgress(38.0f);
+		Game.SetInitProgress(36.0f);
 		C4Startup *pStartup = new C4Startup();
-		Game.SetInitProgress(39.0f);
+		Game.SetInitProgress(37.0f);
 		// load startup specific gfx
 		if (!pStartup->Graphics.Init())
 			{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); delete pStartup; return NULL; }
