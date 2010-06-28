@@ -506,12 +506,12 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		//------------------------------------------------------------------------------------------
 	case C4MC_Drag_Selecting:
 		// Draw frame
-		Application.DDraw->DrawFrame( cgo.Surface,
+		Application.DDraw->DrawFrameDw(cgo.Surface,
 		                              int32_t(cgo.X + GuiX),
 		                              int32_t(cgo.Y + GuiY),
 		                              int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
 		                              int32_t(cgo.Y + (DownY - cgo.TargetY) * GameZoom.Zoom / GuiZoom.Zoom),
-		                              CRed );
+		                              C4RGB(0xca, 0, 0));
 		break;
 		//------------------------------------------------------------------------------------------
 	}

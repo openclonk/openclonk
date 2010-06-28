@@ -23,12 +23,6 @@
 
 #include <math.h>
 
-// color definitions
-const int FTrans=-1,FWhite=0,FBlack=1,FPlayer=2,FRed=3;
-const int CBlack=0,CGray1=1,CGray2=2,CGray3=3,CGray4=4,CGray5=5,CWhite=6,
-                                   CDRed=7,CDGreen=8,CDBlue=9,CRed=10,CGreen=11,CLBlue=12,CYellow=13,CBlue=14;
-extern const BYTE FColors [];
-
 // helper function
 #define RGBA(r, g, b, a) (((DWORD)(a)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 

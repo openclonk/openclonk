@@ -49,28 +49,8 @@ class StdMeshInstance;
 
 // Global DDraw access pointer
 extern CStdDDraw *lpDDraw;
-extern CStdPalette *lpDDrawPal;
 
 extern int iGfxEngine;
-
-/*const DWORD CColors [] =
-  {
-  0x000000, // CBlack
-  0x2A2A2A, // CGray1
-  0x545454, // CGray2
-  0x7F7F7F, // CGray3
-  0xA9A9A9, // CGray4
-  0xD3D3D3, // CGray5
-  0xFFFFFF, // CWrite
-  0x7F0000, // CDRed
-  0x007F00, // CDGreen
-  0x00007F, // CDBlue
-  0xFF0000, // CRed
-  0x00FF00, // CGreen
-  0x7F7FFF, // CLBlue
-  0xFFFF00, // CYellow
-  0x0000FF, // CBlue
-  };*/
 
 // font def color indices
 
@@ -212,11 +192,10 @@ class CStdDDraw
 public:
 	static const StdMeshMatrix OgreToClonk;
 
-	CStdDDraw(): MaxTexSize(0), Saturation(255) { lpDDrawPal=&Pal; }
+	CStdDDraw(): MaxTexSize(0), Saturation(255) { }
 	virtual ~CStdDDraw() { lpDDraw=NULL; }
 public:
 	CStdApp * pApp; // the application
-	CStdPalette Pal;    // 8bit-pal
 	bool Active;                    // set if device is ready to render, etc.
 	CGammaControl Gamma;            // gamma
 	CGammaControl DefRamp;            // default gamma ramp
@@ -255,10 +234,6 @@ public:
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	virtual bool IsOpenGL() { return false; }
 	virtual bool IsShaderific() { return false; }
-	// Palette
-	bool SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf=NULL);
-	bool SetPrimaryPaletteQuad(BYTE *pBuf);
-	bool AttachPrimaryPalette(SURFACE sfcSurface);
 	// Clipper
 	bool GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2);
 	bool SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2);
@@ -271,8 +246,6 @@ public:
 	virtual bool UpdateClipper() = 0; // set current clipper to render target
 	// Surface
 	bool GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt);
-	bool WipeSurface(SURFACE sfcSurface);
-	void SurfaceAllowColor(SURFACE sfcSfc, DWORD *pdwColors, int iNumColors, bool fAllowZero=false);
 	void Grayscale(SURFACE sfcSfc, int32_t iOffset = 0);
 	void LockingPrimary() { PrimaryLocked=true; }
 	void PrimaryUnlocked() { PrimaryLocked=false; }
@@ -305,16 +278,10 @@ public:
 	bool StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	// Drawing
 	virtual void DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
-	void DrawBox(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, BYTE byCol);  // calls DrawBoxDw
 	void DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
 	void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal);
-	void DrawHorizontalLine(SURFACE sfcDest, int x1, int x2, int y, BYTE col);
-	void DrawVerticalLine(SURFACE sfcDest, int x, int y1, int y2, BYTE col);
-	void DrawFrame(SURFACE sfcDest, int x1, int y1, int x2, int y2, BYTE col);
 	void DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
-	virtual void DrawLine(SURFACE sfcTarget, int x1, int y1, int x2, int y2, BYTE byCol)
-	{ DrawLineDw(sfcTarget, (float) x1, (float) y1, (float) x2, (float) y2, Pal.GetClr(byCol)); }
 	virtual void DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
 	virtual void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma

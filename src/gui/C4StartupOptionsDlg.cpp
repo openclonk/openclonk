@@ -63,7 +63,7 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			C4GUI::GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
+			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
 			lpDDraw->ResetBlitMode();
 		}
 	// draw button text
@@ -101,13 +101,13 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	// place message labels
 	// use text with line breaks
 	StdStrBuf sMsgBroken;
-	int iMsgHeight = C4GUI::GetRes()->TextFont.BreakMessage(LoadResStr("IDS_MNU_SWITCHRESOLUTION_LIKEIT"), caMain.GetInnerWidth(), &sMsgBroken, true);
-	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false);
+	int iMsgHeight = ::GraphicsResource.TextFont.BreakMessage(LoadResStr("IDS_MNU_SWITCHRESOLUTION_LIKEIT"), caMain.GetInnerWidth(), &sMsgBroken, true);
+	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont, false);
 	AddElement(pLblMessage);
-	iMsgHeight = C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
+	iMsgHeight = ::GraphicsResource.TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
 	             (int)iResChangeSwitchTime).getData(),
 	             caMain.GetInnerWidth(), &sMsgBroken, true);
-	pOperationCancelLabel = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false, false);
+	pOperationCancelLabel = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &::GraphicsResource.TextFont, false, false);
 	AddElement(pOperationCancelLabel);
 	// place buttons
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromTop(C4GUI_ButtonAreaHgt), 0,0);
@@ -141,7 +141,7 @@ void C4StartupOptionsDlg::ResChangeConfirmDlg::OnSec1Timer()
 	}
 	// update timer label
 	StdStrBuf sTimerText;
-	C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
+	::GraphicsResource.TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
 	                                       (int)iResChangeSwitchTime).getData(),
 	                                       pOperationCancelLabel->GetBounds().Wdt, &sTimerText, true);
 	pOperationCancelLabel->SetText(sTimerText.getData());
@@ -336,7 +336,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	// reset button
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETKEYBOARD");
 	int32_t iButtonWidth=100, iButtonHeight=20; C4GUI::Button *btn;
-	C4GUI::GetRes()->CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
+	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
 	C4Rect rcResetBtn = caKeyBottomBtns.GetFromRight(Min<int32_t>(iButtonWidth+iButtonHeight*4, caKeyBottomBtns.GetInnerWidth()));
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn, this));
 	btn->SetToolTip(LoadResStr("IDS_MSG_RESETKEYSETS"));
@@ -628,7 +628,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// screen calculations
 	int32_t iButtonWidth,iCaptionFontHgt;
 	int32_t iButtonHeight = C4GUI_ButtonHgt;
-	C4GUI::GetRes()->CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
+	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
 	int iIndentX1, iIndentX2, iIndentY1, iIndentY2;
 	if (fSmall)
@@ -695,7 +695,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLangCombo->SetFont(pUseFont);
 	pLangCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
 	pSheetGeneral->AddElement(pLangCombo);
-	pLangInfoLabel = new C4GUI::Label(NULL, caLanguage.GetFromTop(C4GUI::GetRes()->TextFont.GetLineHeight()*3), ALeft, C4StartupFontClr, pUseFont, false);
+	pLangInfoLabel = new C4GUI::Label(NULL, caLanguage.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*3), ALeft, C4StartupFontClr, pUseFont, false);
 	pLangInfoLabel->SetToolTip(szLangTip);
 	pSheetGeneral->AddElement(pLangInfoLabel);
 	UpdateLanguage();
@@ -758,7 +758,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// reset configuration
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETCONFIG");
 	C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton> *pSmallBtn;
-	C4GUI::GetRes()->CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
+	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
 	C4Rect rcResetBtn = caSheetProgram.GetGridCell(1,2,6,7, Min<int32_t>(iButtonWidth+iButtonHeight*4, caSheetProgram.GetInnerWidth()*2/5), SmallButton::GetDefaultButtonHeight(), true);
 	pSheetGeneral->AddElement(pSmallBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::OnResetConfigBtn, this));
 	pSmallBtn->SetToolTip(LoadResStr("IDS_DESC_RESETCONFIG"));

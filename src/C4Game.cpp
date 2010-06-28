@@ -72,6 +72,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4Fonts.h>
 
 #include <StdFile.h>
 
@@ -294,23 +295,36 @@ void C4Game::CloseScenario()
 
 bool C4Game::PreInit()
 {
-	// System
-	if (!InitSystem())
-		{ LogFatal(FormatString("%s(InitSystem)", LoadResStr("IDS_PRC_FAIL")).getData()); return false; }
-
-	// Startup message board
-	if (Application.isFullScreen)
-		if (Config.Graphics.ShowStartupMessages || NetworkActive)
-		{
-			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-			GraphicsSystem.MessageBoard.Init(cgo,true);
-		}
-
-	// gfx resource file preinit (global files only)
+	// init extra root group
+	// this loads font definitions in this group as well
+	// the function may return false, if no extra group is present - that is OK
+	Extra.InitGroup();
+	
 	Log(LoadResStr("IDS_PRC_GFXRES"));
-	if (!GraphicsResource.Init(true))
-		// Error was already logged
-		return false;
+	if (!GraphicsResource.Init()) return false;
+	Game.SetInitProgress(30.0f);
+
+	RandomSeed = time(NULL);
+	// Randomize
+	FixRandom(RandomSeed);
+	// Timer flags
+	GameGo=false;
+	// set gamma
+	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	// init message input (default commands)
+	MessageInput.Init();
+	Game.SetInitProgress(31.0f);
+	// init keyboard input (default keys, plus overloads)
+	if (!InitKeyboard())
+		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
+	// Load string table
+	UpdateLanguage();
+	// Player keyboard input: Key definitions and default sets
+	if (!InitPlayerControlSettings()) return false;
+	Game.SetInitProgress(32.0f);
+	// Rank system
+	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
+	Game.SetInitProgress(33.0f);
 
 	// Graphics system (required for GUI)
 	if (!GraphicsSystem.Init())
@@ -475,10 +489,7 @@ bool C4Game::Init()
 	if (!InitGameFinal()) return false;
 	SetInitProgress(99);
 
-	// Color palette
-	if (Application.isFullScreen) Application.DDraw->WipeSurface(FullScreen.pSurface);
-	GraphicsSystem.SetPalette();
-	GraphicsSystem.SetDarkColorTable();
+	// Gamma
 	GraphicsSystem.ApplyGamma();
 
 	// Message board and upper board
@@ -571,8 +582,7 @@ void C4Game::Clear()
 	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
-	GraphicsResource.Clear();
-	GraphicsResource.ClearFonts(); // need to clear fonts since they keep FontLoader state, they will be reinitialized on time (#261)
+	//::GraphicsResource.Clear();
 	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();
@@ -586,7 +596,7 @@ void C4Game::Clear()
 	PathFinder.Clear();
 	TransferZones.Clear();
 #ifndef USE_CONSOLE
-	FontLoader.Clear();
+	::FontLoader.Clear();
 #endif
 
 	ScriptEngine.Clear();
@@ -757,23 +767,17 @@ bool C4Game::Execute() // Returns true if the game is over
 
 void C4Game::InitFullscreenComponents(bool fRunning)
 {
+	// fullscreen message board
+	C4Facet cgo;
+	cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+	GraphicsSystem.MessageBoard.Init(cgo, !fRunning);
 	if (fRunning)
 	{
 		// running game: Message board upper board and viewports
-		C4Facet cgo;
-		cgo.Set(FullScreen.pSurface, 0, C4GUI::GetScreenHgt() - ::GraphicsResource.FontRegular.iLineHgt,
-		        C4GUI::GetScreenWdt(), ::GraphicsResource.FontRegular.iLineHgt);
-		GraphicsSystem.MessageBoard.Init(cgo,false);
 		C4Facet cgo2;
 		cgo2.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
 		GraphicsSystem.UpperBoard.Init(cgo2);
 		GraphicsSystem.RecalculateViewports();
-	}
-	else
-	{
-		// startup game: Just fullscreen message board
-		C4Facet cgo; cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-		GraphicsSystem.MessageBoard.Init(cgo, true);
 	}
 }
 
@@ -864,10 +868,6 @@ bool C4Game::InitMaterialTexture()
 
 	// Cross map mats (after texture init, because Material-Texture-combinations are used)
 	if (!::MaterialMap.CrossMapMaterials()) return false;
-
-	// mapping to landscape palette will occur when landscape has been created
-	// set the pal
-	::GraphicsSystem.SetPalette();
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();
@@ -1543,7 +1543,7 @@ void C4Game::Default()
 	DirectJoinAddress[0]=0;
 	pJoinReference=NULL;
 	StartupPlayerCount=0;
-	ScenarioTitle.Ref("Loading...");
+	ScenarioTitle.Ref("");
 	HaltCount=0;
 	fReferenceDefinitionOverride=false;
 	Evaluated=false;
@@ -2145,7 +2145,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		// Graphics and fonts (may reinit main font, too)
 		// redundant call in NETWORK2; but it may do scenario local overloads
 		Log(LoadResStr("IDS_PRC_GFXRES"));
-		if (!GraphicsResource.Init(true))
+		if (!GraphicsResource.Init())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(10);
 
@@ -3086,57 +3086,6 @@ bool C4Game::InitKeyboard()
 	// load any custom keysboard overloads
 	KeyboardInput.LoadCustomConfig();
 
-	// done, success
-	return true;
-}
-
-bool C4Game::InitSystem()
-{
-	// Random seed (host)
-	/*if (Config.Network.Active) RandomSeed = 0;
-	else*/
-	RandomSeed = time(NULL);
-	// Randomize
-	FixRandom(RandomSeed);
-	// Timer flags
-	GameGo=false;
-	// set gamma
-	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
-	// first time font-init
-	//Log(LoadResStr("IDS_PRC_INITFONTS"));
-	// open graphics group now for font-init
-	if (!GraphicsResource.RegisterGlobalGraphics()) return false;
-	// load font list
-#ifndef USE_CONSOLE
-	if (!FontLoader.LoadDefs(Application.SystemGroup, Config))
-		{ LogFatal(LoadResStr("IDS_ERR_FONTDEFS")); return false; }
-#endif
-	// init extra root group
-	// this loads font definitions in this group as well
-	// the function may return false, if no extra group is present - that is OK
-	if (Extra.InitGroup())
-		// add any Graphics.c4g-files in Extra.c4g-root
-		GraphicsResource.RegisterMainGroups();
-	// init main system font
-	// This is preliminary, because it's not unlikely to be overloaded after scenario opening and Extra.c4g-initialization.
-	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
-	// Peter wouldn't like this...
-#ifndef USE_CONSOLE
-	if (!FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-		if (!FontLoader.InitFont(::GraphicsResource.FontRegular, C4DEFAULT_FONT_NAME, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
-			return false;
-#endif
-	// init message input (default commands)
-	MessageInput.Init();
-	// init keyboard input (default keys, plus overloads)
-	if (!InitKeyboard())
-		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
-	// Load string table
-	UpdateLanguage();
-	// Player keyboard input: Key definitions and default sets
-	if (!InitPlayerControlSettings()) return false;
-	// Rank system
-	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
 	// done, success
 	return true;
 }

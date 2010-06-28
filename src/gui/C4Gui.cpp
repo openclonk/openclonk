@@ -723,7 +723,7 @@ namespace C4GUI
 			}
 		}
 		// draw contents (if GUI-gfx are loaded, which is assumed in GUI-drawing-functions)
-		if (IsVisible() && IsResLoaded())
+		if (IsVisible() && ::GraphicsResource.IsInitialized())
 		{
 			Window::Draw(cgo);
 			if (pContext) pContext->Draw(cgo);
@@ -967,7 +967,7 @@ namespace C4GUI
 
 	void Screen::DrawToolTip(const char *szTip, C4TargetFacet &cgo, float x, float y)
 	{
-		CStdFont *pUseFont = &(GetRes()->TooltipFont);
+		CStdFont *pUseFont = &(::GraphicsResource.TooltipFont);
 		StdStrBuf sText;
 		pUseFont->BreakMessage(szTip, Min<int32_t>(C4GUI_MaxToolTipWdt, Max<int32_t>(cgo.Wdt, 50)), &sText, true);
 		// get tooltip rect
@@ -1136,76 +1136,6 @@ namespace C4GUI
 
 
 // --------------------------------------------------
-// Resource
-
-	bool Resource::Load(C4GroupSet &rFromGroup)
-	{
-		// load gfx - using helper funcs from ::GraphicsResource here...
-		if (!::GraphicsResource.LoadFile(sfcCaption, "GUICaption", rFromGroup, idSfcCaption)) return false;
-		barCaption.SetHorizontal(sfcCaption, sfcCaption.Hgt, 32);
-		if (!::GraphicsResource.LoadFile(sfcButton, "GUIButton", rFromGroup, idSfcButton)) return false;
-		barButton.SetHorizontal(sfcButton);
-		if (!::GraphicsResource.LoadFile(sfcButtonD, "GUIButtonDown", rFromGroup, idSfcButtonD)) return false;
-		barButtonD.SetHorizontal(sfcButtonD);
-		if (!::GraphicsResource.LoadFile(fctButtonHighlight, "GUIButtonHighlight", rFromGroup)) return false;
-		if (!::GraphicsResource.LoadFile(fctIcons, "GUIIcons", rFromGroup)) return false;
-		fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
-		if (!::GraphicsResource.LoadFile(fctIconsEx, "GUIIcons2", rFromGroup)) return false;
-		fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
-		if (!::GraphicsResource.LoadFile(sfcScroll, "GUIScroll", rFromGroup, idSfcScroll)) return false;
-		sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
-		if (!::GraphicsResource.LoadFile(sfcContext, "GUIContext", rFromGroup, idSfcContext)) return false;
-		fctContext.Set(&sfcContext,0,0,16,16);
-		if (!::GraphicsResource.LoadFile(fctSubmenu, "GUISubmenu", rFromGroup)) return false;
-		if (!::GraphicsResource.LoadFile(fctCheckbox, "GUICheckbox", rFromGroup)) return false;
-		fctCheckbox.Set(fctCheckbox.Surface, 0,0,fctCheckbox.Hgt,fctCheckbox.Hgt);
-		if (!::GraphicsResource.LoadFile(fctBigArrows, "GUIBigArrows", rFromGroup)) return false;
-		fctBigArrows.Set(fctBigArrows.Surface, 0,0, fctBigArrows.Wdt/4, fctBigArrows.Hgt);
-		if (!::GraphicsResource.LoadFile(fctProgressBar, "GUIProgress", rFromGroup)) return false;
-		fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
-		// loaded sucessfully
-		pRes = this;
-		return true;
-	}
-
-	void Resource::Clear()
-	{
-		// clear surfaces
-		sfcCaption.Clear(); sfcButton.Clear(); sfcButtonD.Clear(); sfcScroll.Clear(); sfcContext.Clear();
-		idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
-		barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
-		fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
-		fctSubmenu.Clear();
-		fctCheckbox.Clear();
-		fctBigArrows.Clear();
-		fctProgressBar.Clear();
-		fctContext.Default();
-		// facets are invalid now...doesn't matter anyway, as long as res ptr is not set to this class
-		if (pRes==this) pRes=NULL;
-	}
-
-	CStdFont &Resource::GetFontByHeight(int32_t iHgt, float *pfZoom)
-	{
-		// get optimal font for given control size
-		CStdFont *pUseFont;
-		if (iHgt <= MiniFont.GetLineHeight()) pUseFont = &MiniFont;
-		else if (iHgt <= TextFont.GetLineHeight()) pUseFont = &TextFont;
-		else if (iHgt <= CaptionFont.GetLineHeight()) pUseFont = &CaptionFont;
-		else pUseFont = &TitleFont;
-		// determine zoom
-		if (pfZoom)
-		{
-			int32_t iLineHgt = pUseFont->GetLineHeight();
-			if (iLineHgt)
-				*pfZoom = (float) iHgt / (float) iLineHgt;
-			else
-				*pfZoom = 1.0f; // error
-		}
-		return *pUseFont;
-	}
-
-
-// --------------------------------------------------
 // Global stuff
 
 	void GUISound(const char *szSound)
@@ -1219,7 +1149,6 @@ namespace C4GUI
 // Static vars
 
 	C4Rect ComponentAligner::rcTemp;
-	Resource *Resource::pRes;
 	Screen *Screen::pScreen;
 
 

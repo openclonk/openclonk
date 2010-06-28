@@ -62,7 +62,7 @@ public:
 	public:
 		virtual ~CustomImages() { }
 	};
-	static CStdVectorFont * CreateFont(const StdBuf & Data);
+	static CStdVectorFont * CreateFont(StdBuf & Data);
 	static CStdVectorFont * CreateFont(const char *szFaceName);
 	static void DestroyFont(CStdVectorFont * pFont);
 public:
@@ -72,7 +72,6 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	bool fPrerenderedFont;  // true for fonts that came from a prerendered bitmap surface - no runtime adding of characters
 	CSurface **psfcFontData; // font recource surfaces - additional surfaces created as needed
 	int iNumFontSfcs;       // number of created font surfaces
 	int iSfcSizes;          // size for font surfaces
@@ -140,11 +139,8 @@ public:
 	~CStdFont() { Clear(); }
 
 	// function throws std::runtime_error in case of failure
-	// font initialization - writes the surface data
+	// font initialization from vector font
 	void Init(CStdVectorFont & VectorFont, const char *font_face_name, DWORD dwHeight, DWORD dwFontWeight=FW_NORMAL, bool fDoShadow=true);
-
-	// font initialization - grabs the given surface data and extracts character sizes from it
-	void Init(const char *szFontName, CSurface *psfcFontSfc, int iIndent);
 
 	void Clear(); // clear font
 
@@ -162,8 +158,6 @@ public:
 	{ pCustomImages = pHandler; }
 };
 
-BYTE GetCharsetCode(const char * strCharset);
 const char * GetCharsetCodeName(const char * strCharset);
-int32_t GetCharsetCodePage(const char *strCharset);
 
 #endif // INC_STDFONT

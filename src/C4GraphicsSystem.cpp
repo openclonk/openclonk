@@ -121,13 +121,6 @@ void C4GraphicsSystem::Clear()
 	DeactivateDebugOutput();
 }
 
-bool C4GraphicsSystem::SetPalette()
-{
-	// Set primary palette by game palette
-	if (!Application.DDraw->SetPrimaryPalette(::GraphicsResource.GamePalette, ::GraphicsResource.AlphaPalette)) return false;
-	return true;
-}
-
 extern int32_t iLastControlSize,iPacketDelay;
 extern int32_t ControlQueueSize,ControlQueueDataSize;
 
@@ -222,9 +215,6 @@ void C4GraphicsSystem::Execute()
 	{
 		::pGUI->Render(false);
 	}
-
-	// Palette update
-	if (fSetPalette) { SetPalette(); /*SetDarkColorTable();*/ fSetPalette=false; }
 
 	// gamma update
 	if (fSetGamma)
@@ -336,7 +326,6 @@ void C4GraphicsSystem::Default()
 	ShowHelp=false;
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
-	fSetPalette=false;
 	Video.Default();
 	for (int32_t iRamp=0; iRamp<3*C4MaxGammaRamps; iRamp+=3)
 		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
@@ -691,25 +680,6 @@ void C4GraphicsSystem::DrawHoldMessages()
 		                           CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
 	}
-}
-
-BYTE FindPaletteColor(BYTE *bypPalette, int32_t iRed, int32_t iGreen, int32_t iBlue)
-{
-	int32_t iClosest=0;
-	for (int32_t iColor=1; iColor<256; iColor++)
-		if (Abs(bypPalette[iColor*3+0]-iRed)+Abs(bypPalette[iColor*3+1]-iGreen)+Abs(bypPalette[iColor*3+2]-iBlue)
-		    < Abs(bypPalette[iClosest*3+0]-iRed)+Abs(bypPalette[iClosest*3+1]-iGreen)+Abs(bypPalette[iClosest*3+2]-iBlue) )
-			iClosest = iColor;
-	return iClosest;
-}
-
-void C4GraphicsSystem::SetDarkColorTable()
-{
-	const int32_t iDarkening=80;
-	// Using GamePalette
-	BYTE *bypPalette = ::GraphicsResource.GamePalette;
-	for (int32_t iColor=0; iColor<256; iColor++)
-		DarkColorTable[iColor]=FindPaletteColor(bypPalette,Max<int32_t>(bypPalette[iColor*3+0]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+1]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+2]-iDarkening,0));
 }
 
 void C4GraphicsSystem::FlashMessage(const char *szMessage)

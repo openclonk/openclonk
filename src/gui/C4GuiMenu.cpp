@@ -25,6 +25,7 @@
 #include <C4Gui.h>
 #include <C4FacetEx.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 #include <StdWindow.h>
 
@@ -44,20 +45,20 @@ namespace C4GUI
 		{
 			// get icon counts
 			int32_t iXMax, iYMax;
-			GetRes()->fctIcons.GetPhaseNum(iXMax, iYMax);
+			::GraphicsResource.fctIcons.GetPhaseNum(iXMax, iYMax);
 			if (!iXMax)
 				iXMax = 6;
 			// load icon
-			const C4Facet &rfctIcon = GetRes()->fctIcons.GetPhase(icoIcon % iXMax, icoIcon / iXMax);
+			const C4Facet &rfctIcon = ::GraphicsResource.fctIcons.GetPhase(icoIcon % iXMax, icoIcon / iXMax);
 			rfctIcon.DrawX(cgo.Surface, rcBounds.x + cgo.TargetX, rcBounds.y + cgo.TargetY, rcBounds.Hgt, rcBounds.Hgt);
 		}
 		// print out label
 		if (!!sText)
-			lpDDraw->TextOut(sText.getData(), GetRes()->TextFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+GetIconIndent(), rcBounds.y + cgo.TargetY, C4GUI_ContextFontClr, ALeft);
+			lpDDraw->TextOut(sText.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+GetIconIndent(), rcBounds.y + cgo.TargetY, C4GUI_ContextFontClr, ALeft);
 		// submenu arrow
 		if (pSubmenuHandler)
 		{
-			C4Facet &rSubFct = GetRes()->fctSubmenu;
+			C4Facet &rSubFct = ::GraphicsResource.fctSubmenu;
 			rSubFct.Draw(cgo.Surface, cgo.TargetX+rcBounds.x+rcBounds.Wdt - rSubFct.Wdt, cgo.TargetY+rcBounds.y+(rcBounds.Hgt - rSubFct.Hgt)/2);
 		}
 	}
@@ -71,17 +72,17 @@ namespace C4GUI
 			sText.Copy(szText);
 			ExpandHotkeyMarkup(sText, cHotkey);
 			// adjust size
-			GetRes()->TextFont.GetTextExtent(sText.getData(), rcBounds.Wdt, rcBounds.Hgt, true);
+			::GraphicsResource.TextFont.GetTextExtent(sText.getData(), rcBounds.Wdt, rcBounds.Hgt, true);
 		}
 		else
 		{
 			rcBounds.Wdt = 40;
-			rcBounds.Hgt = GetRes()->TextFont.GetLineHeight();
+			rcBounds.Hgt = ::GraphicsResource.TextFont.GetLineHeight();
 		}
 		// regard icon
 		rcBounds.Wdt += GetIconIndent();
 		// submenu arrow
-		if (pSubmenuHandler) rcBounds.Wdt += GetRes()->fctSubmenu.Wdt+2;
+		if (pSubmenuHandler) rcBounds.Wdt += ::GraphicsResource.fctSubmenu.Wdt+2;
 	}
 
 // ----------------------------------------------------
@@ -623,12 +624,12 @@ namespace C4GUI
 		// calc drawing bounds
 		int32_t x0 = cgo.TargetX + rcBounds.x, y0 = cgo.TargetY + rcBounds.y;
 		// draw button; down (phase 1) if a menu is open
-		GetRes()->fctContext.Draw(cgo.Surface, x0, y0, iOpenMenu ? 1 : 0);
+		::GraphicsResource.fctContext.Draw(cgo.Surface, x0, y0, iOpenMenu ? 1 : 0);
 		// draw selection highlight
 		if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)) || iOpenMenu)
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 			lpDDraw->ResetBlitMode();
 		}
 	}

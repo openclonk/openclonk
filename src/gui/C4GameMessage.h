@@ -96,22 +96,23 @@ public:
 	void ClearPointers(C4Object *pObj);
 	void UpdateDef(C4ID idUpdDef); // called after reloaddef
 	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, const char *szPortraitDef=NULL, uint32_t dwFlags=0u, int32_t width=0);
-	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint8_t bCol);
 	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, const char *szPortraitDef=NULL, uint32_t dwFlags=0u, int32_t width=0);
-	bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint8_t bCol, bool fNoDuplicates = false);
+	bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates = false);
 };
 
 extern C4GameMessageList Messages;
 
-inline void GameMsgObject(const char *szText, C4Object *pTarget, int32_t iFCol=FWhite)
+inline void GameMsgObject(const char *szText, C4Object *pTarget)
 {
-	::Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,(uint8_t) iFCol);
+	::Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,C4RGB(0xff, 0xff, 0xff));
 }
 
-inline void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iFCol=FWhite)
+inline void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t iPlayer)
 {
-	::Messages.New(C4GM_TargetPlayer,szText,pTarget,iPlayer,0,0,(uint8_t) iFCol);
+	::Messages.New(C4GM_TargetPlayer,szText,pTarget,iPlayer,0,0, C4RGB(0xff, 0xff, 0xff));
 }
+
+void GameMsgObjectError(const char *szText, C4Object *pTarget, bool Red = true);
 
 inline void GameMsgObjectDw(const char *szText, C4Object *pTarget, uint32_t dwClr)
 {

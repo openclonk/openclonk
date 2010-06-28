@@ -38,6 +38,7 @@
 #include <C4Language.h>
 #include <C4FileSelDlg.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 #include <set>
 
@@ -369,7 +370,7 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 				if (pScen->fTitleBookFont)
 					pUseFont = &(C4Startup::Get()->Graphics.GetBlackFontByHeight(pScen->iTitleFontSize, &fFontZoom));
 				else
-					pUseFont = &(C4GUI::GetRes()->GetFontByHeight(pScen->iTitleFontSize, &fFontZoom));
+					pUseFont = &(::GraphicsResource.GetFontByHeight(pScen->iTitleFontSize, &fFontZoom));
 				if (Inside<float>(fFontZoom, 0.8f, 1.25f)) fFontZoom = 1.0f; // some tolerance for font zoom
 				pBtn->SetTextFont(pUseFont, fFontZoom);
 			}
@@ -1352,7 +1353,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	int iBookPageWidth;
 	int iExtraHPadding = rcBounds.Wdt >= 700 ? rcBounds.Wdt/50 : 0;
 	int iExtraVPadding = rcBounds.Hgt >= 540 ? rcBounds.Hgt/20 : 0;
-	C4GUI::GetRes()->CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
+	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);

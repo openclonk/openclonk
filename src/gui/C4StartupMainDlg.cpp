@@ -70,7 +70,7 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_EXIT"));
 	btn->SetCustomGraphics(&C4Startup::Get()->Graphics.barMainButtons, &C4Startup::Get()->Graphics.barMainButtonsDown);
 	// list of selected players
-	AddElement(pParticipantsLbl = new C4GUI::Label("test", GetClientRect().Wdt*39/40, GetClientRect().Hgt*9/10, ARight, 0xffffffff, &C4GUI::GetRes()->TitleFont, false));
+	AddElement(pParticipantsLbl = new C4GUI::Label("test", GetClientRect().Wdt*39/40, GetClientRect().Hgt*9/10, ARight, 0xffffffff, &::GraphicsResource.TitleFont, false));
 	pParticipantsLbl->SetToolTip(LoadResStr("IDS_DLGTIP_SELECTEDPLAYERS"));
 	// player selection shortcut - to be made optional
 	UpdateParticipants();
@@ -121,7 +121,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	// draw version info
 	StdStrBuf sVer;
 	sVer.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
-	lpDDraw->TextOut(sVer.getData(), C4GUI::GetRes()->TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt/12 + int32_t(fLogoZoom*fctLogo.Hgt) - 10, 0xffffffff, ALeft, true);
+	lpDDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt/12 + int32_t(fLogoZoom*fctLogo.Hgt) - 10, 0xffffffff, ALeft, true);
 }
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY)

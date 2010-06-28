@@ -301,14 +301,6 @@ void C4GameMessageList::Execute()
 	}
 }
 
-bool C4GameMessageList::New(int32_t iType, const char *szText,
-                            C4Object *pTarget, int32_t iPlayer,
-                            int32_t iX, int32_t iY,
-                            uint8_t bCol)
-{
-	return New(iType, StdStrBuf(szText), pTarget, iPlayer, iX, iY, 0xff000000|Application.DDraw->Pal.GetClr(FColors[bCol]));
-}
-
 bool C4GameMessageList::New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int32_t width)
 {
 	return New(iType, StdStrBuf(szText), pTarget, iPlayer, iX, iY, dwClr, idDecoID, szPortraitDef, dwFlags, width);
@@ -340,7 +332,7 @@ bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pT
 	return true;
 }
 
-bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint8_t bCol, bool fNoDuplicates)
+bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates)
 {
 	C4GameMessage *cmsg = NULL;
 	if (iType == C4GM_Target)
@@ -397,6 +389,11 @@ void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 		// draw msg
 		cmsg->Draw(cgo,iPlayer,msg_zoom);
 	}
+}
+
+void GameMsgObjectError(const char *szText, C4Object *pTarget, bool Red)
+{
+	::Messages.New(C4GM_TargetPlayer,szText,pTarget,pTarget->Controller,0,0, Red ? C4RGB(0xca, 0, 0) : C4RGB(0xff, 0xff, 0xff));
 }
 
 C4GameMessageList Messages;

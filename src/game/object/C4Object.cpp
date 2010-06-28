@@ -126,9 +126,9 @@ void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t conta
 {
 	if (Inside<int32_t>(tx,1,cgo.Wdt-2) && Inside<int32_t>(ty,1,cgo.Hgt-2))
 	{
-		Application.DDraw->DrawHorizontalLine(cgo.Surface,cgo.X+tx-1,cgo.X+tx+1,cgo.Y+ty,col);
-		Application.DDraw->DrawVerticalLine(cgo.Surface,cgo.X+tx,cgo.Y+ty-1,cgo.Y+ty+1,col);
-		if (contact) Application.DDraw->DrawFrame(cgo.Surface,cgo.X+tx-2,cgo.Y+ty-2,cgo.X+tx+2,cgo.Y+ty+2,CWhite);
+		Application.DDraw->DrawLineDw(cgo.Surface, cgo.X + tx - 1, cgo.Y + ty, cgo.X + tx + 1, cgo.Y + ty, col);
+		Application.DDraw->DrawLineDw(cgo.Surface, cgo.X + tx, cgo.Y + ty - 1, cgo.X + tx, cgo.Y + ty + 1, col);
+		if (contact) Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+tx-2,cgo.Y+ty-2,cgo.X+tx+2,cgo.Y+ty+2,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 
@@ -1820,7 +1820,7 @@ bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 	if (!::Game.iTick35) if (txdir) if (!Def->NoHorizontalMove)
 				if (ContactCheck(GetX(), GetY())) // Resets t_contact
 				{
-					GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
+					GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
 					Call(PSF_Stuck);
 				}
 
@@ -1848,7 +1848,7 @@ bool C4Object::Lift(C4Real tydir, C4Real dforce)
 	if (tydir != -GravAccel)
 		if (ContactCheck(GetX(), GetY())) // Resets t_contact
 		{
-			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
+			GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
 			Call(PSF_Stuck);
 		}
 	return true;
@@ -2339,8 +2339,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				// Path
 				x1=ccx-cotx; y1=ccy-coty;
 				x2=pCom->Tx._getInt()-cotx; y2=pCom->Ty-coty;
-				Application.DDraw->DrawLine(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,CRed);
-				Application.DDraw->DrawFrame(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,CRed);
+				Application.DDraw->DrawLineDw(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,C4RGB(0xca,0,0));
+				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,C4RGB(0xca,0,0));
 				if (x1>x2) Swap(x1,x2); if (y1>y2) Swap(y1,y2);
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
 				// Message
@@ -2370,8 +2370,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				// Path
 				x1=ccx-cotx; y1=ccy-coty;
 				x2=pCom->Tx._getInt()-cotx; y2=pCom->Ty-coty;
-				Application.DDraw->DrawLine(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,CGreen);
-				Application.DDraw->DrawFrame(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,CGreen);
+				Application.DDraw->DrawLineDw(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,C4RGB(0,0xca,0));
+				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,C4RGB(0,0xca,0));
 				if (x1>x2) Swap(x1,x2); if (y1>y2) Swap(y1,y2);
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
 				// Message
@@ -2513,7 +2513,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					DrawVertex(cgo,
 					           cox-Shape.GetX()+Shape.VtxX[cnt],
 					           coy-Shape.GetY()+Shape.VtxY[cnt],
-					           (Shape.VtxCNAT[cnt] & CNAT_NoCollision) ? CBlue : (Mobile ? CRed : CYellow),
+					           (Shape.VtxCNAT[cnt] & CNAT_NoCollision) ? C4RGB(0, 0, 0xff) : (Mobile ? C4RGB(0xff, 0, 0) : C4RGB(0xef, 0xef, 0)),
 					           Shape.VtxContactCNAT[cnt]);
 				}
 		}
@@ -2521,17 +2521,17 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 			if (OCF & OCF_Entrance)
-				Application.DDraw->DrawFrame(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
+				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
 				                             cgo.Y+coy-Shape.y+Def->Entrance.y,
 				                             cgo.X+cox-Shape.x+Def->Entrance.x+Def->Entrance.Wdt-1,
 				                             cgo.Y+coy-Shape.y+Def->Entrance.y+Def->Entrance.Hgt-1,
-				                             CBlue);
+				                             C4RGB(0, 0, 0xff));
 			if (OCF & OCF_Collection)
-				Application.DDraw->DrawFrame(cgo.Surface,cgo.X+cox-Shape.x+Def->Collection.x,
+				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+cox-Shape.x+Def->Collection.x,
 				                             cgo.Y+coy-Shape.y+Def->Collection.y,
 				                             cgo.X+cox-Shape.x+Def->Collection.x+Def->Collection.Wdt-1,
 				                             cgo.Y+coy-Shape.y+Def->Collection.y+Def->Collection.Hgt-1,
-				                             CRed);
+				                             C4RGB(0xca, 0, 0));
 		}
 
 	if (::GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
@@ -3080,7 +3080,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 		// BuildNeedsMaterial call to object...
 		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VID(idNeeded), C4VInt(iNeeded))))
 			// ...game message if not overloaded
-			GameMsgObject(Needs.getData(),this);
+			GameMsgObjectError(Needs.getData(),this);
 		// Return
 		return NULL;
 	}

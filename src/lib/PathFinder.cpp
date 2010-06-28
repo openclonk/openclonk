@@ -150,48 +150,6 @@ bool CPathFinderRay::Execute()
 	return true;
 }
 
-/*void CPathFinderRay::Draw(C4TargetFacet &cgo)
-  {
-  BYTE byColor=CRed;
-  switch (Status)
-    {
-    case PF_Ray_Crawl: byColor=CRed; break;
-    case PF_Ray_Still: byColor=CDRed; break;
-    case PF_Ray_Failure: byColor=CYellow; break;
-    case PF_Ray_Deleted: byColor=CGray2; break;
-    }
-
-  // Crawl attachment
-  if (Status==PF_Ray_Crawl)
-    {
-    int iX=0,iY=0; CrawlToAttach(iX,iY,CrawlAttach);
-    lpDDraw->DrawLine(cgo.Surface,
-                      cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
-                      cgo.X+X2-cgo.TargetX+7*iX,cgo.Y+Y2-cgo.TargetY+7*iY,
-                      CRed);
-    //sprintf(OSTR,"%d",Depth); lpDDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
-    }
-
-  // Ray line
-  lpDDraw->DrawLine(cgo.Surface,
-                    cgo.X+X-cgo.TargetX,cgo.Y+Y-cgo.TargetY,
-                    cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
-                    byColor);
-
-  // Crawler point
-  lpDDraw->DrawFrame(cgo.Surface,
-                     cgo.X+X2-cgo.TargetX-1,cgo.Y+Y2-cgo.TargetY-1,
-                     cgo.X+X2-cgo.TargetX+1,cgo.Y+Y2-cgo.TargetY+1,
-                     (Status==PF_Ray_Crawl) ? ((Direction==PF_Direction_Left) ? CGreen : CBlue) : byColor);
-
-  // Search target point
-  lpDDraw->DrawFrame(cgo.Surface,
-                     cgo.X+TargetX-cgo.TargetX-2,cgo.Y+TargetY-cgo.TargetY-2,
-                     cgo.X+TargetX-cgo.TargetX+2,cgo.Y+TargetY-cgo.TargetY+2,
-                     CYellow);
-
-  }*/
-
 bool CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
 {
 	int d,dx,dy,aincr,bincr,xincr,yincr,x,y;

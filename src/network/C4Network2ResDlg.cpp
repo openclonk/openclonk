@@ -27,6 +27,7 @@
 #include "C4PlayerInfo.h"
 #include "C4Network2Players.h"
 #include "C4Network2Dialogs.h"
+#include <C4GraphicsResource.h>
 
 // ----------- C4Network2ResDlg::ListItem ----------------------------------------------------------------
 
@@ -37,7 +38,7 @@ C4Network2ResDlg::ListItem::ListItem(C4Network2ResDlg *pForResDlg, const C4Netwo
 	iResID = pByRes->getResID();
 	const char *szFilename = GetFilename(pByRes->getCore().getFileName());
 	// get size
-	int iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	int iWidth = pForResDlg->GetItemWidth();
 	int iVerticalIndent = 2;
 	SetBounds(C4Rect(0, 0, iWidth, iIconSize+2*iVerticalIndent));

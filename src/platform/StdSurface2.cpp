@@ -184,14 +184,6 @@ bool CSurface::IsRenderTarget()
 	       ;
 }
 
-bool CSurface::Box(int iX, int iY, int iX2, int iY2, int iCol)
-{
-	if (!Lock()) return false;
-	for (int cy=iY; cy<=iY2; cy++) HLine(iX,iX2,cy,iCol);
-	Unlock();
-	return true;
-}
-
 void CSurface::NoClip()
 {
 	ClipX=0; ClipY=0; ClipX2=Wdt-1; ClipY2=Hgt-1;
@@ -203,15 +195,7 @@ void CSurface::Clip(int iX, int iY, int iX2, int iY2)
 	ClipX2=BoundBy(iX2,0,Wdt-1); ClipY2=BoundBy(iY2,0,Hgt-1);
 }
 
-bool CSurface::HLine(int iX, int iX2, int iY, int iCol)
-{
-	if (!Lock()) return false;
-	for (int cx=iX; cx<=iX2; cx++) SetPix(cx,iY,iCol);
-	Unlock();
-	return true;
-}
-
-bool CSurface::Create(int iWdt, int iHgt, bool fOwnPal, bool fIsRenderTarget, int MaxTextureSize)
+bool CSurface::Create(int iWdt, int iHgt, bool, bool fIsRenderTarget, int MaxTextureSize)
 {
 	Clear(); Default();
 	// check size
@@ -516,7 +500,7 @@ IDirect3DSurface9 *CSurface::GetSurface()
 }
 #endif //USE_DIRECTX
 
-bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
+bool CSurface::ReadBMP(CStdStream &hGroup)
 {
 	int lcnt,iLineRest;
 	CBitmap256Info BitmapInfo;
@@ -538,7 +522,7 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 	}
 
 	// Create and lock surface
-	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return false;
+	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight)) return false;
 	if (!Lock()) { Clear(); return false; }
 
 	// create line buffer
@@ -555,13 +539,10 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 			switch (BitmapInfo.Info.biBitCount)
 			{
 			case 8:
-				if (fOwnPal)
-					SetPixDw(x, lcnt, C4RGB(
-					           BitmapInfo.Colors[*pPix].rgbRed,
-					           BitmapInfo.Colors[*pPix].rgbGreen,
-					           BitmapInfo.Colors[*pPix].rgbBlue));
-				else
-					SetPix(x, lcnt, *pPix);
+				SetPixDw(x, lcnt, C4RGB(
+				         BitmapInfo.Colors[*pPix].rgbRed,
+				         BitmapInfo.Colors[*pPix].rgbGreen,
+				         BitmapInfo.Colors[*pPix].rgbBlue));
 				++pPix;
 				break;
 			case 24:
@@ -702,21 +683,6 @@ double ColorDistance(BYTE *bpRGB1, BYTE *bpRGB2)
 	return (double) (Abs(bpRGB1[0]-bpRGB2[0]) + Abs(bpRGB1[1]-bpRGB2[1]) + Abs(bpRGB1[2]-bpRGB2[2])) / 6.0;
 }
 
-bool CSurface::Wipe()
-{
-	if (!ppTex) return false;
-	// simply clear it (currently slow...)
-	if (!Lock()) return false;
-	for (int i=0; i<Wdt*Hgt; ++i)
-		if (!fIsBackground)
-			SetPix(i%Wdt, i/Wdt, 0);
-		else
-			SetPixDw(i%Wdt, i/Wdt, 0xff000000);
-	Unlock();
-	// success
-	return true;
-}
-
 bool CSurface::GetSurfaceSize(int &irX, int &irY)
 {
 	// simply assign stored values
@@ -845,11 +811,6 @@ bool CSurface::GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY)
 	if (!(*ppTexRef)->Lock()) return false;
 	// success
 	return true;
-}
-
-bool CSurface::SetPix(int iX, int iY, BYTE byCol)
-{
-	return SetPixDw(iX, iY, lpDDrawPal->GetClr(byCol));
 }
 
 DWORD CSurface::GetPixDw(int iX, int iY, bool fApplyModulation)
@@ -1598,4 +1559,3 @@ void CTexMgr::IntUnlock()
 }
 
 CTexMgr *pTexMgr;
-const BYTE FColors [] = {31,16,39,47,55,63,71,79,87,95,23,30,99,103};

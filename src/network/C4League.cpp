@@ -26,6 +26,7 @@
 
 #include <C4Game.h>
 #include <C4RoundResults.h>
+#include <C4GraphicsResource.h>
 
 // *** C4LeagueRequestHead
 
@@ -520,8 +521,8 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 		sMsg.Format(LoadResStr("IDS_MSG_LEAGUE_REGISTRATION"), szPlayerName);
 	else
 		sMsg.Format(LoadResStr("IDS_MSG_PASSWORDFORPLAYER"), szPlayerName);
-	int32_t iLabelHgt = C4GUI::GetRes()->TextFont.BreakMessage(sMsg.getData(), caMain.GetInnerWidth(), &sMsgBroken, true);
-	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iLabelHgt), ALeft, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont);
+	int32_t iLabelHgt = ::GraphicsResource.TextFont.BreakMessage(sMsg.getData(), caMain.GetInnerWidth(), &sMsgBroken, true);
+	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iLabelHgt), ALeft, C4GUI_MessageFontClr, &::GraphicsResource.TextFont);
 	AddElement(pLblMessage);
 	// registering and no account pref available
 	if (fRegister && (!szAccountPref || !szAccountPref[0]))

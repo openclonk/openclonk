@@ -27,11 +27,11 @@
 #include <StdSurface8.h>
 #include <C4Group.h>
 
-C4Surface *GroupReadSurface(CStdStream &hGroup, BYTE *bpPalette)
+C4Surface *GroupReadSurface(CStdStream &hGroup)
 {
 	// create surface
 	C4Surface *pSfc=new C4Surface();
-	if (!pSfc->ReadBMP(hGroup, !!bpPalette))
+	if (!pSfc->ReadBMP(hGroup))
 		{ delete pSfc; return NULL; }
 	return pSfc;
 }
@@ -40,16 +40,7 @@ CSurface8 *GroupReadSurface8(CStdStream &hGroup)
 {
 	// create surface
 	CSurface8 *pSfc=new CSurface8();
-	if (!pSfc->Read(hGroup, false))
-		{ delete pSfc; return NULL; }
-	return pSfc;
-}
-
-C4Surface *GroupReadSurfaceOwnPal(CStdStream &hGroup)
-{
-	// create surface
-	C4Surface *pSfc=new C4Surface();
-	if (!pSfc->ReadBMP(hGroup, true))
+	if (!pSfc->Read(hGroup))
 		{ delete pSfc; return NULL; }
 	return pSfc;
 }
@@ -58,7 +49,7 @@ CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
 {
 	// create surface
 	CSurface8 *pSfc=new CSurface8();
-	if (!pSfc->Read(hGroup, true))
+	if (!pSfc->Read(hGroup))
 		{ delete pSfc; return NULL; }
 	return pSfc;
 }

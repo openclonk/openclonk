@@ -37,6 +37,8 @@
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
+#include <C4GraphicsResource.h>
+
 #include <cctype>
 
 // --------------------------------------------------
@@ -51,7 +53,7 @@ bool IsSmallInputQuery(const char *szInputQuery)
 	if (!szInputQuery) return true;
 	int32_t w,h;
 	if (SCharCount('|', szInputQuery)) return false;
-	if (!C4GUI::GetRes()->TextFont.GetTextExtent(szInputQuery, w,h, true))
+	if (!::GraphicsResource.TextFont.GetTextExtent(szInputQuery, w,h, true))
 		return false; // ???
 	return w<C4GUI::GetScreenWdt()/5;
 }

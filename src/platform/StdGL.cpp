@@ -1730,7 +1730,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 	{
 		// emulate
 		if (!LockSurfaceGlobal(sfcTarget)) return;
-		ForLine((int32_t)x1,(int32_t)y1,(int32_t)x2,(int32_t)y2,&DLineSPix,(int) dwClr);
+		ForLine((int32_t)x1,(int32_t)y1,(int32_t)x2,(int32_t)y2,&DLineSPixDw,(int) dwClr);
 		UnLockSurfaceGlobal(sfcTarget);
 	}
 }

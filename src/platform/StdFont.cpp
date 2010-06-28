@@ -28,14 +28,7 @@
 #include <StdMarkup.h>
 #include <stdexcept>
 #include <string>
-/*
-#ifdef _WIN32
-#include <tchar.h>
-#include <stdio.h>
-#else
-#define _T(x) x
-#endif // _WIN32
-*/
+
 #ifdef HAVE_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -48,18 +41,60 @@ class CStdVectorFont
 {
 	FT_Library library;
 	FT_Face face;
+	StdBuf Data;
 public:
-	CStdVectorFont(const char * filepathname)
+	CStdVectorFont(const char * FontFaceName): RefCnt(1)
 	{
+#if defined(_WIN32) && defined(HAVE_FREETYPE)
+	// Win32 using freetype: Load TrueType-data from WinGDI into Data-buffer to be used by FreeType
+	bool fSuccess = false;
+	HDC hDC = ::CreateCompatibleDC(NULL);
+	if (hDC)
+	{
+		HFONT hFont = ::CreateFont(iSize, 0, 0, 0, dwWeight, false,
+		                           false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+		                           CLIP_DEFAULT_PRECIS, 5,
+		                           VARIABLE_PITCH, FontFaceName);
+		if (hFont)
+		{
+			SelectObject( hDC, hFont );
+			uint32_t dwTTFSize = ::GetFontData(hDC, 0, 0, NULL, 0);
+			if (dwTTFSize && dwTTFSize != GDI_ERROR)
+			{
+				Data.SetSize(dwTTFSize);
+				uint32_t dwRealTTFSize = ::GetFontData(hDC, 0, 0, Data.getMData(), dwTTFSize);
+				if (dwRealTTFSize == dwTTFSize)
+				{
+					fSuccess = true;
+				}
+				else
+					Data.Clear();
+			}
+			DeleteObject(hFont);
+		}
+		DeleteDC(hDC);
+	}
+	if (!fSuccess)
+		throw std::runtime_error("Some Win32 error");
+	// Initialize Freetype
+	if (FT_Init_FreeType(&library))
+		throw std::runtime_error("Cannot init Freetype");
+	// Load the font
+	FT_Error e;
+	if ((e=FT_New_Memory_Face(library, static_cast<const FT_Byte *>(Data.getData()), Data.getSize(), 0, &face)))
+		throw std::runtime_error(std::string("Cannot load font: ") + FormatString("%d",e).getData());
+#else
+		//FIXME: get path name from OS
 		// Initialize Freetype
 		if (FT_Init_FreeType(&library))
 			throw std::runtime_error("Cannot init Freetype");
 		// Load the font
 		FT_Error e;
-		if ((e=FT_New_Face(library, filepathname, 0, &face)))
-			throw std::runtime_error(std::string("Cannot load ") + filepathname + ": " + FormatString("%d",e).getData());
+		if ((e=FT_New_Face(library, FontFaceName, 0, &face)))
+			throw std::runtime_error(std::string("Cannot load ") + FontFaceName + ": " + FormatString("%d",e).getData());
+#endif
 	}
-	CStdVectorFont(const StdBuf & Data)
+	CStdVectorFont(StdBuf & Data): RefCnt(1), Data(Data)
 	{
 		// Initialize Freetype
 		if (FT_Init_FreeType(&library))
@@ -76,39 +111,23 @@ public:
 	}
 	operator FT_Face () { return face; }
 	FT_Face operator -> () { return face; }
+	int RefCnt;
 };
 
 CStdVectorFont * CStdFont::CreateFont(const char *szFaceName)
 {
 	return new CStdVectorFont(szFaceName);
 }
-CStdVectorFont * CStdFont::CreateFont(const StdBuf & Data)
+CStdVectorFont * CStdFont::CreateFont(StdBuf & Data)
 {
 	return new CStdVectorFont(Data);
 }
 void CStdFont::DestroyFont(CStdVectorFont * pFont)
 {
-	delete pFont;
-}
-#elif (defined _WIN32)
-class CStdVectorFont
-{
-private:
-	StdStrBuf sFontName;
-public:
-	CStdVectorFont(const char * name)
-	{
-		sFontName.Copy(name);
-	}
-	const char *GetFontName() { return sFontName.getData(); }
-};
-CStdVectorFont * CStdFont::CreateFont(const char *szFaceName)
-{
-	return new CStdVectorFont(szFaceName);
-}
-void CStdFont::DestroyFont(CStdVectorFont * pFont)
-{
-	delete pFont;
+	if (!pFont) return;
+	--(pFont->RefCnt);
+	if (!pFont->RefCnt)
+		delete pFont;
 }
 #else
 CStdVectorFont * CStdFont::CreateFont(const StdBuf & Data)
@@ -141,12 +160,7 @@ CStdFont::CStdFont()
 	*szFontName=0;
 	id=0;
 	pCustomImages=NULL;
-	fPrerenderedFont = false;
-#if defined _WIN32 && !(defined HAVE_FREETYPE)
-	hDC = NULL;
-	hbmBitmap = NULL;
-	hFont = NULL;
-#elif (defined HAVE_FREETYPE)
+#if defined HAVE_FREETYPE
 	pVectorFont = NULL;
 #endif
 }
@@ -191,62 +205,7 @@ bool CStdFont::CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt)
 
 bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 {
-#if defined _WIN32 && !(defined HAVE_FREETYPE)  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Win32-API character rendering
-	// safety
-	if (fPrerenderedFont || !sfcCurrent) return false;
-	bool fUnicode = (dwChar >= 256);
-	char str[2] = _T("x");
-	wchar_t wstr[2] = L"x";
-	SIZE size;
-	if (fUnicode)
-	{
-		wstr[0] = dwChar;
-		GetTextExtentPoint32W( hDC, wstr, 1, &size );
-	}
-	else
-	{
-		// set character
-		str[0] = dwChar;
-		// get size
-		GetTextExtentPoint32( hDC, str, 1, &size );
-	}
-	// keep text shadow in mind
-	if (fDoShadow) { ++size.cx; ++size.cy; }
-	// adjust line height to max character height
-	if (!fUnicode) iLineHgt=Max<int>(iLineHgt, size.cy+1);
-	// print character on empty surface
-	ZeroMemory(pBitmapBits, iBitmapSize*iBitmapSize*4);
-	if (fUnicode)
-		ExtTextOutW( hDC, 0, 0, ETO_OPAQUE, NULL, wstr, 1, NULL );
-	else
-		ExtTextOut( hDC, 0, 0, ETO_OPAQUE, NULL, str, 1, NULL );
-	// must not overflow surfaces: do some size bounds
-	size.cx = Min<int>(size.cx, Min<int>(iSfcSizes, iBitmapSize));
-	size.cy = Min<int>(size.cy, Min<int>(iSfcSizes, iBitmapSize));
-	// need to do a line break or new surface?
-	if (!CheckRenderedCharSpace(size.cx, size.cy)) return false;
-	// transfer bitmap data into alpha channel of surface
-	if (!sfcCurrent->Lock()) return false;
-	for (int y=0; y<size.cy; ++y) for (int x=0; x<size.cx; ++x)
-		{
-			// get value; determine shadow value by pos moved 1px to upper left
-			BYTE bAlpha = (BYTE)(pBitmapBits[iBitmapSize*y + x] & 0xff);
-			BYTE bAlphaShadow;
-			if (x&&y && fDoShadow)
-				bAlphaShadow = (BYTE)((pBitmapBits[iBitmapSize*(y-1) + x-1] & 0xff)*1/1);
-			else
-				bAlphaShadow = 0;
-			// calc pixel value: white char on black shadow (if shadow is desired)
-			DWORD dwPixVal = bAlphaShadow << 24;
-			BltAlpha(dwPixVal, bAlpha << 24 | 0xffffff);
-			sfcCurrent->SetPixDw(iCurrentSfcX+x,iCurrentSfcY+y,dwPixVal);
-		}
-	sfcCurrent->Unlock();
-	// set texture coordinates
-	pfctTarget->Set(sfcCurrent, iCurrentSfcX, iCurrentSfcY, size.cx, size.cy);
-
-#elif defined HAVE_FREETYPE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#if defined HAVE_FREETYPE
 	if (!pVectorFont) return false;
 	// Freetype character rendering
 	FT_Set_Pixel_Sizes(*pVectorFont, dwDefFontHeight, dwDefFontHeight);
@@ -371,7 +330,7 @@ CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 	// find/add facet in map
 	CFacet &rFacet = fctUnicodeMap[c];
 	// create character on the fly if necessary and possible
-	if (!rFacet.Surface && !fPrerenderedFont) AddRenderedChar(c, &rFacet);
+	if (!rFacet.Surface) AddRenderedChar(c, &rFacet);
 	// rendering might have failed, in which case rFacet remains empty. Should be OK; char won't be printed then
 	return rFacet;
 }
@@ -400,65 +359,11 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 		throw std::runtime_error(std::string("Cannot create surface (") + szFontName + ")");
 	}
 
-#if defined _WIN32 && !(defined HAVE_FREETYPE)
-	// drawing using WinGDI
-	iLineHgt=dwHeight;
-	iGfxLineHgt=iLineHgt+fDoShadow; // vertical shadow
+#if defined HAVE_FREETYPE
 
-	// prepare to create an offscreen bitmap to render into
-	iBitmapSize = DWordAligned(dwDefFontHeight * iFontZoom * 5);
-	BITMAPINFO bmi; ZeroMemory(&bmi.bmiHeader, sizeof(BITMAPINFOHEADER));
-	bmi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-	bmi.bmiHeader.biWidth       =  iBitmapSize;
-	bmi.bmiHeader.biHeight      = -iBitmapSize;
-	bmi.bmiHeader.biPlanes      = 1;
-	bmi.bmiHeader.biCompression = BI_RGB;
-	bmi.bmiHeader.biBitCount    = 32;
-
-	// create a rendering DC and a bitmap for the font
-	hDC       = CreateCompatibleDC(NULL);
-	if (!hDC) { Clear(); throw std::runtime_error(std::string("Cannot create DC (") + szFontName + ")"); }
-	hbmBitmap = CreateDIBSection( hDC, &bmi, DIB_RGB_COLORS,
-	                              (VOID**)&pBitmapBits, NULL, 0 );
-	if (!hbmBitmap) { Clear(); throw std::runtime_error(std::string("Cannot create DIBSection (") + szFontName + ")"); }
-	//SetMapMode(hDC, MM_TEXT);
-	char bCharset = GetCharsetCode(szCharset);
-	// create a font. try ClearType first...
-	const char *szFontName = VectorFont.GetFontName();
-	const char *szFontName2;
-	if (szFontName && *szFontName) szFontName2 = szFontName; else szFontName2 = "Comic Sans MS";
-	int iFontHeight = dwDefFontHeight * GetDeviceCaps(hDC, LOGPIXELSY) * iFontZoom / 72;
-	hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, false,
-	                     false, false, bCharset, OUT_DEFAULT_PRECIS,
-	                     CLIP_DEFAULT_PRECIS, 5,
-	                     VARIABLE_PITCH, szFontName2);
-
-	// ClearType failed: try antialiased (not guaranteed)
-	if (!hFont) hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, false,
-		                                 false, false, bCharset, OUT_DEFAULT_PRECIS,
-		                                 CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
-		                                 VARIABLE_PITCH, szFontName2);
-
-	if (!hFont)
-	{
-		Clear();
-		throw std::runtime_error(std::string("Cannot create Font (") + szFontName + ")");
-	}
-	SelectObject( hDC, hbmBitmap );
-	SelectObject( hDC, hFont );
-
-	// set text properties
-	SetTextColor( hDC, RGB(255,255,255) );
-	SetBkColor(   hDC, 0x00000000 );
-	SetTextAlign( hDC, TA_TOP );
-
-	// line height adjusted when characters are created
-	iLineHgt=0;
-
-#elif (defined HAVE_FREETYPE)
-
-	// Store vector font - assumed to be held externally!
+	// Store vector font
 	pVectorFont = &VectorFont;
+	++(pVectorFont->RefCnt);
 	// Get size
 	// FIXME: use bbox or dynamically determined line heights here
 	iLineHgt = (VectorFont->ascender - VectorFont->descender) * dwHeight / VectorFont->units_per_EM;
@@ -467,8 +372,8 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	throw std::runtime_error("You have a engine without Truetype support.");
 #endif // HAVE_FREETYPE
 
-	// loop through all ANSI/ASCII printable characters and prepare them
-	// in case of UTF8, unicode characters will be created on the fly and extended ASCII characters (128-255) are not needed
+	// loop through all ASCII printable characters and prepare them
+	// Non-ASCII Unicode characters will be created on the fly
 	// now render all characters!
 
 	int cMax = 127;
@@ -487,7 +392,6 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	iLineHgt /= iFontZoom;
 	// font successfully created; set name
 	//SCopy(szFontName2, this->szFontName, 80);
-	fPrerenderedFont = false;
 	if (0) for (int i = 0; i < iNumFontSfcs; ++i)
 		{
 			StdStrBuf pngfilename = FormatString("%s%u%s_%d.png",szFontName,static_cast<unsigned int>(dwHeight),fDoShadow ? "_shadow" : "",i);
@@ -495,103 +399,10 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 		}
 }
 
-const DWORD  FontDelimeterColor        = 0xff0000,
-    FontDelimiterColorLB      = 0x00ff00,
-                                FontDelimeterColorIndent1 = 0xffff00,
-                                                            FontDelimeterColorIndent2 = 0xff00ff;
-
-// perform color matching in 16 bit
-inline bool ColorMatch(DWORD dwClr1, DWORD dwClr2)
-{ return ClrDw2W(dwClr1) == ClrDw2W(dwClr2); }
-
-void CStdFont::Init(const char *szFontName, CSurface *psfcFontSfc, int iIndent)
-{
-	// clear previous
-	Clear();
-	// grab surface
-	iSfcSizes = 0;
-	if (!AddSurface()) { Clear(); throw std::runtime_error(std::string("Error creating surface for ") + szFontName); }
-	sfcCurrent->MoveFrom(psfcFontSfc);
-	// extract character positions from image data
-	if (!sfcCurrent->Hgt || !sfcCurrent->Lock())
-	{
-		Clear();
-		throw std::runtime_error(std::string("Error loading ") + szFontName);
-	}
-	// get line height
-	iGfxLineHgt=1;
-	while (iGfxLineHgt<sfcCurrent->Hgt)
-	{
-		DWORD dwPix = sfcCurrent->GetPixDw(0, iGfxLineHgt, false);
-		if (ColorMatch(dwPix, FontDelimeterColor) || ColorMatch(dwPix, FontDelimiterColorLB) ||
-		    ColorMatch(dwPix, FontDelimeterColorIndent1) || ColorMatch(dwPix, FontDelimeterColorIndent2))
-			break;
-		++iGfxLineHgt;
-	}
-	// set font height and width indent
-	dwDefFontHeight=iLineHgt=iGfxLineHgt-iIndent;
-	iHSpace=-iIndent;
-	// determine character sizes
-	int iX=0, iY=0;
-	for (int c=' '; c < 256; ++c)
-	{
-		// save character pos
-		fctAsciiTexCoords[c-' '].X = iX; // left
-		fctAsciiTexCoords[c-' '].Y = iY; // top
-		bool IsLB=false;
-		// get horizontal extent
-		while (iX < sfcCurrent->Wdt)
-		{
-			DWORD dwPix = sfcCurrent->GetPixDw(iX, iY, false);
-			if (ColorMatch(dwPix, FontDelimeterColor) || ColorMatch(dwPix, FontDelimeterColorIndent1) || ColorMatch(dwPix, FontDelimeterColorIndent2))
-				break;
-			if (ColorMatch(dwPix, FontDelimiterColorLB)) { IsLB=true; break; }
-			++iX;
-		}
-		// remove vertical line
-		if (iX < sfcCurrent->Wdt)
-			for (int y=0; y<iGfxLineHgt; ++y)
-				sfcCurrent->SetPixDw(iX, iY+y, 0xffffffff);
-		// save char size
-		fctAsciiTexCoords[c-' '].Wdt = iX - fctAsciiTexCoords[c-' '].X;
-		fctAsciiTexCoords[c-' '].Hgt = iGfxLineHgt;
-		// next line?
-		if (++iX >= sfcCurrent->Wdt || IsLB)
-		{
-			iY += iGfxLineHgt;
-			iX = 0;
-			// remove horizontal line
-			if (iY < sfcCurrent->Hgt)
-				for (int x=0; x<sfcCurrent->Wdt; ++x)
-					sfcCurrent->SetPixDw(x, iY, 0xffffffff);
-			// skip empty line
-			++iY;
-			// end reached?
-			if (iY+iGfxLineHgt > sfcCurrent->Hgt)
-			{
-				// all filled
-				break;
-			}
-		}
-	}
-	// release texture data
-	sfcCurrent->Unlock();
-	// adjust line height
-	iLineHgt /= iFontZoom;
-	// set name
-	SCopy(szFontName, this->szFontName);
-	// mark prerendered
-	fPrerenderedFont = true;
-}
-
 void CStdFont::Clear()
 {
-#if defined _WIN32 && !(defined HAVE_FREETYPE)
-	// clear Win32API font stuff
-	if (hbmBitmap) { DeleteObject(hbmBitmap); hbmBitmap = NULL; }
-	if (hDC) { DeleteDC(hDC); hDC = NULL; }
-	if (hFont) { DeleteObject(hFont); hDC = NULL; }
-#elif (defined HAVE_FREETYPE)
+#if defined HAVE_FREETYPE
+	DestroyFont(pVectorFont);
 	pVectorFont = NULL;
 #endif
 	// clear font sfcs
@@ -612,7 +423,6 @@ void CStdFont::Clear()
 	iGfxLineHgt=iLineHgt+1;
 	dwWeight=FW_NORMAL;
 	fDoShadow=false;
-	fPrerenderedFont = false;
 	// font not yet initialized
 	*szFontName=0;
 	id=0;
@@ -1165,9 +975,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 
 // The internal clonk charset is one of the windows charsets
 // But to save the used one to the configuration, a string is used
-// So we need to convert this string to the windows number for windows
-// and RTF, and to the iconv name for iconv
-//#define GB2312_CHARSET "CP936"
+// So we need to convert this string to the iconv name for iconv
 const char * GetCharsetCodeName(const char *strCharset)
 {
 	// Match charset name to WinGDI codes
@@ -1187,44 +995,4 @@ const char * GetCharsetCodeName(const char *strCharset)
 	if (SEqualNoCase(strCharset, "UTF-8"))       return "UTF-8";
 	// Default
 	return "CP1252";
-}
-BYTE GetCharsetCode(const char *strCharset)
-{
-	// Match charset name to WinGDI codes
-	if (SEqualNoCase(strCharset, "SHIFTJIS"))     return 128; // SHIFTJIS_CHARSET
-	if (SEqualNoCase(strCharset, "HANGUL"))       return 129; // HANGUL_CHARSET
-	if (SEqualNoCase(strCharset, "JOHAB"))        return 130; // JOHAB_CHARSET
-	if (SEqualNoCase(strCharset, "CHINESEBIG5"))  return 136; // CHINESEBIG5_CHARSET
-	if (SEqualNoCase(strCharset, "GREEK"))        return 161; // GREEK_CHARSET
-	if (SEqualNoCase(strCharset, "TURKISH"))      return 162; // TURKISH_CHARSET
-	if (SEqualNoCase(strCharset, "VIETNAMESE"))   return 163; // VIETNAMESE_CHARSET
-	if (SEqualNoCase(strCharset, "HEBREW"))       return 177; // HEBREW_CHARSET
-	if (SEqualNoCase(strCharset, "ARABIC"))       return 178; // ARABIC_CHARSET
-	if (SEqualNoCase(strCharset, "BALTIC"))       return 186; // BALTIC_CHARSET
-	if (SEqualNoCase(strCharset, "RUSSIAN"))      return 204; // RUSSIAN_CHARSET
-	if (SEqualNoCase(strCharset, "THAI"))         return 222; // THAI_CHARSET
-	if (SEqualNoCase(strCharset, "EASTEUROPE"))   return 238; // EASTEUROPE_CHARSET
-	if (SEqualNoCase(strCharset, "UTF-8"))        return 0;   // ANSI_CHARSET - UTF8 needs special handling
-	// Default
-	return 0; // ANSI_CHARSET
-}
-int32_t GetCharsetCodePage(const char *strCharset)
-{
-	// Match charset name to WinGDI codes
-	if (SEqualNoCase(strCharset, "SHIFTJIS"))    return 932;
-	if (SEqualNoCase(strCharset, "HANGUL"))      return 949;
-	if (SEqualNoCase(strCharset, "JOHAB"))       return 1361;
-	if (SEqualNoCase(strCharset, "CHINESEBIG5")) return 950;
-	if (SEqualNoCase(strCharset, "GREEK"))       return 1253;
-	if (SEqualNoCase(strCharset, "TURKISH"))     return 1254;
-	if (SEqualNoCase(strCharset, "VIETNAMESE"))  return 1258;
-	if (SEqualNoCase(strCharset, "HEBREW"))      return 1255;
-	if (SEqualNoCase(strCharset, "ARABIC"))      return 1256;
-	if (SEqualNoCase(strCharset, "BALTIC"))      return 1257;
-	if (SEqualNoCase(strCharset, "RUSSIAN"))     return 1251;
-	if (SEqualNoCase(strCharset, "THAI"))        return 874;
-	if (SEqualNoCase(strCharset, "EASTEUROPE"))  return 1250;
-	if (SEqualNoCase(strCharset, "UTF-8"))       return -1; // shouldn't be called
-	// Default
-	return 1252;
 }

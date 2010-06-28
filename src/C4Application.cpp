@@ -42,6 +42,7 @@
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
+#include <C4Fonts.h>
 #include "hgrevision.h"
 
 #include <StdRegistry.h> // For DDraw emulation warning
@@ -133,7 +134,6 @@ bool C4Application::DoInit()
 		MessageDialog(szMessage);
 		return false;
 	}
-
 	// Language override by parameter
 	const char *pLanguage;
 	if ((pLanguage = SSearchNoCase(GetCommandLine(), "/Language:")))
@@ -248,10 +248,17 @@ void C4Application::ApplyResolutionConstraints()
 
 bool C4Application::PreInit()
 {
-	if (!Game.PreInit()) return false;
-
 	// startup dialog: Only use if no next mission has been provided
 	bool fDoUseStartupDialog = UseStartupDialog && !*Game.ScenarioFilename;
+
+	// Startup message board
+	if (isFullScreen)
+		if (Config.Graphics.ShowStartupMessages || Game.NetworkActive)
+		{
+			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+			GraphicsSystem.MessageBoard.Init(cgo,true);
+		}
+	Game.SetInitProgress(0.0f);
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
 	if (fDoUseStartupDialog)
@@ -261,20 +268,21 @@ bool C4Application::PreInit()
 		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
-
 	Game.SetInitProgress(fDoUseStartupDialog ? 10.0f : 1.0f);
+
+	if (!Game.PreInit()) return false;
 
 	// Music
 	if (!MusicSystem.Init("Frontend.*"))
 		Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 20.0f : 2.0f);
+	Game.SetInitProgress(fDoUseStartupDialog ? 34.0f : 2.0f);
 
 	// Sound
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 30.0f : 3.0f);
+	Game.SetInitProgress(fDoUseStartupDialog ? 35.0f : 3.0f);
 
 	AppState = fDoUseStartupDialog ? C4AS_Startup : C4AS_StartGame;
 
@@ -396,7 +404,6 @@ void C4Application::GameTick()
 	case C4AS_Startup:
 		AppState = C4AS_Game;
 		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
-		Game.ScenarioTitle.Copy(LoadResStr("IDS_PRC_INITIALIZE"));
 		if (!C4Startup::Execute()) { Quit(); return; }
 		AppState = C4AS_StartGame;
 		break;
@@ -466,7 +473,7 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
+	if (!::FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);

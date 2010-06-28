@@ -106,13 +106,6 @@ bool C4GroupSet::RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, 
 	pNewNode->Priority = Priority;
 	pNewNode->Contents = Contents;
 
-#if !defined(USE_CONSOLE)
-	// always add fonts directly
-	if (Contents & C4GSCnt_FontDefs)
-		Game.FontLoader.LoadDefs(rGroup, Config);
-	// success
-#endif
-
 	return true;
 }
 
@@ -133,7 +126,7 @@ int32_t C4GroupSet::CheckGroupContents(C4Group &rGroup, int32_t Contents)
 	if (Contents & C4GSCnt_Material) if (!rGroup.FindEntry(C4CFN_Material)) Contents=Contents&~C4GSCnt_Material;
 	if (Contents & C4GSCnt_Music) if (!rGroup.FindEntry(C4CFN_Music)) Contents=Contents&~C4GSCnt_Music;
 	if (Contents & C4GSCnt_Definitions) if (!rGroup.FindEntry(C4CFN_DefFiles)) Contents=Contents&~C4GSCnt_Definitions;
-	if (Contents & C4GSCnt_FontDefs) if (!rGroup.FindEntry(C4CFN_FontFiles)) if (!rGroup.FindEntry(C4CFN_FontDefs)) Contents=Contents&~C4GSCnt_FontDefs;
+	if (Contents & C4GSCnt_FontDefs) if (!rGroup.FindEntry(C4CFN_FontFiles)) Contents=Contents&~C4GSCnt_FontDefs;
 	// return it
 	return Contents;
 }
@@ -199,6 +192,30 @@ C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32
 		}
 	// nothing found
 	return NULL;
+}
+
+C4Group *C4GroupSet::FindSuitableFile(const char *szName, const char * const extensions[], char *szFileName, int32_t *pID)
+{
+	C4Group *pGrp = 0;
+	C4Group *pGrp2;
+	int iPrio = -1;
+	int32_t iPrio2;
+	int32_t GroupID;
+	char FileName[_MAX_FNAME];
+	SCopy(szName, FileName);
+	for (int i = 0; extensions[i]; ++i)
+	{
+		EnforceExtension(FileName, extensions[i]);
+		pGrp2=FindEntry(FileName, &iPrio2, &GroupID);
+		if ((!pGrp || iPrio2 >= iPrio) && pGrp2)
+		{
+			if (pID) *pID = GroupID;
+			pGrp = pGrp2;
+			SCopy(FileName, szFileName);
+		}
+	}
+	// return found group, if any
+	return pGrp;
 }
 
 bool C4GroupSet::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize, int32_t iAppendZeros)

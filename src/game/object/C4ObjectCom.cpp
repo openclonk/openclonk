@@ -372,7 +372,7 @@ bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 	C4PhysicalInfo *phys=cObj->GetPhysical();
 	if (!phys->CanDig || !ObjectActionDig(cObj))
 	{
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
+		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
 		return false;
 	}
 	return true;
@@ -403,7 +403,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// Check physical
 	if (!cObj->GetPhysical()->CanConstruct)
 	{
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName()).getData(),cObj); return false;
+		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName()).getData(),cObj); return false;
 	}
 
 	// - - - - - - - - - - - - - - - - - - Line pickup - - - - - - - - - - - - - - - - -
@@ -421,7 +421,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		     || (cline->Action.Target2 && (cline->Action.Target2->Def->id==C4ID::Linekit)) )
 		{
 			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj); return false;
+			GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj); return false;
 		}
 		// Create new linekit
 		if (!(linekit=Game.CreateObject(C4ID::Linekit,cObj,cline->Owner))) return false;
@@ -455,7 +455,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		{
 			// No connect
 			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObject(LoadResStr("IDS_OBJ_NOCONNECT"),cObj);  return false;
+			GameMsgObjectError(LoadResStr("IDS_OBJ_NOCONNECT"),cObj);  return false;
 		}
 
 		// Check short circuit -> removal
@@ -485,7 +485,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		if (!connect_okay)
 		{
 			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCONNECTTYPE"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
+			GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOCONNECTTYPE"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
 			return false;
 		}
 
@@ -509,7 +509,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	if (!tstruct || !(ocf & OCF_LineConstruct))
 	{
 		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObject(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
+		GameMsgObjectError(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
 	}
 
 	// Determine new line type
@@ -532,7 +532,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	if (linetype==C4ID::None)
 	{
 		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObject(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
+		GameMsgObjectError(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
 	}
 
 	// Create new line
@@ -693,7 +693,7 @@ bool ObjectComChop(C4Object *cObj, C4Object *pTarget)
 	if (!pTarget) return false;
 	if (!cObj->GetPhysical()->CanChop)
 	{
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
+		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
 		return false;
 	}
 	if (cObj->GetProcedure()!=DFA_WALK) return false;

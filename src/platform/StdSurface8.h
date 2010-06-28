@@ -55,16 +55,14 @@ public:
 	{
 		return Bits[y*Pitch+x];
 	}
-	bool Create(int iWdt, int iHgt, bool fOwnPal=false);
+	bool Create(int iWdt, int iHgt);
 	void MoveFrom(CSurface *psfcFrom); // grab data from other surface - invalidates other surface
 	void Clear();
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();
-	bool Read(class CStdStream &hGroup, bool fOwnPal);
+	bool Read(class CStdStream &hGroup);
 	bool Save(const char *szFilename, BYTE *bpPalette = NULL);
-	void Wipe(); // empty to transparent
 	void GetSurfaceSize(int &irX, int &irY); // get surface size
-	void EnforceC0Transparency() { pPal->EnforceC0Transparency(); }
 	void AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero=false);
 	void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);
 	void ReleaseBuffer();

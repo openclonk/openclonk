@@ -35,6 +35,7 @@
 #include <C4MessageInput.h>
 #include <C4Game.h>
 #include <C4Network2.h>
+#include "C4GraphicsResource.h"
 
 namespace C4GameLobby
 {
@@ -61,7 +62,7 @@ namespace C4GameLobby
 	ScenDesc::ScenDesc(const C4Rect &rcBounds, bool fActive) : C4GUI::Window(), fDescFinished(false)
 	{
 		// build components
-		//CStdFont &rTitleFont = C4GUI::GetRes()->CaptionFont;
+		//CStdFont &rTitleFont = ::GraphicsResource.CaptionFont;
 		SetBounds(rcBounds);
 		C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 		//AddElement(pTitle = new C4GUI::Label("", caMain.GetFromTop(rTitleFont.GetLineHeight()), ALeft, C4GUI_CaptionFontClr, &rTitleFont, true));
@@ -77,8 +78,8 @@ namespace C4GameLobby
 		// scenario present?
 		C4Network2Res *pRes = Game.Parameters.Scenario.getNetRes();
 		if (!pRes) return; // something's wrong
-		CStdFont &rTitleFont = C4GUI::GetRes()->CaptionFont;
-		CStdFont &rTextFont = C4GUI::GetRes()->TextFont;
+		CStdFont &rTitleFont = ::GraphicsResource.CaptionFont;
+		CStdFont &rTextFont = ::GraphicsResource.TextFont;
 		pDescBox->ClearText(false);
 		if (pRes->isComplete())
 		{
@@ -208,7 +209,7 @@ namespace C4GameLobby
 
 		// players / ressources sidebar
 		C4GUI::ComponentAligner caRight(caMain.GetFromRight(iClientListWdt), iIndentX3,iIndentY4);
-		pRightTabLbl = new C4GUI::WoodenLabel("", caRight.GetFromTop(C4GUI::WoodenLabel::GetDefaultHeight(&(C4GUI::GetRes()->TextFont))), C4GUI_CaptionFontClr, &C4GUI::GetRes()->TextFont, ALeft);
+		pRightTabLbl = new C4GUI::WoodenLabel("", caRight.GetFromTop(C4GUI::WoodenLabel::GetDefaultHeight(&(::GraphicsResource.TextFont))), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont, ALeft);
 		caRight.ExpandTop(iIndentY4*2 + 1); // undo margin, so client list is located directly under label
 		pRightTab = new C4GUI::Tabular(caRight.GetAll(), C4GUI::Tabular::tbNone);
 		C4GUI::Tabular::Sheet *pPlayerSheet = pRightTab->AddSheet(LoadResStr("IDS_DLG_PLAYERS"));
@@ -246,7 +247,7 @@ namespace C4GameLobby
 		C4GUI::ComponentAligner caCenter(caMain.GetAll(), iIndentX2, iIndentY3);
 		// chat input box
 		C4GUI::ComponentAligner caChat(caCenter.GetFromBottom(C4GUI::Edit::GetDefaultEditHeight()), 0,0);
-		pLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_CTL_CHAT"), caChat.GetFromLeft(40), C4GUI_CaptionFontClr, &C4GUI::GetRes()->TextFont);
+		pLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_CTL_CHAT"), caChat.GetFromLeft(40), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont);
 		pEdt = new C4GUI::CallbackEdit<MainDlg>(caChat.GetAll(), this, &MainDlg::OnChatInput);
 		pEdt->SetToolTip(LoadResStr("IDS_DLGTIP_CHAT")); pLbl->SetToolTip(LoadResStr("IDS_DLGTIP_CHAT"));
 		pLbl->SetClickFocusControl(pEdt);
@@ -665,9 +666,9 @@ namespace C4GameLobby
 		// output message should be prefixed with client already
 		const char *szMsgBuf = szMessage;
 		// 2do: log with player colors?
-		if (pChatBox && C4GUI::GetRes() && !pOfClient->IsIgnored())
+		if (pChatBox && !pOfClient->IsIgnored())
 		{
-			pChatBox->AddTextLine(szMsgBuf, &C4GUI::GetRes()->TextFont, ::Network.Players.GetClientChatColor(pOfClient ? pOfClient->getID() : Game.Clients.getLocalID(), true) | C4GUI_MessageFontAlpha, true, true);
+			pChatBox->AddTextLine(szMsgBuf, &::GraphicsResource.TextFont, ::Network.Players.GetClientChatColor(pOfClient ? pOfClient->getID() : Game.Clients.getLocalID(), true) | C4GUI_MessageFontAlpha, true, true);
 			pChatBox->ScrollToBottom();
 		}
 		// log it
@@ -687,19 +688,19 @@ namespace C4GameLobby
 
 	void MainDlg::OnLog(const char *szLogMsg, DWORD dwClr)
 	{
-		if (pChatBox && C4GUI::GetRes())
+		if (pChatBox)
 		{
-			pChatBox->AddTextLine(szLogMsg, &C4GUI::GetRes()->TextFont, dwClr, true, true);
+			pChatBox->AddTextLine(szLogMsg, &::GraphicsResource.TextFont, dwClr, true, true);
 			pChatBox->ScrollToBottom();
 		}
 	}
 
 	void MainDlg::OnError(const char *szErrMsg)
 	{
-		if (pChatBox && C4GUI::GetRes())
+		if (pChatBox)
 		{
 			StartSoundEffect("Error");
-			pChatBox->AddTextLine(szErrMsg, &C4GUI::GetRes()->TextFont, C4GUI_ErrorFontClr, true, true);
+			pChatBox->AddTextLine(szErrMsg, &::GraphicsResource.TextFont, C4GUI_ErrorFontClr, true, true);
 			pChatBox->ScrollToBottom();
 		}
 	}

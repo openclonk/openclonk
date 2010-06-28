@@ -29,6 +29,7 @@
 #include <StdFile.h>
 #include <StdBuf.h>
 
+#include <C4Config.h>
 #include "C4Version.h"
 
 #include "c4x.xpm"
@@ -114,7 +115,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	}
 
 	wnd = XCreateWindow(dpy, DefaultRootWindow(dpy),
-	                    0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
+	                    0, 0, Config.Graphics.ResX, Config.Graphics.ResY, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
 	                    attrmask, &attr);
 	if (attr.cursor)
 		XFreeCursor(dpy, attr.cursor);

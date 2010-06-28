@@ -27,8 +27,7 @@
 #include <C4GroupSet.h>
 #include <C4Surface.h>
 #include <C4FacetEx.h>
-
-namespace C4GUI { class Resource; }
+#include <C4Gui.h>
 
 class C4GraphicsResource
 {
@@ -39,15 +38,16 @@ public:
 	~C4GraphicsResource();
 protected:
 	C4Surface sfcControl;
+	C4Surface sfcCaption, sfcButton, sfcButtonD;
+	C4Surface sfcScroll, sfcContext;
+	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext;
 	int32_t idSfcControl; // id of source group of control surface
-	int32_t idPalGrp;     // if of source group of pal file
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups
 	int32_t idRegisteredMainGroupSetFiles;
 public:
 	C4GroupSet Files;
-	BYTE GamePalette[256*3];
-	BYTE AlphaPalette[256*3]; // TODO: alphapal: Why *3?
+	float ProgressStart, ProgressIncrement;
 	C4FacetID fctPlayer;
 	C4FacetID fctFlag;
 	C4FacetID fctCrew;
@@ -86,7 +86,22 @@ public:
 	C4FacetID fctPlayerClr; // ColorByOwner-surface of fctPlayer
 	C4FacetID fctPlayerGray; // grayed out version of fctPlayer
 
+	C4GUI::DynBarFacet barCaption, barButton, barButtonD;
+	C4FacetID fctButtonHighlight;
+	C4FacetID fctIcons, fctIconsEx;
+	C4FacetID fctSubmenu;
+	C4FacetID fctCheckbox;
+	C4FacetID fctBigArrows;
+	C4FacetID fctProgressBar;
+	C4GUI::ScrollBarFacets sfctScroll;
+	C4Facet fctContext;
+	
 	// fonts
+	CStdFont &CaptionFont; // small, bold font
+	CStdFont &TitleFont;   // large, bold font
+	CStdFont &TextFont;    // font for normal text
+	CStdFont &MiniFont;    // tiny font (logfont)
+	CStdFont &TooltipFont; // same as BookFont
 	CStdFont FontTiny;     // used for logs
 	CStdFont FontRegular;  // normal font - just refed from graphics system
 	CStdFont FontCaption;  // used for title bars
@@ -94,11 +109,12 @@ public:
 	CStdFont FontTooltip;  // normal, non-shadowed font (same as BookFont)
 public:
 	int32_t GetColorIndex(int32_t iColor, bool fLast=false);
+	CStdFont &GetFontByHeight(int32_t iHgt, float *pfZoom=NULL); // get optimal font for given control size
 	void Default();
 	void Clear();
-	bool InitFonts(); // init fonts only (early init done by loader screen)
+	bool InitFonts();
 	void ClearFonts(); // clear fonts ()
-	bool Init(bool fInitGUI);
+	bool Init();
 
 	bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)
 
@@ -114,7 +130,6 @@ protected:
 	bool FindLoadRes(C4Group *pSecondFile, const char *szName);
 	bool LoadCursorGfx();
 
-	friend class C4GUI::Resource;
 	friend class C4StartupGraphics;
 };
 

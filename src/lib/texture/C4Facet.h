@@ -131,10 +131,8 @@ public:
 	void Set(CSurface &rSfc);
 	void Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
-	void Wipe();
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
 	void DrawTile(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
-	void DrawEnergyLevel(int32_t iLevel, int32_t iRange, int32_t iColor=45); // draw energy level using solid colors
 	void DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx); // draw energy level using graphics
 	void DrawX(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
 	void DrawXFloat(SURFACE sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
@@ -150,7 +148,6 @@ public:
 	void DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWORD dwClr); // set surface color and draw
 	void DrawXR(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t r=0); // draw rotated
 	void Draw(SURFACE sfcTarget, float iX, float iY, int32_t iPhaseX=0, int32_t iPhaseY=0);
-	void DrawSectionSelect(C4Facet &cgo, int32_t iSelection, int32_t iMaxSelect);
 	bool GetPhaseNum(int32_t &rX, int32_t &rY);   // return number of phases in this graphic
 	C4Facet GetSection(int32_t iSection);
 	C4Facet GetPhase(int iPhaseX=0, int iPhaseY=0);

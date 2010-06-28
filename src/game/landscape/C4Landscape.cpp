@@ -732,7 +732,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		Surface32 = new CSurface();
 		Surface8 = new CSurface8();
 		if (!Surface32->Create(Width, Height, true, false, lpDDraw->IsShaderific() ? 0 : 64)
-		    || !Surface8->Create(Width, Height, true)
+		    || !Surface8->Create(Width, Height)
 		    || !Mat2Pal())
 		{
 			delete Surface8; delete Surface32;
@@ -766,9 +766,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 	// Load diff, if existant
 	ApplyDiff(hGroup);
-
-	// enforce first color to be transparent
-	Surface8->EnforceC0Transparency();
 
 	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
 	// and not creating the map
@@ -2146,13 +2143,13 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 	// Check def
 	if (!(ndef=PropList->GetDef()))
 	{
-		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_UNDEF"), PropList->GetName()).getData(),pByObj,FRed);
+		if (pByObj) GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_UNDEF"), PropList->GetName()).getData(),pByObj);
 		return false;
 	}
 	// Constructable?
 	if (!ndef->Constructable)
 	{
-		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj,FRed);
+		if (pByObj) GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj);
 		return false;
 	}
 	// Check area
@@ -2161,19 +2158,19 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 	rtx=iX-wdt/2; rty=iY-hgt;
 	if (::Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
 	{
-		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
+		if (pByObj) GameMsgObjectError(LoadResStr("IDS_OBJ_NOROOM"),pByObj);
 		return false;
 	}
 	if (::Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
 	{
-		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
+		if (pByObj) GameMsgObjectError(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj);
 		return false;
 	}
 	// Check other structures
 	C4Object *other;
 	if ((other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category)))
 	{
-		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj,FRed);
+		if (pByObj) GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj);
 		return false;
 	}
 	return true;

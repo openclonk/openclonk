@@ -32,6 +32,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include "C4GraphicsResource.h"
 
 
 // ---------------------------------------------------
@@ -149,7 +150,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	// lower button-area
 	C4GUI::ComponentAligner caBottom(caMain.GetFromBottom(iDefBtnHeight+iIndentY1*2), iIndentX1,0);
 	int32_t iBottomButtonSize = caBottom.GetInnerWidth();
-	iBottomButtonSize = Min<int32_t>(iBottomButtonSize/2-2*iIndentX1, C4GUI::GetRes()->CaptionFont.GetTextWidth("Quit it, baby! And some.")*2);
+	iBottomButtonSize = Min<int32_t>(iBottomButtonSize/2-2*iIndentX1, ::GraphicsResource.CaptionFont.GetTextWidth("Quit it, baby! And some.")*2);
 	// goal display
 	const C4IDList &rGoals = Game.RoundResults.GetGoals();
 	const C4IDList &rFulfilledGoals = Game.RoundResults.GetFulfilledGoals();
@@ -171,7 +172,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 			szNetResult = Game.RoundResults.GetNetResultString();
 		else
 			szNetResult = LoadResStr("IDS_TEXT_LEAGUEWAITINGFOREVALUATIO");
-		pNetResultLabel = new C4GUI::Label("", caMain.GetFromTop(C4GUI::GetRes()->TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, NULL, false, false, true);
+		pNetResultLabel = new C4GUI::Label("", caMain.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, NULL, false, false, true);
 		AddElement(pNetResultLabel);
 		// only add label - contents and fIsNetDone will be set in next update
 	}
@@ -186,7 +187,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	{
 		int32_t iMaxHgt = caMain.GetInnerHeight() / 3; // max 1/3rd of height for extra data
 		C4GUI::MultilineLabel *pCustomStrings = new C4GUI::MultilineLabel(caMain.GetFromTop(0 /* resized later*/, iMainTextWidth), 0,0, "    ", true, true);
-		pCustomStrings->AddLine(szCustomEvaluationStrings, &C4GUI::GetRes()->TextFont, C4GUI_MessageFontClr, true, false, NULL);
+		pCustomStrings->AddLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, NULL);
 		C4Rect rcCustomStringBounds = pCustomStrings->GetBounds();
 		if (rcCustomStringBounds.Hgt > iMaxHgt)
 		{
@@ -195,7 +196,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 			rcCustomStringBounds.Hgt = iMaxHgt;
 			C4GUI::TextWindow *pCustomStringsWin = new C4GUI::TextWindow(rcCustomStringBounds, 0,0,0, 0,0,"    ",true, NULL,0, true);
 			pCustomStringsWin->SetDecoration(false, false, NULL, false);
-			pCustomStringsWin->AddTextLine(szCustomEvaluationStrings, &C4GUI::GetRes()->TextFont, C4GUI_MessageFontClr, true, false, NULL);
+			pCustomStringsWin->AddTextLine(szCustomEvaluationStrings, &::GraphicsResource.TextFont, C4GUI_MessageFontClr, true, false, NULL);
 			caMain.ExpandTop(-iMaxHgt);
 			AddElement(pCustomStringsWin);
 		}
@@ -293,7 +294,7 @@ void C4GameOverDlg::SetNetResult(const char *szResultString, C4RoundResults::Net
 	}
 	// message linebreak into box
 	StdStrBuf sBrokenResult;
-	C4GUI::GetRes()->TextFont.BreakMessage(sResult.getData(), pNetResultLabel->GetBounds().Wdt, &sBrokenResult, true);
+	::GraphicsResource.TextFont.BreakMessage(sResult.getData(), pNetResultLabel->GetBounds().Wdt, &sBrokenResult, true);
 	pNetResultLabel->SetText(sBrokenResult.getData(), false);
 	// all done?
 	if (eResultType != C4RoundResults::NR_None && !fIsStreaming)

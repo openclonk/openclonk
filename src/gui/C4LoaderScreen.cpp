@@ -30,7 +30,7 @@
 #include <C4Game.h>
 #include <C4FullScreen.h>
 
-C4LoaderScreen::C4LoaderScreen() : TitleFont(::GraphicsResource.FontTitle), LogFont(::GraphicsResource.FontTiny)
+C4LoaderScreen::C4LoaderScreen()
 {
 	// zero fields
 	szInfo=NULL;
@@ -106,26 +106,6 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 
 	// load info
 	if (szInfo) { delete [] szInfo; szInfo=NULL; }
-	/*size_t iInfoSize;
-	if (Game.ScenarioFile.AccessEntry(C4CFN_Info, &iInfoSize))
-	  {
-	  szInfo = new char[iInfoSize+1];
-	  // load info file
-	  Game.ScenarioFile.Read(szInfo, iInfoSize);
-	  // terminate buffer
-	  szInfo[iInfoSize]=0;
-	  // insert linebreaks
-	  SReplaceChar(szInfo, 0x0a, '|');
-	  }*/
-
-	// init fonts
-	if (!::GraphicsResource.InitFonts())
-		return false;
-
-	// initial draw
-	C4Facet cgo;
-	cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
-	Draw(cgo);
 
 	// done, success!
 	return true;
@@ -173,7 +153,8 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	int iLogBoxMargin=2;
 	int iVMargin=5;
 	int iProgressBarHgt=15;
-	CStdFont &rLogBoxFont=LogFont, &rProgressBarFont=::GraphicsResource.FontRegular;
+	CStdFont &LogFont=::GraphicsResource.FontTiny, &rProgressBarFont=::GraphicsResource.FontRegular;
+	CStdFont &TitleFont = ::GraphicsResource.FontTitle;
 	float fLogBoxFontZoom=1.0f;
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);
@@ -186,9 +167,9 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	// draw progress bar
 	Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
 	int iProgressBarWdt=cgo.Wdt-iHIndent*2-2;
-	if (C4GUI::IsGUIValid())
+	if (::GraphicsResource.fctProgressBar.Surface)
 	{
-		C4GUI::GetRes()->fctProgressBar.DrawX(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iProgressBarWdt*iProgress/100, iProgressBarHgt-2);
+		::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iProgressBarWdt*iProgress/100, iProgressBarHgt-2);
 	}
 	else
 	{
@@ -201,7 +182,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	if (pLog)
 	{
 		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
-		int iLineHgt=int(fLogBoxFontZoom*rLogBoxFont.iLineHgt); if (!iLineHgt) iLineHgt=5;
+		int iLineHgt=int(fLogBoxFontZoom*LogFont.iLineHgt); if (!iLineHgt) iLineHgt=5;
 		int iLinesVisible = (iLogBoxHgt-2*iLogBoxMargin)/iLineHgt;
 		int iX = iHIndent+iLogBoxMargin;
 		int iY = cgo.Hgt-iVIndent-iLogBoxHgt+iLogBoxMargin;
@@ -210,15 +191,15 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		{
 			const char *szLine = pLog->GetLine(i, NULL, NULL, NULL);
 			if (!szLine || !*szLine) continue;
-			rLogBoxFont.GetTextExtent(szLine, w,h, true);
-			lpDDraw->TextOut(szLine,rLogBoxFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
+			LogFont.GetTextExtent(szLine, w,h, true);
+			lpDDraw->TextOut(szLine,LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
 			iY += h;
 		}
 		// append process text
 		if (Process)
 		{
 			iY -= h; iX += w;
-			lpDDraw->TextOut(FormatString("%i%%", (int) Process).getData(),rLogBoxFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
+			lpDDraw->TextOut(FormatString("%i%%", (int) Process).getData(),LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
 		}
 	}
 }

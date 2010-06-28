@@ -708,8 +708,6 @@ void C4ToolsDlg::UpdatePreview()
 		                                        Grade,
 		                                        bCol, Pattern, *::Landscape.GetPal());
 
-	Application.DDraw->AttachPrimaryPalette(sfcPreview);
-
 #ifdef _WIN32
 #ifdef USE_DIRECTX
 	if (pD3D)

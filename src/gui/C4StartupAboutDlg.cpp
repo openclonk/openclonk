@@ -21,6 +21,7 @@
 #include <C4Include.h>
 #include <C4StartupAboutDlg.h>
 #include <C4UpdateDlg.h>
+#include <C4GraphicsResource.h>
 
 #include <C4StartupMainDlg.h>
 
@@ -42,7 +43,7 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	// version and registration info in topright corner
 	C4Rect rcClient = GetContainedClientRect();
 	StdStrBuf sVersion; sVersion.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
-	CStdFont &rUseFont = C4GUI::GetRes()->TextFont;
+	CStdFont &rUseFont = ::GraphicsResource.TextFont;
 	int32_t iInfoWdt = Min<int32_t>(rcClient.Wdt/2, rUseFont.GetTextWidth("General info text width")*2);
 	C4GUI::ComponentAligner caInfo(C4Rect(rcClient.x + rcClient.Wdt - iInfoWdt, rcClient.y, iInfoWdt, rcClient.Hgt/8), 0,0, false);
 	AddElement(new C4GUI::Label(sVersion.getData(), caInfo.GetGridCell(0,1,0,4), ARight));

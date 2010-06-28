@@ -32,6 +32,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
+#include <C4GraphicsResource.h>
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
@@ -124,7 +125,7 @@ C4Network2ClientListBox::ClientListItem::ClientListItem(class C4Network2ClientLi
 	// get associated client
 	const C4Client *pClient = GetClient();
 	// get size
-	int iIconSize = C4GUI::GetRes()->TextFont.GetLineHeight();
+	int iIconSize = ::GraphicsResource.TextFont.GetLineHeight();
 	if (pForDlg->IsStartup()) iIconSize *= 2;
 	int iWidth = pForDlg->GetItemWidth();
 	int iVerticalIndent = 2;
@@ -279,7 +280,7 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 		: ListItem(pForDlg, iClientID), iConnID(iConnectionID), pDesc(NULL), pPing(NULL), pReconnectBtn(NULL), pDisconnectBtn(NULL)
 {
 	// get size
-	CStdFont &rUseFont = C4GUI::GetRes()->TextFont;
+	CStdFont &rUseFont = ::GraphicsResource.TextFont;
 	int iIconSize = rUseFont.GetLineHeight();
 	int iWidth = pForDlg->GetItemWidth();
 	int iVerticalIndent = 2;
@@ -460,7 +461,7 @@ C4Network2ClientListDlg::C4Network2ClientListDlg()
 		: Dialog(::pGUI->GetPreferredDlgRect().Wdt*3/4, ::pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
 {
 	// component layout
-	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
+	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	C4GUI::ComponentAligner caAll(GetContainedClientRect(), 0,0);
 	C4Rect rcStatus = caAll.GetFromBottom(pUseFont->GetLineHeight());
 	// create game options; max 1/2 of dialog height
@@ -800,7 +801,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	StdStrBuf sbuf;
 	pDisplayGraph->Update(); // update averages, etc.
 	// calc metrics
-	CStdFont &rFont = C4GUI::GetRes()->MiniFont;
+	CStdFont &rFont = ::GraphicsResource.MiniFont;
 	int       YAxisWdt       = 5,
 	                           XAxisHgt       = 15;
 	const int AxisArrowLen   = 6,
@@ -854,12 +855,12 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	// safety: too small?
 	if (tw < 10 || th < 10) return;
 	// draw axis
-	lpDDraw->DrawHorizontalLine(cgo.Surface, tx, tx+tw-1, ty+th, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, CGray3);
-	lpDDraw->DrawVerticalLine(cgo.Surface, tx, ty, ty+th, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, CGray3);
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty+th, tx+tw-1, ty+th, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx, ty+th, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
 	tw -= AxisArrowLen + AxisArrowIndent;
 	th -= AxisArrowLen + AxisArrowIndent; ty += AxisArrowLen + AxisArrowIndent;
 	// do axis numbering
@@ -871,7 +872,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	for (; iTime <= iMaxTime; iTime += iXAxisSteps)
 	{
 		iX = tx + tw * (iTime-iMinTime) / dt;
-		lpDDraw->DrawVerticalLine(cgo.Surface, iX, ty+th+1, ty+th+AxisMarkerLen, CGray3);
+		lpDDraw->DrawLineDw(cgo.Surface, iX, ty+th+1, iX, ty+th+AxisMarkerLen, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iTime);
 		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, iX, ty+th+AxisMarkerLen, 0xff7f7f7f, ACenter, false);
 	}
@@ -879,7 +880,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	for (; iVal <= iMaxVal; iVal += iYAxisSteps)
 	{
 		iY = ty+th - int((iVal-iMinVal) / dv * th);
-		lpDDraw->DrawHorizontalLine(cgo.Surface, tx-AxisMarkerLen, tx-1, iY, CGray3);
+		lpDDraw->DrawLineDw(cgo.Surface, tx-AxisMarkerLen, iY, tx-1, iY, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iVal);
 		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, tx-AxisMarkerLen, iY-rFont.GetLineHeight()/2, 0xff7f7f7f, ARight, false);
 	}

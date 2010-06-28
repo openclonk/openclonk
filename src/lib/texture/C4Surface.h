@@ -47,7 +47,7 @@ public:
 	bool Save(C4Group &hGroup, const char *szFilename);
 	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
 	bool Copy(C4Surface &fromSfc);
-	bool Read(CStdStream &hGroup, const char * extension, bool fOwnPal=false);
+	bool Read(CStdStream &hGroup, const char * extension);
 	bool ReadPNG(CStdStream &hGroup);
 	bool ReadJPEG(CStdStream &hGroup);
 };

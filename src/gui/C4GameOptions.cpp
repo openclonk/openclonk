@@ -23,6 +23,7 @@
 #include "C4GameOptions.h"
 #include <C4Game.h>
 #include <C4GameControl.h>
+#include "C4GraphicsResource.h"
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 
@@ -45,7 +46,7 @@ void C4GameOptionsList::Option::InitOption(C4GameOptionsList *pForDlg)
 C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForDlg, const char *szCaption, bool fReadOnly)
 		: Option(pForDlg)
 {
-	CStdFont &rUseFont = C4GUI::GetRes()->TextFont;
+	CStdFont &rUseFont = ::GraphicsResource.TextFont;
 	// get size of caption label
 	bool fTabular = pForDlg->IsTabular();
 	int32_t iCaptWidth, iCaptHeight;

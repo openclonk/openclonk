@@ -244,44 +244,44 @@ bool C4PathFinderRay::Execute()
 
 void C4PathFinderRay::Draw(C4TargetFacet &cgo)
 {
-	BYTE byColor=CRed;
+	uint32_t Color=0xffff0000;
 	switch (Status)
 	{
-	case C4PF_Ray_Crawl: byColor=CRed; break;
-	case C4PF_Ray_Still: byColor=CDRed; break;
-	case C4PF_Ray_Failure: byColor=CYellow; break;
-	case C4PF_Ray_Deleted: byColor=CGray2; break;
+	case C4PF_Ray_Crawl: Color=C4RGB(0xff, 0, 0); break;
+	case C4PF_Ray_Still: Color=C4RGB(0x50, 0, 0); break;
+	case C4PF_Ray_Failure: Color=C4RGB(0xff, 0xff, 0); break;
+	case C4PF_Ray_Deleted: Color=C4RGB(0x59, 0x59, 0x59); break;
 	}
-	if (UseZone) byColor=CBlue;
+	if (UseZone) Color=C4RGB(0, 0, 0xff);
 
 	// Crawl attachment
 	if (Status==C4PF_Ray_Crawl)
 	{
 		int32_t iX=0,iY=0; CrawlToAttach(iX,iY,CrawlAttach);
-		lpDDraw->DrawLine(cgo.Surface,
+		lpDDraw->DrawLineDw(cgo.Surface,
 		                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
 		                  cgo.X+X2-cgo.TargetX+7*iX,cgo.Y+Y2-cgo.TargetY+7*iY,
-		                  CRed);
+		                  C4RGB(0xff, 0, 0));
 		//sprintf(OSTR,"%d",Depth); lpDDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
 	}
 
 	// Ray line
-	lpDDraw->DrawLine(cgo.Surface,
+	lpDDraw->DrawLineDw(cgo.Surface,
 	                  cgo.X+X-cgo.TargetX,cgo.Y+Y-cgo.TargetY,
 	                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
-	                  byColor);
+	                  Color);
 
 	// Crawler point
-	lpDDraw->DrawFrame(cgo.Surface,
+	lpDDraw->DrawFrameDw(cgo.Surface,
 	                   cgo.X+X2-cgo.TargetX-1,cgo.Y+Y2-cgo.TargetY-1,
 	                   cgo.X+X2-cgo.TargetX+1,cgo.Y+Y2-cgo.TargetY+1,
-	                   (Status==C4PF_Ray_Crawl) ? ((Direction==C4PF_Direction_Left) ? CGreen : CBlue) : byColor);
+	                   (Status==C4PF_Ray_Crawl) ? ((Direction==C4PF_Direction_Left) ? C4RGB(0, 0xff, 0) : C4RGB(0, 0, 0xff)) : Color);
 
 	// Search target point
-	lpDDraw->DrawFrame(cgo.Surface,
+	lpDDraw->DrawFrameDw(cgo.Surface,
 	                   cgo.X+TargetX-cgo.TargetX-2,cgo.Y+TargetY-cgo.TargetY-2,
 	                   cgo.X+TargetX-cgo.TargetX+2,cgo.Y+TargetY-cgo.TargetY+2,
-	                   CYellow);
+	                   C4RGB(0xff, 0xff, 0));
 
 }
 

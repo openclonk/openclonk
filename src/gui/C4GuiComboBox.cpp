@@ -24,6 +24,7 @@
 #include <C4Gui.h>
 #include <C4FacetEx.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
 
 #include <StdWindow.h>
 
@@ -143,13 +144,13 @@ namespace C4GUI
 
 	void ComboBox::DrawElement(C4TargetFacet &cgo)
 	{
-		CStdFont *pUseFont = this->pUseFont ? this->pUseFont : &(GetRes()->TextFont);
+		CStdFont *pUseFont = this->pUseFont ? this->pUseFont : &(::GraphicsResource.TextFont);
 		// recheck open menu
 		Screen *pScr = GetScreen();
 		if (!pScr || (iOpenMenu != pScr->GetContextMenuIndex())) iOpenMenu = 0;
 		// calc drawing bounds
 		int32_t x0 = cgo.TargetX + rcBounds.x, y0 = cgo.TargetY + rcBounds.y;
-		int32_t iRightTextEnd = x0 + rcBounds.Wdt - GetRes()->fctContext.Wdt - 1;
+		int32_t iRightTextEnd = x0 + rcBounds.Wdt - ::GraphicsResource.fctContext.Wdt - 1;
 		if (!fReadOnly && !fSimple)
 		{
 			// draw background
@@ -165,26 +166,26 @@ namespace C4GUI
 				// default frame color
 				Draw3DFrame(cgo);
 			// draw button; down (phase 1) if combo is down
-			(pFctSideArrow ? pFctSideArrow : &(GetRes()->fctContext))->Draw(cgo.Surface, iRightTextEnd, y0 + (rcBounds.Hgt-GetRes()->fctContext.Hgt)/2, iOpenMenu ? 1 : 0);
+			(pFctSideArrow ? pFctSideArrow : &(::GraphicsResource.fctContext))->Draw(cgo.Surface, iRightTextEnd, y0 + (rcBounds.Hgt-::GraphicsResource.fctContext.Hgt)/2, iOpenMenu ? 1 : 0);
 		}
 		else if (!fReadOnly)
 		{
 			// draw button in simple mode: Left of text
-			(pFctSideArrow ? pFctSideArrow : &(GetRes()->fctContext))->Draw(cgo.Surface, x0, y0 + (rcBounds.Hgt-GetRes()->fctContext.Hgt)/2, iOpenMenu ? 1 : 0);
+			(pFctSideArrow ? pFctSideArrow : &(::GraphicsResource.fctContext))->Draw(cgo.Surface, x0, y0 + (rcBounds.Hgt-::GraphicsResource.fctContext.Hgt)/2, iOpenMenu ? 1 : 0);
 		}
 		// draw text
 		if (*Text)
 		{
 			lpDDraw->StorePrimaryClipper();
 			lpDDraw->SubPrimaryClipper(x0,y0,iRightTextEnd-1,y0+rcBounds.Hgt-1);
-			lpDDraw->TextOut(Text, *pUseFont, 1.0f, cgo.Surface, x0 + GetRes()->fctContext.Wdt + 2, y0 + (rcBounds.Hgt-pUseFont->GetLineHeight())/2, dwFontClr, ALeft);
+			lpDDraw->TextOut(Text, *pUseFont, 1.0f, cgo.Surface, x0 + ::GraphicsResource.fctContext.Wdt + 2, y0 + (rcBounds.Hgt-pUseFont->GetLineHeight())/2, dwFontClr, ALeft);
 			lpDDraw->RestorePrimaryClipper();
 		}
 		// draw selection highlight
 		if ((HasDrawFocus() || iOpenMenu || fMouseOver) && !fReadOnly)
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 			lpDDraw->ResetBlitMode();
 		}
 	}
@@ -222,7 +223,7 @@ namespace C4GUI
 
 	int32_t ComboBox::GetDefaultHeight()
 	{
-		return GetRes()->TextFont.GetLineHeight() + 4;
+		return ::GraphicsResource.TextFont.GetLineHeight() + 4;
 	}
 
 	void ComboBox::SetText(const char *szToText)

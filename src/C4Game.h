@@ -33,7 +33,6 @@
 #include <C4PathFinder.h>
 #include <C4Extra.h>
 #include <C4Effects.h>
-#include <C4Fonts.h>
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
 #include <C4ScriptHost.h>
@@ -92,10 +91,6 @@ public:
 	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
-#ifndef USE_CONSOLE
-	// We don't need fonts when we don't have graphics
-	C4FontLoader        FontLoader;
-#endif
 	C4Scoreboard        Scoreboard;
 	C4VideoPlayer       VideoPlayer;
 	StdMeshMatManager   MaterialManager;
@@ -253,7 +248,6 @@ public:
 	bool InitPlayerControlSettings();
 
 protected:
-	bool InitSystem();
 	void InitInEarth();
 	void InitVegetation();
 	void InitAnimals();

@@ -88,7 +88,7 @@ bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 	return Load(*pGroup,szFilename,fOwnPal,fNoErrIfNotFound);
 }
 
-bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound)
+bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrIfNotFound)
 {
 	int ScaleToSet = 1;
 	// Image is scaled?
@@ -137,7 +137,7 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool
 		if (!fNoErrIfNotFound) LogF("%s: %s%c%s", LoadResStr("IDS_PRC_FILENOTFOUND"), hGroup.GetFullName().getData(), (char) DirectorySeparator, szFilename);
 		return false;
 	}
-	bool fSuccess = Read(hGroup, GetExtension(szFilename), fOwnPal);
+	bool fSuccess = Read(hGroup, GetExtension(szFilename));
 	// loading error? log!
 	if (!fSuccess)
 		LogF("%s: %s%c%s", LoadResStr("IDS_ERR_NOFILE"), hGroup.GetFullName().getData(), (char) DirectorySeparator, szFilename);
@@ -147,7 +147,7 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool
 	return fSuccess;
 }
 
-bool C4Surface::Read(CStdStream &hGroup, const char * extension, bool fOwnPal)
+bool C4Surface::Read(CStdStream &hGroup, const char * extension)
 {
 	// determine file type by file extension and load accordingly
 	if (SEqualNoCase(extension, "png"))
@@ -156,7 +156,7 @@ bool C4Surface::Read(CStdStream &hGroup, const char * extension, bool fOwnPal)
 	         || SEqualNoCase(extension, "jpg"))
 		return ReadJPEG(hGroup);
 	else if (SEqualNoCase(extension, "bmp"))
-		return ReadBMP(hGroup, fOwnPal);
+		return ReadBMP(hGroup);
 	else
 		return false;
 }

@@ -37,7 +37,6 @@
 
 // Global access pointer
 CStdDDraw *lpDDraw=NULL;
-CStdPalette *lpDDrawPal=NULL;
 int iGfxEngine=-1;
 
 // Transformation matrix to convert meshes from Ogre to Clonk coordinate system
@@ -408,25 +407,9 @@ void CStdDDraw::Clear()
 	dwBlitMode = 0;
 }
 
-bool CStdDDraw::WipeSurface(SURFACE sfcSurface)
-{
-	if (!sfcSurface) return false;
-	return sfcSurface->Wipe();
-}
-
 bool CStdDDraw::GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt)
 {
 	return sfcSurface->GetSurfaceSize(iWdt, iHgt);
-}
-
-bool CStdDDraw::SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf)
-{
-	// store into loaded pal
-	memcpy(&Pal.Colors, pBuf, 768);
-	// store alpha pal
-	if (pAlphaBuf) memcpy(Pal.Alpha, pAlphaBuf, 256);
-	// success
-	return true;
 }
 
 bool CStdDDraw::SubPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
@@ -871,12 +854,6 @@ bool CStdDDraw::CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes)
 	return true;
 }
 
-bool CStdDDraw::AttachPrimaryPalette(SURFACE sfcSurface)
-{/*
-  if (sfcSurface->SetPaletteEntries(0, lpPalette)!=DD_OK) return false;*/
-	return true;
-}
-
 bool CStdDDraw::BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int ty, bool fBlitBase)
 {
 	if (fBlitBase)
@@ -1024,34 +1001,6 @@ void CStdDDraw::DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	PerformPix(sfcDest, tx, ty, dwClr);
 }
 
-void CStdDDraw::DrawBox(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, BYTE byCol)
-{
-	// get color
-	DWORD dwClr=Pal.GetClr(byCol);
-	// offscreen emulation?
-	if (!sfcDest->IsRenderTarget())
-	{
-		int iSfcWdt=sfcDest->Wdt,iSfcHgt=sfcDest->Hgt,xcnt,ycnt;
-		// Lock surface
-		if (!sfcDest->Lock()) return;
-		// Outside of surface/clip
-		if ((iX2<Max(0,iClipX1)) || (iX1>Min(iSfcWdt-1,iClipX2))
-		    || (iY2<Max(0,iClipY1)) || (iY1>Min(iSfcHgt-1,iClipY2)))
-			{ sfcDest->Unlock(); return; }
-		// Clip to surface/clip
-		if (iX1<Max(0,iClipX1)) iX1=Max(0,iClipX1); if (iX2>Min(iSfcWdt-1,iClipX2)) iX2=Min(iSfcWdt-1,iClipX2);
-		if (iY1<Max(0,iClipY1)) iY1=Max(0,iClipY1); if (iY2>Min(iSfcHgt-1,iClipY2)) iY2=Min(iSfcHgt-1,iClipY2);
-		// Set lines
-		for (ycnt=iY2-iY1; ycnt>=0; ycnt--)
-			for (xcnt=iX2-iX1; xcnt>=0; xcnt--)
-				sfcDest->SetPixDw(iX1+xcnt, iY1+ycnt, dwClr);
-		// Unlock surface
-		sfcDest->Unlock();
-	}
-	// draw as primitives
-	DrawBoxDw(sfcDest, iX1, iY1, iX2, iY2, dwClr);
-}
-
 void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	ApplyZoom(x1, y1);
@@ -1099,70 +1048,6 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr);
 }
 
-void CStdDDraw::DrawHorizontalLine(SURFACE sfcDest, int x1, int x2, int y, BYTE col)
-{
-	// if this is a render target: draw it as a box
-	if (sfcDest->IsRenderTarget())
-	{
-		DrawLine(sfcDest, x1, y, x2, y, col);
-		return;
-	}
-	int lWdt=sfcDest->Wdt,lHgt=sfcDest->Hgt,xcnt;
-	// Lock surface
-	if (!sfcDest->Lock()) return;
-	// Fix coordinates
-	if (x1>x2) Swap(x1,x2);
-	// Determine clip
-	int clpx1,clpx2,clpy1,clpy2;
-	clpx1=Max(0,iClipX1); clpy1=Max(0,iClipY1);
-	clpx2=Min(lWdt-1,iClipX2); clpy2=Min(lHgt-1,iClipY2);
-	// Outside clip check
-	if ((x2<clpx1) || (x1>clpx2) || (y<clpy1) || (y>clpy2))
-		{ sfcDest->Unlock(); return; }
-	// Clip to clip
-	if (x1<clpx1) x1=clpx1; if (x2>clpx2) x2=clpx2;
-	// Set line
-	for (xcnt=x2-x1; xcnt>=0; xcnt--) sfcDest->SetPix(x1+xcnt, y, col);
-	// Unlock surface
-	sfcDest->Unlock();
-}
-
-void CStdDDraw::DrawVerticalLine(SURFACE sfcDest, int x, int y1, int y2, BYTE col)
-{
-	// if this is a render target: draw it as a box
-	if (sfcDest->IsRenderTarget())
-	{
-		DrawLine(sfcDest, x, y1, x, y2, col);
-		return;
-	}
-	int lWdt=sfcDest->Wdt,lHgt=sfcDest->Hgt,ycnt;
-	// Lock surface
-	if (!sfcDest->Lock()) return;
-	// Fix coordinates
-	if (y1>y2) Swap(y1,y2);
-	// Determine clip
-	int clpx1,clpx2,clpy1,clpy2;
-	clpx1=Max(0,iClipX1); clpy1=Max(0,iClipY1);
-	clpx2=Min(lWdt-1,iClipX2); clpy2=Min(lHgt-1,iClipY2);
-	// Outside clip check
-	if ((x<clpx1) || (x>clpx2) || (y2<clpy1) || (y1>clpy2))
-		{ sfcDest->Unlock(); return; }
-	// Clip to clip
-	if (y1<clpy1) y1=clpy1; if (y2>clpy2) y2=clpy2;
-	// Set line
-	for (ycnt=y1; ycnt<=y2; ycnt++) sfcDest->SetPix(x, ycnt, col);
-	// Unlock surface
-	sfcDest->Unlock();
-}
-
-void CStdDDraw::DrawFrame(SURFACE sfcDest, int x1, int y1, int x2, int y2, BYTE col)
-{
-	DrawHorizontalLine(sfcDest,x1,x2,y1,col);
-	DrawHorizontalLine(sfcDest,x1,x2,y2,col);
-	DrawVerticalLine(sfcDest,x1,y1,y2,col);
-	DrawVerticalLine(sfcDest,x2,y1,y2,col);
-}
-
 void CStdDDraw::DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
 {
 	DrawLineDw(sfcDest,(float)x1,(float)y1,(float)x2,(float)y1, dwClr);
@@ -1190,13 +1075,6 @@ bool UnLockSurfaceGlobal(SURFACE sfcTarget)
 	return true;
 }
 
-bool DLineSPix(int32_t x, int32_t y, int32_t col)
-{
-	if (!GLSBuffer) return false;
-	GLSBuffer->SetPix(x,y,col);
-	return true;
-}
-
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
 {
 	if (!GLSBuffer) return false;
@@ -1217,37 +1095,6 @@ void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE c
 		}
 	}
 	sfcDest->Unlock();
-}
-
-void CStdDDraw::SurfaceAllowColor(SURFACE sfcSfc, DWORD *pdwColors, int iNumColors, bool fAllowZero)
-{
-	// safety
-	if (!sfcSfc) return;
-	if (!pdwColors || !iNumColors) return;
-	// change colors
-	int xcnt,ycnt,wdt=sfcSfc->Wdt,hgt=sfcSfc->Hgt;
-	// Lock surface
-	if (!sfcSfc->Lock()) return;
-	for (ycnt=0; ycnt<hgt; ycnt++)
-	{
-		for (xcnt=0; xcnt<wdt; xcnt++)
-		{
-			DWORD dwColor = sfcSfc->GetPixDw(xcnt,ycnt,false);
-			BYTE px = 0;
-			for (int i = 0; i < 256; ++i)
-				if (lpDDrawPal->GetClr(i) == dwColor)
-				{
-					px = i; break;
-				}
-			if (fAllowZero)
-			{
-				if (!px) continue;
-				--px;
-			}
-			sfcSfc->SetPixDw(xcnt, ycnt, pdwColors[px % iNumColors]);
-		}
-	}
-	sfcSfc->Unlock();
 }
 
 void CStdDDraw::Grayscale(SURFACE sfcSfc, int32_t iOffset)
