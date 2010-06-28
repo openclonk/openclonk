@@ -157,12 +157,6 @@ bool C4GraphicsResource::PreInit()
 {
 	if (!RegisterGlobalGraphics())
 		return false;
-	// update group set
-	if (!RegisterMainGroups())
-	{
-		LogFatal(LoadResStr("IDS_ERR_GFX_REGISTERMAIN"));
-		return false;
-	}
 	// init main system font
 	// This is preliminary, because it might be overloaded after scenario opening and Extra.c4g-initialization.
 	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
@@ -207,6 +201,12 @@ void C4GraphicsResource::ClearFonts()
 
 bool C4GraphicsResource::Init()
 {
+	// update group set
+	if (!RegisterMainGroups())
+	{
+		LogFatal(LoadResStr("IDS_ERR_GFX_REGISTERMAIN"));
+		return false;
+	}
 	// Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
