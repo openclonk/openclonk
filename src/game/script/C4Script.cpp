@@ -2334,7 +2334,7 @@ static C4Value FnAddMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C
 	C4String * szMessage = c4vMessage->getStr();
 	if (!szMessage) return C4VBool(false);
 
-	::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData(),cthr->Obj,NO_OWNER,0,0,FWhite);
+	::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData(),cthr->Obj,NO_OWNER,0,0,C4RGB(0xff, 0xff, 0xff));
 
 	return C4VBool(true);
 }

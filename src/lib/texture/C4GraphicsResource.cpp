@@ -51,7 +51,6 @@ void C4GraphicsResource::Default()
 
 	sfcControl.Default();
 	idSfcControl = 0;
-	idPalGrp = 0;
 
 	fctPlayer.Default();
 	fctFlag.Default();
@@ -76,8 +75,6 @@ void C4GraphicsResource::Default()
 	fctGamepad.Default();
 	fctBuild.Default();
 
-	ZeroMem(GamePalette,3*256);
-	ZeroMem(AlphaPalette,256);
 	fctCrewClr.Default();
 	fctFlagClr.Default();
 	fctPlayerClr.Default();
@@ -103,7 +100,6 @@ void C4GraphicsResource::Clear()
 
 	sfcControl.Clear();
 	idSfcControl = 0;
-	idPalGrp = 0;
 
 	fctCrewClr.Clear();
 	fctFlagClr.Clear();
@@ -201,29 +197,6 @@ bool C4GraphicsResource::Init()
 	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
 
 	if (!InitFonts()) return false;
-
-	// Game palette - could perhaps be eliminated...
-	int32_t idNewPalGrp;
-	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
-	if (!pPalGrp) { LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), "C4.pal"); return false; }
-	if (idPalGrp != idNewPalGrp)
-	{
-		if (!pPalGrp->AccessEntry("C4.pal")) { LogFatal("Pal error!"); return false; }
-		if (!pPalGrp->Read(GamePalette,256*3)) { LogFatal("Pal error!"); return false; }
-		for (int32_t cnt=0; cnt<256*3; cnt++) GamePalette[cnt]<<=2;
-		for (int32_t cnt=0; cnt<256; cnt++) AlphaPalette[cnt]=0xff;
-		// Set default force field color
-		GamePalette[191*3+0]=0;
-		GamePalette[191*3+1]=0;
-		GamePalette[191*3+2]=255;
-		AlphaPalette[191]=127;
-		// color 0 is transparent
-		GamePalette[0]=GamePalette[1]=GamePalette[2]=0;
-		AlphaPalette[0]=0;
-		// update game pal
-		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return false; }
-		idPalGrp = idNewPalGrp;
-	}
 
 	// load GUI files
 	if (!LoadFile(sfcCaption, "GUICaption", Files, idSfcCaption)) return false;

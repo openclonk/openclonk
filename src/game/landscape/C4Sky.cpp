@@ -64,9 +64,8 @@ void C4Sky::SetFadePalette(int32_t *ipColors)
 	// If colors all zero, use game palette default blue
 	if (ipColors[0]+ipColors[1]+ipColors[2]+ipColors[3]+ipColors[4]+ipColors[5]==0)
 	{
-		BYTE *pClr=::GraphicsResource.GamePalette+3*CSkyDef1;
-		FadeClr1=C4RGB(pClr[0], pClr[1], pClr[2]);
-		FadeClr2=C4RGB(pClr[3*19+0], pClr[3*19+1], pClr[3*19+2]);
+		FadeClr1=C4RGB(0x1c, 0x40, 0x99);
+		FadeClr2=C4RGB(0xc2, 0xc6, 0xff);
 	}
 	else
 	{
@@ -115,12 +114,6 @@ bool C4Sky::Init(bool fSavegame)
 	if (loaded)
 	{
 		// surface loaded, store first color index
-		/*if (Surface->HasOwnPal())
-		  {
-		  FadeClr1=Surface->pPal->GetClr(0);
-		  FadeClr2=Surface->pPal->GetClr(19);
-		  }
-		else*/
 		FadeClr1=FadeClr2=0xffffffff;
 		// enlarge surface to avoid slow 1*1-px-skies
 		if (!SurfaceEnsureSize(&Surface, 128, 128)) return false;

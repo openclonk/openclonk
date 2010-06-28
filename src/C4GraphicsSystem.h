@@ -54,8 +54,6 @@ public:
 	bool ShowPathfinder;
 	bool ShowNetstatus;
 	bool ShowSolidMask;
-	BYTE DarkColorTable[256];
-	bool fSetPalette;
 	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
 	bool fSetGamma;     // must gamma ramp be reassigned?
 	C4Video Video;
@@ -67,7 +65,6 @@ public:
 	void Execute();
 	void FlashMessage(const char *szMessage);
 	void FlashMessageOnOff(const char *strWhat, bool fOn);
-	void SetDarkColorTable();
 	void DeactivateDebugOutput();
 	void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
 	void SetMouseInGUI(bool fInGUI, bool fByMouse);
@@ -80,7 +77,6 @@ public:
 	void EnableLoaderDrawing(); // reset black screen loader flag
 	bool SaveScreenshot(bool fSaveAll);
 	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);
-	bool SetPalette();
 	bool CreateViewport(int32_t iPlayer, bool fSilent);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);

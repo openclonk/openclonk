@@ -42,14 +42,11 @@ protected:
 	C4Surface sfcScroll, sfcContext;
 	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext;
 	int32_t idSfcControl; // id of source group of control surface
-	int32_t idPalGrp;     // if of source group of pal file
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups
 	int32_t idRegisteredMainGroupSetFiles;
 public:
 	C4GroupSet Files;
-	BYTE GamePalette[256*3];
-	BYTE AlphaPalette[256*3]; // TODO: alphapal: Why *3?
 	float ProgressStart, ProgressIncrement;
 	C4FacetID fctPlayer;
 	C4FacetID fctFlag;

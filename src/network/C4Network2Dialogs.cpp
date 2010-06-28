@@ -855,12 +855,12 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	// safety: too small?
 	if (tw < 10 || th < 10) return;
 	// draw axis
-	lpDDraw->DrawHorizontalLine(cgo.Surface, tx, tx+tw-1, ty+th, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, CGray3);
-	lpDDraw->DrawVerticalLine(cgo.Surface, tx, ty, ty+th, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, CGray3);
-	lpDDraw->DrawLine(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, CGray3);
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty+th, tx+tw-1, ty+th, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx, ty+th, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
+	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
 	tw -= AxisArrowLen + AxisArrowIndent;
 	th -= AxisArrowLen + AxisArrowIndent; ty += AxisArrowLen + AxisArrowIndent;
 	// do axis numbering
@@ -872,7 +872,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	for (; iTime <= iMaxTime; iTime += iXAxisSteps)
 	{
 		iX = tx + tw * (iTime-iMinTime) / dt;
-		lpDDraw->DrawVerticalLine(cgo.Surface, iX, ty+th+1, ty+th+AxisMarkerLen, CGray3);
+		lpDDraw->DrawLineDw(cgo.Surface, iX, ty+th+1, iX, ty+th+AxisMarkerLen, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iTime);
 		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, iX, ty+th+AxisMarkerLen, 0xff7f7f7f, ACenter, false);
 	}
@@ -880,7 +880,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	for (; iVal <= iMaxVal; iVal += iYAxisSteps)
 	{
 		iY = ty+th - int((iVal-iMinVal) / dv * th);
-		lpDDraw->DrawHorizontalLine(cgo.Surface, tx-AxisMarkerLen, tx-1, iY, CGray3);
+		lpDDraw->DrawLineDw(cgo.Surface, tx-AxisMarkerLen, iY, tx-1, iY, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iVal);
 		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, tx-AxisMarkerLen, iY-rFont.GetLineHeight()/2, 0xff7f7f7f, ARight, false);
 	}

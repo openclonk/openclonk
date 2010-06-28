@@ -253,21 +253,6 @@ C4Facet C4Facet::Truncate(int32_t iAlign, int32_t iSize)
 	return fctResult;
 }
 
-void C4Facet::DrawSectionSelect(C4Facet &cgo, int32_t iSelection, int32_t iMaxSelect)
-{
-	int32_t sections = cgo.GetSectionCount();
-	int32_t idnum = iMaxSelect;
-	int32_t firstid = BoundBy<int32_t>(iSelection-sections/2,0,Max<int32_t>(idnum-sections,0));
-	C4Facet cgo2;
-	for (int32_t cnt=0; (cnt<sections) && (firstid+cnt<idnum); cnt++)
-	{
-		cgo2 = cgo.GetSection(cnt);
-		if (iSelection==firstid+cnt)
-			lpDDraw->DrawBox(cgo2.Surface,cgo2.X,cgo2.Y,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1,CRed);
-		Draw(cgo2,true,firstid+cnt,0);
-	}
-}
-
 void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t iSectionY, int32_t iAlign)
 {
 	if (!lpDDraw) return;
@@ -360,20 +345,6 @@ void C4Facet::DrawXT(SURFACE sfcTarget, float iX, float iY, int32_t iWdt, int32_
 	              sfcTarget,
 	              iX,iY,iWdt,iHgt,
 	              true, pTransform);
-}
-
-void C4Facet::DrawEnergyLevel(int32_t iLevel, int32_t iRange, int32_t iColor)
-{
-	if (!lpDDraw) return;
-	iLevel = BoundBy<int32_t>(iLevel,0,iRange);
-	lpDDraw->DrawBox(Surface,
-	                 X,Y,
-	                 X+Wdt-1,Y+Hgt-1,
-	                 40);
-	lpDDraw->DrawBox(Surface,
-	                 X+1,Y+1+(Hgt-2)-(Hgt-2)*iLevel/Max<int32_t>(iRange,1),
-	                 X+Wdt-2,Y+Hgt-2,
-	                 iColor);
 }
 
 void C4Facet::DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx)
@@ -493,12 +464,6 @@ void C4Facet::Expand(int32_t iLeft, int32_t iRight, int32_t iTop, int32_t iBotto
 	Wdt+=iRight;
 	Y-=iTop; Hgt+=iTop;
 	Hgt+=iBottom;
-}
-
-void C4Facet::Wipe()
-{
-	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
-	lpDDraw->WipeSurface(Surface);
 }
 
 bool C4Facet::GetPhaseNum(int32_t &rX, int32_t &rY)

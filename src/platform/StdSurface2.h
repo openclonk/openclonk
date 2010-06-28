@@ -151,8 +151,6 @@ protected:
 public:
 	void SetBackground() { fIsBackground = true; }
 	int IsLocked() const { return Locked; }
-	bool HLine(int iX, int iX2, int iY, int iCol);
-	bool Box(int iX, int iY, int iX2, int iY2, int iCol);
 	// Note: This uses partial locks, anything but SetPixDw and Unlock is undefined afterwards until unlock.
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 	void ClearBox8Only(int iX, int iY, int iWdt, int iHgt); // clear box in 8bpp-surface only
@@ -160,7 +158,6 @@ public:
 	bool Lock();
 	bool GetTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
 	bool GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
-	bool SetPix(int iX, int iY, BYTE byCol);  // set 8bit-px
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
@@ -180,10 +177,9 @@ public:
 	void Default();
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();
-	bool ReadBMP(class CStdStream &hGroup, bool fOwnPal=false);
+	bool ReadBMP(class CStdStream &hGroup);
 	bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
 	bool AttachPalette();
-	bool Wipe(); // empty to transparent
 #ifdef USE_DIRECTX
 	IDirect3DSurface9 *GetSurface(); // get internal surface
 #endif

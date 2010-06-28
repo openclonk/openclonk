@@ -452,10 +452,10 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 	}
 	// Draw drag frame
 	if (DragFrame)
-		Application.DDraw->DrawFrame(cgo.Surface,Min(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Min(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,Max(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Max(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,CWhite);
+		Application.DDraw->DrawFrameDw(cgo.Surface,Min(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Min(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,Max(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Max(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,0xffffffff);
 	// Draw drag line
 	if (DragLine)
-		Application.DDraw->DrawLine(cgo.Surface,X*Zoom+cgo.X-cgo.TargetX*Zoom,Y*Zoom+cgo.Y-cgo.TargetY*Zoom,X2*Zoom+cgo.X-cgo.TargetX*Zoom,Y2*Zoom+cgo.Y-cgo.TargetY*Zoom,CWhite);
+		Application.DDraw->DrawLineDw(cgo.Surface,X*Zoom+cgo.X-cgo.TargetX*Zoom,Y*Zoom+cgo.Y-cgo.TargetY*Zoom,X2*Zoom+cgo.X-cgo.TargetX*Zoom,Y2*Zoom+cgo.Y-cgo.TargetY*Zoom,0xffffffff);
 	// Draw drop target
 	if (DropTarget)
 		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,

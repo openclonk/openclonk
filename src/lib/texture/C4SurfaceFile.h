@@ -23,9 +23,8 @@
 #ifndef INC_C4SurfaceFile
 #define INC_C4SurfaceFile
 
-C4Surface *GroupReadSurface(CStdStream &hGroup, BYTE *bpPalette=NULL);
+C4Surface *GroupReadSurface(CStdStream &hGroup);
 CSurface8 *GroupReadSurface8(CStdStream &hGroup);
-C4Surface *GroupReadSurfaceOwnPal(CStdStream &hGroup);
 CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup);
 
 /*bool SaveSurface(const char *szFilename, SURFACE sfcSurface, BYTE *bpPalette);*/

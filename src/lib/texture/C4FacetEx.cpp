@@ -54,46 +54,6 @@ void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1
 	lpDDraw->DrawPix(Surface,(float)(X+iX1),(float)(Y+iY1),col2);
 }
 
-void C4TargetFacet::DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2)
-{
-	DrawLineDw(iX1, iY1, iX2, iY2, lpDDraw->Pal.GetClr(bCol1), lpDDraw->Pal.GetClr(bCol2));
-}
-
-// bolt random size
-#define DrawBoltR1 7
-#define DrawBoltR2 3
-
-void C4TargetFacet::DrawBolt(int iX1, int iY1, int iX2, int iY2, BYTE bCol, BYTE bCol2)
-{
-	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
-	// Scroll position
-	iX1-=TargetX; iY1-=TargetY; iX2-=TargetX; iY2-=TargetY;
-	// Facet bounds
-	if (!Inside(iX1,0,Wdt-1) && !Inside(iX2,0,Wdt-1)) return;
-	if (!Inside(iY1,0,Hgt-1) && !Inside(iY2,0,Hgt-1)) return;
-	iX1+=X; iX2+=X; iY1+=Y; iY2+=Y;
-	// Draw bolt
-	float pvtx[2*4];
-	pvtx[0]=iX1; pvtx[1]=iY1; pvtx[2]=iX2; pvtx[3]=iY2;
-	pvtx[4]=iX2+SafeRandom(DrawBoltR1)-DrawBoltR2; pvtx[5]=iY2+SafeRandom(DrawBoltR1)-DrawBoltR2;
-	pvtx[6]=iX1+SafeRandom(DrawBoltR1)-DrawBoltR2; pvtx[7]=iY1+SafeRandom(DrawBoltR1)-DrawBoltR2;
-	// Draw in surface
-	DWORD dwClr1=lpDDraw->Pal.GetClr(bCol),dwClr2;
-	DWORD dwClr3=lpDDraw->Pal.GetClr(bCol2),dwClr4;
-	/*if (DDrawCfg.NoBoxFades)
-	  {*/
-	dwClr2=dwClr1;
-	dwClr4=dwClr3;
-	/*}
-	else
-	{
-	DWORD dwClr2=dwClr1|0xff000000; ...this leads to black and white lightning bolts. Who wants that?
-	DWORD dwClr4=dwClr3|0xff000000;
-	}*/
-	lpDDraw->DrawQuadDw(Surface,pvtx,dwClr1,dwClr3,dwClr4,dwClr2);
-}
-
-
 // ------------------------
 // C4FacetSurface
 

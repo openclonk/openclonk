@@ -1724,9 +1724,6 @@ bool C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 			for (iTopFree=0; (iTopFree<50) && !GBackSolid(cx,cy+cObj->Shape.GetY()-iTopFree); ++iTopFree) {}
 			if (iTopFree>=15)
 			{
-				//sprintf(OSTR,"Flight take off at %d (%d)",iAngle,Distance(cx,cy,Tx,Ty)); Log(OSTR); GameMsgObject(OSTR,cObj);
-				//cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
-
 				// Take off
 				cObj->SetActionByName("Fly"); // This is a little primitive... we should have a ObjectActionFly or maybe a command for this...
 			}
@@ -1756,7 +1753,6 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 				for (iTopFree=0; (iTopFree<50) && !GBackSolid(cx,cy+cObj->Shape.GetY()-iTopFree); ++iTopFree) {}
 				if (iTopFree>=15)
 				{
-					//sprintf(OSTR,"Diagonal %d (%d)",iAngle,Distance(cx,cy,Tx,Ty)); GameMsgObject(OSTR,cObj);
 					cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
 				}
 			}
@@ -1780,27 +1776,19 @@ bool C4Command::JumpControl() // Called by DFA_WALK
 					cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,iSideY,50);
 					return true;
 				}
-				/*else
-				  { sprintf(OSTR,"Side move %d/%d path not free",iSideX,iSideY); GameMsgObject(OSTR,cObj); }*/
 			}
-			/*else
-			  { sprintf(OSTR,"Side move %d out of range",iSideX-cx); GameMsgObject(OSTR,cObj); }*/
 		}
-	/*else
-	  { sprintf(OSTR,"No high range %d",cy-Ty); GameMsgObject(OSTR,cObj); }*/
 
 	// Low side contact jump
 	int32_t iLowSideRange=5;
 	if (cObj->t_contact & CNAT_Right)
 		if (Inside(iAngle-JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
 		{
-			//sprintf(OSTR,"Low contact right %d",iAngle); GameMsgObject(OSTR,cObj);
 			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
 		}
 	if (cObj->t_contact & CNAT_Left)
 		if (Inside(iAngle+JumpLowAngle,-iLowSideRange*JumpAngleRange,+iLowSideRange*JumpAngleRange))
 		{
-			//sprintf(OSTR,"Low contact left %d",iAngle); GameMsgObject(OSTR,cObj);
 			cObj->AddCommand(C4CMD_Jump,NULL,Tx,Ty); return true;
 		}
 
@@ -2046,7 +2034,7 @@ void C4Command::Fail(const char *szFailMessage)
 				// Message (if not empty)
 				if (!!str)
 				{
-					::Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, true);
+					::Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, C4RGB(0xff, 0xff, 0xff), true);
 				}
 				// Fail sound
 				StartSoundEffect("CommandFailure*",false,100,l_Obj);

@@ -489,10 +489,7 @@ bool C4Game::Init()
 	if (!InitGameFinal()) return false;
 	SetInitProgress(99);
 
-	// Color palette
-	if (Application.isFullScreen) Application.DDraw->WipeSurface(FullScreen.pSurface);
-	GraphicsSystem.SetPalette();
-	GraphicsSystem.SetDarkColorTable();
+	// Gamma
 	GraphicsSystem.ApplyGamma();
 
 	// Message board and upper board
@@ -871,10 +868,6 @@ bool C4Game::InitMaterialTexture()
 
 	// Cross map mats (after texture init, because Material-Texture-combinations are used)
 	if (!::MaterialMap.CrossMapMaterials()) return false;
-
-	// mapping to landscape palette will occur when landscape has been created
-	// set the pal
-	::GraphicsSystem.SetPalette();
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();

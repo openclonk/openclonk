@@ -55,13 +55,8 @@ void CSurface8::Clear()
 	// clear bitmap-copy
 	delete [] Bits; Bits=NULL;
 	// clear pal
-	if (HasOwnPal()) delete pPal;
+	delete pPal;
 	pPal=NULL;
-}
-
-bool CSurface8::HasOwnPal()
-{
-	return pPal != lpDDrawPal;
 }
 
 void CSurface8::Box(int iX, int iY, int iX2, int iY2, int iCol)
@@ -85,22 +80,16 @@ void CSurface8::HLine(int iX, int iX2, int iY, int iCol)
 	for (int cx=iX; cx<=iX2; cx++) SetPix(cx,iY,iCol);
 }
 
-bool CSurface8::Create(int iWdt, int iHgt, bool fOwnPal)
+bool CSurface8::Create(int iWdt, int iHgt)
 {
 	Clear();
 	// check size
 	if (!iWdt || !iHgt) return false;
 	Wdt=iWdt; Hgt=iHgt;
 
-	// create/link to pal
-	if (fOwnPal)
-	{
-		pPal = new CStdPalette;
-		if (!pPal) return false;
-		memcpy(pPal, &lpDDraw->Pal, sizeof(CStdPalette));
-	}
-	else
-		pPal = &lpDDraw->Pal;
+	// create pal
+	pPal = new CStdPalette;
+	if (!pPal) return false;
 
 	Bits=new BYTE[Wdt*Hgt];
 	if (!Bits) return false;
@@ -111,7 +100,7 @@ bool CSurface8::Create(int iWdt, int iHgt, bool fOwnPal)
 	return true;
 }
 
-bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
+bool CSurface8::Read(CStdStream &hGroup)
 {
 	int cnt,lcnt,iLineRest;
 	CBitmap256Info BitmapInfo;
@@ -134,20 +123,17 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 	//f8BitSfc=false;
 
 	// Create and lock surface
-	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return false;
+	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight)) return false;
 
 	if (BitmapInfo.Info.biBitCount == 8)
 	{
-		if (HasOwnPal())
+		// Copy palette
+		for (cnt=0; cnt<256; cnt++)
 		{
-			// Copy palette
-			for (cnt=0; cnt<256; cnt++)
-			{
-				pPal->Colors[cnt*3+0]=BitmapInfo.Colors[cnt].rgbRed;
-				pPal->Colors[cnt*3+1]=BitmapInfo.Colors[cnt].rgbGreen;
-				pPal->Colors[cnt*3+2]=BitmapInfo.Colors[cnt].rgbBlue;
-				pPal->Alpha[cnt]=0xff;
-			}
+			pPal->Colors[cnt*3+0]=BitmapInfo.Colors[cnt].rgbRed;
+			pPal->Colors[cnt*3+1]=BitmapInfo.Colors[cnt].rgbGreen;
+			pPal->Colors[cnt*3+2]=BitmapInfo.Colors[cnt].rgbBlue;
+			pPal->Alpha[cnt]=0xff;
 		}
 	}
 
@@ -208,48 +194,10 @@ bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
 	return true;
 }
 
-/*
-double ColorDistance(BYTE *bpRGB1, BYTE *bpRGB2)
-  {
-  return (double) (Abs(bpRGB1[0]-bpRGB2[0]) + Abs(bpRGB1[1]-bpRGB2[1]) + Abs(bpRGB1[2]-bpRGB2[2])) / 6.0;
-  }
-
-void CSurface8::SetPalette(BYTE *bpPalette, bool fAdapt)
-  {
-  if (!HasOwnPal()) return;
-  // Adapt bitmap
-  if (fAdapt)
-    {
-    BYTE AdaptMap[256]; AdaptMap[0]=0;
-    for (int iFromCol=1; iFromCol<256; iFromCol++) // Color zero transparent
-      {
-      int iToCol = 1;
-      for (int cToCol=iToCol+1; cToCol<256; cToCol++)
-        if ( ColorDistance(&pPal->Colors[iFromCol*3],&bpPalette[cToCol*3])
-           < ColorDistance(&pPal->Colors[iFromCol*3],&bpPalette[iToCol*3]) )
-              iToCol = cToCol;
-
-      AdaptMap[iFromCol] = iToCol;
-      }
-
-    MapBytes(AdaptMap);
-
-    }
-
-  // Set palette
-  MemCopy(bpPalette,pPal->Colors,256*3);
-  }
-*/
 void CSurface8::MapBytes(BYTE *bpMap)
 {
 	if (!bpMap) return;
 	for (int cnt=0; cnt<Wdt*Hgt; cnt++) SetPix(cnt%Wdt, cnt/Wdt, bpMap[GetPix(cnt%Wdt, cnt/Wdt)]);
-}
-
-void CSurface8::Wipe()
-{
-	for (int i=0; i<Wdt*Hgt; ++i)
-		SetPix(i%Wdt, i/Wdt, 0);
 }
 
 void CSurface8::GetSurfaceSize(int &irX, int &irY)

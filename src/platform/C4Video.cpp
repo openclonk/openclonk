@@ -169,13 +169,6 @@ bool C4Video::Start(const char *szFilename)
 	pInfo->bmiHeader.biBitCount=Config.Graphics.BitDepth;
 	pInfo->bmiHeader.biCompression=0;
 	pInfo->bmiHeader.biSizeImage = DWordAligned(Width)*Height * Config.Graphics.BitDepth/8;
-	if (Config.Graphics.BitDepth == 8)
-		for (int cnt=0; cnt<256; cnt++)
-		{
-			pInfo->bmiColors[cnt].rgbRed = ::GraphicsResource.GamePalette[cnt*3+0];
-			pInfo->bmiColors[cnt].rgbGreen = ::GraphicsResource.GamePalette[cnt*3+1];
-			pInfo->bmiColors[cnt].rgbBlue = ::GraphicsResource.GamePalette[cnt*3+2];
-		}
 	// Recording flag
 	Recording=true;
 #endif //_WIN32
@@ -203,9 +196,9 @@ void C4Video::Draw(C4TargetFacet &cgo)
 	// No show
 	if (!ShowFlash) return;
 	// Draw frame
-	Application.DDraw->DrawFrame(cgo.Surface, X+cgo.X,Y+cgo.Y,
+	Application.DDraw->DrawFrameDw(cgo.Surface, X+cgo.X,Y+cgo.Y,
 	                             X+cgo.X+Width-1,Y+cgo.Y+Height-1,
-	                             Recording ? CRed : CWhite);
+	                             Recording ? C4RGB(0xca, 0, 0) : C4RGB(0xff, 0xff, 0xff));
 	// Draw status
 	StdStrBuf str;
 	if (Recording) str.Format("%dx%d Frame %d",Width,Height,AviFrame);

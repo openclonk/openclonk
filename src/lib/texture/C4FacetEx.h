@@ -50,8 +50,6 @@ public:
 	void Set(class CSurface *nsfc, int nx, int ny, int nwdt, int nhgt, float ntx=0, float nty=0);
 	void Set(class CSurface *nsfc, const C4Rect & r, float ntx=0, float nty=0);
 
-	void DrawBolt(int iX1, int iY1, int iX2, int iY2, BYTE bCol, BYTE bCol2);
-	void DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2);
 	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2);
 public:
 	C4TargetFacet &operator = (const C4Facet& rhs)

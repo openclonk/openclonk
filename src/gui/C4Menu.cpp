@@ -169,7 +169,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Select mark
 	if (iStyle!=C4MN_Style_Info)
 		if (fSelected && TextDisplayProgress)
-			Application.DDraw->DrawBox(cgo.Surface,cgoOut.X,cgoOut.Y,cgoOut.X+cgoOut.Wdt-1,cgoOut.Y+cgoOut.Hgt-1,CRed);
+			Application.DDraw->DrawBoxDw(cgo.Surface, cgoOut.X, cgoOut.Y, cgoOut.X + cgoOut.Wdt - 1, cgoOut.Y + cgoOut.Hgt - 1, C4RGB(0xca, 0, 0));
 	// Symbol/text areas
 	C4Facet cgoItemSymbol,cgoItemText;
 	cgoItemSymbol=cgoItemText=cgoOut;
@@ -934,10 +934,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 
 void C4Menu::DrawFrame(SURFACE sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 {
-	lpDDraw->DrawFrame(sfcSurface,iX+1,iY+1,iX+iWdt-1,iY+iHgt-1,80);
-//  lpDDraw->DrawFrame(sfcSurface,iX,iY,iX+iWdt-2,iY+iHgt-2,87);
-//  lpDDraw->SetPixel(sfcSurface,iX+iWdt-1,iY,85);
-//  lpDDraw->SetPixel(sfcSurface,iX,iY+iHgt-1,85);
+	lpDDraw->DrawFrameDw(sfcSurface, iX+1, iY+1, iX+iWdt-1,iY+iHgt-1, C4RGB(0x44, 0, 0));
 }
 
 void C4Menu::SetAlignment(int32_t iAlignment)

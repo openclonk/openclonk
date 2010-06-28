@@ -58,7 +58,7 @@ public:
 		C4Surface* surface = new C4Surface;
 		// Suppress error message here, StdMeshMaterial loader
 		// will show one.
-		if (!surface->Read(Group, GetExtension(filename), false))
+		if (!surface->Read(Group, GetExtension(filename)))
 			{ delete surface; surface = NULL; }
 		return surface;
 	}

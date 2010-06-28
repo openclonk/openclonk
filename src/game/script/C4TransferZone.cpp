@@ -139,10 +139,10 @@ void C4TransferZones::Draw(C4TargetFacet &cgo)
 void C4TransferZone::Draw(C4TargetFacet &cgo, bool fHighlight)
 {
 	if (Used) fHighlight=true;
-	lpDDraw->DrawFrame(cgo.Surface,
+	lpDDraw->DrawFrameDw(cgo.Surface,
 	                   int(cgo.X+X-cgo.TargetX),int(cgo.Y+Y-cgo.TargetY),
 	                   int(cgo.X+X-cgo.TargetX+Wdt-1),int(cgo.Y+Y-cgo.TargetY+Hgt-1),
-	                   fHighlight ? CGreen : CRed);
+	                   fHighlight ? C4RGB(0, 0xca, 0) : C4RGB(0xca, 0, 0));
 }
 
 bool C4TransferZone::At(int32_t iX, int32_t iY)
