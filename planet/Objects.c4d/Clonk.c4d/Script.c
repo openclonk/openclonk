@@ -1499,7 +1499,7 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 
 func Hit(int iXSpeed, int iYSpeed)
 {
-	if(iYSpeed < 300) return;
+	if(iYSpeed < 450) return;
 	if(GetAction() != "Walk") return;
 	var iKneelDownSpeed = 18;
 	SetXDir(0);
