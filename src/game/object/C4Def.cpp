@@ -693,7 +693,6 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			GetPropertyVal(P_PictureTransformation, value);
 		}
 
-
 		StdMeshMatrix matrix;
 		if (C4ValueToMatrix(value, &matrix))
 			lpDDraw->SetMeshTransform(&matrix);
@@ -712,7 +711,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	if (pObj && pObj->pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, pObj);
+				pGfxOvrl->DrawPicture(cgo, pObj, trans);
 }
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)

@@ -256,7 +256,7 @@ public:
 	C4DefGraphics *GetGfx() const { return pSourceGfx; }
 
 	void Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer);
-	void DrawPicture(C4Facet &cgo, C4Object *pForObj);
+	void DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTransform* trans);
 	void DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj);
 
 	bool operator == (const C4GraphicsOverlay &rCmp) const; // comparison operator

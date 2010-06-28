@@ -2959,7 +2959,7 @@ void C4Object::Picture2Facet(C4FacetSurface &cgo)
 	if (pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, this);
+				pGfxOvrl->DrawPicture(cgo, this, NULL);
 
 	// done; reset drawing states
 	FinishedDrawing();

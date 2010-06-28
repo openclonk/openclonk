@@ -1153,7 +1153,7 @@ void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 	pRankSys->DrawRankSymbol(NULL, rank_obj->Info->Rank, pRankRes, iRankCnt, false, 0, &cgo);
 }
 
-void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
+void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTransform* trans)
 {
 	assert(IsPicture());
 	// update object color
@@ -1174,7 +1174,13 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 	// draw at given rect
 	if (!pMeshInstance)
 	{
-		fctBlit.DrawT(cgo, true, iPhase, 0, &C4DrawTransform(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2));
+		// the picture we are rendering is the one with trans applied, and the overlay transformation
+		// is applied to the picture we are rendering, so apply it afterwards. Note that
+		// CBltTransform::operator*= does this = other * this.
+		C4DrawTransform trf(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2);
+		if(trans) trf *= *trans;
+
+		fctBlit.DrawT(cgo, true, iPhase, 0, &trf);
 	}
 	else
 	{
@@ -1186,8 +1192,14 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 		if (C4ValueToMatrix(value, &matrix))
 			lpDDraw->SetMeshTransform(&matrix);
 
+		// the picture we are rendering is the one with trans applied, and the overlay transformation
+		// is applied to the picture we are rendering, so apply it afterwards. Note that
+		// CBltTransform::operator*= does this = other * this.
+		C4DrawTransform trf(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2);
+		if(trans) trf *= *trans;
+
 		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
 		lpDDraw->SetPerspective(false);
 		lpDDraw->SetMeshTransform(NULL);
 	}
