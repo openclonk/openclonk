@@ -669,7 +669,7 @@ void C4ToolsDlg::UpdatePreview()
 
 	// fill bg
 #ifdef _WIN32
-	Application.DDraw->DrawBox(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,CGray4);
+	Application.DDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
 #endif
 	BYTE bCol = 0;
 	CPattern Pattern;

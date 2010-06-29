@@ -51,7 +51,7 @@ public:
 	HDC hDC = ::CreateCompatibleDC(NULL);
 	if (hDC)
 	{
-		HFONT hFont = ::CreateFont(iSize, 0, 0, 0, dwWeight, false,
+		HFONT hFont = ::CreateFont(0, 0, 0, 0, FW_DONTCARE, false,
 		                           false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
 		                           CLIP_DEFAULT_PRECIS, 5,
 		                           VARIABLE_PITCH, FontFaceName);
