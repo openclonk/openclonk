@@ -149,7 +149,7 @@ func Show()
 		{
 			var angle=(i*segment)+(segment/2);
 			if(item_count == 1)
-				menu_icons[i]->SetPosition(x,y);
+				menu_icons[i]->SetPosition(x,y+GUI_Ringmenu_Radius);
 			else
 				menu_icons[i]->SetPosition(x+Sin(angle,GUI_Ringmenu_Radius),y-Cos(angle,GUI_Ringmenu_Radius));
 			menu_icons[i]["Visibility"] = VIS_Owner;

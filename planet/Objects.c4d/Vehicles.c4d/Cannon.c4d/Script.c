@@ -5,6 +5,10 @@
 	Fires objects great distances.
 --*/
 
+#include Library_ItemContainer
+
+private func MenuOnControlUseAlt() { return true; }
+
 local aim_anim;
 local olddir;
 local grabber;
@@ -32,17 +36,7 @@ protected func ContactRight()
 }
 
 //Only one object fits in barrel
-private func MaxContents() { return 1; }
-
-protected func RejectCollect(id idObj,object pObj)
-{
-	if(ContentsCount() < MaxContents()) { Sound("Clonk"); return 0; }
-
-	if(pObj->Contained()) return Message("$TxtCannonisfull$");
-	if(Abs(pObj->GetXDir())>6) pObj->SetYDir(-5);
-	Sound("WoodHit*");
-	return 1;
-}
+private func MaxContentsCount() { return 6; }
 
 /* Control */
 
@@ -51,13 +45,6 @@ public func ControlUseStart(object clonk, int ix, int iy)
 	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
 	AddEffect("TrajAngle", this, 50, 1, this);
 	return 1;
-}
-
-public func ControlUseStartAlt(object clonk, int ix, int iy)
-{
-	if(clonk->ContentsCount() < MaxContents()) Contents(0)->Enter(clonk);
-	else
-		Contents(0)->Exit();
 }
 
 public func HoldingEnabled() { return true; }
@@ -102,21 +89,29 @@ private func ConvertAngle(int angle)
 public func ControlUseStop(object clonk, int ix, int iy)
 {
 	RemoveTrajectory(this);
-	if(!Contents(0))//needs a shot
+	var gunp = FindObject(Find_Container(this), Find_ID(Blackpowder));
+	if (!gunp) // Needs gunpowder
 	{
-		PlayerMessage(clonk->GetOwner(),"$TxtNeedsammo$");
-		return 1;
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
+		return true;
+	}
+	var projectile = FindObject(Find_Container(this), Find_Not(Find_ID(Blackpowder)));
+	if (!projectile) // Needs a projectile
+	{
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		return true;
 	}
 
 	//Can't fire if cannon is cooling down
-	if(GetEffect("Cooldown",this))	return 1;
+	if(GetEffect("Cooldown",this))	return true;
 	
-	if(Contents(0))
+	if (projectile)
 	{
-		DoFire(Contents(0), clonk, Angle(0,0,ix,iy));
+		DoFire(projectile, clonk, Angle(0,0,ix,iy));
+		gunp->RemoveObject();
 		AddEffect("Cooldown",this,1,1,this);
 	}
-	return 1;
+	return true;
 }
 
 public func ControlUseCancel(object clonk, int ix, int iy)

@@ -1,4 +1,5 @@
 TxtControl=Control
 TxtCannonisfull=Cannon is already loaded!
-TxtNeedsammo=Cannon has no ammo.
+TxtNeedsAmmo=Cannon has no ammo.
+TxtNeedsGunp=Cannon has no gunpowder.
 Name=Cannon

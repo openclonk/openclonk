@@ -1,6 +1,14 @@
-/*-- Lore --*/
+/*-- Lorry --*/
 
-/* Status */
+#include Library_ItemContainer
+
+local content_menu;
+
+protected func Construction()
+{
+	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
+}
 
 public func IsLorry() { return 1; }
 
@@ -18,116 +26,52 @@ protected func Initialize()
 	iTremble = 0;
 }
 
-/* Steuerung */
+/*-- Movement --*/
 
 protected func ContactLeft()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5))
+		SetRDir(RandomX(-7, +7));
 }
 
 protected func ContactRight()
 {
-	if(Stuck() && !Random(5)) SetRDir(RandomX(-7, +7));
+	if (Stuck() && !Random(5)) 
+		SetRDir(RandomX(-7, +7));
 }
 
-private func ControlElevator(string szCommand, object pObject)
+/*-- Contents --*/
+
+private func MaxContentsCount()
 {
-	// Objekte an dieser Position überprüfen
-	for(var pElev in FindObjects(Find_AtPoint(1,1), Find_OCF(OCF_Grab), Find_NoContainer()))
-		// Im Fahrstuhlkorb
-		if(pElev->~IsElevator())
-			// Steuerung an Fahrstuhl weiterleiten
-			return pElev->Call(szCommand,pObject);
-	return 0;
+	return 50;
 }
 
-private func ControlElevatorMovement(string szCommand, object pObject)
+private func MenuOnInteraction() { return false; }
+private func MenuOnControlUse() { return true; }
+private func MenuOnControlUseAlt() { return false; }
+
+protected func RejectCollect(id object_id, object obj)
 {
-	// Objekte an dieser Position überprüfen
-	for(var pElev in FindObjects(Find_AtPoint(1,1), Find_OCF(OCF_Grab), Find_NoContainer()))
-		// Fahrstuhlkorb gefunden
-		if(pElev->~IsElevator())
-			// Lore ist angehalten
-			if (GetComDir() == COMD_Stop)
-				// Steuerung an Fahrstuhl weiterleiten
-				return pElev->Call(szCommand,pObject);
-	return 0;
-}
-
-private func ControlElevatorStop(string szCommand, object pObject)
-{
-	// Objekte an dieser Position überprüfen
-	for(var pElev in FindObjects(Find_AtPoint(1,1), Find_OCF(OCF_Grab), Find_NoContainer()))
-		// Fahrstuhlkorb gefunden
-		if(pElev->~IsElevator())
-			// Fahrstuhlkorb bewegt sich
-			if (pElev->GetComDir() != COMD_Stop)
-			{
-				// Fahrstuhlkorb anhalten
-				pElev->Call(szCommand,pObject); 
-				// Noch nicht aussteigen
-				pObject->SetComDir(COMD_Stop);
-				SetComDir(COMD_Stop);
-				// Bewegunsbefehl abbrechen
-				return 1;
-			}
-	return 0;
-}
-
-/* Füllmengenkontrolle */
-
-private func MaxContents() { return 50; }
-
-protected func RejectCollect(id idObj,object pObj)
-{
-	if(ContentsCount() < MaxContents()) { Sound("Clonk"); return 0; }
-	if(pObj->Contained()) return Message("$TxtLorryisfull$");
-	if(Abs(pObj->GetXDir())>6) pObj->SetYDir(-5);
-	Sound("WoodHit*");
-	return 1;
-}
-
-
-/* Automatisches Ausleeren in Gebäuden */
-
-protected func Entrance(object pNewContainer)
+	if (ContentsCount() < MaxContentsCount())
 	{
-	// Nur in Gebäuden (auch Burgteile)
-	if (pNewContainer->GetCategory() & (C4D_StaticBack | C4D_Structure))
-		// Nicht, wenn es das Gebäude verbietet
-		if (!pNewContainer->~NoLorryEjection(this) && !pNewContainer->~IsStaircase())
-		{
-			// Lore entleeren
-			pNewContainer->GrabContents(this);
-		}
+		Sound("Clonk");
+		return false;
 	}
+	if (obj->Contained())
+		return Message("$TxtLorryisfull$");
+	return _inherited(...);
+}
 
-/* Einlade-Helfer */
-
-protected func ContextLoadUp(object pClonk)
+// Automatic unloading in buildings.
+protected func Entrance(object container)
 {
-	[$TxtLoadUp$|Image=LRY1]
-	// Alte Kommandos des Clonks löschen
-	pClonk->SetCommand("None");
-	// Lore ist bereits voll
-	if (ContentsCount() >= MaxContents())
-		return Message("$TxtLorryisfull$", this);
-	// Maximale noch mögliche Zuladung bestimmen
-	var iMaxLoad = MaxContents() - ContentsCount();
-	// Frei liegende Gegenstände in der Umgebung automatisch einladen
-	var iRange = 60;
-	var pObj, iCount;
-	for(pObj in FindObjects(Find_InRect(-iRange, -iRange/2, iRange*2, iRange*2), Find_OCF(OCF_Collectible), Find_NoContainer()))
-		if (pObj->GetOCF() & OCF_Available)
-		{
-			// Maximale Zuladung berücksichtigen (auch die noch vom Clonk kommt)
-			if (++iCount > iMaxLoad - pClonk->ContentsCount()) break;
-			// Einladen
-			pClonk->AddCommand("Put", this, 0,0, pObj);
-		}
-	// Der Clonk soll seine getragenen Objekte auch einladen (ansonsten legt er sie nur irgendwo ab)
-	for (var i = 0; i < Min(pClonk->ContentsCount(), iMaxLoad); i++)
-		pClonk->AddCommand("Put", this, 0,0, pClonk->Contents(i));
+	// Only in buildings
+	if (container->GetCategory() & (C4D_StaticBack | C4D_Structure))
+		// Not if the building prohibits this action.
+		if (!container->~NoLorryEjection(this))
+			// Empty lorry.
+			container->GrabContents(this);
 }
 
 local iRotWheels;
@@ -152,20 +96,21 @@ func TurnWheels()
 
 func Definition(def) {
 	SetProperty("ActMap", {
-Drive = {
-	Prototype = Action,
-	Name = "Drive",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 20,
-	Delay = 2,
-	X = 0,
-	Y = 0,
-	Wdt = 22,
-	Hgt = 16,
-	NextAction = "Drive",
-	//Animation = "Drive",
-},  }, def);
+		Drive = {
+			Prototype = Action,
+			Name = "Drive",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 20,
+			Delay = 2,
+			X = 0,
+			Y = 0,
+			Wdt = 22,
+			Hgt = 16,
+			NextAction = "Drive",
+			//Animation = "Drive",
+		},  
+	}, def);
 	SetProperty("Name", "$Name$", def);
 }

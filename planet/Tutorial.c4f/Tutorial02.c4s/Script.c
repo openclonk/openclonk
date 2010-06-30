@@ -22,11 +22,13 @@ protected func Initialize()
 	pos_1 = [150, 358];
 	pos_2 = [565, 110];
 	
-	// Abandoned mine: Lorry with firestones and dynamite.
+	// Abandoned mine: Lorry with firestones, blackpowder and dynamite.
 	var lorry = CreateObject(Lorry, 200, 560, NO_OWNER);
 	lorry->CreateContents(Firestone, 3);
+	lorry->CreateContents(Blackpowder, 3);
 	lorry->CreateContents(DynamiteBox);
 	AddEffect("IntLorryFill", lorry, 100, 70);
+
 	// Abandoned mine: Scenery.
 	var pickaxe;
 	var pickaxe = CreateObject(Pickaxe, 133, 546, NO_OWNER);
@@ -45,17 +47,22 @@ protected func Initialize()
 		gold->SetR(Random(360));	
 	}
 	
-	// Dynamite(FIXME) or catapult to blast through rock.
-	var dyn1 = CreateObject(Dynamite, 480, 115, NO_OWNER);
-	var dyn2 = CreateObject(Dynamite, 485, 125, NO_OWNER);
-	var dyn3 = CreateObject(Dynamite, 480, 135, NO_OWNER);
-	var dyn4 = CreateObject(Dynamite, 485, 145, NO_OWNER);
-	CreateObject(Fuse, 480, 115, NO_OWNER)->Connect(dyn1, dyn2);
-	CreateObject(Fuse, 485, 125, NO_OWNER)->Connect(dyn2, dyn3);
-	CreateObject(Fuse, 480, 135, NO_OWNER)->Connect(dyn3, dyn4);
-	var igniter = CreateObject(Igniter, 410, 235, NO_OWNER);
-	CreateObject(Fuse, 485, 145, NO_OWNER)->Connect(dyn4, igniter);
-	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
+	// Cannon/Catapult to blast through rock.
+	var cannon = CreateObject(Cannon, 80, 330, NO_OWNER);
+	cannon->CreateContents(Firestone, 3);
+	cannon->CreateContents(Blackpowder, 3);
+	
+	// Dynamite(FIXME) to blast through rock. Removed for now, since cannon existent.
+	//var dyn1 = CreateObject(Dynamite, 480, 115, NO_OWNER);
+	//var dyn2 = CreateObject(Dynamite, 485, 125, NO_OWNER);
+	//var dyn3 = CreateObject(Dynamite, 480, 135, NO_OWNER);
+	//var dyn4 = CreateObject(Dynamite, 485, 145, NO_OWNER);
+	//CreateObject(Fuse, 480, 115, NO_OWNER)->Connect(dyn1, dyn2);
+	//CreateObject(Fuse, 485, 125, NO_OWNER)->Connect(dyn2, dyn3);
+	//CreateObject(Fuse, 480, 135, NO_OWNER)->Connect(dyn3, dyn4);
+	//var igniter = CreateObject(Igniter, 410, 235, NO_OWNER);
+	//CreateObject(Fuse, 485, 145, NO_OWNER)->Connect(dyn4, igniter);
+	//igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	
 	// Scriptcounter
 	ScriptGo(true);
@@ -95,6 +102,7 @@ protected func OnClonkDeath(object clonk)
 	var new_clonk = CreateObject(Clonk, 0, 0, plr);
 	new_clonk->GrabObjectInfo(clonk);
 	SetCursor(plr, new_clonk);
+	UnselectCrew(plr);
 	SelectCrew(plr, new_clonk, true);
 	new_clonk->DoEnergy(100000);
 	// Remove shovel.
