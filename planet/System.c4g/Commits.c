@@ -199,7 +199,9 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 		obj->SetR(Random(360));
 		obj->SetXDir(xdir);
 		obj->SetYDir(Sin(ang, lev) + RandomX(-3, 3));
-		obj->SetRDir((10 + Random(21)) * xdir / Abs(xdir));
+		if(xdir != 0) obj->SetRDir((10 + Random(21)) * (xdir / Abs(xdir)));
+		else
+			obj->SetRDir(-10 + Random(21));
 	}
 	return;
 }
