@@ -51,6 +51,11 @@ public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int ix, int iy)
 {
+	if(!clonk)
+	{
+		CancelUse();
+		return 1;
+	}
 	var r = ConvertAngle(Angle(0,0,ix,iy));
 
 	if(r - GetR() < 0 && GetDir() == 1) SetDir();
@@ -114,7 +119,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	return true;
 }
 
-public func ControlUseCancel(object clonk, int ix, int iy)
+public func CancelUse()
 {
 	RemoveTrajectory(this);
 	return 1;
@@ -122,7 +127,7 @@ public func ControlUseCancel(object clonk, int ix, int iy)
 
 public func Grabbed(object clonk, bool grabbed)
 {
-	if(!grabbed) ControlUseCancel();
+	if(!grabbed) CancelUse();
 }
 
 public func FxCooldownTimer(object target, int num, int timer)
@@ -153,8 +158,8 @@ protected func DoFire(object iammo, object clonk, int angle)
 
 	//Don't excede possible trajectory
 	var r = Normalize(angle,-180);
-	if(r > 90) r = 90;
-	if(r < -90) r = -90;
+	if(r > 90 + GetR()) r = 90 + GetR();
+	if(r < -90 + GetR()) r = -90 + GetR();
 
 	//Send ammo flying
 	iammo->SetR(r);

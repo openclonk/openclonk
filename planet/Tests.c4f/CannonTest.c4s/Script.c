@@ -2,9 +2,8 @@
 
 protected func Initialize()
 {
-	var cannon = CreateObject(Cannon, 225, 630);
-	cannon->CreateContents(Rock,99);
-	cannon->CreateContents(Blackpowder,99);
+	CreateObject(Cannon, 225, 630);
+	CreateObject(Chest, 175, 645)->CreateContents(Rock,30);
 	return;
 }
 
