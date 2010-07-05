@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <anjuta>
-    <plugin name="Automake Project Manager"
+    <plugin name="GBF Project Manager"
             url="http://anjuta.org/plugins/"
             mandatory="yes">
 		<require group="Anjuta Plugin"
@@ -14,8 +14,8 @@
             url="http://anjuta.org/plugins/"
             mandatory="yes">
 		<require group="Anjuta Plugin"
-                 attribute="Location"
-                 value="anjuta-symbol-browser:SymbolBrowserPlugin"/>
+                 attribute="Interfaces"
+                 value="IAnjutaSymbolManager"/>
 	</plugin>
 	<plugin name="Make Build System"
             url="http://anjuta.org/plugins/"
@@ -32,6 +32,6 @@
             mandatory="no">
 		<require group="Anjuta Plugin"
                  attribute="Interfaces"
-                 value="IAnjutaDebuggerManager"/>
+                 value="IAnjutaDebugManager"/>
 	</plugin>
 </anjuta>
