@@ -59,7 +59,6 @@ public:
 	C4FacetID fctBackground;
 	C4FacetID fctCaptain;
 	C4FacetID fctMouseCursor;
-	bool fOldStyleCursor; // if set, offsets need to be applied to some cursor facets
 	C4FacetID fctSelectMark;
 	C4FacetID fctOptions;
 	C4FacetID fctMenu;
@@ -75,7 +74,6 @@ public:
 	C4FacetID fctBuild;
 	C4Facet fctCursor;
 	C4Facet fctDropTarget;
-	C4Facet fctInsideSymbol;
 	C4Facet fctKeyboard;
 	C4Facet fctMouse;
 	C4Facet fctCommand;
@@ -84,7 +82,6 @@ public:
 	C4FacetID fctCrewClr; // ColorByOwner-surface of fctCrew
 	C4FacetID fctFlagClr; // ColorByOwner-surface of fctFlag
 	C4FacetID fctPlayerClr; // ColorByOwner-surface of fctPlayer
-	C4FacetID fctPlayerGray; // grayed out version of fctPlayer
 
 	C4GUI::DynBarFacet barCaption, barButton, barButtonD;
 	C4FacetID fctButtonHighlight;

@@ -405,37 +405,17 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		// Hotspot offset: Usually, hotspot is in center
 		iOffsetX = GfxR->fctMouseCursor.Wdt/2;
 		iOffsetY = GfxR->fctMouseCursor.Hgt/2;
-		// Previously, there used to be custom-defined hotspots for all cursors. Calc them in.
-		if (GfxR->fOldStyleCursor)
+		// calculate the hotspot for the scrolling cursors
+		switch (Cursor)
 		{
-			switch (Cursor)
-			{
-			case C4MC_Cursor_Select: case C4MC_Cursor_Region: //case C4MC_Cursor_DragMenu:
-				iOffsetX=iOffsetY=0;
-				break;
-			case C4MC_Cursor_Dig: case C4MC_Cursor_DigMaterial:
-				iOffsetX=0; iOffsetY=GfxR->fctMouseCursor.Hgt;
-				break;
-			case C4MC_Cursor_Construct:
-			case C4MC_Cursor_DragDrop:
-				// calculated when dragimage is drawn
-				break;
-			}
-		}
-		else
-		{
-			// for new cursors, this hotspot exists for the scrolling cursors only
-			switch (Cursor)
-			{
-			case C4MC_Cursor_Up: iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-			case C4MC_Cursor_Down:iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-			case C4MC_Cursor_Left: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; break;
-			case C4MC_Cursor_Right: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; break;
-			case C4MC_Cursor_UpLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-			case C4MC_Cursor_UpRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-			case C4MC_Cursor_DownLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-			case C4MC_Cursor_DownRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-			}
+		case C4MC_Cursor_Up: iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_Down:iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_Left: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; break;
+		case C4MC_Cursor_Right: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; break;
+		case C4MC_Cursor_UpLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_UpRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_DownLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+		case C4MC_Cursor_DownRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
 		}
 		// Add mark
 		bool fAddMark; fAddMark=false;
