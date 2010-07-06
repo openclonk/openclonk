@@ -29,9 +29,9 @@ public func Phase(bool noAdvance)
 	if(phase==5) SetPosition(LandscapeWidth()-LandscapeWidth()/4,LandscapeHeight()/4);
 }
 
-//Query phase can also be used to modify the phase... ie: QueryPhase(3) would set
+//Get phase can also be used to modify the phase... ie: QueryPhase(3) would set
 //the phase of the moon to phase 3. QueryPhase() will simply return the current moon phase.
-global func QueryPhase(int iphase)
+global func GetPhase(int iphase)
 {
 	var moonphase=FindObject(Find_ID(Moon))->LocalN("phase");
 	if(iphase!=nil && iphase<6) FindObject(Find_ID(Moon))->SetPhase(iphase);
