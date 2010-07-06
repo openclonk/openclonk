@@ -13,7 +13,6 @@ public func GetCarryPhase() { return 900; }
 
 protected func Initialize()
 {
-	Message("Lol");
 	UpdatePicture();
 }
 
