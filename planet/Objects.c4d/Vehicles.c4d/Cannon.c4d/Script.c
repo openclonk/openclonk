@@ -98,7 +98,13 @@ private func ConvertAngle(int angle)
 public func ControlUseStop(object clonk, int ix, int iy)
 {
 	RemoveTrajectory(this);
-	var gunp = FindObject(Find_Container(this), Find_Or(Find_ID(Blackpowder),Find_ID(PowderKeg)));
+	if(FindContents(PowderKeg))
+	{
+		var gunp = FindObject(Find_Or(Find_Container(this), Find_Container(FindContents(PowderKeg))), Find_ID(Blackpowder));
+	}
+	else
+	var gunp = FindObject(Find_Container(this), Find_ID(Blackpowder));
+
 	if (!gunp) // Needs gunpowder
 	{
 		var keg = clonk->FindContents(PowderKeg);

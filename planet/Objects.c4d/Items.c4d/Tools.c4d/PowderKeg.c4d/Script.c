@@ -5,8 +5,6 @@
 	A barrel filled with black powder.
 --*/
 
-local oldamount;
-
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryTransform(clonk)	{	return Trans_Mul(Trans_Translate(-3500,2000,0),Trans_Rotate(180,0,1,0));	}
 public func GetCarryPhase() { return 900; }
@@ -42,7 +40,12 @@ public func ControlUse(object clonk, int iX, int iY)
 			//Switch to proper postion
 			var pBarrel = FindObject(Find_ID(Barrel),Find_Container(clonk));
 			var pPowderKeg = FindObject(Find_ID(PowderKeg),Find_Container(clonk));
-			clonk->Switch2Items(clonk->GetItemPos(pBarrel),clonk->GetItemPos(pPowderKeg));
+			if(clonk->GetID() == Clonk)
+			{
+				clonk->Switch2Items(clonk->GetItemPos(pBarrel),clonk->GetItemPos(pPowderKeg));
+			}
+			else
+				pBarrel->Exit();	//If the powder keg was in a cannon, then exit the cannon
 			Exit();
 			RemoveObject();
 		}
@@ -83,7 +86,7 @@ public func FxFuseTimer(object target, int num, int timer)
 	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
 	if(timer > 90)
 	{
-		//20-42 explosion radius
+		//20-50 explosion radius
 		Explode(Sqrt(1 + ContentsCount() * 2) * 10);
 	}
 }
