@@ -3,7 +3,9 @@
 protected func Initialize()
 {
 	CreateObject(Cannon, 225, 630);
-	CreateObject(Chest, 175, 645)->CreateContents(Rock,30);
+	var chest = CreateObject(Chest, 175, 645);
+	chest->CreateContents(Rock,32);
+	chest->CreateContents(PowderKeg,4);
 	return;
 }
 

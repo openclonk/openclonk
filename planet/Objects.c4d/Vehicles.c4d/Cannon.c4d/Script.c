@@ -44,6 +44,10 @@ public func ControlUseStart(object clonk, int ix, int iy)
 {
 	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
 	AddEffect("TrajAngle", this, 50, 1, this);
+
+	//Animation
+	var r = ConvertAngle(Angle(0,0,ix,iy));
+	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
 	return 1;
 }
 
@@ -58,15 +62,11 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 	}
 	var r = ConvertAngle(Angle(0,0,ix,iy));
 
-	if(r - GetR() < 0 && GetDir() == 1) SetDir();
-	if(r - GetR() > 359 && GetDir() == 0) SetDir(1);
-	Message(Format("%d",Normalize(r - GetR(),-90)),this);
-
 	var iColor = RGB(255,255,255);
 	if(!Contents(0) || GetEffect("Cooldown",this)) iColor = RGB(255,0,0);
 	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r-90, Fire_Velocity), Sin(r-90, Fire_Velocity), iColor, 20);
 
-	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
+	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000));
 	return 1;
 }
 
@@ -88,19 +88,36 @@ private func ConvertAngle(int angle)
 	if(r > 90 + GetR() && GetDir() == 1) r = 90 + GetR();
 	if(r < 270 + GetR() && r != 0 && GetDir() == 0) r = 270 + GetR();
 	if(r == 360 + GetR() && GetDir() == 0) r = 0 + GetR();
+	//second half. Makes it relative to current direction.
+	if(r - GetR() < 0 && GetDir() == 1) SetDir();
+	if(r - GetR() > 359 && GetDir() == 0) SetDir(1);
+	Message(Format("%d",Normalize(r - GetR(),-90)),this);
 	return r;
 }
 
 public func ControlUseStop(object clonk, int ix, int iy)
 {
 	RemoveTrajectory(this);
-	var gunp = FindObject(Find_Container(this), Find_ID(Blackpowder));
+	var gunp = FindObject(Find_Container(this), Find_Or(Find_ID(Blackpowder),Find_ID(PowderKeg)));
 	if (!gunp) // Needs gunpowder
 	{
-		PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
-		return true;
+		var keg = clonk->FindContents(PowderKeg);
+		if(keg)
+		{
+			//if find powder keg in clonk's pack, move to cannon
+			keg->Exit();
+			keg->Enter(this);
+			Sound("WoodHit*");
+		}
+		else
+		{
+			//if not, say there is no powder
+			PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
+			return true;
+		}
 	}
-	var projectile = FindObject(Find_Container(this), Find_Not(Find_ID(Blackpowder)));
+
+	var projectile = FindObject(Find_Container(this), Find_Not(Find_Or(Find_ID(Blackpowder),Find_ID(PowderKeg))));
 	if (!projectile) // Needs a projectile
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
@@ -113,7 +130,13 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy));
-		gunp->RemoveObject();
+		var keg = FindContents(PowderKeg);
+		if(keg)
+		{
+			//If there is a powder keg, take powder from it
+			keg->ControlUse(this);
+		}
+		FindContents(Blackpowder)->RemoveObject();
 		AddEffect("Cooldown",this,1,1,this);
 	}
 	return true;
