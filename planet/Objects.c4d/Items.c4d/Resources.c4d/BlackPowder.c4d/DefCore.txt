@@ -12,7 +12,7 @@ VertexX=0,0
 VertexY=3,-3
 VertexFriction=50,50
 Components=Blackpowder=1;
-Value=10
+Value=1
 Mass=12
 Rotate=1
 ContactIncinerate=1
