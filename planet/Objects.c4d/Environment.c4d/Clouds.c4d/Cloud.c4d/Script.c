@@ -13,16 +13,14 @@ protected func Initialize()
 	iSize = RandomX(300,500);
 	SetClrModulation(RGB(255,255,255));
 	iSearchY = 0;
-	var iGrowth = Random(75);
 	iAcidity=0;
 	iWaitTime = RandomX(130,190);
 	var iGraphics = RandomX(1,3);
 
-	if(iGraphics == 1) SetGraphics("");
-	if(iGraphics == 2) SetGraphics("1");
-	if(iGraphics == 3) SetGraphics("2");
-	DoCon(iGrowth);
+	DoCon(Random(75));
+
 	SetAction("Fly");
+	SetPhase(RandomX(1,16));
 
 	//Push low flying clouds up to proper height
 	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true) 
@@ -39,26 +37,26 @@ public func Precipitation()
 {
 	var iLaunch;
 
-	if (GetTemperature() < 0 && iAcidity==0) szMat="Snow";
-	if (GetTemperature()>=1 && iAcidity==0) szMat="Water";
-	if (iAcidity>=1) szMat="Acid";
+	if (GetTemperature() < 0 && iAcidity == 0) szMat = "Snow";
+	if (GetTemperature() >= 1 && iAcidity == 0) szMat = "Water";
+	if (iAcidity >= 1) szMat="Acid";
 
 	//Reroute function to Evaporation if cloud is growing
 	if(iCondensing == 1) return(Evaporation());
 	if(iSize <= 50 && iAcidity==0) iCondensing = 1;
 
 	//water-snow precipitation
-	if(iWaitTime == 0 && szMat!="Acid")
+	if(iWaitTime == 0 && szMat != "Acid")
 	{
 		RainDrop();
-		(iSize = --iSize);
+		iSize = --iSize;
 	}
 
 	//acid precipitation
-	if(iWaitTime == 0 && szMat=="Acid") 
+	if(iWaitTime == 0 && szMat == "Acid") 
 	{
 		RainDrop();
-		(iAcidity = --iAcidity);
+		iAcidity = --iAcidity;
 	}
 	//Lightning Strike; only during rain
 	if(iWaitTime <= 0 && iSize >= 650 && Random(100) >= 100-(iStrikeChance/16) && szMat=="Water") LaunchLightning(GetX(), GetY() + 20, -20, 41, +5, 15);
@@ -66,9 +64,10 @@ public func Precipitation()
 
 public func TimedEvents()
 {
-	var iRight = LandscapeWidth()-10;
+	var iRight = LandscapeWidth() - 10;
 
 	if(iWaitTime != 0) (iWaitTime = --iWaitTime);
+	if(iWaitTime == 0) Precipitation();
 	WindDirection();
 	CloudShade();
 	//Makes clouds loop around map;
@@ -76,6 +75,10 @@ public func TimedEvents()
 	if(GetX() <= 10) SetPosition(LandscapeWidth()-12, GetY());
 	if(GetY() <= 5) SetPosition(0,6);
 	if(GetYDir()!=0) SetYDir(0);
+
+	if(iCondensing == 1) Message(Format("Condensing|%d",iSize),this);
+	if(iWaitTime > 1) Message(Format("Waiting|%d",iWaitTime),this);
+	if(iCondensing != 1 && iWaitTime == 0) Message(Format("Precipitating|%d",iSize),this);
 
 	while(Stuck()) SetPosition(GetX(),GetY()-5);
 }
@@ -85,11 +88,11 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 	var iSearchX = GetX();
 	var iPrecision = 5;
 	
-	if(iSize >= 700 || iAcidity>=100) 
+	if(iSize >= 700 || iAcidity >= 100) 
 	{
-		(iCondensing = 0);
-		(iSearchY = 0);
-		(iWaitTime = RandomX(130,190));
+		iCondensing = 0;
+		iSearchY = 0;
+		iWaitTime = RandomX(130,190);
 	}
 	//line below prevents clouds evaporating through solids
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid") && GetMaterial(0, iSearchY) != Material("Sky")) return(iSearchY=0);
@@ -103,7 +106,10 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 		iAcidity = iAcidity+3;
 	}
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid"))
-		iSearchY = iSearchY + iPrecision;
+	{
+		iSearchY += iPrecision;
+		CreateParticle("Flash",0,0,0,0,30,RGB(255,255,255));
+	}
 	if(iSearchY >= LandscapeHeight()-GetY()) (iSearchY = 0);
 }
 
@@ -156,25 +162,13 @@ Fly = {
 	Procedure = DFA_FLOAT,
 	X = 0,
 	Y = 0,
-	Wdt = 220,
-	Hgt = 110,
-	Length = 1,
-	Delay = 15,
+	Wdt = 512,
+	Hgt = 350,
+	Length = 16,
+	Delay = 0,
 	NextAction = "Fly",
 	TurnAction = "Turn",
-	StartCall = "Precipitation",
 },
-Turn = {
-	Prototype = Action,
-	Name = "Turn",
-	Procedure = DFA_FLOAT,
-	Length = 1,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 220,
-	Hgt = 110,
-	NextAction = "Fly",
-},  }, def);
+}, def);
 	SetProperty("Name", "Cloud", def);
 }
