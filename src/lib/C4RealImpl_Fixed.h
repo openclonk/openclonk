@@ -45,6 +45,9 @@ class C4RealImpl_Fixed
 	static long SineTable[9001]; // external table of sine values
 
 public:
+	struct StorageType { int32_t v; };
+	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
+
 	inline C4RealImpl_Fixed() : val(0) {}
 	inline C4RealImpl_Fixed(const C4RealImpl_Fixed &rhs) : val(rhs.val) {}
 	explicit inline C4RealImpl_Fixed(int32_t iVal) : val (iVal * FIXED_FPF) { }
@@ -57,6 +60,8 @@ public:
 	explicit inline C4RealImpl_Fixed(float fVal)
 			: val(static_cast<int32_t>(fVal * float(FIXED_FPF)))
 	{ }
+	inline C4RealImpl_Fixed(StorageType rhs) : val(rhs.v) {}
+	operator StorageType() const { StorageType nrv = {val}; return nrv; }
 
 	int32_t to_int() const
 	{

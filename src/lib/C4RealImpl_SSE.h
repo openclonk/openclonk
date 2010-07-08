@@ -63,6 +63,21 @@ public:
 		return f;
 	}
 
+	// To store C4RealImpl_SSE into unions, we're using an anonymous struct
+	// to distinguish types, and an int32_t inside that struct to avoid passing
+	// parameters via the x87 stack.
+	struct StorageType { int32_t v; };
+	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
+	inline C4RealImpl_SSE(StorageType rhs)
+		: value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v)))
+	{}
+	operator StorageType() const
+	{
+		StorageType nrv;
+		_mm_store_ss(reinterpret_cast<float*>(&nrv.v), value);
+		return nrv;
+	}
+
 	// Arithmetics
 	// We're using _ps intrinsics for everything except division because they
 	// have the same latency as their _ss counterparts, but their representa-

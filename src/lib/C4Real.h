@@ -55,6 +55,9 @@
 #define C4REAL_MODE C4REAL_MODE_SSE_FLOAT
 #endif
 
+#include <boost/type_traits/is_class.hpp>
+#include <boost/type_traits/is_pod.hpp>
+
 template<class C4RealImpl>
 class C4RealBase
 {
@@ -62,6 +65,7 @@ class C4RealBase
 
 	friend C4RealBase Sin(const C4RealBase &);
 	friend C4RealBase Cos(const C4RealBase &);
+
 public:
 	inline C4RealBase(int32_t val = 0) : value(val) { }
 	inline C4RealBase(float val) : value(val) {}
@@ -127,6 +131,23 @@ public:
 	// versions via operator bool
 	inline operator bool() const { return static_cast<bool>(value); }
 	inline bool operator !() const { return !operator bool(); }
+
+	// C++03 doesn't support explicitly defaulted ctors, so C4RealBase can't
+	// be a POD, so we can't directly store it into unions. Find a type that
+	// allows this.
+	template<class T, class IsPOD> struct StorageTypeSelector;
+	template<class T>
+	struct StorageTypeSelector<T, boost::false_type> { T v; };
+	template<class T>
+	struct StorageTypeSelector<T, boost::true_type> { typename T::StorageType v; };
+
+	typedef StorageTypeSelector<C4RealImpl, typename boost::is_class<C4RealImpl>::type> StorageType;
+	static_assert(boost::is_pod<StorageType>::value, "C4RealBase: StorageType is not a POD type");
+
+	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
+
+	C4RealBase(StorageType rhs) : value(rhs.v) {}
+	operator StorageType() const { StorageType nrv = {value}; return nrv; }
 };
 
 typedef C4RealBase<class C4RealImpl_Fixed> C4Real_Fixed;
