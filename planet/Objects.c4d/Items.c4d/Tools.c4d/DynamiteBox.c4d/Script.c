@@ -1,6 +1,6 @@
 /*-- Dynamite box --*/
 
-static const DYNA_MaxLength = 400;
+static const DYNA_MaxLength = 500;
 static const DYNA_MaxCount  = 5;
 
 public func Initialize()
@@ -13,7 +13,7 @@ public func Initialize()
 		aDynamites[i] = 0;
 		aWires[i] = 0;
 	}
-	SetGraphics(Format("%d", DYNA_MaxCount), Fuse, 1, GFXOV_MODE_Picture);
+	UpdatePicture();
 }
 
 private func Hit()
@@ -54,9 +54,10 @@ public func ControlUse(object clonk, int x, int y)
 	aWires[iCount-1] = pWire;
 	
 	iCount--;
-	SetGraphics(Format("%d", iCount), Fuse, 1, GFXOV_MODE_Picture);
 
-	Message("%d left", clonk, iCount);
+	UpdatePicture();
+	
+//	Message("%d left", iCount);
 
 	if(iCount == 0)
 	{
@@ -68,6 +69,19 @@ public func ControlUse(object clonk, int x, int y)
 	}
 
 	return true;
+}
+
+private func UpdatePicture()
+{
+	var s = 400;
+	var yoffs = 14000;
+	var xoffs = 22000;
+	var spacing = 14000;
+
+	SetGraphics(Format("%d", iCount), Icon_Number, 12, GFXOV_MODE_Picture);
+	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+
+	SetGraphics(Format("%d", iCount), Fuse, 1, GFXOV_MODE_Picture);
 }
 
 local fWarning;
@@ -85,21 +99,21 @@ func FxIntLengthTimer(pTarget, iNumber, iTime)
 	if(iLength > DYNA_MaxLength*4/5)
 	{
 		fWarning = 1;
-		Message("Line too long! %d%%", iLength*100/DYNA_MaxLength);
+//		Message("Line too long! %d%%", iLength*100/DYNA_MaxLength);
 		if( (iTime % 5) == 0)
 		{
 			var fOn = 1;
 			if( fWarningColor == 1) fOn = 0;
 			fWarningColor = fOn;
-			for(var i = 0; i < GetLength(aWires); i++)
-				if(aWires[i]) aWires[i]->SetColorWarning(fOn);
+//			for(var i = 0; i < GetLength(aWires); i++)
+//				if(aWires[i]) aWires[i]->SetColorWarning(fOn);
 		}
 	}
 	else if(fWarning)
 	{
 		fWarning = 0;
-		for(var i = 0; i < GetLength(aWires); i++)
-			if(aWires[i]) aWires[i]->SetColorWarning(0);
+//		for(var i = 0; i < GetLength(aWires); i++)
+//			if(aWires[i]) aWires[i]->SetColorWarning(0);
 	}
 	if(iLength > DYNA_MaxLength)
 	{
@@ -108,7 +122,7 @@ func FxIntLengthTimer(pTarget, iNumber, iTime)
 		aDynamites[iMax]->Reset();
 		SetLength(aWires, iMax);
 		SetLength(aDynamites, iMax);
-		Message("Line too long,|lost dynamite!|%d left.", iMax);
+//		Message("Line too long,|lost dynamite!|%d left.", iMax);
 		if(iMax == 0)
 		{
 			Contained()->Message("Line broken.");
