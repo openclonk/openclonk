@@ -73,6 +73,7 @@ if(HAVE_NULLPTR)
 	CHECK_CXX_SOURCE_COMPILES("#include <cstddef>
 	template<class T> void f(T &&); template<> void f(std::nullptr_t &&) {} int main() { f(NULL); }" NULL_IS_NULLPTR_T)
 endif()
+CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
@@ -348,6 +349,11 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Random.h
 	src/lib/C4Real.cpp
 	src/lib/C4Real.h
+	src/lib/C4RealImpl_Fixed.cpp
+	src/lib/C4RealImpl_Fixed.h
+	src/lib/C4RealImpl_FPU.h
+	src/lib/C4RealImpl_SSE.cpp
+	src/lib/C4RealImpl_SSE.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4RTF.cpp

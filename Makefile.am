@@ -99,6 +99,11 @@ src/lib/C4Random.cpp \
 src/lib/C4Random.h \
 src/lib/C4Real.cpp \
 src/lib/C4Real.h \
+src/lib/C4RealImpl_Fixed.cpp \
+src/lib/C4RealImpl_Fixed.h \
+src/lib/C4RealImpl_FPU.h \
+src/lib/C4RealImpl_SSE.cpp \
+src/lib/C4RealImpl_SSE.h \
 src/lib/C4Rect.cpp \
 src/lib/C4Rect.h \
 src/lib/C4RTF.cpp \

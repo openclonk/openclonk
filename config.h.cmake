@@ -191,3 +191,6 @@
 /* Define to 1 if your NULL is an instance of std::nullptr_t. */
 #cmakedefine NULL_IS_NULLPTR_T 1
 
+/* Define to 1 if your compiler supports static_assert */
+#cmakedefine HAVE_STATIC_ASSERT 1
+
