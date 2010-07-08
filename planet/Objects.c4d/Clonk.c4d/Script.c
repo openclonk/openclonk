@@ -1563,9 +1563,9 @@ public func ControlThrow(object target, int x, int y)
 	// standard throw after all
 	if (!x && !y) return false;
 	if (!target) return false;
-	
+
 	var throwAngle = Angle(0,0,x,y);
-	
+
 	// walking (later with animation: flight, scale, hangle?) and hands free
 	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" || GetAction() == "Dive")
 		&& this->~HasHandAction())
@@ -1574,10 +1574,7 @@ public func ControlThrow(object target, int x, int y)
 		else SetDir(DIR_Left);
 		//SetAction("Throw");
 		this->~SetHandAction(1); // Set hands ocupied
-		var iThrowTime = 16;
-		PlayAnimation("ThrowArms", 10, Anim_Linear(0, 0, GetAnimationLength("ThrowArms"), iThrowTime), Anim_Const(1000));
-		ScheduleCall(this, "DoThrow", iThrowTime*8/15, 0, target,throwAngle);
-		ScheduleCall(this, "ThrowEnd", iThrowTime);
+		AddEffect("IntThrow", this, 1, 1, this, 0, target, throwAngle);
 		return true;
 	}
 	// attached
@@ -1589,12 +1586,30 @@ public func ControlThrow(object target, int x, int y)
 	return false;
 }
 
-public func ThrowEnd()
+func FxIntThrowStart(target, number, tmp, targetobj, throwAngle)
 {
+	var iThrowTime = 16;
+	if(tmp) return;
+	PlayAnimation("ThrowArms", 10, Anim_Linear(0, 0, GetAnimationLength("ThrowArms"), iThrowTime), Anim_Const(1000));
+	EffectVar(0, target, number) = targetobj;
+	EffectVar(1, target, number) = throwAngle;
+}
+
+func FxIntThrowTimer(target, number, time)
+{
+	var iThrowTime = 16;
+	if(time == iThrowTime*8/15)
+		DoThrow(EffectVar(0, target, number), EffectVar(1, target, number));
+	if(time >= iThrowTime)
+	  return -1;
+}
+
+func FxIntThrowStop(target, number, reason, tmp)
+{
+	if(tmp) return;
 	StopAnimation(GetRootAnimation(10));
 	this->~SetHandAction(0);
 }
-
 func StartDead()
 {
 	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
