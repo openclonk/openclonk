@@ -826,6 +826,9 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	EffectVar(0, pTarget, iNumber) = anim;
 	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	EffectVar(2, pTarget, iNumber) = 0;
+
+	EffectVar(3, pTarget, iNumber) = 0; // Idle counter
+	EffectVar(5, pTarget, iNumber) = Random(300); // Random offset for idle time
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn
@@ -852,16 +855,32 @@ func FxIntWalkTimer(pTarget, iNumber)
 	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(0, pTarget, iNumber) = anim;
+		EffectVar(3, pTarget, iNumber) = 0;
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
-	else if(anim == Clonk_WalkStand && !EffectVar(2, pTarget, iNumber) && !GetHandAction())
+	else if(anim == Clonk_WalkStand && !GetHandAction())
 	{
-		if(Random(200) == 0)
+		if(!EffectVar(2, pTarget, iNumber))
 		{
-			var rand = Random(GetLength(Clonk_IdleActions));
-			PlayAnimation(Clonk_IdleActions[rand][0], 5, Anim_Linear(0, 0, GetAnimationLength(Clonk_IdleActions[rand][0]), Clonk_IdleActions[rand][1], ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-			EffectVar(2, pTarget, iNumber) = Clonk_IdleActions[rand][1]-5;
+			EffectVar(3, pTarget, iNumber)++;
+			if(EffectVar(3, pTarget, iNumber) > 300+EffectVar(5, pTarget, iNumber))
+			{
+				EffectVar(3, pTarget, iNumber) = 0;
+				EffectVar(5, pTarget, iNumber) = Random(300);
+				var rand = Random(GetLength(Clonk_IdleActions));
+				PlayAnimation(Clonk_IdleActions[rand][0], 5, Anim_Linear(0, 0, GetAnimationLength(Clonk_IdleActions[rand][0]), Clonk_IdleActions[rand][1], ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				EffectVar(2, pTarget, iNumber) = Clonk_IdleActions[rand][1]-5;
+			}
+		}
+	}
+	else
+	{
+		EffectVar(3, pTarget, iNumber) = 0;
+		if(EffectVar(2, pTarget, iNumber))
+		{
+			EffectVar(0, pTarget, iNumber) = 0;
+			EffectVar(2, pTarget, iNumber) = 0;
 		}
 	}
 /*	// Check wether the clonk wants to turn (Not when he wants to stop)
