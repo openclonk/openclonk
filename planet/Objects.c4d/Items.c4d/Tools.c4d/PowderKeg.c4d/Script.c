@@ -5,6 +5,8 @@
 	A barrel filled with black powder.
 --*/
 
+local oldcount;
+
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryTransform(clonk)	{	return Trans_Mul(Trans_Translate(-3500,2000,0),Trans_Rotate(180,0,1,0));	}
 public func GetCarryPhase() { return 900; }
@@ -16,12 +18,14 @@ protected func Initialize()
 
 protected func Construction()
 {
+	oldcount = ContentsCount();
 	CreateContents(Blackpowder,12);
-	UpdatePicture();
+	AddEffect("Update",this,1,1,this);
 }
 
 protected func MaxContentsCount() {	return 12;	}
 
+/*
 public func ControlUse(object clonk, int iX, int iY)
 {
 	if(Contents(0) && clonk->ContentsCount() < clonk->MaxContentsCount())
@@ -50,6 +54,20 @@ public func ControlUse(object clonk, int iX, int iY)
 			RemoveObject();
 		}
 	}
+	return 1;
+}
+*/
+
+public func FxUpdateTimer(object target, int num, int timer)
+{
+	if(ContentsCount() != oldcount)
+		UpdatePicture();
+	if(ContentsCount() == 0)
+	{
+		ChangeDef(Barrel);
+		return -1;
+	}
+	oldcount = ContentsCount();
 	return 1;
 }
 
@@ -89,16 +107,6 @@ public func FxFuseTimer(object target, int num, int timer)
 		//20-50 explosion radius
 		Explode(Sqrt(1 + ContentsCount() * 2) * 10);
 	}
-}
-
-protected func RejectCollect(id objid, object obj)
-{
-	if(objid != Blackpowder || ContentsCount() >= MaxContentsCount()) return true;
-}
-
-public func Collection(object obj, bool put)
-{//When a clonk throws a blackpowder pouch into the keg
-	UpdatePicture();
 }
 
 func IsAlchemyProduct() { return 1; }

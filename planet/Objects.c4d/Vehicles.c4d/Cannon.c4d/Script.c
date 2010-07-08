@@ -136,11 +136,11 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy));
-		var keg = FindContents(PowderKeg);
-		if(keg)
+		var kegpwdr = FindContents(PowderKeg)->Contents(0);
+		if(kegpwdr)
 		{
 			//If there is a powder keg, take powder from it
-			keg->ControlUse(this);
+			kegpwdr->Enter(this);
 		}
 		FindContents(Blackpowder)->RemoveObject();
 		AddEffect("Cooldown",this,1,1,this);
