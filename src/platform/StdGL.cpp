@@ -1162,10 +1162,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
 		const float dx = tx + rx*twdt;
 		const float dy = ty + ry*thgt;
-//    const float scx = twdt/fabs(v2.x - v1.x);
-//    const float scy = thgt/fabs(v2.y - v1.y);
-		const float scx = 1;
-		const float scy = 1;
+		const float scale = std::min(twdt/fabs(v2.x - v1.x), thgt/fabs(v2.y - v1.y));
 
 		// Scale so that Z coordinate is between -1 and 1, otherwise parts of
 		// the mesh could be clipped away by the near or far clipping plane.
@@ -1188,11 +1185,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// there are attached meshes.
 		const float scz = 1.0/mesh.GetBoundingRadius();
 
-		// Keep aspect ratio:
-		//if(scx < scy) scy = scx;
-		//else scx = scy;
 		glTranslatef(dx, dy, 0.0f);
-		glScalef(scx, scy, scz);
+		glScalef(scale, scale, scz);
 	}
 	else
 	{
