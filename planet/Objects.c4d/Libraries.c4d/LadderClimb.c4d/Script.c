@@ -145,6 +145,13 @@ func LadderStep(target, number, fUp)
 func FxIntClimbControlTimer(target, number)
 {
 	if (GetAction() != "Climb") return -1;
+	if(!EffectVar(0, target, number))
+	{
+		SetAction("Jump");
+		SetXDir(-5+10*GetDir());
+		SetYDir(-5);
+		return -1;
+	}
 	// Progress
 	var step = 0;
 	if (GetComDir() == COMD_Down) step = -1;

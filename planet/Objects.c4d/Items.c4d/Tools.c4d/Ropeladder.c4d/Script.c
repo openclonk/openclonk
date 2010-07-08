@@ -15,8 +15,15 @@ local particles;
 local segments;
 local TestArray;
 
+local UnrollDir;
+
+local ParticleCount;
+
+local grabber;
+
 public func ControlUse(object clonk, int x, int y)
 {
+	if(!clonk->GetContact(-1)) return true;
 	Exit(0, 10);
 	// Unroll dir
 	var dir = -1;
@@ -26,6 +33,135 @@ public func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
+protected func AddSegment()
+{
+	segments[ParticleCount] = CreateObject(Ropeladder_Segment);
+
+	segments[ParticleCount]->SetMaster(this, ParticleCount);
+
+	segments[ParticleCount]->SetNextLadder(segments[ParticleCount-1]);
+	segments[ParticleCount-1]->SetPreviousLadder(segments[ParticleCount]);
+
+	var oldx = particles[ParticleCount][0][0];
+	var oldy = particles[ParticleCount][0][1];
+	particles[ParticleCount] = [[ oldx+UnrollDir*Ladder_Precision, oldy], [ oldx, oldy], [0,1*Ladder_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
+	
+	ParticleCount++;
+}
+
+protected func RemoveSegment()
+{
+	ParticleCount--;
+	
+	segments[ParticleCount]->RemoveObject();
+
+	if(ParticleCount == 0)
+	{
+		RemoveEffect("IntHang", this);
+		SetCategory(C4D_Object);
+		SetAction("Idle");
+		SetProperty("Collectible", 1);
+
+		grabber->RemoveObject();
+		return;
+	}
+		
+	SetLength(segments, ParticleCount);
+	SetLength(particles, ParticleCount);
+	segments[ParticleCount-1]->SetPreviousLadder(nil);
+}
+
+protected func Unroll(dir)
+{
+	UnrollDir = dir;
+	SetCategory(C4D_StaticBack);
+	SetAction("Hanging");
+	SetProperty("Collectible", 0);
+
+//	TestArray = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9]];
+	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
+
+	grabber = CreateObject(Ropeladder_Grabber);
+	grabber->SetAction("Attach", this);
+	
+	ParticleCount = 1;
+	
+	segments = CreateArray(ParticleCount);
+
+	segments[0] = CreateObject(Ropeladder_Segment);
+	segments[0]->SetGraphics("NoRope");
+
+	segments[0]->SetMaster(this, 0);
+
+	particles = CreateArray(ParticleCount);
+	for(var i = 0; i < Ladder_MaxParticles; i++)
+		particles[i] = [[ (GetX()+i*dir)*Ladder_Precision, GetY()*Ladder_Precision], [ (GetX()+i*1)*Ladder_Precision, GetY()*Ladder_Precision], [0,1*Ladder_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
+	particles[0] = [[ GetX()*Ladder_Precision, GetY()*Ladder_Precision],  [(GetX()+1)*Ladder_Precision, GetY()*Ladder_Precision], [0,1*Ladder_Precision], 0];
+//	SetPosition(GetX(), GetY()+10);
+//	Verlet(1);
+
+	AddEffect("IntHang", this, 1, 1, this);
+
+	AddEffect("UnRoll", this, 1, 1, this);
+
+//	Message("@!!!", this);
+}
+
+local menu;
+
+protected func Grabbed(object by_object, bool grab)
+{
+	if (grab) // If grabbed show content menu.
+	{
+		menu = by_object->CreateRingMenu(GetID(), this);
+		menu->AddItem(Rock);
+		menu->AddItem(GetID());
+		menu->Show();
+	}
+	else // If let go close content menu.
+	{
+		if (menu)
+			menu->Close();
+	}
+}
+
+// Callback from ringmenu.
+public func Selected(object menu, object selected, bool alt)
+{
+	if (!selected)
+		return false;
+	var content_id = selected->GetSymbol();
+	if (content_id == GetID())
+		StartRollUp();
+	return true;
+}
+
+func StartRollUp() { RemoveEffect("UnRoll", this); AddEffect("RollUp", this, 1, 1, this); }
+
+func FxUnRollTimer()
+{
+	if(ParticleCount == Ladder_MaxParticles)
+	{
+		if(GetActTime() < 36) return;
+		// If it wasn't possible to acchieve at least half the full length we pull in again
+		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
+			StartRollUp();
+		return -1;
+	}
+	AddSegment();
+}
+
+func TestLength()
+{
+	if(GetActTime() < 36) return;
+	// If it wasn't possible to acchieve at least half the full length we pull in again
+	if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
+		StartRollUp();
+}
+
+func FxRollUpTimer() { if(ParticleCount == 0) return -1; RemoveSegment(); }
+
+/*
 protected func Unroll(dir)
 {
 	SetCategory(C4D_StaticBack);
@@ -59,7 +195,7 @@ protected func Unroll(dir)
 	Verlet(1);
 
 	AddEffect("IntHang", this, 1, 1, this);
-}
+}*/
 
 func FxIntHangTimer() { TimeStep(); }
 
@@ -67,7 +203,10 @@ func FxIntHangTimer() { TimeStep(); }
 func Verlet(fFirst)
 {
 	var fTimeStep = 1;
-	for(var i = 1; i < Ladder_MaxParticles; i++)
+	var i = 1;
+	var test_length = 0;
+	if(!GBackSolid(GetPartX(0)-GetX(), GetPartY(0)+5-GetY())) i = 0; // If there is no ground under the first part it can fall down too
+	for(; i < ParticleCount; i++)
 	{
 		var x = particles[i][0];
 		var temp = x;
@@ -78,13 +217,19 @@ func Verlet(fFirst)
 		particles[i][0][0] += x[0]-oldx[0]+a[0]*fTimeStep*fTimeStep;
 		particles[i][0][1] += x[1]-oldx[1]+a[1]*fTimeStep*fTimeStep;
 		particles[i][1] = temp;
+		if(i == 0)
+		{
+			SetPosition(GetPartX(0), GetPartY(0));
+			test_length = 1;
+		}
 	}
+	if(test_length) TestLength();
 }
 
 func UpdateLines()
 {
 	var fTimeStep = 1;
-	for(var i=0; i < Ladder_MaxParticles; i++)
+	for(var i=0; i < ParticleCount; i++)
 	{
 		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
@@ -109,7 +254,7 @@ func LogSpeed()
 {
 	// Helperfunction for Debugpurpose
 	var array = [];
-	for(var i=0; i < Ladder_MaxParticles; i++)
+	for(var i=0; i < ParticleCount; i++)
 	{
 		var x = particles[i][0];
 		var oldx = particles[i][1];
@@ -131,12 +276,12 @@ public func OnLadderGrab(clonk, index)
 public func OnLadderClimb(clonk, index)
 {
 	// The clonk drags on the upper segments and pushes on the lower ones
-	if(index > 2 && index < Ladder_MaxParticles-3)
+	if(index > 2 && index < ParticleCount-3)
 	{
 		particles[index-2][0][0] -= 1*Ladder_Precision*(-1+2*clonk->GetDir());
 		particles[index+2][0][0] += 1*Ladder_Precision*(-1+2*clonk->GetDir());
 	}
-	else if(index > 2 && index < Ladder_MaxParticles-2)
+	else if(index > 2 && index < ParticleCount-2)
 	{
 		particles[index-2][0][0] -= 1*Ladder_Precision*(-1+2*clonk->GetDir());
 		particles[index+1][0][0] += 1*Ladder_Precision*(-1+2*clonk->GetDir());
@@ -154,7 +299,7 @@ public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 		angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return true;
 	}
-	if(index == Ladder_MaxParticles-1)
+	if(index == ParticleCount-1)
 	{
 		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}
@@ -170,7 +315,7 @@ func SatisfyConstraints()
 	for(var j=0; j < Ladder_Iterations; j++)
 	{
 		// Satisfy all stick constraints (move the particles to fit the length)
-		for(var i=0; i < Ladder_MaxParticles-1; i++)
+		for(var i=0; i < ParticleCount-1; i++)
 		{
 			// Keep length
 			var restlength = 5*Ladder_Precision; // normal length between laddersegments
@@ -187,7 +332,7 @@ func SatisfyConstraints()
 			particles[i][0]   = Vec_Add(x1, Vec_Div(Vec_Mul(delta, invmass1*diff), 1000));
 			particles[i+1][0] = Vec_Sub(x2, Vec_Div(Vec_Mul(delta, invmass2*diff), 1000));
 		}
-		for(var i=0; i < Ladder_MaxParticles; i++)
+		for(var i=0; i < ParticleCount; i++)
 		{
 			// Don't touch ground
 			if(GBackSolid(GetPartX(i)-GetX(), GetPartY(i)-GetY()))
