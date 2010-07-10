@@ -5883,6 +5883,18 @@ static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int i
 	return true;
 }
 
+static Nillable<int> FnInt(C4AulContext *ctx, C4Real f)
+{
+	if (f < std::numeric_limits<int>::min() || f > std::numeric_limits<int>::max())
+		return C4VNull;
+	return f;
+}
+
+static C4Real FnFloat(C4AulContext *ctx, int i)
+{
+	return i;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6395,6 +6407,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
 
 	AddFunc(pEngine, "Translate", FnTranslate);
+	AddFunc(pEngine, "int", FnInt);
+	AddFunc(pEngine, "float", FnFloat);
 }
 
 C4ScriptConstDef C4ScriptConstMap[]=
