@@ -270,7 +270,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 	}
 }
 
-void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform *pTransform)
+void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform *pTransform)
 {
 	// TODO: Implement this
 	for (int x = 0; x < twdt; x += 10)

@@ -1096,7 +1096,7 @@ namespace
 	}
 }
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
@@ -1162,7 +1162,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
 		const float dx = tx + rx*twdt;
 		const float dy = ty + ry*thgt;
-		const float scale = std::min(twdt/fabs(v2.x - v1.x), thgt/fabs(v2.y - v1.y));
 
 		// Scale so that Z coordinate is between -1 and 1, otherwise parts of
 		// the mesh could be clipped away by the near or far clipping plane.
@@ -1220,6 +1219,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		glTranslatef(ttx, tty, 0.0f);
 		glScalef(((float)ttwdt)/iWdt, ((float)tthgt)/iHgt, 1.0f);
+		glScalef(scale, scale, 1.0f);
 
 		// Return to Clonk coordinate frame
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);

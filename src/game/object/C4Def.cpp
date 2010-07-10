@@ -698,7 +698,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			lpDDraw->SetMeshTransform(&matrix);
 
 		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
+		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, 1.0f, pObj ? pObj->Color : iColor, trans);
 		lpDDraw->SetPerspective(false);
 		lpDDraw->SetMeshTransform(NULL);
 

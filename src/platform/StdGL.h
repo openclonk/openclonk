@@ -111,7 +111,7 @@ public:
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);
 	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform);
 	virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 	void FillBG(DWORD dwClr=0);

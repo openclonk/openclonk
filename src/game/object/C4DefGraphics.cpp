@@ -1089,7 +1089,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
 
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - pDef->Shape.Wdt/2.0, iTy - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - pDef->Shape.Wdt/2.0, iTy - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, 1.0f, pForObj->Color, &trf);
 			lpDDraw->SetMeshTransform(NULL);
 		}
 		else
@@ -1116,7 +1116,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 
 			C4DrawTransform trf(Transform, float(iTx), float(iTy));
 			lpDDraw->SetPerspective(true);
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &trf);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, 1.0f, pForObj->Color, &trf);
 			lpDDraw->SetPerspective(false);
 			lpDDraw->SetMeshTransform(NULL);
 		}
@@ -1199,7 +1199,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		if(trans) trf *= *trans;
 
 		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, 1.0f, pForObj->Color, &trf);
 		lpDDraw->SetPerspective(false);
 		lpDDraw->SetMeshTransform(NULL);
 	}

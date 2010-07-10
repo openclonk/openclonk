@@ -554,7 +554,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		if (C4ValueToMatrix(value, &matrix))
 			lpDDraw->SetMeshTransform(&matrix);
 
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, twdt/fwdt, Color, transform);
 		lpDDraw->SetMeshTransform(NULL);
 		break;
 	}
