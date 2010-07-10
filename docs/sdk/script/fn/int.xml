@@ -12,15 +12,11 @@
 				<param><type>float</type><name>f</name><desc>Die Fließkommazahl, die in eine Ganzzahl konvertiert werden soll.</desc></param>
 			</params>
 		</syntax>
-		<desc>Wandelt eine Fließkommazahl in eine Ganzzahl um. Dabei wird zur nächsten Ganzzahl gerundet. Liegt ein Wert genau in der Mitte zwischen zwei ganzen Zahlen, wird zur geraden Zahl gerundet. Ist der Wert von <em>f</em> außerhalb des Wertebereichs einer vorzeichenbehafteten 32-bit-Ganzzahl, so ist der Rückgabewert <em>nil</em>.</desc>
+		<desc>Wandelt eine Fließkommazahl in eine Ganzzahl um. Dabei werden Nachkommastellen abgeschnitten. Ist der Wert von <em>f</em> außerhalb des Wertebereichs einer vorzeichenbehafteten 32-bit-Ganzzahl, so ist der Rückgabewert <em>nil</em>.</desc>
 		<examples>
 			<example>
 				<code>int(2.5)</code>
 				<text>Gibt die Zahl 2 zurück.</text>
-			</example>
-			<example>
-				<code>int(3.5)</code>
-				<text>Gibt die Zahl 4 zurück.</text>
 			</example>
 		</examples>
 	</func>

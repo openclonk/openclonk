@@ -54,7 +54,7 @@ public:
 
 	operator int () const
 	{
-		return _mm_cvtss_si32(value);
+		return _mm_cvttss_si32(value);
 	}
 	operator float () const
 	{
