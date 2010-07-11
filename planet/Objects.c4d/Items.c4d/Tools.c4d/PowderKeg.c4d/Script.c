@@ -109,6 +109,16 @@ public func FxFuseTimer(object target, int num, int timer)
 	}
 }
 
+public func IsProjectileTarget(target,shooter)
+{
+	return 1;
+}
+
+public func OnProjectileHit()
+{
+	Incinerate();
+}
+
 func IsAlchemyProduct() { return 1; }
 func AlchemyProcessTime() { return 100; }
 
