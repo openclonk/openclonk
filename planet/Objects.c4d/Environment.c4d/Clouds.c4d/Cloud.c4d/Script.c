@@ -76,10 +76,6 @@ public func TimedEvents()
 	if(GetY() <= 5) SetPosition(0,6);
 	if(GetYDir()!=0) SetYDir(0);
 
-	if(iCondensing == 1) Message(Format("Condensing|%d",iSize),this);
-	if(iWaitTime > 1) Message(Format("Waiting|%d",iWaitTime),this);
-	if(iCondensing != 1 && iWaitTime == 0) Message(Format("Precipitating|%d",iSize),this);
-
 	while(Stuck()) SetPosition(GetX(),GetY()-5);
 }
 
@@ -105,12 +101,11 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 		ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3);
 		iAcidity = iAcidity+3;
 	}
+	//advance search point
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid"))
-	{
 		iSearchY += iPrecision;
-		CreateParticle("Flash",0,0,0,0,30,RGB(255,255,255));
-	}
-	if(iSearchY >= LandscapeHeight()-GetY()) (iSearchY = 0);
+
+	if(iSearchY + GetY() >= LandscapeHeight()) (iSearchY = 0);
 }
 
 private func CloudShade()
@@ -128,7 +123,9 @@ private func CloudShade()
 
 public func RainDrop()
 {
-	CastPXS(szMat, 1, 1, RandomX(-50, 50));
+	var angle = RandomX(0,359);
+	var dist = Random(51);
+	CastPXS(szMat, 1, 1, Sin(angle,dist),Cos(angle,dist));
 }
 
 //For use as scenario setting. Can work after initialize, if you really want to.
