@@ -1846,7 +1846,6 @@ Bridge = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Bridge",
-	StartCall = "Digging",
 	InLiquidAction = "Swim",
 },
 Swim = {
