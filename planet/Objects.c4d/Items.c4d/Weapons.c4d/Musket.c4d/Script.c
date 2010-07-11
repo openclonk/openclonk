@@ -14,10 +14,10 @@ local fAiming;
 public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
-/*public func GetCarryTransform()
+public func GetCarryTransform()
 { 
-	if(fAiming != 1) return Trans_Rotate(-90, 0, 1, 0);
-}*/
+	return Trans_Rotate(-90, 0, 1, 0);
+}
 
 local animation_set;
 
