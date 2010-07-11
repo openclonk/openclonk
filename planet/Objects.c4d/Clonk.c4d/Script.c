@@ -1564,7 +1564,7 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 	{
 		Sound("Dig*");
 	}
-	if( (iTime-18) % 36 == 0)
+	if( (iTime-18) % 36 == 0 ||  iTime > 20)
 	{
 		var pShovel = FindObject(Find_ID(Shovel), Find_Container(this));
 		if(!pShovel || !pShovel->IsDigging())
