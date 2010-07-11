@@ -212,7 +212,7 @@ public func StopLoad()
 		ResetHands();
 }
 
-public func StartAim(object weapon)
+public func StartAim(object weapon, int angle)
 {
 	// only if we aren't adjusted to this weapon already
 	if(weapon != aim_weapon)
@@ -245,6 +245,8 @@ public func StartAim(object weapon)
 		}
 	}
 
+	aim_angle = -90;
+	if(GetDir()) aim_angle = 90;
 	AddEffect("IntAim", this, 1, 1, this);
 }
 
