@@ -260,6 +260,7 @@ C4PropListNumbered * C4PropList::GetPropListNumbered()
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 {
+	assert(e);
 	return e->Hash;
 }
 

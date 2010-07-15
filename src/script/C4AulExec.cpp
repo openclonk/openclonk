@@ -579,7 +579,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				}
 				else
 				{
-					if (!Index.ConvertTo(C4V_String))
+					if (!Index.ConvertTo(C4V_String) || !Index._getStr())
 						throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", Index.GetTypeName()).getData());
 					C4PropList *proplist = Array.getPropList();
 					assert(proplist);
