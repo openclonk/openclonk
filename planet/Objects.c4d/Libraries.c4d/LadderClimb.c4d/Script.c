@@ -88,7 +88,12 @@ func FxIntClimbControlStart(target, number, tmp, ladder)
 	SetYDir(0);
 	SetComDir(COMD_Stop);
 	EffectVar(2, target, number) = 0; // odd or even segment?
+	SetHandAction(1);
+	SetTurnType(1);
 }
+
+func SetTurnType() { return _inherited(...); }
+func SetHandAction() { return _inherited(...); }
 
 func LadderStep(target, number, fUp)
 {
@@ -261,6 +266,7 @@ func LadderToLandscapeCoordinates(int x)
 func FxIntClimbControlStop(target, number)
 {
 	SetLadderRotation(0);
+	SetHandAction(0);
 }
 
 func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, release)
@@ -319,6 +325,8 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 }
 
 func SetLadderRotation (int r, int xoff, int yoff) {
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(-r,0,0,1), Trans_Translate(xoff,yoff)));
+	return;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
 	SetObjDrawTransform (
