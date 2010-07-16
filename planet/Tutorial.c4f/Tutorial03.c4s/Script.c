@@ -116,8 +116,8 @@ global func OnTargetDeath(int target)
 	if(target == 3)
 	{
 		TutArrowShowPos(360,340,-90,130);
-		var TutGoal = CreateObject(Goal_Tutorial);
-		TutGoal->AddCheckpoint(650,370,"Javelin1");
+		var goal = FindObject(Find_ID(Goal_Tutorial));
+		goal->AddCheckpoint(650,370,"Javelin1");
 	}
 
 	if(target == 4)
