@@ -1271,14 +1271,23 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 	// 7: Whether the HangleStand animation is shown front-facing or back-facing
 	// 10: Previous Hangle physical
 
-	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	if(GetDir()) EffectVar(7, pTarget, iNumber) = 1;
+	else EffectVar(7, pTarget, iNumber) = 0;
 
+  var begin = 4000*EffectVar(7, pTarget, iNumber);//EffectVar(7, pTarget, iNumber);
+	var end = 2000+begin;
+	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+//	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 }
 
 func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
 {
 	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber), 2);
 	if(fTmp) return;
+	if(GetDir() == 1)
+		EffectVar(7, pTarget, iNumber) = 1;
+	else
+		EffectVar(7, pTarget, iNumber) = 0;
 }
 
 func FxIntHangleTimer(pTarget, iNumber, iTime)
@@ -1301,7 +1310,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 		SetAnimationPosition(EffectVar(1, pTarget, iNumber), Anim_Const(position % GetAnimationLength("Hangle")));
 
 		// Continue movement, if the clonk still has momentum
-		if(GetComDir() == COMD_Stop && iSpeed>10)
+		if((GetComDir() == COMD_Stop || GetComDir() == COMD_Up) && iSpeed>10)
 		{
 			// Make it stop after the current movement
 			EffectVar(6, pTarget, iNumber) = 1;
@@ -1312,7 +1321,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 				SetComDir(COMD_Left);
 		}
 		// Stop movement if the clonk has lost his momentum
-		else if(iSpeed <= 10 && (GetComDir() == COMD_Stop || EffectVar(6, pTarget, iNumber)))
+		else if(iSpeed <= 10 && (GetComDir() == COMD_Stop || GetComDir() == COMD_Up || EffectVar(6, pTarget, iNumber)))
 		{
 			EffectVar(6, pTarget, iNumber) = 0;
 			SetComDir(COMD_Stop);
@@ -1333,7 +1342,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 	else
 	{
 		// We are currently not moving
-		if(GetComDir() != COMD_Stop)
+		if(GetComDir() != COMD_Stop && GetComDir() != COMD_Up)
 		{
 			// Switch to move
 			EffectVar(0, pTarget, iNumber) = 1;

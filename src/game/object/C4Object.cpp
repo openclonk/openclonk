@@ -3636,9 +3636,9 @@ void C4Object::ContactAction()
 			{
 				if (pPhysical->CanHangle)
 				{
-					iDir=DIR_Left;
-					if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
-					ObjectActionHangle(this,iDir); return;
+//					iDir=DIR_Left;
+//					if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
+					ObjectActionHangle(this,Action.Dir); return;
 				}
 				else
 					Action.ComDir=COMD_Stop;
@@ -4112,10 +4112,10 @@ void C4Object::ExecAction()
 			xdir+=ScaleAccel; if (xdir>+lLimit) xdir=+lLimit;
 			break;
 		case COMD_Up:
-			xdir += (Action.Dir == DIR_Left) ? -ScaleAccel : ScaleAccel;
+/*			xdir += (Action.Dir == DIR_Left) ? -ScaleAccel : ScaleAccel;
 			if (xdir<-lLimit) xdir=-lLimit;
 			if (xdir>+lLimit) xdir=+lLimit;
-			break;
+			break;*/ // Hangle + Up means now stop. Stops now the clonk when jumping to the ceiling
 		case COMD_Stop: case COMD_Down:
 			if (xdir<0) xdir+=ScaleAccel;
 			if (xdir>0) xdir-=ScaleAccel;
