@@ -78,9 +78,9 @@ func Checkpoint_Bow2()
 	clonk->CreateContents(Bow);
 	clonk->CreateContents(Arrow);
 
-	clonk->AddEffect("CheckArrow",clonk,1,108,clonk);
+	AddEffect("CheckArrow",clonk,1,108,clonk);
 	var arrowchest = FindObject(Find_ID(Chest),Find_InRect(1060,367,1160,467));
-	arrowchest->AddEffect("ArrowSpawn",arrowchest,1,18,arrowchest);
+	AddEffect("ArrowSpawn",arrowchest,1,18,arrowchest);
 }
 
 //Checks if player has run out of arrows, and displays message if true.
