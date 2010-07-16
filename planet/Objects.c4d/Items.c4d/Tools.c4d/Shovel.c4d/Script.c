@@ -10,19 +10,51 @@ public func GetCarryMode(clonk) { return CARRY_Back; }
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 
 local fDigging;
+local DigAngle;
+local DigX, DigY;
 
 public func IsDigging() { return fDigging; }
 
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	ControlUseHolding(clonk, x, y);
+	AddEffect("ShovelDig",clonk,1,1,this);
+//	ControlUseHolding(clonk, x, y);
 	return true;
 }
 
 public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int x, int y)
+{
+	DigX = x;
+	DigY = y;
+	DigAngle = Angle(0,0,x,y);
+	
+	return true;
+}
+
+public func ControlUseCancel(object clonk, int x, int y)
+{
+	ControlUseStop(clonk, x, y);
+}
+
+public func ControlUseStop(object clonk, int x, int y)
+{
+	fDigging = 0;
+	RemoveEffect("ShovelDig",clonk,0);
+	if(clonk->GetAction() != "Dig") return true;
+
+//	EffectCall(clonk, GetEffect("IntDig", clonk), "StopDig");
+	clonk->SetXDir(0,100);
+	clonk->SetYDir(0,100);
+//	clonk->SetAction("Walk");
+//	clonk->SetComDir(COMD_Stop);
+
+	return true;
+}
+
+public func FxShovelDigTimer(object clonk, int num, int time)
 {
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?
@@ -38,7 +70,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 			{
 				// speed boost when Clonk started digging from scaling, so we don't drop down
 				var clnk_xdir = clonk->GetDir()*2-1;
-				if (Abs(x) > Abs(y) && x*clnk_xdir > 0) // only if player actually wants to go sideways in the scaling direction (|x|>|y| and sign(x)==sign(clnk_xdir))
+				if (Abs(DigX) > Abs(DigY) && DigX*clnk_xdir > 0) // only if player actually wants to go sideways in the scaling direction (|x|>|y| and sign(x)==sign(clnk_xdir))
 				{
 					// not if standing on ground (to prevent speed boost digging) or on ceiling (to make working your way upwards through earth a little harder)
 					if (!clonk->GetContact(-1, CNAT_Top|CNAT_Bottom))
@@ -65,51 +97,26 @@ public func ControlUseHolding(object clonk, int x, int y)
 		AddEffect("ShovelDust",clonk,1,1,this);
 		fDigging = true;
 	}
-	if (fDigging)
+	if(fDigging)
 	{
-	
-		var angle = Angle(0,0,x,y);
+		// Adjust speed at current animation position
 		var speed = clonk->GetPhysical("Dig")/400;
 
 		var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
-		//Message("%d", clonk, iPosition);
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
 
-		//Message("%d", clonk, speed);
 		// limit angle
-		angle = BoundBy(angle,65,300);
-		clonk->SetXDir(Sin(angle,+speed)+xdir_boost,100);
-		clonk->SetYDir(Cos(angle,-speed)+ydir_boost,100);
+		DigAngle = BoundBy(DigAngle,65,300);
+		clonk->SetXDir(Sin(DigAngle,+speed)+xdir_boost,100);
+		clonk->SetYDir(Cos(DigAngle,-speed)+ydir_boost,100);
+
+		// Dust
+		Dust(clonk);
 	}
-	
-	return true;
 }
 
-public func ControlUseCancel(object clonk, int x, int y)
-{
-	ControlUseStop(clonk, x, y);
-}
-
-public func ControlUseStop(object clonk, int x, int y)
-{
-	if (fDigging)
-	{
-		fDigging = 0;
-		RemoveEffect("ShovelDust",clonk,0);
-	}
-	if(clonk->GetAction() != "Dig") return true;
-
-//	EffectCall(clonk, GetEffect("IntDig", clonk), "StopDig");
-	clonk->SetXDir(0,100);
-	clonk->SetYDir(0,100);
-//	clonk->SetAction("Walk");
-//	clonk->SetComDir(COMD_Stop);
-
-	return true;
-}
-
-public func FxShovelDustTimer(object target, int num, int time)
+public func Dust(object target)
 {
 	// Only when the clonk moves the shovel
 	var iAnimation = EffectVar(1, target, GetEffect("IntDig", target));
