@@ -1575,8 +1575,10 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 	}
 	if( (iTime-18) % 36 == 0 ||  iTime > 35)
 	{
-		var pShovel = FindObject(Find_ID(Shovel), Find_Container(this));
-		if(!pShovel || !pShovel->IsDigging())
+		var noDig = 1;
+		for(var pShovel in FindObjects(Find_ID(Shovel), Find_Container(this)))
+			if(pShovel->IsDigging()) noDig = 0;
+		if(noDig)
 		{
 			SetAction("Walk");
 			SetComDir(COMD_Stop);

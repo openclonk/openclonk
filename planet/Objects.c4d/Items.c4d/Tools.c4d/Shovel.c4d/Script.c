@@ -75,6 +75,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
 		//Message("%d", clonk, iPosition);
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
+
 		//Message("%d", clonk, speed);
 		// limit angle
 		angle = BoundBy(angle,65,300);
