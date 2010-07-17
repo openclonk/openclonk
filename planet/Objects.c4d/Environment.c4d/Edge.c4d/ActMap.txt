@@ -1,0 +1,7 @@
+[Action]
+Name=Edge
+Facet=0,0,10,10
+FacetBase=0
+Length=4
+Delay=0
+NextAction=Hold
