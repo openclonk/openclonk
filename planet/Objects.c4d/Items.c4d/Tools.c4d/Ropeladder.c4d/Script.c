@@ -113,7 +113,7 @@ func FxUnRollTimer()
 {
 	if(ParticleCount == Ladder_MaxParticles)
 	{
-		if(GetActTime() < 36) return;
+		if(GetActTime() < Ladder_MaxParticles*2) return;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
 		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
 			StartRollUp();
