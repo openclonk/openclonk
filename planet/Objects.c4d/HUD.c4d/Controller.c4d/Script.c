@@ -188,7 +188,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 			// otherwise we must add it before the rest
 			if(!inside)
 			{
-				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey);
+				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey++);
 				if(actionbar[i]->Selected()) exclusive = true;
 				++i;
 			}
@@ -198,7 +198,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	// search vehicles
 	for(var vehicle in vehicles)
 	{
-		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey);
+		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
@@ -207,7 +207,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
 	for(var structure in structures)
 	{
-		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey);
+		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
@@ -216,7 +216,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer());
 	for(var interactable in interactables)
 	{
-		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey);
+		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey++);
 		++i;
 	}
 	
