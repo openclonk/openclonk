@@ -119,8 +119,6 @@ public func SetContainer(object c)
 	if(container == c) return;
 	
 	container = c;
-	var clonk = container->Contained();
-	SetOwner(clonk->GetOwner());
 	container->~SetHUDObject(this);
 	
 	Update();

@@ -274,8 +274,8 @@ public func SetObject(object obj, int type, int pos, int hot)
 		
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		
-		if(actiontype == ACTIONTYPE_INVENTORY)
-		{
+		//if(actiontype == ACTIONTYPE_INVENTORY)
+		//{
 			// create an effect which monitors whether the object is removed
 			AddEffect("IntRemoveGuard",myobject,1,0,this);
 			
@@ -293,7 +293,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 			{
 				subselector->RemoveObject();
 			}
-		}
+		//}
 	}
 
 	ShowHotkey();
