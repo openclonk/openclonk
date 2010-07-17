@@ -541,12 +541,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	// Release commands are always forwarded even if contents is 0, in case we
 	// need to cancel use of an object that left inventory
-	if (contents || (release && using))
+	if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
 	{
 		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 || (release && using))
+	else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
 	{
 		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
