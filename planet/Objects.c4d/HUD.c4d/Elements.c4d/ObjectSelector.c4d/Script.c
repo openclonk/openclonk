@@ -116,7 +116,7 @@ public func MouseSelection(int plr)
 	}
 	if(actiontype == ACTIONTYPE_SCRIPT)
 	{
-		if(myobject->~IsInteractable())
+		if(myobject->~IsInteractable(crew))
 		{
 			myobject->Interact(crew);
 			return true;

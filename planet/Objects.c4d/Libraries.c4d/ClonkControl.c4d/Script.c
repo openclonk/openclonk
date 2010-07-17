@@ -1018,7 +1018,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 
 private func ObjectControlInteract(int plr, int ctrl)
 {
-	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable"), Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable",this), Find_NoContainer());
 	// if there are several interactable objects, just call the first that returns true
 	for (var interactable in interactables)
 		if (interactable->~Interact(this))

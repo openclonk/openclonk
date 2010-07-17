@@ -213,7 +213,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	}
 
 	// search interactables (script interface)
-	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable"),Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer());
 	for(var interactable in interactables)
 	{
 		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey);

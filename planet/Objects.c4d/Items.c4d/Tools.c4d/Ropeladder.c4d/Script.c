@@ -107,35 +107,6 @@ protected func Unroll(dir)
 //	Message("@!!!", this);
 }
 
-local menu;
-
-protected func Grabbed(object by_object, bool grab)
-{
-	if (grab) // If grabbed show content menu.
-	{
-		menu = by_object->CreateRingMenu(GetID(), this);
-		menu->AddItem(Rock);
-		menu->AddItem(GetID());
-		menu->Show();
-	}
-	else // If let go close content menu.
-	{
-		if (menu)
-			menu->Close();
-	}
-}
-
-// Callback from ringmenu.
-public func Selected(object menu, object selected, bool alt)
-{
-	if (!selected)
-		return false;
-	var content_id = selected->GetSymbol();
-	if (content_id == GetID())
-		StartRollUp();
-	return true;
-}
-
 func StartRollUp() { RemoveEffect("UnRoll", this); AddEffect("RollUp", this, 1, 1, this); }
 
 func FxUnRollTimer()
