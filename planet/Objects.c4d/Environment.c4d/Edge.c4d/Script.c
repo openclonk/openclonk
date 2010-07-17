@@ -11,7 +11,6 @@ protected func Initialize() {
   return true;
 }
 
-
 protected func AutoP()
 {
 	var dir=[];
