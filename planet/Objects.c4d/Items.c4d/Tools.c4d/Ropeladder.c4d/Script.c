@@ -24,7 +24,17 @@ local grabber;
 public func ControlUse(object clonk, int x, int y)
 {
 	if(!clonk->GetContact(-1)) return true;
-	Exit(0, 10);
+	if(clonk->GetAction() == "Scale")
+	{
+		if(clonk->GetDir() == 0)
+			Exit(-7, 8);
+		else
+			Exit(+7, 8);
+	}
+	else if(clonk->GetAction() == "Hangle")
+		Exit(0,-10);
+	else
+		Exit(0, 10);
 	// Unroll dir
 	var dir = -1;
 	if(x > 0) dir = 1;
@@ -61,6 +71,37 @@ protected func RemoveSegment()
 		SetCategory(C4D_Object);
 		SetAction("Idle");
 		SetProperty("Collectible", 1);
+
+		// Try to move the Ropeladder somewhere out if it is stuck
+		if(GBackSolid())
+			for(var i = 0; i < 3; i++)
+			{
+				if(!GBackSolid()) break;
+				SetPosition(GetX(), GetY()-1);
+			}
+		if(GBackSolid())
+		{
+			// Revert Movmemt before
+			SetPosition(GetX(), GetY()-3);
+			for(var i = 0; i < 3; i++)
+			{
+				if(!GBackSolid()) break;
+				SetPosition(GetX()-1, GetY());
+			}
+		}
+		if(GBackSolid())
+		{
+			// Revert Movmemt before
+			SetPosition(GetX()+3, GetY());
+			for(var i = 0; i < 3; i++)
+			{
+				if(!GBackSolid()) break;
+				SetPosition(GetX()+1, GetY());
+			}
+		}
+		if(GBackSolid())
+			// Revert Movmemt before
+			SetPosition(GetX()-3, GetY());
 
 		grabber->RemoveObject();
 		return;
@@ -298,7 +339,9 @@ func SatisfyConstraints()
 			// calculate difference
 			var delta = Vec_Sub(x2,x1);
 			var deltalength = Sqrt(Vec_Dot(delta,delta));
-			var diff = (deltalength-restlength)*1000/(deltalength*(invmass1+invmass2));
+			var diff = 0;
+			if(deltalength != 0) // savety against division throught zero
+				diff = (deltalength-restlength)*1000/(deltalength*(invmass1+invmass2));
 			// Set new positions
 			particles[i][0]   = Vec_Add(x1, Vec_Div(Vec_Mul(delta, invmass1*diff), 1000));
 			particles[i+1][0] = Vec_Sub(x2, Vec_Div(Vec_Mul(delta, invmass2*diff), 1000));
