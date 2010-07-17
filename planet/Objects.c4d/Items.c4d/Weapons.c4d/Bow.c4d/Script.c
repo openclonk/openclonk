@@ -81,6 +81,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
 
 	clonk->StartLoad(this);
+
+	ControlUseHolding(clonk, x, y);
 	
 	return true;
 }

@@ -85,6 +85,8 @@ func ControlUseStart(object clonk, int x, int y)
 	else
 		clonk->StartAim(this);
 
+	ControlUseHolding(clonk, x, y);
+	
 	return true;
 }
 

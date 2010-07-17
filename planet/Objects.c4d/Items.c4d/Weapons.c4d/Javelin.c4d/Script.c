@@ -43,6 +43,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	fAiming = true;
 
 	clonk->StartAim(this);
+
+	ControlUseHolding(clonk, x, y);
 	
 	Sound("DrawJavelin.ogg");
 	return 1;
