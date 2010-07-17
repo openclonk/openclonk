@@ -224,7 +224,9 @@ func FxIntClimbControlTimer(target, number)
 		if (GetAnimationName(animation) != nil)
 		{
 			var length = GetAnimationLength(GetAnimationName(animation));
-			SetAnimationPosition(animation, Anim_Const(EffectVar(1, target, number)*length/200+length/2*EffectVar(2, target, number)));
+			var pos = EffectVar(1, target, number)*length/200+length/2*EffectVar(2, target, number);
+			//pos = BoundBy(pos, 1, length-1);
+			SetAnimationPosition(animation, Anim_Const(pos));
 		}
 	}
 	var contact = GetContact(-1);
