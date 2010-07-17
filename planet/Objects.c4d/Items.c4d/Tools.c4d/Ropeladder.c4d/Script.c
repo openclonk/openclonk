@@ -32,7 +32,7 @@ public func ControlUse(object clonk, int x, int y)
 			Exit(+7, 8);
 	}
 	else if(clonk->GetAction() == "Hangle")
-		Exit(0,-10);
+		Exit(0,-5);
 	else
 		Exit(0, 10);
 	// Unroll dir
@@ -73,35 +73,10 @@ protected func RemoveSegment()
 		SetProperty("Collectible", 1);
 
 		// Try to move the Ropeladder somewhere out if it is stuck
-		if(GBackSolid())
-			for(var i = 0; i < 3; i++)
-			{
-				if(!GBackSolid()) break;
-				SetPosition(GetX(), GetY()-1);
-			}
-		if(GBackSolid())
-		{
-			// Revert Movmemt before
-			SetPosition(GetX(), GetY()-3);
-			for(var i = 0; i < 3; i++)
-			{
-				if(!GBackSolid()) break;
-				SetPosition(GetX()-1, GetY());
-			}
-		}
-		if(GBackSolid())
-		{
-			// Revert Movmemt before
-			SetPosition(GetX()+3, GetY());
-			for(var i = 0; i < 3; i++)
-			{
-				if(!GBackSolid()) break;
-				SetPosition(GetX()+1, GetY());
-			}
-		}
-		if(GBackSolid())
-			// Revert Movmemt before
-			SetPosition(GetX()-3, GetY());
+		TestMoveOut( 0, -1); // Up
+		TestMoveOut( 0, +1); // Down
+		TestMoveOut(-1,  0); // Left
+		TestMoveOut(+1,  0); // Right
 
 		grabber->RemoveObject();
 		return;
@@ -110,6 +85,21 @@ protected func RemoveSegment()
 	SetLength(segments, ParticleCount);
 	SetLength(particles, ParticleCount);
 	segments[ParticleCount-1]->SetPreviousLadder(nil);
+}
+
+func TestMoveOut(xdir, ydir)
+{
+	if(!Stuck()) return;
+	for(var i = 0; i < 8; i++)
+	{
+		if(!GBackSolid(i*xdir, i*ydir))
+		{
+			SetPosition(GetX()+i*xdir, GetY()+i*ydir);
+			if(!Stuck())
+				break;
+			SetPosition(GetX()-i*xdir, GetY()-i*ydir);
+		}
+	}
 }
 
 protected func Unroll(dir)
@@ -143,7 +133,7 @@ protected func Unroll(dir)
 
 	AddEffect("IntHang", this, 1, 1, this);
 
-	AddEffect("UnRoll", this, 1, 1, this);
+	AddEffect("UnRoll", this, 1, 2, this);
 
 //	Message("@!!!", this);
 }
@@ -154,7 +144,7 @@ func FxUnRollTimer()
 {
 	if(ParticleCount == Ladder_MaxParticles)
 	{
-		if(GetActTime() < Ladder_MaxParticles*2) return;
+		if(GetActTime() < Ladder_MaxParticles*2*2) return;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
 		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
 			StartRollUp();
@@ -217,7 +207,7 @@ func Verlet(fFirst)
 	var fTimeStep = 1;
 	var i = 1;
 	var test_length = 0;
-	if(!GBackSolid(GetPartX(0)-GetX(), GetPartY(0)+5-GetY())) i = 0; // If there is no ground under the first part it can fall down too
+	if(!GBackSolid(GetPartX(0)-GetX(), GetPartY(0)+5-GetY()) && !GBackSolid(GetPartX(0)-GetX(), GetPartY(0)-1-GetY())) i = 0; // If there is no ground under the first part it can fall down too
 	for(; i < ParticleCount; i++)
 	{
 		var x = particles[i][0];

@@ -7,3 +7,4 @@ Width=20
 Height=20
 Offset=-10,-10
 Vertices=1
+VertexY=-4
