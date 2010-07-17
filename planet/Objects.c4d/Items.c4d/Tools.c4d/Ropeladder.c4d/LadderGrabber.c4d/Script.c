@@ -11,7 +11,7 @@ public func Interact(object clonk)
 
 public func IsInteractable(object clonk)
 {
-	return clonk->GetProcedure() == "WALK" || clonk->GetProcedure() == "HANGLE";
+	return clonk->GetProcedure() == "WALK" || clonk->GetProcedure() == "SCALE" || clonk->GetProcedure() == "HANGLE";
 }
 
 func GetInteractionMetaInfo(object clonk)
