@@ -494,16 +494,18 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
-	if (house)
+	else if (house)
 	{
-		return Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
 	}
-	if (vehicle && proc == "PUSH")
+	else if (vehicle && proc == "PUSH")
 	{
 		// control to grabbed vehicle
-		return Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
 	}
-	if (vehicle && proc == "ATTACH")
+	else if (vehicle && proc == "ATTACH")
 	{
 		/* objects to which clonks are attached (like horses, mechs,...) have
 		   a special handling:
@@ -518,37 +520,35 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		   usage via CancelUse().
 		  */
 		
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+		
 		var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
-
-		var handled = Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
-		
-		if (handled) return true;
-		
-		// handled normally if movement control
 		if (use)
 		{
-			// handled if the horse is the used object
-			// ("using" is set to the object in StartUse(Delayed)Control - when the
-			// object returns true on that callback. Exactly what we want)
-			if (using == vehicle) return true;
-			// has been cancelled (it is not the start of the usage but no object is used)
-			if (!using && (repeat || release)) return true;
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
+				return true;
+			else
+			{
+				// handled if the horse is the used object
+				// ("using" is set to the object in StartUse(Delayed)Control - when the
+				// object returns true on that callback. Exactly what we want)
+				if (using == vehicle) return true;
+				// has been cancelled (it is not the start of the usage but no object is used)
+				if (!using && (repeat || release)) return true;
+			}
 		}
 		
 	}
-	// out of convencience we call Control2Script, even though it handles
-	// left, right, up and down, too. We don't want that, so this is why we
-	// check that ctrl is Use.
 	// Release commands are always forwarded even if contents is 0, in case we
 	// need to cancel use of an object that left inventory
-	if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
+	if (contents || (release && using))
 	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
+	else if (contents2 || (release && using))
 	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
 	}
 
@@ -681,7 +681,7 @@ public func CancelUse()
 	CancelUseControl(control, mlastx, mlasty);
 }
 
-// for testing if the calls in control2script are issued correctly
+// for testing if the calls in ControlUse2Script are issued correctly
 //global func Call(string call)
 //{
 //	Log("calling %s to %s",call,GetName());
@@ -889,10 +889,9 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 	return true;
 }
 
-// Control redirected to script
-private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
-{
-	
+// Control use redirected to script
+private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+{	
 	// click on secondary cancels primary and the other way round
 	if (using)
 	{
@@ -943,9 +942,15 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			return HoldingUseControl(ctrl, control, x, y, obj);
 		}
 	}
-	
+		
+	return false;
+}
+
+// Control use redirected to script
+private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+{
 	// overloads of movement commandos
-	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
+	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
 	{
 		if (release)
 		{
@@ -969,8 +974,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 				if (ctrl == CON_Jump)  if (obj->Call("ControlJump",this)) return true;
 		}
 	}
-	
-	return false;
+
 }
 
 // returns true if the clonk is able to enter a building (procedurewise)

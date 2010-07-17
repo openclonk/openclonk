@@ -7,7 +7,7 @@ local content_menu;
 protected func Construction()
 {
 	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
-	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
+	SetProperty("MeshTransformation",Trans_Rotate(13,0,1,0));
 }
 
 public func IsLorry() { return 1; }
@@ -113,4 +113,5 @@ func Definition(def) {
 		},  
 	}, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
 }
