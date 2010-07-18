@@ -2,7 +2,7 @@
 # Index +128 for underground materials
 10=Tunnel-tunnel
 11=Tunnel-tunnel
-12=Tunnel-brickbacl
+12=Tunnel-brickback
 13=BrickSoft-brick1
 19=DuroLava-lava_red
 20=Water-water
