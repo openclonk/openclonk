@@ -1722,6 +1722,23 @@ func FxBubbleTimer(pTarget, iNumber, iTime)
 	if(GBackLiquid(0,-4)) Bubble();
 }
 
+func StartPushing()
+{
+//	if(GetEffect("IntTumble", this)) return;
+	// Close eyes
+	PlayAnimation("Push", 5, Anim_AbsX(0, 0, GetAnimationLength("Push"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(1);
+//	AddEffect("IntTumble", this, 1, 0);
+}
+
+protected func StopPushing()
+{
+	return;
+}
+
 func StartHangOnto()
 {
 //	if(GetEffect("IntTumble", this)) return;
@@ -1968,6 +1985,8 @@ Push = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Push",
+	StartCall = "StartPushing",
+	AbortCall = "StopPushing",
 	InLiquidAction = "Swim",
 },
 Build = {
