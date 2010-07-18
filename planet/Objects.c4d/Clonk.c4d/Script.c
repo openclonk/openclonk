@@ -1993,7 +1993,6 @@ Build = {
 	Name = "Build",
 	Procedure = DFA_BUILD,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 8,
 	Delay = 15,
 	X = 128,
