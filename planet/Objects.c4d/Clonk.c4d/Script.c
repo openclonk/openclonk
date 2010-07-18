@@ -1977,7 +1977,6 @@ Push = {
 	Name = "Push",
 	Procedure = DFA_PUSH,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 8,
 	Delay = 15,
 	X = 128,
