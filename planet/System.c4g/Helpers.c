@@ -6,6 +6,24 @@
 --*/
 
 
+global func GetEdges()
+{
+	var x=[];
+	var y=[];
+	var i=0;
+	for(var edge in FindObjects(Find_ID(BrickEdge)))
+	{
+		x[i]=edge->GetX();
+		y[i]=edge->GetY();
+		i++;
+	}
+	Log("x=%v",x);
+	Log("y=%v",y);
+	return;
+}
+
+
+
 global func MessageWindow(string msg, int for_plr, id icon, string caption)
 {
 	// Get icon.
