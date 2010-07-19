@@ -1,0 +1,13 @@
+[DefCore]
+id=Mushroom
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=6
+Height=6
+Offset=-3,-3
+Vertices=1
+VertexY=1
+Mass=1
+Placement=0
+StretchGrowth=1
+Oversize=1
