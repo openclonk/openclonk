@@ -5,13 +5,11 @@
 	Fires objects great distances.
 --*/
 
-#include Library_ItemContainer
 
-private func MenuOnControlUseAlt() { return true; }
+#include Library_HasExtraSlot
 
 local aim_anim;
 local olddir;
-local grabber;
 
 static const Fire_Velocity = 175;
 
@@ -36,38 +34,95 @@ protected func ContactRight()
 }
 
 //Only one object fits in barrel
-private func MaxContentsCount() { return 6; }
+private func MaxContentsCount() { return 1; }
 
-/* Control */
+/*-- Control --*/
 
 public func ControlUseStart(object clonk, int ix, int iy)
 {
+	var result = CheckForKeg(clonk);
+	if (!result)
+		return true;
+		
+	if (!clonk->GetItem(1))
+	{
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		return true;
+	}
+
 	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
-	AddEffect("TrajAngle", this, 50, 1, this);
 
 	//Animation
 	var r = ConvertAngle(Angle(0,0,ix,iy));
 	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
-	return 1;
+	return true;
+}
+
+public func ControlUseAltStart(object clonk, int ix, int iy)
+{
+	var result = CheckForKeg(clonk);
+	if (!result)
+		return true;
+		
+	if (!clonk->GetItem(1))
+	{
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		return true;
+	}
+			
+	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
+
+	//Animation
+	var r = ConvertAngle(Angle(0,0,ix,iy));
+	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
+	return true;
+}
+
+private func CheckForKeg(object clonk)
+{
+	// Check for powderkeg, is the only content.
+	if (!Contents(0))
+	{
+		// Look for a keg inside the shooter.
+		var keg = FindObject(Find_Container(clonk), Find_ID(PowderKeg));
+		if (keg) // If there is a keg, put into cannon.
+		{
+			keg->Exit();
+			keg->Enter(this);	
+			Sound("WoodHit*");		
+		}		
+		else // No keg, stop using cannon.
+		{
+			PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
+			return false;			
+		}
+	}
+	return true;
 }
 
 public func HoldingEnabled() { return true; }
 
+public func ControlUseAltHolding(object clonk, int ix, int iy)
+{
+	return ControlUseHolding(clonk, ix, iy);
+}
+
 public func ControlUseHolding(object clonk, int ix, int iy)
 {
-	if(!clonk)
+	if (!clonk)
 	{
 		CancelUse();
-		return 1;
+		return true;
 	}
 	var r = ConvertAngle(Angle(0,0,ix,iy));
 
 	var iColor = RGB(255,255,255);
-	if(!Contents(0) || GetEffect("Cooldown",this)) iColor = RGB(255,0,0);
+	if (!Contents(0) || GetEffect("Cooldown",this))
+		iColor = RGB(255,0,0);
 	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r-90, Fire_Velocity), Sin(r-90, Fire_Velocity), iColor, 20);
 
 	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000));
-	return 1;
+	return true;
 }
 
 private func AnimAngle(int angle)
@@ -98,32 +153,12 @@ private func ConvertAngle(int angle)
 public func ControlUseStop(object clonk, int ix, int iy)
 {
 	RemoveTrajectory(this);
-	if(FindContents(PowderKeg))
-	{
-		var gunp = FindObject(Find_Or(Find_Container(this), Find_Container(FindContents(PowderKeg))), Find_ID(Blackpowder));
-	}
-	else
-	var gunp = FindObject(Find_Container(this), Find_ID(Blackpowder));
+	
+	var result = CheckForKeg(clonk);
+	if (!result)
+		return true;
 
-	if (!gunp) // Needs gunpowder
-	{
-		var keg = clonk->FindContents(PowderKeg);
-		if(keg)
-		{
-			//if find powder keg in clonk's pack, move to cannon
-			keg->Exit();
-			keg->Enter(this);
-			Sound("WoodHit*");
-		}
-		else
-		{
-			//if not, say there is no powder
-			PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
-			return true;
-		}
-	}
-
-	var projectile = FindObject(Find_Container(this), Find_Not(Find_Or(Find_ID(Blackpowder),Find_ID(PowderKeg))));
+	var projectile = clonk->GetItem(0);
 	if (!projectile) // Needs a projectile
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
@@ -136,14 +171,47 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy));
-		var kegpwdr = FindContents(PowderKeg)->Contents(0);
-		if(kegpwdr)
+		var powder = Contents(0)->Contents(0);
+		if(powder)
 		{
 			//If there is a powder keg, take powder from it
-			kegpwdr->Enter(this);
+			powder->RemoveObject();
+			DoFire(projectile, clonk, Angle(0,0,ix,iy));
+			AddEffect("Cooldown",this,1,1,this);
 		}
-		FindContents(Blackpowder)->RemoveObject();
-		AddEffect("Cooldown",this,1,1,this);
+	}
+	return true;
+}
+
+public func ControlUseAltStop(object clonk, int ix, int iy)
+{
+	RemoveTrajectory(this);
+	
+	var result = CheckForKeg(clonk);
+	if (!result)
+		return true;
+
+	var projectile = clonk->GetItem(1);
+	if (!projectile) // Needs a projectile
+	{
+		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		return true;
+	}
+
+	//Can't fire if cannon is cooling down
+	if(GetEffect("Cooldown",this))	return true;
+	
+	if (projectile)
+	{
+		DoFire(projectile, clonk, Angle(0,0,ix,iy));
+		var powder = Contents(0)->Contents(0);
+		if(powder)
+		{
+			//If there is a powder keg, take powder from it
+			powder->RemoveObject();
+			DoFire(projectile, clonk, Angle(0,0,ix,iy));
+			AddEffect("Cooldown",this,1,1,this);
+		}
 	}
 	return true;
 }
@@ -151,7 +219,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 public func CancelUse()
 {
 	RemoveTrajectory(this);
-	return 1;
+	return true;
 }
 
 public func Grabbed(object clonk, bool grabbed)
