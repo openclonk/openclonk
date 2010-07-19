@@ -9,6 +9,7 @@ private func Hit()
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
+public func GetCarryTransform() { return Trans_Rotate(90, 0, 1, 0); }
 
 
 public func IsTool() { return 1; }
@@ -25,8 +26,11 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	if(!CanStrikeWithWeapon(clonk)) return true;
 	var slow=GetEffect("SwordStrikeSlow", clonk);
+
+	var arm = "R";
+	if(clonk->GetItemPos(this) == 1) arm = "L";
+	var animation = Format("SwordStrike%s%dArms", arm, Random(2)+1);
 	
-	var animation="StrikeArms";
 	// figure out the kind of attack to use
 	var length=0;
 	if(clonk->IsWalking())
