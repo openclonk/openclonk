@@ -2,22 +2,11 @@
 
 protected func Initialize()
 {
-	SetAction("Rotate");
-	SetPhase(RandomX(1,90));
+	SetCon(RandomX(30,100));
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 	return 1;
 }
 
 func Definition(def) {
-	SetProperty("ActMap", {
-		Rotate = {
-			Prototype = Action,
-			Name = "Rotate",
-			Procedure = DFA_NONE,
-			Length = 90,
-			Delay = 0,
-			NextAction = "Hold",
-			Animation = "Rotate",
-		},
-	}, def);
 	SetProperty("Name", "$Name$", def);
 }

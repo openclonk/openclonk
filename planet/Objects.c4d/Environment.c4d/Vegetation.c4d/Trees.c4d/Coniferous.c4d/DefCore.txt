@@ -2,9 +2,9 @@
 id=Tree_Coniferous
 Version=4,10,0,0
 Category=C4D_Vehicle|C4D_StaticBack
-Width=30
-Height=80
-Offset=-15,-40
+Width=60
+Height=110
+Offset=-30,-55
 Vertices=9
 VertexX=0,0,0,0,0,0,0,0,0
 VertexY=-45,-30,-20,-10,0,10,20,30,40
