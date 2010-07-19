@@ -29,7 +29,9 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	var arm = "R";
 	if(clonk->GetItemPos(this) == 1) arm = "L";
-	var animation = Format("SwordStrike%s%dArms", arm, Random(2)+1);
+	var rand = Random(2)+1;
+	var animation = Format("SwordStrike%s%dArms", arm, rand);
+	var animation_sword = Format("Strike%d", rand);
 	
 	// figure out the kind of attack to use
 	var length=0;
@@ -58,6 +60,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	else return true;
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+	PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	return true;
 }
