@@ -718,11 +718,11 @@ namespace
 			if(!(dwBlitMode & C4GFXBLIT_MOD2) && dwModClr == 0xffffffff)
 			{
 				// Fastpath for the easy case
-				glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
-				glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
-				glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
-				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 			}
 			else
 			{
@@ -782,22 +782,26 @@ namespace
 					Emissive[3] = BoundBy<float>(pass.Emissive[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
 				}
 
-				glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
-				glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
-				glMaterialfv(GL_FRONT, GL_EMISSION, Emissive);
-				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Emissive);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 			}
+
+			// Use two-sided light model so that vertex normals are inverted for lighting calculation on back-facing polygons
+			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
+			glFrontFace(parity ? GL_CW : GL_CCW);
 
 			switch (pass.CullHardware)
 			{
 			case StdMeshMaterialPass::CH_Clockwise:
 				glEnable(GL_CULL_FACE);
-				glCullFace(parity ? GL_FRONT : GL_BACK);
+				glCullFace(GL_BACK);
 				break;
 			case StdMeshMaterialPass::CH_CounterClockwise:
 				glEnable(GL_CULL_FACE);
-				glCullFace(parity ? GL_BACK : GL_FRONT);
+				glCullFace(GL_FRONT);
 				break;
 			case StdMeshMaterialPass::CH_None:
 				glDisable(GL_CULL_FACE);
@@ -834,7 +838,7 @@ namespace
 
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
 
-				glEnable(GL_TEXTURE_2D);;
+				glEnable(GL_TEXTURE_2D);
 				if (texunit.HasTexture())
 				{
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
