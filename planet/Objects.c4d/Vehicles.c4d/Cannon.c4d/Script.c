@@ -178,6 +178,11 @@ public func ControlUseStop(object clonk, int ix, int iy)
 			powder->RemoveObject();
 			DoFire(projectile, clonk, Angle(0,0,ix,iy));
 			AddEffect("Cooldown",this,1,1,this);
+			if(Contents(0)->ContentsCount() == 0)
+			{
+				Contents(0)->RemoveObject();
+				CreateObject(Barrel);
+			}
 		}
 	}
 	return true;
