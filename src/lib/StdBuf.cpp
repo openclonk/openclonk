@@ -402,8 +402,8 @@ void StdStrBuf::EnsureUnicode()
 			{
 				if (j + 1 >= buf.getLength())
 					buf.Grow(GROWSIZE);
-				*buf.getMPtr(j++) = ((0xC0 | c)>>6);
-				*buf.getMPtr(j++) = ((0x80 | c) & 0x3F);
+				*buf.getMPtr(j++) = (0xC0 | (c >> 6));
+				*buf.getMPtr(j++) = (0x80 | (c & 0x3F));
 				continue;
 			}
 			// Extra windows-1252-characters
