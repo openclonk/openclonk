@@ -26,12 +26,11 @@ GCC_FLAGS = -pipe
 WARNING_FLAGS = -Wall -Wextra -Wno-invalid-offsetof \
 -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self \
--Wsign-promo -Wunsafe-loop-optimizations \
 -Wsign-promo \
 -Wno-parentheses -Wno-unused-parameter -Wno-inline \
 -Wno-reorder -Wno-float-equal -Wno-switch
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
-##-Weffc++ -Wold-style-cast -Woverloaded-virtual
+##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
 else
 GCC_FLAGS =
 WARNING_FLAGS = -Wall
