@@ -41,7 +41,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	
 	// figure out the kind of attack to use
 	var length=0;
-	if(clonk->IsWalking())
+	/*if(clonk->IsWalking())
 	{
 		length=20;
 		if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
@@ -63,7 +63,9 @@ public func ControlUseStart(object clonk, int x, int y)
 			AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
 		}
 	}
-	else return true;
+	else return true;*/
+	if(!clonk->IsWalking() && !clonk->IsJumping()) return true;
+	length=15;
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
@@ -96,6 +98,8 @@ func WeaponStrikeExpired()
 func CheckStrike(iTime)
 {
 	//if(iTime < 20) return;
+	var  offset_x=10;
+	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
 	var width=8;
 	var height=20;
 	var slowedVelocity=GetWeaponSlow(Contained());
@@ -112,7 +116,7 @@ func CheckStrike(iTime)
 		else angle=(Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
+	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, -height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
 	{
 		found=true;
 		
@@ -131,7 +135,7 @@ func CheckStrike(iTime)
 		if(shield == 100)
 			continue;
 		
-		var damage=((100-shield)*(5000 * velocity) / 100) / 100;
+		var damage=((100-shield)*(5000 * velocity) / 100) / 100 + 0;
 		obj->DoEnergy(-damage, true, 0, Contained()->GetOwner());
 		if(doBash)
 			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
@@ -151,7 +155,7 @@ func CheckStrike(iTime)
 			this->Sound("ShieldMetal*", false);
 			//if(doBash)
 			//	DoWeaponSlow(Contained(), 2000);
-			this->StopWeaponHitCheckEffect(Contained());
+			//this->StopWeaponHitCheckEffect(Contained());
 		}
 	}
 }
