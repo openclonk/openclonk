@@ -7,6 +7,12 @@ private func Hit()
 	Sound("WoodHit"); //TODO Some metal sond
 }
 
+public func Initialize()
+{
+	PlayAnimation("Base", 5, Anim_Const(0), Anim_Const(1000));
+	return _inherited(...);
+}
+
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarryTransform() { return Trans_Rotate(90, 0, 1, 0); }
