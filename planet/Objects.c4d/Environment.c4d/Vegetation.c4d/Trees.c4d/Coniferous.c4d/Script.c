@@ -1,10 +1,13 @@
-/*-- Tree --*/
+/*-- Coniferous Tree --*/
 
-protected func Initialize()
+#include Library_Plant
+
+private func SeedAreaSize() { return 500; }
+private func SeedAmount() { return 10; }
+
+private func Initialize()
 {
-	SetCon(RandomX(30,100));
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
-	return 1;
 }
 
 func Definition(def) {

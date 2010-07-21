@@ -1,11 +1,14 @@
 /*-- Fern --*/
 
-protected func Initialize()
+#include Library_Plant
+
+private func SeedChance() { return 400; }
+private func SeedAreaSize() { return 200; }
+private func SeedAmount() { return 6; }
+
+private func Initialize()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
-	while(Stuck()) SetPosition(GetX(),GetY()-1);
-	DoCon(-Random(50));
-	return 1;
 }
 
 public func Incineration()
