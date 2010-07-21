@@ -1100,7 +1100,7 @@ namespace
 	}
 }
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
@@ -1186,7 +1186,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// by MeshTransformation, so use GetBoundingRadius to be safe.
 		// Note this still fails if mesh is scaled in Z direction or
 		// there are attached meshes.
-		const float scz = 1.0/(mesh.GetBoundingRadius()*scale);
+		const float scz = 1.0/(mesh.GetBoundingRadius());
 
 		glTranslatef(dx, dy, 0.0f);
 		glScalef(1.0f, 1.0f, scz);
@@ -1281,12 +1281,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		gluLookAt(EyeX, EyeY, EyeZ, MeshCenter.x, MeshCenter.y, MeshCenter.z, UpX, UpY, UpZ);
 	}
 
-	if(scale != 1)
-	{
-		glScalef(scale, scale, scale);
-		glEnable(GL_NORMALIZE);
-	}
-
 	// Apply mesh transformation matrix
 	if (MeshTransform)
 	{
@@ -1303,15 +1297,13 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		if (det < 0) parity = !parity;
 
 		// Renormalize if transformation resizes the mesh
-		// for lighting to be correct
+		// for lighting to be correct.
+		// TODO: Also needs to check for orthonormality to be correct
 		if (det != 1 && det != -1)
 			glEnable(GL_NORMALIZE);
 
-		// Apply Matrix in the coordinate system in which the mesh
-		// is centered, not in the mesh's coordinate system.
-		glTranslatef(MeshCenter.x, MeshCenter.y, MeshCenter.z);
+		// Apply MeshTransformation (in the Mesh's coordinate system)
 		glMultMatrixf(Matrix);
-		glTranslatef(-MeshCenter.x, -MeshCenter.y, -MeshCenter.z);
 	}
 
 	// Convert from Ogre to Clonk coordinate system

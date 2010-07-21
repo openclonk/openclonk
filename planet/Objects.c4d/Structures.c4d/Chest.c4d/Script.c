@@ -53,5 +53,5 @@ private func Close()
 protected func Definition(def) 
 {
 	SetProperty("Name", "$Name$", def);
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-30,1,0,0),Trans_Rotate(30,0,1,0),Trans_Translate(1000,1,0,0)),def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(0,-3000,-5000),Trans_Rotate(-30,1,0,0),Trans_Rotate(30,0,1,0),Trans_Translate(1000,1,0)),def);
 }

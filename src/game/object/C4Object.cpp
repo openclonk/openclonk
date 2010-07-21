@@ -551,10 +551,20 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		C4Value value;
 		GetPropertyVal(P_MeshTransformation, value);
 		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			lpDDraw->SetMeshTransform(&matrix);
+		if (!C4ValueToMatrix(value, &matrix))
+			matrix = StdMeshMatrix::Identity();
 
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, twdt/fwdt, Color, transform);
+		if(twdt != fwdt || thgt != fhgt)
+		{
+			// Also scale Z so that the mesh is not totally distorted and
+			// so that normals halfway keep pointing into sensible directions.
+			// We don't have a better guess so use the geometric mean for Z scale.
+			matrix = StdMeshMatrix::Scale(twdt/fwdt,thgt/fhgt,std::sqrt(twdt*thgt/(fwdt*fhgt))) * matrix;
+		}
+
+		lpDDraw->SetMeshTransform(&matrix);
+
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
 		lpDDraw->SetMeshTransform(NULL);
 		break;
 	}

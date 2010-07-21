@@ -777,11 +777,11 @@ func GetCurrentWalkAnimation()
 {
 	if(Contained())
 	{
-		SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,1,0),Trans_Scale(1200)), this);
-		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-110,0,1,0),Trans_Scale(1200)), this);
+		SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(30,0,1,0)), this);
+		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(-110,0,1,0)), this);
 		return Clonk_WalkInside;
 	}
-	else SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), this);
+	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), this);
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
 	if(velocity < 1) return Clonk_WalkStand;
 	if(velocity < 10) return Clonk_WalkWalk;
@@ -2021,7 +2021,7 @@ HangOnto = {
 	SetProperty("Name", "Clonk", def);
 
 	// Set perspective
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
 
 	_inherited(def);
 }

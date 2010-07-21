@@ -677,7 +677,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	return true;
 }
 
-bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform)
+bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// TODO: Emulate rendering
 	if (!sfcTarget->IsRenderTarget()) return false;
@@ -693,7 +693,7 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 	if(MeshTransform) mat = *MeshTransform * mat;
 	instance.ReorderFaces(&mat);
 	// Render mesh
-	PerformMesh(instance, tx, ty, twdt, thgt, scale, dwPlayerColor, pTransform);
+	PerformMesh(instance, tx, ty, twdt, thgt, dwPlayerColor, pTransform);
 	// success
 	return true;
 }

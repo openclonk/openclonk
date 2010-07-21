@@ -259,9 +259,9 @@ public:
 	bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
 	          bool fSrcColKey=false, CBltTransform *pTransform=NULL);
-	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
+	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
 	bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 	           bool fSrcColKey=false, CBltTransform *pTransform=NULL);
