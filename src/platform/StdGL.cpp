@@ -1186,10 +1186,10 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// by MeshTransformation, so use GetBoundingRadius to be safe.
 		// Note this still fails if mesh is scaled in Z direction or
 		// there are attached meshes.
-		const float scz = 1.0/mesh.GetBoundingRadius();
+		const float scz = 1.0/(mesh.GetBoundingRadius()*scale);
 
 		glTranslatef(dx, dy, 0.0f);
-		glScalef(scale, scale, scz);
+		glScalef(1.0f, 1.0f, scz);
 	}
 	else
 	{
@@ -1223,7 +1223,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		glTranslatef(ttx, tty, 0.0f);
 		glScalef(((float)ttwdt)/iWdt, ((float)tthgt)/iHgt, 1.0f);
-		glScalef(scale, scale, 1.0f);
 
 		// Return to Clonk coordinate frame
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
@@ -1280,6 +1279,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glScalef(-1.0f, 1.0f, 1.0f);
 		// center on mesh's bounding box, so that the mesh is really in the center of the viewport
 		gluLookAt(EyeX, EyeY, EyeZ, MeshCenter.x, MeshCenter.y, MeshCenter.z, UpX, UpY, UpZ);
+	}
+
+	if(scale != 1)
+	{
+		glScalef(scale, scale, scale);
+		glEnable(GL_NORMALIZE);
 	}
 
 	// Apply mesh transformation matrix
