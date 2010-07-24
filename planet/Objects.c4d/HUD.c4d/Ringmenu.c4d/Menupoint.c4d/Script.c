@@ -44,6 +44,8 @@ public func SetSymbol(obj)
 	if(!obj) 
 	{	
 		SetGraphics(nil, nil, 1);
+		SetGraphics(nil, nil, 2);
+		SetGraphics(nil, nil, 3);
 	}
 	else
 	{
