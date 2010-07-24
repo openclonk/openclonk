@@ -42,11 +42,15 @@ public func ControlUseStart(object clonk, int ix, int iy)
 {
 	var result = CheckForKeg(clonk);
 	if (!result)
+	{
+		clonk->CancelUse();
 		return true;
+	}
 		
-	if (!clonk->GetItem(1))
+	if (!clonk->GetItem(0))
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		clonk->CancelUse();
 		return true;
 	}
 
@@ -62,11 +66,15 @@ public func ControlUseAltStart(object clonk, int ix, int iy)
 {
 	var result = CheckForKeg(clonk);
 	if (!result)
+	{
+		clonk->CancelUse();
 		return true;
+	}
 		
 	if (!clonk->GetItem(1))
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
+		clonk->CancelUse();
 		return true;
 	}
 			
@@ -111,7 +119,7 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 {
 	if (!clonk)
 	{
-		CancelUse();
+		clonk->CancelUse();
 		return true;
 	}
 	var r = ConvertAngle(Angle(0,0,ix,iy));
@@ -216,20 +224,25 @@ public func ControlUseAltStop(object clonk, int ix, int iy)
 			powder->RemoveObject();
 			DoFire(projectile, clonk, Angle(0,0,ix,iy));
 			AddEffect("Cooldown",this,1,1,this);
+			if(Contents(0)->ContentsCount() == 0)
+			{
+				Contents(0)->RemoveObject();
+				CreateObject(Barrel);
+			}
 		}
 	}
 	return true;
 }
 
-public func CancelUse()
+public func ControlUseCancel()
 {
 	RemoveTrajectory(this);
 	return true;
 }
 
-public func Grabbed(object clonk, bool grabbed)
+public func ControlUseAltCancel()
 {
-	if(!grabbed) CancelUse();
+	return ControlUseCancel();
 }
 
 public func FxCooldownTimer(object target, int num, int timer)
