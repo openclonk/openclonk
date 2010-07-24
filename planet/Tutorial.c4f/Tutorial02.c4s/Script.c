@@ -19,53 +19,93 @@ protected func Initialize()
 	AddEffect("HasCompletedGoal", 0, 100, 10);
 		
 	// Respawn positions.
-	pos_1 = [150, 358];
-	pos_2 = [565, 110];
+	pos_1 = [190, 220];
+	pos_2 = [100, 430];
 	
-	// Abandoned mine: Lorry with firestones, blackpowder and dynamite.
-	var lorry = CreateObject(Lorry, 200, 560, NO_OWNER);
-	lorry->CreateContents(Firestone, 3);
-	lorry->CreateContents(Blackpowder, 3);
-	lorry->CreateContents(DynamiteBox);
-	AddEffect("IntLorryFill", lorry, 100, 70);
-
-	// Abandoned mine: Scenery.
-	var pickaxe;
-	var pickaxe = CreateObject(Pickaxe, 133, 546, NO_OWNER);
-	pickaxe->SetObjectLayer(pickaxe);
-	pickaxe->SetR(-60);
-	var pickaxe = CreateObject(Pickaxe, 177, 530, NO_OWNER);
-	pickaxe->SetObjectLayer(pickaxe);
-	pickaxe->SetR(70);
-	var pickaxe = CreateObject(Pickaxe, 254, 538, NO_OWNER);
-	pickaxe->SetObjectLayer(pickaxe);
-	pickaxe->SetR(-10);
-	for (var i = 0; i < 6; i++)
+	// Create all objects, vehicles, chests used by the player.
+	var cannon, effect, firestone, chest, powderkeg, ropeladder, grapple, cata, dynamite;
+	
+	// Cannon to blast through rock & chest with powderkeg and firestones.
+	cannon = CreateObject(Cannon, 180, 450, NO_OWNER); 
+	effect = AddEffect("CannonRestore", cannon, 100, 35);
+	EffectVar(1, cannon, effect) = 180;
+	EffectVar(2, cannon, effect) = 450;
+	chest = CreateObject(Chest, 80, 430, NO_OWNER);
+	for (var i = 0; i < 4; i++)
 	{
-		var gold = CreateObject(Gold, 140 + Random(120), 550, NO_OWNER);
-		gold->SetObjectLayer(gold);
-		gold->SetR(Random(360));	
+		firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
+		firestone->Enter(chest);
+		firestone->AddRestoreMode(chest);
+	}
+	powderkeg = CreateObject(PowderKeg, 0, 0, NO_OWNER);
+	powderkeg->Enter(chest);
+	powderkeg->AddRestoreMode(chest);
+	
+	// Chest with ropeladder.
+	chest = CreateObject(Chest, 790, 220, NO_OWNER);
+	for (var i = 0; i < 2; i++) 
+	{
+		ropeladder = CreateObject(Ropeladder, 0, 0, NO_OWNER);
+		ropeladder->Enter(chest);
+		effect = AddEffect("RopeladderRestore", ropeladder, 100, 35);
+		EffectVar(0, ropeladder, effect) = chest;
 	}
 	
-	// Cannon/Catapult to blast through rock.
-	var cannon = CreateObject(Cannon, 80, 330, NO_OWNER);
-	cannon->CreateContents(Firestone, 3);
-	cannon->CreateContents(Blackpowder, 3);
+	// Chest with GrappleBow.
+	chest = CreateObject(Chest, 580, 440, NO_OWNER);
+	grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER); //TODO better restore.
+	grapple->Enter(chest);
+	grapple->AddRestoreMode(chest);
 	
-	// Dynamite(FIXME) to blast through rock. Removed for now, since cannon existent.
-	//var dyn1 = CreateObject(Dynamite, 480, 115, NO_OWNER);
-	//var dyn2 = CreateObject(Dynamite, 485, 125, NO_OWNER);
-	//var dyn3 = CreateObject(Dynamite, 480, 135, NO_OWNER);
-	//var dyn4 = CreateObject(Dynamite, 485, 145, NO_OWNER);
-	//CreateObject(Fuse, 480, 115, NO_OWNER)->Connect(dyn1, dyn2);
-	//CreateObject(Fuse, 485, 125, NO_OWNER)->Connect(dyn2, dyn3);
-	//CreateObject(Fuse, 480, 135, NO_OWNER)->Connect(dyn3, dyn4);
-	//var igniter = CreateObject(Igniter, 410, 235, NO_OWNER);
-	//CreateObject(Fuse, 485, 145, NO_OWNER)->Connect(dyn4, igniter);
-	//igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
+	// Catapult to return grappling bow. TODO: implement catapult here.
+	cata = CreateObject(Cannon, 1320, 440, NO_OWNER); 
+	effect = AddEffect("CataRestore", cata, 100, 35);
+	EffectVar(1, cata, effect) = 1320;
+	EffectVar(2, cata, effect) = 440;
+	powderkeg = CreateObject(PowderKeg, 0, 0, NO_OWNER); 
+	powderkeg->Enter(cata);
+	powderkeg->AddRestoreMode(cata);
+	
+	// Chest with dynamite supplies.
+	chest = CreateObject(Chest, 1400, 540, NO_OWNER);
+	for (var i = 0; i < 2; i++)
+	{
+		dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
+		dynamite->Enter(chest);
+		effect = AddEffect("DynamiteRestore", dynamite, 100, 35);
+		EffectVar(0, dynamite, effect) = chest;
+	}
+	
+	// Chest with flints to blast underwater rocks.
+	chest = CreateObject(Chest, 1590, 90, NO_OWNER);
+	for (var i = 0; i < 3; i++)
+	{
+		firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
+		firestone->Enter(chest);
+		firestone->AddRestoreMode(chest);
+	}
+	
+	// Chest with Grapplebows for the final leap.
+	chest = CreateObject(Chest, 1800, 540, NO_OWNER);
+	for (var i = 0; i < 2; i++)
+	{
+		grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER); //TODO better restore.
+		grapple->Enter(chest);
+		grapple->AddRestoreMode(chest);
+	}
+	
+	// Create brick edges.
+	var x = [30,40,50,60,140,150,220,270,30,40,50,240,260,310,380,390,400,410,420,430,980,990,1000,1010,1020,1030,1070,1080,1090,1100,1110,1120,1260,1280,1300,1500,1520,2260,2270,2280,2320,2330,2340,2480,2490,2500,2540,2550,2560,2680,2690,2700,2740,2750,2760];
+	var y = [420,430,440,450,460,470,470,470,230,240,250,250,240,240,330,320,310,300,290,280,50,60,70,80,90,100,100,90,80,70,60,50,430,440,450,380,380,80,90,100,100,90,80,80,90,100,100,90,80,80,90,100,100,90,80];
+	for(var i = 0; i < GetLength(x); i++)
+		CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
 	
 	// Scriptcounter
 	ScriptGo(true);
+	
+	// Set the mood.
+	SetGamma(RGB(30, 25, 20), RGB(135, 130, 125), RGB(255, 250, 245));
+	SetSkyParallax(0, 20, 20);
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
@@ -78,17 +118,11 @@ protected func InitializePlayer(int plr)
 	clonk_1 = GetCrew(plr, 0);
 	clonk_1->SetPosition(pos_1[0], pos_1[1]);
 	AddEffect("IntClonkOne", clonk_1, 100, 10);
-	// Shovel to backpack.
-	clonk_1->Switch2Items(0, 2);
 	
 	// Second clonk.
 	clonk_2 = GetCrew(plr, 1);
 	clonk_2->SetPosition(pos_2[0], pos_2[1]);
 	AddEffect("IntClonkTwo", clonk_2, 100, 10);
-	// Remove shovel, create ropeladders.
-	if (clonk_2->Contents())
-		clonk_2->Contents()->RemoveObject();
-	clonk_2->CreateContents(Ropeladder, 2);	
 	
 	// Professor
 	guide = CreateTutorialGuide(plr);
@@ -105,29 +139,18 @@ protected func OnClonkDeath(object clonk)
 	UnselectCrew(plr);
 	SelectCrew(plr, new_clonk, true);
 	new_clonk->DoEnergy(100000);
-	// Remove shovel.
-	if (new_clonk->Contents())
-		new_clonk->Contents()->RemoveObject();
 	// Set position.
 	if (clonk == clonk_1)
 	{
 		clonk_1 = new_clonk;
 		clonk_1->SetPosition(pos_1[0], pos_1[1]);
 		AddEffect("IntClonkOne", clonk_1, 100, 10);
-		if (grapple_1)
-			clonk_1->CreateContents(GrappleBow, 2);	
-		else 
-			clonk_1->CreateContents(Shovel);	
 	}
 	else if (clonk == clonk_2)
 	{
 		clonk_2 = new_clonk;
 		clonk_2->SetPosition(pos_2[0], pos_2[1]);
 		AddEffect("IntClonkTwo", clonk_2, 100, 10);
-		if (grapple_2)
-			clonk_2->CreateContents(GrappleBow, 2);
-		else
-			clonk_2->CreateContents(Ropeladder, 2);
 	}
 	return;
 }
@@ -147,27 +170,11 @@ global func FxIntLorryFillTimer(object target)
 
 global func FxIntClonkOneTimer(object target)
 {
-	if (Distance(target->GetX(), target->GetY(), 820, 390) < 20)
-	{
-		grapple_1 = true;
-		pos_1 = [820, 390];
-		for (var content in FindObjects(Find_Container(target)))
-			content->RemoveObject();
-		target->CreateContents(GrappleBow, 2);	
-	}
 	return;
 }
 
 global func FxIntClonkTwoTimer(object target)
 {
-	if (Distance(target->GetX(), target->GetY(), 820, 390) < 20)
-	{
-		grapple_2 = true;
-		pos_2 = [820, 390];
-		for (var content in FindObjects(Find_Container(target)))
-			content->RemoveObject();
-		target->CreateContents(GrappleBow, 2);	
-	}
 	return;
 }
 
@@ -253,7 +260,7 @@ global func FxBlastedRock2Timer(object trg, int num, int time)
 // Checks whether the goal has been reached.
 global func FxHasCompletedGoalTimer(object trg, int num, int time)
 {
-	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 1450, 380)))
+	if (ObjectCount(Find_OCF(OCF_CrewMember), Find_Distance(60, 2970, 250)) == 2)
 	{
 		// Dialogue options -> next round.
 		SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
@@ -263,4 +270,107 @@ global func FxHasCompletedGoalTimer(object trg, int num, int time)
 			goal->Fulfill();		
 	}	
 	return;
+}
+
+/*-- Item restoring --*/
+
+// Dynamite box, needs seperate effect since changedef call.
+global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3)
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_container = EffectVar(0, target, num);
+		var revived = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
+		reviver->SetRestoreObject(revived, to_container, nil, nil, "DynamiteRestore");	
+	}
+	return 1;
+}
+
+// Dynamite box, times is always needed.
+global func FxDynamiteRestoreTimer()
+{
+	return 1;
+}
+
+// Cannon, restore position if pushed to far to the right.
+global func FxCannonRestoreTimer(object target, int num, int time)
+{
+	if ((target->GetX() > 300 || target->GetY() > 500) && !target->Contained())
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		reviver->SetRestoreObject(target, nil, to_x, to_y, "CannonRestore");
+	}
+	return 1;
+}
+
+// Catapult, restore position if pushed to far to the left or right.
+global func FxCataRestoreTimer(object target, int num, int time)
+{
+	if ((target->GetX() < 1110 || target->GetX() > 1650 || target->GetY() > 460) && !target->Contained())
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		reviver->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
+	}
+	return 1;
+}
+
+// Catapult, might be dropped within 1100 X-coordinate.
+global func FxCataRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3)
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		reviver->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
+	}
+	return 1;
+}
+
+// Ropeladder, restore if thrown away to unreachable location.
+global func FxRopeladderRestoreTimer(object target, int num, int time)
+{
+	if (target->GetX() < 680 && target->GetY() > 340 && !target->Contained())
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_container = EffectVar(0, target, num);
+		reviver->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
+	}
+	return 1;
+}
+
+// Ropeladder, restore if destroyed.
+global func FxRopeladderRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3)
+	{
+		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		reviver->SetPosition(x, y);
+		var to_container = EffectVar(0, target, num);
+		var revived = CreateObject(Ropeladder, 0, 0, target->GetOwner());
+		reviver->SetRestoreObject(revived, to_container, nil, nil, "RopeladderRestore");	
+	}
+	return 1;
 }
