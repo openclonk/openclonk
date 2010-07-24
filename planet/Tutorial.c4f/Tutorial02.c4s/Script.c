@@ -12,10 +12,9 @@ static guide; // guide object.
 
 protected func Initialize()
 {
-	// Goal
-	var goal = FindObject(Find_ID(Goal_Script));
-	if (!goal) 
-		goal = CreateObject(Goal_Script);
+	// Create goal, all crew members should reach the flag on the far right side.
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
+	goal->CreateGoalFlag(2970, 260);
 	AddEffect("HasCompletedGoal", 0, 100, 10);
 		
 	// Respawn positions.
@@ -77,7 +76,7 @@ protected func Initialize()
 	}
 	
 	// Chest with flints to blast underwater rocks.
-	chest = CreateObject(Chest, 1590, 90, NO_OWNER);
+	chest = CreateObject(Chest, 1590, 100, NO_OWNER);
 	for (var i = 0; i < 3; i++)
 	{
 		firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
