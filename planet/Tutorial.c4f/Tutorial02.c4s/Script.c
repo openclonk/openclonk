@@ -5,9 +5,7 @@
 		In this tutorial the player will be familiarized with crew selection, backpack control and some tools.
 --*/
 
-static pos_1, pos_2; // Respawn positions of either clonk.
-static clonk_1, clonk_2; // Pointer to either clonk.
-static grapple_1, grapple_2; // Progress of either clonk.
+
 static guide; // guide object.
 
 protected func Initialize()
@@ -17,10 +15,6 @@ protected func Initialize()
 	goal->CreateGoalFlag(2970, 260);
 	AddEffect("HasCompletedGoal", 0, 100, 10);
 		
-	// Respawn positions.
-	pos_1 = [190, 220];
-	pos_2 = [100, 430];
-	
 	// Create all objects, vehicles, chests used by the player.
 	var cannon, effect, firestone, chest, powderkeg, ropeladder, grapple, cata, dynamite;
 	
@@ -111,73 +105,38 @@ protected func Initialize()
 	return;
 }
 
+// Gamecall from goals, set next mission.
+protected func OnGoalsFulfilled()
+{
+	// Dialogue options -> next round.
+	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	// Normal scenario ending by goal library.
+	return false;
+}
+
 protected func InitializePlayer(int plr)
 {
+	var clonk, effect;
 	// First clonk.
-	clonk_1 = GetCrew(plr, 0);
-	clonk_1->SetPosition(pos_1[0], pos_1[1]);
-	AddEffect("IntClonkOne", clonk_1, 100, 10);
+	clonk = GetCrew(plr, 0);
+	clonk->SetPosition(190, 220);
+	effect = AddEffect("ClonkOneRestore", clonk, 100, 35);
+	EffectVar(1, clonk, effect) = 190;
+	EffectVar(2, clonk, effect) = 220;
 	
 	// Second clonk.
-	clonk_2 = GetCrew(plr, 1);
-	clonk_2->SetPosition(pos_2[0], pos_2[1]);
-	AddEffect("IntClonkTwo", clonk_2, 100, 10);
+	clonk = GetCrew(plr, 1);
+	clonk->SetPosition(100, 430);
+	effect = AddEffect("ClonkTwoRestore", clonk, 100, 35);
+	EffectVar(1, clonk, effect) = 100;
+	EffectVar(2, clonk, effect) = 430;
 	
 	// Professor
 	guide = CreateTutorialGuide(plr);
 	return;
 }
 
-protected func OnClonkDeath(object clonk)
-{
-	// Respawn new clonk.
-	var plr = clonk->GetOwner();
-	var new_clonk = CreateObject(Clonk, 0, 0, plr);
-	new_clonk->GrabObjectInfo(clonk);
-	SetCursor(plr, new_clonk);
-	UnselectCrew(plr);
-	SelectCrew(plr, new_clonk, true);
-	new_clonk->DoEnergy(100000);
-	// Set position.
-	if (clonk == clonk_1)
-	{
-		clonk_1 = new_clonk;
-		clonk_1->SetPosition(pos_1[0], pos_1[1]);
-		AddEffect("IntClonkOne", clonk_1, 100, 10);
-	}
-	else if (clonk == clonk_2)
-	{
-		clonk_2 = new_clonk;
-		clonk_2->SetPosition(pos_2[0], pos_2[1]);
-		AddEffect("IntClonkTwo", clonk_2, 100, 10);
-	}
-	return;
-}
-
-
-/*-- Effects --*/
-
-global func FxIntLorryFillTimer(object target)
-{
-	// Refill when objects are taken (3 firestones and 1 dynamite box).
-	if (ObjectCount(Find_ID(Firestone), Find_Container(target)) < 3)
-		target->CreateContents(Firestone);	
-	if (ObjectCount(Find_ID(DynamiteBox), Find_Container(target)) < 1)
-		target->CreateContents(DynamiteBox);	
-	return;
-}
-
-global func FxIntClonkOneTimer(object target)
-{
-	return;
-}
-
-global func FxIntClonkTwoTimer(object target)
-{
-	return;
-}
-
-/*-- Messages --*/
+/*-- Guide Messages --*/
 
 // Welcome player, indicate goal.
 func Script1()
@@ -256,41 +215,105 @@ global func FxBlastedRock2Timer(object trg, int num, int time)
 	}
 }
 
-// Checks whether the goal has been reached.
-global func FxHasCompletedGoalTimer(object trg, int num, int time)
+/*-- Clonk restoring --*/
+
+global func FxClonkOneRestoreTimer(object target, int num, int time)
 {
-	if (ObjectCount(Find_OCF(OCF_CrewMember), Find_Distance(60, 2970, 250)) == 2)
+	// Restore clonk to its original location if there is no hanging rope ladder and clonk has fallen down in first sector.
+	if (target->GetY() > 330 && target->GetX() < 660 && !FindObject(Find_InRect(340, 310, 30, 80), Find_Func("IsLadder")))
 	{
-		// Dialogue options -> next round.
-		SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
-		// Fulfill goal.
-		var goal = FindObject(Find_ID(Goal_Script));
-		if (goal)
-			goal->Fulfill();		
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		restorer->SetRestoreObject(target, nil, to_x, to_y, "ClonkOneRestore");
+		return -1;
 	}	
-	return;
+	return 1;
+}
+
+// Relaunches the clonk, from death or removal.
+global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3 || reason == 4)
+	{
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		// Respawn new clonk.
+		var plr = target->GetOwner();
+		var clonk = CreateObject(Clonk, 0, 0, plr);
+		clonk->GrabObjectInfo(target);
+		SetCursor(plr, target);
+		UnselectCrew(plr);
+		SelectCrew(plr, clonk, true);
+		clonk->DoEnergy(100000);
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkOneRestore");
+	}
+	return 1;
+}
+
+global func FxClonkTwoRestoreTimer(object target, int num, int time)
+{
+
+
+	return 1;
+}
+
+// Relaunches the clonk, from death or removal.
+global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3 || reason == 4)
+	{
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		// Respawn new clonk.
+		var plr = target->GetOwner();
+		var clonk = CreateObject(Clonk, 0, 0, plr);
+		clonk->GrabObjectInfo(target);
+		SetCursor(plr, target);
+		UnselectCrew(plr);
+		SelectCrew(plr, clonk, true);
+		clonk->DoEnergy(100000);
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkTwoRestore");
+	}
+	return 1;
 }
 
 /*-- Item restoring --*/
+// All done through global effects, which use ObjectRestorer. 
+// In all cases the effects have:
+// Effectvar 0: Container to which must be restored.
+// Effectvar 1: x-coordinate to which must be restored.
+// Effectvar 2: y-coordinate to which must be restored.
 
 // Dynamite box, needs seperate effect since changedef call.
 global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
-		var revived = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
-		reviver->SetRestoreObject(revived, to_container, nil, nil, "DynamiteRestore");	
+		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");	
 	}
 	return 1;
 }
 
-// Dynamite box, times is always needed.
-global func FxDynamiteRestoreTimer()
+// Dynamite box, effect timer is always needed.
+global func FxDynamiteRestoreTimer(object target, int num, int time)
 {
 	return 1;
 }
@@ -300,13 +323,14 @@ global func FxCannonRestoreTimer(object target, int num, int time)
 {
 	if ((target->GetX() > 300 || target->GetY() > 500) && !target->Contained())
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_x = EffectVar(1, target, num);
 		var to_y = EffectVar(2, target, num);
-		reviver->SetRestoreObject(target, nil, to_x, to_y, "CannonRestore");
+		restorer->SetRestoreObject(target, nil, to_x, to_y, "CannonRestore");
+		return -1;
 	}
 	return 1;
 }
@@ -316,13 +340,14 @@ global func FxCataRestoreTimer(object target, int num, int time)
 {
 	if ((target->GetX() < 1110 || target->GetX() > 1650 || target->GetY() > 460) && !target->Contained())
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_x = EffectVar(1, target, num);
 		var to_y = EffectVar(2, target, num);
-		reviver->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
+		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
+		return -1;
 	}
 	return 1;
 }
@@ -332,13 +357,13 @@ global func FxCataRestoreStop(object target, int num, int reason, bool  temporar
 {
 	if (reason == 3)
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_x = EffectVar(1, target, num);
 		var to_y = EffectVar(2, target, num);
-		reviver->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
+		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
 	}
 	return 1;
 }
@@ -348,12 +373,13 @@ global func FxRopeladderRestoreTimer(object target, int num, int time)
 {
 	if (target->GetX() < 680 && target->GetY() > 340 && !target->Contained())
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
-		reviver->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
+		restorer->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
+		return -1;
 	}
 	return 1;
 }
@@ -363,13 +389,13 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 {
 	if (reason == 3)
 	{
-		var reviver = CreateObject(ItemRestorer, 0, 0, NO_OWNER);
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
-		reviver->SetPosition(x, y);
+		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
-		var revived = CreateObject(Ropeladder, 0, 0, target->GetOwner());
-		reviver->SetRestoreObject(revived, to_container, nil, nil, "RopeladderRestore");	
+		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");	
 	}
 	return 1;
 }
