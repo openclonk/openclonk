@@ -1,192 +1,32 @@
 /*-- Balloon --*/
 
-local rider;
-
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
-protected func Initialize()
-{
-	SetProperty("Collectible",1,this);
-	SetAction("Item");
-	SquishVertices(true);
-}
+local user;
 
 func ControlUseStart(object clonk, int ix, int iy)
 {
-	if(clonk->GetAction() != "Jump") return 1;
+	if(MaterialDepthCheck(0,0, "Sky") < 15) return 1;
+	var balloon = CreateObject(BalloonDeployed,0,-5);
+	balloon->SetSpeed(clonk->GetXDir(),clonk->GetYDir());
 
-	rider = clonk;
-	SetProperty("Collectible",0,this);
-	Exit(0,-3);
-	SetAction("Inflate");
-	SetSpeed(clonk->GetXDir(),clonk->GetYDir());
-	clonk->SetAction("HangOnto",this);
-	AddEffect("Float",this,1,1,this);
-	SquishVertices(false);
-}
+	//Lots of object pointers
+	user = clonk;
+	clonk->SetAction("Ride",balloon);
+	balloon->LocalN("rider") = clonk;
+	balloon->LocalN("parent") = this;
 
-func ControlJump()
-{
-	if(GetAction() != "Deflate") SetAction("Deflate");
-}
-
-func ControlLeft()
-{
-	if(GetXDir() > -7) SetXDir(GetXDir() - 1);
-}
-
-func ControlRight()
-{
-	if(GetXDir() < 7) SetXDir(GetXDir() + 1);
-}
-
-protected func Pack()
-{
-	SetProperty("Collectible",1,this);
-	rider->SetAction("Walk");
-	rider->SetXDir(this->GetXDir());
-	RemoveEffect("Float",this);
-	SquishVertices(true);
-	Enter(rider);
-}
-
-protected func SquishVertices(bool squish)
-{
-	//Reshapes the vertices from a vehicle to an item and back
-	if(squish == true)
-	{
-		SetVertex(0,VTX_X,-4,2);
-		SetVertex(0,VTX_Y,1,2);
-		SetVertex(1,VTX_X,4,2);
-		SetVertex(1,VTX_Y,1,2);
-		SetVertex(2,VTX_X,0,2);
-		SetVertex(2,VTX_Y,-5,2);
-		SetVertex(3,VTX_X,0,2);
-		SetVertex(3,VTX_Y,-5,2);
-		SetVertex(4,VTX_X,0,2);
-		SetVertex(4,VTX_Y,7,2);
-		SetVertex(5,VTX_X,0,2);
-		SetVertex(5,VTX_Y,0,2);
-		SetVertex(6,VTX_X,0,2);
-		SetVertex(6,VTX_Y,0,2);
-	return 1;
-	}
-
-	if(squish != true)
-	{
-		SetVertex(0,VTX_X,0,2);
-		SetVertex(0,VTX_Y,38,2);
-		SetVertex(1,VTX_X,0,2);
-		SetVertex(1,VTX_Y,-16,2);
-		SetVertex(2,VTX_X,-13,2);
-		SetVertex(2,VTX_Y,0,2);
-		SetVertex(3,VTX_X,13,2);
-		SetVertex(3,VTX_Y,0,2);
-		SetVertex(4,VTX_X,-6,2);
-		SetVertex(4,VTX_Y,40,2);
-		SetVertex(5,VTX_X,6,2);
-		SetVertex(5,VTX_Y,40,2);
-		SetVertex(6,VTX_X,0,2);
-		SetVertex(6,VTX_Y,48,2);
-	return 0;
-	}
-}
-
-public func IsProjectileTarget(target,shooter)
-{
+	AddEffect("NoDrop",this,1,1,this);
 	return 1;
 }
 
-public func OnProjectileHit()
+func FxNoDropTimer(object target, int num, int timer)
 {
-	CreateObject(BurntBalloon,0,30);
-	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
-	if(rider!=nil) rider->SetAction("Tumble");
-	RemoveObject();
-}
-
-func FxFloatTimer(object target, int num, int time)
-{
-	var speed = 7;
-	if(GetYDir() > speed) SetYDir(GetYDir() - 1);
-	if(GetYDir() < speed) SetYDir(GetYDir() + 1);
-	if(GetXDir() > speed * 3) SetXDir(GetXDir()-1);
-	if(GetXDir() < -speed * 3) SetXDir(GetXDir()+1);
-
-	if(GBackSolid(0,50) || GBackSolid(5,43) || GBackSolid(-5,43) || GBackLiquid(0,50))
+	if(target->Contained() != user)
 	{
-		if(GetAction() != "Deflate") SetAction("Deflate");
-		return -1;
+		target->Enter(user);
 	}
 }
 
 func Definition(def) {
-	SetProperty("ActMap", {
-
-Float = {
-	Prototype = Action,
-	Name = "Float",
-	Procedure = DFA_FLOAT,
-	Directions = 1,
-	FlipDir = 0,
-	Length = 15,
-	Delay = 5,
-	X = 0,
-	Y = 0,
-	Wdt = 64,
-	Hgt = 64,
-	NextAction = "Float",
-	Animation = "Float",
-},
-
-Inflate = {
-	Prototype = Action,
-	Name = "Inflate",
-	Procedure = DFA_FLOAT,
-	Directions = 1,
-	FlipDir = 0,
-	Length = 20,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 64,
-	Hgt = 64,
-	NextAction = "Float",
-	Animation = "Inflate",
-},
-
-Deflate = {
-	Prototype = Action,
-	Name = "Deflate",
-	Procedure = DFA_FLOAT,
-	Directions = 1,
-	FlipDir = 0,
-	Length = 20,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 64,
-	Hgt = 64,
-	NextAction = "Item",
-	EndCall = "Pack",
-	Animation = "Deflate",
-},
-
-Item = {
-	Prototype = Action,
-	Name = "Item",
-	Procedure = DFA_FLIGHT,
-	Directions = 1,
-	FlipDir = 0,
-	Length = 1,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 64,
-	Hgt = 64,
-	NextAction = "Item",
-	Animation = "Item",
-},
-}, def);}
+	SetProperty("Name", "$Name$" ,def);
+	SetProperty("Collectible", 1, def);
+}
