@@ -3526,6 +3526,8 @@ void GrabLost(C4Object *cObj)
 {
 	// Grab lost script call on target (quite hacky stuff...)
 	cObj->Action.Target->Call(PSF_GrabLost);
+	// Also, delete the target from the clonk's action (Newton)
+	cObj->Action.Target = NULL;
 	// Clear commands down to first PushTo (if any) in command stack
 	for (C4Command *pCom=cObj->Command; pCom; pCom=pCom->Next)
 		if (pCom->Next && pCom->Next->Command==C4CMD_PushTo)

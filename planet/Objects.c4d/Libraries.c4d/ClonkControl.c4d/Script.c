@@ -311,7 +311,11 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
-protected func GrabLost()         { CancelUse(); return _inherited(...); }
+protected func Grab(object target, bool ungrab)
+{
+	if (ungrab) CancelUse();
+	return _inherited(target,ungrab,...);
+}
 
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)

@@ -287,8 +287,12 @@ bool ObjectComUnGrab(C4Object *cObj)
 		{
 			if (!cObj->CloseMenu(false)) return false;
 			cObj->Call(PSF_Grab, &C4AulParSet(C4VObj(pTarget), C4VBool(false)));
+			// clear action target
+			cObj->Action.Target = NULL;
 			if (pTarget && pTarget->Status && cObj->Status)
+			{
 				pTarget->Call(PSF_Grabbed, &C4AulParSet(C4VObj(cObj), C4VBool(false)));
+			}
 			return true;
 		}
 	}

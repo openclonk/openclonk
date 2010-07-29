@@ -86,7 +86,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_Hit                 "~Hit"
 #define PSF_Hit2                "~Hit2"
 #define PSF_Hit3                "~Hit3"
-#define PSF_Grab                "~Grab"
+#define PSF_Grab                "~Grab" // pObject, fGrab
 #define PSF_Grabbed             "~Grabbed"
 #define PSF_Get                 "~Get"
 #define PSF_Put                 "~Put"
