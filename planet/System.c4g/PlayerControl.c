@@ -286,6 +286,9 @@ global func NameComDir(comdir)
 global func ObjectControlMovement(int plr, int ctrl, int strength, bool release, bool repeat)
 {
 	if (!this) return false;
+	
+	// movement is only possible when not contained
+	if (Contained()) return false;
 
 	// this is for controlling movement with Analogpad
 	if(!release)
