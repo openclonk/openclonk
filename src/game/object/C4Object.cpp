@@ -3354,6 +3354,8 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 {
 	C4PropList * LastAction = GetAction();
 	int32_t iLastPhase=Action.Phase;
+	C4Object *pLastTarget = Action.Target;
+	C4Object *pLastTarget2 = Action.Target2;
 	// No other action
 	if (LastAction)
 		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
@@ -3430,7 +3432,9 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 			if (LastAction->GetPropertyStr(P_AbortCall))
 			{
 				C4Def *pOldDef = Def;
-				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
+				if (pLastTarget && !pLastTarget->Status) pLastTarget = NULL;
+				if (pLastTarget2 && !pLastTarget2->Status) pLastTarget2 = NULL;
+				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase), C4VObj(pLastTarget), C4VObj(pLastTarget2)));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return true;
 			}
