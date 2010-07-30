@@ -351,7 +351,6 @@ void C4ControlPlayerSelect::Execute() const
 
 	// Check object list
 	C4Object *pObj;
-	C4ObjectList SelectObjs;
 	int32_t iControlChecksum = 0;
 	for (int32_t i = 0; i < iObjCnt; i++)
 		if ((pObj = ::Objects.SafeObjectPointer(pObjNrs[i])))
@@ -365,16 +364,9 @@ void C4ControlPlayerSelect::Execute() const
 				else
 					pObj->Call(PSF_MouseSelection, &C4AulParSet(C4VInt(iPlr)));
 			}
-			// player crew selection (recheck status of pObj)
-			if (pObj->Status && pPlr->ObjectInCrew(pObj) && !fIsAlt)
-				SelectObjs.Add(pObj, C4ObjectList::stNone);
 		}
 	// count
 	pPlr->CountControl(C4Player::PCID_Command, iControlChecksum);
-
-	// any crew to be selected (or complete crew deselection)?
-	if (!fIsAlt) if (!SelectObjs.IsClear() || !iObjCnt)
-			pPlr->SelectCrew(SelectObjs);
 }
 
 void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)

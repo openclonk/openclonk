@@ -183,7 +183,6 @@ void C4Object::Default()
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
-	Select=0;
 	Unsorted=false;
 	Initializing=false;
 	OnFire=0;
@@ -1255,7 +1254,6 @@ void C4Object::AssignDeath(bool fForced)
 	// Action
 	SetActionByName("Dead");
 	// Values
-	Select=0;
 	Alive=0;
 	ClearCommands();
 	if (Info)
@@ -2496,14 +2494,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	// local particles in front of the object
 	if (FrontParticles) if (eDrawMode!=ODM_BaseOnly) FrontParticles.Draw(cgo,this);
 
-	// Select Mark
-	if (Select)
-		if (eDrawMode!=ODM_BaseOnly)
-			if (ValidPlr(Owner))
-				if (Owner == iByPlayer)
-					if (::Players.Get(Owner)->SelectFlash)
-						DrawSelectMark(cgo, 1);
-
 	// Energy shortage
 	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 			{
@@ -2758,7 +2748,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( SolidMask,                        "SolidMask",          Def->SolidMask    ));
 	pComp->Value(mkNamingAdapt( PictureRect,                      "Picture"                               ));
 	pComp->Value(mkNamingAdapt( Mobile,                           "Mobile",             false             ));
-	pComp->Value(mkNamingAdapt( Select,                           "Selected",           false             ));
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
@@ -5106,28 +5095,20 @@ void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctView
 		riTy = riTy * iParY / 100;
 }
 
-bool C4Object::DoSelect(bool fCursor)
+bool C4Object::DoSelect()
 {
 	// selection allowed?
-	if (CrewDisabled) return true;
-	// was already selected
-	if (Select) return true;
-	// select
-	if (!fCursor) Select=1;
+	if (CrewDisabled) return false;
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(false), C4VBool(!!fCursor)));
+	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(false)));
 	// done
 	return true;
 }
 
-void C4Object::UnSelect(bool fCursor)
+void C4Object::UnSelect()
 {
-	// was not selected
-	if (!Select) return;
-	// unselect
-	if (!fCursor) Select=0;
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true), C4VBool(!!fCursor)));
+	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true)));
 }
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)

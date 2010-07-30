@@ -1641,7 +1641,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 	C4Facet &fctCursor = GraphicsResource.fctCursor;
 	for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->Number == iPlayer || iPlayer==NO_OWNER)
-			if (pPlr->CursorFlash || pPlr->SelectFlash)
+			if (pPlr->CursorFlash)
 				if (pPlr->Cursor)
 				{
 					cursor=pPlr->Cursor;

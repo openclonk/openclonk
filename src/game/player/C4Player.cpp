@@ -223,7 +223,6 @@ void C4Player::Execute()
 	if (ViewWealth>0) ViewWealth--;
 	if (ViewScore>0) ViewScore--;
 	if (CursorFlash>0) CursorFlash--;
-	if (SelectFlash>0) SelectFlash--;
 }
 
 bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName,
@@ -892,51 +891,49 @@ bool C4Player::IsHostileTowards(const C4Player *plr) const
 	return Hostility.find(plr) != Hostility.end();
 }
 
-C4Object* C4Player::GetHiExpActiveCrew(bool fSelectOnly)
+C4Object* C4Player::GetHiExpActiveCrew()
 {
 	C4ObjectLink *clnk;
 	C4Object *cobj,*hiexp=NULL;
 	int32_t iHighestExp=-2, iExp;
 	for (clnk=Crew.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (!cobj->CrewDisabled)
-			if (!fSelectOnly || cobj->Select)
+		{
+			if (cobj->Info) iExp = cobj->Info->Experience; else iExp=-1;
+			if (!hiexp || (iExp>iHighestExp))
 			{
-				if (cobj->Info) iExp = cobj->Info->Experience; else iExp=-1;
-				if (!hiexp || (iExp>iHighestExp))
-				{
-					hiexp=cobj;
-					iHighestExp=iExp;
-				}
+				hiexp=cobj;
+				iHighestExp=iExp;
 			}
+		}
 	return hiexp;
 }
 
-C4Object* C4Player::GetHiRankActiveCrew(bool fSelectOnly)
+C4Object* C4Player::GetHiRankActiveCrew()
 {
 	C4ObjectLink *clnk;
 	C4Object *cobj,*hirank=NULL;
 	int32_t iHighestRank=-2, iRank;
 	for (clnk=Crew.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (!cobj->CrewDisabled)
-			if (!fSelectOnly || cobj->Select)
+		{
+			if (cobj->Info) iRank = cobj->Info->Rank; else iRank=-1;
+			if (!hirank || (iRank>iHighestRank))
 			{
-				if (cobj->Info) iRank = cobj->Info->Rank; else iRank=-1;
-				if (!hirank || (iRank>iHighestRank))
-				{
-					hirank=cobj;
-					iHighestRank=iRank;
-				}
+				hirank=cobj;
+				iHighestRank=iRank;
 			}
+		}
 	return hirank;
 }
 
 void C4Player::CheckCrewExPromotion()
 {
 	C4Object *hirank;
-	if ((hirank=GetHiRankActiveCrew(false)))
+	if ((hirank=GetHiRankActiveCrew()))
 		if (hirank->Info)
 			if (hirank->Info->Rank<1) // No Fähnrich -> except. promo.
-				if ((hirank=GetHiExpActiveCrew(false)))
+				if ((hirank=GetHiExpActiveCrew()))
 					hirank->Promote(1,true,false);
 }
 
@@ -1134,26 +1131,17 @@ void C4Player::AdjustCursorCommand()
 {
 	// Reset view
 	ResetCursorView();
-	// Set cursor to hirank Select clonk
-	C4Object *pHiRank=NULL;
-	// Find hirank Select
-	pHiRank = GetHiRankActiveCrew(true);
-	// If none, check non-Selects as well
-	if (!pHiRank)
-		pHiRank = GetHiRankActiveCrew(false);
-	// The cursor is on someone else: set the cursor to the hirank
-	C4Object* pPrev = Cursor;
-	if (Cursor != pHiRank)
+	// Default cursor to hirank clonk
+	if (!Cursor || Cursor->CrewDisabled)
 	{
-		Cursor=pHiRank;
+		C4Object *pHiRank = GetHiRankActiveCrew();
+		if (!pHiRank)
+			return;
+		Cursor = pHiRank;
 		UpdateView();
+		Cursor->DoSelect();
+		CursorFlash=30;
 	}
-	// UnSelect previous cursor
-	if (pPrev && pPrev != Cursor) pPrev->UnSelect(true);
-	// We have a cursor: do select it
-	if (Cursor) { /*Cursor->DoSelect(true);*/ Cursor->DoSelect(); } // Hmm, why DoSelect() twice? I hope the second one is the correct one...
-	// Updates
-	CursorFlash=30;
 }
 
 void C4Player::CursorRight()
@@ -1166,10 +1154,9 @@ void C4Player::CursorRight()
 	if (!cLnk)
 		for (cLnk=Crew.First; cLnk; cLnk=cLnk->Next)
 			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (cLnk) SetCursor(cLnk->Obj, false, true);
+	if (cLnk) SetCursor(cLnk->Obj, true);
 	// Updates
 	CursorFlash=30;
-	CursorSelection=1;
 	UpdateView();
 }
 
@@ -1183,103 +1170,10 @@ void C4Player::CursorLeft()
 	if (!cLnk)
 		for (cLnk=Crew.Last; cLnk; cLnk=cLnk->Prev)
 			if (cLnk->Obj->Status && !cLnk->Obj->CrewDisabled) break;
-	if (cLnk) SetCursor(cLnk->Obj, false, true);
+	if (cLnk) SetCursor(cLnk->Obj, true);
 	// Updates
 	CursorFlash=30;
-	CursorSelection=1;
 	UpdateView();
-}
-
-void C4Player::UnselectCrew()
-{
-	C4Object *cObj; C4ObjectLink *cLnk; bool fCursorDeselected = false;
-	for (cLnk=Crew.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
-	{
-		if (Cursor == cObj) fCursorDeselected = true;
-		if (cObj->Status)
-			cObj->UnSelect();
-	}
-	// if cursor is outside crew (done by some scenarios), unselect that one, too! (script callback)
-	if (Cursor && !fCursorDeselected) Cursor->UnSelect();
-}
-
-void C4Player::SelectSingleByCursor()
-{
-	// Unselect crew
-	UnselectCrew();
-	// Select cursor
-	if (Cursor) Cursor->DoSelect();
-	// Updates
-	SelectFlash=30;
-	AdjustCursorCommand();
-}
-
-void C4Player::SelectSingle(C4Object *tobj)
-{
-	// clear previous cursor
-	if (Cursor) Cursor->UnSelect(true);
-	// Set cursor
-	Cursor=tobj;
-	if (Cursor) Cursor->DoSelect(true);
-	// Now use PlayerSelectSingleByCursor
-	SelectSingleByCursor();
-}
-
-void C4Player::CursorToggle()
-{
-	C4ObjectLink *clnk;
-	// Selection mode: toggle cursor select
-	if (CursorSelection)
-	{
-		if (Cursor)
-		{
-			if (Cursor->Select) Cursor->UnSelect();
-			else Cursor->DoSelect();
-		}
-		CursorToggled=1;
-	}
-	// Pure toggle: toggle all Select
-	else
-	{
-		for (clnk=Crew.First; clnk; clnk=clnk->Next)
-			if (!clnk->Obj->CrewDisabled)
-			{
-				if (clnk->Obj->Select) clnk->Obj->UnSelect();
-				else clnk->Obj->DoSelect();
-			}
-		AdjustCursorCommand();
-	}
-	// Updates
-	SelectFlash=30;
-}
-
-void C4Player::SelectAllCrew()
-{
-	C4ObjectLink *clnk;
-	// Select all crew
-	for (clnk=Crew.First; clnk; clnk=clnk->Next)
-		clnk->Obj->DoSelect();
-	// Updates
-	AdjustCursorCommand();
-	CursorSelection=CursorToggled=0;
-	SelectFlash=30;
-	// Game display
-	if (LocalControl) StartSoundEffect("Ding");
-}
-
-void C4Player::UpdateSelectionToggleStatus()
-{
-	if (CursorSelection)
-	{
-		// Select toggled: cursor to hirank
-		if (CursorToggled)
-			AdjustCursorCommand();
-		// Cursor select only: single control
-		else
-			SelectSingleByCursor();
-	}
-	CursorSelection=0;
-	CursorToggled=0;
 }
 
 bool C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
@@ -1288,43 +1182,9 @@ bool C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, in
 	if (Eliminated) return false;
 	// Hide startup
 	if (ShowStartup) ShowStartup=false;
-	// Update selection & toggle status
-	UpdateSelectionToggleStatus();
-	// Apply to all selected crew members (in cursor range) except pTarget.
-	// Set, Add, Append mode flags may be combined and have a priority order.
-	C4ObjectLink *cLnk; C4Object *cObj; bool fCursorProcessed = false;
-	for (cLnk=Crew.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
-	{
-		if (cObj == Cursor) fCursorProcessed = true;
-		if (cObj->Status) if (cObj->Select)
-				if ( !(iMode & C4P_Command_Range) || (Cursor && Inside<int32_t>(cObj->GetX()-Cursor->GetX(),-15,+15) && Inside<int32_t>(cObj->GetY()-Cursor->GetY(),-15,+15)) )
-					if (cObj!=pTarget)
-					{
-						// Put command with unspecified put object
-						if ((iCommand == C4CMD_Put) && !pTarget2)
-						{
-							// Special: the put command is only applied by this function if the clonk actually
-							// has something to put. Also, the put count is adjusted to that the clonk will not try to put
-							// more items than he actually has. This workaround is needed so the put command can be used
-							// to tell all selected clonks to put when in a container, simulating the old all-throw behavior.
-							if (cObj->Contents.ObjectCount(iData.getC4ID()))
-								ObjectCommand2Obj(cObj, iCommand, pTarget, Min<int32_t>(iX, cObj->Contents.ObjectCount(iData.getC4ID())), iY, pTarget2, iData, iMode);
-						}
-						// Other command
-						else
-							ObjectCommand2Obj(cObj, iCommand, pTarget, iX, iY, pTarget2, iData, iMode);
-						// don't issue multiple Construct-commands - store previous Clonk as target for next command object
-						// note that if three Clonks get the command, and the middle one gets deleted (the Clonk, not the command), the third will start to build anyway
-						// that is very unlikely, though...could be catched in ClearPointers, if need be?
-						// also, if one Clonk of the chain aborts his command (controlled elsewhere, for instance), the following ones will fail their commands
-						// It's not a perfect solution, after all. But certainly better than placing tons of construction sites in the first place
-						if (iCommand == C4CMD_Construct) pTarget = cObj;
-					}
-	}
 	// Always apply to cursor, even if it's not in the crew
-	if (Cursor && !fCursorProcessed)
-		if (Cursor->Status && Cursor != pTarget)
-			ObjectCommand2Obj(Cursor, iCommand, pTarget, iX, iY, pTarget2, iData, iMode);
+	if (Cursor && Cursor->Status && Cursor != pTarget)
+		ObjectCommand2Obj(Cursor, iCommand, pTarget, iX, iY, pTarget2, iData, iMode);
 
 	// Success
 	return true;
@@ -1369,13 +1229,9 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(Hostility,           "Hostile"               ));
 	pComp->Value(mkNamingAdapt(ProductionDelay,     "ProductionDelay",      0));
 	pComp->Value(mkNamingAdapt(ProductionUnit,      "ProductionUnit",       0));
-	pComp->Value(mkNamingAdapt(SelectCount,         "SelectCount",          0));
-	pComp->Value(mkNamingAdapt(SelectFlash,         "SelectFlash",          0));
 	pComp->Value(mkNamingAdapt(CursorFlash,         "CursorFlash",          0));
 	pComp->Value(mkNamingAdapt(Cursor,              "Cursor",               C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
-	pComp->Value(mkNamingAdapt(CursorSelection,     "CursorSelection",      0));
-	pComp->Value(mkNamingAdapt(CursorToggled,       "CursorToggled",        0));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
 	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
@@ -1428,13 +1284,12 @@ void C4Player::ExecHomeBaseProduction()
 
 void C4Player::UpdateCounts()
 {
-	int32_t nclkcnt,nselcnt;
 	C4Object *cobj; C4ObjectLink *clnk;
-	nclkcnt=nselcnt=0;
+	CrewCnt = 0;
 	for (clnk=Crew.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		{ nclkcnt++; if (cobj->Select) nselcnt++; }
-	if (CrewCnt!=nclkcnt) CrewCnt=nclkcnt;
-	if (SelectCount!=nselcnt) SelectCount=nselcnt;
+	{
+		++CrewCnt;
+	}
 }
 
 void C4Player::CheckElimination()
@@ -1492,7 +1347,6 @@ void C4Player::DefaultRuntimeData()
 	ViewMode=C4PVM_Cursor;
 	ViewX=ViewY=0;
 	ViewTarget=NULL;
-	CursorSelection=CursorToggled=0;
 	ShowStartup=true;
 	CrewCnt=0;
 	ViewWealth=ViewScore=0;
@@ -1501,9 +1355,7 @@ void C4Player::DefaultRuntimeData()
 	ObjectsOwned=0;
 	ProductionDelay=ProductionUnit=0;
 	Cursor=ViewCursor=NULL;
-	SelectCount=0;
-	SelectFlash=CursorFlash=30;
-	CursorSelection=CursorToggled=0;
+	CursorFlash=30;
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.clear();
@@ -1590,7 +1442,7 @@ bool C4Player::DoScore(int32_t iChange)
 	return true;
 }
 
-void C4Player::SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow)
+void C4Player::SetCursor(C4Object *pObj, bool fSelectArrow)
 {
 	// check disabled
 	if (pObj) if (pObj->CrewDisabled) return;
@@ -1599,27 +1451,11 @@ void C4Player::SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow)
 	// Set cursor
 	Cursor=pObj;
 	// unselect previous
-	if (pPrev  && fChanged) pPrev->UnSelect(true);
+	if (pPrev && fChanged) pPrev->UnSelect();
 	// Select object
-	if (Cursor) { Cursor->DoSelect(true); /*Cursor->DoSelect();*/ } // Sven2: why the second DoSelect()? - it breaks cursor-toggle-selection
+	if (Cursor) { Cursor->DoSelect(); }
 	// View flash
 	if (fSelectArrow) CursorFlash=30;
-	if (fSelectFlash) SelectFlash=30;
-}
-
-void C4Player::SelectCrew(C4ObjectList &rList)
-{
-	// Unselect
-	UnselectCrew();
-	// Select (does not check whether objects are in crew)
-	C4ObjectLink *clnk;
-	for (clnk=rList.First; clnk; clnk=clnk->Next)
-		if (clnk->Obj->Status)
-			clnk->Obj->DoSelect();
-	// Updates
-	AdjustCursorCommand();
-	CursorSelection=CursorToggled=0;
-	SelectFlash=30;
 }
 
 void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
@@ -1793,19 +1629,6 @@ bool C4Player::FoWIsVisible(int32_t x, int32_t y)
 	return fSeen;
 }
 
-void C4Player::SelectCrew(C4Object *pObj, bool fSelect)
-{
-	// Not a valid crew member
-	if (!pObj || !Crew.GetLink(pObj)) return;
-	// Select/unselect
-	if (fSelect) pObj->DoSelect();
-	else pObj->UnSelect();
-	// Updates
-	SelectFlash=30;
-	CursorSelection=CursorToggled=0;
-	AdjustCursorCommand();
-}
-
 void C4Player::CloseMenu()
 {
 	// cancel all player menus
@@ -1851,15 +1674,9 @@ int32_t C4Player::ActiveCrewCount()
 
 int32_t C4Player::GetSelectedCrewCount()
 {
-	int32_t iNum=0;
-	C4Object *cObj;
-	for (C4ObjectLink *cLnk=Crew.First; cLnk; cLnk=cLnk->Next)
-		if ((cObj=cLnk->Obj))
-			if (!cObj->CrewDisabled)
-				if (cObj->Select)
-					++iNum;
-	// return it
-	return iNum;
+	if (Cursor && !Cursor->CrewDisabled)
+		return 1;
+	return 0;
 }
 
 void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)

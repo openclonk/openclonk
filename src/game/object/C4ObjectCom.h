@@ -28,13 +28,10 @@
 class C4Facet;
 class C4Object;
 
-int32_t Control2Com(int32_t iControl, bool fUp);
-int32_t Com2Control(int32_t iCom);
 int32_t Coms2ComDir(int32_t iComs);
 bool ComDirLike(int32_t iComDir, int32_t iSample);
 const char *ComName(int32_t iCom);
 int32_t ComOrder(int32_t iCom);
-StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort);
 
 const int32_t ComOrderNum = 24;
 

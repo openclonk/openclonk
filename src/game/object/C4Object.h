@@ -159,7 +159,6 @@ public:
 	C4Real xdir,ydir,rdir;
 	int32_t iLastAttachMovementFrame; // last frame in which Attach-movement by a SolidMask was done
 	bool Mobile;
-	bool Select;
 	bool Unsorted; // NoSave //
 	bool Initializing; // NoSave //
 	bool InLiquid;
@@ -380,8 +379,8 @@ public:
 	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
 public:
-	bool DoSelect(bool fCursor=false); // select in crew (or just set cursor) if not disabled
-	void UnSelect(bool fCursor=false); // unselect in crew (or just task away cursor)
+	bool DoSelect(); // cursor callback if not disabled
+	void UnSelect(); // unselect callback
 	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)       // get position this object is seen at (for given scroll)
 	{ if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX=float(GetX()); riY=float(GetY()); } }
 	void GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport);   // get position this object is seen at, calculating parallaxity

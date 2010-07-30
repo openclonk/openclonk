@@ -2410,11 +2410,6 @@ static bool FnSetPlrView(C4AulContext *cthr, long iPlr, C4Object *tobj)
 	return true;
 }
 
-static C4String *FnGetPlrControlName(C4AulContext *cthr, long iPlr, long iCon, bool fShort)
-{
-	return String(PlrControlKeyName(iPlr,iCon,fShort).getData());
-}
-
 static long FnGetPlrViewMode(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return -1;
@@ -2626,7 +2621,7 @@ static long FnGetPlayerScoreGain(C4AulContext *cthr, long iPlr)
 static C4Object *FnGetHiRank(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->GetHiRankActiveCrew(false);
+	return ::Players.Get(iPlr)->GetHiRankActiveCrew();
 }
 
 static C4Object *FnGetCrew(C4AulContext *cthr, long iPlr, long index)
@@ -2722,30 +2717,13 @@ static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwCo
 	return true;
 }
 
-static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr, long iIndex)
+static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr)
 {
 	// get player
 	C4Player *pPlr = ::Players.Get(iPlr);
 	// invalid player?
 	if (!pPlr) return NULL;
-	// first index is always the cursor
-	if (!iIndex) return pPlr->Cursor;
-	// iterate through selected crew for iIndex times
-	// status needs not be checked, as dead objects are never in Crew list
-	C4Object *pCrew;
-	for (C4ObjectLink *pLnk=pPlr->Crew.First; pLnk; pLnk=pLnk->Next)
-		// get crew object
-		if ((pCrew = pLnk->Obj))
-			// is it selected?
-			if (pCrew->Select)
-				// is it not the cursor? (which is always first)
-				if (pCrew != pPlr->Cursor)
-					// enough searched?
-					if (!--iIndex)
-						// return it
-						return pCrew;
-	// nothing found at that index
-	return NULL;
+	return pPlr->Cursor;
 }
 
 static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
@@ -2756,12 +2734,11 @@ static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
 	return pPlr ? pPlr->ViewCursor : NULL;
 }
 
-static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
+static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectArrow)
 {
 	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr || (pObj && !pObj->Status) || (pObj && pObj->CrewDisabled)) return false;
-	pPlr->SetCursor(pObj, !fNoSelectMark, !fNoSelectArrow);
-	if (!fNoSelectCrew) pPlr->SelectCrew(pObj, true);
+	pPlr->SetCursor(pObj, !fNoSelectArrow);
 	return true;
 }
 
@@ -2774,28 +2751,6 @@ static bool FnSetViewCursor(C4AulContext *cthr, long iPlr, C4Object *pObj)
 	// set viewcursor
 	pPlr->ViewCursor = pObj;
 	return true;
-}
-
-static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSelect, bool fNoCursorAdjust)
-{
-	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr || !pObj) return false;
-	if (fNoCursorAdjust)
-		{ if (fSelect) pObj->DoSelect(); else pObj->UnSelect(); }
-	else
-		pPlr->SelectCrew(pObj,fSelect);
-	return true;
-}
-
-static bool FnGetCrewSelected(C4AulObjectContext *cthr)
-{
-	return !!cthr->Obj->Select;
-}
-
-static long FnGetSelectCount(C4AulContext *cthr, long iPlr)
-{
-	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->SelectCount;
 }
 
 static bool FnSetCrewStatus(C4AulObjectContext *cthr, long iPlr, bool fInCrew)
@@ -4210,7 +4165,6 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 	// deselect
 	if (!fEnabled)
 	{
-		cctx->Obj->Select=false;
 		C4Player *pOwner;
 		if ((pOwner=::Players.Get(cctx->Obj->Owner)))
 		{
@@ -4234,17 +4188,6 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 
 	// success
 	return C4VNull;
-}
-
-static bool FnUnselectCrew(C4AulContext *cctx, long iPlayer)
-{
-	// get player
-	C4Player *pPlr=::Players.Get(iPlayer);
-	if (!pPlr) return false;
-	// unselect crew
-	pPlr->UnselectCrew();
-	// success
-	return true;
 }
 
 static long FnDrawMap(C4AulContext *cctx, long iX, long iY, long iWdt, long iHgt, C4String *szMapDef)
@@ -6175,7 +6118,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoPlayerScore", FnDoPlayerScore);
 	AddFunc(pEngine, "GetPlayerScore", FnGetPlayerScore);
 	AddFunc(pEngine, "GetPlayerScoreGain", FnGetPlayerScoreGain);
-	AddFunc(pEngine, "GetPlrControlName", FnGetPlrControlName);
 	AddFunc(pEngine, "GetWind", FnGetWind);
 	AddFunc(pEngine, "SetWind", FnSetWind);
 	AddFunc(pEngine, "GetTemperature", FnGetTemperature);
@@ -6205,9 +6147,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetViewCursor", FnGetViewCursor);
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
-	AddFunc(pEngine, "SelectCrew", FnSelectCrew);
-	AddFunc(pEngine, "GetCrewSelected", FnGetCrewSelected);
-	AddFunc(pEngine, "GetSelectCount", FnGetSelectCount);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
@@ -6285,7 +6224,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
 	AddFunc(pEngine, "GetCrewEnabled", FnGetCrewEnabled);
 	AddFunc(pEngine, "SetCrewEnabled", FnSetCrewEnabled);
-	AddFunc(pEngine, "UnselectCrew", FnUnselectCrew);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);

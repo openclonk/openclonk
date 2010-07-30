@@ -479,12 +479,6 @@ void C4Command::Dig()
 
 void C4Command::Follow()
 {
-
-	// If crew member, only selected objects can follow
-	if (cObj->Def->CrewMember)
-		// Finish successfully to avoid fail message
-		if (!cObj->Select && cObj->Owner != NO_OWNER) { Finish(true); return; }
-
 	// No-one to follow
 	if (!Target) { Finish(); return; }
 
