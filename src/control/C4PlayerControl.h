@@ -161,7 +161,8 @@ public:
 		CTM_Default=0,              // standard behaviour: The control will be triggered
 		CTM_Hold=      1<<0,        // the control will be put into "down"-mode
 		CTM_Release=   1<<1,        // the hold mode of the control will be released
-		CTM_AlwaysUnhandled= 1<<2  // the key will not block handling of other keys even if it got handled
+		CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
+		CTM_HandleDownStatesOnly = 1<<3 // used when an already handled release key is processed to reset down states of overridden keys only
 	};
 
 private:
@@ -318,6 +319,7 @@ public:
 		int32_t GetControlDisabled(int32_t iControl) const;
 		bool IsControlDisabled(int32_t iControl) const { return GetControlDisabled(iControl)>0; }
 		void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
+		void ResetControlDownState(int32_t iControl);
 		bool SetControlDisabled(int32_t iControl, int32_t iVal);
 
 		void InitDefaults(const C4PlayerControlDefs &ControlDefs);
@@ -330,12 +332,13 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
-	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
+	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key) { return ProcessKeyUpEx(pressed_key, matched_key, false); }
+	bool ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool reset_down_states_only);
 
 	// execute single control. return if handled.
-	bool ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated);
+	bool ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly);
 	bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 	bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 
