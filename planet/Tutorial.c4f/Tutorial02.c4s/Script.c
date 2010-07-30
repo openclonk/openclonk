@@ -141,8 +141,7 @@ protected func InitializePlayer(int plr)
 	EffectVar(0, shovel, effect) = clonk;
 	
 	// Select first clonk
-	UnselectCrew(plr);
-	SelectCrew(plr, GetCrew(plr, 0), true);
+	SetCursor(plr, GetCrew(plr));
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
@@ -226,9 +225,7 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		SetCursor(plr, target);
-		UnselectCrew(plr);
-		SelectCrew(plr, clonk, true);
+		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
@@ -287,9 +284,7 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		SetCursor(plr, target);
-		UnselectCrew(plr);
-		SelectCrew(plr, clonk, true);
+		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))

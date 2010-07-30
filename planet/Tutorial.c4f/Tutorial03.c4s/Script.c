@@ -195,7 +195,6 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr,clonk);
-	SelectCrew(iPlr, clonk, true);
 	JoinPlayer(iPlr);
 	return;
 }

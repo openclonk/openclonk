@@ -81,7 +81,6 @@ protected func RelaunchPlayer(int plr, int killer)
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
-	SelectCrew(plr, clonk, true);
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlrRelaunch", plr);

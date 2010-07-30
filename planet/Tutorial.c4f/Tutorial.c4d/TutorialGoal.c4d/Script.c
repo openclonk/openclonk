@@ -134,7 +134,6 @@ func RelaunchPlayer(int plr)
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
-	SelectCrew(plr, clonk, true);
 	JoinPlayer(plr);
 	// Log message.
 	Log(RndRespawnMsg(), GetPlayerName(plr));

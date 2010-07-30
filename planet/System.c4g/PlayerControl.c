@@ -155,26 +155,14 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		StopSelected();
 		
 		// set cursor if not disabled etc.
-		UnselectCrew(plr);
-		return SelectCrew(plr,crew, true);
+		return SetCursor(plr, crew);
 	}
 	
-	// select the complete crew
-	if (ctrl == CON_AllCrew)
-	{
-		for(var i = 0; i < GetCrewCount(plr); ++i)
-		{
-			var crew = GetCrew(plr,i);
-			SelectCrew(plr,crew, true);
-		}
-		StopSelected(plr);
-	}
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
 		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr+1);
 		g_player_cursor_pos[plr] = [x, y];
-		
 		return true;
 	}
 	/*
@@ -196,8 +184,8 @@ global func GetPlayerCursorPos(int plr)
 
 global func StopSelected(int plr)
 {
-	var cursor;
-	for(var i = 0; cursor = GetCursor(plr,i); ++i)
+	var cursor = GetCursor(plr);
+	if(cursor)
 	{
 		cursor->SetCommand("None");
 		cursor->SetComDir(COMD_Stop);
@@ -415,8 +403,7 @@ global func ShiftCursor(int plr, bool back)
 
 	StopSelected();
 
-	UnselectCrew(plr);
-	return SelectCrew(plr, GetCrew(plr,index), true);
+	return SetCursor(plr, GetCrew(plr,index));
 }
 
 // Temporarily used for Debugging!
@@ -455,9 +442,9 @@ global func ComDir2XY(int comd, &x, &y)
 // Give a command to all selected Clonks of a player
 global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, object target, int tx, int ty, object target2)
 {
-	for (var i=exclude_cursor; i<GetSelectCount(plr); ++i)
+	if (!exclude_cursor)
 	{
-		var follow_clonk = GetCursor(plr, i);
+		var follow_clonk = GetCursor(plr);
 		if (follow_clonk)
 		{
 			follow_clonk->ObjectCommand(command,target,tx,ty,target2);

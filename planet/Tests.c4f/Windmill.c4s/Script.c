@@ -115,7 +115,6 @@ func RelaunchPlayer(int plr)
 	var clonk = CreateObject(Clonk, LandscapeWidth()/2, 600, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
-	SelectCrew(plr, clonk, true);
 	JoinPlayer(plr);
 	var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
 	gui_arrow->SetAction("Show", GetCursor(plr));
