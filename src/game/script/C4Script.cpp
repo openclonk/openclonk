@@ -5882,6 +5882,25 @@ static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int i
 	return true;
 }
 
+static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int value, Nillable<C4String *> name_prefix, int idx)
+{
+	C4String *name_prefix_s = name_prefix;
+	// find a constant that has the specified value and prefix
+	for (int32_t i = 0; i < ::ScriptEngine.GlobalConsts.GetAnzItems(); ++i)
+	{
+		if (::ScriptEngine.GlobalConsts[i].getInt() == value)
+		{
+			const char *const_name = ::ScriptEngine.GlobalConstNames.GetItemUnsafe(i);
+			if (!name_prefix_s || SEqual2(const_name, name_prefix_s->GetCStr()))
+				if (!idx--)
+					// indexed constant found. return name minus prefix
+					return String(const_name + (name_prefix_s ? name_prefix_s->GetData().getLength() : 0));
+		}
+	}
+	// nothing found (at index)
+	return C4VNull;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6392,6 +6411,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
+	AddFunc(pEngine, "GetConstantNameByValue", FnGetConstantNameByValue, false);
 
 	AddFunc(pEngine, "Translate", FnTranslate);
 }
@@ -6459,19 +6479,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 	{ "DIR_Left"               ,C4V_Int,          DIR_Left},
 	{ "DIR_Right"              ,C4V_Int,          DIR_Right},
-
-	{ "CON_CursorLeft"         ,C4V_Int,          CON_CursorLeft},
-	{ "CON_CursorToggle"       ,C4V_Int,          CON_CursorToggle},
-	{ "CON_CursorRight"        ,C4V_Int,          CON_CursorRight},
-	{ "CON_Throw"              ,C4V_Int,          CON_Throw},
-	{ "CON_Up"                 ,C4V_Int,          CON_Up},
-	{ "CON_Dig"                ,C4V_Int,          CON_Dig},
-	{ "CON_Left"               ,C4V_Int,          CON_Left},
-	{ "CON_Down"               ,C4V_Int,          CON_Down},
-	{ "CON_Right"              ,C4V_Int,          CON_Right},
-	{ "CON_Menu"               ,C4V_Int,          CON_Menu},
-	{ "CON_Special"            ,C4V_Int,          CON_Special},
-	{ "CON_Special2"           ,C4V_Int,          CON_Special2},
 
 	{ "OCF_Construct"          ,C4V_Int,          OCF_Construct},
 	{ "OCF_Grab"               ,C4V_Int,          OCF_Grab},

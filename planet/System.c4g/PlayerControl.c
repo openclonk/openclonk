@@ -423,69 +423,9 @@ global func ShiftCursor(int plr, bool back)
 // Helper function to turn CON_*-constants into strings
 global func GetPlayerControlName(int ctrl)
 {
-	if (ctrl == CON_Aim)		return "Aim";
-	if (ctrl == CON_AimLeft)		return "AimLeft";
-	if (ctrl == CON_AimRight)		return "AimRight";
-	if (ctrl == CON_AimUp)		return "AimUp";
-	if (ctrl == CON_AimDown)		return "AimDown";
-	if (ctrl == CON_AimAxisLeft)		return "AimAxisLeft";
-	if (ctrl == CON_AimAxisRight)		return "AimAxisRight";
-	if (ctrl == CON_AimAxisUp)		return "AimAxisUp";
-	if (ctrl == CON_AimAxisDown)		return "AimAxisDown";
-	if (ctrl == CON_Left)		return "Left";
-	if (ctrl == CON_Right)		return "Right";
-	if (ctrl == CON_Up)			return "Up";
-	if (ctrl == CON_Down)		return "Down";
-	if (ctrl == CON_Throw)		return "Throw";
-	if (ctrl == CON_ThrowAlt)		return "ThrowAlt";
-	if (ctrl == CON_ThrowDelayed)		return "ThrowDelayed";
-	if (ctrl == CON_ThrowAltDelayed)		return "ThrowAltDelayed";
-	if (ctrl == CON_Jump)		return "Jump";
-	if (ctrl == CON_MenuLeft)	return "MenuLeft";
-	if (ctrl == CON_MenuRight)	return "MenuRight";
-	if (ctrl == CON_MenuOK)		return "MenuOK";
-	if (ctrl == CON_MenuUp)		return "MenuUp";
-	if (ctrl == CON_MenuDown)	return "MenuDown";
-	if (ctrl == CON_Use)		return "Use";
-	if (ctrl == CON_Drop)		return "Drop";
-	if (ctrl == CON_UseAlt)		return "UseAlt";
-	if (ctrl == CON_UseAltDelayed)		return "UseAltDelayed";
-	if (ctrl == CON_UseDelayed)		return "UseDelayed";
-	if (ctrl == CON_DropAlt)		return "DropAlt";
-	if (ctrl == CON_NextCrew)	return "NextCrew";
-	if (ctrl == CON_PreviousCrew) return "PreviousCrew";
-	if (ctrl == CON_MenuCancel)	return "MenuCancel";
-	if (ctrl == CON_PlayerMenu)	return "PlayerMenu";
-	if (ctrl == CON_GrabNext)	return "GrabNext";
-	if (ctrl == CON_GrabPrevious) return "GrabPrevious";
-	if (ctrl == CON_Grab)		return "Grab";
-	if (ctrl == CON_Ungrab)		return "Ungrab";
-	if (ctrl == CON_AllCrew)	return "AllCrew";
-	if (ctrl == CON_PushEnter)	return "PushEnter";
-	if (ctrl == CON_Enter)		return "Enter";
-	if (ctrl == CON_Exit)		return "Exit";
-	if (ctrl == CON_Hotkey0)	return "Hotkey0";
-	if (ctrl == CON_Hotkey1)	return "Hotkey1";
-	if (ctrl == CON_Hotkey2)	return "Hotkey2";
-	if (ctrl == CON_Hotkey3)	return "Hotkey3";
-	if (ctrl == CON_Hotkey4)	return "Hotkey4";
-	if (ctrl == CON_Hotkey5)	return "Hotkey5";
-	if (ctrl == CON_Hotkey6)	return "Hotkey6";
-	if (ctrl == CON_Hotkey7)	return "Hotkey7";
-	if (ctrl == CON_Hotkey8)	return "Hotkey8";
-	if (ctrl == CON_Hotkey9)	return "Hotkey9";
-	if (ctrl == CON_PlayerHotkey0)	return "PlayerHotkey0";
-	if (ctrl == CON_PlayerHotkey1)	return "PlayerHotkey1";
-	if (ctrl == CON_PlayerHotkey2)	return "PlayerHotkey2";
-	if (ctrl == CON_PlayerHotkey3)	return "PlayerHotkey3";
-	if (ctrl == CON_PlayerHotkey4)	return "PlayerHotkey4";
-	if (ctrl == CON_PlayerHotkey5)	return "PlayerHotkey5";
-	if (ctrl == CON_PlayerHotkey6)	return "PlayerHotkey6";
-	if (ctrl == CON_PlayerHotkey7)	return "PlayerHotkey7";
-	if (ctrl == CON_PlayerHotkey8)	return "PlayerHotkey8";
-	if (ctrl == CON_PlayerHotkey9)	return "PlayerHotkey9";
-	
-	return Format("Unknown(%d)", ctrl);
+	var con_name = GetConstantNameByValue(ctrl, "CON_");
+	if (!con_name) con_name = Format("Unknown(%d)", ctrl);
+	return con_name;
 }
 
 // Return COMD_*-constant corresponding to current state of passed directional controls
