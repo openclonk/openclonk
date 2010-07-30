@@ -6,14 +6,17 @@
 --*/
 
 
-local msg;
+local messages; // A container to hold all messages.
+local index; // Progress in reading messages.
 
 protected func Construction()
 {
 	// parallaxity
-	this["Parallaxity"] = [0,0];
+	this["Parallaxity"] = [0, 0];
 	// visibility
 	this["Visibility"] = VIS_Owner;
+	messages = [];
+	index = 0;
 }
 
 global func CreateTutorialGuide(int plr)
@@ -23,54 +26,46 @@ global func CreateTutorialGuide(int plr)
 	return guide;
 }
 
-static const GUIDE_Graphics_Normal = 0;
-static const GUIDE_Graphics_Balloon = 1;
-static const GUIDE_Graphics_Idea = 2;
-
-public func SetGuideGraphics(int mode, extra)
+public func AddGuideMessage(string msg)
 {
-	if (mode == GUIDE_Graphics_Normal)
-		SetGraphics(0, 0, 0, GFXOV_MODE_IngamePicture);
-	else if (mode == GUIDE_Graphics_Balloon)
-	{
-		SetGraphics("2", 0, 0, GFXOV_MODE_IngamePicture);
-		if (extra)
-		{
-			SetGraphics(0, extra, 1, GFXOV_MODE_IngamePicture);
-			SetObjDrawTransform(400, 0, -15000, 0, 400, -13000, 1);
-		} else
-		{
-			SetGraphics(0, 0, 1, GFXOV_MODE_IngamePicture);
-		}
-	}
-	else if (mode == GUIDE_Graphics_Idea)
-		SetGraphics("3", 0, 0, GFXOV_MODE_IngamePicture);
-
-	return;
-}	
-
-public func SetGuideMessage(string to_msg)
-{
-	msg = to_msg;
+	messages[GetLength(messages)] = msg;
 	return;
 }
 
-public func ShowGuideMessage()
+public func ShowGuideMessage(int show_index)
 {
-	if (GetOwner() == NO_OWNER)
-		return;
-	if (!msg) 
+	index = Max(0, show_index);
+	if (!messages[index]) 
 		return;	
-	return MessageWindow(msg, GetOwner());
+	GuideMessage(messages[index]);
+	if (messages[index + 1]) 
+		index++;
+	return;
 }
 
 public func MouseSelection(int plr)
 {
 	if (plr != GetOwner())
 		return;
-	if (!msg) 
+	if (!messages[index]) 
 		return;
-	return MessageWindow(msg, plr);
+	GuideMessage(messages[index]);
+	if (messages[index + 1]) 
+		index++;
+	return;
+}
+
+public func GuideMessage(string message)
+{
+	if (GetOwner() == NO_OWNER)
+		return false;
+	if (!message)
+		return false;
+	// Defaults
+	var portrait_def = "Portrait:TutorialGuide::00ff00::1";
+	// Message as regular one, don't stop the player.
+	CustomMessage(message, 0, GetOwner(), 0 /* 150*/, 45, 0xffffff, _DCO, portrait_def, MSG_HCenter);
+	return true;
 }
 
 protected func Definition(def)

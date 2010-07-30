@@ -14,11 +14,11 @@ protected func Initialize()
 	return;
 }
 
-public func SetRestoreObject(object to_revive, object to_container, int to_x, int to_y, string ctrl_string)
+public func SetRestoreObject(object to_restore, object to_container, int to_x, int to_y, string ctrl_string)
 {
-	to_revive->Enter(this);
+	to_restore->Enter(this);
 	var effect = AddEffect("Restore", this, 100, 1, this);
-	EffectVar(0, this, effect) = to_revive;
+	EffectVar(0, this, effect) = to_restore;
 	EffectVar(1, this, effect) = to_container;
 	EffectVar(2, this, effect) = to_x;
 	EffectVar(3, this, effect) = to_y;
@@ -56,10 +56,16 @@ protected func FxRestoreTimer(object target, int num, int time)
 		var to_x = EffectVar(2, target, num);
 		var to_y = EffectVar(3, target, num);
 	}
+	// Are the coordinates specified now, if not remove effect.
+	if (to_x == nil || to_y == nil)
+	{
+		EffectVar(0, target, num)->RemoveObject();
+		return -1;		
+	}
 	// Move to the object with a weighed sin-wave centered around the halfway point.
 	var length = Distance(init_x, init_y, to_x, to_y);
 	// Remove effect if animation is done.
-	if (2 * time > length)
+	if (2 * time > length || length == 0)
 		return -1;
 	var angle = Angle(init_x, init_y, to_x, to_y);
 	var std_dev = Min(length / 16, 40);
@@ -78,7 +84,7 @@ protected func FxRestoreTimer(object target, int num, int time)
 	return 1;
 }
 
-protected func FxRestoreStop(object target, int num, int reason, bool  temporary)
+protected func FxRestoreStop(object target, int num, int reason, bool temporary)
 {
 	var to_restore = EffectVar(0, target, num);
 	var to_container = EffectVar(1, target, num);
@@ -96,7 +102,7 @@ protected func FxRestoreStop(object target, int num, int reason, bool  temporary
 		// Add new restore mode, either standard one or effect supplied in EffectVar 4.
 		if (ctrl_string)
 		{
-			var effect = AddEffect(ctrl_string, to_restore, 100, 35);
+			var effect = AddEffect(ctrl_string, to_restore, 100, 10);
 			EffectVar(0, to_restore, effect) = to_container;
 			EffectVar(1, to_restore, effect) = to_x;
 			EffectVar(2, to_restore, effect) = to_y;

@@ -8,9 +8,6 @@ Difficulty=2
 [Definitions]
 Definition1=Objects.c4d
 
-[Game]
-Goals=Goal_Script=1
-
 [Player1]
 Crew=Clonk=2
 

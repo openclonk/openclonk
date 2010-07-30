@@ -12,15 +12,14 @@ protected func Initialize()
 {
 	// Create goal, all crew members should reach the flag on the far right side.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
-	goal->CreateGoalFlag(2970, 260);
-	AddEffect("HasCompletedGoal", 0, 100, 10);
+	goal->CreateGoalFlag(2950, 280);
 		
 	// Create all objects, vehicles, chests used by the player.
 	var cannon, effect, firestone, chest, powderkeg, ropeladder, grapple, cata, dynamite;
 	
 	// Cannon to blast through rock & chest with powderkeg and firestones.
 	cannon = CreateObject(Cannon, 180, 450, NO_OWNER); 
-	effect = AddEffect("CannonRestore", cannon, 100, 35);
+	effect = AddEffect("CannonRestore", cannon, 100, 10);
 	EffectVar(1, cannon, effect) = 180;
 	EffectVar(2, cannon, effect) = 450;
 	chest = CreateObject(Chest, 80, 430, NO_OWNER);
@@ -40,19 +39,20 @@ protected func Initialize()
 	{
 		ropeladder = CreateObject(Ropeladder, 0, 0, NO_OWNER);
 		ropeladder->Enter(chest);
-		effect = AddEffect("RopeladderRestore", ropeladder, 100, 35);
+		effect = AddEffect("RopeladderRestore", ropeladder, 100, 10);
 		EffectVar(0, ropeladder, effect) = chest;
 	}
 	
 	// Chest with GrappleBow.
 	chest = CreateObject(Chest, 580, 440, NO_OWNER);
-	grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER); //TODO better restore.
+	grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
 	grapple->Enter(chest);
-	grapple->AddRestoreMode(chest);
+	effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
+	EffectVar(0, grapple, effect) = chest;
 	
 	// Catapult to return grappling bow. TODO: implement catapult here.
 	cata = CreateObject(Cannon, 1320, 440, NO_OWNER); 
-	effect = AddEffect("CataRestore", cata, 100, 35);
+	effect = AddEffect("CataRestore", cata, 100, 10);
 	EffectVar(1, cata, effect) = 1320;
 	EffectVar(2, cata, effect) = 440;
 	powderkeg = CreateObject(PowderKeg, 0, 0, NO_OWNER); 
@@ -65,7 +65,7 @@ protected func Initialize()
 	{
 		dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
 		dynamite->Enter(chest);
-		effect = AddEffect("DynamiteRestore", dynamite, 100, 35);
+		effect = AddEffect("DynamiteRestore", dynamite, 100, 10);
 		EffectVar(0, dynamite, effect) = chest;
 	}
 	
@@ -82,9 +82,10 @@ protected func Initialize()
 	chest = CreateObject(Chest, 1800, 540, NO_OWNER);
 	for (var i = 0; i < 2; i++)
 	{
-		grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER); //TODO better restore.
+		grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
 		grapple->Enter(chest);
-		grapple->AddRestoreMode(chest);
+		effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
+		EffectVar(0, grapple, effect) = chest;
 	}
 	
 	// Create brick edges.
@@ -116,103 +117,55 @@ protected func OnGoalsFulfilled()
 
 protected func InitializePlayer(int plr)
 {
-	var clonk, effect;
+	var clonk, effect, shovel;
 	// First clonk.
 	clonk = GetCrew(plr, 0);
 	clonk->SetPosition(190, 220);
-	effect = AddEffect("ClonkOneRestore", clonk, 100, 35);
+	effect = AddEffect("ClonkOneRestore", clonk, 100, 10);
 	EffectVar(1, clonk, effect) = 190;
 	EffectVar(2, clonk, effect) = 220;
+	shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
+	shovel->Enter(clonk);
+	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
+	EffectVar(0, shovel, effect) = clonk;
 	
 	// Second clonk.
 	clonk = GetCrew(plr, 1);
 	clonk->SetPosition(100, 430);
-	effect = AddEffect("ClonkTwoRestore", clonk, 100, 35);
+	effect = AddEffect("ClonkTwoRestore", clonk, 100, 10);
 	EffectVar(1, clonk, effect) = 100;
 	EffectVar(2, clonk, effect) = 430;
+	shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
+	shovel->Enter(clonk);
+	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
+	EffectVar(0, shovel, effect) = clonk;
 	
-	// Professor
+	// Select first clonk
+	UnselectCrew(plr);
+	SelectCrew(plr, GetCrew(plr, 0), true);
+	
+	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
+	guide->AddGuideMessage("$MsgTutWelcome$");
+	guide->AddGuideMessage("$MsgTutCrewSelection$");
+	guide->ShowGuideMessage(0);
 	return;
 }
 
 /*-- Guide Messages --*/
 
-// Welcome player, indicate goal.
-func Script1()
-{
-	guide->SetGuideMessage("$MsgTutWelcome$");
-	guide->SetGuideGraphics(GUIDE_Graphics_Normal);
-	guide->ShowGuideMessage();
-	AddEffect("CrewSelection", 0, 100, 35);
-}
-
-// Player has wandered around enough, explain crew selection.
-global func FxCrewSelectionTimer(object trg, int num, int time)
-{
-	if (time >= 35 * 8)
-	{	
-		guide->SetGuideMessage("$MsgTutCrewSelection$");
-		guide->SetGuideGraphics(GUIDE_Graphics_Balloon, Clonk);
-		return -1;
-	}
-}
-
 // Player mastered crew selection, explain backpack control.
-func OnClonkSelection()
+public func OnClonkSelection()
 {
 	if (FrameCounter() == 0)
 		return;
-	guide->SetGuideMessage("$MsgTutBackpack$");
-	guide->SetGuideGraphics(GUIDE_Graphics_Balloon);
-	AddEffect("ReachedMine", 0, 100, 10);
+	guide->AddGuideMessage("$MsgTutBackpack$");
 }
 
-// Player has reached abandoned gold mine.
-global func FxReachedMineTimer(object trg, int num, int time)
+// Player has opened backpack, TODO make callback.
+public func OnBackPackOpen()
 {
-	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(30, 200, 560)))
-	{
-		guide->SetGuideMessage("$MsgTutLorry$");
-		guide->SetGuideGraphics(GUIDE_Graphics_Balloon, Lorry);
-		AddEffect("BlastedRock", 0, 100, 10);
-		return -1;	
-	}
-}
-
-// Player has blasted first rock, explain rope ladder.
-global func FxBlastedRockTimer(object trg, int num, int time)
-{
-	if (GetPathLength(440, 110, 520, 110) > 0)
-	{
-		guide->SetGuideMessage("$MsgTutRopeladder$");
-		guide->SetGuideGraphics(GUIDE_Graphics_Balloon, Ropeladder);
-		AddEffect("PlacedLadder", 0, 100, 10);
-		return -1;
-	}
-}
-
-// Player has placed rope ladder, explain dynamite box.
-global func FxPlacedLadderTimer(object trg, int num, int time)
-{
-	if (FindObject(Find_Func("IsLadder"), Find_Distance(40, 425, 185)))
-	{
-		guide->SetGuideMessage("$MsgTutDynamiteBox$");
-		guide->SetGuideGraphics(GUIDE_Graphics_Balloon, DynamiteBox);
-		AddEffect("BlastedRock2", 0, 100, 10);
-		return -1;
-	}
-}
-
-// Player has blasted second rock, explain grapple bow.
-global func FxBlastedRock2Timer(object trg, int num, int time)
-{
-	if (GetPathLength(620, 290, 680, 350) > 0)
-	{
-		guide->SetGuideMessage("$MsgTutGrappleBow$");
-		guide->SetGuideGraphics(GUIDE_Graphics_Balloon, GrappleBow);
-		return -1;		
-	}
+	guide->AddGuideMessage("$MsgTutInteractable$");
 }
 
 /*-- Clonk restoring --*/
@@ -230,6 +183,30 @@ global func FxClonkOneRestoreTimer(object target, int num, int time)
 		var to_y = EffectVar(2, target, num);
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "ClonkOneRestore");
 		return -1;
+	}
+	// Respawn to new location if reached first cliff.
+	if (Distance(target->GetX(), target->GetY(), 820, 240) < 40)
+	{
+		EffectVar(1, target, num) = 820;
+		EffectVar(2, target, num) = 240;		
+	}
+	// Respawn to new location if reached upper cliff.
+	if (Distance(target->GetX(), target->GetY(), 1250, 240) < 40)
+	{
+		EffectVar(1, target, num) = 1250;
+		EffectVar(2, target, num) = 240;		
+	}
+	// Respawn to new location if reached lower cliff.
+	if (Distance(target->GetX(), target->GetY(), 1240, 410) < 40)
+	{
+		EffectVar(1, target, num) = 1240;
+		EffectVar(2, target, num) = 410;		
+	}
+	// Respawn to new location if reached second cliff.
+	if (Distance(target->GetX(), target->GetY(), 2050, 235) < 40)
+	{
+		EffectVar(1, target, num) = 2050;
+		EffectVar(2, target, num) = 235;		
 	}	
 	return 1;
 }
@@ -253,6 +230,14 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		UnselectCrew(plr);
 		SelectCrew(plr, clonk, true);
 		clonk->DoEnergy(100000);
+		// Transfer contents(grapple bow and shovel).
+		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
+		{
+			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
+			obj->Enter(clonk);
+			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
+			EffectVar(0, obj, effect) = clonk;
+		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkOneRestore");
 	}
 	return 1;
@@ -260,8 +245,30 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 
 global func FxClonkTwoRestoreTimer(object target, int num, int time)
 {
-
-
+	// Respawn to new location if reached first cliff.
+	if (Distance(target->GetX(), target->GetY(), 820, 240) < 40)
+	{
+		EffectVar(1, target, num) = 820;
+		EffectVar(2, target, num) = 240;		
+	}
+	// Respawn to new location if reached upper cliff.
+	if (Distance(target->GetX(), target->GetY(), 1250, 240) < 40)
+	{
+		EffectVar(1, target, num) = 1250;
+		EffectVar(2, target, num) = 240;		
+	}
+	// Respawn to new location if reached lower cliff.
+	if (Distance(target->GetX(), target->GetY(), 1240, 410) < 40)
+	{
+		EffectVar(1, target, num) = 1240;
+		EffectVar(2, target, num) = 410;		
+	}
+	// Respawn to new location if reached second cliff.
+	if (Distance(target->GetX(), target->GetY(), 2050, 235) < 40)
+	{
+		EffectVar(1, target, num) = 2050;
+		EffectVar(2, target, num) = 235;		
+	}
 	return 1;
 }
 
@@ -284,6 +291,14 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		UnselectCrew(plr);
 		SelectCrew(plr, clonk, true);
 		clonk->DoEnergy(100000);
+		// Transfer contents(grapple bow and shovel).
+		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
+		{
+			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
+			obj->Enter(clonk);
+			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
+			EffectVar(0, obj, effect) = clonk;
+		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkTwoRestore");
 	}
 	return 1;
@@ -292,6 +307,7 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 /*-- Item restoring --*/
 // All done through global effects, which use ObjectRestorer. 
 // In all cases the effects have:
+// Timer interval: 10 frames.
 // Effectvar 0: Container to which must be restored.
 // Effectvar 1: x-coordinate to which must be restored.
 // Effectvar 2: y-coordinate to which must be restored.
@@ -396,6 +412,32 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 		var to_container = EffectVar(0, target, num);
 		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");	
+	}
+	return 1;
+}
+
+// Clonk content, set new restore location to last clonk.
+global func FxClonkContentRestoreTimer(object target, int num, int time)
+{
+
+	// Content objects to the container containing them last.
+	if (target->Contained())
+		EffectVar(0, target, num) = target->Contained();
+	return 1;
+}
+
+// Clonk content, restore if destroyed.
+global func FxClonkContentRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3)
+	{
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_container = EffectVar(0, target, num);
+		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");	
 	}
 	return 1;
 }
