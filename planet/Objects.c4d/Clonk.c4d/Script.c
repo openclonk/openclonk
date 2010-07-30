@@ -1736,7 +1736,7 @@ func StartPushing()
 
 protected func StopPushing()
 {
-	return;
+	return _inherited(...);
 }
 
 func StartHangOnto()

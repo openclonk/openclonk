@@ -311,6 +311,7 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
+protected func StopPushing() { CancelUse(); return _inherited(...); } // On abortion of push/grab.
 protected func Grab(object target, bool ungrab)
 {
 	if (ungrab) CancelUse();
