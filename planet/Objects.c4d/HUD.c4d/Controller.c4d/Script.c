@@ -124,7 +124,6 @@ public func OnCrewEnabled(object clonk)
 // call from HUDAdapter (Clonk)
 public func OnCrewSelection(object clonk, bool deselect)
 {
-
 	// selected
 	if(!deselect)
 	{		
@@ -148,6 +147,11 @@ public func OnCrewSelection(object clonk, bool deselect)
 	}
 }
 
+public func FxIntSearchInteractionObjectsEffect(string newname, object target, int num, int new_num)
+{	
+	if(newname == "IntSearchInteractionObjects")
+		return -1;
+}
 
 public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt)
 {

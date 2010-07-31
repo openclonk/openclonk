@@ -1137,10 +1137,8 @@ void C4Player::AdjustCursorCommand()
 		C4Object *pHiRank = GetHiRankActiveCrew();
 		if (!pHiRank)
 			return;
-		Cursor = pHiRank;
+		SetCursor(pHiRank,true);
 		UpdateView();
-		Cursor->DoSelect();
-		CursorFlash=30;
 	}
 }
 
@@ -1453,7 +1451,7 @@ void C4Player::SetCursor(C4Object *pObj, bool fSelectArrow)
 	// unselect previous
 	if (pPrev && fChanged) pPrev->UnSelect();
 	// Select object
-	if (Cursor) { Cursor->DoSelect(); }
+	if (fChanged && Cursor) { Cursor->DoSelect(); }
 	// View flash
 	if (fSelectArrow) CursorFlash=30;
 }
