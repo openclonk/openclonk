@@ -46,24 +46,27 @@ public func ControlUseStart(object clonk, int x, int y)
 		length=20;
 		if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
 			AddEffect("SwordStrikeSpeedUp", clonk, 1, 5, this);
-	} else
+	} else*/
 	if(clonk->IsJumping())
 	{
 		//if(clonk->GetYDir() < 0) length=20;
 		//else length=GetJumpLength(clonk);
-		length=20;
+		length=40;
 		
 		if(!slow)
 		if(!GetEffect("DelayTranslateVelocity", clonk))
 		{
 			//TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300, 1);
 			var a=Angle(0, 0, x,y);
-			clonk->SetXDir(Sin(a, 60));
-			clonk->SetYDir(-Cos(a, 60));
-			AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
+			if(Inside(a, 35+90, 35+180))
+			{
+				clonk->SetXDir(Sin(a, 60));
+				clonk->SetYDir(-Cos(a, 60));
+				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
+			}
 		}
 	}
-	else return true;*/
+	//else return true;*/
 	if(!clonk->IsWalking() && !clonk->IsJumping()) return true;
 	length=15;
 
@@ -99,7 +102,12 @@ func CheckStrike(iTime)
 {
 	//if(iTime < 20) return;
 	var  offset_x=10;
+	var offset_y=0;
 	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
+	
+	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
+		offset_y=10;
+	
 	var width=8;
 	var height=20;
 	var slowedVelocity=GetWeaponSlow(Contained());
@@ -116,7 +124,7 @@ func CheckStrike(iTime)
 		else angle=(Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, -height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
+	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
 	{
 		found=true;
 		
@@ -126,20 +134,22 @@ func CheckStrike(iTime)
 			continue;
 		}*/
 		
-		var velocity=GetRelativeVelocity(Contained(), obj) * 2;
+		/*var velocity=GetRelativeVelocity(Contained(), obj) * 2;
 		velocity+= slowedVelocity / 10;
-		velocity=velocity*3;
+		velocity=velocity*3;*/
 		//if(velocity > 300) velocity=300;
 		
 		var shield=ApplyShieldFactor(Contained(), obj, damage);
 		if(shield == 100)
 			continue;
-		
-		var damage=((100-shield)*(5000 * velocity) / 100) / 100 + 0;
+		// fixed damage for now, not taking velocity into account
+		var damage=((100-shield)*(125 * 1000) / 100 / 100);
 		obj->DoEnergy(-damage, true, 0, Contained()->GetOwner());
-		if(doBash)
-			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
+		//if(doBash)
+		//	ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
 		
+		if(offset_y)
+			ApplyWeaponBash(obj, 100, 0);
 		
 		//if(doBash)
 		//	DoWeaponSlow(obj, 800);
