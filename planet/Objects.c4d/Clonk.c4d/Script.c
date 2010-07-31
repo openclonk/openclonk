@@ -1238,6 +1238,16 @@ func StartJump()
 //		if (SimFlight(iX,iY,iXDir,iYDir,25))
 //			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
 //				PlayAnimation("Dive", 5, Anim_Linear(0, 0, GetAnimationLength("Dive"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));;
+	AddEffect("Fall",this,1,1,this);
+}
+
+func FxFallTimer(object target, int num, int timer)
+{
+	if(GetYDir() > 55 || GetProcedure() == "FLIGHT")
+	{
+		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		return -1;
+	}
 }
 
 /* Hangle */
