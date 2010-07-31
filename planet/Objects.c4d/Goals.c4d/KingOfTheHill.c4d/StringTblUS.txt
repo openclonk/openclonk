@@ -1,0 +1,3 @@
+Name=King of the Hill
+
+MsgGoalDesc=The goal is %d points.
