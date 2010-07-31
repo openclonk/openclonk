@@ -128,7 +128,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_IsFulfilled         "~IsFulfilled"
 #define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
 #define PSF_AttachTargetLost    "~AttachTargetLost"
-#define PSF_CrewSelection       "~CrewSelection" // bool fDeselect, bool fCursorOnly
+#define PSF_CrewSelection       "~CrewSelection" // bool fDeselect
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
 #define PSF_FireMode            "~FireMode"

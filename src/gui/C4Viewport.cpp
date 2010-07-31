@@ -1259,14 +1259,9 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 {
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
-
-/*	C4Player * pPlr = ::Players.Get(Player);
-	if (pPlr->SelectFlash && pPlr->Cursor)
-		pPlr->Cursor->DrawSelectMark(cgo, 1);	*/
 	
 	// Controls
 	DrawPlayerStartup(cgo);
-
 }
 
 bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
