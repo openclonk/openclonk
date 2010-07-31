@@ -1243,7 +1243,7 @@ func StartJump()
 
 func FxFallTimer(object target, int num, int timer)
 {
-	if(GetYDir() > 55 || GetProcedure() == "FLIGHT")
+	if(GetYDir() > 55 && GetProcedure() == "FLIGHT")
 	{
 		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		return -1;
