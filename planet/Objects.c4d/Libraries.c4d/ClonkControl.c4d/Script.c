@@ -383,7 +383,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			// Cancel usage
 			CancelUse();
-			CreateRingMenu(nil,this);
+			CreateRingMenu(Icon_Backpack,this);
 			// CreateRingMenu calls SetMenu(this) in the clonk,
 			// so after this call menu = the created menu
 			
