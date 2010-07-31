@@ -127,9 +127,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 
 	// selected
 	if(!deselect)
-	{
-		// TODO: what if two clonks are selected? Which clonk gets the actionbar?
-		
+	{		
 		// fill actionbar
 		// inventory
 		var i;

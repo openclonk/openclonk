@@ -566,9 +566,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_Throw)
 			{
 				if (proc == "SCALE" || proc == "HANGLE")
-					return PlayerObjectCommand(plr, false, "Drop", contents);
+					return ObjectCommand("Drop", contents);
 				else
-					return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
+					return ObjectCommand("Throw", contents, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
@@ -578,9 +578,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return PlayerObjectCommand(plr, false, "Drop", contents);
+						return ObjectCommand("Drop", contents);
 					else
-						return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+						return ObjectCommand("Throw", contents, mlastx, mlasty);
 				}
 				else
 				{
@@ -591,7 +591,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// drop
 			if (ctrl == CON_Drop)
 			{
-				return PlayerObjectCommand(plr, false, "Drop", contents);
+				return ObjectCommand("Drop", contents);
 			}
 		}
 		// same for contents2 (copypasta)
@@ -601,9 +601,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_ThrowAlt)
 			{
 			    if (proc == "SCALE" || proc == "HANGLE")
-			      return PlayerObjectCommand(plr, false, "Drop", contents2);
+			      return ObjectCommand("Drop", contents2);
 			    else
-			      return PlayerObjectCommand(plr, false, "Throw", contents2, x, y);
+			      return ObjectCommand("Throw", contents2, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
@@ -613,9 +613,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return PlayerObjectCommand(plr, false, "Drop", contents2);
+						return ObjectCommand("Drop", contents2);
 					else
-						return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
+						return ObjectCommand("Throw", contents2, mlastx, mlasty);
 				}
 				else
 				{
@@ -626,7 +626,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// drop
 			if (ctrl == CON_DropAlt)
 			{
-				return PlayerObjectCommand(plr, false, "Drop", contents2);
+				return ObjectCommand("Drop", contents2);
 			}
 		}
 	}
@@ -670,6 +670,9 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	else if (command == "Jump") this->~ControlJump();
 	// else standard command
 	else SetCommand(command,target,tx,ty,target2);
+	
+	// this function might be obsolete: a normal SetCommand does make a callback to
+	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
 }
 
 /* ++++++++++++++++++++++++ Use Controls ++++++++++++++++++++++++ */
@@ -1009,7 +1012,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 		var obj = GetEntranceObject();
 		if (!obj) return false;
 		
-		PlayerObjectCommand(plr, false, "Enter", obj);
+		ObjectCommand("Enter", obj);
 		return true;
 	}
 	
@@ -1018,7 +1021,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	{
 		if (!Contained()) return false;
 		
-		PlayerObjectCommand(plr, false, "Exit");
+		ObjectCommand("Exit");
 		return true;
 	}
 	
@@ -1055,7 +1058,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		if (!obj) return false;
 		
 		// grab
-		PlayerObjectCommand(plr, false, "Grab", obj);
+		ObjectCommand("Grab", obj);
 		return true;
 	}
 	
@@ -1071,7 +1074,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		// ungrab only if he pushes
 		if (proc != "PUSH") return false;
 
-		PlayerObjectCommand(plr, false, "UnGrab");
+		ObjectCommand("UnGrab");
 		return true;
 	}
 	
@@ -1087,7 +1090,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		var obj = GetActionTarget()->GetEntranceObject();
 		if (!obj) return false;
 
-		PlayerObjectCommand(plr, false, "PushTo", GetActionTarget(), 0, 0, obj);
+		ObjectCommand("PushTo", GetActionTarget(), 0, 0, obj);
 		return true;
 	}
 	
@@ -1127,7 +1130,7 @@ private func ShiftVehicle(int plr, bool back)
 		if (index >= GetLength(objs)) index = 0;
 	}
 	
-	PlayerObjectCommand(plr, false, "Grab", objs[index]);
+	ObjectCommand("Grab", objs[index]);
 	
 	return true;
 } 
@@ -1324,7 +1327,8 @@ public func ControlThrow(object target, int x, int y)
 public func ControlJump()
 {
 	var ydir = 0;
-	var xdir = 0;
+	var xdir = 5;
+	var max_xdir = 20;
 	
 	if (GetProcedure() == "WALK")
 	{
@@ -1340,7 +1344,7 @@ public func ControlJump()
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
-		SetXDir(GetXDir()+(GetDir()*2-1)*xdir*GetCon()/100);
+		SetXDir(BoundBy((GetXDir()+(GetDir()*2-1)*xdir)*GetCon()/100,-max_xdir,max_xdir));
 		SetYDir(-ydir*GetCon()/100);
 		return true;
 	}

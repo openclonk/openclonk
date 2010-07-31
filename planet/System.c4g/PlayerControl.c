@@ -290,7 +290,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		// Jump control
 		if (ctrl == CON_Jump)
 		{
-			return PlayerObjectCommand(plr, false, "Jump");
+			return this->ObjectCommand("Jump");
 		}
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
 		{
@@ -298,15 +298,13 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
-			if (ctrl == CON_Left && GetDir() == DIR_Right) return ObjectComLetGo(-10);
-			if (ctrl == CON_Right && GetDir() == DIR_Left) return ObjectComLetGo(+10);
+			if (ctrl == CON_Left && GetDir() == DIR_Right) return this->ObjectComLetGo(-10);
+			if (ctrl == CON_Right && GetDir() == DIR_Left) return this->ObjectComLetGo(+10);
 		}
 		else if (proc == "HANGLE") // Let go from hangling the ceiling
 		{
-			if (ctrl == CON_Down) return ObjectComLetGo(0,0);
+			if (ctrl == CON_Down) return this->ObjectComLetGo(0,0);
 		}
-		// Make sure other selected Clonks are following
-		PlayerObjectCommand(plr, true, "Follow", this, GetX(), GetY());
 		// Direct turnaround if object is standing still. Valid for any procedure in OC
 		if (!GetXDir())
 		{
@@ -439,22 +437,9 @@ global func ComDir2XY(int comd, &x, &y)
 	return true;
 }
 
-// Give a command to all selected Clonks of a player
-global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, object target, int tx, int ty, object target2)
-{
-	if (!exclude_cursor)
-	{
-		var follow_clonk = GetCursor(plr);
-		if (follow_clonk)
-		{
-			follow_clonk->ObjectCommand(command,target,tx,ty,target2);
-		}
-	}
-	return true;
-}
-
 global func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
+	// this function exists to be overloadable by ClonkControl.c4d
 	if(!this) return;
 	this->SetCommand(command,target,tx,ty, target2);
 }

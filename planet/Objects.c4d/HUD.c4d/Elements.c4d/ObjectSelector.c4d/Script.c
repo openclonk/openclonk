@@ -84,16 +84,16 @@ public func MouseSelection(int plr)
 		{
 			// which is mine -> let go
 			if(crew->GetActionTarget() == myobject)
-				PlayerObjectCommand(plr, false, "UnGrab");
+				crew->ObjectCommand("UnGrab");
 			else
-				PlayerObjectCommand(plr, false, "Grab", myobject);
+				crew->ObjectCommand("Grab", myobject);
 				
 			return true;
 		}
 		// grab
 		else if(proc == "WALK")
 		{
-			PlayerObjectCommand(plr, false, "Grab", myobject);
+			crew->ObjectCommand("Grab", myobject);
 			return true;
 		}
 	}
@@ -104,13 +104,13 @@ public func MouseSelection(int plr)
 		// inside? -> exit
 		if(crew->Contained() == myobject)
 		{
-			PlayerObjectCommand(plr, false, "Exit");
+			crew->ObjectCommand("Exit");
 			return true;
 		}
 		// outside? -> enter
 		else if(crew->CanEnter())
 		{
-			PlayerObjectCommand(plr, false, "Enter", myobject);
+			crew->ObjectCommand("Enter", myobject);
 			return true;
 		}
 	}
@@ -223,7 +223,7 @@ public func MouseDrop(int plr, obj)
 			// respect no push enter
 			if (obj->GetDefCoreVal("NoPushEnter","DefCore")) return false;
 			// enter vehicle into structure
-			PlayerObjectCommand(plr, false, "PushTo", obj, 0, 0, myobject);
+			crew->ObjectCommand("PushTo", obj, 0, 0, myobject);
 			return true;
 		}
 	}
