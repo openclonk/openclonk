@@ -24,28 +24,28 @@
 // These are filled in automatically by CMake. When in doubt, edit 
 // Version.txt instead!
 
-#define C4CFG_Company         "OpenClonk Project"
-#define C4COPYRIGHT_YEAR      "2010"
-#define C4COPYRIGHT_COMPANY   "OpenClonk Project"
+#define C4CFG_Company         "@C4PROJECT@"
+#define C4COPYRIGHT_YEAR      "@C4COPYRIGHT_YEAR@"
+#define C4COPYRIGHT_COMPANY   "@C4PROJECT@"
 
-#define C4ENGINENAME          "OpenClonk Reborn"
-#define C4ENGINENICK          "reborn"
+#define C4ENGINENAME          "@C4ENGINENAME@"
+#define C4ENGINENICK          "@C4ENGINENICK@"
 
-#define C4ENGINECAPTION       "OpenClonk Reborn"
+#define C4ENGINECAPTION       "@C4ENGINECAPTION@"
 #define C4EDITORCAPTION       "Clonk Editor"
-#define C4ENGINEID            "org.openclonk.reborn"
+#define C4ENGINEID            "@C4ENGINEID@"
 
-#define C4XVER1               4
-#define C4XVER2               10
-#define C4XVER3               0
-#define C4XVER4               0
-#define C4XVERBUILD           2
-#define C4VERSIONBUILDNAME    "Cerulean"
-#define C4VERSIONEXTRA        "Beta"
-#define C4REVISION            "25a791c06fff+"
+#define C4XVER1               @C4XVER1@
+#define C4XVER2               @C4XVER2@
+#define C4XVER3               @C4XVER3@
+#define C4XVER4               @C4XVER4@
+#define C4XVERBUILD           @C4XVERBUILD@
+#define C4VERSIONBUILDNAME    "@C4VERSIONBUILDNAME@"
+#define C4VERSIONEXTRA        "@C4VERSIONEXTRA@"
+#define C4REVISION            "@C4REVISION@"
 
-#define C4ENGINEINFO          "OpenClonk Reborn Beta"
-#define C4ENGINEINFOLONG      "OpenClonk Reborn Beta (Cerulean)"
+#define C4ENGINEINFO          "@C4ENGINEINFO@"
+#define C4ENGINEINFOLONG      "@C4ENGINEINFOLONG@"
 
 // Build Options
 #ifdef _DEBUG
@@ -54,6 +54,6 @@
 #define C4BUILDDEBUG
 #endif
 #define C4BUILDOPT C4BUILDDEBUG
-#define C4VERSION             "4.10.0.0 [002] Beta mac" C4BUILDOPT
+#define C4VERSION             "@C4VERSION@" C4BUILDOPT
 
 #endif
