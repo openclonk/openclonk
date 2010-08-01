@@ -1,0 +1,74 @@
+
+############################################################################
+# Project version information
+############################################################################
+
+SET(C4PROJECT           "OpenClonk Project")
+SET(C4PROJECT_DOMAIN    "openclonk")
+SET(C4PROJECT_TLD       "org")
+SET(C4PROJECT_URL       "http://www.{C4PROJECT_DOMAIN}.{C4PROJECT_TLD}")
+SET(C4COPYRIGHT_YEAR    2010) # Gimme CMAKE_CURRENT_YEAR already...
+
+SET(C4ENGINENAME        "OpenClonk Reborn")
+SET(C4ENGINENICK        "reborn")
+SET(C4ENGINECAPTION     ${C4ENGINENAME})
+SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
+
+SET(C4XVER1             4)
+SET(C4XVER2             10)
+SET(C4XVER3             0)
+SET(C4XVER4             0)
+
+SET(C4XVERBUILD         2)
+SET(C4VERSIONBUILDNAME  "Cerulean")
+
+SET(C4VERSIONEXTRA      "Beta")
+
+############################################################################
+# Get revision from Mercurial
+############################################################################
+
+# Note: This will not work for source distributions!
+execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	COMMAND "hg" "id" "--id"
+	OUTPUT_VARIABLE C4REVISION
+	OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+############################################################################
+# Build version strings
+############################################################################
+
+set(C4ENGINEINFO "${C4ENGINENAME}")
+set(C4SHORTVERSION "${C4XVER1}.${C4XVER2}.${C4XVER3}.${C4XVER4}")
+set(C4VERSION "${C4SHORTVERSION}")
+
+if(C4XVERBUILD LESS 10)
+	set(C4VERSION "${C4VERSION} [00${C4XVERBUILD}]")
+elseif(C4XVERBUILD LESS 100)
+	set(C4VERSION "${C4VERSION} [0${C4XVERBUILD}]")
+else()
+	set(C4VERSION "${C4VERSION} [${C4XVERBUILD}]")
+endif()
+
+if(NOT ${C4VERSIONEXTRA} STREQUAL "")
+	set(C4ENGINEINFO "${C4ENGINENAME} ${C4VERSIONEXTRA}")
+	set(C4VERSION "${C4VERSION} ${C4VERSIONEXTRA}")
+endif()
+
+if(WIN32)
+	set(C4VERSION "${C4VERSION} win")
+elseif(APPLE)
+	set(C4VERSION "${C4VERSION} mac")
+elseif(UNIX)
+	set(C4VERSION "${C4VERSION} unix")
+else()
+	set(C4VERSION "${C4VERSION} strange")
+endif()
+
+set(C4ENGINEINFOLONG "${C4VERSIONINFO}")
+if(NOT ${C4VERSIONEXTRA} STREQUAL "")
+  set(C4ENGINEINFOLONG  "${C4ENGINEINFO} (${C4VERSIONBUILDNAME})")
+endif()
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/C4Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/C4Version.h ESCAPE_QUOTES)
+

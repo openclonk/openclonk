@@ -60,6 +60,18 @@ protected func Destruction()
 		subselector->RemoveObject();
 }
 
+public func MouseSelectionAlt(int plr)
+{
+	if(!myobject) return;
+	
+	// close other messages...
+	crew->OnDisplayInfoMessage();
+	
+	var msg = Format("<c ff0000>%s|%s</c>",myobject->GetName(),myobject->GetDesc());
+	CustomMessage(msg,this,plr);
+	return true;
+}
+
 public func MouseSelection(int plr)
 {
 	if(!crew) return false;
@@ -242,6 +254,13 @@ public func Clear()
 		subselector->RemoveObject();
 }
 
+public func ClearMessage()
+{
+	CustomMessage("",this,GetOwner());
+	if(subselector)
+		CustomMessage("",subselector,GetOwner());
+}
+
 public func SetObject(object obj, int type, int pos, int hot)
 {
 	if(actiontype != ACTIONTYPE_INVENTORY)
@@ -288,6 +307,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 					subselector->SetPosition(GetX()+16,GetY()+16);
 				}
 				subselector->SetContainer(myobject);
+				subselector->SetCrew(crew);
 			}
 			else if(subselector)
 			{
