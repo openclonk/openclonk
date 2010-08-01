@@ -38,6 +38,11 @@ protected func Recruitment(int plr)
 	return _inherited(plr, ...); 
 }
 
+public func OnDisplayInfoMessage()
+{
+	HUDcontroller->ClearButtonMessages();
+}
+	
 // calls to the crew selector hud
 protected func OnPromotion() { if (HUDselector) HUDselector->UpdateRank(); return _inherited(...); }
 protected func OnEnergyChange() { if (HUDselector) HUDselector->UpdateHealthBar(); return _inherited(...); }

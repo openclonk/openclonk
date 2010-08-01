@@ -288,6 +288,15 @@ private func ClearButtons(int start)
 	}
 }
 
+public func ClearButtonMessages()
+{
+	for(var i = 0; i < GetLength(actionbar); ++i)
+	{
+		if(actionbar[i])
+			actionbar[i]->ClearMessage();
+	}
+}
+
 // hotkey control
 public func ControlHotkey(int hotindex)
 {

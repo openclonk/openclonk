@@ -6,18 +6,31 @@
 	Is shown for ExtraSlots for weapons with munition etc.
 */
 
-local container, myobject;
+local container, myobject, crew;
 
 protected func Construction()
 {
 	myobject = nil;
 	container = nil;
+	crew = nil;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
 	
 	// visibility
 	this["Visibility"] = VIS_None;
+}
+
+public func MouseSelectionAlt(int plr)
+{
+	if(!myobject) return;
+	
+	// close other messages...
+	crew->OnDisplayInfoMessage();
+	
+	var msg = Format("<c ff0000>%s|%s</c>",myobject->GetName(),myobject->GetDesc());
+	CustomMessage(msg,this,plr);
+	return true;
 }
 
 public func MouseDragDone(obj, object target)
@@ -125,3 +138,11 @@ public func SetContainer(object c)
 	
 	this["Visibility"] = VIS_Owner;
 }
+
+public func SetCrew(object c)
+{
+	if(crew == c) return;
+	crew = c;
+}
+
+public func GetCrew() { return crew; }
