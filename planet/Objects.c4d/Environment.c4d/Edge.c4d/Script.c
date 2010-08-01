@@ -5,10 +5,11 @@
 --*/
 
 
-protected func Initialize() {
-  Snap();
-  AutoP();
-  return true;
+protected func Initialize()
+{
+	Snap();
+	AutoP();
+	return true;
 }
 
 protected func AutoP()
@@ -26,14 +27,30 @@ protected func AutoP()
   
   
 public func Snap(int o,int p)
-  {
-  SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
-  }
+{
+	SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
+}
 
 public func SetP(int p)
-  {
-  SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
-  SetAction("Edge"); SetPhase(p);
-  SetSolidMask(p*10,0,10,10);
-  }
+{
+	SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
+	SetAction("Edge"); SetPhase(p);
+	SetSolidMask(p*10,0,10,10);
+}
+  
+global func GetEdges()
+{
+	var x = [];
+	var y = [];
+	var i = 0;
+	for(var edge in FindObjects(Find_ID(BrickEdge)))
+	{
+		x[i] = edge->GetX();
+		y[i] = edge->GetY();
+		i++;
+	}
+	Log("x=%v", x);
+	Log("y=%v", y);
+	return;
+}
   
