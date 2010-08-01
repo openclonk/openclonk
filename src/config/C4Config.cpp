@@ -401,7 +401,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 				if (home) { home += "/"; }
 				filename.Copy(home);
 #ifdef __APPLE__
-				filename += "Library/Preferences/de.clonk." C4ENGINENICK ".config";
+				filename += "Library/Preferences/" C4ENGINEID ".config";
 #else
 				filename += ".clonk/" C4ENGINENICK "/config";
 #endif
