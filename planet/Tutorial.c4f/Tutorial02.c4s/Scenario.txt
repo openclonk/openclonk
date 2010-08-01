@@ -23,13 +23,13 @@ Crew=Clonk=2
 [Landscape]
 Vegetation=Mushroom=1;Fern=1
 VegetationLevel=60
-InEarth=Rock=1
-InEarthLevel=45
+InEarth=Rock=2;Gold=1
+InEarthLevel=25
 Sky=Clouds1
-MapWidth=150
-MapHeight=60
 TopOpen=0
 BottomOpen=1
+MapWidth=300
+MapHeight=60
 NewStyleLandscape=2
 SkyScrollMode=2
 

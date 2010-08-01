@@ -1,2 +1,2 @@
-DE:Tutorial
-US:Tutorial
+DE:Tutorial 01
+US:Tutorial 01
