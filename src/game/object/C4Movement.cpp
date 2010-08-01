@@ -37,8 +37,8 @@ const C4Real FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
 const C4Real FloatFriction=C4REAL100(2);
 const C4Real RotateAccel=C4REAL100(20);
 const C4Real FloatAccel=C4REAL100(10);
-const C4Real WalkAccel=C4REAL100(8);
-const C4Real WalkBreak=C4REAL100(16);
+const C4Real WalkAccel=C4REAL100(12);
+const C4Real WalkBreak=C4REAL100(18);
 const C4Real ScaleAccel=C4REAL100(20);
 const C4Real SwimAccel=C4REAL100(7);
 const C4Real HitSpeed1=C4REAL100(150); // Hit Event
