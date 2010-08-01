@@ -212,10 +212,10 @@ void C4PhysicalInfo::PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysica
 		for (int32_t iPhysIdx=0; (szPhysName = GetNameByIndex(iPhysIdx, &PhysOff)); ++iPhysIdx)
 		{
 			C4Value PhysVal(this->*PhysOff);
-			C4AulParSet Pars(C4VString(szPhysName), C4VInt(iRank), C4VRef(&PhysVal));
-			if (!!pTrainDef->Script.Call(PSF_GetFairCrewPhysical, 0, &Pars))
+			C4AulParSet Pars(C4VString(szPhysName), C4VInt(iRank), PhysVal);
+			if (C4Value NewVal = pTrainDef->Script.Call(PSF_GetFairCrewPhysical, 0, &Pars))
 			{
-				this->*PhysOff = PhysVal.getInt();
+				this->*PhysOff = NewVal.getInt();
 			}
 		}
 	}

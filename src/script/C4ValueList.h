@@ -57,7 +57,7 @@ public:
 	C4Value &operator[](int32_t iElem)   { return GetItem(iElem); }
 
 	void Reset();
-	void SetItem(int32_t iElemNr, C4Value iValue);
+	void SetItem(int32_t iElemNr, const C4Value &Value);
 	void SetSize(int32_t inSize); // (enlarge only!)
 
 	void DenumeratePointers();
@@ -78,23 +78,20 @@ public:
 
 	~C4ValueArray();
 
-	// Add Reference, return self or new copy if necessary
-	C4ValueArray * IncRef();
-	C4ValueArray * IncElementRef();
+	// Add/Remove Reference
+	void IncRef() { iRefCnt++; }
+	void DecRef() { if (!--iRefCnt) delete this;  }
+
 	// Return sub-array [startIndex, endIndex), or reference for [0, iSize)
 	C4ValueArray * GetSlice(int32_t startIndex, int32_t endIndex);
-	// Change length, return self or new copy if necessary
-	C4ValueArray * SetLength(int32_t size);
-	void DecRef();
-	void DecElementRef();
+	// Change length
+	void SetLength(int32_t size);
 
 	void Sort(class C4SortObject &rSort);
+
 private:
-	// Only for IncRef/AddElementRef
-	C4ValueArray(const C4ValueArray &Array2);
 	// Reference counter
 	unsigned int iRefCnt;
-	unsigned int iElementReferences;
 };
 
 #endif

@@ -684,13 +684,13 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 		if (pObj)
 		{
 			instance = pObj->pMeshInstance;
-			pObj->GetPropertyVal(P_PictureTransformation, value);
+			pObj->GetPropertyVal(P_PictureTransformation, &value);
 		}
 		else
 		{
 			dummy.reset(new StdMeshInstance(*graphics->Mesh));
 			instance = dummy.get();
-			GetPropertyVal(P_PictureTransformation, value);
+			GetPropertyVal(P_PictureTransformation, &value);
 		}
 
 		StdMeshMatrix matrix;
@@ -1391,9 +1391,9 @@ C4PropList *C4Def::GetActionByName(C4String *actname)
 	// If we get the null string or ActIdle by name, return NULL action
 	if (!actname || actname == Strings.P[P_Idle]) return NULL;
 	// otherwise, query actmap
-	C4Value ActMap; GetPropertyVal(P_ActMap, ActMap);
+	C4Value ActMap; GetPropertyVal(P_ActMap, &ActMap);
 	if (!ActMap.getPropList()) return false;
-	C4Value Action; ActMap.getPropList()->GetPropertyVal(actname, Action);
+	C4Value Action; ActMap.getPropList()->GetPropertyVal(actname, &Action);
 	if (!Action.getPropList()) return false;
 	return Action.getPropList();
 }

@@ -39,14 +39,12 @@ enum C4V_Type
 	C4V_C4Object=4,
 	C4V_String=5,
 	C4V_Array=6,
-	C4V_Ref=7,         // reference to a value (variable)
-	C4V_PropListRef=8, // reference to an entry in a proplist
 
 	C4V_C4ObjectEnum=9, // enumerated object
 	C4V_C4DefEnum=10 // enumerated object
 };
 
-#define C4V_Last (int) C4V_PropListRef
+#define C4V_Last (int) C4V_Array
 
 const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
@@ -58,12 +56,12 @@ union C4V_Data
 	C4Object * Obj;
 	C4PropList * PropList;
 	C4String * Str;
-	C4Value * Ref;
 	C4ValueArray * Array;
 	// cheat a little - assume that all members have the same length
-	operator void * () { return Ref; }
-	operator const void * () const { return Ref; }
-	C4V_Data& operator= (C4Value * p) { Ref = p; return *this; }
+	operator void * () { return Obj; }
+	operator const void * () const { return Obj; }
+	bool operator== (C4V_Data b) { return Obj == b.Obj; }
+	C4V_Data &operator = (void *p) { Obj = reinterpret_cast<C4Object *>(p); return *this; }
 };
 
 // converter function, used in converter table
@@ -79,29 +77,27 @@ class C4Value
 {
 public:
 
-	C4Value() : NextRef(NULL), FirstRef(NULL), Type(C4V_Any), HasBaseArray(false) { Data.Ref = 0; }
+	C4Value() : NextRef(NULL), Type(C4V_Any) { Data.Obj = 0; }
 
-	C4Value(const C4Value &nValue) : Data(nValue.Data), PropListRefKey(nValue.PropListRefKey), FirstRef(NULL), Type(nValue.Type), HasBaseArray(false)
+	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(NULL), Type(nValue.Type)
 	{ AddDataRef(); }
 
-	explicit C4Value(bool data): NextRef(NULL), FirstRef(NULL), Type(C4V_Bool), HasBaseArray(false)
-	{ Data.Int = data; AddDataRef(); }
-	explicit C4Value(int32_t data): NextRef(NULL), FirstRef(NULL), Type(C4V_Int), HasBaseArray(false)
-	{ Data.Int = data; AddDataRef(); }
-	explicit C4Value(C4Object *pObj): NextRef(NULL), FirstRef(NULL), Type(pObj ? C4V_C4Object : C4V_Any), HasBaseArray(false)
+	explicit C4Value(bool data): NextRef(NULL), Type(C4V_Bool)
+	{ Data.Int = data; }
+	explicit C4Value(int32_t data): NextRef(NULL), Type(C4V_Int)
+	{ Data.Int = data; }
+	explicit C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_C4Object : C4V_Any)
 	{ Data.Obj = pObj; AddDataRef(); }
-	explicit C4Value(C4String *pStr): NextRef(NULL), FirstRef(NULL), Type(pStr ? C4V_String : C4V_Any), HasBaseArray(false)
+	explicit C4Value(C4String *pStr): NextRef(NULL), Type(pStr ? C4V_String : C4V_Any)
 	{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), FirstRef(NULL), Type(pArray ? C4V_Array : C4V_Any), HasBaseArray(false)
+	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), Type(pArray ? C4V_Array : C4V_Any)
 	{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4PropList *p): NextRef(NULL), FirstRef(NULL), Type(p ? C4V_PropList : C4V_Any), HasBaseArray(false)
+	explicit C4Value(C4PropList *p): NextRef(NULL), Type(p ? C4V_PropList : C4V_Any)
 	{ Data.PropList = p; AddDataRef(); }
-	explicit C4Value(C4Value *pVal): NextRef(NULL), FirstRef(NULL), Type(pVal ? C4V_Ref : C4V_Any), HasBaseArray(false)
-	{ Data.Ref = pVal; AddDataRef(); }
 
-	C4Value& operator = (const C4Value& nValue);
+	C4Value& operator = (const C4Value& nValue) { Set(nValue); return *this; }
 
-	~C4Value();
+	~C4Value() { DelDataRef(Data, Type, NextRef); }
 
 	// Checked getters
 	int32_t getInt() { return ConvertTo(C4V_Int) ? Data.Int : 0; }
@@ -111,7 +107,6 @@ public:
 	C4PropList * getPropList() { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
 	C4String * getStr() { return ConvertTo(C4V_String) ? Data.Str : NULL; }
 	C4ValueArray * getArray() { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
-	C4Value * getRef() { return ConvertTo(C4V_Ref) ? Data.Ref : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -120,7 +115,6 @@ public:
 	C4String *_getStr() const { return Data.Str; }
 	C4ValueArray *_getArray() const { return Data.Array; }
 	C4PropList *_getPropList() const { return Data.PropList; }
-	C4Value *_getRef() { return Data.Ref; }
 
 	// Template versions
 	template <typename T> inline T Get() { return C4ValueConv<T>::FromC4V(*this); }
@@ -129,68 +123,37 @@ public:
 	bool operator ! () const { return !GetData(); }
 	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions
 
-	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type, nValue.PropListRefKey); }
+	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
-
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
-
 	void SetObject(C4Object * Obj) { C4V_Data d; d.Obj = Obj; Set(d, C4V_C4Object); }
-
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
-
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
-
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
-
-	void SetRef(C4Value* nValue) { C4V_Data d; d.Ref = nValue; Set(d, C4V_Ref); }
-
-	void SetPropListRef(C4PropList * PropList, C4String * Key);
-
 	void Set0();
 
 	bool operator == (const C4Value& Value2) const;
 	bool operator != (const C4Value& Value2) const;
 
 	// Change and set Type to int in case it was any before (avoids GuessType())
-	C4Value & operator += (int32_t by) { GetData().Int += by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { GetData().Int -= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator *= (int32_t by) { GetData().Int *= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator /= (int32_t by) { GetData().Int /= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator %= (int32_t by) { GetData().Int %= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator &= (int32_t by) { GetData().Int &= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator ^= (int32_t by) { GetData().Int ^= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator |= (int32_t by) { GetData().Int |= by; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator ++ () { GetData().Int ++; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value operator ++ (int) { C4Value alt = GetRefValConst(); GetData().Int ++; GetRefVal().Type=C4V_Int; return alt; }
-	C4Value & operator -- () { GetData().Int --; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value operator -- (int) { C4Value alt = GetRefValConst(); GetData().Int --; GetRefVal().Type=C4V_Int; return alt; }
+	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
+	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
+	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
+	C4Value & operator /= (int32_t by) { Data.Int /= by; Type=C4V_Int; return *this; }
+	C4Value & operator %= (int32_t by) { Data.Int %= by; Type=C4V_Int; return *this; }
+	C4Value & operator &= (int32_t by) { Data.Int &= by; Type=C4V_Int; return *this; }
+	C4Value & operator ^= (int32_t by) { Data.Int ^= by; Type=C4V_Int; return *this; }
+	C4Value & operator |= (int32_t by) { Data.Int |= by; Type=C4V_Int; return *this; }
+	C4Value & operator ++ ()           { Data.Int++;     Type=C4V_Int; return *this; }
+	C4Value operator ++ (int)          { C4Value old = *this; ++(*this); return old; }
+	C4Value & operator -- ()           { Data.Int--;     Type=C4V_Int; return *this; }
+	C4Value operator -- (int)          { C4Value old = *this; --(*this); return old; }
 
-	void Move(C4Value *nValue);
-
-	C4Value GetRef() { return C4Value(this); }
-	void Deref() { Set(GetRefValConst()); }
-	bool IsRef() { return Type == C4V_Ref; }
-
-	// get data of referenced value
-	C4V_Data GetData() const { return GetRefVal().Data; }
-	C4V_Data & GetData() { return GetRefVal().Data; }
-
-	// get type of referenced value
-	C4V_Type GetType() const { return GetRefVal().Type; }
-
-	// return referenced value
-	const C4Value & GetRefVal() const;
-	const C4Value & GetRefValConst() const { return GetRefVal(); }
-protected:
-	// This also creates a new entry in a proplist if the referenced value was previously only in the prototype
-	C4Value & GetRefVal();
-
-public:
-	// Get the Value at the index. Throws C4AulExecError if not an array
-	void GetArrayElement(int32_t index, C4Value & to, struct C4AulContext *pctx, bool noref);
-	// Set the length of the array. Throws C4AulExecError if not an array
-	void SetArrayLength(int32_t size, C4AulContext *cthr);
+	// getters
+	C4V_Data GetData()    const { return Data; }
+	C4V_Data & GetData()        { return Data; }
+	C4V_Type GetType()    const { return Type; }
 
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
 	const char *GetTypeInfo();
@@ -221,40 +184,19 @@ protected:
 	// data
 	C4V_Data Data;
 
-	// reference-list
-	union
-	{
-		C4Value * NextRef;
-		C4ValueArray * BaseArray;
-		C4String * PropListRefKey;
-	};
-	C4Value * FirstRef;
-
 	// data type
-	C4V_Type Type:8;
-	bool HasBaseArray:8;
-	// All referenzes to a C4Value form a linked list, so that they can be updated if the C4Value
-	// has to move, (array is resized), or goes out of scope (func & f() { var r; return r; })
-	// If the reference is in an array, the last c4value in the list has HasBaseArray set, and
-	// BaseArray points to the array. This is used to count the references to elements that an
-	// array has, and maintain the invariant that an array can only have multiple references to
-	// the array OR its elements, but not both. For example, a[0] = a; has to copy the entire
-	// old array into its first element. But a[0]=42; GetLength(a); should not copy the array,
-	// so the element reference count has to be reset after a[0] is removed from the stack.
+	C4V_Type Type;
 
-	C4Value * GetNextRef() { if (HasBaseArray) return 0; else return NextRef; }
-	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
+	// proplist reference list
+	C4Value * NextRef;
 
-	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL), FirstRef(NULL), HasBaseArray(false)
-	{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
+	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL)
+	{ Type = (nData || IsNullableType(nType) ? nType : C4V_Any); AddDataRef(); }
 
-	void Set(C4V_Data nData, C4V_Type nType, C4String * PropListRefKey = 0);
-
-	void AddRef(C4Value *pRef);
-	void DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBaseArray);
+	void Set(C4V_Data nData, C4V_Type nType);
 
 	void AddDataRef();
-	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray, C4String * Key);
+	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef);
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	static bool FnCnvObject(C4Value *Val, C4V_Type toType);
@@ -275,7 +217,6 @@ inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
 inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
 inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
-inline C4Value C4VRef(C4Value *pVal) { return pVal->GetRef(); }
 
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);
@@ -330,12 +271,19 @@ template <> struct C4ValueConv<C4PropList *>
 	inline static C4PropList *_FromC4V(C4Value &v) { return v._getPropList(); }
 	inline static C4Value ToC4V(C4PropList *v) { return C4VPropList(v); }
 };
-template <> struct C4ValueConv<C4Value *>
+template <> struct C4ValueConv<const C4Value &>
 {
-	inline static C4V_Type Type() { return C4V_Ref; }
-	inline static C4Value *FromC4V(C4Value &v) { return v.getRef(); }
-	inline static C4Value *_FromC4V(C4Value &v) { return v._getRef(); }
-	inline static C4Value ToC4V(C4Value *v) { return C4VRef(v); }
+	inline static C4V_Type Type() { return C4V_Any; }
+	inline static const C4Value &FromC4V(C4Value &v) { return v; }
+	inline static const C4Value &_FromC4V(C4Value &v) { return v; }
+	inline static C4Value ToC4V(const C4Value &v) { return v; }
+};
+template <> struct C4ValueConv<C4Value>
+{
+	inline static C4V_Type Type() { return C4V_Any; }
+	inline static C4Value FromC4V(C4Value &v) { return v; }
+	inline static C4Value _FromC4V(C4Value &v) { return v; }
+	inline static C4Value ToC4V(C4Value v) { return v; }
 };
 
 // aliases

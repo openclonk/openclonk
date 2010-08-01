@@ -27,12 +27,8 @@ global func SetRGBaValue(int val, int newval, int sel)
 	return val | newval << ((3 - sel) * 8);
 }
 
-global func SplitRGBaValue(int rgb, int &red, int &green, int &blue, int &alpha) {
-	red = GetRGBaValue(rgb, 1);
-	green = GetRGBaValue(rgb, 2);
-	blue = GetRGBaValue(rgb, 3);
-	alpha = GetRGBaValue(rgb, 0);
-	return;
+global func SplitRGBaValue(int rgb) {
+	return [GetRGBaValue(rgb, 1), GetRGBaValue(rgb, 2), GetRGBaValue(rgb, 3), GetRGBaValue(rgb, 0)];
 }
 
 global func HSL2RGB(int hsl)

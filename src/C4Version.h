@@ -42,7 +42,7 @@
 #define C4XVERBUILD           2
 #define C4VERSIONBUILDNAME    "Cerulean"
 #define C4VERSIONEXTRA        "Beta"
-#define C4REVISION            "25a791c06fff+"
+#define C4REVISION            "8b0d67bef90e+c40d5914b57b+"
 
 #define C4ENGINEINFO          "OpenClonk Reborn Beta"
 #define C4ENGINEINFOLONG      "OpenClonk Reborn Beta (Cerulean)"

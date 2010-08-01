@@ -301,18 +301,15 @@ protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	var x, y;
-	FindRespawnPos(plr, x, y);
-	clonk->SetPosition(x, y);
+	var pos = FindRespawnPos(plr);
+	clonk->SetPosition(pos[0], pos[1]);
 	AddEffect("IntDirNextCP", clonk, 100, 1, this);
 	return;
 }
 
-private func FindRespawnPos(int plr, int &x, int &y)
+private func FindRespawnPos(int plr)
 {
-	x = respawn_list[plr]->GetX();
-	y = respawn_list[plr]->GetY();
-	return;
+	return [respawn_list[plr]->GetX(), respawn_list[plr]->GetY()];
 }
 
 protected func RemovePlayer(int plr)
