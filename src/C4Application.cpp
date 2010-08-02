@@ -189,15 +189,15 @@ bool C4Application::DoInit()
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
-	// Initialize D3D/OpenGL
-	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
-	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
-
 	if (isFullScreen)
 	{
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	}
+
+	// Initialize D3D/OpenGL
+	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
 #if defined(_WIN32) && !defined(USE_CONSOLE)
 	// Register clonk file classes - notice: under Vista this will only work if we have administrator rights
