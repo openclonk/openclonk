@@ -40,6 +40,8 @@
 
 #include "C4PlayerControl.h"
 
+#include "C4Game.h"
+
 #ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
