@@ -107,7 +107,7 @@ private func FxFloatTimer(object target, int num, int time)
 		Deflate();
 		return -1;
 	}
-	if(GetMaterial(0,50) != Material("Sky"))
+	if(GBackSolid(0,50) || GBackLiquid(0,50))
 	{
 		Deflate();
 		return 1;
