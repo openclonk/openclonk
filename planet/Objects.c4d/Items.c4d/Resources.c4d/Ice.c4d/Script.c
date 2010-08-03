@@ -1,5 +1,10 @@
 /*-- Ice --*/
 
+protected func Hit()
+{
+	Sound("CrystalHit*");
+}
+
 protected func Construction()
 {
 	var graphic = Random(5);
