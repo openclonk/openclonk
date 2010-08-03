@@ -8,6 +8,7 @@ private func Hit()
 }
 
 local iAngle;
+local aim_anim;
 // TODO:
 // The clonk must be able to duck behind the shield
 // when he ducks, he is at least invulnerable against spears and arrows,
@@ -29,8 +30,14 @@ public func ControlUseStart(object clonk, int x, int y)
 		else length=GetJumpLength(clonk);
 	}
 	else return true;
+	
+	var hand;
+	if(clonk->GetItemPos(this) == 0) hand = "ShieldArmsR";
+	if(clonk->GetItemPos(this) == 1) hand = "ShieldArmsL";
+	Message(Format("%s",hand));
+	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
+	clonk->UpdateAttach();
 
-	PlayWeaponAnimation(clonk, "Strike2Arms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("Strike2Arms"), length, ANIM_Hold), Anim_Const(1000));
 	StartWeaponHitCheckEffect(clonk, -1, 1);
 	iAngle=Angle(0,0, x,y);
 	return true;
@@ -39,6 +46,7 @@ public func ControlUseStart(object clonk, int x, int y)
 func ControlUseHolding(clonk, x, y)
 {
 	var angle=Angle(0,0, x,y);
+	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(Normalize(angle,-180)) * 11111/1000));
 	if(clonk->GetDir() == DIR_Left)
 	{
 		if(!Inside(angle, 180, 360)) return;
@@ -49,8 +57,20 @@ func ControlUseHolding(clonk, x, y)
 
 func ControlUseStop(object clonk, int x, int y)
 {
+	clonk->StopAnimation(aim_anim);
+	aim_anim = nil;
+	clonk->UpdateAttach();
 	StopWeaponHitCheckEffect(clonk);
-	StopWeaponAnimation(clonk);
+}
+
+func ControlUseCancel(object clonk, int ix, int iy)
+{
+	if(aim_anim)
+	{
+		clonk->StopAnimation(aim_anim);
+		clonk->UpdateAttach();
+		aim_anim = nil;
+	}
 }
 
 func OnWeaponHitCheckStop()
@@ -130,6 +150,9 @@ public func HoldingEnabled() { return true; }
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryTransform(clonk, sec, back)
 {
+	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,0,1),Trans_Rotate(90,0,0,1));
+	if(aim_anim && sec) return Trans_Rotate(180,1,0,0);
+
 	if(mTrans != nil) return mTrans;
 	if(!sec)
 	{
