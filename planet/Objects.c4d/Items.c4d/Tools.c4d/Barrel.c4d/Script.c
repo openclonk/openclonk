@@ -13,7 +13,7 @@ local iDrain;
 local debug;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return Trans_Translate(-3500,2000,0);	} // TODO change when ck has fixed the bug
+public func GetCarryTransform(clonk) { return Trans_Translate(-1000,-800,0); }
 public func GetCarryPhase() { return 900; }
 
 protected func Initialize()

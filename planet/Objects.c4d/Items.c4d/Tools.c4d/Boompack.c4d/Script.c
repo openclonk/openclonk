@@ -17,7 +17,6 @@ local ridervis;
 local riderattach;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return Trans_Translate(-1500,2000,0);	} // TODO change when ck has fixed the bug
 public func GetCarryPhase() { return 700; }
 
 protected func Construction()
