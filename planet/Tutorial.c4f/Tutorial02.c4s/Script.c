@@ -1,5 +1,5 @@
 /*-- 
-		Tutorial 2
+		Tutorial 02
 		Author: Maikel
 
 		In this tutorial the player will be familiarized with crew selection, backpack control and some tools.
