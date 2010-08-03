@@ -133,6 +133,7 @@ protected:
 	bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
 	bool CheckGLError(const char *szAtOp);
+	virtual bool Error(const char *szMsg);
 #ifdef USE_X11
 	// Size of gamma ramps
 	int gammasize;

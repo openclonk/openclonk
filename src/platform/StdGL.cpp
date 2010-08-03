@@ -1777,7 +1777,7 @@ bool CStdGL::RestoreDeviceObjects()
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	if (!GLEW_VERSION_1_3)
 	{
-		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
 	}
 
 	// lines texture
@@ -1932,6 +1932,15 @@ void CStdGL::ResetTexture()
 		glActiveTexture(GL_TEXTURE0);
 	}
 	glDisable(GL_TEXTURE_2D);
+}
+
+bool CStdGL::Error(const char *szMsg)
+{
+	LogF("  gl: %s", glGetString(GL_VENDOR));
+	LogF("  gl: %s", glGetString(GL_RENDERER));
+	LogF("  gl: %s", glGetString(GL_VERSION));
+	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
+	return CStdDDraw::Error(szMsg);
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)
