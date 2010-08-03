@@ -232,3 +232,58 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 	}
 }
 
+
+void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val)
+{
+	// index from back
+	if(startIndex < 0) startIndex += iSize;
+	if(endIndex < 0) endIndex += iSize;
+
+	// ensure relevant bounds
+	if(startIndex < 0) throw new C4AulExecError(NULL, "Array slice: invalid start index");
+	if(endIndex < 0) throw new C4AulExecError(NULL, "Array slice: invalid end index");
+	if(endIndex < startIndex)
+		endIndex = startIndex;
+
+	// setting an array?
+	if(Val.GetType() == C4V_Array)
+	{
+		const C4ValueArray &Other = *Val._getArray();
+
+		// Calculcate new size
+		int32_t iNewEnd = startIndex + Other.GetSize();
+		int32_t iNewSize = iNewEnd;
+		if(endIndex < iSize)
+			iNewSize += iSize - endIndex;
+
+		// Pre-resize moving
+		int32_t i, j;
+		if(iNewEnd < endIndex)
+			for(i = iNewEnd, j = endIndex; j < iSize; i++, j++)
+				pData[i] = pData[j];
+
+		// Resize (Note: Lots of unneccessary copying here, could be optimized)
+		int32_t iOldSize = iSize;
+		SetSize(iNewSize);
+
+		// Post-resize moving
+		if(iNewEnd > endIndex)
+			for(i = iNewSize, j = iOldSize; j > endIndex; i--, j--)
+				pData[i-1] = pData[j-1];
+
+		// Copy the data
+		for(i = startIndex, j = 0; j < Other.GetSize(); i++, j++)
+			pData[i] = Other.pData[j];
+
+	} else /* if(Val.GetType() != C4V_Array) */ {
+
+		// Need resize?
+		if(endIndex > iSize) SetSize(endIndex);
+
+		// Fill
+		for(int32_t i = startIndex; i < endIndex; i++)
+			pData[i] = Val;
+
+	}
+
+}

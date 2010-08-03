@@ -82,8 +82,10 @@ public:
 	void IncRef() { iRefCnt++; }
 	void DecRef() { if (!--iRefCnt) delete this;  }
 
-	// Return sub-array [startIndex, endIndex), or reference for [0, iSize)
+	// Return sub-array [startIndex, endIndex), or reference for [0, iSize). Throws C4AulExecError.
 	C4ValueArray * GetSlice(int32_t startIndex, int32_t endIndex);
+	// Sets sub-array [startIndex, endIndex). Might resize the array.
+	void SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val);
 	// Change length
 	void SetLength(int32_t size);
 

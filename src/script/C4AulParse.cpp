@@ -846,6 +846,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_ARRAYA: return "ARRAYA";  // array access
 	case AB_ARRAYA_SET: return "ARRAYA_SET";  // setter
 	case AB_ARRAY_SLICE: return "ARRAY_SLICE";
+	case AB_ARRAY_SLICE_SET: return "ARRAY_SLICE_SET";
 	case AB_VARN: return "VARN";    // a named var
 	case AB_VARN_SET: return "VARN_SET";
 	case AB_PARN: return "PARN";    // a named parameter
@@ -1100,6 +1101,9 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_PROPSET:
 		return -2;
 
+	case AB_ARRAY_SLICE_SET:
+		return -3;
+
 	default:
 		assert(false);
 	}
@@ -1199,6 +1203,7 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	switch (Value.bccType)
 	{
 	case AB_ARRAYA: Setter.bccType = AB_ARRAYA_SET; break;
+	case AB_ARRAY_SLICE: Setter.bccType = AB_ARRAY_SLICE_SET; break;
 	case AB_PAR: Setter.bccType = AB_PAR_SET; break;
 	case AB_PARN: Setter.bccType = AB_PARN_SET; break;
 	case AB_VARN: Setter.bccType = AB_VARN_SET; break;

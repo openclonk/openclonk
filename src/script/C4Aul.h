@@ -133,6 +133,7 @@ enum C4AulBCCType
 	AB_ARRAYA,  // array or proplist access
 	AB_ARRAYA_SET,
 	AB_ARRAY_SLICE, // array slicing
+	AB_ARRAY_SLICE_SET,
 	AB_VARN,    // a named var
 	AB_VARN_SET,
 	AB_PARN,    // a named parameter

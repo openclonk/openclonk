@@ -499,6 +499,30 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 			}
 
+			case AB_ARRAY_SLICE_SET:
+			{
+				C4Value &Array = pCurVal[-3];
+				C4Value &StartIndex = pCurVal[-2];
+				C4Value &EndIndex = pCurVal[-1];
+				C4Value &Value = pCurVal[0];
+
+				// Typcheck
+				if (!Array.ConvertTo(C4V_Array) || Array.GetType() == C4V_Any)
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: can't access %s as an array!", Array.GetTypeName()).getData());
+				if (!StartIndex.ConvertTo(C4V_Int))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: start index of type %s, int expected!", StartIndex.GetTypeName()).getData());
+				if (!EndIndex.ConvertTo(C4V_Int))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: end index of type %s, int expected!", EndIndex.GetTypeName()).getData());
+
+				C4ValueArray *pArray = Array._getArray();
+				pArray->SetSlice(StartIndex._getInt(), EndIndex._getInt(), Value);
+
+				// Set value as result, remove both indices and first copy of value
+				Array = Value;
+				PopValues(3);
+				break;
+			}
+
 			case AB_STACK:
 				if (pCPos->Par.i < 0)
 					PopValues(-pCPos->Par.i);
