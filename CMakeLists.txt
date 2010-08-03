@@ -1067,3 +1067,39 @@ endif()
 
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+############################################################################
+# installation
+############################################################################
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/clonk.desktop "Path=${CMAKE_INSTALL_PREFIX}/share/${C4PROJECT_DOMAIN}")
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/runclonk "#!/bin/sh\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/runclonk "cd ${CMAKE_INSTALL_PREFIX}/share/${C4PROJECT_DOMAIN}\n")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/runclonk "clonk $*")
+
+install(DIRECTORY share/ DESTINATION share/)
+install(DIRECTORY planet/ DESTINATION share/${C4PROJECT_DOMAIN}/)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/clonk.desktop DESTINATION share/applications)
+
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group ${CMAKE_CURRENT_BINARY_DIR}/runclonk DESTINATION bin/)
+
+############################################################################
+# CPack support
+############################################################################
+set(CPACK_PACKAGE_NAME "${C4PROJECT_DOMAIN}")
+set(CPACK_PACKAGE_VENDOR "${C4PROJECT_URL}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenClonk - An game mix out of tactic, strategy and JnR")
+set(CPACK_PACKAGE_VERSION "${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${C4XVER1}")
+set(CPACK_PACKAGE_VERSION_MINOR "${C4XVER2}")
+set(CPACK_PACKAGE_VERSION_PATCH "r${C4REVISION}")
+set(CPACK_PACKAGE_FILE_NAME "openclonk${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "openclonk-src-${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+# Somebody who uses Debian/Ubuntu should set this
+#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+
+include(CPack)
