@@ -6,14 +6,13 @@ local master, index;
 
 public func SetMaster(new_master, new_index) { master = new_master; index = new_index; }
 
-public func GetLadderData(&startx, &starty, &endx, &endy, &angle)
+public func GetLadderData()
 {
 	if(master != nil)
 	{
-		master->~GetLadderData(index, startx, starty, endx, endy, angle);
-		return;
+		return master->~GetLadderData(index);
 	}
-	return _inherited(startx, starty, endx, endy, angle);
+	return _inherited();
 }
 
 public func LogLadderData()

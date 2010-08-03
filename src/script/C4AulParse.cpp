@@ -1215,7 +1215,7 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	case AB_CALL:
 		// Huge hacks would required to make this work. EffectVar should get the Var treatment
 		// and become a BCC of its own anyway.
-		throw new C4AulParseError(this, "EffectVar call not supported right now, sorry!");
+		throw new C4AulParseError(this, "Setting a call result does not work, sorry!");
 	case AB_FUNC:
 		// This one at least works somewhat
 		if(SEqual(Value.Par.f->Name, "EffectVar"))

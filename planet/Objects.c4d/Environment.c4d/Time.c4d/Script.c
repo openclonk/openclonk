@@ -29,7 +29,7 @@ global func SetTime(int iTime) //Sets the current time using a 1440-minute clock
 		AddEffect("IntSunrise",0,1,1);
 	}
 
-	timeobject->LocalN("itime")=iTime;
+	timeobject["itime"]=iTime;
 	if(timeobject!=nil) return 1;
 	else 
 		return 0;

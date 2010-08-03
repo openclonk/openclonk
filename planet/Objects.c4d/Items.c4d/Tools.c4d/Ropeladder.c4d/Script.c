@@ -290,26 +290,25 @@ public func OnLadderClimb(clonk, index)
 	}
 }
 
-public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
+public func GetLadderData(index)
 {
-	startx = particles[index][0][0]*10;
-	starty = particles[index][0][1]*10;
+	var startx = particles[index][0][0]*10;
+	var starty = particles[index][0][1]*10;
 	if(index == 0)
 	{
-		endx = startx;
-		endy = starty-5000;
-		angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-		return true;
+		var angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
+		return [startx, starty, startx, starty-5000, angle];
 	}
+	var angle;
 	if(index == ParticleCount-1)
 	{
 		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}
 	else
 		angle = Angle(particles[index+1][0][0], particles[index+1][0][1], particles[index-1][0][0], particles[index-1][0][1]);
-	endx = particles[index-1][0][0]*10;
-	endy = particles[index-1][0][1]*10;
-	return true;
+	var endx = particles[index-1][0][0]*10;
+	var endy = particles[index-1][0][1]*10;
+	return [startx, starty, endx, endy, angle];
 }
 
 func SatisfyConstraints()

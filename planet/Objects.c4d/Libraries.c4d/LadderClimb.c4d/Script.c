@@ -180,8 +180,8 @@ func FxIntClimbControlTimer(target, number)
 		}
 		return -1;
 	}
-	var startx, starty, endx, endy, angle;
-	EffectVar(0, target, number)->GetLadderData(startx, starty, endx, endy, angle);
+	var data = EffectVar(0, target, number)->GetLadderData();
+	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
 	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5000-100*GetTurnPhase();
 	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
 	var old_x = GetX(), old_y = GetY();

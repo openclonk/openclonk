@@ -1,6 +1,5 @@
 /*-- Cloud Placer --*/
 
-<<<<<<< local
 //Great thanks to Maikel for the following function provided 
 global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {
@@ -20,8 +19,7 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	}
 	return 0; // No location found.
 }
-=======
->>>>>>> other
+
 protected func Initialize()
 {
 	var iCount = LandscapeWidth()/65; //Determines how many clouds should be on a map

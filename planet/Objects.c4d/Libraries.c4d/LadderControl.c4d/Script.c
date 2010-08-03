@@ -11,14 +11,15 @@ local prev_segment;
 public func IsLadder() { return true; }
 
 // Returns the segment (start position, end position) on which the clonk can climb.
-public func GetLadderData(&startx, &starty, &endx, &endy, &angle)
+public func GetLadderData()
 {
 	// Normally (if not overloaded) interpret the first vertex as start and the second as end
-	startx = GetX() + GetVertex(0, 0);
-	starty = GetY() + GetVertex(0, 1);
-	endx   = GetX() + GetVertex(1, 0);
-	endy   = GetY() + GetVertex(1, 1);
-	angle  = 0;
+	return [
+		GetX() + GetVertex(0, 0),
+		GetY() + GetVertex(0, 1),
+		GetX() + GetVertex(1, 0),
+		GetY() + GetVertex(1, 1),
+		0];
 }
 
 // Get the connected segments

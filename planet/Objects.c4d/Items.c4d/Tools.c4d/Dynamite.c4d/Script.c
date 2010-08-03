@@ -14,7 +14,8 @@ public func ControlUse(object clonk, int iX, int iY, bool fBox)
 	if(GetAction() == "Fuse" || fBox)
 	{
 		var iAngle = Angle(0,0,iX,iY);
-		if(!GetWall(iAngle, iX, iY, clonk))
+		var wall = GetWall(iAngle, iX, iY, clonk);
+		if(!wall)
 		{
 			//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
 			clonk->Message("Can't place dynamite here!");
@@ -25,6 +26,7 @@ public func ControlUse(object clonk, int iX, int iY, bool fBox)
 		// put into ...
 		Sound("Connect");
 
+		iX = wall[0]; iY = wall[1];
 		Exit(iX, iY, Angle(iX,iY));
 		SetPosition(clonk->GetX()+iX, clonk->GetY()+iY);
 	}
@@ -44,20 +46,18 @@ public func Fuse()
 	}
 }
 
-// returns true if there is a wall in direction in which "clonk" looks
-// and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func GetWall(iAngle, &iX, &iY)
+// returns an offset if there is a wall in direction in which "clonk" looks
+// the offset is returned as "[xo, yo]" - looking from the clonk
+private func GetWall(iAngle)
 {
 	var iDist = 12;
 	for(var iDist = 12; iDist < 18; iDist++)
 	{
-		iX = Sin(iAngle, iDist);
-	  iY = -Cos(iAngle, iDist);
+		var iX = Sin(iAngle, iDist);
+		var iY = -Cos(iAngle, iDist);
 		if(GBackSolid(iX, iY))
 		{
-			iX = Sin(iAngle, iDist-5);
-			iY = -Cos(iAngle, iDist-5);
-			return true;
+			return [Sin(iAngle, iDist-5), -Cos(iAngle, iDist-5)];
 		}
 	}
 	return false;

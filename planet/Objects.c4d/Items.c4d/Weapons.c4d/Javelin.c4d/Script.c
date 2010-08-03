@@ -204,8 +204,8 @@ protected func FxFlightTimer(object pTarget,int iEffectNumber, int iEffectTime)
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	pTarget->SetRDir(anglediff/2);
-	pTarget->EffectVar(0,pTarget,iEffectNumber) = newx;
-	pTarget->EffectVar(1,pTarget,iEffectNumber) = newy;
+	EffectVar(0,pTarget,iEffectNumber) = newx;
+	EffectVar(1,pTarget,iEffectNumber) = newy;
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
