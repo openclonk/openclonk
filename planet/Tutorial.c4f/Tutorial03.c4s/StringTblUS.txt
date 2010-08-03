@@ -4,12 +4,6 @@ MsgNextTutorialDesc=Start the next tutorial scenario.
 MsgRepeatRound=&Repeat this round
 MsgRepeatRoundDesc=Restart this scenario.
 
-MsgIntro0=Welcome to the firing range. Here, you'll learn the basics of ranged combat.
-MsgIntro1=Firstly, we'll use the javelin. Go pick that up now.
-MsgJavelin0=Throw a javelin at the target. Keep the mouse button held down to ready it for throwing.
-MsgJavelin1=Good job! Notice that you can collect three javelins in a stack for speedy throwing.
-MsgJavelin2=This target is too high to hit normally. Try throwing while jumping.
-MsgJavelin3=The target on the left is normally too far away. By throwing while running, your javelin can be thrown a much greater distance.
-MsgBow0=Now we'll use the bow. Go to the next checkpoint to collect it.
-MsgBow1=The bow is handled much like the javelin, except you do not need to run and jump to shoot the farthest. This allows for greater accuracy, but less stopping power.
-MsgBow2=Out of arrows? Collect some from the chest beside the Bow.
+MsgIntro0=In this tutorial, you'll need to destroy all the targets.
+MsgIntro1=Start by collecting some javelins.
+TargetsRemain=Not all targets have been destroyed!

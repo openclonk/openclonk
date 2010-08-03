@@ -24,7 +24,7 @@ Crew=Clonk=1
 Vegetation=NONE=1
 VegetationLevel=100
 InEarth=Rock=1;Gold=1;Loam=1
-InEarthLevel=65,0,0,100
+InEarthLevel=20,0,0,100
 Sky=Clouds2
 MapWidth=500
 MapHeight=100

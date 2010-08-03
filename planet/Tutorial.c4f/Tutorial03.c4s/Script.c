@@ -8,17 +8,55 @@ func Initialize()
 	CreateObject(Butterfly, 10, 10);
 
 	//Goals & Events
-	CreateObject(ShootTheTargets);
 	ScriptGo(true);
 	var TutGoal = CreateObject(Goal_Tutorial);
 	TutGoal->SetStartpoint(40,609);
+	CreateObject(Goal_Flag,2230,310);
 
 	//General Objects
-	var chest = CreateObject(Chest,336,650);
+	var chest = CreateObject(Chest,240,650);
 	chest->CreateContents(Javelin);
 	chest->AddEffect("CheckChest",chest,1,36,chest);
-	CreateObject(Ropeladder,751,465)->Unroll(1);
-	
+
+	var chest = CreateObject(Chest,785,550);
+	chest->CreateContents(Bow);
+	chest->CreateContents(Arrow);
+
+	//Targets
+	//1
+	MakeTarget(280,580,true);
+	//2
+	MakeTarget(180,560,true);
+	//3
+	var target3 = MakeTarget(410,580,false);
+	AddEffect("Target3",target3,1,0,target3);
+	//4
+	var target4 = MakeTarget(380,300,true)->GetActionTarget();
+	AddEffect("HorizMoving",target4,1,1,target4);
+	//5
+	var target5 = MakeTarget(690,421,true);
+	AddEffect("FlintDrop",target5,1,0,target5);
+	//6
+	var target6 = MakeTarget(880,520,true)->GetActionTarget();
+	AddEffect("HorizMoving",target6,1,1,target6);
+	//7
+	MakeTarget(1250,450,true);
+	//8
+	var target8 = MakeTarget(1364,300,true);
+	AddEffect("FlintDrop",target8,1,0,target8);
+	//9
+	MakeTarget(1660,450,true);
+	//10
+	var target10 = MakeTarget(1560,320,true)->GetActionTarget();
+	AddEffect("HorizMoving",target10,1,1,target10);
+	//11
+	MakeTarget(1710,230,true);
+	//12
+	MakeTarget(1800,260,true);
+	//13
+	var target13 = MakeTarget(2140,250,true);
+	AddEffect("Target13",target13,1,0,target13);
+
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 }
@@ -29,24 +67,19 @@ global func FxCheckChestTimer(object target, int num, int time)
 	//When the chest with the javelins at the beginning is emptied
 	if(!FindObject(Find_ID(Javelin),Find_Container(target)))
 	{
-		TutMsg("$MsgJavelin0$");
-
-		var balloon = CreateObject(TargetBalloon,AbsX(189),AbsY(580),NO_OWNER);
-		CreateObject(PracticeTarget,AbsX(189),AbsY(580),NO_OWNER)->SetAction("Attach",balloon);
-
-		TutArrowShowPos(189,580,-45,30);
-
-		target->AddEffect("JavelinSpawn",target,1,36,target);
+		FindObject(Find_ID(Goal_Tutorial))->TutArrowClear();
+		
+		//Apply target pointer to player
+		var clonk = FindObject(Find_ID(Clonk),Find_OCF(OCF_Alive));
+		var arrow = CreateObject(GUI_TutArrow);
+		arrow->SetAction("Show",clonk);
+		arrow->SetClrModulation(RGBa(255,0,0,125));
+		arrow->SetOwner(clonk->GetOwner());
+		AddEffect("ArrowPoint",arrow,1,1,arrow);
 		return -1;
 	}
 	return 1;
 }
-
-global func FxJavelinSpawnTimer(object target, int num, int time)
-{
-	if(!FindObject(Find_ID(Javelin))) target->CreateContents(Javelin);
-}
-
 
 //Scripted events
 func Script1()
@@ -57,130 +90,65 @@ func Script1()
 func Script15()
 {
 	TutMsg("$MsgIntro1$");
-	FindObject(Find_ID(Goal_Tutorial))->TutArrowShowPos(333,650,135,25);
+	FindObject(Find_ID(Goal_Tutorial))->TutArrowShowPos(240,650,135,25);
 }
 
-func Checkpoint_Javelin1()
+global func FxTarget3Stop(object target, int num, int reason, bool temporary)
 {
-	TutMsg("$MsgJavelin3$");
+	CreateObject(Rock,AbsX(430),AbsY(620))->Explode(25);
 }
 
-func Checkpoint_Bow1()
+global func FxTarget13Stop(object target, int num, int reason, bool temporary)
 {
-	TutMsg("$MsgBow0$");
+	CreateObject(Ropeladder,AbsX(2140),AbsY(320))->Unroll(1);
+	var flag = FindObject(Find_ID(Goal_Flag));
+	AddEffect("FlagWin",flag,1,1,flag);
 }
 
-
-func Checkpoint_Bow2()
+global func FxHorizMovingTimer(object target, int num, int time)
 {
-	TutMsg("$MsgBow1$");
-	var clonk = FindObject(Find_ID(Clonk),Find_OCF(OCF_Alive));
-	clonk->CreateContents(Bow);
-	clonk->CreateContents(Arrow);
-
-	AddEffect("CheckArrow",clonk,1,108,clonk);
-	var arrowchest = FindObject(Find_ID(Chest),Find_InRect(1060,367,1160,467));
-	AddEffect("ArrowSpawn",arrowchest,1,18,arrowchest);
+	target->SetXDir(Sin(time,20));
 }
 
-//Checks if player has run out of arrows, and displays message if true.
-global func FxCheckArrowTimer(object target, int num, int time)
+global func FxFlintDropStop(object target, int num, int reason, bool temporary)
 {
-	if(!FindObject(Find_ID(Arrow),Find_Container(target->FindContents(Bow))) && !FindObject(Find_ID(Arrow),Find_Container(target)))
+	CreateObject(Firestone);
+}
+
+global func FxFlagWinTimer(object target, int num, int timer)
+{
+	var clonk = target->FindObject(Find_ID(Clonk),Find_Distance(30),Find_OCF(OCF_Alive));
+	if(clonk)
 	{
-		TutMsg("$MsgBow2$");
+		var ballooncount = ObjectCount(Find_ID(PracticeTarget));
+		if(ballooncount > 0)
+		{
+		target->Message("$TargetsRemain$");
+		return;
+		}
+		FindObject(Find_ID(Goal_Tutorial))->SetFinishpoint(clonk->GetX(), clonk->GetY());
 		return -1;
 	}
 }
 
-//respawn arrows in chest
-global func FxArrowSpawnTimer(object target, int num, int time)
+protected func MakeTarget(int ix, int iy, bool flying)
 {
-	if(!FindObject(Find_ID(Arrow))) target->CreateContents(Arrow);
-}
+	if(flying == nil) balloon = false;
 
-global func OnTargetDeath(int target)
-{
-	if(target == 1)
+	var target = CreateObject(PracticeTarget,ix,iy);
+	if(flying == true)
 	{
-		TutMsg("$MsgJavelin1$");
-		TutArrowShowPos(300,520,45,50);
+		var balloon = CreateObject(TargetBalloon,ix,iy-30);
+		target->SetAction("Attach",balloon);
+		CreateParticle("Flash",ix,iy-50,0,0,500,RGB(255,255,255));
 	}
 
-	if(target == 2)
+	if(flying == false)
 	{
-		TutArrowShowPos(510,500,95,70);
-		TutMsg("$MsgJavelin2$");
+		CreateParticle("Flash",ix,iy,0,0,500,RGB(255,255,255));
+		target->SetAction("Float");
 	}
-
-	if(target == 3)
-	{
-		TutArrowShowPos(360,340,-90,130);
-		var goal = FindObject(Find_ID(Goal_Tutorial));
-		goal->AddCheckpoint(650,370,"Javelin1");
-	}
-
-	if(target == 4)
-	{
-		TutArrowShowTarget(FindObject(Find_ID(PracticeTarget)),45,35);
-	}
-
-	if(target == 5)
-	{
-		TutArrowShowPos(1525,150,30,50);
-		var goal = FindObject(Find_ID(Goal_Tutorial));
-		goal->AddCheckpoint(1412,273,"Bow1");
-		goal->AddCheckpoint(1795,457,"Bow2")->SetBaseGraphics(Bow);
-	}
-
-	if(target == 6)
-	{
-		TutArrowShowPos(1908,300,75,50);
-		//Creation of ammochest
-		var ammochest = CreateObject(Chest,AbsX(2480),AbsY(417));
-		ammochest->CreateContents(Arrow);
-		ammochest->CreateContents(Javelin);
-	}
-
-	if(target == 7)
-	{
-		var ladder = CreateObject(Ropeladder,AbsX(1900),AbsY(394));
-		ladder->Unroll(-1);
-		TutArrowShowPos(2352,247,-45,40);
-	}
-
-	if(target == 8)
-	{
-		TutArrowShowPos(2632,285,45,100);
-	}
-
-	if(target == 9)
-	{
-		TutArrowShowPos(2204,535,-100,40);
-	}
-
-	if(target == 10)
-	{
-		TutArrowShowPos(2165,310,-50,70);
-	}
-
-	if(target == 11)
-	{
-		TutArrowShowPos(2750,185,60,150);
-	}
-
-	if(target == 12)
-	{
-		TutArrowShowPos(2782,472,170,130);
-	}
-
-	//creates finish checkpoint on clonk
-	var clonk = FindObject(Find_ID(Clonk),Find_OCF(OCF_Alive));
-	if(target == 13)
-	{
-		FindObject(Find_ID(Goal_Tutorial))->SetFinishpoint(clonk->GetX(), clonk->GetY());
-		TutArrowClear();
-	}
+	return target;
 }
 
 func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
@@ -195,6 +163,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr,clonk);
+	SelectCrew(iPlr, clonk, true);
 	JoinPlayer(iPlr);
 	return;
 }
@@ -206,4 +175,15 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(40, 609);
 	return;
+}
+
+global func FxArrowPointTimer(object arrow, int num, int timer)
+{
+	var practicetarget = FindObject(Find_ID(PracticeTarget),Sort_Distance());
+	if(practicetarget)
+	{
+		arrow->SetR(Angle(AbsX(arrow->GetX()),AbsY(arrow->GetY()),AbsX(practicetarget->GetX()),AbsY(practicetarget->GetY())));
+	}
+	else
+		arrow->RemoveObject();
 }

@@ -1,2 +1,2 @@
-DE:Tutorial 3 - Schießübungen
-US:Tutorial 3 - Target Practice
+DE:Tutorial 3
+US:Tutorial 3
