@@ -62,6 +62,8 @@ public func SetSymbol(obj)
 					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, 0, 0, content);
 					SetObjDrawTransform(size/3, 0, 16*size, 0, size/3, 16*size, 3);
 				}
+				else
+					SetGraphics(nil, nil, 3);
 			}
 		else
 			SetGraphics(nil,obj,1,GFXOV_MODE_IngamePicture);
