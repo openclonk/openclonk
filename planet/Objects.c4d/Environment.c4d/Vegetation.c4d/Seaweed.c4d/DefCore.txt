@@ -2,8 +2,6 @@
 id=Seaweed
 Version=4,10,0,0
 Category=C4D_Object
-Timer=350
-TimerCall=Seed
 Width=6
 Height=16
 Offset=-3,-8
