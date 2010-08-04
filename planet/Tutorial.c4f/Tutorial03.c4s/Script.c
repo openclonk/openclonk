@@ -1,180 +1,151 @@
-/* Tutorial 3 - Targets */
+/*-- 
+		Tutorial 02
+		Author: Ringwall
 
-func Initialize()
+		In this tutorial the player will be familiarized with some ranged weapons.
+--*/
+
+
+static guide; // guide object.
+
+protected func Initialize()
 {
-	//Environment
+	// Environment
 	CreateObject(Environment_Grass, 10, 10);
 	PlaceGrass(85);
 	CreateObject(Butterfly, 10, 10);
+	
+	ScriptGo(true);	
+	
+	// Goal: flag goal also checks if all targets are destroyed.
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
+	goal->CreateGoalFlag(2230, 290);
 
-	//Goals & Events
-	ScriptGo(true);
-	var TutGoal = CreateObject(Goal_Tutorial);
-	TutGoal->SetStartpoint(40,609);
-	CreateObject(Goal_Flag,2230,310);
-
-	//General Objects
-	var chest = CreateObject(Chest,240,650);
+	// A chest with javelins.
+	var chest = CreateObject(Chest, 240, 650, NO_OWNER);
 	chest->CreateContents(Javelin);
-	chest->AddEffect("CheckChest",chest,1,36,chest);
+	
+	// A chest with bow & arrows.
+	var chest = CreateObject(Chest, 785, 550, NO_OWNER);
+	var bow = CreateObject(Bow, 0, 0, NO_OWNER);
+	bow->CreateContents(Arrow);
+	bow->Enter(chest);
 
-	var chest = CreateObject(Chest,785,550);
-	chest->CreateContents(Bow);
-	chest->CreateContents(Arrow);
-
-	//Targets
-	//1
-	MakeTarget(280,580,true);
-	//2
-	MakeTarget(180,560,true);
-	//3
-	var target3 = MakeTarget(410,580,false);
-	AddEffect("Target3",target3,1,0,target3);
-	//4
-	var target4 = MakeTarget(380,300,true)->GetActionTarget();
-	AddEffect("HorizMoving",target4,1,1,target4);
-	//5
-	var target5 = MakeTarget(690,421,true);
-	AddEffect("FlintDrop",target5,1,0,target5);
-	//6
-	var target6 = MakeTarget(880,520,true)->GetActionTarget();
-	AddEffect("HorizMoving",target6,1,1,target6);
-	//7
-	MakeTarget(1250,450,true);
-	//8
-	var target8 = MakeTarget(1364,300,true);
-	AddEffect("FlintDrop",target8,1,0,target8);
-	//9
-	MakeTarget(1660,450,true);
-	//10
-	var target10 = MakeTarget(1560,320,true)->GetActionTarget();
-	AddEffect("HorizMoving",target10,1,1,target10);
-	//11
-	MakeTarget(1710,230,true);
-	//12
-	MakeTarget(1800,260,true);
-	//13
-	var target13 = MakeTarget(2140,250,true);
-	AddEffect("Target13",target13,1,0,target13);
+	// Create practice targets.
+	var target;
+	// Two flying targets above the chest.
+	MakeTarget(280, 580, true);
+	MakeTarget(180, 560, true);
+	// A static target which opens the sand barrier.
+	var target = MakeTarget(410, 580, false);
+	AddEffect("Blast", target, 1, 0, target);
+	// A moving target.
+	var target = MakeTarget(380, 300, true)->GetActionTarget();
+	AddEffect("HorizontalMoving", target, 1, 1, target);
+	// A flying target which drops a flint.
+	var target = MakeTarget(690, 421, true);
+	AddEffect("FlintDrop", target, 1, 0, target);
+	// A moving and a static target.
+	var target = MakeTarget(880, 520, true)->GetActionTarget();
+	AddEffect("HorizontalMoving", target, 1, 1, target);
+	MakeTarget(1250, 450, true);
+	// A flying target dropping a flint.
+	var target = MakeTarget(1364, 300, true);
+	AddEffect("FlintDrop", target, 1, 0, target);
+	// Three flying targets and a moving target.
+	MakeTarget(1660, 450, true);
+	var target = MakeTarget(1560, 320, true)->GetActionTarget();
+	AddEffect("HorizontalMoving", target, 1, 1, target);
+	MakeTarget(1710, 230, true);
+	MakeTarget(1800, 260, true);
+	// The final target, creates a ropeladder.
+	var target = MakeTarget(2140, 250, true);
+	AddEffect("Ropeladder", target, 1, 0, target);
 
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	return;
 }
 
-// -- Javelin chest functionalities --
-global func FxCheckChestTimer(object target, int num, int time)
+// Gamecall from goals, set next mission.
+protected func OnGoalsFulfilled()
 {
-	//When the chest with the javelins at the beginning is emptied
-	if(!FindObject(Find_ID(Javelin),Find_Container(target)))
+	// Dialogue options -> next round.
+	// Uncomment if there is a 4th tutorial.
+	// SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
+	// Normal scenario ending by goal library.
+	return false;
+}
+
+protected func InitializePlayer(int plr)
+{
+	// Clonk to position and add restore effect.
+	var clonk = GetCrew(plr, 0);
+	clonk->SetPosition(30, 620);
+	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
+	EffectVar(1, clonk, effect) = 30;
+	EffectVar(2, clonk, effect) = 620;
+
+	// Create tutorial guide, add messages, show first.
+	guide = CreateTutorialGuide(plr);
+	guide->AddGuideMessage("$MsgTutWelcome$");
+	guide->AddGuideMessage("$MsgTutJavelin$");
+	guide->ShowGuideMessage(0);
+	return;
+}
+
+/*-- Guide control --*/
+// TODO
+
+/*-- Target control --*/
+
+private func MakeTarget(int x, int y, bool flying)
+{
+	if (flying == nil) 
+		balloon = false;
+
+	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);
+	if (flying == true)
 	{
-		FindObject(Find_ID(Goal_Tutorial))->TutArrowClear();
-		
-		//Apply target pointer to player
-		var clonk = FindObject(Find_ID(Clonk),Find_OCF(OCF_Alive));
-		var arrow = CreateObject(GUI_TutArrow);
-		arrow->SetAction("Show",clonk);
-		arrow->SetClrModulation(RGBa(255,0,0,125));
-		arrow->SetOwner(clonk->GetOwner());
-		AddEffect("ArrowPoint",arrow,1,1,arrow);
-		return -1;
-	}
-	return 1;
-}
-
-//Scripted events
-func Script1()
-{
-	TutMsg("$MsgIntro0$");
-}
-
-func Script15()
-{
-	TutMsg("$MsgIntro1$");
-	FindObject(Find_ID(Goal_Tutorial))->TutArrowShowPos(240,650,135,25);
-}
-
-global func FxTarget3Stop(object target, int num, int reason, bool temporary)
-{
-	CreateObject(Rock,AbsX(430),AbsY(620))->Explode(25);
-}
-
-global func FxTarget13Stop(object target, int num, int reason, bool temporary)
-{
-	CreateObject(Ropeladder,AbsX(2140),AbsY(320))->Unroll(1);
-	var flag = FindObject(Find_ID(Goal_Flag));
-	AddEffect("FlagWin",flag,1,1,flag);
-}
-
-global func FxHorizMovingTimer(object target, int num, int time)
-{
-	target->SetXDir(Sin(time,20));
-}
-
-global func FxFlintDropStop(object target, int num, int reason, bool temporary)
-{
-	CreateObject(Firestone);
-}
-
-global func FxFlagWinTimer(object target, int num, int timer)
-{
-	var clonk = target->FindObject(Find_ID(Clonk),Find_Distance(30),Find_OCF(OCF_Alive));
-	if(clonk)
-	{
-		var ballooncount = ObjectCount(Find_ID(PracticeTarget));
-		if(ballooncount > 0)
-		{
-		target->Message("$TargetsRemain$");
-		return;
-		}
-		FindObject(Find_ID(Goal_Tutorial))->SetFinishpoint(clonk->GetX(), clonk->GetY());
-		return -1;
-	}
-}
-
-protected func MakeTarget(int ix, int iy, bool flying)
-{
-	if(flying == nil) balloon = false;
-
-	var target = CreateObject(PracticeTarget,ix,iy);
-	if(flying == true)
-	{
-		var balloon = CreateObject(TargetBalloon,ix,iy-30);
-		target->SetAction("Attach",balloon);
-		CreateParticle("Flash",ix,iy-50,0,0,500,RGB(255,255,255));
+		var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
+		target->SetAction("Attach", balloon);
+		CreateParticle("Flash", x, y - 50, 0, 0, 500, RGB(255, 255, 255));
 	}
 
-	if(flying == false)
+	if (flying == false)
 	{
-		CreateParticle("Flash",ix,iy,0,0,500,RGB(255,255,255));
+		CreateParticle("Flash", x, y, 0, 0, 500, RGB(255, 255, 255));
 		target->SetAction("Float");
 	}
 	return target;
 }
 
-func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
+// Blasts the first sand barrier on destruction.
+global func FxBlastStop(object target, int num, int reason, bool temporary)
 {
-	JoinPlayer(iPlr);
-	return;
+	CreateObject(Rock, AbsX(430), AbsY(620), NO_OWNER)->Explode(25);
+	return 1;
 }
 
-/*
- func RelaunchPlayer(int iPlr)
+// Creates a ropeladder on destruction to reach the final edge.
+global func FxRopeladderStop(object target, int num, int reason, bool temporary)
 {
-	var clonk = CreateObject(Clonk, 0, 0, iPlr);
-	clonk->MakeCrewMember(iPlr);
-	SetCursor(iPlr,clonk);
-	SelectCrew(iPlr, clonk, true);
-	JoinPlayer(iPlr);
-	return;
+	CreateObject(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(1);
+	return 1;
 }
-*/
 
- func JoinPlayer(int iPlr)
+// Target moves horizontal.
+global func FxHorizontalMovingTimer(object target, int num, int time)
 {
-	var clonk = GetCrew(iPlr);
-	clonk->DoEnergy(100000);
-	clonk->SetPosition(40, 609);
-	return;
+	target->SetXDir(Sin(time, 20));
+	return 1;
+}
+
+// Drops a firestone on destruction.
+global func FxFlintDropStop(object target, int num, int reason, bool temporary)
+{
+	CreateObject(Firestone, 0, 0, NO_OWNER);
+	return 1;
 }
 
 global func FxArrowPointTimer(object arrow, int num, int timer)
@@ -187,3 +158,47 @@ global func FxArrowPointTimer(object arrow, int num, int timer)
 	else
 		arrow->RemoveObject();
 }
+
+/*-- Clonk restoring --*/
+
+global func FxClonkRestoreTimer(object target, int num, int time)
+{
+	// Respawn to new location if reached bow & arrow chest.
+	if (Distance(target->GetX(), target->GetY(), 830, 560) < 40)
+	{
+		EffectVar(1, target, num) = 830;
+		EffectVar(2, target, num) = 560;		
+	}
+	// Respawn to new location if reached brick climb.
+	if (Distance(target->GetX(), target->GetY(), 1490, 470) < 40)
+	{
+		EffectVar(1, target, num) = 1490;
+		EffectVar(2, target, num) = 470;		
+	}
+	return 1;
+}
+
+// Relaunches the clonk, from death or removal.
+global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3 || reason == 4)
+	{
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		// Respawn new clonk.
+		var plr = target->GetOwner();
+		var clonk = CreateObject(Clonk, 0, 0, plr);
+		clonk->GrabObjectInfo(target);
+		SetCursor(plr, clonk);
+		clonk->DoEnergy(100000);
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+	}
+	return 1;
+}
+
+/*-- Item restoring --*/
+// TODO

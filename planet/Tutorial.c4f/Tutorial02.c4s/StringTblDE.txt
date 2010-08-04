@@ -1,8 +1,8 @@
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Runde wiederholen
+MsgRepeatRoundDesc=Diese Runde wiederholen.
 
 # Tutorial messages
 MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the flag on the far right side of this cave. On your way you will encounter many obstacles, which can be overcome by the numerous tools and objects available in Clonk. Just walk around a little and try to overcome the first obstacle. At any time you can click on the professor for helpful hints.
