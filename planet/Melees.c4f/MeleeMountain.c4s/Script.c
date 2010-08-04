@@ -34,10 +34,31 @@ global func FxIntFillChestsTimer()
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
 	if (ObjectCount(Find_Container(chest)) > 5)
 		chest->Contents(Random(6))->RemoveObject();
-	var w_list = [Shovel,Bow,Arrow,Musket,LeadShot,Club,Javelin,Boompack,Dynamite,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
+	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Dynamite,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
 	if (chest)
-		chest->CreateContents(w_list[Random(GetLength(w_list))]);
+		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return;
+}
+
+global func CreateChestContents(id obj_id)
+{
+	if (!this)
+		return;
+	if (obj_id == Bow)
+	{
+		var bow = CreateObject(Bow, 0, 0, NO_OWNER);
+		bow->CreateContents(Arrow);
+		bow->Enter(this);
+	}
+	else if (obj_id == Musket)
+	{
+		var bow = CreateObject(Musket, 0, 0, NO_OWNER);
+		bow->CreateContents(LeadShot);
+		bow->Enter(this);
+	}
+	else
+		this->CreateContents(obj_id);
+	return;	
 }
 
 // The weapons available to the players. Needed by MicroMelee_Relaunch

@@ -51,21 +51,42 @@ protected func OnPlrRelaunch(int plr)
 global func FxIntFillChestsStart()
 {
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Bow,Musket,Shield,Sword,Club,Javelin,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox,JarOfWinds,Ropeladder];
+	var w_list = [Bow,Musket,Shield,Sword,Club,Javelin,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox,JarOfWinds];
 	
 	for(var chest in chests)
 		for(var i=0; i<4; ++i)
-			chest->CreateContents(w_list[Random(GetLength(w_list))]);
+			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
 }
 
 global func FxIntFillChestsTimer()
 {
 	SetTemperature(100);
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [LeadShot,Boompack,Dynamite,Loam,Firestone,Arrow];
+	var w_list = [Boompack,Dynamite,Loam,Firestone,Bow,Musket,Sword,Javelin,JarOfWinds];
 	
 	if (chest->ContentsCount() < 5)
-		chest->CreateContents(w_list[Random(GetLength(w_list))]);
+		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
+}
+
+global func CreateChestContents(id obj_id)
+{
+	if (!this)
+		return;
+	if (obj_id == Bow)
+	{
+		var bow = CreateObject(Bow, 0, 0, NO_OWNER);
+		bow->CreateContents(Arrow);
+		bow->Enter(this);
+	}
+	else if (obj_id == Musket)
+	{
+		var bow = CreateObject(Musket, 0, 0, NO_OWNER);
+		bow->CreateContents(LeadShot);
+		bow->Enter(this);
+	}
+	else
+		this->CreateContents(obj_id);
+	return;	
 }
 
 // GameCall from MicroMelee_Relaunch
