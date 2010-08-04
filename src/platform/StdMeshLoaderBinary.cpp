@@ -199,6 +199,11 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 	mesh->BoundingBox = cmesh.bounds;
 	mesh->BoundingRadius = cmesh.radius;
 
+	// We allow bounding box to be empty if it's only due to X direction since
+	// this is what goes inside the screen in Clonk.
+	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
+		throw Ogre::Mesh::EmptyBoundingBox();
+
 	// Read skeleton (if exists)
 	if (!cmesh.skeletonFile.empty())
 	{

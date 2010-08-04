@@ -195,6 +195,11 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		}
 	}
 
+	// We allow bounding box to be empty if it's only due to X direction since
+	// this is what goes inside the screen in Clonk.
+	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
+		xml.Error(StdCopyStrBuf("Bounding box is empty"), mesh_elem);
+
 	// Read skeleton, if any
 	TiXmlElement* skeletonlink_elem = mesh_elem->FirstChildElement("skeletonlink");
 	if (skeletonlink_elem)

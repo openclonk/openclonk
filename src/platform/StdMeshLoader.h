@@ -64,6 +64,7 @@ namespace Ogre
 		DEFINE_EXCEPTION(InvalidVertexDeclaration, "The vertex declaration of a CID_Geometry chunk was invalid");
 		DEFINE_EXCEPTION(InvalidMaterial, "The material referenced by a mesh or submesh is not defined");
 		DEFINE_EXCEPTION(VertexNotFound, "A specified vertex was not found");
+		DEFINE_EXCEPTION(EmptyBoundingBox, "Bounding box is empty");
 		DEFINE_EXCEPTION(NotImplemented, "The requested operation is not implemented");
 	}
 	namespace Skeleton
