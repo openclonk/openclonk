@@ -59,13 +59,10 @@ public:
 	void Synchronize(); // network synchronization
 	void UpdateSolidMasks();
 
-	C4Object *FindInternal(C4ID id); // find object in first sector
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
 	virtual C4PropList *PropListPointer(int32_t iNumber); // object pointer by number
 	int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 	C4Object* SafeObjectPointer(int32_t iNumber);
-
-	C4ObjectList &ObjectsInt(); // return object list containing system objects
 
 	int Load(C4Group &hGroup, bool fKeepInactive);
 	bool Save(const char *szFilename, bool fSaveGame, bool fSaveInactive);

@@ -380,7 +380,7 @@ bool C4MainMenu::ActivateRules(int32_t iPlayer)
 	SetPermanent(false);
 	// Items
 	int32_t cnt; C4ID idGoal; C4Def *pDef;
-	for (cnt=0; (idGoal=::Objects.ObjectsInt().GetListID(C4D_Rule,cnt)); cnt++)
+	for (cnt=0; (idGoal=::Objects.GetListID(C4D_Rule,cnt)); cnt++)
 		if ((pDef=C4Id2Def(idGoal)))
 		{
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize); pDef->Draw(fctSymbol);
@@ -832,7 +832,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		Close(true);
 		// TODO!
 		C4Object *pObj; C4ID idItem(szCommand+12);
-		if ((pObj = ::Objects.FindInternal(idItem)))
+		if ((pObj = ::Objects.Find(idItem)))
 			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
 		else
 			return false;
