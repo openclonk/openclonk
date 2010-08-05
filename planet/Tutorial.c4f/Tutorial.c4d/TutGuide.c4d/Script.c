@@ -86,7 +86,7 @@ public func GuideMessage(string message)
 	// Guide portrait.
 	var portrait_def = "Portrait:TutorialGuide::00ff00::1";
 	// Message as regular one, don't stop the player.
-	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, _DCO, portrait_def, MSG_HCenter);
+	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GuideMenuDeco, portrait_def, MSG_HCenter);
 	return true;
 }
 
