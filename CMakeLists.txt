@@ -518,7 +518,7 @@ if(WIN32)
 		endif()
 
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/src
+		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_BINARY_DIR}
 		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
 		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o)
 
