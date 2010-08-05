@@ -1,2 +1,2 @@
-DE:Tutorial 01
-US:Tutorial 01
+DE:Clonk Control
+US:Clonk Control

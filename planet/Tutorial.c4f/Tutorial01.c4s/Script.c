@@ -1,113 +1,222 @@
-/* Tutorial */
+/* Tutorial 1 */
 
-static g_wasinit;
-static g_has_shovel; // Set after shovel has been discovered
+static guide; // guide object.
+static loam_chest; //chest containing loam
+static flint_chest; //chest containing flints
+static tutstage; //how far has the player gotten? used for repsawn location
 
-static g_cp_start;
-static g_cp_shovel;
-
-
-/* Scenario init */
-
-private func ScenarioInit()
+protected func Initialize()
 {
-	// Checkppints
-	var goal = FindObject(Find_ID(Goal_Tutorial));
-	if (!goal) { GameOver(); FatalError("Goal missing - no definitions loaded?"); }
-	
-	g_cp_start = goal->SetStartpoint(50,200);
-	
-	goal->SetFinishpoint(1900, 100);
-	
-	g_cp_shovel = goal->AddCheckpoint(400, 600, "Shovel");
-	g_cp_shovel->SetBaseGraphics(Shovel);
-	
-	goal->AddCheckpoint(880, 650);
-	
-	g_wasinit = true;
+	//Tutorial
+	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
+	goal->CreateGoalFlag(2330, 540);
+	AddEffect("TutorialScale",0,1,18);
+
+	//Environment
+	CreateObject(Environment_Grass,0,0,NO_OWNER);
+	PlaceGrass(85);
+
+	//Shovel in water
+	var shovel = CreateObject(Shovel,1368,660,NO_OWNER);
+	shovel->SetR(180);
+	AddEffect("ShovelGet",shovel,1,36,shovel);
+
+	//Chest with loam.
+	var chest = CreateObject(Chest,1800,600,NO_OWNER);
+	var loam = chest->CreateContents(Loam);
+	AddEffect("LoamGet",loam,1,36,loam);
+	loam->AddRestoreMode(chest);
+
+	//Chest with firestones
+	chest = CreateObject(Chest,2026,589,NO_OWNER);
+	chest->CreateContents(Firestone)->AddRestoreMode(chest); //I figure a 'for' statement is a little overkill here...
+	chest->CreateContents(Firestone)->AddRestoreMode(chest);
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial01.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return true;
 }
 
+// Gamecall from goals, set next mission.
+protected func OnGoalsFulfilled()
+{
+	// Dialogue options -> next round.
+	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	// Normal scenario ending by goal library.
+	return false;
+}
 
-/* Player init */
 
 func InitializePlayer(int plr)
 {
-	// Scenario init done when first player joins
-	if (!g_wasinit) ScenarioInit();
-	// Script progress reset
-	goto(1);
-	ScriptGo(true);
-	g_has_shovel = false;
-	for (var checkpoint in FindObjects(Find_ID(ParkourCheckpoint)))
-		checkpoint->ResetCleared();
-	var goal = FindObject(Find_ID(Goal_Tutorial));
-	if (goal)
+	var clonk = GetCrew(plr, 0);
+	clonk->SetPosition(230, 455);
+	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
+	EffectVar(1, clonk, effect) = 230;
+	EffectVar(2, clonk, effect) = 455;
+
+	//Remove Shovel
+	var shovel = GetCrew(plr)->FindContents(Shovel);
+	if(shovel)
 	{
-		// No direction indicator initially
-		goal->DisableDirectionHelp();
-		// Join position (InitializePlayer callback to goal object might have come too early)
-		goal->SetPlrRespawnCP(plr, g_cp_start);
-		goal->JoinPlayer(plr);
+		shovel->Exit(); //Make mesh not linger on clonk after removal
+		shovel->RemoveObject();
 	}
+
+	// Create tutorial guide, add messages, show first.
+	guide = CreateTutorialGuide(plr);
+	ScriptGo(1);
 	return true;
 }
-
-func PlrHasSpawned(int plr, object clonk, object cp)
-{
-	if (!clonk) return;
-	// no shovel initially
-	if (!g_has_shovel)
-	{
-		var shovel = clonk->FindContents(Shovel);
-		if (shovel) shovel->RemoveObject();
-	}
-	return true;
-}
-
 
 /* Script progress */
 
 // Part 1: Welcome
 func Script1()
 {
-	TutMsg("@$MsgIntro0$");
+	guide->AddGuideMessage("@$MsgIntro0$");
+	guide->ShowGuideMessage(0);
 }
 
 func Script11()
 {
-	TutMsg("@$MsgIntro1$");
-	TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 10);
+	guide->AddGuideMessage("@$MsgIntro1$");
+	guide->ShowGuideMessage(1);
+	TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 35);
 }
 
-func Script30()
+func Script20()
 {
-	TutMsg("u go there. WASD, etc., WWWWWWWWWWWWWW WWWWWWWWWWWWWWWWWWWWWWW WWWWWWWWWWWWWWWWWWW WWWWWWWWWWWWWW");
-	TutArrowShowTarget(g_cp_shovel, 135, 30);
-	ScriptGo();
-}
-
-func Checkpoint_Shovel(int plr, object cp)
-{
+	guide->AddGuideMessage("$MsgIntro2$");
+	guide->ShowGuideMessage(2);
+	guide->AddGuideMessage("$GuideMsg0$");
 	TutArrowClear();
-	// Give a shovel!
-	var clonk = GetCrew(plr);
-	if (clonk)
-	{
-		var shovel = CreateObject(Shovel, clonk->GetX(), clonk->GetY(), plr);
-		if (shovel) if (!clonk->Collect(shovel,false,1)) shovel->RemoveObject();
-	}
-	// In the future, respawn with a shovel
-	g_has_shovel = true;
-	ScriptGo(1); goto(100);
-	return true;
+	ScriptGo();
 }
 
-func Script101()
+/* Tutorial Guide Messages */
+//Finds when the Clonk has done 'X', and changes the message.
+
+global func FxTutorialScaleTimer(object target, int num, int timer)
 {
-	TutMsg("got shovel OMG, WWWWWWWWWWWWWW WWWWWWWWWWWWWWWWWWWWWWW WWWWWWWWWWWWWWWWWWW WWWWWWWWWWWWWW");
-	ScriptGo();
+	if(FindObject(Find_ID(Clonk),Find_InRect(650,490,140,90)))
+	{
+		guide->AddGuideMessage("@$GuideMsg1$");
+		AddEffect("TutorialHangle", 0, 1, 18);
+		return -1;
+	}
+}
+
+global func FxTutorialHangleTimer(object target, int num, int timer)
+{
+	if(FindObject(Find_ID(Clonk),Find_InRect(820,440,190,140)))
+	{
+		guide->AddGuideMessage("@$GuideMsg2$");
+		AddEffect("TutorialSwim", 0, 1, 18);
+		return -1;
+	}
+}
+
+global func FxTutorialSwimTimer(object target, int num, int timer)
+{
+	if(FindObject(Find_ID(Clonk),Find_InRect(1120,530,140,60)))
+	{
+		tutstage = 1;
+		guide->AddGuideMessage("@$GuideMsg3$");
+		AddEffect("TutorialDig", 0, 1, 18);
+		return -1;
+	}
+}
+
+global func FxTutorialDigTimer(object target, int num, int timer)
+{
+	if(FindObject(Find_ID(Clonk),Find_InRect(1550,540,130,60)))
+	{
+		guide->AddGuideMessage("@$GuideMsg4$");
+		return -1;
+	}
+}
+
+global func FxShovelGetTimer(object target, int num, int timer)
+{
+	if(target->Contained() != nil)
+	{
+		guide->AddGuideMessage("@$GuideMsg5$");
+		RemoveEffect("TutorialDig");
+		AddEffect("TutorialChest", 0, 1, 18);
+		return -1;
+	}
+}
+
+global func FxTutorialChestTimer(object target, int num, int timer)
+{
+	if(FindObject(Find_ID(Clonk),Find_InRect(1750,530,130,80)))
+	{
+		guide->AddGuideMessage("@$GuideMsg6$");
+		return -1;
+	}
+}
+
+global func FxLoamGetTimer(object target, int num, int timer)
+{
+	if(target->Contained()->GetID() != Chest)
+	{
+		guide->AddGuideMessage("@$GuideMsg7$");
+		RemoveEffect("TutorialChest");
+		AddEffect("TutorialFlint", 0, 1, 18);
+		return -1;
+	}
+}
+
+global func FxTutorialFlintTimer(object target, int num, int timer)
+{
+	if(FindObject(Find_ID(Clonk),Find_InRect(1990,520,130,90)))
+	{
+		tutstage = 2;
+		guide->AddGuideMessage("@$GuideMsg8$");
+		return -1;
+	}
+}
+
+
+
+/*-- Clonk restoring --*/
+
+global func FxClonkRestoreTimer(object target, int num, int time)
+{
+	// Respawn to new location if reached bow & arrow chest.
+	if(tutstage == 1)
+	{
+		EffectVar(1, target, num) = 1240;
+		EffectVar(2, target, num) = 570;		
+	}
+	// Respawn to new location if reached brick climb.
+	if(tutstage == 2)
+	{
+		EffectVar(1, target, num) = 2010;
+		EffectVar(2, target, num) = 520;		
+	}
+	return 1;
+}
+
+// Relaunches the clonk, from death or removal.
+global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+{
+	if (reason == 3 || reason == 4)
+	{
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_x = EffectVar(1, target, num);
+		var to_y = EffectVar(2, target, num);
+		// Respawn new clonk.
+		var plr = target->GetOwner();
+		var clonk = CreateObject(Clonk, 0, 0, plr);
+		clonk->GrabObjectInfo(target);
+		SetCursor(plr, clonk);
+		clonk->DoEnergy(100000);
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+	}
+	return 1;
 }

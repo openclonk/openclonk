@@ -8,10 +8,6 @@ Difficulty=1
 [Definitions]
 Definition1=Objects.c4d
 
-[Game]
-Goals=Goal_Tutorial=1
-Rules=Rule_Restart=1
-
 [Player1]
 Crew=Clonk=1
 
@@ -26,9 +22,7 @@ Crew=Clonk=1
 
 [Landscape]
 Vegetation=NONE=1
-VegetationLevel=100
-InEarth=Rock=1;Firestone=1;Gold=1
-InEarthLevel=65
+VegetationLevel=35
 Sky=Clouds2
 BottomOpen=1
 MapWidth=500
