@@ -23,13 +23,16 @@ protected func Initialize()
 
 	// A chest with javelins.
 	var chest = CreateObject(Chest, 240, 650, NO_OWNER);
-	chest->CreateContents(Javelin);
+	var javelin = CreateObject(Javelin, 0, 0, NO_OWNER);
+	javelin->Enter(chest);
+	//javelin->AddRestoreMode(chest);
 	
 	// A chest with bow & arrows.
 	var chest = CreateObject(Chest, 785, 550, NO_OWNER);
 	var bow = CreateObject(Bow, 0, 0, NO_OWNER);
 	bow->CreateContents(Arrow);
 	bow->Enter(chest);
+	//bow->AddRestoreMode(chest);
 
 	// Create practice targets.
 	var target;
@@ -123,7 +126,7 @@ private func MakeTarget(int x, int y, bool flying)
 // Blasts the first sand barrier on destruction.
 global func FxBlastStop(object target, int num, int reason, bool temporary)
 {
-	CreateObject(Rock, AbsX(430), AbsY(620), NO_OWNER)->Explode(25);
+	CreateObject(Rock, AbsX(430), AbsY(618), NO_OWNER)->Explode(25);
 	return 1;
 }
 
@@ -195,6 +198,9 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
+		// Transfer contents.
+		for (var transfer in FindObjects(Find_Container(target)))
+			transfer->Enter(clonk);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
 	}
 	return 1;

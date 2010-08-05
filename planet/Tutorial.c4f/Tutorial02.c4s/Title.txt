@@ -1,2 +1,2 @@
-DE:Tutorial 02
-US:Tutorial 02
+DE:Mehrere Clonks
+US:Multiple Clonks

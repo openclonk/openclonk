@@ -99,16 +99,20 @@ protected func FxRestoreStop(object target, int num, int reason, bool temporary)
 			to_restore->Enter(to_container);
 		else
 			to_restore->SetPosition(to_x, to_y);
-		// Add new restore mode, either standard one or effect supplied in EffectVar 4.
-		if (ctrl_string)
+		// Restored object might have been removed on enter (Stackable).
+		if (to_restore)
 		{
-			var effect = AddEffect(ctrl_string, to_restore, 100, 10);
-			EffectVar(0, to_restore, effect) = to_container;
-			EffectVar(1, to_restore, effect) = to_x;
-			EffectVar(2, to_restore, effect) = to_y;
+			// Add new restore mode, either standard one or effect supplied in EffectVar 4.
+			if (ctrl_string)
+			{
+				var effect = AddEffect(ctrl_string, to_restore, 100, 10);
+				EffectVar(0, to_restore, effect) = to_container;
+				EffectVar(1, to_restore, effect) = to_x;
+				EffectVar(2, to_restore, effect) = to_y;
+			}
+			else
+				to_restore->AddRestoreMode(to_container, to_x, to_y);
 		}
-		else
-			to_restore->AddRestoreMode(to_container, to_x, to_y);		
 		// Add particle effect.
 		for (var i = 0; i < 20; i++)
 		{

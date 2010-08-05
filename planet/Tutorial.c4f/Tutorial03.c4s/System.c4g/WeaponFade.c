@@ -1,30 +1,43 @@
 #appendto Arrow
 #appendto Javelin
+#appendto Bow
 
-public func Hit()
+protected func Departure(object container)
 {
-	AddEffect("Fade",this,1,1,this);
+	if (container->GetOCF() & OCF_CrewMember)
+		AddEffect("Fade", this, 100, 1, this);
+	return _inherited(container, ...);
+}	
+
+protected func Hit()
+{
+	AddEffect("Fade", this, 100, 1, this);
 	return _inherited(...);
 }
 
 public func HitObject(object obj)
 {
-	if(obj->GetOCF() & OCF_CrewMember) return;
-	_inherited(obj,...);
-
+	if(obj->GetOCF() & OCF_CrewMember) 
+		return;
+	return _inherited(obj, ...);
 }
 
-func FxFadeTimer(object target, int num, int time)
+protected func FxFadeTimer(object target, int num, int time)
 {
-	if(Contained() != nil)
+	if (Contained() != nil)
 	{
 		SetObjAlpha(255);
 		return -1;
 	}
-	if(time > 180) target->SetObjAlpha(255 - ((time - 180) * 2));
-	if(time >= 307)
+	if (time > 210)
+		target->SetObjAlpha(255 - (time - 210) * 2);
+	if (time >= 330)
 	{
-		Enter(FindObject(Find_ID(Clonk),Find_OCF(OCF_Alive)));	
-		return -1;
+		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
+		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
+		restorer->SetPosition(x, y);
+		var to_container = FindObject(Find_OCF(OCF_CrewMember));
+		restorer->SetRestoreObject(target, to_container);	
 	}
 }

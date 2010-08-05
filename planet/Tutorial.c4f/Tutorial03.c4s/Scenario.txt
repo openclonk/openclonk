@@ -21,8 +21,8 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Vegetation=NONE=1
-VegetationLevel=100
+Vegetation=Seaweed=5
+VegetationLevel=70
 InEarth=Rock=1;Gold=1;Loam=1
 InEarthLevel=20,0,0,100
 Sky=Clouds2
