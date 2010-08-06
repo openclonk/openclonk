@@ -31,7 +31,6 @@ private func Seed()
 		if(ObjectCount(Find_ID(this->GetID()), Find_Distance(500)) < SeedAmount())
 		{
 			PlaceVegetation(GetID(), iOffset, iOffset, iSize, iSize, 3);
-			Log("Plant seeded");
 		}
 	}
 }
