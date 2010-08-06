@@ -47,6 +47,12 @@ func PostInitialize()
 	AddEffect("Timer", this, 10, 10, this);
 }
 
+func NewPosition()
+{
+	if(marker) marker->SetPosition(this->GetX(), this->GetY());
+	CreateStarCircle();
+}
+
 func FxTimerTimer(target, effect_number, effect_time)
 {
 	this->AdjustStarColor();

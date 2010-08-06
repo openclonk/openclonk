@@ -29,7 +29,7 @@ func FxTimerTimer()
 		y=origin->GetY();
 	}
 	
-	if(Distance(this->GetX(), this->GetY(), x, y) <= 10)
+	if(Distance(this->GetX(), this->GetY(), x, y) <= 15)
 	{
 		this->SetPosition(x, y);
 	}

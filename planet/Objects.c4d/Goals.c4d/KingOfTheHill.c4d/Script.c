@@ -65,10 +65,13 @@ func CalculatePosition()
 	var a=0, b=LandscapeHeight();
 	
 	var x, y;
+	var lastX;
+	var lastY;
 	
-	while(Abs(a - b) < 10)
+	while(Abs(a - b) > 10)
 	{
 		var m=(a + b) / 2;
+		
 		x=0;
 		y=m;
 		var free=PathFree2(x, y, LandscapeWidth(), m);
@@ -80,10 +83,13 @@ func CalculatePosition()
 		else
 		{
 			b=m;
+			lastX=x;
+			lastY=y;
 		}
 	}
 	
-	this->SetPosition(x + 10, y - 10);
+	location->SetPosition(lastX + 10, lastY - 10);
+	location->NewPosition();
 }
 
 public func GetPointLimit()
@@ -136,6 +142,7 @@ func OnClonkDeath(object clonk, int killer)
 		++player_deaths[clonk->GetOwner()];
 	if(!Hostile(clonk->GetOwner(), killer)) return;
 	
+	if(location->GetKing() != nil)
 	if(location->GetKing() == clonk || location->GetKing()->GetOwner() == killer)
 	{
 		DoPoint(killer);
