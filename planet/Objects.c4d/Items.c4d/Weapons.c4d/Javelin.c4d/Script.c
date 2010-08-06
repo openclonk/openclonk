@@ -113,6 +113,7 @@ public func DoThrow(object clonk, int angle)
 	javelin->SetXDir(jav_x, 1000);
 	javelin->SetYDir(jav_y, 1000);
 	
+	SetController(clonk->GetController());
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
 	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);
 	

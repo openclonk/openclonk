@@ -25,6 +25,7 @@ protected func Hit()
 
 public func Launch(object shooter, int angle, int dist, int speed)
 {
+	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 
 	LaunchProjectile(angle+RandomX(-2, 2), dist, speed);	
