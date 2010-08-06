@@ -24,7 +24,7 @@ protected func Initialize()
 
 public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this))
+	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this) || iEffectTime > 108)
 	{
 		AddEffect("Fade",pTarget,1,1,pTarget);
 	}
