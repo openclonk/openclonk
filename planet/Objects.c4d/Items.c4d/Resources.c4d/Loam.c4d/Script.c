@@ -2,11 +2,13 @@
 
 local last_x, last_y, last_frame, begin_frame;
 local x, y;
+local loamleft;
 
 static const LOAM_Bridge_Time = 65; // frames
 
 protected func Construction()
 {
+	loamleft = LOAM_Bridge_Time;
 	var graphic = Random(5);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
@@ -90,7 +92,7 @@ func FxIntBridgeTimer(clonk, number)
 	last_y += dy;
 
 	// bridge time is up?
-	if (last_frame - begin_frame >= LOAM_Bridge_Time)
+	if(loamleft <= 0)
 	{
 		clonk->CancelUse();
 	}
@@ -100,6 +102,7 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 {
 	x = new_x;
 	y = new_y;
+	--loamleft;
 	
 	return true;
 }
@@ -125,7 +128,7 @@ private func LoamDone(object clonk)
 		clonk->SetComDir(COMD_Stop);
 	}
 	// Remove loam object if any of it has been consumed
-	if(last_frame != begin_frame)
+	if(loamleft < 55)
 	{
 		RemoveObject();
 	}
