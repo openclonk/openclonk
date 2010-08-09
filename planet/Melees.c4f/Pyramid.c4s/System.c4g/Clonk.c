@@ -1,0 +1,1 @@
+// Prevents the clonk from starting with a shovel#appendto Clonkprotected func RejectCollect(id objid, object obj){	if (objid == Shovel)		return true;	return _inherited(objid, obj);}
