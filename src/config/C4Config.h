@@ -300,6 +300,7 @@ public:
 	bool RemoveModule(const char *szPath, char *szModules);
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
+	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 private:
