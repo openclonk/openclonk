@@ -370,6 +370,29 @@ void C4Config::Default()
 	fConfigLoaded=false;
 }
 
+void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile)
+{
+	if (szConfigFile)
+	{
+		// Config filename is specified
+		filename.Ref(szConfigFile);
+		// make sure we're at the correct path to load it
+		if (forceWorkingDirectory) General.DeterminePaths(true);
+	}
+	else
+	{
+		// Config filename from home
+		StdStrBuf home(getenv("HOME"));
+		if (home) { home += "/"; }
+		filename.Copy(home);
+#ifdef __APPLE__
+		filename += "Library/Preferences/" C4ENGINEID ".config";
+#else
+		filename += ".clonk/" C4ENGINENICK "/config";
+#endif
+	}
+}
+
 bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 {
 	try
@@ -386,25 +409,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 		{
 			// Nonwindows or explicit config file: Determine filename to load config from
 			StdStrBuf filename;
-			if (szConfigFile)
-			{
-				// Config filename is specified
-				filename.Ref(szConfigFile);
-				// make sure we're at the correct path to load it
-				if (forceWorkingDirectory) General.DeterminePaths(true);
-			}
-			else
-			{
-				// Config filename from home
-				StdStrBuf home(getenv("HOME"));
-				if (home) { home += "/"; }
-				filename.Copy(home);
-#ifdef __APPLE__
-				filename += "Library/Preferences/" C4ENGINEID ".config";
-#else
-				filename += ".clonk/" C4ENGINENICK "/config";
-#endif
-			}
+			GetConfigFileName(filename, forceWorkingDirectory, szConfigFile);
 
 			// Load config file into buf
 			StdStrBuf buf;
@@ -499,20 +504,7 @@ bool C4Config::Save()
 #endif
 		{
 			StdStrBuf filename;
-			if (ConfigFilename.getLength())
-			{
-				filename.Ref(ConfigFilename);
-			}
-			else
-			{
-				filename.Copy(getenv("HOME"));
-				if (filename) { filename += "/"; }
-#ifdef __APPLE__
-				filename += "Library/Preferences/de.clonk." C4ENGINENICK ".config";
-#else
-				filename += ".clonk/" C4ENGINENICK "/config";
-#endif
-			}
+			GetConfigFileName(filename, false, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
 			StdCompilerINIWrite IniWrite;
 			IniWrite.Decompile(*this);
 			IniWrite.getOutput().SaveToFile(filename.getData());
