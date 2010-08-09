@@ -12,4 +12,3 @@ WindDrift=0
 Additive=1
 AlphaFade=10
 RByV=2
-Additive=1

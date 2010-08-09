@@ -35,6 +35,7 @@ func Initialize()
 	
 	//CalculatePosition();
 	ScheduleCall(this, "PostInitialize", 3);
+	return _inherited(...);
 }
 
 func PostInitialize()
@@ -147,8 +148,31 @@ func OnClonkDeath(object clonk, int killer)
 	{
 		DoPoint(killer);
 	}
+	CheckForWinner();
+	return;
 }
 
+private func CheckForWinner()
+{
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (player_points[plr] >= GetPointLimit())
+		{
+			for (var j = 0; j < GetPlayerCount(); j++)
+			{
+				var check_plr = GetPlayerByIndex(j);
+				if (check_plr == plr)
+					continue;
+				if (GetPlayerTeam(check_plr) != 0 && GetPlayerTeam(check_plr) == GetPlayerTeam(plr))
+					continue; 
+				EliminatePlayer(check_plr);
+			}			
+			break;
+		}
+	}
+	return;
+}
 
 
 public func Activate(int byplr)
@@ -159,13 +183,12 @@ public func Activate(int byplr)
 	for(var i=0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
-	}
-	
+	}	
 	
 	var msg=Format("$MsgGoalDesc$", Goal_KingOfTheHill->GetPointLimit());
 	for(var i=0;i<GetLength(lines);++i)
 		msg=Format("%s|%s", msg, lines[i]);
-	return msg;
+	return MessageWindow(msg, byplr);
 }
 
 private func GetTeamList()
@@ -242,5 +265,5 @@ public func GetShortDescription(int plr)
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }
