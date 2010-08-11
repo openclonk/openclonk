@@ -133,7 +133,7 @@ global func FxBlastStop(object target, int num, int reason, bool temporary)
 // Creates a ropeladder on destruction to reach the final edge.
 global func FxRopeladderStop(object target, int num, int reason, bool temporary)
 {
-	CreateObject(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(1);
+	CreateObject(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(-1);
 	return 1;
 }
 
