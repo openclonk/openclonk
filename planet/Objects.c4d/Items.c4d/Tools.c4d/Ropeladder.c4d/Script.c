@@ -204,7 +204,11 @@ public func Unroll(int dir, int unrolldir, int length)
 		SetPosition(GetX(), GetY()+y0-2);
 		SetR(90+Angle(x2, y2, x1, y1));
 	}
-	if(!length) MaxSegmentCount = Ladder_MaxParticles;
+	if(!length)
+	{
+		if(MaxSegmentCount == nil)
+			MaxSegmentCount = Ladder_MaxParticles;
+	}
 	else MaxSegmentCount = length;
 	DoUnroll(dir);
 }
@@ -289,7 +293,7 @@ func Verlet(fFirst)
 }
 
 func UpdateLines()
-{
+{UpdateSegmentOverlays();
 	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
@@ -300,7 +304,10 @@ func UpdateLines()
 		// Calculate the angle to the previous segment
 		var angle;
 		if(i >= 1)
+		{
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
+			segments[i]->SetAngle(angle);
+		}
 
 		// Every segment has not its graphics, but the graphics of the previous segment (or achor for the first)
 		// Otherwise the drawing order would be wrong an we would get lines over segments
@@ -465,7 +472,7 @@ public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 		angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return true;
 	}
-	if(index == ParticleCount-1)
+	if(index == ParticleCount-1 || segments[index+1]->CanNotBeClimbed())
 	{
 		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}

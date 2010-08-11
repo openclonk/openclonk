@@ -58,14 +58,17 @@ func GetLadderScaleAnimation()
 func FxIntSearchLadderTimer(target, number, time)
 {
 	if (GetAction() != "Jump") return -1;
+
 	var ladder;
 	if (!no_ladder_counter)
+	{
 		for(ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder")))
 		{
-			if(ladder->GBackSolid(0, 5) && 0) continue;
+			if(ladder->~CanNotBeClimbed()) continue;
 			else break;
 		}
-//		if(ladder && ladder->GBackSolid(0, 5)) ladder = nil;
+		if(ladder && ladder->~CanNotBeClimbed()) ladder = nil;
+	}
 	else 
 		no_ladder_counter--;
 	// Found ladder?
@@ -155,14 +158,16 @@ func LadderStep(target, number, fUp)
 func FxIntClimbControlTimer(target, number)
 {
 	if (GetAction() != "Climb") return -1;
-//	if(EffectVar(0, target, number)->GBackSolid(0, 5)) EffectVar(0, target, number) = 0;
+	if(EffectVar(0, target, number)->CanNotBeClimbed(1)) EffectVar(0, target, number) = 0;
 	if(!EffectVar(0, target, number))
 	{
+		no_ladder_counter = 5;
 		SetAction("Jump");
 		SetXDir(-5+10*GetDir());
 		SetYDir(-5);
 		return -1;
 	}
+
 	// Progress
 	var step = 0;
 	if (GetComDir() == COMD_Down) step = -1;
@@ -211,12 +216,12 @@ func FxIntClimbControlTimer(target, number)
 		SetPosition(old_x, old_y);
 		if (step) LadderStep(target, number, -step);
 		// if we are to far left or right try to turn
-		if (GetDir() == 0 && LadderToLandscapeCoordinates(x) > GetX())
+		if (GetDir() == 0 && LadderToLandscapeCoordinates(x)-2 > GetX())
 		{
 			SetComDir(COMD_Right);
 			SetDir(1);
 		}
-		else if (GetDir() == 1 && LadderToLandscapeCoordinates(x) < GetX())
+		else if (GetDir() == 1 && LadderToLandscapeCoordinates(x)+2 < GetX())
 		{
 			SetComDir(COMD_Left);
 			SetDir(0);
@@ -333,7 +338,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 }
 
 func SetLadderRotation (int r, int xoff, int yoff) {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(-r,0,0,1), Trans_Translate(xoff,yoff)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)));
 	return;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
