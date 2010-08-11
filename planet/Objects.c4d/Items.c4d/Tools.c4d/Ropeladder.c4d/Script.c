@@ -5,6 +5,11 @@
 	A ladder consisting of ropesegments. The physics is done completly intern with point masses.
 	Verlet integration and simple stick constraints are used for the rope physics.
 	The segments are an extra object, which handels the graphics and the detection of the ladder by the clonk.
+
+	Interface:
+	Unroll(int dir, int unrolldir, int length);	// dir == -1 expand to the left, dir == 1 expand right;
+																							// unrolldir == COMD_Down, COMD_Right, COMD_Left or COMD_Up specifies where to adjust to a wall
+																							// length, length of segments, default 15
 */
 
 static const Ladder_MaxParticles = 15;//30;//15*3;
@@ -16,6 +21,11 @@ local particles;
 local segments;
 local TestArray;
 
+local MaxSegmentCount;
+
+local SwitchRopes;
+local MirrorSegments;
+
 local UnrollDir;
 
 local ParticleCount;
@@ -25,21 +35,32 @@ local grabber;
 public func ControlUse(object clonk, int x, int y)
 {
 	if(!clonk->GetContact(-1)) return true;
-	if(clonk->GetAction() == "Scale")
-	{
-		if(clonk->GetDir() == 0)
-			Exit(-7, 8);
-		else
-			Exit(+7, 8);
-	}
-	else if(clonk->GetAction() == "Hangle")
-		Exit(0,-5);
-	else
-		Exit(0, 10);
 	// Unroll dir
 	var dir = -1;
 	if(x > 0) dir = 1;
-	Unroll(dir);
+	if(clonk->GetAction() == "Scale")
+	{
+		if(clonk->GetDir() == 0)
+		{
+			Exit(0, 8);
+			Unroll(1, COMD_Right);
+		}
+		else
+		{
+			Exit(0, 8);
+			Unroll(-1, COMD_Left);
+		}
+	}
+	else if(clonk->GetAction() == "Hangle")
+	{
+		Exit(0, 0);
+		Unroll(dir, COMD_Up);
+	}
+	else
+	{
+		Exit(0, 5);
+		Unroll(dir, COMD_Down);
+	}
 
 	return true;
 }
@@ -53,11 +74,34 @@ protected func AddSegment()
 	segments[ParticleCount]->SetNextLadder(segments[ParticleCount-1]);
 	segments[ParticleCount-1]->SetPreviousLadder(segments[ParticleCount]);
 
+	segments[ParticleCount]->SetGraphics("None");
+
 	var oldx = particles[ParticleCount][0][0];
 	var oldy = particles[ParticleCount][0][1];
 	particles[ParticleCount] = [[ oldx+UnrollDir*Ladder_Precision, oldy], [ oldx, oldy], [0,1*Ladder_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
 	
 	ParticleCount++;
+	UpdateSegmentOverlays();
+}
+
+public func UpdateSegmentOverlays()
+{
+	for(var i = 1; i < GetLength(segments); i++)
+	{
+		segments[i]->SetGraphics("Line", GetID(), 2, 1);
+		segments[i]->SetGraphics("Line", GetID(), 3, 1);
+		segments[i]->SetGraphics(nil, nil, 4);
+		segments[i]->SetGraphics(nil, nil, 5);
+		if(i > 1)
+			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 4, 1);
+		if(i == GetLength(segments)-1)
+			segments[i]->SetGraphics("NoRope", segments[i]->GetID(), 5, 1);
+		if(i == 1)
+		{
+			segments[i]->SetGraphics("Anchor", GetID(), 1, 1);
+			segments[i]->SetGraphics("AnchorOverlay", GetID(), 5, 1);
+		}
+	}
 }
 
 protected func RemoveSegment()
@@ -80,12 +124,16 @@ protected func RemoveSegment()
 		TestMoveOut(+1,  0); // Right
 
 		grabber->RemoveObject();
+
+		SetGraphics("", GetID());
+		
 		return;
 	}
 		
 	SetLength(segments, ParticleCount);
 	SetLength(particles, ParticleCount);
 	segments[ParticleCount-1]->SetPreviousLadder(nil);
+	UpdateSegmentOverlays();
 }
 
 func TestMoveOut(xdir, ydir)
@@ -103,14 +151,72 @@ func TestMoveOut(xdir, ydir)
 	}
 }
 
-protected func Unroll(dir)
+public func Unroll(int dir, int unrolldir, int length)
 {
+	if(!unrolldir) unrolldir == COMD_Down;
+	SwitchRopes = 0;
+	// Unroll dir
+	if(unrolldir == COMD_Left || unrolldir == COMD_Right)
+	{
+		var xdir = 1;
+		if(unrolldir == COMD_Right)
+		{
+			xdir = -1;
+		}
+		var x1 = 0;
+		var x2 = 0;
+		var x0 = 0;
+		var y1 =-5;
+		var y2 = 5;
+		while(!GBackSolid(x0,  0) && Abs(x0) < 10) x0 += xdir;
+		while(!GBackSolid(x1, y1) && Abs(x1) < 10) x1 += xdir;
+		while(!GBackSolid(x2, y2) && Abs(x2) < 10) x2 += xdir;
+
+		SetPosition(GetX()+x0-2*xdir, GetY());
+		SetR(90*xdir+Angle(x1, y1, x2, y2));
+	}
+	else if(unrolldir == COMD_Up)
+	{
+		var x1 =-2;
+		var x2 = 2;
+		var y1 = 0;
+		var y2 = 0;
+		var y0 = 0;
+		while(!GBackSolid( 0, y0) && Abs(y0) < 10) y0--;
+		while(!GBackSolid(x1, y1) && Abs(y1) < 10) y1--;
+		while(!GBackSolid(x2, y2) && Abs(y2) < 10) y2--;
+
+		SetPosition(GetX(), GetY()+y0+2);
+		SetR(-90+Angle(x2, y2, x1, y1));
+		SwitchRopes = 1;
+	}
+	else
+	{
+		var x1 =-2;
+		var x2 = 2;
+		var y1 = 0;
+		var y2 = 0;
+		var y0 = 0;
+		while(!GBackSolid( 0, y0) && Abs(y0) < 10) y0++;
+		while(!GBackSolid(x1, y1) && Abs(y1) < 10) y1++;
+		while(!GBackSolid(x2, y2) && Abs(y2) < 10) y2++;
+
+		SetPosition(GetX(), GetY()+y0-2);
+		SetR(90+Angle(x2, y2, x1, y1));
+	}
+	if(!length) MaxSegmentCount = Ladder_MaxParticles;
+	else MaxSegmentCount = length;
+	DoUnroll(dir);
+}
+
+protected func DoUnroll(dir)
+{
+	MirrorSegments = dir;
 	UnrollDir = dir;
-	SetCategory(C4D_StaticBack);
+	SetGraphics("Anchor");
 	SetAction("Hanging");
 	SetProperty("Collectible", 0);
 
-//	TestArray = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9]];
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	grabber = CreateObject(Ropeladder_Grabber);
@@ -121,31 +227,27 @@ protected func Unroll(dir)
 	segments = CreateArray(ParticleCount);
 
 	segments[0] = CreateObject(Ropeladder_Segment);
-	segments[0]->SetGraphics("NoRope");
+	segments[0]->SetGraphics("None");
 
 	segments[0]->SetMaster(this, 0);
 
 	particles = CreateArray(ParticleCount);
-	for(var i = 0; i < Ladder_MaxParticles; i++)
+	for(var i = 0; i < MaxSegmentCount; i++)
 		particles[i] = [[ (GetX()+i*dir)*Ladder_Precision, GetY()*Ladder_Precision], [ (GetX()+i*1)*Ladder_Precision, GetY()*Ladder_Precision], [0,1*Ladder_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
 	particles[0] = [[ GetX()*Ladder_Precision, GetY()*Ladder_Precision],  [(GetX()+1)*Ladder_Precision, GetY()*Ladder_Precision], [0,1*Ladder_Precision], 0];
-//	SetPosition(GetX(), GetY()+10);
-//	Verlet(1);
 
 	AddEffect("IntHang", this, 1, 1, this);
 
 	AddEffect("UnRoll", this, 1, 2, this);
-
-//	Message("@!!!", this);
 }
 
 func StartRollUp() { RemoveEffect("UnRoll", this); AddEffect("RollUp", this, 1, 1, this); }
 
 func FxUnRollTimer()
 {
-	if(ParticleCount == Ladder_MaxParticles)
+	if(ParticleCount == MaxSegmentCount)
 	{
-		if(GetActTime() < Ladder_MaxParticles*2*2) return;
+		if(GetActTime() < MaxSegmentCount*2*2) return;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
 		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*Ladder_SegmentLength*Ladder_Precision)/2)
 			StartRollUp();
@@ -164,52 +266,13 @@ func TestLength()
 
 func FxRollUpTimer() { if(ParticleCount == 0) return -1; RemoveSegment(); }
 
-/*
-protected func Unroll(dir)
-{
-	SetCategory(C4D_StaticBack);
-	SetAction("Hanging");
-	SetProperty("Collectible", 0);
-
-//	TestArray = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9]];
-	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
-
-	segments = CreateArray(Ladder_MaxParticles);
-	for(var i = Ladder_MaxParticles-1; i >= 0; i--)
-	{
-		segments[i] = CreateObject(Ropeladder_Segment);
-		if(i == 0) segments[i]->SetGraphics("NoRope");
-	}
-	for(var i = 0; i < Ladder_MaxParticles; i++)
-	{
-		segments[i]->SetMaster(this, i);
-		if(i > 0)
-		{
-			segments[i]->SetNextLadder(segments[i-1]);
-			segments[i-1]->SetPreviousLadder(segments[i]);
-		}
-	}
-	particles = CreateArray(Ladder_MaxParticles);
-	for(var i = 0; i < Ladder_MaxParticles; i++)
-		particles[i] = [[ (GetX()+i*dir)*Ladder_Precision, GetY()*Ladder_Precision], [ (GetX()+i*1)*Ladder_Precision, GetY()*Ladder_Precision], [0,1*Ladder_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
-	particles[0][2] = [0,0];
-	particles[0][3] = 0;
-	SetPosition(GetX(), GetY()-10);
-	Verlet(1);
-
-	AddEffect("IntHang", this, 1, 1, this);
-}*/
-
 func FxIntHangTimer() { TimeStep(); }
 
 // Verlet integration step
 func Verlet(fFirst)
 {
 	var fTimeStep = 1;
-	var i = 1;
-	var test_length = 0;
-	if(!GBackSolid(GetPartX(0)-GetX(), GetPartY(0)+5-GetY()) && !GBackSolid(GetPartX(0)-GetX(), GetPartY(0)-1-GetY())) i = 0; // If there is no ground under the first part it can fall down too
-	for(; i < ParticleCount; i++)
+	for(var i = 1; i < ParticleCount; i++)
 	{
 		var x = particles[i][0];
 		var temp = x;
@@ -220,36 +283,136 @@ func Verlet(fFirst)
 		particles[i][0][0] += x[0]-oldx[0]+a[0]*fTimeStep*fTimeStep;
 		particles[i][0][1] += x[1]-oldx[1]+a[1]*fTimeStep*fTimeStep;
 		particles[i][1] = temp;
-		if(i == 0)
-		{
-			SetPosition(GetPartX(0), GetPartY(0));
-			test_length = 1;
-		}
 	}
-	if(test_length) TestLength();
+	particles[0][0] = [GetX()*Ladder_Precision, GetY()*Ladder_Precision];
+	if(!Stuck()) TestLength();
 }
 
 func UpdateLines()
 {
 	var fTimeStep = 1;
-	for(var i=0; i < ParticleCount; i++)
+	var oldangle;
+	for(var i=1; i < ParticleCount; i++)
 	{
+		// Update the Position of the Segment
 		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
+		// Calculate the angle to the previous segment
 		var angle;
 		if(i >= 1)
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
-		SetSegmentTransform(segments[i], -angle, particles[i][0][0]*10-GetPartX(i)*1000,particles[i][0][1]*10-GetPartY(i)*1000 );
-//		segments[i]->SetR(angle);
+
+		// Every segment has not its graphics, but the graphics of the previous segment (or achor for the first)
+		// Otherwise the drawing order would be wrong an we would get lines over segments
+		
+		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous)
+		if(i > 1)
+			SetLineTransform(segments[i], -oldangle, particles[i-1][0][0]*10-GetPartX(i)*1000,particles[i-1][0][1]*10-GetPartY(i)*1000, 1000, 4, MirrorSegments );
+		if(i == ParticleCount-1)
+			SetLineTransform(segments[i], -angle, particles[i][0][0]*10-GetPartX(i)*1000,particles[i][0][1]*10-GetPartY(i)*1000, 1000, 5, MirrorSegments );
+
+		// The first segment has to draw the achor too
+		if(i == 1)
+		{
+			SetLineTransform(segments[i], -GetR(), GetX()*1000-GetPartX(i)*1000, GetY()*1000-GetPartY(i)*1000, 1000, 1);
+			SetLineTransform(segments[i], -GetR(), GetX()*1000-GetPartX(i)*1000, GetY()*1000-GetPartY(i)*1000, 1000, 5);
+		}
+
+		// Draw the left line
+		var start = GetRopeConnetPosition(i, 0, 0, angle, oldangle);
+		var end   = GetRopeConnetPosition(i, 0, 1, angle, oldangle);
+
+		var diff = Vec_Sub(end,start);
+		var diffangle = Vec_Angle(diff, [0,0]);
+		var point = Vec_Add(start, Vec_Div(diff, 2));
+		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
+
+		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 2 );
+
+		// Draw the right line
+		var start = GetRopeConnetPosition(i, 1, 0, angle, oldangle);
+		var end   = GetRopeConnetPosition(i, 1, 1, angle, oldangle);
+		
+		var diff = Vec_Sub(end,start);
+		var diffangle = Vec_Angle(diff, [0,0]);
+		var point = Vec_Add(start, Vec_Div(diff, 2));
+		var length = Vec_Length(diff)*1000/Ladder_Precision/8;
+
+		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length, 3 );
+
+		// Remember the angle
+		oldangle = angle;
 	}
 }
 
-func SetSegmentTransform(obj, int r, int xoff, int yoff) {
+static const Ropeladder_Segment_LeftXOffset = 200;
+static const Ropeladder_Segment_RightXOffset = -100;
+
+func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+{
+	if(SwitchRopes && index == 1 && fEnd == 0) fRight = !fRight;
+	if(!(index == 1 && fEnd == 0) && MirrorSegments == -1) fRight = !fRight;
+	if(fEnd == 0)
+	{
+		var start = [0,0];
+		if(fRight == 0)
+		{
+			if(index >= 2)
+			{
+				start = particles[index-1][0];
+				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+			}
+			else
+			{
+				start = [GetX()*Ladder_Precision, GetY()*Ladder_Precision];
+				start[0] += -Cos(GetR(), 188)+Sin(GetR(), 113);
+				start[1] += -Sin(GetR(), 188)-Cos(GetR(), 113);
+			}
+		}
+		else
+		{
+			if(index >= 2)
+			{
+				start = particles[index-1][0];
+				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+			}
+			else
+			{
+				start = [GetX()*Ladder_Precision, GetY()*Ladder_Precision];
+				start[0] += +Cos(GetR(), 188)+Sin(GetR(), 113);
+				start[1] += +Sin(GetR(), 188)-Cos(GetR(), 113);
+			}
+		}
+		return start;
+	}
+	else
+	{
+		var end = [0,0];
+		if(fRight == 0)
+		{
+			end = particles[index][0];
+			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
+		}
+		else
+		{
+			end = particles[index][0];
+			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
+		}
+		return end;
+	}
+}
+
+func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values
 	obj->SetObjDrawTransform (
-		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
+		+fcos*MirrorSegments, +fsin*length/1000, xoff,
+		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
 	);
 }
 
@@ -351,12 +514,11 @@ func SatisfyConstraints()
 				if(particles[i][0][1] < particles[i][1][1])
 					ydir = 1;
 				// Look for all possible places where the particle could move (from nearest to farest)
-//				for(var y = 0; y < 10; y++)
-//					for(var x = 0; x < 10; x++)
 				for(var pos in TestArray)
-				{//var pos = [x,y];
+				{
 					if(!GBackSolid(GetPartX(i)-GetX()+xdir*pos[0], GetPartY(i)-GetY()+ydir*pos[1]))
 					{
+						// Calculate the new position (if we don't move in a direction don't overwrite the old value)
 						var new = [0,0];
 						if(pos[0])
 							new[0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision-xdir*Ladder_Precision/2;
@@ -366,25 +528,23 @@ func SatisfyConstraints()
 							new[1] = (GetPartY(i)+ydir*pos[1])*Ladder_Precision-ydir*Ladder_Precision/2;
 						else
 							new[1] = particles[i][0][1];
+						// Calculate the normalvector to apply the normal force accordingly
 						var dif = Vec_Sub(new, particles[i][0]);
 						var vel = Vec_Sub(particles[i][0], particles[i][1]);
 						var tang = [dif[1], -dif[0]];
 						var speed = Vec_Length(vel);
 						var normalforce = Vec_Length(dif);
+						// if the force is smaller then the speed decelerate
 						if(normalforce < speed)
 						{
 							vel = Vec_Mul(vel, 1000-normalforce*1000/speed);
 							vel = Vec_Div(vel, 1000);
-							particles[i][1] = Vec_Sub(new, vel); // TODO Nicht nur fixe Pixel!
-//							Log("%d %d %d", speed, Vec_Length(vel), normalforce);
+							particles[i][1] = Vec_Sub(new, vel);
 						}
+						// If not stop instantly
 						else
 							particles[i][1] = new;
 						particles[i][0] = new;
-						//particles[i][1] = new;
-//						var xvel = 
-//						particles[i][0][0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision-xdir*Ladder_Precision/2;
-//						particles[i][0][1] = (GetPartY(i)+ydir*pos[1])*Ladder_Precision-ydir*Ladder_Precision/2;
 						break;
 					}
 				}
@@ -420,6 +580,7 @@ func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
 func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
 func Vec_Dot(array x, array y) { return x[0]*y[0]+x[1]*y[1];    }
 func Vec_Length(array x) { return Sqrt(x[0]*x[0]+x[1]*x[1]); }
+func Vec_Angle(array x, array y) { return Angle(x[0], x[1], y[0], y[1]); }
 
 func Definition(def) {
 	SetProperty("ActMap", {
