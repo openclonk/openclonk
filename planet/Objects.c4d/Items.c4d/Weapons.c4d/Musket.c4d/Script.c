@@ -93,6 +93,7 @@ func ControlUseStart(object clonk, int x, int y)
 // Callback from the clonk when loading is finished
 public func FinishedLoading(object clonk)
 {
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1)));
 	loaded = true;
 	return false; // false means stop here and reset the clonk
 }
@@ -142,6 +143,7 @@ private func FireWeapon(object clonk, int angle)
 	shot->Launch(clonk,angle,iBarrel,300);
 	
 	loaded = false;
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));
 
 	Sound("GunShoot*.ogg");
 
