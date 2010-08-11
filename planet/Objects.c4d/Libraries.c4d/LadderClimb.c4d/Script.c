@@ -59,8 +59,12 @@ func FxIntSearchLadderTimer(target, number, time)
 {
 	if (GetAction() != "Jump") return -1;
 	var ladder;
-	if (!no_ladder_counter) 
-		ladder = FindObject(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"));
+	if (!no_ladder_counter)
+		for(ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder")))
+		{
+			if(ladder->GBackSolid(0, 5)) continue;
+		}
+		if(ladder && ladder->GBackSolid(0, 5)) ladder = nil;
 	else 
 		no_ladder_counter--;
 	// Found ladder?
@@ -150,6 +154,7 @@ func LadderStep(target, number, fUp)
 func FxIntClimbControlTimer(target, number)
 {
 	if (GetAction() != "Climb") return -1;
+	if(EffectVar(0, target, number)->GBackSolid(0, 5)) EffectVar(0, target, number) = 0;
 	if(!EffectVar(0, target, number))
 	{
 		SetAction("Jump");

@@ -7,9 +7,10 @@
 	The segments are an extra object, which handels the graphics and the detection of the ladder by the clonk.
 */
 
-static const Ladder_MaxParticles = 15;
+static const Ladder_MaxParticles = 15;//30;//15*3;
 static const Ladder_Iterations = 10;
 static const Ladder_Precision = 100;
+static const Ladder_SegmentLength = 5;//2;
 
 local particles;
 local segments;
@@ -146,7 +147,7 @@ func FxUnRollTimer()
 	{
 		if(GetActTime() < Ladder_MaxParticles*2*2) return;
 		// If it wasn't possible to acchieve at least half the full length we pull in again
-		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*5*Ladder_Precision)/2)
+		if( -(particles[0][0][1]-particles[ParticleCount-1][0][1]) < (ParticleCount*Ladder_SegmentLength*Ladder_Precision)/2)
 			StartRollUp();
 		return -1;
 	}
@@ -320,7 +321,7 @@ func SatisfyConstraints()
 		for(var i=0; i < ParticleCount-1; i++)
 		{
 			// Keep length
-			var restlength = 5*Ladder_Precision; // normal length between laddersegments
+			var restlength = Ladder_SegmentLength*Ladder_Precision; // normal length between laddersegments
 			// Get coordinates and inverse masses
 			var x1 = particles[i][0];
 			var x2 = particles[i+1][0];
@@ -339,7 +340,7 @@ func SatisfyConstraints()
 		for(var i=0; i < ParticleCount; i++)
 		{
 			// Don't touch ground
-			if(GBackSolid(GetPartX(i)-GetX(), GetPartY(i)-GetY()))
+			if(GBackSolid(GetPartX(i)-GetX(), GetPartY(i)-GetY()) )
 			{
 				// Moving left?
 				var xdir = -1;
@@ -356,8 +357,34 @@ func SatisfyConstraints()
 				{//var pos = [x,y];
 					if(!GBackSolid(GetPartX(i)-GetX()+xdir*pos[0], GetPartY(i)-GetY()+ydir*pos[1]))
 					{
-						particles[i][0][0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision;
-						particles[i][0][1] = (GetPartY(i)+ydir*pos[1])*Ladder_Precision;
+						var new = [0,0];
+						if(pos[0])
+							new[0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision-xdir*Ladder_Precision/2;
+						else
+							new[0] = particles[i][0][0];
+						if(pos[1])
+							new[1] = (GetPartY(i)+ydir*pos[1])*Ladder_Precision-ydir*Ladder_Precision/2;
+						else
+							new[1] = particles[i][0][1];
+						var dif = Vec_Sub(new, particles[i][0]);
+						var vel = Vec_Sub(particles[i][0], particles[i][1]);
+						var tang = [dif[1], -dif[0]];
+						var speed = Vec_Length(vel);
+						var normalforce = Vec_Length(dif);
+						if(normalforce < speed)
+						{
+							vel = Vec_Mul(vel, 1000-normalforce*1000/speed);
+							vel = Vec_Div(vel, 1000);
+							particles[i][1] = Vec_Sub(new, vel); // TODO Nicht nur fixe Pixel!
+//							Log("%d %d %d", speed, Vec_Length(vel), normalforce);
+						}
+						else
+							particles[i][1] = new;
+						particles[i][0] = new;
+						//particles[i][1] = new;
+//						var xvel = 
+//						particles[i][0][0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision-xdir*Ladder_Precision/2;
+//						particles[i][0][1] = (GetPartY(i)+ydir*pos[1])*Ladder_Precision-ydir*Ladder_Precision/2;
 						break;
 					}
 				}
@@ -392,6 +419,7 @@ func Vec_Add(array x, array y) { return [x[0]+y[0], x[1]+y[1]]; }
 func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
 func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
 func Vec_Dot(array x, array y) { return x[0]*y[0]+x[1]*y[1];    }
+func Vec_Length(array x) { return Sqrt(x[0]*x[0]+x[1]*x[1]); }
 
 func Definition(def) {
 	SetProperty("ActMap", {
