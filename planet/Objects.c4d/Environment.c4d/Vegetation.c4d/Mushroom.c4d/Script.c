@@ -11,6 +11,19 @@ private func Initialize()
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 }
 
+public func Interact(object clonk)
+{
+	//Pick mushroom
+	SetProperty("Collectible",1);
+	if(clonk->ContentsCount() < clonk->MaxContentsCount())
+		Enter(clonk);
+}
+
+public func IsInteractable(object clonk)
+{
+	return clonk->GetProcedure() == "WALK" && GetProperty("Collectible") != 1;
+}
+
 protected func ControlUse(object clonk, int iX, int iY)
 {
 	clonk->DoEnergy(10);
