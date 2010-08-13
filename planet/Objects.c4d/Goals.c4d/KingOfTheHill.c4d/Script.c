@@ -64,22 +64,23 @@ func CalculatePosition()
 {
 	var a=0, b=LandscapeHeight();
 	
-	var x, y;
+	var x, y, block;
 	
 	while(Abs(a - b) < 10)
 	{
 		var m=(a + b) / 2;
 		x=0;
 		y=m;
-		var free=PathFree2(x, y, LandscapeWidth(), m);
+		block=PathFree2(x, y, LandscapeWidth(), m);
 		
-		if(free)
+		if(!block)
 		{
 			a=m;
 		}
 		else
 		{
 			b=m;
+			x=block[0]; y=block[1];
 		}
 	}
 	

@@ -2855,19 +2855,17 @@ static bool FnPathFree(C4AulContext *cthr, long X1, long Y1, long X2, long Y2)
 	return !!PathFree(X1, Y1, X2, Y2);
 }
 
-static C4Value FnPathFree2(C4AulContext *cthr, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+static C4ValueArray* FnPathFree2(C4AulContext *cthr, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
 	int32_t x = -1, y = -1;
-	// Do not use getInt on the references, because it destroys them.
-	bool r = !!PathFree(x1, y1, x2, y2, &x, &y);
-	if (!r)
+	if (!PathFree(x1, y1, x2, y2, &x, &y))
 	{
 		C4ValueArray *pArray = new C4ValueArray(2);
 		pArray->SetItem(0, C4VInt(x));
 		pArray->SetItem(1, C4VInt(y));
-		return C4VArray(pArray);
+		return pArray;
 	}
-	return C4VBool(true);
+	return 0;
 }
 
 static long FnSetTransferZone(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt)
