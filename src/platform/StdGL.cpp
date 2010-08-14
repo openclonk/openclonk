@@ -808,17 +808,28 @@ namespace
 				break;
 			}
 
+			// Overwrite blend mode with default alpha blending when alpha in clrmod
+			// is <255. This makes sure that normal non-blended meshes can have
+			// blending disabled in their material script (which disables expensive
+			// face ordering) but when they are made translucent via clrmod
 			if(!(dwBlitMode & C4GFXBLIT_ADDITIVE))
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
-					    OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
+						          OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
 			}
 			else
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
 			// TODO: Use vbo if available.
+
 			// Note that we need to do this before we do glTexCoordPointer for the
 			// texture units below, otherwise the texcoordpointer is reset by this
 			// call (or at least by my radeon driver), even though the documentation
