@@ -1,79 +1,101 @@
-/*
+/*--
 	Relaunch container
 	Author: Maikel
 
-	This container holds the clonk after relaunches, so the player will be able to choose some weapons.
-*/
+	This container holds the clonk after relaunches.
+	* The time the clonk is held can be specified with SetRelaunchTime(int time);
+	* After that time the clonk is released and OnClonkLeftRelaunch(object clonk) is called in the scenario script.
+	* Optionally the clonk can choose a weapon if GetRelaunchWeaponList in the scenario script returns a valid id-array.
+--*/
 
+local time;
 local menu;
-local choses;
 
-private func WeaponList()
+protected func Initialize()
 {
-	return GameCall("GetMicroMeleeWeaponList");
+	time = 36 * 10;
+	return;
 }
 
-public func WeaponMenu(object clonk)
+// Sets the time, in seconds, the clonk is held in the container.
+public func SetRelaunchTime(int to_time)
 {
+	time = to_time * 36;
+	return;
+}
+// Returns the time, in seconds the clonk is held.
+public func GetRelaunchTime() { return time / 36; }
+
+// Retrieve weapon list from scenario.
+private func WeaponList() { return GameCall("RelaunchWeaponList"); }
+
+public func StartRelaunch(object clonk)
+{
+	if (!clonk)
+		return;
+	clonk->Enter(this);
 	if (!menu)
 	{
 		var weapons = WeaponList();
 		if(weapons)
 		{
-			menu = clonk->CreateRingMenu(Clonk, 0, 0, this);
+			menu = clonk->CreateRingMenu(Clonk, this);
 			for (var weapon in weapons)
 				menu->AddItem(weapon);
 			menu->Show();
 		}
 	}
-	AddEffect("IntTimeLimit", this, 100, 10, this);
+	AddEffect("IntTimeLimit", this, 100, 36, this);
 	return true;
 }
 
-func FxIntTimeLimitTimer(target, num, time)
+func FxIntTimeLimitTimer(target, num, fxtime)
 {
 	var clonk = Contents();
-	if (time > 350)
+	if (fxtime >= time)
 	{    
 		RelaunchClonk();
-		if(menu) menu->Close();
-		PlayerMessage(clonk->GetOwner(), "");
-		this->RemoveObject();
 		return -1;
 	}
-	PlayerMessage(clonk->GetOwner(), Format("%d seconds remaining.", (350 - time) / 35));
+	if (WeaponList())
+		PlayerMessage(clonk->GetOwner(), Format("$MsgWeapon$", (time - fxtime) / 36));
+	else
+		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / 36));
 	return 1;
 }
 
 public func Selected(object menu, object selector)
 {
-	if(!selector) return 0;
+	if (!selector) 
+		return false;
 	
-	for(var i = 0; i<(selector->GetAmount()); i++)
+	for (var i = 0; i < selector->GetAmount(); i++)
 	{
 		var newobj = CreateObject(selector->GetSymbol());
+		if (newobj->GetID() == Bow)
+			newobj->CreateContents(Arrow);
+		if (newobj->GetID() == Musket)
+			newobj->CreateContents(LeadShot);
 		newobj->Enter(Contents());
 	}
 	menu->Show();
-	if (choses > 0)
-	{
-		RelaunchClonk();
-		this->RemoveObject();
-		return 1;
-	}
-	choses++;
-	return 0;
+	RelaunchClonk();
+	return true;
 }
 
 private func RelaunchClonk()
 {
 	var clonk = Contents();
 	clonk->Exit();
-	GameCall("OnClonkLeftRelaunchObject", clonk);
+	GameCall("OnClonkLeftRelaunch", clonk);
+	if (menu) 
+		menu->Close();
+	PlayerMessage(clonk->GetOwner(), "");
+	RemoveObject();
 	return;
 }
 
-
-func Definition(def) {
-	SetProperty("Name", "relaunch", def);
+protected func Definition(def) 
+{
+	SetProperty("Name", "$Name$", def);
 }

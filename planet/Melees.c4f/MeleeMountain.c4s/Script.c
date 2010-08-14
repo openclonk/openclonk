@@ -18,7 +18,7 @@ protected func Initialize()
 }
 
 // Gamecall from Mircomelee rule, on respawning.
-protected func OnPlrRelaunch(int plr)
+protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->SetPosition(Random(LandscapeWidth()),10);
@@ -44,20 +44,12 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
+	var obj = CreateObject(obj_id);
 	if (obj_id == Bow)
-	{
-		var bow = CreateObject(Bow, 0, 0, NO_OWNER);
-		bow->CreateContents(Arrow);
-		bow->Enter(this);
-	}
-	else if (obj_id == Musket)
-	{
-		var bow = CreateObject(Musket, 0, 0, NO_OWNER);
-		bow->CreateContents(LeadShot);
-		bow->Enter(this);
-	}
-	else
-		this->CreateContents(obj_id);
+		obj->CreateContents(Arrow);
+	if (obj_id == Musket)
+		obj->CreateContents(LeadShot);
+	obj->Enter(this);
 	return;	
 }
 

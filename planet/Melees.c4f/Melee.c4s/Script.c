@@ -17,13 +17,12 @@ protected func Initialize()
 }
 
 // Gamecall from Mircomelee rule, on respawning.
-protected func OnPlrRelaunch(int plr)
+protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->Contents()->RemoveObject();
-	var relaunch = CreateObject(Goal_Relaunch, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	clonk->Enter(relaunch);
-	relaunch->~WeaponMenu(clonk);
+	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
+	relaunch->StartRelaunch(clonk);
 	return;
 }
 
@@ -51,25 +50,17 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
+	var obj = CreateObject(obj_id);
 	if (obj_id == Bow)
-	{
-		var bow = CreateObject(Bow, 0, 0, NO_OWNER);
-		bow->CreateContents(Arrow);
-		bow->Enter(this);
-	}
-	else if (obj_id == Musket)
-	{
-		var bow = CreateObject(Musket, 0, 0, NO_OWNER);
-		bow->CreateContents(LeadShot);
-		bow->Enter(this);
-	}
-	else
-		this->CreateContents(obj_id);
+		obj->CreateContents(Arrow);
+	if (obj_id == Musket)
+		obj->CreateContents(LeadShot);
+	obj->Enter(this);
 	return;	
 }
 
 // GameCall from MicroMelee_Relaunch
-func OnClonkLeftRelaunchObject(clonk)
+func OnClonkLeftRelaunch(clonk)
 {
 	clonk->SetPosition(RandomX(30, LandscapeWidth() - 30), -20);
 }

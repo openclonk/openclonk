@@ -62,5 +62,5 @@ public func FxIntFadeOutTimerEffect(string new_effect_name) {
 }
 
 func Definition(def) {
-	SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "Object Fade", def);
 }
