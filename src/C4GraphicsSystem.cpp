@@ -349,11 +349,6 @@ void C4GraphicsSystem::ClearFullscreenBackground()
 	--iRedrawBackground;
 }
 
-void OnSurfaceRestore()
-{
-	::GraphicsSystem.InvalidateBg();
-}
-
 bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
 {
 	// create new loader; overwrite current only if successful

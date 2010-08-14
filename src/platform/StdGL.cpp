@@ -808,17 +808,28 @@ namespace
 				break;
 			}
 
+			// Overwrite blend mode with default alpha blending when alpha in clrmod
+			// is <255. This makes sure that normal non-blended meshes can have
+			// blending disabled in their material script (which disables expensive
+			// face ordering) but when they are made translucent via clrmod
 			if(!(dwBlitMode & C4GFXBLIT_ADDITIVE))
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
-					    OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
+						          OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
 			}
 			else
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
 			// TODO: Use vbo if available.
+
 			// Note that we need to do this before we do glTexCoordPointer for the
 			// texture units below, otherwise the texcoordpointer is reset by this
 			// call (or at least by my radeon driver), even though the documentation
@@ -1777,7 +1788,7 @@ bool CStdGL::RestoreDeviceObjects()
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	if (!GLEW_VERSION_1_3)
 	{
-		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
 	}
 
 	// lines texture
@@ -1932,6 +1943,15 @@ void CStdGL::ResetTexture()
 		glActiveTexture(GL_TEXTURE0);
 	}
 	glDisable(GL_TEXTURE_2D);
+}
+
+bool CStdGL::Error(const char *szMsg)
+{
+	LogF("  gl: %s", glGetString(GL_VENDOR));
+	LogF("  gl: %s", glGetString(GL_RENDERER));
+	LogF("  gl: %s", glGetString(GL_VERSION));
+	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
+	return CStdDDraw::Error(szMsg);
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)

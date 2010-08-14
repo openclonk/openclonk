@@ -7,10 +7,6 @@
 	care of the action (inventory) bar.
 */
 
-// TODO - 
-// following callbacks missing:
-// ...? - entire player is eliminated
-
 local actionbar;
 local wealth;
 
@@ -106,6 +102,37 @@ public func OnGoalUpdate(object goal)
 		HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
 		HUDgoal->SetGoal(goal);
 	}
+}
+
+// called from engine on player eliminated
+public func RemovePlayer(int plr, int team)
+{
+	// not my business
+	if(plr != GetOwner()) return;
+	
+	// at this point, we can assume that all crewmembers have been
+	// removed already. Whats left to do is to remove this object,
+	// the lower hud and the upper right hud
+	// (which are handled by Destruction()
+	this->RemoveObject();
+}
+
+public func Destruction()
+{
+	// remove all hud objects that are managed by this object
+	if(wealth)
+		wealth->RemoveObject();
+	if(actionbar)
+	{
+		for(var i=0; i<GetLength(actionbar); ++i)
+		{
+			if(actionbar[i])
+				actionbar[i]->RemoveObject();
+		}
+	}
+	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
+	if(HUDgoal)
+		HUDgoal->RemoveObject();
 }
 
 public func OnCrewDisabled(object clonk)

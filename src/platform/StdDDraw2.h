@@ -330,7 +330,7 @@ protected:
 	virtual void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr) = 0;
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 	virtual bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
-	bool Error(const char *szMsg);
+	virtual bool Error(const char *szMsg);
 	void DebugLog(const char *szMsg)
 	{
 #ifdef _DEBUG
