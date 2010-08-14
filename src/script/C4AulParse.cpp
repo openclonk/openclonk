@@ -113,7 +113,6 @@ enum C4AulTokenType
 	ATT_SEP,    // "|"
 	ATT_CALL,   // "->"
 	ATT_STAR,   // "*"
-	ATT_AMP,    // "&"
 	ATT_TILDE,  // '~'
 	ATT_LDOTS,  // '...'
 	ATT_SET,    // '='
@@ -650,7 +649,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					}
 				}
 				else if (C == '*') { SPos++; return ATT_STAR; }   // "*"
-				else if (C == '&') { SPos++; return ATT_AMP; }    // "&"
 				else if (C == '~') { SPos++; return ATT_TILDE; }  // "~"
 
 				// identifier by all non-special chars
@@ -1345,7 +1343,6 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_SEP: return "'|'";
 	case ATT_CALL: return "'->'";
 	case ATT_STAR: return "'*'";
-	case ATT_AMP: return "'&'";
 	case ATT_TILDE: return "'~'";
 	case ATT_LDOTS: return "'...'";
 	case ATT_OPERATOR: return "operator";
@@ -1632,7 +1629,7 @@ void C4AulParseState::Parse_FuncHead()
 			if (cpar >= C4AUL_MAX_Par)
 				throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
 			// must be a name or type now
-			if (TokenType != ATT_IDTF && TokenType != ATT_AMP)
+			if (TokenType != ATT_IDTF)
 			{
 				UnexpectedToken("parameter or closing bracket");
 			}
