@@ -319,8 +319,6 @@ void CStdApp::RestoreVideoMode()
 bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
 {
 #ifdef USE_DIRECTX
-	// FIXME: at startup, pD3D will be null, because SetVideoMode must be called before OpenGL
-	// is initialized on SDL
 	if (pD3D)
 	{
 		if (!pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen))
