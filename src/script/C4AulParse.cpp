@@ -100,6 +100,7 @@ enum C4AulTokenType
 	ATT_STRING, // string constant
 	ATT_NIL,    // "nil"
 	ATT_C4ID,   // C4ID constant
+	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
 	ATT_DCOLON, // "::"
@@ -628,6 +629,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 			{
 				SPos+=3; return ATT_LDOTS;
 			}
+			else if (C == '.') {SPos++; return ATT_DOT;   } // "."
 			else
 			{
 				if (bOperator)
@@ -843,6 +845,8 @@ static const char * GetTTName(C4AulBCCType e)
 	{
 	case AB_ARRAYA: return "ARRAYA";  // array access
 	case AB_ARRAYA_SET: return "ARRAYA_SET";  // setter
+	case AB_PROP: return "PROP";
+	case AB_PROP_SET: return "PROP_SET";
 	case AB_ARRAY_SLICE: return "ARRAY_SLICE";
 	case AB_ARRAY_SLICE_SET: return "ARRAY_SLICE_SET";
 	case AB_VARN: return "VARN";    // a named var
@@ -897,7 +901,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_DUP: return "DUP";    // constant: nil
 	case AB_ARRAY: return "ARRAY";    // semi-constant: array
 	case AB_PROPLIST: return "PROPLIST";    // semi-constant: array
-	case AB_PROPSET: return "PROPSET";
+	case AB_IPROPLIST: return "IPROPLIST";
 	case AB_IVARN: return "IVARN";    // initialization of named var
 	case AB_JUMP: return "JUMP";    // jump
 	case AB_JUMPAND: return "JUMPAND";
@@ -936,8 +940,8 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	CPos->SPos = SPos;
 	switch (eType)
 	{
-	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN:
-	/* case AB_LOCALN_SET: -- expected to already have a reference upon creation, see MakeSetter */
+	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
+	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
 		CPos->Par.s->IncRef();
 		break;
 	default:
@@ -952,7 +956,7 @@ void C4AulScript::RemoveLastBCC()
 	C4AulBCC *pBCC = Code + CodeSize - 1;
 	switch (pBCC->bccType)
 	{
-	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET:
+	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 		pBCC->Par.s->DecRef();
 		break;
 	default: break; // I don't want to do anything, thank you very much. Stupid warnings.
@@ -1051,6 +1055,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_BitAnd:
 	case AB_BitXOr:
 	case AB_BitOr:
+	case AB_PROP_SET:
 	case AB_ARRAYA:
 	case AB_CONDN:
 	case AB_COND:
@@ -1072,6 +1077,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_VARN_SET:
 	case AB_PARN_SET:
 	case AB_LOCALN_SET:
+	case AB_PROP:
 	case AB_GLOBALN_SET:
 	case AB_PAR_SET:
 	case AB_Inc:
@@ -1096,7 +1102,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 
 	case AB_ARRAYA_SET:
 	case AB_ARRAY_SLICE:
-	case AB_PROPSET:
+	case AB_IPROPLIST:
 		return -2;
 
 	case AB_ARRAY_SLICE_SET:
@@ -1207,6 +1213,10 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	case AB_VARN: Setter.bccType = AB_VARN_SET; break;
 	case AB_LOCALN:
 		Setter.bccType = AB_LOCALN_SET;
+		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
+		break;
+	case AB_PROP:
+		Setter.bccType = AB_PROP_SET;
 		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
@@ -2139,7 +2149,7 @@ void C4AulParseState::Parse_PropList()
 			UnexpectedToken("':' or '='");
 		Shift();
 		Parse_Expression();
-		AddBCC(AB_PROPSET);
+		AddBCC(AB_IPROPLIST);
 		if (TokenType == ATT_COMMA)
 			Shift();
 		else if (TokenType != ATT_BLCLOSE)
@@ -2615,7 +2625,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 void C4AulParseState::Parse_Expression2(int iParentPrio)
 {
 	while (1) switch (TokenType)
-		{
+	{
 		case ATT_SET:
 		{
 			// back out of any kind of parent operator
@@ -2740,6 +2750,16 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			}
 			break;
 		}
+		case ATT_DOT:
+		{
+			Shift();
+			if (TokenType != ATT_IDTF)
+				UnexpectedToken("Identifier");
+			C4String * pKey = Strings.RegString(Idtf);
+			AddBCC(AB_PROP, (intptr_t) pKey);
+			Shift();
+			break;
+		}
 		case ATT_CALL:
 		{
 			// Here, a '~' is not an operator, but a token
@@ -2783,7 +2803,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 		{
 			return;
 		}
-		}
+	}
 }
 
 void C4AulParseState::Parse_Var()

@@ -232,6 +232,22 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				pCurCtx->Obj->SetProperty(pCPos->Par.s, pCurVal[0]);
 				break;
 
+			case AB_PROP:
+				if (!(pCurVal->ConvertTo(C4V_PropList) && pCurVal->_getPropList()))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("Proplist access: proplist expected, got %s!", pCurVal->GetTypeName()).getData());
+				pCurVal->_getPropList()->GetPropertyVal(pCPos->Par.s, pCurVal);
+				break;
+			case AB_PROP_SET:
+			{
+				C4Value *pPropList = pCurVal - 1;
+				if (!(pPropList->ConvertTo(C4V_PropList) && pPropList->_getPropList()))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("Proplist access: proplist expected, got %s!", pPropList->GetTypeName()).getData());
+				pPropList->_getPropList()->SetProperty(pCPos->Par.s, pCurVal[0]);
+				pPropList->Set(pCurVal[0]);
+				PopValue();
+				break;
+			}
+
 			case AB_GLOBALN:
 				PushValue(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
 				break;
@@ -428,7 +444,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushPropList(C4PropList::New());
 				break;
 			}
-			case AB_PROPSET:
+			case AB_IPROPLIST:
 			{
 				C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
 				if (!pPropSet->ConvertTo(C4V_PropList))

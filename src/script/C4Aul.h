@@ -132,13 +132,15 @@ enum C4AulBCCType
 {
 	AB_ARRAYA,  // array or proplist access
 	AB_ARRAYA_SET,
+	AB_PROP,    // proplist access with static key
+	AB_PROP_SET,
 	AB_ARRAY_SLICE, // array slicing
 	AB_ARRAY_SLICE_SET,
 	AB_VARN,    // a named var
 	AB_VARN_SET,
 	AB_PARN,    // a named parameter
 	AB_PARN_SET,
-	AB_LOCALN,  // a named local
+	AB_LOCALN,  // a property of this
 	AB_LOCALN_SET,
 	AB_GLOBALN, // a named global
 	AB_GLOBALN_SET,
@@ -186,7 +188,7 @@ enum C4AulBCCType
 	AB_ARRAY,   // semi-constant: array
 	AB_DUP,     // duplicate value from stack
 	AB_PROPLIST,    // create a new proplist
-	AB_PROPSET,   // set a property of a proplist
+	AB_IPROPLIST,   // set a property of a proplist
 	AB_IVARN,   // initialization of named var
 	AB_JUMP,    // jump
 	AB_JUMPAND,   // jump if zero, else pop the stack
