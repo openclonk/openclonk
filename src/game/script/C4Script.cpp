@@ -2282,8 +2282,9 @@ static C4ID FnC4Id(C4AulContext *cthr, C4String *szID)
 	return(C4ID(FnStringPar(szID)));
 }
 
-static C4Value FnPlayerMessage_C4V(C4AulObjectContext *cthr, C4Value * iPlayer, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
+static C4Value FnPlayerMessage_C4V(C4AulContext *cthr, C4Value * iPlayer, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7)
 {
+	if (!cthr->Obj) throw new NeedObjectContext("PlayerMessage");
 	char buf[MaxFnStringParLen+1];
 	C4String * szMessage = c4vMessage->getStr();
 	if (!szMessage) return C4VBool(false);
@@ -2304,8 +2305,9 @@ static C4Value FnPlayerMessage_C4V(C4AulObjectContext *cthr, C4Value * iPlayer, 
 	return C4VBool(true);
 }
 
-static C4Value FnMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+static C4Value FnMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
 {
+	if (!cthr->Obj) throw new NeedObjectContext("Message");
 	char buf[MaxFnStringParLen+1];
 	C4String * szMessage = c4vMessage->getStr();
 	if (!szMessage) return C4VBool(false);
@@ -2326,8 +2328,9 @@ static C4Value FnMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C4Va
 	return C4VBool(true);
 }
 
-static C4Value FnAddMessage_C4V(C4AulObjectContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+static C4Value FnAddMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
 {
+	if (!cthr->Obj) throw new NeedObjectContext("AddMessage");
 	C4String * szMessage = c4vMessage->getStr();
 	if (!szMessage) return C4VBool(false);
 
@@ -3563,8 +3566,9 @@ static C4Value FnGetDefCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Valu
 	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Def, "DefCore"));
 }
 
-static C4Value FnGetObjectVal(C4AulObjectContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetObjectVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
 {
+	if (!cthr->Obj) throw new NeedObjectContext("GetObjectVal");
 	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
 	const char *strSection = FnStringPar(strSection_C4V->getStr());
 	if (!*strSection) strSection = NULL;
@@ -3579,8 +3583,9 @@ static C4Value FnGetObjectVal(C4AulObjectContext* cthr, C4Value* strEntry_C4V, C
 	return retval;
 }
 
-static C4Value FnGetObjectInfoCoreVal(C4AulObjectContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetObjectInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
 {
+	if (!cthr->Obj) throw new NeedObjectContext("GetObjectInfoCoreVal");
 	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
 	const char *strSection = FnStringPar(strSection_C4V->getStr());
 	if (strSection && !*strSection) strSection = NULL;
