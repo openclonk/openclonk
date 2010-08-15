@@ -59,7 +59,7 @@ void C4UpperBoard::Draw(C4Facet &cgo)
 	Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,Output.Surface,0,0,Output.Wdt,Output.Hgt);
 	// Logo
 	C4Facet cgo2;
-	float fLogoZoom = 0.75f;
+	float fLogoZoom = 1.0f;
 	cgo2.Set(cgo.Surface, (int32_t)(cgo.Wdt/2-(::GraphicsResource.fctLogo.Wdt/2)*fLogoZoom), 0,
 	         (int32_t)(::GraphicsResource.fctLogo.Wdt*fLogoZoom), (int32_t)(::GraphicsResource.fctLogo.Hgt*fLogoZoom));
 	::GraphicsResource.fctLogo.Draw(cgo2);

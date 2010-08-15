@@ -53,6 +53,7 @@ bool C4StartupGraphics::Init()
 	if (!LoadFile(fctNetBG, "StartupNetworkBG")) return false;
 	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
 	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
+	if (!LoadFile(fctStartupLogo, "StartupLogo")) return false;
 	::GraphicsResource.ProgressStart = 92;
 	::GraphicsResource.ProgressIncrement = 0.5;
 	if (!LoadFile(fctMainButtons, "StartupBigButton")) return false;
