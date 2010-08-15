@@ -470,16 +470,17 @@ static C4Void FnRemoveObject(C4AulObjectContext *cthr, bool fEjectContents)
 	return C4VNull;
 }
 
-static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds)
+static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds, long iPrec)
 {
+	if (!iPrec) iPrec = 1;
 	if (fCheckBounds)
 	{
 		// BoundsCheck takes ref to C4Real and not to long
-		C4Real i_x = itofix(iX), i_y = itofix(iY);
+		C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
 		cthr->Obj->BoundsCheck(i_x, i_y);
-		iX = fixtoi(i_x); iY = fixtoi(i_y);
+		iX = fixtoi(i_x, iPrec); iY = fixtoi(i_y, iPrec);
 	}
-	cthr->Obj->ForcePosition(iX,iY);
+	cthr->Obj->ForcePosition(iX,iY, iPrec);
 	// update liquid
 	cthr->Obj->UpdateInLiquid();
 	return C4VNull;
@@ -1205,10 +1206,11 @@ static long FnGetComDir(C4AulObjectContext *cthr)
 	return cthr->Obj->Action.ComDir;
 }
 
-static Nillable<long> FnGetX(C4AulContext *cthr)
+static Nillable<long> FnGetX(C4AulContext *cthr, long iPrec)
 {
 	if (!cthr->Obj) return C4VNull;
-	return cthr->Obj->GetX();
+	if (!iPrec) iPrec = 1;
+	return fixtoi(cthr->Obj->fix_x, iPrec);
 }
 
 static long FnGetVertexNum(C4AulObjectContext *cthr)
@@ -1299,10 +1301,11 @@ static C4Void FnSetContactDensity(C4AulObjectContext *cthr, long iDensity)
 	return C4VNull;
 }
 
-static Nillable<long> FnGetY(C4AulContext *cthr)
+static Nillable<long> FnGetY(C4AulContext *cthr, long iPrec)
 {
 	if (!cthr->Obj) return C4VNull;
-	return cthr->Obj->GetY();
+	if (!iPrec) iPrec = 1;
+	return fixtoi(cthr->Obj->fix_y, iPrec);
 }
 
 static bool FnGetAlive(C4AulObjectContext *cthr)

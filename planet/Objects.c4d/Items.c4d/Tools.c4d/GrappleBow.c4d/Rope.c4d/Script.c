@@ -1,204 +1,258 @@
 /*
 	Grapple Rope
-	Author: Maikel	
+	Author: Randrian
 
 	The rope used for grappling devices.
-	Call BreakRope() to snap the rope.
-	Calls "OnRopeBreak" in both action targets when the rope snaps.
-	Rope snaps on overtension and bending (>5 vertices).
-	TODO: mix both, breaking should depend on a combination of both tension and bending.
+	Connect(obj1, obj2) connects two objects
+	BreakRope() breaks the rope
+	DrawIn() draws the hook in
 */
 
-/*-- Rope length --*/
+#include Library_Rope
 
-local length; // The physical length of the rope.
+static const Rope_Iterations = 10;
+static const Rope_Precision = 100;
+static const Rope_PointDistance = 10;
 
-// The maximal physical length of the rope.
-private func RopeMaxLength() { return 400; }
+static const Weight = 1;
 
-// Functions to modify the physical rope length.
-public func GetLength() { return length; }
-public func SetLength(int newlength) { length = BoundBy(newlength, 0, RopeMaxLength()); return; }
-public func DoLength(int dolength) { length += dolength; length = BoundBy(length, 0, RopeMaxLength()); return; }
-
-// Call this to set physical rope length to vertex length.
-public func SetToVertexLength() { length = VertexLength(); return; }
-
-// Calculates the the vertex length of the rope.
-private func VertexLength()
+// Call this to break the rope.
+public func BreakRope()
 {
-	var len = 0;
-	for (var i = 0; i < GetVertexNum() - 1; i++)
-		len += Distance (
-			GetVertex (i, VTX_X),
-			GetVertex (i, VTX_Y),
-			GetVertex (i + 1, VTX_X),
-			GetVertex (i + 1, VTX_Y));
-	return len;
+	if(length == -1) return;
+	length = -1;
+	var act1 = objects[0][0];
+	var act2 = objects[1][0];
+	SetAction("Idle");
+	// notify action targets.
+	if (act1 != nil)
+		act1->~OnRopeBreak();
+	if (act2 != nil)
+		act2->~OnRopeBreak();
+	RemoveRope();
+	RemoveObject();
+	return;
+}
+
+/* --------------------- Callbacks form the rope ---------------------- */
+
+/* To be overloaded for special segment behaviour */
+private func CreateSegment(int index, object previous)
+{
+	if(index == 0) return;
+	var segment;
+	segment = CreateObject(GrappleRope);
+	return segment;
 }
 
 /*-- Rope connecting --*/
 
 // Connects two objects to the rope, but the length will vary on their positions.
-public func ConnectFree(object obj1, object obj2)
+public func Connect(object obj1, object obj2)
 {
-	SetAction("ConnectFree", obj1, obj2);
-	return;
-}
+	StartRopeConnect(obj1, obj2);
+	Max_Length = 100;
+	HoockAnchored = 0;
 
-// Connects two objects to the rope, which will try to keep constant length.
-public func ConnectPull(object obj1, object obj2)
-{
-	length = VertexLength();
-	SetAction("ConnectPull", obj1, obj2);
-	return;
-}
-
-/*-- Rope pulling --*/
-
-private func RopeStrength() { return 40; } // How much a rope can maximally be stretched in % of the physical length.
-private func RopeElasticity() { return 100; } // Defines stretching of the rope.
-
-protected func PullObjects()
-{
-	// Break rope on bending -> more than 5 vertices.
-	if (GetVertexNum() > 5)
-	{
-		Log("Rope break: overbending");
-		return BreakRope();
-	}
-
-	// Check rope strength.
-	if (100 * dif > RopeStrength() * (length + 10))
-	{
-		Log("Rope break: overtension");
-		return BreakRope();
-	}
-
-	// Only if vertex length larger than physical length.
-	var vlen = VertexLength();
-	var dif = vlen - length;
-	if (dif < 0)
-	{
-		length = vlen;
-		return;
-	}
-
-	// Rope to short.
-	if (vlen < 12)
-		return BreakRope();
-
-	// Get objects.
-	var obj1 = GetActionTarget(0);
-	var obj2 = GetActionTarget(1);
-
-	// Object positions.
-	var o1x = obj1->GetX();
-	var o1y = obj1->GetY();
-	var o2x = obj2->GetX();
-	var o2y = obj2->GetY();
-
-	// Get containers.
-	while (obj1->Contained()) 
-		obj1 = obj1->Contained();
-	while (obj2->Contained()) 
-		obj2 = obj2->Contained();
-
-	// Check movability.
-	var mov1 = 50;
-	var mov2 = 50;
-	if (obj1->Stuck() || obj1->GetCategory() & (C4D_StaticBack | C4D_Structure))
-	{
-		mov1 = 0;
-		mov2 *= 2;
-	}
-	if (obj2->Stuck() || obj2->GetCategory() & (C4D_StaticBack | C4D_Structure))
-	{
-		mov1 *= 2;
-		mov2 = 0;
-	}
-	if (!mov1 && !mov2)
-		return;
-
-	// Get vertex coordinates.
-	var v1x = GetVertex(1, VTX_X);
-	var v1y = GetVertex(1, VTX_Y);
-	var v2x = GetVertex(GetVertexNum() - 2, VTX_X);
-	var v2y = GetVertex(GetVertexNum() - 2, VTX_Y);
-
-	// Angles.
-	var ang1 = Angle(v1x, v1y, o1x, o1y);
-	var ang2 = Angle(v2x, v2y, o2x, o2y);
-
-	// Mass.
-	var mass1 = Max(5, obj1->GetMass());
-	var mass2 = Max(5, obj2->GetMass());
-
-	// Calculate rope acceleration.
-	var acc1 = 200 * dif * mov1 * RopeElasticity();
-	var acc2 = 200 * dif * mov2 * RopeElasticity();
-	acc1 /= 10 * mass1 * (length + 10);
-	acc2 /= 10 * mass2 * (length + 10);
+	SetAction("Hide");
 	
-	// Artificial energy loss.
-	var xdir1 = 39 * obj1->GetXDir(1000) / 40;
-	var ydir1 = 39 * obj1->GetYDir(1000) / 40;
-	var xdir2 = 39 * obj2->GetXDir(1000) / 40;
-	var ydir2 = 39 * obj2->GetYDir(1000) / 40;
-
-	// Accelerate objects.
-	obj1->SetXDir(xdir1 - Sin(ang1, acc1), 1000);
-	obj1->SetYDir(ydir1 + Cos(ang1, acc1), 1000);
-	obj2->SetXDir(xdir2 - Sin(ang2, acc2), 1000);
-	obj2->SetYDir(ydir2 + Cos(ang2, acc2), 1000);
-
+	AddEffect("IntHang", this, 1, 1, this);
 	return;
 }
 
-/*-- Other --*/
+public func GetConnectStatus() { return !length_auto; }
 
-protected func Initialize()
+local HoockAnchored;
+
+/* Callback form the hook, when it hits ground */
+public func HockAnchored(bool pull)
 {
-	SetVertex(0, VTX_X, GetX()); SetVertex(0, VTX_Y, GetY());
-	SetVertex(1, VTX_X, GetX()); SetVertex(1, VTX_Y, GetY());
-	return;
+	if(pull)
+		ConnectPull();
+	HoockAnchored = 1;
 }
 
-// Call this to break the rope.
-public func BreakRope()
+public func HookRemoved()
 {
-	var act1 = GetActionTarget(0);
-	var act2 = GetActionTarget(1);
-	SetAction("Idle");
-	// notify action targets.
-	if (act1)
-		act1->~OnRopeBreak();
-	if (act2)
-		act2->~OnRopeBreak();
-	RemoveObject();
-	return;
+	var new_hook = CreateObject(GrappleHook);
+	new_hook->New(objects[1][0]->Contained(), this);
+	objects[1][0]->SetHook(new_hook);
+	objects[0][0] = new_hook;
+	DrawIn();
+}
+
+/* Callback form the rope library */
+public func MaxLengthReached()
+{
+	var clonk = objects[1][0];
+	if(clonk->Contained()) clonk = clonk->Contained();
+	if(!HoockAnchored)
+		DrawIn();
+	else if(!clonk->GetContact(-1))
+	{
+		ConnectPull();
+	}
+}
+
+/* for swinging */
+func DoSpeed(int value)
+{
+	particles[-1][1][0] -= value;
+}
+
+func FxIntHangTimer() { TimeStep(); }
+
+func FxDrawInTimer()
+{
+	if(length < 15)
+	{
+		BreakRope();
+		return -1;
+	}
+	DoLength(-5);
+}
+
+func DrawIn()
+{
+	if(!GetEffect("DrawIn", this)) AddEffect("DrawIn", this, 1, 1, this);
+	SetFixed(0, 1);
+	ConnectPull();
+	var clonk = objects[1][0];
+	if(clonk->Contained()) clonk = clonk->Contained();
+	RemoveEffect("IntGrappleControl", clonk);
+}
+
+func ConnectPull()
+{
+	if(length_auto == 1 && objects[1][1])
+	{
+		var obj = objects[1][0];
+		if(obj->Contained()) obj = obj->Contained();
+		// Vector r of the last segment
+		var r = Vec_Sub(particles[-1][0],particles[-3][0]);
+		r = [-r[1], r[0]]; // Get the orthogonal vector
+		r = Vec_Normalize(r, 100); // Make it lenght 0
+		var v = [obj->GetXDir(Rope_Precision), obj->GetYDir(Rope_Precision)]; // Get the speed vector
+		var projection = Vec_Dot(r, Vec_Mul(v, 100))/10000; // Projekt the speed on the orthogonal vector
+		obj->SetXDir(r[0]*projection/100, Rope_Precision);
+		obj->SetYDir(r[1]*projection/100, Rope_Precision);
+	}
+	if(length_auto && objects[1][1])
+	{
+		var obj = objects[1][0];
+		if(obj->Contained()) obj = obj->Contained();
+		particles[-1][1][0] = particles[-1][0][0]-obj->SetXDir(Rope_Precision);
+		particles[-1][1][1] = particles[-1][0][1]-obj->SetYDir(Rope_Precision);
+	}
+	_inherited(...);
+	AccumulateForces();
+	TimeStep();
+}
+
+local hook_angle;
+
+func UpdateLines()
+{
+	var fTimeStep = 1;
+	var oldangle;
+	for(var i=1; i < ParticleCount; i++)
+	{
+		// Update the Position of the Segment
+		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
+
+		// Calculate the angle to the previous segment
+		var angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
+
+		// Draw the left line
+		var start = particles[i-1][0];
+		var end   = particles[i][0];
+
+		if(i == 1 && ParticleCount > 2)
+		{
+			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
+			end = particles[0][0];
+			end[0] += -Sin(angle, 45*Rope_Precision/10);
+			end[1] += +Cos(angle, 45*Rope_Precision/10);
+		}
+		
+		if(i == 2)
+		{
+			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
+			start = particles[0][0];
+			start[0] += -Sin(angle, 45*Rope_Precision/10);
+			start[1] += +Cos(angle, 45*Rope_Precision/10);
+		}
+		
+		var diff = Vec_Sub(end,start);
+		var diffangle = Vec_Angle(diff, [0,0]);
+		var point = Vec_Add(start, Vec_Div(diff, 2));
+		var length = Vec_Length(diff)*1000/Rope_Precision/10;
+
+		if(i == 1)
+		{
+			segments[i]->SetGraphics(nil, GrappleHook);
+			point[0] += -Cos(diffangle, 15*Rope_Precision/10)+Sin(diffangle, 4*Rope_Precision);
+			point[1] += -Cos(diffangle, 4*Rope_Precision)-Sin(diffangle, 15*Rope_Precision/10);
+			length = 1000;
+		}
+
+		SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000, length );
+
+		// Remember the angle
+		oldangle = angle;
+	}
+}
+
+func GetClonkAngle()
+{
+	if(ParticleCount > 3)
+	return Angle(particles[-1][0][0], particles[-1][0][1], particles[-3][0][0], particles[-3][0][1]);
+}
+
+local ClonkOldSpeed;
+
+func GetClonkOff()
+{
+	var clonk = objects[1][0];
+	var speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
+	var offset = speed;
+	offset[0] = offset[0]*1000/Rope_Precision;
+	offset[1] = offset[1]*1000/Rope_Precision;
+	if(!ClonkOldSpeed)
+	{
+		ClonkOldSpeed = offset;
+	}
+	var ret = ClonkOldSpeed;
+	ClonkOldSpeed = offset;
+	return ret;
+}
+
+func SetSegmentTransform(obj, int r, int xoff, int yoff, int length) {
+	var fsin=Sin(r, 1000), fcos=Cos(r, 1000); //length = 1200;
+	// set matrix values
+	obj->SetObjDrawTransform (
+		+fcos,             +fsin*length/1200,             xoff, 
+		-fsin, +fcos*length/1200, yoff,
+	);
+}
+
+func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+	if(!MirrorSegments) MirrorSegments = 1;
+	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	// set matrix values
+	obj->SetObjDrawTransform (
+		+fcos*MirrorSegments, +fsin*length/1000, xoff,
+		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
+	);
 }
 
 protected func Definition(def) {
 	SetProperty("Name", "$Name$", def);
 	SetProperty("LineColors", [RGB(66,33,00) , RGB(66,33,00)], def);
 	SetProperty("ActMap", {
-		ConnectFree = {
+		Hide = {
 			Prototype = Action,
-			Name = "ConnectFree",
-			Procedure = DFA_CONNECT,
-			FacetBase = 1,
-			NextAction = "ConnectFree",
-		},
-		ConnectPull = {
-			Prototype = Action,
-			Name = "ConnectPull",
-			Procedure = DFA_CONNECT,
-			Length = 1,
-			Delay = 1,
-			FacetBase = 1,
-			NextAction = "ConnectPull",
-			StartCall = "PullObjects",
+			Name = "Hide",
 		},
 	}, def);
 }

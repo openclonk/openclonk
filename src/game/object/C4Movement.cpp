@@ -511,6 +511,13 @@ void C4Object::ForcePosition(int32_t tx, int32_t ty)
 	UpdateSolidMask(false);
 }
 
+void C4Object::ForcePosition(int32_t tx, int32_t ty, long iPrec)
+{
+	fix_x=itofix(tx, iPrec); fix_y=itofix(ty, iPrec);
+	UpdatePos();
+	UpdateSolidMask(false);
+}
+
 void C4Object::MovePosition(int32_t dx, int32_t dy)
 {
 	// move object position; repositions SolidMask

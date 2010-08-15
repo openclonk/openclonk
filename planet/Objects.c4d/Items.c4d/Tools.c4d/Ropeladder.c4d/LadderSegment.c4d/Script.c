@@ -5,12 +5,7 @@
 local master, index;
 local angle;
 
-
-public func SetAngle(int new_angle)
-{
-	angle = new_angle;
-}
-
+public func SetAngle(int new_angle) {	angle = new_angle; }
 
 public func SetMaster(new_master, new_index) { master = new_master; index = new_index; }
 

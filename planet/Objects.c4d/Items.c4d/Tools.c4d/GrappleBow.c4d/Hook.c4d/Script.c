@@ -1,35 +1,40 @@
 /*
 	Grapple Hook
-	Author: Maikel
+	Author: Randrian
 	
 	The hook can be shot with the grappling bow. 
-	On impact the hook will 
+	On impact the hook will stick to the ground
+	The hook also controls the swinging controls for the clonk
 */
 
-local rope; // The rope is the connection between the hook and the helper object.
-local help; // The clonk is attached to the helper object.
+local rope; // The rope is the connection between the hook
+local clonk;
+local pull;
 
 public func ArrowStrength() { return 10; }
 
-protected func Construction()
+public func GetRope() { return rope; }
+
+public func New(object new_clonk, object new_rope)
 {
-	SetR(90);
-	return _inherited(...);
+	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
+	clonk = new_clonk;
+	rope = new_rope;
 }
 
 public func Launch(int angle, int str, object shooter, object bow)
 {
+	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
 	Exit();
-		
-	// Create rope and helper object.
-	rope = CreateObject(GrappleRope, 0, 0, NO_OWNER);
-	help = CreateObject(GrappleHelp, 0, 0, NO_OWNER);
 
-	rope->ConnectFree(this, help);
-	help->SetBow(bow);
-	help->SetClonk(shooter);
-	help->SetRope(rope);
-	bow->SetHelp(help);
+	pull = 0;
+		
+	// Create rope
+	rope = CreateObject(GrappleRope, 0, 0, NO_OWNER);
+
+	rope->Connect(this, bow);
+	rope->ConnectLoose();
+	clonk = shooter;
 
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
@@ -39,6 +44,12 @@ public func Launch(int angle, int str, object shooter, object bow)
 	Sound("ArrowShoot*.ogg");
 	
 	AddEffect("InFlight", this, 1, 1, this);
+}
+
+public func Destruction()
+{
+	if(rope)
+		rope->HookRemoved();
 }
 
 private func Stick()
@@ -57,7 +68,6 @@ private func Stick()
 		var y = Cos(GetR(), -9);
 		if(GBackSolid(x,y) && 1)
 		{
-			//Log("Attach hook");
 			// stick in landscape
 			SetVertex(2,VTX_Y,-12,2);
 			SetVertex(3,VTX_X,-3,2);
@@ -71,10 +81,23 @@ private func Stick()
 		}
 
 		if (rope)
-			rope->ConnectPull();
-		if (help)
-			help->HangClonkOntoMe();
+			ScheduleCall(this, "StartPull", 5);
 	}
+}
+
+public func StartPull()
+{
+	pull = 1;
+
+	AddEffect("IntGrappleControl", clonk, 1, 1, this);
+	if(clonk->GetAction() == "Jump")
+	{
+		rope->HockAnchored(1);
+		EffectVar(5, clonk, GetEffect("IntGrappleControl", clonk)) = 1;
+		EffectVar(6, clonk, GetEffect("IntGrappleControl", clonk)) = 10;
+	}
+	else
+		rope->HockAnchored();
 }
 
 public func Hit()
@@ -127,10 +150,135 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
+	RemoveEffect("IntGrappleControl", clonk);
 	RemoveObject();
 	return;
 }
 
 protected func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+}
+
+
+/*-- Grapple rope controls --*/
+
+public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,strength, repeat, release)
+{
+	if(ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return;
+
+	if(ctrl == CON_Right)
+	{
+		EffectVar(3, target, fxnum) = !release;
+	}
+	if(ctrl == CON_Left)
+	{
+		EffectVar(2, target, fxnum) = !release;
+	}
+	if(ctrl == CON_Up)
+	{
+		EffectVar(0, target, fxnum) = !release;
+		if(target->GetAction() == "Jump" && !release && pull)
+			rope->ConnectPull();
+	}
+	if(ctrl == CON_Down)
+	{
+		EffectVar(1, target, fxnum) = !release;
+	}
+}
+
+local iSwingAnimation;
+
+// Effect for smooth movement.
+public func FxIntGrappleControlTimer(object target, int fxnum, int time)
+{
+
+	// Movement.
+	if (EffectVar(0, target, fxnum))
+		if (rope && time%2 == 0)
+			rope->DoLength(-1);
+	if (EffectVar(1, target, fxnum))
+		if (rope)
+			rope->DoLength(+1);
+	if (EffectVar(2, target, fxnum))
+	{
+		rope->DoSpeed(-50);
+		SetXDir(GetXDir(100) - 1000, 100);
+	}
+	if (EffectVar(3, target, fxnum))
+	{
+		rope->DoSpeed(+50);
+		SetXDir(GetXDir(100) + 1000, 100);
+	}
+
+	if(target->GetAction() != "Jump")
+	{
+		if(rope->GetConnectStatus())
+			rope->ConnectLoose();
+	}
+	
+	if(target->GetAction() == "Jump" && rope->GetConnectStatus() && !EffectVar(6, target, fxnum))
+	{
+		if(!EffectVar(4, target, fxnum))
+			target->SetTurnType(1);
+		target->SetObjDrawTransform(1000, 0, 3000*(1-2*target->GetDir()), 0, 1000);
+
+		if(EffectVar(0, target, fxnum))
+		{
+			if(EffectVar(4, target, fxnum) != 2)
+			{
+				EffectVar(4, target, fxnum) = 2;
+				target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			}
+		}
+		else if(EffectVar(1, target, fxnum))
+		{
+			if(EffectVar(4, target, fxnum) != 3)
+			{
+				EffectVar(4, target, fxnum) = 3;
+				target->PlayAnimation("RopeDown", 10, Anim_Const(0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			}
+		}
+		else if(EffectVar(2, target, fxnum) || EffectVar(3, target, fxnum))
+		{
+			var start = target->GetAnimationLength("RopeSwing")/2;
+			var length = target->GetAnimationLength("RopeSwing");
+			var dir = 0;
+			if( (EffectVar(2, target, fxnum) && !target->GetDir())
+				|| (!EffectVar(2, target, fxnum) && target->GetDir())
+				) dir = 1;
+			if(EffectVar(4, target, fxnum) != 4+dir)
+			{
+				iSwingAnimation = target->PlayAnimation("RopeSwing", 10, Anim_Linear(start, length*dir, length*(!dir), 35, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				EffectVar(4, target, fxnum) = 4+dir;
+			}
+		}
+		else if(EffectVar(4, target, fxnum) != 1)
+		{
+			EffectVar(4, target, fxnum) = 1;
+			target->PlayAnimation("OnRope", 10, Anim_Linear(0, 0, target->GetAnimationLength("OnRope"), 35*2, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		}
+		var angle = rope->GetClonkAngle();
+		var off = rope->GetClonkOff();
+		target->SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(angle,0,0,1), Trans_Translate(-off[0],-off[1]+10000)));
+	}
+	else if(EffectVar(4, target, fxnum))
+	{
+		target->SetProperty("MeshTransformation");
+		target->SetObjDrawTransform(1000, 0, 0, 0, 1000);
+		target->StopAnimation(target->GetRootAnimation(10));
+		EffectVar(4, target, fxnum) = 0;
+	}
+
+	if(EffectVar(6, target, fxnum)) EffectVar(6, target, fxnum)--;
+	
+	return FX_OK;
+}
+
+public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tmp)
+{
+	if(tmp) return;
+	target->SetTurnType(0);
+	target->SetProperty("MeshTransformation");
+	target->StopAnimation(target->GetRootAnimation(10));
+	target->SetObjDrawTransform();
 }

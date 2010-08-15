@@ -1,6 +1,6 @@
 /*
 	Grapple Bow
-	Author: Maikel
+	Author: Randrian
 
 	A crossbow which is enabled to fire grappling hooks, also has a winching system.
 */
@@ -18,11 +18,11 @@ public func SetHelp(object tohelp)
 	return;
 }
 
-public func GetCarryMode() { return CARRY_HandBack; }
+public func GetCarryMode() {  if(hook->Contained() == nil) return CARRY_Back; return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 public func GetCarryBone2(clonk) { return "main2"; }
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Grappler; }
+public func GetCarryMode(clonk) { if(hook->Contained() == nil) return CARRY_Back; if(fAiming >= 0) return CARRY_Grappler; }
 
 /* +++++++++++ Controls ++++++++++++++ */
 
@@ -36,9 +36,6 @@ func Initialize()
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
 		AnimationAim   = "CrossbowAimArms",
-//		AnimationLoad  = "BowLoadArms",
-//		LoadTime       = 10,
-//		LoadTime2      = 5*10/20,
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		TurnType       = 1,
@@ -47,6 +44,11 @@ func Initialize()
 		AimSpeed       = 20,            // the speed of aiming
 	};
 	OnRopeBreak();
+}
+
+public func SetHook(object new_hook)
+{
+	hook = new_hook;
 }
 
 public func OnRopeBreak()
@@ -60,18 +62,33 @@ public func OnRopeBreak()
 	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
 }
 
+protected func Destruction()
+{
+	var rope = hook->GetRope();
+	if (rope)
+		rope->BreakRope();
+}
+
+protected func Departure()
+{
+	var rope = hook->GetRope();
+	if (rope)
+		rope->DrawIn();
+}
+
 public func GetAnimationSet() { return animation_set; }
 
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// Cut rope, or otherwise remove helper object.
-	if (help)
+	if (hook->Contained() != this)
 	{
-		var rope = help->GetRope();
+		var rope = hook->GetRope();
 		if (rope)
-			rope->BreakRope();
-		else
-			help->RemoveObject();
+		{
+			rope->DrawIn();
+		//	rope->BreakRope();
+		}
 		return true;
 	}
 
@@ -84,10 +101,9 @@ public func ControlUseStart(object clonk, int x, int y)
 	// Start aiming
 	fAiming = 1;
 
-	FinishedLoading(clonk);
-//	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
+	ControlUseHolding(clonk, x, y);
 
-//	clonk->StartLoad(this);
+	FinishedLoading(clonk);
 
 	return true;
 }
@@ -127,8 +143,6 @@ public func FinishedAiming(object clonk, int angle)
 	DetachMesh(hook_attach);
 	hook_attach = nil;
 
-	// shoot
-//	var hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
 	hook->Exit();
 	hook->Launch(angle, 100, clonk, this);
 	DetachMesh(hook_attach);
@@ -136,7 +150,6 @@ public func FinishedAiming(object clonk, int angle)
 
 	// Open the hand to let the string go and play the fire animation
 	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
-	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
 	clonk->StartShoot(this);
 	return true;
 }
