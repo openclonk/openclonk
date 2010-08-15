@@ -263,20 +263,17 @@ public func ClearMessage()
 
 public func SetObject(object obj, int type, int pos, int hot)
 {
-	if(actiontype != ACTIONTYPE_INVENTORY)
-		if(obj == myobject)
-			if(type == actiontype)
-				if(pos+1 == hotkey)
-					return UpdateSelectionStatus();
-
 	this["Visibility"] = VIS_Owner;
 
+	// remove effect that checks whether the object to which this selector
+	// refers to is still existant because now this selector gets a new
+	// object to which to refer.
+	RemoveEffect("IntRemoveGuard",myobject);
+	
 	position = pos;
 	actiontype = type;
 	myobject = obj;
 	hotkey = hot;
-	
-	RemoveEffect("IntRemoveGuard",myobject);
 	
 	if(!myobject) 
 	{	
@@ -289,31 +286,33 @@ public func SetObject(object obj, int type, int pos, int hot)
 	else
 	{
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, myobject);
-		this["MouseDragImage"] = myobject;
-		
 		SetName(Format("$TxtSelect$",myobject->GetName()));
-		
-		//if(actiontype == ACTIONTYPE_INVENTORY)
-		//{
-			// create an effect which monitors whether the object is removed
+		this["MouseDragImage"] = myobject;
+
+		// if object has extra slot, show it
+		if(myobject->~HasExtraSlot())
+		{
+			if(!subselector)
+			{
+				subselector = CreateObject(GUI_ExtraSlot,0,0,GetOwner());
+				subselector->SetPosition(GetX()+16,GetY()+16);
+			}
+			subselector->SetContainer(myobject);
+			subselector->SetCrew(crew);
+		}
+		// or otherwise, remove it
+		else if(subselector)
+		{
+			subselector->RemoveObject();
+		}
+
+		// create an effect which monitors whether the object is removed:
+		// this is only necessary for inventory as all the other slots
+		// are checked via the effect
+		if(actiontype == ACTIONTYPE_INVENTORY)
+		{
 			AddEffect("IntRemoveGuard",myobject,1,0,this);
-			
-			// if object has extra slot, show it
-			if(myobject->~HasExtraSlot())
-			{
-				if(!subselector)
-				{
-					subselector = CreateObject(GUI_ExtraSlot,0,0,GetOwner());
-					subselector->SetPosition(GetX()+16,GetY()+16);
-				}
-				subselector->SetContainer(myobject);
-				subselector->SetCrew(crew);
-			}
-			else if(subselector)
-			{
-				subselector->RemoveObject();
-			}
-		//}
+		}
 	}
 
 	ShowHotkey();
@@ -364,6 +363,9 @@ public func Selected()
 public func UpdateSelectionStatus()
 {
 	if(!crew) return;
+	
+	// determine...
+	var sel = 0;
 
 	// script...
 	if(actiontype == ACTIONTYPE_SCRIPT)
@@ -373,29 +375,23 @@ public func UpdateSelectionStatus()
 		{
 			SetGraphics(metainfo["IconName"],metainfo["IconID"],2,GFXOV_MODE_IngamePicture);
 			SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
+			
+			var desc = metainfo["Description"];
+			if(desc) SetName(desc);
+			
+			if(metainfo["Selected"])
+				SetObjDrawTransform(1200,0,0,0,1200,0,1);
 		}
-		var desc = metainfo["Description"];
-		if(desc) SetName(desc);
-		
-		if(metainfo["Selected"])
-			SetObjDrawTransform(1200,0,0,0,1200,0,1);
-		
+
 		return;
 	}
-	
-	
-	// determine...
-	var sel = 0;
-	
-	if(actiontype == ACTIONTYPE_VEHICLE)
+	else if(actiontype == ACTIONTYPE_VEHICLE)
 		if(crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == myobject)
-			sel = 1;
-			
-	if(actiontype == ACTIONTYPE_STRUCTURE)
+			sel = 1;	
+	else if(actiontype == ACTIONTYPE_STRUCTURE)
 		if(crew->Contained() == myobject)
 			sel = 1;
-
-	if(actiontype == ACTIONTYPE_INVENTORY)
+	else if(actiontype == ACTIONTYPE_INVENTORY)
 	{
 		if(0 == position)
 			sel += 1;
@@ -404,7 +400,7 @@ public func UpdateSelectionStatus()
 	}
 			
 	selected = sel;
-	
+
 	// and set the icon...
 	if(selected)
 	{

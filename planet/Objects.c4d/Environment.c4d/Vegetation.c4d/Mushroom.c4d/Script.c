@@ -24,6 +24,11 @@ public func IsInteractable(object clonk)
 	return clonk->GetProcedure() == "WALK" && GetProperty("Collectible") != 1;
 }
 
+public func GetInteractionMetaInfo(object clonk)
+{
+	return { Description = "$PickMushroom$" };
+}
+
 protected func ControlUse(object clonk, int iX, int iY)
 {
 	clonk->DoEnergy(10);
