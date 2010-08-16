@@ -32,12 +32,12 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-/*-- Scenario parts --*/
+/*-- Scenario callbacks --*/
 
 private func RelaunchCount()
 {
 	var relaunch_cnt = GameCall("RelaunchCount");
-	if (relaunch_cnt)
+	if (relaunch_cnt != nil)
 		return relaunch_cnt; 
 	return MIME_RelaunchCount;
 }
@@ -45,7 +45,7 @@ private func RelaunchCount()
 private func KillsToRelaunch()
 {
 	var kills_to_relaunch = GameCall("KillsToRelaunch");
-	if (kills_to_relaunch)
+	if (kills_to_relaunch != nil)
 		return kills_to_relaunch; 
 	return MIME_KillsToRelaunch;
 }
@@ -76,7 +76,10 @@ protected func RelaunchPlayer(int plr, int killer)
 		// Only if killer and victim are on different teams.
 		if (!(GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(plr)))
 			if (KillsToRelaunch() && !(GetKillCount(killer) % KillsToRelaunch()) && GetKillCount(killer))
+			{
 				DoRelaunchCount(killer, 1);
+				Log("$MsgRelaunchGained$", GetPlayerName(killer));
+			}
 				
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
