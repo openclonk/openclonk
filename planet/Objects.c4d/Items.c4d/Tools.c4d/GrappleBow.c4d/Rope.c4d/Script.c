@@ -10,9 +10,9 @@
 
 #include Library_Rope
 
-static const Rope_Iterations = 10;
-static const Rope_Precision = 100;
-static const Rope_PointDistance = 10;
+//static const Rope_Iterations = 10;
+//static const Rope_Precision = 100;
+//static const Rope_PointDistance = 10;
 
 static const Weight = 1;
 
@@ -51,12 +51,16 @@ private func CreateSegment(int index, object previous)
 public func Connect(object obj1, object obj2)
 {
 	StartRopeConnect(obj1, obj2);
-	Max_Length = 100;
+	SetMaxLength(100);
 	HoockAnchored = 0;
 
 	SetAction("Hide");
 	
 	AddEffect("IntHang", this, 1, 1, this);
+	called = 0;
+	called2 = 0;
+	called3 = 0;
+//	Benchmark();
 	return;
 }
 
@@ -90,7 +94,7 @@ public func MaxLengthReached()
 		DrawIn();
 	else if(!clonk->GetContact(-1))
 	{
-		ConnectPull();
+//		ConnectPull();
 	}
 }
 
@@ -100,7 +104,37 @@ func DoSpeed(int value)
 	particles[-1][1][0] -= value;
 }
 
+func Benchmark()
+{
+	StartScriptProfiler();
+	AddEffect("IntBenchmark", this, 1, 1, this);
+}
+
+func FxIntBenchmarkTimer(target, number, time)
+{
+	if(time >= 35*1)
+	{
+		StopScriptProfiler();
+		Log("Called %d", called);
+		Log("Called %d via Forces", called2);
+		Log("Called %d via TimeStep", called3);
+		return -1;
+	}
+	Log("%d", time);
+	return;
+	for(var i = 0; i < 100000; i++)
+		for(var j = 0; j < 100000; j++)
+			Sqrt(i*j);
+}
+
 func FxIntHangTimer() { TimeStep(); }
+
+func TimeCompare()
+{
+	for(var i = 0; i < 100000; i++)
+		for(var j = 0; j < 100000; j++)
+			Sqrt(i*j);
+}
 
 func FxDrawInTimer()
 {
@@ -114,12 +148,15 @@ func FxDrawInTimer()
 
 func DrawIn()
 {
-	if(!GetEffect("DrawIn", this)) AddEffect("DrawIn", this, 1, 1, this);
-	SetFixed(0, 1);
-	ConnectPull();
-	var clonk = objects[1][0];
-	if(clonk->Contained()) clonk = clonk->Contained();
-	RemoveEffect("IntGrappleControl", clonk);
+	if(!GetEffect("DrawIn", this))
+	{
+		AddEffect("DrawIn", this, 1, 1, this);
+		SetFixed(0, 1);
+		ConnectPull();
+		var clonk = objects[1][0];
+		if(clonk->Contained()) clonk = clonk->Contained();
+		RemoveEffect("IntGrappleControl", clonk);
+	}
 }
 
 func ConnectPull()
@@ -146,6 +183,7 @@ func ConnectPull()
 	}
 	_inherited(...);
 	AccumulateForces();
+	Log("ConnectPull");
 	TimeStep();
 }
 
