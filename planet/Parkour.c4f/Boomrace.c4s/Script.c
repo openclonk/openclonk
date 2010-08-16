@@ -20,8 +20,6 @@ func Initialize()
 func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
-	if(clonk->Contents())
-		clonk->Contents()->RemoveObject();
 	clonk->CreateContents(Boompack);
 }
 

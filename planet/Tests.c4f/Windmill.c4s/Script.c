@@ -125,8 +125,6 @@ func JoinPlayer(int iPlr)
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(1000);
 
-	var shovel = FindObject(Find_ID(Shovel),Find_Container(clonk));
-	if(shovel) shovel->RemoveObject();
 	clonk->CreateContents(Bow);
 	clonk->Collect(CreateObject(Arrow));
 	clonk->CreateContents(Musket);

@@ -22,9 +22,6 @@ protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->SetPosition(Random(LandscapeWidth()),10);
-	var shovel = clonk->Contents();
-	shovel->Exit();
-	shovel->RemoveObject();
 	return;
 }
 

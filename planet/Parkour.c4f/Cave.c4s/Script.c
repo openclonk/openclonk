@@ -29,5 +29,6 @@ protected func PlrHasRespawned(int iPlr, object cp)
 	else
 		clonk->CreateContents(Dynamite);
 	clonk->CreateContents(JarOfWinds);
+	clonk->CreateContents(Shovel);
 	return;
 }

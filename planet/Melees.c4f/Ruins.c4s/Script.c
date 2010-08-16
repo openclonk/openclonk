@@ -40,7 +40,6 @@ CreateObject(BrickEdge,305,240)->SetP(2);
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	clonk->Contents()->RemoveObject();
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
 	return;

@@ -35,10 +35,6 @@ local pInventory;
 protected func Construction()
 {
 	_inherited(...);
-	// shovel...
-	var shov = CreateObject(Shovel,0,0,GetOwner());
-	if (!Collect(shov,false,1))
-		shov->RemoveObject();
 
 	// Fix clonks with magic physical from erroneous scenarios
 	if (GetID () == Clonk)

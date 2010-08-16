@@ -55,14 +55,6 @@ func InitializePlayer(int plr)
 	EffectVar(1, clonk, effect) = 230;
 	EffectVar(2, clonk, effect) = 455;
 
-	//Remove Shovel
-	var shovel = GetCrew(plr)->FindContents(Shovel);
-	if(shovel)
-	{
-		shovel->Exit(); //Make mesh not linger on clonk after removal
-		shovel->RemoveObject();
-	}
-
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
 	ScriptGo(1);

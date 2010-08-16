@@ -27,6 +27,7 @@ func Initialize()
 protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
+	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Loam);
 	clonk->CreateContents(JarOfWinds);
 	return;
