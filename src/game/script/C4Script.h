@@ -189,6 +189,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CrewDisabled             "~OnCrewDisabled"
 #define PSF_NameChange               "~OnNameChanged" // bool inInfoSection
 #define PSF_OnWealthChanged          "~OnWealthChanged" // int iPlr
+#define PSF_OnActionChanged          "~OnActionChanged" // string oldaction
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

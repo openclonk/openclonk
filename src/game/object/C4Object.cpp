@@ -3440,6 +3440,11 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				if (Def != pOldDef || !Status) return true;
 			}
 		}
+
+	C4Def *pOldDef = Def;
+	Call(PSF_OnActionChanged, &C4AulParSet(C4VString(LastAction ? LastAction->GetName() : "Idle")));
+	if (Def != pOldDef || !Status) return true;
+
 	return true;
 }
 
