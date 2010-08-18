@@ -80,8 +80,8 @@ private func Stick()
 			SetVertex(6,VTX_Y,-6,2);
 		}
 
-		if (rope)
-			ScheduleCall(this, "StartPull", 5);
+		rope->HockAnchored();
+		ScheduleCall(this, "StartPull", 5); // TODO
 	}
 }
 
@@ -92,12 +92,10 @@ public func StartPull()
 	AddEffect("IntGrappleControl", clonk, 1, 1, this);
 	if(clonk->GetAction() == "Jump")
 	{
-		rope->HockAnchored(1);
+		rope->ConnectPull();
 		EffectVar(5, clonk, GetEffect("IntGrappleControl", clonk)) = 1;
 		EffectVar(6, clonk, GetEffect("IntGrappleControl", clonk)) = 10;
 	}
-	else
-		rope->HockAnchored();
 }
 
 public func Hit()
@@ -209,6 +207,9 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 		rope->DoSpeed(+50);
 		SetXDir(GetXDir(100) + 1000, 100);
 	}
+
+	if(target->GetAction() == "Tumble" && target->GetActTime() > 10)
+		target->SetAction("Jump");
 
 	if(target->GetAction() != "Jump")
 	{

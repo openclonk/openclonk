@@ -109,7 +109,7 @@ func SetMaxLength(int newlength)
 
 func GetMaxLength()
 {
-	if(length_auto) return Max_Length2;
+	if(length_auto) return Max_Length;//2;
 	return Max_Length;
 }
 
@@ -149,17 +149,25 @@ func ConnectLoose()
 /** Sets the rope connection mode to \a pull
 * The rope tries to keep its length and pull at non-fixed objects.
 */
+local table2 ;//= [80,126,177,232,292,355,421,491,563,638,716,796,878,963,1050,1139,1230,1323,1417,1514,1612,1712,1814,1917,2022,2128,2236,2346,2457,2569,2683,2798,2914,3032,3151,3271,3393,3516,3640,3765,3891,4019,4148,4278,4409,4541,4674,4808,4943,5080,5217,5356,5495,5635,5777,5919,6063,6207,6352,6498,6645,6794,6943,7092,7243,7395,7547,7701,7855,8010,8166,8323,8481,8639,8798,8958,9119,9281,9444,9607,9771,9936,10102,10268,10435,10603,10772,10941,11111,11282,11454,11626,11799,11973,12148,12323,12499,12675,12853,13031,13209,13389,13569,13749,13931,14113,14295,14479,14663,14847,15033,15219,15405,15593,15780,15969,16158,16348,16538,16729,16921,17113,17306,17499,17693,17888,18083,18279,18475,18672,18870,19068,19267,19466,19666,19867,20000,20000,20000,2000];
+
 func ConnectPull()
 {
-	if(length_auto == 1)
+	if(length_auto == 1 && 0)
 	{
 		var table = [5,6,7,7,8,9,10,11,12,13,13,14,15,16,17,18,18,19,20,21,22,22,23,24,25,26,26,27,28,29,30,30,31,32,33,33,34,35,36,37,37,38,39,40,40,41,42,43,43,44,45,46,46,47,48,49,49,50,51,52,52,53,54,55,55,56,57,58,58,59,60,61,61,62,63,64,64,65,66,67,67,68,69,69,70,71,72,72,73,74,75,75,76,77,77,78,79,80,80,81,82,83,83,84,85,85,86,87,88,88,89,90,90,91,92,93,93,94,95,95,96,97,98,98,99,100,100,101,102,103,103,104,105,105,106,107,108,108,109,110];
+		if(!table2 || 1) table2 = [159,233,311,392,475,560,648,737,828,920,1014,1109,1206,1303,1402,1501,1602,1703,1806,1909,2014,2119,2224,2331,2438,2546,2655,2764,2874,2985,3096,3208,3320,3433,3547,3661,3775,3890,4006,4122,4239,4356,4473,4592,4710,4829,4948,5068,5188,5309,5430,5551,5673,5795,5918,6041,6164,6288,6412,6537,6662,6787,6912,7038,7164,7291,7418,7545,7672,7800,7928,8056,8185,8314,8444,8573,8703,8833,8964,9094,9226,9357,9488,9620,9752,9885,10018,10150,10284,10417,10551,10685,10819,10953,11088,11223,11358,11494,11629,11765,11901,12038,12174,12311,12448,12585,12723,12861,12999,13137,13275,13414,13552,13691,13831,13970,14110,14250,14390,14530,14670,14811,14952,15093,15234,15376,15517,15659,15801,15943,16086,16228,16371,16514,16657,16800,16944,17088,17231,17375];
+
 		var newlength = 0;
 		while( newlength < GetLength(table) && table[newlength] < length)  newlength++;
-//		Log("%d %d", newlength, length);
+
+		var newlength2 = 0;
+		var line_length = GetLineLength();
+		while( newlength2 < GetLength(table2) && table2[newlength2] < line_length)  newlength2++;
+//		Log("%d %d %d", newlength, length, newlength2);
 //		Log("%d %d -> %d", GetLineLength(), length*Rope_Precision, GetLineLength()/Rope_Precision-length);
 		length_auto = 0;
-		var i = newlength - length;
+		var i = newlength2 - length +1;
 		if(i < 0) i = 0;
 		while(i--)
 		{
@@ -183,8 +191,15 @@ func ConnectPull()
 			SatisfyConstraints();
 //			LogSpeed();
 		}
+//		AccumulateForces();
 	}
 	length_auto = 0;
+}
+
+func TogglePull()
+{
+	if(length_auto) ConnectPull();
+	else ConnectLoose();
 }
 
 /** Create a new segment
@@ -291,7 +306,7 @@ public func DoLength(int dolength)
 {
 	length += dolength;
 	if(GetMaxLength())
-		if(length > GetMaxLength())
+		if(length >= GetMaxLength())
 		{
 			MaxLengthReached();
 			length = GetMaxLength();
@@ -371,7 +386,7 @@ local called3;
 local pause_timer;
 /* The procedure of a time step, this should be called with a timercall or an effect! */
 public func TimeStep()
-{
+{//if(!length_auto) Log("%d %d", GetLineLength(), length*Rope_Precision);
 	var line_length = GetLineLength();
 	var percent = line_length*100/(length*Rope_Precision);
 	var per_segment_length = 0;
@@ -382,7 +397,7 @@ public func TimeStep()
 //	if(pause_timer)
 //		return pause_timer--;
 	called3+=Rope_Iterations;
-	if(length_auto)	AccumulateForces();
+//	if(length_auto || 1)	AccumulateForces();
 	Verlet();
 	SatisfyConstraints();
 	ForcesOnObjects();
@@ -398,7 +413,7 @@ func AccumulateForces()
 	for(var i = 1; i < ParticleCount; i++)
 	{
 		var fx = 0, fy = 0, angle;
-		if(i < ParticleCount-2 && length_auto)
+		if(i < ParticleCount-2 && 0)// && length_auto)
 		{
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i+1][0][0], particles[i+1][0][1]);
 			fx = Sin(angle, 5*Rope_Precision);
@@ -465,7 +480,7 @@ public func SetParticleToObject(int index, int obj_index)
 
 public func ConstraintObjects(j)
 {
-			if(length_auto)
+		if(length_auto && length < GetMaxLength())
 		{
 			// Copy Position of the objects
 			for(var i = 0, i2 = 0; i < 2; i++ || i2--)
@@ -654,7 +669,7 @@ func ForcesOnObjects()
 	for(var i=1; i < ParticleCount; i++)
 		length_vertex += Distance(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
 
-//	objects[1][0]->Message("%d %d", length_vertex/100, length);
+
 /*	while(length_auto && redo)
 	{
 		var tabel = [80,126,177,232,292,355,421,491,563,638,716,796,878,963,1050,1139,1230,1323,1417,1514,1612,1712,1814,1917,2022,2128,2236,2346,2457,2569,2683,2798,2914,3032,3151,3271,3393,3516,3640,3765,3891,4019,4148,4278,4409,4541,4674,4808,4943,5080,5217,5356,5495,5635,5777,5919,6063,6207,6352,6498,6645,6794,6943,7092,7243,7395,7547,7701,7855,8010,8166,8323,8481,8639,8798,8958,9119,9281,9444,9607,9771,9936,10102,10268,10435,10603,10772,10941,11111,11282,11454,11626,11799,11973,12148,12323,12499,12675,12853,13031,13209,13389,13569,13749,13931,14113,14295,14479,14663,14847,15033,15219,15405,15593,15780,15969,16158,16348,16538,16729,16921,17113,17306,17499,17693,17888,18083,18279,18475,18672,18870,19068,19267,19466,19666,19867,20000,20000,20000,2000];
@@ -672,11 +687,20 @@ func ForcesOnObjects()
 		}
 		redo = 0;
 	}*/
+  var angle = Vec_Angle(Vec_Sub(particles[-1][0], particles[-1][1]), [0,0]);
+	var angledist = Abs(angle-180);
 	while( length_auto && redo)
 	{
+		angle = Vec_Angle(Vec_Sub(particles[-1][0], particles[-1][1]), [0,0]);
 		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
+		if(length == GetMaxLength())
+		{
+			if(ObjContact(objects[1][0]))
+				speed = 40;
+			else speed = 100;
+		}
 		if(speed > 150) DoLength(1);
-		else if(speed < 50) DoLength(-1);
+		else if(speed < 50 && 1) DoLength(-1); // TODO not just obj 1
 		else redo = 0;
 		if(redo) redo --;
 //		particles[-1][3] = 1;
@@ -684,23 +708,43 @@ func ForcesOnObjects()
 		called2 += iterations;
 //		SatisfyConstraints(iterations);
 	}
+//	objects[1][0]->Message("%d %d|%d %d", length_vertex/100, length, ObjContact(objects[1][0]), angledist);
 	var j = 0;
-	if(!length_auto || length == GetMaxLength())
+	if(!length_auto || length == GetMaxLength() )
 	for(var i = 0; i < 2; i++)
-	{//if(length_auto)// Log("!");
+	{
 		if(i == 1) j = ParticleCount-1;
 		var obj = objects[i][0];
+
 		if(obj == nil || objects[i][1] == 0) continue;
+
 		if(obj->Contained()) obj = obj->Contained();
 		var speed = obj->GetXDir(Rope_Precision);
 		var x = obj->GetX(Rope_Precision), y = obj->GetY(Rope_Precision);
+		var xdir = particles[j][0][0]-particles[j][1][0];
+		var ydir = particles[j][0][1]-particles[j][1][1];
 		obj->SetPosition(particles[j][0][0], particles[j][0][1], 1, Rope_Precision);
 		if(obj->Stuck())
 			obj->SetPosition(x, y, 1, Rope_Precision);
 
+		
+		if(obj->GetComDir() == COMD_Down && ydir > 0)
+			obj->SetComDir(COMD_Up);
+		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle")) // && !obj->GetContact(-1))
+			obj->SetAction("Jump");
+		if( obj->GetAction() == "Climb")
+			obj->SetAction("Jump");
+
 		obj->SetXDir( particles[j][0][0]-particles[j][1][0], Rope_Precision);
 		obj->SetYDir( particles[j][0][1]-particles[j][1][1], Rope_Precision);
 	}
+}
+
+func ObjContact(obj)
+{
+	if(obj->Contained()) obj = obj->Contained();
+	if(obj->GetContact(-1)) return true;
+	return false;
 }
 
 /** Just a helperfunction which has creaded the \c TestArray variable to test the landscape to move out particles

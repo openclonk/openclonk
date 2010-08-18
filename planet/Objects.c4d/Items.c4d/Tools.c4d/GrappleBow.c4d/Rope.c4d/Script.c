@@ -71,8 +71,6 @@ local HoockAnchored;
 /* Callback form the hook, when it hits ground */
 public func HockAnchored(bool pull)
 {
-	if(pull)
-		ConnectPull();
 	HoockAnchored = 1;
 }
 
@@ -101,6 +99,8 @@ public func MaxLengthReached()
 /* for swinging */
 func DoSpeed(int value)
 {
+	var speed = particles[-1][0][0]-particles[-1][1][0];
+	if(speed*value > 0) value += speed/10;
 	particles[-1][1][0] -= value;
 }
 
@@ -120,7 +120,7 @@ func FxIntBenchmarkTimer(target, number, time)
 		Log("Called %d via TimeStep", called3);
 		return -1;
 	}
-	Log("%d", time);
+
 	return;
 	for(var i = 0; i < 100000; i++)
 		for(var j = 0; j < 100000; j++)
@@ -160,7 +160,7 @@ func DrawIn()
 }
 
 func ConnectPull()
-{
+{	_inherited(...);return;
 	if(length_auto == 1 && objects[1][1])
 	{
 		var obj = objects[1][0];
@@ -183,7 +183,7 @@ func ConnectPull()
 	}
 	_inherited(...);
 	AccumulateForces();
-	Log("ConnectPull");
+//	Log("ConnectPull");
 	TimeStep();
 }
 
