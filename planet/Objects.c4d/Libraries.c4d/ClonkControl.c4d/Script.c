@@ -4,7 +4,7 @@
 	
 	This object provides handling of the clonk controls including item
 	management, backpack controls and standard throwing behaviour. It
-	should be included into any clonk definition.
+	should be included into any clonk/crew definition.
 	The controls in System.c4g/PlayerControl.c only provide basic movement
 	handling, namely the movement left, right, up and down. The rest is
 	handled here:
@@ -17,8 +17,8 @@
 	Objects that inherit this object need to return _inherited() in the
 	following callbacks (if defined):
 		Construction, Collection2, Ejection, RejectCollect, Departure,
-		Entrance, AttachTargetLost, GrabLost, CrewSelection, Death,
-		Destruction
+		Entrance, AttachTargetLost, CrewSelection, Death,
+		Destruction, OnActionChanged
 	
 	The following callbacks are made to other objects:
 		*Stop
@@ -311,12 +311,6 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
-protected func StopPushing() { CancelUse(); return _inherited(...); } // On abortion of push/grab.
-protected func Grab(object target, bool ungrab)
-{
-	if (ungrab) CancelUse();
-	return _inherited(target,ungrab,...);
-}
 
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
@@ -347,15 +341,27 @@ protected func Death()
 	return _inherited(...);
 }
 
-// TODO: what is missing here is a callback for when the clonk StarTs a attach or push
-// action.
-// So if a clonk e.g. uses a tool and still while using it (holding down the mouse button)
-// hits SPACE (grab vehicle), ControlUseStop is not called to the tool. 
-// the workaround for now is that the controls do not allow to grab a vehicle while still
-// holding down the mouse button. But this does not cover the (seldom?) case that the clonk
-// is put into a grabbing/attached action via Script.
-
-
+protected func OnActionChanged(string oldaction)
+{
+	var old_act = this["ActMap"][oldaction];
+	var act = this["ActMap"][GetAction()];
+	var old_proc = 0;
+	if(old_act) old_proc = old_act["Procedure"];
+	var proc = 0;
+	if(act) proc = act["Procedure"];
+	// if the object's procedure has changed from a non Push/Attach
+	// to a Push/Attach action or the other way round, the usage needs
+	// to be cancelled
+	if (proc != old_proc)
+	{
+		if (proc == DFA_PUSH || proc == DFA_ATTACH
+		 || old_proc == DFA_PUSH || old_proc == DFA_ATTACH)
+		{
+			CancelUse();
+		}
+	}
+	return _inherited(oldaction,...);
+}
 
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
@@ -1049,9 +1055,6 @@ private func ObjectControlPush(int plr, int ctrl)
 	{
 		// grab only if he walks
 		if (proc != "WALK") return false;
-		
-		// disallow if the clonk is still using something
-		if (using) return false;
 		
 		// only if there is someting to grab
 		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
