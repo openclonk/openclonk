@@ -1,2 +1,2 @@
 DE:Lernrunden
-US:Tutorial
+US:Tutorials

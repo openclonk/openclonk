@@ -1259,10 +1259,9 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 {
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
-
+	
 	// Controls
 	DrawPlayerStartup(cgo);
-
 }
 
 bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
@@ -1300,41 +1299,6 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	Execute();
 	// Success
 	return true;
-}
-
-StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
-{
-	// determine player
-	C4Player *pPlr = ::Players.Get(iPlayer);
-	// player control
-	if (pPlr)
-	{
-		if (pPlr && pPlr->ControlSet)
-		{
-			C4PlayerControlAssignment *ass = pPlr->ControlSet->GetAssignmentByControl(iControl);
-			if (ass)
-			{
-				return C4KeyCodeEx::KeyCode2String(ass->GetTriggerKey().Key, true, fShort);
-			}
-		}
-	}
-	// global control
-	else
-	{
-		// look up iControl for a matching mapping in global key map
-		// and then display the key name - should at least work for
-		// stuff in KEYSCOPE_FullSMenu...
-		const char *szKeyID;
-		switch (iControl)
-		{
-		case CON_Throw: szKeyID = "FullscreenMenuOK"; break;
-		case CON_Dig:   szKeyID = "FullscreenMenuCancel"; break;
-		default: szKeyID = NULL; break;
-		}
-		if (szKeyID) return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyID, fShort);
-	}
-	// undefined control
-	return StdStrBuf();
 }
 
 extern int32_t DrawMessageOffset;

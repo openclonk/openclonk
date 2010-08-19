@@ -1,9 +1,9 @@
 # Static Map Material/Texture Table 
 # Index +128 for underground materials
-
 10=Tunnel-tunnel
 11=Tunnel-tunnel
-
+12=Tunnel-brickback
+13=BrickSoft-brick1
 19=DuroLava-lava_red
 20=Water-water
 #21=Oil-Liquid
@@ -60,7 +60,10 @@
 70=Snow-snow1
 71=Snow-snow1
 72=Snow-snow1
+73=Brick-brick1
 
 #80=FlySand-Smooth2
 #81=FlySand-Smooth3
 #82=FlySand-Smooth
+
+

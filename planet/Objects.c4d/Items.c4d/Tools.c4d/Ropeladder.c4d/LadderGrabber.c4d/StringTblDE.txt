@@ -1,0 +1,2 @@
+Name=Strickleiter
+GrabLadder=Leiter reinziehen

@@ -126,9 +126,7 @@ public:
 	// Control
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;
-	int32_t SelectCount;
-	int32_t SelectFlash,CursorFlash;
-	int32_t CursorSelection,CursorToggled;
+	int32_t CursorFlash;
 	class C4GamePadOpener *pGamepad;
 	// Message
 	int32_t MessageStatus;
@@ -151,7 +149,6 @@ public:
 
 public:
 	void Eliminate();
-	void SelectCrew(C4Object *pObj, bool fSelect);
 	void Default();
 	void Clear();
 	void ClearPointers(C4Object *tptr, bool fDeath);
@@ -162,8 +159,7 @@ public:
 	void Evaluate();
 	void Surrender();
 	void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
-	void SelectCrew(C4ObjectList &rList);
-	void SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow);
+	void SetCursor(C4Object *pObj, bool fSelectArrow);
 	void RemoveCrewObjects();
 	void NotifyOwnedObjects();
 	void DefaultRuntimeData();
@@ -171,12 +167,6 @@ public:
 	void AdjustCursorCommand();
 	void CursorRight();
 	void CursorLeft();
-	void UnselectCrew();
-	void SelectSingleByCursor();
-	void SelectSingle(C4Object *tobj);
-	void CursorToggle();
-	void SelectAllCrew();
-	void UpdateSelectionToggleStatus();
 
 	bool ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
 	void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
@@ -203,8 +193,8 @@ public:
 	bool ActivateMenuMain();
 	bool ActivateMenuTeamSelection(bool fFromMain);
 	void DoTeamSelection(int32_t idTeam);
-	C4Object *GetHiExpActiveCrew(bool fSelectedOnly);
-	C4Object *GetHiRankActiveCrew(bool fSelectedOnly);
+	C4Object *GetHiExpActiveCrew();
+	C4Object *GetHiRankActiveCrew();
 	void SetFoW(bool fEnable);
 	int32_t ActiveCrewCount();
 	int32_t GetSelectedCrewCount();

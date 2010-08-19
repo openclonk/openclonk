@@ -4,7 +4,8 @@
 		Overlays:
 		0=Grey Circle
 		1=Icon of the Object
-		10,11,12: Amount 
+		2,3=Extraslot
+		10,11,12= Amount 
 */
 
 
@@ -28,7 +29,7 @@ public func SetSize(int s) // in px *1000
 {
 	size=s/96;
 	SetObjDrawTransform(size,0,0,0,size,0,0);
-	SetObjDrawTransform(size,0,0,0,size,0,1);
+	SetSymbol(GetSymbol());
 	SetAmount(GetAmount());
 }
 
@@ -42,12 +43,35 @@ public func SetSymbol(obj)
 		
 	if(!obj) 
 	{	
-		SetGraphics(nil,nil,1);
+		SetGraphics(nil, nil, 1);
+		SetGraphics(nil, nil, 2);
+		SetGraphics(nil, nil, 3);
 	}
 	else
 	{
 		if (GetType(obj) == C4V_C4Object)
-			SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, obj);
+		{
+			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetObjDrawTransform(size, 0, 0, 0, size, 0, 1);
+			if (obj->~HasExtraSlot())
+			{
+				SetGraphics(nil, GUI_ExtraSlot, 2, GFXOV_MODE_Base);
+				SetObjDrawTransform(size, 0, 16*size, 0, size, 16*size, 2);
+				var content = obj->Contents(0);
+				if (content)
+				{
+					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetObjDrawTransform(size/3, 0, 16*size, 0, size/3, 16*size, 3);
+				}
+				else
+					SetGraphics(nil, nil, 3);
+			}
+			else
+			{
+				SetGraphics(nil, nil, 2);
+				SetGraphics(nil, nil, 3);
+			}
+		}
 		else
 			SetGraphics(nil,obj,1,GFXOV_MODE_IngamePicture);
 		
@@ -85,7 +109,7 @@ public func SetAmount(Amount)
 	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
 
 	
-		if(ten > 0 || hun > 0)
+	if(ten > 0 || hun > 0)
 	{
 		SetGraphics(Format("%d",ten),Icon_SlimNumber,11,GFXOV_MODE_IngamePicture);
 		SetObjDrawTransform(s,0,xoffs-spacing*2-500,0,s,yoffs+300, 9);

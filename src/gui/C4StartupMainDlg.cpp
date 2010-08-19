@@ -45,7 +45,7 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	int iButtonPadding = 2;
 	int iButtonHeight = C4GUI_BigButtonHgt;
 	C4GUI::ComponentAligner caMain(rcBounds, 0,0,true);
-	C4GUI::ComponentAligner caRightPanel(caMain.GetFromLeft(rcBounds.Wdt*2/5), rcBounds.Wdt/26,40+rcBounds.Hgt/8);
+	C4GUI::ComponentAligner caRightPanel(caMain.GetFromLeft(rcBounds.Wdt*2/5), rcBounds.Wdt/26, 40+rcBounds.Hgt/5);
 	//C4GUI::ComponentAligner caButtons(caRightPanel.GetCentered(caRightPanel.GetWidth(), (iButtonHeight+iButtonPadding) * iButtonCount - iButtonPadding), 0, iButtonPadding);
 	C4GUI::ComponentAligner caButtons(caRightPanel.GetAll(), 0, iButtonPadding);
 	// main menu buttons
@@ -115,13 +115,13 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
 	// draw logo
-	C4Facet &fctLogo = ::GraphicsResource.fctLogo;
+	C4FacetID * fctStartupLogo = &C4Startup::Get()->Graphics.fctStartupLogo;
 	float fLogoZoom = 1.0f;
-	fctLogo.DrawX(cgo.Surface, rcBounds.Wdt *1/21, rcBounds.Hgt/14 - 5, int32_t(fLogoZoom*fctLogo.Wdt), int32_t(fLogoZoom*fctLogo.Hgt));
+	fctStartupLogo->DrawX(cgo.Surface, rcBounds.Wdt *1/21, rcBounds.Hgt/28, int32_t(fLogoZoom*fctStartupLogo->Wdt), int32_t(fLogoZoom*fctStartupLogo->Hgt));
 	// draw version info
 	StdStrBuf sVer;
 	sVer.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
-	lpDDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt/12 + int32_t(fLogoZoom*fctLogo.Hgt) - 10, 0xffffffff, ALeft, true);
+	lpDDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt*38/40, 0xffffffff, ALeft, true);
 }
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY)

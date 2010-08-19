@@ -16,7 +16,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-// A loader for the OGRE .mesh binary file format
+// A loader for the OGRE .mesh XML file format
 
 #include "C4Include.h"
 #include "StdMesh.h"
@@ -129,55 +129,91 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		int VertexCount = xml.RequireIntAttribute(geometry_elem, "vertexcount");
 		submesh.Vertices.resize(VertexCount);
 
-		TiXmlElement* buffer_elem = xml.RequireFirstChild(geometry_elem, "vertexbuffer");
+		static const unsigned int POSITIONS = 1;
+		static const unsigned int NORMALS = 2;
+		static const unsigned int TEXCOORDS = 4;
 
-		unsigned int i = 0;
-		for (TiXmlElement* vertex_elem = buffer_elem->FirstChildElement("vertex"); vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
+		// Individual vertex attributes can be split up in multiple vertex buffers
+		unsigned int loaded_attributes = 0;
+		for(TiXmlElement* buffer_elem = geometry_elem->FirstChildElement("vertexbuffer"); buffer_elem != NULL; buffer_elem = buffer_elem->NextSiblingElement("vertexbuffer"))
 		{
-			TiXmlElement* position_elem = xml.RequireFirstChild(vertex_elem, "position");
-			TiXmlElement* normal_elem = xml.RequireFirstChild(vertex_elem, "normal");
-			TiXmlElement* texcoord_elem = xml.RequireFirstChild(vertex_elem, "texcoord");
+			unsigned int attributes = 0;
+			if(buffer_elem->Attribute("positions")) attributes |= POSITIONS;
+			if(buffer_elem->Attribute("normals")) attributes |= NORMALS;
+			if(buffer_elem->Attribute("texture_coords")) attributes |= TEXCOORDS;
 
-			submesh.Vertices[i].x = xml.RequireFloatAttribute(position_elem, "x");
-			submesh.Vertices[i].y = xml.RequireFloatAttribute(position_elem, "y");
-			submesh.Vertices[i].z = xml.RequireFloatAttribute(position_elem, "z");
-			submesh.Vertices[i].nx = xml.RequireFloatAttribute(normal_elem, "x");
-			submesh.Vertices[i].ny = xml.RequireFloatAttribute(normal_elem, "y");
-			submesh.Vertices[i].nz = xml.RequireFloatAttribute(normal_elem, "z");
-			submesh.Vertices[i].u = xml.RequireFloatAttribute(texcoord_elem, "u");
-			submesh.Vertices[i].v = xml.RequireFloatAttribute(texcoord_elem, "v");
-
-			const float d = std::sqrt(submesh.Vertices[i].x*submesh.Vertices[i].x
-			                          + submesh.Vertices[i].y*submesh.Vertices[i].y
-			                          + submesh.Vertices[i].z*submesh.Vertices[i].z);
-
-			// Construct BoundingBox
-			StdMeshBox &BoundingBox = mesh->BoundingBox;
-			if (i == 0 && mesh->SubMeshes.size() == 1)
+			unsigned int i;
+			TiXmlElement* vertex_elem;
+			for (vertex_elem = buffer_elem->FirstChildElement("vertex"), i = 0; vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
 			{
-				// First vertex
-				BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
-				BoundingBox.y1 = BoundingBox.y2 = submesh.Vertices[i].y;
-				BoundingBox.z1 = BoundingBox.z2 = submesh.Vertices[i].z;
-				mesh->BoundingRadius = d;
+				if(attributes & POSITIONS)
+				{
+					TiXmlElement* position_elem = xml.RequireFirstChild(vertex_elem, "position");
+
+					submesh.Vertices[i].x = xml.RequireFloatAttribute(position_elem, "x");
+					submesh.Vertices[i].y = xml.RequireFloatAttribute(position_elem, "y");
+					submesh.Vertices[i].z = xml.RequireFloatAttribute(position_elem, "z");
+
+					const float d = std::sqrt(submesh.Vertices[i].x*submesh.Vertices[i].x
+							                      + submesh.Vertices[i].y*submesh.Vertices[i].y
+							                      + submesh.Vertices[i].z*submesh.Vertices[i].z);
+
+					// Construct BoundingBox
+					StdMeshBox &BoundingBox = mesh->BoundingBox;
+					if (i == 0 && mesh->SubMeshes.size() == 1)
+					{
+						// First vertex
+						BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
+						BoundingBox.y1 = BoundingBox.y2 = submesh.Vertices[i].y;
+						BoundingBox.z1 = BoundingBox.z2 = submesh.Vertices[i].z;
+						mesh->BoundingRadius = d;
+					}
+					else
+					{
+						BoundingBox.x1 = Min(submesh.Vertices[i].x, BoundingBox.x1);
+						BoundingBox.x2 = Max(submesh.Vertices[i].x, BoundingBox.x2);
+						BoundingBox.y1 = Min(submesh.Vertices[i].y, BoundingBox.y1);
+						BoundingBox.y2 = Max(submesh.Vertices[i].y, BoundingBox.y2);
+						BoundingBox.z1 = Min(submesh.Vertices[i].z, BoundingBox.z1);
+						BoundingBox.z2 = Max(submesh.Vertices[i].z, BoundingBox.z2);
+						mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
+					}
+				}
+
+				if(attributes & NORMALS)
+				{
+					TiXmlElement* normal_elem = xml.RequireFirstChild(vertex_elem, "normal");
+
+					submesh.Vertices[i].nx = xml.RequireFloatAttribute(normal_elem, "x");
+					submesh.Vertices[i].ny = xml.RequireFloatAttribute(normal_elem, "y");
+					submesh.Vertices[i].nz = xml.RequireFloatAttribute(normal_elem, "z");
+				}
+
+				if(attributes & TEXCOORDS)
+				{
+					TiXmlElement* texcoord_elem = xml.RequireFirstChild(vertex_elem, "texcoord");
+					submesh.Vertices[i].u = xml.RequireFloatAttribute(texcoord_elem, "u");
+					submesh.Vertices[i].v = xml.RequireFloatAttribute(texcoord_elem, "v");
+				}
 			}
-			else
-			{
-				BoundingBox.x1 = Min(submesh.Vertices[i].x, BoundingBox.x1);
-				BoundingBox.x2 = Max(submesh.Vertices[i].x, BoundingBox.x2);
-				BoundingBox.y1 = Min(submesh.Vertices[i].y, BoundingBox.y1);
-				BoundingBox.y2 = Max(submesh.Vertices[i].y, BoundingBox.y2);
-				BoundingBox.z1 = Min(submesh.Vertices[i].z, BoundingBox.z1);
-				BoundingBox.z2 = Max(submesh.Vertices[i].z, BoundingBox.z2);
-				mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
-			}
+
+			if(vertex_elem != NULL)
+				xml.Error(FormatString("Too many vertices in vertexbuffer"), buffer_elem);
+			if(i < submesh.Vertices.size())
+				xml.Error(FormatString("Not enough vertices in vertexbuffer"), buffer_elem);
+
+			loaded_attributes |= attributes;
 		}
+
+		static const unsigned int REQUIRED_ATTRIBUTES = POSITIONS | NORMALS | TEXCOORDS;
+		if((loaded_attributes & REQUIRED_ATTRIBUTES) != REQUIRED_ATTRIBUTES)
+			xml.Error(FormatString("Not all required vertex attributes (positions, normals, texcoords) present in mesh geometry"), geometry_elem);
 
 		TiXmlElement* faces_elem = xml.RequireFirstChild(submesh_elem, "faces");
 		int FaceCount = xml.RequireIntAttribute(faces_elem, "count");
 		submesh.Faces.resize(FaceCount);
 
-		i = 0;
+		unsigned int i = 0;
 		for (TiXmlElement* face_elem = faces_elem->FirstChildElement("face"); face_elem != NULL && i < submesh.Faces.size(); face_elem = face_elem->NextSiblingElement("face"), ++i)
 		{
 			int v[3];
@@ -194,6 +230,11 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			}
 		}
 	}
+
+	// We allow bounding box to be empty if it's only due to X direction since
+	// this is what goes inside the screen in Clonk.
+	if(mesh->BoundingBox.y1 == mesh->BoundingBox.y2 || mesh->BoundingBox.z1 == mesh->BoundingBox.z2)
+		xml.Error(StdCopyStrBuf("Bounding box is empty"), mesh_elem);
 
 	// Read skeleton, if any
 	TiXmlElement* skeletonlink_elem = mesh_elem->FirstChildElement("skeletonlink");
@@ -355,24 +396,40 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 						float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
 						StdMeshKeyFrame& frame = track->Frames[time];
 
-						TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
-						TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
-						TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
-						TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
+						TiXmlElement* translate_elem = keyframe_elem->FirstChildElement("translate");
+						TiXmlElement* rotate_elem = keyframe_elem->FirstChildElement("rotate");
+						TiXmlElement* scale_elem = keyframe_elem->FirstChildElement("scale");
 
 						StdMeshVector d, s, r;
-						d.x = skeleton.RequireFloatAttribute(translate_elem, "x");
-						d.y = skeleton.RequireFloatAttribute(translate_elem, "y");
-						d.z = skeleton.RequireFloatAttribute(translate_elem, "z");
-						s.x = skeleton.RequireFloatAttribute(scale_elem, "x");
-						s.y = skeleton.RequireFloatAttribute(scale_elem, "y");
-						s.z = skeleton.RequireFloatAttribute(scale_elem, "z");
-						float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
-						r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
-						r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
-						r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
+						d.x = d.y = d.z = 0.0f;
+						s = StdMeshVector::UnitScale();
+						r.x = r.y = 0.0f; r.z = 1.0f;
+						float angle = 0.0f;
 
-						frame.Transformation.scale = StdMeshVector::UnitScale();
+						if(translate_elem)
+						{
+							d.x = skeleton.RequireFloatAttribute(translate_elem, "x");
+							d.y = skeleton.RequireFloatAttribute(translate_elem, "y");
+							d.z = skeleton.RequireFloatAttribute(translate_elem, "z");
+						}
+						
+						if(rotate_elem)
+						{
+							TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
+							angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
+							r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
+							r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
+							r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
+						}
+
+						if(scale_elem)
+						{
+							s.x = skeleton.RequireFloatAttribute(scale_elem, "x");
+							s.y = skeleton.RequireFloatAttribute(scale_elem, "y");
+							s.z = skeleton.RequireFloatAttribute(scale_elem, "z");
+						}
+
+						frame.Transformation.scale = s;
 						frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
 						frame.Transformation.translate = bone->InverseTransformation.rotate * (bone->InverseTransformation.scale * d);
 					}

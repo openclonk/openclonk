@@ -43,7 +43,6 @@
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
 #include <C4Fonts.h>
-#include "hgrevision.h"
 
 #include <StdRegistry.h> // For DDraw emulation warning
 
@@ -120,7 +119,7 @@ bool C4Application::DoInit()
 	// Open log
 	OpenLog();
 
-	Revision.Ref(OC_HG_REVISION);
+	Revision.Ref(C4REVISION);
 
 	// init system group
 	if (!SystemGroup.Open(C4CFN_System))

@@ -2,8 +2,9 @@
 id=Ropeladder_Grabber
 Version=4,9,8
 Category=C4D_Object
-Width=20
-Height=20
-Offset=-10,-10
+Picture=20,0,64,64
+Width=30
+Height=30
+Offset=-15,-15
 Vertices=1
-Grab=2
+VertexY=0

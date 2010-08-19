@@ -81,6 +81,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
 
 	clonk->StartLoad(this);
+
+	ControlUseHolding(clonk, x, y);
 	
 	return true;
 }
@@ -223,5 +225,5 @@ func Deselection()
 */
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-2000,-2000),Trans_Rotate(180,0,1,0),Trans_Rotate(-25,1,0,1)),def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-2000,-3000,-2000),Trans_Rotate(180,0,1,0),Trans_Rotate(-25,1,0,1)),def);
 }

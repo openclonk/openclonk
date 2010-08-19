@@ -1,0 +1,9 @@
+[DefCore]
+id=KingOfTheHill_Marker
+Version=4,9,5
+#Category=C4D_StaticBack | C4D_Foreground | C4D_IgnoreFoW
+Category=C4D_StaticBack | C4D_Foreground
+Width=15
+Height=15
+Offset=-7,-7
+ 

@@ -693,6 +693,13 @@ bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 	if (iControl >= int32_t(ControlDisableStates.size())) ControlDisableStates.resize(iControl+1);
 	ControlDisableStates[iControl] = iVal;
 	// if a control is disabled, its down-state is reset silently
+	ResetControlDownState(iControl);
+	return true;
+}
+
+void C4PlayerControl::CSync::ResetControlDownState(int32_t iControl)
+{
+	// silently reset down state of control
 	const ControlDownState *pDownState = GetControlDownState(iControl);
 	if (pDownState && pDownState->IsDown())
 	{
@@ -700,7 +707,6 @@ bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 		KeyDownState.iStrength = 0;
 		SetControlDownState(iControl, KeyDownState, 0, false);
 	}
-	return true;
 }
 
 void C4PlayerControl::CSync::InitDefaults(const C4PlayerControlDefs &ControlDefs)
@@ -746,7 +752,7 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", DefaultSync));
 }
 
-bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData)
+bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only)
 {
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
@@ -766,7 +772,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
 				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true; // async cursor pos request - doesn't really make sense to set this flag for async controls
-				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
+				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated(), reset_down_states_only))
 					return true;
 			}
 			else
@@ -777,7 +783,9 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 				// sync control has higher priority - no more async execution then
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
 				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
-				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode());
+				int32_t extra_trigger_mode = 0;
+				if (reset_down_states_only) extra_trigger_mode |= C4PlayerControlAssignment::CTM_HandleDownStatesOnly;
+				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode() | extra_trigger_mode);
 				// sync cursor pos request; pos will be added to control before it is synced/executed
 				if (pControlDef->IsSendCursorPos()) IsCursorPosRequested = true;
 			}
@@ -809,7 +817,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	return fResult;
 }
 
-bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
+bool C4PlayerControl::ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool reset_down_states_only)
 {
 	// remove key from "down" list
 	// except for some mouse events for which a down state does not make sense
@@ -819,27 +827,39 @@ bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCo
 		if (i != DownKeys.end()) DownKeys.erase(i);
 	}
 	// process!
-	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
+	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData(), reset_down_states_only);
 }
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
 {
 	// callback from control queue. Execute controls in packet until one of them gets processed
 	// assume async packets always as not processed to ensure sync safety (usually, sync commands should better not ovberride async commands anyway)
+	bool fHandleDownStateOnly = false;
 	for (C4ControlPlayerControl::ControlItemVec::const_iterator i = pCtrl->GetControlItems().begin(); i != pCtrl->GetControlItems().end(); ++i)
 	{
 		const C4ControlPlayerControl::ControlItem &rItem = *i;
 		const C4PlayerControlDef *pCtrlDef = ControlDefs.GetControlByIndex(rItem.iControl);
 		if (pCtrlDef)
 		{
-			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false))
+			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
 				if (pCtrlDef->IsSync())
-					break;
+				{
+					if (pCtrl->IsReleaseControl())
+					{
+						// control processed. however, for key releases, overriden keys are released silently so following down events aren't handled as key repeats
+						// note this does not affect CTM_Hold/CTM_Release, because they ignore release controls anyway
+						fHandleDownStateOnly = true;
+					}
+					else
+					{
+						break;
+					}
+				}
 		}
 	}
 }
 
-bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated)
+bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated, bool fHandleDownStateOnly)
 {
 	// execute single control. return if handled
 	const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControl);
@@ -850,6 +870,8 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 	bool fWasDown = pCtrlDownState ? pCtrlDownState->IsDown() : false;
 	// global controls only in global context
 	if (IsGlobal() != pControlDef->IsGlobal()) return false;
+	// down state handling only?
+	if (iTriggerMode & C4PlayerControlAssignment::CTM_HandleDownStatesOnly) fHandleDownStateOnly = true;
 	// hold-actions only work on script controls with the hold flag
 	if (iTriggerMode & (C4PlayerControlAssignment::CTM_Hold | C4PlayerControlAssignment::CTM_Release))
 	{
@@ -905,6 +927,8 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 		Sync.SetControlDownState(iControl, KeyExtraData, Game.FrameCounter, true);
 		fRepeated = fWasDown;
 	}
+	// down state handling done
+	if (fHandleDownStateOnly) return false;
 	// perform action for this control
 	bool fHandled = ExecuteControlAction(iControl, eAction, pControlDef->GetExtraData(), fUp, KeyExtraData, fRepeated);
 	// handled controls hide control display
@@ -1106,7 +1130,9 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	if (result)
 	{
 		// mouse event processed in GUI coordinates
-		return true;
+		// ignore in game coordinates, except if it's an up-event, which still needs to reset down-states silently in game coordinates
+		// (-> for handling down controls in game, but up control in GUI when menus open on down controls)
+		if (is_down) return true;
 	}
 	// try processing in Game coordinates instead
 	mouseevent_data.x = uint32_t(game_x);
@@ -1116,7 +1142,7 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	if (is_down)
 		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
 	else
-		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
+		result = ProcessKeyUpEx(mouseevent_keycode, mouseevent_keycode, result);
 	return result;
 }
 

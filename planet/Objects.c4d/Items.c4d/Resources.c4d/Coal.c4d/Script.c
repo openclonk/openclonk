@@ -9,7 +9,7 @@ protected func Construction()
 
 protected func Hit()
 {
-	Sound("RockHit");
+	Sound("RockHit*");
 }
 
 func Definition(def) {

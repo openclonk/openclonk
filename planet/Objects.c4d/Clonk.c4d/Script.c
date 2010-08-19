@@ -35,10 +35,6 @@ local pInventory;
 protected func Construction()
 {
 	_inherited(...);
-	// shovel...
-	var shov = CreateObject(Shovel,0,0,GetOwner());
-	if (!Collect(shov,false,1))
-		shov->RemoveObject();
 
 	// Fix clonks with magic physical from erroneous scenarios
 	if (GetID () == Clonk)
@@ -777,11 +773,11 @@ func GetCurrentWalkAnimation()
 {
 	if(Contained())
 	{
-		SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,1,0),Trans_Scale(1200)), this);
-		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-110,0,1,0),Trans_Scale(1200)), this);
+		SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(30,0,1,0)), this);
+		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(-110,0,1,0)), this);
 		return Clonk_WalkInside;
 	}
-	else SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), this);
+	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), this);
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
 	if(velocity < 1) return Clonk_WalkStand;
 	if(velocity < 10) return Clonk_WalkWalk;
@@ -1238,6 +1234,18 @@ func StartJump()
 //		if (SimFlight(iX,iY,iXDir,iYDir,25))
 //			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
 //				PlayAnimation("Dive", 5, Anim_Linear(0, 0, GetAnimationLength("Dive"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));;
+	AddEffect("Fall",this,1,1,this);
+}
+
+func FxFallTimer(object target, int num, int timer)
+{
+	if(GetYDir() > 55 && GetAction() == "Jump")
+	{
+		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		return -1;
+	}
+	if(GetAction() != "Jump")
+		return -1;
 }
 
 /* Hangle */
@@ -1566,8 +1574,10 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 	}
 	if( (iTime-18) % 36 == 0 ||  iTime > 35)
 	{
-		var pShovel = FindObject(Find_ID(Shovel), Find_Container(this));
-		if(!pShovel || !pShovel->IsDigging())
+		var noDig = 1;
+		for(var pShovel in FindObjects(Find_ID(Shovel), Find_Container(this)))
+			if(pShovel->IsDigging()) noDig = 0;
+		if(noDig)
 		{
 			SetAction("Walk");
 			SetComDir(COMD_Stop);
@@ -1709,6 +1719,23 @@ func FxIntRidingStop(pTarget, iNumber, fTmp)
 func FxBubbleTimer(pTarget, iNumber, iTime)
 {
 	if(GBackLiquid(0,-4)) Bubble();
+}
+
+func StartPushing()
+{
+//	if(GetEffect("IntTumble", this)) return;
+	// Close eyes
+	PlayAnimation("Push", 5, Anim_AbsX(0, 0, GetAnimationLength("Push"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(1);
+//	AddEffect("IntTumble", this, 1, 0);
+}
+
+protected func StopPushing()
+{
+	return _inherited(...);
 }
 
 func StartHangOnto()
@@ -1949,7 +1976,6 @@ Push = {
 	Name = "Push",
 	Procedure = DFA_PUSH,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 8,
 	Delay = 15,
 	X = 128,
@@ -1957,6 +1983,8 @@ Push = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Push",
+	StartCall = "StartPushing",
+	AbortCall = "StopPushing",
 	InLiquidAction = "Swim",
 },
 Build = {
@@ -1964,7 +1992,6 @@ Build = {
 	Name = "Build",
 	Procedure = DFA_BUILD,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 8,
 	Delay = 15,
 	X = 128,
@@ -1993,7 +2020,7 @@ HangOnto = {
 	SetProperty("Name", "Clonk", def);
 
 	// Set perspective
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
 
 	_inherited(def);
 }

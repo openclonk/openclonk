@@ -159,7 +159,6 @@ public:
 	C4Real xdir,ydir,rdir;
 	int32_t iLastAttachMovementFrame; // last frame in which Attach-movement by a SolidMask was done
 	bool Mobile;
-	bool Select;
 	bool Unsorted; // NoSave //
 	bool Initializing; // NoSave //
 	bool InLiquid;
@@ -307,6 +306,7 @@ public:
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
 	void ForcePosition(int32_t tx, int32_t ty);
+	void ForcePosition(int32_t tx, int32_t ty, long iPrec);
 	void MovePosition(int32_t dx, int32_t dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
@@ -380,8 +380,8 @@ public:
 	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
 public:
-	bool DoSelect(bool fCursor=false); // select in crew (or just set cursor) if not disabled
-	void UnSelect(bool fCursor=false); // unselect in crew (or just task away cursor)
+	bool DoSelect(); // cursor callback if not disabled
+	void UnSelect(); // unselect callback
 	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)       // get position this object is seen at (for given scroll)
 	{ if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX=float(GetX()); riY=float(GetY()); } }
 	void GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport);   // get position this object is seen at, calculating parallaxity

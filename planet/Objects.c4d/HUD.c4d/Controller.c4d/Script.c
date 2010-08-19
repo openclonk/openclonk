@@ -7,10 +7,6 @@
 	care of the action (inventory) bar.
 */
 
-// TODO - 
-// following callbacks missing:
-// ...? - entire player is eliminated
-
 local actionbar;
 local wealth;
 
@@ -108,6 +104,37 @@ public func OnGoalUpdate(object goal)
 	}
 }
 
+// called from engine on player eliminated
+public func RemovePlayer(int plr, int team)
+{
+	// not my business
+	if(plr != GetOwner()) return;
+	
+	// at this point, we can assume that all crewmembers have been
+	// removed already. Whats left to do is to remove this object,
+	// the lower hud and the upper right hud
+	// (which are handled by Destruction()
+	this->RemoveObject();
+}
+
+public func Destruction()
+{
+	// remove all hud objects that are managed by this object
+	if(wealth)
+		wealth->RemoveObject();
+	if(actionbar)
+	{
+		for(var i=0; i<GetLength(actionbar); ++i)
+		{
+			if(actionbar[i])
+				actionbar[i]->RemoveObject();
+		}
+	}
+	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
+	if(HUDgoal)
+		HUDgoal->RemoveObject();
+}
+
 public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder
@@ -124,12 +151,9 @@ public func OnCrewEnabled(object clonk)
 // call from HUDAdapter (Clonk)
 public func OnCrewSelection(object clonk, bool deselect)
 {
-
 	// selected
 	if(!deselect)
-	{
-		// TODO: what if two clonks are selected? Which clonk gets the actionbar?
-		
+	{		
 		// fill actionbar
 		// inventory
 		var i;
@@ -150,6 +174,11 @@ public func OnCrewSelection(object clonk, bool deselect)
 	}
 }
 
+public func FxIntSearchInteractionObjectsEffect(string newname, object target, int num, int new_num)
+{	
+	if(newname == "IntSearchInteractionObjects")
+		return -1;
+}
 
 public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt)
 {
@@ -188,7 +217,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 			// otherwise we must add it before the rest
 			if(!inside)
 			{
-				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey);
+				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey++);
 				if(actionbar[i]->Selected()) exclusive = true;
 				++i;
 			}
@@ -198,7 +227,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	// search vehicles
 	for(var vehicle in vehicles)
 	{
-		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey);
+		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
@@ -207,16 +236,16 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
 	for(var structure in structures)
 	{
-		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey);
+		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
 
 	// search interactables (script interface)
-	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable"),Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer());
 	for(var interactable in interactables)
 	{
-		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey);
+		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey++);
 		++i;
 	}
 	
@@ -283,6 +312,15 @@ private func ClearButtons(int start)
 		// we don't have to remove them all the time, no?
 		if(actionbar[j])
 			actionbar[j]->Clear();
+	}
+}
+
+public func ClearButtonMessages()
+{
+	for(var i = 0; i < GetLength(actionbar); ++i)
+	{
+		if(actionbar[i])
+			actionbar[i]->ClearMessage();
 	}
 }
 

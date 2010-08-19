@@ -9,5 +9,7 @@ MsgRelaunch1=noch einen Relauch übrig.
 MsgRelaunchX=noch %d Relaunches übrig.
 MsgFail=verloren.
 
+MsgRelaunchGained=%s has made four kills and gained a relaunch.
+
 MsgGoalFulfilled=Eure Gegner sind eliminiert.
 MsgGoalUnfulfilled=Es sind noch %d Gegner im Spiel.

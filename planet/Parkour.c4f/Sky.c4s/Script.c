@@ -18,5 +18,6 @@ protected func PlrHasRespawned(int iPlr, object cp)
 	var clonk = GetCrew(iPlr);
 	clonk->CreateContents(Loam);
 	clonk->CreateContents(JarOfWinds);
+	clonk->CreateContents(Shovel);
 	return;
 }

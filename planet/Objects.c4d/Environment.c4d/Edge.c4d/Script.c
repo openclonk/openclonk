@@ -1,0 +1,50 @@
+/*-- 
+	Ecke 
+	Originally from Sven2
+	Modified by Mimmo	
+--*/
+
+local dir;
+protected func Initialize() {
+  Snap();
+  AutoP();
+  return true;
+}
+
+func PermaEdge()
+{
+	var p=dir;
+	if(p==0) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX(),GetY(),GetX()+5,GetY()+5,GetX()-5,GetY()+5);
+	if(p==1) DrawMaterialQuad("Brick-brick1",GetX(),GetY(),GetX()+5,GetY()-5,GetX()+5,GetY()+5,GetX()-5,GetY()+5);
+	if(p==3) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX()+5,GetY()-5,GetX()+5,GetY()+5,GetX(),GetY());
+	if(p==2) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX()+5,GetY()-5,GetX(),GetY(),GetX()-5,GetY()+5);
+	this->RemoveObject();
+}
+
+protected func AutoP()
+{
+	var dir=[];
+	dir[0]=GBackSolid(10 ,0);
+	dir[1]=GBackSolid(0,-10);
+	dir[2]=GBackSolid(-10,0);
+	dir[3]=GBackSolid(0 ,10);
+	if(dir[0] && dir[1]) SetP(3);
+	if(dir[1] && dir[2]) SetP(2);
+	if(dir[0] && dir[3]) SetP(1);
+	if(dir[2] && dir[3]) SetP(0);
+}
+  
+  
+public func Snap(int o,int p)
+  {
+  SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
+  }
+
+public func SetP(int p)
+  {
+  SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
+  SetAction("Edge"); SetPhase(p);
+  SetSolidMask(p*10,0,10,10);
+  dir=p;
+  }
+  

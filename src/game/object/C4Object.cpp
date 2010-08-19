@@ -183,7 +183,6 @@ void C4Object::Default()
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
 	Mobile=0;
-	Select=0;
 	Unsorted=false;
 	Initializing=false;
 	OnFire=0;
@@ -551,10 +550,20 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 		C4Value value;
 		GetPropertyVal(P_MeshTransformation, value);
 		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			lpDDraw->SetMeshTransform(&matrix);
+		if (!C4ValueToMatrix(value, &matrix))
+			matrix = StdMeshMatrix::Identity();
 
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, twdt/fwdt, Color, transform);
+		if(twdt != fwdt || thgt != fhgt)
+		{
+			// Also scale Z so that the mesh is not totally distorted and
+			// so that normals halfway keep pointing into sensible directions.
+			// We don't have a better guess so use the geometric mean for Z scale.
+			matrix = StdMeshMatrix::Scale(twdt/fwdt,thgt/fhgt,std::sqrt(twdt*thgt/(fwdt*fhgt))) * matrix;
+		}
+
+		lpDDraw->SetMeshTransform(&matrix);
+
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
 		lpDDraw->SetMeshTransform(NULL);
 		break;
 	}
@@ -1245,7 +1254,6 @@ void C4Object::AssignDeath(bool fForced)
 	// Action
 	SetActionByName("Dead");
 	// Values
-	Select=0;
 	Alive=0;
 	ClearCommands();
 	if (Info)
@@ -2486,14 +2494,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	// local particles in front of the object
 	if (FrontParticles) if (eDrawMode!=ODM_BaseOnly) FrontParticles.Draw(cgo,this);
 
-	// Select Mark
-	if (Select)
-		if (eDrawMode!=ODM_BaseOnly)
-			if (ValidPlr(Owner))
-				if (Owner == iByPlayer)
-					if (::Players.Get(Owner)->SelectFlash)
-						DrawSelectMark(cgo, 1);
-
 	// Energy shortage
 	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 			{
@@ -2748,7 +2748,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( SolidMask,                        "SolidMask",          Def->SolidMask    ));
 	pComp->Value(mkNamingAdapt( PictureRect,                      "Picture"                               ));
 	pComp->Value(mkNamingAdapt( Mobile,                           "Mobile",             false             ));
-	pComp->Value(mkNamingAdapt( Select,                           "Selected",           false             ));
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
@@ -3344,6 +3343,8 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 {
 	C4PropList * LastAction = GetAction();
 	int32_t iLastPhase=Action.Phase;
+	C4Object *pLastTarget = Action.Target;
+	C4Object *pLastTarget2 = Action.Target2;
 	// No other action
 	if (LastAction)
 		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
@@ -3420,7 +3421,9 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 			if (LastAction->GetPropertyStr(P_AbortCall))
 			{
 				C4Def *pOldDef = Def;
-				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
+				if (pLastTarget && !pLastTarget->Status) pLastTarget = NULL;
+				if (pLastTarget2 && !pLastTarget2->Status) pLastTarget2 = NULL;
+				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase), C4VObj(pLastTarget), C4VObj(pLastTarget2)));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return true;
 			}
@@ -3437,6 +3440,11 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				if (Def != pOldDef || !Status) return true;
 			}
 		}
+
+	C4Def *pOldDef = Def;
+	Call(PSF_OnActionChanged, &C4AulParSet(C4VString(LastAction ? LastAction->GetName() : "Idle")));
+	if (Def != pOldDef || !Status) return true;
+
 	return true;
 }
 
@@ -3516,6 +3524,8 @@ void GrabLost(C4Object *cObj)
 {
 	// Grab lost script call on target (quite hacky stuff...)
 	cObj->Action.Target->Call(PSF_GrabLost);
+	// Also, delete the target from the clonk's action (Newton)
+	cObj->Action.Target = NULL;
 	// Clear commands down to first PushTo (if any) in command stack
 	for (C4Command *pCom=cObj->Command; pCom; pCom=pCom->Next)
 		if (pCom->Next && pCom->Next->Command==C4CMD_PushTo)
@@ -5090,28 +5100,20 @@ void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctView
 		riTy = riTy * iParY / 100;
 }
 
-bool C4Object::DoSelect(bool fCursor)
+bool C4Object::DoSelect()
 {
 	// selection allowed?
-	if (CrewDisabled) return true;
-	// was already selected
-	if (Select) return true;
-	// select
-	if (!fCursor) Select=1;
+	if (CrewDisabled) return false;
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(false), C4VBool(!!fCursor)));
+	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(false)));
 	// done
 	return true;
 }
 
-void C4Object::UnSelect(bool fCursor)
+void C4Object::UnSelect()
 {
-	// was not selected
-	if (!Select) return;
-	// unselect
-	if (!fCursor) Select=0;
 	// do callback
-	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true), C4VBool(!!fCursor)));
+	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true)));
 }
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)

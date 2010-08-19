@@ -48,6 +48,8 @@ public:
 	C4FacetID fctNetBG;     // for network screen
 	C4FacetID fctAboutBG;   // for about screen
 
+	C4FacetID fctStartupLogo; // logo
+
 	// big buttons used in main menu
 	C4FacetID fctMainButtons,fctMainButtonsDown;
 	C4GUI::DynBarFacet barMainButtons,barMainButtonsDown;

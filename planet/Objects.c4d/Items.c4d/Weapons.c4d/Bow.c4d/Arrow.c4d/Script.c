@@ -35,7 +35,7 @@ public func Launch(int angle, int str, object shooter)
 	SetR(angle);
 	Sound("ArrowShoot*.ogg");
 	// Shooter controls the arrow.
-	SetController(shooter->GetOwner());
+	SetController(shooter->GetController());
 	
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 	AddEffect("InFlight", this, 1,1, this);

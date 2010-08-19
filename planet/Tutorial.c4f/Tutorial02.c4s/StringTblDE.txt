@@ -1,14 +1,17 @@
 # Dialogue options
-MsgNextTutorial=&Next tutorial
-MsgNextTutorialDesc=Start the next tutorial scenario.
-MsgRepeatRound=&Repeat this round
-MsgRepeatRoundDesc=Restart this scenario.
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Runde wiederholen
+MsgRepeatRoundDesc=Diese Runde wiederholen.
 
 # Tutorial messages
-MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the gold plateau on the far right side with both your clonks. First make yourself familiar with the landscape and try to figure out a way to get there. At any time you can click on the professor for helpful hints. Close this window by clicking on the red cross.
+MsgTutWelcome=Welcome to the second tutorial. Your goal will be to reach the flag on the far right side of this cave. On your way you will encounter many obstacles, which can be overcome by the numerous tools and objects available in Clonk. Just walk around a little and try to overcome the first obstacle. At any time you can click on the professor for helpful hints.
 MsgTutCrewSelection=Since you have two clonks and can only control one clonk at a time, it might be useful to switch between clonks. You can either click on the clonk you want to control in the upperleft part of the HUD, or by pressing Shift + the number key corresponding to the clonk.
-MsgTutBackpack=One of your clonks has a shovel in its backpack. The backpack can be opened and closed with Q, when the backpack is opened you can interchange one of your hand items with a backpack item by left or right clicking on that respective item. With the use of the shovel find the abandoned mine.
-MsgTutLorry=Some mining equipment may have been left behind in the lorry, grab it!
+MsgTutBackpack=As you might have learned the clonk can hold two items in its hands, however it can carry more by using a backpack. The backpack can be opened and closed with Q, when the backpack is opened you can interchange one of your hand items with a backpack item by left or right clicking on that respective item.
+MsgTutInteractable=Apart from items, there are a lot of other objects the clonk can interact with. Most of them, vehicles or buildings, can be grabbed or entered by standing in front of them and pressing space bar. Moreover an icon will show up in the HUD which can be clicked with the mouse, or selected with a number key. This comes in handy when standing in front of multiple interactables.
+MsgTutChest=The chest is an item container and works similar to the backpack. The menu is opened when you grab the chest and items can be interchanged with your hands by clicking on them.
+MsgTutCannon=The cannon is mainly a weapon although it can be used as a tool in various situations. The cannon needs gunpowder to operate, this is stored in a powder keg, a powder keg must be available either in the cannon or in your backpack/hands. To operate the cannon you can click in the landscape to aim the cannon, left click will shoot your left-hand item, right click your right-hand item. 
+
 MsgTutRopeladder=Your second clonk has some rope ladders, these are very useful in aiding other clonks to overcome obstacles in the landscape. When using the rope ladder the ladder will be unrolled towards the location of the click.
 MsgTutDynamiteBox=The dynamitebox can be used to blast through large amounts of material. When using the dynamite box you can stick 5 dynamite pieces into some material, the sixth time you click you will detonate the dynamite. Before doing that you really want to be somehwere distant.
 MsgTutGrappleBow=The last hurdle, a dangerous cliff to get over. With the grapple bow your can shoot a hook with attached rope, the clonk will hang onto the rope. Using two grapple bows swing across the pit by shooting hooks to the sky islands continuously.

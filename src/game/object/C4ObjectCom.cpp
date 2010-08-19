@@ -287,8 +287,12 @@ bool ObjectComUnGrab(C4Object *cObj)
 		{
 			if (!cObj->CloseMenu(false)) return false;
 			cObj->Call(PSF_Grab, &C4AulParSet(C4VObj(pTarget), C4VBool(false)));
+			// clear action target
+			cObj->Action.Target = NULL;
 			if (pTarget && pTarget->Status && cObj->Status)
+			{
 				pTarget->Call(PSF_Grabbed, &C4AulParSet(C4VObj(cObj), C4VBool(false)));
+			}
 			return true;
 		}
 	}
@@ -851,55 +855,6 @@ const char *ComName(int32_t iCom)
 	case COM_WheelDown:   return "WheelDown";
 	}
 	return "Undefined";
-}
-
-int32_t Com2Control(int32_t iCom)
-{
-	iCom = iCom & ~(COM_Double | COM_Single);
-	switch (iCom)
-	{
-	case COM_CursorLeft:    return CON_CursorLeft;
-	case COM_CursorToggle:  return CON_CursorToggle;
-	case COM_CursorRight:   return CON_CursorRight;
-	case COM_Throw:         return CON_Throw;
-	case COM_Up:            return CON_Up;
-	case COM_Dig:           return CON_Dig;
-	case COM_Left:          return CON_Left;
-	case COM_Down:          return CON_Down;
-	case COM_Right:         return CON_Right;
-	case COM_Special:       return CON_Special;
-	case COM_Special2:      return CON_Special2;
-	}
-	return CON_Menu;
-}
-
-int32_t Control2Com(int32_t iControl, bool fUp)
-{
-	static const char con2com[C4MaxKey]=
-	{
-		COM_CursorLeft, COM_CursorToggle, COM_CursorRight,
-		COM_Throw,      COM_Up,           COM_Dig,
-		COM_Left,       COM_Down,         COM_Right,
-		COM_PlayerMenu, COM_Special,      COM_Special2
-	};
-	static const char con2com_r[C4MaxKey]=
-	{
-		COM_None,    COM_None,   COM_None,
-		COM_Throw_R, COM_Up_R,   COM_Dig_R,
-		COM_Left_R,  COM_Down_R, COM_Right_R,
-		COM_None,    COM_Special_R,   COM_Special2_R
-	};
-	if (fUp)
-	{
-		if (Inside<int32_t>(iControl,0,C4MaxKey-1))
-			return con2com_r[iControl];
-	}
-	else
-	{
-		if (Inside<int32_t>(iControl,0,C4MaxKey-1))
-			return con2com[iControl];
-	}
-	return COM_None;
 }
 
 int32_t Coms2ComDir(int32_t iComs)

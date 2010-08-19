@@ -1,5 +1,8 @@
+
 cmake_minimum_required (VERSION 2.6.0)
 project (clonk CXX C)
+
+include(Version.txt)
 
 set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
@@ -93,20 +96,6 @@ if(MSVC_VERSION)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
 	list(APPEND OC_CXX_FLAGS "/wd4244")
-endif()
-
-############################################################################
-# Generate hgrevision.h
-############################################################################
-if(CMAKE_HOST_WIN32 AND NOT CMAKE_HOST_UNIX)
-	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/.hg/dirstate
-		COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/get_hg_revision.bat" > "${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h"
-		VERBATIM)
-else()
-	# Assume all non-windows system to have /bin/sh.
-	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/.hg/dirstate
-		COMMAND /bin/sh "${CMAKE_CURRENT_SOURCE_DIR}/tools/get_hg_revision.sh" > "${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h"
-		VERBATIM)
 endif()
 
 ############################################################################
@@ -507,7 +496,6 @@ set(OC_CLONK_SOURCES
 	src/tinyxml/tinyxmlparser.cpp
 	src/zlib/gzio.c
 	src/zlib/zutil.h
-	${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
@@ -530,7 +518,7 @@ if(WIN32)
 		endif()
 
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/src
+		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_BINARY_DIR}
 		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
 		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o)
 
@@ -728,6 +716,27 @@ if(HAVE_PRECOMPILED_HEADERS)
 endif()
 
 ############################################################################
+# Mac OS bundle setup
+############################################################################
+
+if(APPLE)
+
+	list(APPEND OC_BUNDLE_RESOURCES
+		src/res/Clonk.icns
+		src/res/C4D.icns src/res/C4F.icns src/res/C4G.icns src/res/C4K.icns
+		src/res/C4P.icns src/res/C4S.icns src/res/C4U.icns
+	)
+	
+	# Add icon resources
+	set_source_files_properties(
+		${OC_BUNDLE_RESOURCES}
+		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+	)
+	list(APPEND OC_SYSTEM_SOURCES ${OC_BUNDLE_RESOURCES})
+	
+endif()
+
+############################################################################
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
@@ -767,6 +776,10 @@ target_link_libraries(c4group
 )
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+
+# This expands some variables in Info.plist as a side-effect. XCode might then 
+# expand a second time, using the same syntax. Try not to get confused by this!
+set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/res/Info.plist")
 
 ############################################################################
 # build to planet

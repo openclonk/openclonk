@@ -49,10 +49,12 @@ global func FxHitCheckStop(object target, int effect, int reason, bool temp)
 global func FxHitCheckDoCheck(object target, int effect)
 {
 	var obj;
-	var oldx = EffectVar(0, target, effect);
-	var oldy = EffectVar(1, target, effect);
-	var newx = target->GetX();
-	var newy = target->GetY();
+	// rather search in front of the projectile, since a hit might delete the effect,
+	// and clonks can effectively hide in front of walls. 
+	var oldx = target->GetX();
+	var oldy = target->GetY();
+	var newx = target->GetX() + target->GetXDir() / 10;
+	var newy = target->GetY() + target->GetYDir() / 10;
 	var dist = Distance(oldx, oldy, newx, newy);
 	
 	var shooter = EffectVar(2, target, effect);
@@ -67,6 +69,7 @@ global func FxHitCheckDoCheck(object target, int effect)
 		// and sort by distance (closer first).
 		for (obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy),
 								Find_NoContainer(),
+								Find_PathFree(target),
 								Sort_Distance(oldx, oldy)))
 		{
 			// Excludes
@@ -165,12 +168,12 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 	this->~OnStrike(obj);
 	if (obj->GetAlive())
 	{
-		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetOwner());
+		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetController());
 		obj->~CatchBlow(-dmg, this);
 	}
 	else
 	{
-		obj->DoDamage(dmg, FX_Call_EngObjHit, GetOwner());
+		obj->DoDamage(dmg, FX_Call_EngObjHit, GetController());
 	}
 	// Target could have done something with this projectile.
 	if (!this || !obj) 
@@ -180,7 +183,12 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 	if (obj->GetAlive() && tumble)
 	{
 		obj->SetAction("Tumble");
-		obj->SetSpeed(obj->GetXDir() + GetXDir() / 3 , obj->GetYDir() + GetYDir() / 3 - 1);
+		// Constrained by conservation of linear momentum, unrealism != 1 for unrealistic behaviour.
+		var unrealism = 3;
+		var mass = GetMass();
+		var obj_mass = obj->GetMass();
+		obj->SetXDir((obj->GetXDir() * obj_mass + GetXDir() * mass * unrealism) / (mass + obj_mass));		
+		obj->SetYDir((obj->GetYDir() * obj_mass + GetYDir() * mass * unrealism) / (mass + obj_mass));
 	}
 	return; 
 }

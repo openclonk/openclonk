@@ -8,7 +8,7 @@
 local oldcount;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return Trans_Mul(Trans_Translate(-3500,2000,0),Trans_Rotate(180,0,1,0));	}
+public func GetCarryTransform(clonk)	{	return Trans_Mul(Trans_Translate(-1000,-800,0),Trans_Rotate(180,0,1,0));	}
 public func GetCarryPhase() { return 900; }
 
 protected func Initialize()

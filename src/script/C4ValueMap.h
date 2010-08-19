@@ -125,6 +125,9 @@ public:
 	// returns -1 if no item with given name exists
 	int32_t GetItemNr(const char *strName);
 
+	// get name by index; awway bounds not checked
+	const char *GetItemUnsafe(int32_t idx) const { return pNames[idx]; }
+
 	void Reset();
 
 private:

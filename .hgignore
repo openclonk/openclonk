@@ -33,6 +33,15 @@ autotools/missing
 configure
 intermediate
 
+# Documentation
+*.pyc
+docs/online
+docs/chm
+docs/sdk-en
+docs/sdk/content.xml
+docs/*.mo
+docs/doku.pot
+
 # Visual studio files
 deps/
 planet/Release
@@ -87,6 +96,7 @@ BuildLog.htm
 xcode/build
 *.xcodeproj
 
+.anjuta*
 
 # Binaries
 planet/Clonk.app

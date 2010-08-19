@@ -81,7 +81,6 @@ void C4GraphicsResource::Default()
 
 	fctCursor.Default();
 	fctDropTarget.Default();
-	fctInsideSymbol.Default();
 	fctKeyboard.Default();
 	fctGamepad.Default();
 	fctCommand.Default();
@@ -91,7 +90,6 @@ void C4GraphicsResource::Default()
 
 	iNumRanks=1;
 	idRegisteredMainGroupSetFiles=-1;
-	fOldStyleCursor = false;
 }
 
 void C4GraphicsResource::Clear()
@@ -104,7 +102,6 @@ void C4GraphicsResource::Clear()
 	fctCrewClr.Clear();
 	fctFlagClr.Clear();
 	fctPlayerClr.Clear();
-	fctPlayerGray.Clear();
 
 	fctPlayer.Clear();
 	fctFlag.Clear();
@@ -190,7 +187,7 @@ bool C4GraphicsResource::Init()
 	}
 
 	Game.SetInitProgress(11.0f);
-	ProgressStart = 12; ProgressIncrement = 0.4;
+	ProgressStart = 12.0f; ProgressIncrement = 0.4f;
 	// The progress bar is the only graphic besides the background that is
 	// used during startup, so load it early
 	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;
@@ -268,13 +265,6 @@ bool C4GraphicsResource::Init()
 		fctFlagClr.Hgt=fctFlag.Hgt;
 		fctFlagClr.idSourceGroup = fctFlag.idSourceGroup;
 	}
-	if (fctPlayer.idSourceGroup != fctPlayerGray.idSourceGroup)
-	{
-		fctPlayerGray.Create(fctPlayer.Wdt, fctPlayer.Hgt);
-		fctPlayer.Draw(fctPlayerGray);
-		fctPlayerGray.Grayscale(30);
-		fctPlayerGray.idSourceGroup = fctPlayer.idSourceGroup;
-	}
 	if (fctPlayer.idSourceGroup != fctPlayerClr.idSourceGroup)
 	{
 		if (!fctPlayerClr.CreateClrByOwner(fctPlayer.Surface)) { LogFatal("ClrByOwner error! (1)"); return false; }
@@ -301,44 +291,20 @@ bool C4GraphicsResource::Init()
 
 bool C4GraphicsResource::LoadCursorGfx()
 {
-	// old-style cursor file overloads new-stye, because old scenarios might want to have their own cursors
-	if (!LoadFile(fctMouseCursor, "Cursor",       Files, C4FCT_Height, C4FCT_Full, true))
-	{
-		// no old-style overload present: Determine appropriate GFX file by screen resolution
-		const char *szCursorFilename;
-		if (C4GUI::GetScreenWdt() >= 1280)
-			szCursorFilename = "CursorLarge";
-		else if (C4GUI::GetScreenWdt() >= 800)
-			szCursorFilename = "CursorMedium";
-		else
-			szCursorFilename = "CursorSmall";
-		// always fallback to regular cursor file
-		if (!LoadFile(fctMouseCursor, szCursorFilename,       Files, C4FCT_Height))
-			return false;
-	}
+	// Determine appropriate GFX file by screen resolution
+	const char *szCursorFilename;
+	if (C4GUI::GetScreenWdt() >= 1280)
+		szCursorFilename = "CursorLarge";
+	else if (C4GUI::GetScreenWdt() >= 800)
+		szCursorFilename = "CursorMedium";
+	else
+		szCursorFilename = "CursorSmall";
+	if (!LoadFile(fctMouseCursor, szCursorFilename, Files, C4FCT_Height))
+		return false;
 	// adjust dependant faces
 	int32_t iCursorSize = fctMouseCursor.Hgt;
-	if (iCursorSize == 13)
-	{
-		fctCursor.Set(fctMouseCursor.Surface, 455, 0, 13, 13);
-		fOldStyleCursor = true;
-	}
-	else
-	{
-		fctCursor.Set(fctMouseCursor.Surface, 35*iCursorSize, 0, iCursorSize, iCursorSize);
-		fOldStyleCursor = false;
-	}
-	if (iCursorSize == 13)
-	{
-		fctInsideSymbol.Set(fctMouseCursor.Surface, 468, 0, 13, 13);
-		fctDropTarget.Set(fctMouseCursor.Surface, 494, 0, 13, 13);
-	}
-	else
-	{
-		fctInsideSymbol.Set(fctMouseCursor.Surface, 36*iCursorSize, 0, iCursorSize, iCursorSize);
-		fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
-	}
-	// done
+	fctCursor.Set(fctMouseCursor.Surface, 35*iCursorSize, 0, iCursorSize, iCursorSize);
+	fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
 	return true;
 }
 
@@ -347,8 +313,8 @@ bool C4GraphicsResource::RegisterGlobalGraphics()
 	// Create main gfx group - register with fixed ID 1, to prevent unnecessary font reloading.
 	// FontLoader-initializations always check whether the font has already been initialized
 	// with the same parameters. If the game is simply reloaded in console-mode, this means
-	// that non-bitmap-fonts are not reinitialized. This will also apply for InGame-scenario
-	// switches yet to be implemented.
+	// that fonts are not reinitialized. This will also apply for InGame-scenario switches yet
+	// to be implemented.
 	// Bitmap fonts from other groups are always reloaded, because the group indices of the gfx
 	// group set are not reset, and will then differ for subsequent group registrations.
 	// Resetting the group index of the gfx group set at game reset would cause problems if a
@@ -356,6 +322,7 @@ bool C4GraphicsResource::RegisterGlobalGraphics()
 	// overloaded font face is opened. The group indices could match and the old font would
 	// then be kept.
 	// The cleanest alternative would be to reinit all the fonts whenever a scenario is reloaded
+	// FIXME: Test whether vector fonts from a scenario are correctly reloaded
 	C4Group *pMainGfxGrp = new C4Group();
 	if (!pMainGfxGrp->Open(C4CFN_Graphics) || !Files.RegisterGroup(*pMainGfxGrp, true, C4GSPrio_Base, C4GSCnt_Graphics, 1))
 	{

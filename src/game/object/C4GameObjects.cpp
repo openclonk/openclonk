@@ -382,12 +382,6 @@ void C4GameObjects::Synchronize()
 	UpdateSolidMasks();
 }
 
-C4Object *C4GameObjects::FindInternal(C4ID id)
-{
-	// search list of system objects (searches global list)
-	return ObjectsInt().Find(id);
-}
-
 C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 {
 	// search own list
@@ -422,14 +416,6 @@ C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
 	C4Object *pObj = ObjectPointer(iNumber);
 	if (pObj) if (!pObj->Status) return NULL;
 	return pObj;
-}
-
-C4ObjectList &C4GameObjects::ObjectsInt()
-{
-	// some time ago, only objects in the topleft corner used to be recognized
-	// this is an unnecessary restriction though...
-	//return ::Landscape.Sectors.First()->Objects;
-	return *this;
 }
 
 void C4GameObjects::UpdateSolidMasks()

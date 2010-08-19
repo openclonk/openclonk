@@ -127,7 +127,10 @@ global func UpdateTime(bool advance)
 	{
 		var skyshade = Sin((GetTime() - 180) / 4,255);
 		ShadeCelestial(255-skyshade);
+		if(FindObject(Find_ID(Moon)))
+		{
 		if(GetTime() == 540) FindObject(Find_ID(Moon))->Phase();
+		}
 	}
 
 	//Day Time (540-900)

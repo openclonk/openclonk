@@ -155,26 +155,14 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		StopSelected();
 		
 		// set cursor if not disabled etc.
-		UnselectCrew(plr);
-		return SelectCrew(plr,crew, true);
+		return SetCursor(plr, crew);
 	}
 	
-	// select the complete crew
-	if (ctrl == CON_AllCrew)
-	{
-		for(var i = 0; i < GetCrewCount(plr); ++i)
-		{
-			var crew = GetCrew(plr,i);
-			SelectCrew(plr,crew, true);
-		}
-		StopSelected(plr);
-	}
 	// cursor pos info - store in player values
 	if (ctrl == CON_CursorPos)
 	{
 		if (!g_player_cursor_pos) g_player_cursor_pos = CreateArray(plr+1);
 		g_player_cursor_pos[plr] = [x, y];
-		
 		return true;
 	}
 	/*
@@ -196,8 +184,8 @@ global func GetPlayerCursorPos(int plr)
 
 global func StopSelected(int plr)
 {
-	var cursor;
-	for(var i = 0; cursor = GetCursor(plr,i); ++i)
+	var cursor = GetCursor(plr);
+	if(cursor)
 	{
 		cursor->SetCommand("None");
 		cursor->SetComDir(COMD_Stop);
@@ -286,6 +274,9 @@ global func NameComDir(comdir)
 global func ObjectControlMovement(int plr, int ctrl, int strength, bool release, bool repeat)
 {
 	if (!this) return false;
+	
+	// movement is only possible when not contained
+	if (Contained()) return false;
 
 	// this is for controlling movement with Analogpad
 	if(!release)
@@ -299,7 +290,8 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		// Jump control
 		if (ctrl == CON_Jump)
 		{
-			return PlayerObjectCommand(plr, false, "Jump");
+			SetComDir(COMD_None);
+			return this->ObjectCommand("Jump");
 		}
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
 		{
@@ -307,15 +299,13 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
-			if (ctrl == CON_Left && GetDir() == DIR_Right) return ObjectComLetGo(-10);
-			if (ctrl == CON_Right && GetDir() == DIR_Left) return ObjectComLetGo(+10);
+			if (ctrl == CON_Left && GetDir() == DIR_Right) return this->ObjectComLetGo(-10);
+			if (ctrl == CON_Right && GetDir() == DIR_Left) return this->ObjectComLetGo(+10);
 		}
 		else if (proc == "HANGLE") // Let go from hangling the ceiling
 		{
-			if (ctrl == CON_Down) return ObjectComLetGo(0,0);
+			if (ctrl == CON_Down) return this->ObjectComLetGo(0,0);
 		}
-		// Make sure other selected Clonks are following
-		PlayerObjectCommand(plr, true, "Follow", this, GetX(), GetY());
 		// Direct turnaround if object is standing still. Valid for any procedure in OC
 		if (!GetXDir())
 		{
@@ -412,77 +402,16 @@ global func ShiftCursor(int plr, bool back)
 
 	StopSelected();
 
-	UnselectCrew(plr);
-	return SelectCrew(plr, GetCrew(plr,index), true);
+	return SetCursor(plr, GetCrew(plr,index));
 }
 
 // Temporarily used for Debugging!
 // Helper function to turn CON_*-constants into strings
 global func GetPlayerControlName(int ctrl)
 {
-	if (ctrl == CON_Aim)		return "Aim";
-	if (ctrl == CON_AimLeft)		return "AimLeft";
-	if (ctrl == CON_AimRight)		return "AimRight";
-	if (ctrl == CON_AimUp)		return "AimUp";
-	if (ctrl == CON_AimDown)		return "AimDown";
-	if (ctrl == CON_AimAxisLeft)		return "AimAxisLeft";
-	if (ctrl == CON_AimAxisRight)		return "AimAxisRight";
-	if (ctrl == CON_AimAxisUp)		return "AimAxisUp";
-	if (ctrl == CON_AimAxisDown)		return "AimAxisDown";
-	if (ctrl == CON_Left)		return "Left";
-	if (ctrl == CON_Right)		return "Right";
-	if (ctrl == CON_Up)			return "Up";
-	if (ctrl == CON_Down)		return "Down";
-	if (ctrl == CON_Throw)		return "Throw";
-	if (ctrl == CON_ThrowAlt)		return "ThrowAlt";
-	if (ctrl == CON_ThrowDelayed)		return "ThrowDelayed";
-	if (ctrl == CON_ThrowAltDelayed)		return "ThrowAltDelayed";
-	if (ctrl == CON_Jump)		return "Jump";
-	if (ctrl == CON_MenuLeft)	return "MenuLeft";
-	if (ctrl == CON_MenuRight)	return "MenuRight";
-	if (ctrl == CON_MenuOK)		return "MenuOK";
-	if (ctrl == CON_MenuUp)		return "MenuUp";
-	if (ctrl == CON_MenuDown)	return "MenuDown";
-	if (ctrl == CON_Use)		return "Use";
-	if (ctrl == CON_Drop)		return "Drop";
-	if (ctrl == CON_UseAlt)		return "UseAlt";
-	if (ctrl == CON_UseAltDelayed)		return "UseAltDelayed";
-	if (ctrl == CON_UseDelayed)		return "UseDelayed";
-	if (ctrl == CON_DropAlt)		return "DropAlt";
-	if (ctrl == CON_NextCrew)	return "NextCrew";
-	if (ctrl == CON_PreviousCrew) return "PreviousCrew";
-	if (ctrl == CON_MenuCancel)	return "MenuCancel";
-	if (ctrl == CON_PlayerMenu)	return "PlayerMenu";
-	if (ctrl == CON_GrabNext)	return "GrabNext";
-	if (ctrl == CON_GrabPrevious) return "GrabPrevious";
-	if (ctrl == CON_Grab)		return "Grab";
-	if (ctrl == CON_Ungrab)		return "Ungrab";
-	if (ctrl == CON_AllCrew)	return "AllCrew";
-	if (ctrl == CON_PushEnter)	return "PushEnter";
-	if (ctrl == CON_Enter)		return "Enter";
-	if (ctrl == CON_Exit)		return "Exit";
-	if (ctrl == CON_Hotkey0)	return "Hotkey0";
-	if (ctrl == CON_Hotkey1)	return "Hotkey1";
-	if (ctrl == CON_Hotkey2)	return "Hotkey2";
-	if (ctrl == CON_Hotkey3)	return "Hotkey3";
-	if (ctrl == CON_Hotkey4)	return "Hotkey4";
-	if (ctrl == CON_Hotkey5)	return "Hotkey5";
-	if (ctrl == CON_Hotkey6)	return "Hotkey6";
-	if (ctrl == CON_Hotkey7)	return "Hotkey7";
-	if (ctrl == CON_Hotkey8)	return "Hotkey8";
-	if (ctrl == CON_Hotkey9)	return "Hotkey9";
-	if (ctrl == CON_PlayerHotkey0)	return "PlayerHotkey0";
-	if (ctrl == CON_PlayerHotkey1)	return "PlayerHotkey1";
-	if (ctrl == CON_PlayerHotkey2)	return "PlayerHotkey2";
-	if (ctrl == CON_PlayerHotkey3)	return "PlayerHotkey3";
-	if (ctrl == CON_PlayerHotkey4)	return "PlayerHotkey4";
-	if (ctrl == CON_PlayerHotkey5)	return "PlayerHotkey5";
-	if (ctrl == CON_PlayerHotkey6)	return "PlayerHotkey6";
-	if (ctrl == CON_PlayerHotkey7)	return "PlayerHotkey7";
-	if (ctrl == CON_PlayerHotkey8)	return "PlayerHotkey8";
-	if (ctrl == CON_PlayerHotkey9)	return "PlayerHotkey9";
-	
-	return Format("Unknown(%d)", ctrl);
+	var con_name = GetConstantNameByValue(ctrl, "CON_");
+	if (!con_name) con_name = Format("Unknown(%d)", ctrl);
+	return con_name;
 }
 
 // Return COMD_*-constant corresponding to current state of passed directional controls
@@ -509,22 +438,9 @@ global func ComDir2XY(int comd, &x, &y)
 	return true;
 }
 
-// Give a command to all selected Clonks of a player
-global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, object target, int tx, int ty, object target2)
-{
-	for (var i=exclude_cursor; i<GetSelectCount(plr); ++i)
-	{
-		var follow_clonk = GetCursor(plr, i);
-		if (follow_clonk)
-		{
-			follow_clonk->ObjectCommand(command,target,tx,ty,target2);
-		}
-	}
-	return true;
-}
-
 global func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
+	// this function exists to be overloadable by ClonkControl.c4d
 	if(!this) return;
 	this->SetCommand(command,target,tx,ty, target2);
 }

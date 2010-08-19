@@ -86,7 +86,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_Hit                 "~Hit"
 #define PSF_Hit2                "~Hit2"
 #define PSF_Hit3                "~Hit3"
-#define PSF_Grab                "~Grab"
+#define PSF_Grab                "~Grab" // pObject, fGrab
 #define PSF_Grabbed             "~Grabbed"
 #define PSF_Get                 "~Get"
 #define PSF_Put                 "~Put"
@@ -128,7 +128,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_IsFulfilled         "~IsFulfilled"
 #define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
 #define PSF_AttachTargetLost    "~AttachTargetLost"
-#define PSF_CrewSelection       "~CrewSelection" // bool fDeselect, bool fCursorOnly
+#define PSF_CrewSelection       "~CrewSelection" // bool fDeselect
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
 #define PSF_FireMode            "~FireMode"
@@ -189,6 +189,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CrewDisabled             "~OnCrewDisabled"
 #define PSF_NameChange               "~OnNameChanged" // bool inInfoSection
 #define PSF_OnWealthChanged          "~OnWealthChanged" // int iPlr
+#define PSF_OnActionChanged          "~OnActionChanged" // string oldaction
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

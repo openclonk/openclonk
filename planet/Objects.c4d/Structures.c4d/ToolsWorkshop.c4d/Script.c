@@ -6,6 +6,11 @@
 func ProductType() { return C4D_Vehicle | C4D_Object; }
 func ProductCondition() { return "IsToolProduct"; }
 
+public func Construction() 
+{
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-30,30),0,1,0));
+}
+
 public func Initialize()
 {
 	// the entrance is always open
@@ -209,5 +214,5 @@ Build = {
 	PhaseCall="Smoking",
 },  }, def);
 	SetProperty("Name", "$Name$", def);
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }

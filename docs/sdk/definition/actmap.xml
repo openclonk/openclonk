@@ -117,7 +117,7 @@ oben gezählt (siehe Banner im Ritterpack).</col>
   <row>
     <col>AbortCall</col>
     <col>Zeichenfolge (max. 30)</col>
-    <col>Wird aufgerufen, wenn die Aktivität vor ihrem Ende durch eine andere ersetzt wird.</col>
+    <col>Wird aufgerufen, wenn die Aktivität vor ihrem Ende durch eine andere ersetzt wird. Parameter sind letzte Animationsphase, letztes ActionTarget und ActionTarget2.</col>
   </row>
   <row>
     <col>InLiquidAction</col>

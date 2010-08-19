@@ -1,0 +1,2 @@
+Name=Ropeladder
+GrabLadder=Pull in ladder

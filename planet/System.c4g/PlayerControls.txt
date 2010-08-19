@@ -20,7 +20,7 @@
 	#
 	# Enter Exit
 	#
-	# NextCrew PreviousCrew AllCrew
+	# NextCrew PreviousCrew
 	#
 	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight MenuSelect
 	# ObjectMenuCancel ObjectMenuOK ObjectMenuSelect ObjectMenuSelectAll
@@ -308,11 +308,6 @@
 	Identifier=PreviousCrew
 	GUIName=Previous crew member
 	GUIDesc=Control previous crew member
-
-	[ControlDef]
-	Identifier=AllCrew
-	GUIName=All the crew
-	GUIDesc=Control all crew member at the same time
 	
 	[ControlDef]
 	Identifier=PlayerHotkey1

@@ -40,6 +40,17 @@ namespace
 		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst, unsigned int submesh, const StdMeshMatrix& global_trans):
 				m_inst(inst), m_vertices(m_inst.GetSubMesh(submesh).GetVertices()), m_global_trans(global_trans) {}
 
+		inline float get_z(const StdMeshVertex& vtx) const
+		{
+			// We need to evaluate the Z coordinate of the transformed vertex
+			// (for all three vertices of the two faces), something like
+			// float z11 = (m_global_trans*m_vertices[face1.Vertices[0]]).z;
+			// However we don't do the full matrix multiplication as we are
+			// only interested in the Z coordinate of the result, also we are
+			// not interested in the resulting normals.
+			return m_global_trans(2,0)*vtx.x + m_global_trans(2,1)*vtx.y + m_global_trans(2,2)*vtx.z + m_global_trans(2,3);
+		}
+
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
 			// TODO: Need to apply attach matrix in case of attached meshes
@@ -51,12 +62,12 @@ namespace
 			case StdMeshInstance::FO_FarthestToNearest:
 			case StdMeshInstance::FO_NearestToFarthest:
 			{
-				float z11 = (m_global_trans*m_vertices[face1.Vertices[0]]).z;
-				float z12 = (m_global_trans*m_vertices[face1.Vertices[1]]).z;
-				float z13 = (m_global_trans*m_vertices[face1.Vertices[2]]).z;
-				float z21 = (m_global_trans*m_vertices[face2.Vertices[0]]).z;
-				float z22 = (m_global_trans*m_vertices[face2.Vertices[1]]).z;
-				float z23 = (m_global_trans*m_vertices[face2.Vertices[2]]).z;
+				float z11 = get_z(m_vertices[face1.Vertices[0]]);
+				float z12 = get_z(m_vertices[face1.Vertices[1]]);
+				float z13 = get_z(m_vertices[face1.Vertices[2]]);
+				float z21 = get_z(m_vertices[face2.Vertices[0]]);
+				float z22 = get_z(m_vertices[face2.Vertices[1]]);
+				float z23 = get_z(m_vertices[face2.Vertices[2]]);
 
 				float z1 = std::max(std::max(z11, z12), z13);
 				float z2 = std::max(std::max(z21, z22), z23);

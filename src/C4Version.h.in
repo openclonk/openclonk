@@ -1,0 +1,59 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2001-2002  Peter Wortmann
+ * Copyright (c) 2005, 2009  Günther Brammer
+ * Copyright (c) 2009  Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ *
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
+ */
+#ifndef C4VERSION_H
+
+#define C4VERSION_H
+
+// These are filled in automatically by CMake. When in doubt, edit 
+// Version.txt instead!
+
+#define C4CFG_Company         "@C4PROJECT@"
+#define C4COPYRIGHT_YEAR      "@C4COPYRIGHT_YEAR@"
+#define C4COPYRIGHT_COMPANY   "@C4PROJECT@"
+
+#define C4ENGINENAME          "@C4ENGINENAME@"
+#define C4ENGINENICK          "@C4ENGINENICK@"
+
+#define C4ENGINECAPTION       "@C4ENGINECAPTION@"
+#define C4EDITORCAPTION       "Clonk Editor"
+#define C4ENGINEID            "@C4ENGINEID@"
+
+#define C4XVER1               @C4XVER1@
+#define C4XVER2               @C4XVER2@
+#define C4XVER3               @C4XVER3@
+#define C4XVER4               @C4XVER4@
+#define C4XVERBUILD           @C4XVERBUILD@
+#define C4VERSIONBUILDNAME    "@C4VERSIONBUILDNAME@"
+#define C4VERSIONEXTRA        "@C4VERSIONEXTRA@"
+#define C4REVISION            "@C4REVISION@"
+
+#define C4ENGINEINFO          "@C4ENGINEINFO@"
+#define C4ENGINEINFOLONG      "@C4ENGINEINFOLONG@"
+
+// Build Options
+#ifdef _DEBUG
+#define C4BUILDDEBUG " dbg"
+#else
+#define C4BUILDDEBUG
+#endif
+#define C4BUILDOPT C4BUILDDEBUG
+#define C4VERSION             "@C4VERSION@" C4BUILDOPT
+
+#endif

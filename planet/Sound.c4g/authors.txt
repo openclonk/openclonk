@@ -30,3 +30,4 @@ thecheeseman	- Hurt*, Die
 tobyk			- Fanfare
 broumbroum		- Goals/Parkour/Checkpoint
 ERH				- WindLoop
+dobroide		- BirdsLoop

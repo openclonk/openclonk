@@ -147,19 +147,6 @@ const BYTE CNAT_Flags = CNAT_MultiAttach | CNAT_NoCollision; // all attchment fl
 
 const int C4DoubleClick = 10;
 
-const int CON_CursorLeft    = 0,
-                              CON_CursorToggle  = 1,
-                                                  CON_CursorRight   = 2,
-                                                                      CON_Throw         = 3,
-                                                                                          CON_Up            = 4,
-                                                                                                              CON_Dig           = 5,
-                                                                                                                                  CON_Left          = 6,
-                                                                                                                                                      CON_Down          = 7,
-                                                                                                                                                                          CON_Right         = 8,
-                                                                                                                                                                                              CON_Menu          = 9,
-                                                                                                                                                                                                                  CON_Special       = 10,
-                                                                                                                                                                                                                                      CON_Special2      = 11;
-
 //=================================== Control Commands ======================================================
 
 const BYTE COM_Single   = 64,
@@ -212,10 +199,7 @@ const BYTE COM_Left     = 1,
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        COM_Special2_D = COM_Special2 | COM_Double;
 
 const BYTE COM_CursorLeft   = 30,
-                              COM_CursorRight  = 31,
-                                                 COM_CursorToggle = 32;
-
-const BYTE COM_CursorToggle_D = COM_CursorToggle | COM_Double;
+                              COM_CursorRight  = 31;
 
 const BYTE COM_Help             = 35,
                                   COM_PlayerMenu       = 36,

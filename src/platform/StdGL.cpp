@@ -718,11 +718,11 @@ namespace
 			if(!(dwBlitMode & C4GFXBLIT_MOD2) && dwModClr == 0xffffffff)
 			{
 				// Fastpath for the easy case
-				glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
-				glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
-				glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
-				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 			}
 			else
 			{
@@ -782,39 +782,54 @@ namespace
 					Emissive[3] = BoundBy<float>(pass.Emissive[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
 				}
 
-				glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
-				glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
-				glMaterialfv(GL_FRONT, GL_EMISSION, Emissive);
-				glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Emissive);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 			}
+
+			// Use two-sided light model so that vertex normals are inverted for lighting calculation on back-facing polygons
+			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
+			glFrontFace(parity ? GL_CW : GL_CCW);
 
 			switch (pass.CullHardware)
 			{
 			case StdMeshMaterialPass::CH_Clockwise:
 				glEnable(GL_CULL_FACE);
-				glCullFace(parity ? GL_FRONT : GL_BACK);
+				glCullFace(GL_BACK);
 				break;
 			case StdMeshMaterialPass::CH_CounterClockwise:
 				glEnable(GL_CULL_FACE);
-				glCullFace(parity ? GL_BACK : GL_FRONT);
+				glCullFace(GL_FRONT);
 				break;
 			case StdMeshMaterialPass::CH_None:
 				glDisable(GL_CULL_FACE);
 				break;
 			}
 
+			// Overwrite blend mode with default alpha blending when alpha in clrmod
+			// is <255. This makes sure that normal non-blended meshes can have
+			// blending disabled in their material script (which disables expensive
+			// face ordering) but when they are made translucent via clrmod
 			if(!(dwBlitMode & C4GFXBLIT_ADDITIVE))
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
-					    OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
+						          OgreBlendTypeToGL(pass.SceneBlendFactors[1]));
 			}
 			else
 			{
-				glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
+				if( ((dwModClr >> 24) & 0xff) < 0xff)
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				else
+					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
 			}
 
 			// TODO: Use vbo if available.
+
 			// Note that we need to do this before we do glTexCoordPointer for the
 			// texture units below, otherwise the texcoordpointer is reset by this
 			// call (or at least by my radeon driver), even though the documentation
@@ -834,7 +849,7 @@ namespace
 
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
 
-				glEnable(GL_TEXTURE_2D);;
+				glEnable(GL_TEXTURE_2D);
 				if (texunit.HasTexture())
 				{
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
@@ -1096,7 +1111,7 @@ namespace
 	}
 }
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, float scale, DWORD dwPlayerColor, CBltTransform* pTransform)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
@@ -1182,10 +1197,10 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// by MeshTransformation, so use GetBoundingRadius to be safe.
 		// Note this still fails if mesh is scaled in Z direction or
 		// there are attached meshes.
-		const float scz = 1.0/mesh.GetBoundingRadius();
+		const float scz = 1.0/(mesh.GetBoundingRadius());
 
 		glTranslatef(dx, dy, 0.0f);
-		glScalef(scale, scale, scz);
+		glScalef(1.0f, 1.0f, scz);
 	}
 	else
 	{
@@ -1219,7 +1234,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		glTranslatef(ttx, tty, 0.0f);
 		glScalef(((float)ttwdt)/iWdt, ((float)tthgt)/iHgt, 1.0f);
-		glScalef(scale, scale, 1.0f);
 
 		// Return to Clonk coordinate frame
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
@@ -1294,15 +1308,13 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		if (det < 0) parity = !parity;
 
 		// Renormalize if transformation resizes the mesh
-		// for lighting to be correct
+		// for lighting to be correct.
+		// TODO: Also needs to check for orthonormality to be correct
 		if (det != 1 && det != -1)
 			glEnable(GL_NORMALIZE);
 
-		// Apply Matrix in the coordinate system in which the mesh
-		// is centered, not in the mesh's coordinate system.
-		glTranslatef(MeshCenter.x, MeshCenter.y, MeshCenter.z);
+		// Apply MeshTransformation (in the Mesh's coordinate system)
 		glMultMatrixf(Matrix);
-		glTranslatef(-MeshCenter.x, -MeshCenter.y, -MeshCenter.z);
 	}
 
 	// Convert from Ogre to Clonk coordinate system
@@ -1776,7 +1788,7 @@ bool CStdGL::RestoreDeviceObjects()
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	if (!GLEW_VERSION_1_3)
 	{
-		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
 	}
 
 	// lines texture
@@ -1931,6 +1943,15 @@ void CStdGL::ResetTexture()
 		glActiveTexture(GL_TEXTURE0);
 	}
 	glDisable(GL_TEXTURE_2D);
+}
+
+bool CStdGL::Error(const char *szMsg)
+{
+	LogF("  gl: %s", glGetString(GL_VENDOR));
+	LogF("  gl: %s", glGetString(GL_RENDERER));
+	LogF("  gl: %s", glGetString(GL_VERSION));
+	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
+	return CStdDDraw::Error(szMsg);
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)

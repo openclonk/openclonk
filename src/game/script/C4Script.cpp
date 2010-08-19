@@ -470,16 +470,17 @@ static C4Void FnRemoveObject(C4AulObjectContext *cthr, bool fEjectContents)
 	return C4VNull;
 }
 
-static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds)
+static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds, long iPrec)
 {
+	if (!iPrec) iPrec = 1;
 	if (fCheckBounds)
 	{
 		// BoundsCheck takes ref to C4Real and not to long
-		C4Real i_x = itofix(iX), i_y = itofix(iY);
+		C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
 		cthr->Obj->BoundsCheck(i_x, i_y);
-		iX = fixtoi(i_x); iY = fixtoi(i_y);
+		iX = fixtoi(i_x, iPrec); iY = fixtoi(i_y, iPrec);
 	}
-	cthr->Obj->ForcePosition(iX,iY);
+	cthr->Obj->ForcePosition(iX,iY, iPrec);
 	// update liquid
 	cthr->Obj->UpdateInLiquid();
 	return C4VNull;
@@ -1205,10 +1206,11 @@ static long FnGetComDir(C4AulObjectContext *cthr)
 	return cthr->Obj->Action.ComDir;
 }
 
-static Nillable<long> FnGetX(C4AulContext *cthr)
+static Nillable<long> FnGetX(C4AulContext *cthr, long iPrec)
 {
 	if (!cthr->Obj) return C4VNull;
-	return cthr->Obj->GetX();
+	if (!iPrec) iPrec = 1;
+	return fixtoi(cthr->Obj->fix_x, iPrec);
 }
 
 static long FnGetVertexNum(C4AulObjectContext *cthr)
@@ -1299,10 +1301,11 @@ static C4Void FnSetContactDensity(C4AulObjectContext *cthr, long iDensity)
 	return C4VNull;
 }
 
-static Nillable<long> FnGetY(C4AulContext *cthr)
+static Nillable<long> FnGetY(C4AulContext *cthr, long iPrec)
 {
 	if (!cthr->Obj) return C4VNull;
-	return cthr->Obj->GetY();
+	if (!iPrec) iPrec = 1;
+	return fixtoi(cthr->Obj->fix_y, iPrec);
 }
 
 static bool FnGetAlive(C4AulObjectContext *cthr)
@@ -2410,11 +2413,6 @@ static bool FnSetPlrView(C4AulContext *cthr, long iPlr, C4Object *tobj)
 	return true;
 }
 
-static C4String *FnGetPlrControlName(C4AulContext *cthr, long iPlr, long iCon, bool fShort)
-{
-	return String(PlrControlKeyName(iPlr,iCon,fShort).getData());
-}
-
 static long FnGetPlrViewMode(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return -1;
@@ -2626,7 +2624,7 @@ static long FnGetPlayerScoreGain(C4AulContext *cthr, long iPlr)
 static C4Object *FnGetHiRank(C4AulContext *cthr, long iPlr)
 {
 	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->GetHiRankActiveCrew(false);
+	return ::Players.Get(iPlr)->GetHiRankActiveCrew();
 }
 
 static C4Object *FnGetCrew(C4AulContext *cthr, long iPlr, long index)
@@ -2722,30 +2720,13 @@ static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwCo
 	return true;
 }
 
-static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr, long iIndex)
+static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr)
 {
 	// get player
 	C4Player *pPlr = ::Players.Get(iPlr);
 	// invalid player?
 	if (!pPlr) return NULL;
-	// first index is always the cursor
-	if (!iIndex) return pPlr->Cursor;
-	// iterate through selected crew for iIndex times
-	// status needs not be checked, as dead objects are never in Crew list
-	C4Object *pCrew;
-	for (C4ObjectLink *pLnk=pPlr->Crew.First; pLnk; pLnk=pLnk->Next)
-		// get crew object
-		if ((pCrew = pLnk->Obj))
-			// is it selected?
-			if (pCrew->Select)
-				// is it not the cursor? (which is always first)
-				if (pCrew != pPlr->Cursor)
-					// enough searched?
-					if (!--iIndex)
-						// return it
-						return pCrew;
-	// nothing found at that index
-	return NULL;
+	return pPlr->Cursor;
 }
 
 static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
@@ -2756,12 +2737,11 @@ static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
 	return pPlr ? pPlr->ViewCursor : NULL;
 }
 
-static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
+static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectArrow)
 {
 	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr || (pObj && !pObj->Status) || (pObj && pObj->CrewDisabled)) return false;
-	pPlr->SetCursor(pObj, !fNoSelectMark, !fNoSelectArrow);
-	if (!fNoSelectCrew) pPlr->SelectCrew(pObj, true);
+	pPlr->SetCursor(pObj, !fNoSelectArrow);
 	return true;
 }
 
@@ -2774,28 +2754,6 @@ static bool FnSetViewCursor(C4AulContext *cthr, long iPlr, C4Object *pObj)
 	// set viewcursor
 	pPlr->ViewCursor = pObj;
 	return true;
-}
-
-static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSelect, bool fNoCursorAdjust)
-{
-	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr || !pObj) return false;
-	if (fNoCursorAdjust)
-		{ if (fSelect) pObj->DoSelect(); else pObj->UnSelect(); }
-	else
-		pPlr->SelectCrew(pObj,fSelect);
-	return true;
-}
-
-static bool FnGetCrewSelected(C4AulObjectContext *cthr)
-{
-	return !!cthr->Obj->Select;
-}
-
-static long FnGetSelectCount(C4AulContext *cthr, long iPlr)
-{
-	if (!ValidPlr(iPlr)) return false;
-	return ::Players.Get(iPlr)->SelectCount;
 }
 
 static bool FnSetCrewStatus(C4AulObjectContext *cthr, long iPlr, bool fInCrew)
@@ -4210,7 +4168,6 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 	// deselect
 	if (!fEnabled)
 	{
-		cctx->Obj->Select=false;
 		C4Player *pOwner;
 		if ((pOwner=::Players.Get(cctx->Obj->Owner)))
 		{
@@ -4234,17 +4191,6 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 
 	// success
 	return C4VNull;
-}
-
-static bool FnUnselectCrew(C4AulContext *cctx, long iPlayer)
-{
-	// get player
-	C4Player *pPlr=::Players.Get(iPlayer);
-	if (!pPlr) return false;
-	// unselect crew
-	pPlr->UnselectCrew();
-	// success
-	return true;
 }
 
 static long FnDrawMap(C4AulContext *cctx, long iX, long iY, long iWdt, long iHgt, C4String *szMapDef)
@@ -5882,6 +5828,25 @@ static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int i
 	return true;
 }
 
+static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int value, Nillable<C4String *> name_prefix, int idx)
+{
+	C4String *name_prefix_s = name_prefix;
+	// find a constant that has the specified value and prefix
+	for (int32_t i = 0; i < ::ScriptEngine.GlobalConsts.GetAnzItems(); ++i)
+	{
+		if (::ScriptEngine.GlobalConsts[i].getInt() == value)
+		{
+			const char *const_name = ::ScriptEngine.GlobalConstNames.GetItemUnsafe(i);
+			if (!name_prefix_s || SEqual2(const_name, name_prefix_s->GetCStr()))
+				if (!idx--)
+					// indexed constant found. return name minus prefix
+					return String(const_name + (name_prefix_s ? name_prefix_s->GetData().getLength() : 0));
+		}
+	}
+	// nothing found (at index)
+	return C4VNull;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6156,7 +6121,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoPlayerScore", FnDoPlayerScore);
 	AddFunc(pEngine, "GetPlayerScore", FnGetPlayerScore);
 	AddFunc(pEngine, "GetPlayerScoreGain", FnGetPlayerScoreGain);
-	AddFunc(pEngine, "GetPlrControlName", FnGetPlrControlName);
 	AddFunc(pEngine, "GetWind", FnGetWind);
 	AddFunc(pEngine, "SetWind", FnSetWind);
 	AddFunc(pEngine, "GetTemperature", FnGetTemperature);
@@ -6186,9 +6150,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetViewCursor", FnGetViewCursor);
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
-	AddFunc(pEngine, "SelectCrew", FnSelectCrew);
-	AddFunc(pEngine, "GetCrewSelected", FnGetCrewSelected);
-	AddFunc(pEngine, "GetSelectCount", FnGetSelectCount);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
@@ -6266,7 +6227,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
 	AddFunc(pEngine, "GetCrewEnabled", FnGetCrewEnabled);
 	AddFunc(pEngine, "SetCrewEnabled", FnSetCrewEnabled);
-	AddFunc(pEngine, "UnselectCrew", FnUnselectCrew);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
@@ -6392,6 +6352,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
+	AddFunc(pEngine, "GetConstantNameByValue", FnGetConstantNameByValue, false);
 
 	AddFunc(pEngine, "Translate", FnTranslate);
 }
@@ -6459,19 +6420,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 	{ "DIR_Left"               ,C4V_Int,          DIR_Left},
 	{ "DIR_Right"              ,C4V_Int,          DIR_Right},
-
-	{ "CON_CursorLeft"         ,C4V_Int,          CON_CursorLeft},
-	{ "CON_CursorToggle"       ,C4V_Int,          CON_CursorToggle},
-	{ "CON_CursorRight"        ,C4V_Int,          CON_CursorRight},
-	{ "CON_Throw"              ,C4V_Int,          CON_Throw},
-	{ "CON_Up"                 ,C4V_Int,          CON_Up},
-	{ "CON_Dig"                ,C4V_Int,          CON_Dig},
-	{ "CON_Left"               ,C4V_Int,          CON_Left},
-	{ "CON_Down"               ,C4V_Int,          CON_Down},
-	{ "CON_Right"              ,C4V_Int,          CON_Right},
-	{ "CON_Menu"               ,C4V_Int,          CON_Menu},
-	{ "CON_Special"            ,C4V_Int,          CON_Special},
-	{ "CON_Special2"           ,C4V_Int,          CON_Special2},
 
 	{ "OCF_Construct"          ,C4V_Int,          OCF_Construct},
 	{ "OCF_Grab"               ,C4V_Int,          OCF_Grab},

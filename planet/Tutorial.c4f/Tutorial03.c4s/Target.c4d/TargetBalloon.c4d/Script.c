@@ -30,7 +30,6 @@ public func IsProjectileTarget(target,shooter)
 
 public func OnProjectileHit()
 {
-	CreateObject(BurntBalloon,0,30);
 	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
 	RemoveObject();
 }

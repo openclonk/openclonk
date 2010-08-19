@@ -1,6 +1,6 @@
 /*--
 		Commits.c
-		Authors: flgr, Joern, Tyron, Newton, Ringwaul, Sven2
+		Authors: flgr, Joern, Tyron, Newton, Ringwaul, Sven2, Maikel
 		
 		Useful user committed functions, this should really be organized into more sensible categories.
 --*/
@@ -357,4 +357,24 @@ global func SetObjAlpha(int by_alpha)
 	else 
 		clr_mod = clr_mod & 16777215 | by_alpha << 24;
 	return SetClrModulation(clr_mod);
+}
+
+global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
+{
+	var iX, iY;
+	for(var i = 0; i < 500; i++)
+	{
+		iX = iXStart+Random(iWidth);
+		iY = iYStart+Random(iHeight);
+		if(GetMaterial(AbsX(iX),AbsY(iY))==Material(sMat) &&
+		   GetMaterial(AbsX(iX+iSize),AbsY(iY+iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX+iSize),AbsY(iY-iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX-iSize),AbsY(iY-iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX-iSize),AbsY(iY+iSize))==Material(sMat)
+		) {
+			iToX = iX; iToY = iY;
+			return true; // Location found.
+		}
+	}
+	return false; // No location found.
 }

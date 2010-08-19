@@ -8,10 +8,8 @@
 
 local Amount;
 local MaxCap;
-local JarTrans;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return JarTrans; } // TODO change when ck has fixed the bug
 public func GetCarryPhase() { return 600; }
 
 public func FxJarReloadTimer(object target, int effect, int time)
@@ -23,7 +21,6 @@ protected func Initialize()
 {
 	MaxCap = 60; //Changes duration and power of the Jar
 	SetR(-45);
-	JarTrans = Trans_Translate(-1500,2000,0);
 	AddEffect("JarReload",this,100,2,this);
 }
 
@@ -32,8 +29,7 @@ protected func ControlUse(object pClonk, iX, iY)
 	if(!GetEffect("JarReload",this))
 	{
 		if(!GBackLiquid())
-		{
-			JarTrans = Trans_Translate(-1500,2000,0);		
+		{	
 			FireWeapon(pClonk, iX, iY);
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);

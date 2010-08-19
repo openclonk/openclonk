@@ -24,12 +24,10 @@ protected func Initialize()
 
 public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this))
+	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this) || iEffectTime > 108)
 	{
 		AddEffect("Fade",pTarget,1,1,pTarget);
 	}
-
-	SetYDir(GetYDir()+Random(2));
 
 	//Bubbles burst into smaller bubles
 	if(Random(30)==1 && pTarget->GetCon()>100)
@@ -45,6 +43,8 @@ public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
 		RemoveObject();
 		return -1;
 	}
+
+	SetYDir(GetYDir() - 2 + Random(5));
 
 	//Jittery movement
 	var dir;

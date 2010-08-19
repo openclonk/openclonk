@@ -216,7 +216,7 @@ enum C4PropertyName
 	P_LAST
 };
 
-// There is only one Stringtable in Game.ScriptEngine
+// There is only one Stringtable
 class C4StringTable
 {
 public:

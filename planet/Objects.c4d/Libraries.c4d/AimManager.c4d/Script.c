@@ -245,8 +245,8 @@ public func StartAim(object weapon, int angle)
 		}
 	}
 
-	aim_angle = -90;
-	if(GetDir()) aim_angle = 90;
+//	aim_angle = -90;
+//	if(GetDir()) aim_angle = 90;
 	AddEffect("IntAim", this, 1, 1, this);
 }
 

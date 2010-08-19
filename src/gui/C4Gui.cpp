@@ -460,16 +460,8 @@ namespace C4GUI
 		// dbg: some cursor...
 		//lpDDraw->DrawFrame(lpDDraw->lpBack, x-5,y-5,x+5,y+5,2);
 
-		int32_t iOffsetX, iOffsetY;
-		if (GfxR->fOldStyleCursor)
-		{
-			iOffsetX = iOffsetY = 0;
-		}
-		else
-		{
-			iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
-			iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
-		}
+		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
+		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
 		if (::MouseControl.IsHelp())
 			GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);

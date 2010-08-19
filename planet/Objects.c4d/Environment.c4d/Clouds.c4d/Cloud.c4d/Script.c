@@ -59,7 +59,7 @@ public func Precipitation()
 		iAcidity = --iAcidity;
 	}
 	//Lightning Strike; only during rain
-	if(iWaitTime <= 0 && iSize >= 650 && Random(100) >= 100-(iStrikeChance/16) && szMat=="Water") LaunchLightning(GetX(), GetY() + 20, -20, 41, +5, 15);
+	if(iWaitTime <= 0 && iSize >= 650 && Random(100) >= 100-(iStrikeChance/16) && szMat=="Water") LaunchLightning(GetX(), GetY(), 0, 100, 100, 10, true);
 }
 
 public func TimedEvents()

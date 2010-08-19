@@ -74,6 +74,7 @@ protected func FindPosInMat(int &tx, int &ty, string mat, int rx, int ry, int wd
 protected func PlrHasRespawned(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
+	clonk->CreateContents(Shovel);
 	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Loam);
 	return;

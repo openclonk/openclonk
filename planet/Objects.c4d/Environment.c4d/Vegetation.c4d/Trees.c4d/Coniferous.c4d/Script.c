@@ -1,23 +1,15 @@
-/*-- Tree --*/
+/*-- Coniferous Tree --*/
 
-protected func Initialize()
+#include Library_Plant
+
+private func SeedAreaSize() { return 500; }
+private func SeedAmount() { return 10; }
+
+private func Initialize()
 {
-	SetAction("Rotate");
-	SetPhase(RandomX(1,90));
-	return 1;
+	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 }
 
 func Definition(def) {
-	SetProperty("ActMap", {
-		Rotate = {
-			Prototype = Action,
-			Name = "Rotate",
-			Procedure = DFA_NONE,
-			Length = 90,
-			Delay = 0,
-			NextAction = "Hold",
-			Animation = "Rotate",
-		},
-	}, def);
 	SetProperty("Name", "$Name$", def);
 }

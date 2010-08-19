@@ -81,8 +81,7 @@ public func MouseSelection(int plr)
 	StopSelected();
 		
 	// set cursor if not disabled etc.
-	UnselectCrew(plr);
-	return SelectCrew(plr,crew, true);
+	return SetCursor(plr, crew);
 }
 
 public func SetCrew(object c)
@@ -149,7 +148,7 @@ public func UpdateSelectionStatus()
 	if(!crew) return;
 	if(!hotkey) return;
 
-	if(crew->GetCrewSelected())
+	if(crew == GetCursor(crew->GetOwner()))
 	{
 		SetObjDrawTransform(1200,0,0,0,1200,0, 1);
 	}

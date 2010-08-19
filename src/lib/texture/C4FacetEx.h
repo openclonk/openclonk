@@ -27,8 +27,8 @@
 #include <C4Surface.h>
 
 const int C4FCT_Full   = -1,
-                         C4FCT_Height = -2,
-                                        C4FCT_Width  = -3;
+          C4FCT_Height = -2,
+          C4FCT_Width  = -3;
 
 class C4TargetRect;
 class CSurface;

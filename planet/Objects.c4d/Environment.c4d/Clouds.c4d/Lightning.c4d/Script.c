@@ -24,7 +24,7 @@ public func Activate(int x, int y, int xdir, int xdev, int ydir, int ydev, bool 
 	xDir = xdir; yDir = ydir;
 	xDev = xdev; yDev = ydev;
 	gamma = doGamma;
-	size = startSize || 10;
+	size = startSize || 20;
 	AddVertex(x-GetX(), y-GetY());
 	//Log("Lightning %d: Launching at %d/%d (offset %d/%d)", ObjectNumber(), GetX(), GetY(), GetVertex(0,0), GetVertex(0,1));
 	AddEffect("LightningMove", this, 1, 1, this);

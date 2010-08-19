@@ -4,7 +4,7 @@
 	
 	This object provides handling of the clonk controls including item
 	management, backpack controls and standard throwing behaviour. It
-	should be included into any clonk definition.
+	should be included into any clonk/crew definition.
 	The controls in System.c4g/PlayerControl.c only provide basic movement
 	handling, namely the movement left, right, up and down. The rest is
 	handled here:
@@ -17,8 +17,8 @@
 	Objects that inherit this object need to return _inherited() in the
 	following callbacks (if defined):
 		Construction, Collection2, Ejection, RejectCollect, Departure,
-		Entrance, AttachTargetLost, GrabLost, CrewSelection, Death,
-		Destruction
+		Entrance, AttachTargetLost, CrewSelection, Death,
+		Destruction, OnActionChanged
 	
 	The following callbacks are made to other objects:
 		*Stop
@@ -311,7 +311,6 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
-protected func GrabLost()         { CancelUse(); return _inherited(...); }
 
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
@@ -342,15 +341,27 @@ protected func Death()
 	return _inherited(...);
 }
 
-// TODO: what is missing here is a callback for when the clonk StarTs a attach or push
-// action.
-// So if a clonk e.g. uses a tool and still while using it (holding down the mouse button)
-// hits SPACE (grab vehicle), ControlUseStop is not called to the tool. 
-// the workaround for now is that the controls do not allow to grab a vehicle while still
-// holding down the mouse button. But this does not cover the (seldom?) case that the clonk
-// is put into a grabbing/attached action via Script.
-
-
+protected func OnActionChanged(string oldaction)
+{
+	var old_act = this["ActMap"][oldaction];
+	var act = this["ActMap"][GetAction()];
+	var old_proc = 0;
+	if(old_act) old_proc = old_act["Procedure"];
+	var proc = 0;
+	if(act) proc = act["Procedure"];
+	// if the object's procedure has changed from a non Push/Attach
+	// to a Push/Attach action or the other way round, the usage needs
+	// to be cancelled
+	if (proc != old_proc)
+	{
+		if (proc == DFA_PUSH || proc == DFA_ATTACH
+		 || old_proc == DFA_PUSH || old_proc == DFA_ATTACH)
+		{
+			CancelUse();
+		}
+	}
+	return _inherited(oldaction,...);
+}
 
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
@@ -378,7 +389,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			// Cancel usage
 			CancelUse();
-			CreateRingMenu(nil,this);
+			CreateRingMenu(Icon_Backpack,this);
 			// CreateRingMenu calls SetMenu(this) in the clonk,
 			// so after this call menu = the created menu
 			
@@ -494,16 +505,18 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
-	if (house)
+	else if (house)
 	{
-		return Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
 	}
-	if (vehicle && proc == "PUSH")
+	else if (vehicle && proc == "PUSH")
 	{
 		// control to grabbed vehicle
-		return Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
 	}
-	if (vehicle && proc == "ATTACH")
+	else if (vehicle && proc == "ATTACH")
 	{
 		/* objects to which clonks are attached (like horses, mechs,...) have
 		   a special handling:
@@ -518,37 +531,35 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		   usage via CancelUse().
 		  */
 		
+		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+		
 		var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
-
-		var handled = Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
-		
-		if (handled) return true;
-		
-		// handled normally if movement control
 		if (use)
 		{
-			// handled if the horse is the used object
-			// ("using" is set to the object in StartUse(Delayed)Control - when the
-			// object returns true on that callback. Exactly what we want)
-			if (using == vehicle) return true;
-			// has been cancelled (it is not the start of the usage but no object is used)
-			if (!using && (repeat || release)) return true;
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
+				return true;
+			else
+			{
+				// handled if the horse is the used object
+				// ("using" is set to the object in StartUse(Delayed)Control - when the
+				// object returns true on that callback. Exactly what we want)
+				if (using == vehicle) return true;
+				// has been cancelled (it is not the start of the usage but no object is used)
+				if (!using && (repeat || release)) return true;
+			}
 		}
 		
 	}
-	// out of convencience we call Control2Script, even though it handles
-	// left, right, up and down, too. We don't want that, so this is why we
-	// check that ctrl is Use.
 	// Release commands are always forwarded even if contents is 0, in case we
 	// need to cancel use of an object that left inventory
-	if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
+	if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
 	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
+	else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
 	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
+		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
 	}
 
@@ -561,9 +572,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_Throw)
 			{
 				if (proc == "SCALE" || proc == "HANGLE")
-					return PlayerObjectCommand(plr, false, "Drop", contents);
+					return ObjectCommand("Drop", contents);
 				else
-					return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
+					return ObjectCommand("Throw", contents, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
@@ -573,9 +584,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return PlayerObjectCommand(plr, false, "Drop", contents);
+						return ObjectCommand("Drop", contents);
 					else
-						return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+						return ObjectCommand("Throw", contents, mlastx, mlasty);
 				}
 				else
 				{
@@ -586,7 +597,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// drop
 			if (ctrl == CON_Drop)
 			{
-				return PlayerObjectCommand(plr, false, "Drop", contents);
+				return ObjectCommand("Drop", contents);
 			}
 		}
 		// same for contents2 (copypasta)
@@ -596,9 +607,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_ThrowAlt)
 			{
 			    if (proc == "SCALE" || proc == "HANGLE")
-			      return PlayerObjectCommand(plr, false, "Drop", contents2);
+			      return ObjectCommand("Drop", contents2);
 			    else
-			      return PlayerObjectCommand(plr, false, "Throw", contents2, x, y);
+			      return ObjectCommand("Throw", contents2, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
@@ -608,9 +619,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return PlayerObjectCommand(plr, false, "Drop", contents2);
+						return ObjectCommand("Drop", contents2);
 					else
-						return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
+						return ObjectCommand("Throw", contents2, mlastx, mlasty);
 				}
 				else
 				{
@@ -621,7 +632,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// drop
 			if (ctrl == CON_DropAlt)
 			{
-				return PlayerObjectCommand(plr, false, "Drop", contents2);
+				return ObjectCommand("Drop", contents2);
 			}
 		}
 	}
@@ -665,6 +676,9 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	else if (command == "Jump") this->~ControlJump();
 	// else standard command
 	else SetCommand(command,target,tx,ty,target2);
+	
+	// this function might be obsolete: a normal SetCommand does make a callback to
+	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
 }
 
 /* ++++++++++++++++++++++++ Use Controls ++++++++++++++++++++++++ */
@@ -681,7 +695,7 @@ public func CancelUse()
 	CancelUseControl(control, mlastx, mlasty);
 }
 
-// for testing if the calls in control2script are issued correctly
+// for testing if the calls in ControlUse2Script are issued correctly
 //global func Call(string call)
 //{
 //	Log("calling %s to %s",call,GetName());
@@ -889,10 +903,9 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 	return true;
 }
 
-// Control redirected to script
-private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
-{
-	
+// Control use redirected to script
+private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+{	
 	// click on secondary cancels primary and the other way round
 	if (using)
 	{
@@ -943,9 +956,15 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			return HoldingUseControl(ctrl, control, x, y, obj);
 		}
 	}
-	
+		
+	return false;
+}
+
+// Control use redirected to script
+private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+{
 	// overloads of movement commandos
-	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
+	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
 	{
 		if (release)
 		{
@@ -969,8 +988,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 				if (ctrl == CON_Jump)  if (obj->Call("ControlJump",this)) return true;
 		}
 	}
-	
-	return false;
+
 }
 
 // returns true if the clonk is able to enter a building (procedurewise)
@@ -1000,7 +1018,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 		var obj = GetEntranceObject();
 		if (!obj) return false;
 		
-		PlayerObjectCommand(plr, false, "Enter", obj);
+		ObjectCommand("Enter", obj);
 		return true;
 	}
 	
@@ -1009,7 +1027,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	{
 		if (!Contained()) return false;
 		
-		PlayerObjectCommand(plr, false, "Exit");
+		ObjectCommand("Exit");
 		return true;
 	}
 	
@@ -1018,7 +1036,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 
 private func ObjectControlInteract(int plr, int ctrl)
 {
-	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable"), Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable",this), Find_NoContainer());
 	// if there are several interactable objects, just call the first that returns true
 	for (var interactable in interactables)
 		if (interactable->~Interact(this))
@@ -1038,15 +1056,12 @@ private func ObjectControlPush(int plr, int ctrl)
 		// grab only if he walks
 		if (proc != "WALK") return false;
 		
-		// disallow if the clonk is still using something
-		if (using) return false;
-		
 		// only if there is someting to grab
 		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
 		if (!obj) return false;
 		
 		// grab
-		PlayerObjectCommand(plr, false, "Grab", obj);
+		ObjectCommand("Grab", obj);
 		return true;
 	}
 	
@@ -1062,7 +1077,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		// ungrab only if he pushes
 		if (proc != "PUSH") return false;
 
-		PlayerObjectCommand(plr, false, "UnGrab");
+		ObjectCommand("UnGrab");
 		return true;
 	}
 	
@@ -1078,7 +1093,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		var obj = GetActionTarget()->GetEntranceObject();
 		if (!obj) return false;
 
-		PlayerObjectCommand(plr, false, "PushTo", GetActionTarget(), 0, 0, obj);
+		ObjectCommand("PushTo", GetActionTarget(), 0, 0, obj);
 		return true;
 	}
 	
@@ -1118,7 +1133,7 @@ private func ShiftVehicle(int plr, bool back)
 		if (index >= GetLength(objs)) index = 0;
 	}
 	
-	PlayerObjectCommand(plr, false, "Grab", objs[index]);
+	ObjectCommand("Grab", objs[index]);
 	
 	return true;
 } 
@@ -1315,7 +1330,8 @@ public func ControlThrow(object target, int x, int y)
 public func ControlJump()
 {
 	var ydir = 0;
-	var xdir = 0;
+	var xdir = 5;
+	var max_xdir = 20;
 	
 	if (GetProcedure() == "WALK")
 	{
@@ -1331,7 +1347,7 @@ public func ControlJump()
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
-		SetXDir(GetXDir()+(GetDir()*2-1)*xdir*GetCon()/100);
+		SetXDir(BoundBy((GetXDir()+(GetDir()*2-1)*xdir)*GetCon()/100,-max_xdir,max_xdir));
 		SetYDir(-ydir*GetCon()/100);
 		return true;
 	}

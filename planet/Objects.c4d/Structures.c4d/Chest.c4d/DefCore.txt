@@ -1,7 +1,7 @@
 [DefCore]
 id=Chest
 Version=4,10,0,0
-Category=C4D_Vehicle
+Category=C4D_Structure
 Width=20
 Height=24
 Offset=-10,-12
