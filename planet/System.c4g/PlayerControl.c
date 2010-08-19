@@ -290,6 +290,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		// Jump control
 		if (ctrl == CON_Jump)
 		{
+			SetComDir(COMD_None);
 			return this->ObjectCommand("Jump");
 		}
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
