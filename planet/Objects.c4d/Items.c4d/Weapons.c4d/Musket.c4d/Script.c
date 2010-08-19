@@ -140,7 +140,7 @@ public func Reset(clonk)
 private func FireWeapon(object clonk, int angle)
 {
 	var shot = Contents(0)->TakeObject();
-	shot->Launch(clonk,angle,iBarrel,300);
+	shot->Launch(clonk,angle,iBarrel,200);
 	
 	loaded = false;
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));
