@@ -57,10 +57,6 @@ public func Connect(object obj1, object obj2)
 	SetAction("Hide");
 	
 	AddEffect("IntHang", this, 1, 1, this);
-	called = 0;
-	called2 = 0;
-	called3 = 0;
-//	Benchmark();
 	return;
 }
 
@@ -90,10 +86,6 @@ public func MaxLengthReached()
 	if(clonk->Contained()) clonk = clonk->Contained();
 	if(!HoockAnchored)
 		DrawIn();
-	else if(!clonk->GetContact(-1))
-	{
-//		ConnectPull();
-	}
 }
 
 /* for swinging */
@@ -104,37 +96,7 @@ func DoSpeed(int value)
 	particles[-1][1][0] -= value;
 }
 
-func Benchmark()
-{
-	StartScriptProfiler();
-	AddEffect("IntBenchmark", this, 1, 1, this);
-}
-
-func FxIntBenchmarkTimer(target, number, time)
-{
-	if(time >= 35*1)
-	{
-		StopScriptProfiler();
-		Log("Called %d", called);
-		Log("Called %d via Forces", called2);
-		Log("Called %d via TimeStep", called3);
-		return -1;
-	}
-
-	return;
-	for(var i = 0; i < 100000; i++)
-		for(var j = 0; j < 100000; j++)
-			Sqrt(i*j);
-}
-
 func FxIntHangTimer() { TimeStep(); }
-
-func TimeCompare()
-{
-	for(var i = 0; i < 100000; i++)
-		for(var j = 0; j < 100000; j++)
-			Sqrt(i*j);
-}
 
 func FxDrawInTimer()
 {
@@ -158,36 +120,6 @@ func DrawIn()
 		RemoveEffect("IntGrappleControl", clonk);
 	}
 }
-
-func ConnectPull()
-{	_inherited(...);return;
-	if(length_auto == 1 && objects[1][1])
-	{
-		var obj = objects[1][0];
-		if(obj->Contained()) obj = obj->Contained();
-		// Vector r of the last segment
-		var r = Vec_Sub(particles[-1][0],particles[-3][0]);
-		r = [-r[1], r[0]]; // Get the orthogonal vector
-		r = Vec_Normalize(r, 100); // Make it lenght 0
-		var v = [obj->GetXDir(Rope_Precision), obj->GetYDir(Rope_Precision)]; // Get the speed vector
-		var projection = Vec_Dot(r, Vec_Mul(v, 100))/10000; // Projekt the speed on the orthogonal vector
-		obj->SetXDir(r[0]*projection/100, Rope_Precision);
-		obj->SetYDir(r[1]*projection/100, Rope_Precision);
-	}
-	if(length_auto && objects[1][1])
-	{
-		var obj = objects[1][0];
-		if(obj->Contained()) obj = obj->Contained();
-		particles[-1][1][0] = particles[-1][0][0]-obj->SetXDir(Rope_Precision);
-		particles[-1][1][1] = particles[-1][0][1]-obj->SetYDir(Rope_Precision);
-	}
-	_inherited(...);
-	AccumulateForces();
-//	Log("ConnectPull");
-	TimeStep();
-}
-
-local hook_angle;
 
 func UpdateLines()
 {
@@ -263,15 +195,6 @@ func GetClonkOff()
 	var ret = ClonkOldSpeed;
 	ClonkOldSpeed = offset;
 	return ret;
-}
-
-func SetSegmentTransform(obj, int r, int xoff, int yoff, int length) {
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000); //length = 1200;
-	// set matrix values
-	obj->SetObjDrawTransform (
-		+fcos,             +fsin*length/1200,             xoff, 
-		-fsin, +fcos*length/1200, yoff,
-	);
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
