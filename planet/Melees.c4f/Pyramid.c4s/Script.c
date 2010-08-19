@@ -38,7 +38,7 @@ protected func Initialize()
 	,[630,610],[400,640],[410,630],[420,620],[430,610]
 	];
 	for(var i = 0; i < GetLength(edges); i++)
-		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER);
+		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
 	
 
 	return;

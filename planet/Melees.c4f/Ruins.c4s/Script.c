@@ -29,10 +29,13 @@ var x=[545, 365, 545, 525, 385, 495, 475, 455, 565, 555, 525, 475, 425, 245, 75,
 var y=[295, 165, -5, 295, 285, 315, 325, 335, 345, 355, 365, 375, 385, 385, 325, 345, 355, 365, 355, 285, 235, 155, 245, 235, 345, 295, 295, 375, 255, 245, 235, 225, 225, 165, 135, 115, 105, 95, 85, 85, 95, 105, 115];
 for(var i=0; i<GetLength(x); i++)
 {
-	CreateObject(BrickEdge,x[i], y[i]+5);
+	CreateObject(BrickEdge,x[i], y[i]+5)->PermaEdge();
 }
-CreateObject(BrickEdge,355,250)->SetP(3);
-CreateObject(BrickEdge,305,240)->SetP(2);
+var a;
+a=CreateObject(BrickEdge,355,250);
+a->SetP(3); a->PermaEdge();
+a=CreateObject(BrickEdge,305,240);
+a->SetP(2); a->PermaEdge();
 
 }
 
