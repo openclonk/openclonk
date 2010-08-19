@@ -99,7 +99,6 @@ enum C4AulTokenType
 	ATT_BOOL,   // boolean constant
 	ATT_STRING, // string constant
 	ATT_NIL,    // "nil"
-	ATT_C4ID,   // C4ID constant
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
@@ -1338,7 +1337,6 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_INT: return "integer constant";
 	case ATT_BOOL: return "boolean constant";
 	case ATT_STRING: return "string constant";
-	case ATT_C4ID: return "id constant";
 	case ATT_NIL: return "nil";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
@@ -1789,7 +1787,6 @@ void C4AulParseState::Parse_Statement()
 	case ATT_INT: // constant in cInt
 	case ATT_BOOL:  // constant in cInt
 	case ATT_STRING: // reference in cInt
-	case ATT_C4ID: // converted ID in cInt
 	{
 		Parse_Expression();
 		AddBCC(AB_STACK, -1);
@@ -2547,12 +2544,6 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 	case ATT_STRING: // reference in cInt
 	{
 		AddBCC(AB_STRING, cInt);
-		Shift();
-		break;
-	}
-	case ATT_C4ID: // converted ID in cInt
-	{
-		AddBCC(AB_C4ID, cInt);
 		Shift();
 		break;
 	}
