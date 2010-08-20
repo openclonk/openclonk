@@ -3,14 +3,15 @@
 # PeterW <Peter.Wortmann@gmx.de>
 # Sven2 <sven2@goldwipf.de>
 # Günther <gbrammer@gmx.de>, 2010.
+# Armin Burgmeier <armin@arbur.net>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-07-30 22:12+0200\n"
-"PO-Revision-Date: 2010-07-30 22:35+0200\n"
-"Last-Translator: Günther <gbrammer@gmx.de>\n"
+"PO-Revision-Date: 2010-08-21 01:24+0200\n"
+"Last-Translator: Armin Burgmeier <armin@arbur.net>\n"
 "Language-Team: English\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -4880,8 +4881,8 @@ msgid ""
 "Wenn ungleich 0, wird sichergestellt, dass das sort_object hinter statt vor "
 "object_before_or_after einsortiert wird."
 msgstr ""
-"If not 0, sort_object will be inserted after object object_before_or_after (and not "
-"before)."
+"If not 0, sort_object will be inserted after object object_before_or_after "
+"(and not before)."
 
 #: sdk/script/fn/SetObjectOrder.xml:18(desc)
 msgid ""
@@ -5606,10 +5607,11 @@ msgid ""
 "Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich. Ab CR."
 msgstr ""
 "Only for overlay_mode==GFXOV_MODE_Action: the activity in definition "
-"source_definition, the graphics of which shall be superimposed onto the object. This "
-"activity has to be defined as Action in <emlink href=\"definition/actmap.html"
-"\">ActMap.txt</emlink> of the source definition. Notice: the length of this "
-"animation should be 1; longer animations are not yet possible. Since CR."
+"source_definition, the graphics of which shall be superimposed onto the "
+"object. This activity has to be defined as Action in <emlink href="
+"\"definition/actmap.html\">ActMap.txt</emlink> of the source definition. "
+"Notice: the length of this animation should be 1; longer animations are not "
+"yet possible. Since CR."
 
 #: sdk/script/fn/SetGraphics.xml:29(desc)
 msgid "Blitmodus der überlegten Grafik (z.B. additiv). Siehe <placeholder-1/>"
@@ -5901,7 +5903,8 @@ msgid ""
 "durch <placeholder-1/> deaktiviert ist."
 msgstr ""
 "Sets the control cursor of a player to the specified object and selects this "
-"object for player control. Returns false if the target object is currently deactivated by <placeholder-1/>."
+"object for player control. Returns false if the target object is currently "
+"deactivated by <placeholder-1/>."
 
 #: sdk/script/fn/SetCrewStatus.xml:8(subcat)
 #: sdk/script/fn/SetCrewEnabled.xml:8(subcat)
@@ -7156,8 +7159,8 @@ msgid ""
 "Zeit, bis die Funktion zum ersten Mal aufgerufen werden soll. Wenn repeat "
 "&gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Aufrufen."
 msgstr ""
-"Delay after which the first call is made. If repeat is greather than 1, "
-"this is also the delay inbetween subsequent calls."
+"Delay after which the first call is made. If repeat is greather than 1, this "
+"is also the delay inbetween subsequent calls."
 
 #: sdk/script/fn/ScheduleCall.xml:15(desc)
 msgid ""
@@ -7204,8 +7207,8 @@ msgid ""
 "Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn repeat &gt; "
 "1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen."
 msgstr ""
-"Delay after which the first call is made. If repeat is greather than 1, "
-"this is also the delay inbetween subsequent calls."
+"Delay after which the first call is made. If repeat is greather than 1, this "
+"is also the delay inbetween subsequent calls."
 
 #: sdk/script/fn/Schedule.xml:14(desc)
 msgid ""
@@ -7489,8 +7492,8 @@ msgstr ""
 "Effect index. If name is given then if there are more effects matching the "
 "search mask the one with the given index is refered to. If name is not given "
 "then the effect with the correspoding effect number will be changed. For "
-"indices it is guaranteed that, in contrast to effect numbers, they start at 0 "
-"and count up to the number of effects"
+"indices it is guaranteed that, in contrast to effect numbers, they start at "
+"0 and count up to the number of effects"
 
 #: sdk/script/fn/RemoveEffect.xml:34(desc)
 msgid "Wenn ungleich 0, werden keine Stop-Aufrufe durchgeführt."
@@ -7516,8 +7519,7 @@ msgid ""
 "name!"
 msgstr ""
 "See <placeholder-1/> for an example. Warning: if an effect is meant to "
-"delete itself using this function, only use target and index, not "
-"name!"
+"delete itself using this function, only use target and index, not name!"
 
 #: sdk/script/fn/RemoveEffect.xml:50(emlink)
 #: sdk/script/fn/GetEffectCount.xml:38(emlink)
@@ -7628,8 +7630,8 @@ msgid ""
 "Gibt eine Zufallszahl zwischen 0 und max-1 zurück. Der zurückgegebene Wert "
 "kann jedoch nicht höher als 32767 sein."
 msgstr ""
-"Yields a random number from 0 to max-1. The returned value cannot be "
-"greater than 32767, however."
+"Yields a random number from 0 to max-1. The returned value cannot be greater "
+"than 32767, however."
 
 #: sdk/script/fn/Random.xml:23(text)
 msgid ""
@@ -8838,8 +8840,8 @@ msgid ""
 "> Gibt true zurück, wenn das Objekt erfolgreich der Crew hinzugefügt wurde."
 msgstr ""
 "Adds an object (usually a clonk) to the crew of a player. The object must "
-"have the CrewMember property set in the DefCore.<br/>Returns true if the object "
-"was added successfully."
+"have the CrewMember property set in the DefCore.<br/>Returns true if the "
+"object was added successfully."
 
 #: sdk/script/fn/Log.xml:12(desc)
 msgid "Auszugebender Text"
@@ -9106,7 +9108,8 @@ msgid ""
 "Wenn WAHR, wird nur geprüft, ob player1 mit player2 verfeindet ist und nicht "
 "umgekehrt."
 msgstr ""
-"If true, checks only if player1 is hostile towards player2 but not in reverse."
+"If true, checks only if player1 is hostile towards player2 but not in "
+"reverse."
 
 #: sdk/script/fn/Hostile.xml:17(desc)
 msgid ""
@@ -9240,8 +9243,8 @@ msgid ""
 "(\"Name\")=Wert; kann der Wert einer benannten globalen Variable gesetzt "
 "werden."
 msgstr ""
-"Returns the value of the global variable of name text. Through GlobalN"
-"(\"Name\")=Value you can also set the value of a global variable."
+"Returns the value of the global variable of name text. Through GlobalN(\"Name"
+"\")=Value you can also set the value of a global variable."
 
 #: sdk/script/fn/GetYDir.xml:12(desc) sdk/script/fn/GetXDir.xml:12(desc)
 msgid ""
@@ -9557,8 +9560,8 @@ msgid ""
 "Objektscript: Beim Aktivieren wird eine Meldung ausgegeben, die den Spieler "
 "verpetzt."
 msgstr ""
-"Object script: When activated, a message will be shown which draws "
-"attention to the player."
+"Object script: When activated, a message will be shown which draws attention "
+"to the player."
 
 #: sdk/script/fn/GetSystemTime.xml:12(desc)
 msgid "Was genau zurückgegeben werden soll (siehe Anmerkung)"
@@ -9631,9 +9634,10 @@ msgid ""
 "ist 2) zurück gegeben werden soll. Mit index wird festgelegt von welchem "
 "Palettenindex (0 - 19) der Wert zurück gegeben werden soll."
 msgstr ""
-"Returns the color of the sky. With rgb_index you can specify whether you want to "
-"determine a red (rgb_index 0), green (rgb_index 1), or a blue (rgb_index 2) fraction. "
-"index specifies the palette index of paletted sky colors (0 - 19)."
+"Returns the color of the sky. With rgb_index you can specify whether you "
+"want to determine a red (rgb_index 0), green (rgb_index 1), or a blue "
+"(rgb_index 2) fraction. index specifies the palette index of paletted sky "
+"colors (0 - 19)."
 
 #: sdk/script/fn/GetSkyAdjust.xml:12(desc)
 msgid ""
@@ -9996,9 +10000,9 @@ msgid ""
 "den indizierten Bauplan der entsprechenden Kategorie des Spielers."
 msgstr ""
 "With id specified the function returns true if the player has the "
-"construction plan of the specified object. In this case index and "
-"category are ignored. If id is 0, the function returns the indicated "
-"construction plan of the specified category."
+"construction plan of the specified object. In this case index and category "
+"are ignored. If id is 0, the function returns the indicated construction "
+"plan of the specified category."
 
 #: sdk/script/fn/GetPlrKnowledge.xml:23(text)
 msgid ""
@@ -10853,8 +10857,8 @@ msgid ""
 "ignoriert."
 msgstr ""
 "If specified, the function returns the number of objects of the given type "
-"which the player can buy at his home base. In this case index and "
-"category are ignored."
+"which the player can buy at his home base. In this case index and category "
+"are ignored."
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:18(desc)
 msgid ""
@@ -10866,11 +10870,11 @@ msgid ""
 "wenn zur Zeit keine Objekte dieses Typs verfügbar sind."
 msgstr ""
 "With id specified, the function returns the number of objects of that type "
-"which the player can buy at his home base. In this case index and "
-"category are ignored. If id is 0, the function returns the id of the "
-"indicated type of objects of the specified category buyable at the players "
-"home base. This will return object types which are generally buyable, even "
-"if currently no object of that type is available."
+"which the player can buy at his home base. In this case index and category "
+"are ignored. If id is 0, the function returns the id of the indicated type "
+"of objects of the specified category buyable at the players home base. This "
+"will return object types which are generally buyable, even if currently no "
+"object of that type is available."
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:22(text)
 msgid ""
@@ -10923,8 +10927,8 @@ msgid ""
 "DefCore.txt Sektion [Physical]."
 msgstr ""
 "Returns the current energy value of an object. 100% representing the maximum "
-"physical value of 100,000. Also see DefCore section [Physical]. obj can be "
-"0 in local calls."
+"physical value of 100,000. Also see DefCore section [Physical]. obj can be 0 "
+"in local calls."
 
 #: sdk/script/fn/GetEnergy.xml:13(remark)
 msgid ""
@@ -10985,11 +10989,11 @@ msgid ""
 "Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl "
 "alle Effekte erfasst werden."
 msgstr ""
-"Effect index. With name specified and multiple matches for the "
-"search this will give you the indicated effect from the list of results. If "
-"name is not specified, this index is the effect number. Effect "
-"numbers do not necessarily run continuously from 0 to the number of effects. "
-"When using the index, this continuity is ensured."
+"Effect index. With name specified and multiple matches for the search this "
+"will give you the indicated effect from the list of results. If name is not "
+"specified, this index is the effect number. Effect numbers do not "
+"necessarily run continuously from 0 to the number of effects. When using the "
+"index, this continuity is ensured."
 
 #: sdk/script/fn/GetEffect.xml:34(desc)
 msgid "Index des Wertes, der abgefragt werden soll. Siehe Anmerkung."
@@ -11043,8 +11047,8 @@ msgid ""
 "Über den Parameter query_value können folgende Werte abgefragt werden:<br/"
 "><br/><placeholder-1/>"
 msgstr ""
-"Using the parameter query_value the following values can be retrieved:<br/><br/"
-"><placeholder-1/>"
+"Using the parameter query_value the following values can be retrieved:<br/"
+"><br/><placeholder-1/>"
 
 #: sdk/script/fn/GetEffect.xml:77(text)
 msgid "Entfernt alle Zaubereffekte von allen Objekten und global."
@@ -11095,8 +11099,8 @@ msgid ""
 "Objektkategorien)."
 msgstr ""
 "Returns the id of the indicated definition from the list of definitions of "
-"the specified category as currently loaded by the engine (category 0 for "
-"all categories)."
+"the specified category as currently loaded by the engine (category 0 for all "
+"categories)."
 
 #: sdk/script/fn/GetDefinition.xml:19(text)
 msgid "siehe <placeholder-1/>."
@@ -11118,8 +11122,8 @@ msgid ""
 "entry_number die Anzahl zurückgegeben (siehe Beispiel)"
 msgstr ""
 "If the requested entry is an id list (e.g. \"Components\" in DefCore.txt) an "
-"even entry_number will return the listed id and an uneven entry_number will return "
-"the matching count (see example)."
+"even entry_number will return the listed id and an uneven entry_number will "
+"return the matching count (see example)."
 
 #: sdk/script/fn/GetDefCoreVal.xml:41(text)
 msgid "Ermittelt die Breite des Objekts."
@@ -11248,7 +11252,9 @@ msgstr "Crew index of the clonk."
 msgid ""
 "Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger "
 "Index angegeben, gibt die Funktion nil zurück."
-msgstr "Returns the indicated crew member of a player. For an invalid index nil is returned."
+msgstr ""
+"Returns the indicated crew member of a player. For an invalid index nil is "
+"returned."
 
 #: sdk/script/fn/GetCrew.xml:21(text)
 msgid "Tötet die gesamte Crew des ersten Spielers."
@@ -11347,8 +11353,8 @@ msgid ""
 "Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird "
 "index benutzt und eine Objektkomponente zurückgegeben."
 msgstr ""
-"Object component of which to determine the count. If not specified, index "
-"is used and the id of the component is returned."
+"Object component of which to determine the count. If not specified, index is "
+"used and the id of the component is returned."
 
 #: sdk/script/fn/GetComponent.xml:13(desc)
 msgid ""
@@ -11358,8 +11364,8 @@ msgid ""
 "ermittelt werden kann."
 msgstr ""
 "Index of the component to be returned. This parameter is ignored if "
-"component is specified. Returns the id of the indicated component which "
-"can then be used to determine the count in a subsequent call to GetComponent."
+"component is specified. Returns the id of the indicated component which can "
+"then be used to determine the count in a subsequent call to GetComponent."
 
 #: sdk/script/fn/GetComponent.xml:14(desc)
 msgid ""
@@ -11367,8 +11373,8 @@ msgid ""
 "Wenn stattdessen eine definition angegeben ist, wird dieser Parameter "
 "ignoriert."
 msgstr ""
-"Object of which to determine components. Can be 0 in local calls. If definition "
-"is specified, this parameter is ignored."
+"Object of which to determine components. Can be 0 in local calls. If "
+"definition is specified, this parameter is ignored."
 
 #: sdk/script/fn/GetComponent.xml:15(desc)
 msgid ""
@@ -11482,8 +11488,8 @@ msgid ""
 "Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion "
 "-1 (analog zu <placeholder-1/>(255,255,255,255))."
 msgstr ""
-"A return value of -1 means that no color modulation is done. This corresponds "
-"to <placeholder-1/>(255,255,255,255)."
+"A return value of -1 means that no color modulation is done. This "
+"corresponds to <placeholder-1/>(255,255,255,255)."
 
 #: sdk/script/fn/GetClrModulation.xml:25(text)
 msgid ""
@@ -11584,8 +11590,8 @@ msgid ""
 "Liefert die Nummer des Spielers, dessen Heimatbasis das aufrufende Objekt "
 "ist. Rückgabewert <placeholder-1/> wenn es keine Heimatbasis ist."
 msgstr ""
-"Returns the player whose home base the specified object is. Return value <placeholder-1/> "
-"if the object is not a home base."
+"Returns the player whose home base the specified object is. Return value "
+"<placeholder-1/> if the object is not a home base."
 
 #: sdk/script/fn/GetAnimationWeight.xml:15(desc)
 msgid "Animationsnummer der Animation deren Gewichtung abgefragt werden soll."
@@ -11783,8 +11789,8 @@ msgid ""
 "Script vorhanden ist, gibt die Funktion Null zurück und verursacht keine "
 "Fehlermeldung."
 msgstr ""
-"Calls function in the scenario script. If the function is not defined in "
-"the scenario script, this call returns 0 and does not cause an error."
+"Calls function in the scenario script. If the function is not defined in the "
+"scenario script, this call returns 0 and does not cause an error."
 
 #: sdk/script/fn/GameCall.xml:20(text)
 msgid ""
@@ -12013,18 +12019,19 @@ msgid ""
 "Nullen aufgefüllt), während es bei Zeichenketten (s) die Maximalzahl der "
 "auszugebenden Zeichen angibt.<br/>"
 msgstr ""
-"Composes a string of several values. To do this, text is "
-"scanned for placeholders starting with '%' which are then replaced by the parameters.<br/"
+"Composes a string of several values. To do this, text is scanned for "
+"placeholders starting with '%' which are then replaced by the parameters.<br/"
 ">The general syntax for these placeholders is:<br/><code>%[length][."
 "precision]type</code>Except for type all fields are optional. Type specifies "
-"the data type of the parameter to be expected. It can be one of the following "
-"values: <placeholder-1/> Length specifies the minimum number of characters "
-"used to display the value. If the value is shorter, the display is padded on "
-"the left with space characters, or with zeroes if there is a '0' before the length "
-"specification.<br/><br/>The meaning of the precision field varies with the "
-"data type: for integers (d) it specifies the minimum display length (the "
-"number is padded with zeroes at the beginning); however for strings (s) it "
-"specifies the maximum number of characters to be displayed.<br/>"
+"the data type of the parameter to be expected. It can be one of the "
+"following values: <placeholder-1/> Length specifies the minimum number of "
+"characters used to display the value. If the value is shorter, the display "
+"is padded on the left with space characters, or with zeroes if there is a "
+"'0' before the length specification.<br/><br/>The meaning of the precision "
+"field varies with the data type: for integers (d) it specifies the minimum "
+"display length (the number is padded with zeroes at the beginning); however "
+"for strings (s) it specifies the maximum number of characters to be "
+"displayed.<br/>"
 
 #: sdk/script/fn/Format.xml:36(text)
 msgid ""
@@ -12435,8 +12442,8 @@ msgid ""
 "Das aufrufende Objekt findet sich in FindObject auch selbst. Dies kann durch "
 "<placeholder-1/>() verhindert werden."
 msgstr ""
-"An object using FindObjects in local calls will also find itself. "
-"This can be avoided through use of <placeholder-1/>()."
+"An object using FindObjects in local calls will also find itself. This can "
+"be avoided through use of <placeholder-1/>()."
 
 #: sdk/script/fn/FindObject.xml:23(text)
 msgid ""
@@ -13217,8 +13224,8 @@ msgid ""
 "Wenn WAHR, wird change auf den exakten Energiewert angewendet (0 bis Wert "
 "von Physical \"Energy\")."
 msgstr ""
-"If true, change is applied to the exact energy value (0 to value of "
-"Physical \"Energy\")."
+"If true, change is applied to the exact energy value (0 to value of Physical "
+"\"Energy\")."
 
 #: sdk/script/fn/DoEnergy.xml:14(desc)
 msgid ""
@@ -13366,8 +13373,8 @@ msgid ""
 "Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt"
 "((x2-x1)^2 + (y2-y1)^2;)."
 msgstr ""
-"Calculates the distance between two points. Same as Sqrt((x2-x1)^2 + (y2-"
-"y1)^2;)."
+"Calculates the distance between two points. Same as Sqrt((x2-x1)^2 + (y2-y1)"
+"^2;)."
 
 #: sdk/script/fn/Distance.xml:22(text)
 msgid ""
@@ -13514,8 +13521,7 @@ msgstr "Message to be displayed"
 #: sdk/script/fn/CustomMessage.xml:13(desc)
 msgid ""
 "Wenn ungleich 0, wird die Nachricht über dem angegebenen Objekt ausgegeben."
-msgstr ""
-"If not 0, the message is displayed above the specified object."
+msgstr "If not 0, the message is displayed above the specified object."
 
 #: sdk/script/fn/CustomMessage.xml:14(desc)
 msgid ""
@@ -14072,8 +14078,7 @@ msgstr ""
 #: sdk/script/fn/CreateContents.xml:13(desc)
 msgid ""
 "Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen."
-msgstr ""
-"Number of objects to be created, if not specified, 1 is assumed."
+msgstr "Number of objects to be created, if not specified, 1 is assumed."
 
 #: sdk/script/fn/CreateContents.xml:16(desc)
 msgid "Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts."
@@ -14172,8 +14177,8 @@ msgid ""
 "Liefert das Objekt, in dem sich das aufrufende Objekt befindet, oder nil, "
 "wenn es in keinem anderen Objekt enthalten ist."
 msgstr ""
-"Returns the container object in which this object is contained. Returns nil if "
-"this object is not contained."
+"Returns the container object in which this object is contained. Returns nil "
+"if this object is not contained."
 
 #: sdk/script/fn/Construction.xml:13(desc)
 msgid ""
@@ -14195,11 +14200,12 @@ msgid ""
 "Objekt-Call BuildNeedsMaterial, durch den die Meldung über noch benötigtes "
 "Material ausgewertet und abgefangen werden kann."
 msgstr ""
-"Creates an object of the specified type in the contents of the calling object. "
-"The object is composed from components which must be available inside the object. "
-"Otherwise, a message is displayed listing missing components. This function causes "
-"the callback BuildNeedsMaterial which can be used to intercept the message "
-"and perform custom actions for acquiring the necessary material."
+"Creates an object of the specified type in the contents of the calling "
+"object. The object is composed from components which must be available "
+"inside the object. Otherwise, a message is displayed listing missing "
+"components. This function causes the callback BuildNeedsMaterial which can "
+"be used to intercept the message and perform custom actions for acquiring "
+"the necessary material."
 
 #: sdk/script/fn/ComposeContents.xml:19(text)
 msgid ""
@@ -14987,8 +14993,8 @@ msgid ""
 "lower_bound und value &lt;= upper_bound). Andernfalls wird die jeweils "
 "nächstliegende Grenze zurückgegeben."
 msgstr ""
-"Returns value if it is within the given boundaries (value &gt;= lower_bound and "
-"value &lt;= upper_bound). Otherwise returns the applicable limit."
+"Returns value if it is within the given boundaries (value &gt;= lower_bound "
+"and value &lt;= upper_bound). Otherwise returns the applicable limit."
 
 #: sdk/script/fn/BlastObjects.xml:15(desc)
 msgid "Objekt, in dem die zu sprengenden Objekte enthalten sind."
@@ -15624,7 +15630,11 @@ msgid ""
 "entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname "
 "angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei "
 "<placeholder-1/> als command_object übergeben wurde."
-msgstr "Command to be executed when the menu item is selected. This can be either a function name or a statement. If a function name is given then the function will be called in the object which was given as command_object to <placeholder-1/>."
+msgstr ""
+"Command to be executed when the menu item is selected. This can be either a "
+"function name or a statement. If a function name is given then the function "
+"will be called in the object which was given as command_object to "
+"<placeholder-1/>."
 
 #: sdk/script/fn/AddMenuItem.xml:14(desc)
 msgid ""
@@ -15633,6 +15643,9 @@ msgid ""
 "Parameter an den Aufruf von command übergeben, sofern dieser nur ein "
 "Funktionsname ist."
 msgstr ""
+"The ID is used as a picture for the menu item. The name of the definition "
+"can be used in caption using %s. Also the ID is passed as the first "
+"parameter to the call to command in case it is a function name."
 
 #: sdk/script/fn/AddMenuItem.xml:15(desc)
 msgid ""
@@ -15760,9 +15773,9 @@ msgid ""
 "als global deklariert sein, oder Enginefunktionen sein."
 msgstr ""
 "Definition in which callbacks are to be executed if no command target object "
-"is specified. If both command_target and command_target_id are 0, callbacks are made "
-"globally. For this, the Fx* must also be declared globally or they must be "
-"engine functions."
+"is specified. If both command_target and command_target_id are 0, callbacks "
+"are made globally. For this, the Fx* must also be declared globally or they "
+"must be engine functions."
 
 #: sdk/script/fn/AddEffect.xml:50(desc)
 msgid ""
@@ -16175,8 +16188,8 @@ msgid ""
 "sofort in eine Proplist umgewandelt."
 msgstr ""
 "ID of an object definition (see <emlink href=\"definition/index."
-"html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>)."
-"Will be changed into a proplist immediately."
+"html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>).Will "
+"be changed into a proplist immediately."
 
 #: sdk/script/Typechecks.xml:39(col)
 msgid "Ein beliebiger Text."
@@ -16393,12 +16406,16 @@ msgid ""
 "Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte "
 "konvertiert werden."
 msgstr ""
+"If an object has been converted into a proplist then it can be converted "
+"back to an object. Otherwise proplists cannot be converted into objects."
 
 #: sdk/script/Typechecks.xml:181(li)
 msgid ""
 "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält "
 "sich dann wie <code>any</code>"
 msgstr ""
+"<code>0</code> can be converted into anything. In that case it behaves the "
+"same way as <code>any</code>"
 
 #: sdk/script/ScriptPlayers.xml:10(text)
 msgid ""
@@ -16804,8 +16821,8 @@ msgid ""
 "Wird GetObjectVal für obj/definition jeweils 0 zurückgegeben, so wird das "
 "Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen."
 msgstr ""
-"If 0 is given for obj/definition in a call to GetObjectVal, the object or the "
-"definition of the object from which the call was made is used."
+"If 0 is given for obj/definition in a call to GetObjectVal, the object or "
+"the definition of the object from which the call was made is used."
 
 #: sdk/script/GetXXVal.xml:59(text)
 msgid ""
@@ -17236,8 +17253,8 @@ msgstr ""
 "code>) will be modified and the calling code will have the modified values. "
 "Notice, however, that you <em>have</em> to specify true variables as "
 "parameters for references. You cannot make a call such as "
-"\"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" as in this "
-"case \"<code>iHiRankX + 1</code>\" is not a variable but a numeric result."
+"\"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" as in this case "
+"\"<code>iHiRankX + 1</code>\" is not a variable but a numeric result."
 
 #: sdk/script/Funcs.xml:183(text)
 msgid ""
@@ -18150,8 +18167,8 @@ msgid ""
 "<placeholder-1/>() zu manipulieren."
 msgstr ""
 "Called at the start of the effect. target is the target object of the "
-"effect. num is the effect index. These two parameters can be used "
-"to identify the effect, e.g. to manipulate corresponding variables in "
+"effect. num is the effect index. These two parameters can be used to "
+"identify the effect, e.g. to manipulate corresponding variables in "
 "<placeholder-1/>()."
 
 #: sdk/script/Effects.xml:478(text)
@@ -18162,8 +18179,8 @@ msgid ""
 "aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-"
 "Aufruf)."
 msgstr ""
-"In normal operation the parameter temporary is 0. It is 1 if the effect is re-"
-"added after having been temporarily removed and 2 if the effect was "
+"In normal operation the parameter temporary is 0. It is 1 if the effect is "
+"re-added after having been temporarily removed and 2 if the effect was "
 "temporarily removed and is now to be deleted (in this case a Remove call "
 "will follow)."
 
@@ -18181,8 +18198,8 @@ msgid ""
 "Wenn temporary 0 ist und dieser Callback -1 zurückgibt, wird der Effekt "
 "nicht erzeugt und der zugehörige <placeholder-1/>()-Aufruf gibt 0 zurück."
 msgstr ""
-"If temporary is 0 and this callback returns -1 the effect is not created and the "
-"corrsponding <placeholder-1/>() call returns 0."
+"If temporary is 0 and this callback returns -1 the effect is not created and "
+"the corrsponding <placeholder-1/>() call returns 0."
 
 #: sdk/script/Effects.xml:482(h)
 msgid "Fx*Stop"
@@ -18195,8 +18212,7 @@ msgid ""
 "Objekts."
 msgstr ""
 "When the effect is temporarily or permanently removed. target again is the "
-"target object and num the index into the effects list of that "
-"object."
+"target object and num the index into the effects list of that object."
 
 #: sdk/script/Effects.xml:485(text)
 msgid ""
@@ -18280,9 +18296,8 @@ msgid ""
 "wird, und new_num den Index des neu zu erzeugenden Effektes."
 msgstr ""
 "A call to all effects of higher priority if a new effect is to be added to "
-"the same target object. new_name is the name of the new effect; "
-"num is the index of the effect being called; and ew_num "
-"is the index of the new effect."
+"the same target object. new_name is the name of the new effect; num is the "
+"index of the effect being called; and ew_num is the index of the new effect."
 
 #: sdk/script/Effects.xml:508(text)
 msgid ""
@@ -18294,9 +18309,8 @@ msgid ""
 msgstr ""
 "Warning: the new effect is not yet properly initialized and should not be "
 "manipulated in any way. Especially the priority field might not yet have "
-"been set. The new_num can however be used to request information "
-"via <placeholder-1/>(). In calls made by <placeholder-2/>() new_num "
-"is always 0."
+"been set. The new_num can however be used to request information via "
+"<placeholder-1/>(). In calls made by <placeholder-2/>() new_num is always 0."
 
 #: sdk/script/Effects.xml:509(text)
 msgid ""
@@ -18348,8 +18362,8 @@ msgid ""
 msgstr ""
 "Callback to the accepting effect if that has returned -2 or -3 to a prior "
 "Fx*Effect call. num identifies the accepting effect to which the "
-"consequences of the new effect will be added; target is the target object "
-"(0 for global effects)."
+"consequences of the new effect will be added; target is the target object (0 "
+"for global effects)."
 
 #: sdk/script/Effects.xml:516(text)
 msgid ""
@@ -18358,9 +18372,9 @@ msgid ""
 "werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann "
 "0."
 msgstr ""
-"new_timer is the timer interval of the new effect; var1 to var4 are "
-"the parameters from AddEffect. Notice: in temporary calls, these parameters "
-"are not available - here they will be 0."
+"new_timer is the timer interval of the new effect; var1 to var4 are the "
+"parameters from AddEffect. Notice: in temporary calls, these parameters are "
+"not available - here they will be 0."
 
 #: sdk/script/Effects.xml:517(text)
 msgid ""
@@ -18842,6 +18856,9 @@ msgid ""
 "durch <code>BoundBy(Mittelwert+Random(2*Abweichung+1)-Abweichung,Minimum,"
 "Maximum);</code> bestimmt."
 msgstr ""
+"Some of the values require four numbers which specify mean, deviation, "
+"minimum and maximum. The value which is actually used is computed by "
+"<code>BoundBy(mean+Random(2*deviation+1)-deviation,minimum,maximum);</code>."
 
 #: sdk/scenario/scenario.xml:19(caption)
 msgid "Sektion [Head]"
@@ -18931,7 +18948,8 @@ msgstr "MaxPlayerLeague"
 msgid ""
 "Maximale Anzahl der Spieler für die Liga. Default ist MaxPlayerLeague = "
 "MaxPlayer."
-msgstr "Maximum players for the league, default is MaxPlayerLeague = MaxPlayer."
+msgstr ""
+"Maximum players for the league, default is MaxPlayerLeague = MaxPlayer."
 
 #: sdk/scenario/scenario.xml:56(col)
 msgid "Loader"
@@ -18954,7 +18972,7 @@ msgstr "String"
 
 #: sdk/scenario/scenario.xml:58(col)
 msgid "Dateiname (ohne Dateiendung) des Gewünschten Ladebildschirms."
-msgstr ""
+msgstr "File name (without extension) of the desired loader screen."
 
 #: sdk/scenario/scenario.xml:61(col)
 msgid "Font"
@@ -18965,16 +18983,19 @@ msgid ""
 "Name der Schriftart die für dieses Szenario anstatt der Default-Schriftart "
 "benutzt werden soll."
 msgstr ""
+"Name of the font to be used for this scenario (replacing the default font)."
 
 #: sdk/scenario/scenario.xml:66(col)
 msgid "Difficulty"
-msgstr ""
+msgstr "Difficulty"
 
 #: sdk/scenario/scenario.xml:68(col)
 msgid ""
 "Schwierigkeitsgrad des Szenarios. Szenarien in einem Ordner werden nach "
 "aufsteigender Schwierigkeit sortiert, ansonsten nach dem Alphabet."
 msgstr ""
+"Difficulty of the scenario. Scenarios in a folder are sorted ascendingly by "
+"difficulty if specified or by the alphabet otherwise."
 
 #: sdk/scenario/scenario.xml:71(col)
 msgid "NoInitialize"
@@ -19009,13 +19030,12 @@ msgstr ""
 
 #: sdk/scenario/scenario.xml:81(col)
 msgid "ForcedFairCrew"
-msgstr ""
+msgstr "ForcedFairCrew"
 
 #: sdk/scenario/scenario.xml:83(col)
 msgid ""
 "0 oder 1. Bei 1 wird für dieses Szenario immer eine faire Crew verwendet."
-msgstr ""
-"0 or 1. If 1, fair crew is always used in this scenario."
+msgstr "0 or 1. If 1, fair crew is always used in this scenario."
 
 #: sdk/scenario/scenario.xml:86(col)
 msgid "FairCrewStrength"
@@ -20879,6 +20899,8 @@ msgid ""
 "Wer sich noch nicht mit dem Modellieren in Blender auskennt, sollte zuerst "
 "ein allgemeines Blendertutorial machen!"
 msgstr ""
+"Those who do not know about modeling with Blender should first do a generic "
+"blender tutorial."
 
 #: sdk/renderclonkExamples.xml:9(text)
 msgid ""
@@ -20887,6 +20909,9 @@ msgid ""
 "Anfangstutorials durchgehen. Die Blender.org Tutorials sind allerdings in "
 "englisch."
 msgstr ""
+"To do so please follow one of the beginner's tutorials on <a href=\"http://"
+"www.blender.org/education-help/tutorials/\">http://www.blender.org/education-"
+"help/tutorials/</a>."
 
 #: sdk/renderclonkExamples.xml:10(text)
 msgid ""
@@ -20895,6 +20920,11 @@ msgid ""
 "striver.net/texts.php?action=sh&amp;id=60\">ein Bausatz</a> oder <a href="
 "\"http://www.cc.striver.net/texts.php?action=sh&amp;id=134\">ein Schwert</a>"
 msgstr ""
+"There are also Blender tutorials on the Clonk Center, e.g. <a href=\"http://"
+"www.cc.striver.net/texts.php?action=sh&amp;id=53\">a flint</a>, <a href="
+"\"http://www.cc.striver.net/texts.php?action=sh&amp;id=60\">a construction "
+"kit</a> oder <a href=\"http://www.cc.striver.net/texts.php?action=sh&amp;"
+"id=134\">a sword</a>. They are in German language however."
 
 #: sdk/renderclonkExamples.xml:12(h)
 msgid "Der Bauer Humpe will Clonk werden"
@@ -20915,10 +20945,20 @@ msgid ""
 "würde Bauer auch gehen). Nun kann der Bauer mit einem Klick auf <strong>Save "
 "Clonk</strong> gespeichert werden."
 msgstr ""
+"The goal of this tutorial is to create a Farmer clonk. So let's start up "
+"Blender and open the script. Since the farmer is supposed to be based on the "
+"normal Clonk the first thing we do is to load the Clonk model. In the "
+"scripting window click on <strong>LoadClonk</strong> or <img src=\"../images/"
+"DropDown.png\" width=\"10\" height=\"12\"/> and select Clonk.mesh (or Clonk, "
+"respectively). Now the Clonk is loaded and we find ourselves in the main "
+"menu. Next, we rename the Clonk to Farmer so that we don't overwrite the "
+"original Clonk. To do so we click on <strong>Save/Load</strong> and change "
+"Clonk to Farmer in the <strong>Clonk Name</strong> field. Now the Farmer can "
+"be saved by another click to <strong>Save Clonk</strong>."
 
 #: sdk/renderclonkExamples.xml:15(text)
 msgid "Gut, wir haben jetzt schon einen neuen Clonk geschaffen: den Bauer!"
-msgstr ""
+msgstr "Great, so we have already created a new Clonk. The Farmer!"
 
 #: sdk/renderclonkExamples.xml:16(h)
 msgid "Bauer sucht Hut"
@@ -21549,6 +21589,10 @@ msgid ""
 "koennen frei belegt werden und Kommandos koennen aus beliebigen "
 "Tastenkombinationen oder Sequenzen bestehen."
 msgstr ""
+"Since OC the engine allows to define control commands completely "
+"arbitrarily. Own keyboard commands can be added and modified. All supported "
+"input devices such as mouse, keyboard and gamepads can be mapped freely and "
+"commands can consist of any key combinations or sequences."
 
 #: sdk/playercontrols.xml:9(h)
 msgid "PlayerControls.txt"
@@ -21563,6 +21607,12 @@ msgid ""
 "Szenarien koennen weitere Tasten in ihrer lokalen System.c4g hinzufuegen "
 "oder die Parameter vorhandener Steuerkommandos ueberladen**."
 msgstr ""
+"All control commands which a player can send to the game are defined in the "
+"file PlayerControls.txt. The standard keys as well as their standard mapping "
+"for various input devices are contained in the global definition file in the "
+"Systems.c4g folder. Object definitions and scenarios can add more keys or "
+"overload the parameters of existing commands in their local Systems.c4g "
+"folder**."
 
 #: sdk/playercontrols.xml:11(text)
 msgid ""
@@ -21570,6 +21620,9 @@ msgid ""
 "werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen "
 "Sprachen an die Tastaturen des jeweiligen Landes anzupassen**."
 msgstr ""
+"Additional PlayerControls.txt files can be put in language packages to adapt "
+"the standard key mappings of different loaded languages to the keyboard of "
+"their respective country**."
 
 #: sdk/playercontrols.xml:14(h)
 msgid "Sektion [ControlDefs]"
@@ -21597,6 +21650,12 @@ msgid ""
 "Konflikten gelten in szenarienlokalen sowie Objektpaketlokalen Definitionen "
 "dieselben Benennungsregeln wie zur Vergabe von Objekt-IDs."
 msgstr ""
+"Internally used name for identification of the command. The command is "
+"referenced by that name in standard mappings and it is predefined in script "
+"as CON_Name. The name should therefore be a valid identifier in script, i.e. "
+"only consist of letters, numbers and _. Especially there should be no space "
+"characters or German umlauts. To avoid conflicts the same rules as for "
+"object IDs apply for definitions local to a certain scenario or object."
 
 #: sdk/playercontrols.xml:29(col)
 msgid "GUIName"
@@ -21608,10 +21667,13 @@ msgid ""
 "Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus "
 "dem zugehoerigen StringTable refeenziert werden ($Name$)."
 msgstr ""
+"Name which is shown to the player in the control configuration dialog and in "
+"control tooltips. Localized strings from the corresponding string table can "
+"be used ($Name$)."
 
 #: sdk/playercontrols.xml:34(col)
 msgid "GUIDesc"
-msgstr ""
+msgstr "GUIDesc"
 
 #: sdk/playercontrols.xml:36(col)
 msgid ""
@@ -21619,6 +21681,9 @@ msgid ""
 "angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen "
 "StringTable refeenziert werden ($Name$)."
 msgstr ""
+"Informative description which is displayed to the player in the control "
+"configuration dialog. Lokalisierte Zeichenketten koennen aus dem "
+"zugehoerigen StringTable refeenziert werden ($Name$)."
 
 #: sdk/playercontrols.xml:41(col)
 msgid ""
@@ -21626,6 +21691,9 @@ msgid ""
 "Definition. Siehe <emlink href=\"playercontrols.xml#Globals\">Globale "
 "Definitionen</emlink>."
 msgstr ""
+"If true this is a global definition, i.e. not assigned to a particular "
+"player. See <emlink href=\"playercontrols.xml#Globals\">Global definitions</"
+"emlink>."
 
 #: sdk/playercontrols.xml:44(col) sdk/playercontrols.xml:165(col)
 msgid "Hold"
@@ -21638,6 +21706,10 @@ msgid ""
 "generiert beim Loslassen ein zusaetzliches Scriptereignis. Siehe <emlink "
 "href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 msgstr ""
+"If true this command is interpreted as a held command. Such a command "
+"remembers whether the control key is pressed and generates another scripting "
+"event when it is released. See <emlink href=\"playercontrols.xml#Hold\">Held "
+"keys</emlink>."
 
 #: sdk/playercontrols.xml:49(col)
 msgid "RepeatDelay"
@@ -21650,6 +21722,10 @@ msgid ""
 "Scriptereignisse. Siehe <emlink href=\"playercontrols.xml#Repeat"
 "\">Tastenwiederholungen</emlink>."
 msgstr ""
+"Only valid if <em>Hold</em> is true. If greater than 0 then this key "
+"generates additional scripting events while pressed every that many number "
+"of frames. See <emlink href=\"playercontrols.xml#Repeat\">Key repeats</"
+"emlink>."
 
 #: sdk/playercontrols.xml:54(col)
 msgid "InitialRepeatDelay"
@@ -21661,6 +21737,8 @@ msgid ""
 "Tastenwiederholungsereignis geaendert werden. Siehe <emlink href="
 "\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
 msgstr ""
+"If specified then the delay of the first key repeat event can be changed. "
+"See <emlink href=\"playercontrols.xml#Repeat\">Key repeats</emlink>."
 
 #: sdk/playercontrols.xml:59(col)
 msgid "DefaultDisabled"
@@ -21673,10 +21751,14 @@ msgid ""
 "speziellen Situationen benoetigt werden. Siehe <emlink href=\"playercontrols."
 "xml#Deactivate\">Deaktivierte Kommandos</emlink>."
 msgstr ""
+"If true then the command is deactivated in the normal case and needs to be "
+"activated by script first. This is useful for commands that are only "
+"required in special situations. See <emlink href=\"playercontrols."
+"xml#Deactivate\">Deactivated commands</emlink>."
 
 #: sdk/playercontrols.xml:64(col) sdk/playercontrols.xml:239(h)
 msgid "ExtraData"
-msgstr ""
+msgstr "ExtraData"
 
 #: sdk/playercontrols.xml:65(col) sdk/definition/defcore.xml:83(col)
 #: sdk/definition/defcore.xml:105(col)
@@ -21688,10 +21770,12 @@ msgid ""
 "Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href="
 "\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
 msgstr ""
+"Optional ID that is passed to the script function. See <emlink href="
+"\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
 
 #: sdk/playercontrols.xml:69(col)
 msgid "SendCursorPos"
-msgstr ""
+msgstr "SendCursorPos"
 
 #: sdk/playercontrols.xml:71(col)
 msgid ""
@@ -21699,6 +21783,9 @@ msgid ""
 "Ausloesens des Kommandos als separates CON_CursorPos-Kommando gesendet. Ist "
 "keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen."
 msgstr ""
+"If true then the GUI mouse position at the time of triggering the command "
+"will be sent as a separate CON_CursorPos command. If the mouse is not "
+"activated then the cursor position in GUI coordinates is transmitted."
 
 #: sdk/playercontrols.xml:84(col)
 msgid "Keine Aktion."
@@ -21713,6 +21800,8 @@ msgid ""
 "Ausfuehrung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href="
 "\"playercontrols.xml#Script\">Script-Callbacks</emlink>."
 msgstr ""
+"Execution of the script function <em>PlayerControl</em>. See <emlink href="
+"\"playercontrols.xml#Script\">Script callbacks</emlink>."
 
 #: sdk/playercontrols.xml:91(col)
 msgid "Menu"
@@ -21720,17 +21809,18 @@ msgstr "Menu"
 
 #: sdk/playercontrols.xml:92(col)
 msgid "Oeffnen des Spielermenues (asynchrones Kommando)."
-msgstr ""
+msgstr "Open the player menu (asynchronous command)."
 
 #: sdk/playercontrols.xml:95(col)
 msgid "MenuOK"
-msgstr ""
+msgstr "MenuOK"
 
 #: sdk/playercontrols.xml:96(col)
 msgid ""
 "Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones "
 "Kommando)."
 msgstr ""
+"Confirmation of the selected item in the player menu (asynchronous command)."
 
 #: sdk/playercontrols.xml:99(col)
 msgid "MenuCancel"
@@ -21738,26 +21828,29 @@ msgstr "MenuCancel"
 
 #: sdk/playercontrols.xml:100(col)
 msgid "Schliessen des Spielermenues (asynchrones Kommando)."
-msgstr ""
+msgstr "Close the player menu (asynchronous command)."
 
 #: sdk/playercontrols.xml:103(col)
 msgid "MenuLeft / MenuUp / MenuRight / MenuDown"
-msgstr ""
+msgstr "MenuLeft / MenuUp / MenuRight / MenuDown"
 
 #: sdk/playercontrols.xml:104(col)
 msgid "Navigation im Spielermenu (asynchrones Kommando)."
-msgstr ""
+msgstr "Navigation in the player menu (asynchronous command)."
 
 #: sdk/playercontrols.xml:76(col)
 msgid ""
 "Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte: <placeholder-1/>"
-msgstr "Action to be executed for this command. Possible values: <placeholder-1/>"
+msgstr ""
+"Action to be executed for this command. Possible values: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:15(text)
 msgid ""
 "Definition der moeglichen Spielerkommandos. Nicht gueltig in Sprachpaketen. "
 "Dieser Sektion untergeordnet: <placeholder-1/>"
 msgstr ""
+"Definition of possible player commands. Not valid in language packages. "
+"Subordinated to this section: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:109(h)
 msgid "Sektion [ControlSets]"
@@ -21775,6 +21868,10 @@ msgid ""
 "Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert "
 "werden**."
 msgstr ""
+"Internal name for identification of otherwise equal control mappings. The "
+"names of the standard mappings are <em>Keyboard1</em>, <em>Keyboard1Classic</"
+"em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. By "
+"using placeholders (*) keys can directly be defined in multiple mappings**."
 
 #: sdk/playercontrols.xml:125(caption)
 msgid "Beliebig viele Sektionen [Assignment]"
@@ -21782,17 +21879,19 @@ msgstr "Any number of sections [Assignment]"
 
 #: sdk/playercontrols.xml:132(col)
 msgid "Key"
-msgstr ""
+msgstr "Key"
 
 #: sdk/playercontrols.xml:134(col)
 msgid ""
 "Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe "
 "<emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 msgstr ""
+"Specifies the key(s) of this mapping or a reference to another mapping. See "
+"<emlink href=\"playercontrols.xml#Keys\">Key mappings</emlink>."
 
 #: sdk/playercontrols.xml:137(col)
 msgid "ComboIsSequence"
-msgstr ""
+msgstr "ComboIsSequence"
 
 #: sdk/playercontrols.xml:139(col)
 msgid ""
@@ -21800,6 +21899,9 @@ msgid ""
 "sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink "
 "href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 msgstr ""
+"If true then multiple keys are taken as a sequence, i.e. they need to be "
+"pressed one after the other instead of all at the same time. See <emlink "
+"href=\"playercontrols.xml#Keys\">Key mappings</emlink>."
 
 #: sdk/playercontrols.xml:142(col)
 msgid "Control"
@@ -21811,6 +21913,9 @@ msgid ""
 "<em>Identifier</em> eines in einer <emlink href=\"playercontrols."
 "xml#ControlDef\">[ControlDef]</emlink> definierten Kommandos entsprechen."
 msgstr ""
+"Command that is combined with this mapping. The name should be equivalent to "
+"the <em>Identifier</em> of a command defined in a <emlink href="
+"\"playercontrols.xml#ControlDef\">[ControlDef]</emlink>."
 
 #: sdk/playercontrols.xml:147(col)
 msgid "Priority"
@@ -21822,6 +21927,9 @@ msgid ""
 "wird zunaechst die Taste mit der hoeheren Prioritaet ausgefuehrt, bis ein "
 "Kommando als behandelt gilt."
 msgstr ""
+"Priority of the mapping. If more than once mapping is using the same keys "
+"then the key with the highest priority is executed first until a command is "
+"treated as handled."
 
 #: sdk/playercontrols.xml:152(col)
 msgid "TriggerMode"
@@ -21837,7 +21945,7 @@ msgstr "Default value"
 
 #: sdk/playercontrols.xml:162(col)
 msgid "Keine besondere Aktion."
-msgstr ""
+msgstr "No particular action."
 
 #: sdk/playercontrols.xml:166(col)
 msgid ""
@@ -21848,6 +21956,11 @@ msgid ""
 "wird. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</"
 "emlink>."
 msgstr ""
+"The key changes the state of the command linked to to be held even if the "
+"key itself is pressed only shortly. Only valid if the <em>Hold</em> "
+"attribute is set for the command. This state remains until a corresponding "
+"mapping with trigger mode <em>Release</em> is being pressed. See <emlink "
+"href=\"playercontrols.xml#Hold\">Held keys</emlink>."
 
 #: sdk/playercontrols.xml:169(col)
 msgid "Release"
@@ -21859,10 +21972,13 @@ msgid ""
 "als auch Release setzen, um zwischen den Zustaenden hin und her zu schalten. "
 "Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 msgstr ""
+"The key removes the held state. A key can have both Hold and Release set to "
+"toggle between the two states. See <emlink href=\"playercontrols.xml#Hold"
+"\">Held keys</emlink>."
 
 #: sdk/playercontrols.xml:173(col)
 msgid "AlwaysUnhandled"
-msgstr ""
+msgstr "AlwaysUnhandled"
 
 #: sdk/playercontrols.xml:174(col)
 msgid ""
@@ -21870,10 +21986,12 @@ msgid ""
 "Prioritaet weitergereicht, unabhaengig davon, ob das vorherige Kommando "
 "erfolgreich ausgefuehrt wurde."
 msgstr ""
+"The key press is always passed to the mapping with the next lowest priority, "
+"independent of whether the previous command was executed successfully or not."
 
 #: sdk/playercontrols.xml:177(col)
 msgid "ToggleUnhandled"
-msgstr ""
+msgstr "ToggleUnhandled"
 
 #: sdk/playercontrols.xml:178(col)
 msgid ""
@@ -21881,6 +21999,9 @@ msgid ""
 "Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich "
 "ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
 msgstr ""
+"The keypress is passed to the mapping with the next lower priority only if "
+"the previous command was executed successfully. This can be used to define "
+"macros. **"
 
 #: sdk/playercontrols.xml:181(col)
 msgid "OverrideAssignments"
@@ -21895,7 +22016,9 @@ msgstr ""
 #: sdk/playercontrols.xml:154(col)
 msgid ""
 "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
-msgstr "Trigger mode of this mapping. Bitmask based on the following values: <placeholder-1/>"
+msgstr ""
+"Trigger mode of this mapping. Bitmask based on the following values: "
+"<placeholder-1/>"
 
 #: sdk/playercontrols.xml:110(text)
 msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
@@ -21961,7 +22084,7 @@ msgstr ""
 
 #: sdk/playercontrols.xml:275(h)
 msgid "Gehaltene Tasten"
-msgstr ""
+msgstr "Held keys"
 
 #: sdk/playercontrols.xml:276(text)
 msgid ""
@@ -26199,9 +26322,10 @@ msgid ""
 "bzw. Übergänge zwischen Animationen zu machen. Um mehr darüber zu erfahren "
 "siehe <emlink href=\"definition/animations.html\">Animationen</emlink>."
 msgstr ""
-"It is also possible, via script, to play multiple animations at the same time or to "
-"specify transitions between animations. To learn more about this possibility see "
-"<emlink href=\"definition/animations.html\">Animations</emlink>."
+"It is also possible, via script, to play multiple animations at the same "
+"time or to specify transitions between animations. To learn more about this "
+"possibility see <emlink href=\"definition/animations.html\">Animations</"
+"emlink>."
 
 #: sdk/definition/meshes.xml:26(h)
 msgid "Aneinanderhängen von Meshes"
@@ -28062,7 +28186,7 @@ msgstr ""
 
 #: sdk/definition/animations.xml:67(h)
 msgid "Animationen der ActMap"
-msgstr ""
+msgstr "ActMap animations"
 
 #: sdk/definition/animations.xml:68(text)
 msgid ""
@@ -28076,6 +28200,15 @@ msgid ""
 "<placeholder-3/>. Es existieren auch negative Slotnummern, sodass man eigene "
 "Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann."
 msgstr ""
+"Individual activities specified in the <emlink href=\"definition/actmap.html"
+"\">ActMap</emlink> can be assigned an animation. These animations are always "
+"played in slot 0. This means that, amongst others, at most one animation can "
+"be played in slot 0, animations cannot be combined. Also it is not possible "
+"to modify these animations via script functions such as <placeholder-1/> or "
+"<placeholder-2/>. However it is allowed to query properties of ActMap "
+"animations, such as with <placeholder-3/>. Negative slot numbers do also "
+"exist so that own animations can be assigned a smaller priority than ActMap "
+"animations."
 
 #: sdk/definition/actmap.xml:6(h)
 msgid "ActMap"
@@ -28346,6 +28479,14 @@ msgid ""
 "animations.html\">Animationen</emlink> für weitergehende Dokumentation zu "
 "Animationen."
 msgstr ""
+"Since OC. Specifies the animation to be played in the mesh of the object. "
+"Works only if the object uses a mesh for its graphics. If given all of "
+"Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The "
+"Length times Delay possible animation phases are mapped linearly on the "
+"animation length. If Delay equals 0 only Length will be used and the "
+"animation does not play automatically. See <emlink href=\"definition/"
+"animations.html\">Animationen</emlink> for further documentation on "
+"animations."
 
 #: sdk/console.xml:5(title)
 msgid "Die Engine im Entwicklermodus"
