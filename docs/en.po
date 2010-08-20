@@ -7478,7 +7478,6 @@ msgstr ""
 
 #: sdk/script/fn/RemoveEffect.xml:27(desc)
 #: sdk/script/fn/ChangeEffect.xml:27(desc)
-#, fuzzy
 msgid ""
 "Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske "
 "entsprechenden Effekten den indizierten Effekt in der Liste der passenden "
@@ -7487,12 +7486,11 @@ msgid ""
 "Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl "
 "alle Effekte erfasst werden."
 msgstr ""
-"Effect index. If using a wildcard search in szEffectName results in multiple "
-"matches, this index will indicate which effect from the list of results to "
-"use. If on the other hand no szEffectName is specified, this index will "
-"access the effect of the given effect number. As opposed to direct access "
-"via effect numbers, access by index will ensure that all indexed effects "
-"from 0 to the given number are reached."
+"Effect index. If name is given then if there are more effects matching the "
+"search mask the one with the given index is refered to. If name is not given "
+"then the effect with the correspoding effect number will be changed. For "
+"indices it is guaranteed that, in contrast to effect numbers, they start at 0 "
+"and count up to the number of effects"
 
 #: sdk/script/fn/RemoveEffect.xml:34(desc)
 msgid "Wenn ungleich 0, werden keine Stop-Aufrufe durchgeführt."
@@ -9555,13 +9553,12 @@ msgstr ""
 "background. Dark player names are brightened up."
 
 #: sdk/script/fn/GetTaggedPlayerName.xml:24(text)
-#, fuzzy
 msgid ""
 "Objektscript: Beim Aktivieren wird eine Meldung ausgegeben, die den Spieler "
 "verpetzt."
 msgstr ""
-"Object script: When activated, a global message will be shown telling that "
-"the player just activated this object."
+"Object script: When activated, a message will be shown which draws "
+"attention to the player."
 
 #: sdk/script/fn/GetSystemTime.xml:12(desc)
 msgid "Was genau zurückgegeben werden soll (siehe Anmerkung)"
@@ -9749,9 +9746,8 @@ msgid "Gibt eine Meldung mit dem Szenariotitel aus."
 msgstr "Displays the scenario title."
 
 #: sdk/script/fn/GetRootAnimation.xml:15(desc)
-#, fuzzy
 msgid "Slot dessen oberste Animation zurückgegeben werden soll."
-msgstr "Number of the player whose score you want to determine."
+msgstr "Slot whose topmost animation shall be returned."
 
 #: sdk/script/fn/GetRootAnimation.xml:20(desc)
 msgid ""
@@ -12002,7 +11998,6 @@ msgid "Beliebig. Vor allem nützlich zur Fehlersuche."
 msgstr "Any. Primarily useful for debugging."
 
 #: sdk/script/fn/Format.xml:16(desc)
-#, fuzzy
 msgid ""
 "Setzt eine Zeichenkette aus verschiedenen Werten zusammen. Dabei wird text "
 "von vorne bis zum Ende nach mit '%' beginnenden Platzhaltern durchsucht, um "
@@ -12018,17 +12013,17 @@ msgid ""
 "Nullen aufgefüllt), während es bei Zeichenketten (s) die Maximalzahl der "
 "auszugebenden Zeichen angibt.<br/>"
 msgstr ""
-"Composes a string of several values. To do this, the specified string is "
-"scanned for '%' placeholders which are then replaced by the parameters.<br/"
+"Composes a string of several values. To do this, text is "
+"scanned for placeholders starting with '%' which are then replaced by the parameters.<br/"
 ">The general syntax for these placeholders is:<br/><code>%[length][."
 "precision]type</code>Except for type all fields are optional. Type specifies "
-"the data type of the parameter to be expected. It is one of the following "
+"the data type of the parameter to be expected. It can be one of the following "
 "values: <placeholder-1/> Length specifies the minimum number of characters "
 "used to display the value. If the value is shorter, the display is padded on "
-"the left with spaces, or with zeroes if there is a '0' before the length "
+"the left with space characters, or with zeroes if there is a '0' before the length "
 "specification.<br/><br/>The meaning of the precision field varies with the "
-"data type: with integers (d) it specifies the minimum display length (the "
-"number is padded with zeroes at the beginning); while with strings (s) it "
+"data type: for integers (d) it specifies the minimum display length (the "
+"number is padded with zeroes at the beginning); however for strings (s) it "
 "specifies the maximum number of characters to be displayed.<br/>"
 
 #: sdk/script/fn/Format.xml:36(text)
@@ -13958,7 +13953,6 @@ msgid "C4MN_Extra_MagicValue"
 msgstr "C4MN_Extra_MagicValue"
 
 #: sdk/script/fn/CreateMenu.xml:20(col)
-#, fuzzy
 msgid ""
 "Wert als Magiewert. Dabei wird außerdem extra_data als Vergleichswert "
 "angezeigt, z.B. \"50/100\"."
@@ -15027,9 +15021,8 @@ msgstr ""
 "The calling object causes explosion damage of level 60 to its contents."
 
 #: sdk/script/fn/AttachMesh.xml:12(desc)
-#, fuzzy
 msgid "ID oder Objekt des Meshes das angehängt werden soll."
-msgstr "Object to check."
+msgstr "ID or object of the mesh to be attached."
 
 #: sdk/script/fn/AttachMesh.xml:13(desc)
 msgid ""
@@ -15626,13 +15619,12 @@ msgid "Text des neuen Menüeintrags"
 msgstr "Text of the new menu entry"
 
 #: sdk/script/fn/AddMenuItem.xml:13(desc)
-#, fuzzy
 msgid ""
 "Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann "
 "entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname "
 "angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei "
 "<placeholder-1/> als command_object übergeben wurde."
-msgstr "Script to be executed. Can be a function name or other statement."
+msgstr "Command to be executed when the menu item is selected. This can be either a function name or a statement. If a function name is given then the function will be called in the object which was given as command_object to <placeholder-1/>."
 
 #: sdk/script/fn/AddMenuItem.xml:14(desc)
 msgid ""
@@ -16184,7 +16176,7 @@ msgid ""
 msgstr ""
 "ID of an object definition (see <emlink href=\"definition/index."
 "html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>)."
-"Is changed in a proplist immediately.
+"Will be changed into a proplist immediately."
 
 #: sdk/script/Typechecks.xml:39(col)
 msgid "Ein beliebiger Text."
@@ -16216,9 +16208,8 @@ msgstr ""
 "set, and a property that is not set is gotten, the prototype is asked."
 
 #: sdk/script/Typechecks.xml:57(col)
-#, fuzzy
 msgid "Spielobjekt"
-msgstr "Target object"
+msgstr "Ingame object"
 
 #: sdk/script/Typechecks.xml:58(col)
 msgid ""
@@ -16229,9 +16220,8 @@ msgstr ""
 "<placeholder-1/>()"
 
 #: sdk/script/Typechecks.xml:59(col)
-#, fuzzy
 msgid "CreateObject(Clonk)"
-msgstr "CreateObjects"
+msgstr "CreateObject(Clonk)"
 
 #: sdk/script/Typechecks.xml:63(text)
 msgid "Außerdem gibt es noch zwei spezielle Typen:"
@@ -21759,10 +21749,9 @@ msgid "Navigation im Spielermenu (asynchrones Kommando)."
 msgstr ""
 
 #: sdk/playercontrols.xml:76(col)
-#, fuzzy
 msgid ""
 "Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte: <placeholder-1/>"
-msgstr "Bit mask composed of the following values: <placeholder-1/>"
+msgstr "Action to be executed for this command. Possible values: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:15(text)
 msgid ""
@@ -21788,7 +21777,6 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:125(caption)
-#, fuzzy
 msgid "Beliebig viele Sektionen [Assignment]"
 msgstr "Any number of sections [Assignment]"
 
@@ -21905,10 +21893,9 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:154(col)
-#, fuzzy
 msgid ""
 "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
-msgstr "Bit mask composed of the following values: <placeholder-1/>"
+msgstr "Trigger mode of this mapping. Bitmask based on the following values: <placeholder-1/>"
 
 #: sdk/playercontrols.xml:110(text)
 msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
@@ -22022,7 +22009,6 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:323(h)
-#, fuzzy
 msgid "Globale Definitionen"
 msgstr "Global definitions"
 
@@ -22032,7 +22018,6 @@ msgid "..."
 msgstr ""
 
 #: sdk/playercontrols.xml:325(h)
-#, fuzzy
 msgid "Tastenwiederholungen"
 msgstr "Key repeats"
 
@@ -23876,9 +23861,8 @@ msgstr ""
 "bugs before publishing."
 
 #: sdk/index.xml:12(h)
-#, fuzzy
 msgid "Hinweise"
-msgstr "Note:"
+msgstr "Remark"
 
 #: sdk/index.xml:14(text)
 msgid ""
@@ -26210,14 +26194,14 @@ msgid ""
 msgstr ""
 
 #: sdk/definition/meshes.xml:24(text)
-#, fuzzy
 msgid ""
 "Per Script ist es auch möglich, mehrere Animationen gleichzeitig abzuspielen "
 "bzw. Übergänge zwischen Animationen zu machen. Um mehr darüber zu erfahren "
 "siehe <emlink href=\"definition/animations.html\">Animationen</emlink>."
 msgstr ""
-"Sets the activity of the specified object. Also see <emlink href="
-"\"definition/actmap.html\">ActMap.txt</emlink>."
+"It is also possible, via script, to play multiple animations at the same time or to "
+"specify transitions between animations. To learn more about this possibility see "
+"<emlink href=\"definition/animations.html\">Animations</emlink>."
 
 #: sdk/definition/meshes.xml:26(h)
 msgid "Aneinanderhängen von Meshes"
@@ -28011,9 +27995,8 @@ msgid "Verfügbare Wertquellen"
 msgstr ""
 
 #: sdk/definition/animations.xml:25(col)
-#, fuzzy
 msgid "Kurzbeschreibung"
-msgstr "Short description"
+msgstr "Brief description"
 
 #: sdk/definition/animations.xml:29(col)
 msgid ""
