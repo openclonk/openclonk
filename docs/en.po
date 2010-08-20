@@ -4081,7 +4081,6 @@ msgstr ""
 "and can not be moved using the mouse."
 
 #: sdk/script/fn/SetScoreboardData.xml:37(text)
-#, fuzzy
 msgid ""
 "So könnte eine typische Funktion zur Initialisierung des Scoreboards in "
 "einem Szenarienscript aussehen: Es wird für jeden Spieler eine Zeile "
@@ -4866,9 +4865,8 @@ msgid "Das Objekt ändert seinen Besitzer, wenn es eingesammelt wird."
 msgstr "This object changes its owner when it is collected."
 
 #: sdk/script/fn/SetObjectOrder.xml:13(desc)
-#, fuzzy
 msgid "Objekt, vor oder nach dem sort_object einsortiert werden soll"
-msgstr "Object before or after which pSortObj is to be inserted."
+msgstr "Object before or after which sort_object is to be inserted."
 
 #: sdk/script/fn/SetObjectOrder.xml:14(desc)
 msgid ""
@@ -4878,12 +4876,11 @@ msgstr ""
 "calls."
 
 #: sdk/script/fn/SetObjectOrder.xml:15(desc)
-#, fuzzy
 msgid ""
 "Wenn ungleich 0, wird sichergestellt, dass das sort_object hinter statt vor "
 "object_before_or_after einsortiert wird."
 msgstr ""
-"If not 0, pSortObj will be inserted after object pObjBeforeOrAfter (and not "
+"If not 0, sort_object will be inserted after object object_before_or_after (and not "
 "before)."
 
 #: sdk/script/fn/SetObjectOrder.xml:18(desc)
@@ -5446,14 +5443,13 @@ msgid "Neue Schwerkraft: Werte -300 bis 300 (in Prozent)"
 msgstr "New gravity: value -300 til 300 (in percent)"
 
 #: sdk/script/fn/SetGravity.xml:15(desc)
-#, fuzzy
 msgid ""
 "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer "
 "Beschleunigung von 0.2 Pixeln pro Tick² (Zunahme der YDir um 2 pro Tick bei "
 "precision=10)"
 msgstr ""
 "Sets the gravity. Normal gravity is 100% and results in an acceleration of "
-"0.2 pixels per Tick² (increasing YDir by 2 per Tick with iPrecision=10)."
+"0.2 pixels per Tick² (increasing YDir by 2 per Tick with precision=10)."
 
 #: sdk/script/fn/SetGraphics.xml:12(desc)
 msgid ""
@@ -5464,15 +5460,14 @@ msgstr ""
 "bmp) is set."
 
 #: sdk/script/fn/SetGraphics.xml:13(desc)
-#, fuzzy
 msgid ""
 "Definition, von der die Grafik entnommen werden soll. Wenn nicht angegeben, "
 "gilt die Definition des Objekts, dessen Grafik geändert wird. Wenn nicht "
 "angegeben für overlay!=0, wird das entsprechende Overlay entfernt."
 msgstr ""
 "Definition of which the graphics are to be used. If not specified, the "
-"definition of the changed object is used. If not specified and iOverlay!=0, "
-"the overlay is removed."
+"definition of the changed object is used. If not specified and overlay!=0, "
+"that overlay is removed."
 
 #: sdk/script/fn/SetGraphics.xml:14(desc)
 msgid ""
@@ -5586,26 +5581,23 @@ msgid "6"
 msgstr "6"
 
 #: sdk/script/fn/SetGraphics.xml:25(col)
-#, fuzzy
 msgid ""
 "Benutzt die angegebene Grafik als Quellgrafik, um das Objekt erneut zu "
 "zeichnen. Die Quellkoordinaten sind die gleichen wie die, die auch beim "
 "Zeichnen von obj verwendet wurden. Ab CR."
 msgstr ""
 "Draws the target object a second time, using the supplied graphics. The "
-"source coordinates are the same as in the original object drawing. Since CR."
+"source coordinates are the same as for drawing obj. Since CR."
 
 #: sdk/script/fn/SetGraphics.xml:15(desc)
-#, fuzzy
 msgid ""
 "Nur beachtet bei angegebenem overlay: Gibt an, wie das Overlay gezeichnet "
 "wird. Folgende Konstanten sind möglich: <placeholder-1/>"
 msgstr ""
-"Only in conjunction with iOverlay parameter: specifies how the overlay is to "
+"Only in conjunction with overlay parameter: specifies how the overlay is to "
 "be drawn. The following constants are allowed: <placeholder-1/>"
 
 #: sdk/script/fn/SetGraphics.xml:28(desc)
-#, fuzzy
 msgid ""
 "Nur für overlay_mode==GFXOV_MODE_Action: Aktivität in der Definition "
 "source_definition, dessen Grafik über das Zielobjekt gelegt werden soll. "
@@ -5613,11 +5605,11 @@ msgid ""
 "txt</emlink> der Quelldefinition definiert sein. Achtung: Die Länge dieser "
 "Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich. Ab CR."
 msgstr ""
-"Only for iOverlayMode==GFXOV_MODE_Action: the activity in definition "
-"idSrcDef, the graphics of which shall be superimposed onto the object. This "
+"Only for overlay_mode==GFXOV_MODE_Action: the activity in definition "
+"source_definition, the graphics of which shall be superimposed onto the object. This "
 "activity has to be defined as Action in <emlink href=\"definition/actmap.html"
 "\">ActMap.txt</emlink> of the source definition. Notice: the length of this "
-"animation should be 1; longer animations are not yet possible. From CR."
+"animation should be 1; longer animations are not yet possible. Since CR."
 
 #: sdk/script/fn/SetGraphics.xml:29(desc)
 msgid "Blitmodus der überlegten Grafik (z.B. additiv). Siehe <placeholder-1/>"
@@ -5625,13 +5617,12 @@ msgstr ""
 "Blit mode of the overlayed graphics (e.g. additive). Siehe <placeholder-1/>"
 
 #: sdk/script/fn/SetGraphics.xml:30(desc)
-#, fuzzy
 msgid ""
 "Nur für overlay_mode==GFXOV_MODE_Object: Objekt, dessen Grafik über das "
 "Zielobjekt gelegt werden soll. Ab CR."
 msgstr ""
-" Only for iOverlayMode==GFXOV_MODE_Object: the object the graphics of which "
-"shall be superimposed onto the target object. From CR."
+" Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which "
+"shall be superimposed onto the target object. Since CR."
 
 #: sdk/script/fn/SetGraphics.xml:33(desc)
 msgid ""
@@ -5644,7 +5635,6 @@ msgstr ""
 "buttons."
 
 #: sdk/script/fn/SetGraphics.xml:34(remark)
-#, fuzzy
 msgid ""
 "Es wird bei overlay=0 nur die Grafik eines Objekts geändert. Der Effekt "
 "entspricht dem Ersetzen der Graphics.bmp/-.png/Overlay.png in der <emlink "
@@ -5654,7 +5644,7 @@ msgid ""
 "beeinflusst; diese Koordinaten sollten also in der neuen Grafik auf "
 "sinnvolle Positionen verweisen (Das gilt auch für SolidMasks!)."
 msgstr ""
-"With iOverlay=0 only the base graphics of an object are changed. The effect "
+"With overlay=0 only the base graphics of an object are changed. The effect "
 "corresponds to replacing Graphics.bmp/-.png/Overlay.png in the object "
 "<emlink href=\"definition/index.html\">definition</emlink>. Source "
 "information from <emlink href=\"definition/actmap.html\">ActMap.txt</emlink> "
@@ -5905,14 +5895,13 @@ msgid ""
 msgstr "If not 0, no cursor arrow is drawn when the object is selected."
 
 #: sdk/script/fn/SetCursor.xml:17(desc)
-#, fuzzy
 msgid ""
 "Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert "
 "dieses für die Steuerung. Gibt false zurück falls das Zielobjekt momentan "
 "durch <placeholder-1/> deaktiviert ist."
 msgstr ""
 "Sets the control cursor of a player to the specified object and selects this "
-"object for player control."
+"object for player control. Returns false if the target object is currently deactivated by <placeholder-1/>."
 
 #: sdk/script/fn/SetCrewStatus.xml:8(subcat)
 #: sdk/script/fn/SetCrewEnabled.xml:8(subcat)
@@ -5940,7 +5929,6 @@ msgstr ""
 "code> if you want to remove him."
 
 #: sdk/script/fn/SetCrewStatus.xml:18(desc)
-#, fuzzy
 msgid ""
 "Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu "
 "oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-"
@@ -6020,9 +6008,8 @@ msgid ""
 msgstr "Player number of the new controller. -1 for no controller."
 
 #: sdk/script/fn/SetController.xml:15(desc)
-#, fuzzy
 msgid "Ändert den steuernden Spieler des aufrufenden Objekts."
-msgstr "Changes the controller of an object."
+msgstr "Changes the controller of the calling object."
 
 #: sdk/script/fn/SetController.xml:19(text)
 msgid ""
@@ -6061,7 +6048,6 @@ msgid "Fertigstellung/Wachstum in Prozent"
 msgstr "Completion/growth in percent"
 
 #: sdk/script/fn/SetCon.xml:16(desc)
-#, fuzzy
 msgid ""
 "Setzt die Fertigstellung des aufrufenden Objekts auf den angegebenen Wert."
 msgstr "Sets the completion of an object to the specified value."
@@ -6082,14 +6068,12 @@ msgid "Hinzuzufügende Komponente"
 msgstr "Component to be added"
 
 #: sdk/script/fn/SetComponent.xml:13(desc)
-#, fuzzy
 msgid "Zu setzende Anzahl der Komponenten mit der ID component"
-msgstr "Count to be set for components of type idComponent"
+msgstr "Count to be set for components of type component"
 
 #: sdk/script/fn/SetComponent.xml:16(desc)
-#, fuzzy
 msgid "Setzt die Anzahl einer Komponente des aufrufenden Objekts."
-msgstr "Sets the component count of an object."
+msgstr "Sets the component count of the calling object."
 
 #: sdk/script/fn/SetComponent.xml:17(remark)
 msgid "Siehe auch <emlink href=\"definition/defcore.html\">DefCore</emlink>"
@@ -6149,7 +6133,6 @@ msgstr ""
 "Number of retries if the command fails, until the command fails completely."
 
 #: sdk/script/fn/SetCommand.xml:57(desc)
-#, fuzzy
 msgid ""
 "Gibt dem aufrufenden Objekt ein Kommando, welches dieses selbstständig (ggf. "
 "durch automatische Wegfindung) auszuführen versucht."
@@ -6158,24 +6141,20 @@ msgstr ""
 "using the internal artificial intelligence (including pathfinding)."
 
 #: sdk/script/fn/SetCommand.xml:64(col)
-#, fuzzy
 msgid "command"
-msgstr "Commands"
+msgstr "command"
 
 #: sdk/script/fn/SetCommand.xml:64(col)
-#, fuzzy
 msgid "target"
-msgstr "pTarget"
+msgstr "target"
 
 #: sdk/script/fn/SetCommand.xml:64(col)
-#, fuzzy
 msgid "x,y"
-msgstr "ox, oy"
+msgstr "x, y"
 
 #: sdk/script/fn/SetCommand.xml:64(col)
-#, fuzzy
 msgid "target2"
-msgstr "pTarget2"
+msgstr "target2"
 
 #: sdk/script/fn/SetCommand.xml:64(col)
 msgid "iData"
@@ -6651,7 +6630,6 @@ msgstr ""
 "(), <placeholder-7/>(), <placeholder-8/>() or <placeholder-9/>()."
 
 #: sdk/script/fn/SetComDir.xml:15(desc)
-#, fuzzy
 msgid ""
 "Setzt die Befehlsrichtung des aufrufenden Objekts (siehe <placeholder-1/>)"
 msgstr "Sets the order direction of an object (see <placeholder-1/>)."
@@ -6675,14 +6653,13 @@ msgid "Neue Farbe für ColorByOwner-Flächen"
 msgstr "New color for ColorByOwner areas."
 
 #: sdk/script/fn/SetColor.xml:15(desc)
-#, fuzzy
 msgid ""
 "Setzt die ColorByOwner-Färbung des aufrufenden Objekts. Dieser Aufruf "
 "entspricht dem Setzen eines neuen Besitzers mit <placeholder-1/> bei einem "
 "Spieler mit der Spielerfarbe color."
 msgstr ""
 "Sets the ColorByOwner color of an object. This call corresponds to setting "
-"the owner using <placeholder-1/> to a player with player color dwNewColor."
+"the owner using <placeholder-1/> to a player with color as the player color."
 
 #: sdk/script/fn/SetColor.xml:21(text)
 msgid ""
@@ -6693,9 +6670,8 @@ msgstr ""
 "white and half transparent."
 
 #: sdk/script/fn/SetClrModulation.xml:12(desc)
-#, fuzzy
 msgid "Neue Farbe, mit der moduliert wird."
-msgstr "Color value to be added."
+msgstr "Color value to be modulated with."
 
 #: sdk/script/fn/SetClrModulation.xml:13(desc)
 msgid ""
@@ -6707,7 +6683,6 @@ msgstr ""
 "overlay must have been created using <placeholder-1/> first. From CR."
 
 #: sdk/script/fn/SetClrModulation.xml:16(desc)
-#, fuzzy
 msgid ""
 "Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, "
 "der multiplikativ aufgerechnet wird. Bei <placeholder-1/>(255,0,0) würden "
@@ -6754,12 +6729,10 @@ msgid "Kategorie"
 msgstr "Category"
 
 #: sdk/script/fn/SetCategory.xml:13(desc)
-#, fuzzy
 msgid "Objektkategorie. Sollte ein gültiger C4D_x-Wert sein."
-msgstr "Object category. Should be a valid C4D_x() value."
+msgstr "Object category. Should be a valid C4D_x value."
 
 #: sdk/script/fn/SetCategory.xml:16(desc)
-#, fuzzy
 msgid "Ändert die Kategorie des aufrufenden Objekts."
 msgstr "Changes the category of an object."
 
@@ -6988,7 +6961,6 @@ msgid "Zweites Zielobjekt"
 msgstr "Second target object"
 
 #: sdk/script/fn/SetActionTargets.xml:16(desc)
-#, fuzzy
 msgid ""
 "Setzt die aktuellen Aktivitätszielobjekte des aufrufenden Objekts. Die "
 "Auswirkung der Zielobjekte richtet sich nach der <emlink href=\"definition/"
@@ -7061,13 +7033,12 @@ msgstr ""
 "actmap.html\">ActMap.txt</emlink>."
 
 #: sdk/script/fn/SetAction.xml:18(remark)
-#, fuzzy
 msgid ""
 "Wird target1 bzw. target2 nicht angegeben bzw. 0 übergeben, so bleibt das "
 "jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets "
 "zu löschen sollte <placeholder-1/> benutzt werden."
 msgstr ""
-"If pTarget1 or pTarget2 is omitted or 0, the previously set action target(s) "
+"If target1 or target2 is omitted or 0, the previously set action target(s) "
 "will be preserved. To effectively clear action targets, use <placeholder-1/>."
 
 #: sdk/script/fn/SetAction.xml:19(remark)
@@ -7089,7 +7060,6 @@ msgid "Nummer des Spielers, an den verkauft wird"
 msgstr "Number of the player to which to sell to."
 
 #: sdk/script/fn/Sell.xml:15(desc)
-#, fuzzy
 msgid "Verkauft das aufrufende Objekt mitsamt Inhalt."
 msgstr "Sells an object including all its contents."
 
@@ -7109,7 +7079,6 @@ msgstr ""
 "Number of the menu item which is to be selected. The first entry is number 0."
 
 #: sdk/script/fn/SelectMenuItem.xml:15(desc)
-#, fuzzy
 msgid "Setzt die Auswahl in einem Menü."
 msgstr "Sets menu selection in an object menu."
 
@@ -7122,7 +7091,6 @@ msgstr ""
 "menu entries without losing menu item selection."
 
 #: sdk/script/fn/ScrollContents.xml:13(desc)
-#, fuzzy
 msgid ""
 "Rotiert den Inhalt des aufrufenden Objekts. Dabei wird immer genau ein "
 "Objekt weiter gescrollt (im Gegensatz zu <placeholder-1/>). Es wird außerdem "
@@ -7184,12 +7152,11 @@ msgid "Name der Funktion, die aufgerufen werden soll."
 msgstr "Name of the function to call."
 
 #: sdk/script/fn/ScheduleCall.xml:14(desc)
-#, fuzzy
 msgid ""
 "Zeit, bis die Funktion zum ersten Mal aufgerufen werden soll. Wenn repeat "
 "&gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Aufrufen."
 msgstr ""
-"Delay after which the first call is made. If iRepeat is greather than 1, "
+"Delay after which the first call is made. If repeat is greather than 1, "
 "this is also the delay inbetween subsequent calls."
 
 #: sdk/script/fn/ScheduleCall.xml:15(desc)
@@ -7233,12 +7200,11 @@ msgid "Auszuführendes Script"
 msgstr "Script to be executed."
 
 #: sdk/script/fn/Schedule.xml:13(desc)
-#, fuzzy
 msgid ""
 "Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn repeat &gt; "
 "1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen."
 msgstr ""
-"Delay after which the first call is made. If iRepeat is greather than 1, "
+"Delay after which the first call is made. If repeat is greather than 1, "
 "this is also the delay inbetween subsequent calls."
 
 #: sdk/script/fn/Schedule.xml:14(desc)
@@ -7336,7 +7302,6 @@ msgid "Name der Funktion, die für die Einsortierung aufgerufen wird."
 msgstr "Name of the function to be called for sorting order."
 
 #: sdk/script/fn/ResortObject.xml:15(desc)
-#, fuzzy
 msgid ""
 "Sortiert das aufrufende Objekt neu in die Objektliste ein. Die Platzierung "
 "ergibt sich nach einer Platzierungsfunktion, die die Objektposition relativ "
@@ -7429,7 +7394,6 @@ msgid "0-7: Index der Gammarampe, die zurückgesetzt werden soll."
 msgstr "0-7: index of the gamma ramp to reset."
 
 #: sdk/script/fn/ResetGamma.xml:15(desc)
-#, fuzzy
 msgid ""
 "Setzt eine Gammarampe auf den Normalwert zurück. Dies entspricht "
 "<placeholder-1/>(<placeholder-2/>(0,0,0), <placeholder-3/>(128,128,128), "
@@ -7438,7 +7402,7 @@ msgid ""
 msgstr ""
 "Resets a gamma ramp to default value. This corresponds to <placeholder-1/>"
 "(<placeholder-2/>(0,0,0), <placeholder-3/>(128,128,128), <placeholder-4/>"
-"(255,255,255), iRampIndex);. For more information see <placeholder-5/>."
+"(255,255,255), ramp_index);. For more information see <placeholder-5/>."
 
 #: sdk/script/fn/ResetGamma.xml:19(text)
 msgid "Deaktiviert alle Gammarampen."
@@ -7449,9 +7413,8 @@ msgid "Index des Vertex, das entfernt werden soll."
 msgstr "Index of the vertex to be removed."
 
 #: sdk/script/fn/RemoveVertex.xml:15(desc)
-#, fuzzy
 msgid "Entfernt einen Vertex vom aufrufenden Objekt."
-msgstr "Removes all vertices from the calling object."
+msgstr "Removes a vertex from the calling object."
 
 #: sdk/script/fn/RemoveVertex.xml:20(text)
 msgid "Entfernt alle Vertices vom aufrufenden Objekt."
@@ -7466,9 +7429,8 @@ msgstr ""
 "Otherwise, the contents will be deleted as well."
 
 #: sdk/script/fn/RemoveObject.xml:15(desc)
-#, fuzzy
 msgid "Entfernt das aufrufende Objekt."
-msgstr "Removes all vertices from the calling object."
+msgstr "Removes the calling object."
 
 #: sdk/script/fn/RemoveObject.xml:16(remark)
 msgid ""
@@ -7550,15 +7512,14 @@ msgid "Löscht einen Effekt"
 msgstr "Deletes an effect."
 
 #: sdk/script/fn/RemoveEffect.xml:47(remark)
-#, fuzzy
 msgid ""
 "Beispiel siehe <placeholder-1/>. Achtung: Wenn sich ein Effekt mit dieser "
 "Funktion selbst löschen soll, wird nur target und index angegeben, nicht "
 "name!"
 msgstr ""
 "See <placeholder-1/> for an example. Warning: if an effect is meant to "
-"delete itself using this function, only use pTarget and iIndex, not "
-"szEffectName!"
+"delete itself using this function, only use target and index, not "
+"name!"
 
 #: sdk/script/fn/RemoveEffect.xml:50(emlink)
 #: sdk/script/fn/GetEffectCount.xml:38(emlink)
@@ -7586,14 +7547,12 @@ msgid "Weitere Suchkriterium in Form einer Find_*-Funktion"
 msgstr "Additional search criteria in the form of Find_* functions"
 
 #: sdk/script/fn/RemoveAll.xml:16(desc)
-#, fuzzy
 msgid "Entfernt alle Objekte die den Suchkriterien entsprechen."
-msgstr "Search criterion: finds all objects with the specified action."
+msgstr "Removes all objects which are found using the search criteria."
 
 #: sdk/script/fn/RemoveAll.xml:20(text)
-#, fuzzy
 msgid "Alle Wipfe werden entfernt."
-msgstr "Portrait will be removed."
+msgstr "All wipfs will be removed."
 
 #: sdk/script/fn/ReloadParticle.xml:12(desc)
 msgid "Name des neu zu ladenden Partikeltyps."
@@ -7640,12 +7599,11 @@ msgid "Ende des Bereichs"
 msgstr "Range end"
 
 #: sdk/script/fn/RandomX.xml:16(desc)
-#, fuzzy
 msgid ""
 "Liefert einen Zufallswert zwischen value1 und value2. Dabei ist egal, "
 "welcher Wert der größere ist."
 msgstr ""
-"Yields a random value from iVal1 to iVal2. It does not matter, which limit "
+"Yields a random value from value1 to value2. It does not matter, which limit "
 "is greater or less."
 
 #: sdk/script/fn/RandomX.xml:22(text)
@@ -7668,12 +7626,11 @@ msgid "Höchstwert"
 msgstr "Maximum value"
 
 #: sdk/script/fn/Random.xml:15(desc)
-#, fuzzy
 msgid ""
 "Gibt eine Zufallszahl zwischen 0 und max-1 zurück. Der zurückgegebene Wert "
 "kann jedoch nicht höher als 32767 sein."
 msgstr ""
-"Yields a random number from 0 to iMaxVal-1. The returned value cannot be "
+"Yields a random number from 0 to max-1. The returned value cannot be "
 "greater than 32767, however."
 
 #: sdk/script/fn/Random.xml:23(text)
@@ -7714,7 +7671,6 @@ msgid "Färbt den Himmel so richtig rot."
 msgstr "Makes a ruddy sky."
 
 #: sdk/script/fn/RGB2HSL.xml:15(desc)
-#, fuzzy
 msgid ""
 "Wandelt einen 32Bit-Farbwert in die entsprechenden Hue-, Saturation- und "
 "Lightness-Werte um wie bereits von Malprogrammen bekannt.<br/> Die HSL Werte "
@@ -7723,7 +7679,7 @@ msgid ""
 "bis 255 skaliert."
 msgstr ""
 "Converts a 32 bit color value into hue, saturation, and lightness values as "
-"know in paint programs.<br>The HSL value is returned as DWord and can be "
+"know in paint programs.<br>The HSL value is returned as int and can be "
 "processed using <placeholder-1/> or <placeholder-2/>.<br/> All values range "
 "from 0-255."
 
@@ -7804,7 +7760,6 @@ msgid "Stärke des Schlages (abgezogene Energiemenge)."
 msgstr "Strength of the punch (life energy to be subtracted)."
 
 #: sdk/script/fn/Punch.xml:16(desc)
-#, fuzzy
 msgid "Schlägt obj."
 msgstr "Punches the target object."
 
@@ -7831,16 +7786,14 @@ msgid "Parameter der Funktion."
 msgstr "Parameters of the function."
 
 #: sdk/script/fn/ProtectedCall.xml:17(desc)
-#, fuzzy
 msgid ""
 "Ruft die geschützte oder öffentliche Funktion function in obj auf. Es sollte "
 "überlegt werden, ob der Aufruf wirklich nötig ist."
 msgstr ""
-"Calls the protected or public function szFunction in pObj. You should "
+"Calls the protected or public function szFunction in obj. You should "
 "reconsider whether this workaround is really necessary."
 
 #: sdk/script/fn/PrivateCall.xml:17(desc)
-#, fuzzy
 msgid ""
 "Ruft die private, geschützte oder öffentliche Funktion function in obj auf. "
 "Es sollte überlegt werden, ob der Aufruf wirklich nötig ist."
@@ -7853,18 +7806,16 @@ msgid "Exponent"
 msgstr "Exponent"
 
 #: sdk/script/fn/Pow.xml:26(desc)
-#, fuzzy
 msgid "Errechnet die Potenz von value1 und value2 (\"X hoch Y\")"
-msgstr "Calculates iVal1 to the power of iVal2."
+msgstr "Calculates value1 to the power of value2."
 
 #: sdk/script/fn/Pow.xml:28(remark)
-#, fuzzy
 msgid ""
 "Statt Pow() sollte der <emlink href=\"script/operatoren.html\">Operator</"
 "emlink> \"**\" verwendet werden: <code>value1 ** value2</code>"
 msgstr ""
 "Instead of Pow() you should use the <emlink href=\"script/operatoren.html"
-"\">operator</emlink> \"**\": <code>iVal1 ** iVal2</code>"
+"\">operator</emlink> \"**\": <code>value1 ** value2</code>"
 
 #: sdk/script/fn/PlayerMessage.xml:7(category)
 #: sdk/script/fn/Message.xml:7(category) sdk/script/fn/Log.xml:7(category)
@@ -7901,18 +7852,16 @@ msgid ""
 msgstr "Tells the name of the selected clonk to the owner of the clonk only."
 
 #: sdk/script/fn/PlayAnimation.xml:15(desc)
-#, fuzzy
 msgid "Name der abzuspielenden Animation."
-msgstr "Name of the entry to be retrieved."
+msgstr "Name of the animation to be played."
 
 #: sdk/script/fn/PlayAnimation.xml:20(desc)
-#, fuzzy
 msgid ""
 "Slot im Animation Stack in den die Animation eingefügt werden soll. Siehe "
 "<emlink href=\"definition/animations.html\">Animationen</emlink>."
 msgstr ""
-"Sets the activity of the specified object. Also see <emlink href="
-"\"definition/actmap.html\">ActMap.txt</emlink>."
+"Slot in the animation stack in which the animation should be inserted. See "
+"<emlink href=\"definition/animations.html\">Animations</emlink>."
 
 #: sdk/script/fn/PlayAnimation.xml:35(desc)
 msgid ""
@@ -8027,9 +7976,8 @@ msgid "Menge der zu erzeugenden Objekte"
 msgstr "Count of objects to be created"
 
 #: sdk/script/fn/PlaceObjects.xml:15(col)
-#, fuzzy
 msgid "material_index"
-msgstr "Material index"
+msgstr "material_index"
 
 #: sdk/script/fn/PlaceObjects.xml:15(col)
 msgid "Erzeugung in"
@@ -8073,7 +8021,6 @@ msgid "Objekte werden im freien Himmel erzeugt. Siehe auch <placeholder-1/>()"
 msgstr "Objects are created in mid-air. Also see <placeholder-1/>()."
 
 #: sdk/script/fn/PlaceObjects.xml:14(desc)
-#, fuzzy
 msgid ""
 "Material in die Objekte erzeugt werden soll. Hier kann entweder der "
 "Materialname angegeben werden oder folgende Zeichenketten: <placeholder-1/>"
@@ -8124,7 +8071,6 @@ msgstr ""
 "is needed e.g. when placing objects in liquids."
 
 #: sdk/script/fn/PlaceObjects.xml:30(desc)
-#, fuzzy
 msgid ""
 "Erzeugt amount viele Objekte im angegebenen Zielrechteck (optional) im "
 "angegebenen Material. Gibt die Anzahl der Iterationen zurück, oder -1 wenn "
@@ -8256,12 +8202,10 @@ msgstr ""
 "= 840)"
 
 #: sdk/script/fn/OnFire.xml:12(desc)
-#, fuzzy
 msgid "Gibt zurück, ob das aufrufende Objekt brennt."
 msgstr "Returns whether an object is on fire."
 
 #: sdk/script/fn/ObjectNumber.xml:12(desc)
-#, fuzzy
 msgid ""
 "Bestimmt die Nummer des aufrufenden Objekts. Diese Nummer ist eindeutig und "
 "kann mittels der Funktion <placeholder-1/> in einen Objektpointer "
@@ -8272,7 +8216,6 @@ msgstr ""
 "> it can be converted back to an object pointer."
 
 #: sdk/script/fn/ObjectNumber.xml:22(text)
-#, fuzzy
 msgid ""
 "Wird die Funktion aufgerufen, so wird im aufrufenden Objekt (caller) ein "
 "Menu erzeugt, das alle fällbaren (<placeholder-1/>()) Objekte in einem "
@@ -8296,13 +8239,12 @@ msgid "Erstes Objekt. 0 bei lokalem Aufruf."
 msgstr "First object. Can be 0 in local calls."
 
 #: sdk/script/fn/ObjectDistance.xml:16(desc)
-#, fuzzy
 msgid ""
 "Liefert die Distanz zwischen zwei Objekten. Ist obj 0, Wird die Distanz "
 "zwischen dem aufrufenden Objekt und obj2 gemessen."
 msgstr ""
-"Returns the distance between two objects. If pObj is 0 the distance between "
-"the calling object and pObj2 is measured."
+"Returns the distance between two objects. If obj is 0 the distance between "
+"the calling object and obj2 is measured."
 
 #: sdk/script/fn/ObjectCount.xml:16(desc)
 msgid ""
@@ -8667,7 +8609,6 @@ msgid "Das Objekt kann nicht verkauft werden"
 msgstr "The object can not be sold."
 
 #: sdk/script/fn/OCF_CrewMember.xml:14(remark)
-#, fuzzy
 msgid ""
 "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten "
 "siehe <emlink href=\"definition/ocf.html\">Object character flags</emlink>."
@@ -8676,7 +8617,7 @@ msgid ""
 msgstr ""
 "For more information and examples on the use of these constants see <emlink "
 "href=\"definition/ocf.html\">object character flags</emlink>.<br/> Objects "
-"with the OCF_CrewMember() are handled specially in various ways:<br/"
+"with the OCF_CrewMember are handled specially in various ways:<br/"
 "><placeholder-1/>"
 
 #: sdk/script/fn/OCF_Container.xml:12(desc)
@@ -8692,7 +8633,6 @@ msgid "Object character flag: Baustelle"
 msgstr "Object character flag: construction site"
 
 #: sdk/script/fn/OCF_Collection.xml:12(desc)
-#, fuzzy
 msgid ""
 "Object character flag: Das Objekt besitzt einen Collection-Bereich, ist "
 "nicht verdreht oder unfertig."
@@ -8741,7 +8681,6 @@ msgid "Zündet alle brennbaren Objekte an, die nirgends enthalten sind."
 msgstr "Incinerates all combustible objects which are not contained."
 
 #: sdk/script/fn/NO_OWNER.xml:12(desc)
-#, fuzzy
 msgid ""
 "Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für "
 "diverse Funktionen wie <placeholder-1/> verwendet werden, um einen neutralen "
@@ -8751,7 +8690,6 @@ msgstr ""
 "ownership' in cases such as <placeholder-1/> or <placeholder-2/>."
 
 #: sdk/script/fn/NO_OWNER.xml:17(text)
-#, fuzzy
 msgid "Erzeugt einen besitzerlosen Feuerstein."
 msgstr "Creates a flint owned by no one."
 
@@ -8896,14 +8834,13 @@ msgid "Spieler, dessen Crew das Objekt hinzugefügt werden soll."
 msgstr "Player to whose crew you want to add a member."
 
 #: sdk/script/fn/MakeCrewMember.xml:21(desc)
-#, fuzzy
 msgid ""
 "Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu. "
 "Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.<br/"
 "> Gibt true zurück, wenn das Objekt erfolgreich der Crew hinzugefügt wurde."
 msgstr ""
 "Adds an object (usually a clonk) to the crew of a player. The object must "
-"have the CrewMember property set in the DefCore.<br/>Returns 1 if the object "
+"have the CrewMember property set in the DefCore.<br/>Returns true if the object "
 "was added successfully."
 
 #: sdk/script/fn/Log.xml:12(desc)
@@ -8983,9 +8920,8 @@ msgid "Name des Materials. Default ist \"Lava\""
 msgstr "Name of the material. The default is \"Lava\""
 
 #: sdk/script/fn/LaunchVolcano.xml:18(desc)
-#, fuzzy
 msgid "Erzeugt einen Vulkan an angegebener Position"
-msgstr "Creates smoke at the specified position."
+msgstr "Launches a volcano at the specified position."
 
 #: sdk/script/fn/LaunchLightning.xml:20(desc)
 #: sdk/script/fn/LaunchEarthquake.xml:20(desc)
@@ -9015,7 +8951,6 @@ msgid ""
 msgstr "If true, the lightning will cause a screen flash for all players."
 
 #: sdk/script/fn/LaunchLightning.xml:49(desc)
-#, fuzzy
 msgid ""
 "Erzeugt einen Blitz. Dieser bewegt sich von der Position (x, y) mit der "
 "angegebenen Geschwindigkeit fort. Dabei geben xrange/yrange an, wie sehr der "
@@ -9066,7 +9001,6 @@ msgstr ""
 "From CE."
 
 #: sdk/script/fn/Kill.xml:19(desc)
-#, fuzzy
 msgid "Tötet das aufrufende Objekt. Nur Lebewesen."
 msgstr "Kills an object. Applies to living beings only."
 
@@ -9116,11 +9050,10 @@ msgid "Obergrenze für den Wert"
 msgstr "Upper limit"
 
 #: sdk/script/fn/Inside.xml:29(desc)
-#, fuzzy
 msgid ""
 "Gibt TRUE zurück, wenn value &gt;= lower_bound und value &lt;= upper_bound "
 "ist."
-msgstr "Returns true, if iVal &gt;= iRange1 and iVal &lt;= iRange2."
+msgstr "Returns true, if value &gt;= lower_bound and val &lt;= upper_bound."
 
 #: sdk/script/fn/InsertMaterial.xml:13(desc)
 msgid "Einzufügendes Material (siehe <placeholder-1/>())"
@@ -9149,7 +9082,6 @@ msgid ""
 msgstr "Inserts a material pixel at the given position and given speed."
 
 #: sdk/script/fn/Incinerate.xml:12(desc)
-#, fuzzy
 msgid ""
 "Zündet das aufrufende Objekt an. In dem jeweiligen Objekt wird ggf. "
 "Incineration() aufgerufen"
@@ -9158,7 +9090,6 @@ msgstr ""
 "the object."
 
 #: sdk/script/fn/InLiquid.xml:12(desc)
-#, fuzzy
 msgid ""
 "Gibt TRUE zurück, wenn sich das aufrufende Objekt in einer Flüssigkeit "
 "befindet."
@@ -9173,12 +9104,11 @@ msgid "Zweiter Spieler"
 msgstr "Second player"
 
 #: sdk/script/fn/Hostile.xml:14(desc)
-#, fuzzy
 msgid ""
 "Wenn WAHR, wird nur geprüft, ob player1 mit player2 verfeindet ist und nicht "
 "umgekehrt."
 msgstr ""
-"If true, checks only if iPlr1 is hostile towards iPlr2 but not in reverse."
+"If true, checks only if player1 is hostile towards player2 but not in reverse."
 
 #: sdk/script/fn/Hostile.xml:17(desc)
 msgid ""
@@ -9261,7 +9191,6 @@ msgid "Objekt (Clonk), von dem die Infosektion genommen werden soll."
 msgstr "Object (clonk) of which to retrieve the info section."
 
 #: sdk/script/fn/GrabObjectInfo.xml:21(desc)
-#, fuzzy
 msgid ""
 "Überträgt die Infosektion von einem anderen Objekt zu dem aufrufenden "
 "Objekt. Die Infosektion enthält Namen, Rang, permantente Physicals, usw. Mit "
@@ -9275,7 +9204,6 @@ msgstr ""
 "to a live one."
 
 #: sdk/script/fn/GrabObjectInfo.xml:22(remark)
-#, fuzzy
 msgid ""
 "Der Befehl impliziert ein <placeholder-1/> zum besitzenden Spieler. Der "
 "Clonk sollte also nicht schon vor dem Aufruf mit MakeCrewMember zur "
@@ -9300,23 +9228,21 @@ msgid "Objekt dessen Inhalt gestohlen werden soll."
 msgstr "Obect of which to grab the contents."
 
 #: sdk/script/fn/GrabContents.xml:16(desc)
-#, fuzzy
 msgid ""
 "Entfernt sämtlichen Inhalt von *obj, und gibt diesen dem aufrufenden Objekt."
-msgstr "Removes all contents from pObj and gives it to the calling object."
+msgstr "Removes all contents from obj and gives it to the calling object."
 
 #: sdk/script/fn/GlobalN.xml:12(desc)
 msgid "Name einer globalen Variable."
 msgstr "Name of a global variable."
 
 #: sdk/script/fn/GlobalN.xml:15(desc)
-#, fuzzy
 msgid ""
 "Liefert den Inhalt der globalen Variable mit dem Namen text. Per GlobalN"
 "(\"Name\")=Wert; kann der Wert einer benannten globalen Variable gesetzt "
 "werden."
 msgstr ""
-"Returns the value of the global variable of name szText. Through GlobalN"
+"Returns the value of the global variable of name text. Through GlobalN"
 "(\"Name\")=Value you can also set the value of a global variable."
 
 #: sdk/script/fn/GetYDir.xml:12(desc) sdk/script/fn/GetXDir.xml:12(desc)
@@ -9326,35 +9252,30 @@ msgid ""
 msgstr "Precision with which to retrieve the speed. Default value is 10."
 
 #: sdk/script/fn/GetYDir.xml:15(desc)
-#, fuzzy
 msgid "Liefert die Geschwindigkeit in Y-Richtung des aufrufenden Objekts."
-msgstr "Returns the vertical speed of pObj."
+msgstr "Returns the vertical speed of the calling object."
 
 #: sdk/script/fn/GetYDir.xml:16(remark) sdk/script/fn/GetXDir.xml:16(remark)
-#, fuzzy
 msgid ""
 "Es wird immer die wahre Geschwindigkeit (in Pixeln pro Frame) mal precision "
 "zurückgegeben. Wird precision also nicht angegeben, wird immer das zehnfache "
 "der \"wahren\" Geschwindigkeit zurückgegeben!"
 msgstr ""
 "The function will return the speed in pixels per frame multiplied with "
-"iPrecision. If no precision is specified, the ten-fold speed value will be "
+"precision. If no precision is specified, the ten-fold speed value will be "
 "returned."
 
 #: sdk/script/fn/GetY.xml:12(desc)
-#, fuzzy
 msgid "Liefert die Y-Position des aufrufenden Objekts."
-msgstr "Returns the y position of pObj."
+msgstr "Returns the y position of the calling object."
 
 #: sdk/script/fn/GetXDir.xml:15(desc)
-#, fuzzy
 msgid "Liefert die Geschwindigkeit in X-Richtung des aufrufenden Objekts."
-msgstr "Returns the horizontal speed of pObj."
+msgstr "Returns the horizontal speed of the calling object."
 
 #: sdk/script/fn/GetX.xml:12(desc)
-#, fuzzy
 msgid "Liefert die X-Position des aufrufenden Objekts."
-msgstr "Returns the x position of pObj."
+msgstr "Returns the x position of the calling object."
 
 #: sdk/script/fn/GetWind.xml:12(desc)
 msgid "X-Position"
@@ -9369,25 +9290,22 @@ msgid "Ob der globale Wind abgefragt werden soll. Ab CE."
 msgstr "Whether to retrieve the global wind value. From CE."
 
 #: sdk/script/fn/GetWind.xml:17(desc)
-#, fuzzy
 msgid ""
 "Liefert die Windstärke und Richtung an der Position X, Y. Wird die Funktion "
 "aus einem Objekt heraus aufgerufen, so ist die Position relativ zur "
 "Objektposition. Wenn global=true, wird der globale Wind zurückgegeben."
 msgstr ""
 "Returns the wind's strength and direction at the specified position. In "
-"local calls, the position is an offset to the object position. If fGlobal is "
+"local calls, the position is an offset to the object position. If global is "
 "true, the global wind value is returned."
 
 #: sdk/script/fn/GetWealth.xml:15(desc)
-#, fuzzy
 msgid "Liefert das Vermögen von owner."
 msgstr "Returns the wealth of a player."
 
 #: sdk/script/fn/GetVisibility.xml:12(desc)
-#, fuzzy
 msgid "Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf."
-msgstr "Object of which to retrieve the visibility. Can be 0 in local calls."
+msgstr "Player of which to retrieve the visibility. Can be 0 in local calls."
 
 #: sdk/script/fn/GetVisibility.xml:13(desc)
 #: sdk/script/fn/CheckVisibility.xml:13(desc)
@@ -9408,12 +9326,10 @@ msgstr ""
 "If the calling object is not visible for its owner, it will be made so."
 
 #: sdk/script/fn/GetVertexNum.xml:12(desc)
-#, fuzzy
 msgid "Liefert die Anzahl der Vertices des aufrufenden Objekts."
 msgstr "Returns the number of vertices of an object."
 
 #: sdk/script/fn/GetVertex.xml:23(desc)
-#, fuzzy
 msgid ""
 "Liefert eine Koordinate des indizierten Vertex (siehe <emlink href="
 "\"definition/defcore.html\">DefCore.txt</emlink>) des aufrufenden Objekts. "
@@ -9424,25 +9340,22 @@ msgstr ""
 "center."
 
 #: sdk/script/fn/GetValue.xml:12(desc)
-#, fuzzy
 msgid ""
 "Basis, in der gekauft wird. Falls obj einen CalcValue-Aufruf zur Verfügung "
 "stellt, wird dieser Parameter an den Aufruf weitergegeben."
 msgstr ""
-"Home base in which to buy. If the CalcValue function is defined in pObj, the "
+"Home base in which to buy. If the CalcValue function is defined in obj, the "
 "return value of CalcValue is used."
 
 #: sdk/script/fn/GetValue.xml:13(desc)
-#, fuzzy
 msgid ""
 "Spieler, für den der Wert gilt. Falls obj einen CalcValue-Aufruf zur "
 "Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben."
 msgstr ""
 "Player to whom the value applies. If the CalcValue function is defined in "
-"pObj, the return value of CalcValue is used in this case also."
+"obj, the return value of CalcValue is used in this case also."
 
 #: sdk/script/fn/GetValue.xml:16(desc)
-#, fuzzy
 msgid ""
 "Gibt einen Objekt- oder Definitionswert zurück.<br/>Ein Objektwert berechnet "
 "sich folgendermaßen: Zunächst geprüft, ob eine CalcValue-Funktion im Script "
@@ -9458,7 +9371,7 @@ msgid ""
 msgstr ""
 "Determines the value of an object. With idDef specified, the standard value "
 "of the original object definition is returned, otherwise the current value "
-"of the specified object (pObj) or the calling object if pObj is 0.<br/>An "
+"of the specified object (obj) or the calling object if obj is 0.<br/>An "
 "object's value is determined as follows: with pObj specified it is first "
 "checked whether the CalcValue function is defined in the object's script and "
 "if so, it is evaluated. Otherwise, the definition value is used (see below). "
@@ -9470,13 +9383,12 @@ msgstr ""
 "is used."
 
 #: sdk/script/fn/GetValue.xml:17(remark)
-#, fuzzy
 msgid ""
 "Die beiden Parameter base und for_player sind für szenarienspezifische "
 "Handelsmodelle gedacht, und werden nur in CalcValue/CalcDefValue-Aufrufen "
 "verwendet."
 msgstr ""
-"The two parameters pBase and iForPlayer are designed for use in special "
+"The two parameters base and for_player are designed for use in special "
 "trading in individual scenarios and are only processed by CalcValue/"
 "CalcDefValue calls."
 
@@ -9493,21 +9405,19 @@ msgid "ID des Overlays hinter dem die Suche beginnen soll."
 msgstr "ID of the overlay after which you want to start the search."
 
 #: sdk/script/fn/GetUnusedOverlayID.xml:15(desc)
-#, fuzzy
 msgid ""
 "Gibt eine ungenutzte Overlay-ID zurück. Es wird der erste freie Overlay nach "
 "base_index zurückgegeben."
 msgstr ""
 "Returns an unused overlay ID. The first unused overlay ID following "
-"iBaseIndex will be returned."
+"base_index will be returned."
 
 #: sdk/script/fn/GetUnusedOverlayID.xml:16(remark)
-#, fuzzy
 msgid ""
 "Die Basisgrafik zählt nicht als Overlay, also sollte base_index mindestens 1 "
 "sein."
 msgstr ""
-"The main object image does not count as overlay, so iBaseIndex should be 1 "
+"The main object image does not count as overlay, so base_index should be 1 "
 "or higher."
 
 #: sdk/script/fn/GetType.xml:12(desc)
@@ -9662,9 +9572,8 @@ msgid "Gibt die momentane Uhrzeit zurück."
 msgstr "Returns current system time."
 
 #: sdk/script/fn/GetSystemTime.xml:19(col)
-#, fuzzy
 msgid "what"
-msgstr "iWhat"
+msgstr "what"
 
 #: sdk/script/fn/GetSystemTime.xml:19(col)
 msgid "Rückgabe"
@@ -9703,7 +9612,6 @@ msgid "Millisekunde"
 msgstr "Millisecond"
 
 #: sdk/script/fn/GetSystemTime.xml:17(remark)
-#, fuzzy
 msgid ""
 "Je nach Wert von what gibt GetSystemTime die folgende Angabe zurück: "
 "<placeholder-1/>"
@@ -9720,16 +9628,15 @@ msgid "Rückgabetyp bestimmen."
 msgstr "Determine the return value."
 
 #: sdk/script/fn/GetSkyColor.xml:16(desc)
-#, fuzzy
 msgid ""
 "Liefert den Farbwert des Himmels. Mit rgb_index kann angegeben werden ob "
 "entweder Rot (rgb_index ist 0), Grün (rgb_index ist 1) oder Blau (rgb_index "
 "ist 2) zurück gegeben werden soll. Mit index wird festgelegt von welchem "
 "Palettenindex (0 - 19) der Wert zurück gegeben werden soll."
 msgstr ""
-"Returns the color of the sky. With iRGB you can specify whether you want to "
-"determine a red (iRGB 0), green (iRGB 1), or a blue (iRGB 2) fraction. "
-"iIndex specifies the palette index of paletted sky colors (0 - 19)."
+"Returns the color of the sky. With rgb_index you can specify whether you want to "
+"determine a red (rgb_index 0), green (rgb_index 1), or a blue (rgb_index 2) fraction. "
+"index specifies the palette index of paletted sky colors (0 - 19)."
 
 #: sdk/script/fn/GetSkyAdjust.xml:12(desc)
 msgid ""
@@ -9830,12 +9737,11 @@ msgstr ""
 #: sdk/script/fn/GetPlayerVal.xml:43(remark)
 #: sdk/script/fn/GetObjectVal.xml:34(remark)
 #: sdk/script/fn/GetObjectInfoCoreVal.xml:36(remark)
-#, fuzzy
 msgid ""
 "Die meisten Möglichkeiten für Werte von entry sind bereits in System.c4g/"
 "GetXVal.c vordefiniert"
 msgstr ""
-"Most useful applications for strEntry are already implemented in System.c4g/"
+"Most useful applications for entry are already implemented in System.c4g/"
 "GetXVal.c."
 
 #: sdk/script/fn/GetScenarioVal.xml:43(text)
@@ -9892,12 +9798,10 @@ msgid "Liefert den Grünanteil des aktuell ausgewählten Clonks"
 msgstr "Returns the green fraction of the currently selected clonk."
 
 #: sdk/script/fn/GetRDir.xml:15(desc)
-#, fuzzy
 msgid "Liefert die Rotations-Geschwindigkeit des aufrufenden Objekts."
 msgstr "Returns the rotation speed of an object."
 
 #: sdk/script/fn/GetR.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert die Rotation des aufrufenden Objekts in Grad. Der Rückgabewert liegt "
 "zwischen -180° und 180°. 0° ist der Normalzustand."
@@ -9906,21 +9810,18 @@ msgstr ""
 "unrotated."
 
 #: sdk/script/fn/GetProperty.xml:12(desc)
-#, fuzzy
 msgid "Abzufragende Eigenschaft."
-msgstr "Name of the physical property requested."
+msgstr "Requested property."
 
 #: sdk/script/fn/GetProperty.xml:13(desc)
-#, fuzzy
 msgid "Objekt, das untersucht wird. Null bei lokalem Aufruf."
-msgstr "Object being sold. Can be 0 in local calls."
+msgstr "Object to request property from, zero in local calls."
 
 #: sdk/script/fn/GetProperty.xml:16(desc)
 msgid "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
 msgstr "Returns the property <code>key</code> of <code>object</code>."
 
 #: sdk/script/fn/GetProcedure.xml:12(desc)
-#, fuzzy
 msgid ""
 "Gibt die Prozedur der gegenwärtigen Aktivität des aufrufenden Objekts zurück "
 "(z.B. FLOAT, ATTACH, etc.). Bei einer NONE-Prozedur oder keiner Aktivität "
@@ -9928,7 +9829,7 @@ msgid ""
 msgstr ""
 "Returns the procedure of the current activity of an object (e.g. FLOAT, "
 "ATTACH, WALK). If the procedure is NONE or the object has no activity set "
-"the return value is 0."
+"the return value is nil."
 
 #: sdk/script/fn/GetPortrait.xml:12(desc)
 msgid ""
@@ -9948,7 +9849,6 @@ msgstr ""
 "temporary."
 
 #: sdk/script/fn/GetPortrait.xml:16(desc)
-#, fuzzy
 msgid "Fragt Name oder ID des Portraits des aufrufenden Crew-Mitglieds ab."
 msgstr "Retrieves name or id of the portrait of a crew member."
 
@@ -9963,7 +9863,6 @@ msgstr ""
 "fCopyGfx parameter in <placeholder-1/>"
 
 #: sdk/script/fn/GetPortrait.xml:23(text)
-#, fuzzy
 msgid ""
 "Weist dem aufrufenden Clonk ein zufälliges Portrait zu, wenn der Name des "
 "momentanen Portraits nicht aus nur einem Zeichen besteht (zum Beispiel wenn "
@@ -10047,21 +9946,19 @@ msgid "Spieler, dessen Magiewissen abgefragt wird."
 msgstr "Player whose magic knowledge you want to determine."
 
 #: sdk/script/fn/GetPlrMagic.xml:13(desc)
-#, fuzzy
 msgid ""
 "Bei angegebenen id gibt die Funktion TRUE zurück, wenn der player "
 "betreffenden Zauber zur Verfügung hat. index wird hierbei ignoriert."
 msgstr ""
 "With id specified the function returns true, if the specified player knows "
-"the specified spell. In this case iIndex is ignored."
+"the specified spell. In this case index is ignored."
 
 #: sdk/script/fn/GetPlrMagic.xml:14(desc)
-#, fuzzy
 msgid ""
 "Bei angegebenem index liefert die Funktion den indizierten Zauberspruch, der "
 "dem Spieler zur Verfügung steht."
 msgstr ""
-"With iIndex specified the function returns the indicated spell from the "
+"With index specified the function returns the indicated spell from the "
 "player's list of known spells."
 
 #: sdk/script/fn/GetPlrMagic.xml:17(desc)
@@ -10096,7 +9993,6 @@ msgid "Nur angeben, wenn keine id=0."
 msgstr "Specify only if id is not 0."
 
 #: sdk/script/fn/GetPlrKnowledge.xml:18(desc)
-#, fuzzy
 msgid ""
 "Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den "
 "Bauplan des betreffenden herstellbaren Objekts besitzt. index und category "
@@ -10104,8 +10000,8 @@ msgid ""
 "den indizierten Bauplan der entsprechenden Kategorie des Spielers."
 msgstr ""
 "With id specified the function returns true if the player has the "
-"construction plan of the specified object. In this case iIndex and "
-"dwCategory are ignored. If id is 0, the function returns the indicated "
+"construction plan of the specified object. In this case index and "
+"category are ignored. If id is 0, the function returns the indicated "
 "construction plan of the specified category."
 
 #: sdk/script/fn/GetPlrKnowledge.xml:23(text)
@@ -10191,7 +10087,6 @@ msgstr ""
 "may cause sync loss in a network game."
 
 #: sdk/script/fn/GetPlayerVal.xml:49(text)
-#, fuzzy
 msgid ""
 "Schreibt die Anzahl der Objekte, die der Spieler mit der Nummer player "
 "besitzt ins Log."
@@ -10256,21 +10151,18 @@ msgstr ""
 "returned."
 
 #: sdk/script/fn/GetPlayerScoreGain.xml:12(desc)
-#, fuzzy
 msgid "Spieler, dessen Spielerpunktegewinn gesucht wird."
-msgstr "Player whose value gain you want to determine."
+msgstr "Player whose score gain you want to determine."
 
 #: sdk/script/fn/GetPlayerScoreGain.xml:15(desc)
-#, fuzzy
 msgid "Liefert die Änderung der Spielerpunkte seit Beginn der Runde."
-msgstr "Returns the gain of player value since the beginning of the round."
+msgstr "Returns the gain of player score since the beginning of the round."
 
 #: sdk/script/fn/GetPlayerScore.xml:12(desc)
 msgid "Spieler-Nummer dessen Punkte zurück gegeben werden sollen."
 msgstr "Number of the player whose score you want to determine."
 
 #: sdk/script/fn/GetPlayerScore.xml:15(desc)
-#, fuzzy
 msgid "Liefert die Punkte die player hat."
 msgstr "Returns a player's score."
 
@@ -10512,9 +10404,8 @@ msgid "Ermittelt die Entfernung eines Objekts bis zu seiner ersten Basis"
 msgstr "Determines the distance from an object to its closest friendly base."
 
 #: sdk/script/fn/GetOwner.xml:12(desc)
-#, fuzzy
 msgid "Ermittelt den Besitzer des aufrufenden Objekts."
-msgstr "Determines the owner of an object."
+msgstr "Determines the owner of the calling object."
 
 #: sdk/script/fn/GetOwner.xml:16(text)
 msgid ""
@@ -10523,7 +10414,6 @@ msgid ""
 msgstr "Displays the owner of the calling object above the object."
 
 #: sdk/script/fn/GetObjectVal.xml:32(desc)
-#, fuzzy
 msgid ""
 "Gibt einen Eigenschaftswert des aufrufenden Objekts nach seinem Namen in der "
 "Objects.txt zurück."
@@ -10567,7 +10457,6 @@ msgstr ""
 "overlay must have been previously set using <placeholder-1/>. From CR."
 
 #: sdk/script/fn/GetObjectBlitMode.xml:15(desc)
-#, fuzzy
 msgid "Liefert den aktuellen Zeichenmodus des aufrufenden Objekts."
 msgstr "Returns the current blit mode of an object."
 
@@ -10580,7 +10469,6 @@ msgid "Für ein Beispiel siehe <placeholder-1/>()."
 msgstr "For an example, see <placeholder-1/>()."
 
 #: sdk/script/fn/GetOCF.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert das Object-Character-Flag des aufrufenden Objekts. Dieser Wert "
 "beschreibt den aktuellen Zustand des Objekts. Der Rückgabewert ist eine "
@@ -10588,7 +10476,7 @@ msgid ""
 msgstr ""
 "Returns the Object Character Flag of an object. This value describes the "
 "current state of an object. The return value is a bit mask and can be "
-"compared with OCF_x() values using BitAnd()."
+"compared with OCF_x values using &amp."
 
 #: sdk/script/fn/GetOCF.xml:24(text)
 msgid "Masochist"
@@ -10679,7 +10567,6 @@ msgid "Gibt ins Log aus, welchen Menüpunkt der Spieler gerade gewählt hat."
 msgstr "Writes to the log which menu entry the player has currently selected."
 
 #: sdk/script/fn/GetMenu.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert die ID des Menüs, falls das Objekt ein Menü geöffnet hat. "
 "Normalerweise ist das die ID des Menüsymbols (symbol), wenn nicht bei "
@@ -10687,19 +10574,18 @@ msgid ""
 "NONE bei keinem Symbol."
 msgstr ""
 "Returns the id of the menu if the object has an open menu. This is usually "
-"the id of the menu symbol (idSymbol) unless <placeholder-1/> was used to "
+"the id of the menu symbol (symbol) unless <placeholder-1/> was used to "
 "explicitly use a differing menu id in idMenuID. Returns 0 if there is no "
 "menu or no menu symbol."
 
 #: sdk/script/fn/GetMenu.xml:13(remark)
-#, fuzzy
 msgid ""
 "Ein Rückgabewert von nil bedeutet, dass kein gültiges Symbol ermittelt "
 "werden konnte. Dies kann z.B. dann auftreten, wenn kein Menü geöffnet ist. "
 "Engineinterne Menüs (Kaufen, Verkaufen, etc.) geben keine gültigen IDs "
 "zurück."
 msgstr ""
-"A return value of -1 means that no valid symbol could be determined. This "
+"A return value of nil means that no valid symbol could be determined. This "
 "may happen e.g. if no object pointer was passed during a global call to the "
 "function. Engine defined menus such as Buy, Sell, etc. never return valid "
 "ids."
@@ -10898,7 +10784,6 @@ msgstr ""
 "murderer are shown."
 
 #: sdk/script/fn/GetID.xml:12(desc)
-#, fuzzy
 msgid "Gibt die ID des aufrufenden Objekts zurück."
 msgstr "Returns the object definition id of an object."
 
@@ -10915,15 +10800,14 @@ msgstr ""
 "player has the player number 0."
 
 #: sdk/script/fn/GetHomebaseProduction.xml:13(desc)
-#, fuzzy
 msgid ""
 "Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die in der "
 "Heimatbasis des Spielers nachgeliefert wird. index und category werden "
 "hierbei ignoriert."
 msgstr ""
 "If specified, the function returns the number of objects of the given type "
-"which are resupplied to the player's home base. In this case iIndex and "
-"dwCategory are ignored."
+"which are resupplied to the player's home base. In this case index and "
+"category are ignored."
 
 #: sdk/script/fn/GetHomebaseProduction.xml:14(desc)
 #: sdk/script/fn/GetHomebaseMaterial.xml:14(desc)
@@ -10936,7 +10820,6 @@ msgid "Die Kategorie der gesuchten Kaufmöglichkeit."
 msgstr "Category of buyable items you want to check."
 
 #: sdk/script/fn/GetHomebaseProduction.xml:18(desc)
-#, fuzzy
 msgid ""
 "Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der "
 "Objekte in der Heimatbasis des Spielers nachgeliefert wird. index und "
@@ -10947,7 +10830,7 @@ msgid ""
 "nachgeliefert werden."
 msgstr ""
 "With id specified, the function returns how quickly objects of that type are "
-"resupplied to the player's home base. In this case iIndex and dwCategory are "
+"resupplied to the player's home base. In this case index and category are "
 "ignored. If id is 0, the function returns the id of the indicated type of "
 "objects of the specified category in the player's resupply list. This will "
 "return all object types from the resupply list, even if they are currently "
@@ -10968,18 +10851,16 @@ msgid ""
 msgstr "Number of the player whose buying options to determine."
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:13(desc)
-#, fuzzy
 msgid ""
 "Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die der "
 "Spieler in seiner Heimatbasis kaufen kann. index und category werden hierbei "
 "ignoriert."
 msgstr ""
 "If specified, the function returns the number of objects of the given type "
-"which the player can buy at his home base. In this case iIndex and "
-"dwCategory are ignored."
+"which the player can buy at his home base. In this case index and "
+"category are ignored."
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:18(desc)
-#, fuzzy
 msgid ""
 "Bei angegebenen id gibt die Funktion die Menge der Objekte zurück, die der "
 "Spieler in seiner Heimatbasis kaufen kann. index und category werden hierbei "
@@ -10989,8 +10870,8 @@ msgid ""
 "wenn zur Zeit keine Objekte dieses Typs verfügbar sind."
 msgstr ""
 "With id specified, the function returns the number of objects of that type "
-"which the player can buy at his home base. In this case iIndex and "
-"dwCategory are ignored. If id is 0, the function returns the id of the "
+"which the player can buy at his home base. In this case index and "
+"category are ignored. If id is 0, the function returns the id of the "
 "indicated type of objects of the specified category buyable at the players "
 "home base. This will return object types which are generally buyable, even "
 "if currently no object of that type is available."
@@ -11006,7 +10887,6 @@ msgid "Meldet z.B. \"Das dritte kaufbare Fahrzeug des Spielers ist XBOW\""
 msgstr "Gives the notice \"The third buyable vehicle of this player is a ...\""
 
 #: sdk/script/fn/GetHiRank.xml:15(desc)
-#, fuzzy
 msgid "Liefert den höchstrangigen aktiven Clonk von player."
 msgstr "Returns the highest ranking active clonk of a player."
 
@@ -11041,14 +10921,13 @@ msgid "Extreme Klaustrophobie: Bei geschlossener Tür Selbstmord begehen."
 msgstr "Extreme claustrophobia: if the entrance is blocked, commit suicide."
 
 #: sdk/script/fn/GetEnergy.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert den aktuellen Energiewert des aufrufenden Objekts in Prozent. 100% "
 "stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch "
 "DefCore.txt Sektion [Physical]."
 msgstr ""
 "Returns the current energy value of an object. 100% representing the maximum "
-"physical value of 100,000. Also see DefCore section [Physical]. pObj can be "
+"physical value of 100,000. Also see DefCore section [Physical]. obj can be "
 "0 in local calls."
 
 #: sdk/script/fn/GetEnergy.xml:13(remark)
@@ -11102,7 +10981,6 @@ msgstr ""
 "accessed."
 
 #: sdk/script/fn/GetEffect.xml:27(desc)
-#, fuzzy
 msgid ""
 "Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske "
 "entsprechenden Effekten den indizierten Effekt in der Liste der passenden "
@@ -11111,9 +10989,9 @@ msgid ""
 "Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl "
 "alle Effekte erfasst werden."
 msgstr ""
-"Effect index. With szEffectName specified and multiple matches for the "
+"Effect index. With name specified and multiple matches for the "
 "search this will give you the indicated effect from the list of results. If "
-"szEffectName is not specified, this index is the effect number. Effect "
+"name is not specified, this index is the effect number. Effect "
 "numbers do not necessarily run continuously from 0 to the number of effects. "
 "When using the index, this continuity is ensured."
 
@@ -11132,9 +11010,8 @@ msgstr ""
 "return value is always 0."
 
 #: sdk/script/fn/GetEffect.xml:49(col)
-#, fuzzy
 msgid "query_value"
-msgstr "iQueryVal"
+msgstr "query_value"
 
 #: sdk/script/fn/GetEffect.xml:50(col)
 msgid "Effektnummer"
@@ -11166,12 +11043,11 @@ msgid "Laufzeit des Effektes"
 msgstr "Duration of the effect"
 
 #: sdk/script/fn/GetEffect.xml:47(remark)
-#, fuzzy
 msgid ""
 "Über den Parameter query_value können folgende Werte abgefragt werden:<br/"
 "><br/><placeholder-1/>"
 msgstr ""
-"Using the parameter iQueryVal the following values can be retrieved:<br/><br/"
+"Using the parameter query_value the following values can be retrieved:<br/><br/"
 "><placeholder-1/>"
 
 #: sdk/script/fn/GetEffect.xml:77(text)
@@ -11179,7 +11055,6 @@ msgid "Entfernt alle Zaubereffekte von allen Objekten und global."
 msgstr "Removes all magic effects from all objects and the global list."
 
 #: sdk/script/fn/GetDir.xml:12(desc)
-#, fuzzy
 msgid "Liefert die aktuelle Richtung des aufrufenden Objekts als DIR_x-Wert."
 msgstr "Returns the current direction of an object as DIR_x value."
 
@@ -11188,9 +11063,8 @@ msgid "Clonk der einen Bogen verschluckt hat."
 msgstr "Clonk swallowed a bow."
 
 #: sdk/script/fn/GetDir.xml:32(text)
-#, fuzzy
 msgid "Hinweis: <placeholder-1/> = 0 / <placeholder-2/> = 1"
-msgstr "Notice: <placeholder-1/>() = 0 / <placeholder-2/>() = 1"
+msgstr "Notice: <placeholder-1/> = 0 / <placeholder-2/> = 1"
 
 #: sdk/script/fn/GetDesc.xml:13(desc)
 msgid ""
@@ -11215,19 +11089,17 @@ msgid "Index der gesuchten Definition."
 msgstr "Index of the definition."
 
 #: sdk/script/fn/GetDefinition.xml:13(desc)
-#, fuzzy
 msgid "Die Kategorie, in der die gesuchte Definition ist."
 msgstr "Category of the definition."
 
 #: sdk/script/fn/GetDefinition.xml:16(desc)
-#, fuzzy
 msgid ""
 "Liefert das ID der indizierten von der Engine in dieser Runde geladenen "
 "Objektdefinition der angegebenen Kategorie (category 0 für alle "
 "Objektkategorien)."
 msgstr ""
 "Returns the id of the indicated definition from the list of definitions of "
-"the specified category as currently loaded by the engine (dwCategory 0 for "
+"the specified category as currently loaded by the engine (category 0 for "
 "all categories)."
 
 #: sdk/script/fn/GetDefinition.xml:19(text)
@@ -11235,7 +11107,6 @@ msgid "siehe <placeholder-1/>."
 msgstr "see <placeholder-1/>."
 
 #: sdk/script/fn/GetDefCoreVal.xml:32(desc)
-#, fuzzy
 msgid ""
 "Gibt einen Eigenschaftswert der aufrufenden Objektdefinition nach seinem "
 "Namen in der <emlink href=\"definition/defcore.html\">DefCore.txt</emlink> "
@@ -11245,20 +11116,18 @@ msgstr ""
 "<emlink href=\"definition/defcore.html\">DefCore.txt</emlink>."
 
 #: sdk/script/fn/GetDefCoreVal.xml:35(remark)
-#, fuzzy
 msgid ""
 "Ist der abzufragende Eintrag eine ID-Liste (z.B. \"Components\" in der "
 "DefCore.txt), so wird bei geradem entry_number die ID, bei ungeradem "
 "entry_number die Anzahl zurückgegeben (siehe Beispiel)"
 msgstr ""
 "If the requested entry is an id list (e.g. \"Components\" in DefCore.txt) an "
-"even iEntryNr will return the listed id and an uneven iEntryNr will return "
+"even entry_number will return the listed id and an uneven entry_number will return "
 "the matching count (see example)."
 
 #: sdk/script/fn/GetDefCoreVal.xml:41(text)
-#, fuzzy
 msgid "Ermittelt die Breite des Objekts."
-msgstr "Determines the owner of an object."
+msgstr "Determines the width an object."
 
 #: sdk/script/fn/GetDefCoreVal.xml:54(text)
 msgid ""
@@ -11271,7 +11140,6 @@ msgstr ""
 "list."
 
 #: sdk/script/fn/GetDefBottom.xml:12(desc)
-#, fuzzy
 msgid ""
 "Fragt die Unterkante des aufrufenden Objekts ab. Diese entspricht Y-Position "
 "+ DefCore-OffsetY + DefCore-Height. Eine eventuelle Drehung wird hier nicht "
@@ -11288,7 +11156,6 @@ msgid ""
 msgstr "Exits the first contained object to the container's bottom center."
 
 #: sdk/script/fn/GetDamage.xml:13(desc)
-#, fuzzy
 msgid "Fragt den Schadenswert des aufrufenden Objekts ab."
 msgstr "Determines the damage level of an object."
 
@@ -11382,18 +11249,16 @@ msgid "Index des Clonks in der Crew"
 msgstr "Crew index of the clonk."
 
 #: sdk/script/fn/GetCrew.xml:17(desc)
-#, fuzzy
 msgid ""
 "Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger "
 "Index angegeben, gibt die Funktion nil zurück."
-msgstr "Returns the indicated crew member of a player."
+msgstr "Returns the indicated crew member of a player. For an invalid index nil is returned."
 
 #: sdk/script/fn/GetCrew.xml:21(text)
 msgid "Tötet die gesamte Crew des ersten Spielers."
 msgstr "Kills all crew members of the first player."
 
 #: sdk/script/fn/GetController.xml:13(desc)
-#, fuzzy
 msgid ""
 "Fragt ab, welcher Spieler das aufrufende Objekt zur Zeit kontrolliert bzw. "
 "zuletzt kontrolliert hat. Bei Mannschaftsmitgliedern ist dies normalerweise "
@@ -11439,7 +11304,6 @@ msgstr ""
 "directions are checked."
 
 #: sdk/script/fn/GetContact.xml:16(desc)
-#, fuzzy
 msgid ""
 "Ermittelt, in welche Richtungen einzelne oder alle Vertices des aufrufenden "
 "Objekts feste Landschaft berühren. Die Richtungen werden als Bitmaske von "
@@ -11463,7 +11327,6 @@ msgid "Contact Attachment"
 msgstr "Contact Attachment"
 
 #: sdk/script/fn/GetCon.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert die Fertigstellung des aufrufenden Objekts in Prozent. Bei "
 "Baustellen ist dies die Fertigstellung, während es bei Tieren und Pflanzen "
@@ -11484,16 +11347,14 @@ msgstr ""
 "half size."
 
 #: sdk/script/fn/GetComponent.xml:12(desc)
-#, fuzzy
 msgid ""
 "Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird "
 "index benutzt und eine Objektkomponente zurückgegeben."
 msgstr ""
-"Object component of which to determine the count. If not specified, iIndex "
+"Object component of which to determine the count. If not specified, index "
 "is used and the id of the component is returned."
 
 #: sdk/script/fn/GetComponent.xml:13(desc)
-#, fuzzy
 msgid ""
 "Index der zurückzuliefernden Komponente. Dieser Parameter wird ignoriert, "
 "wenn component angegeben ist. Ansonsten wird eine ID der Komponente "
@@ -11501,21 +11362,19 @@ msgid ""
 "ermittelt werden kann."
 msgstr ""
 "Index of the component to be returned. This parameter is ignored if "
-"idComponent is specified. Returns the id of the indicated component which "
+"component is specified. Returns the id of the indicated component which "
 "can then be used to determine the count in a subsequent call to GetComponent."
 
 #: sdk/script/fn/GetComponent.xml:14(desc)
-#, fuzzy
 msgid ""
 "Objekt dessen Komponenten abgefragt werden sollen. 0 bei lokalem Aufruf. "
 "Wenn stattdessen eine definition angegeben ist, wird dieser Parameter "
 "ignoriert."
 msgstr ""
-"Object of which to determine components. Can be 0 in local calls. If idDef "
+"Object of which to determine components. Can be 0 in local calls. If definition "
 "is specified, this parameter is ignored."
 
 #: sdk/script/fn/GetComponent.xml:15(desc)
-#, fuzzy
 msgid ""
 "Definition, von der die Komponenten abgefragt werden sollen. Wenn 0, wird "
 "stattdessen in obj bzw. dem aufrufenden Objekt abgefragt."
@@ -11552,7 +11411,6 @@ msgstr ""
 "the following (super-level) commands."
 
 #: sdk/script/fn/GetCommand.xml:31(desc)
-#, fuzzy
 msgid ""
 "Gibt Informationen über ein Kommando des aufrufenden Objekts zurück. Führt "
 "das Objekt momentan keine Aktion aus, so wird (bei jedem Wert von element) 0 "
@@ -11572,7 +11430,6 @@ msgstr ""
 "warp the object there directly."
 
 #: sdk/script/fn/GetComDir.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert die aktuelle Befehlsrichtung des aufrufenden Objekts. Diese gibt die "
 "momentane, beabsichtigte Bewegungsrichtung an. Die Auswirkung dieser "
@@ -11592,7 +11449,6 @@ msgid "Prozedur"
 msgstr "Procedure"
 
 #: sdk/script/fn/GetColor.xml:12(desc)
-#, fuzzy
 msgid ""
 "Fragt den RGB-Farbwert der Färbung der ColorByOwner-Flächen des aufrufenden "
 "Objekts ab. Diese werden beispielsweise durch <placeholder-1/> oder "
@@ -11615,7 +11471,6 @@ msgstr ""
 "overlay must be set using <placeholder-1/> first. From CR."
 
 #: sdk/script/fn/GetClrModulation.xml:15(desc)
-#, fuzzy
 msgid ""
 "Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwert, "
 "der multiplikativ (oder auch additiv, bei entsprechend aktiviertem BlitMode "
@@ -11627,13 +11482,12 @@ msgstr ""
 "more information see <placeholder-1/>()."
 
 #: sdk/script/fn/GetClrModulation.xml:16(remark)
-#, fuzzy
 msgid ""
 "Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion "
 "-1 (analog zu <placeholder-1/>(255,255,255,255))."
 msgstr ""
-"A return value of 0 means that no color modulation is done. This corresponds "
-"to <placeholder-1/>(255,255,255,0)."
+"A return value of -1 means that no color modulation is done. This corresponds "
+"to <placeholder-1/>(255,255,255,255)."
 
 #: sdk/script/fn/GetClrModulation.xml:25(text)
 msgid ""
@@ -11675,7 +11529,6 @@ msgstr ""
 "specified position is outside the string, 0 is returned."
 
 #: sdk/script/fn/GetChar.xml:16(desc)
-#, fuzzy
 msgid ""
 "Ermittelt den Zeichencode eines indizierten Zeichens einer Zeichenkette."
 msgstr "Determines the ASCII character code of a character in a string."
@@ -11693,7 +11546,6 @@ msgid "Ermittelt den Anfangsbuchstaben des Spielernamens des ersten Spielers."
 msgstr "Gets the first character of the name of the first player."
 
 #: sdk/script/fn/GetCategory.xml:12(desc)
-#, fuzzy
 msgid ""
 "Fragt die Objektkategorie des aufrufenden Objekts oder der aufrufenden "
 "Definition ab. Die Objektkategorie wird normalerweise über die <emlink href="
@@ -11715,7 +11567,6 @@ msgid "Zündet obj an, wenn es ein Gebäude ist."
 msgstr "Incinerates the object if it is a building."
 
 #: sdk/script/fn/GetBreath.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert den aktuellen Atemwert des aufrufenden Objekts in Prozent. 100% "
 "stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch "
@@ -11725,28 +11576,24 @@ msgstr ""
 "maximum physical value of 100,000. Also see DefCore section [Physical]."
 
 #: sdk/script/fn/GetBit.xml:13(desc)
-#, fuzzy
 msgid "Das abzufragende Bit"
-msgstr "Name of the entry to be retrieved."
+msgstr "The requested bit."
 
 #: sdk/script/fn/GetBit.xml:16(desc)
-#, fuzzy
 msgid "Gibt den Wert des bit_number'nten Bits zurück."
-msgstr "Returns the data type of a passed value."
+msgstr "Returns the value of the bit_number'th bit."
 
 #: sdk/script/fn/GetBase.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert die Nummer des Spielers, dessen Heimatbasis das aufrufende Objekt "
 "ist. Rückgabewert <placeholder-1/> wenn es keine Heimatbasis ist."
 msgstr ""
-"Returns the player whose home base the specified object is. Return value -1 "
+"Returns the player whose home base the specified object is. Return value <placeholder-1/> "
 "if the object is not a home base."
 
 #: sdk/script/fn/GetAnimationWeight.xml:15(desc)
-#, fuzzy
 msgid "Animationsnummer der Animation deren Gewichtung abgefragt werden soll."
-msgstr "Name of the activity of which to get an entry."
+msgstr "Animation number of which the weight must be queried."
 
 #: sdk/script/fn/GetAnimationWeight.xml:20(desc)
 msgid ""
@@ -11876,7 +11723,6 @@ msgstr ""
 "currently not active, the return value is \"Idle\"."
 
 #: sdk/script/fn/GetActTime.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert den Zeitraum in Frames, die das aufrufende Objekt bereits die "
 "aktuelle Aktivität ausgeführt hat."
@@ -11936,13 +11782,12 @@ msgstr ""
 "Up to nine parameters which are passed to the scenario script function."
 
 #: sdk/script/fn/GameCall.xml:16(desc)
-#, fuzzy
 msgid ""
 "Ruft function im Szenario-Script auf. Falls die Funktion nicht im Szenario-"
 "Script vorhanden ist, gibt die Funktion Null zurück und verursacht keine "
 "Fehlermeldung."
 msgstr ""
-"Calls szFunction in the scenario script. If the function is not defined in "
+"Calls function in the scenario script. If the function is not defined in "
 "the scenario script, this call returns 0 and does not cause an error."
 
 #: sdk/script/fn/GameCall.xml:20(text)
@@ -12220,7 +12065,6 @@ msgid "Y-Schleudergeschwindigkeit"
 msgstr "Y flinging speed"
 
 #: sdk/script/fn/Fling.xml:16(desc)
-#, fuzzy
 msgid ""
 "Verschleudert das aufrufende Objekt in die angegebene Richtung. Diese "
 "Funktion ist für Lebewesen konzipiert, da sie die entsprechenden Aktivitäten "
@@ -12445,7 +12289,6 @@ msgid "Gibt eine Liste aller im Spiel befindlichen Gebäude zurück."
 msgstr "Returns a list of all buildings."
 
 #: sdk/script/fn/Find_Category.xml:24(text)
-#, fuzzy
 msgid ""
 "Liefert alle aktiven Spielregeln und Spielziele zurück. Man beachte, dass "
 "sich die Kategorien mit \"|\" kombinieren lassen. In diesem Fall trifft das "
@@ -12593,13 +12436,12 @@ msgstr ""
 "are composed of special Find_x() values."
 
 #: sdk/script/fn/FindObject.xml:17(remark)
-#, fuzzy
 msgid ""
 "Das aufrufende Objekt findet sich in FindObject auch selbst. Dies kann durch "
 "<placeholder-1/>() verhindert werden."
 msgstr ""
-"As opposed to <placeholder-1/>, an object using FindObjects in local calls "
-"will also find itself. This can be avoided through use of <placeholder-2/>()."
+"An object using FindObjects in local calls will also find itself. "
+"This can be avoided through use of <placeholder-1/>()."
 
 #: sdk/script/fn/FindObject.xml:23(text)
 msgid ""
@@ -12613,7 +12455,6 @@ msgid "Objekttyp, von dem das Inhaltsobjekt sein soll"
 msgstr "Object type to be found."
 
 #: sdk/script/fn/FindContents.xml:15(desc)
-#, fuzzy
 msgid "Liefert das erste in einem Behälter enthaltene Objekt vom Typ type."
 msgstr "Returns the first found contained object of the specified type."
 
@@ -12646,7 +12487,6 @@ msgstr ""
 "the start of the search."
 
 #: sdk/script/fn/FindConstructionSite.xml:17(desc)
-#, fuzzy
 msgid ""
 "Sucht einen Bauplatz für ein Gebäude, ausgehend von <placeholder-1/>"
 "(var_num_x)/<placeholder-2/>(var_num_y). Wenn ein Bauplatz gefunden wird, "
@@ -12654,8 +12494,8 @@ msgid ""
 "zurückgegeben. Ansonsten ist der Rückgabewert FALSE."
 msgstr ""
 "Searches for a suitable construction site for a building of the specified "
-"type, starting at position <placeholder-1/>(iVarNumX)/<placeholder-2/>"
-"(iVarNumY). If a site is found, the coordinates are stored in the two "
+"type, starting at position <placeholder-1/>(var_num_x)/<placeholder-2/>"
+"(var_num_y). If a site is found, the coordinates are stored in the two "
 "specified variables and the function returns true. Otherwise, the function "
 "returns false."
 
@@ -12672,12 +12512,11 @@ msgid "Spielernummer des Spielers, dessen Basis gesucht wird"
 msgstr "Player whose home base you are looking for."
 
 #: sdk/script/fn/FindBase.xml:13(desc)
-#, fuzzy
 msgid ""
 "Suchindex, mit dem mehrere Basen eines Spielers gefunden werden können. "
 "index=0 sucht die erste Basis."
 msgstr ""
-"Search index for finding multiple home base objects. iIndex = 0 finds the "
+"Search index for finding multiple home base objects. index = 0 finds the "
 "first base, and so on."
 
 #: sdk/script/fn/FindBase.xml:16(desc)
@@ -12729,7 +12568,6 @@ msgid "Maximale Menge, die extrahiert wird"
 msgstr "Maximum amount to be extracted."
 
 #: sdk/script/fn/ExtractMaterialAmount.xml:19(desc)
-#, fuzzy
 msgid ""
 "Extrahiert eine bestimmte Menge des gleichen Materials an einer Stelle. "
 "Zurückgegeben wird die tatsächlich erfolgreich extrahierte Materialmenge."
@@ -12853,7 +12691,6 @@ msgid "Rotationsgeschwindigkeit des Austrittsobjekts."
 msgstr "Rotational speed of the exiting object."
 
 #: sdk/script/fn/Exit.xml:20(desc)
-#, fuzzy
 msgid ""
 "Versetzt das aufrufende Objekt aus seinem Behälter heraus, und setzt "
 "optional seine Geschwindigkeit."
@@ -12873,7 +12710,6 @@ msgid "Objekt, in das hineinversetzt wird"
 msgstr "Target container."
 
 #: sdk/script/fn/Enter.xml:15(desc)
-#, fuzzy
 msgid ""
 "Versetzt das aufrufende Objekt in ein anderes hinein. Bei diesem Vorgang "
 "wird weder RejectCollect, noch Collection oder ActivateEntrance im "
@@ -12896,7 +12732,6 @@ msgid "Abgefragter Energiewert"
 msgstr "Requested energy value."
 
 #: sdk/script/fn/EnergyCheck.xml:15(desc)
-#, fuzzy
 msgid ""
 "Gibt zurück, ob der Energiewert des aufrufenden Objekts größer oder gleich "
 "energy ist. Wenn die Spielregel \"Energiebedarf\" nicht aktiviert ist, gibt "
@@ -13225,14 +13060,12 @@ msgstr ""
 "Landscape.txt."
 
 #: sdk/script/fn/DoWealth.xml:13(desc)
-#, fuzzy
 msgid "Die Änderung des Vermögens."
-msgstr "New wealth value."
+msgstr "The change in wealth value."
 
 #: sdk/script/fn/DoWealth.xml:16(desc)
-#, fuzzy
 msgid "Verändert das Vermögen eines Spielers."
-msgstr "Sets the wealth value of a player."
+msgstr "Changes the wealth value of a player."
 
 #: sdk/script/fn/DoScoreboardShow.xml:12(desc)
 msgid "Änderung der Sichtbarkeit des Scoreboards."
@@ -13289,9 +13122,8 @@ msgid "Positiv oder negativ: Die Veränderung des Punktewertes"
 msgstr "Change of score (positive or negative)."
 
 #: sdk/script/fn/DoPlayerScore.xml:16(desc)
-#, fuzzy
 msgid "Verändert den Punktewert eines Spielers."
-msgstr "Changes the breath value of an object."
+msgstr "Changes the player score of a player."
 
 #: sdk/script/fn/DoPlayerScore.xml:20(text)
 msgid "Zieht dem Spieler 100 Punkte ab."
@@ -13312,7 +13144,6 @@ msgstr ""
 "not changed at all. Since CR."
 
 #: sdk/script/fn/DoMagicEnergy.xml:16(desc)
-#, fuzzy
 msgid ""
 "Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte "
 "Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn "
@@ -13387,12 +13218,11 @@ msgstr ""
 "value. 100% correspond to the maximum physical value of 100,000."
 
 #: sdk/script/fn/DoEnergy.xml:13(desc)
-#, fuzzy
 msgid ""
 "Wenn WAHR, wird change auf den exakten Energiewert angewendet (0 bis Wert "
 "von Physical \"Energy\")."
 msgstr ""
-"If true, iChange is applied to the exact energy value (0 to value of "
+"If true, change is applied to the exact energy value (0 to value of "
 "Physical \"Energy\")."
 
 #: sdk/script/fn/DoEnergy.xml:14(desc)
@@ -13406,12 +13236,10 @@ msgstr ""
 "emlink>). Default is FX_Call_EngScript."
 
 #: sdk/script/fn/DoEnergy.xml:15(desc) sdk/script/fn/DoDamage.xml:14(desc)
-#, fuzzy
 msgid "Spielernummer des Spielers, der den Schaden verursacht hat."
-msgstr "Number of the player who has caused the damage, plus one."
+msgstr "Number of the player who has caused the damage."
 
 #: sdk/script/fn/DoEnergy.xml:18(desc)
-#, fuzzy
 msgid ""
 "Verändert die Energie des aufrufenden Objekts. Die Energie entspricht bei "
 "Gebäuden der elektrischen Energie, und bei Lebewesen der Lebensenergie."
@@ -13428,7 +13256,6 @@ msgid "Veränderung des Schadenswertes; positiv oder negativ"
 msgstr "Change of damage value (positive or negative)."
 
 #: sdk/script/fn/DoDamage.xml:13(desc)
-#, fuzzy
 msgid ""
 "Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird "
 "(siehe <emlink href=\"script/Effects.html\">Effekte-Dokumentation</emlink>). "
@@ -13436,17 +13263,15 @@ msgid ""
 msgstr ""
 "Damage cause specification which is to be passed to Fx*Damage callbacks of "
 "effects (see <emlink href=\"script/Effects.html\">effect documentation</"
-"emlink>). Default is FX_Call_EngScript."
+"emlink>). Default is FX_Call_DmgScript."
 
 #: sdk/script/fn/DoDamage.xml:17(desc)
-#, fuzzy
 msgid ""
 "Verändert den Schadenswert des aufrufenden Objekts. Bei change ungleich Null "
 "wird im Zielobjekt außerdem die Funktion Damage aufgerufen."
 msgstr ""
 "Adjusts the damage value of an object. If a change is made, the callback "
-"'Damage' is made in the target object. In local calls the owner of the "
-"calling object is considered to have caused the damage."
+"'Damage' is made in the target object."
 
 #: sdk/script/fn/DoDamage.xml:21(text)
 msgid "Fällt einen Baum, wenn er noch nicht gefällt ist."
@@ -13457,7 +13282,6 @@ msgid "Veränderung des Erfahrungswertes"
 msgstr "Change of the experience value."
 
 #: sdk/script/fn/DoCrewExp.xml:16(desc)
-#, fuzzy
 msgid "Gibt dem aufrufenden Clonk Erfahrungspunkte."
 msgstr "Gives experience points to a clonk."
 
@@ -13482,7 +13306,6 @@ msgid "Veränderung der Fertigstellung in Prozentpunkten; positiv oder negativ."
 msgstr "Change of completion in percentage point (positive or negative)."
 
 #: sdk/script/fn/DoCon.xml:15(desc)
-#, fuzzy
 msgid ""
 "Verändert die Fertigstellung des aufrufenden Objekts. Die meisten Lebewesen "
 "und Bäume können dadurch vergrößert oder verkleinert werden. Gebäude können "
@@ -13544,13 +13367,12 @@ msgid "Y-Position des zweiten Punktes"
 msgstr "Y coordinate of the second point."
 
 #: sdk/script/fn/Distance.xml:18(desc)
-#, fuzzy
 msgid ""
 "Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt"
 "((x2-x1)^2 + (y2-y1)^2;)."
 msgstr ""
-"Calculates the distance between two points. Same as Sqrt((iX2-iX1)^2 + (iY2-"
-"iY1)^2;)."
+"Calculates the distance between two points. Same as Sqrt((x2-x1)^2 + (y2-"
+"y1)^2;)."
 
 #: sdk/script/fn/Distance.xml:22(text)
 msgid ""
@@ -13653,9 +13475,8 @@ msgid "Callbacks"
 msgstr "Callbacks"
 
 #: sdk/script/fn/Definition.xml:8(subcat)
-#, fuzzy
 msgid "Definition"
-msgstr "definition id"
+msgstr "Definition"
 
 #: sdk/script/fn/Definition.xml:13(desc)
 msgid "Definition, die initialisiert wird."
@@ -13692,25 +13513,22 @@ msgid "Der ausgewählte Clonk hält an und schaut nach links."
 msgstr "The selected clonk stops and looks to the left."
 
 #: sdk/script/fn/CustomMessage.xml:12(desc)
-#, fuzzy
 msgid "Nachricht, die ausgegeben wird."
 msgstr "Message to be displayed"
 
 #: sdk/script/fn/CustomMessage.xml:13(desc)
-#, fuzzy
 msgid ""
 "Wenn ungleich 0, wird die Nachricht über dem angegebenen Objekt ausgegeben."
 msgstr ""
-"If not 0, the secondary sky color is returned as specified in SetSkyAdjust."
+"If not 0, the message is displayed above the specified object."
 
 #: sdk/script/fn/CustomMessage.xml:14(desc)
-#, fuzzy
 msgid ""
 "Nummer des Spielers, bei dem die Nachricht ausgegeben wird. Bei Angabe von "
 "NO_OWNER wird die Nachricht für alle Spieler angezeigt."
 msgstr ""
-"Object above which the message is to be displayed. If no object is "
-"specified, the message is displayed globally (as with <placeholder-1/>)."
+"Player number for which the message should be displayed. NO_OWNER will "
+"display the message globally."
 
 #: sdk/script/fn/CustomMessage.xml:15(desc)
 msgid ""
@@ -13897,7 +13715,6 @@ msgid "CSPF_NoScenarioInit"
 msgstr "CSPF_NoScenarioInit"
 
 #: sdk/script/fn/CreateScriptPlayer.xml:18(col)
-#, fuzzy
 msgid ""
 "Wenn wahr, wird die Szenarieninitialisierung, also das Erzeugen von "
 "Heimatbasismaterial und Clonks, das Setzen der Baupläne nach "
@@ -13915,7 +13732,7 @@ msgstr ""
 "Also, the global callbacks PreInitializePlayer and InitializePlayer to the "
 "scenario script and to goal, rule, and environment objects are not "
 "performed. Instead, the callback InitializeScriptPlayer(Player number, Team) "
-"is made to the object definition specified in idExtraData. The call is made "
+"is made to the object definition specified in extra_data. The call is made "
 "as DefinitionCall (without <placeholder-1/>() object). Using this parameter "
 "you can create script-controlled AI players which do not receive the same "
 "standard treatment as user-controlled players."
@@ -14093,7 +13910,6 @@ msgstr ""
 "owner)."
 
 #: sdk/script/fn/CreateObject.xml:18(desc)
-#, fuzzy
 msgid ""
 "Erzeugt ein Objekt des angegebenen Typs an der angegebenen Position. xoffset "
 "und yoffset bestimmen die Position in absoluten Pixel-Koordinaten der "
@@ -14102,7 +13918,7 @@ msgid ""
 "Objekt."
 msgstr ""
 "Creates an object of the specified type at the specified position. The "
-"position will be the bottom center of the new object. iXOffset and iYOffset "
+"position will be the bottom center of the new object. xoffset and yoffset "
 "are relative to the calling object in local calls, otherwiese global."
 
 #: sdk/script/fn/CreateObject.xml:22(text)
@@ -14147,7 +13963,7 @@ msgid ""
 "Wert als Magiewert. Dabei wird außerdem extra_data als Vergleichswert "
 "angezeigt, z.B. \"50/100\"."
 msgstr ""
-"Value as magic value. iExtraData is also displayed for comparison, e.g. "
+"Value as magic value. extra_data is also displayed for comparison, e.g. "
 "\"50/100\"."
 
 #: sdk/script/fn/CreateMenu.xml:21(col)
@@ -14180,9 +13996,8 @@ msgid "Bestimmt den angezeigten Menütext, wenn das Menü keine Einträge enthä
 msgstr "Text to be displayed if the menu is empty."
 
 #: sdk/script/fn/CreateMenu.xml:25(desc)
-#, fuzzy
 msgid "Vergleichswert für extra 3"
-msgstr "Comparison value for iExtra 3."
+msgstr "Comparison value for extra 3."
 
 #: sdk/script/fn/CreateMenu.xml:28(col)
 msgid "Aussehen"
@@ -14253,7 +14068,6 @@ msgstr ""
 "<placeholder-1/>"
 
 #: sdk/script/fn/CreateMenu.xml:39(desc)
-#, fuzzy
 msgid ""
 "Erzeugt ein benutzerdefiniertes Menü im aufrufenden Objekt. Menüeinträge "
 "müssen mit <placeholder-1/> hinzugefügt werden."
@@ -14262,15 +14076,12 @@ msgstr ""
 "added using <placeholder-1/>."
 
 #: sdk/script/fn/CreateContents.xml:13(desc)
-#, fuzzy
 msgid ""
 "Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen."
 msgstr ""
-"Width of the target rectangle. If not specified, the right landscape "
-"boundary."
+"Number of objects to be created, if not specified, 1 is assumed."
 
 #: sdk/script/fn/CreateContents.xml:16(desc)
-#, fuzzy
 msgid "Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts."
 msgstr ""
 "Creates an object of the specified type in the contents of another object."
@@ -14286,20 +14097,18 @@ msgstr ""
 "Determines the initial completion of the object in percent (minimum 1)."
 
 #: sdk/script/fn/CreateConstruction.xml:17(desc)
-#, fuzzy
 msgid ""
 "Bestimmt, ob die Landschaft an die Baustelle angepasst werden soll (inkl. "
 "Fundament)."
 msgstr ""
-"Determines whether the landscape at the creation site is to be adjusted to "
-"the objects base."
+"Determines whether the landscape at the creation site has to be adjusted to "
+"the objects basement."
 
 #: sdk/script/fn/CreateConstruction.xml:18(desc)
 msgid "Überprüft die Baustelle vorher auf ihre Eignung"
 msgstr "First checks the specified site for suitability."
 
 #: sdk/script/fn/CreateConstruction.xml:21(desc)
-#, fuzzy
 msgid ""
 "Sollte statt <placeholder-1/> benutzt werden, wenn ein Gebäude oder eine "
 "Baustelle erzeugt werden soll. Bei lokalen Aufrufen dieser Funktion wird die "
@@ -14311,7 +14120,7 @@ msgid ""
 msgstr ""
 "Should be used instead of <placeholder-1/> to create a building or "
 "construction site. In local calls the specified position will be an offset "
-"to the position of the calling object. If fCheckSite is 1, the site is "
+"to the position of the calling object. If check_site is 1, the site is "
 "checked for suitability before creating the object. If the site is not "
 "suitable (e.g. rough ground or not enough space), a message is displayed "
 "above the calling object and the function returns 0."
@@ -14341,16 +14150,14 @@ msgid "Erzeugt ein neues, mit Nullen gefülltes Feld."
 msgstr "Creates a new zero filled array."
 
 #: sdk/script/fn/Cos.xml:17(desc)
-#, fuzzy
 msgid "Liefert cos(angle) * radius."
-msgstr "Returns cos(iAngle) * iRadius."
+msgstr "Returns cos(angle) * radius."
 
 #: sdk/script/fn/ContentsCount.xml:12(desc)
 msgid "Objekttyp, der gezählt wird"
 msgstr "Object type to be counted."
 
 #: sdk/script/fn/ContentsCount.xml:15(desc)
-#, fuzzy
 msgid ""
 "Liefert die Anzahl der Objekte vom Typ id, die im aufrufenden Objekt "
 "enthalten sind."
@@ -14359,22 +14166,19 @@ msgstr ""
 "the target object."
 
 #: sdk/script/fn/Contents.xml:12(desc)
-#, fuzzy
 msgid "Index des Objekts in obj, Zählung beginnt mit 0"
 msgstr "Index of the object in the container, starting with 0."
 
 #: sdk/script/fn/Contents.xml:15(desc)
-#, fuzzy
 msgid "Liefert das indizierte Objekt, das im aufrufenden Objekt enthalten ist."
-msgstr "Returns the indicated object contained in pObj."
+msgstr "Returns the indicated object contained in the target obj."
 
 #: sdk/script/fn/Contained.xml:12(desc)
-#, fuzzy
 msgid ""
 "Liefert das Objekt, in dem sich das aufrufende Objekt befindet, oder nil, "
 "wenn es in keinem anderen Objekt enthalten ist."
 msgstr ""
-"Returns the container object in which this object is contained. Returns 0 if "
+"Returns the container object in which this object is contained. Returns nil if "
 "this object is not contained."
 
 #: sdk/script/fn/Construction.xml:13(desc)
@@ -14389,7 +14193,6 @@ msgid "Wird bei der Erzeugung eines Objekts aufgerufen."
 msgstr "Called at the creation of an object."
 
 #: sdk/script/fn/ComposeContents.xml:15(desc)
-#, fuzzy
 msgid ""
 "Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts. Das Objekt "
 "wird aus seinen Komponenten zusammen gesetzt, die im aufrufenden Objekt "
@@ -14398,19 +14201,18 @@ msgid ""
 "Objekt-Call BuildNeedsMaterial, durch den die Meldung über noch benötigtes "
 "Material ausgewertet und abgefangen werden kann."
 msgstr ""
-"Creates an object of the specified type in the contents of pObj. The object "
-"is composed from components which must be available in pObj. Otherwise, a "
-"message is displayed listing missing components. This function, too, causes "
-"the callbacl BuildNeedsMaterial which can be used to intercept the message "
+"Creates an object of the specified type in the contents of the calling object. "
+"The object is composed from components which must be available inside the object. "
+"Otherwise, a message is displayed listing missing components. This function causes "
+"the callback BuildNeedsMaterial which can be used to intercept the message "
 "and perform custom actions for acquiring the necessary material."
 
 #: sdk/script/fn/ComposeContents.xml:19(text)
-#, fuzzy
 msgid ""
 "Setzt in einer Hütte eine Dampfmaschine zusammen, wenn die Materialien dazu "
 "vorhanden sind."
 msgstr ""
-"Composes a steam engine in the closts hut if the necessary material is "
+"Composes a steam engine in the closest hut if the necessary material is "
 "available."
 
 #: sdk/script/fn/ComponentAll.xml:12(desc)
@@ -14418,7 +14220,6 @@ msgid "ID der erwarteten Components."
 msgstr "id of the expected component."
 
 #: sdk/script/fn/ComponentAll.xml:15(desc)
-#, fuzzy
 msgid "Prüft, ob das aufrufende Objekt nur aus Objekten vom Typ id besteht."
 msgstr ""
 "Checks whether an object is composed of only one specified component type."
@@ -14428,7 +14229,6 @@ msgid "Objekt, das aufgesammelt werden soll"
 msgstr "Object to be collected."
 
 #: sdk/script/fn/Collect.xml:15(desc)
-#, fuzzy
 msgid ""
 "Sammelt ein Objekt auf. Der Befehl führt dieselben Funktionen aus, als wäre "
 "das Objekt durch den normalen Collection-Bereich des Objekts eingesammelt "
@@ -14458,9 +14258,8 @@ msgstr ""
 "selected clonk."
 
 #: sdk/script/fn/CloseMenu.xml:12(desc)
-#, fuzzy
 msgid "Schließt das Menü des aufrufenden Objekts."
-msgstr "Closes the menu of an object."
+msgstr "Closes the menu of the calling object."
 
 #: sdk/script/fn/CloseMenu.xml:16(text)
 msgid "Schließt das Menü des eigenen Behälters."
@@ -14720,7 +14519,6 @@ msgid "Obere Schranke für den zweiten Zusatzparameter"
 msgstr "Upper limit for the second extra parameter."
 
 #: sdk/script/fn/CastParticles.xml:24(desc)
-#, fuzzy
 msgid ""
 "Verschleudert amount Partikel vom angegebenen Typ. Die Zusatzparameter "
 "werden zufällig zwischen a0/b0 und a1/b1 gesetzt."
@@ -15139,13 +14937,12 @@ msgstr ""
 "g. if there is not enough money."
 
 #: sdk/script/fn/Buy.xml:19(desc)
-#, fuzzy
 msgid ""
 "Kauft ein Objekt für for_player, und zieht pay_player Geld ab. Wenn dieser "
 "nicht genug Geld oder das Objekt nicht im Heimatbasismaterial hat, wird der "
 "Vorgang nicht ausgeführt."
 msgstr ""
-"Buys an object for iForPlr, deducting the wealth of iPayPlr. The function "
+"Buys an object for for_plr, deducting the wealth of pay_player. The function "
 "will fail if the paying player does not have enough money or the object is "
 "currently not available in the home base material."
 
@@ -15191,26 +14988,23 @@ msgid "Obere Grenze"
 msgstr "Upper limit."
 
 #: sdk/script/fn/BoundBy.xml:17(desc)
-#, fuzzy
 msgid ""
 "Gibt value zurück, wenn der Wert innerhalb der Grenzen liegt (value &gt;= "
 "lower_bound und value &lt;= upper_bound). Andernfalls wird die jeweils "
 "nächstliegende Grenze zurückgegeben."
 msgstr ""
-"Returns iVal if it is within the given boundaries (iVal &gt;= iRange1 and "
-"iVal &lt;= iRange2). Otherwise returns the applicable limit."
+"Returns value if it is within the given boundaries (value &gt;= lower_bound and "
+"value &lt;= upper_bound). Otherwise returns the applicable limit."
 
 #: sdk/script/fn/BlastObjects.xml:15(desc)
 msgid "Objekt, in dem die zu sprengenden Objekte enthalten sind."
 msgstr "Container of the objects to be blasted."
 
 #: sdk/script/fn/BlastObjects.xml:16(desc)
-#, fuzzy
 msgid "Spielernummer des Spielers, der der Verursacher des Schaden ist."
-msgstr "Number of the player who has caused the damage, plus one."
+msgstr "Number of the player who has caused the damage"
 
 #: sdk/script/fn/BlastObjects.xml:19(desc)
-#, fuzzy
 msgid ""
 "Fügt allen Objekten an angegebener Position Explosionsschaden zu. x und y "
 "sind immer globale Koordinaten. Wenn ein container angegeben ist, wird der "
@@ -15219,8 +15013,8 @@ msgid ""
 "wegschleudern. Bei lokalen Aufrufen gilt der Schaden als vom Controller des "
 "aufrufenden Objekts verursacht."
 msgstr ""
-"Applies explosion damage to all objects at the specified position. iX and iY "
-"are always global coordinates. If pContainer is specified, damage is only "
+"Applies explosion damage to all objects at the specified position. x and y "
+"are always global coordinates. If a container is specified, damage is only "
 "applied to objects contained in that container. Explosion damage can cause "
 "incineration or fling away living objects. In local calls, the controller of "
 "the calling object is considered to have caused the damage."
@@ -15313,15 +15107,14 @@ msgid "Länge der Hypotenuse"
 msgstr "Length of hypotenuse"
 
 #: sdk/script/fn/ArcSin.xml:16(desc)
-#, fuzzy
 msgid ""
 "Berechnet den Arcussinus von value/radius, also Result=arcsin(value/radius). "
 "Dies entspricht Sin(Result)=value/radius. Die Funktion wird benötigt, um "
 "Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist "
 "<placeholder-1/>() aber ausreichend und praktischer."
 msgstr ""
-"Calculates arc sine of iVal/iRadius, or x = arcsin(iVal/iRadius). This "
-"corresponds to sin(x) = iVal/iRadius. This function is used to calculate an "
+"Calculates arc sine of value/radius, or x = arcsin(value/radius). This "
+"corresponds to sin(x) = value/radius. This function is used to calculate an "
 "angle from horizontal and vertical offsets. However, in most cases "
 "<placeholder-1/>() does what you need."
 
@@ -15334,15 +15127,14 @@ msgid "Länge der Ankathete"
 msgstr "Length of the adjacent leg"
 
 #: sdk/script/fn/ArcCos.xml:16(desc)
-#, fuzzy
 msgid ""
 "Berechnet den Arcuscosinus von value/radius, also Result=arccos(value/"
 "radius). Dies entspricht cos(Result)=value/radius. Die Funktion wird "
 "benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten "
 "Fälle ist <placeholder-1/>() aber ausreichend und praktischer."
 msgstr ""
-"Calculates arc cosine of iVal/iRadius, or x = arccos(iVal/iRadius). This "
-"corresponds to cos(x) = iVal/iRadius. This function is used to calculate an "
+"Calculates arc cosine of value/radius, or x = arccos(value/radius). This "
+"corresponds to cos(x) = value/radius. This function is used to calculate an "
 "angle from horizontal and vertical offsets. However, in most cases "
 "<placeholder-1/>() does what you need."
 
@@ -15355,7 +15147,6 @@ msgid "Befehlsstapelmodus. Werte siehe <placeholder-1/>."
 msgstr "Command stack mode. See <placeholder-1/> for values."
 
 #: sdk/script/fn/AppendCommand.xml:69(desc)
-#, fuzzy
 msgid ""
 "Fügt ein Kommando der Kommandoliste des aufrufenden Objekts am Ende hinzu. "
 "Das Objekt wird also das zuerst gegebene Kommando ausführen und sich danach "
@@ -15771,7 +15562,6 @@ msgid "Y-Koordinate des zweiten Punktes"
 msgstr "Y coordinate of the second point"
 
 #: sdk/script/fn/Angle.xml:16(desc)
-#, fuzzy
 msgid ""
 "Gibt, wenn angegeben, den Winkel multipliziert mit precision zurück, um so "
 "genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen "
@@ -15807,7 +15597,6 @@ msgid "Y-Koordinate, von der Objektmitte aus gesehen."
 msgstr "Y coordinate, relative to the object center"
 
 #: sdk/script/fn/AddVertex.xml:16(desc)
-#, fuzzy
 msgid "Fügt dem aufrufenden Objekt einen neuen Vertex hinzu."
 msgstr "Adds a new vertex to an object."
 
@@ -15862,18 +15651,16 @@ msgstr ""
 "amounts)."
 
 #: sdk/script/fn/AddMenuItem.xml:16(desc)
-#, fuzzy
 msgid ""
 "Wird als 2. Parameter an die in command angegebene Funktion übergeben (siehe "
 "Anmerkung)"
-msgstr "Second parameter to the function specified in szCommand (see remark)."
+msgstr "Second parameter to the function specified in command (see remark)."
 
 #: sdk/script/fn/AddMenuItem.xml:17(desc)
 msgid "Beschreibungstext des neuen Menüeintrags"
 msgstr "Description text of the new menu entry."
 
 #: sdk/script/fn/AddMenuItem.xml:18(desc)
-#, fuzzy
 msgid ""
 "Zusatzparameter für das Verhalten des Menüeintrags.<br/> Untere 7 Bits "
 "(0-127): Menüsymbol.<br/> 0: Normal<br/> 1: Rangsymbol. Bei angegebenem "
@@ -15889,25 +15676,23 @@ msgid ""
 "extra von <placeholder-1/>"
 msgstr ""
 "Extra parameter for special behaviour of the menu entry.<br/> Lower 7 bits "
-"(0-127): menu symbol.<br/> 0: normal<br/> 1: rank symbol. With idItem "
-"specified, the Rank.png component of that definition will be used. iCount "
+"(0-127): menu symbol.<br/> 0: normal<br/> 1: rank symbol. With symbol "
+"specified, the Rank.png component of that definition will be used. count "
 "indicates the rank<br/> 2: picture facet, shifted to the right by XPar1 "
 "times the facet width. This is used to include multiple menu symbols in a "
 "single definition.<br/> 3: XPar1 specifies an object to be drawn with the "
 "rank symbol. If the object has no info section (and thus no rank), there "
 "will be an empty entry in context menus. From CE.<br/> 4: XPar1 specifies an "
 "object to be drawn. From CE.<br/> Bit 8 (128): XPar2 is used as object value "
-"and overrides the normal object value. Also see iExtra in <placeholder-1/>"
+"and overrides the normal object value. Also see extra in <placeholder-1/>"
 
 #: sdk/script/fn/AddMenuItem.xml:26(desc)
-#, fuzzy
 msgid "Erster Zusatzparameter für extra."
-msgstr "First additional parameter for iExtra."
+msgstr "First additional parameter for extra."
 
 #: sdk/script/fn/AddMenuItem.xml:27(desc)
-#, fuzzy
 msgid "Zweiter Zusatzparameter für extra."
-msgstr "Second additional parameter for iExtra."
+msgstr "Second additional parameter for extra."
 
 #: sdk/script/fn/AddMenuItem.xml:30(desc)
 msgid "Fügt einen Menüeintrag hinzu."
@@ -15922,7 +15707,6 @@ msgid ""
 msgstr "Custom menu symbols should best have square aspect ratio."
 
 #: sdk/script/fn/AddMenuItem.xml:32(remark)
-#, fuzzy
 msgid ""
 "Wird als command-Parameter nur ein Funktionsname angegeben, werden folgende "
 "Parameter übergeben: <code>symbol, parameter, bRight[, value]</code> wobei "
@@ -15931,10 +15715,10 @@ msgid ""
 "wird und gibt den (überschriebenen) angezeigten Wert des ausgewählten "
 "Menüeintrags an."
 msgstr ""
-"If a function name is specified for szCommand, the following parameters are "
-"passed: <code>idItem, iParameter, bRight[, iValue]</code> with bRight "
+"If a function name is specified for command, the following parameters are "
+"passed: <code>symbol, parameter, bRight[, value]</code> with bRight "
 "indicating whether the menu entry was selected with [Special2] or the right "
-"mouse button. iValue is passed only if bit 8 is set in iExtra and specifies "
+"mouse button. value is passed only if bit 8 is set in extra and specifies "
 "the displayed (overridden) object value of the menu entry."
 
 #: sdk/script/fn/AddMenuItem.xml:68(text)
@@ -15977,7 +15761,6 @@ msgstr ""
 "<placeholder-1/>."
 
 #: sdk/script/fn/AddEffect.xml:44(desc)
-#, fuzzy
 msgid ""
 "Definition, in der bei nicht angegebenem Befehlsziel-Objekt Callbacks "
 "ausgeführt werden. Sind sowohl command_target als auch command_target_id 0, "
@@ -15985,7 +15768,7 @@ msgid ""
 "als global deklariert sein, oder Enginefunktionen sein."
 msgstr ""
 "Definition in which callbacks are to be executed if no command target object "
-"is specified. If both pCmdTarget and idCmdTarget are 0, callbacks are made "
+"is specified. If both command_target and command_target_id are 0, callbacks are made "
 "globally. For this, the Fx* must also be declared globally or they must be "
 "engine functions."
 
@@ -16037,9 +15820,8 @@ msgstr ""
 "Execution will continue with the next command in the stack."
 
 #: sdk/script/fn/AddCommand.xml:66(col)
-#, fuzzy
 msgid "base_mode"
-msgstr "iBaseMode"
+msgstr "base_mode"
 
 #: sdk/script/fn/AddCommand.xml:67(col)
 msgid "Fehlschlagsmeldung und CallFailed-Aufrufe"
@@ -16115,7 +15897,6 @@ msgstr ""
 "Determines the behaviour if the command fails.<br/><br/><placeholder-1/>"
 
 #: sdk/script/fn/AddCommand.xml:82(desc)
-#, fuzzy
 msgid ""
 "Fügt ein Kommado in die Kommandoliste des aufrufenden Objekts hinzu (an den "
 "Anfang, siehe auch <placeholder-1/>). D.h. es wird ein Kommando hinzugefügt, "
@@ -16126,7 +15907,7 @@ msgstr ""
 "Adds a command to the top of the command stack of an object (also see "
 "<placeholder-1/>). This command will be executed first, then the object will "
 "continue with the existing commands. If the command stack is empty, "
-"AddCommand does the same as  <placeholder-2/>.<br/>For the list of commands "
+"AddCommand does the same as <placeholder-2/>.<br/>For the list of commands "
 "see <placeholder-3/>."
 
 #: sdk/script/fn/AddCommand.xml:85(remark)
@@ -16180,7 +15961,6 @@ msgstr ""
 "no such thing occurs, \"Activate\" is called in the clonk."
 
 #: sdk/script/fn/ActIdle.xml:12(desc)
-#, fuzzy
 msgid "Prüft, ob das aufrufende Objekt eine Aktivität ausführt."
 msgstr ""
 "Checks whether an object is currently performing the specified activity."
@@ -16397,14 +16177,14 @@ msgid "Definitions-ID"
 msgstr "definition id"
 
 #: sdk/script/Typechecks.xml:33(col)
-#, fuzzy
 msgid ""
 "ID einer Objektdefinition (siehe <emlink href=\"definition/index."
 "html#ObjektundEntwicklerIdentifikation\">Objektdefinitionen</emlink>). Wird "
 "sofort in eine Proplist umgewandelt."
 msgstr ""
 "ID of an object definition (see <emlink href=\"definition/index."
-"html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>)"
+"html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>)."
+"Is changed in a proplist immediately.
 
 #: sdk/script/Typechecks.xml:39(col)
 msgid "Ein beliebiger Text."
@@ -16514,7 +16294,6 @@ msgstr ""
 "the last element of the array."
 
 #: sdk/script/Typechecks.xml:75(text)
-#, fuzzy
 msgid ""
 "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> "
 "erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im "
@@ -16920,39 +16699,32 @@ msgid "GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal"
 msgstr "GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal"
 
 #: sdk/script/GetXXVal.xml:10(li)
-#, fuzzy
 msgid "GetDefCoreVal(string entry, string section, id definition);"
-msgstr "GetDefCoreVal(string strEntry, string strSection, id idDef);"
+msgstr "GetDefCoreVal(string entry, string section, id definition);"
 
 #: sdk/script/GetXXVal.xml:11(li)
-#, fuzzy
 msgid "GetActMapVal(string entry, string action, id definition);"
-msgstr "GetActMapVal(string strEntry, stringstrAction, id idDef);"
+msgstr "GetActMapVal(string entry, string action, id definition);"
 
 #: sdk/script/GetXXVal.xml:12(li)
-#, fuzzy
 msgid "GetObjectVal(string entry, string section, object obj);"
-msgstr "GetObjectVal(string strEntry, string strSection, object pObj);"
+msgstr "GetObjectVal(string entry, string section, object obj);"
 
 #: sdk/script/GetXXVal.xml:13(li)
-#, fuzzy
 msgid "GetObjectInfoCoreVal(string entry, string section, object obj);"
-msgstr "GetObjectInfoCoreVal(string strEntry, string strSection, object pObj);"
+msgstr "GetObjectInfoCoreVal(string entry, string section, object obj);"
 
 #: sdk/script/GetXXVal.xml:14(li)
-#, fuzzy
 msgid "GetScenarioVal(string entry, string section);"
-msgstr "GetScenarioVal(string strEntry, string strSection);"
+msgstr "GetScenarioVal(string entry, string section);"
 
 #: sdk/script/GetXXVal.xml:15(li)
-#, fuzzy
 msgid "GetPlayerVal(string entry, string section, int player);"
-msgstr "GetPlayerVal(string strEntry, string strSection, int iPlr);"
+msgstr "GetPlayerVal(string entry, string section, int player);"
 
 #: sdk/script/GetXXVal.xml:16(li)
-#, fuzzy
 msgid "GetPlayerInfoCoreVal(string entry, string section, int player);"
-msgstr "GetPlayerInfoCoreVal(string strEntry, string strSection, int iPlr);"
+msgstr "GetPlayerInfoCoreVal(string entry, string section, int player);"
 
 #: sdk/script/GetXXVal.xml:19(text)
 msgid ""
@@ -17038,12 +16810,11 @@ msgstr ""
 "correspond to a valid C4Script data type (e.g. ID lists) the result is 0."
 
 #: sdk/script/GetXXVal.xml:58(text)
-#, fuzzy
 msgid ""
 "Wird GetObjectVal für obj/definition jeweils 0 zurückgegeben, so wird das "
 "Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen."
 msgstr ""
-"If 0 is given for pObj/idDef in a call to GetObjectVal, the object or the "
+"If 0 is given for obj/definition in a call to GetObjectVal, the object or the "
 "definition of the object from which the call was made is used."
 
 #: sdk/script/GetXXVal.xml:59(text)
@@ -17368,7 +17139,6 @@ msgstr ""
 "to change their behaviour."
 
 #: sdk/script/Funcs.xml:142(text)
-#, fuzzy
 msgid ""
 "Definiert die Engine-Funktion <placeholder-1/> neu. Dabei wird sie um einen "
 "neuen Parameter count erweitert, der es erlaubt, mehrere Objekte zu "
@@ -17402,7 +17172,6 @@ msgstr ""
 "illegal:"
 
 #: sdk/script/Funcs.xml:159(text)
-#, fuzzy
 msgid ""
 "Beide Versuche, auf objektlokale Elemente zuzugreifen, schlagen fehl. Das "
 "ist leicht einsichtig, da GlobalFunktion() ja aus jedem beliebigen Script, "
@@ -17462,7 +17231,6 @@ msgid ""
 msgstr "By using references as parameters this can be achieved:"
 
 #: sdk/script/Funcs.xml:182(text)
-#, fuzzy
 msgid ""
 "<code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind "
 "hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die "
@@ -17474,11 +17242,11 @@ msgid ""
 msgstr ""
 "<code>x</code> and <code>y</code> in <code>GetHiRankPosition</code> are "
 "<strong>references</strong>, meaning when the called function modifies these "
-"values, the original variables (<code>iHiRankX</code> and <code>iHiRankY</"
+"values, the original variables (<code>hiRankX</code> and <code>hiRankY</"
 "code>) will be modified and the calling code will have the modified values. "
 "Notice, however, that you <em>have</em> to specify true variables as "
 "parameters for references. You cannot make a call such as "
-"\"<code>GetHiRankPosition(0, iHiRankX + 1, iHiRankY)</code>\" as in this "
+"\"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" as in this "
 "case \"<code>iHiRankX + 1</code>\" is not a variable but a numeric result."
 
 #: sdk/script/Funcs.xml:183(text)
@@ -18062,7 +17830,6 @@ msgstr ""
 "other effects will behave accordingly."
 
 #: sdk/script/Effects.xml:194(text)
-#, fuzzy
 msgid ""
 "Effekte werden auch dann entfernt, wenn das Zielobjekt entfernt wird oder "
 "stirbt - der Grund wird im reason-Parameter an die Remove-Funktion der "
@@ -18070,7 +17837,7 @@ msgid ""
 "dass ein Clonk nach dem Sterben sofort wiederbelebt wird:"
 msgstr ""
 "Effects are also removed when the target object is deleted or dies - the "
-"cause for the removal is passed in the iReason parameter to the Remove "
+"cause for the removal is passed in the reason parameter to the Remove "
 "function of the effect. This can be used e.g. to reanimate a clonk "
 "immediately upon his death:"
 
@@ -18112,7 +17879,6 @@ msgstr ""
 "original value:"
 
 #: sdk/script/Effects.xml:310(text)
-#, fuzzy
 msgid ""
 "target wird hier in allen Effektaufrufen 0 sein. Trotzdem sollte der "
 "Parameter immer an Aufrufe wie <placeholder-1/>() übergeben werden, da es "
@@ -18120,7 +17886,7 @@ msgid ""
 "zu binden. In diesem Fall würde die Gravitation automatisch zurückgesetzt, "
 "sobald der Zauberer stirbt oder der Turm gelöscht wird."
 msgstr ""
-"pTarget will be 0 in all these effect calls. You should still pass this "
+"target will be 0 in all these effect calls. You should still pass this "
 "parameter to calls such as <placeholder-1/>() for then it is also possible "
 "to attach effects to the magician or perhaps a magic tower. In this case, "
 "gravity would automatically be reset as soon as the magician dies or the "
@@ -18387,20 +18153,18 @@ msgid "Fx*Start"
 msgstr "Fx*Start"
 
 #: sdk/script/Effects.xml:477(text)
-#, fuzzy
 msgid ""
 "Wird beim Start des Effektes aufgerufen. target gibt das Zielobjekt des "
 "Effektes an, und num den Index. Über diese beiden Parameter lässt sich der "
 "Effekt eindeutig identifizieren, um beispielsweise zugehörige Variablen in "
 "<placeholder-1/>() zu manipulieren."
 msgstr ""
-"Called at the start of the effect. pTarget is the target object of the "
-"effect. iEffectNumber is the effect index. These two parameters can be used "
+"Called at the start of the effect. target is the target object of the "
+"effect. num is the effect index. These two parameters can be used "
 "to identify the effect, e.g. to manipulate corresponding variables in "
 "<placeholder-1/>()."
 
 #: sdk/script/Effects.xml:478(text)
-#, fuzzy
 msgid ""
 "Der Parameter temporary ist 0 beim normalen Hinzufügen des Effektes, 1 wenn "
 "der Effekt nur hinzugefügt wird, weil er vorher temporär entfernt wurde, und "
@@ -18408,7 +18172,7 @@ msgid ""
 "aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-"
 "Aufruf)."
 msgstr ""
-"In normal operation the parameter iTemp is 0. It is 1 if the effect is re-"
+"In normal operation the parameter temporary is 0. It is 1 if the effect is re-"
 "added after having been temporarily removed and 2 if the effect was "
 "temporarily removed and is now to be deleted (in this case a Remove call "
 "will follow)."
@@ -18423,12 +18187,11 @@ msgstr ""
 "() and can be custom used."
 
 #: sdk/script/Effects.xml:480(text)
-#, fuzzy
 msgid ""
 "Wenn temporary 0 ist und dieser Callback -1 zurückgibt, wird der Effekt "
 "nicht erzeugt und der zugehörige <placeholder-1/>()-Aufruf gibt 0 zurück."
 msgstr ""
-"If iTemp is 0 and this callback returns -1 the effect is not created and the "
+"If temporary is 0 and this callback returns -1 the effect is not created and the "
 "corrsponding <placeholder-1/>() call returns 0."
 
 #: sdk/script/Effects.xml:482(h)
@@ -18436,38 +18199,34 @@ msgid "Fx*Stop"
 msgstr "Fx*Stop"
 
 #: sdk/script/Effects.xml:484(text)
-#, fuzzy
 msgid ""
 "Aufruf, wenn der Effekt temporär oder permanent entfernt wird. target ist "
 "wieder das Effekt-Zielobjekt und num der Effektindex in der Effekteliste des "
 "Objekts."
 msgstr ""
-"When the effect is temporarily or permanently removed. pTarget again is the "
-"target object and iEffectNumber the index into the effects list of that "
+"When the effect is temporarily or permanently removed. target again is the "
+"target object and num the index into the effects list of that "
 "object."
 
 #: sdk/script/Effects.xml:485(text)
-#, fuzzy
 msgid ""
 "reason gibt den Grund für das Entfernen des Effektes an, und kann einer der "
 "folgenden Werte sein:"
 msgstr ""
-"iReason contains the cause of the removal and can be one of the following "
+"reason contains the cause of the removal and can be one of the following "
 "values:"
 
 #: sdk/script/Effects.xml:488(col)
-#, fuzzy
 msgid "reason"
-msgstr "iReason"
+msgstr "reason"
 
 #: sdk/script/Effects.xml:489(col)
 msgid "Effekt wird regulär entfernt"
 msgstr "Normal removal"
 
 #: sdk/script/Effects.xml:490(col)
-#, fuzzy
 msgid "Effekt wird nur temporär entfernt. temporary ist in dem Fall 1."
-msgstr "Temporary removal (fTemp is 1)."
+msgstr "Temporary removal (temporary is 1)."
 
 #: sdk/script/Effects.xml:491(col)
 msgid "nicht verwendet"
@@ -18495,22 +18254,20 @@ msgid "Fx*Timer"
 msgstr "Fx*Timer"
 
 #: sdk/script/Effects.xml:500(text)
-#, fuzzy
 msgid ""
 "Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall "
 "angegeben wurde. target und num spezifizieren auch hier Zielobjekt und "
 "Effekt."
 msgstr ""
 "Periodic timer call, if a timer interval has been specified at effect "
-"creation. pTarget and iEffectNumber as usual."
+"creation. target and num as usual."
 
 #: sdk/script/Effects.xml:501(text)
-#, fuzzy
 msgid ""
 "time gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch "
 "über <placeholder-1/>() mit entsprechenden Parametern abfragen."
 msgstr ""
-"iEffectTime specifies how long the effect has now been active. This might "
+"time specifies how long the effect has now been active. This might "
 "alternatively be determined using <placeholder-1/>()."
 
 #: sdk/script/Effects.xml:502(text)
@@ -18526,7 +18283,6 @@ msgid "Fx*Effect"
 msgstr "Fx*Effect"
 
 #: sdk/script/Effects.xml:507(text)
-#, fuzzy
 msgid ""
 "Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu "
 "demselben Objekt (target) hinzugefügt werden soll. new_name gibt den Namen "
@@ -18534,12 +18290,11 @@ msgid ""
 "wird, und new_num den Index des neu zu erzeugenden Effektes."
 msgstr ""
 "A call to all effects of higher priority if a new effect is to be added to "
-"the same target object. szNewEffectName is the name of the new effect; "
-"iEffectNumber is the index of the effect being called; and iNewEffectNumber "
+"the same target object. new_name is the name of the new effect; "
+"num is the index of the effect being called; and ew_num "
 "is the index of the new effect."
 
 #: sdk/script/Effects.xml:508(text)
-#, fuzzy
 msgid ""
 "Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte "
 "daher nicht manipuliert werden. Insbesondere das Priority-Feld ist "
@@ -18549,8 +18304,8 @@ msgid ""
 msgstr ""
 "Warning: the new effect is not yet properly initialized and should not be "
 "manipulated in any way. Especially the priority field might not yet have "
-"been set. The iNewEffectNumber can however be used to request information "
-"via <placeholder-1/>(). In calls made by <placeholder-2/>() iNewEffectNumber "
+"been set. The new_num can however be used to request information "
+"via <placeholder-1/>(). In calls made by <placeholder-2/>() new_num "
 "is always 0."
 
 #: sdk/script/Effects.xml:509(text)
@@ -18596,26 +18351,24 @@ msgid "Fx*Add"
 msgstr "Fx*Add"
 
 #: sdk/script/Effects.xml:515(text)
-#, fuzzy
 msgid ""
 "Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-"
 "Callback hin -2 oder -3 zurückgegeben hat. num gibt die Nummer des Effektes "
 "an, zu dem hinzugefügt wird; target das Zielobjekt (0 bei globalen Effekten)."
 msgstr ""
 "Callback to the accepting effect if that has returned -2 or -3 to a prior "
-"Fx*Effect call. iEffectNumber identifies the accepting effect to which the "
-"consequences of the new effect will be added; pTarget is the target object "
+"Fx*Effect call. num identifies the accepting effect to which the "
+"consequences of the new effect will be added; target is the target object "
 "(0 for global effects)."
 
 #: sdk/script/Effects.xml:516(text)
-#, fuzzy
 msgid ""
 "new_timer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 "
 "die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter "
 "werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann "
 "0."
 msgstr ""
-"iNewEffectTimer is the timer interval of the new effect; var1 to var4 are "
+"new_timer is the timer interval of the new effect; var1 to var4 are "
 "the parameters from AddEffect. Notice: in temporary calls, these parameters "
 "are not available - here they will be 0."
 
@@ -18642,14 +18395,13 @@ msgstr ""
 "return whether to allow the change."
 
 #: sdk/script/Effects.xml:522(text)
-#, fuzzy
 msgid ""
 "Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei "
 "Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber "
 "umgekehrt. cause gibt den geänderten Wert und den Grund an:"
 msgstr ""
 "This callback is made upon life energy changes in living beings and damage "
-"value changes in non-livings - but not vice versa. iCause contains the value "
+"value changes in non-livings - but not vice versa. cause contains the value "
 "change and reason:"
 
 #: sdk/script/Effects.xml:525(col)
@@ -18657,9 +18409,8 @@ msgid "Scriptkonstante"
 msgstr "Script constant"
 
 #: sdk/script/Effects.xml:525(col)
-#, fuzzy
 msgid "cause"
-msgstr "iCause"
+msgstr "cause"
 
 #: sdk/script/Effects.xml:526(col)
 msgid "FX_Call_DmgScript"
@@ -18805,14 +18556,13 @@ msgid "Energieverlust im Clonk-zu-Clonk-Kampf"
 msgstr "Energy loss through clonk-to-clonk battle"
 
 #: sdk/script/Effects.xml:541(text)
-#, fuzzy
 msgid ""
 "Allgemein kann der Ausdruck \"cause &amp; 32\" verwendet werden, um "
 "festzustellen, ob Energie oder Schadenswert verändert wurden. Werte für die "
 "Energie sind dabei exakt, das heißt 100.000 entspricht der vollen Energie "
 "eines normalen Clonks mit Rang 10 (C4MaxPhysical)."
 msgstr ""
-"Generally, the expression \"iCause &amp; 32\" can be used to determine "
+"Generally, the expression \"cause &amp; 32\" can be used to determine "
 "whether the energy or damage values were changed. Energy values are exact, "
 "meaning 100,000 is the full energy value of a normal clonk of rank 10 "
 "(C4MaxPhysical)."
@@ -19079,7 +18829,6 @@ msgstr ""
 "script. This will not be called if the round was aborted."
 
 #: sdk/scenario/scenario.xml:8(text)
-#, fuzzy
 msgid ""
 "Über die Scenario.txt lassen sich alle Szenarienvoreinstellungen anpassen. "
 "Dazu gehören einfache, dynamische Karten, Spielervorgaben, Spielziele, "
@@ -19169,14 +18918,12 @@ msgid "Vom Szenario benötigte Version der Engine."
 msgstr "Engine version required by the scenario."
 
 #: sdk/scenario/scenario.xml:41(col)
-#, fuzzy
 msgid "MinPlayer"
-msgstr "MaxPlayer"
+msgstr "MinPlayer"
 
 #: sdk/scenario/scenario.xml:43(col)
-#, fuzzy
 msgid "Minimale Anzahl der Spieler."
-msgstr "Maximum player count"
+msgstr "Minimum player count"
 
 #: sdk/scenario/scenario.xml:46(col) sdk/scenario/Teams.xml:107(col)
 msgid "MaxPlayer"
@@ -19187,20 +18934,18 @@ msgid "Maximale Anzahl der Spieler."
 msgstr "Maximum player count"
 
 #: sdk/scenario/scenario.xml:51(col)
-#, fuzzy
 msgid "MaxPlayerLeague"
-msgstr "MaxPlayer"
+msgstr "MaxPlayerLeague"
 
 #: sdk/scenario/scenario.xml:53(col)
 msgid ""
 "Maximale Anzahl der Spieler für die Liga. Default ist MaxPlayerLeague = "
 "MaxPlayer."
-msgstr ""
+msgstr "Maximum players for the league, default is MaxPlayerLeague = MaxPlayer."
 
 #: sdk/scenario/scenario.xml:56(col)
-#, fuzzy
 msgid "Loader"
-msgstr "Layers"
+msgstr "Loaders"
 
 #: sdk/scenario/scenario.xml:57(col) sdk/scenario/scenario.xml:62(col)
 #: sdk/scenario/scenario.xml:77(col) sdk/scenario/scenario.xml:215(col)
@@ -19222,9 +18967,8 @@ msgid "Dateiname (ohne Dateiendung) des Gewünschten Ladebildschirms."
 msgstr ""
 
 #: sdk/scenario/scenario.xml:61(col)
-#, fuzzy
 msgid "Font"
-msgstr "Float"
+msgstr "Font"
 
 #: sdk/scenario/scenario.xml:63(col)
 msgid ""
@@ -19278,20 +19022,18 @@ msgid "ForcedFairCrew"
 msgstr ""
 
 #: sdk/scenario/scenario.xml:83(col)
-#, fuzzy
 msgid ""
 "0 oder 1. Bei 1 wird für dieses Szenario immer eine faire Crew verwendet."
 msgstr ""
-"0 or 1. If 1, the object is not stored in the permanent crew of a player."
+"0 or 1. If 1, fair crew is always used in this scenario."
 
 #: sdk/scenario/scenario.xml:86(col)
 msgid "FairCrewStrength"
-msgstr ""
+msgstr "FairCrewStrength"
 
 #: sdk/scenario/scenario.xml:88(col)
-#, fuzzy
 msgid "Stärke der fairen Crew."
-msgstr "Activates fair crew mode."
+msgstr "Strength of the fair crew."
 
 #: sdk/scenario/scenario.xml:91(col)
 msgid "Film"
@@ -21095,7 +20837,6 @@ msgstr ""
 "\">scenario script</emlink> function of the following form:"
 
 #: sdk/scenario/MapCreatorS2.xml:163(text)
-#, fuzzy
 msgid ""
 "Als Rückgabewert wird 0 (= kein Material) oder 1 (= Material) erwartet. x "
 "und y sind die Koordinaten (in Pixeln), für den der Algorithmuswert "
@@ -21103,7 +20844,7 @@ msgid ""
 "a und b."
 msgstr ""
 "The script function's return value should be 0 (no material) or 1 "
-"(material). iX and iY are the pixel coordinates for which the function is "
+"(material). x and y are the pixel coordinates for which the function is "
 "called. iAlpha and iBeta correspond to parameters a and b."
 
 #: sdk/scenario/MapCreatorS2.xml:164(text)
@@ -21807,9 +21548,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:5(title) sdk/playercontrols.xml:6(h)
-#, fuzzy
 msgid "Spielersteuerung"
-msgstr "Player number"
+msgstr "Player controls"
 
 #: sdk/playercontrols.xml:8(text)
 msgid ""
@@ -21821,9 +21561,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:9(h)
-#, fuzzy
 msgid "PlayerControls.txt"
-msgstr "Player.txt"
+msgstr "PlayerControls.txt"
 
 #: sdk/playercontrols.xml:10(text)
 msgid ""
@@ -21843,24 +21582,20 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:14(h)
-#, fuzzy
 msgid "Sektion [ControlDefs]"
-msgstr "Section [DefCore]"
+msgstr "Section [ControlDefs]"
 
 #: sdk/playercontrols.xml:17(caption)
-#, fuzzy
 msgid "Beliebig viele Sektionen [ControlDef]"
-msgstr "Any number of sections [Scenario]"
+msgstr "Any number of sections [ControlDef]"
 
 #: sdk/playercontrols.xml:24(col)
-#, fuzzy
 msgid "Identifier"
 msgstr "Identifier"
 
 #: sdk/playercontrols.xml:25(col)
-#, fuzzy
 msgid "Zeichenfolge (Max. 96 Zeichen)"
-msgstr "String (max. 30 chars)"
+msgstr "String (max. 96 chars)"
 
 #: sdk/playercontrols.xml:26(col)
 msgid ""
@@ -21874,9 +21609,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:29(col)
-#, fuzzy
 msgid "GUIName"
-msgstr "Name"
+msgstr "GUIName"
 
 #: sdk/playercontrols.xml:31(col)
 msgid ""
@@ -21904,9 +21638,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:44(col) sdk/playercontrols.xml:165(col)
-#, fuzzy
 msgid "Hold"
-msgstr "solid"
+msgstr "Hold"
 
 #: sdk/playercontrols.xml:46(col)
 msgid ""
@@ -21917,9 +21650,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:49(col)
-#, fuzzy
 msgid "RepeatDelay"
-msgstr "Replay"
+msgstr "RepeatDelay"
 
 #: sdk/playercontrols.xml:51(col)
 msgid ""
@@ -21930,9 +21662,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:54(col)
-#, fuzzy
 msgid "InitialRepeatDelay"
-msgstr "InitializePlayer"
+msgstr "InitialRepeatDelay"
 
 #: sdk/playercontrols.xml:56(col)
 msgid ""
@@ -21942,9 +21673,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:59(col)
-#, fuzzy
 msgid "DefaultDisabled"
-msgstr "ObjectDisabled"
+msgstr "DefaultDisabled"
 
 #: sdk/playercontrols.xml:61(col)
 msgid ""
@@ -21981,14 +21711,12 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:84(col)
-#, fuzzy
 msgid "Keine Aktion."
-msgstr "New animation phase."
+msgstr "No action."
 
 #: sdk/playercontrols.xml:87(col)
-#, fuzzy
 msgid "Script (Standardwert)"
-msgstr "Default value"
+msgstr "Script (Default value)"
 
 #: sdk/playercontrols.xml:88(col)
 msgid ""
@@ -21997,7 +21725,6 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:91(col)
-#, fuzzy
 msgid "Menu"
 msgstr "Menu"
 
@@ -22016,9 +21743,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:99(col)
-#, fuzzy
 msgid "MenuCancel"
-msgstr "MenuQueryCancel"
+msgstr "MenuCancel"
 
 #: sdk/playercontrols.xml:100(col)
 msgid "Schliessen des Spielermenues (asynchrones Kommando)."
@@ -22045,14 +21771,12 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:109(h)
-#, fuzzy
 msgid "Sektion [ControlSets]"
-msgstr "Section [DefCore]"
+msgstr "Section [ControlSets]"
 
 #: sdk/playercontrols.xml:112(caption)
-#, fuzzy
 msgid "Beliebig viele Sektionen [ControlSet]"
-msgstr "Any number of sections [Scenario]"
+msgstr "Any number of sections [ControlSet]"
 
 #: sdk/playercontrols.xml:121(col)
 msgid ""
@@ -22066,7 +21790,7 @@ msgstr ""
 #: sdk/playercontrols.xml:125(caption)
 #, fuzzy
 msgid "Beliebig viele Sektionen [Assignment]"
-msgstr "Any number of sections [Action]"
+msgstr "Any number of sections [Assignment]"
 
 #: sdk/playercontrols.xml:132(col)
 msgid "Key"
@@ -22090,9 +21814,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:142(col)
-#, fuzzy
 msgid "Control"
-msgstr "Control_"
+msgstr "Control"
 
 #: sdk/playercontrols.xml:144(col)
 msgid ""
@@ -22102,7 +21825,6 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:147(col)
-#, fuzzy
 msgid "Priority"
 msgstr "Priority"
 
@@ -22114,17 +21836,14 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:152(col)
-#, fuzzy
 msgid "TriggerMode"
-msgstr "iBaseMode"
+msgstr "TriggerMode"
 
 #: sdk/playercontrols.xml:153(col)
-#, fuzzy
 msgid "Bitmaske"
-msgstr "mask"
+msgstr "bitmask"
 
 #: sdk/playercontrols.xml:161(col)
-#, fuzzy
 msgid "Default (Standardwert)"
 msgstr "Default value"
 
@@ -22143,9 +21862,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:169(col)
-#, fuzzy
 msgid "Release"
-msgstr "Repeats"
+msgstr "Release"
 
 #: sdk/playercontrols.xml:170(col)
 msgid ""
@@ -22197,9 +21915,8 @@ msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
 msgstr ""
 
 #: sdk/playercontrols.xml:190(h)
-#, fuzzy
 msgid "Script-Callbacks"
-msgstr "Callbacks"
+msgstr "Script callbacks"
 
 #: sdk/playercontrols.xml:191(text)
 msgid ""
@@ -22307,7 +22024,7 @@ msgstr ""
 #: sdk/playercontrols.xml:323(h)
 #, fuzzy
 msgid "Globale Definitionen"
-msgstr "Global Functions"
+msgstr "Global definitions"
 
 #: sdk/playercontrols.xml:324(text) sdk/playercontrols.xml:337(text)
 #: sdk/playercontrols.xml:339(text) sdk/playercontrols.xml:341(text)
@@ -22317,7 +22034,7 @@ msgstr ""
 #: sdk/playercontrols.xml:325(h)
 #, fuzzy
 msgid "Tastenwiederholungen"
-msgstr "Number of retries"
+msgstr "Key repeats"
 
 #: sdk/playercontrols.xml:326(text)
 msgid ""
@@ -22339,9 +22056,8 @@ msgid ""
 msgstr ""
 
 #: sdk/playercontrols.xml:336(h)
-#, fuzzy
 msgid "Deaktivierte Kommandos**"
-msgstr "Deactivates all gamma ramps."
+msgstr "Deactivated commands**"
 
 #: sdk/playercontrols.xml:338(h)
 msgid "Tastenbelegungen"
@@ -22710,12 +22426,11 @@ msgid "AlphaFade"
 msgstr "AlphaFade"
 
 #: sdk/particle/index.xml:140(col)
-#, fuzzy
 msgid ""
 "0 bis 40. Ausfaden pro FadeDelay. Wenn das Partikel vollends ausgefadet ist, "
 "verschwindet es."
 msgstr ""
-"0 to 40. Rate of fade out per frame. A fully faded particle is removed."
+"0 to 40. Rate of fade out per FadeDelay. A fully faded particle is removed."
 
 #: sdk/particle/index.xml:143(col)
 msgid "FadeDelay"
@@ -25665,7 +25380,6 @@ msgid "InitializePlayer"
 msgstr "InitializePlayer"
 
 #: sdk/definition/script.xml:200(col) sdk/definition/script.xml:210(col)
-#, fuzzy
 msgid "int player"
 msgstr "int player"
 
@@ -25702,9 +25416,8 @@ msgid "Purchase"
 msgstr "Purchase"
 
 #: sdk/definition/script.xml:208(col)
-#, fuzzy
 msgid "int by_player, object buy_object"
-msgstr "int iByPlr, object BuyObject"
+msgstr "int by_player, object buy_object"
 
 #: sdk/definition/script.xml:209(col)
 msgid "Wenn das Objekt gekauft wird. Ab CE."
@@ -26406,9 +26119,8 @@ msgstr ""
 "<placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
 
 #: sdk/definition/meshes.xml:5(title) sdk/definition/meshes.xml:6(h)
-#, fuzzy
 msgid "Meshes"
-msgstr "Message"
+msgstr "Meshes"
 
 #: sdk/definition/meshes.xml:8(text)
 msgid ""
@@ -26450,9 +26162,8 @@ msgid ""
 msgstr ""
 
 #: sdk/definition/meshes.xml:14(h)
-#, fuzzy
 msgid "Materialskripte"
-msgstr "Materials"
+msgstr "Material scripts"
 
 #: sdk/definition/meshes.xml:15(text)
 msgid ""
@@ -26578,9 +26289,8 @@ msgid ""
 msgstr ""
 
 #: sdk/definition/meshes.xml:44(h)
-#, fuzzy
 msgid "MeshTransformation"
-msgstr "Additional Information"
+msgstr "MeshTransformation"
 
 #: sdk/definition/meshes.xml:45(text)
 msgid ""
@@ -26799,12 +26509,12 @@ msgid ""
 msgstr ""
 
 #: sdk/definition/index.xml:30(dt)
-#, fuzzy
 msgid ""
 "<img src=\"../../images/icon_ogre_mesh.gif\" width=\"16\" height=\"16\"/>*."
 "skeleton"
 msgstr ""
-"<img src=\"../../images/icon_sound.gif\" width=\"16\" height=\"16\"/>*.wav"
+"<img src=\"../../images/icon_ogre_mesh.gif\" width=\"16\" height=\"16\"/>*."
+"skeleton"
 
 #: sdk/definition/index.xml:31(text)
 msgid ""
@@ -26852,9 +26562,8 @@ msgstr ""
 "image is actually worth it."
 
 #: sdk/definition/index.xml:39(emlink)
-#, fuzzy
 msgid "*.material"
-msgstr "Material"
+msgstr "*.material"
 
 #: sdk/definition/index.xml:40(text)
 msgid ""
@@ -28304,7 +28013,7 @@ msgstr ""
 #: sdk/definition/animations.xml:25(col)
 #, fuzzy
 msgid "Kurzbeschreibung"
-msgstr "Description"
+msgstr "Short description"
 
 #: sdk/definition/animations.xml:29(col)
 msgid ""
@@ -28351,14 +28060,12 @@ msgid ""
 msgstr ""
 
 #: sdk/definition/animations.xml:53(col)
-#, fuzzy
 msgid "Proportional zur X-Geschwindigkeit eines Objekts."
-msgstr "Sets the vertical speed of the object."
+msgstr "Proportional to the horizontal speed of the object."
 
 #: sdk/definition/animations.xml:57(col)
-#, fuzzy
 msgid "Proportional zur Y-Geschwindigkeit eines Objekts."
-msgstr "Sets the vertical speed of the object."
+msgstr "Proportional to the vertical speed of the object."
 
 #: sdk/definition/animations.xml:61(col)
 msgid "Proportional zur Phase der aktuell ausgeführten Aktivität."
@@ -28642,9 +28349,8 @@ msgid "Nötige Energie für diese Aktion. Maschinen 500."
 msgstr "Energy required for this action. Normal machines should use about 500."
 
 #: sdk/definition/actmap.xml:148(col)
-#, fuzzy
 msgid "Animation"
-msgstr "ColorAnimation"
+msgstr "Animation"
 
 #: sdk/definition/actmap.xml:150(col)
 msgid ""
@@ -28884,9 +28590,8 @@ msgstr ""
 "specified."
 
 #: sdk/cmdline.xml:10(h)
-#, fuzzy
 msgid "Clonk.exe (Windows) clonk (Linux) Clonk (Mac)"
-msgstr "Clonk.exe <tt>(Windows)</tt> clonk (Linux) Clonk (Mac)"
+msgstr "Clonk.exe (Windows) clonk (Linux) Clonk (Mac)"
 
 #: sdk/cmdline.xml:11(text)
 msgid ""
@@ -29299,7 +29004,6 @@ msgstr ""
 #~ msgid "Spieler-Nummer."
 #~ msgstr "Player number."
 
-#, fuzzy
 #~ msgid "Liefert die Anzahl der ausgewählten Clonks von Spieler player."
 #~ msgstr "Returns the number of selected clonks of the specified player."
 
@@ -29310,7 +29014,6 @@ msgstr ""
 #~ "Index which can be used to change crew selection. 0 is always the "
 #~ "currently controlled clonk."
 
-#, fuzzy
 #~ msgid ""
 #~ "Gibt den momentan kontrollierten Clonk eines Spielers zurück. Werden "
 #~ "mehrere Clonks gelenkt, ist es bei index=0 (oder weggelassen) immer das "
@@ -29381,7 +29084,6 @@ msgstr ""
 #~ msgid "Objekttyp"
 #~ msgstr "Object type"
 
-#, fuzzy
 #~ msgid "Anzahl Wiederholungen"
 #~ msgstr "Number of retries"
 
@@ -29420,7 +29122,6 @@ msgstr ""
 #~ "If set, the activity is set directly, bypassing any Start- or AbortCalls "
 #~ "and overriding the NoOtherAction flag."
 
-#, fuzzy
 #~ msgid ""
 #~ "Setzt die Aktivität des angegebenen Objekts. Siehe auch <emlink href="
 #~ "\"definition/actmap.html\">ActMap.txt</emlink>."
