@@ -52,7 +52,7 @@ while (obj = <funclink>FindObject</funclink>(0, -100,-100,200,200, <funclink>OCF
 <funclink>OCF_Living</funclink>,
 <funclink>OCF_NotContained</funclink>,
 <funclink>OCF_OnFire</funclink>,
-<funclink>OCF_Powerconsumer</funclink>,
+<funclink>OCF_PowerConsumer</funclink>,
 <funclink>OCF_PowerSupply</funclink>,
 <funclink>OCF_Prey</funclink>,
 <funclink>OCF_Rotate</funclink>

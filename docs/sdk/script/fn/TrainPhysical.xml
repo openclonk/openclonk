@@ -40,7 +40,7 @@ global func OnClonkSucceededSpell(id spell, object clonk)
 			</example>
 		</examples>
                 <related>
-			<emlink href="definition/DefCore.html#SektionPhysical">DefCore.txt, [Physical]</emlink>
+			<emlink href="definition/defcore.html#SektionPhysical">DefCore.txt, [Physical]</emlink>
                         <funclink>GetPhysical</funclink>
                         <funclink>SetPhysical</funclink>
 			<funclink>ResetPhysical</funclink>
