@@ -99,9 +99,10 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		break;
 	case WM_CHAR:
 	{
-		char c[2];
-		c[0] = (char)wParam;
-		c[1] = 0;
+		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
+		char c[5] = {0};
+		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
+			return 0;
 		// GUI: forward
 		if (::pGUI)
 			if (::pGUI->CharIn(c))
