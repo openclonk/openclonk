@@ -10,13 +10,14 @@ msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-07-30 22:12+0200\n"
-"PO-Revision-Date: 2010-08-21 01:24+0200\n"
+"PO-Revision-Date: 2010-08-21 14:41+0200\n"
 "Last-Translator: Armin Burgmeier <armin@arbur.net>\n"
-"Language-Team: English\n"
+"Language-Team: German <armin@arbur.net>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Zum markieren von veralteten Funktionen im Inhaltsverzeichnis
 #: extra-strings.xml:5(text)
@@ -20970,6 +20971,8 @@ msgid ""
 "natürlich anders aussehen. Bauer Hump möchte gerne einen Hut auf haben. Also "
 "geben wir ihm einen."
 msgstr ""
+"To be able to see a difference between Farmer and Clonk the Farmer should "
+"look different of course. So let's give him a hat."
 
 #: sdk/renderclonkExamples.xml:19(text)
 msgid ""
@@ -20977,6 +20980,8 @@ msgid ""
 "grundlegenden Blendertutorial wie den oben genannten kein großes Problem "
 "darstellen."
 msgstr ""
+"First an appropriate hat needs to be modeled. This should not be a problem "
+"when making use of one of the Blender tutorials mentioned above."
 
 #: sdk/renderclonkExamples.xml:20(text)
 msgid ""
@@ -20988,6 +20993,12 @@ msgid ""
 "hat der Hut einen dunklen Rand und der Clonk einen hellen. Mit Strg+J können "
 "die beiden Meshes nun verbunden werden."
 msgstr ""
+"Initially the hat is an individual mesh. To be able to be stored together "
+"with the Clonk it needs to be connected to the Clonk mesh. To do so first "
+"switch to ObjectMode (maybe switching from the EditMode using Tab) and right-"
+"click the hat mesh, then right-click the Clonk mesh while pressing the Shift "
+"key. Now the hat has a dark border and the Clonk has a bright one. Pressing "
+"Ctrl+J connects the two meshes."
 
 #: sdk/renderclonkExamples.xml:21(text)
 msgid ""
@@ -21000,16 +21011,26 @@ msgid ""
 "vom Vertices vom Kopf mit drin sein, das macht nichts) markieren und mit "
 "einem Klick auf Assign der Vertexgroup zuweisen."
 msgstr ""
+"To move the hat together with the Clonk's head it needs to obtain an "
+"appropriate VertexGroup. Click on <img src=\"../images/Button.png\" width="
+"\"21\" height=\"21\"/>, then on the left click on the symbol next to the "
+"text entry. From the drop-down menu choose 'Head' (referring to the head "
+"bone, i.e. the bone which controls the head). Afterwards switch to Edit mode "
+"using Tab, select all vertices of the hat (it doesn't matter if a few head "
+"vertices are selected as well) and assign them to the Vertex group by "
+"clicking on Assign."
 
 #: sdk/renderclonkExamples.xml:23(text)
 msgid ""
 "Im Scriptfenster kann nun unter <strong>Clonk</strong> dann mit <strong>Save "
 "Farmer</strong> der Bauer mit seinem Hut gespeichert werden."
 msgstr ""
+"In the scripting window the Farmer can be saved including its head by "
+"choosing <strong>Clonk</strong>, then <strong>Save Farmer</strong>."
 
 #: sdk/renderclonkExamples.xml:24(h)
 msgid "Humpe will eine Hose haben"
-msgstr ""
+msgstr "Humpe wants to have pants"
 
 #: sdk/renderclonkExamples.xml:25(text)
 msgid ""
@@ -21017,6 +21038,9 @@ msgid ""
 "der Clonks ist für agrarwirtschaftliche Zwecke nicht adequat. Also muss eine "
 "braune Lederhose her."
 msgstr ""
+"As a next step Farmer Humpe wants to have his own pants since the unit "
+"jumpsuit of the Clonks can not be used for agricultural purposes. So we need "
+"brown leather pants."
 
 #: sdk/renderclonkExamples.xml:26(text)
 msgid ""
@@ -21031,21 +21055,30 @@ msgid ""
 "\"../images/Button.png\" width=\"21\" height=\"21\"/>auf Assign gehen, damit "
 "das Material den selektierten Faces zugewiesen wird."
 msgstr ""
+"The first thing we need is a new material group. So, at <img src=\"../images/"
+"Button.png\" width=\"21\" height=\"21\"/> in the area to the right hand side "
+"of the vertex groups, click 'New'. Then click on <img src=\"../images/"
+"Button2.png\" width=\"21\" height=\"21\"/> and assign a name for the new "
+"material, such as 'Leather'. Choose a brownish shade using the color "
+"selector. Now the material needs to be assigned to the corresponding parts "
+"of the Clonk. In EditMode select the vertices which shall make up the pants, "
+"then in <img src=\"../images/Button.png\" width=\"21\" height=\"21\"/> click "
+"on Assign."
 
 #: sdk/renderclonkExamples.xml:28(text)
 msgid ""
 "So Humpe hat nun seine Hose an. Jetzt wird es mal wieder Zeit zu speichern."
-msgstr ""
+msgstr "Now that Humpe wears his pants it's time to save the mesh again."
 
 #: sdk/renderclonkExamples.xml:29(h)
 msgid "Eine Mistgabel für Mr. Humpe"
-msgstr ""
+msgstr "A pitchfork for Mr. Humpp"
 
 #: sdk/renderclonkExamples.xml:30(text)
 msgid ""
 "Als Bauer braucht man natürlich eine Mistgabel, sonst ist man ja kein "
 "richtiger Bauer!"
-msgstr ""
+msgstr "A farmer without a pitchfork is not a real farmer!"
 
 #: sdk/renderclonkExamples.xml:32(text)
 msgid ""
@@ -21057,6 +21090,12 @@ msgid ""
 "Nun kann die Gabel über 'Save/Load' mit dem Button 'Save Tool' gespeichert "
 "werden, dazu im aufklappenden Menü den Eintrag 'Pitchfork' auswählen."
 msgstr ""
+"First the pitchfork needs to be modeled. The mesh as well as the object "
+"should be assigned the name 'Pitchfork'. Afterwards the mesh should be "
+"aligned so that the point at which the Clonk touches the pitchfork is "
+"exactly on the Tool1 bone of the armature object (see picture). Then save "
+"the pitchfork using the 'Save Tool' button in the 'Save/Load' menu. In the "
+"popup menu choose the 'Pitchfork' entry."
 
 #: sdk/renderclonkExamples.xml:33(text)
 msgid ""
@@ -21073,6 +21112,15 @@ msgid ""
 "Mit einem Klick auf 'Save WalkPitchfork' kann die neue Action nun "
 "gespeichert werden."
 msgstr ""
+"Now of course Humpe should carry the pitchfork when walking. We are going to "
+"use the 'WalkStaff' action as a basis for this. To load it go to 'Save/Load' "
+"and choose the 'Load Action' entry, then choose 'WalkStaff'. In the "
+"'Actions' submenu choose the 'WalkStaff' action, then click on 'New' to "
+"create a new action. Call it 'WalkPitchfork' and answer yes when asked "
+"whether to copy the keyframes. This results in a new action called Pitchfork "
+"using the keyframes from the WalkStaff action. The last thing to do is to "
+"choose the pitchfork as Tool1 so that it uses the pitchfork instead of the "
+"staff. Click on 'Save WalkPitchfork' to save the new action."
 
 #: sdk/renderclonkExamples.xml:34(text)
 msgid ""
@@ -21082,6 +21130,10 @@ msgid ""
 "png\" width=\"52\" height=\"17\"/> einem Klick auf groß. Jetzt können wir "
 "'Walk' anklicken und statt dessen 'WalkPitchfork' auswählen."
 msgstr ""
+"To make the rendering use the new action instead of the old Walk animation "
+"we need to switch it in the action list of the clonk. Go to 'Clonk' and "
+"enlarge the window by clicking on <img src=\"../images/ButtonFullScreen.png"
+"\" width=\"52\" height=\"17\"/>. Then change 'Walk' to 'WalkPitchfork'."
 
 #: sdk/renderclonkExamples.xml:35(text)
 msgid ""
@@ -21091,28 +21143,35 @@ msgid ""
 "Jumpanination auf 8 Frames statt 16 zu stellen. Jetzt wird Jump in der "
 "Actionliste durch JumpPitchfork ersetzt."
 msgstr ""
+"Now we can do the same for the Jump action. We load 'JumpStaff' and use it "
+"to create the new JumpPitchfork action, then assign Pitchfork as Tool1. "
+"Don't forget to set the length of the jump animation to 8 instead of 16 "
+"frames. Eventually replace Jump by JumpPitchfork in the action list."
 
 #: sdk/renderclonkExamples.xml:36(text)
 msgid ""
 "Jetzt läuft und springt Humpe glücklich mit seiner Mistgabel! Zeit zu "
 "speichern."
 msgstr ""
+"Now Humpe happily walks and jumps around carrying his pitchfork! Time to "
+"save."
 
 #: sdk/renderclonkExamples.xml:37(text)
 msgid ""
 "Nun kann Bauer Humpe endlich gerendert werden und sich seiner Clonkheit "
 "freuen:"
-msgstr ""
+msgstr "Finally farmer Humpe can be rendered and enjoy being a Clonk:"
 
 #: sdk/renderclonkExamples.xml:40(h)
 msgid "Bauernaufstand! Humpe kämpft"
-msgstr ""
+msgstr "Farmer uprising! Humpe fights"
 
 #: sdk/renderclonkExamples.xml:41(text)
 msgid ""
 "Doch das alles ist noch nicht genug! Humpe will seine Mistgabel auch zum "
 "Kämpfen verwenden."
 msgstr ""
+"But this is not enough! Humpe also wants to use his pitchfork for fighting."
 
 #: sdk/renderclonkExamples.xml:42(text)
 msgid ""
@@ -21121,6 +21180,10 @@ msgid ""
 "Schwertanimation nehmen und die Mistgabel mit dem Schwert austauschen. "
 "Folglich müssen wir eine ganz neue Animation machen."
 msgstr ""
+"So fighting animations need to be created. However since one cannot use the "
+"pitchfork to strike the same way as with a sword we cannot simple replace "
+"the sword by a pitchfork in the sword fighting animation. This means we need "
+"to create a new animation from scratch."
 
 #: sdk/renderclonkExamples.xml:43(text)
 msgid ""
@@ -21130,6 +21193,11 @@ msgid ""
 "Breite auf 24. Die Höhe von 20 belassen wir so. Jetzt muss das "
 "Armatureobjekt angewählt werden und in den 'Pose Mode' gewechselt werden."
 msgstr ""
+"To do so we switch to the Action submenu, click New and choose "
+"'PitchforkStrike' as the new name. When asked whether to copy the keyframes "
+"we say 'No' this time. The animation length is set to 8 and the width to 24. "
+"The height we leave at 20. Now select the armature object and switch to "
+"'Pose Mode'."
 
 #: sdk/renderclonkExamples.xml:44(text)
 msgid ""
@@ -21142,6 +21210,14 @@ msgid ""
 "sollte die Kamera von schräg vorne auf den Clonk blicken, weil das bei den "
 "meisten Animationen so ist."
 msgstr ""
+"First switch to Frame 1. The frame number is shown in the bottom-left corner "
+"of the 3D window, or as a green line in the animation window respectively "
+"(see picture). So either click at the position of Frame 1 in the animation "
+"window or navigate to Frame 1 using the arrow keys. Having arrived at the "
+"first frame we can bend the Clonk's bones to how he is supposed to look like "
+"at the beginning of the strike animation. The camera should look at the "
+"clonk somewhat displaced from the front since this is the case for most "
+"animations."
 
 #: sdk/renderclonkExamples.xml:45(text)
 msgid ""
@@ -21160,10 +21236,23 @@ msgid ""
 "Frame ja nicht doppelt in der Animation, diese Kopie dient nur dazu das der "
 "Frame 8 als Übergang von 7 zu dem 1 von Blender berechnet wird."
 msgstr ""
+"Bones at their final positions need to be taken over to the keyframe list by "
+"pressing the 'i' key and choosing 'LocRot'. When the pose is finished and "
+"all bone positions are saved as keyframes we can continue. In frame 5 the "
+"Clonk should be at the backmost position when striking out (intermediate "
+"frames are computed automatically by Blender). Then in frame 7 the Clonk "
+"should be stabbing directly towards his enemy. The 9. frame should be the "
+"same as the first so that the Clonk returns into his initial position. So we "
+"press 'b' to select all keyframes of the first frame by drawing a selection "
+"rectangle in the action window. Using Shift+D they are duplicated and moved "
+"to frame 9. Why frame 9 when we only have 8 frames, you might ask. We don't "
+"need the first frame twice in the animation, the additional frame is just so "
+"that the eighth frame is computed as a transition from the seventh to the "
+"first frame by Blender."
 
 #: sdk/renderclonkExamples.xml:46(text)
 msgid "Ein Klick auf 'Save StrikePitchfork' speichert nun die neue Action."
-msgstr ""
+msgstr "A click on 'Save StrikePitchfork' makes sure the new action is saved."
 
 #: sdk/renderclonkExamples.xml:48(text)
 msgid ""
@@ -21175,6 +21264,12 @@ msgid ""
 "Länge auf 4 und die Breite auf 24 gesetzt werden. Also Tool1 stellen wir "
 "wieder unsere Pitchfork ein."
 msgstr ""
+"Now we need another animation in which Humpe is in fighting position with "
+"his pitchfork (when two clonks stand opposed to each other when fighting). "
+"In this case a copy of SwordFight is good. So let's load SwordFight via "
+"'Save/Load' and 'Load Action'. In the 'Action' submenu create a copy of the "
+"action with 'New'. The length needs to be set to 4 and the width to 24. "
+"Tool1 is again chosen to be our pitchfork."
 
 #: sdk/renderclonkExamples.xml:49(text)
 msgid ""
@@ -21183,6 +21278,10 @@ msgid ""
 "mit 'i' und 'LocRot' einfügen. Das ganze bei Frame 1, 3 und 5 jeweils so "
 "machen. Mit 'Save PitchforkFight' wird die Action dann gespeichert."
 msgstr ""
+"However now we can see that the Clonk is holding the pitchfork too high up. "
+"So in 'Pose Mode' lower the Tool1 bone a bit and insert a keyframe with 'i' "
+"and 'LocRot'. Do the same for frames 1, 3 and 5, then save with 'Save "
+"PitchforkFight'."
 
 #: sdk/renderclonkExamples.xml:50(text)
 msgid ""
@@ -21191,10 +21290,14 @@ msgid ""
 "'PitchforkFigth' auswählen. Dannach in das nächste leere Feld das dann unter "
 "'PitchforkFight' entsteht klicken und 'PitchforkStrike' auswählen."
 msgstr ""
+"Eventually the two actions need to be added to the action list of the Clonk. "
+"To do so click on the empty field below Drink and choose 'PitchforkFight'. "
+"Then click again in the next empty field which gets created below "
+"'PitchforkFight' and choose 'PitchforkStrike'."
 
 #: sdk/renderclonkExamples.xml:51(text)
 msgid "Ein Klick auf 'Save Farmer' speichert und unsre Zusammenstellung."
-msgstr ""
+msgstr "Clicking on 'Save Farmer' saves what we have done."
 
 #: sdk/renderclonkExamples.xml:52(text)
 msgid ""
@@ -21203,18 +21306,21 @@ msgid ""
 "Unterordner Graphics/Farmer erzeugt. Von dort können sie jetzt ins Spiel "
 "eingebaut werden."
 msgstr ""
+"Finally our little Farmer is finished. Both Graphics.png and Overlay.png are "
+"created in the Graphics/Farmer subfolder when clicking on 'Render', then "
+"'All', then 'Both'. They can be used to add the graphics into the game."
 
 #: sdk/renderclonk.xml:5(title) sdk/renderclonk.xml:6(h)
 msgid "Blenderclonk"
-msgstr ""
+msgstr "Blender clonk"
 
 #: sdk/renderclonk.xml:8(text)
 msgid "Diese Anleitung erklärt den Umgang mit dem Clonkmodell für Blender."
-msgstr ""
+msgstr "This tutorial explains how to use the clonk model for Blender."
 
 #: sdk/renderclonk.xml:10(h)
 msgid "Wichtige Dateien:"
-msgstr ""
+msgstr "Important files:"
 
 #: sdk/renderclonk.xml:11(text)
 msgid ""
@@ -21222,16 +21328,21 @@ msgid ""
 "noch kein Blender hat sollte es sich deswegen erst von <a href=\"http://www."
 "blender.org\">www.blender.org</a> runterladen und installieren."
 msgstr ""
+"Of course we need Blender! Without Blender we cannot do anything. So if you "
+"do not have Blender yet then download and install it from <a href=\"http://"
+"www.blender.org\">www.blender.org</a>."
 
 #: sdk/renderclonk.xml:14(text)
 msgid "Blender installiert? Dann kann es ja weitergehen..."
-msgstr ""
+msgstr "Blender installed? Great, so let's continue..."
 
 #: sdk/renderclonk.xml:17(li)
 msgid ""
 "Im Ordner <strong>Actions</strong> sind alle Animationen, die für die "
 "einzelnen Clonks gebraucht werden als .anim Datei abgelegt."
 msgstr ""
+"In the folder <strong>Actions</strong> all animations needed for the "
+"individual clonks are stored as .anim files."
 
 #: sdk/renderclonk.xml:18(li)
 msgid ""
@@ -21240,6 +21351,10 @@ msgid ""
 "ist dann zu dem Clonk die Abfolge der Actions gespeichert, in der "
 "Reihenfolge wie sie dann später in der Graphics.png erscheinen soll."
 msgstr ""
+"The folder <strong>Clonk</strong> contains .mesh files which contain the "
+"meshes of the individual Clonks. In the corresponding .act files the "
+"sequence of actions is contained, in the same order as they should appear in "
+"the final Graphics.png output."
 
 #: sdk/renderclonk.xml:19(li)
 msgid ""
@@ -21247,12 +21362,17 @@ msgid ""
 "gespeichert. Das sind die Werkzeuge, die der Clonk bei verschiedenen "
 "Animationen verwenden soll, wie z.B. die Schaufel oder den Hammer."
 msgstr ""
+"The <strong>Tools</strong> folder contains tools for the animations. These "
+"are the tools that the clonk can use for various animations such as shovel "
+"or hammer."
 
 #: sdk/renderclonk.xml:20(li)
 msgid ""
 "Im Ordner <strong>Graphics</strong> werden dann nach dem Rendern die "
 "Graphics.png Dateien für die Clonks abgelegt."
 msgstr ""
+"Finally the generated Graphics.png files are stored in the <strong>Graphics</"
+"strong> folder."
 
 #: sdk/renderclonk.xml:15(text)
 msgid ""
@@ -21264,10 +21384,17 @@ msgid ""
 "<a href=\"http://www.python.org/\">www.python.org</a> geladen werden. Es "
 "gibt dann noch vier wichtige <strong>Unterordner</strong>: <placeholder-1/>"
 msgstr ""
+"The main file is <strong>Clonk.blend</strong>. It contains the armature "
+"object (skeleton of the Clonk) and the scripts. To create the graphics "
+"<strong>Anigrab.exe</strong> is required which should be in the same "
+"directory as the .blend file. Also, to be able to execute the scripts, a "
+"python installation is required. It can be downloaded from <a href=\"http://"
+"www.python.org/\">www.python.org</a>. Then there are four important "
+"<strong>subfolders</strong>: <placeholder-1/>"
 
 #: sdk/renderclonk.xml:24(h)
 msgid "Clonk laden:"
-msgstr ""
+msgstr "Loading the Clonk:"
 
 #: sdk/renderclonk.xml:25(text)
 msgid ""
@@ -21275,6 +21402,9 @@ msgid ""
 "Jetzt sieht man unten rechts in der Ecke die Scriptgui (Benutzeroberfläche "
 "des Scriptes)."
 msgstr ""
+"To launch the Render clonk the Clonk.blend file needs to be opened. In the "
+"lower right corner the Script GUI becomes visible (user interface of the "
+"scripts)."
 
 #: sdk/renderclonk.xml:27(text)
 msgid ""
@@ -21283,37 +21413,47 @@ msgid ""
 "DropDown.png\" width=\"10\" height=\"12\"/> kann man auch schnell einen "
 "Clonk mit Hilfe eines Menüs auswählen."
 msgstr ""
+"Using <strong>\"Load Clonk\"</strong> a Clonk can be loaded from the Clonks "
+"subfolder. The button next to it <img src=\"../images/DropDown.png\" width="
+"\"10\" height=\"12\"/> allows to quickly choose a Clonk via a menu."
 
 #: sdk/renderclonk.xml:28(text)
 msgid ""
 "<strong>\"Import Mesh\"</strong> hilft beim Importieren eines Clonkes (siehe "
 "Kapitel Importieren)."
 msgstr ""
+"<strong>\"Import Mesh\"</strong> assists in importing a Clonk (see the "
+"Import section)."
 
 #: sdk/renderclonk.xml:29(h)
 msgid "Hauptmenü"
-msgstr ""
+msgstr "Main menu"
 
 #: sdk/renderclonk.xml:33(li)
 msgid ""
 "<strong>Action:</strong> Hier können verschiedene Einstellungen zur Action "
 "gemacht werden."
 msgstr ""
+"<strong>Action:</strong> allows to edit various settings for the action."
 
 #: sdk/renderclonk.xml:34(li)
 msgid ""
 "<strong>Clonk:</strong> Hier wird die Actionliste für den Clonk bearbeitet."
 msgstr ""
+"<strong>Clonk:</strong> the action list of the Clonk can be edited in this "
+"section."
 
 #: sdk/renderclonk.xml:35(li)
 msgid ""
 "<strong>Save/Load:</strong> Hier kann man Actions und Tools speichern und "
 "laden."
 msgstr ""
+"<strong>Save/Load:</strong> actions and tools can be saved and loaded from "
+"here."
 
 #: sdk/renderclonk.xml:36(li)
 msgid "<strong>Render:</strong> Dient zum Rendern des Clonkes."
-msgstr ""
+msgstr "<strong>Render:</strong> allows to Render the Clonk."
 
 #: sdk/renderclonk.xml:37(li)
 msgid ""
@@ -21321,6 +21461,9 @@ msgid ""
 "Clonkes.<br/><strong>Achtung:</strong> der Clonk wird dabei nicht "
 "gespeichert, eventuelle Änderungen gehen verloren!"
 msgstr ""
+"<strong>Exit:</strong> return back to the previous many to load another "
+"clonk.<br /><strong>Attention:</strong> the Clonk will not be saved, any "
+"unsaved changes will be lost!"
 
 #: sdk/renderclonk.xml:31(text)
 msgid ""
@@ -21328,6 +21471,9 @@ msgid ""
 "gibt es noch eine Eingabezeile in der der Pfad für den temporären Ordner "
 "angegeben ist und dort geändert werden kann."
 msgstr ""
+"In the main menu there are the following buttons: <placeholder-1/> "
+"Additionally there is a text entry which allows to specify the path to the "
+"temp directory."
 
 #: sdk/renderclonk.xml:42(h) sdk/playercontrols.xml:74(col)
 msgid "Action"
@@ -21345,6 +21491,15 @@ msgid ""
 "Action verwenden soll. Diese werden dann jeweils auf den Bone "
 "<strong>'Tool1'</strong> bzw. <strong>'Tool2'</strong> gelegt."
 msgstr ""
+"By using the drowdown menu at the top various <strong>Actions<strong> can be "
+"chosen. If the armature object is selected the keyframes of the individual "
+"bones appear in the action window. In the fields below the <strong>Length</"
+"strong> of the action can be specified, i.e. the number of frames of the "
+"action, as well as the <strong>Width (X)</strong> and the <strong>Height (Y)"
+"</strong> of the individual frame graphics. Additionally up to two "
+"<strong>Tools</strong> to be used by the clonk during the action can be "
+"specified. They are mapped to the bones <strong>'Tool1'</strong> or "
+"<strong>'Tool2'</strong>, respectively."
 
 #: sdk/renderclonk.xml:45(text)
 msgid ""
@@ -21355,6 +21510,12 @@ msgid ""
 "Einstellungen zur Action verändert hat. Die Action wird dann im Unterordner "
 "Actions gespeichert."
 msgstr ""
+"<strong>Rename</strong> allows to rename the action. <strong>New</strong> "
+"creates a new action, either one containing the keyframes of the old action "
+"or one that does not. The lower button can be used to <strong>save</strong> "
+"the action. This should always be done when keyframes or other settings of "
+"the action have been changed. The action is then saved in the Actions "
+"subfolder."
 
 #: sdk/renderclonk.xml:47(h)
 msgid "Clonk"
@@ -21370,6 +21531,13 @@ msgid ""
 "den ganzen Bildschirm vergrößern. Mit einem erneuten Klick auf diese "
 "Schaltfläche kann man das Fenster wieder verkleinern."
 msgstr ""
+"The list of the Clonk's actions is shown here. If more than one column are "
+"displayed then the columns to the right contain actions which originate from "
+"the actions contained in the column to the left of it. Since often there is "
+"not enough space to show all actions the window can be made fullscreen by "
+"clicking on <img src=\"../images/ButtonFullScreen.png\" width=\"52\" height="
+"\"17\"/>. Another click on this button restores the original window size "
+"again."
 
 #: sdk/renderclonk.xml:50(text)
 msgid ""
@@ -21380,6 +21548,12 @@ msgid ""
 "die in der Liste noch nicht vorkommen. Die abgesetzte Box am unteren Ende "
 "der Liste enthält die Action für das <strong>Picturebild</strong> des Clonks."
 msgstr ""
+"To modify the list one can click on an action and then select another one "
+"instead. <strong>REMOVE</strong> removes the action from the list. "
+"<strong>INSERT</strong> inserts a new action above the selected one. Actions "
+"with a U in front of them are not yet contained in the list. The separated "
+"at the lower end of the list contains the action that is used for the "
+"<strong>Picture graphics</strong> of the Clonk."
 
 #: sdk/renderclonk.xml:51(text)
 msgid ""
@@ -21390,6 +21564,11 @@ msgid ""
 "unterste Schalter <strong>speichert</strong> die Actionliste und das Mesh "
 "des Clonkes."
 msgstr ""
+"Below the <strong>BaseZoom</strong> can be modified. This is the zoom "
+"setting of the camera and is required if a mesh is too big and needs to be "
+"displayed smaller, or vice versa. Normally this setting is not needed "
+"however. The bottommost button <strong>saves</strong> the action list and "
+"the mesh of the clonk."
 
 #: sdk/renderclonk.xml:52(text)
 msgid ""
@@ -21397,6 +21576,9 @@ msgid ""
 "strong> Mesh bestehen! Hat man zwei Meshes können diese mit Strg+J verbunden "
 "werden."
 msgstr ""
+"<strong>Attention:</strong> the Clonks must always consist of a "
+"<strong>single</strong> mesh only! If there are two meshes then they can be "
+"combined via Ctrl+J."
 
 #: sdk/renderclonk.xml:53(text)
 msgid ""
@@ -21406,10 +21588,15 @@ msgid ""
 "Modifier oder eine Textureinstellung nicht aktiviert ist, liegt es daran, "
 "das diese nicht unterstützt wird."
 msgstr ""
+"Also the Clonk always needs to be saved using the script interface instead "
+"of the normal save functionality of Blender. However some exotic settings "
+"will not be exported this way. So if, after loading, a certain modifier or a "
+"certain texture setting is not activated then it is because this feature is "
+"not supported."
 
 #: sdk/renderclonk.xml:55(h)
 msgid "Save/Load"
-msgstr ""
+msgstr "Save/Load"
 
 #: sdk/renderclonk.xml:57(text)
 msgid ""
@@ -21421,6 +21608,13 @@ msgid ""
 "Klick auf <img src=\"../images/DropDown.png\" width=\"10\" height=\"12\"/"
 ">direkt aus einem Dropdownmenü aussuchen."
 msgstr ""
+"Here actions and tools can be loaded. In the beginning of loading the clonk "
+"only the actions and tools the clonk actually needs are loaded. If more "
+"actions from other clonks are needed then they can be loaded using this "
+"window. A click on the button allows to select the <strong>Action/Tool</"
+"strong> with the menu system. A click on <img src=\"../images/DropDown.png\" "
+"width=\"10\" height=\"12\"/> directly shows a dropdown menu with a list to "
+"be selected from."
 
 #: sdk/renderclonk.xml:58(text)
 msgid ""
@@ -21429,6 +21623,10 @@ msgid ""
 "Action und Clonk können auch in den anderen Untermenüs (Action bzw. Clonk) "
 "gespeichert werden. Tools können nur hier gespeichert werden."
 msgstr ""
+"This menu is also used for saving. An <strong>action</strong>, a "
+"<strong>tool</strong> or the <strong>Clonk</strong> can be saved. Actions "
+"and Clonks can also be saved in the other submenu (Action or Clonk, "
+"respectively). Tools can only be saved here."
 
 #: sdk/renderclonk.xml:59(text)
 msgid ""
@@ -21437,6 +21635,10 @@ msgid ""
 "hier vor dem Speichern umbenennen, damit der normale Clonk nicht "
 "überschrieben wird."
 msgstr ""
+"The bottommost text entry can be used to change the <strong>Clonk name</"
+"strong>. For example if you have loaded and edited the default Clonk then "
+"you can rename it before saving so that the original Clonk is not "
+"overwritten."
 
 #: sdk/renderclonk.xml:60(text)
 msgid ""
@@ -21444,6 +21646,9 @@ msgid ""
 "NICHT zum speichern verwendet werden. Zum Speichern bitte immer die "
 "Scriptgui (das Fenster unten rechts) verwenden."
 msgstr ""
+"<strong>Attention</strong>: the normal saving functionality of Blender can "
+"NOT be used to save the Clonk. Please always use the script GUI (the window "
+"in the lower right corner)."
 
 #: sdk/renderclonk.xml:62(h)
 msgid "Render"
@@ -21456,6 +21661,9 @@ msgid ""
 "gerendert werden sollen. Mit <strong>-All-</strong> kann der gesamte Clonk "
 "durchgerendert werden."
 msgstr ""
+"By clicking on the render button a menu appears. It allows to choose various "
+"<strong>actions</strong> which should be rendered separately. By choosing "
+"<strong>-All-</strong> the whole clonk is rendered."
 
 #: sdk/renderclonk.xml:65(text)
 msgid ""
@@ -21466,6 +21674,11 @@ msgid ""
 "Grafik rendern. Dies dient dazu dass man sich den Clonk nach dem Rendern "
 "besser anschauen kann."
 msgstr ""
+"In another submenu one can choose whether to render with or without overlay. "
+"<strong>Both</strong> makes Blender render both Graphics.png and Overlay."
+"png. <strong>Graphics/Overlay</stronG> only creates one of the two. Both can "
+"be rendered into the same graphics by choosing <strong>Full</strong>. This "
+"allows to have a better look at the rendering output."
 
 #: sdk/renderclonk.xml:66(text)
 msgid ""
@@ -21480,6 +21693,15 @@ msgid ""
 "gestellt. Damit man die ActMap zu dem Clonk besser erstellen kann werden die "
 "Positionen der Actions in einer Datei im Ausgabeordner gespeichert."
 msgstr ""
+"When rendering every frame is stored in the temp directory. All of them are "
+"combined to the final graphics using <strong>anigrab</strong>. It is stored "
+"in the output folder /Graphics/Clonk name/Graphics.png. The action are "
+"placed into the graphics in the same order as they appear in the list. The "
+"width of the graphics is chosen by the widest action. If multiple actions "
+"fit side-by-side then they will be put into the graphics that way. Finally "
+"the <strong>Picture</strong> is stored at some free space or at the end of "
+"the graphics. To be able to generate the ActMap of the Clonk conveniently "
+"the positions of the actions are stored in another file in the output folder."
 
 #: sdk/renderclonk.xml:67(text)
 msgid ""
@@ -21491,6 +21713,12 @@ msgid ""
 "einmal komplett durchgerendert werden, damit die Grafiken der anderen "
 "Actions schon im temporären Ordner liegen."
 msgstr ""
+"If only a <strong>single action</strong> is rendered then it is still tried "
+"to create the whole graphics. So there should be rendered frames of the "
+"other animations in the temp directory. This allows to not always having to "
+"re-render all actions if only a single action has changed. However in the "
+"beginning the whole Graphics need to be rendered so that all frames of all "
+"actions are present in the temp directory."
 
 #: sdk/renderclonk.xml:70(text)
 msgid ""
@@ -21500,6 +21728,11 @@ msgid ""
 "Bei <strong>Full</strong> werden beide gerendert. Zusätzlich wird bei Full "
 "noch das Material OverlayColor blau statt weiß gefärbt."
 msgstr ""
+"Generally all materials that start with <strong>Overlay*</strong> are not "
+"rendered for <strong>Graphics</strong>. For <strong>Overlay</strong> only "
+"the materials starting with Overlay* are rendered. When choosing "
+"<strong>Full</strong> both are rendered. Additionally the color of the "
+"material OverlayColor is changed from white to blue when choosing Full."
 
 #: sdk/renderclonk.xml:71(text)
 msgid ""
@@ -21509,6 +21742,11 @@ msgid ""
 "kleinen Animation untergehen würde und deswegen eine gröbere Textur "
 "verwendet werden muss."
 msgstr ""
+"The <strong>Face</strong> material is textured using the <strong>'Face'</"
+"strong> texture in normal animations and is skinned using the  "
+"<strong>'Face2'</strong> texture for the picture. This is required since the "
+"high resolution face would be smeared out in the small animations, so a more "
+"coarse texture needs to be used."
 
 #: sdk/renderclonk.xml:74(h)
 msgid "Tools"
@@ -21521,6 +21759,9 @@ msgid ""
 "Schaufel, Axt, Hammer und Flasche. Beim Ritter kommen dann noch diverse "
 "Waffen dazu."
 msgstr ""
+"Tools are the <strong>utilities</strong> of the clonk which it can use for "
+"various animations. The tools of the standard Clonk are shovel, axe, hammer "
+"and bottle. For the knight various weapons can be chosen additionally."
 
 #: sdk/renderclonk.xml:76(text)
 msgid ""
@@ -21535,12 +21776,24 @@ msgid ""
 "Clonk das Tool anfassen soll direkt auf dem Bone zu liegen kommt. Das ganze "
 "am besten noch von verschiedenen Ansichten prüfen."
 msgstr ""
+"To create a new tool first a <strong>matching mesh</strong> needs to be "
+"created. It is important that the tool only consists of a <strong>single "
+"mesh</strong>. If a mesh has been modeled then it still needs to be "
+"positioned correctly no that when used it is correctly attached to the bone. "
+"To do so the best way is to set the 'Empty' action for the armature object "
+"(or another animation which does not use a tool). Now, above the clonk's "
+"head, there are both tool bones at the same position. Now the mesh needs to "
+"be aligned so that the point at which the Clonk is to touch the mesh needs "
+"to be exactly at the bone position. Ideally, check the result from various "
+"perspectives in the end."
 
 #: sdk/renderclonk.xml:77(text)
 msgid ""
 "Nun sollte das neue Tool noch passende benannt werden. Dabei sollte "
 "<strong>Objectname</strong> und <strong>Meshname</strong> identisch sein."
 msgstr ""
+"Eventually the new tool should have a matching name. The <strong>object "
+"name</strong> and the <strong>mesh name</strong> should be identical."
 
 #: sdk/renderclonk.xml:78(text)
 msgid ""
@@ -21550,6 +21803,10 @@ msgid ""
 "Meshliste auswählen. Das Tool wird nun unter /Tools/toolname.mesh "
 "gespeichert."
 msgstr ""
+"<img src=\"../images/NewTool.png\" width=\"200\" height=\"67\"/><br/> Now "
+"the tool can be saved via <strong>Save/Load</strong> and <strong>'Save "
+"Tool'</strong>. Select the tool from the mesh list which appears. The tool "
+"will be saved at /Tools/toolname.mesh."
 
 #: sdk/renderclonk.xml:81(h)
 msgid "Importieren"
@@ -21567,6 +21824,14 @@ msgid ""
 "werden. Das neue Mesh muss jetzt noch auf den Namen des Clonkes umbenannt "
 "werden."
 msgstr ""
+"To import a clonk first Clonk.blend needs to be loaded. Now we need the "
+"Clonk mesh to import. This can be loaded from the old file via <strong>File-"
+"&gt;Append or Link</strong>. Select the file in the menu that appears, then "
+"go to objects and select the object which contains the Clonk. It is "
+"important that the loaded Clonk only consists of a single mesh! If it "
+"consists or more than one then both need to be selected (shift+right-click) "
+"and combined (Ctrl+J). Finally the new mesh needs to be renamed to the name "
+"of the Clonk."
 
 #: sdk/renderclonk.xml:84(text)
 msgid ""
@@ -21576,6 +21841,10 @@ msgid ""
 "angepasst werden und der Clonk gespeichert werden. Jetzt kann man ihn "
 "genauso wie die anderen Clonks verwenden."
 msgstr ""
+"Again object name and mesh name should be identical. Then the selected mesh "
+"can be imported via a click on <strong>'Import Mesh'</strong>. In the Clonk "
+"submenu the action of the Clonk can be adapted and the Clonk be saved. Now "
+"it can be used the same way as the other Clonks."
 
 #: sdk/playercontrols.xml:5(title) sdk/playercontrols.xml:6(h)
 msgid "Spielersteuerung"
@@ -22005,13 +22274,15 @@ msgstr ""
 
 #: sdk/playercontrols.xml:181(col)
 msgid "OverrideAssignments"
-msgstr ""
+msgstr "OverrideAssignments"
 
 #: sdk/playercontrols.xml:182(col)
 msgid ""
 "Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Control "
 "mit gleichem Press/Release-Triggermodus."
 msgstr ""
+"The assignment overwrites all other assignments for the same control with "
+"the same press/release trigger mode."
 
 #: sdk/playercontrols.xml:154(col)
 msgid ""
@@ -22022,7 +22293,7 @@ msgstr ""
 
 #: sdk/playercontrols.xml:110(text)
 msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
-msgstr ""
+msgstr "Definition of standard control mappings. <placeholder-1/>"
 
 #: sdk/playercontrols.xml:190(h)
 msgid "Script-Callbacks"
@@ -22039,12 +22310,21 @@ msgid ""
 "Steuerung unterscheiden. Gleiches gilt, falls der Spieler mitten im Spiel "
 "die Steuerung wechselt."
 msgstr ""
+"To initialize the player control the script function InitializePlayerControl "
+"is called for each player. This call might be delayed by a few frames with "
+"respect to InitializePlayer since the initialization of the control needs to "
+"be transmitted in the network. When continuing savegames "
+"InitalizePlayerControl will be called again. The chosen control might be "
+"different from the original one. The same can happen if a player chooses to "
+"change its controls during the game."
 
 #: sdk/playercontrols.xml:200(text)
 msgid ""
 "Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im "
 "Spielermenue), rufen eine globale Scriptfunktion auf:"
 msgstr ""
+"most commands (except for asynchronous commands in the player menu) call a "
+"global script function:"
 
 #: sdk/playercontrols.xml:202(text)
 msgid ""
@@ -22052,18 +22332,26 @@ msgid ""
 "erhaelt unter anderem den aufrufenden Spieler in player, sowie das "
 "ausgefuehrte Kommando in iControl."
 msgstr ""
+"For an explanation of the parameters see <placeholder-1/>. Amongst others, "
+"the function receives the calling player in player as well as the command to "
+"be executed in control."
 
 #: sdk/playercontrols.xml:203(text)
 msgid ""
 "Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> "
 "folgendes Kommando definiert:"
 msgstr ""
+"As a simple example let's assume that in the global <em>PlayerControls.txt</"
+"em> the following command has been defined:"
 
 #: sdk/playercontrols.xml:220(text)
 msgid ""
 "Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der "
 "Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:"
 msgstr ""
+"This defines a Jump key and the corresponding standard mapping on the "
+"keyboard for the first player. The following script is used to handle the "
+"control:"
 
 #: sdk/playercontrols.xml:240(text)
 msgid ""
@@ -22071,16 +22359,21 @@ msgid ""
 "kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel "
 "fuer folgende Definition:"
 msgstr ""
+"Since not every object definition is able to overload the global "
+"PlayerControl function the ExtraData field can be used to distribute "
+"commands. As an example consider the following definition:"
 
 #: sdk/playercontrols.xml:247(text)
 msgid ""
 "Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum "
 "Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
 msgstr ""
+"Let shovel be the ID of a shovel object. In the global script there could be "
+"the following, generic handling for unknown commands, for example:"
 
 #: sdk/playercontrols.xml:257(text)
 msgid "Und im Script der Schaufel:"
-msgstr ""
+msgstr "And in the script of the shovel:"
 
 #: sdk/playercontrols.xml:275(h)
 msgid "Gehaltene Tasten"
@@ -22092,44 +22385,55 @@ msgid ""
 "Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten "
 "haben einige Besonderheiten:"
 msgstr ""
+"If the <em>Hold</em> flag is set for a command then the engines saves the "
+"current key state for that key. These kind of keys have a few specialties:"
 
 #: sdk/playercontrols.xml:278(li)
 msgid ""
 "Sie generieren auch beim Loslassen <placeholder-1/>-Aufrufe mit gesetztem "
 "<em>Release</em>-Flag im Script."
 msgstr ""
+"When released they also generate <placeholder-1/> calls in the script with "
+"the <em>Release</em> flag set."
 
 #: sdk/playercontrols.xml:279(li)
 msgid ""
 "Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte "
 "Tastendruecke emulieren."
 msgstr ""
+"Mappings can emulate permanent key presses using the <em>Hold</em>/"
+"<em>Release</em> flags."
 
 #: sdk/playercontrols.xml:280(li)
 msgid ""
 "<emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink> "
 "werden erzeugt."
 msgstr ""
+"<emlink href=\"playercontrols.xml#Repeat\">Key repeats</emlink> are "
+"generated."
 
 #: sdk/playercontrols.xml:281(li)
 msgid ""
 "Der Haltezustand der Taste kann mit <placeholder-1/> im Script abgefragt "
 "werden."
 msgstr ""
+"The held state of the key can be queried in the script via <placeholder-1/>."
 
 #: sdk/playercontrols.xml:283(text)
 msgid "Bestes Beispiel hierfuer ist ein Richtungskommando:"
-msgstr ""
+msgstr "A good example for this functionality is a directional command:"
 
 #: sdk/playercontrols.xml:289(text)
 msgid "Im Script wird die Richtung dann auf den Clonk uebertragen:"
-msgstr ""
+msgstr "In the script the direction is transferred to the Clonk:"
 
 #: sdk/playercontrols.xml:312(text)
 msgid ""
 "Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung "
 "den <em>Hold</em>-Zustand emulieren:"
 msgstr ""
+"To achieve the behaviour of classic controls a mapping can emulate the "
+"<em>Hold</em> state:"
 
 #: sdk/playercontrols.xml:323(h)
 msgid "Globale Definitionen"
@@ -22138,7 +22442,7 @@ msgstr "Global definitions"
 #: sdk/playercontrols.xml:324(text) sdk/playercontrols.xml:337(text)
 #: sdk/playercontrols.xml:339(text) sdk/playercontrols.xml:341(text)
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #: sdk/playercontrols.xml:325(h)
 msgid "Tastenwiederholungen"
@@ -22149,6 +22453,8 @@ msgid ""
 "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte "
 "Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
 msgstr ""
+"If a command has <em>RepeatDelay</em> defined then repeated commands are "
+"generated while the key is pressed. For example for a throwing command:"
 
 #: sdk/playercontrols.xml:334(text)
 msgid ""
@@ -22156,12 +22462,17 @@ msgid ""
 "Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 "
 "Frames automatisch wiederholt."
 msgstr ""
+"In the example one could keep the key pressed after having it pressed for "
+"the first time. The Throw command then would be sent every 5 seconds "
+"automatically after an initial delay of 35 frames (about one second)."
 
 #: sdk/playercontrols.xml:335(text)
 msgid ""
 "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</"
 "em>-Flag gesetzt hat."
 msgstr ""
+"Repeats are only generated when the command also has the <em>Hold</em> flag "
+"set."
 
 #: sdk/playercontrols.xml:336(h)
 msgid "Deaktivierte Kommandos**"
@@ -22177,7 +22488,7 @@ msgstr "Priorities"
 
 #: sdk/playercontrols.xml:343(em)
 msgid "** - noch nicht implementiert"
-msgstr ""
+msgstr "** - not yet implemented"
 
 #: sdk/particle/index.xml:9(text)
 msgid ""
@@ -22546,7 +22857,7 @@ msgstr "FadeDelay"
 
 #: sdk/particle/index.xml:145(col)
 msgid "Default ist 1."
-msgstr ""
+msgstr "The default is 1."
 
 #: sdk/particle/index.xml:148(col)
 msgid "Parallaxity"
@@ -23689,7 +24000,7 @@ msgstr "3,4"
 
 #: sdk/material/c4m.xml:321(col)
 msgid "landscape_x, landscape_y"
-msgstr ""
+msgstr "landscape_x, landscape_y"
 
 #: sdk/material/c4m.xml:321(col)
 msgid "Position in der Landschaft, auf die das Material trifft."
@@ -23701,7 +24012,7 @@ msgstr "5,6"
 
 #: sdk/material/c4m.xml:322(col)
 msgid "xdir, ydir"
-msgstr ""
+msgstr "xdir, ydir"
 
 #: sdk/material/c4m.xml:322(col)
 msgid ""
@@ -23726,7 +24037,7 @@ msgstr ""
 
 #: sdk/material/c4m.xml:324(col)
 msgid "landscape_material"
-msgstr ""
+msgstr "landscape_material"
 
 #: sdk/material/c4m.xml:324(col)
 msgid "Materialnummer des festen Materials."
@@ -26242,6 +26553,15 @@ msgid ""
 "ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> kann "
 "zwischen beiden Formaten umwandeln."
 msgstr ""
+"Since OC it is possible to directly use 3D models (meshes) as object "
+"graphics. To do so they need to be in OGRE format. For most modeling tools "
+"there exist exporter tools, a list can be found on the <a href=\"http://www."
+"ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Both the OGRE binary "
+"format (*.mesh) and the OGRE XML format(*.mesh.xml) are supported, however "
+"it is recommended to always use the binary format whenever possible since it "
+"is smaller in size and can be loaded more quickly by the engine. The tool <a "
+"href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter"
+"\">OgreXMLConverter</a> can convert between the two formats."
 
 #: sdk/definition/meshes.xml:10(text)
 msgid ""
@@ -26254,6 +26574,13 @@ msgid ""
 "xml umbenannt werden. Texturen werden im PNG-, JPG- und BMP-Format "
 "unterstützt."
 msgstr ""
+"The exporter normally creates a mesh file (*.mesh or *.mesh.xml), a skeleton "
+"file (*.skeleton or *.skeleton.xml) if the mesh contains bones, a material "
+"script (*.material) and potentially used textures. To use the mesh as a "
+"Clonk object all generated files need to be copied into the <emlink href="
+"\"definition/index.html\">object definition</emlink> and the mesh file needs "
+"to be renamed to Graphics.mesh or Graphics.mesh.xml, respectively. Textures "
+"are supported in PNG, JPG and BMP format."
 
 #: sdk/definition/meshes.xml:12(text)
 msgid ""
@@ -26267,6 +26594,14 @@ msgid ""
 "Koordinatensystem zeigt in Clonk nach vorne, die Y-Achse nach rechts und die "
 "Z-Achse nach oben."
 msgstr ""
+"The mesh is not automatically scaled to the shape (i.e. the width and height "
+"values specified in <emlink href=\"definition/defcore.html\">DefCore.txt</"
+"emlink>) of the object. Instead one unit in the modeling tool corresponds to "
+"one pixel in Clonk. This simplifies using the same magnitude of object sizes "
+"for all objects which is especially helpful for attaching meshes (see "
+"below). Also pay attention to the coordinate frame: The X axis in the mesh "
+"coordinate frame points out of the screen in Clonk, the Y axis points to the "
+"right and the Z axis points upwards."
 
 #: sdk/definition/meshes.xml:14(h)
 msgid "Materialskripte"
@@ -26284,6 +26619,14 @@ msgid ""
 "geladenen Materialien direkt von jedem Mesh verwendet werden können und es "
 "ansonsten leicht zu Namenskonflikten kommen kann."
 msgstr ""
+"All material scripts (*.material files) are loaded by the engine before the "
+"mesh in the same directory is loaded. Material scripts are simple text files "
+"which specify the material properties (material colors, textures, etc.) that "
+"can be used by meshes. Each material is assigned a name that can normally be "
+"specified in the modeling tool. It should be taken care that names are "
+"unique (for example by prefixing all material names with the object name of "
+"the object they are supposed to be used with) since all loaded materials can "
+"directly be used by any mesh so otherwise they could be naming conflicts."
 
 #: sdk/definition/meshes.xml:17(text)
 msgid ""
@@ -26298,12 +26641,23 @@ msgid ""
 "Besitzers entspricht. Auf diese Weise ist es möglich, Objekte (teilweise) "
 "mit ihrer Spielerfarbe einzufärben."
 msgstr ""
+"Material scripts can also be crafted or edited by hand. The format is "
+"described in the <a href=\"http://www.ogre3d.org/docs/manual/manual_14.html"
+"\">OGRE manual</a>. However not all of the features described there are "
+"supported (yet): Especially pixel, vertex and geometry shaders cannot be "
+"used. Also usage of LOD (Level of Detail) is not yet possible. For the "
+"source1 and source2 fields in the colour_op_ex field in texture units the "
+"additional value src_player_colour can be specified to refer to the player "
+"color of the object's owner. This can be used to colorize objects (partly) "
+"by the player color."
 
 #: sdk/definition/meshes.xml:19(text)
 msgid ""
 "Zur Laufzeit kann das Materialskript auch mit der C4Script-Funktion "
 "<placeholder-1/> geändert werden."
 msgstr ""
+"At runtime the material script can be changed using the C4Script function "
+"<placeholder-1/>."
 
 #: sdk/definition/meshes.xml:22(text)
 msgid ""
@@ -26315,6 +26669,12 @@ msgid ""
 "href=\"definition/actmap.html\">ActMap</emlink> gesetzt sein. Die Facet-"
 "Felder werden bei Mesh-Grafiken ignoriert."
 msgstr ""
+"As for bitmap based graphics an object can play an animation while executing "
+"an action. To do so first a rig for the model and then an animation needs to "
+"be created. When exporting it is saved in the *.skeleton (or *.skeleton.xml "
+"for the OGRE XML format) file. To play it during an action the Animation "
+"field of the action needs to be set in the <emlink href=\"definition/actmap."
+"html\">ActMap</emlink>. The Facet fields are ignored for mesh graphics."
 
 #: sdk/definition/meshes.xml:24(text)
 msgid ""
@@ -26329,7 +26689,7 @@ msgstr ""
 
 #: sdk/definition/meshes.xml:26(h)
 msgid "Aneinanderhängen von Meshes"
-msgstr ""
+msgstr "Attachment of meshs"
 
 #: sdk/definition/meshes.xml:27(text)
 msgid ""
@@ -26342,6 +26702,12 @@ msgid ""
 "immer die gleiche Position und Orientierung hat wie der Bone mit dem es "
 "verbunden wird."
 msgstr ""
+"Meshes can be attached to each other so that they always move together. This "
+"allows the clonk to carry objects or to aim with the bow. To attach two "
+"meshes the C4Script function <placeholder-1/> can be used, or <placeholder-2/"
+"> to detach them again. When attaching a bone of both meshes needs to be "
+"specified. The attached mesh is then aligned so that its bone has always the "
+"same position and orientation as the one to which it is attached."
 
 #: sdk/definition/meshes.xml:29(text)
 msgid ""
@@ -26352,10 +26718,16 @@ msgid ""
 "<placeholder-3/>, <placeholder-4/> oder <placeholder-5/> gefunden wird) "
 "ändert sich <em>nicht</em>."
 msgstr ""
+"However it needs to be taken care of the fact that only the meshes, that is "
+"the graphics of the objects, are attached. The real position of the attached "
+"object (so what is returned by the functions <placeholder-1/> and "
+"<placeholder-2/> or the area in which the object is found by the functions "
+"<placeholder-3/>, <placeholder-4/> oder <placeholder-5/>) is <em>not</em> "
+"affected."
 
 #: sdk/definition/meshes.xml:31(h)
 msgid "Repräsentativgrafik"
-msgstr ""
+msgstr "Picture graphics."
 
 #: sdk/definition/meshes.xml:32(text)
 msgid ""
@@ -26365,6 +26737,11 @@ msgid ""
 "befindet sich dabei vor dem Mesh in einer geeigneten Entfernung so dass das "
 "Mesh vollständig erfasst wird."
 msgstr ""
+"If an object uses a mesh then the Picture entry of the <emlink href="
+"\"definition/defcore.html\">DefCore.txt</emlink> remains without effect. "
+"Instead a perspective projection of the mesh will be used. The camera will "
+"be placed in the front of the object at a distance so that the mesh is "
+"totally covered."
 
 #: sdk/definition/meshes.xml:34(text)
 msgid ""
@@ -26377,16 +26754,26 @@ msgid ""
 "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/> und "
 "<placeholder-5/> lassen sich diese Matrizen sehr bequem generieren."
 msgstr ""
+"The position and orientation of the mesh with respect to the camera can be "
+"changed by making use of the \"PictureTransformation\" property. This way it "
+"can be shown displaced, rotated or scaled. The property should be assigned "
+"an array with 12 integer entries which make up a 3x4 matrix. The first four "
+"values specify the first row, the next four values specify the second row "
+"and the last four entries specify the third one. Those matrices can be "
+"conveniently created using the script functions <placeholder-1/>, "
+"<placeholder-2/>, <placeholder-3/>, <placeholder-4/> and <placeholder-5/>."
 
 #: sdk/definition/meshes.xml:36(text)
 msgid ""
 "Wie bei <placeholder-1/> werden die einzelnen Matrixelemente in Promille "
 "(1000 = 100%) angegeben, da es in Clonk keine Fließkommazahlen gibt."
 msgstr ""
+"As with <placeholder-1/> the individual matrix elements are specified in per "
+"thousand (1000 = 100%) since there are no floating point numbers in Clonk."
 
 #: sdk/definition/meshes.xml:38(text)
 msgid "Als Beispiel hier die Transformation für die Werkzeughütte:"
-msgstr ""
+msgstr "As an example we show the transformation of the tool workshop:"
 
 #: sdk/definition/meshes.xml:42(text)
 msgid ""
@@ -26395,6 +26782,9 @@ msgid ""
 "Anschließend wird sie noch um 7 Einheiten in positive Z-Richtung verschoben "
 "sodass sie näher an der Kamera ist."
 msgstr ""
+"First the workshop is rotated by 30 degrees counter-clockwise around the Y "
+"axis, then by 20 degrees clockwise around the X axis. Finally it is moved 7 "
+"units in positive Z direction so that it is nearer to the camera."
 
 #: sdk/definition/meshes.xml:44(h)
 msgid "MeshTransformation"
@@ -26408,6 +26798,10 @@ msgid ""
 "wirkt sich sehr ähnlich wie <placeholder-1/> aus, jedoch gibt es einige "
 "Unterschiede:"
 msgstr ""
+"The same way the \"PictureTransformation\" property affects the presentation "
+"of the picture graphics the \"MeshTransformation\" property is applied for "
+"ingame graphics. The results are very similar to what can be done with "
+"<placeholder-1/>, however there are a few subtle differences:"
 
 #: sdk/definition/meshes.xml:48(li)
 msgid ""
@@ -26415,6 +26809,8 @@ msgid ""
 "beeinflusst werden. Das Mesh kann also zum Beispiel um die X- oder Y-Achse "
 "gedreht werden."
 msgstr ""
+"With the \"MeshTransformation\" property the Z coordinate can be influenced. "
+"So for example the mesh can be rotated around the X or Y axis."
 
 #: sdk/definition/meshes.xml:49(li)
 msgid ""
@@ -26427,6 +26823,13 @@ msgid ""
 "gemacht, sodass das Mesh immer von unten beleuchtet wird, egal wie es "
 "ausgerichtet ist."
 msgstr ""
+"<placeholder-1/> is applied after lighting. The transformed coordinates have "
+"no influence on the lighting anymore. So for example if the mesh is "
+"illuminated from below and then is turned upside down by <placeholder-2/> "
+"then the illuminated spot is at the same position on the mesh, that is it is "
+"also rotated. When using the \"MeshTransformation\" property however the "
+"lighting is applied after the transformation so that the mesh is always "
+"illuminated from below, no matter how it is oriented."
 
 #: sdk/definition/meshes.xml:50(li)
 msgid ""
@@ -26434,6 +26837,8 @@ msgid ""
 "wird zuerst die \"MeshTransformation\" auf das Mesh angewandt und dann "
 "<placeholder-2/>."
 msgstr ""
+"If both \"MeshTransformation\" and <placeholder-1/> are set then first the "
+"\"MeshTransformation\" is applied to the mesh and then <placeholder-2/>."
 
 #: sdk/definition/lineconnect.xml:5(title) sdk/definition/lineconnect.xml:6(h)
 #: sdk/definition/defcore.xml:88(col)
@@ -26605,7 +27010,7 @@ msgstr ""
 
 #: sdk/definition/index.xml:27(emlink)
 msgid "Graphics.mesh"
-msgstr ""
+msgstr "Graphics.mesh"
 
 #: sdk/definition/index.xml:28(text)
 msgid ""
@@ -26615,6 +27020,11 @@ msgid ""
 "benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen "
 "ebenfalls im Objekt vorhanden sein."
 msgstr ""
+"Since OC a 3D model can be used as an object's graphics instead of a bitmap "
+"in BMP or PNG format. It needs to be provided in OGRE format. There are "
+"exporters for most 3D modeling tools. All files that are required by the "
+"mesh (especially material scripts, textures and skeletons) need also to be "
+"present in the object."
 
 #: sdk/definition/index.xml:30(dt)
 msgid ""
@@ -26630,6 +27040,8 @@ msgid ""
 "werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen "
 "verwendet werden."
 msgstr ""
+"Skeleton files contain bones and animations for a 3D model. They are usually "
+"created by the exporter if bones and/or animations are used for the mesh."
 
 #: sdk/definition/index.xml:33(dt)
 msgid ""
@@ -26681,6 +27093,11 @@ msgid ""
 "auch vom Exporter generiert, sie können aber für zusätzliche Effekte auch "
 "einfach mit einem Texteditor nachträglich bearbeitet werden."
 msgstr ""
+"OGRE material scripts are simple text files which contain information about "
+"the material of a 3D model. Each model is assigned a material which "
+"specifies how it is rendered. Normally these scripts are being generated by "
+"the exporter, but they can also be hand-edited afterwards (using a text "
+"editor) to apply additional effects."
 
 #: sdk/definition/index.xml:43(text)
 msgid ""
@@ -27863,6 +28280,9 @@ msgid ""
 "Dabei können verschiedene Kategorien mit einem binären oder-Operator "
 "kombiniert werden."
 msgstr ""
+"An object's category specifies parts of its behavior. For a definition it is "
+"set by the Category entry in the DefCore.txt file. Multiple categories can "
+"be combined using the binary OR operator."
 
 #: sdk/definition/category.xml:13(col)
 msgid "C4D_StaticBack"
@@ -28009,7 +28429,7 @@ msgstr ""
 
 #: sdk/definition/category.xml:87(text)
 msgid "Kategorie für eine Regel."
-msgstr ""
+msgstr "Category for a rule."
 
 #: sdk/definition/animations.xml:8(text)
 msgid ""
@@ -28019,6 +28439,11 @@ msgid ""
 "Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder "
 "flüssig Übergänge zwischen einzelnen Animationen darstellen."
 msgstr ""
+"One of the new possibilities in OC to use 3D models as an object's graphics "
+"(see <emlink href=\"definition/meshes.html\">meshes</emlink>) is to combine "
+"individual animations. This way the Clonk can easily throw an object while "
+"running or jumping, or there can be smooth transitions between single "
+"animations."
 
 #: sdk/definition/animations.xml:9(text)
 msgid ""
@@ -28033,6 +28458,15 @@ msgid ""
 "aber keine Beinbewegung beschreibt wird diese vom Laufen oder Springen "
 "übernommen."
 msgstr ""
+"Every object has a so-called animation stack. It consists of an arbitrary "
+"number of entries with a unique priority, called slots. Slots with higher "
+"priority overwrite slots with lower priority, however this is only true for "
+"bones affected by one of the animations in the higher priority slot. To "
+"expand on the example above the throwing animation should be assigned a "
+"higher priority then the walking animation so that the movement of the "
+"Clonk's arms is taken from the throwing, not from the walking or jumping "
+"animation. However since there is no leg movement in the throwing animation "
+"the clonk continues to run or jump, respectively."
 
 #: sdk/definition/animations.xml:10(text)
 msgid ""
@@ -28054,11 +28488,28 @@ msgid ""
 "Animation in einem anderen Slot stattfindet ist sie von dem Übergang nicht "
 "betroffen und wird ganz normal abgespielt."
 msgstr ""
+"What still needs to be clarified is how the animations in the individual "
+"slots are determined. A slot can either be a single animation or an "
+"interpolation between two other animations (one or both of which can again "
+"be interpolations of two animations). If such an interpolation is used then "
+"additionally a weight value can be set which specifies how much the two "
+"animations contribute to the final interpolated animation. A weight of 0 "
+"means that only the first animation contributes (as if the second one would "
+"not be present) whereas a weight of 1000 means that only the second "
+"animation contributes. Values inbetween lead to a transition between the two "
+"animations. Again referring to the above example: If the Clonk is standing "
+"at the time it throws but then starts to move before the throwing animation "
+"has finished then it is suggestive to add a walking animation to the "
+"standing animation which gets more and more weight over time until the "
+"weight has reached the value of 1000 and the transition to walking has "
+"finished. Since the throwing animation is played in a different slot it is "
+"not affected by the transition and is played normally."
 
 #: sdk/definition/animations.xml:11(text)
 msgid ""
 "Folgende Grafik veranschaulicht das Konzept anhand des gewählten Beispiels:"
 msgstr ""
+"The following picture illustrates the concept based on the chosen example:"
 
 #: sdk/definition/animations.xml:13(text)
 msgid ""
@@ -28069,10 +28520,15 @@ msgid ""
 "betroffene Bones). Das Ergebnis davon wird dann schlussendlich auf dem "
 "Bildschirm angezeigt."
 msgstr ""
+"First the two animations \"Walk\" and \"Stand\" are combined. The result of "
+"this combination is used as the animation for slot 5 whereas the single "
+"\"Throw\" animation is used for Slot 10. Since 10 is greater than 5 Throw "
+"overwrites the result of the combination in slot 5 (for bones affected by "
+"\"Throw\"). The result of that will be eventually displayed on the screen."
 
 #: sdk/definition/animations.xml:15(h)
 msgid "Abspielen von Animationen"
-msgstr ""
+msgstr "Animation playing"
 
 #: sdk/definition/animations.xml:17(text)
 msgid ""
@@ -28085,6 +28541,14 @@ msgid ""
 "der betreffende Slot leer ist, oder ein Animations- und ein "
 "Kombinationsknoten wenn der betroffende Slot bereits Knoten enthält)."
 msgstr ""
+"The animation stack can be influenced by script functions, i.e. animations "
+"can be added or removed. For this purpose every contributes to an animation "
+"(called node), that is every animation itself but also every combination "
+"node of two other animations, is assigned a unique number, called the "
+"animation number. When inserting or removing an animation one or two new "
+"nodes are created (an animation node if the slot in question is empty or "
+"both an animation and a combination node if there are already nodes in the "
+"slot)."
 
 #: sdk/definition/animations.xml:18(text)
 msgid ""
@@ -28097,6 +28561,14 @@ msgid ""
 "der Richtung eines Objekts ab, von der Mausposition (Zielanimationen) oder "
 "von der Windgeschwindigkeit (Windrad)."
 msgstr ""
+"Both types of nodes have different properties. For animation nodes the "
+"current position of the animation is relevant, and for combination nodes it "
+"is the current weight. Both values need to be changed more or less "
+"frequently depending on the kind of animation. There are multiple "
+"possibilities: Simple animations should just play with time, others (such as "
+"the walking animation of the Clonk) could depend on the velocity of the "
+"object, the current mouse position (aiming animations) or the wind velocity "
+"(windmill)."
 
 #: sdk/definition/animations.xml:19(text)
 msgid ""
@@ -28109,14 +28581,22 @@ msgid ""
 "für Position und Gewicht übergeben. Mit <placeholder-2/> und <placeholder-3/"
 "> können die beiden im Nachhinein geändert werden."
 msgstr ""
+"To both allow playing simple animations without much scripting effort but "
+"also keep the possibility to make rather complex combinations the concept of "
+"so-called animation value providers (AVPs) has been introduced. They specify "
+"how to determine the current animation position or the interpolation weight. "
+"Two such AVPs need to be given as parameters to the script function which "
+"starts a new animation, <placeholder-1/>, one for the animation position and "
+"one for its weight. <placeholder-2/> and <placeholder-3/> can be used to "
+"modify the AVPs later."
 
 #: sdk/definition/animations.xml:20(text)
 msgid "Folgende AVPs stehen zur Auswahl:"
-msgstr ""
+msgstr "The following AVPs are available:"
 
 #: sdk/definition/animations.xml:22(caption)
 msgid "Verfügbare Wertquellen"
-msgstr ""
+msgstr "Available value providers"
 
 #: sdk/definition/animations.xml:25(col)
 msgid "Kurzbeschreibung"
@@ -28129,6 +28609,9 @@ msgid ""
 "eignet, wenn jeden Frame ein neuer AVP diesen Typs mit einem anderen Wert "
 "gesetzt wird."
 msgstr ""
+"A previously defined constant value is used. This is useful if the value "
+"should not change, or if none of the other AVPs is appropriate in which case "
+"each frame a new AVP of this type with a different value can be set."
 
 #: sdk/definition/animations.xml:33(col)
 msgid ""
@@ -28137,6 +28620,10 @@ msgid ""
 "Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur "
 "nächsten genauen Positionsbestimmung fortlaufen."
 msgstr ""
+"Increasing or decreasing linearly with time. This AVP can also be used if "
+"none of the others is appropriate but when it is too expensitve to compute "
+"the new position each frame. In that case the animation can be played with "
+"constant speed until the next exact position is computed."
 
 #: sdk/definition/animations.xml:37(col)
 msgid ""
@@ -28145,6 +28632,9 @@ msgid ""
 "die Animation eines Objekts synchron zu seiner horizontalen Bewegung "
 "stattfinden soll."
 msgstr ""
+"Linear with X position. When the object moves to the left the animation "
+"plays backwards. Can be used if the animation of an object should be "
+"synchronized to its horizontal movement."
 
 #: sdk/definition/animations.xml:41(col)
 msgid ""
@@ -28153,18 +28643,26 @@ msgid ""
 "die Animation eines Objekts synchron zu seiner vertikalen Bewegung "
 "stattfinden soll."
 msgstr ""
+"Linear with Y position. When the object moves upwards the animation plays "
+"backwards. Can be used if the animation of an object should be synchronized "
+"to its vertical movement."
 
 #: sdk/definition/animations.xml:45(col)
 msgid ""
 "Linear mit der X-Position, allerdings spielt die Animation immer in die "
 "gleiche Richtung, egal ob sich das Objekt nach rechts oder nach links bewegt."
 msgstr ""
+"Linear with X position. However, the animation is always played in the same "
+"direction, not taking into account whether the object moves left or right."
 
 #: sdk/definition/animations.xml:49(col)
 msgid ""
 "Linear mit der Y-Position, allerdings spielt die Animation immer in die "
 "gleiche Richtung, egal ob sich das Objekt nach oben oder nach unten bewegt."
 msgstr ""
+"Linear with Y position. However, the animation is always played in the same "
+"direction, not taking into account whether the object moves upwards or "
+"downwards."
 
 #: sdk/definition/animations.xml:53(col)
 msgid "Proportional zur X-Geschwindigkeit eines Objekts."
@@ -28176,13 +28674,15 @@ msgstr "Proportional to the vertical speed of the object."
 
 #: sdk/definition/animations.xml:61(col)
 msgid "Proportional zur Phase der aktuell ausgeführten Aktivität."
-msgstr ""
+msgstr "Proportional to the phase of the currently executed action."
 
 #: sdk/definition/animations.xml:65(text)
 msgid ""
 "Für Beispiele zu den einzelnen AVPs siehe die Dokumentation zu den "
 "entsprechenden Scriptfunktion."
 msgstr ""
+"For examples to the individual AVPs see the documentation of their "
+"respective script functions."
 
 #: sdk/definition/animations.xml:67(h)
 msgid "Animationen der ActMap"
