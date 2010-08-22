@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>FinishCommand</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Commands</subcat>
     <version>4.9.5.0 CE</version>
     <syntax>
@@ -13,19 +14,17 @@
         <param>
           <type>bool</type>
           <name>success</name>
-          <desc>Ob das Kommando als erfolgreich gewertet werden soll.</desc>
+          <desc>Whether to evaluate the ended command as successful.</desc>
         </param>
         <param>
           <type>int</type>
           <name>command_num</name>
           <optional />
-          <desc>Index des Kommandos. 0 für das aktuelle, 1 für das als nächstes auszuführende usw.</desc>
+          <desc>Index of the command. 0 is the current command, other values indicate the following commands.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Beendet ein Kommado in der Kommandoliste eines Objekts.</desc>
-
+    <desc>Ends a command in the command stack of an object.</desc>
     <examples>
       <example>
         <code>public func Production(object clonk)
@@ -35,27 +34,22 @@
   if (!(tree = FindWorkTree(clonk)))
   // Kein geeigneter Baum (fertig)
   {
-	<funclink>Message</funclink>("$TxtNomoresuitabletrees$");
-	clonk->FinishCommand(false, 1);
+	<funclink>Message</funclink>(&quot;$TxtNomoresuitabletrees$&quot;);
+	clonk-&gt;FinishCommand(false, 1);
 	return(0);
   }
 [...]
 }
         </code>
-        <text>
-Auszug aus dem Sägewerk-Script. Finishcommand wird benutzt, um nachfolgende Kommandos darüber zu informieren,
-dass die automatische Holzproduktion fehlgeschlagen ist. Produktion() wurde dabei durch ein Call-Kommando
-aufgerufen, welches immer erfolgreich ist, wenn es die Funktion aufrufen kann. Deshalb muss FinishCommand
-verwendet werden.
-        </text>
+        <text>From the sawmill script: FinishCommand is used to inform the following (super-level) commands that automatic wood production has failed. Produktion() is called through a Call command which counts as successful if the function call could be made. That's why FinishCommand must be used.</text>
       </example>
     </examples>
     <related>
       <funclink>SetCommand</funclink>
       <funclink>GetCommand</funclink>
       <funclink>AppendCommand</funclink>
-	  <funclink>AddCommand</funclink>
+      <funclink>AddCommand</funclink>
     </related>
   </func>
-  <author>Günther</author><date>April 2004</date>
+  <author>GÃ¼nther</author><date>2004-04</date>
 </funcs>

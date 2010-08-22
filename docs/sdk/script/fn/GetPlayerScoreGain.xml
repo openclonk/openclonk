@@ -1,24 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerScoreGain</title>
-                <category>Spieler</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>player</name><desc>Spieler, dessen Spielerpunktegewinn gesucht wird.</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert die Änderung der Spielerpunkte seit Beginn der Runde.</desc>
-                <related>
-                        <funclink>DoPlayerScore</funclink>
-                        <funclink>GetPlayerScore</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
-        <author>Sven2</author><date>April 2010</date>
+  <func>
+    <title>GetPlayerScoreGain</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose score gain you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the gain of player score since the beginning of the round.</desc>
+    <related>
+      <funclink>DoPlayerScore</funclink>
+      <funclink>GetPlayerScore</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+  <author>Sven2</author><date>2010-04</date>
 </funcs>
-

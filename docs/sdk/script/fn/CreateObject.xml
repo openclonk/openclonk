@@ -1,25 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>CreateObject</title>
-    <category>Objekte</category><subcat>Erzeugung</subcat>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>object</rtype>
       <params>
-        <param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-        <param><type>int</type><name>xoffset</name><desc>X-Koordinate</desc></param>
-        <param><type>int</type><name>yoffset</name><desc>Y-Koordinate</desc></param>
-        <param><type>int</type><name>owner</name><desc>Besitzer des zu erstellenden Objekts (Index eines Spielers oder <funclink>NO_OWNER</funclink> für keinen Besitzer)</desc></param>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xoffset</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yoffset</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>owner</name>
+          <desc>Owner of the new object (valid player number or <funclink>NO_OWNER</funclink> for no-owner).</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Erzeugt ein Objekt des angegebenen Typs an der angegebenen Position. xoffset und yoffset bestimmen die Position in absoluten Pixel-Koordinaten der Landschaft (Mitte Unterkante des Objekts). Bei lokalen Aufrufen dieser Funktion wird die angegebene Position zu Offset-Koordinaten zum aufrufenden Objekt.</desc>
+    <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwiese global.</desc>
     <examples>
       <example>
         <code>CreateObject(WIPF, 100,100, <funclink>NO_OWNER</funclink>);</code>
-        <text>Erschafft einen Wipf bei den Koordinaten 100/100 ohne Besitzer.</text>
+        <text>Creates a wipf at coordinates 100/100 with no owner.</text>
       </example>
     </examples>
     <related>
@@ -28,5 +46,5 @@
       <funclink>RemoveObject</funclink>
     </related>
   </func>
-  <author>springer</author><date>April 2002</date>
+  <author>springer</author><date>2002-04</date>
 </funcs>

@@ -1,21 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetClimate</title>
-		<category>Landschaft</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>temperature</name><desc>Temperatur zwischen -50 und 50.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt das Klima (Durchschnittstemperatur).</desc>
-		<related>
-			<funclink>GetClimate</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetClimate</title>
+    <category>Landscape</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>temperature</name>
+          <desc>Temperature from -50 to 50.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the climate (median temperature).</desc>
+    <related><funclink>GetClimate</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

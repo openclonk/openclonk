@@ -1,53 +1,107 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>PlaceObjects</title>
-		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>id</type><name>definition</name><desc>ID des zu platzierenden Objekts</desc></param>
-				<param><type>int</type><name>amount</name><desc>Menge der zu erzeugenden Objekte</desc></param>
-				<param><type>string</type><name>material_name</name><desc>Material in die Objekte erzeugt werden soll. Hier kann entweder der Materialname angegeben werden oder folgende Zeichenketten:
-<table><rowh><col>material_index</col><col>Erzeugung in</col></rowh>
-<row><col>"GBackSolid"</col><col>Objekte werden in festem Material erzeugt. Siehe auch <funclink>GBackSolid</funclink>()</col></row>
-<row><col>"GBackSemiSolid"</col><col>Objekte werden in festem oder flüssigem Material erzeugt. Siehe auch <funclink>GBackSemiSolid</funclink>()</col></row>
-<row><col>"GBackLiquid"</col><col>Objekte werden in flüssigem Material erzeugt. Siehe auch <funclink>GBackLiquid</funclink>()</col></row>
-<row><col>"GBackSky"</col><col>Objekte werden im freien Himmel erzeugt. Siehe auch <funclink>GBackSky</funclink>()</col></row>
-</table>
-</desc></param>
-				<param><type>int</type><name>x</name><desc>Linke Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>y</name><desc>Obere Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>width</name><desc>Platzierrechteck Breite. Wenn nicht angegeben wird das Ende der Landschaft angenommen</desc><optional /></param>
-				<param><type>int</type><name>height</name><desc>Platzierrechteck Höhe. Wenn nicht angegeben wird das Ende der Landschaft angenommen</desc><optional /></param>
-				<param><type>bool</type><name>on_surface</name><desc>Wenn true, werden alle Objekte oberhalb des angegeben Materials erzeugt. (Ohne Berücksichtigung des Zielrechtecks)</desc><optional /></param>
-				<param><type>bool</type><name>no_stuck</name><desc>Wenn true, wird nicht sichergestellt dass des Objekt fest in der Erde ist. Dies ist z.B.: nötig wenn man Objekte im Flüssigkeiten erstellen will.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>
-Erzeugt amount viele Objekte im angegebenen Zielrechteck (optional) im angegebenen Material.
-Gibt die Anzahl der Iterationen zurück, oder -1 wenn die Erzeugung fehlschlägt.
-		</desc>
-		<remark>
-Je weniger vom angegeben Material vorhanden ist, desto Rechenintensiver ist die Platzierung.<br/>
-Es wird sichergestellt, dass keine Endlosschleife entsteht.	
-		</remark>
-		<examples>
-			<example>
-				<code>PlaceObjects(Loam,20,<funclink>Material</funclink>("Earth"),100,0,200)</code>
-				<text>Erzeugt 20 Lehmklumpen in Erde innherhalb der Koordinaten 100,0 und 200,LandscapeHeight()</text>
-			</example>
-			<example>
-				<code>PlaceObjects(FISH,10,"GBackLiquid",0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
-				<text>Erzeugt insgesamt 10 Fische in allen Flüssigkeiten die sich in der oberen Landschaftshälfte befinden</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateObject</funclink>
-		</related>
-	</func>
-	<author>Tyron</author><date>August 2004</date>
+  <func>
+    <title>PlaceObjects</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>ID of the object to be created</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Count of objects to be created</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>material_name</name>
+          <desc>
+            Material in which object are to be created. This can be a material number or a string as follows: 
+            <table>
+              <rowh>
+                <col>material_index</col>
+                <col>Create in</col>
+              </rowh>
+              <row>
+                <col>"GBackSolid"</col>
+                <col>Objects are created in solid material. Also see <funclink>GBackSolid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackSemiSolid"</col>
+                <col>Objects are created in solid or liquid material. Also see <funclink>GBackSemiSolid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackLiquid"</col>
+                <col>Objects are created in liquid material. Also see <funclink>GBackLiquid</funclink>().</col>
+              </row>
+              <row>
+                <col>"GBackSky"</col>
+                <col>Objects are created in mid-air. Also see <funclink>GBackSky</funclink>().</col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left boundary coordinate of the target rectangle (x coordinate).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top boundary coordinate of the target rectangle (y coordinate).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the target rectangle. If not specified, the right landscape boundary.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the target rectangle. If not specified, the bottom landscape boundary.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>on_surface</name>
+          <desc>If true, all objects will be created above the upper surface of the specified material (this might be outside the target rectangle).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_stuck</name>
+          <desc>If true, placement will not ensure that objects are in solid material. This is needed e.g. when placing objects in liquids.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates the specified number of objects in the specified target rectangle and target material (optional). Returns the number of iterations or -1 if creation has failed.</desc>
+    <remark>If there is only very little of the target material present in the landscape, placement calculation will take longer.<br/>However, endless retry loops are avoided.</remark>
+    <examples>
+      <example>
+        <code>PlaceObjects(Loam,20,<funclink>Material</funclink>(&quot;Earth&quot;),100,0,200)</code>
+        <text>Create 20 chunks of loam in earth within the coordinates 100,0 and 200,LandscapeHeight().</text>
+      </example>
+      <example>
+        <code>PlaceObjects(FISH,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
+        <text>Creates a total of 10 fishes in all liquids found in the upper half of the landscape.</text>
+      </example>
+    </examples>
+    <related><funclink>CreateObject</funclink></related>
+  </func>
+  <author>Tyron</author><date>2004-08</date>
 </funcs>

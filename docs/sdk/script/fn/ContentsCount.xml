@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ContentsCount</title>
-		<category>Objekte</category><subcat>Inhalt</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>id</type><name>object_id</name><desc>Objekttyp, der gezählt wird</desc></param>
-			</params>
-		</syntax>
-		<desc>Liefert die Anzahl der Objekte vom Typ id, die im aufrufenden Objekt enthalten sind.</desc>
-		<related>
-			<funclink>FindContents</funclink>
-			<funclink>ObjectCount</funclink>
-		</related>
-	</func>
-	<author>springer</author><date>April 2002</date>
+  <func>
+    <title>ContentsCount</title>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>object_id</name>
+          <desc>Object type to be counted.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the number of objects of the specified type which are contained in the target object.</desc>
+    <related>
+      <funclink>FindContents</funclink>
+      <funclink>ObjectCount</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
 </funcs>

@@ -1,32 +1,53 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoEnergy</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>change</name><desc>Veränderung des Energiewertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000.</desc></param>
-				<param><type>bool</type><name>exact</name><desc>Wenn WAHR, wird change auf den exakten Energiewert angewendet (0 bis Wert von Physical "Energy").</desc><optional /></param>
-				<param><type>int</type><name>damage_type</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_EngScript.</desc><optional /></param>
-				<param><type>int</type><name>caused_by</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Verändert die Energie des aufrufenden Objekts. Die Energie entspricht bei Gebäuden der elektrischen Energie, und bei Lebewesen der Lebensenergie.</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>(0)->DoEnergy(<funclink>GetCursor</funclink>(0)-><funclink>GetPhysical</funclink>("Energy")*50/100000);</code>
-				<text>Gibt den ausgewählten Clonk des ersten Spielers 50% mehr Energie.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetEnergy</funclink>
-			<funclink>EnergyCheck</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
-	<author>Clonkonaut</author><date>April 2008</date>
+  <func>
+    <title>DoEnergy</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of the energy value (positive or negative) in percent of the maximum value. 100% correspond to the maximum physical value of 100,000.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>exact</name>
+          <desc>If true, change is applied to the exact energy value (0 to value of Physical "Energy").</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>damage_type</name>
+          <desc>Damage cause specification which is to be passed to Fx*Damage callbacks of effects (see <emlink href="script/Effects.html">effect documentation</emlink>). Default is FX_Call_EngScript.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>caused_by</name>
+          <desc>Number of the player who has caused the damage.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Adjusts the energy value of an object. Energy signifies electrical energy in buildings and life energy in living beings.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(<funclink>GetCursor</funclink>(0)-&gt;<funclink>GetPhysical</funclink>(&quot;Energy&quot;)*50/100000);</code>
+        <text>Gives 50% more energy to the selected clonk.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetEnergy</funclink>
+      <funclink>EnergyCheck</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

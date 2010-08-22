@@ -1,31 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetShape</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Offset des neuen Shapes</desc></param>
-        <param><type>int</type><name>y</name><desc>Y-Offset des neuen Shapes</desc></param>
-        <param><type>int</type><name>width</name><desc>Breite des neuen Shapes</desc></param>
-        <param><type>int</type><name>height</name><desc>Höhe des neuen Shapes</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X offset of the new shape.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y offset of the new shape.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the new shape.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the new shape.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ändert das interne Objektrechteck des aufrufenden Objekts. Das Objektrechteck wird beispielsweise für Kollisionsabfragen verwendet. Dies hat keine Auswirkung auf die Darstellung des Objekts.</desc>
-    <remark>Die Engine aktualisiert in diversen Fällen das Objektrechteck, wobei es die Definitionswerte zurückkopiert (und damit eventuelle, durch SetShape gesetzte Objektrechtecke verwirft). Die ist beispielsweise beim Ändern der Objektrotation, aber auch beim Neuladen der Spielstände der Fall. Die Funktion sollte also besser nur bei statischen, relativ unveränderten Objekten verwendet werden, und das Shape muss jeweils in einem Synchronisationsaufruf wie UpdateTransferZone neu gesetzt werden.</remark>
+    <desc>Changes the bounding rectangle of the object. This rectangle is used e.g. for collision or overlap detection. It does not affect object drawing.</desc>
+    <remark>In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should readjust the shape manually in synchronization calls like UpdateTransferZone.</remark>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(TRE1)->SetShape(-200,-300,400,600);</code>
-        <text>Sorgt dafür, dass man einen Baum aus der Landschaft auch aus größerer Distanz fällen kann.</text>
+        <code><funclink>FindObject</funclink>(TRE1)-&gt;SetShape(-200,-300,400,600);</code>
+        <text>Enlarges the area or distance from which you can fell a tree.</text>
       </example>
     </examples>
-    <related>
-      <funclink>SetVertex</funclink>
-    </related>
+    <related><funclink>SetVertex</funclink></related>
   </func>
-  <author>Sven2</author><date>Juni 2003</date>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

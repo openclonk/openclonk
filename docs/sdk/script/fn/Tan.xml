@@ -1,26 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Tan</title>
-		<category>Arithmetik</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>angle</name><desc>Winkel in Grad</desc></param>
-				<param><type>int</type><name>radius</name><desc>Radius</desc></param>
-				<param><type>int</type><name>precision</name><desc>Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch diesen Wert dividiert. Bei einem Winkel von 455 und einer Präzision von 10 würde intern also mit einem Winkel von 45,5° gerechnet werden.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Liefert tan(angle) * radius.</desc>
-		<related>
-			<funclink>Cos</funclink>
-			<funclink>Sin</funclink>
-			<funclink>Angle</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>Tan</title>
+    <category>Arithmetics</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>angle</name>
+          <desc>Angle in degrees</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>If specified, the angle will be divided by this value. An angle of 445Â° and a precision value of 10 will thus result in a more precise angle of 45,5Â° internally.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns tan(angle) * radius.</desc>
+    <related>
+      <funclink>Cos</funclink>
+      <funclink>Sin</funclink>
+      <funclink>Angle</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>
-

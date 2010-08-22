@@ -1,37 +1,86 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CreateScriptPlayer</title>
-		<category>Spieler</category>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>name</name><desc>Name für den Scriptspieler. Muss angegeben werden.</desc></param>
-				<param><type>int</type><name>color</name><desc>Spielerfarbe</desc></param>
-				<param><type>int</type><name>team</name><desc>Team-ID. Wird 0 angegeben, so wird ein Team nach denselben Regeln ausgewählt wie bei einem normal beitretenden Spieler.</desc><optional /></param>
-				<param><type>int</type><name>flags</name><desc>Bitmaske aus folgenden Werten:
-				<table><rowh><col>Bit</col><col>Konstante</col><col>Beschreibung</col></rowh>
-				<row><col>0</col><col>CSPF_FixedAttributes</col><col>Wenn gesetzt, tritt der Spieler garantiert mit den in den Parameter angegebenen Namen und Farbe bei. Ansonsten werden die Attribute bei Kollisionen geändert.</col></row>
-				<row><col>1</col><col>CSPF_NoScenarioInit</col><col>Wenn wahr, wird die Szenarieninitialisierung, also das Erzeugen von Heimatbasismaterial und Clonks, das Setzen der Baupläne nach Szenarienvorgaben, etc., nicht durchgeführt. Außerdem werden die globalen PreInitializePlayer- und InitializePlayer-Callbacks ans Szenarienscript und die Spielziel-, Regel- und Umweltobjekte nicht ausgeführt. Stattdessen wird ein InitializeScriptPlayer(Spielernummer, Team)-Callback als DefinitionCall (d.h. ohne <funclink>this</funclink>()-Objekt) auf der in extra_data angegebenen Definition ausgeführt. Mit diesem Parameter lassen sich also spezialisierte Scriptspieler realisieren, die nicht gleichberechtigt mit menschlichen Spielern agieren.</col></row>
-				<row><col>2</col><col>CSPF_NoEliminationCheck</col><col>Wenn gesetzt, wird der Spieler nicht automatisch eliminiert, wenn er keine Crew mehr hat.</col></row>
-				<row><col>3</col><col>CSPF_Invisible</col><col>Wenn gesetzt, ist der Spieler nicht in Spielerlisten wie zum Beispiel in der Lobby und im Verfeindungsmenü sichtbar.</col></row></table></desc><optional /></param>
-				<param><type>id</type><name>extra_data</name><desc>ID, die durchgereicht und an den InitializePlayer-Aufruf weitergegeben wird. Durch Angabe einer ID lassen sich Scriptspieler-Typen unterscheiden. Beispielsweise könnte ein Szenario dynamisch Alien- oder Clonkgegner anbieten.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Initiiert den Beitritt eines Scriptspielers. Scriptspieler berhalten sich von der Scriptseite wie reguläre Spieler. Sie haben eine Stammcrew, ein Konto, Baupläne, Heimatbasismaterial, Verfeindungen, Teams, etc. Für diese Spieler wird jedoch regulär kein Sichtfenster geöffnet und sie lassen sich nicht von menschlichen Spielern steuern.<br />Scriptspieler können zum Beispiel verwendet werden, um KI-Gegner wie z.B. Bots in Hazard zu realisieren.</desc>
-		<remark>Scriptspieler treten in Netzwerkspielen genau wie reguläre Spieler verzögert bei. Das bedeutet, dass nach dem Aufruf von CreateScriptPlayer nicht sofort der Spieler zur Verfügung steht.<br />Wenn ein Script beispielsweise einen KI-Spieler ereugen will, so sollte die tatsächliche KI-Initialisierung erst im entsprechenden InitializePlayer-Callback erfolgen, wobei mit <funclink>GetPlayerType</funclink>() geprüft werden kann, ob es sich um einen Scriptspieler handelt.<br />Wird der Spieler schon zu Beginn des Szenarios gebraucht - also zum Beispiel als Gegner in einer Mission - so sollte stattdessen ein Spieler in den SavePlayerInfos.txt angelegt werden.</remark>
-		<examples>
-			<example>
-				<text>Für Beispiele siehe <emlink href="script/ScriptPlayers.html">Scriptspieler</emlink>.</text>
-			</example>
-		</examples>
-		<related>
-			<emlink href="script/ScriptPlayers.html">Scriptspieler</emlink>
-			<funclink>GetPlayerType</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Dezember 2007</date>
+  <func>
+    <title>CreateScriptPlayer</title>
+    <category>Player</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name for the script player. Required.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>Player color</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>team</name>
+          <desc>Team-Id. If 0, a team is automatically chosen according to the rules also applied to normal joining players.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bit mask composed of the following values: 
+            <table>
+              <rowh>
+                <col>Bit</col>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>0</col>
+                <col>CSPF_FixedAttributes</col>
+                <col>If set, the player is guaranteed to join with the name and color specified in the parameters. Otherwise those preferences might be ignored in case of conflicts with other players' preferences.</col>
+              </row>
+              <row>
+                <col>1</col>
+                <col>CSPF_NoScenarioInit</col>
+                <col>If true, the scenario initialization (i.e. placement of home base material, clonks, setting of build knowledge, etc.) is not performed for this player. Also, the global callbacks PreInitializePlayer and InitializePlayer to the scenario script and to goal, rule, and environment objects are not performed. Instead, the callback InitializeScriptPlayer(Player number, Team) is made to the object definition specified in extra_data. The call is made as DefinitionCall (without <funclink>this</funclink>() object). Using this parameter you can create script-controlled AI players which do not receive the same standard treatment as user-controlled players.</col>
+              </row>
+              <row>
+                <col>2</col>
+                <col>CSPF_NoEliminationCheck</col>
+                <col>If set, the player will not be eliminated automatically if its crew is empty.</col>
+              </row>
+              <row>
+                <col>3</col>
+                <col>CSPF_Invisible</col>
+                <col>If set, the player will not show up in player lists such as in the lobby or hostility menu.</col>
+              </row>
+            </table>
+
+          </desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>extra_data</name>
+          <desc>Id which is passed to the InitializePlayer call. Using this id, it is quite simple to create different types of script players. E.g. a scenario could feature AI players with different types of crew members.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Initializes a joining script player. Script players appear as regular players from the scripting point of view. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users.<br/>Script players can be used to create AI controlled opponent teams in special scenarios.</desc>
+    <remark>As do normal players, script player join with a slight delay in network games. This means that following the call to CreateScriptPlayer the player will not be immediately available.<br/>That means, actual initialization of that player should happen in the InitializePlayer callback which can use <funclink>GetPlayerType</funclink>() to check whether this is a script player.<br/>If the script player really needs to be available even before normal player initialization - e.g. as opponent in a single player mission - you could create the player via the SavePlayerInfos.txt component.</remark>
+    <examples>
+      <example>
+        <text>For examples see <emlink href="script/ScriptPlayers.html">Script Players</emlink>.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="script/ScriptPlayers.html">Script Player</emlink>
+      <funclink>GetPlayerType</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-12</date>
 </funcs>

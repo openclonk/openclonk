@@ -1,35 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Split2Components</title>
-		<category>Objekte</category><subcat>Existenz</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>obj</name><desc>Objekt, das zerlegt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Zerlegt ein Objekt in seine Bestandteile. Die Bestandteile werden in zufälliger Drehung und mit geringer Geschwindigkeit in zufälliger Richtung an der Stelle erzeugt, an der sich das Objekt befand. Das Objekt wird anschließend vernichtet. Wenn sich das Objekt in einem Behälter befand, werden auch die Komponenten nach der Erschaffung in den Behälter versetzt.</desc>
-		<remark>Siehe Hinweis zu <funclink>RemoveObject</funclink>.</remark>
-		<examples>
-			<example>
-<code>protected func ControlDigDouble()
+  <func>
+    <title>Split2Components</title>
+    <category>Objects</category>
+    <subcat>Existence</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object to be split. Can be 0 in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Splits an object into its components. The new component objects will be created with random rotation and a low speed in random direction at the position at which the object was located. The original object is removed. If the original object was contained, the new component objects will be created in the original container.</desc>
+    <remark>See notice for <funclink>RemoveObject</funclink>.</remark>
+    <examples>
+      <example>
+        <code>protected func ControlDigDouble()
   {
   var target=<funclink>Contents</funclink>();
   <funclink>if</funclink> (!target) <funclink>return</funclink>();
   Split2Components(target);
   return true;
   }</code>
-				<text>Script für einen Clonk: Auf Doppelgraben zerlegt er das erste Objekt, das er trägt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RemoveObject</funclink>
-			<funclink>GetComponent</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>August 2002</date>
+        <text>Script for a clonk: He splits the first object he carries on double dig.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RemoveObject</funclink>
+      <funclink>GetComponent</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

@@ -1,47 +1,90 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetGamma</title>
-		<category>Global</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>color1</name><desc>Veränderung für dunkle Farben. Standard ist <funclink>RGB</funclink>(0,0,0) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>color2</name><desc>Veränderung für mittlere Farben. Standard ist <funclink>RGB</funclink>(128,128,128) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>color3</name><desc>Veränderung für helle Farben. Standard ist <funclink>RGB</funclink>(255,255,255) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>ramp_index</name><desc>0-7: Index der zu verändernden Rampe. Es stehen acht Gammarampen zur Verfügung, die aufeinander gerechnet werden. So können zum Beispiel Tag/Nacht-Objekte die globale Helligkeit verändern, ohne dabei andere Effekte wie Blitze zu behindern.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt eine Gammarampe. Mit Gammarampen kann global das Aussehen des gesamten Spieles gesteuert werden, indem jedem Farbkanal eine eigene Tabelle zugewiesen wird, aus der die neue Helligkeit abgelesen wird. Damit kann man zum Beispiel bestimmte Farben speziell hervorheben, alles abdunkeln oder erhellen oder sogar das Bild komplett invertieren.</desc>
-		<remark>
-			Die acht Gammarampen haben folgende, für eigene Szenarien selbstverständlich nicht bindende Funktionen:<br /><br />
-			<table>
-				<rowh><col>ramp_index</col><col>Funktion</col></rowh>
-				<row><col>0</col><col>Szenarienglobaler Wert</col></row>
-				<row><col>1</col><col>Klima/Jahreszeiten (Engineintern benutzt, wenn im Szenario aktiviert!)</col></row>
-				<row><col>2</col><col>frei</col></row>
-				<row><col>3</col><col>Tag/Nacht</col></row>
-				<row><col>4</col><col>frei</col></row>
-				<row><col>5</col><col>Blitze</col></row>
-				<row><col>6</col><col>Zaubereffekte</col></row>
-				<row><col>7</col><col>frei</col></row>
-			</table><br />
-			Allgemein stehen niedrigere Rampenindizes für längerfristige Farbveränderungen; höhere für kürzere Effekte.
-		</remark>
-
-		<examples>
-			<example>
-				<code>SetGamma(<funclink>RGB</funclink>(50,0,0), <funclink>RGB</funclink>(140,100,100), <funclink>RGB</funclink>(255,220,220));</code>
-				<text>Gibt dem Spiel einen leichten Blauschimmer</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>ResetGamma</funclink>
-			<funclink>RGB</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>SetGamma</title>
+    <category>Global</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>color1</name>
+          <desc>Adjusting darker colors. Default <funclink>RGB</funclink>(0,0,0) for no adjustment.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>color2</name>
+          <desc>Adjusting medium colors. Default <funclink>RGB</funclink>(128,128,128) for no adjustment.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>color3</name>
+          <desc>Adjusting brighter colors. Default <funclink>RGB</funclink>(255,255,255) for no adjustment.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ramp_index</name>
+          <desc>0-7: index of the gamma ramp to be changed. There are eight gamma ramps which are applied subsequently. In this way, e.g. global time-of-day objects can modify the global lighting situation without conflicting with secondary lighting effects such as a lightning flash.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets a gamma ramp. Using gamma ramps, the global light situation of the game can be adjusted by assigning an individual data table to each color channel from which a new brightness value is read. By doing this you can strengthen chosen color ranges, darken or lighten the complete game or even invert light and darkness.</desc>
+    <remark>
+      The eight gamma ramps have the following effects:<br/><br/>
+      <table>
+        <rowh>
+          <col>ramp_index</col>
+          <col>Function</col>
+        </rowh>
+        <row>
+          <col>0</col>
+          <col>Scenario global value</col>
+        </row>
+        <row>
+          <col>1</col>
+          <col>Climate/Seasons (will be used internally if activated in the scenario)</col>
+        </row>
+        <row>
+          <col>2</col>
+          <col>free</col>
+        </row>
+        <row>
+          <col>3</col>
+          <col>Day/Night</col>
+        </row>
+        <row>
+          <col>4</col>
+          <col>free</col>
+        </row>
+        <row>
+          <col>5</col>
+          <col>Lightning</col>
+        </row>
+        <row>
+          <col>6</col>
+          <col>Magic Effects</col>
+        </row>
+        <row>
+          <col>7</col>
+          <col>free</col>
+        </row>
+      </table>
+<br/> Generally, lower ramp indices mean longer color changes; higher indices mean shorter effects.
+    </remark>
+    <examples>
+      <example>
+        <code>SetGamma(<funclink>RGB</funclink>(50,0,0), <funclink>RGB</funclink>(140,100,100), <funclink>RGB</funclink>(255,220,220));</code>
+        <text>Adds a light blue hue to the game.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ResetGamma</funclink>
+      <funclink>RGB</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

@@ -1,39 +1,47 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerByIndex</title>
-                <category>Spieler</category>
-                <version>4.9.1.0 GWE<extversion>4.9.6.0 CR</extversion></version>
-                <syntax>
-                        <rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>index</name><desc>Index in der Spielerliste</desc></param>
-				<param><type>int</type><name>player_type</name><desc>Wenn angegeben, wird der indizierte Spieler des angegebenen Typs zurückgegeben. So lassen sich zum Beispiel nur alle menschlichen oder nur alle Scriptspieler durchgehen. Für eine Liste gültiger Werte, siehe <funclink>GetPlayerType</funclink>.</desc><optional /></param>
-			</params>
-                </syntax>
-                <desc>Gibt die indizierte Spielernummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetPlayerCount()-1, dass eine gültige Spielernummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass "Löcher" unbelegter Spielernummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Spielernummern durchgeht. Ab 4.9.6.0 CR.</desc>
-                <examples>
-                        <example>
-<code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(); i++)
-  <funclink>Log</funclink>("Moin, %s", <funclink>GetPlayerName</funclink>(GetPlayerByIndex(i)));</code>
-                                <text>Begrüßt alle Spieler im Log.</text>
-                        </example>
-                        <example>
-<code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(C4PT_User); i++)
+  <func>
+    <title>GetPlayerByIndex</title>
+    <category>Player</category>
+    <version>4.9.1.0 GWE<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index in the player table.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player_type</name>
+          <desc>If specified, the indicated player of the specified type is returned. This can be used e.g. to walk only through the list of human players or only through the list of script players. For a list of all player types see <funclink>GetPlayerType</funclink>.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the indicated player number. This function guarantees that for values from 0 to GetPlayerCount()-1 a valid player number will be returned (notice that there may be "gaps" between player numbers in case some players have left the game). This makes it easier to process all players in a loop.</desc>
+    <examples>
+      <example>
+        <code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(); i++)
+  <funclink>Log</funclink>(&quot;Moin, %s&quot;, <funclink>GetPlayerName</funclink>(GetPlayerByIndex(i)));</code>
+        <text>Welcomes all players in the log file.</text>
+      </example>
+      <example>
+        <code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetPlayerCount</funclink>(C4PT_User); i++)
   <funclink>EliminatePlayer</funclink>(GetPlayerByIndex(i, C4PT_User));</code>
-                                <text>Eliminiert alle regulären Spieler, aber lässt Scriptspieler am Leben.</text>
-                        </example>
-
-                </examples>
-                <related>
-                        <funclink>GetPlayerByName</funclink>
-                        <funclink>GetPlayerName</funclink>
-                        <funclink>GetPlayerCount</funclink>
-                        <funclink>GetPlayerType</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>Dezember 2007</date>
+        <text>Eliminates all human players but excludes script players.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlayerByName</funclink>
+      <funclink>GetPlayerName</funclink>
+      <funclink>GetPlayerCount</funclink>
+      <funclink>GetPlayerType</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-12</date>
 </funcs>
-

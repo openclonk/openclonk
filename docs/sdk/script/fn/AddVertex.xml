@@ -1,32 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>AddVertex</title>
-		<category>Objekte</category><subcat>Vertices</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>X-Koordinate, von der Objektmitte aus gesehen.</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Koordinate, von der Objektmitte aus gesehen.</desc></param>
-			</params>
-		</syntax>
-		<desc>Fügt dem aufrufenden Objekt einen neuen Vertex hinzu.</desc>
-		<remark>Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden alle Vertices wieder auf die Definitionswerte zurückgesetzt.</remark>
-		<examples>
-			<example>
-				<code><funclink>GetHiRank</funclink>(0)->AddVertex(50,0);</code>
-				<text>Lässt den Captain des ersten Spielers im Boden festhängen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetVertex</funclink>
-			<funclink>SetVertex</funclink>
-			<funclink>GetVertexNum</funclink>
-			<funclink>RemoveVertex</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+  <func>
+    <title>AddVertex</title>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate, relative to the object center</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate, relative to the object center</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a new vertex to an object.</desc>
+    <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected.</remark>
+    <examples>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;AddVertex(50,0);</code>
+        <text>Makes the captain of the first player stick to the ground.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetVertex</funclink>
+      <funclink>SetVertex</funclink>
+      <funclink>GetVertexNum</funclink>
+      <funclink>RemoveVertex</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

@@ -1,32 +1,47 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetObjectOrder</title>
-		<category>Objekte</category>
-		<subcat>Position</subcat>
-		<version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>object_before_or_after</name><desc>Objekt, vor oder nach dem sort_object einsortiert werden soll</desc></param>
-				<param><type>object</type><name>sort_object</name><desc>Objekt, das vor oder nach pObjBefore eingeordnet wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>bool</type><name>after</name><desc>Wenn ungleich 0, wird sichergestellt, dass das sort_object hinter statt vor object_before_or_after einsortiert wird.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Sorgt dafür, dass ein Objekt mit Sicherheit vor oder hinter einem anderen Objekt angeordnet ist. Dadurch lässt sich beispielsweise sicherstellen, dass sich ein Fahrstuhlkorb immer vor dem zugehörigen Fahrstuhl befindet.</desc>
-		<remark>Es sollten nur Objekte gleicher Kategorie voreinander angeordnet werden, da sonst die interne Objektsortierung durcheinandergerät.<br />Die eigentliche Umsortierung findet erst später, aber mit Sicherheit noch im selben Frame wie der Scriptaufruf statt.</remark>
-		<examples>
-			<example>
-				<code>SetObjectOrder(<funclink>FindObject</funclink>(TRE1), <funclink>FindObject</funclink>(TRE2));</code>
-				<text>Ordnet den ersten, gefundenen Baum vom Typ TRE2 vor den ersten, gefundenen Baum vom Typ TRE1.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>ResortObjects</funclink>
-			<funclink>Resort</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>SetObjectOrder</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>object_before_or_after</name>
+          <desc>Object before or after which sort_object is to be inserted.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>sort_object</name>
+          <desc>Object which is to be inserted before or after pObjBefore. Can be 0 in local calls.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>after</name>
+          <desc>If not 0, sort_object will be inserted after object object_before_or_after (and not before).</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Ensures that an object is internally sorted before or after another specified object. In this way, you can e.g. ensure that an elevator case is always drawn and processed before its elevator structure.</desc>
+    <remark>You should only resort objects of the same category, otherwise the internal handling mights get confused.<br/>The actual resorting is done later but within the same frame as the script call.</remark>
+    <examples>
+      <example>
+        <code>SetObjectOrder(<funclink>FindObject</funclink>(TRE1), <funclink>FindObject</funclink>(TRE2));</code>
+        <text>Places the first found tree of type TRE2 before the first found tree of type TRE1.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ResortObjects</funclink>
+      <funclink>Resort</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

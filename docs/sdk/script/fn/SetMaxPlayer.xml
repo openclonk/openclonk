@@ -1,28 +1,30 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>SetMaxPlayer</title>
-                <category>Spieler</category>
-                <version>4.9.1.0 GWE</version>
-                <syntax>
-                        <rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>max</name><desc>Neue, maximale Spielerzahl</desc></param>
-			</params>
-                </syntax>
-                <desc>Ändert die Maximalzahl der Spieler, die an der Runde teilnehmen können. Dieser Wert wirkt sich nur auf Neubeitritte aus; es werden keine vorhandenen Spieler eliminiert, um das Limit zu erfüllen.</desc>
-                <examples>
-                        <example>
-				<code>protected func Script100() { <funclink>return</funclink>(SetMaxPlayer()); }</code>
-                                <text>Teil eines Szenarioscripts: Nach einiger Zeit können keine weiteren Spieler beitreten.</text>
-                        </example>
-                </examples>
-                <related>
-                        <funclink>GetPlayerCount</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>Juni 2003</date>
+  <func>
+    <title>SetMaxPlayer</title>
+    <category>Player</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>max</name>
+          <desc>New maximum player count.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adjusts the maximum number of players that can take part in the current round. Lowering this value will not eliminate active players. This value only affects the limit for joining players.</desc>
+    <examples>
+      <example>
+        <code>protected func Script100() { <funclink>return</funclink>(SetMaxPlayer()); }</code>
+        <text>Part of a scenario script: after a little while, no more players can join.</text>
+      </example>
+    </examples>
+    <related><funclink>GetPlayerCount</funclink></related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>
-

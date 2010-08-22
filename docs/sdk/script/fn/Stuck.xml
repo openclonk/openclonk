@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Stuck</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-		</syntax>
-		<desc>Ermittelt, ob das aufrufende Objekt feststeckt, d.h., ob sich einer seiner Vertices in festem Material befindet.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink>(<funclink>GetCursor</funclink>()->Stuck()) <funclink>GetCursor</funclink>()-><funclink>Message</funclink>("Help!");</code>
-				<text>Lässt eine Nachricht über dem ausgewählten Clonk des ersten Spielers ausgeben, wenn dieser zum Zeitpunkt des Aufrufes feststeckt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetContact</funclink>
-			<funclink>GetVertex</funclink>
-			<funclink>GetMaterial</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>August 2002</date>
+  <func>
+    <title>Stuck</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Returns whether the object is stuck, meaning that one of its vertices is enclosed in solid matter.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(<funclink>GetCursor</funclink>()-&gt;Stuck()) <funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;Help!&quot;);</code>
+        <text>Displays a message above the selected clonk of the first player if the clonk is stuck at the time the script is called.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetContact</funclink>
+      <funclink>GetVertex</funclink>
+      <funclink>GetMaterial</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

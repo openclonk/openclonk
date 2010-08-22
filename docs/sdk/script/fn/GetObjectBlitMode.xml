@@ -1,24 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetObjectBlitMode</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Liefert den aktuellen Zeichenmodus des aufrufenden Objekts.</desc>
-		<remark>Für eine Übersicht über die Zeichenmodi, siehe <funclink>SetObjectBlitMode</funclink>().</remark>
-		<remark>Für ein Beispiel siehe <funclink>SetObjectBlitMode</funclink>().</remark>
-		<related>
-			<funclink>GetClrModulation</funclink>
-			<funclink>SetObjectBlitMode</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>März 2004</date>
+  <func>
+    <title>GetObjectBlitMode</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>overlay_id</name>
+          <desc>If specified, the blit mode of the graphics overlay is returned instead. The overlay must have been previously set using <funclink>SetGraphics</funclink>. From CR.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the current blit mode of an object.</desc>
+    <remark>For an Overview of the possible blit modes, see <funclink>SetObjectBlitMode</funclink>().</remark>
+    <remark>For an example, see <funclink>SetObjectBlitMode</funclink>().</remark>
+    <related>
+      <funclink>GetClrModulation</funclink>
+      <funclink>SetObjectBlitMode</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

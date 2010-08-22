@@ -1,42 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetDir</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Liefert die aktuelle Richtung des aufrufenden Objekts als DIR_x-Wert.</desc>
-		<examples>
-			<example>
-				<code>/* Wird bei Doppelklick auf Graben aufgerufen */
+  <func>
+    <title>GetDir</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current direction of an object as DIR_x value.</desc>
+    <examples>
+      <example>
+        <code>/* Wird bei Doppelklick auf Graben aufgerufen */
 protected func Activate()
 {
 	// Pfeil erstellen
 	var arrow = <funclink>CreateContents</funclink>(Arrow);
-	// X-Geschwindigkeit für den Pfeil ermitteln
+	// X-Geschwindigkeit fÃ¼r den Pfeil ermitteln
 	var xspeed = -10 + 20 * <funclink>GetDir</funclink>();
-	// X-Ausgangsposition für den Pfeil ermitteln
+	// X-Ausgangsposition fÃ¼r den Pfeil ermitteln
 	var xexit = -5 + 10 * <funclink>GetDir</funclink>();
 	// Rotation des Pfeiles
 	var rotation = -90 + 180 * <funclink>GetDir</funclink>();
 	// Pfeil schleudern
-	arrow-><funclink>Exit</funclink>(xexit, 0, rotation, xspeed, 0);
+	arrow-&gt;<funclink>Exit</funclink>(xexit, 0, rotation, xspeed, 0);
 	<funclink>return</funclink> 1;
 } 
 				</code>
-				<text>Clonk der einen Bogen verschluckt hat.</text>
-				<text>Hinweis: <funclink>DIR_Left</funclink> = 0 / <funclink>DIR_Right</funclink> = 1</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>SetDir</funclink>
-												<funclink>DIR_Left</funclink>
-			<funclink>DIR_Right</funclink>
-								</related>
-	</func>
-	<author>wipfmetz</author><date>Juni 2002</date>
+        <text>Clonk swallowed a bow.</text>
+        <text>Notice: <funclink>DIR_Left</funclink> = 0 / <funclink>DIR_Right</funclink> = 1</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetDir</funclink>
+      <funclink>DIR_Left</funclink>
+      <funclink>DIR_Right</funclink>
+    </related>
+  </func>
+  <author>wipfmetz</author><date>2002-06</date>
 </funcs>

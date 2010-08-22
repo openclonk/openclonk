@@ -1,27 +1,47 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerType</title>
-                <category>Spieler</category>
-                <version>4.9.6.0 CR</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Typ abgefragt werden soll</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert den Typ eines Spielers. Mögliche Typen sind:
-                      <table><rowh><col>Konstante</col><col>Wert</col><col>Beschreibung</col></rowh>
-                      <row><col>C4PT_User</col><col>1</col><col>Vom Benutzer gesteuerter Spieler</col></row>
-                      <row><col>C4PT_Script</col><col>2</col><col>Scriptgeesteuerter Spieler; zum Beispiel KI-Spieler.</col></row>
-                      </table>
-                </desc>
-                <remark>Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben.</remark>
-                <examples>
-                        <example>
-<code>protected func InitializePlayer(int player)
+  <func>
+    <title>GetPlayerType</title>
+    <category>Player</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose type you want to retrieve.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Returns the type of a player. Possible values are: 
+      <table>
+        <rowh>
+          <col>Constant</col>
+          <col>Value</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>C4PT_User</col>
+          <col>1</col>
+          <col>User-controlled player.</col>
+        </row>
+        <row>
+          <col>C4PT_Script</col>
+          <col>2</col>
+          <col>Script-controlled player; i.e. AI player.</col>
+        </row>
+      </table>
+
+    </desc>
+    <remark>If the specified player number is invalid, the return value is 0.</remark>
+    <examples>
+      <example>
+        <code>protected func InitializePlayer(int player)
   {
   // Ist es ein Scriptspieler?
   if (GetPlayerType(player) == C4PT_Script)
@@ -31,14 +51,13 @@
     }
   <funclink>return</funclink> true;
   }</code>
-                                <text>Szenarienscript: Sobald ein Scritpspieler beitritt, wird ein Objekt der Definition _EAI im Besitz dieses Spielers erstellt. Dieses Objekt könnte zum Beispiel alle Clonks im Besitz des Spielers steuern.</text>
-                        </example>
-                </examples>
-                <related>
-                <emlink href="script/ScriptPlayers.html">Scriptspieler</emlink>
-			<funclink>CreateScriptPlayer</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>Dezember 2007</date>
+        <text>Scenario script: when a script player joins, an object of definition _EAI is created (owned by the joining script player). This object might now control all clonks owned by this player.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="script/ScriptPlayers.html">Script Player</emlink>
+      <funclink>CreateScriptPlayer</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-12</date>
 </funcs>
-

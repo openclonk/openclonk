@@ -1,37 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>Pow</title>
-  <category>Arithmetik</category>
-  <version>4.9.1.0 GWE</version>
-  <deprecated />
-  <syntax>
-   <rtype>int</rtype>
-   <params>
-    <param>
-     <type>int</type>
-     <name>value1</name>
-     <desc>Basis</desc>
-    </param>
-    <param>
-     <type>int</type>
-     <name>value2</name>
-     <desc>Exponent</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Errechnet die Potenz von value1 und value2 ("X hoch Y")</desc>
-
-  <remark>Statt Pow() sollte der <emlink href="script/operatoren.html">Operator</emlink> "**" verwendet werden:
-  <code>value1 ** value2</code></remark>
-
-  <related>
-   <funclink>Mul</funclink>
-   <funclink>Div</funclink>
-  </related>
- </func>
- <author>PeterW</author><date>Januar 2002</date>
+  <func>
+    <title>Pow</title>
+    <category>Arithmetics</category>
+    <version>4.9.1.0 GWE</version>
+    <deprecated />
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value1</name>
+          <desc>Basis</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>value2</name>
+          <desc>Exponent</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Calculates value1 to the power of value2.</desc>
+    <remark>Instead of Pow() you should use the <emlink href="script/operatoren.html">operator</emlink> "**": <code>value1 ** value2</code></remark>
+    <related>
+      <funclink>Mul</funclink>
+      <funclink>Div</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-01</date>
 </funcs>

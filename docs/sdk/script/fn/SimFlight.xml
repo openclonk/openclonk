@@ -1,35 +1,73 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SimFlight</title>
-		<category>Objekte</category><subcat>Bewegung</subcat>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int &amp;</type><name>x</name><desc>X-Koordinate der Startposition. Immer global.</desc></param>
-				<param><type>int &amp;</type><name>y</name><desc>Y-Koordinate der Startposition. Immer global.</desc></param>
-				<param><type>int &amp;</type><name>xdir</name><desc>X-Anfangsgeschwindigkeit.</desc></param>
-				<param><type>int &amp;</type><name>ydir</name><desc>Y-Anfangsgeschwindigkeit.</desc></param>
-				<param><type>int</type><name>min_density</name><desc>Minimale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material).</desc><optional/></param>
-				<param><type>int</type><name>max_density</name><desc>Maximale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material).</desc><optional/></param>
-				<param><type>int</type><name>iterations</name><desc>Anzahl der simulierten Frames bis zum Abbruch der Simulation. Keine Angabe oder Null entspricht -1 (Kein Abbruch).</desc><optional/></param>
-				<param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
-			</params>
-		</syntax>
-		<desc>Simuliert die Bewegung eines freien Falles mit Anfangsgeschwindigkeit in die angegebene Richtung. Wenn die simulierte Bewegung ein Material mit der gewünschten Dichte durchläuft, gibt diese Funktion true zurück, ansonsten false.<br/> Bei true wird die X- und Y-Position des Aufpralls in den angegebenen Variablen für x und y gespeichert, die Aufprallgeschwindigkeit in den angegebenen Variablen fü xdir und ydir. Siehe dazu <emlink href="script/Funcs.html#referenzen">Referenzen</emlink>.</desc>
-		<examples>
-			<example>
-<code>var x = <funclink>GetX</funclink>(), y = <funclink>GetY</funclink>(), xdir = <funclink>GetXDir</funclink>(), ydir = <funclink>GetYDir</funclink>();
-if (<funclink>GetAction</funclink>()eq"Jump")
+  <func>
+    <title>SimFlight</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int &amp;</type>
+          <name>x</name>
+          <desc>X coordinate of the starting position. Always global.</desc>
+        </param>
+        <param>
+          <type>int &amp;</type>
+          <name>y</name>
+          <desc>Y coordinate of the starting position. Always global.</desc>
+        </param>
+        <param>
+          <type>int &amp;</type>
+          <name>xdir</name>
+          <desc>Initial horizontal speed.</desc>
+        </param>
+        <param>
+          <type>int &amp;</type>
+          <name>ydir</name>
+          <desc>Initial vertical speed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>min_density</name>
+          <desc>Mininum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>max_density</name>
+          <desc>Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>iterations</name>
+          <desc>Number of simulated frames for which the projection runs. If not specified or 0 the simultion will run indefinitely until material or the limits of the landscape are encountered.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for x and y, the horizontal and vertical speed at the time of interception in xdir and ydir respectively. See <emlink href="script/Funcs.html#referenzen">references</emlink> for details.</desc>
+    <examples>
+      <example>
+        <code>var x = <funclink>GetX</funclink>(), y = <funclink>GetY</funclink>(), xdir = <funclink>GetXDir</funclink>(), ydir = <funclink>GetYDir</funclink>();
+if (<funclink>GetAction</funclink>()eq&quot;Jump&quot;)
   if (SimFlight(x, y, xdir, ydir))
-    if (ydir >= 80)
-      <funclink>Message</funclink>("Oh oh, das wird ein harter Aufprall!");</code>
-				<text>Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen ist, dass er mit hoher Geschwindigkeit auf den Boden aufprallen wird, ruft dies der Clonk aus. Bei einer Aufprallgeschwindigkeit von mindestens 8 Pixeln pro Frame landet der Clonk nicht mehr auf seinen Füßen und muss sich erst wieder aufrichten.<br/>Die ersten vier Parameter von SimFlight sind <emlink href="script/Funcs.html#referenzen">Referenzen</emlink>.</text>
-			</example>
-		</examples>
-	</func>
-	<author>Newton</author><date>März 2004</date>
+    if (ydir &gt;= 80)
+      <funclink>Message</funclink>(&quot;Oh oh, das wird ein harter Aufprall!&quot;);</code>
+        <text>If the calling clonk is situated in mid-air and it appears that he will hit the ground at high speed, he will call out.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Newton</author><date>2004-03</date>
 </funcs>

@@ -1,24 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ToggleBit</title>
-		<category>Arithmetik</category>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>old_value</name><desc>Alter Wert der Bitmaske</desc></param>
-				<param><type>int</type><name>bit_number</name><desc>Das umzudrehende Bit</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt die neue Bitmaske mit dem an der angegebenen Stelle umgedrehten Bit zurück</desc>
-		<related>
-			<funclink>SetBit</funclink>
-			<funclink>GetBit</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>ToggleBit</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>old_value</name>
+          <desc>Old value of the bit masc</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>bit_number</name>
+          <desc>The bit to flip</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the new bit masc with the bit at the indicated position flipped</desc>
+    <related>
+      <funclink>SetBit</funclink>
+      <funclink>GetBit</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>
-

@@ -1,18 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Random</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>max</name><desc>Höchstwert</desc></param>
+        <param>
+          <type>int</type>
+          <name>max</name>
+          <desc>Maximum value</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Gibt eine Zufallszahl zwischen 0 und max-1 zurück. Der zurückgegebene Wert kann jedoch nicht höher als 32767 sein.</desc>
+    <desc>Yields a random number from 0 to max-1. The returned value cannot be greater than 32767, however.</desc>
     <examples>
       <example>
         <code>protected func Hit()
@@ -20,12 +25,10 @@
   <funclink>if</funclink>(!Random(60)) <funclink>Explode</funclink>(Random(10)+1);
 }
         </code>
-        <text>Lässt das Objekt, in dem der Script steht, mit der Wahrscheinlichkeit von 1:60 explodieren. Der Explosionsradius ist dabei ein zufälliger Wert zwischen 1 und 10.</text>
+        <text>Explodes the object with a probability of 1:60. The explosion radius is a random value from 1 to 10.</text>
       </example>
     </examples>
-    <related>
-      <funclink>RandomX</funclink>
-    </related>
+    <related><funclink>RandomX</funclink></related>
   </func>
-  <author>jwk</author><date>Juni 2002</date>
+  <author>jwk</author><date>2002-06</date>
 </funcs>

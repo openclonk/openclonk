@@ -1,34 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetChar</title>
-		<category>Script</category><subcat>Strings</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>string</type><name>text</name><desc>Zeichenkette, von der ein Zeichen abgefragt wird</desc></param>
-				<param><type>int</type><name>index</name><desc>Position des abgefragten Zeichens. 0 entspricht dabei dem ersten Zeichen. Ist dieser Wert größer oder gleich der Länge der Zeichenkette, wird 0 zurückgegeben.</desc></param>
-			</params>
-		</syntax>
-		<desc>Ermittelt den Zeichencode eines indizierten Zeichens einer Zeichenkette.</desc>
-		<remark>Mit <code><funclink>Format</funclink>("%c")</code> lässt sich das Zeichen in einen String umwandeln.</remark>
-		<examples>
-			<example>
-
-<code>var c=GetChar(<funclink>GetPlayerName</funclink>(0), 0);
+  <func>
+    <title>GetChar</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>String of which to get a character.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Position of the character. The first character is at position 0. If the specified position is outside the string, 0 is returned.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the ASCII character code of a character in a string.</desc>
+    <remark><code><funclink>Format</funclink>("%c")</code> can be used to convert the character to a string.</remark>
+    <examples>
+      <example>
+        <code>var c=GetChar(<funclink>GetPlayerName</funclink>(0), 0);
 <funclink>if</funclink> (<funclink>Inside</funclink>(c, 97, 122)) c-=32;
-<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Log</funclink>("Dein Name beginnt mit dem %d. Buchstaben des Alphabets.", c-64)</code>
-
-				<text>Ermittelt den Anfangsbuchstaben des Spielernamens des ersten Spielers.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Format</funclink>
-			<funclink>GetLength</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Log</funclink>(&quot;Dein Name beginnt mit dem %d. Buchstaben des Alphabets.&quot;, c-64)</code>
+        <text>Gets the first character of the name of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Format</funclink>
+      <funclink>GetLength</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

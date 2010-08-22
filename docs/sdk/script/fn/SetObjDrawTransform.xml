@@ -1,50 +1,80 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetObjDrawTransform</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>width</name><desc>Breite der Grafik. 1000 ist die Standardbreite, negative Angaben bedeuten eine horizontale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
-				<param><type>int</type><name>xskew</name><desc>Horizontale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der horizontalen Kante um 45° nach links (oben nach links, unten nach rechts). Negative Werte bedeuten eine Verschiebung nach rechts.</desc></param>
-				<param><type>int</type><name>xadjust</name><desc>Horizontale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach rechts verschoben, bei negativen Angaben wird die Grafik nach links verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
-				<param><type>int</type><name>yskew</name><desc>Vertikale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der vertikalen Kante um 45° nach unten (links hoch, rechts runter). Negative Werte bedeuten eine Verschiebung nach oben.</desc></param>
-				<param><type>int</type><name>height</name><desc>Höhe der Grafik. 1000 ist die Standardhöhe, negative Angaben bedeuten eine vertikale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
-				<param><type>int</type><name>yadjust</name><desc>Vertikale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach unten verschoben, bei negativen Angaben wird die Grafik nach oben verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
-				<param><type>int</type><name>overlay_id</name><desc>ID des Overlays, dessen Transformation angepasst werden soll. Bei 0 (default) wird die Hauptgrafik transformiert.</desc></param>
-			</params>
-		</syntax>
-		<desc>Transformiert die Grafik des aufrufenden Objektes.</desc>
-		<remark>Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Floating Point-Werte gibt.</remark>
-		<examples>
-			<example>
-				<code>SetObjDrawTransform(1000,0,0,0,1000,0);</code>
-				<text>Setzt die Transformation zurück.</text>
-			</example>
-			<example>
-				<code>global func SetDTRotation (int r, int xoff, int yoff, object obj) {
+  <func>
+    <title>SetObjDrawTransform</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the image. Original width is 1000. A negative value means horizontal mirroring. The image is always centered.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xskew</name>
+          <desc>Horizontal skew of the image: 0 means no skewing. 1000 yields a 45Â° offset of the horizontal edges (top edge to the left, bottom edge to the right). Negative values yield an offset into the opposite direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xadjust</name>
+          <desc>Horizontal image offset. Value 1000 moves the image one pixel to the right. Negative values move the image to the left. This means you can also move the image by fractions of a pixel.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yskew</name>
+          <desc>Vertical skew of the image: 0 means no skewing. 1000 yields a 45Â° offset of the vertical edges (left edge up, right edge down). Negative values yield an offset into the opposite direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the image. Original height is 1000. A negative value means vertical mirroring. The image is always centered.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yadjust</name>
+          <desc>Vertical image offset. Value 1000 moves the image one pixel down. Negative values move the image up. This means you can also move the image by fractions of a pixel.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>overlay_id</name>
+          <desc>ID of the overlay the transform of which you want to adjust. Value 0 (default) indicates the main image (not an overlay).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Transforms the image of the object.</desc>
+    <remark>As there are no floating-point values in Clonk, all values are per thousand (1000 = 1 = 100%). This allows specifiying fractions of one.</remark>
+    <examples>
+      <example>
+        <code>SetObjDrawTransform(1000,0,0,0,1000,0);</code>
+        <text>Resets all transformation.</text>
+      </example>
+      <example>
+        <code>global func SetDTRotation (int r, int xoff, int yoff, object obj) {
   var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
   // set matrix values
-  obj->SetObjDrawTransform (
+  obj-&gt;SetObjDrawTransform (
     +fcos, +fsin, (1000-fcos)*xoff - fsin*yoff,
     -fsin, +fcos, (1000-fcos)*yoff + fsin*xoff,
   );
 }</code>
-				<text>Rotiert das Objekt ohne es tatsächlich zu rotieren (Vertices usw. bleiben da wo sie sind).</text>
-			</example>
-			<example>
-				<code><funclink>GetHiRank</funclink>(0)->SetObjDrawTransform(1000,0,0,0,-1000,0);</code>
-				<text>Dreht den höchstrangigsten Clonk des ersten Spielers um, so dass er auf dem Kopf steht.</text>
-			</example>
-			<example>
-				<code>SetObjDrawTransform(500,0,0,0,500,GetDefHeight(GetID())*1000/4);</code>
-				<text>Verkleinert die Grafik um 50% verschiebt die Unterkante der verkleinerten Grafik an die Unterkante des Objektes: Ein so verkleinerter Baum würde nicht in der Luft schweben (weil Grafik zentriert), sondern seine Wurzel da haben wo sie auch vorher war.</text>
-			</example>
-		</examples>
-	</func>
-	<author>Clonkonaut</author><date>Mai 2008</date>
+        <text>Rotates the image of the object without rotating the actual object (i.e. vertices and other interactive elements stay where they are).</text>
+      </example>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;SetObjDrawTransform(1000,0,0,0,-1000,0);</code>
+        <text>Turns the image of the player's highest ranking clonk upside down.</text>
+      </example>
+      <example>
+        <code>SetObjDrawTransform(500,0,0,0,500,GetDefHeight(GetID())*1000/4);</code>
+        <text>Reduces the image of the object by 50% and moves the bottom edge of the reduced image to the bottom edge of the object: if you use this to reduce the image of a tree, the reduced tree will not float in mid-air but will properly rest with its roots on the ground).</text>
+      </example>
+    </examples>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
 </funcs>

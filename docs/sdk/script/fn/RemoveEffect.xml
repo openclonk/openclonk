@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>RemoveEffect</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>bool</rtype>
@@ -12,42 +13,39 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name des Effektes ohne vorangestelltes Fx. Es können '*' und '?' als Suchmaske verwendet werden.</desc>
+          <desc>Name of the effect without preceding 'Fx'. You can use '*' and '?' wildcards.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Zielobjekt, in dem ein Effekt gelöscht werden sollen. Bei 0 wird die globale Effektliste durchsucht.</desc>
+          <desc>Target object from which to remove an effect. If 0, the global effects list will be searched.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
+          <desc>Effect index. If name is given then if there are more effects matching the search mask the one with the given index is refered to. If name is not given then the effect with the correspoding effect number will be changed. For indices it is guaranteed that, in contrast to effect numbers, they start at 0 and count up to the number of effects</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
           <name>no_calls</name>
           <optional />
-          <desc>Wenn ungleich 0, werden keine Stop-Aufrufe durchgeführt.</desc>
+          <desc>If not 0, no Stop calls will be made.</desc>
         </param>
         <param>
           <type>int</type>
           <name>new_timer</name>
           <optional />
-          <desc>Neues Timer-Intervall. Bei -1 wird der alte Wert beibehalten; ansonsten wird bei diesem Aufruf auch die Effektzeit zurückgesetzt.</desc>
+          <desc>New timer interval. If -1, the previous value will be kept. Otherwise, this call will also reset effect time.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Löscht einen Effekt</desc>
-
-    <remark>Beispiel siehe <funclink>GetEffect</funclink>. Achtung: Wenn sich ein Effekt mit dieser Funktion selbst löschen soll, wird nur target und index angegeben, nicht name!</remark>
-
+    <desc>Deletes an effect.</desc>
+    <remark>See <funclink>GetEffect</funclink> for an example. Warning: if an effect is meant to delete itself using this function, only use target and index, not name!</remark>
     <related>
-      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
       <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
@@ -57,5 +55,5 @@
       <funclink>GetEffect</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>März 2004</date>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

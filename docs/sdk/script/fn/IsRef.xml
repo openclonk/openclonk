@@ -1,16 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>IsRef</title>
-		<category>Variablen</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params><param><type>any</type><name>Value</name><desc>Wert, dessen Typ geprüft werden soll</desc></param></params>
-		</syntax>
-		<desc>Prüft, ob Value eine Referenz ist.</desc>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+  <func>
+    <title>IsRef</title>
+    <category>Variables</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>Value</name>
+          <desc>Value of which to determine the type.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Checks wether Value is a reference.</desc>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

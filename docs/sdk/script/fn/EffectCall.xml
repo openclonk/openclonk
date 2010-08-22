@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>EffectCall</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>any</rtype>
@@ -12,33 +13,30 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Zielobjekt des Effektes, auf dessen Variablenspeicher zugegriffen wird. 0 für globale Effekte.</desc>
+          <desc>Target object of the effect the of which you want to access variables. 0 for global effects.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>number</name>
-          <desc>Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <funclink>AddEffect</funclink> und lassen sich über <funclink>GetEffect</funclink> aus dem Effektnamen herausfinden.</desc>
+          <desc>Effect number. Effect numbers are passed to effect callback functions, they are the return values of <funclink>AddEffect</funclink> and can be determined from an effect name via <funclink>GetEffect</funclink>.</desc>
         </param>
         <param>
           <type>string</type>
           <name>command</name>
-          <desc>Aufzurufender Befehl. Es wird automatisch Fx[Effektname] vorangestellt; dies sollte nicht mit angegeben werden.</desc>
+          <desc>Function to be called. The prefix 'Fx' is automatically prepended to the function name. Do not include 'Fx' in the parameter.</desc>
         </param>
         <param>
           <type>any</type>
           <name>...</name>
-          <desc>Zusätzliche Aufrufparameter</desc>
+          <desc>Additional parameters</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Führt einen Funktionsaufruf im angegebenen Effekt durch. Der Aufruf erhält den Befehlskontext des Effektes, und die ersten beiden Aufrufparameter sind immer Zielobjekt und Effektindex. Die weiteren Parameter können frei gewählt werden.</desc>
-
-    <remark>Für Beispiele und weitere Hinweise siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>.</remark>
-
+    <desc>Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect index. The remaining parameters can be freely chosen.</desc>
+    <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
-      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
       <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
@@ -48,5 +46,5 @@
       <funclink>RemoveEffect</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>März 2004</date>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

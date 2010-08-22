@@ -1,23 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetLength</title>
-		<category>Script</category><subcat>Strings</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>any</type><name>text</name><desc>Zeichenkette oder Array, von der die Länge abgefragt wird</desc></param>
-			</params>
-		</syntax>
-		<desc>Ermittelt die Länge einer Zeichenkette oder eines Arrays.</desc>
-		<related>
-			<funclink>SetLength</funclink>
-			<funclink>GetChar</funclink>
-			<funclink>CreateArray</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>Juni 2006</date>
+  <func>
+    <title>GetLength</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>text</name>
+          <desc>String or array of which to get the length</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the length of a string or an array.</desc>
+    <related>
+      <funclink>SetLength</funclink>
+      <funclink>GetChar</funclink>
+      <funclink>CreateArray</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2006-06</date>
 </funcs>

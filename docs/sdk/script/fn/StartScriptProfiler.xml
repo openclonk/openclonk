@@ -1,22 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>StartScriptProfiler</title>
-		<category>Entwickler</category>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>id</type><name>definition_script</name><desc>Wenn angegeben, werden nur Scriptfunktionen einer bestimmten Objektdefinition gemessen.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Startet den Scriptprofiler.</desc>
-		<remark>Mit dem Scriptprofiler lässt sich messen, wie viel Rechenzeit die Scriptengine in welchen Scriptfunktionen aufwendet. Dies kann nützlich sein, um in langsam laufenden Szenarien zu prüfen, ob und wo sich Flaschenhälse in der Ausführung von Scripten befinden. Gemessen werden immer jeweils die Scriptausführungen zwischen einem StartScriptProfiler und einem StopScriptProfiler-Aufruf.</remark>
-		<related>
-			<funclink>StopScriptProfiler</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>März 2007</date>
+  <func>
+    <title>StartScriptProfiler</title>
+    <category>Developer</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition_script</name>
+          <desc>If specified, only script functions of the given object definition are measured.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Starts the script profiler.</desc>
+    <remark>The script profiler can be used to measure how much processing time the scripting engine is using for executing certain script functions. This can be useful to find out which parts of a script are mainly slowing down execution in larger scenarios. The profiler measures the execution time between the commands StartScriptProfiler and StopScriptProfiler.</remark>
+    <related><funclink>StopScriptProfiler</funclink></related>
+  </func>
+  <author>Sven2</author><date>2007-03</date>
 </funcs>

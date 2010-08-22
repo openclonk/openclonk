@@ -1,37 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetTime</title>
-		<category>System</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Gibt die Zeit seit Windowsstart in Millisekunden zurück. Kann zur genauen Zeitmessung
-					verwendet werden.</desc>
-		<remark>Da die Zeiten bei unterschiedlichen Computern variieren können, gibt diese Funktion,
-						um eine Syncunsicherheit zu vermeiden, beim Netzwerkspiel und bei Filmaufnahmen 0
-						zurück.</remark>
-		<examples>
-			<example>
-				<code>func TestCos()
+  <func>
+    <title>GetTime</title>
+    <category>System</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the time passed since operating system start. Can be used for exact time measurement.</desc>
+    <remark>As operating system times will vary on different computers, this function will always return 0 in a network game or playback to avoid synchronization errors.</remark>
+    <examples>
+      <example>
+        <code>func TestCos()
 {
-	if(<funclink>IsNetwork</funclink>()) <funclink>return</funclink>(<funclink>Log</funclink>("TestCos funktioniert im Netzwerk nicht!"));
+	if(<funclink>IsNetwork</funclink>()) <funclink>return</funclink>(<funclink>Log</funclink>(&quot;TestCos funktioniert im Netzwerk nicht!&quot;));
 	var start_time = GetTime();
 	for(var i = 0; i &lt; 100; i++) var x = <funclink>Cos</funclink>(i, 100);
 	var time = GetTime() - start_time;
-	<funclink>Log</funclink>("Ein Cos-Aufruf benötigt: %d.%02d ms", time / 100, time % 100);
+	<funclink>Log</funclink>(&quot;Ein Cos-Aufruf benÃ¶tigt: %d.%02d ms&quot;, time / 100, time % 100);
 }</code>
-				<text>Diese Funktion prüft die Performance der Funktion "<funclink>Cos</funclink>".
-							Dabei wird die Funktion 100-mal aufgerufen und die verbrauchte Zeit mittels GetTime()
-							gemessen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetSystemTime</funclink>
-		</related>
-	</func>
-	<author>Peter</author><date>August 2002</date>
+        <text>This function checks the performance of the function "<funclink>Cos</funclink>". To do this, it executes the function 100 times and calculates the processinf time using GetTime().</text>
+      </example>
+    </examples>
+    <related><funclink>GetSystemTime</funclink></related>
+  </func>
+  <author>Peter</author><date>2002-08</date>
 </funcs>

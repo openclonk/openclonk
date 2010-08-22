@@ -1,50 +1,52 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Materialdefinitionen</title>
-
-<h id="Materialdefinitionen">Materialdefinitionen</h>
-<part>
-	<text>Mit Materialdefinitionen können Aussehen und Funktion der Materialien, aus denen eine Clonk-Landschaft besteht, bestimmt werden. In der Landschaft eines Szenarios können maximal 125 verschiedene Materialien verwendet werden.</text>
-
-	<h id="MaterialdefinitionsKomponentenMaterialc4g">Materialdefinitions-Komponenten (Material.c4g)</h>
-	<dl>
-		<dt id="TexMaptxt"><img src="../../images/icon_text.gif" width="16" height="16"/>TexMap.txt</dt>
-		<dd><text>Zuordnungstabelle für Farbindizes in statischen und komplexen dynamischen Landkarten. Den Farben 0-127 kann eine Material-Textur-Referenz zugewiesen werden. Die Farben 128-255 stehen für die gleiche Reihe von Materialien in unterirdischem Zustand.</text>
-		<text>Die Engine zeichnet dabei Materialien mit höherem Index über solche mit niedrigeren, so dass bei der Standardtabelle die runde Erde das eckige Wasser überschreibt, weil letzteres einen niedrigeren Index hat. Einen noch höheren Index haben die Resourcen, damit sie nach außen gewölbt sind, und nicht die Wölbung der Erde in sie hineinragt, was etwas seltsam aussähe. Die Reihenfolge ist auch der Grund, weshalb einzelne Goldpixel einer statischen Landkarte nach dem Zoomen mehr Platz einnehmen als das dem Pixel entsprechende Quadrat, während ein einzelnes Wasserpixel oft von der umgebenden Erde komplett übermalt wird.</text>
-		<text>Wenn eine selbstgemalte Landkarte von der Engine mit der Meldung "Landkarte: Textur n nicht definiert." abgelehnt wird, kann dies durch definieren der Textur n in der TexMap behoben werden. Grundsätzlich sollte man ein palettenfähiges Grafikprogramm (MS Paint gehört nicht dazu) oder den Entwicklermodus der Engine verwenden, um solche Probleme zu vermeiden.</text></dd>
-	
-		<dt id="c4m"><img src="../../images/icon_material.gif" width="16" height="16"/><emlink href="material/c4m.html">*.c4m</emlink></dt>
-		<dd><text>Die Engine akzeptiert bis zu 125 Materialdefinitionen gleichzeitig. C4M-Dateien sind einfache Textdateien. Die Materialien Vehicle, Tunnel, Water, Snow, Granite, Sand und Earth müssen immer vorhanden sein.</text></dd>
-		
-		<dt id="bmp"><img src="../../images/icon_image.gif" width="16" height="16"/>*.png/*.bmp</dt>
-		<dd><text>Es können beliebig viele Texturen im Format PNG oder als unkomprimierte Windows-Bitmaps (mit 256 Farben) in einer Materialgruppe abgelegt werden. Breite und Höhe eines jeden Bitmaps müssen Zweierpotenzen sein (also 16, 32, 64, 128, 256, etc.) Im veralteten BMP-Format dürfen nur die ersten drei Farben des Textur-Bitmaps verwendet werden (Farbindex 0-2). Die Farbgebung ist irrelevant, da die Texturen im Spiel mit den Farben des jeweiligen Materials kombiniert werden.</text></dd>
-	</dl>	
-		
-	<h id="MaterialTexturReferenzen">Material-Textur-Referenzen</h>
-	<text>An zahlreichen Stellen in Szenario-Definitionen werden Materialien (ggf. mit Textur- und Mengenangaben) bestimmt.</text>
-	<text><table>
-		<row>
-			<col>Einfache Materialangabe (mit Vorgabetextur):</col>
-			<col><code>Earth</code></col>
-		</row>
-		<row>
-			<col>Material mit bestimmter Textur:</col>
-			<col><code>Earth-Rough</code></col>
-		</row>
-		<row>
-			<col>Material mit Textur und Mengenangabe:</col>
-			<col><code>Gold-Rough=100</code></col>
-		</row>
-		<row>
-			<col>Mehrfache Materialien:</col>
-			<col><code>Earth-Smooth=10; Rock-Rough=5; Gold=2</code></col>
-		</row>
-	</table></text>
-</part>
-
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>April 2004</date>
-
+  <title>Material Definitions</title>
+  <h id="Materialdefinitionen">Material Definitions</h>
+  <part>
+    <text>Using material definitions you can specify looks and behaviour of the landscape materials.</text>
+    <h id="MaterialdefinitionsKomponentenMaterialc4g">Material Definition Components (Material.c4g)</h>
+    <dl>
+      <dt id="TexMaptxt"><img height="16" src="../../images/icon_text.gif" width="16"/>TexMap.txt</dt>
+      <dd>
+        <text>Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'.</text>
+        <text>The engine will draw materials with a higher index above those with a lower index so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. This is also the reason why there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials.</text>
+        <text>If a custom map fails with the message 'texture n undefined' you should define the specified texture in the TexMap. You should always use a paint program capable of editing indexed color palettes without modifying the palette (MS Paint is not suited for this).</text>
+      </dd>
+      <dt id="c4m"><img height="16" src="../../images/icon_material.gif" width="16"/><emlink href="material/c4m.html">*.c4m</emlink></dt>
+      <dd>
+        <text>The engine will accept up to 125 material definitions at a time. C4M files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
+      </dd>
+      <dt id="bmp"><img height="16" src="../../images/icon_image.gif" width="16"/>*.png/*.bmp</dt>
+      <dd>
+        <text>There can be any number of textures in PNG or uncompressed Windows BMP format (with 256 colors) in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.) With the old BMP format only the first three colors of the texture bitmap may be used as to these the three material colors are applied.</text>
+      </dd>
+    </dl>
+    <h id="MaterialTexturReferenzen">Material-Texture-References</h>
+    <text>At numerous places in scenario definitions materials are specified with additional information on texture and amounts.</text>
+    <text>
+      <table>
+        <row>
+          <col>Simple material specification (using the default texture):</col>
+          <col><code>Earth</code></col>
+        </row>
+        <row>
+          <col>Material using an specified texture:</col>
+          <col><code>Earth-Rough</code></col>
+        </row>
+        <row>
+          <col>Material and texture with specified amount:</col>
+          <col><code>Gold-Rough=100</code></col>
+        </row>
+        <row>
+          <col>Multiple material definitions:</col>
+          <col><code>Earth-Smooth=10; Rock-Rough=5; Gold=2</code></col>
+        </row>
+      </table>
+    </text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-04</date>
 </doc>

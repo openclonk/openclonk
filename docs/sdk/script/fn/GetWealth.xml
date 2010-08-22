@@ -1,23 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetWealth</title>
-                <category>Spieler</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>owner</name><desc>Spielernummer</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert das Vermögen von owner.</desc>
-                <related>
-                        <funclink>SetWealth</funclink>
-     					<funclink>DoWealth</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetWealth</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>owner</name>
+          <desc>Player number</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the wealth of a player.</desc>
+    <related>
+      <funclink>SetWealth</funclink>
+      <funclink>DoWealth</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

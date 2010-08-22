@@ -1,23 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetRDir</title>
-                <category>Objekte</category><subcat>Bewegung</subcat>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
-                        </params>
-                </syntax>
-                <desc>Liefert die Rotations-Geschwindigkeit des aufrufenden Objekts.</desc>
-                <related>
-                        <funclink>SetRDir</funclink>
-                        <funclink>GetR</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetRDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the rotation speed of an object.</desc>
+    <related>
+      <funclink>SetRDir</funclink>
+      <funclink>GetR</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

@@ -1,30 +1,40 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Fling</title>
-		<category>Objekte</category><subcat>Bewegung</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>xdir</name><desc>X-Schleudergeschwindigkeit</desc></param>
-				<param><type>int</type><name>ydir</name><desc>Y-Schleudergeschwindigkeit</desc></param>
-			</params>
-		</syntax>
-		<desc>Verschleudert das aufrufende Objekt in die angegebene Richtung. Diese Funktion ist für Lebewesen konzipiert, da sie die entsprechenden Aktivitäten setzt.</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>(0)->Fling(10, -15);</code>
-				<text>Verschleudert den ausgewählten Clonk nach oben rechts.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Jump</funclink>
-			<funclink>SetXDir</funclink>
-			<funclink>SetYDir</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Fling</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>X flinging speed</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>Y flinging speed</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Flings an object into the specified direction. This function is designed for living beings as it will also set the tumbling activity.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;Fling(10, -15);</code>
+        <text>Throws the selected clonk up and to the right.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Jump</funclink>
+      <funclink>SetXDir</funclink>
+      <funclink>SetYDir</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

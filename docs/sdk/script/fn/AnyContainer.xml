@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>AnyContainer</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.6.5.0 CP</version>
-		<deprecated />
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Wird an <funclink>FindObject</funclink>/<funclink>FindObjectOwner</funclink> übergeben, damit nur Objekte gefunden werden, die in einem anderen Objekt enthalten sind</desc>
-		<examples>
-			<example>
-				<code><funclink>Punch</funclink>(<funclink>FindObject</funclink>(WIPF, 0, 0, 0, 0, 0, 0, 0, AnyContainer()), 5);</code>
-				<text>Schlägt einen sich versteckenden Wipf.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Find_AnyContainer</funclink>
-			<funclink>FindObject</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+  <func>
+    <title>AnyContainer</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.6.5.0 CP</version>
+    <deprecated />
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Passed to <funclink>FindObject</funclink>/<funclink>FindObjectOwner</funclink> so only contained objects are found.</desc>
+    <examples>
+      <example>
+        <code><funclink>Punch</funclink>(<funclink>FindObject</funclink>(WIPF, 0, 0, 0, 0, 0, 0, 0, AnyContainer()), 5);</code>
+        <text>Hits a hiding wipf.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Find_AnyContainer</funclink>
+      <funclink>FindObject</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

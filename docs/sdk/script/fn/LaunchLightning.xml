@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>LaunchLightning</title>
-    <category>Umwelt</category><subcat>Wetter</subcat>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
     <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
     <syntax>
       <rtype>bool</rtype>
@@ -12,51 +14,49 @@
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X-Zielposition</desc>
+          <desc>X position</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y-Zielposition</desc>
+          <desc>Y position</desc>
         </param>
         <param>
           <type>int</type>
           <name>xspeed</name>
-          <desc>horizontale mittlere Geschwindigkeit des Blitzes</desc>
+          <desc>Horizontal average speed of the lightning bolt.</desc>
         </param>
         <param>
           <type>int</type>
           <name>xrange</name>
-          <desc>maximale Abweichung von xspeed</desc>
+          <desc>Maximum deviation of xspeed.</desc>
         </param>
         <param>
           <type>int</type>
           <name>yspeed</name>
-          <desc>vertikale mittlere Geschwindigkeit des Blitzes</desc>
+          <desc>Vertical average speed of the lightning bolt.</desc>
         </param>
         <param>
           <type>int</type>
           <name>yrange</name>
-          <desc>maximale Abweichung von yspeed</desc>
+          <desc>Maximum deviation of yspeed.</desc>
         </param>
         <param>
           <type>bool</type>
           <name>do_gamma</name>
-          <desc>Wenn gesetzt, bewirkt dieser Blitz ein Aufflackern des Bildschirms bei allen Spielern.</desc>
+          <desc>If true, the lightning will cause a screen flash for all players.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Erzeugt einen Blitz. Dieser bewegt sich von der Position (x, y) mit der angegebenen Geschwindigkeit fort. Dabei geben xrange/yrange an, wie sehr der Blitz von diesem vorgegegebenen Weg abweichen kann (mit xrange = yrange = 0 würde der Blitz schnurgerade verlaufen). xrange/yrange sind sozusagen ein Maß für die "Zackigkeit" eines Blitzes.<br/>
-          Die Position muss auch bei lokalem Aufruf in globalen Koordinaten angegeben werden.</desc>
+    <desc>Creates a bolt of lightning. This will then move from the starting position (iX, iY) at the specified speed and the specified deviation (iXRange, iYRange). Setting the deviation values to 0 would create a straight, linear bolt.<br/>Coordinates are global, even in local calls.</desc>
     <examples>
       <example>
         <code>LaunchLightning(<funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 0, -20, 41, +5, 15);</code>
-        <text>Dieser Aufruf erzeugt einen normalen Wetterblitz</text>
+        <text>This call creates normal weather lightning.</text>
       </example>
       <example>
         <code>LaunchLightning(100, 100, +5, 15, -10, 21);</code>
-        <text>Hierbei handelt es sich um einen "Zauberblitz", der nach rechts gerichtet ist.<br />
-              (Beispiele aus Orginal-Doku)</text>
+        <text>This will create a bolt such as the one in the magic lightning spell, directed to the right.</text>
       </example>
     </examples>
     <related>
@@ -64,5 +64,5 @@
       <funclink>LaunchVolcano</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

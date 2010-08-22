@@ -15,7 +15,7 @@ class clonkXmlMode:
         return ['code']
 
     _stuff = ['funclink', 'version', 'extversion', 'rtype', 'author', 'date',
-        'type', 'code', 'code/i', 'code/b', 'name', 'func/title']
+        'type', 'code', 'code/i', 'code/b', 'name', 'func/title', 'literal_col']
     def _delete_stuff(self, node, msg):
         #print "looking at " + str(node.name)
         if node and node.children:

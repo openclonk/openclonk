@@ -1,32 +1,73 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>DrawMaterialQuad</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szMaterialTexture</name><desc>Material-Textur-Tupel für das Material, das gezeichnet werden soll</desc></param>
-        <param><type>int</type><name>x1</name><desc>X-Position des ersten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>y1</name><desc>Y-Position des ersten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>x2</name><desc>X-Position des zweiten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>y2</name><desc>Y-Position des zweiten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>x3</name><desc>X-Position des dritten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>y3</name><desc>Y-Position des dritten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>x4</name><desc>X-Position des vierten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>y4</name><desc>Y-Position des vierten Eckpunktes. Immer global.</desc></param>
-			<param><type>bool</type><name>sub</name><desc>Wenn true, wird das Material unterirdisch gezeichnet.</desc></param>
+        <param>
+          <type>string</type>
+          <name>szMaterialTexture</name>
+          <desc>Material-Texture combination for the material to be drawn.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the first corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the first corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the second corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the second corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x3</name>
+          <desc>X coordinate of the third corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y3</name>
+          <desc>Y coordinate of the third corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x4</name>
+          <desc>X coordinate of the fourth corner. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y4</name>
+          <desc>Y coordinate of the fourth corner. Always global.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>sub</name>
+          <desc>If true, the material will be drawn as 'underground'.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Zeichnet ein viereckiges Polygon im angegebenen Material mit der angegebenen Textur. Wenn keine Textur angegeben ist, wird Smooth angenommen.</desc>
-    <remark>Die Eckpunkte des Polygons sollten rechtsherum angegeben werden, und die Polygonkanten sollten sich nicht kreuzen. Für komplexere Formen kann die Funktion einfach mehrfach aufgerufen werden.</remark>
+    <desc>Draws a four-cornered polygon of the specified material and texture into the landscape. If no texture is specified, Smooth is assumed.</desc>
+    <remark>The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you make multiple calls to this function.</remark>
     <examples>
       <example>
-        <code>DrawMaterialQuad("Gold-Rough", 0,0, <funclink>LandscapeWidth</funclink>()-1,0, <funclink>LandscapeWidth</funclink>()-1,<funclink>LandscapeHeight</funclink>()-1, 0,<funclink>LandscapeHeight</funclink>()-1);</code>
-        <text>Füllt die gesamte Landschaft mit Gold.</text>
+        <code>DrawMaterialQuad(&quot;Gold-Rough&quot;, 0,0, <funclink>LandscapeWidth</funclink>()-1,0, <funclink>LandscapeWidth</funclink>()-1,<funclink>LandscapeHeight</funclink>()-1, 0,<funclink>LandscapeHeight</funclink>()-1);</code>
+        <text>Fills the complete landscape with gold.</text>
       </example>
     </examples>
     <related>
@@ -34,5 +75,5 @@
       <funclink>SetLandscapePixel</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

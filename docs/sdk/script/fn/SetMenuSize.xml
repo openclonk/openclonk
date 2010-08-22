@@ -1,20 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetMenuSize</title>
-    <category>Objekte</category><subcat>Menü</subcat>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>coloumns</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll</desc></param>
-        <param><type>int</type><name>rows</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Höhe anzeigen können soll</desc></param>
+        <param>
+          <type>int</type>
+          <name>coloumns</name>
+          <desc>0-50: number of entries to be displayed per line</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>rows</name>
+          <desc>0-50: number of entries to be displayed per column</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ändert die Größe eines Objektmenüs, so dass die vorgegebene Anzahl an Menüeinträgen in Breite und Höhe hineinpassen.</desc>
-    <related><funclink>GetMenuSelection</funclink><funclink>GetMenu</funclink><funclink>CreateMenu</funclink><funclink>AddMenuItem</funclink></related>
+    <desc>Changes the display size of an object menu so the specified number of menu entries will be displayed per line or column.</desc>
+    <related>
+      <funclink>GetMenuSelection</funclink>
+      <funclink>GetMenu</funclink>
+      <funclink>CreateMenu</funclink>
+      <funclink>AddMenuItem</funclink>
+    </related>
   </func>
-  <author>Sven2</author><date>Juni 2003</date>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

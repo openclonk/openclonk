@@ -1,32 +1,51 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DrawMap</title>
-		<category>Landschaft</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>Linke Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>y</name><desc>Obere Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>width</name><desc>Breite des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>height</name><desc>Höhe des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>string</type><name>map</name><desc>Definition der dynamischen Karte. Das umschließende map { ...} - Tag muss vorhanden sein.</desc></param>
-			</params>
-		</syntax>
-		<desc>Zeichnet eine dynamische Zufallskarte innerhalb eines Bereichs. Dazu wird derselbe Generator benutzt, der auch die Karten der Landscape.txt zeichnet.</desc>
-		<remark>Da die Maximallänge von Strings in C4Script durch interne Puffer begrenzt ist, wird empfohlen, für aufwändigere Karten <funclink>DrawDefMap</funclink> zu benutzen.</remark>
-		<examples>
-			<example>
-				<code>DrawMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>()/2, "map Empty{}");</code>
-				<text>Leert die obere Hälfte der Karte aus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>DrawDefMap</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>DrawMap</title>
+    <category>Landscape</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>map</name>
+          <desc>Definition of the dynamic map. The enclosing map { ... } tag must be present.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Draws a dynamic map within the specified rectangle. This is done using the same evaluation as with Landscape.txt components.</desc>
+    <remark>As maximum string length in C4Script is limited by internal buffers you should use <funclink>DrawDefMap</funclink> for very complex maps.</remark>
+    <examples>
+      <example>
+        <code>DrawMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>()/2, &quot;map Empty{}&quot;);</code>
+        <text>Empties the top half of the map.</text>
+      </example>
+    </examples>
+    <related><funclink>DrawDefMap</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

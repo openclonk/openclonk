@@ -1,26 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>PlaceVegetation</title>
-  <category>Umwelt</category>
-  <version>4.6.5.0 CP</version>
-  <syntax>
-   <rtype>object</rtype>
-   <params>
-    <param><type>id</type><name>id</name><desc>ID des zu erstellenden Objekts.</desc></param>
-    <param><type>int</type><name>x</name><desc>Obere linke Ecke des Zielrechtecks, X-Koordinate</desc></param>
-    <param><type>int</type><name>y</name><desc>Obere linke Ecke des Zielrechtecks, Y-Koordinate</desc></param>
-    <param><type>int</type><name>width</name><desc>Breite des Zielrechtecks</desc></param>
-    <param><type>int</type><name>height</name><desc>Höhe des Zielrechtecks</desc></param>
-    <param><type>int</type><name>growth</name><desc>Wachstumsphase des Zielobjekts. -1 platziert Vegetation in zufälligem Wachstumsstadium, ansonsten gilt der Wertebereich 1-100000 (1-100%)</desc></param>
-   </params>
-  </syntax>
-  <desc>Platziert Vegetation im angegebenen Zielrechteck. Bei lokalen Aufrufen gelten die Koordinaten als Offset zur Mitte des aufrufenden Objekts. Rückgabewert ist ein Zeiger auf das neu erzeugte Objekt.</desc>
-  <related>
-  	<funclink>PlaceAnimal</funclink>
-  </related>
- </func>
- <author>jwk</author><date>August 2002</date>
+  <func>
+    <title>PlaceVegetation</title>
+    <category>Environment</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>ID of the object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Top left corner of the target rectangle; X coordinate.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top left corner of the target rectangle; Y coordinate.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the target rectangle.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the target rectangle.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>growth</name>
+          <desc>Growth phase of the target object. Value -1 places vegetation at random growth, otherwise the valid range is 1-100000 (1-100%).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Places vegetation in the specified target rectangle. In local calls, the specified coordinates are an offset to the position of the calling object. Returns a pointer to the newly created plant.</desc>
+    <related><funclink>PlaceAnimal</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

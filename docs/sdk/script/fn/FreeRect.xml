@@ -1,27 +1,48 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>FreeRect</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>Linke Kante des Rechtecks</desc></param>
-        <param><type>int</type><name>y</name><desc>Obere Kante des Rechtecks</desc></param>
-        <param><type>int</type><name>width</name><desc>Breite des Rechtecks</desc></param>
-        <param><type>int</type><name>height</name><desc>Höhe des Rechtecks</desc></param>
-        <param><type>int</type><name>density</name><desc>Wenn angegeben, wird Material mit der entsprechenden Dichte entfernt</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left limit of the rectangle</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top limit of the rectangle</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the rectangle</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the rectangle</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>density</name>
+          <desc>If specified, material of the specified density is removed.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Entfernt alle Materialien innerhalb des angegebenen Rechtecks. Die Koordinaten sind immer global, und der untere und rechte Rand des Rechtecks zählen nicht mit dazu.</desc>
-    <remark>Der Befehl arbeitet bei großen Bereichen nicht sehr schnell.</remark>
+    <desc>Removes all material within the specified rectangle. Coordinates are always global. Excluding the right and lower limits of the rectangle.</desc>
+    <remark>This call may take quite a while for large rectangles.</remark>
     <examples>
       <example>
         <code>FreeRect(0, 0, <funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>());</code>
-        <text>Leert die Karte aus.</text>
+        <text>Empties the complete landscape.</text>
       </example>
     </examples>
     <related>
@@ -30,6 +51,6 @@
       <funclink>Explode</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

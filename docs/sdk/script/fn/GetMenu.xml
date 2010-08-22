@@ -1,35 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetMenu</title>
-    <category>Objekte</category><subcat>Menü</subcat>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>id?</rtype>
-    </syntax>
-    <desc>Liefert die ID des Menüs, falls das Objekt ein Menü geöffnet hat. Normalerweise ist das die ID des Menüsymbols (symbol), wenn nicht bei <funclink>CreateMenu</funclink> explizit eine andere Menü-ID als idMenuID angegeben wurde. NONE bei keinem Symbol.</desc>
-    <remark>Ein Rückgabewert von nil bedeutet, dass kein gültiges Symbol ermittelt werden konnte. Dies kann z.B. dann auftreten, wenn kein Menü geöffnet ist. Engineinterne Menüs (Kaufen, Verkaufen, etc.) geben keine gültigen IDs zurück.</remark>
+    <syntax><rtype>id?</rtype></syntax>
+    <desc>Returns the id of the menu if the object has an open menu. This is usually the id of the menu symbol (symbol) unless <funclink>CreateMenu</funclink> was used to explicitly use a differing menu id in idMenuID. Returns 0 if there is no menu or no menu symbol.</desc>
+    <remark>A return value of nil means that no valid symbol could be determined. This may happen e.g. if no object pointer was passed during a global call to the function. Engine defined menus such as Buy, Sell, etc. never return valid ids.</remark>
     <examples>
       <example>
         <code>/* Wird bei klick auf Spezial aufgerufen */
 protected func ControlSpecial()
 {
-  /* überhaupt ein Menü offen und ein Symbol angegeben? */
+  /* Ã¼berhaupt ein MenÃ¼ offen und ein Symbol angegeben? */
   if(GetMenu())
     /* Mutieren */
     <funclink>ChangeDef</funclink>(GetMenu());
   return(1);
 }
         </code>
-        <text>Zu einem Objekt mutieren, welches vom Symbol repräsentiert wird.</text>
+        <text>Mutate into the object represented by the symbol.</text>
       </example>
     </examples>
     <related>
-            <funclink>CreateMenu</funclink>
-            <funclink>CloseMenu</funclink>
+      <funclink>CreateMenu</funclink>
+      <funclink>CloseMenu</funclink>
     </related>
   </func>
-  <author>wipfmetz</author><date>August 2002</date>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

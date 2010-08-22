@@ -1,35 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>RandomX</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>value1</name><desc>Anfang des Bereichs</desc><optional /></param>
-        <param><type>int</type><name>value2</name><desc>Ende des Bereichs</desc><optional /></param>
+        <param>
+          <type>int</type>
+          <name>value1</name>
+          <desc>Range start</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>value2</name>
+          <desc>Range end</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Liefert einen Zufallswert zwischen value1 und value2. Dabei ist egal, welcher Wert der größere ist.</desc>
+    <desc>Yields a random value from value1 to value2. It does not matter, which limit is greater or less.</desc>
     <examples>
       <example>
-
-<code><funclink>SetXDir</funclink>(RandomX(-20,+20));</code>
-
-        <text>Setzt die horizontale Geschwindigkeit des Objekts auf einen Zufallswert zwischen -20 und +20.</text>
+        <code><funclink>SetXDir</funclink>(RandomX(-20,+20));</code>
+        <text>Sets horizontal speed of the object to a random value between -20 and +20.</text>
       </example>
       <example>
-<code><funclink>Message</funclink>("Daniel hat %d Brötchen!", RandomX(42,23));</code>
-
-        <text>Gibt die Anzahl von Daniels zufälligen Brötchen aus. Das können Werte zwischen 23 und 42 sein.</text>
+        <code><funclink>Message</funclink>(&quot;Daniel hat %d BrÃ¶tchen!&quot;, RandomX(42,23));</code>
+        <text>Returns the number of Daniel's random bread rolls. This may be a value from 23 to 42.</text>
       </example>
     </examples>
-    <related>
-      <funclink>Random</funclink>
-    </related>
+    <related><funclink>Random</funclink></related>
   </func>
-  <author>flgr</author><date>Januar 2002</date>
+  <author>flgr</author><date>2002-01</date>
 </funcs>

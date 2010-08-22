@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Trans_Identity</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.10.0.0 OC</version>
-    <syntax>
-      <rtype>array</rtype>
-    </syntax>
-    <desc>Liefert eine 3x4-Einheitsmatrix. Sie kann als Transformation für <funclink>AttachMesh</funclink> oder für die "PictureTransformation" oder "MeshTransformation"-Eigenschaften (siehe <emlink href="definition/meshes.html#Picture">Meshes</emlink>) verwendet werden.</desc>
+    <syntax><rtype>array</rtype></syntax>
+    <desc>Returns a 3x4 identity matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
     <examples>
       <example>
-	      <code><funclink>this</funclink>["MeshTransformation"] = <funclink>Trans_Identity</funclink>();</code>
-        <text>Setzt die MeshTransformation für das aufrufende Objekt zurück.</text>
+        <code><funclink>this</funclink>[&quot;MeshTransformation&quot;] = <funclink>Trans_Identity</funclink>();</code>
+        <text>Resets the MeshTransformation for the calling object.</text>
       </example>
     </examples>
     <related>
@@ -25,5 +24,5 @@
       <funclink>SetAttachTransform</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>April 2010</date>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </funcs>

@@ -1,41 +1,61 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetHomebaseProduction</title>
-		<category>Spieler</category>
-		<version>4.9.8.5 CR</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Die Nummer des Spielers, dessen Kaufmöglichkeiten abgefragt werden sollen. Der erste Spieler hat die Nummer 0.</desc></param>
-				<param><type>id</type><name>id</name><desc>Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert.</desc><optional /></param>
-				<param><type>int</type><name>index</name><desc>Der Index der gesuchten Kaufmöglichkeit.</desc><optional /></param>
-				<param><type>int</type><name>category</name><desc>Die Kategorie der gesuchten Kaufmöglichkeit.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der Objekte in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der nachgelieferten Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs nachgeliefert werden.</desc>
-		<examples>
-			<example>
-				<code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-><funclink>CreateContents</funclink>(Firestone);</code>
-				<text>Gibt dem ausgewählten Clonk des ersten Spielers einen Feuerstein, wenn in seiner Heimatbasis keine Feuersteine nachgeliefert werden.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetHomebaseMaterial</funclink>
-			<funclink>DoHomebaseMaterial</funclink>
-			<funclink>DoHomebaseProduction</funclink>
-			<funclink>C4D_All</funclink>
-			<funclink>C4D_Goal</funclink>
-			<funclink>C4D_Knowledge</funclink>
-			<funclink>C4D_Living</funclink>
-			<funclink>C4D_Object</funclink>
-			<funclink>C4D_Rule</funclink>
-			<funclink>C4D_StaticBack</funclink>
-			<funclink>C4D_Structure</funclink>
-			<funclink>C4D_Vehicle</funclink>
-		</related>
-	</func>
-	<author>Clonk-Karl</author><date>März 2008</date>
+  <func>
+    <title>GetHomebaseProduction</title>
+    <category>Player</category>
+    <version>4.9.8.5 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose buying options you want to determine. The first player has the player number 0.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>If specified, the function returns the number of objects of the given type which are resupplied to the player's home base. In this case index and category are ignored.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>List index of the buyable item to check.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>category</name>
+          <desc>Category of buyable items you want to check.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>With id specified, the function returns how quickly objects of that type are resupplied to the player's home base. In this case index and category are ignored. If id is 0, the function returns the id of the indicated type of objects of the specified category in the player's resupply list. This will return all object types from the resupply list, even if they are currently not being resupplied.</desc>
+    <examples>
+      <example>
+        <code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-&gt;<funclink>CreateContents</funclink>(Firestone);</code>
+        <text>Gives a flintstone to the selected clonk of the first player if currently no flintstones are resupplied to the player's home base.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetHomebaseMaterial</funclink>
+      <funclink>DoHomebaseMaterial</funclink>
+      <funclink>DoHomebaseProduction</funclink>
+      <funclink>C4D_All</funclink>
+      <funclink>C4D_Goal</funclink>
+      <funclink>C4D_Knowledge</funclink>
+      <funclink>C4D_Living</funclink>
+      <funclink>C4D_Object</funclink>
+      <funclink>C4D_Rule</funclink>
+      <funclink>C4D_StaticBack</funclink>
+      <funclink>C4D_Structure</funclink>
+      <funclink>C4D_Vehicle</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2008-03</date>
 </funcs>

@@ -1,39 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Spieldaten</title>
-<h id="Spieldaten">Spieldaten</h>
-
-<text>Die Spieldaten von Clonk sind in komprimierten Gruppendateien zusammen gefasst, die jeweils
-einzelne Komponenten oder weitere Gruppendateien enthalten:</text>
-<dl>
-<dt id="Spielerdateienc4p"><img src="../images/icon_player.gif" width="16" height="16"/>Spielerdateien (c4p)</dt>
-<dd><text>In einer Spielerdatei werden die persönlichen Einstellungen eines Spielers, seine
-erspielten Punkte, Informationen zu seiner Stammcrew und gegebenenfalls sein Portrait
-gespeichert.</text></dd>
-<dt id="Szenarienc4s"><img src="../images/icon_scenario.gif" width="16"
-height="16"/><emlink href="scenario/index.html">Szenarien (c4s)</emlink></dt>
-<dd><text>Szenariodateien setzen sich aus einem Informationskern und weiteren Komponenten, wie einer
-Landkarte, Titelbild und Beschreibungstexten, einer Himmelsgrafik, einem Script und lokalen
-Objektdefinitionen zusammen.</text></dd>
-<dt id="Objektdefinitionenc4d"><img src="../images/icon_object_definition.gif" width="16"
-height="16"/><emlink href="definition/index.html">Objektdefinitionen (c4d)</emlink></dt>
-<dd><text>Objektdefinitionen enthalten einen Informationskern, Grafikelemente, eine
-Aktivitätstabelle, Scripte und Beschreibungstexte. Auch <emlink
-href="particle/index.html">Partikel</emlink> werden in Objektordnern angelegt.</text></dd>
-<dt id="Rundenordnerc4f"><img src="../images/icon_scenario_folder.gif" width="16" height="16"/><emlink href="folder/index.html">Rundenordner (c4f)</emlink></dt>
-<dd><text>Szenarien können in Rundenordnern zusammen gefasst werden.</text></dd>
-<dt id="Systemdatenc4g"><img src="../images/icon_system.gif" width="16" height="16"/>Systemdaten (c4g)</dt>
-<dd><text>Grafiken, Sounds und Musik des Spiels sind in eigenen Gruppen zusammen gefasst und sollten
-nicht verändert werden.</text>
-<text>Mit dem Menüsystem von Clonk lassen sich Gruppendateien bearbeiten und/oder in normale
-Verzeichnisse umwandeln. Die Komponenten der Gruppendateien lassen sich direkt mit allen
-gängigen Anwendungsprogrammen editieren. Sowohl Menüsystem als auch Engine können
-generell sowohl gepackte als auch offene Gruppen verarbeiten.</text>
-<text>Das Entpacken von Gruppen liefert vor allem einen Geschwindigkeitsvorteil beim Bearbeiten von
-größeren oder verschachtelten Dateien.</text></dd>
-</dl>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
+  <title>Game Data</title>
+  <h id="Spieldaten">Game Data</h>
+  <text>The game data of clonk is stored in compressed group files which each contain one component or further group files.</text>
+  <dl>
+    <dt id="Spielerdateienc4p"><img height="16" src="../images/icon_player.gif" width="16"/>Player Files (c4p)</dt>
+    <dd>
+      <text>Player files contain personal settings, gained score and information about the crew. It may also contain a portrait file.</text>
+    </dd>
+    <dt id="Szenarienc4s"><img height="16" src="../images/icon_scenario.gif" width="16"/><emlink href="scenario/index.html">Scenarios (c4s)</emlink></dt>
+    <dd>
+      <text>Scenario files consist of an information core and additional components, such as a landscape, title image, description texts, sky graphics, a script, local object definitions, etc.</text>
+    </dd>
+    <dt id="Objektdefinitionenc4d"><img height="16" src="../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">Object Definitions (c4d)</emlink></dt>
+    <dd>
+      <text>Object definitions contain an information core, graphic elements, action tables, script, and descriptive text. Also, <emlink href="particle/index.html">particles</emlink> are stored in object definition folders.</text>
+    </dd>
+    <dt id="Rundenordnerc4f"><img height="16" src="../images/icon_scenario_folder.gif" width="16"/><emlink href="folder/index.html">Scenario Folders (c4f)</emlink></dt>
+    <dd>
+      <text>Scenarios are grouped in scenario folders.</text>
+    </dd>
+    <dt id="Systemdatenc4g"><img height="16" src="../images/icon_system.gif" width="16"/>System Data (c4g)</dt>
+    <dd>
+      <text>Graphics, sound, and music of the original game are grouped in these folders and should not be modified.</text>
+      <text>Using the menu system, group files can be edited and/or converted to normal directories. Group file components can then be edited using common applications for text or graphics editing. Menu system and game engine can both load packed group files or unpacked directories directly.</text>
+      <text>Unpacking group files greatly increases speed while editing large or deeply nested groups.</text>
+    </dd>
+  </dl>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

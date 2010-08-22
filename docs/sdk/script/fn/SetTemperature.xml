@@ -1,28 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetTemperature</title>
-		<category>Umwelt</category><subcat>Wetter</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>temperature</name><desc>Temperatur von -100 bis 100.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die globale Temperatur.</desc>
-		<examples>
-			<example>
-				<code>SetTemperature(-100);
+  <func>
+    <title>SetTemperature</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>temperature</name>
+          <desc>Temperature from -100 to 100.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the global temperature.</desc>
+    <examples>
+      <example>
+        <code>SetTemperature(-100);
 				</code>
-				<text>Schockfrostet die Landschaft.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetTemperature</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+        <text>Shock freezes the landscape.</text>
+      </example>
+    </examples>
+    <related><funclink>GetTemperature</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

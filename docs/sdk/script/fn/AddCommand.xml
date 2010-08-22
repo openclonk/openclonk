@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>AddCommand</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Commands</subcat>
     <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion><extversion>4.9.5.0 CE</extversion></version>
     <syntax>
@@ -13,91 +14,109 @@
         <param>
           <type>string</type>
           <name>command</name>
-          <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
+          <desc>Command name (as string). See the table below.</desc>
         </param>
         <param>
           <type>object</type>
           <name>target</name>
           <optional />
-          <desc>Zielobjekt für Aktion</desc>
+          <desc>target object for the command</desc>
         </param>
         <param>
           <type>int</type>
           <name>x</name>
           <optional />
-          <desc>X-Zielkoordinate</desc>
+          <desc>X target coordinate</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
           <optional />
-          <desc>Y-Zielkoordinate</desc>
+          <desc>Y target coordinate</desc>
         </param>
         <param>
           <type>object</type>
           <name>target2</name>
           <optional />
-          <desc>zweites Zielobjekt</desc>
+          <desc>secondary target object</desc>
         </param>
         <param>
           <type>int</type>
           <name>delay</name>
           <optional />
-          <desc>Zeit (in Ticks/Frames), bis das Kommando abgebrochen wird (es wird dann mit dem nachsten in der Kommandoliste fortgesetzt)</desc>
+          <desc>Time (in ticks or frames) until the command is automatically aborted. Execution will continue with the next command in the stack.</desc>
         </param>
         <param>
           <type>any</type>
           <name>Data</name>
           <optional />
-          <desc>zusätzliche Daten zur Aktion</desc>
+          <desc>additional data for the command</desc>
         </param>
         <param>
           <type>int</type>
           <name>retries</name>
           <optional />
-          <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
+          <desc>Number of retries if the command fails, until the command fails completely.</desc>
         </param>
         <param>
           <type>int</type>
           <name>base_mode</name>
           <optional />
-          <desc>Bestimmt, wie beim Fehlschlag des Commands verfahren wird.<br/><br/>
+          <desc>
+            Determines the behaviour if the command fails.<br/><br/>
             <table>
-              <rowh><col>base_mode</col> <col>Name</col> <col>Beschreibung</col>
-                    <col>Fehlschlagsmeldung und CallFailed-Aufrufe</col> <col>Nächster Befehl</col></rowh>
-              <row><col>0</col> <col>C4CMD_SilentSub</col> <col>Stiller Unterbefehl</col>
-                   <col>Nur wenn dies der letzte Befehl ist</col> <col>Schlägt fehl</col></row>
-              <row><col>3</col> <col>C4CMD_Sub</col> <col>Unterbefehl</col>
-                   <col>Wenn der nächste Befehl keine Wiederholungen mehr hat oder dies der letzte Befehl ist</col> <col>Schlägt fehl</col></row>
-              <row><col>2</col> <col>C4CMD_SilentBase</col> <col>Stiller Basisbefehl</col>
-                   <col>Nie</col> <col>Schlägt nicht fehl</col></row>
-              <row><col>1</col> <col>C4CMD_Base</col> <col>Basisbefehl</col>
-                   <col>Immer</col> <col>Schlägt nicht fehl</col></row>
+              <rowh>
+                <col>base_mode</col>
+                <col>Name</col>
+                <col>Description</col>
+                <col>Failure messages and CallFailed calls</col>
+                <col>Next command</col>
+              </rowh>
+              <row>
+                <col>0</col>
+                <col>C4CMD_SilentSub</col>
+                <col>Silent command</col>
+                <col>Only if this is the last command</col>
+                <col>Fails</col>
+              </row>
+              <row>
+                <col>3</col>
+                <col>C4CMD_Sub</col>
+                <col>Command</col>
+                <col>If the next command has no retries left or this is the last command.</col>
+                <col>Fails</col>
+              </row>
+              <row>
+                <col>2</col>
+                <col>C4CMD_SilentBase</col>
+                <col>Silent base command</col>
+                <col>Never</col>
+                <col>Does not fail</col>
+              </row>
+              <row>
+                <col>1</col>
+                <col>C4CMD_Base</col>
+                <col>Base command</col>
+                <col>Always</col>
+                <col>Does not fail</col>
+              </row>
             </table>
+
           </desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Fügt ein Kommado in die Kommandoliste des aufrufenden Objekts hinzu (an den Anfang, siehe auch <funclink>AppendCommand</funclink>). D.h. es wird ein Kommando hinzugefügt, welches das Objekt vor anderen vorher gegebenen Kommandos auszuführen hat (war vorher kein Kommando gesetzt, so entspricht AddCommand <funclink>SetCommand</funclink>) <br />
-          Für Kommando-Beschreibungen siehe <funclink>SetCommand</funclink>
-	</desc>
-    <remark>
-          Mit AddCommand hinzugefügte Befehle werden nicht an gesteuerte Fahrzeuge weitergeleitet (siehe VehicleControl)
-    </remark>
+    <desc>Adds a command to the top of the command stack of an object (also see <funclink>AppendCommand</funclink>). This command will be executed first, then the object will continue with the existing commands. If the command stack is empty, AddCommand does the same as <funclink>SetCommand</funclink>.<br/>For the list of commands see <funclink>SetCommand</funclink>.</desc>
+    <remark>Commands added using AddCommand are not passed to controlled vehicles (see VehicleControl).</remark>
     <examples>
       <example>
         <code>Timer:
   var obj = <funclink>FindObject</funclink>(0, -20, -40, 40, 40, <funclink>OCF_CrewMember</funclink>();
   if(obj)
-    if(obj-><funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>())
-      obj-><funclink>AddCommand</funclink>("Jump");
+    if(obj-&gt;<funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>())
+      obj-&gt;<funclink>AddCommand</funclink>(&quot;Jump&quot;);
   return();</code>
-        <text>
-Dieser Timer-Script bewirkt (aus einem Objekt aufgerufen, welches auf dem Boden liegt), dass jeder Clonk, der über das Objekt von links nach rechts hinübergeht, springt. Dazu wird erst ein Clonk (bzw. CrewMember) über dem Objekt gesucht. Wurde ein solcher gefunden, und läuft er im Moment nach rechts (ComDir), so wird dem Clonk das Kommando "Jump" hinzugefügt.
-Das besondere an dem Script ist, dass die alte Befehlskette nicht angetastet wird; der Clonk wird nachdem er gesprungen hat seine Befehlskette weiter verarbeiten.<br />
-Mithilfe dieses Script kann man einem Clonk z.B. beibringen, an einer bestimmten Stelle automatisch über einen Abgrund zu hüpfen.
-        </text>
+        <text>If called from an object on the ground, this timer script makes any clonk passing the object from left to right jump. To do this, crew member objects are searched above the object. If one is found and he is moving from left to right (ComDir), he is given a 'Jump' command. Notice that this does not affect the previously set commands of the clonk - after completing the jump command, the clonk will continue with his previous commands. Using this script, you could e.g. ensure that clonks will always jump a given gap in the landscape.</text>
       </example>
     </examples>
     <related>
@@ -107,6 +126,6 @@ Mithilfe dieses Script kann man einem Clonk z.B. beibringen, an einer bestimmten
       <funclink>FinishCommand</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
-  <author>Günther</author><date>Januar 2005</date>
+  <author>PeterW</author><date>2001-11</date>
+  <author>GÃ¼nther</author><date>2005-01</date>
 </funcs>

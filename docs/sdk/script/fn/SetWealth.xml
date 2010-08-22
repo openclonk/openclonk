@@ -1,23 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetWealth</title>
-    <category>Spieler</category>
+    <category>Player</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Vermögen verändert werden soll</desc></param>
-        <param><type>int</type><name>value</name><desc>Das neue Vermögen.</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose wealth you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>New wealth value.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt das Vermögen eines Spielers.</desc>
+    <desc>Sets the wealth value of a player.</desc>
     <examples>
       <example>
         <code>SetWealth(5, 0);</code>
-        <text>Ruiniert den sechsten Spieler.</text>
+        <text>Brankrupts player number six.</text>
       </example>
     </examples>
     <related>
@@ -25,5 +34,5 @@
       <funclink>DoWealth</funclink>
     </related>
   </func>
-  <author>jwk</author><date>August 2002</date>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

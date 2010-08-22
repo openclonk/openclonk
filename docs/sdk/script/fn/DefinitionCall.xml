@@ -1,24 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>DefinitionCall</title>
-    <category>Script</category><subcat>Funktionsaufruf</subcat>
+    <category>Script</category>
+    <subcat>Function call</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>id</type><name>definition</name><desc>ID der Definition, in dessen Script die Funktion aufgerufen wird</desc></param>
-        <param><type>string</type><name>function</name><desc>Aufzurufende Funktion</desc></param>
-        <param><type>any</type><name>...</name><desc>Zusätzliche Parameter, die an die Funktion übergeben werden</desc><optional /></param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>id of the definition in the script of which to call the function.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Function to call</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Additional parameters to be passed to the function.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Ruft eine Funktion in einem Script ohne zugehöriges Objekt auf. Der <funclink>this</funclink>()-Zeiger gibt in einem solchen Aufruf 0 zurück (Vergleichbar mit dem Szenarioscript).</desc>
+    <desc>Calls a function in a script without object context. <funclink>this</funclink> returns 0 in this case (comparable to scenario scripts).</desc>
     <examples>
       <example>
-        <code>DefinitionCall(CPPL, "SetKnowledge", 0);</code>
-        <text>Gibt Spieler 0 die Pläne für die Burgteile.</text>
+        <code>DefinitionCall(CPPL, &quot;SetKnowledge&quot;, 0);</code>
+        <text>Gives castle construction plans to player 0.</text>
       </example>
     </examples>
     <related>
@@ -26,5 +41,5 @@
       <funclink>GameCall</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

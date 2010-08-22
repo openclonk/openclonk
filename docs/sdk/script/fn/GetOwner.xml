@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetOwner</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Ermittelt den Besitzer des aufrufenden Objekts.</desc>
-		<examples>
-			<example>
-				<code><funclink>Message</funclink>("Ich gehöre %s!", <funclink>GetPlayerName</funclink>(GetOwner()))</code>
-				<text>Gibt einen Text mit dem Namen des besitzenden Spielers über dem aufrufenden Objekt aus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetOwner</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>GetOwner</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines the owner of the calling object.</desc>
+    <examples>
+      <example>
+        <code><funclink>Message</funclink>(&quot;Ich gehÃ¶re %s!&quot;, <funclink>GetPlayerName</funclink>(GetOwner()))</code>
+        <text>Displays the owner of the calling object above the object.</text>
+      </example>
+    </examples>
+    <related><funclink>SetOwner</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

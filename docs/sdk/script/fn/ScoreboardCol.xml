@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,17 +10,19 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>id</type><name>definition</name><desc>C4ID, die in einen Scoreboard-Spaltenindex umgewandelt werden soll. Für Scoreboards auf Objektbasis sollte hier die ID der Objektdefinition genommen werden, die die Scoreboardfunktionen bereit stellt.</desc></param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>C4ID to be converted into a scoreboard column index. For object based scoreboards you should always use the id of the object definition which is accessing the scoreboard.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>
-	Wandelt eine Objektdefinitions-ID in eine Zahl um, die als Spaltenidentifikator für <funclink>SetScoreboardData</funclink> verwendet werden kann. Diese Funktion ist dann interessant, wenn ein Objekt auf das Scoreboard zugreifen will, aber dabei sicher stellen muss, dass es nicht dieselbe ID wie ein anderes Objekt verwendet.
-    </desc>
+    <desc>Converts an object definition id into a number which can be used as index for <funclink>SetScoreboardData</funclink>. This function is of interest if an object script intends to access the scoreboard but wants to be sure that it is not using the same column indices as another object definition.</desc>
     <related>
       <funclink>SetScoreboardData</funclink>
       <funclink>SortScoreboard</funclink>
       <funclink>DoScoreboardShow</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Februar 2006</date>
+  <author>Sven2</author><date>2006-02</date>
 </funcs>

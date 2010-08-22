@@ -1,27 +1,30 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ReloadDef</title>
-		<category>Entwickler</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>id</type><name>definition</name><desc>ID der neu zu ladenden Definition</desc></param>
-			</params>
-		</syntax>
-		<desc>Aktualisiert eine Definition. Dieser Befehl kann im Entwicklermodus in der Konsole eingegeben werden, nachdem die Definition auf der Festplatte verändert wurde. Sie muss zuvor geladen gewesen sein.</desc>
-		<examples>
-			<example>
-				<code>ReloadDef(Rock);</code>
-				<text>Der Stein wird neu geladen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>ReloadParticle</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>ReloadDef</title>
+    <category>Developer</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>ID of the definition to be reloaded.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Reloads an object definition. This command can be entered in the console of the developer mode engine after the object definition file has been modified. It will work only if the definition is already loaded.</desc>
+    <examples>
+      <example>
+        <code>ReloadDef(Rock);</code>
+        <text>Reloads the rock object definition.</text>
+      </example>
+    </examples>
+    <related><funclink>ReloadParticle</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

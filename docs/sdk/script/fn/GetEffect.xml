@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetEffect</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>any</rtype>
@@ -12,74 +13,96 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name des Effektes ohne vorangestelltes Fx. Es können '*' und '?' als Suchmaske verwendet werden.</desc>
+          <desc>Name of the effect without preceding 'Fx'. You can use '*' and '?' wildcards.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Zielobjekt, in dem Effekte abgefragt werden sollen. Bei 0 wird die globale Effektliste durchsucht.</desc>
+          <desc>Target object in which to access effects. If 0, the global effects are accessed.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer abgefragt. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
+          <desc>Effect index. With name specified and multiple matches for the search this will give you the indicated effect from the list of results. If name is not specified, this index is the effect number. Effect numbers do not necessarily run continuously from 0 to the number of effects. When using the index, this continuity is ensured.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>query_value</name>
           <optional />
-          <desc>Index des Wertes, der abgefragt werden soll. Siehe Anmerkung.</desc>
+          <desc>Index of the value to be retrieved. See remarks.</desc>
         </param>
         <param>
           <type>int</type>
           <name>max_priority</name>
           <optional />
-          <desc>Wenn ungleich 0, werden nur Effekte zurückgegeben, die höchstens die angegebene Priorität haben.</desc>
+          <desc>If not 0, only those effects are counted which have the specified priority or lower.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Fragt Effektdaten ab, oder ermittelt, ob ein bstimmter Effekt vorhanden ist. Der Rückgabetyp richtet sich nach dem abgefragten Wert. Wurde der Effekt nicht gefunden, wird immer 0 zurückgegeben.</desc>
-
-    <remark>Über den Parameter query_value können folgende Werte abgefragt werden:<br/><br/>
+    <desc>Retrieves effect data or determines whether a certain effect is present. The return value depend on the requested value. If an effect cannot be found the return value is always 0.</desc>
+    <remark>
+      Using the parameter query_value the following values can be retrieved:<br/><br/>
       <table>
-        <rowh><col>query_value</col><col>Wert</col></rowh>
-        <row><col>0</col><col>Effektnummer</col></row>
-        <row><col>1</col><col>Name</col></row>
-        <row><col>2</col><col>Priorität</col></row>
-        <row><col>3</col><col>Timer-Intervall</col></row>
-        <row><col>4</col><col>Befehlsziel</col></row>
-        <row><col>5</col><col>Befehlsziel-ID</col></row>
-        <row><col>6</col><col>Laufzeit des Effektes</col></row>
+        <rowh>
+          <col>query_value</col>
+          <col>Value</col>
+        </rowh>
+        <row>
+          <col>0</col>
+          <col>Effect number</col>
+        </row>
+        <row>
+          <col>1</col>
+          <col>Name</col>
+        </row>
+        <row>
+          <col>2</col>
+          <col>Priority</col>
+        </row>
+        <row>
+          <col>3</col>
+          <col>Timer interval</col>
+        </row>
+        <row>
+          <col>4</col>
+          <col>Command target</col>
+        </row>
+        <row>
+          <col>5</col>
+          <col>Command target id</col>
+        </row>
+        <row>
+          <col>6</col>
+          <col>Duration of the effect</col>
+        </row>
       </table>
-    </remark>
 
+    </remark>
     <examples>
       <example>
         <code>var obj, i, effect;
 // Alle Objekte durchsuchen
 <funclink>while</funclink> (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
   {
-  // Von Effektzahl abwärts zählen, da Effekte entfernt werden
+  // Von Effektzahl abwÃ¤rts zÃ¤hlen, da Effekte entfernt werden
   i = <funclink>GetEffectCount</funclink>(0, obj);
   <funclink>while</funclink> (i--)
-    <funclink>if</funclink> (effect = GetEffect("*Spell", obj, i))
+    <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, obj, i))
       <funclink>RemoveEffect</funclink>(0, obj, effect);
   }
 // Globale Effekte entfernen
 i = <funclink>GetEffectCount</funclink>();
 <funclink>while</funclink> (i--)
-  <funclink>if</funclink> (effect = GetEffect("*Spell", 0, i))
+  <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, 0, i))
     <funclink>RemoveEffect</funclink>(0, 0, effect);</code>
-        <text>Entfernt alle Zaubereffekte von allen Objekten und global.</text>
+        <text>Removes all magic effects from all objects and the global list.</text>
       </example>
     </examples>
-
     <related>
-      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
       <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
@@ -89,5 +112,5 @@ i = <funclink>GetEffectCount</funclink>();
       <funclink>RemoveEffect</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>März 2004</date>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

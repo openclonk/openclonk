@@ -1,30 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_Func</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>string</type><name>function</name><desc>Aufzurufende Funktion</desc></param>
-				<param><type></type><name>...</name><desc>Parameter für die Funktion</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: sucht alle Objekte bei denen der Aufruf der angegebenen Funktion <code>true</code> liefert. Wenn es eine lokale Funktion gibt, wird diese aufgerufen, sonst wenn vorhanden eine globale.</desc>
-		<remark><strong>Achtung:</strong> Niemals mit einer Funktion verwenden, die Seiteneffekte hat. Wenn nicht sichergestellt ist, dass die Funktion harmlos ist, muss auf Find_Func verzichtet werden. Stattdessen kann die Funktion mit einer Schleife über die gefundenen Objekte aufgerufen werden.</remark>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<examples>
-			<example>
-<code><funclink>FindObjects</funclink>(<funclink>Find_Func</funclink>("IsClonk"))</code>
-				<text>Liefert alles zurück, was ein Clonk ist (also auch Hydroclonks, Magier...).</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_Func</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Function to call</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Parameters of the function.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects which return <code>true</code> to a call of the specified function. If the function is defined locally, the local function will be called, otherwiese a global function.</desc>
+    <remark><strong>Warning:</strong> never use this with a function which might have side effects. If your function may have side effects, do not use Find_Func but walk through the list of found objects instead.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>FindObjects</funclink>(<funclink>Find_Func</funclink>(&quot;IsClonk&quot;))</code>
+        <text>Returns all clonks of any types (including Hydroclonks, Mages...)</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

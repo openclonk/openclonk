@@ -1,30 +1,40 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CreateContents</title>
-		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-				<param><type>int</type><name>count</name><desc>Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen.</desc></param>
-			</params>
-		</syntax>
-		<desc>Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts.</desc>
-		<examples>
-			<example>
-				<code><funclink>GetHiRank</funclink>(0)->CreateContents(Rock);</code>
-				<text>Der höchstrangige Clonk des Spielers erhält einen Stein.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateConstruction</funclink>
-			<funclink>CreateObject</funclink>
-			<funclink>RemoveObject</funclink>
-		</related>
-	</func>
-	<author>springer</author><date>April 2002</date>
+  <func>
+    <title>CreateContents</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>count</name>
+          <desc>Number of objects to be created, if not specified, 1 is assumed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an object of the specified type in the contents of another object.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;CreateContents(Rock);</code>
+        <text>The highest ranking clonk of this player receives a rock.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+      <funclink>CreateObject</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
 </funcs>

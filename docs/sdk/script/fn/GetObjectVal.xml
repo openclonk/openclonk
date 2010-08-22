@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,34 +13,29 @@
         <param>
           <type>string</type>
           <name>entry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
-          <optional/>
+          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>entry_number</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt einen Eigenschaftswert des aufrufenden Objekts nach seinem Namen in der Objects.txt zurück.</desc>
-
-    <remark>Die meisten Möglichkeiten für Werte von entry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
-
+    <desc>Returns the property value of an object by its name in the Objects.txt.</desc>
+    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
     <examples>
       <example>
-        <text>siehe <funclink>GetDefCoreVal</funclink></text>
+        <text>see <funclink>GetDefCoreVal</funclink></text>
       </example>
     </examples>
-
-
     <related>
       <funclink>GetDefCoreVal</funclink>
       <funclink>GetObjectInfoCoreVal</funclink>
@@ -48,7 +44,6 @@
       <funclink>GetPlayerVal</funclink>
       <funclink>GetPlayerInfoCoreVal</funclink>
     </related>
-
   </func>
-  <author>PeterW</author><date>April 2002</date>
+  <author>PeterW</author><date>2002-04</date>
 </funcs>

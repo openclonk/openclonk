@@ -1,35 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>FindConstructionSite</title>
-		<category>Landschaft</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>id</type><name>definition</name><desc>ID des gewünschten Gebäudetyps</desc></param>
-				<param><type>int</type><name>var_num_x</name><desc>Variablennummer, in  der die globale X-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine X-Position für den Start der Suche enthalten.</desc></param>
-				<param><type>int</type><name>var_num_y</name><desc>Variablennummer, in  der die globale Y-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine Y-Position für den Start der Suche enthalten.</desc></param>
-			</params>
-		</syntax>
-		<desc>Sucht einen Bauplatz für ein Gebäude, ausgehend von <funclink>Var</funclink>(var_num_x)/<funclink>Var</funclink>(var_num_y). Wenn ein Bauplatz gefunden wird, wird er in den entsprechenden Variablen abgelegt, und es wird TRUE zurückgegeben. Ansonsten ist der Rückgabewert FALSE.</desc>
-		<examples>
-			<example>
-
-<code><funclink>Var</funclink>(0)=<funclink>GetX</funclink>(); <funclink>Var</funclink>(1)=<funclink>GetY</funclink>();
+  <func>
+    <title>FindConstructionSite</title>
+    <category>Landscape</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>id of the desired building type.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>var_num_x</name>
+          <desc>Number of the variable in which the global x position of the site is to be stored. This variable should first be initialized with the x position for the start of the search.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>var_num_y</name>
+          <desc>Number of the variable in which the global y position of the site is to be stored. This variable should first be initialized with the y position for the start of the search.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Searches for a suitable construction site for a building of the specified type, starting at position <funclink>Var</funclink>(var_num_x)/<funclink>Var</funclink>(var_num_y). If a site is found, the coordinates are stored in the two specified variables and the function returns true. Otherwise, the function returns false.</desc>
+    <examples>
+      <example>
+        <code><funclink>Var</funclink>(0)=<funclink>GetX</funclink>(); <funclink>Var</funclink>(1)=<funclink>GetY</funclink>();
 <funclink>if</funclink>(FindConstructionSite(HUT3, 0, 1))
 	<funclink>CreateConstruction</funclink>(HUT3, <funclink>Var</funclink>(0), <funclink>Var</funclink>(1), <funclink>GetOwner</funclink>(), 1, 1);</code>
-
-				<text>Sucht einen Bauplatz für eine Hütte, ausgehend von der lokalen Position. Wurde ein Platz gefunden, wird dort eine Baustelle errichtet.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateConstruction</funclink>
-			<funclink>Var</funclink>
-			<funclink>SetVar</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+        <text>Searches a construction site for a hut, starting at the local position. If a site is found, construction is started.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+      <funclink>Var</funclink>
+      <funclink>SetVar</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

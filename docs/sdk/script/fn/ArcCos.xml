@@ -1,23 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ArcCos</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>value</name><desc>Länge der Ankathete</desc></param>
-        <param><type>int</type><name>radius</name><desc>Länge der Hypotenuse</desc></param>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Length of the adjacent leg</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Length of hypotenuse</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Berechnet den Arcuscosinus von value/radius, also Result=arccos(value/radius). Dies entspricht cos(Result)=value/radius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
+    <desc>Calculates arc cosine of value/radius, or x = arccos(value/radius). This corresponds to cos(x) = value/radius. This function is used to calculate an angle from horizontal and vertical offsets. However, in most cases <funclink>Angle</funclink>() does what you need.</desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>("Zielwinkel: %d Grad", ArcCos(<funclink>Abs</funclink>(<funclink>GetX</funclink>(target)-<funclink>GetX</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>
-        <text>Gibt den Zielwinkel vom aufrufenden Objekt zu target aus.</text>
+        <code><funclink>Log</funclink>(&quot;Zielwinkel: %d Grad&quot;, ArcCos(<funclink>Abs</funclink>(<funclink>GetX</funclink>(target)-<funclink>GetX</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>
+        <text>Returns the target angle from the object to the target.</text>
       </example>
     </examples>
     <related>
@@ -26,5 +35,5 @@
       <funclink>Cos</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

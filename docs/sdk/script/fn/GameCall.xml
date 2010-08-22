@@ -1,30 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GameCall</title>
-		<category>Script</category><subcat>Funktionsaufruf</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>any</rtype>
-			<params>
-				<param><type>string</type><name>function</name><desc>Name der Funktion im Szenario-Script</desc></param>
-				<param><type>any</type><name>...</name><desc>Bis zu neun Parameter, die an die Funktion im Szenario-Script übergeben werden</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Ruft function im Szenario-Script auf. Falls die Funktion nicht im Szenario-Script vorhanden ist, gibt die Funktion Null zurück und verursacht keine Fehlermeldung.</desc>
-		<examples>
-			<example>
-				<code>GameCall("InitializePlayer",0);</code>
-				<text>Lässt das Szenarioscript nochmal die Initialisierung für den ersten Spieler ausführen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Call</funclink>
-			<funclink>ObjectCall</funclink>
-			<funclink>DefinitionCall</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>April 2002</date>
+  <func>
+    <title>GameCall</title>
+    <category>Script</category>
+    <subcat>Function call</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Name of the scenario script function.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Up to nine parameters which are passed to the scenario script function.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Calls function in the scenario script. If the function is not defined in the scenario script, this call returns 0 and does not cause an error.</desc>
+    <examples>
+      <example>
+        <code>GameCall(&quot;InitializePlayer&quot;,0);</code>
+        <text>Causes the scenario script to re-execute intialization for the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Call</funclink>
+      <funclink>ObjectCall</funclink>
+      <funclink>DefinitionCall</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-04</date>
 </funcs>

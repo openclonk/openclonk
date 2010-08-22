@@ -1,35 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ChangeDef</title>
-    <category>Objekte</category><subcat>Status</subcat>
+    <category>Objects</category>
+    <subcat>Status</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>id</type><name>new_def</name><desc>ID der neuen Definition für das Objekt</desc></param>
+        <param>
+          <type>id</type>
+          <name>new_def</name>
+          <desc>id of the new definition.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Weist einem Objekt eine neue Definition zu.</desc>
-    <remark>Bei ChangeDef bleiben lokale Variablen unangetastet. Die Werte lokaler benannter Variablen
-            werden in gleichnamige Variablen in der Zieldefinition übertragen.</remark>
-
-    <remark>Achtung! Wendet der Script eines Objekts ChangeDef auf sich selbst an, passt der Script
-            nach der Definitionsänderung nicht mehr zum Objekt. Deshalb sollte in diesem Fall
-            nach ChangeDef weder eine lokale Funktion aufgerufen (stattdessen <funclink>this</funclink>()->Funktion(...)
-            benutzen) noch auf eine lokale benannte Variable zugegriffen werden (selbst wenn
-            eine gleichnamige in der Zieldefinition existiert).</remark>
+    <desc>Assigns a new definition to an object.</desc>
+    <remark>ChangeDef does not affect object local variables. The values of named local variables are transferred to local variables of the same name in the target definition.</remark>
+    <remark>Warning: if an object applies ChangeDef to itself, the executed object script will no longer match the object definition after the call. Because of this, following a ChangeDef call you should neither call any local function (use <funclink>this</funclink>()-&gt;function(...) instead) nor access any local variables (even if a variable of the same name exists in the new definition).</remark>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)->ChangeDef(MONS);</code>
-        <text>Verwandelt den ausgewählten Clonk des ersten Spielers in ein Monster.</text>
+        <code><funclink>GetCursor</funclink>(0)-&gt;ChangeDef(MONS);</code>
+        <text>Changes the selected clonk of the first player into a monster.</text>
       </example>
     </examples>
-    <related>
-      <funclink>GetID</funclink>
-    </related>
+    <related><funclink>GetID</funclink></related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

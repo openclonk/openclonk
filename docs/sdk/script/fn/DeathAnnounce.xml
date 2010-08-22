@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>DeathAnnounce</title>
-    <category>Objekte</category><subcat>Lebewesen</subcat>
+    <category>Objects</category>
+    <subcat>Living Beings</subcat>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>void</rtype>
-    </syntax>
-    <desc>Gibt eine Botschaft a la "[name] ist von uns gegangen"  über dem aufrufenden Objekt aus.</desc>
-    <related>
-      <funclink>Message</funclink>
-    </related>
+    <syntax><rtype>void</rtype></syntax>
+    <desc>Displays a death message above the calling object.</desc>
+    <related><funclink>Message</funclink></related>
   </func>
-  <author>jwk</author><date>April 2002</date>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

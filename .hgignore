@@ -37,10 +37,11 @@ intermediate
 *.pyc
 docs/online
 docs/chm
-docs/sdk-en
+docs/sdk-de
 docs/sdk/content.xml
 docs/*.mo
 docs/doku.pot
+docs/Functions.txt
 
 # Visual studio files
 deps/

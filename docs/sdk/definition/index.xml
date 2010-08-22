@@ -1,76 +1,96 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Objektdefinitionen</title>
-<h id="Objektdefinitionen">Objektdefinitionen</h>
-<part>
-<text>Mit Objektdefinitionen werden alle in Clonk vorkommenden Spielobjekte - vom Feuermonsterei über Holzhütten bis zum Clonk selber - definiert. Eine Objektdefinition ist eine Gruppendatei, die sich aus folgenden Komponenten zusammen setzt:</text>
-
-<h id="ObjektdefinitionsKomponentenC4D">Objektdefinitions-Komponenten (C4D)</h>
-<dl>
-<dt><img src="../../images/icon_text.gif" width="16" height="16" /><emlink href="definition/defcore.html">DefCore.txt</emlink></dt>
-<dd><text>Objekteigenschaften.</text></dd>
-
-<dt><img src="../../images/icon_text.gif" width="16" height="16" /><emlink href="definition/actmap.html">ActMap.txt</emlink></dt>
-<dd><text>Tabelle für Objektaktivitäten.</text></dd>
-
-<dt id="Graphicspng"><img src="../../images/icon_image.gif" width="16" height="16" />Graphics.png</dt>
-<dd><text>Grafikelemente des Objekts. Basisgrafik, Animationsphasen sowie ein Bild zur Anzeige in Menüs werden in einer 32-Bit-Bilddatei mit Transparenz (Alpha-Kanal) abgelegt (Format PNG, Farbtiefe 32 Bit RGBA, nicht interlaced).</text></dd>
-
-<dt id="Overlaypng"><img src="../../images/icon_image.gif" width="16" height="16" />Overlay.png</dt>
-<dd><text>Der Teil der Objektgrafik, der mit der Spielerfarbe (ColorByOwner, siehe DefCore.txt) eingefärbt werden soll, kann auch als separate Grafik angelegt werden. Auf diese Weise kann die sonst vergebene Farbe Blau in der Graphics.png frei benutzt werden, und es ist auch Antialiasing an den zu verfärbenden Rändern möglich. In der Overlay.png sollten nur Graustufen verwendet werden.</text></dd>
-
-<dt id="Graphicsbmp"><img src="../../images/icon_image.gif" width="16" height="16" />Graphics.bmp</dt>
-<dd><text>Das BMP-Format für Grafikelemente ist veraltet, wird aber weiterhin unterstützt. In einem 256 Farb-Bitmap (8 Bit) dürfen nur die Farben 16 bis 103 der festen Clonk-Palette verwendet werden (siehe Originalobjekte).</text></dd>
-
-<dt id="Graphicsmesh"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" /><emlink href="definition/meshes.html">Graphics.mesh</emlink></dt>
-<dd><text>Ab OC kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein.</text></dd>
-
-<dt id="Graphicsskeleton"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" />*.skeleton</dt>
-<dd><text>Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden.</text></dd>
-
-<dt id="Graphicsex"><img src="../../images/icon_image.gif" width="16" height="16" />Graphics*.png/Overlay*.png/Graphics*.bmp</dt>
-<dd><text>Objekte können auch alternative Grafiksätze bereitstellen, die während des Spiels mit Hilfe des Scriptbefehls <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>() zugewiesen werden können. Der Name der Grafik entspricht dabei dem Dateinamensteil zwischen "Graphics" und der Dateiendung; das entsprechende Overlay wird automatisch mit verwendet. Für Beispiele siehe <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>().</text></dd>
-
-<dt id="Titlepng"><img src="../../images/icon_image.gif" width="16" height="16" />Title.png/Title.bmp</dt>
-<dd><text>Objektdefinitionen können ein zusätzliches Titelbild enthalten (ähnlich Szenarien). Dieses wird im Menüsystem anstelle des Pictures der Objektdefinition angezeigt. Empfohlene Größe: 150x150 Pixel, sofern die vorhandene Titelgrafik dies hergibt. Für Titelbilder wird ebenfalls das veraltete BMP-Format mit 256 Farben weiterhin unterstützt.</text></dd>
-
-<dt id="MaterialScripts"><img src="../../images/icon_ogre_mesh.gif" width="16" height="16" /><emlink href="definition/meshes.html#MaterialScripts">*.material</emlink></dt>
-<dd><text>OGRE Materialskripte sind einfache Textdateien die Informationen über das Material eines 3D-Modells beinhalten. Jedem Modell ist ein Material zugeordnet, das sein Erscheinen festlegt. In der Regel werden diese Skripte auch vom Exporter generiert, sie können aber für zusätzliche Effekte auch einfach mit einem Texteditor nachträglich bearbeitet werden.</text></dd>
-
-<dt id="ScriptcScript__c"><img src="../../images/icon_text.gif" width="16" height="16" /><emlink href="definition/script.html">Script.c</emlink></dt>
-<dd><text>Das Objektscript. Siehe <emlink href="script/index.html">Script-Dokumentation</emlink> und <emlink href="lang.html">Sprachanpassung</emlink>.</text></dd>
-
-<dt id="Namestxt"><img src="../../images/icon_text.gif" width="16" height="16" />Names.txt</dt>
-<dd><text>Mehrsprachige Namenstabelle (siehe Title.txt bei Szenarien).</text></dd>
-
-<dt id="Desc__txt"><img src="../../images/icon_text.gif" width="16" height="16" />Desc*.txt</dt>
-<dd><text>Kurzbeschreibung. Für sprachliche Unterscheidung siehe Szenario-Beschreibungstexte.</text></dd>
-
-<dt id="Ranktxt"><img src="../../images/icon_text.gif" width="16" height="16" />Rank.txt/Rank*.txt</dt>
-<dd><text>Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.c4d. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren.</text></dd>
-
-<dt id="Rankbmppng"><img src="../../images/icon_image.gif" width="16" height="16" />Rank.png/Rank.bmp</dt>
-<dd><text>Für Clonktypen können außerdem spezifische Rangsymbole definiert werden, die dann im Spiel anstelle der Standardsymbole benutzt werden. Ein Rangsymbol muss immer so breit wie hoch sein, und es sollten ausreichend Symbole für alle Ränge vorhanden sein. Bei höheren Rängen als der Anzahl vorhandener Rangsymbole wird von vorne begonnen und ein Stern daneben gezeichnet.</text></dd>
-
-<dt id="wav"><img src="../../images/icon_sound.gif" width="16" height="16" />*.wav</dt>
-<dd><text>Objektlokale Sounds. Da diese statisch geladen und nicht wie szenariolokale Sounds dynamisch entladen werden, sollten objektlokale Sounds möglichst klein sein.</text></dd>
-
-<dt id="c4d"><img src="../../images/icon_object_definition.gif" width="16" height="16" />*.c4d</dt>
-<dd><text>Die Engine durchsucht alle gültigen c4d-Unterverzeichnisse nach weiteren Definitionen. Objektdefinitionen sollten so in sinnvollen Gruppierungen zusammen gefasst werden.</text></dd>
-
-<dt id="Infotxt"><img src="../../images/icon_text.gif" width="16" height="16" />Info.txt</dt>
-<dd><text>Diese Komponente wird nicht von der Engine verarbeitet. Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seines Objekts, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte.</text></dd>
-
-<dt id="Authortxt"><img src="../../images/icon_text.gif" width="16" height="16" />Author.txt</dt>
-<dd><text>Sollte den Namen des Autors im Format "Vorname Nachname (Nick)" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung dieser Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht.</text></dd>
-</dl>
-<h id="ObjektundEntwicklerIdentifikation">Objekt-Identifikation</h>
-<text>Objektdefinitionen werden über ein ID identifiziert, das sich aus vier Zeichen zusammen setzt (z.B. C4ID). Nur Originalobjekte von RedWolf Design nutzen hierbei alle vier Zeichen: ABCD oder ABC1.</text>
-<text>Lokale Objektdefinitionen, die nur als Teil eines Szenarios verbreitet werden, erhalten IDs vom Format _ABC.</text>
-<text>Von Spielern erstellte Objektdefinitionen, die auch einzeln veröffentlicht werden, sollten das Format AB3C nutzen, wobei nur die ersten beiden Zeichen frei vergeben werden können und die letzten beiden Zeichen (1 Ziffer und 1 Buchstabe) das Entwickler-ID des Spielers darstellen, welches frei wählbar ist, wobei allerdings Überschneidungen mit bereits von anderen Entwicklern benutzten IDs vermieden werden sollten.</text>
-</part>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
+  <title>Object Definitions</title>
+  <h id="Objektdefinitionen">Object Definitions</h>
+  <part>
+    <text>Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:</text>
+    <h id="ObjektdefinitionsKomponentenC4D">Object Definition Components (c4d)</h>
+    <dl>
+      <dt><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/defcore.html">DefCore.txt</emlink></dt>
+      <dd>
+        <text>Object properties.</text>
+      </dd>
+      <dt><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/actmap.html">ActMap.txt</emlink></dt>
+      <dd>
+        <text>Table for activities.</text>
+      </dd>
+      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.gif" width="16"/>Graphics.png</dt>
+      <dd>
+        <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced).</text>
+      </dd>
+      <dt id="Overlaypng"><img height="16" src="../../images/icon_image.gif" width="16"/>Overlay.png</dt>
+      <dd>
+        <text>The part of the object's graphics which is to be colored in the player color (see ColorByOwner in DefCore.txt) can also be defined using a separate graphics file. In this way you can also use the color blue in the object's graphics for effects other than player color and antialiasing of the player color sections becomes possible. In Overlay.png gray scales should be used instead of blue color.</text>
+      </dd>
+      <dt id="Graphicsbmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Graphics.bmp</dt>
+      <dd>
+        <text>The bmp format for graphics elements is obsolete but still supported. In a 256 color bitmap (8 bit) only the predefined colors 15 through 103 of the fixed Clonk color palette may be used.</text>
+      </dd>
+      <dt id="Graphicsmesh"><img height="16" src="../../images/icon_ogre_mesh.gif" width="16"/><emlink href="definition/meshes.html">Graphics.mesh</emlink></dt>
+      <dd>
+        <text>Since OC a 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object.</text>
+      </dd>
+      <dt id="Graphicsskeleton"><img height="16" src="../../images/icon_ogre_mesh.gif" width="16"/>*.skeleton</dt>
+      <dd>
+        <text>Skeleton files contain bones and animations for a 3D model. They are usually created by the exporter if bones and/or animations are used for the mesh.</text>
+      </dd>
+      <dt id="Graphicsex"><img height="16" src="../../images/icon_image.gif" width="16"/>Graphics*.png/Overlay*.png/Graphics*.bmp</dt>
+      <dd>
+        <text>Objects can also contain alternative sets of graphics which can be selected ingame using the script command <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>(). The name corresponds to the file name portion following "Graphics". The matching overlay is automatically selected. For more information see <emlink href="script/fn/SetGraphics.html">SetGraphics</emlink>().</text>
+      </dd>
+      <dt id="Titlepng"><img height="16" src="../../images/icon_image.gif" width="16"/>Title.png/Title.bmp</dt>
+      <dd>
+        <text>Object definitions can contain an additional title image (as scenarios do). This will be displayed in the menu system instead of the picture section of the object definition. Recommended size: 150x150 pixels, as long as your image is actually worth it.</text>
+      </dd>
+      <dt id="MaterialScripts"><img height="16" src="../../images/icon_ogre_mesh.gif" width="16"/><emlink href="definition/meshes.html#MaterialScripts">*.material</emlink></dt>
+      <dd>
+        <text>OGRE material scripts are simple text files which contain information about the material of a 3D model. Each model is assigned a material which specifies how it is rendered. Normally these scripts are being generated by the exporter, but they can also be hand-edited afterwards (using a text editor) to apply additional effects.</text>
+      </dd>
+      <dt id="ScriptcScript__c"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/script.html">Script.c</emlink></dt>
+      <dd>
+        <text>The object script. See <emlink href="script/index.html">script documentation</emlink> and <emlink href="lang.html">localization</emlink>.</text>
+      </dd>
+      <dt id="Namestxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Names.txt</dt>
+      <dd>
+        <text>Multilingual name table (see Title.txt in scenarios).</text>
+      </dd>
+      <dt id="Desc__txt"><img height="16" src="../../images/icon_text.gif" width="16"/>Desc*.txt</dt>
+      <dd>
+        <text>Short description. For multilingual descriptions see scenario descriptions.</text>
+      </dd>
+      <dt id="Ranktxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Rank.txt/Rank*.txt</dt>
+      <dd>
+        <text>For object definitions defining a clonk type you can specify custom rank names for this clonk type here. The rank names will then also replace rank names of existing crew members of this type. The file should contain a simple text list of names of maximum 30 characters each. For an example see the knight in the Knights pack. By using the approriate language codes you can create language dependent sets of rank names.</text>
+      </dd>
+      <dt id="Rankbmppng"><img height="16" src="../../images/icon_image.gif" width="16"/>Rank.png/Rank.bmp</dt>
+      <dd>
+        <text>You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.c4g. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol.</text>
+      </dd>
+      <dt id="wav"><img height="16" src="../../images/icon_sound.gif" width="16"/>*.wav</dt>
+      <dd>
+        <text>Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only.</text>
+      </dd>
+      <dt id="c4d"><img height="16" src="../../images/icon_object_definition.gif" width="16"/>*.c4d</dt>
+      <dd>
+        <text>The engine will also search all valid c4d subdirectories for additional object definitions. Object definitions should be grouped by category.</text>
+      </dd>
+      <dt id="Infotxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Info.txt</dt>
+      <dd>
+        <text>This component is not processed by the engine. Here the author can store additional information he wants to share with other developers.</text>
+      </dd>
+      <dt id="Authortxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Author.txt</dt>
+      <dd>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the group was edited by RedWolf Design. This feature is mainly used for contest scenarios.</text>
+      </dd>
+    </dl>
+    <h id="ObjektundEntwicklerIdentifikation">Object Identification</h>
+    <text>Object definitions are identified by an id which consists of four characters (e.g. C4ID). Original objects use four characters: ABCD or ABC1.</text>
+    <text>Local object definitions which are only available in one scenario should use the id format _ABC.</text>
+    <text>Object definitions created by community players but publicly released should use the format AB3C of which the first two characters should identify the object and the second two (one digit and one character) should identify the developer. This is to avoid id conflicts with other developers.</text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

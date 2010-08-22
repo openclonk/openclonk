@@ -1,21 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetPlrDownDouble</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Nummer des Spielers, von dem die zuletzt gedrückten Tasten überprüft werden sollen.</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt zurück, ob der angegebene Spieler als letzte Aktion Doppel-Stopp
-          gedrückt hatte. Mit dieser Funktion kann z.B. in ControlThrow überprüft werden,
-          ob der Spieler das selektierte Objekt ablegen wollte, anstatt es zu werfen
-          (Doppel-Stopp + Werfen).</desc>
-	</func>
-	<author>PeterW</author><date>Juni 2003</date>
+  <func>
+    <title>GetPlrDownDouble</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose last pressed keyboard keys you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns whether the specified player has pressed double-stop on the keyboard as last command. Using this function you can e.g. in ControlThrow check whether the player intended to drop the selected inventory item instead of throwing it (double-stop-throw combination).</desc>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
 </funcs>

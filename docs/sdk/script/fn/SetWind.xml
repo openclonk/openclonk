@@ -1,21 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetWind</title>
-		<category>Umwelt</category><subcat>Wetter</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>strength</name><desc>Windstärke von -100 bis 100.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die globale Windrichtung und -stärke.</desc>
-		<examples>
-			<example>
-				<code>/* Nach Links pusten */
+  <func>
+    <title>SetWind</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>strength</name>
+          <desc>Wind velocity from -100 to 100.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Temporarily sets the global wind velocity and direction.</desc>
+    <examples>
+      <example>
+        <code>/* Nach Links pusten */
 protected func ControlLeft()
 { 
 	SetWind(-100);
@@ -29,12 +35,10 @@ protected func ControlRight()
 	return true;
 }
 				</code>
-				<text>Pusteclonk</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>GetWind</funclink>
-								</related>
-	</func>
-	<author>wipfmetz</author><date>August 2002</date>
+        <text>Blowing clonk</text>
+      </example>
+    </examples>
+    <related><funclink>GetWind</funclink></related>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

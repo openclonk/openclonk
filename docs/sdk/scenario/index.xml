@@ -1,97 +1,116 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Szenarien</title>
-
-<h id="Szenarien">Szenarien</h>
-<part>
-	<text>Szenarien sind die Spielwelten, die der Spieler im Menüsystem auswählen und starten kann. Über die einzelnen Komponenten kann der Szenarien-Designer von der Landschaft über Spielmodus und -regeln über benutzte Objekte, Materialien, die Landschaft, usw. bis hin zum Aussehen im Menüsystem alles frei einstellen.</text>
-	
-	<h id="SzenarioKomponentenC4S">Szenario-Komponenten (C4S)</h>
-	<dl>
-		<dt id="Szenariotxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/scenario.html">Scenario.txt</emlink></dt>
-		<dd><text>Enthält die meisten Szenarioeinstellungen.</text></dd>
-		
-		<dt id="Teamstxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/Teams.html">Teams.txt</emlink></dt>
-		<dd><text>Enthält Teameinstellungen für Mehrspielerszenarien. Ab 4.9.6.0 CR.</text></dd>
-		
-		<dt id="Title"><img src="../../images/icon_image.gif" width="16" height="16"/>Title.png/Title.bmp</dt>
-		<dd><text>Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt.</text></dd>
-		
-		<dt id="Iconbmp"><img src="../../images/icon_image.gif" width="16" height="16"/>Icon.bmp</dt>
-		<dd><text>Das Icon des Szenarios als unkomprimiertes Windows Bitmap mit 256 Farben. Größe 16x16 Pixel. Die Farbe RGB 255/0/255 (Lila) wird transparent angezeigt.</text></dd>
-		
-		<dt id="Loader"><img src="../../images/icon_image.gif" width="16" height="16"/>Loader*.png/Loader*.bmp</dt>
-		<dd><text>Eine Grafik, die beim Start der Runde angezeigt wird. Sind mehrere Dateien vorhanden (Loader1.png, Loader2.png, Loader3.png...), wird per Zufall eine ausgewählt, wobei über eine optional im Scenario.txt vorhandene Loader-Spezifikation die Auswahl noch weiter vorgegeben werden kann. Beim veralteten BMP-Format mit 256 Farben müssen die Farben Schwarz bei Palettenindex 16 und Weiß bei Index 31 vorhanden sein, damit Meldungen beim Startvorgang korrekt angezeigt werden können. Auch Loader-Grafiken aus einem übergeordneten Ordner werden geladen.</text></dd>
-		
-		<dt id="Sky"><img src="../../images/icon_image.gif" width="16" height="16"/>Sky.png/Sky.bmp</dt>
-		<dd><text>Das Himmels-Hintergrundbild. Himmelsgrafiken sollten exakt kachelfähig sein oder die exakte Größe der Landschaft während der Runde haben (bei dynamischen Karten nicht vorhersehbar, bei statischen Karten die Größe des Landkartenbitmaps multipliziert mit dem Vergrößerungsfaktor). Beim veralteten BMP-Format mit 256 Farben dürfen in diesem Bitmap nur die ersten zwanzig Farben benutzt werden. </text></dd>
-		
-		<dt id="Desc__rtf"><img src="../../images/icon_text.gif" width="16" height="16"/>Desc*.rtf</dt>
-		<dd><text>Der Beschreibungstext im RTF-Format. __ muss durch den zweistelligen Sprachcode ersetzt werden. DE steht beispielsweise für Deutsch, US für American English. Es können für mehrere Sprachen verschiedene Beschreibungen enthalten sein, von denen je nach eingestellter Sprache des Menüsystems automatisch die passendste ausgewählt wird.</text>
-		<text>Der Font des Textes wird im Spiel automatisch auf den eingestellten Menüsystem-Font angepasst. Die Größe der Überschrift sollte 10pt und die des Textes 8pt betragen. Bilder im Text werden ignoriert.</text>
-		<text>Diese Datei erstellt man am besten mit dem zu Windows gehörenden WordPad und nicht mit Winword, denn dieses packt in jedes Dokument kilobyteweise unnütze Daten.</text></dd>
-		
-		<dt id="Titletxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Title.txt</dt>
-		<dd><text>Normalerweise wird der Titel eines Szenarios beim Umbenennen mit dem Menüsystem dem Dateinamen entnommen und in der [Head]-Sektion des Szenario.txt gespeichert. Der Dateiname kann unabhängig verändert werden. Für mehrsprachige Szenarien muss eine Datei Title mit entsprechendem Inhalt erzeugt werden:</text>
-		<code>DE:Angriff der Killerwipfe
-US:Attack of the Killer Wipfs</code>
-		<text>Wichtig: es sollten keine Anführungszeichen oder Sonderzeichen verwendet werden.</text></dd>
-		
-		<dt id="Scriptc"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/script.html">Script.c</emlink></dt>
-		<dd><text>Das Szenarioscript.</text></dd>
-		
-		<dt id="Landscapebmp"><img src="../../images/icon_image.gif" width="16" height="16"/>Landscape.bmp</dt>
-		<dd><text>Statische Landkarten werden um den in Scenario.txt enthaltenen Faktor MapZoom auf die tatsächliche Spiellandschaft vergrößert. Die in Landscape.bmp enthaltenen Farbindizes entsprechen den in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink> zugeordneten Materialien und Texturen.</text>
-		<text>Exakte Landkarten (ExactLandscape) geben die tatsächliche Spiellandschaft wieder. Die Farbindizes in Landscape.bmp (128-191 und 192-255, jeweils 3 Farben pro Material) repräsentieren direkt die für das Szenario festgelegten Materialien. Die aktuelle Materialanordnung wird in MatMap.txt festgehalten.</text></dd>
-		
-		<dt id="Landscapepng"><img src="../../images/icon_image.gif" width="16" height="16"/>Landscape.png</dt>
-		<dd><text>Die Karte in Originalgröße für exakte Landschaften. Hier wird für Spielstände das aktuelle Erscheinungsbild der Landkarte mit Halbtransparenz und texturierten Materialien abgelegt. Exakte Landschaften beanspruchen sehr viel Speicherplatz und sollten daher in regulären Szenarien nicht verwendet werden.</text></dd>
-		
-		<dt id="Landscapetxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/MapCreatorS2.html">Landscape.txt</emlink></dt>
-		<dd><text>Besonders fortgeschrittene Spieler können über diese Datei komplexe Zufallslandschaften definieren. Dafür sind allerdings mathematisches und logisches Verständnis sowie viel Geduld unumgänglich.</text></dd>
-		
-		<dt id="MatMaptxt"><img src="../../images/icon_text.gif" width="16" height="16"/>MatMap.txt</dt>
-		<dd><text>Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.c4g vorhanden sein.</text></dd>
-		
-		<dt id="Objectstxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Objects.txt</dt>
-		<dd><text>Diese Komponente wird von der Engine erzeugt und enthält die Laufzeitobjektdaten eines abgespeicherten Szenarios.</text></dd>
-		
-		<dt id="Materialc4g"><img src="../../images/icon_system.gif" width="16" height="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
-		<dd><text>Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <a href="#UeberladungenC4S">Überladungsregeln</a>.</text></dd>
-		
-		<dt id="Graphicsc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Graphics.c4g</dt>
-		<dd><text>Szenarien können einzelne Grafiken aus der systemglobalen Graphics.c4g überladen. Es gelten die <a href="#UeberladungenC4S">Überladungsregeln</a>.</text></dd>
-		
-		<dt id="wav"><img src="../../images/icon_sound.gif" width="16" height="16"/>*.wav</dt>
-		<dd><text>Szenarien können beliebig lokale Sounds enthalten. Diese können per Script während des Spiels abgespielt werden. Szenariolokale Sounds werden dynamisch und erst bei Bedarf geladen, was bei großen Szenariodateien zu Verzögerungen führen kann.</text></dd>
-		
-		<dt id="mid"><img src="../../images/icon_music.gif" width="16" height="16"/>*.mid/*.ogg</dt>
-		<dd><text>Wenn das Szenario lokale Musikdateien enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href="script/fn/Music.html">Music</emlink>().</text></dd>
-		
-		<dt id="Musicc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Music.c4g</dt>
-		<dd><text>Lokale Musikstücke können auch in dieser lokalen Gruppendatei abgelegt werden.</text></dd>
-		
-		<dt id="c4d"><img src="../../images/icon_object_definition.gif" width="16" height="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
-		<dd><text>Szenarien können lokale Objektdefinitionen enthalten, die dann nur im entsprechenden Szenario verfügbar sind.</text>
-		<text>Die Engine durchsucht auch alle übergeordneten Rundenordner (c4f) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind.</text></dd>
-		
-		<dt id="Namestxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Names.txt</dt>
-		<dd><text>Diese Namen werden für während der Runde neu erzeugte Clonks verwendet.</text></dd>
-		
-		<dt id="Infotxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Info.txt</dt>
-		<dd><text>Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seines Szenarios, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte.</text></dd>
-		
-		<dt id="Authortxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Author.txt</dt>
-		<dd><text>Sollte den Namen des Autors im Format "Vorname Nachname (Nick)" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht.</text></dd>
-	</dl>
-	
-	<h id="UeberladungenC4S">Überladungsregeln</h>
-	<text>Diverse Systemkomponenten (Graphics, Loader, Material, Musik und Objekte) können in Szenarien überladen werden. Dabei werden auch übergeordnete Rundenordner (C4F) durchsucht. Hierbei steigt die Überladungspriorität mit der Ordnertiefe. Bei einem Szenario, das sich in die Ordnerstruktur Ordner.c4f\Unterordner.c4f\Szenario.c4s einordnet, würden Komponenten aus Unterordner.c4f also gleiche Komponenten aus Ordner.c4f überladen (respektive Szenario.c4f Komponenten aus Unterordner.c4f und Ordner.c4f).</text>
-</part>
-
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
-
+  <title>Scenarios</title>
+  <h id="Szenarien">Scenarios</h>
+  <part>
+    <text>Scenarios are the playing worlds which the player can select and start from the menu. With their components the scenario designer can adjust freely everything from the landscape, the goals and rules, the available objects and materials to the look in the menu.</text>
+    <h id="SzenarioKomponentenC4S">Scenario Components (c4s)</h>
+    <dl>
+      <dt id="Szenariotxt"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="scenario/scenario.html">Scenario.txt</emlink></dt>
+      <dd>
+        <text>Contains most scenario settings.</text>
+      </dd>
+      <dt id="Teamstxt"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="scenario/Teams.html">Teams.txt</emlink></dt>
+      <dd>
+        <text>Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR.</text>
+      </dd>
+      <dt id="Title"><img height="16" src="../../images/icon_image.gif" width="16"/>Title.png/Title.bmp</dt>
+      <dd>
+        <text>The title picture of the scenario in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well.</text>
+      </dd>
+      <dt id="Iconbmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.bmp</dt>
+      <dd>
+        <text>The icon of the scenario in the menu. Windows bmp with 256 colors, 16x16 pixel, RGB 255,0,255 is treated as transparent.</text>
+      </dd>
+      <dt id="Loader"><img height="16" src="../../images/icon_image.gif" width="16"/>Loader*.png/Loader*.bmp</dt>
+      <dd>
+        <text>Loader screen to be displayed while the scenario is loading. If multiple files are present (Loader1.png, Loader2.png, Loader3.png...), one is selected randomly. You can optionally specify which loader to use in Scenario.txt. Loader image files located in parent scenario folders are also used.</text>
+      </dd>
+      <dt id="Sky"><img height="16" src="../../images/icon_image.gif" width="16"/>Sky.png/Sky.bmp</dt>
+      <dd>
+        <text>The sky background image. Sky graphics should either be tileable or match the exact landscape size. Notice that you cannot know the exact landscape size with dynamic maps which may increase with the number of participants.</text>
+      </dd>
+      <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.gif" width="16"/>Desc*.rtf</dt>
+      <dd>
+        <text>The description text of the scenario in rich text format (rtf). '__' is to be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a scenario file of which the game will automatically load the one appropriate for the configured language.</text>
+        <text>The font of the description text is set internally on display. The character size in the file should be 10pt for headings and 8pt for text. Images or other rtf tags are ignored.</text>
+        <text>It is recommended to edit this file using a small scale rtf editor such as WordPad.exe in Windows and not a full-blown word processor such as Word as these will stuff kilobytes of unneeded extra information into the rtf file.</text>
+      </dd>
+      <dt id="Titletxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Title.txt</dt>
+      <dd>
+        <text>By default, the title of a scenario is set when renaming the scenario in the menu system and stored in section [Head] of Scenario.txt. The file name of the scenario group file may differ. For language dependent titles you should create a Title.txt component with the appropriate contents:</text>
+        <code>DE:Angriff der Killerwipfe
+US:Attack of the Killer Wipfs</code>        <text>Important: No quotation marks and special characters should be used.</text>
+      </dd>
+      <dt id="Scriptc"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="scenario/script.html">Script.c</emlink></dt>
+      <dd>
+        <text>The scenario script.</text>
+      </dd>
+      <dt id="Landscapebmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Landscape.bmp</dt>
+      <dd>
+        <text>Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Landscape.bmp correspond to materials and textures as defined in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink>.</text>
+        <text>Exact landscapes represent the actual in-game landscape saved to a bitmap file. The bitmap color indices (128-191 and 192-255, 3 colors per material) correspond directly to the material pixels used in the scenario. The current material list is stored in MatMap.txt.</text>
+      </dd>
+      <dt id="Landscapepng"><img height="16" src="../../images/icon_image.gif" width="16"/>Landscape.png</dt>
+      <dd>
+        <text>Full size map for exact landscapes. This is mainly used in savegames to store the exact terrain including transparent materials and their texture. Exact landscapes consume an extreme amount of memory and should not be used for regularly distributed scenarios.</text>
+      </dd>
+      <dt id="Landscapetxt"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="scenario/MapCreatorS2.html">Landscape.txt</emlink></dt>
+      <dd>
+        <text>Advanced scenario designers can use this component to define highly complex, fully random generated dynamic landscapes. This does require certain mathematical skill and some patience, however.</text>
+      </dd>
+      <dt id="MatMaptxt"><img height="16" src="../../images/icon_text.gif" width="16"/>MatMap.txt</dt>
+      <dd>
+        <text>Stores the material table used in this scenario. The materials listed here are used by the exact landscape and have to be available in the loaded Material.c4g group.</text>
+      </dd>
+      <dt id="Objectstxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Objects.txt</dt>
+      <dd>
+        <text>This component is generated by the engine and stores runtime object data of a savegame.</text>
+      </dd>
+      <dt id="Materialc4g"><img height="16" src="../../images/icon_system.gif" width="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
+      <dd>
+        <text>Scenarios can contain local material definition groups. See <a href="#UeberladungenC4S">overloading rules</a>.</text>
+      </dd>
+      <dt id="Graphicsc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Graphics.c4g</dt>
+      <dd>
+        <text>Scenarios can overload individual entries of the global Graphics.c4g group. See <a href="#UeberladungenC4S">overloading rules</a>.</text>
+      </dd>
+      <dt id="wav"><img height="16" src="../../images/icon_sound.gif" width="16"/>*.wav</dt>
+      <dd>
+        <text>Scenarios can contain any number of sound files. These can be played back by script during the game. Scenario local sounds are loaded dynamically on demand which might cause delays with large scenario files.</text>
+      </dd>
+      <dt id="mid"><img height="16" src="../../images/icon_music.gif" width="16"/>*.mid/*.ogg</dt>
+      <dd>
+        <text>If the scenario contains music files, these can be played back during the game in random order. Also see script command <emlink href="script/fn/Music.html">Music</emlink>().</text>
+      </dd>
+      <dt id="Musicc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Music.c4g</dt>
+      <dd>
+        <text>Local music files can also be combines in a local music group.</text>
+      </dd>
+      <dt id="c4d"><img height="16" src="../../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
+      <dd>
+        <text>Scenarios can contain local object definitions which are then available in that scenario only.</text>
+        <text>The engine will also search all parent folders (c4f) of the scenario for additional local object definitions. In this way, a scenario folder can contain object definitions which are then available in all its contents scenarios.</text>
+      </dd>
+      <dt id="Namestxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Names.txt</dt>
+      <dd>
+        <text>These names are used for clonks created in this scenario.</text>
+      </dd>
+      <dt id="Infotxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Info.txt</dt>
+      <dd>
+        <text>Here an author can store additional information about the development of his scenario, his email address, or other information he wants to share with other developers.</text>
+      </dd>
+      <dt id="Authortxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Author.txt</dt>
+      <dd>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios.</text>
+      </dd>
+    </dl>
+    <h id="UeberladungenC4S">Overloading Rules</h>
+    <text>Various system components (graphics, loader screens, materials, music, or objects) can be overloaded in scenarios. In doing this, parent scenario folders (c4f) are searched. Also, components located in child groups will always overload the same components located in parent groups.</text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

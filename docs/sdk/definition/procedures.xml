@@ -1,142 +1,135 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Prozeduren</title>
-<h id="Prozeduren">Prozeduren</h>
-
-<text>Für Objekt-Aktivitäten bietet die Engine diverse Standardprozeduren an, die verschiedene
-typische Verhaltensweisen steuern. Durch die Standardprozedur WALK wechselt z.B. die Aktivität Walk
-automatisch nach Jump, sobald der Boden unter den Füßen verloren wurde.</text>
-<text>
-<table>
-<rowh>
-  <col>Prozedur</col>
-  <col>Beschreibung</col>
-  <col>Verhalten</col>
-  <col>CNAT</col>
-</rowh><row>
-  <col>NONE</col>
-  <col>Keine Prozedur</col>
-  <col>Nur Schwerkraft oder in der <emlink href="definition/actmap.html">Aktivität</emlink>
-festgelegtes Attach.</col>
-  <col>[Action] Attach</col>
-</row><row>
-  <col>WALK</col>
-  <col>Laufen</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Walk und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>FLIGHT</col>
-  <col>Freier Fall</col>
-  <col>Nur Schwerkraft.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>KNEEL</col>
-  <col>Aufstehen</col>
-  <col>Verhalten nach <emlink href="definition/actmap.html">Aktivität</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>SCALE</col>
-  <col>Klettern</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Scale und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_Left/Right</col>
-</row><row>
-  <col>HANGLE</col>
-  <col>Hangeln</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Hangle und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_Top</col>
-</row><row>
-  <col>DIG</col>
-  <col>Graben</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Dig und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>. Bei 
-<emlink href="script/fn/SetActionData.html">Data</emlink>=1 wird Material freigegraben.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>SWIM</col>
-  <col>Schwimmen</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Swim und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>THROW</col>
-  <col>Werfen</col>
-  <col>Verhalten nach <emlink href="definition/actmap.html">Aktivität</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>BRIDGE</col>
-  <col>Brückenbau</col>
-  <col>Nach <emlink href="script/fn/SetComDir.html">ComDir</emlink>. Brückenmaterial als Index in
-<emlink href="script/fn/SetActionData.html">Data</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>BUILD</col>
-  <col>Bauen</col>
-  <col>Baut das <emlink href="script/fn/SetAction.html">Zielobjekt</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>PUSH</col>
-  <col>Schieben</col>
-  <col>Schiebt das <emlink href="script/fn/SetAction.html">Zielobjekt</emlink> nach 
-<emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Push und 
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>CHOP</col>
-  <col>Fällen</col>
-  <col>Fällt das <emlink href="script/fn/SetAction.html">Zielobjekt</emlink> nach 
-<emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Chop.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>LIFT</col>
-  <col>Heben</col>
-  <col>Hebt das <emlink href="script/fn/SetAction.html">Zielobjekt</emlink> nach 
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>FLOAT</col>
-  <col>Schweben</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Float und aktueller
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>ATTACH</col>
-  <col>Festhalten</col>
-  <col>Richtet Objektposition Vertex a an Vertex b des 
-<emlink href="script/fn/SetAction.html">Zielobjekts</emlink> aus. a und b sind die beiden niederwertigen Bytes
-von <emlink href="script/fn/SetActionData.html">ActionData</emlink> (Siehe 
-<emlink href="script/fn/SetActionData.html">SetActionData</emlink> für Beispiel). Erweitert ab CE.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>FIGHT</col>
-  <col>Kämpfen</col>
-  <col>Nach <emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Fight gegen 
-<emlink href="script/fn/SetAction.html">Zielobjekt</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row><row>
-  <col>CONNECT</col>
-  <col>Verbinden</col>
-  <col>Nur <emlink href="definition/lineconnect.html">Leitungsobjekte</emlink>. Verbindet 
-<emlink href="script/fn/SetAction.html">Zielobjekt 1</emlink> und 
-<emlink href="script/fn/SetAction.html">Zielobjekt 2</emlink>.</col>
-  <col>CNAT_None</col>
-</row><row>
-  <col>PULL</col>
-  <col>Ziehen</col>
-  <col>Zieht das <emlink href="script/fn/SetAction.html">Zielobjekt</emlink> nach 
-<emlink href="definition/defcore.html#SektionPhysical">Physical</emlink> Push und 
-<emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
-  <col>CNAT_Bottom</col>
-</row></table>
-</text>
-<text>Prozeduren sind in der Engine fest programmiert und stammen aus alten Zeiten, bevor
-entsprechendes Verhalten flexibler auf der Ebene von Aktivitäten und Scripts möglich war. Hinter den
-meisten Prozeduren verbirgt sich extrem komplexes Verhalten und sie lassen sich nur in ihrer
-ursprünglichen Verwendung in Clonks sinnvoll einsetzen.</text>
-
-<author>Sven2</author><date>April 2002</date>
+  <title>Procedures</title>
+  <h id="Prozeduren">Procedures</h>
+  <text>For object activity the engine offers various standard procedures which perform typical physcial behaviour. In procedure WALK, for instance, the activity automatically changes to "Jump" if the ground under the feet is lost.</text>
+  <text>
+    <table>
+      <rowh>
+        <col>Procedure</col>
+        <col>Description</col>
+        <col>Behaviour</col>
+        <col>CNAT</col>
+      </rowh>
+      <row>
+        <col>NONE</col>
+        <col>No procedure</col>
+        <col>Only gravitational effects or attachment as specified in the <emlink href="definition/actmap.html">activity</emlink>.</col>
+        <col>[Action] Attach</col>
+      </row>
+      <row>
+        <col>WALK</col>
+        <col>Walking</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Walk and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>FLIGHT</col>
+        <col>Free fall</col>
+        <col>Only gravitational effects</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>KNEEL</col>
+        <col>Getting up</col>
+        <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>SCALE</col>
+        <col>Scaling a wall</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Scale and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_Left/Right</col>
+      </row>
+      <row>
+        <col>HANGLE</col>
+        <col>Climbing on the ceiling</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Hangle and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_Top</col>
+      </row>
+      <row>
+        <col>DIG</col>
+        <col>Dig</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Dig and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>. With <emlink href="script/fn/SetActionData.html">Data</emlink>=1 material chunks are dug free.</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>SWIM</col>
+        <col>Swimming</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Swim and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>THROW</col>
+        <col>Throw</col>
+        <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>BRIDGE</col>
+        <col>Bridge building</col>
+        <col>According to <emlink href="script/fn/SetComDir.html">ComDir</emlink>. Bridge material is a material number in <emlink href="script/fn/SetActionData.html">Data</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>BUILD</col>
+        <col>Building</col>
+        <col>Builds the <emlink href="script/fn/SetAction.html">target object</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>PUSH</col>
+        <col>Pushing</col>
+        <col>Pushes the <emlink href="script/fn/SetAction.html">target object </emlink> according to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Push and <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>CHOP</col>
+        <col>Tree felling</col>
+        <col>Chops the <emlink href="script/fn/SetAction.html">target object </emlink> according to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Chop.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>LIFT</col>
+        <col>Lifting</col>
+        <col>Lifts the <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>FLOAT</col>
+        <col>Floating in mid-air</col>
+        <col>According to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Float and current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>ATTACH</col>
+        <col>Attachment to another object</col>
+        <col>Adjusts object position at vertex a to the position of vertex b of the <emlink href="script/fn/SetAction.html">target object</emlink>. a and b are the two low bytes of <emlink href="script/fn/SetActionData.html">ActionData</emlink> (see <emlink href="script/fn/SetActionData.html">SetActionData</emlink> for an example).</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>FIGHT</col>
+        <col>Fighting</col>
+        <col>Fight against <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="definition/defcore.html#SektionPhysical">Fight physical</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+      <row>
+        <col>CONNECT</col>
+        <col>Line connections</col>
+        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
+        <col>CNAT_None</col>
+      </row>
+      <row>
+        <col>PULL</col>
+        <col>Pulling</col>
+        <col>Pulls the <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Push and <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
+        <col>CNAT_Bottom</col>
+      </row>
+    </table>
+  </text>
+  <text>Procedures are hardcoded in the engine and are from older times in which is was not yet possible to implement the same functionality in script. Most procedures represent highly complex behaviour which is useful only for clonks.</text>
+  <author>Sven2</author><date>2002-04</date>
 </doc>

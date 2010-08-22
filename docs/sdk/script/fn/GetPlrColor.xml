@@ -1,24 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetPlrColor</title>
-    <category>Spieler</category>
+    <category>Player</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Abgefragter Spieler</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player to be checked</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Fragt die Spielerfarbe ab. Die Spielerfarbe wird verwendet, um einige Besitzobjekte wie Clonks oder Flaggen, sowie Textnachrichten dieses Spielers einzufärben.</desc>
+    <desc>Determines the player color. The player color is used to identify various owned objects such as flags or clonks as well as his text messages.</desc>
     <examples>
       <example>
-
-<code><funclink>Log</funclink>("&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.", GetPlrColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
-
-        <text>Gibt Statusinformationen über den ersten Spieler aus, wobei dessen Spielername in seiner Spielerfarbe gefärbt wird.</text>
+        <code><funclink>Log</funclink>(&quot;&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.&quot;, GetPlrColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
+        <text>Returns status information about the first player, highlighting the player's name in the player color.</text>
       </example>
     </examples>
     <related>
@@ -26,5 +29,5 @@
       <funclink>SetColor</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Oktober 2003</date>
+  <author>Sven2</author><date>2003-10</date>
 </funcs>

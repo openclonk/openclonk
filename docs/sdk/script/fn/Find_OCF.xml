@@ -1,33 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_OCF</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>int</type><name>ocf</name><desc>Object-Character-Flag der zu suchenden Objekte</desc></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: Sucht alle Objekte, bei denen eine der angegebenen Object-Character-Flags gesetzt ist.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<examples>
-			<example>
-				<code><funclink>ObjectCount</funclink>(Find_OCF(<funclink>OCF_InLiquid</funclink> | <funclink>OCF_InSolid</funclink>))</code>
-				<text>Gibt die Anzahl der Objekte zurück, die sich in Flüssigkeit befinden oder im Boden stecken.</text>
-			</example>
-			<example>
-				<code><funclink>FindObject</funclink>(Find_OCF(<funclink>OCF_Alive</funclink>), Find_OCF(<funclink>OCF_OnFire</funclink>))</code>
-				<text>Gibt das erstbeste brennende Lebewesen zurück, falls ein solches existiert.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>FindObjects</funclink>
-			<emlink href="definition/ocf.html">Object character flags</emlink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_OCF</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>ocf</name>
+          <desc>Object character flag of the objects to find.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects which have the specified Object Character Flag set.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>ObjectCount</funclink>(Find_OCF(<funclink>OCF_InLiquid</funclink> | <funclink>OCF_InSolid</funclink>))</code>
+        <text>Returns the number of objects which are currently in a liquid or stuck in the ground.</text>
+      </example>
+      <example>
+        <code><funclink>FindObject</funclink>(Find_OCF(<funclink>OCF_Alive</funclink>), Find_OCF(<funclink>OCF_OnFire</funclink>))</code>
+        <text>Returns the first found burning object, if one can be found.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>FindObjects</funclink>
+      <emlink href="definition/ocf.html">Object character flags</emlink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

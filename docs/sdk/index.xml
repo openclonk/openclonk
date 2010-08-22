@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Entwicklermodus</title>
-<h>Clonk Entwicklermodus</h>
-<!--<img src="../images/cpem.gif" align="left" width="52" height="52" hspace="5" vspace="2" />-->
-<img src="../images/cpem.gif" id="cpem" width="52" height="52" />
-<text>Der Clonk Entwicklermodus gibt vollen Zugriff auf alle Spieldaten von Clonk: Szenarien, Objektdefinitionen, Spielerdateien und zusätzliche Gruppendateien. Bestehende Daten können modifiziert werden, um so neue Spielelemente zu schaffen.</text>
-<text>Selbsterstellte Spielelemente können veröffentlicht und somit anderen Clonk-Spielern zugänglich gemacht werden. Sie sollten jedoch vorher unbedingt ausgiebig getestet werden und keine Fehler enthalten.</text>
-
-<h id="Nutzungsbedingungen">Hinweise</h>
-
-<text>Die Benutzung der erweiterten Funktionen von Clonk geschieht grundsätzlich auf eigene Gefahr und Verantwortung. Es gibt keinerlei Support. Der Entwicklermodus ist nur registrierten Spielern zugänglich.</text>
-<text>Durch unsachgemäße Anwendung kann nicht nur der Spielspaß zunichte, sondern das komplette Spiel unspielbar gemacht werden. Für den erfolgreichen Einsatz des Entwicklermodus sind grundlegende Programmierkenntnisse, Fähigkeiten bei der Bearbeitung von Grafiken und allgemeiner Sachverstand absolute Voraussetzung. Wer sich dessen nicht sicher ist, sollte die Finger davon lassen.</text>
-<text>Jeder, der die in dieser Dokumentation enthaltenen Informationen nutzt, sollte verantwortungsvoll mit den gegebenen Möglichkeiten umgehen und eigenverantwortlich das Ziel anstreben, sinnvoll spielbare Erweiterungen zum Gesamtspiel zu erstellen, die der Gemeinschaft nützen.</text>
+  <title>Developer Mode</title>
+  <h>Clonk Developer Mode</h>
+  <img src="../images/cpem.gif" height="52" id="cpem" width="52" />
+  <text>The Clonk developer mode grants full access to all game content in Clonk: scenarios, object definitions, player files, and additional group files. Existing data can be modified and new elements can be created.</text>
+  <text>Self created game content can be publicly released and made available to other players. However, all content should be thoroughly tested and free of bugs before publishing.</text>
+  <h id="Nutzungsbedingungen">Terms of use</h>
+  <text>Use the developer mode at your own risk. No support can be given by RedWolf Design. The developer mode is available to registered players only.</text>
+  <text>Through improper use you can not only destroy all the fun in the game, but also make the whole game unplayable. In order to successfully use the developer mode, basic programming and graphics skills as well as general computer expertise are required. Those who are unsure should leave their hands off it!</text>
+  <text>Anybody using the advanced editing features should do so with great care and responsibility and try to produce useful extensions to the game, thus serving the whole community.</text>
 </doc>

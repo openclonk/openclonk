@@ -1,29 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>EnergyCheck</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>energy</name><desc>Abgefragter Energiewert</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt zurück, ob der Energiewert des aufrufenden Objekts größer oder gleich energy ist. Wenn die Spielregel "Energiebedarf" nicht aktiviert ist, gibt diese Funktion immer TRUE zurück. Außerdem werden Leitungen dazu motiviert, Energie hierhin zu transferieren.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink>(EnergyCheck(10000)) { <funclink>DoEnergy</funclink>(-10000); <funclink>SetAction</funclink>("Working"); }</code>
-				<text>Startet die Aktivität "Working", wenn genug Energie vorhanden ist.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CheckEnergyNeedChain</funclink>
-			<funclink>GetEnergy</funclink>
-			<funclink>DoEnergy</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>EnergyCheck</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>energy</name>
+          <desc>Requested energy value.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns whether an object's energy value is greater than or equal to the specified level. If the game rule "Energy Usage" is not enabled, this function always returns true. Otherwise, this call will also create an energy demand which will cause connected energy lines to transfer energy into this object.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(EnergyCheck(10000)) { <funclink>DoEnergy</funclink>(-10000); <funclink>SetAction</funclink>(&quot;Working&quot;); }</code>
+        <text>Starts the activity "Working" if sufficient energy is available.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CheckEnergyNeedChain</funclink>
+      <funclink>GetEnergy</funclink>
+      <funclink>DoEnergy</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

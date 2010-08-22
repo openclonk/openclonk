@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,14 +10,17 @@
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>any</type><name>...</name><desc>Aufrufparameter</desc></param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Calling Parameters</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ruft die überladene Funktion auf. Funktionen überladen sich, wenn sie beide den gleichen Namen haben.</desc>
+    <desc>Calls the overloaded function. A function overloads another function if it is declared with the same name in the same scope.</desc>
     <examples>
       <example>
-
-<code>
+        <code>
 #include Clonk
 
 func Initialize()
@@ -24,13 +28,10 @@ func Initialize()
   CreateContents(Sword);
   <funclink>return</funclink> inherited(...);
 }</code>
-
-        <text>So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (Clonk) ab, und erweitert den Initialize-EngineCallback.</text>
+        <text>This could be the script of a new clonk type. It derives its basic functionality from the normal clonk (Clonk) and extends the Initialize function.</text>
       </example>
     </examples>
-    <related>
-      <funclink>_inherited</funclink>
-    </related>
+    <related><funclink>_inherited</funclink></related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

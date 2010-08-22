@@ -1,32 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetValue</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>base</name><desc>Basis, in der gekauft wird. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
-				<param><type>int</type><name>for_player</name><desc>Spieler, für den der Wert gilt. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Gibt einen Objekt- oder Definitionswert zurück.<br />Ein Objektwert berechnet sich folgendermaßen: Zunächst geprüft, ob eine CalcValue-Funktion im Script des Objekttyps vorhanden ist, und gegebenenfalls ausgewertet. Ansonsten wird der Definitionswert (siehe nächster Absatz) verwendet. Unabhängig davon wird der Wert des Objekts immer mit der Fertigstellung (<funclink>GetCon</funclink>()/100) multipliziert. Tote Lebewesen (<funclink>GetCategory</funclink>()&amp;<funclink>OCF_Living</funclink> &amp;&amp; !<funclink>GetAlive</funclink>()) haben immer den Wert 0.<br />Der Definitionswert wird folgendermaßen ermittelt: Ist eine CalcDefValue-Funktion im Script vorhanden, wird diese ausgewertet. Ansonsten wird eine Wertüberladung aus der Scenario.txt verwendet. Ist diese ebenfalls nicht vorhanden, wird der in der DefCore angegebene Wert benutzt.<br /></desc>
-		<remark>Die beiden Parameter base und for_player sind für szenarienspezifische Handelsmodelle gedacht, und werden nur in CalcValue/CalcDefValue-Aufrufen verwendet.</remark>
-		<examples>
-			<example>
-<code>var value=GetValue();
-<funclink>while</funclink> (value-->0) <funclink>CreateContents</funclink>(Rock);
+  <func>
+    <title>GetValue</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>base</name>
+          <desc>Home base in which to buy. If the CalcValue function is defined in obj, the return value of CalcValue is used.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>Player to whom the value applies. If the CalcValue function is defined in obj, the return value of CalcValue is used in this case also.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the value of an object. With idDef specified, the standard value of the original object definition is returned, otherwise the current value of the specified object (obj) or the calling object if obj is 0.<br/>An object's value is determined as follows: with pObj specified it is first checked whether the CalcValue function is defined in the object's script and if so, it is evaluated. Otherwise, the definition value is used (see below). The resulting value is then reduced according to the object's completion.<br/>Dead animals or clonks always have value 0.<br/>The definition value is determined as follows: if the function CalcDefValue is defined in the definition script, it is evaluated. Otherwise, the value overload from Scenario.txt is used, if present. Otherwise, the standard value from DefCore is used.</desc>
+    <remark>The two parameters base and for_player are designed for use in special trading in individual scenarios and are only processed by CalcValue/CalcDefValue calls.</remark>
+    <examples>
+      <example>
+        <code>var value=GetValue();
+<funclink>while</funclink> (value--&gt;0) <funclink>CreateContents</funclink>(Rock);
 <funclink>RemoveObject</funclink>(true);</code>
-				<text>Objektscript: Das Objekt erzeugt so viele Steine, wie es wert ist, und vernichtet sich dann selber (wobei es die Steine auswirft).</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetWealth</funclink>
-			<funclink>SetWealth</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>März 2003</date>
+        <text>Object script: the object creates as many rocks as it is worth and then self-destructs (expelling the rocks).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetWealth</funclink>
+      <funclink>SetWealth</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-03</date>
 </funcs>

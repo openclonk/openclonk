@@ -1,33 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Collect</title>
-		<category>Objekte</category><subcat>Inhalt</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>item</name><desc>Objekt, das aufgesammelt werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Sammelt ein Objekt auf. Der Befehl führt dieselben Funktionen aus, als wäre das Objekt durch den normalen Collection-Bereich des Objekts eingesammelt worden (z.B. RejectCollect, Prüfung auf Flagge/Flagge abnehmbar, Hit-Aufruf bei OCF_HitSpeed2, usw.). Die einzigen Unterschiede sind, dass keine Prüfung der Position von item auf den Entrance-Bereich von target/this() gemacht wird, und dass item nicht auf OCF_Carryable geprüft wird.<br />Mit diesem Befehl lässt sich beispielsweise das Aufnehmen von Objekten aus Containern heraus realisieren. Wenn die Aufnahme fehlschlug (Beispielsweise durch den RejectCollect-Aufruf oder weil der Container voll war), gibt die Funktion 0 zurück. Ansonsten 1.</desc>
-		<examples>
-			<example>
-<code>protected func ControlDig (clonk)
+  <func>
+    <title>Collect</title>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>item</name>
+          <desc>Object to be collected.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Collects an object. This function performs the same events as they occur if the object is collected in the game through the Collection area (there will be a RejectCollect call, flag collection checks, hit calls, etc.) The only difference is that there will be no comparison of collection position and the collected item is not checked for the OCF_Carryable flag.<br/>Using this function you can for example collect objects directly from a container. If the function fails (e.g. through a RejectCollect or a full target container) the function returns 0, otherwise 1.</desc>
+    <examples>
+      <example>
+        <code>protected func ControlDig (clonk)
 {
 	var obj; if (!(obj = <funclink>Contents</funclink>())) <funclink>return</funclink> 1;
-	if (!clonk->Collect(obj)) clonk-><funclink>Message</funclink>("Herausnehmen nicht möglich");
+	if (!clonk-&gt;Collect(obj)) clonk-&gt;<funclink>Message</funclink>(&quot;Herausnehmen nicht mÃ¶glich&quot;);
 	<funclink>return</funclink> 1;
 }
 </code>
-				<text>Auf Graben wird das erste Inhaltsobjekt an den ausgewählten Clonk übergeben.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Enter</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+        <text>With keyboard command Dig the first inventory object is passed to the selected clonk.</text>
+      </example>
+    </examples>
+    <related><funclink>Enter</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

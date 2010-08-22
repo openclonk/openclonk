@@ -1,53 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Szenarioscripte</title>
-
-<h id="SzenarioScripte">Szenarioscripte</h>
-<part>
-	<text>In Szenarioscripten kann ein globaler Handlungsablauf und szenarienspezifische Besonderheiten wie Rejoins oder spezielle Spielerplatzierungen festgelegt werden. Für eine Beschreibung der Scriptsprache C4Script siehe <emlink href="script/index.html">C4Script</emlink>-Dokumentation.</text>
-
-	<h id="Callbacks">Callbacks in Szenarioscripten</h>
-	<text>Beim Start der Runde (Und VOR dem Beitritt der Spieler!) ruft die Engine, wenn vorhanden, die Funktion "Initialize" im Script des Szenarios auf. Innerhalb dieser Funktion können z.B. Objekte erzeugt werden, die beim Start der Runde vorhanden sein sollen. Außerdem kann die fortlaufende Scriptausführung gestartet werden.</text>
-
-	<code>func Initialize()
+  <title>Scenario Scripts</title>
+  <h id="SzenarioScripte">Scenario Scripts</h>
+  <part>
+    <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
+    <h id="Callbacks">Callbacks in Scenario Scripts</h>
+    <text>At the start of each round, before the players have joined, the engine calls the function "Initialize" in the scenario script, if defined. Within this function a scenario can perform special object placement or start the scenario scripting sequence.</text>
+    <code>func Initialize()
 {
-  <funclink>Log</funclink>("Hallo"); 
+  <funclink>Log</funclink>(&quot;Hallo&quot;); 
   <funclink>CreateObject</funclink>(HUT1,250,200,0);
   <funclink>ScriptGo</funclink>(1);
 }</code>
-
-	<text>Fortlaufende Scriptausführung: zu Beginn der Runde steht der interne Sciptzähler auf 0. Wurde mit ScriptGo die Scriptausführung aktiviert, so erhöht die Engine im Lauf der Runde in jedem zehnten Frame (Bild) den Scriptzähler um 1 und ruft, wenn vorhanden, die dazugehörige Script-Funktion im Szenario-Script auf.</text>
-	
-	<code>func Script26()
+    <text>Sequential scripting: at the start of a round the internal script counter is set to 0. If sequential scripting has been started with ScriptGo, the counter is increased by one every ten frames and the corresponding script function is called in the scenario script, if defined.</text>
+    <code>func Script26()
 {
-  <funclink>Log</funclink>("Diese Funktion wird nach 260 Frames ausgeführt.");
+  <funclink>Log</funclink>(&quot;Diese Funktion wird nach 260 Frames ausgefÃ¼hrt.&quot;);
 }</code>
-
-	<text>Der Scriptzähler kann mit dem Befehl <funclink>goto</funclink>() auch manuell auf einen bestimmten Wert gesetzt werden.</text>
-	<text>Nach der Platzierung eines beitretenden Spielers ruft die Engine, wenn vorhanden, die Funktion InitializePlayer im Scenario-Script für diesen Spieler auf. Die Funktion wird aufgerufen, nachdem die in Scenario.txt beschriebenen Startkonditionen (Positionierung und Platzierung von Mannschaft, Gebäude, Fahrzeuge, Material) verarbeitet wurden. Mit dieser Funktion können weitere spielerabhängige Startkonditionen geschaffen werden.</text>
-
-	<code>func InitializePlayer(player)
+    <text>The script counter can also be manually adjusted using <funclink>goto</funclink>() to jump to certain counter positions.</text>
+    <text>After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement.</text>
+    <code>func InitializePlayer(player)
 {
-  // Eine Meldung für diesen Spieler
-  <funclink>Log</funclink>( "Spieler Nr. %d ist beigetreten", player );
-  <funclink>Sound</funclink>("Ding");
+  // Eine Meldung fÃ¼r diesen Spieler
+  <funclink>Log</funclink>( &quot;Spieler Nr. %d ist beigetreten&quot;, player );
+  <funclink>Sound</funclink>(&quot;Ding&quot;);
   // Ersten Clonk des Spielers doch an einer anderen Stelle starten lassen
   <funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()), <funclink>GetCrew</funclink>(player));
 }</code>
-
-	<text>Analog dazu ruft die Engine die Funktion RemovePlayer auf, wenn ein Spieler die Runde verlässt.</text>
-	<text>Wird eine Runde durch szenariobedingte Spielziele wie Spielereliminierung, Materialabbau, usw. (siehe Scenario.txt <emlink href="scenario/scenario.html#SektionGame">Sektion [Game]</emlink>) oder durch den Scriptbefehl GameOver beendet (also nicht bei abgebrochenen Runden), ruft die Engine im Szenario-Script die Funktion OnGameOver auf.</text>
-
-	<code>func OnGameOver()
+    <text>When a player leaves a round, the function RemovePlayer is called.</text>
+    <text>If a round is ended through the game i.e. by player elimination, fulfillment of all goals as defined in Scenario.txt <emlink href="scenario/scenario.html#SektionGame">section [Game]</emlink>), or by the script command GameOver, the engine will call the function OnGameOver in the scenario script. This will not be called if the round was aborted.</text>
+    <code>func OnGameOver()
 {
-  <funclink>Sound</funclink>("Trumpet");
-  // Hier bietet sich die Möglichkeit für spezielle Rundenauswertung in der Log-Datei Clonk4.log
-  <funclink>Log</funclink>("Vermögen von Spieler 1: %d", <funclink>GetWealth</funclink>(0));
+  <funclink>Sound</funclink>(&quot;Trumpet&quot;);
+  // Hier bietet sich die MÃ¶glichkeit fÃ¼r spezielle Rundenauswertung in der Log-Datei Clonk4.log
+  <funclink>Log</funclink>(&quot;VermÃ¶gen von Spieler 1: %d&quot;, <funclink>GetWealth</funclink>(0));
 }</code>
-</part>
-
-<author>Sven2</author><date>April 2002</date>
-
+  </part>
+  <author>Sven2</author><date>2002-04</date>
 </doc>

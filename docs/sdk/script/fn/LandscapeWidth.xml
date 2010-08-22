@@ -1,18 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>LandscapeWidth</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Gibt die Breite der Landschaft in Pixel zurück.</desc>
-    <related>
-      <funclink>LandscapeHeight</funclink>
-    </related>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the width of the landscape in pixels.</desc>
+    <related><funclink>LandscapeHeight</funclink></related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

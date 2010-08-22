@@ -1,36 +1,47 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetContact</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>index</name><desc>Index des abzufragenden Vertex. -1 prüft alle Vertices, und gibt das Ergebnis als eine mit binärem Oder kombinierte Bitmaske zurück.</desc></param>
-				<param><type>int</type><name>dwCNAT</name><desc>Bitmaske von CNAT-Werten, die angeben, welche Richtungen geprüft werden sollen. Bei 0 werden alle Richtungen geprüft.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Ermittelt, in welche Richtungen einzelne oder alle Vertices des aufrufenden Objekts feste Landschaft berühren. Die Richtungen werden als Bitmaske von <emlink href="definition/cnat.html">CNAT-Werten</emlink> übergeben bzw. von der Funktion zurückgegeben.</desc>
-		<examples>
-			<example>
-<code>protected func Activate(object caller)
+  <func>
+    <title>GetContact</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the vertex to be checked. -1 checks all vertices and returns the result as a bitmask of values combined with OR.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>dwCNAT</name>
+          <desc>Bit mask of CNAT values which determine which directions to check. If 0, all directions are checked.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines on which side individual or all vertices of an object are touching the landscape. Directions are specified using <emlink href="definition/cnat.html">CNAT values</emlink>.</desc>
+    <examples>
+      <example>
+        <code>protected func Activate(object caller)
   {
   [Hopp!]
-  if (caller->GetContact(-1) &amp; CNAT_Bottom) <funclink>return</funclink>(caller-><funclink>Jump</funclink>());
+  if (caller-&gt;GetContact(-1) &amp; CNAT_Bottom) <funclink>return</funclink>(caller-&gt;<funclink>Jump</funclink>());
   <funclink>return</funclink>(false);
   }</code>
-				<text>Script für eine Hüpfpille: Wenn man sie mit Doppelgraben aktiviert, hüpft der Clonk, falls er auf dem Boden steht.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Stuck</funclink>
-			<funclink>GetVertex</funclink>
-			<funclink>GetMaterial</funclink>
-			<emlink href="definition/cnat.html">Contact Attachment</emlink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Januar 2005</date>
+        <text>Script for a jumping pill: if you activate it with double dig, the clonk jumps if he is standing on the ground.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Stuck</funclink>
+      <funclink>GetVertex</funclink>
+      <funclink>GetMaterial</funclink>
+      <emlink href="definition/cnat.html">Contact Attachment</emlink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2005-01</date>
 </funcs>

@@ -1,21 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ResetPhysical</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>physical</name><desc>Sollte, wenn angegeben, der Name einer Physical sein, die zuvor mit <funclink>SetPhysical</funclink> im Modus PHYS_StackTemporary gesetzt wurde. Es wird dann diese Physical auf den alten Wert, den sie vor dem temporären Setzen hatte, zurückgesetzt und die temporäre Änderung vom Stapel entfernt. Ist der Stapel leer - das heißt, wenn für alle <funclink>SetPhysical</funclink>-Aufrufe mit PHYS_StackTemporary-Parameter entsprechende ResetPhysical-Aufrufe mit sPhys-Parameter getätigt wurden, werden die temporären Physicals wieder gelöscht. Ist der Parameter 0 oder nicht angegeben, werden die temporären Physicals immer zurückgesetzt und alle temporären Zwischenwerte vom Stapel gelöscht. Für ein Beispiel zu diesem Parameter siehe <funclink>SetPhysical</funclink>.</desc><optional/></param>
-			</params>
-		</syntax>
-		<desc>Setzt alle Physicals auf den Normalwert zurück. Für weitere Informationen siehe <funclink>SetPhysical</funclink>.</desc>
-		<related>
-			<funclink>SetPhysical</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>ResetPhysical</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>physical</name>
+          <desc>If nonzero, this string should specify the name of a physical attribute of which a previous value has been stored using <funclink>SetPhysical</funclink> in PHYS_StackTemporary-mode. The specified physical is reset to its previous value and the previous value is removed from the temporary physical stack. If the stack is empty - i.e., ResetPhysical has been called for all respective calls to <funclink>SetPhysical</funclink> in PHYS_StackTemporary-mode, the temporary physicals will automatically be reset. If this parameter is zero, all temporary physicals are reset and any temporary physical values deleted form the stack. See <funclink>SetPhysical</funclink> for an example using this parameter. Since CR.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Resets all physicals to their default value. For more information see <funclink>SetPhysical</funclink>.</desc>
+    <related><funclink>SetPhysical</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

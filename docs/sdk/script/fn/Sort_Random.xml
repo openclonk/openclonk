@@ -1,20 +1,18 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Sort_Random</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>array</rtype>
-		</syntax>
-		<desc>Sortierkriterium: Sortiert die gefundenen Objekte zufällig.</desc>
-		<remark>Sort_Random sollte nicht in Verbindung mit <funclink>FindObject</funclink> verwendet werden, um ein zufälliges, passendes Objekt zu ermitteln. Stattdessen kann zum Beispiel das erste Element einer <funclink>FindObjects</funclink>-Suche mit SortRandom-Parameter verwendet werden.</remark>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>Sort_Random</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax><rtype>array</rtype></syntax>
+    <desc>Sort criterion: Sorts the found objects randomly.</desc>
+    <remark>Sort_Random should not be used together with <placeholder-1/> to find a random, matching object. Instead the first object of a <placeholder-2/> search with a SortRandom parameter can be used for instance.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,26 +10,28 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-		<param><type>int</type><name>index</name><desc>Index in der Teamliste</desc></param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index into the list of teams.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>
-    Gibt die indizierte Teamnummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetTeamCount()-1, dass eine gültige Teamnummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass "Löcher" unbelegter Teamnummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Teamnummern durchgeht.
-    </desc>
-<examples>
-                        <example>
-<code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetTeamCount</funclink>(); i++)
-  <funclink>Log</funclink>("Willkommen im Spiel, Spieler von %s", <funclink>GetTeamName</funclink>(GetTeamByIndex(i)));</code>
-                                <text>Begrüßt alle Spieler anhand ihrer Teams im Log.</text>
-                        </example>
-                </examples>
-	<related>
-		<emlink href="scenario/Teams.html">Teams</emlink>
-		<funclink>GetTeamColor</funclink>
-		<funclink>GetTeamName</funclink>
-		<funclink>GetPlayerTeam</funclink>
-		<funclink>GetTeamCount</funclink>
-	</related>
+    <desc>Returns the indicated team number. This function guarantees that for values from 0 to GetTeamCount()-1 a valid team number will be returned (notice that there may be "gaps" between team numbers in case some team have been removed from the game). This makes it easier to process all teams in a loop.</desc>
+    <examples>
+      <example>
+        <code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetTeamCount</funclink>(); i++)
+  <funclink>Log</funclink>(&quot;Willkommen im Spiel, Spieler von %s&quot;, <funclink>GetTeamName</funclink>(GetTeamByIndex(i)));</code>
+        <text>Welcomes all players in the log file.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>GetTeamColor</funclink>
+      <funclink>GetTeamName</funclink>
+      <funclink>GetPlayerTeam</funclink>
+      <funclink>GetTeamCount</funclink>
+    </related>
   </func>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

@@ -1,34 +1,58 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Buy</title>
-		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>id</type><name>buy_object</name><desc>ID des Objekttyps, der gekauft wird</desc></param>
-				<param><type>int</type><name>for_player</name><desc>Nummer des Spielers, dem das Objekt hinterher gehört</desc></param>
-				<param><type>int</type><name>pay_player</name><desc>Nummer des Spielers, der den Kauf bezahlt</desc></param>
-				<param><type>object</type><name>to_base</name><desc>Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird</desc><optional /></param>
-				<param><type>bool</type><name>show_errors</name><desc>Wenn ungleich Null, werden Fehlermeldugnen wie "Kaufen nicht möglich" aufgrund von Geldmangel angezeigt.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Kauft ein Objekt für for_player, und zieht pay_player Geld ab. Wenn dieser nicht genug Geld oder das Objekt nicht im Heimatbasismaterial hat, wird der Vorgang nicht ausgeführt.</desc>
-		<examples>
-			<example>
-				<code>Buy(Rock, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
-				<text>Kauft einen Stein in der Basis des ersten Spielers.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Sell</funclink>
-			<funclink>GetWealth</funclink>
-			<funclink>GetBase</funclink>
-			<funclink>FindBase</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Buy</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>buy_object</name>
+          <desc>Type of object to be bought.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>Owner (player number) of the new object.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>pay_player</name>
+          <desc>Number of the player who pays for the object.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>to_base</name>
+          <desc>Target object in which the new object is placed.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>show_errors</name>
+          <desc>If not 0, failure messages such as "Buying not possible" are displayed, e.g. if there is not enough money.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Buys an object for for_plr, deducting the wealth of pay_player. The function will fail if the paying player does not have enough money or the object is currently not available in the home base material.</desc>
+    <examples>
+      <example>
+        <code>Buy(Rock, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
+        <text>Buys a rock at the base of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Sell</funclink>
+      <funclink>GetWealth</funclink>
+      <funclink>GetBase</funclink>
+      <funclink>FindBase</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

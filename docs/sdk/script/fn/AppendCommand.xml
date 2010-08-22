@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>AppendCommand</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Commands</subcat>
     <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
     <syntax>
@@ -13,71 +14,65 @@
         <param>
           <type>string</type>
           <name>command</name>
-          <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
+          <desc>Command name (as string). See the table below.</desc>
         </param>
         <param>
           <type>object</type>
           <name>target</name>
           <optional />
-          <desc>Zielobjekt für Aktion</desc>
+          <desc>target object for the command</desc>
         </param>
         <param>
           <type>int</type>
           <name>x</name>
           <optional />
-          <desc>X-Zielkoordinate</desc>
+          <desc>X target coordinate</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
           <optional />
-          <desc>Y-Zielkoordinate</desc>
+          <desc>Y target coordinate</desc>
         </param>
         <param>
           <type>object</type>
           <name>target2</name>
           <optional />
-          <desc>zweites Zielobjekt</desc>
+          <desc>secondary target object</desc>
         </param>
         <param>
           <type>int</type>
           <name>delay</name>
           <optional />
-          <desc>Zeit (in Ticks/Frames), bis das Kommando abgebrochen wird</desc>
+          <desc>Time (in ticks or frames) until the command is terminated.</desc>
         </param>
         <param>
           <type>any</type>
           <name>Data</name>
           <optional />
-          <desc>zusätzliche Daten zur Aktion</desc>
+          <desc>additional data for the command</desc>
         </param>
         <param>
           <type>int</type>
           <name>retries</name>
           <optional />
-          <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
+          <desc>Number of retries if the command fails, until the command fails completely.</desc>
         </param>
         <param>
           <type>int</type>
           <name>base_mode</name>
           <optional />
-          <desc>Befehlsstapelmodus. Werte siehe <funclink>AddCommand</funclink>.</desc>
+          <desc>Command stack mode. See <funclink>AddCommand</funclink> for values.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Fügt ein Kommando der Kommandoliste des aufrufenden Objekts am Ende hinzu. Das Objekt wird also das zuerst gegebene Kommando ausführen und sich danach automatisch dem mit AppendCommand hinzugefügten widmen.<br />
-          Für Kommando-Beschreibungen siehe <funclink>SetCommand</funclink><br/>
-          Bemerkung: Mit AppendCommand hinzugefügte Befehle werden nicht an gesteuerte Fahrzeuge weitergeleitet (siehe VehicleControl)</desc>
-
+    <desc>Appends a command to the command stack of an object. The appended command will be executed after the current other commands.<br/>For command descriptions see <funclink>SetCommand</funclink><br/>Notice: commands set by AppendCommand are not transferred to controlled vehicles (see VehicleControl).</desc>
     <examples>
       <example>
         <code>var base = <funclink>FindBase</funclink>();
-<funclink>SetCommand</funclink>("MoveTo", base);
-AppendCommand("Throw", nil, base-><funclink>GetX</funclink>(), base-><funclink>GetY</funclink>());</code>
-        <text>
-Gibt dem Clonk den Befehl, zuerst zu der ersten (gefundenen) Basis zu laufen, und dann das erste Objekt, das er trägt, auf diese zu werfen.<br />
-        </text>
+<funclink>SetCommand</funclink>(&quot;MoveTo&quot;, base);
+AppendCommand(&quot;Throw&quot;, nil, base-&gt;<funclink>GetX</funclink>(), base-&gt;<funclink>GetY</funclink>());</code>
+        <text>Gives the clonk the command to go to the first found base and then throw the first carried object at the base.</text>
       </example>
     </examples>
     <related>
@@ -87,5 +82,5 @@ Gibt dem Clonk den Befehl, zuerst zu der ersten (gefundenen) Basis zu laufen, un
       <funclink>FinishCommand</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

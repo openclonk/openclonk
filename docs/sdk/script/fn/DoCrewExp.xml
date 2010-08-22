@@ -1,30 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoCrewExp</title>
-		<category>Objekte</category>
-		<subcat>Mannschaft</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>change</name><desc>Veränderung des Erfahrungswertes</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt dem aufrufenden Clonk Erfahrungspunkte.</desc>
-		<remark>Der Clonk muss eine Infosektion haben, das heißt er muss ein CrewMember sein und einem Spieler gehören.</remark>
-		<examples>
-			<example>
-<code><funclink>GetCursor</funclink>()->DoCrewExp(100);
-<funclink>Sound</funclink>("Applause", true); <funclink>GameOver</funclink>();</code>
-				<text>Gibt dem ausgewählten Clonk des ersten Spielers 100 Punkte Erfahrung, spielt einen Applaus ab und beendet die Runde.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetRank</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>DoCrewExp</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of the experience value.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Gives experience points to a clonk.</desc>
+    <remark>The receiving object must have an info section, meaning it must be a CrewMember and joined to a player's crew.</remark>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;DoCrewExp(100);
+<funclink>Sound</funclink>(&quot;Applause&quot;, true); <funclink>GameOver</funclink>();</code>
+        <text>Gives the selected clonk 100 points of experience, plays a sound and then ends the round.</text>
+      </example>
+    </examples>
+    <related><funclink>GetRank</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

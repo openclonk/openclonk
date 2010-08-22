@@ -1,34 +1,63 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CastPXS</title>
-		<category>Landschaft</category>
-		<version>4.6.5.0 CP <extversion>4.10.0.0 OC</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>string</type><name>material_name</name><desc>Materialname</desc></param>
-				<param><type>int</type><name>amount</name><desc>Menge</desc></param>
-				<param><type>int</type><name>level</name><desc>Stärke</desc></param>
-				<param><type>int</type><name>x</name><desc>X-Koordinate</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Koordinate</desc></param>
-				<param><type>int </type><name>angle</name><desc>Winkel in den die Materialpixel verschleudert werden.</desc><optional /></param>
-				<param><type>int </type><name>angle_variance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Materialpixel in alle Richtungen verschleudert.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Verschleudert namentlich angegebene Materialpixel an angegebener Position. Bei einem lokalen Aufruf gelten die Koordinaten als Offset zum aufrufenden Objekt.</desc>
-		<examples>
-			<example>
-				<code>CastPXS("Lava", 6000, 30);</code>
-				<text>Verschleudert sechstausend Lavapixel an der Position des aufrufenden Objekts.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CastObjects</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>CastPXS</title>
+    <category>Landscape</category>
+    <version>4.6.5.0 CP <extversion>4.10.0.0 OC</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>material_name</name>
+          <desc>Material name</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Amount</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Strength.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle</name>
+          <desc>Angle into which the material pixels are casted.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle_variance</name>
+          <desc>Maximum deviation from that angle. If not given the material pixels will all be casted into all directions.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Casts material pixels at the specified position. In local calls, the coordinates are an offset to the position of the calling object.</desc>
+    <examples>
+      <example>
+        <code>CastPXS(&quot;Lava&quot;, 6000, 30);</code>
+        <text>Casts 6,000 lava pixels at the position of the calling object.</text>
+      </example>
+    </examples>
+    <related><funclink>CastObjects</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

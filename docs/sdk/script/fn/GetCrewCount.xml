@@ -1,23 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetCrewCount</title>
-    <category>Objekte</category>
-    <subcat>Mannschaft</subcat>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglieder gezählt werden sollen.</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose crew members you want to count.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Liefert die Anzahl der Mannschaftsmitglieder eines Spielers zurück.</desc>
+    <desc>Returns the number of crew members of a player.</desc>
     <examples>
       <example>
         <code><funclink>while</funclink> (<funclink>GetCrewCount</funclink>(0) &gt; 3) <funclink>Kill</funclink>(<funclink>GetHiRank</funclink>(0));</code>
-        <text>Tötet die höchstrangigen Clonks des ersten Spielers, bis er nur noch drei oder weniger Clonks hat.</text>
+        <text>Keeps killing Kills the highest ranking clonk of the first player until the player has only three clonks left.</text>
       </example>
     </examples>
     <related>
@@ -27,5 +32,5 @@
       <funclink>GetCaptain</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

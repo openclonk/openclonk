@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -8,12 +9,18 @@
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
-      <params><param><type>bool</type><name>start</name><desc>Angabe, ob der Zähler gestartet oder gestoppt werden soll.</desc></param></params>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>start</name>
+          <desc>Whether to start or stop the counter.</desc>
+        </param>
+      </params>
     </syntax>
-    <desc>Startet den Scriptzähler, bzw. hält ihn wieder an.</desc>
+    <desc>Starts or stops the scenario script counter.</desc>
     <examples>
       <example>
-        <text>Siehe <funclink>goto</funclink>().</text>
+        <text>See <funclink>goto</funclink>().</text>
       </example>
     </examples>
     <related>
@@ -21,5 +28,5 @@
       <funclink>ScriptCounter</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>August 2002</date>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

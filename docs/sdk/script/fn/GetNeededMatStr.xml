@@ -1,38 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetNeededMatStr</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>string</rtype>
-			<params>
-				<param><type>object</type><name>need_mat_object</name><desc>Objekt, dessen Baumaterialsbedarf abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
-			</params>
-		</syntax>
-		<desc>Liefert die noch benötigten Baumaterialien des Objekts</desc>
-		<examples>
-			<example>
-				<code>/* Wird von der Bau-Action des Clonks aufgerufen */
+  <func>
+    <title>GetNeededMatStr</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>need_mat_object</name>
+          <desc>Object whose construction material need is queried. Can be 0 in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the still needed construction materials of an object.</desc>
+    <examples>
+      <example>
+        <code>/* Wird von der Bau-Action des Clonks aufgerufen */
 private func Building()
 {
-  /* benötigtes Baumaterial abfragen */
+  /* benÃ¶tigtes Baumaterial abfragen */
   var need_mat_text=GetNeededMatStr(<funclink>GetActionTarget</funclink>());
   /* Ausgeben */
-  <funclink>Message</funclink>("%s",need_mat_text);
+  <funclink>Message</funclink>(&quot;%s&quot;,need_mat_text);
   return(1);
 }
 				</code>
-				<text>Labernder Bauarbeiter.</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>GetComponent</funclink>
-												<funclink>GetCon</funclink>
-												<funclink>ComponentAll</funclink>
-								</related>
-	</func>
-	<author>wipfmetz</author><date>August 2002</date>
+        <text>Talking builder.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetComponent</funclink>
+      <funclink>GetCon</funclink>
+      <funclink>ComponentAll</funclink>
+    </related>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

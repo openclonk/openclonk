@@ -1,31 +1,50 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetHostility</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion><extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player1</name><desc>Der Spieler, dessen Bündnisverhältnis gesetzt wird</desc></param>
-				<param><type>int</type><name>player2</name><desc>Der Spieler, zu dem das Bündnisverhältnis gesetzt wird</desc></param>
-				<param><type>bool</type><name>hostile</name><desc>Wenn ungleich 0, wird verfeindet. Sonst verbündet.</desc></param>
-				<param><type>bool</type><name>silent</name><desc>Wenn ungleich 0, erscheint keine Verfeindungsnachricht im Messageboard. Im ersten Frame des Spieles wird auch ohne diesen Parameter nie eine Nachricht ausgegeben.</desc></param>
-				<param><type>bool</type><name>no_calls</name><desc>Wenn ungleich 0, werden die Callbacks RejectHostilityChange und OnHostilityChange nicht ausgeführt. Ab CR.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt das Bündnisverhältnis zwischen zwei Spielern einseitig.</desc>
-		<examples>
-			<example>
-				<code>SetHostility(0,1,1); SetHostility(1,0,1);</code>
-				<text>Verfeindet die ersten beiden Spieler, ohne eine Logmeldung auszugeben.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Hostile</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2007</date>
+  <func>
+    <title>SetHostility</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion><extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player1</name>
+          <desc>Player whose hostility towards another player you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player2</name>
+          <desc>Player towards whom you want to change hostility.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>hostile</name>
+          <desc>If unequal to 0, the relationship is hostile. Else friendly.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>silent</name>
+          <desc>If not 0, the hostility messages in the message board will be suppressed. Hostility messages are never displayed during the first frame of a round, regardless of the value of this parameter.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If not 0, the callbacks RejectHostilityChange and OnHostilityChange are not executed. From CR.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets bilateral friendship of two players.</desc>
+    <examples>
+      <example>
+        <code>SetHostility(0,1,1); SetHostility(1,0,1);</code>
+        <text>Makes the first two players enemies without causing a message.</text>
+      </example>
+    </examples>
+    <related><funclink>Hostile</funclink></related>
+  </func>
+  <author>Sven2</author><date>2007-04</date>
 </funcs>

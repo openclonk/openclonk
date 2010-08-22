@@ -1,34 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ClearMenuItems</title>
-		<category>Objekte</category><subcat>Menü</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Entfernt alle Einträge aus einem Menü.</desc>
-		<examples>
-			<example>
-
-<code>var clonk=<funclink>GetCursor</funclink>();
-clonk-><funclink>CreateMenu</funclink>(Clonk, clonk, nil, "", 0, 2);
-clonk-><funclink>AddMenuItem</funclink>("", "", TIM1, nil,nil,"Alter Text");
+  <func>
+    <title>ClearMenuItems</title>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Removes all entries from a menu.</desc>
+    <examples>
+      <example>
+        <code>var clonk=<funclink>GetCursor</funclink>();
+clonk-&gt;<funclink>CreateMenu</funclink>(Clonk, clonk, nil, &quot;&quot;, 0, 2);
+clonk-&gt;<funclink>AddMenuItem</funclink>(&quot;&quot;, &quot;&quot;, TIM1, nil,nil,&quot;Alter Text&quot;);
 
 [...]
 
-clonk->ClearMenuItems();
-clonk-><funclink>AddMenuItem</funclink>(nil, "", TIM1, nil,0,0,"Neuer Text");</code>
-				<text>Öffnet zunächst ein Textfenster mit dem Inhalt "Alter Text" für den ausgewählten Clonk des ersten Spielers, und ändert die Beschriftung dann später auf "Neuer Text".</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateMenu</funclink>
-			<funclink>AddMenuItem</funclink>
-			<funclink>CloseMenu</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+clonk-&gt;ClearMenuItems();
+clonk-&gt;<funclink>AddMenuItem</funclink>(nil, &quot;&quot;, TIM1, nil,0,0,&quot;Neuer Text&quot;);</code>
+        <text>Opens a text window containing the entry "Old Text" for the selected clonk. Then changes the entry to "New Text".</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateMenu</funclink>
+      <funclink>AddMenuItem</funclink>
+      <funclink>CloseMenu</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

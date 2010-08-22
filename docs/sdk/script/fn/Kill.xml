@@ -1,32 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Kill</title>
-		<category>Objekte</category>
-		<subcat>Lebewesen</subcat>
-		<version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param>
-					<type>bool</type><name>forced</name>
-					<desc>Wenn gesetzt, wird das Objekt auch dann getötet, wenn ein Effekt das zu unterbrechen versucht. Ab CE.</desc><optional />
-				</param>
-			</params>
-		</syntax>
-		<desc>Tötet das aufrufende Objekt. Nur Lebewesen.</desc>
-		<examples>
-			<example>
-				<code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_Alive</funclink>())->Kill();</code>
-				<text>Tötet ein Lebewesen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Punch</funclink>
-			<funclink>RemoveObject</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001, März 2004</date>
+  <func>
+    <title>Kill</title>
+    <category>Objects</category>
+    <subcat>Living Beings</subcat>
+    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>forced</name>
+          <desc>If set, the object will be killed, even if an effect tries to prevent this. From CE.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Kills an object. Applies to living beings only.</desc>
+    <examples>
+      <example>
+        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_Alive</funclink>())-&gt;Kill();</code>
+        <text>Kills a living being.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Punch</funclink>
+      <funclink>RemoveObject</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

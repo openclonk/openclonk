@@ -1,6 +1,6 @@
 # Notable targets:
 # all (default): German and English onlinedocs
-# online-de: only German onlinedocs, which can be partially updated
+# online-en: only English onlinedocs, which can be partially updated
 # Enwickler.chm: the German offline doc
 #                use with make Entwickler.chm HHC = /path/to/hhc
 
@@ -33,7 +33,7 @@ xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name 'content.xml' -pr
 htmlfiles := $(addsuffix .html, $(basename $(xmlfiles)))
 
 # The translated files and directories
-sdk-en-dirs := $(subst sdk, sdk-en, $(sdk-dirs))
+sdk-de-dirs := $(subst sdk, sdk-de, $(sdk-dirs))
 
 # For openclonk.org
 online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
@@ -43,13 +43,13 @@ online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extr
 # For Entwickler.chm
 chm-dirs := $(foreach lang, en de, $(addprefix chm/$(lang)/, . $(sdk-dirs) images))
 
-.PHONY: all online-de chm install check clean
+.PHONY: all online-en chm install check clean
 
-all: $(online-dirs) $(sdk-en-dirs) $(online-extra-files) $(online-sdk-files)
+all: $(online-dirs) $(sdk-de-dirs) $(online-extra-files) $(online-sdk-files)
 
-online-de: $(addprefix online/de/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
+online-en: $(addprefix online/en/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
 
-chm: $(chm-dirs) chm/de/Entwickler.chm chm/en/Developer.chm
+chm: $(chm-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
@@ -60,22 +60,22 @@ check:
 
 clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot
-	rm -rf online sdk-en chm
+	rm -rf online sdk-de chm
 
-chm/de/Output.hhp chm/de/Output.hhk chm/en/Output.hhp chm/en/Output.hhk: sdk/content.xml
+chm/en/Output.hhp chm/en/Output.hhk chm/de/Output.hhp chm/de/Output.hhk: sdk/content.xml
 #update timestamp
 	touch $@
-sdk/content.xml: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental.py \
-  sdk/content.xml.in Template.hhk Template.en.hhk Template.hhp Template.en.hhp en.mo
+sdk/content.xml: $(xmlfiles) chm/en/. chm/de/. build_chm_files.py experimental.py \
+  sdk/content.xml.in Template.hhk Template.de.hhk Template.hhp Template.de.hhp de.mo
 	@echo generate chm files
 	@python build_chm_files.py $(xmlfiles)
 
-$(sdk-en-dirs) $(online-dirs) $(chm-dirs):
+$(sdk-de-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
 
-doku.pot: $(xmlfiles) extra-strings.xml xml2po.py clonk.py
+doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 	@echo extract strings to $@
-	@python xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml
+	@python xml2po.py -e -m clonk -o $@ $(xmlfiles) extra-strings.xml sdk/content.xml.in
 
 %.po: doku.pot
 	@echo update $@
@@ -85,9 +85,9 @@ doku.pot: $(xmlfiles) extra-strings.xml xml2po.py clonk.py
 	@echo compile $@
 	@msgfmt --statistics -o $@ $<
 
-sdk-en/%.xml: sdk/%.xml en.mo xml2po.py clonk.py
+sdk-de/%.xml: sdk/%.xml de.mo xml2po.py clonk.py
 	@echo generate $@
-	@python xml2po.py -e -m clonk -t en.mo -o $@ $<
+	@python xml2po.py -e -m clonk -t de.mo -o $@ $<
 
 define run-xslt
 @echo generate $@
@@ -95,14 +95,14 @@ define run-xslt
 endef
 online/%: webnotes=1
 chm/%: webnotes=0
-online/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
-online/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
-chm/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
-chm/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
-chm/de/Output.hhc: stylesheet=hhc.xsl
+online/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
+online/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
+chm/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
+chm/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/Output.hhc: stylesheet=hhc.xsl
-chm/de/Output.hhc: sdk/content.xml hhc.xsl ; $(run-xslt)
-chm/en/Output.hhc: sdk-en/content.xml hhc.xsl ; $(run-xslt)
+chm/de/Output.hhc: stylesheet=hhc.xsl
+chm/en/Output.hhc: sdk/content.xml hhc.xsl ; $(run-xslt)
+chm/de/Output.hhc: sdk-de/content.xml hhc.xsl ; $(run-xslt)
 
 $(filter online/en/%, $(online-extra-files)): online/en/%: %
 	$(CP) $< $@
@@ -113,8 +113,7 @@ $(addprefix chm/en/, $(extra-files-chm)): chm/en/%: %
 $(addprefix chm/de/, $(extra-files-chm)): chm/de/%: %
 	$(CP) $< $@
 
-chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
-	"$(HHC)" $<
 chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(addprefix chm/en/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
 	"$(HHC)" $<
-
+chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
+	"$(HHC)" $<

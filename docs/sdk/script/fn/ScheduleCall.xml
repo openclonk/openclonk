@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,26 +10,44 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-				<param><type>object</type><name>obj</name><desc>Objekt, in dem die Funktion aufgerufen werden soll. 0 für lokalen Aufruf.</desc></param>
-        <param><type>string</type><name>function</name><desc>Name der Funktion, die aufgerufen werden soll.</desc></param>
-        <param><type>int</type><name>delay</name><desc>Zeit, bis die Funktion zum ersten Mal aufgerufen werden soll. Wenn repeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Aufrufen.</desc></param>
-				<param><type>int</type><name>repeat</name><desc>Anzahl der Aufrufe. Wenn 0 oder nicht angegeben wird die Funktion genau ein mal aufgerufen.</desc></param>
-				<param><name>...</name><desc>Weitere Parameter, die an die Funktion übergeben werden sollen.</desc></param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object in which to call the function. Can be 0 in local calls.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Name of the function to call.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>delay</name>
+          <desc>Delay after which the first call is made. If repeat is greather than 1, this is also the delay inbetween subsequent calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>repeat</name>
+          <desc>Number of calls. If 0 or not specified, the call is made exactly once.</desc>
+        </param>
+        <param>
+          <name>...</name>
+          <desc>Additional parameters which are passed to the function called.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ruft eine Funktion nach einer angegebenen Verzögerung auf.</desc>
-		<remark>Diese Funktion wird in der System.c4g durch einen <emlink href="script/Effects.html">Effekt</emlink> "IntScheduleCall" und
-					  die Funktion <funclink>Call</funclink> realisiert.</remark>
+    <desc>Calls a function after a specified delay.</desc>
+    <remark>This function is implemented in System.c4g using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
     <examples>
       <example>
-				<code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), "Redefine", 500, 0, MCLK);</code>
-				<text>Ruft in einem Clonk die Funktion "Redefine" mit 500 Ticks Verzögerung auf und übergibt als Parameter "MCLK". Dadurch wird der Clonk nach 500 Ticks zu einem Magier, sofern der Aufruf nicht durch <funclink>ClearScheduleCall</funclink> vorher abgebrochen wird.</text>
-			</example>
-		</examples>
+        <code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;, 500, 0, MCLK);</code>
+        <text>Calls the function "Redefine" in a clonk with a delay of 500 ticks and passes "MCLK" as additional parameter. This will cause the clonk to change into a magician after 500 frames unless the call is cancelled earlier using <funclink>ClearScheduleCall</funclink>.</text>
+      </example>
+    </examples>
     <related>
       <funclink>Schedule</funclink>
       <funclink>ClearScheduleCall</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>August 2005</date>
+  <author>PeterW</author><date>2005-08</date>
 </funcs>

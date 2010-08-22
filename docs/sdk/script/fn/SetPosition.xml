@@ -1,26 +1,40 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>SetPosition</title>
-                <category>Objekte</category><subcat>Position</subcat>
-                <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-                <syntax>
-                        <rtype>void</rtype>
-                        <params>
-                                <param><type>int</type><name>x</name><desc>Neue X-Position für das Objekt</desc></param>
-                                <param><type>int</type><name>y</name><desc>Neue Y-Position für das Objekt</desc></param>
-                                <param><type>bool</type><name>check_bounds</name><desc>Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist. (Ab CR)</desc><optional /></param>
-                        </params>
-                </syntax>
-                <desc>Verschiebt das aufrufende Objekt an die angegebene Position. Dabei wird das Objekt an die exakte Pixelposition gesetzt, und eventuelle, interne Verschiebungen um Pixelbruchteile werden verworfen.</desc>
-                <related>
-                        <funclink>GetX</funclink>
-                        <funclink>GetY</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>August 2002</date>
-        <author>Clonkonaut</author><date>April 2008</date>
+  <func>
+    <title>SetPosition</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>New X position of the object.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>New Y position of the object.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>check_bounds</name>
+          <desc>Only applies to objects using the BorderBound flag. Ensures that the position is always within the limits specified by the object.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Moves the object to the specified position. This will set the exact pixel position and any internal sub-pixel offsets will be reset.</desc>
+    <related>
+      <funclink>GetX</funclink>
+      <funclink>GetY</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>
-

@@ -1,48 +1,112 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CustomMessage</title>
-		<category>Nachrichten</category>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>message</name><desc>Nachricht, die ausgegeben wird.</desc></param>
-				<param><type>object</type><name>obj</name><desc>Wenn ungleich 0, wird die Nachricht über dem angegebenen Objekt ausgegeben.</desc><optional /></param>
-				<param><type>int</type><name>plr</name><desc>Nummer des Spielers, bei dem die Nachricht ausgegeben wird. Bei Angabe von NO_OWNER wird die Nachricht für alle Spieler angezeigt.</desc></param>
-				<param><type>int</type><name>offset_x</name><desc>x-Offset der Nachrichtenposition. Bei globalen Nachrichten ist dies die Viewportmitte. Bei Objektnachrichten ist dies relativ zur Standard-Nachrichtenposition über dem Objekt. Bei Portrait-Nachrichten (portrait!=0) ist das Offset relativ zur oberen, linken Viewportecke.</desc><optional /></param>
-				<param><type>int</type><name>offset_y</name><desc>y-Offset der Nachrichtenposition.</desc><optional /></param>
-				<param><type>int</type><name>color</name><desc>Farbe der Nachricht. Bei 0 Default auf 0xffffff (weiß).</desc><optional /></param>
-				<param><type>id</type><name>deco</name><desc>ID der Objektdefinition, die für Dekoration der Nachricht verwendet wird. Wenn angegeben, wird die Nachricht von einem Rahmen umgeben. Nur gültig bei angegebenem Portrait.</desc><optional /></param>
-				<param><type>string</type><name>portrait</name><desc>Bildspezifikation für ein Bild links neben der Nachricht im Dekorationsrahmen.</desc><optional /></param>
-				<param><type>int</type><name>flags</name><desc>Bitmaske zusätzlicher Optionen. Mögliche Werte:
-          <table><rowh><col>Bit</col><col>Konstante</col><col>Beschreibung</col></rowh>
-				  <row><col>0</col><col>MSG_NoBreak</col><col>Wenn gesetzt, werden keine automatischen Zeilenumbruch bei langen Nachrichten eingefügt.</col></row>
-				  <row><col>1</col><col>MSG_Bottom</col><col>Nur globale Nachrichten. Für Portraitnachrichten mit Dekorationsrahmen: Das Nachrichtenoffset gibt die Verschiebung zur unteren Bildschirmkante anstatt zur oberen Bildschirmkante an. Für nicht-Portraitnachrichten setzt das Flag die Nachricht etwas tiefer.</col></row>
-				  <row><col>2</col><col>MSG_Multiple</col><col>Wenn gesetzt, werden vorherige Nachrichten des gleichen Typs nicht gelöscht.</col></row>
-				  </table></desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Gibt eine Nachricht aus.</desc>
-		<remark>Diese Funktion vereinigt die Funktionialitäten von <funclink>Message</funclink> und <funclink>PlayerMessage</funclink> und bietet zusätzliche Optionen an. Um in der Zukunft weitere Parameter einfügen zu können ohne eine neue Funktion zu erschaffen, enthält sie bewusst keine zusätzlichen Format-Parameter. Diese können über die Funktion <funclink>Format</funclink> erreicht werden.</remark>
-		<remark>Es gelten die üblichen Nachrichtenformatierungen. Beginnt die Nachricht mit einem "@", so wird die Nachricht dauerhaft angezeigt bis sie durch eine andere ersetzt wird. Das Zeichen "|" steht für einen Zeilenumbruch. Es können Nachrichtenformatierungen mit den Tags &lt;i&gt; (kursiv) und &lt;c&gt; (farbig) genutzt werden.</remark>
-		<remark>Nachrichten werden grundsätzlich angezeigt, bis eine von der Nachrichtenlänge abhängige Zeit vergangen ist oder sie durch eine zweite Nachricht gleicher Klasse ersetzt werden. Eine globale Nachricht (d.h. obj=0) ersetzt alle anderen globalen Nachrichten, und eine Objektnachricht (obj!=0) ersetzt alle anderen Objektnachrichten. Um mehrere Nachrichten gleicher Klasse anzuzeigen, sollte das Flag MSG_Multiple verwendet werden.</remark>
-		<examples>
-			<example>
-				<code>CustomMessage("This is &lt;i&gt;madness&lt;/i&gt;!");</code>
-				<text>Gibt die Nachricht "This is madness!" nur für Spieler 0 aus, wobei das Wort "madness" in kursiver Schrift angezeigt wird.</text>
-			</example>
-			<example>
-				<code>CustomMessage("&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world", 0, NO_OWNER, 100,100, 0, MD69, "Portrait:Clonk::00ff00::1);</code>
-				<text>Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein grünes Clonk-Portrait angezeigt. Es muss die Dekorationsdefinition MD69 geladen sein.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Message</funclink>
-			<funclink>PlayerMessage</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juli 2008</date>
+  <func>
+    <title>CustomMessage</title>
+    <category>Messages</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Message to be displayed</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>If not 0, the message is displayed above the specified object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>plr</name>
+          <desc>Player number for which the message should be displayed. NO_OWNER will display the message globally.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset_x</name>
+          <desc>x offset of the message position. For global messages this refers to the viewport center. For object messages this is relative to the standard message position above the object. For portrait messages (portrait!=0) the offset is relative to the upper left viewport corner.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>offset_y</name>
+          <desc>y offset of the message position.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>Color of the message. 0 defaults to 0xffffff (white).</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>deco</name>
+          <desc>ID of the object definition which is used for decoration of the message. If given the message will be surrounded by a border. Only valid for given portrait.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>portrait</name>
+          <desc>Picture specification for a picture to the left of the message within the decoration frame.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Bit mask specifying additional options. Possible values: 
+            <table>
+              <rowh>
+                <col>Bit</col>
+                <col>Constant</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <col>0</col>
+                <col>MSG_NoBreak</col>
+                <col>If set no automatic line breaks are inserted for long messages.</col>
+              </row>
+              <row>
+                <col>1</col>
+                <col>MSG_Bottom</col>
+                <col>Global messages only. For portrait messages with decoration frame: The message offset specifies the displacement relative to the bottom of the screen instead of relative to the top. For non-portrait messages the flag displaces the message a bit to the bottom.</col>
+              </row>
+              <row>
+                <col>2</col>
+                <col>MSG_Multiple</col>
+                <col>If set previous messages of the same type will not be removed.</col>
+              </row>
+            </table>
+
+          </desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Displays a message.</desc>
+    <remark>This function unifies the functionalities of <funclink>Message</funclink> and <funclink>PlayerMessage</funclink> and offers additional options. To be able to add more parameters in future without having to define a new function it intentionally does not have additionaly format parameters. Instead they can be used via the function <funclink>Format</funclink>.</remark>
+    <remark>The usual message formating rules apply. If the message starts with an "@" then the message is displayed permanently until it is replaced by another message. The character "|" causes a line break. The message can be formatted using the tags &lt;i&gt; (italic) or &lt;c&gt; (colored).</remark>
+    <remark>Messages are displayed until a certain time which depends on the length of the message has passed, or the message is replaced by another message of the same class. A global message (i.e. obj=0) replaces all other global messages, and an object message (obj!=0) replaces all other object messages. To display multiple messages of the same class the flag MSG_Multiple can be used.</remark>
+    <examples>
+      <example>
+        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;);</code>
+        <text>Shows the message "This is madness!" for player 0 only with the word "madness" being written in italic.</text>
+      </example>
+      <example>
+        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, 0, NO_OWNER, 100,100, 0, MD69, &quot;Portrait:Clonk::00ff00::1);</code>
+        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition MD69 needs to be loaded.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Message</funclink>
+      <funclink>PlayerMessage</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2008-07</date>
 </funcs>

@@ -215,7 +215,7 @@ if 0:
         reader.parse(filename)
     experimental.Result()
 
-mofile = open("en.mo", "rb")
+mofile = open("de.mo", "rb")
 gt = gettext.GNUTranslations(mofile)
 
 #_ = lambda s: s.encode('iso-8859-1')
@@ -242,8 +242,8 @@ for line in fin:
 f.close()
 fin.close()
 
-for f, fin in ((file("chm/de/Output.hhp", "w"), file("Template.hhp", "r")),
-               (file("chm/en/Output.hhp", "w"), file("Template.en.hhp", "r"))):
+for f, fin in ((file("chm/en/Output.hhp", "w"), file("Template.hhp", "r")),
+               (file("chm/de/Output.hhp", "w"), file("Template.de.hhp", "r"))):
     for line in fin:
         if line.find("[INFOTYPES]") != -1:
             for filename in sys.argv[1:]:
@@ -253,8 +253,8 @@ for f, fin in ((file("chm/de/Output.hhp", "w"), file("Template.hhp", "r")),
     fin.close()
 
 _ = lambda s: s.encode('iso-8859-1')
-for f, fin in ((file("chm/de/Output.hhk", "w"), file("Template.hhk", "r")),
-               (file("chm/en/Output.hhk", "w"), file("Template.en.hhk", "r"))):
+for f, fin in ((file("chm/en/Output.hhk", "w"), file("Template.hhk", "r")),
+               (file("chm/de/Output.hhk", "w"), file("Template.de.hhk", "r"))):
     for line in fin:
         if line.find("</UL>") != -1:
             for title, filename in parser.files.iteritems():

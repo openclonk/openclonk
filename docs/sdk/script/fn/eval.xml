@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,24 +13,18 @@
         <param>
           <type>string</type>
           <name>script</name>
-          <desc>Auszuführender Script</desc>
+          <desc>Script to be executed</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Führt einen als String übergebenen Script aus.</desc>
-
+    <desc>Executes a string as script.</desc>
     <examples>
       <example>
-
         <code>var v1, v2, v3, v4, v5;
-for(var i = 1; i &lt;= 5; i++) eval( <funclink>Format</funclink>("v%d = %d", i, i * i) );</code>
-
-        <text>Füllt die Variablen v1 bis v5 mit den Quadratzahlen der Zahlen 1 bis 5 (Es werden die Scripte "v1 = 1", "v2 = 4" ... "v5 = 25" mit <funclink>Format</funclink> erzeugt und mit "eval" ausgeführt)</text>
-
+for(var i = 1; i &lt;= 5; i++) eval( <funclink>Format</funclink>(&quot;v%d = %d&quot;, i, i * i) );</code>
+        <text>Sets the variables v1 to v5 with the squared values of 1 to 5. (The script snippets "v1 = 1", "v2 = 4" ... "v5 = 25" are created with <funclink>Format</funclink> and executed with "eval".)</text>
       </example>
     </examples>
-
   </func>
-  <author>PeterW</author><date>April 2002</date>
+  <author>PeterW</author><date>2002-04</date>
 </funcs>

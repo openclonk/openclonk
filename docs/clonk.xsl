@@ -335,7 +335,7 @@
               <xsl:attribute name="onClick">Switch(<xsl:value-of select="position() - 1" />);</xsl:attribute>
             </xsl:if>
             <xsl:if test="position() mod 2=0"><xsl:attribute name="class">dark</xsl:attribute></xsl:if>
-            <xsl:for-each select="col">
+            <xsl:for-each select="col|literal_col">
               <td><xsl:apply-templates select="@colspan|node()"/></td>
             </xsl:for-each>
           </tr>
@@ -372,7 +372,7 @@
   <xsl:template match="rowh">
     <thead><tr>
       <xsl:apply-templates select="@id" />
-      <xsl:for-each select="col">
+      <xsl:for-each select="col|literal_col">
         <th><xsl:apply-templates select="@colspan|node()"/></th>
       </xsl:for-each>
     </tr></thead>

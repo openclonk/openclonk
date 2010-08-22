@@ -1,24 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetComponent</title>
-		<category>Objekte</category><subcat>Komponenten</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>id</type><name>component</name><desc>Hinzuzufügende Komponente</desc></param>
-				<param><type>int</type><name>count</name><desc>Zu setzende Anzahl der Komponenten mit der ID component</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Anzahl einer Komponente des aufrufenden Objekts.</desc>
-		<remark>Siehe auch <emlink href="definition/defcore.html">DefCore</emlink></remark>
-		<related>
-			<funclink>GetComponent</funclink>
-			<funclink>Split2Components</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetComponent</title>
+    <category>Objects</category>
+    <subcat>Components</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>component</name>
+          <desc>Component to be added</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>count</name>
+          <desc>Count to be set for components of type component</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the component count of the calling object.</desc>
+    <remark>Also see <emlink href="definition/defcore.html">DefCore</emlink>.</remark>
+    <related>
+      <funclink>GetComponent</funclink>
+      <funclink>Split2Components</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

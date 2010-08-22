@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetDamage</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Status</subcat>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Fragt den Schadenswert des aufrufenden Objekts ab.</desc>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines the damage level of an object.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(GetDamage() > 100) <funclink>Split2Components</funclink>();</code>
-        <text>Zerlegt das aufrufende Objekt, falls es zu viel Schaden genommen hat.</text>
+        <code><funclink>if</funclink>(GetDamage() &gt; 100) <funclink>Split2Components</funclink>();</code>
+        <text>Decomposes the calling object if it has taken too much damage.</text>
       </example>
     </examples>
     <related>
@@ -22,5 +21,5 @@
       <funclink>DoEnergy</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

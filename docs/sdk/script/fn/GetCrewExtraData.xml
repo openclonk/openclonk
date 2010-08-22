@@ -1,35 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>GetCrewExtraData</title>
-  <category>Spieler</category>
-  <version>4.9.6.0 CR</version>
-  <syntax>
-   <rtype>any</rtype>
-   <params>
-    <param>
-     <type>object</type>
-     <name>crew</name>
-     <desc>Crewobjekt, aus dessen Infosektion zusätzliche Daten abgefragt werden. 0 für lokalen Aufruf.</desc>
-    </param>
-    <param>
-     <type>string</type>
-     <name>data_name</name>
-     <desc>Name, dessen zugeordnete Daten abgefragt werden.</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Dieser Befehl fragt im Clonk in der Spielerdatei gespeicherten Extra-Daten ab, die per <funclink>SetCrewExtraData</funclink> gesetzt wurden.</desc>
-
-  <remark>Für Details siehe <funclink>SetCrewExtraData</funclink>.</remark>
-
-  <related>
-   <funclink>GetPlrExtraData</funclink>
-   <funclink>SetCrewExtraData</funclink>
-  </related>
- </func>
- <author>Sven2</author><date>Februar 2006</date>
+  <func>
+    <title>GetCrewExtraData</title>
+    <category>Player</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>crew</name>
+          <desc>Object to get the extra data from. Can be 0 at local call.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Retrieves extra data stored in the player file using <funclink>SetCrewExtraData</funclink>.</desc>
+    <remark>For details, see <funclink>SetCrewExtraData</funclink>.</remark>
+    <related>
+      <funclink>GetPlrExtraData</funclink>
+      <funclink>SetCrewExtraData</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2006-02</date>
 </funcs>

@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>StopAnimation</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>bool</rtype>
@@ -12,25 +13,19 @@
         <param>
           <type>int</type>
           <name>animation_number</name>
-          <desc>Nummer der zu stoppenden Animation.</desc>
+          <desc>Number of the animation to stop.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Stoppt die Animation mit der angegeben Nummer (wie sie von <funclink>PlayAnimation</funclink> zurückgegeben wird) und entfernt die Animation aus dem zugehörigen Slot im Animations-Stack. Gehört ein Kombinationsknoten zur Nummer, so werden beide Animationen entfernt die kombiniert werden; wenn eine oder beide davon wieder Kombinationen sind werden auch deren Animationen entfernt, und so weiter. Wird die gestoppte Animation mit einer anderen kombiniert, so wird auch der zugehörige Kombinationsknoten entfernt, da es nun nichts mehr zu kombinieren gibt. Gibt true zurück wenn die Animation entfernt wurde, oder 0 wenn dies nicht möglich war (zum Beispiel wenn es keine Animation zur gegebenen Nummer gibt, oder die Animation zu Slot 0 gehört).</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Stops the animation corresponding to the given number (such as returned by <funclink>PlayAnimation</funclink>) and removes it from the corresponding slot in the animation stack. If there is a combination node associated to that number then both of the anmiations being combined are removed as well; if either or both of those are combination nodes again then they are also removed and so on. If the node to be removed is combined with another node then the combining node is also removed because there is not anything to combine anymore. The function returns true if the animation was removed or 0 otherwise (for example if there is no animation for the given number or if belongs to slot 0).</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
-	<text>Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält.</text>
+        <text>Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards.</text>
       </example>
     </examples>
-
-    <related>
-      <funclink>PlayAnimation</funclink>
-    </related>
+    <related><funclink>PlayAnimation</funclink></related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

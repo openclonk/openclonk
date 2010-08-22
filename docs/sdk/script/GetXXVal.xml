@@ -1,64 +1,63 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</title>
-
-<h>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</h>
-<part>
-	<text><ul>
-		<li>GetDefCoreVal(string entry, string section, id definition); </li>
-		<li>GetActMapVal(string entry, string action, id definition); </li>
-		<li>GetObjectVal(string entry, string section, object obj); </li>
-		<li>GetObjectInfoCoreVal(string entry, string section, object obj); </li>
-		<li>GetScenarioVal(string entry, string section);</li>
-		<li>GetPlayerVal(string entry, string section, int player); </li>
-		<li>GetPlayerInfoCoreVal(string entry, string section, int player); </li>
-	</ul></text>
-	
-	<text>Diese Funktionsfamilie gewährt direkten Zugriff auf sämtliche Eigenschaften der entsprechenden Objekte, wie sie auch abgespeichert werden.</text>
-	<text>Dabei entsprechen die Funktionen jeweils folgenden Dateien:</text>
-	
-	<text><table>
-		<rowh>
-			<col>Funktion</col>
-			<col>Datei</col>
-		</rowh>
-		<row>
-			<col>GetDefCoreVal</col>
-			<col>DefCore.txt</col>
-		</row>
-		<row>
-			<col>GetActMapVal</col>
-			<col>ActMap.txt</col>
-		</row>
-		<row>
-			<col>GetObjectVal</col>
-			<col>Objects.txt</col>
-		</row>
-		<row>
-			<col>GetObjectInfoCoreVal</col>
-			<col>*.c4i (in Spielerdateien)</col>
-		</row>
-		<row>
-			<col>GetScenarioVal</col>
-			<col>Scenario.txt</col>
-		</row>
-		<row>
-			<col>GetPlayerVal</col>
-			<col>scenario.txt</col>
-		</row>
-		<row>
-			<col>GetPlayerInfoCoreVal</col>
-			<col>player.txt</col>
-		</row>
-	</table></text>
-	
-	<text>Die Eigenschaft wird jeweils anhand ihres Namen und ggf. der Sektion übergeben (wird 0 übergeben, so werden alle Sektionen nach einem gleichnamigen Wert durchsucht). Wurde eine entsprechende Eigenschaft nicht gefunden oder entsprcht der Typ der Eigenschaft keinem gültigen Script-Datenformat (z.B. ID-Liste), so wird 0 zurückgegeben.</text>
-	<text>Wird GetObjectVal für obj/definition jeweils 0 zurückgegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen.</text>
-	<text>Die Zusatzfunktionen GetXVal.c (in System.c4g) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal("Width", 0, -obj-)</code>).</text>
-</part>
-
-<author>Peter</author><date>November 2001</date>
-
+  <title>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</title>
+  <h>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</h>
+  <part>
+    <text>
+      <ul>
+        <li>GetDefCoreVal(string entry, string section, id definition);</li>
+        <li>GetActMapVal(string entry, string action, id definition);</li>
+        <li>GetObjectVal(string entry, string section, object obj);</li>
+        <li>GetObjectInfoCoreVal(string entry, string section, object obj);</li>
+        <li>GetScenarioVal(string entry, string section);</li>
+        <li>GetPlayerVal(string entry, string section, int player);</li>
+        <li>GetPlayerInfoCoreVal(string entry, string section, int player);</li>
+      </ul>
+    </text>
+    <text>This family of functions provide direct access to all properties of the respective object as stored in the definition files.</text>
+    <text>Each function corresponds to the following files:</text>
+    <text>
+      <table>
+        <rowh>
+          <col>Function</col>
+          <col>File</col>
+        </rowh>
+        <row>
+          <col>GetDefCoreVal</col>
+          <col>DefCore.txt</col>
+        </row>
+        <row>
+          <col>GetActMapVal</col>
+          <col>ActMap.txt</col>
+        </row>
+        <row>
+          <col>GetObjectVal</col>
+          <col>Objects.txt</col>
+        </row>
+        <row>
+          <col>GetObjectInfoCoreVal</col>
+          <col>*.c4i (in player files)</col>
+        </row>
+        <row>
+          <col>GetScenarioVal</col>
+          <col>Scenario.txt</col>
+        </row>
+        <row>
+          <col>GetPlayerVal</col>
+          <col>scenario.txt</col>
+        </row>
+        <row>
+          <col>GetPlayerInfoCoreVal</col>
+          <col>Player.txt</col>
+        </row>
+      </table>
+    </text>
+    <text>The property to be accessed is referenced through its name and section, if applicable (if no value is given for the section, all sections will be searched for the property). If a matching property was not found or does not correspond to a valid C4Script data type (e.g. ID lists) the result is 0.</text>
+    <text>If 0 is given for obj/definition in a call to GetObjectVal, the object or the definition of the object from which the call was made is used.</text>
+    <text>There is a number of additional wrapper functions located in System.c4g/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>("Width", 0, -obj-)</code>).</text>
+  </part>
+  <author>Peter</author><date>2001-11</date>
 </doc>

@@ -1,23 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>SetPlayList</title>
-  <category>Musik</category>
-  <version>4.9.1.0 GWE</version>
-  <syntax>
-   <rtype>int</rtype>
-   <params>
-    <param><type>string</type><name>playlist</name><desc>Liste der abzuspielenden Musikstücke. Dabei werden die Einzeldateinamen jeweils mit einem Semikolon (";") getrennt. Wildcards dürfen benutzt werden. Wird der Parameter wegelassen, so wird die Standard-Musikliste gespielt.</desc><optional/></param>
-   </params>
-  </syntax>
-  <desc>Setzt die Liste der Musikstücke, die in zufälliger Reihenfolge abgespielt werden sollen (wenn die Musik aktiviert ist). Zurückgegeben wird die Anzahl der aktivierten Musikstücke (Im Netzwerk wird allerdings immer 0 zurückgegeben).</desc>
-  <remark>Durch Aufruf von SetPlayList wird die Musik nicht aktiviert, wenn sie vorher deaktiviert war. Der Aufruf wirkt sich dann erst aus, wenn die Musik wieder aktiviert wird.</remark>
-  <remark>Der Aufruf 'SetPlayList("*.*")' ist nicht identisch mit 'SetPlayList()'. Wird 'SetPlayList("*.*")' aufgerufen, so werden wirklich alle Musikstücke aktiviert, auch diejenigen, die mittels eines "@" im Namen von der Standard-PlayList ausgenommen wurden. 'SetPlayList()' aktiviert diese Musikstücke dagegen nicht.</remark>
-  <related>
-    <funclink>Music</funclink>
-  </related>
- </func>
- <author>PeterW</author><date>Januar 2003</date>
+  <func>
+    <title>SetPlayList</title>
+    <category>Music</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>playlist</name>
+          <desc>List of pieces of music to be played. The individual file names are separated with semicolons (";"). Wildcards are expanded. When 0, the standard playlist is restored.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the play list of pieces of music to be played in random order, if music is activated. The actual number of pieces of music in the playlist is returned, or 0 in network mode.</desc>
+    <remark>SetPlayList does not activate music playback when the player has turned the music off. If the player enables music, the new playlist takes effect.</remark>
+    <remark><code>SetPlayList("*.*")</code> is not identical to <code>SetPlayList()</code>. The former activates all music, the latter only those not starting with "@", the standard behavior.</remark>
+    <related><funclink>Music</funclink></related>
+  </func>
+  <author>PeterW</author><date>2003-01</date>
 </funcs>

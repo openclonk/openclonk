@@ -1,45 +1,60 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetAttachBones</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>attach_number</name><desc>Nummer des angehängten Meshes. Der Rückgabewert von <funclink>AttachMesh</funclink> bildet solch eine Nummer.</desc></param>
-				<param><type>string</type><name>parent_bone</name><desc>Bone am aufrufenden Objekt an den das Mesh angehängt werden soll.</desc><optional /></param>
-				<param><type>string</type><name>child_bone</name><desc>Bone des anzuhängenden Meshes mit dem es befestigt werden soll.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Wurde zuvor mit <funclink>AttachMesh</funclink> ein Mesh an einem anderen befestigt, so kann mit dieser Funktion einer oder beide der Bones geändert werden mit denen sie aneinander hängen. Um nur einen Bone zu ändern kann für den anderen Parameter <code>nil</code> angegeben werden.</desc>
-		<examples>
-			<example>
-				<code>func FxIntCarryBowStart(object target, int number)
+  <func>
+    <title>SetAttachBones</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>Number of the attached mesh. The return value of <funclink>AttachMesh</funclink> provides such a number.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>parent_bone</name>
+          <desc>Bone of the calling object at which to attach the mesh.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>child_bone</name>
+          <desc>Bone of the object to be attached.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>If a mesh was previously attached to another mesh then this function can be used to change one or both of the bones at which they are attached. To only change a single bone the other parameter can be set to <code>nil</code>.</desc>
+    <examples>
+      <example>
+        <code>func FxIntCarryBowStart(object target, int number)
 {
-	<funclink>EffectVar</funclink>(0, target, number) = target-><funclink>AttachMesh</funclink>(Bow, "pos_hand1", "main");
+	<funclink>EffectVar</funclink>(0, target, number) = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
 	<funclink>EffectVar</funclink>(1, target, number) = true;
 }
 
 func FxIntCarryBowTimer(object target, int number)
 {
 	<funclink>if</funclink>(<funclink>EffectVar</funclink>(1, target, number))
-		target-><funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), "pos_hand2", nil);
+		target-&gt;<funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), &quot;pos_hand2&quot;, nil);
 	else
-		target-><funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), "pos_hand1", nil);
+		target-&gt;<funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), &quot;pos_hand1&quot;, nil);
 	<funclink>EffectVar</funclink>(1, target, number) = !<funclink>EffectVar</funclink>(1, target, number);
 }</code>
-				<text>Script für einen <emlink href="script/Effects.html">Effekt</emlink>: Bei Start trägt der Clonk einen Bogen in einer Hand um bei jedem Timer-Aufruf nimmt der Clonk den Bogen von der rechten in die linke Hand oder umgekehrt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>AttachMesh</funclink>
-			<funclink>DetachMesh</funclink>
-			<funclink>SetAttachTransform</funclink>
-		</related>
-		</func>
-	<author>Clonk-Karl</author><date>April 2010</date>
+        <text>Script for an <emlink href="script/Effects.html">effect</emlink>: Initially the clonk carries a bow and for each timer call the bow is switched from its left hand to its right hand or vice versa.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AttachMesh</funclink>
+      <funclink>DetachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </funcs>
-

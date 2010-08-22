@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetSeason</title>
-                <category>Umwelt</category><subcat>Wetter</subcat>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                </syntax>
-                <desc>Liefert die aktuelle Jahreszeit. 0 ist Winter, 50 Sommer.</desc>
-                <related>
-                        <funclink>GetClimate</funclink>
-                        <funclink>GetTemperature</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetSeason</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current season. From 0 = winter through 50 = summer to 99 = again winter.</desc>
+    <related>
+      <funclink>GetClimate</funclink>
+      <funclink>GetTemperature</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

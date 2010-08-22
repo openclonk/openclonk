@@ -1,61 +1,88 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Format</title>
-    <category>Script</category><subcat>Strings</subcat>
+    <category>Script</category>
+    <subcat>Strings</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>string</type><name>text</name><desc>Zeichenkette, in die die Werte eingesetzt werden</desc></param>
-        <param><type></type><name>...</name><desc>Werte, die in die Zeichenkette eingesetzt werden</desc></param>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>String into which to insert values.</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Values to be inserted.</desc>
+        </param>
       </params>
     </syntax>
     <desc>
-      Setzt eine Zeichenkette aus verschiedenen Werten zusammen. Dabei wird text von vorne bis zum Ende nach mit '%' beginnenden Platzhaltern durchsucht, um diese dann durch die Parameter zu ersetzen.<br />
-      Das allgemeine Syntax für diese Platzhalter lautet:<br />
-      <code>%[Länge][.Präzision]Typ</code>
-      Bis auf den Typ sind also alle Parameter optional. Der Typ gibt den Datentyp an, den der Parameter hat. Möglich sind folgende Werte:
-      <table><rowh><col>Typ</col><col>Bedeutung</col></rowh>
-      <row><col>d</col><col>Ganzzahl (int)</col></row>
-      <row><col>x</col><col>Ganzzahl (int), hexadezimale Ausgabe (0123456789abcdef)</col></row>
-      <row><col>X</col><col>Ganzzahl (int), hexadezimale Ausgabe (0123456789ABCDEF)</col></row>
-      <row><col>i</col><col>id (Bei IDs funktionieren die restlichen Parameter wie Länge und Präzision nicht!)</col></row>
-      <row><col>s</col><col>Zeichenkette</col></row>
-      <row><col>v</col><col>Beliebig. Vor allem nützlich zur Fehlersuche.</col></row>
+      Composes a string of several values. To do this, text is scanned for placeholders starting with '%' which are then replaced by the parameters.<br/>The general syntax for these placeholders is:<br/><code>%[length][.precision]type</code>Except for type all fields are optional. Type specifies the data type of the parameter to be expected. It can be one of the following values: 
+      <table>
+        <rowh>
+          <col>Type</col>
+          <col>Meaning</col>
+        </rowh>
+        <row>
+          <col>d</col>
+          <col>Whole number (int)</col>
+        </row>
+        <row>
+          <col>x</col>
+          <col>Whole number (int), hexadecimal representation (0123456789abcdef)</col>
+        </row>
+        <row>
+          <col>X</col>
+          <col>Whole number (int), hexadecimal representation (0123456789ABCDEF)</col>
+        </row>
+        <row>
+          <col>i</col>
+          <col>id (with ids, length and precision parameters do not apply)</col>
+        </row>
+        <row>
+          <col>s</col>
+          <col>String</col>
+        </row>
+        <row>
+          <col>v</col>
+          <col>Any. Primarily useful for debugging.</col>
+        </row>
       </table>
-      Länge gibt eine Minimallänge an. Wenn der Wert kürzer ist, wird er rechtsbündig ausgerichtet und mit Leerzeichen aufgefüllt. Wird vor die Länge eine '0' gestellt, wird mit Nullen statt Leerzeichen aufgefüllt.<br />
-      <br />
-      Das Präzisionsfeld verhält sich je nach dem Parametertyp: Bei Ganzzahlen (d) gibt es die Minimalzahl der auszugebenden Zahlen an (der Rest wird mit Nullen aufgefüllt), während es bei Zeichenketten (s) die Maximalzahl der auszugebenden Zeichen angibt.<br />
+ Length specifies the minimum number of characters used to display the value. If the value is shorter, the display is padded on the left with space characters, or with zeroes if there is a '0' before the length specification.<br/><br/>The meaning of the precision field varies with the data type: for integers (d) it specifies the minimum display length (the number is padded with zeroes at the beginning); however for strings (s) it specifies the maximum number of characters to be displayed.<br/>
     </desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(Format("Hallo, %s. Du hast %d Clonks!", <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
-        <text>Gibt zum Beispiel "Hallo Twonky, du hast 3 Clonks!" auf dem Bildschirm aus.</text>
+        <code><funclink>Log</funclink>(Format(&quot;Hallo, %s. Du hast %d Clonks!&quot;, <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
+        <text>Displays "Hallo Twonky, du hast 3 Clonks!" (names vary).</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(Format("'%3d'", 1));</code>
-        <text>Gibt aus: '  1'</text>
+        <code><funclink>Log</funclink>(Format(&quot;'%3d'&quot;, 1));</code>
+        <text>Displays: ' 1'</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(Format("'%i'", <funclink>GetID</funclink>(<funclink>GetCursor</funclink>())));</code>
-        <text>Gibt z.B. aus: 'Clonk'</text>
+        <code><funclink>Log</funclink>(Format(&quot;'%i'&quot;, <funclink>GetID</funclink>(<funclink>GetCursor</funclink>())));</code>
+        <text>Displays (e.g.): 'Clonk'</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(Format("'%3.2d'", 5));</code>
-        <text>Gibt aus: ' 05'</text>
+        <code><funclink>Log</funclink>(Format(&quot;'%3.2d'&quot;, 5));</code>
+        <text>Displays: ' 05'</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(Format("'%.2s'", "test"));</code>
-        <text>Gibt aus: 'te'</text>
+        <code><funclink>Log</funclink>(Format(&quot;'%.2s'&quot;, &quot;test&quot;));</code>
+        <text>Displays: 'te'</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(Format("'%03d'", 12));</code>
-        <text>Gibt aus: '012'</text>
+        <code><funclink>Log</funclink>(Format(&quot;'%03d'&quot;, 12));</code>
+        <text>Displays: '012'</text>
       </example>
     </examples>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

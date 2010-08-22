@@ -1,28 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetFilmView</title>
-		<category>Spieler</category>
-		<subcat>Sicht</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>for_player</name><desc>Nummer des Spielers, dessen Sicht gezeigt werden soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Sicht in Filmwiedergaben auf den angegebenen Spieler.</desc>
-		<examples>
-			<example>
-<code>protected func InitializePlayer(player)
+  <func>
+    <title>SetFilmView</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>Number of the player whose view is to be displayed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets film playback view to the specified player.</desc>
+    <examples>
+      <example>
+        <code>protected func InitializePlayer(player)
 {
-	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(player) eq "Kamera") SetFilmView(player);
+	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(player) eq &quot;Kamera&quot;) SetFilmView(player);
 }</code>
-				<text>Dieses Szenarioscript setzt die Sicht in der Wiedergabe der aufgenommenen Runde auf den Spieler mit dem Namen "Kamera".</text>
-			</example>
-		</examples>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+        <text>This scenario script sets the playback view of the recorded round to the player with the name "Kamera".</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

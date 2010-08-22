@@ -1,62 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Object character flags</title>
-<h id="ocf">Object Character Flags</h>
-<text>Object Character Flags sind Attribute eines Objekts, die sich als Kombination
-aus einigen <emlink href="definition/defcore.html">DefCore</emlink>-Einträgen sowie
-dem aktuellen Zustand des Objekts in der Landschaft ergeben. Da sich diese Flags aus
-dem gegenwärtigen Zustand des Objekts ergeben, und automatisch von der Engine gesetzt
-werden, können sie natürlich nur getestet, und nicht direkt per Script manipuliert
-werden.</text>
-<text>Alle OCF-Flags sind als Bitmaske in einem 32Bit-DWORD gespeichert. Dadurch
-können sie mit einem einfachen bitweisen "und" getestet werden. Also zum Beispiel:</text>
-
-<code>if (<funclink>GetOCF</funclink>(objekt) &amp; <funclink>OCF_Living</funclink>)
-  <funclink>Log</funclink>("Das Objekt ist ein Lebewesen.");</code>
-
-<text>Die häufigste Anwendung für OCFs sind FindObject-Schleifen:</text>
-
-<code>var obj;
+  <title>Object character flags</title>
+  <h id="ocf">Object Character Flags</h>
+  <text>Object Character Flags are attributes of an object, which are computed from some <emlink href="definition/defcore.html">DefCore</emlink> entries and the current state of the object in the landscape. They are automatically updated by the engine.</text>
+  <text>All OCF are stored in a 32 bit wide bitmask. They can be tested with a simple bitwise "and". For example:</text>
+  <code>if (<funclink>GetOCF</funclink>(objekt) &amp; <funclink>OCF_Living</funclink>)
+  <funclink>Log</funclink>(&quot;Das Objekt ist ein Lebewesen.&quot;);</code>  <text>The most common application for OCF are FindObject loops:</text>
+  <code>var obj;
 while (obj = <funclink>FindObject</funclink>(0, -100,-100,200,200, <funclink>OCF_Rotate</funclink>, 0,0, <funclink>NoContainer</funclink>(), obj)
-  <funclink>SetR</funclink>(180, obj);</code>
-<text>Dieses Script dreht alle Objekte auf den Kopf.</text>
-<h id="ocf_fns">OCF-Konstanten</h>
-<text>Es sind folgende OCFs im Script definiert:</text>
-
-<text><funclink>OCF_Alive</funclink>,
-<funclink>OCF_AttractLightning</funclink>,
-<funclink>OCF_Available</funclink>,
-<funclink>OCF_Chop</funclink>,
-<funclink>OCF_Collectible</funclink>,
-<funclink>OCF_Collection</funclink>,
-<funclink>OCF_Construct</funclink>,
-<funclink>OCF_Container</funclink>,
-<funclink>OCF_CrewMember</funclink>,
-<funclink>OCF_Edible</funclink>,
-<funclink>OCF_Entrance</funclink>,
-<funclink>OCF_Exclusive</funclink>,
-<funclink>OCF_FightReady</funclink>,
-<funclink>OCF_Fullcon</funclink>,
-<funclink>OCF_Grab</funclink>,
-<funclink>OCF_HitSpeed1</funclink>,
-<funclink>OCF_HitSpeed2</funclink>,
-<funclink>OCF_HitSpeed3</funclink>,
-<funclink>OCF_HitSpeed4</funclink>,
-<funclink>OCF_Inflammable</funclink>,
-<funclink>OCF_InFree</funclink>,
-<funclink>OCF_InLiquid</funclink>,
-<funclink>OCF_InSolid</funclink>,
-<funclink>OCF_LineConstruct</funclink>,
-<funclink>OCF_Living</funclink>,
-<funclink>OCF_NotContained</funclink>,
-<funclink>OCF_OnFire</funclink>,
-<funclink>OCF_PowerConsumer</funclink>,
-<funclink>OCF_PowerSupply</funclink>,
-<funclink>OCF_Prey</funclink>,
-<funclink>OCF_Rotate</funclink>
-</text>
-
-<author>Sven2</author><date>Mai 2002</date>
+  <funclink>SetR</funclink>(180, obj);</code>  <text>This script turns all rotatable objects upside down.</text>
+  <h id="ocf_fns">OCF Constants</h>
+  <text>The following OCFs are defined in C4Script:</text>
+  <text><funclink>OCF_Alive</funclink>, <funclink>OCF_AttractLightning</funclink>, <funclink>OCF_Available</funclink>, <funclink>OCF_Chop</funclink>, <funclink>OCF_Collectible</funclink>, <funclink>OCF_Collection</funclink>, <funclink>OCF_Construct</funclink>, <funclink>OCF_Container</funclink>, <funclink>OCF_CrewMember</funclink>, <funclink>OCF_Edible</funclink>, <funclink>OCF_Entrance</funclink>, <funclink>OCF_Exclusive</funclink>, <funclink>OCF_FightReady</funclink>, <funclink>OCF_Fullcon</funclink>, <funclink>OCF_Grab</funclink>, <funclink>OCF_HitSpeed1</funclink>, <funclink>OCF_HitSpeed2</funclink>, <funclink>OCF_HitSpeed3</funclink>, <funclink>OCF_HitSpeed4</funclink>, <funclink>OCF_Inflammable</funclink>, <funclink>OCF_InFree</funclink>, <funclink>OCF_InLiquid</funclink>, <funclink>OCF_InSolid</funclink>, <funclink>OCF_LineConstruct</funclink>, <funclink>OCF_Living</funclink>, <funclink>OCF_NotContained</funclink>, <funclink>OCF_OnFire</funclink>, <funclink>OCF_PowerConsumer</funclink>, <funclink>OCF_PowerSupply</funclink>, <funclink>OCF_Prey</funclink>, <funclink>OCF_Rotate</funclink></text>
+  <author>Sven2</author><date>2002-05</date>
 </doc>

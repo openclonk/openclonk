@@ -1,48 +1,60 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>PathFree</title>
-  <category>Landschaft</category>
-  <version>4.6.5.0 CP</version>
-  <syntax>
-   <rtype>bool</rtype>
-   <params>
-    <param><type>int</type><name>x1</name><desc>X-Position des Anfangspunktes</desc></param>
-    <param><type>int</type><name>y1</name><desc>Y-Position des Anfangspunktes</desc></param>
-    <param><type>int</type><name>x2</name><desc>X-Position des Endpunktes</desc></param>
-    <param><type>int</type><name>y2</name><desc>Y-Position des Endpunktes</desc></param>
-   </params>
-  </syntax>
-
-  <desc>Gibt zurück, ob der Weg zwischen den beiden angegebenen Punkten in der Landschaft frei ist, d.h., ob sich keine festen Materialien auf der Verbindungslinie zwischen den Punkten befinden.</desc>
-
-  <remark>Alle angegebenen Koordinaten sind auch bei lokalen Aufrufen global.</remark>
-
-  <examples>
-    <example>
-<code>protected func ControlSpecial2()
+  <func>
+    <title>PathFree</title>
+    <category>Landscape</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the start point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the start point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the end point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the end point</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines whether the path from the start point to the end point is free, meaning that no solid material is intersected by a directly line between those points.</desc>
+    <remark>All coordinates are global, even in local calls.</remark>
+    <examples>
+      <example>
+        <code>protected func ControlSpecial2()
   {
   var i, base;
   while (base=FindBase(GetOwner(), i++))
     if (PathFree(GetX(), GetY(), GetX(base), GetY(base)))
       {
-      Message("Ich sehe meine Basis!");
+      Message(&quot;Ich sehe meine Basis!&quot;);
       break;
       }
-  if (!base) Message("Ich sehe meine Basis nicht :/");
+  if (!base) Message(&quot;Ich sehe meine Basis nicht :/&quot;);
   }</code>
-      <text>Script eines Spezialclonks: Auf Spezial2 sagt er, ob er eine seiner Basen sehen kann.</text>
-    </example>
-  </examples>
-
-  <related>
-    <funclink>GetMaterial</funclink>
-    <funclink>GBackSolid</funclink>
-    <funclink>GetPathLength</funclink>
-  </related>
-
- </func>
- <author>Sven2</author><date>August 2002</date>
+        <text>Script of a special clonk: with key Special 2 he will tell you whether he can see one of his home bases.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetMaterial</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GetPathLength</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

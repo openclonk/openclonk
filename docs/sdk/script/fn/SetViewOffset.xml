@@ -1,24 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetViewOffset</title>
-    <category>Spieler</category>
-    <subcat>Sicht</subcat>
+    <category>Player</category>
+    <subcat>View</subcat>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>BOOL</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Spieler, für den der Sicht-Offset gesetzt werden soll.</desc></param>
-        <param><type>int</type><name>x</name><desc>X-Komponente des Offsets (in Pixel).</desc></param>
-        <param><type>int</type><name>x</name><desc>Y-Komponente des Offsets (in Pixel).</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose view offset you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X offset value in pixels.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Y offset value in pixels.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Verschiebt die Sicht eines Spielers permanent um einen bestimmten Betrag. Ein erneuter Aufruf überschreibt die Verschiebung wieder, ein Aufruf mit 0-Koordinaten setzt die Sicht wieder in den Normalzustand zurück.</desc>
-    <related>
-      <funclink>SetPlrView</funclink>
-    </related>
+    <desc>Moves the view of a player permanently by a given offset. Calling the function again will set a new offset. Calling the function with 0,0 parameters will reset to normal, centered view.</desc>
+    <related><funclink>SetPlrView</funclink></related>
   </func>
-  <author>PeterW</author><date>September 2004</date>
+  <author>PeterW</author><date>2004-09</date>
 </funcs>

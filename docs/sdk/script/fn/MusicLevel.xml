@@ -1,18 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>MusicLevel</title>
-    <category>Musik</category>
+    <category>Music</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>level</name><desc>Gewünschte Lautstärke (0-100).</desc></param>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Desired volume (0-100).</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die Lautstärke, mit der die Hintergrundmusik abgespielt wird (siehe <funclink>Music</funclink>).</desc>
+    <desc>Sets the volume for playback of background music (see <funclink>Music</funclink>).</desc>
     <examples>
       <example>
         <code>local volume;
@@ -32,12 +37,10 @@ func Timer()
     <funclink>RemoveObject</funclink>();
   }
 }</code>
-        <text>Script eines Musik-Fadeout-Objekts. Die Musiklautstärke wird in der Funktion "Timer" bei jedem Aufruf ein Stück reduziert, bis die Lautstärke 0 ist. Dann wird die Musik deaktiviert und das Objekt gelöscht.</text>
+        <text>Script for an object which will fade out background music: the "Timer" function will decrease the volume step by step until it is 0. Then the music will be turned off and the helper object deleted.</text>
       </example>
     </examples>
-    <related>
-      <funclink>Music</funclink>
-    </related>
+    <related><funclink>Music</funclink></related>
   </func>
-  <author>PeterW</author><date>Februar 2003</date>
+  <author>PeterW</author><date>2003-02</date>
 </funcs>

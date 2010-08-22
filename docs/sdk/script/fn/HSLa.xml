@@ -1,32 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>HSLa</title>
-		<category>Arithmetik</category>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>byH</name><desc>Farbton der Farbe. 0 ist Rot, 85 ist Grün, 170 Blau und 255 wieder Rot.</desc></param>
-				<param><type>int</type><name>byS</name><desc>Sättigung der Farbe. Dies ist der Farbkontrast.</desc></param>
-				<param><type>int</type><name>byL</name><desc>Helligkeit der Farbe. Helligkeit gleich null entspräche <funclink>RGB</funclink>(0,0,0)</desc></param>
-				<param><type>int</type><name>byA</name><desc>Durchsichtigkeit der Farbe.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt einen 32Bit-Farbwert aus den drei Parametern und einem Durchsichtigkeitswert zusammen. 0-255 für alle Parameter.</desc>
-		<examples>
-			<example>
-				<code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,192),<funclink>FindObject</funclink>(TRE1));</code>
-				<text>Färbt einen zufälligen Baum absolut weiß und ein wenig durchsichtig.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RGB</funclink>
-			<funclink>RGBa</funclink>
-			<funclink>HSLa</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juni 2005</date>
+  <func>
+    <title>HSLa</title>
+    <category>Arithmetics</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>byH</name>
+          <desc>Hue of the color. 0 is red, 85 is green, 170 is blue, and 255 is red again.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byS</name>
+          <desc>Saturation of the color. This is the color contrast.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byL</name>
+          <desc>Brightniss of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>byA</name>
+          <desc>Transparency of the color.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a 32 bit color value from four parameters. Range is 0-255 for all parameters.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,192),<funclink>FindObject</funclink>(TRE1));</code>
+        <text>Colors a randomly chosen tree white and somewhat transparent.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+      <funclink>HSLa</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2005-06</date>
 </funcs>

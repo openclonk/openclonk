@@ -1,28 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetSeason</title>
-		<category>Umwelt</category><subcat>Wetter</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>season</name><desc>Jahreszeit von 0 (Frühling) bis 100 (Winter).</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Jahreszeit.</desc>
-		<examples>
-			<example>
-				<code>SetSeason(50);
+  <func>
+    <title>SetSeason</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>season</name>
+          <desc>Season from 0 (spring) to 100 (winter).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the season.</desc>
+    <examples>
+      <example>
+        <code>SetSeason(50);
 				</code>
-				<text>Mittsommer.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetSeason</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+        <text>Mid-summer.</text>
+      </example>
+    </examples>
+    <related><funclink>GetSeason</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

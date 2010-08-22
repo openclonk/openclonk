@@ -1,24 +1,30 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ComposeContents</title>
-		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>id</type><name>object_id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-			</params>
-		</syntax>
-		<desc>Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts. Das Objekt wird aus seinen Komponenten zusammen gesetzt, die im aufrufenden Objekt enthalten sein müssen. Andernfalls wird eine Meldung ausgegeben, welche Objekte noch benötigt werden. Auch ComposeContents produziert den Engine Objekt-Call BuildNeedsMaterial, durch den die Meldung über noch benötigtes Material ausgewertet und abgefangen werden kann.</desc>
-		<examples>
-			<example>
-				<code><funclink>FindObject</funclink>(HUT1)->ComposeContents(STMG);</code>
-				<text>Setzt in einer Hütte eine Dampfmaschine zusammen, wenn die Materialien dazu vorhanden sind.</text>
-			</example>
-		</examples>
-	</func>
-	<author>springer</author><date>April 2002</date>
+  <func>
+    <title>ComposeContents</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>object_id</name>
+          <desc>Type of object to be created.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an object of the specified type in the contents of the calling object. The object is composed from components which must be available inside the object. Otherwise, a message is displayed listing missing components. This function causes the callback BuildNeedsMaterial which can be used to intercept the message and perform custom actions for acquiring the necessary material.</desc>
+    <examples>
+      <example>
+        <code><funclink>FindObject</funclink>(HUT1)-&gt;ComposeContents(STMG);</code>
+        <text>Composes a steam engine in the closest hut if the necessary material is available.</text>
+      </example>
+    </examples>
+  </func>
+  <author>springer</author><date>2002-04</date>
 </funcs>

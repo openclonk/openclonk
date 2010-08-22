@@ -1,26 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Bubble</title>
-    <category>Umwelt</category><subcat>Effekte</subcat>
+    <category>Environment</category>
+    <subcat>Effects</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
-        <param><type>int</type><name>y</name><desc>Y-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the bubble. Offset in local calls.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the bubble. Offset in local calls.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Erzeugt eine Luftblase.</desc>
-    <remark>Die maximale Anzahl der Luftblasen auf dem Spielfeld richtet sich nach der Einstellung für Rauchentwicklung in den Optionen. Im Netzwerk und bei Aufnahmen/Wiedergaben ist dieser Wert immer 150.</remark>
+    <desc>Creates a bubble.</desc>
+    <remark>The maximum number of bubbles simultaneously present in a game depends on the smoke level configuration. In network games, this value is forced to 150.</remark>
     <examples>
       <example>
         <code>Bubble();</code>
-        <text>Erzeugt eine Luftblase beim aufrufenden Objekt.</text>
+        <text>Creates a bubble at the calling object.</text>
       </example>
     </examples>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

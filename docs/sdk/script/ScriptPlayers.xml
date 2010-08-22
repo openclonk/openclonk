@@ -1,29 +1,25 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Scriptspieler</title>
-
-<h>Scriptspieler</h>
-<part>
-	<h id="Intro">Einleitung</h>
-	<text>Ab CR Build 265 ist es möglich, Spieler auch per Script beitreten zu lassen. Solche Spieler verhalten sich wie normale Spieler. Sie besitzen eine Crew, ein Konto, Heimatbasismaterial, ein Team, Baupläne, etc. Einziger Unterschied ist, dass sie von keinem Spieler gesteuert werden und auf keinem Rechner ein Sichtfenster für diese Spieler geöffnet wird.</text>
-	
-	<text>Scriptspieler sind nützlich, um zum Beispiel KI-Gegner zu realisieren.</text>
-
-	<h id="Runtime">Beitritt zur Laufzeit</h>
-<text>Fürs Erstellen einer KI zur Laufzeit - zum Beispiel als Gegner im Deathmatch - dient <funclink>CreateScriptPlayer</funclink>. Daraufhin erfolgt (unter Umständen verzögert, weil es sich um einen Spielerbeitritt handelt!) ein InitializePlayer-Aufruf für diesen Scriptspieler. Da der Aufruf verzögert ist, sollte die eigentliche KI-Initialisierung in diesem Aufruf passieren.</text>
-
-<text>Dazu ein Beispiel:</text>
-
-<code>/* Script einer aktivierten Spielregel namens "KI Erzeugen" */
+  <title>Script Player</title>
+  <h>Script Player</h>
+  <part>
+    <h id="Intro">Introduction</h>
+    <text>From CR 4.9.7.8 it is possible to create non-humans players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users.</text>
+    <text>Script players can be used to create AI controlled opponent teams in special scenarios.</text>
+    <h id="Runtime">Runtime join</h>
+    <text>For creating an AI player at run time - e.g. a new deathmatch opponent - you can use <funclink>CreateScriptPlayer</funclink>. This call will be followed (possibly with a little delay) by a InitializePlayer callback for the new player.</text>
+    <text>Example:</text>
+    <code>/* Script einer aktivierten Spielregel namens &quot;KI Erzeugen&quot; */
 
 
 
 public func Activate(int player)
   {
-  // Der Spieler player hat die Spielregel ausgewählt. Erzeuge einen KI-Gegner!
-  <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>("Computer", 0x7f7f7f));
+  // Der Spieler player hat die Spielregel ausgewÃ¤hlt. Erzeuge einen KI-Gegner!
+  <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>(&quot;Computer&quot;, 0x7f7f7f));
   }
   
 protected func InitializePlayer(int player)
@@ -33,31 +29,26 @@ protected func InitializePlayer(int player)
   // Ist es ein Scriptspieler?
   <funclink>if</funclink> (<funclink>GetPlayerType</funclink>(player) == C4PT_Script)
     {
-    // Dann übernimm die Steuerung für alle Clonks!
+    // Dann Ã¼bernimm die Steuerung fÃ¼r alle Clonks!
     var crew_counter, crew;
     <funclink>while</funclink> (crew = <funclink>GetCrew</funclink>(player, crew_counter++))
-      <funclink>AddEffect</funclink>("Int_EAI", crew, 1, 100, <funclink>this</funclink>());
+      <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, crew, 1, 100, <funclink>this</funclink>());
     }
   }
   
 protected func FxInt_EAITimer(object crew, int num, int time)
   {
-  // Nächsten Gegner angreifen
+  // NÃ¤chsten Gegner angreifen
   var enemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(crew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
-  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, "Attack", enemy);
+  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, &quot;Attack&quot;, enemy);
   <funclink>return</funclink> FX_OK;
   }
 </code>
-
-<text>Dieses Beispielscript für ein Regelobjekt erlaubt dem Spieler, zur Laufzeit KI-Gegner zu erstellen. Außerdem sorgt es dafür, dass alle Clonks dieses KI-Gegners angreifen. Achtung: Das Beispiel übernimmt die Kontrolle nur für alle Clonks, die der Spieler zu Spielbeginn nach Szenarienvorgaben erhalten hat. Wenn ein Szenarienscript zum Beispiel noch andere Clonks erstellen würde, würden diese nicht gesteuert.</text>
-
-<text>Für Internetspiele kann man auch MaxScriptPlayers in der <emlink href="scenario/Teams.html">Teams.txt</emlink> auf einen Wert >0 setzen. Dann bekommt man in der Lobby die Option, Scriptspieler zu aktivieren. Diese Spieler treten auch wie gewöhnliche Spieler bei, und man sollte auch hier in InitializePlayer entsprechend das KI-Kontrollobjekt erstellen. Das obige Beispiel würde also auch sofort mit in der Lobby aktivierten KI-Spielern funktionieren.</text>
-
-<h id="Preset">Beitritt als Vorgabe</h>
-
-<text>Wenn ein Szenario schon von Anfang an einen Scriptspieler beinhalten soll - zum Beispiel weil Objekte in der Objects.txt in dessen Besitz sein sollen, oder weil in Initialize Objekte für diesen Spieler erzeugt werden, dann sollte man diesen wie in einem Savegame definieren. Also eine SavePlayerInfos.txt wie diese anlegen:</text>
-
-<code>[PlayerInfoList]
+    <text>This script for a sample rule object allows the user to create AI opponents at runtime. Also, it will order all clonks of the AI players to attack. Notice: this sample script only handles those clonks automatically created through the scenario settings. Additional clonks placed by specialized scripting are not handled.</text>
+    <text>For internet games you can set MaxScriptPlayers in <emlink href="scenario/Teams.html">Teams.txt</emlink> to a value greater than 0. This will enable the option to have script players join in the game lobby.</text>
+    <h id="Preset">Default join</h>
+    <text>If scripted players should be present in the scenario right from the beginning (comparable to objects created via Objects.txt) then you should create them via the SavePlayerInfos.txt component:</text>
+    <code>[PlayerInfoList]
 LastPlayerID=1
 
   [Client]
@@ -65,7 +56,7 @@ LastPlayerID=1
   Flags=Initial
 
     [Player]
-    Name="Aliens"
+    Name=&quot;Aliens&quot;
     Flags=Joined
     ID=1
     Type=Script
@@ -74,48 +65,41 @@ LastPlayerID=1
     GameNumber=1
     GameJoinFrame=0
 </code>
-
-<text>Dies führt eine Spieler-Wiederherstellung durch, analog zur Wiederherstellung nach einem Savegame. Es wird also kein InitializePlayer für diesen Spieler aufgerufen. Das Szenarienscript sollte in der Initialisierung die Crew für diesen Spieler erstellen, oder es sollte eine entsprechende Crew in der Objects.txt vorhanden sein. Ansonsten wird der Scriptspieler sofort zum Spielbeginn eliminiert.</text>
-
-<text>Scriptspieler werden im Gegensatz zu regulären Spielern ebenfalls gespeichert, wenn man in der Konsole "Speichern als Szenario" wählt. Auf diese Weise kann man sich die richtige SavePlayerInfos.txt automatisch anlegen lassen. Dazu sollte einfach im Entwicklermodus manuell <funclink>CreateScriptPlayer</funclink> aufgerufen und dann Clonks für diesen Scriptspieler verteilt werden. Speichert man dann als Szenario, wird der Scriptspieler mitgespeichert und steht beim Starten wieder zur Verfügung.</text>
-
-<h id="Specialized">Spezialisierte Spieler</h>
-<text>Manchmal kann es sinnvoll sein, einen Scriptspieler erst zur Laufzeit zu erstellen aber trotzdem eine spezielle Initialisierung durchzuführen. Zum Beispiel sollte ein spezieller Alien-Gegner in einem Hazard-Deathmatch keine Hazardclonks erhalten.</text>
-<text>Mit einem Parameter an <funclink>CreateScriptPlayer</funclink> lassen sich die szenarienspezifische Initialisierung, das heißt das Erzeugen des Startmaterials, das Setzen der Startparameter nach Vorgaben und auch alle InitializePlayer-Aufrufe unterbinden. Stattdessen erfolgt nur ein InitializeScriptPlayer-Definitionsaufruf in der angegebenen Definition. Dazu ein Beispiel:</text>
-
-<code>/* Script einer aktivierten Spielregel namens "Aliens erzeugen" */
+    <text>This method effectively performs a player restore, similar to a regular player restore in a savegame resume. Consequently, no InitializePlayer is called for this player and no startup material or crew is created. A crew for this player should be created in the scenario script. Alternatively, a crew may be present in the Objects.txt. Otherwise, the script player will be eliminated shortly after game start.</text>
+    <text>Contrary to regular players, script players are saved if you perform "Save as scenario" in developer mode. This way, you can automatically generate the correct SavePlayerInfos.txt and an according crew in the Objects.txt of the scenario. In order to do this, simply execute <funclink>CreateScriptPlayer</funclink> from the console and create some Clonks for the newly created script player. Then save the game as scenario. The script player Clonks will automatically be restored with the correct owner and in the crew of the script player.</text>
+    <h id="Specialized">Specialized Players</h>
+    <text>Sometimes it can be desirable to create a script player at runtime, but still execute a specialized initialization instead of the default crew and base material creation. For example, a Hazard deathmatch scenario may provide a specialized alien enemy.</text>
+    <text>By passing a parameter to <funclink>CreateScriptPlayer</funclink>, scenario initialization can be prevented, i.e. no creation of start materials, no setting of player parameters such as homebase material by the according presets and no InitializePlayer-calls are done. Instead, a single CreateScriptPlayer-callback is done to the definition passed as idExtraData. Example:</text>
+    <code>/* Script einer aktivierten Spielregel namens &quot;Aliens erzeugen&quot; */
 
 
 
 public func Activate(int player)
   {
-  // Der Spieler player hat die Spielregel ausgewählt. Erzeuge einen Alien-Gegner!
-  <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>("Aliens", 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID()));
+  // Der Spieler player hat die Spielregel ausgewÃ¤hlt. Erzeuge einen Alien-Gegner!
+  <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>(&quot;Aliens&quot;, 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID()));
   }
   
 protected func InitializeScriptPlayer(int player, int idTeam)
   {
   // Ein Alienspieler ist beigetreten
-  // Da keine Szenarieninitialisierung durchgeführt wurde, muss in diesem Callback eine Crew für den Spieler erstellt werden
-  // Erstelle einen grünen Clonk - ein richtiges Szenario sollte natürlich echte Aliens mitbringen :)
+  // Da keine Szenarieninitialisierung durchgefÃ¼hrt wurde, muss in diesem Callback eine Crew fÃ¼r den Spieler erstellt werden
+  // Erstelle einen grÃ¼nen Clonk - ein richtiges Szenario sollte natÃ¼rlich echte Aliens mitbringen :)
   var alien = CreateObject(Clonk, LandscapeWidth()/2, -1, player);
   MakeCrewMember(alien, player);
   SetClrModulation(0x7fff7f, alien);
   // Und angreifen lassen
-  <funclink>AddEffect</funclink>("Int_EAI", alien, 1, 100, 0, GetID());
+  <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, alien, 1, 100, 0, GetID());
   }
   
 protected func FxInt_EAITimer(object crew, int num, int time)
   {
-  // Nächsten Gegner angreifen
+  // NÃ¤chsten Gegner angreifen
   var enemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(crew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
-  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, "Attack", enemy);
+  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, &quot;Attack&quot;, enemy);
   <funclink>return</funclink> FX_OK;
   }
 </code>
-
-</part>
-
-<author>Sven2</author><date>Dezember 2007</date>
-
+  </part>
+  <author>Sven2</author><date>2007-12</date>
 </doc>

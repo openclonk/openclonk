@@ -1,21 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetEntrance</title>
-		<category>Objekte</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>status</name><desc>0 = Geschlossen; 1 = Offen</desc></param>
-			</params>
-		</syntax>
-		<desc>Ermöglicht bzw. verhindert das Betreten eines Gebäudes. Nur lokale Aufrufe.</desc>
-		<related>
-			<funclink>GetEntrance</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetEntrance</title>
+    <category>Objects</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>status</name>
+          <desc>0 = closed; 1 = open</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Enables or disables entering or leaving a building. Local call only.</desc>
+    <related><funclink>GetEntrance</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

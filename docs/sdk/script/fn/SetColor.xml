@@ -1,24 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetColor</title>
-    <category>Objekte</category><subcat>Darstellung</subcat>
+    <category>Objects</category>
+    <subcat>Display</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>color</name><desc>Neue Farbe für ColorByOwner-Flächen</desc></param>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>New color for ColorByOwner areas.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die ColorByOwner-Färbung des aufrufenden Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <funclink>SetOwner</funclink> bei einem Spieler mit der Spielerfarbe color.</desc>
+    <desc>Sets the ColorByOwner color of an object. This call corresponds to setting the owner using <funclink>SetOwner</funclink> to a player with color as the player color.</desc>
     <examples>
       <example>
-
-	      <code><funclink>GetCursor</funclink>(0)->SetColor(<funclink>RGBa</funclink>(255, 255, 255, 127));</code>
-
-        <text>Färbt die nach dem Besitzer gefärbten Flächen des ausgewählten Clonk des ersten Spielers weiß und halbdurchsichtig.</text>
+        <code><funclink>GetCursor</funclink>(0)-&gt;SetColor(<funclink>RGBa</funclink>(255, 255, 255, 127));</code>
+        <text>Colors the owner areas of the currently selected clonk of the first player white and half transparent.</text>
       </example>
     </examples>
     <related>
@@ -26,5 +30,5 @@
       <funclink>SetClrModulation</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

@@ -1,23 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>this</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>object</rtype>
-    </syntax>
-    <desc>Liefert einen Zeiger auf das Objekt, in dem der Script ausgeführt gerade wird.</desc>
-    <remark>Die Funktionsklammern können optional weggelassen werden.</remark>
+    <syntax><rtype>object</rtype></syntax>
+    <desc>Returns a pointer to the object in the scope of which the script is currently being executed.</desc>
+    <remark>The parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code>var myid;
-myid = this-><funclink>GetID</funclink>();</code>
-        <text>Speichert die ID des aufrufenden Objekts in der threadlokalen Variable myid.</text>
+myid = this-&gt;<funclink>GetID</funclink>();</code>
+        <text>Stores the ID of the calling object in the thread local variable myid.</text>
       </example>
     </examples>
   </func>
-  <author>jwk</author><date>April 2002</date>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

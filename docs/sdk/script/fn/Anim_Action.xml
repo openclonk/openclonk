@@ -1,28 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Anim_Action</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>array</rtype>
-      <params>
-      </params>
+      <params />
     </syntax>
-
-    <desc>Der Wert hängt von der Phase der aktuellen Action ab. Die Phase wird linear auf die von der Action zur Zeit abgespielte Animation abgebildet (siehe <emlink href="definition/actmap.html">ActMap</emlink>). Dies kann verwendet werden um Animationen synchron zur ActMap-Animation zu spielen.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>The value depends on the phase of the current action. The phase is mapped linearily to the length of the animation the current action is playing. This can be used to play animations synchronized to the ActMap animation.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-        <code><funclink>PlayAnimation</funclink>("Walk", 10, <funclink>Anim_Action</funclink>(), <funclink>Anim_Const</funclink>(1000));</code>
-	<text>Spielt die Animation "Walk" in Slot 10 synchron zur aktuellen Action ab.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;Walk&quot;, 10, <funclink>Anim_Action</funclink>(), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Walk in slot 10 synchroned to the current action.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
@@ -37,5 +33,5 @@
       <funclink>Anim_YDir</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

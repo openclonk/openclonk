@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetRank</title>
-                <category>Objekte</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                </syntax>
-                <desc>Liefert die Rang-Nummer des aufrufenden Objekts. 0 ist ein unbeförderter Clonk.</desc>
-                <related>
-                        <funclink>GetHiRank</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetRank</title>
+    <category>Objects</category>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the rank of the specified object. 0 is a freshly recruited clonk.</desc>
+    <related><funclink>GetHiRank</funclink></related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

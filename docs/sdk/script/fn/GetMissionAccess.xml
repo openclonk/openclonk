@@ -1,33 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetMissionAccess</title>
-		<category>System</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>mission_access</name><desc>Missionszugang, der überprüft wird</desc></param>
-			</params>
-		</syntax>
-		<desc>Stellt fest und gibt zurück, ob der Spieler bereits das angegebene Missionszugangspasswort besitzt</desc>
-		<remark>Bei aktiviertem Netzwerk gibt diese Funktion grundsätzlich den Wert false zurück, da ansonsten lokale Unterschiede zur Desynchronisation führen könnten.</remark>
-		<examples>
-			<example>
-				<code><funclink>if</funclink> (!GetMissionAccess("DasWarHarteArbeit"))
+  <func>
+    <title>GetMissionAccess</title>
+    <category>System</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>mission_access</name>
+          <desc>Mission access to be checked.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines whether the player already has the specified mission access password.</desc>
+    <remark>In a network game, this function always returns 0. Otherwise differing local values might cause synchronization problems.</remark>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (!GetMissionAccess(&quot;DasWarHarteArbeit&quot;))
 {
-  <funclink>GainMissionAccess</funclink>("DasWarHarteArbeit");
-  <funclink>Message</funclink>("Glückwunsch, du bist hier zum ersten Mal!");
+  <funclink>GainMissionAccess</funclink>(&quot;DasWarHarteArbeit&quot;);
+  <funclink>Message</funclink>(&quot;GlÃ¼ckwunsch, du bist hier zum ersten Mal!&quot;);
 }</code>
-				<text>Gibt eine Nachricht nur aus, wenn der Missionszugang "DasWarHarteArbeit" noch nie erreicht wurde, und gibt dann den Zugang.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GainMissionAccess</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
-	<author>matthes</author><date>Februar 2005</date>
+        <text>Displays a message if the mission access password "DasWarHarteArbeit" was not yet gained and then gives this mission access.</text>
+      </example>
+    </examples>
+    <related><funclink>GainMissionAccess</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>matthes</author><date>2005-02</date>
 </funcs>

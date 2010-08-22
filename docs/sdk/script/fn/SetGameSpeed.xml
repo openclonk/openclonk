@@ -1,25 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetGameSpeed</title>
-		<category>Global</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>game_speed</name><desc>Spielgeschwindigkeit in FPS (Frames per Second). Wird der Parameter nicht angegeben oder 0 übergeben, so wird die Standard-Spielgeschwindigkeit (38 FPS) gewählt.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Spielgeschwindigkeit.</desc>
-
-		<examples>
-			<example>
-				<code>SetGameSpeed(10);</code>
-				<text>Das Spiel läuft in Zeitlupe.</text>
-			</example>
-		</examples>
-	</func>
-	<author>PeterW</author><date>Mai 2002</date>
+  <func>
+    <title>SetGameSpeed</title>
+    <category>Global</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>game_speed</name>
+          <desc>Game speed in FPS (frames per second). If this parameter is omitted or 0, the default game speed of 38 FPS is used.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets game speed.</desc>
+    <examples>
+      <example>
+        <code>SetGameSpeed(10);</code>
+        <text>The game runs in slow motion.</text>
+      </example>
+    </examples>
+  </func>
+  <author>PeterW</author><date>2002-05</date>
 </funcs>

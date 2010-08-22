@@ -1,49 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Benannte Variablen</title>
-
-<h>Benannte Variablen</h>
-<part>
-	<text>Variablen dienen innerhalb von Scripts zur Speicherung von Daten. Es gibt bestimmte <emlink href="script/Typechecks.html">Datentypen</emlink>, die Variablen annehmen können.</text>
-	
-	<text>Außerdem kann eine Variable einen von drei Gültigkeitsbereiche haben. Die Variable ist außerhalb ihres Gültigkeitsbereiches nicht sichtbar.</text>
-	
-	<text><table>
-		<row>
-		  <col>Schlüsselwort</col>
-		  <col>Gültigkeitsbereich</col>
-		  <col>Standort</col>
-		</row>
-		<row>
-		  <col><code>var</code></col>
-		  <col>funktions-lokal</col>
-		  <col>Funktion</col>
-		</row>
-		<row>
-		  <col><code>local</code></col>
-		  <col>objekt-lokal</col>
-		  <col>Objektscript</col>
-		</row>
-		<row>
-		  <col><code>static</code></col>
-		  <col>global</col>
-		  <col>beliebiger Skript</col>
-		</row>
-	</table></text>
-	
-	<text>Variablen werden mit folgender Syntax definiert:</text>
-	
-	<code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
-	
-	<text>Als erstes wird der Gültigkeitbereich angegeben. Danach muss der Name einer benannten Variable folgen.</text>
-	<text>Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies ist aber nur für funktionslokale (<code>var</code>) Variablen erlaubt. Ohne Initialisierung beginnt die Variable mit dem Standard-Wert 0.</text>
-	<text>Weitere Deklarationen können, mit Kommata getrennt, folgen. Die Deklaration muss immer mit einem ";" beendet werden.</text>
-	
-	<h>Beispiel:</h>
-	
-	<code>static object_count;
+  <title>Named Variables</title>
+  <h>Named Variables</h>
+  <part>
+    <text>Variables are placeholders for values stored in a script. A variable stores a value in one of several <emlink href="script/Typechecks.html">data types</emlink>.</text>
+    <text>There are three different scopes in which a variable can be declared. Variables are not visible outside their declared scope.</text>
+    <text>
+      <table>
+        <row>
+          <col>Keyword</col>
+          <col>Scope</col>
+          <col>Location</col>
+        </row>
+        <row>
+          <col><code>var</code></col>
+          <col>function local</col>
+          <col>Function</col>
+        </row>
+        <row>
+          <col><code>local</code></col>
+          <col>object local</col>
+          <col>Object Script</col>
+        </row>
+        <row>
+          <col><code>static</code></col>
+          <col>global</col>
+          <col>any script</col>
+        </row>
+      </table>
+    </text>
+    <text>Variables are declared using the following syntax:</text>
+    <code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
+    <text>The variable's scope, followed by the variable's name.</text>
+    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with value 0.</text>
+    <text>Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon.</text>
+    <h>Example:</h>
+    <code>static object_count;
 local  time_to_live;
 
 protected func Initialize()
@@ -72,18 +67,16 @@ protected func Timer()
 
   <funclink>return</funclink>();
 }</code>
-	
-	<h>Ergänzungen:</h>
-	
-	<text><ul>
-		<li>Definitionen objektlokaler Variablen werden sowohl bei #appendto also auch bei #include mit übernommen.</li>
-		<li>Mittels der Funktionen <funclink>VarN</funclink>(), <funclink>LocalN</funclink>(), und <funclink>GlobalN</funclink>() kann indirekt auf Variablen zugegriffen werden. Mittels <funclink>LocalN</funclink>() kann speziell auch auf lokale Variablen in anderen Objekten zugreifen.</li>
-		<li>Sind an einer Stelle zwei Variablen desselben Namens sichtbar, so bezeichnet der Name im Script jeweils die Variable mit dem kleineren Geltungsbereich. Das heißt z.B., dass eine objektlokale Variable eine globale Variable "verdeckt".</li>
-		<li>Wird eine Variable mehrfach deklariert, so existiert die Variable nachher trotzdem nur einmal und es wird kein Fehler ausgegeben. Initialisierungen gelten als Zuweisungen und werden wie eine entsprechende Anweisung ggf. auch mehrfach ausgeführt.</li>
-		<li>Eine <code>static</code>-Variable darf auch in Objektscripten verwendet werden (siehe Beispiel). Wird eine <code>static</code>-Variable mit gleichem Namen in einem anderen Script definiert, so bezeichnen beide auch dieselbe Variable.</li>
-	</ul></text>
-</part>
-
-<author>PeterW</author><date>ewig her</date>
-
+    <h>Addendum:</h>
+    <text>
+      <ul>
+        <li>Object local variable declarations are also valid in #appendto or #include script extensions.</li>
+        <li>Using the functions <funclink>VarN</funclink>(), <funclink>LocalN</funclink>(), and <funclink>GlobalN</funclink>() you can access variables indirectly. Using <funclink>LocalN</funclink>() you can specifically access local variables in other objects.</li>
+        <li>If two variables of the same name but differing scope are valid at the same time, then the variable of the smaller scope will be used, meaning for example an object local variable will "cover up" a global variable within its own scope.</li>
+        <li>If the same variable is declared multiply, then still the variable will exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively.</li>
+        <li>A <code>static</code> variable may also be used in object scripts (see example). If a <code>static</code> variable of the same name is defined in another script, the name will refer to the same variable.</li>
+      </ul>
+    </text>
+  </part>
+  <author>PeterW</author><date>her-long ago</date>
 </doc>

@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Contents</title>
-		<category>Objekte</category><subcat>Inhalt</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>int</type><name>index</name><desc>Index des Objekts in obj, Zählung beginnt mit 0</desc></param>
-			</params>
-		</syntax>
-		<desc>Liefert das indizierte Objekt, das im aufrufenden Objekt enthalten ist.</desc>
-		<related>
-			<funclink>Contained</funclink>
-			<funclink>FindContents</funclink>
-		</related>
-	</func>
-	<author>springer</author><date>April 2002</date>
+  <func>
+    <title>Contents</title>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the object in the container, starting with 0.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the indicated object contained in the target obj.</desc>
+    <related>
+      <funclink>Contained</funclink>
+      <funclink>FindContents</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
 </funcs>

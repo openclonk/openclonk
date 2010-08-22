@@ -1,31 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetPlrViewMode</title>
-		<category>Spieler</category>
-		<subcat>Sicht</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Nummer des Spielers, dessen Sichtmodus abgefragt werden soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Fragt den aktuellen Sichtmodus eines Spielers ab. Die Funktion gibt einen der folgenden Werte zurück:
-          <ul>
-            <li>0: Cursor - Die Sicht des Spielers folgt dem aktuell selektierten Clonk (siehe <funclink>GetCursor</funclink>)</li>
-            <li>1: Target - Die Sicht folgt einem anderen Objekt, welches durch den Befehl <funclink>SetPlrView</funclink> im Script gesetzt wurde. Siehe auch <funclink>GetPlrView</funclink>.</li>
-            <li>2: Scroll - Der Spieler bewegt seine Sicht unabhängig von der Position eines Objekts. Dies geschieht, wenn der Spieler die Maus an den Rand seines Sichtbereichs zieht.</li>
-          </ul>
+  <func>
+    <title>GetPlrViewMode</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose view mode you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Determines the current view mode of a player. The function returns the following values: 
+      <ul>
+        <li>0: Cursor - The player view follows the currently selected clonk (see <funclink>GetCursor</funclink>).</li>
+        <li>1: Target - The player view follows the object set by <funclink>SetPlrView</funclink>. Also see <funclink>GetPlrView</funclink>.</li>
+        <li>2: Scroll - The player is scrolling his view using the mouse.</li>
+      </ul>
+
     </desc>
-    <remark>Da die Maus nicht über Netzwerk synchronisiert wird, gibt die Funktion für Record, Replay und Netzwerkspiele
-            immer -1 zurück.</remark>
+    <remark>As mouse scrolling behaviour differs on every computer, this function always returns -1 whenever in Record, Replay, or network game mode.</remark>
     <related>
       <funclink>SetPlrView</funclink>
       <funclink>GetPlrView</funclink>
     </related>
-	</func>
-	<author>PeterW</author><date>Juni 2003</date>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
 </funcs>

@@ -1,38 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetMaterialCount</title>
-		<category>Landschaft</category><subcat>Material</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>material_index</name><desc>Materialsindex</desc></param>
-			</params>
-		</syntax>
-		<desc>Liefert die in der Landschaft vorhandene Menge des angegebenen Materials.</desc>
-		<remark>Ein Rückgabewert -1 bedeutet, daß noch kein gültiger Wert ermittelt werden konnte. Er kann nicht ermittelt werden, wenn nicht mindestens 500 Frames seit Rundenbeginn vergangen sind, oder NoScan in den Szenarieneigenschaften aktiviert ist. Pixel werden nur alle 500 Frames gezählt, d.h. in diesem Zeitraum gibt die Funktion immer den selben Wert zurück.</remark>
-		<examples>
-			<example>
-				<code>/* Spielziel erfüllt? */
+  <func>
+    <title>GetMaterialCount</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>material_index</name>
+          <desc>Material index</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the amount of the specified material found in the landscape.</desc>
+    <remark>A returns value of -1 indicates that no valid result could yet be determined. Valid results are not available during the first 500 frames of the round or if NoScan is enabled in the scenario core. Results are updated only roughly every 500 frames - inbetween updates values will remain unchanged.</remark>
+    <examples>
+      <example>
+        <code>/* Spielziel erfÃ¼llt? */
 public func IsFulfilled()
 {
-  // Gold noch nicht gezählt?
-  if ((var gold_count=GetMaterialCount(<funclink>Material</funclink>("Gold")))==-1) return();
+  // Gold noch nicht gezÃ¤hlt?
+  if ((var gold_count=GetMaterialCount(<funclink>Material</funclink>(&quot;Gold&quot;)))==-1) return();
   // noch zu viel?
-  if (gold_count >= 150) return();
-  // noch Goldstücke abzubauen?
+  if (gold_count &gt;= 150) return();
+  // noch GoldstÃ¼cke abzubauen?
   return(!<funclink>ObjectCount</funclink>(Gold));
 }
 				</code>
-				<text>Auszug aus dem Goldminen-Spielzielobjekt (GLDM).</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>Material</funclink>
-								</related>
-	</func>
-	<author>wipfmetz</author><date>August 2002</date>
+        <text>Script taken from goldmine game goal (GLDM).</text>
+      </example>
+    </examples>
+    <related><funclink>Material</funclink></related>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

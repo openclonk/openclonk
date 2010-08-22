@@ -1,24 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetSkyColor</title>
-                <category>Himmel</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>index</name><desc>Farb-Index in der Clonk-Palette.</desc></param>
-                                <param><type>int</type><name>rgb_index</name><desc>Rückgabetyp bestimmen.</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert den Farbwert des Himmels. Mit rgb_index kann angegeben werden ob entweder Rot (rgb_index ist 0), Grün (rgb_index ist 1) oder Blau (rgb_index ist 2) zurück gegeben werden soll. Mit index wird festgelegt von welchem Palettenindex (0 - 19) der Wert zurück gegeben werden soll.</desc>
-                <related>
-                        <funclink>SetSkyColor</funclink>
-                        <funclink>SetSkyFade</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetSkyColor</title>
+    <category>Sky</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Color index in the Clonk palette.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>rgb_index</name>
+          <desc>Determine the return value.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the color of the sky. With rgb_index you can specify whether you want to determine a red (rgb_index 0), green (rgb_index 1), or a blue (rgb_index 2) fraction. index specifies the palette index of paletted sky colors (0 - 19).</desc>
+    <related>
+      <funclink>SetSkyColor</funclink>
+      <funclink>SetSkyFade</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

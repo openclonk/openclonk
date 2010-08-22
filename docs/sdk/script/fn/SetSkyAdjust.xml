@@ -1,33 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetSkyAdjust</title>
-		<category>Himmel</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>colorMod</name><desc>Primäre Farbmodulation</desc></param>
-				<param><type>int</type><name>dwBackClr</name><desc>Hintergrundfarbe. Wenn in colorMod das Alphabyte nicht 0 ist, wird diese Farbe als Hintergrund hinter den Himmel gelegt. So lassen sich auch hellere oder entsättigte Himmel realisieren.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Himmelsmodulation. Die Himmelsfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken.</desc>
-		<examples>
-			<example>
-				<code>SetSkyAdjust(<funclink>RGBa</funclink>(255,255,255,127), <funclink>RGB</funclink>(127,127,127));</code>
-				<text>Graut den Himmel aus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetSkyAdjust</funclink>
-			<funclink>SetMatAdjust</funclink>
-			<funclink>SetSkyFade</funclink>
-			<funclink>SetGamma</funclink>
-			<funclink>RGB</funclink>
-			<funclink>RGBa</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+  <func>
+    <title>SetSkyAdjust</title>
+    <category>Sky</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>colorMod</name>
+          <desc>Primary color modulation.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>dwBackClr</name>
+          <desc>Background color. If the alpha byte in colorMod is not 0, this color will be used as background color behind the sky. In this way you can create lighter or more desaturated skies.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the sky color modulation. The sky colors will be mixed with the specified color as is done in ColorByOwner overlays.</desc>
+    <examples>
+      <example>
+        <code>SetSkyAdjust(<funclink>RGBa</funclink>(255,255,255,127), <funclink>RGB</funclink>(127,127,127));</code>
+        <text>Grays out the sky.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetSkyAdjust</funclink>
+      <funclink>SetMatAdjust</funclink>
+      <funclink>SetSkyFade</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

@@ -1,58 +1,97 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>SetPhysical</title>
-                <category>Objekte</category><subcat>Status</subcat>
-                <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-                <syntax>
-                        <rtype>bool</rtype>
-                        <params>
-                                <param><type>string</type><name>physical</name><desc>Name Eigenschaft, die geändert werden soll</desc></param>
-                                <param><type>int</type><name>value</name><desc>0-100000: Neuer Wert für diese Eigenschaft</desc></param>
-                                <param><type>int</type><name>mode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
-					<table><rowh><col>Konstante</col><col>Wert</col><col>Bedeutung</col></rowh>
-					<row><col>PHYS_Current</col><col>0</col><col>Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes geändert.</col></row>
-					<row><col>PHYS_Permanent</col><col>1</col><col>Die Eigenschaften werden permanent geändert. Das heißt, dass auch die Infosektion des Objektes modifiziert wird, und die Änderungen somit auch in die Spielerdatei geschrieben werden. Nur Spielercrewobjekte besitzen eine Infosektion.</col></row>
-					<row><col>PHYS_Temporary</col><col>2</col><col>Für das Objekt wird eine temporäre Infosektion erzeugt, sofern noch nicht vorhanden, und temporären Modus gesetzt. Änderungen im temporären Modus landen nicht in der Spielerdatei. Um temporäre Physicals wieder zu den Originalen zurückzusetzen, sollte <funclink>ResetPhysical</funclink> verwendet werden.</col></row>
-					<row><col>PHYS_StackTemporary</col><col>3</col><col>Wie PHYS_Temporary, jedoch wird zusätzlich der vorherige Physical-Wert gesichert und kann einzeln mit einem <funclink>ResetPhysical</funclink>-Aufruf wiederhergestellt werden. Ab CR.</col></row></table><br /></desc><optional /></param>
-			</params>
-		</syntax>
-                <desc>Ändert die physischen Eigenschaften des aufrufenden Objekts. Hiermit können die in der Physical-Sektion der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Werte temporär oder permanent angepasst werden.</desc>
-		<examples>
-			<example>
-<code>protected func Activate(eater)
+  <func>
+    <title>SetPhysical</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>physical</name>
+          <desc>Name of property to be changed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>0-100000: new value for the property</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>mode</name>
+          <desc>
+            Physical attribute change mode (symbolical constants since CR):<br/>
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Value</col>
+                <col>Meaning</col>
+              </rowh>
+              <row>
+                <col>PHYS_Current</col>
+                <col>0</col>
+                <col>The physical attributes are changed in the current mode (temporary or permanent) of the object.</col>
+              </row>
+              <row>
+                <col>PHYS_Permanent</col>
+                <col>1</col>
+                <col>The physical attributes are changed in permanent mode. This modifies the info section of the associated crew object, which means that the changes will be written to the player file as well. Only player crew objects have  a permanent info section.</col>
+              </row>
+              <row>
+                <col>PHYS_Temporary</col>
+                <col>2</col>
+                <col>The object will be set to temporary physical mode, and a temporary info section will be created if none exists already. Use <funclink>ResetPhysical</funclink> to reset temporary physicals to permanent mode.</col>
+              </row>
+              <row>
+                <col>PHYS_StackTemporary</col>
+                <col>3</col>
+                <col>Like PHYS_Temporary, but the previous physical-value will be backed up and can be restored by calling <funclink>ResetPhysical</funclink>. Since CR.</col>
+              </row>
+            </table>
+<br/>
+          </desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the physical properties of the object. With this, the values from the Physical section of the <emlink href="definition/DefCore.html">DefCore.txt</emlink> can be permanently or temporarily adapted.</desc>
+    <examples>
+      <example>
+        <code>protected func Activate(eater)
   {
   [$DescEatPill$]
-  eater->SetPhysical("Magic", 1000000, PHYS_Temporary);
-  <funclink>while</funclink>(eater-><funclink>DoMagicEnergy</funclink>(1)) ;
+  eater-&gt;SetPhysical(&quot;Magic&quot;, 1000000, PHYS_Temporary);
+  <funclink>while</funclink>(eater-&gt;<funclink>DoMagicEnergy</funclink>(1)) ;
   <funclink>RemoveObject</funclink>();
   }</code>
-				<text>Script für eine Magiepille: Der essende Clonk bekommt temporär Zauberenergie.</text>
-			</example>
-			<example>
-<code>protected func FxJumpBoostStart(object trg, int num, int temporary)
+        <text>Script for a magic pill: the eating clonk will temporarily gain magic energy.</text>
+      </example>
+      <example>
+        <code>protected func FxJumpBoostStart(object trg, int num, int temporary)
   {
-  trg->SetPhysical("Jump", trg-><funclink>GetPhysical</funclink>("Jump", PHYS_Current) + 10000, PHYS_StackTemporary);
+  trg-&gt;SetPhysical(&quot;Jump&quot;, trg-&gt;<funclink>GetPhysical</funclink>(&quot;Jump&quot;, PHYS_Current) + 10000, PHYS_StackTemporary);
   <funclink>return</funclink>(FX_OK);
   }
 		
 protected func FxJumpBoostStop(object trg, int num, int reason, bool tmp)
   {
-  trg-><funclink>ResetPhysical</funclink>("Jump");
+  trg-&gt;<funclink>ResetPhysical</funclink>(&quot;Jump&quot;);
   <funclink>return</funclink>(FX_OK);
   }</code>
-				<text>Script für einen Effekt namens JumpBoost: Wenn auf ein Objekt angewendet, kann es bis zum Löschen des Effektes höher springen. Die Kombination von PHYS_StackTemporary beim Setzen und  Angabe der geänderten Physical in <funclink>ResetPhysical</funclink> sorgt dafür, dass sich mehrere solcher Effekte problemlos kombinieren lassen.</text>
-			</example>
-		</examples>
-                <related>
-			<emlink href="definition/DefCore.html#SektionPhysical">DefCore.txt, [Physical]</emlink>
-                        <funclink>GetPhysical</funclink>
-			<funclink>ResetPhysical</funclink>
-			<funclink>TrainPhysical</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>Juni 2003</date>
+        <text>Script of an effect named JumpBoost: If created on a Clonk, it can jump higher until the effect is deleted again. Using PHYS_StackTemporary and <funclink>ResetPhysical</funclink> in this manner ensures that multiple effects written in this style can be combined without causing unwanted behaviour when one effect wears off while another remains.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="definition/DefCore.html#SektionPhysical">DefCore.txt, [Physical]</emlink>
+      <funclink>GetPhysical</funclink>
+      <funclink>ResetPhysical</funclink>
+      <funclink>TrainPhysical</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>
-

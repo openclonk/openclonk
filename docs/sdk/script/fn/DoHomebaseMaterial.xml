@@ -1,33 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoHomebaseMaterial</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Heimatbasismaterial verändert werden soll</desc></param>
-				<param><type>id</type><name>definition</name><desc>ID des Objekttyps, der mehr oder weniger oft kaufbar sein soll</desc></param>
-				<param><type>int</type><name>change</name><desc>Positive oder negative Veränderung der kaufbaren Objektmenge</desc></param>
-			</params>
-		</syntax>
-		<desc>Verändert die Kaufbarkeit von Objekten in der Heimatbasis.</desc>
-		<examples>
-			<example>
-				<code>DoHomebaseMaterial(0, Firestone, 1);</code>
-				<text>Der Spieler kann sich jetzt einen Flint mehr kaufen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetHomebaseMaterial</funclink>
-			<funclink>GetHomebaseProduction</funclink>
-			<funclink>DoHomebaseProduction</funclink>
-			<funclink>Buy</funclink>
-			<funclink>Sell</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>DoHomebaseMaterial</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose home base material you want to change.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>id of the buyable object type you want to adjust.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of the available amount (positive or negative).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes availability of buyable objects at the home base.</desc>
+    <examples>
+      <example>
+        <code>DoHomebaseMaterial(0, Firestone, 1);</code>
+        <text>The player can now buy one flint more.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetHomebaseMaterial</funclink>
+      <funclink>GetHomebaseProduction</funclink>
+      <funclink>DoHomebaseProduction</funclink>
+      <funclink>Buy</funclink>
+      <funclink>Sell</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

@@ -1,56 +1,56 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Blenderclonk Beispiele</title>
-<h id="Blenderclonk">Blenderclonk Beispiele</h>
-<part>
-<text>Wer sich noch nicht mit dem Modellieren in Blender auskennt, sollte zuerst ein allgemeines Blendertutorial machen!</text>
-<text>Dazu am besten unter <a href="http://www.blender.org/education-help/tutorials/">http://www.blender.org/education-help/tutorials/</a> eines der Anfangstutorials durchgehen. Die Blender.org Tutorials sind allerdings in englisch.</text>
-<text>Oder Blendertutorial vom Clonk-Center: z.B. <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=53">ein Flint</a>, <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=60">ein Bausatz</a> oder <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=134">ein Schwert</a></text>
-</part>
-<h id="ClonkWerden">Der Bauer Humpe will Clonk werden</h>
-<text>Wir wollen nun einen Bauern Clonk basteln. Dazu muss erstmal Blender gestartet und das Script geöffnet werden. Da der Bauer auf dem normalen Clonk bassieren soll muss erstmal dieser geladen werden. Also im Scriptfenster auf <strong>LoadClonk</strong> oder <img src="../images/DropDown.png" width="10" height="12"/>klicken und Clonk.mesh (bzw. Clonk) auswählen.
-	Jetzt befinden wir uns im Hauptmenü und haben den Clonk geladen. Dieser soll jetzt aber umbenannt werden zum Bauer, damit wir nicht den normalen Clonk überschreiben. Dazu gehen wir auf <strong>Save/Load</strong> und geben unter <strong>Clonk Name</strong> statt Clonk nun Farmer ein (es ist allgemein üblich die Clonks in englisch zu bezeichnen, natürlich würde Bauer auch gehen). Nun kann der Bauer mit einem Klick auf <strong>Save Clonk</strong> gespeichert werden.</text>
-<text>Gut, wir haben jetzt schon einen neuen Clonk geschaffen: den Bauer!</text>
-<h id="Hut">Bauer sucht Hut</h>
-<text>Damit man den Unterschied zwischen Bauer und Clonk erkennt sollte der Bauer natürlich anders aussehen. Bauer Hump möchte gerne einen Hut auf haben. Also geben wir ihm einen.</text>
-<text><img src="../images/Hut.png" width="257" height="238"/></text>
-<text>Zuerst muss dazu ein passen der Hut modelliert werden. Das sollte mit einem grundlegenden Blendertutorial wie den oben genannten kein großes Problem darstellen.</text>
-<text>Der Hut ist zunächst ein einzelnes Mesh. Aber damit er zusammen mit dem Clonk gespeichert werden kann muss er mit dem Clonkmesh verbunden werden. Dazu muss im ObjektMode (gegebenenfalls aus dem EditMode mit Tab gewechselt werden) zuerst das Hutmesh mit rechts angeklickt werden und dann während man Shift gedrückt hält noch das Clonkmesh mit rechts angeklickt werden. Jetzt hat der Hut einen dunklen Rand und der Clonk einen hellen. Mit Strg+J können die beiden Meshes nun verbunden werden.</text>
-<text>Damit der Hut immer passend mit dem Kopf bewegt wird muss er jetzt eine passende VertexGroup bekommen. Dazu auf <img src="../images/Button.png" width="21" height="21"/>gehen, dort links unter "Vertex Group" auf das Symbol neben dem Textfeld gehen. Aus dem Dropdownmenü dann 'Head' (für das Head Bone, also den Knochen der den Kopf steuert) auswählen. Dannach mit Tab in den Edit Mode wechseln, alle Vertices des Hutes (es können auch ein paar vom Vertices vom Kopf mit drin sein, das macht nichts) markieren und mit einem Klick auf Assign der Vertexgroup zuweisen.</text>
-<text><img src="../images/Vertexgroup.png" width="499" height="130"/></text>
-<text>Im Scriptfenster kann nun unter <strong>Clonk</strong> dann mit <strong>Save Farmer</strong> der Bauer mit seinem Hut gespeichert werden.</text>
-<h id="Hose">Humpe will eine Hose haben</h>
-<text>Als nächstes will Herr Humpe eine tolle Hose haben, denn der Einheitsoverall der Clonks ist für agrarwirtschaftliche Zwecke nicht adequat. Also muss eine braune Lederhose her.</text>
-<text>Dazu muss zuerst eine neue Materialgroup her. Dazu unter <img src="../images/Button.png" width="21" height="21"/>im Bereich rechts neben den Vertexgroups auf 'New' klicken. Dann auf <img src="../images/Button2.png" width="21" height="21"/> und dem neu erzeugten Material einen Namen geben, hier bietet sich 'Leather' für ein Ledermaterial an. Mit den Farbwähler dann einen passenden Braunton einstellen. Nun muss das Material noch den passenden Stellen am Clonk zugewiesen werden. Dazu im EditMode die Vertices markieren, die die Lederhose umspannen sollen. Dann unter <img src="../images/Button.png" width="21" height="21"/>auf Assign gehen, damit das Material den selektierten Faces zugewiesen wird.</text>
-<text><img src="../images/Trousers.png" width="443" height="250"/></text>
-<text>So Humpe hat nun seine Hose an. Jetzt wird es mal wieder Zeit zu speichern.</text>
-<h id="Mistgabel">Eine Mistgabel für Mr. Humpe</h>
-<text>Als Bauer braucht man natürlich eine Mistgabel, sonst ist man ja kein richtiger Bauer!</text>
-<text><img src="../images/Pitchfork.png" width="258" height="292"/></text>
-<text>Dazu muss natürlich zuerst einmal die landwirtschaftliche Gabel modelliert werden. Das Mistgabel-Mesh sowie das Object sollte dann den Namen 'Pitchfork' (eng. für Mistgabel) gegeben werden. Dann muss das Mesh so verschoben werden, dass die Position, an der der Clonk später die Gabel anfassen soll genau auf dem Tool1 Bone es Armatureobjectes ist (siehe Bild). Nun kann die Gabel über 'Save/Load' mit dem Button 'Save Tool' gespeichert werden, dazu im aufklappenden Menü den Eintrag 'Pitchfork' auswählen.</text>
-<text>Jetzt soll Humpe die Gabel natürlich beim Laufen immer tragen. Dazu werden wir als Grundlage die Action 'WalkStaff' verwenden. Diese muss zunächst geladen werden. Dazu gehen wir auf 'Save/Load' und wählen den Eintrag 'Load Action' aus und laden die Action 'WalkStaff'. Jetzt geht's ins Untermenü 'Actions' da wählen wir die Action 'WalkStaff' aus. Mit einem Klick auf 'New' wird eine neue Action erstellt. Als neunen Namen geben wir 'WalkPitchfork' ein. Die Frage nach dem Kopieren der Keyframes beantworten wir mit ja. Jetzt haben wir also eine neue Action mit dem Namen Pitchfork und den Keyframes von WalkStaff. Jetzt muss noch als Tool1 Pitchfork eingestellt werden, damit der Clonk statt dem Stab die Mistgabel verwendet. Mit einem Klick auf 'Save WalkPitchfork' kann die neue Action nun gespeichert werden.</text>
-<text>Damit mit der neuen Action statt der alten Walk Animation gerendert wird müssen wir die noch in der Actionliste des Clonks umstellen. Dazu gehen wir auf 'Clonk' und machen das Fenster mit <img src="../images/ButtonFullScreen.png" width="52" height="17"/> einem Klick auf groß. Jetzt können wir 'Walk' anklicken und statt dessen 'WalkPitchfork' auswählen.</text>
-<text>Was gleiche können wir jetzt für die Jump Action machen. Dazu laden wir 'JumpStaff'. Mit JumpStaff wird dann die neue Action JumpPitchfork erzeugt und Pitchfork als Tool1 zugewiesen, dabei nicht vergessen die Länge der Jumpanination auf 8 Frames statt 16 zu stellen. Jetzt wird Jump in der Actionliste durch JumpPitchfork ersetzt.</text>
-<text>Jetzt läuft und springt Humpe glücklich mit seiner Mistgabel! Zeit zu speichern.</text>
-<text>Nun kann Bauer Humpe endlich gerendert werden und sich seiner Clonkheit freuen:</text>
-<text><img src="../images/Humpe.png" width="256" height="320"/></text>
-<part>
-<h id="Aufstand">Bauernaufstand! Humpe kämpft</h>
-<text>Doch das alles ist noch nicht genug! Humpe will seine Mistgabel auch zum Kämpfen verwenden.</text>
-<text>Also müssen Kampfanimationen her. Da man aber mit einer Mistgabel nicht einfach zu zuschlägt wie mit einem Schwert können wir nicht die Schwertanimation nehmen und die Mistgabel mit dem Schwert austauschen. Folglich müssen wir eine ganz neue Animation machen.</text>
-<text>Dazu gehen wir zunächst ins Untermenü Action und klicken auf 'New' und geben als neuen Namen den Namen PitchforkStrike ein. Die Frage nach dem Kopieren von Keyframes verneinen wir. Die Animationslänge stellen wir auf 8 und die Breite auf 24. Die Höhe von 20 belassen wir so. Jetzt muss das Armatureobjekt angewählt werden und in den 'Pose Mode' gewechselt werden.</text>
-<text>Zunächst muss in den Frame 1 gewechselt werden. Die Framenummer wird immer links unten im 3D Fenster angezeigt, bzw. als grüner Stich im Animationsfenster (siehe Bild). Dazu entweder im Animatonsfenster auf die Position vom Frame 1 klicken oder mit den Pfeiltasten die Frames durch schalten. Sind wir nun im Frame 1 angelangt können wir die Bones des Clonkes so verbiegen, wie er am Anfang der Angriffsanimation aussehen soll. Dabei sollte die Kamera von schräg vorne auf den Clonk blicken, weil das bei den meisten Animationen so ist.</text>
-<text>Fertig positionierte Bones müssen dann noch mit einem Klick auf die Taste 'i' und der Auswahl von 'LocRot' in die Keyframeliste übernommen werden. Ist die Pose fertig und alle Bonepositionen als Keyframes gespeichert kann es weitergehen. Dann geht es weiter mit Frame 5, hier soll der Clonk gerade beim Ausholen ganz hinten sein (die zwischen Frames werden von Blender dann automatisch berechnet). Im Anschluss geht es mit Frame 7 weiter, hier soll der Clonk gerade ganz nach vorne stechen. Als 9. Frame wollen wir wieder den ersten haben, damit der Clonk wieder in die Ausgangsstellung zurückkehrt. Also drücken wir 'b' um im Actionfenster alles Keyframes des ersten Frames nun mit einem gezogenen Rahmen zu markieren. Mit Shift+D werden diese nur dupliziert und an die Stelle von Frame 9 verschoben. Warum Frame 9, den sieht man doch gar nicht, wir haben ja nur 8 Frames! Wir brauchen den 1. Frame ja nicht doppelt in der Animation, diese Kopie dient nur dazu das der Frame 8 als Übergang von 7 zu dem 1 von Blender berechnet wird.</text>
-<text>Ein Klick auf 'Save StrikePitchfork' speichert nun die neue Action.</text>
-<text><img src="../images/StrikeAction.png" width="637" height="372"/></text>
-<text>Jetzt brauchen wir natürlich auch noch eine Animation in der Humpe mit der Mistgabel in Kampfstellung ist (dann wenn sich zwei Clonk im Kampf gegenüberstehen). Hier reicht eine Kopie von SwordFight. Also laden wir SwordFight über 'Save/Load' und 'Load Action'. Im 'Action' Untermenü kann jetzt mit 'New' eine Kopie der Action erstellt werden. Da muss jetzt die Länge auf 4 und die Breite auf 24 gesetzt werden. Also Tool1 stellen wir wieder unsere Pitchfork ein.</text>
-<text>Jetzt kann man jedoch erkennen, dass der Clonk die Mistgabel zu hoch hält. Also im 'Pose Mode' das Tool1 Bone etwas tiefer setzen und einen Keyframe mit 'i' und 'LocRot' einfügen. Das ganze bei Frame 1, 3 und 5 jeweils so machen. Mit 'Save PitchforkFight' wird die Action dann gespeichert.</text>
-<text>Jetzt müssen die beiden Actions noch in die Actionliste des Clonks aufgenommen werden. Dazu auf das leere Feld unter Drink klicken und 'PitchforkFigth' auswählen. Dannach in das nächste leere Feld das dann unter 'PitchforkFight' entsteht klicken und 'PitchforkStrike' auswählen.</text>
-<text>Ein Klick auf 'Save Farmer' speichert und unsre Zusammenstellung.</text>
-<text>Jetzt ist unser kleiner Agrarwirt endlich fertig. Mit einen Klick auf 'Render', 'All' und dann 'Both' wird nun Graphics.png und Overlay.png im Unterordner Graphics/Farmer erzeugt. Von dort können sie jetzt ins Spiel eingebaut werden.</text>
-<text><img src="../images/Full.png" width="256" height="320"/></text>
-</part>
-<author>Randrian</author><date>Mai 2008</date>
+  <title>Renderclonk Examples</title>
+  <h id="Blenderclonk">Renderclonk Examples</h>
+  <part>
+    <text>Those who do not know about modeling with Blender should first do a generic blender tutorial.</text>
+    <text>To do so please follow one of the beginner's tutorials on <a href="http://www.blender.org/education-help/tutorials/">http://www.blender.org/education-help/tutorials/</a>.</text>
+    <text>There are also Blender tutorials on the Clonk Center, e.g. <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=53">a flint</a>, <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=60">a construction kit</a> oder <a href="http://www.cc.striver.net/texts.php?action=sh&amp;id=134">a sword</a>. They are in German language however.</text>
+  </part>
+  <h id="ClonkWerden">Farmer Humpe wants to become a clonk.</h>
+  <text>The goal of this tutorial is to create a Farmer clonk. So let's start up Blender and open the script. Since the farmer is supposed to be based on the normal Clonk the first thing we do is to load the Clonk model. In the scripting window click on <strong>LoadClonk</strong> or <img src="../images/DropDown.png" width="10" height="12"/> and select Clonk.mesh (or Clonk, respectively). Now the Clonk is loaded and we find ourselves in the main menu. Next, we rename the Clonk to Farmer so that we don't overwrite the original Clonk. To do so we click on <strong>Save/Load</strong> and change Clonk to Farmer in the <strong>Clonk Name</strong> field. Now the Farmer can be saved by another click to <strong>Save Clonk</strong>.</text>
+  <text>Great, so we have already created a new Clonk. The Farmer!</text>
+  <h id="Hut">Farmer Seeks Hat</h>
+  <text>To be able to see a difference between Farmer and Clonk the Farmer should look different of course. So let's give him a hat.</text>
+  <text><img src="../images/Hut.png" height="238" width="257" /></text>
+  <text>First an appropriate hat needs to be modeled. This should not be a problem when making use of one of the Blender tutorials mentioned above.</text>
+  <text>Initially the hat is an individual mesh. To be able to be stored together with the Clonk it needs to be connected to the Clonk mesh. To do so first switch to ObjectMode (maybe switching from the EditMode using Tab) and right-click the hat mesh, then right-click the Clonk mesh while pressing the Shift key. Now the hat has a dark border and the Clonk has a bright one. Pressing Ctrl+J connects the two meshes.</text>
+  <text>To move the hat together with the Clonk's head it needs to obtain an appropriate VertexGroup. Click on <img src="../images/Button.png" width="21" height="21"/>, then on the left click on the symbol next to the text entry. From the drop-down menu choose 'Head' (referring to the head bone, i.e. the bone which controls the head). Afterwards switch to Edit mode using Tab, select all vertices of the hat (it doesn't matter if a few head vertices are selected as well) and assign them to the Vertex group by clicking on Assign.</text>
+  <text><img src="../images/Vertexgroup.png" height="130" width="499" /></text>
+  <text>In the scripting window the Farmer can be saved including its head by choosing <strong>Clonk</strong>, then <strong>Save Farmer</strong>.</text>
+  <h id="Hose">Humpe wants to have pants</h>
+  <text>As a next step Farmer Humpe wants to have his own pants since the unit jumpsuit of the Clonks can not be used for agricultural purposes. So we need brown leather pants.</text>
+  <text>The first thing we need is a new material group. So, at <img src="../images/Button.png" width="21" height="21"/> in the area to the right hand side of the vertex groups, click 'New'. Then click on <img src="../images/Button2.png" width="21" height="21"/> and assign a name for the new material, such as 'Leather'. Choose a brownish shade using the color selector. Now the material needs to be assigned to the corresponding parts of the Clonk. In EditMode select the vertices which shall make up the pants, then in <img src="../images/Button.png" width="21" height="21"/> click on Assign.</text>
+  <text><img src="../images/Trousers.png" height="250" width="443" /></text>
+  <text>Now that Humpe wears his pants it's time to save the mesh again.</text>
+  <h id="Mistgabel">A pitchfork for Mr. Humpp</h>
+  <text>A farmer without a pitchfork is not a real farmer!</text>
+  <text><img src="../images/Pitchfork.png" height="292" width="258" /></text>
+  <text>First the pitchfork needs to be modeled. The mesh as well as the object should be assigned the name 'Pitchfork'. Afterwards the mesh should be aligned so that the point at which the Clonk touches the pitchfork is exactly on the Tool1 bone of the armature object (see picture). Then save the pitchfork using the 'Save Tool' button in the 'Save/Load' menu. In the popup menu choose the 'Pitchfork' entry.</text>
+  <text>Now of course Humpe should carry the pitchfork when walking. We are going to use the 'WalkStaff' action as a basis for this. To load it go to 'Save/Load' and choose the 'Load Action' entry, then choose 'WalkStaff'. In the 'Actions' submenu choose the 'WalkStaff' action, then click on 'New' to create a new action. Call it 'WalkPitchfork' and answer yes when asked whether to copy the keyframes. This results in a new action called Pitchfork using the keyframes from the WalkStaff action. The last thing to do is to choose the pitchfork as Tool1 so that it uses the pitchfork instead of the staff. Click on 'Save WalkPitchfork' to save the new action.</text>
+  <text>To make the rendering use the new action instead of the old Walk animation we need to switch it in the action list of the clonk. Go to 'Clonk' and enlarge the window by clicking on <img src="../images/ButtonFullScreen.png" width="52" height="17"/>. Then change 'Walk' to 'WalkPitchfork'.</text>
+  <text>Now we can do the same for the Jump action. We load 'JumpStaff' and use it to create the new JumpPitchfork action, then assign Pitchfork as Tool1. Don't forget to set the length of the jump animation to 8 instead of 16 frames. Eventually replace Jump by JumpPitchfork in the action list.</text>
+  <text>Now Humpe happily walks and jumps around carrying his pitchfork! Time to save.</text>
+  <text>Finally farmer Humpe can be rendered and enjoy being a Clonk:</text>
+  <text><img src="../images/Humpe.png" height="320" width="256" /></text>
+  <part>
+    <h id="Aufstand">Farmer uprising! Humpe fights</h>
+    <text>But this is not enough! Humpe also wants to use his pitchfork for fighting.</text>
+    <text>So fighting animations need to be created. However since one cannot use the pitchfork to strike the same way as with a sword we cannot simple replace the sword by a pitchfork in the sword fighting animation. This means we need to create a new animation from scratch.</text>
+    <text>To do so we switch to the Action submenu, click New and choose 'PitchforkStrike' as the new name. When asked whether to copy the keyframes we say 'No' this time. The animation length is set to 8 and the width to 24. The height we leave at 20. Now select the armature object and switch to 'Pose Mode'.</text>
+    <text>First switch to Frame 1. The frame number is shown in the bottom-left corner of the 3D window, or as a green line in the animation window respectively (see picture). So either click at the position of Frame 1 in the animation window or navigate to Frame 1 using the arrow keys. Having arrived at the first frame we can bend the Clonk's bones to how he is supposed to look like at the beginning of the strike animation. The camera should look at the clonk somewhat displaced from the front since this is the case for most animations.</text>
+    <text>Bones at their final positions need to be taken over to the keyframe list by pressing the 'i' key and choosing 'LocRot'. When the pose is finished and all bone positions are saved as keyframes we can continue. In frame 5 the Clonk should be at the backmost position when striking out (intermediate frames are computed automatically by Blender). Then in frame 7 the Clonk should be stabbing directly towards his enemy. The 9. frame should be the same as the first so that the Clonk returns into his initial position. So we press 'b' to select all keyframes of the first frame by drawing a selection rectangle in the action window. Using Shift+D they are duplicated and moved to frame 9. Why frame 9 when we only have 8 frames, you might ask. We don't need the first frame twice in the animation, the additional frame is just so that the eighth frame is computed as a transition from the seventh to the first frame by Blender.</text>
+    <text>A click on 'Save StrikePitchfork' makes sure the new action is saved.</text>
+    <text><img src="../images/StrikeAction.png" height="372" width="637" /></text>
+    <text>Now we need another animation in which Humpe is in fighting position with his pitchfork (when two clonks stand opposed to each other when fighting). In this case a copy of SwordFight is good. So let's load SwordFight via 'Save/Load' and 'Load Action'. In the 'Action' submenu create a copy of the action with 'New'. The length needs to be set to 4 and the width to 24. Tool1 is again chosen to be our pitchfork.</text>
+    <text>However now we can see that the Clonk is holding the pitchfork too high up. So in 'Pose Mode' lower the Tool1 bone a bit and insert a keyframe with 'i' and 'LocRot'. Do the same for frames 1, 3 and 5, then save with 'Save PitchforkFight'.</text>
+    <text>Eventually the two actions need to be added to the action list of the Clonk. To do so click on the empty field below Drink and choose 'PitchforkFight'. Then click again in the next empty field which gets created below 'PitchforkFight' and choose 'PitchforkStrike'.</text>
+    <text>Clicking on 'Save Farmer' saves what we have done.</text>
+    <text>Finally our little Farmer is finished. Both Graphics.png and Overlay.png are created in the Graphics/Farmer subfolder when clicking on 'Render', then 'All', then 'Both'. They can be used to add the graphics into the game.</text>
+    <text><img src="../images/Full.png" height="320" width="256" /></text>
+  </part>
+  <author>Randrian</author><date>2008-05</date>
 </doc>

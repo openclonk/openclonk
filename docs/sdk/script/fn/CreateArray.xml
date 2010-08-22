@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CreateArray</title>
-		<category>Script</category><subcat>Strings</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>int</type><name>length</name><desc>Länge des neuen Felds</desc></param>
-			</params>
-		</syntax>
-		<desc>Erzeugt ein neues, mit Nullen gefülltes Feld.</desc>
-		<related>
-			<funclink>SetLength</funclink>
-			<funclink>GetLength</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>Juni 2006</date>
+  <func>
+    <title>CreateArray</title>
+    <category>Script</category>
+    <subcat>Strings</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>length</name>
+          <desc>Length of the new array.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a new zero filled array.</desc>
+    <related>
+      <funclink>SetLength</funclink>
+      <funclink>GetLength</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2006-06</date>
 </funcs>

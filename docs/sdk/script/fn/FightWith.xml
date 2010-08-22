@@ -1,28 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>FightWith</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>target</name><desc>Objekt, das bekämpft werden soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Beginnt einen Zweikampf. Mit diesem Befehl können auch Clonks nicht verfeindeter Spieler einen Kampf beginnen. Beide Teilnehmer müssen <funclink>OCF_FightReady</funclink> sein.</desc>
-		<examples>
-			<example>
-				<code>FightWith(<funclink>FindObject</funclink>(0, -8,-10,16,20 <funclink>OCF_FightReady</funclink>()));</code>
-				<text>Bekämpft ein direkt in der Nähe stehendes Objekt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Punch</funclink>
-			<funclink>OCF_FightReady</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+  <func>
+    <title>FightWith</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Object to be fought.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Starts a clonk-to-clonk fight. Using this command you can also make allied clonks fight. Both participants must be <funclink>OCF_FightReady</funclink>.</desc>
+    <examples>
+      <example>
+        <code>FightWith(<funclink>FindObject</funclink>(0, -8,-10,16,20 <funclink>OCF_FightReady</funclink>()));</code>
+        <text>Fights another object close-by.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Punch</funclink>
+      <funclink>OCF_FightReady</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

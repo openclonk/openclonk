@@ -1,28 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoMagicEnergy</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>change</name><desc>Veränderung des Magiewertes; positiv oder negativ</desc></param>
-				<param><type>bool</type><name>allow_partial</name><desc>Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung change nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink> (DoMagicEnergy(-10)) <funclink>CreateObject</funclink>(MLGT)->Activate(<funclink>this</funclink>);</code>
-				<text>Zaubert einen Blitzzauber, wenn die nötige magische Aufladung dafür vorhanden ist.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetMagicEnergy</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>DoMagicEnergy</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of magic value (positive or negative).</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>allow_partial</name>
+          <desc>If true, the function will also transfer magical energy partially instead of failing. In this case, the function will only fail if the magical energy is not changed at all. Since CR.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Adjusts the magic value of an object. The change is only performed as a whole - if the specified change would pass the upper or lower physical limit of the object, it is not performed and the function returns false. The effect is that with only one call you can make a change and check whether the change is even possible.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (DoMagicEnergy(-10)) <funclink>CreateObject</funclink>(MLGT)-&gt;Activate(<funclink>this</funclink>);</code>
+        <text>Casts a lightning spell if enough magic energy is available.</text>
+      </example>
+    </examples>
+    <related><funclink>GetMagicEnergy</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

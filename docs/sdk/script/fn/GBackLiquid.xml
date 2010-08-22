@@ -1,34 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GBackLiquid</title>
-		<category>Landschaft</category>
-		<subcat>Material</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>X-Koordinate, Offset bei lokalem Aufruf</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Koordinate, Offset bei lokalem Aufruf</desc></param>
-			</params>
-		</syntax>
-		<desc>Überprüft ob sich an angegebener Position in der Landschaft Flüssigkeit befindet.</desc>
-		<examples>
-			<example>
-				<code>var obj=<funclink>FindObject</funclink>(Rock);
+  <func>
+    <title>GBackLiquid</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate. Offset in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Checks whether there is liquid at the specified position in the landscape.</desc>
+    <examples>
+      <example>
+        <code>var obj=<funclink>FindObject</funclink>(Rock);
 if(GBackLiquid(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>()<emlink href="script/operatoren.html">-</emlink>10)) <funclink>Explode</funclink>(obj);</code>
-				<text>Wenn der Stein unterhalb von Wasser ist, explodiert er.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GBackSemiSolid</funclink>
-			<funclink>GBackSolid</funclink>
-			<funclink>GBackSky</funclink>
-			<funclink>InLiquid</funclink>
-			<funclink>GetMaterial</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>April 2002</date>
+        <text>If this rock is underwater it explodes.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GBackSemiSolid</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GBackSky</funclink>
+      <funclink>InLiquid</funclink>
+      <funclink>GetMaterial</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-04</date>
 </funcs>

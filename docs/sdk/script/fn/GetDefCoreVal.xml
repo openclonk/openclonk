@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,51 +13,43 @@
         <param>
           <type>string</type>
           <name>entry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
-          <optional/>
+          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>entry_number</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt einen Eigenschaftswert der aufrufenden Objektdefinition nach seinem Namen in der <emlink href="definition/defcore.html">DefCore.txt</emlink>
-          zurück.</desc>
-
-    <remark>Ist der abzufragende Eintrag eine ID-Liste (z.B. "Components" in der DefCore.txt), so wird bei
-            geradem entry_number die ID, bei ungeradem entry_number die Anzahl zurückgegeben (siehe Beispiel)</remark>
-
+    <desc>Returns the property value of an object definition by its name in the <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <remark>If the requested entry is an id list (e.g. "Components" in DefCore.txt) an even entry_number will return the listed id and an uneven entry_number will return the matching count (see example).</remark>
     <examples>
       <example>
-        <code>var wdt = GetID()->GetDefCoreVal("Width", "DefCore");</code>
-        <text>Ermittelt die Breite des Objekts.</text>
+        <code>var wdt = GetID()-&gt;GetDefCoreVal(&quot;Width&quot;, &quot;DefCore&quot;);</code>
+        <text>Determines the width an object.</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(" Eine Werkstatt benötigt folgendes Material:");
+        <code><funclink>Log</funclink>(&quot; Eine Werkstatt benÃ¶tigt folgendes Material:&quot;);
 
 for(var i = 0;; i++)
 {
-  var id = GetDefCoreVal("Components", "DefCore", WRKS, i*2);
+  var id = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, WRKS, i*2);
   if(!id) break;
-  var cnt = GetDefCoreVal("Components", "DefCore", WRKS, i*2+1);
+  var cnt = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, WRKS, i*2+1);
 
-  <funclink>Log</funclink>("%d x %s", cnt, <funclink>GetName</funclink>(0, id));
+  <funclink>Log</funclink>(&quot;%d x %s&quot;, cnt, <funclink>GetName</funclink>(0, id));
 }</code>
-        <text>Fragt den Materialbedarf für den Bau einer Werkstatt ab. <br/> Die Schleife läuft solange, bis GetDefCoreVal für
-              die ID 0 zurückgibt, was das Ende der Liste markiert</text>
+        <text>Determines the necessary components for construction of a workshop.<br/>The loop will run until GetDefCoreVal returns id 0 which means the end of the list.</text>
       </example>
     </examples>
-
-
     <related>
       <funclink>GetObjectVal</funclink>
       <funclink>GetObjectInfoCoreVal</funclink>
@@ -65,7 +58,6 @@ for(var i = 0;; i++)
       <funclink>GetPlayerVal</funclink>
       <funclink>GetPlayerInfoCoreVal</funclink>
     </related>
-
   </func>
-  <author>PeterW</author><date>April 2002</date>
+  <author>PeterW</author><date>2002-04</date>
 </funcs>

@@ -1,39 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CheckVisibility</title>
-		<category>Objekte</category><subcat>Sichtbarkeit</subcat>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>object</type><name>obj</name><desc>Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Fragt die Sichtbarkeit eines Objekts ab. Siehe dazu auch <funclink>SetVisibility</funclink>.</desc>
-		<examples>
-			<example>
-
-<code>var vis=<funclink>GetVisibility</funclink>();
+  <func>
+    <title>CheckVisibility</title>
+    <category>Objects</category>
+    <subcat>Visibility</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player of which to retrieve the visibility. Can be 0 in local calls.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object of which to retrieve the visibility. Can be 0 in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the current visibility of an object. Also see <funclink>SetVisibility</funclink>.</desc>
+    <examples>
+      <example>
+        <code>var vis=<funclink>GetVisibility</funclink>();
 if (vis &amp;&amp; ~vis &amp; <funclink>VIS_Owner</funclink>()) <funclink>SetVisibility</funclink>(vis | <funclink>VIS_Owner</funclink>());</code>
-
-				<text>Wenn das aufrufende Objekt nicht für den Besitzer sichtbar war, wird es für ihn sichtbar gemacht.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetVisibility</funclink>
-			<funclink>CheckVisibility</funclink>
-			<funclink>VIS_All</funclink>
-			<funclink>VIS_None</funclink>
-			<funclink>VIS_Owner</funclink>
-			<funclink>VIS_Allies</funclink>
-			<funclink>VIS_Enemies</funclink>
-			<funclink>VIS_God</funclink>
-			<funclink>VIS_Local</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+        <text>If the calling object is not visible for its owner, it will be made so.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetVisibility</funclink>
+      <funclink>CheckVisibility</funclink>
+      <funclink>VIS_All</funclink>
+      <funclink>VIS_None</funclink>
+      <funclink>VIS_Owner</funclink>
+      <funclink>VIS_Allies</funclink>
+      <funclink>VIS_Enemies</funclink>
+      <funclink>VIS_God</funclink>
+      <funclink>VIS_Local</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

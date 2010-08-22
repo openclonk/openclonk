@@ -1,156 +1,141 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>ActMap.txt</title>
-<h id="ActMap">ActMap</h>
-<text>In der Komponente ActMap.txt werden die möglichen
-Aktivitäten eines Objekts beschrieben. Die Animationsphasen einer
-jeden Aktivität werden dabei in der Graphics.png (oder veraltet
-Graphics.bmp) als nebeneinanderliegende Bilder abgelegt und in der
-ActMap.txt über Bildkoordinaten referenziert. Aktivitäten können im
-Spiel von der Engine oder per Script gestartet oder beendet werden
-(siehe <emlink href="script/fn/SetAction.html">SetAction</emlink>). Einige
-Aktivitäten, speziell solche von Lebewesen, nutzen dabei Engine-interne
-<emlink href="definition/procedures.html">Prozeduren</emlink>, die das Bewegungsverhalten
-des Objekts während der Ausführung dieser Aktivität steuert.</text>
-<text>
-<table>
-<caption id="BeliebigvieleSektionenAction">Beliebig viele Sektionen [Action]</caption>
-  <rowh>
-    <col>Wert</col>
-    <col>Datentyp</col>
-    <col>Beschreibung</col>
-  </rowh>
-  <row>
-    <col>Name</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Name der Aktivität. Siehe <emlink href="script/fn/SetAction.html">SetAction</emlink>().</col>
-  </row>
-  <row>
-    <col>Procedure</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Interne Standardprozedur. Siehe <emlink href="definition/procedures.html">Prozeduren</emlink>.</col>
-  </row>
-  <row>
-    <col>Directions</col>
-    <col>Integer</col>
-    <col>Anzahl der Animationsrichtungen. Animationreihen vertikal in Graphics.png.</col>
-  </row>
-  <row>
-    <col>FlipDir</col>
-    <col>Integer</col>
-    <col>Wenn ungleich 0, gibt dieser Wert die erste Animationsrichtung an, die durch
-Spiegelung einer davor liegenden Animationsrichtung gezeichnet wird. So wird bei Wert
-1 für die Richtung 1 (rechts) die gespiegelte Grafik der Richtung 0 (links) verwendet
-(siehe Clonks). Bei Wert 7 wird für Richtungen &gt;= 7 die gespiegelte Grafik der
-Richtung 6 - n verwendet, d.h. bei höheren Richtungsnummern wird wieder rückwärts nach
-oben gezählt (siehe Banner im Ritterpack).</col>
-  </row>
-  <row>
-    <col>Length</col>
-    <col>Integer</col>
-    <col>Anzahl der Animationsphasen dieser Aktivität (horizontal in Graphics.png).</col>
-  </row>
-  <row>
-    <col>Reverse</col>
-    <col>Integer</col>
-    <col>0 oder 1. Bei Wert 1 werden die Animationsphasen rückwärts angezeigt.</col>
-  </row>
-  <row>
-    <col>Delay</col>
-    <col>Integer</col>
-    <col>Wartezeit in Frames (Ticks) zwischen zwei Animationsphasen.</col>
-  </row>
-  <row>
-    <col>Attach</col>
-    <col>Integer</col>
-    <col>Festhalten an Oberflächen: <emlink href="definition/cnat.html">CNAT-Wert</emlink>,
-    also z.B. Wert 8 für Boden. Wird nur ausgewertet, wenn Procedure NONE ist.</col>
-  </row>
-  <row>
-    <col>Facet</col>
-    <col>6 Integer</col>
-    <col>Animationsgrafik: Zielrechteck aus Graphics.png auf Objektposition.</col>
-  </row>
-  <row>
-    <col>FacetBase</col>
-    <col>Integer</col>
-    <col>0 oder 1. Bei Wert 1 wird Facet mit der Standardobjektgrafik unterlegt.</col>
-  </row>
-  <row>
-    <col>FacetTopFace</col>
-    <col>Integer</col>
-    <col>0 oder 1. Bei 1 wird das TopFace (siehe <emlink href="definition/defcore.html">DefCore.txt</emlink>)
-    aus der animierten Facet verwendet.</col>
-  </row>
-  <row>
-    <col>FacetTargetStretch</col>
-    <col>Boolean</col>
-    <col>0 oder 1. Bei 1 wird die Grafik vertikal bis zur oberen Kante des ActionTarget gestretcht.</col>
-  </row>
-  <row>
-    <col>NextAction</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Nächste Aktivität nach Ablauf der Animationsphasen.</col>
-  </row>
-  <row>
-    <col>NoOtherAction</col>
-    <col>Integer</col>
-    <col>0 oder 1. Bei 1 ist keine Aktivität nach dieser möglich (z.B. Tod, Zerstörung).</col>
-  </row>
-  <row>
-    <col>StartCall</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Objektscriptfunktion, die beim Start der Aktivität aufgerufen wird.</col>
-  </row>
-  <row>
-    <col>EndCall</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Wird am Ende der Aktivität aufgerufen.</col>
-  </row>
-  <row>
-    <col>PhaseCall</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Wird bei jedem Phasenschritt aufgerufen.</col>
-  </row>
-  <row>
-    <col>AbortCall</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Wird aufgerufen, wenn die Aktivität vor ihrem Ende durch eine andere ersetzt wird. Parameter sind letzte Animationsphase, letztes ActionTarget und ActionTarget2.</col>
-  </row>
-  <row>
-    <col>InLiquidAction</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Auszuführende Aktion, wenn das Objekt in Flüssigkeiten eintaucht.</col>
-  </row>
-  <row>
-    <col>Sound</col>
-    <col>Zeichenfolge (max. 30)</col>
-    <col>Dauerhaftes Geräusch dieser Aktivität.</col>
-  </row>
-  <row>
-    <col>ObjectDisabled</col>
-    <col>Integer</col>
-    <col>0 oder 1. Eingeschränkte Fähigkeit des Objekts während dieser Aktion.</col>
-  </row>
-  <row>
-    <col>DigFree</col>
-    <col>Integer</col>
-    <col>Freigraben während dieser Aktion. Objektrechteck 1, sonst Kreisradius.</col>
-  </row>
-  <row>
-    <col>EnergyUsage</col>
-    <col>Integer</col>
-    <col>Nötige Energie für diese Aktion. Maschinen 500.</col>
-  </row>
-  <row>
-    <col>Animation</col>
-    <col>Zeichenfolge</col>
-    <col>Ab OC. Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href="definition/animations.html">Animationen</emlink> für weitergehende Dokumentation zu Animationen.</col>
-  </row>
-</table>
-</text>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
+  <title>ActMap.txt</title>
+  <h id="ActMap">ActMap</h>
+  <text>The ActMap.txt-component describes possible actions (i.e., activities like walking and scaling for clonks; or opening/closing doors of buildings), of an object. The animation phases of each activity are placed as adjacent images in the Graphics.png (and/or Overlay.png/Graphics.bmp). These animations are being referenced using image coordinates in the ActMap.txt. Animations may be started by script (see <emlink href="script/fn/SetAction.html">SetAction</emlink>) or directly by the engine. Some activities - especially those of clonks and animals - use an engine-intrenal <emlink href="definition/procedures.html">procedure</emlink>, which controls the movement of an object while such an activity is set.</text>
+  <text>
+    <table>
+      <caption id="BeliebigvieleSektionenAction">Any number of sections [Action]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <literal_col>Name</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Name of the activity. See <emlink href="script/fn/SetAction.html">SetAction</emlink>().</col>
+      </row>
+      <row>
+        <literal_col>Procedure</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Internal standard procedure. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Directions</literal_col>
+        <col>Integer</col>
+        <col>Number of animation directions. Animation directions are arranged vertically in Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>FlipDir</literal_col>
+        <col>Integer</col>
+        <col>If nonzero, this value specifies the first animation phase that is produced by mirroring one of the previous animation directions. If this value is 1, graphics of direction 1 (DIR_Right) will be drawn as a horizontally mirrored graphics of direction 0 (DIR_Left) (see clonks). If it is 7, any directions n &gt;= 7 will be drawn using the mirrored graphics of directions 6 - n, i.e. higher direction values will be drawn using the mirrored graphics in reverse orders (cf. banner in the knights pack).</col>
+      </row>
+      <row>
+        <literal_col>Length</literal_col>
+        <col>Integer</col>
+        <col>Number of animation phases for this activity (arranged horizontally in Graphics.png)</col>
+      </row>
+      <row>
+        <literal_col>Reverse</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the animation phases will be shown in reverse order.</col>
+      </row>
+      <row>
+        <literal_col>Delay</literal_col>
+        <col>Integer</col>
+        <col>Time difference in frames (ticks) between two animation phases.</col>
+      </row>
+      <row>
+        <literal_col>Attach</literal_col>
+        <col>Integer</col>
+        <col>Attachment to surfaces: <emlink href="definition/cnat.html">CNAT Value</emlink>, e.g. value 8 if the object should attach to the floor like a walking clonk does; or 4 for attachment to the ceiling like a hangling clonk. Only evaluated if the procedure is NONE.</col>
+      </row>
+      <row>
+        <literal_col>Facet</literal_col>
+        <col>6 integers</col>
+        <col>Animation graphics: Target rectangle from Graphics.png relative to upper left corner of unrotated object shape.</col>
+      </row>
+      <row>
+        <literal_col>FacetBase</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the default facet (i.e., the facet shown if the object has no action) will be drawn behind the action facet.</col>
+      </row>
+      <row>
+        <literal_col>FacetTopFace</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the TopFace (see <emlink href="definition/defcore.html">DefCore.txt</emlink>) will be drawn using the animated facet.</col>
+      </row>
+      <row>
+        <literal_col>FacetTargetStretch</literal_col>
+        <col>Boolean</col>
+        <col>0 or 1. If 1, the graphics will be stretched down towards the upper border of the ActionTarget. Used e.g. for the elevator line.</col>
+      </row>
+      <row>
+        <literal_col>NextAction</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Next action being set after the current one has reached its end.</col>
+      </row>
+      <row>
+        <literal_col>NoOtherAction</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, no other action can be set after this one (used e.g. for death or destruction).</col>
+      </row>
+      <row>
+        <literal_col>StartCall</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Object script function which is called when the activity is started.</col>
+      </row>
+      <row>
+        <literal_col>EndCall</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Called when an activity reaches the end of its animation.</col>
+      </row>
+      <row>
+        <literal_col>PhaseCall</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Called whenever the animation phase changes.</col>
+      </row>
+      <row>
+        <literal_col>AbortCall</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Called if an activity is being replaced by another before its regular end; i.e. not by a transition through NextAction. Parameters are the previous animation phase, previous ActionTarget and previous ActionTarget2.</col>
+      </row>
+      <row>
+        <literal_col>InLiquidAction</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Action to be set if the object plunges into water.</col>
+      </row>
+      <row>
+        <literal_col>Sound</literal_col>
+        <col>String (max. 30 chars)</col>
+        <col>Permanent sound being played during this action.</col>
+      </row>
+      <row>
+        <literal_col>ObjectDisabled</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. Restricted control of the object during this action.</col>
+      </row>
+      <row>
+        <literal_col>DigFree</literal_col>
+        <col>Integer</col>
+        <col>Area that is dug free during this action. If 1, the area covered by the object shape is freed (like the elevator case); otherwise, the value is taken as the radius of a circular area (like a digging Clonk).</col>
+      </row>
+      <row>
+        <literal_col>EnergyUsage</literal_col>
+        <col>Integer</col>
+        <col>Energy required for this action. Normal machines should use about 500.</col>
+      </row>
+      <row>
+        <literal_col>Animation</literal_col>
+        <col>String</col>
+        <col>Since OC. Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animationen</emlink> for further documentation on animations.</col>
+      </row>
+    </table>
+  </text>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

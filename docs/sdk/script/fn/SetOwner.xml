@@ -1,30 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetOwner</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>new_owner</name><desc>Spielernummer des neuen Besitzers. -1 für keinen Besitzer.</desc></param>
-			</params>
-		</syntax>
-		<desc>Ändert den Besitzer des aufrufenden Objekts.</desc>
-		<remark>Dieser Aufruf ändert auch den Controller des Objektes auf den neuen Besitzer</remark>
-		<examples>
-			<example>
-				<code>protected func Entrance(container) { SetOwner(container-><funclink>GetOwner</funclink>()); <funclink>return</funclink>(); }</code>
-				<text>Das Objekt ändert seinen Besitzer, wenn es eingesammelt wird.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetController</funclink>
-			<funclink>GetOwner</funclink>
-			<funclink>MakeCrewMember</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>SetOwner</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>new_owner</name>
+          <desc>Player number of the new owner. -1 for no owner.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the owner of the object.</desc>
+    <remark>This function also changes the controller to the new owner.</remark>
+    <examples>
+      <example>
+        <code>protected func Entrance(container) { SetOwner(container-&gt;<funclink>GetOwner</funclink>()); <funclink>return</funclink>(); }</code>
+        <text>This object changes its owner when it is collected.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetController</funclink>
+      <funclink>GetOwner</funclink>
+      <funclink>MakeCrewMember</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

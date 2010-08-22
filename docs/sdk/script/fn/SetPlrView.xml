@@ -1,22 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetPlrView</title>
-		<category>Spieler</category><subcat>Sicht</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spieler, dessen Sicht gesetzt werden soll.</desc></param>
-				<param><type>object</type><name>obj</name><desc>Objekt, auf das die Sicht gesetzt werden soll. </desc></param>
-			</params>
-		</syntax>
-		<desc>Zentriert das Sichtfenster eines Spielers auf ein Objekt. Die Sicht folgt dem Objekt bis zum nächsten Spielerkommando.</desc>
-		<examples>
-			<example>
-				<code>local oFeind;
+  <func>
+    <title>SetPlrView</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose view distance to want to set.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object to which to want to set the view.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Centers a player's view to the specified object. The view will follow this object until the next player command.</desc>
+    <examples>
+      <example>
+        <code>local oFeind;
 // TimerCall eines automatischen Aussichtsturms
 protected func Timer()
 {
@@ -29,7 +39,7 @@ protected func Timer()
       {
         // Ein feindlicher Clonk!
         SetPlrView(<funclink>GetOwner</funclink>(), oAlarm);
-        <funclink>Sound</funclink>("Bing");
+        <funclink>Sound</funclink>(&quot;Bing&quot;);
         break;
       }
   }
@@ -37,9 +47,9 @@ protected func Timer()
   {
     <funclink>if</funclink>(<funclink>ObjectDistance</funclink>(oFeind) &lt; 120)
     {
-      // Noch einige ständige Effekte bei Alarm
-      <funclink>Sound</funclink>("Bing");
-      <funclink>Message</funclink>("!!! FEIND !!!");
+      // Noch einige stÃ¤ndige Effekte bei Alarm
+      <funclink>Sound</funclink>(&quot;Bing&quot;);
+      <funclink>Message</funclink>(&quot;!!! FEIND !!!&quot;);
     }
     else
     {
@@ -49,16 +59,15 @@ protected func Timer()
   }
 }
 				</code>
-				<text>Automatischer Wachturm: gelangt ein gegnerischer Clonk in die Nähe des Gebäudes, so wird die Sicht des Gebäudebesitzers auf den Angreifer gelenkt. 
-              Außerdem wird, solange er sich in der Umgebung des Gebäudes befindet, ständig ein Sound gespielt und eine Nachricht über den Gebäude ausgegeben.</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>GetPlrView</funclink>
-												<funclink>GetPlrViewMode</funclink>
-												<funclink>SetPlrViewRange</funclink>
-												<funclink>SetFoW</funclink>
-								</related>
-	</func>
-	<author>PeterW</author><date>April 2003</date>
+        <text>Automatic watch tower: if an enemy clonk gets near the tower the player's view will be set to the attacker. Also, a sound is played and a message is popped up while the enemy is in range.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlrView</funclink>
+      <funclink>GetPlrViewMode</funclink>
+      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetFoW</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2003-04</date>
 </funcs>

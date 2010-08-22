@@ -1,39 +1,57 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>AttachMesh</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>any</type><name>mesh</name><desc>ID oder Objekt des Meshes das angehängt werden soll.</desc></param>
-				<param><type>string</type><name>parent_bone</name><desc>Bone am Mesh des aufrufenden Objekts an dem das anzuhängende Mesh befestigt werden soll.</desc></param>
-				<param><type>string</type><name>child_bone</name><desc>Bone am Mesh des anzuhängenden Objekts mit dem es befestigt werden soll.</desc></param>
-				<param><type>array</type><name>transformation</name><desc>Transformation im Koordinatensystem des anzuhängenden Meshes, die auf selbiges angewandt wird. Das Array sollte 12 Integer-Einträge haben die eine 3x4-Matrix beschreiben wobei jeder Wert in Promille (1000 = 100%) angegeben ist. Die Matrizen können auch mit <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> und <funclink>Trans_Scale</funclink> erzeugt und mit <funclink>Trans_Mul</funclink> kombiniert werden.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Befestigt ein Mesh an einem anderen. Wenn für <code>mesh</code> eine ID angegeben wird, so wird das Mesh der entsprechenden Definition verwendet. Wenn für <code>mesh</code> ein Objekt angegeben wird, so wird dessen aktuelles Mesh verwendet, inklusive aller Animationen oder weiterer angehängter Meshes. Dabei wird jedoch nur die Grafik angehangen, das Objekt selbst bleibt weiter an seiner gegenwärtigen Position. Der Rückgabewert ist eine Nummer mit Hilfe derer das Mesh mit <funclink>DetachMesh</funclink> wieder gelöst werden kann.</desc>
-		<remark>Wird für mesh ein Objekt angegeben, so wird die "MeshTransformation"-Eigenschaft nicht auf das angehängte Mesh angewandt. Stattdessen kann der Parameter <code>transformation</code> angegeben werden um das angehängte Mesh zu transformieren.</remark>
-		<examples>
-			<example>
-				<code><funclink>AttachMesh</funclink>(Bow, "pos_hand1", "main");</code>
-				<text>Gibt einem Clonk einen Bogen in die Hand wenn im Clonkscript ausgeführt. Der Bogen wird mit seinem Bone "main" an den Bone "pos_hand1" des Clonks gehängt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>DetachMesh</funclink>
-			<funclink>SetAttachBones</funclink>
-			<funclink>SetAttachTransform</funclink>
-			<funclink>Trans_Identitiy</funclink>
-			<funclink>Trans_Translate</funclink>
-			<funclink>Trans_Rotate</funclink>
-			<funclink>Trans_Scale</funclink>
-			<funclink>Trans_Mul</funclink>
-		</related>
-		</func>
-	<author>Clonk-Karl</author><date>April 2010</date>
+  <func>
+    <title>AttachMesh</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>mesh</name>
+          <desc>ID or object of the mesh to be attached.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>parent_bone</name>
+          <desc>Bone of the calling object's mesh at which to fix the mesh to be attached.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>child_bone</name>
+          <desc>Bone of the object to be attached with which to fix it.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>transformation</name>
+          <desc>Transformation to be applied on the attached mesh in its own frame of reference. The array should consist of 12 integer entries which make up a 3x4 matrix in which each vaule is given in promille (1000 = 100%). These matrices can be created via <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> and <funclink>Trans_Scale</funclink> or they can be combined via <funclink>Trans_Mul</funclink>.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Attaches a mesh to another mesh. If <code>mesh</code> is an ID then the mesh of the corresponding definition is used. If <code>mesh</code> is an object then the current mesh of that object is used, including all its animations and attached meshes. However, in that case only the graphics will be attached - the object itself stays at its current position. The return value is a number that can be used to detach the mesh again via <funclink>DetachMesh</funclink>.</desc>
+    <remark>If an object is used for a mesh then the "MeshTransformation" property of teh attached mesh will not be applied. Instead the parameter <code>transformation</code> can be used to transform the attached mesh.</remark>
+    <examples>
+      <example>
+        <code><funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);</code>
+        <text>If executed in the context of a clonk this script makes him carry a bow. The bow will be attached with its Bone "main" to the bone "pos_hand1" of the clonk.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>DetachMesh</funclink>
+      <funclink>SetAttachBones</funclink>
+      <funclink>SetAttachTransform</funclink>
+      <funclink>Trans_Identitiy</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>Trans_Mul</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </funcs>
-

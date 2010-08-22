@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetPlayerTeam</title>
-    <category>Spieler</category>
+    <category>Player</category>
     <version>4.9.6.0 CR</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Team abgefragt werden soll</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose team you want to determine.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>
-    Liefert das Team eines Spielers. Hat der Spieler kein Team, wird 0 zurückgegeben.
-    </desc>
-	<related>
-		<emlink href="scenario/Teams.html">Teams</emlink>
-		<funclink>SetPlayerTeam</funclink>
-	</related>
+    <desc>Returns the team number of a player. If the player is not in a team, 0 is returned.</desc>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>SetPlayerTeam</funclink>
+    </related>
   </func>
-  <author>Sven2</author><date>März 2006</date>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Sven2</author><date>2006-03</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

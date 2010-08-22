@@ -1,54 +1,148 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CreateMenu</title>
-		<category>Objekte</category><subcat>Menü</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>id</type><name>symbol</name><desc>Objektdefinition, deren Bild als Symbol verwendet wird</desc></param>
-				<param><type>object</type><name>command_object</name><desc>Erhält das Menükommando (siehe <funclink>AddMenuItem</funclink>); kann bei lokalen Aufrufen Null sein</desc></param>
-				<param><type>int</type><name>extra</name><desc>Zusätzliche Information im Menü über das jeweils markierte Objekt. Die angegebenen C4MN_*-Konstanten sind seit 4.9.5.0 CE ebenfalls definiert und sollten statt der numerischen Werte verwendet werden:
-				      <table>
-				        <rowh><col>Konstante</col><col>Wert</col><col>Effekt</col></rowh>
-				        <row><col>C4MN_Extra_None</col><col>0</col><col>Nichts</col></row>
-				        <row><col>C4MN_Extra_Components</col><col>1</col><col>Komponenten</col></row>
-				        <row><col>C4MN_Extra_Value</col><col>2</col><col>Wert</col></row>
-				        <row><col>C4MN_Extra_MagicValue</col><col>3</col><col>Wert als Magiewert. Dabei wird außerdem extra_data als Vergleichswert angezeigt, z.B. "50/100".</col></row>
-				        <row><col>C4MN_Extra_Info</col><col>4</col><col>Beschreibungstext sofort anzeigen</col></row>
-				        <row><col>C4MN_Extra_ComponentsMagic</col><col>5</col><col>Komponenten und Magiewert</col><col></col></row>
-				      </table></desc></param>
-				<param><type>string</type><name>caption</name><desc>Bestimmt den angezeigten Menütext, wenn das Menü keine Einträge enthält</desc></param>
-				<param><type>int</type><name>extra_data</name><desc>Vergleichswert für extra 3</desc></param>
-				<param><type>int</type><name>style</name><desc>Aussehen des Menüs. Folgende Konstanten sind ab CR definiert:
-				      <table>
-				        <rowh><col>Konstante</col><col>Wert</col><col>Aussehen</col></rowh>
-				        <row><col>C4MN_Style_Normal</col><col>0</col><col>Normal</col></row>
-				        <row><col>C4MN_Style_Context</col><col>1</col><col>Kontextmenü</col></row>
-				        <row><col>C4MN_Style_Info</col><col>2</col><col>Infomenü</col></row>
-				        <row><col>C4MN_Style_Dialog</col><col>3</col><col>Dialog</col></row>
-				        <row><col>C4MN_Style_EqualItemHeight</col><col>128</col><col>Kann mit C4MN_Style_Dialog kombiniert werden: Alle Einträge mit Icon im Dialogmenü bekommen die gleiche Höhe.</col></row>
-				      </table></desc></param>
-				<param><type>bool</type><name>permanent</name><desc>Das Menü bleibt geöffnet, wenn eine Auswahl getroffen wird.</desc></param>
-				<param><type>id</type><name>menu_id</name><desc>Wenn angegeben, wird diese ID als Menü-ID gesetzt. Die aktuelle Menü-ID wird zum Beispiel von <funclink>GetMenu</funclink> zurückgegeben.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Erzeugt ein benutzerdefiniertes Menü im aufrufenden Objekt. Menüeinträge müssen mit <funclink>AddMenuItem</funclink> hinzugefügt werden.</desc>
-		<examples>
-			<example>
-				<text>siehe <funclink>AddMenuItem</funclink></text>
-			</example>
-		</examples>
-		<related>
-			<funclink>AddMenuItem</funclink>
-			<funclink>SelectMenuItem</funclink>
-			<funclink>GetMenu</funclink>
-			<funclink>CloseMenu</funclink>
-		</related>
-	</func>
-	<author>springer</author><date>April 2002</date>
-	<author>Sven2</author><date>März 2007</date>
+  <func>
+    <title>CreateMenu</title>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>symbol</name>
+          <desc>The picture of this object definition is used as symbol.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>command_object</name>
+          <desc>Object to receive the menu command (see <funclink>AddMenuItem</funclink>). Can be 0 in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>extra</name>
+          <desc>
+            Additional information to be displayed about the currently selected entry. C4MN_ values are now also defined as constants: 
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Value</col>
+                <col>Effect</col>
+              </rowh>
+              <row>
+                <col>C4MN_Extra_None</col>
+                <col>0</col>
+                <col>Nothing</col>
+              </row>
+              <row>
+                <col>C4MN_Extra_Components</col>
+                <col>1</col>
+                <col>Components</col>
+              </row>
+              <row>
+                <col>C4MN_Extra_Value</col>
+                <col>2</col>
+                <col>Value</col>
+              </row>
+              <row>
+                <col>C4MN_Extra_MagicValue</col>
+                <col>3</col>
+                <col>Value as magic value. extra_data is also displayed for comparison, e.g. "50/100".</col>
+              </row>
+              <row>
+                <col>C4MN_Extra_Info</col>
+                <col>4</col>
+                <col>Display object description immediately.</col>
+              </row>
+              <row>
+                <col>C4MN_Extra_ComponentsMagic</col>
+                <col>5</col>
+                <col>Display components and magic value.</col>
+                <col></col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>caption</name>
+          <desc>Text to be displayed if the menu is empty.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>extra_data</name>
+          <desc>Comparison value for extra 3.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>style</name>
+          <desc>
+            Appearance of the menu. The following constants are defined (from CR): 
+            <table>
+              <rowh>
+                <col>Constant</col>
+                <col>Value</col>
+                <col>Appearance</col>
+              </rowh>
+              <row>
+                <col>C4MN_Style_Normal</col>
+                <col>0</col>
+                <col>Normal</col>
+              </row>
+              <row>
+                <col>C4MN_Style_Context</col>
+                <col>1</col>
+                <col>Context menu</col>
+              </row>
+              <row>
+                <col>C4MN_Style_Info</col>
+                <col>2</col>
+                <col>Info menu</col>
+              </row>
+              <row>
+                <col>C4MN_Style_Dialog</col>
+                <col>3</col>
+                <col>Dialog</col>
+              </row>
+              <row>
+                <col>C4MN_Style_EqualItemHeight</col>
+                <col>128</col>
+                <col>Can be combined with C4MN_Style_Dialog: all entries with an icon are drawn with the same height.</col>
+              </row>
+            </table>
+
+          </desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>permanent</name>
+          <desc>The menu stays open after an entry has been selected.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>menu_id</name>
+          <desc>If specified, this id is used as menu id. The current menu id is returned by <funclink>GetMenu</funclink></desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a user defined menu for the specified object. Menu entries are to be added using <funclink>AddMenuItem</funclink>.</desc>
+    <examples>
+      <example>
+        <text>see <funclink>AddMenuItem</funclink></text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AddMenuItem</funclink>
+      <funclink>SelectMenuItem</funclink>
+      <funclink>GetMenu</funclink>
+      <funclink>CloseMenu</funclink>
+    </related>
+  </func>
+  <author>springer</author><date>2002-04</date>
+  <author>Sven2</author><date>2007-03</date>
 </funcs>

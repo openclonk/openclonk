@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,16 +10,23 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>change</name><desc>Änderung der Sichtbarkeit des Scoreboards.</desc></param>
-        <param><type>int</type><name>for_player</name><desc>Wenn größer 0, Spielernummer+1 des Spielers, für den die Scoreboard-Sichtbarkeit geändert werden soll.</desc><optional /></param>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of visibility.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>for_player</name>
+          <desc>If greater than 0, this is the player number + 1 of the player for which scoreboard visibility is to be changed.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>
-	Ändert den Sichtbarkeitszähler für das Scoreboard. Der intern verwaltete Zähler beginnt bei 0. Ist er größer als 0, wird das Scoreboard gezeigt. Ist er kleiner als 0, wird es verborgen. Ist er gleich 0, wird das Scoreboard nur dann gezeigt, wenn der Spieler die entsprechende Taste (normalweise Tab) drückt.
-    </desc>
+    <desc>Sets the visibility counter of the scoreboard. This internal counter starts at 0. If the counter value is greater than 0, the scoreboard is visible. If it is less than 0, it is removed. If it is equal to 0, the scoreboard is visible when the player presses the corresponding keyboard key (usually Tab).</desc>
     <examples>
       <example>
-        <text>Für ein ausführliches Beispiel siehe <funclink>SetScoreboardData</funclink>.</text>
+        <text>For an example, see <funclink>SetScoreboardData</funclink>.</text>
       </example>
     </examples>
     <related>
@@ -27,5 +35,5 @@
       <funclink>ScoreboardCol</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Februar 2006</date>
+  <author>Sven2</author><date>2006-02</date>
 </funcs>

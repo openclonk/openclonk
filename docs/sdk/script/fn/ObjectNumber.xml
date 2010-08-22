@@ -1,32 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ObjectNumber</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Bestimmt die Nummer des aufrufenden Objekts. Diese Nummer ist eindeutig und kann mittels der Funktion <funclink>Object</funclink> in einen Objektpointer zurückverwandelt werden.</desc>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the object number of an object. This number always uniquely identifies an object, even in subsequent savegame runs. Using <funclink>Object</funclink> it can be converted back to an object pointer.</desc>
     <examples>
       <example>
         <code>func Activate(caller)
 {
-  caller-><funclink>CreateMenu</funclink>(<funclink>GetID</funclink>(), caller, 0, "Kein geeignetes Objekt in Reichweite!");
+  caller-&gt;<funclink>CreateMenu</funclink>(<funclink>GetID</funclink>(), caller, 0, &quot;Kein geeignetes Objekt in Reichweite!&quot;);
   var obj;
   <funclink>while</funclink>(obj = <funclink>FindObject</funclink>(0, -50, -50, 100, 100, <funclink>OCF_Chop</funclink>(), 0, 0, <funclink>NoContainer</funclink>(), obj))
-    caller-><funclink>AddMenuItem</funclink>("%s fällen", <funclink>Format</funclink>("SetCommand(this(), \"Chop\", Object(%d))", obj->ObjectNumber()), obj-><funclink>GetID</funclink>());
+    caller-&gt;<funclink>AddMenuItem</funclink>(&quot;%s fÃ¤llen&quot;, <funclink>Format</funclink>(&quot;SetCommand(this(), \&quot;Chop\&quot;, Object(%d))&quot;, obj-&gt;ObjectNumber()), obj-&gt;<funclink>GetID</funclink>());
 }</code>
-        <text>Wird die Funktion aufgerufen, so wird im aufrufenden Objekt (caller) ein Menu erzeugt, das alle fällbaren (<funclink>OCF_Chop</funclink>()) Objekte in einem bestimmten Bereich um das Objekt enthält.
-              Das Auswählen eines der Menüeinträge bewirkt dann, dass über <funclink>SetCommand</funclink> das Kommando "Chop" gesetzt wird. Da dabei der Objektpointer des Objekts zwischengespeichert werden muss,
-              wird der Pointer zuerst in die Objektnummer umgewandelt.</text>
+        <text>This function opens a menu in the calling object (pCaller) which contains all chopable objects (<funclink>OCF_Chop</funclink>()) in the object's vicinity. Selecting a menu entry then uses <funclink>SetCommand</funclink> to set the command "Chop" in the object. Since this requires storage of the object pointer, the pointer is first converted into the object number.</text>
       </example>
     </examples>
-    <related>
-      <funclink>Object</funclink>
-    </related>
+    <related><funclink>Object</funclink></related>
   </func>
-  <author>PeterW</author><date>Februar 2003</date>
+  <author>PeterW</author><date>2003-02</date>
 </funcs>

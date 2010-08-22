@@ -1,30 +1,48 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetBridgeActionData</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.9.9.0 CR</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>bridge_length</name><desc>Länge der Brücke.</desc></param>
-				<param><type>bool</type><name>move_clonk</name><desc>Ob sich der Clonk mit der Brücke mitbewegen soll.</desc></param>
-				<param><type>bool</type><name>build_wall</name><desc>Sollte <code>true</code> sein, wenn der Clonk keine Brücke, sondern eine Wand (d.h. über seinem Kopf) baut.</desc></param>
-				<param><type>int</type><name>bridge_material</name><desc>Materialnummer des Materials aus dem die Brücke bestehen soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur des aufrufenden Objekts.</desc>
-		<related>
-			<funclink>SetAction</funclink>
-			<funclink>SetActionData</funclink>
-			<funclink>GetAction</funclink>
-			<funclink>GetActionTarget</funclink>
-			<funclink>SetPhase</funclink>
-			<funclink>SetDir</funclink>
-			<funclink>SetComDir</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Mai 2008</date>
+  <func>
+    <title>SetBridgeActionData</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.9.9.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>bridge_length</name>
+          <desc>Length of the bridge.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>move_clonk</name>
+          <desc>Whether the clonk is supposed to move with the bridge.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>build_wall</name>
+          <desc><code>true</code> if the clonk is meant to build a ceiling above his head instead of a bridge underneath his feet.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>bridge_material</name>
+          <desc>Material number of the material to be used for the bridge.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets additional parameters for a currently executed BRIDGE procedure of the calling object.</desc>
+    <related>
+      <funclink>SetAction</funclink>
+      <funclink>SetActionData</funclink>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>SetPhase</funclink>
+      <funclink>SetDir</funclink>
+      <funclink>SetComDir</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2008-05</date>
 </funcs>

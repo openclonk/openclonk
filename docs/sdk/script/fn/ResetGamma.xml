@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,19 +10,21 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>ramp_index</name><desc>0-7: Index der Gammarampe, die zurückgesetzt werden soll.</desc></param>
+        <param>
+          <type>int</type>
+          <name>ramp_index</name>
+          <desc>0-7: index of the gamma ramp to reset.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt eine Gammarampe auf den Normalwert zurück. Dies entspricht <funclink>SetGamma</funclink>(<funclink>RGB</funclink>(0,0,0), <funclink>RGB</funclink>(128,128,128), <funclink>RGB</funclink>(255,255,255), ramp_index);. Für weitere Informationen siehe <funclink>SetGamma</funclink>.</desc>
+    <desc>Resets a gamma ramp to default value. This corresponds to <funclink>SetGamma</funclink>(<funclink>RGB</funclink>(0,0,0), <funclink>RGB</funclink>(128,128,128), <funclink>RGB</funclink>(255,255,255), ramp_index);. For more information see <funclink>SetGamma</funclink>.</desc>
     <examples>
       <example>
         <code><funclink>for</funclink> (var i; i&lt;8; i++) ResetGamma(i);</code>
-        <text>Deaktiviert alle Gammarampen.</text>
+        <text>Deactivates all gamma ramps.</text>
       </example>
     </examples>
-    <related>
-      <funclink>SetGamma</funclink>
-    </related>
+    <related><funclink>SetGamma</funclink></related>
   </func>
-  <author>Sven2</author><date>April 2002</date>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

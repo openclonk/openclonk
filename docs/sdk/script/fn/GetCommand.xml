@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetCommand</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Commands</subcat>
     <version>4.6.5.0 CP
       <extversion>4.9.1.0 GWE</extversion>
@@ -17,29 +18,25 @@
           <type>int</type>
           <name>element</name>
           <optional />
-          <desc>Information, die zurückgegeben werden soll. 0 oder kA: Name, 1: Target, 2: TargetX, 3: TargetY, 4: Target2, 5: Data</desc>
+          <desc>Data to be returned. Unspecified or 0: Name, 1: Target, 2: TargetX, 3: TargetY, 4: Target2, 5: Data</desc>
         </param>
         <param>
           <type>int</type>
           <name>command_num</name>
           <optional />
-          <desc>Nummer des Kommandos. 0 steht für das momentan aktive, 1 für das danach auszuführende usw.</desc>
+          <desc>Number of the command. 0 is the currently active command, other values are the following (super-level) commands.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt Informationen über ein Kommando des aufrufenden Objekts zurück. Führt das Objekt momentan keine Aktion aus, so wird (bei jedem Wert von element) 0 zurückgegeben.</desc>
-
+    <desc>Returns information on a current command of an object. If the object does not have any commands set, 0 is returned for all queries.</desc>
     <examples>
       <example>
         <code>func Timer()
 {
-  if(GetCommand() == "Enter" &amp;&amp; GetCommand(1) == <funclink>FindBase</funclink>(<funclink>GetOwner</funclink>()))
+  if(GetCommand() == &quot;Enter&quot; &amp;&amp; GetCommand(1) == <funclink>FindBase</funclink>(<funclink>GetOwner</funclink>()))
     <funclink>Enter</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>()));
 }</code>
-        <text>
-Dieser Script beamt das Objekt, falls sein Kommando ist, in seine Basis zu gehen (Kommando "Enter"), sofort dorthin. Dies würde z.B. dazu führen, dass man mit der Maussteuerung den Clonk direkt in seine Heimatbasis beamen könnte, indem man den Eingang anklickt.
-        </text>
+        <text>If the object has been commanded to enter the home base, this script will warp the object there directly.</text>
       </example>
     </examples>
     <related>
@@ -48,5 +45,5 @@ Dieser Script beamt das Objekt, falls sein Kommando ist, in seine Basis zu gehen
       <funclink>AppendCommand</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

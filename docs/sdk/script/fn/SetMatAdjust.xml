@@ -1,22 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetMatAdjust</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>colorMod</name><desc>Primäre Farbmodulation</desc></param>
+        <param>
+          <type>int</type>
+          <name>colorMod</name>
+          <desc>Primary color modulation.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die Materialmodulation. Die Materialfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken.</desc>
+    <desc>Sets the material drawing modulation. The material colors will be modulated with the specified color in the same way as ColorByOwner graphics.</desc>
     <examples>
       <example>
         <code>SetMatAdjust(<funclink>RGBa</funclink>(255,127,127,127));</code>
-        <text>Macht die Materialien rötlich und halbdurchsichtig.</text>
+        <text>Makes the materials reddish and semi transparent.</text>
       </example>
     </examples>
     <related>
@@ -27,5 +32,5 @@
       <funclink>RGBa</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

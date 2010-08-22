@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Anim_Const</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>array</rtype>
@@ -12,22 +13,18 @@
         <param>
           <type>int</type>
           <name>value</name>
-          <desc>Zu verwendender Wert.</desc>
+          <desc>Value to use.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Wertangabe für <funclink>PlayAnimation</funclink>, <funclink>SetAnimationPosition</funclink> oder <funclink>SetAnimationWeight</funclink>: Über die komplette Zeitdauer der Animation wird der gegebene konstante Wert verwendet.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Value provider for <funclink>PlayAnimation</funclink>, <funclink>SetAnimationPosition</funclink> or <funclink>SetAnimationWeight</funclink>: For the whole animation the given constant value will be used.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-	      <code><funclink>PlayAnimation</funclink>("HangleStand", 5, <funclink>Anim_Linear</funclink>(0, 0, 2000, 100, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
-	<text>Spielt die Animation "HangleStand" ab und verwendet dabei kontant den Wert 1000 als Gewicht (volles Gewicht). Die Position der Animation ist nicht konstant sondern verändert sich (linear) mit der Zeit, siehe <funclink>Anim_Linear</funclink>.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;HangleStand&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, 2000, 100, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "HangleStand" and uses the value 1000 constantly for the animation's weight (full weight). The position of the animation is not contant but changes (linearily) with time, see <funclink>Anim_Linear</funclink>.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
@@ -42,5 +39,5 @@
       <funclink>Anim_Action</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

@@ -1,22 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GlobalN</title>
-                <category>Variablen</category>
-                <version>4.9.1.0 GWE</version>
-                <syntax>
-                        <rtype>&amp;</rtype>
-                        <params>
-                                <param><type>string</type><name>text</name><desc>Name einer globalen Variable.</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert den Inhalt der globalen Variable mit dem Namen text. Per GlobalN("Name")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden.</desc>
-                <related>
-                        <funclink>Global</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GlobalN</title>
+    <category>Variables</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>&amp;</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>text</name>
+          <desc>Name of a global variable.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the value of the global variable of name text. Through GlobalN("Name")=Value you can also set the value of a global variable.</desc>
+    <related><funclink>Global</funclink></related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

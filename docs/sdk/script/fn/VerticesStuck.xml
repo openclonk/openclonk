@@ -1,38 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>VerticesStuck</title>
-    <category>Objekte</category><subcat>Vertices</subcat>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
     <version>4.9.1.0 GWE</version>
-
     <syntax>
       <rtype>int</rtype>
-        <params>
-          <param>
-            <type>object</type>
-            <name>obj</name>
-            <desc>Zielobjekt</desc><optional />
-          </param>
-        </params>
-      </syntax>
-
-      <desc>Liefert die Anzahl feststeckender Vertices von *obj</desc>
-
-      <examples>
-        <example>
-          <code>var obj=FindObject(Find_ID(FLAG));
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Target object</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the number of stuck vertices of *obj</desc>
+    <examples>
+      <example>
+        <code>var obj=FindObject(Find_ID(FLAG));
 if (VerticesStuck(obj)) RemoveObject(obj);</code>
-          <text>Entfernt obj wenn einer seiner Vertices feststeckt</text>
-        </example>
-      </examples>
-
-      <related>
-        <funclink>GetVertex</funclink>
-        <funclink>Stuck</funclink>
-      </related>
+        <text>Removes obj if one if its vertices is stuck.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetVertex</funclink>
+      <funclink>Stuck</funclink>
+    </related>
   </func>
-  <author>flgr</author><date>Januar 2002</date>
+  <author>flgr</author><date>2002-01</date>
 </funcs>
-

@@ -1,22 +1,21 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-				<func>
-								<title>GetClimate</title>
-								<category>Umwelt</category><subcat>Wetter</subcat>
-								<version>4.6.5.0 CP</version>
-								<syntax>
-												<rtype>int</rtype>
-								</syntax>
-								<desc>Liefert den aktuellen Klimawert. Dieser wird als Konstante zum durch TemperatureRange und Season entstehenden Wert hinzugezählt.</desc>
-		<remark>Der aktuelle Temperaturrichtwert errechnet sich als "Climate - TemperatureRange * cos(Season * Pi / 50)" - an diesen Richtwert wird die aktuelle Temperatur mit maximal 1 Grad pro 35 Frames angepasst.</remark>
-								<related>
-												<funclink>GetSeason</funclink>
-												<funclink>GetTemperature</funclink>
-												<funclink>SetClimate</funclink>
-								</related>
-				</func>
-				<author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetClimate</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current climate. This is the median, constant temperature. Actual temperature is calculated by adding the current season and TemperatureRange.</desc>
+    <remark>The current weather temperature is "Climate - TemperatureRange * cos(Season * Pi / 50)" - the actual temperature approximates this value at a rate of 1 degree per 35 frames.</remark>
+    <related>
+      <funclink>GetSeason</funclink>
+      <funclink>GetTemperature</funclink>
+      <funclink>SetClimate</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

@@ -1,21 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>PlaceAnimal</title>
-  <category>Umwelt</category>
-  <version>4.6.5.0 CP</version>
-  <syntax>
-   <rtype>object</rtype>
-   <params>
-    <param><type>id</type><name>animal_id</name><desc>ID des zu erstellenden Tieres.</desc></param>
-   </params>
-  </syntax>
-  <desc>Erzeugt ein Lebewesen vom angegebenen Typ in der Landschaft. Die Startposition bestimmt sich dabei aus dem Wert Placement im <emlink href="definition/defcore.html">DefCore</emlink> des Lebewesens. Rückgabewert ist ein Zeiger auf das neu erzeugte Objekt.</desc>
-  <related>
-  	<funclink>PlaceVegetation</funclink>
-  </related>
- </func>
- <author>jwk</author><date>August 2002</date>
+  <func>
+    <title>PlaceAnimal</title>
+    <category>Environment</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>animal_id</name>
+          <desc>Type of the animal to be created.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates an animal of the specified type in the landscape. The placement position depends on the Placement value in the <emlink href="definition/defcore.html">DefCore</emlink> of the animal's definition. Returns a pointer to the newly created animal.</desc>
+    <related><funclink>PlaceVegetation</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

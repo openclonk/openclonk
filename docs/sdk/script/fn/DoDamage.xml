@@ -1,29 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoDamage</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>change</name><desc>Veränderung des Schadenswertes; positiv oder negativ</desc></param>
-				<param><type>int</type><name>damage_type</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_DmgScript.</desc><optional /></param>
-				<param><type>int</type><name>caused_by</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Verändert den Schadenswert des aufrufenden Objekts. Bei change ungleich Null wird im Zielobjekt außerdem die Funktion Damage aufgerufen.</desc>
-		<examples>
-			<example>
-				<code><funclink>FindObject</funclink>(TREE)->DoDamage(500);</code>
-				<text>Fällt einen Baum, wenn er noch nicht gefällt ist.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetDamage</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>DoDamage</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of damage value (positive or negative).</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>damage_type</name>
+          <desc>Damage cause specification which is to be passed to Fx*Damage callbacks of effects (see <emlink href="script/Effects.html">effect documentation</emlink>). Default is FX_Call_DmgScript.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>caused_by</name>
+          <desc>Number of the player who has caused the damage.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Adjusts the damage value of an object. If a change is made, the callback 'Damage' is made in the target object.</desc>
+    <examples>
+      <example>
+        <code><funclink>FindObject</funclink>(TREE)-&gt;DoDamage(500);</code>
+        <text>Fells a tree if it's not yet down.</text>
+      </example>
+    </examples>
+    <related><funclink>GetDamage</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

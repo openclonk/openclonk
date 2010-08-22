@@ -1,35 +1,50 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Trans_Scale</title>
-		<category>Arithmetik</category>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>int</type><name>sx</name><desc>Vergrößerung in X-Richtung.</desc></param>
-				<param><type>int</type><name>sy</name><desc>Vergrößerung in Y-Richtung.</desc><optional /></param>
-				<param><type>int</type><name>sz</name><desc>Vergrößerung in Z-Richtung.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Liefert eine 3x4-Skalierungsmatrix. Sie kann als Transformation für <funclink>AttachMesh</funclink> oder für die "PictureTransformation" oder "MeshTransformation"-Eigenschaften (siehe <emlink href="definition/meshes.html#Picture">Meshes</emlink>) verwendet werden.</desc>
-		<remark>When <code>sy</code> und <code>sz</code> nicht angegeben werden oder 0 sind, dann wird eine Streckung um <code>sx</code> in alle drei Richtungen gemacht. Ein Wert von 1000 bewirkt keine Veränderung, niedrigere Werte verkleinern die Grafik, größere vergrößern sie. Negative Werte bewirken eine Spiegelung um die entsprechende Achse.</remark>
-		<examples>
-			<example>
-				<code><funclink>this</funclink>["PictureTransformation"] = <funclink>Trans_Scale</funclink>(2000);</code>
-				<text>Macht die Repräsentativgrafik des aufrufenden Objekts doppelt so groß.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Trans_Identity</funclink>
-			<funclink>Trans_Translate</funclink>
-			<funclink>Trans_Rotate</funclink>
-			<funclink>Trans_Mul</funclink>
-			<funclink>AttachMesh</funclink>
-			<funclink>SetAttachTransform</funclink>
-		</related>
-	</func>
-	<author>Clonk-Karl</author><date>April 2010</date>
+  <func>
+    <title>Trans_Scale</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>sx</name>
+          <desc>Magnification factor in X direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>sy</name>
+          <desc>Magnification factor in Y direction.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>sz</name>
+          <desc>Magnification factor in Z direction.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a 3x4 scaling matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <remark>If both <code>sy</code> and <code>sz</code> are not given or are given as 0 then the factor <code>sx</code> is used for all three axes. A value of 1000 does not cause any change, smaller values shrink the graphics, larger values enlarge it. Negative values can be used to mirror the graphics with respect to the corresponding axis.</remark>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;PictureTransformation&quot;] = <funclink>Trans_Scale</funclink>(2000);</code>
+        <text>Doubles the picture graphics of the calling object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Mul</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </funcs>

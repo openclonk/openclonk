@@ -1,28 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>FindBase</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Basis gesucht wird</desc></param>
-				<param><type>int</type><name>index</name><desc>Suchindex, mit dem mehrere Basen eines Spielers gefunden werden können. index=0 sucht die erste Basis.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Sucht eine Heimatbasis eines Spielers. Die Heimatbasis ist zumeist das Gebäude, auf dem eine Flagge weht.</desc>
-		<examples>
-			<example>
-				<code><funclink>SetCommand</funclink>(<funclink>GetCursor</funclink>(0), "Enter", FindBase(0));</code>
-				<text>Gibt dem ausgewählten Clonk des ersten Spielers das Kommando, seine Basis zu betreten.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetBase</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>FindBase</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose home base you are looking for.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Search index for finding multiple home base objects. index = 0 finds the first base, and so on.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Searches for the home base of a player. The home base is usually the building with the flag.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetCommand</funclink>(<funclink>GetCursor</funclink>(0), &quot;Enter&quot;, FindBase(0));</code>
+        <text>Gives the selected clonk the order to enter his home base.</text>
+      </example>
+    </examples>
+    <related><funclink>GetBase</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

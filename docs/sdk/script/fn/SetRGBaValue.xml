@@ -1,41 +1,68 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetRGBaValue</title>
-		<category>Arithmetik</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-				<param><type>int</type><name>NewVal</name><desc>0-255: Farbwert, der mit dem alten ersetzt werden soll.</desc></param>
-				<param><type>int</type><name>select</name><desc>0-3: Farbwert, der geändert werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>
-		Setzt einen einzelnen Farbwert des angegebenen 32bit-Farbewerts.
-		
-     <table><rowh><col>select</col><col>Auswahl</col></rowh>
-     <row><col>0</col><col>Alpha-Wert</col></row>
-     <row><col>1</col><col>Rotanteil</col></row>
-     <row><col>2</col><col>Grünanteil</col></row>
-     <row><col>3</col><col>Blauanteil</col></row>
-     
-     </table>
+  <func>
+    <title>SetRGBaValue</title>
+    <category>Arithmetics</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>Val</name>
+          <desc>32 bit color value</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>NewVal</name>
+          <desc>0-255: Color value to be replaced with the old one.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>select</name>
+          <desc>0-3: Color value to be changed.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>
+      Sets a single color value of a 32 bit color value. 
+      <table>
+        <rowh>
+          <literal_col>select</literal_col>
+          <col>Selection</col>
+        </rowh>
+        <row>
+          <literal_col>0</literal_col>
+          <col>Alpha value</col>
+        </row>
+        <row>
+          <literal_col>1</literal_col>
+          <col>Red value</col>
+        </row>
+        <row>
+          <literal_col>2</literal_col>
+          <col>Green value</col>
+        </row>
+        <row>
+          <literal_col>3</literal_col>
+          <col>Blue value</col>
+        </row>
+      </table>
 
-		</desc>
-		<examples>
-			<example>
-				<code>SetColorDw(SetRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),255,1),<funclink>GetCursor</funclink>());</code>
-				<text>Setzt den Rotanteil des aktuell ausgewählten Clonks auf maximum.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetRGBaValue</funclink>
-			<funclink>DoRGBaValue</funclink>
-		</related>
-	</func>
-	<author>Tyron</author><date>August 2004</date>
+    </desc>
+    <examples>
+      <example>
+        <code>SetColorDw(SetRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),255,1),<funclink>GetCursor</funclink>());</code>
+        <text>Sets the red value of the current clonk to maximum.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetRGBaValue</funclink>
+      <funclink>DoRGBaValue</funclink>
+    </related>
+  </func>
+  <author>Tyron</author><date>2004-08</date>
 </funcs>

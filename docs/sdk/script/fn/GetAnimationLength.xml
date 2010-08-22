@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetAnimationLength</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,26 +13,22 @@
         <param>
           <type>string</type>
           <name>animation</name>
-          <desc>Name der Animation deren Länge abgefragt werden soll.</desc>
+          <desc>Name of the animation whose length to retrieve.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt die Länge der Animation mit dem angegebenen Namen zurück, oder nil wenn keine solche Animation existiert. Gültige Positionen (für <funclink>PlayAnimation</funclink> und <funclink>SetAnimationPosition</funclink>) liegen zwischen 0 und der Länge der Animation. Die zurückgegebene Zahl entspricht der Animationslänge (wie sie im Modellierungstool eingestellt wurde) in Millisekunden.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Returns the length of the animation with the given name, or nil if there is no such animation. Valid positions (for <funclink>PlayAnimation</funclink> and <funclink>SetAnimationPosition</funclink>) include values between 0 and the animation length. The returned number corresponds to the animation length (as specified in the modelling tool) in milliseconds.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-        <code><funclink>PlayAnimation</funclink>("Turn", 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>("Turn"), 50, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
-	<text>Spielt eine neue Animation namens "Turn" in Slot 5 ab, die eventuell andere Animationen in Slot 5 überlagert. Ein Animationsdurchgang dauert 50 Frames. Danach fängt die Animation wieder von vorne an.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;Turn&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;Turn&quot;), 50, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays a new animation named "Turn" in slot 5 which superimposes other animations in slot 5. One animation cycle lasts 50 frames. After that time the animation restarts from the beginning.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

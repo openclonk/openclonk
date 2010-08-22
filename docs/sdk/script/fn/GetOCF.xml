@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetOCF</title>
-		<category>Objekte</category><subcat>OCF</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Liefert das Object-Character-Flag des aufrufenden Objekts. Dieser Wert beschreibt den aktuellen Zustand des Objekts. Der Rückgabewert ist eine Bitmaske und kann mit &amp; mit einem OCF_x-Wert verglichen werden.</desc>
-		<examples>
-			<example>
-				<code>/* Wird bei Schäden aufgerufen */
+  <func>
+    <title>GetOCF</title>
+    <category>Objects</category>
+    <subcat>OCF</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the Object Character Flag of an object. This value describes the current state of an object. The return value is a bit mask and can be compared with OCF_x values using &amp;.</desc>
+    <examples>
+      <example>
+        <code>/* Wird bei SchÃ¤den aufgerufen */
 protected func Damage()
 {
 	// Brennt?
 	if(GetOCF() &amp; <funclink>OCF_OnFire</funclink>)
 		// Freuen
-		<funclink>Message</funclink>("Juhu! Ich brenne!");
+		<funclink>Message</funclink>(&quot;Juhu! Ich brenne!&quot;);
 }		
 				</code>
-				<text>Masochist</text>
-			</example>
-		</examples>
-	</func>
-	<author>wipfmetz</author><date>August 2002</date>
+        <text>Masochist</text>
+      </example>
+    </examples>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

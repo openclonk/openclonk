@@ -1,23 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>MaterialName</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <subcat>Material</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>int</type><name>material_index</name><desc>Index des Materials, dessen Name ermittelt wird</desc></param>
+        <param>
+          <type>int</type>
+          <name>material_index</name>
+          <desc>Index of the material of which you want to know the name.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Gibt den (internen, englischen) Namen eines Materials zurück.</desc>
+    <desc>Returns the internal (technical) name of a material.</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-><funclink>Message</funclink>("Dein Clonk steht auf %s.", MaterialName(<funclink>GetMaterial</funclink>(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0))+12)));</code>
-        <text>Zeigt an, auf welchem Material der ausgewählte Clonk des ersten Spielers steht.</text>
+        <code><funclink>GetCursor</funclink>(0)-&gt;<funclink>Message</funclink>(&quot;Dein Clonk steht auf %s.&quot;, MaterialName(<funclink>GetMaterial</funclink>(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0))+12)));</code>
+        <text>Displays on what type of material the first player's selected clonk is standing.</text>
       </example>
     </examples>
     <related>
@@ -25,5 +30,5 @@
       <funclink>GetMaterial</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

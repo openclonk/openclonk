@@ -1,35 +1,51 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetAction</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>action</name><desc>Neue Aktivität. "ActIdle" oder "Idle" löscht die Aktivität.</desc></param>
-				<param><type>object</type><name>target1</name><desc>Erstes Zielobjekt für die Aktivität</desc><optional /></param>
-				<param><type>object</type><name>target2</name><desc>Zweites Zielobjekt für die Aktivität</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Aktivität des aufrufenden Objekts. Siehe auch <emlink href="definition/actmap.html">ActMap.txt</emlink>.</desc>
-		<remark>Wird target1 bzw. target2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <funclink>SetActionTargets</funclink> benutzt werden.</remark>
-		<remark>Der StartCall der Aktivität wird während der Ausführung von SetAction aufgerufen. Wenn dieser also zum Beispiel das Objekt löscht, darf die aufrufende Funktion danach nichts mehr mit dem Objekt machen!</remark>
-		<examples>
-			<example>
-				<code>SetAction("Dead");</code>
-				<text>Der aufrufende Clonk wird scheintot.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetAction</funclink>
-			<funclink>GetActionTarget</funclink>
-			<funclink>SetPhase</funclink>
-			<funclink>SetDir</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
-	<author>Günther</author><date>Dezember 2004</date>
+  <func>
+    <title>SetAction</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>action</name>
+          <desc>New action to be set. "ActIdle" or "Idle" will clear any action.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target1</name>
+          <desc>First target object for the action.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>target2</name>
+          <desc>Second target object for the action.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the activity of the calling object. Also see <emlink href="definition/actmap.html">ActMap.txt</emlink>.</desc>
+    <remark>If target1 or target2 is omitted or 0, the previously set action target(s) will be preserved. To effectively clear action targets, use <funclink>SetActionTargets</funclink>.</remark>
+    <remark>The StartCall of the defined action is called during the execution of SetAction. So if the StartCall should happen to delete the object you must not access the object in any way following the call to SetAction!</remark>
+    <examples>
+      <example>
+        <code>SetAction(&quot;Dead&quot;);</code>
+        <text>The calling clonk will pretend death.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>SetPhase</funclink>
+      <funclink>SetDir</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
+  <author>GÃ¼nther</author><date>2004-12</date>
 </funcs>

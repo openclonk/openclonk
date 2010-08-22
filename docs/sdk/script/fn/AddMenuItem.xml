@@ -1,78 +1,108 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>AddMenuItem</title>
-		<category>Objekte</category><subcat>Menü</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>string</type><name>caption</name><desc>Text des neuen Menüeintrags</desc></param>
-				<param><type>string</type><name>command</name><desc>Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei <funclink>CreateMenu</funclink> als command_object übergeben wurde.</desc></param>
-				<param><type>id</type><name>symbol</name><desc>Die ID wird als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in caption verwendet werden. Außerdem wird die ID als erster Parameter an den Aufruf von command übergeben, sofern dieser nur ein Funktionsname ist.</desc></param>
-				<param><type>int</type><name>count</name><desc>Gewünschte Zahl, die neben dem Menüeintrag angezeigt werden soll (ähnlich der Mengenanzeige im Aktivieren-Menü)</desc></param>
-				<param><type>int</type><name>parameter</name><desc>Wird als 2. Parameter an die in command angegebene Funktion übergeben (siehe Anmerkung)</desc></param>
-				<param><type>string</type><name>info_caption</name><desc>Beschreibungstext des neuen Menüeintrags</desc></param>
-				<param><type>int</type><name>extra</name><desc>Zusatzparameter für das Verhalten des Menüeintrags.<br />
-					Untere 7 Bits (0-127): Menüsymbol.<br />
-					0: Normal<br />
-					1: Rangsymbol. Bei angegebenem symbol wird ggf. die Rank.png der Definition genutzt. count gibt die Ranghöhe an<br />
-					2: Picturefacet, das um XPar1-fache Picturebreite nach rechts verschoben ist. Damit lassen sich mehrere Menüsymbole innerhalb einer Definition unterbringen.<br />
-					3: XPar1 gibt ein Objekt an, dessen Picture-Grafik mit Rang gezeichnet wird. Hat das Objekt keine Infosektion (und dmait keinen Rang), so wird in Kontextmenüs dennoch ein entsprechender Leerraum gelassen. Ab CE.<br />
-					4: XPar1 gibt ein Objekt an, dessen Picture-Grafik gezeichnet wird. Ab CE.<br />
-					Bit 8 (128): XPar2 wird als Wertangabe benutzt, und überschreibt die Standardangabe (Wert der Definition symbol). Siehe auch extra von <funclink>CreateMenu</funclink></desc><optional/></param>
-				<param><type>any</type><name>XPar1</name><desc>Erster Zusatzparameter für extra.</desc><optional /></param>
-				<param><type>any</type><name>XPar2</name><desc>Zweiter Zusatzparameter für extra.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Fügt einen Menüeintrag hinzu.</desc>
-		<remark>Menüsymbole sollten optimalerweise die Größe 35x35 für normale Menüs, 16x16 für Kontextmenüs besitzen. Andernfalls wird unter Beibehaltung des Höhe/Breite-Verhältnisses so gestreckt, dass die längere Seite dieser Größe entspricht.</remark>
-		<remark>Wird als command-Parameter nur ein Funktionsname angegeben, werden folgende Parameter übergeben:
-			<code>symbol, parameter, bRight[, value]</code>
-						wobei bRight angibt, ob der Menueintrag mit [Special2] bzw. der rechten Maustaste ausgewählt wurde.
-						value wird nur übergeben, wenn das Bit 8 bei extra gesetzt wird und gibt den (überschriebenen) angezeigten Wert des ausgewählten Menüeintrags an.
-		</remark>
-		<examples>
-			<example>
-				<code>/* Wird bei Doppelklick auf Graben aufgerufen */
+  <func>
+    <title>AddMenuItem</title>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>caption</name>
+          <desc>Text of the new menu entry</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>command</name>
+          <desc>Command to be executed when the menu item is selected. This can be either a function name or a statement. If a function name is given then the function will be called in the object which was given as command_object to <funclink>CreateMenu</funclink>.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>symbol</name>
+          <desc>The ID is used as a picture for the menu item. The name of the definition can be used in caption using %s. Also the ID is passed as the first parameter to the call to command in case it is a function name.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>count</name>
+          <desc>Numeric value to be displayed next to the menu entry (such as counts and amounts).</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>parameter</name>
+          <desc>Second parameter to the function specified in command (see remark).</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>info_caption</name>
+          <desc>Description text of the new menu entry.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>extra</name>
+          <desc>Extra parameter for special behaviour of the menu entry.<br/> Lower 7 bits (0-127): menu symbol.<br/> 0: normal<br/> 1: rank symbol. With symbol specified, the Rank.png component of that definition will be used. count indicates the rank<br/> 2: picture facet, shifted to the right by XPar1 times the facet width. This is used to include multiple menu symbols in a single definition.<br/> 3: XPar1 specifies an object to be drawn with the rank symbol. If the object has no info section (and thus no rank), there will be an empty entry in context menus. From CE.<br/> 4: XPar1 specifies an object to be drawn. From CE.<br/> Bit 8 (128): XPar2 is used as object value and overrides the normal object value. Also see extra in <funclink>CreateMenu</funclink></desc>
+          <optional />
+        </param>
+        <param>
+          <type>any</type>
+          <name>XPar1</name>
+          <desc>First additional parameter for extra.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>any</type>
+          <name>XPar2</name>
+          <desc>Second additional parameter for extra.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a menu entry.</desc>
+    <remark>Custom menu symbols should best have square aspect ratio.</remark>
+    <remark>If a function name is specified for command, the following parameters are passed: <code>symbol, parameter, bRight[, value]</code> with bRight indicating whether the menu entry was selected with [Special2] or the right mouse button. value is passed only if bit 8 is set in extra and specifies the displayed (overridden) object value of the menu entry.</remark>
+    <examples>
+      <example>
+        <code>/* Wird bei Doppelklick auf Graben aufgerufen */
 func Activate()
 {
-	// Lokales Menü mit lokalen Kommandos erzeugen
+	// Lokales MenÃ¼ mit lokalen Kommandos erzeugen
 	CreateMenu(GetID());
-	// Menüeinträge erzeugen
-	AddMenuItem("Hallo sagen", "SayHello", 0);
-	AddMenuItem("Zaubern", "DoMagic", 0);
-	AddMenuItem("Objekt erzeugen: %s", "CreateItem", Rock);
-	AddMenuItem("Objekt erzeugen: %s", "CreateItem", Firestone);
+	// MenÃ¼eintrÃ¤ge erzeugen
+	AddMenuItem(&quot;Hallo sagen&quot;, &quot;SayHello&quot;, 0);
+	AddMenuItem(&quot;Zaubern&quot;, &quot;DoMagic&quot;, 0);
+	AddMenuItem(&quot;Objekt erzeugen: %s&quot;, &quot;CreateItem&quot;, Rock);
+	AddMenuItem(&quot;Objekt erzeugen: %s&quot;, &quot;CreateItem&quot;, Firestone);
 }
 
-/* Diese Kommados werden vom Menü aufgerufen */
+/* Diese Kommados werden vom MenÃ¼ aufgerufen */
 func SayHello()
 {
-	Message("Hallo");
+	Message(&quot;Hallo&quot;);
 }
 
 func DoMagic()
 {
-	Sound("Magic*");
-	CreateObject(MLGT,0,0)->~Activate(this);
+	Sound(&quot;Magic*&quot;);
+	CreateObject(MLGT,0,0)-&gt;~Activate(this);
 }
 
 func CreateItem(id item)
 {
-	Sound("Magic*");
+	Sound(&quot;Magic*&quot;);
 	CreateContents(item);
 }</code>
-				<text>Menü für einen Spezialclonk.</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>CreateMenu</funclink>
-												<funclink>SelectMenuItem</funclink>
-			<funclink>CloseMenu</funclink>
-								</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+        <text>Menu for a special clonk.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateMenu</funclink>
+      <funclink>SelectMenuItem</funclink>
+      <funclink>CloseMenu</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

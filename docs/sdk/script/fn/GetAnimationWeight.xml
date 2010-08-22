@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetAnimationWeight</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,22 +13,18 @@
         <param>
           <type>int</type>
           <name>animation_number</name>
-          <desc>Animationsnummer der Animation deren Gewichtung abgefragt werden soll.</desc>
+          <desc>Animation number of which the weight must be queried.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt die Gewichtung eines Kombinationsknotens zurück. Die Gewichtung bestimmt, zu welchem Anteil die beiden kombinierten Animationen in die Gesamtanimation einfließen. Die Zahl liegt immer zwischen 0 (erste Animation geht voll ein) und 1000 (zweite Animation geht voll ein). Gibt nil zurück falls es keine Animation mit der angegebenen Nummer gibt, oder falls es sich dabei um einen Animationsknoten handelt.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Returns the weight of a combination node. The weight specifies the relative portion the combined animations contribute to the resulting animation. The number is always between 0 (only the first animation contributes) and 1000 (only the second animation contributes). Returns nil if there is no such animation with the calling number or if the number refers to an animation node.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>if</funclink>(<funclink>GetAnimationWeight</funclink>(animation_number) == 1000) <funclink>StopAnimation</funclink>(animation_number);</code>
-	<text>Entfernt den Kombinationsknoten "animation_number" wenn seine Gewichtung 1000 erreicht hat.</text>
+        <text>Removes the combination node "animation_number" if its weight has reached the value 1000.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>GetAnimationPosition</funclink>
@@ -35,5 +32,5 @@
       <funclink>SetAnimationWeight</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

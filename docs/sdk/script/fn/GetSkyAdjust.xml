@@ -1,31 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetSkyAdjust</title>
-		<category>Himmel</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>bool</type><name>back_color</name><desc>Wenn ungleich 0, wird die in SetSkyAdjust angegebene Zweitfarbe zurückgegeben.</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt die mit <funclink>SetSkyAdjust</funclink> gesetzte Himmelsmodulation zurück. Für weitere Informationen siehe <funclink>SetSkyAdjust</funclink></desc>
-		<examples>
-			<example>
-				<code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; 16777215);</code>
-				<text>Sorgt dafür, dass der Himmel garantiert ohne Transparenz (also nicht mehr gegen eine Hintergrundfarbe) gezeichnet wird.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetMatAdjust</funclink>
-			<funclink>SetSkyAdjust</funclink>
-			<funclink>SetGamma</funclink>
-			<funclink>RGB</funclink>
-			<funclink>RGBa</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+  <func>
+    <title>GetSkyAdjust</title>
+    <category>Sky</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>back_color</name>
+          <desc>If not 0, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the sky modulation as set by <funclink>SetSkyAdjust</funclink>. For more information see <funclink>SetSkyAdjust</funclink>.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; 16777215);</code>
+        <text>Ensures that the sky is drawn without any transparency (thoroughly covering any background color).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetMatAdjust</funclink>
+      <funclink>SetSkyAdjust</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

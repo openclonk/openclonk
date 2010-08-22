@@ -21,8 +21,8 @@
 		<param name="Local" value="sdk\definition\actmap.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Benannte Variablen">
-		<param name="Name" value="Benannte Variablen">
+		<param name="Name" value="Named Variables">
+		<param name="Name" value="Named Variables">
 		<param name="Local" value="sdk\script\NamedVar.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -51,81 +51,81 @@
 		<param name="Local" value="sdk\definition\defcore.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Direktiven">
+		<param name="Name" value="Directives">
 		<param name="Name" value="#appendto">
 		<param name="Local" value="sdk\script\AppendTo.html">
 		<param name="Name" value="#strict">
 		<param name="Local" value="sdk\script\Strict.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Entwicklermodus">
-		<param name="Name" value="Clonk Entwicklermodus">
+		<param name="Name" value="Developer Mode">
+		<param name="Name" value="Clonk Developer Mode">
 		<param name="Local" value="sdk\index.html">
-		<param name="Name" value="Die Engine im Entwicklermodus">
+		<param name="Name" value="The Engine in Developer Mode">
 		<param name="Local" value="sdk\console.html">
-		<param name="Name" value="Kommandozeilenparameter">
+		<param name="Name" value="Command line options">
 		<param name="Local" value="sdk\cmdline.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="for">
-		<param name="Name" value="Die For-Schleife">
+		<param name="Name" value="The for loop">
 		<param name="Local" value="sdk\script\for.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="landscape.txt">
-		<param name="Name" value="Der dynamische Kartengenerator">
+		<param name="Name" value="Dynamic Map Generator">
 		<param name="Local" value="sdk\scenario\MapCreatorS2.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Material">
-		<param name="Name" value="Materialdefinitionen">
+		<param name="Name" value="Materials">
+		<param name="Name" value="Material Definitions">
 		<param name="Local" value="sdk\material\index.html">
-		<param name="Name" value="Materialdefinitionen (C4M)">
+		<param name="Name" value="Material Definitions (C4M)">
 		<param name="Local" value="sdk\material\c4m.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Landschaftsgenerator">
-		<param name="Name" value="Der dynamische Kartengenerator">
+		<param name="Name" value="Map Generator">
+		<param name="Name" value="Dynamic Map Generator">
 		<param name="Local" value="sdk\scenario\MapCreatorS2.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Kartengenerator">
-		<param name="Name" value="Der dynamische Kartengenerator">
+		<param name="Name" value="Map Generator">
+		<param name="Name" value="Dynamic Map Generator">
 		<param name="Local" value="sdk\scenario\MapCreatorS2.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Objektdefinitionen">
-		<param name="Name" value="Objektdefinitionen">
+		<param name="Name" value="Object Definitions">
+		<param name="Name" value="Definitions">
 		<param name="Local" value="sdk\definition\index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Objektkategorien">
-		<param name="Name" value="Objektkategorien">
+		<param name="Name" value="Object Categories">
+		<param name="Name" value="Object Categories">
 		<param name="Local" value="sdk\definition\category.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Objektscripte">
-		<param name="Name" value="Objektscripte">
+		<param name="Name" value="Objekt Scripts">
+		<param name="Name" value="Objekt Scripts">
 		<param name="Local" value="sdk\definition\script.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="OCF">
-		<param name="Name" value="Object character flags">
+		<param name="Name" value="Object Character Flags">
 		<param name="Local" value="sdk\definition\ocf.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Operatoren">
-		<param name="Name" value="Operatoren">
+		<param name="Name" value="Operators">
+		<param name="Name" value="Operators">
 		<param name="Local" value="sdk\script\operatoren.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Partikel">
-		<param name="Name" value="Partikel">
+		<param name="Name" value="Particles">
+		<param name="Name" value="Particles">
 		<param name="Local" value="sdk\particle\index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Procedure (ActMap)">
-		<param name="Name" value="Prozeduren">
+		<param name="Name" value="Procedures (ActMap)">
+		<param name="Name" value="Procedures">
 		<param name="Local" value="sdk\definition\procedures.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -135,36 +135,36 @@
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Script">
-		<param name="Name" value="Szenarioscripte">
+		<param name="Name" value="Scenario Scripts">
 		<param name="Local" value="sdk\scenario\script.html">
-		<param name="Name" value="Objektscripte">
+		<param name="Name" value="Object Scripts">
 		<param name="Local" value="sdk\definition\script.html">
-		<param name="Name" value="C4Script Dokumentation">
+		<param name="Name" value="C4Script Documentation">
 		<param name="Local" value="sdk\script\index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Spieldaten">
-		<param name="Name" value="Spieldatenreferenz">
+		<param name="Name" value="Game Data">
+		<param name="Name" value="Game Data">
 		<param name="Local" value="sdk\files.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Szenarien">
-		<param name="Name" value="Szenarien">
+		<param name="Name" value="Scenarios">
+		<param name="Name" value="Scenarios">
 		<param name="Local" value="sdk\scenario\index.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Szenarioscripte">
-		<param name="Name" value="Szenarioscripte">
+		<param name="Name" value="Scenario Scripts">
+		<param name="Name" value="Scenario Scripts">
 		<param name="Local" value="sdk\scenario\script.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Typpr&uuml;fung">
-		<param name="Name" value="Datentypen">
+		<param name="Name" value="Typechecking">
+		<param name="Name" value="Data Types">
 		<param name="Local" value="sdk\script\Typechecks.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Variablen">
-		<param name="Name" value="Benannte Variablen">
+		<param name="Name" value="Variables">
+		<param name="Name" value="Named Variables">
 		<param name="Local" value="sdk\script\NamedVar.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
@@ -173,48 +173,48 @@
 		<param name="Local" value="sdk\definition\vertices.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Effekte">
-		<param name="Name" value="Effekte">
+		<param name="Name" value="Effects">
+		<param name="Name" value="Effects">
 		<param name="Local" value="sdk\script\Effects.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Scriptspieler">
-		<param name="Name" value="Scriptspieler">
+		<param name="Name" value="Script players">
+		<param name="Name" value="Script players">
 		<param name="Local" value="sdk\script\ScriptPlayers.html">
 		</OBJECT>
 		
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="++"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="--"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="~"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="!"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="+"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="*"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="/"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="%"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<<"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">>"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="=="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="!="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="S="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="ne"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="eq"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="&amp;"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="^"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="|"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="&amp;&amp;"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="||"> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="*="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="/="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="%="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="+="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
-	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="="> <PARAM name="Name" value="Operatoren"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="++"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="--"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="~"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="!"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="+"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="*"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="/"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="%"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<<"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">>"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="<="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value=">="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="=="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="!="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="S="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="ne"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="eq"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="&amp;"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="^"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="|"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="&amp;&amp;"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="||"> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="*="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="/="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="%="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="+="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="-="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
+	<LI> <OBJECT type="text/sitemap"> <PARAM name="Name" value="="> <PARAM name="Name" value="Operators"> <PARAM name="Local" value="sdk\script\operatoren.html"> </OBJECT>
 
 </UL>
 </BODY></HTML>

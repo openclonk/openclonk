@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>VarN</title>
-    <category>Variablen</category>
+    <category>Variables</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>&amp;</rtype>
@@ -12,26 +13,23 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc>
+          <desc>Name of the variable to which a reference is to be returned.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt eine Referenz auf eine funktionslokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden.</desc>
-
+    <desc>Returns a reference to a function local variable. This reference can be used for reading or writing.</desc>
     <examples>
       <example>
-<code>var v0,v1,v2,v3,v4,v5,v6;
-VarN(<funclink>Format</funclink>("V%d", <funclink>Random</funclink>(7))) = <funclink>Random</funclink>(100);</code>
-        <text>Setzt eine zufällige, threadlokale Variable auf einen zufälligen Wert.</text>
+        <code>var v0,v1,v2,v3,v4,v5,v6;
+VarN(<funclink>Format</funclink>(&quot;V%d&quot;, <funclink>Random</funclink>(7))) = <funclink>Random</funclink>(100);</code>
+        <text>Sets a randomly chosen thread local variable to a random value.</text>
       </example>
     </examples>
-
     <related>
       <funclink>IsRef</funclink>
       <funclink>LocalN</funclink>
       <funclink>GlobalN</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>April 2002</date>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

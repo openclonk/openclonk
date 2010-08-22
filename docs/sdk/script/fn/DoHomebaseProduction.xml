@@ -1,33 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DoHomebaseProduction</title>
-		<category>Spieler</category>
-		<version>4.9.8.5 CR</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Heimatbasismaterial-Nachlieferung verändert werden soll</desc></param>
-				<param><type>id</type><name>type</name><desc>ID des Objekttyps, der schneller oder langsamer nachgeliefert werden soll.</desc></param>
-				<param><type>int</type><name>change</name><desc>Positive oder negative Veränderung der nachgelieferten Objektmenge</desc></param>
-			</params>
-		</syntax>
-		<desc>Verändert die Nachlieferung von kaufbaren Objekten in der Heimatbasis.</desc>
-		<examples>
-			<example>
-				<code><funclink>DoHomebaseProduction</funclink>(0, Firestone, -<funclink>GetHomebaseProduction</funclink>(0, Firestone));</code>
-				<text>Feuersteine werden für den ersten Spieler nicht mehr nachgeliefert.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetHomebaseProduction</funclink>
-			<funclink>DoHomebaseMaterial</funclink>
-			<funclink>GetHomebaseMaterial</funclink>
-			<funclink>Buy</funclink>
-			<funclink>Sell</funclink>
-		</related>
-	</func>
-	<author>Clonk-Karl</author><date>März 2008</date>
+  <func>
+    <title>DoHomebaseProduction</title>
+    <category>Player</category>
+    <version>4.9.8.5 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose home base resupply list you want to change.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>type</name>
+          <desc>id of the object type you want to adjust.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of the resupply value (positive or negative).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes resupply speed of buyable objects at the home base.</desc>
+    <examples>
+      <example>
+        <code><funclink>DoHomebaseProduction</funclink>(0, Firestone, -<funclink>GetHomebaseProduction</funclink>(0, Firestone));</code>
+        <text>No more flintstones are resupplied for the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetHomebaseProduction</funclink>
+      <funclink>DoHomebaseMaterial</funclink>
+      <funclink>GetHomebaseMaterial</funclink>
+      <funclink>Buy</funclink>
+      <funclink>Sell</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2008-03</date>
 </funcs>

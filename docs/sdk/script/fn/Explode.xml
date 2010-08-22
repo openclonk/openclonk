@@ -1,32 +1,48 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Explode</title>
-		<category>Objekte</category><subcat>Existenz</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>int</type><name>level</name><desc>Explosionsstärke. Die Explosionsstärke bestimmt das Ausmaß des Explosionsschadens sowie die akustische Gestaltung. Bis Stärke 29 einschließlich wird Blast1 abgespielt, von Stärke 30 bis stärke 39 einschließlich Blast2, und bei Werten darüber Blast3.</desc></param>
-				<param><type>id</type><name>effect</name><desc>Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt. Ab 4.9.6.0 CR</desc><optional /></param>
-				<param><type>string</type><name>particle</name><desc>Name eines Partikels, der statt der normalen Explosionspartikel erzeugt wird.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Lässt ein Objekt explodieren. Die Explosion beschädigt Landschaft und Objekte, und das Objekt wird mitsamt Inhalt vor der Explosion entfernt. Wenn sich das Objekt in einen anderen Objekt befindet, werden alle anderen Inhaltsobjekte und das enthaltende Objekt beschädigt. Als Verursacher des Schadens gilt der Besitzer des explodierenden Objekts.</desc>
-		<remark>Siehe Hinweis zu <funclink>RemoveObject</funclink>.</remark>
-		<examples>
-			<example>
-				<code><funclink>GetHiRank</funclink>(0)->Explode(25);</code>
-				<text>Der höchstrangige Clonk des ersten Spielers explodiert.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RemoveObject</funclink>
-			<funclink>BlastObjects</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
-	<author>Clonkonaut</author><date>April 2008</date>
+  <func>
+    <title>Explode</title>
+    <category>Objects</category>
+    <subcat>Existence</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Explosion level. This determines the amount of explosion damage caused and the type of explosion sound played. Up to level 29 the explosion is a Blast1, 30 to 39 is a Blast2, and above is a Blast3.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>effect</name>
+          <desc>If specified, an object of this type is created instead of a particle. It is assumed that the newly created object will perform the explosion effect. From CR 4.9.6.0.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>particle</name>
+          <desc>Type of particle to be created instead of the normal explosion particle.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Makes an object explode. The explosion will affect landscape and objects and the object including all of its contents is removed. If the object is contained, the explosion will also damage all other objects in that container. The owner of the exploding object is considered to have caused the explosion.</desc>
+    <remark>See notice for <funclink>RemoveObject</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;Explode(25);</code>
+        <text>The first player's highest ranking clonk explodes.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RemoveObject</funclink>
+      <funclink>BlastObjects</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

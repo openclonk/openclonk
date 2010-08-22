@@ -1,33 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetActionTargets</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>object</type><name>target1</name><desc>Erstes Zielobjekt</desc></param>
-				<param><type>object</type><name>target2</name><desc>Zweites Zielobjekt</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Setzt die aktuellen Aktivitätszielobjekte des aufrufenden Objekts. Die Auswirkung der Zielobjekte richtet sich nach der <emlink href="definition/procedures.html">Prozedur</emlink> der aktuell gesetzten Aktivität.</desc>
-		<examples>
-			<example>
-				<code>protected func Entrance(into_object)
+  <func>
+    <title>SetActionTargets</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>target1</name>
+          <desc>First target object</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>target2</name>
+          <desc>Second target object</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the activity targets of an object. The result depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current action.</desc>
+    <examples>
+      <example>
+        <code>protected func Entrance(into_object)
   {
   SetActionTargets(into_object);
   }</code>
-				<text>Scriptteil für einen Schildzauber, der gerade eine ATTACH-Aktivität ausführt: Wenn der tragende Clonk ein Gebäude betritt, klebt er sich an dieses Gebäude. Das Script sorgt allerdings nicht dafür, dass sich der Zauber wieder an den Clonk klebt, wenn dieser das Gebäude verlässt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetAction</funclink>
-			<funclink>GetActionTarget</funclink>
-			<funclink>GetProcedure</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+        <text>Script for a shield spell using an ATTACH action: when the carrying clonk enters a building, the spell will attach itself to the building. This script will not, however, reattach the spell to the clonk when he leaves the building.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>GetProcedure</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

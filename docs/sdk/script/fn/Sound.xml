@@ -1,32 +1,54 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Sound</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>name</name><desc>Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden.</desc></param>
-        <param><type>bool</type><name>global</name><desc>Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll.</desc><optional /></param>
-        <param><type>int</type><name>volume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei nil wird 100 als Standard angenommen.</desc><optional /></param>
-        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Wenn nil oder nicht angegeben, wird der Sound für alle Spieler abgespielt.</desc><optional /></param>
-        <param><type>int</type><name>loop_count</name><desc>Erhöht oder verringert die Anzahl der in einer Endlosschleife laufenden Sounds. Bei +1 wird dieser Sound unendlich oft abgespielt bis diese Funktion noch einmal mit -1 aufgerufen wird. Bei 0 wird der Sound normal abgespielt.</desc><optional /></param>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>global</name>
+          <desc>Specifies wether the sound is played globally, i.e. independently of the object position always with the same loudness.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>volume</name>
+          <desc>0-100: volume for playback of the sound. A volume value of nil means playback at 100.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If nil (or not specified), the sound will be played for all players.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>loop_count</name>
+          <desc>Increases or decreases the number of sounds running in a continuous loop. Value +1 will play this sound indefinitely until it is stopped by calling this function again with value -1. Value 0 will play the sound once normally.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Spielt einen Sound ab. Die entsprechende Sounddatei muss in der Gruppendatei Sound.c4g, in der aktiven Szenariodatei oder in einer geladenen Objektdefinition vorhanden sein. Bei lokalen Aufrufen werden Geräusche abhängig von der aktuellen Position des aufrufenden Objekts abgespielt.</desc>
+    <desc>Plays a sound. The specified sound file has to be available in the group Sound.c4g, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
     <examples>
       <example>
-
-	      <code><funclink>FindObject</funclink>(HUT2)->Sound("Applause", false, 50);</code>
-        <text>Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halber Lautstärke ab.</text>
+        <code><funclink>FindObject</funclink>(HUT2)-&gt;Sound(&quot;Applause&quot;, false, 50);</code>
+        <text>Plays an 'applause' sound next to the first found wooden hut at half volume.</text>
       </example>
     </examples>
-    <related>
-      <funclink>Music</funclink>
-    </related>
+    <related><funclink>Music</funclink></related>
   </func>
-  <author>Sven2</author><date>August 2002</date>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

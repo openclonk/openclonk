@@ -1,207 +1,225 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Spielersteuerung</title>
-<h id="Controls">Spielersteuerung</h>
-<part>
-<text>Ab OC erlaubt die Engine, Steuerungskommandos fuer Spieler komplett frei zu definieren. Eigene Tastaturkommandos koennen hinzugefuegt oder veraendert werden. Alle unterstuetzten Eingabegeraete wie Maus, Tastatur und Gamepads koennen frei belegt werden und Kommandos koennen aus beliebigen Tastenkombinationen oder Sequenzen bestehen.</text>
-<h id="ControlFiles">PlayerControls.txt</h>
-<text>Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.c4g. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.c4g hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**.</text>
-<text>Zusaetzliche Dateien PlayerControls.txt koennen in Sprachpaketen abgelegt werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen Sprachen an die Tastaturen des jeweiligen Landes anzupassen**.</text>
+  <title>Player controls</title>
+  <h id="Controls">Player controls</h>
+  <part>
+    <text>Since OC the engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
+    <h id="ControlFiles">PlayerControls.txt</h>
+    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.c4g folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.c4g folder**.</text>
+    <text>Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**.</text>
+    <part>
+      <h id="ControlDefs">Section [ControlDefs]</h>
+      <text>
+        Definition of possible player commands. Not valid in language packages. Subordinated to this section: 
+        <text>
+          <table>
+            <caption id="ControlDef">Any number of sections [ControlDef]</caption>
+            <rowh>
+              <col>Value</col>
+              <col>Data type</col>
+              <col>Description</col>
+            </rowh>
+            <row>
+              <literal_col>Identifier</literal_col>
+              <col>String (max. 96 chars)</col>
+              <col>Internally used name for identification of the command. The command is referenced by that name in standard mappings and it is predefined in script as CON_Name. The name should therefore be a valid identifier in script, i.e. only consist of letters, numbers and _. Especially there should be no space characters or German umlauts. To avoid conflicts the same rules as for object IDs apply for definitions local to a certain scenario or object.</col>
+            </row>
+            <row>
+              <literal_col>GUIName</literal_col>
+              <col>String</col>
+              <col>Name which is shown to the player in the control configuration dialog and in control tooltips. Localized strings from the corresponding string table can be used ($Name$).</col>
+            </row>
+            <row>
+              <literal_col>GUIDesc</literal_col>
+              <col>String</col>
+              <col>Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$).</col>
+            </row>
+            <row>
+              <literal_col>Global</literal_col>
+              <col>Boolean</col>
+              <col>If true this is a global definition, i.e. not assigned to a particular player. See <emlink href="playercontrols.xml#Globals">Global definitions</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>Hold</literal_col>
+              <col>Boolean</col>
+              <col>If true this command is interpreted as a held command. Such a command remembers whether the control key is pressed and generates another scripting event when it is released. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>RepeatDelay</literal_col>
+              <col>Integer</col>
+              <col>Only valid if <em>Hold</em> is true. If greater than 0 then this key generates additional scripting events while pressed every that many number of frames. See <emlink href="playercontrols.xml#Repeat">Key repeats</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>InitialRepeatDelay</literal_col>
+              <col>Integer</col>
+              <col>If specified then the delay of the first key repeat event can be changed. See <emlink href="playercontrols.xml#Repeat">Key repeats</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>DefaultDisabled</literal_col>
+              <col>Boolean</col>
+              <col>If true then the command is deactivated in the normal case and needs to be activated by script first. This is useful for commands that are only required in special situations. See <emlink href="playercontrols.xml#Deactivate">Deactivated commands</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>ExtraData</literal_col>
+              <col>C4ID</col>
+              <col>Optional ID that is passed to the script function. See <emlink href="playercontrols.xml#ExtraData">ExtraData</emlink>.</col>
+            </row>
+            <row>
+              <literal_col>SendCursorPos</literal_col>
+              <col>Boolean</col>
+              <col>If true then the GUI mouse position at the time of triggering the command will be sent as a separate CON_CursorPos command. If the mouse is not activated then the cursor position in GUI coordinates is transmitted.</col>
+            </row>
+            <row>
+              <literal_col>Action</literal_col>
+              <col>String</col>
+              <col>
+                Action to be executed for this command. Possible values: 
+                <text>
+                  <table>
+                    <rowh>
+                      <col>Value</col>
+                      <col>Description</col>
+                    </rowh>
+                    <row>
+                      <literal_col>None</literal_col>
+                      <col>No action.</col>
+                    </row>
+                    <row>
+                      <literal_col>Script</literal_col>
+                      <col>Execution of the script function <em>PlayerControl</em>. See <emlink href="playercontrols.xml#Script">Script callbacks</emlink>. (Default value)</col>
+                    </row>
+                    <row>
+                      <literal_col>Menu</literal_col>
+                      <col>Open the player menu (asynchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>MenuOK</literal_col>
+                      <col>Confirmation of the selected item in the player menu (asynchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>MenuCancel</literal_col>
+                      <col>Close the player menu (asynchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>MenuLeft / MenuUp / MenuRight / MenuDown</literal_col>
+                      <col>Navigation in the player menu (asynchronous command).</col>
+                    </row>
+                  </table>
+                </text>
 
-<part>
-<h id="ControlDefs">Sektion [ControlDefs]</h>
-<text>Definition der moeglichen Spielerkommandos. Nicht gueltig in Sprachpaketen. Dieser Sektion untergeordnet:
-<text><table>
-	<caption id="ControlDef">Beliebig viele Sektionen [ControlDef]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Identifier</col>
-		<col>Zeichenfolge (Max. 96 Zeichen)</col>
-		<col>Intern benutzter Name zur Identifikation des Kommandos. Das Kommando wird unter diesem Namen in Standardbelegungen referenziert und im Script als CON_Name-Konstante vordefiniert. Der Name sollte folglich im Script gueltig sein, d.h. nur aus Buchstaben, Zahlen sowie _ bestehen. Insbesondere sollten keine Leerzeichen oder deutsche Umlaute verwendet werden. Zur Vermeidung von Konflikten gelten in szenarienlokalen sowie Objektpaketlokalen Definitionen dieselben Benennungsregeln wie zur Vergabe von Objekt-IDs.</col>
-	</row>
-	<row>
-		<col>GUIName</col>
-		<col>Zeichenfolge</col>
-		<col>Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$).</col>
-	</row>
-	<row>
-		<col>GUIDesc</col>
-		<col>Zeichenfolge</col>
-		<col>Erlaeuternde Beschreibung, die dem Spieler im Steuerungskonfigurationsdialog angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$).</col>
-	</row>
-	<row>
-		<col>Global</col>
-		<col>Boolean</col>
-		<col>Wenn wahr, ist dies eine globale, d.h. keinem Spieler zugeordnete Definition. Siehe <emlink href="playercontrols.xml#Globals">Globale Definitionen</emlink>.</col>
-	</row>
-	<row>
-		<col>Hold</col>
-		<col>Boolean</col>
-		<col>Wenn wahr, wird das Kommando als ein gehaltenes Kommando interpretiert. Ein solches Kommando speichert, ob die Steuerungstaste gedrueckt ist und generiert beim Loslassen ein zusaetzliches Scriptereignis. Siehe <emlink href="playercontrols.xml#Hold">Gehaltene Tasten</emlink>.</col>
-	</row>
-	<row>
-		<col>RepeatDelay</col>
-		<col>Integer</col>
-		<col>Nur gueltig wenn <em>Hold</em> wahr. Wenn groesser 0, generiert die Taste im gehaltenen Zustand im angegebenen Abstand (in Frames) weitere Scriptereignisse. Siehe <emlink href="playercontrols.xml#Repeat">Tastenwiederholungen</emlink>.</col>
-	</row>
-	<row>
-		<col>InitialRepeatDelay</col>
-		<col>Integer</col>
-		<col>Wenn angegeben, kann die Wartezeit fuer das erste Tastenwiederholungsereignis geaendert werden. Siehe <emlink href="playercontrols.xml#Repeat">Tastenwiederholungen</emlink>.</col>
-	</row>
-	<row>
-		<col>DefaultDisabled</col>
-		<col>Boolean</col>
-		<col>Wenn wahr, ist das Kommando im Normalfall deaktiviert und muss erst per Script aktiviert werden. Nuetzlich fuer Kommandos, die nur in sehr speziellen Situationen benoetigt werden. Siehe <emlink href="playercontrols.xml#Deactivate">Deaktivierte Kommandos</emlink>.</col>
-	</row>
-	<row>
-		<col>ExtraData</col>
-		<col>C4ID</col>
-		<col>Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href="playercontrols.xml#ExtraData">ExtraData</emlink>.</col>
-	</row>
-	<row>
-		<col>SendCursorPos</col>
-		<col>Boolean</col>
-		<col>Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des Ausloesens des Kommandos als separates CON_CursorPos-Kommando gesendet. Ist keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen.</col>
-	</row>
-	<row>
-		<col>Action</col>
-		<col>Zeichenfolge</col>
-		<col>Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte:
-			<text><table>
-			<rowh>
-				<col>Wert</col>
-				<col>Beschreibung</col>
-			</rowh>
-			<row>
-				<col>None</col>
-				<col>Keine Aktion.</col>
-			</row>
-			<row>
-				<col>Script (Standardwert)</col>
-				<col>Ausfuehrung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href="playercontrols.xml#Script">Script-Callbacks</emlink>.</col>
-			</row>
-			<row>
-				<col>Menu</col>
-				<col>Oeffnen des Spielermenues (asynchrones Kommando).</col>
-			</row>
-			<row>
-				<col>MenuOK</col>
-				<col>Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones Kommando).</col>
-			</row>
-			<row>
-				<col>MenuCancel</col>
-				<col>Schliessen des Spielermenues (asynchrones Kommando).</col>
-			</row>
-			<row>
-				<col>MenuLeft / MenuUp / MenuRight / MenuDown</col>
-				<col>Navigation im Spielermenu (asynchrones Kommando).</col>
-			</row></table></text>
-		</col>
-	</row></table></text></text>
+              </col>
+            </row>
+          </table>
+        </text>
 
-<h id="ControlSets">Sektion [ControlSets]</h>
-<text>Definition von Standard-Steuerungsbelegungen.
-<text><table>
-	<caption id="ControlSet">Beliebig viele Sektionen [ControlSet]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Name</col>
-		<col>Zeichenfolge</col>
-		<col>Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. Ueber Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert werden**.</col>
-	</row></table>
+      </text>
+      <h id="ControlSets">Section [ControlSets]</h>
+      <text>
+        Definition of standard control mappings. 
+        <text>
+          <table>
+            <caption id="ControlSet">Any number of sections [ControlSet]</caption>
+            <rowh>
+              <col>Value</col>
+              <col>Data type</col>
+              <col>Description</col>
+            </rowh>
+            <row>
+              <literal_col>Name</literal_col>
+              <col>String</col>
+              <col>Internal name for identification of otherwise equal control mappings. The names of the standard mappings are <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. By using placeholders (*) keys can directly be defined in multiple mappings**.</col>
+            </row>
+          </table>
+          <text>
+            <table>
+              <caption id="Assignment">Any number of sections [Assignment]</caption>
+              <rowh>
+                <col>Value</col>
+                <col>Data type</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>Key</literal_col>
+                <col>String</col>
+                <col>Specifies the key(s) of this mapping or a reference to another mapping. See <emlink href="playercontrols.xml#Keys">Key mappings</emlink>.</col>
+              </row>
+              <row>
+                <literal_col>ComboIsSequence</literal_col>
+                <col>Boolean</col>
+                <col>If true then multiple keys are taken as a sequence, i.e. they need to be pressed one after the other instead of all at the same time. See <emlink href="playercontrols.xml#Keys">Key mappings</emlink>.</col>
+              </row>
+              <row>
+                <literal_col>Control</literal_col>
+                <col>String</col>
+                <col>Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href="playercontrols.xml#ControlDef">[ControlDef]</emlink>.</col>
+              </row>
+              <row>
+                <literal_col>Priority</literal_col>
+                <col>Integer</col>
+                <col>Priority of the mapping. If more than once mapping is using the same keys then the key with the highest priority is executed first until a command is treated as handled.</col>
+              </row>
+              <row>
+                <literal_col>TriggerMode</literal_col>
+                <col>bitmask</col>
+                <col>
+                  Trigger mode of this mapping. Bitmask based on the following values: 
+                  <text>
+                    <table>
+                      <rowh>
+                        <col>Value</col>
+                        <col>Description</col>
+                      </rowh>
+                      <row>
+                        <col>Default value</col>
+                        <col>No particular action.</col>
+                      </row>
+                      <row>
+                        <literal_col>Hold</literal_col>
+                        <col>The key changes the state of the command linked to to be held even if the key itself is pressed only shortly. Only valid if the <em>Hold</em> attribute is set for the command. This state remains until a corresponding mapping with trigger mode <em>Release</em> is being pressed. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+                      </row>
+                      <row>
+                        <literal_col>Release</literal_col>
+                        <col>The key removes the held state. A key can have both Hold and Release set to toggle between the two states. See <emlink href="playercontrols.xml#Hold">Held keys</emlink>.</col>
+                      </row>
+                      <row>
+                        <literal_col>AlwaysUnhandled</literal_col>
+                        <col>The key press is always passed to the mapping with the next lowest priority, independent of whether the previous command was executed successfully or not.</col>
+                      </row>
+                      <row>
+                        <literal_col>ToggleUnhandled</literal_col>
+                        <col>The keypress is passed to the mapping with the next lower priority only if the previous command was executed successfully. This can be used to define macros. **</col>
+                      </row>
+                      <row>
+                        <literal_col>OverrideAssignments</literal_col>
+                        <col>The assignment overwrites all other assignments for the same control with the same press/release trigger mode.</col>
+                      </row>
+                    </table>
+                  </text>
 
-<text><table>
-	<caption id="Assignment">Beliebig viele Sektionen [Assignment]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Key</col>
-		<col>Zeichenfolge</col>
-		<col>Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe <emlink href="playercontrols.xml#Keys">Tastenbelegungen</emlink>.</col>
-	</row>
-	<row>
-		<col>ComboIsSequence</col>
-		<col>Boolean</col>
-		<col>Wenn wahr, werden mehrfache Tasten als Sequenz interpretiert. Das heisst, sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink href="playercontrols.xml#Keys">Tastenbelegungen</emlink>.</col>
-	</row>
-	<row>
-		<col>Control</col>
-		<col>Zeichenfolge</col>
-		<col>Kommando, das mit dieser Belegung verknuepft wird. Der Name sollte dem <em>Identifier</em> eines in einer <emlink href="playercontrols.xml#ControlDef">[ControlDef]</emlink> definierten Kommandos entsprechen.</col>
-	</row>
-	<row>
-		<col>Priority</col>
-		<col>Integer</col>
-		<col>Prioritaet der Belegung. Nutzen mehrere Belegungen die gleichen Tasten, so wird zunaechst die Taste mit der hoeheren Prioritaet ausgefuehrt, bis ein Kommando als behandelt gilt.</col>
-	</row>
-	<row>
-		<col>TriggerMode</col>
-		<col>Bitmaske</col>
-		<col>Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten:
-			<text><table>
-			<rowh>
-				<col>Wert</col>
-				<col>Beschreibung</col>
-			</rowh>
-			<row>
-				<col>Default (Standardwert)</col>
-				<col>Keine besondere Aktion.</col>
-			</row>
-			<row>
-				<col>Hold</col>
-				<col>Die Taste versetzt das verlinkte Kommando in den gedrueckten Zustand, selbst wenn die Taste selbst nur angeschlagen wird. Nur gueltig, wenn das Kommando das <em>Hold</em>-Attribut gesetzt hat. Dieser Zustand bleibt erhalten, bis eine entsprechende Belegung mit Ausloesemodus <em>Release</em> gedrueckt wird. Siehe <emlink href="playercontrols.xml#Hold">Gehaltene Tasten</emlink>.</col>
-			</row>
-			<row>
-				<col>Release</col>
-				<col>Die Taste entfernt den gedrueckten Zustand. Eine Taste kann auch sowohl Hold als auch Release setzen, um zwischen den Zustaenden hin und her zu schalten. Siehe <emlink href="playercontrols.xml#Hold">Gehaltene Tasten</emlink>.</col>
-			</row>
-			<row>
-				<col>AlwaysUnhandled</col>
-				<col>Der Tastendruck wird immer an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, unabhaengig davon, ob das vorherige Kommando erfolgreich ausgefuehrt wurde.</col>
-			</row>
-			<row>
-				<col>ToggleUnhandled</col>
-				<col>Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **</col>
-			</row>
-			<row>
-				<col>OverrideAssignments</col>
-				<col>Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Control mit gleichem Press/Release-Triggermodus.</col>
-			</row></table></text>
-		</col>
-	</row></table></text>
+                </col>
+              </row>
+            </table>
+          </text>
+        </text>
 
-</text></text>
-
-</part>
-<h id="Script">Script-Callbacks</h>
-<text>Zum Initialisieren der Spielersteuerung wird für jeden gesteuerten Spieler die Funktion InitializePlayerControl aufgerufen. Dieser Aufruf erfolgt gegebenenfalls einige Frames verspätet nach InitializePlayer, da die Initialisierung der Steuerung im Netzwerk übertragen werden muss. Beim Fortsetzen von Spielständen wird InitializePlayerControl wiederholt aufgerufen. Die gewählte Steuerung kann sich hier von der ursprünglichen Steuerung unterscheiden. Gleiches gilt, falls der Spieler mitten im Spiel die Steuerung wechselt.</text>
-
-<code>global func InitializePlayerControl(int player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
+      </text>
+    </part>
+    <h id="Script">Script callbacks</h>
+    <text>To initialize the player control the script function InitializePlayerControl is called for each player. This call might be delayed by a few frames with respect to InitializePlayer since the initialization of the control needs to be transmitted in the network. When continuing savegames InitalizePlayerControl will be called again. The chosen control might be different from the original one. The same can happen if a player chooses to change its controls during the game.</text>
+    <code>global func InitializePlayerControl(int player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
 {
-  // Hier bietet sich die Möglichkeit, spezielle Kontrollelemente wie ein Gamepad-Zielkreuz zu erzeugen
-  // oder zu zerstören, falls die Kontrolle vom Gamepad weggeschaltet wurde
+  // Hier bietet sich die MÃ¶glichkeit, spezielle Kontrollelemente wie ein Gamepad-Zielkreuz zu erzeugen
+  // oder zu zerstÃ¶ren, falls die Kontrolle vom Gamepad weggeschaltet wurde
   return true;
 }</code>
-
-<text>Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
-<text>Fuer eine Erlaeuterung der Parameter siehe <funclink>PlayerControl</funclink>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in player, sowie das ausgefuehrte Kommando in iControl.</text>
-<text>Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:</text>
-<code>[ControlDefs]
+    <text>most commands (except for asynchronous commands in the player menu) call a global script function:</text>
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
+    <text>For an explanation of the parameters see <funclink>PlayerControl</funclink>. Amongst others, the function receives the calling player in player as well as the command to be executed in control.</text>
+    <text>As a simple example let's assume that in the global <em>PlayerControls.txt</em> the following command has been defined:</text>
+    <code>[ControlDefs]
   [ControlDef]
   Identifier=Jump
   GUIName=Jump
@@ -217,8 +235,8 @@
     Key=W
     Control=Jump
     Priority=50</code>
-<text>Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <text>This defines a Jump key and the corresponding standard mapping on the keyboard for the first player. The following script is used to handle the control:</text>
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   // Welches Kommando wurde ausgeloest?
   // Die Konstante CON_Jump wurde automatisch durch die Definition in PlayerControls.txt angelegt
@@ -226,7 +244,7 @@
   {
     // Sprungtaste gedrueckt. Der vom Spieler ausgewaehlte Clonk soll springen
     var player_clonk = GetCursor(player);
-    if (player_clonk &amp;&amp; player_clonk->Jump())
+    if (player_clonk &amp;&amp; player_clonk-&gt;Jump())
     {
       // Das Kommando wurde erfolgreich abgearbeitet
       return true;;
@@ -235,27 +253,26 @@
   // Unbekanntes Kommando
   return false;
 }</code>
-  
-<h id="ExtraData">ExtraData</h>
-<text>Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:</text>
-<code>[ControlDefs]
+    <h id="ExtraData">ExtraData</h>
+    <text>Since not every object definition is able to overload the global PlayerControl function the ExtraData field can be used to distribute commands. As an example consider the following definition:</text>
+    <code>[ControlDefs]
   [ControlDef]
   Identifier=Dig
   GUIName=Dig
   GUIDesc=Going underground
   ExtraData=Shovel</code>
-<text>Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <text>Let shovel be the ID of a shovel object. In the global script there could be the following, generic handling for unknown commands, for example:</text>
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   // Behandlung bekannter Befehle
   // [...]
   // Befehl mit eigener Behandlung
-  if (control_extra) return control_extra->PlayerControl(player, control, x, y, strength, repeat, release);
+  if (control_extra) return control_extra-&gt;PlayerControl(player, control, x, y, strength, repeat, release);
   // Unbekanntes Kommando
   return false;
 }</code>
-<text>Und im Script der Schaufel:</text>
-<code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, bool release)
+    <text>And in the script of the shovel:</text>
+    <code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, bool release)
 {
   // Behandlung bekannter Befehle
   // Grabkommando direkt an die Schaufel
@@ -263,31 +280,32 @@
   {
     // Nur, wenn ein Clonk ausgewaehlt ist, der graben kann
     var player_clonk = GetCursor(player);
-    if (player_clonk &amp;&amp; player_clonk->HasShovel())
+    if (player_clonk &amp;&amp; player_clonk-&gt;HasShovel())
     {
-      return player_clonk->StartDig();
+      return player_clonk-&gt;StartDig();
     }
   }
   // Unbekanntes Kommando
   return false;
 }</code>
-  
-<h id="Hold">Gehaltene Tasten</h>
-<text>Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:</text>
-<text><ul>
-<li>Sie generieren auch beim Loslassen <funclink>PlayerControl</funclink>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script.</li>
-<li>Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren.</li>
-<li><emlink href="playercontrols.xml#Repeat">Tastenwiederholungen</emlink> werden erzeugt.</li>
-<li>Der Haltezustand der Taste kann mit <funclink>GetPlayerControlState</funclink> im Script abgefragt werden.</li>
-</ul></text>
-<text>Bestes Beispiel hierfuer ist ein Richtungskommando:</text>
-<code>  [ControlDef]
+    <h id="Hold">Held keys</h>
+    <text>If the <em>Hold</em> flag is set for a command then the engines saves the current key state for that key. These kind of keys have a few specialties:</text>
+    <text>
+      <ul>
+        <li>When released they also generate <funclink>PlayerControl</funclink> calls in the script with the <em>Release</em> flag set.</li>
+        <li>Mappings can emulate permanent key presses using the <em>Hold</em>/<em>Release</em> flags.</li>
+        <li><emlink href="playercontrols.xml#Repeat">Key repeats</emlink> are generated.</li>
+        <li>The held state of the key can be queried in the script via <funclink>GetPlayerControlState</funclink>.</li>
+      </ul>
+    </text>
+    <text>A good example for this functionality is a directional command:</text>
+    <code>  [ControlDef]
   Identifier=Left
   GUIName=Left
   GUIDesc=Walk left
   Hold=1</code>
-<text>Im Script wird die Richtung dann auf den Clonk uebertragen:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
+    <text>In the script the direction is transferred to the Clonk:</text>
+    <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   if (control == CON_Left) return UpdateControlDir(player);
   // ...
@@ -302,15 +320,15 @@ global func UpdateControlDir(int player)
     // Clonkrichtung aktualisieren
     var new_comdir = COMD_Stop;
     if (GetPlayerControlState(player, CON_Left)) new_comdir = COMD_Left;
-    player_clonk->SetComDir(new_comdir);
+    player_clonk-&gt;SetComDir(new_comdir);
     // Kommando behandelt
     return true;;
   }
   // Kommando behandelt
   return false;
 }</code>
-<text>Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:</text>
-<code>    [Assignment]
+    <text>To achieve the behaviour of classic controls a mapping can emulate the <em>Hold</em> state:</text>
+    <code>    [Assignment]
     Key=A
     Control=Left
     TriggerMode=Hold
@@ -319,27 +337,26 @@ global func UpdateControlDir(int player)
     Key=S
     Control=Left
     TriggerMode=Release | AlwaysUnhandled</code>
-
-<h id="Globals">Globale Definitionen</h>
-<text>...</text>
-<h id="Repeat">Tastenwiederholungen</h>
-<text>Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:</text>
-<code>  [ControlDef]
+    <h id="Globals">Global definitions</h>
+    <text>...</text>
+    <h id="Repeat">Key repeats</h>
+    <text>If a command has <em>RepeatDelay</em> defined then repeated commands are generated while the key is pressed. For example for a throwing command:</text>
+    <code>  [ControlDef]
   Identifier=Throw
   GUIName=Throw
   GUIDesc=Get rid of your selected inventory
   Hold=1
   RepeatDelay=5
   InitialRepeatDelay=35</code>
-<text>Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt.</text>
-<text>Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat.</text>
-<h id="Deactivate">Deaktivierte Kommandos**</h>
-<text>...</text>
-<h id="Keys">Tastenbelegungen</h>
-<text>...</text>
-<h id="Priority">Prioritaeten</h>
-<text>...</text>
-</part>
-<text><em>** - noch nicht implementiert</em></text>
-<author>Sven2</author><date>Juni 2009</date>
+    <text>In the example one could keep the key pressed after having it pressed for the first time. The Throw command then would be sent every 5 seconds automatically after an initial delay of 35 frames (about one second).</text>
+    <text>Repeats are only generated when the command also has the <em>Hold</em> flag set.</text>
+    <h id="Deactivate">Deactivated commands**</h>
+    <text>...</text>
+    <h id="Keys">Keyboard shortcuts</h>
+    <text>...</text>
+    <h id="Priority">Priorities</h>
+    <text>...</text>
+  </part>
+  <text><em>** - not yet implemented</em></text>
+  <author>Sven2</author><date>2009-06</date>
 </doc>

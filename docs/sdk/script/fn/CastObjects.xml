@@ -1,36 +1,68 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CastObjects</title>
-		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.6.5.0 CP<extversion>4.10.0.0 OC</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>id </type><name>id</name><desc>ID des Objekttyps, der verschleudert wird</desc></param>
-				<param><type>int </type><name>number</name><desc>Anzahl verschleuderter Objekte.</desc></param>
-				<param><type>int </type><name>level</name><desc>Geschwindigkeit der verschleuderten Objekte</desc></param>
-				<param><type>int </type><name>x</name><desc>X-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int </type><name>y</name><desc>Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int </type><name>angle</name><desc>Winkel in den die Objekte verschleudert werden.</desc><optional /></param>
-				<param><type>int </type><name>angle_variance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Objekte in alle Richtungen verschleudert.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Verschleudert number Objekte an angegebener Position mit einer Geschwindigkeit von level. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt.</desc>
-		<examples>
-			<example>
-				<code>var num=<funclink>GetVertexNum</funclink>()<emlink href="script/operatoren.html">-</emlink>1;
+  <func>
+    <title>CastObjects</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>4.6.5.0 CP<extversion>4.10.0.0 OC</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>id </type>
+          <name>id</name>
+          <desc>Type of objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>number</name>
+          <desc>Number of objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>level</name>
+          <desc>Velocity of the objects.</desc>
+        </param>
+        <param>
+          <type>int </type>
+          <name>x</name>
+          <desc>X casting position. In local calls offset to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>y</name>
+          <desc>Y casting position. In local calls offset to the calling object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle</name>
+          <desc>Angle into which to cast the objects.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int </type>
+          <name>angle_variance</name>
+          <desc>Maximum deviation from that angle. If not given objects will be cast into all directions.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object.</desc>
+    <examples>
+      <example>
+        <code>var num=<funclink>GetVertexNum</funclink>()<emlink href="script/operatoren.html">-</emlink>1;
 CastObjects(SPRK,1,20,<funclink>GetVertex</funclink>(num, 0)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(), <funclink>GetVertex</funclink>(num, 1)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>());
 				</code>
-				<text>Erzeugt am letzten Vertex einer Linie einen Funken. Bei mehrmaligem Aufruf erzielt man damit den gleichen Effekt wie bei einem Blitzeinschlag.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateObject</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>Februar 2002</date>
-	<author>Newton</author><date>Juli 2009</date>
+        <text>Creates a spark at the last vertex of a line. With multiple calls this will create the same effect as a lightning strike.</text>
+      </example>
+    </examples>
+    <related><funclink>CreateObject</funclink></related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-02</date>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

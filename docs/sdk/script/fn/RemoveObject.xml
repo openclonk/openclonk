@@ -1,33 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>RemoveObject</title>
-		<category>Objekte</category><subcat>Existenz</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>bool</type><name>eject_contents</name><desc>Wenn wahr, wird der Inhalt des Objekts vor der Vernichtung ausgeleert. Ansonsten wird er mit vernichtet.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Entfernt das aufrufende Objekt.</desc>
-		<remark>
-			Beim Löschen eines Objekts werden viele interne Zeiger gelöscht, und das Objekt selber wird ungültig. Darum sollte der Zeiger auf dieses Objekt (z.B. innerhalb von threadlokalen Variablen) anschließend nicht mehr benutzt werden. Wenn sich ein Objekt selber entfernt, sollte die Funktion sofort mit return() beendet werden.<br />
-			Wenn sich das Objekt zu diesem Zeitpunkt in einer Crew befindet, wird das assoziierte Infoobjekt in der Crew nicht als getötet markiert. Das heißt, ein darauffolgender <funclink>MakeCrewMember</funclink>()-Aufruf kann wieder in demselben Mannschaftsmitglied resultieren. Um dies zu verhindern, sollte das Objekt zuvor mit <funclink>Kill</funclink>() getötet werden.
-		</remark>
-		<examples>
-			<example>
-				<code>public func Activate(clonk) { clonk->RemoveObject(); }</code>
-				<text>Wenn ein Clonk dieses Objekt aktiviert, wird er entfernt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Explode</funclink>
-			<funclink>CreateObject</funclink>
-			<funclink>Kill</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>August 2002</date>
+  <func>
+    <title>RemoveObject</title>
+    <category>Objects</category>
+    <subcat>Existence</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>eject_contents</name>
+          <desc>If true, the object's contents is exited before deletion of the object. Otherwise, the contents will be deleted as well.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Removes the calling object.</desc>
+    <remark>When removing an object, numerous internal references to the object are cleared and any pointer to the object will become invalid. If you have stored a pointer to this object (e.g. in thread local script) you must no longer use this pointer after deletion of the object. If an object removes itself by script it should not execute any more script commands following the removal. The deleting function should immediately end with return().<br/>If the object is a valid crew member at the time of removal, the associated info object in the crew list will not be marked as 'killed', meaning a subsequent call to <funclink>MakeCrewMember</funclink>() might reuse the same crew info. To properly kill a clonk until the end of a round use <funclink>Kill</funclink>().</remark>
+    <examples>
+      <example>
+        <code>public func Activate(clonk) { clonk-&gt;RemoveObject(); }</code>
+        <text>If a clonk activates this object, we will be deleted.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Explode</funclink>
+      <funclink>CreateObject</funclink>
+      <funclink>Kill</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

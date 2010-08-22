@@ -1,27 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>#appendto</title>
-<h>#appendto</h>
-<part>
-<text>Durch Verwendung von #appendto können zahlreiche Objektüberladungen vermieden werden.</text>
-
-<h id="Syntax">Deklaration</h>
-<code>#appendto [id]</code>
-<text>Jedes Script kann sich mit <code>#appendto</code> an ein oder mehrere Objektscripte anhängen.
-Dabei werden alle Funktionen ans Ende des Zielscripts angehängt und haben damit bei
-Namensgleichheit eine höhere Priorität. Die überladenen Funktionen sind dabei durch <emlink
-href="script/fn/inherited.html">inherited</emlink> verfügbar. Eigene #include-Scripte werden nicht
-angehängt, angehängte Scripte aber mit inkludiert.</text>
-<code>#appendto *</code>
-<text>Durch Angabe von <code>*</code> anstelle eine id wird das Script an alle geladenen
-Definitionen angehängt.</text>
-<text>Ein Script kann beliebig viele #appendto enthalten. Es wird aber immer selbst mit kompiliert.
-Dies ist besonders dann entscheidend, wenn benannte Locals oder Funktionsnamen aus dem Script, an
-das angehängt wird, verwendet werden.</text>
-</part>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
-<author>Günther</author><date>Januar 2006</date>
+  <title>#appendto</title>
+  <h>#appendto</h>
+  <part>
+    <text>By using #appendto you can avoid various object definition overloads.</text>
+    <h id="Syntax">Declaration</h>
+    <code>#appendto [id]</code>
+    <text>A script can append itself to one or multiple existing scripts using the <code>#appendto</code> directive. Functions of the same name will overload functions in the target script. The original overloaded functions can still be called using <emlink href="script/fn/inherited.html">inherited</emlink>. #included scripts are not appended with #append, but #appended scripts are included by #include.</text>
+    <code>#appendto *</code>
+    <text>Appending to <code>*</code> will append this script to all definitions.</text>
+    <text>A script can contain multiple #appendto directives. It is always compiled with the original script. This is of interest whenever local variables or functions from the appended script are used.</text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
+  <author>GÃ¼nther</author><date>2006-01</date>
 </doc>

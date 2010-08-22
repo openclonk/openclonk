@@ -1,36 +1,76 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>LineConnect</title>
-<h id="LineConnect">LineConnect</h>
-<text>Die LineConnect-Eigenschaft (DWord-Bitmaske) eines Objekts bestimmt, welche Leitungen an das Objekt
-angeschlossen werden können und welches Leitungsverhalten das Objekt hat.</text>
-<text>
-<table><rowh>
-	<col>Bit</col><col>Wert</col><col>Name</col><col>Beschreibung</col>
-</rowh><row>
-	<col>0</col><col>1</col><col>C4D_PowerInput</col><col>Das Ende einer Energieleitung kann angeschlossen werden.</col>
-</row><row>
-	<col>1</col><col>2</col><col>C4D_PowerOutput</col><col>Der Anfang einer Energieleitung kann angeschlossen werden.</col>
-</row><row>
-	<col>2</col><col>4</col><col>C4D_LiquidInput</col><col>Das Ende eines Rohres kann angeschlossen werden.</col>
-</row><row>
-	<col>3</col><col>8</col><col>C4D_LiquidOutput</col><col>Der Anfang eines Rohres kann angeschlossen werden.</col>
-</row><row>
-	<col>4</col><col>16</col><col>C4D_PowerGenerator</col><col>Das Objekt ist ein Energieerzeuger.</col>
-</row><row>
-	<col>5</col><col>32</col><col>C4D_PowerConsumer</col><col>Das Objekt ist ein Energieverbraucher.</col>
-</row><row>
-	<col>6</col><col>64</col><col>C4D_LiquidPump</col><col>Das Objekt ist eine Pumpe.</col>
-</row><row>
-    <col>7</col><col>128</col><col></col><col>Reserviert, wird nicht benutzt.</col>
-</row><row>
-	<col>8</col><col>256</col><col>C4D_EnergyHolder</col><col>Das Objekt verliert nicht von allein Energie, auch wenn es kein Lebewesen oder Basis ist.</col>
-</row>
-</table>
-</text>
-<author>Sven2</author><date>April 2002</date>
-<author>Newton</author><date>Januar 2005</date>
-<author>Günther</author><date>Juli 2006</date>
+  <title>LineConnect</title>
+  <h id="LineConnect">LineConnect</h>
+  <text>The LineConnect attribute is a bitmask and determines which lines can be connected to an object and what the object conducts.</text>
+  <text>
+    <table>
+      <rowh>
+        <col>Bit</col>
+        <col>Value</col>
+        <col>Name</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>0</col>
+        <col>1</col>
+        <col>C4D_PowerInput</col>
+        <col>The end of an energy line can be connected.</col>
+      </row>
+      <row>
+        <col>1</col>
+        <col>2</col>
+        <col>C4D_PowerOutput</col>
+        <col>The start of an energy line can be connected.</col>
+      </row>
+      <row>
+        <col>2</col>
+        <col>4</col>
+        <col>C4D_LiquidInput</col>
+        <col>The end of a pipe can be connected.</col>
+      </row>
+      <row>
+        <col>3</col>
+        <col>8</col>
+        <col>C4D_LiquidOutput</col>
+        <col>The beginning of a pipe can be connected.</col>
+      </row>
+      <row>
+        <col>4</col>
+        <col>16</col>
+        <col>C4D_PowerGenerator</col>
+        <col>The object is a power generator.</col>
+      </row>
+      <row>
+        <col>5</col>
+        <col>32</col>
+        <col>C4D_PowerConsumer</col>
+        <col>The object is an energy consumer.</col>
+      </row>
+      <row>
+        <col>6</col>
+        <col>64</col>
+        <col>C4D_LiquidPump</col>
+        <col>The object is a pump.</col>
+      </row>
+      <row>
+        <col>7</col>
+        <col>128</col>
+        <col></col>
+        <col>Reserved, unused.</col>
+      </row>
+      <row>
+        <col>8</col>
+        <col>256</col>
+        <col>C4D_EnergyHolder</col>
+        <col>The object does not loose energy by itself, even if it is not alive or a base.</col>
+      </row>
+    </table>
+  </text>
+  <author>Sven2</author><date>2002-04</date>
+  <author>Newton</author><date>2005-01</date>
+  <author>GÃ¼nther</author><date>2006-07</date>
 </doc>

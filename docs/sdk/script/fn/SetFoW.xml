@@ -1,34 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetFoW</title>
-		<category>Spieler</category><subcat>Sicht</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>bool</type><name>enabled</name><desc>Wenn TRUE, wird der Kriegsnebel aktiviert, bei FALSE deaktiviert.</desc></param>
-				<param><type>int</type><name>player</name><desc>Nummer des Spielers.</desc></param>
-			</params>
-		</syntax>
-		<desc>Schaltet den Nebel des Krieges für einen Spieler ein oder aus.</desc>
-		<examples>
-			<example>
-				<code>var i = 0;
+  <func>
+    <title>SetFoW</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>enabled</name>
+          <desc>If <code>true</code>, the fog of war is activated, if <code>false</code>, deactivated.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Switches the fog of war for one player on or off.</desc>
+    <examples>
+      <example>
+        <code>var i = 0;
 <funclink>for</funclink> (var plrnum = <funclink>GetPlayerCount</funclink> (); plrnum; i++)
   if (<funclink>GetPlayerName</funclink> (i)) {
     plrnum--;
     SetFoW (0, i);
   }</code>
-				<text>Schaltet den Kriegsnebel für alle Spieler aus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetPlrView</funclink>
-			<funclink>SetPlrViewRange</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>November 2002</date>
+        <text>Deactivates fog of war for all players.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlrView</funclink>
+      <funclink>SetPlrViewRange</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-11</date>
 </funcs>

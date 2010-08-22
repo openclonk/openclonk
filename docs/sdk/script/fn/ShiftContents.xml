@@ -1,42 +1,57 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
-
 <funcs>
   <func>
     <title>ShiftContents</title>
-    <category>Objekte</category>
-    <subcat>Inhalt</subcat>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
     <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>bool</type><name>shift_back</name><desc>Wenn wahr, wird rückwärts durchsortiert.</desc><optional /></param>
-        <param><type>id</type><name>target_id</name><desc>ID des Objekttyps, der als nächstes ausgewählt sein soll. Wenn dieser Parameter angegeben ist, wird kein ControlContents-Aufruf mehr getätigt, sondern es wird direkt und ohne das Abspielen eines Sounds durchgeschaltet. Damit lässt sich beispielsweise das Durchschalten des Inventars in ControlConents überladen, und mit eigenen Sounds oder Zusatzaktivitäten versehen.</desc><optional /></param>
-        <param><type>bool</type><name>no_calls</name><desc>Wenn wahr, werden ControlContents- und Selection-Aufrufe getätigt.</desc><optional /></param>
+        <param>
+          <type>bool</type>
+          <name>shift_back</name>
+          <desc>If true, objects will be resorted backwards.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>target_id</name>
+          <desc>ID of the object type to be in front after the shift. If this parameter is specified, no call to ControlContents will be made. The object will be selected directly and without the selection sound. In this way you can overload the contents switching in ControlContents and add your own sounds or special events.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If true, calls to ControlContents and Selection will be made.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Sortiert die Inhaltsobjekte des aufrufenden Objekts so um, dass das nächste Objekt mit anderer ID vorne liegt. Die häufigste Anwendung für diesen Befehl ist ein Inventarwechsel.</desc>
-    <remark>Der Befehl ruft im Behälter ControlContents auf, womit die Umsortierung überladen werden kann. Gibt diese Funktion 0 zurück oder existiert nicht, wird für das neue selektierte Objekt "Selection" aufgerufen. Existiert diese Funktion nicht oder gibt 0 zurück, wird der Sound "Grab" beim Containerobjekt abgespielt. Siehe dazu auch <emlink href="definition/script.html">Objektscripte</emlink>.</remark>
-    <remark>Achtung: Durch das neue ControlContents-System, das ein variableres Interface für die Inventarauswahl bilden soll, ruft wie beschrieben auch ShiftContents den Auswahlsound hervor. Um Dopplungen zu vermeiden, sollten Objektscripte entsprechend angepasst werden, und beim Inventarwechsel keinen eigenen Sound mehr abspielen, bzw. diesen wie im Beispiel weiter unten nach ControlContents verlagern.</remark>
+    <desc>Resorts the contained objects so the next object with a differing ID will be in front. The most common application for this command is inventory selection.</desc>
+    <remark>This command calls the function "ControlContents" in the container object which can be used to overload the selection process. If the function ControlContents does not exist in the container object or returns 0, the function "Selection" will be called in the newly selected inventory object. If the function Selection does not exist in the contained object or returns 0, the engine will play the "Grab" sound effect for the container object (default behaviour for inventory selection). See also <emlink href="definition/script.html">object scripts</emlink>.</remark>
+    <remark>Notice: nowadays the function ShiftContents will also play the selection sound. To avoid double playback, object scripts should take this into consideration and not play their own selection sound or move the sound playback to the ControlContents function, as seen below.</remark>
     <examples>
       <example>
-<code>protected func ControlSpecial()
+        <code>protected func ControlSpecial()
   {
   [Inventarwechsel]
   ShiftContents();
   <funclink>return</funclink> 1;
   }</code>
-        <text>Teil eines Objektscripts. Verschiebt die Inhaltsobjekte eines Objekts auf Spezialtaste 1.</text>
+        <text>Part of an object script. Moves the contents of an object on special key 1.</text>
       </example>
       <example>
-<code>protected func ControlContents(target_id)
+        <code>protected func ControlContents(target_id)
   {
   if (!ShiftContents(false, target_id)) <funclink>return</funclink> 1;
-  <funclink>Sound</funclink>("Ding");
+  <funclink>Sound</funclink>(&quot;Ding&quot;);
   <funclink>return</funclink> 1;
   }</code>
-        <text>Durch dieses Objektscript verursacht das Auswählen eines anderen Gegenstandes im Inventar einen Ding-Sound.</text>
+        <text>Through this object script selecting a new inventory item will play a "Ding" sound.</text>
       </example>
     </examples>
     <related>
@@ -44,5 +59,5 @@
       <funclink>ResortObjects</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>April 2002</date>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

@@ -1,28 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>return</title>
-		<category>Script</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-			  <param><type>Any</type><name>retval</name><desc>Rückgabewert</desc></param>
-			</params>
-		</syntax>
-		<desc>Beendet die aktuelle Funktion und gibt einen Wert an den Aufrufer zurück.</desc>
-		<examples>
-			<example>
-				<code>private func Division( dividend, divisor )
+  <func>
+    <title>return</title>
+    <category>Script</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>Any</type>
+          <name>retval</name>
+          <desc>Return value</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Ends the current function and returns a value to the caller.</desc>
+    <examples>
+      <example>
+        <code>private func Division( dividend, divisor )
 {
 	return dividend / divisor;
 }
 				</code>
-				<text>Teilt dividend durch divisor und gibt das Ergebnis zurück.</text>
-			</example>
-		</examples>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+        <text>Divides a by b and returns the result.</text>
+      </example>
+    </examples>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

@@ -1,27 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetContactDensity</title>
-    <category>Objekte</category><subcat>Status</subcat>
+    <category>Objects</category>
+    <subcat>Status</subcat>
     <version>4.9.6.0 CR</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>density</name><desc>Dichte des Materials, mit dem das Objekt kollidieren soll.</desc></param>
+        <param>
+          <type>int</type>
+          <name>density</name>
+          <desc>Minimum material density to cause collisions with this object.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Legt fest, welche Dichte ein Material haben muss, damit das Objekt mit diesem kollidiert. Standardmäßig liegt dieser Wert bei 50 (dichtes Material).</desc>
+    <desc>Determines the minimum density of a material to cause an object to collide with the material. By default, objects collide with material that have a density of 50 (solid) or more.</desc>
     <examples>
       <example>
-	      <code><funclink>GetCursor</funclink>()->SetContactDensity(25);</code>
-        <text>Ändert die Kontaktdichte des ausgewähten Clonks des ersten Spielers so, dass dieser auch auf Flüssigkeiten laufen kann.</text>
+        <code><funclink>GetCursor</funclink>()-&gt;SetContactDensity(25);</code>
+        <text>Modifies the collision density of the selected clonk of the first player so that the selected clonk can now walk on liquids.</text>
       </example>
     </examples>
-    <related>
-      <emlink href="material\index.html">Materialdefinitionen</emlink>
-    </related>
+    <related><emlink href="material\index.html">Material Definitions</emlink></related>
   </func>
-  <author>Clonkonaut</author><date>Mai 2008</date>
+  <author>Clonkonaut</author><date>2008-05</date>
 </funcs>

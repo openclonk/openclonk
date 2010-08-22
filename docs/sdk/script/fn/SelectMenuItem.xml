@@ -1,23 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SelectMenuItem</title>
-    <category>Objekte</category><subcat>Menü</subcat>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>number</name><desc>Nummer des MenuItems, das selektiert werden soll. Der erste Eintrag hat die Nummer 0.</desc></param>
+        <param>
+          <type>int</type>
+          <name>number</name>
+          <desc>Number of the menu item which is to be selected. The first entry is number 0.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die Auswahl in einem Menü.</desc>
+    <desc>Sets menu selection in an object menu.</desc>
     <examples>
       <example>
-        <text>SelectMenuItem kann zusammen mit <funclink>GetMenuSelection</funclink> dazu verwendet werden, ein Menu zu aktualisieren, ohne dabei die Selektion zu verändern:</text>
+        <text>SelectMenuItem can be used in conjunction with <funclink>GetMenuSelection</funclink> to update menu entries without losing menu item selection.</text>
         <code>var selection = -1;
-// Menu bereits geöffnet?
+// Menu bereits geÃ¶ffnet?
 if(<funclink>GetMenu</funclink>())
   selection = <funclink>GetMenuSelection</funclink>();
 
@@ -28,7 +34,12 @@ if(selection &gt;= 0)
   SelectMenuItem(selection);</code>
       </example>
     </examples>
-    <related><funclink>GetMenuSelection</funclink><funclink>GetMenu</funclink><funclink>CreateMenu</funclink><funclink>AddMenuItem</funclink></related>
+    <related>
+      <funclink>GetMenuSelection</funclink>
+      <funclink>GetMenu</funclink>
+      <funclink>CreateMenu</funclink>
+      <funclink>AddMenuItem</funclink>
+    </related>
   </func>
-  <author>PeterW</author><date>Oktober 2002</date>
+  <author>PeterW</author><date>2002-10</date>
 </funcs>

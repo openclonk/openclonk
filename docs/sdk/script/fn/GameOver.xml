@@ -1,28 +1,25 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GameOver</title>
     <category>Global</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>bool</rtype>
-    </syntax>
-    <desc>Beendet die Runde. Die Runde wird für alle überlebenden Spieler als gewonnen gewertet.</desc>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Ends the round. The game will count as won for all surviving players.</desc>
     <examples>
       <example>
         <code><funclink>if</funclink>(!<funclink>ObjectCount</funclink>(Rock))
 {
-  <funclink>Log</funclink>("Prima, keine Steine stören mehr.");
+  <funclink>Log</funclink>(&quot;Prima, keine Steine stÃ¶ren mehr.&quot;);
   GameOver();
 }</code>
-        <text>Beendet die Runde, falls keine Steine da sind.</text>
+        <text>Ends the round if no more rocks are present.</text>
       </example>
     </examples>
-    <related>
-      <funclink>EliminatePlayer</funclink>
-    </related>
+    <related><funclink>EliminatePlayer</funclink></related>
   </func>
-  <author>Günther</author><date>April 2002</date>
+  <author>GÃ¼nther</author><date>2002-04</date>
 </funcs>

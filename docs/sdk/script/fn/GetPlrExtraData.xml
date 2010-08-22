@@ -1,35 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>GetPlrExtraData</title>
-  <category>Spieler</category>
-  <version>4.9.1.0 GWE</version>
-  <syntax>
-   <rtype>any</rtype>
-   <params>
-    <param>
-     <type>int</type>
-     <name>player</name>
-     <desc>Nummer des Spielers, für den zusätzliche Daten gespeichert werden sollen</desc>
-    </param>
-    <param>
-     <type>string</type>
-     <name>data_name</name>
-     <desc>Name, der den Daten zugeordnet werden soll</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Dieser Befehl fragt im Spieler gespeicherten Extra-Daten ab, die per <funclink>SetPlrExtraData</funclink> gesetzt wurden.</desc>
-
-  <remark>Für Details siehe <funclink>SetPlrExtraData</funclink></remark>
-
-  <related>
-   <funclink>SetPlrExtraData</funclink>
-   <funclink>GetCrewExtraData</funclink>
-  </related>
- </func>
- <author>PeterW</author><date>Januar 2002</date>
+  <func>
+    <title>GetPlrExtraData</title>
+    <category>Player</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player for whom additional data is saved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>This commands retrieves extra data stored in the player file by <funclink>SetPlrExtraData</funclink>.</desc>
+    <remark>For details see <funclink>SetPlrExtraData</funclink>.</remark>
+    <related>
+      <funclink>SetPlrExtraData</funclink>
+      <funclink>GetCrewExtraData</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-01</date>
 </funcs>

@@ -1,28 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_Not</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>array</type><name>Criteria</name><desc>Suchkriterium in Form einer Find_*-Funktion</desc></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: findet genau alle Objekte, die nicht das angegebene Kriterium erfüllen.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<examples>
-			<example>
-<code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(50), Find_Not(<funclink>Find_Distance</funclink>(30))</code>
-				<text>Ergibt eine Auflistung aller Objekte, die höchstens 50 - aber mehr als 30 - Pixel entfernt sind.</text>
-			</example>
-		</examples>		
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_Not</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>Criteria</name>
+          <desc>Search criterion in the form of a Find_* function</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects which do NOT fulfill the specified criterion.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(50), Find_Not(<funclink>Find_Distance</funclink>(30))</code>
+        <text>Returns a list of all objects which are at at least 30 but no more than 50 pixel distance.</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

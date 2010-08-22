@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetAnimationPosition</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,22 +13,18 @@
         <param>
           <type>int</type>
           <name>animation_number</name>
-          <desc>Animationsnummer der Animation deren Position abgefragt werden soll.</desc>
+          <desc>Animation number of the animation whose position to retrieve.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt die Stelle zurück an der die Animation mit der angegebenen Nummer gerade ist. Die Zahl liegt zwischen 0 und <funclink>GetAnimationLength</funclink>(<funclink>GetAnimationName</funclink>(animation_number)). Falls es keine Animation mit der angegebenen Nummer gibt oder es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Retuerns the position of the animation refered to by the given number. The returned value lies between 0 and <funclink>GetAnimationLength</funclink>(<funclink>GetAnimationName</funclink>(animation_number)). If there is no such animation with the given number or the number refers to a combination node then this function returns nil.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>SetAnimationPosition</funclink>(animation_number, <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(animation_number)+100));</code>
-	<text>Script für einen Timer: Bei jeder Durchführung wird die Animation um 100 Millisekunden weitergespielt. Falls der Timer im gleichen Abstand aufgerufen wird kann stattdessen auch <funclink>Anim_Linear</funclink> verwendet werden.</text>
+        <text>Script for a timer: For each call the animation is advanced by 100 milliseconds. If the timer is called periodically in same intervals <funclink>Anim_Linear</funclink> can be used instead.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
@@ -35,5 +32,5 @@
       <funclink>SetAnimationWeight</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Break / Continue</title>
-
-<h id="BreakContinue">Break / Continue</h>
-<part>
-	<text>Die Schlüsselwörter <code>break</code> bzw. <code>continue</code> werden zur manuellen Steuerung von Schleifen benutzt:</text>
-	<text><ul>
-		<li><code>break</code> beendet die übergeordnete Schleife. Die Ausführung wird hinter Schleifenende fortgeführt.</li>
-		<li><code>continue</code> beendet den aktuellen Schleifendurchlauf der übergeordneten Schleife. Die Ausführung wird am Anfang der Schleife fortgeführt, wobei die Schleifenbedingung geprüft wird.</li>
-	</ul></text>
-
-	<h>Beispiel:</h>
-	<code>for(var i = 0; i &lt; 10; i++) 
+  <title>Break / Continue</title>
+  <h id="BreakContinue">Break / Continue</h>
+  <part>
+    <text>The keywords <code>break</code> and <code>continue</code> are used for manual control of loops:</text>
+    <text>
+      <ul>
+        <li><code>break</code> ends the enclosing loop. Execution is continued after the end of the loop.</li>
+        <li><code>continue</code> ends the current loop execution and continues with the next loop item from the beginning of the loop.</li>
+      </ul>
+    </text>
+    <h>Example:</h>
+    <code>for(var i = 0; i &lt; 10; i++) 
 {
-  <funclink>Log</funclink>("Zahl: %d", i);
-  if(i > 6) break;
-  if(i > 2) continue;
-  Log("Zahl: %d (2. Ausgabe)", i);
+  <funclink>Log</funclink>(&quot;Zahl: %d&quot;, i);
+  if(i &gt; 6) break;
+  if(i &gt; 2) continue;
+  Log(&quot;Zahl: %d (2. Ausgabe)&quot;, i);
 }
-Log("Endwert: %d",i);</code>
-
-	<h>Ausgabe:</h>
-	<code>Zahl: 0 
+Log(&quot;Endwert: %d&quot;,i);</code>
+    <h>Output:</h>
+    <code>Zahl: 0 
 Zahl: 0 (2.Ausgabe)
 Zahl: 1 
 Zahl: 1 (2.Ausgabe)
@@ -35,13 +35,10 @@ Zahl: 5
 Zahl: 6 
 Zahl: 7 
 Endwert: 7</code>
-
-	<text>In dieser Schleife läuft die Variable <code>i</code> von 0 bis 10.</text>
-	<text>In den ersten 3 Schleifendurchläufen (i von 0 bis 2) wird der Wert zwei mal ausgegeben.</text>
-	<text>Ab dem Wert 3 wird nach der ersten Ausgabe <code>continue</code> aufgerufen. Dadurch wird der aktuelle Schleifendurchlauf abgebrochen, der Wert wird nur 1 mal ausgegeben.</text>
-	<text>Wird der Wert 7 erreicht, wird <code>break</code> aufgerufen. <code>break</code> bricht jetzt, im Gegensatz zu <code>continue</code>, nicht nur den aktuellen Schleifendurchlauf, sondern auch die Schleife ab. (Erkennbar daran, dass der Wert von <code>i</code> am Ende 7 ist, nicht 11).</text>
-</part>
-
-<author>Peter</author><date>Juli 2001</date>
-
+    <text>This loops counts the variable <code>i</code> from 0 to 10.</text>
+    <text>If the first three loop executions (i from 0 to 2) the value is displayed twice.</text>
+    <text>From value 3 on <code>continue</code> is called after the first output. This will skip the current loop execution. The output is made only once.</text>
+    <text>If value 7 is reached, <code>break</code> is called. <code>break</code> will, as opposed to <code>continue</code>, not only skip current loop execution but will break out of the whole loop. You can notice by seeing that the value of <code>i</code> is 7 at the end, not 11.</text>
+  </part>
+  <author>Peter</author><date>2001-07</date>
 </doc>

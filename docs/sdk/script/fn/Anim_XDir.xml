@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Anim_XDir</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>array</rtype>
@@ -12,32 +13,28 @@
         <param>
           <type>int</type>
           <name>begin</name>
-          <desc>Beginn des Intervalls.</desc>
+          <desc>Start of the interval.</desc>
         </param>
         <param>
           <type>int</type>
           <name>end</name>
-          <desc>Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit größerer XDir zu, sonst nimmt er ab.</desc>
+          <desc>End of the interval. If end is greater than begin then the value increases with increases XDir, otherwise it decreases.</desc>
         </param>
         <param>
           <type>int</type>
           <name>max_dir</name>
-          <desc>Größter Wert der XDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (end).</desc>
-	</param>
+          <desc>Largest value of XDir to be mapped. Even larger velocities lead to the same animation value (end).</desc>
+        </param>
       </params>
     </syntax>
-
-    <desc>Der Wert ist proportional zur X-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis max_dir werden linear auf den Wertebereich von begin bis end abgebildet.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>The value is proportional to the object's velocity in X direction. The velocities from 0 to max_dir are mapped linearily to the interval from begin to end.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-        <code><funclink>PlayAnimation</funclink>("ShowSpeed", 10, <funclink>Anim_XDir</funclink>(0, <funclink>GetAnimationLength</funclink>("ShowSpeed"), 100), <funclink>Anim_Const</funclink>(1000));</code>
-	<text>Spielt die Animation "ShowSpeed" in Slot 10 ab. Diese könnte eine Geschwindigkeitsanzeige in einem Fahrzeug darstellen.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;ShowSpeed&quot;, 10, <funclink>Anim_XDir</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;ShowSpeed&quot;), 100), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "ShowSpeed" in slot 10. This could be a tachoometer in a vehicle.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
@@ -52,5 +49,5 @@
       <funclink>Anim_Action</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

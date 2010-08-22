@@ -1,29 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Log</title>
-		<category>Nachrichten</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>message</name><desc>Auszugebender Text</desc></param>
-				<param><type></type><name>...</name><desc>Zusätzliche Parameter, mit denen der Text formatiert wird</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Gibt einen Text im Messageboard am unteren Bildschirmrand aus. Die Parameter können über den C-Formatierungsstil in den Text eingebunden werden. Siehe dazu auch <funclink>Format</funclink>.</desc>
-		<examples>
-			<example>
-				<code>Log("Moin, %s.", <funclink>GetPlayerName</funclink>(0));</code>
-				<text>Begrüßt den Spieler</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Format</funclink>
-			<funclink>Message</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Log</title>
+    <category>Messages</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>message</name>
+          <desc>Text to be displayed.</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional parameters for text formatting.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Displays a text in the message board at the bottom of the screen. Parameters can be inserted in C formatting style. See <funclink>Format</funclink>.</desc>
+    <examples>
+      <example>
+        <code>Log(&quot;Moin, %s.&quot;, <funclink>GetPlayerName</funclink>(0));</code>
+        <text>Welcomes a player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Format</funclink>
+      <funclink>Message</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,46 +13,37 @@
         <param>
           <type>string</type>
           <name>entry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
-          <optional/>
+          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Nummer des Spielers, von dem der Eintrag abgefragt werden soll.</desc>
-          <optional/>
+          <desc>Number of the player of which you want to retrieve an entry.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>entry_number</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Fragt Eigenschaftswerte eines Spielers anhand dessen Namen ab, wie sie beim Speichern eines Spiels in die game.txt geschrieben werden</desc>
-
-    <remark>Achtung! Die abgefragten Werte können teilweise sync-sicher sein (also z.B. bei
-            verschiedenen Rechnern in einem Netzwerkspiel verschiedene Werte zurückliefern)</remark>
-
-    <remark>Die meisten Möglichkeiten für Werte von entry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
-
+    <desc>Retrieves properties of a player by way of the name under which they are stored in the Game.txt component of a savegame.</desc>
+    <remark>Warning: the retrieved values may not be synchronization safe, meaning they may differ from computer to computer in a network game. Using these values may cause sync loss in a network game.</remark>
+    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
     <examples>
       <example>
-        <code><funclink>Log</funclink>("Spieler %d hat %d Objekte!", player, GetPlrObjectsOwned(player));</code>
-
-        <text>Schreibt die Anzahl der Objekte, die der Spieler mit der Nummer player besitzt ins Log.</text>
-
+        <code><funclink>Log</funclink>(&quot;Spieler %d hat %d Objekte!&quot;, player, GetPlrObjectsOwned(player));</code>
+        <text>Writes the number of objects owned by this player into the log file.</text>
       </example>
     </examples>
-
-
     <related>
       <funclink>GetDefCoreVal</funclink>
       <funclink>GetObjectVal</funclink>
@@ -60,7 +52,6 @@
       <funclink>GetScenarioVal</funclink>
       <funclink>GetPlayerInfoCoreVal</funclink>
     </related>
-
   </func>
-  <author>PeterW</author><date>April 2002</date>
+  <author>PeterW</author><date>2002-04</date>
 </funcs>

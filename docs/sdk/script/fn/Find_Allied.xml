@@ -1,22 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_Allied</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer, dessen Verbündete Besitzer der zu suchenden Objekte sein müssen</desc></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: sucht alle Objekte die Spielern gehören, die mit dem angegebenen Spieler verbündet sind.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_Allied</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player to which the found objects must be friendly.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects owned by friends of the specified player.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

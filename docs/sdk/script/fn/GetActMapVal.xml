@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,39 +13,35 @@
         <param>
           <type>string</type>
           <name>entry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
           <name>action</name>
-          <desc>Name der Aktion, von der der Eintrag abgefragt werden soll</desc>
-          <optional/>
+          <desc>Name of the activity of which to get an entry.</desc>
+          <optional />
         </param>
         <param>
           <type>id</type>
           <name>definition</name>
-          <desc>Objektdefinition, von der die Aktionsdaten abgefragt werden sollen. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
-          <optional/>
+          <desc>Object definition of which to get action data. If 0, the definition of the calling object is used.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>entry_number</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Fragt Aktionsdaten aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> anhand deren dortigem Namen ab.</desc>
-
+    <desc>Gets activity data from the <emlink href="definition/actmap.html">ActMap.txt</emlink> of an object.</desc>
     <examples>
       <example>
-        <code>var act_length = GetActMapVal("Length", <funclink>GetAction</funclink>()) * GetActMapVal("Delay", <funclink>GetAction</funclink>());</code>
-        <text>Berechnet die Länge in Ticks, die die aktuelle Action dauert</text>
+        <code>var act_length = GetActMapVal(&quot;Length&quot;, <funclink>GetAction</funclink>()) * GetActMapVal(&quot;Delay&quot;, <funclink>GetAction</funclink>());</code>
+        <text>Calculates the time in ticks that the current action will take.</text>
       </example>
     </examples>
-
-
     <related>
       <funclink>GetDefCoreVal</funclink>
       <funclink>GetObjectVal</funclink>
@@ -53,7 +50,6 @@
       <funclink>GetPlayerVal</funclink>
       <funclink>GetPlayerInfoCoreVal</funclink>
     </related>
-
   </func>
-  <author>PeterW</author><date>April 2002</date>
+  <author>PeterW</author><date>2002-04</date>
 </funcs>

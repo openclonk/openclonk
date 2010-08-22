@@ -1,27 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Angle</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>x1</name><desc>X-Koordinate des ersten Punktes</desc></param>
-        <param><type>int</type><name>y1</name><desc>Y-Koordinate des ersten Punktes</desc></param>
-        <param><type>int</type><name>x2</name><desc>X-Koordinate des zweiten Punktes</desc></param>
-        <param><type>int</type><name>y2</name><desc>Y-Koordinate des zweiten Punktes</desc></param>
-        <param><type>int</type><name>precision</name><desc>Gibt, wenn angegeben, den Winkel multipliziert mit precision zurück, um so genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen 0 und 3600 zurück.</desc><optional/></param>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the first point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the first point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the second point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the second point</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Multiplied with the angle. For a higher precision while working with integers (whole numbers) you can specify a higher precision value. A precision of 10 will produce values from 0 to 3600.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Liefert den Winkel, in dem sich der zweite Punkt vom ersten Punkt aus gesehen befindet. Der Winkel wird in Grad zurückgeliefert, 0° ist senkrecht oben. Alle Koordinaten sind global.</desc>
+    <desc>Returns the view angle from the first point to the second in degrees. 0Â° ist straight up. All coordinates global.</desc>
     <examples>
       <example>
-<code><funclink>SetR</funclink>(Angle(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)),
+        <code><funclink>SetR</funclink>(Angle(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)),
            <funclink>GetX</funclink>(<funclink>GetCursor</funclink>(1)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(1)) ));</code>
-        <text>Das Objekt dreht sich, so dass es parallel zu der Gerade liegt, die durch die Mittelpunkte der ausgewählten Clonks von Spieler 1 und 2 geht.</text>
+        <text>The object rotates so it points from the clonk of player 1 to the clonk of player 2.</text>
       </example>
     </examples>
     <related>
@@ -29,6 +51,6 @@
       <funclink>Sin</funclink>
     </related>
   </func>
-  <author>jwk</author><date>April 2002</date>
-  <author>Clonk-Karl</author><date>September 2004</date>
+  <author>jwk</author><date>2002-04</date>
+  <author>Clonk-Karl</author><date>2004-09</date>
 </funcs>

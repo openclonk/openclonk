@@ -1,19 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Construction</title>
-		<category>Callbacks</category>
-		<subcat>Objekte</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.6.2 CR</extversion></version>
-		<syntax>
-                        <rtype>any</rtype>
-			<params>
-				<param><type>object</type><name>creator</name><desc>Objekt welches das neu erstellte Objekt erzeugt hat. 0 wenn es global (Szenarioscript,...) erstellt wurde.</desc></param>
-			</params>
-		</syntax>
-		<desc>Wird bei der Erzeugung eines Objekts aufgerufen.</desc>
-	</func>
-	<author>boni</author><date>April 2007</date>
+  <func>
+    <title>Construction</title>
+    <category>Callbacks</category>
+    <subcat>Objects</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.6.2 CR</extversion></version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>creator</name>
+          <desc>Object that created the new object. 0 if createt global (Scenarioscript,...).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Called at the creation of an object.</desc>
+  </func>
+  <author>boni</author><date>2007-04</date>
 </funcs>

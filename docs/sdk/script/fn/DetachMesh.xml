@@ -1,36 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DetachMesh</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>attach_number</name><desc>Nummer des zu entfernenden angehängten Meshes. Der Rückgabewert von <funclink>AttachMesh</funclink> bildet solch eine Nummer.</desc></param>
-			</params>
-		</syntax>
-		<desc>Wurde zuvor mit <funclink>AttachMesh</funclink> ein Mesh an einem anderen befestigt, so kann es mit dieser Funktion wieder gelöst werden.</desc>
-		<examples>
-			<example>
-				<code>func FxIntCarryBowStart(object target, int number)
+  <func>
+    <title>DetachMesh</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>Number of the mesh to detach. <funclink>AttachMesh</funclink> returns such a number.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>If a mesh was previously attached to another one via <funclink>AttachMesh</funclink> then it can be detached again using this function.</desc>
+    <examples>
+      <example>
+        <code>func FxIntCarryBowStart(object target, int number)
 {
-	<funclink>EffectVar</funclink>(0, target, number) = target-><funclink>AttachMesh</funclink>(Bow, "pos_hand1", "main");
+	<funclink>EffectVar</funclink>(0, target, number) = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
 }
 
 func FxIntCarryBowStop(object target, int number)
 {
-	target-><funclink>DetachMesh</funclink>(<funclink>EffectVar</funclink>(0, target, number));
+	target-&gt;<funclink>DetachMesh</funclink>(<funclink>EffectVar</funclink>(0, target, number));
 }</code>
-				<text>Script für einen <emlink href="script/Effects.html">Effekt</emlink>: Während der Effekt aktiv ist trägt das Effektziel einen Bogen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>AttachMesh</funclink>
-		</related>
-		</func>
-	<author>Clonk-Karl</author><date>April 2010</date>
+        <text>Script for an <emlink href="script/Effects.html">effect</emlink>: The effect target carries a bow as long as the effect remains active.</text>
+      </example>
+    </examples>
+    <related><funclink>AttachMesh</funclink></related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </funcs>
-

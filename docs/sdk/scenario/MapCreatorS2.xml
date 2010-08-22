@@ -1,185 +1,190 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Kartengenerator</title>
-
-<h id="Kartengenerator">Kartengenerator</h>
-<part>
-	<text>Neben einfachen dynamischen, statischen und exakten Landkarten steht auch ein leistungsfähiger dynamischer Kartengenerator für komplexe, mit Zufallswerten erzeugte Landschaften zur Verfügung.</text>
-	<text>Dieser arbeitet mit verschachtelten und durch Operatoren verknüpfte Ebenen, denen jeweils ein Materialwert und diverse Attribute zugewiesen werden, die die Form beschreiben. Der Landschaftsgenerator rendert dabei die Karten mit Hilfe dieser Ebenen. Sie werden dann später wie reguläre statische Karten vergrößert</text>
-	<text>Die Objektstruktur aus Karten, Ebenen und Attributen wird aus der Datei 'Landscape.txt' im Szenario gelesen.</text>
-	
-	<h id="Syntax">Syntax</h>
-	<text>Die Sprache zur Beschreibung solcher Karten arbeitet grundsätzlich mit Objekten, Attributen und Operatoren. Groß- und Kleinschreibung wird beachtet. Objekte werden wie folgt definiert:</text>
-	<code>Objekttyp [Name] { Attribute };</code>
-	<text>Die Angabe eines Namens ist optional. Für die Objekttypen stehen momentan map, overlay und point (für den Algorithmus poly) zur Verfügung. Wenn ein Objekt benannt wird, kann es später also Vorlage für eine weitere Instanz definieren, die man mit</text>
-	<code>Name { Attribute };</code>
-	<text>definiert. Hier würde das vorher definierte Objekt 'Name' kopiert und gegebenenfalls um die entsprechenden Attribute ergänzt werden. Werden keine weiteren Attribute angegeben, können die Klammern hier auch weggelassen werden.</text>
-	<text>Attribute haben grundsätzlich die Form</text>
-	<code>Attribut=Wert;</code>
-	<text>und können in beliebiger Reihenfolge im Objekt definiert werden. Sie können dabei optional % oder px als Einheit haben, und als Konstante oder Wertbereich (Zahl1 - Zahl2) angegeben werden (Ab CE). Bei Doppelten Zuweisungen gilt das zuletzt definierte.</text>
-	<text>Zusätzlich zu den Attributen können wieder untergeordnete Objekte definiert und mit Operatoren verknüpft werden:</text>
-	<code>Objekt1 Operator Objekt2;</code>
-	<text>Operatorketten können beliebig lang sein und steuern die Kombination von Ebenen. Mögliche Operatoren sind | (oder), &amp; (und) und ^ (exklusiv oder).</text>
-	<text>Einige Beispiele gibt es in den Dynamischen Welten.</text>
-	
-	<h id="Attributes">Attribute</h>
-	<part>
-		<h id="Attr_overlay">Ebenen (overlay)</h>
-		<text>Folgende Attribute sind definiert:</text>
-		<text><table>
-			<rowh>
-				<col>Attribut</col>
-				<col>Typ</col>
-				<col>Beschreibung</col>
-			</rowh>
-			<row>
-				<col>mat</col>
-				<col>Material</col>
-				<col>Material. Das Material muss in der entsprechenden Material.c4g definiert sein. Standard ist Himmel.</col>
-			</row>
-			<row>
-				<col>tex</col>
-				<col>Textur</col>
-				<col>Textur. Die Material-Textur-Kombination sollte in der geladenen TexMap vorhanden sein.</col>
-			</row>
-			<row>
-				<col>x, y, wdt, hgt</col>
-				<col>Integer</col>
-				<col>Größe der beschriebenen Ebene auf der übergeordneten Ebene in Prozent.</col>
-			</row>
-			<row>
-				<col>algo</col>
-				<col>Algorithmus</col>
-				<col>Füllungstyp der Ebene. Für verfügbare Füllungen siehe <a href="#Algos">Füllalgorithmen</a></col>
-			</row>
-			<row>
-				<col>zoomX, zoomY</col>
-				<col>Integer</col>
-				<col>Gibt die entsprechende Zoomstufe an, um die die Füllung vergrößert/verkleinert werden soll. -100 bis +99</col>
-			</row>
-			<row>
-				<col>ox, oy</col>
-				<col>Integer</col>
-				<col>Offset auf den Füllalgorithmus in Prozent. Hiermit kann z.B. eine Sinuskurve verschoben werden.</col>
-			</row>
-			<row>
-				<col>a, b</col>
-				<col>Integer</col>
-				<col>Zusatzparameter für den Füllalgorithmus</col>
-			</row>
-			<row>
-				<col>turbulence</col>
-				<col>Integer</col>
-				<col>10 bis 10.000; Deformierung der Ebene</col>
-			</row>
-			<row>
-				<col>rotate</col>
-				<col>Integer</col>
-				<col>-180 bis +180. Drehung der Ebene.</col>
-			</row>
-			<row>
-				<col>invert</col>
-				<col>Boolean</col>
-				<col>0 oder 1. Bei 1 wird die Ebenenfüllung umgekehrt.</col>
-			</row>
-			<row>
-				<col>seed</col>
-				<col>Integer</col>
-				<col>Zufallsseed für die Ebenenberechnung. Bei festem Seed wird die Ebene immer gleich erzeugt.</col>
-			</row>
-			<row>
-				<col>loosebounds</col>
-				<col>Boolean</col>
-				<col>Legt fest, ob die Grenzen durch rotate, turbulence, ox und oy mit transformiert werden.</col>
-			</row>
-			<row>
-				<col>mask</col>
-				<col>Boolean</col>
-				<col>0 oder 1. Bei 1 wird die Ebene nie gezeichnet. Auf untergeordnete Ebenen hat dies keinen Effekt.</col>
-			</row>
-			<row>
-				<col>grp</col>
-				<col>b</col>
-				<col>0 oder 1. Bei 1 gilt die Ebene als gesetzt, wenn der lokale Algorithmus oder eine der untergeordneten Ebenen erfüllt ist. Folgt ein Operator, so wird die Ebene selber nicht gezeichnet.</col>
-			</row>
-			<row>
-				<col>sub</col>
-				<col>Boolean</col>
-				<col>0 oder 1. Bei 1 ist das Material unterirdisch (standard)</col>
-			</row>
-			<row>
-				<col>lambda</col>
-				<col>Integer</col>
-				<col>0 bis 20. Zusätzliche turbulence-Iterationen.</col>
-			</row>
-		</table></text>
-		
-		<h id="Attr_map">Karten (map)</h>
-		<text>Karten enthalten grundsätzlich alle Attribute, die Ebenen auch enthalten. Allerdings machen hier nur mat, tex und sub wirklich Sinn, und geben die Hintergrundfüllung an.</text>
-	</part>
-	
-	<h id="Algos">Füllalgorithmen</h>
-	<text>Um festzustellen, ob ein Punkt auf der Karte eine Ebene trifft, wird er zunächst verschoben (zoom, turbulence, rotate, ox/oy), und anschließend ihr Algorithmus ausgewertet. Außerdem wird geprüft, ob er innerhalb der Maskengrenzen (x, y, wdt, hgt) liegt. Normalerweise vor, bei loosebounds nach der Transformation.</text>
-		
-	<dl>
-		<dt id="Algo_solid">solid</dt>
-		<dd><text>Standardalgorithmus. Gibt immer wahr zurück.</text></dd>
-		
-		<dt id="Algo_random">random</dt>
-		<dd><text>Zufall. Der Parameter a gibt die Wahrscheinlichkeit an; je höher a, desto seltener ist der Punkt ausgefüllt.</text></dd>
-		
-		<dt id="Algo_checker">checker</dt>
-		<dd><text>Abwechselnd ausgefüllte Kästen der Größe 10 (bei normalem Zoom)</text></dd>
-		
-		<dt id="Algo_bozo">bozo</dt>
-		<dd><text>Flecken. Über a kann die Fleckengröße verringert werden.</text></dd>
-		
-		<dt id="Algo_sin">sin</dt>
-		<dd><text>Horizontale Sinuskurve; Bei Standardzoom beträgt die Amplitude 10, die Periode 20 Pixel.</text></dd>
-		
-		<dt id="Algo_boxes">boxes</dt>
-		<dd><text>Regelmäßige Blöcke. a gibt die Blockgröße, b den Abstand der Mittelpunkte an.</text></dd>
-		
-		<dt id="Algo_rndchecker">rndchecker</dt>
-		<dd><text>Wie checker, jedoch ist die Erfüllung nicht alternierend sondern zufällig.</text></dd>
-		
-		<dt id="Algo_lines">lines</dt>
-		<dd><text>Senkrechte Linien. a gibt die Linienstärke an; b den Abstand der Linienmitten.</text></dd>
-		
-		<dt id="Algo_border">border</dt>
-		<dd><text>Zieht einen inneren Rahmen im übergeordnete Layer (bzw der gesamten Operatorkette). a und b sind die horizontale und vertikale Rahmendicke. Da zur Berechnung das übergeordnete Layer abgefragt werden muss, darf dieses natürlich nicht als Gruppe (grp) definiert sein.</text></dd>
-		
-		<dt id="Algo_mandel">mandel</dt>
-		<dd><text>Zeichnet die Mandelbrotmenge in den Zielbereich. Über den Parameter a kann die Iterationstiefe verändert werden (Standard 1000). Ungezommt wird das gesamte "Apfelmännchen" in den Zielbereich gezeichnet (entspricht dem Bereich -2-2i bis 2+2i)</text></dd>
-		
-		<dt id="Algo_rndall">rndall</dt>
-		<dd><text>Der gesamten Bereich gilt als erfüllt oder nicht erfüllt, je nach Zufallswert. Der Parameter a gibt die Erfüllungschance in Prozent an. Mit diesem algo können beispielsweise mehrere Karten untergeordnet von einem mask=1-Layer angegeben werden, zwischen denen dann gewählt wird.</text></dd>
-		
-		<dt id="Algo_script">script</dt>
-		<dd><text>Das Verhalten des Algorithmus wird durch eine Script-Funktion im <emlink href="scenario/script.html">Szenarioscript</emlink> festgelegt. Diese sollte folgende Form haben:</text>
-		<code>func ScriptAlgo[Overlay-Name](x, y, iAlpha, iBeta)</code>
-		<text>Als Rückgabewert wird 0 (= kein Material) oder 1 (= Material) erwartet. x und y sind die Koordinaten (in Pixeln), für den der Algorithmuswert zurückgegeben werden soll. iAlpha und iBeta entsprechen den Algo-Parametern a und b.</text>
-		<text>Hat die Ebene keinen Namen, wird die Funktion "ScriptAlgo" benutzt.</text></dd>
-		
-		<dt id="Algo_poly">poly</dt>
-		<dd><text>Ein Pixel gilt als erfüllt, wenn er innerhalb des durch die im overlay enthaltenen Punkte definierten Polygons liegt. Punkte können durch</text>
-		<code>point { x=&lt;X-Koordinate des Eckpunkts&gt;&lt;Einheit&gt;; y=&lt;Y-Koordinate&gt;&gt;&lt;Einheit&gt;; };</code> 
-		<text>angegeben werden. Ab CE. Beispiel:</text>
-		<code>overlay { algo=poly; mat=Earth;
+  <title>Map Generator</title>
+  <h id="Kartengenerator">Map Generator</h>
+  <part>
+    <text>Besides simple dynamic maps defined in Scenario.txt there is also a powerful dynamic map generator for highly complex yet fully random maps.</text>
+    <text>This generator works with nested layers that can be combined using various operators and to which a material value and various attributes can be assigned to describe their resulting shape. The map generator will generate a map using these layers. The map is then later zoomed to the landscape as a static map would be.</text>
+    <text>The structure of maps, layers, and attributes is stored in the component Landscape.txt in the scenario.</text>
+    <h id="Syntax">Syntax</h>
+    <text>The language describing this structure works with objects, attributes, and operators and is case sensitive. Objects are defined as follows:</text>
+    <code>Objekttyp [Name] { Attribute };</code>
+    <text>The name is optional. Current objects types are map, overlay, and point (for the poly algorithm). If an object is known it can later be used for another instance which is defined with:</text>
+    <code>Name { Attribute };</code>
+    <text>Here, the previously defined object 'Name' is copied and optionally extended by the given attributes. If no additional attributes are defined, the brackets can be omitted.</text>
+    <text>General attribute syntax is:</text>
+    <code>Attribut=Wert;</code>
+    <text>Attributes can be defined in any order within the object. They can optionally have % or px as unit and can be specified as single value or range of values (val1 - val2). In case of a duplicate assignment the last value is evaluated.</text>
+    <text>In addition to attributes there can be nested sub-objects which can be combined using operators:</text>
+    <code>Objekt1 Operator Objekt2;</code>
+    <text>Operator statements can have any length and control the combination of layers. Operators are: | (OR), &amp; (AND), ^ (XOR).</text>
+    <text>You will find several examples in the Dynamic Worlds folder.</text>
+    <h id="Attributes">Attributes</h>
+    <part>
+      <h id="Attr_overlay">Layers (overlay)</h>
+      <text>The following attributes are defined:</text>
+      <text>
+        <table>
+          <rowh>
+            <col>Attribute</col>
+            <col>Type</col>
+            <col>Description</col>
+          </rowh>
+          <row>
+            <col>mat</col>
+            <col>Material</col>
+            <col>Material. The material must be defined in the active Material.c4g. Default is Sky.</col>
+          </row>
+          <row>
+            <col>tex</col>
+            <col>Texture</col>
+            <col>Texture. The material-texture combination should be defined in the active TexMap.</col>
+          </row>
+          <row>
+            <col>x, y, wdt, hgt</col>
+            <col>Integer</col>
+            <col>Size of the specified layer as a percentage of the layer above.</col>
+          </row>
+          <row>
+            <col>algo</col>
+            <col>Algorithm</col>
+            <col>Area fill type. For a list of available fill types see <a href="#Algos">fill algorhythms</a>.</col>
+          </row>
+          <row>
+            <col>zoomX, zoomY</col>
+            <col>Integer</col>
+            <col>Specifies the scale applied to the fill pattern. -100 to +99.</col>
+          </row>
+          <row>
+            <col>ox, oy</col>
+            <col>Integer</col>
+            <col>Offset to the fill pattern in percent. You can use this e.g. to shift a sine curve.</col>
+          </row>
+          <row>
+            <col>a, b</col>
+            <col>Integer</col>
+            <col>Additional parameters for the fill pattern.</col>
+          </row>
+          <row>
+            <col>turbulence</col>
+            <col>Integer</col>
+            <col>10 to 10,000; layer deformation</col>
+          </row>
+          <row>
+            <col>rotate</col>
+            <col>Integer</col>
+            <col>-180 to +180; rotation of the layer.</col>
+          </row>
+          <row>
+            <col>invert</col>
+            <col>Boolean</col>
+            <col>0 or 1; if 1 the layer filling is inverted.</col>
+          </row>
+          <row>
+            <col>seed</col>
+            <col>Integer</col>
+            <col>Random seed for layer generation. Each seed will create a unique random layer.</col>
+          </row>
+          <row>
+            <col>loosebounds</col>
+            <col>Boolean</col>
+            <col>Determines whether the area limits are also affected by rotate, turbulence, ox, and oy.</col>
+          </row>
+          <row>
+            <col>mask</col>
+            <col>Boolean</col>
+            <col>0 or 1; if 1 the layer is never drawn. This does not affect sub-layers.</col>
+          </row>
+          <row>
+            <col>grp</col>
+            <col>b</col>
+            <col>0 or 1; if 1 the layer is considered set if the local algorithm or the algorithm of one of the sub-layers returns true. If an operator follows, the layer itself is not drawn.</col>
+          </row>
+          <row>
+            <col>sub</col>
+            <col>Boolean</col>
+            <col>0 or 1; if 1 the material is considered underground (default)</col>
+          </row>
+          <row>
+            <col>lambda</col>
+            <col>Integer</col>
+            <col>0 to 20; additional turbulence iterations</col>
+          </row>
+        </table>
+      </text>
+      <h id="Attr_map">Maps</h>
+      <text>Maps generally can have the same attributes as layers. However, only mat, tex, and sub are really useful for maps and determine the background filling.</text>
+    </part>
+    <h id="Algos">Fill Algorithms</h>
+    <text>To decide whether a point on a map hits a given layer, it is first transformed (zoom, turbulence, rotate, ox/oy) and then processed in the layer's algorithm. Also it is checked against the mask boundaries (x, y, wdt, hgt). This is usually done before, but with loosebounds after the transformation.</text>
+    <dl>
+      <dt id="Algo_solid">solid</dt>
+      <dd>
+        <text>Default algorithm. Always true.</text>
+      </dd>
+      <dt id="Algo_random">random</dt>
+      <dd>
+        <text>Random points. The parameter specifies probability. The higher a, the less likely the point is set.</text>
+      </dd>
+      <dt id="Algo_checker">checker</dt>
+      <dd>
+        <text>Alternating boxes of size 10 (at normal zoom).</text>
+      </dd>
+      <dt id="Algo_bozo">bozo</dt>
+      <dd>
+        <text>Specks. Parameter a can be used to reduce speck size.</text>
+      </dd>
+      <dt id="Algo_sin">sin</dt>
+      <dd>
+        <text>Horizontal sine curve. In standard zoom the amplitude is 10, the period 20 pixels.</text>
+      </dd>
+      <dt id="Algo_boxes">boxes</dt>
+      <dd>
+        <text>Orderly boxes. Parameter a defines block size, b the distance of block centers.</text>
+      </dd>
+      <dt id="Algo_rndchecker">rndchecker</dt>
+      <dd>
+        <text>As checker, but not in alternating but in random order.</text>
+      </dd>
+      <dt id="Algo_lines">lines</dt>
+      <dd>
+        <text>Vertical lines. Parameter a defines line width, b defines distance between lines.</text>
+      </dd>
+      <dt id="Algo_border">border</dt>
+      <dd>
+        <text>Draws an inner border in the parent layer (or the whole operator chain respectively). a and b are the horizontal and vertical border width. Because the superior layer needs to be accessed for calculation, it cannot be defined as a group (grp).</text>
+      </dd>
+      <dt id="Algo_mandel">mandel</dt>
+      <dd>
+        <text>Draws the Mandel fractal into the target area. Parameter a specifies iteration depth (default 1000). With no zoom, the complete "ApfelmÃ¤nnchen" is drawn (corresponding to -2-2i to 2+2i).</text>
+      </dd>
+      <dt id="Algo_rndall">rndall</dt>
+      <dd>
+        <text>The complete area is filled, or not filled, with probability a (in percent). Using this algorithm you could for example specify multiple maps as sub maps of a mask=1 layer and one of these maps would be randomly chosen.</text>
+      </dd>
+      <dt id="Algo_script">script</dt>
+      <dd>
+        <text>This algorithm is defined via a <emlink href="scenario/script.html">scenario script</emlink> function of the following form:</text>
+        <code>func ScriptAlgo[Overlay-Name](x, y, iAlpha, iBeta)</code>        <text>The script function's return value should be 0 (no material) or 1 (material). x and y are the pixel coordinates for which the function is called. iAlpha and iBeta correspond to parameters a and b.</text>
+        <text>If the layer has no name, the function "ScriptAlgo" is used.</text>
+      </dd>
+      <dt id="Algo_poly">poly</dt>
+      <dd>
+        <text>Returns true for pixels within the specified polygon. Points are specifed using</text>
+        <code>point { x=&lt;X-Koordinate des Eckpunkts&gt;&lt;Einheit&gt;; y=&lt;Y-Koordinate&gt;&gt;&lt;Einheit&gt;; };</code>        <text>Example:</text>
+        <code>overlay { algo=poly; mat=Earth;
   point { x=10px; y=25%; };  
   point { x=20px; y=25%; };  
   point { x=10px; y=75%; };  
   point { x=20px; y=75%; };  
   point { x=30px; y=50%; };
-};</code></dd>
-	</dl>
-	
-	<h id="Operators">Operatoren</h>
-	<text>Mehrere Ebenen können mit Operatoren verbunden werden. Diese werden von oben nach unten ausgewertet, und es wird nur das unterste Glied der Operatorkette ggf gezeichnet. Bei einer Gruppe (grp) werden zusätzlich die untergeordneten Ebenen in die Auswertung mit einbezogen und nicht gezeichnet. Definierte Operatoren sind | (oder), &amp; (und) und ^ (exklusiv oder).</text>
-</part>
-
-<author>Sven2</author><date>Juli 2001</date>
-
+};</code>      </dd>
+    </dl>
+    <h id="Operators">Operators</h>
+    <text>Multiple layers can be combined using operators. This are evaluated from top to bottom and only the bottom most result of the chain is drawn. In a group (grp) the child layers are taken into the calculation but not actually drawn. Operators are | (OR), &amp; (AND), ^ (XOR).</text>
+  </part>
+  <author>Sven2</author><date>2001-07</date>
 </doc>

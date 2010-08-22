@@ -1,36 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetPlrMagic</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool / id</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spieler, dessen Magiewissen abgefragt wird.</desc></param>
-				<param><type>id</type><name>id</name><desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der player betreffenden Zauber zur Verfügung hat. index wird hierbei ignoriert.</desc></param>
-				<param><type>int</type><name>index</name><desc>Bei angegebenem index liefert die Funktion den indizierten Zauberspruch, der dem Spieler zur Verfügung steht.</desc></param>
-			</params>
-		</syntax>
-		<desc>Stellt das Magiewissen eines bestimmten Spielers fest.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink> (GetPlrMagic(0,MLGT))
-	<funclink>Log</funclink>("Spieler %s kann Blitze zaubern",<funclink>GetPlayerName</funclink>(0));
+  <func>
+    <title>GetPlrMagic</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool / id</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose magic knowledge you want to determine.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>With id specified the function returns true, if the specified player knows the specified spell. In this case index is ignored.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>With index specified the function returns the indicated spell from the player's list of known spells.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines magic spell knowledge of a player.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (GetPlrMagic(0,MLGT))
+	<funclink>Log</funclink>(&quot;Spieler %s kann Blitze zaubern&quot;,<funclink>GetPlayerName</funclink>(0));
 				</code>
-				<text>Wenn Spieler 0 Blitze zaubern (MLGT) kann, wird eine entsprechende Botschaft ausgegeben.</text>
-			</example>
-			<example>
-				<code>var spell;
+        <text>If player 0 knows the lightning spell (MGLT), a message is displayed.</text>
+      </example>
+      <example>
+        <code>var spell;
 
 spell = GetPlrMagic(0,0,4);
-<funclink>Log</funclink>("Der fünfte Zauberspruch des Spielers ist %i",spell);
+<funclink>Log</funclink>(&quot;Der fÃ¼nfte Zauberspruch des Spielers ist %i&quot;,spell);
 				</code>
-				<text>Gibt die ID des 5. Zauberspruchs des ersten Spielers aus.</text>
-			</example>
-		</examples>
-	</func>
-	<author>jwk</author><date>Juni 2002</date>
+        <text>Returns the id of the fifth spell of the first player.</text>
+      </example>
+    </examples>
+  </func>
+  <author>jwk</author><date>2002-06</date>
 </funcs>

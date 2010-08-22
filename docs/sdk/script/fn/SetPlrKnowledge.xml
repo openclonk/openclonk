@@ -1,30 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetPlrKnowledge</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spieler, dem ein Bauplan gegeben werden soll</desc></param>
-				<param><type>id</type><name>definition</name><desc>ID der Objektdefinition, für die der Bauplan gegeben werden soll</desc></param>
-				<param><type>bool</type><name>remove</name><desc>Wenn ungleich 0, wird der Bauplan vom Wissen des Spielers entfernt</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Fügt einen Bauplan zum Wissen des Spielers hinzu (oder entfernt ihn bei angegebenem remove).</desc>
-		<examples>
-			<example>
-				<code>var i, id; <funclink>while</funclink> (id = <funclink>GetDefinition</funclink>(i++)) SetPlrKnowledge(0, id);</code>
-				<text>Gibt dem ersten Spieler Baupläne für alle geladenen Objekte.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetPlrKnowledge</funclink>
-			<funclink>SetPlrMagic</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+  <func>
+    <title>SetPlrKnowledge</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player which receives the construction plan.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>Id of the definition for which the plan shall be given.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>remove</name>
+          <desc>If not 0, the plan will be removed from the players knowledge.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Gives a player a construction plan resp. removes the plan if remove is given.</desc>
+    <examples>
+      <example>
+        <code>var i, id; <funclink>while</funclink> (id = <funclink>GetDefinition</funclink>(i++)) SetPlrKnowledge(0, id);</code>
+        <text>The first player is given plans to all loaded objects.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlrKnowledge</funclink>
+      <funclink>SetPlrMagic</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

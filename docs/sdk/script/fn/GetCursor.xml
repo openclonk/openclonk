@@ -1,33 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetCursor</title>
-		<category>Objekte</category>
-		<subcat>Mannschaft</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen kontrollierter Clonk zurückgegeben werden soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt den momentan kontrollierten Clonk eines Spielers zurück.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink> (!GetCursor(0)) <funclink>SetCursor</funclink>(<funclink>GetHiRank</funclink>(0));</code>
-				<text>Wählt den höchstrangigen Clonk des ersten Spielers aus, wenn ansonsten gerade kein anderer Clonk ausgewählt ist.</text>
-			</example>
-			<example>
-				<code>GetCursor(0)-><funclink>Message</funclink>("Hurra!");</code>
-				<text>Gibt eine Nachricht über dem ausgewählten Clonk des ersten Spielers aus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetHiRank</funclink>
-			<funclink>GetCrew</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Februar 2003</date>
+  <func>
+    <title>GetCursor</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose controlled clonk you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the currently controlled Clonk of a player.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (!GetCursor(0)) <funclink>SetCursor</funclink>(<funclink>GetHiRank</funclink>(0));</code>
+        <text>Selects the player's highest ranking clonk if currently no other clonk is selected.</text>
+      </example>
+      <example>
+        <code>GetCursor(0)-&gt;<funclink>Message</funclink>(&quot;Hurra!&quot;);</code>
+        <text>Displays a message above the currently selected clonk of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetHiRank</funclink>
+      <funclink>GetCrew</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-02</date>
 </funcs>

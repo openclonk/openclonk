@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,14 +10,17 @@
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>any</type><name>...</name><desc>Aufrufparameter</desc></param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Calling Parameters</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ruft die überladene Funktion auf. Funktionen überladen sich, wenn sie beide den gleichen Namen haben. Die Funktion ist im Gegensatz zu <funclink>inherited</funclink> außerdem failsafe. Das heißt, dass es zu keinem Fehler führt, wenn die Ursprungsfunktion gar nicht existiert.</desc>
+    <desc>Calls the overloaded function. A function will overload another function if it is declared in the same scope with the same name. As opposed to <funclink>inherited</funclink>, this method is also failsafe, meaning it will not cause an error if the original function doesn't really exist.</desc>
     <examples>
       <example>
-
-<code>
+        <code>
 
 #appendto Clonk
 
@@ -25,13 +29,10 @@ func Initialize()
   <funclink>CreateContents</funclink>(Firestone);
   <funclink>return</funclink> _inherited(...);
 }</code>
-
-        <text>Gibt jedem Clonk zu Beginn einen Feuerstein.</text>
+        <text>Gives a flintstone to each clonk.</text>
       </example>
     </examples>
-    <related>
-      <funclink>inherited</funclink>
-    </related>
+    <related><funclink>inherited</funclink></related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

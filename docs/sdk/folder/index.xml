@@ -1,64 +1,75 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Rundenordner</title>
-
-<h id="Folders">Rundenordner</h>
-<part>
-	<text>In Rundenordner werden mehrere Szenarien zusammengefasst. Rundenordner erscheinen in der Szenarienauswahl als Buch, das geöffnet werden kann um die enthaltenen Szenarien zu starten.</text>
-	
-	<h id="Components">Szenario-Komponenten (C4S)</h>
-	<dl>
-		<dt id="c4s"><img src="../../images/icon_scenario.gif" width="16" height="16"/><emlink href="scenario/index.html">*.c4s</emlink></dt>
-		<dd><text>Rundenordner können beliebig viele Szenarien enthalten, die in diesem Ordner ausgewählt werden können.</text></dd>
-		
-		<dt id="c4f"><img src="../../images/icon_scenario_folder.gif" width="16" height="16"/>*.c4f</dt>
-		<dd><text>Rundenordner lassen sich auch schachteln.</text></dd>
-		
-		<dt id="Title"><img src="../../images/icon_image.gif" width="16" height="16"/>Title.png/Title.bmp</dt>
-		<dd><text>Das Titelbild des Rundenordners im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt.</text></dd>
-		
-		<dt id="Iconbmp"><img src="../../images/icon_image.gif" width="16" height="16"/>Icon.bmp/Icon.png</dt>
-		<dd><text>Das Icon des Rundenordners, das statt des Buches angezeigt werden kann. Für Bitmaps: Größe 16x16 Pixel. Die Farbe RGB 255/0/255 (Lila) wird transparent angezeigt. Für png-Dateien ist die empfohlene Größe 24x24 Pixel, und es wird der png-Alphakanal für Transparenz genutzt.</text></dd>
-		
-		<dt id="Desc__rtf"><img src="../../images/icon_text.gif" width="16" height="16"/>Desc*.rtf</dt>
-		<dd><text>Der Beschreibungstext im RTF-Format. __ muss durch den zweistelligen Sprachcode ersetzt werden. DE steht beispielsweise für Deutsch, US für American English. Es können für mehrere Sprachen verschiedene Beschreibungen enthalten sein, von denen je nach eingestellter Sprache des Menüsystems automatisch die passendste ausgewählt wird.</text>
-		<text>Der Font des Textes wird im Spiel automatisch auf den eingestellten Menüsystem-Font angepasst. Die Größe der Überschrift sollte 10pt und die des Textes 8pt betragen. Bilder im Text werden ignoriert.</text>
-		<text>Diese Datei erstellt man am besten mit dem zu Windows gehörenden WordPad und nicht mit Winword, denn dieses packt in jedes Dokument kilobyteweise unnütze Daten.</text></dd>
-		
-		<dt id="Titletxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Title.txt</dt>
-		<dd><text>Normalerweise wird der Titel eines Szenarios beim Umbenennen mit dem Menüsystem dem Dateinamen entnommen und in der [Head]-Sektion des Szenario.txt gespeichert. Der Dateiname kann unabhängig verändert werden. Für mehrsprachige Szenarien muss eine Datei Title mit entsprechendem Inhalt erzeugt werden:</text>
-		<code>DE:Meine Rundensammlung
-US:My scenario collection</code>
-		<text>Wichtig: Folgende Zeichen sollten nicht verwendet werden: &lt;&gt;&amp;"</text></dd>
-		
-		<dt id="FolderMaptxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
-		<dd><text>Ab CR können Rundenordner Auswahlkarten für die enthaltenen Szenarien anbieten.</text></dd>
-		
-		<dt id="Loader"><img src="../../images/icon_image.gif" width="16" height="16"/>Loader*.png/Loader*.bmp</dt>
-		<dd><text>Rundenordner können lokale Ladebildschirme enthalten. Siehe auch <emlink href="scenario/index.html">Szenarien</emlink>. Es gelten die <emlink href="scenario/index.html#UeberladungenC4S">Überladungsregeln</emlink>.</text></dd>
-		
-		<dt id="Materialc4g"><img src="../../images/icon_system.gif" width="16" height="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
-		<dd><text>Rundenordner können lokale Materialdefinitionen enthalten. Siehe auch <emlink href="scenario/index.html#Materialc4g">Szenarien</emlink>. Es gelten die <emlink href="scenario/index.html#UeberladungenC4S">Überladungsregeln</emlink>.</text></dd>
-		
-		<dt id="Graphicsc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Graphics.c4g</dt>
-		<dd><text>Rundenordner können einzelne Grafiken aus der systemglobalen Graphics.c4g überladen. Siehe auch <emlink href="scenario/index.html#Graphicsc4g">Szenarien</emlink>. Es gelten die <emlink href="scenario/index.html#UeberladungenC4S">Überladungsregeln</emlink>.</text></dd>
-		
-		<dt id="Musicc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Music.c4g</dt>
-		<dd><text>Rundenordner können eigene Musik für alle Szenarien bereitstellen. Siehe auch <emlink href="scenario/index.html#Musicc4g">Szenarien</emlink>. Es gelten die <emlink href="scenario/index.html#UeberladungenC4S">Überladungsregeln</emlink>.</text></dd>
-		
-		<dt id="c4d"><img src="../../images/icon_object_definition.gif" width="16" height="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
-		<dd><text>Rundenordner können lokale Objektdefinitionen enthalten, die dann in allen Szenarien des Ordners verfügbar sind. Siehe auch <emlink href="scenario/index.html#c4d">Szenarien</emlink>. Es gelten die <emlink href="scenario/index.html#UeberladungenC4S">Überladungsregeln</emlink>.</text></dd>
-		
-		<dt id="Infotxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Info.txt</dt>
-		<dd><text>Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seiner Szenarien, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte.</text></dd>
-		
-		<dt id="Authortxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Author.txt</dt>
-		<dd><text>Sollte den Namen des Autors im Format "Vorname Nachname (Nick)" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht.</text></dd>
-	</dl>
-</part>
-
-<author>Sven2</author><date>September 2006</date>
-
+  <title>Scenario Folder</title>
+  <h id="Folders">Scenario Folder</h>
+  <part>
+    <text>Scenario folders are used to group a number of scenarios. Scenario folders are displayed with a book icon in the startup screen which can then be opened to list contained scenarios.</text>
+    <h id="Components">Scenario Components (c4s)</h>
+    <dl>
+      <dt id="c4s"><img height="16" src="../../images/icon_scenario.gif" width="16"/><emlink href="scenario/index.html">*.c4s</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain any number of scenarios.</text>
+      </dd>
+      <dt id="c4f"><img height="16" src="../../images/icon_scenario_folder.gif" width="16"/>*.c4f</dt>
+      <dd>
+        <text>Scenario folders can also contain other scenario folders.</text>
+      </dd>
+      <dt id="Title"><img height="16" src="../../images/icon_image.gif" width="16"/>Title.png/Title.bmp</dt>
+      <dd>
+        <text>The title picture of the scenario folder in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well.</text>
+      </dd>
+      <dt id="Iconbmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.bmp/Icon.png</dt>
+      <dd>
+        <text>The icon of a scenario folder which is to be displayed instead of the book icon. BMP format (obsolete): 16x16 pixels, color RGB 255 0 255 (purple) is transparent. PNG format: 24x24 pixels, alpha channel is used for transparency.</text>
+      </dd>
+      <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.gif" width="16"/>Desc*.rtf</dt>
+      <dd>
+        <text>The description text of the scenario in rich text format (rtf). '__' is to be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a scenario file of which the game will automatically load the one appropriate for the configured language.</text>
+        <text>The font of the description text is set internally on display. The character size in the file should be 10pt for headings and 8pt for text. Images or other rtf tags are ignored.</text>
+        <text>It is recommended to edit this file using a small scale rtf editor such as WordPad.exe in Windows and not a full-blown word processor such as Word as these will stuff kilobytes of unneeded extra information into the rtf file.</text>
+      </dd>
+      <dt id="Titletxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Title.txt</dt>
+      <dd>
+        <text>By default, the title of a scenario is set when renaming the scenario in the menu system and stored in section [Head] of Scenario.txt. The file name of the scenario group file may differ. For language dependent titles you should create a Title.txt component with the appropriate contents:</text>
+        <code>DE:Meine Rundensammlung
+US:My scenario collection</code>        <text>Important: No quotation marks and special characters should be used.</text>
+      </dd>
+      <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
+      <dd>
+        <text>From CR, scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
+      </dd>
+      <dt id="Loader"><img height="16" src="../../images/icon_image.gif" width="16"/>Loader*.png/Loader*.bmp</dt>
+      <dd>
+        <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Materialc4g"><img height="16" src="../../images/icon_system.gif" width="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain local material definitions. Also see <emlink href="scenario/index.html#Materialc4g">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Graphicsc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Graphics.c4g</dt>
+      <dd>
+        <text>Scenario folders can overload individual entries of the global Graphics.c4g group. See <emlink href="#UeberladungenC4S">overloading rules</emlink>.</text>
+      </dd>
+      <dt id="Musicc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Music.c4g</dt>
+      <dd>
+        <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicc4g">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="c4d"><img height="16" src="../../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
+      <dd>
+        <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#c4d">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+      </dd>
+      <dt id="Infotxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Info.txt</dt>
+      <dd>
+        <text>Here an author can store additional information about the development of his scenario, his email address, or other information he wants to share with other developers.</text>
+      </dd>
+      <dt id="Authortxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Author.txt</dt>
+      <dd>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios.</text>
+      </dd>
+    </dl>
+  </part>
+  <author>Sven2</author><date>2006-09</date>
 </doc>

@@ -1,95 +1,98 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Objektkategorien</title>
-<h id="Objektkategorien">Objektkategorien</h>
-<part>
-<text>Die Kategorie eines Objekts legt Teile seines Verhaltens fest. Sie wird für eine Definition durch den Eintrag Category in der DefCore.txt festgelegt. Dabei können verschiedene Kategorien mit einem binären oder-Operator kombiniert werden.</text>
-<text>
-<table>
-<rowh><col>Kategorie</col><col>Beschreibung</col></rowh>
-<row>
-  <col>C4D_StaticBack</col>
-  <col>Unbewegliches Hintergrundobjekt.</col>
-</row>
-<row>
-  <col>C4D_Structure</col>
-  <col>Gebäude.</col>
-</row>
-<row>
-  <col>C4D_Vehicle</col>
-  <col>Fahrzeug.</col>
-</row>
-<row>
-  <col>C4D_Living</col>
-  <col>Lebewesen.</col>
-</row>
-<row>
-   <col>C4D_Object</col>
-  <col>Gegenstand.</col>
-</row>
-<row>
-   <col>C4D_Goal</col>
-  <col>Spielziel.</col>
-</row>
-<row>
-  <col>C4D_Environment</col>
-  <col>Umweltsteuerungsobjekt.</col>
-</row>
-<row>
-  <col>C4D_TradeLiving</col>
-  <col>Verkaufbares Lebewesen.</col>
-</row>
-<row>
-  <col>C4D_Magic</col>
-  <col>Zauber.</col>
-</row>
-<row>
-  <col></col>
-  <col>Reserviert; wird intern benutzt.</col>
-</row>
-<row>
-  <col>C4D_Rule</col>
-  <col>Spielregel.</col>
-</row>
-<row>
-  <col>C4D_Background</col>
-  <col>Objekt ist hinter der Landschaft.</col>
-</row>
-<row>
-  <col>C4D_Parallax</col>
-  <col>Objekt bewegt sich parallax nach Local 0 und 1. Für mehr Informationen siehe <funclink>C4D_Parallax</funclink>.</col>
-</row>
-<row>
-  <col>C4D_MouseSelect</col>
-  <col>Objekt mit der Maus anwählbar, MouseSelection(int player)-Callback im Objekt.</col>
-</row>
-<row>
-  <col>C4D_Foreground</col>
-  <col>Objekt ist im Vordergrund, also vor globalen Partikeln.</col>
-</row>
-<row>
-  <col>C4D_MouseIgnore</col>
-  <col>Objekt ist nicht mit der Maus anwählbar.</col>
-</row>
-<row>
-  <col>C4D_IgnoreFoW</col>
-  <col>Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente. Ab CR.</col>
-</row>
-</table>
-</text>
-<h id="Beispiel">Beispiel</h>
-<text>
-  <examples>
-    <example>
-      <code>Category=C4D_StaticBack|C4D_Rule</code>
-	  <text>Kategorie für eine Regel.</text>
-    </example>
-  </examples>
-</text>
-</part>
-
-<author>Sven2</author><date>Mai 2006</date>
-<author>Newton &amp; Günther</author><date>Januar 2005</date>
+  <title>Object Categories</title>
+  <h id="Objektkategorien">Object Categories</h>
+  <part>
+    <text>An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
+    <text>
+      <table>
+        <rowh>
+          <col>Category</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>C4D_StaticBack</col>
+          <col>Immovable background object.</col>
+        </row>
+        <row>
+          <col>C4D_Structure</col>
+          <col>Building.</col>
+        </row>
+        <row>
+          <col>C4D_Vehicle</col>
+          <col>Vehicle.</col>
+        </row>
+        <row>
+          <col>C4D_Living</col>
+          <col>A living being.</col>
+        </row>
+        <row>
+          <col>C4D_Object</col>
+          <col>A smaller item.</col>
+        </row>
+        <row>
+          <col>C4D_Goal</col>
+          <col>Game goal.</col>
+        </row>
+        <row>
+          <col>C4D_Environment</col>
+          <col>Environmental control object.</col>
+        </row>
+        <row>
+          <col>C4D_TradeLiving</col>
+          <col>A living being that can be sold at the home base.</col>
+        </row>
+        <row>
+          <col>C4D_Magic</col>
+          <col>A magic spell.</col>
+        </row>
+        <row>
+          <col></col>
+          <col>Reserved, used internally.</col>
+        </row>
+        <row>
+          <col>C4D_Rule</col>
+          <col>Rule control object.</col>
+        </row>
+        <row>
+          <col>C4D_Background</col>
+          <col>Object is behind the landscape.</col>
+        </row>
+        <row>
+          <col>C4D_Parallax</col>
+          <col>Object moves parallax according to Local 0 and 1. For more information see <funclink>C4D_Parallax</funclink>.</col>
+        </row>
+        <row>
+          <col>C4D_MouseSelect</col>
+          <col>Object can be clicked with the mouse, causing a MouseSelection(int player) callback in the object.</col>
+        </row>
+        <row>
+          <col>C4D_Foreground</col>
+          <col>Object is always in the foreground, even before global particles.</col>
+        </row>
+        <row>
+          <col>C4D_MouseIgnore</col>
+          <col>Object cannot be selected with the mouse.</col>
+        </row>
+        <row>
+          <col>C4D_IgnoreFoW</col>
+          <col>Object is drawn above fog of war. Useful for creating status displays or gui elements using objects. From CR.</col>
+        </row>
+      </table>
+    </text>
+    <h id="Beispiel">Example</h>
+    <text>
+      <examples>
+        <example>
+          <code>Category=C4D_StaticBack|C4D_Rule</code>
+          <text>Category for a rule.</text>
+        </example>
+      </examples>
+    </text>
+  </part>
+  <author>Sven2</author><date>2006-05</date>
+  <author>Newton &amp; GÃ¼nther</author><date>2005-01</date>
 </doc>

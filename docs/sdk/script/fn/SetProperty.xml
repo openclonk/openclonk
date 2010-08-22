@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>SetProperty</title>
-                <category>Objekte</category><subcat>Eigenschaften</subcat>
-                <version>4.10.0.0</version>
-                <syntax>
-                        <rtype>bool</rtype>
-                        <params>
-                                <param><type>string</type><name>key</name><desc>Zu setzende Eigenschaft.</desc><optional /></param>
-                                <param><type>any</type><name>value</name><desc>Wert, auf den die Eigenschaft gesetzt werden soll.</desc><optional /></param>
-                                <param><type>proplist</type><name>object</name><desc>Objekt, das geändert wird. Null bei lokalem Aufruf.</desc><optional /></param>
-                        </params>
-                </syntax>
-                <desc>Setzt die Eigenschaft <code>key</code> von <code>object</code> auf <code>value</code>. Die Eigenschaft muss vorher nicht existiert haben.</desc>
-                <related>
-                        <funclink>GetProperty</funclink>
-                </related>
-        </func>
-        <author>Günther</author><date>Mai 2009</date>
+  <func>
+    <title>SetProperty</title>
+    <category>Objects</category>
+    <subcat>Properties</subcat>
+    <version>4.10.0.0</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>key</name>
+          <desc>Property to be set.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>any</type>
+          <name>value</name>
+          <desc>Value to set the property to.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>proplist</type>
+          <name>object</name>
+          <desc>Object to be changed. Can be 0 in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the property <code>key</code> of <code>object</code> to <code>value</code>. The property does not have to exist beforehand.</desc>
+    <related><funclink>GetProperty</funclink></related>
+  </func>
+  <author>Günther</author><date>2009-05</date>
 </funcs>
-

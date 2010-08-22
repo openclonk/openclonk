@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetEffectCount</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,30 +13,27 @@
         <param>
           <type>string</type>
           <name>mask</name>
-          <desc>Suchmaske für den Namen der Effekte. Es können '*' und '?' in der Maske verwendet, oder auch direkt Effektnamen angegeben werden. Bei 0, werden alle Effekte gezählt.</desc>
+          <desc>Search mask for effect names. You can use '*' or '?' wildcards or specify an effect name directly. If 0, all effects are counted.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Zielobjekt, dessen Effekte gezählt werden sollen. Bei 0 werden globale Effekte gezählt.</desc>
+          <desc>Target object the effects of which you want to count. If 0, the global effects will be counted.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>max_priority</name>
-          <desc>Wenn ungleich 0, werden nur Effekte zurückgegeben, die höchstens die angegebene Priorität haben.</desc>
+          <desc>If not 0, only those effects are counted which have the specified priority or lower.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Zählt die Effekte in einem Objekt oder globale Effekte.</desc>
-
-    <remark>Beispiel siehe <funclink>GetEffect</funclink>.</remark>
-
+    <desc>Counts object effects or global effects.</desc>
+    <remark>For an example see <funclink>GetEffect</funclink>.</remark>
     <related>
-      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
       <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
@@ -45,5 +43,5 @@
       <funclink>RemoveEffect</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>März 2004</date>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

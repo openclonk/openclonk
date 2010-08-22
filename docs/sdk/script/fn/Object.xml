@@ -1,21 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Object</title>
-		<category>Objekte</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>int</type><name>object_number</name><desc>Eindeutige Objektnummer.</desc></param>
-			</params>
-		</syntax>
-		<desc>Wandelt eine Objektnummer in einen Objektpointer um.</desc>
-		<related>
-			<funclink>ObjectNumber</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>Mai 2002</date>
+  <func>
+    <title>Object</title>
+    <category>Objects</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>object_number</name>
+          <desc>Unique object number.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Converts an object number into an object pointer.</desc>
+    <related><funclink>ObjectNumber</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-05</date>
 </funcs>

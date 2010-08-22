@@ -1,32 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>RGB2HSL</title>
-		<category>Arithmetik</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-			</params>
-		</syntax>
-		<desc>
-		Wandelt einen 32Bit-Farbwert in die entsprechenden Hue-, Saturation- und Lightness-Werte um wie bereits von Malprogrammen bekannt.<br/>
-		Die HSL Werte werden ebenfalls als int zurückgegeben und können mit <funclink>GetRGBaValue</funclink>() oder <funclink>SplitRGBaValue</funclink>() weiter verwendet werden.<br/>
-		Alle Werte sind von 0 bis 255 skaliert.
-		</desc>
-		<remark>
-		Da es in Clonk keinen Float-Datentyp gibt können die umgerechneten Werte einen geringen Fehler enthalten. (Im Regelfall nicht mehr als +1 bzw. -1) 
-		</remark>
-		<examples>
-			<example>
-				<code> 2
+  <func>
+    <title>RGB2HSL</title>
+    <category>Arithmetics</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>Val</name>
+          <desc>32 bit color value</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Converts a 32 bit color value into hue, saturation, and lightness values as know in paint programs.<br/>The HSL value is returned as int and can be processed using <funclink>GetRGBaValue</funclink> or <funclink>SplitRGBaValue</funclink>.<br/> All values range from 0-255.</desc>
+    <remark>Since there is no floating point data type in Clonk, these values may contain slight rounding errors (usually not greater than +1 to +1).</remark>
+    <examples>
+      <example>
+        <code> 2
 #appendto Clonk
 
 func Initialize() {
-  <funclink>AddEffect</funclink>("VariateHue",<funclink>this</funclink>(),200,1,<funclink>this</funclink>());
+  <funclink>AddEffect</funclink>(&quot;VariateHue&quot;,<funclink>this</funclink>(),200,1,<funclink>this</funclink>());
   <funclink>return</funclink> <funclink>_inherited</funclink>();
 }
 
@@ -35,19 +34,19 @@ func FxVariateHueTimer() {
   var hue, sat, light;
   <funclink>SplitRGBaValue</funclink>(hsl, hue, sat, light);
   hue+=2;
-  if(hue>255) hue=0;
+  if(hue&gt;255) hue=0;
   rgb=<funclink>HSL2RGB</funclink>(<funclink>RGB</funclink>(hue,sat,light));
   <funclink>SetColorDw</funclink>(rgb);
 }
 </code>
-				<text>Erzeugt in jedem Clonk einen Effekt der die Farbe der Clonks Regenbogenartig variieren lässt.<br/>Zum ausprobieren den Script am besten in einen Szenarienlokale System.c4g Ordner kopieren<br/>Der Hue-Wert wird hier mit Absicht mit jeweils um 2 erhöht, da der geringe Fehler bei der Umrechnung sonst wirksam wird und gar nichts geschieht.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>HSL2RGB</funclink>
-			<funclink>SetRGBaValue</funclink>
-			<funclink>RGB</funclink>
-		</related>
-	</func>
-	<author>Tyron</author><date>September 2004</date>
+        <text>Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.c4g group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>HSL2RGB</funclink>
+      <funclink>SetRGBaValue</funclink>
+      <funclink>RGB</funclink>
+    </related>
+  </func>
+  <author>Tyron</author><date>2004-09</date>
 </funcs>

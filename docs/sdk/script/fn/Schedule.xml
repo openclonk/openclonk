@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,29 +10,42 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>script</name><desc>Auszuführendes Script</desc></param>
-        <param><type>int</type><name>delay</name><desc>Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn repeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen.</desc></param>
-				<param><type>int</type><name>repeat</name><desc>Anzahl der Ausführungen. Wenn 0 oder nicht angegeben wird das Script genau ein mal ausgeführt.</desc></param>
-				<param><type>object</type><name>obj</name><desc>Objekt, in dem das Script ausgeführt werden soll. 0 für lokalen Aufruf.</desc></param>
+        <param>
+          <type>string</type>
+          <name>script</name>
+          <desc>Script to be executed.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>delay</name>
+          <desc>Delay after which the first call is made. If repeat is greather than 1, this is also the delay inbetween subsequent calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>repeat</name>
+          <desc>Number of calls. If 0 or not specified, the call is made exactly once.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object in which the call is to be made. Can be 0 in local calls.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Führt einen bestimmes Script mit Verzögerung aus.</desc>
-		<remark>Diese Funktion wird in der System.c4g durch einen <emlink href="script/Effects.html">Effekt</emlink> "IntSchedule" und
-					  die Funktion <funclink>eval</funclink> realisiert.</remark>
-		<remark>Entsprechend darf das Script nur aus genau einem Befehl bestehen (es ist nicht möglich, mehrere Befehle mit ";" aufzulisten)</remark>
+    <desc>Executes a specified script command after a specified delay.</desc>
+    <remark>This function is implemented in System.c4g using the <emlink href="script/Effects.html">effect</emlink> "IntSchedule" in function <funclink>eval</funclink>.</remark>
+    <remark>Accordingly, the specified script can be a single command only. It may not contain multiple commands separated by ";".</remark>
     <examples>
       <example>
-				<code>Schedule("<funclink>Explode</funclink>(50)", 1000, 0, <funclink>FindObject</funclink>(Clonk));</code>
-				<text>Lässt einen Clonk auf der Landschaft mit 1000 Ticks Verzögerung explodieren.</text>
-			</example>
+        <code>Schedule(&quot;<funclink>Explode</funclink>(50)&quot;, 1000, 0, <funclink>FindObject</funclink>(Clonk));</code>
+        <text>Makes a clonk explode after 1000 ticks delay.</text>
+      </example>
       <example>
-				<code>Schedule("<funclink>SetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), <funclink>GetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0)) + 1)", 1, 100);</code>
-				<text>Gibt dem ersten Spieler 100 Ticks lang jeden Tick 1 Goldstück. Man beachte dass wenn der erste Spieler stirbt, der Geldregen auf den nächsten Spieler übergeht, da bei jeder Ausführung das Ziel neu bestimmt wird.</text>
-			</example>
-		</examples>
-    <related>
-      <funclink>ScheduleCall</funclink>
-    </related>
+        <code>Schedule(&quot;<funclink>SetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), <funclink>GetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0)) + 1)&quot;, 1, 100);</code>
+        <text>Gives one unit of money per frame to the first player for 100 frames. Notice that if the first player is eliminated, the donations will continue for the next (first) player, since the receiving player is determined anew in each execution.</text>
+      </example>
+    </examples>
+    <related><funclink>ScheduleCall</funclink></related>
   </func>
-  <author>PeterW</author><date>August 2005</date>
+  <author>PeterW</author><date>2005-08</date>
 </funcs>

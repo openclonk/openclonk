@@ -1,34 +1,55 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>BlastObjects</title>
-		<category>Objekte</category>
-		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>X-Koordinate</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Koordinate</desc></param>
-				<param><type>int</type><name>level</name><desc>Stärke</desc></param>
-				<param><type>object</type><name>container</name><desc>Objekt, in dem die zu sprengenden Objekte enthalten sind.</desc></param>
-				<param><type>int</type><name>caused_by</name><desc>Spielernummer des Spielers, der der Verursacher des Schaden ist.</desc></param>
-			</params>
-		</syntax>
-		<desc>Fügt allen Objekten an angegebener Position Explosionsschaden zu. x und y sind immer globale Koordinaten. Wenn ein container angegeben ist, wird der Schaden nur den Objekten zugefügt, die in container enthalten sind. Explosionsschaden kann zur Entzündung führen oder auch Lebewesen wegschleudern. Bei lokalen Aufrufen gilt der Schaden als vom Controller des aufrufenden Objekts verursacht.</desc>
-		<examples>
-			<example>
-				<code>BlastObjects(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 60, <funclink>this</funclink>());</code>
-				<text>Das aufrufende Objekt fügt enthaltenen Objekten Explosionsschaden der Stärke 60 zu.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Explode</funclink>
-			<funclink>NoContainer</funclink>
-			<funclink>AnyContainer</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
-	<author>Clonkonaut</author><date>April 2008</date>
+  <func>
+    <title>BlastObjects</title>
+    <category>Objects</category>
+    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>level</name>
+          <desc>Strength.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>container</name>
+          <desc>Container of the objects to be blasted.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>caused_by</name>
+          <desc>Number of the player who has caused the damage</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects. In local calls, the controller of the calling object is considered to have caused the damage.</desc>
+    <examples>
+      <example>
+        <code>BlastObjects(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 60, <funclink>this</funclink>());</code>
+        <text>The calling object causes explosion damage of level 60 to its contents.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Explode</funclink>
+      <funclink>NoContainer</funclink>
+      <funclink>AnyContainer</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

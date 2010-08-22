@@ -1,28 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GainMissionAccess</title>
-		<category>System</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>string</type><name>password</name><desc>Passwort, das der Liste hinzugefügt wird.</desc></param>
-			</params>
-		</syntax>
-		<desc>Fügt ein Passwort in die Liste der Missionszugänge ein. Alle Spieler auf dem selben Computer können dann ein Szenario starten, welches in der Scenario.txt dieses Passwort als Voraussetzung enthält. Sinnvollerweise sollte jedes Szenario in einer Reihe von Missionen bei erfolgreichem Beenden der Runde das für die jeweils nächste Mission benötigte Passwort freigeben.</desc>
-		<remark>Da nach Spielen im Entwicklermodus Registrierungsinformationen vom Menüsystem nicht aktualisiert werden, kann diese Funktion nur im Spielermodus erfolgreich getestet werden.</remark>
-		<examples>
-			<example>
-				<code>GainMissionAccess("WipfeMonsterSchnee");</code>
-				<text>Gibt dem Spieler das Missionspasswort WipfeMonsterSchnee.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetMissionAccess</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>GainMissionAccess</title>
+    <category>System</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>password</name>
+          <desc>Password to be added to the list.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds a password to the list of gained mission access passwords. All players on this computer can then start scenarios which require this password (defined in Scenario.txt). In a sequence of mission scenarios each scenario should give access to the next one.</desc>
+    <remark>If the engine runs in developer mode, stored registry information is not properly updated. To test this function, start the engine in player mode.</remark>
+    <examples>
+      <example>
+        <code>GainMissionAccess(&quot;WipfeMonsterSchnee&quot;);</code>
+        <text>Gives the mission password WipfeMosterSchnee to the player.</text>
+      </example>
+    </examples>
+    <related><funclink>GetMissionAccess</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

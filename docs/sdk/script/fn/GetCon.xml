@@ -1,27 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetCon</title>
-                <category>Objekte</category><subcat>Status</subcat>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                </syntax>
-                <desc>Liefert die Fertigstellung des aufrufenden Objekts in Prozent. Bei Baustellen ist dies die Fertigstellung, während es bei Tieren und Pflanzen die Größe angibt (Siehe StretchGrowth/OverSize in der <emlink href="definition/defcore.html">DefCore</emlink>)</desc>
+  <func>
+    <title>GetCon</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the completion of an object. With buildings this is the completion of the construction site. With animals and plants this is the current growth (see StretchGrowth/OverSize in <emlink href="definition/defcore.html">DefCore</emlink>).</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (<funclink>GetCursor</funclink>()->GetCon() > 50) <funclink>GetCursor</funclink>()-><funclink>DoCon</funclink>(-10);</code>
-        <text>Schrumpft den ausgewählten Clonk des ersten Spielers um 10% seiner Normalgröße, wenn er nicht schon auf halbe Größe geschrumpft ist.</text>
+        <code><funclink>if</funclink> (<funclink>GetCursor</funclink>()-&gt;GetCon() &gt; 50) <funclink>GetCursor</funclink>()-&gt;<funclink>DoCon</funclink>(-10);</code>
+        <text>Shrinks the selected clonk of the first player by 10% if he's not already at half size.</text>
       </example>
     </examples>
-                <related>
+    <related>
       <funclink>SetCon</funclink>
       <funclink>DoCon</funclink>
       <funclink>OCF_Fullcon</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

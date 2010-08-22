@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,16 +10,23 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>coloumn_id</name><desc>ID der Spalte, nach der sortiert werden soll.</desc></param>
-        <param><type>bool</type><name>reverse</name><desc>Wenn wahr, wird in absteigender Reihenfolge sortiert. Ansonsten in aufsteigender Reihenfolge.</desc><optional /></param>
+        <param>
+          <type>int</type>
+          <name>coloumn_id</name>
+          <desc>ID of the column by which you want to sort.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>reverse</name>
+          <desc>If true, sorting will be done in descendnig order. Otherwise ascending order.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>
-	Sortiert die Zeilen des Scoreboards nach den Extradaten einer Spalte. Wenn zwei Einträge in dieser Spalte die gleichen Werte besitzen, wird nicht umsortiert. So kann durch sukzessive Aufrufe dieser Funktion nach mehreren Spalten sortiert werden.
-    </desc>
+    <desc>Sorts scoreboard lines by the extra data of a column. If two entries have the same value in this column, no sorting is done. In this way you can sort these entries by additional columns in subsequent calls to this function.</desc>
     <examples>
       <example>
-        <text>Für ein ausführliches Beispiel siehe <funclink>SetScoreboardData</funclink>.</text>
+        <text>For an example, see <funclink>SetScoreboardData</funclink>.</text>
       </example>
     </examples>
     <related>
@@ -27,5 +35,5 @@
       <funclink>ScoreboardCol</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Februar 2006</date>
+  <author>Sven2</author><date>2006-02</date>
 </funcs>

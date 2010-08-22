@@ -1,31 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>FindContents</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>id</type><name>type</name><desc>Objekttyp, von dem das Inhaltsobjekt sein soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Liefert das erste in einem Behälter enthaltene Objekt vom Typ type.</desc>
-		<examples>
-			<example>
-
-<code>var hut;
-<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut->FindContents(Clonk)-><funclink>Exit</funclink>(hut-><funclink>GetX</funclink>(), hut-><funclink>GetY</funclink>());</code>
-				<text>Befördert einen Clonk aus einer Hütte heraus.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>FindOtherContents</funclink>
-			<funclink>Contents</funclink>
-			<funclink>FindObject</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>FindContents</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>type</name>
+          <desc>Object type to be found.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the first found contained object of the specified type.</desc>
+    <examples>
+      <example>
+        <code>var hut;
+<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut-&gt;FindContents(Clonk)-&gt;<funclink>Exit</funclink>(hut-&gt;<funclink>GetX</funclink>(), hut-&gt;<funclink>GetY</funclink>());</code>
+        <text>Expels a clonk from a hut.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>FindOtherContents</funclink>
+      <funclink>Contents</funclink>
+      <funclink>FindObject</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

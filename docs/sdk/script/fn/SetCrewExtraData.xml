@@ -1,45 +1,40 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>SetCrewExtraData</title>
-  <category>Spieler</category>
-  <version>4.9.6.0 CR</version>
-  <syntax>
-   <rtype>any</rtype>
-   <params>
-    <param>
-     <type>string</type>
-     <name>data_name</name>
-     <desc>Name, der den Daten zugeordnet werden soll</desc>
-    </param>
-    <param>
-     <type>any</type>
-     <name>Data</name>
-     <desc>Daten, die gesetzt werden sollen.</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Mithilfe dieses Befehls können beliebige, scriptdefinierte Werte unter einem gegebenen Namen im Clonk in der Spielerdatei gespeichert werden.
-        Auf diese Weise kann man Daten über einen Clonk in einer Spielerdatei über Szenariogrenzen hinweg erhalten (z.B. für RPGs)
-        Zurückgegeben wird (wenn erfolgreich) der gesetzte Wert.</desc>
-
-  <remark>Es dürfen keine Objektpointer oder Zeichenfolgen (Strings) gespeichert werden.</remark>
-
-  <remark>Da die Namen des ExtraData über Szenariogrenzen hinweg gültig sind, sollte man dem Namen einen Prefix hinzufügen, um Doppelbenutzungen zu vermeiden ("MySzen_MyName" or "MYID_MyName" für Objektpakete).</remark>
-
-  <examples>
-   <example>
-    <code>#include Clonk
+  <func>
+    <title>SetCrewExtraData</title>
+    <category>Player</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <desc>Data to be saved.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>With this function additional data can be saved in a crew member's file the in player. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
+    <remark>No objects or strings may be saved.</remark>
+    <remark>Because all scripts use the same storage in the crew member, the name for the data should be prefixed with the scenario or object name or your developer id.</remark>
+    <examples>
+      <example>
+        <code>#include Clonk
 
 local is_invisible;
     
 protected func Recruitment(a,b,c,d,e,f,g,h,i,j)
   {
   var rVal = <funclink>_inherited</funclink>(a,b,c,d,e,f,g,h,i,j);
-  if (<funclink>GetCrewExtraData</funclink>("C4ID_Invisible")) <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
+  if (<funclink>GetCrewExtraData</funclink>(&quot;C4ID_Invisible&quot;)) <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
   <funclink>return</funclink>(rVal);
   }
     
@@ -49,15 +44,15 @@ protected func ControlSpecial()
     <funclink>SetVisibility</funclink>();
   else
     <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
-  SetCrewExtraData("C4ID_Invisible", is_invisible);
+  SetCrewExtraData(&quot;C4ID_Invisible&quot;, is_invisible);
   }</code>
-    <text>Script für einen Spezialclonk: Der Clonk kann sich auf Taste Spezial unsichtbar und wieder sichtbar machen. Diese Unsichtbarkeit bleibt auch erhalten, wenn man das Szenario beendet und ein anderes Szenario mit diesem Clonk startet.</text>
-   </example>
-  </examples>
-  <related>
-   <funclink>GetCrewExtraData</funclink>
-   <funclink>SetPlrExtraData</funclink>
-  </related>
- </func>
- <author>Sven2</author><date>Februar 2006</date>
+        <text>A script for a special clonk: the clonk can make himself invisible through the Special 1 key. The set invisibility is maintained even beyond game end and is reapplied when this clonk is used in a new round.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrewExtraData</funclink>
+      <funclink>SetPlrExtraData</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2006-02</date>
 </funcs>

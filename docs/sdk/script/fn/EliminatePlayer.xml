@@ -1,27 +1,30 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>EliminatePlayer</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des zu eliminierenden Spielers</desc></param>
-			</params>
-		</syntax>
-		<desc>Eliminiert einen Spieler. Die Runde gilt für diesen Spieler als verloren.</desc>
-		<examples>
-			<example>
-				<code>if (!<funclink>FindObject</funclink>(Find_ID(FLAG), Find_Owner(0))) EliminatePlayer(0);</code>
-				<text>Wenn der erste Spieler keine Flagge mehr hat, wird er eliminiert.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GameOver</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>EliminatePlayer</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player to be eliminated.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Eliminates a player. The round counts as 'lost' for all eliminated players.</desc>
+    <examples>
+      <example>
+        <code>if (!<funclink>FindObject</funclink>(Find_ID(FLAG), Find_Owner(0))) EliminatePlayer(0);</code>
+        <text>The first player is eliminated if he has no more flags.</text>
+      </example>
+    </examples>
+    <related><funclink>GameOver</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

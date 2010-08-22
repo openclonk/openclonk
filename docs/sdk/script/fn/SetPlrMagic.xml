@@ -1,35 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetPlrMagic</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Nummer des Spielers, dessen Liste der verfügbaren Zauber geändert werden soll</desc></param>
-				<param><type>id</type><name>id</name><desc>ID des Zaubers</desc></param>
-				<param><type>bool</type><name>remove</name><desc>Ob der Zauber entfernt werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Fügt einen Zauber der Liste der verfügbaren Zauber eines Spielers hinzu oder entfernt einen Zauber aus der Liste.</desc>
-		<examples>
-			<example>
-<code><emlink href="Script/NamedVar.html">var</emlink> i <emlink href="script/operatoren.html">=</emlink> 0;
+  <func>
+    <title>SetPlrMagic</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose list of available spells you want to change.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>ID of the spell.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>remove</name>
+          <desc>Whether to remove the spell.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds or removes a magic spell to or from the list of available spells of a player.</desc>
+    <examples>
+      <example>
+        <code><emlink href="Script/NamedVar.html">var</emlink> i <emlink href="script/operatoren.html">=</emlink> 0;
 <funclink>for</funclink> (<emlink href="Script/NamedVar.html">var</emlink> plrnum <emlink href="script/operatoren.html">=</emlink> <funclink>GetPlayerCount</funclink> (); plrnum; i<emlink href="script/operatoren.html">++</emlink>)
   if (<funclink>GetPlayerName</funclink> (i)) {
     plrnum<emlink href="script/operatoren.html">--</emlink>;
     SetPlrMagic (i, MGHL);
   }
 </code>
-				<text>Gibt allen Spielern den Heilzauber.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetPlrMagic</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>November 2002, Februar 2005</date>
+        <text>Makes the Healing spell available to all players.</text>
+      </example>
+    </examples>
+    <related><funclink>GetPlrMagic</funclink></related>
+  </func>
+  <author>GÃ¼nther</author><date>2005-02</date>
 </funcs>

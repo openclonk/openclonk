@@ -1,29 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Sqrt</title>
-    <category>Arithmetik</category>
+    <category>Arithmetics</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>value</name><desc>Wert, aus dem die Wurzel gezogen werden soll</desc></param>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Value of which you want to take the square root.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Zieht die Wurzel aus dem ersten Parameter. Ist der Parameter kleiner als 0, wird einfach 0 zurückgegeben.</desc>
+    <desc>Returns the square root of the first parameter. If the parameter is less than 0, the result is 0.</desc>
     <examples>
       <example>
-
-<code>global func ObjectDistance(obj1, obj2)
+        <code>global func ObjectDistance(obj1, obj2)
 {
   var dx = <funclink>GetX</funclink>(obj1) - <funclink>GetX</funclink>(obj2);
   var dy = <funclink>GetY</funclink>(obj1) - <funclink>GetY</funclink>(obj2);
   <funclink>return</funclink>(Sqrt(dx*dx+dy*dy));
 }</code>
-
-        <text>Berechnet den Abstand zwischen zwei Objekten nach dem Satz des Pythagoras. <br/>Anmerkung: ObjectDistance existiert bereits als Engine-Funktion.</text>
+        <text>Returns the distance between two objects. Notice there's also an engine function <code>ObjectDistance</code>.</text>
       </example>
     </examples>
     <related>
@@ -31,5 +34,5 @@
       <funclink>ObjectDistance</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

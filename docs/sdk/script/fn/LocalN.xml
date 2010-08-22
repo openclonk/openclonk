@@ -1,43 +1,48 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>LocalN</title>
-		<category>Variablen</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>&amp;</rtype>
-			<params>
-				<param><type>string</type><name>name</name><desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt eine Referenz auf eine Objektlokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden.</desc>
-		<examples>
-			<example>
-				<code><emlink href="script/NamedVar.html">var</emlink> obj;
-if (obj <emlink href="script/operatoren.html">=</emlink> <funclink>FindObject</funclink>(WTWR)->LocalN("basement")) obj-><funclink>Explode</funclink>(20);</code>
-				<text>Lässt ein Fundament eines Zauberturms explodieren.</text>
-			</example>
-			<example>
-				<code>func <emlink href="definition/script.html#ObjektCallsderEngine">Initialize</emlink> () {
+  <func>
+    <title>LocalN</title>
+    <category>Variables</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>&amp;</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>name</name>
+          <desc>Name of the variable to which a reference is to be returned.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a reference to an object local variable. This reference can be used for reading or writing this variable.</desc>
+    <examples>
+      <example>
+        <code><emlink href="script/NamedVar.html">var</emlink> obj;
+if (obj <emlink href="script/operatoren.html">=</emlink> <funclink>FindObject</funclink>(WTWR)-&gt;LocalN(&quot;basement&quot;)) obj-&gt;<funclink>Explode</funclink>(20);</code>
+        <text>Makes the basement of a magic tower explode.</text>
+      </example>
+      <example>
+        <code>func <emlink href="definition/script.html#ObjektCallsderEngine">Initialize</emlink> () {
   <emlink href="script/NamedVar.html">local</emlink> Baum <emlink href="script/operatoren.html">=</emlink> <funclink>CreateObject</funclink> (<emlink href="script/Typechecks.html">TRE1</emlink>);
 }
 //Mit Timer=1 in der <emlink href="definition/defcore.html">DefCore.txt</emlink> jeden Frame aufgerufen
 func TimerCall () {
-  LocalN("Baum")-><funclink>SetPosition</funclink> (<funclink>GetX</funclink> (), <funclink>GetY</funclink> (), );
+  LocalN(&quot;Baum&quot;)-&gt;<funclink>SetPosition</funclink> (<funclink>GetX</funclink> (), <funclink>GetY</funclink> (), );
 }
 </code>
-				<text>Das Objekt trägt einen Baum mit sich herum.</text>
-			</example>
-		</examples>
-		<related>
-			<emlink href="script/NamedVar.html">benannte Variablen</emlink>
-			<funclink>Local</funclink>
-			<funclink>IsRef</funclink>
-			<funclink>VarN</funclink>
-			<funclink>GlobalN</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>November 2002</date>
+        <text>The object carries a tree around with it.</text>
+      </example>
+    </examples>
+    <related>
+      <emlink href="script/NamedVar.html">named variables</emlink>
+      <funclink>Local</funclink>
+      <funclink>IsRef</funclink>
+      <funclink>VarN</funclink>
+      <funclink>GlobalN</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-11</date>
 </funcs>

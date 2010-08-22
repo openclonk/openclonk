@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetCategory</title>
-		<category>Objekte</category><subcat>Kategorie</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Fragt die Objektkategorie des aufrufenden Objekts oder der aufrufenden Definition ab. Die Objektkategorie wird normalerweise über die <emlink href="definition/defcore.html">DefCore</emlink> gesetzt, und danach höchstens in seltenen Fällen mit <funclink>SetCategory</funclink> geändert. Sie bestimmt das allgemeine Verhalten eines Objekts und dessen Platzierung. Eine mit GetCategory abgefragt Kategorie kann mit dem &amp;-Operator gegen eine C4D_-Konstante geprüft werden.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink> (obj->GetCategory() &amp; <funclink>C4D_Structure</funclink>()) <funclink>Incinerate</funclink>(obj);</code>
-				<text>Zündet obj an, wenn es ein Gebäude ist.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetCategory</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>GetCategory</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines the category of an object. The category is usually specified in the <emlink href="definition/defcore.html">DefCore</emlink> but may in some cases haven been changed during the game by <funclink>SetCategory</funclink>. The category determines general placement and behaviour of the object. The returned category value can be compared with C4D_x constants using the &amp; operator.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink> (obj-&gt;GetCategory() &amp; <funclink>C4D_Structure</funclink>()) <funclink>Incinerate</funclink>(obj);</code>
+        <text>Incinerates the object if it is a building.</text>
+      </example>
+    </examples>
+    <related><funclink>SetCategory</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

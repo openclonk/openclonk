@@ -1,25 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerScore</title>
-                <category>Spieler</category>
-                <version>4.9.1.0 GWE</version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>player</name><desc>Spieler-Nummer dessen Punkte zurück gegeben werden sollen.</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert die Punkte die player hat.</desc>
-                <related>
-                        <funclink>GetWealth</funclink>
-                        <funclink>DoPlayerScore</funclink>
-                        <funclink>GetPlayerScoreGain</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
-        <author>Sven2</author><date>April 2010</date>
+  <func>
+    <title>GetPlayerScore</title>
+    <category>Player</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose score you want to determine.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a player's score.</desc>
+    <related>
+      <funclink>GetWealth</funclink>
+      <funclink>DoPlayerScore</funclink>
+      <funclink>GetPlayerScoreGain</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
+  <author>Sven2</author><date>2010-04</date>
 </funcs>
-

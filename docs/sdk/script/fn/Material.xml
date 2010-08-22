@@ -1,28 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Material</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <subcat>Material</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>string</type><name>material_name</name><desc>Name des Materials</desc></param>
+        <param>
+          <type>string</type>
+          <name>material_name</name>
+          <desc>Name of material</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Gibt den Index eines Materials anhand seines Namens zurück. Dieser Index wird in den meisten materialbezogenen Funktionen verwendet.</desc>
+    <desc>Returns the index of a material from its name. This index is used in most functions dealing with materials.</desc>
     <examples>
       <example>
-        <code><funclink>InsertMaterial</funclink>(Material("Gold"), 200, 100);</code>
-        <text>Fügt ein Pixel Gold an Position 200/100 ein.</text>
+        <code><funclink>InsertMaterial</funclink>(Material(&quot;Gold&quot;), 200, 100);</code>
+        <text>Inserts a pixel of gold at position 200/100.</text>
       </example>
     </examples>
-    <related>
-      <funclink>MaterialName</funclink>
-    </related>
+    <related><funclink>MaterialName</funclink></related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

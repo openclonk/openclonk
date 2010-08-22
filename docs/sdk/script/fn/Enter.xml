@@ -1,28 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Enter</title>
-		<category>Objekte</category><subcat>Position</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>target</name><desc>Objekt, in das hineinversetzt wird</desc></param>
-			</params>
-		</syntax>
-		<desc>Versetzt das aufrufende Objekt in ein anderes hinein. Bei diesem Vorgang wird weder RejectCollect, noch Collection oder ActivateEntrance im Zielobjekt aufgerufen. Dafür aber RejectEntrance und Entrance im Objekt, das hineinversetzt werden soll.</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>(0)->Enter(<funclink>FindObject</funclink>(HUT1));</code>
-				<text>Der ausgewählte Clonk des ersten Spielers wird in die erstbeste Hütte versetzt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Exit</funclink>
-			<funclink>Collect</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Enter</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>target</name>
+          <desc>Target container.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Moves an object into the contents of another object. This call invokes no RejectCollect, Collection, or ActivateEntracnce callbacks in the target object. It does, however, cause RejectEntrance and Entrance callbacks in the entering object.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;Enter(<funclink>FindObject</funclink>(HUT1));</code>
+        <text>The selected clonk is moved into the first found hut.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Exit</funclink>
+      <funclink>Collect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

@@ -1,35 +1,56 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-				<func>
-								<title>GetComponent</title>
-								<category>Objekte</category><subcat>Komponenten</subcat>
-								<version>4.6.5.0 CP</version>
-								<syntax>
-												<rtype>int / id</rtype>
-												<params>
-																<param><type>id</type><name>component</name><desc>Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird index benutzt und eine Objektkomponente zurückgegeben.</desc><optional /></param>
-																<param><type>int</type><name>index</name><desc>Index der zurückzuliefernden Komponente. Dieser Parameter wird ignoriert, wenn component angegeben ist. Ansonsten wird eine ID der Komponente zurückgegeben, dessen Menge in einem darauffolgenden GetComponent-Aufruf ermittelt werden kann.</desc><optional /></param>
-																<param><type>object</type><name>obj</name><desc>Objekt dessen Komponenten abgefragt werden sollen. 0 bei lokalem Aufruf. Wenn stattdessen eine definition angegeben ist, wird dieser Parameter ignoriert.</desc><optional /></param>
-																<param><type>id</type><name>definition</name><desc>Definition, von der die Komponenten abgefragt werden sollen. Wenn 0, wird stattdessen in obj bzw. dem aufrufenden Objekt abgefragt.</desc><optional /></param>
-												</params>
-								</syntax>
-								<desc>Liefert Objektkomponenten.</desc>
-		<examples>
-			<example>
-<code>var i,cid,num;
+  <func>
+    <title>GetComponent</title>
+    <category>Objects</category>
+    <subcat>Components</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int / id</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>component</name>
+          <desc>Object component of which to determine the count. If not specified, index is used and the id of the component is returned.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Index of the component to be returned. This parameter is ignored if component is specified. Returns the id of the indicated component which can then be used to determine the count in a subsequent call to GetComponent.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object of which to determine components. Can be 0 in local calls. If definition is specified, this parameter is ignored.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>id</type>
+          <name>definition</name>
+          <desc>Definition of which to determine components. If 0, the specified object is checked instead.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Used to determine object components.</desc>
+    <examples>
+      <example>
+        <code>var i,cid,num;
 <funclink>while</funclink> (id = GetComponent(0, i++, 0, <funclink>GetID</funclink>()))
-	if ((num = GetComponent(id) - GetComponent(id, 0, 0, <funclink>GetID</funclink>())) > 0)
+	if ((num = GetComponent(id) - GetComponent(id, 0, 0, <funclink>GetID</funclink>())) &gt; 0)
 		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id, 0, 0, <funclink>GetOwner</funclink>());</code>
-				<text>Erzeugt alle Komponenten, die dem aufrufenden Objekt noch fehlen (z.B. bei einer Baustelle), direkt vor selbigem.</text>
-			</example>
-		</examples>
-								<related>
-			<funclink>SetComponent</funclink>
-			<funclink>Split2Components</funclink>
-								</related>
-				</func>
-				<author>Cucaracha</author><date>Mai 2002</date>
+        <text>Creates all components which are still missing in the calling object (e.g. in a construction site) in front of the object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetComponent</funclink>
+      <funclink>Split2Components</funclink>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

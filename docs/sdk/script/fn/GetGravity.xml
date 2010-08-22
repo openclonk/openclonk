@@ -1,25 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetGravity</title>
-		<category>Global</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Liest die Schwerkraft (in Prozent) aus.</desc>
-		<examples>
-			<example>
-<code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100)))
-  obj-><funclink>SetYDir</funclink>(obj-><funclink>GetYDir</funclink>(500) - GetGravity(), 500);</code>
-				<text>Hebt die Gravitation in einem Radius von 100 Pixeln auf, wenn jeden Frame aufgerufen.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetGravity</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>GetGravity</title>
+    <category>Global</category>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current gravity in percent.</desc>
+    <examples>
+      <example>
+        <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100)))
+  obj-&gt;<funclink>SetYDir</funclink>(obj-&gt;<funclink>GetYDir</funclink>(500) - GetGravity(), 500);</code>
+        <text>Makes the gravitation within a radius of 100 pixels vanish if called every frame.</text>
+      </example>
+    </examples>
+    <related><funclink>SetGravity</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

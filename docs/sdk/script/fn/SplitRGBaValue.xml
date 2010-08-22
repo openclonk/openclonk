@@ -1,37 +1,56 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SplitRGBaValue</title>
-		<category>Arithmetik</category>
-		<version>4.9.5.0 CE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-				<param><type>int</type><name>red</name><desc>[opt] Variable, in der der Rotanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>green</name><desc>[opt] Variable, in der der Grünanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>blue</name><desc>[opt] Variable, in der der Blauanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>alpha</name><desc>[opt] Variable, in der der Alpha-Wert gespeichert werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>
-		Zerstückelt den 32Bit-Farbwert und schreibt die einzelnen Farbwerte in die jeweiligen angegeben Variablen.
-		</desc>
-		<examples>
-			<example>
-				<code>var red, green, blue;
+  <func>
+    <title>SplitRGBaValue</title>
+    <category>Arithmetics</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>Val</name>
+          <desc>32 bit color value</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>red</name>
+          <desc>[opt] variable in which the red value is to be stored</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>green</name>
+          <desc>[opt] variable in which the green value is to be stored</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>blue</name>
+          <desc>[opt] variable in which the blue value is to be stored</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>alpha</name>
+          <desc>[opt] variable in which the alpha value is to be stored</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Writes the red, green, blue, and alpha values of a 32 bit color value to the specified variables.</desc>
+    <examples>
+      <example>
+        <code>var red, green, blue;
 SplitRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),red,green,blue);
-<funclink>GetCursor</funclink>()-><funclink>Message</funclink>("Rot: %d|Grün %d|Blau %d",red, green, blue);
+<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;Rot: %d|GrÃ¼n %d|Blau %d&quot;,red, green, blue);
 				</code>
-				<text>Schreibt die 3 Farbwerte des aktuell ausgewählten Clonks als Text über den Clonk</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetRGBaValue</funclink>
-			<funclink>SetRGBaValue</funclink>
-		</related>
-	</func>
-	<author>Tyron</author><date>September 2004</date>
+        <text>Displays the three color values of the currently selected clonk above the clonk's head.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetRGBaValue</funclink>
+      <funclink>SetRGBaValue</funclink>
+    </related>
+  </func>
+  <author>Tyron</author><date>2004-09</date>
 </funcs>

@@ -1,45 +1,75 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetSystemTime</title>
-		<category>System</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>what</name><desc>Was genau zurückgegeben werden soll (siehe Anmerkung)</desc>
-				</param>
-			</params>
-		</syntax>
-		<desc>Gibt die momentane Uhrzeit zurück.</desc>
-		<remark>Je nach Wert von what gibt GetSystemTime die folgende Angabe zurück:
-						<table>
-							<rowh><col>what</col><col>Rückgabe</col></rowh>
-							<row><col>0</col><col>Jahr</col></row>
-							<row><col>1</col><col>Monat (1 = Januar, 2 = Februar usw.)</col></row>
-							<row><col>2</col><col>Wochentag (0 = Sonntag, 1 = Montag usw.)</col></row>
-							<row><col>3</col><col>Tag</col></row>
-							<row><col>4</col><col>Stunde</col></row>
-							<row><col>5</col><col>Minute</col></row>
-							<row><col>6</col><col>Sekunde</col></row>
-							<row><col>7</col><col>Millisekunde</col></row>
-						</table></remark>
-		<remark>Da die Zeiten bei unterschiedlichen Computern variieren können, gibt diese Funktion,
-						um eine Syncunsicherheit zu vermeiden, beim Netzwerkspiel und bei Filmaufnahmen 0
-						zurück.</remark>
-		<examples>
-			<example>
-				<code>func SageUhrzeit()
+  <func>
+    <title>GetSystemTime</title>
+    <category>System</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>what</name>
+          <desc>What to return (see remarks).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns current system time.</desc>
+    <remark>
+      The function will return a value depending on what has been requested: 
+      <table>
+        <rowh>
+          <col>what</col>
+          <col>Return value</col>
+        </rowh>
+        <row>
+          <col>0</col>
+          <col>Year</col>
+        </row>
+        <row>
+          <col>1</col>
+          <col>Month (1 = January, 2 = February, etc.)</col>
+        </row>
+        <row>
+          <col>2</col>
+          <col>Day of the wekk (0 = Sunday, 1 = Monday, etc.)</col>
+        </row>
+        <row>
+          <col>3</col>
+          <col>Day</col>
+        </row>
+        <row>
+          <col>4</col>
+          <col>Hour</col>
+        </row>
+        <row>
+          <col>5</col>
+          <col>Minute</col>
+        </row>
+        <row>
+          <col>6</col>
+          <col>Second</col>
+        </row>
+        <row>
+          <col>7</col>
+          <col>Millisecond</col>
+        </row>
+      </table>
+
+    </remark>
+    <remark>As operating system times will vary on different computers, this function will always return 0 in a network game or playback to avoid synchronization errors.</remark>
+    <examples>
+      <example>
+        <code>func SageUhrzeit()
 {
-	<funclink>Message</funclink>("Die momentane Uhrzeit ist: %02d:%02d:%02d", GetSystemTime(4), GetSystemTime(5), GetSystemTime(6));
+	<funclink>Message</funclink>(&quot;Die momentane Uhrzeit ist: %02d:%02d:%02d&quot;, GetSystemTime(4), GetSystemTime(5), GetSystemTime(6));
 }</code>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetTime</funclink>
-		</related>
-	</func>
-	<author>Peter</author><date>August 2002</date>
+      </example>
+    </examples>
+    <related><funclink>GetTime</funclink></related>
+  </func>
+  <author>Peter</author><date>2002-08</date>
 </funcs>

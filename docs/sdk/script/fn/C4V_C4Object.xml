@@ -1,25 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>C4V_C4Object</title>
-    <category>Variablen</category>
+    <category>Variables</category>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Datentyp: Objektzeiger.</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: object pointer.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink> (x &amp;&amp; <funclink>GetType</funclink>(x)==C4V_C4Object) <funclink>Log</funclink>("x=%s", <funclink>GetName</funclink>(x));</code>
-        <text>Gibt den Namen von x im Log aus, wenn es ein Objekt ist.</text>
+        <code><funclink>if</funclink> (x &amp;&amp; <funclink>GetType</funclink>(x)==C4V_C4Object) <funclink>Log</funclink>(&quot;x=%s&quot;, <funclink>GetName</funclink>(x));</code>
+        <text>Writes the name of x to the log if it is an object.</text>
       </example>
     </examples>
-    <related>
-      <funclink>GetType</funclink>
-    </related>
+    <related><funclink>GetType</funclink></related>
   </func>
-  <author>Sven2</author><date>April 2002</date>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

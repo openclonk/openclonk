@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetRootAnimation</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,26 +13,22 @@
         <param>
           <type>int</type>
           <name>slot</name>
-          <desc>Slot dessen oberste Animation zurückgegeben werden soll.</desc>
+          <desc>Slot whose topmost animation shall be returned.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt die Nummer der obersten Animation im angegebenen Slot zurück. Diese Animation wird mit der Animation der nächstkleineren Slotnummer kombiniert um dann mit der obersten Animation der nächsthöheren Slotnummer kombiniert zu werden, oder, falls es keinen nächsthöheren Slot gibt, auf dem Bildschirm angezeigt zu werden. Enthält der Slot mehr als eine Animation, so ist die oberste Animation immer ein Kombinationsknoten, der die Einzelanimationen oder Kombinationen derselben zu dem Gesamtergebnis des Slots kombiniert. Gibt nil zurück wenn der angegebene Slot gar keine Animation enthält.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>Returns the number of the animation at the top of the given slot. This animation is combined with the animation of the next smaller slot number and the result of this combination will be combined with the animation at the top of the slot with the next higher slot number, or, if there is no such slot, be the final output displayed on the screen. If the slot contains more than one animation then the animation at the top is always a combination node which combines multiple animations or other combinations of animations to the result of the slot. Returns nil if there are no animations in the given slot.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
-	<text>Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält.</text>
+        <text>Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards.</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>StopAnimation</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

@@ -1,70 +1,49 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Script</title>
-
-<h id="C4ScriptDokumentation">Script</h>
-<part>
-<h id="Scripte">Einleitung</h>
-<text>Die Scriptsprache von Clonk heißt C4Script.</text>
-<text>Objekte und Szenarien von Clonk können ein Script enthalten. Funktionsaufrufe aus
-Szenarioscripten gelten als globale Aufrufe. Funktionsaufrufe aus Objektscripten gelten als lokale
-Aufrufe.</text>
-<text>Für weitere Informationen zu den spezifischen Scriptarten siehe 
-<emlink href="definition/script.html">Objektscripte</emlink> und 
-<emlink href="scenario/script.html">Szenarioscripte</emlink>.</text>
-
-<text>C4Script verwendet C-ähnliche Syntax. Es gibt
-<emlink href="script/operatoren.html">Operatoren</emlink>, 
-<emlink href="script/NamedVar.html">Variablendeklaration</emlink>, Compound Statements (Blöcke), 
-Bedingungen (<funclink>if</funclink>) und Wiederholungsschleifen (<funclink>for</funclink> und
-<funclink>while</funclink>).</text>
-
-<h id="Debugging">Debugging</h>
-<text>Fehlermeldungen lassen sich durch Aktivieren des Debugmodus in den Optionen des Menüsystems
-anzeigen. Jeder Script-Programmierer sollte den Debugmodus aktivieren.</text>
-
-<h id="Funktionen">Funktionen</h>
-<text>Ähnlich wie in anderen Sprachen können in C4Script 
-<emlink href="script/Funcs.html">Funktionen</emlink> deklariert werden:</text>
-<code>func CreateRock()
+  <title>Script</title>
+  <h id="C4ScriptDokumentation">Script</h>
+  <part>
+    <h id="Scripte">Introduction</h>
+    <text>Clonk supports its own scripting language: C4Script.</text>
+    <text>Object definitions and scenarios can contain a script. Function calls made from scenario scripts are considered "global" calls. Function calls made within an object script are considered "local" calls.</text>
+    <text>For further information on the two types of script see <emlink href="definition/script.html">object scripts</emlink> and <emlink href="scenario/script.html">scenario scripts</emlink>.</text>
+    <text>C4Script uses a C-style syntax. It includes <emlink href="script/operatoren.html">operators</emlink>, <emlink href="script/NamedVar.html">variable declarations</emlink>, compound statements, conditional statements (<funclink>if</funclink>) and loops (<funclink>for</funclink> and <funclink>while</funclink>).</text>
+    <h id="Debugging">Debugging</h>
+    <text>Activate the debug mode in the developer section of the game options to have additional error messages displayed. Anyone writing scripts should do this.</text>
+    <h id="Funktionen">Functions</h>
+    <text>As in other programming languages you can define <emlink href="script/Funcs.html">functions</emlink> in C4Script:</text>
+    <code>func CreateRock()
 {
   [Erzeugt einen Stein|Image=Rock]
   <funclink>CreateObject</funclink>(Rock,50,50);
   <funclink>return</funclink> 1;
 }
 </code>
-<text>Unmittelbar nach dem Funktionsnamen kann in eckigen Klammern eine Beschreibung der Funktion
-folgen, die in mehreren durch | getrennten Feldern einen kurzen Beschreibungstext und eine
-Bildreferenz (id der Definition, deren Bild verwendet werden soll) enthalten kann.</text>
-
-<h id="VariablenParameter">Variablen/Parameter</h>
-<text>Variablen können Werte der Typen int, bool, id, string oder object enthalten. Für alle in
-Funktionsaufrufen ausgelassenen Parameter gilt grundsätzlich der Vorgabewert Null. Funktionen
-akzeptieren maximal zehn Parameter.</text>
-<h id="Kommentare">Kommentare</h>
-<text>Scripte können Kommentare im C-Stil enthalten. Kommentare werden beim Laden des Script
-herausgefiltert und komplett ignoriert.</text>
-<code>func MeineFunktion() // Ein Kommentar bis zum Ende der Zeile
+    <text>Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol.</text>
+    <h id="VariablenParameter">Variables/Parameters</h>
+    <text>Variables can hold values of type int, bool, id, string, or object. Any parameter not directly specified in a function call will hold the default value 0. Functions can have a maximum of ten parameters.</text>
+    <h id="Kommentare">Comments</h>
+    <text>Scripts may contain code comments in C-style. Comment test will be completely ignored when the script is comipiled for execution.</text>
+    <code>func MeineFunktion() // Ein Kommentar bis zum Ende der Zeile
 {
-  <funclink>Message</funclink>(&quot;Dieser Code wird ausgeführt&quot;); /* Ein Kommentar in einem Block */ <funclink>Message</funclink>(&quot;Dieser auch&quot;);
+  <funclink>Message</funclink>(&quot;Dieser Code wird ausgefÃ¼hrt&quot;); /* Ein Kommentar in einem Block */ <funclink>Message</funclink>(&quot;Dieser auch&quot;);
   <funclink>return</funclink> 1;
 }
 </code>
-
-<h id="Infos">Weitere Informationen</h>
-<text><emlink href="script/AppendTo.html">#appendto: Zum nachträglichen Erweitern fremder Scripte</emlink></text>
-<text><emlink href="script/BreakContinue.html">Befehle zur Schleifenkontrolle</emlink></text>
-<text><emlink href="script/FuncCall.html">Aufruf von Scriptfunktionen</emlink></text>
-<text><emlink href="script/Effects.html">Effekte</emlink></text>
-<text><emlink href="script/GetXXVal.html">Abfrage von Spieldaten</emlink></text>
-<text><emlink href="script/NamedVar.html">Benannte Variablen und ihre Geltungsbereiche</emlink></text>
-<text><emlink href="script/operatoren.html">Operatoren: +, -, = etc. in C4Script</emlink></text>
-<text><emlink href="script/Typechecks.html">Überprüfung von Datentypen zur Laufzeit</emlink></text>
-<text><emlink href="script/ScriptPlayers.html">Scriptspieler (z.B. KI-Spieler)</emlink></text>
-</part>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
-
+    <h id="Infos">Additional Information</h>
+    <text><emlink href="script/AppendTo.html">#appendto: for appending code to existing scripts</emlink></text>
+    <text><emlink href="script/BreakContinue.html">Loop Control</emlink></text>
+    <text><emlink href="script/FuncCall.html">Calling Script Functions</emlink></text>
+    <text><emlink href="script/Effects.html">Effects</emlink></text>
+    <text><emlink href="script/GetXXVal.html">Querying Game Data</emlink></text>
+    <text><emlink href="script/NamedVar.html">Named variables and their scope</emlink></text>
+    <text><emlink href="script/operatoren.html">Operators: +, -, = etc. in C4Script</emlink></text>
+    <text><emlink href="script/Typechecks.html">Data type checking at runtime</emlink></text>
+    <text><emlink href="script/ScriptPlayers.html">Script Player (i.e. AI player)</emlink></text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

@@ -1,33 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>AbsX</title>
-  <category>Objekte</category>
-  <subcat>Position</subcat>
-  <version>4.9.1.0 GWE</version>
-  <syntax>
-   <rtype>int</rtype>
-   <params>
-    <param><type>int</type><name>x</name><desc>X</desc></param>
-   </params>
-  </syntax>
-  <desc>Liefert das relative X in Bezug auf Objektmitte wenn von einem Objekt aufgerufen. Sonst liefert diese Funktion das übergebene X zurück</desc>
-  <examples>
-   <example>
-
-<code><funclink>CreateObject</funclink>(WIPF, AbsX(100), AbsY(500), -1);</code>
-
-    <text>Erzeugt einen Wipf an der Position 100/500 auch wenn in einem Objektscript benutzt.</text>
-   </example>
-  </examples>
-  <related>
-   <funclink>AbsY</funclink>
-   <funclink>GetX</funclink>
-   <funclink>GetY</funclink>
-   <funclink>CreateObject</funclink>
-  </related>
- </func>
- <author>flgr</author><date>Januar 2002</date>
+  <func>
+    <title>AbsX</title>
+    <category>Objects</category>
+    <subcat>Position</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>If called from an object, this function returns the given X coordinate relative to the object's center. Otherwise, the original coordinate is returned.</desc>
+    <examples>
+      <example>
+        <code><funclink>CreateObject</funclink>(WIPF, AbsX(100), AbsY(500), -1);</code>
+        <text>Creates a wipf at position 100/500, even if called from an object script.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AbsY</funclink>
+      <funclink>GetX</funclink>
+      <funclink>GetY</funclink>
+      <funclink>CreateObject</funclink>
+    </related>
+  </func>
+  <author>flgr</author><date>2002-01</date>
 </funcs>

@@ -1,60 +1,54 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>SetPlrExtraData</title>
-  <category>Spieler</category>
-  <version>4.9.1.0 GWE</version>
-  <syntax>
-   <rtype>any</rtype>
-   <params>
-    <param>
-     <type>int</type>
-     <name>player</name>
-     <desc>Nummer des Spielers, für den zusätzliche Daten gespeichert werden sollen</desc>
-    </param>
-    <param>
-     <type>string</type>
-     <name>data_name</name>
-     <desc>Name, der den Daten zugeordnet werden soll</desc>
-    </param>
-    <param>
-     <type>any</type>
-     <name>Data</name>
-     <desc>Daten, die gesetzt werden sollen.</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Mithilfe dieses Befehls können beliebige, scriptdefinierte Werte unter einem gegebenen Namen in der Spielerdatei gespeichert werden.
-        Auf diese Weise kann man Daten über einen Spieler über Szenariogrenzen hinweg erhalten (z.B. für RPGs)
-        Zurückgegeben wird (wenn erfolgreich) der gesetzte Wert.</desc>
-
-  <remark>Es dürfen keine Objektpointer oder Zeichenfolgen (Strings) gespeichert werden.</remark>
-
-  <remark>Da die Namen des ExtraData über Szenariogrenzen hinweg gültig sind, sollte man dem Namen einen Prefix hinzufügen, um Doppelbenutzungen zu vermeiden ("MySzen_MyName").</remark>
-
-  <examples>
-   <example>
-    <code>Timer:
+  <func>
+    <title>SetPlrExtraData</title>
+    <category>Player</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player for whom additional data is saved.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>data_name</name>
+          <desc>Name for the data.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <desc>Data to be saved.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>With this function additional data can be saved in player's file. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
+    <remark>No objects or strings may be saved.</remark>
+    <remark>Because all scenarios use the same storage, the name for the data should be prefixed with the scenario name or your developer id.</remark>
+    <examples>
+      <example>
+        <code>Timer:
   for(var i=0; i&lt;<funclink>GetPlayerCount</funclink>(); i++)
-    SetPlrExtraData(i, "MySzen_Wealth", <funclink>GetWealth</funclink>(i));
+    SetPlrExtraData(i, &quot;MySzen_Wealth&quot;, <funclink>GetWealth</funclink>(i));
   return();
 
 Initialize:
   for(var i=0; i&lt;<funclink>GetPlayerCount</funclink>(); i++)
-    <funclink>SetWealth</funclink>(i, <funclink>GetPlrExtraData</funclink>(i, "MySzen_Wealth"));
+    <funclink>SetWealth</funclink>(i, <funclink>GetPlrExtraData</funclink>(i, &quot;MySzen_Wealth&quot;));
   return();
   </code>
-    <text>Die erste Funktion speichert periodisch das Vermögen unter dem Namen "MySzen_Wealth" in dem entspr. Spieler ab. Wird die Runde nun neu gestartet und das Objekt
-          erstellt, so wird das Vermögen der Spieler in Initialize wiederhergestellt.</text>
-   </example>
-  </examples>
-  <related>
-   <funclink>GetPlrExtraData</funclink>
-   <funclink>SetCrewExtraData</funclink>
-  </related>
- </func>
- <author>PeterW</author><date>Januar 2002</date>
+        <text>The first function periodically saves the wealth with the name "MySzen_Wealth" in the player's file. If the round is restarted, the wealth is restored in Initialize.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlrExtraData</funclink>
+      <funclink>SetCrewExtraData</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2002-01</date>
 </funcs>

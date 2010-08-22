@@ -1,27 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetXDir</title>
-		<category>Objekte</category><subcat>Bewegung</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>xdir</name><desc>Horizontale Gechwindigkeit geteilt durch precision.</desc></param>
-				<param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
-			</params>
-		</syntax>
-		<desc>Setzt die horizontale Geschwindigkeit des aufrufenden Objekts.</desc>
-		<related>
-			<funclink>GetXDir</funclink>
-			<funclink>GetYDir</funclink>
-			<funclink>SetYDir</funclink>
-			<funclink>SetRDir</funclink>
-			<funclink>SetSpeed</funclink>
-			<funclink>SetR</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetXDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>Horizontal speed divided by precision.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>precision</name>
+          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the horizontal speed of the object.</desc>
+    <related>
+      <funclink>GetXDir</funclink>
+      <funclink>GetYDir</funclink>
+      <funclink>SetYDir</funclink>
+      <funclink>SetRDir</funclink>
+      <funclink>SetSpeed</funclink>
+      <funclink>SetR</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

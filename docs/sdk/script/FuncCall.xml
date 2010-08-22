@@ -1,107 +1,85 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Aufruf von Scriptfunktionen</title>
-
-<h>Aufruf von Scriptfunktionen</h>
-<part>
-	<text>Durch den Aufruf einer Scriptfunktion wird der Script der Funktion ausgeführt. Dabei kann die aufrufende Scriptfunktion Parameter an die Funktion übergeben und den Rückgabewert der Funktion verwerten.</text>
-	
-	<h>Aufruf einer lokalen Funktion</h>
-	<part>
-		<text>Befindet sich die Funktion, die aufgerufen werden soll, im selben Script wie die aufrufende Funktion, so ist dies ein "lokaler" Funktionsaufruf. Dabei wird die Funktion direkt über ihren Namen aufgerufen.</text>
-	
-		<h>Beispiel:</h>
-		<code>func TestFunktion()
+  <title>Calling Script Functions</title>
+  <h>Calling Script Functions</h>
+  <part>
+    <text>By calling a script function you will execute that function's code. The calling script may pass parameter values to the function and receive a return value from the function.</text>
+    <h>Calling a local function</h>
+    <part>
+      <text>If the function to be called was declared in the same script as the calling script it this is considered a "local call". The function can be called directly by its function name only.</text>
+      <h>Example:</h>
+      <code>func TestFunktion()
 {
-  <funclink>Log</funclink>("Die Test-Funktion wurde aufgerufen!");
+  <funclink>Log</funclink>(&quot;Die Test-Funktion wurde aufgerufen!&quot;);
 }
 
 func Aufruf()
 {
   TestFunktion();
 }</code>
-	
-		<text>Wird hier die Funktion Aufruf() ausgeführt, so wird die Funktion TestFunktion() aufgerufen, welche eine entsprechende Nachricht ins Log ausgibt.</text>
-	</part>
-	
-	<h>Aufruf einer Funktion in einem anderen Objekt</h>
-	<part>
-		<text>Will man eine Funktion im Script eines anderen Objekts aufrufen, so reicht der Name nicht aus, um einen Aufruf ausführen zu können. Es muss zusätzlich das Objekt angegeben werden, in dem die aufzurufende Funktion steht.</text>
-
-		<h>Beispiel:</h>
-		<text>Script Objekt A (ID AAAA):</text>
-		
-		<code>func Activate()
+      <text>When function Aufruf() is executed, it will also call the function TestFunktion() which will output a message to the log.</text>
+    </part>
+    <h>Calling a function in another object</h>
+    <part>
+      <text>To call a function in another object you have to specify that object first, then the function name.</text>
+      <h>Example:</h>
+      <text>Script Object A (ID AAAA):</text>
+      <code>func Activate()
 {
-  <funclink>Log</funclink>("Activate wurde in Objekt A aufgerufen!");
+  <funclink>Log</funclink>(&quot;Activate wurde in Objekt A aufgerufen!&quot;);
   <funclink>Explode</funclink>(20);
 }</code>
-		
-		<text>Script Objekt B:</text>
-		
-		<code>func Activate()
+      <text>Script Object B:</text>
+      <code>func Activate()
 {
   var obj = <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1);
-  obj->Activate();
+  obj-&gt;Activate();
 }	</code>
-		
-		<text>Der Script der Funktion Activate() in Objekt B sucht sich als erstes das nächstliegende Objekt vom Typ A (also mit der ID AAAA) und speichert es in der Veriable obj. Danach wird die Funktion Activate() im Script von diesem Objekt aufgerufen. Dazu wird zuerst das aufzurufende Objekt angegeben, gefolgt von dem Pfeil-Operator, der einen Objektaufruf markiert. Danach folgt der Funktionsname der aufzurufenden Funktion nebst der Parameterliste (in diesem Fall werden keine Parameter übergeben).</text>
-		<text>Es wird also durch den Aufruf von Activate() in Objekt B bewirkt, dass das nächstliegende Objekt vom Typ A in die Luft gejagt wird. Es handelt sich also im Beispiel um eine Art sehr primitiver Fernsteuerung für Objekt A (Der Aufruf erzeugt z.B. einen Fehler, wenn kein Objekt A existiert).</text>
-
-		<h>Anmerkungen</h>
-		<text>Die Speicherung des Objektzeigers in der Variable obj im Beispiel ist nicht erforderlich. Die folgende Schreibweise der Funktion Activate() in B ist gleichwertig:</text>
-		
-		<code>func Activate()
+      <text>The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a pointer to this object in the variable "obj". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow operator, then the function name including the parameter list (no parameters in this case).</text>
+      <text>Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found.</text>
+      <h>Remarks</h>
+      <text>You don't <i>have</i> to store the object pointer in a variable as done in this example. You could also continue calling the function directly on the search result as in this case:</text>
+      <code>func Activate()
 {
-  <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1)->Activate();
+  <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1)-&gt;Activate();
 }</code>
-		
-		<text>Es kann zusätzlich zum Namen der aufzurufenden Funktion noch die ID der Definition der Scriptfunktion mit angegeben werden. Das macht den Aufruf zum einen in vielen Fällen leicht schneller, außerdem können so auch überladene Funktionen im Zielscript aufgerufen werden (siehe #include/#appendto).</text>
-		
-		<code>func Activate()
+      <text>To make sure that an object function is called from a given definition script you can also specify the definition's ID just before the function name. In some cases this may be necessary to resolve ambiguities if functions of the same name override each other.</text>
+      <code>func Activate()
 {
   var obj = <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1);
-  obj->AAAA::Activate();
+  obj-&gt;AAAA::Activate();
 }</code>
-
-	</part>
-	
-	<h>Indirekter Aufruf von Skriptfunktionen</h>
-	<part>
-		<text>In manchen Situationen kann allerdings auch ein "indirekter" Aufruf durch die Engine-Funktionen <funclink>Call</funclink> und Verwandte sinnvoll sein. Hier wird der Funktionsname als String übergeben, was den Aufruf einer Funktion "nach Namen" ermöglicht.</text>
-		
-		<h>Beispiel:</h>
-		<code>func TestFunktion()
+    </part>
+    <h>Indirect call of script functions</h>
+    <part>
+      <text>In some cases you may want somebody else to call a script function that you have specified. The engine function <funclink>Call</funclink> can do such "indirect" calls. You simply pass the function name of the function to be called as string.</text>
+      <h>Example:</h>
+      <code>func TestFunktion()
 {
-  <funclink>Log</funclink>("Die Test-Funktion wurde aufgerufen!");
+  <funclink>Log</funclink>(&quot;Die Test-Funktion wurde aufgerufen!&quot;);
 }
 	
 func Aufruf()
 {
-  <funclink>Call</funclink>("TestFunktion");
+  <funclink>Call</funclink>(&quot;TestFunktion&quot;);
 }</code>
-	
-		<text>Ein solcher indirekter Aufruf ist allerdings in der Regel deutlich langsamer als der direkte Aufruf, da bei Call die entsprechende Funktion erst zur Laufzeit im Script gesucht werden muss. Beim direkten Aufruf steht die aufzurufende Funktion dagegen in der Regel bereits zur Zeit des Parsens (also beim Start der Engine) fest, weshalb dieser Aufruf besser optimiert werden kann und deshalb schneller ist.</text>
-		
-		<text>Dieser Nachteil ist aber gleichzeitig in bestimmten Situationen eine Stärke von Call: es ist möglich, zur Laufzeit zu entscheiden, welche Funktion aufgerufen werden soll. Eine Anwendung soll das folgende Beispiel deutlich machen:</text>
-		
-		<code>func TestFunktion()
+      <text>Usually, indirect calls are a bit slower than direct calls, since they cannot be precompiled and the function will have to be searched by name at runtime.</text>
+      <text>On the other hand, with indirect calls you can "decide" at runtime which function to call as is done in the following example:</text>
+      <code>func TestFunktion()
 {
-  <funclink>Call</funclink>(<funclink>Format</funclink>("Aufruf%d", <funclink>Random</funclink>(3)));
+  <funclink>Call</funclink>(<funclink>Format</funclink>(&quot;Aufruf%d&quot;, <funclink>Random</funclink>(3)));
 }
 
-func Aufruf0() { <funclink>Log</funclink>("Die erste Funktion wurde aufgerufen!"); }
-func Aufruf1() { <funclink>Log</funclink>("Die zweite Funktion wurde aufgerufen!"); }
-func Aufruf2() { <funclink>Log</funclink>("Die dritte Funktion wurde aufgerufen!"); }</code>
-	
-		<text>Hier wird in TestFunktion() eine <em>zufällige</em> Funktion aufgerufen (mittels <funclink>Random</funclink> und <funclink>Format</funclink> wird zufällig einer der drei Strings "Aufruf1", "Aufruf2" oder "Aufruf3" an Call übergeben).</text>
-		<text>Call muss hier verwendet werden, da erst zur Laufzeit bestimmt wird, welche Funktion aufgerufen wird. Außerdem wird bei jeder Ausführung von TestFunktion() eine andere Scriptfunktion ausgewählt, die aufgerufen wird. Dies wäre mit einem direkten Aufruf nicht möglich.</text>
-		<text>Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe dazu <funclink>ObjectCall</funclink> und <funclink>GameCall</funclink>. Besondere Beachtung verdienen außerdem noch <funclink>PrivateCall</funclink> und <funclink>ProtectedCall</funclink>. Sie ermöglichen die Umgehung der <emlink href="script/Funcs.html#Aufrufb">Aufrufbeschränkung</emlink> und existieren nur in der "Indirekt-Aufruf-Version".</text>
-	</part>
-</part>
-
-<author>PeterW</author><date>Mai 2003</date>
-
+func Aufruf0() { <funclink>Log</funclink>(&quot;Die erste Funktion wurde aufgerufen!&quot;); }
+func Aufruf1() { <funclink>Log</funclink>(&quot;Die zweite Funktion wurde aufgerufen!&quot;); }
+func Aufruf2() { <funclink>Log</funclink>(&quot;Die dritte Funktion wurde aufgerufen!&quot;); }</code>
+      <text>In TestFunktion() a <em>random</em> function is called (using <funclink>Random</funclink> and <funclink>Format</funclink> one of the three strings "Aufruf1", "Aufruf2", and "Aufruf3" is randomly composed and passed to <code>Call</code>).</text>
+      <text>This process has to be done with indirect calls as only at runtime we can know which function is to be called.</text>
+      <text>There are also some other methods of indirect calls. See <funclink>ObjectCall</funclink> and <funclink>GameCall</funclink>. Also see <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink>. They allow for bypassing the <emlink href="script/Funcs.html#Aufrufb">calling permission</emlink> and only exist as indirect calls.</text>
+    </part>
+  </part>
+  <author>PeterW</author><date>2003-05</date>
 </doc>

@@ -1,42 +1,48 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetActionData</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>any</type><name>data</name><desc>Zusatzparameter für die Aktivität.</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt den Zusatzparameter für die aktuell ausgeführte Aktivitäts-Prozedur. Die Auswirkung dieses Parameters hängt von der gesetzten Prozedur ab. Siehe dazu auch <emlink href="definition/procedures.html">ActMap-Prozeduren</emlink>.</desc>
-		<examples>
-			<example>
-				<code>protected func ControlSpecial2()
+  <func>
+    <title>SetActionData</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>any</type>
+          <name>data</name>
+          <desc>Additional parameter for the activity.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the extra data for the current action. The application of the extra data depends on the procedure of the current action. See <emlink href="definition/procedures.html">ActMap procedures</emlink>.</desc>
+    <examples>
+      <example>
+        <code>protected func ControlSpecial2()
   {
-  <funclink>SetAction</funclink>("Bridge");
-  SetActionData(<funclink>Material</funclink>("Gold"));
+  <funclink>SetAction</funclink>(&quot;Bridge&quot;);
+  SetActionData(<funclink>Material</funclink>(&quot;Gold&quot;));
   <funclink>SetComDir</funclink>(<funclink>COMD_Up</funclink>);
   }</code>
-				<text>Scriptfunktion für einen Spezialclonk: Auf Spezial 2 baut er eine senkrechte Goldbrücke.</text>
-			</example>
-			<example>
-				<code><funclink>FindObject</funclink>(WWNG)->SetActionData(256*3 + 2)</code>
-				<text>Verschiebt den Aufhängepunkt eines Windrades so, dass der dritte Vertex vom Windrad am zweiten Vertex des Gerüstes klebt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetAction</funclink>
-			<funclink>SetBridgeActionData</funclink>
-			<funclink>GetAction</funclink>
-			<funclink>GetActionTarget</funclink>
-			<funclink>SetPhase</funclink>
-			<funclink>SetDir</funclink>
-			<funclink>SetComDir</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+        <text>Script for a special clonk: with key Special 2 he will build a vertical gold bridge.</text>
+      </example>
+      <example>
+        <code><funclink>FindObject</funclink>(WWNG)-&gt;SetActionData(256*3 + 2)</code>
+        <text>Adjusts the attaching vertex of the windmill wheel so that the wheel's third vertex will attach to the second vertex of the windmill scaffolding.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetAction</funclink>
+      <funclink>SetBridgeActionData</funclink>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>SetPhase</funclink>
+      <funclink>SetDir</funclink>
+      <funclink>SetComDir</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

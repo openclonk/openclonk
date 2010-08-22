@@ -1,37 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>MakeCrewMember</title>
-  <category>Objekte</category>
-  <subcat>Mannschaft</subcat>
-  <version>4.6.5.0 CP</version>
-  <syntax>
-   <rtype>bool</rtype>
-   <params>
-    <param>
-     <type>int</type>
-     <name>player</name>
-     <desc>Spieler, dessen Crew das Objekt hinzugefügt werden soll.</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.<br/>
-        Gibt true zurück, wenn das Objekt erfolgreich der Crew hinzugefügt wurde.</desc>
-
-  <examples>
-   <example>
-    <code>var nClonk = <funclink>CreateObject</funclink>(Clonk, 0, 0, <funclink>GetOwner</funclink>());
-nClonk->MakeCrewMember(<funclink>GetOwner</funclink>());
+  <func>
+    <title>MakeCrewMember</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player to whose crew you want to add a member.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Adds an object (usually a clonk) to the crew of a player. The object must have the CrewMember property set in the DefCore.<br/>Returns true if the object was added successfully.</desc>
+    <examples>
+      <example>
+        <code>var nClonk = <funclink>CreateObject</funclink>(Clonk, 0, 0, <funclink>GetOwner</funclink>());
+nClonk-&gt;MakeCrewMember(<funclink>GetOwner</funclink>());
     </code>
-    <text>Dieser kurze Objektscript erstellt einen neuen Clonk und fügt ihn der Crew seines Besitzers hinzu.</text>
-   </example>
-  </examples>
-  <related>
-   <funclink>GetCrew</funclink><funclink>CrewMember</funclink><funclink>OCF_CrewMember</funclink><funclink>GrabObjectInfo</funclink><funclink>SetCrewStatus</funclink>
-  </related>
- </func>
- <author>PeterW</author><date>Dezember 2001</date>
+        <text>This script creates a new clonk and adds it to the crew list of the owner.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrew</funclink>
+      <funclink>CrewMember</funclink>
+      <funclink>OCF_CrewMember</funclink>
+      <funclink>GrabObjectInfo</funclink>
+      <funclink>SetCrewStatus</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>2001-12</date>
 </funcs>

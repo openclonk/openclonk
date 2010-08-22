@@ -1,22 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>FindOtherContents</title>
-    <category>Objekte</category><subcat>Suche</subcat>
+    <category>Objects</category>
+    <subcat>Search</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>object</rtype>
       <params>
-        <param><type>id</type><name>type</name><desc>ID des zu ignorierenden Objekttyps</desc></param>
+        <param>
+          <type>id</type>
+          <name>type</name>
+          <desc>id of the object type to be ignored.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Liefert das erste Inhaltsobjekt eines Behälters, das nicht vom angegebenen Typ ist.</desc>
+    <desc>Returns the first contained object which is not of the specified type.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (!FindOtherContents(GUNP)) <funclink>Message</funclink>("Kein Projektil");</code>
-        <text>Gibt eine Meldung aus, wenn ein Objekt nichts anderes als Schießpulver enthält.</text>
+        <code><funclink>if</funclink> (!FindOtherContents(GUNP)) <funclink>Message</funclink>(&quot;Kein Projektil&quot;);</code>
+        <text>Displays a message if the object contains nothing but gunpowder.</text>
       </example>
     </examples>
     <related>
@@ -24,5 +30,5 @@
       <funclink>Contents</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

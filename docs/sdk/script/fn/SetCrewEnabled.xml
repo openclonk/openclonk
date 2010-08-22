@@ -1,30 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetCrewEnabled</title>
-		<category>Objekte</category>
-		<subcat>Mannschaft</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>void</rtype>
-			<params>
-				<param><type>bool</type><name>enabled</name><desc>Gibt an, ob das Mannschaftsmitglied aktiviert oder deaktiviert werden soll.</desc></param>
-			</params>
-		</syntax>
-		<desc>Aktiviert oder deaktiviert Mannschaftsmitglieder. Deaktivierte Mannschaftsmitglieder können nicht mehr vom Spieler angewählt werden. So kann es auch passieren, dass ein Spieler zwar 0 Mannschaftsmitglieder zur Auswahl hat, aber trotzdem nicht eliminiert ist. Nur für Objekte, die auch wirklich zu einer Mannschaft gehören. Deaktivierte Mannschaftsmitglieder sind automatisch nicht mehr ausgewählt.</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>()->SetCrewEnabled(false);</code>
-				<text>Deaktiviert den ausgewählten Clonk des ersten Spielers.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetCrewEnabled</funclink>
-			<funclink>MakeCrewMember</funclink>
-			<funclink>SelectCrew</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>SetCrewEnabled</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>void</rtype>
+      <params>
+        <param>
+          <type>bool</type>
+          <name>enabled</name>
+          <desc>Specifies whether the crew member is to be activated or deactivated.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Activates or deactivates crew members. Deactivated crew members can no longer be selected for control by a player. If all of a player's crew members are deactivated the player can not control any clonks but he is still not eliminated. Only valid for true crew member objects. Deactivated crew members are automatically deselected from player control.</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;SetCrewEnabled(false);</code>
+        <text>Deactivates the selected clonk of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrewEnabled</funclink>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>SelectCrew</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

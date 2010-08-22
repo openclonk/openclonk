@@ -1,34 +1,61 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetSkyParallax</title>
-		<category>Himmel</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>mode</name><desc>Scrollmodus. 0 ist Standard; bei 1 bewegt sich der Himmel mit dem Wind.</desc></param>
-				<param><type>int</type><name>xpar</name><desc>Parallaxität in X-Richtung. Bei 10 ist der Himmel fest mit der Landschaft, mit größeren Werten beginnt die Parallaxität. Bei 0 wird der vorherige Wert beibehalten.</desc></param>
-				<param><type>int</type><name>ypar</name><desc>Parallaxität in Y-Richtung</desc></param>
-				<param><type>int</type><name>xdir</name><desc>Feste, horizontale Bewegungsgeschwindigkeit des Himmels</desc></param>
-				<param><type>int</type><name>ydir</name><desc>Feste, vertikale Bewegungsgeschwindigkeit des Himmels</desc></param>
-				<param><type>int</type><name>x</name><desc>X-Scrollposition des Himmels</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Scrollposition des Himmels</desc></param>
-			</params>
-		</syntax>
-		<desc>Verändert Parallaxität und Scrollgeschwindigkeit des Himmels.</desc>
-		<remark>Wird für einen der Parameter <funclink>SkyPar_Keep</funclink>() angegeben, wird der vorherige Wert beibehalten.</remark>
-		<examples>
-			<example>
-				<code>SetSkyParallax(1, 20,20, 0,0, <funclink>SkyPar_Keep</funclink>(),<funclink>SkyPar_Keep</funclink>());</code>
-				<text>Setzt den Himmel auf parallax und mit dem Wind bewegend.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SkyPar_Keep</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>SetSkyParallax</title>
+    <category>Sky</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>mode</name>
+          <desc>Scroll mode. 0 standard; 1 wind moves with the wind.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xpar</name>
+          <desc>Horizontal parallaxity. At value 10 the sky is linked to the landscape; at higher values the sky will be parallax to the landscape; at 0 the previous value is kept.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ypar</name>
+          <desc>Vertical parallaxity.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xdir</name>
+          <desc>Constant horizontal motion of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ydir</name>
+          <desc>Constant vertical motion of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X scroll position of the sky.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y scroll position of the sky.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes parallaxity and scroll speed of the sky.</desc>
+    <remark>If you specify <funclink>SkyPar_Keep</funclink>() for one of the parameters, the previously set value will be kept.</remark>
+    <examples>
+      <example>
+        <code>SetSkyParallax(1, 20,20, 0,0, <funclink>SkyPar_Keep</funclink>(),<funclink>SkyPar_Keep</funclink>());</code>
+        <text>Sets the sky to parallax and moving with the wind.</text>
+      </example>
+    </examples>
+    <related><funclink>SkyPar_Keep</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

@@ -1,33 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetClrModulation</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.9.1.0 GWE<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>color</name><desc>Neue Farbe, mit der moduliert wird.</desc></param>
-				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <funclink>RGB</funclink>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <funclink>RGBa</funclink>(255,255,255,128) würde die Grafik halbtransparent machen (sofern Alphaaddition nicht in den Grafikoptionen deaktiviert ist).</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>()->SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128));</code>
-				<text>Färbt den ausgewählten Clonk des ersten Spielers leicht bläulich ein und macht ihn halbtransparent.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RGB</funclink>
-			<funclink>RGBa</funclink>
-			<funclink>SetGamma</funclink>
-			<funclink>GetClrModulation</funclink>
-			<funclink>SetObjectBlitMode</funclink>
-			<funclink>SetColor</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>SetClrModulation</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.9.1.0 GWE<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>color</name>
+          <desc>Color value to be modulated with.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>overlay_id</name>
+          <desc>If specified, sets the color modulation of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first. From CR.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the color modulation of an object. This is a color value which is multiplied with the object color. <funclink>RGB</funclink>(255,0,0) will only let the red part of the color show. <funclink>RGBa</funclink>(255,255,255,128) will make all color half transparent (unless alpha addition is disabled in the graphics options).</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>()-&gt;SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128));</code>
+        <text>Colors the selected clonk of the first player slightly blue and makes him half transparent.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>GetClrModulation</funclink>
+      <funclink>SetObjectBlitMode</funclink>
+      <funclink>SetColor</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

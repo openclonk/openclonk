@@ -1,15 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>for</title>
-		<category>Script</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>void</rtype>
-		</syntax>
-		<desc>Siehe <emlink href="script/for.html">Die For-Schleife</emlink></desc>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+  <func>
+    <title>for</title>
+    <category>Script</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>void</rtype></syntax>
+    <desc>See <emlink href="script/for.html">the 'for' loop</emlink>.</desc>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

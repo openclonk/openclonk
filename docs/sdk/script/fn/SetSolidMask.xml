@@ -1,30 +1,56 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetSolidMask</title>
-    <category>Objekte</category><subcat>Status</subcat>
+    <category>Objects</category>
+    <subcat>Status</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>y</name><desc>Y-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>width</name><desc>Breite der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>height</name><desc>Höhe der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>target_x</name><desc>X-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
-        <param><type>int</type><name>target_y</name><desc>Y-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the top left corner of the new SolidMask rectangle within the definition graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the top left corner of the new SolidMask rectangle within the definition graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the new SolidMask rectangle within the definition graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the new SolidMask rectangle within the definition graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>target_x</name>
+          <desc>X target position of the SolidMask relative to the top left corner of the object graphic.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>target_y</name>
+          <desc>Y target position of the SolidMask relative to the top left corner of the object graphic.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt einen neuen, festen Bereich eines Objekts. Das Quellrechteck der Grafik gibt dabei an, welche Pixel im Rechteck fest werden sollen: Alle Pixel, die zu weniger als 50% transparent sind, werden fest. Siehe auch Eintrag SolidMask in der <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
-    <remark>Feste Bereiche werden intern in der Landschaft als Pixel mit dem Material "Vehicle" eingefügt.</remark>
+    <desc>Sets the solid area of an object. The source rectangle determines which pixels from the definition graphic should be used. All pixels within the rectangle of less than 50% transparency will be solid. Also see the SolidMask entry in <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <remark>Solid areas will internally be drawn in the landscape using the "Vehicle" material.</remark>
     <examples>
       <example>
         <code>SetSolidMask();</code>
-        <text>Löscht die SolidMask für das aufrufende Objekt.</text>
+        <text>Removes the SolidMask for the calling object.</text>
       </example>
     </examples>
   </func>
-  <author>Sven2</author><date>Juni 2003</date>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

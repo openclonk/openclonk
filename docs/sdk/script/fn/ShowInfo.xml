@@ -1,36 +1,43 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>ShowInfo</title>
-		<category>Objekte</category><subcat>Menü</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>obj</name><desc>Objekt, zu dem Informationen angezeigt werden sollen. Bei 0 wird das aufrufende Objekt verwendet.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Zeigt die Beschreibung eines Objekts in einem kleinen Informationsfenster (intern ein Menü) beim aufrufenden Objekt an.</desc>
-		<remark>Die Informationsbox wird mit dem Bild des Objekts hinterlegt.</remark>
-		<examples>
-			<example>
-<code>protected func ControlSpecial()
+  <func>
+    <title>ShowInfo</title>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object for which to display information. If unspecified, the calling object will be used.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Displays the description text of an object in a popup window (a menu window).</desc>
+    <remark>The information window's background will be the definition image of the obect.</remark>
+    <examples>
+      <example>
+        <code>protected func ControlSpecial()
   {
   ShowInfo(<funclink>Contents</funclink>());
   <funclink>return</funclink> 1;
   }</code>
-				<text>Funktion für einen Spezialclonk: Auf Druck auf die Spezialtaste zeigt er die Beschreibung zum ersten Inhaltsobjekt in einem kleinen Fenster an. Trägt der Clonk kein Objekt, wird seine eigene Beschreibung angezeigt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetCommand</funclink>
-			<funclink>GetDesc</funclink>
-			<funclink>CreateMenu</funclink>
-			<funclink>AddMenuItem</funclink>
-			<funclink>CloseMenu</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>August 2002</date>
+        <text>A feature for a special clonk: pressing the 'special' key will display the description of the first inventory item in a popup window. If the clonk does not carry any objects, the clonk's own description will be displayed.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetDesc</funclink>
+      <funclink>CreateMenu</funclink>
+      <funclink>AddMenuItem</funclink>
+      <funclink>CloseMenu</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

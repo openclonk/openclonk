@@ -1,32 +1,51 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>DrawDefMap</title>
-		<category>Landschaft</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>Linke Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>y</name><desc>Obere Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>width</name><desc>Breite des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>height</name><desc>Höhe des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>string</type><name>map_name</name><desc>Name der zu benutzenden Karte aus der Landscape.txt</desc></param>
-			</params>
-		</syntax>
-		<desc>Zeichnet eine dynamische Zufallskarte innerhalb eines Bereichs. Dazu wird die angegebene Karte in der Landscape.txt gesucht.</desc>
-		<remark>Normalerweise wird die Landscape.txt nach der Landscahftsgenerierung entladen, um unnötig belegten Speicher freizugeben. Darum sollte in Szenarien, in denen dieser Befehl verwendet wird, in der Scenario.txt Sektion [Landscape] die Option KeepMapCreator=1 gesetzt werden.</remark>
-		<examples>
-			<example>
-				<code>DrawDefMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>(), "TheMap");</code>
-				<text>Zeichnet TheMap über die gesamte Karte. TheMap muss in der geladenen Landscape.txt vorhanden sein.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>DrawMap</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>DrawDefMap</title>
+    <category>Landscape</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>Left border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Top border of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the rectangle in which to draw the map.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>map_name</name>
+          <desc>Name of the map to be used from Landscape.txt.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Draws a dynamic map within the specified rectangle using a given map specification from Landscape.txt.</desc>
+    <remark>The Landscape.txt component is usually removed from memory after scenario initialization. To keep it in memory for later use by this command you should specify the option KeepMapCreator=1 in Scenario.txt section [Landscape].</remark>
+    <examples>
+      <example>
+        <code>DrawDefMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>(), &quot;TheMap&quot;);</code>
+        <text>Draws 'TheMap' over the complete landscape. 'TheMap' must be defined in Landscape.txt.</text>
+      </example>
+    </examples>
+    <related><funclink>DrawMap</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

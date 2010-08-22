@@ -1,25 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>C4V_Array</title>
-    <category>Variablen</category>
+    <category>Variables</category>
     <version>4.9.6.0 CR</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Datentyp: Array.</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Data type: array.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) != C4V_Array) x = <funclink>CreateArray</funclink>();</code>
-        <text>Speichert ein neues, leeres Array in x wenn es noch kein Array ist.</text>
+        <text>Saves a new, empty array in x if it is not already an array.</text>
       </example>
     </examples>
-    <related>
-      <funclink>GetType</funclink>
-    </related>
+    <related><funclink>GetType</funclink></related>
   </func>
-  <author>Clonk-Karl</author><date>Dezember 2008</date>
+  <author>Clonk-Karl</author><date>2008-12</date>
 </funcs>

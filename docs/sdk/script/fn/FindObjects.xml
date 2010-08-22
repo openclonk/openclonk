@@ -1,73 +1,84 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>FindObjects</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>array</type><name>Criteria</name><desc>Suchkriterium in Form einer Find_*-Funktion</desc></param>
-				<param><type></type><name>...</name><desc>Weitere Suchkriterium in Form einer Find_*-Funktion</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Erstellt eine Liste von Objekten, auf die alle angegeben Suchkriterien zutreffen. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
-		<remark>Anders als bei <funclink>FindObject</funclink> findet sich bei objektlokalen Aufrufen von FindObjects das aufrufende Objekt selbst. Dies kann durch <funclink>Find_Exclude</funclink>() verhindert werden.</remark>
-		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObject</funclink> und <funclink>ObjectCount</funclink>.</remark>
-		<examples>
-			<example>
-<code><funclink>for</funclink>(var vehicle in FindObjects (<funclink>Find_Owner</funclink>(1), <funclink>Find_Category</funclink>(<funclink>C4D_Vehicle</funclink>)))
+  <func>
+    <title>FindObjects</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>Criteria</name>
+          <desc>Search criterion in the form of a Find_* function</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional search criteria in the form of Find_* functions</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a list of objects which fulfill the specified search criteria. Search criteria are composed of Find_x() values.</desc>
+    <remark>As opposed to <funclink>FindObject</funclink>, an object using FindObjects in local calls will also find itself. This can be avoided through use of <funclink>Find_Exclude</funclink>().</remark>
+    <remark>Criteria are specified in the same way as with <funclink>FindObject</funclink> and <funclink>ObjectCount</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>for</funclink>(var vehicle in FindObjects (<funclink>Find_Owner</funclink>(1), <funclink>Find_Category</funclink>(<funclink>C4D_Vehicle</funclink>)))
   <funclink>RemoveObject</funclink> (vehicle);</code>
-				<text>Lässt alle Fahrzeuge von Spieler 2 verschwinden.</text>
-			</example>
-			<example>
-<code>protected func Hit()
+        <text>Removes all vehicles of player 2.</text>
+      </example>
+      <example>
+        <code>protected func Hit()
 {
   <funclink>for</funclink>(var structure in FindObjects(<funclink>Find_AtPoint</funclink>(), <funclink>Find_Category</funclink>(<funclink>C4D_Structure</funclink>), <funclink>Find_OCF</funclink>(<funclink>OCF_Inflammable</funclink>)))
     Incinerate(structure);
   <funclink>RemoveObject</funclink>();
 }</code>
-				<text>Der Feuerteufelflint: entzündet beim Auftreffen alle brennbaren Gebäude, die er berührt.</text>
-			</example>
-			<example>
-<code><funclink>for</funclink>(var obj in FindObjects( <funclink>Find_Not</funclink>(<funclink>Find_Owner</funclink>(<funclink>NO_OWNER</funclink>)) ))
-  obj-><funclink>SetOwner</funclink>(<funclink>NO_OWNER</funclink>);</code>
-				<text>Anarchie! Kein Objekt gehört mehr einem Spieler.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Find_Action</funclink>
-			<funclink>Find_ActionTarget</funclink>
-			<funclink>Find_Allied</funclink>
-			<funclink>Find_And</funclink>
-			<funclink>Find_AnyContainer</funclink>
-			<funclink>Find_AtPoint</funclink>
-			<funclink>Find_Category</funclink>
-			<funclink>Find_Container</funclink>
-			<funclink>Find_Distance</funclink>
-			<funclink>Find_Exclude</funclink>
-			<funclink>Find_Func</funclink>
-			<funclink>Find_Hostile</funclink>
-			<funclink>Find_ID</funclink>
-			<funclink>Find_InRect</funclink>
-			<funclink>Find_NoContainer</funclink>
-			<funclink>Find_Not</funclink>
-			<funclink>Find_OCF</funclink>
-			<funclink>Find_Or</funclink>
-			<funclink>Find_Owner</funclink>
-			<funclink>Sort_Random</funclink>
-			<funclink>Sort_Reverse</funclink>
-			<funclink>Sort_Multiple</funclink>
-			<funclink>Sort_Value</funclink>
-			<funclink>Sort_Speed</funclink>
-			<funclink>Sort_Mass</funclink>
-			<funclink>Sort_Distance</funclink>
-			<funclink>Sort_Func</funclink>
-			<funclink>FindObject</funclink>
-			<funclink>ObjectCount</funclink>	
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+        <text>Arsonist flint: incinerates all buildings at the point of impact.</text>
+      </example>
+      <example>
+        <code><funclink>for</funclink>(var obj in FindObjects( <funclink>Find_Not</funclink>(<funclink>Find_Owner</funclink>(<funclink>NO_OWNER</funclink>)) ))
+  obj-&gt;<funclink>SetOwner</funclink>(<funclink>NO_OWNER</funclink>);</code>
+        <text>Anarchy! No object is owned by any player anymore.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Find_Action</funclink>
+      <funclink>Find_ActionTarget</funclink>
+      <funclink>Find_Allied</funclink>
+      <funclink>Find_And</funclink>
+      <funclink>Find_AnyContainer</funclink>
+      <funclink>Find_AtPoint</funclink>
+      <funclink>Find_Category</funclink>
+      <funclink>Find_Container</funclink>
+      <funclink>Find_Distance</funclink>
+      <funclink>Find_Exclude</funclink>
+      <funclink>Find_Func</funclink>
+      <funclink>Find_Hostile</funclink>
+      <funclink>Find_ID</funclink>
+      <funclink>Find_InRect</funclink>
+      <funclink>Find_NoContainer</funclink>
+      <funclink>Find_Not</funclink>
+      <funclink>Find_OCF</funclink>
+      <funclink>Find_Or</funclink>
+      <funclink>Find_Owner</funclink>
+      <funclink>Sort_Random</funclink>
+      <funclink>Sort_Reverse</funclink>
+      <funclink>Sort_Multiple</funclink>
+      <funclink>Sort_Value</funclink>
+      <funclink>Sort_Speed</funclink>
+      <funclink>Sort_Mass</funclink>
+      <funclink>Sort_Distance</funclink>
+      <funclink>Sort_Func</funclink>
+      <funclink>FindObject</funclink>
+      <funclink>ObjectCount</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

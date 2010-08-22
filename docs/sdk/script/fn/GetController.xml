@@ -1,28 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetController</title>
-		<category>Objekte</category>
-		<subcat>Mannschaft</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Fragt ab, welcher Spieler das aufrufende Objekt zur Zeit kontrolliert bzw. zuletzt kontrolliert hat. Bei Mannschaftsmitgliedern ist dies normalerweise immer der Besitzer; bei Fahrzeugen der Controller des Clonks, der es zuletzt bedient (angefasst und geschoben/gezogen) hat. Objekte, die von Lebewesen aufgenommen werden, nehmen automatisch den Controller ihres Containers an. Beim Besitzerwechsel (siehe <funclink>SetOwner</funclink>())wird automatisch auch der Controller auf den neuen Besitzer geändert.</desc>
-		<remark>Der Controller wird durch eine temporäre Kontrolle durch beispielsweise <funclink>SetCursor</funclink> nicht verändert.</remark>
-		<examples>
-			<example>
-				<code><funclink>DoScore</funclink>(GetController(), 100);</code>
-				<text>Gibt dem das aufrufende Objekt kontrollierenden Spieler 100 Punkte.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetController</funclink>
-			<funclink>GetCursor</funclink>
-			<funclink>GetOwner</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+  <func>
+    <title>GetController</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines which player is currently controlling an object or has last controlled it. With crew members this is usually the owning player. With vehicles it is the owner of the clonk that has last grabbed or pushed it. Objects that are collected by living things automatically change their owner to the owner of the new container. If an object changes its owner (see <funclink>SetOwner</funclink>()), the controller is automatically set to the new owner.</desc>
+    <remark>The controller value is not affected by temporary control e.g. through <funclink>SetCursor</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>DoScore</funclink>(GetController(), 100);</code>
+        <text>Gives 100 score to the player controlling the calling object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetController</funclink>
+      <funclink>GetCursor</funclink>
+      <funclink>GetOwner</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

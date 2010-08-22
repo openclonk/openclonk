@@ -1,24 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetWind</title>
-                <category>Umwelt</category><subcat>Wetter</subcat>
-                <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
-                <syntax>
-                        <rtype>int</rtype>
-                        <params>
-                                <param><type>int</type><name>x</name><desc>X-Position</desc></param>
-                                <param><type>int</type><name>y</name><desc>Y-Position</desc></param>
-                                <param><type>bool</type><name>global</name><desc>Ob der globale Wind abgefragt werden soll. Ab CE.</desc><optional /></param>
-                        </params>
-                </syntax>
-                <desc>Liefert die Windstärke und Richtung an der Position X, Y. Wird die Funktion aus einem Objekt heraus aufgerufen, so ist die Position relativ zur Objektposition. Wenn global=true, wird der globale Wind zurückgegeben.</desc>
-                <related>
-                        <funclink>SetWind</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+  <func>
+    <title>GetWind</title>
+    <category>Environment</category>
+    <subcat>Weather</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>global</name>
+          <desc>Whether to retrieve the global wind value. From CE.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is true, the global wind value is returned.</desc>
+    <related><funclink>SetWind</funclink></related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

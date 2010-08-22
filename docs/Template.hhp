@@ -1,13 +1,13 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=Entwickler.chm
+Compiled file=Developer.chm
 Contents file=Output.hhc
 Default topic=sdk\index.html
 Display compile progress=No
 Full-text search=Yes
 Index file=Output.hhk
-Language=0x407 Deutsch (Standard)
-Title=Clonk Entwicklermodus
+Language=0x409 Englisch (USA)
+Title=Clonk Developer Mode
 
 
 [FILES]

@@ -1,24 +1,29 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Abs</title>
-		<category>Arithmetik</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>value</name><desc>Wert, von dem der absolutwert gebildet werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Bildet den Absolutwert (Betrag), entfernt also das Vorzeichen des ersten Parameters.</desc>
-		<examples>
-			<example>
-				<code><funclink>Log</funclink>("Aktuelle Fluggeschwindigkeit: %d Clonks/min", Abs(<funclink>GetXDir</funclink>(<funclink>FindObject</funclink>(BLMP))));</code>
-				<text>Gibt die Fluggeschwindigkeit eines Luftschiffes aus.</text>
-			</example>
-		</examples>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Abs</title>
+    <category>Arithmetics</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>value</name>
+          <desc>Absolute coordinate you want to convert to a relative coordinate.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the absolute value of the given parameter, ignoring the sign of the value.</desc>
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>(&quot;Aktuelle Fluggeschwindigkeit: %d Clonks/min&quot;, Abs(<funclink>GetXDir</funclink>(<funclink>FindObject</funclink>(BLMP))));</code>
+        <text>Prints the absolute velocity of a blimp.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

@@ -1,30 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Sort_Func</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>string</type><name>function</name><desc>Aufzurufende Funktion</desc></param>
-				<param><type></type><name>...</name><desc>Parameter für die Funktion</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Sortierkriterium: Sortiert die gefundenen Objekte anhand des int-Rückgabewertes der angegebenen Funktion. Je kleiner der Wert, desto weiter vorne steht das Objekt im Array.</desc>
-		<remark><strong>Achtung:</strong> Niemals mit einer Funktion verwenden, die Seiteneffekte hat. Wenn nicht sichergestellt ist, dass die Funktion harmlos ist, muss auf Sort_Func verzichtet oder eine neue Funktion ohne Seiteneffekte erstellt werden.</remark>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<examples>
-			<example>
-<code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100), Sort_Func("GetDefWidth"))</code>
-				<text>Sortiert alle Objekte in einer maximalen Distanz von 100 Pixeln nach ihrer Breite. Kleine Objekte sind vorne, große hinten.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>Sort_Func</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Function to call</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Parameters of the function.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sort criterion: Sorts the found objects by the int result of the indicated function. Objects with smaller values first.</desc>
+    <remark><strong>Warning:</strong> never use this with a function which might have side effects. If a function is not guaranteed to be harmless, a new, side-effect-free function needs to be written.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <examples>
+      <example>
+        <code><funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100), Sort_Func(&quot;GetDefWidth&quot;))</code>
+        <text>Sorts all objects inside a maximum distance of 100 pixels by their width, beginning with small objects.</text>
+      </example>
+    </examples>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

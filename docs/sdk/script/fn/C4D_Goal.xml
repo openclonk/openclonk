@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>C4D_Goal</title>
-    <category>Objekte</category><subcat>Kategorie</subcat>
+    <category>Objects</category>
+    <subcat>Category</subcat>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Objektkategorie: Spielziele</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Object category: game goal.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-<code>var obj;
+        <code>var obj;
 while (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
   if (<funclink>GetCategory</funclink>(obj) &amp; C4D_Goal)
     <funclink>RemoveObject</funclink>(obj);</code>
-        <text>Entfernt alle Spielziele.</text>
+        <text>Removes all game goals.</text>
       </example>
     </examples>
     <related>
@@ -25,5 +25,5 @@ while (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
       <funclink>SetCategory</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Januar 2002</date>
+  <author>Sven2</author><date>2002-01</date>
 </funcs>

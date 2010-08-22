@@ -1,24 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetCursor</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer</desc></param>
-				<param><type>object</type><name>obj</name><desc>Anzuwählendes Objekt</desc></param>
-				<param><type>bool</type><name>no_select_arrow</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung. Gibt false zurück falls das Zielobjekt momentan durch <funclink>SetCrewEnabled</funclink> deaktiviert ist.</desc>
-		<related>
-			<funclink>GetCursor</funclink>
-			<funclink>SelectCrew</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetCursor</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object to be selected.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_select_arrow</name>
+          <desc>If not 0, no cursor arrow is drawn when the object is selected.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the control cursor of a player to the specified object and selects this object for player control. Returns false if the target object is currently deactivated by <funclink>SetCrewEnabled</funclink>.</desc>
+    <related>
+      <funclink>GetCursor</funclink>
+      <funclink>SelectCrew</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

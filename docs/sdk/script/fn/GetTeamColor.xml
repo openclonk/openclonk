@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -9,19 +10,21 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>team</name><desc>Teamnummer des Teams, dessen Farbe abgefragt werden soll</desc></param>
+        <param>
+          <type>int</type>
+          <name>team</name>
+          <desc>Number of the team whose color to get.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>
-    Liefert die Farbe eines Teams.
-    </desc>
-	<related>
-		<emlink href="scenario/Teams.html">Teams</emlink>
-		<funclink>GetTeamName</funclink>
-		<funclink>GetTeamCount</funclink>
-		<funclink>GetPlayerTeam</funclink>
-		<funclink>GetTeamByIndex</funclink>
-	</related>
+    <desc>Returns the color of a team.</desc>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>GetTeamName</funclink>
+      <funclink>GetTeamCount</funclink>
+      <funclink>GetPlayerTeam</funclink>
+      <funclink>GetTeamByIndex</funclink>
+    </related>
   </func>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

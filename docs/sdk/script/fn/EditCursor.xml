@@ -1,23 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>EditCursor</title>
-    <category>Entwickler</category>
+    <category>Developer</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>object</rtype>
-    </syntax>
-    <desc>Liefert im Entwicklermodus der Engine das Objekt, welches sich im gerade unter dem Mauscursor befindet (Modus: Objekte auswählen und verschieben).</desc>
+    <syntax><rtype>object</rtype></syntax>
+    <desc>In the developer mode of the engine this function returns the object which is currently under the mouse cursor (in edit mode: select and move).</desc>
     <examples>
-    <example>
-<code>var cursor = EditCursor();
-cursor-><funclink>Message</funclink>("%s|x: %d y: %d|xdir: %d ydir: %d", <funclink>GetName</funclink>(cursor), <funclink>GetX</funclink>(cursor), <funclink>GetY</funclink>(cursor),
+      <example>
+        <code>var cursor = EditCursor();
+cursor-&gt;<funclink>Message</funclink>(&quot;%s|x: %d y: %d|xdir: %d ydir: %d&quot;, <funclink>GetName</funclink>(cursor), <funclink>GetX</funclink>(cursor), <funclink>GetY</funclink>(cursor),
   <funclink>GetXDir</funclink>(cursor), <funclink>GetYDir</funclink>(cursor));</code>
-      <text>Zeigt einige Informationen über das Objekt an, über dem gerade der Mauscursor schwebt.</text>
-    </example>
+        <text>Displays some information about the object above which the edit cursor is hovering.</text>
+      </example>
     </examples>
   </func>
-  <author>matthes</author><date>April 2008</date>
+  <author>matthes</author><date>2008-04</date>
 </funcs>

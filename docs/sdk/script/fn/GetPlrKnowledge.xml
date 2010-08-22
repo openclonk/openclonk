@@ -1,43 +1,63 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetPlrKnowledge</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spieler, über dessen Baupläne Informationen abgerufen werden sollen.</desc></param>
-				<param><type>id</type><name>id</name><desc>Wenn angegebenen, dann gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt, ansonsten FALSE.</desc><optional /></param>
-				<param><type>int</type><name>index</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
-				<param><type>int</type><name>category</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Bauplan der entsprechenden Kategorie des Spielers.</desc>
-		<examples>
-			<example>
-				<code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))
-	<funclink>Log</funclink>("Spieler %s kann Bambushütten bauen",<funclink>GetPlayerName</funclink>(0));</code>
-				<text>Gibt einen Text aus, falls der erste Spieler sich im Besitz des Bauplanes für Bambushütten befindet.</text>
-				<code>var def = GetPlrKnowledge( 0,0,4,<funclink>C4D_Structure</funclink>()) );
-<funclink>Log</funclink>("Der fünfte Gebäude-Bauplan des Spielers ist %i",def);</code>
-				<text></text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetPlrKnowledge</funclink>
-			<funclink>C4D_All</funclink>
-			<funclink>C4D_Goal</funclink>
-			<funclink>C4D_Knowledge</funclink>
-			<funclink>C4D_Living</funclink>
-			<funclink>C4D_Object</funclink>
-			<funclink>C4D_Rule</funclink>
-			<funclink>C4D_StaticBack</funclink>
-			<funclink>C4D_Structure</funclink>
-			<funclink>C4D_Vehicle</funclink>
-		</related>
-	</func>
-	<author>Günther</author><date>Februar 2002</date>
+  <func>
+    <title>GetPlrKnowledge</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose construction plans you want to determine.</desc>
+        </param>
+        <param>
+          <type>id</type>
+          <name>id</name>
+          <desc>If specified, the function returns true, if the player has the construction plan of the specified object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Specify only if id is not 0.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>category</name>
+          <desc>Specify only if id is not 0.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>With id specified the function returns true if the player has the construction plan of the specified object. In this case index and category are ignored. If id is 0, the function returns the indicated construction plan of the specified category.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))
+	<funclink>Log</funclink>(&quot;Spieler %s kann BambushÃ¼tten bauen&quot;,<funclink>GetPlayerName</funclink>(0));</code>
+        <text>Displays a message if the first player has the construction plan for bamboo huts.</text>
+        <code>var def = GetPlrKnowledge( 0,0,4,<funclink>C4D_Structure</funclink>()) );
+<funclink>Log</funclink>(&quot;Der fÃ¼nfte GebÃ¤ude-Bauplan des Spielers ist %i&quot;,def);</code>
+        <text />
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlrKnowledge</funclink>
+      <funclink>C4D_All</funclink>
+      <funclink>C4D_Goal</funclink>
+      <funclink>C4D_Knowledge</funclink>
+      <funclink>C4D_Living</funclink>
+      <funclink>C4D_Object</funclink>
+      <funclink>C4D_Rule</funclink>
+      <funclink>C4D_StaticBack</funclink>
+      <funclink>C4D_Structure</funclink>
+      <funclink>C4D_Vehicle</funclink>
+    </related>
+  </func>
+  <author>GÃ¼nther</author><date>2002-02</date>
 </funcs>

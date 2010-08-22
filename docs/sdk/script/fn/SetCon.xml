@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetCon</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <subcat>Status</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>con</name><desc>Fertigstellung/Wachstum in Prozent</desc></param>
+        <param>
+          <type>int</type>
+          <name>con</name>
+          <desc>Completion/growth in percent</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die Fertigstellung des aufrufenden Objekts auf den angegebenen Wert.</desc>
+    <desc>Sets the completion of an object to the specified value.</desc>
     <examples>
       <example>
-
-	      <code><funclink>GetCrew</funclink>(0,0)->SetCon(50);</code>
-
-        <text>Schrumpft den ersten Clonk des ersten Spielers auf halbe Größe.</text>
+        <code><funclink>GetCrew</funclink>(0,0)-&gt;SetCon(50);</code>
+        <text>Shrinks the first clonk of the first player to half size.</text>
       </example>
     </examples>
     <related>
@@ -29,6 +32,6 @@
       <funclink>OCF_Construct</funclink>
     </related>
   </func>
-  <author>flgr</author><date>Januar 2002</date>
-  <author>matthes</author><date>Juli 2004</date>
+  <author>flgr</author><date>2002-01</date>
+  <author>matthes</author><date>2004-07</date>
 </funcs>

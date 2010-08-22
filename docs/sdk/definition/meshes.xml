@@ -1,55 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Meshes</title>
-<h id="Meshes">Meshes</h>
-<part>
-	<text>Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Dazu müssen sie im OGRE-Format vorliegen. Für gängige Modellierungstools gibt es entsprechende Exporter, eine Liste befindet sich auf dem <a href="http://www.ogre3d.org/wiki/index.php/Exporters">OGRE Wiki</a>. Es werden sowohl das OGRE-Binär-Format (*.mesh) als auch das OGRE-XML-Format (*.mesh.xml) unterstützt, jedoch wird empfohlen wann immer möglich das Binärformat zu verwenden, da es eine kleinere Dateigröße hat und schneller von der Engine geladen werden kann. Das Tool <a href="http://www.ogre3d.org/wiki/index.php/OgreXmlConverter">OgreXMLConverter</a> kann zwischen beiden Formaten umwandeln.</text>
-
-	<text>Der Exporter erzeugt in der Regel eine Mesh-Datei (*.mesh oder *.mesh.xml), falls das Mesh Bones enthält eine Skelett-Datei (*.skeleton oder *.skeleton.xml), ein Materialskript (*.material) und eventuell verwendete Texturen. Um das Mesh für ein Clonk-Objekt zu verwenden müssen alle erzeugten Dateien in die <emlink href="definition/index.html">Objektdefinition</emlink> (*.c4d) kopiert werden und die Mesh-Datei muss in Graphics.mesh bzw. Graphics.mesh.xml umbenannt werden. Texturen werden im PNG-, JPG- und BMP-Format unterstützt.</text>
-
-	<text>Das Mesh wird nicht automatisch auf die Größe des Shapes (d.h. die Width- und Height-Werte aus der <emlink href="definition/defcore.html">DefCore.txt</emlink>) skaliert. Stattdessen entspricht eine Einheit im Modellierungstool ein Pixel in Clonk. Dies erleichtert die Größenverhältnisse zwischen verschiedenen Meshes einzuhalten, was insbesondere beim Aneinanderhängen von Meshes (siehe unten) hilfreich ist. Auch auf das Koordinatensystem ist acht zu geben: Die X-Achse im Mesh-Koordinatensystem zeigt in Clonk nach vorne, die Y-Achse nach rechts und die Z-Achse nach oben.</text>
-
-<h id="MaterialScripts">Materialskripte</h>
-	<text>Alle Materialskripte (*.material-Dateien) werden von der Engine geladen bevor das eigentliche Mesh geladen wird. Dabei handelt es sich um einfache Textdateien die Materialeigenschaften (Farben für verschiedene Lichter, Texturen, etc.) bestimmen die dann von Meshes verwenden werden können. Jedem Material ist ein Name zugeordnet der in der Regel im Modellierungstool bestimmt werden kann. Dabei sollte darauf geachtet werden, dass dieser möglichst eindeutig ist (also zum Beispiel den Objektnamen enthält), da alle geladenen Materialien direkt von jedem Mesh verwendet werden können und es ansonsten leicht zu Namenskonflikten kommen kann.</text>
-
-	<text>Materialskripte können auch von Hand erstellt oder nachbearbeitet werden. Das Format wird im <a href="http://www.ogre3d.org/docs/manual/manual_14.html">OGRE-Handbuch</a> beschrieben. Es werden jedoch (noch) nicht alle dort beschriebenen Features von Clonk unterstützt: Insbesondere Pixel-, Vertex- und Geometrie-Shader können derzeit nicht verwendet werden. Auch die Verwendung von LOD (Level of Detail) ist noch nicht möglich. Für das Feld colour_op_ex in Textureinheiten kann für source1 oder source2 zusätzlich noch der Wert src_player_colour angegeben werden was der Spielerfarbe des Besitzers entspricht. Auf diese Weise ist es möglich, Objekte (teilweise) mit ihrer Spielerfarbe einzufärben.</text>
-
-	<text>Zur Laufzeit kann das Materialskript auch mit der C4Script-Funktion <funclink>SetMeshMaterial</funclink> geändert werden.</text>
-
-<h id="Animations">Animationen</h>
-	<text>Wei bei Bitmap-basierten Grafiken kann ein Objekt während einer Aktivität eine Animation abspielen. Dazu muss zuerst ein Rig für das Modell erstellt und anschließend die Animation erzeugt werden. Beim Export wird  sie in der *.skeleton (bzw. *.skeleton.xml im OGRE-XML-Format) gespeichert. Um sie während einer Aktivität abzuspielen muss das Animation-Feld in der <emlink href="definition/actmap.html">ActMap</emlink> gesetzt sein. Die Facet-Felder werden bei Mesh-Grafiken ignoriert.</text>
-
-	<text>Per Script ist es auch möglich, mehrere Animationen gleichzeitig abzuspielen bzw. Übergänge zwischen Animationen zu machen. Um mehr darüber zu erfahren siehe <emlink href="definition/animations.html">Animationen</emlink>.</text>
-
-<h id="Attachment">Aneinanderhängen von Meshes</h>
-	<text>Meshes können aneinandergehängt werden, sodass sie sich immer miteinander bewegen. Auf diese Weise kann der Clonk zum Beispiel Sachen tragen oder mit dem Bogen Zielen. Um zwei Meshes zu verbinden gibt es die C4Script-Funktion <funclink>AttachMesh</funclink>, um sie wieder zu lösen kann <funclink>DetachMesh</funclink> verwendet werden. Beim Anhängen wird dabei jeweils ein Bone von den beiden Meshes angegeben. Das angehängte Mesh wird dann so positioniert, dass sein Bone immer die gleiche Position und Orientierung hat wie der Bone mit dem es verbunden wird.</text>
-
-	<text>Dabei ist jedoch darauf zu achten, dass lediglich die Meshes, also die Grafiken der Objekte, verbunden werden. Die wirkliche Position des angehängten Objekts (also was die Funktionen <funclink>GetX</funclink> und <funclink>GetY</funclink> zurückgeben oder den Bereich in dem das Objekt von <funclink>Find_AtPoint</funclink>, <funclink>Find_InRect</funclink> oder <funclink>Find_AtRect</funclink> gefunden wird) ändert sich <em>nicht</em>.</text>
-
-<h id="Picture">Repräsentativgrafik</h>
-	<text>Wird ein Mesh verwendet so bleibt der Picture-Eintrag aus der <emlink href="definition/defcore.html">DefCore.txt</emlink> ohne Wirkung. Stattdessen wird eine perspektivische Projektion des Meshes verwendet. Die Kamera befindet sich dabei vor dem Mesh in einer geeigneten Entfernung so dass das Mesh vollständig erfasst wird.</text>
-
-	<text>Die Position und Ausrichtung des Meshes relativ zur Kamera kann mit der "PictureTransformation"-Eigenschaft geändert werden. So kann es gedreht, versetzt und vergrößert dargestellt werden. Der Eigenschaft sollte ein Array mit 12 Integer-Einträgen zugewiesen werden, die eine 3x4-Matrix bilden. Die ersten vier Werte bilden die erste Zeile, die nächsten vier die zweite und die letzten vier Werte die dritte Zeile. Mit Hilfe der Skriptfunktionen <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink>, <funclink>Trans_Scale</funclink> und <funclink>Trans_Mul</funclink> lassen sich diese Matrizen sehr bequem generieren.</text>
-
-	<text>Wie bei <funclink>SetObjDrawTransform</funclink> werden die einzelnen Matrixelemente in Promille (1000 = 100%) angegeben, da es in Clonk keine Fließkommazahlen gibt.</text> 
-
-	<text>Als Beispiel hier die Transformation für die Werkzeughütte:</text>
-
-	<code><funclink>SetProperty</funclink>("PictureTransformation", <funclink>Trans_Mul</funclink>(<funclink>Trans_Translate</funclink>(0,0,7000), <funclink>Trans_Rotate</funclink>(-20,1,0,0), <funclink>Trans_Rotate</funclink>(30,0,1,0)), def);</code>
-
-	<text>Zuerst wird die Werkzeughütte um 30 Grad gegen den Uhrzeigersinn um die Y-Achse gedreht, danach um 20 Grad im Uhrzeigersinn um die X-Achse. Anschließend wird sie noch um 7 Einheiten in positive Z-Richtung verschoben sodass sie näher an der Kamera ist.</text>
-
-<h id="Transformation">MeshTransformation</h>
-	<text>Genauso wie die Eigenschaft "PictureTransformation" das Erscheinungsbild der Repräsentativgrafik ändert gibt es auch die Eigenschaft "MeshTransformation", die auf die normale Grafik im Spiel wirkt. Dies wirkt sich sehr ähnlich wie <funclink>SetObjDrawTransform</funclink> aus, jedoch gibt es einige Unterschiede:</text>
-
-	<ul>
-		<li>Mit der "MeshTransformation"-Eigenschaft kann auch die Z-Koordinate beeinflusst werden. Das Mesh kann also zum Beispiel um die X- oder Y-Achse gedreht werden.</li>
-		<li><funclink>SetObjDrawTransform</funclink> wird auch nach der Beleuchtung angewandt. Die transformierten Koordinaten haben also keinen Einfluss auf die Beleuchtung mehr. Wird das Mesh zum Beispiel von unten beleuchtet und wird es dann mit <funclink>SetObjDrawTransform</funclink> auf den Kopf gestellt, so bleibt die Beleuchtung an der gleichen Stelle auf dem Mesh, wird also mitgedreht. Bei der "MeshTransformation"-Eigenschaft wird die Beleuchtung jedoch hinterher gemacht, sodass das Mesh immer von unten beleuchtet wird, egal wie es ausgerichtet ist.</li>
-		<li>Sind sowohl "MeshTransformation" als auch <funclink>SetObjDrawTransform</funclink> gesetzt, so wird zuerst die "MeshTransformation" auf das Mesh angewandt und dann <funclink>SetObjDrawTransform</funclink>.</li>
-	</ul>
-
-</part>
-<author>Clonk-Karl</author><date>April 2010</date>
+  <title>Meshes</title>
+  <h id="Meshes">Meshes</h>
+  <part>
+    <text>Since OC it is possible to directly use 3D models (meshes) as object graphics. To do so they need to be in OGRE format. For most modeling tools there exist exporter tools, a list can be found on the <a href="http://www.ogre3d.org/wiki/index.php/Exporters">OGRE Wiki</a>. Both the OGRE binary format (*.mesh) and the OGRE XML format(*.mesh.xml) are supported, however it is recommended to always use the binary format whenever possible since it is smaller in size and can be loaded more quickly by the engine. The tool <a href="http://www.ogre3d.org/wiki/index.php/OgreXmlConverter">OgreXMLConverter</a> can convert between the two formats.</text>
+    <text>The exporter normally creates a mesh file (*.mesh or *.mesh.xml), a skeleton file (*.skeleton or *.skeleton.xml) if the mesh contains bones, a material script (*.material) and potentially used textures. To use the mesh as a Clonk object all generated files need to be copied into the <emlink href="definition/index.html">object definition</emlink> and the mesh file needs to be renamed to Graphics.mesh or Graphics.mesh.xml, respectively. Textures are supported in PNG, JPG and BMP format.</text>
+    <text>The mesh is not automatically scaled to the shape (i.e. the width and height values specified in <emlink href="definition/defcore.html">DefCore.txt</emlink>) of the object. Instead one unit in the modeling tool corresponds to one pixel in Clonk. This simplifies using the same magnitude of object sizes for all objects which is especially helpful for attaching meshes (see below). Also pay attention to the coordinate frame: The X axis in the mesh coordinate frame points out of the screen in Clonk, the Y axis points to the right and the Z axis points upwards.</text>
+    <h id="MaterialScripts">Material scripts</h>
+    <text>All material scripts (*.material files) are loaded by the engine before the mesh in the same directory is loaded. Material scripts are simple text files which specify the material properties (material colors, textures, etc.) that can be used by meshes. Each material is assigned a name that can normally be specified in the modeling tool. It should be taken care that names are unique (for example by prefixing all material names with the object name of the object they are supposed to be used with) since all loaded materials can directly be used by any mesh so otherwise they could be naming conflicts.</text>
+    <text>Material scripts can also be crafted or edited by hand. The format is described in the <a href="http://www.ogre3d.org/docs/manual/manual_14.html">OGRE manual</a>. However not all of the features described there are supported (yet): Especially pixel, vertex and geometry shaders cannot be used. Also usage of LOD (Level of Detail) is not yet possible. For the source1 and source2 fields in the colour_op_ex field in texture units the additional value src_player_colour can be specified to refer to the player color of the object's owner. This can be used to colorize objects (partly) by the player color.</text>
+    <text>At runtime the material script can be changed using the C4Script function <funclink>SetMeshMaterial</funclink>.</text>
+    <h id="Animations">Animations</h>
+    <text>As for bitmap based graphics an object can play an animation while executing an action. To do so first a rig for the model and then an animation needs to be created. When exporting it is saved in the *.skeleton (or *.skeleton.xml for the OGRE XML format) file. To play it during an action the Animation field of the action needs to be set in the <emlink href="definition/actmap.html">ActMap</emlink>. The Facet fields are ignored for mesh graphics.</text>
+    <text>It is also possible, via script, to play multiple animations at the same time or to specify transitions between animations. To learn more about this possibility see <emlink href="definition/animations.html">Animations</emlink>.</text>
+    <h id="Attachment">Attachment of meshs</h>
+    <text>Meshes can be attached to each other so that they always move together. This allows the clonk to carry objects or to aim with the bow. To attach two meshes the C4Script function <funclink>AttachMesh</funclink> can be used, or <funclink>DetachMesh</funclink> to detach them again. When attaching a bone of both meshes needs to be specified. The attached mesh is then aligned so that its bone has always the same position and orientation as the one to which it is attached.</text>
+    <text>However it needs to be taken care of the fact that only the meshes, that is the graphics of the objects, are attached. The real position of the attached object (so what is returned by the functions <funclink>GetX</funclink> and <funclink>GetY</funclink> or the area in which the object is found by the functions <funclink>Find_AtPoint</funclink>, <funclink>Find_InRect</funclink> oder <funclink>Find_AtRect</funclink>) is <em>not</em> affected.</text>
+    <h id="Picture">Picture graphics.</h>
+    <text>If an object uses a mesh then the Picture entry of the <emlink href="definition/defcore.html">DefCore.txt</emlink> remains without effect. Instead a perspective projection of the mesh will be used. The camera will be placed in the front of the object at a distance so that the mesh is totally covered.</text>
+    <text>The position and orientation of the mesh with respect to the camera can be changed by making use of the "PictureTransformation" property. This way it can be shown displaced, rotated or scaled. The property should be assigned an array with 12 integer entries which make up a 3x4 matrix. The first four values specify the first row, the next four values specify the second row and the last four entries specify the third one. Those matrices can be conveniently created using the script functions <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink>, <funclink>Trans_Scale</funclink> and <funclink>Trans_Mul</funclink>.</text>
+    <text>As with <funclink>SetObjDrawTransform</funclink> the individual matrix elements are specified in per thousand (1000 = 100%) since there are no floating point numbers in Clonk.</text>
+    <text>As an example we show the transformation of the tool workshop:</text>
+    <code><funclink>SetProperty</funclink>(&quot;PictureTransformation&quot;, <funclink>Trans_Mul</funclink>(<funclink>Trans_Translate</funclink>(0,0,7000), <funclink>Trans_Rotate</funclink>(-20,1,0,0), <funclink>Trans_Rotate</funclink>(30,0,1,0)), def);</code>
+    <text>First the workshop is rotated by 30 degrees counter-clockwise around the Y axis, then by 20 degrees clockwise around the X axis. Finally it is moved 7 units in positive Z direction so that it is nearer to the camera.</text>
+    <h id="Transformation">MeshTransformation</h>
+    <text>The same way the "PictureTransformation" property affects the presentation of the picture graphics the "MeshTransformation" property is applied for ingame graphics. The results are very similar to what can be done with <funclink>SetObjDrawTransform</funclink>, however there are a few subtle differences:</text>
+    <ul>
+      <li>With the "MeshTransformation" property the Z coordinate can be influenced. So for example the mesh can be rotated around the X or Y axis.</li>
+      <li><funclink>SetObjDrawTransform</funclink> is applied after lighting. The transformed coordinates have no influence on the lighting anymore. So for example if the mesh is illuminated from below and then is turned upside down by <funclink>SetObjDrawTransform</funclink> then the illuminated spot is at the same position on the mesh, that is it is also rotated. When using the "MeshTransformation" property however the lighting is applied after the transformation so that the mesh is always illuminated from below, no matter how it is oriented.</li>
+      <li>If both "MeshTransformation" and <funclink>SetObjDrawTransform</funclink> are set then first the "MeshTransformation" is applied to the mesh and then <funclink>SetObjDrawTransform</funclink>.</li>
+    </ul>
+  </part>
+  <author>Clonk-Karl</author><date>2010-04</date>
 </doc>

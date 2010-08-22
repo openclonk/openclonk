@@ -1,20 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ActIdle</title>
-    <category>Objekte</category><subcat>Aktivität</subcat>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>bool</rtype>
-    </syntax>
-    <desc>Prüft, ob das aufrufende Objekt eine Aktivität ausführt.</desc>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Checks whether an object is currently performing the specified activity.</desc>
     <examples>
       <example>
-	      <code>var hut = <funclink>FindObject</funclink>(HUT1);
-		  <funclink>if</funclink>(hut->ActIdle()) hut-><funclink>Explode</funclink>(15);</code>
-        <text>Lässt die Bambushütte explodieren, wenn die Tür geschlossen ist</text>
+        <code>var hut = <funclink>FindObject</funclink>(HUT1);
+		  <funclink>if</funclink>(hut-&gt;ActIdle()) hut-&gt;<funclink>Explode</funclink>(15);</code>
+        <text>Blows up the hut if the door is currently closed.</text>
       </example>
     </examples>
     <related>
@@ -22,5 +22,5 @@
       <funclink>SetAction</funclink>
     </related>
   </func>
-  <author>jwk</author><date>April 2002</date>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

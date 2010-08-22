@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetBase</title>
-                <category>Spieler</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                </syntax>
-		<desc>Liefert die Nummer des Spielers, dessen Heimatbasis das aufrufende Objekt ist. Rückgabewert <funclink>NO_OWNER</funclink> wenn es keine Heimatbasis ist.</desc>
-                <related>
-                        <funclink>FindBase</funclink>
-                </related>
-        </func>
-        <author>jwk</author><date>Juni 2002</date>
+  <func>
+    <title>GetBase</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the player whose home base the specified object is. Return value <funclink>NO_OWNER</funclink> if the object is not a home base.</desc>
+    <related><funclink>FindBase</funclink></related>
+  </func>
+  <author>jwk</author><date>2002-06</date>
 </funcs>
-

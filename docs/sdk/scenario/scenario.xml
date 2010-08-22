@@ -1,444 +1,442 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Scenario.txt</title>
-
-<h id="Scenariotxt">Scenario.txt</h>
-<text>Über die Scenario.txt lassen sich alle Szenarienvoreinstellungen anpassen.
-Dazu gehören einfache, dynamische Karten, Spielervorgaben, Spielziele, Wetter, usw.
-Die meisten dieser Einstellungen lassen sich allerdings bequemer über den Editor in den Rundenoptionen konfigurieren.
-Für komplexere Startbedingungen wie zum Beispiel Teamschlachten mit automatischen Rejoins,
-sowie für vorgegebene Handlungsabläufe im Spiel benötigt man ein <emlink href="scenario/script.html">Script</emlink>.</text>
-<text>Einige der Werte werden mit vier Zahlen angegeben, die Mittelwert, Abweichung, Minimum und Maximum festlegen.
-Der tatsächliche Wert wird dann durch
-<code>BoundBy(Mittelwert+Random(2*Abweichung+1)-Abweichung,Minimum,Maximum);</code>
-bestimmt.</text>
-
-<text><table>
-	<caption id="SektionHead">Sektion [Head]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Icon</col>
-		<col>Integer</col>
-		<col>Standard-Icon des Szenarios. Siehe Szenarioeigenschaften im Menüsystem.</col>
-	</row>
-	<row>
-		<col>Title</col>
-		<col>Zeichenfolge (max 512)</col>
-		<col>Titel des Szenarios. Wird durch die Einträge in Title.txt ersetzt.</col>
-	</row>
-	<row>
-		<col>Version</col>
-		<col>4 Integer</col>
-		<col>Vom Szenario benötigte Version der Engine.</col>
-	</row>
-	<row>
-		<col>MinPlayer</col>
-		<col>Integer</col>
-		<col>Minimale Anzahl der Spieler.</col>
-	</row>
-	<row>
-		<col>MaxPlayer</col>
-		<col>Integer</col>
-		<col>Maximale Anzahl der Spieler.</col>
-	</row>
-	<row>
-		<col>MaxPlayerLeague</col>
-		<col>Integer</col>
-		<col>Maximale Anzahl der Spieler für die Liga. Default ist MaxPlayerLeague = MaxPlayer.</col>
-	</row>
-	<row>
-		<col>Loader</col>
-		<col>Zeichenfolge</col>
-		<col>Dateiname (ohne Dateiendung) des Gewünschten Ladebildschirms.</col>
-	</row>
-	<row>
-		<col>Font</col>
-		<col>Zeichenfolge</col>
-		<col>Name der Schriftart die für dieses Szenario anstatt der Default-Schriftart benutzt werden soll. </col>
-	</row>
-	<row>
-		<col>Difficulty</col>
-		<col>Integer</col>
-		<col>Schwierigkeitsgrad des Szenarios. Szenarien in einem Ordner werden nach aufsteigender Schwierigkeit sortiert, ansonsten nach dem Alphabet.</col>
-	</row>
-	<row>
-		<col>NoInitialize</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 werden alle Objekte, die genau einmal erzeugt werden sollten, nicht platziert. Automatisch für Spielstände und gespeicherte Szenarien gesetzt, um eine erneute Erzeugung von Vegetation, Spielzielen und ähnlichem zu vermeiden. Es werden unter anderem die Werte Buildings, Vehicles, Material, Vegetation, InEarth und Animals ignoriert.</col>
-	</row>
-	<row>
-		<col>MissionAccess</col>
-		<col>Zeichenfolge</col>
-		<col>Szenario kann nur gestartet werden, wenn ein Spieler zuvor dieses Zugangspasswort in einem anderen Szenario erspielt hat. Siehe Scriptfunktion <funclink>GainMissionAccess</funclink>().</col>
-	</row>
-	<row>
-		<col>ForcedFairCrew</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 wird für dieses Szenario immer eine faire Crew verwendet.</col>
-	</row>
-	<row>
-		<col>FairCrewStrength</col>
-		<col>Integer</col>
-		<col>Stärke der fairen Crew.</col>
-	</row>
-	<row>
-		<col>Film</col>
-		<col>Integer</col>
-		<col>0 oder 1 und nur bei Aufnahmen. Bei 1 folgt die Sicht nur dem ersten Spieler und alle Spielerkontrollen werden ausgeblendet.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionGame">Sektion [Game]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Rules</col>
-		<col>ID-Liste</col>
-		<col>Spielregeln.</col>
-	</row>
-	<row>
-		<col>Goals</col>
-		<col>ID-Liste</col>
-		<col>Spielziele.</col>
-	</row>
-	<row>
-		<col>ValueOverloads</col>
-		<col>ID-Liste</col>
-		<col>Liste der Definitionen, dessen Wert für diese Runde geändert sein soll. Die Menge gibt den neuen Wert an.</col>
-	</row>
-	<row>
-		<col>FoWColor</col>
-		<col>DWORD</col>
-		<col>Farbe des Fog of War.</col>
-	</row>
-
-</table></text>
-
-<text><table>
-	<caption id="SektionenPlayer1Player2Player3Player4">Sektionen [Player1] [Player2] [Player3] [Player4]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Wealth</col>
-		<col>4 Integer</col>
-		<col>Startkapital.</col>
-	</row>
-	<row>
-		<col>Position</col>
-		<col>2 Integer</col>
-		<col>Startposition in Koordinaten der ungezoomten Landkarte. Beide -1 für Zufall.</col>
-	</row>
-	<row>
-		<col>Crew</col>
-		<col>ID-Liste</col>
-		<col>Art und Anzahl der Mannschaftsmitglieder.</col>
-	</row>
-	<row>
-		<col>Buildings</col>
-		<col>ID-Liste</col>
-		<col>Zu Spielbeginn vorhandene Gebäude.</col>
-	</row>
-	<row>
-		<col>Vehicles</col>
-		<col>ID-Liste</col>
-		<col>Zu Spielbeginn vorhandene Fahrzeuge.</col>
-	</row>
-	<row>
-		<col>Material</col>
-		<col>ID-Liste</col>
-		<col>Zu Spielbeginn vorhandenes Material.</col>
-	</row>
-	<row>
-		<col>Knowledge</col>
-		<col>ID-Liste</col>
-		<col>Vom Spieler erzeugbare Objekte.</col>
-	</row>
-	<row>
-		<col>HomeBaseMaterial</col>
-		<col>ID-Liste</col>
-		<col>Zu Spielbeginn in der Heimatbasis kaufbares Material.</col>
-	</row>
-	<row>
-		<col>HomeBaseProduction</col>
-		<col>ID-Liste</col>
-		<col>Nachproduktion von Material für die Heimatbasis.</col>
-	</row>
-	<row>
-		<col>Magic</col>
-		<col>ID-Liste</col>
-		<col>Zur Verfügung stehende Zauber. Sind keine Zauber angegeben, werden alle verfügbaren Zauber geladen (Abwärtskompatibilität zu älteren Szenarien).</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionLandscape">Sektion [Landscape]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Vegetation</col>
-		<col>ID-Liste</col>
-		<col>Vegetationstypen und relative Anteile.</col>
-	</row>
-	<row>
-		<col>VegetationLevel</col>
-		<col>4 Integer</col>
-		<col>0-100. Menge Vegetation.</col>
-	</row>
-	<row>
-		<col>InEarth</col>
-		<col>ID-Liste</col>
-		<col>Typen und relative Anteile der Objekte im Erdreich.</col>
-	</row>
-	<row>
-		<col>InEarthLevel</col>
-		<col>4 Integer</col>
-		<col>0-100. Menge Erdreich-Objekte.</col>
-	</row>
-	<row>
-		<col>Sky</col>
-		<col>Zeichenfolge</col>
-		<col>Himmeltextur wie in der Graphics.c4g vorhanden (ohne Dateierweiterung).</col>
-	</row>
-	<row>
-		<col>SkyFade</col>
-		<col>6 Integer</col>
-		<col>Himmelfarbverlauf von RGB nach RGB. Werte von 0-255. Sind alle Werte 0, wird das Vorgabe-Blau der Clonk-Farbpalette verwendet.</col>
-	</row>
-	<row>
-		<col>BottomOpen</col>
-		<col>Integer</col>
-		<col>0 oder 1. Legt fest, ob die Spielwelt unten offen ist.</col>
-	</row>
-	<row>
-		<col>TopOpen</col>
-		<col>Integer</col>
-		<col>0 oder 1. Legt fest, ob die Spielwelt oben offen ist.</col>
-	</row>
-	<row>
-		<col>LeftOpen</col>
-		<col>Integer</col>
-		<col>Öffnung des linken Randes bis zum Abstand in Pixel von der Oberkante.</col>
-	</row>
-	<row>
-		<col>RightOpen</col>
-		<col>Integer</col>
-		<col>Öffnung des rechten Randes bis zum Abstand in Pixel von der Oberkante.</col>
-	</row>
-	<row>
-		<col>AutoScanSideOpen</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 werden LeftOpen und RightOpen automatisch angepasst.</col>
-	</row>
-	<row>
-		<col>MapWidth</col>
-		<col>4 Integer</col>
-		<col>Ausgangsbreite der dynamischen Karte.</col>
-	</row>
-	<row>
-		<col>MapHeight</col>
-		<col>4 Integer</col>
-		<col>Ausgangshöhe der dynamischen Karte.</col>
-	</row>
-	<row>
-		<col>MapZoom</col>
-		<col>4 Integer</col>
-		<col>Vergrößerungsfaktor der Karte auf die tatsächliche Spiellandschaft. Wert 10.</col>
-	</row>
-	<row>
-		<col>Amplitude</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Hügelhöhe bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>Phase</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Hügelverschiebung bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>Period</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Hügelabstand bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>Random</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Zufallsabweichung bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>Material</col>
-		<col>Zeichenfolge</col>
-		<col>Material-Textur-Definition des Basismaterials (Erdreich) bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>Liquid</col>
-		<col>Zeichenfolge</col>
-		<col>Material-Textur-Definition der Flüssigkeit in dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>LiquidLevel</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Flüssigkeitsstand in dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>MapPlayerExtend</col>
-		<col>Integer</col>
-		<col>0 oder 1. Legt fest, ob die dynamische Karte in der Breite angepasst wird.</col>
-	</row>
-	<row>
-		<col>Layers</col>
-		<col>Material-Liste</col>
-		<col>Materialschichten im Erdreich bei dynamischen Karten.</col>
-	</row>
-	<row>
-		<col>ExactLandscape</col>
-		<col>1 Integer</col>
-		<col>0 oder 1. Gibt an, ob Landscape.bmp eine tatsächliche Spiellandschaft ist.</col>
-	</row>
-	<row>
-		<col>Gravity</col>
-		<col>4 Integer</col>
-		<col>10-200: Gravitation. 100 ist Standard.</col>
-	</row>
-	<row>
-		<col>NoScan</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 werden keine Überprüfungen innerhalb der Landschaft durchgeführt, wie beispielsweise Schneeschmelze oder Festwerden von Lava in Vulkanen.</col>
-	</row>
-	<row>
-		<col>KeepMapCreator</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 wird der interne MapCreator nicht nach dem Start entladen, so dass Befehle wie <funclink>DrawDefMap</funclink> zur Verfügung stehen.</col>
-	</row>
-	<row>
-		<col>SkyScrollMode</col>
-		<col>Integer</col>
-		<col>0 bis 2. Bei 1 bewegt sich der Himmel mit dem Wind, bei 2 ist er halbparallax.</col>
-	</row>
-	<row>
-		<col>FoWRes</col>
-		<col>Integer</col>
-		<col>Größe der Blöcke, in denen der Kriegsnebel (Fog of War) berechnet wird. Standardwert 64. Achtung: Kleinere Werte verbessern zwar die Darstellung des Kriegsnebels, erhöhen aber auch die benötigte Rechenleistung bei hohen Bildschirmauflösungen. Ab CR.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionAnimals">Sektion [Animals]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Animals</col>
-		<col>ID-Liste</col>
-		<col>Freilaufende Lebewesen.</col>
-	</row>
-	<row>
-		<col>Nest</col>
-		<col>ID-Liste</col>
-		<col>Nester im Erdreich.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionWeather">Sektion [Weather]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Climate</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Durchschnittstemperatur. 0 warm, 100 kalt.</col>
-	</row>
-	<row>
-		<col>StartSeason</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Startjahreszeit.</col>
-	</row>
-	<row>
-		<col>YearSpeed</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Geschwindigkeit des Jahreszeitenwechsels.</col>
-	</row>
-	<row>
-		<col>Rain</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Regenwahrscheinlichkeit.</col>
-	</row>
-	<row>
-		<col>Wind</col>
-		<col>4 Integer</col>
-		<col>-100-100 und Abweichung. Windrichtung und -stärke.</col>
-	</row>
-	<row>
-		<col>Precipitation</col>
-		<col>Zeichenfolge</col>
-		<col>Einfache Materialdefinition Niederschlag.</col>
-	</row>
-	<row>
-		<col>NoGamma</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 wirken sich die Jahreszeiten nicht auf die Bildschirmfärbung aus.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionEnvironment">Sektion [Environment]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Objects</col>
-		<col>ID-Liste</col>
-		<col>Umweltsteuerungsobjekte, die am Anfang der Runde platziert werden.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionDefinitions">Sektion [Definitions]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>LocalOnly</col>
-		<col>Integer</col>
-		<col>Wenn LocalOnly den Wert 1 hat, werden alle angegebenen Objektdefinitions-pakete ignoriert und nur lokale Objektdefinitionen geladen.</col>
-	</row>
-	<row>
-		<col>Definition1 (bis 9)</col>
-		<col>Zeichenfolge(n)</col>
-		<col>Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (c4d) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert.</col>
-	</row>
-	<row>
-		<col>SkipDefs</col>
-		<col>ID-Liste</col>
-		<col>Liste der Definitionen, die im Spiel nicht geladen werden sollen. So lässt sich beispielsweise die Erforschung bestimmter Objekte verhindern.</col>
-	</row>
-</table></text>
-
-<author>Sven2</author><date>April 2002</date>
-<author>Newton</author><date>Februar 2010</date>
-
+  <title>Scenario.txt</title>
+  <h id="Scenariotxt">Scenario.txt</h>
+  <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
+  <text>Some of the values require four numbers which specify mean, deviation, minimum and maximum. The value which is actually used is computed by <code>BoundBy(mean+Random(2*deviation+1)-deviation,minimum,maximum);</code>.</text>
+  <text>
+    <table>
+      <caption id="SektionHead">Section [Head]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>Icon</col>
+        <col>Integer</col>
+        <col>Default icon for the scenario. See the scenario options in the menu system.</col>
+      </row>
+      <row>
+        <col>Title</col>
+        <col>String (max 512)</col>
+        <col>Title for the scenario. Entries in Title.txt will override this value.</col>
+      </row>
+      <row>
+        <col>Version</col>
+        <col>4 integers</col>
+        <col>Engine version required by the scenario.</col>
+      </row>
+      <row>
+        <col>MinPlayer</col>
+        <col>Integer</col>
+        <col>Minimum player count</col>
+      </row>
+      <row>
+        <col>MaxPlayer</col>
+        <col>Integer</col>
+        <col>Maximum player count</col>
+      </row>
+      <row>
+        <col>MaxPlayerLeague</col>
+        <col>Integer</col>
+        <col>Maximum players for the league, default is MaxPlayerLeague = MaxPlayer.</col>
+      </row>
+      <row>
+        <col>Loaders</col>
+        <col>String</col>
+        <col>File name (without extension) of the desired loader screen.</col>
+      </row>
+      <row>
+        <col>Font</col>
+        <col>String</col>
+        <col>Name of the font to be used for this scenario (replacing the default font).</col>
+      </row>
+      <row>
+        <col>Difficulty</col>
+        <col>Integer</col>
+        <col>Difficulty of the scenario. Scenarios in a folder are sorted ascendingly by difficulty if specified or by the alphabet otherwise.</col>
+      </row>
+      <row>
+        <col>NoInitialize</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings, animals, vegetation) are not placed. This flag is automatically set in savegaes and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, Vehicles, Material, Vegetation, InEarth, and Animals.</col>
+      </row>
+      <row>
+        <col>MissionAccess</col>
+        <col>String</col>
+        <col>The scenario will only load if the player gained this password in another scenario. See script function <funclink>GainMissionAccess</funclink>().</col>
+      </row>
+      <row>
+        <col>ForcedFairCrew</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, fair crew is always used in this scenario.</col>
+      </row>
+      <row>
+        <col>FairCrewStrength</col>
+        <col>Integer</col>
+        <col>Strength of the fair crew.</col>
+      </row>
+      <row>
+        <col>Film</col>
+        <col>Integer</col>
+        <col>0 or 1 und only valid for records. If 1, the view always follows the first player and all player controls are invisible.</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionGame">Section [Game]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>Rules</col>
+        <col>ID list</col>
+        <col>Game rules.</col>
+      </row>
+      <row>
+        <col>Goals</col>
+        <col>ID list</col>
+        <col>Game goals.</col>
+      </row>
+      <row>
+        <col>ValueOverloads</col>
+        <col>ID list</col>
+        <col>List of definitions for which the values should be overridden. The amount will be the new value.</col>
+      </row>
+      <row>
+        <col>FoWColor</col>
+        <col>DWORD</col>
+        <col>Color of the fog of war</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionenPlayer1Player2Player3Player4">Sections [Player1] [Player2] [Player3] [Player4]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <literal_col>Wealth</literal_col>
+        <col>4 integers</col>
+        <col>Seed capital.</col>
+      </row>
+      <row>
+        <literal_col>Position</literal_col>
+        <col>2 Integer</col>
+        <col>Start position as coordinates for the un-zoomed landscape. Both -1: Random position.</col>
+      </row>
+      <row>
+        <literal_col>Crew</literal_col>
+        <col>ID list</col>
+        <col>Type and count of initial crew members.</col>
+      </row>
+      <row>
+        <literal_col>Buildings</literal_col>
+        <col>ID list</col>
+        <col>Buildings available at game start.</col>
+      </row>
+      <row>
+        <literal_col>Vehicles</literal_col>
+        <col>ID list</col>
+        <col>Vehicles available at game start.</col>
+      </row>
+      <row>
+        <literal_col>Material</literal_col>
+        <col>ID list</col>
+        <col>Materials available at game start</col>
+      </row>
+      <row>
+        <literal_col>Knowledge</literal_col>
+        <col>ID list</col>
+        <col>Objects the player should initially be able to create.</col>
+      </row>
+      <row>
+        <literal_col>HomeBaseMaterial</literal_col>
+        <col>ID list</col>
+        <col>Materials available to buy at game start.</col>
+      </row>
+      <row>
+        <literal_col>HomeBaseProduction</literal_col>
+        <col>ID list</col>
+        <col>Additional supply of materials to buy.</col>
+      </row>
+      <row>
+        <literal_col>Magic</literal_col>
+        <col>ID list</col>
+        <col>Available spells. If the list is empty, all spells are available (backwards compatibility).</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionLandscape">Section [Landscape]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <literal_col>Vegetation</literal_col>
+        <col>ID list</col>
+        <col>Vegetation types and ratio.</col>
+      </row>
+      <row>
+        <literal_col>VegetationLevel</literal_col>
+        <col>4 integers</col>
+        <col>0-100. Vegetation amount.</col>
+      </row>
+      <row>
+        <literal_col>InEarth</literal_col>
+        <col>ID list</col>
+        <col>Types and proportionate shares of buried objects.</col>
+      </row>
+      <row>
+        <literal_col>InEarthLevel</literal_col>
+        <col>4 integers</col>
+        <col>0-100. Amount of buried objects.</col>
+      </row>
+      <row>
+        <literal_col>Sky</literal_col>
+        <col>String</col>
+        <col>Sky texture from Graphics.c4g (without filename extension)</col>
+      </row>
+      <row>
+        <literal_col>SkyFade</literal_col>
+        <col>6 integers</col>
+        <col>Sky color gradient (RGB to RGB). Values 0-255. With all values 0, the default blue background will be used.</col>
+      </row>
+      <row>
+        <literal_col>BottomOpen</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. Determines wether the bottom of the game world should be open.</col>
+      </row>
+      <row>
+        <literal_col>TopOpen</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. Determines wether the top of the game world should be open.</col>
+      </row>
+      <row>
+        <literal_col>LeftOpen</literal_col>
+        <col>Integer</col>
+        <col>Height until which the left side of the game world is open.</col>
+      </row>
+      <row>
+        <literal_col>RightOpen</literal_col>
+        <col>Integer</col>
+        <col>Height until which the right side of the game world is open.</col>
+      </row>
+      <row>
+        <literal_col>AutoScanSideOpen</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, LeftOpen and RightOpen will be set automatically depending on the landscape at game start.</col>
+      </row>
+      <row>
+        <literal_col>MapWidth</literal_col>
+        <col>4 integers</col>
+        <col>Base width of the dynamic map.</col>
+      </row>
+      <row>
+        <literal_col>MapHeight</literal_col>
+        <col>4 integers</col>
+        <col>Base height of the dynamic map.</col>
+      </row>
+      <row>
+        <literal_col>MapZoom</literal_col>
+        <col>4 integers</col>
+        <col>Factor for zooming the map to the real game world. Default is 10.</col>
+      </row>
+      <row>
+        <literal_col>Amplitude</literal_col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Hill height for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>Phase</literal_col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Hill offset for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>Period</literal_col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Hill interval for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>Random</literal_col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Random deviance for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>Material</literal_col>
+        <col>String</col>
+        <col>Material-texture definition of the base material for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>Liquid</literal_col>
+        <col>String</col>
+        <col>Material-texture definition of the liquid material for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>LiquidLevel</literal_col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Liquid level for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>MapPlayerExtend</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. Determines wether the dynamic map will be extended for every player activated at game start.</col>
+      </row>
+      <row>
+        <literal_col>Layers</literal_col>
+        <col>Material list</col>
+        <col>Additional material layers in earth for dynamic maps.</col>
+      </row>
+      <row>
+        <literal_col>ExactLandscape</literal_col>
+        <col>1 Integer</col>
+        <col>0 or 1. Specifies wether the Landscape.bmp is an actual game landscape.</col>
+      </row>
+      <row>
+        <literal_col>Gravity</literal_col>
+        <col>4 integers</col>
+        <col>10-200: Gravity. Default 100.</col>
+      </row>
+      <row>
+        <literal_col>NoScan</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, some ingame landscape checks will be turned of, such as freezing, melting or material counting.</col>
+      </row>
+      <row>
+        <literal_col>KeepMapCreator</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the internal MapCreater won't unload after game start, so functions like <funclink>DrawDefMap</funclink> still work.</col>
+      </row>
+      <row>
+        <literal_col>SkyScrollMode</literal_col>
+        <col>Integer</col>
+        <col>0 to 2. 0: Static sky, 1: The sky moves with the wind, 2: The sky is drawn half-parallax.</col>
+      </row>
+      <row>
+        <literal_col>FoWRes</literal_col>
+        <col>Integer</col>
+        <col>Granularity of the Fog of War. Default: 64. Warning: smaller values will improve the looks of the FoW but will also severely increase processing times.</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionAnimals">Section [Animals]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>Animals</col>
+        <col>ID list</col>
+        <col>Freewheeling creatures.</col>
+      </row>
+      <row>
+        <col>Nest</col>
+        <col>ID list</col>
+        <col>Buried nests.</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionWeather">Section [Weather]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>Climate</col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Average temperature. 0 warm, 100 cold.</col>
+      </row>
+      <row>
+        <col>StartSeason</col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Season at game start.</col>
+      </row>
+      <row>
+        <col>YearSpeed</col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Speed of season change.</col>
+      </row>
+      <row>
+        <col>Rain</col>
+        <col>4 integers</col>
+        <col>0-100 with tolerance. Precipitation amount.</col>
+      </row>
+      <row>
+        <col>Wind</col>
+        <col>4 integers</col>
+        <col>-100-100 with tolerance. Wind direction and strength.</col>
+      </row>
+      <row>
+        <col>Precipitation</col>
+        <col>String</col>
+        <col>Simple material definition precipitation.</col>
+      </row>
+      <row>
+        <col>NoGamma</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, the current season won't cause a small global color change.</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionEnvironment">Section [Environment]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <literal_col>Objects</literal_col>
+        <col>ID list</col>
+        <col>Environment control objects that are placed at game start.</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionDefinitions">Section [Definitions]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>LocalOnly</col>
+        <col>Integer</col>
+        <col>If LocalOnly is 1, only definitions local to the scenario file will be load.</col>
+      </row>
+      <row>
+        <col>Definition1 to 9</col>
+        <col>String(s)</col>
+        <col>With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled.</col>
+      </row>
+      <row>
+        <col>SkipDefs</col>
+        <col>ID list</col>
+        <col>List of object definitions (C4IDs) which are not to be loaded with this scenario. This can be used to prevent researching certain object types in the game.</col>
+      </row>
+    </table>
+  </text>
+  <author>Sven2</author><date>2002-04</date>
+  <author>Newton</author><date>2010-02</date>
 </doc>

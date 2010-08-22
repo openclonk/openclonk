@@ -1,42 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>GrabObjectInfo</title>
-  <category>Objekte</category>
-  <subcat>Mannschaft</subcat>
-  <version>4.9.1.0 GWE</version>
-  <syntax>
-   <rtype>bool</rtype>
-   <params>
-    <param>
-     <type>object</type>
-     <name>from</name>
-     <desc>Objekt (Clonk), von dem die Infosektion genommen werden soll.</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Überträgt die Infosektion von einem anderen Objekt zu dem aufrufenden Objekt. Die Infosektion enthält Namen, Rang, permantente Physicals, usw. Mit diesem Befehl lassen sich beispielsweise Wiederbelebungen realisieren, indem einfach beim Tod eines Clonks ein neuer erstellt und die Infosektion übertragen wird.</desc>
-  <remark>Der Befehl impliziert ein <funclink>MakeCrewMember</funclink> zum besitzenden Spieler. Der Clonk sollte also nicht schon vor dem Aufruf mit MakeCrewMember zur Spielercrew hinzugefügt werden, weil dadurch jeweils ein neuer Clonk aus der Crew eingestellt und sofort wieder entlassen würde.</remark>
-
-  <examples>
-   <example>
-<code>protected Death:
+  <func>
+    <title>GrabObjectInfo</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>from</name>
+          <desc>Object (clonk) of which to retrieve the info section.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Transfers the info section from one object to another. The info section contains name, rank, permanent physicals, etc. Using this command you can e.g. perform reincarnations by transferring the info section from a dead clonk to a live one.</desc>
+    <remark>This command implies a <funclink>MakeCrewMember</funclink> for the owning player. So the clonk should not already be a crew member - this would cause a new crew member info to be created and immediately discarded.</remark>
+    <examples>
+      <example>
+        <code>protected Death:
   var newclnk = <funclink>CreateObject</funclink>(<funclink>GetID</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())-<funclink>GetX</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>())-<funclink>GetY</funclink>(), <funclink>GetOwner</funclink>());
-  newclnk->GrabObjectInfo(<funclink>this</funclink>());
+  newclnk-&gt;GrabObjectInfo(<funclink>this</funclink>());
   <funclink>return</funclink> 1;</code>
-    <text>Dieser Teil eines Objektscripts sorgt dafür, dass ein Clonk bei seinem Tod irgendwo in der Landschaft neu erstellt wird, und unter demselben Namen und mit denselben Physicals weiterspielen kann.</text>
-   </example>
-  </examples>
-  <related>
-   <funclink>MakeCrewMember</funclink>
-   <funclink>Kill</funclink>
-   <funclink>GetCrew</funclink>
-   <funclink>CrewMember</funclink>
-   <funclink>OCF_CrewMember</funclink>
-  </related>
- </func>
- <author>Sven2</author><date>Mai 2002</date>
+        <text>This part of a script would reincarnate a dead clonk at a random landscape position using the same name and physicals.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>MakeCrewMember</funclink>
+      <funclink>Kill</funclink>
+      <funclink>GetCrew</funclink>
+      <funclink>CrewMember</funclink>
+      <funclink>OCF_CrewMember</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

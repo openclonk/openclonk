@@ -1,25 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_InRect</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>X-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
-				<param><type>int</type><name>width</name><desc>Breite des Suchbereiches</desc></param>
-				<param><type>int</type><name>height</name><desc>Höhe des Suchbereiches</desc></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: sucht alle Objekte im angegebenen Suchrechteck.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_InRect</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the top left corner of the search rectangle. Relative to the calling object's center in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the top left corner of the search rectangle. Relative to the calling object's center in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the search rectangle</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the search rectangle</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects within the specified rectangle.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

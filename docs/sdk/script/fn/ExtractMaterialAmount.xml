@@ -1,30 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ExtractMaterialAmount</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <subcat>Material</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>y</name><desc>Y-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>material_index</name><desc>Index des Materials, das extrahiert wird. Siehe dazu auch <funclink>Material</funclink>.</desc></param>
-        <param><type>int</type><name>amount</name><desc>Maximale Menge, die extrahiert wird</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position at which material is extracted. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position at which material is extracted. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>material_index</name>
+          <desc>Index of the material to be extracted. Also see <funclink>Material</funclink>.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Maximum amount to be extracted.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Extrahiert eine bestimmte Menge des gleichen Materials an einer Stelle. Zurückgegeben wird die tatsächlich erfolgreich extrahierte Materialmenge.</desc>
+    <desc>Extracts a certain amount of material at the specified position. The return value is the amount actually extracted.</desc>
     <examples>
       <example>
-
-<code>var i=ExtractMaterialAmount(0,0,<funclink>Material</funclink>("Water"),10);
-<funclink>while</funclink> (i--) <funclink>InsertMaterial</funclink>(<funclink>Material</funclink>("Water"),0,-10,<funclink>Random</funclink>(5)-2,-10);</code>
-
-        <text>Saugt bis zu zehn Pixel Wasser auf, und schleudert sie nach oben.</text>
-
+        <code>var i=ExtractMaterialAmount(0,0,<funclink>Material</funclink>(&quot;Water&quot;),10);
+<funclink>while</funclink> (i--) <funclink>InsertMaterial</funclink>(<funclink>Material</funclink>(&quot;Water&quot;),0,-10,<funclink>Random</funclink>(5)-2,-10);</code>
+        <text>Sucks up to ten pixels of water and squirts them up.</text>
       </example>
     </examples>
     <related>
@@ -33,5 +47,5 @@
       <funclink>InsertMaterial</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

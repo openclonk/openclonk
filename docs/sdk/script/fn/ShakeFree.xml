@@ -1,24 +1,37 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ShakeFree</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>y</name><desc>Y-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>radius</name><desc>Radius des freigeschüttelten Kreises</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X center position of the circular area to be shaken free. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y center position of the circular area to be shaken free. Always global.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius of the circular area to be shaken free.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Löst innerhalb eines kreisförmigen Bereiches halbfestes Material in der Landschaft. Für gelöstes Material wird neu geprüft, ob es in darunterliegendes Material fallen kann. Dadurch kann man zum Beispiel Höhlendecken einstürzen lassen.</desc>
+    <desc>Loosens instable material within a circular area. Loosened material will then begin to fall if there is room underneath. This can be used to collapse earth tunnels or similar.</desc>
     <examples>
       <example>
         <code>ShakeFree(<funclink>LandscapeWidth</funclink>()/2, <funclink>LandscapeHeight</funclink>()/2, <funclink>Distance</funclink>(<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>())/2);</code>
-        <text>Schüttelt die gesamte Landschaft frei. Achtung: Extrem rechenintensiv :)</text>
+        <text>Shakes the complete landscape. Careful: this might kill you computer ;)</text>
       </example>
     </examples>
     <related>
@@ -26,5 +39,5 @@
       <funclink>CastPXS</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Juni 2003</date>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

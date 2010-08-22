@@ -1,37 +1,44 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetClrModulation</title>
-		<category>Objekte</category><subcat>Darstellung</subcat>
-		<version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
-		<remark>Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion -1 (analog zu <funclink>RGBa</funclink>(255,255,255,255)).</remark>
-		<examples>
-			<example>
-<code>global func SetObjAlpha(byAlpha, obj)
+  <func>
+    <title>GetClrModulation</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>overlay_id</name>
+          <desc>If specified, the color modulation of the overlay is returned instead. The overlay must be set using <funclink>SetGraphics</funclink> first. From CR.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the color modulation of an object. This is a color value which is multiplied (or added, according to BlitMode) with the object graphics. For more information see <funclink>SetClrModulation</funclink>().</desc>
+    <remark>A return value of -1 means that no color modulation is done. This corresponds to <funclink>RGBa</funclink>(255,255,255,255).</remark>
+    <examples>
+      <example>
+        <code>global func SetObjAlpha(byAlpha, obj)
   {
-  var dwClrMod=obj->GetClrModulation();
+  var dwClrMod=obj-&gt;GetClrModulation();
   <funclink>if</funclink> (!dwClrMod) dwClrMod = byAlpha&lt;&lt;24; else dwClrMod = dwClrMod &amp; 16777215 | byAlpha&lt;&lt;24;
-  <funclink>return</funclink>(obj-><funclink>SetClrModulation</funclink>(dwClrMod));
+  <funclink>return</funclink>(obj-&gt;<funclink>SetClrModulation</funclink>(dwClrMod));
   }</code>
-				<text>Globale Funktion: Setzt nur den Alphawert der Farbmodulation eines Objekts.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RGB</funclink>
-			<funclink>RGBa</funclink>
-			<funclink>SetGamma</funclink>
-			<funclink>SetClrModulation</funclink>
-			<funclink>GetColor</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Fabruar 2004</date>
+        <text>Global function: only sets the alpha value of the color modulation of an object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+      <funclink>RGBa</funclink>
+      <funclink>SetGamma</funclink>
+      <funclink>SetClrModulation</funclink>
+      <funclink>GetColor</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2004-02</date>
 </funcs>

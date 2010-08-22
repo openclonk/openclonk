@@ -1,33 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetMaterial</title>
-		<category>Landschaft</category>
-		<subcat>Material</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>x</name><desc>X-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
-				<param><type>int</type><name>y</name><desc>Y-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
-			</params>
-		</syntax>
-		<desc>Fragt das Material an einer bestimmten Stelle der Landschaft ab. Der zurückgegebene Wert ist ein Materialindex, der mit anderen Indizes zum Beispiel über die Funktion <funclink>Material</funclink>() verglichen werden kann. Für Himmel gibt die Funktion -1 zurück.</desc>
-		<remark>Die Funktion erfasst nur feste Materialpixel, also beispielsweise keinen herunterrieselnden Schnee. Materialflächen, die nur über den MassMover in Bewegung sind, werden natürlich erfasst.</remark>
-		<examples>
-			<example>
-				<code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>("Oil")) <funclink>Message</funclink>("Ich bin reich!");</code>
-				<text>Teil eines Clonkscripts: Wenn 200 Pixel unterhalb des aufrufenden Objekts Öl ist, wird eine entsprechende Meldung über dem Objekt ausgegeben.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>Material</funclink>
-			<funclink>GBackSolid</funclink>
-			<funclink>GBackLiquid</funclink>
-			<funclink>InsertMaterial</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>August 2002</date>
+  <func>
+    <title>GetMaterial</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate at which to check the material. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate at which to check the material. Offset in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the material type at the specified position in the landscape. Returns a material index which can be used for comparison e.g. with <funclink>Material</funclink>. For sky areas the function returns -1.</desc>
+    <remark>This functions only processes static materials - moving material pixels such as rain or snow are not evaluated.</remark>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>(&quot;Oil&quot;)) <funclink>Message</funclink>(&quot;Ich bin reich!&quot;);</code>
+        <text>Part of a clonk script: if 200 pixels below the calling object oil is found a message is displayed.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Material</funclink>
+      <funclink>GBackSolid</funclink>
+      <funclink>GBackLiquid</funclink>
+      <funclink>InsertMaterial</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

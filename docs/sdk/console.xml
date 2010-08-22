@@ -1,64 +1,36 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Die Engine im Entwicklermodus</title>
-<h id="DieEngineimEntwicklermodus">Engine</h>
-<part>
-<text>Im Entwicklermodus der Engine können Szenarien bei laufendem oder angehaltenen Spiel
-bearbeitet und anschließend abgespeichert werden.</text>
-<h id="Bearbeitungsmodus">Bearbeitungsmodus:</h>
-<text><img src="../images/icon_em_play.gif" width="16" height="16"/> Spielen: die Maussteuerung gilt
-jeweils nur im ersten Sichtfenster des entsprechenden Spielers. Die Tastatursteuerung aller Spieler
-gilt, wenn ein beliebiges Sichtfenster aktiviert ist.</text>
-<text><img src="../images/icon_em_edit.gif" width="16" height="16"/> Editieren: Objekte können
-mit der Maus bearbeitet und verschoben werden. Weitere Bearbeitungsoptionen durch das
-Kontextmenü über die rechte Maustaste. Um neue Objekte zu erzeugen, die entsprechende
-Objektdefinition (c4d) per Drag 'n' Drop aus dem Menüsystem in ein Sichtfenster der Engine
-ziehen. Objekte können in anderen Objekten abgelegt werden, indem sie bei gehaltener Ctrl-Taste
-auf das entsprechende Zielobjekt gezogen werden.</text>
-<text><img src="../images/icon_em_brush.gif" width="16" height="16"/> Zeichnen:
-Werkzeugeinstellungen zum Bearbeiten der Landschaft im Kontextmenü über die rechte
-Maustaste.</text>
-<h id="Landschaftsmodus">Landschaftsmodus:</h>
-<text><img src="../images/icon_em_dynamic.gif" width="16" height="16"/> Dynamisch: Szenarien mit
-dynamischer Landkarte kommen mit einer sehr geringen Dateigröße aus. Da die Landkarte bei
-jedem Start neu erzeugt wird, sollten im Entwicklermodus der Engine bearbeitete Szenarien jedoch nur
-dann mit dynamischer Landkarte gespeichert speichern werden, wenn die Einstellungen der Landkarte
-keinerlei Zufallswerte enthalten. Dynamische Landschaften können nicht im Zeichenmodus
-bearbeitet werden. Es ist nicht möglich, statische oder exakte Landschaften in den dynamischen
-Modus zurückzuschalten.</text>
-<text><img src="../images/icon_em_static.gif" width="16" height="16"/> Statisch: Mittlere
-Dateigröße. Die Landschaft wird in groben Blöcken aus einer verkleinerten Landkarte
-generiert. Statische Landschaften sollten nur bei angehaltenen Spiel bearbeitet werden, da
-Veränderungen zur Laufzeit (z.B. durch grabende Clonks, Explosionen, bewegte
-Flüssigkeiten) zwar zunächst im Spiel sichtbar sind, in der bearbeiteten Karte allerdings
-nicht berücksichtigt werden, was zu Ungenauigkeiten in der Anzeige führen kann.</text>
-<text><img src="../images/icon_em_exact.gif" width="16" height="16"/> Exakt: extrem hohe
-Dateigröße. Ermöglicht dafür pixelgenaue Bearbeitung der Landschaft.</text>
-<h id="Landschaftswerkzeug">Landschaftswerkzeug:</h>
-<text><img src="../images/icon_em_brush.gif" width="16" height="16"/> Pinsel (Stärke
-einstellbar).</text>
-<text><img src="../images/icon_em_line.gif" width="16" height="16"/> Linie (Stärke
-einstellbar).</text>
-<text><img src="../images/icon_em_rect.gif" width="16" height="16"/> Ausgefülltes
-Rechteck.</text>
-<text><img src="../images/icon_em_eyedrop.gif" width="16" height="16"/> Übernimmt Material,
-Textur und Materialhintergrund aus der Landschaft (Textur nur in statischen Karten).</text>
-<text><img src="../images/icon_em_fill.gif" width="16" height="16"/> Materialfüller
-(Stärke einstellbar, nur in exakten Karten bei laufendem Spiel).</text>
-<h id="Materialhintergrund">Materialhintergrund:</h>
-<text><img src="../images/icon_em_sky.gif" width="16" height="16"/> Hinter dem gezeichneten Material
-erscheint nach dem Freigraben Himmel.</text>
-<text><img src="../images/icon_em_tunnel.gif" width="16" height="16"/> Hinter dem gezeichneten
-Material erscheint nach dem Freigraben Tunnelwand.</text>
-<h id="Tastaturbelegung">Tastaturbelegung:</h>
-<text>Im aktivierten Sichtfenster:</text>
-<text>Scroll Lock (Rollen): Scrolling des Sichtfensters ein/aus</text>
-<text>Break (Pause): Spiel anhalten/weiter</text>
-<text>Space (Leertaste): Bearbeitungsmodus wechseln</text>
-<text>Ctrl-W, Ctrl-M, Ctrl-T, Ctrl-I, +/- : Einstellungen im Zeichenmodus</text>
-</part>
-<author>Sven2</author><date>April 2002</date>
-<author>matthes</author><date>Juni 2004</date>
+  <title>The engine in developer mode</title>
+  <h id="DieEngineimEntwicklermodus">Engine</h>
+  <part>
+    <text>In developer mode, scenarios may be edited in running or paused game mode and saved to disk afterwards.</text>
+    <h id="Bearbeitungsmodus">Edit mode:</h>
+    <text><img src="../images/icon_em_play.gif" width="16" height="16"/> Play: Mouse control works only for the first viewport of a player who has mouse control activated. Keyboard control for all players is accepted in any viewport.</text>
+    <text><img src="../images/icon_em_edit.gif" width="16" height="16"/>Edit objects: Objects may be edited and moved around by mouse. Additional editing options are available by right-clicking on objects in a viewport.In order to create new objects, object definitions (c4d) may be drag &amp; dropped from the menu system or an Explorer window into a viewport of the engine. Objects may be put into other objects by dragging them onto the target object while holding down the control key.</text>
+    <text><img src="../images/icon_em_brush.gif" width="16" height="16"/>Draw: Landscape drawing tools may be configured by right-clicking in a viewport and selecting 'tools'.</text>
+    <h id="Landschaftsmodus">Landscape mode:</h>
+    <text><img src="../images/icon_em_dynamic.gif" width="16" height="16"/>Dynamic: Scenarios that have a dynamic landscape generally have a very small file size. But since a new landscape is generated whenever the scenario is started, landscape settings of scenarios edited in developer mode should not contain any random values. Dynamic landscapes cannot be edited. It is not possible to revert static or exact landscapes to dynamic mode.</text>
+    <text><img src="../images/icon_em_static.gif" width="16" height="16"/>Static: Medium file-size. The landscape is zoomed down and saved in coarse blocks only, and will be regenerated rougly when loaded. Static landscapes should be edited in paused game mode, because any runtime changes (e.g. digging clonks, explosions, moved liquids) will be visible while editing, but they won't be saved. This can lead to an inaccurate map.</text>
+    <text><img src="../images/icon_em_exact.gif" width="16" height="16"/>Exact: Extremely high level of detail and file size: The landscape is saved as-is at pixel level of detail.</text>
+    <h id="Landschaftswerkzeug">Landscape editing tool:</h>
+    <text><img src="../images/icon_em_brush.gif" width="16" height="16"/>Brush (size adjustable).</text>
+    <text><img src="../images/icon_em_line.gif" width="16" height="16"/>Line (size adjustable).</text>
+    <text><img src="../images/icon_em_rect.gif" width="16" height="16"/>Filled rect.</text>
+    <text><img src="../images/icon_em_eyedrop.gif" width="16" height="16"/>Eye-dropper: Acquires material, texture and background (sky or tunnel) of the landscape at the place you click on in the viewport. Textures can be determined in static landscape mode only.</text>
+    <text><img src="../images/icon_em_fill.gif" width="16" height="16"/>Material-filler (strength adjustable; works in exact maps only).</text>
+    <h id="Materialhintergrund">Material background:</h>
+    <text><img src="../images/icon_em_sky.gif" width="16" height="16"/> If dug free or removed by explosions, sky will appear behind the drawn material.</text>
+    <text><img src="../images/icon_em_tunnel.gif" width="16" height="16"/> If dug free or removed by explosions, tunnel will appear behind the drawn material.</text>
+    <h id="Tastaturbelegung">Keyboard shortcuts:</h>
+    <text>In active viewport:</text>
+    <text>Scroll lock: Enable/disable scroll bars in current viewport</text>
+    <text>Break/Pause: Pause or continue game</text>
+    <text>Space: Cycle through editing modes</text>
+    <text>Ctrl-W, Ctrl-M, Ctrl-T, Ctrl-I, +/- : Change settings in landscape drawing mode</text>
+  </part>
+  <author>Sven2</author><date>2002-04</date>
+  <author>matthes</author><date>2004-06</date>
 </doc>

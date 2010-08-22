@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>InLiquid</title>
-    <category>Landschaft</category>
+    <category>Landscape</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>bool</rtype>
-    </syntax>
-    <desc>Gibt TRUE zurück, wenn sich das aufrufende Objekt in einer Flüssigkeit befindet.</desc>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Returns true, if the object is submerged in liquid.</desc>
     <related>
       <funclink>OCF_InLiquid</funclink>
       <funclink>GBackLiquid</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

@@ -1,30 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetMass</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Liefert die Masse des aufrufenden Objekts (inklusive aller Inhaltsobjekte) oder der aufrufenden Definition.</desc>
-		<examples>
-			<example>
-				<code>/* Wird bei klick auf Spezial aufgerufen */
+  <func>
+    <title>GetMass</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the mass of the calling objects (including the mass of all its contents) or the calling definition.</desc>
+    <examples>
+      <example>
+        <code>/* Wird bei klick auf Spezial aufgerufen */
 protected func ControlSpecial()
 {
-	// Magersüchtig?
+	// MagersÃ¼chtig?
 	if(<funclink>GetMass</funclink>() &lt; 50) // Normalmasse des Clonk: 50
-		// Magensäure frisst sich nach aussen
-		<funclink>CastPXS</funclink>("Acid", 150, 30);
+		// MagensÃ¤ure frisst sich nach aussen
+		<funclink>CastPXS</funclink>(&quot;Acid&quot;, 150, 30);
 <funclink>return</funclink> 1;
 }		
 				</code>
-				<text>Magersucht</text>
-			</example>
-		</examples>
-	</func>
-	<author>wipfmetz / Sven2</author><date>August 2002 / April 2003</date>
+        <text>Twiggy</text>
+      </example>
+    </examples>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
+  <author>Sven2</author><date>2003-04</date>
 </funcs>

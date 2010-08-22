@@ -1,38 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerName</title>
-                <category>Spieler</category>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>string</rtype>
-                        <params>
-                                <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Name abgefragt werden soll</desc></param>
-                        </params>
-                </syntax>
-                <desc>Liefert den Namen eines Spielers. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist.</desc>
-                <examples>
-                        <example>
-<code>protected func Activate(clonk)
+  <func>
+    <title>GetPlayerName</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose name to get.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the name of a player. If the specified player number is invalid, 0 is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
+    <examples>
+      <example>
+        <code>protected func Activate(clonk)
   {
-  // Begrüßen
-  <funclink>Message</funclink>("Moin, %s. Was macht %s?", <funclink>GetName</funclink>(clonk), GetPlayerName(<funclink>GetOwner</funclink>(clonk)));
+  // BegrÃ¼ÃŸen
+  <funclink>Message</funclink>(&quot;Moin, %s. Was macht %s?&quot;, <funclink>GetName</funclink>(clonk), GetPlayerName(<funclink>GetOwner</funclink>(clonk)));
   // Fertig
   <funclink>return</funclink>(1);
   }</code>
-                                <text>Objektscript: Beim Aktivieren wird der Clonk gefragt, was der Spieler so macht.</text>
-                        </example>
-                </examples>
-                <related>
-			<funclink>GetTaggedPlayerName</funclink>
-                        <funclink>GetPlayerByName</funclink>
-                        <funclink>GetPlayerCount</funclink>
-                        <funclink>GetName</funclink>
-                        <funclink>GetOwner</funclink>
-                </related>
-        </func>
-        <author>Sven2</author><date>August 2002</date>
+        <text>Object script: when activated, the clonk asks what the player is doing.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetTaggedPlayerName</funclink>
+      <funclink>GetPlayerByName</funclink>
+      <funclink>GetPlayerCount</funclink>
+      <funclink>GetName</funclink>
+      <funclink>GetOwner</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>
-

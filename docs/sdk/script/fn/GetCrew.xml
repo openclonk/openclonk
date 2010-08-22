@@ -1,32 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetCrew</title>
-		<category>Objekte</category>
-		<subcat>Mannschaft</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>object</rtype>
-			<params>
-				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglied zurückgegeben werden soll.</desc></param>
-				<param><type>int</type><name>index</name><desc>Index des Clonks in der Crew</desc></param>
-			</params>
-		</syntax>
-		<desc>Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger Index angegeben, gibt die Funktion nil zurück.</desc>
-		<examples>
-			<example>
-				<code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>
-				<text>Tötet die gesamte Crew des ersten Spielers.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetCrewCount</funclink>
-			<funclink>GetHiRank</funclink>
-			<funclink>GetCursor</funclink>
-			<funclink>GetCaptain</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+  <func>
+    <title>GetCrew</title>
+    <category>Objects</category>
+    <subcat>Crew</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>object</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose crew member will be returned.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Crew index of the clonk.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the indicated crew member of a player. For an invalid index nil is returned.</desc>
+    <examples>
+      <example>
+        <code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>
+        <text>Kills all crew members of the first player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCrewCount</funclink>
+      <funclink>GetHiRank</funclink>
+      <funclink>GetCursor</funclink>
+      <funclink>GetCaptain</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

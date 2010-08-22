@@ -1,20 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>AddMsgBoardCmd</title>
-		<category>Interface</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>string</type><name>command</name><desc>Name des MessageBoard-Kommandos</desc></param>
-				<param><type>string</type><name>script</name><desc>Auszuführender Script</desc></param>
-			</params>
-		</syntax>
-		<desc>Erzeugt ein neues selbstdefiniertes Messageboard-Kommando. Dieses Kommando kann von jedem Spieler im Spiel durch Eingabe von "/[Kommandoname]" aufgerufen werden.
-          In dem Fall wird der angegebene Script ausgeführt. Im Script kann "%s" dafür verwendet werden, eventuell angegebene Parameter einzubinden.</desc>
-	</func>
-	<author>PeterW</author><date>Juni 2003</date>
+  <func>
+    <title>AddMsgBoardCmd</title>
+    <category>Interface</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>command</name>
+          <desc>Name of messageboard command</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>script</name>
+          <desc>Script to be executed</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a user-defined messageboard command. This command can be entered by any player using the syntax "/[command]" in the message board. This will execute the defined script. The script can use "%s" to incorporate parameters.</desc>
+  </func>
+  <author>PeterW</author><date>2003-06</date>
 </funcs>

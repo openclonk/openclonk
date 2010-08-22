@@ -1,29 +1,38 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetPlayerTeam</title>
-    <category>Spieler</category>
+    <category>Player</category>
     <version>4.9.6.0 CR</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Team geändert werden soll.</desc></param>
-        <param><type>int</type><name>new_team</name><desc>Teamnummer des neuen Teams.</desc></param>
-        <param><type>bool</type><name>no_calls</name><desc>Wenn WAHR, werden die Aufrufe "RejectTeamSwitch" und "OnTeamSwitch" nicht getätigt. Der Spieler wird auch nicht neu verfeindet (dies muss ggf. selbst nachgeholt werden).</desc></param>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player number of the player whose team assignment you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>new_team</name>
+          <desc>Team number of the team to be joined.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_calls</name>
+          <desc>If true, calls to "RejectTeamSwitch" and "OnTeamSwitch" are not made. Also, player hostility is not automatically adjusted (this might have to be done manually instead).</desc>
+        </param>
       </params>
     </syntax>
-    <desc>
-    Teilt einen Spieler einem neuen Team zu. Es wird geprüft, ob in dem neuen Team noch Platz ist (anhand des MaxPlayer-Werts).
-    </desc>
-    <remark>
-    Es wird in allen Spielziel, -regel und Umweltobjekten, sowie dem Szenarioscript die Funktion "RejectTeamSwitch" mit der Spieler- und der Teamnummer als Parameter aufgerufen. Sollte diese irgendwo WAHR zurückliefern, kann so der Wechsel verhindert werden. Nach dem erfolgreichen Wechsel eines Spielers, wird wiederum "OnTeamSwitch" (mit der Spielernummer, der neuen und der alten Teamnummer als Parameter) an all diesen Orten aufgerufen.
-    </remark>
-	<related>
-		<emlink href="scenario/Teams.html">Teams</emlink>
-		<funclink>GetPlayerTeam</funclink>
-	</related>
+    <desc>Assigns a player to a new team. The player limit (MaxPlayer) of the team will be considered.</desc>
+    <remark>The function "RejectTeamSwitch" will be called in all game goal, rule, and environment objects. If any of these calls return true, then the team switch will not take place. If the team switch was performed successfully, the function "OnTeamSwitch" is called in all objects mentioned above (including the player number and new and old team numbers).</remark>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>GetPlayerTeam</funclink>
+    </related>
   </func>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

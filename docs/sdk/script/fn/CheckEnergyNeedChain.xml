@@ -1,28 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CheckEnergyNeedChain</title>
-		<category>Objekte</category>
-		<subcat>Status</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-		</syntax>
-		<desc>Überprüft, ob ein an das aufrufende Objekt angeschlossener Verbraucher Energie benötigt. Dabei werden auch indirekt (also über mehrere Leitungen über einen weiteren Verbraucher) angeschlossene Verbraucher überprüft.</desc>
-		<remark>Es wird nur in die Richtung geprüft, in der auch Energie durch Energieleitungen fließen kann. Also vom Versorger zum Verbraucher.</remark>
-		<examples>
-			<example>
-				<code><funclink>if</funclink>(CheckEnergyNeedChain()) <funclink>SetAction</funclink>("Burning");</code>
-				<text>Script für ein Kraftwerk: Wenn einer der angeschlossenen Verbraucher Energie benötigt, wird der Ofen angeheizt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>EnergyCheck</funclink>
-			<funclink>GetEnergy</funclink>
-			<funclink>DoEnergy</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Juni 2003</date>
+  <func>
+    <title>CheckEnergyNeedChain</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Checks whether any energy user connected to the specified object currently requires energy. The search will also include indirectly connected objects (via multiple lines).</desc>
+    <remark>The search is performed only in the direction in which energy is also transferred, meaning from suppliers to users.</remark>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(CheckEnergyNeedChain()) <funclink>SetAction</funclink>(&quot;Burning&quot;);</code>
+        <text>Script for a power plant: if any of the connected users needs energy, the furnace is started.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>EnergyCheck</funclink>
+      <funclink>GetEnergy</funclink>
+      <funclink>DoEnergy</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

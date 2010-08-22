@@ -1,22 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Find_ActionTarget</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>object</type><name>action_target</name><desc>Aktionsziel von Objekten, nach denen gesucht werden soll</desc></param>
-			</params>
-		</syntax>
-		<desc>Suchkriterium: sucht alle Objekte mit dem entsprechenden ersten Aktionsziel.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Clonkonaut</author><date>Juli 2006</date>
+  <func>
+    <title>Find_ActionTarget</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>action_target</name>
+          <desc>Action target of the objects to be found.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects that have the specified first action target.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Clonkonaut</author><date>2006-07</date>
 </funcs>

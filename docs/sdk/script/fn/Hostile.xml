@@ -1,30 +1,42 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Hostile</title>
-		<category>Spieler</category>
-		<version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>int</type><name>player1</name><desc>Erster Spieler</desc></param>
-				<param><type>int</type><name>player2</name><desc>Zweiter Spieler</desc></param>
-				<param><type>bool</type><name>check_one_way</name><desc>Wenn WAHR, wird nur geprüft, ob player1 mit player2 verfeindet ist und nicht umgekehrt.</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Prüft, ob zwei Spieler verfeindet sind. Dazu reicht es, wenn nur einer von beiden mit dem anderen Spieler verfeindet ist.</desc>
-		<examples>
-			<example>
-				<code>protected RejectEntrance: <funclink>return</funclink>(!<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(<funclink>Par</funclink>())));</code>
-				<text>Das Objekt lässt sich nur vom Besitzer oder verbündeten Spielern einsammeln.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>SetHostility</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
-	<author>Clonkonaut</author><date>April 2008</date>
+  <func>
+    <title>Hostile</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player1</name>
+          <desc>First player</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>player2</name>
+          <desc>Second player</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>check_one_way</name>
+          <desc>If true, checks only if player1 is hostile towards player2 but not in reverse.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines whether two players are enemies. Two players will be opposed if at least one of them has declared hostility towards the other.</desc>
+    <examples>
+      <example>
+        <code>protected RejectEntrance: <funclink>return</funclink>(!<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(<funclink>Par</funclink>())));</code>
+        <text>The object can only be collected by friendly players.</text>
+      </example>
+    </examples>
+    <related><funclink>SetHostility</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

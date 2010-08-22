@@ -1,54 +1,46 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
- <func>
-  <title>Par</title>
-  <category>Script</category>
-  <version>4.6.5.0 CP</version>
-  <!-- <deprecated /> Ich denke nicht (peter) -->
-  <syntax>
-   <rtype>any</rtype>
-   <params>
-    <param>
-     <type>int</type>
-     <name>index</name>
-     <desc>0-9: Index des abzufragenden Parameters</desc>
-    </param>
-   </params>
-  </syntax>
-
-  <desc>Gibt einen der an die Funktion übergebenen Parameter zurück.</desc>
-
-  <remark>Diese Funktion war in der alten (&lt; gwe4) Funktionssyntax die einzige Möglichkeit, um
-          die Funktionsparameter abzufragen. Mit der neuen Syntax können den Parametern Namen zugewiesen
-          werden, was in den meisten Fällen auch zu empfehlen ist (Ausnahme: siehe Beispiel)</remark>
-
-  <examples>
-    <example>
-      <code>private Multiply3:
+  <func>
+    <title>Par</title>
+    <category>Script</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>0-9: index of the requested parameter</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the value of a parameter passed to the function.</desc>
+    <remark>In old times, this was the only method to access function parameters. The new script style allows naming of parameters which makes declaration and access much more convenient.</remark>
+    <examples>
+      <example>
+        <code>private Multiply3:
   <funclink>return</funclink>(Par() * Par(1) * Par(2));</code>
-      <text>Definiert eine Funktion Multiply3, die ihre drei Parameter miteinander multipliziert.</text>
-    </example>
-    <example>
-      <code>private func Multiply3(v1, v2, v3)
+        <text>A function Multiply3, which multiplies its three parameters.</text>
+      </example>
+      <example>
+        <code>private func Multiply3(v1, v2, v3)
 {
   return(v1 * v2 * v3);
 }</code>
-      <text>Dieselbe Funktion mit in neuer Funktionssyntax</text>
-      <code>private func MultiplyX(cnt)
+        <text>The same function with new style syntax.</text>
+        <code>private func MultiplyX(cnt)
 {
   var x = 1;
   for(var i = 0; i &lt; cnt; i++)
     x *= Par(i + 1);
   return(x);
 }</code>
-      <text>Ein Beispiel für gemischte Verwendung von benannten und unbenannten Parametern. Diese
-            Funktion kann bis zu 9 Zahlen multiplizieren. Dabei wird jeweils die Anzahl der zu
-            multiplizierenden Zahlen übergeben (z.B. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)</text>
-    </example>
-  </examples>
-
- </func>
- <author>Sven2</author><date>August 2002</date>
+        <text>An example for mixed use of named and indexed parameters: this function can multiply up to 0 numbers. The first parameter is the count of following parameters to be multiplied (e.g. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>2002-08</date>
 </funcs>

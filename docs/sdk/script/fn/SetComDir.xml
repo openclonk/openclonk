@@ -1,33 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetComDir</title>
-    <category>Objekte</category><subcat>Bewegung</subcat>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>com_dir</name><desc>Befehlsrichtung. Muss <funclink>COMD_None</funclink>(), <funclink>COMD_Down</funclink>(), <funclink>COMD_DownLeft</funclink>(), <funclink>COMD_DownRight</funclink>(), <funclink>COMD_Left</funclink>(), <funclink>COMD_Right</funclink>(), <funclink>COMD_Up</funclink>(), <funclink>COMD_UpLeft</funclink>() oder <funclink>COMD_UpRight</funclink>() sein.</desc></param>
+        <param>
+          <type>int</type>
+          <name>com_dir</name>
+          <desc>Order direction. Must be <funclink>COMD_None</funclink>(), <funclink>COMD_Down</funclink>(), <funclink>COMD_DownLeft</funclink>(), <funclink>COMD_DownRight</funclink>(), <funclink>COMD_Left</funclink>(), <funclink>COMD_Right</funclink>(), <funclink>COMD_Up</funclink>(), <funclink>COMD_UpLeft</funclink>() or <funclink>COMD_UpRight</funclink>().</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Setzt die Befehlsrichtung des aufrufenden Objekts (siehe <funclink>GetComDir</funclink>)</desc>
+    <desc>Sets the order direction of an object (see <funclink>GetComDir</funclink>).</desc>
     <examples>
       <example>
-
-<code>var clonk = <funclink>GetHiRank</funclink>(0);
-clonk->SetComDir(<funclink>COMD_None</funclink>());
-clonk-><funclink>SetCommand</funclink>("");</code>
-
-        <text>Gibt dem höchstrangigsten Clonk von Spieler 1 den Befehl, stehen zu bleiben. Vorhandene Kommandos werden gelöscht.</text>
-
-<code>var clonk = <funclink>GetHiRank</funclink>(0);
-<funclink>clonk->SetAction</funclink>("Dig");
-clonk->SetComDir(<funclink>COMD_DownRight</funclink>());</code>
-
-        <text>Lässt den höchstrangigsten Clonk von Spieler 1 nach rechts unten graben.</text>
-
+        <code>var clonk = <funclink>GetHiRank</funclink>(0);
+clonk-&gt;SetComDir(<funclink>COMD_None</funclink>());
+clonk-&gt;<funclink>SetCommand</funclink>(&quot;&quot;);</code>
+        <text>Tells the highest ranking clonk of player 1 to stop. Any current activity will be stopped.</text>
+        <code>var clonk = <funclink>GetHiRank</funclink>(0);
+<funclink>clonk-&gt;SetAction</funclink>(&quot;Dig&quot;);
+clonk-&gt;SetComDir(<funclink>COMD_DownRight</funclink>());</code>
+        <text>Makes the highest ranking clonk of player 1 dig towards the lower right.</text>
       </example>
     </examples>
     <related>
@@ -35,5 +36,5 @@ clonk->SetComDir(<funclink>COMD_DownRight</funclink>());</code>
       <funclink>SetDir</funclink>
     </related>
   </func>
-  <author>jwk</author><date>August 2002</date>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

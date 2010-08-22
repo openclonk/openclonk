@@ -1,38 +1,54 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetPicture</title>
-    <category>Objekte</category><subcat>Darstellung</subcat>
+    <category>Objects</category>
+    <subcat>Display</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>x</name><desc>X-Position der oberen linken Ecke des neuen Grafikrechtecks</desc></param>
-        <param><type>int</type><name>y</name><desc>Y-Position der oberen linken Ecke des neuen Grafikrechtecks</desc></param>
-        <param><type>int</type><name>width</name><desc>Breite des neuen Grafikrechtecks</desc></param>
-        <param><type>int</type><name>height</name><desc>Höhe des neuen Grafikrechtecks</desc></param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X position of the top left corner of the new graphics rectangle.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y position of the top left corner of the new graphics rectangle.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>width</name>
+          <desc>Width of the new graphics rectangle.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>height</name>
+          <desc>Height of the new graphics rectangle.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Ändert die Repräsentativgrafik des aufrufenden Objekts auf ein neues Zielrechteck der aktuell benutzten Grafik. Die Repräsentativgrafik wird beispielsweise im Menü oder der Inventarliste des ausgewählten Clonks verwendet. Siehe auch Eintrag Picture in der <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <desc>Changes the representative picture of the object by setting it to a new source rectangle within the definition graphics. This picture is used e.g. in menus or the inventory. Also see the Picture entry in <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
     <examples>
       <example>
-<code>global func SetObjectPicture(idSrcDef, obj)
+        <code>global func SetObjectPicture(idSrcDef, obj)
   {
-  obj->SetPicture(<funclink>GetDefCoreVal</funclink>("Picture", "DefCore", idSrcDef, 0),
-             <funclink>GetDefCoreVal</funclink>("Picture", "DefCore", idSrcDef, 1),
-             <funclink>GetDefCoreVal</funclink>("Picture", "DefCore", idSrcDef, 2),
-             <funclink>GetDefCoreVal</funclink>("Picture", "DefCore", idSrcDef, 3));
-  obj-><funclink>SetGraphics</funclink>(0, idSrcDef);
+  obj-&gt;SetPicture(<funclink>GetDefCoreVal</funclink>(&quot;Picture&quot;, &quot;DefCore&quot;, idSrcDef, 0),
+             <funclink>GetDefCoreVal</funclink>(&quot;Picture&quot;, &quot;DefCore&quot;, idSrcDef, 1),
+             <funclink>GetDefCoreVal</funclink>(&quot;Picture&quot;, &quot;DefCore&quot;, idSrcDef, 2),
+             <funclink>GetDefCoreVal</funclink>(&quot;Picture&quot;, &quot;DefCore&quot;, idSrcDef, 3));
+  obj-&gt;<funclink>SetGraphics</funclink>(0, idSrcDef);
   <funclink>return</funclink> 1;
   }</code>
-        <text>Globale Funktion: Ändert die Repräsentativgrafik von obj auf die eines anderen Objekts (Achtung: Macht die Spielgrafik und eventuelle SolidMasks durch SetGraphics möglicherweise ungültig!)</text>
+        <text>Global function: changes the picture of obj to that of another object (Warning: this may make the game graphics or SolidMasks of the object invalid).</text>
       </example>
     </examples>
-    <related>
-      <funclink>SetGraphics</funclink>
-    </related>
+    <related><funclink>SetGraphics</funclink></related>
   </func>
-  <author>Sven2</author><date>Juni 2003</date>
+  <author>Sven2</author><date>2003-06</date>
 </funcs>

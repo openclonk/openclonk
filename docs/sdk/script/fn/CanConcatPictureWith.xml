@@ -1,22 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>CanConcatPictureWith</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <version>OpenClonk</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>object</type><name>other</name><desc>Das Object mit dem verglichen werden soll.</desc></param>
+        <param>
+          <type>object</type>
+          <name>other</name>
+          <desc>The object with which to compare.</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Tested ob die Bilder zweier Objekte gleich sind und sie somit in Inhaltsanzeigen gestapelt werden können.</desc>
+    <desc>Checks whether the pictures of two objects are the same and therefore can be stacked in contents menus.</desc>
     <related>
       <funclink>SetGraphics</funclink>
       <funclink>SetClrModulation</funclink>
     </related>
   </func>
-  <author>Randrian</author><date>September 2009</date>
+  <author>Randrian</author><date>2009-09</date>
 </funcs>

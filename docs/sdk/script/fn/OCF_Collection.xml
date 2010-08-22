@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>OCF_Collection</title>
-		<category>Objekte</category><subcat>OCF</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Object character flag: Das Objekt besitzt einen Collection-Bereich, ist nicht verdreht oder unfertig.</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href="definition/ocf.html">Object character flags</emlink>.</remark>
-		<related>
-			<funclink>GetOCF</funclink>
-			<funclink>FindObject</funclink>
-			<emlink href="definition/ocf.html">Object character flags</emlink>
-			<funclink>OCF_Collectible</funclink>
-			<funclink>Collect</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>Mai 2002</date>
+  <func>
+    <title>OCF_Collection</title>
+    <category>Objects</category>
+    <subcat>OCF</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Object character flag: the object has a collection area, is not rotated or incomplete, and the contents has not reached the CollectionLimit.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
+    <remark>For more information and examples regarding these constants see <emlink href="definition/ocf.html">object character flags</emlink>.</remark>
+    <related>
+      <funclink>GetOCF</funclink>
+      <funclink>FindObject</funclink>
+      <emlink href="definition/ocf.html">Object character flags</emlink>
+      <funclink>OCF_Collectible</funclink>
+      <funclink>Collect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

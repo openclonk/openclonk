@@ -1,43 +1,74 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetPortrait</title>
-    <category>Objekte</category><subcat>Darstellung</subcat>
+    <category>Objects</category>
+    <subcat>Display</subcat>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>portrait</name>
-          <desc>Name des zu setzenden Portraits. Dabei wird die Datei "PortraitX.png" benutzt (wobei X der Name ist). Dieser Parameter kann die folgenden Spezialwerte annehmen:
+        <param>
+          <type>string</type>
+          <name>portrait</name>
+          <desc>
+            Name of the portrait to be set. This will load the image file "PortraitX.png" (X being replaced with the specified name). This parameter can handle the following special values: 
             <table>
-              <rowh><col>Wert</col><col>Bedeutung</col></rowh>
-              <row><col>"none"</col><col>Portrait wird entfernt.</col></row>
-              <row><col>"random"</col><col>Aus den vorhandenen Portraits wird eines zufällig ausgewählt.</col></row>
-              <row><col>"custom"</col><col>Das Portrait wird auf das individuelle Portrait des Objekts, sofern vorhanden, geändert.</col></row>
+              <rowh>
+                <col>Value</col>
+                <col>Meaning</col>
+              </rowh>
+              <row>
+                <col>"none"</col>
+                <col>Portrait will be removed.</col>
+              </row>
+              <row>
+                <col>"random"</col>
+                <col>A random portrait will be selected from all available portraits.</col>
+              </row>
+              <row>
+                <col>"custom"</col>
+                <col>The portrait will be set to the object's individually stored portrait, if available.</col>
+              </row>
             </table>
-	        </desc>
+
+          </desc>
         </param>
-        <param><type>id</type><name>source_definition</name><desc>Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird.</desc><optional /></param>
-        <param><type>bool</type><name>permanent</name><desc>Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde.</desc><optional /></param>
-        <param><type>bool</type><name>copy_gfx</name><desc>Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf "custom". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt.</desc><optional /></param>
+        <param>
+          <type>id</type>
+          <name>source_definition</name>
+          <desc>Definition from which you want to load the portrait. If not specified, the portrait will be loaded from the definition of the object.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>permanent</name>
+          <desc>If 'true' the new portrait setting will be stored in the player file and used in future rounds. Otherwise the portrait setting will be discarded at the end of the round.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>bool</type>
+          <name>copy_gfx</name>
+          <desc>Copies the image of the new portrait to the player file and sets the portrait to "custom". In this way, the portrait will still be available even if the definition from which it was originally loaded is not available in a given round. On the other hand, with this setting it is impossible to determine from which source the portrait was originally loaded.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
-    <desc>Ändert das Portrait des aufrufenden Crew-Mitglieds während des Spiels.</desc>
+    <desc>Changes the portrait of the crew member at runtime.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_CrewMember</funclink>)->SetPortrait("random");</code>
-        <text>Weist einem Clonk ein zufälliges Portrait zu.</text>
+        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_CrewMember</funclink>)-&gt;SetPortrait(&quot;random&quot;);</code>
+        <text>Assigns a random portrait to the clonk.</text>
       </example>
       <example>
         <code>SetPortrait(<funclink>GetPortrait</funclink>(0, 0, 1), <funclink>GetPortrait</funclink>(0, 1, 1) );</code>
-        <text>Stellt das Standardportrait eines Clonkes wieder her, falls es zwischenzeitlich durch andere SetPortrait-Aufrufe geändert wurde.</text>
+        <text>Restores the default portrait of a clonk in case it was changed by a SetPortrait call.</text>
       </example>
     </examples>
-    <related>
-      <funclink>GetPortrait</funclink>
-    </related>
+    <related><funclink>GetPortrait</funclink></related>
   </func>
-  <author>Clonk-Karl</author><date>Dezember 2005</date>
+  <author>Clonk-Karl</author><date>2005-12</date>
 </funcs>

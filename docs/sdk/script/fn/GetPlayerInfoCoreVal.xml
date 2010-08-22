@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -12,33 +13,30 @@
         <param>
           <type>string</type>
           <name>entry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
-          <optional/>
+          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Spieler, dessen Eintrag abgefragt werden soll.</desc>
-          <optional/>
+          <desc>Player of which to retrieve an entry.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
           <name>entry_number</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt einen Eigenschaftswert aus der Player.txt eines Spielers zurück.</desc>
-
-    <remark>Es kann aus technischen Gründen keine analoge Funktion SetPlayerVal geben.</remark>
-
+    <desc>Returns the property value of a player by its name in the Player.txt.</desc>
+    <remark>For technical reasons there can not be a corresponding function SetPlayerVal.</remark>
     <related>
       <funclink>GetObjectVal</funclink>
       <funclink>GetObjectInfoCoreVal</funclink>
@@ -46,7 +44,6 @@
       <funclink>GetScenarioVal</funclink>
       <funclink>GetPlayerVal</funclink>
     </related>
-
   </func>
-  <author>jwk</author><date>August 2002</date>
+  <author>jwk</author><date>2002-08</date>
 </funcs>

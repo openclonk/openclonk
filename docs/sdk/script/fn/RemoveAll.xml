@@ -1,30 +1,41 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>RemoveAll</title>
-		<category>Objekte</category><subcat>Existenz</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>array</type><name>Criteria</name><desc>Suchkriterium in Form einer Find_*-Funktion</desc></param>
-				<param><type></type><name>...</name><desc>Weitere Suchkriterium in Form einer Find_*-Funktion</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Entfernt alle Objekte die den Suchkriterien entsprechen.</desc>
-		<examples>
-			<example>
-				<code>RemoveAll(<funclink>Find_ID</funclink>(WIPF));</code>
-				<text>Alle Wipfe werden entfernt.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>RemoveObject</funclink>
-			<funclink>CreateObject</funclink>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>RemoveAll</title>
+    <category>Objects</category>
+    <subcat>Existence</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>Criteria</name>
+          <desc>Search criterion in the form of a Find_* function</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional search criteria in the form of Find_* functions</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Removes all objects which are found using the search criteria.</desc>
+    <examples>
+      <example>
+        <code>RemoveAll(<funclink>Find_ID</funclink>(WIPF));</code>
+        <text>All wipfs will be removed.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RemoveObject</funclink>
+      <funclink>CreateObject</funclink>
+      <funclink>FindObjects</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

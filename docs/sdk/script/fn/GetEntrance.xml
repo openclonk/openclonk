@@ -1,35 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetEntrance</title>
-		<category>Objekte</category>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-		</syntax>
-		<desc>Liefert den aktuellen Eintrittsstatus des aufrufenden Objekts. TRUE bei erlaubtem Eintritt, FALSE bei verbotenem Eintritt.</desc>
-		<examples>
-			<example>
-				<code>/* Wird bei klick auf Spezial aufgerufen */
+  <func>
+    <title>GetEntrance</title>
+    <category>Objects</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Returns the current entrance status of an object. TRUE if entering the object is currently allowed or FALSE if it is disallowed.</desc>
+    <examples>
+      <example>
+        <code>/* Wird bei klick auf Spezial aufgerufen */
 protected func ControlSpecial()
 {
 	// ist man irgendwo drinnen?
 	if(<funclink>Contained</funclink>())
-		// Tür zu?
-		if(!<funclink>Contained</funclink>()->GetEntrance())
+		// TÃ¼r zu?
+		if(!<funclink>Contained</funclink>()-&gt;GetEntrance())
 			// Selbstmord begehen!
 			<funclink>Kill</funclink>();
 <funclink>return</funclink>(1);
 }		
 				</code>
-				<text>Extreme Klaustrophobie: Bei geschlossener Tür Selbstmord begehen.</text>
-			</example>
-		</examples>
-								<related>
-												<funclink>SetEntrance</funclink>
-								</related>
-	</func>
-	<author>wipfmetz</author><date>August 2002</date>
+        <text>Extreme claustrophobia: if the entrance is blocked, commit suicide.</text>
+      </example>
+    </examples>
+    <related><funclink>SetEntrance</funclink></related>
+  </func>
+  <author>wipfmetz</author><date>2002-08</date>
 </funcs>

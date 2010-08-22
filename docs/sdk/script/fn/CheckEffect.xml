@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>CheckEffect</title>
-    <category>Effekte</category>
+    <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
       <rtype>int</rtype>
@@ -12,59 +13,56 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name des Effektes ohne vorangestelltes Fx.</desc>
+          <desc>Name of the effect without prepended 'Fx'.</desc>
         </param>
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Zielobjekt, dessen Effekte benachrichtigt werden. Bei 0 wird die globale Effektliste benachrichtigt.</desc>
+          <desc>Target object of the effects to be notified. If 0, the global effects are notified.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>priority</name>
-          <desc>Priorität für den Effekt. Es werden Fx*Effect-Callbacks bei allen Effekten mit gleicher und höherer Priorität durchgeführt. Bei 0 werden alle Effekte benachrichtigt.</desc>
+          <desc>Effect priority. Calls are made to all effects of equal or higher priority. With 0, all effects are notified.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>timer</name>
           <optional />
-          <desc>Intervall, in dem Timer-Aufrufe getätigt würden. Bei 0 würden keine Timer-Aufrufe durchgeführt, und der Effekt bliebe permanent bis er durch anderwertige Aufrufe entfernt würde.</desc>
+          <desc>Interval for the timer calls. With 0, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var1</name>
           <optional />
-          <desc>Erster Zusatzparameter, der an Fx*Effect-Callbacks übergeben wird</desc>
+          <desc>First extra parameter to be passed to the effect callback.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var2</name>
           <optional />
-          <desc>Zweiter Zusatzparameter, der an Fx*Effect-Callbacks übergeben wird</desc>
+          <desc>Second extra parameter to be passed to the effect callback.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var3</name>
           <optional />
-          <desc>Dritter Zusatzparameter, der an Fx*Effect-Callbacks übergeben wird</desc>
+          <desc>Third extra parameter to be passed to the effect callback.</desc>
         </param>
         <param>
           <type>any</type>
           <name>var4</name>
           <optional />
-          <desc>Vierter Zusatzparameter, der an Fx*Effect-Callbacks übergeben wird</desc>
+          <desc>Fourth extra parameter to be passed to the effect callback.</desc>
         </param>
       </params>
     </syntax>
-
-    <desc>Führt Fx*Effect (und ggf. auch Fx*Add)-Callbacks in der entsprechenden Effektliste aus, ohne einen Effekt selber zu erstellen. Rückgabewert ist -1, wenn ein anderer Effekt den Effekt abgelehnt hat, und die Effektnummer des aufnehmenden Effektes, wenn der Effekt aufgenommen wurde.</desc>
-
-    <remark>Für Beispiele und weitere Hinweise siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>.</remark>
-
+    <desc>Makes Fx*Effect (and in cases Fx*Add) callbacks to the specified list of effects, without actually creating any effect. The return value is -1 if another effect has rejected the call. If an effect accepts the call, the return value is the effect number of that effect.</desc>
+    <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
-      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
       <funclink>ChangeEffect</funclink>
       <funclink>GetEffectCount</funclink>
@@ -74,5 +72,5 @@
       <funclink>RemoveEffect</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>März 2004</date>
+  <author>Sven2</author><date>2004-03</date>
 </funcs>

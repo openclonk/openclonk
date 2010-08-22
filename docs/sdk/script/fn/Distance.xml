@@ -1,30 +1,45 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Distance</title>
-		<category>Arithmetik</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>x1</name><desc>X-Position des ersten Punktes</desc></param>
-				<param><type>int</type><name>y1</name><desc>Y-Position des ersten Punktes</desc></param>
-				<param><type>int</type><name>x2</name><desc>X-Position des zweiten Punktes</desc></param>
-				<param><type>int</type><name>y2</name><desc>Y-Position des zweiten Punktes</desc></param>
-			</params>
-		</syntax>
-		<desc>Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt((x2-x1)^2 + (y2-y1)^2;).</desc>
-		<examples>
-			<example>
-				<code><funclink>GetCursor</funclink>(0)->Message("Schnell, noch %d Clonks trennen dich vom Ziel!", Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
-				<text>Gibt an, wie weit der ausgewählte Clonk noch vom Punkt 1000/200 entfernt ist.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>ObjectDistance</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>Distance</title>
+    <category>Arithmetics</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x1</name>
+          <desc>X coordinate of the first point.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y1</name>
+          <desc>Y coordinate of the first point.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x2</name>
+          <desc>X coordinate of the second point.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y2</name>
+          <desc>Y coordinate of the second point.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Calculates the distance between two points. Same as Sqrt((x2-x1)^2 + (y2-y1)^2;).</desc>
+    <examples>
+      <example>
+        <code><funclink>GetCursor</funclink>(0)-&gt;Message(&quot;Schnell, noch %d Clonks trennen dich vom Ziel!&quot;, Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
+        <text>Displays the distance of the clonk from point 1000/200.</text>
+      </example>
+    </examples>
+    <related><funclink>ObjectDistance</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

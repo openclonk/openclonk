@@ -1,23 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetPlayerByName</title>
-                <category>Spieler</category>
-                <version>4.9.4.0 GWE</version>
-                <syntax>
-                        <rtype>int</rtype>
-			<params>
-				<param><type>string</type><name>player_name</name><desc>Name des Spielers</desc></param>
-			</params>
-                </syntax>
-                <desc>Gibt die Spielernummer des angegebenen Spielers oder -1 wenn kein solcher Spieler gefunden wurde zurück.</desc>
-                <related>
-                        <funclink>GetPlayerName</funclink>
-                        <funclink>GetPlayerByIndex</funclink>
-                </related>
-        </func>
-        <author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>GetPlayerByName</title>
+    <category>Player</category>
+    <version>4.9.4.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>player_name</name>
+          <desc>Name of the player</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the number of the given player or -1 if there is no such player.</desc>
+    <related>
+      <funclink>GetPlayerName</funclink>
+      <funclink>GetPlayerByIndex</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>
-

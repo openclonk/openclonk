@@ -1,58 +1,52 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>SetVertexXY</title>
-    <category>Objekte</category><subcat>Vertices</subcat>
+    <category>Objects</category>
+    <subcat>Vertices</subcat>
     <version>4.9.1.0 GWE</version>
-
     <syntax>
       <rtype>bool</rtype>
-        <params>
-          <param>
-            <type>int</type>
-            <name>index</name>
-            <desc>Vertexnummer</desc>
-          </param>
-
-    <param>
-            <type>int</type>
-            <name>xpos</name>
-            <desc>Gewünschte X-Position des Vertices</desc>
-          </param>
-
-          <param>
-            <type>int</type>
-            <name>ypos</name>
-            <desc>Gewünschte Y-Position des Vertices</desc>
-          </param>
-
-          <param>
-            <type>object</type>
-            <name>obj</name>
-            <desc>Zielobjekt</desc>
-            <optional />
-          </param>
-        </params>
-      </syntax>
-
-      <desc>Setzt X und Y eines Vertices zugleich</desc>
-
-      <remark>Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden alle Vertices wieder auf die Definitionswerte zurückgesetzt.</remark>
-
-      <examples>
-        <example>
-          <code>SetVertexXY(3, -5, -10, GetCrew(0,0));</code>
-          <text>Setzt die Position des 3. Vertices des ersten Clonks des ersten Spielers auf -5/-10</text>
-        </example>
-      </examples>
-
-      <related>
-        <funclink>SetVertex</funclink>
-        <funclink>AddVertex</funclink>
-        <funclink>RemoveVertex</funclink>
-      </related>
+      <params>
+        <param>
+          <type>int</type>
+          <name>index</name>
+          <desc>Vertex number</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xpos</name>
+          <desc>Desired X offset of the vertex.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ypos</name>
+          <desc>Desired Y offset of the vertex.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Target object</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets both X and Y position of a vertex.</desc>
+    <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected.</remark>
+    <examples>
+      <example>
+        <code>SetVertexXY(3, -5, -10, GetCrew(0,0));</code>
+        <text>Sets the third vertex of the first clonk of the first player to -5/-10.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetVertex</funclink>
+      <funclink>AddVertex</funclink>
+      <funclink>RemoveVertex</funclink>
+    </related>
   </func>
-  <author>flgr</author><date>Januar 2002</date>
+  <author>flgr</author><date>2002-01</date>
 </funcs>

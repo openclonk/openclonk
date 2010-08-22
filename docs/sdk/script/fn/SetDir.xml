@@ -1,27 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>SetDir</title>
-		<category>Objekte</category><subcat>Aktivität</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>int</type><name>dir</name><desc>Aktionsrichtung. Vordefinierte Werte: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc></param>
-			</params>
-		</syntax>
-		<desc>Setzt die Richtung des aufrufenden Objekts.</desc>
-		<remark>SetDir beeinflusst nur die grafische Darstellung das Objekts; für Veränderung der Bewegungsrichtung ist <funclink>SetComDir</funclink> zuständig!</remark>
-		<remark>Wenn bei der Aktion mehr als zwei Richtungen angegeben werden (siehe <emlink href="definition/actmap.html">ActMap.txt</emlink>), dürfen auch andere Werte als <funclink>DIR_Right</funclink>()
-						und <funclink>DIR_Left</funclink>() übergeben werden.</remark>
-		<related>
-			<funclink>GetDir</funclink>
-			<funclink>DIR_Left</funclink>
-			<funclink>DIR_Right</funclink>
-			<funclink>SetAction</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>August 2002</date>
+  <func>
+    <title>SetDir</title>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>dir</name>
+          <desc>New direction. Predefined values: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the direction of the object.</desc>
+    <remark>SetDir affects the visual direction of an active object; to modify object motion use <funclink>SetComDir</funclink>.</remark>
+    <remark>If the object's action has more than two directions (see <emlink href="definition/actmap.html">ActMap.txt</emlink>), you can also use values other than just <funclink>DIR_Right</funclink>() and <funclink>DIR_Left</funclink>().</remark>
+    <related>
+      <funclink>GetDir</funclink>
+      <funclink>DIR_Left</funclink>
+      <funclink>DIR_Right</funclink>
+      <funclink>SetAction</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-08</date>
 </funcs>
