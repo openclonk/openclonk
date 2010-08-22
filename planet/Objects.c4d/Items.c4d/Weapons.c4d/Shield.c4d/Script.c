@@ -14,6 +14,8 @@ local aim_anim;
 // when he ducks, he is at least invulnerable against spears and arrows,
 // other bonuses perhaps too
 
+local solid_mask_helper;
+
 public func ControlUseStart(object clonk, int x, int y)
 {
 	if(!CanStrikeWithWeapon(clonk)) return true;
@@ -34,13 +36,43 @@ public func ControlUseStart(object clonk, int x, int y)
 	var hand;
 	if(clonk->GetItemPos(this) == 0) hand = "ShieldArmsR";
 	if(clonk->GetItemPos(this) == 1) hand = "ShieldArmsL";
-	Message(Format("%s",hand));
+	
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 	clonk->UpdateAttach();
 
 	StartWeaponHitCheckEffect(clonk, -1, 1);
 	iAngle=Angle(0,0, x,y);
+	AdjustSolidMaskHelper();
 	return true;
+}
+
+func AdjustSolidMaskHelper()
+{
+	if(aim_anim && Contained())
+	{
+		if(!solid_mask_helper)
+		{
+			solid_mask_helper=CreateObject(Shield_SolidMask, 0, 0, NO_OWNER);
+			solid_mask_helper->SetAction("Attach", Contained());
+		}
+	}
+	else 
+	{
+		if(solid_mask_helper) return solid_mask_helper->RemoveObject();
+	}	
+	
+	
+	var angle=BoundBy(iAngle, 0, 115); 
+	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
+	
+	solid_mask_helper->SetR(angle - 90);
+	var distance=10;
+	var y_adjust=-5;
+	var x_adjust=1;
+	if(Contained()->GetDir() == DIR_Left) x_adjust=-1; 
+	var x=Sin(angle, distance) + x_adjust;
+	var y=-Cos(angle, distance) + y_adjust;
+	solid_mask_helper->SetVertexXY(0, -x, -y); 
 }
 
 func ControlUseHolding(clonk, x, y)
@@ -53,6 +85,7 @@ func ControlUseHolding(clonk, x, y)
 	}
 	else if(!Inside(angle, 0, 180)) return;
 	iAngle=angle;
+	AdjustSolidMaskHelper();
 }
 
 func ControlUseStop(object clonk, int x, int y)
@@ -61,6 +94,7 @@ func ControlUseStop(object clonk, int x, int y)
 	aim_anim = nil;
 	clonk->UpdateAttach();
 	StopWeaponHitCheckEffect(clonk);
+	AdjustSolidMaskHelper();
 }
 
 func ControlUseCancel(object clonk, int ix, int iy)
@@ -71,6 +105,7 @@ func ControlUseCancel(object clonk, int ix, int iy)
 		clonk->UpdateAttach();
 		aim_anim = nil;
 	}
+	AdjustSolidMaskHelper();
 }
 
 func OnWeaponHitCheckStop()
@@ -83,7 +118,8 @@ func CheckStrike(iTime)
 	var found=false;
 	var found_alive=false;
 	var push_livings=false;
-	if(Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5) push_livings=true;
+	if(Contained()->GetContact(-1) & CNAT_Bottom)
+		if(Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5) push_livings=true;
 	for(var obj in FindObjects(Find_Distance(20), Find_Or(Find_Category(C4D_Object), Find_OCF(OCF_Alive)), Find_NoContainer(), Find_Exclude(Contained())))
 	{
 

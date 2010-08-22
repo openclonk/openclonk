@@ -1,0 +1,13 @@
+[DefCore]
+id=Shield_SolidMask
+Version=4,9,5
+Category=C4D_Vehicle
+MaxUserSelect=0
+Width=8
+Height=11
+Offset=-4,-5
+SolidMask=8, 0, 8, 11
+Vertices=1
+VertexFriction=100
+Rotate=1
+NoStabilize=1
