@@ -83,7 +83,7 @@ private:
 class C4ValueProviderX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0), LastX(Fix0) {}
+	C4ValueProviderX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
 	C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
@@ -95,14 +95,12 @@ private:
 	C4Real Begin;
 	C4Real End;
 	int32_t Length;
-
-	C4Real LastX;
 };
 
 class C4ValueProviderY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0), LastY(Fix0) {}
+	C4ValueProviderY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
 	C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
@@ -114,14 +112,12 @@ private:
 	C4Real Begin;
 	C4Real End;
 	int32_t Length;
-
-	C4Real LastY;
 };
 
 class C4ValueProviderAbsX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0), LastX(Fix0) {}
+	C4ValueProviderAbsX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
 	C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
@@ -133,14 +129,12 @@ private:
 	C4Real Begin;
 	C4Real End;
 	int32_t Length;
-
-	C4Real LastX;
 };
 
 class C4ValueProviderAbsY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0), LastY(Fix0) {}
+	C4ValueProviderAbsY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
 	C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
@@ -152,8 +146,6 @@ private:
 	C4Real Begin;
 	C4Real End;
 	int32_t Length;
-
-	C4Real LastY;
 };
 
 class C4ValueProviderXDir: public StdMeshInstance::SerializableValueProvider

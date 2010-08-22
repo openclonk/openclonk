@@ -158,16 +158,14 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 }
 
 C4ValueProviderX::C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
-		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
+		Object(object), Begin(begin), End(end), Length(length)
 {
 	Value = pos;
 }
 
 bool C4ValueProviderX::Execute()
 {
-	//const C4Real obj_x = fixtof(Object->fix_x);
-	Value += (End - Begin) * (Object->fix_x - LastX) / Length; // TODO: Use xdir instead?
-	LastX = Object->fix_x;
+	Value += (End - Begin) * (Object->xdir) / Length;
 
 	if (End > Begin)
 	{
@@ -198,21 +196,17 @@ void C4ValueProviderX::CompileFunc(StdCompiler* pComp)
 	pComp->Value(End);
 	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Separator();
-	pComp->Value(LastX);
 }
 
 C4ValueProviderY::C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
-		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
+		Object(object), Begin(begin), End(end), Length(length)
 {
 	Value = pos;
 }
 
 bool C4ValueProviderY::Execute()
 {
-	//const C4Real obj_y = fixtof(Object->fix_y);
-	Value += (End - Begin) * (Object->fix_y - LastY) / Length; // TODO: Use ydir instead?
-	LastY = Object->fix_y;
+	Value += (End - Begin) * (Object->ydir) / Length;
 
 	if (End > Begin)
 	{
@@ -243,20 +237,17 @@ void C4ValueProviderY::CompileFunc(StdCompiler* pComp)
 	pComp->Value(End);
 	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Separator();
-	pComp->Value(LastY);
 }
 
 C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
-		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
+		Object(object), Begin(begin), End(end), Length(length)
 {
 	Value = pos;
 }
 
 bool C4ValueProviderAbsX::Execute()
 {
-	Value += (End - Begin) * Abs(Object->fix_x - LastX) / Length;
-	LastX = Object->fix_x;
+	Value += (End - Begin) * Abs(Object->xdir) / Length;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
 	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
@@ -276,20 +267,17 @@ void C4ValueProviderAbsX::CompileFunc(StdCompiler* pComp)
 	pComp->Value(End);
 	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Separator();
-	pComp->Value(LastX);
 }
 
 C4ValueProviderAbsY::C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
-		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
+		Object(object), Begin(begin), End(end), Length(length)
 {
 	Value = pos;
 }
 
 bool C4ValueProviderAbsY::Execute()
 {
-	Value += (End - Begin) * Abs(Object->fix_y - LastY) / Length;
-	LastY = Object->fix_y;
+	Value += (End - Begin) * Abs(Object->ydir) / Length;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
 	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
@@ -309,8 +297,6 @@ void C4ValueProviderAbsY::CompileFunc(StdCompiler* pComp)
 	pComp->Value(End);
 	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Separator();
-	pComp->Value(LastY);
 }
 
 C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, C4Real begin, C4Real end, C4Real max_xdir):
