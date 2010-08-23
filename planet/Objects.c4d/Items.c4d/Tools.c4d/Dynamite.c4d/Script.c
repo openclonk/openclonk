@@ -7,32 +7,63 @@
 */
 	
 
-// The dynamite is not a weapon but a mining tool
-public func ControlUse(object clonk, int iX, int iY, bool fBox)
+public func ControlUse(object clonk, int x, int y, bool box)
 {
 	// if already activated, nothing (so, throw)
-	if(GetAction() == "Fuse" || fBox)
+	if(GetAction() == "Fuse" || box)
 	{
-		var iAngle = Angle(0,0,iX,iY);
-		if(!GetWall(iAngle, iX, iY, clonk))
-		{
-			//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
-			clonk->Message("Can't place dynamite here!");
-			if(fBox) return false;
+		if(Place(clonk,x,y,box))
 			return true;
-		}
-		if(fBox) SetReady();
-		// put into ...
-		Sound("Connect");
+		// if placed with the box, we are more tolerant where the
+		// user clicks and search for other positions too
+		else if(box)
+		{
 
-		Exit(iX, iY, Angle(iX,iY));
-		SetPosition(clonk->GetX()+iX, clonk->GetY()+iY);
+			// get rough direction (left, right, up down)
+			var angle = (Angle(0,0,x,y)+45)/90*90;
+
+			var plusminus = -1;
+			// first check if it is possible to place the dynamite
+			// in roughly the same direction as he clicked, then
+			// in each left or right of that direction and then
+			// in the opposite direction.
+			for(var i=0; i<=3; ++i)
+			{
+
+				angle += plusminus * i * 90;
+				x = Sin(angle, 300);
+				y = -Cos(angle, 300);
+
+				if(Place(clonk,x,y,box))
+					return true;
+
+				plusminus *= -1;
+			}
+			
+		}
 	}
 	else
 	{
 		Fuse();
+		return true;
 	}
-	return true;
+	return false;
+}
+
+private func Place(object clonk, int x, int y, bool box)
+{
+	var angle = Angle(0,0,x,y);
+	if(GetWall(angle, x, y, clonk))
+	{
+		if(box) SetReady();
+		
+		// put into ...
+		Sound("Connect");
+		Exit(x, y, Angle(x,y));
+		SetPosition(clonk->GetX()+x, clonk->GetY()+y);
+		return true;
+	}
+	return false;
 }
 
 public func Fuse()
@@ -46,17 +77,17 @@ public func Fuse()
 
 // returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func GetWall(iAngle, &iX, &iY)
+private func GetWall(angle, &x, &y)
 {
-	var iDist = 12;
-	for(var iDist = 12; iDist < 18; iDist++)
+	var dist = 12;
+	for(var dist = 12; dist < 18; dist++)
 	{
-		iX = Sin(iAngle, iDist);
-	  iY = -Cos(iAngle, iDist);
-		if(GBackSolid(iX, iY))
+		x = Sin(angle, dist);
+		y = -Cos(angle, dist);
+		if(GBackSolid(x, y))
 		{
-			iX = Sin(iAngle, iDist-5);
-			iY = -Cos(iAngle, iDist-5);
+			x = Sin(angle, dist-5);
+			y = -Cos(angle, dist-5);
 			return true;
 		}
 	}
@@ -123,6 +154,8 @@ public func DoExplode()
 
 protected func Definition(def) {
 	def["Name"] = "Dynamite";
+	def["Description"] = "$Description$";
+	
 	def["ActMap"] = {
 			Fuse = {
 				Prototype = Action,

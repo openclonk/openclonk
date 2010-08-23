@@ -34,7 +34,7 @@ local pWire;
 
 public func ControlUse(object clonk, int x, int y)
 {
-	if(clonk->GetAction() != "Walk") return true;
+	//if(clonk->GetAction() != "Walk") return true;
 
 	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
 	if(!pDyna->ControlUse(clonk, x, y, 1))
@@ -159,5 +159,6 @@ func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
 func Definition(def) {
 	SetProperty("Collectible", 1, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 }
