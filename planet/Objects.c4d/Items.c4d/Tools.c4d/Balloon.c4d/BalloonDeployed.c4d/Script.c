@@ -45,11 +45,6 @@ private func Pack()
 	rider->SetSpeed(GetXDir(),GetYDir());
 }
 
-func ControlUseStart(object clonk, int ix, int iy)
-{
-	return 1;
-}
-
 func HoldingEnabled() { return true; }
 
 func ControlLeft()
