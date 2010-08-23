@@ -1,14 +1,15 @@
 /* Loam */
 
-local last_x, last_y, last_frame, begin_frame;
-local x, y;
-local loamleft;
+local last_x, last_y; // Last drawing position of bridge (global coordinates)
+local last_frame;     // Last frame during which a bridge chunk was drawn
+local begin_frame;    // Starting frame of briding process
+local target_x, target_y; // local target coordinates during bridging
+local loamused;       // amound of loam already used
 
-static const LOAM_Bridge_Time = 65; // frames
+static const LOAM_Bridge_Amount = 65; // bridge length in pixels
 
 protected func Construction()
 {
-	loamleft = LOAM_Bridge_Time;
 	var graphic = Random(5);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
@@ -43,6 +44,8 @@ func ControlUseStart(object clonk, int x, int y)
 	clonk->SetYDir(0);
 	last_x = BoundBy(x,-0,0)+GetX(); last_y = clonk->GetDefBottom()+3;
 	last_frame = begin_frame = FrameCounter();
+	
+	target_x = x; target_y = y;
 
 	AddEffect("IntBridge", clonk, 1, 1, this);
 	
@@ -67,10 +70,10 @@ func FxIntBridgeTimer(clonk, number)
 
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
 	var min_dt = 3;
-	if (y < -20 && !Abs(x*5/y)) min_dt=2;
+	if (target_y < -20 && !Abs(target_x*5/target_y)) min_dt=2;
 
 	// get global drawing coordinates
-	x += GetX(); y += GetY();
+	var x = target_x + GetX(), y = target_y + GetY();
 
 	// bridge speed by dig physical
 	var speed = clonk->GetPhysical("Dig")/4500;
@@ -92,7 +95,8 @@ func FxIntBridgeTimer(clonk, number)
 	last_y += dy;
 
 	// bridge time is up?
-	if(loamleft <= 0)
+	loamused += Max(line_len/10,1);
+	if(loamused >= LOAM_Bridge_Amount)
 	{
 		clonk->CancelUse();
 	}
@@ -100,9 +104,8 @@ func FxIntBridgeTimer(clonk, number)
 
 func ControlUseHolding(object clonk, int new_x, int new_y)
 {
-	x = new_x;
-	y = new_y;
-	--loamleft;
+	target_x = new_x;
+	target_y = new_y;
 	
 	return true;
 }
@@ -127,8 +130,8 @@ private func LoamDone(object clonk)
 		clonk->SetAction("Walk");
 		clonk->SetComDir(COMD_Stop);
 	}
-	// Remove loam object if any of it has been consumed
-	if(loamleft < 55)
+	// Remove loam object if most of it has been consumed
+	if(loamused > LOAM_Bridge_Amount - 10)
 	{
 		RemoveObject();
 	}

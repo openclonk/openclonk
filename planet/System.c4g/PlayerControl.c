@@ -469,3 +469,16 @@ global func MouseDragDrop(int plr, object source, object target)
 	if (source) source->~MouseDragDone(src_drag, target);
 	return true;
 }
+
+
+
+/* Debug */
+
+// uncomment this to get log messages for any player control issued
+/*global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
+{
+	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
+	if (r) rs = ""; else rs = "!";
+	Log("%s%d, %s, %i, %d, %d, %d, %v, %v", rs, plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
+	return r;
+}*/
