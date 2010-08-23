@@ -1,1 +1,2 @@
 Name=Bleikugel
+Description=Munition für die Muskete.

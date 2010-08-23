@@ -22,12 +22,6 @@ public func IsTool() { return 1; }
 
 public func IsToolProduct() { return 1; }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
-}
-
 public func ControlUseStart(object clonk, int x, int y)
 {
 	if(!CanStrikeWithWeapon(clonk)) return true;
@@ -215,4 +209,11 @@ func FxSwordStrikeSlowStop(pTarget, iEffectNumber, iCause, iTemp)
 {
 	pTarget->ResetPhysical("Walk");
 	//pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 2, PHYS_Temporary);
+}
+
+func Definition(def) {
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
+	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
 }

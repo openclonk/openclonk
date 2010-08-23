@@ -121,5 +121,7 @@ func Definition(def) {
 		FacetBase = 1,
 		StartCall = "Traveling"
 	}}, def);
+	
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

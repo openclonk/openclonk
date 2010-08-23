@@ -1,1 +1,2 @@
 Name=Arrows
+Description=Ammunition for the bow.

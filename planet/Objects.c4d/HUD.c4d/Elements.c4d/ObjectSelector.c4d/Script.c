@@ -64,11 +64,16 @@ public func MouseSelectionAlt(int plr)
 {
 	if(!myobject) return;
 	
+	var desc = myobject->GetProperty("Description");
+	
 	// close other messages...
 	crew->OnDisplayInfoMessage();
 	
-	var msg = Format("<c ff0000>%s</c>",myobject->GetProperty("Description"));
-	CustomMessage(msg,this,plr);
+	if(desc)
+	{
+		var msg = Format("<c ff0000>%s</c>",desc);
+		CustomMessage(msg,this,plr);
+	}
 	return true;
 }
 

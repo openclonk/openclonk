@@ -1,1 +1,2 @@
 Name=Javelin
+Description=Press [Use] to aim and throw one of the javelins. If you take a run up, you'll be able to throw it must further.

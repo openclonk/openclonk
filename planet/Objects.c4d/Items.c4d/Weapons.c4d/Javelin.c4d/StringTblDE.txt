@@ -1,1 +1,2 @@
-Name=Speer
+Name=Wurfspeer
+Description=Ziele und werfe einen der Wurfspeere mit [Benutzen]. Mit Anlauf kannst Du den Wurfspeer wesentlich weiter werfen.

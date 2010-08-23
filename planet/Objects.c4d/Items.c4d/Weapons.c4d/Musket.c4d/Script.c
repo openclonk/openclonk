@@ -171,5 +171,6 @@ func RejectCollect(id shotid, object shot)
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)),def);
 }

@@ -1,1 +1,2 @@
 Name=Shield
+Description=Use the shield, to block stuff that is flying at you.
