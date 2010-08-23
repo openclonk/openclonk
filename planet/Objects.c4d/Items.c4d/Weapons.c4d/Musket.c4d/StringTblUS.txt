@@ -1,2 +1,2 @@
 Name=Musket
-Description=Aim and shoot with [Use]. The musket needs lead shots as ammunition.
+Description=Aim and shoot with [Use]. The musket needs lead shot as ammunition.
