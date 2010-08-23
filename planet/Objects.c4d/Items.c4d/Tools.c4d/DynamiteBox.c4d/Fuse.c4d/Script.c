@@ -114,5 +114,6 @@ func Definition(def) {
 		Procedure = DFA_NONE,//CONNECT,
 		NextAction = "Fusing",
 	},  }, def);
+	
 	SetProperty("Name", "$Name$", def);
 }

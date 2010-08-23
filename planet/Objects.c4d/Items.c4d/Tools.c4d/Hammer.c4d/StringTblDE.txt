@@ -2,3 +2,4 @@ TxtNoconstructionplansa=Keine Baupläne verfügbar
 TxtConstructions=Konstruktion: %s
 TxtCantConstruct=%s kann nicht bauen.
 Name=Hammer
+Description=Drücke [Benutzen], um ein Gebäude zu errichten.

@@ -1,1 +1,2 @@
 Name=Balloon
+Description=Press [Use] while you are falling to slow down your fall.

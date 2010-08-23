@@ -46,13 +46,14 @@ private func BreakMessage()
 
 func Definition(def) {
 	SetProperty("ActMap", {
-Connect = {
-Prototype = Action,
-Name = "Connect",
-Length = 0,
-Delay = 0,
-Procedure = DFA_CONNECT,
-NextAction = "Connect",
-},  }, def);
+		Connect = {
+		Prototype = Action,
+		Name = "Connect",
+		Length = 0,
+		Delay = 0,
+		Procedure = DFA_CONNECT,
+		NextAction = "Connect",
+		},  }, def);
+		
 	SetProperty("Name", "$Name$", def);
 }

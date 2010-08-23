@@ -1,1 +1,2 @@
 Name=Schaufel
+Description=Halte [Benutzen] gedrückt, um durch die Erde zu graben.

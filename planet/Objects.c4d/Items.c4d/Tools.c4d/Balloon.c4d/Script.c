@@ -28,5 +28,6 @@ func FxNoDropTimer(object target, int num, int timer)
 
 func Definition(def) {
 	SetProperty("Name", "$Name$" ,def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("Collectible", 1, def);
 }

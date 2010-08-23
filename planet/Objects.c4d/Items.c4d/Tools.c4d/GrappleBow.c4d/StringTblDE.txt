@@ -1,1 +1,2 @@
-Name=Pfeile
+Name=Enterhaken
+Description=Schieße den Enterhaken an eine Decke, um Dich daran zu sichern.

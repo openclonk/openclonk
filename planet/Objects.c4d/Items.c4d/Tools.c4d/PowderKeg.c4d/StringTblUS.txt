@@ -1,1 +1,2 @@
 Name=Powder Keg
+Description=Ammunition for the cannon.

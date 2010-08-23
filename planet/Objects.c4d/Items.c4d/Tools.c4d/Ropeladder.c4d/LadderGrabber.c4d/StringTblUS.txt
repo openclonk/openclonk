@@ -1,2 +1,3 @@
 Name=Ropeladder
+Description=Press [Use] to pull the ladder in again.
 GrabLadder=Pull in ladder

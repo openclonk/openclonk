@@ -23,11 +23,12 @@ public func GetCarryTransform()
 //TODO: The pick should probably have an internal array that
 //keeps the data of how much of which material has been dug.
 //I wouldn't have a clue how to do this, so if anyone else 
-//wants to make that, good luck! :)
+//wants to make that, good luck! :) - Ringwaul
 
 func Definition(def) {
 	SetProperty("Collectible", 1, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(40, 0, 0, 1),Trans_Rotate(150, 0, 1, 0), Trans_Scale(900), Trans_Translate(600, 400, 1000)),def);
 }
 

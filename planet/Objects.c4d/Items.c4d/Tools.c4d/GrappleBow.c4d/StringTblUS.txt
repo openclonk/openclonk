@@ -1,1 +1,2 @@
-Name=End
+Name=Grappling hook
+Description=Shoot the grappling hook at a ceiling to attach yourself to it.

@@ -1,0 +1,2 @@
+Name=Dynamitstange
+Description=Drücke [Benutzen], um sie anzuzünden. Ziele danach in die Richtung in die Du sie platzieren willst und drücke nochmals [Benutzen].

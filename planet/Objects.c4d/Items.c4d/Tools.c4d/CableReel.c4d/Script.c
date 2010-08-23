@@ -67,4 +67,5 @@ private func Find_PowerLine(object pObject)
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

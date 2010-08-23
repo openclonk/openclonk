@@ -27,5 +27,7 @@ func Definition(def) {
 			Procedure = DFA_ATTACH,
 		},},
 	def);
+	
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

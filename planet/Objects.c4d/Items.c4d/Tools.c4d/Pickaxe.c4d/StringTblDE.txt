@@ -1,1 +1,2 @@
-Name=Pickel
+Name=Spitzhacke
+Description=Halte [Benutzen] gedrückt, um langsam in Gesteinsformationen vorzudringen.

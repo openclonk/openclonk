@@ -454,10 +454,11 @@ public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 
 func Definition(def) {
 	SetProperty("ActMap", {
-
-Hanging = {
-	Prototype = Action,
-	Name = "Hanging"
-},}, def);
+	Hanging = {
+		Prototype = Action,
+		Name = "Hanging"
+	},}, def);
+	
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

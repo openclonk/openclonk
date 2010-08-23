@@ -1,1 +1,2 @@
-Name=Pulverfaﬂ
+Name=Pulverfass
+Description=Munition f√ºr die Kanone.

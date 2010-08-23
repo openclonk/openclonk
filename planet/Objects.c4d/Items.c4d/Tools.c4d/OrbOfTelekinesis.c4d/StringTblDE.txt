@@ -1,1 +1,2 @@
-Name=Telekinesis
+Name=Telekinese
+Description=Du kannst ein frei herumliegendes Objekt langsam durch die Landschaft ziehen, indem Du darauf zeigst und dabei die Maustaste gedrückt hälst.

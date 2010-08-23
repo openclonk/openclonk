@@ -1,1 +1,2 @@
 Name=Boompack
+Description=Aim and press [Use] to ignite the rocket and catapult yourself in any direction.

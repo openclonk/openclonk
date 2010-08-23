@@ -1,1 +1,2 @@
 Name=Jar of Winds
+Description=Press [Use] to aim and release a gust of wind into one direction, pushing you into the other.
