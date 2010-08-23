@@ -182,8 +182,8 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
 		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
-		pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedNoCrew",          0));
-		pComp->Value(mkNamingAdapt(FairCrewStrength,          "DefCrewStrength",       0));
+		pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedFairCrew",          0));
+		pComp->Value(mkNamingAdapt(FairCrewStrength,          "FairCrewStrength",       0));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
 		if (pComp->isCompiler()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
