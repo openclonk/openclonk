@@ -651,9 +651,9 @@ void C4MouseControl::UpdateTargetRegion()
 	if (Help)
 		if (TargetRegion->Target /*&& Cursor!=C4MC_Cursor_DragMenu*/)
 		{
-			if (TargetRegion->Target->Def->GetDesc())
-				Caption.Format("%s: %s",TargetRegion->Target->GetName(), TargetRegion->Target->Def->GetDesc());
-			else
+			//if (TargetRegion->Target->Def->GetDesc())
+			//	Caption.Format("%s: %s",TargetRegion->Target->GetName(), TargetRegion->Target->Def->GetDesc());
+			//else
 				Caption.Copy(TargetRegion->Target->GetName());
 			IsHelpCaption = true;
 		}
@@ -980,9 +980,9 @@ void C4MouseControl::LeftUpDragNone()
 	case C4MC_Cursor_Help:
 		if (DownTarget)
 		{
-			if (DownTarget->Def->GetDesc())
-				Caption.Format("%s: %s",DownTarget->GetName(), DownTarget->Def->GetDesc());
-			else
+			//if (DownTarget->Def->GetDesc())
+			//	Caption.Format("%s: %s",DownTarget->GetName(), DownTarget->Def->GetDesc());
+			//else
 				Caption.Copy(DownTarget->GetName());
 			KeepCaption=Caption.getLength()/2;
 			IsHelpCaption = true;

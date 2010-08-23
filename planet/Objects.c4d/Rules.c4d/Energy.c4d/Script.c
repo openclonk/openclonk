@@ -2,7 +2,7 @@
 
 protected func Activate(int iByPlayer)
 {
-	MessageWindow(GetDesc(), iByPlayer);
+	MessageWindow(GetProperty("Description"), iByPlayer);
 	return true;
 }
 

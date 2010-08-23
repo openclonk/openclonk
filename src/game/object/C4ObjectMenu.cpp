@@ -175,7 +175,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
 				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
 				// Add menu item
-				Add(szCaption,fctSymbol,szCommand,iCount,pObj,pDef->GetDesc(),pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
+				Add(szCaption,fctSymbol,szCommand,iCount,pObj,"",pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
 				fctSymbol.Default();
 			}
@@ -223,7 +223,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
 					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
 				// Add menu item (with object)
-				Add(szCaption, fctSymbol, szCommand, iCount, pObj, pDef->GetDesc(), pDef->id, szCommand2);
+				Add(szCaption, fctSymbol, szCommand, iCount, pObj, "", pDef->id, szCommand2);
 				fctSymbol.Default();
 			}
 		}
@@ -290,6 +290,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			fctSymbol.Default();
 		}
 
+		/*  no GetDesc() anymore
 		// Target info (if desc available)
 		if (pTarget->Def->GetDesc() && *pTarget->Def->GetDesc())
 		{
@@ -305,6 +306,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			Add(LoadResStr("IDS_CON_INFO"),fctSymbol,szCommand);
 			fctSymbol.Default();
 		}
+		*/
 
 		// Exit (if self contained in target container)
 		if (pTarget->OCF & OCF_Container)

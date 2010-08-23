@@ -452,9 +452,6 @@ void C4Def::Clear()
 
 	PortraitCount = 0;
 	Portraits = NULL;
-
-
-	Desc.Clear();
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -609,15 +606,6 @@ bool C4Def::Load(C4Group &hGroup,
 			}
 		}
 	}
-
-
-	// Read desc
-	if (dwLoadWhat & C4D_Load_Desc)
-	{
-		Desc.LoadEx("Desc", hGroup, C4CFN_DefDesc, szLanguage);
-		Desc.TrimSpaces();
-	}
-
 
 	// Read sounds
 	if (dwLoadWhat & C4D_Load_Sounds)

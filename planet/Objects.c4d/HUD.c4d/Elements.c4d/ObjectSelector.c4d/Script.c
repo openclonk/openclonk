@@ -67,7 +67,7 @@ public func MouseSelectionAlt(int plr)
 	// close other messages...
 	crew->OnDisplayInfoMessage();
 	
-	var msg = Format("<c ff0000>%s|%s</c>",myobject->GetName(),myobject->GetDesc());
+	var msg = Format("<c ff0000>%s</c>",myobject->GetProperty("Description"));
 	CustomMessage(msg,this,plr);
 	return true;
 }

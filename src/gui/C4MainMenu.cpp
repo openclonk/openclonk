@@ -361,7 +361,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 						::GraphicsResource.fctCaptain.Draw(fctGF);
 					}
 					StdStrBuf Command; Command.Format("Player:Goal:%s", idGoal.ToString());
-					Add(pDef->GetName(),fctSymbol,Command.getData(),C4MN_Item_NoCount,NULL,pDef->GetDesc());
+					Add(pDef->GetName(),fctSymbol,Command.getData(),C4MN_Item_NoCount,NULL,"");
 				}
 		// Go back to options menu on close
 		SetCloseCommand("ActivateMenu:Main");
@@ -385,7 +385,7 @@ bool C4MainMenu::ActivateRules(int32_t iPlayer)
 		{
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize); pDef->Draw(fctSymbol);
 			sprintf(Command, "Player:Rule:%s", idGoal.ToString());
-			Add(pDef->GetName(),fctSymbol,Command,C4MN_Item_NoCount,NULL,pDef->GetDesc());
+			Add(pDef->GetName(),fctSymbol,Command,C4MN_Item_NoCount,NULL,"");
 		}
 	// Go back to options menu on close
 	SetCloseCommand("ActivateMenu:Main");

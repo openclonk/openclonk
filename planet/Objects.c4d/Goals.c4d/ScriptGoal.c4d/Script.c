@@ -27,10 +27,6 @@ public func Fulfill()
 	return;
 }
 
-protected func Activate(int plr)
-{
-	return MessageWindow(GetDesc(), plr);
-}
 
 /*-- Proplist --*/
 

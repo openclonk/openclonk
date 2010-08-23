@@ -128,5 +128,5 @@ protected func Activate(plr)
 {
 	if (IsFulfilled()) 
 		return(MessageWindow("$MsgGoalFulfilled$", plr));
-	return MessageWindow(GetDesc(), plr);
+	return MessageWindow(GetProperty("Description"), plr);
 }

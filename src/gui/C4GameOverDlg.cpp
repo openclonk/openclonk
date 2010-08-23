@@ -57,7 +57,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 		if (pGoalDef)
 		{
 			strGoalName.Copy(pGoalDef->GetName());
-			strGoalDesc.Copy(pGoalDef->GetDesc());
+			// strGoalDesc.Copy(pGoalDef->GetDesc());
 		}
 	}
 	// get tooltip

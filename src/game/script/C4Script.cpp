@@ -1094,16 +1094,6 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 	return true;
 }
 
-static C4String *FnGetDesc(C4AulContext *cthr)
-{
-	assert(!cthr->Obj || cthr->Def);
-	// find def
-	if (!cthr->Def)
-		throw new NeedNonGlobalContext("GetDesc");
-	// return desc
-	return String(cthr->Def->GetDesc());
-}
-
 static C4String *FnGetPlayerName(C4AulContext *cthr, long iPlayer)
 {
 	if (!ValidPlr(iPlayer)) return NULL;
@@ -1580,7 +1570,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	// Info caption
 	SCopy(FnStringPar(szInfoCaption),infocaption,C4MaxTitle);
 	// Default info caption by def desc
-	if (pDef && !infocaption[0] && !(iExtra & C4MN_Add_ForceNoDesc)) SCopy(pDef->GetDesc(),infocaption,C4MaxTitle);
+	//if (pDef && !infocaption[0] && !(iExtra & C4MN_Add_ForceNoDesc)) SCopy(pDef->GetDesc(),infocaption,C4MaxTitle);
 
 	// Create symbol
 	C4FacetSurface fctSymbol;
@@ -6078,7 +6068,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetR", FnGetR);
 	AddFunc(pEngine, "GetName", FnGetName);
 	AddFunc(pEngine, "SetName", FnSetName);
-	AddFunc(pEngine, "GetDesc", FnGetDesc);
 	AddFunc(pEngine, "GetPlayerName", FnGetPlayerName);
 	AddFunc(pEngine, "GetPlayerType", FnGetPlayerType);
 	AddFunc(pEngine, "GetPlayerColor", FnGetPlayerColor);

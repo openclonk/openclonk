@@ -42,97 +42,97 @@
 #include <set>
 
 const int32_t C4D_None           =    0,
-                                      C4D_All            =    ~C4D_None,
+C4D_All            =    ~C4D_None,
 
-                                                              C4D_StaticBack     =    1<<0,
-                                                                                      C4D_Structure      =    1<<1,
-                                                                                                              C4D_Vehicle        =    1<<2,
-                                                                                                                                      C4D_Living         =    1<<3,
-                                                                                                                                                              C4D_Object         =    1<<4,
+C4D_StaticBack     =    1<<0,
+C4D_Structure      =    1<<1,
+C4D_Vehicle        =    1<<2,
+C4D_Living         =    1<<3,
+C4D_Object         =    1<<4,
 
-                                                                                                                                                                                      C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
+C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
 
-                                                                                                                                                                                                      C4D_Goal             =  1<<5,
-                                                                                                                                                                                                                              C4D_Environment      =  1<<6,
+C4D_Goal             =  1<<5,
+C4D_Environment      =  1<<6,
 
-                                                                                                                                                                                                                                                      C4D_SelectBuilding   =  1<<7,
-                                                                                                                                                                                                                                                                              C4D_SelectVehicle    =  1<<8,
-                                                                                                                                                                                                                                                                                                      C4D_SelectMaterial   =  1<<9,
-                                                                                                                                                                                                                                                                                                                              C4D_SelectKnowledge  =  1<<10,
-                                                                                                                                                                                                                                                                                                                                                      C4D_SelectHomebase   =  1<<11,
-                                                                                                                                                                                                                                                                                                                                                                              C4D_SelectAnimal     =  1<<12,
-                                                                                                                                                                                                                                                                                                                                                                                                      C4D_SelectNest       =  1<<13,
-                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_SelectInEarth    =  1<<14,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_SelectVegetation =  1<<15,
+C4D_SelectBuilding   =  1<<7,
+C4D_SelectVehicle    =  1<<8,
+C4D_SelectMaterial   =  1<<9,
+C4D_SelectKnowledge  =  1<<10,
+C4D_SelectHomebase   =  1<<11,
+C4D_SelectAnimal     =  1<<12,
+C4D_SelectNest       =  1<<13,
+C4D_SelectInEarth    =  1<<14,
+C4D_SelectVegetation =  1<<15,
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_TradeLiving      =  1<<16,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_Magic            =  1<<17,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_CrewMember       =  1<<18,
+C4D_TradeLiving      =  1<<16,
+C4D_Magic            =  1<<17,
+C4D_CrewMember       =  1<<18,
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_Rule             =  1<<19,
+C4D_Rule             =  1<<19,
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_Background       =  1<<20,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_Parallax         =  1<<21,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_MouseSelect      =  1<<22,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_Foreground       =  1<<23,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_MouseIgnore      =  1<<24,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4D_IgnoreFoW        =  1<<25,
+C4D_Background       =  1<<20,
+C4D_Parallax         =  1<<21,
+C4D_MouseSelect      =  1<<22,
+C4D_Foreground       =  1<<23,
+C4D_MouseIgnore      =  1<<24,
+C4D_IgnoreFoW        =  1<<25,
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
+C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
 
 const int32_t C4D_Grab_Put = 1,
-                             C4D_Grab_Get = 2,
+C4D_Grab_Get = 2,
 
-                                            C4D_Border_Sides  = 1,
-                                                                C4D_Border_Top    = 2,
-                                                                                    C4D_Border_Bottom = 4,
-                                                                                                        C4D_Border_Layer  = 8,
+C4D_Border_Sides  = 1,
+C4D_Border_Top    = 2,
+C4D_Border_Bottom = 4,
+C4D_Border_Layer  = 8,
 
-                                                                                                                            C4D_Line_Power     = 1,
-                                                                                                                                                 C4D_Line_Source    = 2,
-                                                                                                                                                                      C4D_Line_Drain     = 3,
-                                                                                                                                                                                           C4D_Line_Lightning = 4,
-                                                                                                                                                                                                                C4D_Line_Volcano   = 5,
-                                                                                                                                                                                                                                     C4D_Line_Rope      = 6,
-                                                                                                                                                                                                                                                          C4D_Line_Colored   = 7,
-                                                                                                                                                                                                                                                                               C4D_Line_Vertex    = 8,
+C4D_Line_Power     = 1,
+C4D_Line_Source    = 2,
+C4D_Line_Drain     = 3,
+C4D_Line_Lightning = 4,
+C4D_Line_Volcano   = 5,
+C4D_Line_Rope      = 6,
+C4D_Line_Colored   = 7,
+C4D_Line_Vertex    = 8,
 
-                                                                                                                                                                                                                                                                                                    C4D_Power_Input     =   1,
-                                                                                                                                                                                                                                                                                                                            C4D_Power_Output    =   2,
-                                                                                                                                                                                                                                                                                                                                                    C4D_Liquid_Input    =   4,
-                                                                                                                                                                                                                                                                                                                                                                            C4D_Liquid_Output   =   8,
-                                                                                                                                                                                                                                                                                                                                                                                                    C4D_Power_Generator =  16,
-                                                                                                                                                                                                                                                                                                                                                                                                                           C4D_Power_Consumer  =  32,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4D_Liquid_Pump     =  64,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                         C4D_Connect_Rope    = 128,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               C4D_EnergyHolder    = 256,
+C4D_Power_Input     =   1,
+C4D_Power_Output    =   2,
+C4D_Liquid_Input    =   4,
+C4D_Liquid_Output   =   8,
+C4D_Power_Generator =  16,
+C4D_Power_Consumer  =  32,
+C4D_Liquid_Pump     =  64,
+C4D_Connect_Rope    = 128,
+C4D_EnergyHolder    = 256,
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     C4D_Place_Surface    = 0,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            C4D_Place_Liquid     = 1,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   C4D_Place_Air        = 2;
+C4D_Place_Surface    = 0,
+C4D_Place_Liquid     = 1,
+C4D_Place_Air        = 2;
 
 const int32_t C4D_VehicleControl_None     = 0,
-    C4D_VehicleControl_Outside  = 1,
-                                  C4D_VehicleControl_Inside   = 2;
+C4D_VehicleControl_Outside  = 1,
+C4D_VehicleControl_Inside   = 2;
 
 const int32_t C4D_Sell     = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Object | C4D_TradeLiving,
-                             C4D_Get      = C4D_Sell,
-                                            C4D_Take     = C4D_Get,
-                                                           C4D_Activate = C4D_Get;
+C4D_Get      = C4D_Sell,
+C4D_Take     = C4D_Get,
+C4D_Activate = C4D_Get;
 
 const DWORD C4D_Load_None      =  0,
-                                  C4D_Load_Picture   =  1,
-                                                        C4D_Load_Bitmap    =  2,
-                                                                              C4D_Load_Script    =  4,
-                                                                                                    C4D_Load_Desc      =  8,
-                                                                                                                          C4D_Load_Image     = 32,
-                                                                                                                                               C4D_Load_Sounds    = 64,
-                                                                                                                                                                    C4D_Load_ClonkNames= 128,
-                                                                                                                                                                                         C4D_Load_RankNames = 256,
-                                                                                                                                                                                                              C4D_Load_RankFaces = 512,
-                                                                                                                                                                                                                                   C4D_Load_FE        = C4D_Load_Image | C4D_Load_Desc,
-                                                                                                                                                                                                                                                        C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Desc | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
-                                                                                                                                                                                                                                                                             C4D_Load_Temporary = 1024;
+C4D_Load_Picture   =  1,
+C4D_Load_Bitmap    =  2,
+C4D_Load_Script    =  4,
+
+C4D_Load_Image     = 32,
+C4D_Load_Sounds    = 64,
+C4D_Load_ClonkNames= 128,
+C4D_Load_RankNames = 256,
+C4D_Load_RankFaces = 512,
+C4D_Load_FE        = C4D_Load_Image,
+C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
+C4D_Load_Temporary = 1024;
 
 #define C4D_Blit_Normal     0
 #define C4D_Blit_Additive   1
@@ -239,7 +239,6 @@ public:
 	int32_t Creation;
 	int32_t Count; // number of instanciations
 	C4AulScriptFunc *TimerCall;
-	C4ComponentHost Desc;
 
 	// Currently cannot have script host in frontend because that
 	// would need C4Script, C4AulScript, and all that as well...
@@ -279,7 +278,6 @@ public:
 	C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
 	void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 	void Synchronize();
-	const char *GetDesc() { return Desc.GetData(); }
 	virtual C4Def* GetDef() { return this; }
 protected:
 	bool LoadPortraits(C4Group &hGroup);

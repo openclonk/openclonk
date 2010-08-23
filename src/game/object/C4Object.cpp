@@ -2000,7 +2000,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			// Command
 			sprintf(szCommand,"SetCommand(\"Construct\",nil,0,0,nil,%s)",pDef->id.ToString());
 			// Add menu item
-			Menu->AddRefSym(szCaption,fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pDef->GetDesc(),pDef->id);
+			Menu->AddRefSym(szCaption,fctSymbol,szCommand,C4MN_Item_NoCount,NULL,"",pDef->id);
 		}
 		// Preselect
 		Menu->SetSelection(iMenuSelect, false, true);
@@ -5393,7 +5393,7 @@ StdStrBuf C4Object::GetInfoString()
 	// no info for invalid objects
 	if (!Status) return sResult;
 	// first part always description
-	sResult.Copy(Def->GetDesc());
+	//sResult.Copy(Def->GetDesc());
 	// go through all effects and add their desc
 	for (C4Effect *pEff = pEffects; pEff; pEff = pEff->pNext)
 	{
