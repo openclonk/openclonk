@@ -2,6 +2,12 @@
 
 #appendto Goal_ReachFlag
 
+protected func Initialize()
+{
+	SetProperty("Description", "$NewGoalDescription$", this);
+	return _inherited(...);
+}
+
 public func IsFulfilled() 
 { 
 	// No flag, goal fulfilled.
@@ -12,10 +18,20 @@ public func IsFulfilled()
 	{
 		var balloon_count = ObjectCount(Find_ID(PracticeTarget));
 		if (balloon_count == 0)
+		{
+			// Balloon_count zero, hence goal fulfilled.
 			return true;
+		}
 		else
-			flag->Message("$MsgTargetsLeft$", balloon_count);
+		{
+			// Notify the player.
+			if (balloon_count == 1)
+				flag->Message("$MsgOneTargetLeft$");
+			else
+				flag->Message("$MsgTargetsLeft$", balloon_count);
+		}
 	}
 	// Otherwise unfulfilled.
 	return false;
 }
+

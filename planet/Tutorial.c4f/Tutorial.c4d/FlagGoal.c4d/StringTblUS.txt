@@ -1,2 +1,3 @@
 Name=Reach the flag
+Description=The scenario is completed if all crew members have reached the flag.
 

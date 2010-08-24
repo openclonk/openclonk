@@ -34,7 +34,7 @@ public func CreateGoalFlag(int x, int y)
 
 protected func Activate(int plr)
 {
-	return MessageWindow(GetDesc(), plr);
+	return MessageWindow(GetProperty("Description", this), plr);
 }
 
 /*-- Proplist --*/
@@ -42,4 +42,5 @@ protected func Activate(int plr)
 func Definition(def)
 {
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

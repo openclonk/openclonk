@@ -1,1 +1,2 @@
 Name=Object restorer
+Description=Restores a lost object to its original location or container.
