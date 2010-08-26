@@ -1,15 +1,18 @@
 /*-- 
-		Tutorial Guide
-		Author: Maikel
+	Tutorial Guide
+	Author: Maikel
 		
-		The tutorial guide can be clicked on by the player, it supplies the player with information and hints.
+	The tutorial guide can be clicked on by the player, it supplies the player with information and hints.
+	Callbacks to the scenario script:
+	* OnGuideMessageShown(int plr, int index) when a message is shown
+	* OnGuideMessageRemoved(int plr, int index) when a message is removed, all events
 --*/
 
 
 local messages; // A container to hold all messages.
 local index; // Progress in reading messages.
 
-protected func Construction()
+protected func Initialize()
 {
 	// parallaxity
 	this["Parallaxity"] = [0, 0];
@@ -56,7 +59,7 @@ public func ShowGuideMessage(int show_index)
 		return;
 	if (GetEffect("NotifyPlayer", this))
 		RemoveEffect("NotifyPlayer", this);
-	GuideMessage(messages[index]);
+	GuideMessage(index);
 	if (messages[index + 1]) 
 		index++;
 	return;
@@ -80,22 +83,23 @@ public func MouseSelection(int plr)
 		RemoveEffect("NotifyPlayer", this);
 	// Clear guide message if the latest is already shown.
 	var effect = GetEffect("MessageShown", this, nil, 0);
-	if (effect && EffectVar(0, this, effect) == messages[index])
+	if (effect && EffectVar(0, this, effect) == index)
 		return ClearGuideMessage();
 	// Show guide message if there is a new one, and increase index if possible.
 	if (!messages[index]) 
 		return;
-	GuideMessage(messages[index]);
+	GuideMessage(index);
 	if (messages[index + 1]) 
 		index++;
 	return;
 }
 
 // Shows a message at the right place in message box.
-private func GuideMessage(string message)
+private func GuideMessage(int show_index)
 {
 	if (GetOwner() == NO_OWNER)
 		return false;
+	var message = messages[show_index];
 	if (!message)
 		return false;
 	// Guide portrait.
@@ -103,18 +107,32 @@ private func GuideMessage(string message)
 	// Message as regular one, don't stop the player.
 	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
-	EffectVar(0, this, effect) = message;
+	EffectVar(0, this, effect) = show_index;
 	return true;
 }
 
 // Effect exists as long as the message is shown.
 // Message string is stored in EffectVar 0.
 // TODO account for infinite messages, those with @ in front.
+protected func FxMessageShownStart(object target, int num, int temporary)
+{
+	if (temporary == 0)
+		GameCall("OnGuideMessageShown", target->GetOwner(), index);
+	return 1;
+}
+
 protected func FxMessageShownTimer(object target, int num, int time)
 {
 	// Delete effect if time has passed, i.e. message has disappeared.
 	if (time)
 		return -1;
+	return 1;
+}
+
+protected func FxMessageShownStop(object target, int num, int reason, bool temporary)
+{
+	if (!temporary)
+		GameCall("OnGuideMessageRemoved", target->GetOwner(), index);
 	return 1;
 }
 

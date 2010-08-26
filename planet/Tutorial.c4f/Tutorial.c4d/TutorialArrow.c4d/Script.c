@@ -4,15 +4,16 @@ func AttachTargetLost() { RemoveObject(); }
 
 global func TutArrowClear()
 {
-	var arrow = FindObject(Find_ID(TutorialArrow));
-	if (arrow) arrow->RemoveObject();
+	for (arrow in FindObjects(Find_ID(TutorialArrow)))
+		arrow->RemoveObject();
+	return;
 }
 
 global func TutArrowShowPos(int x, int y, int angle, int dist)
 {
-	TutArrowClear();
-	if (!angle) angle = 135;
-	if (!dist) dist = 16;
+	//TutArrowClear();
+	if (angle == nil) angle = 135;
+	if (dist == nil) dist = 16;
 	var arrow = CreateObject(TutorialArrow, x, y);
 	if (!arrow) return;
 	dist += 8; // arrow size
@@ -26,9 +27,9 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 
 global func TutArrowShowTarget(object target, int angle, int dist)
 {
-	TutArrowClear();
-	if (!angle) angle = 135;
-	if (!dist) dist = 16;
+	//TutArrowClear();
+	if (angle == nil) angle = 135;
+	if (dist == nil) dist = 16;
 	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY());
 	if (!arrow) return;
 	arrow->SetAction("Attach", target);

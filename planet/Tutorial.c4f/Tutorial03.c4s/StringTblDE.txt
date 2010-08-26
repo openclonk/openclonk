@@ -4,5 +4,7 @@ MsgNextTutorialDesc=Die nächste Lernrunde starten.
 MsgRepeatRound=&Runde wiederholen
 MsgRepeatRoundDesc=Diese Runde wiederholen.
 
-MsgTutWelcome=Welcome to the target practice. Use the javelin and the bow to hit the balloon targets and make your way to the flag on the far right side. Click on me to reveal the next hint.
+# Tutorial messages
+MsgTutWelcome=Welcome to the target practice. Use the javelin and the bow to hit the balloon targets and make your way to the flag on the far right side.
 MsgTutJavelin=Retrieve the javelins from the chest and use them to hit the first few targets. Right click on the javelin in the HUD to get some hints on how to use it. 
+MsgTutBow=There is a bow in that chest. Some targets might not be reachable by throwing javelins, use the bow instead.

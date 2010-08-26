@@ -1,8 +1,8 @@
 /*-- 
-		Tutorial 02
-		Author: Ringwall
+	Tutorial 03
+	Author: Ringwall
 
-		In this tutorial the player will be familiarized with some ranged weapons.
+	In this tutorial the player will be familiarized with some ranged weapons.
 --*/
 
 
@@ -75,7 +75,7 @@ protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
 	// Uncomment if there is a 4th tutorial.
-	// SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
+	// SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -92,13 +92,50 @@ protected func InitializePlayer(int plr)
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
 	guide->AddGuideMessage("$MsgTutWelcome$");
-	guide->AddGuideMessage("$MsgTutJavelin$");
 	guide->ShowGuideMessage(0);
+	AddEffect("TutorialJavelin", nil, 100, 36 * 5);
 	return;
 }
 
 /*-- Guide control --*/
-// TODO
+
+global func FxTutorialJavelinStop()
+{
+	guide->AddGuideMessage("$MsgTutJavelin$");
+	AddEffect("TutorialBow", nil, 100, 5);
+	return 1;
+}
+
+global func FxTutorialBowTimer()
+{
+	if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(680, 500, 100, 100)))
+	{
+		guide->AddGuideMessage("$MsgTutBow$");
+		return -1;
+	}
+	return 1;
+}
+
+protected func OnGuideMessageShown(int plr, int index)
+{
+	// Show first three targets with the arrow.
+	if (index == 0)
+		for (target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
+			TutArrowShowTarget(target, RandomX(-45, 45), 16);
+	// Show javelin chest with an arrow.
+	if (index == 1)
+		TutArrowShowPos(240, 650);
+	// Show bow chest with an arrow.
+	if (index == 2)
+		TutArrowShowPos(785, 550);
+	return;
+}
+
+protected func OnGuideMessageRemoved(int plr, int index)
+{
+	TutArrowClear();
+	return;
+}
 
 /*-- Target control --*/
 

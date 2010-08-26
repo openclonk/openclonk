@@ -36,7 +36,8 @@ public func OnProjectileHit()
 
 func FxFlyOffTimer(target, num, time)
 {
-	RemoveEffect("Float",this);
+	RemoveEffect("Float", this);
+	RemoveEffect("HorizontalMoving", this);
 	if(GetYDir()>-30)
 	{
 		SetYDir(GetYDir()-1);

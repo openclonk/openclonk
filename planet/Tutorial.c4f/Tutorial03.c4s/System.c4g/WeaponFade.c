@@ -33,11 +33,22 @@ protected func FxFadeTimer(object target, int num, int time)
 		target->SetObjAlpha(255 - (time - 210) * 2);
 	if (time >= 330)
 	{
+		target->SetObjAlpha(255);
 		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
 		var to_container = FindObject(Find_OCF(OCF_CrewMember));
-		restorer->SetRestoreObject(target, to_container);	
+		restorer->SetRestoreObject(target, to_container);
+		return -1;
 	}
+	return 1;
+}
+
+// Only one fade effect allowed.
+protected func FxFadeEffect(string new_name, object target, int num, int new_num)
+{
+	if (new_name == "Fade")
+		return -1;
+	return -2;
 }
