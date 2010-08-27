@@ -3,8 +3,8 @@
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-  <title>Named Variables</title>
-  <h>Named Variables</h>
+  <title>Variables</title>
+  <h>Variables</h>
   <part>
     <text>Variables are placeholders for values stored in a script. A variable stores a value in one of several <emlink href="script/Typechecks.html">data types</emlink>.</text>
     <text>There are three different scopes in which a variable can be declared. Variables are not visible outside their declared scope.</text>
@@ -35,7 +35,7 @@
     <text>Variables are declared using the following syntax:</text>
     <code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
     <text>The variable's scope, followed by the variable's name.</text>
-    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with value 0.</text>
+    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with <code>nil</code>.</text>
     <text>Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon.</text>
     <h>Example:</h>
     <code>static object_count;

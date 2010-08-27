@@ -8,14 +8,14 @@
   <part>
     <text>A script function represents a length of script code which can be called (or executed) from the engine or from other places in script. Basically, all scripting of a scenario or object is organized in functions.</text>
     <h>Parameters and Return Values</h>
-    <text>Up to ten parameters can be passed in a function call. These are values which can then be used inside function execution. On completion, a function can pass a single value (the return value) back to the caller using the <funclink>return</funclink>() command.</text>
+    <text>Up to ten parameters can be passed in a function call. These are values which can then be used inside function execution. On completion, a function can pass a single value (the return value) back to the caller using the <funclink>return</funclink> statement.</text>
     <h>Syntax</h>
     <text>A simple function declaration could look like the following:</text>
     <code>func MeineFunktion()
 {
   <funclink>Log</funclink>(&quot;Meine Funktion wurde aufgerufen!&quot;);
 }</code>
-    <text>A function script is delimited by { } brackets. Preceding this script block is the <strong>function declaration</strong>. The declaration starts with "<code>func</code>", followed by the <strong>function name</strong> (here: "MeineFunktion"). In the ( ) brackets following the function name the <strong>function parameters</strong> can be declared (see below).</text>
+    <text>A function script is delimited by { } brackets. Preceding this script block is the <b>function declaration</b>. The declaration starts with "<code>func</code>", followed by the <b>function name</b> (here: "MeineFunktion"). In the ( ) brackets following the function name the <b>function parameters</b> can be declared (see below).</text>
     <text>When calling this function the message "Meine Funktion wurde aufgerufen!" is displayed.</text>
     <code>func ZeigeZahl(int zahl)
 {
@@ -42,15 +42,15 @@
     <funclink>CreateContents</funclink>(def, Clonk);
   Clonk-&gt;<funclink>Message</funclink>(msg);
 }</code>
-    <text>This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href="script/Typechecks.html">type checking</emlink>).</text>
+    <text>This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href="script/Typechecks.html">Data Types</emlink>).</text>
     <text>Making a call such as <code>TypParameterFunktion(1, Clonk, "Text", 5)</code> would cause a type checking error.</text>
     <h id="spezial">Default Parameters</h>
     <text>Unlike in other programming languages you can always pass fewer parameters than are declared in a function declaration.</text>
     <text>The following calls to above function are perfectly legal:</text>
     <code>ZeigeSumme(1, 2);
 ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
-    <text>In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain the value 0.</text>
-    <text>If you leave out a parameter it will be the same as passing the value 0.</text>
+    <text>In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain <code>nil</code>.</text>
+    <text>If you leave out a parameter it will be the same as passing <code>nil</code>.</text>
     <text>In the second call, on the other hand, there are <em>more</em> parameters passed than specified. These are simply not used during function execution. However, a function is still able to access these extra parameters even if they weren't declared in the function declaration: to do this, you can use the <funclink>Par</funclink>() function.</text>
     <h>Return Values</h>
     <part>
@@ -66,8 +66,9 @@ ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
   <funclink>Log</funclink>(&quot;Die Differenz zwischen %d und %d beträgt %d!&quot;, Zahl1, Zahl2, Differenz(Zahl1, Zahl2));
 }	</code>
       <text>The call "ZeigeDifferenz(5, 2)" will produce the message "Die Differenz zwischen 5 und 2 beträgt 3!".</text>
+      <text>If the function does not return a value, an implicit <code>return nil;</code> is implied.</text>
     </part>
-    <h id="Aufrufb">Permissions</h>
+<!--    <h id="Aufrufb">Permissions</h>
     <part>
       <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
       <text>
@@ -94,7 +95,7 @@ ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
       <text>Calling this function from another object script will cause an error.</text>
       <h>Remark</h>
       <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink> functions.</text>
-    </part>
+    </part>-->
     <h>Global Functions</h>
     <part>
       <text>A function is declared globally by placing the "<code>global</code>" keyword before the <code>func</code> marker.</text>
@@ -109,7 +110,7 @@ ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
 }</code>
       <text>This script redefines the engine function <funclink>CreateContents</funclink> while adding a new parameter declaration at the end of the parameter list which now allows to create multiple objects. Notice that <funclink>inherited</funclink> within this function refers to the overloaded engine function <funclink>CreateContents</funclink>.</text>
       <h>Attention!</h>
-      <text>A global script function is executed with the context of the calling function. This means in particular that <funclink>this</funclink>() is the calling object (if the global function was called from an object local scope). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:</text>
+      <text>A global script function is executed with the context of the calling function. This means in particular that <funclink>this</funclink> is the calling object (if the global function was called from an object local scope), or <code>nil</code> (if called from a scenario script). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:</text>
       <code>local number;
 func ObjektFunktion()
 {
@@ -124,7 +125,7 @@ global func GlobaleFunktion()
       <text>Both attempts to access the object local elements will fail. This is understandable because the globally declared function may have been called from any script, even from a scenario script or the script of another object. It will thus not know the declared variable or object function. As the calling context can't be safely known, the engine will throw an error.</text>
       <text>Notice: to call an object local function from a different context, use the syntax "<code>this()-&gt;function(...)</code>". This will execute the function in the specified object's context and only cause an error if the function really isn't available.</text>
     </part>
-    <h id="referenzen">References</h>
+<!--    <h id="referenzen">References</h>
     <text>In some cases, you don't want to pass the value of a variable as a parameter, but the "variable itself" so the function that is called can modify the original variable. This is done by passing a "reference" to the variable as parameter.</text>
     <text>Let's say we want to write a function returning the position (coordinates) of a player's highest ranking clonk. This cannot be done with a single return value, as we need to return an x and a y coordinate.</text>
     <text>By using references as parameters this can be achieved:</text>
@@ -142,8 +143,9 @@ func Aufruf()
   <funclink>Log</funclink>(&quot;Die Position des HiRanks von Spieler 1 ist: %d/%d&quot;, hiRankX, hiRankY);
 }</code>
     <text><code>x</code> and <code>y</code> in <code>GetHiRankPosition</code> are <strong>references</strong>, meaning when the called function modifies these values, the original variables (<code>hiRankX</code> and <code>hiRankY</code>) will be modified and the calling code will have the modified values. Notice, however, that you <em>have</em> to specify true variables as parameters for references. You cannot make a call such as "<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>" as in this case "<code>iHiRankX + 1</code>" is not a variable but a numeric result.</text>
-    <text>Notice that in C4Script "<code>&amp;</code>" is a data type of its own. You may not specify an extra data type with it, such as in "<code>int &amp;x</code>".</text>
+    <text>Notice that in C4Script "<code>&amp;</code>" is a data type of its own. You may not specify an extra data type with it, such as in "<code>int &amp;x</code>".</text>-->
   </part>
   <author>PeterW</author><date>2002-07</date>
   <author>matthes</author><date>2004-06</date>
+  <author>Günther</author><date>2010-08</date>
 </doc>

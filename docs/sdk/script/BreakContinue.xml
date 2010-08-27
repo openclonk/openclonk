@@ -3,10 +3,10 @@
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-  <title>Break / Continue</title>
-  <h id="BreakContinue">Break / Continue</h>
+  <title>break and continue</title>
+  <h id="BreakContinue">break and continue</h>
   <part>
-    <text>The keywords <code>break</code> and <code>continue</code> are used for manual control of loops:</text>
+    <text>The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:</text>
     <text>
       <ul>
         <li><code>break</code> ends the enclosing loop. Execution is continued after the end of the loop.</li>

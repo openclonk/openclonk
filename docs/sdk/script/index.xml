@@ -24,9 +24,9 @@
 </code>
     <text>Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol.</text>
     <h id="VariablenParameter">Variables/Parameters</h>
-    <text>Variables can hold values of type int, bool, id, string, or object. Any parameter not directly specified in a function call will hold the default value 0. Functions can have a maximum of ten parameters.</text>
+    <text>Variables can hold values of type <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> or <code>object</code>. Any parameter not directly specified in a function call will hold the default value <code>nil</code>. Functions can have a maximum of ten parameters.</text>
     <h id="Kommentare">Comments</h>
-    <text>Scripts may contain code comments in C-style. Comment test will be completely ignored when the script is comipiled for execution.</text>
+    <text>Scripts may contain code comments in C-style. Comment text will be completely ignored when the script is compiled for execution.</text>
     <code>func MeineFunktion() // Ein Kommentar bis zum Ende der Zeile
 {
   <funclink>Message</funclink>(&quot;Dieser Code wird ausgeführt&quot;); /* Ein Kommentar in einem Block */ <funclink>Message</funclink>(&quot;Dieser auch&quot;);
@@ -34,14 +34,16 @@
 }
 </code>
     <h id="Infos">Additional Information</h>
-    <text><emlink href="script/AppendTo.html">#appendto: for appending code to existing scripts</emlink></text>
-    <text><emlink href="script/BreakContinue.html">Loop Control</emlink></text>
+    <text><emlink href="script/Funcs.html">Functions</emlink></text>
     <text><emlink href="script/FuncCall.html">Calling Script Functions</emlink></text>
+    <text><emlink href="script/Typechecks.html">Data Types</emlink></text>
+    <text><emlink href="script/NamedVar.html">Variables and their Scope</emlink></text>
+    <text><emlink href="script/operatoren.html">Operators: +, -, = etc. in C4Script</emlink></text>
+    <text><emlink href="script/for.html">for Loop</emlink></text>
+    <text><emlink href="script/BreakContinue.html">Loop Control</emlink></text>
+    <text><emlink href="script/AppendTo.html">#appendto: for appending code to existing scripts</emlink></text>
     <text><emlink href="script/Effects.html">Effects</emlink></text>
     <text><emlink href="script/GetXXVal.html">Querying Game Data</emlink></text>
-    <text><emlink href="script/NamedVar.html">Named variables and their scope</emlink></text>
-    <text><emlink href="script/operatoren.html">Operators: +, -, = etc. in C4Script</emlink></text>
-    <text><emlink href="script/Typechecks.html">Data type checking at runtime</emlink></text>
     <text><emlink href="script/ScriptPlayers.html">Script Player (i.e. AI player)</emlink></text>
   </part>
   <author>Sven2</author><date>2002-04</date>

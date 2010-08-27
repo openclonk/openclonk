@@ -159,10 +159,10 @@ def printcontents3(f, _):
         ihack[0] = ihack[0] + 1
     def sheet(url, name):
         f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
-            "<a href='" + url[4:] + "'>" + name + "</a></li>\n")
+            "<emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
     def sheetE(url, name):
         f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
-            "<a href='" + url[4:] + "'>" + name + "</a> (erweitert)</li>\n")
+            "<emlink href='" + url[4:] + "'>" + name + "</emlink> (erweitert)</li>\n")
     folder("Funktionen nach Kategorie")
     cats = parser.cats.keys()
     cats.sort()

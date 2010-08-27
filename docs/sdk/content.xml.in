@@ -60,69 +60,69 @@
 	Developer mode
 	<ul id='brn1'>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="index.html">Introduction</a></li>
+		<emlink href="index.html">Introduction</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="console.html">Engine</a></li>
+		<emlink href="console.html">Engine</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="cmdline.html">Command Line Parameters</a></li>
+		<emlink href="cmdline.html">Command Line Parameters</emlink></li>
 	</ul>
 	</li>
 	<li>
 	<img id='tgl2' class='collapseimg' src='../images/bullet_folder_open.gif' alt='-' onclick='tb(2)' ondblclick='ta(2)' />
-	<a href="files.html">Game content</a>
+	<emlink href="files.html">Game content</emlink>
 	<ul id='brn2'>
 		<li>
 		<img id='tgl3' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(3)' ondblclick='ta(3)' />
-		<a href="definition/index.html">Object Definitions</a>
+		<emlink href="definition/index.html">Object Definitions</emlink>
 		<ul id='brn3' class='invisi'>
 			<li>
 			<img id='tgl4' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(4)' ondblclick='ta(4)' />
-			<a href="definition/defcore.html">DefCore</a>
+			<emlink href="definition/defcore.html">DefCore</emlink>
 			<ul id='brn4' class='invisi'>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/category.html">Category</a></li>
+				<emlink href="definition/category.html">Category</emlink></li>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/ocf.html">OCF</a></li>
+				<emlink href="definition/ocf.html">OCF</emlink></li>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/vertices.html">Vertices</a></li>
+				<emlink href="definition/vertices.html">Vertices</emlink></li>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/lineconnect.html">LineConnect</a></li>
+				<emlink href="definition/lineconnect.html">LineConnect</emlink></li>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/cnat.html">CNAT - Contact Attachment</a></li>
+				<emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink></li>
 			</ul>
 			</li>
 			<li>
 			<img id='tgl5' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(5)' ondblclick='ta(5)' />
-			<a href="definition/actmap.html">ActMap</a>
+			<emlink href="definition/actmap.html">ActMap</emlink>
 			<ul id='brn5' class='invisi'>
 				<li><img src='../images/bullet_sheet.gif' alt='-' />
-				<a href="definition/procedures.html">Procedures</a></li>
+				<emlink href="definition/procedures.html">Procedures</emlink></li>
 			</ul>
 			</li>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="definition/script.html">Scripts</a></li>
+			<emlink href="definition/script.html">Scripts</emlink></li>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="particle/index.html">Particles</a></li>
+			<emlink href="particle/index.html">Particles</emlink></li>
 		</ul>
 		</li>
 		<li>
 		<img id='tgl6' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(6)' ondblclick='ta(6)' />
-		<a href="scenario/index.html">Scenarios</a>
+		<emlink href="scenario/index.html">Scenarios</emlink>
 		<ul id='brn6' class='invisi'>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="scenario/scenario.html">Scenario</a></li>
+			<emlink href="scenario/scenario.html">Scenario</emlink></li>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="scenario/MapCreatorS2.html">Map Generator</a></li>
+			<emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="scenario/script.html">Scripts</a></li>
+			<emlink href="scenario/script.html">Scripts</emlink></li>
 		</ul>
 		</li>
 		<li>
 		<img id='tgl7' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(7)' ondblclick='ta(7)' />
-		<a href="material/index.html">Materials</a>
+		<emlink href="material/index.html">Materials</emlink>
 		<ul id='brn7' class='invisi'>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="material/c4m.html">Definitions</a></li>
+			<emlink href="material/c4m.html">Definitions</emlink></li>
 		</ul>
 		</li>
 		<li>
@@ -130,37 +130,37 @@
 		Internationalization
 		<ul id='brn8' class='invisi'>
 			<li><img src='../images/bullet_sheet.gif' alt='-' />
-			<a href="lang.html">Internationalization</a></li>
+			<emlink href="lang.html">Internationalization</emlink></li>
 		</ul>
 		</li>
 	</ul>
 	</li>
 	<li>
 	<img id='tgl9' class='collapseimg' src='../images/bullet_folder_open.gif' alt='-' onclick='tb(9)' ondblclick='ta(9)' />
-	<a href="script/index.html">Script</a>
+	<emlink href="script/index.html">Script</emlink>
 	<ul id='brn9'>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/Funcs.html">Functions</a></li>
+		<emlink href="script/Funcs.html">Functions</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/FuncCall.html">Function Call</a></li>
+		<emlink href="script/FuncCall.html">Function Call</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/Strict.html">#strict</a></li>
+		<emlink href="script/Typechecks.html">Data Types</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/AppendTo.html">#appendto</a></li>
+		<emlink href="script/NamedVar.html">Variables</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/BreakContinue.html">break / continue</a></li>
+		<emlink href="script/operatoren.html">Operators</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/for.html">for</a></li>
+		<emlink href="script/for.html">for</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/NamedVar.html">Named Variables</a></li>
+		<emlink href="script/BreakContinue.html">Loop Control</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/operatoren.html">Operators</a></li>
+		<emlink href="script/AppendTo.html">#appendto</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/Typechecks.html">Data Types</a></li>
+		<emlink href="script/Effects.html">Effects</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/Effects.html">Effects</a></li>
+		<emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<a href="script/ScriptPlayers.html">Script Players</a></li>
+		<emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
 <!-- Insert Functions here -->
 	</ul>
 	</li>

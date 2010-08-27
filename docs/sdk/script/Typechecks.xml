@@ -19,53 +19,59 @@
           <col><code>int</code></col>
           <col>Integer</col>
           <col>A whole number from -2.147.483.648 to +2.147.483.647.</col>
-          <col><code>42 </code></col>
+          <col><code>42</code></col>
         </row>
         <row>
           <col><code>bool</code></col>
           <col>Boolean</col>
           <col>"true" (value <code>true</code>) or "false" (value <code>false</code>). Expected as parameter by many structures such as <funclink>if</funclink> and <funclink>while</funclink>.</col>
-          <col><code>true </code></col>
+          <col><code>true</code></col>
         </row>
         <row>
           <col><code>id</code></col>
           <col>definition id</col>
           <col>ID of an object definition (see <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Object Definitions</emlink>).Will be changed into a proplist immediately.</col>
-          <col><code>Clonk </code></col>
+          <col><code>Clonk</code></col>
         </row>
         <row>
           <col><code>string</code></col>
           <col>String</col>
           <col>Any text.</col>
-          <col><code>&quot;Dies ist ein Text!&quot; </code></col>
+          <col><code>&quot;Dies ist ein Text!&quot;</code></col>
         </row>
         <row>
           <col><code>array</code></col>
           <col>Array</col>
-          <col>A type containing multiple variables, whose number can be enquired with <funclink>GetLength</funclink>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>. Since CR.</col>
-          <col><code>[0,42,Clonk] </code></col>
+          <col>A type containing multiple variables, whose number can be enquired with <funclink>GetLength</funclink>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>.</col>
+          <col><code>[0,23,Clonk]</code></col>
         </row>
         <row>
           <col><code>proplist</code></col>
           <col>Object</col>
           <col>A general purpose object type. <funclink>GetProperty</funclink> and <funclink>SetProperty</funclink> can get respectively set properties. If the property <code>"Prototype"</code> is set, and a property that is not set is gotten, the prototype is asked.</col>
-          <col><code>{ foo = 0, &quot;bar baz&quot; = 42, Prototype = Clonk }</code></col>
+          <col><code>{ foo = 0, &quot;bar baz&quot; = 13, Prototype = Clonk }</code></col>
         </row>
         <row>
           <col><code>object</code></col>
-          <col>Ingame object</col>
+          <col>Ingame Object</col>
           <col>Reference to an existing object at runtime. No direct representation. See <funclink>FindObject</funclink>()</col>
-          <col>CreateObject(Clonk)</col>
+          <col><code>CreateObject(Clonk)</code></col>
+        </row>
+        <row>
+          <col><code>any</code></col>
+          <col></col>
+          <col>The type of <code>nil</code>. When used as a function parameter type, the type check is skipped.</col>
+          <col><code>nil</code></col>
         </row>
       </table>
     </text>
-    <text>Additionally, there are two special types:</text>
+<!--    <text>Additionally, there are two special types:</text>
     <text>
       <ul>
-        <li><code>any</code>: The type is unknown or does not make a difference. "0" always has this type.</li>
+        <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
         <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
       </ul>
-    </text>
+    </text>-->
     <h>Arrays</h>
     <part>
       <text>Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <funclink>CreateArray</funclink>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used.</text>
@@ -100,6 +106,10 @@
   }
 }</code>
       <text>This function calls <code>DoExplode()</code> on the six nearest Dynamite objects.</text>
+    </part>
+    <h>Proplists</h>
+    <part>
+      <text>Proplists can be created with <code>{<em>key 1</em>=<em>expression 1</em>, <em>key 1</em>=<em>expression 1</em>, ...}</code> or with <funclink>CreateProplist</funclink>.</text>
     </part>
     <h>Conversion</h>
     <text>Consult the following table to determine which types can be converted and which conversions might cause errors:</text>

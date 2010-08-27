@@ -35,22 +35,16 @@ func Aufruf()
       <text>Script Object B:</text>
       <code>func Activate()
 {
-  var obj = <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1);
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(AAAA), <funclink>Sort_Distance</funclink>());
   obj-&gt;Activate();
 }	</code>
-      <text>The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a pointer to this object in the variable "obj". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow operator, then the function name including the parameter list (no parameters in this case).</text>
+      <text>The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a reference to this object in the variable "obj". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case).</text>
       <text>Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found.</text>
       <h>Remarks</h>
       <text>You don't <i>have</i> to store the object pointer in a variable as done in this example. You could also continue calling the function directly on the search result as in this case:</text>
       <code>func Activate()
 {
-  <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1)-&gt;Activate();
-}</code>
-      <text>To make sure that an object function is called from a given definition script you can also specify the definition's ID just before the function name. In some cases this may be necessary to resolve ambiguities if functions of the same name override each other.</text>
-      <code>func Activate()
-{
-  var obj = <funclink>FindObject</funclink>(AAAA, -1, -1, -1, -1);
-  obj-&gt;AAAA::Activate();
+  <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(AAAA), <funclink>Sort_Distance</funclink>())-&gt;Activate();
 }</code>
     </part>
     <h>Indirect call of script functions</h>
@@ -66,8 +60,7 @@ func Aufruf()
 {
   <funclink>Call</funclink>(&quot;TestFunktion&quot;);
 }</code>
-      <text>Usually, indirect calls are a bit slower than direct calls, since they cannot be precompiled and the function will have to be searched by name at runtime.</text>
-      <text>On the other hand, with indirect calls you can "decide" at runtime which function to call as is done in the following example:</text>
+      <text>With indirect calls you can "decide" at runtime which function to call as is done in the following example:</text>
       <code>func TestFunktion()
 {
   <funclink>Call</funclink>(<funclink>Format</funclink>(&quot;Aufruf%d&quot;, <funclink>Random</funclink>(3)));
@@ -82,4 +75,5 @@ func Aufruf2() { <funclink>Log</funclink>(&quot;Die dritte Funktion wurde aufger
     </part>
   </part>
   <author>PeterW</author><date>2003-05</date>
+  <author>Günther</author><date>2010-08</date>
 </doc>

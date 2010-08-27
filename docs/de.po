@@ -2,16 +2,16 @@
 # matthes <matthes@clonk.de>
 # PeterW <Peter.Wortmann@gmx.de>
 # Sven2 <sven2@goldwipf.de>
-# Günther <gbrammer@gmx.de>, 2010.
 # Armin Burgmeier <armin@arbur.net>, 2010.
+# Günther Brammer <gbrammer@gmx.de>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-22 14:49+0200\n"
-"PO-Revision-Date: 2010-08-22 14:40+0200\n"
-"Last-Translator: Armin Burgmeier <armin@arbur.net>\n"
+"POT-Creation-Date: 2010-08-27 20:59+0200\n"
+"PO-Revision-Date: 2010-08-27 21:08+0200\n"
+"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <armin@arbur.net>\n"
 "Language: German\n"
 "MIME-Version: 1.0\n"
@@ -31,19 +31,19 @@ msgstr ""
 msgid "Contents"
 msgstr "Inhalt"
 
-#: sdk/content.xml.in:63(a)
+#: sdk/content.xml.in:63(emlink)
 #: sdk/script/index.xml:9(h)
 #: sdk/script/ScriptPlayers.xml:9(h)
 #: sdk/script/Effects.xml:10(h)
 msgid "Introduction"
 msgstr "Einleitung"
 
-#: sdk/content.xml.in:65(a)
+#: sdk/content.xml.in:65(emlink)
 #: sdk/console.xml:7(h)
 msgid "Engine"
 msgstr "Engine"
 
-#: sdk/content.xml.in:67(a)
+#: sdk/content.xml.in:67(emlink)
 #: sdk/cmdline.xml:6(title)
 #: sdk/cmdline.xml:7(h)
 msgid "Command Line Parameters"
@@ -53,22 +53,22 @@ msgstr "Kommandozeilenparameter"
 msgid "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.gif\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Developer mode <placeholder-1/>"
 msgstr "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.gif\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Entwicklermodus <placeholder-1/>"
 
-#: sdk/content.xml.in:72(a)
+#: sdk/content.xml.in:72(emlink)
 msgid "Game content"
 msgstr "Spielinhalt"
 
-#: sdk/content.xml.in:76(a)
+#: sdk/content.xml.in:76(emlink)
 #: sdk/definition/index.xml:6(title)
 #: sdk/definition/index.xml:7(h)
 msgid "Object Definitions"
 msgstr "Objektdefinitionen"
 
-#: sdk/content.xml.in:80(a)
+#: sdk/content.xml.in:80(emlink)
 #: sdk/definition/defcore.xml:7(h)
 msgid "DefCore"
 msgstr "DefCore"
 
-#: sdk/content.xml.in:83(a)
+#: sdk/content.xml.in:83(emlink)
 #: sdk/script/fn/SetCategory.xml:9(subcat)
 #: sdk/script/fn/GetCategory.xml:9(subcat)
 #: sdk/script/fn/C4D_Vehicle.xml:9(subcat)
@@ -86,7 +86,7 @@ msgstr "DefCore"
 msgid "Category"
 msgstr "Kategorie"
 
-#: sdk/content.xml.in:85(a)
+#: sdk/content.xml.in:85(emlink)
 #: sdk/script/fn/OCF_Rotate.xml:9(subcat)
 #: sdk/script/fn/OCF_Prey.xml:9(subcat)
 #: sdk/script/fn/OCF_PowerSupply.xml:9(subcat)
@@ -122,7 +122,7 @@ msgstr "Kategorie"
 msgid "OCF"
 msgstr "OCF"
 
-#: sdk/content.xml.in:87(a)
+#: sdk/content.xml.in:87(emlink)
 #: sdk/script/fn/VerticesStuck.xml:9(subcat)
 #: sdk/script/fn/SetVertexXY.xml:9(subcat)
 #: sdk/script/fn/SetVertex.xml:9(subcat)
@@ -135,64 +135,64 @@ msgstr "OCF"
 msgid "Vertices"
 msgstr "Vertices"
 
-#: sdk/content.xml.in:89(a)
+#: sdk/content.xml.in:89(emlink)
 #: sdk/definition/lineconnect.xml:6(title)
 #: sdk/definition/lineconnect.xml:7(h)
 msgid "LineConnect"
 msgstr "LineConnect"
 
-#: sdk/content.xml.in:91(a)
+#: sdk/content.xml.in:91(emlink)
 #: sdk/definition/cnat.xml:6(title)
 #: sdk/definition/cnat.xml:7(h)
 msgid "CNAT - Contact Attachment"
 msgstr "CNAT - Contact Attachment"
 
-#: sdk/content.xml.in:96(a)
+#: sdk/content.xml.in:96(emlink)
 #: sdk/definition/actmap.xml:7(h)
 msgid "ActMap"
 msgstr "ActMap"
 
-#: sdk/content.xml.in:99(a)
+#: sdk/content.xml.in:99(emlink)
 #: sdk/definition/procedures.xml:6(title)
 #: sdk/definition/procedures.xml:7(h)
 msgid "Procedures"
 msgstr "Prozeduren"
 
-#: sdk/content.xml.in:103(a)
-#: sdk/content.xml.in:117(a)
+#: sdk/content.xml.in:103(emlink)
+#: sdk/content.xml.in:117(emlink)
 msgid "Scripts"
 msgstr "Scripte"
 
-#: sdk/content.xml.in:105(a)
+#: sdk/content.xml.in:105(emlink)
 msgid "Particles"
 msgstr "Partikel"
 
-#: sdk/content.xml.in:110(a)
+#: sdk/content.xml.in:110(emlink)
 #: sdk/scenario/index.xml:6(title)
 #: sdk/scenario/index.xml:7(h)
 msgid "Scenarios"
 msgstr "Szenarien"
 
-#: sdk/content.xml.in:113(a)
+#: sdk/content.xml.in:113(emlink)
 msgid "Scenario"
 msgstr "Szenario"
 
-#: sdk/content.xml.in:115(a)
+#: sdk/content.xml.in:115(emlink)
 #: sdk/scenario/MapCreatorS2.xml:6(title)
 #: sdk/scenario/MapCreatorS2.xml:7(h)
 msgid "Map Generator"
 msgstr "Kartengenerator"
 
-#: sdk/content.xml.in:122(a)
+#: sdk/content.xml.in:122(emlink)
 #: sdk/material/c4m.xml:348(col)
 msgid "Materials"
 msgstr "Materialien"
 
-#: sdk/content.xml.in:125(a)
+#: sdk/content.xml.in:125(emlink)
 msgid "Definitions"
 msgstr "Definitionen"
 
-#: sdk/content.xml.in:133(a)
+#: sdk/content.xml.in:133(emlink)
 msgid "Internationalization"
 msgstr "Sprachanpassung"
 
@@ -200,7 +200,7 @@ msgstr "Sprachanpassung"
 msgid "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.gif\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Internationalization <placeholder-1/>"
 msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.gif\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Sprachanpassung <placeholder-1/>"
 
-#: sdk/content.xml.in:140(a)
+#: sdk/content.xml.in:140(emlink)
 #: sdk/script/index.xml:6(title)
 #: sdk/script/index.xml:7(h)
 #: sdk/script/fn/while.xml:8(category)
@@ -234,44 +234,44 @@ msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.gif
 msgid "Script"
 msgstr "Script"
 
-#: sdk/content.xml.in:143(a)
+#: sdk/content.xml.in:143(emlink)
 #: sdk/script/index.xml:16(h)
+#: sdk/script/index.xml:37(emlink)
 #: sdk/script/Funcs.xml:6(title)
 #: sdk/script/Funcs.xml:7(h)
 msgid "Functions"
 msgstr "Funktionen"
 
-#: sdk/content.xml.in:145(a)
+#: sdk/content.xml.in:145(emlink)
 msgid "Function Call"
 msgstr "Funktionsaufruf"
 
-#: sdk/content.xml.in:147(a)
-msgid "#strict"
-msgstr "#strict"
+#: sdk/content.xml.in:147(emlink)
+#: sdk/script/index.xml:39(emlink)
+#: sdk/script/Typechecks.xml:6(title)
+#: sdk/script/Typechecks.xml:7(h)
+msgid "Data Types"
+msgstr "Datentypen"
 
-#: sdk/content.xml.in:149(a)
-#: sdk/script/AppendTo.xml:6(title)
-#: sdk/script/AppendTo.xml:7(h)
-msgid "#appendto"
-msgstr "#appendto"
-
-#: sdk/content.xml.in:151(a)
-msgid "break / continue"
-msgstr "break / continue"
-
-#: sdk/content.xml.in:153(a)
-#: sdk/script/Funcs.xml:41(emlink)
-#: sdk/script/Funcs.xml:106(emlink)
-msgid "for"
-msgstr "for"
-
-#: sdk/content.xml.in:155(a)
+#: sdk/content.xml.in:149(emlink)
+#: sdk/script/fn/VarN.xml:8(category)
+#: sdk/script/fn/LocalN.xml:8(category)
+#: sdk/script/fn/IsRef.xml:8(category)
+#: sdk/script/fn/GlobalN.xml:8(category)
+#: sdk/script/fn/GetType.xml:8(category)
+#: sdk/script/fn/C4V_String.xml:8(category)
+#: sdk/script/fn/C4V_Int.xml:8(category)
+#: sdk/script/fn/C4V_C4Object.xml:8(category)
+#: sdk/script/fn/C4V_C4ID.xml:8(category)
+#: sdk/script/fn/C4V_Bool.xml:8(category)
+#: sdk/script/fn/C4V_Array.xml:8(category)
+#: sdk/script/fn/C4V_Any.xml:8(category)
 #: sdk/script/NamedVar.xml:6(title)
 #: sdk/script/NamedVar.xml:7(h)
-msgid "Named Variables"
-msgstr "Benannte Variablen"
+msgid "Variables"
+msgstr "Variablen"
 
-#: sdk/content.xml.in:157(a)
+#: sdk/content.xml.in:151(emlink)
 #: sdk/script/operatoren.xml:6(title)
 #: sdk/script/operatoren.xml:7(h)
 #: sdk/script/fn/if.xml:31(emlink)
@@ -279,14 +279,25 @@ msgstr "Benannte Variablen"
 msgid "Operators"
 msgstr "Operatoren"
 
-#: sdk/content.xml.in:159(a)
-#: sdk/script/Typechecks.xml:6(title)
-#: sdk/script/Typechecks.xml:7(h)
-msgid "Data Types"
-msgstr "Datentypen"
+#: sdk/content.xml.in:153(emlink)
+#: sdk/script/Funcs.xml:41(emlink)
+#: sdk/script/Funcs.xml:107(emlink)
+msgid "for"
+msgstr "for"
 
-#: sdk/content.xml.in:161(a)
-#: sdk/script/index.xml:40(emlink)
+#: sdk/content.xml.in:155(emlink)
+#: sdk/script/index.xml:43(emlink)
+msgid "Loop Control"
+msgstr "Befehle zur Schleifenkontrolle"
+
+#: sdk/content.xml.in:157(emlink)
+#: sdk/script/AppendTo.xml:6(title)
+#: sdk/script/AppendTo.xml:7(h)
+msgid "#appendto"
+msgstr "#appendto"
+
+#: sdk/content.xml.in:159(emlink)
+#: sdk/script/index.xml:45(emlink)
 #: sdk/script/fn/Sound.xml:8(category)
 #: sdk/script/fn/Smoke.xml:9(subcat)
 #: sdk/script/fn/RemoveEffect.xml:8(category)
@@ -303,7 +314,12 @@ msgstr "Datentypen"
 msgid "Effects"
 msgstr "Effekte"
 
-#: sdk/content.xml.in:163(a)
+#: sdk/content.xml.in:161(emlink)
+#: sdk/script/index.xml:46(emlink)
+msgid "Querying Game Data"
+msgstr "Abfrage von Spieldaten"
+
+#: sdk/content.xml.in:163(emlink)
 msgid "Script Players"
 msgstr "Scriptspieler"
 
@@ -938,10 +954,10 @@ msgstr "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren
 #: sdk/script/ScriptPlayers.xml:14(text)
 #: sdk/script/NamedVar.xml:40(h)
 #: sdk/script/Funcs.xml:58(h)
-#: sdk/script/Funcs.xml:102(h)
+#: sdk/script/Funcs.xml:103(h)
 #: sdk/script/FuncCall.xml:13(h)
 #: sdk/script/FuncCall.xml:28(h)
-#: sdk/script/FuncCall.xml:59(h)
+#: sdk/script/FuncCall.xml:53(h)
 #: sdk/script/BreakContinue.xml:16(h)
 #: sdk/scenario/MapCreatorS2.xml:177(text)
 msgid "Example:"
@@ -1236,52 +1252,44 @@ msgid "Variables/Parameters"
 msgstr "Variablen/Parameter"
 
 #: sdk/script/index.xml:27(text)
-msgid "Variables can hold values of type int, bool, id, string, or object. Any parameter not directly specified in a function call will hold the default value 0. Functions can have a maximum of ten parameters."
-msgstr "Variablen können Werte der Typen int, bool, id, string oder object enthalten. Für alle in Funktionsaufrufen ausgelassenen Parameter gilt grundsätzlich der Vorgabewert Null. Funktionen akzeptieren maximal zehn Parameter."
+msgid "Variables can hold values of type <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> or <code>object</code>. Any parameter not directly specified in a function call will hold the default value <code>nil</code>. Functions can have a maximum of ten parameters."
+msgstr "Variablen können Werte der Typen <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> oder <code>object</code> enthalten. Für alle in Funktionsaufrufen ausgelassenen Parameter gilt grundsätzlich der Vorgabewert <code>nil</code>. Funktionen akzeptieren maximal zehn Parameter."
 
 #: sdk/script/index.xml:28(h)
 msgid "Comments"
 msgstr "Kommentare"
 
 #: sdk/script/index.xml:29(text)
-msgid "Scripts may contain code comments in C-style. Comment test will be completely ignored when the script is comipiled for execution."
+msgid "Scripts may contain code comments in C-style. Comment text will be completely ignored when the script is compiled for execution."
 msgstr "Scripte können Kommentare im C-Stil enthalten. Kommentare werden beim Laden des Script herausgefiltert und komplett ignoriert."
 
 #: sdk/script/index.xml:36(h)
 msgid "Additional Information"
 msgstr "Weitere Informationen"
 
-#: sdk/script/index.xml:37(emlink)
-msgid "#appendto: for appending code to existing scripts"
-msgstr "#appendto: Zum nachträglichen Erweitern fremder Scripte"
-
 #: sdk/script/index.xml:38(emlink)
-msgid "Loop Control"
-msgstr "Befehle zur Schleifenkontrolle"
-
-#: sdk/script/index.xml:39(emlink)
 #: sdk/script/FuncCall.xml:6(title)
 #: sdk/script/FuncCall.xml:7(h)
 msgid "Calling Script Functions"
 msgstr "Aufruf von Scriptfunktionen"
 
+#: sdk/script/index.xml:40(emlink)
+msgid "Variables and their Scope"
+msgstr "Variablen und ihre Geltungsbereiche"
+
 #: sdk/script/index.xml:41(emlink)
-msgid "Querying Game Data"
-msgstr "Abfrage von Spieldaten"
-
-#: sdk/script/index.xml:42(emlink)
-msgid "Named variables and their scope"
-msgstr "Benannte Variablen und ihre Geltungsbereiche"
-
-#: sdk/script/index.xml:43(emlink)
 msgid "Operators: +, -, = etc. in C4Script"
 msgstr "Operatoren: +, -, = etc. in C4Script"
 
-#: sdk/script/index.xml:44(emlink)
-msgid "Data type checking at runtime"
-msgstr "Überprüfung von Datentypen zur Laufzeit"
+#: sdk/script/index.xml:42(emlink)
+msgid "for Loop"
+msgstr "Die for-Schleife"
 
-#: sdk/script/index.xml:45(emlink)
+#: sdk/script/index.xml:44(emlink)
+msgid "#appendto: for appending code to existing scripts"
+msgstr "#appendto: Zum nachträglichen Erweitern fremder Scripte"
+
+#: sdk/script/index.xml:47(emlink)
 msgid "Script Player (i.e. AI player)"
 msgstr "Scriptspieler (z.B. KI-Spieler)"
 
@@ -1291,8 +1299,8 @@ msgid "The 'for' Loop"
 msgstr "Die for-Schleife"
 
 #: sdk/script/for.xml:9(text)
-msgid "The <code>for</code> loop is a very convenient loop with starting initialization. It is most often used as <a href=\"#Zaehlschleife\">counting loop</a>. It will take three statements as parameters, each separated by a ';' semicolon. Followed by the code block to be executed:"
-msgstr "Die <code>for</code>-Schleife stellt eine recht komfortable Schleife mit Anfangsbedingung dar. Am häufigsten wird sie als sog. <a href=\"#Zaehlschleife\">Zählschleife</a> benutzt. Sie nimmt 3 Anweisungen als Parameter, die jeweils mit einem Strichpunkt ';' getrennt sind. Darauf folgt der auszuführende Teil:"
+msgid "The <code>for</code> loop is a convenient loop with starting initialization. It is most often used as <a href=\"#Zaehlschleife\">counting loop</a>. It will take three statements as parameters, each separated by a ';' semicolon. Followed by the code block to be executed:"
+msgstr "Die <code>for</code>-Schleife stellt eine komfortable Schleife mit Anfangsbedingung dar. Am häufigsten wird sie als sog. <a href=\"#Zaehlschleife\">Zählschleife</a> benutzt. Sie nimmt 3 Anweisungen als Parameter, die jeweils mit einem Strichpunkt ';' getrennt sind. Darauf folgt der auszuführende Teil:"
 
 #: sdk/script/for.xml:15(li)
 msgid "The first statement will be executed once at the beginning of the loop. This is a good place to initialize counter variables."
@@ -1307,7 +1315,7 @@ msgid "The third statement is executed after each loop execution. This is a good
 msgstr "Der im dritten Parameter angegebene Ausdruck wird jeweils als letztes ausgeführt. Hier wird typischerweise z.B. eine Variable für den nächsten Schleifendurchlauf hochgezählt."
 
 #: sdk/script/for.xml:20(text)
-msgid "It is possible to omit any of the three statements. If there is no condition statement, then the loop will run forever unless it is manually interrupted (i.e. using the <code>break</code> keyword). This is an infinite loop:"
+msgid "It is possible to omit any of the three statements. If there is no condition statement, then the loop will run forever unless it is interrupted from the loop body (i.e. using the <code>break</code> keyword). This is an infinite loop:"
 msgstr "Es ist erlaubt, einen oder mehrere dieser Parameter wegzulassen, den Platz zwischen den Strichpunkten also freizulassen. Wird die Bedingung weggelassen, so wird die Schleife nie automatisch abgebrochen. (Um die Schleife zu beenden, sollte dann <code>break</code> verwendet werden.) Auf diese Weise lässt sich z.B. eine Endlosschleife konstruieren:"
 
 #: sdk/script/for.xml:24(h)
@@ -1322,23 +1330,23 @@ msgstr "Am Häufigsten findet die <code>for</code>-Schleife Verwendung als Zähl
 msgid "Notice: the following <placeholder-1/> loop would do exactly the same:"
 msgstr "Zur Verdeutlichung: Die folgende <placeholder-1/>-Schleife tut exakt dasselbe:"
 
-#: sdk/script/for.xml:34(h)
+#: sdk/script/for.xml:36(h)
 msgid "Using for to iterate over an array"
 msgstr "Gebrauch der for-Schleife zum Durchlauf von Arrays"
 
-#: sdk/script/for.xml:35(text)
+#: sdk/script/for.xml:37(text)
 msgid "Another function of the <code>for</code>-loop is iterating over arrays. Each element of the array is stored in the variable and the loop body executed for that element. The script looks like this:"
 msgstr "Eine weitere Funktion der <code>for</code>-Schleife ist es, Arrays Element für Element zu durchlaufen und für einen Durchlauf ein Element in einer Variable zu speichern. Das Script sieht folgendermaßen aus:"
 
-#: sdk/script/for.xml:39(text)
+#: sdk/script/for.xml:41(text)
 msgid "This script would output all elements of the array <code>a</code> to the log."
 msgstr "Mit diesem Script würden alle Elemente des Array <code>a</code> ins Log ausgegeben."
 
-#: sdk/script/for.xml:40(h)
+#: sdk/script/for.xml:42(h)
 msgid "Further examples:"
 msgstr "Weitere Beispiele:"
 
-#: sdk/script/for.xml:44(text)
+#: sdk/script/for.xml:46(text)
 msgid "Counts backwards from 10 to 1."
 msgstr "Zählt rückwärts von 10 bis 1."
 
@@ -1513,7 +1521,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/GetEntrance.xml:8(category)
 #: sdk/script/fn/GetEnergy.xml:8(category)
 #: sdk/script/fn/GetDir.xml:8(category)
-#: sdk/script/fn/GetDesc.xml:8(category)
 #: sdk/script/fn/GetDefinition.xml:8(category)
 #: sdk/script/fn/GetDefBottom.xml:8(category)
 #: sdk/script/fn/GetDamage.xml:8(category)
@@ -1799,21 +1806,6 @@ msgstr "Liefert die Anzahl feststeckender Vertices von *obj"
 #: sdk/script/fn/VerticesStuck.xml:27(text)
 msgid "Removes obj if one if its vertices is stuck."
 msgstr "Entfernt obj wenn einer seiner Vertices feststeckt"
-
-#: sdk/script/fn/VarN.xml:8(category)
-#: sdk/script/fn/LocalN.xml:8(category)
-#: sdk/script/fn/IsRef.xml:8(category)
-#: sdk/script/fn/GlobalN.xml:8(category)
-#: sdk/script/fn/GetType.xml:8(category)
-#: sdk/script/fn/C4V_String.xml:8(category)
-#: sdk/script/fn/C4V_Int.xml:8(category)
-#: sdk/script/fn/C4V_C4Object.xml:8(category)
-#: sdk/script/fn/C4V_C4ID.xml:8(category)
-#: sdk/script/fn/C4V_Bool.xml:8(category)
-#: sdk/script/fn/C4V_Array.xml:8(category)
-#: sdk/script/fn/C4V_Any.xml:8(category)
-msgid "Variables"
-msgstr "Variablen"
 
 #: sdk/script/fn/VarN.xml:16(desc)
 #: sdk/script/fn/LocalN.xml:16(desc)
@@ -2146,7 +2138,6 @@ msgstr "Setzt die MeshTransformation für das aufrufende Objekt zurück."
 #: sdk/script/fn/GetNeededMatStr.xml:9(subcat)
 #: sdk/script/fn/GetMass.xml:9(subcat)
 #: sdk/script/fn/GetKiller.xml:9(subcat)
-#: sdk/script/fn/GetDesc.xml:9(subcat)
 #: sdk/script/fn/GetDefBottom.xml:9(subcat)
 #: sdk/script/fn/GetDamage.xml:9(subcat)
 #: sdk/script/fn/GetContact.xml:9(subcat)
@@ -7832,14 +7823,6 @@ msgstr "Clonk der einen Bogen verschluckt hat."
 msgid "Notice: <placeholder-1/> = 0 / <placeholder-2/> = 1"
 msgstr "Hinweis: <placeholder-1/> = 0 / <placeholder-2/> = 1"
 
-#: sdk/script/fn/GetDesc.xml:12(desc)
-msgid "Returns the description of an object or of an object definition. Descriptions are stored in the Desc**.txt files of an object definition group."
-msgstr "Gibt die Beschreibung eines Objekts oder einer Objektdefinition zurück. Die Beschreibung wird in Objektdefinitionen in der Desc**.txt angegeben."
-
-#: sdk/script/fn/GetDesc.xml:16(text)
-msgid "Displays a message containing the name of the selected clonk and the description text of the clonk type."
-msgstr "Gibt eine Meldung auf dem Bildschirm aus, die den Namen des gerade ausgewählten Clonks des ersten Spielers, sowie den Beschreibungstext seines Clonktyps enthält."
-
 #: sdk/script/fn/GetDefinition.xml:16(desc)
 msgid "Index of the definition."
 msgstr "Index der gesuchten Definition."
@@ -11182,150 +11165,153 @@ msgid "Array"
 msgstr "Array"
 
 #: sdk/script/Typechecks.xml:45(col)
-msgid "A type containing multiple variables, whose number can be enquired with <placeholder-1/>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>. Since CR."
-msgstr "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR."
+msgid "A type containing multiple variables, whose number can be enquired with <placeholder-1/>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>."
+msgstr "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können."
 
 #: sdk/script/Typechecks.xml:51(col)
 msgid "A general purpose object type. <placeholder-1/> and <placeholder-2/> can get respectively set properties. If the property <code>\"Prototype\"</code> is set, and a property that is not set is gotten, the prototype is asked."
 msgstr "Ein allgemeiner Objekttyp. Mit <placeholder-1/> und <placeholder-2/> können Eigenschaften abgefragt bzw. gesetzt werden. Wenn die Eigenschaft <code>\"Prototype\"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt."
 
 #: sdk/script/Typechecks.xml:56(col)
-msgid "Ingame object"
+msgid "Ingame Object"
 msgstr "Spielobjekt"
 
 #: sdk/script/Typechecks.xml:57(col)
 msgid "Reference to an existing object at runtime. No direct representation. See <placeholder-1/>()"
 msgstr "Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <placeholder-1/>()"
 
-#: sdk/script/Typechecks.xml:58(col)
-msgid "CreateObject(Clonk)"
-msgstr "CreateObject(Clonk)"
+#: sdk/script/Typechecks.xml:63(col)
+msgid "The type of <code>nil</code>. When used as a function parameter type, the type check is skipped."
+msgstr ""
 
-#: sdk/script/Typechecks.xml:62(text)
-msgid "Additionally, there are two special types:"
-msgstr "Außerdem gibt es noch zwei spezielle Typen:"
-
-#: sdk/script/Typechecks.xml:65(li)
-msgid "<code>any</code>: The type is unknown or does not make a difference. \"0\" always has this type."
-msgstr "<code>any</code>: Der Typ ist nicht bekannt oder egal. \"0\" hat immer diesen Typ."
-
-#: sdk/script/Typechecks.xml:66(li)
-msgid "<code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator \"<code>=</code>\"). See also <emlink href=\"script/Funcs.html#referenzen\">Reference parameters</emlink>."
-msgstr "<code>&amp;</code>: Der Wert ist eine Referenz - z.B. auf eine Variable. Er verhält sich genau wie der Zielwert, kann aber gesetzt werden (z.B. mit dem Operator \"<code>=</code>\"). Siehe auch <emlink href=\"script/Funcs.html#referenzen\">Referenzparameter</emlink>."
-
-#: sdk/script/Typechecks.xml:69(h)
+#. <text>Additionally, there are two special types:</text>
+#.     <text>
+#.       <ul>
+#.         <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
+#.         <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
+#.       </ul>
+#.     </text>
+#: sdk/script/Typechecks.xml:75(h)
 msgid "Arrays"
 msgstr "Arrays"
 
-#: sdk/script/Typechecks.xml:71(text)
+#: sdk/script/Typechecks.xml:77(text)
 msgid "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used."
 msgstr "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <placeholder-1/>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden."
 
-#: sdk/script/Typechecks.xml:72(text)
+#: sdk/script/Typechecks.xml:78(text)
 msgid "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array."
 msgstr "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element. Für negative Indizes wird vom Ende des Arrays gezählt, so dass <code>a[-1]</code> auf das letzte Element des Arrays zugreift."
 
-#: sdk/script/Typechecks.xml:73(text)
+#: sdk/script/Typechecks.xml:79(text)
 msgid "A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code><placeholder-1/>(a)</code> respectively if not given."
 msgstr "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code><placeholder-1/>(a)</code> aufgefasst, falls sie nicht angegeben sind."
 
-#: sdk/script/Typechecks.xml:74(h)
+#: sdk/script/Typechecks.xml:80(h)
 msgid "Example 1"
 msgstr "Beispiel 1"
 
-#: sdk/script/Typechecks.xml:85(text)
+#: sdk/script/Typechecks.xml:91(text)
 msgid "This function adds up all elements of an array."
 msgstr "Diese Funktion summiert alle Elemente eines Arrays."
 
-#: sdk/script/Typechecks.xml:86(h)
+#: sdk/script/Typechecks.xml:92(h)
 msgid "Example 2"
 msgstr "Beispiel 2"
 
-#: sdk/script/Typechecks.xml:92(text)
+#: sdk/script/Typechecks.xml:98(text)
 msgid "This function randomly chooses one out of four ids and returns it."
 msgstr "Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück."
 
-#: sdk/script/Typechecks.xml:93(h)
+#: sdk/script/Typechecks.xml:99(h)
 msgid "Example 3"
 msgstr "Beispiel 3"
 
-#: sdk/script/Typechecks.xml:102(text)
+#: sdk/script/Typechecks.xml:108(text)
 msgid "This function calls <code>DoExplode()</code> on the six nearest Dynamite objects."
 msgstr "Diese Funktion ruft <code>DoExplode()</code> auf die sechs naheliegendsten Dynamit-Objekte auf."
 
-#: sdk/script/Typechecks.xml:104(h)
+#: sdk/script/Typechecks.xml:110(h)
+msgid "Proplists"
+msgstr "Proplisten"
+
+#: sdk/script/Typechecks.xml:112(text)
+msgid "Proplists can be created with <code>{<em>key 1</em>=<em>expression 1</em>, <em>key 1</em>=<em>expression 1</em>, ...}</code> or with <placeholder-1/>."
+msgstr ""
+
+#: sdk/script/Typechecks.xml:114(h)
 msgid "Conversion"
 msgstr "Konvertierung"
 
-#: sdk/script/Typechecks.xml:105(text)
+#: sdk/script/Typechecks.xml:115(text)
 msgid "Consult the following table to determine which types can be converted and which conversions might cause errors:"
 msgstr "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
 
-#: sdk/script/Typechecks.xml:109(col)
+#: sdk/script/Typechecks.xml:119(col)
 msgid "to -&gt;"
 msgstr "nach -&gt;"
 
-#: sdk/script/Typechecks.xml:119(col)
-#: sdk/script/Typechecks.xml:120(col)
-#: sdk/script/Typechecks.xml:128(col)
 #: sdk/script/Typechecks.xml:129(col)
+#: sdk/script/Typechecks.xml:130(col)
 #: sdk/script/Typechecks.xml:138(col)
 #: sdk/script/Typechecks.xml:139(col)
-#: sdk/script/Typechecks.xml:142(col)
-#: sdk/script/Typechecks.xml:147(col)
+#: sdk/script/Typechecks.xml:148(col)
 #: sdk/script/Typechecks.xml:149(col)
-#: sdk/script/Typechecks.xml:156(col)
+#: sdk/script/Typechecks.xml:152(col)
+#: sdk/script/Typechecks.xml:157(col)
 #: sdk/script/Typechecks.xml:159(col)
-#: sdk/script/Typechecks.xml:165(col)
+#: sdk/script/Typechecks.xml:166(col)
 #: sdk/script/Typechecks.xml:169(col)
+#: sdk/script/Typechecks.xml:175(col)
+#: sdk/script/Typechecks.xml:179(col)
 msgid "OK"
 msgstr "OK"
 
-#: sdk/script/Typechecks.xml:121(col)
-#: sdk/script/Typechecks.xml:122(col)
-#: sdk/script/Typechecks.xml:123(col)
-#: sdk/script/Typechecks.xml:124(col)
-msgid "if 0"
-msgstr "wenn 0"
-
-#: sdk/script/Typechecks.xml:130(col)
 #: sdk/script/Typechecks.xml:131(col)
 #: sdk/script/Typechecks.xml:132(col)
 #: sdk/script/Typechecks.xml:133(col)
-#: sdk/script/Typechecks.xml:137(col)
+#: sdk/script/Typechecks.xml:134(col)
+msgid "if 0"
+msgstr "wenn 0"
+
 #: sdk/script/Typechecks.xml:140(col)
 #: sdk/script/Typechecks.xml:141(col)
-#: sdk/script/Typechecks.xml:146(col)
-#: sdk/script/Typechecks.xml:148(col)
+#: sdk/script/Typechecks.xml:142(col)
+#: sdk/script/Typechecks.xml:143(col)
+#: sdk/script/Typechecks.xml:147(col)
 #: sdk/script/Typechecks.xml:150(col)
 #: sdk/script/Typechecks.xml:151(col)
-#: sdk/script/Typechecks.xml:155(col)
-#: sdk/script/Typechecks.xml:157(col)
+#: sdk/script/Typechecks.xml:156(col)
 #: sdk/script/Typechecks.xml:158(col)
 #: sdk/script/Typechecks.xml:160(col)
-#: sdk/script/Typechecks.xml:164(col)
+#: sdk/script/Typechecks.xml:161(col)
+#: sdk/script/Typechecks.xml:165(col)
 #: sdk/script/Typechecks.xml:167(col)
 #: sdk/script/Typechecks.xml:168(col)
+#: sdk/script/Typechecks.xml:170(col)
+#: sdk/script/Typechecks.xml:174(col)
+#: sdk/script/Typechecks.xml:177(col)
+#: sdk/script/Typechecks.xml:178(col)
 msgid "Error"
 msgstr "Error"
 
-#: sdk/script/Typechecks.xml:166(col)
+#: sdk/script/Typechecks.xml:176(col)
 msgid "maybe"
 msgstr "maybe"
 
-#: sdk/script/Typechecks.xml:173(h)
+#: sdk/script/Typechecks.xml:183(h)
 msgid "Additional information:"
 msgstr "Erklärung der Tabelle:"
 
-#: sdk/script/Typechecks.xml:176(li)
+#: sdk/script/Typechecks.xml:186(li)
 msgid "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
 msgstr "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
 
-#: sdk/script/Typechecks.xml:177(li)
+#: sdk/script/Typechecks.xml:187(li)
 msgid "If an object has been converted into a proplist then it can be converted back to an object. Otherwise proplists cannot be converted into objects."
 msgstr "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
 
-#: sdk/script/Typechecks.xml:178(li)
+#: sdk/script/Typechecks.xml:188(li)
 msgid "<code>0</code> can be converted into anything. In that case it behaves the same way as <code>any</code>"
 msgstr "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 
@@ -11426,8 +11412,8 @@ msgid "The variable's scope, followed by the variable's name."
 msgstr "Als erstes wird der Gültigkeitbereich angegeben. Danach muss der Name einer benannten Variable folgen."
 
 #: sdk/script/NamedVar.xml:38(text)
-msgid "Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with value 0."
-msgstr "Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies ist aber nur für funktionslokale (<code>var</code>) Variablen erlaubt. Ohne Initialisierung beginnt die Variable mit dem Standard-Wert 0."
+msgid "Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with <code>nil</code>."
+msgstr "Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies ist aber nur für funktionslokale (<code>var</code>) Variablen erlaubt. Ohne Initialisierung beginnt die Variable mit <code>nil</code>."
 
 #: sdk/script/NamedVar.xml:39(text)
 msgid "Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon."
@@ -11581,8 +11567,8 @@ msgid "Parameters and Return Values"
 msgstr "Parameter und Rückgabewerte"
 
 #: sdk/script/Funcs.xml:11(text)
-msgid "Up to ten parameters can be passed in a function call. These are values which can then be used inside function execution. On completion, a function can pass a single value (the return value) back to the caller using the <placeholder-1/>() command."
-msgstr "An eine Scriptfunktion können beim Aufruf bis zu 10 Parameter übergeben werden. Diese können dann innerhalb der Funktion ausgewertet und verwendet werden. Beim Beenden kann eine Funktion mit dem Befehl <placeholder-1/>() einen einzelnen Wert an den Aufrufer zurückgeben."
+msgid "Up to ten parameters can be passed in a function call. These are values which can then be used inside function execution. On completion, a function can pass a single value (the return value) back to the caller using the <placeholder-1/> statement."
+msgstr "An eine Scriptfunktion können beim Aufruf bis zu 10 Parameter übergeben werden. Diese können dann innerhalb der Funktion ausgewertet und verwendet werden. Beim Beenden kann eine Funktion mit dem Befehl <placeholder-1/> einen einzelnen Wert an den Aufrufer zurückgeben."
 
 #: sdk/script/Funcs.xml:12(h)
 #: sdk/scenario/MapCreatorS2.xml:12(h)
@@ -11594,8 +11580,8 @@ msgid "A simple function declaration could look like the following:"
 msgstr "Eine einfache Funktionsdeklaration könnte z.B. folgendermaßen aussehen:"
 
 #: sdk/script/Funcs.xml:18(text)
-msgid "A function script is delimited by { } brackets. Preceding this script block is the <strong>function declaration</strong>. The declaration starts with \"<code>func</code>\", followed by the <strong>function name</strong> (here: \"MeineFunktion\"). In the ( ) brackets following the function name the <strong>function parameters</strong> can be declared (see below)."
-msgstr "Das Script der Funktion steht in einem sogenannten Block (der Bereich zwischen '{' und '}' ). Vor diesem Block steht die <strong>Funktionsdeklaration</strong>. Diese beginnt mit \"<code>func</code>\", gefolgt von dem <strong>Funktionsnamen</strong> (hier: \"MeineFunktion\"). In der Klammer nach dem Funktionsnamen können Funktionsparameter definiert werden (s.u.)."
+msgid "A function script is delimited by { } brackets. Preceding this script block is the <b>function declaration</b>. The declaration starts with \"<code>func</code>\", followed by the <b>function name</b> (here: \"MeineFunktion\"). In the ( ) brackets following the function name the <b>function parameters</b> can be declared (see below)."
+msgstr "Das Script der Funktion steht in einem sogenannten Block (der Bereich zwischen '{' und '}' ). Vor diesem Block steht die <b>Funktionsdeklaration</b>. Diese beginnt mit \"<code>func</code>\", gefolgt von dem <b>Funktionsnamen</b> (hier: \"MeineFunktion\"). In der Klammer nach dem Funktionsnamen können <b>Funktionsparameter</b> definiert werden (s.u.)."
 
 #: sdk/script/Funcs.xml:19(text)
 msgid "When calling this function the message \"Meine Funktion wurde aufgerufen!\" is displayed."
@@ -11638,8 +11624,8 @@ msgid "You can specify the data type that is to be accepted for a given paramete
 msgstr "Es ist möglich, den Typ der ürgebenen Parameter zu erzwingen. Dazu einfach den Namen des entsprechenden Typs (siehe dazu <emlink href=\"script/Typechecks.html\">Typechecks</emlink>) vor den Parameternamen setzen:"
 
 #: sdk/script/Funcs.xml:45(text)
-msgid "This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href=\"script/Typechecks.html\">type checking</emlink>)."
-msgstr "Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href=\"script/Typechecks.html\">Typechecks</emlink>)."
+msgid "This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href=\"script/Typechecks.html\">Data Types</emlink>)."
+msgstr "Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href=\"script/Typechecks.html\">Datentypen</emlink>)."
 
 #: sdk/script/Funcs.xml:46(text)
 msgid "Making a call such as <code>TypParameterFunktion(1, Clonk, \"Text\", 5)</code> would cause a type checking error."
@@ -11658,12 +11644,12 @@ msgid "The following calls to above function are perfectly legal:"
 msgstr "Die folgenden Aufrufe der obigen Funktion sind also völlig legal:"
 
 #: sdk/script/Funcs.xml:52(text)
-msgid "In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain the value 0."
-msgstr "Beim ersten Aufruf wurden weniger Parameter übergeben, als in ZeigeSumme deklariert wurden. Die \"überschüssigen\" Parameter in ZeigeSumme erhalten nun einfach den Wert 0, die Meldung lautet entsprechend \"Die Summe der ersten 4 Parameter ist 3.\" (=1+2+0+0)."
+msgid "In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain <code>nil</code>."
+msgstr "Beim ersten Aufruf wurden weniger Parameter übergeben, als in ZeigeSumme deklariert wurden. Die \"überschüssigen\" Parameter in ZeigeSumme erhalten nun einfach <code>nil</code>, die Meldung lautet entsprechend \"Die Summe der ersten 4 Parameter ist 3.\" (=1+2+0+0)."
 
 #: sdk/script/Funcs.xml:53(text)
-msgid "If you leave out a parameter it will be the same as passing the value 0."
-msgstr "Wird ein Parameter nicht übergeben, so ist das mit der Übergabe von 0 identisch."
+msgid "If you leave out a parameter it will be the same as passing <code>nil</code>."
+msgstr "Wird ein Parameter nicht übergeben, so ist das mit der Übergabe von <code>nil</code> identisch."
 
 #: sdk/script/Funcs.xml:54(text)
 msgid "In the second call, on the other hand, there are <em>more</em> parameters passed than specified. These are simply not used during function execution. However, a function is still able to access these extra parameters even if they weren't declared in the function declaration: to do this, you can use the <placeholder-1/>() function."
@@ -11685,98 +11671,69 @@ msgstr "Hier wird die Differenz der ersten beiden Parameter bestimmt und das Erg
 msgid "The call \"ZeigeDifferenz(5, 2)\" will produce the message \"Die Differenz zwischen 5 und 2 beträgt 3!\"."
 msgstr "Der Aufruf \"ZeigeDifferenz(5, 2)\" würde also die Meldung \"Die Differenz zwischen 5 und 2 beträgt 3!\" erzeugen."
 
-#: sdk/script/Funcs.xml:70(h)
-msgid "Permissions"
-msgstr "Aufrufberechtigungen"
+#: sdk/script/Funcs.xml:69(text)
+msgid "If the function does not return a value, an implicit <code>return nil;</code> is implied."
+msgstr ""
 
-#: sdk/script/Funcs.xml:72(text)
-msgid "A function can have one of three levels of \"calling permission\". This will determine from where the function may be called:"
-msgstr "Für jede Funktion kann eine \"Aufrufberechtigung\" festgelegt werden, die bestimmt, von wo die Funktion aufgerufen werden darf. Hier gibt es drei verschiedene Stufen:"
-
-#: sdk/script/Funcs.xml:77(col)
-msgid "may be called from the engine or any other script (default)"
-msgstr "darf von überall aufgerufen werden, auch aus anderen Scripten (Standard)"
-
-#: sdk/script/Funcs.xml:81(col)
-msgid "may only be called from the engine or from within the same object script"
-msgstr "darf nur aus dem eigenen Script und von der Engine aufgerufen werden"
-
-#: sdk/script/Funcs.xml:85(col)
-msgid "may only be called from the same object script"
-msgstr "darf nur aus dem eigenen Script aufgerufen werden"
-
-#: sdk/script/Funcs.xml:89(text)
-msgid "The calling permissions are expected before the <code>func</code> marker:"
-msgstr "Die Aufrufberechtigung wird jeweils direkt vor \"<code>func</code>\" geschrieben:"
-
-#: sdk/script/Funcs.xml:94(text)
-msgid "Calling this function from another object script will cause an error."
-msgstr "Wird diese Funktion nun von einem externen Script aufgerufen, so gibt die Engine einen Fehler aus."
-
-#: sdk/script/Funcs.xml:95(h)
-#: sdk/renderclonk.xml:64(h)
-msgid "Remark"
-msgstr "Anmerkung"
-
-#: sdk/script/Funcs.xml:96(text)
-msgid "As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <placeholder-1/> and <placeholder-2/> functions."
-msgstr "Da es in manchen Fällen notwendig erscheint, auch eine geschützte Funktion aus einem fremden Script aufzurufen, kann die Aufrufbeschränkung mittels <placeholder-1/> bzw. <placeholder-2/> umgangen werden."
-
-#: sdk/script/Funcs.xml:98(h)
+#. <h id="Aufrufb">Permissions</h>
+#.     <part>
+#.       <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
+#.       <text>
+#.         <table>
+#.           <row>
+#.             <col><code>public</code></col>
+#.             <col>may be called from the engine or any other script (default)</col>
+#.           </row>
+#.           <row>
+#.             <col><code>protected</code></col>
+#.             <col>may only be called from the engine or from within the same object script</col>
+#.           </row>
+#.           <row>
+#.             <col><code>private</code></col>
+#.             <col>may only be called from the same object script</col>
+#.           </row>
+#.         </table>
+#.       </text>
+#.       <text>The calling permissions are expected before the <code>func</code> marker:</text>
+#.       <code>private func PrivateFunktion()
+#. {
+#.   // Diese Funktion darf nur im selben Script aufgerufen werden!
+#. }</code>
+#.       <text>Calling this function from another object script will cause an error.</text>
+#.       <h>Remark</h>
+#.       <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink> functions.</text>
+#.     </part>
+#: sdk/script/Funcs.xml:99(h)
 msgid "Global Functions"
 msgstr "Globale Funktionen"
 
-#: sdk/script/Funcs.xml:100(text)
+#: sdk/script/Funcs.xml:101(text)
 msgid "A function is declared globally by placing the \"<code>global</code>\" keyword before the <code>func</code> marker."
 msgstr "Eine Funktion wird <code>global</code> definiert, indem \"<code>global</code>\" vor \"<code>func</code>\" gestellt wird."
 
-#: sdk/script/Funcs.xml:101(text)
+#: sdk/script/Funcs.xml:102(text)
 msgid "A <code>global</code> function can be called from any script. Its scope corresponds to that of the predefined engine functions. Global script functions can also be used to overload predefined engine functions in order to change their behaviour."
 msgstr "Eine als <code>global</code> definierte Funktion kann aus jedem Script aufgerufen werden. Ihr Gültigkeitsbereich stimmt mit denen der Engine-Funktionen überein. Sie können damit auch verwendet werden, um Engine-Funktionen zu überladen und ihre Funktionsweise zu modifizieren."
 
-#: sdk/script/Funcs.xml:110(text)
+#: sdk/script/Funcs.xml:111(text)
 msgid "This script redefines the engine function <placeholder-1/> while adding a new parameter declaration at the end of the parameter list which now allows to create multiple objects. Notice that <placeholder-2/> within this function refers to the overloaded engine function <placeholder-3/>."
 msgstr "Definiert die Engine-Funktion <placeholder-1/> neu. Dabei wird sie um einen neuen Parameter count erweitert, der es erlaubt, mehrere Objekte zu erzeugen. Man beachte, dass <placeholder-2/> innerhalb dieser Funktion der durch sie überladenen Engine-Funktion <placeholder-3/> entspricht!"
 
-#: sdk/script/Funcs.xml:111(h)
+#: sdk/script/Funcs.xml:112(h)
 msgid "Attention!"
 msgstr "Achtung!"
 
-#: sdk/script/Funcs.xml:112(text)
-msgid "A global script function is executed with the context of the calling function. This means in particular that <placeholder-1/>() is the calling object (if the global function was called from an object local scope). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:"
-msgstr "Eine globale Skriptfunktion übernimmt den Kontext der aufrufenden Funktion. Das bedeutet insbesondere, dass <placeholder-1/>() das aufrufende Objekt ist (natürlich nur, wenn die Funktion auch aus einem Objekt aufgerufen wurde). Deshalb darf in einer globalen Funktion auch keine objektlokale Variable verwendet werden und auch keine andere lokale Funktion aufgerufen oder lokale Variablen verändert werden! Das folgende Objektscript ist also nicht zulässig:"
+#: sdk/script/Funcs.xml:113(text)
+msgid "A global script function is executed with the context of the calling function. This means in particular that <placeholder-1/> is the calling object (if the global function was called from an object local scope), or <code>nil</code> (if called from a scenario script). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:"
+msgstr "Eine globale Skriptfunktion übernimmt den Kontext der aufrufenden Funktion. Das bedeutet insbesondere, dass <placeholder-1/> das aufrufende Objekt ist (natürlich nur, wenn die Funktion auch aus einem Objekt aufgerufen wurde), oder <code>nil</code> (wenn aus einem Szenarioscript aufgerufen). Deshalb darf in einer globalen Funktion auch keine objektlokale Variable verwendet werden und auch keine andere lokale Funktion aufgerufen oder lokale Variablen verändert werden! Das folgende Objektscript ist also nicht zulässig:"
 
-#: sdk/script/Funcs.xml:124(text)
+#: sdk/script/Funcs.xml:125(text)
 msgid "Both attempts to access the object local elements will fail. This is understandable because the globally declared function may have been called from any script, even from a scenario script or the script of another object. It will thus not know the declared variable or object function. As the calling context can't be safely known, the engine will throw an error."
 msgstr "Beide Versuche, auf objektlokale Elemente zuzugreifen, schlagen fehl. Das ist leicht einsichtig, da GlobalFunktion() ja aus jedem beliebigen Script, also auch aus dem Szenarioscript oder aus dem Script eines anderen Objekts aufgerufen werden kann. Dieses Script besitzt dann höchstwahrscheinlich auch keine Variable \"number\" oder Funktion \"ObjectFunktion\", die benutzt werden könnte. Da die Engine dies beim Vararbeiten des Scripts nicht sicherstellen kann, wird ein Fehler ausgelöst."
 
-#: sdk/script/Funcs.xml:125(text)
+#: sdk/script/Funcs.xml:126(text)
 msgid "Notice: to call an object local function from a different context, use the syntax \"<code>this()-&gt;function(...)</code>\". This will execute the function in the specified object's context and only cause an error if the function really isn't available."
 msgstr "Anmerkung: Soll eine lokale Funktion in einem fremden Kontext aufgerufen werden, so sollte \"<code>this()-&gt;Funktion(...)</code>\" verwendet werden. Dann gibt es nur einen Fehler, wenn die Funktion auch wirklich nicht im Objekt existiert."
-
-#: sdk/script/Funcs.xml:127(h)
-msgid "References"
-msgstr "Referenzen"
-
-#: sdk/script/Funcs.xml:128(text)
-msgid "In some cases, you don't want to pass the value of a variable as a parameter, but the \"variable itself\" so the function that is called can modify the original variable. This is done by passing a \"reference\" to the variable as parameter."
-msgstr "Manchmal ist es nötig, nicht den Wert einer Variable zu übergeben, sondern einen \"Verweis\" auf die Variable selbst."
-
-#: sdk/script/Funcs.xml:129(text)
-msgid "Let's say we want to write a function returning the position (coordinates) of a player's highest ranking clonk. This cannot be done with a single return value, as we need to return an x and a y coordinate."
-msgstr "Nehmen wir an, wir wollen eine Funktion schreiben, die die Position des höchstrangingsten Clonks eines Spielers zurückgibt. Dies ist normalerweise ohne Tricks nicht möglich, da eine Funktion ja nur einen Rückgabewert hat (die Position hat aber zwei Komponeneten: X und Y)."
-
-#: sdk/script/Funcs.xml:130(text)
-msgid "By using references as parameters this can be achieved:"
-msgstr "Doch durch Verwendung von Referenzübergabe als Parameter kann hier die Information trotzdem zurückgegeben werden:"
-
-#: sdk/script/Funcs.xml:144(text)
-msgid "<code>x</code> and <code>y</code> in <code>GetHiRankPosition</code> are <strong>references</strong>, meaning when the called function modifies these values, the original variables (<code>hiRankX</code> and <code>hiRankY</code>) will be modified and the calling code will have the modified values. Notice, however, that you <em>have</em> to specify true variables as parameters for references. You cannot make a call such as \"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" as in this case \"<code>iHiRankX + 1</code>\" is not a variable but a numeric result."
-msgstr "<code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die Variablen gesetzt, die man als Parameter angab (in diesem Fall <code>hiRankX</code> und <code>hiRankY</code>). Man beachte, dass ein Aufruf wie \"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" zu einem Typfehler führt, da \"<code>hiRankX + 1</code>\" keine Variable, sondern eine Zahl ist!"
-
-#: sdk/script/Funcs.xml:145(text)
-msgid "Notice that in C4Script \"<code>&amp;</code>\" is a data type of its own. You may not specify an extra data type with it, such as in \"<code>int &amp;x</code>\"."
-msgstr "Man beachte, dass \"<code>&amp;</code>\" ein eigenständiger Typ ist, deshalb darf für einen Referenzparameter kein weiterer Typ angegeben werden, \"<code>int &amp;x</code>\" wäre also ungültig!"
 
 #: sdk/script/FuncCall.xml:9(text)
 msgid "By calling a script function you will execute that function's code. The calling script may pass parameter values to the function and receive a return value from the function."
@@ -11811,8 +11768,8 @@ msgid "Script Object B:"
 msgstr "Script Objekt B:"
 
 #: sdk/script/FuncCall.xml:41(text)
-msgid "The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a pointer to this object in the variable \"obj\". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow operator, then the function name including the parameter list (no parameters in this case)."
-msgstr "Der Script der Funktion Activate() in Objekt B sucht sich als erstes das nächstliegende Objekt vom Typ A (also mit der ID AAAA) und speichert es in der Veriable obj. Danach wird die Funktion Activate() im Script von diesem Objekt aufgerufen. Dazu wird zuerst das aufzurufende Objekt angegeben, gefolgt von dem Pfeil-Operator, der einen Objektaufruf markiert. Danach folgt der Funktionsname der aufzurufenden Funktion nebst der Parameterliste (in diesem Fall werden keine Parameter übergeben)."
+msgid "The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a reference to this object in the variable \"obj\". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case)."
+msgstr "Der Script der Funktion Activate() in Objekt B sucht sich als erstes das nächstliegende Objekt vom Typ A (also mit der ID AAAA) und speichert es in der Veriable obj. Danach wird die Funktion Activate() im Script von diesem Objekt aufgerufen. Dazu wird zuerst das aufzurufende Objekt angegeben, gefolgt von dem Pfeil, der einen Objektaufruf markiert. Danach folgt der Funktionsname der aufzurufenden Funktion nebst der Parameterliste (in diesem Fall werden keine Parameter übergeben)."
 
 #: sdk/script/FuncCall.xml:42(text)
 msgid "Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found."
@@ -11826,35 +11783,27 @@ msgstr "Anmerkungen"
 msgid "You don't <i>have</i> to store the object pointer in a variable as done in this example. You could also continue calling the function directly on the search result as in this case:"
 msgstr "Die Speicherung des Objektzeigers in der Variable obj im Beispiel ist nicht erforderlich. Die folgende Schreibweise der Funktion Activate() in B ist gleichwertig:"
 
-#: sdk/script/FuncCall.xml:49(text)
-msgid "To make sure that an object function is called from a given definition script you can also specify the definition's ID just before the function name. In some cases this may be necessary to resolve ambiguities if functions of the same name override each other."
-msgstr "Es kann zusätzlich zum Namen der aufzurufenden Funktion noch die ID der Definition der Scriptfunktion mit angegeben werden. Das macht den Aufruf zum einen in vielen Fällen leicht schneller, außerdem können so auch überladene Funktionen im Zielscript aufgerufen werden (siehe #include/#appendto)."
-
-#: sdk/script/FuncCall.xml:56(h)
+#: sdk/script/FuncCall.xml:50(h)
 msgid "Indirect call of script functions"
 msgstr "Indirekter Aufruf von Skriptfunktionen"
 
-#: sdk/script/FuncCall.xml:58(text)
+#: sdk/script/FuncCall.xml:52(text)
 msgid "In some cases you may want somebody else to call a script function that you have specified. The engine function <placeholder-1/> can do such \"indirect\" calls. You simply pass the function name of the function to be called as string."
 msgstr "In manchen Situationen kann allerdings auch ein \"indirekter\" Aufruf durch die Engine-Funktionen <placeholder-1/> und Verwandte sinnvoll sein. Hier wird der Funktionsname als String übergeben, was den Aufruf einer Funktion \"nach Namen\" ermöglicht."
 
-#: sdk/script/FuncCall.xml:69(text)
-msgid "Usually, indirect calls are a bit slower than direct calls, since they cannot be precompiled and the function will have to be searched by name at runtime."
-msgstr "Ein solcher indirekter Aufruf ist allerdings in der Regel deutlich langsamer als der direkte Aufruf, da bei Call die entsprechende Funktion erst zur Laufzeit im Script gesucht werden muss. Beim direkten Aufruf steht die aufzurufende Funktion dagegen in der Regel bereits zur Zeit des Parsens (also beim Start der Engine) fest, weshalb dieser Aufruf besser optimiert werden kann und deshalb schneller ist."
+#: sdk/script/FuncCall.xml:63(text)
+msgid "With indirect calls you can \"decide\" at runtime which function to call as is done in the following example:"
+msgstr "Mit Call ist es ist möglich, zur Laufzeit zu entscheiden, welche Funktion aufgerufen werden soll. Eine Anwendung soll das folgende Beispiel deutlich machen:"
 
-#: sdk/script/FuncCall.xml:70(text)
-msgid "On the other hand, with indirect calls you can \"decide\" at runtime which function to call as is done in the following example:"
-msgstr "Dieser Nachteil ist aber gleichzeitig in bestimmten Situationen eine Stärke von Call: es ist möglich, zur Laufzeit zu entscheiden, welche Funktion aufgerufen werden soll. Eine Anwendung soll das folgende Beispiel deutlich machen:"
-
-#: sdk/script/FuncCall.xml:79(text)
+#: sdk/script/FuncCall.xml:72(text)
 msgid "In TestFunktion() a <em>random</em> function is called (using <placeholder-1/> and <placeholder-2/> one of the three strings \"Aufruf1\", \"Aufruf2\", and \"Aufruf3\" is randomly composed and passed to <code>Call</code>)."
 msgstr "Hier wird in TestFunktion() eine <em>zufällige</em> Funktion aufgerufen (mittels <placeholder-1/> und <placeholder-2/> wird zufällig einer der drei Strings \"Aufruf1\", \"Aufruf2\" oder \"Aufruf3\" an Call übergeben)."
 
-#: sdk/script/FuncCall.xml:80(text)
+#: sdk/script/FuncCall.xml:73(text)
 msgid "This process has to be done with indirect calls as only at runtime we can know which function is to be called."
 msgstr "Call muss hier verwendet werden, da erst zur Laufzeit bestimmt wird, welche Funktion aufgerufen wird. Außerdem wird bei jeder Ausführung von TestFunktion() eine andere Scriptfunktion ausgewählt, die aufgerufen wird. Dies wäre mit einem direkten Aufruf nicht möglich."
 
-#: sdk/script/FuncCall.xml:81(text)
+#: sdk/script/FuncCall.xml:74(text)
 msgid "There are also some other methods of indirect calls. See <placeholder-1/> and <placeholder-2/>. Also see <placeholder-3/> and <placeholder-4/>. They allow for bypassing the <emlink href=\"script/Funcs.html#Aufrufb\">calling permission</emlink> and only exist as indirect calls."
 msgstr "Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe dazu <placeholder-1/> und <placeholder-2/>. Besondere Beachtung verdienen außerdem noch <placeholder-3/> und <placeholder-4/>. Sie ermöglichen die Umgehung der <emlink href=\"script/Funcs.html#Aufrufb\">Aufrufbeschränkung</emlink> und existieren nur in der \"Indirekt-Aufruf-Version\"."
 
@@ -12532,12 +12481,12 @@ msgstr "<placeholder-1/>() - um Effekt-Callbacks auszuführen, ohne den Effekt s
 
 #: sdk/script/BreakContinue.xml:6(title)
 #: sdk/script/BreakContinue.xml:7(h)
-msgid "Break / Continue"
-msgstr "Break / Continue"
+msgid "break and continue"
+msgstr "break und continue"
 
 #: sdk/script/BreakContinue.xml:9(text)
-msgid "The keywords <code>break</code> and <code>continue</code> are used for manual control of loops:"
-msgstr "Die Schlüsselwörter <code>break</code> bzw. <code>continue</code> werden zur manuellen Steuerung von Schleifen benutzt:"
+msgid "The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:"
+msgstr "Die Schlüsselwörter <code>break</code> bzw. <code>continue</code> werden zur Steuerung von Schleifen benutzt:"
 
 #: sdk/script/BreakContinue.xml:12(li)
 msgid "<code>break</code> ends the enclosing loop. Execution is continued after the end of the loop."
@@ -12564,8 +12513,8 @@ msgid "If value 7 is reached, <code>break</code> is called. <code>break</code> w
 msgstr "Wird der Wert 7 erreicht, wird <code>break</code> aufgerufen. <code>break</code> bricht jetzt, im Gegensatz zu <code>continue</code>, nicht nur den aktuellen Schleifendurchlauf, sondern auch die Schleife ab. (Erkennbar daran, dass der Wert von <code>i</code> am Ende 7 ist, nicht 11)."
 
 #: sdk/script/AppendTo.xml:9(text)
-msgid "By using #appendto you can avoid various object definition overloads."
-msgstr "Durch Verwendung von #appendto können zahlreiche Objektüberladungen vermieden werden."
+msgid "With #appendto, you can modify an existing object defintion script without changing the original file. For example, a scenario could change flints to cause bigger explosions, without having to duplicate the entire flint in the scenario."
+msgstr ""
 
 #: sdk/script/AppendTo.xml:10(h)
 msgid "Declaration"
@@ -14304,6 +14253,10 @@ msgstr "Beim Rendern wird jeder Einzelframe im temporären Verzeichnis gespeiche
 #: sdk/renderclonk.xml:63(text)
 msgid "If only a <strong>single action</strong> is rendered then it is still tried to create the whole graphics. So there should be rendered frames of the other animations in the temp directory. This allows to not always having to re-render all actions if only a single action has changed. However in the beginning the whole Graphics need to be rendered so that all frames of all actions are present in the temp directory."
 msgstr "Wird nur eine <strong>einzelne Action</strong> gerendert, dann wird trotzdem versucht die gesamte Grafik zu bauen. Es sollten also von den anderen Actions schon gerenderte Frames in dem temporären Ordner liegen. Diese Funktion dient dazu, dass man nicht immer alle Actions neu rendern muss, wenn man nur an einer Action etwas verändert hat. Zu Anfang muss jedoch einmal komplett durchgerendert werden, damit die Grafiken der anderen Actions schon im temporären Ordner liegen."
+
+#: sdk/renderclonk.xml:64(h)
+msgid "Remark"
+msgstr "Anmerkung"
 
 #: sdk/renderclonk.xml:65(text)
 msgid "Generally all materials that start with <strong>Overlay*</strong> are not rendered for <strong>Graphics</strong>. For <strong>Overlay</strong> only the materials starting with Overlay* are rendered. When choosing <strong>Full</strong> both are rendered. Additionally the color of the material OverlayColor is changed from white to blue when choosing Full."
@@ -18440,6 +18393,96 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:127(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "CreateObject(Clonk)"
+#~ msgstr "CreateObject(Clonk)"
+
+#, fuzzy
+#~ msgid "Additionally, there is a special types:"
+#~ msgstr "Außerdem gibt es noch zwei spezielle Typen:"
+
+#, fuzzy
+#~ msgid "<code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type."
+#~ msgstr "<code>any</code>: Der Typ ist nicht bekannt oder egal. \"0\" hat immer diesen Typ."
+
+#~ msgid "break / continue"
+#~ msgstr "break / continue"
+
+#~ msgid "Named Variables"
+#~ msgstr "Benannte Variablen"
+
+#, fuzzy
+#~ msgid "Data types"
+#~ msgstr "Datentyp"
+
+#~ msgid "<code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator \"<code>=</code>\"). See also <emlink href=\"script/Funcs.html#referenzen\">Reference parameters</emlink>."
+#~ msgstr "<code>&amp;</code>: Der Wert ist eine Referenz - z.B. auf eine Variable. Er verhält sich genau wie der Zielwert, kann aber gesetzt werden (z.B. mit dem Operator \"<code>=</code>\"). Siehe auch <emlink href=\"script/Funcs.html#referenzen\">Referenzparameter</emlink>."
+
+#~ msgid "Permissions"
+#~ msgstr "Aufrufberechtigungen"
+
+#~ msgid "A function can have one of three levels of \"calling permission\". This will determine from where the function may be called:"
+#~ msgstr "Für jede Funktion kann eine \"Aufrufberechtigung\" festgelegt werden, die bestimmt, von wo die Funktion aufgerufen werden darf. Hier gibt es drei verschiedene Stufen:"
+
+#~ msgid "may be called from the engine or any other script (default)"
+#~ msgstr "darf von überall aufgerufen werden, auch aus anderen Scripten (Standard)"
+
+#~ msgid "may only be called from the engine or from within the same object script"
+#~ msgstr "darf nur aus dem eigenen Script und von der Engine aufgerufen werden"
+
+#~ msgid "may only be called from the same object script"
+#~ msgstr "darf nur aus dem eigenen Script aufgerufen werden"
+
+#~ msgid "The calling permissions are expected before the <code>func</code> marker:"
+#~ msgstr "Die Aufrufberechtigung wird jeweils direkt vor \"<code>func</code>\" geschrieben:"
+
+#~ msgid "Calling this function from another object script will cause an error."
+#~ msgstr "Wird diese Funktion nun von einem externen Script aufgerufen, so gibt die Engine einen Fehler aus."
+
+#~ msgid "As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <placeholder-1/> and <placeholder-2/> functions."
+#~ msgstr "Da es in manchen Fällen notwendig erscheint, auch eine geschützte Funktion aus einem fremden Script aufzurufen, kann die Aufrufbeschränkung mittels <placeholder-1/> bzw. <placeholder-2/> umgangen werden."
+
+#~ msgid "References"
+#~ msgstr "Referenzen"
+
+#~ msgid "In some cases, you don't want to pass the value of a variable as a parameter, but the \"variable itself\" so the function that is called can modify the original variable. This is done by passing a \"reference\" to the variable as parameter."
+#~ msgstr "Manchmal ist es nötig, nicht den Wert einer Variable zu übergeben, sondern einen \"Verweis\" auf die Variable selbst."
+
+#~ msgid "Let's say we want to write a function returning the position (coordinates) of a player's highest ranking clonk. This cannot be done with a single return value, as we need to return an x and a y coordinate."
+#~ msgstr "Nehmen wir an, wir wollen eine Funktion schreiben, die die Position des höchstrangingsten Clonks eines Spielers zurückgibt. Dies ist normalerweise ohne Tricks nicht möglich, da eine Funktion ja nur einen Rückgabewert hat (die Position hat aber zwei Komponeneten: X und Y)."
+
+#~ msgid "By using references as parameters this can be achieved:"
+#~ msgstr "Doch durch Verwendung von Referenzübergabe als Parameter kann hier die Information trotzdem zurückgegeben werden:"
+
+#~ msgid "<code>x</code> and <code>y</code> in <code>GetHiRankPosition</code> are <strong>references</strong>, meaning when the called function modifies these values, the original variables (<code>hiRankX</code> and <code>hiRankY</code>) will be modified and the calling code will have the modified values. Notice, however, that you <em>have</em> to specify true variables as parameters for references. You cannot make a call such as \"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" as in this case \"<code>iHiRankX + 1</code>\" is not a variable but a numeric result."
+#~ msgstr "<code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die Variablen gesetzt, die man als Parameter angab (in diesem Fall <code>hiRankX</code> und <code>hiRankY</code>). Man beachte, dass ein Aufruf wie \"<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>\" zu einem Typfehler führt, da \"<code>hiRankX + 1</code>\" keine Variable, sondern eine Zahl ist!"
+
+#~ msgid "Notice that in C4Script \"<code>&amp;</code>\" is a data type of its own. You may not specify an extra data type with it, such as in \"<code>int &amp;x</code>\"."
+#~ msgstr "Man beachte, dass \"<code>&amp;</code>\" ein eigenständiger Typ ist, deshalb darf für einen Referenzparameter kein weiterer Typ angegeben werden, \"<code>int &amp;x</code>\" wäre also ungültig!"
+
+#~ msgid "To make sure that an object function is called from a given definition script you can also specify the definition's ID just before the function name. In some cases this may be necessary to resolve ambiguities if functions of the same name override each other."
+#~ msgstr "Es kann zusätzlich zum Namen der aufzurufenden Funktion noch die ID der Definition der Scriptfunktion mit angegeben werden. Das macht den Aufruf zum einen in vielen Fällen leicht schneller, außerdem können so auch überladene Funktionen im Zielscript aufgerufen werden (siehe #include/#appendto)."
+
+#~ msgid "Usually, indirect calls are a bit slower than direct calls, since they cannot be precompiled and the function will have to be searched by name at runtime."
+#~ msgstr "Ein solcher indirekter Aufruf ist allerdings in der Regel deutlich langsamer als der direkte Aufruf, da bei Call die entsprechende Funktion erst zur Laufzeit im Script gesucht werden muss. Beim direkten Aufruf steht die aufzurufende Funktion dagegen in der Regel bereits zur Zeit des Parsens (also beim Start der Engine) fest, weshalb dieser Aufruf besser optimiert werden kann und deshalb schneller ist."
+
+#~ msgid "Data type checking at runtime"
+#~ msgstr "Überprüfung von Datentypen zur Laufzeit"
+
+#~ msgid "Break / Continue"
+#~ msgstr "Break / Continue"
+
+#~ msgid "By using #appendto you can avoid various object definition overloads."
+#~ msgstr "Durch Verwendung von #appendto können zahlreiche Objektüberladungen vermieden werden."
+
+#~ msgid "#strict"
+#~ msgstr "#strict"
+
+#~ msgid "Returns the description of an object or of an object definition. Descriptions are stored in the Desc**.txt files of an object definition group."
+#~ msgstr "Gibt die Beschreibung eines Objekts oder einer Objektdefinition zurück. Die Beschreibung wird in Objektdefinitionen in der Desc**.txt angegeben."
+
+#~ msgid "Displays a message containing the name of the selected clonk and the description text of the clonk type."
+#~ msgstr "Gibt eine Meldung auf dem Bildschirm aus, die den Namen des gerade ausgewählten Clonks des ersten Spielers, sowie den Beschreibungstext seines Clonktyps enthält."
 
 #~ msgid "File type"
 #~ msgstr "Datentyp"

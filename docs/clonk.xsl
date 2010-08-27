@@ -562,7 +562,7 @@
   <xsl:template name="color2">
     <xsl:param name="s" select="." />
     <!-- the list of keywords -->
-    <xsl:param name="t" select="'#include|#strict|#appendto|public|private|protected|global|static|var|local|const|int|id|object|string|bool|return|goto|if|else|break|continue|while|for|func|true|false|'" />
+    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|int|proplist|object|array|string|bool|return|if|else|break|continue|while|for|func|true|false|nil|'" />
     <xsl:param name="w" select="substring-before($t, '|')" />
     <!-- text before the keyword -->
     <xsl:variable name="l" select="substring-before($s, $w)" />
@@ -577,7 +577,7 @@
         <xsl:value-of select="$s" />
       </xsl:when>
       <!-- only highlight when the text was found and is not surrounded by other text -->
-      <xsl:when test="($l or $r) and (not(contains('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $cb)) or $cb='') and (not(contains('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $ca)) or $ca='')">
+      <xsl:when test="(contains($s, $w)) and (not(contains('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $cb)) or $cb='') and (not(contains('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $ca)) or $ca='')">
         <!-- look for the next keyword in the preceding text -->
         <xsl:call-template name="color2">
           <xsl:with-param name="s" select="$l" />
