@@ -79,8 +79,15 @@ func Script11()
 
 func Script20()
 {
-	guide->AddGuideMessage("$MsgIntro2$");
+	guide->AddGuideMessage("@$MsgIntro2$");
 	guide->ShowGuideMessage(2);
+	TutArrowClear();
+}
+
+func Script40()
+{
+	guide->AddGuideMessage("$MsgIntro3$");
+	guide->ShowGuideMessage(3);
 	guide->AddGuideMessage("$GuideMsgMovement$");
 	TutArrowClear();
 	ScriptGo();
