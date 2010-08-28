@@ -169,6 +169,7 @@ func Launch(int angle, object clonk)
 	{
 		clonk->SetAction("Ride",this);
 		rider=clonk;
+		SetOwner(clonk->GetController());
 	}
 
 	var level = 16;
