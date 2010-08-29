@@ -1,7 +1,7 @@
 [DefCore]
 id=Butterfly
-Category=69640
-MaxUserSelect=10
+Version=4,10,0,0
+Category=C4D_Living
 TimerCall=Activity
 ContactCalls=1
 Width=24

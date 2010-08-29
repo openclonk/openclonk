@@ -1,3 +1,5 @@
+// Weapons fade out after some time, and return to their owner.
+
 #appendto Arrow
 #appendto Javelin
 #appendto Bow

@@ -121,7 +121,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show first three targets with the arrow.
 	if (index == 0)
 		for (target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
-			TutArrowShowTarget(target, RandomX(-45, 45), 16);
+			TutArrowShowTarget(target, RandomX(-45, 45), 24);
 	// Show javelin chest with an arrow.
 	if (index == 1)
 		TutArrowShowPos(240, 650);
@@ -188,17 +188,6 @@ global func FxFlintDropStop(object target, int num, int reason, bool temporary)
 	return 1;
 }
 
-global func FxArrowPointTimer(object arrow, int num, int timer)
-{
-	var practicetarget = FindObject(Find_ID(PracticeTarget),Sort_Distance());
-	if(practicetarget)
-	{
-		arrow->SetR(Angle(AbsX(arrow->GetX()),AbsY(arrow->GetY()),AbsX(practicetarget->GetX()),AbsY(practicetarget->GetY())));
-	}
-	else
-		arrow->RemoveObject();
-}
-
 /*-- Clonk restoring --*/
 
 global func FxClonkRestoreTimer(object target, int num, int time)
@@ -244,4 +233,4 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 }
 
 /*-- Item restoring --*/
-// TODO
+// TODO: Is done in WeaponFade.c currently.

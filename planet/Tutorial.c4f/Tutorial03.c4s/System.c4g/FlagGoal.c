@@ -4,6 +4,7 @@
 
 protected func Initialize()
 {
+	// Set new goal description corresponding to the functionality.
 	SetProperty("Description", "$NewGoalDescription$", this);
 	return _inherited(...);
 }
