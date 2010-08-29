@@ -1,0 +1,2 @@
+Name=Airplane
+Description=Press [Up] and [Down] to stop and start engine. [Left] and [Right] control ailerons. Press [Down] again when the engine is off to reverse the plane.
