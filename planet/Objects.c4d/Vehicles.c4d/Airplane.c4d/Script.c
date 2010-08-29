@@ -283,7 +283,6 @@ public func Hit()
 
 public func ActivateEntrance(object pby)
 {
-	Log("ActivateEntrance");
 	if(ContentsCount() > 0)
 		if(pby->Contained() == this)
 		{
@@ -305,7 +304,6 @@ public func ActivateEntrance(object pby)
 
 public func Ejection(object obj)
 {
-	Log("Ejection");
 	PlaneDismount(obj);
 	obj->SetSpeed(this->GetXDir(),this->GetYDir());
 }
