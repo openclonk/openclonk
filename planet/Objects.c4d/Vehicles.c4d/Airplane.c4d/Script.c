@@ -5,18 +5,6 @@
 	Acrobatic air-vehicle. Capable of firing lead shot.
 --*/
 
-protected func ContactLeft()
-{
-	if (Stuck() && !Random(5))
-		SetRDir(RandomX(-7, +7));
-}
-
-protected func ContactRight()
-{
-	if (Stuck() && !Random(5)) 
-		SetRDir(RandomX(-7, +7));
-}
-
 local throttle;
 local rdir;
 local thrust;
@@ -356,6 +344,6 @@ Land = {
 }, 
 }, def);
 	SetProperty("Name", "$Name$", def);
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3000,0), Trans_Rotate(25,0,1,0)));
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3375,0), Trans_Rotate(25,0,1,0)));
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-5,1,0,0),Trans_Rotate(40,0,1,0),Trans_Translate(-20000,-4000,20000)),def);
 }

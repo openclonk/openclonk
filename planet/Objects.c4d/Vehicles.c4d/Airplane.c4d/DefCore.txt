@@ -7,11 +7,11 @@ ContactCalls=1
 Width=40
 Height=56
 Offset=-20,-27
-Vertices=8
-VertexX=0,0,0,-14,-14,14,14
-VertexY=0,-29,28,-12,12,-12,12
-VertexCNAT=16,5,6,9,10
-VertexFriction=20,20,20,20,5,5,5,5
+Vertices=9
+VertexX=0,0,0,-13,-13,-13,13,13,13
+VertexY=0,-29,28,-14,0,12,-14,0,12
+VertexCNAT=16,4,8
+VertexFriction=50,50,50,15,5,5,15,5,5
 Value=20
 Mass=75
 Components=Metal=8;Wood=4;
