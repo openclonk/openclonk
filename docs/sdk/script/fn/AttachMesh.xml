@@ -32,6 +32,24 @@
           <desc>Transformation to be applied on the attached mesh in its own frame of reference. The array should consist of 12 integer entries which make up a 3x4 matrix in which each vaule is given in promille (1000 = 100%). These matrices can be created via <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> and <funclink>Trans_Scale</funclink> or they can be combined via <funclink>Trans_Mul</funclink>.</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>
+            Additional flags to specify the behavior of the attached mesh. Multiple values can be separated with <code>|</code>. The following values are allowed:
+            <table>
+              <rowh>
+                <col>Flag</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>AM_DrawBefore</literal_col>
+                <col>Normally the mesh of the object itself is drawn first and afterwards the attached mesh. If this flag is present then the attached mesh is drawn before the object's mesh is drawn. Note that normally this makes no difference since a Z buffer is used to make sure the drawing order is correct. However if one or both of the meshes make use of alpha blending then the drawing order becomes relevant so that a mesh is not hidden behind otherwise (partly) translucent parts of the other mesh.</col>
+              </row>
+            </table>
+          </desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Attaches a mesh to another mesh. If <code>mesh</code> is an ID then the mesh of the corresponding definition is used. If <code>mesh</code> is an object then the current mesh of that object is used, including all its animations and attached meshes. However, in that case only the graphics will be attached - the object itself stays at its current position. The return value is a number that can be used to detach the mesh again via <funclink>DetachMesh</funclink>.</desc>
@@ -39,7 +57,7 @@
     <examples>
       <example>
         <code><funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);</code>
-        <text>If executed in the context of a clonk this script makes him carry a bow. The bow will be attached with its Bone "main" to the bone "pos_hand1" of the clonk.</text>
+        <text>If executed in the context of a clonk this script makes him carry a bow. The bow will be attached with its bone called "main" to the bone called "pos_hand1" of the clonk.</text>
       </example>
     </examples>
     <related>

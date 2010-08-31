@@ -5726,6 +5726,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 	PAR(string, szParentBone);
 	PAR(string, szChildBone);
 	PAR(array, Transformation);
+	PAR(int, Flags);
 
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if (Transformation)
@@ -5737,7 +5738,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 	if (pObj)
 	{
 		if (!pObj->pMeshInstance) return C4VNull;
-		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans);
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
 	}
 	else
 	{
@@ -5746,7 +5747,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 
 		C4Def* pDef = C4Id2Def(id);
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
-		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans);
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
 	}
 
 	if (!attach) return C4VNull;
@@ -6678,6 +6679,9 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "DMQ_Sky"                   ,C4V_Int,      DMQ_Sky },
 	{ "DMQ_Sub"                   ,C4V_Int,      DMQ_Sub },
 	{ "DMQ_Bridge"                ,C4V_Int,      DMQ_Bridge },
+	
+	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
+	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
 
 	{ NULL, C4V_Any, 0}
 };
@@ -6747,7 +6751,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
 	{ "EffectVar",            1  ,C4V_Ref      ,{ C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectVar_C4V,             0 },
 
-	{ "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
+	{ "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
 
 	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
 

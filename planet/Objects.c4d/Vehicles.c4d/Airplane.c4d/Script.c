@@ -300,7 +300,7 @@ public func PlaneMount(object clonk)
 {
 	SetOwner(clonk->GetController());
 	clonk->PlayAnimation("Stand", 15, 0, Anim_Const(1000));
-	clonkmesh = AttachMesh(clonk,"pilot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)));
+	clonkmesh = AttachMesh(clonk,"pilot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)),AM_DrawBefore);
 	return true;
 }
 

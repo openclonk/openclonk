@@ -1102,9 +1102,9 @@ StdMeshInstance::AttachedMesh::AttachedMesh():
 }
 
 StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child, Denumerator* denumerator,
-		unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
+		unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform, uint32_t flags):
 		Number(number), Parent(parent), Child(child), OwnChild(own_child), ChildDenumerator(denumerator),
-		ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform),
+		ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform), Flags(flags),
 		FinalTransformDirty(true)
 {
 }
@@ -1150,10 +1150,21 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 		ChildDenumerator = Factory();
 	}
 
+	const StdBitfieldEntry<uint8_t> AM_Entries[] =
+	{
+		{ "DrawBefore",    AM_DrawBefore },
+
+		{ NULL,            0 }
+	};
+
 	pComp->Value(mkNamingAdapt(Number, "Number"));
 	pComp->Value(mkNamingAdapt(ParentBone, "ParentBone")); // TODO: Save as string
 	pComp->Value(mkNamingAdapt(ChildBone, "ChildBone")); // TODO: Save as string (note we can only resolve this in DenumeratePointers then!)
 	pComp->Value(mkNamingAdapt(mkTransformAdapt(AttachTrans), "AttachTransformation"));
+	
+	uint8_t dwSyncFlags = static_cast<uint8_t>(Flags);
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, AM_Entries), "Flags"));
+	if(pComp->isCompiler()) Flags = dwSyncFlags;
 
 	pComp->Value(mkParAdapt(*ChildDenumerator, this));
 }
@@ -1454,16 +1465,16 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 		(*iter)->Child->ExecuteAnimation(dt);
 }
 
-StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, uint32_t flags)
 {
 	StdMeshInstance* instance = new StdMeshInstance(mesh);
 	instance->SetFaceOrdering(CurrentFaceOrdering);
-	AttachedMesh* attach = AttachMesh(*instance, denumerator, parent_bone, child_bone, transformation, true);
+	AttachedMesh* attach = AttachMesh(*instance, denumerator, parent_bone, child_bone, transformation, flags, true);
 	if (!attach) { delete instance; delete denumerator; return NULL; }
 	return attach;
 }
 
-StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, bool own_child)
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, uint32_t flags, bool own_child)
 {
 	std::auto_ptr<AttachedMesh::Denumerator> auto_denumerator(denumerator);
 
@@ -1488,9 +1499,14 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& inst
 	if (!parent_bone_obj || !child_bone_obj) return NULL;
 
 	// TODO: Face Ordering is not lined up... can't do that properly here
-	attach = new AttachedMesh(number, this, &instance, own_child, auto_denumerator.release(), parent_bone_obj->Index, child_bone_obj->Index, transformation);
+	attach = new AttachedMesh(number, this, &instance, own_child, auto_denumerator.release(), parent_bone_obj->Index, child_bone_obj->Index, transformation, flags);
 	instance.AttachParent = attach;
-	AttachChildren.push_back(attach);
+
+	// If DrawInFront is set then sort before others so that drawing order is easy
+	if(flags & AM_DrawBefore)
+		AttachChildren.insert(AttachChildren.begin(), attach);
+	else
+		AttachChildren.insert(AttachChildren.end(), attach);
 
 	return attach;
 }

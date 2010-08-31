@@ -1011,9 +1011,55 @@ namespace
 		}
 	}
 
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity); // Needed by RenderAttachedMesh
+
+	void RenderAttachedMesh(StdMeshInstance::AttachedMesh* attach, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	{
+		const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
+
+		// Convert matrix to column-major order, add fourth row
+		const float attach_trans_gl[16] =
+		{
+			FinalTrans(0,0), FinalTrans(1,0), FinalTrans(2,0), 0,
+			FinalTrans(0,1), FinalTrans(1,1), FinalTrans(2,1), 0,
+			FinalTrans(0,2), FinalTrans(1,2), FinalTrans(2,2), 0,
+			FinalTrans(0,3), FinalTrans(1,3), FinalTrans(2,3), 1
+		};
+
+		// TODO: Take attach transform's parity into account
+		glPushMatrix();
+		glMultMatrixf(attach_trans_gl);
+		RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, parity);
+		glPopMatrix();
+
+#if 0
+			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attach->ParentBone)
+			                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
+
+			// Draw attached bone
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_LIGHTING);
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+			GLUquadric* quad = gluNewQuadric();
+			glPushMatrix();
+			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
+			gluSphere(quad, 1.0f, 4, 4);
+			glPopMatrix();
+			gluDeleteQuadric(quad);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+#endif
+	}
+
 	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMesh& mesh = instance.Mesh;
+
+		// Render AM_DrawBefore attached meshes
+		StdMeshInstance::AttachedMeshIter attach_iter = instance.AttachedMeshesBegin();
+
+		for (; attach_iter != instance.AttachedMeshesEnd() && ((*attach_iter)->GetFlags() & StdMeshInstance::AM_DrawBefore); ++attach_iter)
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
@@ -1040,45 +1086,9 @@ namespace
 		}
 #endif
 
-		// Render attached meshes
-		for (StdMeshInstance::AttachedMeshIter iter = instance.AttachedMeshesBegin(); iter != instance.AttachedMeshesEnd(); ++iter)
-		{
-			const StdMeshInstance::AttachedMesh* attach = *iter;
-			const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
-
-			// Convert matrix to column-major order, add fourth row
-			const float attach_trans_gl[16] =
-			{
-				FinalTrans(0,0), FinalTrans(1,0), FinalTrans(2,0), 0,
-				FinalTrans(0,1), FinalTrans(1,1), FinalTrans(2,1), 0,
-				FinalTrans(0,2), FinalTrans(1,2), FinalTrans(2,2), 0,
-				FinalTrans(0,3), FinalTrans(1,3), FinalTrans(2,3), 1
-			};
-
-			// TODO: Take attach transform's parity into account
-			glPushMatrix();
-			glMultMatrixf(attach_trans_gl);
-			RenderMeshImpl(*attach->Child, dwModClr, dwBlitMode, dwPlayerColor, parity);
-			glPopMatrix();
-
-#if 0
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attach->ParentBone)
-			                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
-
-			// Draw attached bone
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_LIGHTING);
-			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-			GLUquadric* quad = gluNewQuadric();
-			glPushMatrix();
-			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
-			gluSphere(quad, 1.0f, 4, 4);
-			glPopMatrix();
-			gluDeleteQuadric(quad);
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_LIGHTING);
-#endif
-		}
+		// Render non-AM_DrawBefore attached meshes
+		for (; attach_iter != instance.AttachedMeshesEnd(); ++attach_iter)
+			RenderAttachedMesh(*attach_iter, dwModClr, dwBlitMode, dwPlayerColor, parity);
 	}
 
 	// Apply Zoom and Transformation to the current matrix stack. Return

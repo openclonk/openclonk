@@ -511,6 +511,11 @@ public:
 	// dt is used for texture animation, skeleton animation is updated via value providers
 	void ExecuteAnimation(float dt);
 
+	enum AttachMeshFlags {
+		AM_None        = 0,
+		AM_DrawBefore  = 1 << 0
+	};
+
 	class AttachedMesh
 	{
 		friend class StdMeshInstance;
@@ -533,7 +538,7 @@ public:
 
 		AttachedMesh();
 		AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child, Denumerator* denumerator,
-		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform);
+		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform, uint32_t flags);
 		~AttachedMesh();
 
 		uint32_t Number;
@@ -546,6 +551,7 @@ public:
 		bool SetChildBone(const StdStrBuf& bone);
 		void SetAttachTransformation(const StdMeshMatrix& transformation);
 		const StdMeshMatrix& GetFinalTransformation() const { return FinalTrans; }
+		uint32_t GetFlags() const { return Flags; }
 
 		void CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory);
 		void EnumeratePointers();
@@ -555,6 +561,7 @@ public:
 		unsigned int ParentBone;
 		unsigned int ChildBone;
 		StdMeshMatrix AttachTrans;
+		uint32_t Flags;
 
 		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans; // NoSave
@@ -565,9 +572,9 @@ public:
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
 	// Create a new instance and attach it to this mesh. Takes ownership of denumerator
-	AttachedMesh* AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
+	AttachedMesh* AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), uint32_t flags = AM_None);
 	// Attach an instance to this instance. Takes ownership of denumerator. If own_child is true deletes instance on detach.
-	AttachedMesh* AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), bool own_child = false);
+	AttachedMesh* AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), uint32_t flags = AM_None, bool own_child = false);
 	// Removes attachment with given number
 	bool DetachMesh(unsigned int number);
 	// Returns attached mesh with given number
