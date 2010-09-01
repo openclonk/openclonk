@@ -1165,6 +1165,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	// TODO: We ignore the additive drawing flag for meshes but instead
 	// set the blending mode of the corresponding material. I'm not sure
 	// how the two could be combined.
+	// TODO: Maybe they can be combined using a pixel shader which does
+	// ftransform() and then applies colormod, additive and mod2
+	// on the result (with alpha blending).
 	//int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	//glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
