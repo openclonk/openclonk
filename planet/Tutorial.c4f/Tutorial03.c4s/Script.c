@@ -102,7 +102,21 @@ protected func InitializePlayer(int plr)
 global func FxTutorialJavelinStop()
 {
 	guide->AddGuideMessage("$MsgTutJavelin$");
-	AddEffect("TutorialBow", nil, 100, 5);
+	AddEffect("TutorialHasJavelin", nil, 100, 5);
+	return 1;
+}
+
+global func FxTutorialHasJavelinTimer()
+{
+	var clonk = FindObject(Find_OCF(OCF_CrewMember));
+	if (!clonk)
+		return 1;
+	if (FindObject(Find_Container(clonk), Find_ID(Javelin)))
+	{
+		guide->AddGuideMessage("$MsgTutJumpThrow$");
+		Log("%v",AddEffect("TutorialBow", nil, 100, 5));
+		return -1;
+	}
 	return 1;
 }
 
@@ -111,6 +125,17 @@ global func FxTutorialBowTimer()
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(680, 500, 100, 100)))
 	{
 		guide->AddGuideMessage("$MsgTutBow$");
+		AddEffect("TutorialHighBalloon", nil, 100, 5);
+		return -1;
+	}
+	return 1;
+}
+
+global func FxTutorialHighBalloonTimer()
+{
+	if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(1200, 400, 150, 150)))
+	{
+		guide->AddGuideMessage("$MsgTutHighBalloon$");
 		return -1;
 	}
 	return 1;
@@ -126,8 +151,15 @@ protected func OnGuideMessageShown(int plr, int index)
 	if (index == 1)
 		TutArrowShowPos(240, 650);
 	// Show bow chest with an arrow.
-	if (index == 2)
+	if (index == 3)
 		TutArrowShowPos(785, 550);
+	// Show high balloon.
+	if (index == 4)
+	{
+		var target = FindObject(Find_ID(PracticeTarget), Find_Distance(25, 1364, 300));
+		if (target)
+			TutArrowShowTarget(target, RandomX(-45, 45), 24);
+	}
 	return;
 }
 
