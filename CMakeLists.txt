@@ -58,9 +58,9 @@ option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
 ############################################################################
 include(CheckCXXCompilerFlag)
 if(CMAKE_COMPILER_IS_GNUCXX)
-	CHECK_CXX_COMPILER_FLAG("-std=c++0x" USE_GCC_STD_0X)
+	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
 	if(USE_GCC_STD_0X)
-		list(APPEND OC_CXX_FLAGS "-std=c++0x")
+		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 	endif()
 endif()
 
@@ -72,7 +72,7 @@ endforeach()
 
 # ck 10-09-04: Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
 # otherwise they are used for C library checks as well and the C compiler bails
-# out because it does not understand -std=c++0x
+# out because it does not understand -std=gnu++0x
 set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
