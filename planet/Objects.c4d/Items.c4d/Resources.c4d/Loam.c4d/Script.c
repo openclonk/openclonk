@@ -87,6 +87,12 @@ func FxIntBridgeTimer(clonk, number)
 	var line_wdt = 4;
 	var line_len = speed * dt;
 	var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);
+
+	// Don't use up loam if the mouse position is reached...
+	// wait for the mouse being moved and then continue bridging
+	// into that direction
+	if(!d) return true;
+
 	var ox = dy * line_wdt / d, oy = -dx * line_wdt / d;
 	dx = dx * line_len / (d*10);
 	dy = dy * line_len / (d*10);
