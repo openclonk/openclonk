@@ -620,6 +620,10 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 				scaleY2 = scaleY * iTexSizeY;
 			}
 
+			// Size of this texture actually containing image data
+			const int iImgSizeX = (iX == sfcSource->iTexX-1) ? ((sfcSource->Wdt - 1) % iTexSizeX + 1) : (iTexSizeX);
+			const int iImgSizeY = (iY == sfcSource->iTexY-1) ? ((sfcSource->Hgt - 1) % iTexSizeY + 1) : (iTexSizeY);
+
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
 			fTexBlt.left  = Max<float>(fx - iBlitX, 0);
@@ -643,17 +647,38 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 			BltData.TexPos.MoveScale(((float) fTexBlt.left) / iTexSize,
 			  ((float) fTexBlt.top) / iTexSize, 1, 1);*/
 			// Set resulting matrix directly
-			BltData.TexPos.SetMoveScale(
+			/*BltData.TexPos.SetMoveScale(
 			  fTexBlt.left / iTexSizeX - tTexBlt.left / scaleX2,
 			  fTexBlt.top / iTexSizeY - tTexBlt.top / scaleY2,
 			  1 / scaleX2,
-			  1 / scaleY2);
+			  1 / scaleY2);*/
+
+			// get tex bounds
+			// The code below is commented out since the problem
+			// in question is currently fixed by using non-power-of-two
+			// and non-square textures.
+#if 0
+			// Make sure we don't access border pixels. Normally this is prevented
+			// by GL_CLAMP_TO_EDGE anyway but for the bottom and rightmost textures
+			// this does not work as the textures might only be partially filled.
+			// This is the case if iImgSizeX != iTexSize or iImgSizeY != iTexSize.
+			// See bug #396.
+			fTexBlt.left  = Max<float>(fTexBlt.left, 0.5);
+			fTexBlt.top   = Max<float>(fTexBlt.top, 0.5);
+			fTexBlt.right = Min<float>(fTexBlt.right, iImgSizeX - 0.5);
+			fTexBlt.bottom= Min<float>(fTexBlt.bottom, iImgSizeY - 0.5);
+#endif
+
 			// set up blit data as rect
 			BltData.byNumVertices = 4;
 			BltData.vtVtx[0].ftx = tTexBlt.left;  BltData.vtVtx[0].fty = tTexBlt.top;
 			BltData.vtVtx[1].ftx = tTexBlt.right; BltData.vtVtx[1].fty = tTexBlt.top;
 			BltData.vtVtx[2].ftx = tTexBlt.right; BltData.vtVtx[2].fty = tTexBlt.bottom;
 			BltData.vtVtx[3].ftx = tTexBlt.left;  BltData.vtVtx[3].fty = tTexBlt.bottom;
+			BltData.vtVtx[0].tx = fTexBlt.left / iTexSizeX; BltData.vtVtx[0].ty = fTexBlt.top / iTexSizeY;
+			BltData.vtVtx[1].tx = fTexBlt.right / iTexSizeX; BltData.vtVtx[1].ty = fTexBlt.top / iTexSizeY;
+			BltData.vtVtx[2].tx = fTexBlt.right / iTexSizeX; BltData.vtVtx[2].ty = fTexBlt.bottom / iTexSizeY;
+			BltData.vtVtx[3].tx = fTexBlt.left / iTexSizeX; BltData.vtVtx[3].ty = fTexBlt.bottom / iTexSizeY;
 
 			CTexRef * pBaseTex = pTex;
 			// is there a base-surface to be blitted first?

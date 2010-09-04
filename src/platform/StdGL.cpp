@@ -408,12 +408,13 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	}
 
 	glMatrixMode(GL_TEXTURE);
-	float matrix[16];
+	/*float matrix[16];
 	matrix[0]=rBltData.TexPos.mat[0];  matrix[1]=rBltData.TexPos.mat[3];  matrix[2]=0;  matrix[3]=rBltData.TexPos.mat[6];
 	matrix[4]=rBltData.TexPos.mat[1];  matrix[5]=rBltData.TexPos.mat[4];  matrix[6]=0;  matrix[7]=rBltData.TexPos.mat[7];
 	matrix[8]=0;                       matrix[9]=0;                       matrix[10]=1; matrix[11]=0;
 	matrix[12]=rBltData.TexPos.mat[2]; matrix[13]=rBltData.TexPos.mat[5]; matrix[14]=0; matrix[15]=rBltData.TexPos.mat[8];
-	glLoadMatrixf(matrix);
+	glLoadMatrixf(matrix);*/
+	glLoadIdentity();
 
 	if (shaders[0] && fUseClrModMap)
 	{
@@ -426,6 +427,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	if (rBltData.pTransform)
 	{
 		float * mat = rBltData.pTransform->mat;
+		float matrix[16];
 		matrix[0]=mat[0];  matrix[1]=mat[3];  matrix[2]=0;  matrix[3]=mat[6];
 		matrix[4]=mat[1];  matrix[5]=mat[4];  matrix[6]=0;  matrix[7]=mat[7];
 		matrix[8]=0;       matrix[9]=0;       matrix[10]=1; matrix[11]=0;
@@ -448,8 +450,8 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	// draw polygon
 	for (i=0; i<rBltData.byNumVertices; ++i)
 	{
-		rBltData.vtVtx[i].tx = rBltData.vtVtx[i].ftx;
-		rBltData.vtVtx[i].ty = rBltData.vtVtx[i].fty;
+		//rBltData.vtVtx[i].tx = rBltData.vtVtx[i].ftx;
+		//rBltData.vtVtx[i].ty = rBltData.vtVtx[i].fty;
 		//if (rBltData.pTransform) rBltData.pTransform->TransformPoint(rBltData.vtVtx[i].ftx, rBltData.vtVtx[i].fty);
 		rBltData.vtVtx[i].ftz = 0;
 	}

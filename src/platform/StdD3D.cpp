@@ -222,9 +222,8 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		// FIXME: Put this into a global transformation matrix or something
 		bltClrVertices[i].x -= 0.5;
 		bltClrVertices[i].y -= 0.5;
-		bltClrVertices[i].tu = rBltData.vtVtx[i].ftx;
-		bltClrVertices[i].tv = rBltData.vtVtx[i].fty;
-		rBltData.TexPos.TransformPoint(bltClrVertices[i].tu, bltClrVertices[i].tv);
+		bltClrVertices[i].tu = rBltData.vtVtx[i].tx;
+		bltClrVertices[i].tv = rBltData.vtVtx[i].ty;
 		bltClrVertices[i].color = dwModClr;
 	}
 

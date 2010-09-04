@@ -142,7 +142,6 @@ struct CBltData
 {
 	BYTE byNumVertices;  // number of valid vertices
 	CBltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
-	CBltTransform TexPos; // texture mapping matrix
 	CBltTransform *pTransform; // Vertex transformation
 };
 
