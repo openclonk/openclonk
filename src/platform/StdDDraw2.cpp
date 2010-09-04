@@ -588,14 +588,15 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
 	// set blitting state - done by PerformBlt
 	// get involved texture offsets
-	int iTexSize=sfcSource->iTexSize;
-	int iTexX=Max(int(fx/iTexSize), 0);
-	int iTexY=Max(int(fy/iTexSize), 0);
-	int iTexX2=Min((int)(fx+fwdt-1)/iTexSize +1, sfcSource->iTexX);
-	int iTexY2=Min((int)(fy+fhgt-1)/iTexSize +1, sfcSource->iTexY);
+	int iTexSizeX=sfcSource->iTexSize;
+	int iTexSizeY=sfcSource->iTexSize;
+	int iTexX=Max(int(fx/iTexSizeX), 0);
+	int iTexY=Max(int(fy/iTexSizeY), 0);
+	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
+	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
 	// calc stretch regarding texture size and indent
-	float scaleX2 = scaleX * iTexSize;
-	float scaleY2 = scaleY * iTexSize;
+	float scaleX2 = scaleX * iTexSizeX;
+	float scaleY2 = scaleY * iTexSizeY;
 	// Enable textures
 	SetTexture();
 	// blit from all these textures
@@ -604,22 +605,27 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 		for (int iX=iTexX; iX<iTexX2; ++iX)
 		{
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
-			// get current blitting offset in texture (beforing any last-tex-size-changes)
-			int iBlitX=iTexSize*iX;
-			int iBlitY=iTexSize*iY;
+			// get current blitting offset in texture
+			int iBlitX=sfcSource->iTexSize*iX;
+			int iBlitY=sfcSource->iTexSize*iY;
 			// size changed? recalc dependant, relevant (!) values
-			if (iTexSize != pTex->iSize)
+			if (iTexSizeX != pTex->iSizeX)
 			{
-				iTexSize = pTex->iSize;
-				scaleX2 = scaleX * iTexSize;
-				scaleY2 = scaleY * iTexSize;
+				iTexSizeX = pTex->iSizeX;
+				scaleX2 = scaleX * iTexSizeX;
 			}
+			if (iTexSizeY != pTex->iSizeY)
+			{
+				iTexSizeY = pTex->iSizeY;
+				scaleY2 = scaleY * iTexSizeY;
+			}
+
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
 			fTexBlt.left  = Max<float>(fx - iBlitX, 0);
 			fTexBlt.top   = Max<float>(fy - iBlitY, 0);
-			fTexBlt.right = Min<float>(fx + fwdt - (float)iBlitX, (float)iTexSize);
-			fTexBlt.bottom= Min<float>(fy + fhgt - (float)iBlitY, (float)iTexSize);
+			fTexBlt.right = Min<float>(fx + fwdt - (float)iBlitX, (float)iTexSizeX);
+			fTexBlt.bottom= Min<float>(fy + fhgt - (float)iBlitY, (float)iTexSizeY);
 			// get new dest bounds
 			FLOAT_RECT tTexBlt;
 			tTexBlt.left  = (fTexBlt.left  + iBlitX - fx) * scaleX + tx;
@@ -638,8 +644,8 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 			  ((float) fTexBlt.top) / iTexSize, 1, 1);*/
 			// Set resulting matrix directly
 			BltData.TexPos.SetMoveScale(
-			  fTexBlt.left / iTexSize - tTexBlt.left / scaleX2,
-			  fTexBlt.top / iTexSize - tTexBlt.top / scaleY2,
+			  fTexBlt.left / iTexSizeX - tTexBlt.left / scaleX2,
+			  fTexBlt.top / iTexSizeY - tTexBlt.top / scaleY2,
 			  1 / scaleX2,
 			  1 / scaleY2);
 			// set up blit data as rect

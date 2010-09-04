@@ -241,8 +241,8 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		lpDevice->SetTexture(pShader->iInTexIndex, pTex->pTex);
 		CSurface * pModSurface = pClrModMap->GetSurface();
 		if (pModSurface->ppTex) lpDevice->SetTexture(pShader->iFoWTexIndex, (*(pModSurface->ppTex))->pTex);
-		const float mod_proj[4] = { 1.0f/(pClrModMap->GetResolutionX()*pModSurface->iTexSize),
-		                            1.0f/(pClrModMap->GetResolutionY()*pModSurface->iTexSize),
+		const float mod_proj[4] = { 1.0f/(pClrModMap->GetResolutionX()* (*(pModSurface->ppTex))->iSizeX),
+		                            1.0f/(pClrModMap->GetResolutionY()* (*(pModSurface->ppTex))->iSizeY),
 		                            float(pClrModMap->OffX), float(pClrModMap->OffY)
 		                          };
 		lpDevice->SetPixelShaderConstantF(pShader->iFoWTransformIndex, mod_proj, 1);
@@ -311,7 +311,7 @@ bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT
 	int tWdt = rtTo.right-rtTo.left;
 	int tHgt = rtTo.bottom-rtTo.top;
 	// adjust bitmap info
-	sfcBmpInfo.bmiHeader.biHeight = sfcBmpInfo.bmiHeader.biWidth = pTexRef->iSize;
+	sfcBmpInfo.bmiHeader.biHeight = pTexRef->iSizeY; sfcBmpInfo.bmiHeader.biWidth = pTexRef->iSizeX;
 	// Same size
 	if ((fWdt==tWdt) && (fHgt==tHgt))
 		return SetDIBitsToDevice(hdcTarget, rtTo.left, rtTo.top, fWdt, fHgt, rtFrom.left, rtFrom.top, 0, fWdt, pBits, &sfcBmpInfo, DIB_RGB_COLORS) > 0;
@@ -340,11 +340,12 @@ bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 		float scaleX=(float) tWdt/fWdt;
 		float scaleY=(float) tHgt/fHgt;
 		// get involved texture offsets
-		int iTexSize=sfcSource->iTexSize;
-		int iTexX=fX/iTexSize;
-		int iTexY=fY/iTexSize;
-		int iTexX2=Min((fX+fWdt-1)/iTexSize +1, sfcSource->iTexX);
-		int iTexY2=Min((fY+fHgt-1)/iTexSize +1, sfcSource->iTexY);
+		int iTexSizeX=sfcSource->iTexSize;
+		int iTexSizeY=sfcSource->iTexSize;
+		int iTexX=fX/iTexSizeX;
+		int iTexY=fY/iTexSizeY;
+		int iTexX2=Min((fX+fWdt-1)/iTexSizeX +1, sfcSource->iTexX);
+		int iTexY2=Min((fY+fHgt-1)/iTexSizeY +1, sfcSource->iTexY);
 		CTexRef **ppTex=sfcSource->ppTex+iTexY*sfcSource->iTexX+iTexX;
 		// blit from all these textures
 		CTexRef **ppTexRow, *pBaseTex=NULL;
@@ -354,14 +355,14 @@ bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 			for (int iX=iTexX; iX<iTexX2; ++iX)
 			{
 				// get current blitting offset in texture
-				int iBlitX=iTexSize*iX;
-				int iBlitY=iTexSize*iY;
+				int iBlitX=sfcSource->iTexSize*iX;
+				int iBlitY=sfcSource->iTexSize*iY;
 				// get new texture source bounds
 				RECT fTexBlt;
 				fTexBlt.left  = Max(fX-iBlitX, 0);
 				fTexBlt.top   = Max(fY-iBlitY, 0);
-				fTexBlt.right = Min(fX+fWdt-iBlitX, iTexSize);
-				fTexBlt.bottom= Min(fY+fHgt-iBlitY, iTexSize);
+				fTexBlt.right = Min(fX+fWdt-iBlitX, iTexSizeX);
+				fTexBlt.bottom= Min(fY+fHgt-iBlitY, iTexSizeY);
 				// get new dest bounds
 				RECT tTexBlt;
 				tTexBlt.left  = (long) ((fTexBlt.left  +iBlitX-fX)*scaleX+tX);

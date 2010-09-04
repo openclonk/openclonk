@@ -227,22 +227,30 @@ bool CSurface::Create(int iWdt, int iHgt, bool, bool fIsRenderTarget, int MaxTex
 	return true;
 }
 
+namespace
+{
+	int GetNeedTexSize(int Size)
+	{
+		int iNeedSize = Size;
+
+	#ifdef USE_GL
+		if (!pGL || !GLEW_ARB_texture_non_power_of_two)
+	#endif
+		{
+			int n=0;
+			while ((1<<++n) < iNeedSize) {}
+			iNeedSize = 1<<n;
+		}
+
+		return iNeedSize;
+	}
+}
+
 bool CSurface::CreateTextures(int MaxTextureSize)
 {
 	// free previous
 	FreeTextures();
-	// get needed tex size - begin with smaller value of wdt/hgt, so there won't be too much space wasted
-	int iNeedSize=Min(Wdt, Hgt);
-#ifdef USE_GL
-	if (!pGL || !GLEW_ARB_texture_non_power_of_two)
-#endif
-	{
-		int n=0;
-		while ((1<<++n) < iNeedSize) {}
-		iNeedSize = 1<<n;
-	}
-	// adjust to available texture size
-	iTexSize=Min(iNeedSize, lpDDraw->MaxTexSize);
+	iTexSize=Min(GetNeedTexSize(Max(Wdt, Hgt)), lpDDraw->MaxTexSize);
 	if (MaxTextureSize)
 		iTexSize=Min(iTexSize, MaxTextureSize);
 	// get the number of textures needed for this size
@@ -255,6 +263,31 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 	if (!IsSingleSurface()) fIsRenderTarget = false;
 	// create textures
 	CTexRef **ppCTex=ppTex;
+	for (int y = 0; y < iTexY; ++y)
+	{
+		for(int x = 0; x < iTexX; ++x)
+		{
+			int sizeX = iTexSize;
+			int sizeY = iTexSize;
+			if(x == iTexX-1) sizeX = GetNeedTexSize( (Wdt - 1) % iTexSize + 1);
+			if(y == iTexY-1) sizeY = GetNeedTexSize( (Hgt - 1) % iTexSize + 1);
+
+			*ppCTex = new CTexRef(sizeX, sizeY, fIsRenderTarget);
+			
+			if (fIsBackground && ppCTex) (*ppCTex)->FillBlack();
+
+#ifdef USE_DIRECTX
+			if (!(*ppCTex)->pTex && pD3D)
+			{
+				// error creating texture
+				return false;
+			}
+#endif
+
+			++ppCTex;
+		}
+	}
+#if 0
 	for (int i=iTexX*iTexY; i; --i,++ppCTex)
 	{
 		// regular textures or if last texture fits exactly into the space by Wdt or Hgt
@@ -283,6 +316,8 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 		}
 #endif
 	}
+#endif
+
 #ifdef _DEBUG
 	static int dbg_counter = 0;
 	dbg_idx = new int;
@@ -1207,30 +1242,30 @@ bool CSurface::CopyBytes(BYTE *pImageData)
 	for (int iY=0; iY<iTexY; ++iY)
 	{
 		BYTE *pSource = pImageData + iSrcPitch * iLineTotal;
-		int iLastHeight=pTex->iSize; int iXImgPos=0;
+		int iLastHeight=pTex->iSizeY; int iXImgPos=0;
 		for (int iX=0; iX<iTexX; ++iX)
 		{
 			pTex = *ppCurrTex++;
 			if (!pTex->Lock()) return false;
 			BYTE *pTarget = (BYTE*)pTex->texLock.pBits;
-			int iCpyNum = Min(pTex->iSize, Wdt-iXImgPos)*byBytesPP;
-			int iYMax = Min(pTex->iSize, Hgt-iLineTotal);
+			int iCpyNum = Min(pTex->iSizeX, Wdt-iXImgPos)*byBytesPP;
+			int iYMax = Min(pTex->iSizeY, Hgt-iLineTotal);
 			for (int iLine = 0; iLine < iYMax; ++iLine)
 			{
 				memcpy(pTarget, pSource, iCpyNum);
 				pSource += iSrcPitch;
 				// FIXME: use pTex->texLock.Pitch here?
-				pTarget += pTex->iSize*byBytesPP;
+				pTarget += pTex->iSizeX*byBytesPP;
 			}
 			pSource += iCpyNum - iSrcPitch*iYMax;
-			iXImgPos += pTex->iSize;
+			iXImgPos += pTex->iSizeX;
 		}
 		iLineTotal += iLastHeight;
 	}
 	return true;
 }
 
-CTexRef::CTexRef(int iSize, bool fSingle)
+CTexRef::CTexRef(int iSizeX, int iSizeY, bool fSingle)
 {
 	// zero fields
 #ifdef USE_DIRECTX
@@ -1241,7 +1276,8 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 #endif
 	texLock.pBits=NULL; fIntLock=false;
 	// store size
-	this->iSize=iSize;
+	this->iSizeX=iSizeX;
+	this->iSizeY=iSizeY;
 	// add to texture manager
 	if (!pTexMgr) pTexMgr = new CTexMgr();
 	pTexMgr->RegTex(this);
@@ -1254,14 +1290,14 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 	{
 		// Direct3D
 		bool fRenderTarget = fSingle && !DDrawCfg.NoOffscreenBlits;
-		if (pD3D->lpDevice->CreateTexture(iSize, iSize, 1, fRenderTarget ? D3DUSAGE_RENDERTARGET : 0, pD3D->dwSurfaceType, fRenderTarget ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED, &pTex, NULL) != D3D_OK)
+		if (pD3D->lpDevice->CreateTexture(iSizeX, iSizeY, 1, fRenderTarget ? D3DUSAGE_RENDERTARGET : 0, pD3D->dwSurfaceType, fRenderTarget ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED, &pTex, NULL) != D3D_OK)
 		{
 			lpDDraw->Error("Error creating surface");
 			return;
 		}
 		// empty texture
 		if (!Lock()) return;
-		FillMemory(texLock.pBits, texLock.Pitch*iSize, 0x00);
+		FillMemory(texLock.pBits, texLock.Pitch*iSizeY, 0x00);
 		Unlock();
 	}
 	else
@@ -1271,9 +1307,9 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 		{
 			// OpenGL
 			// create mem array for texture creation
-			texLock.pBits = new unsigned char[iSize*iSize*pGL->byByteCnt];
-			texLock.Pitch = iSize*pGL->byByteCnt;
-			memset(texLock.pBits, 0x00, texLock.Pitch*iSize);
+			texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
+			texLock.Pitch = iSizeX*pGL->byByteCnt;
+			memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
 			// turn mem array into texture
 			Unlock();
 		}
@@ -1281,12 +1317,12 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 #endif
 			if (lpDDraw)
 			{
-				texLock.pBits = new unsigned char[iSize*iSize*lpDDraw->byByteCnt];
-				texLock.Pitch = iSize*lpDDraw->byByteCnt;
-				memset(texLock.pBits, 0x00, texLock.Pitch*iSize);
+				texLock.pBits = new unsigned char[iSizeX*iSizeY*lpDDraw->byByteCnt];
+				texLock.Pitch = iSizeX*lpDDraw->byByteCnt;
+				memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
 				// Always locked
 				LockSize.left = LockSize.top = 0;
-				LockSize.right = LockSize.bottom = iSize;
+				LockSize.right = iSizeX; LockSize.bottom = iSizeY;
 			}
 }
 
@@ -1318,7 +1354,7 @@ bool CTexRef::LockForUpdate(RECT & rtUpdate)
 	if (texLock.pBits)
 	{
 		// fully locked
-		if (LockSize.left == 0 && LockSize.right == iSize && LockSize.top == 0 && LockSize.bottom == iSize)
+		if (LockSize.left == 0 && LockSize.right == iSizeX && LockSize.top == 0 && LockSize.bottom == iSizeY)
 		{
 			return true;
 		}
@@ -1367,7 +1403,7 @@ bool CTexRef::Lock()
 {
 	// already locked?
 	if (texLock.pBits) return true;
-	LockSize.right = LockSize.bottom = iSize;
+	LockSize.right = iSizeX; LockSize.bottom = iSizeY;
 	LockSize.top = LockSize.left = 0;
 	// lock
 #ifdef USE_DIRECTX
@@ -1385,8 +1421,8 @@ bool CTexRef::Lock()
 			{
 				if (!pGL->pCurrCtx) return false;
 				// get texture
-				texLock.pBits = new unsigned char[iSize*iSize*pGL->byByteCnt];
-				texLock.Pitch = iSize * pGL->byByteCnt;
+				texLock.pBits = new unsigned char[iSizeX*iSizeY*pGL->byByteCnt];
+				texLock.Pitch = iSizeX * pGL->byByteCnt;
 				glBindTexture(GL_TEXTURE_2D, texName);
 				glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, lpDDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 				return true;
@@ -1434,7 +1470,7 @@ void CTexRef::Unlock()
 				// Default, changed in PerformBlt if necessary
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexImage2D(GL_TEXTURE_2D, 0, 4, iSize, iSize, 0, GL_BGRA, lpDDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
+				glTexImage2D(GL_TEXTURE_2D, 0, 4, iSizeX, iSizeY, 0, GL_BGRA, lpDDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 			}
 			else
 			{
@@ -1490,16 +1526,16 @@ bool CTexRef::FillBlack()
 	switch (lpDDraw->byByteCnt)
 	{
 	case 2:
-		for (y=0; y<iSize; ++y)
+		for (y=0; y<iSizeY; ++y)
 		{
-			for (int x = 0; x < iSize; ++x)
+			for (int x = 0; x < iSizeX; ++x)
 				SetPix2(x, y, 0xf000);
 		}
 		break;
 	case 4:
-		for (y=0; y<iSize; ++y)
+		for (y=0; y<iSizeY; ++y)
 		{
-			for (int x = 0; x < iSize; ++x)
+			for (int x = 0; x < iSizeX; ++x)
 				SetPix4(x, y, 0xff000000);
 		}
 		break;

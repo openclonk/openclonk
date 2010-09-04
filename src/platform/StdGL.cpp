@@ -420,7 +420,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		glActiveTexture(GL_TEXTURE3);
 		glLoadIdentity();
 		CSurface * pSurface = pClrModMap->GetSurface();
-		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 	}
 	if (rBltData.pTransform)
@@ -1435,11 +1435,12 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		return;
 	}
 	// get involved texture offsets
-	int iTexSize=sfcSource->iTexSize;
-	int iTexX=Max(int(fx/iTexSize), 0);
-	int iTexY=Max(int(fy/iTexSize), 0);
-	int iTexX2=Min((int)(fx+wdt-1)/iTexSize +1, sfcSource->iTexX);
-	int iTexY2=Min((int)(fy+hgt-1)/iTexSize +1, sfcSource->iTexY);
+	int iTexSizeX=sfcSource->iTexSize;
+	int iTexSizeY=sfcSource->iTexSize;
+	int iTexX=Max(int(fx/iTexSizeX), 0);
+	int iTexY=Max(int(fy/iTexSizeY), 0);
+	int iTexX2=Min((int)(fx+wdt-1)/iTexSizeX +1, sfcSource->iTexX);
+	int iTexY2=Min((int)(fy+hgt-1)/iTexSizeY +1, sfcSource->iTexY);
 	// blit from all these textures
 	SetTexture();
 	if (mattextures)
@@ -1475,14 +1476,14 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			}
 
-			// get current blitting offset in texture (beforing any last-tex-size-changes)
-			int iBlitX=iTexSize*iX;
-			int iBlitY=iTexSize*iY;
+			// get current blitting offset in texture
+			int iBlitX=sfcSource->iTexSize*iX;
+			int iBlitY=sfcSource->iTexSize*iY;
 			// size changed? recalc dependant, relevant (!) values
-			if (iTexSize != pTex->iSize)
-			{
-				iTexSize = pTex->iSize;
-			}
+			if (iTexSizeX != pTex->iSizeX)
+				iTexSizeX = pTex->iSizeX;
+			if (iTexSizeY != pTex->iSizeY)
+				iTexSizeY = pTex->iSizeY;
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
 			// get new dest bounds
@@ -1492,9 +1493,9 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			tTexBlt.left  = (fTexBlt.left  + iBlitX - fx) * Zoom + tx;
 			fTexBlt.top   = Max<float>((float)(fy - iBlitY), 0.0f);
 			tTexBlt.top   = (fTexBlt.top   + iBlitY - fy) * Zoom + ty;
-			fTexBlt.right = Min<float>((float)(fx + wdt - iBlitX), (float)iTexSize);
+			fTexBlt.right = Min<float>((float)(fx + wdt - iBlitX), (float)iTexSizeX);
 			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * Zoom + tx;
-			fTexBlt.bottom= Min<float>((float)(fy + hgt - iBlitY), (float)iTexSize);
+			fTexBlt.bottom= Min<float>((float)(fy + hgt - iBlitY), (float)iTexSizeY);
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * Zoom + ty;
 			CBltVertex Vtx[4];
 			// blit positions
@@ -1515,7 +1516,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
 				CSurface * pSurface = pClrModMap->GetSurface();
-				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 
 				glClientActiveTexture(GL_TEXTURE3);
@@ -1539,8 +1540,8 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			}
 			for (int i=0; i<4; ++i)
 			{
-				Vtx[i].tx /= iTexSize;
-				Vtx[i].ty /= iTexSize;
+				Vtx[i].tx /= iTexSizeX;
+				Vtx[i].ty /= iTexSizeY;
 				Vtx[i].ftz = 0;
 			}
 			if (mattextures)
@@ -1711,7 +1712,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
 				CSurface * pSurface = pClrModMap->GetSurface();
-				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 
 				glClientActiveTexture(GL_TEXTURE3);

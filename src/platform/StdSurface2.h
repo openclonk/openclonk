@@ -235,11 +235,12 @@ public:
 		};
 	};
 #endif
-	int iSize;
+	int iSizeX;
+	int iSizeY;
 	bool fIntLock;    // if set, texref is locked internally only
 	RECT LockSize;
 
-	CTexRef(int iSize, bool fAsRenderTarget);   // create texture with given size
+	CTexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
 	~CTexRef();           // release texture
 	bool Lock();          // lock texture
 	// Lock a part of the rect, discarding the content
