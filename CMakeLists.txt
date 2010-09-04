@@ -69,6 +69,11 @@ include(CheckCXXSourceCompiles)
 foreach(FLAG ${OC_CXX_FLAGS})
 	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
 endforeach()
+
+# ck 10-09-04: Reset CMAKE_REQUIRED_FLAGS after having done the C++0x checks
+# otherwise they are used for C library checks as well and the C compiler bails
+# out because it does not understand -std=gnu++0x
+set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
@@ -76,6 +81,7 @@ if(HAVE_NULLPTR)
 	CHECK_CXX_SOURCE_COMPILES("#include <cstddef>
 	template<class T> void f(T &&); template<> void f(std::nullptr_t &&) {} int main() { f(NULL); }" NULL_IS_NULLPTR_T)
 endif()
+set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
