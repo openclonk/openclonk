@@ -46,6 +46,10 @@ public:
 	bool SetLanguageString(const char *szLanguage, const char *szString);
 	void TrimSpaces();
 protected:
+	// The component host's Data has changed. This callback can be used by
+	// derived classes to reload internal structures.
+	virtual void OnLoad() {}
+
 	StdCopyStrBuf Data;
 	bool Modified;
 	char Name[_MAX_FNAME+1];

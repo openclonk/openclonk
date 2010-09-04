@@ -114,6 +114,8 @@ void C4ComponentHost::Default()
 void C4ComponentHost::Clear()
 {
 	Data.Clear();
+	OnLoad();
+
 #ifdef _WIN32
 	if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
 #endif
@@ -151,6 +153,8 @@ bool C4ComponentHost::Load(const char *szName,
 				// Store actual filename
 				hGroup.FindEntry(strEntryWithLanguage, Filename);
 				CopyFilePathFromGroup(hGroup);
+				// Notify
+				OnLoad();
 				// Got it
 				return true;
 			}
@@ -192,6 +196,8 @@ bool C4ComponentHost::Load(const char *szName,
 				C4Group *pGroup = hGroupSet.FindEntry(strEntryWithLanguage);
 				pGroup->FindEntry(strEntryWithLanguage, Filename);
 				CopyFilePathFromGroup(*pGroup);
+				// Notify
+				OnLoad();
 				// Got it
 				return true;
 			}
@@ -284,6 +290,7 @@ bool C4ComponentHost::LoadAppend(const char *szName,
 
 	SReplaceChar(Filename,'|',0);
 	CopyFilePathFromGroup(hGroup);
+	OnLoad();
 	return !! iFileCnt;
 }
 
@@ -301,6 +308,8 @@ bool C4ComponentHost::Set(const char *szData)
 	Clear();
 	// copy new data
 	Data.Copy(szData);
+	// Notify
+	OnLoad();
 	return true;
 }
 

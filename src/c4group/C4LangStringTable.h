@@ -46,6 +46,8 @@ public:
 	public:
 		NoSuchTranslation(const std::string &text) : std::runtime_error("No such translation: \"" + text + "\"") {}
 	};
+protected:
+	virtual void OnLoad() { strings.clear(); } // Make sure we re-populate when the string table is reloaded
 };
 
 #endif // INC_C4LangStringTable
