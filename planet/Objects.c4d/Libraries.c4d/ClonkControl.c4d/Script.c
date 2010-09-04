@@ -1280,9 +1280,12 @@ func Selected(object mnu, object mnu_item, bool alt)
 	var backpack_index = mnu_item->GetExtraData();
 	var hands_index = 0;
 	if (alt) hands_index = 1;
+	// Update menu
+	var show_new_item = GetItem(hands_index);
+	mnu_item->SetSymbol(show_new_item);
 	// swap index with backpack index
-	Switch2Items(hands_index, backpack_index);
-	return true;
+	Switch2Items(hands_index, backpack_index);	
+	return false;
 }
 
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
