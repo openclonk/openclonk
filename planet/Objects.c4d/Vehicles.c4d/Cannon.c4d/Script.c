@@ -332,5 +332,6 @@ Roll = {
 	NextAction = "Roll",
 },	}, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(6000,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(35,0,1,0),Trans_Scale(1350)),def);
 }

@@ -1,1 +1,2 @@
 Name=Holz
+Description=Geeignet als Bau- oder Brennmaterial.

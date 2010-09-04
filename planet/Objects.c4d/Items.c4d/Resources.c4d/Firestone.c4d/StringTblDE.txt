@@ -1,1 +1,2 @@
 Name=Feuerstein
+Description=Volcanic stone, explodes on contact.

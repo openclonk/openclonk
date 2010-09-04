@@ -1,1 +1,2 @@
 Name=Eisenerz
+Description=Raw material for metal production in the foundry.

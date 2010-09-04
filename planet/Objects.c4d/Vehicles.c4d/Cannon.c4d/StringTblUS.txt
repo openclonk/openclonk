@@ -3,3 +3,4 @@ TxtCannonisfull=Cannon is already loaded!
 TxtNeedsAmmo=Cannon has no ammo.
 TxtNeedsGunp=Cannon has no gunpowder.
 Name=Cannon
+Description=Needs a powder keg to operate, Hold [Use] to aim and shoot about anything.

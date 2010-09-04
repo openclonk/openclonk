@@ -1,1 +1,2 @@
 Name=Coal
+Description=Fuel, can be used to produce metal or generate power.

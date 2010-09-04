@@ -1,1 +1,2 @@
 Name=Kohle
+Description=Fuel, can be used to produce metal or generate power.

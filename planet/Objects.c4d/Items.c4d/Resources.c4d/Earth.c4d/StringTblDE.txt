@@ -1,1 +1,2 @@
 Name=Erdklumpen
+Description=Can be dug out, crumbles to earth on contact.

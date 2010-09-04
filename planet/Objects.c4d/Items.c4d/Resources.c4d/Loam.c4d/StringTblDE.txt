@@ -1,1 +1,2 @@
 Name=Lehm
+Description=Press [Use] to build a loam bridge into the specified direction.

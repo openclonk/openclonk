@@ -9,6 +9,7 @@ protected func Construction()
 
 protected func Hit()
 {
+	
 	CastPXS("Earth", 200, 18);
 	Sound("EarthHit*");
 	RemoveObject();
@@ -18,4 +19,5 @@ protected func Hit()
 func Definition(def) {
 	SetProperty("Collectible", 1, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

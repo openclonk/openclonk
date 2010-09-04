@@ -1,1 +1,2 @@
-Name=Chunk of Dirt
+Name=Chunk of earth
+Description=Can be dug out, crumbles to earth on contact.

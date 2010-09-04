@@ -8,4 +8,5 @@ protected func Incineration()
 func Definition(def) {
 	SetProperty("Collectible", 1, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

@@ -14,4 +14,5 @@ protected func Hit()
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 }

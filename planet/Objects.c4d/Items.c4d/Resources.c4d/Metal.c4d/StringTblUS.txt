@@ -1,1 +1,2 @@
 Name=Metal
+Description=Useful for construction.

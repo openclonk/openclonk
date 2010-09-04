@@ -1,7 +1,7 @@
 [DefCore]
 id=Gold
 Version=4,10,0,0
-Category=C4D_Object|C4D_SelectMaterial
+Category=C4D_Object
 MaxUserSelect=100
 Width=8
 Height=8

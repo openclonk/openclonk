@@ -1,1 +1,2 @@
 Name=Stein
+Description=Elementary throwing weapon and basic construction material.

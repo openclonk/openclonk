@@ -1,1 +1,2 @@
 Name=Schwefel
+Description=Material for various explosives.

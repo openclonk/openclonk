@@ -1,1 +1,2 @@
-Name=Fire Stone
+Name=Firestone
+Description=Volcanic stone, explodes on contact.

@@ -1,1 +1,2 @@
 Name=Black Powder
+Description=Extremely explosive.

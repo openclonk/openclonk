@@ -113,5 +113,6 @@ func Definition(def) {
 		},  
 	}, def);
 	SetProperty("Name", "$Name$", def);
+	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
 }

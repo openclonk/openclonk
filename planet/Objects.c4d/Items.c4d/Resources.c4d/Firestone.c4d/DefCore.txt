@@ -1,7 +1,7 @@
 [DefCore]
 id=Firestone
 Version=4,10,0,0
-Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase|C4D_SelectInEarth
+Category=C4D_Object
 MaxUserSelect=10
 Width=8
 Height=8
