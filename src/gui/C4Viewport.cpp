@@ -1119,7 +1119,6 @@ void C4Viewport::ChangeZoom(float by_factor)
 
 void C4Viewport::AdjustPosition()
 {
-	const float ZoomAdjustFactor = 1.025f; // must be > 1.0 to have effect
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	C4Player *pPlr = ::Players.Get(Player);
 	if (ZoomTarget < 0.000001f)
@@ -1135,15 +1134,28 @@ void C4Viewport::AdjustPosition()
 		float PrefViewY = ViewY + ViewHgt / (Zoom * 2) - ViewOffsY;
 		// Change Zoom
 		assert(Zoom>0);
-		if (Zoom < ZoomTarget)
-			Zoom *= ZoomAdjustFactor;
-		if (Zoom > ZoomTarget)
+		assert(ZoomTarget>0);
+
+		if(Zoom != ZoomTarget)
 		{
-			Zoom /= ZoomAdjustFactor;
+			float DeltaZoom = Zoom/ZoomTarget;
+			if(DeltaZoom<1) DeltaZoom = 1/DeltaZoom;
+
+			// Minimal Zoom change factor
+			static const float Z0 = pow(C4GFX_ZoomStep, 1.0/8.0);
+
+			// We change zoom based on (logarithmic) distance of current zoom
+			// to target zoom. The greater the distance the more we adjust the
+			// zoom in one frame. There is a minimal zoom change Z0 to make sure
+			// we reach ZoomTarget in finite time.
+			float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0/8.0);
+
 			if (Zoom < ZoomTarget)
-				Zoom = ZoomTarget;
+				Zoom = Min(Zoom * ZoomAdjustFactor, ZoomTarget);
+			if (Zoom > ZoomTarget)
+				Zoom = Max(Zoom / ZoomAdjustFactor, ZoomTarget);
 		}
-		
+
 		float ScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float ExtraBoundsX = 0, ExtraBoundsY = 0;
 		if (pPlr->ViewMode == C4PVM_Scrolling)
