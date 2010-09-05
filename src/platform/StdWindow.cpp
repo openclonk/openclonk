@@ -136,7 +136,9 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
 		// If bordered, add border size
 		RECT rect = {0, 0, cx, cy};
 		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
-		::SetWindowPos(hWindow, NULL, 0, 0, rect.right, rect.bottom, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		cx = rect.right - rect.left;
+		cy = rect.bottom - rect.top;
+		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 
@@ -328,9 +330,6 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	}
 #endif
 #ifdef USE_GL
-	// HACK: Disable window border
-	SetWindowLong(pWindow->hWindow, GWL_STYLE,
-	              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
 	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 	bool fFound=false;
@@ -377,26 +376,33 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	if (!fFullScreen)
 	{
 		ChangeDisplaySettings(NULL, CDS_RESET);
+		SetWindowLong(pWindow->hWindow, GWL_STYLE,
+		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
 	// save original display mode
 	// if a monitor is given, use that
-	else if (iMonitor)
-	{
-		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-		if (ChangeDisplaySettingsEx(Mon.getData(), &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
-		{
-			return false;
-		}
-	}
 	else
 	{
-		if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+		if (iMonitor)
 		{
-			return false;
+			dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+			if (ChangeDisplaySettingsEx(Mon.getData(), &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+			{
+				return false;
+			}
 		}
+		else
+		{
+			if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+			{
+				return false;
+			}
+		}
+		SetWindowLong(pWindow->hWindow, GWL_STYLE,
+		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
 
-	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW);
+	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
 	OnResolutionChanged(iXRes, iYRes);
 	return true;
