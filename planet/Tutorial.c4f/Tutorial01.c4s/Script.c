@@ -86,7 +86,7 @@ func Script20()
 	TutArrowClear();
 }
 
-func Script40()
+func Script50()
 {
 	guide->AddGuideMessage("$MsgIntro3$");
 	guide->ShowGuideMessage(3);
@@ -102,7 +102,7 @@ global func FxTutorialScaleTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(650,990,140,90)))
 	{
-		guide->AddGuideMessage("@$GuideMsgScale$");
+		guide->AddGuideMessage("$GuideMsgScale$");
 		AddEffect("TutorialHangle", 0, 1, 18);
 		return -1;
 	}
@@ -112,7 +112,7 @@ global func FxTutorialHangleTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(820,940,190,140)))
 	{
-		guide->AddGuideMessage("@$GuideMsgHangle$");
+		guide->AddGuideMessage("$GuideMsgHangle$");
 		AddEffect("TutorialSwim", 0, 1, 18);
 		return -1;
 	}
@@ -123,7 +123,7 @@ global func FxTutorialSwimTimer(object target, int num, int timer)
 	if(FindObject(Find_ID(Clonk),Find_InRect(1120,1030,140,60)))
 	{
 		tutstage = 1;
-		guide->AddGuideMessage("@$GuideMsgSwim$");
+		guide->AddGuideMessage("$GuideMsgSwim$");
 		AddEffect("TutorialDig", 0, 1, 18);
 		return -1;
 	}
@@ -133,7 +133,7 @@ global func FxTutorialDigTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(1550,1040,130,60)))
 	{
-		guide->AddGuideMessage("@$GuideMsgDig$");
+		guide->AddGuideMessage("$GuideMsgDig$");
 		return -1;
 	}
 }
@@ -142,7 +142,7 @@ global func FxShovelGetTimer(object target, int num, int timer)
 {
 	if(target->Contained() != nil)
 	{
-		guide->AddGuideMessage("@$GuideMsgTools$");
+		guide->AddGuideMessage("$GuideMsgTools$");
 		RemoveEffect("TutorialDig");
 		AddEffect("TutorialChest", 0, 1, 18);
 		return -1;
@@ -153,7 +153,7 @@ global func FxTutorialChestTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(1750,1030,130,80)))
 	{
-		guide->AddGuideMessage("@$GuideMsgChest$");
+		guide->AddGuideMessage("$GuideMsgChest$");
 		return -1;
 	}
 }
@@ -162,7 +162,7 @@ global func FxLoamGetTimer(object target, int num, int timer)
 {
 	if(target->Contained()->GetID() != Chest)
 	{
-		guide->AddGuideMessage("@$GuideMsgLoam$");
+		guide->AddGuideMessage("$GuideMsgLoam$");
 		RemoveEffect("TutorialChest");
 		AddEffect("TutorialFlint", 0, 1, 18);
 		return -1;
@@ -174,7 +174,7 @@ global func FxTutorialFlintTimer(object target, int num, int timer)
 	if(FindObject(Find_ID(Clonk),Find_InRect(1990,1020,130,90)))
 	{
 		tutstage = 2;
-		guide->AddGuideMessage("@$GuideMsgFlint$");
+		guide->AddGuideMessage("$GuideMsgFlint$");
 		return -1;
 	}
 }
