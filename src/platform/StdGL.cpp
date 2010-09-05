@@ -28,6 +28,8 @@
 #include <StdWindow.h>
 #include "C4Rect.h"
 #include "StdMesh.h"
+#include "C4Config.h"
+#include "C4Application.h"
 
 #ifdef USE_GL
 
@@ -1996,6 +1998,13 @@ void CStdGL::TaskOut()
 	// backup textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
+#ifdef _WIN32
+	if (fFullscreen && !Config.Graphics.Windowed)
+	{
+		::ChangeDisplaySettings(NULL, 0);
+		::ShowWindow(Application.GetWindowHandle(), SW_MINIMIZE);
+	}
+#endif
 }
 
 void CStdGL::TaskIn()
@@ -2004,6 +2013,13 @@ void CStdGL::TaskIn()
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
 	// restore textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntUnlock();
+
+#ifdef _WIN32
+	if (fFullscreen && !Config.Graphics.Windowed)
+	{
+		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+	}
+#endif
 }
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
