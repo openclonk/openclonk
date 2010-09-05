@@ -179,12 +179,11 @@ void C4StartupMainDlg::UpdateParticipants()
 {
 	// First validate all participants (files must exist)
 	std::string strPlayers(Config.General.Participants);
-	std::string strPlayer;
-	strPlayer.reserve(1025);
+	std::vector<char> strPlayer(1025);
 	*Config.General.Participants=0;
-	for (int i = 0; SCopySegment(strPlayers.c_str(), i, &strPlayer[0], ';', 1024, true); i++)
+	for (int i = 0; SCopySegment(strPlayers.c_str(), i, &strPlayer[0], ';', strPlayer.size() - 1, true); i++)
 	{
-		const char *szPlayer = strPlayer.c_str();
+		const char *szPlayer = &strPlayer[0];
 		std::string strPlayerFile(Config.General.UserDataPath);
 		strPlayerFile.append(szPlayer);
 		if (!szPlayer || !*szPlayer) continue;
@@ -202,7 +201,7 @@ void C4StartupMainDlg::UpdateParticipants()
 		for (int i = 0; SCopySegment(Config.General.Participants, i, &strPlayer[0], ';', 1024, true); i++)
 		{
 			if (i > 0) strPlayers.append(", ");
-			strPlayers.append(C4Language::IconvClonk(GetFilenameOnly(strPlayer.c_str())).getData());
+			strPlayers.append(C4Language::IconvClonk(GetFilenameOnly(&strPlayer[0])).getData());
 		}
 	pParticipantsLbl->SetText(strPlayers.c_str());
 }
