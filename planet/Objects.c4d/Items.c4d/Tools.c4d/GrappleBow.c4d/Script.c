@@ -7,16 +7,8 @@
 
 local fAiming;
 
-local help; // Help object, the clonk is attached to this object.
-
 local hook;
 local hook_attach;
-
-public func SetHelp(object tohelp)
-{
-	help = tohelp;
-	return;
-}
 
 public func GetCarryMode() {  if(hook->Contained() == nil) return CARRY_Back; return CARRY_HandBack; }
 

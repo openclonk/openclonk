@@ -63,22 +63,18 @@ private func Stick()
 		SetXDir(0);
 		SetYDir(0);
 		SetRDir(0);
-	
-		var x = Sin(GetR(), +9);
-		var y = Cos(GetR(), -9);
-		if(GBackSolid(x,y) && 1)
-		{
-			// stick in landscape
-			SetVertex(2,VTX_Y,-12,2);
-			SetVertex(3,VTX_X,-3,2);
-			SetVertex(3,VTX_Y,-9,2);
-			SetVertex(4,VTX_X,+3,2);
-			SetVertex(4,VTX_Y,-6,2);
-			SetVertex(5,VTX_X,-3,2);
-			SetVertex(5,VTX_Y,-6,2);
-			SetVertex(6,VTX_X,+3,2);
-			SetVertex(6,VTX_Y,-6,2);
-		}
+
+		// Stick in landscape (vertex 3-7)
+		SetVertex(2, VTX_X, 0, 2);
+		SetVertex(2, VTX_Y, -6, 2);
+		SetVertex(3, VTX_X, -3, 2);
+		SetVertex(3, VTX_Y, -4, 2);
+		SetVertex(4, VTX_X, 3, 2);
+		SetVertex(4, VTX_Y, -4, 2);
+		SetVertex(5, VTX_X, 4, 2);
+		SetVertex(5, VTX_Y, -1, 2);
+		SetVertex(6, VTX_X, -4, 2);
+		SetVertex(6, VTX_Y, -1, 2);
 
 		rope->HockAnchored();
 		ScheduleCall(this, "StartPull", 5); // TODO
@@ -98,7 +94,7 @@ public func StartPull()
 	}
 }
 
-public func Hit()
+public func Hit(x, y)
 {
 	Stick();
 }
