@@ -1142,13 +1142,13 @@ void C4Viewport::AdjustPosition()
 			if(DeltaZoom<1) DeltaZoom = 1/DeltaZoom;
 
 			// Minimal Zoom change factor
-			static const float Z0 = pow(C4GFX_ZoomStep, 1.0/8.0);
+			static const float Z0 = pow(C4GFX_ZoomStep, 1.0f/8.0f);
 
 			// We change zoom based on (logarithmic) distance of current zoom
 			// to target zoom. The greater the distance the more we adjust the
 			// zoom in one frame. There is a minimal zoom change Z0 to make sure
 			// we reach ZoomTarget in finite time.
-			float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0/8.0);
+			float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f/8.0f);
 
 			if (Zoom < ZoomTarget)
 				Zoom = Min(Zoom * ZoomAdjustFactor, ZoomTarget);
