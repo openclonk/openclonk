@@ -26,7 +26,7 @@ protected func Initialize()
 	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn2, dyn3);
 	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn3, dyn4);
 	var igniter = CreateObject(Igniter, 110, 710, NO_OWNER);
-	CreateObject(Fuse, 240, 675, NO_OWNER)->Connect(dyn4, igniter);
+	CreateObject(Fuse, 240, 685, NO_OWNER)->Connect(dyn4, igniter);
 	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with cannon stuff.
@@ -284,8 +284,29 @@ global func FxTutorialReachedGraniteTimer()
 {
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 1560, 350)))
 	{
-		guide->AddGuideMessage("$MsgBlastGranite$");
-		//AddEffect("TutorialRockBlasted", nil, 100, 5);
+		guide->AddGuideMessage("$MsgTutBlastGranite$");
+		AddEffect("TutorialPassedGranite", nil, 100, 5);
+		return -1;
+	}
+	return 1;
+}
+
+global func FxTutorialPassedGraniteTimer()
+{
+	if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(1800, 0, 1200, 750)))
+	{
+		guide->AddGuideMessage("$MsgTutBlastedGranite$");
+		AddEffect("TutorialReachedAcid", nil, 100, 5);
+		return -1;
+	}
+	return 1;
+}
+
+global func FxTutorialReachedAcidTimer()
+{
+	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 2130, 330)))
+	{
+		guide->AddGuideMessage("$MsgTutLastGrapple$");
 		return -1;
 	}
 	return 1;
@@ -311,7 +332,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	// Show ropeladder position.
 	if (index == 9)
-		TutArrowShowPos(630, 290, 135);
+		TutArrowShowPos(630, 310, 135);
 	// Show resurface locations.
 	if (index == 10)
 	{
@@ -320,7 +341,20 @@ protected func OnGuideMessageShown(int plr, int index)
 	}
 	// Show granite blast location.
 	if (index == 11)
-		TutArrowShowPos(1700, 340, 45);
+		TutArrowShowPos(1705, 345, 90);
+	// Show grapple tunnel
+	if (index == 12)
+		TutArrowShowPos(1500, 480, 135);
+	// Show grapple aim positions.
+	if (index == 13)
+	{
+		TutArrowShowPos(2220, 200, 0);
+		TutArrowShowPos(2285, 200, 0);
+		TutArrowShowPos(2435, 200, 0);
+		TutArrowShowPos(2515, 200, 0);
+		TutArrowShowPos(2670, 200, 0);
+		TutArrowShowPos(2750, 200, 0);
+	}
 	return;
 }
 
@@ -364,12 +398,18 @@ global func FxClonkOneRestoreTimer(object target, int num, int time)
 		EffectVar(1, target, num) = 960;
 		EffectVar(2, target, num) = 360;		
 	}
-	// Respawn to new location if reached second cliff.
-	if (Distance(target->GetX(), target->GetY(), 2050, 235) < 40)
+	// Respawn to new location if reached granite blasting.
+	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		EffectVar(1, target, num) = 2050;
-		EffectVar(2, target, num) = 235;		
-	}	
+		EffectVar(1, target, num) = 1560;
+		EffectVar(2, target, num) = 350;		
+	}
+	// Respawn to new location if reached acid lake.
+	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
+	{
+		EffectVar(1, target, num) = 2130;
+		EffectVar(2, target, num) = 330;		
+	}
 	return 1;
 }
 
@@ -417,17 +457,17 @@ global func FxClonkTwoRestoreTimer(object target, int num, int time)
 		EffectVar(1, target, num) = 960;
 		EffectVar(2, target, num) = 360;		
 	}
-	// Respawn to new location if reached lower cliff.
-	if (Distance(target->GetX(), target->GetY(), 1240, 410) < 40)
+	// Respawn to new location if reached granite blasting.
+	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		EffectVar(1, target, num) = 1240;
-		EffectVar(2, target, num) = 410;		
+		EffectVar(1, target, num) = 1560;
+		EffectVar(2, target, num) = 350;		
 	}
-	// Respawn to new location if reached second cliff.
-	if (Distance(target->GetX(), target->GetY(), 2050, 235) < 40)
+	// Respawn to new location if reached acid lake.
+	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
 	{
-		EffectVar(1, target, num) = 2050;
-		EffectVar(2, target, num) = 235;		
+		EffectVar(1, target, num) = 2130;
+		EffectVar(2, target, num) = 330;		
 	}
 	return 1;
 }
