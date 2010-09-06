@@ -56,8 +56,6 @@
 
 //========================== Some Support Functions =======================================
 
-char pscOSTR[500];
-
 const long MaxFnStringParLen=500;
 
 inline const static char *FnStringPar(C4String *pString)
@@ -177,16 +175,6 @@ bool CheckEnergyNeedChain(C4Object *pObj, C4ObjectList &rEnergyChainChecked)
 						return true;
 
 	return false;
-}
-
-
-DWORD StringBitEval(const char *str)
-{
-	DWORD rval=0;
-	for (int cpos=0; str && str[cpos]; cpos++)
-		if ((str[cpos]!='_') && (str[cpos]!=' '))
-			rval += 1 << cpos;
-	return rval;
 }
 
 typedef int32_t t_int;
@@ -377,20 +365,18 @@ static long FnGetGravity(C4AulContext *cthr)
 static C4Void FnDeathAnnounce(C4AulObjectContext *cthr)
 {
 	const long MaxDeathMsg=7;
+	if (Game.C4S.Head.Film)
+		return C4VNull;
 	// Check if crew member has an own death message
-	*pscOSTR=0;
-	char *szMsg;
-	if (cthr->Obj->Info)
-		if (*(szMsg = cthr->Obj->Info->DeathMessage))
-			sprintf(pscOSTR, "%s", szMsg);
-	if (!*pscOSTR)
+	if (cthr->Obj->Info && *(cthr->Obj->Info->DeathMessage))
+	{
+		GameMsgObject(cthr->Obj->Info->DeathMessage, cthr->Obj);
+	}
+	else
 	{
 		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
-		sprintf(pscOSTR,LoadResStr(idDeathMsg) ,cthr->Obj->GetName());
+		GameMsgObject(FormatString(LoadResStr(idDeathMsg), cthr->Obj->GetName()).getData(), cthr->Obj);
 	}
-	if (!Game.C4S.Head.Film)
-		GameMsgObject(pscOSTR,cthr->Obj);
-
 	return C4VNull;
 }
 
