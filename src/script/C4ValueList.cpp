@@ -116,16 +116,19 @@ C4Value &C4ValueList::GetItem(int32_t iElem)
 	return pData[iElem];
 }
 
-void C4ValueList::SetItem(int32_t iElemNr, const C4Value &Value)
+void C4ValueList::SetItem(int32_t iElem, const C4Value &Value)
 {
 	// enlarge
-	if (iElemNr < 0) iElemNr = 0;
-	if (iElemNr >= iSize && iElemNr < MaxSize) this->SetSize(iElemNr + 1);
+	if (iElem < -iSize)
+		throw new C4AulExecError(NULL,"array access: index out of range");
+	else if (iElem < 0)
+		iElem = iSize + iElem;
+	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
-	if (iElemNr >= iSize)
-		throw new C4AulExecError(NULL,"out of memory");
+	if (iElem >= iSize)
+		throw new C4AulExecError(NULL,"array access: index too large");
 	// set
-	pData[iElemNr]=Value;
+	pData[iElem]=Value;
 }
 
 void C4ValueList::SetSize(int32_t inSize)
