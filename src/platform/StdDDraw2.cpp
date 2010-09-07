@@ -478,12 +478,21 @@ void CStdDDraw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 	bool fRender = sfcTarget->IsRenderTarget();
 	if (!fRender) if (!sfcTarget->Lock())
 			{ return; }
+
+	float tfx = tx, tfy = ty, twdt = wdt, thgt = hgt;
+	if (Zoom != 1.0)
+	{
+		ApplyZoom(tfx, tfy);
+		twdt *= Zoom;
+		thgt *= Zoom;
+	}
+
 	// blit 8 bit pix
-	for (int ycnt=0; ycnt<hgt; ++ycnt)
-		for (int xcnt=0; xcnt<wdt; ++xcnt)
+	for (int ycnt=0; ycnt<thgt; ++ycnt)
+		for (int xcnt=0; xcnt<twdt; ++xcnt)
 		{
-			BYTE byPix = sfcSource->GetPix(fx+xcnt, fy+ycnt);
-			if (byPix) PerformPix(sfcTarget,(float)(tx+xcnt), (float)(ty+ycnt), sfcSource->pPal->GetClr(byPix));
+			BYTE byPix = sfcSource->GetPix(fx+wdt*xcnt/twdt, fy+hgt*ycnt/thgt);
+			if (byPix) PerformPix(sfcTarget,(float)(tfx+xcnt), (float)(tfy+ycnt), sfcSource->pPal->GetClr(byPix));
 		}
 	// unlock
 	if (!fRender) sfcTarget->Unlock();
