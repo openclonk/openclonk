@@ -46,7 +46,7 @@ private:
 	void CheckOverflow(int iCnt)
 	{
 		if (ValueStackSize() + iCnt > MAX_VALUE_STACK)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack overflow! (probably too deep recursion in script)");
+			throw new C4AulExecError(pCurCtx->Obj, "value stack overflow, probably due to too deep recursion");
 	}
 
 	void PushString(C4String * Str)
@@ -82,7 +82,7 @@ private:
 	bool PopValue()
 	{
 		if (LocalValueStackSize() < 1)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
+			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
 		(pCurVal--)->Set0();
 		return true;
 	}
@@ -90,7 +90,7 @@ private:
 	void PopValues(int n)
 	{
 		if (LocalValueStackSize() < n)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
+			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
 		while (n--)
 			(pCurVal--)->Set0();
 	}
@@ -98,7 +98,7 @@ private:
 	void PopValuesUntil(C4Value *pUntilVal)
 	{
 		if (pUntilVal < Values - 1)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
+			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
 		while (pCurVal > pUntilVal)
 			(pCurVal--)->Set0();
 	}
@@ -128,11 +128,11 @@ private:
 		// Typecheck parameters
 		if (!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\" left side: got \"%s\", but expected \"%s\"!",
+			                         FormatString("operator \"%s\" left side got %s, but expected %s",
 			                                      C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
 		if (!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
 			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
+			                         FormatString("operator \"%s\" right side got %s, but expected %s",
 			                                      C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
 	}
 	void CheckOpPar(int iOpID)
@@ -140,7 +140,7 @@ private:
 		// Typecheck parameter
 		if (!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
+			                         FormatString("operator \"%s\": got %s, but expected %s",
 			                                      C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
 	}
 
@@ -149,17 +149,17 @@ private:
 		if (pStructure->ConvertTo(C4V_Array) && pStructure->GetType() != C4V_Any)
 		{
 			if (!pIndex->ConvertTo(C4V_Int))
-				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, int expected!", pIndex->GetTypeName()).getData());
+				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
 		else if (pStructure->ConvertTo(C4V_PropList) && pStructure->GetType() != C4V_Any)
 		{
 			if (!pIndex->ConvertTo(C4V_String) || !pIndex->_getStr())
-				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", pIndex->GetTypeName()).getData());
+				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
 			return C4V_PropList;
 		}
 		else
-			throw new C4AulExecError(pCurCtx->Obj, FormatString("can't access %s as array or proplist!", pStructure->GetTypeName()).getData());
+			throw new C4AulExecError(pCurCtx->Obj, FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
 	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj = NULL, C4Def *pDef = NULL);
 };

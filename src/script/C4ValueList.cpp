@@ -105,13 +105,13 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 C4Value &C4ValueList::GetItem(int32_t iElem)
 {
 	if (iElem < -iSize)
-		throw new C4AulExecError(NULL,"invalid subscript");
+		throw new C4AulExecError(NULL,"array access: index out of range");
 	else if (iElem < 0)
 		iElem = iSize + iElem;
 	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
 	if (iElem >= iSize)
-		throw new C4AulExecError(NULL,"out of memory");
+		throw new C4AulExecError(NULL,"array access: index too large");
 	// return
 	return pData[iElem];
 }
@@ -214,11 +214,11 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 {
 	// adjust indices so that the default end index works and that negative numbers count backwards from the end of the string
 	if (startIndex > iSize) startIndex = iSize;
-	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid start index");
+	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "array slice: start index out of range");
 	else if (startIndex < 0) startIndex += iSize;
 
 	if (endIndex > iSize) endIndex = iSize;
-	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid end index");
+	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "array slice: end index out of range");
 	else if (endIndex < 0) endIndex += iSize;
 
 	if (startIndex == 0 && endIndex == iSize)
@@ -240,8 +240,8 @@ void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value 
 	if(endIndex < 0) endIndex += iSize;
 
 	// ensure relevant bounds
-	if(startIndex < 0) throw new C4AulExecError(NULL, "Array slice: invalid start index");
-	if(endIndex < 0) throw new C4AulExecError(NULL, "Array slice: invalid end index");
+	if(startIndex < 0) throw new C4AulExecError(NULL, "array slice: start index out of range");
+	if(endIndex < 0) throw new C4AulExecError(NULL, "array slice: end index out of range");
 	if(endIndex < startIndex)
 		endIndex = startIndex;
 
