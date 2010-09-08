@@ -132,18 +132,17 @@ char GetC4VID(const C4V_Type Type)
 		return 'i';
 	case C4V_Bool:
 		return 'b';
+	case C4V_PropList:
+		return 'p';
 	case C4V_C4Object:
-		return 'o';
-	case C4V_String:
-		return 's';
 	case C4V_C4ObjectEnum:
 		return 'O';
+	case C4V_String:
+		return 's';
 	case C4V_C4DefEnum:
 		return 'D';
 	case C4V_Array:
 		return 'a';
-	case C4V_PropList:
-		return 'p';
 	default:
 		assert(false);
 	}
@@ -373,12 +372,10 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		// Get type
 		assert(Type != C4V_Any || !Data);
 		char cC4VID = GetC4VID(Type);
-		// Object reference is saved enumerated
-		if (Type == C4V_C4Object)
-			cC4VID = GetC4VID(C4V_C4ObjectEnum);
-		if (Type == C4V_PropList && getPropList()->GetDef())
+		// special case proplists
+		if (Type == C4V_PropList && getPropList()->IsDef())
 			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if (Type == C4V_PropList)
+		else if (Type == C4V_PropList && !getPropList()->IsFrozen())
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
 		// Write
 		pComp->Character(cC4VID);
@@ -435,9 +432,18 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
 	{
+		if (fCompiler || (Type == C4V_PropList && getPropList()->IsFrozen() && !getPropList()->IsDef()))
+		{
+			assert(Type == C4V_PropList);
+			pComp->Separator(StdCompiler::SEP_START2);
+			pComp->Value(mkPtrAdapt(Data.PropList, false));
+			if (fCompiler) Data.PropList->AddRef(this);
+			pComp->Separator(StdCompiler::SEP_END2);
+			break;
+		}
 		assert(!fCompiler);
 		C4PropList * p = getPropList();
-		if (Type == C4V_PropList && p->GetDef())
+		if (Type == C4V_PropList && p->IsDef())
 			pComp->Value(p->GetDef()->id);
 		else
 		{
@@ -457,7 +463,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	{
 		assert(fCompiler);
 		C4ID id;
-		pComp->Value(id); // must be denumerated later
+		pComp->Value(id);
 		Data.PropList = Definitions.ID2Def(id);
 		Type = C4V_PropList;
 		if (!Data.PropList)

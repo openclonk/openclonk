@@ -2520,7 +2520,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 						// otherwise: fall through to error
 					default:
 					{
-						throw new C4AulParseError(this,FormatString("internal error: constant %s has undefined type %d", Idtf, val.GetType()).getData());
+						throw new C4AulParseError(this,FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
 					}
 					}
 					Shift();
@@ -2979,7 +2979,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		case ATT_BLOPEN:
 			{
 				Shift();
-				r.SetPropList(C4PropList::New());
+				r.SetPropList(C4PropList::NewAnon());
 				while (TokenType != ATT_BLCLOSE)
 				{
 					C4String * pKey;

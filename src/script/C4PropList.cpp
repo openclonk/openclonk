@@ -61,6 +61,12 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
+C4PropList * C4PropList::NewAnon(C4PropList * prototype)
+{
+	C4PropList * r = new C4PropList(prototype);
+	return r;
+}
+
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
@@ -82,7 +88,7 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Number, "Number"));
-	C4PropList::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(Properties, "Properties"));//C4PropList::CompileFunc(pComp);
 	if (pComp->isCompiler())
 		::Objects.PropLists.Add(this);
 }
@@ -131,7 +137,8 @@ C4PropList::~C4PropList()
 
 void C4PropList::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(Properties, "Properties"));
+	//pComp->Value(mkNamingAdapt(Properties, "Properties"));
+	pComp->Value(Properties);
 }
 
 template<typename T>

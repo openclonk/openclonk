@@ -58,6 +58,9 @@ public:
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() { return prototype; }
 
+	// Whether this proplist should be saved as a reference to a C4Def
+	virtual bool IsDef() { return false; }
+
 	bool HasProperty(C4String * k) const;
 	bool GetPropertyVal(C4String *k, C4Value *pResult);
 	bool GetPropertyVal(C4PropertyName k, C4Value *pResult) { return GetPropertyVal(Strings.P[k], pResult); }
