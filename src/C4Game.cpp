@@ -1035,11 +1035,10 @@ C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_
                                int32_t x, int32_t y, int32_t r,
                                C4Real xdir, C4Real ydir, C4Real rdir, int32_t iController)
 {
-	C4Def *pDef;
-	// Get pDef
-	if (!PropList || !(pDef=PropList->GetDef())) return NULL;
+	// check Definition
+	if (!PropList || !PropList->GetDef()) return NULL;
 	// Create object
-	return NewObject(pDef,pCreator,
+	return NewObject(PropList,pCreator,
 	                 iOwner,NULL,
 	                 x,y,r,
 	                 xdir,ydir,rdir,
@@ -1091,7 +1090,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 	}
 
 	// Create object
-	if (!(pObj=NewObject(pDef,
+	if (!(pObj=NewObject(PropList,
 	                     pCreator,
 	                     iOwner,NULL,
 	                     iX,iBY,0,
