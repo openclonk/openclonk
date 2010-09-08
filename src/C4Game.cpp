@@ -254,10 +254,6 @@ bool C4Game::OpenScenario()
 		if (!Parameters.Load(ScenarioFile, &C4S, GameText.GetData(), &ScenarioLangStringTable, DefinitionFilenames))
 			return false;
 
-	// Load Strings (since kept objects aren't denumerated in sect-load, no problems should occur...)
-	if (ScenarioFile.FindEntry(C4CFN_Strings))
-		if (!Strings.Load(ScenarioFile))
-			{ LogFatal(LoadResStr("IDS_ERR_STRINGS")); return false; }
 	SetInitProgress(4);
 
 	// Compile runtime data

@@ -638,22 +638,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			delete pExc;
 			cC4VID = 'A';
 		}
-		// old style string
-		if (cC4VID == 'S')
-		{
-			int32_t iTmp;
-			pComp->Value(iTmp);
-			// search
-			C4String *pString = ::Strings.FindString(iTmp);
-			if (pString)
-			{
-				Data.Str = pString;
-				pString->IncRef();
-			}
-			else
-				Type = C4V_Any;
-			return;
-		}
 		Type = GetC4VFromID(cC4VID);
 	}
 	// Data
@@ -712,7 +696,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 	}
 
-	// string: save string number
 	case C4V_String:
 	{
 		// search

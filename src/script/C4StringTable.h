@@ -223,21 +223,14 @@ public:
 	C4StringTable();
 	virtual ~C4StringTable();
 
-	void Clear();
-
 	C4String *RegString(StdStrBuf String);
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
 	// Find existing C4String
 	C4String *FindString(const char *strString);
 	// Check wether the pointer is a C4String
 	C4String *FindString(C4String *pString);
-	// Get a string from the Strings.txt
-	C4String *FindString(int iEnumID);
-
-	bool Load(C4Group& ParentGroup);
 
 	C4Set<C4String *> Set;
-	std::vector<C4String *> Stringstxt;
 	C4String * P[P_LAST];
 };
 

@@ -480,8 +480,6 @@ void C4AulScriptEngine::UnLink()
 {
 	// unlink scripts
 	C4AulScript::UnLink();
-	// clear string table ("hold" strings only)
-	Strings.Clear();
 	// Do not clear global variables and constants, because they are registered by the
 	// preparser. Note that keeping those fields means that you cannot delete a global
 	// variable or constant at runtime by removing it from the script.

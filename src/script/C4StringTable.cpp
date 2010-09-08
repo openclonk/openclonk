@@ -126,16 +126,8 @@ C4StringTable::C4StringTable()
 
 C4StringTable::~C4StringTable()
 {
-	Clear();
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->DecRef();
 	assert(!Set.GetSize());
-}
-
-void C4StringTable::Clear()
-{
-	for (unsigned int i = 0; i < Stringstxt.size(); ++i)
-		Stringstxt[i]->DecRef();
-	Stringstxt.clear();
 }
 
 C4String *C4StringTable::RegString(StdStrBuf String)
@@ -158,36 +150,6 @@ C4String *C4StringTable::FindString(C4String *pString)
 		if (*i == pString)
 			return pString;
 	return NULL;
-}
-
-C4String *C4StringTable::FindString(int iEnumID)
-{
-	if (iEnumID >= 0 && iEnumID < int(Stringstxt.size()))
-		return Stringstxt[iEnumID];
-	return NULL;
-}
-
-bool C4StringTable::Load(C4Group& ParentGroup)
-{
-	Clear();
-	// read data
-	char *pData;
-	if (!ParentGroup.LoadEntry(C4CFN_Strings, &pData, NULL, 1))
-		return false;
-	// read all strings
-	char strBuf[1024 + 1]; // 1024 was the last used value to write the Strings.txt
-	for (int i = 0; SCopySegment(pData, i, strBuf, 0x0A, 1024); i++)
-	{
-		SReplaceChar(strBuf, 0x0D, 0x00);
-		// add string to list
-		C4String *pnString;
-		pnString = RegString(StdStrBuf(strBuf));
-		pnString->IncRef();
-		Stringstxt.push_back(pnString);
-	}
-	// delete data
-	delete[] pData;
-	return true;
 }
 
 C4StringTable Strings;
