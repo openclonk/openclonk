@@ -1112,50 +1112,110 @@ void C4Viewport::Execute()
 	BlitOutput();
 }
 
+void C4Viewport::InitZoom()
+{
+	// player viewport: Init zoom by view range parameters
+	C4Player *plr = Players.Get(Player);
+	if (plr)
+	{
+		plr->ZoomLimitsToViewport();
+		plr->ZoomToViewport(true);
+	}
+	else
+	{
+		// general viewport? Default zoom parameters
+		ZoomTarget = Max<float>(float(ViewWdt)/GBackWdt, 1.0f);
+		Zoom = ZoomTarget;
+		SetZoomLimits(ZoomTarget, 0 /* no default max limit */);
+	}
+}
+
 void C4Viewport::ChangeZoom(float by_factor)
 {
 	ZoomTarget *= by_factor;
+	if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
+	if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+}
+
+void C4Viewport::SetZoom(float to_value, bool direct)
+{
+	ZoomTarget = to_value;
+	if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
+	if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	// direct: Set zoom without scrolling to it
+	if (direct) Zoom = ZoomTarget;
+}
+
+void C4Viewport::SetZoomLimits(float to_min_zoom, float to_max_zoom)
+{
+	ZoomLimitMin = to_min_zoom;
+	ZoomLimitMax = to_max_zoom;
+	if (ZoomLimitMax < ZoomLimitMin) ZoomLimitMax = ZoomLimitMin;
+	if (ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
+	if (ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+}
+
+float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
+{
+	// set zoom such that both size_x and size_y are guarantueed to fit into the viewport range
+	// determine whether zoom is to be calculated by x or by y
+	bool zoom_by_y;
+	if (size_x && size_y)
+	{
+		zoom_by_y = (size_y * ViewWdt > size_x * ViewHgt);
+	}
+	else if (size_y)
+	{
+		// no x size passed - zoom by y
+		zoom_by_y = true;
+	}
+	else if (!size_x)
+	{
+		// 0/0 size passed - zoom to default
+		size_x = C4FOW_Def_View_RangeX * 2;
+		zoom_by_y = false;
+	}
+	// zoom calculation
+	if (zoom_by_y)
+		return float(ViewHgt) / size_y;
+	else
+		return float(ViewWdt) / size_x;
 }
 
 void C4Viewport::AdjustPosition()
 {
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	C4Player *pPlr = ::Players.Get(Player);
-	if (ZoomTarget < 0.000001f)
+	if (ZoomTarget < 0.000001f) InitZoom();
+	// Change Zoom
+	assert(Zoom>0);
+	assert(ZoomTarget>0);
+
+	if(Zoom != ZoomTarget)
 	{
-		ZoomTarget = Max(float(ViewWdt)/GBackWdt, 1.0f);
-		if (pPlr) ZoomTarget = Max(ViewWdt / (2.0f * C4FOW_Def_View_RangeX), ZoomTarget);
-		Zoom = ZoomTarget; 
+		float DeltaZoom = Zoom/ZoomTarget;
+		if(DeltaZoom<1) DeltaZoom = 1/DeltaZoom;
+
+		// Minimal Zoom change factor
+		static const float Z0 = pow(C4GFX_ZoomStep, 1.0f/8.0f);
+
+		// We change zoom based on (logarithmic) distance of current zoom
+		// to target zoom. The greater the distance the more we adjust the
+		// zoom in one frame. There is a minimal zoom change Z0 to make sure
+		// we reach ZoomTarget in finite time.
+		float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f/8.0f);
+
+		if (Zoom < ZoomTarget)
+			Zoom = Min(Zoom * ZoomAdjustFactor, ZoomTarget);
+		if (Zoom > ZoomTarget)
+			Zoom = Max(Zoom / ZoomAdjustFactor, ZoomTarget);
 	}
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 	{
 		float PrefViewX = ViewX + ViewWdt / (Zoom * 2) - ViewOffsX;
 		float PrefViewY = ViewY + ViewHgt / (Zoom * 2) - ViewOffsY;
-		// Change Zoom
-		assert(Zoom>0);
-		assert(ZoomTarget>0);
-
-		if(Zoom != ZoomTarget)
-		{
-			float DeltaZoom = Zoom/ZoomTarget;
-			if(DeltaZoom<1) DeltaZoom = 1/DeltaZoom;
-
-			// Minimal Zoom change factor
-			static const float Z0 = pow(C4GFX_ZoomStep, 1.0f/8.0f);
-
-			// We change zoom based on (logarithmic) distance of current zoom
-			// to target zoom. The greater the distance the more we adjust the
-			// zoom in one frame. There is a minimal zoom change Z0 to make sure
-			// we reach ZoomTarget in finite time.
-			float ZoomAdjustFactor = Z0 * pow(DeltaZoom, 1.0f/8.0f);
-
-			if (Zoom < ZoomTarget)
-				Zoom = Min(Zoom * ZoomAdjustFactor, ZoomTarget);
-			if (Zoom > ZoomTarget)
-				Zoom = Max(Zoom / ZoomAdjustFactor, ZoomTarget);
-		}
-
+		
 		float ScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float ExtraBoundsX = 0, ExtraBoundsY = 0;
 		if (pPlr->ViewMode == C4PVM_Scrolling)
@@ -1256,6 +1316,7 @@ void C4Viewport::Default()
 	DrawX=DrawY=0;
 	Zoom = 1.0;
 	ZoomTarget = 0.0;
+	ZoomLimitMin=ZoomLimitMax=0; // no limit
 	Next=NULL;
 	PlayerLock=true;
 	ResetMenuPositions=false;
@@ -1353,6 +1414,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	DrawX=iDrawX; DrawY=iDrawY;
 	OutX=iOutX; OutY=iOutY;
 	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
+	InitZoom();
 	UpdateViewPosition();
 	// Reset menus
 	ResetMenuPositions=true;

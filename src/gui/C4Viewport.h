@@ -39,6 +39,11 @@ typedef CStdGtkWindow C4ViewportBase;
 typedef CStdWindow C4ViewportBase;
 #endif
 
+// view ranges in "CR-pixels" covered by viewport
+static const int C4VP_DefViewRangeX    = 1000,
+                 C4VP_DefMinViewRangeX = 100,
+                 C4VP_DefMaxViewRangeX = 3000;
+
 class C4ViewportWindow: public C4ViewportBase
 {
 public:
@@ -92,6 +97,7 @@ public:
 	C4TargetFacet last_game_draw_cgo, last_gui_draw_cgo;
 	// factor between "landscape" and "display"
 	bool fIsNoOwnerViewport; // this viewport is found for searches of NO_OWNER-viewports; even if it has a player assigned (for network obs)
+
 	float GetZoom() { return Zoom; }
 	void Default();
 	void Clear();
@@ -99,7 +105,14 @@ public:
 	void ClearPointers(C4Object *pObj);
 	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
 	void UpdateViewPosition(); // update view position: Clip properly; update border variables
+	void InitZoom();
 	void ChangeZoom(float by_factor);
+	void SetZoom(float to_zoom, bool direct=false);
+	void SetZoomLimits(float to_min_zoom, float to_max_zoom);
+	float GetZoomByViewRange(int32_t size_x, int32_t size_y) const; // set zoom such that the supplied size is visible in the viewport
+	float GetZoomLimitMin() const { return ZoomLimitMin; }
+	float GetZoomLimitMax() const { return ZoomLimitMax; }
+	float GetZoomTarget() const { return ZoomTarget; }
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
 	bool Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
 #ifdef _WIN32
@@ -115,6 +128,7 @@ public:
 protected:
 	float Zoom;
 	float ZoomTarget;
+	float ZoomLimitMin,ZoomLimitMax;
 	int32_t Player;
 	bool PlayerLock;
 	int32_t OutX,OutY;

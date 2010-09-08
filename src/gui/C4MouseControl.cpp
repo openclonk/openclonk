@@ -232,7 +232,13 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// Execute caption
 	if (KeepCaption) KeepCaption--; else { Caption.Clear(); IsHelpCaption=false; CaptionBottomY=0; }
 	// Check player
-	if ((Player>NO_OWNER) && !(pPlayer=::Players.Get(Player))) { Active=false; return; }
+	if (Player>NO_OWNER)
+	{
+		pPlayer=::Players.Get(Player);
+		if (!pPlayer) { Active=false; return; }
+	}
+	else
+		pPlayer = NULL;
 	// Check viewport
 	if (!(Viewport=::GraphicsSystem.GetViewport(Player))) return;
 	// get view position
@@ -614,6 +620,8 @@ void C4MouseControl::UpdateScrolling()
 	Scrolling=false;
 	// No scrolling if on region
 	if (TargetRegion) return;
+	// No scrolling if disabled by player
+	if (pPlayer) if (pPlayer->IsViewLocked()) return;
 	// Scrolling on border
 	if (VpX==0)
 		{ Cursor=C4MC_Cursor_Left; ScrollView(-ScrollSpeed,0,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }

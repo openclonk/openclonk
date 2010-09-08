@@ -48,6 +48,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4Viewport.h>
 
 C4Player::C4Player() : C4PlayerInfoCore()
 {
@@ -1006,6 +1007,8 @@ void C4Player::Default()
 	pGamepad = NULL;
 	NoEliminationCheck = false;
 	Evaluated = false;
+	ZoomLimitMinWdt=ZoomLimitMinHgt=ZoomLimitMaxWdt=ZoomLimitMaxHgt=ZoomWdt=ZoomHgt=0;
+	ViewLock = false;
 }
 
 bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
@@ -1214,6 +1217,13 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(ViewMode,            "ViewMode",             C4PVM_Cursor));
 	pComp->Value(mkNamingAdapt(ViewX,               "ViewX",                0));
 	pComp->Value(mkNamingAdapt(ViewY,               "ViewY",                0));
+	pComp->Value(mkNamingAdapt(ViewLock,            "ViewLock",             false));
+	pComp->Value(mkNamingAdapt(ZoomLimitMinWdt,     "ZoomLimitMinWdt",      0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMinHgt,     "ZoomLimitMinHgt",      0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMaxWdt,     "ZoomLimitMaxWdt",      0));
+	pComp->Value(mkNamingAdapt(ZoomLimitMaxHgt,     "ZoomLimitMaxHgt",      0));
+	pComp->Value(mkNamingAdapt(ZoomWdt,             "ZoomWdt",              0));
+	pComp->Value(mkNamingAdapt(ZoomHgt,             "ZoomHgt",              0));
 	pComp->Value(mkNamingAdapt(ViewWealth,          "ViewWealth",           0));
 	pComp->Value(mkNamingAdapt(ViewScore,           "ViewScore",            0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
@@ -1458,6 +1468,7 @@ void C4Player::SetCursor(C4Object *pObj, bool fSelectArrow)
 
 void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
 {
+	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
 	int32_t ViewportScrollBorder = Application.isFullScreen ? C4ViewportScrollBorder : 0;
 	ViewX = BoundBy<int32_t>( ViewX+iX, ViewWdt/2-ViewportScrollBorder, GBackWdt+ViewportScrollBorder-ViewWdt/2 );
@@ -1960,5 +1971,71 @@ void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
 			int32_t num = (*it)->Number;
 			pComp->Value(num); // Can't use (*it)->Number directly because StdCompiler is dumb about constness
 		}
+	}
+}
+
+void C4Player::SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomWdt, range_wdt, no_increase, no_decrease);
+	AdjustZoomParameter(&ZoomHgt, range_hgt, no_increase, no_decrease);
+	ZoomToViewport(direct, no_decrease, no_increase); // inc/dec swapped for zoom, because it's inversely proportional to range
+}
+
+void C4Player::SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMinWdt, range_wdt, no_increase, no_decrease);
+	AdjustZoomParameter(&ZoomLimitMinHgt, range_hgt, no_increase, no_decrease);
+	ZoomLimitsToViewport();
+}
+
+void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
+{
+	AdjustZoomParameter(&ZoomLimitMaxWdt, range_wdt, no_increase, no_decrease);
+	AdjustZoomParameter(&ZoomLimitMaxHgt, range_hgt, no_increase, no_decrease);
+	ZoomLimitsToViewport();
+}
+
+void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
+{
+	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	if (!vp) return;
+	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
+	float old_zoom = vp->GetZoomTarget();
+	if (new_zoom > old_zoom && no_increase) return;
+	if (new_zoom < old_zoom && no_decrease) return;
+	vp->SetZoom(new_zoom, direct);
+}
+
+void C4Player::ZoomLimitsToViewport()
+{
+	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	if (!vp) return;
+	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
+	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
+	vp->SetZoomLimits(zoom_min, zoom_max);
+}
+
+bool C4Player::AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease)
+{
+	// helper function: Adjust *range_par to new_val if increase/decrease not forbidden
+	if (new_val < *range_par)
+	{
+		if (!no_decrease) *range_par = new_val;
+		return !no_decrease;
+	}
+	else if(new_val > *range_par)
+	{
+		if (!no_increase) *range_par = new_val;
+		return !no_increase;
+	}
+	return true;
+}
+
+void C4Player::SetViewLocked(bool to_val)
+{
+	if ((ViewLock = to_val))
+	{
+		// view was locked - cancel any scrolling
+		if (ViewMode == C4PVM_Scrolling) SetViewMode(C4PVM_Cursor);
 	}
 }

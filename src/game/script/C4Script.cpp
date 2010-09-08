@@ -2424,6 +2424,58 @@ static C4Object *FnGetPlrView(C4AulContext *cthr, long iPlr)
 	return pPlr->ViewTarget;
 }
 
+// flags for SetPlayerZoom* calls
+static const int PLRZOOM_Direct     = 0x01,
+                 PLRZOOM_NoIncrease = 0x04,
+                 PLRZOOM_NoDecrease = 0x08,
+                 PLRZOOM_LimitMin   = 0x10,
+                 PLRZOOM_LimitMax   = 0x20;
+
+static bool FnSetPlayerZoomByViewRange(C4AulContext *cthr, long plr_idx, long range_wdt, long range_hgt, long flags)
+{
+	// zoom size safety - both ranges 0 is fine, it causes a zoom reset to default
+	if (range_wdt < 0 || range_hgt < 0) return false;
+	// special player NO_OWNER: apply to all viewports
+	if (plr_idx == NO_OWNER)
+	{
+		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
+			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnSetPlayerZoomByViewRange(cthr, plr->Number, range_wdt, range_hgt, flags);
+		return true;
+	}
+	else
+	{
+		// safety check on player only, so function return result is always in sync
+		C4Player *plr = ::Players.Get(plr_idx);
+		if (!plr) return false;
+		// adjust values in player
+		if (!(flags & (PLRZOOM_LimitMin | PLRZOOM_LimitMax)))
+			plr->SetZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_Direct), !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		else
+		{
+			if (flags & PLRZOOM_LimitMin) plr->SetMinZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+			if (flags & PLRZOOM_LimitMax) plr->SetMaxZoomByViewRange(range_wdt, range_hgt, !!(flags & PLRZOOM_NoIncrease), !!(flags & PLRZOOM_NoDecrease));
+		}
+	}
+	return true;
+}
+
+static bool FnSetPlayerViewLock(C4AulContext *cthr, long plr_idx, bool is_locked)
+{
+	// special player NO_OWNER: apply to all players
+	if (plr_idx == NO_OWNER)
+	{
+		for (C4Player *plr = ::Players.First; plr; plr=plr->Next)
+			if (plr->Number != NO_OWNER) // can't happen, but would be a crash if it did...
+				FnSetPlayerViewLock(cthr, plr->Number, is_locked);
+		return true;
+	}
+	C4Player *plr = ::Players.Get(plr_idx);
+	if (!plr) return false;
+	plr->SetViewLocked(is_locked);
+	return true;
+}
+
 static bool FnDoHomebaseMaterial(C4AulContext *cthr, long iPlr, C4ID id, long iChange)
 {
 	// validity check
@@ -6172,6 +6224,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetValue", FnGetValue);
 	AddFunc(pEngine, "GetRank", FnGetRank);
 	AddFunc(pEngine, "Angle", FnAngle);
+	AddFunc(pEngine, "SetPlayerZoomByViewRange", FnSetPlayerZoomByViewRange);
+	AddFunc(pEngine, "SetPlayerViewLock", FnSetPlayerViewLock);
 	AddFunc(pEngine, "DoHomebaseMaterial", FnDoHomebaseMaterial);
 	AddFunc(pEngine, "DoHomebaseProduction", FnDoHomebaseProduction);
 	AddFunc(pEngine, "GainMissionAccess", FnGainMissionAccess);
@@ -6682,6 +6736,12 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
+
+	{ "PLRZOOM_Direct"            ,C4V_Int,      PLRZOOM_Direct },
+	{ "PLRZOOM_NoIncrease"        ,C4V_Int,      PLRZOOM_NoIncrease },
+	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },
+	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
+	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
 
 	{ NULL, C4V_Any, 0}
 };

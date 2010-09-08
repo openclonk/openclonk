@@ -32,8 +32,8 @@
 #include <set>
 
 const int32_t C4PVM_Cursor    = 0,
-                                C4PVM_Target    = 1,
-                                                  C4PVM_Scrolling = 2;
+              C4PVM_Target    = 1,
+              C4PVM_Scrolling = 2;
 
 const int32_t C4P_Number_None = -5;
 
@@ -100,6 +100,7 @@ public:
 	// View
 	int32_t ViewMode;
 	int32_t ViewX,ViewY;
+	bool ViewLock; // if set, no scrolling is allowed
 	C4Object *ViewTarget; // NoSave //
 	int32_t ViewWealth,ViewScore;
 	bool ShowStartup;
@@ -107,6 +108,7 @@ public:
 	bool fFogOfWar;
 	bool fFogOfWarInitialized; // No Save //
 	C4ObjectList FoWViewObjs; // No Save //
+	int32_t ZoomLimitMinWdt,ZoomLimitMinHgt,ZoomLimitMaxWdt,ZoomLimitMaxHgt,ZoomWdt,ZoomHgt; // zoom limits and last zoom set by script
 	// Game
 	int32_t Wealth;
 	int32_t CurrentScore,InitialScore;
@@ -202,6 +204,8 @@ public:
 	bool SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus); // add/remove object from crew
 	bool IsChosingTeam() const { return Status==PS_TeamSelection || Status==PS_TeamSelectionPending; }
 	bool IsInvisible() const;
+	bool IsViewLocked() const { return ViewLock; } // return if view is fixed to cursor, so scrolling is not allowed
+	void SetViewLocked(bool to_val); // lock or unlock free scrolling for player
 
 protected:
 	void ClearControl();
@@ -250,6 +254,16 @@ public:
 
 	// when the player changes team, his color changes. Relfect this in player objects
 	void SetPlayerColor(uint32_t dwNewClr);
+
+	// zoom and zoom limit changes
+	void SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease);
+	void SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
+	void SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
+	void ZoomToViewport(bool direct, bool no_increase=false, bool no_decrease=false);
+	void ZoomLimitsToViewport();
+
+private:
+	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);
 };
 
 #endif
