@@ -1432,6 +1432,7 @@ void C4DefList::CallEveryDefinition()
 	{
 		C4AulParSet Pars(C4VPropList(it->second));
 		it->second->Script.Call(PSF_Definition, 0, &Pars, true);
+		it->second->Freeze();
 	}
 }
 

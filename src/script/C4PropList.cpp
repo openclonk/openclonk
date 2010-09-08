@@ -97,7 +97,7 @@ C4PropListNumbered::~C4PropListNumbered()
 
 C4PropList::C4PropList(C4PropList * prototype):
 		Status(1),
-		FirstRef(NULL), prototype(prototype)
+		FirstRef(NULL), prototype(prototype), constant(false)
 {
 	if (prototype)
 		SetProperty(Strings.P[P_Prototype], C4VPropList(prototype));
@@ -318,6 +318,7 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n)
 
 void C4PropList::SetProperty(C4String * k, const C4Value & to)
 {
+	assert(!constant);
 	assert(Strings.Set.Has(k));
 	if (k == Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
 	{

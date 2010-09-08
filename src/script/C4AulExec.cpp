@@ -247,6 +247,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPropList = pCurVal - 1;
 				if (!(pPropList->ConvertTo(C4V_PropList) && pPropList->_getPropList()))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
+				if (pPropList->_getPropList()->IsFrozen())
+					throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");
 				pPropList->_getPropList()->SetProperty(pCPos->Par.s, pCurVal[0]);
 				pPropList->Set(pCurVal[0]);
 				PopValue();
@@ -492,6 +494,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				{
 					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
 					C4PropList *pPropList = pStruct->_getPropList();
+					if (pPropList->IsFrozen())
+						throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");					
 					pPropList->SetProperty(pIndex->_getStr(), *pValue);
 				}
 				// Set result, remove array and index from stack

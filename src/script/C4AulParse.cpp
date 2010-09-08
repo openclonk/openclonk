@@ -175,7 +175,7 @@ public:
 
 	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
 	void Match(C4AulTokenType TokenType, const char * Message = NULL);
-	void UnexpectedToken(const char * Expected);
+	void UnexpectedToken(const char * Expected) NORETURN;
 	const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, const char *pIdtf=0);
@@ -3003,6 +3003,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 					else if (TokenType != ATT_BLCLOSE)
 						UnexpectedToken("'}' or ','");
 				}
+				r._getPropList()->Freeze();
 				break;
 			}
 		default:

@@ -1021,6 +1021,8 @@ static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 	if (!pObj) return C4VFalse;
 	C4String * key = key_C4V->_getStr();
 	if (!key) return C4VFalse;
+	if (pObj->IsFrozen())
+		throw new C4AulExecError(cthr->Obj, "proplist write: proplist is readonly");
 	pObj->SetProperty(key, *to);
 	return C4VTrue;
 }

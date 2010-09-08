@@ -63,10 +63,17 @@ public:
 	bool GetPropertyVal(C4PropertyName k, C4Value *pResult) { return GetPropertyVal(Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k);
 	int32_t GetPropertyInt(C4PropertyName k);
+	// not allowed on frozen proplists
 	void SetProperty(C4String * k, const C4Value & to);
 	void ResetProperty(C4String * k);
 
 	static C4PropList * New(C4PropList * prototype = 0);
+	static C4PropList * NewAnon(C4PropList * prototype = 0);
+
+	// only freeze proplists which are not going to be modified
+	void Freeze() { constant = true; }
+	bool IsFrozen() { return constant; }
+
 	virtual void DenumeratePointers();
 	virtual ~C4PropList();
 
@@ -79,7 +86,7 @@ protected:
 
 private:
 	C4Value *FirstRef; // No-Save
-	bool constant; // if true, this proplist is neither saved nor changeable FIXME: implement
+	bool constant; // if true, this proplist is not changeable
 
 	C4PropList * prototype;
 	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
