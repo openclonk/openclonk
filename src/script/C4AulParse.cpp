@@ -3035,6 +3035,16 @@ C4Value C4AulParseState::Parse_ConstExpression()
 	}
 	// expect ',' (next global) or ';' (end of definition) now
 	Shift();
+	if (TokenType == ATT_OPERATOR)
+	{
+		int OpID = cInt;
+		if (C4ScriptOpMap[OpID].Code == AB_BitOr)
+		{
+			Shift();
+			C4Value r2 = Parse_ConstExpression();
+			r.SetInt(r.getInt() | r2.getInt());
+		}
+	}
 	return r;
 }
 
