@@ -2854,7 +2854,21 @@ void C4AulParseState::Parse_Local()
 			// insert variable
 			a->LocalNamed.AddName(Idtf);
 		}
+		char Name[C4AUL_MAX_Identifier] = ""; // current identifier
+		SCopy(Idtf, Name);
 		Match(ATT_IDTF);
+		if (TokenType == ATT_SET)
+		{
+			if (!a->Def)
+				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
+			// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
+			Shift(Ref, false);
+			// register as constant
+			if (Type == PREPARSER)
+				a->Def->SetProperty(Strings.RegString(Name), Parse_ConstExpression());
+			else
+				Parse_ConstExpression();
+		}
 		switch (TokenType)
 		{
 		case ATT_COMMA:
@@ -2916,99 +2930,108 @@ void C4AulParseState::Parse_Static()
 C4Value C4AulParseState::Parse_ConstExpression()
 {
 	C4Value r;
-	if (Type == PREPARSER)
+	switch (TokenType)
 	{
-		switch (TokenType)
+	case ATT_INT: r.SetInt(cInt); break;
+	case ATT_BOOL: r.SetBool(!!cInt); break;
+	case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
+	case ATT_NIL: r.Set0(); break;
+	case ATT_IDTF:
+		// identifier is only OK if it's another constant
+		if (!a->Engine->GetGlobalConstant(Idtf, &r))
+			UnexpectedToken("constant value");
+		break;
+	case ATT_BOPEN2:
 		{
-		case ATT_INT: r.SetInt(cInt); break;
-		case ATT_BOOL: r.SetBool(!!cInt); break;
-		case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-		case ATT_NIL: r.Set0(); break;
-		case ATT_IDTF:
-			// identifier is only OK if it's another constant
-			if (!a->Engine->GetGlobalConstant(Idtf, &r))
-				UnexpectedToken("constant value");
-			break;
-		case ATT_BOPEN2:
-			{
-				Shift();
-				// Create an array
+			Shift();
+			// Create an array
+			if (Type == PREPARSER)
 				r.SetArray(new C4ValueArray());
-				int size = 0;
-				bool fDone = false;
-				do
-				switch (TokenType)
+			int size = 0;
+			bool fDone = false;
+			do
+			switch (TokenType)
+			{
+				case ATT_BCLOSE2:
 				{
-					case ATT_BCLOSE2:
+					// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
+					if (size > 0)
 					{
-						// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
-						if (size > 0)
-						{
+						if (Type == PREPARSER)
 							r._getArray()->SetItem(size, C4VNull);
-							++size;
-						}
+						++size;
+					}
+					fDone = true;
+					break;
+				}
+				case ATT_COMMA:
+				{
+					// got no parameter before a ","? then push nil
+					if (Type == PREPARSER)
+						r._getArray()->SetItem(size, C4VNull);
+					Shift();
+					++size;
+					break;
+				}
+				default:
+				{
+					if (Type == PREPARSER)
+						r._getArray()->SetItem(size, Parse_ConstExpression());
+					else
+						Parse_ConstExpression();
+					++size;
+					if (TokenType == ATT_COMMA)
+						Shift();
+					else if (TokenType == ATT_BCLOSE2)
+					{
 						fDone = true;
 						break;
 					}
-					case ATT_COMMA:
-					{
-						// got no parameter before a ","? then push nil
-						r._getArray()->SetItem(size, C4VNull);
-						Shift();
-						++size;
-						break;
-					}
-					default:
-					{
-						r._getArray()->SetItem(size, Parse_ConstExpression());
-						++size;
-						if (TokenType == ATT_COMMA)
-							Shift();
-						else if (TokenType == ATT_BCLOSE2)
-						{
-							fDone = true;
-							break;
-						}
-						else
-							UnexpectedToken("',' or ']'");
-					}
+					else
+						UnexpectedToken("',' or ']'");
 				}
-				while (!fDone);
-				break;
 			}
-		case ATT_BLOPEN:
-			{
-				Shift();
-				r.SetPropList(C4PropList::NewAnon());
-				while (TokenType != ATT_BLCLOSE)
-				{
-					C4String * pKey;
-					if (TokenType == ATT_IDTF)
-					{
-						pKey = Strings.RegString(Idtf);
-						Shift();
-					}
-					else if (TokenType == ATT_STRING)
-					{
-						pKey = reinterpret_cast<C4String*>(cInt);
-						Shift();
-					}
-					else UnexpectedToken("string or identifier");
-					if (TokenType != ATT_COLON && TokenType != ATT_SET)
-						UnexpectedToken("':' or '='");
-					Shift();
-					r._getPropList()->SetProperty(pKey, Parse_ConstExpression());
-					if (TokenType == ATT_COMMA)
-						Shift();
-					else if (TokenType != ATT_BLCLOSE)
-						UnexpectedToken("'}' or ','");
-				}
-				r._getPropList()->Freeze();
-				break;
-			}
-		default:
-			UnexpectedToken("constant value");
+			while (!fDone);
+			break;
 		}
+	case ATT_BLOPEN:
+		{
+			Shift(Type == PREPARSER ? Hold : Discard);
+			if (Type == PREPARSER)
+				r.SetPropList(C4PropList::NewAnon());
+			while (TokenType != ATT_BLCLOSE)
+			{
+				C4String * pKey;
+				if (TokenType == ATT_IDTF)
+				{
+					if (Type == PREPARSER)
+						pKey = Strings.RegString(Idtf);
+					Shift();
+				}
+				else if (TokenType == ATT_STRING)
+				{
+					pKey = reinterpret_cast<C4String*>(cInt);
+					Shift();
+				}
+				else UnexpectedToken("string or identifier");
+				if (TokenType != ATT_COLON && TokenType != ATT_SET)
+					UnexpectedToken("':' or '='");
+				Shift();
+				if (Type == PREPARSER)
+					r._getPropList()->SetProperty(pKey, Parse_ConstExpression());
+				else
+					Parse_ConstExpression();
+				if (TokenType == ATT_COMMA)
+					Shift(Type == PREPARSER ? Hold : Discard);
+				else if (TokenType != ATT_BLCLOSE)
+					UnexpectedToken("'}' or ','");
+			}
+			if (Type == PREPARSER)
+				r._getPropList()->Freeze();
+			break;
+		}
+	default:
+		UnexpectedToken("constant value");
 	}
 	// expect ',' (next global) or ';' (end of definition) now
 	Shift();
