@@ -12,21 +12,25 @@ func GetTurnPhase() { return _inherited(...); }
 
 func Definition(def) {
 	// add action
-	SetProperty("Climb", {
-		Prototype = Action,
-		Name = "Climb",
-		Directions = 2,
-		Length = 0,
-		Delay = 0,
-		Wdt = 8,
-		Hgt = 20,
-		Procedure = DFA_FLOAT,
-	}, GetProperty("ActMap"));
-	// save old phasecall of jump
-	var jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
-	// and add new one
-	SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
-	SetProperty("StartCallLadderOverloaded", jump_startcall, GetProperty("Jump", GetProperty("ActMap")));
+	def.ActMap = {
+		Prototype = def.ActMap,
+		Climb = {
+			Prototype = Action,
+			Name = "Climb",
+			Directions = 2,
+			Length = 0,
+			Delay = 0,
+			Wdt = 8,
+			Hgt = 20,
+			Procedure = DFA_FLOAT,
+		},
+		Jump = {
+			Prototype = def.ActMap.Jump,
+			StartCall = "StartSearchLadder",
+			// save old phasecall of jump
+			StartCallLadderOverloaded = def.ActMap.Jump.StartCall
+		}
+	};
 	_inherited(def);
 }
 

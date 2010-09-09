@@ -1770,9 +1770,7 @@ protected func AbortHangOnto()
 
 /* Act Map */
 
-func Definition(def) {
-	SetProperty("ActMap", {
-
+local ActMap = {
 Walk = {
 	Prototype = Action,
 	Name = "Walk",
@@ -1860,7 +1858,7 @@ Dig = {
 	Procedure = DFA_DIG,
 	Directions = 2,
 	Length = 16,
-	Delay = 15*3*0,
+	Delay = 0,//15*3*0,
 	X = 0,
 	Y = 60,
 	Wdt = 8,
@@ -2027,9 +2025,10 @@ HangOnto = {
 	AbortCall = "AbortHangOnto",
 	InLiquidAction = "Swim",
 },
-}, def);
-	SetProperty("Name", "Clonk", def);
+};
+local Name = "Clonk";
 
+func Definition(def) {
 	// Set perspective
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
 
