@@ -6,6 +6,4 @@ protected func Activate(int iByPlayer)
 	return true;
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

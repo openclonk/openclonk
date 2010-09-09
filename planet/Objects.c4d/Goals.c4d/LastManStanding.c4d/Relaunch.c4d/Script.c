@@ -73,7 +73,4 @@ private func RelaunchClonk()
 	return;
 }
 
-
-func Definition(def) {
-	SetProperty("Name", "relaunch", def);
-}
+local Name = "$Name$";

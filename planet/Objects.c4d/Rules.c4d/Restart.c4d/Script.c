@@ -11,6 +11,4 @@ func Activate(int plr)
 		clonk->RemoveObject();
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

@@ -164,7 +164,4 @@ global func FxRestoreModeStop(object target, int num, int reason, bool  temporar
 	return 1;
 }
 
-func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

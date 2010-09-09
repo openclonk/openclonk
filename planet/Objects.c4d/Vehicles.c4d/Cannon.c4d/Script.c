@@ -315,8 +315,7 @@ func Timer()
 	olddir = GetDir();
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 Roll = {
 	Prototype = Action,
 	Name = "Roll",
@@ -330,7 +329,11 @@ Roll = {
 	Wdt = 22,
 	Hgt = 16,
 	NextAction = "Roll",
-},	}, def);
-	SetProperty("Name", "$Name$", def);
+},
+};
+func Definitio(def)
+{
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(6000,0,0),Trans_Rotate(-20,1,0,0),Trans_Rotate(35,0,1,0),Trans_Scale(1350)),def);
 }
+
+local Name = "$Name$";

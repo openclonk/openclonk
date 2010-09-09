@@ -61,6 +61,4 @@ public func FxIntFadeOutTimerEffect(string new_effect_name) {
 		return -1;
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

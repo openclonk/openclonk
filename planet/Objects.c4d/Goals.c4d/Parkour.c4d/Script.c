@@ -469,8 +469,4 @@ private func AddEvalData(int plr)
 }
 
 /*-- Proplist --*/
-
-protected func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

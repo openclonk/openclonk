@@ -15,6 +15,4 @@ protected func Initialize()
 	AdjustLightningFrequency(GetScenarioVal("Lightning"));
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

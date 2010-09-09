@@ -6,10 +6,6 @@
 local fIsBase;
 local iEnergy;
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
 // ---------------- Settings for base funcionallity --------------------
 // --- these functions can be overloaded for vendors or special bases ---
 
@@ -440,3 +436,5 @@ global func GetBase ()
 	if(!(this->~IsBase())) return NO_OWNER;
 	return GetOwner();
 }
+
+local Name = "$Name$";

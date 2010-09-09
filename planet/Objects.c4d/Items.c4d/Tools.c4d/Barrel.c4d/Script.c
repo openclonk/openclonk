@@ -108,7 +108,6 @@ protected func Collection(object obj, bool put)
 
 public func IsToolProduct() { return 1; }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-}
+local Collectible = 1;
+local Name = "$Name$";
+

@@ -28,8 +28,7 @@ public func Set(int sx, int sy, int ex, int ey) {
 
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 	
 Vis = {
 	Prototype = Action,
@@ -43,7 +42,6 @@ Vis = {
 	OffX = -16,
 	OffY = 0,
 	NextAction = "Hold"
-	},  }, def);
-	
-	SetProperty("Name", "Path", def);
-}
+	},
+};
+local Name = "Path";

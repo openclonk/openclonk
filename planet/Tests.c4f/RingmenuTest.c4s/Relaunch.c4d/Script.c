@@ -53,7 +53,4 @@ public func Selected(object menu, object selector)
 	return 0;
 }
 
-
-func Definition(def) {
-	SetProperty("Name", "relaunch", def);
-}
+local Name = "relaunch";

@@ -17,6 +17,4 @@ protected func ControlUse(object clonk, int iX, int iY)
 	RemoveObject();
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

@@ -68,7 +68,4 @@ public func GuideMessage(string message)
 	return true;
 }
 
-protected func Definition(def)
-{
-	def["Name"] = "Prof. clonkine";
-}
+local Name = "Prof. clonkine";

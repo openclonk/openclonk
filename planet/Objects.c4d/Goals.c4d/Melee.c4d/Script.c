@@ -76,6 +76,4 @@ public func GetShortDescription(int plr)
 	return ""; // TODO
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

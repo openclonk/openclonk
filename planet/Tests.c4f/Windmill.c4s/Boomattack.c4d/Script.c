@@ -115,8 +115,7 @@ func GetFuel()
 	return fuel;
 }
 
-func Definition(def) {
-SetProperty("ActMap", {
+local ActMap = {
 
 Fly = {
 	Prototype = Action,
@@ -127,10 +126,9 @@ Fly = {
 	Wdt = 15,
 	Hgt = 27
 },
-}, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Collectible",1, def);
-	SetProperty("PerspectiveR", 20000, def);
-	SetProperty("PerspectiveTheta", 25, def);
-	SetProperty("PerspectivePhi", 30, def);
-}
+};
+local PerspectiveR = 20000;
+local PerspectiveTheta = 25;
+local PerspectivePhi = 30;
+local Name = "$Name$";
+local Collectible = 1;

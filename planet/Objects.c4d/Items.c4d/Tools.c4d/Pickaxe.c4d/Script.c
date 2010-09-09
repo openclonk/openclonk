@@ -26,8 +26,6 @@ public func GetCarryTransform()
 //wants to make that, good luck! :)
 
 func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(40, 0, 0, 1),Trans_Rotate(150, 0, 1, 0), Trans_Scale(900), Trans_Translate(600, 400, 1000)),def);
 }
 
@@ -207,3 +205,6 @@ public func Reset(clonk)
 public func IsTool() { return 1; }
 
 public func IsToolProduct() { return 1; }
+
+local Collectible = 1;
+local Name = "$Name$";

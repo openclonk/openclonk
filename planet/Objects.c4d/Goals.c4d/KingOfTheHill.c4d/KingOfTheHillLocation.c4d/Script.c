@@ -12,10 +12,6 @@ local color;
 local king;
 local timer;
 
-func Definition(def) {
-	def["Name"] = "$Name$";
-}
-
 func Initialize() {
 	
  	ScheduleCall(this, "PostInitialize", 1, 0);
@@ -146,3 +142,5 @@ func CreateStarCircle()
 		stars[GetLength(stars)]=star;
 	}
 }
+
+local Name = "$Name$";

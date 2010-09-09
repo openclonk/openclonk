@@ -223,8 +223,7 @@ protected func ContainedDigDouble()
 	return 1;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 Walk = {
 	Prototype = Action,
 	Name = "Walk",
@@ -405,6 +404,5 @@ Dead = {
 	ObjectDisabled = 1,
 	Animation = "Death",
 },
-}, def);
-	SetProperty("Name", "$Name$", def);
-}
+};
+local Name = "$Name$";

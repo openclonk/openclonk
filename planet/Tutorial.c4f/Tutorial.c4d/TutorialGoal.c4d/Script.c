@@ -245,7 +245,4 @@ protected func FxIntDirNextCPStop(object target, int fxnum)
 
 /*-- Proplist --*/
 
-func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

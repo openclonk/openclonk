@@ -24,7 +24,5 @@ private func Hit()
 	RemoveObject();
 }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-}
+local Collectible = 1;
+local Name = "$Name$";

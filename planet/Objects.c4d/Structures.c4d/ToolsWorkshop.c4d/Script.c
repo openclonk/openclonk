@@ -200,8 +200,7 @@ private func FindIncompleteContents(idSearched)
 	return 0;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 Build = {
 	Prototype = Action,
 	Name = "Build",
@@ -212,7 +211,10 @@ Build = {
 	NextAction = "Build",
 	//Animation = "Turn",
 	PhaseCall="Smoking",
-},  }, def);
-	SetProperty("Name", "$Name$", def);
+},
+};
+func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
+
+local Name = "$Name$";

@@ -59,14 +59,13 @@ public func AttachTargetLost()
   RemoveObject();
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 Attach = {
 	Prototype = Action,
 	Name = "Attach",
 	Procedure = DFA_ATTACH,
 	Length = 1,
 	Delay = 0,
-},	}, def);
-	SetProperty("Name", "$Name$", def);
-}
+},
+};
+local Name = "$Name$";

@@ -77,6 +77,4 @@ protected func MakeTarget(int ix, int iy, bool flying)
 	return target;
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

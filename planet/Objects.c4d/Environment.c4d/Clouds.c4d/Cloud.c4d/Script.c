@@ -167,5 +167,5 @@ Fly = {
 	TurnAction = "Turn",
 },
 }, def);
-	SetProperty("Name", "Cloud", def);
 }
+local Name = "Cloud";

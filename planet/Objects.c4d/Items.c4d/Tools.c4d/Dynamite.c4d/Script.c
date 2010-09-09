@@ -121,28 +121,26 @@ public func DoExplode()
 	Explode(18);
 }
 
-protected func Definition(def) {
-	def["Name"] = "Dynamite";
-	def["ActMap"] = {
-			Fuse = {
-				Prototype = Action,
-				Name = "Fuse",
-				Procedure = DFA_NONE,
-				NextAction = "Fuse",
-				Delay = 1,
-				Length = 1,
-				FacetBase = 1,
-				Sound = "Fusing",
-				StartCall = "Fusing"
-			},
-			Ready = {
-				Prototype = Action,
-				Name = "Ready",
-				Procedure = DFA_NONE,
-				NextAction = "Ready",
-				Delay = 1,
-				Length = 1,
-				FacetBase = 1,
-			}
-		};
-}
+local ActMap = {
+	Fuse = {
+		Prototype = Action,
+		Name = "Fuse",
+		Procedure = DFA_NONE,
+		NextAction = "Fuse",
+		Delay = 1,
+		Length = 1,
+		FacetBase = 1,
+		Sound = "Fusing",
+		StartCall = "Fusing"
+	},
+	Ready = {
+		Prototype = Action,
+		Name = "Ready",
+		Procedure = DFA_NONE,
+		NextAction = "Ready",
+		Delay = 1,
+		Length = 1,
+		FacetBase = 1,
+	}
+};
+local Name = "Dynamite";

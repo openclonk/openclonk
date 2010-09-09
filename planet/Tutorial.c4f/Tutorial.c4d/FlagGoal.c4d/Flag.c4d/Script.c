@@ -12,11 +12,13 @@ protected func Initialize()
 
 /*-- Proplist --*/
 
+local Name = "$Name$";
+
 func Definition(def)
 {
-	SetProperty("Name", "$Name$", def);
 	SetProperty("MeshTransformation", Trans_Rotate(90,0,1,0),def);
-	SetProperty("ActMap", {
+}	
+local ActMap = {
 Wave = {
 	Prototype = Action,
 	Name = "Wave",
@@ -32,4 +34,4 @@ Wave = {
 	NextAction = "Wave",
 	Animation = "Wave",
 },
-}, def);}
+};

@@ -97,7 +97,4 @@ private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, in
 	}
 }
 
-func Definition(def)
-{
-	def["Name"] = "$Name$";
-}
+local Name = "$Name$";

@@ -203,6 +203,4 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	return true;
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

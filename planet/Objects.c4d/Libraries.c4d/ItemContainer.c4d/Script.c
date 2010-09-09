@@ -116,7 +116,4 @@ private func Exchange(object chest_content, object clonk_content, object clonk, 
 		clonk_content->Enter(this);
 }
 
-protected func Definition(def) 
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

@@ -143,6 +143,4 @@ private func FireWeapon(object pClonk,iX,iY)
 	}
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

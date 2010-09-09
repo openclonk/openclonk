@@ -83,8 +83,5 @@ public func RelaunchCount()
 {
 	return 5;
 }
-	
-protected func Definition(def)
-{
-	SetProperty("Name", "Scoreboard Relaunches", def);
-}
+
+local Name = "Scoreboard Relaunches";

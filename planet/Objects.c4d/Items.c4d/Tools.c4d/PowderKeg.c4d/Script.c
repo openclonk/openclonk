@@ -122,7 +122,5 @@ public func OnProjectileHit()
 func IsAlchemyProduct() { return 1; }
 func AlchemyProcessTime() { return 100; }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-}
+local Collectible = 1;
+local Name = "$Name$";

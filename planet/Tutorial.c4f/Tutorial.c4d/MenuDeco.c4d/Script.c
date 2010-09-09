@@ -6,10 +6,9 @@ func FrameDecorationBorderLeft()    { return 5; }
 func FrameDecorationBorderRight()   { return 5; }
 func FrameDecorationBorderBottom()  { return 5; }
 
-func Definition(def) {
-	SetProperty("Name", "MenuDeco", def);
+local Name = "MenuDeco";
 
-	SetProperty("ActMap", {
+local ActMap = {
 
 		FrameDecoTopLeft = {
 			Prototype = Action,
@@ -127,7 +126,4 @@ func Definition(def) {
 			OffX = 0,
 			OffY = 0,
 		}
-
-	});
-
-}
+};

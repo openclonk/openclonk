@@ -157,7 +157,7 @@ func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
 }
 
 func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
 	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 }
+local Collectible = 1;
+local Name = "$Name$";

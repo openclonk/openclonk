@@ -38,15 +38,13 @@ func UpdateTransferZone()
 	Show();
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 		Fly = {
 			Prototype = Action,
 			Name = "Fly",
 			Procedure = DFA_FLOAT,
 			NextAction = "Hold"
 		},
-			}, def);
-			
-	SetProperty("Name", "Cloud", def);
-}
+};
+local Name = "Cloud";
+

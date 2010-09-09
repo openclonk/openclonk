@@ -114,8 +114,7 @@ private func FxFloatTimer(object target, int num, int time)
 	}
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 
 Float = {
 	Prototype = Action,
@@ -150,6 +149,5 @@ Deflate = {
 	EndCall = "Pack",
 	Animation = "Deflate",
 },
-}, def);
-	SetProperty("Name", "$Name$",def);
-}
+};
+local Name = "$Name$";

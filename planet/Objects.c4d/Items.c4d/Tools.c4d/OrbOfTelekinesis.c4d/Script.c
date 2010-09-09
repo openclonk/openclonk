@@ -94,6 +94,4 @@ protected func FxChargeTimer(object pTarget, int iEffectNumber, int iEffectTime)
 	}
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

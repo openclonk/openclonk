@@ -399,5 +399,5 @@ Hanging = {
 	Prototype = Action,
 	Name = "Hanging"
 },}, def);
-	SetProperty("Name", "$Name$", def);
 }
+local Name = "$Name$";

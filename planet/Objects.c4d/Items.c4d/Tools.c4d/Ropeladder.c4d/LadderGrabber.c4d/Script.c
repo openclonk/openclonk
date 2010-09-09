@@ -19,13 +19,11 @@ func GetInteractionMetaInfo(object clonk)
 	return { Description = "$GrabLadder$", IconName = nil, IconID = nil, Selected = false };
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 		Attach = {
 			Prototype = Action,
 			Name = "Attach",
 			Procedure = DFA_ATTACH,
-		},},
-	def);
-	SetProperty("Name", "$Name$", def);
-}
+		},
+};
+local Name = "$Name$";

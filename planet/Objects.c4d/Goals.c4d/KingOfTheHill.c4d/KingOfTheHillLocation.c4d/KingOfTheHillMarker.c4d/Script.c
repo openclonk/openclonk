@@ -3,10 +3,6 @@ Marker for King of the Hill
 Author: Zapper
 */
 
-func Definition(def) {
-	def["Name"] = "$Name$";
-}
-
 func Initialize()
 {
 	AddEffect("Timer", this, 10, 1, this);
@@ -42,3 +38,5 @@ func FxTimerTimer()
 	
 	this->SetClrModulation(origin->GetStarColor(Sin(this->GetActTime(), 50)));
 }
+
+local Name = "$Name$";

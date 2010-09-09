@@ -184,6 +184,4 @@ global func FxRealTimeTimer(object target, int num, int time)
 	UpdateTime();
 }
 
-func Definition(def) {
-	SetProperty("Name","Time",def);
-}
+local Name = "Time";
