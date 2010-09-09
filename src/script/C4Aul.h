@@ -183,16 +183,17 @@ enum C4AulBCCType
 	AB_INT,     // constant: int
 	AB_BOOL,    // constant: bool
 	AB_STRING,  // constant: string
-	AB_C4ID,    // constant: C4ID
+	AB_CPROPLIST, // constant: proplist
+	AB_CARRAY,  // constant: array
 	AB_NIL,     // constant: nil
 	AB_ARRAY,   // semi-constant: array
 	AB_DUP,     // duplicate value from stack
-	AB_PROPLIST,    // create a new proplist
-	AB_IPROPLIST,   // set a property of a proplist
+	AB_PROPLIST, // create a new proplist
+	AB_IPROPLIST, // set a property of a proplist
 	AB_IVARN,   // initialization of named var
 	AB_JUMP,    // jump
-	AB_JUMPAND,   // jump if zero, else pop the stack
-	AB_JUMPOR,    // jump if not zero, else pop the stack
+	AB_JUMPAND, // jump if zero, else pop the stack
+	AB_JUMPOR,  // jump if not zero, else pop the stack
 	AB_CONDN,   // conditional jump (negated, pops stack)
 	AB_COND,    // conditional jump (pops stack)
 	AB_FOREACH_NEXT, // foreach: next element
@@ -230,6 +231,8 @@ struct C4AulBCC
 	{
 		int32_t i;
 		C4String * s;
+		C4PropList * p;
+		C4ValueArray * a;
 		C4AulFunc * f;
 		intptr_t X;
 	} Par;    // extra info (long for use with amd64)

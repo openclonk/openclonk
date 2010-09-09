@@ -164,6 +164,7 @@ public:
 	void Parse_Local();
 	void Parse_Static();
 	void Parse_Const();
+	C4Value Parse_ConstExpression();
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
@@ -895,7 +896,8 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_INT: return "INT";      // constant: int
 	case AB_BOOL: return "bool";    // constant: bool
 	case AB_STRING: return "STRING";  // constant: string
-	case AB_C4ID: return "C4ID";    // constant: C4ID
+	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
+	case AB_CARRAY: return "CARRAY";  // constant: array
 	case AB_NIL: return "NIL";    // constant: nil
 	case AB_DUP: return "DUP";    // constant: nil
 	case AB_ARRAY: return "ARRAY";    // semi-constant: array
@@ -1025,7 +1027,8 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_INT:
 	case AB_BOOL:
 	case AB_STRING:
-	case AB_C4ID:
+	case AB_CPROPLIST:
+	case AB_CARRAY:
 	case AB_PROPLIST:
 	case AB_NIL:
 	case AB_VARN:
@@ -1411,15 +1414,15 @@ void C4AulParseState::Parse_Script()
 	bool all_ok = true;
 	bool found_code = false;
 	while (!fDone) try
+	{
+		// Go to the next token if the current token could not be processed or no token has yet been parsed
+		if (SPos == SPos0)
 		{
-			// Go to the next token if the current token could not be processed or no token has yet been parsed
-			if (SPos == SPos0)
-			{
-				Shift();
-			}
-			SPos0 = SPos;
-			switch (TokenType)
-			{
+			Shift();
+		}
+		SPos0 = SPos;
+		switch (TokenType)
+		{
 			case ATT_DIR:
 			{
 				if (found_code)
@@ -1525,18 +1528,18 @@ void C4AulParseState::Parse_Script()
 				break;
 			default:
 				UnexpectedToken("declaration");
-			}
-			all_ok = true;
 		}
-		catch (C4AulError *err)
-		{
-			// damn! something went wrong, print it out
-			// but only one error per function
-			if (all_ok)
-				err->show();
-			all_ok = false;
-			delete err;
-		}
+		all_ok = true;
+	}
+	catch (C4AulError *err)
+	{
+		// damn! something went wrong, print it out
+		// but only one error per function
+		if (all_ok)
+			err->show();
+		all_ok = false;
+		delete err;
+	}
 
 	// includes were added?
 	if (a->Includes)
@@ -2013,7 +2016,8 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				{
 				case AB_INT: from = (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 				case AB_STRING: from = C4V_String; break;
-				case AB_ARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
+				case AB_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
+				case AB_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 				case AB_BOOL: from = C4V_Bool; break;
 				case AB_FUNC:
 					if ((a->CPos-1)->Par.f) from = (a->CPos-1)->Par.f->GetRetType(); break;
@@ -2122,13 +2126,8 @@ void C4AulParseState::Parse_PropList()
 	AddBCC(AB_PROPLIST);
 	Shift();
 	// insert block in byte code
-	while (1)
+	while (TokenType != ATT_BLCLOSE)
 	{
-		if (TokenType == ATT_BLCLOSE)
-		{
-			Shift();
-			return;
-		}
 		C4String * pKey;
 		if (TokenType == ATT_IDTF)
 		{
@@ -2152,6 +2151,7 @@ void C4AulParseState::Parse_PropList()
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 	}
+	Shift();
 }
 
 void C4AulParseState::Parse_DoWhile()
@@ -2504,7 +2504,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					case C4V_String:
 						AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 						break;
-					case C4V_PropList:   AddBCC(AB_C4ID,   val.getC4ID().GetHandle()); break;
+					case C4V_PropList:
+						AddBCC(AB_CPROPLIST, reinterpret_cast<intptr_t>(val._getPropList()));
+						break;
+					case C4V_Array:
+						AddBCC(AB_CARRAY, reinterpret_cast<intptr_t>(val._getArray()));
+						break;
 					case C4V_Any:
 						// any: allow zero
 						if (!val.GetData())
@@ -2908,6 +2913,107 @@ void C4AulParseState::Parse_Static()
 	}
 }
 
+C4Value C4AulParseState::Parse_ConstExpression()
+{
+	C4Value r;
+	if (Type == PREPARSER)
+	{
+		switch (TokenType)
+		{
+		case ATT_INT: r.SetInt(cInt); break;
+		case ATT_BOOL: r.SetBool(!!cInt); break;
+		case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
+		case ATT_NIL: r.Set0(); break;
+		case ATT_IDTF:
+			// identifier is only OK if it's another constant
+			if (!a->Engine->GetGlobalConstant(Idtf, &r))
+				UnexpectedToken("constant value");
+			break;
+		case ATT_BOPEN2:
+			{
+				Shift();
+				// Create an array
+				r.SetArray(new C4ValueArray());
+				int size = 0;
+				bool fDone = false;
+				do
+				switch (TokenType)
+				{
+					case ATT_BCLOSE2:
+					{
+						// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
+						if (size > 0)
+						{
+							r._getArray()->SetItem(size, C4VNull);
+							++size;
+						}
+						fDone = true;
+						break;
+					}
+					case ATT_COMMA:
+					{
+						// got no parameter before a ","? then push nil
+						r._getArray()->SetItem(size, C4VNull);
+						Shift();
+						++size;
+						break;
+					}
+					default:
+					{
+						r._getArray()->SetItem(size, Parse_ConstExpression());
+						++size;
+						if (TokenType == ATT_COMMA)
+							Shift();
+						else if (TokenType == ATT_BCLOSE2)
+						{
+							fDone = true;
+							break;
+						}
+						else
+							UnexpectedToken("',' or ']'");
+					}
+				}
+				while (!fDone);
+				break;
+			}
+		case ATT_BLOPEN:
+			{
+				Shift();
+				r.SetPropList(C4PropList::New());
+				while (TokenType != ATT_BLCLOSE)
+				{
+					C4String * pKey;
+					if (TokenType == ATT_IDTF)
+					{
+						pKey = Strings.RegString(Idtf);
+						Shift();
+					}
+					else if (TokenType == ATT_STRING)
+					{
+						pKey = reinterpret_cast<C4String*>(cInt);
+						Shift();
+					}
+					else UnexpectedToken("string or identifier");
+					if (TokenType != ATT_COLON && TokenType != ATT_SET)
+						UnexpectedToken("':' or '='");
+					Shift();
+					r._getPropList()->SetProperty(pKey, Parse_ConstExpression());
+					if (TokenType == ATT_COMMA)
+						Shift();
+					else if (TokenType != ATT_BLCLOSE)
+						UnexpectedToken("'}' or ','");
+				}
+				break;
+			}
+		default:
+			UnexpectedToken("constant value");
+		}
+	}
+	// expect ',' (next global) or ';' (end of definition) now
+	Shift();
+	return r;
+}
+
 void C4AulParseState::Parse_Const()
 {
 	// get global constant definition(s)
@@ -2936,43 +3042,25 @@ void C4AulParseState::Parse_Const()
 		// So allow only direct constants for now.
 		// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
 		Shift(Ref, false);
-		if (Type == PREPARSER)
-		{
-			C4Value vGlobalValue;
-			switch (TokenType)
-			{
-			case ATT_INT: vGlobalValue.SetInt(cInt); break;
-			case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
-			case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-			case ATT_NIL: vGlobalValue.Set0(); break;
-			case ATT_IDTF:
-				// identifier is only OK if it's another constant
-				if (!a->Engine->GetGlobalConstant(Idtf, &vGlobalValue))
-					UnexpectedToken("constant value");
-				break;
-			default:
-				UnexpectedToken("constant value");
-			}
-			// register as constant
-			a->Engine->RegisterGlobalConstant(Name, vGlobalValue);
-		}
-		// expect ',' (next global) or ';' (end of definition) now
-		Shift();
+
+		// register as constant
+		a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression());
+		
 		switch (TokenType)
 		{
-		case ATT_COMMA:
-		{
-			Shift();
-			break;
-		}
-		case ATT_SCOLON:
-		{
-			return;
-		}
-		default:
-		{
-			UnexpectedToken("',' or ';'");
-		}
+			case ATT_COMMA:
+			{
+				Shift();
+				break;
+			}
+			case ATT_SCOLON:
+			{
+				return;
+			}
+			default:
+			{
+				UnexpectedToken("',' or ';'");
+			}
 		}
 	}
 }

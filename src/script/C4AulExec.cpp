@@ -181,8 +181,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushString(pCPos->Par.s);
 				break;
 
-			case AB_C4ID:
-				PushValue(C4VPropList(C4Id2Def(C4ID(pCPos->Par.i))));
+			case AB_CPROPLIST:
+				PushPropList(pCPos->Par.p);
+				break;
+
+			case AB_CARRAY:
+				PushArray(pCPos->Par.a);
 				break;
 
 			case AB_NIL:
