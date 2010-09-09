@@ -1369,7 +1369,10 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	// Disable player lock on unowned viewports
 	if (!ValidPlr(Player)) TogglePlayerLock();
 	// Draw
-	Execute();
+	// Don't call Execute right away since it is not yet guaranteed that
+	// the Player has set this as its Viewport, and the drawing routines rely
+	// on that.
+	//Execute();
 	// Success
 	return true;
 }
