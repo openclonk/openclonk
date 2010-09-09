@@ -177,8 +177,11 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 		else
 			return false;
 		delete[] buf;
+
+		// Create mirrored animations (#401)
+		Mesh->MirrorAnimations();
 	}
-	catch (const StdMeshLoader::LoaderException &ex)
+	catch (const std::runtime_error& ex)
 	{
 		DebugLogF("Failed to load mesh: %s", ex.what());
 		delete[] buf;

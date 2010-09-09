@@ -179,6 +179,35 @@ namespace
 			ClearAnimationListRecursively(list, node->GetRightChild());
 		}
 	}
+
+	// Mirror is wrt X axis
+	void MirrorKeyFrame(StdMeshKeyFrame& frame, const StdMeshTransformation& old_bone_transformation, const StdMeshTransformation& new_inverse_bone_transformation)//Bone& new_bone, const StdMeshBone& old_bone)
+	{
+		// frame was a keyframe of a track for old_bone and was now transplanted to new_bone.
+
+		frame.Transformation.rotate.y = -frame.Transformation.rotate.y;
+		frame.Transformation.rotate.z = -frame.Transformation.rotate.z;
+
+		// We might also want to do something like this... need to get feedback
+		// from modelers...
+		//StdMeshVector d = old_bone_transformation.scale * (old_bone_transformation.rotate * frame.Transformation.translate);
+		//d.x = -d.x;
+		//frame.Transformation.translate = new_inverse_bone_transformation.rotate * (new_inverse_bone_transformation.scale * d);
+	}
+
+	bool MirrorName(StdStrBuf& buf)
+	{
+		unsigned int len = buf.getLength();
+
+		if(buf.Compare_(".R", len-2) == 0)
+			buf.getMData()[len-1] = 'L';
+		else if(buf.Compare_(".L", len-2) == 0)
+			buf.getMData()[len-1] = 'R';
+		else
+			return false;
+
+		return true;
+	}
 }
 
 /* Boring Math stuff begins here */
@@ -904,6 +933,66 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 	std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name2);
 	if (iter == Animations.end()) return NULL;
 	return &iter->second;
+}
+
+void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation)
+{
+	StdCopyStrBuf name2(name);
+	assert(Animations.find(name2) == Animations.end());
+
+	StdMeshAnimation& new_anim = Animations.insert(std::make_pair(name2, animation)).first->second;
+	new_anim.Name = name2;
+
+	// Go through all bones
+	for(unsigned int i = 0; i < GetNumBones(); ++i)
+	{
+		// Only proceed if the bone is used in this animation
+		if(animation.Tracks[i] != NULL)
+		{
+			const StdMeshBone& bone = GetBone(i);
+			StdCopyStrBuf other_bone_name(bone.Name);
+			if(MirrorName(other_bone_name))
+			{
+				const StdMeshBone* other_bone = GetBoneByName(other_bone_name);
+				if(!other_bone)
+					throw std::runtime_error(std::string("No counterpart for bone ") + bone.Name.getData() + " found");
+
+				// Make sure to not swap tracks twice
+				if(other_bone->Index > bone.Index)
+				{
+					std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
+
+					StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
+					StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
+
+					// Mirror all the keyframes of both tracks
+					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
+						MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(other_own_trans));
+
+					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[other_bone->Index]->Frames.begin(); iter != new_anim.Tracks[other_bone->Index]->Frames.end(); ++iter)
+						MirrorKeyFrame(iter->second, other_own_trans, StdMeshTransformation::Inverse(own_trans));
+				}
+			}
+		}
+	}
+}
+
+void StdMesh::MirrorAnimations()
+{
+	// Mirror .R and .L animations without counterpart
+	for(std::map<StdCopyStrBuf, StdMeshAnimation>::iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
+	{
+		// For debugging purposes:
+		//if(iter->second.Name == "Jump")
+		//	MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
+
+		StdCopyStrBuf buf = iter->second.Name;
+		if(MirrorName(buf))
+		{
+			if(Animations.find(buf) == Animations.end())
+				MirrorAnimation(buf, iter->second);
+		}
+	}
 }
 
 StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):

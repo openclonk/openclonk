@@ -192,6 +192,7 @@ public:
 // Animation track, specifies transformation for one bone for each keyframe
 class StdMeshTrack
 {
+	friend class StdMesh;
 	friend class StdMeshLoader;
 public:
 	StdMeshTransformation GetTransformAt(float time) const;
@@ -203,6 +204,7 @@ private:
 // Animation, consists of one Track for each animated Bone
 class StdMeshAnimation
 {
+	friend class StdMesh;
 	friend class StdMeshLoader;
 	friend class StdMeshInstance;
 public:
@@ -272,6 +274,10 @@ public:
 
 	const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
 	float GetBoundingRadius() const { return BoundingRadius; }
+
+	// TODO: This code should maybe better be placed in StdMeshLoader...
+	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
+	void MirrorAnimations();
 
 private:
 	void AddMasterBone(StdMeshBone* bone);
