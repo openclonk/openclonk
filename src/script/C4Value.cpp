@@ -544,7 +544,15 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return false;
 		}
 	case C4V_C4Object: case C4V_PropList:
-		return Data == Value2.Data && Type == Value2.Type;
+		if (Type == Value2.Type)
+		{
+			// Compare as equal if and only if the proplists are indistinguishable
+			// If one or both are mutable, they have to be the same
+			// otherwise, they have to have the same contents
+			if (Data.PropList == Value2.Data.PropList) return true;
+			if (!Data.PropList->IsFrozen() || !Value2.Data.PropList->IsFrozen()) return false;
+			return (*Data.PropList == *Value2.Data.PropList);
+		}
 	case C4V_String:
 		return Type == Value2.Type && Data.Str == Value2.Data.Str;
 	case C4V_Array:

@@ -135,6 +135,20 @@ C4PropList::~C4PropList()
 	assert(!::Objects.ObjectNumber(this));
 }
 
+bool C4PropList::operator==(const C4PropList &b) const
+{
+	if (Properties.GetSize() != b.Properties.GetSize()) return false;
+	if (GetDef() != b.GetDef()) return false;
+	//if (GetObject() != b.GetObject()) return false;
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		if (*p != b.Properties.Get(p->Key)) return false;
+		p = Properties.Next(p);
+	}
+	return true;
+}
+
 void C4PropList::CompileFunc(StdCompiler *pComp)
 {
 	//pComp->Value(mkNamingAdapt(Properties, "Properties"));
@@ -242,6 +256,11 @@ C4Def * C4PropList::GetDef()
 	return 0;
 }
 
+C4Def const * C4PropList::GetDef() const
+{
+	if (prototype) return prototype->GetDef();
+	return 0;
+}
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
@@ -282,7 +301,7 @@ bool C4PropList::HasProperty(C4String * k) const
 	return false;
 }
 
-bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult)
+bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult) const
 {
 	if (Properties.Has(k))
 	{
@@ -295,7 +314,7 @@ bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult)
 		return false;
 }
 
-C4String * C4PropList::GetPropertyStr(C4PropertyName n)
+C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 {
 	C4String * k = Strings.P[n];
 	if (Properties.Has(k))
@@ -309,7 +328,7 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n)
 	return 0;
 }
 
-int32_t C4PropList::GetPropertyInt(C4PropertyName n)
+int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 {
 	C4String * k = Strings.P[n];
 	if (Properties.Has(k))
