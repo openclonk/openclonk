@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=39
 Title=Test1
 Version=4,10
 Difficulty=10

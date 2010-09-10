@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=28
 Title=Sky race 1 [R]
 Version=4,10
 Difficulty=10

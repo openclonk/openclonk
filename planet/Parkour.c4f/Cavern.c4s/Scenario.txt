@@ -1,5 +1,5 @@
 [Head]
-Icon=24
+Icon=34
 Title=Cavern
 Version=4,10,0,0
 MaxPlayer=12
