@@ -533,7 +533,7 @@ clonk_LDADD = \
 
 # build the resources
 .rc.o:
-	$(WINDRES) -I $(srcdir)/src/res -I $(srcdir)/src -i $< -o $@
+	$(WINDRES) -I $(srcdir)/src/res -I $(builddir) -i $< -o $@
 
 c4group_CPPFLAGS = \
   -I$(builddir) \
