@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=24
 Title=Mountain race 2 [R]
 Version=4,10
 Difficulty=10

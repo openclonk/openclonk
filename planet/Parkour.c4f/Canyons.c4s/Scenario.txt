@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=34
 Title=Canyons parkour [R]
 Version=4,10
 Difficulty=10

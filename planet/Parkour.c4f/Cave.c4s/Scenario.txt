@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=40
 Title=Cave race 2 [R]
 Version=4,10
 Difficulty=10
