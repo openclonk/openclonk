@@ -91,8 +91,7 @@ private func GetHorizonHeight(int x)
 	return height;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 
 Fly = {
 	Prototype = Action,
@@ -126,8 +125,9 @@ Flutter = {
 	StartCall = "Fluttering",
 	Animation = "Wait",
 },
-}, def);
-	SetProperty("Name", "Butterfly", def);
+};
+local Name = "Butterfly";
 
+func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
 }

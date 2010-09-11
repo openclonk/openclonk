@@ -104,7 +104,7 @@ public:
 		}
 		return !!*r;
 	}
-	unsigned int GetSize() { return Size; }
+	unsigned int GetSize() const { return Size; }
 	T * Add(T e)
 	{
 		// FIXME: Profile for load factor

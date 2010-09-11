@@ -3,10 +3,6 @@
 // Author: Randrian
 // TODO -> torough explanation how to use it
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
 func Initialize()
 {
 	var iPlrNumber = GetOwner()%4+1;
@@ -177,3 +173,5 @@ public func DoDoHomebaseProduction (id idID, int iChange)
 	}
 	return false;
 }
+
+local Name = "$Name$";

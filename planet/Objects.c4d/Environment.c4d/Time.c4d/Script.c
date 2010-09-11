@@ -29,7 +29,7 @@ global func SetTime(int iTime) //Sets the current time using a 1440-minute clock
 		AddEffect("IntSunrise",0,1,1);
 	}
 
-	timeobject->LocalN("itime")=iTime;
+	timeobject["itime"]=iTime;
 	if(timeobject!=nil) return 1;
 	else 
 		return 0;
@@ -94,12 +94,11 @@ protected func PlaceStars()
 	var maxamount=(LandscapeWidth()*LandscapeHeight())/40000;
 	var amount=0;
 
-	var iX;
-	var iY;
 	while(amount!=maxamount)
 	{
-		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
-			CreateObject(Star,iX,iY); //Places stars around like PlacesObjects should, but that function is broken
+		var pos;
+		if(pos = FindPosInMat("Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
+			CreateObject(Star,pos[0],pos[1]); //Places stars around like PlacesObjects should, but that function is broken
 		amount=++amount;
 	}
 }
@@ -185,6 +184,4 @@ global func FxRealTimeTimer(object target, int num, int time)
 	UpdateTime();
 }
 
-func Definition(def) {
-	SetProperty("Name","Time",def);
-}
+local Name = "Time";

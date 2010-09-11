@@ -18,8 +18,7 @@ stamp-h1
 config.h
 config.log
 config.status
-hgrevision.h
-hgrevision
+C4Version.h
 Makefile
 C4Include.h.gch
 Makefile.in

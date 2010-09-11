@@ -18,7 +18,4 @@ func NotifyHUD() { if (ExtraHUD) ExtraHUD->Update(); }
 func Collection2() { NotifyHUD(); return _inherited(...); }
 func Ejection() { NotifyHUD(); return _inherited(...); }
 
-func Definition(def) 
-{
-	SetProperty("Name", "ExtraSlot", def);
-}
+local Name = "ExtraSlot";

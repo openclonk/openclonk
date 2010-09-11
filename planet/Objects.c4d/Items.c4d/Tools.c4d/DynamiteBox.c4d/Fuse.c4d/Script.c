@@ -96,8 +96,7 @@ func FxIntFusingTimer()
 
 public func IsFuse() { return true; }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 		Connect = {
 		Prototype = Action,
 		Name = "Connect",
@@ -113,7 +112,7 @@ func Definition(def) {
 		Delay = 0,
 		Procedure = DFA_NONE,//CONNECT,
 		NextAction = "Fusing",
-	},  }, def);
+	},
+};
+local Name = "$Name$";
 	
-	SetProperty("Name", "$Name$", def);
-}

@@ -87,8 +87,5 @@ public func GetKillStreakCol()
 	//return ScoreboardCol(Scoreboard_KillStreak);
 	return 109;
 }
-	
-protected func Definition(def)
-{
-	SetProperty("Name", "Scoreboard Kill streaks", def);
-}
+
+local Name = "Scoreboard Kill streaks";

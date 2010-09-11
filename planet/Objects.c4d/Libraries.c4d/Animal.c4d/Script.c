@@ -86,6 +86,4 @@ protected func RejectEntrance(object pContainer)
 	return 1;// !Library_Animal_IsCollectible(pContainer); TODO create this rule :-)
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

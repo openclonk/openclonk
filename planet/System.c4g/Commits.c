@@ -359,22 +359,22 @@ global func SetObjAlpha(int by_alpha)
 	return SetClrModulation(clr_mod);
 }
 
-global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
+global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {
 	var iX, iY;
+	var iMaterial = Material(sMat);
 	for(var i = 0; i < 500; i++)
 	{
-		iX = iXStart+Random(iWidth);
-		iY = iYStart+Random(iHeight);
-		if(GetMaterial(AbsX(iX),AbsY(iY))==Material(sMat) &&
-		   GetMaterial(AbsX(iX+iSize),AbsY(iY+iSize))==Material(sMat) &&
-		   GetMaterial(AbsX(iX+iSize),AbsY(iY-iSize))==Material(sMat) &&
-		   GetMaterial(AbsX(iX-iSize),AbsY(iY-iSize))==Material(sMat) &&
-		   GetMaterial(AbsX(iX-iSize),AbsY(iY+iSize))==Material(sMat)
+		iX = AbsX(iXStart+Random(iWidth));
+		iY = AbsY(iYStart+Random(iHeight));
+		if(GetMaterial(iX,iY)==iMaterial &&
+		   GetMaterial(iX+iSize,iY+iSize)==iMaterial &&
+		   GetMaterial(iX+iSize,iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize,iY-iSize)==iMaterial &&
+		   GetMaterial(iX-iSize,iY+iSize)==iMaterial
 		) {
-			iToX = iX; iToY = iY;
-			return true; // Location found.
+			return [iX, iY]; // Location found.
 		}
 	}
-	return false; // No location found.
+	return 0; // No location found.
 }

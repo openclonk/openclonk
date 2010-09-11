@@ -129,7 +129,4 @@ protected func FxIntEarthquakeTimer(object target, int fxnum, int time)
 
 /*-- Proplist --*/
 
-protected func Definition(def) 
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

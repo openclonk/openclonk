@@ -205,8 +205,8 @@ protected func FxFlightTimer(object pTarget,int iEffectNumber, int iEffectTime)
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	pTarget->SetRDir(anglediff/2);
-	pTarget->EffectVar(0,pTarget,iEffectNumber) = newx;
-	pTarget->EffectVar(1,pTarget,iEffectNumber) = newy;
+	EffectVar(0,pTarget,iEffectNumber) = newx;
+	EffectVar(1,pTarget,iEffectNumber) = newy;
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
@@ -216,8 +216,9 @@ protected func FxFlightStop(object pTarget,int iEffectNumber)
 }
 
 func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40,0,0,1),Trans_Rotate(-10,1,0,0)),def);
 }
+
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";

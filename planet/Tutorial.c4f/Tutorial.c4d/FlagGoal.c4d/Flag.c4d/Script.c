@@ -10,8 +10,9 @@ protected func Initialize()
 
 /*-- Proplist --*/
 
+local Name = "$Name$";
+
 func Definition(def)
 {
-	SetProperty("Name", "$Name$", def);
 	SetProperty("MeshTransformation", Trans_Rotate(60,0,1,0),def);
 }

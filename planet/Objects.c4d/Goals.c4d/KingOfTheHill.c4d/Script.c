@@ -64,8 +64,7 @@ public func SearchPosition()
 func CalculatePosition()
 {
 	var a=0, b=LandscapeHeight();
-	
-	var x, y;
+
 	var lastX;
 	var lastY;
 	
@@ -73,19 +72,17 @@ func CalculatePosition()
 	{
 		var m=(a + b) / 2;
 		
-		x=0;
-		y=m;
-		var free=PathFree2(x, y, LandscapeWidth(), m);
+		var block=PathFree2(0, m, LandscapeWidth(), m);
 		
-		if(free)
+		if(!block)
 		{
 			a=m;
 		}
 		else
 		{
 			b=m;
-			lastX=x;
-			lastY=y;
+			lastX=block[0];
+			lastY=block[1];
 		}
 	}
 	
@@ -264,6 +261,4 @@ public func GetShortDescription(int plr)
 	return ""; // TODO
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

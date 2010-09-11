@@ -98,12 +98,12 @@ protected func JoinPlayer(int plr)
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
 	var x, y;
-	FindRelaunchPos(plr, x, y);
-	clonk->SetPosition(x, y);
+	var pos = FindRelaunchPos(plr);
+	clonk->SetPosition(pos[0], pos[1]);
 	return;
 }
 
-private func FindRelaunchPos(int plr, int &x, int &y)
+private func FindRelaunchPos(int plr)
 {
 	var tx, ty; // Test position.
 	for (var i = 0; i < 500; i++)
@@ -121,11 +121,9 @@ private func FindRelaunchPos(int plr, int &x, int &y)
 		if (GBackSemiSolid(AbsX(tx-5), AbsY(ty-10)))
 			continue;
 		// Succes.
-		x = tx;
-		y = ty;
-		break;
+		return [tx, ty];
 	}
-	return true;
+	return nil;
 }
 
 protected func RemovePlayer(int plr)
@@ -159,7 +157,4 @@ private func LogKill(int killer, int victim)
 	return;
 }
 
-protected func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

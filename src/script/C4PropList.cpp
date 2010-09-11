@@ -42,19 +42,6 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 		pVal->NextRef = pNextRef;
 	}
 	if (FirstRef) return;
-	if (iElementReferences) return;
-	// These classes have their own memory management
-	if (dynamic_cast<C4Object *>(this)) return;
-	if (dynamic_cast<C4Def *>(this)) return;
-	delete this;
-}
-
-void C4PropList::DecElementRef()
-{
-	assert(iElementReferences > 0);
-	--iElementReferences;
-	if (iElementReferences) return;
-	if (FirstRef) return;
 	// These classes have their own memory management
 	if (dynamic_cast<C4Object *>(this)) return;
 	if (dynamic_cast<C4Def *>(this)) return;
@@ -71,6 +58,12 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 {
 	C4PropListNumbered * r = new C4PropListNumbered(prototype);
 	r->AcquireNumber();
+	return r;
+}
+
+C4PropList * C4PropList::NewAnon(C4PropList * prototype)
+{
+	C4PropList * r = new C4PropList(prototype);
 	return r;
 }
 
@@ -95,7 +88,7 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Number, "Number"));
-	C4PropList::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(Properties, "Properties"));//C4PropList::CompileFunc(pComp);
 	if (pComp->isCompiler())
 		::Objects.PropLists.Add(this);
 }
@@ -110,7 +103,7 @@ C4PropListNumbered::~C4PropListNumbered()
 
 C4PropList::C4PropList(C4PropList * prototype):
 		Status(1),
-		FirstRef(NULL), iElementReferences(0), prototype(prototype)
+		FirstRef(NULL), prototype(prototype), constant(false)
 {
 	if (prototype)
 		SetProperty(Strings.P[P_Prototype], C4VPropList(prototype));
@@ -125,8 +118,8 @@ void C4PropList::DenumeratePointers()
 		p = Properties.Next(p);
 	}
 	C4Value v;
-	GetPropertyVal(Strings.P[P_Prototype], v);
-	prototype = v.getPropList();
+	if(GetPropertyVal(Strings.P[P_Prototype], &v))
+		prototype = v.getPropList();
 }
 
 C4PropList::~C4PropList()
@@ -139,13 +132,27 @@ C4PropList::~C4PropList()
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;
 	}
-	assert(!iElementReferences);
 	assert(!::Objects.ObjectNumber(this));
+}
+
+bool C4PropList::operator==(const C4PropList &b) const
+{
+	if (Properties.GetSize() != b.Properties.GetSize()) return false;
+	if (GetDef() != b.GetDef()) return false;
+	//if (GetObject() != b.GetObject()) return false;
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		if (*p != b.Properties.Get(p->Key)) return false;
+		p = Properties.Next(p);
+	}
+	return true;
 }
 
 void C4PropList::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(Properties, "Properties"));
+	//pComp->Value(mkNamingAdapt(Properties, "Properties"));
+	pComp->Value(Properties);
 }
 
 template<typename T>
@@ -249,6 +256,11 @@ C4Def * C4PropList::GetDef()
 	return 0;
 }
 
+C4Def const * C4PropList::GetDef() const
+{
+	if (prototype) return prototype->GetDef();
+	return 0;
+}
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
@@ -289,70 +301,20 @@ bool C4PropList::HasProperty(C4String * k) const
 	return false;
 }
 
-void C4PropList::GetPropertyRef(C4String * k, C4Value & to)
-{
-	// The prototype is special
-	if (k == Strings.P[P_Prototype])
-	{
-		to.SetPropList(prototype);
-		return;
-	}
-	to.SetPropListRef(this, k);
-}
-
-C4Value * C4PropList::GetRefToProperty(C4String * k)
-{
-	// The prototype is special
-	if (k == Strings.P[P_Prototype])
-	{
-		return 0;
-	}
-	if (Properties.Has(k))
-	{
-		return &Properties.Get(k).Value;
-	}
-	if (prototype)
-	{
-		C4Property p(k, *(prototype->GetRefToProperty(k)));
-		return &(Properties.Add(p)->Value);
-	}
-	C4Property p(k, C4VNull);
-	return &(Properties.Add(p)->Value);
-}
-
-const C4Value * C4PropList::GetRefToPropertyConst(C4String * k) const
-{
-	// The prototype is special
-	if (k == Strings.P[P_Prototype])
-	{
-		return 0;
-	}
-	if (Properties.Has(k))
-	{
-		return &Properties.Get(k).Value;
-	}
-	if (prototype)
-	{
-		return prototype->GetRefToPropertyConst(k);
-	}
-	return 0;
-}
-
-bool C4PropList::GetPropertyVal(C4String * k, C4Value & to)
+bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult) const
 {
 	if (Properties.Has(k))
 	{
-		to.Set(Properties.Get(k).Value);
+		*pResult = Properties.Get(k).Value;
 		return true;
 	}
-	if (prototype)
-	{
-		return prototype->GetPropertyVal(k, to);
-	}
-	return false;
+	else if(prototype)
+		return prototype->GetPropertyVal(k, pResult);
+	else
+		return false;
 }
 
-C4String * C4PropList::GetPropertyStr(C4PropertyName n)
+C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 {
 	C4String * k = Strings.P[n];
 	if (Properties.Has(k))
@@ -366,7 +328,7 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n)
 	return 0;
 }
 
-int32_t C4PropList::GetPropertyInt(C4PropertyName n)
+int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 {
 	C4String * k = Strings.P[n];
 	if (Properties.Has(k))
@@ -382,6 +344,7 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n)
 
 void C4PropList::SetProperty(C4String * k, const C4Value & to)
 {
+	assert(!constant);
 	assert(Strings.Set.Has(k));
 	if (k == Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
 	{
@@ -403,8 +366,6 @@ void C4PropList::ResetProperty(C4String * k)
 {
 	Properties.Remove(k);
 }
-
-
 
 template<> template<>
 unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int e)

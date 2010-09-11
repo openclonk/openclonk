@@ -14,6 +14,4 @@ protected func Initialize()
 
 public func IsCelestial() { return true; }
 
-func Definition(def) {
-	SetProperty("Name","$Name$",def);
-}
+local Name = "$Name$";

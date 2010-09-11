@@ -61,6 +61,4 @@ func Collection2(obj)
 	return _inherited (obj);
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

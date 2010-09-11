@@ -83,8 +83,5 @@ public func GetKillCol()
 	//return ScoreboardCol(Scoreboard_Kill);
 	return 107;
 }
-	
-protected func Definition(def)
-{
-	SetProperty("Name", "Scoreboard Kills", def);
-}
+
+local Name = "Scoreboard Kills";

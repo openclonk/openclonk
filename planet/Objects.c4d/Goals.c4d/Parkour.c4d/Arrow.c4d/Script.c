@@ -8,10 +8,7 @@ protected func Initialize()
 
 /*-- Proplist --*/
 
-protected func Definition(def) 
-{
-	SetProperty("Name", "$Name$", def);
-	SetProperty("ActMap", {
+local ActMap = {
 		Show = {
 			Prototype = Action,
 			Name = "Show",
@@ -24,5 +21,5 @@ protected func Definition(def)
 			Hgt = 20,
 			NextAction = "Show",
 		},  
-	}, def);
-}
+};
+local Name = "$Name$";

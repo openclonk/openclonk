@@ -29,8 +29,8 @@ class C4AulScriptEngine;
 class StdMeshMatrix;
 
 const int C4SCR_Access_Public     = 0,
-                                    C4SCR_Access_Protected  = 1,
-                                                              C4SCR_Access_Private    = 2;
+          C4SCR_Access_Protected  = 1,
+          C4SCR_Access_Private    = 2;
 
 #define C4SCR_Public    "public"
 #define C4SCR_Protected "protected"
@@ -57,7 +57,7 @@ struct C4ScriptFnDef
 	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
-	C4Value (*FunctionC4V)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
+	C4Value (*FunctionC4V)(struct C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
 	                       C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
 	C4Value (*FunctionC4V2)(struct C4AulContext *, C4Value *);
 };

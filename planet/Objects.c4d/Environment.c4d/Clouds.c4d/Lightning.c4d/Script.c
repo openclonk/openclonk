@@ -40,11 +40,11 @@ protected func FxLightningMoveTimer()
 	var newy = oldy + yDir + yDev - Random(2 * yDev);
 	var pathCheckX = oldx+GetX(), pathCheckY = oldy+GetY();
 	//Log("Lightning %d: Moving from %d/%d to %d/%d", ObjectNumber(), pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
-	var strike_solid = !PathFree2(pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
+	var strike_solid = PathFree2(pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
 	if (strike_solid)
 	{
-		newx = pathCheckX - GetX();
-		newy = pathCheckY - GetY();
+		newx = strike_solid[0] - GetX();
+		newy = strike_solid[1] - GetY();
 		//Log("Lightning %d: Move blocked, moving to %d/%d instead", ObjectNumber(), newx+GetX(), newy+GetY());
 	}
 	AddVertex(newx, newy);
@@ -97,7 +97,4 @@ private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, in
 	}
 }
 
-func Definition(def)
-{
-	def["Name"] = "$Name$";
-}
+local Name = "$Name$";

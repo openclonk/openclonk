@@ -66,8 +66,7 @@ func ConsumeFuel()
 	}
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 Work = {
 	Prototype = Action,
 	Name = "Work",
@@ -83,6 +82,6 @@ Work = {
 	NextAction = "Work",
 	Animation = "Work",
 	EndCall = "ConsumeFuel",
-},  }, def);
-	SetProperty("Name", "$Name$", def);
-}
+},
+};
+local Name = "$Name$";

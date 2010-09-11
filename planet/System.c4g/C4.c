@@ -26,7 +26,12 @@ static const DFA_ATTACH  = 14;
 static const DFA_FIGHT   = 15;
 static const DFA_CONNECT = 16;
 static const DFA_PULL    = 17;
-static Action;
+static const Action = {
+	Length = 1,
+	Directions = 1,
+	Step = 1,
+	Procedure = DFA_NONE,
+};
 
 global func GetActMapVal(string entry, string action, id def, int num)
 {

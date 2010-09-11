@@ -53,14 +53,15 @@ public func ControlUse(object clonk, int x, int y, bool box)
 private func Place(object clonk, int x, int y, bool box)
 {
 	var angle = Angle(0,0,x,y);
-	if(GetWall(angle, x, y, clonk))
+	var pos = GetWall(angle);
+	if(pos)
 	{
 		if(box) SetReady();
 		
 		// put into ...
 		Sound("Connect");
-		Exit(x, y, Angle(x,y));
-		SetPosition(clonk->GetX()+x, clonk->GetY()+y);
+		Exit(pos[0], pos[1], Angle(pos[0],pos[1]));
+		SetPosition(clonk->GetX()+pos[0], clonk->GetY()+pos[1]);
 		return true;
 	}
 	return false;
@@ -77,18 +78,14 @@ public func Fuse()
 
 // returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func GetWall(angle, &x, &y)
+private func GetWall(angle)
 {
 	var dist = 12;
 	for(var dist = 12; dist < 18; dist++)
 	{
-		x = Sin(angle, dist);
-		y = -Cos(angle, dist);
 		if(GBackSolid(x, y))
 		{
-			x = Sin(angle, dist-5);
-			y = -Cos(angle, dist-5);
-			return true;
+			return [Sin(angle, dist-5), -Cos(angle, dist-5)];
 		}
 	}
 	return false;
@@ -152,30 +149,27 @@ public func DoExplode()
 	Explode(18);
 }
 
-protected func Definition(def) {
-	def["Name"] = "Dynamite";
-	def["Description"] = "$Description$";
-	
-	def["ActMap"] = {
-			Fuse = {
-				Prototype = Action,
-				Name = "Fuse",
-				Procedure = DFA_NONE,
-				NextAction = "Fuse",
-				Delay = 1,
-				Length = 1,
-				FacetBase = 1,
-				Sound = "Fusing",
-				StartCall = "Fusing"
-			},
-			Ready = {
-				Prototype = Action,
-				Name = "Ready",
-				Procedure = DFA_NONE,
-				NextAction = "Ready",
-				Delay = 1,
-				Length = 1,
-				FacetBase = 1,
-			}
-		};
-}
+local ActMap = {
+	Fuse = {
+		Prototype = Action,
+		Name = "Fuse",
+		Procedure = DFA_NONE,
+		NextAction = "Fuse",
+		Delay = 1,
+		Length = 1,
+		FacetBase = 1,
+		Sound = "Fusing",
+		StartCall = "Fusing"
+	},
+	Ready = {
+		Prototype = Action,
+		Name = "Ready",
+		Procedure = DFA_NONE,
+		NextAction = "Ready",
+		Delay = 1,
+		Length = 1,
+		FacetBase = 1,
+	}
+};
+local Name = "Dynamite";
+local Description = "$Description$";

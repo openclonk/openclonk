@@ -38,7 +38,4 @@ protected func RemovePlayer(int plr)
 
 /*-- Misc --*/
 
-protected func Definition(def)
-{
-	SetProperty("Name", "Scoreboard Players", def);
-}
+local Name = "Scoreboard Players";

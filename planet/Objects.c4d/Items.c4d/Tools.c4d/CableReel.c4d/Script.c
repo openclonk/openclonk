@@ -65,7 +65,5 @@ private func Find_PowerLine(object pObject)
 	return [C4FO_Func, "IsConnectedTo", pObject];
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
+local Name = "$Name$";
+local Description = "$Description$";

@@ -94,8 +94,7 @@ func TurnWheels()
 	}
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 		Drive = {
 			Prototype = Action,
 			Name = "Drive",
@@ -111,8 +110,12 @@ func Definition(def) {
 			NextAction = "Drive",
 			//Animation = "Drive",
 		},  
-	}, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
+};
+
+func Definition(def)
+{
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25,1,0,0),Trans_Rotate(40,0,1,0)),def);
 }
+
+local Name = "$Name$";
+local Description = "$Description$";

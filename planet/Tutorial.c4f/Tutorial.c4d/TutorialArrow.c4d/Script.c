@@ -42,10 +42,8 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 
 /*-- Proplist --*/
 
-protected func Definition(def) 
-{
-	SetProperty("Name", "$Name$", def);
-	SetProperty("ActMap", {
+local Name = "$Name$";
+local ActMap = {
 		Attach = {
 			Prototype = Action,
 			Name = "Attach",
@@ -72,5 +70,4 @@ protected func Definition(def)
 			NextAction = "Show",
 			Animation = "Bounce",
 		},  
-	}, def);
-}
+};

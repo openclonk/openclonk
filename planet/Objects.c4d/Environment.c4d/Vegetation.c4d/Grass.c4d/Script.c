@@ -31,6 +31,4 @@ global func PlaceGrass(int iAmount, int start, int end)
 	}
 }
 
-func Definition(def) {
-	SetProperty("Name","Grass",def);
-}
+local Name = "Grass";

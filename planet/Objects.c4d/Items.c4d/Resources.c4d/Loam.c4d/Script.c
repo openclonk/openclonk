@@ -15,12 +15,6 @@ protected func Construction()
 		SetGraphics(Format("%d",graphic));
 }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
-
 // Impact sound
 func Hit()
 {
@@ -145,3 +139,7 @@ private func LoamDone(object clonk)
 	// Remove Effect
 	RemoveEffect("IntBridge", clonk);
 }
+
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";

@@ -39,8 +39,5 @@ protected func Activate(int plr)
 
 /*-- Proplist --*/
 
-func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
+local Name = "$Name$";
+local Description = "$Description$";
