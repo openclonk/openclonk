@@ -19,12 +19,8 @@ protected func Initialize()
 		if (!(pos = FindPosInMat("Tunnel", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20)) || !Random(3))
 			pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20);
 		else
-<<<<<<< local
-			mode = mode | RACE_CP_Respawn;
-		x = pos[0]; y = pos[1];
-=======
 			mode = mode | PARKOUR_CP_Respawn;
->>>>>>> other
+		x = pos[0]; y = pos[1];
 		// All checkpoints ordered.
 		mode = mode | PARKOUR_CP_Ordered;
 		goal->AddCheckpoint(x, y, mode);

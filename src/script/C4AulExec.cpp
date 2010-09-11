@@ -204,7 +204,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 			case AB_PARN_SET:
 				pCurCtx->Pars[pCPos->Par.i] = pCurVal[0];
-			
+				break;
+
 			case AB_PARN_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
 				break;

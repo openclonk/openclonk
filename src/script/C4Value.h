@@ -60,7 +60,6 @@ union C4V_Data
 	// cheat a little - assume that all members have the same length
 	operator void * () { return Obj; }
 	operator const void * () const { return Obj; }
-	bool operator== (C4V_Data b) { return Obj == b.Obj; }
 	C4V_Data &operator = (void *p) { Obj = reinterpret_cast<C4Object *>(p); return *this; }
 };
 
