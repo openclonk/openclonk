@@ -30,7 +30,13 @@ public func ControlUseStart(object clonk, int x, int y)
 	var arm = "R";
 	if(clonk->GetItemPos(this) == 1) arm = "L";
 	var rand = Random(2)+1;
-	var animation = Format("SwordStrike%s%dArms", arm, rand);
+	var animation = Format("SwordSlash%d.%s", rand, arm);
+	if(clonk->GetAction() == "Jump")
+	{
+		rand = 1;
+		if(clonk->GetYDir() < -5) rand = 2;
+		animation = Format("SwordJump%d.%s",rand,arm);
+	}
 	var animation_sword = Format("Strike%d", rand);
 	
 	// figure out the kind of attack to use
@@ -57,6 +63,7 @@ public func ControlUseStart(object clonk, int x, int y)
 				clonk->SetXDir(Sin(a, 60));
 				clonk->SetYDir(-Cos(a, 60));
 				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
+				animation = Format("SwordJump3.%s",arm);
 			}
 		}
 	}
