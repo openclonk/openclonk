@@ -729,6 +729,23 @@ void C4Object::ComponentConGain()
 		                   Max<int32_t>(Component.GetCount(cnt),Def->Component.GetCount(cnt)*Con/FullCon));
 }
 
+void C4Object::UpdateInMat()
+{
+	// get new mat
+	int32_t newmat;
+	if (Contained)
+		newmat = Contained->Def->ClosedContainer ? MNone : Contained->InMat;
+	else
+		newmat = GBackMat(GetX(), GetY());
+
+	// mat changed?
+	if (newmat != InMat)
+	{
+		Call(PSF_OnMaterialChanged,&C4AulParSet(C4VInt(newmat),C4VInt(InMat)));
+		InMat = newmat;
+	}
+}
+
 void C4Object::SetOCF()
 {
 	C4PropList* pActionDef = GetAction();
@@ -743,10 +760,7 @@ void C4Object::SetOCF()
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
-	if (Contained)
-		InMat = Contained->Def->ClosedContainer ? MNone : Contained->InMat;
-	else
-		InMat = GBackMat(GetX(), GetY());
+	UpdateInMat();
 	// OCF_Normal: The OCF is never zero
 	OCF=OCF_Normal;
 	// OCF_Construct: Can be built outside
@@ -882,10 +896,7 @@ void C4Object::UpdateOCF()
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
-	if (Contained)
-		InMat = Contained->Def->ClosedContainer ? MNone : Contained->InMat;
-	else
-		InMat = GBackMat(GetX(), GetY());
+	UpdateInMat();
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	           /*| OCF_Chop - now updated regularly, see below */
