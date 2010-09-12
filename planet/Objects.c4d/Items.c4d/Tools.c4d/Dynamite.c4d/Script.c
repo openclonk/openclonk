@@ -83,6 +83,8 @@ private func GetWall(angle)
 	var dist = 12;
 	for(var dist = 12; dist < 18; dist++)
 	{
+		var x = Sin(angle, dist);
+		var y = -Cos(angle, dist);
 		if(GBackSolid(x, y))
 		{
 			return [Sin(angle, dist-5), -Cos(angle, dist-5)];
