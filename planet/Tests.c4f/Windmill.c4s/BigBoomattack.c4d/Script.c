@@ -98,8 +98,7 @@ func DoFireworks()
 	Explode(50);
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap =  {
 
 	Fly = {
 		Prototype = Action,
@@ -110,5 +109,4 @@ func Definition(def) {
 		Wdt = 60,
 		Hgt = 100
 	},
-	}, def);
-}
+};

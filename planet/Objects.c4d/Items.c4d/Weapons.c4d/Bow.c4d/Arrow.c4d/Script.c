@@ -149,7 +149,5 @@ func RejectEntrance()
 	return _inherited(...);
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
+local Name = "$Name$";
+local Description = "$Description$";

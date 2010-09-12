@@ -71,7 +71,4 @@ public func GetDeathCol()
 	return 101;
 }
 
-protected func Definition(def)
-{
-	SetProperty("Name", "Scoreboard Deaths", def);
-}
+local Name = "Scoreboard Deaths";

@@ -44,8 +44,7 @@ private func BreakMessage()
 	pLine->Message("$TxtLinebroke$");
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 		Connect = {
 		Prototype = Action,
 		Name = "Connect",
@@ -53,7 +52,7 @@ func Definition(def) {
 		Delay = 0,
 		Procedure = DFA_CONNECT,
 		NextAction = "Connect",
-		},  }, def);
+},
+};
+local Name = "$Name$";
 		
-	SetProperty("Name", "$Name$", def);
-}

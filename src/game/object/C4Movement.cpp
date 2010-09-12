@@ -531,6 +531,8 @@ void C4Object::MovePosition(int32_t dx, int32_t dy)
 
 bool C4Object::ExecMovement() // Every Tick1 by Execute
 {
+	// update in which material this object is
+	UpdateInMat();
 
 	// Containment check
 	if (Contained)

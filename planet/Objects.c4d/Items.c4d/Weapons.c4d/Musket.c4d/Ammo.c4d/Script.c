@@ -108,8 +108,7 @@ public func TrailColor(int time)
 	return RGBa(255,255,255,240*Max(0,FlightTime()-time)/FlightTime());
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 
 	Travel = {
 		Prototype = Action,
@@ -120,8 +119,8 @@ func Definition(def) {
 		Delay = 1,
 		FacetBase = 1,
 		StartCall = "Traveling"
-	}}, def);
+	},
+};
+local Name = "$Name$";
+local Description = "$Description$";
 	
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}

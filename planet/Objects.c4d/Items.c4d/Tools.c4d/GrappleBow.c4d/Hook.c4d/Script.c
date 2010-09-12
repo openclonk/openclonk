@@ -149,9 +149,7 @@ public func OnRopeBreak()
 	return;
 }
 
-protected func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";
 
 
 /*-- Grapple rope controls --*/

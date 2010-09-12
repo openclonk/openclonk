@@ -277,8 +277,4 @@ protected func GetColorByAngle(int angle)
 }
 
 /*-- Proplist --*/
-
-protected func Definition(def)
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

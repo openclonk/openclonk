@@ -11,8 +11,8 @@ func ControlUseStart(object clonk, int ix, int iy)
 	//Lots of object pointers
 	user = clonk;
 	clonk->SetAction("Ride",balloon);
-	balloon->LocalN("rider") = clonk;
-	balloon->LocalN("parent") = this;
+	balloon["rider"] = clonk;
+	balloon["parent"] = this;
 
 	AddEffect("NoDrop",this,1,1,this);
 	return 1;
@@ -26,8 +26,6 @@ func FxNoDropTimer(object target, int num, int timer)
 	}
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$" ,def);
-	SetProperty("Description", "$Description$", def);
-	SetProperty("Collectible", 1, def);
-}
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";

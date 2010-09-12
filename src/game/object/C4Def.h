@@ -278,7 +278,9 @@ public:
 	C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
 	void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 	void Synchronize();
-	virtual C4Def* GetDef() { return this; }
+	virtual C4Def const * GetDef() const { return this; }	
+	virtual C4Def * GetDef() { return this; }
+	virtual bool IsDef() const { return true; }
 protected:
 	bool LoadPortraits(C4Group &hGroup);
 	bool LoadActMap(C4Group &hGroup);

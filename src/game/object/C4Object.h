@@ -131,6 +131,8 @@ public:
 
 class C4Object: public C4PropListNumbered
 {
+private:
+	void UpdateInMat();
 public:
 	C4Object();
 	~C4Object();

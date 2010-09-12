@@ -6,10 +6,6 @@
 local origin;
 local number;
 
-func Definition(def) {
-	def["Name"] = "$Name$";
-}
-
 func Init(o, n)
 {
 	this->SetObjectBlitMode(GFX_BLIT_Mod2);
@@ -29,3 +25,5 @@ func FxTimerTimer()
 {
 	this->SetClrModulation(origin->GetStarColor(number));
 }
+
+local Name = "$Name$";

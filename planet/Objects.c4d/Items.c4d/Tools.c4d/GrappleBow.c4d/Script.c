@@ -175,7 +175,7 @@ public func Reset(clonk)
 }
 
 func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-700,400),Trans_Scale(1150),Trans_Rotate(180,0,1,0),Trans_Rotate(-30,-1,0,-1)),def);
 }
+local Name = "$Name$";
+local Description = "$Description$";

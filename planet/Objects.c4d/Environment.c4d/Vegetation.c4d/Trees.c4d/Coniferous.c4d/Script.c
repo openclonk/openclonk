@@ -10,6 +10,4 @@ private func Initialize()
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

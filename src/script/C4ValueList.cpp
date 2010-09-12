@@ -105,27 +105,30 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 C4Value &C4ValueList::GetItem(int32_t iElem)
 {
 	if (iElem < -iSize)
-		throw new C4AulExecError(NULL,"invalid subscript");
+		throw new C4AulExecError(NULL,"array access: index out of range");
 	else if (iElem < 0)
 		iElem = iSize + iElem;
 	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
-	// out-of-memory? This might not be catched, but it's better than a segfault
+	// out-of-memory? This might not get caught, but it's better than a segfault
 	if (iElem >= iSize)
-		throw new C4AulExecError(NULL,"out of memory");
+		throw new C4AulExecError(NULL,"array access: index too large");
 	// return
 	return pData[iElem];
 }
 
-void C4ValueList::SetItem(int32_t iElemNr, C4Value iValue)
+void C4ValueList::SetItem(int32_t iElem, const C4Value &Value)
 {
 	// enlarge
-	if (iElemNr < 0) iElemNr = 0;
-	if (iElemNr >= iSize && iElemNr < MaxSize) this->SetSize(iElemNr + 1);
-	// out-of-memory? This might not be catched, but it's better than a segfault
-	if (iElemNr >= iSize)
-		throw new C4AulExecError(NULL,"out of memory");
+	if (iElem < -iSize)
+		throw new C4AulExecError(NULL,"array access: index out of range");
+	else if (iElem < 0)
+		iElem = iSize + iElem;
+	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
+	// out-of-memory? This might not get caught, but it's better than a segfault
+	if (iElem >= iSize)
+		throw new C4AulExecError(NULL,"array access: index too large");
 	// set
-	pData[iElemNr]=iValue;
+	pData[iElem]=Value;
 }
 
 void C4ValueList::SetSize(int32_t inSize)
@@ -142,14 +145,14 @@ void C4ValueList::SetSize(int32_t inSize)
 	// bounds check
 	if (inSize > MaxSize) return;
 
-	// create new array (initialises)
+	// create new array
 	C4Value* pnData = new C4Value [inSize];
 	if (!pnData) return;
 
 	// move existing values
 	int32_t i;
 	for (i=0; i<iSize; i++)
-		pData[i].Move(&pnData[i]);
+		pnData[i] = pData[i];
 
 	// replace
 	delete[] pData;
@@ -195,17 +198,12 @@ void C4ValueList::CompileFunc(class StdCompiler *pComp)
 }
 
 C4ValueArray::C4ValueArray()
-		: C4ValueList(), iRefCnt(0), iElementReferences(0)
+		: C4ValueList(), iRefCnt(0)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: C4ValueList(inSize), iRefCnt(0), iElementReferences(0)
-{
-}
-
-C4ValueArray::C4ValueArray(const C4ValueArray &Array2)
-		: C4ValueList(Array2), iRefCnt(1), iElementReferences(0)
+		: C4ValueList(inSize), iRefCnt(0)
 {
 }
 
@@ -215,59 +213,19 @@ C4ValueArray::~C4ValueArray()
 
 enum { C4VALUEARRAY_DEBUG = 0 };
 
-C4ValueArray * C4ValueArray::IncElementRef()
-{
-	if (iRefCnt > 1)
-	{
-		C4ValueArray * pNew = new C4ValueArray(*this);
-		pNew->iElementReferences = 1;
-		if (C4VALUEARRAY_DEBUG) printf("%p IncElementRef at %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		--iRefCnt;
-		return pNew;
-	}
-	else
-	{
-		if (C4VALUEARRAY_DEBUG) printf("%p IncElementRef at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-		++iElementReferences;
-		return this;
-	}
-}
-
-void C4ValueArray::DecElementRef()
-{
-	if (C4VALUEARRAY_DEBUG) printf("%p DecElementRef at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-	assert(iElementReferences > 0);
-	--iElementReferences;
-}
-
-C4ValueArray * C4ValueArray::IncRef()
-{
-	if (iRefCnt >= 1 && iElementReferences)
-	{
-		C4ValueArray * pNew = new C4ValueArray(*this);
-		if (C4VALUEARRAY_DEBUG) printf("%p IncRef from %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		return pNew;
-	}
-	if (C4VALUEARRAY_DEBUG) printf("%p IncRef from %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-	iRefCnt++;
-	return this;
-}
-
 C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 {
 	// adjust indices so that the default end index works and that negative numbers count backwards from the end of the string
 	if (startIndex > iSize) startIndex = iSize;
-	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid start index");
+	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "array slice: start index out of range");
 	else if (startIndex < 0) startIndex += iSize;
 
 	if (endIndex > iSize) endIndex = iSize;
-	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "Array slice: invalid end index");
+	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "array slice: end index out of range");
 	else if (endIndex < 0) endIndex += iSize;
 
 	if (startIndex == 0 && endIndex == iSize)
-	{
-		return IncRef();
-	}
+		return this;
 	else
 	{
 		C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
@@ -277,31 +235,58 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 	}
 }
 
-C4ValueArray * C4ValueArray::SetLength(int32_t size)
-{
-	if (iRefCnt > 1)
-	{
-		C4ValueArray * pNew = (new C4ValueArray(size))->IncRef();
-		for (int32_t i = 0; i < size; i++)
-			pNew->pData[i].Set(pData[i]);
-		if (C4VALUEARRAY_DEBUG) printf("%p SetLength at %d, %d - Copying %p\n", static_cast<void*>(this), iRefCnt, iElementReferences, static_cast<void*>(pNew));
-		--iRefCnt;
-		return pNew;
-	}
-	else
-	{
-		if (C4VALUEARRAY_DEBUG) printf("%p SetLength at %d, %d\n", static_cast<void*>(this), iRefCnt, iElementReferences);
-		SetSize(size);
-		return this;
-	}
-}
 
-void C4ValueArray::DecRef()
+void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val)
 {
-	if (C4VALUEARRAY_DEBUG) printf("%p DecRef from %d, %d%s\n", static_cast<void*>(this), iRefCnt, iElementReferences, iRefCnt == 1 ? " - Deleting" : "");
-	assert(iRefCnt);
-	if (!--iRefCnt)
+	// index from back
+	if(startIndex < 0) startIndex += iSize;
+	if(endIndex < 0) endIndex += iSize;
+
+	// ensure relevant bounds
+	if(startIndex < 0) throw new C4AulExecError(NULL, "array slice: start index out of range");
+	if(endIndex < 0) throw new C4AulExecError(NULL, "array slice: end index out of range");
+	if(endIndex < startIndex)
+		endIndex = startIndex;
+
+	// setting an array?
+	if(Val.GetType() == C4V_Array)
 	{
-		delete this;
+		const C4ValueArray &Other = *Val._getArray();
+
+		// Calculcate new size
+		int32_t iNewEnd = startIndex + Other.GetSize();
+		int32_t iNewSize = iNewEnd;
+		if(endIndex < iSize)
+			iNewSize += iSize - endIndex;
+
+		// Pre-resize moving
+		int32_t i, j;
+		if(iNewEnd < endIndex)
+			for(i = iNewEnd, j = endIndex; j < iSize; i++, j++)
+				pData[i] = pData[j];
+
+		// Resize (Note: Lots of unneccessary copying here, could be optimized)
+		int32_t iOldSize = iSize;
+		SetSize(iNewSize);
+
+		// Post-resize moving
+		if(iNewEnd > endIndex)
+			for(i = iNewSize, j = iOldSize; j > endIndex; i--, j--)
+				pData[i-1] = pData[j-1];
+
+		// Copy the data
+		for(i = startIndex, j = 0; j < Other.GetSize(); i++, j++)
+			pData[i] = Other.pData[j];
+
+	} else /* if(Val.GetType() != C4V_Array) */ {
+
+		// Need resize?
+		if(endIndex > iSize) SetSize(endIndex);
+
+		// Fill
+		for(int32_t i = startIndex; i < endIndex; i++)
+			pData[i] = Val;
+
 	}
+
 }

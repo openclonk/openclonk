@@ -12,8 +12,7 @@ protected func IsBuilt()
 	return GetCon() >= 100;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {/*
+local ActMap = {/*
 Idle = {
 	Prototype = Action,
 	Name = "Idle",
@@ -54,8 +53,10 @@ CloseDoor = {
 	StartCall = "SoundCloseDoor",
 	Animation = "CloseDoor",
 },
-}, def);
-	SetProperty("Name", "$Name$", def);
+};
+func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 	SetProperty("MeshTransformation", Trans_Rotate(-8,0,1,0));
 }
+
+local Name = "$Name$";

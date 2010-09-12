@@ -5,8 +5,6 @@ protected func Incineration()
 	Schedule("Explode(20)", 90);
 }
 
-func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";

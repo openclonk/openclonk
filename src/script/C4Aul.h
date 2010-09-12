@@ -130,35 +130,33 @@ struct C4AulParSet
 // some special script functions defined hard-coded to reduce the exec context
 enum C4AulBCCType
 {
-	AB_ARRAYA_R,  // array access
-	AB_ARRAYA_V,  // not creating a reference
+	AB_ARRAYA,  // array or proplist access
+	AB_ARRAYA_SET,
+	AB_PROP,    // proplist access with static key
+	AB_PROP_SET,
 	AB_ARRAY_SLICE, // array slicing
-	AB_VARN_R,    // a named var
-	AB_VARN_V,
-	AB_PARN_R,    // a named parameter
-	AB_PARN_V,
-	AB_LOCALN_R,  // a named local
-	AB_LOCALN_V,
-	AB_GLOBALN_R, // a named global
-	AB_GLOBALN_V,
-	AB_PAR_R,     // Par statement
-	AB_PAR_V,
+	AB_ARRAY_SLICE_SET,
+	AB_VARN,    // a named var
+	AB_VARN_SET,
+	AB_PARN,    // a named parameter
+	AB_PARN_SET,
+	AB_LOCALN,  // a property of this
+	AB_LOCALN_SET,
+	AB_GLOBALN, // a named global
+	AB_GLOBALN_SET,
+	AB_PAR,     // Par statement
+	AB_PAR_SET,
 	AB_FUNC,    // function
 
 	AB_PARN_CONTEXT,
 	AB_VARN_CONTEXT,
 
 // prefix
-	AB_Inc1,  // ++
-	AB_Dec1,  // --
+	AB_Inc,  // ++
+	AB_Dec,  // --
 	AB_BitNot,  // ~
 	AB_Not,   // !
-	// +
 	AB_Neg,   // -
-
-// postfix (whithout second statement)
-	AB_Inc1_Postfix,  // ++
-	AB_Dec1_Postfix,  // --
 
 // postfix
 	AB_Pow,   // **
@@ -178,15 +176,6 @@ enum C4AulBCCType
 	AB_BitAnd,  // &
 	AB_BitXOr,  // ^
 	AB_BitOr, // |
-	AB_MulIt, // *=
-	AB_DivIt, // /=
-	AB_ModIt, // %=
-	AB_Inc,   // +=
-	AB_Dec,   // -=
-	AB_AndIt, // &=
-	AB_OrIt,  // |=
-	AB_XOrIt, // ^=
-	AB_Set,   // =
 
 	AB_CALL,    // direct object call
 	AB_CALLFS,  // failsafe direct call
@@ -194,15 +183,17 @@ enum C4AulBCCType
 	AB_INT,     // constant: int
 	AB_BOOL,    // constant: bool
 	AB_STRING,  // constant: string
-	AB_C4ID,    // constant: C4ID
+	AB_CPROPLIST, // constant: proplist
+	AB_CARRAY,  // constant: array
 	AB_NIL,     // constant: nil
 	AB_ARRAY,   // semi-constant: array
-	AB_PROPLIST,    // create a new proplist
-	AB_PROPSET,   // set a property of a proplist
+	AB_DUP,     // duplicate value from stack
+	AB_PROPLIST, // create a new proplist
+	AB_IPROPLIST, // set a property of a proplist
 	AB_IVARN,   // initialization of named var
 	AB_JUMP,    // jump
-	AB_JUMPAND,   // jump if zero, else pop the stack
-	AB_JUMPOR,    // jump if not zero, else pop the stack
+	AB_JUMPAND, // jump if zero, else pop the stack
+	AB_JUMPOR,  // jump if not zero, else pop the stack
 	AB_CONDN,   // conditional jump (negated, pops stack)
 	AB_COND,    // conditional jump (pops stack)
 	AB_FOREACH_NEXT, // foreach: next element
@@ -222,8 +213,9 @@ struct C4ScriptOpDef
 	unsigned short Priority;
 	const char* Identifier;
 	C4AulBCCType Code;
+	C4AulBCCType ResultModifier; // code to apply to result after it was calculated
 	bool Postfix;
-	bool RightAssociative; // right oder left-associative?
+	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
 	bool NoSecondStatement; // no second statement expected (++/-- postfix)
 	C4V_Type RetType; // type returned. ignored by C4V
 	C4V_Type Type1;
@@ -239,6 +231,8 @@ struct C4AulBCC
 	{
 		int32_t i;
 		C4String * s;
+		C4PropList * p;
+		C4ValueArray * a;
 		C4AulFunc * f;
 		intptr_t X;
 	} Par;    // extra info (long for use with amd64)
@@ -332,12 +326,11 @@ public:
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	bool bReturnRef; // return reference
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
 			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All),
-			bReturnRef(false), tProfileTime(0)
+			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
 	} // constructor
@@ -346,7 +339,7 @@ public:
 
 	virtual bool GetPublic() { return true; }
 	virtual C4V_Type *GetParType() { return ParType; }
-	virtual C4V_Type GetRetType() { return bReturnRef ? C4V_Ref : C4V_Any; }
+	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
 	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 
@@ -473,6 +466,7 @@ protected:
 	C4AulFunc *GetFunc(const char *pIdtf); // get local function by name
 
 	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
 	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
 	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false, C4AulScriptContext* context = NULL); // parse single script function

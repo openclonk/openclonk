@@ -207,13 +207,14 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 	);
 }
 
-protected func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-	SetProperty("LineColors", [RGB(66,33,00) , RGB(66,33,00)], def);
-	SetProperty("ActMap", {
+func Definition(def)
+{
+	def.LineColors = [RGB(66,33,00), RGB(66,33,00)];
+}
+local ActMap = {
 		Hide = {
 			Prototype = Action,
 			Name = "Hide",
 		},
-	}, def);
-}
+};
+local Name = "$Name$";

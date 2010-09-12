@@ -202,8 +202,9 @@ public func GetCarryTransform(clonk, sec, back)
 local mTrans;
 
 func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1000,-500),Trans_Rotate(20,1,1,-1),Trans_Scale(1200)),def);
 }
+
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";

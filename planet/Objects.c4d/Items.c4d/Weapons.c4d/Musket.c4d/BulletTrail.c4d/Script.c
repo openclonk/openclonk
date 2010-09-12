@@ -113,8 +113,7 @@ public func DrawTransform() {
 	);
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
+local ActMap = {
 
 Travel = {
 	Prototype = Action,
@@ -130,5 +129,5 @@ Travel = {
 	OffX = 0,
 	OffY = 2,
 	StartCall = "Traveling"
-}}, def);
-}
+},
+};

@@ -160,7 +160,5 @@ protected func FxNotifyPlayerStop(object target, int num, int reason, bool tempo
 	return 1;
 }
 
-protected func Definition(def)
-{
-	def["Name"] = "$Name$";
-}
+local Name = "$Name$";
+

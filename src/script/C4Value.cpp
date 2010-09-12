@@ -33,32 +33,12 @@ const C4NullValue C4VNull = C4NullValue();
 const C4Value C4VTrue = C4VBool(true);
 const C4Value C4VFalse = C4VBool(false);
 
-C4Value::~C4Value()
-{
-	// resolve all C4Values referencing this Value
-	while (FirstRef)
-		FirstRef->Set(*this);
-
-	// delete contents
-	DelDataRef(Data, Type, GetNextRef(), GetBaseArray(), Type == C4V_PropListRef ? PropListRefKey : NULL);
-}
-
-C4Value &C4Value::operator = (const C4Value &nValue)
-{
-	// set referenced value
-	GetRefVal().Set(nValue.GetRefVal());
-
-	return *this;
-}
-
 void C4Value::AddDataRef()
 {
 	assert(Type != C4V_Any || !Data);
 	switch (Type)
 	{
-	case C4V_Ref: Data.Ref->AddRef(this); break;
-	case C4V_PropListRef: Data.PropList->IncElementRef(); PropListRefKey->IncRef(); break;
-	case C4V_Array: Data.Array = Data.Array->IncRef(); break;
+	case C4V_Array: Data.Array->IncRef(); break;
 	case C4V_String: Data.Str->IncRef(); break;
 	case C4V_C4Object:
 	case C4V_PropList:
@@ -75,17 +55,11 @@ void C4Value::AddDataRef()
 	}
 }
 
-void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray, C4String * Key)
+void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
 {
 	// clean up
 	switch (Type)
 	{
-	case C4V_Ref:
-		// Save because AddDataRef does not set this flag
-		HasBaseArray = false;
-		Data.Ref->DelRef(this, pNextRef, pBaseArray);
-		break;
-	case C4V_PropListRef: Data.PropList->DecElementRef(); Key->DecRef(); break;
 	case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
 	case C4V_Array: Data.Array->DecRef(); break;
 	case C4V_String: Data.Str->DecRef(); break;
@@ -93,33 +67,23 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 	}
 }
 
-void C4Value::Set(C4V_Data nData, C4V_Type nType, C4String * nPropListRefKey)
+void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
 	assert(nType != C4V_Any || !nData);
-	assert(nType != C4V_PropListRef || nPropListRefKey);
 	// Do not add this to the same linked list twice.
 	if (Data == nData && Type == nType) return;
 
 	C4V_Data oData = Data;
 	C4V_Type oType = Type;
 	C4Value * oNextRef = NextRef;
-	C4ValueArray * oBaseArray = BaseArray;
-	C4String * oKey = PropListRefKey;
-	bool oHasBaseArray = HasBaseArray;
 
 	// change
-	PropListRefKey = nPropListRefKey; // This will be overwritten if the union is needed for something else
 	Data = nData;
 	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
 
-	// hold
+	// hold new data & clean up old
 	AddDataRef();
-
-	// clean up
-	DelDataRef(oData, oType,
-	           oHasBaseArray ? NULL : oNextRef,
-	           oHasBaseArray ? oBaseArray : NULL,
-	           oType == C4V_PropListRef ? oKey : NULL);
+	DelDataRef(oData, oType, oNextRef);
 }
 
 void C4Value::Set0()
@@ -128,152 +92,11 @@ void C4Value::Set0()
 	C4V_Type oType = Type;
 
 	// change
-	Data = 0;
+	Data.Obj = 0;
 	Type = C4V_Any;
 
 	// clean up (save even if Data was 0 before)
-	DelDataRef(oData, oType,
-	           HasBaseArray ? NULL : NextRef,
-	           HasBaseArray ? BaseArray : NULL,
-	           oType == C4V_PropListRef ? PropListRefKey : NULL);
-}
-
-void C4Value::SetPropListRef(C4PropList * PropList, C4String * Key)
-{
-	assert(PropList);
-	assert(Key);
-	C4V_Data d; d.PropList = PropList;
-	Set(d, C4V_PropListRef, Key);
-}
-
-void C4Value::Move(C4Value *nValue)
-{
-	nValue->Set(*this);
-
-	// change references
-	for (C4Value *pVal = FirstRef; pVal; pVal = pVal->GetNextRef())
-		pVal->Data.Ref = nValue;
-
-	// copy ref list
-	assert(!nValue->FirstRef);
-	nValue->FirstRef = FirstRef;
-
-	// delete usself
-	FirstRef = NULL;
-	Set0();
-}
-
-void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pctx, bool noref)
-{
-	if (noref)
-	{
-		const C4Value & Ref = GetRefValConst();
-		// No array (and no nullpointer because Data==0 => Type==any)
-		if (Ref.Type != C4V_Array)
-			throw new C4AulExecError(pctx->Obj, "Array access: array expected");
-		// Get the item, but do not resize the array - it might be used more than once
-		if (Index < Ref.Data.Array->GetSize())
-			target.Set(Ref.Data.Array->GetItem(Index));
-		else
-			target.Set0();
-	}
-	else
-	{
-		C4Value & Ref = GetRefVal();
-		// No array (and no nullpointer because Data==0 => Type==any)
-		if (Ref.Type != C4V_Array)
-			throw new C4AulExecError(pctx->Obj, "Array access: array expected");
-		// Is target the first ref?
-		if (Index >= Ref.Data.Array->GetSize() || !Ref.Data.Array->GetItem(Index).FirstRef)
-		{
-			Ref.Data.Array = Ref.Data.Array->IncElementRef();
-			target.SetRef(&Ref.Data.Array->GetItem(Index));
-			if (target.Type == C4V_Ref)
-			{
-				assert(!target.NextRef);
-				target.BaseArray = Ref.Data.Array;
-				target.HasBaseArray = true;
-			}
-			// else target apparently owned the last reference to the array
-		}
-		else
-		{
-			target.SetRef(&Ref.Data.Array->GetItem(Index));
-		}
-	}
-}
-
-void C4Value::SetArrayLength(int32_t size, C4AulContext *cthr)
-{
-	C4Value & Ref = GetRefVal();
-	// No array
-	if (Ref.Type != C4V_Array)
-		throw new C4AulExecError(cthr->Obj, "SetLength: array expected");
-	Ref.Data.Array = Ref.Data.Array->SetLength(size);
-}
-
-const C4Value & C4Value::GetRefVal() const
-{
-	const C4Value* pVal = this;
-	while (1)
-	{
-		if (pVal->Type == C4V_Ref)
-			pVal = pVal->Data.Ref;
-		else if (pVal->Type == C4V_PropListRef)
-		{
-			pVal = pVal->Data.PropList->GetRefToPropertyConst(pVal->PropListRefKey);
-			if (!pVal) return C4VNull;
-		}
-		else
-			return *pVal;
-	}
-}
-
-C4Value &C4Value::GetRefVal()
-{
-	C4Value* pVal = this;
-	while (1)
-	{
-		if (pVal->Type == C4V_Ref)
-			pVal = pVal->Data.Ref;
-		else if (pVal->Type == C4V_PropListRef)
-			pVal = pVal->Data.PropList->GetRefToProperty(pVal->PropListRefKey);
-		else
-			return *pVal;
-	}
-}
-
-void C4Value::AddRef(C4Value *pRef)
-{
-	pRef->NextRef = FirstRef;
-	FirstRef = pRef;
-}
-
-void C4Value::DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBaseArray)
-{
-	if (pRef == FirstRef)
-		FirstRef = pNextRef;
-	else
-	{
-		C4Value* pVal = FirstRef;
-		while (pVal->NextRef != pRef)
-		{
-			// assert that pRef really was in the list
-			assert(pVal->NextRef && !pVal->HasBaseArray);
-			pVal = pVal->NextRef;
-		}
-		pVal->NextRef = pNextRef;
-		if (pBaseArray)
-		{
-			pVal->HasBaseArray = true;
-			pVal->BaseArray = pBaseArray;
-		}
-	}
-	// Was pRef the last ref to an array element?
-	if (pBaseArray && !FirstRef)
-	{
-		pBaseArray->DecElementRef();
-	}
+	DelDataRef(oData, oType, NextRef);
 }
 
 const char* GetC4VName(const C4V_Type Type)
@@ -294,8 +117,6 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_PropList:
 		return "proplist";
-	case C4V_Ref:
-		return "&";
 	default:
 		return "!Fehler!";
 	}
@@ -311,20 +132,18 @@ char GetC4VID(const C4V_Type Type)
 		return 'i';
 	case C4V_Bool:
 		return 'b';
+	case C4V_PropList:
+		return 'p';
 	case C4V_C4Object:
-		return 'o';
-	case C4V_String:
-		return 's';
 	case C4V_C4ObjectEnum:
 		return 'O';
+	case C4V_String:
+		return 's';
 	case C4V_C4DefEnum:
 		return 'D';
 	case C4V_Array:
 		return 'a';
-	case C4V_PropList:
-		return 'p';
 	default:
-		assert(Type != C4V_Ref && Type != C4V_PropListRef);
 		assert(false);
 	}
 	return ' ';
@@ -344,8 +163,6 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_C4Object;
 	case 's':
 		return C4V_String;
-	case 'V':
-		return C4V_Ref;
 	case 'O':
 		return C4V_C4ObjectEnum;
 	case 'D':
@@ -371,22 +188,6 @@ static bool FnCnvError(C4Value *Val, C4V_Type toType)
 	return false;
 }
 
-static bool FnCnvDeref(C4Value *Val, C4V_Type toType)
-{
-	// resolve reference of Value
-	Val->Deref();
-	// retry to check convert
-	return Val->ConvertTo(toType);
-}
-
-bool C4Value::FnCnvPLR(C4Value *Val, C4V_Type toType)
-{
-	// resolve reference of Value
-	Val->SetRef(Val->Data.PropList->GetRefToProperty(Val->PropListRefKey));
-	// retry to check convert
-	return Val->ConvertTo(toType);
-}
-
 static bool FnOk0(C4Value *Val, C4V_Type toType)
 {
 	// 0 can be treated as nil, but every other integer can't
@@ -404,8 +205,6 @@ bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
 #define CnvOK        0, false           // allow conversion by same value
 #define CnvOK0       FnOk0, true
 #define CnvError     FnCnvError, true
-#define CnvDeref     FnCnvDeref, false
-#define CnvPLR       FnCnvPLR, false
 #define CnvObject    FnCnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
@@ -418,8 +217,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvOK   }, // C4Object
 		{ CnvOK   }, // String
 		{ CnvOK   }, // Array
-		{ CnvError  }, // Ref
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Int
 		{ CnvOK   }, // any
@@ -429,8 +226,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvOK0  }, // C4Object   only if 0
 		{ CnvOK0  }, // String     only if 0
 		{ CnvOK0  }, // Array      only if 0
-		{ CnvError  }, // Ref
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Bool
 		{ CnvOK   }, // any
@@ -440,8 +235,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvError  }, // C4Object   NEVER!
 		{ CnvError  }, // String     NEVER!
 		{ CnvError  }, // Array      NEVER!
-		{ CnvError  }, // Ref
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_PropList
 		{ CnvOK   }, // any
@@ -451,8 +244,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvObject }, // C4Object
 		{ CnvError  }, // String     NEVER!
 		{ CnvError  }, // Array      NEVER!
-		{ CnvError  }, // Ref   NEVER!
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Object
 		{ CnvOK   }, // any
@@ -462,8 +253,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvOK   }, // C4Object   same
 		{ CnvError  }, // String     NEVER!
 		{ CnvError  }, // Array      NEVER!
-		{ CnvError  }, // Ref   NEVER!
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_String
 		{ CnvOK   }, // any
@@ -473,8 +262,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvError  }, // C4Object   NEVER!
 		{ CnvOK   }, // String     same
 		{ CnvError  }, // Array      NEVER!
-		{ CnvError  }, // Ref   NEVER!
-		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Array
 		{ CnvOK   }, // any
@@ -484,45 +271,17 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 		{ CnvError  }, // C4Object   NEVER!
 		{ CnvError  }, // String     NEVER!
 		{ CnvOK   }, // Array      same
-		{ CnvError  }, // Ref   NEVER!
-		{ CnvError  }, // PropListRef
-	},
-	{ // C4V_Ref - resolve reference and retry type check
-		{ CnvDeref  }, // any
-		{ CnvDeref  }, // int
-		{ CnvDeref  }, // Bool
-		{ CnvDeref  }, // PropList
-		{ CnvDeref  }, // C4Object
-		{ CnvDeref  }, // String
-		{ CnvDeref  }, // Array
-		{ CnvOK   }, // Ref   same
-		{ CnvError  }, // PropListRef
-	},
-	{ // C4V_Ref - resolve reference and retry type check
-		{ CnvPLR  }, // any
-		{ CnvPLR  }, // int
-		{ CnvPLR  }, // Bool
-		{ CnvPLR  }, // PropList
-		{ CnvPLR  }, // C4Object
-		{ CnvPLR  }, // String
-		{ CnvPLR  }, // Array
-		{ CnvPLR  }, // Ref
-		{ CnvOK   }, // PropListRef   same
-	},
+	}
 };
 
 #undef CnvOK
 #undef CnvOK0
 #undef CnvError
-#undef CnvDeref
-#undef CnvPLR
 #undef CnvObject
 
 // Humanreadable debug output
 StdStrBuf C4Value::GetDataString()
 {
-	if (Type == C4V_Ref)
-		return GetRefVal().GetDataString() + "*";
 
 	// ouput by type info
 	switch (GetType())
@@ -613,12 +372,10 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		// Get type
 		assert(Type != C4V_Any || !Data);
 		char cC4VID = GetC4VID(Type);
-		// Object reference is saved enumerated
-		if (Type == C4V_C4Object)
-			cC4VID = GetC4VID(C4V_C4ObjectEnum);
-		if (Type == C4V_PropList && getPropList()->GetDef())
+		// special case proplists
+		if (Type == C4V_PropList && getPropList()->IsDef())
 			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if (Type == C4V_PropList)
+		else if (Type == C4V_PropList && !getPropList()->IsFrozen())
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
 		// Write
 		pComp->Character(cC4VID);
@@ -659,9 +416,18 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
 	{
+		if (fCompiler || (Type == C4V_PropList && getPropList()->IsFrozen() && !getPropList()->IsDef()))
+		{
+			assert(Type == C4V_PropList);
+			pComp->Separator(StdCompiler::SEP_START2);
+			pComp->Value(mkPtrAdapt(Data.PropList, false));
+			if (fCompiler) Data.PropList->AddRef(this);
+			pComp->Separator(StdCompiler::SEP_END2);
+			break;
+		}
 		assert(!fCompiler);
 		C4PropList * p = getPropList();
-		if (Type == C4V_PropList && p->GetDef())
+		if (Type == C4V_PropList && p->IsDef())
 			pComp->Value(p->GetDef()->id);
 		else
 		{
@@ -681,7 +447,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	{
 		assert(fCompiler);
 		C4ID id;
-		pComp->Value(id); // must be denumerated later
+		pComp->Value(id);
 		Data.PropList = Definitions.ID2Def(id);
 		Type = C4V_PropList;
 		if (!Data.PropList)
@@ -719,7 +485,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	case C4V_Array:
 		pComp->Separator(StdCompiler::SEP_START2);
 		pComp->Value(mkPtrAdapt(Data.Array, false));
-		if (fCompiler) Data.Array = Data.Array->IncRef();
+		if (fCompiler) Data.Array->IncRef();
 		pComp->Separator(StdCompiler::SEP_END2);
 		break;
 
@@ -729,7 +495,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 		// shouldn't happen
-	case C4V_Ref:
 	default:
 		assert(false);
 		break;
@@ -762,13 +527,20 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return false;
 		}
 	case C4V_C4Object: case C4V_PropList:
-		return Data == Value2.Data && Type == Value2.Type;
+		if (Type == Value2.Type)
+		{
+			// Compare as equal if and only if the proplists are indistinguishable
+			// If one or both are mutable, they have to be the same
+			// otherwise, they have to have the same contents
+			if (Data.PropList == Value2.Data.PropList) return true;
+			if (!Data.PropList->IsFrozen() || !Value2.Data.PropList->IsFrozen()) return false;
+			return (*Data.PropList == *Value2.Data.PropList);
+		}
 	case C4V_String:
 		return Type == Value2.Type && Data.Str == Value2.Data.Str;
 	case C4V_Array:
 		return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
 	default:
-		// C4AulExec should have dereferenced both values, no need to implement comparison here
 		return Data == Value2.Data;
 	}
 	return GetData() == Value2.GetData();

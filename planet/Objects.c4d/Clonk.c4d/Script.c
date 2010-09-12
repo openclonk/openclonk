@@ -5,9 +5,6 @@
 	The protoganist of the game. Witty and nimble if skillfully controled ;-)
 	
 	TODO:
-	+ You should write a lot about the functioning of the animations-system,
-	holding weapons etc. and/or put that into a separate library - Newton
-	
 	+ replace German comments
 */
 
@@ -47,7 +44,6 @@ protected func Construction()
 
 	AddEffect("IntTurn", this, 1, 1, this);
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
-	AddEffect("Bubble", this, 1, 72, this);
 }
 
 
@@ -1716,9 +1712,24 @@ func FxIntRidingStop(pTarget, iNumber, fTmp)
 		pMount->~OnUnmount(this);
 }
 
+// calback from engine
+func OnMaterialChanged(int new, int old)
+{
+	var newdens = GetMaterialVal("Density","Material",new);
+	var olddens = GetMaterialVal("Density","Material",old);
+	var newliquid = (newdens >= C4M_Liquid) && (newdens < C4M_Solid);
+	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
+	// into water
+	if(newliquid && !oldliquid)
+		AddEffect("Bubble", this, 1, 72, this);
+	// out of water
+	else if(!newliquid && oldliquid)
+		RemoveEffect("Bubble", this);
+}
+
 func FxBubbleTimer(pTarget, iNumber, iTime)
 {
-	if(GBackLiquid(0,-4)) Bubble();
+	Bubble();
 }
 
 func StartPushing()
@@ -1759,9 +1770,7 @@ protected func AbortHangOnto()
 
 /* Act Map */
 
-func Definition(def) {
-	SetProperty("ActMap", {
-
+local ActMap = {
 Walk = {
 	Prototype = Action,
 	Name = "Walk",
@@ -1849,7 +1858,7 @@ Dig = {
 	Procedure = DFA_DIG,
 	Directions = 2,
 	Length = 16,
-	Delay = 15*3*0,
+	Delay = 0,//15*3*0,
 	X = 0,
 	Y = 60,
 	Wdt = 8,
@@ -2016,9 +2025,10 @@ HangOnto = {
 	AbortCall = "AbortHangOnto",
 	InLiquidAction = "Swim",
 },
-}, def);
-	SetProperty("Name", "Clonk", def);
+};
+local Name = "Clonk";
 
+func Definition(def) {
 	// Set perspective
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), def);
 

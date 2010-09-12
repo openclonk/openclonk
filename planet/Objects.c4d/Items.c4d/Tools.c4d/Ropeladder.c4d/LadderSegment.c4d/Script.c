@@ -20,14 +20,13 @@ public func CanNotBeClimbed(bool fClimbing)
 	return false;
 }
 
-public func GetLadderData(&startx, &starty, &endx, &endy, &angle)
+public func GetLadderData()
 {
 	if(master != nil)
 	{
-		master->~GetLadderData(index, startx, starty, endx, endy, angle);
-		return;
+		return master->~GetLadderData(index);
 	}
-	return _inherited(startx, starty, endx, endy, angle);
+	return _inherited();
 }
 
 public func LogLadderData()

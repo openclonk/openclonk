@@ -95,7 +95,4 @@ private func RelaunchClonk()
 	return;
 }
 
-protected func Definition(def) 
-{
-	SetProperty("Name", "$Name$", def);
-}
+local Name = "$Name$";

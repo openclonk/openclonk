@@ -12,21 +12,25 @@ func GetTurnPhase() { return _inherited(...); }
 
 func Definition(def) {
 	// add action
-	SetProperty("Climb", {
-		Prototype = Action,
-		Name = "Climb",
-		Directions = 2,
-		Length = 0,
-		Delay = 0,
-		Wdt = 8,
-		Hgt = 20,
-		Procedure = DFA_FLOAT,
-	}, GetProperty("ActMap"));
-	// save old phasecall of jump
-	var jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
-	// and add new one
-	SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
-	SetProperty("StartCallLadderOverloaded", jump_startcall, GetProperty("Jump", GetProperty("ActMap")));
+	def.ActMap = {
+		Prototype = def.ActMap,
+		Climb = {
+			Prototype = Action,
+			Name = "Climb",
+			Directions = 2,
+			Length = 0,
+			Delay = 0,
+			Wdt = 8,
+			Hgt = 20,
+			Procedure = DFA_FLOAT,
+		},
+		Jump = {
+			Prototype = def.ActMap.Jump,
+			StartCall = "StartSearchLadder",
+			// save old phasecall of jump
+			StartCallLadderOverloaded = def.ActMap.Jump.StartCall
+		}
+	};
 	_inherited(def);
 }
 
@@ -191,8 +195,8 @@ func FxIntClimbControlTimer(target, number)
 		}
 		return -1;
 	}
-	var startx, starty, endx, endy, angle;
-	EffectVar(0, target, number)->GetLadderData(startx, starty, endx, endy, angle);
+	var data = EffectVar(0, target, number)->GetLadderData();
+	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
 	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5000-100*GetTurnPhase();
 	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
 	var old_x = GetX(), old_y = GetY();

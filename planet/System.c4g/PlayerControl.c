@@ -338,9 +338,9 @@ global func ObjectControlUpdateComdir(int plr)
 		//s = Format("%s %s", s, ["Stop", "Up", "UpRight", "Right", "DownRight", "Down", "DownLeft", "Left", "UpLeft"][new_comdir]);
 		//Message("@%s", this, s);
 		// The control is only handled if it had an actual effect on the current movement direction of the Clonk
-		var old_cx, old_cy, new_cx, new_cy;
-		ComDir2XY(old_comdir, old_cx, old_cy);
-		ComDir2XY(new_comdir, new_cx, new_cy);
+		var old = ComDir2XY(old_comdir);
+		var new = ComDir2XY(new_comdir);
+		var old_cx = old[0], old_cy = old[1], new_cx = new[0], new_cy = new[1];
 		var is_handled;
 		var proc = GetProcedure();
 		if (proc == "WALK" || proc == "HANGLE" || proc == "PUSH" || proc == "PULL" || proc == "FLIGHT")
@@ -430,13 +430,11 @@ global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, in
 }
 
 // Returns coordinate directions associated with a COMD_Constant
-global func ComDir2XY(int comd, &x, &y)
+global func ComDir2XY(int comd)
 {
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
-	x = [0,0,1,1,1,0,-1,-1,-1][comd];
-	y = [0,-1,-1,0,1,1,1,0,-1][comd];
-	return true;
+	return [[0,0,1,1,1,0,-1,-1,-1][comd], [0,-1,-1,0,1,1,1,0,-1][comd]];
 }
 
 global func ObjectCommand(string command, object target, int tx, int ty, object target2)

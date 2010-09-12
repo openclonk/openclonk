@@ -12,7 +12,5 @@ protected func Hit()
 	return 1;
 }
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
-}
+local Name = "$Name$";
+local Description = "$Description$";
