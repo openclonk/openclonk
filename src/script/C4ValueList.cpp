@@ -224,15 +224,10 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "array slice: end index out of range");
 	else if (endIndex < 0) endIndex += iSize;
 
-	if (startIndex == 0 && endIndex == iSize)
-		return this;
-	else
-	{
-		C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
-		for (int i = startIndex; i < endIndex; ++i)
-			NewArray->pData[i - startIndex] = pData[i];
-		return NewArray;
-	}
+	C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
+	for (int i = startIndex; i < endIndex; ++i)
+		NewArray->pData[i - startIndex] = pData[i];
+	return NewArray;
 }
 
 
