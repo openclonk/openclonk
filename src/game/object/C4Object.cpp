@@ -760,7 +760,6 @@ void C4Object::SetOCF()
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
-	UpdateInMat();
 	// OCF_Normal: The OCF is never zero
 	OCF=OCF_Normal;
 	// OCF_Construct: Can be built outside
@@ -896,7 +895,6 @@ void C4Object::UpdateOCF()
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
-	UpdateInMat();
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	           /*| OCF_Chop - now updated regularly, see below */
