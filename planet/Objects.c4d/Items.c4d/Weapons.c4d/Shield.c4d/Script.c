@@ -41,6 +41,10 @@ public func ControlUseStart(object clonk, int x, int y)
 	clonk->UpdateAttach();
 
 	StartWeaponHitCheckEffect(clonk, -1, 1);
+	
+	if(!GetEffect("ShieldStop", clonk))
+		AddEffect("ShieldStop", clonk, 2, 50, this);
+	
 	iAngle=Angle(0,0, x,y);
 	AdjustSolidMaskHelper();
 	return true;
@@ -59,6 +63,7 @@ func AdjustSolidMaskHelper()
 	else 
 	{
 		if(solid_mask_helper) return solid_mask_helper->RemoveObject();
+		else return;
 	}	
 	
 	
@@ -95,6 +100,9 @@ func ControlUseStop(object clonk, int x, int y)
 	clonk->UpdateAttach();
 	StopWeaponHitCheckEffect(clonk);
 	AdjustSolidMaskHelper();
+	
+	if(GetEffect("ShieldStop", clonk))
+		RemoveEffect("ShieldStop", clonk);
 }
 
 func ControlUseCancel(object clonk, int ix, int iy)
@@ -179,6 +187,23 @@ func HitByWeapon(pFrom, iDamage)
 	
 	// shield factor
 	return 50;
+}
+
+func FxShieldStopStart(pTarget, iEffectNumber, iTemp)
+{
+	pTarget->SetPhysical("Walk", 0, PHYS_StackTemporary);
+	if(iTemp) return;
+}
+
+func FxShieldStopStop(pTarget, iEffectNumber, iCause, iTemp)
+{
+	pTarget->ResetPhysical("Walk");
+	if(iTemp) return;
+}
+
+func FxShieldStopTimer(pTarget, iEffectNumber)
+{
+	return 1;
 }
 
 public func HoldingEnabled() { return true; }
