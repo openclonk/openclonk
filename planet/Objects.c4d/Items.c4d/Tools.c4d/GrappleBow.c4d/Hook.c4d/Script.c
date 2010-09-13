@@ -217,7 +217,7 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 			rope->ConnectLoose();
 	}
 	
-	if(target->GetAction() == "Jump" && rope->GetConnectStatus() && !EffectVar(6, target, fxnum))
+	if(target->GetAction() == "Jump" && rope->PullObjects() && !EffectVar(6, target, fxnum))
 	{
 		if(!EffectVar(4, target, fxnum))
 		{
