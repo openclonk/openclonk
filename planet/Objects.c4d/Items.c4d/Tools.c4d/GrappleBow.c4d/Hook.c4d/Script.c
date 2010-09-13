@@ -10,6 +10,8 @@
 local rope; // The rope is the connection between the hook
 local clonk;
 local pull;
+local grappler;
+local effect;
 
 public func ArrowStrength() { return 10; }
 
@@ -35,6 +37,7 @@ public func Launch(int angle, int str, object shooter, object bow)
 	rope->Connect(this, bow);
 	rope->ConnectLoose();
 	clonk = shooter;
+	grappler = bow;
 
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
@@ -65,18 +68,22 @@ private func Stick()
 		SetRDir(0);
 
 		// Stick in landscape (vertex 3-7)
-		SetVertex(2, VTX_X, 0, 2);
+		SetVertex(2, VTX_X,  0, 2);
 		SetVertex(2, VTX_Y, -6, 2);
 		SetVertex(3, VTX_X, -3, 2);
 		SetVertex(3, VTX_Y, -4, 2);
-		SetVertex(4, VTX_X, 3, 2);
+		SetVertex(4, VTX_X,  3, 2);
 		SetVertex(4, VTX_Y, -4, 2);
-		SetVertex(5, VTX_X, 4, 2);
+		SetVertex(5, VTX_X,  4, 2);
 		SetVertex(5, VTX_Y, -1, 2);
 		SetVertex(6, VTX_X, -4, 2);
 		SetVertex(6, VTX_Y, -1, 2);
 
 		rope->HockAnchored();
+		for(var obj in FindObjects(Find_ID(GrappleBow), Find_Container(clonk)))
+			if(obj != grappler)
+				obj->DrawRopeIn();
+//		StartPull();
 		ScheduleCall(this, "StartPull", 5); // TODO
 	}
 }
@@ -85,9 +92,10 @@ public func StartPull()
 {
 	pull = 1;
 
-	AddEffect("IntGrappleControl", clonk, 1, 1, this);
+	effect = AddEffect("IntGrappleControl", clonk, 1, 1, this);
 	if(clonk->GetAction() == "Jump")
 	{
+		rope->AdjustClonkMovement();
 		rope->ConnectPull();
 		EffectVar(5, clonk, GetEffect("IntGrappleControl", clonk)) = 1;
 		EffectVar(6, clonk, GetEffect("IntGrappleControl", clonk)) = 10;
@@ -144,7 +152,7 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
-	RemoveEffect("IntGrappleControl", clonk);
+	RemoveEffect(0, clonk, effect);
 	RemoveObject();
 	return;
 }
@@ -193,13 +201,11 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 			rope->DoLength(+1);
 	if (EffectVar(2, target, fxnum))
 	{
-		rope->DoSpeed(-50);
-		SetXDir(GetXDir(100) - 1000, 100);
+		rope->DoSpeed(-15);
 	}
 	if (EffectVar(3, target, fxnum))
 	{
-		rope->DoSpeed(+50);
-		SetXDir(GetXDir(100) + 1000, 100);
+		rope->DoSpeed(+15);
 	}
 
 	if(target->GetAction() == "Tumble" && target->GetActTime() > 10)
@@ -214,7 +220,11 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 	if(target->GetAction() == "Jump" && rope->GetConnectStatus() && !EffectVar(6, target, fxnum))
 	{
 		if(!EffectVar(4, target, fxnum))
+		{
 			target->SetTurnType(1);
+			if(!target->GetHandAction())
+				target->SetHandAction(-1);
+		}
 		target->SetObjDrawTransform(1000, 0, 3000*(1-2*target->GetDir()), 0, 1000);
 
 		if(EffectVar(0, target, fxnum))
@@ -261,6 +271,8 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 		target->SetProperty("MeshTransformation");
 		target->SetObjDrawTransform(1000, 0, 0, 0, 1000);
 		target->StopAnimation(target->GetRootAnimation(10));
+		if(!target->GetHandAction())
+				target->SetHandAction(0);
 		EffectVar(4, target, fxnum) = 0;
 	}
 
@@ -276,4 +288,6 @@ public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tm
 	target->SetProperty("MeshTransformation");
 	target->StopAnimation(target->GetRootAnimation(10));
 	target->SetObjDrawTransform();
+	if(!target->GetHandAction())
+		target->SetHandAction(0);
 }

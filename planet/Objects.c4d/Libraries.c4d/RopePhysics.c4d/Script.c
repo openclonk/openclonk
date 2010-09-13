@@ -21,6 +21,11 @@ local length_auto;
 
 local Max_Length;
 
+func GetRopeGravity()
+{
+	return GetGravity()*Rope_Precision/500;
+}
+
 /** Starts a rope
 * The rope object itself is used as first pole where the rope is connected to.
 * @param obj1 The first object
@@ -32,13 +37,13 @@ protected func StartRope()
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	length = Rope_SegmentLength;
-	
+
 	ParticleCount = 1;
 	segments = CreateArray(ParticleCount);
 	segments[0] = CreateSegment(0, nil);
 
 	particles = CreateArray(ParticleCount);
-	particles[0] = [[ GetX()*Rope_Precision, GetY()*Rope_Precision],  [(GetX()+1)*Rope_Precision, GetY()*Rope_Precision], [0,1*Rope_Precision], 0];
+	particles[0] = [[ GetX()*Rope_Precision, GetY()*Rope_Precision],  [(GetX()+1)*Rope_Precision, GetY()*Rope_Precision], [0,GetRopeGravity()], 0];
 }
 
 /** Connects \a obj1 and \a obj2
@@ -51,7 +56,7 @@ public func StartRopeConnect(object obj1, object obj2)
 {
 	length = ObjectDistance(obj1, obj2);
 	objects = [[obj1, 0], [obj2, 1]];
-	
+
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	ParticleCount = length/Rope_SegmentLength;
@@ -79,7 +84,7 @@ public func StartRopeConnect(object obj1, object obj2)
 		x = obj1->GetX(Rope_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetX(Rope_Precision)*i/ParticleCount;
 		y = obj1->GetY(Rope_Precision)*(ParticleCount-i)/ParticleCount+obj2->GetY(Rope_Precision)*i/ParticleCount;
 		y += yoff*i;
-		particles[i] = [[ x, y], [ x, y], [0,1*Rope_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
+		particles[i] = [[ x, y], [ x, y], [0,GetRopeGravity()], 1]; // Pos, Oldpos, acceleration (gravity), mass
 	}
 	particles[0][2] = [0,0];
 	particles[0][3] = 0;
@@ -90,7 +95,7 @@ public func StartRopeConnect(object obj1, object obj2)
 
 	UpdateSegmentOverlays();
 	TimeStep();
-	
+
 	return;
 }
 
@@ -193,12 +198,12 @@ public func AddSegment(int xoffset, int yoffset)
 
 	var oldx = particles[ParticleCount-1][0][0];
 	var oldy = particles[ParticleCount-1][0][1];
-	particles[ParticleCount] = [[ oldx+xoffset, oldy+yoffset], [ oldx, oldy], [0,1*Rope_Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
+	particles[ParticleCount] = [[ oldx+xoffset, oldy+yoffset], [ oldx, oldy], [0,GetRopeGravity()], 1]; // Pos, Oldpos, acceleration (gravity), mass
 
 	ParticleCount++;
 
 	length += Rope_SegmentLength;
-	
+
 	UpdateSegmentOverlays();
 }
 
@@ -212,7 +217,7 @@ public func PickSegment(int index) // Removes a segment form the middle
 	var previous = nil;
 	if(index > 0) previous = segments[index-1];
 	DeleteSegment(segments[index], previous);
-	
+
 	for(var i = index; i < ParticleCount-1; i++)
 	{
 		segments[i] = segments[i+1];
@@ -288,8 +293,8 @@ public func DoLength(int dolength)
 
 		var x4 = particles[ParticleCount-2][1][0];
 		var y4 = particles[ParticleCount-2][1][1];
-		particles[-1] = [[0,0], [0,0], [0,0], 0];
-		particles[-1] = [[x2, y2], [x4, y4], [0,2*Rope_Precision], 1];
+//		particles[-1] = [[0,0], [0,0], [0,0], 0];
+		particles[-1] = [[x2, y2], [x4, y4], [0,GetRopeGravity()], 1];
 
 		for(var i = ParticleCount-2; i > 0; i--)
 		{
@@ -366,7 +371,7 @@ func AccumulateForces()
 			fx = Sin(angle, length/2);
 			fy =-Cos(angle, length/2);*/
 		}
-		particles[i][2] = [fx,fy+1*Rope_Precision];
+		particles[i][2] = [fx,fy+GetRopeGravity()];
 	}
 }
 
@@ -378,18 +383,26 @@ private func Verlet()
 	// Copy Position of the objects
 	var j = 0;
 	for(var i = 0; i < 2; i++ || j--)
-	{
-		if(objects[i][1] == 0)
+	{//Log("Verlet %d %d (%v), %d", i, j, objects, objects[i][1] == 0);
+//		if(objects[i][1] == 0 )//|| PullObjects())
 			SetParticleToObject(j, i);
-	}
+	}//Log("End");
 
 	// Verlet
-	for(var i = 1; i < ParticleCount; i++)
+	var start = 1;
+	var last = ParticleCount;
+	if(objects[-1][1] == 1 && PullObjects()) last -= 1;
+	for(var i = start; i < ParticleCount; i++)
 	{
-		var x = particles[i][0];
+		if(i == ParticleCount-1)
+		{
+			//particles[i][0] = particles[i][1][:];
+			//continue;
+		}
+		var x = particles[i][0][:];
 		var temp = x;
-		var oldx = particles[i][1];
-		var a = particles[i][2];
+		var oldx = particles[i][1][:];
+		var a = particles[i][2][:];
 
 		// Verlet step, get speed out of distance moved relativ to the last position
 		particles[i][0][0] += x[0]-oldx[0]+a[0];
@@ -410,7 +423,8 @@ public func SetParticleToObject(int index, int obj_index)
 	if(obj->Contained()) obj = obj->Contained();
 	particles[index][0][0] = obj->GetX(Rope_Precision);
 	particles[index][0][1] = obj->GetY(Rope_Precision);
-
+	return;
+//Log("Set %d %d", index, obj_index);
 	particles[index][1][0] = particles[index][0][0];
 	particles[index][1][1] = particles[index][0][1];
 }
@@ -537,13 +551,15 @@ func GetLineLength()
 	return length_vertex;
 }
 
+func LengthAutoTryCount() { return 5; }
+
 /** Applies the forces on the objects (only non-fixed ones) or adjust the length then the object pulls
 */
 func ForcesOnObjects()
 {
 	if(!length) return;
 
-	var redo = 5;
+	var redo = LengthAutoTryCount();
 	while(length_auto && redo)
 	{
 		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
@@ -559,7 +575,7 @@ func ForcesOnObjects()
 		if(redo) redo --;
 	}
 	var j = 0;
-	if(!length_auto || length == GetMaxLength() )
+	if(PullObjects() )
 	for(var i = 0; i < 2; i++)
 	{
 		if(i == 1) j = ParticleCount-1;
@@ -568,20 +584,28 @@ func ForcesOnObjects()
 		if(obj == nil || objects[i][1] == 0) continue;
 
 		if(obj->Contained()) obj = obj->Contained();
-		
-		var x = obj->GetX(Rope_Precision), y = obj->GetY(Rope_Precision);
+
+/*		var x = obj->GetX(Rope_Precision), y = obj->GetY(Rope_Precision);
 		obj->SetPosition(particles[j][0][0], particles[j][0][1], 1, Rope_Precision);
 		if(obj->Stuck())
-			obj->SetPosition(x, y, 1, Rope_Precision);
+			obj->SetPosition(x, y, 1, Rope_Precision);*/
 
 		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
 			obj->SetAction("Jump");
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
+		var xdist = particles[j][0][0]-obj->GetX(Rope_Precision);
+		var ydist = particles[j][0][1]-obj->GetY(Rope_Precision);
+
 		obj->SetXDir( particles[j][0][0]-particles[j][1][0], Rope_Precision);
 		obj->SetYDir( particles[j][0][1]-particles[j][1][1], Rope_Precision);
 	}
+}
+
+func PullObjects()
+{
+	return !length_auto || length == GetMaxLength();
 }
 
 func ObjContact(obj)
@@ -616,8 +640,8 @@ func LogSpeed()
 	var array = [];
 	for(var i=0; i < ParticleCount; i++)
 	{
-		var x = particles[i][0];
-		var oldx = particles[i][1];
+		var x = particles[i][0][:];
+		var oldx = particles[i][1][:];
 		array[GetLength(array)] = Distance(x[0]-oldx[0], x[1]-oldx[1]);
 	}
 	Log("%v", array);
@@ -638,7 +662,7 @@ func Vec_Add(array x, array y) { return [x[0]+y[0], x[1]+y[1]]; }
 func Vec_Sub(array x, array y) { return [x[0]-y[0], x[1]-y[1]]; }
 
 /** Multiplication of a vector and a number
-* @param x vector 
+* @param x vector
 * @param i number
 * @param return \a i times \a x
 */

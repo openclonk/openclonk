@@ -341,7 +341,7 @@ func DoUpdateAttach(bool sec)
 	if(obj->~GetCarryBone2()) bone2 = obj->~GetCarryBone2(this);
 	else bone2 = bone;
 	var nohand = 0;
-	if(!HasHandAction(sec)) nohand = 1;
+	if(!HasHandAction(sec, 1)) nohand = 1;
 	var trans = obj->~GetCarryTransform(this, sec, nohand);
 
 	var pos_hand = "pos_hand2";
@@ -362,7 +362,7 @@ func DoUpdateAttach(bool sec)
 
 	if(iAttachMode == CARRY_Hand)
 	{
-		if(HasHandAction(sec))
+		if(HasHandAction(sec, 1))
 		{
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
@@ -372,7 +372,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
-		if(HasHandAction(sec))
+		if(HasHandAction(sec, 1))
 		{
 			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
@@ -392,7 +392,7 @@ func DoUpdateAttach(bool sec)
 	else if(iAttachMode == CARRY_BothHands)
 	{
 		if(sec) return;
-		if(HasHandAction(sec) && !sec)
+		if(HasHandAction(sec, 1) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_tool1", bone, trans);
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
@@ -403,7 +403,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Spear)
 	{
-		if(HasHandAction(sec) && !sec)
+		if(HasHandAction(sec, 1) && !sec)
 		{
 			PlayAnimation("CarrySpear", 6, Anim_Const(0), Anim_Const(1000));
 		}
@@ -412,7 +412,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Musket)
 	{
-		if(HasHandAction(sec) && !sec)
+		if(HasHandAction(sec, 1) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
 			PlayAnimation("CarryMusket", 6, Anim_Const(0), Anim_Const(1000));
@@ -423,7 +423,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Grappler)
 	{
-		if(HasHandAction(sec) && !sec)
+		if(HasHandAction(sec, 1) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
 			PlayAnimation("CarryCrossbow", 6, Anim_Const(0), Anim_Const(1000));
@@ -452,12 +452,20 @@ static const CARRY_Spear        = 6;
 static const CARRY_Musket       = 7;
 static const CARRY_Grappler     = 8;
 
-func HasHandAction(sec)
+func HasHandAction(sec, just_wear)
 {
 	if(sec && fBothHanded)
 		return false;
-	if( HasActionProcedure() && !fHandAction )
-		return true;
+	if(just_wear)
+	{
+		if( HasActionProcedure() && !fHandAction ) // For wear purpose fHandAction==-1 also blocks
+			return true;
+	}
+	else
+	{
+		if( HasActionProcedure() && (!fHandAction || fHandAction == -1) )
+			return true;
+	}
 	return false;
 }
 
@@ -477,8 +485,10 @@ public func ReadyToAction(fNoArmCheck)
 
 public func SetHandAction(bool fNewValue)
 {
-	if(fNewValue)
-		fHandAction = 1;
+	if(fNewValue > 0)
+		fHandAction = 1; // 1 means can't use items and doesn't draw items in hand
+	if(fNewValue < 0)
+		fHandAction = -1; // just don't draw items in hand can still use them
 	else
 		fHandAction = 0;
 	UpdateAttach();

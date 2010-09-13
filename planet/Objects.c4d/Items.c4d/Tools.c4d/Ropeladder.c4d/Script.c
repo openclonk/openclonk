@@ -350,7 +350,7 @@ func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int old
 		{
 			if(index >= 2)
 			{
-				start = particles[index-1][0];
+				start = particles[index-1][0][:];
 				start[0] += -Cos(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 				start[1] += -Sin(oldangle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 			}
@@ -365,7 +365,7 @@ func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int old
 		{
 			if(index >= 2)
 			{
-				start = particles[index-1][0];
+				start = particles[index-1][0][:];
 				start[0] += -Cos(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 				start[1] += -Sin(oldangle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 			}
@@ -383,13 +383,13 @@ func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int old
 		var end = [0,0];
 		if(fRight == 0)
 		{
-			end = particles[index][0];
+			end = particles[index][0][:];
 			end[0] += -Cos(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 			end[1] += -Sin(angle, Ropeladder_Segment_LeftXOffset*MirrorSegments);
 		}
 		else
 		{
-			end = particles[index][0];
+			end = particles[index][0][:];
 			end[0] += -Cos(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 			end[1] += -Sin(angle, Ropeladder_Segment_RightXOffset*MirrorSegments);
 		}
@@ -412,7 +412,7 @@ public func OnLadderGrab(clonk, index)
 {
 	// Do some speed when the clonk jumps on the ladder
 	if(index == 0) return;
-	particles[index][0][0] += BoundBy(clonk->GetXDir(), -50, 50)*Ladder_Precision;
+	particles[index][0][0] += BoundBy(clonk->GetXDir()/2, -25, 25)*Ladder_Precision;
 }
 
 public func OnLadderClimb(clonk, index)
@@ -420,13 +420,13 @@ public func OnLadderClimb(clonk, index)
 	// The clonk drags on the upper segments and pushes on the lower ones
 	if(index > 2 && index < ParticleCount-3)
 	{
-		particles[index-2][0][0] -= 1*Ladder_Precision*(-1+2*clonk->GetDir());
-		particles[index+2][0][0] += 1*Ladder_Precision*(-1+2*clonk->GetDir());
+		particles[index-2][0][0] -= 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
+		particles[index+2][0][0] += 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
 	}
 	else if(index > 2 && index < ParticleCount-2)
 	{
-		particles[index-2][0][0] -= 1*Ladder_Precision*(-1+2*clonk->GetDir());
-		particles[index+1][0][0] += 1*Ladder_Precision*(-1+2*clonk->GetDir());
+		particles[index-2][0][0] -= 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
+		particles[index+1][0][0] += 1*Ladder_Precision/5*(-1+2*clonk->GetDir());
 	}
 }
 

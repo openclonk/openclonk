@@ -70,6 +70,8 @@ public func HockAnchored(bool pull)
 	HoockAnchored = 1;
 }
 
+func LengthAutoTryCount() { if(!HoockAnchored) return 10; return 5; }
+
 public func HookRemoved()
 {
 	var new_hook = CreateObject(GrappleHook);
@@ -121,6 +123,24 @@ func DrawIn()
 	}
 }
 
+func AdjustClonkMovement()
+{
+	var clonk = objects[1][0];
+	if(clonk->Contained()) clonk = clonk->Contained();
+	
+	var rope_vector = Vec_Sub(particles[-1][0], particles[-2][0]);
+	var clonk_speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
+
+
+	var rope_orthogonal = [rope_vector[1], -rope_vector[0]];
+	var new_speed = Vec_Dot(rope_orthogonal, clonk_speed)/Vec_Length(rope_orthogonal);
+	
+	var clonk_newspeed = Vec_Normalize(rope_orthogonal, new_speed);
+
+	clonk->SetXDir(clonk_newspeed[0], Rope_Precision);
+	clonk->SetYDir(clonk_newspeed[1], Rope_Precision);
+}
+
 func UpdateLines()
 {
 	var fTimeStep = 1;
@@ -134,13 +154,13 @@ func UpdateLines()
 		var angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
 
 		// Draw the left line
-		var start = particles[i-1][0];
-		var end   = particles[i][0];
+		var start = particles[i-1][0][:];
+		var end   = particles[i][0][:];
 
 		if(i == 1 && ParticleCount > 2)
 		{
 			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-			end = particles[0][0];
+			end = particles[0][0][:];
 			end[0] += -Sin(angle, 45*Rope_Precision/10);
 			end[1] += +Cos(angle, 45*Rope_Precision/10);
 		}
@@ -148,7 +168,7 @@ func UpdateLines()
 		if(i == 2)
 		{
 			angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
-			start = particles[0][0];
+			start = particles[0][0][:];
 			start[0] += -Sin(angle, 45*Rope_Precision/10);
 			start[1] += +Cos(angle, 45*Rope_Precision/10);
 		}

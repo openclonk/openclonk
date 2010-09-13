@@ -48,10 +48,18 @@ public func OnRopeBreak()
 	if(hook_attach)
 		DetachMesh(hook_attach);
 
-	hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
+	if(!hook)
+		hook = CreateObject(GrappleHook, 0, 0, NO_OWNER);
 	hook->Enter(this);
 	hook_attach = AttachMesh(hook, "bolt", "main");
 	PlayAnimation("Load", 5, Anim_Const(GetAnimationLength("Load")), Anim_Const(1000));
+}
+
+public func DrawRopeIn()
+{
+	var rope = hook->GetRope();
+	if (rope)
+		rope->DrawIn();
 }
 
 protected func Destruction()
