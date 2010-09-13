@@ -63,6 +63,7 @@ public func Connect(object obj1, object obj2)
 public func GetConnectStatus() { return !length_auto; }
 
 local HoockAnchored;
+local DrawingIn;
 
 /* Callback form the hook, when it hits ground */
 public func HockAnchored(bool pull)
@@ -70,7 +71,7 @@ public func HockAnchored(bool pull)
 	HoockAnchored = 1;
 }
 
-func LengthAutoTryCount() { if(!HoockAnchored) return 10; return 5; }
+//func LengthAutoTryCount() { if(!HoockAnchored && !DrawingIn) return 10; return 5; }
 
 public func HookRemoved()
 {
@@ -87,7 +88,11 @@ public func MaxLengthReached()
 	var clonk = objects[1][0];
 	if(clonk->Contained()) clonk = clonk->Contained();
 	if(!HoockAnchored)
+	{
+		for(var i = 0; i < ParticleCount; i++)
+			particles[i][1] = particles[i][0][:];
 		DrawIn();
+	}
 }
 
 /* for swinging */
@@ -108,14 +113,23 @@ func FxDrawInTimer()
 		return -1;
 	}
 	DoLength(-5);
+	if(!HoockAnchored)
+	{
+		for(var i = 0; i < ParticleCount; i++)
+			particles[i][1] = particles[i][0][:];//Vec_Add(particles[i][0],Vec_Div(Vec_Sub(particles[i][0],particles[i][1]), 2));
+		DoLength(-3);
+	}
 }
 
 func DrawIn()
 {
+	DrawingIn = 1;
 	if(!GetEffect("DrawIn", this))
 	{
 		AddEffect("DrawIn", this, 1, 1, this);
 		SetFixed(0, 1);
+		objects[0][0]->SetXDir();
+		objects[0][0]->SetYDir();
 		ConnectPull();
 		var clonk = objects[1][0];
 		if(clonk->Contained()) clonk = clonk->Contained();
