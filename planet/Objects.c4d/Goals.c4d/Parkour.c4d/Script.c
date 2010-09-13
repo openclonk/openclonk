@@ -1,5 +1,5 @@
-/*-- 
-		Parkour 
+/*--
+		Parkour
 		Authors: Maikel
 		
 		The goal is to be the first to reach the finish, the team or player to do so wins the round.
@@ -10,7 +10,7 @@
 			* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
 			* The start and finish are also checkpoints.
 			
-		TODO: 
+		TODO:
 			* Update CP Graphics -> looks satisfactory atm but cpu intensive.
 			* Add significant message under goal, done.
 --*/
@@ -190,7 +190,7 @@ public func GetShortDescription(int plr)
 		if (pos == 1)
 			msg = "$MsgDescTeamFirst$";
 		if (pos == 2)
-			msg = "$MsgDescTeamSecond$";	
+			msg = "$MsgDescTeamSecond$";
 		if (pos == 3)
 			msg = "$MsgDescTeamThird$";
 		if (pos >= 4)
@@ -202,19 +202,19 @@ public func GetShortDescription(int plr)
 		if (pos == 1)
 			msg = "$MsgDescFirst$";
 		if (pos == 2)
-			msg = "$MsgDescSecond$";	
+			msg = "$MsgDescSecond$";
 		if (pos == 3)
 			msg = "$MsgDescThird$";
 		if (pos >= 4)
-			msg = Format("$MsgDescNth$", pos);	
-	}	
+			msg = Format("$MsgDescNth$", pos);
+	}
 	return msg;
 }
 
 private func GetPlayerPosition(int plr)
 {
 	var pos = 1;
-	var plrid = GetPlayerID(plr); 
+	var plrid = GetPlayerID(plr);
 	for (var i = 0; i < GetPlayerCount(); i++)
 		if (plr_list[plrid] < plr_list[GetPlayerID(GetPlayerByIndex(i))])
 			pos++;
@@ -375,12 +375,12 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 		{
 			nextcp = cp;
 			break;
-		}	
+		}
 	if (!nextcp)
 		return EffectVar(0, target, fxnum)->SetClrModulation(RGBa(0, 0, 0, 0));
 	// Calculate parameters.
 	var angle = Angle(target->GetX(), target->GetY(), nextcp->GetX(), nextcp->GetY());
-	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510); 
+	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510);
 	var red = BoundBy(dist, 0, 255);
 	var green = BoundBy(510 - dist, 0, 255);
 	var color = RGBa(red, green, 0, 128);
@@ -449,7 +449,7 @@ private func SetEvalData(int winner)
 	for (var i = 0; i < GetPlayerCount(); i++)
 		AddEvalData(GetPlayerByIndex(i));
 	// Obviously get rid of settlement score.
-	HideSettlementScoreInEvaluation(true); 
+	HideSettlementScoreInEvaluation(true);
 	return;
 }
 

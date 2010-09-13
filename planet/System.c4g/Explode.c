@@ -9,7 +9,7 @@
 
 /*-- Explosion --*/
 
-global func Explode(int level) 
+global func Explode(int level)
 {
 	// Shake the viewport.
 	ShakeViewPort(level, nil, GetX(), GetY());
@@ -41,9 +41,9 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	var container = inobj;
 	while (container)
 	{
-		if (container->GetID()->GetDefContainBlast()) 
+		if (container->GetID()->GetDefContainBlast())
 			break;
-		else 
+		else
 			container = container->Contained();
 	}
 
@@ -60,7 +60,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	}
 	// Damage in the objects, and outside.
 	BlastObjects(x + GetX(), y + GetY(), level, inobj, cause_plr, layer);
-	if (inobj != container) 
+	if (inobj != container)
 		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer);
 	
 	// Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
@@ -110,10 +110,10 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		if (container->GetObjectLayer() == layer)
 		{
 			container->BlastObject(level, cause_plr);
-			if (!container) 
+			if (!container)
 				return true; // Container could be removed in the meanwhile.
 			for (obj in FindObjects(Find_Container(container), Find_Layer(layer)))
-				if (obj) 
+				if (obj)
 					obj->BlastObject(level, cause_plr);
 		}
 	}
@@ -132,14 +132,14 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		var cnt = GetLength(shockwave_objs);
 		if (cnt)
 		{
-			// The hurl energy is distributed over the objects. 
+			// The hurl energy is distributed over the objects.
 			//Log("Shockwave objs %v (%d)", shockwave_objs, cnt);
 			var shock_speed = Sqrt(2 * level * level / BoundBy(cnt, 2, 12));
-			for (var obj in shockwave_objs) 
+			for (var obj in shockwave_objs)
 				if (obj) // Test obj, cause OnShockwaveHit could have removed objects.
 				{
 					// Object has special reaction on shockwave?
-					if (obj->~OnShockwaveHit(level, x, y)) 
+					if (obj->~OnShockwaveHit(level, x, y))
 						continue;
 					// Living beings are hurt more.
 					var cat = obj->GetCategory();
@@ -149,14 +149,14 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 						obj->DoDamage(level / 2, FX_Call_DmgBlast, cause_plr);
 					}
 					// Killtracing for projectiles.
-					if (cat & C4D_Object) 
+					if (cat & C4D_Object)
 						obj->SetController(cause_plr);
 					// Shockwave.
-					var mass_fact = 20, mass_mul = 100; 
+					var mass_fact = 20, mass_mul = 100;
 					if (cat & C4D_Living)
 					{
-						mass_fact = 8; 
-						mass_mul = 80; 
+						mass_fact = 8;
+						mass_mul = 80;
 					}
 					mass_fact = BoundBy(obj->GetMass() * mass_mul / 1000, 4, mass_fact);
 					var dx = 100 * (obj->GetX() - x) + Random(51) - 25;
@@ -169,9 +169,9 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 					{
 						// Objects shouldn't move too fast.
 						var ovx = obj->GetXDir(100), ovy = obj->GetYDir(100);
-						if (ovx * vx > 0) 
+						if (ovx * vx > 0)
 							vx = (Sqrt(vx * vx + ovx * ovx) - Abs(vx)) * Abs(vx) / vx;
-						if (ovy * vy > 0) 
+						if (ovy * vy > 0)
 							vy = (Sqrt(vy * vy + ovy * ovy) - Abs(vy)) * Abs(vy) / vy;
 					}
 					//Log("%v v(%v %v)   d(%v %v)  m=%v  l=%v  s=%v", obj, vx,vy, dx,dy, mass_fact, level, shock_speed);
@@ -186,14 +186,14 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 global func BlastObjectsShockwaveCheck(int x, int y)
 {
 	var def = GetID();
-	// Some special cases, which won't go into FindObjects. 
-	if (def->GetDefHorizontalFix()) 
+	// Some special cases, which won't go into FindObjects.
+	if (def->GetDefHorizontalFix())
 		return false;
 	if (def->GetDefGrab() != 1)
 	{
-		if (GetCategory() & C4D_Vehicle) 
+		if (GetCategory() & C4D_Vehicle)
 			return false;
-		if (GetProcedure() == "FLOAT") 
+		if (GetProcedure() == "FLOAT")
 			return false;
 	}
 	// Projectiles not when they fly downwards or are exactly in the explosion point.
@@ -204,7 +204,7 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 		if (GetYDir() > 5) return false;
 	}
 	// No stuck objects.
-	if (Stuck()) 
+	if (Stuck())
 		return false;
 	return true;
 }
@@ -214,7 +214,7 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 
 global func ShakeViewPort(int level, int x_off, int y_off)
 {
-	if (level <= 0) 
+	if (level <= 0)
 		return false;
 
 	var eff = GetEffect("ShakeEffect", this);
@@ -300,7 +300,7 @@ global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, b
 	x += GetX();
 	y += GetY();
 	var num = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, strength, angle, x, y);
-	if (!color) 
+	if (!color)
 		color = RGBa(130, 130, 130, 70);
 	EffectVar(6, nil, num) = color;
 	EffectVar(7, nil, num) = noblast;
@@ -321,7 +321,7 @@ global func FxSmokeTrailStart(object target, int fxnum, int temp, strength, angl
 	if (temp)
 		return;
 	
-	if (angle % 90 == 1) 
+	if (angle % 90 == 1)
 		angle += 1;
 	strength = Max(strength, 5);
 
@@ -401,7 +401,7 @@ global func Fireworks(int color, int x, int y)
 
 global func FxFireworkStart(object target, int num, int tmp, speed, angle, x, y, color)
 {
-	if (tmp) 
+	if (tmp)
 		return;
 
 	EffectVar(0, target, num) = speed * 100;
@@ -419,7 +419,7 @@ global func FxFireworkTimer(object target, int num, int time)
 	
 	if (time > 65) return -1;
 	
-	if (GBackSemiSolid(x / 100, y / 100)) 
+	if (GBackSemiSolid(x / 100, y / 100))
 		return -1;
 	
 	// loose speed

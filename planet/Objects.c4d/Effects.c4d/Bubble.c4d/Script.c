@@ -12,7 +12,7 @@ global func Bubble(int iamount, int x, int y)
 	{
 		CreateObject(Bubble1, x, y);
 		++i;
-	}		
+	}
 }
 
 protected func Initialize()

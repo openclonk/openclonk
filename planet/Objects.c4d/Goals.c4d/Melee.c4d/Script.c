@@ -22,9 +22,9 @@ protected func InitializePlayer(int newplr, int x, int y, object base, int team)
 private func CheckTeamHostile(int plr1, int plr2)
 {
 	var team1 = GetPlayerTeam(plr1);
-	if (team1 != GetPlayerTeam(plr2)) 
+	if (team1 != GetPlayerTeam(plr2))
 		return true;
-	if (team1) 
+	if (team1)
 		return false;
 	return Hostile(plr1, plr2);
 }
@@ -40,7 +40,7 @@ public func IsFulfilled()
 		// Compare with other players.
 		for (var j = i + 1; j < GetPlayerCount(); j++)
 		{
-			var plr2cmp = GetPlayerByIndex(j); 
+			var plr2cmp = GetPlayerByIndex(j);
 			// Still enemy players out there?
 			if (CheckTeamHostile(plr, plr2cmp) ) return false;
 		}
@@ -59,7 +59,7 @@ public func Activate(int byplr)
 		var plr = GetPlayerByIndex(i);
 		if (plr == byplr)
 			continue;
-		if (Hostile(plr, byplr) ) 
+		if (Hostile(plr, byplr) )
 			hostile_count++;
 	}
 	

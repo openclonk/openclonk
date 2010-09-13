@@ -9,7 +9,7 @@ func Initialize()
 	CreateObject(WindGenerator,68,188)->SetR(95);
 	CreateObject(WindGenerator,LandscapeWidth()-68,188)->SetR(-95);
 	SetSkyAdjust (RGB(230,210,150), RGB(150,100,0));
-	for(var i=0; i<30; i++) CreateObject(Rule_ObjectFade); 
+	for(var i=0; i<30; i++) CreateObject(Rule_ObjectFade);
 	var b=LandscapeWidth();
 
 	DrawMaterialQuad("Vehicle",0,110,22,120,27,255,0,255);

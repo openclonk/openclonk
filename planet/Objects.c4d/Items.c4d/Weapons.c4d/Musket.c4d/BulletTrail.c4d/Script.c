@@ -18,7 +18,7 @@ local fRemove, iSpeed, pShot, w, l, r, x, y;
 
 public func Set(int iWidth, int iLength, object pSht)
 {
-	pShot = pSht;	
+	pShot = pSht;
 
 	w = 1000*iWidth/this["ActMap"]["Travel"]["Wdt"];
 	l = 1000*iLength/this["ActMap"]["Travel"]["Hgt"];
@@ -61,7 +61,7 @@ private func Traveling()
 			
 	// Display
 	DrawTransform();
-	if(pShot) 
+	if(pShot)
 		if(pShot->~TrailColor(GetActTime()) != nil)
 			SetClrModulation(pShot->~TrailColor(GetActTime()));
 
@@ -90,7 +90,7 @@ public func DrawTransform() {
 	if(!fRemove && l < relative_length) return;
 
 	// stretch >-<
-	if(fRemove) l = Max(0,l-iSpeed); 
+	if(fRemove) l = Max(0,l-iSpeed);
 
 	// stretch <->
 	var h = Min(l,relative_length);

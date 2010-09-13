@@ -3,11 +3,11 @@
 func Activate(int plr)
 {
 	// Notify scenario.
-	if (GameCall("OnRestart", plr)) 
+	if (GameCall("OnRestart", plr))
 		return;
 	// Remove the player's clonk, including contents.
 	var clonk = GetCrew(plr);
-	if (clonk) 
+	if (clonk)
 		clonk->RemoveObject();
 }
 

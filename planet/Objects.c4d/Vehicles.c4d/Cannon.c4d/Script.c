@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Cannon
 	Author: Ringwaul
 	
@@ -96,13 +96,13 @@ private func CheckForKeg(object clonk)
 		if (keg) // If there is a keg, put into cannon.
 		{
 			keg->Exit();
-			keg->Enter(this);	
-			Sound("WoodHit*");		
-		}		
+			keg->Enter(this);
+			Sound("WoodHit*");
+		}
 		else // No keg, stop using cannon.
 		{
 			PlayerMessage(clonk->GetOwner(),"$TxtNeedsGunp$");
-			return false;			
+			return false;
 		}
 	}
 	return true;
@@ -256,7 +256,7 @@ func ControlLeft(object clonk)
 	SetDir();
 }
 
-func ControlRight(object clonk)	
+func ControlRight(object clonk)
 {
 	SetDir(1);
 }
@@ -298,7 +298,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 }
 
 func Timer()
-{	
+{
 	//Turning
 	if(olddir != GetDir())
 	{

@@ -56,7 +56,7 @@ local ActMap = {
 			Hgt = 20,
 			NextAction = "Attach",
 			Animation = "Spin",
-		},  
+		},
 		Show = {
 			Prototype = Action,
 			Name = "Show",
@@ -69,5 +69,5 @@ local ActMap = {
 			Hgt = 20,
 			NextAction = "Show",
 			Animation = "Bounce",
-		},  
+		},
 };

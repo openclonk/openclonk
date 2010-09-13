@@ -1,7 +1,7 @@
 /*-- Airplane Reticle --*/
 
 protected func Initialize()
-{	
+{
 	this["Visibility"] = VIS_Owner;
 	AddEffect("IntRotate",this,1,1,this);
 	return;
@@ -15,7 +15,7 @@ public func FxIntRotateTimer(object target, int num, int timer)
 
 /*-- Proplist --*/
 
-protected func Definition(def) 
+protected func Definition(def)
 {
 	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
@@ -30,6 +30,6 @@ protected func Definition(def)
 			Wdt = 40,
 			Hgt = 20,
 			NextAction = "Show",
-		},  
+		},
 	}, def);
 }

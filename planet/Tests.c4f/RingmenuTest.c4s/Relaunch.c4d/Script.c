@@ -22,7 +22,7 @@ func ChooseMenu(object clonk)
 		menuitem->AddItem(Loam,3);
 		menuitem->AddItem(Firestone,5);
 		menuitem->AddItem(Fireglobe,3);
-		menuitem->AddItem(Blackpowder,3); 
+		menuitem->AddItem(Blackpowder,3);
 		menuitem->Show();
 	}
 	return true;

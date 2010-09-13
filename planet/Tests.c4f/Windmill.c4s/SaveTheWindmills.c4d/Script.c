@@ -14,7 +14,7 @@ func Initialize()
 	SetScoreboardData(SBRD_Caption, SBRD_Caption, "$ScoreCaption$", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Rockets, "{{Goal_SaveTheWindmills}}", SBRD_Caption);
 	// Remove settlement eval data.
-	HideSettlementScoreInEvaluation(true); 
+	HideSettlementScoreInEvaluation(true);
 	inherited(...);
 }
 
@@ -93,7 +93,7 @@ protected func RemovePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-public func DoEvaluationData() 
+public func DoEvaluationData()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{

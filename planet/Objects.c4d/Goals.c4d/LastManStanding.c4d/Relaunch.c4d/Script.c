@@ -53,7 +53,7 @@ func FxIntTimeLimitTimer(target, num, fxtime)
 {
 	var clonk = Contents();
 	if (fxtime >= time)
-	{    
+	{
 		RelaunchClonk();
 		return -1;
 	}
@@ -66,7 +66,7 @@ func FxIntTimeLimitTimer(target, num, fxtime)
 
 public func Selected(object menu, object selector)
 {
-	if (!selector) 
+	if (!selector)
 		return false;
 	
 	for (var i = 0; i < selector->GetAmount(); i++)
@@ -88,7 +88,7 @@ private func RelaunchClonk()
 	var clonk = Contents();
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk);
-	if (menu) 
+	if (menu)
 		menu->Close();
 	PlayerMessage(clonk->GetOwner(), "");
 	RemoveObject();

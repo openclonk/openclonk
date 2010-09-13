@@ -28,7 +28,7 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 
-	LaunchProjectile(angle, dist, speed);	
+	LaunchProjectile(angle, dist, speed);
 	
 	// remove after some time
 	SetAction("Travel");

@@ -31,7 +31,7 @@ protected func ControlSpecial2()
 
 /* Context menu entries */
 
-/*public func ContextRelease(pCaller) 
+/*public func ContextRelease(pCaller)
 {
 	[$CtxRelease$|Image=CXRL|Condition=ReleaseAllowed]
 	FindObject(REAC)->Activate(GetOwner());
@@ -41,7 +41,7 @@ protected func ControlSpecial2()
 public func ContextEnergy(pCaller)
 {
 	[$TxtEnergysupply$|Image=CXEC|Condition=AtEnergySite]
-	var pSite; 
+	var pSite;
 	if (pSite = FindEnergySite())
 		SetCommand("Energy", pSite);
 	return 1;
@@ -50,7 +50,7 @@ public func ContextEnergy(pCaller)
 public func ContextConstructionSite(pCaller)
 {
 	[$CtxConstructionMaterial$|Image=CXCM|Condition=AtConstructionSite]
-	var pSite; 
+	var pSite;
 	if (pSite = FindConstructionSite())
 		pSite->PlayerMessage(GetOwner(), pSite->GetNeededMatStr());
 	return 1;
@@ -59,7 +59,7 @@ public func ContextConstructionSite(pCaller)
 public func ContextChop(pCaller)
 {
 	[$CtxChop$|Image=CXCP|Condition=AtTreeToChop]
-	var pTree; 
+	var pTree;
 	if (pTree = FindTree())
 		SetCommand("Chop", pTree);
 	return 1;
@@ -80,7 +80,7 @@ public func ContextHome(pCaller)
 	return 1;
 }
 
-public func ContextDescend(pCaller) 
+public func ContextDescend(pCaller)
 {
 	[$TxtDescend$|Image=DSCN|Condition=IsRiding]
 	DescendVehicle();
@@ -162,5 +162,5 @@ public func DescendVehicle()
 			// Vehicle is stuck as well? Back to the roots.
 			SetPosition(x,y);
 		}
-	}	
+	}
 }

@@ -60,24 +60,24 @@ func AdjustSolidMaskHelper()
 			solid_mask_helper->SetAction("Attach", Contained());
 		}
 	}
-	else 
+	else
 	{
 		if(solid_mask_helper) return solid_mask_helper->RemoveObject();
 		else return;
-	}	
+	}
 	
 	
-	var angle=BoundBy(iAngle, 0, 115); 
+	var angle=BoundBy(iAngle, 0, 115);
 	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
 	
 	solid_mask_helper->SetR(angle - 90);
 	var distance=10;
 	var y_adjust=-5;
 	var x_adjust=1;
-	if(Contained()->GetDir() == DIR_Left) x_adjust=-1; 
+	if(Contained()->GetDir() == DIR_Left) x_adjust=-1;
 	var x=Sin(angle, distance) + x_adjust;
 	var y=-Cos(angle, distance) + y_adjust;
-	solid_mask_helper->SetVertexXY(0, -x, -y); 
+	solid_mask_helper->SetVertexXY(0, -x, -y);
 }
 
 func ControlUseHolding(clonk, x, y)
@@ -144,7 +144,7 @@ func CheckStrike(iTime)
 		if(obj->GetOCF() & OCF_Alive)
 		{
 			if(push_livings)
-			{	
+			{
 				found_alive=true;
 				obj->SetXDir((obj->GetXDir() + Contained()->GetXDir() * 3) / 4);
 				obj->SetYDir((obj->GetYDir() + Contained()->GetYDir() * 3) / 4);
@@ -159,7 +159,7 @@ func CheckStrike(iTime)
 		//if(speed > 5000) continue;
 		speed=Max(150, speed/2);
 		obj->SetXDir(+Sin(a, speed), 100);
-		obj->SetYDir(-Cos(a, speed), 100); 
+		obj->SetYDir(-Cos(a, speed), 100);
 		found=true;
 	}
 	

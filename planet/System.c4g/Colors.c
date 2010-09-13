@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Colors.c
 		Authors: Tyron
 		
@@ -19,7 +19,7 @@ global func RGBa (int r, int g, int b, int a) { return (a & 255) << 24 | (r & 25
 global func GetRGBaValue(int val, int sel) { return val >> ((3 - sel) * 8) & 255; }
 global func DoRGBaValue(int val, int chng, int sel) { return val + (chng << ((3 - sel) * 8)); }
 
-global func SetRGBaValue(int val, int newval, int sel) 
+global func SetRGBaValue(int val, int newval, int sel)
 {
 	// 'delete' old color
 	val = val & ~(255 << ((3 - sel) * 8));
@@ -40,10 +40,10 @@ global func HSL2RGB(int hsl)
 	if (sat == 0)
 	{
 		red = green = blue = lightness;
-	} 
+	}
 	else
 	{
-		if (lightness < 128) 
+		if (lightness < 128)
 			var2 = lightness * (255 + sat) / 255;
 		else
 			var2 = lightness + sat - lightness * sat / 255;
@@ -64,9 +64,9 @@ global func Hue_2_RGB(int var1, int var2, int hue)
 		hue += 255;
 	if (hue > 255)
 		hue -= 255;
-	if (6 * hue < 255) 
+	if (6 * hue < 255)
 		return var1 + (var2 - var1) * 6 * hue / 255;
-	if (2 * hue < 255) 
+	if (2 * hue < 255)
 		return var2;
 	if (3 * hue < 510)
 		return var1 + (var2 - var1) * ( 510 / 3 - hue ) * 6 / 255;
@@ -85,28 +85,28 @@ global func RGB2HSL(int rgb)
 	{
 		hue = 0;
 		sat = 0;
-	} 
+	}
 	else
 	{
-		if (lightness < 128) 
+		if (lightness < 128)
 			sat = 255 * diff_val / (max_val + min_val);
-		else 
+		else
 			sat = 255 * diff_val / (510 - (max_val + min_val));
 
 		diff_red = ((255 * (max_val - red)) / 6 + (255 * diff_val) / 2) / diff_val;
 		diff_green = ((255 * (max_val - green)) / 6 + (255 * diff_val) / 2) / diff_val;
 		diff_blue = ((255 * (max_val - blue )) / 6 + (255 * diff_val) / 2) / diff_val;
 			
-		if (red == max_val) 
+		if (red == max_val)
 			hue = diff_blue -diff_green;
-		else if (green == max_val) 
+		else if (green == max_val)
 			hue = 255 / 3 + diff_red - diff_blue;
 		else if (blue == max_val)
 			hue = 510 / 3 + diff_green - diff_red;
 		
-		if (hue < 0) 
+		if (hue < 0)
 			hue += 255;
-		if (hue > 255) 
+		if (hue > 255)
 			hue -= 255;
 	}
 	

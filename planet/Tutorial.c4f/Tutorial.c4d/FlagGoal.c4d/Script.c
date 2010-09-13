@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Script goal
 		Author: Maikel
 		
@@ -10,8 +10,8 @@
 
 local flag; // Pointer to the flag
 
-public func IsFulfilled() 
-{ 
+public func IsFulfilled()
+{
 	// No flag, goal fulfilled.
 	if (!flag)
 		return true;

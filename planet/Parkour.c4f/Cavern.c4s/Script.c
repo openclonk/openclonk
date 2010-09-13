@@ -32,7 +32,7 @@ protected func Initialize()
 	x = pos[0]; y = pos[1];
 	goal->SetFinishpoint(x, y);
 	// Place chests.
-	d = 300; 
+	d = 300;
 	while (d < LandscapeHeight() - 300)
 	{
 		var i = 0;
@@ -40,7 +40,7 @@ protected func Initialize()
 			i++; // Max 25 attempts.
 		x = pos[0]; y = pos[1];
 		CreateObject(Chest, x, y + 8, NO_OWNER);
-		d += RandomX(250, 300); 
+		d += RandomX(250, 300);
 	}
 	// Fill chests.
 	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam];

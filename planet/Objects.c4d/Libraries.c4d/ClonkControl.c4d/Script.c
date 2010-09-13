@@ -25,7 +25,7 @@
 		*Left, *Right, *Up, *Down
 		*Use, *UseStop, *UseStart, *UseHolding, *UseCancel
 	wheras * is 'Contained' if the clonk is contained and otherwise (riding,
-	pushing, to self) it is 'Control'. 	The item in the inventory only gets
+	pushing, to self) it is 'Control'. The item in the inventory only gets
 	the Use*-calls. If the callback is handled, you should return true.
 	Currently, this is explained more in detail here:
 	http://forum.openclonk.org/topic_show.pl?tid=337
@@ -226,7 +226,7 @@ protected func Ejection(object obj)
 	var success = false;
 	for(var item in inventory)
 	{
-		if (obj == item) 
+		if (obj == item)
 		{
 			inventory[i] = nil;
 			indexed_inventory--;
@@ -315,7 +315,7 @@ protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
 {
-	if (unselect) 
+	if (unselect)
 	{
 		// cancel usage on unselect first...
 		CancelUse();
@@ -520,10 +520,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		/* objects to which clonks are attached (like horses, mechs,...) have
 		   a special handling:
-		   movement controls are forwarded normally to the horse as if it is a 
+		   movement controls are forwarded normally to the horse as if it is a
 		   pushed vehicle. Use controls however are, too, forwarded to the
-		   horse but if the control is considered unhandled (return false) on 
-		   the start of the usage, the control is forwarded further to the 
+		   horse but if the control is considered unhandled (return false) on
+		   the start of the usage, the control is forwarded further to the
 		   item. If the item then returns true on the call, that item is
 		   regarded as the used item for the subsequent ControlUse* calls.
 		   BUT the horse always gets the ControlUse*-calls that'd go to the used
@@ -606,10 +606,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw
 			if (ctrl == CON_ThrowAlt)
 			{
-			    if (proc == "SCALE" || proc == "HANGLE")
-			      return ObjectCommand("Drop", contents2);
-			    else
-			      return ObjectCommand("Throw", contents2, x, y);
+				if (proc == "SCALE" || proc == "HANGLE")
+					return ObjectCommand("Drop", contents2);
+				else
+					return ObjectCommand("Throw", contents2, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
@@ -877,7 +877,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 
 	/* all this stuff is already done on a higher layer - in playercontrol.c
 	   now this is just the same for gamepad control */
-	   
+	
 	if (!PlayerHasVirtualCursor(GetOwner()))
 		return false;
 
@@ -888,7 +888,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 	
 	// update angle for visual effect on the menu
 	if (repeat)
-	{	
+	{
 		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 			this->GetMenu()->~UpdateCursor(mex,mey);
 	}
@@ -905,7 +905,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 
 // Control use redirected to script
 private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
-{	
+{
 	// click on secondary cancels primary and the other way round
 	if (using)
 	{
@@ -1136,7 +1136,7 @@ private func ShiftVehicle(int plr, bool back)
 	ObjectCommand("Grab", objs[index]);
 	
 	return true;
-} 
+}
 
 /* Virtual cursor stuff */
 
@@ -1215,7 +1215,7 @@ func SetMenu(object m)
 	// new one
 	menu = m;
 	if (menu)
-	{	
+	{
 		CancelUse();
 		// stop clonk
 		SetComDir(COMD_Stop);
@@ -1284,7 +1284,7 @@ func Selected(object mnu, object mnu_item, bool alt)
 	var show_new_item = GetItem(hands_index);
 	mnu_item->SetSymbol(show_new_item);
 	// swap index with backpack index
-	Switch2Items(hands_index, backpack_index);	
+	Switch2Items(hands_index, backpack_index);
 	return false;
 }
 
@@ -1313,7 +1313,7 @@ private func DoThrow(object obj, int angle)
 	iYDir += GetYDir(1000)/2;
 
 	// throw
-	obj->Exit(iX, iY, iR, 0, 0, iRDir);	
+	obj->Exit(iX, iY, iR, 0, 0, iRDir);
 	obj->SetXDir(iXDir,1000);
 	obj->SetYDir(iYDir,1000);
 	

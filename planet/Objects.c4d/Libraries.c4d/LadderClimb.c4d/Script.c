@@ -73,7 +73,7 @@ func FxIntSearchLadderTimer(target, number, time)
 		}
 		if(ladder && ladder->~CanNotBeClimbed()) ladder = nil;
 	}
-	else 
+	else
 		no_ladder_counter--;
 	// Found ladder?
 	if (ladder != nil)
@@ -89,14 +89,14 @@ func FxIntSearchLadderTimer(target, number, time)
 func FxIntSearchLadderStop(target, number, reason, tmp)
 {
 	if (tmp) return;
-	no_ladder_counter = 0; 
+	no_ladder_counter = 0;
 }
 
 func FxIntClimbControlStart(target, number, tmp, ladder)
 {
 	if (tmp) return;
 	EffectVar(0, target, number) = ladder;
-	SetXDir(0); 
+	SetXDir(0);
 	SetYDir(0);
 	SetComDir(COMD_Stop);
 	EffectVar(2, target, number) = 0; // odd or even segment?

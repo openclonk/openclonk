@@ -267,7 +267,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 	if(pObj->GetOCF() & OCF_CrewMember) pObj->MakeCrewMember(iForPlr);
 	if(pObj->GetOCF() & OCF_Collectible) pClonk->Collect(pObj);
 	// is right clicked? then buy another object
-	if(bRight) 
+	if(bRight)
 		DoBuy(idDef, iForPlr, iPayPlr, pClonk, bRight, iValue, 1);
 	return pObj;
 }
@@ -396,7 +396,7 @@ func DoSell(object pObj, int iPlr, bool bRight)
 			if(CanStack(pObj, pNewObj) && pObj != pNewObj)
 			{
 				bFound = 1;
-				break; 
+				break;
 			}
 	}
 	// And remove the object

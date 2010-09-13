@@ -11,16 +11,16 @@ public func GetCarryBone()	{	return "main";	}
 public func GetCarryTransform()	{	return Trans_Rotate(90,0,1,0);	}
 
 public func ControlUse(object clonk, int ix, int iy)
-{ 
+{
 	clonk->Message("Using hammer");
 	// Stop clonk
 	clonk->SetComDir(COMD_Stop);
 
 	// Is the clonk able to build?
 	if (clonk && !clonk->GetPhysical("CanConstruct", PHYS_Current) && CheckCanUse(clonk)==true)
-	{ 
-		PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", clonk->GetName()); 
-		return 1; 
+	{
+		PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", clonk->GetName());
+		return 1;
 	}
 
 	if(clonk->GetAction()=="Build") //Stop building

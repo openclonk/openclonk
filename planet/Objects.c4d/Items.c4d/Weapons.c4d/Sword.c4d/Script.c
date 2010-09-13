@@ -93,7 +93,7 @@ func OnWeaponHitCheckStop(clonk)
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
 	//if(GetEffect("DelayTranslateVelocity", clonk))
-	//	RemoveEffect("DelayTranslateVelocity", clonk);	
+	//	RemoveEffect("DelayTranslateVelocity", clonk);
 	return;
 }
 

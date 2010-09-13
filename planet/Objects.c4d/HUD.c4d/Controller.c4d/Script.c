@@ -153,14 +153,14 @@ public func OnCrewSelection(object clonk, bool deselect)
 {
 	// selected
 	if(!deselect)
-	{		
+	{
 		// fill actionbar
 		// inventory
 		var i;
 		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
 			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
-		}		
+		}
 		ClearButtons(i);
 		
 		// and start effect to monitor vehicles and structures...
@@ -175,7 +175,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target, int num, int new_num)
-{	
+{
 	if(newname == "IntSearchInteractionObjects")
 		return -1;
 }

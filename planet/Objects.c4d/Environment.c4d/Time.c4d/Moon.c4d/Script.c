@@ -15,9 +15,9 @@ protected func Initialize()
 public func Phase(bool noAdvance)
 {
 	if(noAdvance!=true)
-	{	
-	if(phase<=5) phase=phase+1;
-	if(phase>=6) phase=1;
+	{
+		if(phase<=5) phase=phase+1;
+		if(phase>=6) phase=1;
 	}
 
 	if(phase==1) SetGraphics();

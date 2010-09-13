@@ -36,7 +36,7 @@ protected func ContactLeft()
 
 protected func ContactRight()
 {
-	if (Stuck() && !Random(5)) 
+	if (Stuck() && !Random(5))
 		SetRDir(RandomX(-7, +7));
 }
 
@@ -109,7 +109,7 @@ local ActMap = {
 			Hgt = 16,
 			NextAction = "Drive",
 			//Animation = "Drive",
-		},  
+		},
 };
 
 func Definition(def)

@@ -124,7 +124,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 }
 
 private func LoamDone(object clonk)
-{ 
+{
 	// Get out of animation
 	if(clonk->GetAction() == "Bridge")
 	{

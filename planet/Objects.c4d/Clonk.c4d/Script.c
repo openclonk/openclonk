@@ -224,7 +224,7 @@ protected func Death(int killed_by)
 	GameCallEx("OnClonkDeath", this, killed_by);
 	
 	// The broadcast could have revived the clonk.
-	if (GetAlive()) 
+	if (GetAlive())
 		return;
 	
 	Sound("Die");
@@ -237,7 +237,7 @@ protected func Death(int killed_by)
 
 protected func Destruction()
 {
-	// If the clonk wasn't dead yet, he will be now. 
+	// If the clonk wasn't dead yet, he will be now.
 	if (GetAlive())
 		GameCallEx("OnClonkDeath", this, GetKiller());
 	// If this is the last crewmember, do broadcast.
@@ -312,7 +312,7 @@ func AttachHandItem(bool secondary)
 {
 	if(!iHandMesh) iHandMesh = [0,0];
 	DetachHandItem(secondary);
-	UpdateAttach();	
+	UpdateAttach();
 }
 
 func UpdateAttach()
@@ -988,7 +988,7 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 		// Play animations
 		AnimationSetState("StandTurn", EffectVar(18, pTarget, iNumber)*100, nil);
 		AnimationSetState("RunTurn", EffectVar(18, pTarget, iNumber)*100, nil);
-		// 
+		//
 		if( ( EffectVar(17, pTarget, iNumber) == COMD_Left && GetDir() )
 			|| ( EffectVar(17, pTarget, iNumber) == COMD_Right && !GetDir() ) )
 			{
@@ -1281,7 +1281,7 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 	// EffectVars:
 	// 0: whether the clonk is currently moving or not (<=> current animation is Hangle or HangleStand)
 	// 1: Current animation number
-	// 6: Player requested the clonk to stop 
+	// 6: Player requested the clonk to stop
 	// 7: Whether the HangleStand animation is shown front-facing or back-facing
 	// 10: Previous Hangle physical
 
@@ -1636,7 +1636,7 @@ func FxIntThrowTimer(target, number, time)
 	if(time == iThrowTime*8/15)
 		DoThrow(EffectVar(0, target, number), EffectVar(1, target, number));
 	if(time >= iThrowTime)
-	  return -1;
+		return -1;
 }
 
 func FxIntThrowStop(target, number, reason, tmp)

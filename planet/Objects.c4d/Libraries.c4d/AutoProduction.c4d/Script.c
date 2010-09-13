@@ -11,7 +11,7 @@ public func ControlCommandAcquire(target, x, y, target2, def)
 		AddCommand ("Get", obj, 0, 0, 0, 40);
 		return 1;
 	}
-	// Search for a building to produce the object	
+	// Search for a building to produce the object
 	if (obj = GetProducerOf (def)) {
 		AddCommand ( "Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
 		obj -> HowToProduce (this, def);
@@ -23,13 +23,13 @@ public func ControlCommandAcquire(target, x, y, target2, def)
 
 public func AutoProduction() { return 1; }
 
-public func AutoProductionFailed() 
+public func AutoProductionFailed()
 {
 	var def = GetCommand (5, 1);
-	if (!FindContents(def)) 
+	if (!FindContents(def))
 	{
 		var obj = GetAvailableObject (def, GetCommand ( 4, 1));
-		if (obj) 
+		if (obj)
 		{
 			AddEffect("IntNotAvailable", obj, 1, 5, this);
 			AddCommand ("Get", obj,0,0,0,40);
@@ -49,7 +49,7 @@ public func FxIntNotAvailableTimer(target, number)
 {
 	var clonk = EffectVar(0, target, number);
 	// Check wether the clonk still wants to get the object
-	for (var i = 0; clonk->GetCommand(0,i); ++i) 
+	for (var i = 0; clonk->GetCommand(0,i); ++i)
 	{
 		if (clonk->GetCommand(0, i) == "Get" && clonk->GetCommand(1, i) == target)
 			return;

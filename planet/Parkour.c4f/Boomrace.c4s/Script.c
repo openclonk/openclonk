@@ -13,7 +13,7 @@ func Initialize()
 	pGoal->AddCheckpoint(3830, 710, 28);
 	pGoal->SetFinishpoint(3650, 180);
 
-	SetSkyAdjust (RGB(255,128,0), RGB(0,0,0)); 
+	SetSkyAdjust (RGB(255,128,0), RGB(0,0,0));
 }
 
 // Gamecall from Race-goal, on respawning.

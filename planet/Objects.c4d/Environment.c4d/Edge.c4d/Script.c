@@ -1,14 +1,14 @@
-/*-- 
-	Ecke 
+/*--
+	Ecke
 	Originally from Sven2
-	Modified by Mimmo	
+	Modified by Mimmo
 --*/
 
 local dir;
 protected func Initialize() {
-  Snap();
-  AutoP();
-  return true;
+	Snap();
+	AutoP();
+	return true;
 }
 
 func PermaEdge()
@@ -33,18 +33,18 @@ protected func AutoP()
 	if(dir[0] && dir[3]) SetP(1);
 	if(dir[2] && dir[3]) SetP(0);
 }
-  
-  
+
+
 public func Snap(int o,int p)
-  {
-  SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
-  }
+{
+	SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
+}
 
 public func SetP(int p)
-  {
-  SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
-  SetAction("Edge"); SetPhase(p);
-  SetSolidMask(p*10,0,10,10);
-  dir=p;
-  }
+{
+	SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
+	SetAction("Edge"); SetPhase(p);
+	SetSolidMask(p*10,0,10,10);
+	dir=p;
+}
   

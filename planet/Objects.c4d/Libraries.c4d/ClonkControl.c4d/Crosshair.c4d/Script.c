@@ -155,7 +155,7 @@ public func Aim(int ctrl, object clonk, int strength, int repeat, int release)
 
 	// aiming with analog pad
 	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
-	{	
+	{
 		dirx = diry = 0;
 		
 		if(ctrl == CON_AimAxisUp) ypos = -strength;

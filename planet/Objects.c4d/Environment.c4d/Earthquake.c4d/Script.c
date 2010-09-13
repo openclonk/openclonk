@@ -1,11 +1,11 @@
-/*-- 
+/*--
 		Earthquake
 		Author: Maikel
 		
 		This is the earthquake control object, earthquakes are realized through a global effect.
 		Earthquakes can be activated in Scenario.txt under [Environment], Earthquake=x will result
-		in a 10*x % earthquake level. You can also just create the control object and modify the 
-		chance with Get/Set/DoChance. The third option is to directly launch an earthquake with 
+		in a 10*x % earthquake level. You can also just create the control object and modify the
+		chance with Get/Set/DoChance. The third option is to directly launch an earthquake with
 		LaunchEarthquake(int x, int y, int strength) at the global coordinates (x,y).
 --*/
 
@@ -35,14 +35,14 @@ public func GetChance()
 	return EffectVar(0, this, effect);
 }
 
-public func SetChance(int chance) 
+public func SetChance(int chance)
 {
 	var effect = GetEffect("IntEarthquakeControl", this);
 	EffectVar(0, this, effect) = BoundBy(chance, 0, 100);
 	return;
 }
 
-public func DoChance(int chance) 
+public func DoChance(int chance)
 {
 	SetChance(GetChance() + chance);
 	return;
@@ -57,14 +57,14 @@ protected func FxIntEarthquakeControlTimer(object target, int fxnum, int time)
 	return FX_OK;
 }
 
-// Launches an earthquake with epicenter (x,y). 
+// Launches an earthquake with epicenter (x,y).
 global func LaunchEarthquake(int x, int y, int strength)
-{	
+{
 	// Earthquake should start in solid.
 	if (!GBackSemiSolid(x, y))
 		return false;
 	// Minimum strength is 15, maximum strength is 100.
-	strength = BoundBy(strength, 15, 100);	
+	strength = BoundBy(strength, 15, 100);
 	// The earthquake is handled by a global effect.
 	var effect = AddEffect("IntEarthquake", 0, 100, 1, nil, Earthquake);
 	EffectVar(0, 0, effect) = x; // Epicentre x coordinate.
@@ -111,10 +111,10 @@ protected func FxIntEarthquakeTimer(object target, int fxnum, int time)
 	ShakeObjects(x, y, 4 * str);
 	// Move the quake around a little.
 	var dx, dy, cnt = 0;
-	do 
+	do
 	{	// Try ten times to find a nearby in material location.
 		dx = Random(str * 4 + 1) - str * 2;
-		dy = Random(str * 4 + 1) - str * 2;	
+		dy = Random(str * 4 + 1) - str * 2;
 		cnt++;
 	} while (!GBackSemiSolid(x + dx, y + dy) && cnt < 10)
 	// No continuation.
@@ -123,7 +123,7 @@ protected func FxIntEarthquakeTimer(object target, int fxnum, int time)
 	// Set new position.
 	EffectVar(0, 0, fxnum) += dx;
 	EffectVar(1, 0, fxnum) += dy;
-	// Done.	
+	// Done.
 	return FX_OK;
 }
 

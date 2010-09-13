@@ -21,7 +21,7 @@ public func SetColorWarning(fOn)
 
 public func Connect(pTarget1, pTarget2)
 {
-	SetAction("Connect", pTarget1, pTarget2);	
+	SetAction("Connect", pTarget1, pTarget2);
 }
 
 private func GetLineLength()

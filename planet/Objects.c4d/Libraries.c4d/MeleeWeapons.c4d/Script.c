@@ -1,8 +1,8 @@
-/*-- 
+/*--
 	Melee weapons
 	Author: Zapper
 	
-	Generic weapon template 
+	Generic weapon template
 --*/
 
 
@@ -75,7 +75,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 	{
 		if(!pTarget->IsWalking())
 			return -1;
-	} 
+	}
 	else if(!pTarget->IsJumping())
 	{
 		return -1;
@@ -324,7 +324,7 @@ func GetJumpLength(pClonk)
 }
 
 func ApplyShieldFactor(pFrom, pTo, damage)
-{	
+{
 	// totally prevent the strike?
 	if(pTo->~QueryCatchBlow(pFrom)) return 100;
 	

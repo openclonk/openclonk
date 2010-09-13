@@ -2,20 +2,20 @@
 		Schedule.c
 		Authors:
 		
-		Schedule can be used to execute scripts or functions repetitively with delay. 
+		Schedule can be used to execute scripts or functions repetitively with delay.
 --*/
 
 // Executes a script repetitively with delay.
 global func Schedule(string script, int interval, int repeats, object obj)
 {
 	// Defaults.
-	if (!repeats) 
+	if (!repeats)
 		repeats = 1;
-	if (!obj) 
+	if (!obj)
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
-	if (effect <= 0) 
+	if (effect <= 0)
 		return false;
 	// Set variables.
 	EffectVar(0, obj, effect) = script;
@@ -36,19 +36,19 @@ global func FxIntScheduleTimer(object obj, int effect)
 global func ScheduleCall(object obj, string function, int interval, int repeats, par0, par1, par2, par3, par4)
 {
 	// Defaults.
-	if (!repeats) 
+	if (!repeats)
 		repeats = 1;
-	if (!obj) 
+	if (!obj)
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
-	if (effect <= 0) 
+	if (effect <= 0)
 		return false;
 	// Set variables.
 	EffectVar(0, obj, effect) = function;
 	EffectVar(1, obj, effect) = repeats;
 	// EffectVar(2): Just there for backwards compatibility.
-	EffectVar(2, obj, effect) = obj; 
+	EffectVar(2, obj, effect) = obj;
 	for (var i = 0; i < 5; i++)
 		EffectVar(i + 3, obj, effect) = Par(i + 4);
 	return true;

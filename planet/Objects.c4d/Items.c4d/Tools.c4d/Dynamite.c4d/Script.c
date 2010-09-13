@@ -2,7 +2,7 @@
 	Dynamite
 	Author: Newton
 
-	A volatile tool that can be pressed into walls 
+	A volatile tool that can be pressed into walls
 	for accurate mining, burning a short fuse before exploding.
 */
 	
@@ -99,7 +99,7 @@ protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
-  return GetAction() == "Fuse" || GetAction() == "Ready";
+	return GetAction() == "Fuse" || GetAction() == "Ready";
 }
 
 // Controle of the Dynamite box
@@ -118,7 +118,7 @@ public func Reset()
 	SetAction("Idle");
 }
 
-private func Fusing() 
+private func Fusing()
 {
 	var sin=Sin(180-GetR(),5);
 	var cos=Cos(180-GetR(),5);

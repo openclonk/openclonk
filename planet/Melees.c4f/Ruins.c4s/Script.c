@@ -11,11 +11,11 @@ protected func Initialize()
 	CreateObject(Chest, 570, 220, NO_OWNER);
 	CreateObject(Chest, 70, 80, NO_OWNER);
 	CreateObject(Chest, 340, 200, NO_OWNER);
-	CreateObject(Rule_ObjectFade); 
-	CreateObject(Rule_ObjectFade); 
-	CreateObject(Rule_ObjectFade); 
-	CreateObject(Rule_ObjectFade); 
-	CreateObject(Rule_ObjectFade); 
+	CreateObject(Rule_ObjectFade);
+	CreateObject(Rule_ObjectFade);
+	CreateObject(Rule_ObjectFade);
+	CreateObject(Rule_ObjectFade);
+	CreateObject(Rule_ObjectFade);
 
 	AddEffect("IntFillChests", nil, 200, 70, this);
 	Edges();
@@ -79,7 +79,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	obj->Enter(this);
-	return;	
+	return;
 }
 
 // GameCall from MicroMelee_Relaunch

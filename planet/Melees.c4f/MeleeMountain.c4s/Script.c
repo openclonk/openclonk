@@ -47,7 +47,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	obj->Enter(this);
-	return;	
+	return;
 }
 
 // The weapons available to the players. Needed by MicroMelee_Relaunch

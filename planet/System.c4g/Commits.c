@@ -7,27 +7,27 @@
 
 
 // Returns the offset to x.
-global func AbsX(int x) 
+global func AbsX(int x)
 {
-	return x - GetX(); 
+	return x - GetX();
 }
 
 // Returns the offset to y.
-global func AbsY(int y) 
+global func AbsY(int y)
 {
-	return y - GetY(); 
+	return y - GetY();
 }
 
 // Supports negative values, and can deliver random values between two bounds.
-global func RandomX(int start, int end) 
+global func RandomX(int start, int end)
 {
 	var swap;
 	// Values swapped: reswap them.
-	if (start > end) 
-	{ 
+	if (start > end)
+	{
 		swap = start;
 		start = end;
-		end = swap; 
+		end = swap;
 	}
 	// Return random factor.
 	return Random(end - start + 1) + start;
@@ -41,13 +41,13 @@ global func Tan(int angle, int radius, int prec)
 
 global func Normalize(int angle, int start, int precision)
 {
-	if (!precision) 
+	if (!precision)
 		precision = 1;
 	var end = precision * 360 + start;
 	
 	while (angle < start)
 		angle += precision * 360;
-	while (angle >= end) 
+	while (angle >= end)
 		angle -= precision * 360;
 
 	return angle;
@@ -72,7 +72,7 @@ global func SetVelocity(int angle, int speed)
 	return;
 }
 
-// Sets the completion of this to new_con. 
+// Sets the completion of this to new_con.
 global func SetCon(int new_con)
 {
 	return DoCon(new_con - GetCon());
@@ -93,7 +93,7 @@ global func SetVertexXY(int index, int x, int y)
 	return;
 }
 
-// Returns the number of stuck vertices. (of this) 
+// Returns the number of stuck vertices. (of this)
 global func VerticesStuck()
 {
 	var vertices = 0;
@@ -106,7 +106,7 @@ global func VerticesStuck()
 	return vertices;
 }
 
-// Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material. 
+// Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.
 global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
 {
@@ -122,17 +122,17 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 			return -1;
 	
 	// Optional parameters wdt and hgt.
-	if (!wdt) 
+	if (!wdt)
 		wdt = LandscapeWidth() - x - GetX();
-	if (!hgt) 
+	if (!hgt)
 		hgt = LandscapeHeight() - y - GetY();
 
 	// Cycle-saving method.
-	if (mat != -1) 
-		while (i < amount) 
+	if (mat != -1)
+		while (i < amount)
 		{
 			// If there's isn't any or not enough of the given material, break before it gets an endless loop.
-			if (j++ > 20000) 
+			if (j++ > 20000)
 				return -1;
 			// Destinated rectangle.
 			rndx = x + Random(wdt);
@@ -141,22 +141,22 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 			if (GetMaterial(rndx, rndy) == mat)
 			{
 				// On-surface option.
-				if (onsf) 
-					while (GBackSemiSolid(rndx, rndy) && rndy >= y) 
+				if (onsf)
+					while (GBackSemiSolid(rndx, rndy) && rndy >= y)
 						rndy--;
-				if (rndy < y) 
+				if (rndy < y)
 					continue;
 				// Create and verify stuckness.
 				obj = CreateObject(id, rndx, rndy + objhgt / 2, NO_OWNER);
 				obj->SetR(Random(360));
-				if (obj->Stuck() || nostuck) 
+				if (obj->Stuck() || nostuck)
 					i++;
-				else 
+				else
 					obj->RemoveObject();
 			}
 		}
 
-	if (mat == -1) 
+	if (mat == -1)
 		while (i < amount)
 		{
 			// If there's isn't any or not enough of the given material, break before it gets an endless loop.
@@ -169,8 +169,8 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 			if (eval(Format("%s(%d,%d)", mat_str, rndx, rndy)))
 			{
 				// On-surface Option.
-				if (onsf) 
-					while (GBackSemiSolid(rndx, rndy) && rndy >= y) 
+				if (onsf)
+					while (GBackSemiSolid(rndx, rndy) && rndy >= y)
 						rndy--;
 				if (rndy < y)
 					continue;
@@ -189,7 +189,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 
 global func CastObjects(id def, int am, int lev, int x, int y, int angs, int angw)
 {
-	if (!angw) 
+	if (!angw)
 		angw = 360;
 	for (var i = 0; i < am; i++)
 	{
@@ -208,7 +208,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 
 global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int angw)
 {
-	if (!angw) 
+	if (!angw)
 		angw = 360;
 	for (var i = 0; i < am; i++)
 	{
@@ -221,21 +221,21 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 global func CheckVisibility(int plr)
 {
 	var visible = this["Visibility"];
-	if (GetType(visible) == C4V_Array) 
+	if (GetType(visible) == C4V_Array)
 		visible = visible[0];
 
 	// Not visible at all.
-	if (visible == VIS_None) 
+	if (visible == VIS_None)
 		return false;
 	// Visible for all.
-	if (visible == VIS_All) 
+	if (visible == VIS_All)
 		return true;
 
 	// Object is owned by the indicated player.
 	if (GetOwner() == plr)
-	{ 
-		if (visible & VIS_Owner) 
-			return true; 
+	{
+		if (visible & VIS_Owner)
+			return true;
 	}
 	// Object belongs to a player, hostile to plr.
 	else if (Hostile(GetOwner(), plr))
@@ -245,7 +245,7 @@ global func CheckVisibility(int plr)
 	}
 	// Object belongs to a player, friendly to plr.
 	else
-	{ 
+	{
 		if (visible & VIS_Allies)
 			return true;
 	}
@@ -270,12 +270,12 @@ global func MaterialDepthCheck(int x, int y, string mat, int depth)
 	if (depth == nil)
 		depth = LandscapeHeight();
 
-	while (travelled != depth) 
+	while (travelled != depth)
 	{
-		if (GetMaterial(xval, yval) == Material(mat)) 
+		if (GetMaterial(xval, yval) == Material(mat))
 		{
 			travelled++;
-			yval++; 
+			yval++;
 		}
 		if (GetMaterial(xval, yval) != Material(mat))
 			return travelled; // Returns depth of material.
@@ -297,8 +297,8 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 	var x_offset = Sin(angle, dist);
 	var y_offset = -Cos(angle, dist);
 
-	if (Contained() != nil && rel_x == true) 
-		if (Contained()->GetDir() == 0) 
+	if (Contained() != nil && rel_x == true)
+		if (Contained()->GetDir() == 0)
 			x = -x;
 
 	if (Contained() != nil)
@@ -308,7 +308,7 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 		return true;
 	}
 
-	if (Contained() == nil) 
+	if (Contained() == nil)
 	{
 		SetPosition(GetX() + x_offset + x, GetY() + y_offset + y);
 		SetR(angle);
@@ -320,30 +320,30 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 
 global func ComDirTransform(int comdir, int tocomdir)
 {
-	if (comdir == tocomdir) 
+	if (comdir == tocomdir)
 		return comdir;
-	if (comdir == COMD_Stop) 
+	if (comdir == COMD_Stop)
 		return tocomdir;
-	if (comdir == (tocomdir + 3) % 8 + 1) 
+	if (comdir == (tocomdir + 3) % 8 + 1)
 		return COMD_Stop;
-	if (Inside(comdir, tocomdir + 1, tocomdir + 3)) 
+	if (Inside(comdir, tocomdir + 1, tocomdir + 3))
 		return comdir - 1;
-	if (Inside(comdir, tocomdir - 1, tocomdir - 3)) 
+	if (Inside(comdir, tocomdir - 1, tocomdir - 3))
 		return comdir + 1;
-	if (Inside(comdir, tocomdir - 7, tocomdir - 5)) 
+	if (Inside(comdir, tocomdir - 7, tocomdir - 5))
 		return (comdir + 6) % 8 + 1;
 	return comdir % 8 + 1;
 }
 
 global func ComDirLike(int comdir1, int comdir2)
 {
-	if (comdir1 == comdir2) 
+	if (comdir1 == comdir2)
 		return true;
 	if (comdir1 == COMD_Stop || comdir2 == COMD_Stop)
 		return false;
 	if (comdir1 % 8 + 1 == comdir2)
 		return true;
-	if (comdir1 == comdir2 % 8 + 1) 
+	if (comdir1 == comdir2 % 8 + 1)
 		return true;
 	return false;
 }
@@ -352,9 +352,9 @@ global func SetObjAlpha(int by_alpha)
 {
 	var clr_mod = GetClrModulation();
 	
-	if (!clr_mod) 
-		clr_mod = by_alpha << 24; 
-	else 
+	if (!clr_mod)
+		clr_mod = by_alpha << 24;
+	else
 		clr_mod = clr_mod & 16777215 | by_alpha << 24;
 	return SetClrModulation(clr_mod);
 }

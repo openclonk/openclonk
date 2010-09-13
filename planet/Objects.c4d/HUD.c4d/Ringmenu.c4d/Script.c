@@ -52,7 +52,7 @@ global func CreateRingMenu(id symbol, object commander)
 	menu->SetMenu(this,commander);
 	menu->SetMenuIcon(symbol);
 	menu->Hide();
-	return menu;	
+	return menu;
 }
 
 
@@ -65,19 +65,19 @@ public func GetMenuObject()
 public func SetMenu(object menuobject, object commandobject)
 {
 	if(menuobject->GetOCF() & OCF_CrewMember)
-		menu_object=menuobject;	
+		menu_object=menuobject;
 	command_object=commandobject;
 	menuobject->~SetMenu(this);
 
 	
-}	
+}
 
 //re-set icon
 func SetMenuIcon(id symbol)
 {
-	this["Visibility"] = VIS_Owner;		
-	if(!symbol) 
-	{	
+	this["Visibility"] = VIS_Owner;
+	if(!symbol)
+	{
 		SetGraphics(nil,nil,0);
 		SetGraphics(nil,nil,1);
 	}
@@ -90,17 +90,17 @@ func SetMenuIcon(id symbol)
 }
 
 //adds an item, icon, amount, extra (the item can be an object too)
-public func AddItem(new_item, int amount, extra) 
-{ 
+public func AddItem(new_item, int amount, extra)
+{
 	var index = GetLength(menu_icons);
 	menu_icons[index] = CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
 	menu_icons[index]->SetSymbol(new_item);
-	menu_icons[index]->SetExtraData(extra);	
+	menu_icons[index]->SetExtraData(extra);
 	if(amount == nil)
 	{
 		menu_icons[index]->SetAmount(1);
 	}
-	else 
+	else
 	{
 		menu_icons[index]->SetAmount(amount);
 	}
@@ -111,7 +111,7 @@ public func AddItem(new_item, int amount, extra)
 //selects by dx,dy and alt=alternative selection
 public func Select(int dx, int dy, bool alt)
 {
-	var item_count=GetLength(menu_icons); 
+	var item_count=GetLength(menu_icons);
 	if(!item_count)
 		if(command_object->Selected(this,nil,alt))
 			Close();
@@ -134,17 +134,17 @@ public func Select(int dx, int dy, bool alt)
 func IsVisible() { return shown; }
 
 //makes me visible/updates me
-func Show() 
+func Show()
 {
-	var item_count = GetLength(menu_icons); 
+	var item_count = GetLength(menu_icons);
 	if(!item_count) return;
 	
 	var segment=360/item_count;
 	
 	var x = GetX();
 	var y = GetY();
-	for(var i=0; i<item_count; i++) 
-	{	
+	for(var i=0; i<item_count; i++)
+	{
 		if(menu_icons[i])
 		{
 			var angle=(i*segment)+(segment/2);
@@ -164,11 +164,11 @@ func Show()
 }
 
 public func UpdateCursor(int dx, int dy)
-{	
+{
 	if(shown)
 	{
 		var angle = Angle(0,0,dx,dy);
-		var item_count = GetLength(menu_icons); 
+		var item_count = GetLength(menu_icons);
 		if(!item_count) return;
 		
 		var distance = Sqrt(dx*dx+dy*dy);
@@ -188,7 +188,7 @@ public func UpdateCursor(int dx, int dy)
 		if(outside) item = -1;
 		
 		for(var i=0; i< item_count; i++)
-		{ 
+		{
 			if(menu_icons[i])
 			{
 					// calculate distance to angle
@@ -227,7 +227,7 @@ func Close()
 	if(command_object)
 		command_object->~MenuClosed(this);
 
-	RemoveObject(); 
+	RemoveObject();
 }
 
 local Name = "$Name$";

@@ -1,11 +1,11 @@
 /*--
 		GetXVal.c
-		Authors: 
+		Authors:
 		
 		Some functions which request information from the GetXVal family.
-		Attention: These functions directly access internal values of the engine. 
+		Attention: These functions directly access internal values of the engine.
 		The usage might, under certain circumstances, lead to desynchronisation in
-		either network games or save games. The most dangerous functions are marked 
+		either network games or save games. The most dangerous functions are marked
 		with //(!).
 --*/
 

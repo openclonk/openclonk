@@ -14,7 +14,7 @@ local timer;
 
 func Initialize() {
 	
- 	ScheduleCall(this, "PostInitialize", 1, 0);
+	ScheduleCall(this, "PostInitialize", 1, 0);
 	timer=0;
 	return(1);
 }
@@ -120,8 +120,8 @@ func AdjustStarColor()
 	{
 		var percent=(king->GetEnergy()  * 100) / (king->GetPhysical("Energy") / 1000);
 		var red=255; if(percent > 50) red=(255*(100-2*(percent-50))) / 100;
-  		var green=255; if(percent < 50) green=(255*(2*percent)) / 100;
-  		color=RGB(red/2, green/2, 0);
+		var green=255; if(percent < 50) green=(255*(2*percent)) / 100;
+		color=RGB(red/2, green/2, 0);
 	}
 	else
 	{

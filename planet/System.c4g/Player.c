@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Player.c
 		Authors: timi, Maikel
 
@@ -15,7 +15,7 @@ global func GetPlayerByName(string plr_name)
 		// Does the player's name match the one searched for?
 		if (WildcardMatch(GetPlayerName(GetPlayerByIndex(i)), plr_name))
 			// It does -> return player number.
-			return GetPlayerByIndex(i); 
+			return GetPlayerByIndex(i);
 	// There is no player with that name.
 	return NO_OWNER;
 }
@@ -29,7 +29,7 @@ global func GetTeamByName(string team_name)
 		// Does the team's name match the one searched for?
 		if (WildcardMatch(GetTeamName(GetTeamByIndex(i)), team_name))
 			// It does -> return team number.
-			return GetTeamByIndex(i); 
+			return GetTeamByIndex(i);
 	// There is no team with that name.
 	return NO_OWNER;
 }
@@ -38,7 +38,7 @@ global func GetTeamByName(string team_name)
 global func GetTaggedPlayerName(int plr)
 {
 	var plr_name = GetPlayerName(plr);
-	if (!plr_name) 
+	if (!plr_name)
 		return;
 	var plr_color = MakeColorReadable(GetPlayerColor(plr));
 	var tagged_plr_name = Format("<c %x>%s</c>", plr_color, plr_name);
@@ -49,7 +49,7 @@ global func GetTaggedPlayerName(int plr)
 global func GetTaggedTeamName(int team)
 {
 	var team_name = GetTeamName(team);
-	if (!team_name) 
+	if (!team_name)
 		return;
 	var team_color = MakeColorReadable(GetTeamColor(team));
 	var tagged_team_name = Format("<c %x>%s</c>", team_color, team_name);
@@ -67,7 +67,7 @@ global func MakeColorReadable(int color)
 	var r = (color >> 16 & 255), g = (color >> 8 & 255), b = (color & 255);
 	var lightness = r * 50 + g * 87 + b * 27;
 	// Above 55 / 164 (*255) is okay.
-	if (lightness < 14025) 
+	if (lightness < 14025)
 	{
 		// Brighten up.
 		var inc = (14025 - lightness) / 164;

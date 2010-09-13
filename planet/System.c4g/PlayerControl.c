@@ -25,7 +25,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
-	if (cursor) 
+	if (cursor)
 	{
 		// Object controlled by plr
 		cursor->SetController(plr);

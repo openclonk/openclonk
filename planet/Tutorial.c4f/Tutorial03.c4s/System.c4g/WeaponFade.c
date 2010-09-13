@@ -9,7 +9,7 @@ protected func Departure(object container)
 	if (container->GetOCF() & OCF_CrewMember)
 		AddEffect("Fade", this, 100, 1, this);
 	return _inherited(container, ...);
-}	
+}
 
 protected func Hit()
 {
@@ -19,7 +19,7 @@ protected func Hit()
 
 public func HitObject(object obj)
 {
-	if(obj->GetOCF() & OCF_CrewMember) 
+	if(obj->GetOCF() & OCF_CrewMember)
 		return;
 	return _inherited(obj, ...);
 }

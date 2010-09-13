@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Script goal
 		Author: Maikel
 		
@@ -16,9 +16,9 @@ protected func Initialize()
 	return inherited(...);
 }
 
-public func IsFulfilled() 
-{ 
-	return fulfilled; 
+public func IsFulfilled()
+{
+	return fulfilled;
 }
 
 public func Fulfill()

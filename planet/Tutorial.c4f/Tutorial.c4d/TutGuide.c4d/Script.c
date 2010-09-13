@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Tutorial Guide
 	Author: Maikel
 		
@@ -37,7 +37,7 @@ public func SetGuideIndex(int to_index)
 {
 	index = BoundBy(to_index, 0, GetLength(messages));
 	return;
-} 
+}
 
 // Add a message to the guide, the index is set to this message.
 public func AddGuideMessage(string msg)
@@ -55,12 +55,12 @@ public func AddGuideMessage(string msg)
 public func ShowGuideMessage(int show_index)
 {
 	index = Max(0, show_index);
-	if (!messages[index]) 
+	if (!messages[index])
 		return;
 	if (GetEffect("NotifyPlayer", this))
 		RemoveEffect("NotifyPlayer", this);
 	GuideMessage(index);
-	if (messages[index + 1]) 
+	if (messages[index + 1])
 		index++;
 	return;
 }
@@ -86,10 +86,10 @@ public func MouseSelection(int plr)
 	if (effect && EffectVar(0, this, effect) == index)
 		return ClearGuideMessage();
 	// Show guide message if there is a new one, and increase index if possible.
-	if (!messages[index]) 
+	if (!messages[index])
 		return;
 	GuideMessage(index);
-	if (messages[index + 1]) 
+	if (messages[index + 1])
 		index++;
 	return;
 }
@@ -149,7 +149,7 @@ protected func FxNotifyPlayerTimer(object target, int num, int time)
 {
 	// Delete effect if time has passed.
 	if (time)
-		return -1;	
+		return -1;
 	return 1;
 }
 

@@ -101,8 +101,8 @@ public func SetObject(object obj)
 	
 	RemoveEffect("IntRemoveGuard",myobject);
 	
-	if(!myobject) 
-	{	
+	if(!myobject)
+	{
 		SetGraphics(nil,nil,1);
 		SetName("$TxtEmpty$");
 		this["MouseDragImage"] = nil;

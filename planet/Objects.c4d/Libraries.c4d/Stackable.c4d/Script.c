@@ -5,7 +5,7 @@
 	Including this object means, the object is stackable. Other objects of
 	the same type will be added automatically to the object. This functionality
 	is similar to the Pack-functionality of the arrows in old clonk titles only
-	more general. 
+	more general.
 	The count of how many objects are stacked together (into a single one, this
 	one) is shown in the picture of the object and can be queried and set via
 	GetStackCount()/SetStackCount().
@@ -169,7 +169,7 @@ private func TryPutInto(object into)
 	// first check if stackable can be put into object with extra slot
 	for (var content in contents)
 	{
-		if (!content) 
+		if (!content)
 			continue;
 		if (content->~HasExtraSlot())
 			if (TryPutInto(content))
@@ -180,7 +180,7 @@ private func TryPutInto(object into)
 	for (var content in contents)
 	{
 		var howmany = 0;
-		if (!content) 
+		if (!content)
 			continue;
 		if (content->~IsStackable())
 			if (content->GetID() == GetID())
@@ -195,6 +195,6 @@ private func TryPutInto(object into)
 				}
 	}
 	
-	Update();	
+	Update();
 	return false;
 }

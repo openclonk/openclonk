@@ -28,7 +28,7 @@ protected func InitializePlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
 	// Create scoreboard relaunch count entry for this player.
-	score_relaunch_list[plrid] = RelaunchCount();	
+	score_relaunch_list[plrid] = RelaunchCount();
 	SetScoreboardData(plrid, GetRelaunchCol(), Format("%d", score_relaunch_list[plrid]), score_relaunch_list[plrid]);
 	return _inherited(plr, ...);
 }

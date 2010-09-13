@@ -1,8 +1,8 @@
-/*-- 
+/*--
 	Wooden Barrel
 	Author: Ringwaul
 
-	The barrel is used to transport liquids 
+	The barrel is used to transport liquids
 --*/
 
 local szLiquid;
@@ -62,7 +62,7 @@ private func FillBarrel(string szMat)
 	var iCapacity = 300;
 	
 	if(iVolume >= 1 && szMat != szLiquid) return 0;
-	while(iVolume != iCapacity && GetMaterial(0,iDrain) == Material(szMat)) 
+	while(iVolume != iCapacity && GetMaterial(0,iDrain) == Material(szMat))
 	{
 		ExtractLiquid(0,iDrain);
 		iVolume = ++iVolume;

@@ -8,7 +8,7 @@
 	he is attached, he has more control over it than if it were just in his
 	inventory: The ControlLeft/Right/Up/Down callbacks are issued to the boom-
 	pack too. Here, they are used to slightly steer the boompack to the left
-	or right plus to jump off the rocket. 
+	or right plus to jump off the rocket.
 --*/
 
 local fuel;
@@ -31,7 +31,7 @@ protected func Destruction()
 }
 
 func ControlRight()
-{	
+{
 	SetRDir(+3);
 	return true;
 }
@@ -61,7 +61,7 @@ func ControlUseStart(object clonk, int x, int y)
 }
 
 func ControlUse(object clonk, int x, int y)
-{	
+{
 	// forward control to item
 	if(clonk->GetProcedure()=="ATTACH") return false;
 

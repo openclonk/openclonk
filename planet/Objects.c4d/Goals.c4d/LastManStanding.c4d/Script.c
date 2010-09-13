@@ -38,7 +38,7 @@ private func RelaunchCount()
 {
 	var relaunch_cnt = GameCall("RelaunchCount");
 	if (relaunch_cnt != nil)
-		return relaunch_cnt; 
+		return relaunch_cnt;
 	return MIME_RelaunchCount;
 }
 
@@ -46,7 +46,7 @@ private func KillsToRelaunch()
 {
 	var kills_to_relaunch = GameCall("KillsToRelaunch");
 	if (kills_to_relaunch != nil)
-		return kills_to_relaunch; 
+		return kills_to_relaunch;
 	return MIME_KillsToRelaunch;
 }
 
@@ -88,7 +88,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
 	// Show scoreboard for a while.
-	DoScoreboardShow(1, plr + 1);  
+	DoScoreboardShow(1, plr + 1);
 	Schedule(Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	return; // _inherited(plr, killer, ...);
 }

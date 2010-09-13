@@ -1,6 +1,6 @@
 /*-- Plant Library --*/
 
-private func SeedChance() {	return 500;	} 
+private func SeedChance() {	return 500;	}
 private func SeedAreaSize() { return 300; } //The distance seeds may travel
 private func SeedAmount() { return 10; } //The amount of plants possible within a diameter of 500px.
 

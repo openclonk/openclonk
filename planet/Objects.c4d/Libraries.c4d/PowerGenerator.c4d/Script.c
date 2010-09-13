@@ -14,7 +14,7 @@ local power;
 // Functions that specify object properties, should be overloaded by the generator.
 
 // Maximum amount of power that can be stored in this power generator.
-public func GetCapacity() 
+public func GetCapacity()
 {
 	return 0;
 }
@@ -71,7 +71,7 @@ public func IsPowerGeneratorFor(object consumer, object next, object old_line, a
 // Finds all power lines connected to pObject (can be nil in local calls).
 private func Find_PowerLine(object line)
 {
-	if (!line) 
+	if (!line)
 		line = this;
 	return [C4FO_Func, "IsConnectedTo", line];
 }
@@ -101,7 +101,7 @@ public func DoPower(int do_power)
 
 /*-- Debug --*/
 
-protected func Initialize() 
+protected func Initialize()
 {
 	//AddEffect("ShowPower",this,100,10,this);
 	return _inherited(...);

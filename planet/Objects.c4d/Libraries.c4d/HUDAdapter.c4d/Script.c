@@ -23,7 +23,7 @@ public func HUDAdapter()
 // hotkey control
 public func ControlHotkey(int hotindex)
 {
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		return HUDcontroller->ControlHotkey(hotindex);
 }
 
@@ -35,7 +35,7 @@ protected func Recruitment(int plr)
 	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
 	if (!HUDcontroller)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
-	return _inherited(plr, ...); 
+	return _inherited(plr, ...);
 }
 
 public func OnDisplayInfoMessage()
@@ -65,30 +65,30 @@ protected func OnPhysicalChange(string physical, int change, int mode)
 		else if (physical == "Breath") HUDselector->UpdateBreathBar();
 		else if (physical == "Magic") HUDselector->UpdateMagicBar();
 	}
-	return _inherited(physical, change, mode, ...); 
+	return _inherited(physical, change, mode, ...);
 }
 
 // calls to both crew selector and controller
 protected func CrewSelection(bool unselect)
 {
-	if (HUDselector) 
+	if (HUDselector)
 		HUDselector->UpdateSelectionStatus();
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->OnCrewSelection(this,unselect);
-	return _inherited(unselect, ...); 
+	return _inherited(unselect, ...);
 }
 
 // calls to controller
 protected func OnCrewEnabled()
 {
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->OnCrewEnabled(this);
 	return _inherited(...);
 }
 
 protected func OnCrewDisabled()
 {
-	if (HUDcontroller) 
+	if (HUDcontroller)
 		HUDcontroller->OnCrewDisabled(this);
 	return _inherited(...);
 }

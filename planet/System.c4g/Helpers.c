@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Helpers.c
 		Authors:
 		
@@ -9,10 +9,10 @@
 global func MessageWindow(string msg, int for_plr, id icon, string caption)
 {
 	// Get icon.
-	if (!icon) 
+	if (!icon)
 		icon = GetID();
 	// Get caption.
-	if (!caption) 
+	if (!caption)
 		caption = GetName();
 	// Create msg window (menu).
 	var cursor = GetCursor(for_plr);
@@ -28,7 +28,7 @@ global func RemoveAll(p)
 	if (GetType(p) == C4V_PropList) p = Find_ID(p); // RemoveAll(ID) shortcut
 	for (var obj in FindObjects(p, ...))
 	{
-		if (obj) 
+		if (obj)
 		{
 			obj->RemoveObject();
 			cnt++;
@@ -39,7 +39,7 @@ global func RemoveAll(p)
 
 global func SetBit(int old_val, int bit_nr, bool bit)
 {
-	if (GetBit(old_val, bit_nr) != (bit != 0)) 
+	if (GetBit(old_val, bit_nr) != (bit != 0))
 		return ToggleBit(old_val, bit_nr);
 	return old_val;
 }
@@ -57,7 +57,7 @@ global func ToggleBit(int old_val, int bit_nr)
 global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, int prtdist, int a, int b0, int b1, int ydir)
 {
 	// Right parameters?
-	if (!prtdist) 
+	if (!prtdist)
 		return 0;
 	// Calculate required number of particles.
 	var prtnum = Max(Distance(x0, y0, x1, y1) / prtdist, 2);
@@ -71,7 +71,7 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 
 		b = ((b0 & 16711935) * i1 + (b1 & 16711935) * i2) >> 8 & 16711935
 			| ((b0 >> 8 & 16711935) * i1 + (b1 >> 8 & 16711935) * i2) & -16711936;
-		if (!b && (b0 | b1)) 
+		if (!b && (b0 | b1))
 			b++;
 		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, 0, ydir, a, b);
 	}
@@ -89,7 +89,7 @@ global func GetAvailableObject (id def, object obj)
 		Find_Not(Find_OCF(OCF_OnFire)),
 		Find_Func("GetAvailableObjectCheck", GetOwner()),
 		Find_Not(Find_Container(obj)));
-	if (!obj) 
+	if (!obj)
 		SetLength(crit, GetLength(crit) - 1);
 	return FindObject(crit, Sort_Distance());
 }
@@ -97,10 +97,10 @@ global func GetAvailableObject (id def, object obj)
 global func GetAvailableObjectCheck(int plr)
 {
 	// Object is not connected to anything (for line construction kits)
-	if (FindObject (Find_ActionTarget(this), Find_Procedure(DFA_CONNECT))) 
+	if (FindObject (Find_ActionTarget(this), Find_Procedure(DFA_CONNECT)))
 		return false;
 	// Not chosen by another friendly clonk
-	if (GetEffect("IntNotAvailable", this) && !Hostile(plr, EffectVar(0, this, GetEffect("IntNotAvailable", this))->GetOwner())) 
+	if (GetEffect("IntNotAvailable", this) && !Hostile(plr, EffectVar(0, this, GetEffect("IntNotAvailable", this))->GetOwner()))
 		return false;
 	return true;
 }

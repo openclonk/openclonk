@@ -19,7 +19,7 @@
 
 global func FxHitCheckStart(object target, int effect, int temp, object by_obj, bool never_shooter)
 {
-	if (temp) 
+	if (temp)
 		return;
 	EffectVar(0, target, effect) = target->GetX();
 	EffectVar(1, target, effect) = target->GetY();
@@ -35,11 +35,11 @@ global func FxHitCheckStart(object target, int effect, int temp, object by_obj, 
 	if (target->GetCategory() & C4D_Object)
 		target->SetCategory((target->GetCategory() - C4D_Object) | C4D_Vehicle);
 	return;
-}	
+}
 
 global func FxHitCheckStop(object target, int effect, int reason, bool temp)
 {
-	if (temp) 
+	if (temp)
 		return;
 	
 	target->SetCategory(target->GetID()->GetCategory());
@@ -50,7 +50,7 @@ global func FxHitCheckDoCheck(object target, int effect)
 {
 	var obj;
 	// rather search in front of the projectile, since a hit might delete the effect,
-	// and clonks can effectively hide in front of walls. 
+	// and clonks can effectively hide in front of walls.
 	var oldx = target->GetX();
 	var oldy = target->GetY();
 	var newx = target->GetX() + target->GetXDir() / 10;
@@ -84,17 +84,17 @@ global func FxHitCheckDoCheck(object target, int effect)
 			if (obj->~IsProjectileTarget(target, shooter) || obj->GetOCF() & OCF_Alive)
 			{
 				target->~HitObject(obj);
-				if (!target) 
+				if (!target)
 					return;
 			}
 		}
 	}
-	return;	
+	return;
 }
 
 global func FxHitCheckEffect(string newname)
 {
-	if (newname == "HitCheck") 
+	if (newname == "HitCheck")
 		return -2;
 	return;
 }
@@ -118,7 +118,7 @@ global func FxHitCheckTimer(object target, int effect, int time)
 	EffectCall(target, effect, "DoCheck");
 	// It could be that it hit something and removed itself. thus check if target is still there.
 	// The effect will be deleted right after this.
-	if (!target) 
+	if (!target)
 		return -1;
 	
 	EffectVar(0, target, effect) = target->GetX();
@@ -129,9 +129,9 @@ global func FxHitCheckTimer(object target, int effect, int time)
 
 	// The projectile will be only switched to "live", meaning that it can hit the
 	// shooter himself when the shot exited the shape of the shooter one time.
-	if (!never_shooter) 
+	if (!never_shooter)
 	{
-		if (!live) 
+		if (!live)
 		{
 			var ready = true;
 			// We search for all objects with the id of our shooter.
@@ -152,17 +152,17 @@ global func FxHitCheckTimer(object target, int effect, int time)
 
 global func ProjectileHit(object obj, int dmg, bool tumble)
 {
-	if (!this || !obj) 
+	if (!this || !obj)
 		return;
 	
 	if (obj->GetAlive())
 		if (obj->~QueryCatchBlow(this))
 			return;
-	if (!this || !obj) 
+	if (!this || !obj)
 		return;
 		
 	obj->~OnProjectileHit(this);
-	if (!this || !obj) 
+	if (!this || !obj)
 		return;
 	
 	this->~OnStrike(obj);
@@ -176,7 +176,7 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 		obj->DoDamage(dmg, FX_Call_EngObjHit, GetController());
 	}
 	// Target could have done something with this projectile.
-	if (!this || !obj) 
+	if (!this || !obj)
 		return;
 	
 	// Tumble target.
@@ -190,5 +190,5 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 		obj->SetXDir((obj->GetXDir() * obj_mass + GetXDir() * mass * unrealism) / (mass + obj_mass));		
 		obj->SetYDir((obj->GetYDir() * obj_mass + GetYDir() * mass * unrealism) / (mass + obj_mass));
 	}
-	return; 
+	return;
 }

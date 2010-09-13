@@ -441,7 +441,7 @@ public func ConstraintObjects()
 
 public func ConstraintLength()
 {
-  // Satisfy all stick constraints (move the particles to fit the length)
+	// Satisfy all stick constraints (move the particles to fit the length)
 	var normal_restlength = Rope_SegmentLength*Rope_Precision;
 	var normal_restlength2 = normal_restlength*normal_restlength;
 	var restlength, restlength2;

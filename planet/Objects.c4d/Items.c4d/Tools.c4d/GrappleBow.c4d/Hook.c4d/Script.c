@@ -2,7 +2,7 @@
 	Grapple Hook
 	Author: Randrian
 	
-	The hook can be shot with the grappling bow. 
+	The hook can be shot with the grappling bow.
 	On impact the hook will stick to the ground
 	The hook also controls the swinging controls for the clonk
 */

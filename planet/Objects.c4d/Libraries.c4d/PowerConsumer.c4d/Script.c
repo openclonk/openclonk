@@ -2,10 +2,10 @@
 	Power consumer
 	Author: Maikel
 	
-	To be included by all objects that need a supply of energy. 
+	To be included by all objects that need a supply of energy.
 	The object then can check and consume power by calling it's
 	function CheckPower(int power_check, bool no_substract),
-	see below for an explanation.	
+	see below for an explanation.
 --*/
 
 
@@ -13,7 +13,7 @@
 // Functions that specify object properties, should be overloaded by the consumer.
 
 // Returns whether the object is a power consumer.
-public func IsPowerConsumer() 
+public func IsPowerConsumer()
 {
 	return true;
 }
@@ -31,12 +31,12 @@ public func CanPowerConnect() // Other name?
 // fSubstract determines whether the check substracts powerNeed.
 // If false it starts showing the power need object.
 // If true it stops showing the power need object.
-public func CheckPower(int power_check, bool no_substract) 
+public func CheckPower(int power_check, bool no_substract)
 {
 	if (!FindObject(Find_ID(Rule_NeedEnergy))) // Rule: Consumers do not need power.
 		return true;
 	// Check all power generators connected to this consumer and sort them according to priority.
-	for (var generator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority())) 
+	for (var generator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority()))
 	{
 		var power = generator->GetPower();
 		if (power > power_check)
@@ -97,9 +97,9 @@ private func FxEnergyNeedTimer(object trg, int fxnum, int time)
 		// Do not show symbol.
 		trg->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
 		EffectVar(0, trg, fxnum) = false;
-	} 
+	}
 	else // Effect was not showing symbol.
-	{	
+	{
 		// Do show symbol.
 		trg->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
 		trg->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);

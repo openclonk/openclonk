@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		Tutorial 02
 		Author: Maikel
 
@@ -57,7 +57,7 @@ protected func Initialize()
 	lorry->SetObjectLayer(lorry);
 	
 	// Cannon to blast through rock & chest with powderkeg and firestones.
-	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER); 
+	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER);
 	//effect = AddEffect("CannonRestore", cannon, 100, 10);
 	//EffectVar(1, cannon, effect) = 180;
 	//EffectVar(2, cannon, effect) = 450;
@@ -100,7 +100,7 @@ protected func Initialize()
 	
 	// Chest with boompack for fast players.
 	chest = CreateObject(Chest, 1800, 660, NO_OWNER);
-	chest->CreateContents(Boompack, 2);	
+	chest->CreateContents(Boompack, 2);
 	
 	// Set the mood.
 	SetGamma(RGB(30, 25, 20), RGB(135, 130, 125), RGB(255, 250, 245));
@@ -503,7 +503,7 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 }
 
 /*-- Item restoring --*/
-// All done through global effects, which use ObjectRestorer. 
+// All done through global effects, which use ObjectRestorer.
 // In all cases the effects have:
 // Timer interval: 10 frames.
 // Effectvar 0: Container to which must be restored.
@@ -521,7 +521,7 @@ global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temp
 		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
 		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");	
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");
 	}
 	return 1;
 }
@@ -609,7 +609,7 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
 		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");	
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");
 	}
 	return 1;
 }
@@ -635,7 +635,7 @@ global func FxClonkContentRestoreStop(object target, int num, int reason, bool  
 		restorer->SetPosition(x, y);
 		var to_container = EffectVar(0, target, num);
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");	
+		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");
 	}
 	return 1;
 }

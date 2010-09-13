@@ -137,7 +137,7 @@ public func MouseSelection(int plr)
 		{
 			myobject->Interact(crew);
 			return true;
-		}	
+		}
 	}
 }
 
@@ -280,8 +280,8 @@ public func SetObject(object obj, int type, int pos, int hot)
 	myobject = obj;
 	hotkey = hot;
 	
-	if(!myobject) 
-	{	
+	if(!myobject)
+	{
 		SetGraphics(nil,nil,1);
 		SetName(Format("$TxtSlot$",pos+1));
 		this["MouseDragImage"] = nil;
@@ -392,7 +392,7 @@ public func UpdateSelectionStatus()
 	}
 	else if(actiontype == ACTIONTYPE_VEHICLE)
 		if(crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == myobject)
-			sel = 1;	
+			sel = 1;
 	else if(actiontype == ACTIONTYPE_STRUCTURE)
 		if(crew->Contained() == myobject)
 			sel = 1;

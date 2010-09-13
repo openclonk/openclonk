@@ -38,7 +38,7 @@ global func FxBoomAttackTimer(object target, int effect, int time)
 	if(time/35 % Boomattack_wave_delay == 1)
 	{
 		var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-		if(gol)	
+		if(gol)
 			gol->SetWave(wave);
 		if (wave < 13)
 		{
@@ -68,7 +68,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 		rocket_id = BigBoomattack;
 	}
 	
-	for(var i=0; i<rockets; ++i) 
+	for(var i=0; i<rockets; ++i)
 	{
 		var rocket_angle = angle + Random(anglespread) - anglespread/2;
 		var rocket_radius = radius * RandomX(80,100) / 100;

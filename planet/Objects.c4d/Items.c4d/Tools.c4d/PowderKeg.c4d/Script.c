@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Powder Keg
 	Author: Ringwaul
 

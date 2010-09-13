@@ -1,5 +1,5 @@
-/*-- 
-	Goal control 
+/*--
+	Goal control
 	Author: Sven2
 	
 	Include this to all C4D_Goal objects
@@ -38,7 +38,7 @@ func RecheckGoalTimer()
 	if (!GetEffect("IntGoalCheck", 0))
 	{
 		var timer_interval = 35;
-		if (GetLeague()) 
+		if (GetLeague())
 			timer_interval = 2; // league has more frequent checks
 		var num = AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
 		FxIntGoalCheckTimer(nil, num);
@@ -52,7 +52,7 @@ public func NotifyHUD()
 	{
 		var plr = GetPlayerByIndex(i);
 		var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (HUD) 
+		if (HUD)
 			HUD->OnGoalUpdate(this);
 	}
 }
@@ -60,7 +60,7 @@ public func NotifyHUD()
 protected func InitializePlayer(int plr)
 {
 	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-	if (HUD) 
+	if (HUD)
 		HUD->OnGoalUpdate(this);
 }
 
@@ -73,7 +73,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 	if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
 	{
 		curr_goal->NotifyHUD();
-		if (!curr_goal->~IsFulfilled()) 
+		if (!curr_goal->~IsFulfilled())
 			return true;
 	}
 	// Current goal is fulfilled/destroyed - check all others
@@ -89,7 +89,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 		}
 	}
 	// No goal object? Kill timer
-	if (!goal_count) 
+	if (!goal_count)
 		return FX_Execute_Kill;
 	// Game over :(
 	AllGoalsFulfilled();
@@ -126,7 +126,7 @@ public func IsFulfilled() { return true; }
 
 protected func Activate(plr)
 {
-	if (IsFulfilled()) 
+	if (IsFulfilled())
 		return(MessageWindow("$MsgGoalFulfilled$", plr));
 	return MessageWindow(GetProperty("Description"), plr);
 }

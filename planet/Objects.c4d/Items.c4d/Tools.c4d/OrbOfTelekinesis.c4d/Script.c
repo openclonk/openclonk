@@ -29,13 +29,13 @@ public func ControlUseHolding(object pClonk, ix, iy)
 
 
 	if(target!=nil && pClonk->GetProcedure()== "WALK")
-	{		
+	{
 		//Magical particle effect
 		if(Distance(GetX(),GetY(),GetX()+ix,GetY()+iy)<150)
-		{	
-		var partx=-(Sin(180-Angle(0,0,ix,iy), 100)/10);
-		var party=-(Cos(180-Angle(0,0,ix,iy), 100)/10);
-		if(Random(3)==1)CreateParticle("Magic",ix,iy,partx,party,magic/10+50,RGB(0,220,250));
+		{
+			var partx=-(Sin(180-Angle(0,0,ix,iy), 100)/10);
+			var party=-(Cos(180-Angle(0,0,ix,iy), 100)/10);
+			if(Random(3)==1) CreateParticle("Magic",ix,iy,partx,party,magic/10+50,RGB(0,220,250));
 		}
 
 		//Don't mess around with underground objects. This stops you from triggering flints underground by pulling on them.

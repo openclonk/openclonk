@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Tutorial 03
 	Author: Ringwall
 
@@ -15,7 +15,7 @@ protected func Initialize()
 	PlaceGrass(85);
 	CreateObject(Butterfly, 10, 10);
 	
-	ScriptGo(true);	
+	ScriptGo(true);
 	
 	// Goal: flag goal also checks if all targets are destroyed.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
@@ -75,7 +75,7 @@ protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
 	// Uncomment if there is a 4th tutorial.
-	// SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
+	// SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
@@ -173,7 +173,7 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 private func MakeTarget(int x, int y, bool flying)
 {
-	if (flying == nil) 
+	if (flying == nil)
 		balloon = false;
 
 	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);

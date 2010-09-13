@@ -25,8 +25,8 @@ public func GetConnectedObject(object pObject)
 {
 	if(GetActionTarget(0) == pObject)
 		return GetActionTarget(1);
-	if(GetActionTarget(1) == pObject) 
-		return GetActionTarget(0);		
+	if(GetActionTarget(1) == pObject)
+		return GetActionTarget(0);
 	return;
 }
 

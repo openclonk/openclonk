@@ -5,7 +5,7 @@
 		0=Grey Circle
 		1=Icon of the Object
 		2,3=Extraslot
-		10,11,12= Amount 
+		10,11,12= Amount
 */
 
 
@@ -41,8 +41,8 @@ public func SetSymbol(obj)
 
 	this["Visibility"] = VIS_Owner;
 		
-	if(!obj) 
-	{	
+	if(!obj)
+	{
 		SetGraphics(nil, nil, 1);
 		SetGraphics(nil, nil, 2);
 		SetGraphics(nil, nil, 3);
@@ -122,7 +122,7 @@ public func SetAmount(Amount)
 	if(hun > 0)
 	{
 		SetGraphics(Format("%d",hun),Icon_SlimNumber,10,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(s,0,xoffs-spacing*3-500,0,s,yoffs+300, 9);	
+		SetObjDrawTransform(s,0,xoffs-spacing*3-500,0,s,yoffs+300, 9);
 		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
 
 	}

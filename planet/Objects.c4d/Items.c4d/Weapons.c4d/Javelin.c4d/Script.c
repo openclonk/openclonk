@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Javelin
 	Author: Ringwaul
 	
@@ -147,13 +147,13 @@ public func OnStrike(object obj)
 }
 
 protected func Hit()
-{	
+{
 	if(GetEffect("Flight",this))
 	{
 		Stick();
 		Sound("JavelinHitGround.ogg");
 	}
-	else	
+	else
 		Sound("WoodHit");
 }
 

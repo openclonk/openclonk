@@ -55,7 +55,7 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	obj->Enter(this);
-	return;	
+	return;
 }
 
 // GameCall from MicroMelee_Relaunch

@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Airplane
 	Author: Ringwaul
 	
@@ -20,7 +20,7 @@ protected func Construction(object byobj)
 }
 
 protected func Initialize()
-{	
+{
 	propanim = PlayAnimation("Propellor", 15,  Anim_Const(0),Anim_Const(1000));
 	AddEffect("IntPlane",this,1,1,this);
 	SetAction("Land");
@@ -67,7 +67,7 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
 		CreateParticle("Flash",0,0,GetXDir(),GetYDir(),800,RGBa(255,255,64,150));
 
-		AddEffect("IntCooldown", this,1,1,this);	
+		AddEffect("IntCooldown", this,1,1,this);
 	}
 	return 1;
 }
@@ -327,7 +327,7 @@ Fly = {
 	Wdt = 40,
 	Hgt = 56,
 	NextAction = "Fly",
-},  
+},
 Land = {
 	Prototype = Action,
 	Name = "Land",
@@ -341,7 +341,7 @@ Land = {
 	Wdt = 40,
 	Hgt = 56,
 	NextAction = "Land",
-}, 
+},
 }, def);
 	SetProperty("Name", "$Name$", def);
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3375,0), Trans_Rotate(25,0,1,0)));

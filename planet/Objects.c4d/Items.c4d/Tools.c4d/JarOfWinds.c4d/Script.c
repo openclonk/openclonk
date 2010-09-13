@@ -14,7 +14,7 @@ public func GetCarryPhase() { return 600; }
 
 public func FxJarReloadTimer(object target, int effect, int time)
 {
- target->Load();
+	target->Load();
 }
 
 protected func Initialize()
@@ -29,7 +29,7 @@ protected func ControlUse(object pClonk, iX, iY)
 	if(!GetEffect("JarReload",this))
 	{
 		if(!GBackLiquid())
-		{	
+		{
 			FireWeapon(pClonk, iX, iY);
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);
@@ -42,7 +42,7 @@ protected func ControlUse(object pClonk, iX, iY)
 	{
 		pClonk->Message("Reloading!");
 		return true;
-	}	
+	}
 	ChargeSoundStop();
 }
 
@@ -103,7 +103,7 @@ private func FireWeapon(object pClonk,iX,iY)
 					Sin(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
 					Cos(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
 					Max(i + 30, 90),
-					);	
+					);
 		}
 	}
 	
@@ -115,7 +115,7 @@ private func FireWeapon(object pClonk,iX,iY)
 		var x = pClonk->GetXDir();
 		var y = pClonk->GetYDir();
 		pClonk->SetXDir((x) - (sinspeed / 3));
-		pClonk->SetYDir((y) - (cosspeed / 3)); 
+		pClonk->SetYDir((y) - (cosspeed / 3));
 	}
 	
 	for( var obj in FindObjects(
@@ -126,7 +126,7 @@ private func FireWeapon(object pClonk,iX,iY)
 				),
 		Find_Not(Find_Category(C4D_Structure))
 								)
-		) 
+		)
 		{
 		if(obj != pClonk && PathFree(pClonk->GetX(),pClonk->GetY(),obj->GetX(),obj->GetY()))
 		{

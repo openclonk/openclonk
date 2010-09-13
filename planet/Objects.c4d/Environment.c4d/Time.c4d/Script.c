@@ -1,9 +1,9 @@
-/*-- 
+/*--
 	Time Controller
 	Author:Ringwall
 	
 	Creates time based on the 24-hour time scheme.
-	Time is computed in minutes, which are by default 
+	Time is computed in minutes, which are by default
 	1/2 a second in real life (18 frames). This will
 	make each complete day/night cycle last 12 minutes
 	in real life.
@@ -24,14 +24,14 @@ global func SetTime(int iTime) //Sets the current time using a 1440-minute clock
 		AddEffect("IntSunset",0,1,1);
 	}
 
-	if(IsDay()==false && IsDay(iTime)==true) 
+	if(IsDay()==false && IsDay(iTime)==true)
 	{
 		AddEffect("IntSunrise",0,1,1);
 	}
 
 	timeobject["itime"]=iTime;
 	if(timeobject!=nil) return 1;
-	else 
+	else
 		return 0;
 }
 
@@ -150,7 +150,7 @@ global func UpdateTime(bool advance)
 	SetSkyAdjust(RGB(skyshade,skyshade,skyshade));
 
 	//time advancement
-	if(advance != true) 
+	if(advance != true)
 		return 1;
 	if(GetTime()>=1439) SetTime(0);
 	if(GetTime()<1439) SetTime(GetTime()+1);

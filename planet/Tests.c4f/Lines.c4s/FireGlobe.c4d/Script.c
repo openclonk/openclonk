@@ -166,7 +166,7 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	// parallel!
 	if(denominator == 0)
 	{
-		if(numerator != 0) return false; 
+		if(numerator != 0) return false;
 		// on same line somewhere
 		else
 		{

@@ -1,4 +1,4 @@
-/*--  
+/*--
 	Pyramid
 	Author: Maikel
 	
@@ -19,7 +19,7 @@ protected func Initialize()
 	CreateObject(Chest, 200, 760, NO_OWNER);
 	CreateObject(Chest, 970, 760, NO_OWNER);
 	CreateObject(Chest, 860, 560, NO_OWNER);
-	CreateObject(Chest, 670, 610, NO_OWNER);	
+	CreateObject(Chest, 670, 610, NO_OWNER);
 	AddEffect("IntFillChests", nil, 100, 70, this);
 	
 	// Brick edges.
@@ -65,7 +65,7 @@ protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	var x = Random(LandscapeWidth()), y = 590;	
+	var x = Random(LandscapeWidth()), y = 590;
 	clonk->SetPosition(x, y);
 	return;
 }
@@ -101,5 +101,5 @@ global func CreateChestContents(id obj_id)
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	obj->Enter(this);
-	return;	
+	return;
 }

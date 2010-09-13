@@ -19,7 +19,7 @@ protected func Activate(object pClonk)
 	// Is there an object which accepts power lines?
 	var pObj = FindObject(Find_AtPoint(), Find_Func("CanPowerConnect"));
 	// No such object -> message.
-	if(!pObj) 
+	if(!pObj)
 		return pClonk->Message("$TxtNoNewLine$");
 	// Is there a power line connected to this wire roll?
 	var pLine = FindObject(Find_PowerLine());
@@ -32,7 +32,7 @@ protected func Activate(object pClonk)
 			Sound("Connect");
 			pClonk->Message("$TxtLineRemoval$");
 			return true;
-		} 
+		}
 		else // Connect existing power line to pObj.
 		{
 			if(pLine->GetActionTarget(0) == this)

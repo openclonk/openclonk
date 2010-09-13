@@ -23,7 +23,7 @@ protected func Initialize()
 	SetPhase(RandomX(1,16));
 
 	//Push low flying clouds up to proper height
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true) 
+	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true)
 	{
 		SetPosition(GetX(),GetY()-1);
 	}
@@ -53,7 +53,7 @@ public func Precipitation()
 	}
 
 	//acid precipitation
-	if(iWaitTime == 0 && szMat == "Acid") 
+	if(iWaitTime == 0 && szMat == "Acid")
 	{
 		RainDrop();
 		iAcidity = --iAcidity;
@@ -84,7 +84,7 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 	var iSearchX = GetX();
 	var iPrecision = 5;
 	
-	if(iSize >= 700 || iAcidity >= 100) 
+	if(iSize >= 700 || iAcidity >= 100)
 	{
 		iCondensing = 0;
 		iSearchY = 0;
@@ -92,7 +92,7 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 	}
 	//line below prevents clouds evaporating through solids
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid") && GetMaterial(0, iSearchY) != Material("Sky")) return(iSearchY=0);
-	if(GetMaterial(0, iSearchY) == Material("Water")) 
+	if(GetMaterial(0, iSearchY) == Material("Water"))
 	{
 		ExtractMaterialAmount(0, iSearchY,Material("Water"), 3);
 		iSize = iSize+3;
@@ -129,7 +129,7 @@ public func RainDrop()
 }
 
 //For use as scenario setting. Can work after initialize, if you really want to.
-global func AdjustLightningFrequency(int iFreq) 
+global func AdjustLightningFrequency(int iFreq)
 {
 	for(var Cloud in FindObjects(Find_ID(Cloud)))
 		Cloud->SetLightningFrequency(iFreq);

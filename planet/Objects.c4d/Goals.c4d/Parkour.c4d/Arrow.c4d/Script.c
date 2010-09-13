@@ -1,7 +1,7 @@
 /*-- Parkour arrow --*/
 
 protected func Initialize()
-{	
+{
 	this["Visibility"] = VIS_Owner;
 	return;
 }
@@ -20,6 +20,6 @@ local ActMap = {
 			Wdt = 40,
 			Hgt = 20,
 			NextAction = "Show",
-		},  
+		},
 };
 local Name = "$Name$";

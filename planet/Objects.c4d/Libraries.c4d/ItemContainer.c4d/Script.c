@@ -1,4 +1,4 @@
-/*-- 
+/*--
 	Item container
 	Author: Maikel
 	
@@ -65,7 +65,7 @@ public func OpenMenu(object clonk)
 {
 	//var proc = clonk->GetProcedure();
 	// not opened yet           v- why is this check here? - it belongs in the object script - Newton
-	if (!content_menu /* && (proc == "WALK" || proc == "PUSH")*/) 
+	if (!content_menu /* && (proc == "WALK" || proc == "PUSH")*/)
 	{
 		content_menu = clonk->CreateRingMenu(GetID(), this);
 		// all contents into the menu

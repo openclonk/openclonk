@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		CheckPoint
 		Author: Maikel
 
@@ -24,7 +24,7 @@ static const PARKOUR_CP_Check = 8;
 static const PARKOUR_CP_Ordered = 16;
 static const PARKOUR_CP_Bonus = 32;
 
-public func SetCPMode(int mode) 
+public func SetCPMode(int mode)
 {
 	if (mode & PARKOUR_CP_Start) // Start always occurs alone.
 		mode = PARKOUR_CP_Start;
@@ -36,7 +36,7 @@ public func SetCPMode(int mode)
 		// Set CP number.
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
-	cp_mode = mode; 
+	cp_mode = mode;
 	DoGraphics();
 	return;
 }
@@ -48,19 +48,19 @@ public func FindCPMode(int mode) { return cp_mode & mode; }
 /*-- Checkpoint controller --*/
 local cp_con;
 
-public func SetCPController(object con) 
-{ 
-	cp_con = con; 
-	return; 
+public func SetCPController(object con)
+{
+	cp_con = con;
+	return;
 }
 
 /*-- Checkpoint number --*/
 local cp_num;
 
-public func SetCPNumber(int num) 
-{ 
-	cp_num = num; 
-	return; 
+public func SetCPNumber(int num)
+{
+	cp_num = num;
+	return;
 }
 
 public func GetCPNumber() { return cp_num; }
@@ -78,7 +78,7 @@ protected func Initialize()
 	UpdateGraphics();
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
-}	
+}
 
 /*-- Checkpoint status --*/
 
@@ -103,7 +103,7 @@ public func IsActiveForPlr(int plr)
 					return false;
 		return true;
 	}
-	if (cp_mode & PARKOUR_CP_Ordered) 
+	if (cp_mode & PARKOUR_CP_Ordered)
 	{
 		if (GetCPNumber() == 1) // First ordered checkpoint is always active.
 			return true;
@@ -137,7 +137,7 @@ public func ResetCleared() // reset progress done by players
 /*-- Checkpoint activity --*/
 
 protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
-{	
+{
 	if (!(fxtime % 5))
 		CheckForClonks();
 	UpdateGraphics(fxtime);
@@ -148,7 +148,7 @@ protected func CheckForClonks()
 {
 	// Loop through all clonks inside the checkpoint.
 	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
-	{		
+	{
 		var plr = pClonk->GetOwner();
 		var team = GetPlayerTeam(plr);
 		var plrid = GetPlayerID(plr);
@@ -156,7 +156,7 @@ protected func CheckForClonks()
 		if (!IsActiveForPlr(plr) && !IsActiveForTeam(team))
 			continue;
 		// Check respawn status.
-		if (cp_mode & PARKOUR_CP_Respawn) 
+		if (cp_mode & PARKOUR_CP_Respawn)
 			if (cp_con)
 				cp_con->SetPlrRespawnCP(plr, this); // Notify race goal.
 		// If already done by player -> continue.
@@ -178,7 +178,7 @@ protected func CheckForClonks()
 			}
 		}
 		// Check finish status.
-		if (cp_mode & PARKOUR_CP_Finish) 
+		if (cp_mode & PARKOUR_CP_Finish)
 		{
 			Sound("Cleared", false, nil, plr);
 			aDoneByPlr[plrid] = true;
@@ -198,10 +198,10 @@ protected func CheckForClonks()
 
 public func SetBaseGraphics(id gfx, int mod)
 {
-  // Update base graphics in overlay layer 1
-  SetGraphics("", gfx, 1, GFXOV_MODE_Base);
-  SetClrModulation(mod , 1);
-  return true;
+	// Update base graphics in overlay layer 1
+	SetGraphics("", gfx, 1, GFXOV_MODE_Base);
+	SetClrModulation(mod , 1);
+	return true;
 }
 
 // Mode graphics.
@@ -255,7 +255,7 @@ protected func GetColorByAngle(int angle)
 	for (var i = 0; i < GetPlayerCount(); i++)
 		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & PARKOUR_CP_Start))
 			cnt++;
-	if (!cnt) 
+	if (!cnt)
 		return RGBa(255, 255, 255, 192);
 
 	var prt = 360 / cnt;

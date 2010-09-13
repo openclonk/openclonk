@@ -1,8 +1,8 @@
 /*--Helper --*/
 
-func Initialize() {
-   
-  return(1);
+func Initialize()
+{
+	return(1);
 }
 
 func Definition(def) {

@@ -29,7 +29,7 @@ protected func Activity()
 	if (Random(2)) return;
 
 	// Reproduction
-	if (!Random(ReproductionRate())) 
+	if (!Random(ReproductionRate()))
 		Reproduction();
 
 	// Jump
@@ -76,7 +76,7 @@ public func TurnLeft()
 	if (Stuck() || (GetAction() != "Walk" && GetAction() != "Swim")) return;
 	if (GetXDir() > 0) SetXDir(0);
 	SetDir(DIR_Left);
-	SetComDir(COMD_Left); 
+	SetComDir(COMD_Left);
 	return 1;
 }
 
@@ -96,7 +96,7 @@ protected func CatchBlow()
 	return 1;
 }
 
-protected func Death() 
+protected func Death()
 {
 	Sound("WolfDead"); // TODO Get Sound
 	SetDir(0);

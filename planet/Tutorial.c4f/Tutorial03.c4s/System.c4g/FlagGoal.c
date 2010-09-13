@@ -9,8 +9,8 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-public func IsFulfilled() 
-{ 
+public func IsFulfilled()
+{
 	// No flag, goal fulfilled.
 	if (!flag)
 		return true;

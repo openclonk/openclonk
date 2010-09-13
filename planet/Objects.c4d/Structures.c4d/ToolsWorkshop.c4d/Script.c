@@ -6,7 +6,7 @@
 func ProductType() { return C4D_Vehicle | C4D_Object; }
 func ProductCondition() { return "IsToolProduct"; }
 
-public func Construction() 
+public func Construction()
 {
 	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-30,30),0,1,0));
 }
@@ -25,7 +25,7 @@ public func NeedsEnergy()
 
 /* Production */
 
-public func IsProducerOf(caller, def) 
+public func IsProducerOf(caller, def)
 {
 	if (!(def->GetCategory () & ProductType())) return 0;
 	if (!IsBuilt ()) return 0;
@@ -53,7 +53,7 @@ func FindSuppliedObjectCloseTo (obj, def)
 public func HowToProduce (clonk, def)
 {
 	if(NeedsEnergy())
-	{ 
+	{
 		clonk->AddCommand ("Call", this, def, 0, 0, 0, "HowToProduce");
 		clonk->AddCommand ("Energy", this);
 		return 1;
@@ -109,7 +109,7 @@ public func StartProduction(pWorker,idType,bSpecial2)
 }
 
 public func ProductionCompleteFailed(pWorker,idType,bSpecial2)
-{	
+{
 	// Action "Build" can't be executed (resources are missing)
 	// To recieve the Message "x needs y" execute one more the command "Build"
 	// so that it fails and puts out the message.
@@ -142,7 +142,7 @@ protected func IsBuilt()
 
 /* Control */
 
-protected func ContainedUp(pCaller) 
+protected func ContainedUp(pCaller)
 {
 	[$Production$|Image=CXCN]
 	return MenuProduction(pCaller);
@@ -151,7 +151,7 @@ protected func ContainedUp(pCaller)
 /* Activity */
 
 private func CheckBuild()
-{ 
+{
 	// TimerCall: The workshop starts its own Build-Action, when
 	// someone works in the workshop. The work in a building only proceeds
 	// when the building supports this with an own build-action.
@@ -174,7 +174,7 @@ private func IsWorking()
 }
 
 private func Smoking()
-{	
+{
 	if (GetPhase()%3) return 1;
 	if (Random(6)) Smoke(+16,-14,16);
 	if (Random(8)) Smoke(10,-14,15+Random(3));

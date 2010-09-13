@@ -1,4 +1,4 @@
-/*-- 
+/*--
 		C4.c
 		Authors:
 		
@@ -17,7 +17,7 @@ static const DFA_DIG     =  5;
 static const DFA_SWIM    =  6;
 static const DFA_THROW   =  7;
 static const DFA_BRIDGE  =  8;
-static const DFA_BUILD   =  9; 
+static const DFA_BUILD   =  9;
 static const DFA_PUSH    = 10;
 static const DFA_CHOP    = 11;
 static const DFA_LIFT    = 12;
@@ -35,9 +35,9 @@ static const Action = {
 
 global func GetActMapVal(string entry, string action, id def, int num)
 {
-	if (!def) 
+	if (!def)
 		def = GetID();
-	if (entry == "Facet") 
+	if (entry == "Facet")
 		entry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][num];
 	return GetProperty(entry, GetProperty(action, def));
 }
@@ -55,9 +55,9 @@ global func ShowNeededMaterial(object of_obj)
 global func FlameConsumeMaterial(int x, int y)
 {
 	var mat = GetMaterial(x, y);
-	if (mat == -1) 
+	if (mat == -1)
 		return false;
-	if (!GetMaterialVal("Inflammable", "Material", mat)) 
+	if (!GetMaterialVal("Inflammable", "Material", mat))
 		return false;
 	return !!ExtractMaterialAmount(x, y, mat, 1);
 }
@@ -70,7 +70,7 @@ global func ExtractLiquid(int x, int y)
 {
 	var mat = GetMaterial(x, y);
 	var density = GetMaterialVal("Density", "Material", mat);
-	if (density < C4M_Liquid || density >= C4M_Solid) 
+	if (density < C4M_Liquid || density >= C4M_Solid)
 		return -1;
 	ExtractMaterialAmount(x, y, mat, 1);
 	return mat;
@@ -86,7 +86,7 @@ global func LaunchEffect(id type, int x, int y)
 // Splits the calling object into its components.
 global func Split2Components()
 {
-	if (!this) 
+	if (!this)
 		return false;
 	var ctr = Contained();
 	// Transfer all contents to container.

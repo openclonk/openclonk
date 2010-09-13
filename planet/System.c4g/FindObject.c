@@ -1,9 +1,9 @@
-/*--  
+/*--
 		FindObject.c
-		Authors: 
+		Authors:
 
 		Wrappers for convenient calls to the FindObject family.
---*/ 
+--*/
 
 
 /*-- Find functions --*/
@@ -16,7 +16,7 @@ global func Find_Not(cond)
 global func Find_And()
 {
 	var result = [C4FO_And];
-	for (var i = 0; Par(i); i++) 
+	for (var i = 0; Par(i); i++)
 		result[i + 1] = Par(i);
 	return result;
 }
@@ -31,9 +31,9 @@ global func Find_Or()
 
 global func Find_Exclude(object obj)
 {
-	if (!obj) 
+	if (!obj)
 		obj = this;
-	if (!obj) 
+	if (!obj)
 		return;
 	return [C4FO_Exclude, obj];
 }
@@ -158,7 +158,7 @@ global func Find_Layer(object layer)
 
 global func Find_PathFree(object to_obj)
 {
-	if (!to_obj) 
+	if (!to_obj)
 		to_obj = this;
 	return [C4FO_Func, "Find_PathFreeCheck", to_obj];
 }

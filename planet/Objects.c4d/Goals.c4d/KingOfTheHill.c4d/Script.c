@@ -162,9 +162,9 @@ private func CheckForWinner()
 				if (check_plr == plr)
 					continue;
 				if (GetPlayerTeam(check_plr) != 0 && GetPlayerTeam(check_plr) == GetPlayerTeam(plr))
-					continue; 
+					continue;
 				EliminatePlayer(check_plr);
-			}			
+			}
 			break;
 		}
 	}
@@ -180,7 +180,7 @@ public func Activate(int byplr)
 	for(var i=0;i<GetLength(teams);++i)
 	{
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
-	}	
+	}
 	
 	var msg=Format("$MsgGoalDesc$", Goal_KingOfTheHill->GetPointLimit());
 	for(var i=0;i<GetLength(lines);++i)
@@ -242,7 +242,7 @@ func RefreshScoreboard()
 	
 	
 	var points=GetTeamPoints();
- 	 
+	
 	for(var cnt=0;cnt<GetPlayerCount();cnt++)
 	{
 		var plr=GetPlayerByIndex(cnt);

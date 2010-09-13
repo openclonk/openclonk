@@ -48,7 +48,7 @@ public func Ignite(clonk)
 	pIgniteClonk = clonk;
 	if (aWires[iIgniteNumber])
 		aWires[iIgniteNumber]->StartFusing(this);
-	else 
+	else
 		for (var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 			obj->~StartFusing(this);
 

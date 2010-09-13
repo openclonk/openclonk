@@ -35,7 +35,7 @@ public func FxIntFadeOutStart(object target, int num) {
 public func FxIntFadeOutTimer(object target, int num, int time) {
 	if(time < fade_time * 2/3) return;
 	//Log("%d,%d,%08x,%08x => %08x", fade_time, time, EffectVar(4, target, num), EffectVar(3, target, num), ((fade_time - time) * EffectVar(4, target, num) / (fade_time/3)));
-	if(!(target->Contained()) 
+	if(!(target->Contained())
 		&& EffectVar(0, target, num) == target->GetX()
 		&& EffectVar(1, target, num) == target->GetY()
 	) {

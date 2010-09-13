@@ -94,7 +94,7 @@ protected func FxRestoreStop(object target, int num, int reason, bool temporary)
 	// Only if there is something to restore.
 	if (to_restore)
 	{			
-		to_restore->Exit(); 
+		to_restore->Exit();
 		if (to_container)
 			to_restore->Enter(to_container);
 		else
@@ -140,12 +140,12 @@ global func AddRestoreMode(object to_container, int to_x, int to_y)
 {
 	if (!this)
 		return;
-	var effect = AddEffect("RestoreMode", this, 100);	
+	var effect = AddEffect("RestoreMode", this, 100);
 	EffectVar(0, this, effect) = to_container;
 	EffectVar(1, this, effect) = to_x;
 	EffectVar(2, this, effect) = to_y;
 	return;
-}	
+}
 
 // Destruction check, uses Fx*Stop to detect item removal.
 // Effectvar 0: Container to which must be restored.
@@ -163,7 +163,7 @@ global func FxRestoreModeStop(object target, int num, int reason, bool  temporar
 		var to_x = EffectVar(1, target, num);
 		var to_y = EffectVar(2, target, num);
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, to_x, to_y);	
+		restorer->SetRestoreObject(restored, to_container, to_x, to_y);
 	}
 	return 1;
 }
