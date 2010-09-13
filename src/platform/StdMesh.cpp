@@ -181,18 +181,21 @@ namespace
 	}
 
 	// Mirror is wrt X axis
-	void MirrorKeyFrame(StdMeshKeyFrame& frame, const StdMeshTransformation& old_bone_transformation, const StdMeshTransformation& new_inverse_bone_transformation)//Bone& new_bone, const StdMeshBone& old_bone)
+	void MirrorKeyFrame(StdMeshKeyFrame& frame, const StdMeshTransformation& old_bone_transformation, const StdMeshTransformation& new_inverse_bone_transformation)
 	{
 		// frame was a keyframe of a track for old_bone and was now transplanted to new_bone.
 
+		//frame.Transformation.rotate.x = -frame.Transformation.rotate.x;
 		frame.Transformation.rotate.y = -frame.Transformation.rotate.y;
 		frame.Transformation.rotate.z = -frame.Transformation.rotate.z;
 
 		// We might also want to do something like this... need to get feedback
 		// from modelers...
-		//StdMeshVector d = old_bone_transformation.scale * (old_bone_transformation.rotate * frame.Transformation.translate);
+#if 0
+		StdMeshVector d = old_bone_transformation.scale * (old_bone_transformation.rotate * frame.Transformation.translate);
 		//d.x = -d.x;
-		//frame.Transformation.translate = new_inverse_bone_transformation.rotate * (new_inverse_bone_transformation.scale * d);
+		frame.Transformation.translate = new_inverse_bone_transformation.rotate * (new_inverse_bone_transformation.scale * d);
+#endif
 	}
 
 	bool MirrorName(StdStrBuf& buf)
@@ -961,7 +964,7 @@ void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& ani
 				if(other_bone->Index > bone.Index)
 				{
 					std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
-
+#if 1
 					StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
 					StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
 
@@ -971,7 +974,16 @@ void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& ani
 
 					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[other_bone->Index]->Frames.begin(); iter != new_anim.Tracks[other_bone->Index]->Frames.end(); ++iter)
 						MirrorKeyFrame(iter->second, other_own_trans, StdMeshTransformation::Inverse(own_trans));
+#endif
 				}
+			}
+			else if(bone.Name.Compare_(".N", bone.Name.getLength()-2) != 0)
+			{
+				StdMeshTransformation own_trans = bone.Transformation;
+				if(bone.GetParent()) own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
+
+				for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
+					MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(own_trans));
 			}
 		}
 	}
@@ -983,8 +995,8 @@ void StdMesh::MirrorAnimations()
 	for(std::map<StdCopyStrBuf, StdMeshAnimation>::iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
 	{
 		// For debugging purposes:
-		//if(iter->second.Name == "Jump")
-		//	MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
+//		if(iter->second.Name == "Jump")
+//			MirrorAnimation(StdCopyStrBuf("Jump.Mirror"), iter->second);
 
 		StdCopyStrBuf buf = iter->second.Name;
 		if(MirrorName(buf))
