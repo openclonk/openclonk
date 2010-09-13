@@ -187,7 +187,7 @@ public func UpdateCursor(int dx, int dy)
 		var item = BoundBy(angle/segment,0,item_count-1);
 		if(outside) item = -1;
 		
-		for(var i=0; i<= item_count; i++)
+		for(var i=0; i< item_count; i++)
 		{ 
 			if(menu_icons[i])
 			{
