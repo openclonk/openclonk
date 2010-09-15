@@ -76,22 +76,22 @@ class C4Value
 {
 public:
 
-	C4Value() : NextRef(NULL), Type(C4V_Any) { Data.Obj = 0; }
+	C4Value() : Type(C4V_Any), NextRef(NULL) { Data.Obj = 0; }
 
-	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(NULL), Type(nValue.Type)
+	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type), NextRef(NULL)
 	{ AddDataRef(); }
 
-	explicit C4Value(bool data): NextRef(NULL), Type(C4V_Bool)
+	explicit C4Value(bool data): Type(C4V_Bool), NextRef(NULL)
 	{ Data.Int = data; }
-	explicit C4Value(int32_t data): NextRef(NULL), Type(C4V_Int)
+	explicit C4Value(int32_t data): Type(C4V_Int), NextRef(NULL)
 	{ Data.Int = data; }
-	explicit C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_C4Object : C4V_Any)
+	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), NextRef(NULL)
 	{ Data.Obj = pObj; AddDataRef(); }
-	explicit C4Value(C4String *pStr): NextRef(NULL), Type(pStr ? C4V_String : C4V_Any)
+	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), NextRef(NULL)
 	{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), Type(pArray ? C4V_Array : C4V_Any)
+	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Any), NextRef(NULL)
 	{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4PropList *p): NextRef(NULL), Type(p ? C4V_PropList : C4V_Any)
+	explicit C4Value(C4PropList *p): Type(p ? C4V_PropList : C4V_Any), NextRef(NULL)
 	{ Data.PropList = p; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue) { Set(nValue); return *this; }
