@@ -56,7 +56,7 @@ public func SetStartpoint(int x, int y)
 	cp->SetCPMode(PARKOUR_CP_Start);
 	cp->SetCPController(this);
 	cp_list[0] = cp;
-	return;
+	return cp;
 }
 
 public func SetFinishpoint(int x, int y)
@@ -67,7 +67,7 @@ public func SetFinishpoint(int x, int y)
 	cp->SetCPController(this);
 	cp_count++;
 	cp_list[cp_count] = cp;
-	return;
+	return cp;
 }
 
 public func AddCheckpoint(int x, int y, int mode)
@@ -82,7 +82,7 @@ public func AddCheckpoint(int x, int y, int mode)
 		cp_list[cp_count + 1] = cp_list[cp_count]; // Finish 1 place further.
 		cp_list[cp_count] = cp;
 	}
-	return;
+	return cp;
 }
 
 /*-- Checkpoint interaction --*/
@@ -368,6 +368,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 {
 	var plr = target->GetOwner();
 	var team = GetPlayerTeam(plr);
+	var arrow = EffectVar(0, target, fxnum);
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
@@ -377,7 +378,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 			break;
 		}
 	if (!nextcp)
-		return EffectVar(0, target, fxnum)->SetClrModulation(RGBa(0, 0, 0, 0));
+		return arrow->SetClrModulation(RGBa(0, 0, 0, 0));
 	// Calculate parameters.
 	var angle = Angle(target->GetX(), target->GetY(), nextcp->GetX(), nextcp->GetY());
 	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510);
@@ -385,8 +386,20 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	var green = BoundBy(510 - dist, 0, 255);
 	var color = RGBa(red, green, 0, 128);
 	// Draw arrow.
-	EffectVar(0, target, fxnum)->SetR(angle);
-	EffectVar(0, target, fxnum)->SetClrModulation(color);
+	arrow->SetR(angle);
+	arrow->SetClrModulation(color);
+	// Check if clonk is contained in a vehicle, if so attach arrow to vehicle.
+	var container = target->Contained();
+	if (container && container->GetCategory() & C4D_Vehicle)
+	{
+		if (arrow->GetActionTarget() != container)
+			arrow->SetActionTargets(container);
+	} 
+	else
+	{
+		if (arrow->GetActionTarget() != target)
+			arrow->SetActionTargets(target);
+	}
 	return FX_OK;
 }
 

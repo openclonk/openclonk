@@ -65,6 +65,17 @@ public func SetCPNumber(int num)
 
 public func GetCPNumber() { return cp_num; }
 
+/*-- Checkpoint size --*/
+local cp_size;
+
+public func SetCPSize(int size)
+{
+	cp_size = BoundBy(size, 10, 100);
+	return;
+}
+
+public func GetCPSize() { return cp_size; }
+
 /*-- Initialize --*/
 
 local aDoneByPlr; // Array to keep track of players which were already here.
@@ -75,6 +86,7 @@ protected func Initialize()
 	aDoneByPlr = [];
 	aDoneByTeam = [];
 	cp_mode = PARKOUR_CP_Check;
+	cp_size = 20;
 	UpdateGraphics();
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
@@ -147,7 +159,7 @@ protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
 protected func CheckForClonks()
 {
 	// Loop through all clonks inside the checkpoint.
-	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
+	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(cp_size)))
 	{
 		var plr = pClonk->GetOwner();
 		var team = GetPlayerTeam(plr);
@@ -241,10 +253,10 @@ protected func UpdateGraphics(int time)
 	// Create two sparks at opposite sides.
 	var angle = (time * 10) % 360;
 	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, 20), -Cos(angle, 20), 0, 0, 32, color);
+	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
 	angle = (angle + 180) % 360;
 	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, 20), -Cos(angle, 20), 0, 0, 32, color);
+	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
 	return;
 }
 
