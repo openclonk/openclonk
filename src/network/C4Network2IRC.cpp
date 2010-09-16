@@ -380,7 +380,7 @@ bool C4Network2IRCClient::Join(const char *szChannel)
 {
 	// Newbie limitation: can only join channels beginning with #clonk
 	if (!Config.IRC.AllowAllChannels)
-		if (!SEqual2NoCase(szChannel, "#clonk"))
+		if (!SEqual2NoCase(szChannel, "#clonk") && !SEqual2NoCase(szChannel, "#openclonk"))
 		{
 			const char* message = LoadResStr("IDS_ERR_CHANNELNOTALLOWED");
 			PushMessage(MSG_Status, "", "", message);
