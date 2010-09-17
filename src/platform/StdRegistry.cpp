@@ -391,7 +391,13 @@ bool RestoreWindowPosition(HWND hwnd,
 		wdt=winpos.right-winpos.left; hgt=winpos.bottom-winpos.top;
 	}
 	// Move window
-	if (!MoveWindow(hwnd,x,y,wdt,hgt,true))
+	WINDOWPLACEMENT wp; memset(&wp, 0, sizeof(WINDOWPLACEMENT)); wp.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(hwnd, &wp);
+	RECT normalpos;
+	normalpos.left = x; normalpos.right  = wdt + x;
+	normalpos.top  = y; normalpos.bottom = hgt + y;
+	wp.rcNormalPosition = normalpos;
+	if (SetWindowPlacement(hwnd, &wp))
 		return false;
 	// Hide window
 	if (fHidden)
