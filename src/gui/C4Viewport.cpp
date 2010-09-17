@@ -438,10 +438,11 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 		// no x size passed - zoom by y
 		zoom_by_y = true;
 	}
-	else if (!size_x)
+	else
 	{
 		// 0/0 size passed - zoom to default
-		size_x = C4FOW_Def_View_RangeX * 2;
+		if (!size_x)
+			size_x = C4FOW_Def_View_RangeX * 2;
 		zoom_by_y = false;
 	}
 	// zoom calculation
