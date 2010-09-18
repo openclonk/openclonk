@@ -1,33 +1,52 @@
-/*-- Grass Placer --*/
+/*-- Grass --*/
 
 protected func Initialize()
 {
-	if(ObjectCount(Find_ID(Grass))>1) RemoveObject(); //Failsafe to stop creation of more than one grass controller.
-	PlaceGrass(85);
+	DoCon(Random(50));
+	if (Random(2))
+		SetGraphics("1");
 }
 
-global func PlaceGrass(int iAmount, int start, int end)
+public func Incineration()
 {
-	if(!start)
+	Destroy();
+	return;
+}
+
+public func CanBeHitByShockwaves() { return true; }
+
+public func OnShockwaveHit()
+{	
+	Destroy();
+	return true;
+}
+
+private func Destroy()
+{
+	CastParticles("Grass", 10, 35, 0, 0, 30, 50, RGB(255,255,255), RGB(255,255,255));
+	RemoveObject();
+}
+
+global func PlaceGrass(int amount, int start, int end)
+{
+	if (!start)
 		start = 0;
-		
-	if(!end)
+	if (!end)
 		end = LandscapeWidth();
 		
-	var x=start;
-	while(x<end)
+	var x = start, y; 
+	while (x < end)
 	{
-		var y = MaterialDepthCheck(AbsX(x),0,"Sky");
-
-		if(GetMaterial(AbsX(x),AbsY(y)) == Material("Earth"))
+		y = 0;
+		while (y < LandscapeHeight())
 		{
-			if(Random(100)>(100-iAmount))
-			{
-				var grass=CreateObject(Grass,AbsX(x),AbsY(y+3));
-			}
+			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky"))
+				if (GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
+					if (Random(100) < amount)
+						CreateObject(Grass, AbsX(x), AbsY(y + 4), NO_OWNER);
+			y += 3;
 		}
-
-		x+=9;
+		x += 9;
 	}
 }
 

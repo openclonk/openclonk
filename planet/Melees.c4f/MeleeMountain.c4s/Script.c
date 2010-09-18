@@ -5,7 +5,6 @@ protected func Initialize()
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	SetSkyAdjust (RGB(230,210,150), RGB(150,100,0));
 	//Environment
-	CreateObject(Environment_Grass);
 	PlaceGrass(80);
 	// Chests.
 	CreateObject(Chest, 600, 495, NO_OWNER);

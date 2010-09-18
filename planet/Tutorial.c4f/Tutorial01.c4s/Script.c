@@ -13,7 +13,6 @@ protected func Initialize()
 	AddEffect("TutorialScale",0,1,18);
 
 	//Environment
-	CreateObject(Environment_Grass,0,0,NO_OWNER);
 	PlaceGrass(85);
 	CreateObject(Tree_Coniferous,900,629);
 	CreateObject(Plane,950,605);

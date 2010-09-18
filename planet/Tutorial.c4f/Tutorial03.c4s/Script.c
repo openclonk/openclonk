@@ -11,7 +11,6 @@ static guide; // guide object.
 protected func Initialize()
 {
 	// Environment
-	CreateObject(Environment_Grass, 10, 10);
 	PlaceGrass(85);
 	CreateObject(Butterfly, 10, 10);
 	
