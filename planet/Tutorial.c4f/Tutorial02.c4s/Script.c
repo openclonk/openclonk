@@ -428,7 +428,8 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		SetCursor(plr, clonk);
+		if (GetCursor(plr) == target)
+			SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
@@ -487,7 +488,8 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
 		clonk->GrabObjectInfo(target);
-		SetCursor(plr, clonk);
+		if (GetCursor(plr) == target)
+			SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents(grapple bow and shovel).
 		for (var transfer in FindObjects(Find_Container(target), Find_Or(Find_ID(Shovel), Find_ID(GrappleBow))))
