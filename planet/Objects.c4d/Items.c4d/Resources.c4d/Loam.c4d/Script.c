@@ -6,7 +6,7 @@ local begin_frame;    // Starting frame of briding process
 local target_x, target_y; // local target coordinates during bridging
 local loamused;       // amound of loam already used
 
-static const LOAM_Bridge_Amount = 65; // bridge length in pixels
+static const LOAM_Bridge_Amount = 28; // bridge length in pixels
 
 protected func Construction()
 {
@@ -79,7 +79,7 @@ func FxIntBridgeTimer(clonk, number)
 	last_frame += dt;
 
 	// draw loam (earth) line
-	var line_wdt = 4;
+	var line_wdt = 3;
 	var line_len = speed * dt;
 	var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);
 
