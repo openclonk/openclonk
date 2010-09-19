@@ -1,7 +1,7 @@
 If not stated otherwise, the sound effects are licensed under the
 CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
-If a directory intead of a sound file is specified on the right column, it
-menans that all sounds of that object are from that author.
+If a directory instead of a sound file is specified on the right column, it
+means that all sounds of that object are from that author.
 
 Author			  Work(s)
 ===============================================================================

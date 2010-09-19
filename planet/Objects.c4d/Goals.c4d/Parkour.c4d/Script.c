@@ -393,12 +393,18 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	if (container && container->GetCategory() & C4D_Vehicle)
 	{
 		if (arrow->GetActionTarget() != container)
+		{
 			arrow->SetActionTargets(container);
+			arrow->SetCategory(C4D_Vehicle);
+		}
 	} 
 	else
 	{
 		if (arrow->GetActionTarget() != target)
+		{
 			arrow->SetActionTargets(target);
+			arrow->SetCategory(C4D_StaticBack);
+		}
 	}
 	return FX_OK;
 }
