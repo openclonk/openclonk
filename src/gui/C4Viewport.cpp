@@ -1159,7 +1159,7 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 {
 	// set zoom such that both size_x and size_y are guarantueed to fit into the viewport range
 	// determine whether zoom is to be calculated by x or by y
-	bool zoom_by_y;
+	bool zoom_by_y = false;
 	if (size_x && size_y)
 	{
 		zoom_by_y = (size_y * ViewWdt > size_x * ViewHgt);
