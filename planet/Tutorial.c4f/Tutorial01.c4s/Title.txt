@@ -1,2 +1,2 @@
-DE:Clonk Control
+DE:Clonksteuerung
 US:Clonk Control

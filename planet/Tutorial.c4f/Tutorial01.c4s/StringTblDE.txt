@@ -1,20 +1,20 @@
 # Dialogue options
 MsgNextTutorial=&Nächste Lernrunde
 MsgNextTutorialDesc=Die nächste Lernrunde starten.
-MsgRepeatRound=&Runde wiederholen
-MsgRepeatRoundDesc=Diese Runde wiederholen.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 MsgIntro0=Willkommen bei OpenClonk!
-MsgIntro1=Dies ist dein Clonk.
-MsgIntro2=Travel through the cave to the east to complete the tutorial, the goal of a scenario is always shown in the upper right corner of the screen.
-MsgIntro3=If at any time you need help, click on my icon in the upper right corner of the screen. Once you're done reading, click again on the icon to hide the message.
+MsgIntro1=Dies ist Dein Clonk.
+MsgIntro2=Das Ziel der Lernrunde ist, mit deinem Clonk durch die Höhle an den rechten Kartenrand zu kommen. Das Spielziel wird in jeder Runde in der oberen rechten Ecke des Bildschirms angezeigt.
+MsgIntro3=Wenn Du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen linken Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
 
-GuideMsgMovement=Clonks are controlled with the WASD keys. Press 'A' or 'D' to make the clonk walk left or right. Pressing 'W' will make the clonk jump.
-GuideMsgScale=Here you will need to scale the wall to advance. To scale, walk towards the wall until your clonk grabs on. Once you have grabbed on, you may scale up or down the wall by holding 'W' or 'S'.
-GuideMsgHangle=To hangle, jump towards the roof. When your clonk grabs on, you will be able to move left or right. To release, press 'S'.
-GuideMsgSwim=Swimming is controlled simply by pressing in the direction you wish your clonk to move. While underwater make certain you resurface before your breath runs out, otherwise you will drown!
-GuideMsgDig=You'll need a shovel to dig through here. What's that under the water?
-GuideMsgTools=Tools are controlled by clicking, and sometimes holding, the mouse buttons. If it is in your primary hand, you click the left mouse button. If it it in your secondary hand, you click the right mouse button. || Right click on the shovel in your hand slot to get a brief description on how it works.
-GuideMsgChest=You'll need to make a loam bridge to cross this obstacle. When you are in front of the chest, you will notice an icon appears on the HUD. Pressing the number key displayed on the icon, or simply clicking the icon, will open the chest. Once the chest's contents appear, you can click the left or right mouse button to swap/collect items. ||By clicking the left or right mouse button, the item from the chest will be swapped with whatever is in your primary or secondary hand.
-GuideMsgLoam=Hold down the mouse to build a loam bridge; your clonk will build it in the direction of the mouse. If you have built a loam bridge in the wrong place, you can dig it out with your shovel.
-GuideMsgFlint=Oh, what's this? The cave's exit has been blocked. Collect firestones from the chest to blow a hole in the wall (throw with mouse click). To collect both, you'll want to put your shovel into your backpack. ||To access your backpack, press 'Q'. From this menu, you can store, swap, or collect items from the backpack.
+GuideMsgMovement=Clonks werden durch die WASD Tasten gesteuert. Drücke 'A' oder 'D', um nach links oder rechts zu gehen. Mit 'W' springst Du.
+GuideMsgScale=Hier musst Du an der Wand hochklettern, um weiterzukommen. Dein Clonk fängt automatisch an zu klettern, wenn Du gegen eine Wand läufst oder springst. Dann kannst Du mit 'W' hoch- und 'S' runterklettern.
+GuideMsgHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst Du normal nach links oder rechts hangeln. Um schließlich loszulassen, drücke 'S'.
+GuideMsgSwim=Im Wasser kannst Du in jede Richtung schwimmen. Wenn Du untertauchst, hält dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertringt er.
+GuideMsgDig=Hier brauchst Du eine Schaufel um hindurchzugraben. Was ist das da unter Wasser?
+GuideMsgTools=Das Inventar deines Clonks in der unteren linken Bildschirmecke zeigt nun die Schaufel. Ist sie in der linken Hand (linker Slot), benutzt du sie mit der linken Maustaste. Ist sie in der rechten Hand (rechter Slot), mit der rechten Maustaste.||Ein Klick mit der rechten Maustaste auf die Schaufel im Inventar zeigt eine kurze Beschreibung an, wie sie funktioniert.
+GuideMsgChest=Um hier weiterzukommen, musst Du eine Lehmbrücke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drücke die Leertaste, um die Truhe zu öffnen. Sobald der Inhalt der Truhe angezeigt wird, kannst Du ihn in die Hand nehmen. || Wählst Du den Lehmklumpen mit der linken Maustaste aus, nimmst Du ihn in die linke Hand. Wählst Du ihn mit der rechten Maustaste aus, nimmst Du ihn in die rechte Hand.
+GuideMsgLoam=Um eine Lehmbrücke zu bauen, halte die Maustaste gedrückt. Die Konstruktion funktioniert wie das Graben, nur statt einem Tunnel wird eine Lehmbrücke gebaut.
+GuideMsgFlint=Oh, was ist das? Der Höhlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst Du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um Dir einen Weg freizusprengen (ziele und werfe mit der Maus). Wenn Du beide einsammeln willst, könntest Du die Schaufel vorher in deinen Rucksack tun.||Drücke 'Q', um Deinen Rucksack zu öffnen. In diesem Menü kannst Du Gegenstände im Rucksack verstauen oder in die Hand nehmen. 
