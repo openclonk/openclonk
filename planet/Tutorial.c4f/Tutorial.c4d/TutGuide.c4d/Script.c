@@ -60,7 +60,7 @@ public func ShowGuideMessage(int show_index)
 	if (GetEffect("NotifyPlayer", this))
 		RemoveEffect("NotifyPlayer", this);
 	GuideMessage(index);
-	if (messages[index + 1])
+	if (GetLength(messages) > index+1)
 		index++;
 	return;
 }
@@ -89,7 +89,7 @@ public func MouseSelection(int plr)
 	if (!messages[index])
 		return;
 	GuideMessage(index);
-	if (messages[index + 1])
+	if (GetLength(messages) > index+1)
 		index++;
 	return;
 }
