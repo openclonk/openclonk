@@ -40,29 +40,15 @@ private func MaxContentsCount() { return 1; }
 
 public func ControlUseStart(object clonk, int ix, int iy)
 {
-	var result = CheckForKeg(clonk);
-	if (!result)
-	{
-		clonk->CancelUse();
-		return true;
-	}
-		
-	if (!clonk->GetItem(0))
-	{
-		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
-		clonk->CancelUse();
-		return true;
-	}
-
-	if(clonk->GetOwner() != GetOwner()) SetOwner(clonk->GetOwner());
-
-	//Animation
-	var r = ConvertAngle(Angle(0,0,ix,iy));
-	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
-	return true;
+	return UseAnyStart(clonk,ix,iy,0);
 }
 
 public func ControlUseAltStart(object clonk, int ix, int iy)
+{
+	return UseAnyStart(clonk,ix,iy,1);
+}
+
+private func UseAnyStart(object clonk, int ix, int iy, int item)
 {
 	var result = CheckForKeg(clonk);
 	if (!result)
@@ -71,7 +57,7 @@ public func ControlUseAltStart(object clonk, int ix, int iy)
 		return true;
 	}
 		
-	if (!clonk->GetItem(1))
+	if (!clonk->GetItem(item))
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
 		clonk->CancelUse();
