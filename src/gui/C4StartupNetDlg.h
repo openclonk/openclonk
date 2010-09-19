@@ -111,6 +111,7 @@ public:
 	bool Execute(); // update stuff - if false is returned, the item is to be removed
 	bool OnReference(); // like Execute(), but only called if some reference was received
 	void UpdateCollapsed(bool fToCollapseValue);
+	void SetVisibility(bool fToValue);
 
 	const char *GetError() { return fError ? sError.getData() : NULL; } // return error message, if any is set
 	C4Network2Reference *GrabReference(); // grab the reference so it won't be deleted when this item is removed
@@ -118,6 +119,7 @@ public:
 	bool IsSameHost(const C4Network2Reference *pRef2); // check whether the reference was created by the same host as this one
 	bool IsSameAddress(const C4Network2Reference *pRef2); // check whether there is at least one matching address (address and port)
 	bool IsSameRefQueryAddress(const char *szJoinAddress); // check whether reference query was created with same host address
+	bool KeywordMatch(const char *szMatch); // check whether any of the reference contents match a given keyword
 	const char *GetJoinAddress(); // ref queries only: Get direct join address
 
 };
@@ -138,6 +140,7 @@ private:
 	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnInternet, *btnRecord, *btnUpdate; // right side buttons
 	C4GUI::Button *btnJoin, *btnRefresh;
 	C4GUI::Edit *pJoinAddressEdt;
+	C4GUI::Edit *pSearchFieldEdt;
 	class C4ChatControl *pChatCtrl;
 	C4GUI::WoodenLabel *pChatTitleLabel;
 	C4StartupNetListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
@@ -177,6 +180,8 @@ protected:
 	void OnBtnRecord(C4GUI::Control *btn);
 	void OnBtnUpdate(C4GUI::Control *btn);
 	C4GUI::Edit::InputResult OnJoinAddressEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
+	{ DoOK(); return C4GUI::Edit::IR_Abort; }
+	C4GUI::Edit::InputResult OnSearchFieldEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
 	{ DoOK(); return C4GUI::Edit::IR_Abort; }
 	void OnChatTitleChange(const StdStrBuf &sNewTitle);
 

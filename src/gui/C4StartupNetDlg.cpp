@@ -326,17 +326,19 @@ void C4StartupNetListEntry::UpdateSmallState()
 
 void C4StartupNetListEntry::UpdateEntrySize()
 {
-	// restack all labels by their size
-	int32_t iLblCnt = (fIsSmall ? 2 : InfoLabelCount), iY=1;
-	for (int i=0; i<iLblCnt; ++i)
-	{
-		C4Rect rcBounds = pInfoLbl[i]->GetBounds();
-		rcBounds.y = iY;
-		iY += rcBounds.Hgt + 2;
+	if(fVisible) {
+		// restack all labels by their size
+		int32_t iLblCnt = (fIsSmall ? 2 : InfoLabelCount), iY=1;
+		for (int i=0; i<iLblCnt; ++i)
+		{
+			C4Rect rcBounds = pInfoLbl[i]->GetBounds();
+			rcBounds.y = iY;
+				iY += rcBounds.Hgt + 2;
 		pInfoLbl[i]->SetBounds(rcBounds);
-	}
-	// resize this control
-	GetBounds().Hgt = iY-1;
+		}
+		// resize this control
+		GetBounds().Hgt = iY-1;
+	} else GetBounds().Hgt = 0;
 	UpdateSize();
 }
 
@@ -375,6 +377,12 @@ void C4StartupNetListEntry::UpdateText()
 		pInfoLbl[i]->SetColor(fIsEnabled ? C4GUI_MessageFontClr : C4GUI_InactMessageFontClr);
 	}
 	if (fRestackElements) UpdateEntrySize();
+}
+
+void C4StartupNetListEntry::SetVisibility(bool fToValue) {
+	bool fChange = fToValue != fVisible;
+	C4GUI::Window::SetVisibility(fToValue);
+	if(fChange) UpdateEntrySize();
 }
 
 void C4StartupNetListEntry::AddStatusIcon(C4GUI::Icons eIcon, const char *szToolTip)
@@ -552,6 +560,17 @@ bool C4StartupNetListEntry::IsSameRefQueryAddress(const char *szJoinaddress)
 	return SEqualNoCase(sRefClientAddress.getData(), szJoinaddress);
 }
 
+bool C4StartupNetListEntry::KeywordMatch(const char *szMatch)
+{
+	// only finished references
+	if (!pRef) return false;
+	if(SSearchNoCase(pRef->getTitle(),szMatch)) return true;
+	C4Client *pHost = pRef->Parameters.Clients.getHost();
+	if(pHost && SSearchNoCase(pHost->getName(),szMatch)) return true;
+	if(SSearchNoCase(pRef->getComment(),szMatch)) return true;
+	return false;
+}
+
 const char *C4StartupNetListEntry::GetJoinAddress()
 {
 	// only unresolved references
@@ -628,6 +647,19 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	C4GUI::ComponentAligner caGameList(pSheetGameList->GetContainedClientRect(), 0,0, false);
 	C4GUI::WoodenLabel *pGameListLbl; int32_t iCaptHgt = C4GUI::WoodenLabel::GetDefaultHeight(&::GraphicsResource.TextFont);
 	pGameListLbl = new C4GUI::WoodenLabel(LoadResStr("IDS_NET_GAMELIST"), caGameList.GetFromTop(iCaptHgt), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont, ALeft);
+	// search field
+	C4GUI::WoodenLabel *pSearchLbl;
+	const char *szSearchLblText = LoadResStr("IDS_NET_MSSEARCH");
+	int32_t iSearchWdt=100, iSearchHgt;
+	::GraphicsResource.TextFont.GetTextExtent(szSearchLblText, iSearchWdt, iSearchHgt, true);
+	C4GUI::ComponentAligner caSearch(caGameList.GetFromTop(iSearchHgt), 0,0);
+	pSearchLbl = new C4GUI::WoodenLabel(szSearchLblText, caSearch.GetFromLeft(iSearchWdt+10), C4GUI_Caption2FontClr, &::GraphicsResource.TextFont);
+	const char *szSearchTip = LoadResStr("IDS_NET_MSSEARCH_DESC");
+	pSearchLbl->SetToolTip(szSearchTip);
+	pSheetGameList->AddElement(pSearchLbl);
+	pSearchFieldEdt = new C4GUI::CallbackEdit<C4StartupNetDlg>(caSearch.GetAll(), this, &C4StartupNetDlg::OnSearchFieldEnter);
+	pSearchFieldEdt->SetToolTip(szSearchTip);
+	pSheetGameList->AddElement(pSearchFieldEdt);
 	//const char *szGameSelListTip = LoadResStr("IDS_NET_GAMELIST_INFO"); disabled this tooltip, it's mainly disturbing when browsing the list
 	//pGameListLbl->SetToolTip(szGameSelListTip);
 	pSheetGameList->AddElement(pGameListLbl);
@@ -846,6 +878,9 @@ void C4StartupNetDlg::UpdateList(bool fGotReference)
 	if (fUpdatingList) return;
 	fUpdatingList = true;
 	pGameSelList->FreezeScrolling();
+	// Games display mask
+	const char *szGameMask = pSearchFieldEdt->GetText();
+	if (!szGameMask) szGameMask = "";
 	// Update all child entries
 	bool fAnyRemoval = false;
 	C4GUI::Element *pElem, *pNextElem = pGameSelList->GetFirst();
@@ -854,6 +889,7 @@ void C4StartupNetDlg::UpdateList(bool fGotReference)
 		pNextElem = pElem->GetNext(); // determine next exec element now - execution
 		C4StartupNetListEntry *pEntry = static_cast<C4StartupNetListEntry *>(pElem);
 		// do item updates
+		if(pEntry->GetReference()) pEntry->SetVisibility(pEntry->KeywordMatch(szGameMask));
 		bool fKeepEntry = true;
 		if (fGotReference)
 			fKeepEntry = pEntry->OnReference();
@@ -983,6 +1019,11 @@ bool C4StartupNetDlg::DoOK()
 			SetFocus(pGameSelList, true);
 			return true;
 		}
+	}
+	if (GetFocus() == pSearchFieldEdt)
+	{
+		UpdateList();
+		return true;
 	}
 	// get currently selected item
 	C4GUI::Element *pSelection = pGameSelList->GetSelectedItem();

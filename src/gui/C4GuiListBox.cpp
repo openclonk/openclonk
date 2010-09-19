@@ -423,10 +423,12 @@ namespace C4GUI
 					pCurr->GetBounds().y = 0;
 					pCurr->UpdateOwnPos();
 				}
-				iOverallHgt = pCurr->GetBounds().Hgt;
+				if(pCurr->fVisible) iOverallHgt = pCurr->GetBounds().Hgt;
+				else iOverallHgt = 0;
 				// others stacked under it
 				while ((pCurr = pCurr->GetNext()))
 				{
+					if(!pCurr->fVisible) continue; //Do not reserve space for hidden elements
 					int32_t iYSpace = pCurr->GetListItemTopSpacing();
 					int32_t iNewY = iOverallHgt + iYSpace;
 					iOverallHgt += pCurr->GetBounds().Hgt + iYSpace;
