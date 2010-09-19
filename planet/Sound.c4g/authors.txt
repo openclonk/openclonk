@@ -14,6 +14,7 @@ Checkmaty		- Items/Weapons/Bow
 				  Items/Weapons/Bow/Arrow
 				  Items/Weapons/Musket
 				  Items/Weapons/Musket/Ammo
+				  Items/Weapons/Sword
 				  Items/Weapons/Javelin
 				  Items/Weapons/Shield
 				  ProjectileHitLiving*
