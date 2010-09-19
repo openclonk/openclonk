@@ -19,7 +19,7 @@ protected func Initialize()
 
 	//Shovel in water
 	var shovel = CreateObject(Shovel,1368,1160,NO_OWNER);
-	shovel->SetR(180);
+	shovel->SetR(150);
 	AddEffect("ShovelGet",shovel,1,36,shovel);
 
 	//Chest with loam.
@@ -57,7 +57,7 @@ func InitializePlayer(int plr)
 	EffectVar(2, clonk, effect) = 955;
 
 	SetPlayerViewLock(plr,true);
-	SetPlayerZoomByViewRange(plr,300,nil,PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+	SetPlayerZoomByViewRange(plr,400,nil,PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);

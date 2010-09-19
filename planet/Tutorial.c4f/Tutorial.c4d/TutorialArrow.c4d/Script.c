@@ -43,7 +43,7 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 /*-- Proplist --*/
 
 local Name = "$Name$";
-local MeshTransformation = [1800,0,0,0,0,1800,0,0,0,0,1800,0];
+local MeshTransformation = [1400,0,0,0,0,1400,0,0,0,0,1400,0];
 local ActMap = {
 		Attach = {
 			Prototype = Action,
