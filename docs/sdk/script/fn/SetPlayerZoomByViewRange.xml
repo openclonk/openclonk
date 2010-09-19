@@ -74,7 +74,7 @@
       </example>
     </examples>
     <related>
-      <funclink>SetPlauerViewLock</funclink>
+      <funclink>SetPlayerViewLock</funclink>
       <funclink>SetPlrView</funclink>
       <funclink>SetPlrViewRange</funclink>
       <funclink>SetFoW</funclink>

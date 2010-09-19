@@ -56,6 +56,9 @@ func InitializePlayer(int plr)
 	EffectVar(1, clonk, effect) = 230;
 	EffectVar(2, clonk, effect) = 955;
 
+	SetPlayerViewLock(plr,true);
+	SetPlayerZoomByViewRange(plr,300,nil,PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
 	ScriptGo(1);

@@ -47,7 +47,7 @@ public func AddGuideMessage(string msg)
 	// Add message to list.
 	messages[index] = msg;
 	// Make visible that there is a new message.
-	AddEffect("NotifyPlayer", this, 100, 72, this);
+	AddEffect("NotifyPlayer", this, 100, 0, this);
 	return;
 }
 
@@ -158,6 +158,11 @@ protected func FxNotifyPlayerStop(object target, int num, int reason, bool tempo
 	// Remove notifier.
 	SetGraphics(nil, nil, 1);
 	return 1;
+}
+
+protected func FxNotifyPlayerEffect(string new_name)
+{
+	if(new_name == "NotifyPlayer") return -1;
 }
 
 local Name = "$Name$";
