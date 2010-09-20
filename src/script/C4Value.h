@@ -66,7 +66,7 @@ union C4V_Data
 // converter function, used in converter table
 struct C4VCnvFn
 {
-	bool (*Function) (C4Value*, C4V_Type); // function to be called; returns whether possible
+	enum { CnvOK, CnvOK0, CnvError, CnvObject } Function;
 	bool Warn;
 };
 
@@ -99,13 +99,13 @@ public:
 	~C4Value() { DelDataRef(Data, Type, NextRef); }
 
 	// Checked getters
-	int32_t getInt() { return ConvertTo(C4V_Int) ? Data.Int : 0; }
-	bool getBool() { return ConvertTo(C4V_Bool) ? !! Data : 0; }
-	C4ID getC4ID();
-	C4Object * getObj() { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
-	C4PropList * getPropList() { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
-	C4String * getStr() { return ConvertTo(C4V_String) ? Data.Str : NULL; }
-	C4ValueArray * getArray() { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
+	int32_t getInt() const { return ConvertTo(C4V_Int) ? Data.Int : 0; }
+	bool getBool() const { return ConvertTo(C4V_Bool) ? !! Data : 0; }
+	C4ID getC4ID() const;
+	C4Object * getObj() const { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
+	C4PropList * getPropList() const { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
+	C4String * getStr() const { return ConvertTo(C4V_String) ? Data.Str : NULL; }
+	C4ValueArray * getArray() const { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -151,7 +151,6 @@ public:
 
 	// getters
 	C4V_Data GetData()    const { return Data; }
-	C4V_Data & GetData()        { return Data; }
 	C4V_Type GetType()    const { return Type; }
 
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
@@ -159,14 +158,17 @@ public:
 
 	void DenumeratePointer();
 
-	StdStrBuf GetDataString();
+	StdStrBuf GetDataString() const;
 
-	inline bool ConvertTo(C4V_Type vtToType) // convert to dest type
+	inline bool ConvertTo(C4V_Type vtToType) const // convert to dest type
 	{
-		C4VCnvFn Fn = C4ScriptCnvMap[Type][vtToType];
-		if (Fn.Function)
-			return (*Fn.Function)(this, vtToType);
-		return true;
+		switch (C4ScriptCnvMap[Type][vtToType].Function)
+		{
+		case C4VCnvFn::CnvOK: return true;
+		case C4VCnvFn::CnvOK0: return !*this;
+		case C4VCnvFn::CnvError: return false;
+		case C4VCnvFn::CnvObject: return FnCnvObject();
+		}
 	}
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
 	{
@@ -198,8 +200,7 @@ protected:
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef);
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
-	static bool FnCnvObject(C4Value *Val, C4V_Type toType);
-	static bool FnCnvPLR(C4Value *Val, C4V_Type toType);
+	bool FnCnvObject() const;
 
 	friend class C4PropList;
 	friend class C4AulDefFunc;

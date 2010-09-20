@@ -432,7 +432,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Pop values from stack
 				for (int i = 0; i < pCPos->Par.i; i++)
-					pArray->GetItem(i) = pCurVal[i - pCPos->Par.i + 1];
+					(*pArray)[i] = pCurVal[i - pCPos->Par.i + 1];
 
 				// Push array
 				if (pCPos->Par.i > 0)

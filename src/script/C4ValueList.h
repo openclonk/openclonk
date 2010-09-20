@@ -51,10 +51,9 @@ public:
 		else
 			return C4VNull;
 	}
-	C4Value &GetItem(int32_t iElem);
 
 	C4Value operator[](int32_t iElem) const { return GetItem(iElem); }
-	C4Value &operator[](int32_t iElem)   { return GetItem(iElem); }
+	C4Value &operator[](int32_t iElem);
 
 	void Reset();
 	void SetItem(int32_t iElemNr, const C4Value &Value);

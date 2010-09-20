@@ -102,16 +102,13 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 		std::stable_sort(pData, pData+iSize, C4SortObjectSTL(rSort));
 }
 
-C4Value &C4ValueList::GetItem(int32_t iElem)
+C4Value &C4ValueList::operator[](int32_t iElem)
 {
-	if (iElem < -iSize)
-		throw new C4AulExecError(NULL,"array access: index out of range");
-	else if (iElem < 0)
-		iElem = iSize + iElem;
-	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
+	assert(iElem < MaxSize);
+	assert(iElem >= 0);
+	if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
-	if (iElem >= iSize)
-		throw new C4AulExecError(NULL,"array access: index too large");
+	assert(iElem < iSize);
 	// return
 	return pData[iElem];
 }

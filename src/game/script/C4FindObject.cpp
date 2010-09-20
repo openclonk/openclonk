@@ -396,7 +396,7 @@ void C4FindObject::CheckObjectStatus(C4ValueArray *pArray)
 			int32_t j = i; i++;
 			for (; i < pArray->GetSize(); i++)
 				if (pArray->GetItem(i).getObj()->Status)
-					pArray->GetItem(j++) = pArray->GetItem(i);
+					(*pArray)[j++] = pArray->GetItem(i);
 			// Set new size
 			pArray->SetSize(j);
 			break;

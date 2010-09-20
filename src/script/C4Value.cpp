@@ -180,32 +180,17 @@ const char* C4Value::GetTypeInfo()
 	return GetC4VName(GetType());
 }
 
-// converter functions ----------------
-
-static bool FnCnvError(C4Value *Val, C4V_Type toType)
-{
-	// deny convert
-	return false;
-}
-
-static bool FnOk0(C4Value *Val, C4V_Type toType)
-{
-	// 0 can be treated as nil, but every other integer can't
-	return !*Val;
-}
-
-bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
+bool C4Value::FnCnvObject() const
 {
 	// try casting
-	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;
+	if (dynamic_cast<C4Object *>(Data.PropList)) return true;
 	return false;
 }
-
 // Type conversion table
-#define CnvOK        0, false           // allow conversion by same value
-#define CnvOK0       FnOk0, true
-#define CnvError     FnCnvError, true
-#define CnvObject    FnCnvObject, false
+#define CnvOK        C4VCnvFn::CnvOK, false           // allow conversion by same value
+#define CnvOK0       C4VCnvFn::CnvOK0, true
+#define CnvError     C4VCnvFn::CnvError, true
+#define CnvObject    C4VCnvFn::CnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 {
@@ -280,7 +265,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 #undef CnvObject
 
 // Humanreadable debug output
-StdStrBuf C4Value::GetDataString()
+StdStrBuf C4Value::GetDataString() const
 {
 
 	// ouput by type info
@@ -552,7 +537,7 @@ bool C4Value::operator != (const C4Value& Value2) const
 }
 
 C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
-C4ID C4Value::getC4ID()
+C4ID C4Value::getC4ID() const
 {
 	C4PropList * p = getPropList();
 	if (!p) return C4ID::None;
