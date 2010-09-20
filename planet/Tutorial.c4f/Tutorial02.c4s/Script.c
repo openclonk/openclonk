@@ -97,6 +97,10 @@ protected func Initialize()
 		effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
 		EffectVar(0, grapple, effect) = chest;
 	}
+	var shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
+	shovel->Enter(chest);
+	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
+	EffectVar(0, shovel, effect) = chest;
 	
 	// Chest with boompack for fast players.
 	chest = CreateObject(Chest, 1800, 660, NO_OWNER);
@@ -123,7 +127,11 @@ protected func OnGoalsFulfilled()
 
 protected func InitializePlayer(int plr)
 {
-	var clonk, effect, grapple, ropeladder, shovel;
+	var clonk, effect, grapple, ropeladder;
+	
+	SetPlayerViewLock(plr,true);
+	SetPlayerZoomByViewRange(plr,400,nil,PLRZOOM_Direct);
+	
 	// First clonk.
 	clonk = GetCrew(plr, 1);
 	clonk->SetPosition(200, 440);
@@ -145,10 +153,6 @@ protected func InitializePlayer(int plr)
 	effect = AddEffect("ClonkTwoRestore", clonk, 100, 10);
 	EffectVar(1, clonk, effect) = 30;
 	EffectVar(2, clonk, effect) = 680;
-	shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
-	shovel->Enter(clonk);
-	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
-	EffectVar(0, shovel, effect) = clonk;
 	
 	// Select first clonk
 	SetCursor(plr, GetCrew(plr, 1));
@@ -183,7 +187,7 @@ global func FxTutorialReachedEdgeStop()
 	return 1;
 }
 
-// Player mastered crew selection, explain backpack control.
+// Player mastered crew selection
 public func OnClonkSelection()
 {
 	if (FrameCounter() == 0)
@@ -338,6 +342,7 @@ protected func OnGuideMessageShown(int plr, int index)
 	{
 		TutArrowShowPos(1160, 590, 0);
 		TutArrowShowPos(1285, 520, 0);		
+		TutArrowShowPos(1230, 510, 0);		
 	}
 	// Show granite blast location.
 	if (index == 11)
@@ -348,12 +353,11 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show grapple aim positions.
 	if (index == 13)
 	{
-		TutArrowShowPos(2220, 200, 0);
-		TutArrowShowPos(2285, 200, 0);
-		TutArrowShowPos(2435, 200, 0);
-		TutArrowShowPos(2515, 200, 0);
-		TutArrowShowPos(2670, 200, 0);
-		TutArrowShowPos(2750, 200, 0);
+		TutArrowShowPos(2270, 225, 0);
+		TutArrowShowPos(2340, 225, 0);
+		TutArrowShowPos(2435, 260, 0);
+		TutArrowShowPos(2515, 230, 0);
+		TutArrowShowPos(2680, 260, 0);
 	}
 	return;
 }

@@ -1,5 +1,4 @@
 // Callback to scenario script, to notify the tutorial guide.
-// No automatic shovel creation.
 
 #appendto Clonk
 
