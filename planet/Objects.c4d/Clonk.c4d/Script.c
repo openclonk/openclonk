@@ -1785,14 +1785,15 @@ func QueryCatchBlow(object obj)
 	var i=0;
 	while(e=GetEffect("*Control*", this, i++))
 	{
-		if(EffectCall(nil, e, "QueryCatchBlow", obj))
+		if(EffectCall(this, e, "QueryCatchBlow", obj))
 		{
 			r=true;
 			break;
 		}
 		
 	}
-	return r;
+	if(r) return r;
+	return _inherited(obj, ...);
 }
 
 /* Act Map */

@@ -274,6 +274,9 @@ protected func Ejection(object obj)
 
 protected func RejectCollect(id objid, object obj)
 {
+	// collection of that object magically disabled?
+	if(GetEffect("NoCollection", obj)) return true;
+	
 	// try to stuff obj into an object with an extra slot
 	for(var i=0; Contents(i); ++i)
 		if (Contents(i)->~HasExtraSlot())

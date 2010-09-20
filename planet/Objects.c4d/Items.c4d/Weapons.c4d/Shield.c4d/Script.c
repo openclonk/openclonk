@@ -128,6 +128,7 @@ func OnWeaponHitCheckStop()
 
 func CheckStrike(iTime)
 {
+	return;
 	var found=false;
 	var found_alive=false;
 	var push_livings=false;
@@ -188,10 +189,10 @@ func HitByWeapon(pFrom, iDamage)
 	else if(!Inside(iAngle, 180, 360)) return 0;
 		
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 500*10, iAngle);
+	ApplyWeaponBash(pFrom, 500*50, iAngle);
 	
 	// shield factor
-	return 50;
+	return 100;
 }
 
 func FxShieldStopControlStart(pTarget, iEffectNumber, iTemp)
@@ -230,17 +231,17 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	if(Abs(obj->GetXDir()*/
 	var angle=BoundBy(iAngle, 0, 115);
 	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
-	var posX=Sin(angle, 10);
-	var posY=-Cos(angle, 10);
+	var posX=Sin(angle, 12);
+	var posY=-Cos(angle, 12);
 	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
-	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 10) return false;
-	if(AngleInside(angle, object_angle, 450)) return false;
+	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 15) return false;
+	if(AngleInside(angle, object_angle, 45)) return false;
 	
-	var xd=obj->GetXDir();
+	/*var xd=obj->GetXDir();
 	var yd=obj->GetYDir();
 	 
-	var sxd=Sin(angle, 2);
-	var syd=-Cos(angle, 2);
+	var sxd=Sin(angle, 10);
+	var syd=-Cos(angle, 10);
 	var b=(sxd + syd);
 	sxd/=b;
 	syd/=b;
@@ -255,7 +256,17 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	 
 	var s=Sqrt(obj->GetXDir()+obj->GetYDir());
 	obj->SetXDir(nx*s);
-	obj->SetYDir(ny*s);
+	obj->SetYDir(ny*s);*/
+	
+	// boring stuff for now
+	var sxd=Sin(angle, 15);
+	var syd=-Cos(angle, 15);
+	var xd=obj->GetXDir();
+	var yd=obj->GetYDir();
+	obj->SetXDir(-xd/3 + sxd);
+	obj->SetYDir(-yd/3 + syd);
+	// dont collect blocked objects
+	AddEffect("NoCollection", obj, 1, 30);
 	return true;
 }
 
