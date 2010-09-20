@@ -134,7 +134,7 @@ func CheckStrike(iTime)
 	var push_livings=false;
 	if(Contained()->GetContact(-1) & CNAT_Bottom)
 		if(Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5) push_livings=true;
-	for(var obj in FindObjects(Find_Distance(20), Find_Or(Find_Category(C4D_Object), Find_OCF(OCF_Alive)), Find_NoContainer(), Find_Exclude(Contained())))
+	for(var obj in FindObjects(Find_Distance(20), Find_Or(Find_Category(C4D_Object), Find_OCF(OCF_Alive)), Find_NoContainer(), Find_Exclude(Contained()), Find_Layer(GetObjectLayer())))
 	{
 
 		if(obj->GetX() > GetX())

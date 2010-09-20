@@ -66,7 +66,8 @@ func FxIntSearchLadderTimer(target, number, time)
 	var ladder;
 	if (!no_ladder_counter)
 	{
-		for(ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder")))
+		for(ladder in FindObjects(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"),
+		    Find_NoContainer(), Find_Layer(GetObjectLayer())))
 		{
 			if(ladder->~CanNotBeClimbed()) continue;
 			else break;

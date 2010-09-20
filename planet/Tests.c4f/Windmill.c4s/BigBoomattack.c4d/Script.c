@@ -54,7 +54,7 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 
 public func OnProjectileHit(object shot)
 {
-	CreateObject(Rock,AbsX(shot->GetX()),AbsY(shot->GetY()))->Explode(10);
+	shot->CreateObject(Rock,0,0)->Explode(10);
 	
 	if(hits > 10 * GetPlayerCount())
 	{

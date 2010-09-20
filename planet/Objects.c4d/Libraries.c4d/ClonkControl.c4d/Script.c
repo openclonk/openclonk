@@ -1039,7 +1039,8 @@ private func ObjectControlEntrance(int plr, int ctrl)
 
 private func ObjectControlInteract(int plr, int ctrl)
 {
-	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable",this), Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable",this),
+	                    Find_NoContainer(), Find_Layer(GetObjectLayer()));
 	// if there are several interactable objects, just call the first that returns true
 	for (var interactable in interactables)
 		if (interactable->~Interact(this))
@@ -1060,7 +1061,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		if (proc != "WALK") return false;
 		
 		// only if there is someting to grab
-		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
+		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this), Find_Layer(GetObjectLayer()));
 		if (!obj) return false;
 		
 		// grab
@@ -1111,7 +1112,7 @@ private func ShiftVehicle(int plr, bool back)
 
 	var lorry = GetActionTarget();
 	// get all grabbable objects
-	var objs = FindObjects(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
+	var objs = FindObjects(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this), Find_Layer(GetObjectLayer()));
 		
 	// nothing to switch to (there is no other grabbable object)
 	if (GetLength(objs) <= 1) return false;

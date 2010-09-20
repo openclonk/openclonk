@@ -32,7 +32,7 @@ public func ControlUse(object clonk, int ix, int iy)
 	}
 
 	//Start building
-	var structure=FindObject(Find_Category(C4D_Structure),Find_Distance(30));
+	var structure=FindObject(Find_Category(C4D_Structure),Find_Distance(30),Find_Layer(GetObjectLayer()));
 	if(structure) {
 		if(structure->GetCon()<100)
 		{

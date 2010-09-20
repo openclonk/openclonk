@@ -8,10 +8,11 @@ private func Hit()
 
 public func ControlUse(object pByClonk, int iX, int iY)
 {
-	var pTree;
-	if( pTree = FindObject(Find_AtPoint(iX, iY), Find_Func("IsTree") && Find_Func("IsStanding")) )
+	var tree = FindObject(Find_AtPoint(iX, iY), Find_Func("IsTree"), Find_Func("IsStanding"),
+	           Find_Layer(GetObjectLayer()), Find_NoContainer());
+	if( tree )
 	{
-		pByClonk->SetCommand("Chop", pTree);
+		pByClonk->SetCommand("Chop", tree);
 		Sound("KnightConfirm*");
 	} else {
 		if(pByClonk->GetAction() == "Chop")

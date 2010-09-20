@@ -202,7 +202,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	
 	if((!target->Contained()))
 	{
-		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
+		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		
 		// don't forget the vehicle that the clonk is pushing (might not be found
 		// by the findobjects because it is not at that point)
@@ -233,7 +233,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	}
 
 	// search structures
-	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
+	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 	for(var structure in structures)
 	{
 		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey++);
@@ -242,7 +242,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	}
 
 	// search interactables (script interface)
-	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer());
+	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 	for(var interactable in interactables)
 	{
 		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey++);

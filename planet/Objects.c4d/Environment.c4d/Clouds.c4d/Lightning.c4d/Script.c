@@ -50,7 +50,7 @@ protected func FxLightningMoveTimer()
 	AddVertex(newx, newy);
 	DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, size/5, size*2, 0xa0f0f0f0);
 	// Strike objects on the line
-	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy)))
+	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy),Find_NoContainer()))
 	{
 		if (!obj->~LightningStrike(size))
 			Punch(obj, size);

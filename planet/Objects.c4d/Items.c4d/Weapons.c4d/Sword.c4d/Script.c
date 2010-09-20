@@ -133,7 +133,7 @@ func CheckStrike(iTime)
 		else angle=(Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
+	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained()), Find_Layer(GetObjectLayer())))
 	{
 		// check for second hit
 		var effect_name=Format("HasBeenHitBySwordEffect%d", magic_number);

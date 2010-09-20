@@ -25,7 +25,7 @@ public func ControlUseHolding(object pClonk, ix, iy)
 	if(magic==0 || GetEffect("Charge",this)) return 1;
 
 	//Objects which can be lifted by telekinesis
-	var target=FindObject(Find_Category(C4D_Object),Find_NoContainer(),Find_Not(Find_OCF(OCF_Alive)),Find_Distance(25,ix,iy), Find_Distance(150,0,0), Find_Exclude(pClonk));
+	var target=FindObject(Find_Category(C4D_Object),Find_NoContainer(),Find_Not(Find_OCF(OCF_Alive)),Find_Distance(25,ix,iy), Find_Distance(150,0,0), Find_Exclude(pClonk), Find_Layer(GetObjectLayer()));
 
 
 	if(target!=nil && pClonk->GetProcedure()== "WALK")

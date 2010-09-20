@@ -242,7 +242,8 @@ global func GetEntranceObject()
 	if (!this) return nil;
 
 	// object with an entrance on target position
-	var obj = FindObject(Find_OCF(OCF_Entrance), Find_AtPoint(0,0), Find_Exclude(this));
+	var obj = FindObject(Find_OCF(OCF_Entrance), Find_Layer(GetObjectLayer()), 
+	                     Find_AtPoint(0,0), Find_Exclude(this));
 	if (!obj) return nil;
 
 	var x = obj->GetDefCoreVal("Entrance","DefCore",0) + obj->GetX();
