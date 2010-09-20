@@ -5,16 +5,16 @@ MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 MsgIntro0=Willkommen bei OpenClonk!
-MsgIntro1=Dies ist Dein Clonk.
+MsgIntro1=Dies ist dein Clonk.
 MsgIntro2=Das Ziel der Lernrunde ist, mit deinem Clonk durch die Höhle an den rechten Kartenrand zu kommen. Das Spielziel wird in jeder Runde in der oberen rechten Ecke des Bildschirms angezeigt.
-MsgIntro3=Wenn Du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen linken Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
+MsgIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen linken Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
 
-GuideMsgMovement=Clonks werden durch die WASD Tasten gesteuert. Drücke 'A' oder 'D', um nach links oder rechts zu gehen. Mit 'W' springst Du.
-GuideMsgScale=Hier musst Du an der Wand hochklettern, um weiterzukommen. Dein Clonk fängt automatisch an zu klettern, wenn Du gegen eine Wand läufst oder springst. Dann kannst Du mit 'W' hoch- und 'S' runterklettern.
-GuideMsgHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst Du normal nach links oder rechts hangeln. Um schließlich loszulassen, drücke 'S'.
-GuideMsgSwim=Im Wasser kannst Du in jede Richtung schwimmen. Wenn Du untertauchst, hält dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertringt er.
-GuideMsgDig=Hier brauchst Du eine Schaufel um hindurchzugraben. Was ist das da unter Wasser?
+GuideMsgMovement=Clonks werden durch die WASD Tasten gesteuert. Drücke 'A' oder 'D', um nach links oder rechts zu gehen. Mit 'W' springst du.
+GuideMsgScale=Hier musst du an der Wand hochklettern, um weiterzukommen. Dein Clonk fängt automatisch an zu klettern, wenn du gegen eine Wand läufst oder springst. Dann kannst du mit 'W' hoch- und 'S' runterklettern.
+GuideMsgHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst du normal nach links oder rechts hangeln. Um schließlich loszulassen, drücke 'S'.
+GuideMsgSwim=Im Wasser kannst du in jede Richtung schwimmen. Wenn du untertauchst, hält dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertringt er.
+GuideMsgDig=Hier brauchst du eine Schaufel um hindurchzugraben. Was ist das da unter Wasser?
 GuideMsgTools=Das Inventar deines Clonks in der unteren linken Bildschirmecke zeigt nun die Schaufel. Ist sie in der linken Hand (linker Slot), benutzt du sie mit der linken Maustaste. Ist sie in der rechten Hand (rechter Slot), mit der rechten Maustaste.||Ein Klick mit der rechten Maustaste auf die Schaufel im Inventar zeigt eine kurze Beschreibung an, wie sie funktioniert.
-GuideMsgChest=Um hier weiterzukommen, musst Du eine Lehmbrücke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drücke die Leertaste, um die Truhe zu öffnen. Sobald der Inhalt der Truhe angezeigt wird, kannst Du ihn in die Hand nehmen. || Wählst Du den Lehmklumpen mit der linken Maustaste aus, nimmst Du ihn in die linke Hand. Wählst Du ihn mit der rechten Maustaste aus, nimmst Du ihn in die rechte Hand.
+GuideMsgChest=Um hier weiterzukommen, musst du eine Lehmbrücke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drücke die Leertaste, um die Truhe zu öffnen. Sobald der Inhalt der Truhe angezeigt wird, kannst du ihn in die Hand nehmen. || Wählst du den Lehmklumpen mit der linken Maustaste aus, nimmst du ihn in die linke Hand. Wählst du ihn mit der rechten Maustaste aus, nimmst du ihn in die rechte Hand.
 GuideMsgLoam=Um eine Lehmbrücke zu bauen, halte die Maustaste gedrückt. Die Konstruktion funktioniert wie das Graben, nur statt einem Tunnel wird eine Lehmbrücke gebaut.
-GuideMsgFlint=Oh, was ist das? Der Höhlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst Du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um Dir einen Weg freizusprengen (ziele und werfe mit der Maus). Wenn Du beide einsammeln willst, könntest Du die Schaufel vorher in deinen Rucksack tun.||Drücke 'Q', um Deinen Rucksack zu öffnen. In diesem Menü kannst Du Gegenstände im Rucksack verstauen oder in die Hand nehmen. 
+GuideMsgFlint=Oh, was ist das? Der Höhlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um dir einen Weg freizusprengen (ziele und werfe mit der Maus). Wenn du beide einsammeln willst, könntest du die Schaufel vorher in deinen Rucksack tun.||Drücke 'Q', um deinen Rucksack zu öffnen. In diesem Menü kannst du Gegenstände im Rucksack verstauen oder in die Hand nehmen. 
