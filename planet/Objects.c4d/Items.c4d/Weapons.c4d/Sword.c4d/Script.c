@@ -78,6 +78,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, length, 1);
+	
+	this->Sound(Format("WeaponSwing%d.ogg", 1+Random(3)), false, nil, nil, nil);
 	return true;
 }
 
@@ -154,7 +156,7 @@ func CheckStrike(iTime)
 			else
 			{
 				//Log("first hit overall");
-				AddEffect(sword_name, obj, 1, 60, 0, 0);
+				AddEffect(sword_name, obj, 1, 40, 0, 0);
 			}
 		}
 		
@@ -187,6 +189,18 @@ func CheckStrike(iTime)
 		else
 			if(!offset_y)
 				DoWeaponSlow(obj, 300);
+		
+		
+		// particle
+		var x=-1;
+		var p="Slice2";
+		if(Contained()->GetDir() == DIR_Right)
+		{
+			x=1;
+			p="Slice1";
+		} 
+
+		CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
 	}
 	if(found)
 	{
@@ -196,7 +210,7 @@ func CheckStrike(iTime)
 		}
 		else*/
 		{
-			this->Sound("ShieldMetal*", false);
+			this->Sound(Format("WeaponHit%d.ogg", 1+Random(3)), false);
 			//if(doBash)
 			//	DoWeaponSlow(Contained(), 2000);
 			//this->StopWeaponHitCheckEffect(Contained());

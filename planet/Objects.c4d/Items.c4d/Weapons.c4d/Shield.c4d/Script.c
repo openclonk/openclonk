@@ -42,8 +42,8 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	StartWeaponHitCheckEffect(clonk, -1, 1);
 	
-	if(!GetEffect("ShieldStop", clonk))
-		AddEffect("ShieldStop", clonk, 2, 50, this);
+	if(!GetEffect("ShieldStopControl", clonk))
+		AddEffect("ShieldStopControl", clonk, 2, 50, this);
 	
 	iAngle=Angle(0,0, x,y);
 	AdjustSolidMaskHelper();
@@ -52,7 +52,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 func AdjustSolidMaskHelper()
 {
-	if(aim_anim && Contained())
+	if(aim_anim && Contained() && (Inside(iAngle, 0, 20) || Inside(iAngle, 340, 360)))
 	{
 		if(!solid_mask_helper)
 		{
@@ -71,7 +71,7 @@ func AdjustSolidMaskHelper()
 	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
 	
 	solid_mask_helper->SetR(angle - 90);
-	var distance=10;
+	var distance=8;
 	var y_adjust=-5;
 	var x_adjust=1;
 	if(Contained()->GetDir() == DIR_Left) x_adjust=-1;
@@ -101,8 +101,8 @@ func ControlUseStop(object clonk, int x, int y)
 	StopWeaponHitCheckEffect(clonk);
 	AdjustSolidMaskHelper();
 	
-	if(GetEffect("ShieldStop", clonk))
-		RemoveEffect("ShieldStop", clonk);
+	if(GetEffect("ShieldStopControl", clonk))
+		RemoveEffect("ShieldStopControl", clonk);
 }
 
 func ControlUseCancel(object clonk, int ix, int iy)
@@ -113,6 +113,11 @@ func ControlUseCancel(object clonk, int ix, int iy)
 		clonk->UpdateAttach();
 		aim_anim = nil;
 	}
+	AdjustSolidMaskHelper();
+}
+
+func Departure()
+{
 	AdjustSolidMaskHelper();
 }
 
@@ -183,27 +188,75 @@ func HitByWeapon(pFrom, iDamage)
 	else if(!Inside(iAngle, 180, 360)) return 0;
 		
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 500, iAngle);
+	ApplyWeaponBash(pFrom, 500*10, iAngle);
 	
 	// shield factor
 	return 50;
 }
 
-func FxShieldStopStart(pTarget, iEffectNumber, iTemp)
+func FxShieldStopControlStart(pTarget, iEffectNumber, iTemp)
 {
 	pTarget->SetPhysical("Walk", 0, PHYS_StackTemporary);
 	if(iTemp) return;
 }
 
-func FxShieldStopStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxShieldStopControlStop(pTarget, iEffectNumber, iCause, iTemp)
 {
 	pTarget->ResetPhysical("Walk");
 	if(iTemp) return;
 }
 
-func FxShieldStopTimer(pTarget, iEffectNumber)
+func FxShieldStopControlTimer(pTarget, iEffectNumber)
 {
 	return 1;
+}
+
+func AngleInside(angle1, angle2, allowance)
+{
+	angle1=Normalize(angle1, 0);
+	angle2=Normalize(angle2, 0);
+	if(Inside(angle1, angle2-allowance, angle2+allowance)) return true;
+	if(Abs(angle1 - angle2) > Abs(angle1 - (360+angle2))) if(Inside(angle1, 360+angle2-allowance, 360+angle2+allowance)) return true;
+	if(Abs(angle2 - angle1) > Abs(angle2 - (360+angle1))) if(Inside(angle2, 360+angle1-allowance, 360+angle1+allowance)) return true;
+	
+	return false;
+}
+
+func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
+{
+	/*var x=1;
+	if(Contained()->GetDir() == DIR_Left) x=-1;
+	var direction=BoundBy(obj->GetXDir(), -1, 1);
+	if(Abs(obj->GetXDir()*/
+	var angle=BoundBy(iAngle, 0, 115);
+	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
+	var posX=Sin(angle, 10);
+	var posY=-Cos(angle, 10);
+	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
+	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 10) return false;
+	if(AngleInside(angle, object_angle, 450)) return false;
+	
+	var xd=obj->GetXDir();
+	var yd=obj->GetYDir();
+	 
+	var sxd=Sin(angle, 2);
+	var syd=-Cos(angle, 2);
+	var b=(sxd + syd);
+	sxd/=b;
+	syd/=b;
+	 
+	// considered to be normalized
+	var dot=xd*sxd + yd*syd;
+	var nx=sxd*dot;
+	var ny=syd*dot;
+	b=(nx+ny);
+	nx/=b;
+	ny/=b;
+	 
+	var s=Sqrt(obj->GetXDir()+obj->GetYDir());
+	obj->SetXDir(nx*s);
+	obj->SetYDir(ny*s);
+	return true;
 }
 
 public func HoldingEnabled() { return true; }

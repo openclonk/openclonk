@@ -1778,6 +1778,23 @@ protected func AbortHangOnto()
 	return;
 }
 
+func QueryCatchBlow(object obj)
+{
+	var r=0;
+	var e=0;
+	var i=0;
+	while(e=GetEffect("*Control*", this, i++))
+	{
+		if(EffectCall(nil, e, "QueryCatchBlow", obj))
+		{
+			r=true;
+			break;
+		}
+		
+	}
+	return r;
+}
+
 /* Act Map */
 
 local ActMap = {
