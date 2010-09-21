@@ -10,9 +10,15 @@
 
 local fade_time;
 
+func DoFadeTime(int to_add)
+{
+	fade_time += to_add;
+	return;
+}
+
 func Initialize() {
 	if(ObjectCount(Find_ID(Rule_ObjectFade), Find_Exclude(this))) {
-		FindObject(Find_ID(Rule_ObjectFade), Find_Exclude(this))->LocalN("fade_time") += 36;
+		FindObject(Find_ID(Rule_ObjectFade), Find_Exclude(this))->DoFadeTime(36);
 		return RemoveObject();
 	}
 	fade_time = 18; // 18, because the timer will check once per second, so it's aproximately a second.
