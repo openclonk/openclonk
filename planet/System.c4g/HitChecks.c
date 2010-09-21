@@ -69,7 +69,7 @@ global func FxHitCheckDoCheck(object target, int effect)
 		// and sort by distance (closer first).
 		for (obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy),
 								Find_NoContainer(),
-								Find_Layer(GetObjectLayer()),
+								Find_Layer(target->GetObjectLayer()),
 								Find_PathFree(target),
 								Sort_Distance(oldx, oldy)))
 		{
