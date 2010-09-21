@@ -1,2 +1,2 @@
 Name=Rock
-Description=Elementary throwing weapon and basic construction material.
+Description=Basic construction material.

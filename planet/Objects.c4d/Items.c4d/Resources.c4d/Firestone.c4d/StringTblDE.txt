@@ -1,2 +1,2 @@
 Name=Feuerstein
-Description=Volcanic stone, explodes on contact.
+Description=Vulkanischem Ursprungs, explodiert bei Aufprall.

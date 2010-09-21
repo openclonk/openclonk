@@ -1,2 +1,2 @@
 Name=Kohle
-Description=Fuel, can be used to produce metal or generate power.
+Description=Kohle kann dazu benutzt werden, Strom zu erzeugen oder Metall zu produzieren.

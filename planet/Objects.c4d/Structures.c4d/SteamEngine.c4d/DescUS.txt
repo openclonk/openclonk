@@ -1,1 +1,0 @@
-Turns coal, oil, or wood into energy.

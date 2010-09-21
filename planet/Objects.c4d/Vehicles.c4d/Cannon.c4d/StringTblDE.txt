@@ -1,6 +1,6 @@
-TxtControl=Control
-TxtCannonisfull=Cannon is already loaded!
-TxtNeedsAmmo=Cannon has no ammo.
-TxtNeedsGunp=Cannon has no gunpowder.
-Name=Cannon
-Description=Needs a powder keg to operate, Hold [Use] to aim and shoot about anything.
+TxtControl=Steuerung
+TxtCannonisfull=Die Kanone ist schon geladen!
+TxtNeedsAmmo=Die Kanone hat keine Munition.
+TxtNeedsGunp=Die Kanone hat kein Schießpulver.
+Name=Kanone
+Description=Halte [Benutzen] gedrückt, um den Gegenstand in deiner Hand zu verschießen. Benötigt ein Pulverfass.

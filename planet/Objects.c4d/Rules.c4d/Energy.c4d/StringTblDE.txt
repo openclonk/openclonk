@@ -1,1 +1,2 @@
-Name=Energiebedarf
+Name=Strombedarf
+Description=Stromverbraucher müssen durch Stromkabel mit Stromerzeugern verbunden sein.

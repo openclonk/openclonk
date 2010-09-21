@@ -1,1 +1,2 @@
 Name=Power need
+Description=Power consumers need to be connected to a power source using power lines.
