@@ -5,8 +5,9 @@ MsgRepeatRound=&Runde wiederholen
 MsgRepeatRoundDesc=Diese Runde wiederholen.
 
 # Tutorial messages
-MsgTutWelcome=Welcome to the target practice. Use the javelin and the bow to hit the balloon targets and make your way to the flag on the far right side.
-MsgTutJavelin=Retrieve the javelins from the chest and use them to hit the first few targets. Right click on the javelin in the HUD to get some hints on how to use it. 
-MsgTutJumpThrow=If you have problems hitting targets with the javelin, throw it while jumping. That way you can throw the javelin a lot higher.
-MsgTutBow=There is a bow in that chest. Some targets might not be reachable by throwing javelins, use the bow instead.
-MsgTutHighBalloon=That balloon up high is hit more easily when shooting while jumping. Aim the bow first by holding [Use], then jump and release [Use] during the jump.
+MsgTutWelcome=Willkommen zur Schießübung. Benutze den Speer und den Bogen um die Ballons zu treffen. Damit machst du den Weg zur Flagge auf der rechten Seite frei.
+MsgTutJavelin=Nimm die Speere aus der Truhe und benutze sie um die ersten paar Ballons zu treffen. Du kannst auch mit Rechtsklick auf den Speer in der linken unteren Bildschirmhälfte klicken, um Hinweise zur Benutzung zu bekommen.
+MsgTutJumpThrow=Wenn du Probleme beim Treffen mit dem Speer hast, wirf ihn während du springst. Auf diese Weise kannst du den Speer höher werfen.
+MsgTutBow=Manche Ballons sind mit dem Speer nicht zu erreichen. Benutze statt dessen den Bogen aus dieser Truhe.
+MsgTutHighBalloon=Den Ballon ganz oben kannst du besser treffen, wenn du springst während du schießt. Ziele zuerst mit dem Bogen auf das Ziel, indem du [Benutzen] gedrückt hälst. Dann springst du und lässt [Benutzen] los.
+

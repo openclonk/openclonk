@@ -1,2 +1,2 @@
 DE:Ranged Weapons
-US:Ranged Weapons
+US:Fernkampfwaffen
