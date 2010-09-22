@@ -1196,7 +1196,7 @@ void C4AulParseState::RemoveLastBCC()
 	C4AulBCC *pBCC = a->CPos-1;
 	assert(pBCC->bccType != AB_STACK);
 	// Correct stack
-	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.i);
+	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.X);
 	// Remove
 	a->RemoveLastBCC();
 }
@@ -1244,14 +1244,14 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	{
 		// Duplicate parameters on stack
 		// (all push one value on the stack as result, so we have -(N-1) parameters)
-		int iParCount = -GetStackValue(Value.bccType, Value.Par.i) + 1;
+		int iParCount = -GetStackValue(Value.bccType, Value.Par.X) + 1;
 		for(int i = 0; i < iParCount; i++)
 			AddBCC(AB_DUP, iParCount);
 		// Finally re-add original BCC
-		AddBCC(Value.bccType, Value.Par.i);
+		AddBCC(Value.bccType, Value.Par.X);
 	}
 	// Done. The returned BCC should be added later once the value to be set was pushed on top.
-	assert(GetStackValue(Value.bccType, Value.Par.i) == GetStackValue(Setter.bccType, Setter.Par.i)+1);
+	assert(GetStackValue(Value.bccType, Value.Par.X) == GetStackValue(Setter.bccType, Setter.Par.X)+1);
 	return Setter;
 }
 
@@ -2588,7 +2588,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		AddBCC(C4ScriptOpMap[OpID].Code, OpID);
 		// writter setter
 		if(C4ScriptOpMap[OpID].Changer)
-			AddBCC(Changer.bccType, Changer.Par.i);
+			AddBCC(Changer.bccType, Changer.Par.X);
 		break;
 	}
 	case ATT_BOPEN:
@@ -2634,7 +2634,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			Shift();
 			Parse_Expression(1);
 			// write setter
-			AddBCC(Setter.bccType, Setter.Par.i);
+			AddBCC(Setter.bccType, Setter.Par.X);
 			break;
 		}
 		case ATT_OPERATOR:
@@ -2691,7 +2691,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				SetJumpHere(iCond);
 				// write setter (unused - could also optimize to skip self-assign, but must keep stack balanced)
 				if (C4ScriptOpMap[OpID].Changer)
-					AddBCC(Setter.bccType, Setter.Par.i);
+					AddBCC(Setter.bccType, Setter.Par.X);
 				break;
 			}
 			else
@@ -2704,7 +2704,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				// write setter and mofidier
 				if (C4ScriptOpMap[OpID].Changer)
 					{
-					AddBCC(Setter.bccType, Setter.Par.i);
+					AddBCC(Setter.bccType, Setter.Par.X);
 					if(C4ScriptOpMap[OpID].ResultModifier != AB_ERR)
 						AddBCC(C4ScriptOpMap[OpID].ResultModifier, OpID);
 					}
