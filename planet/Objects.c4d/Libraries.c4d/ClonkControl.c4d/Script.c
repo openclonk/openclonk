@@ -504,41 +504,39 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var contents = GetItem(0);
 	var contents2 = GetItem(1);
 	
+	// menu
 	if (menu)
 	{
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
-	else if (house)
+	
+	// usage
+	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
+	if (use)
 	{
-		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
-		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Contained", house)) return true;
-	}
-	else if (vehicle && proc == "PUSH")
-	{
-		// control to grabbed vehicle
-		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
-		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
-	}
-	else if (vehicle && proc == "ATTACH")
-	{
-		/* objects to which clonks are attached (like horses, mechs,...) have
-		   a special handling:
-		   movement controls are forwarded normally to the horse as if it is a
-		   pushed vehicle. Use controls however are, too, forwarded to the
-		   horse but if the control is considered unhandled (return false) on
-		   the start of the usage, the control is forwarded further to the
-		   item. If the item then returns true on the call, that item is
-		   regarded as the used item for the subsequent ControlUse* calls.
-		   BUT the horse always gets the ControlUse*-calls that'd go to the used
-		   item, too and before it so it can decide at any time to cancel its
-		   usage via CancelUse().
-		  */
-		
-		if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
-		
-		var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
-		if (use)
+		if (house)
 		{
+			return ControlUse2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+		}
+		// control to grabbed vehicle
+		else if (vehicle && proc == "PUSH")
+		{
+			return ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+		}
+		else if (vehicle && proc == "ATTACH")
+		{
+			/* objects to which clonks are attached (like horses, mechs,...) have
+			   a special handling:
+			   Use controls are, forwarded to the
+			   horse but if the control is considered unhandled (return false) on
+			   the start of the usage, the control is forwarded further to the
+			   item. If the item then returns true on the call, that item is
+			   regarded as the used item for the subsequent ControlUse* calls.
+			   BUT the horse always gets the ControlUse*-calls that'd go to the used
+			   item, too and before it so it can decide at any time to cancel its
+			   usage via CancelUse().
+			  */
+
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
 				return true;
 			else
@@ -551,21 +549,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				if (!using && (repeat || release)) return true;
 			}
 		}
-		
-	}
-	// Release commands are always forwarded even if contents is 0, in case we
-	// need to cancel use of an object that left inventory
-	if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
-	{
-		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
-			return true;
-	}
-	else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-	{
-		if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
-			return true;
+		// Release commands are always forwarded even if contents is 0, in case we
+		// need to cancel use of an object that left inventory
+		if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
+		{
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
+				return true;
+		}
+		else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
+		{
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
+				return true;
+		}
 	}
 
+	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	if (!house && (!vehicle || proc != "PUSH"))
 	{
@@ -640,11 +638,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 	}
 	
-	// standard controls that are called if not overloaded via script
-	
 	// Movement controls (defined in PlayerControl.c, partly overloaded here)
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+	{	
+		// forward to script...
+		if (house)
+		{
+			return ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+		}
+		else if (vehicle)
+		{
+			if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+		}
+	
 		return ObjectControlMovement(plr, ctrl, strength, release);
+	}
 	
 	// Unhandled control
 	return false;
