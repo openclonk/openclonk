@@ -67,6 +67,10 @@ protected func ControlUseStop(object clonk, ix, iy)
 public func FinishedAiming(object clonk, int angle)
 {
 	clonk->StartShoot(this);
+	
+	// since the Clonk internal callback is only once, we cannot use it
+	// ..
+	AddEffect("DuringClubShoot", clonk, 1, 1, this, nil, angle);
 	return true;
 }
 
@@ -84,26 +88,47 @@ public func Reset(clonk)
 // Called in the half of the shoot animation (when ShootTime2 is over)
 public func DuringShoot(object clonk, int angle)
 {
-	DoStrike(clonk, angle);
+	// called only once. We don't want it only once..
+	// DoStrike(clonk, angle);
+}
+
+func FxDuringClubShootStart(target, effect_number, temp, p1)
+{
+	if(temp) return;
+	EffectVar(0, target, effect_number)=p1;
+}
+
+func FxDuringClubShootTimer(target, effect_number, effect_time)
+{
+	if(effect_time > 16) return -1;
+	if(!this) return -1;
+	this->DoStrike(target, EffectVar(0, target, effect_number));
 }
 
 func DoStrike(clonk, angle)
 {
 	var x=Sin(angle, 7);
 	var y=-Cos(angle, 7);
-	
+	var found=false;
 	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
 		if(obj->GetOCF() & OCF_Alive)
 		{
-			ApplyWeaponBash(obj, 400, angle);
+			ApplyWeaponBash(obj, 500, angle);
 		}
 		else
 		{
-			obj->SetXDir((obj->GetXDir(100) + Sin(angle, 2000)) / 2, 100);
-			obj->SetYDir((obj->GetYDir(100) - Cos(angle, 2000)) / 2, 100);
+			var div=100;
+			if(obj->GetContact(-1)) div*=10;
+			obj->SetXDir((obj->GetXDir(100) + Sin(angle, 2000)) / 2, div);
+			obj->SetYDir((obj->GetYDir(100) - Cos(angle, 2000)) / 2, div);
 		}
+		found=true;
+		break;
 	}
+	
+	if(found)
+		RemoveEffect("DuringClubShoot", clonk);
 }
 
 public func IsTool() { return 1; }
