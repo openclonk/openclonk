@@ -45,11 +45,7 @@
 #ifdef WITH_DEVELOPER_MODE
 # include <C4Language.h>
 
-# include <gtk/gtklabel.h>
-# include <gtk/gtkmenushell.h>
-# include <gtk/gtkmenu.h>
-# include <gtk/gtkmenuitem.h>
-# include <gtk/gtkseparatormenuitem.h>
+# include <gtk/gtk.h>
 #endif
 
 C4EditCursor::C4EditCursor()

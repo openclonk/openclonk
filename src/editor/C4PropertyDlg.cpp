@@ -40,11 +40,7 @@
 # include <C4DevmodeDlg.h>
 # include <C4Language.h>
 
-# include <gtk/gtkentry.h>
-# include <gtk/gtkvbox.h>
-# include <gtk/gtktextview.h>
-# include <gtk/gtkwindow.h>
-# include <gtk/gtkscrolledwindow.h>
+# include <gtk/gtk.h>
 #endif
 
 #ifdef _WIN32

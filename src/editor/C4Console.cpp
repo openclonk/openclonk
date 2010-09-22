@@ -64,26 +64,8 @@ namespace
 #endif // _WIN32
 
 #ifdef WITH_DEVELOPER_MODE
-# include <gdk/gdkcursor.h>
 # include <gdk/gdkx.h>
-# include <gtk/gtkstock.h>
-# include <gtk/gtkwindow.h>
-# include <gtk/gtkmessagedialog.h>
-# include <gtk/gtkfilechooserdialog.h>
-# include <gtk/gtkaboutdialog.h>
-# include <gtk/gtklabel.h>
-# include <gtk/gtkbutton.h>
-# include <gtk/gtktogglebutton.h>
-# include <gtk/gtkhbox.h>
-# include <gtk/gtkvbox.h>
-# include <gtk/gtkscrolledwindow.h>
-# include <gtk/gtkentry.h>
-# include <gtk/gtkframe.h>
-# include <gtk/gtkvseparator.h>
-# include <gtk/gtktextview.h>
-# include <gtk/gtkmenubar.h>
-# include <gtk/gtkmenuitem.h>
-# include <gtk/gtkseparatormenuitem.h>
+# include <gtk/gtk.h>
 
 # include <res/Play.h>
 # include <res/Halt.h>
@@ -765,7 +747,11 @@ bool C4Console::SaveGame(bool fSaveGame)
 	SetCursor(LoadCursor(0,IDC_WAIT));
 #elif defined(WITH_DEVELOPER_MODE)
 	// Seems not to work. Don't know why...
+#if GTK_CHECK_VERSION(2,14,0)
+	gdk_window_set_cursor(gtk_widget_get_window(window), cursorWait);
+#else
 	gdk_window_set_cursor(window->window, cursorWait);
+#endif
 #endif
 
 	C4GameSave *pGameSave;
@@ -786,7 +772,11 @@ bool C4Console::SaveGame(bool fSaveGame)
 #ifdef _WIN32
 	SetCursor(LoadCursor(0,IDC_ARROW));
 #elif defined(WITH_DEVELOPER_MODE)
+#if GTK_CHECK_VERSION(2,14,0)
+	gdk_window_set_cursor(gtk_widget_get_window(window), NULL);
+#else
 	gdk_window_set_cursor(window->window, NULL);
+#endif
 #endif
 
 	// Initialize/script notification

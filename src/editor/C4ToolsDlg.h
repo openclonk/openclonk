@@ -25,7 +25,7 @@
 #define INC_C4ToolsDlg
 
 #ifdef WITH_DEVELOPER_MODE
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #endif
 
 #include "C4Constants.h"

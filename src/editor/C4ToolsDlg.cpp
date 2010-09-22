@@ -45,14 +45,6 @@
 # include <C4Language.h>
 # include <C4DevmodeDlg.h>
 
-# include <gtk/gtkwindow.h>
-# include <gtk/gtkimage.h>
-# include <gtk/gtktogglebutton.h>
-# include <gtk/gtkvscale.h>
-# include <gtk/gtkhbox.h>
-# include <gtk/gtkvbox.h>
-# include <gtk/gtkcombobox.h>
-# include <gtk/gtkstock.h>
 # include <gtk/gtk.h>
 
 # include <res/Brush.h>
@@ -700,7 +692,11 @@ void C4ToolsDlg::UpdatePreview()
 	if (IsWindowEnabled(GetDlgItem(hDialog,IDC_PREVIEW)))
 #else
 #ifdef WITH_DEVELOPER_MODE
+#if GTK_CHECK_VERSION(2,18,0)
+	if (gtk_widget_is_sensitive(preview))
+#else
 	if (GTK_WIDGET_SENSITIVE(preview))
+#endif
 #endif
 #endif
 		Application.DDraw->DrawPatternedCircle( sfcPreview,

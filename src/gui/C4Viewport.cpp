@@ -59,12 +59,7 @@
 #ifdef WITH_DEVELOPER_MODE
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkdnd.h>
-#include <gtk/gtkselection.h>
-#include <gtk/gtkdrawingarea.h>
-#include <gtk/gtkhscrollbar.h>
-#include <gtk/gtkvscrollbar.h>
+#include <gtk/gtk.h>
 #endif
 #endif
 
@@ -441,16 +436,23 @@ bool C4Viewport::TogglePlayerLock()
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
+	
+	GtkAllocation allocation;
+#if GTK_CHECK_VERSION(2,18,0)
+	gtk_widget_get_allocation(pWindow->drawing_area, &allocation);
+#else
+	allocation = pWindow->drawing_area->allocation;
+#endif
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-	adjustment->page_increment = pWindow->drawing_area->allocation.width;
-	adjustment->page_size = pWindow->drawing_area->allocation.width;
+	adjustment->page_increment = allocation.width;
+	adjustment->page_size = allocation.width;
 	adjustment->value = ViewX;
 	gtk_adjustment_changed(adjustment);
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	adjustment->page_increment = pWindow->drawing_area->allocation.height;
-	adjustment->page_size = pWindow->drawing_area->allocation.height;
+	adjustment->page_increment = allocation.height;
+	adjustment->page_size = allocation.height;
 	adjustment->value = ViewY;
 	gtk_adjustment_changed(adjustment);
 
@@ -510,7 +512,11 @@ void C4ViewportWindow::OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 
 gboolean C4ViewportWindow::OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
+#if GTK_CHECK_VERSION(2,90,7)
+	if (event->keyval == GDK_KEY_Scroll_Lock)
+#else
 	if (event->keyval == GDK_Scroll_Lock)
+#endif
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
@@ -818,11 +824,19 @@ bool C4Viewport::UpdateOutputSize()
 	// Output size
 	RECT rect;
 #ifdef WITH_DEVELOPER_MODE
+
+	GtkAllocation allocation;
+#if GTK_CHECK_VERSION(2,18,0)
+	gtk_widget_get_allocation(pWindow->drawing_area, &allocation);
+#else
+	allocation = pWindow->drawing_area->allocation;
+#endif
+
 	// Use only size of drawing area without scrollbars
-	rect.left = pWindow->drawing_area->allocation.x;
-	rect.top = pWindow->drawing_area->allocation.y;
-	rect.right = rect.left + pWindow->drawing_area->allocation.width;
-	rect.bottom = rect.top + pWindow->drawing_area->allocation.height;
+	rect.left = allocation.x;
+	rect.top = allocation.y;
+	rect.right = rect.left + allocation.width;
+	rect.bottom = rect.top + allocation.height;
 #else
 	if (!pWindow->GetSize(&rect)) return false;
 #endif

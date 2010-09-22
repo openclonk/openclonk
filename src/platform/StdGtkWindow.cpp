@@ -24,7 +24,7 @@
 #include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
-#include <gtk/gtklayout.h>
+#include <gtk/gtk.h>
 
 #include "C4Version.h"
 
@@ -77,19 +77,41 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 
 	gtk_window_set_title(GTK_WINDOW(window), Title);
 
+#if GTK_CHECK_VERSION(2,14,0)
+	GdkWindow* window_wnd = gtk_widget_get_window(window);
+#else
+	GdkWindow* window_wnd = window->window;
+#endif
+
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(window);
-	wnd = GDK_WINDOW_XWINDOW(window->window);
-	gdk_window_add_filter(window->window, OnFilter, this);
+	wnd = GDK_WINDOW_XWINDOW(window_wnd);
+	gdk_window_add_filter(window_wnd, OnFilter, this);
 
 	XWMHints * wm_hint = XGetWMHints(dpy, wnd);
 	if (!wm_hint) wm_hint = XAllocWMHints();
 	Hints = wm_hint;
 
 	if (GTK_IS_LAYOUT(render_widget))
-		renderwnd = GDK_WINDOW_XWINDOW(GTK_LAYOUT(render_widget)->bin_window);
+	{
+#if GTK_CHECK_VERSION(2,14,0)
+		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
+#else
+		GdkWindow* bin_wnd = GTK_LAYOUT(render_widget)->bin_window;
+#endif
+
+		renderwnd = GDK_WINDOW_XWINDOW(bin_wnd);
+	}
 	else
-		renderwnd = GDK_WINDOW_XWINDOW(render_widget->window);
+	{
+#if GTK_CHECK_VERSION(2,14,0)
+		GdkWindow* render_wnd = gtk_widget_get_window(render_widget);
+#else
+		GdkWindow* render_wnd = render_widget->window;
+#endif
+
+		renderwnd = GDK_WINDOW_XWINDOW(render_wnd);
+	}
 
 	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
 
@@ -97,7 +119,7 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	{
 		// TODO!
 //    GdkCursor* cursor = gdk_cursor_new_from_pixmap(NULL, NULL, NULL, NULL, 0, 0);
-		gdk_window_set_cursor(window->window, NULL);
+		gdk_window_set_cursor(window_wnd, NULL);
 	}
 
 	// Make sure the window is shown and ready to be rendered into,
@@ -162,9 +184,18 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 
 	// For keypress/relases, event->state contains the state _before_
 	// the event, but we need to store the current state.
-	if (event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R) mask ^= MK_SHIFT;
-	if (event->keyval == GDK_Control_L || event->keyval == GDK_Control_R) mask ^= MK_CONTROL;
-	if (event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R) mask ^= (1 << 3);
+#if !GTK_CHECK_VERSION(2,90,7)
+# define GDK_KEY_Shift_L GDK_Shift_L
+# define GDK_KEY_Shift_R GDK_Shift_R
+# define GDK_KEY_Control_L GDK_Control_L
+# define GDK_KEY_Control_R GDK_Control_R
+# define GDK_KEY_Alt_L GDK_Alt_L
+# define GDK_KEY_Alt_R GDK_Alt_R
+#endif
+
+	if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R) mask ^= MK_SHIFT;
+	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
+	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
 
 	static_cast<CStdApp*>(user_data)->KeyMask = mask;
 	return false;

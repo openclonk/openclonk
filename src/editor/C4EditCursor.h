@@ -27,7 +27,7 @@
 #include "C4Control.h"
 
 #ifdef WITH_DEVELOPER_MODE
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #endif
 
 class C4EditCursor

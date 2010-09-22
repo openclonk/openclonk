@@ -23,7 +23,7 @@
 
 #include <StdWindow.h>
 
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 
 class CStdGtkWindow: public CStdWindow
 {

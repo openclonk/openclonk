@@ -139,8 +139,7 @@ int main()
 
 #ifdef WITH_DEVELOPER_MODE
 # include "c4x.xpm"
-# include <gtk/gtkmain.h>
-# include <gtk/gtkwindow.h>
+# include <gtk/gtk.h>
 #endif
 
 #ifdef HAVE_SIGNAL_H

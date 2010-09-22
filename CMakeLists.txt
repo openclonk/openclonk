@@ -41,9 +41,11 @@ endif()
 if(UNIX AND NOT USE_SDL_MAINLOOP)
 	option(USE_X11 "Use X11 to create windows etc." ON)
 	option(USE_GTK "Use GTK for the developer mode" ON)
+	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
 else()
 	SET(USE_X11 OFF)
 	SET(USE_GTK OFF)
+	SET(USE_GTK3 OFF)
 endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
@@ -707,6 +709,7 @@ macro(FINDLIB lib)
 	find_library(${ARGV})
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
+
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
@@ -745,11 +748,29 @@ endif()
 ############################################################################
 # Generate output files
 ############################################################################
+
+# Set GTK link directory. This needs to be done before add_executable,
+# otherwise the path is not used for linking clonk
+if(USE_GTK)
+	include(FindPkgConfig)
+	if (PKG_CONFIG_FOUND)
+		if (USE_GTK3)
+			pkg_check_modules(GTK glib-2.0>=2.4 gtk+-3.0)
+		else()
+			pkg_check_modules(GTK glib-2.0>=2.4 gtk+-2.0>=2.4)
+		endif()
+	endif()
+	if(GTK_FOUND)
+		link_directories(${GTK_LIBRARY_DIRS})
+	endif()
+endif()
+
 add_definitions(-DHAVE_CONFIG_H)
 add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
+
 add_executable(c4group
 	src/c4group/c4group_ng.cpp
 	src/c4group/C4Group.cpp
@@ -842,6 +863,7 @@ endforeach()
 ############################################################################
 # Locate optional libraries (if so desired)
 ############################################################################
+
 if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
@@ -867,15 +889,11 @@ if(USE_DIRECTX)
 	)
 endif()
 if(USE_GTK)
-	include(FindPkgConfig)
-	if (PKG_CONFIG_FOUND)
-		pkg_check_modules(GTK glib-2.0>=2.4 gtk+-2.0>=2.4)
-	endif()
 	if(GTK_FOUND)
 		include_directories(${GTK_INCLUDE_DIRS})
-		link_directories(${GTK_LIBRARY_DIRS})
 		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 		SET(WITH_GLIB ${GTK_FOUND})
+		SET(WITH_GTK3 ${USE_GTK3})
 		target_link_libraries(clonk
 			${GTK_LIBRARIES}
 		)
@@ -941,5 +959,6 @@ if(NOT HAVE_FMOD OR USE_SDL_MAINLOOP)
 		)
 	endif()
 endif()
+
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)

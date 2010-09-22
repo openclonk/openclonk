@@ -32,7 +32,7 @@
 #include <StdWindow.h>
 
 #ifdef WITH_DEVELOPER_MODE
-# include <gtk/gtkwidget.h>
+# include <gtk/gtk.h>
 #endif
 
 const int C4CNS_ModePlay = 0,

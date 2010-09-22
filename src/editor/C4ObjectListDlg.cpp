@@ -30,8 +30,6 @@
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
-#include <gtk/gtknotebook.h>
-#include <gtk/gtklabel.h>
 
 
 /* Some boilerplate GObject defines. 'klass' is used instead of 'class', because 'class' is a C++ keyword */
