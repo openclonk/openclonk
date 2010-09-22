@@ -10,26 +10,26 @@ protected func Initialize()
 	//Tutorial
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2330, 1040);
-	AddEffect("TutorialScale",0,1,18);
+	AddEffect("TutorialScale", 0, 1, 18);
 
 	//Environment
 	PlaceGrass(85);
-	CreateObject(Tree_Coniferous,900,629);
-	CreateObject(Plane,950,605);
+	CreateObject(Tree_Coniferous, 900, 629);
+	CreateObject(Plane, 950, 605);
 
 	//Shovel in water
-	var shovel = CreateObject(Shovel,1368,1160,NO_OWNER);
+	var shovel = CreateObject(Shovel, 1368, 1160, NO_OWNER);
 	shovel->SetR(150);
-	AddEffect("ShovelGet",shovel,1,36,shovel);
+	AddEffect("ShovelGet",shovel, 1, 36, shovel);
 
 	//Chest with loam.
-	var chest = CreateObject(Chest,1800,1100,NO_OWNER);
+	var chest = CreateObject(Chest, 1805, 1100, NO_OWNER);
 	var loam = chest->CreateContents(Loam);
-	AddEffect("LoamGet",loam,1,36,loam);
+	AddEffect("LoamGet", loam, 1, 36, loam);
 	loam->AddRestoreMode(chest);
 
 	//Chest with firestones
-	chest = CreateObject(Chest,2026,1089,NO_OWNER);
+	chest = CreateObject(Chest, 2026, 1089, NO_OWNER);
 	chest->CreateContents(Firestone)->AddRestoreMode(chest); //I figure a 'for' statement is a little overkill here...
 	chest->CreateContents(Firestone)->AddRestoreMode(chest);
 	
@@ -56,8 +56,8 @@ func InitializePlayer(int plr)
 	EffectVar(1, clonk, effect) = 230;
 	EffectVar(2, clonk, effect) = 955;
 
-	SetPlayerViewLock(plr,true);
-	SetPlayerZoomByViewRange(plr,400,nil,PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+	SetPlayerViewLock(plr, true);
+	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
@@ -102,7 +102,7 @@ func Script50()
 
 global func FxTutorialScaleTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(650,990,140,90)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(650, 990, 140, 90)))
 	{
 		guide->AddGuideMessage("$GuideMsgScale$");
 		AddEffect("TutorialHangle", 0, 1, 18);
@@ -112,7 +112,7 @@ global func FxTutorialScaleTimer(object target, int num, int timer)
 
 global func FxTutorialHangleTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(820,940,190,140)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(820, 940, 190, 140)))
 	{
 		guide->AddGuideMessage("$GuideMsgHangle$");
 		AddEffect("TutorialSwim", 0, 1, 18);
@@ -122,7 +122,7 @@ global func FxTutorialHangleTimer(object target, int num, int timer)
 
 global func FxTutorialSwimTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1120,1030,140,60)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(1120, 1030, 140, 60)))
 	{
 		tutstage = 1;
 		guide->AddGuideMessage("$GuideMsgSwim$");
@@ -133,7 +133,7 @@ global func FxTutorialSwimTimer(object target, int num, int timer)
 
 global func FxTutorialDigTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1550,1040,130,60)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(1550, 1040, 130, 60)))
 	{
 		guide->AddGuideMessage("$GuideMsgDig$");
 		return -1;
@@ -153,7 +153,7 @@ global func FxShovelGetTimer(object target, int num, int timer)
 
 global func FxTutorialChestTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1750,1030,130,80)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(1750, 1030, 130, 80)))
 	{
 		guide->AddGuideMessage("$GuideMsgChest$");
 		return -1;
@@ -173,7 +173,7 @@ global func FxLoamGetTimer(object target, int num, int timer)
 
 global func FxTutorialFlintTimer(object target, int num, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1990,1020,130,90)))
+	if(FindObject(Find_ID(Clonk),Find_InRect(1990, 1020, 130, 90)))
 	{
 		tutstage = 2;
 		guide->AddGuideMessage("$GuideMsgFlint$");
