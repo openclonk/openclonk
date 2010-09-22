@@ -452,6 +452,7 @@ void C4Def::Clear()
 
 	PortraitCount = 0;
 	Portraits = NULL;
+	C4PropList::Clear();
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -1229,7 +1230,7 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();
-	// update script engine - this will also do include callbacks
+	// update script engine - this will also do include callbacks and Freeze() this
 	::ScriptEngine.ReLink(this);
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);

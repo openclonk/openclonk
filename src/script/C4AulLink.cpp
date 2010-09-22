@@ -169,6 +169,8 @@ void C4AulScript::UnLink()
 	// check if byte code needs to be freed
 	ClearCode();
 
+	if (Def) Def->C4PropList::Clear();
+
 	// delete included/appended functions
 	C4AulFunc* pFunc = Func0;
 	while (pFunc)
