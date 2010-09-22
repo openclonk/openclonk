@@ -1,0 +1,2 @@
+Name=Flugzeugkugel
+Description=Munition für den Flugzeug.

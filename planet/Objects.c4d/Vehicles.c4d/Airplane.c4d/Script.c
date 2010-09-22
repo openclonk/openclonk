@@ -29,59 +29,130 @@ protected func Initialize()
 	rdir = 0;
 	dir = 0;
 	health = 50;
+	weapon_selected = Bullet;
+	return;
 }
 
-/*-- Control --*/
+/*-- Weapon control --*/
+// With [Use] the current weapon can be fired.
+// With [AltUse] a weapon can be selected.
+
+// Store ID of selected weapon here.
+local weapon_selected; 
+
+public func HoldingEnabled() { return true; }
 
 public func ContainedUseStart(object clonk, int ix, int iy)
 {
+	if (!weapon_selected)
+	{
+		PlayerMessage(clonk->GetOwner(), "No weapon selected.");
+		clonk->CancelUse();
+		return true;		
+	}
+	var ammo = FindObject(Find_Container(this), Find_ID(weapon_selected));
+	if (!ammo)
+	{
+		PlayerMessage(clonk->GetOwner(), "No ammo available.");
+		clonk->CancelUse();
+		return true;	
+	}
+	// If there is weapon, show reticle.
 	reticle = CreateObject(GUI_Reticle);
 	reticle->SetOwner(clonk->GetController());
 	reticle->SetAction("Show", this);
-	return 1;
+	return true;
+}
+
+public func ContainedUseHolding(object clonk, int ix, int iy)
+{
+
+	if (GetEffect("IntCoolDown", this))
+		return true;
+	var ammo = FindObject(Find_Container(this), Find_ID(weapon_selected));
+	if (!ammo)
+	{
+		PlayerMessage(clonk->GetOwner(), "No ammo available.");
+		clonk->CancelUse();
+		return true;	
+	}
+	var angle = GetR();
+	ammo->Launch(this);
+	AddEffect("IntCoolDown", this, 100, Max(1, ammo->~GetCoolDownTime()), this);
+	return true;
 }
 
 public func ContainedUseStop(object clonk, int ix, int iy)
 {
-	if(reticle) reticle->RemoveObject();
-
-	var ammo = FindObject(Find_Container(clonk),Find_Func("IsMusketAmmo"));
-	if(GetEffect("IntCooldown",this)) return 1;
-	if(ammo)
-	{
-		var shot = ammo->TakeObject();
-		var angle = this->GetR();
-		shot->Launch(clonk, angle, 35, 200);
-		Sound("GunShoot*.ogg");
-
-		// Muzzle Flash & gun smoke
-		var IX = Sin(GetR(), 30);
-		var IY = -Cos(GetR(), 30);
-
-		for(var i=0; i<10; ++i)
-		{
-			var speed = RandomX(0,10);
-			var r = angle;
-			CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2) + GetXDir(),-Cos(r,speed)+RandomX(-2,2) + GetYDir(),RandomX(100,400),RGBa(255,255,255,50));
-		}
-		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
-		CreateParticle("Flash",0,0,GetXDir(),GetYDir(),800,RGBa(255,255,64,150));
-
-		AddEffect("IntCooldown", this,1,1,this);
-	}
-	return 1;
+	if(reticle)
+		reticle->RemoveObject();
+		
+	return true;
 }
 
 public func ContainedUseCancel(object clonk, int ix, int iy)
 {
 	if(reticle) reticle->RemoveObject();
+	return true;
+}
+
+// Weapon selection, uses ringmenu.
+local weapon_menu;
+
+public func ContainedUseAlt(object clonk, int x, int y)
+{
+	if (!weapon_menu)
+	{
+		weapon_menu = clonk->CreateRingMenu(GetID(), this);
+		// List all weapons in a ringmenu.
+		var index = 0, weapon_def, weapon_cnt = 0;
+		while (weapon_def = GetDefinition(index))
+		{
+			if (weapon_def->~IsPlaneWeapon())
+			{
+				weapon_cnt++;
+				// Add weapon and show ammo count.
+				weapon_menu->AddItem(weapon_def, GetAmmoCount(weapon_def));				
+			}
+			index++;
+		}
+		// Only show menu if weapon count > 1.
+		if (weapon_cnt > 1)
+			weapon_menu->Show();
+		else
+			PlayerMessage(clonk->GetOwner(), "Only bullet available.");
+	}
+	else if (clonk == weapon_menu->GetMenuObject())
+		weapon_menu->Close();
+
+	return true;
+}
+
+public func Selected(object menu, object selected, bool alt)
+{
+	// Move selected weapon to extra slot.
+	weapon_selected = selected->GetSymbol();
+	menu->GetMenuObject()->CancelUse();
+	return true;
+}
+
+public func FxIntCooldownStop(object target)
+{
 	return 1;
 }
 
-public func FxIntCooldownTimer(object target, int num, int timer)
+private func GetAmmoCount(id weapon)
 {
-	if(timer > 50) return -1;
+	var cnt = 0;
+	for (var ammo in FindObjects(Find_ID(weapon), Find_Container(this)))
+		if (ammo->~IsStackable())
+			cnt += ammo->GetStackCount();
+		else
+			cnt++;
+	return cnt;
 }
+
+/*-- Movement control --*/
 
 public func ContainedUp(object clonk)
 {
@@ -92,8 +163,7 @@ public func ContainedUp(object clonk)
 	//engine start
 	if(GetAction() == "Land")
 	{
-		StartFlight();
-		throttle = 15;
+		StartFlight(15);
 		return;
 	}
 }
@@ -113,8 +183,7 @@ public func ContainedDown(object clonk)
 	//allow reverse
 	if(GetAction() == "Land")
 	{
-		StartFlight();
-		throttle = -5;
+		StartFlight(-5);
 		return;
 	}
 }
@@ -134,11 +203,26 @@ public func ContainedStop(object clonk)
 	rdir = 0;
 }
 
-public func StartFlight()
+public func StartFlight(int new_throttle)
 {
 	Sound("EngineStart.ogg");
 	AddEffect("IntSoundDelay",this,1,1,this);
 	SetAction("Fly");
+	throttle = new_throttle;
+}
+
+public func StartInstantFlight(int angle, int new_throttle)
+{
+	angle -= 10;
+	Sound("EngineStart.ogg");
+	AddEffect("IntSoundDelay",this,1,1,this);
+	SetAction("Fly");
+	throttle = new_throttle;
+	thrust = new_throttle;
+	SetR(angle);
+	SetXDir(Cos(angle, thrust));
+	SetYDir(Sin(angle, thrust));
+	return;
 }
 
 public func CancelFlight()
@@ -271,19 +355,17 @@ public func Hit()
 
 public func ActivateEntrance(object pby)
 {
-	if(ContentsCount() > 0)
+	var cnt = ObjectCount(Find_Container(this), Find_OCF(OCF_CrewMember));
+	if(cnt > 0)
 		if(pby->Contained() == this)
 		{
 			pby->Exit();
 			return;
 		}
-
-	if(ContentsCount() > 0)
-		if(pby->Contained() != this)
-		{
+		else
 			return;
-		}
-	if(ContentsCount() == 0)
+
+	if(cnt == 0)
 	{
 		pby->Enter(this);
 		PlaneMount(pby);
