@@ -8,9 +8,9 @@
 protected func Initialize()
 {
 	// Goal settings.
-	CreateObject(Goal_KingOfTheHill, 625, 170, NO_OWNER);
-	Goal_KingOfTheHill->SetRadius(120);
-	Goal_KingOfTheHill->SetPointLimit(6);
+	var goal = CreateObject(Goal_KingOfTheHill, 625, 170, NO_OWNER);
+	goal->SetRadius(120);
+	goal->SetPointLimit(6);
 	
 	// Weapon chests.
 	CreateObject(Chest, 690, 210, NO_OWNER);

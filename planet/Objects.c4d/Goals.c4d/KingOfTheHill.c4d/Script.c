@@ -8,15 +8,15 @@ Additionally it creates a KingOfTheHill_Location that does the rest.
 Interface:
 
 Radius of the area:
-Goal_KingOfTheHill->SetRadius(int x);
-Goal_KingOfTheHill->GetRadius();
+SetRadius(int x);
+GetRadius();
 
 points to achieve for the victory:
-Goal_KingOfTheHill->SetPointLimit(int x);
-Goal_KingOfTheHill->GetPointLimit();
+SetPointLimit(int x);
+GetPointLimit();
 
 automatically place the area on the map:
-Goal_KingOfTheHill->SearchPosition();
+SearchPosition();
 */
 
 #include Library_Goal
@@ -24,6 +24,8 @@ Goal_KingOfTheHill->SearchPosition();
 local player_points;
 local player_deaths;
 local location;
+local point_limit;
+local radius;
 
 func Initialize()
 {
@@ -47,6 +49,7 @@ func PostInitialize()
 func Init()
 {
 	location=CreateObject(KingOfTheHill_Location, 0, 5, NO_OWNER);
+	location->SetKotH(this);
 }
 
 func Destruction()
@@ -54,14 +57,7 @@ func Destruction()
 	if(location) location->RemoveObject();
 }
 
-public func SearchPosition()
-{
-	var o=FindObject(Find_ID(Goal_KingOfTheHill));
-	if(!o) return;
-	o->CalculatePosition();
-}
-
-func CalculatePosition()
+func SearchPosition()
 {
 	var a=0, b=LandscapeHeight();
 
@@ -92,31 +88,25 @@ func CalculatePosition()
 
 public func GetPointLimit()
 {
-	return Goal_KingOfTheHill["point_limit"];
+	return point_limit;
 }
 
 public func SetPointLimit(int x)
 {
-	Goal_KingOfTheHill["point_limit"]=x;
+	point_limit=x;
 }
 
 public func GetRadius()
 {
-	return Goal_KingOfTheHill["radius"];
+	return radius;
 }
 
 public func SetRadius(int to)
 {
-	Goal_KingOfTheHill["radius"]=to;
+	radius=to;
 }
 
-public func DoPoint(player)
-{
-	var o=FindObject(Find_ID(Goal_KingOfTheHill));
-	o->DoPointEx(player);
-}
-
-func DoPointEx(player)
+func DoPoint(player)
 {
 	++player_points[player];
 }
@@ -124,12 +114,12 @@ func DoPointEx(player)
 protected func InitializePlayer()
 {
 	ScheduleCall(this, "RefreshScoreboard", 1);
-	return Goal_Melee->InitializePlayer(...);
+	return Goal_Melee->InitializePlayer(...); // TODO
 }
 
 public func IsFulfilled()
 {
-	return Goal_Melee->IsFulfilled();
+	return Goal_Melee->IsFulfilled(); // TODO
 }
 
 func OnClonkDeath(object clonk, int killer)
@@ -182,7 +172,7 @@ public func Activate(int byplr)
 		lines[GetLength(lines)]=Format("%s: %d", teams[i]["player_names"], teams[i]["points"] );
 	}
 	
-	var msg=Format("$MsgGoalDesc$", Goal_KingOfTheHill->GetPointLimit());
+	var msg=Format("$MsgGoalDesc$", GetPointLimit());
 	for(var i=0;i<GetLength(lines);++i)
 		msg=Format("%s|%s", msg, lines[i]);
 	return MessageWindow(msg, byplr);
@@ -237,7 +227,7 @@ static const SBRD_Points=1;
 func RefreshScoreboard()
 {
 	SetScoreboardData(SBRD_Caption,SBRD_Caption,"King of the Hill",SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,SBRD_Points,Format("{{Sword}} / %d", Goal_KingOfTheHill->GetPointLimit()),SBRD_Caption);
+	SetScoreboardData(SBRD_Caption,SBRD_Points,Format("{{Sword}} / %d", GetPointLimit()),SBRD_Caption);
 	SetScoreboardData(SBRD_Caption,SBRD_Deaths,"{{Clonk}}",SBRD_Caption);
 	
 	

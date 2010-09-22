@@ -11,12 +11,18 @@ local stars;
 local color;
 local king;
 local timer;
+local koth_goal;
 
 func Initialize() {
 	
 	ScheduleCall(this, "PostInitialize", 1, 0);
 	timer=0;
 	return(1);
+}
+
+func SetKotH(object koth)
+{
+	koth_goal = koth;
 }
 
 func GetKing()
@@ -38,7 +44,7 @@ func Destruction()
 func PostInitialize()
 {
 	marker=CreateObject(KingOfTheHill_Marker, 0, -5, NO_OWNER);
-	marker["origin"]=this;
+	marker->SetOrigin(this);
 	CreateStarCircle();
 	AddEffect("Timer", this, 10, 10, this);
 }
@@ -63,7 +69,7 @@ func CheckNewKing()
 		
 	if(king) return;
 	
-	var new=FindObject(Find_Distance(Goal_KingOfTheHill->GetRadius()), Find_NoContainer(), Find_OCF(OCF_CrewMember));
+	var new=FindObject(Find_Distance(koth_goal->GetRadius()), Find_NoContainer(), Find_OCF(OCF_CrewMember));
 	if(new)
 	{
 		king=new;
@@ -131,7 +137,7 @@ func AdjustStarColor()
 
 func CreateStarCircle()
 {
-	var radius=Goal_KingOfTheHill->GetRadius();
+	var radius=koth_goal->GetRadius();
 	if(radius == nil) return FatalError("Goal_KingOfTheHill: radius has to be set before use!");
 	
 	if(GetType(stars) != C4V_Array)

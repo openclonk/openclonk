@@ -1,16 +1,27 @@
 /*
-Marker for King of the Hill
-Author: Zapper
+	Marker for King of the Hill
+	Author: Zapper
 */
+
+local origin;
 
 func Initialize()
 {
 	AddEffect("Timer", this, 10, 1, this);
 }
 
+func SetOrigin(object o)
+{
+	origin = o;
+}
+
+func GetOrigin()
+{
+	return origin;
+}
+
 func FxTimerTimer()
 {
-	var origin=this["origin"];
 	if(!origin) return RemoveObject();
 	
 	var x, y;
