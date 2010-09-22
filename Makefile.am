@@ -59,7 +59,7 @@ AM_CPPFLAGS = \
   -I$(srcdir)/src/game/object \
   -I$(srcdir)/src/lib/texture \
   -I$(srcdir)/src/script \
-  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
+  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
 
 BUILT_SOURCES = hgrevision.h
 hgrevision.h: $(srcdir)/.hg/dirstate

@@ -167,6 +167,11 @@ else
   VL_LIB_READLINE
 fi
 
+# Check for boost
+AX_BOOST_BASE([1.40.0], [], [
+  AC_MSG_ERROR([Boost not found.])
+])
+
 # Check for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, [
   CLONK_LIBS="-ljpeg $CLONK_LIBS"

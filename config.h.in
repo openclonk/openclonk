@@ -3,6 +3,9 @@
 /* Activate DebugRecs */
 #undef DEBUGREC
 
+/* define if the Boost library is available */
+#undef HAVE_BOOST
+
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
