@@ -11,11 +11,7 @@ protected func Initialize()
 	CreateObject(Chest, 570, 220, NO_OWNER);
 	CreateObject(Chest, 70, 80, NO_OWNER);
 	CreateObject(Chest, 340, 200, NO_OWNER);
-	CreateObject(Rule_ObjectFade);
-	CreateObject(Rule_ObjectFade);
-	CreateObject(Rule_ObjectFade);
-	CreateObject(Rule_ObjectFade);
-	CreateObject(Rule_ObjectFade);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5*37);
 
 
 	AddEffect("IntFillChests", nil, 200, 70, this);

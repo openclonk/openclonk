@@ -1,2 +1,2 @@
-DE:Pyramide
-US:Pyramid
+DE:König der Pyramide
+US:King of the Pyramid
