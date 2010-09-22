@@ -1,2 +1,0 @@
-DE:Ringmenu Test
-US:RingMenu Test

@@ -1,1 +1,0 @@
-Destroy the windmill-eating rockets before they reach the windmills! If no windmill remains, you loose.
