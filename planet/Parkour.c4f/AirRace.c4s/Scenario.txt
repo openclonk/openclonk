@@ -1,5 +1,5 @@
 [Head]
-Icon=19
+Icon=37
 Title=AirRace
 
 [Game]
