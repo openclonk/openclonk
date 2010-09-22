@@ -1,0 +1,2 @@
+Name=Rocket
+Description=Can be hung under an airplane, especially suited for destroying static targets.

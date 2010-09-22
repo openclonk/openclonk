@@ -1,0 +1,95 @@
+/*-- AirRace --*/
+
+// Rndchecker filler pattern for RandomMatFill.
+overlay Mats 
+{				
+	algo = rndchecker;
+	a = 8;
+	zoomX = -50; zoomY = -50;
+	turbulence = 500; loosebounds = 1;
+};
+
+// Fills the specified region with some random materials.
+overlay RandomMatFill
+{
+	overlay { mat = Earth; tex = earth; loosebounds = 1; };
+	Mats { mat = Gold; tex = gold; a = 20; };
+	Mats { mat = Ore; tex = ore; a = 20; };
+	Mats { mat = Tunnel; tex = tunnel; a = 20; };
+	Mats { mat = Rock; tex = rock; a = 20; };
+	Mats { mat = Gold; tex = gold; a = 20; };
+	Mats { mat = Ore; tex = ore; a = 20; };
+	Mats { mat = Tunnel; tex = tunnel; a = 20; };
+	Mats { mat = Rock; tex = rock; a = 20; };
+	Mats { mat = Earth; tex = earth_dry; };
+	Mats { mat = Earth; tex = earth_rough; };
+};
+
+
+// A challenging map to fly through with the airplane.
+map AirRace 
+{
+	// Random parkour, with sky islands, cliffs, caverns, etc. 
+	// TODO: Remove if map is nice.
+	overlay 
+	{
+		algo = rndchecker;
+		x = 0; y = 0;
+		wdt = 100; hgt = 100;
+		RandomMatFill{};
+		zoomX = -50; zoomY = -50;
+		a = 6;
+		loosebounds = 1;
+		turbulence = 1000;
+	};
+	
+	// Sky island on the left, to take off from.
+	overlay
+	{
+		x = 0; y = 50;
+		wdt = 12; hgt = 10;
+	};
+	overlay
+	{
+		x = 0; y = 60;
+		wdt = 6; hgt = 4;
+		mat = BrickSoft; tex = brick1;
+	};
+	overlay
+	{
+		algo = poly;
+		RandomMatFill{};
+		loosebounds = 1;
+		turbulence = 25;
+		point { x = 0%; y = 62%; };
+		point { x = 0%; y = 66%; };
+		point { x = 2%; y = 67%; };
+		point { x = 5%; y = 66%; };
+		point { x = 6%; y = 62%; };
+	};	
+	
+	// Sky island on the right, to take finish on.
+	overlay
+	{
+		x = 88; y = 50;
+		wdt = 13; hgt = 10;
+	};
+	overlay
+	{
+		x = 94; y = 60;
+		wdt = 7; hgt = 4;
+		mat = BrickSoft; tex = brick1;
+	};
+	overlay
+	{
+		algo = poly;
+		RandomMatFill{};
+		loosebounds = 1;
+		turbulence = 25;
+		point { x = 94%; y = 62%; };
+		point { x = 94%; y = 66%; };
+		point { x = 96%; y = 67%; };
+		point { x = 99%; y = 66%; };
+		point { x = 100%; y = 62%; };
+	};		
+};
