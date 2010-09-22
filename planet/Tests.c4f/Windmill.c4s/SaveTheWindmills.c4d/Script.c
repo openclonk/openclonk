@@ -38,7 +38,7 @@ public func IsFulfilled()
 
 public func Activate(int byplr)
 {
-	MessageWindow(GetDesc(), byplr);
+	MessageWindow(this.Description, byplr);
 	return;
 }
 
@@ -104,3 +104,4 @@ public func DoEvaluationData()
 }
 
 local Name = "$Name$";
+local Description = "$Description$";
