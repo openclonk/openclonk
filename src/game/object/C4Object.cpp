@@ -2286,7 +2286,7 @@ bool C4Object::SetPhase(int32_t iPhase)
 	return true;
 }
 
-void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
+void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
 	C4Facet ccgo;
 
@@ -2303,8 +2303,11 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (BackParticles && !Contained && eDrawMode!=ODM_BaseOnly) BackParticles.Draw(cgo,this);
 
 	// Object output position
-	float cotx = cgo.TargetX,coty=cgo.TargetY; if (eDrawMode!=ODM_Overlay) TargetPos(cotx, coty, cgo);
-	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
+	float newzoom;
+	if (eDrawMode!=ODM_Overlay)
+	{
+		if (!GetDrawPosition(cgo, 1.0, offX, offY, newzoom)) return;
+	}
 
 	bool fYStretchObject=false;
 	C4PropList* pActionDef = GetAction();
@@ -2341,7 +2344,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	{
 		C4Command *pCom;
 		int32_t ccx=GetX(),ccy=GetY();
-		int32_t x1,y1,x2,y2;
+		float offX1, offY1, offX2, offY2, newzoom;
 		char szCommand[200];
 		StdStrBuf Cmds;
 		int32_t iMoveTos=0;
@@ -2353,11 +2356,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				// Angle
 				int32_t iAngle; iAngle=Angle(ccx,ccy,pCom->Tx._getInt(),pCom->Ty); while (iAngle>180) iAngle-=360;
 				// Path
-				x1=ccx-cotx; y1=ccy-coty;
-				x2=pCom->Tx._getInt()-cotx; y2=pCom->Ty-coty;
-				Application.DDraw->DrawLineDw(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,C4RGB(0xca,0,0));
-				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,C4RGB(0xca,0,0));
-				if (x1>x2) Swap(x1,x2); if (y1>y2) Swap(y1,y2);
+				if(GetDrawPosition(cgo, ccx, ccy, 1.0, offX1, offY1, newzoom) &&
+				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, 1.0, offX2, offY2, newzoom))
+				{
+					Application.DDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
+					Application.DDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
+				}
+
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
 				// Message
 				iMoveTos++; szCommand[0]=0;
@@ -2384,11 +2389,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				break;
 			case C4CMD_Transfer:
 				// Path
-				x1=ccx-cotx; y1=ccy-coty;
-				x2=pCom->Tx._getInt()-cotx; y2=pCom->Ty-coty;
-				Application.DDraw->DrawLineDw(cgo.Surface,cgo.X+x1,cgo.Y+y1,cgo.X+x2,cgo.Y+y2,C4RGB(0,0xca,0));
-				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+x2-1,cgo.Y+y2-1,cgo.X+x2+1,cgo.Y+y2+1,C4RGB(0,0xca,0));
-				if (x1>x2) Swap(x1,x2); if (y1>y2) Swap(y1,y2);
+				if(GetDrawPosition(cgo, ccx, ccy, 1.0, offX1, offY1, newzoom) &&
+				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, 1.0, offX2, offY2, newzoom))
+				{
+					Application.DDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
+					Application.DDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
+				}
+
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
 				// Message
 				sprintf(szCommand,"%s %s",CommandName(pCom->Command),pCom->Target ? pCom->Target->GetName() : "");
@@ -2561,28 +2568,31 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
 }
 
-void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
+void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
 	// Status
 	if (!Status || !Def) return;
 	// visible?
 	if (!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
-	float cotx = cgo.TargetX, coty = cgo.TargetY; if (eDrawMode!=ODM_Overlay) TargetPos(cotx, coty, cgo);
+	float newzoom;
+	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, 1.0, offX, offY, newzoom);
 	// Clonk name
 	// Name of Owner/Clonk (only when Crew Member; never in films)
-	if (OCF & OCF_CrewMember) if ((Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) && (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)) if (!eDrawMode)
+	if (OCF & OCF_CrewMember)
+		if ((Config.Graphics.ShowCrewNames || Config.Graphics.ShowCrewCNames) && (!Game.C4S.Head.Film || !Game.C4S.Head.Replay))
+			if (!eDrawMode)
 				if (Owner != iByPlayer && !Contained)
 				{
 					// inside screen range?
-					if (!Inside<int>(GetX() + Shape.GetX() - cotx, 1 - Shape.Wdt, cgo.Wdt)
-					    || !Inside<int>(GetY() + Shape.GetY() - coty, 1 - Shape.Hgt, cgo.Hgt)) return;
+					if (!Inside<int>(offX + Shape.GetX(), cgo.X - Shape.Wdt, cgo.X + cgo.Wdt)
+					    || !Inside<int>(offY + Shape.GetY(), cgo.Y - Shape.Hgt, cgo.Y + cgo.Hgt)) return;
 					// get player
 					C4Player* pOwner = ::Players.Get(Owner);
-					if (pOwner) if (!Hostile(Owner, iByPlayer)) if (!pOwner->IsInvisible())
+					if (pOwner)
+						if (!Hostile(Owner, iByPlayer))
+							if (!pOwner->IsInvisible())
 							{
-								int32_t X = GetX();
-								int32_t Y = GetY() - Def->Shape.Hgt / 2 - 20;
 								// compose string
 								char szText[C4GM_MaxText+1];
 								if (Config.Graphics.ShowCrewNames)
@@ -2597,41 +2607,38 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 								int32_t iMaxLine = Max<int32_t>( cgo.Wdt / iCharWdt, 20 );
 								SWordWrap(szText,' ','|',iMaxLine);
 								// Adjust position by output boundaries
-								int32_t iTX,iTY,iTWdt,iTHgt;
+								float iTX,iTY;
+								int iTWdt,iTHgt;
 								::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
-								iTX = BoundBy<int>( X-cotx, iTWdt/2, cgo.Wdt-iTWdt/2 );
-								iTY = BoundBy<int>( Y-coty-iTHgt, 0, cgo.Hgt-iTHgt );
+								iTX = BoundBy<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
+								iTY = BoundBy<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
 								// Draw
-								Application.DDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
+								Application.DDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
 								                           pOwner->ColorDw|0x7f000000,ACenter);
 							}
 				}
 	// TopFace
 	if (!(TopFace.Surface || (OCF & OCF_Construct))) return;
-	// Output position
-	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
-	float cox = fixtof(fix_x) + Shape.GetX() - cotx, coy = fixtof(fix_y) + Shape.GetY() - coty;
 	// Output bounds check
-	if (!Inside<float>(cox,1-Shape.Wdt,cgo.Wdt)
-	    || !Inside<float>(coy,1-Shape.Hgt,cgo.Hgt))
+	if (!Inside<float>(offX, cgo.X - Shape.Wdt, cgo.X + cgo.Wdt)
+	    || !Inside<float>(offY, cgo.Y - Shape.Hgt, cgo.Y + cgo.Hgt))
 		return;
 	// Don't draw (show solidmask)
-	if (::GraphicsSystem.ShowSolidMask)
-		if (SolidMask.Wdt)
-			return;
+	if (::GraphicsSystem.ShowSolidMask && SolidMask.Wdt) return;
 	// Contained
 	if (Contained) if (eDrawMode!=ODM_Overlay) return;
 	// Construction sign
-	if (OCF & OCF_Construct) if (r==0) if (eDrawMode!=ODM_BaseOnly)
-			{
-				C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
-				lpDDraw->Blit(fctConSign.Surface,
-				              fctConSign.X, fctConSign.Y,
-				              fctConSign.Wdt, fctConSign.Hgt,
-				              cgo.Surface,
-				              cgo.X + cox, cgo.Y + coy + Shape.Hgt - fctConSign.Hgt,
-				              fctConSign.Wdt, fctConSign.Hgt, true);
-			}
+	if (OCF & OCF_Construct && r == 0)
+		if (eDrawMode!=ODM_BaseOnly)
+		{
+			C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
+			lpDDraw->Blit(fctConSign.Surface,
+			              fctConSign.X, fctConSign.Y,
+			              fctConSign.Wdt, fctConSign.Hgt,
+			              cgo.Surface,
+			              offX + Shape.GetX(), offY + Shape.GetY() + Shape.Hgt - fctConSign.Hgt,
+			              fctConSign.Wdt, fctConSign.Hgt, true);
+		}
 	// FacetTopFace: Override TopFace.GetX()/GetY()
 	C4PropList* pActionDef = GetAction();
 	if (pActionDef && pActionDef->GetPropertyInt(P_FacetTopFace))
@@ -2651,7 +2658,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		lpDDraw->Blit(TopFace.Surface,
 		              TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
 		              cgo.Surface,
-		              cgo.X + cox + float(Def->TopFace.tx * Con) / FullCon, cgo.Y + coy + float(Def->TopFace.ty * Con) / FullCon,
+		              offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
 		              float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
 		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	else
@@ -2660,7 +2667,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		              TopFace.X,TopFace.Y,
 		              TopFace.Wdt,TopFace.Hgt,
 		              cgo.Surface,
-		              cgo.X + cox + Def->TopFace.tx, cgo.Y + coy + Def->TopFace.ty,
+		              offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
 		              TopFace.Wdt, TopFace.Hgt,
 		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	// end of color modulation
@@ -3159,17 +3166,18 @@ void C4Object::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
 	// No select marks in film playback
 	if (Game.C4S.Head.Film && Game.C4S.Head.Replay) return;
 	// target pos (parallax)
-	float cotx=cgo.TargetX,coty=cgo.TargetY; TargetPos(cotx, coty, cgo);
+	float offX, offY, newzoom;
+	GetDrawPosition(cgo, Zoom, offX, offY, newzoom);
 	// Output boundary
-	if (!Inside<float>(fixtof(fix_x) - cotx, 0, cgo.Wdt - 1)
-	    || !Inside<float>(fixtof(fix_y) - coty, 0, cgo.Hgt - 1)) return;
+	if (!Inside<float>(offX, cgo.X, cgo.X + cgo.Wdt)
+	    || !Inside<float>(offY, cgo.Y, cgo.Y + cgo.Hgt)) return;
 	// Draw select marks
-	float cox = (fixtof(fix_x) + Shape.GetX() - cotx) * Zoom + cgo.X - 2;
-	float coy = (fixtof(fix_y) + Shape.GetY() - coty) * Zoom + cgo.Y - 2;
+	float cox = (offX + Shape.GetX() - cgo.X) * Zoom + cgo.X - 2;
+	float coy = (offY + Shape.GetY() - cgo.Y) * Zoom + cgo.Y - 2;
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy,0);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*Zoom,coy,1);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt*Zoom,2);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*Zoom,coy+Shape.Hgt*Zoom,3);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy,1);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt*newzoom,2);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy+Shape.Hgt*newzoom,3);
 }
 
 void C4Object::ClearCommands()
@@ -4843,9 +4851,10 @@ void C4Object::PlrFoWActualize()
 void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 {
 	// target pos (parallax)
-	float cotx=cgo.TargetX,coty=cgo.TargetY; TargetPos(cotx, coty, cgo);
-	Audible = Max<int>(Audible, BoundBy(100 - 100 * Distance(cotx + cgo.Wdt / 2, coty + cgo.Hgt / 2, iX,iY) / 700, 0, 100));
-	AudiblePan = BoundBy<int>(AudiblePan + (iX - (cotx + cgo.Wdt / 2)) / 5, -100, 100);
+	float offX, offY, newzoom;
+	GetDrawPosition(cgo, iX, iY, 1.0, offX, offY, newzoom);
+	Audible = Max<int>(Audible, BoundBy(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100));
+	AudiblePan = BoundBy<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
 }
 
 bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
@@ -5094,22 +5103,6 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 	return true;
 }
 
-void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport)
-{
-	// parallaxity by locals
-	// special: Negative positions with parallaxity 0 mean HUD elements positioned to the right/bottom
-	int iParX, iParY;
-	GetParallaxity(&iParX, &iParY);
-	if (!iParX && GetX()<0)
-		riTx = -fctViewport.Wdt;
-	else
-		riTx = riTx * iParX / 100;
-	if (!iParY && GetY()<0)
-		riTy = -fctViewport.Hgt;
-	else
-		riTy = riTy * iParY / 100;
-}
-
 bool C4Object::DoSelect()
 {
 	// selection allowed?
@@ -5124,6 +5117,58 @@ void C4Object::UnSelect()
 {
 	// do callback
 	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true)));
+}
+
+bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float zoom,
+	float & resultx, float & resulty, float & resultzoom)
+{
+	return GetDrawPosition(cgo, fixtof(fix_x), fixtof(fix_y), zoom, resultx, resulty, resultzoom);
+}
+
+bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom)
+{
+	int iParX, iParY;
+	GetParallaxity(&iParX, &iParY);
+	float targetx = cgo.TargetX; float targety = cgo.TargetY;
+	int width = cgo.Wdt; int height = cgo.Hgt;
+	float parx = iParX/100.0f; float pary = iParY / 100.0f;
+	float par = parx; //todo: pary?
+	// Old
+	resultzoom = zoom;
+
+	if(parx == 0 && fix_x < 0)
+		resultx = cgo.X + objx + cgo.Wdt;
+	else
+		resultx = cgo.X + objx - targetx*parx;
+
+	if(pary == 0 && fix_y < 0)
+		resulty = cgo.Y + objy + cgo.Hgt;
+	else
+		resulty = cgo.Y + objy - targety*pary;
+
+	return true;
+
+	// New
+
+	// Step 1: project to landscape coordinates
+	resultzoom = 1.0 / (1.0 - (par - par/zoom));
+	if (resultzoom < 0 || resultzoom > 100) // FIXME: optimize treshhold
+		return false;
+
+	float rx = ((1 - parx) * targetx) * resultzoom + objx;
+	float ry = ((1 - pary) * targety) * resultzoom + objy;
+
+	// Step 2: convert to screen coordinates
+	if(parx == 0 && fix_x < 0)
+		resultx = cgo.X + (objx + cgo.Wdt) * zoom / resultzoom;
+	else
+		resultx = cgo.X + (rx - targetx) * zoom / resultzoom;
+
+	if(pary == 0 && fix_y < 0)
+		resulty = cgo.Y + (objy + cgo.Hgt) * zoom / resultzoom;
+	else
+		resulty = cgo.Y + (ry - targety) * zoom / resultzoom;
+	return true;
 }
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)

@@ -405,13 +405,14 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 	for (clnk=Selection.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 	{
 		// target pos (parallax)
-		float cotx = cgo.TargetX, coty = cgo.TargetY; cobj->TargetPos(cotx, coty, cgo);
+		float offX, offY, newzoom;
+		cobj->GetDrawPosition(cgo, Zoom, offX, offY, newzoom); 
 		FLOAT_RECT frame =
 		{
-			(cobj->GetX()+cobj->Shape.x-cotx)*Zoom + cgo.X,
-			(cobj->GetX()+cobj->Shape.x-cotx)*Zoom + cgo.X + cobj->Shape.Wdt*Zoom,
-			(cobj->GetY()+cobj->Shape.y-coty)*Zoom + cgo.Y,
-			(cobj->GetY()+cobj->Shape.y-coty)*Zoom + cgo.Y + cobj->Shape.Hgt*Zoom
+			(offX+cobj->Shape.x-cgo.X)*newzoom + cgo.X,
+			(offX+cobj->Shape.x-cgo.X)*newzoom + cgo.X + cobj->Shape.Wdt*newzoom,
+			(offY+cobj->Shape.y-cgo.Y)*newzoom + cgo.Y,
+			(offY+cobj->Shape.y-cgo.Y)*newzoom + cgo.Y + cobj->Shape.Hgt*newzoom
 		};
 		DrawSelectMark(cgo, frame);
 		// highlight selection if shift is pressed

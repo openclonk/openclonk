@@ -751,6 +751,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			fctBlit.Set(pSourceGfx->GetBitmap(),
 			            action->GetPropertyInt(P_X), action->GetPropertyInt(P_Y),
 			            action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
+			// FIXME: fctBlit.TargetX has to be set here
 		}
 		else
 		{
@@ -987,9 +988,10 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	assert(!IsPicture());
 	assert(pForObj);
 	// get target pos
-	float cotx=cgo.TargetX,coty=cgo.TargetY; pForObj->TargetPos(cotx, coty, cgo);
-	float iTx = fixtof(pForObj->fix_x) - cotx + cgo.X,
-	            iTy = fixtof(pForObj->fix_y) - coty + cgo.Y;
+	float offX, offY;
+	float newzoom;
+	pForObj->GetDrawPosition(cgo, 1.0, offX, offY, newzoom);
+
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->PrepareDrawing();
@@ -1004,7 +1006,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	if (eMode == MODE_Rank)
 	{
 		C4TargetFacet ccgo;
-		ccgo.Set(cgo.Surface, iTx+pForObj->Shape.x,iTy+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
+		ccgo.Set(cgo.Surface, offX+pForObj->Shape.x,offY+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
 		DrawRankSymbol(ccgo, OverlayObj);
 	}
 	// drawing specific object?
@@ -1013,22 +1015,15 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		if (eMode == MODE_ObjectPicture)
 		{
 			C4Facet fctTarget;
-			fctTarget.Set(cgo.Surface, iTx+pForObj->Shape.x, iTy+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
+			fctTarget.Set(cgo.Surface, offX+pForObj->Shape.x, offY+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
 
 			OverlayObj->DrawPicture(fctTarget, false, NULL, &C4DrawTransform(Transform, fctTarget.X+float(fctTarget.Wdt)/2, fctTarget.Y+float(fctTarget.Hgt)/2));
 		}
 		else
 		{
 			// Draw specified object at target pos of this object; offset by transform.
-			// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
-			// (But any parallaxity of pForObj is regarded in calculation of cotx/y!)
-			int32_t oldTx = cgo.TargetX, oldTy = cgo.TargetY;
-			cgo.TargetX = cotx - pForObj->GetX() + OverlayObj->GetX() - Transform.GetXOffset();
-			cgo.TargetY = coty - pForObj->GetY() + OverlayObj->GetY() - Transform.GetYOffset();
-			OverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay);
-			OverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
-			cgo.TargetX = oldTx;
-			cgo.TargetY = oldTy;
+			OverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay, offX + Transform.GetXOffset(), offY + Transform.GetYOffset());
+			OverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay, offX + Transform.GetXOffset(), offY + Transform.GetYOffset());
 		}
 	}
 	else if (eMode == MODE_ExtraGraphics)
@@ -1065,25 +1060,25 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		if (!pMeshInstance)
 		{
 			// draw there
-			C4DrawTransform trf(Transform, float(iTx), float(iTy));
+			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
 				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(fctBlit.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(fctBlit.Hgt,1));
-				trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
+				trf.ScaleAt(fZoom, fZoom, offX, offY);
 			}
 
-			fctBlit.DrawT(cgo.Surface, iTx - fctBlit.Wdt/2 + fctBlit.TargetX, iTy - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
+			fctBlit.DrawT(cgo.Surface, offX - fctBlit.Wdt/2 + fctBlit.TargetX, offY - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
 		else if(eMode == MODE_Base || eMode == MODE_Action)
 		{
 			C4Def *pDef = pSourceGfx->pDef;
 
 			// draw there
-			C4DrawTransform trf(Transform, float(iTx), float(iTy));
+			C4DrawTransform trf(Transform, offX, offY);
 			if (fZoomToShape)
 			{
 				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(pDef->Shape.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(pDef->Shape.Hgt,1));
-				trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
+				trf.ScaleAt(fZoom, fZoom,  offX, offY);
 			}
 
 			C4Value value;
@@ -1092,7 +1087,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
 
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - pDef->Shape.Wdt/2.0, iTy - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
 			lpDDraw->SetMeshTransform(NULL);
 		}
 		else
@@ -1117,9 +1112,9 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
 
-			C4DrawTransform trf(Transform, float(iTx), float(iTy));
+			C4DrawTransform trf(Transform, offX, offY);
 			lpDDraw->SetPerspective(true);
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &trf);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - twdt/2, offY - thgt/2, twdt, thgt, pForObj->Color, &trf);
 			lpDDraw->SetPerspective(false);
 			lpDDraw->SetMeshTransform(NULL);
 		}

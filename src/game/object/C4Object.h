@@ -257,8 +257,8 @@ public:
 	bool SetPhase(int32_t iPhase);
 	void AssignRemoval(bool fExitContents=false);
 	enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2 };
-	void Draw(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal);
-	void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal);
+	void Draw(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
+	void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
 	void DrawActionFace(C4TargetFacet &cgo, float offX, float offY);
 	void DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX=0, int32_t iPhaseY=0);
 	void DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform);
@@ -364,10 +364,9 @@ public:
 	bool GrabInfo(C4Object *pFrom);         // grab info object from other object
 	bool ShiftContents(bool fShiftBack, bool fDoCalls); // rotate through contents
 	void DirectComContents(C4Object *pTarget, bool fDoCalls);   // direct com: scroll contents to given ID
-	inline void TargetPos(float &riTx, float &riTy, const C4Facet &fctViewport)    // update scroll pos applying parallaxity
-	{ if (Category & C4D_Parallax) ApplyParallaxity(riTx, riTy, fctViewport); }
 	void GetParallaxity(int32_t *parX, int32_t *parY);
-	void ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport);   // apply parallaxity by locals of object
+	bool GetDrawPosition(const C4TargetFacet & cgo, float zoom, float & resultx, float & resulty, float & resultzoom); // converts the object's position into screen coordinates
+	bool GetDrawPosition(const C4TargetFacet & cgo, float x, float y, float zoom, float & resultx, float & resulty, float & resultzoom); // converts object coordinates into screen coordinates
 	bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
 	void UpdateInLiquid(); // makes splash when a liquid is entered
 	void GrabContents(C4Object *pFrom); // grab all contents that don't reject it
