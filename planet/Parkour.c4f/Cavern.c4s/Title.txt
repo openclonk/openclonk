@@ -1,2 +1,2 @@
-DE:Die Höhle
-US:The Cavern
+DE:Kalte Höhle
+US:Cool Cavern

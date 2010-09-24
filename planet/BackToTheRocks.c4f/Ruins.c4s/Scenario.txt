@@ -5,6 +5,9 @@ Version=4,10
 [Definitions]
 Definition1=Objects.c4d
 
+[Game]
+Goals=MELE
+
 [Player1]
 Crew=Clonk=1
 
@@ -18,13 +21,14 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Sky=Clouds1.png
-MapWidth=60,0,64,10000
-MapHeight=50,0,40,10000
+Sky=Clouds1
+MapWidth=60
+MapHeight=50
 NewStyleLandscape=2
 
 [Animals]
 Nest=Firestone=30;Loam=20;Rock=15;
+
 [Weather]
 Climate=00,0,0,00
 StartSeason=0,0,0,00
