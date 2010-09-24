@@ -99,7 +99,7 @@ public:
 	C4MainMenu Menu; // Local-NoSave //
 	// View
 	int32_t ViewMode;
-	int32_t ViewX,ViewY;
+	C4Real ViewX,ViewY; // FIXED because this is saved/synchronized
 	bool ViewLock; // if set, no scrolling is allowed
 	C4Object *ViewTarget; // NoSave //
 	int32_t ViewWealth,ViewScore;
@@ -160,7 +160,7 @@ public:
 	void ResetCursorView(); // reset view to cursor if any cursor exists
 	void Evaluate();
 	void Surrender();
-	void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
+	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates
 	void SetCursor(C4Object *pObj, bool fSelectArrow);
 	void RemoveCrewObjects();
 	void NotifyOwnedObjects();

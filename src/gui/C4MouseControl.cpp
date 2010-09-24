@@ -622,13 +622,13 @@ void C4MouseControl::UpdateScrolling()
 	if (pPlayer) if (pPlayer->IsViewLocked()) return;
 	// Scrolling on border
 	if (VpX==0)
-		{ Cursor=C4MC_Cursor_Left; ScrollView(-ScrollSpeed,0,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }
+		{ Cursor=C4MC_Cursor_Left; ScrollView(-ScrollSpeed/Viewport->Zoom,0,Viewport->ViewWdt/Viewport->Zoom,Viewport->ViewHgt/Viewport->Zoom); Scrolling=true; }
 	if (VpY==0)
-		{ Cursor=C4MC_Cursor_Up; ScrollView(0,-ScrollSpeed,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }
+		{ Cursor=C4MC_Cursor_Up; ScrollView(0,-ScrollSpeed/Viewport->Zoom,Viewport->ViewWdt/Viewport->Zoom,Viewport->ViewHgt/Viewport->Zoom); Scrolling=true; }
 	if (VpX==Viewport->ViewWdt-1)
-		{ Cursor=C4MC_Cursor_Right; ScrollView(+ScrollSpeed,0,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }
+		{ Cursor=C4MC_Cursor_Right; ScrollView(+ScrollSpeed/Viewport->Zoom,0,Viewport->ViewWdt/Viewport->Zoom,Viewport->ViewHgt/Viewport->Zoom); Scrolling=true; }
 	if (VpY==Viewport->ViewHgt-1)
-		{ Cursor=C4MC_Cursor_Down; ScrollView(0,+ScrollSpeed,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }
+		{ Cursor=C4MC_Cursor_Down; ScrollView(0,+ScrollSpeed/Viewport->Zoom,Viewport->ViewWdt/Viewport->Zoom,Viewport->ViewHgt/Viewport->Zoom); Scrolling=true; }
 	// Set correct cursor
 	if ((VpX==0) && (VpY==0)) Cursor=C4MC_Cursor_UpLeft;
 	if ((VpX==Viewport->ViewWdt-1) && (VpY==0)) Cursor=C4MC_Cursor_UpRight;
@@ -1140,7 +1140,7 @@ bool C4MouseControl::IsPassive()
 	return ::Control.isReplay() || Player<=NO_OWNER;
 }
 
-void C4MouseControl::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
+void C4MouseControl::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 {
 	// player assigned: scroll player view
 	if (pPlayer)

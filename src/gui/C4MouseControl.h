@@ -142,7 +142,7 @@ protected:
 	bool UpdatePutTarget(bool fVehicle);
 	C4Object *GetTargetObject(); // get MouseSelection object at position
 	bool IsPassive(); // return whether mouse is only used to look around
-	void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
+	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates
 
 public:
 	bool IsHelp() { return Help; }

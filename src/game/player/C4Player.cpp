@@ -1466,13 +1466,13 @@ void C4Player::SetCursor(C4Object *pObj, bool fSelectArrow)
 	if (fSelectArrow) CursorFlash=30;
 }
 
-void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
+void C4Player::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 {
 	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
-	int32_t ViewportScrollBorder = Application.isFullScreen ? C4ViewportScrollBorder : 0;
-	ViewX = BoundBy<int32_t>( ViewX+iX, ViewWdt/2-ViewportScrollBorder, GBackWdt+ViewportScrollBorder-ViewWdt/2 );
-	ViewY = BoundBy<int32_t>( ViewY+iY, ViewHgt/2-ViewportScrollBorder, GBackHgt+ViewportScrollBorder-ViewHgt/2 );
+	float ViewportScrollBorder = Application.isFullScreen ? C4ViewportScrollBorder : 0;
+	ViewX = BoundBy<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
+	ViewY = BoundBy<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
 }
 
 void C4Player::ClearControl()

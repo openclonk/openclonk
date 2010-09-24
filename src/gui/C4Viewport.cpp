@@ -1241,16 +1241,16 @@ void C4Viewport::AdjustPosition()
 		else
 		{
 			// if view is close to border, allow scrolling
-			if (pPlr->ViewX < ViewportScrollBorder) ExtraBoundsX = Min<float>(ViewportScrollBorder - pPlr->ViewX, ViewportScrollBorder);
-			else if (pPlr->ViewX >= GBackWdt - ViewportScrollBorder) ExtraBoundsX = Min<float>(float(pPlr->ViewX - GBackWdt), 0) + ViewportScrollBorder;
-			if (pPlr->ViewY < ViewportScrollBorder) ExtraBoundsY = Min<float>(ViewportScrollBorder - pPlr->ViewY, ViewportScrollBorder);
-			else if (pPlr->ViewY >= GBackHgt - ViewportScrollBorder) ExtraBoundsY = Min<float>(float(pPlr->ViewY - GBackHgt), 0) + ViewportScrollBorder;
+			if (fixtof(pPlr->ViewX) < ViewportScrollBorder) ExtraBoundsX = Min<float>(ViewportScrollBorder - fixtof(pPlr->ViewX), ViewportScrollBorder);
+			else if (fixtof(pPlr->ViewX) >= GBackWdt - ViewportScrollBorder) ExtraBoundsX = Min<float>(fixtof(pPlr->ViewX) - GBackWdt, 0) + ViewportScrollBorder;
+			if (fixtof(pPlr->ViewY) < ViewportScrollBorder) ExtraBoundsY = Min<float>(ViewportScrollBorder - fixtof(pPlr->ViewY), ViewportScrollBorder);
+			else if (fixtof(pPlr->ViewY) >= GBackHgt - ViewportScrollBorder) ExtraBoundsY = Min<float>(fixtof(pPlr->ViewY) - GBackHgt, 0) + ViewportScrollBorder;
 		}
 		ExtraBoundsX = Max(ExtraBoundsX, (ViewWdt/Zoom - GBackWdt) / 2+1);
 		ExtraBoundsY = Max(ExtraBoundsY, (ViewHgt/Zoom - GBackHgt) / 2+1);
 		// calc target view position
-		float TargetViewX = pPlr->ViewX/* */;
-		float TargetViewY = pPlr->ViewY/* */;
+		float TargetViewX = fixtof(pPlr->ViewX) /* */;
+		float TargetViewY = fixtof(pPlr->ViewY) /* */;
 		// add mouse auto scroll
 		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAScroll)
 		{
