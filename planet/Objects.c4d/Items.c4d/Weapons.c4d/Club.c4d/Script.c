@@ -36,7 +36,7 @@ local fAiming;
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// cooldown?
-	if(!CanStrikeWithWeapon(clonk)) return;
+	if(!CanStrikeWithWeapon(clonk)) return 1;
 	
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
