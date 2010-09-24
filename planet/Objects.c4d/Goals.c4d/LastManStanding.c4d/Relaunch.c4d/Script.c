@@ -69,7 +69,7 @@ func FxIntTimeLimitTimer(target, num, fxtime)
 	return 1;
 }
 
-public func Selected(object menu, object selector)
+public func Selected(object menu, object selector, bool alt)
 {
 	if (!selector)
 		return false;
@@ -81,7 +81,7 @@ public func Selected(object menu, object selector)
 			newobj->CreateContents(Arrow);
 		if (newobj->GetID() == Musket)
 			newobj->CreateContents(LeadShot);
-		newobj->Enter(Contents());
+		Contents()->Collect(newobj, nil, alt);
 	}
 	menu->Show();
 	RelaunchClonk();
