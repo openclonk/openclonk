@@ -64,8 +64,8 @@ public func ControlUseAlt(object clonk)
 public func OpenMenu(object clonk)
 {
 	//var proc = clonk->GetProcedure();
-	// not opened yet           v- why is this check here? - it belongs in the object script - Newton
-	if (!content_menu /* && (proc == "WALK" || proc == "PUSH")*/)
+	// not opened yet
+	if (!content_menu)
 	{
 		content_menu = clonk->CreateRingMenu(GetID(), this);
 		// all contents into the menu
@@ -73,6 +73,8 @@ public func OpenMenu(object clonk)
 			content_menu->AddItem(Contents(i));
 		if (ContentsCount() < MaxContentsCount())
 			content_menu->AddItem(nil);
+		// add effect which checks if the clonk is still there
+		AddEffect("ClonkStillThere", this, 1, 10, this);
 		content_menu->Show();
 		OnContentMenuOpen();
 	}
@@ -80,12 +82,29 @@ public func OpenMenu(object clonk)
 	{
 		content_menu->Close();
 		OnContentMenuClose();
+		RemoveEffect("ClonkStillThere",this);
 	}
 	// otherwise, fail
 	else
 		return false;
 		
 	return true;
+}
+
+func FxClonkStillThereTimer(object target, int num, int time)
+{
+	if(!content_menu) return -1;
+	var clonk = content_menu->GetMenuObject();
+	if(!clonk) return -1;
+	for(var obj in FindObjects(Find_InRect(-GetDefWidth()/2,-GetDefHeight()/2,GetDefWidth(),GetDefHeight())))
+	{
+		// clonk still there
+		if(clonk == obj) return 0;
+	}
+	// clonk gone
+	content_menu->Close();
+	OnContentMenuClose();
+	return -1;
 }
 
 private func OnContentMenuOpen() { return; }
