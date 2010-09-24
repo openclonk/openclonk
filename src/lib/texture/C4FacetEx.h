@@ -40,17 +40,17 @@ public:
 	C4TargetFacet() { Default(); }
 	~C4TargetFacet() { }
 public:
-	float TargetX,TargetY;
+	float TargetX,TargetY,Zoom;
 public:
-	void Default() { TargetX=TargetY=0; C4Facet::Default(); }
+	void Default() { TargetX=TargetY=0; Zoom=1; C4Facet::Default(); }
 	void Clear() { Surface=NULL; }
 
-	void Set(const C4Facet &cpy) { TargetX=TargetY=0; C4Facet::Set(cpy); }
+	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; C4Facet::Set(cpy); }
 	void Set(const C4TargetFacet &cpy) { *this = cpy; }
-	void Set(class CSurface *nsfc, int nx, int ny, int nwdt, int nhgt, float ntx=0, float nty=0);
-	void Set(class CSurface *nsfc, const C4Rect & r, float ntx=0, float nty=0);
+	void Set(class CSurface *nsfc, int nx, int ny, int nwdt, int nhgt, float ntx=0, float nty=0, float Zoom=1);
+	void Set(class CSurface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
 
-	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2);
+	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2); // uses Target and position
 public:
 	C4TargetFacet &operator = (const C4Facet& rhs)
 	{
