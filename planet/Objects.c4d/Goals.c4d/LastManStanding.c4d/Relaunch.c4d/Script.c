@@ -34,6 +34,13 @@ public func StartRelaunch(object clonk)
 	if (!clonk)
 		return;
 	clonk->Enter(this);
+	ScheduleCall(this, "OpenWeaponMenu", 36, 0, clonk);
+	AddEffect("IntTimeLimit", this, 100, 36, this);
+	return true;
+}
+
+private func OpenWeaponMenu(object clonk)
+{
 	if (!menu)
 	{
 		var weapons = WeaponList();
@@ -45,8 +52,6 @@ public func StartRelaunch(object clonk)
 			menu->Show();
 		}
 	}
-	AddEffect("IntTimeLimit", this, 100, 36, this);
-	return true;
 }
 
 func FxIntTimeLimitTimer(target, num, fxtime)
