@@ -187,18 +187,18 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 	else if (Type == C4GM_Target || ((Type == C4GM_TargetPlayer) && (iPlayer == Player)))
 	{
 		// adjust position by object; care about parallaxity
-		float iMsgX, iMsgY;
+		float iMsgX, iMsgY, newzoom;
 		if (Type == C4GM_Target || Type == C4GM_TargetPlayer)
 		{
-			Target->GetViewPos(iMsgX, iMsgY, cgo.TargetX, cgo.TargetY, cgo);
+			Target->GetDrawPosition(cgo, iMsgX, iMsgY, newzoom);
 			iMsgY -= Target->Def->Shape.Hgt/2+5;
 			iMsgX+=X; iMsgY+=Y;
 		}
 		else
 			{ iMsgX=X; iMsgY=Y; }
 		// check output bounds
-		if (Inside<float>((iMsgX - cgo.TargetX) * Zoom, 0, cgo.Wdt - 1))
-			if (Inside<float>((iMsgY - cgo.TargetY) * Zoom, 0, cgo.Hgt - 1))
+		if (Inside<float>((iMsgX - cgo.X) * newzoom, 0, cgo.Wdt - 1))
+			if (Inside<float>((iMsgY - cgo.Y) * newzoom, 0, cgo.Hgt - 1))
 			{
 				// if the message is attached to an object and the object
 				// is invisible for that player, the message won't be drawn
@@ -224,8 +224,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 				int32_t iTX,iTY,iTWdt,iTHgt;
 				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
 				// +0.5f for proper rounding; avoids oscillations near pixel border:
-				iTX = BoundBy<float>((iMsgX - cgo.TargetX) * Zoom, iTWdt/2, cgo.Wdt - iTWdt / 2) + 0.5f;
-				iTY = BoundBy<float>((iMsgY - cgo.TargetY) * Zoom - iTHgt, 0, cgo.Hgt - iTHgt) + 0.5f;
+				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt - iTWdt / 2) + 0.5f;
+				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt - iTHgt) + 0.5f;
 				// Draw
 				Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 				                           cgo.Surface,
