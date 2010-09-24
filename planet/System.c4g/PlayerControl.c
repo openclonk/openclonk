@@ -291,7 +291,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		// Jump control
 		if (ctrl == CON_Jump)
 		{
-			if(proc == "WALK")
+			if(proc == "WALK" && GetComDir() == COMD_Up)
 				SetComDir(COMD_None);
 			return this->ObjectCommand("Jump");
 		}
