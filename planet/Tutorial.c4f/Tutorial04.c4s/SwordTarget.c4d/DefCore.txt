@@ -1,0 +1,14 @@
+[DefCore]
+id=SwordTarget
+Version=4,10,0,0
+Category=C4D_Living
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=3
+VertexX=0,10,-10
+VertexY=-6,6,6
+VertexFriction=50
+Value=10
+Mass=15
+Rotate=1

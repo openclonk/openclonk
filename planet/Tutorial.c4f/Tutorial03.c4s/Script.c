@@ -71,8 +71,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
-	// Uncomment if there is a 4th tutorial.
-	// SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	 SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }

@@ -1,0 +1,14 @@
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
+# Tutorial messages
+MsgTutWelcome=Welcome, you have been equipped with sword and shield. Use the sword to strike the four straw men, you can strike with the sword while jumping.
+MsgTutGateOpened=Not bad, but the next challenge will be a living opponent. Move through the gate up the ledge, be careful when approaching your enemy.
+MsgTutFirstEnemy=There is an enemy, use the shield to block his ranged attacks, and strike him with the sword from nearby.
+MsgTutOpenGate=No challenge at all, right? Grab the spin wheel and press [Up] to open the gate and advance to your next opponents.
+MsgTutTwoEnemies=There are two bow men occupying that tower, make it into the tower and attack them from behind.
+MsgTutMoveOn=Well done! Open the gate with the wheel in tower, and move on to the last enemy.
+MsgTutLastEnemy=The last enemy is there, he is equipped with sword and shield. Kill him to complete this tutorial.

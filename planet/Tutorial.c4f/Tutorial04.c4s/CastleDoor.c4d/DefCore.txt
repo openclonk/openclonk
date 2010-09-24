@@ -1,0 +1,17 @@
+[DefCore]
+id=CastleDoor
+Version=4,10,0,0
+Category=C4D_Structure
+MaxUserSelect=4
+Width=10
+Height=40
+Offset=-5,-20
+Vertices=4
+VertexX=-4,4,-4,4
+VertexY=20,20,-20,-20
+VertexFriction=100,100,50,50
+VertexCNAT=8,8,4,4
+SolidMask=40,0,10,40,0,0
+Value=60
+Mass=10000
+Components=Wood=6;Metal=2;
