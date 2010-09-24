@@ -47,14 +47,18 @@ protected func Initialize()
 	pickaxe = CreateObject(Pickaxe, 185, 680, NO_OWNER);
 	pickaxe->SetObjectLayer(pickaxe);
 	pickaxe->SetR(-60);
+	pickaxe->SetClrModulation(RGB(120, 120, 120));
 	pickaxe = CreateObject(Pickaxe, 316, 678, NO_OWNER);
 	pickaxe->SetObjectLayer(pickaxe);
+	pickaxe->SetClrModulation(RGB(120, 120, 120));
 	pickaxe->SetR(70);
 	pickaxe = CreateObject(Pickaxe, 156, 666, NO_OWNER);
 	pickaxe->SetObjectLayer(pickaxe);
+	pickaxe->SetClrModulation(RGB(120, 120, 120));
 	pickaxe->SetR(-10);
 	var lorry = CreateObject(Lorry, 320, 680, NO_OWNER);
 	lorry->SetObjectLayer(lorry);
+	lorry->SetClrModulation(RGB(120, 120, 120));
 	
 	// Cannon to blast through rock & chest with powderkeg and firestones.
 	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER);

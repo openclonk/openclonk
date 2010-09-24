@@ -27,7 +27,7 @@ VegetationLevel=100
 InEarth=Rock=2;Gold=1
 InEarthLevel=25
 Sky=Clouds1
-TopOpen=0
+TopOpen=1
 BottomOpen=0
 MapWidth=300
 MapHeight=60
