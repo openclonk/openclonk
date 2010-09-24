@@ -86,9 +86,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SaveGameFolder,      "SaveGameFolder",     "Savegames.c4f", false, true));
 	pComp->Value(mkNamingAdapt(SaveDemoFolder,      "SaveDemoFolder",     "Records.c4f",   false, true  ));
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
-	pComp->Value(mkNamingAdapt(s(UpdateEngine),     "UpdateEngine",       "www.clonkx.de/" C4ENGINENICK "/cr_%d_%s.c4u"));
-	pComp->Value(mkNamingAdapt(s(UpdateObjects),    "UpdateObjects",      "www.clonkx.de/" C4ENGINENICK "/cr_%d%d%d%d_%d_%s.c4u"));
-	pComp->Value(mkNamingAdapt(s(UpdateMajor),      "UpdateMajor",        "www.clonkx.de/" C4ENGINENICK "/cr_%d%d%d%d_%s.c4u"));
+	pComp->Value(mkNamingAdapt(s(UpdateURL),        "UpdateURL",          "openclonk.org/updates/oc_%d_%d_%d_%d_%s.c4u"));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	pComp->Value(mkNamingAdapt(Record,              "Record",             0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));

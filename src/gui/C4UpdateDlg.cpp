@@ -165,15 +165,16 @@ bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *p
 	StdStrBuf strUpdateURL;
 	// Double check for valid update
 	if (!IsValidUpdate(rUpdateVersion)) return false;
-	// Objects major update: we will update to the first minor of the next major version - we can not skip major versions or jump directly to a higher minor of the next major version.
-	if (rUpdateVersion.iVer[2] > C4XVER3)
-		strUpdateURL.Format(Config.General.UpdateMajor, (int)rUpdateVersion.iVer[0], (int)rUpdateVersion.iVer[1], C4XVER3 + 1, 0, C4_OS);
-	// Objects version match: engine update only
-	else if ((rUpdateVersion.iVer[2] == C4XVER3) && (rUpdateVersion.iVer[3] == C4XVER4))
-		strUpdateURL.Format(Config.General.UpdateEngine, (int)rUpdateVersion.iBuild, C4_OS);
-	// Objects version mismatch: full objects update
+	// Major update: we will update to the first minor of the next major version - we can not skip major versions or jump directly to a higher minor of the next major version.
+	if (rUpdateVersion.iVer[0] > C4XVER1)
+		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1 + 1, 0, 0, 0, C4_OS);
+	else if (rUpdateVersion.iVer[1] > C4XVER2)
+		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2 + 1, 0, 0, C4_OS);
+	else if (rUpdateVersion.iVer[2] > C4XVER3)
+		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3 + 1, 0, C4_OS);
+	// Minor update: apply cumulative update
 	else
-		strUpdateURL.Format(Config.General.UpdateObjects, (int)rUpdateVersion.iVer[0], (int)rUpdateVersion.iVer[1], (int)rUpdateVersion.iVer[2], (int)rUpdateVersion.iVer[3], (int)rUpdateVersion.iBuild, C4_OS);
+		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3, (int)rUpdateVersion.iVer[3], C4_OS);
 	// Determine local filename for update group
 	StdStrBuf strLocalFilename; strLocalFilename.Copy(GetFilename(strUpdateURL.getData()));
 	// Windows Vista: download update group to temp path
@@ -272,7 +273,7 @@ bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
 	     // ...or objects major is the same and objects minor is higher...
 	     || ((rNewVer.iVer[2] == C4XVER3) && (rNewVer.iVer[3] > C4XVER4))
 	     // ...or build number is higher
-	     || (rNewVer.iBuild > C4XVERBUILD) )
+	     /*|| (rNewVer.iBuild > C4XVERBUILD)*/ )
 		// Update okay
 		return true;
 	// Otherwise
@@ -372,7 +373,7 @@ bool C4Network2VersionInfoClient::GetVersion(C4GameVersion *piVerOut)
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
 	// Parse response
-	piVerOut->Set("", 0,0,0,0, 0);;
+	piVerOut->Set("", 0,0,0,0);
 	try
 	{
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(

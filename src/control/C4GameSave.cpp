@@ -311,7 +311,7 @@ void C4GameSave::WriteDescGameTime(StdStrBuf &sBuf)
 
 void C4GameSave::WriteDescEngine(StdStrBuf &sBuf)
 {
-	char ver[5]; sprintf(ver, "%03d", (int) C4XVERBUILD);
+	char ver[5]; sprintf(ver, "%03d", (int) C4XVER4);
 	sBuf.AppendFormat(LoadResStr("IDS_DESC_VERSION"), ver);
 	WriteDescLineFeed(sBuf);
 }
@@ -556,7 +556,7 @@ void C4GameSaveRecord::AdjustCore(C4Scenario &rC4S)
 	rC4S.Head.Icon=29;
 	// default record title
 	char buf[1024 + 1];
-	sprintf(buf, "%03i %s [%d]", iNum, Game.ScenarioTitle.getData(), (int) C4XVERBUILD);
+	sprintf(buf, "%03i %s [%d]", iNum, Game.ScenarioTitle.getData(), (int) C4XVER4);
 	SCopy(buf, rC4S.Head.Title, C4MaxTitle);
 }
 

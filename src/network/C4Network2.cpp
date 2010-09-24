@@ -1075,9 +1075,9 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 
 	// check engine version
 	bool fWrongPassword = false;
-	if (Pkt.getVer() != C4XVERBUILD)
+	if (Pkt.getVer() != C4XVER4)
 	{
-		reply.Format("wrong engine (%d, I have %d)", Pkt.getVer(), C4XVERBUILD);
+		reply.Format("wrong engine (%d, I have %d)", Pkt.getVer(), C4XVER4);
 		fOK = false;
 	}
 	else

@@ -6509,7 +6509,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver2"               ,C4V_Int,          C4XVER2},
 	{ "C4X_Ver3"               ,C4V_Int,          C4XVER3},
 	{ "C4X_Ver4"               ,C4V_Int,          C4XVER4},
-	{ "C4X_VerBuild"           ,C4V_Int,          C4XVERBUILD},
 
 	{ "SkyPar_Keep"            ,C4V_Int,          SkyPar_KEEP},
 

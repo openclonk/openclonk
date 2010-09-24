@@ -408,12 +408,12 @@ void C4PacketList::CompileFunc(StdCompiler *pComp)
 // *** C4PacketConn
 
 C4PacketConn::C4PacketConn()
-		: iVer(C4XVERBUILD)
+		: iVer(C4XVER4)
 {
 }
 
 C4PacketConn::C4PacketConn(const C4ClientCore &nCCore, uint32_t inConnID, const char *szPassword)
-		: iVer(C4XVERBUILD),
+		: iVer(C4XVER4),
 		iConnID(inConnID),
 		CCore(nCCore),
 		Password(szPassword)

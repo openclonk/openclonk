@@ -118,7 +118,6 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));
 	pComp->Value(mkNamingAdapt(Game.sEngineName,      "Game",             "None"));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"    ));
-	pComp->Value(mkNamingAdapt(Game.iBuild,             "Build",            -1));
 	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
 
 	pComp->Value(Parameters);
@@ -564,7 +563,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
 	// Parse response
-	MasterVersion.Set("", 0,0,0,0, 0);
+	MasterVersion.Set("", 0,0,0,0);
 	fVerSet = false;
 	// local update test
 	try
