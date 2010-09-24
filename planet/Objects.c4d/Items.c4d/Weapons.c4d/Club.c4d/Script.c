@@ -76,7 +76,7 @@ public func FinishedAiming(object clonk, int angle)
 	AddEffect("DuringClubShoot", clonk, 1, 1, this, nil, angle);
 	
 	// aaaand, a cooldown
-	AddEffect("ClubWeaponCooldown", clonk, 1, 30, this);
+	AddEffect("ClubWeaponCooldown", clonk, 1, 5, this);
 	return true;
 }
 
@@ -118,6 +118,9 @@ func DoStrike(clonk, angle)
 	var found=false;
 	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
+		var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+		if(GetEffect(en, obj)) continue;
+		
 		if(obj->GetOCF() & OCF_Alive)
 		{
 			var damage=5*1000;
@@ -137,6 +140,7 @@ func DoStrike(clonk, angle)
 			obj->SetXDir((obj->GetXDir(100) + Sin(angle, speed)) / 2, div);
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, speed)) / 2, div);
 		}
+		AddEffect(en, obj, 1, 15, 0);
 		found=true;
 		break;
 	}
