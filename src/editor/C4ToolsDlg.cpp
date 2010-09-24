@@ -717,8 +717,10 @@ void C4ToolsDlg::UpdatePreview()
 	{
 		if (pGLCtx->Select())
 		{
-			pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
-			Application.pWindow->pSurface->PageFlip();
+			// FIXME: This activates the wrong GL context. To avoid breaking the main window display,
+			// FIXME: it has been disabled for the moment
+			// pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
+			// Application.pWindow->pSurface->PageFlip();
 		}
 	}
 #endif
