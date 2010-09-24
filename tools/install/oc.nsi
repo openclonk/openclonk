@@ -1,3 +1,4 @@
+; TODO: PRODUCT_VERSION
 !define PRODUCT_NAME "OpenClonk"
 !define PRODUCT_PUBLISHER "OpenClonk Development Team"
 !define PRODUCT_WEB_SITE "http://www.openclonk.org"
@@ -55,8 +56,8 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ; MUI end ------
 
 Name "${PRODUCT_NAME}"
-OutFile "..\oc_win32.exe"
-InstallDir "$PROGRAMFILES\OpenClonk"
+OutFile "..\oc.exe"
+InstallDir "@PROGRAMFILES@\OpenClonk"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -68,23 +69,9 @@ Section "MainSection" SEC01
   File "Clonk.exe"
   File "c4group.exe"
 
-  File "freetype6.dll"
-  File "glew32.dll"
-  File "jpeg62.dll"
-  File "libpng3.dll"
-  File "zlib1.dll"
-  File "libeay32.dll"
-  File "fmod.dll"
+  File "*.dll"
 
-  File "Worlds.c4f"
-  File "Parkour.c4f"
-  File "Tests.c4f"
-  File "Graphics.c4g"
-  File "Material.c4g"
-  File "Music.c4g"
-  File "Sound.c4g"
-  File "System.c4g"
-  File "Objects.c4d"
+  File "*.c4?"
   
   File "AUTHORS"
   File "COPYING"
@@ -202,24 +189,9 @@ Section Uninstall
   Delete "$INSTDIR\Clonk.exe"
   Delete "$INSTDIR\c4group.exe"
 
-  Delete "$INSTDIR\freetype6.dll"
-  Delete "$INSTDIR\glew32.dll"
-  Delete "$INSTDIR\jpeg62.dll"
-  Delete "$INSTDIR\libpng3.dll"
-  Delete "$INSTDIR\zlib1.dll"
-  Delete "$INSTDIR\libeay32.dll"
-  Delete "$INSTDIR\fmod.dll"
+  Delete "$INSTDIR\*.dll"
 
-  Delete "$INSTDIR\Worlds.c4f"
-  Delete "$INSTDIR\Parkour.c4f"
-  Delete "$INSTDIR\Tests.c4f"
-
-  Delete "$INSTDIR\Graphics.c4g"
-  Delete "$INSTDIR\Material.c4g"
-  Delete "$INSTDIR\Music.c4g"
-  Delete "$INSTDIR\Sound.c4g"
-  Delete "$INSTDIR\System.c4g"
-  Delete "$INSTDIR\Objects.c4d"
+  Delete "$INSTDIR\*.c4?"
 
   Delete "$INSTDIR\AUTHORS"
   Delete "$INSTDIR\COPYING"
