@@ -49,7 +49,7 @@ protected func OnPlayerRelaunch(int plr)
 global func FxIntFillChestsStart()
 {
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Bow,Musket,Shield,Sword,Club,Javelin,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox,JarOfWinds];
+	var w_list = [Bow,Musket,Shield,Sword,Club,Javelin,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox];
 	
 	for(var chest in chests)
 		for(var i=0; i<4; ++i)
