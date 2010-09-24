@@ -191,6 +191,9 @@ func HitByWeapon(pFrom, iDamage)
 	// bash him hard!
 	ApplyWeaponBash(pFrom, 500*50, iAngle);
 	
+	// uber advantage in melee combat
+	AddEffect("ShieldBlockMeleeCooldown", pFrom, 1, 16, this);
+	
 	// shield factor
 	return 100;
 }
@@ -221,6 +224,11 @@ func AngleInside(angle1, angle2, allowance)
 	if(Abs(angle2 - angle1) > Abs(angle2 - (360+angle1))) if(Inside(angle2, 360+angle1-allowance, 360+angle1+allowance)) return true;
 	
 	return false;
+}
+
+func FxShieldStopControlControlJump(target, effect_number)
+{
+	return true;
 }
 
 func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)

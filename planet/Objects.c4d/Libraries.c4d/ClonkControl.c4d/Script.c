@@ -1342,8 +1342,23 @@ public func ControlThrow(object target, int x, int y)
 	return false;
 }
 
+func CanJump()
+{
+	// allowing effects to overload that
+	var e=0, i=0;
+	while(e=GetEffect("*Control*", this, i++))
+	{
+		var r=EffectCall(this, e, "ControlJump");
+		if(r) return false;
+	}
+	return true;
+}
+
 public func ControlJump()
 {
+	// may I?
+	if(!CanJump()) return false;
+	
 	var ydir = 0;
 	var xdir = 0;
 	var max_xdir = 20;
