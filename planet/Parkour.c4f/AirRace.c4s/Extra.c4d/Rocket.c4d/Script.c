@@ -70,9 +70,9 @@ protected func FxIntFlightTimer(object target, int num, int time)
 	SetXDir(Sin(angle, speed), 100);
 	SetYDir(-Cos(angle, speed), 100);
 
-	// Check if there is a vehicle - other than this - to explode at.
-	if (time > 40)
-		if (FindObject(Find_Category(C4D_Vehicle), Find_Exclude(shooter), Find_Exclude(this), Find_AtPoint()))
+	// Check if there is a plane to explode at.
+	if (time > 10)
+		if (FindObject(Find_ID(Plane), Find_Exclude(shooter), Find_Exclude(this), Find_AtPoint()))
 			DoFireworks();
 	
 	var sizemod = ignition*ignition/5;

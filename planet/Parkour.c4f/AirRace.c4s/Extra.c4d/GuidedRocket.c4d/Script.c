@@ -24,13 +24,13 @@ protected func FxIntFlightTimer(object target, int num, int time)
 	SetYDir(-Cos(angle, speed), 100);
 	
 
-	// Check if there is a vehicle - other than this - to explode at.
-	if (time > 40)
+	// Check if there is a plane to explode at.
+	if (time > 10)
 		if (FindObject(Find_ID(Plane), Find_Exclude(shooter), Find_Exclude(this), Find_AtPoint()))
 			DoFireworks();
 			
 	// Follow nearest other vehicle.
-	for (var to_follow in FindObjects(Find_Category(C4D_Vehicle), Find_Exclude(shooter), Find_Exclude(this), Find_Distance(300), Sort_Distance()))
+	for (var to_follow in FindObjects(Find_ID(Plane), Find_Exclude(shooter), Find_Exclude(this), Find_Distance(300), Sort_Distance()))
 	{
 		// Vehicle must be in 60 degree front wedge.
 		var angle = Angle(GetX(), GetY(), to_follow->GetX(), to_follow->GetY());
@@ -55,7 +55,8 @@ protected func FxIntFlightTimer(object target, int num, int time)
 	fuel--;
 }
 
-func Definition(def) {
+func Definition(def) 
+{
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
 }
 local Collectible = 1;

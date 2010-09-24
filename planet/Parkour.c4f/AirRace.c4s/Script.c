@@ -19,6 +19,9 @@ protected func Initialize()
 
 	// Vegetation.
 	PlaceGrass(100);
+	
+	// Environment.
+	CreateObject(Environment_Clouds);
 
 	return;
 }
@@ -130,7 +133,6 @@ protected func PlrHasRespawned(int plr, object cp)
 	else if (mode & PARKOUR_CP_Respawn)
 	{
 		var angle = FindPlaneAngle(cp);
-		Log("%v", angle);
 		plane->StartInstantFlight(angle, 15);
 	}
 	return;
