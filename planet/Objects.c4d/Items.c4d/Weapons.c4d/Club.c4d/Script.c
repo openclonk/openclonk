@@ -115,6 +115,7 @@ func DoStrike(clonk, angle)
 		if(obj->GetOCF() & OCF_Alive)
 		{
 			ApplyWeaponBash(obj, 500, angle);
+			obj->DoEnergy(-5, false, FX_Call_EngGetPunched, clonk->GetOwner());
 		}
 		else
 		{
