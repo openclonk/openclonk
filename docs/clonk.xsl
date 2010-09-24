@@ -55,7 +55,9 @@
   <xsl:template match="script">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
-  <xsl:template match="*" mode="head" />
+  <xsl:template match="*" mode="head">
+    <xsl:apply-templates mode="head" />
+  </xsl:template>
   <xsl:template match="title" />
 
   <xsl:template name="header">
