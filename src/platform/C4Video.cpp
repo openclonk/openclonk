@@ -214,9 +214,9 @@ bool C4Video::AdjustPosition()
 	C4Player *pPlr = ::Players.Get(pViewport->GetPlayer());
 	if (!pPlr) return false;
 	// Set camera position
-	X = int32_t(pPlr->ViewX - pViewport->ViewX + pViewport->DrawX - Width/2);
+	X = int32_t(fixtof(pPlr->ViewX) - pViewport->ViewX + pViewport->DrawX - Width/2);
 	X = BoundBy( X, 0, pViewport->ViewWdt - Width );
-	Y = int32_t(pPlr->ViewY - pViewport->ViewY + pViewport->DrawY - Height/2);
+	Y = int32_t(fixtof(pPlr->ViewY) - pViewport->ViewY + pViewport->DrawY - Height/2);
 	Y = BoundBy( Y, 0, pViewport->ViewHgt - Height );
 	// Success
 	return true;
