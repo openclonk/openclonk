@@ -173,7 +173,7 @@ func CheckStrike(iTime)
 		velocity=velocity*3;*/
 		//if(velocity > 300) velocity=300;
 		
-		var shield=ApplyShieldFactor(Contained(), obj, damage);
+		var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
 		if(shield == 100)
 			continue;
 		// fixed damage for now, not taking velocity into account
