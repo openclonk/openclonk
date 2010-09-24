@@ -222,9 +222,25 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 	if (Surface)
 	{
 		// blit parallax sky
-		int iParX = cgo.TargetX * 10 / ParX - fixtoi(x);
-		int iParY = cgo.TargetY * 10 / ParY - fixtoi(y);
-		Application.DDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, iParX, iParY, false);
+		float zoom = cgo.Zoom;
+		float targetx = cgo.TargetX; float targety = cgo.TargetY;
+		int width = cgo.Wdt; int height = cgo.Hgt;
+		float parx = 10.0f / ParX; float pary = 10.0f / ParY;
+		float par = parx; //todo: pary?
+
+		// Step 1: project to landscape coordinates
+		float resultzoom = 1.0 / (1.0 - (par - par/zoom));
+
+		float rx = ((1 - parx) * targetx) * resultzoom + fixtof(x);
+		float ry = ((1 - pary) * targety) * resultzoom + fixtof(y);
+
+		// Step 2: convert to screen coordinates
+		float resultx = (rx - targetx) * zoom / resultzoom;
+		float resulty = (ry - targety) * zoom / resultzoom;
+
+		ZoomDataStackItem zdsi(resultzoom);
+
+		Application.DDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
 	}
 	else
 	{

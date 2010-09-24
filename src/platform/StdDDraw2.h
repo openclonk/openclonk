@@ -343,6 +343,12 @@ protected:
 	friend class CStdD3DShader;
 };
 
+struct ZoomDataStackItem: public ZoomData
+{
+	ZoomDataStackItem(float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
+	~ZoomDataStackItem() { lpDDraw->SetZoom(*this); }
+};
+
 bool LockSurfaceGlobal(SURFACE sfcTarget);
 bool UnLockSurfaceGlobal(SURFACE sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);

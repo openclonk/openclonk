@@ -990,7 +990,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	// get target pos
 	float offX, offY;
 	float newzoom;
-	pForObj->GetDrawPosition(cgo, 1.0, offX, offY, newzoom);
+	pForObj->GetDrawPosition(cgo, offX, offY, newzoom);
+	ZoomDataStackItem zdsi(newzoom);
 
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)

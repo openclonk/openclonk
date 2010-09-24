@@ -2306,8 +2306,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	float newzoom;
 	if (eDrawMode!=ODM_Overlay)
 	{
-		if (!GetDrawPosition(cgo, 1.0, offX, offY, newzoom)) return;
+		if (!GetDrawPosition(cgo, offX, offY, newzoom)) return;
 	}
+	ZoomDataStackItem zdsi(newzoom);
 
 	bool fYStretchObject=false;
 	C4PropList* pActionDef = GetAction();
@@ -2356,9 +2357,10 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				// Angle
 				int32_t iAngle; iAngle=Angle(ccx,ccy,pCom->Tx._getInt(),pCom->Ty); while (iAngle>180) iAngle-=360;
 				// Path
-				if(GetDrawPosition(cgo, ccx, ccy, 1.0, offX1, offY1, newzoom) &&
-				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, 1.0, offX2, offY2, newzoom))
+				if(GetDrawPosition(cgo, ccx, ccy, cgo.Zoom, offX1, offY1, newzoom) &&
+				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
+					ZoomDataStackItem zdsi(newzoom);
 					Application.DDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
 					Application.DDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
 				}
@@ -2389,9 +2391,10 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				break;
 			case C4CMD_Transfer:
 				// Path
-				if(GetDrawPosition(cgo, ccx, ccy, 1.0, offX1, offY1, newzoom) &&
-				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, 1.0, offX2, offY2, newzoom))
+				if(GetDrawPosition(cgo, ccx, ccy, cgo.Zoom, offX1, offY1, newzoom) &&
+				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
+					ZoomDataStackItem zdsi(newzoom);
 					Application.DDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
 					Application.DDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
 				}
@@ -2576,7 +2579,8 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	if (!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
 	float newzoom;
-	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, 1.0, offX, offY, newzoom);
+	if (eDrawMode!=ODM_Overlay) GetDrawPosition(cgo, offX, offY, newzoom);
+	ZoomDataStackItem zdsi(newzoom);
 	// Clonk name
 	// Name of Owner/Clonk (only when Crew Member; never in films)
 	if (OCF & OCF_CrewMember)
@@ -3159,7 +3163,7 @@ void C4Object::SyncClearance()
 	}
 }
 
-void C4Object::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
+void C4Object::DrawSelectMark(C4TargetFacet &cgo)
 {
 	// Status
 	if (!Status) return;
@@ -3167,13 +3171,13 @@ void C4Object::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
 	if (Game.C4S.Head.Film && Game.C4S.Head.Replay) return;
 	// target pos (parallax)
 	float offX, offY, newzoom;
-	GetDrawPosition(cgo, Zoom, offX, offY, newzoom);
+	GetDrawPosition(cgo, offX, offY, newzoom);
 	// Output boundary
 	if (!Inside<float>(offX, cgo.X, cgo.X + cgo.Wdt)
 	    || !Inside<float>(offY, cgo.Y, cgo.Y + cgo.Hgt)) return;
 	// Draw select marks
-	float cox = (offX + Shape.GetX() - cgo.X) * Zoom + cgo.X - 2;
-	float coy = (offY + Shape.GetY() - cgo.Y) * Zoom + cgo.Y - 2;
+	float cox = (offX + Shape.GetX() - cgo.X) * newzoom + cgo.X - 2;
+	float coy = (offY + Shape.GetY() - cgo.Y) * newzoom + cgo.Y - 2;
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy,0);
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy,1);
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt*newzoom,2);
@@ -4852,7 +4856,7 @@ void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 {
 	// target pos (parallax)
 	float offX, offY, newzoom;
-	GetDrawPosition(cgo, iX, iY, 1.0, offX, offY, newzoom);
+	GetDrawPosition(cgo, iX, iY, cgo.Zoom, offX, offY, newzoom);
 	Audible = Max<int>(Audible, BoundBy(100 - 100 * Distance(cgo.X + cgo.Wdt / 2, cgo.Y + cgo.Hgt / 2, offX, offY) / 700, 0, 100));
 	AudiblePan = BoundBy<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
 }
@@ -5119,10 +5123,10 @@ void C4Object::UnSelect()
 	Call(PSF_CrewSelection, &C4AulParSet(C4VBool(true)));
 }
 
-bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float zoom,
+bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 	float & resultx, float & resulty, float & resultzoom)
 {
-	return GetDrawPosition(cgo, fixtof(fix_x), fixtof(fix_y), zoom, resultx, resulty, resultzoom);
+	return GetDrawPosition(cgo, fixtof(fix_x), fixtof(fix_y), cgo.Zoom, resultx, resulty, resultzoom);
 }
 
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom)
@@ -5134,7 +5138,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	float parx = iParX/100.0f; float pary = iParY / 100.0f;
 	float par = parx; //todo: pary?
 	// Old
-	resultzoom = zoom;
+	/*resultzoom = zoom;
 
 	if(parx == 0 && fix_x < 0)
 		resultx = cgo.X + objx + cgo.Wdt;
@@ -5146,7 +5150,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	else
 		resulty = cgo.Y + objy - targety*pary;
 
-	return true;
+	return true;*/
 
 	// New
 

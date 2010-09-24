@@ -100,7 +100,7 @@ public:
 	void Draw(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects
 	void DrawList(C4Facet &cgo, int iSelection=-1, DWORD dwCategory=C4D_All);
 	void DrawIDList(C4Facet &cgo, int iSelection, C4DefList &rDefs, int32_t dwCategory, C4RegionList *pRegions=NULL, int iRegionCom=COM_None, bool fDrawOneCounts=true);
-	void DrawSelectMark(C4TargetFacet &cgo, float Zoom);
+	void DrawSelectMark(C4TargetFacet &cgo);
 	void CloseMenus();
 	void UpdateGraphics(bool fGraphicsChanged);
 	void UpdateFaces(bool bUpdateShape);

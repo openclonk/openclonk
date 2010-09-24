@@ -996,6 +996,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
 		// Apply Zoom
 		lpDDraw->SetZoom(GameZoom);
+		cgo.Zoom = GameZoom.Zoom;
 		Application.DDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
 	last_game_draw_cgo = cgo;
@@ -1055,7 +1056,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
 		cgo.Set(cgo0);
 
-		cgo.X = DrawX; cgo.Y = DrawY;
+		cgo.X = DrawX; cgo.Y = DrawY; cgo.Zoom = fGUIZoom;
 		cgo.Wdt = int(float(ViewWdt)/fGUIZoom); cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
 		cgo.TargetX = ViewX; cgo.TargetY = ViewY;
 
@@ -1067,7 +1068,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
 
-		if (!Application.isFullScreen) Console.EditCursor.Draw(cgo, Zoom);
+		if (!Application.isFullScreen) Console.EditCursor.Draw(cgo);
 
 		DrawOverlay(cgo, GameZoom);
 

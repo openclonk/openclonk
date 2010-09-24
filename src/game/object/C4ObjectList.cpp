@@ -739,11 +739,11 @@ void C4ObjectList::UpdateFaces(bool bUpdateShapes)
 			cLnk->Obj->UpdateFace(bUpdateShapes);
 }
 
-void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
+void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo)
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
-		cLnk->Obj->DrawSelectMark(cgo, Zoom);
+		cLnk->Obj->DrawSelectMark(cgo);
 }
 
 void C4ObjectList::CloseMenus()

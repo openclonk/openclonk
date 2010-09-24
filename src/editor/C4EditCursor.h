@@ -61,7 +61,7 @@ public:
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	bool ToggleMode();
-	void Draw(C4TargetFacet &cgo, float Zoom);
+	void Draw(C4TargetFacet &cgo);
 	int32_t GetMode();
 	C4Object* GetTarget();
 	bool SetMode(int32_t iMode);

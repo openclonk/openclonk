@@ -400,7 +400,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	// Draw selection
 	if (!IsPassive())
 	{
-		Selection.DrawSelectMark(cgo, 1.0f);
+		Selection.DrawSelectMark(cgo);
 	}
 
 	// Draw control

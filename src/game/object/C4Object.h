@@ -225,7 +225,7 @@ public:
 	C4Command *FindCommand(int32_t iCommandType); // find a command of the given type
 	void ClearCommand(C4Command *pUntil);
 	void ClearCommands();
-	void DrawSelectMark(C4TargetFacet &cgo, float Zoom);
+	void DrawSelectMark(C4TargetFacet &cgo);
 	void UpdateActionFace();
 	void SyncClearance();
 	void SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
@@ -365,7 +365,7 @@ public:
 	bool ShiftContents(bool fShiftBack, bool fDoCalls); // rotate through contents
 	void DirectComContents(C4Object *pTarget, bool fDoCalls);   // direct com: scroll contents to given ID
 	void GetParallaxity(int32_t *parX, int32_t *parY);
-	bool GetDrawPosition(const C4TargetFacet & cgo, float zoom, float & resultx, float & resulty, float & resultzoom); // converts the object's position into screen coordinates
+	bool GetDrawPosition(const C4TargetFacet & cgo, float & resultx, float & resulty, float & resultzoom); // converts the object's position into screen coordinates
 	bool GetDrawPosition(const C4TargetFacet & cgo, float x, float y, float zoom, float & resultx, float & resulty, float & resultzoom); // converts object coordinates into screen coordinates
 	bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
 	void UpdateInLiquid(); // makes splash when a liquid is entered

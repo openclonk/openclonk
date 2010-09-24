@@ -398,7 +398,7 @@ bool C4EditCursor::Duplicate()
 	return true;
 }
 
-void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
+void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
 	// Draw selection marks
 	C4Object *cobj; C4ObjectLink *clnk;
@@ -406,7 +406,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 	{
 		// target pos (parallax)
 		float offX, offY, newzoom;
-		cobj->GetDrawPosition(cgo, Zoom, offX, offY, newzoom); 
+		cobj->GetDrawPosition(cgo, offX, offY, newzoom); 
 		FLOAT_RECT frame =
 		{
 			(offX+cobj->Shape.x-cgo.X)*newzoom + cgo.X,
@@ -426,7 +426,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			if (~cobj->Category & C4D_Foreground)
 			{
 				lpDDraw->GetZoom(&zd);
-				lpDDraw->SetZoom(cgo.X, cgo.Y, Zoom);
+				lpDDraw->SetZoom(cgo.X, cgo.Y, cgo.Zoom);
 			}
 			
 			StdMeshInstance::FaceOrdering old_fo = StdMeshInstance::FO_Fixed;
@@ -447,6 +447,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			cobj->BlitMode = dwOldBlitMode;
 		}
 	}
+	float Zoom = cgo.Zoom;
 	// Draw drag frame
 	if (DragFrame)
 		Application.DDraw->DrawFrameDw(cgo.Surface,Min(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Min(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,Max(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Max(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,0xffffffff);
