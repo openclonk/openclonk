@@ -122,13 +122,13 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 	}
 }
 
-void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
+static void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
 {
-	if (Inside<int32_t>(tx,1,cgo.Wdt-2) && Inside<int32_t>(ty,1,cgo.Hgt-2))
+	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
 	{
-		Application.DDraw->DrawLineDw(cgo.Surface, cgo.X + tx - 1, cgo.Y + ty, cgo.X + tx + 1, cgo.Y + ty, col);
-		Application.DDraw->DrawLineDw(cgo.Surface, cgo.X + tx, cgo.Y + ty - 1, cgo.X + tx, cgo.Y + ty + 1, col);
-		if (contact) Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+tx-2,cgo.Y+ty-2,cgo.X+tx+2,cgo.Y+ty+2,C4RGB(0xff, 0xff, 0xff));
+		Application.DDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
+		Application.DDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
+		if (contact) Application.DDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 
@@ -2304,7 +2304,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
 	// Object output position
 	float cotx = cgo.TargetX,coty=cgo.TargetY; if (eDrawMode!=ODM_Overlay) TargetPos(cotx, coty, cgo);
-	float cox = fixtof(fix_x) + Shape.GetX() - cotx, coy = fixtof(fix_y) + Shape.GetY() - coty;
 	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
 
 	bool fYStretchObject=false;
@@ -2322,14 +2321,14 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		if (pActionDef && !r && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 		{
 			// active
-			if ( !Inside<float>(cox+Action.FacetX,1-Action.Facet.Wdt,cgo.Wdt)
-			     || (!Inside<float>(coy+Action.FacetY,1-Action.Facet.Hgt,cgo.Hgt)) )
+			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
+			     || (!Inside<float>(offY+Shape.GetY()+Action.FacetY,cgo.Y-Action.Facet.Hgt,cgo.Y+cgo.Hgt)) )
 				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
 		}
 		else
 			// idle
-			if ( !Inside<float>(cox,1-Shape.Wdt,cgo.Wdt)
-			     || (!Inside<float>(coy,1-Shape.Hgt,cgo.Hgt)) )
+			if ( !Inside<float>(offX+Shape.GetX(),cgo.X-Shape.Wdt,cgo.X+cgo.Wdt)
+			     || (!Inside<float>(offY+Shape.GetY(),cgo.Y-Shape.Hgt,cgo.Y+cgo.Hgt)) )
 				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
 	}
 
@@ -2414,7 +2413,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
 		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		Application.DDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		Application.DDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 	}
 	// Debug Display ///////////////////////////////////////////////////////////////////////////////
 
@@ -2504,12 +2503,12 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (FrontParticles) if (eDrawMode!=ODM_BaseOnly) FrontParticles.Draw(cgo,this);
 
 	// Energy shortage
-	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
+	/*if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 			{
 				C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
 				int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
 				fctEnergy.Draw(cgo.Surface,cgo.X+tx,cgo.Y+ty);
-			}
+			}*/
 
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
@@ -2520,8 +2519,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				for (cnt=0; cnt<Shape.VtxNum; cnt++)
 				{
 					DrawVertex(cgo,
-					           cox-Shape.GetX()+Shape.VtxX[cnt],
-					           coy-Shape.GetY()+Shape.VtxY[cnt],
+					           offX+Shape.VtxX[cnt],
+					           offY+Shape.VtxY[cnt],
 					           (Shape.VtxCNAT[cnt] & CNAT_NoCollision) ? C4RGB(0, 0, 0xff) : (Mobile ? C4RGB(0xff, 0, 0) : C4RGB(0xef, 0xef, 0)),
 					           Shape.VtxContactCNAT[cnt]);
 				}
@@ -2530,16 +2529,16 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 			if (OCF & OCF_Entrance)
-				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
-				                             cgo.Y+coy-Shape.y+Def->Entrance.y,
-				                             cgo.X+cox-Shape.x+Def->Entrance.x+Def->Entrance.Wdt-1,
-				                             cgo.Y+coy-Shape.y+Def->Entrance.y+Def->Entrance.Hgt-1,
+				Application.DDraw->DrawFrameDw(cgo.Surface,offX+Def->Entrance.x,
+				                             offY+Def->Entrance.y,
+				                             offX+Def->Entrance.x+Def->Entrance.Wdt-1,
+				                             offY+Def->Entrance.y+Def->Entrance.Hgt-1,
 				                             C4RGB(0, 0, 0xff));
 			if (OCF & OCF_Collection)
-				Application.DDraw->DrawFrameDw(cgo.Surface,cgo.X+cox-Shape.x+Def->Collection.x,
-				                             cgo.Y+coy-Shape.y+Def->Collection.y,
-				                             cgo.X+cox-Shape.x+Def->Collection.x+Def->Collection.Wdt-1,
-				                             cgo.Y+coy-Shape.y+Def->Collection.y+Def->Collection.Hgt-1,
+				Application.DDraw->DrawFrameDw(cgo.Surface,offX+Def->Collection.x,
+				                             offY+Def->Collection.y,
+				                             offX+Def->Collection.x+Def->Collection.Wdt-1,
+				                             offY+Def->Collection.y+Def->Collection.Hgt-1,
 				                             C4RGB(0xca, 0, 0));
 		}
 
@@ -2550,7 +2549,9 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				StdStrBuf str;
 				str.Format("%s (%d)",pActionDef->GetName(),Action.Phase);
 				int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-				Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+				Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
+				                           1.0, cgo.Surface, offX, offY + Shape.GetY() - cmhgt,
+				                           InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
 			}
 		}
 	// Debug Display ///////////////////////////////////////////////////////////////////////

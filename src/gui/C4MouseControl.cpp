@@ -553,8 +553,6 @@ void C4MouseControl::UpdateCursorTarget()
 	{
 		// default cursor for object; also set if not in FoW
 		Cursor=C4MC_Cursor_Crosshair;
-		// get position
-		float iObjX, iObjY; TargetObject->GetViewPos(iObjX, iObjY, ViewX, ViewY, fctViewport);
 		// select custom region
 		if (TargetObject->Category & C4D_MouseSelect)
 			Cursor=C4MC_Cursor_Select;
