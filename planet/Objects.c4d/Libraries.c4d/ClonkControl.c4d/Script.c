@@ -1345,7 +1345,7 @@ public func ControlThrow(object target, int x, int y)
 public func ControlJump()
 {
 	var ydir = 0;
-	var xdir = 5;
+	var xdir = 0;
 	var max_xdir = 20;
 	
 	if (GetProcedure() == "WALK")
