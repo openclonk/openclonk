@@ -129,8 +129,9 @@ protected func InitializePlayer(int plr)
 {
 	var clonk, effect, grapple, ropeladder;
 	
-	SetPlayerViewLock(plr,true);
-	SetPlayerZoomByViewRange(plr,400,nil,PLRZOOM_Direct);
+	// Standard player zoom for tutorials.
+	SetPlayerViewLock(plr, true);
+	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct);
 	
 	// First clonk.
 	clonk = GetCrew(plr, 1);

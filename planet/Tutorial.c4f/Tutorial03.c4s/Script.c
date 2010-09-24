@@ -14,8 +14,6 @@ protected func Initialize()
 	PlaceGrass(85);
 	CreateObject(Butterfly, 10, 10);
 	
-	ScriptGo(true);
-	
 	// Goal: flag goal also checks if all targets are destroyed.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2230, 290);
@@ -81,6 +79,10 @@ protected func OnGoalsFulfilled()
 
 protected func InitializePlayer(int plr)
 {
+	// Two times standard player zoom for tutorials, since targets can be distant.
+	SetPlayerViewLock(plr, true);
+	SetPlayerZoomByViewRange(plr, 800, nil, PLRZOOM_Direct);
+	
 	// Clonk to position and add restore effect.
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(30, 620);
@@ -113,7 +115,7 @@ global func FxTutorialHasJavelinTimer()
 	if (FindObject(Find_Container(clonk), Find_ID(Javelin)))
 	{
 		guide->AddGuideMessage("$MsgTutJumpThrow$");
-		Log("%v",AddEffect("TutorialBow", nil, 100, 5));
+		AddEffect("TutorialBow", nil, 100, 5);
 		return -1;
 	}
 	return 1;

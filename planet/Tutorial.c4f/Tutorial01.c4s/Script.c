@@ -1,36 +1,41 @@
-/* Tutorial 1 */
+/*-- 
+	Tutorial 01
+	Author: Ringwall
+	
+	First introduction to the world of OpenClonk: explains movement, shovel, loam and firestones.
+--*/
 
-static guide; // guide object.
-static loam_chest; //chest containing loam
-static flint_chest; //chest containing flints
-static tutstage; //how far has the player gotten? used for repsawn location
+static guide; // guide object
+static loam_chest; // chest containing loam
+static flint_chest; // chest containing flints
+static tutstage; // how far has the player gotten? used for respawn location
 
 protected func Initialize()
 {
-	//Tutorial
+	// Tutorial goal.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2330, 1040);
 	AddEffect("TutorialScale", 0, 1, 18);
 
-	//Environment
+	// Environment.
 	PlaceGrass(85);
 	CreateObject(Tree_Coniferous, 900, 629);
 	CreateObject(Plane, 950, 605);
 
-	//Shovel in water
+	// Shovel in water.
 	var shovel = CreateObject(Shovel, 1368, 1160, NO_OWNER);
 	shovel->SetR(150);
 	AddEffect("ShovelGet",shovel, 1, 36, shovel);
 
-	//Chest with loam.
-	var chest = CreateObject(Chest, 1805, 1100, NO_OWNER);
+	// Chest with loam.
+	var chest = CreateObject(Chest, 1815, 1100, NO_OWNER);
 	var loam = chest->CreateContents(Loam);
 	AddEffect("LoamGet", loam, 1, 36, loam);
 	loam->AddRestoreMode(chest);
 
-	//Chest with firestones
+	// Chest with firestones.
 	chest = CreateObject(Chest, 2026, 1089, NO_OWNER);
-	chest->CreateContents(Firestone)->AddRestoreMode(chest); //I figure a 'for' statement is a little overkill here...
+	chest->CreateContents(Firestone)->AddRestoreMode(chest);
 	chest->CreateContents(Firestone)->AddRestoreMode(chest);
 	
 	// Dialogue options -> repeat round.
@@ -56,12 +61,13 @@ func InitializePlayer(int plr)
 	EffectVar(1, clonk, effect) = 230;
 	EffectVar(2, clonk, effect) = 955;
 
+	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
 	SetPlayerViewLock(plr, true);
 	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
-	ScriptGo(1);
+	ScriptGo(true);
 	return true;
 }
 
