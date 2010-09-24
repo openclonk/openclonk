@@ -1,2 +1,2 @@
-DE:Kamikaze Feuerwerk
-US:Kamikaze Fireworks
+DE:Kamikaze Cowboys
+US:Kamikaze Cowboys
