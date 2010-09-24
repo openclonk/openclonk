@@ -12,15 +12,18 @@ protected func Initialize()
 	CreateObject(Chest, 1123, 124, NO_OWNER);
 	CreateObject(Chest, 180, 404, NO_OWNER);
 	CreateObject(Chest, 261, 163, NO_OWNER);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5*37);
+	
 	AddEffect("IntFillChests", nil, 100, 70, this);
 	return;
 }
 
-// Gamecall from Mircomelee rule, on respawning.
+// Gamecall from lastmanstanding rule, on respawning.
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
-	clonk->SetPosition(Random(LandscapeWidth()),10);
+	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
+	relaunch->StartRelaunch(clonk);
 	return;
 }
 
@@ -28,12 +31,10 @@ protected func OnPlayerRelaunch(int plr)
 global func FxIntFillChestsTimer()
 {
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	if (ObjectCount(Find_Container(chest)) > 5)
-		chest->Contents(Random(6))->RemoveObject();
-	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Dynamite,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
-	if (chest)
+	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
+	
+	if (chest->ContentsCount() < 5)
 		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
-	return;
 }
 
 global func CreateChestContents(id obj_id)
@@ -49,16 +50,11 @@ global func CreateChestContents(id obj_id)
 	return;
 }
 
-// The weapons available to the players. Needed by MicroMelee_Relaunch
-func GetMicroMeleeWeaponList()
-{
-	return 0;
-}
-
-// GameCall from MicroMelee_Relaunch
-func OnClonkLeftRelaunchObject(clonk)
+// GameCall from lastmanstanding
+func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(30, LandscapeWidth() - 30), -20);
 }
 
 func KillsToRelaunch() { return 0; }
+func RelaunchWeaponList(){ return [Boompack, Balloon, JarOfWinds, GrappleBow, Shovel]; }
