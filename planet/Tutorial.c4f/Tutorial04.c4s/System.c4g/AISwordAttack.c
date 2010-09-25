@@ -7,7 +7,7 @@ public func AI_CanStrike() { return true; }
 public func AI_CommandString() { return "AI_SwordAttack"; }
 public func AI_TargetInRange(object target)
 {
-	if (ObjectDistance(target, Contained()) < 20)
+	if (ObjectDistance(target, Contained()) < 12)
 		return true;
 	return false;
 }

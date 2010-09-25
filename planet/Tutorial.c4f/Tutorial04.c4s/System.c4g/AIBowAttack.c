@@ -25,7 +25,7 @@ protected func AI_BowAttack(object clonk, int x, int y, object target)
 	// Shoot an arrow. Todo: aim better.
 	AddEffect("AI_BowAim", clonk, 100, 1, this, nil, target);
 
-	clonk->AppendCommand("Wait", nil, 30, nil, nil, nil, 30);
+	clonk->AppendCommand("Wait", nil, 50, nil, nil, nil, 50);
 	clonk->AppendCommand("Call", clonk, nil, nil, target, nil, "AI_RangedAttack"); //add+finish
 	return;
 }

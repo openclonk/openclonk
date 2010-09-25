@@ -64,9 +64,9 @@ protected func Initialize()
 	swordman->CreateContents(Sword);
 	swordman->AI_GuardArea(2050, 300, 300, 100);
 	AddEffect("IntContentRemoval", swordman, 100, 0);
-	// Chest with some extras.
+	// Chest with some extra weapons.
 	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
-	chest->CreateContents(Firestone, 3);	
+	chest->CreateContents(Club);	
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
