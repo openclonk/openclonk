@@ -192,7 +192,7 @@ func HitByWeapon(pFrom, iDamage)
 	ApplyWeaponBash(pFrom, 500*50, iAngle);
 	
 	// uber advantage in melee combat
-	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 20, this);
+	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 30, this);
 	
 	// shield factor
 	return 100;
