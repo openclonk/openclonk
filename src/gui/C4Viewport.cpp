@@ -1207,6 +1207,9 @@ void C4Viewport::AdjustPosition()
 	assert(Zoom>0);
 	assert(ZoomTarget>0);
 
+	float PrefViewX = ViewX + ViewWdt / (Zoom * 2) - ViewOffsX;
+	float PrefViewY = ViewY + ViewHgt / (Zoom * 2) - ViewOffsY;
+
 	if(Zoom != ZoomTarget)
 	{
 		float DeltaZoom = Zoom/ZoomTarget;
@@ -1229,8 +1232,6 @@ void C4Viewport::AdjustPosition()
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 	{
-		float PrefViewX = ViewX + ViewWdt / (Zoom * 2) - ViewOffsX;
-		float PrefViewY = ViewY + ViewHgt / (Zoom * 2) - ViewOffsY;
 		
 		float ScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float ExtraBoundsX = 0, ExtraBoundsY = 0;
