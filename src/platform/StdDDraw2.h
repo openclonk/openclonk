@@ -346,6 +346,7 @@ protected:
 struct ZoomDataStackItem: public ZoomData
 {
 	ZoomDataStackItem(float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
+	ZoomDataStackItem(int X, int Y, float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
 	~ZoomDataStackItem() { lpDDraw->SetZoom(*this); }
 };
 

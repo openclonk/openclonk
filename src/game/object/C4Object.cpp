@@ -5084,6 +5084,11 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
 {
 	assert(parX); assert(parY);
 	*parX = 100; *parY = 100;
+	if (Category & C4D_Foreground)
+	{
+		*parX = 0; *parY = 0;
+		return;
+	}
 	if (!(Category & C4D_Parallax)) return;
 	C4Value parV; GetPropertyVal(P_Parallaxity, &parV);
 	C4ValueArray *par = parV.getArray();
@@ -5135,7 +5140,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	GetParallaxity(&iParX, &iParY);
 	float targetx = cgo.TargetX; float targety = cgo.TargetY;
 	int width = cgo.Wdt; int height = cgo.Hgt;
-	float parx = iParX/100.0f; float pary = iParY / 100.0f;
+	float parx = iParX / 100.0f; float pary = iParY / 100.0f;
 	float par = parx; //todo: pary?
 	// Old
 	/*resultzoom = zoom;
@@ -5156,7 +5161,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 
 	// Step 1: project to landscape coordinates
 	resultzoom = 1.0 / (1.0 - (par - par/zoom));
-	if (resultzoom < 0 || resultzoom > 100) // FIXME: optimize treshhold
+	if (resultzoom <= 0 || resultzoom > 100) // FIXME: optimize treshhold
 		return false;
 
 	float rx = ((1 - parx) * targetx) * resultzoom + objx;

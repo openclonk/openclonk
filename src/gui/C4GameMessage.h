@@ -54,7 +54,7 @@ class C4GameMessage
 {
 	friend class C4GameMessageList;
 public:
-	void Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom);
+	void Draw(C4TargetFacet &cgo, int32_t iPlayer);
 	C4GameMessage();
 	~C4GameMessage();
 protected:
@@ -91,7 +91,7 @@ public:
 	void Default();
 	void Clear();
 	void Execute();
-	void Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom);
+	void Draw(C4TargetFacet &gui_cgo, C4TargetFacet &cgo, int32_t iPlayer);
 	void ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags);
 	void ClearPointers(C4Object *pObj);
 	void UpdateDef(C4ID idUpdDef); // called after reloaddef

@@ -891,10 +891,6 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		DrawMenu(cgo);
 		C4ST_STOP(MenuStat)
 	}
-	// Game messages
-	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
-	::Messages.Draw(cgo, Player, Zoom);
-	C4ST_STOP(MsgStat)
 
 	// Control overlays (if not film/replay)
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
@@ -980,7 +976,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	C4TargetFacet cgo; cgo.Set(cgo0);
 	ZoomData GameZoom;
 	GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
-	GameZoom.Zoom = Zoom;
+	GameZoom.Zoom = cgo.Zoom;
 
 	if (fDrawOverlay)
 	{
@@ -991,12 +987,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		if (BorderBottom)Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 
 		// Set clippers
-		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/Zoom);
+		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
 		GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
 		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
 		// Apply Zoom
 		lpDDraw->SetZoom(GameZoom);
-		cgo.Zoom = GameZoom.Zoom;
 		Application.DDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
 	last_game_draw_cgo = cgo;
@@ -1054,27 +1049,33 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// now restore complete cgo range for overlay drawing
 		lpDDraw->SetZoom(DrawX,DrawY, fGUIZoom);
 		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
-		cgo.Set(cgo0);
+		C4TargetFacet gui_cgo;
+		gui_cgo.Set(cgo0);
 
-		cgo.X = DrawX; cgo.Y = DrawY; cgo.Zoom = fGUIZoom;
-		cgo.Wdt = int(float(ViewWdt)/fGUIZoom); cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
-		cgo.TargetX = ViewX; cgo.TargetY = ViewY;
+		gui_cgo.X = DrawX; gui_cgo.Y = DrawY; gui_cgo.Zoom = fGUIZoom;
+		gui_cgo.Wdt = int(float(ViewWdt)/fGUIZoom); gui_cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
+		gui_cgo.TargetX = ViewX; gui_cgo.TargetY = ViewY;
 
-		last_gui_draw_cgo = cgo;
+		last_gui_draw_cgo = gui_cgo;
 
 		// draw custom GUI objects
-		::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Foreground, false);
+		::Objects.ForeObjects.DrawIfCategory(gui_cgo, Player, C4D_Foreground, false);
 
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
 
 		if (!Application.isFullScreen) Console.EditCursor.Draw(cgo);
 
-		DrawOverlay(cgo, GameZoom);
+		DrawOverlay(gui_cgo, GameZoom);
+
+		// Game messages
+		C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
+		::Messages.Draw(gui_cgo, cgo, Player);
+		C4ST_STOP(MsgStat)
 
 		// Netstats
 		if (::GraphicsSystem.ShowNetstatus)
-			::Network.DrawStatus(cgo);
+			::Network.DrawStatus(gui_cgo);
 
 		C4ST_STOP(OvrStat)
 
@@ -1115,7 +1116,7 @@ void C4Viewport::Execute()
 	C4TargetFacet cgo;
 	CStdWindow * w = pWindow;
 	if (!w) w = &FullScreen;
-	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),ViewX,ViewY);
+	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),ViewX,ViewY,Zoom);
 	lpDDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);

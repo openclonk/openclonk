@@ -106,7 +106,7 @@ int32_t DrawMessageOffset = -35; // For finding the optimum place to draw startu
 int32_t PortraitWidth = 64;
 int32_t PortraitIndent = 10;
 
-void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
+void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 {
 	// Globals or player
 	if (Type == C4GM_Global || ((Type == C4GM_GlobalPlayer) && (iPlayer == Player)))
@@ -188,17 +188,12 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 	{
 		// adjust position by object; care about parallaxity
 		float iMsgX, iMsgY, newzoom;
-		if (Type == C4GM_Target || Type == C4GM_TargetPlayer)
-		{
-			Target->GetDrawPosition(cgo, iMsgX, iMsgY, newzoom);
-			iMsgY -= Target->Def->Shape.Hgt/2+5;
-			iMsgX+=X; iMsgY+=Y;
-		}
-		else
-			{ iMsgX=X; iMsgY=Y; }
+		Target->GetDrawPosition(cgo, iMsgX, iMsgY, newzoom);
+		iMsgY -= Target->Def->Shape.Hgt/2+5;
+		iMsgX+=X; iMsgY+=Y;
 		// check output bounds
-		if (Inside<float>((iMsgX - cgo.X) * newzoom, 0, cgo.Wdt - 1))
-			if (Inside<float>((iMsgY - cgo.Y) * newzoom, 0, cgo.Hgt - 1))
+		if (Inside<float>((iMsgX - cgo.X) * newzoom, 0, cgo.Wdt * cgo.Zoom - 1))
+			if (Inside<float>((iMsgY - cgo.Y) * newzoom, 0, cgo.Hgt * cgo.Zoom - 1))
 			{
 				// if the message is attached to an object and the object
 				// is invisible for that player, the message won't be drawn
@@ -208,7 +203,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 				// check fog of war
 				C4Player *pPlr = ::Players.Get(iPlayer);
 				if (pPlr && pPlr->fFogOfWar)
-					if (!pPlr->FoWIsVisible(iMsgX, iMsgY))
+					if (!pPlr->FoWIsVisible(iMsgX + cgo.TargetX - cgo.X, iMsgY + cgo.TargetY - cgo.Y))
 					{
 						// special: Target objects that ignore FoW should display the message even if within FoW
 						if (Type != C4GM_Target && Type != C4GM_TargetPlayer) return;
@@ -217,22 +212,25 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 				// Word wrap to cgo width
 				StdStrBuf sText;
 				if (~dwFlags & C4GM_NoBreak)
-					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), BoundBy<int32_t>(cgo.Wdt, 50, 200), &sText, true);
+					::GraphicsResource.FontRegular.BreakMessage(Text.getData(), BoundBy<int32_t>(cgo.Wdt * cgo.Zoom, 50, 200), &sText, true);
 				else
 					sText.Ref(Text);
 				// Adjust position by output boundaries
-				int32_t iTX,iTY,iTWdt,iTHgt;
+				float iTX,iTY;
+				int iTWdt,iTHgt;
 				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
 				// +0.5f for proper rounding; avoids oscillations near pixel border:
-				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt - iTWdt / 2) + 0.5f;
-				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt - iTHgt) + 0.5f;
+				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
+				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
 				// Draw
 				Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 				                           cgo.Surface,
 				                           cgo.X + iTX,
 				                           cgo.Y + iTY,
 				                           ColorDw,ACenter);
+				return;
 			}
+		fprintf(stderr, "%f %f '%s'\n", iMsgX, iMsgY, Text.getData());
 	}
 }
 
@@ -377,17 +375,15 @@ void C4GameMessageList::UpdateDef(C4ID idUpdDef)
 	for (cmsg=First; cmsg; cmsg=cmsg->Next) cmsg->UpdateDef(idUpdDef);
 }
 
-void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
+void C4GameMessageList::Draw(C4TargetFacet &gui_cgo, C4TargetFacet &cgo, int32_t iPlayer)
 {
 	C4GameMessage *cmsg;
 	for (cmsg=First; cmsg; cmsg=cmsg->Next)
 	{
-		// determine zoom: GUI object messages need to be drawn in GUI zoom
-		float msg_zoom = Zoom;
 		if ((cmsg->Target && (cmsg->Target->Category & C4D_Foreground)) || cmsg->Type == C4GM_Global || cmsg->Type == C4GM_GlobalPlayer)
-			msg_zoom = C4GUI::GetZoom();
-		// draw msg
-		cmsg->Draw(cgo,iPlayer,msg_zoom);
+			cmsg->Draw(gui_cgo,iPlayer);
+		else
+			cmsg->Draw(cgo,iPlayer);
 	}
 }
 
