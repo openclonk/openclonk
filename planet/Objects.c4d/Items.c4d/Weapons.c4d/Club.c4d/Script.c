@@ -118,6 +118,8 @@ func DoStrike(clonk, angle)
 	var found=false;
 	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
+		if(obj->Stuck()) continue;
+		
 		var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 		if(GetEffect(en, obj)) continue;
 		
