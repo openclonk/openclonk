@@ -400,19 +400,21 @@ bool C4EditCursor::Duplicate()
 
 void C4EditCursor::Draw(C4TargetFacet &cgo)
 {
+	ZoomDataStackItem zdsi(cgo.X, cgo.Y, cgo.Zoom);
 	// Draw selection marks
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=Selection.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 	{
 		// target pos (parallax)
 		float offX, offY, newzoom;
-		cobj->GetDrawPosition(cgo, offX, offY, newzoom); 
+		cobj->GetDrawPosition(cgo, offX, offY, newzoom);
+		ZoomDataStackItem zdsi(cgo.X, cgo.Y, newzoom);
 		FLOAT_RECT frame =
 		{
-			(offX+cobj->Shape.x-cgo.X)*newzoom + cgo.X,
-			(offX+cobj->Shape.x-cgo.X)*newzoom + cgo.X + cobj->Shape.Wdt*newzoom,
-			(offY+cobj->Shape.y-cgo.Y)*newzoom + cgo.Y,
-			(offY+cobj->Shape.y-cgo.Y)*newzoom + cgo.Y + cobj->Shape.Hgt*newzoom
+			offX+cobj->Shape.x,
+			offX+cobj->Shape.x + cobj->Shape.Wdt,
+			offY+cobj->Shape.y,
+			offY+cobj->Shape.y + cobj->Shape.Hgt
 		};
 		DrawSelectMark(cgo, frame);
 		// highlight selection if shift is pressed
@@ -422,12 +424,6 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
-			ZoomData zd = { 0 };
-			if (~cobj->Category & C4D_Foreground)
-			{
-				lpDDraw->GetZoom(&zd);
-				lpDDraw->SetZoom(cgo.X, cgo.Y, cgo.Zoom);
-			}
 			
 			StdMeshInstance::FaceOrdering old_fo = StdMeshInstance::FO_Fixed;
 			if(cobj->pMeshInstance)
@@ -442,23 +438,25 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			if(cobj->pMeshInstance)
 				cobj->pMeshInstance->SetFaceOrdering(old_fo);
 			
-			if (~cobj->Category & C4D_Foreground) lpDDraw->SetZoom(zd);
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;
 		}
 	}
-	float Zoom = cgo.Zoom;
 	// Draw drag frame
 	if (DragFrame)
-		Application.DDraw->DrawFrameDw(cgo.Surface,Min(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Min(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,Max(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Max(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,0xffffffff);
+		Application.DDraw->DrawFrameDw(cgo.Surface,
+		                               Min(X, X2) + cgo.X - cgo.TargetX, Min(Y, Y2) + cgo.Y - cgo.TargetY,
+		                               Max(X, X2) + cgo.X - cgo.TargetX, Max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drag line
 	if (DragLine)
-		Application.DDraw->DrawLineDw(cgo.Surface,X*Zoom+cgo.X-cgo.TargetX*Zoom,Y*Zoom+cgo.Y-cgo.TargetY*Zoom,X2*Zoom+cgo.X-cgo.TargetX*Zoom,Y2*Zoom+cgo.Y-cgo.TargetY*Zoom,0xffffffff);
+		Application.DDraw->DrawLineDw(cgo.Surface,
+		                              X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
+		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drop target
 	if (DropTarget)
 		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
-		                                      DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-::GraphicsResource.fctDropTarget.Wdt/2,
-		                                      DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-::GraphicsResource.fctDropTarget.Hgt);
+		                                      DropTarget->GetX() + cgo.X - cgo.TargetX - ::GraphicsResource.fctDropTarget.Wdt / 2,
+		                                      DropTarget->GetY() + DropTarget->Shape.y + cgo.Y - cgo.TargetY - ::GraphicsResource.fctDropTarget.Hgt);
 }
 
 
