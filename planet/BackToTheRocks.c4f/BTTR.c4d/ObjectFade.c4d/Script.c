@@ -25,8 +25,10 @@ func Initialize() {
 }
 
 func Timer() {
-	for(var fade in FindObjects(Find_Category(C4D_Object), Find_NoContainer(), Find_Not(Find_OCF(OCF_HitSpeed1)))) {
+	for(var fade in FindObjects(Find_Category(C4D_Object), Find_NoContainer(), Find_Not(Find_OCF(OCF_HitSpeed1)))) 
+	{
 		if(fade->GetXDir() || fade->GetYDir() || fade->GetEffect("IntFadeOut", fade)) continue;
+		if(GBackSolid(AbsX(fade->GetX()), AbsY(fade->GetY()))) continue;
 		fade->AddEffect("IntFadeOut", fade, 1, /*fade_time * 2/3*/1, this, Rule_ObjectFade);
 	}
 }

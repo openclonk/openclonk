@@ -1,39 +1,53 @@
-/*-- Melee --*/
+/*-- 
+	Ruins
+	Author: Mimmo_O
+	
+	An arena like last man standing round for up to 12 players.
+--*/
 
 protected func Initialize()
 {
+	// Goal.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
-	SetSkyAdjust(RGBa(255,255,255,127),RGB(255,200,150));
-	SetGamma(RGB(40,35,30), RGB(140,135,130), RGB(255,250,245));
-	// Chests.
-	CreateObject(Chest, 420, 320, NO_OWNER);
-	CreateObject(Chest, 230, 170, NO_OWNER);
-	CreateObject(Chest, 570, 220, NO_OWNER);
-	CreateObject(Chest, 70, 80, NO_OWNER);
-	CreateObject(Chest, 340, 200, NO_OWNER);
-	CreateObject(Rule_ObjectFade)->DoFadeTime(5*37);
+	
+	// Mood.
+	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));
+	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
+	
+	// Chests with weapons.
+	CreateObject(Chest, 420, 340, NO_OWNER);
+	CreateObject(Chest, 230, 220, NO_OWNER);
+	CreateObject(Chest, 570, 240, NO_OWNER);
+	CreateObject(Chest, 105, 350, NO_OWNER);
+	CreateObject(Chest, 340, 470, NO_OWNER);
+	AddEffect("IntFillChests", nil, 100, 2 * 36, this);
+	
+	// Ropeladders to get to the upper part.
+	CreateObject(Ropeladder, 120, 140, NO_OWNER)->Unroll(1);
+	CreateObject(Ropeladder, 220, 130, NO_OWNER)->Unroll(-1);
+	CreateObject(Ropeladder, 540, 130, NO_OWNER)->Unroll(-1);
+	
+	// Objects fade after 5 seconds.
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
-
-	AddEffect("IntFillChests", nil, 200, 70, this);
+	// Smooth brick edges.
 	Edges();
 	return;
 }
 
-
 protected func Edges()
 {
-	var x=[545, 365, 545, 525, 385, 495, 475, 455, 565, 555, 525, 475, 425, 245, 75, 95, 125, 135, 205, 475, 455, 435, 475, 405, 245, 225, 155, 145, 125, 155, 175, 205, 255, 315, 455, 425, 405, 385, 375, 285, 265, 245, 225];
-	var y=[295, 165, -5, 295, 285, 315, 325, 335, 345, 355, 365, 375, 385, 385, 325, 345, 355, 365, 355, 285, 235, 155, 245, 235, 345, 295, 295, 375, 255, 245, 235, 225, 225, 165, 135, 115, 105, 95, 85, 85, 95, 105, 115];
-	for(var i=0; i<GetLength(x); i++)
-	{
-		CreateObject(BrickEdge,x[i], y[i]+5)->PermaEdge();
-	}
+	var x = [545, 365, 545, 525, 385, 495, 475, 455, 565, 555, 525, 475, 425, 245, 75, 95, 125, 135, 205, 475, 455, 435, 475, 405, 245, 225, 155, 145, 125, 155, 175, 205, 255, 315, 455, 425, 405, 385, 375, 285, 265, 245, 225];
+	var y = [295, 165, -5, 295, 285, 315, 325, 335, 345, 355, 365, 375, 385, 385, 325, 345, 355, 365, 355, 285, 235, 155, 245, 235, 345, 295, 295, 375, 255, 245, 235, 225, 225, 165, 135, 115, 105, 95, 85, 85, 95, 105, 115];
+	for (var i = 0; i < GetLength(x); i++)
+		CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER)->PermaEdge();
+	
 	var a;
-	a=CreateObject(BrickEdge,355,250);
+	a=CreateObject(BrickEdge, 355, 250, NO_OWNER);
 	a->SetP(3); a->PermaEdge();
-	a=CreateObject(BrickEdge,305,240);
+	a=CreateObject(BrickEdge, 305, 240, NO_OWNER);
 	a->SetP(2); a->PermaEdge();
-
+	return;
 }
 
 // Gamecall from LastManStanding goal, on respawning.
@@ -49,21 +63,23 @@ protected func OnPlayerRelaunch(int plr)
 global func FxIntFillChestsStart()
 {
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Bow,Musket,Shield,Sword,Club,Javelin,Bow,Musket,Shield,Sword,Club,Javelin,DynamiteBox];
+	var w_list = [Bow, Musket, Shield, Sword, Club, Javelin, Bow, Musket, Shield, Sword, Club, Javelin, DynamiteBox];
 	
 	for(var chest in chests)
 		for(var i=0; i<4; ++i)
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	return 1;
 }
 
 global func FxIntFillChestsTimer()
 {
 	SetTemperature(100);
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Boompack,Dynamite,Loam,Firestone,Bow,Musket,Sword,Javelin];
+	var w_list = [Boompack, Dynamite, Loam, Firestone, Bow, Musket, Sword, Javelin];
 	
 	if (chest->ContentsCount() < 5)
 		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	return 1;
 }
 
 global func CreateChestContents(id obj_id)
@@ -79,11 +95,11 @@ global func CreateChestContents(id obj_id)
 	return;
 }
 
-// GameCall from MicroMelee_Relaunch
+// GameCall from RelaunchContainer.
 func OnClonkLeftRelaunch(object clonk)
 {
 	clonk->SetPosition(RandomX(30, LandscapeWidth() - 30), -20);
 }
 
 func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList(){ return [Bow,Shield,Sword,Club,Javelin,Musket]; }
+func RelaunchWeaponList() { return [Bow, Shield, Sword, Club, Javelin, Musket]; }
