@@ -243,6 +243,7 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	var posY=-Cos(angle, 12);
 	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
 	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 7) return false;
+	target->Message(Format("%d", Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY())));
 	if(AngleInside(angle, object_angle, 45)) return false;
 	
 	/*var xd=obj->GetXDir();
