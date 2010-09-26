@@ -5161,11 +5161,12 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 
 	// Step 1: project to landscape coordinates
 	resultzoom = 1.0 / (1.0 - (par - par/zoom));
+	// it would be par / (1.0 - (par - par/zoom)) if objects would get smaller farther away
 	if (resultzoom <= 0 || resultzoom > 100) // FIXME: optimize treshhold
 		return false;
 
-	float rx = ((1 - parx) * targetx) * resultzoom + objx;
-	float ry = ((1 - pary) * targety) * resultzoom + objy;
+	float rx = ((1 - parx) * targetx) * resultzoom + objx / (parx + zoom - parx * zoom);
+	float ry = ((1 - pary) * targety) * resultzoom + objy / (pary + zoom - pary * zoom);
 
 	// Step 2: convert to screen coordinates
 	if(parx == 0 && fix_x < 0)
