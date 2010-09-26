@@ -8,7 +8,7 @@
 protected func Initialize()
 {
 	SetAction("Float");
-	PlayAnimation("idle", 1, Anim_Linear(0, 0, GetAnimationLength("idle"), 1000, ANIM_Loop), Anim_Const(1000));
+	SetProperty("MeshTransformation", Trans_Rotate(45+Random(91),0,1,0));
 }
 
 public func Burst()
