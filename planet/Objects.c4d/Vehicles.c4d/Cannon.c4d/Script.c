@@ -140,7 +140,6 @@ private func ConvertAngle(int angle)
 	//second half. Makes it relative to current direction.
 	if(r - GetR() < 0 && GetDir() == 1) SetDir();
 	if(r - GetR() > 359 && GetDir() == 0) SetDir(1);
-	Message(Format("%d",Normalize(r - GetR(),-90)),this);
 	return r;
 }
 
@@ -249,9 +248,6 @@ func ControlRight(object clonk)
 
 protected func DoFire(object iammo, object clonk, int angle)
 {
-	if(iammo == nil) iammo = FindContents(Rock); //debug only!
-	iammo->Exit();
-
 	if(iammo->GetID() == Dynamite)
 	{
 		iammo->Fuse();
