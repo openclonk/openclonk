@@ -30,14 +30,15 @@
 #include <C4Config.h>
 #include <C4Application.h>
 #include <C4GraphicsSystem.h>
+#include <C4SoundLoaders.h>
+
+using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		UsageTime (0),
 		Instances (0),
 		Static (false),
-#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
 		pSample (NULL),
-#endif
 		FirstInst (NULL),
 		Next (NULL)
 {
@@ -58,9 +59,10 @@ void C4SoundEffect::Clear()
 #ifdef HAVE_LIBSDL_MIXER
 	if (pSample) Mix_FreeChunk(pSample);
 #endif
-#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
-	pSample = NULL;
+#ifdef USE_OPEN_AL
+	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
+	pSample = NULL;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, bool fStatic)
@@ -81,36 +83,40 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
 {
 	// Sound check
 	if (!Config.Sound.RXSound) return false;
-	// load directly from memory
-#ifdef HAVE_FMOD
-	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
-	if (fRaw) iOptions |= FSOUND_LOADRAW;
-	if (!(pSample = FSOUND_Sample_Load(FSOUND_UNMANAGED, (const char *)pData,
-	                                   iOptions, 0, iDataLen)))
-		{ Clear(); return false; }
-	// get length
-	int32_t iSamples = FSOUND_Sample_GetLength(pSample);
-	int iSampleRate = SampleRate;
-	if (!iSamples || !FSOUND_Sample_GetDefaults(pSample, &iSampleRate, 0, 0, 0))
-		return false;
-	SampleRate = iSampleRate;
-	Length = iSamples * 10 / (SampleRate / 100);
+
+	SoundInfo info;
+	int32_t options = 0;
+	if (fRaw)
+		options |= SoundLoader::OPTION_Raw;
+	for (SoundLoader* loader = SoundLoader::first_loader; loader; loader = loader->next)
+	{
+		if (loader->ReadInfo(info, pData, iDataLen))
+		{
+			if (info.final_handle)
+			{
+				// loader supplied the handle specific to the sound system used; just assign to pSample
+				pSample = info.final_handle;
+			}
+			else
+			{
+#ifdef USE_OPEN_AL
+				Application.MusicSystem.SelectContext();
+				alGenBuffers(1, &pSample);
+				alBufferData(pSample, info.format, info.sound_data, info.sound_data_size, info.sample_rate);
+#else
+				Log("SoundLoader does not provide a ready-made handle");
 #endif
-#ifdef HAVE_LIBSDL_MIXER
-	// Be paranoid about SDL_Mixer initialisation
-	if (!Application.MusicSystem.MODInitialized)
-		{ Clear(); return false; }
-	if (!(pSample = Mix_LoadWAV_RW(SDL_RWFromConstMem(pData, iDataLen), 1)))
-		{ Clear(); return false; }
-	//FIXME: Is this actually correct?
-	Length = 1000 * pSample->alen / (44100 * 2);
-	SampleRate = 0;
-#endif
+			}
+			SampleRate = info.sample_rate;
+			Length = info.sample_length*1000;
+			break;
+		}
+	}
 	*Name = '\0';
 	// Set usage time
 	UsageTime=Game.Time;
 	Static=fStatic;
-	return true;
+	return pSample;
 }
 
 void C4SoundEffect::Execute()
@@ -270,6 +276,11 @@ bool C4SoundInstance::Start()
 	if (!Application.MusicSystem.MODInitialized) return false;
 	if ((iChannel = Mix_PlayChannel(-1, pEffect->pSample, fLooping? -1 : 0)) == -1)
 		return false;
+#elif defined(USE_OPEN_AL)
+	Application.MusicSystem.SelectContext();
+	alGenSources(1, (ALuint*)&iChannel);
+	alSourcei(iChannel, AL_BUFFER, pEffect->pSample);
+	alSourcePlay(iChannel);
 #else
 	return false;
 #endif
@@ -292,6 +303,10 @@ bool C4SoundInstance::Stop()
 	if (Playing())
 		Mix_HaltChannel(iChannel);
 #endif
+#ifdef USE_OPEN_AL
+	if (Playing())
+		alSourceStop(iChannel);
+#endif
 	iChannel = -1;
 	iStarted = 0;
 	fLooping = false;
@@ -308,6 +323,16 @@ bool C4SoundInstance::Playing()
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
+#endif
+#ifdef USE_OPEN_AL
+	if (iChannel == -1)
+		return false;
+	else
+	{
+		ALint state;
+		alGetSourcei(iChannel, AL_SOURCE_STATE, &state);
+		return state == AL_PLAYING;
+	}
 #endif
 	return false;
 }
@@ -342,6 +367,9 @@ void C4SoundInstance::Execute()
 #ifdef HAVE_LIBSDL_MIXER
 			Mix_HaltChannel(iChannel);
 #endif
+#ifdef USE_OPEN_AL
+			alDeleteSources(1, (ALuint*)&iChannel);
+#endif
 			iChannel = -1;
 		}
 	}
@@ -360,6 +388,10 @@ void C4SoundInstance::Execute()
 		Mix_Volume(iChannel, (iVol * MIX_MAX_VOLUME) / (100 * 256));
 		//Mix_SetPanning(iChannel, ((100 + iPan) * 256) / 200, ((100 - iPan) * 256) / 200);
 		Mix_SetPanning(iChannel, BoundBy((100 - iPan) * 256 / 100, 0, 255), BoundBy((100 + iPan) * 256 / 100, 0, 255));
+#endif
+#ifdef USE_OPEN_AL
+		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
+		alSourcef(iChannel, AL_GAIN, iVol / 100);
 #endif
 	}
 }
@@ -439,6 +471,9 @@ void C4SoundSystem::ClearEffects()
 
 void C4SoundSystem::Execute()
 {
+#ifdef USE_OPEN_AL
+	Application.MusicSystem.SelectContext();
+#endif
 	// Sound effect statistics & unload check
 	C4SoundEffect *csfx,*next=NULL,*prev=NULL;
 	for (csfx=FirstSound; csfx; csfx=next)

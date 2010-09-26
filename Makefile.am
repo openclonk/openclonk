@@ -59,7 +59,7 @@ AM_CPPFLAGS = \
   -I$(srcdir)/src/game/object \
   -I$(srcdir)/src/lib/texture \
   -I$(srcdir)/src/script \
-  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
+  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(OPENAL_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
 
 ##BUILT_SOURCES = hgrevision.h
 ##hgrevision.h: $(srcdir)/.hg/dirstate
@@ -428,6 +428,8 @@ src/platform/C4MusicSystem.cpp \
 src/platform/C4MusicSystem.h \
 src/platform/C4SoundSystem.cpp \
 src/platform/C4SoundSystem.h \
+src/platform/C4SoundLoaders.h \
+src/platform/C4SoundLoaders.cpp \
 src/platform/C4Video.cpp \
 src/platform/C4Video.h \
 src/platform/C4VideoPlayback.cpp \
@@ -547,6 +549,7 @@ clonk_LDADD = \
   lib.a \
   $(LIBICONV) \
   $(GTK_LIBS) \
+  $(OPENAL_LIBS) \
   $(FREETYPE_LIBS) \
   $(SDL_LIBS) \
   $(PTHREAD_LIBS) \

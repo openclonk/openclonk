@@ -27,6 +27,16 @@
 
 #include <C4Group.h>
 
+#if defined(USE_OPEN_AL)
+#ifdef __APPLE__
+#import <OpenAL/al.h>
+#import <OpenAL/alc.h>
+#else
+#include <AL/al.h>
+#include <AL/alc.h>
+#endif
+#endif
+
 class C4MusicFileInfoNode;
 class C4MusicFile;
 
@@ -68,10 +78,19 @@ protected:
 
 	bool GrpContainsMusic(C4Group &rGrp); // return whether this group contains music files
 
-	// FMod / SDL_mixer
+	// FMod / SDL_mixer / OpenAL
 	bool MODInitialized;
 	bool InitializeMOD();
 	void DeinitializeMOD();
+#ifdef USE_OPEN_AL
+private:
+	ALCdevice* alcDevice;
+	ALCcontext* alcContext;
+public:
+	void SelectContext();
+#endif
+public:
+	inline bool IsMODInitialized() {return MODInitialized;}
 };
 
 

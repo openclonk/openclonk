@@ -172,6 +172,9 @@
 /* MP3 music */
 #undef USE_MP3
 
+/* OpenAL sound */
+#undef USE_OPEN_AL
+
 /* Define to 1 if SDL is used for the main loop */
 #undef USE_SDL_MAINLOOP
 

@@ -26,22 +26,32 @@
 
 #include <C4Group.h>
 
-#ifdef HAVE_FMOD
-#include <fmod.h>
-#endif
-#ifdef HAVE_LIBSDL_MIXER
-#define USE_RWOPS
-#include <SDL_mixer.h>
-#undef USE_RWOPS
-#endif
-
-const int32_t C4MaxSoundName=100,
-                             C4MaxSoundInstances=20,
-                                                 C4NearSoundRadius=50,
-                                                                   C4AudibilityRadius=700;
+const int32_t
+	C4MaxSoundName=100,
+	C4MaxSoundInstances=20,
+	C4NearSoundRadius=50,
+	C4AudibilityRadius=700;
 
 class C4Object;
 class C4SoundInstance;
+
+#if defined(HAVE_FMOD)
+#include <fmod.h>
+typedef FSOUND_SAMPLE* C4SoundHandle;
+#elif defined(HAVE_LIBSDL_MIXER)
+#define USE_RWOPS
+#include <SDL_mixer.h>
+typedef Mix_Chunk* C4SoundHandle;
+#elif defined(USE_OPEN_AL)
+#ifdef __APPLE__
+#import <OpenAL/al.h>
+#else
+#include <AL/al.h>
+#endif
+typedef ALuint C4SoundHandle;
+#else
+typedef void* C4SoundHandle;
+#endif
 
 class C4SoundEffect
 {
@@ -54,12 +64,7 @@ public:
 	int32_t UsageTime, Instances;
 	int32_t SampleRate, Length;
 	bool Static;
-#ifdef HAVE_FMOD
-	FSOUND_SAMPLE *pSample;
-#endif
-#ifdef HAVE_LIBSDL_MIXER
-	Mix_Chunk * pSample;
-#endif
+	C4SoundHandle pSample;
 	C4SoundInstance *FirstInst;
 	C4SoundEffect *Next;
 public:

@@ -54,6 +54,9 @@ C4MusicSystem::C4MusicSystem():
 		SongCount(0),
 		PlayMusicFile(NULL),
 		Volume(100)
+#ifdef USE_OPEN_AL
+		, alcDevice(NULL), alcContext(NULL)
+#endif
 {
 }
 
@@ -61,6 +64,13 @@ C4MusicSystem::~C4MusicSystem()
 {
 	Clear();
 }
+
+#ifdef USE_OPEN_AL
+void C4MusicSystem::SelectContext()
+{
+	alcMakeContextCurrent(alcContext);
+}
+#endif
 
 bool C4MusicSystem::InitializeMOD()
 {
@@ -117,6 +127,14 @@ bool C4MusicSystem::InitializeMOD()
 	}
 	MODInitialized = true;
 	return true;
+#elif defined(USE_OPEN_AL)
+	alcDevice = alcOpenDevice(NULL);
+	if (!alcDevice)
+		return false;
+	alcContext = alcCreateContext(alcDevice, NULL);
+	if (!alcContext)
+		return false;
+	return true;
 #endif
 	return false;
 }
@@ -132,6 +150,11 @@ void C4MusicSystem::DeinitializeMOD()
 #elif defined HAVE_LIBSDL_MIXER
 	Mix_CloseAudio();
 	SDL_Quit();
+#elif defined(USE_OPEN_AL)
+	alcDestroyContext(alcContext);
+	alcCloseDevice(alcDevice);
+	alcContext = NULL;
+	alcDevice = NULL;
 #endif
 	MODInitialized = false;
 }

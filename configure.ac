@@ -15,7 +15,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
-AC_COPYRIGHT([©2005-2009 Günther Brammer])
+AC_COPYRIGHT([©2005-2010 Günther Brammer])
 AC_CONFIG_SRCDIR([/src/C4Game.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
@@ -115,6 +115,21 @@ AS_IF([test $with_gtk = yes],[
 ])
 AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk = yes])
 
+
+# OpenAL
+AC_ARG_WITH([openal],
+  [AC_HELP_STRING([--with-openal],[compile with openal support [default=no]])],
+  , [with_openal=no])
+if test $with_openal = yes; then
+  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal])
+  AC_DEFINE([USE_OPEN_AL], 1, [OpenAL sound])
+  if test $enable_sound = no; then
+    AC_MSG_ERROR([--with-openal cannot be used with --disable-sound.])
+  fi
+fi
+
+# SDL
+with_sdl_mixer=no
 AC_ARG_WITH([sdl],
   AS_HELP_STRING([--with-sdl], [Use SDL @<:@default=yes (no for win32)@:>@]),
   , [if test $win32 = true; then with_sdl=no; else if test $enable_console = yes; then with_sdl=no; else with_sdl=yes; fi fi])
@@ -126,11 +141,12 @@ if test $with_sdl = yes; then
     [AC_MSG_ERROR([libSDL not found.])])
   AC_SUBST(SDL_CFLAGS)
   AC_SUBST(SDL_LIBS)
-  if test $enable_sound = yes; then
+  if test $enable_sound = yes && test $with_openal = no; then
     # Check for SDL_mixer library
     AC_CHECK_LIB(SDL_mixer, Mix_OpenAudio,
       [AC_DEFINE(HAVE_LIBSDL_MIXER,1,[Define to 1 if you have SDL_mixer.])
-      SDL_LIBS="-lSDL_mixer $SDL_LIBS"],
+      SDL_LIBS="-lSDL_mixer $SDL_LIBS"
+      with_sdl_mixer=yes],
       [AC_MSG_ERROR([SDL_mixer not found.])],
       [$SDL_LIBS])
   fi
@@ -171,6 +187,10 @@ fi
 AX_BOOST_BASE([1.40.0], [], [
   AC_MSG_ERROR([Boost not found.])
 ])
+
+# OpenSSL
+AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
+  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
 
 # Check for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, [
@@ -262,10 +282,6 @@ if test "$with_directx" = yes; then
   AC_DEFINE([USE_DIRECTX], 1, [DirectX graphics])
 fi
 
-# OpenSSL
-AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
-  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
-
 if test $win32 = false; then
   # pthread
   AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
@@ -323,6 +339,8 @@ echo "Configuration:
   DirectX:	$with_directx
   OpenGL:	$with_gl
   Sound:	$enable_sound
+  SDL_Mixer:	$with_sdl_mixer
+  OpenAL:	$with_openal
   GTK+: 	$with_gtk
   X11:  	$have_x"
 
