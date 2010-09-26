@@ -1,0 +1,54 @@
+body {
+    font-family: 'Verdana', sans-serif;
+}
+
+#masterserver {
+    background: none repeat scroll 0 0 transparent;
+    margin: 0 auto;
+    padding-left: 76px;
+    padding-right: 76px;
+    padding-top: 7px;
+}
+
+#masterserver a, p, table {
+    font-size: 10pt;
+    color: black;
+    text-decoration: none;
+}
+
+#masterserver a {
+    border-bottom: 1px dotted black;
+    text-decoration: none;
+}
+
+#masterserver a:hover {
+    border-bottom: 1px solid black;
+}
+
+#masterserver h1 {
+    margin: 0 0 2px;
+    font-size: 1.3em;
+    font-weight: normal;
+    color: #222222;
+    padding: 0px;
+}
+
+#masterserver th {
+    text-align: center;
+}
+
+#masterserver td {
+    padding: 5px 30px;
+}
+
+#masterserver_footer {
+    margin-top: 10px;
+    border-top: 1px dotted gray;
+}
+
+#masterserver_footer p {
+    color: gray;
+    font-size: 0.7em;
+    margin-top: 2px;
+    float: right;
+}
