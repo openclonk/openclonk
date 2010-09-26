@@ -231,8 +231,8 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 		// Step 1: project to landscape coordinates
 		float resultzoom = 1.0 / (1.0 - (par - par/zoom));
 
-		float rx = ((1 - parx) * targetx) * resultzoom + fixtof(x);
-		float ry = ((1 - pary) * targety) * resultzoom + fixtof(y);
+		float rx = ((1 - parx) * targetx) * resultzoom + fixtof(x) / (parx + zoom - parx * zoom);
+		float ry = ((1 - pary) * targety) * resultzoom + fixtof(y) / (pary + zoom - pary * zoom);
 
 		// Step 2: convert to screen coordinates
 		float resultx = (rx - targetx) * zoom / resultzoom;
