@@ -4,8 +4,11 @@
 1=Vehicle-Smooth
 2=Granite-Lava
 3=Granite-lava_red
+4=SandDry-sand_rough
 10=Tunnel-tunnel
 11=Tunnel-tunnel
+12=Tunnel-brickback
+13=BrickSoft-brick1
 19=DuroLava-lava_red
 20=Water-water
 22=Acid-acid
@@ -31,10 +34,10 @@
 53=Sulphur-sulphur
 54=Coal-coal
 55=Sand-sand_rough
-65=Ice-ice1
 66=Ice-ice2
 67=Ice-ice3
 68=Ice-ice3
 70=Snow-snow1
 71=Snow-snow1
 72=Snow-snow1
+73=Brick-brick1
