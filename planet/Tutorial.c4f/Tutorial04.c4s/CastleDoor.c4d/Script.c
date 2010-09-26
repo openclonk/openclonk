@@ -3,47 +3,48 @@
 protected func Initialize()
 {
 	SetAction("Door");
+	return;
 }
 
 public func OpenGateDoor()
 {
-	//Non-working vertices...
-	AddEffect("StopHit",this,1,1,this);
-	if (GetContact(CNAT_Top))
-	{
-		Sound("GateStuck");
-		return;
-	}
-	if (!GBackSolid(0,-21)) SetYDir(-5);
+	AddEffect("IntMoveGateUp", this, 100, 1, this);
 	Sound("GateMove");
-}
-
-func FxStopHitTimer(object door, int num, int timer)
-{
-	if (GBackSolid(0,-21) || GBackSolid(0,21))
-	{
-		Hit();
-		return -1;
-	}
+	return;
 }
 
 public func CloseGateDoor()
 {
-	if (GetContact(CNAT_Bottom) || GBackSolid(0,21))
-	{
-		Hit();
-		return;
-	}
-	AddEffect("StopHit",this,1,1,this);
-	SetYDir(5);
+	AddEffect("IntMoveGateDown", this, 100, 1, this);
 	Sound("GateMove");
+	return;
 }
 
-public func Hit()
+protected func FxIntMoveGateUpTimer(object target)
 {
-	Sound("GateHit.ogg");
-	SetSpeed();
+	if (GBackSolid(0, -20))
+	{
+		Sound("GateHit.ogg");
+		SetYDir(0);
+		return -1;
+	}
+	
+	SetYDir(-5);
+	return 1;
 }
+
+protected func FxIntMoveGateDownTimer(object target)
+{
+	if (GBackSolid(0, 19))
+	{
+		Sound("GateHit.ogg");
+		SetYDir(0);
+		return -1;
+	}
+	
+	SetYDir(5);
+	return 1;
+}	
 
 func Definition(def) 
 {

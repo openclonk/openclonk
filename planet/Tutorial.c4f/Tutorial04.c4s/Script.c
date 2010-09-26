@@ -17,12 +17,12 @@ protected func Initialize()
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	
 	// First section: Some straw targets to be struck with the sword.
-	CreateObject(SwordTarget, 190, 675, NO_OWNER);
-	CreateObject(SwordTarget, 280, 622, NO_OWNER);
-	CreateObject(SwordTarget, 340, 652, NO_OWNER);
-	CreateObject(SwordTarget, 430, 602, NO_OWNER);
+	CreateObject(SwordTarget, 190, 671, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObject(SwordTarget, 280, 620, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObject(SwordTarget, 340, 648, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObject(SwordTarget, 430, 600, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(CastleDoor, 555, 638, NO_OWNER);
+	var gate = CreateObject(CastleDoor, 556, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
@@ -36,7 +36,7 @@ protected func Initialize()
 	spearman1->AI_GuardArea(800, 400, 400, 250);
 	AddEffect("IntContentRemoval", spearman1, 100, 0);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1215, 548, NO_OWNER);
+	var gate = CreateObject(CastleDoor, 1216, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	
@@ -54,7 +54,7 @@ protected func Initialize()
 	bowman->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", bowman, 100, 0);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1855, 498, NO_OWNER);
+	var gate = CreateObject(CastleDoor, 1856, 500, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	
