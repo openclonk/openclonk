@@ -487,7 +487,7 @@ public func SetHandAction(bool fNewValue)
 {
 	if(fNewValue > 0)
 		fHandAction = 1; // 1 means can't use items and doesn't draw items in hand
-	if(fNewValue < 0)
+	else if(fNewValue < 0)
 		fHandAction = -1; // just don't draw items in hand can still use them
 	else
 		fHandAction = 0;
