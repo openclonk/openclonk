@@ -485,7 +485,7 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 		cgo2 = cgo.TruncateSection(iAlign);
 		rDefs.Draw(c_id,cgo2,(firstid+cnt==iSelection),0);
 		sprintf(buf,"%dx",idcount);
-		if (fCounts) Application.DDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+		if (fCounts) lpDDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 	}
 
 }

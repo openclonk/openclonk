@@ -1208,7 +1208,7 @@ void CStdDDraw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-CStdDDraw *DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+bool DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
 {
 	// create engine
 	switch (iGfxEngine = Engine)
@@ -1223,15 +1223,15 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned in
 #endif
 	case GFXENGN_NOGFX: lpDDraw = new CStdNoGfx(); break;
 	}
-	if (!lpDDraw) return NULL;
+	if (!lpDDraw) return false;
 	// init it
 	if (!lpDDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
 	{
 		delete lpDDraw;
-		return NULL;
+		return false;
 	}
 	// done, success
-	return lpDDraw;
+	return true;
 }
 
 bool CStdDDraw::Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)

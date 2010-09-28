@@ -376,7 +376,7 @@ void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 		// Draw count
 		sprintf(szCount,"%dx",iCount);
 		if ((iCount!=1) || fDrawOneCounts)
-			Application.DDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+			lpDDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 		// Region
 		if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->Number);
 		// Next section
@@ -397,7 +397,7 @@ void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 	    // Draw count
 	    sprintf(szCount,"%dx",iCount);
 	    if ((iCount!=1) || fDrawOneCounts)
-	      Application.DDraw->TextOut(szCount,cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-Application.DDraw->TextHeight(),FWhite,ARight);
+	      lpDDraw->TextOut(szCount,cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-lpDDraw->TextHeight(),FWhite,ARight);
 	    // Region
 	    if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->id);
 	    // Next section

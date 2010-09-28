@@ -651,7 +651,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
 
 	if (fSelected)
-		Application.DDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
+		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
 
 	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
 

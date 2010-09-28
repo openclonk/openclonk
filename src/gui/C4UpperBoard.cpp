@@ -56,7 +56,7 @@ void C4UpperBoard::Draw(C4Facet &cgo)
 {
 	if (!cgo.Surface) return;
 	// Background
-	Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,Output.Surface,0,0,Output.Wdt,Output.Hgt);
+	lpDDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,Output.Surface,0,0,Output.Wdt,Output.Hgt);
 	// Logo
 	C4Facet cgo2;
 	float fLogoZoom = 1.0f;
@@ -66,18 +66,18 @@ void C4UpperBoard::Draw(C4Facet &cgo)
 	// Right text sections
 	int32_t iRightOff = 1;
 	// Playing time
-	Application.DDraw->TextOut(cTimeString, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 10, TextYPosition, 0xFFFFFFFF);
+	lpDDraw->TextOut(cTimeString, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 10, TextYPosition, 0xFFFFFFFF);
 	// Clock
 	if (Config.Graphics.ShowClock)
-		Application.DDraw->TextOut(cTimeString2, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 30, TextYPosition, 0xFFFFFFFF);
+		lpDDraw->TextOut(cTimeString2, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 30, TextYPosition, 0xFFFFFFFF);
 	// FPS
 	if (Config.General.FPS)
 	{
 		sprintf(cTimeString, "%d FPS", Game.FPS);
-		Application.DDraw->TextOut(cTimeString, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 30, TextYPosition, 0xFFFFFFFF);
+		lpDDraw->TextOut(cTimeString, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, C4GUI::GetScreenWdt() - (iRightOff++) * TextWidth - 30, TextYPosition, 0xFFFFFFFF);
 	}
 	// Scenario title
-	Application.DDraw->TextOut(Game.ScenarioTitle.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, 10, cgo.Hgt / 2 - ::GraphicsResource.FontRegular.GetLineHeight() / 2, 0xFFFFFFFF);
+	lpDDraw->TextOut(Game.ScenarioTitle.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, 10, cgo.Hgt / 2 - ::GraphicsResource.FontRegular.GetLineHeight() / 2, 0xFFFFFFFF);
 }
 
 void C4UpperBoard::Init(C4Facet &cgo)

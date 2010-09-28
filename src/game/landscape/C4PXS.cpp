@@ -270,14 +270,14 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						// lines for stuff that goes whooosh!
 						int len = fixtoi(Abs(pxp->xdir)+Abs(pxp->ydir));
 						dwMatClr = uint32_t(Max<int>(dwMatClr>>24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr&0xffffff);
-						Application.DDraw->DrawLineDw(cgo.Surface,
+						lpDDraw->DrawLineDw(cgo.Surface,
 						                              fixtof(pxp->x - pxp->xdir) + cgox, fixtof(pxp->y - pxp->ydir) + cgoy,
 						                              fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy,
 						                              dwMatClr);
 					}
 					else
 						// single pixels for slow stuff
-						Application.DDraw->DrawPix(cgo.Surface, fixtof(pxp->x)+cgox, fixtof(pxp->y)+cgoy, dwMatClr);
+						lpDDraw->DrawPix(cgo.Surface, fixtof(pxp->x)+cgox, fixtof(pxp->y)+cgoy, dwMatClr);
 				}
 		}
 
@@ -310,9 +310,9 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 					int32_t z=1 + ((cnt2/Max<int32_t>(pnx*pny, 1))^341) % pMat->PXSGfxSize;
 					pny=(cnt2/pnx)%pny; pnx=cnt2%pnx;
 					// draw
-					Application.DDraw->ActivateBlitModulation(Min((fcWdtH-z)*16, 255)<<24 | 0xffffff);
+					lpDDraw->ActivateBlitModulation(Min((fcWdtH-z)*16, 255)<<24 | 0xffffff);
 					pMat->PXSFace.DrawX(cgo.Surface, fixtoi(pxp->x)+cgox+z*pMat->PXSGfxRt.tx/fcWdt, fixtoi(pxp->y)+cgoy+z*pMat->PXSGfxRt.ty/fcWdt, z, z*pMat->PXSFace.Hgt/fcWdt, pnx, pny);
-					Application.DDraw->DeactivateBlitModulation();
+					lpDDraw->DeactivateBlitModulation();
 				}
 		}
 

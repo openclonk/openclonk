@@ -1657,7 +1657,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 							}
 							else str = cursor->GetName();
 
-							Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                           cgo.X + cox + fctCursor.Wdt / 2,
 							                           cgo.Y + coy - 2 - texthgt,
 							                           0xffff0000, ACenter);
@@ -1853,7 +1853,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
-		Application.DDraw->Blit(FullScreen.pSurface,
+		lpDDraw->Blit(FullScreen.pSurface,
 		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 

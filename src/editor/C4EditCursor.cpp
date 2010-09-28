@@ -444,12 +444,12 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 	}
 	// Draw drag frame
 	if (DragFrame)
-		Application.DDraw->DrawFrameDw(cgo.Surface,
+		lpDDraw->DrawFrameDw(cgo.Surface,
 		                               Min(X, X2) + cgo.X - cgo.TargetX, Min(Y, Y2) + cgo.Y - cgo.TargetY,
 		                               Max(X, X2) + cgo.X - cgo.TargetX, Max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drag line
 	if (DragLine)
-		Application.DDraw->DrawLineDw(cgo.Surface,
+		lpDDraw->DrawLineDw(cgo.Surface,
 		                              X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
 		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drop target
@@ -466,21 +466,21 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	if (!cgo.Surface) return;
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
+	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
 }
 
 

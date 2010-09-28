@@ -644,7 +644,7 @@ void fxSmokeDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	int32_t px = i/4;
 	int32_t py = i%4;
 	// draw at pos
-	Application.DDraw->ActivateBlitModulation(particle->b);
+	lpDDraw->ActivateBlitModulation(particle->b);
 
 	float fx = float(def->Gfx.X + def->Gfx.Wdt * px);
 	float fy = float(def->Gfx.Y + def->Gfx.Hgt * py);
@@ -655,7 +655,7 @@ void fxSmokeDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	              cgo.Surface, cx - particle->a, cy - particle->a, particle->a * 2, particle->a * 2,
 	              true);
 
-	Application.DDraw->DeactivateBlitModulation();
+	lpDDraw->DeactivateBlitModulation();
 }
 
 bool fxStdInit(C4Particle *particle, C4Object *target)
@@ -862,9 +862,9 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	if (def->RByV == 3) // random rotation - currently a pseudo random rotation by x/y position
 		r = (((int32_t)(particle->x * 23 + particle->y * 12)) % 360) * 100;
 	// draw at pos
-	Application.DDraw->ActivateBlitModulation(particle->b);
-	Application.DDraw->StorePrimaryClipper();
-	Application.DDraw->SubPrimaryClipper(cgox, cgoy+def->YOff, 100000, 100000);
+	lpDDraw->ActivateBlitModulation(particle->b);
+	lpDDraw->StorePrimaryClipper();
+	lpDDraw->SubPrimaryClipper(cgox, cgoy+def->YOff, 100000, 100000);
 	if (def->Additive)
 		lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 
@@ -899,9 +899,9 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 		              true);
 	}
 
-	Application.DDraw->ResetBlitMode();
-	Application.DDraw->RestorePrimaryClipper();
-	Application.DDraw->DeactivateBlitModulation();
+	lpDDraw->ResetBlitMode();
+	lpDDraw->RestorePrimaryClipper();
+	lpDDraw->DeactivateBlitModulation();
 }
 
 C4ParticleProcRec C4ParticleProcMap[] =

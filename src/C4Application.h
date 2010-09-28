@@ -71,7 +71,6 @@ public:
 	// IRC client for global chat
 	C4Network2IRCClient IRCClient;
 	// Tick timing
-	class CStdDDraw *DDraw;
 	void Clear();
 	void GameTick();
 	void Draw();

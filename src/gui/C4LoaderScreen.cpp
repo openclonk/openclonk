@@ -159,13 +159,13 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);
 	// draw scenario title
-	Application.DDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.iLineHgt, 0xdddddddd, ARight, false);
+	lpDDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.iLineHgt, 0xdddddddd, ARight, false);
 	// draw info
 	/*if (szInfo)
-	  Application.DDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
+	  lpDDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
 	//
 	// draw progress bar
-	Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
+	lpDDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
 	int iProgressBarWdt=cgo.Wdt-iHIndent*2-2;
 	if (::GraphicsResource.fctProgressBar.Surface)
 	{
@@ -173,15 +173,15 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	}
 	else
 	{
-		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
+		lpDDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
 	}
-	Application.DDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
+	lpDDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
 	                             cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff,
 	                             ACenter, true);
 	// draw log box
 	if (pLog)
 	{
-		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
+		lpDDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
 		int iLineHgt=int(fLogBoxFontZoom*LogFont.iLineHgt); if (!iLineHgt) iLineHgt=5;
 		int iLinesVisible = (iLogBoxHgt-2*iLogBoxMargin)/iLineHgt;
 		int iX = iHIndent+iLogBoxMargin;

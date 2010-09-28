@@ -302,23 +302,23 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 
 void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 {
-	if (Modulation) Application.DDraw->ActivateBlitModulation(Modulation);
+	if (Modulation) lpDDraw->ActivateBlitModulation(Modulation);
 	// do relights
 	DoRelights();
 	// blit landscape
 	if (::GraphicsSystem.ShowSolidMask)
-		Application.DDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
+		lpDDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else
 	{
 		const CSurface * Surfaces[C4M_MaxTexIndex];
 		if (Config.Graphics.HighResLandscape)
 			for (int i = 0; i < C4M_MaxTexIndex; ++i)
 				Surfaces[i] = ::TextureMap.GetEntry(i)->GetPattern().getSurface();
-		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
+		lpDDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
 		                                 cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt,
 		                                 Config.Graphics.HighResLandscape ? Surfaces : 0);
 	}
-	if (Modulation) Application.DDraw->DeactivateBlitModulation();
+	if (Modulation) lpDDraw->DeactivateBlitModulation();
 }
 
 int32_t C4Landscape::ChunkyRandom(int32_t &iOffset, int32_t iRange)
@@ -503,7 +503,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	Surface32->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
-	Application.DDraw->NoPrimaryClipper();
+	lpDDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
 	iMapX-=2; iMapY-=2; iMapWdt+=4; iMapHgt+=4;
@@ -2445,7 +2445,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 	// assign clipper
 	Surface8->Clip(BoundingBox.x,BoundingBox.y,BoundingBox.x+BoundingBox.Wdt,BoundingBox.y+BoundingBox.Hgt);
-	Application.DDraw->NoPrimaryClipper();
+	lpDDraw->NoPrimaryClipper();
 
 	// draw all chunks
 	int32_t x, y;

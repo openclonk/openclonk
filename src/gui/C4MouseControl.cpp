@@ -492,7 +492,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		//------------------------------------------------------------------------------------------
 	case C4MC_Drag_Selecting:
 		// Draw frame
-		Application.DDraw->DrawFrameDw(cgo.Surface,
+		lpDDraw->DrawFrameDw(cgo.Surface,
 		                              int32_t(cgo.X + GuiX),
 		                              int32_t(cgo.Y + GuiY),
 		                              int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
@@ -516,7 +516,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			// Otherwise red mouse control style
 			int32_t iWdt,iHgt;
 			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			Application.DDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
+			lpDDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
 			                           cgo.Surface,
 			                           float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
 			                           float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),

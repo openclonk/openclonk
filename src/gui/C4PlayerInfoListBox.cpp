@@ -304,7 +304,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		fctDraw.X = 2;
 		// shadow
 		DWORD dwPrevMod; bool fPrevMod = lpDDraw->GetBlitModulation(dwPrevMod);
-		Application.DDraw->ActivateBlitModulation(1);
+		lpDDraw->ActivateBlitModulation(1);
 		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, true, dwJoinedInfoClr);
 		if (fPrevMod) lpDDraw->ActivateBlitModulation(dwPrevMod); else lpDDraw->DeactivateBlitModulation();
 		fctDraw.X = 0;

@@ -355,5 +355,5 @@ bool UnLockSurfaceGlobal(SURFACE sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-CStdDDraw *DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+bool DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

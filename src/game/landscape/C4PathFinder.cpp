@@ -348,7 +348,7 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
     d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=rX; y=rY;
     for (y=rY; y!=iToY; y+=yincr)
       {
-      Application.DDraw->SetPixel(sfcSurface,x,y,byCol);
+      lpDDraw->SetPixel(sfcSurface,x,y,byCol);
       if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
       }
     }
@@ -361,7 +361,7 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
     d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=rX; y=rY;
     for (x=rX; x!=iToX; x+=xincr)
       {
-      Application.DDraw->SetPixel(sfcSurface,x,y,byCol);
+      lpDDraw->SetPixel(sfcSurface,x,y,byCol);
       if (d>=0) { y+=yincr; d+=aincr; } else d+=bincr;
       }
     }

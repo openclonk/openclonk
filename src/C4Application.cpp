@@ -54,7 +54,7 @@ C4Application::C4Application():
 		NoSplash(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
-		DDraw(NULL), AppState(C4AS_None)
+		AppState(C4AS_None)
 {
 }
 
@@ -176,8 +176,8 @@ bool C4Application::DoInit()
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	DDraw = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
-	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
+	bool success = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
 	if (!isEditor)
 	{
@@ -302,7 +302,7 @@ void C4Application::Clear()
 	SoundSystem.Clear();
 	RestoreVideoMode();
 	// Clear direct draw (late, because it's needed for e.g. Log)
-	if (DDraw) { delete DDraw; DDraw=NULL; }
+	if (lpDDraw) { delete lpDDraw; lpDDraw=NULL; }
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();
@@ -441,10 +441,10 @@ void C4Application::SetGameTickDelay(int iDelay)
 void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// notify game
-	if (DDraw)
+	if (lpDDraw)
 	{
 		Game.OnResolutionChanged(iXRes, iYRes);
-		DDraw->OnResolutionChanged(iXRes, iYRes);
+		lpDDraw->OnResolutionChanged(iXRes, iYRes);
 	}
 	if (pWindow && pWindow->pSurface)
 		pWindow->pSurface->UpdateSize(iXRes, iYRes);

@@ -169,7 +169,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Select mark
 	if (iStyle!=C4MN_Style_Info)
 		if (fSelected && TextDisplayProgress)
-			Application.DDraw->DrawBoxDw(cgo.Surface, cgoOut.X, cgoOut.Y, cgoOut.X + cgoOut.Wdt - 1, cgoOut.Y + cgoOut.Hgt - 1, C4RGB(0xca, 0, 0));
+			lpDDraw->DrawBoxDw(cgo.Surface, cgoOut.X, cgoOut.Y, cgoOut.X + cgoOut.Wdt - 1, cgoOut.Y + cgoOut.Hgt - 1, C4RGB(0xca, 0, 0));
 	// Symbol/text areas
 	C4Facet cgoItemSymbol,cgoItemText;
 	cgoItemSymbol=cgoItemText=cgoOut;
@@ -183,17 +183,17 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Draw if there is no text progression at all (TextDisplayProgress==-1, or if it's progressed far enough already (TextDisplayProgress>0)
 	if (Symbol.Surface && TextDisplayProgress) Symbol.DrawClr(cgoItemSymbol, true, dwSymbolClr);
 	// Draw item text
-	Application.DDraw->StorePrimaryClipper(); Application.DDraw->SubPrimaryClipper(cgoItemText.X, cgoItemText.Y, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1);
+	lpDDraw->StorePrimaryClipper(); lpDDraw->SubPrimaryClipper(cgoItemText.X, cgoItemText.Y, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1);
 	switch (iStyle)
 	{
 	case C4MN_Style_Context:
-		Application.DDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+		lpDDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 		break;
 	case C4MN_Style_Info:
 	{
 		StdStrBuf sText;
 		::GraphicsResource.FontRegular.BreakMessage(InfoCaption, cgoItemText.Wdt, &sText, true);
-		Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
+		lpDDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
 		break;
 	}
 	case C4MN_Style_Dialog:
@@ -209,19 +209,19 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 		// display broken text
 		StdStrBuf sText;
 		::GraphicsResource.FontRegular.BreakMessage(Caption, cgoItemText.Wdt, &sText, true);
-		Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
+		lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
 		// restore complete text
 		if (cXChg) Caption[iStopPos] = cXChg;
 		break;
 	}
 	}
-	Application.DDraw->RestorePrimaryClipper();
+	lpDDraw->RestorePrimaryClipper();
 	// Draw count
 	if (Count!=C4MN_Item_NoCount)
 	{
 		char szCount[10+1];
 		sprintf(szCount,"%ix",Count);
-		Application.DDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+		lpDDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 	}
 }
 
@@ -869,8 +869,8 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 
 	// Store and clear global clipper
 //  int32_t iX1,iY1,iX2,iY2;
-//  Application.DDraw->GetPrimaryClipper(iX1,iY1,iX2,iY2);
-//  Application.DDraw->SubPrimaryClipper(rcBounds.x, rcBounds.y, rcBounds.x+rcBounds.Wdt-1, rcBounds.y+rcBounds.Hgt-1);
+//  lpDDraw->GetPrimaryClipper(iX1,iY1,iX2,iY2);
+//  lpDDraw->SubPrimaryClipper(rcBounds.x, rcBounds.y, rcBounds.x+rcBounds.Wdt-1, rcBounds.y+rcBounds.Hgt-1);
 
 	C4Facet cgoExtra(cgo.Surface, cgo.TargetX+rcBounds.x+1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-C4MN_SymbolSize-1, rcBounds.Wdt-2, C4MN_SymbolSize);
 
@@ -929,7 +929,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	}
 
 	// Restore global clipper
-	//Application.DDraw->SetPrimaryClipper(iX1,iY1,iX2,iY2);
+	//lpDDraw->SetPrimaryClipper(iX1,iY1,iX2,iY2);
 }
 
 void C4Menu::DrawFrame(SURFACE sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)

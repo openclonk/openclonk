@@ -916,7 +916,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
 	{
-		Application.DDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
+		lpDDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
 		                           ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
 	}
@@ -981,10 +981,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	if (fDrawOverlay)
 	{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
-		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
-		if (BorderTop)   Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
-		if (BorderRight) Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
-		if (BorderBottom)Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
+		if (BorderLeft)  lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
+		if (BorderTop)   lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
+		if (BorderRight) lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
+		if (BorderBottom)lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 
 		// Set clippers
 		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
@@ -992,7 +992,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
 		// Apply Zoom
 		lpDDraw->SetZoom(GameZoom);
-		Application.DDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
+		lpDDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
 	last_game_draw_cgo = cgo;
 
@@ -1048,7 +1048,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		float fGUIZoom = C4GUI::GetZoom();
 		// now restore complete cgo range for overlay drawing
 		lpDDraw->SetZoom(DrawX,DrawY, fGUIZoom);
-		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
+		lpDDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
 		C4TargetFacet gui_cgo;
 		gui_cgo.Set(cgo0);
 
@@ -1081,7 +1081,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		// Remove zoom n clippers
 		lpDDraw->SetZoom(0, 0, 1.0);
-		Application.DDraw->NoPrimaryClipper();
+		lpDDraw->NoPrimaryClipper();
 	}
 
 }
@@ -1420,7 +1420,7 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	}
 
 	// Name
-	Application.DDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+	lpDDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 	                           cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
 	                           pPlr->ColorDw | 0xff000000, ACenter);
 }
