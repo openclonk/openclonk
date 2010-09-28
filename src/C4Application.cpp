@@ -52,7 +52,6 @@ C4Application::C4Application():
 		UseStartupDialog(true),
 		CheckForUpdates(false),
 		NoSplash(false),
-		launchEditor(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
 		DDraw(NULL), AppState(C4AS_None)
@@ -65,17 +64,6 @@ C4Application::~C4Application()
 	if (pGamePadControl) delete pGamePadControl;
 	// Close log
 	CloseLog();
-	// Launch editor
-	if (launchEditor)
-	{
-#ifdef _WIN32
-		char strCommandLine[_MAX_PATH + 1]; SCopy(Config.AtExePath(C4CFN_Editor), strCommandLine);
-		STARTUPINFO StartupInfo; ZeroMemory(&StartupInfo, sizeof StartupInfo);
-		StartupInfo.cb = sizeof StartupInfo;
-		PROCESS_INFORMATION ProcessInfo; ZeroMemory(&ProcessInfo, sizeof ProcessInfo);
-		CreateProcess(NULL, strCommandLine, NULL, NULL, true, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
-#endif
-	}
 }
 
 bool C4Application::DoInit()

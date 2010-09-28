@@ -216,9 +216,6 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
 	succeeded = true;
 #ifdef _WIN32
-	// Close editor if open
-	HWND hwnd = FindWindow(NULL, C4EDITORCAPTION);
-	if (hwnd) PostMessage(hwnd, WM_CLOSE, 0, 0);
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
 	StdStrBuf strUpdateArgs; strUpdateArgs.Format("\"%s\" /p -w \"" C4ENGINECAPTION "\" -w \"" C4EDITORCAPTION "\" -w 2000 %s", strUpdateFile, fDeleteUpdate ? "-yd" : "-y");
 	int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
