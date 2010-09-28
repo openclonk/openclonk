@@ -556,6 +556,7 @@ if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/MacUtility.mm
 		src/platform/StdMacApp.mm
+		src/paltform/C4FileMonitorMac.mm
 	)
 endif()
 if(USE_GTK)

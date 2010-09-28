@@ -318,7 +318,7 @@ void C4FileMonitor::HandleNotify(const char *szDir, const _FILE_NOTIFY_INFORMATI
 	Application.InteractiveThread.PushEvent(Ev_FileChange, Path.GrabPointer());
 }
 
-#else // !defined(HAVE_SYS_INOTIFY_H) && !defined(HAVE_SYS_SYSCALL_H)
+#elif not defined(__APPLE__)
 
 // Stubs
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
