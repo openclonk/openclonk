@@ -1390,7 +1390,7 @@ void C4StartupOptionsDlg::RecreateDialog(bool fFade)
 
 void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 {
-	pShaders->SetChecked(!!DDrawCfg.Shader);
+	pShaders->SetChecked(!!Config.Graphics.EnableShaders);
 	// title of troubleshooting-box
 	pGroupTrouble->SetTitle(LoadResStrNoAmp("IDS_CTL_TROUBLE"));
 }
@@ -1398,7 +1398,7 @@ void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 {
 	// get it from controls
-	DDrawCfg.Shader=pShaders->GetChecked();
+	Config.Graphics.EnableShaders=pShaders->GetChecked();
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// and apply them directly, if the engine is current

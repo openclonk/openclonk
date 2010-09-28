@@ -161,8 +161,6 @@ bool C4Application::DoInit()
 			return true;
 #endif
 
-	DDrawCfg.Shader = !!Config.Graphics.EnableShaders;
-
 	// Fixup resolution
 	if (!Config.Graphics.Windowed)
 		ApplyResolutionConstraints();

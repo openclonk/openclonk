@@ -537,7 +537,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	// check exact
 	bool fExact = !pTransform && fwdt==twdt && fhgt==thgt;
 	// manual clipping? (primary surface only)
-	if (DDrawCfg.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
+	if (Config.Graphics.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
 	{
 		float iOver;
 		// Left
@@ -1025,7 +1025,7 @@ void CStdDDraw::DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	ApplyZoom(tx, ty);
 	// FIXME: zoom to a box
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		if (tx < iClipX1) { return; }
 		if (ty < iClipY1) { return; }
@@ -1046,7 +1046,7 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		float i;
 		// sort left/right
@@ -1311,7 +1311,7 @@ void CStdDDraw::DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, flo
 void CStdDDraw::DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		int iOver;
 		iOver=iX1-iClipX1; if (iOver<0) { iX1=iClipX1; }

@@ -1393,7 +1393,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	// bound
 	if (ClipAll) return;
 	// manual clipping? (primary surface only)
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		int iOver;
 		// Left
@@ -1840,7 +1840,7 @@ bool CStdGL::RestoreDeviceObjects()
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(CBltVertex), 0, GL_STREAM_DRAW_ARB);
 	}
 
-	if (!DDrawCfg.Shader)
+	if (!Config.Graphics.EnableShaders)
 	{
 	}
 	else if (!shaders[0] && GLEW_ARB_fragment_program)
