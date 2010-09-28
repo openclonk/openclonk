@@ -26,58 +26,12 @@
 
 #include <C4Region.h>
 
-#include <StdWindow.h>
-
 #include <C4Shape.h>
-
-class C4Viewport;
-
-#ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ViewportBase;
-#else
-typedef CStdWindow C4ViewportBase;
-#endif
 
 // view ranges in "CR-pixels" covered by viewport
 static const int C4VP_DefViewRangeX    = 1000,
                  C4VP_DefMinViewRangeX = 100,
                  C4VP_DefMaxViewRangeX = 3000;
-
-class C4ViewportWindow: public C4ViewportBase
-{
-public:
-	C4Viewport * cvp;
-	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
-#ifdef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
-#elif defined(WITH_DEVELOPER_MODE)
-	virtual GtkWidget* InitGUI();
-
-	static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data);
-	static gboolean OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data);
-	static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-	static void OnRealizeStatic(GtkWidget* widget, gpointer user_data);
-	static gboolean OnExposeStatic(GtkWidget* widget, GdkEventExpose* event, gpointer user_data);
-	static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data);
-
-	static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-
-	static void OnVScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-	static void OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-
-	GtkWidget* h_scrollbar;
-	GtkWidget* v_scrollbar;
-	GtkWidget* drawing_area;
-#elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-	virtual void HandleMessage (XEvent &);
-#endif
-	virtual void Close();
-};
 
 class C4Viewport
 {
@@ -135,7 +89,7 @@ protected:
 	bool ResetMenuPositions;
 	C4RegionList *SetRegions;
 	C4Viewport *Next;
-	C4ViewportWindow * pWindow;
+	class C4ViewportWindow * pWindow;
 	CClrModAddMap ClrModMap; // color modulation map for viewport drawing
 	void DrawPlayerFogOfWar(C4TargetFacet &cgo);
 	void DrawPlayerStartup(C4TargetFacet &cgo);
@@ -155,8 +109,5 @@ protected:
 	friend class C4GraphicsSystem;
 	friend class C4Video;
 };
-
-#define C4ViewportClassName "C4Viewport"
-#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
 
 #endif

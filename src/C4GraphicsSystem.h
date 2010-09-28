@@ -90,7 +90,6 @@ public:
 	bool CloseViewport(C4Viewport * cvp);
 #ifdef _WIN32
 	C4Viewport* GetViewport(HWND hwnd);
-	BOOL RegisterViewportClass(HINSTANCE hInst);
 #endif
 protected:
 	C4Viewport *FirstViewport;
