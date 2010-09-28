@@ -569,7 +569,7 @@ namespace C4GUI
 	{
 		assert(pDlg);
 		// do place console mode dialogs
-		if (Application.isFullScreen || pDlg->IsViewportDialog())
+		if (!Application.isEditor || pDlg->IsViewportDialog())
 			// exclusive or free dlg: center pos
 			// evaluate own placement proc first
 			if (!pDlg->DoPlacement(this, PreferredDlgRect))
@@ -721,7 +721,7 @@ namespace C4GUI
 			if (pContext) pContext->Draw(cgo);
 		}
 		// draw mouse cursor
-		if (Application.isFullScreen) RenderMouse(cgo);
+		if (!Application.isEditor) RenderMouse(cgo);
 	}
 
 	bool Screen::Execute()

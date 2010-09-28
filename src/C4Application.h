@@ -48,7 +48,7 @@ public:
 	C4Application();
 	~C4Application();
 	// set by ParseCommandLine
-	bool isFullScreen;
+	bool isEditor;
 	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
 	bool UseStartupDialog;
 	// set by ParseCommandLine, for installing registration keys

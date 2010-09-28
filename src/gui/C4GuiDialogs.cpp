@@ -530,7 +530,7 @@ namespace C4GUI
 		// always keep local copy of title
 		TitleString.Copy(szTitle);
 		// console mode dialogs: Use window bar
-		if (!Application.isFullScreen && !IsViewportDialog())
+		if (Application.isEditor && !IsViewportDialog())
 		{
 			if (pWindow) pWindow->SetTitle(szTitle ? szTitle : "");
 			return;
@@ -809,7 +809,7 @@ namespace C4GUI
 		pOnScreen->ShowDialog(this, false);
 		fVisible = true;
 		// developer mode: Create window
-		if (!Application.isFullScreen && !IsViewportDialog())
+		if (Application.isEditor && !IsViewportDialog())
 			if (!CreateConsoleWindow()) return false;
 		// CB
 		if (fCB) OnShown();

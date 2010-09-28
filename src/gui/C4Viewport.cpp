@@ -1064,7 +1064,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
 
-		if (!Application.isFullScreen) Console.EditCursor.Draw(cgo);
+		if (Application.isEditor) Console.EditCursor.Draw(cgo);
 
 		DrawOverlay(gui_cgo, GameZoom);
 
@@ -1121,7 +1121,7 @@ void C4Viewport::Execute()
 	// Draw
 	Draw(cgo, true);
 	// Video record & status (developer mode, first player viewport)
-	if (!Application.isFullScreen)
+	if (Application.isEditor)
 		if (Player==0 && (this==::GraphicsSystem.GetViewport((int32_t) 0)))
 			::GraphicsSystem.Video.Execute();
 	// Blit output
@@ -1296,7 +1296,7 @@ void C4Viewport::UpdateViewPosition()
 	// no-owner viewports should not scroll outside viewing area
 	if (fIsNoOwnerViewport)
 	{
-		if (Application.isFullScreen && GBackWdt<ViewWdt / Zoom)
+		if (!Application.isEditor && GBackWdt<ViewWdt / Zoom)
 		{
 			ViewX = (GBackWdt-ViewWdt / Zoom)/2;
 		}
@@ -1305,7 +1305,7 @@ void C4Viewport::UpdateViewPosition()
 			ViewX = Min(ViewX, GBackWdt-ViewWdt / Zoom);
 			ViewX = Max(ViewX, 0.0f);
 		}
-		if (Application.isFullScreen && GBackHgt<ViewHgt / Zoom)
+		if (!Application.isEditor && GBackHgt<ViewHgt / Zoom)
 		{
 			ViewY = (GBackHgt-ViewHgt / Zoom)/2;
 		}

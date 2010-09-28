@@ -172,7 +172,7 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// do not render to inactive fullscreen
-	if (!Active && fFullscreen) return false;
+	if (!Active && !Editor) return false;
 	// device?
 	if (!lpDevice) return false;
 	// target?
@@ -443,7 +443,7 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 	return true;
 }
 
-bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdD3D::CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
@@ -465,7 +465,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
 	DebugLog("  Create Device...");
-	if (Fullscreen)
+	if (!Editor)
 	{
 		// fullscreen mode
 		// pick a display mode

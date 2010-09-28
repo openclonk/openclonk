@@ -133,7 +133,7 @@ bool C4GraphicsSystem::StartDrawing()
 	if (!Application.DDraw->Active) return false;
 
 	// only if application is active or windowed (if config allows)
-	if (!Application.Active && (Application.isFullScreen || !Config.Graphics.RenderInactiveEM)) return false;
+	if (!Application.Active && (!Application.isEditor || !Config.Graphics.RenderInactiveEM)) return false;
 
 	// drawing OK
 	return true;
@@ -141,7 +141,7 @@ bool C4GraphicsSystem::StartDrawing()
 
 void C4GraphicsSystem::FinishDrawing()
 {
-	if (Application.isFullScreen) FullScreen.pSurface->PageFlip();
+	if (!Application.isEditor) FullScreen.pSurface->PageFlip();
 }
 
 void C4GraphicsSystem::Execute()
@@ -154,7 +154,7 @@ void C4GraphicsSystem::Execute()
 	// If lobby running, message board only (page flip done by startup message board)
 	if (!::pGUI || !::pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
 		if (::Network.isLobbyActive() || !Game.IsRunning)
-			if (Application.isFullScreen)
+			if (!Application.isEditor)
 			{
 				// Message board
 				if (iRedrawBackground) ClearFullscreenBackground();
@@ -165,7 +165,7 @@ void C4GraphicsSystem::Execute()
 			}
 
 	// fullscreen GUI?
-	if (Application.isFullScreen && ::pGUI && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
+	if (!Application.isEditor && ::pGUI && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
 	{
 		if (!fBGDrawn && iRedrawBackground) ClearFullscreenBackground();
 		::pGUI->Render(!fBGDrawn);
@@ -177,7 +177,7 @@ void C4GraphicsSystem::Execute()
 	ScreenRate = 1;
 
 	// Background redraw
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		if (iRedrawBackground)
 			DrawFullscreenBackground();
 
@@ -196,7 +196,7 @@ void C4GraphicsSystem::Execute()
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
 		cvp->Execute();
 
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 	{
 		// Upper board
 		UpperBoard.Execute();
@@ -224,7 +224,7 @@ void C4GraphicsSystem::Execute()
 	}
 
 	// Video record & status (fullsrceen)
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		Video.Execute();
 
 	// done
@@ -285,7 +285,7 @@ bool C4GraphicsSystem::CreateViewport(int32_t iPlayer, bool fSilent)
 	int32_t iLastCount = GetViewportCount();
 	C4Viewport *nvp = new C4Viewport;
 	bool fOkay = false;
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		fOkay = nvp->Init(iPlayer, false);
 	else
 		fOkay = nvp->Init(&Console,&Application,iPlayer);
@@ -398,7 +398,7 @@ void C4GraphicsSystem::RecalculateViewports()
 {
 
 	// Fullscreen only
-	if (!Application.isFullScreen) return;
+	if (Application.isEditor) return;
 
 	// Sort viewports
 	SortViewportsByPlayerControl();
@@ -594,7 +594,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 {
 	// Fullscreen only
-	if (!Application.isFullScreen) return false;
+	if (Application.isEditor) return false;
 	// back surface must be present
 	if (!FullScreen.pSurface) return false;
 
@@ -667,7 +667,7 @@ void C4GraphicsSystem::DeactivateDebugOutput()
 
 void C4GraphicsSystem::DrawHoldMessages()
 {
-	if (Application.isFullScreen && Game.HaltCount)
+	if (!Application.isEditor && Game.HaltCount)
 	{
 		Application.DDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 		                           FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
@@ -706,7 +706,7 @@ void C4GraphicsSystem::FlashMessageOnOff(const char *strWhat, bool fOn)
 void C4GraphicsSystem::DrawFlashMessage()
 {
 	if (!FlashMessageTime) return;
-	if (!Application.isFullScreen) return;
+	if (Application.isEditor) return;
 	Application.DDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           (FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 	                           (FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
@@ -720,7 +720,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 void C4GraphicsSystem::DrawHelp()
 {
 	if (!ShowHelp) return;
-	if (!Application.isFullScreen) return;
+	if (Application.isEditor) return;
 	int32_t iX = ViewportArea.X, iY = ViewportArea.Y;
 	int32_t iWdt = ViewportArea.Wdt;
 	StdStrBuf strText;

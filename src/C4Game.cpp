@@ -374,7 +374,7 @@ bool C4Game::Init()
 				{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 			// init loader
-			if (Application.isFullScreen && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
 				{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -397,7 +397,7 @@ bool C4Game::Init()
 		}
 
 		// check wether console mode is allowed
-		if (!Application.isFullScreen && !Parameters.AllowDebug)
+		if (Application.isEditor && !Parameters.AllowDebug)
 			{ LogFatal(LoadResStr("IDS_TEXT_JOININCONSOLEMODENOTALLOW")); return false; }
 
 		// do lobby (if desired)
@@ -440,7 +440,7 @@ bool C4Game::Init()
 			{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 		// init loader
-		if (Application.isFullScreen && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 
 		// Init network
@@ -453,7 +453,7 @@ bool C4Game::Init()
 	C4Startup::Unload();
 
 	// Init debugmode
-	DebugMode = !Application.isFullScreen;
+	DebugMode = Application.isEditor;
 	if (Config.General.AlwaysDebug)
 		DebugMode = true;
 	if (!Parameters.AllowDebug)
@@ -489,7 +489,7 @@ bool C4Game::Init()
 	GraphicsSystem.ApplyGamma();
 
 	// Message board and upper board
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 	{
 		InitFullscreenComponents(true);
 	}
@@ -1847,7 +1847,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	}
 
 	// Fullscreen screenshot
-	else if (Application.isFullScreen && Application.Active)
+	else if (!Application.isEditor && Application.Active)
 	{
 		SURFACE sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
 		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
@@ -1904,7 +1904,7 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 		}
 		else
 		{
-			if (Application.isFullScreen)
+			if (!Application.isEditor)
 			{
 				if (FullScreen.pMenu && FullScreen.pMenu->IsActive()) // fullscreen menu
 					InScope |= KEYSCOPE_FullSMenu;
@@ -2107,7 +2107,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	{
 
 		// file monitor
-		if (Config.Developer.AutoFileReload && !Application.isFullScreen && !pFileMonitor)
+		if (Config.Developer.AutoFileReload && Application.isEditor && !pFileMonitor)
 			pFileMonitor = new C4FileMonitor(FileMonitorCallback);
 
 		// system scripts
@@ -2427,7 +2427,7 @@ bool C4Game::InitPlayers()
 #ifndef USE_CONSOLE
 		// No players in fullscreen
 		if (iPlrCnt==0)
-			if (Application.isFullScreen && !Control.NoInput())
+			if (!Application.isEditor && !Control.NoInput())
 			{
 				LogFatal(LoadResStr("IDS_CNS_NOFULLSCREENPLRS")); return false;
 			}
@@ -2435,7 +2435,7 @@ bool C4Game::InitPlayers()
 		// Too many players
 		if (iPlrCnt>Game.Parameters.MaxPlayers)
 		{
-			if (Application.isFullScreen)
+			if (!Application.isEditor)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_PRC_TOOMANYPLRS"),Game.Parameters.MaxPlayers).getData());
 				return false;
@@ -2890,7 +2890,7 @@ void C4Game::ParseCommandLine(const char *szCmdLine)
 	// Check for fullscreen switch in command line
 	if (SSearchNoCase(szCmdLine, "/console")
 	    || (!SSearchNoCase(szCmdLine, "/fullscreen") && *ScenarioFilename))
-		Application.isFullScreen = false;
+		Application.isEditor = true;
 
 	// Determine startup player count
 	StartupPlayerCount = SModuleCount(PlayerFilenames);
@@ -2899,7 +2899,7 @@ void C4Game::ParseCommandLine(const char *szCmdLine)
 	Record = Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && NetworkActive);
 
 	// startup dialog required?
-	Application.UseStartupDialog = Application.isFullScreen && !*DirectJoinAddress && !*ScenarioFilename && !RecordStream.getSize();
+	Application.UseStartupDialog = !Application.isEditor && !*DirectJoinAddress && !*ScenarioFilename && !RecordStream.getSize();
 
 }
 
@@ -3196,7 +3196,7 @@ void C4Game::ShowGameOverDlg()
 	// console engine quits here directly
 	Application.QuitGame();
 #else
-	if (pGUI && Application.isFullScreen)
+	if (pGUI && !Application.isEditor)
 	{
 		C4GameOverDlg *pDlg = new C4GameOverDlg();
 		pDlg->SetDelOnClose();

@@ -2517,7 +2517,7 @@ void C4Network2::LeagueSurrender()
 
 void C4Network2::LeagueShowError(const char *szMsg)
 {
-	if (::pGUI && Application.isFullScreen)
+	if (::pGUI && !Application.isEditor)
 	{
 		::pGUI->ShowErrorMessage(szMsg);
 	}

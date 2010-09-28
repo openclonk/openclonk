@@ -201,7 +201,7 @@ void C4MouseControl::UpdateClip()
 #endif
 #ifdef _WIN32
 	// fullscreen only
-	if (!Application.isFullScreen) return;
+	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
 	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
 	// get controlled viewport
@@ -253,7 +253,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (Application.isFullScreen)
+		if (!Application.isEditor)
 		{
 			int32_t iMidX = Viewport->OutX + iX;
 			int32_t iMidY = Viewport->OutY + iY;
@@ -271,7 +271,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (Application.isFullScreen)
+		if (!Application.isEditor)
 		{
 			//int32_t iMidX = Viewport->OutX + iX;
 			//int32_t iMidY = Viewport->OutY + iY;

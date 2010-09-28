@@ -158,7 +158,7 @@ public:
 protected:
 	bool FindDisplayMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor);
 	bool FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor);
-	virtual bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
+	virtual bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 	bool SetOutputAdapter(unsigned int iMonitor);
 	inline bool HasShaders() const { return !!pShaders[0]; }
 

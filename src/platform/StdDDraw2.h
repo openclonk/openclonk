@@ -201,7 +201,7 @@ public:
 	int MaxTexSize;
 protected:
 	BYTE                byByteCnt;    // bytes per pixel (2 or 4)
-	bool fFullscreen;
+	bool Editor;
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 	float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates
 	int32_t iClipX1,iClipY1,iClipX2,iClipY2; // clipper in pixel coordinates
@@ -220,7 +220,7 @@ protected:
 public:
 	float Zoom;
 	// General
-	bool Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+	bool Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
 	virtual CStdGLCtx *CreateContext(CStdWindow *, CStdApp *) { return NULL; }
@@ -328,7 +328,7 @@ protected:
 	virtual void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol) = 0; // without ClrModMap
 	virtual void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr) = 0;
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
-	virtual bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
+	virtual bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
 	void DebugLog(const char *szMsg)
 	{
@@ -355,5 +355,5 @@ bool UnLockSurfaceGlobal(SURFACE sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+CStdDDraw *DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

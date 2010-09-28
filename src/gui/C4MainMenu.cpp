@@ -568,15 +568,15 @@ bool C4MainMenu::ActivateDisplay(int32_t iPlayer, int32_t selection)
 	// Crew clonk names
 	AddRefSym(LoadResStr("IDS_MNU_CLONKNAMES"), GfxR->fctOptions.GetPhase(9 + Config.Graphics.ShowCrewCNames), "Display:ClonkNames", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CLONKNAMES_DESC"));
 	// Upper Board
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 	{
 		AddRefSym(LoadResStr("IDS_MNU_UPPERBOARD"),GfxR->fctOptions.GetPhase(3 + Config.Graphics.UpperBoard),"Display:UpperBoard",C4MN_Item_NoCount);
 	}
 	// FPS
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		AddRefSym(LoadResStr("IDS_MNU_FPS"), GfxR->fctOptions.GetPhase(5 + Config.General.FPS), "Display:FPS", C4MN_Item_NoCount);
 	// Clock
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		AddRefSym(LoadResStr("IDS_MNU_CLOCK"), GfxR->fctOptions.GetPhase(15 + Config.Graphics.ShowClock), "Display:Clock", C4MN_Item_NoCount);
 	// Restore selection
 	SetSelection(selection, false, true);
@@ -650,7 +650,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 	if (pPlr)
 		AddRefSym(LoadResStr("IDS_MENU_CPSURRENDER"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Surrender), "ActivateMenu:Surrender", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CPSURRENDERINFO"));
 	// Abort
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 		AddRefSym(LoadResStr("IDS_MENU_ABORT"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Exit), "Abort", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_ABORT_DESC"));
 	// No empty menus
 	if (GetItemCount()==0) Close(false);

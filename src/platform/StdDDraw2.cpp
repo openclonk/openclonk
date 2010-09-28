@@ -385,7 +385,7 @@ uint32_t CColorFadeMatrix::GetColorAt(int iX, int iY)
 
 void CStdDDraw::Default()
 {
-	fFullscreen=false;
+	Editor=true;
 	RenderTarget=NULL;
 	ClipAll=false;
 	Active=false;
@@ -1208,7 +1208,7 @@ void CStdDDraw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+CStdDDraw *DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
 {
 	// create engine
 	switch (iGfxEngine = Engine)
@@ -1225,7 +1225,7 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 	}
 	if (!lpDDraw) return NULL;
 	// init it
-	if (!lpDDraw->Init(pApp, Fullscreen, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!lpDDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
 	{
 		delete lpDDraw;
 		return NULL;
@@ -1234,7 +1234,7 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 	return lpDDraw;
 }
 
-bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool CStdDDraw::Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	this->pApp = pApp;
 
@@ -1243,7 +1243,7 @@ bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 
 	pApp->pWindow->pSurface = new CSurface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;
 
 	DebugLog("  Create Clipper");
@@ -1251,7 +1251,7 @@ bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 	if (!CreatePrimaryClipper(iXRes, iYRes))
 		return Error("  Clipper failure.");
 
-	fFullscreen = Fullscreen;
+	this->Editor = Editor;
 
 	return true;
 }

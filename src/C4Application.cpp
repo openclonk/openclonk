@@ -48,7 +48,7 @@
 
 
 C4Application::C4Application():
-		isFullScreen(true),
+		isEditor(false),
 		UseStartupDialog(true),
 		CheckForUpdates(false),
 		NoSplash(false),
@@ -157,7 +157,7 @@ bool C4Application::DoInit()
 	Active=true;
 
 	// Init carrier window
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		if (!(pWindow = FullScreen.Init(this)))
 			{ Clear(); return false; }
@@ -176,10 +176,10 @@ bool C4Application::DoInit()
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	DDraw = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
@@ -237,7 +237,7 @@ bool C4Application::PreInit()
 	bool fDoUseStartupDialog = UseStartupDialog && !*Game.ScenarioFilename;
 
 	// Startup message board
-	if (isFullScreen)
+	if (!isEditor)
 		if (Config.Graphics.ShowStartupMessages || Game.NetworkActive)
 		{
 			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
@@ -312,7 +312,7 @@ void C4Application::Clear()
 
 bool C4Application::OpenGame()
 {
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		// Open game
 		return Game.Init();
@@ -424,7 +424,7 @@ void C4Application::Draw()
 	if (!Game.DoSkipFrame)
 	{
 		// Fullscreen mode
-		if (isFullScreen)
+		if (!isEditor)
 			FullScreen.Execute();
 		// Console mode
 		else
