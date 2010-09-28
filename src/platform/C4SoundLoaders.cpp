@@ -248,12 +248,12 @@ bool FMODSoundLoader::ReadInfo(SoundInfo& result, BYTE* data, size_t data_length
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
 	if (options & OPTION_Raw)
 		iOptions |= FSOUND_LOADRAW;
-	SoundHandle pSample;
+	C4SoundHandle pSample;
 	if (!(pSample = FSOUND_Sample_Load(FSOUND_UNMANAGED, (const char *)data, iOptions, 0, data_length)))
-		{ Clear(); return false; }
+		{ return false; }
 	// get length
 	int32_t iSamples = FSOUND_Sample_GetLength(pSample);
-	int iSampleRate = SampleRate;
+	int iSampleRate = 0;
 	if (!iSamples || !FSOUND_Sample_GetDefaults(pSample, &iSampleRate, 0, 0, 0))
 		return false;
 	result.sample_rate = iSampleRate;
