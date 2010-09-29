@@ -106,6 +106,8 @@ if(MSVC_VERSION)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
 	list(APPEND OC_CXX_FLAGS "/wd4244")
+	# Disable warning C4267: 'var' : conversion from 'size_t' to 'type', possible loss of data (64 bit build only)
+	list(APPEND OC_CXX_FLAGS "/wd4267")
 endif()
 
 ############################################################################
