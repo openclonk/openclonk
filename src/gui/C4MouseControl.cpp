@@ -205,7 +205,7 @@ void C4MouseControl::UpdateClip()
 	// application or mouse control not active? remove any clips
 	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
 	// get controlled viewport
-	C4Viewport *pVP=::GraphicsSystem.GetViewport(Player);
+	C4Viewport *pVP=::Viewports.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
 	// adjust size by viewport size
 	RECT vpRct;
@@ -240,7 +240,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	else
 		pPlayer = NULL;
 	// Check viewport
-	if (!(Viewport=::GraphicsSystem.GetViewport(Player))) return;
+	if (!(Viewport=::Viewports.GetViewport(Player))) return;
 	// get view position
 	C4Rect rcViewport = Viewport->GetOutputRect();
 	fctViewport.Set(NULL, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);

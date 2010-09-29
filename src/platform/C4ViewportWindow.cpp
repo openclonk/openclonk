@@ -57,7 +57,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
 	// Determine viewport
 	C4Viewport *cvp;
-	if (!(cvp=::GraphicsSystem.GetViewport(hwnd)))
+	if (!(cvp=::Viewports.GetViewport(hwnd)))
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
@@ -229,6 +229,8 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 {
+	static bool fViewportClassRegistered = false;
+	if (fViewportClassRegistered) return true;
 	// register landscape viewport class
 	WNDCLASSEX WndClass;
 	WndClass.cbSize=sizeof(WNDCLASSEX);
@@ -245,7 +247,7 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
 	if (!RegisterClassEx(&WndClass)) return false;
 	// register GUI dialog class
-	return C4GUI::Dialog::RegisterWindowClass(hInst);
+	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
 }
 
 CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
@@ -802,5 +804,5 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 
 void C4ViewportWindow::Close()
 {
-	::GraphicsSystem.CloseViewport(cvp);
+	::Viewports.CloseViewport(cvp);
 }

@@ -28,11 +28,6 @@
 
 #include <C4Shape.h>
 
-// view ranges in "CR-pixels" covered by viewport
-static const int C4VP_DefViewRangeX    = 1000,
-                 C4VP_DefMinViewRangeX = 100,
-                 C4VP_DefMaxViewRangeX = 3000;
-
 class C4Viewport
 {
 	friend class C4MouseControl;
@@ -106,8 +101,44 @@ protected:
 	friend LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 	friend class C4ViewportWindow;
+	friend class C4ViewportList;
 	friend class C4GraphicsSystem;
 	friend class C4Video;
 };
+
+class C4ViewportList {
+public:
+	C4ViewportList();
+	~C4ViewportList();
+	void Clear();
+	void ClearPointers(C4Object *pObj);
+	void Execute(bool DrawBackground);
+	void SortViewportsByPlayerControl();
+	void RecalculateViewports();
+	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
+	bool CloseViewport(int32_t iPlayer, bool fSilent);
+	int32_t GetViewportCount();
+	C4Viewport* GetViewport(int32_t iPlayer);
+	C4Viewport* GetFirstViewport() { return FirstViewport; }
+	bool CloseViewport(C4Viewport * cvp);
+#ifdef _WIN32
+	C4Viewport* GetViewport(HWND hwnd);
+#endif
+	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);
+	bool ViewportNextPlayer();
+
+	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset
+	bool ViewportZoomOut();
+	bool ViewportZoomIn();
+protected:
+	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	void DrawFullscreenBackground();
+	C4Viewport *FirstViewport;
+	C4Facet ViewportArea;
+	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
+	friend class C4GraphicsSystem;
+};
+
+extern C4ViewportList Viewports;
 
 #endif

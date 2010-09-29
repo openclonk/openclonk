@@ -25,6 +25,8 @@
 
 #include <list>
 
+const float C4GFX_ZoomStep = 1.1040895f;
+
 // one control definition, e.g. "Left", "Throw", etc.
 class C4PlayerControlDef
 {

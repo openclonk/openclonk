@@ -1997,7 +1997,7 @@ void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool 
 
 void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 {
-	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	C4Viewport *vp = ::Viewports.GetViewport(Number);
 	if (!vp) return;
 	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
@@ -2008,7 +2008,7 @@ void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 
 void C4Player::ZoomLimitsToViewport()
 {
-	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	C4Viewport *vp = ::Viewports.GetViewport(Number);
 	if (!vp) return;
 	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
 	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);

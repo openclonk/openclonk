@@ -29,15 +29,6 @@
 #include <C4Video.h>
 #include <C4Shape.h>
 
-class C4Game;
-class C4LoaderScreen;
-class C4Object;
-extern C4Game Game;
-
-const float C4GFX_ZoomStep = 1.1040895f;
-
-#define C4FOW_Def_View_RangeX 500
-
 class C4GraphicsSystem
 {
 public:
@@ -68,55 +59,30 @@ public:
 	void DeactivateDebugOutput();
 	void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
 	void SetMouseInGUI(bool fInGUI, bool fByMouse);
-	void SortViewportsByPlayerControl();
-	void ClearPointers(C4Object *pObj);
-	//void UpdateMouse(HWND hwnd, int32_t iX, int32_t iY, int32_t iB);
-	void RecalculateViewports();
 	bool Init();
 	bool InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst);
 	void EnableLoaderDrawing(); // reset black screen loader flag
 	bool SaveScreenshot(bool fSaveAll);
 	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);
-	bool CreateViewport(int32_t iPlayer, bool fSilent);
-	bool CloseViewport(int32_t iPlayer, bool fSilent);
-	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);
-	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer);
-	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	inline void InvalidateBg() { iRedrawBackground=2; }
 	inline void OverwriteBg() { InvalidateBg(); }
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
 	void ApplyGamma();                                        // apply gamma ramp to ddraw
-	bool CloseViewport(C4Viewport * cvp);
-#ifdef _WIN32
-	C4Viewport* GetViewport(HWND hwnd);
-#endif
 protected:
-	C4Viewport *FirstViewport;
-	bool fViewportClassRegistered;
-	C4Facet ViewportArea;
-	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
 	char FlashMessageText[C4MaxTitle+1];
 	int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
 	void DrawHelp();
 	void DrawFlashMessage();
 	void DrawHoldMessages();
-	void DrawFullscreenBackground();
 	void ClearFullscreenBackground();
 	int32_t SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int32_t iLoaderCount, char *szDstName, C4Group **ppDestGrp);
-	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
 
 public:
 	bool ToggleShowSolidMask();
 	bool ToggleShowNetStatus();
 	bool ToggleShowVertices();
 	bool ToggleShowAction();
-	bool ViewportNextPlayer();
 	bool ToggleShowHelp();
-
-	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset
-	bool ViewportZoomOut();
-	bool ViewportZoomIn();
 };
 
 extern C4GraphicsSystem GraphicsSystem;

@@ -32,7 +32,7 @@
 #include <C4Player.h>
 #include <C4Object.h>
 #include <C4Game.h>
-#include <C4GraphicsSystem.h>
+#include <C4Viewport.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
@@ -272,7 +272,7 @@ bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	pPlr->CrewInfoList.DetachFromObjects();
 
 	// Clear viewports
-	::GraphicsSystem.CloseViewport(pPlr->Number, fNoCalls);
+	::Viewports.CloseViewport(pPlr->Number, fNoCalls);
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
 

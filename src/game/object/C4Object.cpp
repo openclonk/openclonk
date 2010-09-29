@@ -296,7 +296,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	UpdateFace(true);
 
 	// Initial audibility
-	Audible=::GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
+	Audible=::Viewports.GetAudibility(GetX(), GetY(), &AudiblePan);
 
 	// Initial OCF
 	SetOCF();
@@ -2026,7 +2026,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
 		Menu->SetPermanent(true);
 		Menu->SetAlignment(C4MN_Align_Free);
-		C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
+		C4Viewport *pViewport = ::Viewports.GetViewport(Controller); // Hackhackhack!!!
 		if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->GetZoom(),
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->GetZoom());
 		// Add info item

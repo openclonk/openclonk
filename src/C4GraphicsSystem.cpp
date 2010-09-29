@@ -47,7 +47,6 @@
 
 C4GraphicsSystem::C4GraphicsSystem()
 {
-	fViewportClassRegistered=false;
 	Default();
 }
 
@@ -60,10 +59,8 @@ bool C4GraphicsSystem::Init()
 {
 #ifdef _WIN32
 	// Register viewport class
-	if (!fViewportClassRegistered)
-		if (!C4ViewportWindow::RegisterViewportClass(Application.GetInstance()))
-			return false;
-	fViewportClassRegistered=true;
+	if (!C4ViewportWindow::RegisterViewportClass(Application.GetInstance()))
+		return false;
 #endif
 	// Init video module
 	if (Config.Graphics.VideoModule)
@@ -81,14 +78,7 @@ void C4GraphicsSystem::Clear()
 	// clear loader
 	if (pLoaderScreen) { delete pLoaderScreen; pLoaderScreen=NULL; }
 	// Close viewports
-	C4Viewport *next;
-	while (FirstViewport)
-	{
-		next=FirstViewport->Next;
-		delete FirstViewport;
-		FirstViewport=next;
-	}
-	FirstViewport=NULL;
+	::Viewports.Clear();
 	// Clear video system
 	Video.Clear();
 	// No debug stuff
@@ -150,11 +140,6 @@ void C4GraphicsSystem::Execute()
 	// Fixed screen rate in old network
 	ScreenRate = 1;
 
-	// Background redraw
-	if (!Application.isEditor)
-		if (iRedrawBackground)
-			DrawFullscreenBackground();
-
 	// Screen rate skip frame draw
 	ScreenTick++; if (ScreenTick>=ScreenRate) ScreenTick=0;
 
@@ -167,8 +152,8 @@ void C4GraphicsSystem::Execute()
 		SetMouseInGUI(false, false);
 
 	// Viewports
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		cvp->Execute();
+	::Viewports.Execute(!Application.isEditor && iRedrawBackground);
+	if (iRedrawBackground) --iRedrawBackground;
 
 	if (!Application.isEditor)
 	{
@@ -205,91 +190,11 @@ void C4GraphicsSystem::Execute()
 	FinishDrawing();
 }
 
-bool C4GraphicsSystem::CloseViewport(C4Viewport * cvp)
-{
-	if (!cvp) return false;
-	/*C4Viewport *next,*prev=NULL;
-	for (C4Viewport *cvp2=FirstViewport; cvp2; cvp2=next)
-	  {
-	  next=cvp2->Next;
-	  if (cvp2 == cvp)
-	    {
-	    delete cvp;
-	    StartSoundEffect("CloseViewport");
-	    if (prev) prev->Next=next;
-	    else FirstViewport=next;
-	    }
-	  else
-	    prev=cvp2;
-	  }*/
-	// Chop the start of the chain off
-	if (FirstViewport == cvp)
-	{
-		FirstViewport = cvp->Next;
-		delete cvp;
-		StartSoundEffect("CloseViewport");
-	}
-	// Take out of the chain
-	else for (C4Viewport * prev = FirstViewport; prev; prev = prev->Next)
-		{
-			if (prev->Next == cvp)
-			{
-				prev->Next = cvp->Next;
-				delete cvp;
-				StartSoundEffect("CloseViewport");
-			}
-		}
-	// Recalculate viewports
-	RecalculateViewports();
-	// Done
-	return true;
-}
-#ifdef _WIN32
-C4Viewport* C4GraphicsSystem::GetViewport(HWND hwnd)
-{
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		if (cvp->pWindow->hWindow==hwnd)
-			return cvp;
-	return NULL;
-}
-#endif
-bool C4GraphicsSystem::CreateViewport(int32_t iPlayer, bool fSilent)
-{
-	// Create and init new viewport, add to viewport list
-	int32_t iLastCount = GetViewportCount();
-	C4Viewport *nvp = new C4Viewport;
-	bool fOkay = false;
-	if (!Application.isEditor)
-		fOkay = nvp->Init(iPlayer, false);
-	else
-		fOkay = nvp->Init(&Console,&Application,iPlayer);
-	if (!fOkay) { delete nvp; return false; }
-	C4Viewport *pLast;
-	for (pLast=FirstViewport; pLast && pLast->Next; pLast=pLast->Next) {}
-	if (pLast) pLast->Next=nvp; else FirstViewport=nvp;
-	// Recalculate viewports
-	RecalculateViewports();
-	// Viewports start off at centered position
-	nvp->CenterPosition();
-	// Action sound
-	if (GetViewportCount()!=iLastCount) if (!fSilent)
-			StartSoundEffect("CloseViewport");
-	return true;
-}
-
-void C4GraphicsSystem::ClearPointers(C4Object *pObj)
-{
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		cvp->ClearPointers(pObj);
-}
-
 void C4GraphicsSystem::Default()
 {
 	UpperBoard.Default();
 	MessageBoard.Default();
-	FirstViewport=NULL;
 	InvalidateBg();
-	ViewportArea.Default();
 	ShowVertices=false;
 	ShowAction=false;
 	ShowCommand=false;
@@ -305,16 +210,6 @@ void C4GraphicsSystem::Default()
 		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
 	fSetGamma=false;
 	pLoaderScreen=NULL;
-}
-
-void C4GraphicsSystem::DrawFullscreenBackground()
-{
-	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
-	{
-		const C4Rect &rc = BackgroundAreas.Get(i);
-		lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
-	}
-	--iRedrawBackground;
 }
 
 void C4GraphicsSystem::ClearFullscreenBackground()
@@ -343,154 +238,6 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
 }
 
-bool C4GraphicsSystem::CloseViewport(int32_t iPlayer, bool fSilent)
-{
-	// Close all matching viewports
-	int32_t iLastCount = GetViewportCount();
-	C4Viewport *next,*prev=NULL;
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=next)
-	{
-		next=cvp->Next;
-		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
-		{
-			delete cvp;
-			if (prev) prev->Next=next;
-			else FirstViewport=next;
-		}
-		else
-			prev=cvp;
-	}
-	// Recalculate viewports
-	RecalculateViewports();
-	// Action sound
-	if (GetViewportCount()!=iLastCount) if (!fSilent)
-			StartSoundEffect("CloseViewport");
-	return true;
-}
-
-void C4GraphicsSystem::RecalculateViewports()
-{
-
-	// Fullscreen only
-	if (Application.isEditor) return;
-
-	// Sort viewports
-	SortViewportsByPlayerControl();
-
-	// Viewport area
-	int32_t iBorderTop = 0, iBorderBottom = 0;
-	if (Config.Graphics.UpperBoard)
-		iBorderTop = C4UpperBoardHeight;
-	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop);
-
-	// Redraw flag
-	InvalidateBg();
-#ifdef _WIN32
-	// reset mouse clipping
-	ClipCursor(NULL);
-#else
-	// StdWindow handles this.
-#endif
-	// reset GUI dlg pos
-	if (::pGUI)
-		::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
-
-	// fullscreen background: First, cover all of screen
-	BackgroundAreas.Clear();
-	BackgroundAreas.AddRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
-
-	// Viewports
-	C4Viewport *cvp;
-	int32_t iViews = 0;
-	for (cvp=FirstViewport; cvp; cvp=cvp->Next) iViews++;
-	if (!iViews) return;
-	int32_t iViewsH = (int32_t) sqrt(float(iViews));
-	int32_t iViewsX = iViews / iViewsH;
-	int32_t iViewsL = iViews % iViewsH;
-	int32_t cViewH,cViewX,ciViewsX;
-	int32_t cViewWdt,cViewHgt,cOffWdt,cOffHgt,cOffX,cOffY;
-	cvp=FirstViewport;
-	for (cViewH=0; cViewH<iViewsH; cViewH++)
-	{
-		ciViewsX = iViewsX; if (cViewH<iViewsL) ciViewsX++;
-		for (cViewX=0; cViewX<ciViewsX; cViewX++)
-		{
-			cViewWdt = ViewportArea.Wdt/ciViewsX;
-			cViewHgt = ViewportArea.Hgt/iViewsH;
-			cOffX = ViewportArea.X;
-			cOffY = ViewportArea.Y;
-			cOffWdt = cOffHgt = 0;
-			if (ciViewsX * cViewWdt < ViewportArea.Wdt)
-				cOffX = (ViewportArea.Wdt - ciViewsX * cViewWdt) / 2;
-			if (iViewsH * cViewHgt < ViewportArea.Hgt)
-				cOffY = (ViewportArea.Hgt - iViewsH * cViewHgt) / 2 + ViewportArea.Y;
-			if (Config.Graphics.SplitscreenDividers)
-			{
-				if (cViewX < ciViewsX - 1) cOffWdt=4;
-				if (cViewH < iViewsH - 1) cOffHgt=4;
-			}
-			int32_t coViewWdt=cViewWdt-cOffWdt;
-			int32_t coViewHgt=cViewHgt-cOffHgt;
-			C4Rect rcOut(cOffX+cViewX*cViewWdt, cOffY+cViewH*cViewHgt, coViewWdt, coViewHgt);
-			cvp->SetOutputSize(rcOut.x,rcOut.y,rcOut.x,rcOut.y,rcOut.Wdt,rcOut.Hgt);
-			cvp=cvp->Next;
-			// clip down area avaiable for background drawing
-			BackgroundAreas.ClipByRect(rcOut);
-		}
-	}
-}
-
-int32_t C4GraphicsSystem::GetViewportCount()
-{
-	int32_t iResult = 0;
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next) iResult++;
-	return iResult;
-}
-
-C4Viewport* C4GraphicsSystem::GetViewport(int32_t iPlayer)
-{
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
-			return cvp;
-	return NULL;
-}
-
-void C4GraphicsSystem::SortViewportsByPlayerControl()
-{
-
-	// Sort
-	bool fSorted;
-	C4Player *pPlr1,*pPlr2;
-	C4Viewport *pView,*pNext,*pPrev;
-	do
-	{
-		fSorted = true;
-		for (pPrev=NULL,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
-		{
-			// Get players
-			pPlr1 = ::Players.Get(pView->Player);
-			pPlr2 = ::Players.Get(pNext->Player);
-			// Swap order
-			if (pPlr1 && pPlr2 && pPlr1->ControlSet && pPlr2->ControlSet && ( pPlr1->ControlSet->GetLayoutOrder() > pPlr2->ControlSet->GetLayoutOrder() ))
-			{
-				if (pPrev) pPrev->Next = pNext; else FirstViewport = pNext;
-				pView->Next = pNext->Next;
-				pNext->Next = pView;
-				pPrev = pNext;
-				pNext = pView;
-				fSorted = false;
-			}
-			// Don't swap
-			else
-			{
-				pPrev = pView;
-			}
-		}
-	}
-	while (!fSorted);
-
-}
-
 void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP)
 {
 	// pass on to GUI
@@ -516,18 +263,7 @@ void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD 
 		return;
 	}
 	// Pass on to mouse controlled viewport
-	MouseMoveToViewport(iButton, iX, iY, dwKeyParam);
-}
-
-void C4GraphicsSystem::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// Pass on to mouse controlled viewport
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		if (::MouseControl.IsViewport(cvp))
-			::MouseControl.Move( iButton,
-			                     BoundBy<int32_t>(iX-cvp->OutX,0,cvp->ViewWdt-1),
-			                     BoundBy<int32_t>(iY-cvp->OutY,0,cvp->ViewHgt-1),
-			                     dwKeyParam );
+	::Viewports.MouseMoveToViewport(iButton, iX, iY, dwKeyParam);
 }
 
 void C4GraphicsSystem::SetMouseInGUI(bool fInGUI, bool fByMouse)
@@ -540,7 +276,7 @@ void C4GraphicsSystem::SetMouseInGUI(bool fInGUI, bool fByMouse)
 		if (!::MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
 		{
 			::MouseControl.SetOwnedMouse(true);
-			MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
+			::Viewports.MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
 		}
 	}
 	::MouseControl.SetOwnedMouse(!fInGUI);
@@ -576,7 +312,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	if (fSaveAll)
 	{
 		// get viewport to draw in
-		C4Viewport *pVP=GetFirstViewport(); if (!pVP) return false;
+		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landcape
 		CPNGFile png; int32_t lWdt=GBackWdt,lHgt=GBackHgt;
 		if (!png.Create(lWdt, lHgt, false)) return false;
@@ -664,7 +400,7 @@ void C4GraphicsSystem::FlashMessage(const char *szMessage)
 	if (Config.Graphics.UpperBoard)
 		FlashMessageY += C4UpperBoardHeight;
 	// More than one viewport: try to stay below portraits etc.
-	if (GetViewportCount() > 1)
+	if (::Viewports.GetViewportCount() > 1)
 		FlashMessageY += 64;
 	// New flash message: redraw background (might be drawing one message on top of another)
 	InvalidateBg();
@@ -695,8 +431,8 @@ void C4GraphicsSystem::DrawHelp()
 {
 	if (!ShowHelp) return;
 	if (Application.isEditor) return;
-	int32_t iX = ViewportArea.X, iY = ViewportArea.Y;
-	int32_t iWdt = ViewportArea.Wdt;
+	int32_t iX = ::Viewports.ViewportArea.X, iY = ::Viewports.ViewportArea.Y;
+	int32_t iWdt = ::Viewports.ViewportArea.Wdt;
 	StdStrBuf strText;
 	// left coloumn
 	strText.AppendFormat("[%s]\n\n", LoadResStr("IDS_CTL_GAMEFUNCTIONS"));
@@ -733,22 +469,6 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
 	lpDDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
-}
-
-int32_t C4GraphicsSystem::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius)
-{
-	// default audibility radius
-	if (!iAudibilityRadius) iAudibilityRadius = C4AudibilityRadius;
-	// Accumulate audibility by viewports
-	int32_t iAudible=0; *iPan = 0;
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-	{
-		iAudible = Max( iAudible,
-		                BoundBy<int32_t>(100-100*Distance(cvp->ViewX+cvp->ViewWdt/2,cvp->ViewY+cvp->ViewHgt/2,iX,iY)/C4AudibilityRadius,0,100) );
-		*iPan += (iX-(cvp->ViewX+cvp->ViewWdt/2)) / 5;
-	}
-	*iPan = BoundBy<int32_t>(*iPan, -100, 100);
-	return iAudible;
 }
 
 void C4GraphicsSystem::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
@@ -833,47 +553,6 @@ bool C4GraphicsSystem::ToggleShowHelp()
 	Toggle(ShowHelp);
 	// Turned off? Invalidate background.
 	if (!ShowHelp) InvalidateBg();
-	return true;
-}
-
-bool C4GraphicsSystem::ViewportNextPlayer()
-{
-	// safety: switch valid?
-	if ((!Game.C4S.Head.Film || !Game.C4S.Head.Replay) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
-	// do switch then
-	C4Viewport *vp = GetFirstViewport();
-	if (!vp) return false;
-	vp->NextPlayer();
-	return true;
-}
-
-bool C4GraphicsSystem::FreeScroll(C4Vec2D vScrollBy)
-{
-	// safety: move valid?
-	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
-	C4Viewport *vp = GetFirstViewport();
-	if (!vp) return false;
-	// move then (old static code crap...)
-	static int32_t vp_vx=0; static int32_t vp_vy=0; static int32_t vp_vf=0;
-	int32_t dx=vScrollBy.x; int32_t dy=vScrollBy.y;
-	if (Game.FrameCounter-vp_vf < 5)
-		{ dx += vp_vx; dy += vp_vy; }
-	vp_vx=dx; vp_vy=dy; vp_vf=Game.FrameCounter;
-	vp->ViewX+=dx; vp->ViewY+=dy;
-	return true;
-}
-
-bool C4GraphicsSystem::ViewportZoomOut()
-{
-	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(1.0f/C4GFX_ZoomStep);
-	if (FirstViewport) FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
-	return true;
-}
-
-bool C4GraphicsSystem::ViewportZoomIn()
-{
-	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(C4GFX_ZoomStep);
-	if (FirstViewport) FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 }
 

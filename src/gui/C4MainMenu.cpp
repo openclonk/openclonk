@@ -242,7 +242,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 		// Clear items
 		ClearItems();
 		// Check validity
-		C4Viewport *pVP = ::GraphicsSystem.GetViewport(NO_OWNER);
+		C4Viewport *pVP = ::Viewports.GetViewport(NO_OWNER);
 		if (!pVP) return false;
 		int32_t iInitialSelection = 0;
 		// Add free view
@@ -811,7 +811,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand + 8, "UpperBoard"))
 		{
 			Config.Graphics.UpperBoard = !Config.Graphics.UpperBoard;
-			::GraphicsSystem.RecalculateViewports();
+			::Viewports.RecalculateViewports();
 		}
 		// FPS
 		if (SEqual(szCommand + 8, "FPS")) Config.General.FPS = !Config.General.FPS;
@@ -864,7 +864,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	if (SEqual2(szCommand, "Observe:"))
 	{
 		const char *szObserverTarget = szCommand+8;
-		C4Viewport *pVP = ::GraphicsSystem.GetViewport(NO_OWNER);
+		C4Viewport *pVP = ::Viewports.GetViewport(NO_OWNER);
 		if (pVP) // viewport may have closed meanwhile
 		{
 			if (SEqual(szObserverTarget, "Free"))
@@ -900,7 +900,7 @@ bool C4MainMenu::ActivateCommand(int32_t iPlayer, const char *szCommand)
 bool C4MainMenu::ActivateObserver()
 {
 	// Safety: Viewport lost?
-	if (!::GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if (!::Viewports.GetViewport(NO_OWNER)) return false;
 	// Menu symbol/init
 	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_View), LoadResStr("IDS_TEXT_VIEW"), NO_OWNER, C4MN_Extra_None, 0, C4MN_Observer, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);

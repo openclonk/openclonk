@@ -445,7 +445,7 @@ bool C4FullScreen::ViewportCheck()
 	// Determine film mode
 	bool fFilm = (Game.C4S.Head.Replay && Game.C4S.Head.Film);
 	// Check viewports
-	switch (::GraphicsSystem.GetViewportCount())
+	switch (::Viewports.GetViewportCount())
 	{
 		// No viewports: create no-owner viewport
 	case 0:
@@ -455,7 +455,7 @@ bool C4FullScreen::ViewportCheck()
 			if ((pPlr = ::Players.First))
 				iPlrNum = pPlr->Number;
 		// Create viewport
-		Game.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
+		::Viewports.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
 		// Non-film (observer mode)
 		if (!fFilm)
 		{
@@ -472,11 +472,11 @@ bool C4FullScreen::ViewportCheck()
 		break;
 		// More than one viewport: remove all no-owner viewports
 	default:
-		::GraphicsSystem.CloseViewport(NO_OWNER, true);
+		::Viewports.CloseViewport(NO_OWNER, true);
 		break;
 	}
 	// Look for no-owner viewport
-	C4Viewport *pNoOwnerVp = ::GraphicsSystem.GetViewport(NO_OWNER);
+	C4Viewport *pNoOwnerVp = ::Viewports.GetViewport(NO_OWNER);
 	// No no-owner viewport found
 	if (!pNoOwnerVp)
 	{

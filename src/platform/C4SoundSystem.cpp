@@ -29,7 +29,7 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
-#include <C4GraphicsSystem.h>
+#include <C4Viewport.h>
 #include <C4SoundLoaders.h>
 
 using namespace C4SoundLoaders;
@@ -398,7 +398,7 @@ void C4SoundInstance::Execute()
 
 void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y)
 {
-	iVolume = ::GraphicsSystem.GetAudibility(x, y, &iPan);
+	iVolume = ::Viewports.GetAudibility(x, y, &iPan);
 }
 
 void C4SoundInstance::ClearPointers(C4Object *pDelete)
