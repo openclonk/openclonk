@@ -654,9 +654,6 @@ bool C4Game::GameOverCheck()
 	return GameOver;
 }
 
-int32_t iLastControlSize=0;
-extern int32_t iPacketDelay;
-
 C4ST_NEW(ControlRcvStat,    "C4Game::Execute ReceiveControl")
 C4ST_NEW(ControlStat,       "C4Game::Execute ExecuteControl")
 C4ST_NEW(ExecObjectsStat,   "C4Game::Execute ExecObjects")

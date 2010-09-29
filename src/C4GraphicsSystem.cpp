@@ -85,11 +85,6 @@ void C4GraphicsSystem::Clear()
 	DeactivateDebugOutput();
 }
 
-extern int32_t iLastControlSize,iPacketDelay;
-extern int32_t ControlQueueSize,ControlQueueDataSize;
-
-int32_t ScreenTick=0, ScreenRate=1;
-
 bool C4GraphicsSystem::StartDrawing()
 {
 	// only if ddraw is ready
@@ -136,12 +131,6 @@ void C4GraphicsSystem::Execute()
 		FinishDrawing();
 		return;
 	}
-
-	// Fixed screen rate in old network
-	ScreenRate = 1;
-
-	// Screen rate skip frame draw
-	ScreenTick++; if (ScreenTick>=ScreenRate) ScreenTick=0;
 
 	// Reset object audibility
 	::Objects.ResetAudibility();

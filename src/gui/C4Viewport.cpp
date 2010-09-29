@@ -214,9 +214,6 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	cgo.TargetX = iOldTx; cgo.TargetY = iOldTy;
 }
 
-extern int32_t iLastControlSize,iPacketDelay,ScreenRate;
-extern int32_t ControlQueueSize,ControlQueueDataSize;
-
 void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 {
 
