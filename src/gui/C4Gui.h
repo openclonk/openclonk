@@ -2530,6 +2530,8 @@ namespace C4GUI
 		virtual bool CharIn(const char * c);        // input: character key pressed - should return false for none-character-inputs
 		using Window::MouseInput;
 		bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, Dialog *pDlg, class C4Viewport *pVP); // input: mouse movement or buttons; sends MouseEnter/Leave; return whether inside dialog
+		void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
+		void SetMouseInGUI(bool fInGUI, bool fByMouse);
 		bool RecheckMouseInput();                                       // do mouse movement iusing last input flags
 
 		bool ShowMessage(const char *szMessage, const char *szCaption, Icons icoIcon, int32_t *piConfigDontShowAgainSetting=NULL); // show message
@@ -2722,6 +2724,8 @@ namespace C4GUI
 
 	// Zoom
 	inline float GetZoom() { Screen *s=Screen::GetScreenS(); return s ? s->GetZoom() : 1.0f; }
+	inline void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP) // pVP specified for console mode viewports only
+	{ Screen *s=Screen::GetScreenS(); if(s) s->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
 
 } // end of namespace
 

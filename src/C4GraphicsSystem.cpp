@@ -132,13 +132,14 @@ void C4GraphicsSystem::Execute()
 		return;
 	}
 
+	
 	// Reset object audibility
 	::Objects.ResetAudibility();
 
 	// some hack to ensure the mouse is drawn after a dialog close and before any
 	// movement messages
 	if (::pGUI && !C4GUI::IsActive())
-		SetMouseInGUI(false, false);
+		::pGUI->SetMouseInGUI(false, false);
 
 	// Viewports
 	::Viewports.Execute(!Application.isEditor && iRedrawBackground);
@@ -225,50 +226,6 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 {
 	// reset black screen loader flag
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
-}
-
-void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP)
-{
-	// pass on to GUI
-	// Special: Don't pass if dragging and button is not upped
-	if (::pGUI && ::pGUI->IsActive() && !::MouseControl.IsDragging())
-	{
-		bool fResult = ::pGUI->MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
-		if (::pGUI && ::pGUI->HasMouseFocus()) { SetMouseInGUI(true, true); return; }
-		// non-exclusive GUI: inform mouse-control about GUI-result
-		SetMouseInGUI(fResult, true);
-		// abort if GUI processed it
-		if (fResult) return;
-	}
-	else
-		// no GUI: mouse is not in GUI
-		SetMouseInGUI(false, true);
-	// mouse control enabled?
-	if (!::MouseControl.IsActive())
-	{
-		// enable mouse in GUI, if a mouse-only-dlg is displayed
-		if (::pGUI && ::pGUI->GetMouseControlledDialogCount())
-			SetMouseInGUI(true, true);
-		return;
-	}
-	// Pass on to mouse controlled viewport
-	::Viewports.MouseMoveToViewport(iButton, iX, iY, dwKeyParam);
-}
-
-void C4GraphicsSystem::SetMouseInGUI(bool fInGUI, bool fByMouse)
-{
-	// inform mouse control and GUI
-	if (::pGUI)
-	{
-		::pGUI->Mouse.SetOwnedMouse(fInGUI);
-		// initial movement to ensure mouse control pos is correct
-		if (!::MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
-		{
-			::MouseControl.SetOwnedMouse(true);
-			::Viewports.MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
-		}
-	}
-	::MouseControl.SetOwnedMouse(!fInGUI);
 }
 
 bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)

@@ -174,27 +174,27 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		switch (uMsg)
 		{
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE:
 			if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
 			     && Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
 				SetCursor(NULL);
-			::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEWHEEL:
-			::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 
@@ -529,10 +529,10 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 		switch (event->direction)
 		{
 		case GDK_SCROLL_UP:
-			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
+			C4GUI::MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
 			break;
 		case GDK_SCROLL_DOWN:
-			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
+			C4GUI::MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
 			break;
 		default:
 			break;
@@ -552,18 +552,18 @@ gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton
 		{
 		case 1:
 			if (event->type == GDK_BUTTON_PRESS)
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				C4GUI::MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			else if (event->type == GDK_2BUTTON_PRESS)
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				C4GUI::MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 2:
-			::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			C4GUI::MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 3:
 			if (event->type == GDK_BUTTON_PRESS)
-				::GraphicsSystem.MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				C4GUI::MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			else if (event->type == GDK_2BUTTON_PRESS)
-				::GraphicsSystem.MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				C4GUI::MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		}
 	}
@@ -592,13 +592,13 @@ gboolean C4ViewportWindow::OnButtonReleaseStatic(GtkWidget* widget, GdkEventButt
 		switch (event->button)
 		{
 		case 1:
-			::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			C4GUI::MouseMove(C4MC_Button_LeftUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 2:
-			::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			C4GUI::MouseMove(C4MC_Button_MiddleUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 3:
-			::GraphicsSystem.MouseMove(C4MC_Button_RightUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			C4GUI::MouseMove(C4MC_Button_RightUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		}
 	}
@@ -624,7 +624,7 @@ gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotio
 
 	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
-		::GraphicsSystem.MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+		C4GUI::MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 	}
 	else
 	{
@@ -698,41 +698,41 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			case Button1:
 				if (timeGetTime() - last_left_click < 400)
 				{
-					::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
+					C4GUI::MouseMove(C4MC_Button_LeftDouble,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 					last_left_click = 0;
 				}
 				else
 				{
-					::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
+					C4GUI::MouseMove(C4MC_Button_LeftDown,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 					last_left_click = timeGetTime();
 				}
 				break;
 			case Button2:
-				::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
+				C4GUI::MouseMove(C4MC_Button_MiddleDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 			case Button3:
 				if (timeGetTime() - last_right_click < 400)
 				{
-					::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
+					C4GUI::MouseMove(C4MC_Button_RightDouble,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 					last_right_click = 0;
 				}
 				else
 				{
-					::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
+					C4GUI::MouseMove(C4MC_Button_RightDown,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 					last_right_click = timeGetTime();
 				}
 				break;
 			case Button4:
-				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				C4GUI::MouseMove(C4MC_Button_Wheel,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(1) << 16), cvp);
 				break;
 			case Button5:
-				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				C4GUI::MouseMove(C4MC_Button_Wheel,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-1) << 16), cvp);
 				break;
 			default:
@@ -759,13 +759,13 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			switch (e.xbutton.button)
 			{
 			case Button1:
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				C4GUI::MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 			case Button2:
-				::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				C4GUI::MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 			case Button3:
-				::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				C4GUI::MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 			default:
 				break;
@@ -787,7 +787,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 	case MotionNotify:
 		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 		{
-			::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+			C4GUI::MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 		}
 		else
 		{

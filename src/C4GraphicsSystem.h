@@ -57,8 +57,6 @@ public:
 	void FlashMessage(const char *szMessage);
 	void FlashMessageOnOff(const char *strWhat, bool fOn);
 	void DeactivateDebugOutput();
-	void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP); // pVP specified for console mode viewports only
-	void SetMouseInGUI(bool fInGUI, bool fByMouse);
 	bool Init();
 	bool InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst);
 	void EnableLoaderDrawing(); // reset black screen loader flag

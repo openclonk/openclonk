@@ -136,6 +136,7 @@ protected:
 	C4Viewport *FirstViewport;
 	C4Facet ViewportArea;
 	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
+	friend class C4GUI::Screen;
 	friend class C4GraphicsSystem;
 };
 
