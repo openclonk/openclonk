@@ -93,7 +93,7 @@ inline void operator delete(void *p, const char *, long)
 
 
 // C++0x nullptr
-#if defined(HAVE_NULLPTR) && !defined(NULL_IS_NULLPTR_T)
+#ifdef HAVE_NULLPTR
 #undef NULL
 #define NULL nullptr
 #endif
