@@ -169,6 +169,8 @@ public:
 		case C4VCnvFn::CnvError: return false;
 		case C4VCnvFn::CnvObject: return FnCnvObject();
 		}
+		assert(!"C4Value::ConvertTo: Invalid conversion function specified");
+		return false;
 	}
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
 	{
