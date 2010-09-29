@@ -9,179 +9,153 @@
 	in real life.
 --*/
 
-local itime;
 
-global func SetTime(int iTime) //Sets the current time using a 1440-minute clock scheme.
+local time; 
+
+// Sets the current time using a 24*60 minute clock scheme.
+public func SetTime(int to_time) 
 {
-	var timeobject=FindObject(Find_ID(Environment_Time));
-
-	//clear any existing sunrise/sunset effects
-	if(!GetEffect("IntSunrise")) RemoveEffect("IntSunrise");
-	if(!GetEffect("IntSunset")) RemoveEffect("IntSunset");
-
-	if(IsDay()==true && IsDay(iTime)==false)
-	{
-		AddEffect("IntSunset",0,1,1);
-	}
-
-	if(IsDay()==false && IsDay(iTime)==true)
-	{
-		AddEffect("IntSunrise",0,1,1);
-	}
-
-	timeobject["itime"]=iTime;
-	if(timeobject!=nil) return 1;
-	else
-		return 0;
+	// Set time.
+	time = to_time % (24 * 60);
+	// Adjust to time.
+	AdjustToTime();
+	return;
 }
 
-global func SetMinuteLength(int iFrames)
+// Returns the time in minutes.
+public func GetTime()
 {
-	//The number of frames per clonk-minute.
-	//36 frames would make one clonk minute one real-life second. 18 frames is the default.
-	RemoveEffect("IntTimePass");
-	AddEffect("IntTimePass",0,1,iFrames);
+	return time;
 }
 
-global func GetMinuteLength()
+// Sets the number of frames per clonk-minute.
+// Standard is 18 frames per minute, making a day-night cycle of 12 minutes.
+// Setting minute lenght to 0 will stop day-night cycle.
+public func SetCycleSpeed(int speed)
 {
-	return GetEffect("IntTimePass",0,0,3);
+	//ChangeEffect("IntTimeCycle", this, nil, nil, Max(0, speed));
+	RemoveEffect("IntTimeCycle", this);
+	AddEffect("IntTimeCycle", this, 100, Max(0, speed), this);
+	return;
 }
 
-//If clock is true, an integer of the hours/minutes will be output instead of raw minutes. Not for use in calculations!
-global func GetTime(bool clock)
+public func GetCycleSpeed()
 {
-	if(!FindObject(Find_ID(Environment_Time))) return nil;
-	if(clock!=true)	return FindObject(Find_ID(Environment_Time))->LocalN("itime");
-	if(clock==true)
-	{
-		var hour=FindObject(Find_ID(Environment_Time))->LocalN("itime")/60*100;
-		var minute=(FindObject(Find_ID(Environment_Time))->LocalN("itime")*100/60-hour)*6/10;
-		return hour+minute;
-	}
+	return GetEffect("IntTimeCycle", this, nil, 3);
 }
 
-//If iTime is not zero, it will return if iTime is at day or night instead of the current time
-global func IsDay(int iTime)
-{
-	var time=GetTime();
-	if(iTime!=nil) time=iTime;
+local time_set;
 
-	//The day spans from 360 to 1080.
-	if(time >= 360 && time < 1080) return true;
-
-	//if false, then it is night
-	return false;
-}
 
 protected func Initialize()
 {
-	if(ObjectCount(Find_ID(Environment_Time))>1) RemoveObject();
-	AddEffect("IntTimePass",0,1,18);
-	itime=720; //Sets the time to midday (12:00)
+	// Only one time control object.
+	if (ObjectCount(Find_ID(Environment_Time)) > 1) 
+		return RemoveObject();
+		
+	time_set = {
+		SunriseStart = 180,
+		SunriseEnd = 540,
+		SunsetStart = 900,
+		SunsetEnd = 1260,
+	};
+	
+	// Add effect that controls time cycle.
+	AddEffect("IntTimeCycle", this, 100, 18, this);
+	
+	// Set the time to midday (12:00).
+	time = 720; 
 
-	if(FindObject(Find_ID(Environment_Celestial)))
+	// Create moon and stars.
+	if (FindObject(Find_ID(Environment_Celestial)))
 	{
-		var moon=CreateObject(Moon,LandscapeWidth()/2,LandscapeHeight()/6);
+		var moon=CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 		moon->Resort();
 		PlaceStars();
 	}
+	return;
 }
 
-protected func PlaceStars()
+public func IsDay()
+{
+	var day_start = (time_set["SunriseStart"] + time_set["SunriseEnd"]) / 2;
+	var day_end = (time_set["SunsetStart"] + time_set["SunsetEnd"]) / 2;
+	if (Inside(time, day_start, day_end))
+		return true;
+	return false;
+}
+
+public func IsNight()
+{
+	var night_start = (time_set["SunsetStart"] + time_set["SunsetEnd"]) / 2;
+	var night_end = (time_set["SunriseStart"] + time_set["SunriseEnd"]) / 2;
+	if (Inside(time, night_start, night_end))
+		return true;
+	return false;
+}
+
+private func PlaceStars()
 {
 	//Star Creation
-	var maxamount=(LandscapeWidth()*LandscapeHeight())/40000;
-	var amount=0;
+	var maxamount = LandscapeWidth() * LandscapeHeight() / 40000;
+	var amount = 0;
 
-	while(amount!=maxamount)
+	while (amount != maxamount)
 	{
 		var pos;
-		if(pos = FindPosInMat("Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
-			CreateObject(Star,pos[0],pos[1]); //Places stars around like PlacesObjects should, but that function is broken
-		amount=++amount;
+		if (pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight()))
+			CreateObject(Star, pos[0], pos[1]); 
+		amount++;
 	}
+	return;
 }
 
-global func FxIntTimePassTimer(object pTarget,int iNumber,int iTime)
+// Cycles through day and night.
+protected func FxIntTimeCycleTimer(object target)
 {
-	UpdateTime(true);
-}
+	// Adjust to time.
+	AdjustToTime();
 
-//bool advance: if true, time will advance on update
-global func UpdateTime(bool advance)
-{
-	//Sunrise begins at 180 and ends at 540
-	//Sunset begins at 900 and ends at 1260
+	// Advance time.
+	time++;
+	time %= (24 * 60);
 	
-	//Night Time (1260-180)
-	if(GetTime() < 180 || GetTime() > 1260)
-	{
-		var skyshade = 0;
-		ShadeCelestial(255);
-	}
-
-	//Sunrise (180-540)
-	if(GetTime() >= 180 && GetTime() <=540)
-	{
-		var skyshade = Sin((GetTime() - 180) / 4,255);
-		ShadeCelestial(255-skyshade);
-		if(FindObject(Find_ID(Moon)))
-		{
-		if(GetTime() == 540) FindObject(Find_ID(Moon))->Phase();
-		}
-	}
-
-	//Day Time (540-900)
-	if(GetTime() > 540 && GetTime() < 900)
-	{
-		var skyshade = 255;
-		ShadeCelestial(0);
-	}
-
-	//Sunset (900-120)
-	if(GetTime() >= 900 && GetTime() <= 1260)
-	{
-		var skyshade = 255 - Sin((GetTime() - 900) / 4,255);
-		ShadeCelestial(255-skyshade);
-	}
-
-	//Shade sky
-	SetSkyAdjust(RGB(skyshade,skyshade,skyshade));
-
-	//time advancement
-	if(advance != true)
-		return 1;
-	if(GetTime()>=1439) SetTime(0);
-	if(GetTime()<1439) SetTime(GetTime()+1);
 	return 1;
 }
 
-global func ShadeCelestial(int shade)
+// Adjusts the sky, celestial and others to the current time.
+private func AdjustToTime()
 {
-	for(var celestial in FindObjects(Find_Func("IsCelestial")))
-			celestial->SetObjAlpha(shade);
-	return 1;
-}
-
-//Makes clonk time follow real time. Just for fun. :]
-global func EnableRealTime(bool enable)
-{
-	if(enable == true)
+	var skyshade;
+	// Sunrise 
+	if (Inside(time, time_set["SunriseStart"], time_set["SunriseEnd"]))
 	{
-		FindObject(Find_ID(Environment_Time))->AddEffect("RealTime",0,1,36);
+		skyshade = Sin((GetTime() - 180) / 4, 255);
+		if (time == 540)
+			if (FindObject(Find_ID(Moon)))
+				FindObject(Find_ID(Moon))->Phase();
 	}
-	if(enable == false)
-	{
-		RemoveEffect("RealTime");
-	}
-}
-
-global func FxRealTimeTimer(object target, int num, int time)
-{
-	SetMinuteLength(0);
-	SetTime(GetSystemTime(4)*60 + GetSystemTime(5));
-	UpdateTime();
+	// Day
+	else if (Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
+		skyshade = 255;
+	//Sunset
+	else if (Inside(time, time_set["SunsetStart"], time_set["SunsetEnd"]))
+		skyshade = 255 - Sin((GetTime() - 900) / 4, 255);
+	// Night
+	else if (time > time_set["SunsetEnd"] || time < time_set["SunriseStart"])
+		skyshade = 0;
+	
+	// Shade sky.
+	SetSkyAdjust(RGB(skyshade, skyshade, skyshade));
+	
+	// Adjust celestial objects.
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+			celestial->SetObjAlpha(255 - skyshade);
+			
+	// Adjust clouds, TODO remedie this special case of white clouds on black sky.
+	
+	
+	return;
 }
 
 local Name = "Time";

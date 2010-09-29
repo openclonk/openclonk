@@ -10,8 +10,13 @@ static guide; // guide object.
 
 protected func Initialize()
 {
-	// Environment
+	// Environment 
 	PlaceGrass(85);
+	CreateObject(Environment_Clouds);
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
+	time->SetTime(1125);
+	time->SetCycleSpeed(0);
 	
 	// Goal: Melee, all opponents must be killed.
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
