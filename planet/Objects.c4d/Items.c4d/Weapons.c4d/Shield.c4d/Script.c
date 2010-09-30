@@ -9,6 +9,7 @@ private func Hit()
 
 local iAngle;
 local aim_anim;
+local carry_bone;
 // TODO:
 // The clonk must be able to duck behind the shield
 // when he ducks, he is at least invulnerable against spears and arrows,
@@ -32,11 +33,19 @@ public func ControlUseStart(object clonk, int x, int y)
 		else length=GetJumpLength(clonk);
 	}
 	else return true;
-	
+
 	var hand;
-	if(clonk->GetItemPos(this) == 0) hand = "ShieldArmsR";
-	if(clonk->GetItemPos(this) == 1) hand = "ShieldArmsL";
-	
+	if(clonk->GetItemPos(this) == 0)
+	{
+		carry_bone = "pos_hand2";
+		hand = "ShieldArmsR";
+	}
+	if(clonk->GetItemPos(this) == 1)
+	{
+		carry_bone = "pos_hand1";
+		hand = "ShieldArmsL";
+	}
+
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 	clonk->UpdateAttach();
 
@@ -94,7 +103,8 @@ func ControlUseHolding(clonk, x, y)
 }
 
 func ControlUseStop(object clonk, int x, int y)
-{
+{//Log("Stop");
+	carry_bone = nil;
 	clonk->StopAnimation(aim_anim);
 	aim_anim = nil;
 	clonk->UpdateAttach();
@@ -282,6 +292,7 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 public func HoldingEnabled() { return true; }
 
 public func GetCarryMode() { return CARRY_HandBack; }
+public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform(clonk, sec, back)
 {
 	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,0,1),Trans_Rotate(90,0,0,1));
