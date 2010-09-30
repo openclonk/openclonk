@@ -7,8 +7,11 @@ public func AI_IsLoaded() { return !!FindObject(Find_Container(this), Find_ID(Ar
 public func AI_CommandString() { return "AI_BowAttack"; }
 public func AI_TargetHittable(object target)
 {
-	var x = ObjectDistance(target, Contained());
-	return Max(0, - x * (x - 200) / 100);
+	var xDist = target->GetX() - Contained()->GetX();
+	var yDist = target->GetY() - Contained()->GetY();
+	// (vel*vel*vel*vel - g*(g*x*x + 2*y*vel*vel)) <see: AI_BowFirePos()>
+	// vel = 100, g = 20
+	return Max(1, 100000000 - (400*xDist*xDist + yDist*400000)); 
 }
 
 protected func AI_BowAttack(object clonk, int x, int y, object target)
@@ -22,7 +25,6 @@ protected func AI_BowAttack(object clonk, int x, int y, object target)
 		clonk->AddCommand("Acquire", nil, nil, nil, nil, nil, Arrow);
 		return;	
 	}
-	// Shoot an arrow. Todo: aim better.
 	AddEffect("AI_BowAim", clonk, 100, 1, this, nil, target);
 
 	clonk->AppendCommand("Wait", nil, 50, nil, nil, nil, 50);
@@ -37,9 +39,15 @@ protected func FxAI_BowAimStart(object clonk, int num, int temporary, object tar
 	EffectVar(0, clonk, num) = target;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseStart(clonk, dx, dy);
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseStart(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, 100, 5);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseStart(clonk, aimVector[0], aimVector[1]);
+	}
 }
 
 protected func FxAI_BowAimTimer(object clonk, int num, int time)
@@ -49,10 +57,16 @@ protected func FxAI_BowAimTimer(object clonk, int num, int time)
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseHolding(clonk, dx, dy);
-	return 1;
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseHolding(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, 100, 5);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseHolding(clonk, aimVector[0], aimVector[1]);
+		return 1;
+	}
 }
 
 protected func FxAI_BowAimStop(object clonk, int num, int reason, bool temporary)
@@ -60,37 +74,27 @@ protected func FxAI_BowAimStop(object clonk, int num, int reason, bool temporary
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseStop(clonk, dx, dy);
-	return 1;
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseStop(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, 100, 5);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseStop(clonk, aimVector[0], aimVector[1]);
+		return 1;
+	}
 }
 
-private func AI_BowFirePos(x, y)
+//vel = "muzzle velocity" (speed at which the projectile is launched)
+//spread = variation in aim
+private func AI_AimPos(int x, int y, int vel, int spread)
 {
-	var v = 10, // 10 px / tick
-		f = 200, // Fixpunktfaktor
-		g = -GetGravity() * f * f / 1000 / v, // 0,2 px / tick²
-		x = x * f / v,
-		y = -y * f / v /* Korrektur: */ - Abs(x) * GetGravity() / 2000,
-		d = y * y + x * x,
-		k = y + f * f * f / 2 / g,
-		w = k * k - d;
-	if (w < 0)
-		return;
-	var t1 = Sqrt( (k + Sqrt(w)) * (f * f * f / g) ),
-		t2 = Sqrt( (k - Sqrt(w)) * (f * f * f / g) ),
-		phi1 = ArcCos(x, t1),
-		phi2 = ArcCos(x, t2);
-	if(y < g * t1 / f * t1 / f / f) phi1 = -phi1;
-	if(y < g * t2 / f * t2 / f / f) phi2 = -phi2;
-    // Winkel umrechnen
-    phi1 = (270 - phi1) % 360 - 180; 
-    phi2 = 90 - phi2;
-
-    var angle = phi1;
-	if(t2 < t1 * 3)
-    	angle = phi2;
-    	
-    return [Sin(angle, 100), Cos(angle, 100)];
+	y = -y;
+	var g = GetGravity()/5; //FnGetGravity() multiplies actual gravity by 500
+	var root = (vel*vel*vel*vel - g*(g*x*x + 2*y*vel*vel));
+	if(root < 0)
+		return -1;
+	var angle = Angle(0,0,(g*x),vel*vel-Sqrt(root));
+    return [Sin(angle, 100)+Random(2*spread)-spread, Cos(angle, 100)+Random(2*spread)-spread];
 }

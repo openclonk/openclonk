@@ -7,7 +7,7 @@ protected func AI_RangedAttack(object clonk, int x, int y, object target)
 	clonk->AI_LogCommandStack();
 	clonk->AI_Log("Ranged attack on %v", target);
 	// target in range?
-	if (ObjectDistance(clonk, target) > 400 || target->Contained())
+	if (ObjectDistance(clonk, target) > 1000 || target->Contained())
 		return clonk->AI_Log("Target %v out of range", target);
 		
 	// target still alive?

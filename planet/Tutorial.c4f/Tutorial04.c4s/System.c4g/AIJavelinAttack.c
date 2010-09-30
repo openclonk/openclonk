@@ -28,10 +28,16 @@ protected func FxAI_JavelinAimStart(object clonk, int num, int temporary, object
 		return;
 	EffectVar(0, clonk, num) = target;
 	var dx = target->GetX() - clonk->GetX();
-	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseStart(clonk, dx, dy);
+	var dy = target->GetY() - (clonk->GetY()-5);
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseStart(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, 0);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseStart(clonk, aimVector[0], aimVector[1]);
+	}
 }
 
 protected func FxAI_JavelinAimTimer(object clonk, int num, int time)
@@ -40,10 +46,16 @@ protected func FxAI_JavelinAimTimer(object clonk, int num, int time)
 		return -1;
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
-	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseHolding(clonk, dx, dy);
+	var dy = target->GetY() - (clonk->GetY()-5);
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseHolding(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, 0);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseHolding(clonk, aimVector[0], aimVector[1]);
+	}
 	return 1;
 }
 
@@ -51,9 +63,28 @@ protected func FxAI_JavelinAimStop(object clonk, int num, int reason, bool tempo
 {
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
-	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
-	dy -= dist / 10;
-	ControlUseStop(clonk, dx, dy);
+	var dy = target->GetY() - (clonk->GetY()-5);
+	//var dist = Distance(0, 0, dx, dy);
+	//dy -= dist / 10;
+	//ControlUseStop(clonk, dx, dy);
+	var aimVector = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, 0);
+	if(aimVector == -1) {
+		ControlUseCancel(clonk,nil,nil);
+	}else{
+		ControlUseStop(clonk, aimVector[0], aimVector[1]);
+	}
 	return 1;
+}
+
+//vel = "muzzle velocity" (speed at which the projectile is launched)
+//spread = variation in aim
+private func AI_AimPos(int x, int y, int vel, int spread)
+{
+	y = -y;
+	var g = GetGravity()/5; //FnGetGravity() multiplies actual gravity by 500
+	var root = (vel*vel*vel*vel - g*(g*x*x + 2*y*vel*vel));
+	if(root < 0)
+		return -1;
+	var angle = Angle(0,0,(g*x),vel*vel-Sqrt(root));
+    return [Sin(angle, 100)+Random(2*spread)-spread, Cos(angle, 100)+Random(2*spread)-spread];
 }
