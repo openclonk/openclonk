@@ -7,7 +7,6 @@
 
 protected func Initialize()
 {
-	SetAction("Float");
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(225+Random(91),0,1,0), Trans_Scale(800)));
 }
 
@@ -27,20 +26,4 @@ public func OnSwordHit()
 protected func Definition(def) 
 {
 	SetProperty("Name", "$Name$", def);
-	SetProperty("ActMap", {
-		Float = {
-			Prototype = Action,
-			Name = "Float",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			FlipDir = 0,
-			Length = 1,
-			Delay = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 25,
-			Hgt = 25,
-			NextAction = "Float",
-		},
-	}, def);
 }
