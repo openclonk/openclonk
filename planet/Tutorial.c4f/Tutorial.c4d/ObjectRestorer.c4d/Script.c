@@ -32,8 +32,12 @@ public func SetRestoreObject(object to_restore, object to_container, int to_x, i
 // Effectvar 2: x-coordinate to which must be restored.
 // Effectvar 3: y-coordinate to which must be restored.
 // Effectvar 4: Effect which must be reinstated after restoring.
+// Effectvar 5: x-coordinate from which is restored.
+// Effectvar 6: y-coordinate from which is restored.
 protected func FxRestoreStart(object target, int num, int temporary)
 {
+	EffectVar(5, target, num) = target->GetX();
+	EffectVar(6, target, num) = target->GetY();
 	return 1;
 }
 
@@ -43,8 +47,8 @@ protected func FxRestoreTimer(object target, int num, int time)
 	if (!EffectVar(0, target, num))
 		return -1;
 	// Get coordinates.
-	var init_x = target->GetX();
-	var init_y = target->GetY();
+	var init_x = EffectVar(5, target, num);
+	var init_y = EffectVar(6, target, num);
 	var to_container = EffectVar(1, target, num);
 	if (to_container)
 	{
@@ -74,12 +78,18 @@ protected func FxRestoreTimer(object target, int num, int time)
 		dev = 4 * std_dev * time / length;
 	else
 		dev = 2 * std_dev - 4 * std_dev * time / length;
-	var x = Sin(angle, 2 * time) + Cos(angle, Sin(20 * time, dev));
-	var y = -Cos(angle, 2 * time) + Sin(angle, Sin(20 * time, dev));
+	// Set container to current location to shift view.
+	var x = init_x + Sin(angle, 2 * time);
+	var y = init_y - Cos(angle, 2 * time);
+	Log("%v,%v", x, y);
+	target->SetPosition(x, y);
+	// Draw Particles.
+	x = init_x + Sin(angle, 2 * time) + Cos(angle, Sin(20 * time, dev)) - target->GetX();
+	y = init_y - Cos(angle, 2 * time) + Sin(angle, Sin(20 * time, dev)) - target->GetY();
 	var color = RGB(128 + Cos(4 * time, 127), 128 + Cos(4 * time + 120, 127), 128 + Cos(4 * time + 240, 127));
 	CreateParticle("PSpark", x, y, 0, 0, 32, color);
-	x = Sin(angle, 2 * time) - Cos(angle, Sin(20 * time, dev));
-	y = -Cos(angle, 2 * time) - Sin(angle, Sin(20 * time, dev));
+	x = init_x + Sin(angle, 2 * time) - Cos(angle, Sin(20 * time, dev)) - target->GetX();
+	y = init_y - Cos(angle, 2 * time) - Sin(angle, Sin(20 * time, dev)) - target->GetY();
 	CreateParticle("PSpark", x, y, 0, 0, 32, color);
 	return 1;
 }
