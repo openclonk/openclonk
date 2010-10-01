@@ -1470,7 +1470,7 @@ void C4Player::ScrollView(float iX, float iY, float ViewWdt, float ViewHgt)
 {
 	if (ViewLock) return;
 	SetViewMode(C4PVM_Scrolling);
-	float ViewportScrollBorder = Application.isFullScreen ? C4ViewportScrollBorder : 0;
+	float ViewportScrollBorder = Application.isEditor ? 0 : C4ViewportScrollBorder;
 	ViewX = BoundBy<C4Real>( ViewX+ftofix(iX), ftofix(ViewWdt/2.0f-ViewportScrollBorder), ftofix(GBackWdt+ViewportScrollBorder-ViewWdt/2.0f) );
 	ViewY = BoundBy<C4Real>( ViewY+ftofix(iY), ftofix(ViewHgt/2.0f-ViewportScrollBorder), ftofix(GBackHgt+ViewportScrollBorder-ViewHgt/2.0f) );
 }
@@ -1997,7 +1997,7 @@ void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool 
 
 void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 {
-	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	C4Viewport *vp = ::Viewports.GetViewport(Number);
 	if (!vp) return;
 	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
@@ -2008,7 +2008,7 @@ void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 
 void C4Player::ZoomLimitsToViewport()
 {
-	C4Viewport *vp = ::GraphicsSystem.GetViewport(Number);
+	C4Viewport *vp = ::Viewports.GetViewport(Number);
 	if (!vp) return;
 	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
 	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);

@@ -26,7 +26,6 @@
 //========================= Component File Names ============================================
 
 #define C4CFN_Engine          "Clonk.exe"
-#define C4CFN_Editor          "Editor.exe"
 
 #define C4CFN_Material        "Material.c4g"
 #define C4CFN_Sound           "Sound.c4g"

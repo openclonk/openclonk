@@ -48,8 +48,6 @@
 #include <limits.h>
 #include <list>
 
-CDDrawCfg DDrawCfg; // ddraw config
-
 CSurface::CSurface() : fIsBackground(false)
 {
 	Default();
@@ -179,7 +177,7 @@ bool CSurface::IsRenderTarget()
 	       //  or the surface is split (large sfcs) or locked (landscape)
 	       //  (only D3D for now)
 #ifdef USE_DIRECTX
-	       || (!Locked && !DDrawCfg.NoOffscreenBlits && pD3D && fIsRenderTarget)
+	       || (!Locked && !Config.Graphics.NoOffscreenBlits && pD3D && fIsRenderTarget)
 #endif
 	       ;
 }
@@ -1289,7 +1287,7 @@ CTexRef::CTexRef(int iSizeX, int iSizeY, bool fSingle)
 	if (pD3D)
 	{
 		// Direct3D
-		bool fRenderTarget = fSingle && !DDrawCfg.NoOffscreenBlits;
+		bool fRenderTarget = fSingle && !Config.Graphics.NoOffscreenBlits;
 		if (pD3D->lpDevice->CreateTexture(iSizeX, iSizeY, 1, fRenderTarget ? D3DUSAGE_RENDERTARGET : 0, pD3D->dwSurfaceType, fRenderTarget ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED, &pTex, NULL) != D3D_OK)
 		{
 			lpDDraw->Error("Error creating surface");

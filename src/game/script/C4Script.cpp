@@ -4501,7 +4501,7 @@ static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
 	// real switch in replays only
 	if (!::Control.isReplay()) return true;
 	// set new target plr
-	if (C4Viewport *vp = ::GraphicsSystem.GetFirstViewport()) vp->Init(iToPlr, true);
+	if (C4Viewport *vp = ::Viewports.GetFirstViewport()) vp->Init(iToPlr, true);
 	// done, always success (sync)
 	return true;
 }
@@ -5058,7 +5058,7 @@ static bool FnSetViewOffset(C4AulContext *ctx, long iPlayer, long iX, long iY)
 {
 	if (!ValidPlr(iPlayer)) return 0;
 	// get player viewport
-	C4Viewport *pView = ::GraphicsSystem.GetViewport(iPlayer);
+	C4Viewport *pView = ::Viewports.GetViewport(iPlayer);
 	if (!pView) return 1; // sync safety
 	// set
 	pView->ViewOffsX = iX;

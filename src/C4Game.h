@@ -185,7 +185,6 @@ public:
 	void SyncCheckFiles(); // check if files are in sync
 	// Editing
 	bool DropFile(const char *szFilename, float iX, float iY);
-	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool DropDef(C4ID id, float iX, float iY);
 	bool LoadDef(const char *szFilename);
 	bool ReloadFile(const char *szPath);

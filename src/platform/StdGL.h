@@ -130,7 +130,7 @@ public:
 	bool DeviceReady() { return !!pMainCtx; }
 
 protected:
-	bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
+	bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
 	bool CheckGLError(const char *szAtOp);
 	virtual bool Error(const char *szMsg);

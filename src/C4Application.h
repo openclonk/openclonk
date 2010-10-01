@@ -48,7 +48,7 @@ public:
 	C4Application();
 	~C4Application();
 	// set by ParseCommandLine
-	bool isFullScreen;
+	bool isEditor;
 	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
 	bool UseStartupDialog;
 	// set by ParseCommandLine, for installing registration keys
@@ -59,8 +59,6 @@ public:
 	bool CheckForUpdates;
 	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
 	bool NoSplash;
-	// Flag for launching editor on quit
-	bool launchEditor;
 	// Flag for restarting the engine at the end
 	bool restartAtEnd;
 	// main System.c4g in working folder
@@ -73,7 +71,6 @@ public:
 	// IRC client for global chat
 	C4Network2IRCClient IRCClient;
 	// Tick timing
-	class CStdDDraw *DDraw;
 	void Clear();
 	void GameTick();
 	void Draw();

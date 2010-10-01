@@ -216,9 +216,9 @@ void C4Sky::Execute()
 void C4Sky::Draw(C4TargetFacet &cgo)
 {
 	// background color?
-	if (BackClrEnabled) Application.DDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X+cgo.Wdt, cgo.Y+cgo.Hgt, BackClr);
+	if (BackClrEnabled) lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X+cgo.Wdt, cgo.Y+cgo.Hgt, BackClr);
 	// sky surface?
-	if (Modulation != 0xffffffff) Application.DDraw->ActivateBlitModulation(Modulation);
+	if (Modulation != 0xffffffff) lpDDraw->ActivateBlitModulation(Modulation);
 	if (Surface)
 	{
 		// blit parallax sky
@@ -240,16 +240,16 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 		ZoomDataStackItem zdsi(resultzoom);
 
-		Application.DDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
+		lpDDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
 	}
 	else
 	{
 		// no sky surface: blit sky fade
 		DWORD dwClr1=GetSkyFadeClr(cgo.TargetY);
 		DWORD dwClr2=GetSkyFadeClr(cgo.TargetY+cgo.Hgt);
-		Application.DDraw->DrawBoxFade(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, dwClr1, dwClr1, dwClr2, dwClr2, cgo.TargetX, cgo.TargetY);
+		lpDDraw->DrawBoxFade(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, dwClr1, dwClr1, dwClr2, dwClr2, cgo.TargetX, cgo.TargetY);
 	}
-	if (Modulation != 0xffffffff) Application.DDraw->DeactivateBlitModulation();
+	if (Modulation != 0xffffffff) lpDDraw->DeactivateBlitModulation();
 	// done
 }
 

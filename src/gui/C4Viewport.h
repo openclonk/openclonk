@@ -26,58 +26,7 @@
 
 #include <C4Region.h>
 
-#include <StdWindow.h>
-
 #include <C4Shape.h>
-
-class C4Viewport;
-
-#ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ViewportBase;
-#else
-typedef CStdWindow C4ViewportBase;
-#endif
-
-// view ranges in "CR-pixels" covered by viewport
-static const int C4VP_DefViewRangeX    = 1000,
-                 C4VP_DefMinViewRangeX = 100,
-                 C4VP_DefMaxViewRangeX = 3000;
-
-class C4ViewportWindow: public C4ViewportBase
-{
-public:
-	C4Viewport * cvp;
-	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
-#ifdef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
-#elif defined(WITH_DEVELOPER_MODE)
-	virtual GtkWidget* InitGUI();
-
-	static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data);
-	static gboolean OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data);
-	static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-	static void OnRealizeStatic(GtkWidget* widget, gpointer user_data);
-	static gboolean OnExposeStatic(GtkWidget* widget, GdkEventExpose* event, gpointer user_data);
-	static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data);
-
-	static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-
-	static void OnVScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-	static void OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-
-	GtkWidget* h_scrollbar;
-	GtkWidget* v_scrollbar;
-	GtkWidget* drawing_area;
-#elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-	virtual void HandleMessage (XEvent &);
-#endif
-	virtual void Close();
-};
 
 class C4Viewport
 {
@@ -135,7 +84,7 @@ protected:
 	bool ResetMenuPositions;
 	C4RegionList *SetRegions;
 	C4Viewport *Next;
-	C4ViewportWindow * pWindow;
+	class C4ViewportWindow * pWindow;
 	CClrModAddMap ClrModMap; // color modulation map for viewport drawing
 	void DrawPlayerFogOfWar(C4TargetFacet &cgo);
 	void DrawPlayerStartup(C4TargetFacet &cgo);
@@ -152,11 +101,45 @@ protected:
 	friend LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 	friend class C4ViewportWindow;
+	friend class C4ViewportList;
 	friend class C4GraphicsSystem;
 	friend class C4Video;
 };
 
-#define C4ViewportClassName "C4Viewport"
-#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+class C4ViewportList {
+public:
+	C4ViewportList();
+	~C4ViewportList();
+	void Clear();
+	void ClearPointers(C4Object *pObj);
+	void Execute(bool DrawBackground);
+	void SortViewportsByPlayerControl();
+	void RecalculateViewports();
+	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
+	bool CloseViewport(int32_t iPlayer, bool fSilent);
+	int32_t GetViewportCount();
+	C4Viewport* GetViewport(int32_t iPlayer);
+	C4Viewport* GetFirstViewport() { return FirstViewport; }
+	bool CloseViewport(C4Viewport * cvp);
+#ifdef _WIN32
+	C4Viewport* GetViewport(HWND hwnd);
+#endif
+	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);
+	bool ViewportNextPlayer();
+
+	bool FreeScroll(C4Vec2D vScrollBy); // key callback: Scroll ownerless viewport by some offset
+	bool ViewportZoomOut();
+	bool ViewportZoomIn();
+protected:
+	void MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+	void DrawFullscreenBackground();
+	C4Viewport *FirstViewport;
+	C4Facet ViewportArea;
+	C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
+	friend class C4GUI::Screen;
+	friend class C4GraphicsSystem;
+};
+
+extern C4ViewportList Viewports;
 
 #endif

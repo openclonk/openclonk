@@ -28,6 +28,7 @@
 #include <StdD3DShader.h>
 #include <StdMarkup.h>
 #include <StdWindow.h>
+#include <C4Config.h>
 
 #ifdef USE_DIRECTX
 
@@ -171,7 +172,7 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// do not render to inactive fullscreen
-	if (!Active && fFullscreen) return false;
+	if (!Active && !Editor) return false;
 	// device?
 	if (!lpDevice) return false;
 	// target?
@@ -442,7 +443,7 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 	return true;
 }
 
-bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdD3D::CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
@@ -464,7 +465,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
 	DebugLog("  Create Device...");
-	if (Fullscreen)
+	if (!Editor)
 	{
 		// fullscreen mode
 		// pick a display mode
@@ -558,9 +559,6 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	assert(lpDevice);
-	// If fullscreen: SetVideoMode will have handled this.
-	//if (fFullscreen && !DDrawCfg.Windowed) return true;
-
 	// NOTE: This should be replaced by using a desktop-size video buffer and
 	// just clipping to the current resolution to improve performance
 	d3dpp.BackBufferWidth = iXRes;
@@ -921,7 +919,7 @@ bool CStdD3D::InitDeviceObjects()
 	bool fSuccess=true;
 	// Create shaders
 	for (int i=0; i<SHIDX_Size; ++i) if (pShaders[i]) { delete pShaders[i]; pShaders[i]=NULL; }
-	if (DDrawCfg.Shader)
+	if (Config.Graphics.EnableShaders)
 	{
 		if (!InitShaders())
 		{

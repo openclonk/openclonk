@@ -977,8 +977,8 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	case C4PlayerControlDef::CDA_ObjectMenuRight:        if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuRight,0); return true; // navigate
 	case C4PlayerControlDef::CDA_ObjectMenuDown:         if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuDown ,0); return true; // navigate
 
-	case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
-	case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom
+	case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
+	case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom
 
 		//unknown action
 	default: return false;
@@ -1160,7 +1160,7 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	if (!plr) return false;
 	C4Object *cursor_obj = plr->Cursor;
 	if (!cursor_obj) return false;
-	C4Viewport *vp = GraphicsSystem.GetViewport(iPlr);
+	C4Viewport *vp = ::Viewports.GetViewport(iPlr);
 	if (!vp) return false;
 	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
 	// game coordinate to screen coordinates...

@@ -66,24 +66,6 @@ class CStdGLCtx;
 extern CStdGL *pGL;
 #endif
 
-// config
-class CDDrawCfg
-{
-public:
-	bool ClipManuallyE; // do manual clipping in the easy cases
-	bool NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
-
-	bool Shader; // whether to use pixelshaders
-
-	CDDrawCfg():
-			ClipManuallyE (true),
-			NoOffscreenBlits (true), // not yet working properly...
-			Shader (false)
-	{
-	}
-};
-
-extern CDDrawCfg DDrawCfg; // ddraw config
 extern CStdDDraw *lpDDraw;
 
 class CSurface

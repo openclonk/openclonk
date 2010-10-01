@@ -1393,7 +1393,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	// bound
 	if (ClipAll) return;
 	// manual clipping? (primary surface only)
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		int iOver;
 		// Left
@@ -1840,7 +1840,7 @@ bool CStdGL::RestoreDeviceObjects()
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(CBltVertex), 0, GL_STREAM_DRAW_ARB);
 	}
 
-	if (!DDrawCfg.Shader)
+	if (!Config.Graphics.EnableShaders)
 	{
 	}
 	else if (!shaders[0] && GLEW_ARB_fragment_program)
@@ -1996,10 +1996,10 @@ void CStdGL::TaskOut()
 {
 	// deactivate
 	// backup textures
-	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
+	if (pTexMgr && !Editor) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
 #ifdef _WIN32
-	if (fFullscreen && !Config.Graphics.Windowed)
+	if (!Editor && !Config.Graphics.Windowed)
 	{
 		::ChangeDisplaySettings(NULL, 0);
 		::ShowWindow(Application.GetWindowHandle(), SW_MINIMIZE);
@@ -2012,10 +2012,10 @@ void CStdGL::TaskIn()
 	// restore gl
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
 	// restore textures
-	if (pTexMgr && fFullscreen) pTexMgr->IntUnlock();
+	if (pTexMgr && !Editor) pTexMgr->IntUnlock();
 
 #ifdef _WIN32
-	if (fFullscreen && !Config.Graphics.Windowed)
+	if (!Editor && !Config.Graphics.Windowed)
 	{
 		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 	}

@@ -196,20 +196,20 @@ void C4Video::Draw(C4TargetFacet &cgo)
 	// No show
 	if (!ShowFlash) return;
 	// Draw frame
-	Application.DDraw->DrawFrameDw(cgo.Surface, X+cgo.X,Y+cgo.Y,
+	lpDDraw->DrawFrameDw(cgo.Surface, X+cgo.X,Y+cgo.Y,
 	                             X+cgo.X+Width-1,Y+cgo.Y+Height-1,
 	                             Recording ? C4RGB(0xca, 0, 0) : C4RGB(0xff, 0xff, 0xff));
 	// Draw status
 	StdStrBuf str;
 	if (Recording) str.Format("%dx%d Frame %d",Width,Height,AviFrame);
 	else str.Format("%dx%d",Width,Height);
-	Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
+	lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
 }
 
 bool C4Video::AdjustPosition()
 {
 	// Get source player & viewport
-	C4Viewport *pViewport = ::GraphicsSystem.GetFirstViewport();
+	C4Viewport *pViewport = ::Viewports.GetFirstViewport();
 	if (!pViewport) return false;
 	C4Player *pPlr = ::Players.Get(pViewport->GetPlayer());
 	if (!pPlr) return false;
@@ -297,7 +297,7 @@ void C4Video::Draw()
 	if (!Active) return;
 	// Get viewport
 	C4Viewport *pViewport;
-	if ( (pViewport = ::GraphicsSystem.GetFirstViewport()) )
+	if ( (pViewport = ::Viewports.GetFirstViewport()) )
 	{
 		C4TargetFacet cgo;
 		cgo.Set(Surface,pViewport->DrawX,pViewport->DrawY,pViewport->ViewWdt,pViewport->ViewHgt,pViewport->ViewX,pViewport->ViewY);

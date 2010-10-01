@@ -26,7 +26,6 @@ class C4StartupMainDlg : public C4StartupDlg
 {
 private:
 	C4KeyBinding *pKeyDown, *pKeyUp, *pKeyEnter;
-	C4KeyBinding *pKeyEditor;
 	C4GUI::Label *pParticipantsLbl;
 	C4GUI::Button *pStartButton;
 	bool fFirstShown;
@@ -53,8 +52,6 @@ protected:
 	void OnAboutBtn(C4GUI::Control *btn); // callback: Show about screen
 	void OnExitBtn(C4GUI::Control *btn); // callback: exit button pressed
 	void OnTODO(C4GUI::Control *btn); // button not yet implemented
-
-	bool SwitchToEditor();
 
 	bool KeyEnterDown(); // return pressed -> reroute as space
 	bool KeyEnterUp(); // return released -> reroute as space

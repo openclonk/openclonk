@@ -95,9 +95,6 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	keys.clear(); keys.push_back(C4KeyCodeEx(K_RETURN));
 	pKeyEnter = new C4KeyBinding(keys, "StartupMainOK", KEYSCOPE_Gui,
 	                             new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::KeyEnterDown, &C4StartupMainDlg::KeyEnterUp), C4CustomKey::PRIO_CtrlOverride);
-	keys.clear(); keys.push_back(C4KeyCodeEx(K_F6));
-	pKeyEditor = new C4KeyBinding(keys, "StartupMainEditor", KEYSCOPE_Gui,
-	                              new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::SwitchToEditor, false), C4CustomKey::PRIO_CtrlOverride);
 }
 
 C4StartupMainDlg::~C4StartupMainDlg()
@@ -106,7 +103,6 @@ C4StartupMainDlg::~C4StartupMainDlg()
 	delete pKeyEnter;
 	delete pKeyUp;
 	delete pKeyDown;
-	delete pKeyEditor;
 }
 
 void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
@@ -351,20 +347,3 @@ void C4StartupMainDlg::OnShown()
 	}
 	fFirstShown = false;
 }
-
-bool C4StartupMainDlg::SwitchToEditor()
-{
-
-#ifdef _WIN32
-	// No editor executable available
-	if (!FileExists(Config.AtExePath(C4CFN_Editor))) return false;
-	// Flag editor launch
-	Application.launchEditor = true;
-	// Quit
-	C4Startup::Get()->Exit();
-#endif
-
-	return true;
-}
-
-

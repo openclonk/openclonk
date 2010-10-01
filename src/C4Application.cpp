@@ -48,14 +48,13 @@
 
 
 C4Application::C4Application():
-		isFullScreen(true),
+		isEditor(false),
 		UseStartupDialog(true),
 		CheckForUpdates(false),
 		NoSplash(false),
-		launchEditor(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
-		DDraw(NULL), AppState(C4AS_None)
+		AppState(C4AS_None)
 {
 }
 
@@ -65,17 +64,6 @@ C4Application::~C4Application()
 	if (pGamePadControl) delete pGamePadControl;
 	// Close log
 	CloseLog();
-	// Launch editor
-	if (launchEditor)
-	{
-#ifdef _WIN32
-		char strCommandLine[_MAX_PATH + 1]; SCopy(Config.AtExePath(C4CFN_Editor), strCommandLine);
-		STARTUPINFO StartupInfo; ZeroMemory(&StartupInfo, sizeof StartupInfo);
-		StartupInfo.cb = sizeof StartupInfo;
-		PROCESS_INFORMATION ProcessInfo; ZeroMemory(&ProcessInfo, sizeof ProcessInfo);
-		CreateProcess(NULL, strCommandLine, NULL, NULL, true, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
-#endif
-	}
 }
 
 bool C4Application::DoInit()
@@ -161,8 +149,6 @@ bool C4Application::DoInit()
 			return true;
 #endif
 
-	DDrawCfg.Shader = !!Config.Graphics.EnableShaders;
-
 	// Fixup resolution
 	if (!Config.Graphics.Windowed)
 		ApplyResolutionConstraints();
@@ -171,7 +157,7 @@ bool C4Application::DoInit()
 	Active=true;
 
 	// Init carrier window
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		if (!(pWindow = FullScreen.Init(this)))
 			{ Clear(); return false; }
@@ -190,10 +176,10 @@ bool C4Application::DoInit()
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
-	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
+	bool success = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
@@ -251,7 +237,7 @@ bool C4Application::PreInit()
 	bool fDoUseStartupDialog = UseStartupDialog && !*Game.ScenarioFilename;
 
 	// Startup message board
-	if (isFullScreen)
+	if (!isEditor)
 		if (Config.Graphics.ShowStartupMessages || Game.NetworkActive)
 		{
 			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
@@ -316,7 +302,7 @@ void C4Application::Clear()
 	SoundSystem.Clear();
 	RestoreVideoMode();
 	// Clear direct draw (late, because it's needed for e.g. Log)
-	if (DDraw) { delete DDraw; DDraw=NULL; }
+	if (lpDDraw) { delete lpDDraw; lpDDraw=NULL; }
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();
@@ -326,7 +312,7 @@ void C4Application::Clear()
 
 bool C4Application::OpenGame()
 {
-	if (isFullScreen)
+	if (!isEditor)
 	{
 		// Open game
 		return Game.Init();
@@ -438,7 +424,7 @@ void C4Application::Draw()
 	if (!Game.DoSkipFrame)
 	{
 		// Fullscreen mode
-		if (isFullScreen)
+		if (!isEditor)
 			FullScreen.Execute();
 		// Console mode
 		else
@@ -455,10 +441,10 @@ void C4Application::SetGameTickDelay(int iDelay)
 void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// notify game
-	if (DDraw)
+	if (lpDDraw)
 	{
 		Game.OnResolutionChanged(iXRes, iYRes);
-		DDraw->OnResolutionChanged(iXRes, iYRes);
+		lpDDraw->OnResolutionChanged(iXRes, iYRes);
 	}
 	if (pWindow && pWindow->pSurface)
 		pWindow->pSurface->UpdateSize(iXRes, iYRes);

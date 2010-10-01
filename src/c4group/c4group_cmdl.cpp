@@ -63,7 +63,6 @@ int iResult = 0;
 
 C4ConfigShareware Config;
 C4Config *GetCfg() { return &Config; }
-CDDrawCfg DDrawCfg; // to satisfy the linker
 
 #ifdef _WIN32
 #ifdef _DEBUG

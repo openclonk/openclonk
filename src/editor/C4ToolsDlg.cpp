@@ -661,7 +661,7 @@ void C4ToolsDlg::UpdatePreview()
 
 	// fill bg
 #ifdef _WIN32
-	Application.DDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
+	lpDDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
 #endif
 	BYTE bCol = 0;
 	CPattern Pattern;
@@ -699,7 +699,7 @@ void C4ToolsDlg::UpdatePreview()
 #endif
 #endif
 #endif
-		Application.DDraw->DrawPatternedCircle( sfcPreview,
+		lpDDraw->DrawPatternedCircle( sfcPreview,
 		                                        iPrvWdt/2,iPrvHgt/2,
 		                                        Grade,
 		                                        bCol, Pattern, *::Landscape.GetPal());

@@ -1023,7 +1023,7 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 		Stat.Append("| - none -");
 
 	// draw
-	Application.DDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
+	lpDDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
 }
 
 bool C4Network2::InitNetIO(bool fNoClientID, bool fHost)
@@ -2517,7 +2517,7 @@ void C4Network2::LeagueSurrender()
 
 void C4Network2::LeagueShowError(const char *szMsg)
 {
-	if (::pGUI && Application.isFullScreen)
+	if (::pGUI && !Application.isEditor)
 	{
 		::pGUI->ShowErrorMessage(szMsg);
 	}

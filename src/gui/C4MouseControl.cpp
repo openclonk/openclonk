@@ -201,11 +201,11 @@ void C4MouseControl::UpdateClip()
 #endif
 #ifdef _WIN32
 	// fullscreen only
-	if (!Application.isFullScreen) return;
+	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
 	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
 	// get controlled viewport
-	C4Viewport *pVP=::GraphicsSystem.GetViewport(Player);
+	C4Viewport *pVP=::Viewports.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
 	// adjust size by viewport size
 	RECT vpRct;
@@ -240,7 +240,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	else
 		pPlayer = NULL;
 	// Check viewport
-	if (!(Viewport=::GraphicsSystem.GetViewport(Player))) return;
+	if (!(Viewport=::Viewports.GetViewport(Player))) return;
 	// get view position
 	C4Rect rcViewport = Viewport->GetOutputRect();
 	fctViewport.Set(NULL, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);
@@ -253,7 +253,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (Application.isFullScreen)
+		if (!Application.isEditor)
 		{
 			int32_t iMidX = Viewport->OutX + iX;
 			int32_t iMidY = Viewport->OutY + iY;
@@ -271,7 +271,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	{
 		iX = Viewport->ViewWdt/2;
 		iY = Viewport->ViewHgt/2;
-		if (Application.isFullScreen)
+		if (!Application.isEditor)
 		{
 			//int32_t iMidX = Viewport->OutX + iX;
 			//int32_t iMidY = Viewport->OutY + iY;
@@ -492,7 +492,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		//------------------------------------------------------------------------------------------
 	case C4MC_Drag_Selecting:
 		// Draw frame
-		Application.DDraw->DrawFrameDw(cgo.Surface,
+		lpDDraw->DrawFrameDw(cgo.Surface,
 		                              int32_t(cgo.X + GuiX),
 		                              int32_t(cgo.Y + GuiY),
 		                              int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
@@ -516,7 +516,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			// Otherwise red mouse control style
 			int32_t iWdt,iHgt;
 			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			Application.DDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
+			lpDDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
 			                           cgo.Surface,
 			                           float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
 			                           float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),

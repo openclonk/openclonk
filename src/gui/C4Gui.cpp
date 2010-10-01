@@ -569,7 +569,7 @@ namespace C4GUI
 	{
 		assert(pDlg);
 		// do place console mode dialogs
-		if (Application.isFullScreen || pDlg->IsViewportDialog())
+		if (!Application.isEditor || pDlg->IsViewportDialog())
 			// exclusive or free dlg: center pos
 			// evaluate own placement proc first
 			if (!pDlg->DoPlacement(this, PreferredDlgRect))
@@ -721,7 +721,7 @@ namespace C4GUI
 			if (pContext) pContext->Draw(cgo);
 		}
 		// draw mouse cursor
-		if (Application.isFullScreen) RenderMouse(cgo);
+		if (!Application.isEditor) RenderMouse(cgo);
 	}
 
 	bool Screen::Execute()
@@ -759,6 +759,46 @@ namespace C4GUI
 		if (!pActiveDlg || !pActiveDlg->IsVisible()) return fResult;
 		// forward to dialog
 		return pActiveDlg->CharIn(c) || fResult;
+	}
+
+	void Screen::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP)
+	{
+		// Special: Pass to MouseControl if dragging and button is not upped
+		if (IsActive() && !::MouseControl.IsDragging())
+		{
+			bool fResult = MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
+			if (HasMouseFocus()) { SetMouseInGUI(true, true); return; }
+			// non-exclusive GUI: inform mouse-control about GUI-result
+			SetMouseInGUI(fResult, true);
+			// abort if GUI processed it
+			if (fResult) return;
+		}
+		else
+			// no GUI: mouse is not in GUI
+			SetMouseInGUI(false, true);
+		// mouse control enabled?
+		if (!::MouseControl.IsActive())
+		{
+			// enable mouse in GUI, if a mouse-only-dlg is displayed
+			if (GetMouseControlledDialogCount())
+				SetMouseInGUI(true, true);
+			return;
+		}
+		// Pass on to mouse controlled viewport
+		::Viewports.MouseMoveToViewport(iButton, iX, iY, dwKeyParam);
+	}
+
+	void Screen::SetMouseInGUI(bool fInGUI, bool fByMouse)
+	{
+		// inform mouse control and GUI
+		Mouse.SetOwnedMouse(fInGUI);
+		// initial movement to ensure mouse control pos is correct
+		if (!::MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
+		{
+			::MouseControl.SetOwnedMouse(true);
+			::Viewports.MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
+		}
+		::MouseControl.SetOwnedMouse(!fInGUI);
 	}
 
 	bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKeyParam, Dialog *pForDlg, class C4Viewport *pForVP)

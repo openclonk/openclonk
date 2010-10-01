@@ -40,6 +40,12 @@ const int32_t C4P_Number_None = -5;
 const int32_t C4MaxPlayer = 5000; // ought to be enough for everybody (used to catch invalid player counts)
 const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to catch invalid client counts)
 
+// view ranges in "CR-pixels" covered by viewport
+static const int C4VP_DefViewRangeX    = 1000,
+                 C4VP_DefMinViewRangeX = 100,
+                 C4VP_DefMaxViewRangeX = 3000;
+#define C4FOW_Def_View_RangeX 500
+
 class C4Player: public C4PlayerInfoCore
 {
 	class HostilitySet : public std::set<const C4Player*>

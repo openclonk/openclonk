@@ -374,7 +374,7 @@ bool C4Game::Init()
 				{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 			// init loader
-			if (Application.isFullScreen && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
 				{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -397,7 +397,7 @@ bool C4Game::Init()
 		}
 
 		// check wether console mode is allowed
-		if (!Application.isFullScreen && !Parameters.AllowDebug)
+		if (Application.isEditor && !Parameters.AllowDebug)
 			{ LogFatal(LoadResStr("IDS_TEXT_JOININCONSOLEMODENOTALLOW")); return false; }
 
 		// do lobby (if desired)
@@ -440,7 +440,7 @@ bool C4Game::Init()
 			{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 		// init loader
-		if (Application.isFullScreen && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 
 		// Init network
@@ -453,7 +453,7 @@ bool C4Game::Init()
 	C4Startup::Unload();
 
 	// Init debugmode
-	DebugMode = !Application.isFullScreen;
+	DebugMode = Application.isEditor;
 	if (Config.General.AlwaysDebug)
 		DebugMode = true;
 	if (!Parameters.AllowDebug)
@@ -489,7 +489,7 @@ bool C4Game::Init()
 	GraphicsSystem.ApplyGamma();
 
 	// Message board and upper board
-	if (Application.isFullScreen)
+	if (!Application.isEditor)
 	{
 		InitFullscreenComponents(true);
 	}
@@ -654,9 +654,6 @@ bool C4Game::GameOverCheck()
 	return GameOver;
 }
 
-int32_t iLastControlSize=0;
-extern int32_t iPacketDelay;
-
 C4ST_NEW(ControlRcvStat,    "C4Game::Execute ReceiveControl")
 C4ST_NEW(ControlStat,       "C4Game::Execute ExecuteControl")
 C4ST_NEW(ExecObjectsStat,   "C4Game::Execute ExecObjects")
@@ -773,7 +770,7 @@ void C4Game::InitFullscreenComponents(bool fRunning)
 		C4Facet cgo2;
 		cgo2.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
 		GraphicsSystem.UpperBoard.Init(cgo2);
-		GraphicsSystem.RecalculateViewports();
+		::Viewports.RecalculateViewports();
 	}
 }
 
@@ -894,7 +891,7 @@ void C4Game::ClearPointers(C4PropList * PropList)
 	::Messages.ClearPointers(pObj);
 	ClearObjectPtrs(pObj);
 	Players.ClearPointers(pObj);
-	GraphicsSystem.ClearPointers(pObj);
+	::Viewports.ClearPointers(pObj);
 	MessageInput.ClearPointers(pObj);
 	Console.ClearPointers(pObj);
 	MouseControl.ClearPointers(pObj);
@@ -1436,11 +1433,6 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 	if (!::Game.iTick255) ObjectRemovalCheck();
 }
 
-bool C4Game::CreateViewport(int32_t iPlayer, bool fSilent)
-{
-	return GraphicsSystem.CreateViewport(iPlayer, fSilent);
-}
-
 C4ID DefFileGetID(const char *szFilename)
 {
 	C4Group hDef;
@@ -1657,7 +1649,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 							}
 							else str = cursor->GetName();
 
-							Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                           cgo.X + cox + fctCursor.Wdt / 2,
 							                           cgo.Y + coy - 2 - texthgt,
 							                           0xffff0000, ACenter);
@@ -1847,13 +1839,13 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	}
 
 	// Fullscreen screenshot
-	else if (Application.isFullScreen && Application.Active)
+	else if (!Application.isEditor && Application.Active)
 	{
 		SURFACE sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
 		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
-		Application.DDraw->Blit(FullScreen.pSurface,
+		lpDDraw->Blit(FullScreen.pSurface,
 		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 
@@ -1904,13 +1896,13 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 		}
 		else
 		{
-			if (Application.isFullScreen)
+			if (!Application.isEditor)
 			{
 				if (FullScreen.pMenu && FullScreen.pMenu->IsActive()) // fullscreen menu
 					InScope |= KEYSCOPE_FullSMenu;
 				else if (Game.C4S.Head.Replay && C4S.Head.Film) // film view only
 					InScope |= KEYSCOPE_FilmView;
-				else if (GraphicsSystem.GetViewport(NO_OWNER)) // NO_OWNER-viewport-controls
+				else if (::Viewports.GetViewport(NO_OWNER)) // NO_OWNER-viewport-controls
 					InScope |= KEYSCOPE_FreeView;
 				else
 				{
@@ -2107,7 +2099,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	{
 
 		// file monitor
-		if (Config.Developer.AutoFileReload && !Application.isFullScreen && !pFileMonitor)
+		if (Config.Developer.AutoFileReload && Application.isEditor && !pFileMonitor)
 			pFileMonitor = new C4FileMonitor(FileMonitorCallback);
 
 		// system scripts
@@ -2304,7 +2296,7 @@ bool C4Game::InitGameFinal()
 	// Create viewports
 	for (pPlr=Players.First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->LocalControl)
-			CreateViewport(pPlr->Number);
+			::Viewports.CreateViewport(pPlr->Number);
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
 	// update halt state
@@ -2427,7 +2419,7 @@ bool C4Game::InitPlayers()
 #ifndef USE_CONSOLE
 		// No players in fullscreen
 		if (iPlrCnt==0)
-			if (Application.isFullScreen && !Control.NoInput())
+			if (!Application.isEditor && !Control.NoInput())
 			{
 				LogFatal(LoadResStr("IDS_CNS_NOFULLSCREENPLRS")); return false;
 			}
@@ -2435,7 +2427,7 @@ bool C4Game::InitPlayers()
 		// Too many players
 		if (iPlrCnt>Game.Parameters.MaxPlayers)
 		{
-			if (Application.isFullScreen)
+			if (!Application.isEditor)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_PRC_TOOMANYPLRS"),Game.Parameters.MaxPlayers).getData());
 				return false;
@@ -2890,7 +2882,7 @@ void C4Game::ParseCommandLine(const char *szCmdLine)
 	// Check for fullscreen switch in command line
 	if (SSearchNoCase(szCmdLine, "/console")
 	    || (!SSearchNoCase(szCmdLine, "/fullscreen") && *ScenarioFilename))
-		Application.isFullScreen = false;
+		Application.isEditor = true;
 
 	// Determine startup player count
 	StartupPlayerCount = SModuleCount(PlayerFilenames);
@@ -2899,7 +2891,7 @@ void C4Game::ParseCommandLine(const char *szCmdLine)
 	Record = Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && NetworkActive);
 
 	// startup dialog required?
-	Application.UseStartupDialog = Application.isFullScreen && !*DirectJoinAddress && !*ScenarioFilename && !RecordStream.getSize();
+	Application.UseStartupDialog = !Application.isEditor && !*DirectJoinAddress && !*ScenarioFilename && !RecordStream.getSize();
 
 }
 
@@ -2998,8 +2990,8 @@ bool C4Game::InitKeyboard()
 	// main ingame
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F1                ), "ToggleShowHelp",         KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowHelp)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F4                ), "NetClientListDlgToggle", KEYSCOPE_Generic,    new C4KeyCB  <C4Network2>      (Network, &C4Network2::ToggleClientListDlg)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F5                ), "ZoomIn",                 KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ViewportZoomIn)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F6                ), "ZoomOut",                KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ViewportZoomOut)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F5                ), "ZoomIn",                 KEYSCOPE_Generic,    new C4KeyCB  <C4ViewportList>  (::Viewports, &C4ViewportList::ViewportZoomIn)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F6                ), "ZoomOut",                KEYSCOPE_Generic,    new C4KeyCB  <C4ViewportList>  (::Viewports, &C4ViewportList::ViewportZoomOut)));
 
 	// messageboard
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_UP,     KEYS_Shift), "MsgBoardScrollUp",       KEYSCOPE_Fullscreen, new C4KeyCB  <C4MessageBoard>  (GraphicsSystem.MessageBoard, &C4MessageBoard::ControlScrollUp)));
@@ -3042,7 +3034,7 @@ bool C4Game::InitKeyboard()
 	Keys.clear(); Keys.push_back(C4KeyCodeEx(K_SPACE));
 	if (Config.Controls.GamepadGuiControl) Keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_AnyButton)));
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "FullscreenMenuOpen",     KEYSCOPE_FreeView,   new C4KeyCB  <C4FullScreen>   (FullScreen, &C4FullScreen::ActivateMenuMain))); // name used by C4MainMenu!
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FilmNextPlayer",         KEYSCOPE_FilmView,   new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ViewportNextPlayer)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FilmNextPlayer",         KEYSCOPE_FilmView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 
 	// chat
 	Keys.clear();
@@ -3051,10 +3043,10 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(Keys,                              "ChatOpen",               KEYSCOPE_Generic,    new C4KeyCBEx<C4MessageInput, bool>(MessageInput, false, &C4MessageInput::KeyStartTypeIn)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RETURN, KEYS_Shift), "ChatOpen2Allies",        KEYSCOPE_Generic,    new C4KeyCBEx<C4MessageInput, bool>(MessageInput, true, &C4MessageInput::KeyStartTypeIn)));
 
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_LEFT              ), "FreeViewScrollLeft",     KEYSCOPE_FreeView,   new C4KeyCBEx<C4GraphicsSystem, C4Vec2D>(GraphicsSystem, C4Vec2D(-5, 0), &C4GraphicsSystem::FreeScroll)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FreeViewScrollRight",    KEYSCOPE_FreeView,   new C4KeyCBEx<C4GraphicsSystem, C4Vec2D>(GraphicsSystem, C4Vec2D(+5, 0), &C4GraphicsSystem::FreeScroll)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_UP                ), "FreeViewScrollUp",       KEYSCOPE_FreeView,   new C4KeyCBEx<C4GraphicsSystem, C4Vec2D>(GraphicsSystem, C4Vec2D(0, -5), &C4GraphicsSystem::FreeScroll)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_DOWN              ), "FreeViewScrollDown",     KEYSCOPE_FreeView,   new C4KeyCBEx<C4GraphicsSystem, C4Vec2D>(GraphicsSystem, C4Vec2D(0, +5), &C4GraphicsSystem::FreeScroll)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_LEFT              ), "FreeViewScrollLeft",     KEYSCOPE_FreeView,   new C4KeyCBEx<C4ViewportList, C4Vec2D>(::Viewports, C4Vec2D(-5, 0), &C4ViewportList::FreeScroll)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_RIGHT             ), "FreeViewScrollRight",    KEYSCOPE_FreeView,   new C4KeyCBEx<C4ViewportList, C4Vec2D>(::Viewports, C4Vec2D(+5, 0), &C4ViewportList::FreeScroll)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_UP                ), "FreeViewScrollUp",       KEYSCOPE_FreeView,   new C4KeyCBEx<C4ViewportList, C4Vec2D>(::Viewports, C4Vec2D(0, -5), &C4ViewportList::FreeScroll)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_DOWN              ), "FreeViewScrollDown",     KEYSCOPE_FreeView,   new C4KeyCBEx<C4ViewportList, C4Vec2D>(::Viewports, C4Vec2D(0, +5), &C4ViewportList::FreeScroll)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_TAB               ), "ScoreboardToggle",       KEYSCOPE_Generic,    new C4KeyCB  <C4Scoreboard>(Scoreboard, &C4Scoreboard::KeyUserShow)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_ESCAPE            ), "GameAbort",              KEYSCOPE_Fullscreen, new C4KeyCB  <C4FullScreen>(FullScreen, &C4FullScreen::ShowAbortDlg)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_PAUSE             ), "FullscreenPauseToggle",  KEYSCOPE_Fullscreen, new C4KeyCB  <C4Game>(Game, &C4Game::TogglePause)));
@@ -3072,7 +3064,7 @@ bool C4Game::InitKeyboard()
 
 	// no default keys assigned
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "ChartToggle",            C4KeyScope(KEYSCOPE_Generic | KEYSCOPE_Gui),    new C4KeyCB  <C4Game>          (*this, &C4Game::ToggleChart)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetObsNextPlayer",       KEYSCOPE_FreeView,   new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ViewportNextPlayer)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetObsNextPlayer",       KEYSCOPE_FreeView,   new C4KeyCB  <C4ViewportList>(::Viewports, &C4ViewportList::ViewportNextPlayer)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "CtrlRateDown",           KEYSCOPE_Generic,    new C4KeyCBEx<C4GameControl, int32_t>(Control, -1, &C4GameControl::KeyAdjustControlRate)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "CtrlRateUp",             KEYSCOPE_Generic,    new C4KeyCBEx<C4GameControl, int32_t>(Control, +1, &C4GameControl::KeyAdjustControlRate)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetAllowJoinToggle",     KEYSCOPE_Generic,    new C4KeyCB  <C4Network2>      (Network, &C4Network2::ToggleAllowJoin)));
@@ -3113,7 +3105,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	// Player final init
 	pPlr->FinalInit(true);
 	// Create player viewport
-	if (pPlr->LocalControl) CreateViewport(pPlr->Number);
+	if (pPlr->LocalControl) ::Viewports.CreateViewport(pPlr->Number);
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
 	// Update menus
@@ -3196,7 +3188,7 @@ void C4Game::ShowGameOverDlg()
 	// console engine quits here directly
 	Application.QuitGame();
 #else
-	if (pGUI && Application.isFullScreen)
+	if (pGUI && !Application.isEditor)
 	{
 		C4GameOverDlg *pDlg = new C4GameOverDlg();
 		pDlg->SetDelOnClose();
@@ -3540,7 +3532,7 @@ void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	// note that this may fail if the gfx groups are closed already (runtime resolution change)
 	// doesn't matter; old gfx are kept in this case
 	GraphicsResource.ReloadResolutionDependantFiles();
-	GraphicsSystem.RecalculateViewports();
+	::Viewports.RecalculateViewports();
 }
 
 bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
@@ -3685,7 +3677,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	pCurrentScenarioSection = pLoadSect;
 	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);
 	// resize viewports
-	GraphicsSystem.RecalculateViewports();
+	::Viewports.RecalculateViewports();
 	// done, success
 	return true;
 }

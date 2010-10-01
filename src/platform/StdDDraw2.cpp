@@ -385,7 +385,7 @@ uint32_t CColorFadeMatrix::GetColorAt(int iX, int iY)
 
 void CStdDDraw::Default()
 {
-	fFullscreen=false;
+	Editor=true;
 	RenderTarget=NULL;
 	ClipAll=false;
 	Active=false;
@@ -537,7 +537,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	// check exact
 	bool fExact = !pTransform && fwdt==twdt && fhgt==thgt;
 	// manual clipping? (primary surface only)
-	if (DDrawCfg.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
+	if (Config.Graphics.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
 	{
 		float iOver;
 		// Left
@@ -1025,7 +1025,7 @@ void CStdDDraw::DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	ApplyZoom(tx, ty);
 	// FIXME: zoom to a box
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		if (tx < iClipX1) { return; }
 		if (ty < iClipY1) { return; }
@@ -1046,7 +1046,7 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		float i;
 		// sort left/right
@@ -1208,7 +1208,7 @@ void CStdDDraw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+bool DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
 {
 	// create engine
 	switch (iGfxEngine = Engine)
@@ -1223,18 +1223,18 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 #endif
 	case GFXENGN_NOGFX: lpDDraw = new CStdNoGfx(); break;
 	}
-	if (!lpDDraw) return NULL;
+	if (!lpDDraw) return false;
 	// init it
-	if (!lpDDraw->Init(pApp, Fullscreen, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!lpDDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
 	{
 		delete lpDDraw;
-		return NULL;
+		return false;
 	}
 	// done, success
-	return lpDDraw;
+	return true;
 }
 
-bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
+bool CStdDDraw::Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	this->pApp = pApp;
 
@@ -1243,7 +1243,7 @@ bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 
 	pApp->pWindow->pSurface = new CSurface(pApp, pApp->pWindow);
 
-	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;
 
 	DebugLog("  Create Clipper");
@@ -1251,7 +1251,7 @@ bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 	if (!CreatePrimaryClipper(iXRes, iYRes))
 		return Error("  Clipper failure.");
 
-	fFullscreen = Fullscreen;
+	this->Editor = Editor;
 
 	return true;
 }
@@ -1311,7 +1311,7 @@ void CStdDDraw::DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, flo
 void CStdDDraw::DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
 	// manual clipping?
-	if (DDrawCfg.ClipManuallyE)
+	if (Config.Graphics.ClipManuallyE)
 	{
 		int iOver;
 		iOver=iX1-iClipX1; if (iOver<0) { iX1=iClipX1; }

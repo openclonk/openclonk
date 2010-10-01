@@ -172,7 +172,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			C4Facet facet(cgo.Surface, iDrawX, iDrawY, PortraitWidth, PortraitWidth);
 			fctPortrait.Draw(facet);
 			// draw message
-			Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PortraitWidth+PortraitIndent,iDrawY,ColorDw,ALeft);
+			lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PortraitWidth+PortraitIndent,iDrawY,ColorDw,ALeft);
 		}
 		else
 		{
@@ -180,7 +180,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			iDrawX += cgo.Wdt/2;
 			iDrawY += 2 * cgo.Hgt / 3 + 50;
 			if (!(dwFlags & C4GM_Bottom)) iDrawY += DrawMessageOffset;
-			Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
+			lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
 		}
 	}
 	// Positioned
@@ -223,7 +223,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
 				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
 				// Draw
-				Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
+				lpDDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 				                           cgo.Surface,
 				                           cgo.X + iTX,
 				                           cgo.Y + iTY,

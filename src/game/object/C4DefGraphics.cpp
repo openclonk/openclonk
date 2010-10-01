@@ -998,8 +998,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->PrepareDrawing();
 	else
 	{
-		Application.DDraw->SetBlitMode(dwBlitMode);
-		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
+		lpDDraw->SetBlitMode(dwBlitMode);
+		if (dwClrModulation != 0xffffff) lpDDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
@@ -1126,8 +1126,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->FinishedDrawing();
 	else
 	{
-		Application.DDraw->ResetBlitMode();
-		Application.DDraw->DeactivateBlitModulation();
+		lpDDraw->ResetBlitMode();
+		lpDDraw->DeactivateBlitModulation();
 	}
 }
 
@@ -1164,8 +1164,8 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 	}
 	else
 	{
-		Application.DDraw->SetBlitMode(dwBlitMode);
-		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
+		lpDDraw->SetBlitMode(dwBlitMode);
+		if (dwClrModulation != 0xffffff) lpDDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
@@ -1209,8 +1209,8 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 	}
 	else
 	{
-		Application.DDraw->ResetBlitMode();
-		Application.DDraw->DeactivateBlitModulation();
+		lpDDraw->ResetBlitMode();
+		lpDDraw->DeactivateBlitModulation();
 	}
 }
 

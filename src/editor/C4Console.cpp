@@ -36,6 +36,7 @@
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
+#include <C4Viewport.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 
@@ -235,7 +236,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		// New player viewport
 		if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
 		{
-			Game.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
+			::Viewports.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
 			return true;
 		}
 		// Remove player
@@ -1215,7 +1216,7 @@ void C4Console::HelpAbout()
 
 void C4Console::ViewportNew()
 {
-	Game.CreateViewport(NO_OWNER);
+	::Viewports.CreateViewport(NO_OWNER);
 }
 
 bool C4Console::UpdateCursorBar(const char *szCursor)
@@ -1800,7 +1801,7 @@ void C4Console::OnViewNew(GtkWidget* item, gpointer data)
 
 void C4Console::OnViewNewPlr(GtkWidget* item, gpointer data)
 {
-	Game.CreateViewport(GPOINTER_TO_INT(data));
+	::Viewports.CreateViewport(GPOINTER_TO_INT(data));
 }
 
 void C4Console::OnHelpAbout(GtkWidget* item, gpointer data)

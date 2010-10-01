@@ -119,16 +119,16 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Log((const char *)lParam);
 		return false;
 	case WM_LBUTTONDOWN:
-		::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
 		break;
-	case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEWHEEL: ::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_MOUSEWHEEL: C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
 	case WM_MOUSEMOVE:
-		::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
 		// Hide cursor in client area
 		if (NativeCursorShown)
 		{
@@ -190,41 +190,41 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		case Button1:
 			if (timeGetTime() - last_left_click < 400)
 			{
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
+				C4GUI::MouseMove(C4MC_Button_LeftDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 				last_left_click = 0;
 			}
 			else
 			{
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
+				C4GUI::MouseMove(C4MC_Button_LeftDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 				last_left_click = timeGetTime();
 			}
 			break;
 		case Button2:
-			::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
+			C4GUI::MouseMove(C4MC_Button_MiddleDown,
 			                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		case Button3:
 			if (timeGetTime() - last_right_click < 400)
 			{
-				::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
+				C4GUI::MouseMove(C4MC_Button_RightDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 				last_right_click = 0;
 			}
 			else
 			{
-				::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
+				C4GUI::MouseMove(C4MC_Button_RightDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 				last_right_click = timeGetTime();
 			}
 			break;
 		case Button4:
-			::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+			C4GUI::MouseMove(C4MC_Button_Wheel,
 			                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(32) << 16), NULL);
 			break;
 		case Button5:
-			::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+			C4GUI::MouseMove(C4MC_Button_Wheel,
 			                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-32) << 16), NULL);
 			break;
 		default:
@@ -236,20 +236,20 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		switch (e.xbutton.button)
 		{
 		case Button1:
-			::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			C4GUI::MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		case Button2:
-			::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			C4GUI::MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		case Button3:
-			::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			C4GUI::MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		default:
 			break;
 		}
 		break;
 	case MotionNotify:
-		::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 		break;
 	case FocusIn:
 		Application.Active = true;
@@ -350,7 +350,6 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
-			if (pGL) pGL->fFullscreen = !Config.Graphics.Windowed;
 			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 			lpDDraw->InvalidateDeviceObjects();
 			lpDDraw->RestoreDeviceObjects();
@@ -381,14 +380,14 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, NULL);
 		break;
 	case SDL_MOUSEMOTION:
-		::GraphicsSystem.MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
 		break;
 	case SDL_MOUSEBUTTONUP:
 	case SDL_MOUSEBUTTONDOWN:
 		int32_t button;
 		DWORD flags;
 		sdlToC4MCBtn(e.button, button, flags);
-		::GraphicsSystem.MouseMove(button, e.button.x, e.button.y, flags, NULL);
+		C4GUI::MouseMove(button, e.button.x, e.button.y, flags, NULL);
 		break;
 	case SDL_JOYAXISMOTION:
 	case SDL_JOYHATMOTION:
@@ -446,7 +445,7 @@ bool C4FullScreen::ViewportCheck()
 	// Determine film mode
 	bool fFilm = (Game.C4S.Head.Replay && Game.C4S.Head.Film);
 	// Check viewports
-	switch (::GraphicsSystem.GetViewportCount())
+	switch (::Viewports.GetViewportCount())
 	{
 		// No viewports: create no-owner viewport
 	case 0:
@@ -456,7 +455,7 @@ bool C4FullScreen::ViewportCheck()
 			if ((pPlr = ::Players.First))
 				iPlrNum = pPlr->Number;
 		// Create viewport
-		Game.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
+		::Viewports.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
 		// Non-film (observer mode)
 		if (!fFilm)
 		{
@@ -473,11 +472,11 @@ bool C4FullScreen::ViewportCheck()
 		break;
 		// More than one viewport: remove all no-owner viewports
 	default:
-		::GraphicsSystem.CloseViewport(NO_OWNER, true);
+		::Viewports.CloseViewport(NO_OWNER, true);
 		break;
 	}
 	// Look for no-owner viewport
-	C4Viewport *pNoOwnerVp = ::GraphicsSystem.GetViewport(NO_OWNER);
+	C4Viewport *pNoOwnerVp = ::Viewports.GetViewport(NO_OWNER);
 	// No no-owner viewport found
 	if (!pNoOwnerVp)
 	{
