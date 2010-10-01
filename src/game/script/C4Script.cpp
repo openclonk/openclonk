@@ -4386,13 +4386,13 @@ static long FnReloadParticle(C4AulContext* ctx, C4String *szParticleName)
 
 static bool FnSetGamma(C4AulContext* ctx, long dwClr1, long dwClr2, long dwClr3, long iRampIndex)
 {
-	::GraphicsSystem.SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
+	lpDDraw->SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
 	return true;
 }
 
 static bool FnResetGamma(C4AulContext* ctx, long iRampIndex)
 {
-	::GraphicsSystem.SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
+	lpDDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
 	return true;
 }
 

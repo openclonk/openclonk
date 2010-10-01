@@ -166,11 +166,7 @@ void C4GraphicsSystem::Execute()
 	}
 
 	// gamma update
-	if (fSetGamma)
-	{
-		ApplyGamma();
-		fSetGamma=false;
-	}
+	lpDDraw->ApplyGamma();
 
 	// Video record & status (fullsrceen)
 	if (!Application.isEditor)
@@ -196,9 +192,6 @@ void C4GraphicsSystem::Default()
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
 	Video.Default();
-	for (int32_t iRamp=0; iRamp<3*C4MaxGammaRamps; iRamp+=3)
-		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
-	fSetGamma=false;
 	pLoaderScreen=NULL;
 }
 
@@ -217,7 +210,7 @@ bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlac
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;
 	// apply user gamma for loader
-	ApplyGamma();
+	lpDDraw->ApplyGamma();
 	// done, success
 	return true;
 }
@@ -415,46 +408,6 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
 	lpDDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
-}
-
-void C4GraphicsSystem::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
-{
-	// No gamma effects
-	if (Config.Graphics.DisableGamma) return;
-	if (iRampIndex < 0 || iRampIndex >= C4MaxGammaRamps) return;
-	// turn ramp index into array offset
-	iRampIndex*=3;
-	// set array members
-	dwGamma[iRampIndex+0]=dwClr1;
-	dwGamma[iRampIndex+1]=dwClr2;
-	dwGamma[iRampIndex+2]=dwClr3;
-	// mark gamma ramp to be recalculated
-	fSetGamma=true;
-}
-
-void C4GraphicsSystem::ApplyGamma()
-{
-	// No gamma effects
-	if (Config.Graphics.DisableGamma) return;
-	//  calculate color channels by adding the difference between the gamma ramps to their normals
-	int32_t ChanOff[3];
-	DWORD Gamma[3];
-	const int32_t DefChanVal[3] = { 0x00, 0x80, 0xff };
-	// calc offset for curve points
-	for (int32_t iCurve=0; iCurve<3; ++iCurve)
-	{
-		ZeroMemory(ChanOff, sizeof(int32_t)*3);
-		// ...channels...
-		for (int32_t iChan=0; iChan<3; ++iChan)
-			// ...ramps...
-			for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
-				// add offset
-				ChanOff[iChan]+=(int32_t) BYTE(dwGamma[iRamp*3+iCurve]>>(16-iChan*8)) - DefChanVal[iCurve];
-		// calc curve point
-		Gamma[iCurve]=C4RGB(BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
-	}
-	// set gamma
-	lpDDraw->SetGamma(Gamma[0], Gamma[1], Gamma[2]);
 }
 
 bool C4GraphicsSystem::ToggleShowNetStatus()

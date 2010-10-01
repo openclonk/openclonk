@@ -198,8 +198,10 @@ public:
 	bool Active;                    // set if device is ready to render, etc.
 	CGammaControl Gamma;            // gamma
 	CGammaControl DefRamp;            // default gamma ramp
+	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
 	int MaxTexSize;
 protected:
+	bool fSetGamma;     // must gamma ramp be reassigned?
 	BYTE                byByteCnt;    // bytes per pixel (2 or 4)
 	bool Editor;
 	float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
@@ -284,7 +286,8 @@ public:
 	virtual void DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
 	virtual void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma
-	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3);  // set gamma ramp
+	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
+	void ApplyGamma();                                        // apply gamma ramp to ddraw
 	void DisableGamma();                                      // reset gamma ramp to default
 	void EnableGamma();                                       // set current gamma ramp
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color

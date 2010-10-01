@@ -306,7 +306,7 @@ bool C4Game::PreInit()
 	// Timer flags
 	GameGo=false;
 	// set gamma
-	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	lpDDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -486,7 +486,7 @@ bool C4Game::Init()
 	SetInitProgress(99);
 
 	// Gamma
-	GraphicsSystem.ApplyGamma();
+	lpDDraw->ApplyGamma();
 
 	// Message board and upper board
 	if (!Application.isEditor)

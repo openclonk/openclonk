@@ -398,6 +398,9 @@ void CStdDDraw::Default()
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
 	MeshTransform = NULL;
 	fUsePerspective = false;
+	for (int32_t iRamp=0; iRamp<3*C4MaxGammaRamps; iRamp+=3)
+		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
+	fSetGamma=false;
 }
 
 void CStdDDraw::Clear()
@@ -1166,12 +1169,49 @@ bool CStdDDraw::GetPrimaryClipper(int &rX1, int &rY1, int &rX2, int &rY2)
 	return true;
 }
 
-void CStdDDraw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
+void CStdDDraw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex)
 {
+	// No gamma effects
+	if (Config.Graphics.DisableGamma) return;
+	if (iRampIndex < 0 || iRampIndex >= C4MaxGammaRamps) return;
+	// turn ramp index into array offset
+	iRampIndex*=3;
+	// set array members
+	dwGamma[iRampIndex+0]=dwClr1;
+	dwGamma[iRampIndex+1]=dwClr2;
+	dwGamma[iRampIndex+2]=dwClr3;
+	// mark gamma ramp to be recalculated
+	fSetGamma=true;
+}
+
+void CStdDDraw::ApplyGamma()
+{
+	// No gamma effects
+	if (Config.Graphics.DisableGamma) return;
+	if (!fSetGamma) return;
+
+	//  calculate color channels by adding the difference between the gamma ramps to their normals
+	int32_t ChanOff[3];
+	DWORD tGamma[3];
+	const int32_t DefChanVal[3] = { 0x00, 0x80, 0xff };
+	// calc offset for curve points
+	for (int32_t iCurve=0; iCurve<3; ++iCurve)
+	{
+		ZeroMemory(ChanOff, sizeof(int32_t)*3);
+		// ...channels...
+		for (int32_t iChan=0; iChan<3; ++iChan)
+			// ...ramps...
+			for (int32_t iRamp=0; iRamp<C4MaxGammaRamps; ++iRamp)
+				// add offset
+				ChanOff[iChan]+=(int32_t) BYTE(dwGamma[iRamp*3+iCurve]>>(16-iChan*8)) - DefChanVal[iCurve];
+		// calc curve point
+		tGamma[iCurve]=C4RGB(BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[0], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[1], 0, 255), BoundBy<int32_t>(DefChanVal[iCurve]+ChanOff[2], 0, 255));
+	}
 	// calc ramp
-	Gamma.Set(dwClr1, dwClr2, dwClr3);
-	// set it
+	Gamma.Set(tGamma[0], tGamma[1], tGamma[2]);
+	// set gamma
 	ApplyGammaRamp(Gamma.ramp, false);
+	fSetGamma=false;
 }
 
 void CStdDDraw::DisableGamma()

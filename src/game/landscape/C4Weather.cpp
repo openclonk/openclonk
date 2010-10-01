@@ -208,7 +208,7 @@ void C4Weather::SetSeasonGamma()
 			dwClr[i] |= BoundBy<int32_t>(iChanVal,0,255)<<iChan;
 		}
 	// apply gamma ramp
-	::GraphicsSystem.SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
+	lpDDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
 }
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
@@ -229,7 +229,7 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		dwGammaDefaults[i*3+1] = 0x808080;
 		dwGammaDefaults[i*3+2] = 0xffffff;
 	}
-	pComp->Value(mkNamingAdapt(mkArrayAdaptM(::GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptM(lpDDraw->dwGamma), "Gamma", dwGammaDefaults));
 }
 
 C4Weather Weather;
