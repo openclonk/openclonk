@@ -7,7 +7,7 @@
 
 protected func Initialize()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(225+Random(91),0,1,0), Trans_Scale(800)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(45+Random(46),0,1,0)));
 }
 
 public func Burst()
