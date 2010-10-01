@@ -90,7 +90,7 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
 		options |= SoundLoader::OPTION_Raw;
 	for (SoundLoader* loader = SoundLoader::first_loader; loader; loader = loader->next)
 	{
-		if (loader->ReadInfo(info, pData, iDataLen))
+		if (loader->ReadInfo(&info, pData, iDataLen))
 		{
 			if (info.final_handle)
 			{
@@ -102,7 +102,7 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
 #ifdef USE_OPEN_AL
 				Application.MusicSystem.SelectContext();
 				alGenBuffers(1, &pSample);
-				alBufferData(pSample, info.format, info.sound_data, info.sound_data_size, info.sample_rate);
+				alBufferData(pSample, info.format, &info.sound_data[0], info.sound_data.size(), info.sample_rate);
 #else
 				Log("SoundLoader does not provide a ready-made handle");
 #endif

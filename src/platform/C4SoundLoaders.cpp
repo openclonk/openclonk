@@ -65,7 +65,7 @@ namespace
 	}
 }
 
-bool AppleSoundLoader::ReadInfo(SoundInfo& info, BYTE* data, size_t data_length, uint32_t)
+bool AppleSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
 {
 	CFDataRef data_container = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, data, data_length, kCFAllocatorNull);
 	AudioFileID sound_file;
@@ -81,33 +81,33 @@ bool AppleSoundLoader::ReadInfo(SoundInfo& info, BYTE* data, size_t data_length,
 	{
 		UInt32 property_size;
 	
-		info.sound_data_size = 0;
-		property_size = sizeof(info.sound_data_size);
-		AudioFileGetProperty(sound_file, kAudioFilePropertyAudioDataByteCount, &property_size, &info.sound_data_size);
+		uint64_t sound_data_size = 0;
+		property_size = sizeof(sound_data_size);
+		AudioFileGetProperty(sound_file, kAudioFilePropertyAudioDataByteCount, &property_size, &sound_data_size);
 		
-		info.sample_length = -1;
-		property_size = sizeof(info.sample_length);
-		AudioFileGetProperty(sound_file, kAudioFilePropertyEstimatedDuration, &property_size, &info.sample_length);
-		
-		UInt32 sound_data_size_32 = info.sound_data_size;
-		info.sound_data = malloc(info.sound_data_size);
-		AudioFileReadBytes(sound_file, false, 0, &sound_data_size_32, info.sound_data);
+		result->sample_length = -1;
+		property_size = sizeof(result->sample_length);
+		AudioFileGetProperty(sound_file, kAudioFilePropertyEstimatedDuration, &property_size, &result->sample_length);
+
+		UInt32 sound_data_size_32 = sound_data_size;
+		result->sound_data.resize(sound_data_size);
+		AudioFileReadBytes(sound_file, false, 0, &sound_data_size_32, &result->sound_data[0]);
 		
 		AudioStreamBasicDescription desc;
 		property_size = sizeof(desc);
 		AudioFileGetProperty(sound_file, kAudioFilePropertyDataFormat, &property_size, &desc);
-		info.sample_rate = desc.mSampleRate;
+		result->sample_rate = desc.mSampleRate;
 		
 		switch (desc.mChannelsPerFrame)
 		{
 		case 1:
-			info.format = desc.mBitsPerChannel == 16 ? AL_FORMAT_MONO16 : AL_FORMAT_MONO8;
+			result->format = desc.mBitsPerChannel == 16 ? AL_FORMAT_MONO16 : AL_FORMAT_MONO8;
 			break;
 		case 2:
-			info.format = desc.mBitsPerChannel == 16 ? AL_FORMAT_STEREO16 : AL_FORMAT_STEREO8;
+			result->format = desc.mBitsPerChannel == 16 ? AL_FORMAT_STEREO16 : AL_FORMAT_STEREO8;
 			break;
 		default:
-			info.format = 0;
+			result->format = 0;
 		}
 	}
 	CFRelease(data_container);
@@ -123,9 +123,9 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 {
 	size_t spaceToEOF;
 	size_t actualSizeToRead;
-	VorbisLoader* loader = (VorbisLoader*)datasource;
+	CompressedData* data = (CompressedData*)datasource;
 	
-	spaceToEOF = loader->data_length - loader->data_pos;
+	spaceToEOF = data->data_length - data->data_pos;
 	if (size_to_read*byte_size < spaceToEOF)
 		actualSizeToRead = size_to_read*byte_size;
 	else
@@ -133,8 +133,8 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 	
 	if (actualSizeToRead)
 	{
-		memcpy(ptr, (char*)loader->data + loader->data_pos, actualSizeToRead);
-		loader->data_pos += actualSizeToRead;
+		memcpy(ptr, (char*)data->data + data->data_pos, actualSizeToRead);
+		data->data_pos += actualSizeToRead;
 	}
 	
 	return actualSizeToRead;
@@ -143,19 +143,19 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 {
 	size_t spaceToEOF;
-	ogg_int64_t actualOffset;	// How much we can actually offset it by
-	VorbisLoader* loader = (VorbisLoader*)datasource;
+	ogg_int64_t actualOffset; // How much we can actually offset it by
+	CompressedData* data = (CompressedData*)datasource;
 	
 	switch (whence)
 	{
 	case SEEK_SET:
-		loader->data_pos = offset < loader->data_length ? offset : loader->data_length;
+		data->data_pos = offset < data->data_length ? offset : data->data_length;
 		break;
 	case SEEK_CUR:
-		loader->data_pos += offset < loader->data_length - loader->data_pos ? offset : loader->data_length - loader->data_pos;
+		data->data_pos += offset < data->data_length - data->data_pos ? offset : data->data_length - data->data_pos;
 		break;
 	case SEEK_END:
-		loader->data_pos = loader->data_length+1;
+		data->data_pos = data->data_length+1;
 		break;
 	}
 	return 0;
@@ -168,20 +168,15 @@ int VorbisLoader::close_func(void* datasource)
 
 long VorbisLoader::tell_func(void* datasource)
 {
-	return ((VorbisLoader*)datasource)->data_pos;
+	return ((CompressedData*)datasource)->data_pos;
 }
 
-bool VorbisLoader::ReadInfo(SoundInfo& result, BYTE* data, size_t data_length, uint32_t)
+bool VorbisLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
 {
-	this->data = data;
-	this->data_length = data_length;
-	this->data_pos = 0;
+	CompressedData compressed(data, data_length);
 
 	int endian = 0;
-	int bitStream;
-	long bytes;
-	char array[32768];
-	
+
 	vorbis_info* info;
 	OggVorbis_File ogg_file;
 	memset(&ogg_file, 0, sizeof(ogg_file));
@@ -192,32 +187,35 @@ bool VorbisLoader::ReadInfo(SoundInfo& result, BYTE* data, size_t data_length, u
 	callbacks.tell_func  = &tell_func;
 	
 	// open using callbacks
-	if (ov_open_callbacks(this, &ogg_file, NULL, 0, callbacks) != 0)
+	if (ov_open_callbacks(&compressed, &ogg_file, NULL, 0, callbacks) != 0)
 	{
 		ov_clear(&ogg_file);
 		return false;
 	}
 
+	// get information about sound
 	info = ov_info(&ogg_file, -1);
 	if (info->channels == 1)
-		result.format = AL_FORMAT_MONO16;
+		result->format = AL_FORMAT_MONO16;
 	else
-		result.format = AL_FORMAT_STEREO16;
-	result.sample_rate = info->rate;
-	
-	std::vector<BYTE> buffer;
-	do {
-		bytes = ov_read(&ogg_file, array, sizeof(array)/sizeof(array[0]), endian, 2, 1, &bitStream);
-		for (int i = 0; i < bytes; i++)
-			buffer.push_back(array[i]);
-	} while (bytes > 0);
-	
-	result.sound_data = malloc(buffer.size());
-	result.sound_data_size = buffer.size();
-	for (int i = 0; i < buffer.size(); i++)
-		((BYTE*)result.sound_data)[i] = buffer[i];
-	result.sample_length = 5;
+		result->format = AL_FORMAT_STEREO16;
+	result->sample_rate = info->rate;
+	result->sample_length = ov_time_total(&ogg_file, -1)/1000.0;
 
+	// read
+	unsigned long buffer_size = 0;
+	long bytes_read;
+	do {
+		const int chunk_size = 1024*8;
+		int bitStream;
+		if (buffer_size+chunk_size > result->sound_data.size())
+			result->sound_data.resize(buffer_size+chunk_size);
+		bytes_read = ov_read(&ogg_file, (char*)&result->sound_data[buffer_size], chunk_size*sizeof(BYTE), endian, 2, 1, &bitStream);
+		buffer_size += bytes_read;
+	} while (bytes_read > 0);
+	result->sound_data.resize(buffer_size);
+	
+	// clear ogg file
 	ov_clear(&ogg_file);
 	return true;
 }
@@ -226,16 +224,16 @@ VorbisLoader VorbisLoader::singleton;
 #endif
 
 #ifdef HAVE_LIBSDL_MIXER
-bool SDLMixerSoundLoader::ReadInfo(SoundInfo& result, BYTE* data, size_t data_length, uint32_t)
+bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
 {
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.IsMODInitialized())
 		{ return false; }
-	if (!(result.final_handle = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, data_length), 1)))
+	if (!(result->final_handle = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, data_length), 1)))
 		{ return false; }
 	//FIXME: Is this actually correct?
-	result.sample_length = result.final_handle->alen / (44100 * 2);
-	result.sample_rate = 0;
+	result->sample_length = result->final_handle->alen / (44100 * 2);
+	result->sample_rate = 0;
 	return true;
 }
 
@@ -243,7 +241,7 @@ SDLMixerSoundLoader SDLMixerSoundLoader::singleton;
 #endif
 
 #ifdef HAVE_FMOD
-bool FMODSoundLoader::ReadInfo(SoundInfo& result, BYTE* data, size_t data_length, uint32_t options)
+bool FMODSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t options)
 {
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
 	if (options & OPTION_Raw)
