@@ -21,7 +21,6 @@
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(50, 490);
 	clonk->CreateContents(Bow);
-	clonk->CreateContents(FIGB);
 	clonk->Collect(CreateObject(Arrow));
 	return;
 }

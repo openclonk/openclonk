@@ -136,8 +136,8 @@ public func FxInFlightTimer(object target, int effect, int time)
 		var bx = EffectVar(4,target,effect);
 		var by = EffectVar(5,target,effect);
 		
-		var xo, yo;
-		if(Intersect(oldx, oldy, newx, newy, ax, ay, bx, by, xo, yo))
+		var pos = Intersect(oldx, oldy, newx, newy, ax, ay, bx, by);
+		if (pos != nil)
 		{
 			var angle = Angle(ax, ay, bx, by);
 			var speed = 60;
@@ -152,7 +152,8 @@ public func FxInFlightTimer(object target, int effect, int time)
 	EffectVar(1,target,effect) = newy;
 }
 
-global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, int Qy, &Xout, &Yout)
+// Returns nil or coordinates of intersection.
+global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, int Qy)
 {
 	var BAx = Bx-Ax;
 	var BAy = By-Ay;
@@ -166,20 +167,18 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	// parallel!
 	if(denominator == 0)
 	{
-		if(numerator != 0) return false;
+		if(numerator != 0) return nil;
 		// on same line somewhere
 		else
 		{
-			Xout = Ax;
-			Yout = Ay;
-			return true;
+			return [Ax, Ay];
 		}
 	}
 
 	// in parameter bounds?
 	var Y = 10000 * numerator/denominator;
 	
-	if(!Inside(Y,0,10000)) return false;
+	if(!Inside(Y,0,10000)) return nil;
 
 	// we don't want division by zero...
 	if(BAy != 0) {
@@ -194,13 +193,13 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 	// in parameter bounds
 	var X = 10000*numerator / denominator;
 	
-	if(!Inside(X,0,10000)) return false;
+	if(!Inside(X,0,10000)) return nil;
 
 	// this is the point...
-	Xout = Ax+X*(BAx)/10000;
-	Yout = Ay+X*(BAy)/10000;
+	var x = Ax+X*(BAx)/10000;
+	var y = Ay+X*(BAy)/10000;
 
-	return true;
+	return [x, y];
 }
 
 local Name = "$Name$";

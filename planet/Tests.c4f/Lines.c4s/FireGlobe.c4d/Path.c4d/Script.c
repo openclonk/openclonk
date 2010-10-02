@@ -5,7 +5,7 @@ public func Set(int sx, int sy, int ex, int ey) {
 	SetPosition(sx,sy);
 	SetClrModulation(RGB(255,0,0));
 
-	var cl = 1000*Distance(sx,sy,ex,ey)/this["ActMap"]["Vis"]["Hgt"];
+	var cl = 1000*Distance(sx,sy,ex,ey)/256;
 	var w = 650;
 	var r = Angle(sx,sy,ex,ey)-180;
 
@@ -29,18 +29,18 @@ public func Set(int sx, int sy, int ex, int ey) {
 }
 
 local ActMap = {
-Vis = {
-	Prototype = Action,
-	Name = "Vis",
-	Procedure = DFA_FLOAT,
-	Length = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 32,
-	Hgt = 256,
-	OffX = -16,
-	OffY = 0,
-	NextAction = "Hold"
+	Vis = {
+		Prototype = Action,
+		Name = "Vis",
+		Procedure = DFA_FLOAT,
+		Length = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 32,
+		Hgt = 256,
+		OffX = -16,
+		OffY = 0,
+		NextAction = "Hold"
 	},
 };
 local Name = "Path";
