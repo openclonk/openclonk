@@ -57,7 +57,7 @@ protected func Load()
 		var SX=Sin(A + R,D);
 		var SY=Cos(A + R,D);
 		
-		if(!GBackSolid(SX,SY) && !GBackLiquid(SX,SY)) //when on a random spot in front is air...
+		if(!GBackSolid(SX,SY) && !GBackLiquid(SX,SY) && !GBackSolid(0,0) && !GBackLiquid(0,0)) //when on a random spot in front is air...
 		{
 			Amount += 2; //Air is sucked in.
 			CreateParticle("AirIntake",
