@@ -4649,40 +4649,44 @@ static bool FnSetObjDrawTransform2(C4AulObjectContext *ctx, long iA, long iB, lo
 	return true;
 }
 
-#define COPY_C4V_PAR(Var, Par, ParType, Std) \
-  Var = (Par && Par->GetType() == ParType \
-         ? Par->GetData().Int \
-         : Std)
+bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t &iIter);
 
-bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter);
-
-static C4Value FnSimFlight(C4AulContext *ctx, C4Value *pvrX, C4Value *pvrY, C4Value *pvrXDir, C4Value *pvrYDir, C4Value *pviDensityMin, C4Value *pviDensityMax, C4Value *pviIter, C4Value *pviPrec)
+static C4ValueArray* FnSimFlight(C4AulContext *ctx, int X, int Y, Nillable<int> pvrXDir, Nillable<int> pvrYDir, Nillable<int> pviDensityMin, Nillable<int> pviDensityMax, Nillable<int> pviIter, int iPrec)
 {
-	// check and copy parameters
-	if (!pvrX || !pvrY || !pvrXDir || !pvrYDir) return C4VFalse;
+	// check and set parameters
+	if (ctx->Obj)
+	{
+		X += ctx->Obj->GetX();
+		Y += ctx->Obj->GetY();
+	}
+	int XDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->xdir) : pvrXDir;
+	int YDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->ydir) : pvrYDir;
 
-	COPY_C4V_PAR(int iDensityMin, pviDensityMin, C4V_Int, C4M_Solid);
-	COPY_C4V_PAR(int iDensityMax, pviDensityMax, C4V_Int, 100);
-	COPY_C4V_PAR(int iIter, pviIter, C4V_Int, -1);
-	COPY_C4V_PAR(int iPrec, pviPrec, C4V_Int, 10);
+	int iDensityMin = pviDensityMin.IsNil() ? C4M_Solid : pviDensityMin;
+	int iDensityMax = pviDensityMax.IsNil() ? 100 : pviDensityMax;
+	int iIter = pviIter.IsNil() ? -1 : pviIter;
+	if (!iPrec) iPrec = 10;
 
 	// convert to C4Real
-	C4Real x = itofix(pvrX->GetData().Int), y = itofix(pvrY->GetData().Int),
-	          xdir = itofix(pvrXDir->GetData().Int, iPrec), ydir = itofix(pvrYDir->GetData().Int, iPrec);
+	C4Real x = itofix(X), y = itofix(Y),
+		xdir = itofix(XDir, iPrec), ydir = itofix(YDir, iPrec);
 
 	// simulate
 	if (!SimFlight(x, y, xdir, ydir, iDensityMin, iDensityMax, iIter))
-		return C4VFalse;
+	{
+		iIter *= -1;
+	}	
 
 	// write results to array
-	C4ValueArray *pResults = new C4ValueArray(4);
+	C4ValueArray *pResults = new C4ValueArray(5);
 	pResults->SetItem(0, C4VInt(fixtoi(x)));
 	pResults->SetItem(1, C4VInt(fixtoi(y)));
 	pResults->SetItem(2, C4VInt(fixtoi(xdir * iPrec)));
 	pResults->SetItem(3, C4VInt(fixtoi(ydir * iPrec)));
-	return C4VArray(pResults);
+	pResults->SetItem(4, C4VInt(iIter));
+	return pResults;
 }
-#undef COPY_C4V_PAR
+
 static bool FnSetPortrait(C4AulObjectContext *ctx, C4String *pstrPortrait, C4ID idSourceDef, bool fPermanent, bool fCopyGfx)
 {
 	// safety
@@ -6301,6 +6305,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "RemoveUnusedTexMapEntries", FnRemoveUnusedTexMapEntries, false);
 	AddFunc(pEngine, "SetObjDrawTransform", FnSetObjDrawTransform);
 	AddFunc(pEngine, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
+	AddFunc(pEngine, "SimFlight", FnSimFlight);
 	AddFunc(pEngine, "SetPortrait", FnSetPortrait);
 	AddFunc(pEngine, "LoadScenarioSection", FnLoadScenarioSection, false);
 	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
@@ -6798,7 +6803,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetPlrExtraData",      1  ,C4V_Any      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPlrExtraData,           0 },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
-	{ "SimFlight",            1  ,C4V_Bool     ,{ C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Int    ,C4V_Int    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSimFlight,                 0 },
 	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "AddEffect",            1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnAddEffect_C4V,             0 },
 	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },

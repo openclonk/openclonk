@@ -601,14 +601,16 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 	return true;
 }
 
-bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter)
+bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t &iIter)
 {
+	bool hitOnTime = true;
 	bool fBreak = false;
-	int32_t ctcox,ctcoy,cx,cy;
+	int32_t ctcox,ctcoy,cx,cy,i;
 	cx = fixtoi(x); cy = fixtoi(y);
+	i = iIter;
 	do
 	{
-		if (!iIter--) return false;
+		if (!--i) {hitOnTime = false; break;}
 		// Set target position by momentum
 		x+=xdir; y+=ydir;
 		// Movement to target
@@ -631,18 +633,23 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 	while (!fBreak);
 	// write position back
 	x = itofix(cx); y = itofix(cy);
-	// ok
-	return true;
+
+	// how many steps did it take to get here?
+	i = iIter - i;
+	iIter = i;
+
+	return hitOnTime;
 }
 
 bool SimFlightHitsLiquid(C4Real fcx, C4Real fcy, C4Real xdir, C4Real ydir)
 {
 	// Start in water?
+	int temp;
 	if (DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))
-		if (!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, 10))
+		if (!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, temp=10))
 			return false;
 	// Hits liquid?
-	if (!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, -1))
+	if (!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, temp=-1))
 		return false;
 	// liquid & deep enough?
 	return GBackLiquid(fixtoi(fcx), fixtoi(fcy)) && GBackLiquid(fixtoi(fcx), fixtoi(fcy) + 9);

@@ -1237,7 +1237,7 @@ func StartJump()
 	SetTurnType(0);
 	// TODO: make dive animation and uncomment here
 //	var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
-//		if (SimFlight(iX,iY,iXDir,iYDir,25))
+//		if (SimFlight(iX,iY,iXDir,iYDir,25)) // SimFlight behavior changed. (10/1/10)
 //			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
 //				PlayAnimation("Dive", 5, Anim_Linear(0, 0, GetAnimationLength("Dive"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));;
 	AddEffect("Fall",this,1,1,this);
