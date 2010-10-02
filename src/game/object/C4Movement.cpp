@@ -635,8 +635,7 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 	x = itofix(cx); y = itofix(cy);
 
 	// how many steps did it take to get here?
-	i = iIter - i;
-	iIter = i;
+	iIter -= i;
 
 	return hitOnTime;
 }
