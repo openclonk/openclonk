@@ -52,6 +52,11 @@ global func FxDynamiteEruptionTimer(object nobject, int noum, int timer)
 	dyn->SetRDir(RandomX(-30,30));
 }
 
+global func FxSparklingAttentionTimer(object pTarget, int noum, int timer)
+{
+	CastParticles("PSpark",Random(10)+10,60,pTarget->GetX(),pTarget->GetY(),100,120,RGBa(Random(100)+150,Random(100)+150,Random(100)+150,80+Random(36)));
+}
+
 protected func Decoration()
 {
 	PlaceObjects(Rock,300,"Earth");
@@ -67,38 +72,46 @@ protected func Doors()
 	var wheel = CreateObject(SpinWheel, 1045, 1165, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 1155, 1026, NO_OWNER);
-	var wheel = CreateObject(SpinWheel, 1906, 778, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	var	wheel = CreateObject(ArrowWheel, 1906, 778, NO_OWNER);
+	var straw = CreateObject(DoorTarget,1850,820,NO_OWNER);
+	straw->SetGate(gate);
+	straw->SetAction("Float");
 	gate->CloseGateDoor();
-	
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 1875, 761, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1752, 1148, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 1875, 864, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1116, 1038, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 3115, 685, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 3140, 588, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 585, 915, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 853, 681, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
+	AddEffect("SparklingAttention",wheel,100,100);
 	
 	var gate = CreateObject(CastleDoor, 345, 740, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 417, 712, NO_OWNER);
 	wheel->SetCastleDoor(gate);
 	gate->CloseGateDoor();
-	
+	AddEffect("SparklingAttention",wheel,100,100);
+		
 }
 
 protected func Edges()
