@@ -268,6 +268,7 @@ bool C4SoundInstance::Start()
 	// set position
 	if (timeGetTime() > iStarted + 20)
 	{
+		assert(pEffect->Length > 0);
 		int32_t iTime = (timeGetTime() - iStarted) % pEffect->Length;
 		FSOUND_SetCurrentPosition(iChannel, iTime / 10 * pEffect->SampleRate / 100);
 	}
