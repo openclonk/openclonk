@@ -31,7 +31,6 @@ TopOpen=1
 BottomOpen=0
 MapWidth=300
 MapHeight=60
-NewStyleLandscape=2
 SkyScrollMode=2
 
 [Weather]

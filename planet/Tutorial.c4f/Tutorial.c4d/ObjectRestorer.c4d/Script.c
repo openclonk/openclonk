@@ -81,7 +81,6 @@ protected func FxRestoreTimer(object target, int num, int time)
 	// Set container to current location to shift view.
 	var x = init_x + Sin(angle, 2 * time);
 	var y = init_y - Cos(angle, 2 * time);
-	Log("%v,%v", x, y);
 	target->SetPosition(x, y);
 	// Draw Particles.
 	x = init_x + Sin(angle, 2 * time) + Cos(angle, Sin(20 * time, dev)) - target->GetX();

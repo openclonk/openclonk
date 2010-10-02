@@ -17,6 +17,7 @@ protected func Initialize()
 	var time = CreateObject(Environment_Time);
 	time->SetTime(1125);
 	time->SetCycleSpeed(0);
+	Sound("WindLoop.ogg", true, 40, nil, 1);
 	
 	// Goal: Melee, all opponents must be killed.
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
@@ -190,7 +191,6 @@ global func FxTutorialReachedFourthSectionTimer()
 	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 2200, 420)))
 	{
 		guide->AddGuideMessage("$MsgTutLastEnemy$");
-		//AddEffect("TutorialCompletedThirdSection", nil, 100, 5);
 		return -1;
 	}
 	return 1;

@@ -19,5 +19,4 @@ MsgTutDive=To make it past the next obstacle you would need to dive. Clonks have
 MsgTutBlastGranite=Use the explosives, which can be found under the lake, to blast through the granite. The best location is indicated by the arrow.
 MsgTutBlastedGranite=Good job, for the last hurdle you need some grapple bows. Two per clonk to be precise, these can be found a tunnel a little back.
 MsgTutLastGrapple=Ouch, that looks like an acid lake. No chance swimming across here, the easiest way over is by alternate use of two grapple bows. Shoot the first hook into the granite, then while scaling the rope use the second grappler, repeat this till you crossed the acid lake.
-
 MsgTutBackpack=As you might have learned the clonk can hold two items in its hands, however it can carry more by using a backpack. The backpack can be opened and closed with Q, when the backpack is opened you can interchange one of your hand items with a backpack item by left or right clicking on that respective item.

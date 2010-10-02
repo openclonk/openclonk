@@ -15,8 +15,8 @@ protected func Initialize()
 	// Tutorial goal.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2330, 1040);
-	AddEffect("TutorialScale", 0, 1, 18);
-
+	AddEffect("TutorialScale", nil, 100, 5);
+	
 	// Environment.
 	PlaceGrass(85);
 	CreateObject(Tree_Coniferous, 900, 629);
@@ -25,7 +25,7 @@ protected func Initialize()
 	// Shovel in water.
 	var shovel = CreateObject(Shovel, 1368, 1160, NO_OWNER);
 	shovel->SetR(150);
-	AddEffect("ShovelGet",shovel, 1, 36, shovel);
+	AddEffect("ShovelGet", shovel, 100, 36, shovel);
 
 	// Chest with loam.
 	var chest = CreateObject(Chest, 1815, 1100, NO_OWNER);
@@ -53,7 +53,7 @@ protected func OnGoalsFulfilled()
 }
 
 
-func InitializePlayer(int plr)
+protected func InitializePlayer(int plr)
 {
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(230, 955);
@@ -67,50 +67,48 @@ func InitializePlayer(int plr)
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
-	ScriptGo(true);
+	guide->AddGuideMessage("@$MsgTutIntro0$");
+	guide->ShowGuideMessage(0);
+	AddEffect("TutorialIntro1", nil, 100, 36 * 3);
 	return true;
 }
 
-/* Script progress */
+/*-- Guide Messages --*/
+// Finds when the Clonk has done 'X', and changes the message.
 
-// Part 1: Welcome
-func Script1()
+global func FxTutorialIntro1Stop()
 {
-	guide->AddGuideMessage("@$MsgIntro0$");
-	guide->ShowGuideMessage(0);
-}
-
-func Script11()
-{
-	guide->AddGuideMessage("@$MsgIntro1$");
+	guide->AddGuideMessage("@$MsgTutIntro1$");
 	guide->ShowGuideMessage(1);
 	TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 35);
+	AddEffect("TutorialIntro2", nil, 100, 36 * 3);
+	return 1;
 }
 
-func Script20()
+global func FxTutorialIntro2Stop()
 {
-	guide->AddGuideMessage("@$MsgIntro2$");
+	guide->AddGuideMessage("@$MsgTutIntro2$");
 	guide->ShowGuideMessage(2);
 	TutArrowClear();
+	AddEffect("TutorialIntro3", nil, 100, 36 * 10);
+	return 1;
 }
 
-func Script50()
+global func FxTutorialIntro3Stop()
 {
-	guide->AddGuideMessage("$MsgIntro3$");
+	guide->AddGuideMessage("$MsgTutIntro3$");
 	guide->ShowGuideMessage(3);
-	guide->AddGuideMessage("$GuideMsgMovement$");
-	TutArrowClear();
-	ScriptGo();
+	guide->AddGuideMessage("$MsgTutMovement$");
+	return 1;
 }
-
-/* Tutorial Guide Messages */
-//Finds when the Clonk has done 'X', and changes the message.
 
 global func FxTutorialScaleTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(650, 990, 140, 90)))
 	{
-		guide->AddGuideMessage("$GuideMsgScale$");
+		while (GetEffect("TutotialIntro*"))
+			RemoveEffect("TutotialIntro*");
+		guide->AddGuideMessage("$MsgTutScale$");
 		AddEffect("TutorialHangle", 0, 1, 18);
 		return -1;
 	}
@@ -120,7 +118,7 @@ global func FxTutorialHangleTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(820, 940, 190, 140)))
 	{
-		guide->AddGuideMessage("$GuideMsgHangle$");
+		guide->AddGuideMessage("$MsgTutHangle$");
 		AddEffect("TutorialSwim", 0, 1, 18);
 		return -1;
 	}
@@ -131,7 +129,7 @@ global func FxTutorialSwimTimer(object target, int num, int timer)
 	if(FindObject(Find_ID(Clonk),Find_InRect(1120, 1030, 140, 60)))
 	{
 		tutstage = 1;
-		guide->AddGuideMessage("$GuideMsgSwim$");
+		guide->AddGuideMessage("$MsgTutSwim$");
 		AddEffect("TutorialDig", 0, 1, 18);
 		return -1;
 	}
@@ -141,7 +139,7 @@ global func FxTutorialDigTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(1550, 1040, 130, 60)))
 	{
-		guide->AddGuideMessage("$GuideMsgDig$");
+		guide->AddGuideMessage("$MsgTutDig$");
 		return -1;
 	}
 }
@@ -150,7 +148,7 @@ global func FxShovelGetTimer(object target, int num, int timer)
 {
 	if(target->Contained() != nil)
 	{
-		guide->AddGuideMessage("$GuideMsgTools$");
+		guide->AddGuideMessage("$MsgTutTools$");
 		RemoveEffect("TutorialDig");
 		AddEffect("TutorialChest", 0, 1, 18);
 		return -1;
@@ -161,7 +159,7 @@ global func FxTutorialChestTimer(object target, int num, int timer)
 {
 	if(FindObject(Find_ID(Clonk),Find_InRect(1750, 1030, 130, 80)))
 	{
-		guide->AddGuideMessage("$GuideMsgChest$");
+		guide->AddGuideMessage("$MsgTutChest$");
 		return -1;
 	}
 }
@@ -170,7 +168,7 @@ global func FxLoamGetTimer(object target, int num, int timer)
 {
 	if(target->Contained()->GetID() != Chest)
 	{
-		guide->AddGuideMessage("$GuideMsgLoam$");
+		guide->AddGuideMessage("$MsgTutLoam$");
 		RemoveEffect("TutorialChest");
 		AddEffect("TutorialFlint", 0, 1, 18);
 		return -1;
@@ -182,12 +180,10 @@ global func FxTutorialFlintTimer(object target, int num, int timer)
 	if(FindObject(Find_ID(Clonk),Find_InRect(1990, 1020, 130, 90)))
 	{
 		tutstage = 2;
-		guide->AddGuideMessage("$GuideMsgFlint$");
+		guide->AddGuideMessage("$MsgTutFlint$");
 		return -1;
 	}
 }
-
-
 
 /*-- Clonk restoring --*/
 

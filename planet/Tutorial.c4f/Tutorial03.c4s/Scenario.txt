@@ -30,7 +30,6 @@ Sky=Clouds2
 MapWidth=500
 MapHeight=100
 SkyScrollMode=2
-NewStyleLandscape=2
 
 [Weather]
 Climate=0,0,0,100
