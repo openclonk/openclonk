@@ -80,7 +80,6 @@ global func FxTutorialIntro1Stop()
 {
 	guide->AddGuideMessage("@$MsgTutIntro1$");
 	guide->ShowGuideMessage(1);
-	TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 35);
 	AddEffect("TutorialIntro2", nil, 100, 36 * 3);
 	return 1;
 }
@@ -89,7 +88,6 @@ global func FxTutorialIntro2Stop()
 {
 	guide->AddGuideMessage("@$MsgTutIntro2$");
 	guide->ShowGuideMessage(2);
-	TutArrowClear();
 	AddEffect("TutorialIntro3", nil, 100, 36 * 10);
 	return 1;
 }
@@ -183,6 +181,26 @@ global func FxTutorialFlintTimer(object target, int num, int timer)
 		guide->AddGuideMessage("$MsgTutFlint$");
 		return -1;
 	}
+}
+
+protected func OnGuideMessageShown(int plr, int index)
+{
+	// Show the player his clonk.
+	if (index == 1)
+		TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 24);
+	// Show where the goal is located in the HUD.
+	if (index == 2)
+		TutArrowShowGUIPos(- 64 - 16 - GUI_Goal->GetDefHeight() / 2,8 + GUI_Goal->GetDefHeight() / 2, 0, 40);
+	// Show where the guide is located in the HUD.
+	if (index == 3)	
+		TutArrowShowGUIPos(- 128 - 32 - TutorialGuide->GetDefWidth() / 2, 8 + TutorialGuide->GetDefHeight() / 2, 0, 40);
+	return;
+}
+
+protected func OnGuideMessageRemoved(int plr, int index)
+{
+	TutArrowClear();
+	return;
 }
 
 /*-- Clonk restoring --*/
