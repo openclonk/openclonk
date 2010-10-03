@@ -55,7 +55,6 @@ void C4GraphicsResource::Default()
 	fctPlayer.Default();
 	fctFlag.Default();
 	fctCrew.Default();
-	fctScore.Default();
 	fctWealth.Default();
 	fctRank.Default();
 	fctFire.Default();
@@ -106,7 +105,6 @@ void C4GraphicsResource::Clear()
 	fctPlayer.Clear();
 	fctFlag.Clear();
 	fctCrew.Clear();
-	fctScore.Clear();
 	fctWealth.Clear();
 	fctRank.Clear();
 	fctFire.Clear();
@@ -230,7 +228,6 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctBackground,  "Background",   Files))               return false;
 	if (!LoadFile(fctFlag,        "Flag",         Files))               return false; // (new format)
 	if (!LoadFile(fctCrew,        "Crew",         Files))               return false; // (new format)
-	if (!LoadFile(fctScore,       "Score",        Files))               return false; // (new)
 	if (!LoadFile(fctWealth,      "Wealth",       Files))               return false; // (new)
 	if (!LoadFile(fctPlayer,      "Player",       Files))               return false; // (new format)
 	if (!LoadFile(fctRank,        "Rank",         Files, C4FCT_Height)) return false;
