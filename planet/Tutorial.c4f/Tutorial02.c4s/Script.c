@@ -323,9 +323,21 @@ global func FxTutorialReachedAcidTimer()
 
 protected func OnGuideMessageShown(int plr, int index)
 {
+	// Show the guide location again.
+	if (index == 0)
+	{
+		var guide = FindObject(Find_ID(TutorialGuide));
+		if (guide)
+			TutArrowShowGUITarget(guide, 0);
+	}
 	// Show grapple hook position.
 	if (index == 1)
 		TutArrowShowPos(60, 280, 0);
+	// Show crew selection in the HUD.
+	if (index == 2)
+		for (var crew_sel in FindObjects(Find_ID(GUI_CrewSelector)))
+			TutArrowShowGUITarget(crew_sel, 0);
+	
 	// Show dynamite detonator.
 	if (index == 3)
 	{

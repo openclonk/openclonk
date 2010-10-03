@@ -96,6 +96,31 @@ global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 	return arrow;
 }
 
+/** Creates an arrow to indicate the target.
+	@param target GUI object which should be indicated by the arrow.
+	@param angle angle at which the arrow should be drawn, standard \c 135 degrees.
+	@param dist distance of the arrow to the target object, automatically corrects for GUI object's size.
+	@return the arrow created.
+*/
+global func TutArrowShowGUITarget(object target, int angle, int dist)
+{
+	if (angle == nil) 
+		angle = 135;
+	if (dist == nil) 
+		dist = 16;
+	var arrow = CreateObject(TutorialArrow, target->GetX(), target->GetY(), NO_OWNER);
+	if (!arrow) 
+		return;
+	// Change arrow category to C4D_Gui.
+	arrow->SetCategory(C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
+	// Display spinning arrow, corrected for GUI and arrow size.
+	dist += 8 + target->GetID()->GetDefHeight() / 2;
+	arrow->SetAction("Attach", target);
+	arrow->SetR(angle);
+	arrow->SetVertex(0, VTX_Y, -dist, VTX_SetPermanentUpd);
+	return arrow;
+}
+
 /*-- Proplist --*/
 
 local Name = "$Name$";
