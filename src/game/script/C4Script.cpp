@@ -4659,12 +4659,12 @@ static C4ValueArray* FnSimFlight(C4AulContext *ctx, int X, int Y, Nillable<int> 
 		X += ctx->Obj->GetX();
 		Y += ctx->Obj->GetY();
 	}
-	int XDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->xdir) : pvrXDir;
-	int YDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->ydir) : pvrYDir;
+	int XDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->xdir) : static_cast<int>(pvrXDir);
+	int YDir = pvrXDir.IsNil() && ctx->Obj ? fixtoi(ctx->Obj->ydir) : static_cast<int>(pvrYDir);
 
-	int iDensityMin = pviDensityMin.IsNil() ? C4M_Solid : pviDensityMin;
-	int iDensityMax = pviDensityMax.IsNil() ? 100 : pviDensityMax;
-	int iIter = pviIter.IsNil() ? -1 : pviIter;
+	int iDensityMin = pviDensityMin.IsNil() ? C4M_Solid : static_cast<int>(pviDensityMin);
+	int iDensityMax = pviDensityMax.IsNil() ? 100 : static_cast<int>(pviDensityMax);
+	int iIter = pviIter.IsNil() ? -1 : static_cast<int>(pviIter);
 	if (!iPrec) iPrec = 10;
 
 	// convert to C4Real
