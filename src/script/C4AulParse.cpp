@@ -96,6 +96,7 @@ enum C4AulTokenType
 	ATT_DIR,    // directive
 	ATT_IDTF,   // identifier
 	ATT_INT,    // integer constant
+	ATT_FLOAT,  // floating point constant
 	ATT_BOOL,   // boolean constant
 	ATT_STRING, // string constant
 	ATT_NIL,    // "nil"
@@ -439,11 +440,11 @@ C4ScriptOpDef C4ScriptOpMap[] =
 	
 	// postfix
 	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
+	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
 	{ 13, "%",  AB_Mod,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
+	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
 	{ 11, "<<", AB_LeftShift,       AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 11, ">>", AB_RightShift,      AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 10, "<",  AB_LessThan,        AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
@@ -549,6 +550,11 @@ static int32_t StrToI32(char *s, int base, char **scan_end)
 	return result;
 }
 
+static float StrToF32(const char *s, char **scan_end)
+{
+	return strtod(s, scan_end);
+}
+
 void C4AulParseState::ClearToken()
 {
 	// if last token was a string, make sure its ref is deleted
@@ -575,6 +581,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 		TGS_Ident,      // getting identifier
 		TGS_Int,        // getting integer
 		TGS_IntHex,     // getting hexadecimal integer
+		TGS_Float,      // getting floating point value
 		TGS_String,     // getting string
 		TGS_Dir         // getting directive
 	};
@@ -719,6 +726,13 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 			break;
 
 		case TGS_Int: // integer: parse until non-number is found
+			if (C == '.')
+			{
+				State = TGS_Float;
+				break;
+			}
+			else
+				// Fall through
 		case TGS_IntHex:
 			if ((C < '0') || (C > '9'))
 			{
@@ -748,6 +762,17 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				// it's not, so return the int
 				*pInt = StrToI32(pToken, base, 0);
 				return ATT_INT;
+			}
+			break;
+
+		case TGS_Float: // float (after decimal point): parse until non-numeric
+			if ((C < '0') || (C > '9'))
+			{
+				Len = Min(Len, C4AUL_MAX_Identifier);
+				SCopy(SPos0, pToken, Len);
+				float value = StrToF32(pToken, 0);
+				*pInt = *reinterpret_cast<int*>(&value);
+				return ATT_FLOAT;
 			}
 			break;
 
@@ -1025,6 +1050,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	switch (eType)
 	{
 	case AB_INT:
+	case AB_FLOAT:
 	case AB_BOOL:
 	case AB_STRING:
 	case AB_CPROPLIST:
@@ -2500,6 +2526,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					switch (val.GetType())
 					{
 					case C4V_Int:    AddBCC(AB_INT,    val.GetData().Int); break;
+					case C4V_Float:
+					{
+						C4Real::StorageType f = val.getFloat();
+						AddBCC(AB_FLOAT, *reinterpret_cast<intptr_t*>(&f));
+						break;
+					}
 					case C4V_Bool:   AddBCC(AB_BOOL,   val.GetData().Int); break;
 					case C4V_String:
 						AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
@@ -2537,6 +2569,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 	case ATT_INT: // constant in cInt
 	{
 		AddBCC(AB_INT, cInt);
+		Shift();
+		break;
+	}
+	case ATT_FLOAT: // constant in cInt
+	{
+		AddBCC(AB_FLOAT, cInt);
 		Shift();
 		break;
 	}

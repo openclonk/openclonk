@@ -80,6 +80,7 @@ set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
+CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
@@ -345,6 +346,11 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Random.h
 	src/lib/C4Real.cpp
 	src/lib/C4Real.h
+	src/lib/C4RealImpl_Fixed.cpp
+	src/lib/C4RealImpl_Fixed.h
+	src/lib/C4RealImpl_FPU.h
+	src/lib/C4RealImpl_SSE.cpp
+	src/lib/C4RealImpl_SSE.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4RTF.cpp

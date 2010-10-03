@@ -69,6 +69,7 @@ C4Application::~C4Application()
 bool C4Application::DoInit()
 {
 	assert(AppState == C4AS_None);
+
 	// Config overwrite by parameter
 	StdStrBuf sConfigFilename;
 	char szParameter[_MAX_PATH+1];
@@ -106,6 +107,27 @@ bool C4Application::DoInit()
 
 	// Open log
 	OpenLog();
+
+	// Check for SSE support
+	bool has_sse = false;
+	struct registers
+	{
+		int eax, ebx, ecx, edx;
+	} regs = {0};
+	const uint32_t CPUID_EDX_HAS_SSE_FLAG = 1 << 25;
+#if defined _MSC_VER
+	__cpuid(reinterpret_cast<int*>(&regs), 1);
+#elif defined __GNUC__
+	__asm__ __volatile__("cpuid":"=d"(regs.edx):"a"(1):"%ebx","%ecx");
+#endif
+	has_sse = (regs.edx & CPUID_EDX_HAS_SSE_FLAG) != 0;
+	if (!has_sse)
+	{
+		const char *message = "Your CPU does not support the SSE instruction set that is required by this program.";
+		Log(message);
+		MessageDialog(message);
+		return false;
+	}
 
 	Revision.Ref(C4REVISION);
 

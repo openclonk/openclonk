@@ -21,6 +21,7 @@
 #define INC_C4Value
 
 #include "C4Id.h"
+#include "C4Real.h"
 
 // class declarations
 class C4Value;
@@ -32,16 +33,17 @@ class C4ValueArray;
 // C4Value type
 enum C4V_Type
 {
-	C4V_Any=0,         // nil
-	C4V_Int=1,
-	C4V_Bool=2,
-	C4V_PropList=3,
-	C4V_C4Object=4,
-	C4V_String=5,
-	C4V_Array=6,
+	C4V_Any,          // nil
+	C4V_Int,
+	C4V_Float,
+	C4V_Bool,
+	C4V_PropList,
+	C4V_C4Object,
+	C4V_String,
+	C4V_Array,  // reference to an entry in a proplist
 
-	C4V_C4ObjectEnum=9, // enumerated object
-	C4V_C4DefEnum=10 // enumerated object
+	C4V_C4ObjectEnum, // enumerated object
+	C4V_C4DefEnum     // enumerated object
 };
 
 #define C4V_Last (int) C4V_Array
@@ -52,6 +54,7 @@ C4V_Type GetC4VFromID(char C4VID);
 
 union C4V_Data
 {
+	C4Real::StorageType Float;
 	intptr_t Int;
 	C4Object * Obj;
 	C4PropList * PropList;
@@ -66,7 +69,7 @@ union C4V_Data
 // converter function, used in converter table
 struct C4VCnvFn
 {
-	enum { CnvOK, CnvOK0, CnvError, CnvObject } Function;
+	enum { CnvOK, CnvOK0, CnvError, CnvObject, CnvF2I, CnvI2F } Function;
 	bool Warn;
 };
 
@@ -85,6 +88,8 @@ public:
 	{ Data.Int = data; }
 	explicit C4Value(int32_t data): Type(C4V_Int), NextRef(NULL)
 	{ Data.Int = data; }
+	explicit C4Value(C4Real data): Type(C4V_Float), NextRef(NULL)
+	{ Data.Float = data; AddDataRef(); }
 	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), NextRef(NULL)
 	{ Data.Obj = pObj; AddDataRef(); }
 	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), NextRef(NULL)
@@ -99,8 +104,25 @@ public:
 	~C4Value() { DelDataRef(Data, Type, NextRef); }
 
 	// Checked getters
-	int32_t getInt() const { return ConvertTo(C4V_Int) ? Data.Int : 0; }
+	int32_t getInt() const
+	{
+		if (!ConvertTo(C4V_Int))
+			return 0;
+		else if (Type == C4V_Float)
+			return C4Real(Data.Float);
+		else 
+			return Data.Int;
+	}
 	bool getBool() const { return ConvertTo(C4V_Bool) ? !! Data : 0; }
+	C4Real getFloat() const
+	{
+		if (!ConvertTo(C4V_Float))
+			return C4Real(0);
+		else if (Type == C4V_Float)
+			return Data.Float;
+		else
+			return static_cast<int32_t>(Data.Int);
+	}
 	C4ID getC4ID() const;
 	C4Object * getObj() const { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
 	C4PropList * getPropList() const { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
@@ -109,6 +131,7 @@ public:
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
+	C4Real _getFloat() const { return Data.Float; }
 	bool _getBool() const { return !! Data.Int; }
 	C4Object *_getObj() const { return Data.Obj; }
 	C4String *_getStr() const { return Data.Str; }
@@ -125,6 +148,8 @@ public:
 	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
+	void SetFloat(C4Real f) { C4V_Data d; d.Float = f; Set(d, C4V_Float); }
+
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 	void SetObject(C4Object * Obj) { C4V_Data d; d.Obj = Obj; Set(d, C4V_C4Object); }
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
@@ -135,19 +160,70 @@ public:
 	bool operator == (const C4Value& Value2) const;
 	bool operator != (const C4Value& Value2) const;
 
-	// Change and set Type to int in case it was any before (avoids GuessType())
-	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
-	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
-	C4Value & operator /= (int32_t by) { Data.Int /= by; Type=C4V_Int; return *this; }
-	C4Value & operator %= (int32_t by) { Data.Int %= by; Type=C4V_Int; return *this; }
-	C4Value & operator &= (int32_t by) { Data.Int &= by; Type=C4V_Int; return *this; }
-	C4Value & operator ^= (int32_t by) { Data.Int ^= by; Type=C4V_Int; return *this; }
-	C4Value & operator |= (int32_t by) { Data.Int |= by; Type=C4V_Int; return *this; }
-	C4Value & operator ++ ()           { Data.Int++;     Type=C4V_Int; return *this; }
-	C4Value operator ++ (int)          { C4Value old = *this; ++(*this); return old; }
-	C4Value & operator -- ()           { Data.Int--;     Type=C4V_Int; return *this; }
-	C4Value operator -- (int)          { C4Value old = *this; --(*this); return old; }
+#define C4VALUE_ARITHMETIC_OPERATOR(op) \
+	/* combined arithmetic and assignment op */ \
+	C4Value &operator op##= (const C4Value &rhs) \
+	{ \
+		/* Promote numeric values to float if any operand is float */ \
+		if (rhs.GetType() == C4V_Float || GetType() == C4V_Float) \
+		{ \
+			C4Real lhsf = getFloat(); \
+			C4Real rhsf = rhs.getFloat(); \
+			SetFloat(lhsf op##= rhsf); \
+		} \
+		else \
+		{ \
+			Data.Int op##= rhs.Data.Int; \
+			Type=C4V_Int; \
+		} \
+		return *this; \
+	}
+	C4VALUE_ARITHMETIC_OPERATOR(+)
+	C4VALUE_ARITHMETIC_OPERATOR(-)
+	C4VALUE_ARITHMETIC_OPERATOR(*)
+	C4VALUE_ARITHMETIC_OPERATOR(/)
+#undef C4VALUE_ARITHMETIC_OPERATOR
+
+	C4Value &operator++()
+	{
+		switch (Type)
+		{
+		case C4V_Int:
+		case C4V_Bool:
+			++Data.Int; Type = C4V_Int; break;
+		case C4V_Float:
+			SetFloat(getFloat() + 1.0f); break;
+		default:
+			assert(!"Can't increment a non-numeric value");
+		}
+		return *this;
+	}
+	C4Value operator++(int)
+	{
+		C4Value nrv(*this);
+		operator++();
+		return nrv;
+	}
+	C4Value &operator--()
+	{
+		switch (Type)
+		{
+		case C4V_Int:
+		case C4V_Bool:
+			--Data.Int; Type = C4V_Int; break;
+		case C4V_Float:
+			SetFloat(getFloat() - 1.0f); break;
+		default:
+			assert(!"Can't decrement a non-numeric value");
+		}
+		return *this;
+	}
+	C4Value operator--(int)
+	{
+		C4Value nrv(*this);
+		operator--();
+		return nrv;
+	}
 
 	// getters
 	C4V_Data GetData()    const { return Data; }
@@ -168,6 +244,8 @@ public:
 		case C4VCnvFn::CnvOK0: return !*this;
 		case C4VCnvFn::CnvError: return false;
 		case C4VCnvFn::CnvObject: return FnCnvObject();
+		case C4VCnvFn::CnvF2I: return Type == C4V_Float && (vtToType == C4V_Int || vtToType == C4V_Bool);
+		case C4VCnvFn::CnvI2F: return (Type == C4V_Int || Type == C4V_Bool) && vtToType == C4V_Float;
 		}
 		assert(!"C4Value::ConvertTo: Invalid conversion function specified");
 		return false;
@@ -181,7 +259,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 	static inline bool IsNullableType(C4V_Type Type)
-	{ return Type == C4V_Int || Type == C4V_Bool; }
+	{ return Type == C4V_Int || Type == C4V_Float || Type == C4V_Bool; }
 
 protected:
 	// data
@@ -213,6 +291,7 @@ protected:
 
 // converter
 inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
+inline C4Value C4VFloat(C4Real f) { return C4Value(f); }
 inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
 C4Value C4VID(C4ID iVal);
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
@@ -230,6 +309,13 @@ template <> struct C4ValueConv<int32_t>
 	inline static int32_t FromC4V(C4Value &v) { return v.getInt(); }
 	inline static int32_t _FromC4V(C4Value &v) { return v._getInt(); }
 	inline static C4Value ToC4V(int32_t v) { return C4VInt(v); }
+};
+template <> struct C4ValueConv<C4Real>
+{
+	inline static C4V_Type Type() { return C4V_Float; }
+	inline static C4Real FromC4V(C4Value &v) { return v.getFloat(); }
+	inline static C4Real _FromC4V(C4Value &v) { return v._getFloat(); }
+	inline static C4Value ToC4V(C4Real v) { return C4VFloat(v); }
 };
 template <> struct C4ValueConv<bool>
 {

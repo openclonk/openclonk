@@ -107,6 +107,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "nil";
 	case C4V_Int:
 		return "int";
+	case C4V_Float:
+		return "float";
 	case C4V_Bool:
 		return "bool";
 	case C4V_C4Object:
@@ -130,6 +132,8 @@ char GetC4VID(const C4V_Type Type)
 		return 'A';
 	case C4V_Int:
 		return 'i';
+	case C4V_Float:
+		return 'f';
 	case C4V_Bool:
 		return 'b';
 	case C4V_PropList:
@@ -157,6 +161,8 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_Any;
 	case 'i':
 		return C4V_Int;
+	case 'f':
+		return C4V_Float;
 	case 'b':
 		return C4V_Bool;
 	case 'o':
@@ -186,17 +192,21 @@ bool C4Value::FnCnvObject() const
 	if (dynamic_cast<C4Object *>(Data.PropList)) return true;
 	return false;
 }
+
 // Type conversion table
 #define CnvOK        C4VCnvFn::CnvOK, false           // allow conversion by same value
 #define CnvOK0       C4VCnvFn::CnvOK0, true
 #define CnvError     C4VCnvFn::CnvError, true
 #define CnvObject    C4VCnvFn::CnvObject, false
+#define CnvI2F       C4VCnvFn::CnvI2F, false       // convert int->C4Real
+#define CnvF2I       C4VCnvFn::CnvF2I, false       // convert C4Real->int
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 {
 	{ // C4V_Any - is always 0, convertible to everything
 		{ CnvOK   }, // any        same
 		{ CnvOK   }, // int
+		{ CnvOK   }, // float
 		{ CnvOK   }, // Bool
 		{ CnvOK   }, // PropList
 		{ CnvOK   }, // C4Object
@@ -206,7 +216,18 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Int
 		{ CnvOK   }, // any
 		{ CnvOK   }, // int        same
+		{ CnvI2F  }, // float
 		{ CnvOK   }, // Bool
+		{ CnvOK0  }, // PropList   only if 0
+		{ CnvOK0  }, // C4Object   only if 0
+		{ CnvOK0  }, // String     only if 0
+		{ CnvOK0  }, // Array      only if 0
+	},
+	{ // C4V_Float
+		{ CnvOK   }, // any
+		{ CnvF2I  }, // int
+		{ CnvOK   }, // float      same
+		{ CnvF2I  }, // Bool
 		{ CnvOK0  }, // PropList   only if 0
 		{ CnvOK0  }, // C4Object   only if 0
 		{ CnvOK0  }, // String     only if 0
@@ -215,6 +236,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Bool
 		{ CnvOK   }, // any
 		{ CnvOK   }, // int        might be used
+		{ CnvI2F  }, // float
 		{ CnvOK   }, // Bool       same
 		{ CnvError  }, // PropList   NEVER!
 		{ CnvError  }, // C4Object   NEVER!
@@ -224,6 +246,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_PropList
 		{ CnvOK   }, // any
 		{ CnvError  }, // int        NEVER!
+		{ CnvError  }, // float
 		{ CnvOK   }, // Bool
 		{ CnvOK   }, // PropList   same
 		{ CnvObject }, // C4Object
@@ -233,6 +256,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Object
 		{ CnvOK   }, // any
 		{ CnvError  }, // int        NEVER!
+		{ CnvError  }, // float
 		{ CnvOK   }, // Bool
 		{ CnvOK   }, // PropList
 		{ CnvOK   }, // C4Object   same
@@ -242,6 +266,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_String
 		{ CnvOK   }, // any
 		{ CnvError  }, // int        NEVER!
+		{ CnvError  }, // float
 		{ CnvOK   }, // Bool
 		{ CnvError  }, // PropList   NEVER!
 		{ CnvError  }, // C4Object   NEVER!
@@ -251,6 +276,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Array
 		{ CnvOK   }, // any
 		{ CnvError  }, // int        NEVER!
+		{ CnvError  }, // float
 		{ CnvOK   }, // Bool
 		{ CnvError  }, // PropList   NEVER!
 		{ CnvError  }, // C4Object   NEVER!
@@ -261,6 +287,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 
 #undef CnvOK
 #undef CnvOK0
+#undef CnvI2F
+#undef CnvF2I
 #undef CnvError
 #undef CnvObject
 
@@ -273,6 +301,8 @@ StdStrBuf C4Value::GetDataString() const
 	{
 	case C4V_Int:
 		return FormatString("%ld", static_cast<long>(Data.Int));
+	case C4V_Float:
+		return FormatString("%f", static_cast<float>(C4Real(Data.Float)));
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
 	case C4V_C4Object:
@@ -397,6 +427,12 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		Data.Int = iTmp;
 
 		break;
+	case C4V_Float:
+		{
+			C4Real val = Data.Float;
+			pComp->Value(val);
+			Data.Float = val;
+		}
 
 		// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
@@ -494,20 +530,25 @@ bool C4Value::operator == (const C4Value& Value2) const
 		assert(!Data);
 		return Value2.Type == Type;
 	case C4V_Int:
-		switch (Value2.Type)
-		{
-		case C4V_Int:
-		case C4V_Bool:
-			return Data == Value2.Data;
-		default:
-			return false;
-		}
 	case C4V_Bool:
 		switch (Value2.Type)
 		{
 		case C4V_Int:
 		case C4V_Bool:
 			return Data == Value2.Data;
+		case C4V_Float:
+			return C4Real(Value2.Data.Float) == static_cast<int>(Data.Int);
+		default:
+			return false;
+		}
+	case C4V_Float:
+		switch (Value2.Type)
+		{
+		case C4V_Int:
+		case C4V_Bool:
+			return C4Real(Data.Float) == static_cast<int>(Data.Int);
+		case C4V_Float:
+			return Data.Float == Value2.Data.Float;
 		default:
 			return false;
 		}

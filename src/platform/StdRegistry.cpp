@@ -522,6 +522,11 @@ void StdCompilerConfigWrite::Raw(void *pData, size_t iSize, RawCompileType eType
 	excCorrupt("Raw values aren't supported for registry compilers!");
 }
 
+void StdCompilerConfigWrite::Float(float &val)
+{
+	excCorrupt(0, "Float values aren't supported for registry compilers!");
+}
+
 void StdCompilerConfigWrite::Begin()
 {
 	assert(!iDepth);
@@ -703,6 +708,11 @@ void StdCompilerConfigRead::String(char **pszString, RawCompileType eType)
 void StdCompilerConfigRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
 	excCorrupt(0, "Raw values aren't supported for registry compilers!");
+}
+
+void StdCompilerConfigRead::Float(float &val)
+{
+	excCorrupt(0, "Float values aren't supported for registry compilers!");
 }
 
 void StdCompilerConfigRead::Begin()

@@ -262,7 +262,7 @@ void C4Object::DoMovement()
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
+		while (Abs<C4Real>(fix_x - ctcox) >= C4Real(1))
 		{
 			// Next step
 			int step = Sign<C4Real>(new_x - fix_x);
@@ -286,7 +286,7 @@ void C4Object::DoMovement()
 		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
+		while (Abs<C4Real>(fix_y - ctcoy) >= C4Real(1))
 		{
 			// Next step
 			int step = Sign<C4Real>(new_y - fix_y);

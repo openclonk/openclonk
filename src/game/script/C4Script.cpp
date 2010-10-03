@@ -3510,6 +3510,7 @@ public:
 	virtual void Byte(uint8_t &rByte)      { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rByte;  ProcessInt(i); rByte =i; } }
 	virtual void Boolean(bool &rBool)      { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
 	virtual void Character(char &rChar)    { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
+	virtual void Float(float &flt)         { assert(!"Can't compile/decompile float from structure"); }
 
 	// The C4ID-Adaptor will set RCT_ID for it's strings (see C4Id.h), so we don't have to guess the type.
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType)
@@ -5889,6 +5890,18 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 	return C4VNull;
 }
 
+static Nillable<int> FnInt(C4AulContext *ctx, C4Real f)
+{
+	if (f < std::numeric_limits<int>::min() || f > std::numeric_limits<int>::max())
+		return C4VNull;
+	return f;
+}
+
+static C4Real FnFloat(C4AulContext *ctx, int i)
+{
+	return i;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6402,6 +6415,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetConstantNameByValue", FnGetConstantNameByValue, false);
 
 	AddFunc(pEngine, "Translate", FnTranslate);
+	AddFunc(pEngine, "int", FnInt);
+	AddFunc(pEngine, "float", FnFloat);
 }
 
 C4ScriptConstDef C4ScriptConstMap[]=

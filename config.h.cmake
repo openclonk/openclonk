@@ -191,3 +191,6 @@
 /* Define to 1 if you have support for nullptr. */
 #cmakedefine HAVE_NULLPTR 1
 
+/* Define to 1 if your compiler supports static_assert */
+#cmakedefine HAVE_STATIC_ASSERT 1
+

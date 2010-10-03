@@ -173,6 +173,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushValue(C4VInt(pCPos->Par.i));
 				break;
 
+			case AB_FLOAT:
+				PushValue(C4VFloat(pCPos->Par.fl));
+				break;
+
 			case AB_BOOL:
 				PushValue(C4VBool(!! pCPos->Par.i));
 				break;
@@ -298,7 +302,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (!pPar2->_getInt())
 					throw new C4AulExecError(pCurCtx->Obj, "division by zero");
-				pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
+				*pPar1 /= *pPar2;
 				PopValue();
 				break;
 			}
@@ -306,7 +310,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() * pPar2->_getInt());
+				*pPar1 *= *pPar2;
 				PopValue();
 				break;
 			}
@@ -325,7 +329,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() - pPar2->_getInt());
+				*pPar1 -= *pPar2;
 				PopValue();
 				break;
 			}
@@ -333,7 +337,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() + pPar2->_getInt());
+				*pPar1 += *pPar2;
 				PopValue();
 				break;
 			}
