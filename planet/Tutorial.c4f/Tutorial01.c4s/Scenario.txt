@@ -4,7 +4,6 @@ Title=Tutorial01
 Version=4,10,0,0
 MaxPlayer=1
 Difficulty=1
-ForcedFairCrew=1
 
 [Definitions]
 Definition1=Objects.c4d

@@ -2,9 +2,8 @@
 Icon=5
 Title=Tutorial04
 Version=4,10,0,0
-MaxPlayer=5
+MaxPlayer=2
 Difficulty=4
-ForcedFairCrew=1
 
 [Definitions]
 Definition1=Objects.c4d
