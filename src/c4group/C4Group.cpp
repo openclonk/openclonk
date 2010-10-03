@@ -58,7 +58,6 @@ const char *C4CFN_FLS[] =
 	C4CFN_Easy,             C4FLS_Easy,
 	C4CFN_Material,         C4FLS_Material,
 	C4CFN_Graphics,         C4FLS_Graphics,
-	"Western.c4f",          C4FLS_Western, // hardcoded stuff for foldermap
 	C4CFN_DefFiles,         C4FLS_Def,
 	C4CFN_PlayerFiles,      C4FLS_Player,
 	C4CFN_ObjectInfoFiles,  C4FLS_Object,
