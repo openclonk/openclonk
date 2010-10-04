@@ -868,6 +868,12 @@ endforeach()
 ############################################################################
 # Locate optional libraries (if so desired)
 ############################################################################
+CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+if(NOT HAVE_GETOPT_H)
+	include_directories(thirdparty/getopt)
+	add_subdirectory(thirdparty/getopt)
+	target_link_libraries(clonk getopt)
+endif()
 
 if(USE_GL)
 	include(FindOpenGL)

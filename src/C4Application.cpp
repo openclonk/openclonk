@@ -254,7 +254,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"network", no_argument, 0, 'n'},
 			{"record", no_argument, 0, 'r'},
 
-			{"lobby", optional_argument, 0, 'l'},
+			{"lobby", required_argument, 0, 'l'},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;

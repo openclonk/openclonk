@@ -34,3 +34,4 @@ Allegro: Shawn Hargreaves
 GTK+: see LGPL.txt
 SDL: see LGPL.txt
 SDL_mixer: see LGPL.txt
+getopt: see getopt.txt
