@@ -40,7 +40,7 @@ enum C4V_Type
 	C4V_PropList,
 	C4V_C4Object,
 	C4V_String,
-	C4V_Array,  // reference to an entry in a proplist
+	C4V_Array,
 
 	C4V_C4ObjectEnum, // enumerated object
 	C4V_C4DefEnum     // enumerated object
@@ -240,12 +240,13 @@ public:
 	{
 		switch (C4ScriptCnvMap[Type][vtToType].Function)
 		{
-		case C4VCnvFn::CnvOK: return true;
+		case C4VCnvFn::CnvOK:
+		case C4VCnvFn::CnvF2I:
+		case C4VCnvFn::CnvI2F:
+			return true;
 		case C4VCnvFn::CnvOK0: return !*this;
 		case C4VCnvFn::CnvError: return false;
 		case C4VCnvFn::CnvObject: return FnCnvObject();
-		case C4VCnvFn::CnvF2I: return Type == C4V_Float && (vtToType == C4V_Int || vtToType == C4V_Bool);
-		case C4VCnvFn::CnvI2F: return (Type == C4V_Int || Type == C4V_Bool) && vtToType == C4V_Float;
 		}
 		assert(!"C4Value::CanConvertTo: Invalid conversion function specified");
 		return false;
