@@ -1065,7 +1065,6 @@ IDS_NET_REFQUERY_FAILED=Spielreferenz konnte nicht abgefragt werden: %s
 IDS_NET_REFQUERY_NOREF=Keine Spielreferenz gefunden!
 IDS_NET_REFQUERY_QUERYMSG=Spiele werden auf %s gesucht...
 IDS_NET_REFQUERY_QUERYTITLE=Suche Spiele...
-IDS_NET_REGJOINONLY=Beitritt zu diesem Spiel ist nur in der registrierten Version möglich.
 IDS_NET_RELOAD_DESC=Sucht erneut nach Netzwerk- oder Internetspielen.
 IDS_NET_RESPROGRESS_DESC=Fortschritt beim Laden der Ressourcen
 IDS_NET_RES_DYNAMIC=Laufzeitdaten

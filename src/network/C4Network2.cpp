@@ -1106,11 +1106,6 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 				reply = "wrong password";
 				fWrongPassword = true;
 			}
-			// registered join only
-			else if (Game.RegJoinOnly && !SLen(NewCCore.getCUID()))
-			{
-				reply = "registered join only";
-			}
 			// accept join
 			else if (Join(NewCCore, pConn, reply.getData()))
 			{

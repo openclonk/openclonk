@@ -31,7 +31,7 @@
 C4Network2Reference::C4Network2Reference()
 		: Icon(0), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		RegJoinOnly(false), iAddrCnt(0)
+		iAddrCnt(0)
 {
 
 }
@@ -72,7 +72,6 @@ void C4Network2Reference::InitLocal()
 	JoinAllowed = ::Network.isJoinAllowed();
 	ObservingAllowed = ::Network.isObservingAllowed();
 	PasswordNeeded = ::Network.isPassworded();
-	RegJoinOnly = ::Game.RegJoinOnly;
 	Game.Set();
 
 	// Addresses
@@ -112,7 +111,6 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(JoinAllowed,       "JoinAllowed",      true));
 	pComp->Value(mkNamingAdapt(ObservingAllowed,  "ObservingAllowed", true));
 	pComp->Value(mkNamingAdapt(PasswordNeeded,    "PasswordNeeded",   false));
-	pComp->Value(mkNamingAdapt(RegJoinOnly,       "RegJoinOnly",      false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddrCnt), "AddressCount", 0));
 	iAddrCnt = Min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));

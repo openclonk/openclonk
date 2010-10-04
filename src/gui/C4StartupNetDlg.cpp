@@ -430,9 +430,6 @@ void C4StartupNetListEntry::SetReference(C4Network2Reference *pRef)
 	// password
 	if (pRef->isPasswordNeeded())
 		AddStatusIcon(C4GUI::Ico_Ex_LockedFrontal, LoadResStr("IDS_NET_INFOPASSWORD"));
-	// reg join only
-	if (pRef->isRegJoinOnly())
-		AddStatusIcon(C4GUI::Ico_RegJoinOnly, LoadResStr("IDS_NET_REGJOINONLY"));
 	// league
 	if (pRef->Parameters.isLeague())
 		AddStatusIcon(C4GUI::Ico_Ex_League, pRef->Parameters.getLeague());

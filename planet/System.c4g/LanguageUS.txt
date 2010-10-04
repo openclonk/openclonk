@@ -1065,7 +1065,6 @@ IDS_NET_REFQUERY_FAILED=Could not query reference: %s
 IDS_NET_REFQUERY_NOREF=No reference found!
 IDS_NET_REFQUERY_QUERYMSG=Searching for games at %s...
 IDS_NET_REFQUERY_QUERYTITLE=Searching...
-IDS_NET_REGJOINONLY=This game can be joined in the registered version only.
 IDS_NET_RELOAD_DESC=Repeat the search for running games.
 IDS_NET_RESPROGRESS_DESC=Resource loading progress
 IDS_NET_RES_DYNAMIC=Dynamic

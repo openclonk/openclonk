@@ -119,7 +119,6 @@ public:
 	bool fReferenceDefinitionOverride;
 	bool NetworkActive;
 	bool Record;
-	bool RegJoinOnly; // default false; set to true only by command line parameter or in console builds
 	StdStrBuf RecordDumpFile;
 	StdStrBuf RecordStream;
 	bool TempScenarioFile;

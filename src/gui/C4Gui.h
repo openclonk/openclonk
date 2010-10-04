@@ -695,7 +695,7 @@ namespace C4GUI
 		Ico_Star           = 48,
 		Ico_Disconnect     = 49,
 		Ico_View           = 50,
-		Ico_RegJoinOnly    = 51,
+//		Ico_RegJoinOnly    = 51,
 		Ico_Ignored        = 52,
 
 		Ico_Ex_RecordOff     = Ico_Extended + 0,

@@ -1543,7 +1543,6 @@ void C4Game::Default()
 	HaltCount=0;
 	fReferenceDefinitionOverride=false;
 	Evaluated=false;
-	RegJoinOnly=false;
 	TimeGo=false;
 	Time=0;
 	StartTime=0;

@@ -52,7 +52,6 @@ private:
 	bool ObservingAllowed;
 	bool PasswordNeeded;
 	bool OfficialServer;
-	bool RegJoinOnly;
 
 	// Engine information
 	C4GameVersion Game;
@@ -70,7 +69,6 @@ public:
 	const char *getComment() const { return Comment.getData(); }
 	const C4GameVersion &getGameVersion() const { return Game; }
 	bool isPasswordNeeded() const { return PasswordNeeded; }
-	bool isRegJoinOnly() const { return RegJoinOnly; }
 	bool isJoinAllowed() const { return JoinAllowed; }
 	bool isOfficialServer() const { return OfficialServer; }
 	int32_t getSortOrder() const;
