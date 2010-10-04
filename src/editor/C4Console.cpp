@@ -943,11 +943,10 @@ bool C4Console::FileOpen()
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
-	// Compose command line
-	char cmdline[2000]="";
-	SAppend("\"",cmdline,1999); SAppend(c4sfile,cmdline,1999); SAppend("\" ",cmdline,1999);
+	Application.ClearCommandLine();
+	Game.SetScenarioFilename(c4sfile);
 	// Open game
-	OpenGame(cmdline);
+	OpenGame();
 	return true;
 }
 
@@ -966,25 +965,27 @@ bool C4Console::FileOpenWPlrs()
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return false;
 	// Compose command line
-	char cmdline[6000]="";
-	SAppend("\"",cmdline,5999); SAppend(c4sfile,cmdline,5999); SAppend("\" ",cmdline,5999);
+	Application.ClearCommandLine();
+	Game.SetScenarioFilename(c4sfile);
 	if (DirectoryExists(c4pfile)) // Multiplayer
 	{
-		const char *cptr = c4pfile+SLen(c4pfile)+1;
+		const char *cptr = c4pfile + SLen(c4pfile) + 1;
 		while (*cptr)
 		{
-			SAppend("\"",cmdline,5999);
-			SAppend(c4pfile,cmdline,5999); SAppend(DirSep,cmdline,5999);
-			SAppend(cptr,cmdline,5999); SAppend("\" ",cmdline,5999);
-			cptr += SLen(cptr)+1;
+			char c4pfile2[512 + 1] = "";
+			SAppend(c4pfile, c4pfile2, 512);
+			SAppend(DirSep, c4pfile2, 512);
+			SAppend(cptr, c4pfile2, 512);
+			SAddModule(Game.PlayerFilenames, c4pfile2);
+			cptr += SLen(cptr) + 1;
 		}
 	}
 	else // Single player
 	{
-		SAppend("\"",cmdline,5999); SAppend(c4pfile,cmdline,5999); SAppend("\" ",cmdline,5999);
+		SAddModule(Game.PlayerFilenames, c4pfile);
 	}
 	// Open game
-	OpenGame(cmdline);
+	OpenGame();
 	return true;
 }
 
@@ -1622,7 +1623,7 @@ void C4Console::Execute()
 	::GraphicsSystem.Execute();
 }
 
-bool C4Console::OpenGame(const char *szCmdLine)
+bool C4Console::OpenGame()
 {
 	bool fGameWasOpen = fGameOpen;
 	// Close any old game
@@ -1635,10 +1636,6 @@ bool C4Console::OpenGame(const char *szCmdLine)
 	if (!EditCursor.Init()) return false;
 	// Default game - only if open before, because we do not want to default out the GUI
 	if (fGameWasOpen) Game.Default();
-
-	// Pretend to be called with a new commandline
-	if (szCmdLine)
-		Game.ParseCommandLine(szCmdLine);
 
 	// PreInit is required because GUI has been deleted
 	if (!Game.PreInit() ) { Game.Clear(); return false; }

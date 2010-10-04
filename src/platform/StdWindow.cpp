@@ -254,14 +254,12 @@ CStdApp::~CStdApp()
 
 const char *LoadResStr(const char *id);
 
-bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine)
+bool CStdApp::Init(int argc, char * argv[])
 {
 	// Set instance vars
-	hInstance = hInst;
-	this->szCmdLine = szCmdLine;
 	hMainThread = ::GetCurrentThread();
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()

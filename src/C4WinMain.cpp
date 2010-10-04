@@ -34,6 +34,7 @@
 #include "MacUtility.h"
 
 #ifdef _WIN32
+#include <shellapi.h>
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
 //#define GENERATE_MINI_DUMP
@@ -88,9 +89,28 @@ int WINAPI WinMain (HINSTANCE hInst,
 	__try
 	{
 #endif
+		// Split wide command line to wide argv array
+		std::vector<char*> argv;
+		int argc = 0;
+		LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+		if (!wargv)
+			throw std::runtime_error("Unable to split command line");
+		argv.reserve(argc);
+		
+		// Convert args to UTF-8
+		LPWSTR *curwarg = wargv;
+		while(argc--)
+		{
+			int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
+			char *utf8arg = new char[arglen ? arglen : 1];
+			WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
+			argv.push_back(utf8arg);
+			++curwarg;
+		}
+		LocalFree(wargv);
 
 		// Init application
-		if (!Application.Init(hInst,nCmdShow,lpszCmdParam))
+		if (!Application.Init(argv.size(), &argv[0]))
 		{
 			Application.Clear();
 			return C4XRV_Failure;
@@ -100,10 +120,13 @@ int WINAPI WinMain (HINSTANCE hInst,
 		Application.Run();
 		Application.Clear();
 
+		// delete arguments
+		for(std::vector<char*>::const_iterator it = argv.begin(); it != argv.end(); ++it)
+			delete[] *it;
+		argv.clear();
 		// Return exit code
 		if (!Game.GameOver) return C4XRV_Aborted;
 		return C4XRV_Completed;
-
 #ifdef GENERATE_MINI_DUMP
 	} __except(GenerateDump(GetExceptionInformation())) { return C4XRV_Failure; }
 #endif
@@ -111,21 +134,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 
 int main()
 {
-	// Get command line, go over program name
-	char *pCommandLine = GetCommandLine();
-	if (*pCommandLine == '"')
-	{
-		pCommandLine++;
-		while (*pCommandLine && *pCommandLine != '"')
-			pCommandLine++;
-		if (*pCommandLine == '"') pCommandLine++;
-	}
-	else
-		while (*pCommandLine && *pCommandLine != ' ')
-			pCommandLine++;
-	while (*pCommandLine == ' ') pCommandLine++;
-	// Call
-	return WinMain(GetModuleHandle(NULL), 0, pCommandLine, 0);
+	return WinMain(GetModuleHandle(NULL), 0, 0, 0);
 }
 
 #else // _WIN32
@@ -135,11 +144,6 @@ int main()
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-
-#ifdef WITH_DEVELOPER_MODE
-# include "c4x.xpm"
-# include <gtk/gtk.h>
 #endif
 
 #ifdef HAVE_SIGNAL_H
@@ -221,15 +225,6 @@ int main (int argc, char * argv[])
 	signal(SIGQUIT, crash_handler);
 	signal(SIGFPE, crash_handler);
 	signal(SIGTERM, crash_handler);
-#endif
-
-	// FIXME: This should only be done in developer mode.
-#ifdef WITH_DEVELOPER_MODE
-	gtk_init(&argc, &argv);
-
-	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
-	gtk_window_set_default_icon(icon);
-	g_object_unref(icon);
 #endif
 
 	// Init application

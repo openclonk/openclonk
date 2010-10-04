@@ -39,26 +39,9 @@ class C4GamePadControl;
 
 class C4Application: public CStdApp
 {
-private:
-	// if set, this mission will be launched next
-	StdCopyStrBuf NextMission;
-	// version information strings
-	StdCopyStrBuf Revision;
 public:
 	C4Application();
 	~C4Application();
-	// set by ParseCommandLine
-	bool isEditor;
-	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
-	bool UseStartupDialog;
-	// set by ParseCommandLine, for installing registration keys
-	StdStrBuf IncomingKeyfile;
-	// set by ParseCommandLine, for manually applying downloaded update packs
-	StdStrBuf IncomingUpdate;
-	// set by ParseCommandLine, for manually invoking an update check by command line or url
-	bool CheckForUpdates;
-	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
-	bool NoSplash;
 	// Flag for restarting the engine at the end
 	bool restartAtEnd;
 	// main System.c4g in working folder
@@ -70,8 +53,9 @@ public:
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
 	C4Network2IRCClient IRCClient;
-	// Tick timing
 	void Clear();
+	void ClearCommandLine();
+	// Tick timing
 	void GameTick();
 	void Draw();
 	// System.c4g helper funcs
@@ -81,12 +65,28 @@ public:
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes);
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
 	void NextTick();
+
+	virtual void Quit();
+	void QuitGame(); // quit game only, but restart application if in fullscreen startup menu mode
+	void Activate(); // activate app to gain full focus in OS
+	void SetNextMission(const char *szMissionFilename);
+
+	const char *GetRevision() const { return Revision.getData(); }
+
+	// set by ParseCommandLine
+	int isEditor;
+	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
+	int NoSplash;
+	// set by ParseCommandLine, for manually applying downloaded update packs
+	StdStrBuf IncomingUpdate;
+	// set by ParseCommandLine, for manually invoking an update check by command line or url
+	int CheckForUpdates;	
 protected:
 	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;
 
-protected:
-	virtual bool DoInit();
+	virtual bool DoInit(int argc, char * argv[]);
+	void ParseCommandLine(int argc, char * argv[]);
 	bool OpenGame();
 	bool PreInit();
 	static bool ProcessCallback(const char *szMessage, int iProcess);
@@ -94,13 +94,15 @@ protected:
 
 	virtual void OnCommand(const char *szCmd);
 
-public:
-	virtual void Quit();
-	void QuitGame(); // quit game only, but restart application if in fullscreen startup menu mode
-	void Activate(); // activate app to gain full focus in OS
-	void SetNextMission(const char *szMissionFilename);
-
-	const char *GetRevision() const { return Revision.getData(); }
+	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
+	int UseStartupDialog;
+	// set by ParseCommandLine, for installing registration keys
+	StdStrBuf IncomingKeyfile;
+private:
+	// if set, this mission will be launched next
+	StdCopyStrBuf NextMission;
+	// version information strings
+	StdCopyStrBuf Revision;
 };
 
 extern C4Application  Application;

@@ -148,10 +148,9 @@ public:
 	bool DebugMode;
 	// next mission to be played after this one
 	StdCopyStrBuf NextMission, NextMissionText, NextMissionDesc;
-private:
 	// debug settings
-	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; bool DebugWait;
-public:
+	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; int DebugWait;
+
 	// Init and execution
 	void Default();
 	void Clear();
@@ -163,7 +162,7 @@ public:
 	void FixRandom(int32_t iSeed);
 	bool Init();
 	bool PreInit();
-	void ParseCommandLine(const char *szCmdLine);
+	void SetScenarioFilename(const char*);
 	bool Execute();
 	class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	bool DoGameOver();

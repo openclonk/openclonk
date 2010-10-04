@@ -69,6 +69,7 @@ static CStdApp * readline_callback_use_this_app = 0;
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
+# include "c4x.xpm"
 # include <gtk/gtk.h>
 #endif
 
@@ -118,6 +119,14 @@ bool CStdApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
+	// FIXME: This should only be done in developer mode.
+#ifdef WITH_DEVELOPER_MODE
+	gtk_init(&argc, &argv);
+
+	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
+	gtk_window_set_default_icon(icon);
+	g_object_unref(icon);
+#endif
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 	static char dir[PATH_MAX];
@@ -132,15 +141,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	{
 		Location = dir;
 	}
-	// botch arguments
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
 
 	if (!(dpy = XOpenDisplay (0)))
 	{
@@ -195,7 +195,7 @@ bool CStdApp::Init(int argc, char * argv[])
 #endif
 
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()

@@ -374,6 +374,7 @@ public:
 
 	virtual void Clear();
 
+	bool Init(int argc, char * argv[]);
 	void Run()
 	{
 		// Main message loop
@@ -399,7 +400,6 @@ public:
 	bool FlushMessages();
 	CStdWindow * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
-	const char *GetCommandLine() { return szCmdLine; }
 
 	// Copy the text to the clipboard or the primary selection
 	void Copy(const StdStrBuf & text, bool fClipboard = true);
@@ -433,22 +433,22 @@ private:
 	CStdMessageProc MessageProc;
 
 public:
-	bool Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine);
 	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
 	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
 	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
 	HWND GetWindowHandle() { return pWindow ? pWindow->hWindow : NULL; }
+	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
 	HINSTANCE GetInstance() const { return hInstance; }
 	bool DialogMessageHandling(MSG *pMsg) { return pWindow ? pWindow->Win32DialogMessageHandling(pMsg) : false; }
 	bool AssertMainThread()
 	{
-#ifdef _DEBUG
+#  ifdef _DEBUG
 		if (hMainThread && hMainThread != ::GetCurrentThread())
 		{
 			assert(false);
 			return false;
 		}
-#endif
+#  endif
 		return true;
 	}
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
@@ -458,18 +458,17 @@ protected:
 	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODE dspMode, OldDspMode;// display mode for fullscreen
 #else
-#if defined(USE_X11)
+#  if defined(USE_X11)
 	Display * dpy;
 	int xf86vmode_major_version, xf86vmode_minor_version;
 	int xrandr_major_version, xrandr_minor_version;
-#endif
+#  endif
 
-#if defined(USE_SDL_MAINLOOP)
+#  if defined(USE_SDL_MAINLOOP)
 	void HandleSDLEvent(SDL_Event& event);
-#endif
+#  endif
 	const char * Location;
 	pthread_t MainThread;
-	bool Init(int argc, char * argv[]);
 	bool DoNotDelay;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
@@ -485,22 +484,20 @@ protected:
 	void OnXInput();
 	void OnStdInInput();
 protected:
-#if defined(USE_SDL_MAINLOOP) || defined(USE_CONSOLE)
-	int argc; char ** argv;
-#endif
-#ifdef USE_X11
+#  ifdef USE_X11
 	class CStdAppPrivate * Priv;
 	void HandleXMessage();
-#endif
+#  endif
 	unsigned int KeyMask;
 #endif
+protected:
+	int argc; char ** argv;
 #ifdef USE_CONSOLE
 	CStdInProc InProc;
 #endif
-	const char *szCmdLine;
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit() = 0;
+	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	// commands from stdin (console only)
 	StdCopyStrBuf CmdBuf;

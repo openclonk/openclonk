@@ -43,9 +43,11 @@
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
 #include <C4Fonts.h>
+#include <C4Network2.h>
 
 #include <StdRegistry.h> // For DDraw emulation warning
 
+#include <getopt.h>
 
 C4Application::C4Application():
 		isEditor(false),
@@ -66,15 +68,14 @@ C4Application::~C4Application()
 	CloseLog();
 }
 
-bool C4Application::DoInit()
+bool C4Application::DoInit(int argc, char * argv[])
 {
 	assert(AppState == C4AS_None);
 	// Config overwrite by parameter
 	StdStrBuf sConfigFilename;
-	char szParameter[_MAX_PATH+1];
-	for (int32_t iPar=0; SGetParameter(GetCommandLine(), iPar, szParameter, _MAX_PATH); iPar++)
-		if (SEqual2NoCase(szParameter, "/config:"))
-			sConfigFilename.Copy(szParameter + 8);
+	for (int32_t iPar=0; iPar < argc; iPar++)
+		if (SEqual2NoCase(argv[iPar], "--config="))
+			sConfigFilename.Copy(argv[iPar] + 9);
 	// Config check
 	Config.Init();
 	Config.Load(true, sConfigFilename.getData());
@@ -121,10 +122,8 @@ bool C4Application::DoInit()
 		MessageDialog(szMessage);
 		return false;
 	}
-	// Language override by parameter
-	const char *pLanguage;
-	if ((pLanguage = SSearchNoCase(GetCommandLine(), "/Language:")))
-		SCopyUntil(pLanguage, Config.General.LanguageEx, ' ', CFG_MaxString);
+	// Parse command line
+	ParseCommandLine(argc, argv);
 
 	// Init external language packs
 	Languages.Init();
@@ -138,8 +137,6 @@ bool C4Application::DoInit()
 	if (!Config.Registered())
 		C4Group_SetMaker(LoadResStr("IDS_PRC_UNREGUSER"));
 
-	// Parse command line
-	Game.ParseCommandLine(GetCommandLine());
 
 #ifdef WIN32
 	// Windows: handle incoming updates directly, even before starting up the gui
@@ -200,6 +197,234 @@ bool C4Application::DoInit()
 	return true;
 }
 
+void C4Application::ClearCommandLine()
+{
+	SCopy(Config.General.Definitions, Game.DefinitionFilenames);
+	*Game.PlayerFilenames = 0;
+	Game.StartupPlayerCount = 0;
+}
+
+void C4Application::ParseCommandLine(int argc, char * argv[])
+{
+	//Log("Command line: "); Log(szCmdLine);
+
+	ClearCommandLine();
+	Game.NetworkActive = false;
+	Config.General.ClearAdditionalDataPaths();
+	isEditor = 2;
+	int c;
+	while (1)
+	{
+		static struct option long_options[] =
+		{
+			{"editor", no_argument, &isEditor, 1},
+			{"fullscreen", no_argument, &isEditor, 0},
+			{"debugwait", no_argument, &Game.DebugWait, 1},
+			{"ucrw", no_argument, &Config.General.FairCrew, 0},
+			{"trainedcrew", no_argument, &Config.General.FairCrew, 0},
+			{"ncrw", no_argument, &Config.General.FairCrew, 1},
+			{"faircrew", no_argument, &Config.General.FairCrew, 1},
+			{"nosplash", no_argument, &NoSplash, 1},
+			{"update", no_argument, &CheckForUpdates, 1},
+			{"noruntimejoin", no_argument, &Config.Network.NoRuntimeJoin, 1},
+			{"runtimejoin", no_argument, &Config.Network.NoRuntimeJoin, 0},
+			{"noleague", no_argument, &Config.Network.LeagueServerSignUp, 0},
+			{"league", no_argument, &Config.Network.LeagueServerSignUp, 1},
+			{"nosignup", no_argument, &Config.Network.MasterServerSignUp, 0},
+			{"signup", no_argument, &Config.Network.MasterServerSignUp, 1},
+
+			{"client", required_argument, 0, 'c'},
+			{"host", no_argument, 0, 'h'},
+			{"debughost", required_argument, 0, 'H'},
+			{"debugpass", required_argument, 0, 'P'},
+			{"debug", required_argument, 0, 'D'},
+			{"data", required_argument, 0, 'd'},
+			{"startup", required_argument, 0, 's'},
+			{"stream", required_argument, 0, 'e'},
+			{"recdump", required_argument, 0, 'R'},
+			{"comment", required_argument, 0, 'm'},
+			{"pass", required_argument, 0, 'p'},
+			{"udpport", required_argument, 0, 'u'},
+			{"tcpport", required_argument, 0, 't'},
+			{"join", required_argument, 0, 'j'},
+			{"language", required_argument, 0, 'L'},
+
+			{"observe", no_argument, 0, 'o'},
+			{"nonetwork", no_argument, 0, 'N'},
+			{"network", no_argument, 0, 'n'},
+			{"record", no_argument, 0, 'r'},
+
+			{"lobby", optional_argument, 0, 'l'},
+			{0, 0, 0, 0}
+		};
+		int option_index = 0;
+		c = getopt_long (argc, argv, "abc:d:f:",
+			long_options, &option_index);
+     		// no more options
+		if (c == -1)
+			break;
+		switch (c)
+		{
+		case 0:
+			// Signup
+			if (SEqualNoCase(long_options[option_index].name, "signup"))
+			{
+				Game.NetworkActive = true;
+			}
+			// League
+			if (SEqualNoCase(long_options[option_index].name, "league"))
+			{
+				Game.NetworkActive = true;
+				Config.Network.MasterServerSignUp = true;
+			}
+			break;
+		// Lobby
+		case 'l':
+			Game.fLobby = true;
+			// lobby timeout specified? (e.g. --lobby=120)
+			if (optarg)
+			{
+				Game.iLobbyTimeout = atoi(optarg);
+				if (Game.iLobbyTimeout < 0) Game.iLobbyTimeout = 0;
+			}
+			break;
+		case 'o': Game.fObserve = true; break;
+		// Direct join
+		case 'j':
+			Game.NetworkActive = true;
+			SCopy(optarg, Game.DirectJoinAddress, _MAX_PATH);
+			break;
+		case 'r': Game.Record = true; break;
+		case 'n': Game.NetworkActive = true; break;
+		case 'N': Game.NetworkActive = false; break;
+		// Language override by parameter
+		case 'L': SCopy(optarg, Config.General.LanguageEx, CFG_MaxString);
+		// port overrides
+		case 't': Config.Network.PortTCP = atoi(optarg); break;
+		case 'u': Config.Network.PortUDP = atoi(optarg); break;
+		// network game password
+		case 'p': Network.SetPassword(optarg); break;
+		// network game comment
+		case 'm': Config.Network.Comment.CopyValidated(optarg); break;
+		// record dump
+		case 'R': Game.RecordDumpFile.Copy(optarg); break;
+		// record stream
+		case 'e': Game.RecordStream.Copy(optarg); break;
+		// startup start screen
+		case 's': C4Startup::SetStartScreen(optarg); break;
+		// additional read-only data path
+		case 'd': Config.General.AddAdditionalDataPath(optarg); break;
+		// debug options
+		case 'D': Game.DebugPort = atoi(optarg); break;
+		case 'P': Game.DebugPassword = optarg; break;
+		case 'H': Game.DebugHost = optarg; break;
+		// debug configs
+		case 'h':
+			Game.NetworkActive = true;
+			Game.fLobby = true;
+			Config.Network.PortTCP = 11112;
+			Config.Network.PortUDP = 11113;
+			Config.Network.MasterServerSignUp = Config.Network.LeagueServerSignUp = false;
+			break;
+		case 'c':
+			Game.NetworkActive = true;
+			SCopy("localhost", Game.DirectJoinAddress, _MAX_PATH);
+			Game.fLobby = true;
+			Config.Network.PortTCP = 11112 + 2*(atoi(optarg)+1);
+			Config.Network.PortUDP = 11113 + 2*(atoi(optarg)+1);
+			break;
+		case '?': /* getopt_long already printed an error message. */ break;
+		default: assert(!"unexpected getopt_long return value");
+		}
+	}
+	if (!Config.Network.MasterServerSignUp)
+		Config.Network.LeagueServerSignUp = false;
+	if (Game.fObserve || Game.fLobby)
+		Game.NetworkActive = true;
+
+	while (optind < argc)
+	{
+		char * szParameter = argv[optind++];
+		{ // Strip trailing / that result from tab-completing unpacked c4groups
+			int iLen = SLen(szParameter);
+			if (iLen > 5 && szParameter[iLen-1] == '/' && szParameter[iLen-5] == '.' && szParameter[iLen-4] == 'c' && szParameter[iLen-3] == '4')
+			{
+				szParameter[iLen-1] = '\0';
+			}
+		}
+		// Scenario file
+		if (SEqualNoCase(GetExtension(szParameter),"c4s"))
+		{
+			Game.SetScenarioFilename(Config.AtDataReadPath(szParameter, true));
+			continue;
+		}
+		if (SEqualNoCase(GetFilename(szParameter),"scenario.txt"))
+		{
+			Game.SetScenarioFilename(szParameter);
+			continue;
+		}
+		// Player file
+		if (SEqualNoCase(GetExtension(szParameter),"c4p"))
+		{
+			const char *param = Config.AtDataReadPath(szParameter, true);
+			SAddModule(Game.PlayerFilenames,param);
+			continue;
+		}
+		// Definition file
+		if (SEqualNoCase(GetExtension(szParameter),"c4d"))
+		{
+			SAddModule(Game.DefinitionFilenames,szParameter);
+			continue;
+		}
+		// Key file
+		if (SEqualNoCase(GetExtension(szParameter),"c4k"))
+		{
+			Application.IncomingKeyfile.Copy(szParameter);
+			continue;
+		}
+		// Update file
+		if (SEqualNoCase(GetExtension(szParameter),"c4u"))
+		{
+			Application.IncomingUpdate.Copy(szParameter);
+			continue;
+		}
+		// record stream
+		if (SEqualNoCase(GetExtension(szParameter),"c4r"))
+		{
+			Game.RecordStream.Copy(szParameter);
+		}
+		// Direct join by URL
+		if (SEqual2NoCase(szParameter, "clonk:"))
+		{
+			// Store address
+			SCopy(szParameter + 6, Game.DirectJoinAddress, _MAX_PATH);
+			SClearFrontBack(Game.DirectJoinAddress, '/');
+			// Special case: if the target address is "update" then this is used for update initiation by url
+			if (SEqualNoCase(Game.DirectJoinAddress, "update"))
+			{
+				Application.CheckForUpdates = true;
+				Game.DirectJoinAddress[0] = 0;
+				continue;
+			}
+			// Self-enable network
+			Game.NetworkActive = true;
+			continue;
+		}
+	}
+
+	// Default to editor if scenario given, player mode otherwise
+	if (isEditor == 2)
+		isEditor = !!*Game.ScenarioFilename;
+
+	// Determine startup player count
+	Game.StartupPlayerCount = SModuleCount(Game.PlayerFilenames);
+
+	// default record?
+	Game.Record = Game.Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && Game.NetworkActive);
+
+	// startup dialog required?
+	UseStartupDialog = !isEditor && !*Game.DirectJoinAddress && !*Game.ScenarioFilename && !Game.RecordStream.getSize();
+}
 
 void C4Application::ApplyResolutionConstraints()
 {
@@ -321,7 +546,7 @@ bool C4Application::OpenGame()
 	{
 		// Execute command line
 		if (Game.ScenarioFilename[0] || Game.DirectJoinAddress[0])
-			return Console.OpenGame(szCmdLine);
+			return Console.OpenGame();
 	}
 	// done; success
 	return true;

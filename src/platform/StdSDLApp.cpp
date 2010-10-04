@@ -59,16 +59,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	SCopy(argv[0], dir);
 	Location = dir;
 
-	// Build command line.
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
-
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
 	{
 		Log("Error initializing SDL.");
@@ -83,7 +73,7 @@ bool CStdApp::Init(int argc, char * argv[])
 #endif
 
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 

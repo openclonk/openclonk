@@ -86,22 +86,13 @@ bool CStdApp::Init(int argc, char * argv[])
 	{
 		Location = dir;
 	}
-	// botch arguments
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
 
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_install (">", readline_callback);
 	readline_callback_use_this_app = this;
 #endif
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()
