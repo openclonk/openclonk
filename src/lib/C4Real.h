@@ -142,7 +142,9 @@ public:
 	struct StorageTypeSelector<T, boost::true_type> { typename T::StorageType v; };
 
 	typedef StorageTypeSelector<C4RealImpl, typename boost::is_class<C4RealImpl>::type> StorageType;
+#ifdef HAVE_WORKING_IS_POD
 	static_assert(boost::is_pod<StorageType>::value, "C4RealBase: StorageType is not a POD type");
+#endif
 
 	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
 

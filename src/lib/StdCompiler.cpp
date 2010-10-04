@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <C4Log.h>
+#include <limits>
 
 // *** StdCompiler
 

@@ -54,6 +54,8 @@
 #include <C4GameControl.h>
 #include <C4MeshAnimation.h>
 
+#include <limits>
+
 //========================== Some Support Functions =======================================
 
 const long MaxFnStringParLen=500;
@@ -5894,7 +5896,7 @@ static Nillable<int> FnInt(C4AulContext *ctx, C4Real f)
 {
 	if (f < std::numeric_limits<int>::min() || f > std::numeric_limits<int>::max())
 		return C4VNull;
-	return f;
+	return static_cast<int>(f);
 }
 
 static C4Real FnFloat(C4AulContext *ctx, int i)

@@ -64,6 +64,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	if(USE_GCC_STD_0X)
 		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 	endif()
+	# isilkor 10-10-04: disable a useless warning
+	list(APPEND OC_CXX_FLAGS "-Wno-non-template-friend")
 endif()
 
 # ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
@@ -79,8 +81,8 @@ set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
-set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
+set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
@@ -701,6 +703,11 @@ if(NOT Boost_INCLUDE_DIR)
 	message(SEND_ERROR "Could not find the Boost C++ Libraries")
 else()
 	include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+	set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIR})
+	CHECK_CXX_SOURCE_COMPILES("
+		#include <boost/type_traits/is_pod.hpp>
+		struct Pod {}; struct NonPod { NonPod() {} };
+		int main() { int a[boost::is_pod<Pod>::value * 2 - 1], b[1 - 2 * boost::is_pod<NonPod>::value]; }" HAVE_WORKING_IS_POD)
 endif()
 
 include(FindThreads)

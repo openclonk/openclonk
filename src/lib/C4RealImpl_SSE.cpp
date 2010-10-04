@@ -109,8 +109,8 @@ C4RealImpl_SSE C4RealImpl_SSE::SinCos(bool cosine) const
 	// and 360 deg
 	// relative error less than 1.2e-7 between -260 deg and 260 deg.
 	// absolute error less than 6.0e-8 between -4.2e7 and 4.2e7 deg.
-	assert(float_radians == 0.0f || std::abs((rv.f[sinidx] - std::sinf(float_radians)) / std::sinf(float_radians)) < 1.1e-6f);
-	assert(float_radians == 0.0f || std::abs((rv.f[cosidx] - std::cosf(float_radians)) / std::cosf(float_radians)) < 1.1e-6f);
+	assert(float_radians == 0.0f || std::abs((rv.f[sinidx] - std::sin(float_radians)) / std::sin(float_radians)) < 1.1e-6f);
+	assert(float_radians == 0.0f || std::abs((rv.f[cosidx] - std::cos(float_radians)) / std::cos(float_radians)) < 1.1e-6f);
 
 	uint32_t cosine_mask = cosine * ~0;
 	int idx = (cosine_mask & cosidx) | (~cosine_mask & sinidx);
