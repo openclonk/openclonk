@@ -150,7 +150,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 		}*/
 }
 
-func FxIntWeaponChargeStop(pTarget, iEffectNumber, iTemp)
+func FxIntWeaponChargeStop(pTarget, iEffectNumber, iReason, iTemp)
 {
 	if(iTemp) return;
 	if(!pTarget) return;

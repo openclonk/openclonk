@@ -194,15 +194,15 @@ func HitByWeapon(pFrom, iDamage)
 {
 	if(pFrom->GetX() > GetX())
 	{
-		if(!Inside(iAngle, 0, 180)) return 0;
+		if(Contained()->GetDir() != DIR_Right) return 0;
 	}
-	else if(!Inside(iAngle, 180, 360)) return 0;
+	else if(Contained()->GetDir() != DIR_Left) return 0;
 		
 	// bash him hard!
 	ApplyWeaponBash(pFrom, 500*50, iAngle);
 	
 	// uber advantage in melee combat
-	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 30, this);
+	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 40, this);
 	
 	// shield factor
 	return 100;
@@ -210,7 +210,7 @@ func HitByWeapon(pFrom, iDamage)
 
 func FxShieldStopControlStart(pTarget, iEffectNumber, iTemp)
 {
-	pTarget->SetPhysical("Walk", 0, PHYS_StackTemporary);
+	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
 	if(iTemp) return;
 }
 
@@ -243,17 +243,27 @@ func FxShieldStopControlControlJump(target, effect_number)
 
 func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 {
+	if(obj->GetOCF() & OCF_Alive) return false;
 	/*var x=1;
 	if(Contained()->GetDir() == DIR_Left) x=-1;
 	var direction=BoundBy(obj->GetXDir(), -1, 1);
 	if(Abs(obj->GetXDir()*/
-	var angle=BoundBy(iAngle, 0, 115);
-	if(iAngle > 180) angle=BoundBy(iAngle, 180+65, 360);
-	var posX=Sin(angle, 12);
-	var posY=-Cos(angle, 12)-5;
+	var angle=BoundBy(iAngle, 0, 150);
+	if(iAngle > 180) angle=BoundBy(iAngle, 180+30, 360);
+	var posX=Sin(angle, 4);
+	if(Contained()->GetDir() == DIR_Right) posX+=3;
+	else posX-=1;
+	var posY=-Cos(angle, 4);
 	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
+	
+	/*for(var cnt=0;cnt<360;cnt+=10)
+	{
+		CreateParticle("AirIntake", posX+Sin(cnt, 7), posY-Cos(cnt, 7), 0, 0, 10, RGB(255,255,255));
+		
+	}*/
+	
 	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 7) return false;
-	target->Message(Format("%d", Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY())));
+	//target->Message(Format("%d", Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY())));
 	if(AngleInside(angle, object_angle, 45)) return false;
 	
 	/*var xd=obj->GetXDir();
