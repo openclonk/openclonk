@@ -5,10 +5,10 @@
 public func AI_IsRangedWeapon() { return true; }
 public func AI_IsLoaded() { return !!FindObject(Find_Container(this), Find_ID(LeadShot)); }
 public func AI_CommandString() { return "AI_MusketAttack"; }
-public func AI_TargetHittable(object target) 
+public func AI_CanHitTarget(object target) 
 {
-	var x = ObjectDistance(target, Contained());
-	return Max(0, - x * (x - 400) / 400);
+	var dist = ObjectDistance(target, Contained());
+	return dist < 400;
 }
 
 protected func AI_MusketAttack(object clonk, int x, int y, object target)
