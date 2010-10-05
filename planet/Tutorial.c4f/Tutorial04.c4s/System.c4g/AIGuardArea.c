@@ -4,7 +4,7 @@
 
 public func AI_GuardArea(int x, int y, int wdt, int hgt)
 {
-	var effect = AddEffect("IntAIGuardArea", this, 100, 5, this);
+	var effect = AddEffect("IntAIGuardArea", this, 100, 20, this);
 	EffectVar(0, this, effect) = x;
 	EffectVar(1, this, effect) = y;
 	EffectVar(2, this, effect) = wdt;

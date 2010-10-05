@@ -8,7 +8,9 @@ public func AI_CommandString() { return "AI_MusketAttack"; }
 public func AI_CanHitTarget(object target) 
 {
 	var dist = ObjectDistance(target, Contained());
-	return dist < 400;
+	if(dist < 400) return false;
+	//TODO: prevent shooting through solids
+	return true;
 }
 
 protected func AI_MusketAttack(object clonk, int x, int y, object target)
