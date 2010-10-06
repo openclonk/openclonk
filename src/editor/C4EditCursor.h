@@ -39,7 +39,7 @@ protected:
 	bool fAltWasDown;
 	bool fSelectionChanged;
 	int32_t Mode;
-	int32_t X,Y,X2,Y2;
+	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
 	C4Object *Target,*DropTarget;
 #ifdef _WIN32

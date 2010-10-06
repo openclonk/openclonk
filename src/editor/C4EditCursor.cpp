@@ -144,7 +144,7 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 {
 	// Offset movement
 	float xoff = iX-X; float yoff = iY-Y;
-	X=int32_t(iX); Y=int32_t(iY);
+	X=iX; Y=iY;
 
 	switch (Mode)
 	{
@@ -189,6 +189,7 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 
 bool C4EditCursor::UpdateStatusBar()
 {
+	int32_t X=this->X, Y=this->Y;
 	StdStrBuf str;
 	switch (Mode)
 	{
