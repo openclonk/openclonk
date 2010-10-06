@@ -22,6 +22,7 @@ public func ControlUp(object clonk)
 		arrw->SetGraphics("1");
 		CastParticles("Straw",30,20,x,y,30,40,RGB(255,255,255),RGB(255,120,200));
 	}
+	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 }
 
 
