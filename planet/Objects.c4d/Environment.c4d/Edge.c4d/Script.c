@@ -47,25 +47,33 @@ public func SetP(int p)
 	SetSolidMask(p*10,0,10,10);
 	dir=p;
 }
+public func GetD() { return dir; }
 
-
-global func MakeEdgeFunction()
+global func MakeEdgeFunction(bool fExact)
 {
 	var x=[];
 	var y=[];
+	var d=[];
 	for(var e in FindObjects(Find_ID(BrickEdge)))
 	{
 		x[GetLength(x)]=e->GetX();
 		y[GetLength(y)]=e->GetY();
+		d[GetLength(d)]=e->GetD();
 	}
 	Log("global func PlaceEdges()");
 	Log("{");
 	Log("	var x=%v;",x);
 	Log("	var y=%v;",y);
+	Log("	var d=%v;",d);
 	Log("	for (var i = 0; i < GetLength(x); i++)");
 	Log("	{");
 	Log("		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);");
 	Log("		edge->Initialize();"); //additional initialize for anti self blocking
+	if(fExact)
+	{
+		Log("		edge->SetP(d[i]);");
+		Log("		edge->SetPosition(x[i],y[i]);");
+	}
 	Log("		edge->PermaEdge();");
 	Log("	}");
 	Log("	return 1;");
