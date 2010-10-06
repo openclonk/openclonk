@@ -208,7 +208,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
-			Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);
+			Console.EditCursor.Move(cvp->ViewX+LOWORD(lParam)/cvp->Zoom,cvp->ViewY+HIWORD(lParam)/cvp->Zoom,wParam);
 			Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(); break;
@@ -217,7 +217,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE: Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam); break;
+		case WM_MOUSEMOVE: Console.EditCursor.Move(cvp->ViewX+LOWORD(lParam)/cvp->Zoom,cvp->ViewY+HIWORD(lParam)/cvp->Zoom,wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		}
 	}
