@@ -1,12 +1,12 @@
-/**
-	Tutorial Arrow
-	Arrow to show important stuff to the player, can be created by using one of the global functions.
-
-	@author Sven2, Maikel
+/** Tutorial Arrow
+* Arrow to show important stuff to the player, can be created by using one of the global functions.
+* @author Sven2, Maikel
 */
 
 // Remove arrow if it was showing a target object which got removed.
 protected func AttachTargetLost() { RemoveObject(); }
+// Remove arrow if target object entered a container.
+protected func Entrance() { RemoveObject(); }
 
 /*-- Arrow Creation --*/
 
@@ -20,11 +20,11 @@ global func TutArrowClear()
 }
 
 /** Creates an arrow to indicate a position.
-	@param x X-coordinate of the position.
-	@param y Y-coordinate of the position.
-	@param angle angle at which the arrow should be drawn, standard \c 135 degrees.
-	@param dist distance of the arrow to the position, standard 16 pixels.
-	@return the arrow created.
+* @param x X-coordinate of the position.
+* @param y Y-coordinate of the position.
+* @param angle angle at which the arrow should be drawn, standard \c 135 degrees.
+* @param dist distance of the arrow to the position, standard 16 pixels.
+* @return the arrow created.
 */
 global func TutArrowShowPos(int x, int y, int angle, int dist)
 {
@@ -46,10 +46,10 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 }
 
 /** Creates an arrow to indicate the target.
-	@param target target object which should be indicated by the arrow.
-	@param angle angle at which the arrow should be drawn, standard \c 135 degrees.
-	@param dist distance of the arrow to the target object, standard 16 pixels.
-	@return the arrow created.
+* @param target target object which should be indicated by the arrow.
+* @param angle angle at which the arrow should be drawn, standard \c 135 degrees.
+* @param dist distance of the arrow to the target object, standard 16 pixels.
+* @return the arrow created.
 */
 global func TutArrowShowTarget(object target, int angle, int dist)
 {
@@ -69,11 +69,11 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 }
 
 /** Creates an arrow to indicate a GUI position.
-	@param x X-coordinate of the GUI position.
-	@param y Y-coordinate of the GUI position.
-	@param angle angle at which the arrow should be drawn, standard \c 135 degrees.
-	@param dist distance of the arrow to the position, standard 16 pixels.
-	@return the arrow created.
+* @param x X-coordinate of the GUI position.
+* @param y Y-coordinate of the GUI position.
+* @param angle angle at which the arrow should be drawn, standard \c 135 degrees.
+* @param dist distance of the arrow to the position, standard 16 pixels.
+* @return the arrow created.
 */
 global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 {
@@ -97,10 +97,10 @@ global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 }
 
 /** Creates an arrow to indicate the target.
-	@param target GUI object which should be indicated by the arrow.
-	@param angle angle at which the arrow should be drawn, standard \c 135 degrees.
-	@param dist distance of the arrow to the target object, automatically corrects for GUI object's size.
-	@return the arrow created.
+* @param target GUI object which should be indicated by the arrow.
+* @param angle angle at which the arrow should be drawn, standard \c 135 degrees.
+* @param dist distance of the arrow to the target object, automatically corrects for GUI object's size.
+* @return the arrow created.
 */
 global func TutArrowShowGUITarget(object target, int angle, int dist)
 {

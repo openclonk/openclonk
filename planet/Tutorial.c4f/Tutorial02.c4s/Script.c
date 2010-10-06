@@ -30,8 +30,8 @@ protected func Initialize()
 	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with cannon stuff.
-	var hut = CreateObject(WoodenCabin, 570, 740, NO_OWNER);
-	hut->SetObjectLayer(hut);
+	//var hut = CreateObject(WoodenCabin, 570, 740, NO_OWNER);
+	//hut->SetObjectLayer(hut);
 	chest = CreateObject(Chest, 510, 740, NO_OWNER);
 	for (var i = 0; i < 3; i++)
 	{
@@ -42,7 +42,7 @@ protected func Initialize()
 	powderkeg = CreateObject(PowderKeg, 0, 0, NO_OWNER);
 	powderkeg->Enter(chest);
 	powderkeg->AddRestoreMode(chest);
-	// Decoration for the mine.
+	/* Decoration for the mine.
 	var pickaxe;
 	pickaxe = CreateObject(Pickaxe, 185, 680, NO_OWNER);
 	pickaxe->SetObjectLayer(pickaxe);
@@ -58,13 +58,13 @@ protected func Initialize()
 	pickaxe->SetR(-10);
 	var lorry = CreateObject(Lorry, 320, 680, NO_OWNER);
 	lorry->SetObjectLayer(lorry);
-	lorry->SetClrModulation(RGB(120, 120, 120));
+	lorry->SetClrModulation(RGB(120, 120, 120)); */
 	
 	// Cannon to blast through rock & chest with powderkeg and firestones.
 	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER);
-	//effect = AddEffect("CannonRestore", cannon, 100, 10);
-	//EffectVar(1, cannon, effect) = 180;
-	//EffectVar(2, cannon, effect) = 450;
+	effect = AddEffect("CannonRestore", cannon, 100, 10);
+	EffectVar(1, cannon, effect) = 700;
+	EffectVar(2, cannon, effect) = 420;
 
 	// Chest with flints and dynamite to blast underwater rocks.
 	chest = CreateObject(Chest, 870, 680, NO_OWNER);
@@ -221,37 +221,44 @@ global func FxTutorialBlastedThroughTimer()
 	if (GetPathLength(150, 670, 350, 655))
 	{
 		guide->AddGuideMessage("$MsgTutFreeOtherClonk$");
-		AddEffect("TutorialFoundCannon", nil, 100, 5);
+		AddEffect("TutorialFoundInteractable", nil, 100, 5);
 		return -1;
 	}
 	return 1;
 }
 
 // TODO move this around a little
-global func FxTutorialFoundCannonTimer()
+global func FxTutorialFoundInteractableTimer(object target, int num)
 {
-	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 700, 420)))
+	var clonk = GetCursor(GetPlayerByIndex(0));
+	var cannon = FindObject(Find_ID(Cannon));
+	//var chest = FindObject(Find_ID(Chest), Find_Distance(40, 510, 740));
+	if (clonk->GetAction() == "Push")
 	{
-		guide->AddGuideMessage("$MsgTutCannon$");
-		AddEffect("TutorialFreeClonk", nil, 100, 36 * 8);
-		return -1;
+		var act_trg = clonk->GetActionTarget(0);
+		if (act_trg == cannon)
+		{
+			if (clonk->FindContents(PowderKeg) && clonk->FindContents(Firestone))
+			{
+				if (!EffectVar(0, target, num))
+					guide->AddGuideMessage("$MsgTutCannon$");
+				if (!EffectVar(1, target, num))
+					guide->AddGuideMessage("$MsgTutExplosivesChest$");
+				guide->AddGuideMessage("$MsgTutFireCannon$");
+				AddEffect("TutorialRockBlasted", nil, 100, 5);
+				return -1;
+			}
+			else if (!EffectVar(0, target, num))
+			{
+				guide->AddGuideMessage("$MsgTutCannon$");
+				EffectVar(0, target, num) = true;				
+			}		
+		}
 	}
-	return 1;
-}
-
-global func FxTutorialFreeClonkStop()
-{
-	guide->AddGuideMessage("$MsgTutFindExplosives$");
-	AddEffect("TutorialFoundExplosives", nil, 100, 5);
-}
-
-global func FxTutorialFoundExplosivesTimer()
-{
-	if (FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
+	if (!EffectVar(1, target, num) && FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
 	{
 		guide->AddGuideMessage("$MsgTutExplosivesChest$");
-		AddEffect("TutorialRockBlasted", nil, 100, 5);
-		return -1;
+		EffectVar(1, target, num) = true;
 	}
 	return 1;
 }
@@ -345,6 +352,9 @@ protected func OnGuideMessageShown(int plr, int index)
 		if (detonator)
 			TutArrowShowTarget(detonator, 225, 16);
 	}
+	// Show where to shoot with cannon.
+	if (index == 7)
+		TutArrowShowPos(380, 240, 270);
 	// Show grapple jump & hook position.
 	if (index == 8)
 	{
@@ -558,7 +568,7 @@ global func FxDynamiteRestoreTimer(object target, int num, int time)
 // Cannon, restore position if pushed to far to the right.
 global func FxCannonRestoreTimer(object target, int num, int time)
 {
-	if ((target->GetX() > 300 || target->GetY() > 500) && !target->Contained())
+	if ((target->GetX() < 595 && target->GetY() > 415) && !target->Contained())
 	{
 		var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());

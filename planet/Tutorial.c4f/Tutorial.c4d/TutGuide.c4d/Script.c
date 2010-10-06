@@ -1,12 +1,10 @@
-/*--
-	Tutorial Guide
-	Author: Maikel
-		
-	The tutorial guide can be clicked on by the player, it supplies the player with information and hints.
-	Callbacks to the scenario script:
-	* OnGuideMessageShown(int plr, int index) when a message is shown
-	* OnGuideMessageRemoved(int plr, int index) when a message is removed, all events
---*/
+/** Tutorial Guide
+* The tutorial guide can be clicked by the player, it supplies the player with information and hints.
+* The following callbacks are made to the scenario script:
+* - \c OnGuideMessageShown(int plr, int index) when a message is shown
+* - \c OnGuideMessageRemoved(int plr, int index) when a message is removed, all events
+* @author Maikel
+*/
 
 
 local messages; // A container to hold all messages.
@@ -23,7 +21,10 @@ protected func Initialize()
 	return;
 }
 
-// Creates the tutorial guide in the upper hud, returns the guide as a pointer.
+/* Creates the tutorial guide in the upper part of the HUD, returns the guide as a pointer.
+* @param plr The player for which the guide should be created.
+* @return the guide object.
+*/
 global func CreateTutorialGuide(int plr)
 {
 	var guide = CreateObject(TutorialGuide, 0, 0 , plr);
@@ -39,7 +40,10 @@ public func SetGuideIndex(int to_index)
 	return;
 }
 
-// Add a message to the guide, the index is set to this message.
+/* Adds a message to the guide. The internal index is set to this message meaning that this message will
+* be shown if the player clicks the guide.
+* @param msg Message that should be added to the message stack.
+*/
 public func AddGuideMessage(string msg)
 {
 	// Automatically set index to current.
@@ -51,7 +55,9 @@ public func AddGuideMessage(string msg)
 	return;
 }
 
-// Shows a guide message to the player, also resets the index to that point.
+/* Shows a guide message to the player, also resets the internal index to that point.
+*	@param show_index The message corresponding to this index will be shown.
+*/
 public func ShowGuideMessage(int show_index)
 {
 	index = Max(0, show_index);
