@@ -873,6 +873,9 @@ if(NOT HAVE_GETOPT_H)
 	include_directories(thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
 	target_link_libraries(clonk getopt)
+elseif(MINGW)
+	# Link libiberty which contains getopt with mingw
+	target_link_libraries(clonk iberty)
 endif()
 
 if(USE_GL)
