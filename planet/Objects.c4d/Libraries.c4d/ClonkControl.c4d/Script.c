@@ -501,6 +501,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
 	var vehicle = GetActionTarget();
+	// the clonk can have an action target even though he lost his action. 
+	// That's why the clonk may only interact with a vehicle if in an
+	// appropiate procedure:
+	if (proc != "ATTACH" && proc != "PUSH")
+		vehicle = nil;
 	var contents = GetItem(0);
 	var contents2 = GetItem(1);
 	
@@ -565,7 +570,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && (!vehicle || proc != "PUSH"))
+	if (!house && (!vehicle || proc == "ATTACH"))
 	{
 		if (contents)
 		{
@@ -832,6 +837,7 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 	{
 		// pushing vehicle: object to turn is the vehicle
 		var dir_obj = GetActionTarget();
+		if (GetProcedure() != "PUSH") dir_obj = nil;
 
 		// otherwise, turn the clonk
 		if (!dir_obj) dir_obj = this;
