@@ -1743,7 +1743,7 @@ func OnMaterialChanged(int new, int old)
 
 func FxBubbleTimer(pTarget, iNumber, iTime)
 {
-	Bubble();
+	if(GBackLiquid(0,-5)) Bubble();
 }
 
 func StartPushing()
