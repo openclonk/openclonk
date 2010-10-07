@@ -67,7 +67,6 @@ AM_CPPFLAGS = \
 ##$(srcdir)/.hg/dirstate:
 
 BUILT_SOURCES = C4Version.h
-EXTRA_DIST = automake.in
 do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
   -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
   -e 's,[@]C4PROJECT_TLD[@],org,g' \
@@ -660,7 +659,9 @@ endif
 
 ## other stuff
 
-EXTRA_DIST += \
+EXTRA_DIST = \
+  planet/System.c4g/LanguageUS.txt \
+  planet/System.c4g/LanguageDE.txt \
   clonk.anjuta \
   licenses \
   xcode \
