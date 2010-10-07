@@ -220,6 +220,9 @@ protected func Put()
 
 protected func Death(int killed_by)
 {
+	// this must be done first, before any goals do funny stuff with the clonk
+	_inherited(killed_by,...);
+	
 	// Info-broadcasts for dying clonks.
 	GameCallEx("OnClonkDeath", this, killed_by);
 	
@@ -232,11 +235,12 @@ protected func Death(int killed_by)
 	// If the last crewmember died, do another broadcast.
 	if (!GetCrew(GetOwner()))
 		GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
-	return _inherited(...);
+	return;
 }
 
 protected func Destruction()
 {
+	_inherited(...);
 	// If the clonk wasn't dead yet, he will be now.
 	if (GetAlive())
 		GameCallEx("OnClonkDeath", this, GetKiller());
@@ -246,7 +250,7 @@ protected func Destruction()
 		// Only if the player is still alive and not yet elimnated.
 			if (GetPlayerName(GetOwner()))
 				GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
-	return _inherited(...);
+	return;
 }
 
 protected func DeepBreath()
