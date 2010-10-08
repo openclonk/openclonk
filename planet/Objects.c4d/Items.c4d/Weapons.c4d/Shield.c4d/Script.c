@@ -91,6 +91,8 @@ func AdjustSolidMaskHelper()
 
 func ControlUseHolding(clonk, x, y)
 {
+	if(!clonk->IsWalking() && !clonk->IsJumping())
+		return clonk->CancelUse();
 	var angle=Angle(0,0, x,y);
 	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(Normalize(angle,-180)) * 11111/1000));
 	if(clonk->GetDir() == DIR_Left)
@@ -123,6 +125,8 @@ func ControlUseCancel(object clonk, int ix, int iy)
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->UpdateAttach();
 	AdjustSolidMaskHelper();
+	if(GetEffect("ShieldStopControl", clonk))
+		RemoveEffect("ShieldStopControl", clonk);
 }
 
 func Departure()
