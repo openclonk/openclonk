@@ -53,18 +53,18 @@ global func MakeEdgeFunction(bool fExact)
 {
 	var x=[];
 	var y=[];
-	var d=[];
+	if(fExact)var d=[];
 	for(var e in FindObjects(Find_ID(BrickEdge)))
 	{
 		x[GetLength(x)]=e->GetX();
 		y[GetLength(y)]=e->GetY();
-		d[GetLength(d)]=e->GetD();
+		if(fExact) d[GetLength(d)]=e->GetD();
 	}
 	Log("global func PlaceEdges()");
 	Log("{");
 	Log("	var x=%v;",x);
 	Log("	var y=%v;",y);
-	Log("	var d=%v;",d);
+	if(fExact) Log("	var d=%v;",d);
 	Log("	for (var i = 0; i < GetLength(x); i++)");
 	Log("	{");
 	Log("		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);");
