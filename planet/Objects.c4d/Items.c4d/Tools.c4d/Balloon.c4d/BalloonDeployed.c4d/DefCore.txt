@@ -2,7 +2,6 @@
 id=BalloonDeployed
 Version=4,9,8
 Category=C4D_Vehicle
-MaxUserSelect=10
 Width=32
 Height=40
 Offset=-16,-16

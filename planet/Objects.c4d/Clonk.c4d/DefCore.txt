@@ -1,8 +1,7 @@
 [DefCore]
 id=Clonk
 Version=4,10,0,0
-Category=C4D_Living|C4D_SelectHomebase
-MaxUserSelect=10
+Category=C4D_Living
 Width=8
 Height=20
 Offset=-4,-10

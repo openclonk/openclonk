@@ -2,6 +2,5 @@
 id=GUI_MenuDeco
 Version=4,10,0,0
 Category=C4D_StaticBack
-MaxUserSelect=0
 Width=1
 Height=1

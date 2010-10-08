@@ -2,7 +2,6 @@
 id=Snow
 Version=4,9,10,0
 Category=C4D_Object
-MaxUserSelect=100
 Timer=30
 TimerCall=Check
 Width=8

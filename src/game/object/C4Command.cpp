@@ -1210,7 +1210,7 @@ void C4Command::Get()
 bool C4Command::CheckMinimumCon (C4Object *pObj)
 {
 	if ((pObj->Category & C4D_Vehicle) || (pObj->Category & C4D_Object))
-		if (pObj->Category & C4D_SelectKnowledge)
+		if (pObj->Category & C4D_Knowledge)
 			if (pObj->GetCon() < FullCon)
 			{
 				//SoundEffect("Error",0,100,cObj);

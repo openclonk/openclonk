@@ -1,8 +1,7 @@
 [DefCore]
 id=WindGenerator
 Version=4,9,8
-Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
-MaxUserSelect=3
+Category=C4D_Structure
 TimerCall=Wind2Turn
 Timer=35
 Width=70

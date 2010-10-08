@@ -1,8 +1,7 @@
 [DefCore]
 id=Barrel
 Version=4,10,0,0
-Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
-MaxUserSelect=5
+Category=C4D_Object
 Value=8
 Mass=20
 TimerCall=Check

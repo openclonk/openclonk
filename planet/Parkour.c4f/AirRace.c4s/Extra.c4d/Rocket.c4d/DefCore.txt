@@ -2,7 +2,6 @@
 id=Rocket
 Version=4,10,0,0
 Category=C4D_Object
-MaxUserSelect=15
 Width=8
 Height=14
 Offset=-4,-7

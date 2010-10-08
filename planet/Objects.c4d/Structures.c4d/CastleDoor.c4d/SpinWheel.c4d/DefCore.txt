@@ -2,7 +2,6 @@
 id=SpinWheel
 Version=4,10,0,0
 Category=C4D_Structure
-MaxUserSelect=1
 Width=16
 Height=16
 Offset=-8,-8

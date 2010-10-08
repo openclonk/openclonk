@@ -2,7 +2,6 @@
 id=Boompack
 Version=4,9,10,10
 Category=C4D_Object
-MaxUserSelect=15
 Width=10
 Height=18
 Offset=-5,-7

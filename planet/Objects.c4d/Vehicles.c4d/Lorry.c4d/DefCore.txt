@@ -1,8 +1,7 @@
 [DefCore]
 id=Lorry
 Version=4,9,8
-Category=C4D_Vehicle|C4D_SelectVehicle|C4D_SelectKnowledge|C4D_SelectHomebase
-MaxUserSelect=5
+Category=C4D_Vehicle
 ContactCalls=1
 Width=22
 Height=16

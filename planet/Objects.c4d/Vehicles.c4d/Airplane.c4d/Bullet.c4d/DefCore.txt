@@ -2,7 +2,6 @@
 id=Bullet
 Version=4,10,0,0
 Category=C4D_Object
-MaxUserSelect=50
 Width=8
 Height=8
 Offset=-4,-4

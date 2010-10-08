@@ -6413,7 +6413,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4D_Object"             ,C4V_Int,          C4D_Object},
 	{ "C4D_Goal"               ,C4V_Int,          C4D_Goal},
 	{ "C4D_Environment"        ,C4V_Int,          C4D_Environment},
-	{ "C4D_Knowledge"          ,C4V_Int,          C4D_SelectKnowledge},
+	{ "C4D_Knowledge"          ,C4V_Int,          C4D_Knowledge},
 	{ "C4D_Magic"              ,C4V_Int,          C4D_Magic},
 	{ "C4D_Rule"               ,C4V_Int,          C4D_Rule},
 	{ "C4D_Background"         ,C4V_Int,          C4D_Background},

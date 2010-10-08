@@ -109,7 +109,6 @@ void C4Def::DefaultDefCore()
 	ContainBlast=0;
 	UprightAttach=0;
 	ContactFunctionCalls=0;
-	MaxUserSelect=0;
 	Line=0;
 	LineConnect=0;
 	LineIntersect=0;
@@ -233,22 +232,13 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_Object",                   C4D_Object              },
 
 		{ "C4D_Goal",                     C4D_Goal                },
+		{ "C4D_Rule",                     C4D_Rule                },
 		{ "C4D_Environment",              C4D_Environment         },
-		{ "C4D_SelectBuilding",           C4D_SelectBuilding      },
-		{ "C4D_SelectVehicle",            C4D_SelectVehicle       },
-		{ "C4D_SelectMaterial",           C4D_SelectMaterial      },
-		{ "C4D_SelectKnowledge",          C4D_SelectKnowledge     },
-		{ "C4D_SelectHomebase",           C4D_SelectHomebase      },
-		{ "C4D_SelectAnimal",             C4D_SelectAnimal        },
-		{ "C4D_SelectNest",               C4D_SelectNest          },
-		{ "C4D_SelectInEarth",            C4D_SelectInEarth       },
-		{ "C4D_SelectVegetation",         C4D_SelectVegetation    },
-
+		
+		{ "C4D_Knowledge",                C4D_Knowledge           },
 		{ "C4D_TradeLiving",              C4D_TradeLiving         },
 		{ "C4D_Magic",                    C4D_Magic               },
 		{ "C4D_CrewMember",               C4D_CrewMember          },
-
-		{ "C4D_Rule",                     C4D_Rule                },
 
 		{ "C4D_Background",               C4D_Background          },
 		{ "C4D_Parallax",                 C4D_Parallax            },
@@ -263,7 +253,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkNamingAdapt(MaxUserSelect,                 "MaxUserSelect",      0                 ));
 	pComp->Value(mkNamingAdapt(Timer,                         "Timer",              35                ));
 	pComp->Value(mkNamingAdapt(toC4CStr(STimerCall),          "TimerCall",          ""                ));
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));

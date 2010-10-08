@@ -2,7 +2,6 @@
 id=Ropeladder
 Version=4,9,8
 Category=C4D_Object
-MaxUserSelect=30
 Width=8
 Height=8
 Offset=-4,-4

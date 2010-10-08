@@ -53,30 +53,20 @@ C4D_Object         =    1<<4,
 C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
 
 C4D_Goal             =  1<<5,
-C4D_Environment      =  1<<6,
+C4D_Rule             =  1<<6,
+C4D_Environment      =  1<<7,
 
-C4D_SelectBuilding   =  1<<7,
-C4D_SelectVehicle    =  1<<8,
-C4D_SelectMaterial   =  1<<9,
-C4D_SelectKnowledge  =  1<<10,
-C4D_SelectHomebase   =  1<<11,
-C4D_SelectAnimal     =  1<<12,
-C4D_SelectNest       =  1<<13,
-C4D_SelectInEarth    =  1<<14,
-C4D_SelectVegetation =  1<<15,
+C4D_Knowledge        =  1<<8,
+C4D_TradeLiving      =  1<<9,
+C4D_Magic            =  1<<10,
+C4D_CrewMember       =  1<<11,
 
-C4D_TradeLiving      =  1<<16,
-C4D_Magic            =  1<<17,
-C4D_CrewMember       =  1<<18,
-
-C4D_Rule             =  1<<19,
-
-C4D_Background       =  1<<20,
-C4D_Parallax         =  1<<21,
-C4D_MouseSelect      =  1<<22,
-C4D_Foreground       =  1<<23,
-C4D_MouseIgnore      =  1<<24,
-C4D_IgnoreFoW        =  1<<25,
+C4D_Background       =  1<<12,
+C4D_Parallax         =  1<<13,
+C4D_MouseSelect      =  1<<14,
+C4D_Foreground       =  1<<15,
+C4D_MouseIgnore      =  1<<16,
+C4D_IgnoreFoW        =  1<<17,
 
 C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
 
@@ -179,7 +169,6 @@ public:
 	int32_t ContainBlast;
 	int32_t UprightAttach;
 	int32_t ContactFunctionCalls;
-	int32_t MaxUserSelect;
 	int32_t Line;
 	int32_t LineConnect;
 	int32_t LineIntersect;

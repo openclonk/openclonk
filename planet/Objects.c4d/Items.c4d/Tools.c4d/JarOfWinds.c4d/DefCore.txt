@@ -2,7 +2,6 @@
 id=JarOfWinds
 Version=4,9,10,10
 Category=C4D_Object
-MaxUserSelect=30
 Width=9
 Height=9
 Offset=-5,-5

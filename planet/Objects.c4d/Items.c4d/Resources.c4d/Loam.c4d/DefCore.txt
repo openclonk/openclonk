@@ -2,7 +2,6 @@
 id=Loam
 Version=4,9,10,10
 Category=C4D_Object
-MaxUserSelect=50
 Width=8
 Height=8
 Offset=-4,-4

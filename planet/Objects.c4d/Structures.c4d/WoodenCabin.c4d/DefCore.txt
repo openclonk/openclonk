@@ -1,8 +1,7 @@
 [DefCore]
 id=WoodenCabin
 Version=4,9,8
-Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
-MaxUserSelect=2
+Category=C4D_Structure
 Width=94
 Height=40
 Offset=-47,-20

@@ -2,7 +2,6 @@
 id=DoorTarget
 Version=4,9,8
 Category=C4D_Vehicle
-MaxUserSelect=10
 Width=25
 Height=25
 Offset=-12,-12

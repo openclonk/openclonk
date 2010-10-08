@@ -1,8 +1,7 @@
 [DefCore]
 id=Javelin
 Version=4,9,5
-Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
-MaxUserSelect=15
+Category=C4D_Object
 Value=7
 Width=4
 Height=26

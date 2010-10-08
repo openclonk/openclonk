@@ -12,7 +12,6 @@
 
 // GetDefCoreVal
 global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
-global func GetDefMaxUserSelect() { return GetDefCoreVal("MaxUserSelect", "DefCore"); }
 global func GetDefWidth()       { return GetDefCoreVal("Width", "DefCore"); }
 global func GetDefHeight()      { return GetDefCoreVal("Height", "DefCore"); }
 global func GetDefOffset(nr)   { return GetDefCoreVal("Offset", "DefCore", nr); }

@@ -2,7 +2,6 @@
 id=BurntBalloon
 Version=4,9,8
 Category=C4D_Vehicle
-MaxUserSelect=10
 Width=64
 Height=64
 Offset=-32,-32

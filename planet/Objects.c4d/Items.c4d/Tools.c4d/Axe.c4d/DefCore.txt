@@ -1,8 +1,7 @@
 [DefCore]
 id=Axe
 Version=4,10,0,0
-Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
-MaxUserSelect=5
+Category=C4D_Object
 Value=15
 Mass=20
 Width=10

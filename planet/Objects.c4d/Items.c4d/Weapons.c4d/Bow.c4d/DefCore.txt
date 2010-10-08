@@ -1,7 +1,6 @@
 [DefCore]
 id=Bow
 Category=C4D_Object
-MaxUserSelect=30
 Width=4
 Height=20
 Offset=-2,-10
