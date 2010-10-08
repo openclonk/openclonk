@@ -33,7 +33,7 @@ protected func Initialize()
 
 	// Smooth brick edges.
 	PlaceEdges();
-	AddEffect("Rain",0,100,2);
+	AddEffect("DryTime",0,100,2);
 	return;
 }
 
@@ -103,7 +103,7 @@ global func FxDryTimeTimer(object pTarget, int noum, int timer)
 	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 		return 1;
 	}
-	for(var i=0; i<6;i++)
+	for(var i=0; i<6+Random(4);i++)
 		ExtractLiquid(310+Random(50),430+Random(10));
 	if(!GBackLiquid(335,430))
 	{
@@ -115,8 +115,9 @@ global func FxDryTimeTimer(object pTarget, int noum, int timer)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart()
+global func FxIntFillChestsStart(object target, int num, int temporary);
 {
+	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
 	var w_list = [Bow, Musket, Shield, Sword, Club, Javelin, Bow, Musket, Shield, Sword, Club, Javelin, DynamiteBox];
 	
