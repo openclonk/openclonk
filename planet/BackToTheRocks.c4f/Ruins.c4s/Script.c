@@ -115,7 +115,7 @@ global func FxDryTimeTimer(object pTarget, int noum, int timer)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary);
+global func FxIntFillChestsStart(object target, int num, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));
