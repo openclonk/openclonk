@@ -156,7 +156,7 @@ public func FinishedAiming(object clonk, int angle)
 
 public func ControlUseCancel(object clonk, int x, int y)
 {
-	clonk->CancelAiming(this);
+	clonk->StopAim();
 	return true;
 }
 
