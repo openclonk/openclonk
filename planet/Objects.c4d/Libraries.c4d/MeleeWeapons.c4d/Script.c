@@ -328,21 +328,26 @@ func ApplyShieldFactor(pFrom, pTo, damage)
 	// totally prevent the strike?
 	if(pTo->~QueryCatchBlow(pFrom)) return 100;
 	
+	var state=0;
 	var shield=-1;
-	for(var i = GetEffectCount(0, pTo); i--;)
+	//for(var i = GetEffectCount(0, pTo); i--;)
+	for(;state <= 1;state++)
 	{
+		var effect_name="*Shield*";
+		if(state == 1) effect_name="IntWeaponCharge";
 		var iEffect;
-		iEffect = GetEffect("*Shield*", pTo, i);
-		if(!iEffect) iEffect = GetEffect("IntWeaponCharge", pTo, i);
-		
-		if(iEffect)
+		var i=0;
+		while(iEffect=GetEffect(effect_name, pTo, i++))
 		{
+			//iEffect = GetEffect("*Shield*", pTo, i);
+			//if(!iEffect) iEffect = GetEffect("IntWeaponCharge", pTo, i);
 			var s=EffectCall(pTo, iEffect, "HitByWeapon", pFrom, damage);
 			if(s && shield == -1) shield=s;
 			else if(s)
 			{
 				shield=(100-(((100-s)*(100-shield))/100));
 			}
+			
 		}
 	}
 	

@@ -195,17 +195,17 @@ func CheckStrike(iTime)
 
 func HitByWeapon(pFrom, iDamage)
 {
-	if(pFrom->GetX() > GetX())
+	if(pFrom->GetX() > Contained()->GetX())
 	{
 		if(Contained()->GetDir() != DIR_Right) return 0;
 	}
 	else if(Contained()->GetDir() != DIR_Left) return 0;
-		
+
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 500*50, iAngle);
+	ApplyWeaponBash(pFrom, 500, iAngle);
 	
 	// uber advantage in melee combat
-	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 40, this);
+	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 30, this);
 	
 	// shield factor
 	return 100;
@@ -247,16 +247,17 @@ func FxShieldStopControlControlJump(target, effect_number)
 func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 {
 	if(obj->GetOCF() & OCF_Alive) return false;
+
 	/*var x=1;
 	if(Contained()->GetDir() == DIR_Left) x=-1;
 	var direction=BoundBy(obj->GetXDir(), -1, 1);
 	if(Abs(obj->GetXDir()*/
 	var angle=BoundBy(iAngle, 0, 150);
 	if(iAngle > 180) angle=BoundBy(iAngle, 180+30, 360);
-	var posX=Sin(angle, 4);
-	if(Contained()->GetDir() == DIR_Right) posX+=3;
-	else posX-=1;
-	var posY=-Cos(angle, 4);
+	//var posX=Sin(angle, 4);
+	//if(Contained()->GetDir() == DIR_Right) posX+=3;
+	//else posX-=1;
+	var posY=-Cos(angle, 8);
 	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
 	
 	/*for(var cnt=0;cnt<360;cnt+=10)
@@ -265,7 +266,10 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 		
 	}*/
 	
-	if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 7) return false;
+	var dis=Abs(obj->GetY() - (Contained()->GetY()+posY));
+	
+	//if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 7) return false;
+	if(dis > 5) return false;
 	//target->Message(Format("%d", Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY())));
 	if(AngleInside(angle, object_angle, 45)) return false;
 	
@@ -299,6 +303,7 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	obj->SetYDir(-yd/3 + syd);
 	// dont collect blocked objects
 	AddEffect("NoCollection", obj, 1, 30);
+	Contained()->Sound(Format("ShieldMetalHit%d", Random(4)+1),false, nil, nil, nil);)
 	return true;
 }
 
