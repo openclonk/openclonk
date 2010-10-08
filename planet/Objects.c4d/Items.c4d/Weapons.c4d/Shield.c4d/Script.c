@@ -103,9 +103,8 @@ func ControlUseHolding(clonk, x, y)
 }
 
 func ControlUseStop(object clonk, int x, int y)
-{//Log("Stop");
+{
 	carry_bone = nil;
-	clonk->StopAnimation(aim_anim);
 	aim_anim = nil;
 	clonk->UpdateAttach();
 	StopWeaponHitCheckEffect(clonk);
@@ -113,16 +112,16 @@ func ControlUseStop(object clonk, int x, int y)
 	
 	if(GetEffect("ShieldStopControl", clonk))
 		RemoveEffect("ShieldStopControl", clonk);
+
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 }
 
 func ControlUseCancel(object clonk, int ix, int iy)
 {
-	if(aim_anim)
-	{
-		clonk->StopAnimation(aim_anim);
-		clonk->UpdateAttach();
-		aim_anim = nil;
-	}
+	carry_bone = nil;
+	aim_anim = nil;
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->UpdateAttach();
 	AdjustSolidMaskHelper();
 }
 

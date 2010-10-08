@@ -784,7 +784,9 @@ private func CancelUseControl(control, int x, int y)
 private func StopUseControl(control, int x, int y, object obj, bool cancel)
 {
 	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
+	// TODO: maybe think of a better alternative to distinguish between vehicle and object that is just outside the clonk
+	// cause the clonk is emptied on death
+	if (alt && !(obj->Contained()) && !(obj->GetCategory() & C4D_Object)) estr = "Alt";
 	
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
