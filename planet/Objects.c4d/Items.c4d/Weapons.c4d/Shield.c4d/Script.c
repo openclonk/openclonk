@@ -202,7 +202,7 @@ func HitByWeapon(pFrom, iDamage)
 	else if(Contained()->GetDir() != DIR_Left) return 0;
 
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 500, iAngle);
+	ApplyWeaponBash(pFrom, 100, iAngle);
 	
 	// uber advantage in melee combat
 	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 30, this);
@@ -257,7 +257,7 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	//var posX=Sin(angle, 4);
 	//if(Contained()->GetDir() == DIR_Right) posX+=3;
 	//else posX-=1;
-	var posY=-Cos(angle, 8);
+	var posY=-Cos(angle, 8)-3;
 	var object_angle=Angle(0, 0, obj->GetXDir(), obj->GetYDir());
 	
 	/*for(var cnt=0;cnt<360;cnt+=10)
@@ -269,7 +269,8 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	var dis=Abs(obj->GetY() - (Contained()->GetY()+posY));
 	
 	//if(Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY()) > 7) return false;
-	if(dis > 5) return false;
+	if(dis > 10) return false;
+	Log("%d - %d to %d with pos %d", dis, obj->GetY(), Contained()->GetY(), posY);
 	//target->Message(Format("%d", Distance(GetX()+posX, GetY()+posY, obj->GetX(), obj->GetY())));
 	if(AngleInside(angle, object_angle, 45)) return false;
 	
