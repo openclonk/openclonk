@@ -15,7 +15,7 @@
 // Include modular scoreboard columns, notice the reverse order.
 #include Scoreboard_KillStreak
 #include Scoreboard_Kill
-#include Scoreboard_Death
+//#include Scoreboard_Death
 #include Scoreboard_Relaunch
 #include Scoreboard_Player
 
@@ -87,7 +87,10 @@ protected func RelaunchPlayer(int plr, int killer)
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
-	// Show scoreboard for a while.
+	// Show scoreboard for a while & sort.
+	SortScoreboard(Scoreboard_KillStreak->GetKillStreakCol(), true);
+	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
+	SortScoreboard(Scoreboard_Relaunch->GetRelaunchCol(), true);
 	DoScoreboardShow(1, plr + 1);
 	Schedule(Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	return; // _inherited(plr, killer, ...);
