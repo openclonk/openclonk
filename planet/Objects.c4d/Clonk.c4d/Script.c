@@ -329,6 +329,7 @@ func UpdateAttach()
 func DoUpdateAttach(bool sec)
 {
 	var obj = GetItem(sec);
+	var other_obj = GetItem(!sec);
 	if(!obj) return;
 	var iAttachMode = obj->~GetCarryMode(this);
 	if(iAttachMode == CARRY_None) return;
@@ -358,6 +359,8 @@ func DoUpdateAttach(bool sec)
 	if(!sec) fBothHanded = 0;
 
 	var special = obj->~GetCarrySpecial(this);
+	var special_other;
+	if(other_obj) special_other = other_obj->~GetCarrySpecial(this);
 	if(special)
 	{
 		iHandMesh[sec] = AttachMesh(obj, special, bone, trans);
@@ -396,7 +399,7 @@ func DoUpdateAttach(bool sec)
 	else if(iAttachMode == CARRY_BothHands)
 	{
 		if(sec) return;
-		if(HasHandAction(sec, 1) && !sec)
+		if(HasHandAction(sec, 1) && !sec && !special_other)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_tool1", bone, trans);
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
