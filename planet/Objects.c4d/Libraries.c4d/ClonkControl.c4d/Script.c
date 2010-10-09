@@ -172,6 +172,7 @@ protected func Construction()
 	// using variables
 	alt = false;
 	using = nil;
+	using_type = nil;
 
 	return _inherited(...);
 }
@@ -368,7 +369,7 @@ protected func OnActionChanged(string oldaction)
 
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
-local using;
+local using, using_type;
 local alt;
 local mlastx, mlasty;
 local virtual_cursor;
@@ -521,12 +522,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if (house)
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+			return ControlUse2Script(ctrl, x, y, strength, repeat, release, house);
 		}
 		// control to grabbed vehicle
 		else if (vehicle && proc == "PUSH")
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+			return ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle);
 		}
 		else if (vehicle && proc == "ATTACH")
 		{
@@ -542,7 +543,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			   usage via CancelUse().
 			  */
 
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle))
 				return true;
 			else
 			{
@@ -558,12 +559,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// need to cancel use of an object that left inventory
 		if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
 		{
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
 				return true;
 		}
 		else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
 		{
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents2))
 				return true;
 		}
 	}
@@ -649,11 +650,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// forward to script...
 		if (house)
 		{
-			return ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
+			return ControlMovement2Script(ctrl, x, y, strength, repeat, release, house);
 		}
 		else if (vehicle)
 		{
-			if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle)) return true;
+			if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, vehicle)) return true;
 		}
 	
 		return ObjectControlMovement(plr, ctrl, strength, release);
@@ -703,12 +704,8 @@ public func CancelUse()
 {
 	if (!using) return;
 
-	var control = "Control";
-	if (Contained() == using)
-		control = "Contained";
-	
 	// use the saved x,y coordinates for canceling
-	CancelUseControl(control, mlastx, mlasty);
+	CancelUseControl(mlastx, mlasty);
 }
 
 // for testing if the calls in ControlUse2Script are issued correctly
@@ -718,30 +715,59 @@ public func CancelUse()
 //	return inherited(call,...);
 //}
 
-private func StartUseControl(int ctrl, control, int x, int y, object obj)
+private func DetermineUsageType(object obj)
+{
+	// house
+	if (obj == Contained())
+		return C4D_Structure;
+	// object
+	if (obj)
+		if (obj->Contained() == this)
+			return C4D_Object;
+	// vehicle
+	var proc = GetProcedure();
+	if (obj == GetActionTarget())
+		if (proc == "ATTACH" && proc == "PUSH")
+			return C4D_Vehicle;
+	// unkown
+	return nil;
+}
+
+private func GetUseCallString(string action) {
+	// Control... or Contained...
+	var control = "Control";
+	if (using_type == C4D_Structure) control = "Contained";
+	// ..Use.. or ..UseAlt...
+	var estr = "";
+	if (alt && using_type != C4D_Object) estr = "Alt";
+	// Action
+	if (!action) action = "";
+	
+	return Format("~%sUse%s%s",control,estr,action);
+}
+
+private func StartUseControl(int ctrl, int x, int y, object obj)
 {
 	using = obj;
+	using_type = DetermineUsageType(obj);
+	alt = ctrl != CON_Use;
+	
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
 	if (hold_enabled)
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
-		
-	if (ctrl == CON_Use) alt = false;
-	else alt = true;
-	
-	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
-	
+
 	// first call UseStart. If unhandled, call Use (mousecontrol)
-	var handled = obj->Call(Format("~%sUse%sStart",control,estr),this,x,y);
+	var handled = obj->Call(GetUseCallString("Start"),this,x,y);
 	if (!handled)
 	{
-		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+		handled = obj->Call(GetUseCallString(),this,x,y);
 		noholdingcallbacks = handled;
 	}
 	if (!handled)
 	{
 		using = nil;
+		using_type = nil;
 		if (hold_enabled)
 			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		return false;
@@ -750,52 +776,44 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	return handled;
 }
 
-private func StartUseDelayedControl(int ctrl, control, object obj)
+private func StartUseDelayedControl(int ctrl, object obj)
 {
 	using = obj;
-	var hold_enabled = obj->Call("~HoldingEnabled");
+	using_type = DetermineUsageType(obj);
+	alt = ctrl != CON_UseDelayed;
 				
-	if (ctrl == CON_UseDelayed) alt = false;
-	else alt = true;
-			
-	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
-			
 	VirtualCursor()->StartAim(this);
 			
 	// call UseStart
-	var handled = obj->Call(Format("~%sUse%sStart",control,estr),this,mlastx,mlasty);
-	if (!handled) noholdingcallbacks = true;
-	else noholdingcallbacks = false;
+	var handled = obj->Call(GetUseCallString("Start"),this,mlastx,mlasty);
+	noholdingcallbacks = !handled;
 	
 	return handled;
 }
 
-private func CancelUseControl(control, int x, int y)
+private func CancelUseControl(int x, int y)
 {
 	// to horse first (if there is one)
 	var horse = GetActionTarget();
 	if(horse && GetProcedure() == "ATTACH" && using != horse)
-		StopUseControl(control, x, y, horse, true);
+		StopUseControl(x, y, horse, true);
 
-	return StopUseControl(control, x, y, using, true);
+	return StopUseControl(x, y, using, true);
 }
 
-private func StopUseControl(control, int x, int y, object obj, bool cancel)
+private func StopUseControl(int x, int y, object obj, bool cancel)
 {
-	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
-	
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
 	var stop = "Stop";
 	if (cancel) stop = "Cancel";
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
-	var handled = obj->Call(Format("~%sUse%s%s",control,estr,stop),this,x,y);
+	var handled = obj->Call(GetUseCallString(stop),this,x,y);
 	if (obj == using)
 	{
 		using = nil;
+		using_type = nil;
 		alt = false;
 		noholdingcallbacks = false;
 		
@@ -808,11 +826,8 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	return handled;
 }
 
-private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
+private func HoldingUseControl(int ctrl, int x, int y, object obj)
 {
-	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
-	
 	var mex = x;
 	var mey = y;
 	if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
@@ -857,29 +872,26 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 		}
 	}
 	
-	var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
+	var handled = obj->Call(GetUseCallString("Holding"),this,mex,mey);
 			
 	return handled;
 }
 
-private func StopUseDelayedControl(control, object obj)
+private func StopUseDelayedControl(object obj)
 {
-	var estr = "";
-	if (alt && !(obj->Contained())) estr = "Alt";
-	
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
-	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,mlastx,mlasty);
+	
+	var handled = obj->Call(GetUseCallString("Stop"),this,mlastx,mlasty);
 	if (!handled)
-		handled = obj->Call(Format("~%sUse%s",control,estr),this,mlastx,mlasty);
-
-	//Log("called %sUse%sStop(this,%d,%d)",control,estr,mlastx,mlasty);
+		handled = obj->Call(GetUseCallString(),this,mlastx,mlasty);
 	
 	if (obj == using)
 	{
 		VirtualCursor()->StopAim();
 		using = nil;
+		using_type = nil;
 		alt = false;
 		noholdingcallbacks = false;
 	}
@@ -921,7 +933,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 }
 
 // Control use redirected to script
-private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// click on secondary cancels primary and the other way round
 	if (using)
@@ -929,7 +941,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt
 		||  ctrl == CON_UseDelayed && alt || ctrl == CON_UseAltDelayed && !alt)
 		{
-			CancelUseControl(control, x, y);
+			CancelUseControl(x, y);
 			return true;
 		}
 	}
@@ -939,11 +951,11 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 	{
 		if (!release && !repeat)
 		{
-			return StartUseControl(ctrl, control, x, y, obj);
+			return StartUseControl(ctrl,x, y, obj);
 		}
 		else if (release && obj == using)
 		{
-			return StopUseControl(control, x, y, obj);
+			return StopUseControl(x, y, obj);
 		}
 	}
 	// gamepad use
@@ -951,11 +963,11 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 	{
 		if (!release && !repeat)
 		{
-			return StartUseDelayedControl(ctrl, control,obj);
+			return StartUseDelayedControl(ctrl, obj);
 		}
 		else if (release && obj == using)
 		{
-			return StopUseDelayedControl(control,obj);
+			return StopUseDelayedControl(obj);
 		}
 	}
 	
@@ -970,7 +982,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		}
 		else if (repeat && !noholdingcallbacks)
 		{
-			return HoldingUseControl(ctrl, control, x, y, obj);
+			return HoldingUseControl(ctrl, x, y, obj);
 		}
 	}
 		
@@ -978,11 +990,14 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 }
 
 // Control use redirected to script
-private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
+private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// overloads of movement commandos
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
 	{
+		var control = "Control";
+		if (Contained() == obj) control = "Contained";
+	
 		if (release)
 		{
 			// if any movement key has been released, ControlStop is called
