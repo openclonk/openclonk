@@ -15,6 +15,7 @@ public func Initialize()
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
+public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform() { return Trans_Rotate(90, 0, 1, 0); }
 
 
@@ -23,13 +24,19 @@ public func IsTool() { return 1; }
 public func IsToolProduct() { return 1; }
 
 local magic_number;
+local carry_bone;
 public func ControlUseStart(object clonk, int x, int y)
 {
 	if(!CanStrikeWithWeapon(clonk)) return true;
 	var slow=GetEffect("SwordStrikeSlow", clonk);
 
 	var arm = "R";
-	if(clonk->GetItemPos(this) == 1) arm = "L";
+	carry_bone = "pos_hand2";
+	if(clonk->GetItemPos(this) == 1)
+	{
+		arm = "L";
+		carry_bone = "pos_hand1";
+	}
 	var rand = Random(2)+1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	if(clonk->GetAction() == "Jump")
@@ -75,6 +82,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+	clonk->UpdateAttach();
 	
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, length, 1);
@@ -92,6 +100,8 @@ func ControlUseStop(object clonk, int x, int y)
 
 func OnWeaponHitCheckStop(clonk)
 {
+	carry_bone = nil;
+	clonk->UpdateAttach();
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
 	//if(GetEffect("DelayTranslateVelocity", clonk))
