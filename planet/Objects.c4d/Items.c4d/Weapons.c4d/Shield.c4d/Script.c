@@ -304,7 +304,7 @@ func FxShieldStopControlQueryCatchBlow(target, effect_number, object obj)
 	obj->SetYDir(-yd/3 + syd);
 	// dont collect blocked objects
 	AddEffect("NoCollection", obj, 1, 30);
-	Contained()->Sound(Format("ShieldMetalHit%d", Random(4)+1),false, nil, nil, nil);)
+	Contained()->Sound(Format("ShieldMetalHit%d", Random(4)+1),false, nil, nil, nil);
 	return true;
 }
 
