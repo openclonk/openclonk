@@ -784,9 +784,7 @@ private func CancelUseControl(control, int x, int y)
 private func StopUseControl(control, int x, int y, object obj, bool cancel)
 {
 	var estr = "";
-	// TODO: maybe think of a better alternative to distinguish between vehicle and object that is just outside the clonk
-	// cause the clonk is emptied on death
-	if (alt && !(obj->Contained()) && !(obj->GetCategory() & C4D_Object)) estr = "Alt";
+	if (alt && !(obj->Contained())) estr = "Alt";
 	
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
@@ -943,7 +941,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		{
 			return StartUseControl(ctrl, control, x, y, obj);
 		}
-		else if (release)
+		else if (release && obj == using)
 		{
 			return StopUseControl(control, x, y, obj);
 		}
@@ -955,7 +953,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		{
 			return StartUseDelayedControl(ctrl, control,obj);
 		}
-		else if (release)
+		else if (release && obj == using)
 		{
 			return StopUseDelayedControl(control,obj);
 		}
