@@ -165,24 +165,18 @@ bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *p
 	StdStrBuf strUpdateURL;
 	// Double check for valid update
 	if (!IsValidUpdate(rUpdateVersion)) return false;
-	// Major update: we will update to the first minor of the next major version - we can not skip major versions or jump directly to a higher minor of the next major version.
-	if (rUpdateVersion.iVer[0] > C4XVER1)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1 + 1, 0, 0, 0, C4_OS);
-	else if (rUpdateVersion.iVer[1] > C4XVER2)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2 + 1, 0, 0, C4_OS);
-	else if (rUpdateVersion.iVer[2] > C4XVER3)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3 + 1, 0, C4_OS);
-	// Minor update: apply cumulative update
-	else
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3, (int)rUpdateVersion.iVer[3], C4_OS);
+	strUpdateURL.Format(Config.General.UpdateURL, C4_OS, C4XVER1, C4XVER2, C4XVER3, C4XVER4);
 	// Determine local filename for update group
 	StdStrBuf strLocalFilename; strLocalFilename.Copy(GetFilename(strUpdateURL.getData()));
-	// Windows Vista: download update group to temp path
-	if (IsWindowsVista()) strLocalFilename.Copy(Config.AtTempPath(strLocalFilename.getData()));
+	strLocalFilename.Copy(Config.AtTempPath(strLocalFilename.getData()));
 	// Download update group
 	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strUpdateURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
-		// Download failed (return success, because error message has already been shown)
+	{
+		// Download failed, open browser so the user can download a full package
+		OpenURL("http://wiki.openclonk.org/w/Download");
+		// return success, because error message has already been shown
 		return true;
+	}
 	// Apply downloaded update
 	return ApplyUpdate(strLocalFilename.getData(), true, pScreen);
 }
@@ -263,18 +257,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 
 bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
 {
-	// Engine or game version mismatch
-	if ( (rNewVer.iVer[0] != C4XVER1) || (rNewVer.iVer[1] != C4XVER2) ) return false;
-	// Objects major is higher...
-	if ( (rNewVer.iVer[2] > C4XVER3)
-	     // ...or objects major is the same and objects minor is higher...
-	     || ((rNewVer.iVer[2] == C4XVER3) && (rNewVer.iVer[3] > C4XVER4))
-	     // ...or build number is higher
-	     /*|| (rNewVer.iBuild > C4XVERBUILD)*/ )
-		// Update okay
-		return true;
-	// Otherwise
-	return false;
+	return CompareVersion(rNewVer.iVer[0], rNewVer.iVer[1], rNewVer.iVer[2], rNewVer.iVer[3], C4XVER1, C4XVER2, C4XVER3, C4XVER4) > 0;
 }
 
 bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
