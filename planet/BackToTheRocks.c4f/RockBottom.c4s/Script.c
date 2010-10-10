@@ -57,6 +57,7 @@ protected func OnPlayerRelaunch(int plr)
 	var clonk = GetCrew(plr);
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
+	SetFoW(false,plr);
 	return;
 }
 
@@ -77,7 +78,7 @@ global func FxIntFillChestsStart(object target, int num, int temporary)
 global func FxIntFillChestsTimer()
 {
 	SetTemperature(100); 
-	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
+	var chest = FindObject(Find_ID(Chest));
 	var w_list = [Dynamite, Rock, Dynamite, Firestone, Firestone, Bow, Musket, Sword, Javelin];
 	
 	if (chest->ContentsCount() < 5 || !Random((chest->ContentsCount())+4))
