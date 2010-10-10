@@ -457,14 +457,13 @@ static C4Void FnRemoveObject(C4AulObjectContext *cthr, bool fEjectContents)
 static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds, long iPrec)
 {
 	if (!iPrec) iPrec = 1;
+	C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
 	if (fCheckBounds)
 	{
 		// BoundsCheck takes ref to C4Real and not to long
-		C4Real i_x = itofix(iX, iPrec), i_y = itofix(iY, iPrec);
 		cthr->Obj->BoundsCheck(i_x, i_y);
-		iX = fixtoi(i_x, iPrec); iY = fixtoi(i_y, iPrec);
 	}
-	cthr->Obj->ForcePosition(iX,iY, iPrec);
+	cthr->Obj->ForcePosition(i_x, i_y);
 	// update liquid
 	cthr->Obj->UpdateInLiquid();
 	return C4VNull;

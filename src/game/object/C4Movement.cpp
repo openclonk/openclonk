@@ -504,16 +504,9 @@ void C4Object::CopyMotion(C4Object *from)
 	xdir=from->xdir; ydir=from->ydir;
 }
 
-void C4Object::ForcePosition(int32_t tx, int32_t ty)
+void C4Object::ForcePosition(C4Real tx, C4Real ty)
 {
-	fix_x=itofix(tx); fix_y=itofix(ty);
-	UpdatePos();
-	UpdateSolidMask(false);
-}
-
-void C4Object::ForcePosition(int32_t tx, int32_t ty, long iPrec)
-{
-	fix_x=itofix(tx, iPrec); fix_y=itofix(ty, iPrec);
+	fix_x=tx; fix_y=ty;
 	UpdatePos();
 	UpdateSolidMask(false);
 }

@@ -76,7 +76,7 @@ void C4EditCursor::Execute()
 	case C4CNS_ModeEdit:
 		// Hold selection
 		if (Hold)
-			EMMoveObject(EMMO_Move, 0, 0, NULL, &Selection);
+			EMMoveObject(EMMO_Move, Fix0, Fix0, NULL, &Selection);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
@@ -153,7 +153,7 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 		// Hold
 		if (!DragFrame && Hold)
 		{
-			MoveSelection(int32_t(xoff),int32_t(yoff));
+			MoveSelection(ftofix(xoff),ftofix(yoff));
 			UpdateDropTarget(wKeyFlags);
 		}
 		// Update target
@@ -370,7 +370,7 @@ bool C4EditCursor::RightButtonUp()
 bool C4EditCursor::Delete()
 {
 	if (!EditingOK()) return false;
-	EMMoveObject(EMMO_Remove, 0, 0, NULL, &Selection);
+	EMMoveObject(EMMO_Remove, Fix0, Fix0, NULL, &Selection);
 	if (::Control.isCtrlHost())
 	{
 		OnSelectionChanged();
@@ -395,7 +395,7 @@ bool C4EditCursor::OpenPropTools()
 
 bool C4EditCursor::Duplicate()
 {
-	EMMoveObject(EMMO_Duplicate, 0, 0, NULL, &Selection);
+	EMMoveObject(EMMO_Duplicate, Fix0, Fix0, NULL, &Selection);
 	return true;
 }
 
@@ -485,9 +485,9 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 }
 
 
-void C4EditCursor::MoveSelection(int32_t iXOff, int32_t iYOff)
+void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 {
-	EMMoveObject(EMMO_Move, iXOff, iYOff, NULL, &Selection);
+	EMMoveObject(EMMO_Move, XOff, YOff, NULL, &Selection);
 }
 
 void C4EditCursor::FrameSelection()
@@ -505,7 +505,7 @@ void C4EditCursor::FrameSelection()
 
 bool C4EditCursor::In(const char *szText)
 {
-	EMMoveObject(EMMO_Script, 0, 0, NULL, &Selection, szText);
+	EMMoveObject(EMMO_Script, Fix0, Fix0, NULL, &Selection, szText);
 	return true;
 }
 
@@ -679,7 +679,7 @@ void C4EditCursor::GrabContents()
 	Hold=true;
 
 	// Exit all objects
-	EMMoveObject(EMMO_Exit, 0, 0, NULL, &Selection);
+	EMMoveObject(EMMO_Exit, Fix0, Fix0, NULL, &Selection);
 }
 
 void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
@@ -703,7 +703,7 @@ void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 void C4EditCursor::PutContents()
 {
 	if (!DropTarget) return;
-	EMMoveObject(EMMO_Enter, 0, 0, DropTarget, &Selection);
+	EMMoveObject(EMMO_Enter, Fix0, Fix0, DropTarget, &Selection);
 }
 
 C4Object *C4EditCursor::GetTarget()
@@ -769,7 +769,7 @@ void C4EditCursor::ApplyToolPicker()
 	Hold=false;
 }
 
-void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs, const char *szScript)
+void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs, const char *szScript)
 {
 	// construct object list
 	int32_t iObjCnt = 0; int32_t *pObjIDs = NULL;

@@ -307,8 +307,7 @@ public:
 	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=NULL);
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
-	void ForcePosition(int32_t tx, int32_t ty);
-	void ForcePosition(int32_t tx, int32_t ty, long iPrec);
+	void ForcePosition(C4Real tx, C4Real ty);
 	void MovePosition(int32_t dx, int32_t dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);

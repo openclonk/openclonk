@@ -3805,12 +3805,12 @@ void C4Object::ContactAction()
 			bool fAllowDown = !(t_contact & CNAT_Bottom);
 			if (t_contact & CNAT_Right)
 			{
-				ForcePosition(GetX() - 1, GetY() + fAllowDown);
+				ForcePosition(fix_x - 1, fix_y + fAllowDown);
 				xdir=ydir=0;
 			}
 			if (t_contact & CNAT_Left)
 			{
-				ForcePosition(GetX() + 1, GetY() + fAllowDown);
+				ForcePosition(fix_x + 1, fix_y + fAllowDown);
 				xdir=ydir=0;
 			}
 		}
@@ -3818,7 +3818,7 @@ void C4Object::ContactAction()
 		{
 			if (t_contact & CNAT_Top)
 			{
-				ForcePosition(GetX(), GetY() + 1);
+				ForcePosition(fix_x, fix_y + 1);
 				xdir=ydir=0;
 			}
 		}
@@ -4603,9 +4603,9 @@ void C4Object::ExecAction()
 		}
 
 		// Force position
-		ForcePosition(Action.Target->GetX()+Action.Target->Shape.VtxX[Action.Data&255]
+		ForcePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
 		              -Shape.VtxX[Action.Data>>8],
-		              Action.Target->GetY()+Action.Target->Shape.VtxY[Action.Data&255]
+		              Action.Target->fix_y + Action.Target->Shape.VtxY[Action.Data&255]
 		              -Shape.VtxY[Action.Data>>8]);
 		// must zero motion...
 		xdir=ydir=0;

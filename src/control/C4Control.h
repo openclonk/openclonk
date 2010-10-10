@@ -353,12 +353,12 @@ class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
 	C4ControlEMMoveObject() : pObjects(NULL) { }
-	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
+	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
 	~C4ControlEMMoveObject();
 protected:
 	C4ControlEMObjectAction eAction; // action to be performed
-	int32_t tx,ty;        // target position
+	C4Real tx,ty;        // target position
 	int32_t iTargetObj;   // enumerated ptr to target object
 	int32_t iObjectNum;   // number of objects moved
 	int32_t *pObjects;    // pointer on array of objects moved

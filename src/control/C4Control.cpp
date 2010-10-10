@@ -901,7 +901,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlEMMoveObject
 
-C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
+C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
@@ -927,7 +927,7 @@ void C4ControlEMMoveObject::Execute() const
 		for (int i=0; i<iObjectNum; ++i)
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i]))) if (pObj->Status)
 				{
-					pObj->ForcePosition(pObj->GetX()+tx,pObj->GetY()+ty);
+					pObj->ForcePosition(pObj->fix_x+tx,pObj->fix_y+ty);
 					pObj->xdir=pObj->ydir=0;
 					pObj->Mobile = false;
 				}
@@ -977,8 +977,8 @@ void C4ControlEMMoveObject::Execute() const
 			ScriptCtrl.SetTargetObj(pObjects[i]);
 			ScriptCtrl.Execute();
 		}
-		break;
 	}
+	break;
 	case EMMO_Remove:
 	{
 		if (!pObjects) return;
@@ -988,7 +988,7 @@ void C4ControlEMMoveObject::Execute() const
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				pObj->AssignRemoval();
 	}
-	break; // Here was fallthrough. Seemed wrong. ck.
+	break;
 	case EMMO_Exit:
 	{
 		if (!pObjects) return;
@@ -998,7 +998,7 @@ void C4ControlEMMoveObject::Execute() const
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
 	}
-	break; // Same. ck.
+	break;
 	}
 	// update property dlg & status bar
 	if (fLocalCall)
