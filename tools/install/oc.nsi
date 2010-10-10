@@ -97,7 +97,6 @@ Section "MainSection" SEC01
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-;  CreateShortCut "$SMPROGRAMS\Clonk Rage\Clonk Editor.lnk" "$INSTDIR\Editor.exe"
   CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\Uninstall.lnk" "$INSTDIR\uninst.exe"

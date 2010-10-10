@@ -395,12 +395,6 @@ bool C4ConfigShareware::LoadRegistration(const char *keyFile)
 	// Now truncate the signature from the registration key
 	*delim = 0;
 
-	// Date check: Clonk Rage allows valid c4k keys which are newer than 2006-04-01
-	int iYear, iMonth, iDay;
-	sscanf(GetRegistrationData("Date"), "%d-%d-%d", &iYear, &iMonth, &iDay);
-	if ((iYear < 2006) || ((iYear == 2006) && (iMonth < 4)))
-		return HandleError("Registration key is too old for this version.");
-
 	// Set registered flag
 	RegistrationValid = true;
 	// Store valid keyfile name
