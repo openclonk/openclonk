@@ -68,6 +68,7 @@ public:
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
 #endif
+	void EditCursorMove(int X, int Y, uint16_t);
 	virtual void Close();
 };
 
