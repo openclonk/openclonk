@@ -264,11 +264,11 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 		}
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();
-		target->SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(angle,0,0,1), Trans_Translate(-off[0],-off[1]+10000)));
+		target->SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(angle,0,0,1), Trans_Translate(-off[0],-off[1]+10000)), 2);
 	}
 	else if(EffectVar(4, target, fxnum))
 	{
-		target->SetProperty("MeshTransformation");
+		target->SetMeshTransformation(0, 2);
 		target->SetObjDrawTransform(1000, 0, 0, 0, 1000);
 		target->StopAnimation(target->GetRootAnimation(10));
 		if(!target->GetHandAction())
@@ -285,7 +285,7 @@ public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tm
 {
 	if(tmp) return;
 	target->SetTurnType(0);
-	target->SetProperty("MeshTransformation");
+	target->SetMeshTransformation(0, 2);
 	target->StopAnimation(target->GetRootAnimation(10));
 	target->SetObjDrawTransform();
 	if(!target->GetHandAction())

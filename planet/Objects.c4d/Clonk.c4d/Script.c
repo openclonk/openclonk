@@ -508,6 +508,28 @@ public func GetHandAction()
 	return false;
 }
 
+/* Mesh transformations */
+
+local mesh_transformation_list;
+
+func SetMeshTransformation(array transformation, int layer)
+{
+	if(!mesh_transformation_list) mesh_transformation_list = [];
+	if(GetLength(mesh_transformation_list) < layer)
+		SetLength(mesh_transformation_list, layer+1);
+	mesh_transformation_list[layer] = transformation;
+	var all_transformations = 0;
+	for(var trans in mesh_transformation_list)
+	{
+		if(!trans) continue;
+		if(all_transformations)
+			all_transformations = Trans_Mul(trans, all_transformations);
+		else
+			all_transformations = trans;
+	}
+	SetProperty("MeshTransformation", all_transformations);
+}
+
 /* Turn */
 local iTurnAction;
 local iTurnAction2;
@@ -535,18 +557,56 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	var iTurnPos = 0;
 	if(EffectVar(0, pTarget, iNumber) == COMD_Right) iTurnPos = 1;
 
+	EffectVar(3, pTarget, iNumber) = 25;
+//	SetProperty("MeshTransformation", Trans_Rotate(EffectVar(3, pTarget, iNumber), 0, 1, 0));
+/*
 	iTurnAction  = PlayAnimation("TurnRoot120", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot120")), Anim_Const(1000));
 	iTurnAction2 = PlayAnimation("TurnRoot180", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot180")), Anim_Const(1000), iTurnAction);
 	iTurnKnot1 = iTurnAction2+1;
 	iTurnAction3 = PlayAnimation("TurnRoot240", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot240")), Anim_Const(1000), iTurnAction2);
 	iTurnKnot2 = iTurnAction3+1;
-
+*/
 	EffectVar(1, pTarget, iNumber) = 0;
+	EffectVar(4, pTarget, iNumber) = 25;
+	EffectVar(5, pTarget, iNumber) = -1;
 	SetTurnType(0);
 }
 
 func FxIntTurnTimer(pTarget, iNumber, iTime)
 {
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+	var iRot = EffectVar(4, pTarget, iNumber);
+	if(EffectVar(0, pTarget, iNumber) != GetDirection() || EffectVar(5, pTarget, iNumber) != iLastTurn)
+	{
+		EffectVar(0, pTarget, iNumber) = GetDirection();
+		if(EffectVar(0, pTarget, iNumber) == COMD_Right)
+		{
+			if(iLastTurn == 0)
+				iRot = 180-25;
+			if(iLastTurn == 1)
+				iRot = 180;
+		}
+		else
+		{
+			if(iLastTurn == 0)
+				iRot = 25;
+			if(iLastTurn == 1)
+				iRot = 0;
+		}
+		// Save new ComDir
+		EffectVar(0, pTarget, iNumber) = GetDirection();
+		EffectVar(5, pTarget, iNumber) = iLastTurn;
+		// Notify effects
+		ResetAnimationEffects();
+	}
+	if(iRot != EffectVar(3, pTarget, iNumber))
+	{
+		EffectVar(3, pTarget, iNumber) += BoundBy(iRot-EffectVar(3, pTarget, iNumber), -18, 18);
+		SetMeshTransformation(Trans_Rotate(EffectVar(3, pTarget, iNumber), 0, 1, 0), 0);
+//		SetProperty("MeshTransformation", Trans_Rotate(EffectVar(3, pTarget, iNumber), 0, 1, 0));
+	}
+	EffectVar(4, pTarget, iNumber) = iRot;
+	return;
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	if(EffectVar(0, pTarget, iNumber) != GetDirection())
 	{
@@ -583,6 +643,12 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 
 public func GetTurnPhase()
 {
+	var iEff = GetEffect("IntTurn", this);
+	var iRot = EffectVar(3, this, iEff);
+	if(iLastTurn == 0)
+		return (iRot-25)*100/130;
+	if(iLastTurn == 1)
+		return iRot*100/180;
 	return GetAnimationPosition(iTurnAction)*100/GetAnimationLength("TurnRoot120");
 }
 
@@ -604,10 +670,12 @@ func SetTurnType(iIndex, iSpecial)
 	}
 	else
 	{
-		// Standart turn? Save and do nothin if we are blocked
+		// Standart turn? Save and do nothing if we are blocked
 		iLastTurn = iIndex;
 		if(iTurnSpecial) return;
 	}
+//	EffectVar(0, this, GetEffect("IntTurn", this)) = -1;
+	return;
 	if(iIndex == 0)
 	{
 		SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),1000,0,10,ANIM_Hold));
