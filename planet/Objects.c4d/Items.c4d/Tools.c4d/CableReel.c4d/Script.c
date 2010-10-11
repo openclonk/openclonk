@@ -55,7 +55,7 @@ protected func Activate(object pClonk)
 		pClonk->Message("$TxtConnect$", pObj->GetName());
 		return true;
 	}
-	return true;
+//	return true;
 }
 
 // Finds all power lines connected to pObject (can be nil in local calls).

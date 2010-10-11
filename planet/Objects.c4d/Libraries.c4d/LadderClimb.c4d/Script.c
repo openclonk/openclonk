@@ -353,12 +353,12 @@ func SetLadderRotation (int r, int xoff, int yoff) {
 	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)), 1);
 //	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)));
 	return;
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-	// set matrix values
-	SetObjDrawTransform (
-		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
-	);
+//	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+//	// set matrix values
+//	SetObjDrawTransform (
+//		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
+//		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
+//	);
 }
 
 // Defined to prevent an error.
