@@ -792,7 +792,7 @@ bool CSurface::Unlock()
 				// if tex refs exist, free them
 				/*FreeTextures();*/
 				// otherwise, emulated primary locks in OpenGL
-				delete PrimarySurfaceLockBits;
+				delete[] PrimarySurfaceLockBits;
 				PrimarySurfaceLockBits = 0;
 				return true;
 			}
