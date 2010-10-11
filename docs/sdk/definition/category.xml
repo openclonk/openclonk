@@ -46,10 +46,6 @@
           <col>A magic spell.</col>
         </row>
         <row>
-          <col></col>
-          <col>Reserved, used internally.</col>
-        </row>
-        <row>
           <col>C4D_Rule</col>
           <col>Rule control object.</col>
         </row>

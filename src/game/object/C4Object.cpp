@@ -5609,7 +5609,7 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
 		else
 		{
 			// Do not force that the owner exists because the function must work for unjoined players (savegame resume)
-			if (Category & C4D_CrewMember)
+			if (Def->CrewMember)
 				return true;
 		}
 	}

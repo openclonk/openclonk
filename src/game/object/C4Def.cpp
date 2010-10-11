@@ -158,9 +158,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Adjust category: C4D_CrewMember by CrewMember flag
-		if (CrewMember) Category|=C4D_CrewMember;
-
 		// Adjust picture rect
 		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
 			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
@@ -237,7 +234,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		
 		{ "C4D_Knowledge",                C4D_Knowledge           },
 		{ "C4D_Magic",                    C4D_Magic               },
-		{ "C4D_CrewMember",               C4D_CrewMember          },
 
 		{ "C4D_Background",               C4D_Background          },
 		{ "C4D_Parallax",                 C4D_Parallax            },

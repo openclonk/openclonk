@@ -58,7 +58,6 @@ C4D_Environment      =  1<<7,
 
 C4D_Knowledge        =  1<<8,
 C4D_Magic            =  1<<10,
-C4D_CrewMember       =  1<<11,
 
 C4D_Background       =  1<<12,
 C4D_Parallax         =  1<<13,
