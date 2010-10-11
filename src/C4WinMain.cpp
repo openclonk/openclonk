@@ -110,6 +110,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 		LocalFree(wargv);
 
 		// Init application
+		Application.SetInstance(hInst);
 		if (!Application.Init(argv.size(), &argv[0]))
 		{
 			Application.Clear();
