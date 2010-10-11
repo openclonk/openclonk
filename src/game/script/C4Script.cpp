@@ -2616,7 +2616,7 @@ static C4Value FnGetPlrMagic_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value*
 	// Search by id, check if available, return bool
 	if (id) return C4VBool(::Players.Get(iPlr)->Magic.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(::Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_Magic, iIndex ));
+	return C4VID(::Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_All, iIndex ));
 }
 
 static long FnGetWealth(C4AulContext *cthr, long iPlr)
@@ -6414,7 +6414,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4D_Goal"               ,C4V_Int,          C4D_Goal},
 	{ "C4D_Environment"        ,C4V_Int,          C4D_Environment},
 	{ "C4D_Knowledge"          ,C4V_Int,          C4D_Knowledge},
-	{ "C4D_Magic"              ,C4V_Int,          C4D_Magic},
 	{ "C4D_Rule"               ,C4V_Int,          C4D_Rule},
 	{ "C4D_Background"         ,C4V_Int,          C4D_Background},
 	{ "C4D_Parallax"           ,C4V_Int,          C4D_Parallax},

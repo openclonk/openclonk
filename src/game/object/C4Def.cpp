@@ -165,9 +165,7 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		// Check category
 		if (!(Category & C4D_SortLimit))
 		{
-			// special: Allow this for spells
-			if (~Category & C4D_Magic)
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
+			DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
 			// assign a default category here
 			Category = (Category & ~C4D_SortLimit) | 1;
 		}
@@ -233,7 +231,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_Environment",              C4D_Environment         },
 		
 		{ "C4D_Knowledge",                C4D_Knowledge           },
-		{ "C4D_Magic",                    C4D_Magic               },
 
 		{ "C4D_Background",               C4D_Background          },
 		{ "C4D_Parallax",                 C4D_Parallax            },

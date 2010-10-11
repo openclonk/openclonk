@@ -667,7 +667,6 @@ bool C4Player::ScenarioInit()
 	Knowledge.ConsolidateValids(::Definitions);
 	Magic=Game.C4S.PlrStart[PlrStartIndex].Magic;
 	Magic.ConsolidateValids(::Definitions);
-	if (Magic.IsClear()) Magic.Load(::Definitions,C4D_Magic); // All magic default if empty
 	Magic.SortByValue(::Definitions);
 
 	// Starting position

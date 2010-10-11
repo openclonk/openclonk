@@ -42,10 +42,6 @@
           <col>Environmental control object.</col>
         </row>
         <row>
-          <col>C4D_Magic</col>
-          <col>A magic spell.</col>
-        </row>
-        <row>
           <col>C4D_Rule</col>
           <col>Rule control object.</col>
         </row>
