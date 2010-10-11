@@ -425,8 +425,8 @@ public func SetParticleToObject(int index, int obj_index)
 	particles[index][0][1] = obj->GetY(Rope_Precision);
 	return;
 //Log("Set %d %d", index, obj_index);
-	particles[index][1][0] = particles[index][0][0];
-	particles[index][1][1] = particles[index][0][1];
+//	particles[index][1][0] = particles[index][0][0];
+//	particles[index][1][1] = particles[index][0][1];
 }
 
 public func ConstraintObjects()
