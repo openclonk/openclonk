@@ -267,9 +267,8 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	xdir=nxdir; ydir=nydir; rdir=nrdir;
 
 	// Initial mobility
-	if (Category!=C4D_StaticBack)
-		if (!!xdir || !!ydir || !!rdir)
-			Mobile=1;
+	if (!!xdir || !!ydir || !!rdir)
+		Mobile=1;
 
 	// Mass
 	Mass=Max<int32_t>(Def->Mass*Con/FullCon,1);

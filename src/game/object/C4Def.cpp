@@ -236,7 +236,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_Environment",              C4D_Environment         },
 		
 		{ "C4D_Knowledge",                C4D_Knowledge           },
-		{ "C4D_TradeLiving",              C4D_TradeLiving         },
 		{ "C4D_Magic",                    C4D_Magic               },
 		{ "C4D_CrewMember",               C4D_CrewMember          },
 

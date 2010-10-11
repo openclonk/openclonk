@@ -849,7 +849,7 @@ void C4ObjectList::DeleteObjects()
 // -------------------------------------------------
 // C4ObjectListIterator
 
-C4Object *C4ObjectListIterator::GetNext(int32_t *piCount, uint32_t dwCategory)
+C4Object *C4ObjectListIterator::GetNext(int32_t *piCount)
 {
 	// end reached?
 	if (pCurrID == rList.end()) return NULL;
@@ -860,10 +860,6 @@ C4Object *C4ObjectListIterator::GetNext(int32_t *piCount, uint32_t dwCategory)
 	else
 		// next item
 		if (++pCurr == rList.end()) return NULL;
-	// skip mismatched category
-	if (dwCategory)
-		while (!((*pCurr)->Category & dwCategory))
-			if (++pCurr == rList.end()) return NULL;
 	// next ID section reached?
 	if ((*pCurr)->id != (*pCurrID)->id)
 		pCurrID = pCurr;
@@ -872,24 +868,20 @@ C4Object *C4ObjectListIterator::GetNext(int32_t *piCount, uint32_t dwCategory)
 		// otherwise, it must be checked, whether this is a duplicate item already iterated
 		// if so, advance the list
 		for (C4ObjectList::iterator pCheck = pCurrID; pCheck != pCurr; ++pCheck)
-			if (!dwCategory || ((*pCheck)->Category & dwCategory))
-				if ((*pCheck)->CanConcatPictureWith(*pCurr))
+			if ((*pCheck)->CanConcatPictureWith(*pCurr))
+			{
+				// next object of matching category
+				if (++pCurr == rList.end()) return NULL;
+				// next ID chunk reached?
+				if ((*pCurr)->id != (*pCurrID)->id)
 				{
-					// next object of matching category
-					if (++pCurr == rList.end()) return NULL;
-					if (dwCategory)
-						while (!((*pCurr)->Category & dwCategory))
-							if (++pCurr == rList.end()) return NULL;
-					// next ID chunk reached?
-					if ((*pCurr)->id != (*pCurrID)->id)
-					{
-						// then break here
-						pCurrID = pCurr;
-						break;
-					}
-					// restart check for next object
-					pCheck = pCurrID;
+					// then break here
+					pCurrID = pCurr;
+					break;
 				}
+				// restart check for next object
+				pCheck = pCurrID;
+			}
 	}
 	if (piCount)
 	{
@@ -898,9 +890,8 @@ C4Object *C4ObjectListIterator::GetNext(int32_t *piCount, uint32_t dwCategory)
 		// add additional objects of same ID to the count
 		C4ObjectList::iterator pCheck(pCurr);
 		for (++pCheck; pCheck != rList.end() && (*pCheck)->id == (*pCurr)->id; ++pCheck)
-			if (!dwCategory || ((*pCheck)->Category & dwCategory))
-				if ((*pCheck)->CanConcatPictureWith(*pCurr))
-					++*piCount;
+			if ((*pCheck)->CanConcatPictureWith(*pCurr))
+				++*piCount;
 	}
 	// return found object
 	return *pCurr;

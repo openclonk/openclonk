@@ -154,7 +154,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 		{
 			// Add target contents items
 			C4ObjectListIterator iter(pTarget->Contents);
-			while ((pObj = iter.GetNext(&iCount, C4D_Activate)))
+			while ((pObj = iter.GetNext(&iCount)))
 			{
 				pDef = pObj->Def;
 				if (pDef->NoGet) continue;
@@ -191,7 +191,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 		{
 			// Add target contents items
 			C4ObjectListIterator iter(pTarget->Contents);
-			while ((pObj = iter.GetNext(&iCount, C4D_Get)))
+			while ((pObj = iter.GetNext(&iCount)))
 			{
 				pDef = pObj->Def;
 				if (pDef->NoGet) continue;

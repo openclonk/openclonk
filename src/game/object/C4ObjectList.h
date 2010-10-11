@@ -187,7 +187,7 @@ private:
 	C4ObjectListIterator(const C4ObjectListIterator &rCopy); // no copy ctor
 public:
 	C4ObjectListIterator(C4ObjectList &rList) : rList(rList), pCurr(rList.end()), pCurrID(rList.begin()) {} // ctor
-	C4Object *GetNext(int32_t *piCount, uint32_t dwCategory=0); // get next object; return NULL if end is reached
+	C4Object *GetNext(int32_t *piCount); // get next object; return NULL if end is reached
 };
 
 #endif

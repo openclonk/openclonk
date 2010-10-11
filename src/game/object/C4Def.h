@@ -57,7 +57,6 @@ C4D_Rule             =  1<<6,
 C4D_Environment      =  1<<7,
 
 C4D_Knowledge        =  1<<8,
-C4D_TradeLiving      =  1<<9,
 C4D_Magic            =  1<<10,
 C4D_CrewMember       =  1<<11,
 
@@ -104,11 +103,6 @@ C4D_Place_Air        = 2;
 const int32_t C4D_VehicleControl_None     = 0,
 C4D_VehicleControl_Outside  = 1,
 C4D_VehicleControl_Inside   = 2;
-
-const int32_t C4D_Sell     = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Object | C4D_TradeLiving,
-C4D_Get      = C4D_Sell,
-C4D_Take     = C4D_Get,
-C4D_Activate = C4D_Get;
 
 const DWORD C4D_Load_None      =  0,
 C4D_Load_Picture   =  1,

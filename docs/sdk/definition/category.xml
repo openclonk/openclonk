@@ -42,10 +42,6 @@
           <col>Environmental control object.</col>
         </row>
         <row>
-          <col>C4D_TradeLiving</col>
-          <col>A living being that can be sold at the home base.</col>
-        </row>
-        <row>
           <col>C4D_Magic</col>
           <col>A magic spell.</col>
         </row>
