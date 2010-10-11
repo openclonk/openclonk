@@ -144,7 +144,6 @@ protected:
 	bool FlightControl();
 	bool InitEvaluation();
 	int32_t GetExpGain(); // get control counts gained by this command; 1EXP=5 ControlCounts
-	bool CheckMinimumCon (C4Object *pObj);
 };
 
 #endif

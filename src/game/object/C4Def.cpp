@@ -230,8 +230,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_Rule",                     C4D_Rule                },
 		{ "C4D_Environment",              C4D_Environment         },
 		
-		{ "C4D_Knowledge",                C4D_Knowledge           },
-
 		{ "C4D_Background",               C4D_Background          },
 		{ "C4D_Parallax",                 C4D_Parallax            },
 		{ "C4D_MouseSelect",              C4D_MouseSelect         },

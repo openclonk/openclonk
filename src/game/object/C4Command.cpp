@@ -1027,8 +1027,6 @@ void C4Command::Context()
 
 bool C4Command::GetTryEnter()
 {
-	// No minimum con knowledge vehicles/items: fail
-	if (Target->Contained && CheckMinimumCon(Target)) { /* fail??! */ return false; }
 	// Target contained and container has RejectContents: fail
 	if (Target->Contained && !!Target->Contained->Call(PSF_RejectContents)) { Finish(); return false; }
 	// FIXME: Drop stuff if full here
@@ -1207,19 +1205,6 @@ void C4Command::Get()
 
 }
 
-bool C4Command::CheckMinimumCon (C4Object *pObj)
-{
-	if ((pObj->Category & C4D_Vehicle) || (pObj->Category & C4D_Object))
-		if (pObj->Category & C4D_Knowledge)
-			if (pObj->GetCon() < FullCon)
-			{
-				//SoundEffect("Error",0,100,cObj);
-				Finish(false, FormatString(LoadResStr("IDS_OBJ_NOCONACTIV"),pObj->GetName()).getData());
-				return true;
-			}
-	return false;
-}
-
 void C4Command::Activate()
 {
 
@@ -1265,9 +1250,6 @@ void C4Command::Activate()
 
 			// Thing in own container (target2)
 			if (Target->Contained!=Target2) { Finish(); return; }
-
-			// No minimum con knowledge vehicles/items
-			if (CheckMinimumCon(Target)) return;
 
 			// Activate object to exit
 			Target->Controller = cObj->Controller;
