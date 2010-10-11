@@ -3802,7 +3802,7 @@ void C4Object::ContactAction()
 		// Enforce slide free (might slide through tiny holes this way)
 		if (!ydir)
 		{
-			bool fAllowDown = !(t_contact & CNAT_Bottom);
+			int fAllowDown = !(t_contact & CNAT_Bottom);
 			if (t_contact & CNAT_Right)
 			{
 				ForcePosition(fix_x - 1, fix_y + fAllowDown);
