@@ -2906,18 +2906,6 @@ static C4Value FnEditCursor(C4AulContext *cth, C4Value *pPars)
 	return C4VObj(Console.EditCursor.GetTarget());
 }
 
-static bool FnResort(C4AulContext *cthr, C4Object *pObj)
-{
-	if (!pObj) pObj=cthr->Obj;
-	// Resort single object
-	if (pObj)
-		pObj->Resort();
-	// Resort object list
-	else
-		::Objects.SortByCategory();
-	return true;
-}
-
 static bool FnIsNetwork(C4AulContext *cthr) { return Game.Parameters.IsNetworkGame; }
 
 static C4String *FnGetLeague(C4AulContext *cthr, long idx)
@@ -3445,48 +3433,6 @@ static Nillable<long> FnGetMenuSelection(C4AulObjectContext *cthr)
 {
 	if (!cthr->Obj->Menu || !cthr->Obj->Menu->IsActive()) return C4VNull;
 	return cthr->Obj->Menu->GetSelection();
-}
-
-static bool FnResortObjects(C4AulContext* cthr, C4String *szFunc, long Category)
-{
-	// safety
-	if (!szFunc) return false;
-	if (!cthr->Caller) return false;
-	// default category
-	if (!Category) Category=C4D_SortLimit;
-	// get function
-	C4AulFunc *pFn = cthr->Caller->Func->GetLocalSFunc(FnStringPar(szFunc));
-	if (!pFn)
-		throw new C4AulExecError(cthr->Obj, FormatString("ResortObjects: Resort function %s not found", FnStringPar(szFunc)).getData());
-	// create object resort
-	C4ObjResort *pObjRes = new C4ObjResort();
-	pObjRes->Category=Category;
-	pObjRes->OrderFunc=pFn;
-	// insert into game resort proc list
-	pObjRes->Next = ::Objects.ResortProc;
-	::Objects.ResortProc = pObjRes;
-	// success, so far
-	return true;
-}
-
-static bool FnResortObject(C4AulObjectContext* cthr, C4String *szFunc)
-{
-	// safety
-	if (!szFunc) return false;
-	if (!cthr->Caller) return false;
-	// get function
-	C4AulFunc *pFn = cthr->Caller->Func->GetLocalSFunc(FnStringPar(szFunc));
-	if (!pFn)
-		throw new C4AulExecError(cthr->Obj, FormatString("ResortObjects: Resort function %s not found", FnStringPar(szFunc)).getData());
-	// create object resort
-	C4ObjResort *pObjRes = new C4ObjResort();
-	pObjRes->OrderFunc=pFn;
-	pObjRes->pSortObj=cthr->Obj;
-	// insert into game resort proc list
-	pObjRes->Next = ::Objects.ResortProc;
-	::Objects.ResortProc = pObjRes;
-	// success, so far
-	return true;
 }
 
 static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
@@ -4123,25 +4069,6 @@ static bool FnSetLandscapePixel(C4AulContext* ctx, long iX, long iY, long dwValu
 	// set pixel in 32bit-sfc only
 	// TODO: ::Landscape.SetPixDw(iX, iY, dwValue);
 	// success
-	return true;
-}
-
-static bool FnSetObjectOrder(C4AulContext* ctx, C4Object *pObjBeforeOrAfter, C4Object *pSortObj, bool fSortAfter)
-{
-	// local call/safety
-	if (!pSortObj) pSortObj=ctx->Obj; if (!pSortObj) return false;
-	if (!pObjBeforeOrAfter) return false;
-	// note that no category check is done, so this call might corrupt the main list!
-	// the scripter must be wise enough not to call it for objects with different categories
-	// create object resort
-	C4ObjResort *pObjRes = new C4ObjResort();
-	pObjRes->pSortObj = pSortObj;
-	pObjRes->pObjBefore = pObjBeforeOrAfter;
-	pObjRes->fSortAfter = fSortAfter;
-	// insert into game resort proc list
-	pObjRes->Next = ::Objects.ResortProc;
-	::Objects.ResortProc = pObjRes;
-	// done, success so far
 	return true;
 }
 
@@ -5864,7 +5791,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "InsertMaterial", FnInsertMaterial);
 	AddFunc(pEngine, "LandscapeWidth", FnLandscapeWidth);
 	AddFunc(pEngine, "LandscapeHeight", FnLandscapeHeight);
-	AddFunc(pEngine, "Resort", FnResort);
 	AddFunc(pEngine, "CreateMenu", FnCreateMenu);
 	AddFunc(pEngine, "SelectMenuItem", FnSelectMenuItem);
 	AddFunc(pEngine, "SetMenuDecoration", FnSetMenuDecoration);
@@ -5913,8 +5839,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);
 	AddFunc(pEngine, "CloseMenu", FnCloseMenu);
 	AddFunc(pEngine, "GetMenuSelection", FnGetMenuSelection);
-	AddFunc(pEngine, "ResortObjects", FnResortObjects);
-	AddFunc(pEngine, "ResortObject", FnResortObject);
 	AddFunc(pEngine, "GetDefBottom", FnGetDefBottom);
 	AddFunc(pEngine, "MaterialName", FnMaterialName);
 	AddFunc(pEngine, "SetMenuSize", FnSetMenuSize);
@@ -5940,7 +5864,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ResetGamma", FnResetGamma);
 	AddFunc(pEngine, "FrameCounter", FnFrameCounter);
 	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
-	AddFunc(pEngine, "SetObjectOrder", FnSetObjectOrder);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
 	AddFunc(pEngine, "ClearMenuItems", FnClearMenuItems);

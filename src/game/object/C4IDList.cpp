@@ -402,25 +402,6 @@ bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
 	return fIDsRemoved;
 }
 
-void C4IDList::SortByCategory(C4DefList &rDefs)
-{
-	bool fBubble;
-	size_t cnt;
-	C4Def *cdef1,*cdef2;
-	do
-	{
-		fBubble=false;
-		for (cnt=0; cnt+1<Count; cnt++)
-			if ((cdef1=rDefs.ID2Def(GetID(cnt))) && (cdef2=rDefs.ID2Def(GetID(cnt+1))))
-				if ((cdef1->Category & C4D_SortLimit) < (cdef2->Category & C4D_SortLimit))
-				{
-					SwapItems(cnt, cnt+1);
-					fBubble=true;
-				}
-	}
-	while (fBubble);
-}
-
 void C4IDList::SortByValue(C4DefList &rDefs)
 {
 	bool fBubble;

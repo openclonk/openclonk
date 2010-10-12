@@ -1424,7 +1424,6 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 		fResortAnyObject = false;
 		Objects.ResortUnsorted();
 	}
-	if (Objects.ResortProc) Objects.ExecuteResorts();
 
 #ifdef DEBUGREC
 	AddDbgRec(RCT_Block, "ObjRm", 6);

@@ -26,8 +26,6 @@
 #include <C4FindObject.h>
 #include <C4Sector.h>
 
-class C4ObjResort;
-
 // main object list class
 class C4GameObjects : public C4NotifyingObjectList
 {
@@ -45,7 +43,6 @@ public:
 	C4ObjectList InactiveObjects; // inactive objects (Status=2)
 	C4ObjectList BackObjects; // objects in background (C4D_Background)
 	C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
-	C4ObjResort *ResortProc; // current sheduled user resorts
 
 	unsigned int LastUsedMarker; // last used value for C4Object::Marker
 
@@ -74,18 +71,14 @@ public:
 	void UpdatePos(C4Object *pObj);
 	void UpdatePosResort(C4Object *pObj);
 
-	bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-	bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
 	void FixObjectOrder(); // Called after loading: Resort any objects that are out of order
 	void ResortUnsorted(); // resort any objects with unsorted-flag set into lists
-	void ExecuteResorts(); // execute custom resort procs
 
 	void DeleteObjects(bool fDeleteInactive); // delete all objects and links
 
 	bool ValidateOwners();
 	bool AssignInfo();
 	void AssignPlrViewRange();
-	void SortByCategory();
 	void SyncClearance();
 	void ResetAudibility();
 	void UpdateTransferZones();
@@ -96,23 +89,5 @@ protected:
 };
 
 extern C4GameObjects Objects;
-
-// sheduled resort holder
-class C4ObjResort
-{
-public:
-	C4ObjResort(); // constructor
-	~C4ObjResort(); // destructor
-
-	void Execute(); // do the resort!
-	void Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast); // sort list between pFirst and pLast
-	void SortObject();        // sort single object within its category
-
-	int Category;             // object category mask to be sorted
-	C4AulFunc *OrderFunc;     // function determining new sort order
-	C4ObjResort *Next;        // next resort holder
-	C4Object *pSortObj, *pObjBefore;  // objects that are swapped if no OrderFunc is given
-	bool fSortAfter;          // if set, the sort object is sorted
-};
 
 #endif

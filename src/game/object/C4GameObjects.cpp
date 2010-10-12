@@ -47,7 +47,6 @@ C4GameObjects::~C4GameObjects()
 
 void C4GameObjects::Default()
 {
-	ResortProc=NULL;
 	Sectors.Clear();
 	LastUsedMarker = 0;
 	BackObjects.Default();
@@ -324,7 +323,6 @@ void C4GameObjects::Synchronize()
 {
 	// synchronize unsorted objects
 	ResortUnsorted();
-	ExecuteResorts();
 	// synchronize solidmasks
 	UpdateSolidMasks();
 }
@@ -387,212 +385,8 @@ void C4GameObjects::Clear(bool fClearInactive)
 	DeleteObjects(fClearInactive);
 	if (fClearInactive)
 		InactiveObjects.Clear();
-	ResortProc = NULL;
 	LastUsedMarker = 0;
 }
-
-/* C4ObjResort */
-
-C4ObjResort::C4ObjResort()
-{
-	Category=0;
-	OrderFunc=NULL;
-	Next=NULL;
-	pSortObj = pObjBefore = NULL;
-	fSortAfter = false;
-}
-
-C4ObjResort::~C4ObjResort()
-{
-}
-
-void C4ObjResort::Execute()
-{
-	// no order func: resort given objects
-	if (!OrderFunc)
-	{
-		// no objects given?
-		if (!pSortObj || !pObjBefore) return;
-		// object to be resorted died or changed category
-		if (pSortObj->Status != C4OS_NORMAL || pSortObj->Unsorted) return;
-		// exchange
-		if (fSortAfter)
-			::Objects.OrderObjectAfter(pSortObj, pObjBefore);
-		else
-			::Objects.OrderObjectBefore(pSortObj, pObjBefore);
-		// done
-		return;
-	}
-	else if (pSortObj)
-	{
-		// sort single object
-		SortObject();
-		return;
-	}
-	// get first link to start sorting
-	C4ObjectLink *pLnk=::Objects.Last; if (!pLnk) return;
-	// sort all categories given; one by one (sort by category is ensured by C4ObjectList::Add)
-	for (int iCat=1; iCat<C4D_SortLimit; iCat<<=1)
-		if (iCat & Category)
-		{
-			// get first link of this category
-			while (!(pLnk->Obj->Status && (pLnk->Obj->Category & iCat) ))
-				if (!(pLnk=pLnk->Prev))
-					// no more objects to sort: done
-					break;
-			// first link found?
-			if (pLnk)
-			{
-				// get last link of this category
-				C4ObjectLink *pNextLnk=pLnk;
-				while (!pLnk->Obj->Status || (pNextLnk->Obj->Category & iCat))
-					if (!(pNextLnk=pNextLnk->Prev))
-						// no more objects: end of list reached
-						break;
-				// get previous link, which is the last in the list of this category
-				C4ObjectLink *pLastLnk;
-				if (pNextLnk) pLastLnk=pNextLnk->Next; else pLastLnk=::Objects.First;
-				// get next valid (there must be at least one: pLnk; so this loop should be safe)
-				while (!pLastLnk->Obj->Status) pLastLnk=pLastLnk->Next;
-				// now sort this portion of the list
-				Sort(pLastLnk, pLnk);
-				// start searching at end of this list next time
-				// if the end has already been reached: stop here
-				if (!(pLnk=pNextLnk)) return;
-			}
-			// continue with next category
-		}
-}
-
-void C4ObjResort::SortObject()
-{
-	// safety
-	if (pSortObj->Status != C4OS_NORMAL || pSortObj->Unsorted) return;
-	// pre-build parameters
-	C4AulParSet Pars;
-	Pars[1].Set(C4VObj(pSortObj));
-	// first, check forward in list
-	C4ObjectLink *pMoveLink=NULL;
-	C4ObjectLink *pLnk = ::Objects.GetLink(pSortObj);
-	C4ObjectLink *pLnkBck = pLnk;
-	C4Object *pObj2; int iResult;
-	if (!pLnk) return;
-	while ((pLnk = pLnk->Next))
-	{
-		// get object
-		pObj2 = pLnk->Obj;
-		if (!pObj2->Status) continue;
-		// does the category still match?
-		if (!(pObj2->Category & pSortObj->Category)) break;
-		// perform the check
-		Pars[0].Set(C4VObj(pObj2));
-		iResult = OrderFunc->Exec(NULL, &Pars).getInt();
-		if (iResult > 0) break;
-		if (iResult < 0) pMoveLink=pLnk;
-	}
-	// check if movement has to be done
-	if (pMoveLink)
-	{
-		// move link directly after pMoveLink
-		// FIXME: Inform C4ObjectList that this is a reorder, not a remove+insert
-		// move out of current position
-		::Objects.RemoveLink(pLnkBck);
-		// put into new position
-		::Objects.InsertLink(pLnkBck, pMoveLink);
-	}
-	else
-	{
-		// no movement yet: check backwards in list
-		Pars[0].Set(C4VObj(pSortObj));
-		pLnk = pLnkBck;
-		while ((pLnk = pLnk->Prev))
-		{
-			// get object
-			pObj2 = pLnk->Obj;
-			if (!pObj2->Status) continue;
-			// does the category still match?
-			if (!(pObj2->Category & pSortObj->Category)) break;
-			// perform the check
-			Pars[1].Set(C4VObj(pObj2));
-			iResult = OrderFunc->Exec(NULL, &Pars).getInt();
-			if (iResult > 0) break;
-			if (iResult < 0) pMoveLink=pLnk;
-		}
-		// no movement to be done? finish
-		if (!pMoveLink) return;
-		// move link directly before pMoveLink
-		// move out of current position
-		::Objects.RemoveLink(pLnkBck);
-		// put into new position
-		::Objects.InsertLinkBefore(pLnkBck, pMoveLink);
-	}
-	// object has been resorted: resort into area lists, too
-	::Objects.UpdatePosResort(pSortObj);
-	// done
-}
-
-void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
-{
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-	// do a simple insertion-like sort
-	C4ObjectLink *pCurr; // current link to analyse
-	C4ObjectLink *pCurr2; // second (previous) link to analyse
-	C4ObjectLink *pNewFirst; // next link to be first
-
-	C4ObjectLink *pFirstBck=pFirst; // backup of first link
-
-	// pre-build parameters
-	C4AulParSet Pars;
-
-	// loop until there's nothing left to sort
-	while (pFirst != pLast)
-	{
-		// start from the very end of the list
-		pCurr=pNewFirst=pLast;
-		// loop the checks up to the first list item to check
-		while (pCurr != pFirst)
-		{
-			// get second check item
-			pCurr2=pCurr->Prev;
-			while (!pCurr2->Obj->Status) pCurr2=pCurr2->Prev;
-			// perform the check
-			Pars[0].Set(C4VObj(pCurr->Obj)); Pars[1].Set(C4VObj(pCurr2->Obj));
-			if (OrderFunc->Exec(NULL, &Pars).getInt() < 0)
-			{
-				// so there's something to be reordered: swap the links
-				// FIXME: Inform C4ObjectList about this reorder
-				C4Object *pObj=pCurr->Obj; pCurr->Obj=pCurr2->Obj; pCurr2->Obj=pObj;
-				// and readd to sector lists
-				pCurr->Obj->Unsorted=pCurr2->Obj->Unsorted=true;
-				// grow list section to scan next
-				pNewFirst=pCurr;
-			}
-			// advance in list
-			pCurr=pCurr2;
-		}
-		//reduce area to be checked
-		pFirst=pNewFirst;
-	}
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-	// resort objects in sector lists
-	for (pCurr=pFirstBck; pCurr!=pLast->Next; pCurr=pCurr->Next)
-	{
-		C4Object *pObj=pCurr->Obj;
-		if (pObj->Status && pObj->Unsorted)
-		{
-			pObj->Unsorted=false;
-			::Objects.UpdatePosResort(pObj);
-		}
-	}
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-}
-
 
 #define C4CV_Section_Object "[Object]"
 
@@ -813,34 +607,6 @@ void C4GameObjects::UpdatePosResort(C4Object *pObj)
 	Sectors.Add(pObj, this);
 }
 
-bool C4GameObjects::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
-{
-	// check that this won't screw the category sort
-	if ((pObj1->Category & C4D_SortLimit) < (pObj2->Category & C4D_SortLimit))
-		return false;
-	// reorder
-	if (!C4ObjectList::OrderObjectBefore(pObj1, pObj2))
-		return false;
-	// update area lists
-	UpdatePosResort(pObj1);
-	// done, success
-	return true;
-}
-
-bool C4GameObjects::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
-{
-	// check that this won't screw the category sort
-	if ((pObj1->Category & C4D_SortLimit) > (pObj2->Category & C4D_SortLimit))
-		return false;
-	// reorder
-	if (!C4ObjectList::OrderObjectAfter(pObj1, pObj2))
-		return false;
-	// update area lists
-	UpdatePosResort(pObj1);
-	// done, success
-	return true;
-}
-
 void C4GameObjects::FixObjectOrder()
 {
 	// fixes the object order so it matches the global object order sorting constraints
@@ -942,20 +708,6 @@ void C4GameObjects::ResortUnsorted()
 	}
 }
 
-void C4GameObjects::ExecuteResorts()
-{
-	// custom object sort
-	C4ObjResort *pRes = ResortProc;
-	while (pRes)
-	{
-		C4ObjResort *pNextRes=pRes->Next;
-		pRes->Execute();
-		delete pRes;
-		pRes=pNextRes;
-	}
-	ResortProc=NULL;
-}
-
 bool C4GameObjects::ValidateOwners()
 {
 	// validate in sublists
@@ -980,26 +732,6 @@ void C4GameObjects::AssignPlrViewRange()
 	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->AssignPlrViewRange();
-}
-
-void C4GameObjects::SortByCategory()
-{
-	C4ObjectLink *cLnk;
-	bool fSorted;
-	// Sort by category
-	do
-	{
-		fSorted = true;
-		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
-			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
-			{
-				RemoveLink(cLnk);
-				InsertLink(cLnk,cLnk->Next);
-				fSorted = false;
-				break;
-			}
-	}
-	while (!fSorted);
 }
 
 void C4GameObjects::SyncClearance()

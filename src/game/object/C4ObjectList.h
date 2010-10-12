@@ -135,9 +135,6 @@ public:
 
 	C4ID GetListID(int32_t dwCategory, int Index);
 
-	virtual bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-	virtual bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
-
 	bool ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
 
 	void DeleteObjects(); // delete all objects and links
@@ -156,7 +153,6 @@ protected:
 	void RemoveIter(iterator * iter);
 
 	friend class iterator;
-	friend class C4ObjResort;
 };
 
 class C4NotifyingObjectList: public C4ObjectList
@@ -170,7 +166,6 @@ protected:
 	virtual void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore);
 	virtual void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter);
 	virtual void RemoveLink(C4ObjectLink *pLnk);
-	friend class C4ObjResort;
 };
 
 // This iterator is used to return objects of same ID and picture as grouped.

@@ -769,52 +769,6 @@ void C4ObjectList::Default()
 	pEnumerated=NULL;
 }
 
-bool C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
-{
-	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
-	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
-	// check if requirements are already fulfilled
-	C4ObjectLink *pLnk=pLnk1;
-	while ((pLnk=pLnk->Next)) if (pLnk==pLnk2) break;
-	if (pLnk) return true;
-	// if not, reorder pLnk1 directly before pLnk2
-	// unlink from current position
-	// no need to check pLnk1->Prev here, because pLnk1 cannot be first in the list
-	// (at least pLnk2 must lie before it!)
-	if ((pLnk1->Prev->Next=pLnk1->Next)) pLnk1->Next->Prev=pLnk1->Prev; else Last=pLnk1->Prev;
-	// relink into new one
-	if ((pLnk1->Prev=pLnk2->Prev)) pLnk2->Prev->Next=pLnk1; else First=pLnk1;
-	pLnk1->Next=pLnk2; pLnk2->Prev=pLnk1;
-	// done, success
-	return true;
-}
-
-bool C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
-{
-	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
-	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
-	// check if requirements are already fulfilled
-	C4ObjectLink *pLnk=pLnk1;
-	while ((pLnk=pLnk->Prev)) if (pLnk==pLnk2) break;
-	if (pLnk) return true;
-	// if not, reorder pLnk1 directly after pLnk2
-	// unlink from current position
-	// no need to check pLnk1->Next here, because pLnk1 cannot be last in the list
-	// (at least pLnk2 must lie after it!)
-	if ((pLnk1->Next->Prev=pLnk1->Prev)) pLnk1->Prev->Next=pLnk1->Next; else First=pLnk1->Next;
-	// relink into new one
-	if ((pLnk1->Next=pLnk2->Next)) pLnk2->Next->Prev=pLnk1; else Last=pLnk1;
-	pLnk1->Prev=pLnk2; pLnk2->Next=pLnk1;
-	// done, success
-	return true;
-}
-
 bool C4ObjectList::ShiftContents(C4Object *pNewFirst)
 {
 	// get link of new first (this ensures list is not empty)

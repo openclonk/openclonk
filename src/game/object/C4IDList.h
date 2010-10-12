@@ -89,7 +89,6 @@ public:
 	bool Consolidate();
 	bool ConsolidateValids(C4DefList &rDefs, int32_t dwCategory = 0);
 	bool ConsolidateCounts();
-	void SortByCategory(C4DefList &rDefs);
 	void SortByValue(C4DefList &rDefs);
 	void Load(C4DefList &rDefs, int32_t dwCategory);
 	// Item operation
