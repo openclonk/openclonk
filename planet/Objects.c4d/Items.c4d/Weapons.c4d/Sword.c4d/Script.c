@@ -120,14 +120,14 @@ func WeaponStrikeExpired()
 func CheckStrike(iTime)
 {
 	//if(iTime < 20) return;
-	var  offset_x=10;
+	var  offset_x=7;
 	var offset_y=0;
 	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
 	
 	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
 		offset_y=10;
 	
-	var width=8;
+	var width=10;
 	var height=20;
 	var slowedVelocity=GetWeaponSlow(Contained());
 	var found=false;
