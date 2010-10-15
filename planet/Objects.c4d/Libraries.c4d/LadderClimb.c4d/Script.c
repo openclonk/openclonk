@@ -353,3 +353,6 @@ func SetLadderRotation (int r, int xoff, int yoff) {
 		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
 	);
 }
+
+// Defined to prevent an error.
+func SetMeshTransformation() { return _inherited(...); }
