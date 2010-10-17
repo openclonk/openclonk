@@ -15,7 +15,7 @@ public func SetCastleDoor(object door)
 
 public func ControlUp(object clonk)
 {
-	if (GetAction() == "Still")
+	if (GetAction() == "Still" && targetdoor)
 	{
 		targetdoor->OpenGateDoor();
 		SetAction("SpinLeft");
@@ -25,7 +25,7 @@ public func ControlUp(object clonk)
 
 public func ControlDown(object clonk)
 {
-	if (GetAction() == "Still")
+	if (GetAction() == "Still" && targetdoor)
 	{
 		targetdoor->CloseGateDoor();
 		SetAction("SpinRight");

@@ -1,0 +1,2 @@
+NameLeft=The Ascenders
+NameRight=The Defenders
