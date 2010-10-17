@@ -4999,7 +4999,7 @@ bool C4Object::GrabInfo(C4Object *pFrom)
 	// set info
 	Info = pFrom->Info; pFrom->ClearInfo (pFrom->Info);
 	// set name
-	if (!Properties.Has(Strings.P[P_Name])) SetName(Info->Name);
+	SetName(Info->Name);
 	// retire from old crew
 	Info->Retire();
 	// set death status

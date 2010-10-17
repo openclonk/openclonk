@@ -88,7 +88,8 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(Number, "Number"));
-	pComp->Value(mkNamingAdapt(Properties, "Properties"));//C4PropList::CompileFunc(pComp);
+	// reuse C4PropList::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
 	if (pComp->isCompiler())
 		::Objects.PropLists.Add(this);
 }
@@ -151,7 +152,6 @@ bool C4PropList::operator==(const C4PropList &b) const
 
 void C4PropList::CompileFunc(StdCompiler *pComp)
 {
-	//pComp->Value(mkNamingAdapt(Properties, "Properties"));
 	pComp->Value(Properties);
 }
 

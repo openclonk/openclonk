@@ -89,9 +89,9 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
-	C4Set<C4Property> Properties;
 
 private:
+	C4Set<C4Property> Properties;
 	C4Value *FirstRef; // No-Save
 	bool constant; // if true, this proplist is not changeable
 
