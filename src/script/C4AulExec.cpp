@@ -240,7 +240,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_PROP:
 				if (!(pCurVal->ConvertTo(C4V_PropList) && pCurVal->_getPropList()))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
-				pCurVal->_getPropList()->GetPropertyVal(pCPos->Par.s, pCurVal);
+				if (!pCurVal->_getPropList()->GetPropertyVal(pCPos->Par.s, pCurVal))
+					pCurVal->Set0();
 				break;
 			case AB_PROP_SET:
 			{
