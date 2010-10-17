@@ -264,7 +264,10 @@ global func FxShakeEffectTimer(object target, int fxnum, int fxtime)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		var distance = Distance(GetCursor(plr)->GetX(), GetCursor(plr)->GetY(), xpos, ypos);
+		var cursor = GetCursor(plr);
+		if (!cursor)
+			continue;
+		var distance = Distance(cursor->GetX(), cursor->GetY(), xpos, ypos);
 
 		// Shake effect lowers as a function of the distance.
 		var level = (300 * str) / Max(300, distance);
