@@ -288,19 +288,6 @@ unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
 	return p.Key->Hash;
 }
 
-bool C4PropList::HasProperty(C4String * k) const
-{
-	if (Properties.Has(k))
-	{
-		return true;
-	}
-	if (prototype)
-	{
-		return prototype->HasProperty(k);
-	}
-	return false;
-}
-
 bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult) const
 {
 	if (Properties.Has(k))

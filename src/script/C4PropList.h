@@ -63,7 +63,6 @@ public:
 	// Whether this proplist should be saved as a reference to a C4Def
 	virtual bool IsDef() const { return false; }
 
-	bool HasProperty(C4String * k) const;
 	bool GetPropertyVal(C4String *k, C4Value *pResult) const;
 	bool GetPropertyVal(C4PropertyName k, C4Value *pResult) const { return GetPropertyVal(Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
