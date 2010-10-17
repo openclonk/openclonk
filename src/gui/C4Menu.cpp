@@ -46,48 +46,6 @@ const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
 
 const int32_t C4MN_InfoCaption_Delay = 90;
 
-/* Obsolete helper function still used by CreateMenu(iSymbol) */
-
-#include <C4ObjectMenu.h> // only needed for menu symbol constants below
-
-void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj)
-{
-	C4Facet ccgo;
-
-	DWORD dwColor=0;
-	if (ValidPlr(iOwner)) dwColor=::Players.Get(iOwner)->ColorDw;
-
-	switch (iMenu)
-	{
-	case C4MN_Construction:
-	{
-		C4Def *pDef;
-		if ((pDef=C4Id2Def(C4ID("CXCN"))))
-			pDef->Draw(cgo);
-		else if ((pDef=C4Id2Def(C4ID("WKS1"))))
-			pDef->Draw(cgo);
-	}
-	break;
-	case C4MN_Buy:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 0);
-		break;
-	case C4MN_Sell:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 1);
-		break;
-		/*case C4MN_Main:
-		  ::GraphicsResource.fctFlagClr.DrawClr(cgo,true,dwColor);
-		  ccgo.Set(cgo.Surface,cgo.X,cgo.Y+cgo.Hgt/2,cgo.Wdt,cgo.Hgt/2);
-		  ::GraphicsResource.fctCrewClr.DrawClr(ccgo,true,dwColor);
-		  break;*/
-	}
-}
-
-
-
 // -----------------------------------------------------------
 // C4MenuItem
 

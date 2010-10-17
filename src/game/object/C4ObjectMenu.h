@@ -26,7 +26,7 @@
 enum
 {
 	C4MN_None         = 0,
-	C4MN_Construction = 1,
+	/*C4MN_Construction = 1, obsolete, now reserved */
 	/*C4MN_Bridge       = 2, obsolete, now reserved */
 	C4MN_Take         = 3,
 	C4MN_Buy          = 4,

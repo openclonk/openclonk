@@ -1573,11 +1573,10 @@ void C4Command::Construct()
 		Finish(false, FormatString(LoadResStr("IDS_TEXT_CANTBUILD"), cObj->GetName()).getData());
 		return;
 	}
-	// No target type to construct: open menu & done
+	// No target type to construct: fail
 	if (!Data)
 	{
-		cObj->ActivateMenu(C4MN_Construction);
-		Finish(true); return;
+		Finish(false); return;
 	}
 
 	// Determine move-to range

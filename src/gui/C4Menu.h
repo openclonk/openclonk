@@ -74,8 +74,6 @@ enum
 	C4MN_AdjustPosition = 1<<31
 };
 
-void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj);
-
 class C4MenuItem : public C4GUI::Element
 {
 	friend class C4Menu;

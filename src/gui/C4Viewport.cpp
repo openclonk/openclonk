@@ -897,7 +897,7 @@ void C4ViewportList::RecalculateViewports()
 	SortViewportsByPlayerControl();
 
 	// Viewport area
-	int32_t iBorderTop = 0, iBorderBottom = 0;
+	int32_t iBorderTop = 0;
 	if (Config.Graphics.UpperBoard)
 		iBorderTop = C4UpperBoardHeight;
 	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop);
