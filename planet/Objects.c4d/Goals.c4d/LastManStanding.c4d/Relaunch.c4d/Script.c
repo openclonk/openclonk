@@ -10,6 +10,7 @@
 
 local time;
 local menu;
+local hold;
 
 protected func Initialize()
 {
@@ -18,9 +19,10 @@ protected func Initialize()
 }
 
 // Sets the time, in seconds, the clonk is held in the container.
-public func SetRelaunchTime(int to_time)
+public func SetRelaunchTime(int to_time, bool to_hold)
 {
 	time = to_time * 36;
+	hold = to_hold;
 	return;
 }
 // Returns the time, in seconds the clonk is held.
@@ -54,7 +56,7 @@ private func OpenWeaponMenu(object clonk)
 	}
 }
 
-func FxIntTimeLimitTimer(target, num, fxtime)
+func FxIntTimeLimitTimer(object target, int num, int fxtime)
 {
 	var clonk = Contents();
 	if (fxtime >= time)
@@ -84,7 +86,8 @@ public func Selected(object menu, object selector, bool alt)
 		Contents()->Collect(newobj, nil, alt);
 	}
 	menu->Show();
-	RelaunchClonk();
+	if (!hold)
+		RelaunchClonk();
 	return true;
 }
 

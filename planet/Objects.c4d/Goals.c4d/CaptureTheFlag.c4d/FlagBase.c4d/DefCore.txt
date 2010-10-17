@@ -1,0 +1,11 @@
+[DefCore]
+id=Goal_FlagBase
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=10
+Height=5
+Offset=-5,-3
+Vertices=3
+VertexX=-5,5,0
+VertexY=3,3,-2
+VertexFriction=100,100,100

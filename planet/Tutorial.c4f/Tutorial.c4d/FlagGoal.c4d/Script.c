@@ -28,7 +28,7 @@ public func IsFulfilled()
 
 public func CreateGoalFlag(int x, int y)
 {
-	flag = CreateObject(Goal_Flag, 0, 0, NO_OWNER);
+	flag = CreateObject(TutorialFlag, 0, 0, NO_OWNER);
 	flag->SetPosition(x, y);
 }
 

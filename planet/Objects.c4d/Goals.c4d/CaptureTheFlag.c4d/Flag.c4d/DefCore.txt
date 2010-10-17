@@ -1,0 +1,11 @@
+[DefCore]
+id=Goal_Flag
+Version=4,10,0,0
+Category=C4D_Object
+Width=30
+Height=40
+Offset=-15,-20
+Vertices=5
+VertexX=-15,-15,-15,15,15
+VertexY=20,-5,-20,-20,-5
+VertexFriction=100,100,100,100,100

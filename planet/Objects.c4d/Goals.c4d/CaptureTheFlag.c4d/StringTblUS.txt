@@ -1,0 +1,5 @@
+Name=Capture The Flag
+
+MsgGoalFulfilled=You have won this round!
+MsgGoalUnfulfilled1=You still need to capture one flag.
+MsgGoalUnfulfilledX=You still need to capture %d flags.
