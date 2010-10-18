@@ -106,9 +106,10 @@ public func SetRadius(int to)
 	radius=to;
 }
 
-func DoPoint(player)
+func DoPoint(player,count)
 {
-	++player_points[player];
+	if(count == nil) count = 1;
+	player_points[player] += count;
 }
 
 protected func InitializePlayer()
@@ -123,17 +124,26 @@ public func IsFulfilled()
 }
 
 func OnClonkDeath(object clonk, int killer)
-{
+{	
 	ScheduleCall(this, "RefreshScoreboard", 1);
 	if(clonk->GetAlive()) return;
 	if(GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
-	if(!Hostile(clonk->GetOwner(), killer)) return;
-	
-	if(location->GetKing() != nil)
-	if(location->GetKing() == clonk || location->GetKing()->GetOwner() == killer)
+	if(!Hostile(clonk->GetOwner(), killer)) //Shame on the one who kills himself (this applies for NO_OWNER too)
 	{
-		DoPoint(killer);
+		DoPoint(clonk->GetOwner(),-1);
+		return;
+	}
+	
+	if(location->GetKing() != nil) 
+	{
+		if(location->GetKing()->GetOwner() == killer)
+			DoPoint(killer);
+		else if(location->GetKing() == clonk)
+		{
+			DoPoint(killer);
+			location->SetKing(GetCursor(killer));
+		}
 	}
 	CheckForWinner();
 	return;
