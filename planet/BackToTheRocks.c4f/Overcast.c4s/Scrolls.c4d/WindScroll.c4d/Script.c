@@ -53,7 +53,6 @@ public func FxWindScrollStormTimer(pTarget, iEffectNumber, iEffectTime)
 		{
 			if(PathFree(x,y,obj->GetX(),obj->GetY()))
 			{
-				Log("%d und %d",obj->GetYDir(),ydir);
 				if(xdir<0)
 				{if(obj->GetXDir() > xdir) obj->SetXDir(obj->GetXDir(100) + (xdir*3)/2,100); }
 				else 
