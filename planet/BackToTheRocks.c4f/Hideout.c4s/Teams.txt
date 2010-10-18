@@ -5,14 +5,14 @@ TeamColors=true
 	id=1
 	Name=$NameLeft$
 	Color=255
-	#IconSpec=GrappleBow:1
+	#IconSpec=GrappleBow
 	MaxPlayer=4
 
 	[Team]
 	id=2
 	Name=$NameRight$
 	Color=16711680
-	#IconSpec=Shield:1
+	#IconSpec=Shield
 	MaxPlayer=4
 
 

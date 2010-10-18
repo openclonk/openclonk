@@ -1,8 +1,8 @@
 /*--
-		Flag
-		Author: Maikel
+	Flag
+	Author: Maikel
 		
-		Flag for CTF goal, to be captured and defended.
+	Flag for CTF goal, to be captured and defended.
 --*/
 
 
@@ -79,6 +79,8 @@ protected func Initialize()
 	PlayAnimation("Wave", 1, Anim_Linear(0, 0, GetAnimationLength("Wave"), 78, ANIM_Loop), Anim_Const(1000));
 	return;
 }
+
+public func HasNoFadeOut() { return true; }
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryPhase() { return 700; }
