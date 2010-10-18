@@ -11,7 +11,9 @@ local no_ladder_counter;
 func GetTurnPhase() { return _inherited(...); }
 
 func Definition(def) {
-	// add action
+	// Only add action if included by clonk.
+	if (!def.ActMap)
+		return _inherited(def);
 	def.ActMap = {
 		Prototype = def.ActMap,
 		Climb = {
