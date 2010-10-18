@@ -41,7 +41,7 @@ abstract class C4Network {
      * @return void
      */
     public static function SendAnswer($message) {
-        header('Content-Length: '.strlen($message));
+        //header('Content-Length: '.strlen($message));
         echo $message;
     }
 
