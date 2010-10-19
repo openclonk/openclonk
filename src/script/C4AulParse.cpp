@@ -96,9 +96,7 @@ enum C4AulTokenType
 	ATT_DIR,    // directive
 	ATT_IDTF,   // identifier
 	ATT_INT,    // integer constant
-	ATT_BOOL,   // boolean constant
 	ATT_STRING, // string constant
-	ATT_NIL,    // "nil"
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
@@ -709,10 +707,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				SCopy(SPos0, pToken, Len);
 				// directive?
 				if (State == TGS_Dir) return ATT_DIR;
-				// check reserved names
-				if (SEqual(pToken, C4AUL_False)) { *pInt = false; return ATT_BOOL; }
-				if (SEqual(pToken, C4AUL_True))  { *pInt = true; return ATT_BOOL; }
-				if (SEqual(pToken, C4AUL_Nil))   { return ATT_NIL; }
 				// everything else is an identifier
 				return ATT_IDTF;
 			}
@@ -1338,9 +1332,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_DIR: return "directive";
 	case ATT_IDTF: return "identifier";
 	case ATT_INT: return "integer constant";
-	case ATT_BOOL: return "boolean constant";
 	case ATT_STRING: return "string constant";
-	case ATT_NIL: return "nil";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
 	case ATT_DCOLON: return "'::'";
@@ -1788,7 +1780,6 @@ void C4AulParseState::Parse_Statement()
 	case ATT_SET:
 	case ATT_OPERATOR:
 	case ATT_INT: // constant in cInt
-	case ATT_BOOL:  // constant in cInt
 	case ATT_STRING: // reference in cInt
 	{
 		Parse_Expression();
@@ -2408,6 +2399,21 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			AddBCC(AB_LOCALN, (intptr_t) pKey);
 			Shift();
 		}
+		else if (SEqual(Idtf, C4AUL_True))
+		{
+			AddBCC(AB_BOOL, 1);
+			Shift();
+		}
+		else if (SEqual(Idtf, C4AUL_False))
+		{
+			AddBCC(AB_BOOL, 0);
+			Shift();
+		}
+		else if (SEqual(Idtf, C4AUL_Nil))
+		{
+			AddBCC(AB_NIL);
+			Shift();
+		}
 		// check for global variable (static)
 		else if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 		{
@@ -2540,21 +2546,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		Shift();
 		break;
 	}
-	case ATT_BOOL:  // constant in cInt
-	{
-		AddBCC(AB_BOOL, cInt);
-		Shift();
-		break;
-	}
 	case ATT_STRING: // reference in cInt
 	{
 		AddBCC(AB_STRING, cInt);
-		Shift();
-		break;
-	}
-	case ATT_NIL:
-	{
-		AddBCC(AB_NIL);
 		Shift();
 		break;
 	}
@@ -2933,12 +2927,16 @@ C4Value C4AulParseState::Parse_ConstExpression()
 	switch (TokenType)
 	{
 	case ATT_INT: r.SetInt(cInt); break;
-	case ATT_BOOL: r.SetBool(!!cInt); break;
 	case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-	case ATT_NIL: r.Set0(); break;
 	case ATT_IDTF:
 		// identifier is only OK if it's another constant
-		if (!a->Engine->GetGlobalConstant(Idtf, &r))
+		if (SEqual(Idtf, C4AUL_True))
+			r.SetBool(true);
+		else if (SEqual(Idtf, C4AUL_False))
+			r.SetBool(false);
+		else if (SEqual(Idtf, C4AUL_Nil))
+			r.Set0();
+		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
 			UnexpectedToken("constant value");
 		break;
 	case ATT_BOPEN2:
