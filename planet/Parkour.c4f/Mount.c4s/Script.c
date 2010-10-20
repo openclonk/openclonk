@@ -21,6 +21,7 @@ func Initialize()
 	x=LandscapeWidth()/2;;
 	y=35;
 	pGoal->SetFinishpoint(x, y);
+	MapBottomFix();
 }
 
 protected func PlrHasRespawned(int iPlr, object cp)
@@ -33,4 +34,14 @@ protected func PlrHasRespawned(int iPlr, object cp)
 	clonk->CreateContents(JarOfWinds);
 	clonk->CreateContents(Shovel);
 	return;
+}
+
+global func MapBottomFix()
+{
+	for(var i=1; i < LandscapeWidth(); i++)
+	{
+		var sway = Sin(i,10);
+		if(GetMaterial(i,LandscapeHeight()-1) == Material("Tunnel"))
+			DrawMaterialQuad("Granite",i-1,LandscapeHeight() - 13 + sway,i+1,LandscapeHeight() - 13 + sway,i+1,LandscapeHeight(),i-1,LandscapeHeight());
+	}
 }
