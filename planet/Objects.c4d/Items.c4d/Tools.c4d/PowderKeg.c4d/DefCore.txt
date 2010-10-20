@@ -18,4 +18,5 @@ Collectible=1
 ContactIncinerate=2
 BlastIncinerate=5
 NoBurnDecay=1
+NoComponentMass=1
 Rotate=1
