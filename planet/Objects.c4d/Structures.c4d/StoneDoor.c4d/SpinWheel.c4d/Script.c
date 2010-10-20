@@ -7,7 +7,7 @@ public func Initialize()
 	SetAction("Still");
 }
 
-public func SetCastleDoor(object door)
+public func SetStoneDoor(object door)
 {
 	targetdoor = door;
 	return;

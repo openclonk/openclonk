@@ -23,24 +23,24 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(CastleDoor, 366, 420, NO_OWNER);
+	gate = CreateObject(StoneDoor, 366, 420, NO_OWNER);
 	wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
-	wheel->SetCastleDoor(gate);
-	gate = CreateObject(CastleDoor, 346, 550, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, 346, 550, NO_OWNER);
 	wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
-	wheel->SetCastleDoor(gate);
-	gate = CreateObject(CastleDoor, 846, 450, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, 846, 450, NO_OWNER);
 	wheel = CreateObject(SpinWheel, 780, 480, NO_OWNER);
-	wheel->SetCastleDoor(gate);
-	gate = CreateObject(CastleDoor, LandscapeWidth() - 364, 420, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 420, NO_OWNER);
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
-	wheel->SetCastleDoor(gate);
-	gate = CreateObject(CastleDoor, LandscapeWidth() - 344, 550, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 344, 550, NO_OWNER);
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
-	wheel->SetCastleDoor(gate);
-	gate = CreateObject(CastleDoor, LandscapeWidth() - 844, 450, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 844, 450, NO_OWNER);
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 780, 480, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
 	var chest;

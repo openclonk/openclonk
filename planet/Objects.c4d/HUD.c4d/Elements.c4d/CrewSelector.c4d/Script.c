@@ -124,9 +124,8 @@ private func UpdateTexts()
 {
 	CustomMessage("",this,crew->GetOwner());
 	
-	//if(crew->GetEnergy() > 0)
-	// always show the number
-	CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), energypos, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
+	if(crew->GetEnergy() > 0)
+		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), energypos, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
 	
 	if(crew->GetMagicEnergy() > 0)
 		CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), magicpos, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);

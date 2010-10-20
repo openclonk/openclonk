@@ -70,13 +70,13 @@ protected func Decoration()
 
 protected func Doors()
 {
-	var gate = CreateObject(CastleDoor, 865, 1195, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 865, 1195, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1045, 1165, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 1155, 1026, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1155, 1026, NO_OWNER);
 	var	wheel = CreateObject(ArrowWheel, 1906, 778, NO_OWNER);
 	var straw = CreateObject(DoorTarget,1850,820,NO_OWNER);
 	straw->SetGate(gate);
@@ -84,39 +84,39 @@ protected func Doors()
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 1875, 761, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1875, 761, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1752, 1148, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 1875, 864, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1875, 864, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1116, 1038, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 3115, 685, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 3115, 685, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 3140, 588, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 585, 915, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 585, 915, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 853, 681, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 345, 740, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 345, 740, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 417, 712, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 	
-	var gate = CreateObject(CastleDoor, 1935, 550, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1935, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1900, 565, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
 		

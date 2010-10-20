@@ -28,7 +28,7 @@ protected func Initialize()
 	CreateObject(SwordTarget, 340, 648, NO_OWNER)->SetR(RandomX(-10, 10));
 	CreateObject(SwordTarget, 430, 600, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(CastleDoor, 556, 640, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 556, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
@@ -42,9 +42,9 @@ protected func Initialize()
 	spearman1->AI_GuardArea(800, 400, 400, 250);
 	AddEffect("IntContentRemoval", spearman1, 100, 0);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1216, 550, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
@@ -60,9 +60,9 @@ protected func Initialize()
 	bowman->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", bowman, 100, 0);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1856, 500, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1856, 500, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	
 	// Fourth section: Opponent with sword and shield.
 	var swordman = CreateObject(Clonk, 2250, 330, NO_OWNER);

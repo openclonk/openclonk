@@ -1,4 +1,4 @@
-/*-- Castle Door --*/
+/*-- Stone Door --*/
 
 protected func Initialize()
 {
