@@ -2,6 +2,8 @@
 Icon=19
 Title=Pyramid
 Version=4,10,0,0
+MinPlayer=2
+Maxplayer=8
 
 [Definitions]
 Definition1=Objects.c4d
@@ -19,8 +21,6 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Vegetation=TRE1=1;TRE2=2;TRE3=1;
-VegetationLevel=100,0
 InEarth=Rock=1;Gold=1;Flint=1;Loam=1;
 InEarthLevel=65
 Sky=Clouds1;Default
