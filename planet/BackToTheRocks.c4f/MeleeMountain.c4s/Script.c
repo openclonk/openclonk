@@ -31,7 +31,7 @@ protected func OnPlayerRelaunch(int plr)
 global func FxIntFillChestsTimer()
 {
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
+	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Loam,Firestone,JarOfWinds,GrappleBow];
 	
 	if (chest->ContentsCount() < 5)
 		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
@@ -57,4 +57,4 @@ func OnClonkLeftRelaunch(object clonk)
 }
 
 func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList(){ return [Boompack, Balloon, JarOfWinds, GrappleBow, Shovel]; }
+func RelaunchWeaponList(){ return [Boompack, JarOfWinds, GrappleBow, Shovel]; }
