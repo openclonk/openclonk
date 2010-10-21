@@ -1,23 +1,28 @@
-/* Sky race */
+/*-- 
+	Boomrace 
+	Author: Newton
+	
+	A parkour on boompacks.
+--*/
 
-func Initialize()
+protected func Initialize()
 {
-	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
-	pGoal->SetStartpoint(90, 820);
-	pGoal->AddCheckpoint(660, 580, 28);
-	pGoal->AddCheckpoint(500, 270, 28);
-	pGoal->AddCheckpoint(1850, 90, 28);
-	pGoal->AddCheckpoint(1650, 740, 28);
-	pGoal->AddCheckpoint(2200, 870, 28);
-	pGoal->AddCheckpoint(3300, 240, 28);
-	pGoal->AddCheckpoint(3830, 710, 28);
-	pGoal->SetFinishpoint(3650, 180);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
+	goal->SetStartpoint(90, 820);
+	goal->AddCheckpoint(660, 580, 28);
+	goal->AddCheckpoint(500, 270, 28);
+	goal->AddCheckpoint(1850, 90, 28);
+	goal->AddCheckpoint(1650, 740, 28);
+	goal->AddCheckpoint(2200, 870, 28);
+	goal->AddCheckpoint(3300, 240, 28);
+	goal->AddCheckpoint(3830, 710, 28);
+	goal->SetFinishpoint(3650, 180);
 
-	SetSkyAdjust (RGB(255,128,0), RGB(0,0,0));
+	SetSkyAdjust(RGB(255,128,0), RGB(0,0,0));
 }
 
-// Gamecall from Race-goal, on respawning.
-func PlrHasRespawned(int iPlr, object cp)
+// Gamecall from parkour goal, on respawning.
+protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->CreateContents(Boompack);

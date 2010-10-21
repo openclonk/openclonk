@@ -1,4 +1,4 @@
-/*-- The Cavern --*/
+/*-- Cavern --*/
 
 overlay Mats {				
 	algo=rndchecker;

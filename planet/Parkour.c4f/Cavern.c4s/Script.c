@@ -1,4 +1,9 @@
-/*-- The Cavern --*/
+/*-- 
+	Cool Cavern
+	Author: Maikel
+	
+	An upwards parkour where basic clonking skills are required to get out of cold cavern.
+--*/
 
 protected func Initialize()
 {

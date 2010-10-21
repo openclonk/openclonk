@@ -26,10 +26,9 @@ Crew=Clonk=1
 InEarth=Rock=1;Firestone=3;Loam=3
 InEarthLevel=80,0,0,100
 Sky=Clouds1
-MapWidth=100,0,64,10000
-MapHeight=250,0,40,10000
+MapWidth=100,0,64,250
+MapHeight=250,0,40,250
 SkyScrollMode=2
-NewStyleLandscape=2
 
 [Weather]
 Climate=100,0,0,100
