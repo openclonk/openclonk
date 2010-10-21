@@ -72,7 +72,13 @@ protected func Initialize()
 	AddEffect("IntContentRemoval", swordman, 100, 0);
 	// Chest with some extra weapons.
 	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
-	chest->CreateContents(Club);	
+	chest->CreateContents(Club);
+	
+	// Brick edges.
+	var edges = [[620,640],[630,630],[540,560],[530,550],[530,480],[520,470],[1160,570],[1170,560],[1830,450],[1840,440],[1850,430],[1830,370],[1800,360]];
+	for(var i = 0; i < GetLength(edges); i++)
+		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
+
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");

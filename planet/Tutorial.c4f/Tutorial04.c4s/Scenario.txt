@@ -2,7 +2,7 @@
 Icon=5
 Title=Tutorial04
 Version=4,10,0,0
-MaxPlayer=2
+MaxPlayer=1
 Difficulty=4
 
 [Definitions]
