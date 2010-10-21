@@ -1,5 +1,5 @@
 [Head]
-Icon=12
+Icon=13
 Title=Hideout
 Version=4,10,0,0
 MinPlayer=2

@@ -26,7 +26,6 @@ Crew=Clonk=1
 Sky=Clouds1
 MapWidth=60
 MapHeight=50
-NewStyleLandscape=2
 
 [Animals]
 Nest=Firestone=20;Loam=20;Rock=15;Gold=5;

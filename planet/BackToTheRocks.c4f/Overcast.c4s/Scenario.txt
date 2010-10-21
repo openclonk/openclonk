@@ -1,6 +1,7 @@
 [Head]
 Title=Overcast
 Version=4,10,0,0
+MinPlayer=2
 
 [Definitions]
 Definition1=Objects.c4d
@@ -24,7 +25,6 @@ Crew=Clonk=1
 Sky=Clouds1
 MapWidth=60
 MapHeight=50
-NewStyleLandscape=2
 BottomOpen=1
 SkyScrollMode=1
 Sky=Fog1
