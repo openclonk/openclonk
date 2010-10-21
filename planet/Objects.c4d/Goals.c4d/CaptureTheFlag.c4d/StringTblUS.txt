@@ -1,5 +1,10 @@
 Name=Capture The Flag
 
+MsgGoalCaptureTheFlag=Capture enemy flags and bring them to your base. 
 MsgGoalFulfilled=You have won this round!
-MsgGoalUnfulfilled1=You still need to capture one flag.
-MsgGoalUnfulfilledX=You still need to capture %d flags.
+MsgGoalUnfulfilled1=You still need to capture one flag to win.
+MsgGoalUnfulfilledX=You still need to capture %d flags to win.
+
+MsgShortSteal=Capture a flag!
+MsgShortCaptured=Your flag has| been captured!
+MsgShortReturn=Return this flag| to your base.

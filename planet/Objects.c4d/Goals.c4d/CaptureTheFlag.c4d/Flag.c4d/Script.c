@@ -44,7 +44,7 @@ public func IsInteractable(object clonk)
 	if (ctrl_team == 0)
 		return false;
 	if (team == ctrl_team)
-		if (IsFlagAtBase())
+		if (IsAtBase())
 			return false;
 	return true;
 }
@@ -85,6 +85,7 @@ public func HasNoFadeOut() { return true; }
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryPhase() { return 700; }
 
+// Checks whether the carrier has reached its base.
 protected func FxFlagCarriedTimer(object target)
 {
 	var controller = target->GetController();
@@ -122,14 +123,14 @@ protected func Destruction()
 }
 
 // Returns whether the flag is at its base.
-private func IsFlagAtBase()
+public func IsAtBase()
 {
 	return !!FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team), Find_Distance(30));
 }
 
 private func BeamFlag(bool msg)
 {
-	if (IsFlagAtBase())
+	if (IsAtBase())
 		return;
 	if (msg)
 		Log("$MsgFlagBeamed$", GetTeamName(team));

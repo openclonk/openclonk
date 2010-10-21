@@ -20,6 +20,9 @@ protected func Initialize()
 
 private func GetScoreGoal()
 {
+	var flag_cnt = GameCall("CaptureFlagCount");
+	if (flag_cnt != nil)
+		return Max(1, flag_cnt);
 	return 1;
 }
 
@@ -91,6 +94,12 @@ protected func RemovePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
+protected func RejectTeamSwitch(int player, int new_team)
+{
+	// Prevent team switching in any case.
+	return true;
+}
+
 /*-- Goal interface --*/
 
 public func IsFulfilled()
@@ -123,17 +132,31 @@ public func Activate(int byplr)
 		MessageWindow("$MsgGoalFulfilled$", byplr);
 	else
 	{
+		var msg = "$MsgGoalCaptureTheFlag$";
 		if (flags == 1)
-			MessageWindow("$MsgGoalUnfulfilled1$", byplr);
+			msg = Format("%s %s", msg, "$MsgGoalUnfulfilled1$");
 		else
-			MessageWindow(Format("$MsgGoalUnfulfilledX$", flags), byplr);
+			msg = Format("%s %s", msg, Format("$MsgGoalUnfulfilledX$", flags));
+
+		MessageWindow(msg, byplr);
 	}
 	return;
 }
 
 public func GetShortDescription(int plr)
 {
-	return ""; // TODO
+	var team = GetPlayerTeam(plr);
+	var flag = FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team));
+	var at_base = flag->IsAtBase();
+	if (!at_base)
+		return "$MsgShortCaptured$";
+	
+	var cursor = GetCursor(plr);
+	flag = FindObject(Find_ID(Goal_Flag), Find_Not(Find_Func("FindTeam", team)), Find_Container(cursor));
+	if (flag)
+		return "$MsgShortReturn$";
+	
+	return "$MsgShortSteal$";
 }
 
 // Returns the number of players in a specific team.
