@@ -63,6 +63,8 @@ public func ShowGuideMessage(int show_index)
 	index = Max(0, show_index);
 	if (!messages[index])
 		return;
+	if (GetEffect("MessageShown", this))
+		RemoveEffect("MessageShown", this);
 	if (GetEffect("NotifyPlayer", this))
 		RemoveEffect("NotifyPlayer", this);
 	GuideMessage(index);
@@ -114,12 +116,15 @@ private func GuideMessage(int show_index)
 	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
 	EffectVar(0, this, effect) = show_index;
+	// Messages with @ in front are shown infinetely long.
+	if(GetChar(message, 0) == GetChar("@", 0))
+		EffectVar(1, this, effect) = true;
 	return true;
 }
 
 // Effect exists as long as the message is shown.
-// Message string is stored in EffectVar 0.
-// TODO account for infinite messages, those with @ in front.
+// Message index is stored in EffectVar 0.
+// For messages with @ in front, EffectVar 1 is true.
 protected func FxMessageShownStart(object target, int num, int temporary)
 {
 	if (temporary == 0)
@@ -130,7 +135,8 @@ protected func FxMessageShownStart(object target, int num, int temporary)
 protected func FxMessageShownTimer(object target, int num, int time)
 {
 	// Delete effect if time has passed, i.e. message has disappeared.
-	if (time)
+	// But only if it is not a message of infinite length, with @ in front.
+	if (time && !EffectVar(1, target, num))
 		return -1;
 	return 1;
 }
@@ -168,7 +174,8 @@ protected func FxNotifyPlayerStop(object target, int num, int reason, bool tempo
 
 protected func FxNotifyPlayerEffect(string new_name)
 {
-	if(new_name == "NotifyPlayer") return -1;
+	if (new_name == "NotifyPlayer") 
+		return -1;
 }
 
 local Name = "$Name$";

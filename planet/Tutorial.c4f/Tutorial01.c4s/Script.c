@@ -40,7 +40,7 @@ protected func Initialize()
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial01.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
-	return true;
+	return;
 }
 
 // Gamecall from goals, set next mission.
