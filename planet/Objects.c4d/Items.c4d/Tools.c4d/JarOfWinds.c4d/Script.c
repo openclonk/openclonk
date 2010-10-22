@@ -8,6 +8,7 @@
 
 local Amount;
 local MaxCap;
+local sound;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 600; }
@@ -22,6 +23,7 @@ protected func Initialize()
 	MaxCap = 60; //Changes duration and power of the Jar
 	SetR(-45);
 	AddEffect("JarReload",this,100,2,this);
+	sound=false;
 }
 
 protected func ControlUse(object pClonk, iX, iY)
@@ -36,6 +38,7 @@ protected func ControlUse(object pClonk, iX, iY)
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);
 			Sound("WindCharge.ogg",false,nil,nil,1);
+			sound=true;
 		}
 		
 		return true;
@@ -50,7 +53,7 @@ protected func ControlUse(object pClonk, iX, iY)
 
 protected func Load()
 {
-
+	
 	if(Amount <= MaxCap)
 	{
 		var R=RandomX(-25,25);
@@ -61,6 +64,11 @@ protected func Load()
 		
 		if(!GBackSolid(SX,SY) && !GBackLiquid(SX,SY) && !GBackSolid(0,0) && !GBackLiquid(0,0)) //when on a random spot in front is air...
 		{
+			if(!sound)
+			{
+				Sound("WindCharge.ogg",false,nil,nil,1);
+				sound=true;
+			}
 			Amount += 2; //Air is sucked in.
 			CreateParticle("AirIntake",
 				SX,SY,
@@ -70,11 +78,18 @@ protected func Load()
 				RGBa(255,255,255,128)
 			);
 		}
+		else if(GBackSolid(0,0) || GBackLiquid(0,0))
+		{
+			if(sound)
+			ChargeSoundStop();
+		}
+
 	}
 	else
 	{
 		RemoveEffect("JarReload",this);
 		ChargeSoundStop();
+		
 	}
 }
 
@@ -82,6 +97,7 @@ protected func ChargeSoundStop()
 {
 	Sound("WindCharge.ogg",false,nil,nil,-1);
 	Sound("WindChargeStop.ogg");
+	sound=false;
 }
 
 private func FireWeapon(object pClonk,iX,iY)
