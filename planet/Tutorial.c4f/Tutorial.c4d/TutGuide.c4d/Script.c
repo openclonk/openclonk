@@ -91,8 +91,13 @@ public func MouseSelection(int plr)
 		RemoveEffect("NotifyPlayer", this);
 	// Clear guide message if the latest is already shown.
 	var effect = GetEffect("MessageShown", this, nil, 0);
-	if (effect && EffectVar(0, this, effect) == index)
-		return ClearGuideMessage();
+	if (effect)
+	{
+		if (EffectVar(0, this, effect) == index)
+			return ClearGuideMessage();
+		else
+			RemoveEffect("MessageShown", this);
+	}
 	// Show guide message if there is a new one, and increase index if possible.
 	if (!messages[index])
 		return;
