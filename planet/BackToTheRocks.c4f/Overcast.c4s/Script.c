@@ -52,9 +52,14 @@ global func FxChanneledWindTimer()
 	{
 		obj->SetXDir(obj->GetXDir()+2);
 	}
+	for(var obj in FindObjects(Find_InRect(110,0,100,100)))
+	{
+		obj->SetXDir(obj->GetXDir()+2);
+	}
 	CreateParticle("AirIntake",110+Random(30),230+Random(185),RandomX(-1,1),-30,60+Random(10),RGB(100+Random(25),128+Random(20),255));
 	CreateParticle("AirIntake",110+Random(30),230+Random(180),RandomX(-1,1),-30,60+Random(10),RGB(100+Random(25),128+Random(20),255));
 	CreateParticle("AirIntake",110+Random(70),130+Random(30) , 30,Random(3),60+Random(10),RGB(100+Random(25),128+Random(20),255));
+	CreateParticle("AirIntake",110+Random(80),Random(100) , 30,Random(3),60+Random(10),RGB(100+Random(25),128+Random(20),255));
 }
 
 global func PlaceEdges()

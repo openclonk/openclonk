@@ -20,8 +20,8 @@ public func FxWindScrollStormStart(pTarget, iEffectNumber, iTemp, angle, x, y)
 	if(iTemp) return;
 	EffectVar(0, pTarget, iEffectNumber)=Sin(angle,32);
 	EffectVar(1, pTarget, iEffectNumber)=-Cos(angle,32);
-	EffectVar(2, pTarget, iEffectNumber)=x+Sin(angle,25);
-	EffectVar(3, pTarget, iEffectNumber)=y-Cos(angle,25);
+	EffectVar(2, pTarget, iEffectNumber)=x+Sin(angle,43);
+	EffectVar(3, pTarget, iEffectNumber)=y-Cos(angle,43);
 
 	
 }
@@ -36,7 +36,7 @@ public func FxWindScrollStormTimer(pTarget, iEffectNumber, iEffectTime)
 	if(iEffectTime<36)
 	{
 			var r=Random(360);
-			var d=Random(50);
+			var d=Random(40);
 			CreateParticle("AirIntake",Sin(r,d)+x,-Cos(r,d)+y,xdir/3,ydir/3 +2,64,RGB(Random(80),100+Random(50),255));
 	return 1;
 	}
@@ -45,11 +45,11 @@ public func FxWindScrollStormTimer(pTarget, iEffectNumber, iEffectTime)
 		for(var i=0; i<5; i++)
 		{
 			var r=Random(360);
-			var d=Random(50);
+			var d=Random(40);
 			CreateParticle("AirIntake",Sin(r,d)+x,-Cos(r,d)+y,xdir/2,ydir/2 +2,64,RGB(Random(80),100+Random(50),255));
 		}
 		
-		for(var obj in FindObjects(Find_Distance(50,x,y),Find_Not(Find_Category(C4D_Structure))))
+		for(var obj in FindObjects(Find_Distance(40,x,y),Find_Not(Find_Category(C4D_Structure))))
 		{
 			if(PathFree(x,y,obj->GetX(),obj->GetY()))
 			{

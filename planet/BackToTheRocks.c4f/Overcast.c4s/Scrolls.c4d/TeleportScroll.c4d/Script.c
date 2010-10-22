@@ -17,7 +17,6 @@ public func ControlUse(object pClonk, int ix, int iy)
 	if(r==4) { x=200; y=150; }
 	if(r==5) { x=400; y=470; }
 	
-	if(!Random(20)) { x=65; y=650; }
 	
 	DrawParticleLine("Magic",0,0,-GetX()+x,-GetY()+y,2,64,RGB(0,128,255),RGB(0,200,255),-1);
 	pClonk->SetPosition(x,y);

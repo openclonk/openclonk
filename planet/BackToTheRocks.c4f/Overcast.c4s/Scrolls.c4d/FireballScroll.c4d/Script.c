@@ -38,7 +38,7 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 	 		Find_Hostile(EffectVar(0, pTarget, iEffectNumber)),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
-	 		Find_OnLine(x+Sin(angle, -4),y-Cos(angle, 4),x+Sin(angle, -4),y-Cos(angle, 4))
+	 		Find_Distance(5,x,y)
 	 		)
 	 	)
 	{
