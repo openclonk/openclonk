@@ -25,10 +25,11 @@ These sound effects are licensed under the CC Sampling plus license.
 
 shall555		- Items/Tools/Shovel
 TicTacShutUp	- Click
-Benboncan		- Blast3
+Benboncan		- Blast*
 kwandalist		- RockHit*
 thecheeseman	- Hurt*, Die 
 tobyk			- Fanfare
 broumbroum		- Goals/Parkour/Checkpoint
 ERH				- WindLoop
 dobroide		- BirdsLoop
+m_O_M			- Fuse/FuseLoop
