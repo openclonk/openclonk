@@ -1,2 +1,2 @@
-DE:Kalte Höhle
+DE:Eisige Höhle
 US:Cool Cavern
