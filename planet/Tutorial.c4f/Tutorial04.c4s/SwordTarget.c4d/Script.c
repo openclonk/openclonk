@@ -17,7 +17,9 @@ public func Burst()
 	return;
 }
 
-public func OnSwordHit()
+public func IsProjectileTarget() { return true; }
+
+public func Damage()
 {
 	Burst();
 	return;

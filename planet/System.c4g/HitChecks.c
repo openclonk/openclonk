@@ -167,9 +167,12 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 		return;
 	
 	this->~OnStrike(obj);
+	if (!this || !obj)
+		return;
 	if (obj->GetAlive())
 	{
 		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetController());
+		if(!obj) return;
 		obj->~CatchBlow(-dmg, this);
 	}
 	else

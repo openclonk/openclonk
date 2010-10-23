@@ -36,10 +36,10 @@ protected func AI_MeleeAttack(object clonk, int x, int y, object target)
 			return;
 		}
 		
-	// Move to target in steps of 20 pixels.
+	// Move to target
 	var angle = Angle(clonk->GetX(), clonk->GetY(), target->GetX(), target->GetY());
-	clonk->AI_Log("Move to position (%d,%d)", clonk->GetX() + Sin(angle, 10),  clonk->GetY() + Cos(angle, 10));
-	clonk->AppendCommand("MoveTo", nil, clonk->GetX() + Sin(angle, 10), clonk->GetY() + Cos(angle, 10));
+	clonk->AI_Log("Move to position (%d,%d)", target->GetX() - Sin(angle, 10),  clonk->GetY() + Cos(angle, 10));
+	clonk->AppendCommand("MoveTo", nil, target->GetX() - Sin(angle, 10), target->GetY() + Cos(angle, 10));
 	clonk->AppendCommand("Call", clonk, nil, nil, target, nil, "AI_MeleeAttack");
 	
 	// Return to basic attacks.
