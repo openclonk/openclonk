@@ -35,7 +35,7 @@ Vegetation=TRE1=1;TRE2=2;TRE3=1;TRE4=1
 VegetationLevel=100,0,0,100
 InEarth=Rock=1;Gold=1;Dynamite=1;Loam=1
 InEarthLevel=65,0,0,100
-Sky=Clouds2
+Sky=WinterMountains
 BottomOpen=1
 MapWidth=200,0,64,10000
 MapHeight=250,0,40,10000
@@ -50,7 +50,7 @@ SkyScrollMode=2
 NewStyleLandscape=2
 
 [Weather]
-Climate=0,0,0,100
+Climate=100,0,0,100
 YearSpeed=20,10,0,100
 Wind=1,100,-100,100
 

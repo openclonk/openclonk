@@ -21,19 +21,53 @@ func Initialize()
 	x=LandscapeWidth()/2;;
 	y=35;
 	pGoal->SetFinishpoint(x, y);
+	
+	// Place chests.
+	var d = 300;
+	var pos;
+	while (d < LandscapeHeight() - 300)
+	{
+		var i = 0;
+		while (!(pos = FindPosInMat("Tunnel", 0, d, LandscapeWidth(), 300, 15)) && i < 25)
+			i++; // Max 25 attempts.
+		x = pos[0]; y = pos[1];
+		CreateObject(Chest, x, y + 8, NO_OWNER);
+		d += RandomX(250, 300);
+	}
+	// Fill chests.
+	var content_list = [PowderKeg, Dynamite, DynamiteBox, Loam, Firestone];
+	for (var chest in FindObjects(Find_ID(Chest)))
+		for (var i = 0; i < 4; i++)
+			chest->CreateContents(content_list[Random(GetLength(content_list))]);
+
+	//Environmental Effects
+	var time = CreateObject(Environment_Time);
+	time->SetCycleSpeed();
+	time->SetTime(900);
+
+	//Clouds
+	for(var i; i < 30; i++)
+		CreateObject(CloudEffect,Random(LandscapeWidth()),Random(LandscapeHeight()))->Show(nil,nil,5000,true);
+	//Snow
+	AddEffect("Snowfall",0,1,2);
+
 	MapBottomFix();
 }
 
 protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
+	clonk->CreateContents(Shovel);
 	if (!Random(2))
 		clonk->CreateContents(Loam);
 	else
 		clonk->CreateContents(Dynamite);
-	clonk->CreateContents(JarOfWinds);
-	clonk->CreateContents(Shovel);
 	return;
+}
+
+global func FxSnowfallTimer(object target, int num, int timer)
+{
+	CastPXS("Snow",5,1,RandomX(0,LandscapeWidth()),1);
 }
 
 global func MapBottomFix()

@@ -1,2 +1,2 @@
-US:Mountain Race
-DE:Bergklettern
+US:Shiver Peak
+DE:Schauerberg
