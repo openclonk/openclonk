@@ -8,3 +8,6 @@ MsgGoalUnfulfilledX=You still need to capture %d flags to win.
 MsgShortSteal=Capture a flag!
 MsgShortCaptured=Your flag has| been captured!
 MsgShortReturn=Return this flag| to your base.
+
+MsgScoreboard1=Capture one flag.
+MsgScoreboardX=Capture %d flags.

@@ -1,10 +1,13 @@
 Name=Capture The Flag
 
-MsgGoalCaptureTheFlag=Capture enemy flags and bring them to your base. 
-MsgGoalFulfilled=You have won this round!
-MsgGoalUnfulfilled1=You still need to capture one flag to win.
-MsgGoalUnfulfilledX=You still need to capture %d flags to win.
+MsgGoalCaptureTheFlag=Erobere feindliche Flaggen und bringe diese zu deiner Base. 
+MsgGoalFulfilled=Du hast diese Runde gewonnen!
+MsgGoalUnfulfilled1=Für den Sieg musst du noch eine Flagge erobern.
+MsgGoalUnfulfilledX=Für den Sieg musst du noch %d Flaggen erobern.
 
-MsgShortSteal=Capture a flag!
-MsgShortCaptured=Your flag has| been captured!
-MsgShortReturn=Return this flag| to your base.
+MsgShortSteal=Erobere eine Flagge!
+MsgShortCaptured=Deine Flagge| würde erobert!
+MsgShortReturn=Bringe diese Flagge| zu deiner Base.
+
+MsgScoreboard1=Erobere eine Flagge.
+MsgScoreboardX=Erobere %d Flaggen.
