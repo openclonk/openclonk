@@ -33,3 +33,4 @@ broumbroum		- Goals/Parkour/Checkpoint
 ERH				- WindLoop
 dobroide		- BirdsLoop
 m_O_M			- Fuse/FuseLoop
+CGEffex			- Splash*
