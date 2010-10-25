@@ -169,8 +169,8 @@ void C4AulScript::Default()
 	// not compiled
 	State = ASS_NONE;
 	Script = NULL;
-	Code = CPos = NULL;
-	CodeSize = CodeBufSize = 0;
+	Code.clear();
+	CPos = NULL;
 	IncludesResolved = false;
 
 	// defaults

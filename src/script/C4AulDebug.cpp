@@ -223,13 +223,14 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		{
 			C4AulBCC* foundDebugChunk = NULL;
 			const char* scriptText = script->GetScript();
-			for (C4AulBCC* chunk = script->Code; chunk; chunk++)
+			for (C4AulBCC* chunk = &script->Code[0]; chunk; chunk++)
 			{
 				switch (chunk->bccType)
 				{
 				case AB_DEBUG:
-					int lineOfThisOne;
-					if ((lineOfThisOne = SGetLine(scriptText, chunk->SPos)) == line)
+					{
+					int lineOfThisOne = script->GetLineOfCode(chunk);
+					if (lineOfThisOne == line)
 					{
 						foundDebugChunk = chunk;
 						goto Done;
@@ -237,7 +238,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 					/*else {
 					  DebugLogF("Debug chunk at %d", lineOfThisOne);
 					}*/
-
+					}
 					break;
 				case AB_EOF:
 					goto Done;
@@ -472,8 +473,7 @@ void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 {
 	// Get position in script
-	const char *szScript = pCtx->Func->pOrgScript->GetScript();
-	int iLine = SGetLine(szScript, pCPos->SPos);
+	int iLine = pCtx->Func->pOrgScript->GetLineOfCode(pCPos);
 	// Format
 	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
 }

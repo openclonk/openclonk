@@ -95,10 +95,10 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	else if (Func->Owner->Def != NULL)
 		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
-	if (!fDirectExec && Func->Owner)
+	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
 		                  Func->pOrgScript->ScriptName.getData(),
-		                  SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
+		                  CPos ? Func->pOrgScript->GetLineOfCode(CPos) : SGetLine(Func->pOrgScript->GetScript(), Func->Script));
 	// Return it
 	return Dump;
 }
@@ -1178,7 +1178,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		delete pScript;
 		return C4VNull;
 	}
-	pFunc->Code = pScript->Code;
+	pFunc->Code = &pScript->Code[0];
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));

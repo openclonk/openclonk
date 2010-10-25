@@ -888,13 +888,13 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CALLFS: return "CALLFS";  // failsafe direct call
 	case AB_STACK: return "STACK";    // push nulls / pop
 	case AB_INT: return "INT";      // constant: int
-	case AB_BOOL: return "bool";    // constant: bool
+	case AB_BOOL: return "BOOL";    // constant: bool
 	case AB_STRING: return "STRING";  // constant: string
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
 	case AB_CARRAY: return "CARRAY";  // constant: array
 	case AB_NIL: return "NIL";    // constant: nil
-	case AB_DUP: return "DUP";    // constant: nil
 	case AB_ARRAY: return "ARRAY";    // semi-constant: array
+	case AB_DUP: return "DUP";    // constant: nil
 	case AB_PROPLIST: return "PROPLIST";    // semi-constant: array
 	case AB_IPROPLIST: return "IPROPLIST";
 	case AB_IVARN: return "IVARN";    // initialization of named var
@@ -906,6 +906,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_FOREACH_NEXT: return "FOREACH_NEXT"; // foreach: next element
 	case AB_RETURN: return "RETURN";  // return statement
 	case AB_ERR: return "ERR";      // parse error at this position
+	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
 	case AB_EOF: return "EOF";
 
@@ -915,59 +916,50 @@ static const char * GetTTName(C4AulBCCType e)
 
 void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 {
-	// range check
-	if (CodeSize >= CodeBufSize)
-	{
-		// create new buffer
-		CodeBufSize = CodeBufSize ? 2 * CodeBufSize : C4AUL_CodeBufSize;
-		C4AulBCC *nCode = new C4AulBCC [CodeBufSize];
-		// copy data
-		memcpy(nCode, Code, sizeof(*Code) * CodeSize );
-		// replace buffer
-		delete[] Code;
-		Code = nCode;
-		// adjust pointer
-		CPos = Code + CodeSize;
-	}
 	// store chunk
-	CPos->bccType = eType;
-	CPos->Par.X = X;
-	CPos->SPos = SPos;
+	C4AulBCC bcc;
+	bcc.bccType = eType;
+	bcc.Par.X = X;
+	Code.push_back(bcc);
+	PosForCode.push_back(SPos);
+
+	CPos = &Code.back();
 	switch (eType)
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
 	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
 		CPos->Par.s->IncRef();
 		break;
-	default:
-		// TODO
-		break;
+	default: break;
 	}
-	CPos++; CodeSize++;
+	CPos++;
 }
 
 void C4AulScript::RemoveLastBCC()
 {
-	C4AulBCC *pBCC = Code + CodeSize - 1;
+	C4AulBCC *pBCC = &Code.back();
 	switch (pBCC->bccType)
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 		pBCC->Par.s->DecRef();
 		break;
-	default: break; // I don't want to do anything, thank you very much. Stupid warnings.
+	default: break;
 	}
-	CodeSize--;
+	Code.pop_back();
+	PosForCode.pop_back();
 	CPos--;
 }
 
 void C4AulScript::ClearCode()
 {
-	while(CodeSize > 0)
+	while(Code.size() > 0)
 		RemoveLastBCC();
-	delete[] Code;
-	Code = 0;
-	CodeSize = CodeBufSize = 0;
-	CPos = Code;
+	CPos = 0;
+}
+
+int C4AulScript::GetLineOfCode(C4AulBCC * bcc)
+{
+	return SGetLine(GetScript(), PosForCode[bcc - &Code[0]]);
 }
 
 bool C4AulScript::Preparse()
@@ -981,7 +973,7 @@ bool C4AulScript::Preparse()
 	  however, this is just a few bytes per updated definition in developer mode, which
 	  seems acceptable for me. The mem will be released when destroying the list */
 	Includes = NULL; Appends=NULL;
-	CPos = Code;
+	CPos = &Code[0];
 	while (Func0)
 	{
 		// belongs to this script?
@@ -1125,7 +1117,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 	}
 
 	// Join checks only if it's not a jump target
-	if (!fJump && a->CPos > a->Code)
+	if (!fJump && a->CPos > &a->Code[0])
 	{
 		// Join together stack operations
 		C4AulBCC *pCPos1 = a->CPos - 1;
@@ -1381,7 +1373,7 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContex
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
-	Fn->Code = (C4AulBCC *) (CPos - Code);
+	Fn->Code = (C4AulBCC *) (CPos - &Code[0]);
 	// parse
 	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
@@ -3103,8 +3095,8 @@ bool C4AulScript::Parse()
 	{
 		C4ScriptHost * scripthost = 0;
 		if (Def) scripthost = &Def->Script;
-		if (scripthost) LogSilentF("parsing %s...\n", scripthost->GetFilePath());
-		else LogSilentF("parsing unknown...\n");
+		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->GetFilePath());
+		else fprintf(stderr, "parsing unknown...\n");
 	}
 	// parse children
 	C4AulScript *s = Child0;
@@ -3151,12 +3143,12 @@ bool C4AulScript::Parse()
 				delete err;
 				// make all jumps that don't have their destination yet jump here
 				// intptr_t to make it work on 64bit
-				for (intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - Code; i++)
+				for (intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - &Code[0]; i++)
 				{
-					C4AulBCC *pBCC = Code + i;
+					C4AulBCC *pBCC = &Code[i];
 					if (IsJump(pBCC->bccType))
 						if (!pBCC->Par.i)
-							pBCC->Par.i = CPos - Code - i;
+							pBCC->Par.i = CPos - &Code[0] - i;
 				}
 				// add an error chunk
 				AddBCC(AB_ERR);
@@ -3181,7 +3173,7 @@ bool C4AulScript::Parse()
 			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 		}
 		if (Fn)
-			Fn->Code = Code + (intptr_t) Fn->Code;
+			Fn->Code = &Code[(intptr_t) Fn->Code];
 	}
 
 	// save line count
@@ -3197,23 +3189,30 @@ bool C4AulScript::Parse()
 				if (f->LinkedTo) Fn = f->LinkedTo->SFunc();
 				if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 			}
-			if (Fn)
+			if (!Fn)
+				continue;
+			fprintf(stderr, "%s:\n", Fn->Name);
+			for (C4AulBCC *pBCC = Fn->Code;; pBCC++)
 			{
-				LogSilentF("%s:", Fn->Name);
-				for (C4AulBCC *pBCC = Fn->Code;; pBCC++)
+				C4AulBCCType eType = pBCC->bccType;
+				fprintf(stderr, "\t%d\t%s", GetLineOfCode(pBCC), GetTTName(eType));
+				switch (eType)
 				{
-					C4AulBCCType eType = pBCC->bccType;
-					switch (eType)
-					{
-					case AB_FUNC:
-						LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.f->Name); break;
-					case AB_STRING: case AB_CALL: case AB_CALLFS:
-						LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.s->GetCStr()); break;
-					default:
-						LogSilentF("%s\t%ld\n", GetTTName(eType), static_cast<long>(pBCC->Par.X)); break;
-					}
-					if (eType == AB_EOFN) break;
+				case AB_FUNC:
+					fprintf(stderr, "\t%s\n", pBCC->Par.f->Name); break;
+				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
+					fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
+				case AB_STRING:
+					fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
+				case AB_DEBUG: case AB_NIL: case AB_RETURN:
+				case AB_PROPLIST: case AB_IPROPLIST: case AB_PAR:
+				case AB_ARRAYA: case AB_ARRAY_SLICE: case AB_ERR:
+				case AB_EOFN: case AB_EOF:
+					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+				default:
+					fprintf(stderr, "\t%ld\n", static_cast<long>(pBCC->Par.X)); break;
 				}
+				if (eType == AB_EOFN) break;
 			}
 		}
 
