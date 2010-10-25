@@ -5,7 +5,7 @@
 
 public func ControlUp(object clonk)
 {
-	if(GetEffect("SparklingAttention")) RemoveEffect("SparklingAttention");
+	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 	if (GetAction() == "Still" && targetdoor)
 	{
 		targetdoor->OpenGateDoor();

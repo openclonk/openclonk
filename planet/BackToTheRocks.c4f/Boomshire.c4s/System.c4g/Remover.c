@@ -11,11 +11,13 @@ protected func Initialize()
 	{
 		plants[GetLength(plants)]=CreateObject(Grass,-6,-15+i*5,NO_OWNER);
 		plants[GetLength(plants)-1]->SetR(-90);
+		plants[GetLength(plants)-1]->SetCategory(C4D_StaticBack);
 	}
 	for(var i=0; i<8; i++)
 	{
 		plants[GetLength(plants)]=CreateObject(Grass,+6,-15+i*5,NO_OWNER);
 		plants[GetLength(plants)-1]->SetR(+90);
+		plants[GetLength(plants)-1]->SetCategory(C4D_StaticBack);
 	}
 
 	SetAction("Door");
