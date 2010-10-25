@@ -1,70 +1,67 @@
 /*-- Bubble --*/
 
-local time;
-local alpha;
 
-global func Bubble(int iamount, int x, int y)
+global func Bubble(int amount, int x, int y)
 {
-	if(iamount==nil || iamount==0) iamount=3;
+	if (amount==nil || amount==0) 
+		amount=3;
 
-	var i = 0;
-	while(i<iamount)
-	{
-		CreateObject(Bubble1, x, y);
-		++i;
-	}
+	for (var i = 0; i < amount; i++)
+		CreateObject(Fx_Bubble, x, y, NO_OWNER);
+	return;
 }
 
 protected func Initialize()
 {
-	alpha=255;
-	DoCon(RandomX(25,100));
-	AddEffect("Move",this,1,1,this);
+	DoCon(RandomX(25, 100));
+	AddEffect("Move", this, 100, 1, this);
+	return;
 }
 
-public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
+public func FxMoveTimer(object target, int num, int time)
 {
-	if(GBackLiquid(0,-3)==false && !GetEffect("Fade",this) || iEffectTime > 108)
-	{
-		AddEffect("Fade",pTarget,1,1,pTarget);
-	}
+	if (!GBackLiquid(0, -3) && !GetEffect("Fade", this) || time > 108)
+		AddEffect("Fade", target, 100, 1, target);
 
-	//Bubbles burst into smaller bubles
-	if(Random(30)==1 && pTarget->GetCon()>100)
+	// Bubbles burst into smaller bubles
+	if (!Random(30) && target->GetCon() > 100)
 	{
-		var i=3;
-		while(i>0)
+		for (var i = 0; i < 3; i++)
 		{
-			i=--i;
-			var bubble=CreateObject(Bubble1);
-			bubble->SetCon(pTarget->GetCon()/15*10);
-			bubble->SetYDir(pTarget->GetYDir());
+			var bubble = CreateObject(Fx_Bubble);
+			bubble->SetCon(10 * target->GetCon() / 15);
+			bubble->SetYDir(target->GetYDir());
 		}
 		RemoveObject();
 		return -1;
 	}
 
+	// Jittery movement
 	SetYDir(GetYDir() - 2 + Random(5));
+	if (Inside(GetXDir(), -6, 6))
+		SetXDir(GetXDir() + 2 * Random(2) - 1);
 
-	//Jittery movement
-	var dir;
-	if(Random(2)==1) dir=-1;
-	else	dir=1;
-	if(GetXDir()<6 && GetXDir()>-6)
-	{
-		SetXDir(GetXDir()+dir);
-	}
+	return 1;
 }
 
-
-public func FxFadeTimer(pTarget)
+public func FxFadeStart(object target, int num, int temporary)
 {
-	if(alpha<=0)
+	// Store alpha here
+	if (temporary == 0)
+		EffectVar(0, target, num) = 255;
+	return 1;
+}
+
+public func FxFadeTimer(object target, int num)
+{
+	var alpha = EffectVar(0, target, num);
+	if (alpha <= 0)
 	{
-		RemoveEffect("Move",this);
+		RemoveEffect("Move", this);
 		RemoveObject();
 		return -1;
 	}
-	SetClrModulation(RGBa(255,255,255,alpha));
-	alpha=alpha-5;
+	SetClrModulation(RGBa(255, 255, 255, alpha));
+	EffectVar(0, target, num) = alpha - 5;
+	return 1;
 }

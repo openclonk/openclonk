@@ -75,7 +75,7 @@ global func ExplosionEffect(int level, int x, int y)
 	// Blast particle.
 	CreateParticle("Blast", x, y, 0, 0, level * 10, RGBa(255, 255, 255, 100));
 	if(!GBackLiquid(x,y)) CastParticles("Spark", 10, 80 + level, x, y, 35, 40, RGB(255, 200, 0), RGB(255, 255, 150));
-	if(GBackLiquid(x,y)) CastObjects(Bubble1, level * 7 / 10, level, x, y);
+	if(GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 7 / 10, level, x, y);
 	//CastParticles("FSpark", level/5+1, level, x,y, level*5+10,level*10+10, 0x00ef0000,0xffff1010));
 
 	// Smoke trails.

@@ -831,9 +831,9 @@ void BubbleOut(int32_t tx, int32_t ty)
 	// User-defined smoke level
 	int32_t SmokeLevel = GetSmokeLevel();
 	// Enough bubbles out there already
-	if (::Objects.ObjectCount(C4ID("FXU1")) >= SmokeLevel) return;
+	if (::Objects.ObjectCount(C4ID("Fx_Bubble")) >= SmokeLevel) return;
 	// Create bubble
-	Game.CreateObject(C4ID("FXU1"),NULL,NO_OWNER,tx,ty);
+	Game.CreateObject(C4ID("Fx_Bubble"),NULL,NO_OWNER,tx,ty);
 }
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
