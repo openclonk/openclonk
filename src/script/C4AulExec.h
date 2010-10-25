@@ -146,13 +146,13 @@ private:
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)
 	{
-		if (pStructure->ConvertTo(C4V_Array) && pStructure->GetType() != C4V_Any)
+		if (pStructure->ConvertTo(C4V_Array) && pStructure->_getArray())
 		{
 			if (!pIndex->ConvertTo(C4V_Int))
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
-		else if (pStructure->ConvertTo(C4V_PropList) && pStructure->GetType() != C4V_Any)
+		else if (pStructure->ConvertTo(C4V_PropList) && pStructure->_getPropList())
 		{
 			if (!pIndex->ConvertTo(C4V_String) || !pIndex->_getStr())
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
