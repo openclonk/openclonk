@@ -55,16 +55,15 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 		y+=-Cos(angle, 6);
 		EffectVar(2, pTarget, iEffectNumber)=x;
 		EffectVar(3, pTarget, iEffectNumber)=y;
-		for(var i=0;i<2;++i)
+		for(var i=0;i<6;++i)
 		{
-			var c=HSL(Random(32), 200+Random(25), Random(100));
-			var rx=RandomX(-1, 1);
-			var ry=RandomX(-1, 1);
-			CreateParticle("Magic", x+rx, y+ry, 0, 0, 30+Random(10), c);
+			var c=HSL(Random(50), 200+Random(25), Random(100));
 			var rx=RandomX(-2, 2);
 			var ry=RandomX(-2, 2);
-			CreateParticle("Blast", x+rx, y+ry, 0, 0, 20+Random(8), c);
+			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 40+Random(20), c);
+			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 20+Random(10), RGB(255,255,0));
 		}
+		CreateParticle("ExploSmoke",x,y,RandomX(-6,6),RandomX(-6,-3),RandomX(10,50),RGBa(255,255,255,50));
 	}
 
 	return 1;

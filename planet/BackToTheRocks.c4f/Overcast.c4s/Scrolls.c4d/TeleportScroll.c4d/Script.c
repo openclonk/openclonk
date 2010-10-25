@@ -18,7 +18,8 @@ public func ControlUse(object pClonk, int ix, int iy)
 	if(r==5) { x=400; y=470; }
 	
 	
-	DrawParticleLine("Magic",0,0,-GetX()+x,-GetY()+y,2,64,RGB(0,128,255),RGB(0,200,255),-1);
+	DrawParticleLine("Magic",0,0,-GetX()+x,-GetY()+y,3,64,RGB(0,128,255),RGB(0,200,255),-1);
+	DrawParticleLine("MagicFire",0,0,-GetX()+x,-GetY()+y,4,64,RGB(0,255,128),RGB(0,255,20),-1);
 	pClonk->SetPosition(x,y);
 	pClonk->SetXDir(0);
 	pClonk->SetYDir(-5);
