@@ -9,6 +9,7 @@
 public func ControlUse(object pClonk, int ix, int iy)
 {
 	AddEffect("Fireball", 0, 100, 1, 0, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	Sound("Fireball.ogg");
 	RemoveObject();
 	return 1;
 }

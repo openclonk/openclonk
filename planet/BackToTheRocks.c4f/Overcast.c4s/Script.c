@@ -12,8 +12,12 @@ protected func Initialize()
 
 	// Goal.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
-
 	
+	//Enviroment.
+	CreateObject(Environment_Clouds);
+	CreateObject(Environment_Clouds); //Double the clouds.
+	SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
+	Sound("BirdsLoop.ogg",true,100,nil,+1);
 	
 	// Chests with weapons.
 	CreateObject(Chest, 200, 150, NO_OWNER);

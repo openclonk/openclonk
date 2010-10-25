@@ -9,7 +9,8 @@ func Initialize()
 		CreateObject(Blackpowder,i,1328,-1);
 	
 	}
-
+	Sound("BirdsLoop.ogg",true,100,nil,+1);
+	CreateObject(Environment_Clouds);
 	// Create the race goal.
 	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(20, 1000);
@@ -72,6 +73,9 @@ protected func Decoration()
 		var gras=CreateObject(Grass, x[i], y[i] -15, NO_OWNER);
 		while(!GBackSolid(x[i],gras->GetY())) gras->SetPosition(x[i],gras->GetY()+1);
 		gras->SetPosition(x[i],gras->GetY()-2+Random(2));
+		gras->SetCategory(C4D_StaticBack);
+		gras->DoCon(Random(25));
+		if(!Random(20)) CreateObject(Fern,gras->GetX(),gras->GetY()+Random(5))->DoCon(-Random(90));
 		
 		
 	}
