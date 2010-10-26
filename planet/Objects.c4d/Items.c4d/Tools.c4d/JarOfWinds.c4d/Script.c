@@ -143,6 +143,7 @@ private func FireWeapon(object pClonk,iX,iY)
 			Find_Distance(25,Sin(180 - Angle(0,0,iX,iY),70),Cos(180 - Angle(0,0,iX,iY),70))
 				),
 		Find_Not(Find_Category(C4D_Structure)),
+		Find_Not(Find_Func("NoWindjarForce")),
 		Find_Layer(GetObjectLayer()), Find_NoContainer()
 								)
 		)

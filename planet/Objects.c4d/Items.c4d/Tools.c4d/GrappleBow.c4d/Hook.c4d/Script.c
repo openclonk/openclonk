@@ -291,3 +291,5 @@ public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tm
 	if(!target->GetHandAction())
 		target->SetHandAction(0);
 }
+
+public func NoWindjarForce() {	return true; }
