@@ -1,18 +1,15 @@
 [Head]
 Icon=34
-Title=Canyons parkour [R]
+Title=Bristle Ridge
 Version=4,10
 Difficulty=10
 Access=1
-MaxPlayer=8
+MaxPlayer=16
 NoInitialize=0
 ForcedGfxMode=1
 
 [Definitions]
 Definition1=Objects.c4d
-
-[Game]
-Rules=RSTR=1
 
 [Player1]
 Wealth=50,0,0,250
@@ -54,5 +51,3 @@ Climate=0,0,0,100
 YearSpeed=20,10,0,100
 Wind=1,100,-100,100
 
-[Environment]
-Objects=EGLN=1;EGRS=1

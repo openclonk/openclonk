@@ -13,7 +13,7 @@ map o
 {
   overlay
   {
-    algo = lines; a=26; b=45; mat = tunnel; turbulence = 100; zoomY=60; y=5;
+    algo = lines; a=26; b=46; mat = tunnel; turbulence = 100; zoomY=60; y=5; loosebounds=1; x=-10; wdt=120;
     overlay {mat = earth; algo = rndchecker; zoomX=40; a=2;b=1; turbulence = 100; mats{};};
     overlay {mat = earth; hgt=3;};
     overlay 
@@ -32,6 +32,8 @@ map o
       overlay {algo = lines; mat = tunnel; a=13; b=55; turbulence = 20;};
     };
   };
-  overlay {y=86;wdt=5; mat = earth; mats{};};
-  overlay {y = 76;hgt=10;wdt=6; mat = tunnel;};
+  overlay {y=86;wdt=5; mat = earth; mats{};
+  	overlay{ mat=Brick; algo=border; a=1; };	
+  };
+  overlay {y = 76;hgt=9;wdt=6; mat = tunnel;};
 };
