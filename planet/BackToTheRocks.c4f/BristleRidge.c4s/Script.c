@@ -15,6 +15,7 @@ func Initialize()
 		while(GBackSolid(ix,iy) | GBackSky(ix,iy)) {++l;u+=3;iy=y-u+Random(2*u); ix=x-u+Random(2*u);if(l>100){break;};}
 		var mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered;
 		pGoal->AddCheckpoint(ix, iy, mode);
+		CreateObject(Dynamite,ix,iy,NO_OWNER)->Explode(20);
 		y-=LandscapeHeight()/10;
 		x+=LandscapeWidth()/6;
 	}
