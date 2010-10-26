@@ -10,6 +10,7 @@ public func ControlUse(object pClonk, int ix, int iy)
 {
 	AddEffect("Fireball", 0, 100, 1, 0, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
 	Sound("Fireball.ogg");
+	Sound("Fireball.ogg");
 	RemoveObject();
 	return 1;
 }
@@ -62,7 +63,7 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 			var c=HSL(Random(50), 200+Random(25), Random(100));
 			var rx=RandomX(-2, 2);
 			var ry=RandomX(-2, 2);
-			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 100+Random(20), c);
+			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 80+Random(20), c);
 			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 20+Random(10), RGB(255,255,0));
 		}
 	}

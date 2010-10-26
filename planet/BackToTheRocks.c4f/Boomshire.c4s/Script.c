@@ -84,28 +84,7 @@ protected func Decoration()
 	CreateObject(Plane,3100,200);
 }
 
-func GetGrass()
-{
-	var x=[];
-	var y=[];
-	for(var e in FindObjects(Find_ID(Grass)))
-	{
-		x[GetLength(x)]=e->GetX();
-		y[GetLength(y)]=e->GetY();
 
-	}
-	Log("global func PlaceEdges()");
-	Log("{");
-	Log("	var x=%v;",x);
-	Log("	var y=%v;",y);
-	Log("	for (var i = 0; i < GetLength(x); i++)");
-	Log("	{");
-	Log("		var edge=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);");
-	Log("	}");
-	Log("	return 1;");
-	Log("}");
-
-}
 
 protected func Doors()
 {
