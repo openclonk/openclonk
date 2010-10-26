@@ -11,7 +11,6 @@ Vertices=6
 VertexX=-2,2,-2,2,3,-3
 VertexY=-6,-6,6,6,0,0
 VertexFriction=60,60,60,60,60,60
-Collection=-6,-6,12,12
 Components=Barrel=1;Sulphur=1;Coal=1;
 Rebuy=1
 Collectible=1
