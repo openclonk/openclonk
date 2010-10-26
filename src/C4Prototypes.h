@@ -22,6 +22,7 @@
 #ifndef INC_C4Prototypes
 #define INC_C4Prototypes
 
+// class declarations
 class C4Action;
 class C4AList;
 class C4AulDefFunc;
@@ -94,12 +95,15 @@ class C4RoundResults;
 class C4Scenario;
 class C4SoundSystem;
 class C4Stream;
+class C4String;
 class C4Surface;
 class C4SVal;
 class C4TargetFacet;
 class C4TeamList;
 class C4TexMapEntry;
 class C4TextureMap;
+class C4Value;
+class C4ValueArray;
 class C4Viewport;
 class C4ViewportList;
 class C4ViewportWindow;

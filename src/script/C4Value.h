@@ -21,13 +21,7 @@
 #define INC_C4Value
 
 #include "C4Id.h"
-
-// class declarations
-class C4Value;
-class C4Object;
-class C4PropList;
-class C4String;
-class C4ValueArray;
+#include "C4StringTable.h"
 
 // C4Value type
 enum C4V_Type
@@ -299,6 +293,82 @@ extern const C4Value C4VFalse, C4VTrue;
 // type tag to allow other code to recognize C4VNull at compile time
 class C4NullValue : public C4Value {};
 extern const C4NullValue C4VNull;
+
+/* These are by far the most often called C4Value functions.
+ They also often do redundant checks the compiler should be able to optimize away
+ in common situations because the Type of the new value is known. In any case,
+ inlining them does speed up the script engine on at least one artificial benchmark. */
+
+#include "C4ValueList.h"
+#include "C4PropList.h"
+
+ALWAYS_INLINE void C4Value::AddDataRef()
+{
+	assert(Type != C4V_Any || !Data);
+	switch (Type)
+	{
+	case C4V_Array: Data.Array->IncRef(); break;
+	case C4V_String: Data.Str->IncRef(); break;
+	case C4V_C4Object:
+#ifdef _DEBUG
+		// check if the object actually exists
+		/*if (!::Objects.ObjectNumber(Data.Obj))
+			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }*/
+#endif
+	case C4V_PropList:
+#ifdef _DEBUG
+		if (!Data.PropList->Status)
+			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
+#endif
+		Data.PropList->AddRef(this);
+		break;
+	default: break;
+	}
+}
+
+ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
+{
+	// clean up
+	switch (Type)
+	{
+	case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
+	case C4V_Array: Data.Array->DecRef(); break;
+	case C4V_String: Data.Str->DecRef(); break;
+	default: break;
+	}
+}
+
+ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
+{
+	assert(nType != C4V_Any || !nData);
+	// Do not add this to the same linked list twice.
+	if (Data == nData && Type == nType) return;
+
+	C4V_Data oData = Data;
+	C4V_Type oType = Type;
+	C4Value * oNextRef = NextRef;
+
+	// change
+	Data = nData;
+	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
+
+	// hold new data & clean up old
+	AddDataRef();
+	DelDataRef(oData, oType, oNextRef);
+}
+
+ALWAYS_INLINE void C4Value::Set0()
+{
+	C4V_Data oData = Data;
+	C4V_Type oType = Type;
+
+	// change
+	Data.Obj = 0;
+	Type = C4V_Any;
+
+	// clean up (save even if Data was 0 before)
+	DelDataRef(oData, oType, NextRef);
+}
 
 #endif
 
