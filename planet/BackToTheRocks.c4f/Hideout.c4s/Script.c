@@ -24,21 +24,25 @@ protected func Initialize()
 	// Doors and spinwheels.
 	var gate, wheel;
 	gate = CreateObject(StoneDoor, 366, 420, NO_OWNER);
-	wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
+	//wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
+	//wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, 346, 550, NO_OWNER);
-	wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
-	wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 846, 450, NO_OWNER);
+	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
+	//wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
+	//wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, 846, 480, NO_OWNER);
 	wheel = CreateObject(SpinWheel, 780, 480, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 420, NO_OWNER);
-	wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
-	wheel->SetStoneDoor(gate);
+	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
+	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
+	//wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 344, 550, NO_OWNER);
-	wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
-	wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 844, 450, NO_OWNER);
+	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
+	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
+	//wheel->SetStoneDoor(gate);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 844, 480, NO_OWNER);
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 780, 480, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
@@ -50,13 +54,15 @@ protected func Initialize()
 	AddEffect("FillBaseChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, 810, 600, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
+	chest = CreateObject(Chest, 860, 350, NO_OWNER);
+	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 810, 600, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
-	chest = CreateObject(Chest, 1400, 500, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 860, 350, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	
 	// Cannons loaded with 12 shots.
@@ -65,13 +71,13 @@ protected func Initialize()
 	cannon->SetDir(DIR_Right);
 	cannon->SetR(15);
 	cannon->CreateContents(PowderKeg);
-	cannon = CreateObject(Cannon, 2372, 444, NO_OWNER);
+	cannon = CreateObject(Cannon, 1772, 444, NO_OWNER);
 	cannon->SetDir(DIR_Left);
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
 	
 	// Brick edges, notice the symmetric landscape.
-	var edges = [[80,480],[100,490],[110,500],[220,550],[230,560],[250,570],[270,580],[340,460],[400,450],[620,570],[630,560],[1320,590],[1330,580],[1340,570],[1370,530],[1380,520],[1390,510],[1340,500]];
+	var edges = [[80,480],[100,490],[110,500],[220,550],[230,560],[250,570],[270,580],[340,460],[400,450],[620,570],[630,560],[790,440],[780,430],[770,420],[760,410],[810,380],[820,370],[830,360]];
 	for(var i = 0; i < GetLength(edges); i++)
 	{
 		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
@@ -97,7 +103,7 @@ protected func OnPlayerRelaunch(int plr)
 	return;
 }
 
-func RelaunchWeaponList() { return [Firestone, Loam, Shovel, Dynamite]; }
+func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Shovel, Firestone, Dynamite, Loam]; }
 
 /*-- Chest filler effects --*/
 
