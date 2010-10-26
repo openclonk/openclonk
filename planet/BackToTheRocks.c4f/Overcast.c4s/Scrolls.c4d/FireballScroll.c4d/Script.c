@@ -49,6 +49,8 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 	}	
 	else if(iEffectTime < 70)
 	{
+		CreateParticle("FireballSmoke",x,y,Sin(Random(360),2),Cos(Random(360),2),RandomX(120,180),RGBa(100,100,100,70));
+
 		//if(!Random(10)) if(Random(2))angle++; else angle--;
 		angle+=Sin(iEffectTime*30,18);
 		x+=Sin(angle, 6);
@@ -60,10 +62,9 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 			var c=HSL(Random(50), 200+Random(25), Random(100));
 			var rx=RandomX(-2, 2);
 			var ry=RandomX(-2, 2);
-			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 40+Random(20), c);
+			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 100+Random(20), c);
 			CreateParticle("MagicFire", x+rx, y+ry, Sin(angle+180,6)+ry, -Cos(angle+180,6)+rx, 20+Random(10), RGB(255,255,0));
 		}
-		CreateParticle("ExploSmoke",x,y,RandomX(-6,6),RandomX(-6,-3),RandomX(10,50),RGBa(255,255,255,50));
 	}
 
 	return 1;
