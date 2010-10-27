@@ -51,6 +51,7 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 	else if(iEffectTime < 70)
 	{
 		CreateParticle("FireballSmoke",x,y,Sin(Random(360),2),Cos(Random(360),2),RandomX(120,180),RGBa(100,100,100,70));
+		CreateParticle("MagicSpark",x,y,Sin(Random(360),RandomX(5,13)),Cos(Random(360),RandomX(5,13)),RandomX(30,70),RGB(255,255,255));
 
 		//if(!Random(10)) if(Random(2))angle++; else angle--;
 		angle+=Sin(iEffectTime*30,18);
