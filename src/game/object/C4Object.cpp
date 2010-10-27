@@ -1073,7 +1073,6 @@ bool C4Object::ExecLife()
 				// Reduce breath, then energy, bubble
 				if (Breath > 0) DoBreath(-2);
 				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
-				BubbleOut(GetX() + Random(5) - 2, GetY() + Shape.GetY() / 2);
 				ViewEnergy = C4ViewDelay;
 				// Physical training
 				TrainPhysical(&C4PhysicalInfo::Breath, 2, C4MaxPhysical);
