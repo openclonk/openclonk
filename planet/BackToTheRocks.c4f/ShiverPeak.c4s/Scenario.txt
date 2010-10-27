@@ -2,32 +2,21 @@
 Icon=24
 Title=Shiver Peak
 Version=4,10
-Difficulty=10
-Access=1
 MaxPlayer=8
-NoInitialize=0
-ForcedGfxMode=1
 
 [Definitions]
 Definition1=Objects.c4d
 
-[Game]
-Rules=RSTR=1
-
 [Player1]
-Wealth=50,0,0,250
 Crew=Clonk=1
 
 [Player2]
-Wealth=50,0,0,250
 Crew=Clonk=1
 
 [Player3]
-Wealth=50,0,0,250
 Crew=Clonk=1
 
 [Player4]
-Wealth=50,0,0,250
 Crew=Clonk=1
 
 [Landscape]
@@ -39,20 +28,9 @@ Sky=WinterMountains
 BottomOpen=1
 MapWidth=200,0,64,10000
 MapHeight=250,0,40,10000
-Amplitude=10,10,0,100
-Phase=50,50,0,100
-Period=10,10,0,100
-Random=20,20,0,100
-Liquid=Water-Smooth
-LiquidLevel=20,30,0,100
-Layers=Rock=7;Rock=7;Gold=1;Ice;15;Granite=4;Water=5;Earth-earth=50;Earth-earth_dry=50
 SkyScrollMode=2
-NewStyleLandscape=2
 
 [Weather]
 Climate=100,0,0,100
 YearSpeed=20,10,0,100
 Wind=1,100,-100,100
-
-[Environment]
-Objects=EGLN=1;EGRS=1

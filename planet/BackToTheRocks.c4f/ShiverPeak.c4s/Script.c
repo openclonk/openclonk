@@ -1,4 +1,9 @@
-/* Mountain parkour */
+/*-- 
+	Shiver Peak
+	Authors: Ringwaul, Asmageddon
+	
+	Parkour on a dynamic map.
+--*/
 
 func Initialize()
 {
