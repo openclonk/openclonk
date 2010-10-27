@@ -24,8 +24,10 @@ func Initialize()
 	pGoal->AddCheckpoint(3350,1240,PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
 	pGoal->AddCheckpoint(3040,720, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
 	pGoal->AddCheckpoint(2530,520, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(2150,510, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->SetFinishpoint(1500,200);
+	pGoal->AddCheckpoint(2150,510, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
+	pGoal->AddCheckpoint(2000,200, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
+	pGoal->AddCheckpoint(3090,300, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
+	pGoal->SetFinishpoint(3400,360);
 	
 	//Items
 	CreateObject(Blackpowder,1904,878,-1);
@@ -86,7 +88,8 @@ protected func Decoration()
 	}
 	
 	}
-	CreateObject(Plane,3100,200);
+	CreateObject(Plane,3030,315,0);
+	CreateObject(Plane,3160,315,1);
 }
 
 
@@ -142,6 +145,11 @@ protected func Doors()
 	wheel->SetStoneDoor(gate);
 	gate->CloseGateDoor();
 	AddEffect("SparklingAttention",wheel,100,100);
+	
+	var gate = CreateObject(StoneDoor, 2965, 310, NO_OWNER);
+	var wheel = CreateObject(SpinWheel, 3260, 328, NO_OWNER);
+	wheel->SetStoneDoor(gate);
+	gate->CloseGateDoor();
 		
 }
 
