@@ -67,6 +67,7 @@ AM_CPPFLAGS = \
 ##$(srcdir)/.hg/dirstate:
 
 BUILT_SOURCES = C4Version.h
+CLEANFILES = C4Version.h
 do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
   -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
   -e 's,[@]C4PROJECT_TLD[@],org,g' \
@@ -90,7 +91,7 @@ C4Version.h: $(srcdir)/src/C4Version.h.in
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
 BUILT_SOURCES += C4Include.h.gch
-CLEANFILES = C4Include.h.gch
+CLEANFILES += C4Include.h.gch
 DISTCLEANFILES = @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
 
 # Adapted from the automake compile-command for normal source files.
