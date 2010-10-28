@@ -21,7 +21,7 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Gold=1;Dynamite=1;Loam=1
+InEarth=Rock=1;Gold=1;Loam=1
 InEarthLevel=65,0,0,100
 Sky=Clouds2
 BottomOpen=1
