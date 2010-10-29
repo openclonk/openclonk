@@ -173,11 +173,11 @@ protected func Stick()
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
-			if(GetMaterialVal("DigFree","Material",mat))
-			{
+			//if(GetMaterialVal("DigFree","Material",mat))
+			//{
 			// stick in landscape
 			SetVertex(2,VTX_Y,-18,1);
-			}
+			//}
 		}
 		return;
 	}
