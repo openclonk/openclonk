@@ -12,27 +12,28 @@ protected func Initialize()
 	// Set start point.
 	var x, y, pos;
 	var d = 100;
-	while(!(pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 40, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
+	while (!(pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 40, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
 		d += 10;
 	x = pos[0]; y = pos[1];
 	goal->SetStartpoint(x, y);
 	// Set some checkpoints.
 	while (d < LandscapeHeight() - 350)
 	{
-		var mode = PARKOUR_CP_Check;
+		// All checkpoints ordered, only respawn in tunnel.
+		var mode = PARKOUR_CP_Check | PARKOUR_CP_Ordered;
 		d += RandomX(150, 250);
 		if (!(pos = FindPosInMat("Tunnel", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20)) || !Random(3))
 			pos = FindPosInMat("Sky", 0, LandscapeHeight() - d - 80, LandscapeWidth(), 80, 20);
 		else
 			mode = mode | PARKOUR_CP_Respawn;
+		if (!pos)
+			continue;
 		x = pos[0]; y = pos[1];
-		// All checkpoints ordered.
-		mode = mode | PARKOUR_CP_Ordered;
 		goal->AddCheckpoint(x, y, mode);
 	}
 	// Set finish point.
 	d = 0;
-	while(!(pos = FindPosInMat("Sky", 0, 20 + d, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
+	while (!(pos = FindPosInMat("Sky", 0, 20 + d, LandscapeWidth(), 40, 20)) && d < LandscapeHeight())
 		d += 10;
 	x = pos[0]; y = pos[1];
 	goal->SetFinishpoint(x, y);
@@ -43,6 +44,8 @@ protected func Initialize()
 		var i = 0;
 		while (!(pos = FindPosInMat("Tunnel", 0, d, LandscapeWidth(), 300, 15)) && i < 25)
 			i++; // Max 25 attempts.
+		if (!pos)
+			continue;
 		x = pos[0]; y = pos[1];
 		CreateObject(Chest, x, y + 8, NO_OWNER);
 		d += RandomX(250, 300);
@@ -74,7 +77,7 @@ protected func FindPosInMat(string mat, int rx, int ry, int wdt, int hgt, int si
 			return [x, y];
 		}
 	}
-	return 0;
+	return;
 }
 
 // Gamecall from parkour goal, on respawning.

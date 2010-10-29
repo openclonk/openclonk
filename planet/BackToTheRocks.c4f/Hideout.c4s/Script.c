@@ -109,7 +109,7 @@ func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Shovel, Firesto
 
 global func FxFillBaseChestStart(object target, int num, int temporary)
 {
-	if(temporary) 
+	if (temporary) 
 		return 1;
 	var w_list = [Bow, Shield, Sword, Javelin, Shovel, Firestone, Dynamite, Loam];
 	if (target->ContentsCount() < 5)
@@ -128,7 +128,7 @@ global func FxFillBaseChestTimer(object target)
 
 global func FxFillOtherChestStart(object target, int num, int temporary)
 {
-	if(temporary) 
+	if (temporary) 
 		return 1;
 	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow];
 	if (target->ContentsCount() < 5)

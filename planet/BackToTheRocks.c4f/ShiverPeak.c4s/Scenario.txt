@@ -1,6 +1,6 @@
 [Head]
 Icon=24
-Title=Shiver Peak
+Title=ShiverPeak
 Version=4,10
 MaxPlayer=8
 

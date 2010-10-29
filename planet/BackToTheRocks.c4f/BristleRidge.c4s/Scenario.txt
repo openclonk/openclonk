@@ -1,6 +1,6 @@
 [Head]
 Icon=34
-Title=Bristle Ridge
+Title=BristleRidge
 Version=4,10
 MaxPlayer=16
 

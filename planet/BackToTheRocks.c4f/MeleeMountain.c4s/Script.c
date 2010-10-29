@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
-	SetSkyAdjust (RGB(230,210,150), RGB(150,100,0));
+	SetSkyAdjust(RGB(230, 210, 150), RGB(150, 100, 0));
 	//Environment
 	PlaceGrass(80);
 	// Chests.
@@ -12,7 +12,7 @@ protected func Initialize()
 	CreateObject(Chest, 1123, 124, NO_OWNER);
 	CreateObject(Chest, 180, 404, NO_OWNER);
 	CreateObject(Chest, 261, 163, NO_OWNER);
-	CreateObject(Rule_ObjectFade)->DoFadeTime(5*37);
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	
 	AddEffect("IntFillChests", nil, 100, 70, this);
 	return;

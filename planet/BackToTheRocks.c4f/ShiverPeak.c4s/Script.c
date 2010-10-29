@@ -32,7 +32,7 @@ func Initialize()
 		y -= LandscapeHeight() / 7;
 	}
 	x = LandscapeWidth() / 2;
-	y = 35;
+	y = 50;
 	goal->SetFinishpoint(x, y);
 	
 	//Environmental Effects
