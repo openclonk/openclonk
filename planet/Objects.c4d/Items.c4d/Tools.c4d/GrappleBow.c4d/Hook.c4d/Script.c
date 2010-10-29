@@ -97,8 +97,8 @@ public func StartPull()
 	{
 		rope->AdjustClonkMovement();
 		rope->ConnectPull();
-		EffectVar(5, clonk, GetEffect("IntGrappleControl", clonk)) = 1;
-		EffectVar(6, clonk, GetEffect("IntGrappleControl", clonk)) = 10;
+		EffectVar(5, clonk, effect) = 1;
+		EffectVar(6, clonk, effect) = 10;
 	}
 }
 
@@ -164,7 +164,13 @@ local Name = "$Name$";
 
 public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,strength, repeat, release)
 {
-	if(ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return;
+	// Cancel this effect if clonk is now attached to something
+	if (target->GetProcedure() == "ATTACH") {
+		RemoveEffect(nil,target,fxnum);
+		return false;
+	}
+
+	if(ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return false;
 
 	if(ctrl == CON_Right)
 	{
@@ -184,6 +190,9 @@ public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,stren
 	{
 		EffectVar(1, target, fxnum) = !release;
 	}
+	
+	// never swallow the control
+	return false;
 }
 
 local iSwingAnimation;
@@ -191,7 +200,21 @@ local iSwingAnimation;
 // Effect for smooth movement.
 public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 {
+	// Cancel this effect if clonk is now attached to something
+	// this check is also in the timer because on a high control rate
+	// (higher than 1 actually), the timer could be called first
+	if (target->GetProcedure() == "ATTACH")
+		return -1;
 
+	// EffectVars:
+	// 0 - movement up
+	// 1 - movement down
+	// 2 - movement left
+	// 3 - movement right
+	// 4 -
+	// 5 -
+	// 6 -
+		
 	// Movement.
 	if (EffectVar(0, target, fxnum))
 		if (rope && time%2 == 0)
@@ -201,11 +224,11 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 			rope->DoLength(+1);
 	if (EffectVar(2, target, fxnum))
 	{
-		rope->DoSpeed(-15);
+		rope->DoSpeed(-10);
 	}
 	if (EffectVar(3, target, fxnum))
 	{
-		rope->DoSpeed(+15);
+		rope->DoSpeed(+10);
 	}
 
 	if(target->GetAction() == "Tumble" && target->GetActTime() > 10)
@@ -290,6 +313,13 @@ public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tm
 	target->SetObjDrawTransform();
 	if(!target->GetHandAction())
 		target->SetHandAction(0);
+	
+	// grapple hook == this:
+	// if the hook is not already drawing in, break the rope
+	if(!GetEffect("DrawIn", this->GetRope()))
+	{
+		this->GetRope()->BreakRope();
+	}
 }
 
 public func NoWindjarForce() {	return true; }
