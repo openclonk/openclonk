@@ -1,4 +1,4 @@
-/* Everyone wins! */
+//No rain for clouds.
 
 #appendto Cloud
 

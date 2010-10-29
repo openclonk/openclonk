@@ -1,4 +1,4 @@
-/* larger dynamite explosion */
+// Remove arrow on impact.
 
 #appendto Arrow
 

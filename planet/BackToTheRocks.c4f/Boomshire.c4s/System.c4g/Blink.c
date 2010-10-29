@@ -1,4 +1,4 @@
-/* larger dynamite explosion */
+// Remove the shining-effect on spinwheels when its turned.
 
 #appendto SpinWheel
 
