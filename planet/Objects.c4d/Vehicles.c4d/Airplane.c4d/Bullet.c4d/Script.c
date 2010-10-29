@@ -47,7 +47,7 @@ public func Launch(object shooter, int angle)
 
 public func HitObject(object obj)
 {
-	ProjectileHit(obj,ProjectileDamage(),true);
+	ProjectileHit(obj,ProjectileDamage(),ProjectileHit_tumble);
 	RemoveObject();
 }
 

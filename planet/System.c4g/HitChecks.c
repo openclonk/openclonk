@@ -151,33 +151,53 @@ global func FxHitCheckTimer(object target, int effect, int time)
 	return;
 }
 
-global func ProjectileHit(object obj, int dmg, bool tumble)
+// flags for the ProjectileHit function
+static const ProjectileHit_tumble=1; // the target tumbles
+static const ProjectileHit_no_query_catch_blow_callback=2; // if you want to call QueryCatchBlow manually
+static const ProjectileHit_exact_damage=4; // exact damage, factor 1000
+static const ProjectileHit_no_on_projectile_hit_callback=8;
+
+global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
 {
+	if(flags == nil) flags=0;
+	if(!damage_type) damage_type=FX_Call_EngObjHit;
+	var tumble=flags & ProjectileHit_tumble;
+	
 	if (!this || !obj)
 		return;
 	
-	if (obj->GetAlive())
-		if (obj->~QueryCatchBlow(this))
+	if(!(flags & ProjectileHit_no_query_catch_blow))
+	{
+		if (obj->GetAlive())
+			if (obj->~QueryCatchBlow(this))
+				return;
+				
+		if (!this || !obj)
 			return;
-	if (!this || !obj)
-		return;
-		
-	obj->~OnProjectileHit(this);
-	if (!this || !obj)
-		return;
+	}
+	
+	if(!(flags & ProjectileHit_no_on_projectile_hit_callback))
+	{
+		obj->~OnProjectileHit(this);
+		if (!this || !obj)
+			return;
+	}
 	
 	this->~OnStrike(obj);
 	if (!this || !obj)
 		return;
 	if (obj->GetAlive())
 	{
-		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetController());
+		obj->DoEnergy(-dmg, (flags & ProjectileHit_exact_damage), damage_type, GetController());
 		if(!obj) return;
 		obj->~CatchBlow(-dmg, this);
 	}
 	else
 	{
-		obj->DoDamage(dmg, FX_Call_EngObjHit, GetController());
+		var true_dmg=dmg;
+		if(flags & ProjectileHit_exact_damage) true_dmg/=1000;
+		
+		obj->DoDamage(true_dmg, damage_type, GetController());
 	}
 	// Target could have done something with this projectile.
 	if (!this || !obj)

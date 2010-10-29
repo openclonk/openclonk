@@ -174,8 +174,8 @@ func CheckStrike(iTime)
 					continue;
 					
 				// fixed damage (10)
-				var damage=((100-shield)*10 / 100);
-				ProjectileHit(obj, damage);
+				var damage=((100-shield)*10*1000 / 100);
+				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
 				
 				// object has not been deleted?
 				if(obj)

@@ -134,7 +134,7 @@ public func HitObject(object obj)
 	Stick();
 
 	var dmg = JavelinStrength()*speed/100;
-	ProjectileHit(obj,dmg,true);
+	ProjectileHit(obj,dmg,ProjectileHit_tumble);
 }
 
 // called by successful hit of object after from ProjectileHit(...)

@@ -73,7 +73,7 @@ public func HitObject(object obj)
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
 	var dmg = ArrowStrength()*speed/100;
-	ProjectileHit(obj,dmg,true);
+	ProjectileHit(obj,dmg,ProjectileHit_tumble);
 	// Stick does something unwanted to controller.
 	Stick();
 }
