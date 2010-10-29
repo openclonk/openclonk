@@ -509,10 +509,7 @@ bool C4Game::Init()
 	Log(LoadResStr(C4S.Head.NetworkGame ? "IDS_PRC_JOIN" : C4S.Head.SaveGame ? "IDS_PRC_RESUME" : "IDS_PRC_START"));
 
 	// set non-exclusive GUI
-	if (pGUI)
-	{
-		pGUI->SetExclusive(false);
-	}
+	pGUI->SetExclusive(false);
 
 	// after GUI is made non-exclusive, recheck the scoreboard
 	Scoreboard.DoDlgShow(0, false);
@@ -1887,7 +1884,7 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 	{
 		if (IsRunning) InScope = KEYSCOPE_Generic;
 		// if GUI has keyfocus, this overrides regular controls
-		if (pGUI && (pGUI->HasKeyboardFocus() || pForDialog))
+		if (pGUI->HasKeyboardFocus() || pForDialog)
 		{
 			InScope |= KEYSCOPE_Gui;
 			// control to console mode dialog: Make current keyboard target the active dlg,
@@ -2976,7 +2973,7 @@ void C4Game::ShowGameOverDlg()
 	// console engine quits here directly
 	Application.QuitGame();
 #else
-	if (pGUI && !Application.isEditor)
+	if (!Application.isEditor)
 	{
 		C4GameOverDlg *pDlg = new C4GameOverDlg();
 		pDlg->SetDelOnClose();
@@ -3064,7 +3061,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 	Log(Message.getData());
 	// Set up wait dialog
 	C4GUI::MessageDialog *pDlg = NULL;
-	if (::pGUI && !Console.Active)
+	if (!Application.isEditor)
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(Message.getData(), LoadResStr("IDS_NET_REFQUERY_QUERYTITLE"),
@@ -3078,7 +3075,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 		if (!Application.ScheduleProcs(100) ||
 		    (pDlg && pDlg->IsAborted()))
 		{
-			if (::pGUI && pDlg) delete pDlg;
+			delete pDlg;
 			return false;
 		}
 		// Check if reference is received
@@ -3086,7 +3083,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 			break;
 	}
 	// Close dialog
-	if (::pGUI && pDlg) delete pDlg;
+	delete pDlg;
 	// Error?
 	if (!RefClient.isSuccess())
 		{ LogFatal(FormatString(strRefQueryFailed.getData(), RefClient.GetError()).getData()); return false; }
@@ -3313,8 +3310,7 @@ void C4Game::SetInitProgress(float fToProgress)
 void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// update anything that's dependant on screen resolution
-	if (pGUI)
-		pGUI->SetBounds(C4Rect(0,0,iXRes,iYRes));
+	pGUI->SetBounds(C4Rect(0,0,iXRes,iYRes));
 	if (FullScreen.Active)
 		InitFullscreenComponents(!!IsRunning);
 	// note that this may fail if the gfx groups are closed already (runtime resolution change)

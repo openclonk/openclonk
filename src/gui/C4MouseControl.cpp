@@ -203,7 +203,7 @@ void C4MouseControl::UpdateClip()
 	// fullscreen only
 	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
-	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
+	if (!Active || !Application.Active || ::pGUI->HasMouseFocus()) { ClipCursor(NULL); return; }
 	// get controlled viewport
 	C4Viewport *pVP=::Viewports.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
@@ -219,8 +219,7 @@ void C4MouseControl::UpdateClip()
 	}
 	ClipCursor(&vpRct);
 	// and inform GUI
-	if (::pGUI)
-		::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
+	::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
 #endif
 	//StdWindow manages this.
 }

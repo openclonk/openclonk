@@ -646,7 +646,7 @@ bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLea
 {
 	// show league signup dlg modally; return whether user pressed OK and change user and pass buffers in that case
 	assert(psCUID); assert(psPass);
-	if (!psCUID || !psPass || !::pGUI) return false;
+	if (!psCUID || !psPass) return false;
 	C4LeagueSignupDialog *pDlg = new C4LeagueSignupDialog(szPlayerName, szLeagueName, szLeagueServerName, psCUID->getData(), psPass->getData(), fWarnThirdParty, fRegister);
 	bool fResult = ::pGUI->ShowModalDlg(pDlg, false);
 	if (fResult)

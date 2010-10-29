@@ -992,7 +992,6 @@ C4ChatDlg::~C4ChatDlg()
 
 C4ChatDlg *C4ChatDlg::ShowChat()
 {
-	if (!::pGUI) return NULL;
 	if (!pInstance)
 	{
 		pInstance = new C4ChatDlg();

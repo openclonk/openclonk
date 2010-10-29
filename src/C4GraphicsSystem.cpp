@@ -111,20 +111,20 @@ void C4GraphicsSystem::Execute()
 	bool fBGDrawn = false;
 
 	// If lobby running, message board only (page flip done by startup message board)
-	if (!::pGUI || !::pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
+	if (!::pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
 		if (::Network.isLobbyActive() || !Game.IsRunning)
 			if (!Application.isEditor)
 			{
 				// Message board
 				if (iRedrawBackground) ClearFullscreenBackground();
 				MessageBoard.Execute();
-				if (!::pGUI || !C4GUI::IsActive())
+				if (!C4GUI::IsActive())
 					{ FinishDrawing(); return; }
 				fBGDrawn = true;
 			}
 
 	// fullscreen GUI?
-	if (!Application.isEditor && ::pGUI && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
+	if (!Application.isEditor && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
 	{
 		if (!fBGDrawn && iRedrawBackground) ClearFullscreenBackground();
 		::pGUI->Render(!fBGDrawn);
@@ -138,7 +138,7 @@ void C4GraphicsSystem::Execute()
 
 	// some hack to ensure the mouse is drawn after a dialog close and before any
 	// movement messages
-	if (::pGUI && !C4GUI::IsActive())
+	if (!C4GUI::IsActive())
 		::pGUI->SetMouseInGUI(false, false);
 
 	// Viewports
@@ -160,7 +160,7 @@ void C4GraphicsSystem::Execute()
 	}
 
 	// InGame-GUI
-	if (::pGUI && C4GUI::IsActive())
+	if (C4GUI::IsActive())
 	{
 		::pGUI->Render(false);
 	}

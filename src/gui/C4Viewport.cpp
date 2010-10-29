@@ -152,7 +152,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
 			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
-			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
+			if (pWindow) ::pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
 		}
 	}
@@ -693,9 +693,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 		{
 			::MouseControl.UpdateClip();
 			// and inform GUI
-			if (::pGUI)
-				//::pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
-				::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+			::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
 		}
 }
 
@@ -911,8 +909,7 @@ void C4ViewportList::RecalculateViewports()
 	// StdWindow handles this.
 #endif
 	// reset GUI dlg pos
-	if (::pGUI)
-		::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
+	::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
 
 	// fullscreen background: First, cover all of screen
 	BackgroundAreas.Clear();

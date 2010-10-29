@@ -224,7 +224,7 @@ namespace C4GUI
 	LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		// Determine dialog
-		Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hwnd) : NULL;
+		Dialog *pDlg = ::pGUI->GetDialog(hwnd);
 		if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 		// Process message
@@ -331,7 +331,7 @@ namespace C4GUI
 		CStdWindow::HandleMessage(e);
 
 		// Determine dialog
-		Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(this) : NULL;
+		Dialog *pDlg = ::pGUI->GetDialog(this);
 		if (!pDlg) return;
 
 		switch (e.type)

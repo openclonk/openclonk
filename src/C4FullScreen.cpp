@@ -104,9 +104,8 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
 			return 0;
 		// GUI: forward
-		if (::pGUI)
-			if (::pGUI->CharIn(c))
-				return 0;
+		if (::pGUI->CharIn(c))
+			return 0;
 		return false;
 	}
 	case WM_USER_LOG:
@@ -361,7 +360,7 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		char c[2];
 		c[0] = e.key.keysym.unicode;
 		c[1] = 0;
-		if (::pGUI && !isSpecialKey(e.key.keysym.unicode))
+		if (!isSpecialKey(e.key.keysym.unicode))
 			::pGUI->CharIn(c);
 		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
@@ -494,8 +493,6 @@ bool C4FullScreen::ViewportCheck()
 
 bool C4FullScreen::ShowAbortDlg()
 {
-	// no gui?
-	if (!::pGUI) return false;
 	// abort dialog already shown
 	if (C4AbortGameDialog::IsShown()) return false;
 	// not while game over dialog is open
