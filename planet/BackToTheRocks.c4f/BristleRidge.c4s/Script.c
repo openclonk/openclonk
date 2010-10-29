@@ -29,10 +29,11 @@ protected func Initialize()
 				break;
 		}
 		goal->AddCheckpoint(ix, iy, mode);
-		CreateObject(Dynamite, ix, iy, NO_OWNER)->Explode(20);
+		CreateObject(Dynamite, ix, iy, NO_OWNER)->Explode(25);
+		CreateObject(Dynamite, ix, iy, NO_OWNER)->Explode(25);
 	}
-	x = LandscapeWidth() - 130;
-	y = 50;
+	x = LandscapeWidth() - 200;
+	y = 80;
 	goal->SetFinishpoint(x, y);
 	SetFoW(false);
 	Sound("BirdsLoop.ogg", true, 100, nil, 1);
