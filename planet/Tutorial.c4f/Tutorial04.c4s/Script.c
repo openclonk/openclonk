@@ -37,10 +37,12 @@ protected func Initialize()
 	
 	// Second section: Weak opponent with javelins.
 	var spearman1 = CreateObject(Clonk, 1050, 560, NO_OWNER);
-	spearman1->SetPhysical("Energy", 30000, PHYS_Temporary);
+	spearman1->SetPhysical("Energy", 40000, PHYS_Temporary);
+	spearman1->DoEnergy(-10);
 	spearman1->CreateContents(Javelin);
 	spearman1->AI_GuardArea(800, 400, 400, 250);
 	AddEffect("IntContentRemoval", spearman1, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman1);
 	// Gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
@@ -49,16 +51,20 @@ protected func Initialize()
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
 	var spearman2 = CreateObject(Clonk, 1753, 410, NO_OWNER);
-	spearman2->SetPhysical("Energy", 30000, PHYS_Temporary);
+	spearman2->SetPhysical("Energy", 40000, PHYS_Temporary);
+	spearman2->DoEnergy(-10);
 	spearman2->CreateContents(Javelin);
 	spearman2->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", spearman2, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman2);
 	// Upper part: a normal bowman.
 	var bowman = CreateObject(Clonk, 1732, 330, NO_OWNER);
-	bowman->SetPhysical("Energy", 40000, PHYS_Temporary);
+	bowman->SetPhysical("Energy", 45000, PHYS_Temporary);
+	bowman->DoEnergy(-5);
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
 	bowman->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", bowman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(bowman);
 	// Gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1856, 500, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
@@ -66,10 +72,13 @@ protected func Initialize()
 	
 	// Fourth section: Opponent with sword and shield.
 	var swordman = CreateObject(Clonk, 2250, 330, NO_OWNER);
+	swordman->SetPhysical("Energy", 60000, PHYS_Temporary);
+	swordman->DoEnergy(10);
 	swordman->CreateContents(Shield);
 	swordman->CreateContents(Sword);
 	swordman->AI_GuardArea(2050, 300, 300, 100);
 	AddEffect("IntContentRemoval", swordman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(swordman);
 	// Chest with some extra weapons.
 	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
 	chest->CreateContents(Club);
