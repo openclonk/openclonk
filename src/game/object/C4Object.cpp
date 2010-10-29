@@ -393,7 +393,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (Info) Info->Retire();
 	Info = NULL;
 	// Object system operation
-	C4PropList::AssignRemoval();
+	while (FirstRef) FirstRef->Set0();
+	Game.ClearPointers(this);
 	ClearCommands();
 	if (pSolidMaskData)
 	{

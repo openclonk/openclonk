@@ -189,7 +189,7 @@ public:
 	bool ReloadDef(C4ID id);
 	bool ReloadParticle(const char *szName);
 	// Object functions
-	void ClearPointers(C4PropList *cobj);
+	void ClearPointers(C4Object *cobj);
 	C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
 	                       int32_t x=50, int32_t y=50, int32_t r=0,
 	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);

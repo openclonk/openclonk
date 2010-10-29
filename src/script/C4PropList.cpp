@@ -48,12 +48,6 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 	delete this;
 }
 
-void C4PropList::AssignRemoval()
-{
-	while (FirstRef) FirstRef->Set0();
-	Game.ClearPointers(this);
-}
-
 C4PropList * C4PropList::New(C4PropList * prototype)
 {
 	C4PropListNumbered * r = new C4PropListNumbered(prototype);

@@ -49,7 +49,6 @@ public:
 	int32_t Status;
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
-	void AssignRemoval();
 	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
 	const char *GetName();
 	virtual void SetName (const char *NewName = 0);
@@ -88,10 +87,10 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
+	C4Value *FirstRef; // No-Save	
 
 private:
 	C4Set<C4Property> Properties;
-	C4Value *FirstRef; // No-Save
 	bool constant; // if true, this proplist is not changeable
 
 	C4PropList * prototype;
