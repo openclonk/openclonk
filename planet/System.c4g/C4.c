@@ -44,7 +44,7 @@ global func GetActMapVal(string entry, string action, id def, int num)
 
 global func ShowNeededMaterial(object of_obj)
 {
-	MessageWindow(GetNeededMatStr(of_obj), GetOwner(), CXCN, of_obj->GetName());
+	MessageWindow(GetNeededMatStr(of_obj), GetOwner(), nil, of_obj->GetName());
 	return true;
 }
 

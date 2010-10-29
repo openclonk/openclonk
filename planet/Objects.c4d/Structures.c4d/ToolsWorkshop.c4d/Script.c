@@ -67,7 +67,7 @@ public func HowToProduce (clonk, def)
 private func MenuProduction(pCaller)
 {
 	// Create menu and fill it with the plans of the player
-	pCaller->CreateMenu(CXCN,this,1,"$NoPlrKnowledge$");
+	pCaller->CreateMenu(GetID(),this,1,"$NoPlrKnowledge$");
 	for(var i=0,idKnowledge; idKnowledge=GetPlrKnowledge(pCaller->GetOwner(),0,i,ProductType ()); ++i)
 	{
 		if(ProductCondition())
