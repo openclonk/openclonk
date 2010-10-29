@@ -1318,6 +1318,12 @@ func StartJump()
 	AddEffect("Fall",this,1,1,this);
 }
 
+func FxFallEffect(string new_name, object target, int num)
+{
+	// reject more than one fall effects.
+	if(new_name == "Fall") return -1;
+}
+
 func FxFallTimer(object target, int num, int timer)
 {
 	if(GetYDir() > 55 && GetAction() == "Jump")
