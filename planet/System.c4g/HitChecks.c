@@ -166,7 +166,7 @@ global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
 	if (!this || !obj)
 		return;
 	
-	if(!(flags & ProjectileHit_no_query_catch_blow))
+	if(!(flags & ProjectileHit_no_query_catch_blow_callback))
 	{
 		if (obj->GetAlive())
 			if (obj->~QueryCatchBlow(this))
