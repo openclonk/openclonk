@@ -327,12 +327,7 @@ bool C4Game::PreInit()
 		{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); return false; }
 
 	// load GUI
-	if (!pGUI)
-	{
-		int32_t iGuiResX = Config.Graphics.ResX;
-		int32_t iGuiResY = Config.Graphics.ResY;
-		pGUI = new C4GUIScreen(0, 0, iGuiResX, iGuiResY);
-	}
+	pGUI->Init(0, 0, Config.Graphics.ResX, Config.Graphics.ResY);
 
 	fPreinited = true;
 
@@ -561,8 +556,8 @@ void C4Game::Clear()
 	C4AulProfiler::Abort();
 
 	// exit gui
-	if (pGUI) { delete pGUI; pGUI=NULL; }
-
+	pGUI->Clear();
+	
 	// next mission (shoud have been transferred to C4Application now if next mission was desired)
 	NextMission.Clear(); NextMissionText.Clear(); NextMissionDesc.Clear();
 
@@ -1584,7 +1579,6 @@ void C4Game::Default()
 	TransferZones.Default();
 	GroupSet.Default();
 	pParentGroup=NULL;
-	pGUI=NULL;
 	pScenarioSections=pCurrentScenarioSection=NULL;
 	*CurrentScenarioSection=0;
 	pGlobalEffects=NULL;

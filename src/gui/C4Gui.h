@@ -2512,8 +2512,11 @@ namespace C4GUI
 
 		Dialog *GetTopDialog(); // get topmost dlg
 	public:
-		Screen(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt); // ctor
-		~Screen(); // dtor
+		Screen();
+		~Screen();
+
+		void Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt);
+		void Clear();
 
 		void Render(bool fDoBG);                 // render to lpDDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
@@ -2727,6 +2730,7 @@ namespace C4GUI
 	inline void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP) // pVP specified for console mode viewports only
 	{ Screen *s=Screen::GetScreenS(); if(s) s->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
 
+	extern Screen TheScreen;
 } // end of namespace
 
 typedef C4GUI::Screen C4GUIScreen;
