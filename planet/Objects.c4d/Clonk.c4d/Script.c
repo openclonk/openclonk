@@ -1707,6 +1707,9 @@ func FxIntThrowStart(target, number, tmp, targetobj, throwAngle)
 
 func FxIntThrowTimer(target, number, time)
 {
+	// cancel throw if object does not exist anymore
+	if(!EffectVar(0, target, number))
+		return -1;
 	var iThrowTime = 16;
 	if(time == iThrowTime*8/15)
 		DoThrow(EffectVar(0, target, number), EffectVar(1, target, number));
