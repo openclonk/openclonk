@@ -130,7 +130,7 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 {
 	if(temporary) 
 		return 1;
-	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow, Balloon];
+	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -138,7 +138,7 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow, Balloon];
+	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
