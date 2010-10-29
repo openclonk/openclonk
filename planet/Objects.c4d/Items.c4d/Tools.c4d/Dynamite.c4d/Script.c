@@ -173,5 +173,5 @@ local ActMap = {
 		FacetBase = 1,
 	}
 };
-local Name = "Dynamite";
+local Name = "$Name$";
 local Description = "$Description$";

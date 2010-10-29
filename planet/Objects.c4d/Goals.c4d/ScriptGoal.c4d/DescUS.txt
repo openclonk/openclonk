@@ -1,1 +1,0 @@
-Script goal, can be fulfilled from other scripts, e.g. a scenario script.
