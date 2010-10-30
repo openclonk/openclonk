@@ -11,23 +11,25 @@ func Initialize()
 	}
 	Sound("BirdsLoop.ogg",true,100,nil,+1);
 	CreateObject(Environment_Clouds);
-	// Create the race goal.
-	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
-	pGoal->SetStartpoint(20, 1000);
-	pGoal->AddCheckpoint(760,950,  PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(400,660,  PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(870,460,  PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(1665,1070,PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(1485,800, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(1735,1410,PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(2110,1180,PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
-	pGoal->AddCheckpoint(3350,1240,PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(3040,720, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
-	pGoal->AddCheckpoint(2530,520, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(2150,510, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
-	pGoal->AddCheckpoint(2000,200, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);	
-	pGoal->AddCheckpoint(3090,300, PARKOUR_CP_Respawn|PARKOUR_CP_Ordered);
-	pGoal->SetFinishpoint(3400,360);
+	
+	// Create the parkour goal.
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
+	var mode = PARKOUR_CP_Respawn | PARKOUR_CP_Ordered | PARKOUR_CP_Team;
+	goal->SetStartpoint(20, 1000);
+	goal->AddCheckpoint(760, 950, mode);	
+	goal->AddCheckpoint(400, 660, mode);	
+	goal->AddCheckpoint(870, 460, mode);	
+	goal->AddCheckpoint(1665, 1070, mode);	
+	goal->AddCheckpoint(1485, 800, mode);	
+	goal->AddCheckpoint(1735, 1410, mode);	
+	goal->AddCheckpoint(2110, 1180, mode);
+	goal->AddCheckpoint(3350, 1240, mode);	
+	goal->AddCheckpoint(3040, 720, mode);
+	goal->AddCheckpoint(2530, 520, mode);	
+	goal->AddCheckpoint(2150, 510, mode);
+	goal->AddCheckpoint(2000, 200, mode);	
+	goal->AddCheckpoint(3090, 300, mode);
+	goal->SetFinishpoint(3400, 360, true);
 	
 	//Items
 	CreateObject(Blackpowder,1904,878,-1);
@@ -47,6 +49,14 @@ func Initialize()
 	AddEffect("DynamiteEruption",0,100,130);
 	return 1;
 }
+
+protected func InitializePlayer(int plr)
+{
+	SetPlayerTeam(plr, 1);
+	return;
+}
+
+
 global func FxDynamiteEruptionTimer(object nobject, int noum, int timer)
 {
 	var dyn=CreateObject(Firestone,2460+Random(20),670);
