@@ -161,20 +161,20 @@ public func Activate(int plr)
 		if (team)
 		{
 			if (IsWinner(plr))
-				msg = "$MsgRaceWonTeam$";
+				msg = "$MsgParkourWonTeam$";
 			else
-				msg = "$MsgRaceLostTeam$";
+				msg = "$MsgParkourLostTeam$";
 		}
 		else
 		{
 			if (IsWinner(plr))
-				msg = "$MsgRaceWon$";
+				msg = "$MsgParkourWon$";
 			else
-				msg = "$MsgRaceLost$";
+				msg = "$MsgParkourLost$";
 		}
 	}
 	else
-		msg = Format("$MsgRace$", cp_count);
+		msg = Format("$MsgParkour$", cp_count);
 	// Show goal message.
 	MessageWindow(msg, plr);
 	return;
@@ -417,15 +417,26 @@ protected func FxIntDirNextCPStop(object target, int fxnum)
 
 /*-- Time tracker --*/
 
+// Store the best time in the player file, same for teammembers.
 private func DoBestTime(int plr)
 {
 	var effect = GetEffect("IntBestTime", this);
 	var time = EffectVar(0, this, effect);
-	var rectime = GetPlrExtraData(plr, time_store);
-	if (time != 0 && (!rectime || time < rectime))
+	var winteam = GetPlayerTeam(plr);
+	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		SetPlrExtraData(plr, time_store, time);
-		Log(Format("$MsgBestTime$", GetPlayerName(plr), TimeToString(time)));
+		var check_plr = GetPlayerByIndex(i);
+		if (winteam == 0 && check_plr != plr)
+			continue;
+		if (winteam != GetPlayerTeam(check_plr))
+			continue;
+		// Store best time for all players in the winning team.
+		var rectime = GetPlrExtraData(check_plr, time_store);
+		if (time != 0 && (!rectime || time < rectime))
+		{
+			SetPlrExtraData(check_plr, time_store, time);
+			Log(Format("$MsgBestTime$", GetPlayerName(check_plr), TimeToString(time)));
+		}
 	}
 	return;
 }
@@ -482,7 +493,7 @@ private func AddEvalData(int plr)
 	if (cps == cp_count)
 		msg = "$MsgEvalPlayerAll$";
 	else
-		msg = Format("$MsgEvalPlayerX$", cps);
+		msg = Format("$MsgEvalPlayerX$", cps, cp_count);
 	AddEvaluationData(msg, plrid);
 	return;
 }

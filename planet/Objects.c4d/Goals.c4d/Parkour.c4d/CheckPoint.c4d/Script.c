@@ -159,9 +159,9 @@ protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
 protected func CheckForClonks()
 {
 	// Loop through all clonks inside the checkpoint.
-	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(cp_size)))
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(cp_size)))
 	{
-		var plr = pClonk->GetOwner();
+		var plr = clonk->GetOwner();
 		var team = GetPlayerTeam(plr);
 		var plrid = GetPlayerID(plr);
 		// Check whether this CP is already activated for player or its team.

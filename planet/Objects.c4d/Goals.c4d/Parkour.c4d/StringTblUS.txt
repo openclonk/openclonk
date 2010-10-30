@@ -1,11 +1,11 @@
 Name=Parkour
 
 #Goal window
-MsgRace=This parkour is over %d checkpoints, check the scoreboard for the number of completed checkpoints per player.
-MsgRaceWon=Congratulations, you have won this parkour!
-MsgRaceWonTeam=Congratulations, your team has won this parkour!
-MsgRaceLost=You have lost this parkour.
-MsgRaceLostTeam=Your team has lost this parkour.
+MsgParkour=This parkour is over %d checkpoints, check the scoreboard for the number of completed checkpoints per player.
+MsgParkourWon=Congratulations, you have won this parkour!
+MsgParkourWonTeam=Congratulations, your team has won this parkour!
+MsgParkourLost=You have lost this parkour.
+MsgParkourLostTeam=Your team has lost this parkour.
 
 #Respawn
 MsgRespawn0=%s tries again.
@@ -22,7 +22,7 @@ MsgDescNth=You are in| %dth place.
 MsgDescTeamFirst=Your team is| in first place.
 MsgDescTeamSecond=Your team is| in second place.
 MsgDescTeamThird=Your team is| in third place.
-MsgDescTeamNth=Your team is |in %dth place.
+MsgDescTeamNth=Your team is|in %dth place.
 
 #Scoreboard
 MsgCaptionX=Parkour over %d checkpoints.
@@ -34,5 +34,5 @@ MsgBestTime=%s has set a new personal best time of %s.
 #Evaluation data
 MsgEvalPlrWon=%s has won the parkour in %s.
 MsgEvalTeamWon=The team %s has won the parkour in %s.
-MsgEvalPlayerX=You have cleared %d checkpoints.
+MsgEvalPlayerX=You have cleared %d out of %d checkpoints.
 MsgEvalPlayerAll=You have cleared all checkpoints.
