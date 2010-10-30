@@ -853,11 +853,9 @@ namespace C4GUI
 				// dialog idle proc
 				OnIdle();
 				// handle messages - this may block until the next timer
-				if (!Application.ScheduleProcs() || !IsGUIValid())
+				if (!Application.ScheduleProcs())
 					return false; // game GUI and lobby will deleted in Game::Clear()
 			}
-			// Idle proc may have done something nasty
-			if (!IsGUIValid()) return false;
 		}
 		// return whether dlg was OK
 		return fOK;
@@ -869,7 +867,7 @@ namespace C4GUI
 		if (!Application.ScheduleProcs(0))
 			return false;
 		// check status
-		if (!IsGUIValid() || !fShow) return false;
+		if (!fShow) return false;
 		return true;
 	}
 
@@ -878,7 +876,7 @@ namespace C4GUI
 		// execute
 		if (Execute()) return true;
 		// delete self if closed
-		if (IsGUIValid()) delete this;
+		delete this;
 		return false;
 	}
 
@@ -900,7 +898,7 @@ namespace C4GUI
 	bool Dialog::FadeIn(Screen *pOnScreen)
 	{
 		// default screen
-		if (!pOnScreen) if (!(pOnScreen = Screen::GetScreenS())) return false;
+		if (!pOnScreen) pOnScreen = Screen::GetScreenS();
 		// fade in there
 		pOnScreen->ShowDialog(this, true);
 		iFade = 0;
@@ -1251,8 +1249,6 @@ namespace C4GUI
 		ProgressDialog *pDlg = new ProgressDialog(szMessage, szCaption, iMaxProgress, iInitialProgress, icoIcon);
 		// show it
 		if (!pDlg->Show(this, true)) { delete pDlg; return false; }
-		// do not return invalid pointer if GUI got deleted (whil eshowing the progress bar Dlg; maybe some stupid stuff in OnShow)
-		if (!IsGUIValid()) return NULL;
 		// return dlg pointer
 		return pDlg;
 	}
@@ -1271,8 +1267,6 @@ namespace C4GUI
 		if (!pDlg->Show(this, true)) { delete pDlg; return false; }
 		// wait until it is closed
 		bool fResult = pDlg->DoModal();
-		// free dlg if this class is still valid (may have been deleted in game clear)
-		if (!IsGUIValid()) return false;
 		if (fDestruct) delete pDlg;
 		// return result
 		return fResult;

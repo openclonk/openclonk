@@ -274,12 +274,10 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	// Get current update url from server
 	StdStrBuf UpdateURL;
 	C4GUI::Dialog *pWaitDlg = NULL;
-	if (C4GUI::IsGUIValid())
-	{
-		pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
-		pWaitDlg->SetDelOnClose(false);
-		pScreen->ShowDialog(pWaitDlg, false);
-	}
+	pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
+	pWaitDlg->SetDelOnClose(false);
+	pScreen->ShowDialog(pWaitDlg, false);
+
 	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
 	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
@@ -294,13 +292,13 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			// wait, check for program abort
 			if (!Application.ScheduleProcs()) { fAborted = true; break; }
 			// check for dialog close
-			if (pWaitDlg) if (!C4GUI::IsGUIValid() || !pWaitDlg->IsShown())  { fAborted = true; break; }
+			if (pWaitDlg) if (!pWaitDlg->IsShown())  { fAborted = true; break; }
 		}
 		if (!fAborted) fSuccess = UpdateClient.GetUpdateURL(&UpdateURL);
 		Application.InteractiveThread.RemoveProc(&UpdateClient);
 		UpdateClient.SetNotify(NULL);
 	}
-	if (C4GUI::IsGUIValid() && pWaitDlg) delete pWaitDlg;
+	delete pWaitDlg;
 	// User abort
 	if (fAborted)
 	{

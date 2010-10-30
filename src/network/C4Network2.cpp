@@ -707,7 +707,7 @@ StdStrBuf C4Network2::QueryClientPassword()
 	pInputDlg->SetDelOnClose(false);
 	if (!::pGUI->ShowModalDlg(pInputDlg, false))
 	{
-		if (C4GUI::IsGUIValid()) delete pInputDlg;
+		delete pInputDlg;
 		return StdStrBuf();
 	}
 	// copy to buffer

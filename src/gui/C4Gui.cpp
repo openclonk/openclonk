@@ -144,8 +144,7 @@ namespace C4GUI
 			pParent->RemoveElement(this);
 		else if (this != Screen::GetScreenS())
 			// always ensure removal from screen!
-			if (Screen::GetScreenS())
-				Screen::GetScreenS()->RemoveElement(this);
+			Screen::GetScreenS()->RemoveElement(this);
 	}
 
 	void Element::RemoveElement(Element *pChild)
@@ -155,10 +154,9 @@ namespace C4GUI
 			pParent->RemoveElement(pChild);
 		else if (this != Screen::GetScreenS())
 			// always ensure removal from screen!
-			if (Screen::GetScreenS())
-				// but not if this is the context menu, to avoid endless flip-flop!
-				if (!IsMenu())
-					Screen::GetScreenS()->RemoveElement(pChild);
+			// but not if this is the context menu, to avoid endless flip-flop!
+			if (!IsMenu())
+				Screen::GetScreenS()->RemoveElement(pChild);
 	}
 
 	void Element::UpdateSize()
@@ -740,12 +738,9 @@ namespace C4GUI
 
 	bool Screen::Execute()
 	{
-		if (!IsGUIValid()) return false;
 		// process messages
 		if (!Application.FlushMessages())
 			return false;
-		// check status
-		if (!IsGUIValid()) return false;
 		return true;
 	}
 
@@ -932,8 +927,6 @@ namespace C4GUI
 							{
 								// Okay; do input
 								pDlg->MouseInput(Mouse, iButton, fX - rcDlgBounds.x - iOffX, fY - rcDlgBounds.y - iOffY, dwKeyParam);
-								// dlgs may destroy GUI
-								if (!IsGUIValid()) return false;
 								// CAUTION: pDlg may be invalid now!
 								// set processed-flag manually
 								fProcessed = true;
@@ -947,8 +940,6 @@ namespace C4GUI
 							}
 						}
 			}
-			// check valid GUI; might be destroyed by mouse input
-			if (!IsGUIValid()) return false;
 		}
 
 		// check if MouseOver has changed

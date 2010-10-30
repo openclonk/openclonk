@@ -1810,8 +1810,6 @@ void C4Player::CountControl(ControlType eType, int32_t iID, int32_t iCntAdd)
 
 void C4Player::ExecMsgBoardQueries()
 {
-	// query now possible?
-	if (!C4GUI::IsGUIValid()) return;
 	// already active?
 	if (::MessageInput.IsTypeIn()) return;
 	// find an un-evaluated query

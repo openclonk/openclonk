@@ -261,8 +261,7 @@ void C4Scoreboard::InvalidateRows()
 
 void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 {
-	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
+	if (::pGUI->IsExclusive()) return;
 	// update dlg show
 	iDlgShow += iChange;
 	if (!fUserToggle)
@@ -285,8 +284,7 @@ void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 
 void C4Scoreboard::HideDlg()
 {
-	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
+	if (::pGUI->IsExclusive()) return;
 	// hide scoreboard if it was active
 	if (pDlg) pDlg->Close(false);
 }

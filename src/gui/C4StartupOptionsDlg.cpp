@@ -1149,13 +1149,10 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
 	{
 		// abort: Restore screen, if this was not some program abort
-		if (C4GUI::IsGUIValid())
+		if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
 		{
-			if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
-			{
-				if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
-				RecreateDialog(false);
-			}
+			if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
+			RecreateDialog(false);
 		}
 
 		return false;

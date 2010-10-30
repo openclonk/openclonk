@@ -252,8 +252,6 @@ namespace C4GUI
 	{
 		// do OnFinishInput callback and process result - returns whether pasting operation should be continued
 		InputResult eResult = OnFinishInput(fPasting, fPastingMore);
-		// safety...
-		if (!IsGUIValid()) return false;
 		switch (eResult)
 		{
 		case IR_None: // do nothing and continue pasting

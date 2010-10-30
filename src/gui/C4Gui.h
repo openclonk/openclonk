@@ -2714,21 +2714,20 @@ namespace C4GUI
 	};
 
 	// shortcut for check whether GUI is active
-	inline bool IsGUIValid() { return !!Screen::GetScreenS(); }
-	inline bool IsActive() { return Screen::GetScreenS() && Screen::GetScreenS()->IsActive(); }
-	inline bool IsExclusive() { return Screen::GetScreenS() && Screen::GetScreenS()->IsExclusive(); }
+	inline bool IsActive() { return Screen::GetScreenS()->IsActive(); }
+	inline bool IsExclusive() { return Screen::GetScreenS()->IsExclusive(); }
 
 	// shortcut for GUI screen size
-	inline int32_t GetScreenWdt() { Screen *pScreen = Screen::GetScreenS(); return pScreen ? pScreen->GetBounds().Wdt : Config.Graphics.ResX; }
-	inline int32_t GetScreenHgt() { Screen *pScreen = Screen::GetScreenS(); return pScreen ? pScreen->GetBounds().Hgt : Config.Graphics.ResY; }
+	inline int32_t GetScreenWdt() { return Screen::GetScreenS()->GetBounds().Wdt; }
+	inline int32_t GetScreenHgt() { return Screen::GetScreenS()->GetBounds().Hgt; }
 
 	// sound effect in GUI: Only if enabled
 	void GUISound(const char *szSound);
 
 	// Zoom
-	inline float GetZoom() { Screen *s=Screen::GetScreenS(); return s ? s->GetZoom() : 1.0f; }
+	inline float GetZoom() { return Screen::GetScreenS()->GetZoom(); }
 	inline void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP) // pVP specified for console mode viewports only
-	{ Screen *s=Screen::GetScreenS(); if(s) s->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
+	{ Screen::GetScreenS()->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
 
 	extern Screen TheScreen;
 } // end of namespace

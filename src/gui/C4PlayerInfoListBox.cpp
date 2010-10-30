@@ -1241,8 +1241,6 @@ void C4PlayerInfoListBox::SetClientSoundIcon(int32_t iForClientID)
 
 C4PlayerInfoListBox::ListItem *C4PlayerInfoListBox::GetPlayerListItem(ListItem::ID::IDType eType, int32_t id)
 {
-	// safety
-	if (!C4GUI::IsGUIValid()) return NULL;
 	ListItem::ID idSearch(eType, id);
 	// search through listbox
 	for (C4GUI::Element *pEItem = GetFirst(); pEItem; pEItem = pEItem->GetNext())
@@ -1283,9 +1281,6 @@ static bool fPlayerListUpdating=false;
 
 void C4PlayerInfoListBox::Update()
 {
-	// safety
-	if (!C4GUI::IsGUIValid()) return;
-
 	if (fPlayerListUpdating) return;
 	fPlayerListUpdating = true;
 

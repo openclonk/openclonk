@@ -436,7 +436,7 @@ bool C4DefinitionSelDlg::SelectDefinitions(C4GUI::Screen *pOnScreen, StdStrBuf *
 	{
 		pSelection->Copy(pDlg->GetSelection(pSelection->getData(), true));
 	}
-	if (C4GUI::IsGUIValid()) delete pDlg;
+	delete pDlg;
 	return fResult;
 }
 
@@ -668,6 +668,6 @@ bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSele
 		*pfSetPicture = pDlg->IsSetPicture();
 		*pfSetBigIcon = pDlg->IsSetBigIcon();
 	}
-	if (C4GUI::IsGUIValid()) delete pDlg;
+	delete pDlg;
 	return fResult;
 }

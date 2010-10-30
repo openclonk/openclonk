@@ -496,8 +496,6 @@ void C4Network2ClientListDlg::Update()
 
 bool C4Network2ClientListDlg::Toggle()
 {
-	// safety
-	if (!C4GUI::IsGUIValid()) return false;
 	// toggle off?
 	if (pInstance) { pInstance->Close(true); return true; }
 	// toggle on!
@@ -940,7 +938,7 @@ C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("I
 void C4ChartDialog::AddChart(const StdStrBuf &rszName)
 {
 	// get graph by name
-	if (!Game.pNetworkStatistics || !pChartTabular || !C4GUI::IsGUIValid()) return;
+	if (!Game.pNetworkStatistics || !pChartTabular) return;
 	bool fOwnGraph = false;
 	C4Graph *pGraph = Game.pNetworkStatistics->GetGraphByName(rszName, fOwnGraph);
 	if (!pGraph) return;
@@ -955,7 +953,6 @@ void C4ChartDialog::AddChart(const StdStrBuf &rszName)
 
 void C4ChartDialog::Toggle()
 {
-	if (!C4GUI::IsGUIValid()) return;
 	// close if open
 	if (pChartDlg) { pChartDlg->Close(false); return; }
 	// otherwise, open

@@ -185,11 +185,7 @@ bool C4DownloadDlg::DownloadFile(const char *szDLType, C4GUI::Screen *pScreen, c
 	C4DownloadDlg *pDlg = new C4DownloadDlg(szDLType);
 	if (!pDlg->ShowModal(pScreen, szURL, szSaveAsFilename))
 	{
-		// an error occurred. Did the GUI get deleted?
-		if (!C4GUI::IsGUIValid())
-			// then the dlg got deleted as well, and we should get out ASAP
-			return false;
-		// otherwise, show an appropriate error
+		// show an appropriate error
 		const char *szError = pDlg->GetError();
 		if (!szError || !*szError) szError = LoadResStr("IDS_PRC_UNKOWNERROR");
 		StdStrBuf sError;

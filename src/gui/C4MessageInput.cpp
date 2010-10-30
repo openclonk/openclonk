@@ -161,7 +161,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		// reroute to message input class
 		::MessageInput.ProcessInput(szInputText);
 	// safety: message board commands may do strange things
-	if (!C4GUI::IsGUIValid() || this!=pInstance) return C4GUI::Edit::IR_Abort;
+	if (this!=pInstance) return C4GUI::Edit::IR_Abort;
 	// select all text to be removed with next keypress
 	// just for pasting mode; usually the dlg will be closed now anyway
 	pEdt->SelectAll();
@@ -289,14 +289,13 @@ bool C4MessageInput::CloseTypeIn()
 {
 	// close dialog if present and valid
 	C4ChatInputDialog *pDlg = GetTypeIn();
-	if (!pDlg || !C4GUI::IsGUIValid()) return false;
+	if (!pDlg) return false;
 	pDlg->Close(false);
 	return true;
 }
 
 bool C4MessageInput::StartTypeIn(bool fObjInput, C4Object *pObj, bool fUpperCase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery)
 {
-	if (!C4GUI::IsGUIValid()) return false;
 	// close any previous
 	if (IsTypeIn()) CloseTypeIn();
 	// start new
@@ -313,8 +312,6 @@ bool C4MessageInput::KeyStartTypeIn(bool fTeam)
 
 bool C4MessageInput::ToggleTypeIn()
 {
-	// safety
-	if (!C4GUI::IsGUIValid()) return false;
 	// toggle off?
 	if (IsTypeIn())
 	{
@@ -330,7 +327,7 @@ bool C4MessageInput::ToggleTypeIn()
 bool C4MessageInput::IsTypeIn()
 {
 	// check GUI and dialog
-	return C4GUI::IsGUIValid() && C4ChatInputDialog::IsShown();
+	return C4ChatInputDialog::IsShown();
 }
 
 bool C4MessageInput::ProcessInput(const char *szText)
