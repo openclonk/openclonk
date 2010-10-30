@@ -3,7 +3,7 @@ Icon=19
 Title=Pyramid
 Version=4,10,0,0
 MinPlayer=2
-Maxplayer=8
+MaxPlayer=8
 
 [Definitions]
 Definition1=Objects.c4d
