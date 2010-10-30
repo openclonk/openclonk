@@ -1,18 +1,18 @@
 /*--
-		Parkour
-		Authors: Maikel
+	Parkour
+	Authors: Maikel
+	
+	The goal is to be the first to reach the finish, the team or player to do so wins the round.
+	Checkpoints can be added to make the path more interesting and more complex.
+	Checkpoints can have different functionalities:
+		* Respawn: On/Off - The clonk respawns at the last passed checkpoint.
+		* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
+		* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
+		* The start and finish are also checkpoints.
 		
-		The goal is to be the first to reach the finish, the team or player to do so wins the round.
-		Checkpoints can be added to make the path more interesting and more complex.
-		Checkpoints can have different functionalities:
-			* Respawn: On/Off - The clonk respawns at the last passed checkpoint.
-			* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
-			* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
-			* The start and finish are also checkpoints.
-			
-		TODO:
-			* Update CP Graphics -> looks satisfactory atm but cpu intensive.
-			* Add significant message under goal, done.
+	TODO:
+		* Update CP Graphics -> looks satisfactory atm but cpu intensive.
+		* Add significant message under goal, done.
 --*/
 
 
@@ -59,11 +59,14 @@ public func SetStartpoint(int x, int y)
 	return cp;
 }
 
-public func SetFinishpoint(int x, int y)
+public func SetFinishpoint(int x, int y, bool team)
 {
 	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
-	cp->SetCPMode(PARKOUR_CP_Finish);
+	var mode = PARKOUR_CP_Finish;
+	if (team)
+		mode = mode | PARKOUR_CP_Team;
+	cp->SetCPMode(mode);
 	cp->SetCPController(this);
 	cp_count++;
 	cp_list[cp_count] = cp;

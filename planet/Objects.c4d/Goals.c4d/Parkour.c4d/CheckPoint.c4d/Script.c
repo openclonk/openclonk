@@ -1,16 +1,17 @@
 /*--
-		CheckPoint
-		Author: Maikel
+	Checkpoint
+	Author: Maikel
 
-		The parkour goal uses checkpoints to allow for user defined routes.
-		A checkpoint can have different modes, indicated with a bitmask:
-			*None - Not a Checkpoint.
-			*Start - Start of the parkour.
-			*Finish - End of the parkour.
-			*Respawn - The clonk can respawn at this CP.
-			*Check - This checkpoint must be cleared in order to complete the parkour.
-			*Ordered - These checkpoints must be cleared in the right order.
-			*Bonus - Player receives a bonus if he cleares this CP.
+	The parkour goal uses checkpoints to allow for user defined routes.
+	A checkpoint can have different modes, indicated with a bitmask:
+		*None - Not a Checkpoint.
+		*Start - Start of the parkour.
+		*Finish - End of the parkour.
+		*Respawn - The clonk can respawn at this CP.
+		*Check - This checkpoint must be cleared in order to complete the parkour.
+		*Ordered - These checkpoints must be cleared in the right order.
+		*Team - All players of a team must have cleared this CP.
+		*Bonus - Player receives a bonus if he cleares this CP.
 --*/
 
 
@@ -22,15 +23,19 @@ static const PARKOUR_CP_Finish = 2;
 static const PARKOUR_CP_Respawn = 4;
 static const PARKOUR_CP_Check = 8;
 static const PARKOUR_CP_Ordered = 16;
-static const PARKOUR_CP_Bonus = 32;
+static const PARKOUR_CP_Team = 32;
+static const PARKOUR_CP_Bonus = 64;
 
 public func SetCPMode(int mode)
 {
-	if (mode & PARKOUR_CP_Start) // Start always occurs alone.
+	// PARKOUR_CP_Start always occurs alone.
+	if (mode & PARKOUR_CP_Start) 
 		mode = PARKOUR_CP_Start;
-	if (mode & PARKOUR_CP_Finish) // Start always occurs alone.
-		mode = PARKOUR_CP_Finish;
-	if (mode & PARKOUR_CP_Ordered) // Ordered checkpoints must have PARKOUR_CP_Check.
+	// PARKOUR_CP_Finish only in combination with PARKOUR_CP_Team.	
+	if (mode & PARKOUR_CP_Finish)
+		mode = mode & (PARKOUR_CP_Finish | PARKOUR_CP_Team) ;
+	// PARKOUR_CP_Ordered must have PARKOUR_CP_Check and a number.
+	if (mode & PARKOUR_CP_Ordered)
 	{
 		mode = mode | PARKOUR_CP_Check;
 		// Set CP number.
@@ -78,13 +83,11 @@ public func GetCPSize() { return cp_size; }
 
 /*-- Initialize --*/
 
-local aDoneByPlr; // Array to keep track of players which were already here.
-local aDoneByTeam; // Array to keep track of teams which were already here.
+local cleared_by_plr; // Array to keep track of players which were already here.
 
 protected func Initialize()
 {
-	aDoneByPlr = [];
-	aDoneByTeam = [];
+	cleared_by_plr = [];
 	cp_mode = PARKOUR_CP_Check;
 	cp_size = 20;
 	UpdateGraphics();
@@ -94,20 +97,43 @@ protected func Initialize()
 
 /*-- Checkpoint status --*/
 
+// Returns whether this checkpoint has been cleared by player.
 public func ClearedByPlr(int plr)
 {
 	var plrid = GetPlayerID(plr);
-	return aDoneByPlr[plrid];
+	return cleared_by_plr[plrid];
 }
 
+// Returns whether this checkpoint has been cleared by team.
 public func ClearedByTeam(int team)
 {
-	return aDoneByTeam[team];
+	if (!team)
+		return false;
+	if (cp_mode & PARKOUR_CP_Team)
+	{
+		// PARKOUR_CP_Team: Cleared if all players of the team have cleared the checkpoint.
+		for (var i = 0; i < GetPlayerCount(); i++)
+			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+				if (!ClearedByPlr(GetPlayerByIndex(i)))
+					return false;
+		return true;					
+	}
+	else
+	{
+		// Not PARKOUR_CP_Team: Cleared if one player has cleared the checkpoint.
+		for (var i = 0; i < GetPlayerCount(); i++)
+			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+				if (ClearedByPlr(GetPlayerByIndex(i)))
+					return true;
+	}
+	return false;
 }
 
+// Whether this checkpoint is active for a player.
 public func IsActiveForPlr(int plr)
 {
-	if (cp_mode & PARKOUR_CP_Finish) // Check all checkpoints.
+	// PARKOUR_CP_Finish: Check all PARKOUR_CP_Check checkpoints.
+	if (cp_mode & PARKOUR_CP_Finish)
 	{
 		for (var cp in FindObjects(Find_ID(GetID())))
 			if (cp->GetCPMode() & PARKOUR_CP_Check)
@@ -115,35 +141,41 @@ public func IsActiveForPlr(int plr)
 					return false;
 		return true;
 	}
+	// PARKOUR_CP_Ordered: Check previous PARKOUR_CP_Ordered checkpoint.
 	if (cp_mode & PARKOUR_CP_Ordered)
 	{
-		if (GetCPNumber() == 1) // First ordered checkpoint is always active.
+		// First ordered checkpoint is always active.
+		if (GetCPNumber() == 1) 
 			return true;
 		for (var cp in FindObjects(Find_ID(GetID()), Find_Func("GetCPNumber")))
 			if (cp->GetCPNumber() + 1 == GetCPNumber())
-				if (cp->ClearedByPlr(plr))
+			{	
+				var team = GetPlayerTeam(plr);		
+				if (cp->GetCPMode() & PARKOUR_CP_Team && team)
+				{
+					if (cp->ClearedByTeam(team))
+						return true;
+				}				
+				else if (cp->ClearedByPlr(plr))
 					return true;
+			}
 		return false;
 	}
+	// Other modes are always active.
 	return true;
 }
 
+// Whether this checkpoint is active for a team.
 public func IsActiveForTeam(int team)
 {
 	if (!team)
 		return false;
+	// Checkpoint is active for a team if it is active for one of its members.
 	for (var i = 0; i < GetPlayerCount(); i++)
 		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
 			if (IsActiveForPlr(GetPlayerByIndex(i)))
 				return true;
 	return false;
-}
-
-public func ResetCleared() // reset progress done by players
-{
-	aDoneByPlr = [];
-	aDoneByTeam = [];
-	UpdateGraphics();
 }
 
 /*-- Checkpoint activity --*/
@@ -170,34 +202,34 @@ protected func CheckForClonks()
 		// Check respawn status.
 		if (cp_mode & PARKOUR_CP_Respawn)
 			if (cp_con)
-				cp_con->SetPlrRespawnCP(plr, this); // Notify race goal.
+				cp_con->SetPlrRespawnCP(plr, this); // Notify parkour goal.
 		// If already done by player -> continue.
-		if (aDoneByPlr[plrid])
+		if (cleared_by_plr[plrid])
 			continue;
 		// Check checkpoint status.
 		if (cp_mode & PARKOUR_CP_Check)
 		{
-			aDoneByPlr[plrid] = true;
-			Sound("Cleared", false, nil, plr);
-			if (!team)
-				if (cp_con)
-					cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
-			if (team && !aDoneByTeam[team])
-			{
-				aDoneByTeam[team] = true;
-				if (cp_con)
-					cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
-			}
+			cleared_by_plr[plrid] = true;
+			Sound("Cleared", false, 100, plr);
+			if (cp_con)
+				cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
 		}
 		// Check finish status.
 		if (cp_mode & PARKOUR_CP_Finish)
 		{
-			Sound("Cleared", false, nil, plr);
-			aDoneByPlr[plrid] = true;
-			if (team)
-				aDoneByTeam[team] = true;
-			if (cp_con)
-				cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
+			Sound("Cleared", false, 100, plr);
+			cleared_by_plr[plrid] = true;
+			if (cp_mode & PARKOUR_CP_Team)
+			{
+				if (ClearedByTeam(team))
+					if (cp_con)
+						cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
+			}
+			else
+			{
+				if (cp_con)
+					cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
+			}
 		}
 		// Check bonus.
 		if (cp_mode & PARKOUR_CP_Bonus)
@@ -207,14 +239,6 @@ protected func CheckForClonks()
 }
 
 /*-- Checkpoint appearance --*/
-
-public func SetBaseGraphics(id gfx, int mod)
-{
-	// Update base graphics in overlay layer 1
-	SetGraphics("", gfx, 1, GFXOV_MODE_Base);
-	SetClrModulation(mod , 1);
-	return true;
-}
 
 // Mode graphics.
 protected func DoGraphics()
