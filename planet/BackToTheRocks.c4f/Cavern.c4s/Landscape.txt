@@ -9,11 +9,11 @@ overlay Mats {
 
 overlay MatFill {
 	overlay { mat=Earth; tex=earth_dry; loosebounds=1; };
-	Mats { mat=Ore; tex=ore; a=20;};
+	Mats { mat=Ore; tex=ore; a=20; };
 	Mats { mat=Snow; tex=snow1; a=20; };
-	Mats { mat=Granite; tex=granite; a=20;};
+	Mats { mat=Granite; tex=granite; a=20; };
 	Mats { mat=Rock; tex=rock; a=20; };
-	Mats { mat=Ore; tex=ore; a=20;};
+	Mats { mat=Ore; tex=ore; a=20; };
 	Mats { mat=Ice; tex=ice3; a=20; };
 	Mats { mat=Snow; tex=snow1; a=20; };
 	Mats { mat=Ice; tex=ice3; };

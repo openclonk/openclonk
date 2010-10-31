@@ -1,7 +1,7 @@
 [Head]
 Icon=34
 Title=BristleRidge
-Version=4,10
+Version=4,10,0
 MaxPlayer=16
 
 [Definitions]
@@ -20,12 +20,12 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Gold=1;Dynamite=1;Loam=1
-InEarthLevel=65,0,0,100
+InEarth=Rock=1;Dynamite=1;Firestone=1;Loam=1
+InEarthLevel=60
 Sky=Clouds2
 BottomOpen=1
-MapWidth=400,0,64,10000
-MapHeight=200,0,40,10000
+MapWidth=400
+MapHeight=200
 SkyScrollMode=2
 
 [Weather]
