@@ -157,8 +157,8 @@ protected func FxMessageShownStop(object target, int num, int reason, bool tempo
 protected func FxNotifyPlayerStart(object target, int num, int temporary)
 {
 	// Display notifier.
-	SetGraphics("SpeakBubble", GetID(), 1, GFXOV_MODE_Base); //TODO get rid of this placeholder image.
-	SetObjDrawTransform(500, 0, -20000, 0, 500, -10000, 1);
+	SetGraphics("SpeakBubble", GetID(), 1, GFXOV_MODE_Base);
+	SetObjDrawTransform(500, 0, -24000, 0, 500, -2000, 1);
 	return 1;
 }
 
