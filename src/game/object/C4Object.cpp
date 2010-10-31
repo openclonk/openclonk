@@ -1081,7 +1081,8 @@ bool C4Object::ExecLife()
 			else
 			{
 				// Take breath
-				int32_t takebreath=GetPhysical()->Breath-Breath;
+				int32_t takebreath = GetPhysical()->Breath - Breath;
+				takebreath = 100 * takebreath / C4MaxPhysical;
 				if (takebreath > 0) DoBreath(takebreath);
 			}
 		}
