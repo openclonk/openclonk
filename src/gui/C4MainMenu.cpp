@@ -630,10 +630,11 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_MENU_CPNEWPLAYER"),GfxR->fctPlayerClr.GetPhase(),"ActivateMenu:NewPlayer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPNEWPLAYERINFO"));
 	}
 	// Save game (player menu only - should we allow saving games with no players in it?)
+	/*
 	if (pPlr && (!::Network.isEnabled() || ::Network.isHost()))
 	{
 		AddRefSym(LoadResStr("IDS_MENU_CPSAVEGAME"),GfxR->fctMenu.GetPhase(0),"ActivateMenu:Save:Game",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPSAVEGAMEINFO"));
-	}
+	}*/
 	// Options
 	AddRefSym(LoadResStr("IDS_MNU_OPTIONS"), GfxR->fctOptions.GetPhase(0), "ActivateMenu:Options",C4MN_Item_NoCount, NULL, LoadResStr("IDS_MNU_OPTIONSINFO"));
 	// Disconnect
