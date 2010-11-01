@@ -29,7 +29,7 @@ func Initialize()
 	goal->AddCheckpoint(2150, 510, mode);
 	goal->AddCheckpoint(2000, 200, mode);	
 	goal->AddCheckpoint(3090, 300, mode);
-	var c=goal->AddCheckpoint(1000, 50, mode);
+	var c=goal->AddCheckpoint(1000, 100, mode);
 		c->SetCPSize(40);
 	var door=CreateObject(StoneDoor, 225, 60, NO_OWNER);
 	door->CloseGateDoor();
@@ -100,7 +100,7 @@ protected func Decoration()
 		gras->DoCon(Random(25));
 		if(!Random(20))
 		{
-			CreateObject(Fern,gras->GetX(),gras->GetY()+Random(5))->DoCon(-30+Random(100));
+			CreateObject(Fern,gras->GetX(),gras->GetY()+Random(15))->DoCon(-30+Random(100));
 			gras->Incinerate();
 		}
 		
