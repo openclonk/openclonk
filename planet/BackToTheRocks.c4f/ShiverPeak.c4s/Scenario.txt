@@ -22,12 +22,12 @@ Crew=Clonk=1
 [Landscape]
 Vegetation=Tree_Coniferous;
 VegetationLevel=100,0,0,100
-InEarth=Rock=1;Gold=1;Dynamite=1;Loam=1
-InEarthLevel=65,0,0,100
+InEarth=Rock=1;Gold=1;Dynamite=2;Loam=2
+InEarthLevel=40,0,0,100
 Sky=WinterMountains
 BottomOpen=1
-MapWidth=200,0,64,10000
-MapHeight=250,0,40,10000
+MapWidth=200
+MapHeight=250
 SkyScrollMode=2
 
 [Weather]

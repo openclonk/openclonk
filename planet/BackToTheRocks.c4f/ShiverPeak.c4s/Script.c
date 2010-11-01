@@ -5,50 +5,57 @@
 	Parkour on a dynamic map.
 --*/
 
-func Initialize()
+
+protected func Initialize()
 {
+	// Parkour goal: from bottom to top.
 	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
+	// Start at bottom of the map.
+	var sx = LandscapeWidth() / 2, sy = LandscapeHeight() - 120;
+	goal->SetStartpoint(sx, sy);
+	// Finish exactly at the peak of the mountain, so find it.
+	var fx = LandscapeWidth() / 2, fy = 0;
+	while (PathFree(0, fy + 20, LandscapeWidth(), fy + 20) && fy < LandscapeHeight())
+		fy += 10;
+	goal->SetFinishpoint(fx, fy);
+	// All checkpoints are ordered and provide respawn.
+	// Checkpoints form a more or less straight line from start to finish.
+	var cp_mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered;
+	var cp_count = 6;
+	var dx = (fx - sx) / (cp_count + 1);
+	var dy = (fy - sy) / (cp_count + 1);
 	var x, y;
-	y = LandscapeHeight() - 120;
-	x = LandscapeWidth() / 2;
-	goal->SetStartpoint(x, y);
-	var ix, iy;
-	y = 6 * LandscapeHeight() / 7;
-	var mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered;
-	for (var i = 1; i < 7; i++)
+	// Create cp_count checkpoints.
+	for (var cp_num = 1; cp_num <= cp_count; cp_num++)
 	{
-		iy = y - 50 + Random(100);
-		ix = x - 125 + Random(250);
-		var l = 0, u = 125;
-		while (GBackSolid(ix, iy))
+		x = sx + cp_num * dx + Random(200) - 100;
+		y = sy + cp_num * dy;
+		// Move around a little to find a decent location (150) tries.
+		var move = 10;
+		for (var i = 0; i < 150; i++)
 		{
-			++l; u += 5;
-			iy = y - 50 + Random(100);
-			ix = x - u + Random(2 * u);
-			if (l > 50)
+			x += Random(6 * move) - 3 * move;
+			y += Random(2 * move) - move;
+			if (!GBackSolid(x, y))
 				break;
 		}
-		goal->AddCheckpoint(ix, iy, mode);
-		y -= LandscapeHeight() / 7;
+		goal->AddCheckpoint(x, y, cp_mode);
 	}
-	x = LandscapeWidth() / 2;
-	y = 50;
-	goal->SetFinishpoint(x, y);
 	
-	//Environmental Effects
+	// Environmental Effects
 	var time = CreateObject(Environment_Time);
 	time->SetCycleSpeed(0);
 	time->SetTime(900);
 
-	//Clouds
+	// Clouds
 	for (var i = 0; i < 30; i++)
 		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
-	//Snow
+	// Snow
 	AddEffect("Snowfall", 0, 1, 2);
 
 	MapBottomFix();
 
-	//Place powderkegs and dynamite boxes
+	// Place powderkegs and dynamite boxes
 	for (var i = 0; i < 25; i++)
 	{
 		var pos = FindPosInMat("Tunnel", 0, 0, LandscapeWidth(), LandscapeHeight());
@@ -59,8 +66,10 @@ func Initialize()
 		else 
 			CreateObject(DynamiteBox, pos[0], pos[1], NO_OWNER);
 	}
+	return;
 }
 
+// Callback from parkour goal: give the player useful tools on respawn.
 protected func PlrHasRespawned(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
@@ -73,9 +82,10 @@ protected func PlrHasRespawned(int plr, object cp)
 global func FxSnowfallTimer(object target, int num, int timer)
 {
 	CastPXS("Snow", 5, 1, RandomX(0, LandscapeWidth()), 1);
+	return 1;
 }
 
-global func MapBottomFix()
+private func MapBottomFix()
 {
 	for (var i = 1; i < LandscapeWidth(); i++)
 	{
@@ -83,4 +93,5 @@ global func MapBottomFix()
 		if (GetMaterial(i, LandscapeHeight() - 1) == Material("Tunnel"))
 			DrawMaterialQuad("Granite", i - 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight(), i - 1, LandscapeHeight());
 	}
+	return;
 }
