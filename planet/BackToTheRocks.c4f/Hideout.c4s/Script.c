@@ -10,7 +10,7 @@
 protected func Initialize()
 {
 	// Environment 
-	PlaceGrass(85);
+	PlaceGrass(185);
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
@@ -24,6 +24,7 @@ protected func Initialize()
 	// Doors and spinwheels.
 	var gate, wheel;
 	gate = CreateObject(StoneDoor, 366, 420, NO_OWNER);
+	gate->DoDamage(50);		//Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
 	//wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
@@ -32,9 +33,11 @@ protected func Initialize()
 	//wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, 846, 480, NO_OWNER);
+	gate->DoDamage(80);		//Middle dors even easier
 	wheel = CreateObject(SpinWheel, 780, 480, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 420, NO_OWNER);
+	gate->DoDamage(50);		//Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
 	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
@@ -43,27 +46,31 @@ protected func Initialize()
 	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 844, 480, NO_OWNER);
+	gate->DoDamage(80);		//Middle dors even easier
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 780, 480, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
 	var chest;
 	chest = CreateObject(Chest, 110, 590, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36);
+	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
 	chest = CreateObject(Chest, 25, 460, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36);
+	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
 	chest = CreateObject(Chest, 810, 600, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, 860, 350, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36);
+	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36);
+	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
 	chest = CreateObject(Chest, LandscapeWidth() - 810, 600, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 860, 350, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
+	
+	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
+	AddEffect("FillSpecialChest", chest, 100, 5 * 36);
 	
 	// Cannons loaded with 12 shots.
 	var cannon;
@@ -77,14 +84,25 @@ protected func Initialize()
 	cannon->CreateContents(PowderKeg);
 	
 	// Brick edges, notice the symmetric landscape.
-	var edges = [[80,480],[100,490],[110,500],[220,550],[230,560],[250,570],[270,580],[340,460],[400,450],[620,570],[630,560],[790,440],[780,430],[770,420],[760,410],[810,380],[820,370],[830,360]];
-	for(var i = 0; i < GetLength(edges); i++)
-	{
-		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
-		CreateObject(BrickEdge, LandscapeWidth() - edges[i][0] + 10 , edges[i][1], NO_OWNER)->PermaEdge();
-	}
+	PlaceEdges();
 	
 	return;
+}
+
+global func PlaceEdges()
+{
+	var x=[695, 655, 385, 345, 255, 275, 295, 105, 95, 45, 185, 155, 145, 825, 815, 805, 755, 765, 775, 785, 625, 615, 395, 335, 265, 245, 225, 215, 105, 95, 75];
+	var y=[515, 545, 385, 405, 485, 475, 465, 365, 375, 465, 545, 575, 585, 355, 365, 375, 405, 415, 425, 435, 555, 565, 445, 455, 575, 565, 555, 545, 495, 485, 475];
+	for (var i = 0; i < GetLength(x); i++)
+	{
+		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		edge->Initialize();
+		edge->PermaEdge();
+		var edge=CreateObject(BrickEdge, LandscapeWidth()-x[i]+5, y[i] + 5, NO_OWNER);
+		edge->Initialize();
+		edge->PermaEdge();
+	}
+	return 1;
 }
 
 protected func InitializePlayer(int plr)
@@ -107,20 +125,26 @@ func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Shovel, Firesto
 
 /*-- Chest filler effects --*/
 
-global func FxFillBaseChestStart(object target, int num, int temporary)
+global func FxFillBaseChestStart(object target, int num, int temporary, bool supply)
 {
 	if (temporary) 
 		return 1;
-	var w_list = [Bow, Shield, Sword, Javelin, Shovel, Firestone, Dynamite, Loam];
-	if (target->ContentsCount() < 5)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
+		
+	EffectVar(0, target, num)=supply;
+	if(EffectVar(0, target, num)) 
+		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
+	else
+		var w_list = [Bow, Shield, Sword, Javelin, Musket];
+	for(var i=0; i<4; i++)
+		target->CreateChestContents(w_list[i]);
 	return 1;
 }
-
-global func FxFillBaseChestTimer(object target)
+global func FxFillBaseChestTimer(object target, int num)
 {
-	var w_list = [Bow, Shield, Sword, Javelin, Shovel, Firestone, Dynamite, Loam];
-	
+	if(EffectVar(0, target, num)) 
+		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
+	else
+		var w_list = [Bow, Shield, Sword, Javelin, Musket];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -130,7 +154,7 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 {
 	if (temporary) 
 		return 1;
-	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow];
+	var w_list = [Sword, Javelin, Club, Firestone, Dynamite, Firestone];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -138,9 +162,26 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Bow, Shield, Sword, Javelin, Club, Musket, DynamiteBox, GrappleBow];
+	var w_list = [Sword, Javelin, Club, Dynamite];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	return 1;
+}
+
+global func FxFillSpecialChestTimer(object target)
+{
+	if(Random(3)) return 1;
+	var w_list = [JarOfWinds, GrappleBow, DynamiteBox, DynamiteBox];
+	var r=Random(3);
+	if(FindObject(Find_ID(w_list[0]))) return 1;
+	if(FindObject(Find_ID(w_list[1]))) return 1;
+	if(FindObject(Find_ID(w_list[2]))) return 1;
+	target->CreateChestContents(w_list[r]);
+	
+	var clr=RGB(220,220,255);
+	if(r==1) clr=RGB(0,255,0);
+	if(r==2) clr=RGB(255,0,0);
+	CastParticles("AnouncingFire",75,60,target->GetX(),target->GetY(),100,150,clr);
 	return 1;
 }
 
@@ -153,6 +194,17 @@ global func CreateChestContents(id obj_id)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
+	if(obj_id==JarOfWinds || obj_id==GrappleBow)
+		AddEffect("NotTooLong",obj,100,36);
 	obj->Enter(this);
+	
 	return;
+}
+
+
+global func FxNotTooLongTimer(object target, int num)
+{	if(!(target->Contained())) return 1;
+	if(target->Contained()->GetID()==Clonk) EffectVar(0, target, num)++;
+	if(EffectVar(0, target, num)>40) return target->RemoveObject();
+	else if(EffectVar(0, target, num)>35) target->Message("@<c ff%x%x>%d",(41-EffectVar(0, target, num))*50,(41-EffectVar(0, target, num))*50,41-EffectVar(0, target, num));
 }
