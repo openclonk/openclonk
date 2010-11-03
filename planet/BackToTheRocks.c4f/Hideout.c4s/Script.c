@@ -170,17 +170,15 @@ global func FxFillOtherChestTimer(object target)
 
 global func FxFillSpecialChestTimer(object target)
 {
-	if(Random(3)) return 1;
-	var w_list = [JarOfWinds, GrappleBow, DynamiteBox, DynamiteBox];
-	var r=Random(3);
-	if(FindObject(Find_ID(w_list[0]))) return 1;
-	if(FindObject(Find_ID(w_list[1]))) return 1;
-	if(FindObject(Find_ID(w_list[2]))) return 1;
+	if (Random(3)) return 1;
+	var w_list = [GrappleBow, DynamiteBox];
+	var r=Random(2);
+	if (FindObject(Find_ID(w_list[0]))) return 1;
+	if (FindObject(Find_ID(w_list[1]))) return 1;
 	target->CreateChestContents(w_list[r]);
 	
-	var clr=RGB(220,220,255);
-	if(r==1) clr=RGB(0,255,0);
-	if(r==2) clr=RGB(255,0,0);
+	var clr = RGB(0,255,0);
+	if (r) clr = RGB(255,0,0);
 	CastParticles("AnouncingFire",75,60,target->GetX(),target->GetY(),100,150,clr);
 	return 1;
 }
@@ -194,7 +192,7 @@ global func CreateChestContents(id obj_id)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
-	if(obj_id==JarOfWinds || obj_id==GrappleBow)
+	if (obj_id == GrappleBow)
 		AddEffect("NotTooLong",obj,100,36);
 	obj->Enter(this);
 	
@@ -203,8 +201,8 @@ global func CreateChestContents(id obj_id)
 
 
 global func FxNotTooLongTimer(object target, int num)
-{	if(!(target->Contained())) return 1;
-	if(target->Contained()->GetID()==Clonk) EffectVar(0, target, num)++;
-	if(EffectVar(0, target, num)>40) return target->RemoveObject();
-	else if(EffectVar(0, target, num)>35) target->Message("@<c ff%x%x>%d",(41-EffectVar(0, target, num))*50,(41-EffectVar(0, target, num))*50,41-EffectVar(0, target, num));
+{	if (!(target->Contained())) return 1;
+	if (target->Contained()->GetID() == Clonk) EffectVar(0, target, num)++;
+	if (EffectVar(0, target, num) > 40) return target->RemoveObject();
+	else if (EffectVar(0, target, num) > 35) target->Message("@<c ff%x%x>%d",(41-EffectVar(0, target, num))*50,(41-EffectVar(0, target, num))*50,41-EffectVar(0, target, num));
 }
