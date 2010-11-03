@@ -45,8 +45,8 @@ public func ControlUse(object clonk, int x, int y)
 	if(pWire)
 		pWire->Connect(aDynamites[iCount], pDyna);
 	// First? then add Timer
-	else
-		AddEffect("IntLength", this, 1, 10, this);
+/*	else
+		AddEffect("IntLength", this, 1, 10, this);*/
 
 	pWire = CreateObject(Fuse);
 	pWire->Connect(pDyna, this);
