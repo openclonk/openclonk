@@ -3,9 +3,6 @@
 	Author: Randrian
 
 	The protoganist of the game. Witty and nimble if skillfully controled ;-)
-	
-	TODO:
-	+ replace German comments
 */
 
 
@@ -1809,6 +1806,7 @@ func FxIntRidingStop(pTarget, iNumber, fTmp)
 // calback from engine
 func OnMaterialChanged(int new, int old)
 {
+	if(!GetAlive()) return;
 	var newdens = GetMaterialVal("Density","Material",new);
 	var olddens = GetMaterialVal("Density","Material",old);
 	var newliquid = (newdens >= C4M_Liquid) && (newdens < C4M_Solid);
