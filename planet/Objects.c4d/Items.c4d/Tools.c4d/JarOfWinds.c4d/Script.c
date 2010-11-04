@@ -18,6 +18,12 @@ public func FxJarReloadTimer(object target, int effect, int time)
 	target->Load();
 }
 
+public func DoFullLoad()
+{
+	Amount = MaxCap;
+	return;
+}
+
 protected func Initialize()
 {
 	MaxCap = 60; //Changes duration and power of the Jar
