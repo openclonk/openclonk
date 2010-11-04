@@ -568,15 +568,17 @@ void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd)
 }
 
 // Copy the text to the clipboard or the primary selection
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
 	Window owner = XGetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
-	if (owner != pWindow->wnd) return;
+	if (owner != pWindow->wnd) return false;
 	d.Text.Copy(text);
 	d.AcquirationTime = Priv->LastEventTime;
+	return true;
 }
+
 // Paste the text from the clipboard or the primary selection
 StdStrBuf CStdApp::Paste(bool fClipboard)
 {
@@ -614,11 +616,13 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 	XFree (data);
 	return res;
 }
+
 // Is there something in the clipboard?
 bool CStdApp::IsClipboardFull(bool fClipboard)
 {
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 }
+
 // Give up Selection ownership
 void CStdApp::ClearClipboard(bool fClipboard)
 {

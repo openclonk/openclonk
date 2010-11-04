@@ -402,7 +402,7 @@ public:
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
 
 	// Copy the text to the clipboard or the primary selection
-	void Copy(const StdStrBuf & text, bool fClipboard = true);
+	bool Copy(const StdStrBuf & text, bool fClipboard = true);
 	// Paste the text from the clipboard or the primary selection
 	StdStrBuf Paste(bool fClipboard = true);
 	// Is there something in the clipboard?

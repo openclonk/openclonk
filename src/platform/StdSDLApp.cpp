@@ -175,7 +175,7 @@ void CStdApp::RestoreVideoMode()
 #ifndef __APPLE__
 
 // stubs
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 }
 

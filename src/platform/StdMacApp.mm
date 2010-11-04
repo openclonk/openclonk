@@ -24,13 +24,15 @@
 #include <C4Include.h>
 #include <StdWindow.h>
 
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 	[pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
 	NSString* string = [NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding];
 	if (![pasteboard setString:string forType:NSStringPboardType]) {
 		NSLog(@"Writing to Cocoa pasteboard failed");
+		return false;
 	}
+	return true;
 }
 
 StdStrBuf CStdApp::Paste(bool fClipboard) {

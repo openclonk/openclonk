@@ -50,7 +50,7 @@
 #include "resource.h"
 #include "C4Version.h"
 
-#define C4FullScreenClassName "C4FullScreen"
+#define C4FullScreenClassName L"C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 CStdWindow::CStdWindow (): Active(false), pSurface(0), hWindow(0)
@@ -62,7 +62,7 @@ CStdWindow::~CStdWindow ()
 
 BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 {
-	WNDCLASSEX WndClass = {0};
+	WNDCLASSEXW WndClass = {0};
 	WndClass.cbSize        = sizeof(WNDCLASSEX);
 	WndClass.style         = CS_DBLCLKS;
 	WndClass.lpfnWndProc   = FullScreenWinProc;
@@ -71,8 +71,11 @@ BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	WndClass.lpszClassName = C4FullScreenClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-	return RegisterClassEx(&WndClass);
+	return RegisterClassExW(&WndClass);
 }
+
+#define ADDL2(s) L##s
+#define ADDL(s) ADDL2(s)
 
 CStdWindow * CStdWindow::Init(CStdApp * pApp)
 {
@@ -82,10 +85,10 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp)
 	if (!RegisterWindowClass(pApp->hInstance)) return NULL;
 
 	// Create window
-	hWindow = CreateWindowEx  (
+	hWindow = CreateWindowExW  (
 	            0,
 	            C4FullScreenClassName,
-	            C4ENGINENAME,
+	            ADDL(C4ENGINENAME),
 	            WS_OVERLAPPEDWINDOW,
 	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
 	            NULL,NULL,pApp->hInstance,NULL);
@@ -429,4 +432,54 @@ bool CStdApp::ReadStdInCommand()
 void CStdApp::MessageDialog(const char * message)
 {
 	MessageBox(0, message, C4ENGINECAPTION, MB_ICONERROR);
+}
+
+// Clipboard functions
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+{
+	if (!fClipboard) return false;
+	bool fSuccess = true;
+	// gain clipboard ownership
+	if (!OpenClipboard(GetWindowHandle())) return false;
+	// must empty the global clipboard, so the application clipboard equals the Windows clipboard
+	EmptyClipboard();
+	int size = MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), 0, 0);
+	HANDLE hglbCopy = GlobalAlloc(GMEM_MOVEABLE, size * sizeof(wchar_t));
+	if (hglbCopy == NULL) { CloseClipboard(); return false; }
+	// lock the handle and copy the text to the buffer.
+	wchar_t *szCopyChar = (wchar_t *) GlobalLock(hglbCopy);
+	fSuccess = !!MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), szCopyChar, size);
+	GlobalUnlock(hglbCopy);
+	// place the handle on the clipboard.
+	fSuccess = fSuccess && !!SetClipboardData(CF_UNICODETEXT, hglbCopy);
+	// close clipboard
+	CloseClipboard();
+	// return whether copying was successful
+	return fSuccess;
+}
+
+StdStrBuf CStdApp::Paste(bool fClipboard)
+{
+	if (!fClipboard) return StdStrBuf();
+	// open clipboard
+	if (!OpenClipboard(NULL)) return StdStrBuf();
+	// get text from clipboard
+	HANDLE hglb = GetClipboardData(CF_UNICODETEXT);
+	if (!hglb) return StdStrBuf();
+	StdStrBuf text((LPCWSTR) GlobalLock(hglb));
+	// unlock mem
+	GlobalUnlock(hglb);
+	// close clipboard
+	CloseClipboard();
+	return text;
+}
+
+bool CStdApp::IsClipboardFull(bool fClipboard)
+{
+	if (!fClipboard) return false;
+	return !!IsClipboardFormatAvailable(CF_UNICODETEXT);
+}
+
+void CStdApp::ClearClipboard(bool fClipboard)
+{
 }

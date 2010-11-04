@@ -223,7 +223,7 @@ StdStrBuf C4RankSystem::GetRankName(int iRank, bool fReturnLastIfOver)
 		sprintf(keyname,"Rank%03d",iRank+1);
 		if (GetRegistryString(Register,keyname,RankName,C4MaxName+1))
 			return StdStrBuf(RankName);
-		if (!fReturnLastIfOver) return StdStrBuf(NULL);
+		if (!fReturnLastIfOver) return StdStrBuf();
 		--iRank;
 	}
 #endif

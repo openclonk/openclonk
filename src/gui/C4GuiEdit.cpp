@@ -279,42 +279,16 @@ namespace C4GUI
 
 	bool Edit::Copy()
 	{
-#ifdef _WIN32
 		// get selected range
 		int32_t iSelBegin = Min(iSelectionStart, iSelectionEnd), iSelEnd = Max(iSelectionStart, iSelectionEnd);
 		if (iSelBegin == iSelEnd) return false;
-		// 2do: move clipboard functionality to Standard
-		// gain clipboard ownership
-		if (!OpenClipboard(Application.GetWindowHandle())) return false;
-		// must empty the global clipboard, so the application clipboard equals the Windows clipboard
-		EmptyClipboard();
+		StdStrBuf buf;
 		// allocate a global memory object for the text.
-		int32_t iTextLen = iSelEnd-iSelBegin;
-		HANDLE hglbCopy = GlobalAlloc(GMEM_MOVEABLE, iTextLen+1);
-		if (hglbCopy == NULL) { CloseClipboard(); return false; }
-		// lock the handle and copy the text to the buffer.
-		char *szCopyChar = (char *) GlobalLock(hglbCopy);
-		if (!cPasswordMask)
-			SCopy(Text+iSelBegin, szCopyChar, iTextLen);
-		else
-			memset(szCopyChar, cPasswordMask, iTextLen);
-		szCopyChar[iTextLen]=0;
-		GlobalUnlock(hglbCopy);
-		// place the handle on the clipboard.
-		bool fSuccess = !!SetClipboardData(CF_TEXT, hglbCopy);
-		// close clipboard
-		CloseClipboard();
-		// return whether copying was successful
-		return fSuccess;
-#else
-		static StdStrBuf buf;
-		buf.Clear();
-		int iSelBegin = Min(iSelectionStart, iSelectionEnd);
-		int iSelEnd = Max(iSelectionStart, iSelectionEnd);
 		buf.Append(Text+iSelBegin, iSelEnd-iSelBegin);
-		Application.Copy(buf);
-		return true;
-#endif
+		if (cPasswordMask)
+			memset(buf.getMData(), cPasswordMask, buf.getLength());
+
+		return Application.Copy(buf);
 	}
 
 	bool Edit::Cut()
@@ -330,58 +304,38 @@ namespace C4GUI
 	bool Edit::Paste()
 	{
 		bool fSuccess = false;
-		// 2do: move clipboard functionality to Standard
-#ifdef _WIN32
 		// check clipboard contents
-		if (!IsClipboardFormatAvailable(CF_TEXT)) return false;
-		// open clipboard
-		if (!OpenClipboard(NULL)) return false;
-		// get text from clipboard
-		HANDLE hglb = GetClipboardData(CF_TEXT);
-		if (hglb != NULL)
+		if(!Application.IsClipboardFull()) return false;
+		StdStrBuf text(Application.Paste());
+		char * szText = text.getMData();
+		if (text)
 		{
-			char *szText = (char *) GlobalLock(hglb);
-			if (szText != NULL)
+			fSuccess = !!*szText;
+			// replace any '|'
+			int32_t iLBPos=0, iLBPos2;
+			// caution when inserting line breaks: Those must be stripped, and sent as Enter-commands
+			iLBPos=0;
+			for (;;)
 			{
-				fSuccess = !!*szText;
-				// replace any '|'
-				int32_t iLBPos=0, iLBPos2;
-				while ((iLBPos = SCharPos('|', szText, iLBPos))>=0) szText[iLBPos]='l';
-				// caution when inserting line breaks: Those must be stripped, and sent as Enter-commands
+				iLBPos = SCharPos(0x0d, szText);
+				iLBPos2 = SCharPos(0x0a, szText);
+				if (iLBPos<0 && iLBPos2<0) break; // no more linebreaks
+				if (iLBPos2>=0 && (iLBPos2<iLBPos || iLBPos<0)) iLBPos = iLBPos2;
+				if (!iLBPos) { ++szText; continue; } // empty line
+				szText[iLBPos]=0x00;
+				if (!InsertText(szText, true)) fSuccess=false; // if the buffer was too long, still try to insert following stuff (don't abort just b/c one line was too long)
+				szText += iLBPos+1;
 				iLBPos=0;
-				for (;;)
+				if (!DoFinishInput(true, !!*szText))
 				{
-					iLBPos = SCharPos(0x0d, szText);
-					iLBPos2 = SCharPos(0x0a, szText);
-					if (iLBPos<0 && iLBPos2<0) break; // no more linebreaks
-					if (iLBPos2>=0 && (iLBPos2<iLBPos || iLBPos<0)) iLBPos = iLBPos2;
-					if (!iLBPos) { ++szText; continue; } // empty line
-					szText[iLBPos]=0x00;
-					if (!InsertText(szText, true)) fSuccess=false; // if the buffer was too long, still try to insert following stuff (don't abort just b/c one line was too long)
-					szText += iLBPos+1;
-					iLBPos=0;
-					if (!DoFinishInput(true, !!*szText))
-					{
-						// cleanup
-						GlobalUnlock(hglb); CloseClipboard();
-						// safety...
-						if (!IsGUIValid()) return false;
-						// k, pasted
-						return true;
-					}
+					// k, pasted
+					return true;
 				}
-				// insert new text (may fail due to overfull buffer, in which case parts of the text will be inserted)
-				if (*szText) fSuccess = fSuccess && InsertText(szText, true);
 			}
-			// unlock mem
-			GlobalUnlock(hglb);
+			// insert new text (may fail due to overfull buffer, in which case parts of the text will be inserted)
+			if (*szText) fSuccess = fSuccess && InsertText(szText, true);
 		}
-		// close clipboard
-		CloseClipboard();
 		// return whether insertion was successful
-#else
-		InsertText(Application.Paste().getData(), true);
-#endif
 		return fSuccess;
 	}
 
@@ -693,11 +647,7 @@ namespace C4GUI
 			pCtx->AddItem(LoadResStr("IDS_DLG_CUT"), LoadResStr("IDS_DLGTIP_CUT"), Ico_None, new CBMenuHandler<Edit>(this, &Edit::OnCtxCut));
 			pCtx->AddItem(LoadResStr("IDS_DLG_COPY"), LoadResStr("IDS_DLGTIP_COPY"), Ico_None, new CBMenuHandler<Edit>(this, &Edit::OnCtxCopy));
 		}
-#ifdef _WIN32
-		if (IsClipboardFormatAvailable(CF_TEXT))
-#else
 		if (Application.IsClipboardFull())
-#endif
 			pCtx->AddItem(LoadResStr("IDS_DLG_PASTE"), LoadResStr("IDS_DLGTIP_PASTE"), Ico_None, new CBMenuHandler<Edit>(this, &Edit::OnCtxPaste));
 
 		if (fAnythingSelected)

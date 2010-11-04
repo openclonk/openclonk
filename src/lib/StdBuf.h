@@ -434,6 +434,15 @@ public:
 			: StdBuf(pData, pData ? strlen(pData) + 1 : 0, fCopy)
 	{ }
 
+#ifdef _WIN32
+	explicit StdStrBuf(const wchar_t * utf16)
+	{
+		int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
+		SetSize(len);
+		WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
+	}
+#endif
+
 	// As previous constructor, but set length manually.
 	StdStrBuf(const char *pData, long int iLength)
 			: StdBuf(pData, pData ? iLength + 1 : 0, false)
