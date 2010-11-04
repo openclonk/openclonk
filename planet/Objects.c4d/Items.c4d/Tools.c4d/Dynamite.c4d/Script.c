@@ -71,7 +71,7 @@ public func Fuse()
 {
 	if(GetAction() != "Fuse")
 	{
-		Sound("Fuse");
+		if(!FindObject(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this))) Sound("Fuse");
 		SetAction("Fuse");
 	}
 }

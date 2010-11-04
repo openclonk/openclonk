@@ -61,6 +61,7 @@ public func StartFusing(object controler)
 	fuse_y = GetVertex(fuse_vertex, 1)*10;
 	AddEffect("IntFusing", this, 1, 1, this);
 	SetAction("Fusing");
+	Sound("FuseLoop",false,75,nil,1);
 }
 
 func FxIntFusingTimer()
@@ -92,6 +93,11 @@ func FxIntFusingTimer()
 	CastParticles("Spark",1,20,fuse_x/10-GetX(), fuse_y/10-GetY(),15,25,RGB(255,200,0),RGB(255,255,150));
 	
 	SetVertexXY(fuse_vertex, fuse_x/10, fuse_y/10);
+}
+
+func FxIntFusingStop()
+{
+	Sound("FuseLoop",false,75,nil,-1);
 }
 
 public func IsFuse() { return true; }
