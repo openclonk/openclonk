@@ -142,7 +142,7 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 global func FxFillBaseChestTimer(object target, int num)
 {
 	if(EffectVar(0, target, num)) 
-		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
+		var w_list = [Firestone, Firestone, Dynamite, Dynamite, Shovel, Loam, Loam, Ropeladder ];
 	else
 		var w_list = [Bow, Shield, Sword, Javelin, Musket];
 	if (target->ContentsCount() < 5)
@@ -162,7 +162,7 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Sword, Javelin, Club, Dynamite];
+	var w_list = [Sword, Javelin, Club, Dynamite, Firestone, Dynamite];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -171,14 +171,16 @@ global func FxFillOtherChestTimer(object target)
 global func FxFillSpecialChestTimer(object target)
 {
 	if (Random(3)) return 1;
-	var w_list = [GrappleBow, DynamiteBox];
-	var r=Random(2);
-	if (FindObject(Find_ID(w_list[0]))) return 1;
-	if (FindObject(Find_ID(w_list[1]))) return 1;
+	var w_list = [GrappleBow, DynamiteBox, Boompack];
+	var r=Random(3);
+
+	for(var i=0; i < GetLength(w_list); i++)
+		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
 	
 	var clr = RGB(0,255,0);
-	if (r) clr = RGB(255,0,0);
+	if (r == 1) clr = RGB(255,0,0);
+	if (r == 2) clr = RGB(255,128,0);
 	CastParticles("AnouncingFire",75,60,target->GetX(),target->GetY(),100,150,clr);
 	return 1;
 }
