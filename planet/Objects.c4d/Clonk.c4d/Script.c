@@ -554,7 +554,7 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	var iTurnPos = 0;
 	if(EffectVar(0, pTarget, iNumber) == COMD_Right) iTurnPos = 1;
 
-	EffectVar(3, pTarget, iNumber) = 25;
+	EffectVar(3, pTarget, iNumber) = 24;
 //	SetProperty("MeshTransformation", Trans_Rotate(EffectVar(3, pTarget, iNumber), 0, 1, 0));
 /*
 	iTurnAction  = PlayAnimation("TurnRoot120", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot120")), Anim_Const(1000));
