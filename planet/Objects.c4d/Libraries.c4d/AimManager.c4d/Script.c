@@ -159,12 +159,14 @@ func FxIntAimCheckProcedureStop(target, number, reason, tmp)
 
 func PauseAim()
 {
+	if(!aim_weapon) return CancelAiming();
 	ResetHands(1);
 	aim_weapon->~OnPauseAim(this);
 }
 
 func RestartAim()
 {
+	if(!aim_weapon) return false;
 	if(!aim_weapon->~OnRestartAim(this)) return false;
 	// Applay the set
 	ApplySet(aim_set);
