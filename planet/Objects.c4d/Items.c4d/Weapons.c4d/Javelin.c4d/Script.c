@@ -131,10 +131,11 @@ public func HitObject(object obj)
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
-	Stick();
 
 	var dmg = JavelinStrength()*speed/100;
 	ProjectileHit(obj,dmg,ProjectileHit_tumble);
+	
+	Stick();
 }
 
 // called by successful hit of object after from ProjectileHit(...)

@@ -6,7 +6,7 @@ func Initialize()
 }
 
 func Definition(def) {
-	SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "solid mask helper", def);
 	
 	SetProperty("ActMap", {
 
