@@ -12,7 +12,6 @@ protected func Initialize()
 {
 	// Environment
 	PlaceGrass(85);
-	CreateObject(Butterfly, 10, 10);
 	
 	// Goal: flag goal also checks if all targets are destroyed.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
