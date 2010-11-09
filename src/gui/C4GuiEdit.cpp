@@ -215,7 +215,7 @@ namespace C4GUI
 			char *pNewBuffer = new char[iMinBufferSize];
 			SCopy(Text, pNewBuffer);
 			// apply new buffer
-			delete Text; Text = pNewBuffer;
+			delete[] Text; Text = pNewBuffer;
 			iBufferSize = iMinBufferSize;
 		}
 	}
