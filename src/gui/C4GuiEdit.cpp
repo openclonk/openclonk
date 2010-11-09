@@ -119,7 +119,7 @@ namespace C4GUI
 		// free oversized buffers
 		if (iBufferSize > 256)
 		{
-			delete Text;
+			delete[] Text;
 			Text = new char[256];
 			iBufferSize = 256;
 		}
