@@ -566,7 +566,8 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 	}
 	else btnInternet = NULL;
 	bool fIsLeague = false;
-	if (fNetwork)
+	// League button disabled (#479, re-enable when an OC league exists)
+	if (0 && fNetwork)
 	{
 		C4GUI::Icons eLeagueIcon;
 		fIsLeague = fLobby ? Game.Parameters.isLeague() : !!Config.Network.LeagueServerSignUp;
@@ -617,7 +618,8 @@ void C4GameOptionButtons::OnBtnInternet(C4GUI::Control *btn)
 	if (!fCheck)
 	{
 		Config.Network.LeagueServerSignUp = false;
-		btnLeague->SetIcon(C4GUI::Ico_Ex_LeagueOff);
+		if (btnLeague)
+			btnLeague->SetIcon(C4GUI::Ico_Ex_LeagueOff);
 	}
 	// re-set in config for the case of failure
 	Config.Network.MasterServerSignUp = fCheck;
