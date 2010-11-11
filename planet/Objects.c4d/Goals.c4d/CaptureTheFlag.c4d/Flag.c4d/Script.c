@@ -82,8 +82,11 @@ protected func Initialize()
 
 public func HasNoFadeOut() { return true; }
 
-public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryPhase() { return 700; }
+public func GetCarryMode() { return CARRY_Back; }
+public func GetCarryTransform()
+{
+	return Trans_Mul(Trans_Translate(0,-17000,0),Trans_Rotate(90,0,1,0));
+}
 
 // Checks whether the carrier has reached its base.
 protected func FxFlagCarriedTimer(object target)
@@ -149,6 +152,6 @@ private func BeamFlag(bool msg)
 local Name = "$Name$";
 protected func Definition(def) 
 {
-	SetProperty("MeshTransformation", Trans_Rotate(60, 0, 1, 0), def);
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(60, 0, 1, 0), Trans_Scale(1200)), def);
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-130000,-3000,0), Trans_Rotate(60,0,1,0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(60, 0, 1, 0), Trans_Scale(1200), Trans_Translate(-4000,6500,-3000)), def);
 }
