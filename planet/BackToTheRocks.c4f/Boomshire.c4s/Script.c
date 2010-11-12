@@ -195,7 +195,7 @@ global func Edges()
 }
 
 // Gamecall from Race-goal, on respawning.
-protected func PlrHasRespawned(int iPlr, object cp)
+protected func OnPlayerRespawn(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->CreateContents(JarOfWinds);

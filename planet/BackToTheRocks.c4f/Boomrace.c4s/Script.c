@@ -25,7 +25,7 @@ protected func Initialize()
 }
 
 // Gamecall from parkour goal, on respawning.
-protected func PlrHasRespawned(int plr, object cp)
+protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 	clonk->CreateContents(Boompack);

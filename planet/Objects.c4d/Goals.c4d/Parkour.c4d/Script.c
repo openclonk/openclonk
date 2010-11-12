@@ -51,7 +51,9 @@ protected func Initialize()
 
 public func SetStartpoint(int x, int y)
 {
-	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
+	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
+	if (!cp)	
+		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(PARKOUR_CP_Start);
 	cp->SetCPController(this);
@@ -61,7 +63,9 @@ public func SetStartpoint(int x, int y)
 
 public func SetFinishpoint(int x, int y, bool team)
 {
-	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
+	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
+	if (!cp)	
+		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	var mode = PARKOUR_CP_Finish;
 	if (team)
@@ -91,34 +95,7 @@ public func AddCheckpoint(int x, int y, int mode)
 /*-- Checkpoint interaction --*/
 
 // Called from a finish CP to indicate that plr has reached it.
-public func PlrReachedFinishCP(int plr, object cp)
-{
-	if (finished)
-		return;
-	var plrid = GetPlayerID(plr);
-	plr_list[plrid]++;
-	if (GetPlayerTeam(plr))
-		team_list[GetPlayerTeam(plr)]++;
-	UpdateScoreboard(plr);
-	DoBestTime(plr);
-	SetEvalData(plr);
-	EliminatePlayers(plr);
-	finished = true;
-	return;
-}
-
-// Called from a respawn CP to indicate that plr has reached it.
-public func SetPlrRespawnCP(int plr, object cp)
-{
-	if (respawn_list[plr] == cp)
-		return;
-	respawn_list[plr] = cp;
-	cp->PlayerMessage(plr, "$MsgNewRespawn$");
-	return;
-}
-
-// Called from a check CP to indicate that plr has cleared it.
-public func AddPlrClearedCP(int plr, object cp)
+public func PlayerReachedFinishCP(int plr, object cp)
 {
 	if (finished)
 		return;
@@ -128,6 +105,41 @@ public func AddPlrClearedCP(int plr, object cp)
 	if (team)
 		team_list[team]++;
 	UpdateScoreboard(plr);
+	DoBestTime(plr);
+	SetEvalData(plr);
+	EliminatePlayers(plr);
+	finished = true;
+	return;
+}
+
+// Called from a respawn CP to indicate that plr has reached it.
+public func SetPlayerRespawnCP(int plr, object cp)
+{
+	if (respawn_list[plr] == cp)
+		return;
+	respawn_list[plr] = cp;
+	cp->PlayerMessage(plr, "$MsgNewRespawn$");
+	return;
+}
+
+// Called from a check CP to indicate that plr has cleared it.
+public func AddPlayerClearedCP(int plr, object cp)
+{
+	if (finished)
+		return;
+	var plrid = GetPlayerID(plr);
+	plr_list[plrid]++;
+	UpdateScoreboard(plr);
+	return;
+}
+
+// Called from a check CP to indicate that plr has cleared it.
+public func AddTeamClearedCP(int team, object cp)
+{
+	if (finished)
+		return;
+	if (team)
+		team_list[team]++;
 	return;
 }
 
@@ -236,7 +248,7 @@ private func GetTeamPosition(int team)
 private func IsWinner(int plr)
 {
 	var team = GetPlayerTeam(plr);
-	var finish = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
+	var finish = cp_list[cp_count];
 	if (!finish)
 		return false;
 	if (team)
@@ -246,7 +258,7 @@ private func IsWinner(int plr)
 	}
 	else
 	{
-		if (finish->ClearedByPlr(plr))
+		if (finish->ClearedByPlayer(plr))
 			return true;
 	}
 	return false;
@@ -278,7 +290,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 	DoScoreboardShow(1, plr + 1);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("PlrHasRespawned", plr, respawn_list[plr]);
+	GameCall("OnPlayerRespawn", plr, respawn_list[plr]);
 	return;
 }
 
@@ -289,7 +301,7 @@ protected func RelaunchPlayer(int plr)
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.
-	GameCall("PlrHasRespawned", plr, respawn_list[plr]);
+	GameCall("OnPlayerRespawn", plr, respawn_list[plr]);
 	// Log message.
 	Log(RndRespawnMsg(), GetPlayerName(plr));
 	return;
@@ -375,7 +387,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
-		if (!cp->ClearedByPlr(plr) && (cp->IsActiveForPlr(plr) || cp->IsActiveForTeam(GetPlayerTeam(plr))))
+		if (!cp->ClearedByPlayer(plr) && (cp->IsActiveForPlayer(plr) || cp->IsActiveForTeam(GetPlayerTeam(plr))))
 		{
 			nextcp = cp;
 			break;

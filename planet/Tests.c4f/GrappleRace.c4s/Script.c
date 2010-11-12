@@ -45,7 +45,7 @@ private func CreateParkour()
 /*-- Player respawn --*/
 
 // Callback from parkour goal, on player respawn.
-protected func PlrHasRespawned(int plr, object cp)
+protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 

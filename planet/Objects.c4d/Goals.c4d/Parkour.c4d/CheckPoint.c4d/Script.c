@@ -98,7 +98,7 @@ protected func Initialize()
 /*-- Checkpoint status --*/
 
 // Returns whether this checkpoint has been cleared by player.
-public func ClearedByPlr(int plr)
+public func ClearedByPlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
 	return cleared_by_plr[plrid];
@@ -114,7 +114,7 @@ public func ClearedByTeam(int team)
 		// PARKOUR_CP_Team: Cleared if all players of the team have cleared the checkpoint.
 		for (var i = 0; i < GetPlayerCount(); i++)
 			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-				if (!ClearedByPlr(GetPlayerByIndex(i)))
+				if (!ClearedByPlayer(GetPlayerByIndex(i)))
 					return false;
 		return true;					
 	}
@@ -123,21 +123,21 @@ public func ClearedByTeam(int team)
 		// Not PARKOUR_CP_Team: Cleared if one player has cleared the checkpoint.
 		for (var i = 0; i < GetPlayerCount(); i++)
 			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-				if (ClearedByPlr(GetPlayerByIndex(i)))
+				if (ClearedByPlayer(GetPlayerByIndex(i)))
 					return true;
 	}
 	return false;
 }
 
 // Whether this checkpoint is active for a player.
-public func IsActiveForPlr(int plr)
+public func IsActiveForPlayer(int plr)
 {
 	// PARKOUR_CP_Finish: Check all PARKOUR_CP_Check checkpoints.
 	if (cp_mode & PARKOUR_CP_Finish)
 	{
 		for (var cp in FindObjects(Find_ID(GetID())))
 			if (cp->GetCPMode() & PARKOUR_CP_Check)
-				if (!cp->ClearedByPlr(plr))
+				if (!cp->ClearedByPlayer(plr))
 					return false;
 		return true;
 	}
@@ -156,7 +156,7 @@ public func IsActiveForPlr(int plr)
 					if (cp->ClearedByTeam(team))
 						return true;
 				}				
-				else if (cp->ClearedByPlr(plr))
+				else if (cp->ClearedByPlayer(plr))
 					return true;
 			}
 		return false;
@@ -173,7 +173,7 @@ public func IsActiveForTeam(int team)
 	// Checkpoint is active for a team if it is active for one of its members.
 	for (var i = 0; i < GetPlayerCount(); i++)
 		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-			if (IsActiveForPlr(GetPlayerByIndex(i)))
+			if (IsActiveForPlayer(GetPlayerByIndex(i)))
 				return true;
 	return false;
 }
@@ -182,6 +182,7 @@ public func IsActiveForTeam(int team)
 
 protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
 {
+	// Check every 5 frames.
 	if (!(fxtime % 5))
 		CheckForClonks();
 	UpdateGraphics(fxtime);
@@ -190,6 +191,9 @@ protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
 
 protected func CheckForClonks()
 {
+	// Only check if controlled by a parkour goal.
+	if (!cp_con)
+		return;
 	// Loop through all clonks inside the checkpoint.
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(cp_size)))
 	{
@@ -197,38 +201,39 @@ protected func CheckForClonks()
 		var team = GetPlayerTeam(plr);
 		var plrid = GetPlayerID(plr);
 		// Check whether this CP is already activated for player or its team.
-		if (!IsActiveForPlr(plr) && !IsActiveForTeam(team))
+		if (!IsActiveForPlayer(plr) && !IsActiveForTeam(team))
 			continue;
 		// Check respawn status.
 		if (cp_mode & PARKOUR_CP_Respawn)
-			if (cp_con)
-				cp_con->SetPlrRespawnCP(plr, this); // Notify parkour goal.
+			cp_con->SetPlayerRespawnCP(plr, this); // Notify parkour goal.
 		// If already done by player -> continue.
-		if (cleared_by_plr[plrid])
+		if (ClearedByPlayer(plr))
 			continue;
 		// Check checkpoint status.
 		if (cp_mode & PARKOUR_CP_Check)
 		{
+			var team_clear = !ClearedByTeam(team);
 			cleared_by_plr[plrid] = true;
 			Sound("Cleared", false, 100, plr);
-			if (cp_con)
-				cp_con->AddPlrClearedCP(plr, this); // Notify parkour goal.
+			cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
+			if (ClearedByTeam(team) && team_clear)
+				cp_con->AddTeamClearedCP(team, this); // Notify parkour goal.
 		}
 		// Check finish status.
 		if (cp_mode & PARKOUR_CP_Finish)
 		{
 			Sound("Cleared", false, 100, plr);
 			cleared_by_plr[plrid] = true;
-			if (cp_mode & PARKOUR_CP_Team)
+			if (team)
 			{
 				if (ClearedByTeam(team))
-					if (cp_con)
-						cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
+					cp_con->PlayerReachedFinishCP(plr, this); // Notify parkour goal.
+				else
+					cp_con->AddPlayerClearedCP(plr, this); // Notify parkour goal.
 			}
 			else
 			{
-				if (cp_con)
-					cp_con->PlrReachedFinishCP(plr, this); // Notify parkour goal.
+				cp_con->PlayerReachedFinishCP(plr, this); // Notify parkour goal.
 			}
 		}
 		// Check bonus.
@@ -289,7 +294,7 @@ protected func GetColorByAngle(int angle)
 	// Get cleared count.
 	var cnt = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & PARKOUR_CP_Start))
+		if (ClearedByPlayer(GetPlayerByIndex(i)) || (cp_mode & PARKOUR_CP_Start))
 			cnt++;
 	if (!cnt)
 		return RGBa(255, 255, 255, 192);
@@ -300,7 +305,7 @@ protected func GetColorByAngle(int angle)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (ClearedByPlr(plr) || (cp_mode & PARKOUR_CP_Start))
+		if (ClearedByPlayer(plr) || (cp_mode & PARKOUR_CP_Start))
 		{
 			if (angle >= j * prt && angle < (j + 1) * prt)
 				return GetPlayerColor(plr);

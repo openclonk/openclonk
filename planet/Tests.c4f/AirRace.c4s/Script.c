@@ -121,7 +121,7 @@ private func FindWeaponSpawnPosition(int rx, int ry, int wdt, int hgt, int size)
 /*-- Player respawn --*/
 
 // Callback from parkour goal, on player respawn.
-protected func PlrHasRespawned(int plr, object cp)
+protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 	var plane = CreateObject(Plane, cp->GetX(), cp->GetY(), plr);
