@@ -91,7 +91,7 @@ if($link && $db) {
     }
     else { //list availabe games
         $list = $server->GetReferenceArray(false);
-        $message = "[OpenClonk]\nVersion=4,10,0,3\nMOTD=<c 0fff0f>Which is worse: ignorance or apathy? Who knows? Who cares?\n\n";
+        $message = "[OpenClonk]\nVersion=4,10,0,4\nMOTD=<c 0fff0f>Which is worse: ignorance or apathy? Who knows? Who cares?\n\n";
         foreach($list as $reference) {
             if(!empty($message)) $message .= "\n\n";
             $message .= $reference['data'];
