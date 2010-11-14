@@ -630,6 +630,7 @@ src/platform/StdConfig.cpp \
 src/zlib/gzio.c
 
 gunzip4c4group_LDADD = \
+  $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 ## puncher
