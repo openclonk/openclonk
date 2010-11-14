@@ -76,13 +76,6 @@ global func ExtractLiquid(int x, int y)
 	return mat;
 }
 
-// Special effects.
-global func LaunchEffect(id type, int x, int y)
-{
-	var fx = CreateObject(type, AbsX(x), AbsY(y));
-	return fx && fx->Activate(x, y, ...);
-}
-
 // Splits the calling object into its components.
 global func Split2Components()
 {
