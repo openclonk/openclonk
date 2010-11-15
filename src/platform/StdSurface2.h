@@ -166,7 +166,7 @@ public:
 	IDirect3DSurface9 *GetSurface(); // get internal surface
 #endif
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
-	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr?toClr:0xff; }
+	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
 	bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
 protected:
