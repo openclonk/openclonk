@@ -29,130 +29,68 @@ protected func Initialize()
 	rdir = 0;
 	dir = 0;
 	health = 50;
-	weapon_selected = Bullet;
 	return;
 }
 
-/*-- Weapon control --*/
-// With [Use] the current weapon can be fired.
-// With [AltUse] a weapon can be selected.
-
-// Store ID of selected weapon here.
-local weapon_selected; 
-
-public func HoldingEnabled() { return true; }
+/*-- Control --*/
 
 public func ContainedUseStart(object clonk, int ix, int iy)
 {
-	if (!weapon_selected)
+	if(!clonk->FindContents(LeadShot))
 	{
-		PlayerMessage(clonk->GetOwner(), "No weapon selected.");
-		clonk->CancelUse();
-		return true;		
+		CustomMessage("$NoShots$",this,clonk->GetOwner());
+		return 1;
 	}
-	var ammo = FindObject(Find_Container(this), Find_ID(weapon_selected));
-	if (!ammo)
+	else
 	{
-		PlayerMessage(clonk->GetOwner(), "No ammo available.");
-		clonk->CancelUse();
-		return true;	
+		reticle = CreateObject(GUI_Reticle);
+		reticle->SetOwner(clonk->GetController());
+		reticle->SetAction("Show", this);
 	}
-	// If there is weapon, show reticle.
-	reticle = CreateObject(GUI_Reticle);
-	reticle->SetOwner(clonk->GetController());
-	reticle->SetAction("Show", this);
-	return true;
-}
-
-public func ContainedUseHolding(object clonk, int ix, int iy)
-{
-
-	if (GetEffect("IntCoolDown", this))
-		return true;
-	var ammo = FindObject(Find_Container(this), Find_ID(weapon_selected));
-	if (!ammo)
-	{
-		PlayerMessage(clonk->GetOwner(), "No ammo available.");
-		clonk->CancelUse();
-		return true;	
-	}
-	var angle = GetR();
-	ammo->Launch(this);
-	AddEffect("IntCoolDown", this, 100, Max(1, ammo->~GetCoolDownTime()), this);
-	return true;
+	return 1;
 }
 
 public func ContainedUseStop(object clonk, int ix, int iy)
 {
-	if(reticle)
-		reticle->RemoveObject();
-		
-	return true;
+	if(reticle) reticle->RemoveObject();
+
+	var ammo = FindObject(Find_Container(clonk),Find_Func("IsMusketAmmo"));
+	if(GetEffect("IntCooldown",this)) return 1;
+	if(ammo)
+	{
+		var shot = ammo->TakeObject();
+		var angle = this->GetR();
+		shot->Launch(clonk, angle, 35, 200);
+		Sound("GunShoot*.ogg");
+
+		// Muzzle Flash & gun smoke
+		var IX = Sin(GetR(), 30);
+		var IY = -Cos(GetR(), 30);
+
+		for(var i=0; i<10; ++i)
+		{
+			var speed = RandomX(0,10);
+			var r = angle;
+			CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2) + GetXDir()/2,-Cos(r,speed)+RandomX(-2,2) + GetYDir()/2,RandomX(100,400),RGBa(255,255,255,50));
+		}
+		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
+		CreateParticle("Flash",0,0,GetXDir(),GetYDir(),800,RGBa(255,255,64,150));
+
+		AddEffect("IntCooldown", this,1,1,this);
+	}
+	return 1;
 }
 
 public func ContainedUseCancel(object clonk, int ix, int iy)
 {
 	if(reticle) reticle->RemoveObject();
-	return true;
-}
-
-// Weapon selection, uses ringmenu.
-local weapon_menu;
-
-public func ContainedUseAlt(object clonk, int x, int y)
-{
-	if (!weapon_menu)
-	{
-		weapon_menu = clonk->CreateRingMenu(GetID(), this);
-		// List all weapons in a ringmenu.
-		var index = 0, weapon_def, weapon_cnt = 0;
-		while (weapon_def = GetDefinition(index))
-		{
-			if (weapon_def->~IsPlaneWeapon())
-			{
-				weapon_cnt++;
-				// Add weapon and show ammo count.
-				weapon_menu->AddItem(weapon_def, GetAmmoCount(weapon_def));				
-			}
-			index++;
-		}
-		// Only show menu if weapon count > 1.
-		if (weapon_cnt > 1)
-			weapon_menu->Show();
-		else
-			PlayerMessage(clonk->GetOwner(), "Only bullet available.");
-	}
-	else if (clonk == weapon_menu->GetMenuObject())
-		weapon_menu->Close();
-
-	return true;
-}
-
-public func Selected(object menu, object selected, bool alt)
-{
-	// Move selected weapon to extra slot.
-	weapon_selected = selected->GetSymbol();
-	menu->GetMenuObject()->CancelUse();
-	return true;
-}
-
-public func FxIntCooldownStop(object target)
-{
 	return 1;
 }
 
-private func GetAmmoCount(id weapon)
+public func FxIntCooldownTimer(object target, int num, int timer)
 {
-	var cnt = 0;
-	for (var ammo in FindObjects(Find_ID(weapon), Find_Container(this)))
-		if (ammo->~IsStackable())
-			cnt += ammo->GetStackCount();
-		else
-			cnt++;
-	return cnt;
+	if(timer > 50) return -1;
 }
-
-/*-- Movement control --*/
 
 public func ContainedUp(object clonk)
 {
@@ -253,7 +191,7 @@ private func FxIntPlaneTimer(object target, int num, int timer)
 
 	if(GetAction() == "Fly")
 	{
-		//Ailerons
+	//--Ailerons--
 		//clockwise
 		if(rdir == 1)
 			if(GetRDir() < 5) SetRDir(GetRDir() + 1);
@@ -262,8 +200,7 @@ private func FxIntPlaneTimer(object target, int num, int timer)
 			if(GetRDir() > -5) SetRDir(GetRDir() - 1);
 		if(rdir == 0) SetRDir();
 
-		//Match dir
-		//temporary
+		//Roll plane to movement direction
 		if(throttle > 0)
 		{
 			if(GetXDir() > 10 && dir != 1) RollPlane(1);
@@ -305,7 +242,7 @@ private func FxIntPlaneTimer(object target, int num, int timer)
 	}
 
 	//No pilot?
-	if(!Contents(0) && throttle != 0) CancelFlight();
+	if(!FindObject(Find_OCF(OCF_CrewMember),Find_Container(this)) && throttle != 0) CancelFlight();
 
 	//Pilot, but no mesh? In case they are scripted into the plane.
 	if(FindContents(Clonk) && !clonkmesh)
@@ -314,9 +251,9 @@ private func FxIntPlaneTimer(object target, int num, int timer)
 	//Gun Sights
 	if(reticle)
 	{
-		var retcol = 255;
-		if(GetEffect("IntCooldown",this)) retcol = 0;
-		reticle->SetClrModulation(RGB(255,retcol,retcol));
+		var retcol = RGB(0,255,0);
+		if(GetEffect("IntCooldown",this)) retcol = RGB(255,0,0);
+		reticle->SetClrModulation(retcol);
 	}
 }
 
@@ -350,16 +287,16 @@ private func PlaneDeath()
 
 public func Hit()
 {
-	if(GetDamage() > 50) PlaneDeath();
+	if(GetDamage() > health) PlaneDeath();
 }
 
-public func ActivateEntrance(object pby)
+public func ActivateEntrance(object clonk)
 {
 	var cnt = ObjectCount(Find_Container(this), Find_OCF(OCF_CrewMember));
 	if(cnt > 0)
-		if(pby->Contained() == this)
+		if(clonk->Contained() == this)
 		{
-			pby->Exit();
+			clonk->Exit();
 			return;
 		}
 		else
@@ -367,8 +304,8 @@ public func ActivateEntrance(object pby)
 
 	if(cnt == 0)
 	{
-		pby->Enter(this);
-		PlaneMount(pby);
+		clonk->Enter(this);
+		PlaneMount(clonk);
 	}
 }
 
