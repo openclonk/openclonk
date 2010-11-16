@@ -1,6 +1,6 @@
 [DefCore]
 id=WindGenerator
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Structure
 TimerCall=Wind2Turn
 Timer=35

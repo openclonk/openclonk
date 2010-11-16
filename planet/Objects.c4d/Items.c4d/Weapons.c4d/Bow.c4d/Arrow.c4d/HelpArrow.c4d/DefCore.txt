@@ -1,6 +1,6 @@
 [DefCore]
 id=HelpArrow
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Object
 Width=4
 Height=15

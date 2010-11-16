@@ -1,6 +1,6 @@
 [DefCore]
 id=Coal
-Version=4,9,10,10
+Version=4,10,0,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -10,9 +10,9 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=75,75
-Components=Wood=2;
 Value=4
 Mass=9
+Components=Wood=2;
 Rotate=1
 ContactIncinerate=1
 BlastIncinerate=5

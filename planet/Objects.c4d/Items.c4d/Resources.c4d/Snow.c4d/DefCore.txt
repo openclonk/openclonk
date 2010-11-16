@@ -1,6 +1,6 @@
 [DefCore]
 id=Snow
-Version=4,9,10,0
+Version=4,10,0,0
 Category=C4D_Object
 Timer=30
 TimerCall=Check
@@ -12,9 +12,8 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40
+Mass=6
 Components=Snow=1;
 StretchGrowth=1
 Float=1
-Value=0
-Mass=6
 Rotate=1

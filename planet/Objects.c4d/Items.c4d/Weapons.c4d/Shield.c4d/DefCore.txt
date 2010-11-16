@@ -1,9 +1,7 @@
 [DefCore]
 id=Shield
-Version=4,9,5
+Version=4,10,0,0
 Category=C4D_Object
-Value=16
-Mass=20
 Width=8
 Height=11
 Offset=-4,-5
@@ -11,7 +9,8 @@ Vertices=2
 VertexX=0,0,-2,2
 VertexY=-4,5,-2,-2
 VertexFriction=50,50
-Picture=10,10,54,54
+Value=10
+Mass=20
 Components=Wood=1;Metal=1;
 Rebuy=1
 Collectible=1

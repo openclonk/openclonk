@@ -14,5 +14,3 @@ Mass=12
 Components=Gold=1
 Rebuy=0
 Rotate=1
-StretchGrowth=1
-Oversize=1

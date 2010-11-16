@@ -1,8 +1,7 @@
 [DefCore]
 id=Javelin
-Version=4,9,5
+Version=4,10,0,0
 Category=C4D_Object
-Value=7
 Width=4
 Height=26
 Offset=-2,-13
@@ -10,8 +9,9 @@ Vertices=3
 VertexX=0,0
 VertexY=-12,13
 VertexFriction=100,50
-Components=Wood=2;Metal=1;
+Value=12
 Mass=9
+Components=Wood=2;Metal=1;
 Rebuy=1
 Collectible=1
 Rotate=1

@@ -1,6 +1,6 @@
 [DefCore]
 id=Ore
-Version=4,9,10,0
+Version=4,10,0,0
 Category=C4D_Object
 Width=8
 Height=8

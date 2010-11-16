@@ -2,8 +2,6 @@
 id=PowderKeg
 Version=4,10,0,0
 Category=C4D_Object
-Value=8
-Mass=20
 Width=16
 Height=16
 Offset=-8,-8
@@ -11,11 +9,13 @@ Vertices=6
 VertexX=-2,2,-2,2,3,-3
 VertexY=-6,-6,6,6,0,0
 VertexFriction=60,60,60,60,60,60
+Value=20
+Mass=20
 Components=Barrel=1;Sulphur=1;Coal=1;
 Rebuy=1
 Collectible=1
 ContactIncinerate=2
-BlastIncinerate=5
+BlastIncinerate=1
 NoBurnDecay=1
 NoComponentMass=1
 Rotate=1

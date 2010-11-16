@@ -2,8 +2,6 @@
 id=Pickaxe
 Version=4,10,0,0
 Category=C4D_Object
-Value=15
-Mass=20
 Width=10
 Height=10
 Offset=-5,-5
@@ -12,6 +10,8 @@ VertexX=0,-4,4,0
 VertexY=-4,-3,-3,4
 VertexFriction=50,100,100,40
 Picture=10,0,64,64
+Value=10
+Mass=20
 Components=Wood=1;Metal=1;
 Rebuy=1
 Collectible=1

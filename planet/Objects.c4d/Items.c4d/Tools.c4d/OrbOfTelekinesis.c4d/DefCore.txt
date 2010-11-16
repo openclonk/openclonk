@@ -1,6 +1,6 @@
 [DefCore]
 id=OrbOfTelekinesis
-Version=4,9,10,10
+Version=4,10,0,0
 Category=C4D_Object
 Width=8
 Height=8
@@ -10,9 +10,9 @@ VertexX=0,-3,3
 VertexY=-3,2,2
 VertexFriction=40,40,40
 Picture=0,0,8,8
-Value=35
+Value=20
 Mass=7
 Collectible=1
-Components=CRYS=5;
+Components=Crystal=4;
 Rebuy=1
 Rotate=1

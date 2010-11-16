@@ -1,9 +1,7 @@
 [DefCore]
 id=Club
-Version=4,9,5
+Version=4,10,0,0
 Category=C4D_Object
-Value=16
-Mass=20
 Width=3
 Height=16
 Offset=-1,-8
@@ -12,7 +10,9 @@ VertexX=0,0
 VertexY=-7,7
 VertexFriction=50,50
 Picture=10,10,54,54
-Components=Wood=1;
+Value=10
+Mass=20
+Components=Wood=1;Metal=1;
 Rebuy=1
 Collectible=1
 Rotate=1

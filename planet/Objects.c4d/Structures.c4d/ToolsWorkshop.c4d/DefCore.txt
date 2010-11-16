@@ -1,6 +1,6 @@
 [DefCore]
 id=ToolsWorkshop
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Structure
 Timer=20
 TimerCall=CheckBuild

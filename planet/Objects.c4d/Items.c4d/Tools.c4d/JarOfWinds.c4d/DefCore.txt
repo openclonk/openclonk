@@ -1,6 +1,6 @@
 [DefCore]
 id=JarOfWinds
-Version=4,9,10,10
+Version=4,10,0,0
 Category=C4D_Object
 Width=9
 Height=9
@@ -10,7 +10,7 @@ VertexX=-1,3,-1,-5
 VertexY=-4,0,4,0
 VertexFriction=50,50,50,50
 Picture=0,1,9,9
-Value=35
+Value=14
 Mass=15
 Collectible=1
 Components=Rock=6;Metal=1;

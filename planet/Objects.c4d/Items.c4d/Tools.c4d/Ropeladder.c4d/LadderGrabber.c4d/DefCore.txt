@@ -1,6 +1,6 @@
 [DefCore]
 id=Ropeladder_Grabber
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Object
 Picture=20,0,64,64
 Width=30

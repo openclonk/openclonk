@@ -1,9 +1,7 @@
 [DefCore]
 id=Hammer
-Version=4,9,5
+Version=4,10,0,0
 Category=C4D_Object
-Value=5
-Mass=15
 Width=8
 Height=12
 Offset=-4,-6
@@ -11,8 +9,9 @@ Vertices=4
 VertexX=-1,-1,-3,3
 VertexY=1,5,-2,-2
 VertexFriction=80,80,80,80
+Value=3
+Mass=15
 Components=Wood=1;Rock=1;
-Picture=0,8,64,64
 Rebuy=1
 Collectible=1
 Rotate=1
