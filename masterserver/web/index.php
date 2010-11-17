@@ -3,7 +3,7 @@
  * C4Masterserver main frontend
  *
  * @package C4Masterserver
- * @version 1.1.5-en
+ * @version 1.2.0-en
  * @author  Benedict Etzel <b.etzel@live.de>
  * @license http://creativecommons.org/licenses/by/3.0/ CC-BY 3.0
  */
@@ -17,46 +17,46 @@ require_once('server/include/ParseINI.php');
 
 $config = file_get_contents('server/include/config.ini');
 $link = mysql_connect(
-        ParseINI::ParseValue('mysql_host', $config),
-        ParseINI::ParseValue('mysql_user', $config),
-        ParseINI::ParseValue('mysql_password', $config)); //connect to MySQL
-$db = mysql_selectdb(ParseINI::ParseValue('mysql_db', $config), $link); //select the database
+        ParseINI::parseValue('mysql_host', $config),
+        ParseINI::parseValue('mysql_user', $config),
+        ParseINI::parseValue('mysql_password', $config)); //connect to MySQL
+$db = mysql_selectdb(ParseINI::parseValue('mysql_db', $config), $link); //select the database
 
 if($link && $db) {
-    $server = new C4Masterserver($link, ParseINI::ParseValue('mysql_prefix', $config));
-    $server->SetTimeoutgames(intval(ParseINI::ParseValue('c4ms_timeoutgames', $config)));
-    $server->SetDeletegames(intval(ParseINI::ParseValue('c4ms_deletegames', $config)));
-    $server->SetMaxgames(intval(ParseINI::ParseValue('c4ms_maxgames', $config)));
-    $protect = new FloodProtection($link, ParseINI::ParseValue('mysql_prefix', $config));
-    $protect->SetMaxflood(intval(ParseINI::ParseValue('flood_maxrequests', $config)));
-    if($protect->CheckRequest($_SERVER['REMOTE_ADDR'])) { //flood protection
+    $server = new C4Masterserver($link, $config);
+    $server->setTimeoutgames(intval(ParseINI::parseValue('c4ms_timeoutgames', $config)));
+    $server->setDeletegames(intval(ParseINI::parseValue('c4ms_deletegames', $config)));
+    $server->setMaxgames(intval(ParseINI::parseValue('c4ms_maxgames', $config)));
+    $protect = new FloodProtection($link, ParseINI::parseValue('mysql_prefix', $config));
+    $protect->setMaxflood(intval(ParseINI::parseValue('flood_maxrequests', $config)));
+    if($protect->checkRequest($_SERVER['REMOTE_ADDR'])) { //flood protection
         header('Content-Type: text/plain');
         die('Flood protection.');
     }
     $games = '';
-    $list = $server->GetReferenceArray(true);
+    $list = $server->getReferenceArray(true);
     $players = '';
     $count = 0;
     foreach($list as $reference) {
         if($reference['valid']) {
             $games .= '<tr>';
-            $games .= '<td>'.htmlspecialchars(ParseINI::ParseValue('Title', $reference['data'])).'</td>';
-            $games .= '<td>'.htmlspecialchars(ParseINI::ParseValue('State', $reference['data'])).'</td>';
+            $games .= '<td>'.htmlspecialchars(ParseINI::parseValue('Title', $reference['data'])).'</td>';
+            $games .= '<td>'.htmlspecialchars(ParseINI::parseValue('State', $reference['data'])).'</td>';
             $games .= '<td>'.date("Y-m-d H:i", $reference['start']).'</td>';
             $players = '';
-            $player_list = ParseINI::ParseValuesByCategory('Name', 'Player', $reference['data']);
+            $player_list = ParseINI::parseValuesByCategory('Name', 'Player', $reference['data']);
             foreach($player_list as $player) {
                 if(!empty($players)) $players .= ', ';
                 $players .= $player;
             }
             $games .= '<td>'.htmlspecialchars($players).'</td>';
         }
-        if((ParseINI::ParseValue('State', $reference['data']) == 'Running') && $reference['time'] >= time() - 60*60*24) {
+        if((ParseINI::parseValue('State', $reference['data']) == 'Running') && $reference['time'] >= time() - 60*60*24) {
             $count++;
         }
     }
-    $games = C4Network::CleanString($games);
-    $server->CleanUp();
+    $games = C4Network::cleanString($games);
+    $server->cleanUp();
 }
 
 $dirname = dirname($_SERVER['SCRIPT_NAME']);
@@ -67,7 +67,7 @@ if($dirname != '/') {
 $dirname .= $path.'server/';
 $server_link = strtolower($_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$dirname);
 $engine = '';
-$engine_string = ParseINI::ParseValue('c4ms_engine', $config);
+$engine_string = ParseINI::parseValue('c4ms_engine', $config);
 if(!empty($engine_string)) {
     $engine = '('.$engine_string.' only)';
 }
@@ -117,7 +117,7 @@ if(!empty($engine_string)) {
             }
             ?>
             <div id="masterserver_footer">
-                <p>Powered by C4Masterserver v<?php echo C4Masterserver::GetVersion(); ?> &bull; Coded by Benedict Etzel</p>
+                <p>Powered by C4Masterserver v<?php echo C4Masterserver::GetVersion(); ?> &raquo; Coded by Benedict Etzel</p>
             </div>
         </div>
     </body>
