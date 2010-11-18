@@ -7,27 +7,38 @@ The installation should now be complete and ready to use. You can see the server
 
 __Database__
 
-CREATE TABLE IF NOT EXISTS `c4ms_flood` (
-  `ip` char(32) NOT NULL,
+CREATE TABLE `c4ms_flood` (
+  `ip` char(32) CHARACTER SET latin1 NOT NULL,
   `count` int(11) NOT NULL,
-  `time` char(20) NOT NULL,
+  `time` char(20) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`ip`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-
-CREATE TABLE IF NOT EXISTS `c4ms_games` (
+CREATE TABLE `c4ms_games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ip` varchar(255) NOT NULL,
-  `csid` varchar(255) NOT NULL,
-  `data` text NOT NULL,
-  `start` varchar(255) NOT NULL,
-  `time` varchar(255) NOT NULL,
+  `ip` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `csid` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `data` text CHARACTER SET latin1 NOT NULL,
+  `start` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `time` varchar(255) CHARACTER SET latin1 NOT NULL,
   `valid` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+__Updates__
+
+If you are running an update service for OpenClonk, you also need to insert the following table and specifiy the config entries. (see there for more details)
+
+CREATE TABLE `c4ms_update` (
+  `old_version` varchar(16) CHARACTER SET latin1 NOT NULL,
+  `new_version` varchar(16) CHARACTER SET latin1 NOT NULL,
+  `platform` varchar(64) CHARACTER SET latin1 NOT NULL,
+  `file` varchar(255) CHARACTER SET latin1 NOT NULL,
+  PRIMARY KEY (`old_version`,`platform`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 __License__
 This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by/3.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
 
 __Append__
-Please also note that 'Clonk' is a registered trademark of Matthes Bender (http://www.clonk.de)
+Please also note that 'Clonk' is a registered trademark of Matthes Bender (http://www.clonk.de).

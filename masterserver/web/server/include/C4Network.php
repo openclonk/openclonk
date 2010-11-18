@@ -4,7 +4,7 @@
  * Clonk 4 engine with ini-style strings.
  *
  * @package C4Masterserver
- * @version 1.1.5-en
+ * @version 1.2.0-en
  * @author  Benedict Etzel <b.etzel@live.de>
  * @license http://creativecommons.org/licenses/by/3.0/ CC-BY 3.0
  */
@@ -16,7 +16,7 @@ abstract class C4Network {
      * @param array $data
      * @return string
      */
-    public static function CreateAnswer($data) {
+    public static function createAnswer($data) {
         $message = '[Response]'."\n";
         foreach ($data as $key => $value) {
             $message .= $key.'='.$value."\n";
@@ -30,8 +30,8 @@ abstract class C4Network {
      * @param string message
      * @return string
      */
-    public static function CreateError($message) {
-        return C4Network::CreateAnswer(array("Status" => "Failure", "Message" => $message));
+    public static function createError($message) {
+        return C4Network::createAnswer(array("Status" => "Failure", "Message" => $message));
     }
 
     /**
@@ -40,7 +40,7 @@ abstract class C4Network {
      * @param string $message
      * @return void
      */
-    public static function SendAnswer($message) {
+    public static function sendAnswer($message) {
         header('Content-Length: '.strlen($message));
         echo $message;
     }
@@ -51,12 +51,12 @@ abstract class C4Network {
      * @param string $message
      * @return string
      */
-    public static function CleanString($message) {
+    public static function cleanString($message) {
         $coded = $decoded = array();
         preg_match_all('|\\\[0-9]{3}|', $message, $coded);
         foreach($coded[0] as $numstr) {
             $num = ereg_replace("[^0-9]", "", $numstr);
-            $decoded[$num] = C4Network::DecodeEntitiyString($num);
+            $decoded[$num] = C4Network::decodeEntitiyString($num);
         }
         foreach($decoded as $num => $entity) {
             $message = str_replace('\\'.$num, $entity, $message);
@@ -70,7 +70,7 @@ abstract class C4Network {
      * @param string $string
      * @return string
      */
-    public static function DecodeEntitiyString($string) {
+    public static function decodeEntitiyString($string) {
         $num = ereg_replace("[^0-9]", "", $string);
         $num = octdec($num);
         return iconv('Windows-1252', 'UTF-8', chr($num));

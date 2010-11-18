@@ -4,7 +4,7 @@
  * from an ini-like string.
  *
  * @package C4Masterserver
- * @version 1.1.5-en
+ * @version 1.2.0-en
  * @author  Benedict Etzel <b.etzel@live.de>
  * @license http://creativecommons.org/licenses/by/3.0/ CC-BY 3.0
  */
@@ -17,7 +17,7 @@ abstract class ParseINI {
      * @param string $string
      * @return string
      */
-    public static function ParseValue($key, $string) {
+    public static function parseValue($key, $string) {
         if(!$key || !$string) {
             return false;
         }
@@ -34,7 +34,10 @@ abstract class ParseINI {
             $value = substr($string, $key_start, $key_end - $key_start);
         }
         $value = trim($value);
-        return trim($value, '"');
+        $value = trim($value, '"');
+        if($value == 'true') $value = 1;
+        if($value == 'false') $value = 0;
+        return $value;
     }
 
     /**
@@ -45,7 +48,7 @@ abstract class ParseINI {
      * @param string $string
      * @return array
      */
-    public static function ParseValuesByCategory($key, $category, $string) {
+    public static function parseValuesByCategory($key, $category, $string) {
         if(!$key || !$string || !$category) {
             return false;
         }
@@ -65,9 +68,7 @@ abstract class ParseINI {
             if($current_category != $category) continue; //wrong category
             if(strpos($line, ';') === 0) continue; //comment
             if(strpos($line, $key) === false) continue; //not needed
-            $value = ParseINI::ParseValue($key, $line);
-            $value = trim($value);
-            $values[] = trim($value, '"');
+            $values[] = ParseINI::parseValue($key, $line);
         }
         return $values;
     }
