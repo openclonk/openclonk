@@ -2,7 +2,7 @@
 	Shiver Peak
 	Authors: Ringwaul, Asmageddon
 	
-	Parkour on a dynamic map.
+	Climb to the top of the peak.
 --*/
 
 
@@ -20,7 +20,7 @@ protected func Initialize()
 	goal->SetFinishpoint(fx, fy);
 	// All checkpoints are ordered and provide respawn.
 	// Checkpoints form a more or less straight line from start to finish.
-	var cp_mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered;
+	var cp_mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered | PARKOUR_CP_Team;
 	var cp_count = 6;
 	var dx = (fx - sx) / (cp_count + 1);
 	var dy = (fy - sy) / (cp_count + 1);
@@ -42,7 +42,9 @@ protected func Initialize()
 		goal->AddCheckpoint(x, y, cp_mode);
 	}
 	
-	// Environmental Effects
+	/* --Environmental Effects-- */
+
+	// Time
 	var time = CreateObject(Environment_Time);
 	time->SetCycleSpeed(0);
 	time->SetTime(900);
@@ -52,20 +54,36 @@ protected func Initialize()
 		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
 	// Snow
 	AddEffect("Snowfall", 0, 1, 2);
+	//Wind
+	Sound("WindLoop.ogg",true,40,nil,+1);
 
 	MapBottomFix();
 
-	// Place powderkegs and dynamite boxes
-	for (var i = 0; i < 25; i++)
+	var i = 0;
+	while(i < 10)
 	{
-		var pos = FindPosInMat("Tunnel", 0, 0, LandscapeWidth(), LandscapeHeight());
-		if (!pos)
-			continue;
-		if (Random(2)) 
-			CreateObject(PowderKeg, pos[0], pos[1], NO_OWNER);
-		else 
-			CreateObject(DynamiteBox, pos[0], pos[1], NO_OWNER);
+		PlaceChest();
+		i++;
 	}
+
+	return;
+}
+
+global func PlaceChest()
+{
+	// Place powderkegs and dynamite boxes
+	var spawnlist = [PowderKeg, PowderKeg, DynamiteBox, Boompack, Musket, LeadShot, LeadShot];
+
+	var pos = FindPosInMat("Tunnel", 0, 0, LandscapeWidth(), LandscapeHeight());
+	var chest = CreateObject(Chest, pos[0], pos[1]);
+
+	for(var i; i < 5; i++)
+		chest->CreateContents(spawnlist[Random(GetLength(spawnlist))]);
+}
+
+protected func InitializePlayer(int player)
+{
+	SetPlayerTeam(player,1);
 	return;
 }
 
@@ -74,7 +92,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 	clonk->CreateContents(Shovel);
-	clonk->CreateContents(Loam);
+	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Dynamite);
 	return;
 }
