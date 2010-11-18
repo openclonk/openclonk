@@ -23,5 +23,5 @@ Martin Plicht (Mortimer)
 Benedict Etzel (B_E)
 
 <Thanks to Contributors>
-Benjamin Herr (Loriel), Martin Plicht (Mortimer), Caesar, Manuel Riecke (Spell), Carl-Philip H‰nsch (Carli), Asmageddon, Florian Graier (Nachtfalter), Merten Ehmig (pluto), Marky (Mark Haﬂelbusch), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Matthias Rottl‰nder (Matthi), Faby, Checkmaty, Felix Wagner (Clonkonaut), TomyLobo, Stan, Gurkenglas, 
+Benjamin Herr (Loriel), Martin Plicht (Mortimer), Caesar, Manuel Riecke (Spell), Carl-Philip H‰nsch (Carli), Asmageddon, Florian Graier (Nachtfalter), Merten Ehmig (pluto), Marky (Mark Haﬂelbusch), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Matthias Rottl‰nder (Matthi), Faby, Checkmaty, Felix Wagner (Clonkonaut), TomyLobo, Stan, Gurkenglas, Clonkine
 RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source. 
