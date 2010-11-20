@@ -1,3 +1,3 @@
 Name=Airplane
-NoShot=No available lead shot!
 Description=Press [Up] and [Down] to stop and start engine. [Left] and [Right] control ailerons. Press [Down] again when the engine is off to reverse the plane.
+NoShots=No available lead shot!
