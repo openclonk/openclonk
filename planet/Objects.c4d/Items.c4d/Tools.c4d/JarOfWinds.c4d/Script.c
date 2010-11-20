@@ -126,7 +126,7 @@ private func FireWeapon(object pClonk,iX,iY)
 					SX,SY,
 					Sin(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
 					Cos(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
-					Max(i + 30, 90),
+					Max(i + 30, 90) + 75,
 					);
 		}
 	}
