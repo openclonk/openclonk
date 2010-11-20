@@ -17,7 +17,7 @@ protected func Initialize()
 	var fx = LandscapeWidth() / 2, fy = 0;
 	while (PathFree(0, fy + 20, LandscapeWidth(), fy + 20) && fy < LandscapeHeight())
 		fy += 10;
-	goal->SetFinishpoint(fx, fy);
+	goal->SetFinishpoint(fx, fy, true);
 	// All checkpoints are ordered and provide respawn.
 	// Checkpoints form a more or less straight line from start to finish.
 	var cp_mode = PARKOUR_CP_Check | PARKOUR_CP_Respawn | PARKOUR_CP_Ordered | PARKOUR_CP_Team;
