@@ -150,21 +150,21 @@ func OnWeaponHitCheckStop()
 	return;
 }
 
-func HitByWeapon(pFrom, iDamage)
+func HitByWeapon(by, iDamage)
 {
-	if(pFrom->GetX() > Contained()->GetX())
-	{
-		if(Contained()->GetDir() != DIR_Right) return 0;
-	}
-	else if(Contained()->GetDir() != DIR_Left) return 0;
+	var object_angle = Angle(GetX(),GetY(),by->GetX(), by->GetY());
+	var shield_angle = iAngle;
+	// angle difference: 0..180
+	var angle_diff = Abs(Normalize(shield_angle-object_angle,-180));
+	if (angle_diff > 45) return 0;
 
 	Sound(Format("ShieldMetalHit%d.ogg", Random(4)+1));
 	
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 100, iAngle);
+	ApplyWeaponBash(by, 100, iAngle);
 	
 	// uber advantage in melee combat
-	AddEffect("ShieldBlockWeaponCooldown", pFrom, 1, 30, this);
+	AddEffect("ShieldBlockWeaponCooldown", by, 1, 30, this);
 	
 	// shield factor
 	return 100;
@@ -212,7 +212,7 @@ func FxShieldStopControlQueryCatchBlow(object target, int num, object obj)
 	var angle_diff = Abs(Normalize(shield_angle-object_angle,-180));
 
 	// objects hits if the angle difference is greater than 45°
-	//if (angle_diff > 45) return false;
+	if (angle_diff > 45) return false;
 	
 	// projectile bounces off
 	var sxd=Sin(shield_angle, 15);
