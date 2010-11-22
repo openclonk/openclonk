@@ -29,7 +29,7 @@ NoFight=1
 
 [Physical]
 Energy=50000
-Breath=250000
+Breath=100000
 Walk=70000
 Jump=40000
 Scale=30000
