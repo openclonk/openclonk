@@ -1,9 +1,9 @@
 Name=Flagge
 
-MsgBeamFlag=Beam the flag to your base.
-MsgGrabFlag=Grab the flag and carry it to your base.
+MsgBeamFlag=Teleportiere die Flagge in deine Basis.
+MsgGrabFlag=Schnapp dir die Flagge und bring sie in deine Basis.
 
-MsgFlagStolen=%s stole the flag of %s.
-MsgFlagBeamed=%s beamed the flag to their base.
-MsgFlagCaptured=%s successfully captured a flag, and scored a point.
-MsgFlagRestored=The flag of %s got restored.
+MsgFlagStolen=%s hat die Flagge von %s geklaut.
+MsgFlagBeamed=%s hat die Flagge in ihre Basis zurueckgebeamt.
+MsgFlagCaptured=%s hat erfolgreich die Flagge geklaut, und damit fuer sein Team einen Punkt gemacht.
+MsgFlagRestored=Die Flagge von %s wurde zurueckgesetzt.
