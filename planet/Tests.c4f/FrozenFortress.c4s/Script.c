@@ -6,7 +6,6 @@
 	the opposing team.
 --*/
 
-
 protected func Initialize()
 {
 	// Environment 
@@ -63,6 +62,8 @@ protected func Initialize()
 	
 	return;
 }
+
+protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
 
 global func FxGeysirExplosionTimer(object target, int num)
 {
