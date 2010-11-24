@@ -2901,11 +2901,6 @@ static long FnSetTransferZone(C4AulObjectContext *cthr, long iX, long iY, long i
 	return Game.TransferZones.Set(iX,iY,iWdt,iHgt,cthr->Obj);
 }
 
-static C4Value FnEqual_C4V(C4AulContext *cthr, C4Value * Val1, C4Value * Val2)
-{
-	return C4VBool(Val1->GetData()==Val2->GetData());
-}
-
 static long FnAbs(C4AulContext *cthr, long iVal)
 {
 	return Abs(iVal);
@@ -3320,10 +3315,9 @@ static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)
 	return C4VInt(Value->GetType());
 }
 
-static C4Value FnCreateArray(C4AulContext *cthr, C4Value *pPars)
+static C4ValueArray * FnCreateArray(C4AulContext *cthr, int iSize)
 {
-	PAR(int, iSize);
-	return C4VArray(new C4ValueArray(iSize));
+	return new C4ValueArray(iSize);
 }
 
 static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
@@ -3968,48 +3962,6 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 	return true;
 }
 
-static C4Value FnVarN(C4AulContext *cthr, C4Value *strName_C4V)
-{
-	const char *strName = FnStringPar(strName_C4V->getStr());
-
-	if (!cthr->Caller) return C4VNull;
-
-	// find variable
-	int32_t iID = cthr->Caller->Func->VarNamed.GetItemNr(strName);
-	if (iID < 0)
-		return C4VNull;
-
-	// return variable value
-	return cthr->Caller->Vars[iID];
-}
-
-static C4Value FnLocalN(C4AulContext* cthr, C4Value* strName_C4V)
-{
-	if (!cthr->Obj)
-		throw new NeedObjectContext("LocalN");
-
-	C4String * key = strName_C4V->getStr();
-	if (!key) return C4VNull;
-
-	// get variable
-	C4Value r;
-	cthr->Obj->GetPropertyVal(key, &r);
-	return r;
-}
-
-static C4Value FnGlobalN(C4AulContext* cthr, C4Value* strName_C4V)
-{
-	const char* strName = FnStringPar(strName_C4V->getStr());
-
-	// find variable
-	C4Value* pVarN = ::ScriptEngine.GlobalNamed.GetItem(strName);
-
-	if (!pVarN) return C4Value();
-
-	// return variable value
-	return *pVarN;
-}
-
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
 {
 	// set adjust
@@ -4037,9 +3989,6 @@ static long FnGetMatAdjust(C4AulContext* cthr)
 	// get adjust
 	return ::Landscape.GetModulation();
 }
-
-static long FnAnyContainer(C4AulContext*)   { return ANY_CONTAINER; }
-static long FnNoContainer(C4AulContext*)      { return NO_CONTAINER;  }
 
 static long FnGetTime(C4AulContext *)
 {
@@ -6080,8 +6029,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "AddVertex", FnAddVertex);
 	AddFunc(pEngine, "RemoveVertex", FnRemoveVertex);
 	AddFunc(pEngine, "SetContactDensity", FnSetContactDensity, false);
-	AddFunc(pEngine, "AnyContainer", FnAnyContainer);
-	AddFunc(pEngine, "NoContainer", FnNoContainer);
 	AddFunc(pEngine, "GetController", FnGetController);
 	AddFunc(pEngine, "SetController", FnSetController);
 	AddFunc(pEngine, "GetKiller", FnGetKiller);
@@ -6118,6 +6065,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetYDir", FnSetYDir);
 	AddFunc(pEngine, "SetR", FnSetR);
 	AddFunc(pEngine, "SetOwner", FnSetOwner);
+	AddFunc(pEngine, "CreateArray", FnCreateArray);
 	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
 	AddFunc(pEngine, "GrabObjectInfo", FnGrabObjectInfo);
@@ -6742,7 +6690,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 C4ScriptFnDef C4ScriptFnMap[]=
 {
 
-	{ "Equal",                1  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnEqual_C4V ,                 0 },
 	{ "SetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
 	{ "GetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
 	{ "PlayerObjectCommand",  1  ,C4V_Bool     ,{ C4V_Int     ,C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any    ,C4V_Int    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnPlayerObjectCommand },
@@ -6775,7 +6722,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 
 	{ "GetType",              1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetType,                   0 },
 
-	{ "CreateArray",          1  ,C4V_Array    ,{ C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnCreateArray },
 	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
 	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
 
@@ -6800,10 +6746,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
 
 	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
-
-	{ "VarN",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnVarN,                      0 },
-	{ "LocalN",               1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnLocalN,                    0 },
-	{ "GlobalN",              1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGlobalN,                   0 },
 
 	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
 

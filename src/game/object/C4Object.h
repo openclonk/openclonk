@@ -77,9 +77,6 @@
 
 const int32_t MagicPhysicalFactor=1000;
 
-#define ANY_CONTAINER (123)
-#define NO_CONTAINER (124)
-
 class C4SolidMask;
 class C4Command;
 class C4MaterialList;

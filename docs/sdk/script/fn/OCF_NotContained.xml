@@ -15,7 +15,7 @@
     <related>
       <funclink>GetOCF</funclink>
       <funclink>FindObject</funclink>
-      <funclink>NoContainer</funclink>
+      <funclink>Find_NoContainer</funclink>
       <emlink href="definition/ocf.html">Object character flags</emlink>
     </related>
   </func>

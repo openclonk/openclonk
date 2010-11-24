@@ -46,8 +46,6 @@
     </examples>
     <related>
       <funclink>Explode</funclink>
-      <funclink>NoContainer</funclink>
-      <funclink>AnyContainer</funclink>
     </related>
   </func>
   <author>jwk</author><date>2002-04</date>

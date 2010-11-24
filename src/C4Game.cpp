@@ -1247,7 +1247,7 @@ C4Object* C4Game::FindObject(C4ID id,
 								// ActionTarget
 								if (!pActionTarget || (pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 									// Container
-									if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<intptr_t>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<intptr_t>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
+									if ( !pContainer || (cObj->Contained == pContainer))
 										// Owner
 										if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
 											// Area
