@@ -119,7 +119,7 @@ global func FxSnowyWinterTimer(object target, int num, int time)
 	if(time%1200 == 100 ) 
 	{
 		var add=RandomX(-3,3);
-		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,5);	
+		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,6);	
 	}
 	for(var i=0; i<(EffectVar(0, target, num)); i++)
 	{

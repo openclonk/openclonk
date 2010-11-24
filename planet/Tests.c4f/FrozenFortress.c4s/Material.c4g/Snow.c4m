@@ -20,7 +20,7 @@ Dig2Object=Snow
 Dig2ObjectRatio=1500
 Dig2ObjectRequest=0
 InMatConvert=Water
-InMatConvertTo=Water
+InMatConvertTo=Sky
 InMatConvertDepth=1
 
 
