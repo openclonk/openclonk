@@ -1,0 +1,2 @@
+Name=Frostbolzen-Schriftrolle
+Description=Schleudere einen gefrorenen Blitz in die Gegnermenge.

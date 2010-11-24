@@ -1,0 +1,2 @@
+Name=Frostbolt Scroll
+Description=Hurl a frozen bolt into your enemies.
