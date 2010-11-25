@@ -27,7 +27,7 @@
     </examples>
     <related>
       <funclink>GetCrewEnabled</funclink>
-      <funclink>MakeCrewMember</funclink>
+      <funclink>SetCrewStatus</funclink>
       <funclink>SelectCrew</funclink>
     </related>
   </func>

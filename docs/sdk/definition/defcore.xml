@@ -193,7 +193,7 @@
         <row>
           <literal_col>CrewMember</literal_col>
           <col>Integer</col>
-          <col>0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href="script/fn/MakeCrewMember">MakeCrewMember</emlink>.</col>
+          <col>0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href="script/fn/SetCrewStatus">SetCrewStatus</emlink>.</col>
         </row>
         <row>
           <literal_col>Growth</literal_col>

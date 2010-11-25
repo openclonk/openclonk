@@ -34,7 +34,6 @@ nClonk-&gt;SetCrewStatus(<funclink>GetOwner</funclink>(), true);</code>
     <related>
       <funclink>GetCrew</funclink>
       <funclink>CrewMember</funclink>
-      <funclink>MakeCrewMember</funclink>
       <funclink>OCF_CrewMember</funclink>
       <funclink>GrabObjectInfo</funclink>
     </related>

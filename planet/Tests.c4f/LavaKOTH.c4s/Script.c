@@ -185,7 +185,7 @@ global func CreateChestContents(id obj_id)
 protected func RelaunchPlayer(int plr)
 {
 	var clonk = CreateObject(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
+	clonk->SetCrewStatus(plr,true);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	return;

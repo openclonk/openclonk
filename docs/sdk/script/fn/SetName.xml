@@ -52,7 +52,7 @@
       </example>
     </examples>
     <related>
-      <funclink>MakeCrewMember</funclink>
+      <funclink>SetCrewStatus</funclink>
       <funclink>GetName</funclink>
     </related>
   </func>

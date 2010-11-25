@@ -19,7 +19,7 @@
       </params>
     </syntax>
     <desc>Transfers the info section from one object to another. The info section contains name, rank, permanent physicals, etc. Using this command you can e.g. perform reincarnations by transferring the info section from a dead clonk to a live one.</desc>
-    <remark>This command implies a <funclink>MakeCrewMember</funclink> for the owning player. So the clonk should not already be a crew member - this would cause a new crew member info to be created and immediately discarded.</remark>
+    <remark>This command implies a <funclink>SetCrewStatus</funclink> for the owning player. So the clonk should not already be a crew member - this would cause a new crew member info to be created and immediately discarded.</remark>
     <examples>
       <example>
         <code>protected Death:
@@ -30,7 +30,7 @@
       </example>
     </examples>
     <related>
-      <funclink>MakeCrewMember</funclink>
+      <funclink>SetCrewStatus</funclink>
       <funclink>Kill</funclink>
       <funclink>GetCrew</funclink>
       <funclink>CrewMember</funclink>

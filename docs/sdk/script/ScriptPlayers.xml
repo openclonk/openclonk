@@ -86,7 +86,7 @@ protected func InitializeScriptPlayer(int player, int idTeam)
   // Da keine Szenarieninitialisierung durchgeführt wurde, muss in diesem Callback eine Crew für den Spieler erstellt werden
   // Erstelle einen grünen Clonk - ein richtiges Szenario sollte natürlich echte Aliens mitbringen :)
   var alien = CreateObject(Clonk, LandscapeWidth()/2, -1, player);
-  MakeCrewMember(alien, player);
+  alien->SetCrewStatus(player, true);
   SetClrModulation(0x7fff7f, alien);
   // Und angreifen lassen
   <funclink>AddEffect</funclink>(&quot;Int_EAI&quot;, alien, 1, 100, 0, GetID());

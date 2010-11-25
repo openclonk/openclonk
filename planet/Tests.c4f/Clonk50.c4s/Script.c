@@ -9,7 +9,7 @@
  func RelaunchPlayer(int iPlr)
 {
 	var clonk = CreateObject(Clonk, 0, 0, iPlr);
-	clonk->MakeCrewMember(iPlr);
+	clonk->SetCrewStatus(iPlr,true);
 	SetCursor(iPlr,clonk);
 	JoinPlayer(iPlr);
 	return;

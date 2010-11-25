@@ -82,7 +82,7 @@ protected func RelaunchPlayer(int plr, int killer)
 			}
 				
 	var clonk = CreateObject(Clonk, 0, 0, plr);
-	clonk->MakeCrewMember(plr);
+	clonk->SetCrewStatus(plr,true);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.

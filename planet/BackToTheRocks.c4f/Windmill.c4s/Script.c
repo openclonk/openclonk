@@ -113,7 +113,7 @@ func RemovePlayer(int iPlr)
 func RelaunchPlayer(int plr)
 {
 	var clonk = CreateObject(Clonk, LandscapeWidth()/2, 600, plr);
-	clonk->MakeCrewMember(plr);
+	clonk->SetCrewStatus(plr,true);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));

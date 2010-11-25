@@ -1975,12 +1975,6 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 	return pFO;
 }
 
-static bool FnMakeCrewMember(C4AulObjectContext *cthr, long iPlayer)
-{
-	if (!ValidPlr(iPlayer)) return false;
-	return !!::Players.Get(iPlayer)->MakeCrewMember(cthr->Obj);
-}
-
 static C4Value FnObjectCount(C4AulContext *cthr, C4Value *pPars)
 {
 	// Create FindObject-structure
@@ -6126,7 +6120,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetOwner", FnSetOwner);
 	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
-	AddFunc(pEngine, "MakeCrewMember", FnMakeCrewMember);
 	AddFunc(pEngine, "GrabObjectInfo", FnGrabObjectInfo);
 	AddFunc(pEngine, "CreateContents", FnCreateContents);
 	AddFunc(pEngine, "ShiftContents", FnShiftContents);
