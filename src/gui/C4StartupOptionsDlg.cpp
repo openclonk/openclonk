@@ -859,16 +859,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupOptions->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
 	pSheetGraphics->AddElement(pGroupOptions);
 	C4GUI::ComponentAligner caGroupOptions(pGroupOptions->GetClientRect(), iIndentX1, iIndentY2, true);
-	// add new crew portraits
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_ADDPORTRAITS"), NULL, &Config.Graphics.AddNewCrewPortraits);
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_ADDPORTRAITS_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
-	// store default portraits in crew
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_STOREPORTRAITS"), NULL, &Config.Graphics.SaveDefaultPortraits);
-	pCheck->SetToolTip(LoadResStr("IDS_DESC_STOREPORTRAITS"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
 	// --subgroup effects
 	C4GUI::GroupBox *pGroupEffects = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,2,3));
 	pGroupEffects->SetTitle(LoadResStrNoAmp("IDS_CTL_SMOKE"));
