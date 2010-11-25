@@ -305,6 +305,8 @@ protected func RejectCollect(id objid, object obj)
 	return _inherited(objid,obj,...);
 }
 
+public func GetUsedObject() { return using; }
+
 /* ################################################# */
 
 // The using-command hast to be canceled if the clonk is entered into
