@@ -39,20 +39,17 @@ protected func Initialize()
 	// Chests with weapons.
 	var chest;
 	chest = CreateObject(Chest, 60, 220, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
 	chest = CreateObject(Chest, 150, 370, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	AddEffect("FillBaseSpecialIce", chest, 100, 36,nil,nil);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
 	chest = CreateObject(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	AddEffect("FillBaseSpecialIce", chest, 100, 36,nil,nil);
+	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
 
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 320, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 5 * 36);
-	AddEffect("FillBaseSpecialIce", chest, 100, 28,nil,nil);
 	
 	AddEffect("SnowyWinter", nil, 100, 1);
 	Sound("WindLoop.ogg",true,20,nil,+1);
@@ -118,8 +115,8 @@ global func FxSnowyWinterTimer(object target, int num, int time)
 {
 	if(time%1200 == 100 ) 
 	{
-		var add=RandomX(-3,3);
-		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,6);	
+		var add=RandomX(-1,1);
+		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,4);	
 	}
 	for(var i=0; i<(EffectVar(0, target, num)); i++)
 	{
@@ -173,7 +170,7 @@ protected func OnPlayerRelaunch(int plr)
 	return;
 }
 
-func RelaunchWeaponList() { return [Musket, Sword, Javelin,  FrostboltScroll]; }
+func RelaunchWeaponList() { return [Musket, Sword, Javelin,  FrostboltScroll, Shovel]; }
 
 /*-- Chest filler effects --*/
 
@@ -193,27 +190,36 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 }
 global func FxFillBaseChestTimer(object target, int num)
 {
-	if(EffectVar(0, target, num)) 
-		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
-	else
-		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
-	if (target->ContentsCount() < 7)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
-	return 1;
-}
-
-
-global func FxFillBaseSpecialIceTimer(object target, int num, int time)
-{
-	EffectVar(1, target, num)++;
-	if(EffectVar(0, target, num)) return 1;
-	if(EffectVar(1, target, num) < (30)) return 1;
+	var maxcount = [];
 	
-	EffectVar(0, target, num)=CreateObject(HardeningScroll);
-	EffectVar(0, target, num)->Enter(target);
-	EffectVar(1, target, num)= -30;
+	if(EffectVar(0, target, num)) 
+	{
+		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
+		var maxcount = [2,2,1,2,1];
+	}
+	else
+	{
+		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
+		var maxcount = [1,2,1,1,1,2];
+	}
+	
+	var contents;
+	for(var i=0; i<target->GetLength(w_list); i++)
+		contents+=target->ContentsCount(w_list[i]);
+	if(contents > 5) return 1;
+	
+	for(var i=0; i<2 ; i++)
+	{
+		var r = Random(GetLength(w_list));
+		if (target->ContentsCount(w_list[r]) < maxcount[r])
+		{
+			target->CreateChestContents(w_list[r]);
+			i=3;
+		}
+	}
 	return 1;
 }
+
 
 global func FxFillOtherChestStart(object target, int num, int temporary)
 {
@@ -227,9 +233,24 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Sword, Javelin, Dynamite, WindScroll, FrostboltScroll ];
-	if (target->ContentsCount() < 6)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
+
+	var w_list = [Sword, Javelin, Dynamite, WindScroll, FrostboltScroll, Loam, HardeningScroll, PowderKeg];
+	var maxcount = [1,1,3,1,2,1,1,1];
+	
+	var contents;
+	for(var i=0; i<target->GetLength(w_list); i++)
+		contents+=target->ContentsCount(w_list[i]);
+	if(contents > 5) return 1;
+	
+	for(var i=0; i<2 ; i++)
+	{
+		var r = Random(GetLength(w_list));
+		if (target->ContentsCount(w_list[r]) < maxcount[r])
+		{
+			target->CreateChestContents(w_list[r]);
+			i=3;
+		}
+	}
 	return 1;
 }
 

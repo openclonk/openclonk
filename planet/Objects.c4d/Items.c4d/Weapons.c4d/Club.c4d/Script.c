@@ -36,7 +36,7 @@ local fAiming;
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// cooldown?
-	if(!CanStrikeWithWeapon(clonk)) return 1;
+	if(!CanStrikeWithWeapon(clonk)) return true;
 	
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
@@ -73,7 +73,7 @@ public func FinishedAiming(object clonk, int angle)
 	
 	// since the Clonk internal callback is only once, we cannot use it
 	// ..
-	AddEffect("DuringClubShoot", clonk, 1, 1, this, nil, angle);
+	AddEffect("DuringClubShootControl", clonk, 1, 1, this, nil, angle);
 	
 	// aaaand, a cooldown
 	AddEffect("ClubWeaponCooldown", clonk, 1, 5, this);
@@ -98,17 +98,26 @@ public func DuringShoot(object clonk, int angle)
 	// DoStrike(clonk, angle);
 }
 
-func FxDuringClubShootStart(target, effect_number, temp, p1)
+func FxDuringClubShootControlStart(target, effect_number, temp, p1)
 {
 	if(temp) return;
 	EffectVar(0, target, effect_number)=p1;
 }
 
-func FxDuringClubShootTimer(target, effect_number, effect_time)
+func FxDuringClubShootControlTimer(target, effect_number, effect_time)
 {
 	if(effect_time > 16) return -1;
 	if(!this) return -1;
 	this->DoStrike(target, EffectVar(0, target, effect_number));
+}
+
+// you are not going to be hit by objects you fling away
+func FxDuringClubShootControlQueryCatchBlow(object target, int num, object obj)
+{
+	DoStrike();
+	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+	if(GetEffect(en, obj)) return true;
+	return false;
 }
 
 func DoStrike(clonk, angle)
@@ -127,7 +136,7 @@ func DoStrike(clonk, angle)
 		{
 			var damage=5*1000;
 			var f=ApplyShieldFactor(clonk, obj, damage);
-			ApplyWeaponBash(obj, 200, angle);
+			ApplyWeaponBash(obj, 400, angle);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}
 		else
@@ -135,10 +144,10 @@ func DoStrike(clonk, angle)
 			var div=100;
 			if(obj->GetContact(-1)) div*=10;
 			
-			// mass factor
+			// mass/size factor
 			var fac1=10000/Max(2, obj->GetMass());
 			var fac2=BoundBy(10-Abs(obj->GetDefCoreVal("Width", "DefCore")-obj->GetDefCoreVal("Height", "DefCore")), 1, 10);
-			var speed=(2000 * fac1 * fac2) / 10 / 1000;
+			var speed=(3000 * fac1 * fac2) / 10 / 1000;
 			obj->SetXDir((obj->GetXDir(100) + Sin(angle, speed)) / 2, div);
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, speed)) / 2, div);
 		}

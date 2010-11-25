@@ -100,8 +100,8 @@ global func AllGoalsFulfilled()
 {
 	// Goals fulfilled: Set mission password(s)
 	for (var goal in FindObjects(Find_Category(C4D_Goal)))
-		if (goal->LocalN("mission_password"))
-			GainMissionAccess(goal->LocalN("mission_password"));
+		if (goal.mission_password)
+			GainMissionAccess(goal.mission_password);
 	// Custom scenario goal evaluation?
 	if (GameCall("OnGoalsFulfilled")) return true;
 	// We're done. Play some sound and schedule game over call

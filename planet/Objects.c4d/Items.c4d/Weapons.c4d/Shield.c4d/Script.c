@@ -14,7 +14,7 @@ local solid_mask_helper;
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// may only be used while walking
-	if(!clonk->IsWalking() || !CanStrikeWithWeapon(clonk))
+	if(!clonk->HasHandAction() || !clonk->IsWalking() || !CanStrikeWithWeapon(clonk))
 	{
 		AddEffect("IntShieldSuspend", clonk, 1, 5, this);
 	}

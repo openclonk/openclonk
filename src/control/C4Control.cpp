@@ -839,7 +839,7 @@ void C4ControlJoinPlayer::Strip()
 		StdBuf NewPlrData;
 		if (!NewPlrData.LoadFromFile(PlayerFilename.getData()))
 			{ EraseFile(PlayerFilename.getData()); return; }
-		PlrData = NewPlrData;
+		PlrData = std::move(NewPlrData);
 		// Done
 		EraseFile(PlayerFilename.getData());
 	}

@@ -27,7 +27,13 @@ local magic_number;
 local carry_bone;
 public func ControlUseStart(object clonk, int x, int y)
 {
+	// cooldown?
 	if(!CanStrikeWithWeapon(clonk)) return true;
+	
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
+		return true;
+		
 	var slow=GetEffect("SwordStrikeSlow", clonk);
 
 	var arm = "R";

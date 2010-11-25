@@ -836,9 +836,14 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 	// command?
 	if (*szInput == '/' && !SEqual2NoCase(szInput + 1, "me "))
 	{
-		StdStrBuf sCommand, sParam("");; sCommand.Copy(szInput+1);
+		StdStrBuf sCommand, sParam(""); sCommand.Copy(szInput+1);
 		sCommand.SplitAtChar(' ', &sParam);
-		if (SEqualNoCase(sCommand.getData(), "quit"))
+		if (SEqualNoCase(sCommand.getData(), "help"))
+		{
+			pChatSheet->DoError(LoadResStr("IDS_ERR_HELPCMD"));
+			fResult = false;
+		}
+		else if (SEqualNoCase(sCommand.getData(), "quit"))
 		{
 			// query disconnect from IRC server
 			fIRCSuccess = pIRCClient->Quit(sParam.getData());
@@ -900,7 +905,11 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 			if (!sParam.getLength())
 				pChatSheet->DoError(FormatString(LoadResStr("IDS_ERR_INSUFFICIENTPARAMETERS"), sCommand.getData()).getData());
 			else
+			{
+				StdStrBuf sMsg;
+				sParam.SplitAtChar(' ', &sMsg);
 				OpenQuery(sParam.getData(), true, NULL);
+			}
 		}
 		else if (SEqualNoCase(sCommand.getData(), "nick"))
 		{

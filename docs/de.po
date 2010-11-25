@@ -1,22 +1,22 @@
 # -*- coding: UTF-8 -*-
-# matthes <matthes@clonk.de>
+# matthes <matthes@clonk.de>, 2006-2008.
 # PeterW <Peter.Wortmann@gmx.de>
 # Sven2 <sven2@goldwipf.de>
-# Günther Brammer <gbrammer@gmx.de>, 2010.
 # Armin Burgmeier <armin@arbur.net>, 2010.
+# Günther Brammer <gbrammer@gmx.de>, 2009, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 17:09+0200\n"
-"PO-Revision-Date: 2010-08-31 23:44+0200\n"
-"Last-Translator: Armin Burgmeier <armin@arbur.net>\n"
+"POT-Creation-Date: 2010-11-24 22:24+0100\n"
+"PO-Revision-Date: 2010-11-24 22:17+0100\n"
+"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
+"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: German\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sdk/content.xml.in:5(title)
@@ -78,7 +78,6 @@ msgstr "DefCore"
 #: sdk/script/fn/C4D_Parallax.xml:9(subcat)
 #: sdk/script/fn/C4D_Object.xml:9(subcat)
 #: sdk/script/fn/C4D_Living.xml:9(subcat)
-#: sdk/script/fn/C4D_Knowledge.xml:9(subcat)
 #: sdk/script/fn/C4D_Goal.xml:9(subcat)
 #: sdk/script/fn/C4D_Background.xml:9(subcat)
 #: sdk/script/fn/C4D_All.xml:9(subcat)
@@ -254,10 +253,7 @@ msgid "Data Types"
 msgstr "Datentypen"
 
 #: sdk/content.xml.in:149(emlink)
-#: sdk/script/fn/VarN.xml:8(category)
-#: sdk/script/fn/LocalN.xml:8(category)
 #: sdk/script/fn/IsRef.xml:8(category)
-#: sdk/script/fn/GlobalN.xml:8(category)
 #: sdk/script/fn/GetType.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:8(category)
 #: sdk/script/fn/C4V_Int.xml:8(category)
@@ -715,7 +711,6 @@ msgid "8l"
 msgstr "8l"
 
 #: sdk/script/operatoren.xml:178(col)
-#: sdk/script/fn/C4D_Knowledge.xml:16(emlink)
 msgid "&amp;"
 msgstr "&amp;"
 
@@ -833,8 +828,6 @@ msgstr "vermindert den Wert der vorangestellten Variable um den nachgestellten W
 #: sdk/script/operatoren.xml:248(col)
 #: sdk/script/fn/SetPlrMagic.xml:33(emlink)
 #: sdk/script/fn/SetPlrMagic.xml:34(emlink)
-#: sdk/script/fn/LocalN.xml:24(emlink)
-#: sdk/script/fn/LocalN.xml:29(emlink)
 msgid "="
 msgstr "="
 
@@ -1483,7 +1476,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/OCF_Available.xml:8(category)
 #: sdk/script/fn/OCF_AttractLightning.xml:8(category)
 #: sdk/script/fn/OCF_Alive.xml:8(category)
-#: sdk/script/fn/NoContainer.xml:8(category)
 #: sdk/script/fn/MakeCrewMember.xml:8(category)
 #: sdk/script/fn/Kill.xml:8(category)
 #: sdk/script/fn/Jump.xml:8(category)
@@ -1621,7 +1613,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/C4D_Parallax.xml:8(category)
 #: sdk/script/fn/C4D_Object.xml:8(category)
 #: sdk/script/fn/C4D_Living.xml:8(category)
-#: sdk/script/fn/C4D_Knowledge.xml:8(category)
 #: sdk/script/fn/C4D_Goal.xml:8(category)
 #: sdk/script/fn/C4D_Background.xml:8(category)
 #: sdk/script/fn/C4D_All.xml:8(category)
@@ -1629,7 +1620,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/BlastObjects.xml:8(category)
 #: sdk/script/fn/AttachMesh.xml:8(category)
 #: sdk/script/fn/AppendCommand.xml:8(category)
-#: sdk/script/fn/AnyContainer.xml:8(category)
 #: sdk/script/fn/AddVertex.xml:8(category)
 #: sdk/script/fn/AddMenuItem.xml:8(category)
 #: sdk/script/fn/AddCommand.xml:8(category)
@@ -1809,19 +1799,6 @@ msgstr "Liefert die Anzahl feststeckender Vertices von *obj"
 msgid "Removes obj if one if its vertices is stuck."
 msgstr "Entfernt obj wenn einer seiner Vertices feststeckt"
 
-#: sdk/script/fn/VarN.xml:16(desc)
-#: sdk/script/fn/LocalN.xml:16(desc)
-msgid "Name of the variable to which a reference is to be returned."
-msgstr "Name der Variablen, zu der eine Referenz zurückgegeben werden soll"
-
-#: sdk/script/fn/VarN.xml:20(desc)
-msgid "Returns a reference to a function local variable. This reference can be used for reading or writing."
-msgstr "Gibt eine Referenz auf eine funktionslokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden."
-
-#: sdk/script/fn/VarN.xml:25(text)
-msgid "Sets a randomly chosen thread local variable to a random value."
-msgstr "Setzt eine zufällige, threadlokale Variable auf einen zufälligen Wert."
-
 #: sdk/script/fn/VIS_Owner.xml:9(subcat)
 #: sdk/script/fn/VIS_None.xml:9(subcat)
 #: sdk/script/fn/VIS_Local.xml:9(subcat)
@@ -1905,7 +1882,6 @@ msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für de
 #: sdk/script/fn/C4D_Parallax.xml:13(remark)
 #: sdk/script/fn/C4D_Object.xml:13(remark)
 #: sdk/script/fn/C4D_Living.xml:13(remark)
-#: sdk/script/fn/C4D_Knowledge.xml:13(remark)
 #: sdk/script/fn/C4D_Goal.xml:13(remark)
 #: sdk/script/fn/C4D_Background.xml:13(remark)
 #: sdk/script/fn/C4D_All.xml:13(remark)
@@ -2433,7 +2409,6 @@ msgstr "Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halb
 #: sdk/script/fn/Sort_Func.xml:9(subcat)
 #: sdk/script/fn/Sort_Distance.xml:9(subcat)
 #: sdk/script/fn/ObjectCount.xml:9(subcat)
-#: sdk/script/fn/NoContainer.xml:9(subcat)
 #: sdk/script/fn/Find_Owner.xml:9(subcat)
 #: sdk/script/fn/Find_Or.xml:9(subcat)
 #: sdk/script/fn/Find_OCF.xml:9(subcat)
@@ -2458,7 +2433,6 @@ msgstr "Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halb
 #: sdk/script/fn/FindObject.xml:9(subcat)
 #: sdk/script/fn/FindContents.xml:9(subcat)
 #: sdk/script/fn/FindBase.xml:9(subcat)
-#: sdk/script/fn/AnyContainer.xml:9(subcat)
 msgid "Search"
 msgstr "Suche"
 
@@ -3601,7 +3575,6 @@ msgstr "Fügt einen Zauber der Liste der verfügbaren Zauber eines Spielers hinz
 
 #: sdk/script/fn/SetPlrMagic.xml:33(emlink)
 #: sdk/script/fn/SetPlrMagic.xml:34(emlink)
-#: sdk/script/fn/LocalN.xml:23(emlink)
 #: sdk/script/fn/FinishCommand.xml:33(emlink)
 msgid "var"
 msgstr "var"
@@ -6373,14 +6346,6 @@ msgstr "Object character flag: Blitzanziehendes Objekt. Dieses Flag wird durch d
 msgid "Object character flag: live living being."
 msgstr "Object character flag: Lebendes Lebewesen."
 
-#: sdk/script/fn/NoContainer.xml:13(desc)
-msgid "Constant for FindObject: search uncontained objects."
-msgstr "Konstante für FindObject: Suche außerhalb aller Objekte."
-
-#: sdk/script/fn/NoContainer.xml:17(text)
-msgid "Incinerates all combustible objects which are not contained."
-msgstr "Zündet alle brennbaren Objekte an, die nirgends enthalten sind."
-
 #: sdk/script/fn/NO_OWNER.xml:11(desc)
 msgid "Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <placeholder-1/> or <placeholder-2/>."
 msgstr "Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <placeholder-1/> verwendet werden, um einen neutralen Spieler anzugeben."
@@ -6513,41 +6478,6 @@ msgstr "Gibt einen Text im Messageboard am unteren Bildschirmrand aus. Die Param
 #: sdk/script/fn/Log.xml:30(text)
 msgid "Welcomes a player."
 msgstr "Begrüßt den Spieler"
-
-#: sdk/script/fn/LocalN.xml:20(desc)
-msgid "Returns a reference to an object local variable. This reference can be used for reading or writing this variable."
-msgstr "Gibt eine Referenz auf eine Objektlokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden."
-
-#: sdk/script/fn/LocalN.xml:25(text)
-msgid "Makes the basement of a magic tower explode."
-msgstr "Lässt ein Fundament eines Zauberturms explodieren."
-
-#: sdk/script/fn/LocalN.xml:28(emlink)
-msgid "Initialize"
-msgstr "Initialize"
-
-#: sdk/script/fn/LocalN.xml:29(emlink)
-msgid "local"
-msgstr "local"
-
-#: sdk/script/fn/LocalN.xml:29(emlink)
-msgid "TRE1"
-msgstr "TRE1"
-
-#: sdk/script/fn/LocalN.xml:31(emlink)
-#: sdk/script/GetXXVal.xml:30(col)
-#: sdk/definition/index.xml:12(emlink)
-#: sdk/definition/defcore.xml:6(title)
-msgid "DefCore.txt"
-msgstr "DefCore.txt"
-
-#: sdk/script/fn/LocalN.xml:36(text)
-msgid "The object carries a tree around with it."
-msgstr "Das Objekt trägt einen Baum mit sich herum."
-
-#: sdk/script/fn/LocalN.xml:40(emlink)
-msgid "named variables"
-msgstr "benannte Variablen"
 
 #: sdk/script/fn/LaunchVolcano.xml:16(desc)
 #: sdk/script/fn/LaunchLightning.xml:17(desc)
@@ -6788,14 +6718,6 @@ msgstr "Objekt dessen Inhalt gestohlen werden soll."
 #: sdk/script/fn/GrabContents.xml:21(desc)
 msgid "Removes all contents from obj and gives it to the calling object."
 msgstr "Entfernt sämtlichen Inhalt von *obj, und gibt diesen dem aufrufenden Objekt."
-
-#: sdk/script/fn/GlobalN.xml:16(desc)
-msgid "Name of a global variable."
-msgstr "Name einer globalen Variable."
-
-#: sdk/script/fn/GlobalN.xml:20(desc)
-msgid "Returns the value of the global variable of name text. Through GlobalN(\"Name\")=Value you can also set the value of a global variable."
-msgstr "Liefert den Inhalt der globalen Variable mit dem Namen text. Per GlobalN(\"Name\")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden."
 
 #: sdk/script/fn/GetYDir.xml:17(desc)
 #: sdk/script/fn/GetXDir.xml:17(desc)
@@ -10354,14 +10276,6 @@ msgstr "Objektkategorie: Lebewesen."
 msgid "Returns the first type of living beings which can be built by player 1 - usually none."
 msgstr "Liefert das erste Lebewesen zurück, das der 1. Spieler bauen kann, also normalerweise 0."
 
-#: sdk/script/fn/C4D_Knowledge.xml:12(desc)
-msgid "Object category: construction plan."
-msgstr "Objektkategorie: Bauplan."
-
-#: sdk/script/fn/C4D_Knowledge.xml:17(text)
-msgid "Using bitwise AND you can check whether two objects correspond in at least one category."
-msgstr "Mit einem bitweisen And kann man überprüfen, ob zwei Kategorien in mindestens einer Kategorie übereinstimmen."
-
 #: sdk/script/fn/C4D_Goal.xml:12(desc)
 msgid "Object category: game goal."
 msgstr "Objektkategorie: Spielziele"
@@ -10543,14 +10457,6 @@ msgstr "Fügt ein Kommando der Kommandoliste des aufrufenden Objekts am Ende hin
 #: sdk/script/fn/AppendCommand.xml:75(text)
 msgid "Gives the clonk the command to go to the first found base and then throw the first carried object at the base."
 msgstr "Gibt dem Clonk den Befehl, zuerst zu der ersten (gefundenen) Basis zu laufen, und dann das erste Objekt, das er trägt, auf diese zu werfen.<br/>"
-
-#: sdk/script/fn/AnyContainer.xml:13(desc)
-msgid "Passed to <placeholder-1/>/<placeholder-2/> so only contained objects are found."
-msgstr "Wird an <placeholder-1/>/<placeholder-2/> übergeben, damit nur Objekte gefunden werden, die in einem anderen Objekt enthalten sind"
-
-#: sdk/script/fn/AnyContainer.xml:17(text)
-msgid "Hits a hiding wipf."
-msgstr "Schlägt einen sich versteckenden Wipf."
 
 #: sdk/script/fn/Anim_YDir.xml:16(desc)
 #: sdk/script/fn/Anim_Y.xml:21(desc)
@@ -10986,7 +10892,7 @@ msgid "Contents of Variable"
 msgstr "Variableninhalt"
 
 #: sdk/script/Typechecks.xml:16(col)
-#: sdk/definition/category.xml:86(h)
+#: sdk/definition/category.xml:74(h)
 msgid "Example"
 msgstr "Beispiel"
 
@@ -11446,8 +11352,8 @@ msgid "Variables are placeholders for values stored in a script. A variable stor
 msgstr "Variablen dienen innerhalb von Scripts zur Speicherung von Daten. Es gibt bestimmte <emlink href=\"script/Typechecks.html\">Datentypen</emlink>, die Variablen annehmen können."
 
 #: sdk/script/NamedVar.xml:10(text)
-msgid "There are three different scopes in which a variable can be declared. Variables are not visible outside their declared scope."
-msgstr "Außerdem kann eine Variable einen von drei Gültigkeitsbereiche haben. Die Variable ist außerhalb ihres Gültigkeitsbereiches nicht sichtbar."
+msgid "There are three different scopes in which a variable can be declared."
+msgstr "Außerdem kann eine Variable einen von drei Gültigkeitsbereiche haben."
 
 #: sdk/script/NamedVar.xml:14(col)
 msgid "Keyword"
@@ -11486,34 +11392,34 @@ msgid "The variable's scope, followed by the variable's name."
 msgstr "Als erstes wird der Gültigkeitbereich angegeben. Danach muss der Name einer benannten Variable folgen."
 
 #: sdk/script/NamedVar.xml:38(text)
-msgid "Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with <code>nil</code>."
-msgstr "Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies ist aber nur für funktionslokale (<code>var</code>) Variablen erlaubt. Ohne Initialisierung beginnt die Variable mit <code>nil</code>."
+msgid "Optionally, you can assign a value to the variable directly at declaration time. However, this is not possible for global variables. Without initialization variables always start with <code>nil</code>."
+msgstr "Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies funktioniert allerdings nicht für globale Variablen. Ohne Initialisierung enthält die Variable anfangs <code>nil</code>."
 
 #: sdk/script/NamedVar.xml:39(text)
 msgid "Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon."
 msgstr "Weitere Deklarationen können, mit Kommata getrennt, folgen. Die Deklaration muss immer mit einem \";\" beendet werden."
 
-#: sdk/script/NamedVar.xml:70(h)
+#: sdk/script/NamedVar.xml:69(h)
 msgid "Addendum:"
 msgstr "Ergänzungen:"
 
-#: sdk/script/NamedVar.xml:73(li)
+#: sdk/script/NamedVar.xml:72(li)
 msgid "Object local variable declarations are also valid in #appendto or #include script extensions."
 msgstr "Definitionen objektlokaler Variablen werden sowohl bei #appendto also auch bei #include mit übernommen."
 
-#: sdk/script/NamedVar.xml:74(li)
-msgid "Using the functions <placeholder-1/>(), <placeholder-2/>(), and <placeholder-3/>() you can access variables indirectly. Using <placeholder-4/>() you can specifically access local variables in other objects."
-msgstr "Mittels der Funktionen <placeholder-1/>(), <placeholder-2/>(), und <placeholder-3/>() kann indirekt auf Variablen zugegriffen werden. Mittels <placeholder-4/>() kann speziell auch auf lokale Variablen in anderen Objekten zugreifen."
+#: sdk/script/NamedVar.xml:73(li)
+msgid "Using the <code>obj.foo</code> or <code>obj[\"foo\"]</code> notation one can access local variables in other objects."
+msgstr "Mit <code>obj.foo</code> oder <code>obj[\"foo\"]</code> kann auf lokale Variablen anderer Objekte zugegriffen werden."
 
-#: sdk/script/NamedVar.xml:75(li)
+#: sdk/script/NamedVar.xml:74(li)
 msgid "If two variables of the same name but differing scope are valid at the same time, then the variable of the smaller scope will be used, meaning for example an object local variable will \"cover up\" a global variable within its own scope."
 msgstr "Sind an einer Stelle zwei Variablen desselben Namens sichtbar, so bezeichnet der Name im Script jeweils die Variable mit dem kleineren Geltungsbereich. Das heißt z.B., dass eine objektlokale Variable eine globale Variable \"verdeckt\"."
 
-#: sdk/script/NamedVar.xml:76(li)
-msgid "If the same variable is declared multiply, then still the variable will exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively."
-msgstr "Wird eine Variable mehrfach deklariert, so existiert die Variable nachher trotzdem nur einmal und es wird kein Fehler ausgegeben. Initialisierungen gelten als Zuweisungen und werden wie eine entsprechende Anweisung ggf. auch mehrfach ausgeführt."
+#: sdk/script/NamedVar.xml:75(li)
+msgid "If the same variable is declared multiple times, the variable will still exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively."
+msgstr "Wird eine Variable mehrfach deklariert, so existiert die Variable trotzdem nur einmal und es wird kein Fehler ausgegeben. Initialisierungen gelten als Zuweisungen und werden wie eine entsprechende Anweisung gegebenenfalls auch mehrfach ausgeführt."
 
-#: sdk/script/NamedVar.xml:77(li)
+#: sdk/script/NamedVar.xml:76(li)
 msgid "A <code>static</code> variable may also be used in object scripts (see example). If a <code>static</code> variable of the same name is defined in another script, the name will refer to the same variable."
 msgstr "Eine <code>static</code>-Variable darf auch in Objektscripten verwendet werden (siehe Beispiel). Wird eine <code>static</code>-Variable mit gleichem Namen in einem anderen Script definiert, so bezeichnen beide auch dieselbe Variable."
 
@@ -11565,6 +11471,12 @@ msgstr "Datei"
 #: sdk/script/GetXXVal.xml:29(col)
 msgid "GetDefCoreVal"
 msgstr "GetDefCoreVal"
+
+#: sdk/script/GetXXVal.xml:30(col)
+#: sdk/definition/index.xml:12(emlink)
+#: sdk/definition/defcore.xml:6(title)
+msgid "DefCore.txt"
+msgstr "DefCore.txt"
 
 #: sdk/script/GetXXVal.xml:33(col)
 msgid "GetActMapVal"
@@ -17861,82 +17773,62 @@ msgid "Environmental control object."
 msgstr "Umweltsteuerungsobjekt."
 
 #: sdk/definition/category.xml:45(col)
-msgid "C4D_TradeLiving"
-msgstr "C4D_TradeLiving"
-
-#: sdk/definition/category.xml:46(col)
-msgid "A living being that can be sold at the home base."
-msgstr "Verkaufbares Lebewesen."
-
-#: sdk/definition/category.xml:49(col)
-msgid "C4D_Magic"
-msgstr "C4D_Magic"
-
-#: sdk/definition/category.xml:50(col)
-msgid "A magic spell."
-msgstr "Zauber."
-
-#: sdk/definition/category.xml:54(col)
-msgid "Reserved, used internally."
-msgstr "Reserviert; wird intern benutzt."
-
-#: sdk/definition/category.xml:57(col)
 msgid "C4D_Rule"
 msgstr "C4D_Rule"
 
-#: sdk/definition/category.xml:58(col)
+#: sdk/definition/category.xml:46(col)
 msgid "Rule control object."
 msgstr "Spielregel."
 
-#: sdk/definition/category.xml:61(col)
+#: sdk/definition/category.xml:49(col)
 msgid "C4D_Background"
 msgstr "C4D_Background"
 
-#: sdk/definition/category.xml:62(col)
+#: sdk/definition/category.xml:50(col)
 msgid "Object is behind the landscape."
 msgstr "Objekt ist hinter der Landschaft."
 
-#: sdk/definition/category.xml:65(col)
+#: sdk/definition/category.xml:53(col)
 msgid "C4D_Parallax"
 msgstr "C4D_Parallax"
 
-#: sdk/definition/category.xml:66(col)
+#: sdk/definition/category.xml:54(col)
 msgid "Object moves parallax according to Local 0 and 1. For more information see <placeholder-1/>."
 msgstr "Objekt bewegt sich parallax nach Local 0 und 1. Für mehr Informationen siehe <placeholder-1/>."
 
-#: sdk/definition/category.xml:69(col)
+#: sdk/definition/category.xml:57(col)
 msgid "C4D_MouseSelect"
 msgstr "C4D_MouseSelect"
 
-#: sdk/definition/category.xml:70(col)
+#: sdk/definition/category.xml:58(col)
 msgid "Object can be clicked with the mouse, causing a MouseSelection(int player) callback in the object."
 msgstr "Objekt mit der Maus anwählbar, MouseSelection(int player)-Callback im Objekt."
 
-#: sdk/definition/category.xml:73(col)
+#: sdk/definition/category.xml:61(col)
 msgid "C4D_Foreground"
 msgstr "C4D_Foreground"
 
-#: sdk/definition/category.xml:74(col)
+#: sdk/definition/category.xml:62(col)
 msgid "Object is always in the foreground, even before global particles."
 msgstr "Objekt ist im Vordergrund, also vor globalen Partikeln."
 
-#: sdk/definition/category.xml:77(col)
+#: sdk/definition/category.xml:65(col)
 msgid "C4D_MouseIgnore"
 msgstr "C4D_MouseIgnore"
 
-#: sdk/definition/category.xml:78(col)
+#: sdk/definition/category.xml:66(col)
 msgid "Object cannot be selected with the mouse."
 msgstr "Objekt ist nicht mit der Maus anwählbar."
 
-#: sdk/definition/category.xml:81(col)
+#: sdk/definition/category.xml:69(col)
 msgid "C4D_IgnoreFoW"
 msgstr "C4D_IgnoreFoW"
 
-#: sdk/definition/category.xml:82(col)
+#: sdk/definition/category.xml:70(col)
 msgid "Object is drawn above fog of war. Useful for creating status displays or gui elements using objects. From CR."
 msgstr "Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente. Ab CR."
 
-#: sdk/definition/category.xml:91(text)
+#: sdk/definition/category.xml:79(text)
 msgid "Category for a rule."
 msgstr "Kategorie für eine Regel."
 
@@ -18467,6 +18359,78 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:127(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Constant for FindObject: search uncontained objects."
+#~ msgstr "Konstante für FindObject: Suche außerhalb aller Objekte."
+
+#~ msgid "Incinerates all combustible objects which are not contained."
+#~ msgstr "Zündet alle brennbaren Objekte an, die nirgends enthalten sind."
+
+#~ msgid "Passed to <placeholder-1/>/<placeholder-2/> so only contained objects are found."
+#~ msgstr "Wird an <placeholder-1/>/<placeholder-2/> übergeben, damit nur Objekte gefunden werden, die in einem anderen Objekt enthalten sind"
+
+#~ msgid "Hits a hiding wipf."
+#~ msgstr "Schlägt einen sich versteckenden Wipf."
+
+#~ msgid "Name of the variable to which a reference is to be returned."
+#~ msgstr "Name der Variablen, zu der eine Referenz zurückgegeben werden soll"
+
+#~ msgid "Returns a reference to a function local variable. This reference can be used for reading or writing."
+#~ msgstr "Gibt eine Referenz auf eine funktionslokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden."
+
+#~ msgid "Sets a randomly chosen thread local variable to a random value."
+#~ msgstr "Setzt eine zufällige, threadlokale Variable auf einen zufälligen Wert."
+
+#~ msgid "Returns a reference to an object local variable. This reference can be used for reading or writing this variable."
+#~ msgstr "Gibt eine Referenz auf eine Objektlokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden."
+
+#~ msgid "Makes the basement of a magic tower explode."
+#~ msgstr "Lässt ein Fundament eines Zauberturms explodieren."
+
+#~ msgid "Initialize"
+#~ msgstr "Initialize"
+
+#~ msgid "local"
+#~ msgstr "local"
+
+#~ msgid "TRE1"
+#~ msgstr "TRE1"
+
+#~ msgid "The object carries a tree around with it."
+#~ msgstr "Das Objekt trägt einen Baum mit sich herum."
+
+#~ msgid "named variables"
+#~ msgstr "benannte Variablen"
+
+#~ msgid "Name of a global variable."
+#~ msgstr "Name einer globalen Variable."
+
+#~ msgid "Returns the value of the global variable of name text. Through GlobalN(\"Name\")=Value you can also set the value of a global variable."
+#~ msgstr "Liefert den Inhalt der globalen Variable mit dem Namen text. Per GlobalN(\"Name\")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden."
+
+#~ msgid "Object category: construction plan."
+#~ msgstr "Objektkategorie: Bauplan."
+
+#~ msgid "Using bitwise AND you can check whether two objects correspond in at least one category."
+#~ msgstr "Mit einem bitweisen And kann man überprüfen, ob zwei Kategorien in mindestens einer Kategorie übereinstimmen."
+
+#~ msgid "Using the functions <placeholder-1/>(), <placeholder-2/>(), and <placeholder-3/>() you can access variables indirectly. Using <placeholder-4/>() you can specifically access local variables in other objects."
+#~ msgstr "Mittels der Funktionen <placeholder-1/>(), <placeholder-2/>(), und <placeholder-3/>() kann indirekt auf Variablen zugegriffen werden. Mittels <placeholder-4/>() kann speziell auch auf lokale Variablen in anderen Objekten zugreifen."
+
+#~ msgid "C4D_TradeLiving"
+#~ msgstr "C4D_TradeLiving"
+
+#~ msgid "A living being that can be sold at the home base."
+#~ msgstr "Verkaufbares Lebewesen."
+
+#~ msgid "C4D_Magic"
+#~ msgstr "C4D_Magic"
+
+#~ msgid "A magic spell."
+#~ msgstr "Zauber."
+
+#~ msgid "Reserved, used internally."
+#~ msgstr "Reserviert; wird intern benutzt."
 
 #~ msgid "CreateObject(Clonk)"
 #~ msgstr "CreateObject(Clonk)"

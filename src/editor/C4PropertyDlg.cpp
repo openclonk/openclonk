@@ -172,14 +172,6 @@ bool C4PropertyDlg::Update(C4ObjectList &rSelection)
 	return Update();
 }
 
-bool IsObjectPointer(int iValue)
-{
-	for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj == (C4Object*) iValue)
-			return true;
-	return false;
-}
-
 bool C4PropertyDlg::Update()
 {
 	if (!Active) return false;
