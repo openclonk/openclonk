@@ -20,7 +20,7 @@
       </params>
     </syntax>
     <desc>Removes the calling object.</desc>
-    <remark>When removing an object, numerous internal references to the object are cleared and any pointer to the object will become invalid. If you have stored a pointer to this object (e.g. in thread local script) you must no longer use this pointer after deletion of the object. If an object removes itself by script it should not execute any more script commands following the removal. The deleting function should immediately end with return().<br/>If the object is a valid crew member at the time of removal, the associated info object in the crew list will not be marked as 'killed', meaning a subsequent call to <funclink>SetCrewStatus</funclink>() might reuse the same crew info. To properly kill a clonk until the end of a round use <funclink>Kill</funclink>().</remark>
+    <remark>When removing an object, numerous internal references to the object are cleared and any pointer to the object will become invalid. If you have stored a pointer to this object (e.g. in thread local script) you must no longer use this pointer after deletion of the object. If an object removes itself by script it should not execute any more script commands following the removal. The deleting function should immediately end with return().<br/>If the object is a valid crew member at the time of removal, the associated info object in the crew list will not be marked as 'killed', meaning a subsequent call to <funclink>MakeCrewMember</funclink>() might reuse the same crew info. To properly kill a clonk until the end of a round use <funclink>Kill</funclink>().</remark>
     <examples>
       <example>
         <code>public func Activate(clonk) { clonk-&gt;RemoveObject(); }</code>

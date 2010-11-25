@@ -55,7 +55,7 @@ protected func InitializePlayer(int plr)
 protected func RelaunchPlayer(int plr)
 {
 	var clonk = CreateObject(Clonk, 0, 0, plr);
-	clonk->SetCrewStatus(plr,true);
+	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	return;

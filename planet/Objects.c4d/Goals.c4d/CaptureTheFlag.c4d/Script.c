@@ -70,7 +70,7 @@ protected func RelaunchPlayer(int plr)
 {
 	// New clonk.
 	var clonk = CreateObject(Clonk, 0, 0, plr);
-	clonk->SetCrewStatus(plr,true);
+	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	// Join new clonk.
 	JoinPlayer(plr);

@@ -297,7 +297,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 protected func RelaunchPlayer(int plr)
 {
 	var clonk = CreateObject(Clonk, 0, 0, plr);
-	clonk->SetCrewStatus(plr,true);
+	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	JoinPlayer(plr);
 	// Scenario script callback.

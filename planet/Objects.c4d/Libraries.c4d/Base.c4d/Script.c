@@ -264,7 +264,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 	// Deliver the object
 	var pObj = CreateContents(idDef);
 	pObj->SetOwner(iForPlr);
-	if(pObj->GetOCF() & OCF_CrewMember) pObj->SetCrewStatus(iForPlr,true);
+	if(pObj->GetOCF() & OCF_CrewMember) pObj->MakeCrewMember(iForPlr);
 	if(pObj->GetOCF() & OCF_Collectible) pClonk->Collect(pObj);
 	// is right clicked? then buy another object
 	if(bRight)
