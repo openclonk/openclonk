@@ -221,8 +221,6 @@ void C4Player::Execute()
 	// Delays
 	if (MessageStatus>0) MessageStatus--;
 	if (RetireDelay>0) RetireDelay--;
-	if (ViewWealth>0) ViewWealth--;
-	if (ViewScore>0) ViewScore--;
 	if (CursorFlash>0) CursorFlash--;
 }
 
@@ -791,7 +789,6 @@ bool C4Player::SetWealth(int32_t iVal)
 	if (iVal == Wealth) return true;
 
 	Wealth=BoundBy<int32_t>(iVal,0,10000);
-	ViewWealth = C4ViewDelay;
 
 	Game.Script.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
@@ -1223,8 +1220,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxHgt,     "ZoomLimitMaxHgt",      0));
 	pComp->Value(mkNamingAdapt(ZoomWdt,             "ZoomWdt",              0));
 	pComp->Value(mkNamingAdapt(ZoomHgt,             "ZoomHgt",              0));
-	pComp->Value(mkNamingAdapt(ViewWealth,          "ViewWealth",           0));
-	pComp->Value(mkNamingAdapt(ViewScore,           "ViewScore",            0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
@@ -1356,7 +1351,6 @@ void C4Player::DefaultRuntimeData()
 	ViewTarget=NULL;
 	ShowStartup=true;
 	CrewCnt=0;
-	ViewWealth=ViewScore=0;
 	Wealth=0;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
@@ -1445,7 +1439,6 @@ void C4Player::NotifyOwnedObjects()
 bool C4Player::DoScore(int32_t iChange)
 {
 	CurrentScore = BoundBy<int32_t>( CurrentScore+iChange, -100000, 100000 );
-	ViewScore = C4ViewDelay;
 	return true;
 }
 

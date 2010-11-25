@@ -861,7 +861,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
 		// Flag parent object's owner's wealth display
 		C4Player *pParentPlr = ::Players.Get(GetControllingPlayer());
-		if (pParentPlr) pParentPlr->ViewWealth = C4ViewDelay;
 	}
 	break;
 	case C4MN_Extra_MagicValue:

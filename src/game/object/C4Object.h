@@ -154,7 +154,6 @@ public:
 	int32_t InMat; // SyncClearance-NoSave //
 	uint32_t Color;
 	int32_t Timer;
-	int32_t ViewEnergy; // NoSave //
 	int32_t Audible, AudiblePan; // NoSave //
 	int32_t PlrViewRange;
 	C4Real fix_x,fix_y,fix_r; // SyncClearance-Fix //

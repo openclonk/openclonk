@@ -108,7 +108,6 @@ public:
 	C4Real ViewX,ViewY; // FIXED because this is saved/synchronized
 	bool ViewLock; // if set, no scrolling is allowed
 	C4Object *ViewTarget; // NoSave //
-	int32_t ViewWealth,ViewScore;
 	bool ShowStartup;
 	int32_t FlashCom; // NoSave //
 	bool fFogOfWar;

@@ -28,20 +28,15 @@
 const size_t C4MaxTitle   = 512;
 const int
 C4MaxDefString  = 100,
-                  C4MaxMessage    = 256,
-
-                                    C4ViewDelay     = 100,
-                                                      C4RetireDelay   =  60,
-
-                                                                         C4MaxColor       = 12,
-                                                                                            C4MaxKey         = 12,
-                                                                                                               C4MaxKeyboardSet =  4,
-                                                                                                                                   C4MaxControlSet  =  C4MaxKeyboardSet+4, // keyboard sets+gamepads
-
-                                                                                                                                                       C4MaxControlRate = 20,
-
-                                                                                                                                                                          C4MaxGammaUserRamps = 8,
-                                                                                                                                                                                                C4MaxGammaRamps     = C4MaxGammaUserRamps+1;
+C4MaxMessage    = 256,
+C4RetireDelay   =  60,
+C4MaxColor       = 12,
+C4MaxKey         = 12,
+C4MaxKeyboardSet =  4,
+C4MaxControlSet  =  C4MaxKeyboardSet+4, // keyboard sets+gamepads
+C4MaxControlRate = 20,
+C4MaxGammaUserRamps = 8,
+C4MaxGammaRamps     = C4MaxGammaUserRamps+1;
 
 // gamma ramp indices
 #define   C4GRI_SCENARIO  0

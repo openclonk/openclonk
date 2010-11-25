@@ -178,7 +178,6 @@ void C4Object::Default()
 	FirePhase=0;
 	InMat=MNone;
 	Color=0;
-	ViewEnergy=0;
 	PlrViewRange=0;
 	fix_x=fix_y=fix_r=0;
 	xdir=ydir=rdir=0;
@@ -1075,7 +1074,6 @@ bool C4Object::ExecLife()
 				// Reduce breath, then energy, bubble
 				if (Breath > 0) DoBreath(-2);
 				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
-				ViewEnergy = C4ViewDelay;
 				// Physical training
 				TrainPhysical(&C4PhysicalInfo::Breath, 2, C4MaxPhysical);
 			}
@@ -1203,8 +1201,6 @@ void C4Object::Execute()
 	}
 	// Menu
 	if (Menu) Menu->Execute();
-	// View delays
-	if (ViewEnergy>0) ViewEnergy--;
 }
 
 bool C4Object::At(int32_t ctx, int32_t cty)
@@ -1420,8 +1416,6 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	Call(PSF_EnergyChange,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedByPlr)));
 	// Alive and energy reduced to zero: death
 	if (Alive) if (Energy==0) if (!fWasZero) AssignDeath(false);
-	// View change
-	ViewEnergy = C4ViewDelay;
 }
 
 void C4Object::UpdatLastEnergyLossCause(int32_t iNewCausePlr)
@@ -1444,8 +1438,6 @@ void C4Object::DoBreath(int32_t iChange)
 	Breath += iChange;
 	// call to object
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
-	// View change
-	ViewEnergy = C4ViewDelay;
 }
 
 void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)

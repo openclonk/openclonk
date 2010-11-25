@@ -537,8 +537,6 @@ static bool FnDoMagicEnergy(C4AulObjectContext *cthr, long iChange, bool fAllowP
 	cthr->Obj->MagicEnergy += iChange;
 	// call to object
 	cthr->Obj->Call(PSF_MagicEnergyChange,&C4AulParSet(C4VInt(iChange)));
-
-	cthr->Obj->ViewEnergy = C4ViewDelay;
 	return true;
 }
 
