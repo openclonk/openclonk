@@ -165,7 +165,7 @@ func LadderStep(target, number, fUp)
 func FxIntClimbControlTimer(target, number)
 {
 	if (GetAction() != "Climb") return -1;
-	if(EffectVar(0, target, number)->CanNotBeClimbed(1)) EffectVar(0, target, number) = 0;
+	if(EffectVar(0, target, number) && EffectVar(0, target, number)->CanNotBeClimbed(1)) EffectVar(0, target, number) = 0;
 	if(!EffectVar(0, target, number))
 	{
 		no_ladder_counter = 5;
