@@ -850,11 +850,7 @@ func StopWalk()
 func GetCurrentWalkAnimation()
 {
 	if(Contained())
-	{
-		SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(30,0,1,0)), this);
-		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000),Trans_Rotate(-110,0,1,0)), this);
 		return Clonk_WalkInside;
-	}
 	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), this);
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
 	if(velocity < 1) return Clonk_WalkStand;
