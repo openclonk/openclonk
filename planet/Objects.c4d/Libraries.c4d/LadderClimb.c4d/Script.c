@@ -162,9 +162,9 @@ func LadderStep(target, number, fUp)
 	return true;
 }
 
-func FxIntClimbControlTimer(target, number)
+func FxIntClimbControlTimer(target, number, time)
 {
-	if (GetAction() != "Climb") return -1;
+	if (GetAction() != "Climb" || Contained()) return -1;
 	if(EffectVar(0, target, number) && EffectVar(0, target, number)->CanNotBeClimbed(1)) EffectVar(0, target, number) = 0;
 	if(!EffectVar(0, target, number))
 	{
@@ -202,8 +202,12 @@ func FxIntClimbControlTimer(target, number)
 	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
 	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5000-100*GetTurnPhase();
 	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
+	var lx = LadderToLandscapeCoordinates(x);
+	var ly = LadderToLandscapeCoordinates(y);
 	var old_x = GetX(), old_y = GetY();
-	SetPosition(LadderToLandscapeCoordinates(x), LadderToLandscapeCoordinates(y));
+	if(Abs(old_x-lx)+Abs(old_y-ly) > 10 && time > 1)
+		return -1;
+	SetPosition(lx, ly);
 	SetXDir(0); SetYDir(0);
 	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//EffectVar(2, target, number));
 	if (Stuck())
@@ -285,6 +289,7 @@ func LadderToLandscapeCoordinates(int x)
 
 func FxIntClimbControlStop(target, number)
 {
+	if(GetAction() == "Climb") SetAction("Walk");
 	SetLadderRotation(0);
 	SetHandAction(0);
 }
