@@ -1,5 +1,5 @@
 [DefCore]
-id=Goal_Flag
+id=Goal_FlagMeshes
 Version=4,10,0,0
 Category=C4D_Object
 Width=30

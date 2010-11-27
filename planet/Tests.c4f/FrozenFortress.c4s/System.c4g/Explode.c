@@ -80,7 +80,7 @@ global func BlueExplosionEffect(int level, int x, int y)
 			continue;
 		//var lvl = 16 * level / 10;
 		CreateSmokeTrail(level, angle, x + smokex, y + smokey);
-		count--;*/
-	}
+		count--;
+	}*/
 	return;
 }
