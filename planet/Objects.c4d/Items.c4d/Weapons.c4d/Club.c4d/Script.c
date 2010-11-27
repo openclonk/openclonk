@@ -114,7 +114,7 @@ func FxDuringClubShootControlTimer(target, effect_number, effect_time)
 // you are not going to be hit by objects you fling away
 func FxDuringClubShootControlQueryCatchBlow(object target, int num, object obj)
 {
-	DoStrike();
+	this->DoStrike(target, EffectVar(0, target, num));
 	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 	if(GetEffect(en, obj)) return true;
 	return false;
