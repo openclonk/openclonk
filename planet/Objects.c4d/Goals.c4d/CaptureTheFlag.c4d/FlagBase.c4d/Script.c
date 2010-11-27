@@ -29,6 +29,12 @@ public func FindTeam(int find_team)
 	return team == find_team;
 }
 
+// Returns whether there is a flag at this base.
+public func IsBaseWithFlag()
+{
+	return !!FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team), Find_Distance(30));
+}
+
 private func UpdateColor()
 {
 	//SetClrModulation(GetTeamColor(team));

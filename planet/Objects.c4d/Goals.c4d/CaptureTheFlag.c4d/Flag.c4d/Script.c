@@ -40,8 +40,6 @@ public func IsInteractable(object clonk)
 	if (GetAction() == "Attach")
 		if (GetActionTarget() != clonk)
 			return false;
-	if (clonk->GetProcedure() != "WALK")
-		return false;
 	var controller = clonk->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
 	if (ctrl_team == 0)
@@ -113,7 +111,8 @@ protected func FxFlagCarriedTimer(object target, int num)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
-	if (FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(30))) 
+	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(30));
+	if (base && base->IsBaseWithFlag()) 
 	{
 		var goal = FindObject(Find_ID(Goal_CaptureTheFlag));
 		if (goal)
