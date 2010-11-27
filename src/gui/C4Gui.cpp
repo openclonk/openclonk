@@ -556,6 +556,7 @@ namespace C4GUI
 
 	void Screen::Clear()
 	{
+		Container::Clear();
 		// dtor: Close context menu
 		AbortContext(false);
 		// GamePad
