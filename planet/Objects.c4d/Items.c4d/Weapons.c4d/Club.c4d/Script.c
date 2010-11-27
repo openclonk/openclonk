@@ -104,6 +104,12 @@ func FxDuringClubShootControlStart(target, effect_number, temp, p1)
 	EffectVar(0, target, effect_number)=p1;
 }
 
+func FxDuringClubShootControlStop(target, effect_number, reason, temp)
+{
+	if(temp) return;
+	AddEffect("AfterClubShootControl", target, 1, 15, this);
+}
+
 func FxDuringClubShootControlTimer(target, effect_number, effect_time)
 {
 	if(effect_time > 16) return -1;
@@ -120,14 +126,30 @@ func FxDuringClubShootControlQueryCatchBlow(object target, int num, object obj)
 	return false;
 }
 
+func FxAfterClubShootControlTimer()
+{
+	return -1;
+}
+
+func FxAfterClubShootControlQueryCatchBlow(object target, int effect_number, object obj)
+{
+	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
+	if(GetEffect(en, obj)) return true;
+	return false;
+}
+
 func DoStrike(clonk, angle)
 {
 	var x=Sin(angle, 7);
 	var y=-Cos(angle, 7);
 	var found=false;
-	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object), Find_Category(C4D_Vehicle)), Find_Exclude(clonk), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
 		if(obj->Stuck()) continue;
+		
+		// vehicles are only hit if they are pseudo vehicles. Bad system - has to be changed in the future
+		if(obj->GetCategory() & C4D_Vehicle)
+			if(!GetEffect("HitCheck", obj)) continue;
 		
 		var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 		if(GetEffect(en, obj)) continue;
