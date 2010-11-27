@@ -147,7 +147,7 @@ void C4UpdateDlg::UpdateText()
 // --------------------------------------------------
 // static update application function
 
-static bool IsWindowsVista()
+static bool IsWindowsWithUAC()
 {
 #ifdef _WIN32
 	// Determine windows version
@@ -155,7 +155,7 @@ static bool IsWindowsVista()
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	bool fWindowsXP = false;
 	if (GetVersionEx((LPOSVERSIONINFO) &ver))
-		return ((ver.dwMajorVersion == 6) && (ver.dwMinorVersion == 0));
+		return (ver.dwMajorVersion == 6);
 #endif
 	return false;
 }
@@ -189,8 +189,8 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (SEqual(C4_OS, "win32")) strUpdateProg += ".exe";
 	// Determine name of local extract of update program
 	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(strUpdateProg);
-	// Windows Vista: rename update program to setup.exe for UAC elevation and in temp path
-	if (IsWindowsVista()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
+	// Windows Vista/7: rename update program to setup.exe for UAC elevation and in temp path
+	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
 	// Extract update program (the update should be applied using the new version)
 	C4Group UpdateGroup, SubGroup;
 	char strSubGroup[1024+1];
