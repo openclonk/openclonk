@@ -2,8 +2,10 @@ Name=Flagge
 
 MsgBeamFlag=Teleportiere die Flagge in deine Basis.
 MsgGrabFlag=Schnapp dir die Flagge und bring sie in deine Basis.
+MsgDropFlag=Leg die Flagge hier ab.
 
 MsgFlagStolen=%s hat die Flagge von %s geklaut.
+MsgFlagDropped=%s hat die Flagge von %s fallen gelassen.
 MsgFlagBeamed=%s hat die Flagge in ihre Basis zurueckgebeamt.
 MsgFlagCaptured=%s hat erfolgreich die Flagge geklaut, und damit fuer sein Team einen Punkt gemacht.
 MsgFlagRestored=Die Flagge von %s wurde zurueckgesetzt.

@@ -37,6 +37,9 @@ public func FindTeam(int find_team)
 // Flag can be picked up by interaction.
 public func IsInteractable(object clonk)
 {
+	if (GetAction() == "Attach")
+		if (GetActionTarget() != clonk)
+			return false;
 	if (clonk->GetProcedure() != "WALK")
 		return false;
 	var controller = clonk->GetController();
@@ -55,22 +58,33 @@ public func GetInteractionMetaInfo(object clonk)
 	var ctrl_team = GetPlayerTeam(controller);
 	if (team == ctrl_team)
 		return { Description = "$MsgBeamFlag$" };
-	else
-		return { Description = "$MsgGrabFlag$" };
+	if (GetAction() == "Attach" && GetActionTarget() == clonk)
+		return { Description = "$MsgDropFlag$" };
+	return { Description = "$MsgGrabFlag$" };
 }
 
 public func Interact(object clonk)
 {
 	var controller = clonk->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
+	// Picked up by owning team, beam flag to base.
 	if (team == ctrl_team)
-		BeamFlag(true);
-	else
 	{
-		Enter(clonk); // TODO: Checks here.
-		Log("$MsgFlagStolen$", GetTeamName(ctrl_team), GetTeamName(team));
-		AddEffect("FlagCarried", clonk, 100, 5, this);
+		BeamFlag(true);
+		return true;
 	}
+	// Carrying clonk, drop flag.
+	if (GetAction() == "Attach" && GetActionTarget() == clonk)
+	{
+		SetAction("Idle");
+		RemoveEffect("FlagCarried", clonk);
+		Log("$MsgFlagDropped$", GetTeamName(ctrl_team), GetTeamName(team));
+		return true;		
+	}
+	// Fiendly team, grab flag.
+	SetAction("Attach", clonk);
+	Log("$MsgFlagStolen$", GetTeamName(ctrl_team), GetTeamName(team));
+	AddEffect("FlagCarried", clonk, 100, 5, this);
 	return true;
 }
 
@@ -82,14 +96,20 @@ protected func Initialize()
 
 public func HasNoFadeOut() { return true; }
 
-public func GetCarryMode() { return CARRY_Back; }
-public func GetCarryTransform()
+protected func FxFlagCarriedStart(object target, int num, int temp)
 {
-	return Trans_Mul(Trans_Translate(0,-17000,0),Trans_Rotate(90,0,1,0));
+	if (temp == 0)
+	{
+		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
+		EffectVar(0, target, num) = target->AttachMesh(this, "pos_back1", "main", trans);
+		this.Visibility = VIS_None;
+		ReducePhysicals(target);
+	}
+	return 1;
 }
 
 // Checks whether the carrier has reached its base.
-protected func FxFlagCarriedTimer(object target)
+protected func FxFlagCarriedTimer(object target, int num)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
@@ -105,10 +125,36 @@ protected func FxFlagCarriedTimer(object target)
 	return 1;
 }
 
-protected func Departure()
+protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 {
-	RemoveEffect("FlagCarried");
+	if (temp)
+		return 1;
+	this.Visibility = VIS_All;
+	if (target)
+	{	
+		target->DetachMesh(EffectVar(0, target, num));
+		ResetPhysicals(target);
+	}
+	return 1;
+}
+
+// Reduces physicals by 80%.
+private func ReducePhysicals(object clonk)
+{
+	var phys = ["Walk", "Jump", "Scale", "Hangle", "Swim"];
+	for (var i = 0; i < GetLength(phys); i++)
+		clonk->SetPhysical(phys[i], (8 * clonk->GetPhysical(phys[i], PHYS_Current)) / 10, PHYS_StackTemporary);
 	return;
+}
+
+// Resets physicals.
+private func ResetPhysicals(object clonk)
+{
+	var phys = ["Walk", "Jump", "Scale", "Hangle", "Swim"];
+	for (var i = 0; i < GetLength(phys); i++)
+		clonk->ResetPhysical(phys[i]);
+	return;
+
 }
 
 // Create a new flag on destruction.
@@ -137,12 +183,12 @@ private func BeamFlag(bool msg)
 		return;
 	if (msg)
 		Log("$MsgFlagBeamed$", GetTeamName(team));
-	Exit();
+	SetAction("Idle");
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base)
 	{
 		if(ObjectDistance(base) > 30)
-			SetPosition(base->GetX(), base->GetY() - 20);
+			SetPosition(base->GetX(), base->GetY() - 13);
 	}
 	else 
 		RemoveObject();
@@ -150,8 +196,20 @@ private func BeamFlag(bool msg)
 }
 
 local Name = "$Name$";
+local ActMap = {
+	Attach = {
+		Prototype = Action,
+		Name = "Attach",
+		Procedure = DFA_ATTACH,
+		Length = 1,
+		Delay = 0,
+		NextAction = "Attach",
+		Animation = "Wave",
+	},
+};
+
 protected func Definition(def) 
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-130000,-3000,0), Trans_Rotate(60,0,1,0)), def);
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(60, 0, 1, 0), Trans_Scale(1200), Trans_Translate(-4000,6500,-3000)), def);
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-79000, 1000, 0), Trans_Rotate(60, 0, 1, 0)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(60, 0, 1, 0), Trans_Scale(1200), Trans_Translate(-4000, 6500, -3000)), def);
 }

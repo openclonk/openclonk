@@ -31,6 +31,7 @@ public func SetFlagBase(int team, int x, int y)
 	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
 	var flag = CreateObject(Goal_Flag, x, y, NO_OWNER);
+	flag->SetPosition(x, y - 13);
 	flag->SetTeam(team);
 	return;
 }
