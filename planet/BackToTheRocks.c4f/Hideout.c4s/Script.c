@@ -85,9 +85,12 @@ protected func Initialize()
 	
 	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();
-	
+
 	return;
 }
+
+
+
 
 global func PlaceEdges()
 {
