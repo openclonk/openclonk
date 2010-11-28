@@ -64,11 +64,11 @@ abstract class ParseINI {
      */
     public static function parseValuesByCategory($key, $category, $string) {
         if(!$key || !$string || !$category) {
-            return false;
+            return array();
         }
 		$string = ParseINI::normalize($string);
         if(strpos($string, $key) === false || strpos($string, '['.$category.']') === false) {
-            return false;
+            return array();
         }
         $values = array();
         $lines = explode("\n", $string);
