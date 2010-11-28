@@ -1,10 +1,9 @@
 #appendto Sword
 
-local bKingSize;
+local king_size;
 
-public func MakeKingSize() { bKingSize = true; SetMeshMaterial("KingSword2",1); }
-public func MakeNormalSize() { bKingSize = false; SetMeshMaterial("Sword2",1); }
-
+public func MakeKingSize() { king_size = true; SetMeshMaterial("KingSword2",1); }
+public func MakeNormalSize() { king_size = false; SetMeshMaterial("Sword2",1); }
 public func Departure() { MakeNormalSize(); }
 
 
@@ -60,7 +59,7 @@ func CheckStrike(iTime)
 					AddEffect(sword_name, obj, 1, 40, 0, 0);
 				}
 
-				if(!bKingSize)
+				if(!king_size)
 				{
 					// Reduce damage by shield
 					var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
@@ -69,7 +68,7 @@ func CheckStrike(iTime)
 				}	
 				// fixed damage (10)
 				var damage=((100-shield)*10*1000 / 100);
-				if(bKingSize) damage+=3000+Random(3000);
+				if(king_size) damage+=3000+Random(3000);
 				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
 				
 				// object has not been deleted?

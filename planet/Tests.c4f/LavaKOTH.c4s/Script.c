@@ -10,7 +10,6 @@
 protected func Initialize()
 {
 	// Goal.
-
 	var goal = CreateObject(Goal_KingOfTheHill, 555, 250, NO_OWNER);
 	goal->SetRadius(80);
 	goal->SetPointLimit(10);

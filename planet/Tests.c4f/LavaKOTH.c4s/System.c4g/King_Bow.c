@@ -1,9 +1,9 @@
 #appendto Bow
 
-local bKingSize;
+local king_size;
 
-public func MakeKingSize() { bKingSize = true; SetMeshMaterial("Kingwood",1); return(SetMeshMaterial("KingLeather", 0)); }
-public func MakeNormalSize() { bKingSize = false; SetMeshMaterial("wood",0); return(SetMeshMaterial("Leather", 1)); }
+public func MakeKingSize() { king_size = true; SetMeshMaterial("Kingwood",1); return(SetMeshMaterial("KingLeather", 0)); }
+public func MakeNormalSize() { king_size = false; SetMeshMaterial("wood",0); return(SetMeshMaterial("Leather", 1)); }
 public func Departure() { MakeNormalSize(); }
 
 // Callback from the clonk, when he actually has stopped aiming
@@ -19,7 +19,7 @@ public func FinishedAiming(object clonk, int angle)
 		{
 			var arrow = Contents(0)->TakeObject();
 			arrow->Launch(angle,100,clonk);
-			if(bKingSize)
+			if(king_size)
 			{
 				AddEffect("ExplosiveArrow",arrow,100,1,this);
 				arrow->SetClrModulation(RGB(255,128,0));
@@ -44,6 +44,3 @@ public func FxExplosiveArrowTimer(pTarget, iEffectNumber, iEffectTime)
 	
 }
 
-
-local Name = "$Name$";
-local Description = "$Description$";

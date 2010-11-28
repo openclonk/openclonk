@@ -1,16 +1,16 @@
 #appendto Musket
 
-local bKingSize;
+local king_size;
 
-public func MakeKingSize() { bKingSize = true; return(SetMeshMaterial("KingMusket")); }
-public func MakeNormalSize() { bKingSize = false; return(SetMeshMaterial("Musket")); }
+public func MakeKingSize() { king_size = true; return(SetMeshMaterial("KingMusket")); }
+public func MakeNormalSize() { king_size = false; return(SetMeshMaterial("Musket")); }
 public func Departure() { MakeNormalSize(); }
 
 private func FireWeapon(object clonk, int angle)
 {
 	var shot = Contents(0)->TakeObject();
 	
-	if(bKingSize)
+	if(king_size)
 	{
 		var box = CreateObject(LeadShot,0,0,this->GetOwner());
 		shot->LessDamage();

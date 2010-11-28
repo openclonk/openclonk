@@ -1,4 +1,5 @@
 #appendto LeadShot
+
 local lowering;
 public func LessDamage() { lowering=6; SetClrModulation(RGB(255,128,0)); }
 public func ProjectileDamage() { return 10-lowering; }

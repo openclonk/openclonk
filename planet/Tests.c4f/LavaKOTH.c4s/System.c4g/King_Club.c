@@ -1,13 +1,10 @@
 #appendto Club
 
-local bKingSize;
+local king_size;
 
-public func MakeKingSize() { bKingSize = true;  SetMeshMaterial("KingClub",0);}
-public func MakeNormalSize() { bKingSize = false;  SetMeshMaterial("Club",0);}
-
+public func MakeKingSize() { king_size = true;  SetMeshMaterial("KingClub",0);}
+public func MakeNormalSize() { king_size = false;  SetMeshMaterial("Club",0);}
 public func Departure() { MakeNormalSize(); }
-
-
 
 func DoStrike(clonk, angle)
 {
@@ -24,7 +21,7 @@ func DoStrike(clonk, angle)
 		if(obj->GetOCF() & OCF_Alive)
 		{
 			var damage=5*1000;
-			if(bKingSize) damage+=3000;
+			if(king_size) damage+=3000;
 			var f=ApplyShieldFactor(clonk, obj, damage);
 			ApplyWeaponBash(obj, 200, angle);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
@@ -34,7 +31,7 @@ func DoStrike(clonk, angle)
 			var div=100;
 			if(obj->GetContact(-1)) div*=10;
 			var k=1;
-			if(bKingSize) k=3;
+			if(king_size) k=3;
 			// mass factor
 			var fac1=10000/Max(2, obj->GetMass());
 			var fac2=BoundBy(10-Abs(obj->GetDefCoreVal("Width", "DefCore")-obj->GetDefCoreVal("Height", "DefCore")), 1, 10);
