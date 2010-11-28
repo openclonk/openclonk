@@ -10,6 +10,19 @@
  */
 abstract class ParseINI {
 
+	/**
+     * Normalizes the given text to unix line endings (lf).
+     *
+     * @param string $text
+     * @return string
+     */
+	public static function normalize($text) {
+		$text = str_replace("\r\n", "\n", $text);
+		$text = str_replace("\r", "\n", $text);
+		$text = preg_replace("/\n{2,}/", "\n\n", $text);
+		return $text;
+	}
+
     /**
      * Returns the value belonging to the key from an ini-like string.
      *
@@ -18,13 +31,14 @@ abstract class ParseINI {
      * @return string
      */
     public static function parseValue($key, $string) {
-        if(!$key || !$string) {
+		if(!$key || !$string) {
             return false;
         }
+        $string = ParseINI::normalize($string);
         if(strpos($string, $key) === false) {
             return false;
         }
-        $value = '';
+		$value = '';
         $key_start = strpos($string, $key."=") + strlen($key) + 1;
         $key_end = strpos($string, "\n", $key_start);
         if($key_end === false) {
@@ -52,6 +66,7 @@ abstract class ParseINI {
         if(!$key || !$string || !$category) {
             return false;
         }
+		$string = ParseINI::normalize($string);
         if(strpos($string, $key) === false || strpos($string, '['.$category.']') === false) {
             return false;
         }
