@@ -1,6 +1,7 @@
 [Head]
-Title=Bottom
+Title=MoltenMonarch
 Version=4,10,0,0
+Icon=23
 MinPlayer=2
 MaxPlayer=8
 
