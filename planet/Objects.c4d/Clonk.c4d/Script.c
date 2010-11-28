@@ -1440,11 +1440,13 @@ func StartSwim()
 		Clonk_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
+	SetVertex(1,VTX_Y,-4,2);
 }
 
 func StopSwim()
 {
 	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
+	SetVertex(1,VTX_Y,-7,2);
 }
 
 func FxIntSwimStart(pTarget, iNumber, fTmp)
