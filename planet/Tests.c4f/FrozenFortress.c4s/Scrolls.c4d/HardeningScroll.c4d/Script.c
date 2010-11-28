@@ -48,7 +48,7 @@ public func FxHardeningSpellTimer(pTarget, iEffectNumber, iEffectTime)
 	for(var i=0; i<5; i++)
 	{
 		var r = Random(360);
-		var d = Random(8) + Random(5) + Random(6) + Random(6);
+		var d = Random(8) + Random(6) + Random(6) + Random(6)+Random(3);
 		x= Sin(r,d) + EffectVar(2, pTarget, iEffectNumber);
 		y = -Cos(r,d) + EffectVar(3, pTarget, iEffectNumber);
 		if(GetMaterial(x,y) == Material("Snow"))
@@ -57,7 +57,7 @@ public func FxHardeningSpellTimer(pTarget, iEffectNumber, iEffectTime)
 			CreateParticle("Air",x ,y ,xdir/3 ,ydir/3 ,35);
 		}
 	}
-	if(iEffectTime > 360 || EffectVar(4, pTarget, iEffectNumber) > 300) { return -1; }
+	if(iEffectTime > 360 || EffectVar(4, pTarget, iEffectNumber) > 500) { return -1; }
 
 
 	

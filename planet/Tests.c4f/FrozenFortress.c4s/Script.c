@@ -54,9 +54,10 @@ protected func Initialize()
 	AddEffect("SnowyWinter", nil, 100, 1);
 	Sound("WindLoop.ogg",true,20,nil,+1);
 	AddEffect("GeysirExplosion", nil, 100, 1);
-	//// Brick edges, notice the symmetric landscape.
+	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();
-	
+	// No Seaweed in snowy regions.
+	RemoveAll(Find_ID(Seaweed));
 	return;
 }
 
@@ -115,8 +116,8 @@ global func FxSnowyWinterTimer(object target, int num, int time)
 {
 	if(time%1200 == 100 ) 
 	{
-		var add=RandomX(-1,1);
-		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,4);	
+		var add=RandomX(-2,2);
+		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,5);	
 	}
 	for(var i=0; i<(EffectVar(0, target, num)); i++)
 	{
