@@ -17,7 +17,8 @@ protected func JavelinStrength()
 public func DoThrow(object clonk, int angle)
 {
 	var javelin=TakeObject();
-	javelin->MakeKingSize();
+	if (king_size)
+		javelin->MakeKingSize();
 	
 	// how fast the javelin is thrown depends very much on
 	// the speed of the clonk
