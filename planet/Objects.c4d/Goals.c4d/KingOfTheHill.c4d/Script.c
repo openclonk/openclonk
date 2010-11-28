@@ -106,10 +106,11 @@ public func SetRadius(int to)
 	radius=to;
 }
 
-func DoPoint(player,count)
+func DoPoint(int player, int count)
 {
-	if(count == nil) count = 1;
-	player_points[player] += count;
+	if (count == nil) 
+		count = 1;
+	player_points[player] = Max(player_points[player] + count, 0);
 }
 
 protected func InitializePlayer()
