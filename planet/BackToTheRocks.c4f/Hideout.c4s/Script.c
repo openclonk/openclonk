@@ -141,12 +141,31 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 }
 global func FxFillBaseChestTimer(object target, int num)
 {
-	if(EffectVar(0, target, num)) 
-		var w_list = [Firestone, Firestone, Dynamite, Dynamite, Shovel, Loam, Loam, Ropeladder ];
+	if(EffectVar(0, target, num))
+	{ 
+		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder ];
+		var maxcount = [2,2,1,2,1];
+	}
 	else
+	{
 		var w_list = [Bow, Shield, Sword, Javelin, Musket];
-	if (target->ContentsCount() < 5)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
+		var maxcount = [1,2,1,2,1];
+	}
+	
+	var contents;
+	for(var i=0; i<target->GetLength(w_list); i++)
+		contents+=target->ContentsCount(w_list[i]);
+	if(contents > 5) return 1;
+	
+	for(var i=0; i<2 ; i++)
+	{
+		var r = Random(GetLength(w_list));
+		if (target->ContentsCount(w_list[r]) < maxcount[r])
+		{
+			target->CreateChestContents(w_list[r]);
+			i=3;
+		}
+	}
 	return 1;
 }
 
@@ -162,9 +181,24 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Sword, Javelin, Club, Dynamite, Firestone, Dynamite];
-	if (target->ContentsCount() < 5)
-		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
+	var w_list = [Sword, Javelin, Club, Dynamite, Firestone];
+	var maxcount = [1,2,1,2,2];
+
+	
+	var contents;
+	for(var i=0; i<target->GetLength(w_list); i++)
+		contents+=target->ContentsCount(w_list[i]);
+	if(contents > 6) return 1;
+	
+	for(var i=0; i<2 ; i++)
+	{
+		var r = Random(GetLength(w_list));
+		if (target->ContentsCount(w_list[r]) < maxcount[r])
+		{
+			target->CreateChestContents(w_list[r]);
+			i=3;
+		}
+	}
 	return 1;
 }
 

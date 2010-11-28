@@ -7,4 +7,4 @@ public func FxNoInteractTime()
 	return -1;
 }
 
-public func Initialize() { AddEffect("NoInteract",this,100,26*36,this); }
+public func Initialize() { AddEffect("NoInteract",this,100,10*36,this); }
