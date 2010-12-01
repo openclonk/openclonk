@@ -160,23 +160,20 @@ static bool IsWindowsWithUAC()
 	return false;
 }
 
-bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *pScreen)
+bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 {
-	StdStrBuf strUpdateURL;
-	// Double check for valid update
-	if (!IsValidUpdate(rUpdateVersion)) return false;
-	strUpdateURL.Format(Config.General.UpdateURL, C4_OS, C4XVER1, C4XVER2, C4XVER3, C4XVER4);
 	// Determine local filename for update group
-	StdStrBuf strLocalFilename; strLocalFilename.Copy(GetFilename(strUpdateURL.getData()));
-	strLocalFilename.Copy(Config.AtTempPath(strLocalFilename.getData()));
+	StdCopyStrBuf strLocalFilename(Config.AtTempPath(GetFilename(szUpdateURL)));
+	StdCopyStrBuf strRemoteURL(szUpdateURL);
 	// Download update group
-	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strUpdateURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
+	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strRemoteURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
 	{
 		// Download failed, open browser so the user can download a full package
 		OpenURL("http://wiki.openclonk.org/w/Download");
 		// return success, because error message has already been shown
 		return true;
 	}
+
 	// Apply downloaded update
 	return ApplyUpdate(strLocalFilename.getData(), true, pScreen);
 }
@@ -255,9 +252,9 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	return succeeded;
 }
 
-bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
+bool C4UpdateDlg::IsValidUpdate(const char *szUpdateURL)
 {
-	return CompareVersion(rNewVer.iVer[0], rNewVer.iVer[1], rNewVer.iVer[2], rNewVer.iVer[3], C4XVER1, C4XVER2, C4XVER3, C4XVER4) > 0;
+	return szUpdateURL != NULL && strlen(szUpdateURL) > 0;
 }
 
 bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
@@ -268,8 +265,8 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			return false;
 	// Store the time of this update check (whether it's automatic or not or successful or not)
 	Config.Network.LastUpdateTime = time(NULL);
-	// Get current update version from server
-	C4GameVersion UpdateVersion;
+	// Get current update url from server
+	StdStrBuf UpdateURL;
 	C4GUI::Dialog *pWaitDlg = NULL;
 	if (C4GUI::IsGUIValid())
 	{
@@ -277,24 +274,25 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 		pWaitDlg->SetDelOnClose(false);
 		pScreen->ShowDialog(pWaitDlg, false);
 	}
-	C4Network2VersionInfoClient VerChecker;
+	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
-	StdStrBuf strQuery; strQuery.Format("%s?action=version", Config.Network.UpdateServerAddress);
-	if (VerChecker.Init() && VerChecker.SetServer(strQuery.getData()) && VerChecker.QueryVersion())
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
+	if (UpdateClient.Init() && UpdateClient.SetServer(strQuery.getData()) && UpdateClient.QueryUpdateURL())
 	{
-		VerChecker.SetNotify(&Application.InteractiveThread);
-		Application.InteractiveThread.AddProc(&VerChecker);
+		UpdateClient.SetNotify(&Application.InteractiveThread);
+		Application.InteractiveThread.AddProc(&UpdateClient);
 		// wait for version check to terminate
-		while (VerChecker.isBusy())
+		while (UpdateClient.isBusy())
 		{
 			// wait, check for program abort
 			if (!Application.ScheduleProcs()) { fAborted = true; break; }
 			// check for dialog close
 			if (pWaitDlg) if (!C4GUI::IsGUIValid() || !pWaitDlg->IsShown())  { fAborted = true; break; }
 		}
-		if (!fAborted) fSuccess = VerChecker.GetVersion(&UpdateVersion);
-		Application.InteractiveThread.RemoveProc(&VerChecker);
-		VerChecker.SetNotify(NULL);
+		if (!fAborted) fSuccess = UpdateClient.GetUpdateURL(&UpdateURL);
+		Application.InteractiveThread.RemoveProc(&UpdateClient);
+		UpdateClient.SetNotify(NULL);
 	}
 	if (C4GUI::IsGUIValid() && pWaitDlg) delete pWaitDlg;
 	// User abort
@@ -306,7 +304,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	if (!fSuccess)
 	{
 		StdStrBuf sError; sError.Copy(LoadResStr("IDS_MSG_UPDATEFAILED"));
-		const char *szErrMsg = VerChecker.GetError();
+		const char *szErrMsg = UpdateClient.GetError();
 		if (szErrMsg)
 		{
 			sError.Append(": ");
@@ -316,13 +314,12 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 		return false;
 	}
 	// Applicable update available
-	if (C4UpdateDlg::IsValidUpdate(UpdateVersion))
+	if (C4UpdateDlg::IsValidUpdate(UpdateURL.getData()))
 	{
 		// Prompt user, then apply update
-		StdStrBuf strMsg; strMsg.Format(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), UpdateVersion.GetString().getData());
-		if (pScreen->ShowMessageModal(strMsg.getData(), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
+		if (pScreen->ShowMessageModal(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
 		{
-			if (!DoUpdate(UpdateVersion, pScreen))
+			if (!DoUpdate(UpdateURL.getData(), pScreen))
 				pScreen->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 			else
 				return true;
@@ -340,37 +337,28 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 }
 
 
-// *** C4Network2VersionInfoClient
+// *** C4Network2UpdateClient
 
-bool C4Network2VersionInfoClient::QueryVersion()
+bool C4Network2UpdateClient::QueryUpdateURL()
 {
 	// Perform an Query query
 	return Query(NULL, false);
 }
 
-bool C4Network2VersionInfoClient::GetVersion(C4GameVersion *piVerOut)
+bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
 {
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
 	// Parse response
-	piVerOut->Set("", 0,0,0,0);
 	try
 	{
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
-		                                     mkNamingAdapt(
-		                                       mkParAdapt(*piVerOut, false),
-		                                       "Version"),
+		                                     mkNamingAdapt(*pUpdateURL,"UpdateURL"),
 		                                     C4ENGINENAME), ResultString);
 	}
 	catch (StdCompiler::Exception *pExc)
 	{
 		SetError(pExc->Msg.getData());
-		return false;
-	}
-	// validate version
-	if (!piVerOut->iVer[0])
-	{
-		SetError(LoadResStr("IDS_ERR_INVALIDREPLYFROMSERVER"));
 		return false;
 	}
 	// done; version OK!

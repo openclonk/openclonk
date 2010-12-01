@@ -52,7 +52,6 @@ public:
 	StdStrBuf SaveDemoFolder;
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
-	char UpdateURL[CFG_MaxString+1];
 	int32_t FPS;
 	int32_t Record;
 	int32_t DefRec;

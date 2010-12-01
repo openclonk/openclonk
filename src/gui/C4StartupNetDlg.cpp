@@ -270,9 +270,9 @@ bool C4StartupNetListEntry::OnReference()
 	if (eQueryType == NRQT_Masterserver)
 	{
 		// masterserver is official: So check version
-		C4GameVersion MasterVersion;
-		if (pRefClient->GetMasterVersion(&MasterVersion))
-			pNetDlg->CheckVersionUpdate(MasterVersion);
+		StdStrBuf updURL;
+		if (pRefClient->GetUpdateURL(&updURL))
+			pNetDlg->CheckVersionUpdate(updURL.getData());
 		// masterserver: schedule next query
 		sInfoText[1].Format(LoadResStr("IDS_NET_INFOGAMES"), (int) iNewRefCount);
 		SetTimeout(TT_Masterserver);
@@ -845,7 +845,7 @@ void C4StartupNetDlg::OnBtnRecord(C4GUI::Control *btn)
 void C4StartupNetDlg::OnBtnUpdate(C4GUI::Control *btn)
 {
 	// do update
-	if (!C4UpdateDlg::DoUpdate(UpdateVersion, GetScreen()))
+	if (!C4UpdateDlg::DoUpdate(UpdateURL.getData(), GetScreen()))
 	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 	}
@@ -865,7 +865,9 @@ void C4StartupNetDlg::UpdateMasterserver()
 	else
 	{
 		pMasterserverClient = new C4StartupNetListEntry(pGameSelList, NULL, this);
-		pMasterserverClient->SetRefQuery(Config.Network.GetLeagueServerAddress(), C4StartupNetListEntry::NRQT_Masterserver);
+		StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+		StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.GetLeagueServerAddress(), strVersion.getData(), C4_OS);
+		pMasterserverClient->SetRefQuery(strQuery.getData(), C4StartupNetListEntry::NRQT_Masterserver);
 	}
 }
 
@@ -1194,12 +1196,12 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 		pEntry->UpdateCollapsed(true);
 }
 
-void C4StartupNetDlg::CheckVersionUpdate(const C4GameVersion &rNewVer)
+void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL)
 {
 	// Is a valid update
-	if (C4UpdateDlg::IsValidUpdate(rNewVer))
+	if (C4UpdateDlg::IsValidUpdate(szUpdateURL))
 	{
-		UpdateVersion = rNewVer;
+		UpdateURL = szUpdateURL;
 		btnUpdate->SetVisibility(true);
 	}
 	// Otherwise: no update available

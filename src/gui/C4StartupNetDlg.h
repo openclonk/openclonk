@@ -146,7 +146,7 @@ private:
 	C4StartupNetListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
 	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
 	bool fUpdatingList; // set during list update - prevent selection update calls
-	C4GameVersion UpdateVersion; // set if update button is visible: Version to be updated to
+	StdCopyStrBuf UpdateURL; // set if update button is visible: Version to be updated to
 
 	C4Network2IODiscoverClient DiscoverClient; // disocver client to search for local hosts
 	int iGameDiscoverInterval;                 // next time until a game discovery is started
@@ -209,7 +209,7 @@ public:
 
 	void OnSec1Timer(); // idle proc: update list
 
-	void CheckVersionUpdate(const C4GameVersion &rNewVer); // make an update button visible if the passed verionis an update to this version
+	void CheckVersionUpdate(const char *szUpdateURL); // make an update button visible if the passed url is a valid update url
 };
 
 

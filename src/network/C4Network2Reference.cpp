@@ -551,7 +551,7 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 bool C4Network2RefClient::QueryReferences()
 {
 	// invalidate version
-	fVerSet = false;
+	fUrlSet = false;
 	// Perform an Query query
 	return Query(NULL, false);
 }
@@ -561,8 +561,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
 	// Parse response
-	MasterVersion.Set("", 0,0,0,0);
-	fVerSet = false;
+	fUrlSet = false;
 	// local update test
 	try
 	{
@@ -572,9 +571,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		Comp.Begin();
 		// get current version
 		Comp.Value(mkNamingAdapt(
-		             mkNamingAdapt(
-		               mkParAdapt(MasterVersion, false),
-		               "Version"),
+		             mkNamingAdapt(UpdateURL,"UpdateURL"),
 		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
@@ -597,17 +594,17 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	for (int i = 0; i < rRefCount; i++)
 		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
 	// validate version
-	if (MasterVersion.iVer[0]) fVerSet = true;
+	if (UpdateURL.getData() != NULL) fUrlSet = true;
 	// Done
 	ResetError();
 	return true;
 }
 
-bool C4Network2RefClient::GetMasterVersion(C4GameVersion *piVerOut)
+bool C4Network2RefClient::GetUpdateURL(StdStrBuf *pUpdateURL)
 {
 	// call only after GetReferences
-	if (!fVerSet) return false;
-	*piVerOut = MasterVersion;
+	if (!fUrlSet) return false;
+	*pUpdateURL = UpdateURL;
 	return true;
 }
 
