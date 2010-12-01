@@ -165,6 +165,8 @@ bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 	// Determine local filename for update group
 	StdCopyStrBuf strLocalFilename(Config.AtTempPath(GetFilename(szUpdateURL)));
 	StdCopyStrBuf strRemoteURL(szUpdateURL);
+	// cut off http://
+	strRemoteURL.Replace("http://","");
 	// Download update group
 	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strRemoteURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
 	{
@@ -183,7 +185,9 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	// Determine name of update program
 	StdStrBuf strUpdateProg; strUpdateProg.Copy(C4CFN_UpdateProgram);
 	// Windows: manually append extension because ExtractEntry() cannot properly glob and Extract() doesn't return failure values
-	if (SEqual(C4_OS, "win32")) strUpdateProg += ".exe";
+#ifdef _WIN32
+	strUpdateProg += ".exe";
+#endif
 	// Determine name of local extract of update program
 	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(strUpdateProg);
 	// Windows Vista/7: rename update program to setup.exe for UAC elevation and in temp path
@@ -194,6 +198,8 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (!UpdateGroup.Open(strUpdateFile)) return false;
 	// Look for update program at top level
 	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
+		// ASK: What is this? Why should an update program not be found at the top
+		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
 		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.c4u", C4_OS).getData(), strSubGroup))
 			// Extract update program from sub group

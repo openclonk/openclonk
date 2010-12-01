@@ -215,13 +215,17 @@ inline int stricmp(const char *s1, const char *s2)
 
 
 #ifdef _WIN64
-#define C4_OS "win64"
+#define C4_OS "win-x86_64"
 #elif defined(_WIN32)
-#define C4_OS "win32"
+#define C4_OS "win-x86"
 #elif defined(__linux__)
-#define C4_OS "linux"
+#if defined(__x86_64__)
+#define C4_OS "linux-x86_64"
+#else
+#define C4_OS "linux-x86"
+#endif
 #elif defined(__APPLE__)
-#define C4_OS "mac"
+#define C4_OS "mac-x86"
 #else
 #define C4_OS "unknown";
 #endif
