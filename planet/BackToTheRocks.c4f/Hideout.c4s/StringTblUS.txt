@@ -1,2 +1,2 @@
-NameLeft=Team Emerald
+NameLeft=Team Amber
 NameRight=Team Ametyst

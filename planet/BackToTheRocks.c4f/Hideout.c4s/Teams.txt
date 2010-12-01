@@ -4,7 +4,7 @@ TeamColors=true
 	[Team]
 	id=1
 	Name=$NameLeft$
-	Color=2483746
+	Color=12996352
 	#IconSpec=GrappleBow
 	MaxPlayer=4
 

@@ -1,5 +1,5 @@
 [Material]
-Name=Emerald
+Name=Amber
 Shape=3
 Density=50
 Friction=15
@@ -9,4 +9,4 @@ MaxAirSpeed=100
 MaxSlide=1
 Corrode=60
 Placement=21
-TextureOverlay=Emerald
+TextureOverlay=Amber
