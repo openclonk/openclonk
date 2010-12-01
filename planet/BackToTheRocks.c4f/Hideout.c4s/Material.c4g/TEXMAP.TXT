@@ -2,7 +2,7 @@
 # Index +128 for underground materials
 OverloadMaterials
 OverloadTextures
-08=Tunnel-tunnelAmber
+08=Tunnel-tunnelRuby
 09=Tunnel-tunnelAmethyst
 10=Tunnel-tunnel
 11=Tunnel-tunnel
@@ -56,7 +56,7 @@ OverloadTextures
 #61=Crystal-Structure
 #62=Crystal-Structure2
 
-65=Amber-Amber
+65=Ruby-Ruby
 66=Ice-ice2
 67=Ametyst-Ametyst
 68=Ice-ice3

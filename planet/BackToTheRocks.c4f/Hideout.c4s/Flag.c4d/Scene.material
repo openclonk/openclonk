@@ -13,7 +13,7 @@ material FlagLeft
 			scene_blend alpha_blend
 			texture_unit
 			{
-				texture FlagAmber.png
+				texture FlagRuby.png
 				tex_address_mode wrap
 				filtering trilinear
 			}
