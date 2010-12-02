@@ -25,6 +25,7 @@
 
 #include <C4Object.h>
 #include <C4ObjectCom.h>
+#include <C4Physics.h>
 #include <C4Random.h>
 #include <C4Network2Stats.h>
 #include <C4Game.h>
@@ -274,13 +275,14 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 										if (obj2->Marker == Marker) continue;
 										obj2->Marker = Marker;
 										// Hit
-										if ((obj2->OCF & OCF_HitSpeed2) && (obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
-											if (!obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
-											{
-												if (true /* "realistic" hit energy */)
+										if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
+										{
+											C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
+											C4Real speed = dXDir * dXDir + dYDir * dYDir;
+											if (speed > HitSpeed2)
+												if (!obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
 												{
-													C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
-													int32_t iHitEnergy = fixtoi((dXDir * dXDir + dYDir * dYDir) * obj2->Mass / 5 );
+													int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5 );
 													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); // hit energy reduced to 1/3rd, but do not drop to zero because of this division
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
@@ -288,22 +290,13 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 													if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyInt(P_Procedure) != DFA_FLIGHT))
 														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
 													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
-													                                      C4VObj(obj2)));
+																						  C4VObj(obj2)));
+													// obj1 might have been tampered with
+													if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+														goto out1;
+													continue;
 												}
-												else
-												{
-													obj1->DoEnergy(-obj2->Mass/5, false, C4FxCall_EngObjHit, obj2->Controller);
-													int tmass=Max<int32_t>(obj1->Mass,50);
-													obj1->Fling(obj2->xdir*50/tmass,
-													            -Abs(obj2->ydir/2)*50/tmass, false);
-													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-obj2->Mass/5),
-													                                      C4VObj(obj2)));
-												}
-												// obj1 might have been tampered with
-												if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-													goto out1;
-												continue;
-											}
+										}
 										// Collection
 										if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable))
 											if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Def->Collection.x),0,obj1->Def->Collection.Wdt-1))
