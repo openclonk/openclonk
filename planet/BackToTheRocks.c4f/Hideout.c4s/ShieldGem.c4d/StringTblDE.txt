@@ -1,0 +1,2 @@
+Name=Schild-Kristall
+Description=Erzeugt beim Aufprall ein kurzlebiges Schild.

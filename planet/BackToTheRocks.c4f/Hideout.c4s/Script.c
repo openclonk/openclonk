@@ -70,7 +70,7 @@ protected func Initialize()
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
-	AddEffect("FillSpecialChest", chest, 100, 5 * 36);
+	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
 	
 	// Cannons loaded with 12 shots.
 	var cannon;
@@ -135,9 +135,9 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 		
 	EffectVar(0, target, num)=supply;
 	if(EffectVar(0, target, num)) 
-		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
+		var w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
-		var w_list = [Bow, Shield, Sword, Javelin, Musket];
+		var w_list = [Bow, Sword, Javelin, PyreGem];
 	for(var i=0; i<4; i++)
 		target->CreateChestContents(w_list[i]);
 	return 1;
@@ -146,13 +146,13 @@ global func FxFillBaseChestTimer(object target, int num)
 {
 	if(EffectVar(0, target, num))
 	{ 
-		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder ];
-		var maxcount = [2,2,1,2,1];
+		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
+		var maxcount = [2,2,1,2,1,2,1];
 	}
 	else
 	{
-		var w_list = [Bow, Shield, Sword, Javelin, Musket];
-		var maxcount = [1,2,1,2,1];
+		var w_list = [Bow, Shield, Sword, Javelin, Musket, ShieldGem, PyreGem];
+		var maxcount = [1,2,1,2,1,1,2];
 	}
 	
 	var contents;
@@ -176,7 +176,7 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 {
 	if (temporary) 
 		return 1;
-	var w_list = [Sword, Javelin, Club, Firestone, Dynamite, Firestone];
+	var w_list = [Sword, Javelin, Club, Firestone, Dynamite];
 	if (target->ContentsCount() < 5)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
 	return 1;
@@ -184,8 +184,8 @@ global func FxFillOtherChestStart(object target, int num, int temporary)
 
 global func FxFillOtherChestTimer(object target)
 {
-	var w_list = [Sword, Javelin, Club, Dynamite, Firestone];
-	var maxcount = [1,2,1,2,2];
+	var w_list = [Sword, Javelin, Club, Dynamite, Firestone, SlowGem, ShieldGem, PyreGem];
+	var maxcount = [1,2,1,2,2,1,2,2];
 
 	
 	var contents;
@@ -208,9 +208,14 @@ global func FxFillOtherChestTimer(object target)
 global func FxFillSpecialChestTimer(object target)
 {
 	if (Random(3)) return 1;
+	
+	var w_list = [PyreGem, ShieldGem, SlowGem];
+	var r=Random(3);
+	if (target->ContentsCount() < 4)
+		target->CreateChestContents(w_list[r]);
+	
 	var w_list = [GrappleBow, DynamiteBox, Boompack];
 	var r=Random(3);
-
 	for(var i=0; i < GetLength(w_list); i++)
 		if (FindObject(Find_ID(w_list[i]))) return 1;
 	target->CreateChestContents(w_list[r]);
@@ -226,13 +231,18 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	var obj = CreateObject(obj_id);
+	if(GetX() > LandscapeWidth()/2 -50 && GetX() < LandscapeWidth()/2 +50)
+		var obj = CreateObject(obj_id,RandomX(0,LandscapeWidth()),-500,NO_OWNER);
+	else
+		var obj = CreateObject(obj_id);
+		
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
 	if (obj_id == GrappleBow)
 		AddEffect("NotTooLong",obj,100,36);
+	
 	obj->Enter(this);
 	
 	return;
