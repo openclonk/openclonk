@@ -117,8 +117,10 @@
               C4Network::sendAnswer(C4Network::createError('Wrong engine, "' . ParseINI::parseValue('Game', $input) . '" expected.'));
           }
       } else { //list availabe games
-          if (!isset($_REQUEST['action']) || $_REQUEST['action'] == 'version')
-              $list = $server->getReferenceArray(false);
+          $list = array();
+          if (!isset($_REQUEST['action']) || $_REQUEST['action'] != 'version')
+            $list = $server->getReferenceArray(false);
+          }
           $message = '';
           $engine = ParseINI::parseValue('c4ms_title_engine', $config);
           $platform = isset($_REQUEST['platform']) ? mysql_real_escape_string($_REQUEST['platform'], $link) : 0;
