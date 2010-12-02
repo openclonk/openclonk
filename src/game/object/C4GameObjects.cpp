@@ -277,6 +277,8 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 										// Hit
 										if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
 										{
+											if(obj2->xdir != 0 || obj2->ydir != 0)
+											{
 											C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
 											C4Real speed = dXDir * dXDir + dYDir * dYDir;
 											if (speed > HitSpeed2)
@@ -296,6 +298,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 														goto out1;
 													continue;
 												}
+											}
 										}
 										// Collection
 										if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable))
