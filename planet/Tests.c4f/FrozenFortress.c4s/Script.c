@@ -124,6 +124,10 @@ global func FxSnowyWinterTimer(object target, int num, int time)
 	}
 	ExtractLiquid(LandscapeWidth()/2,295);
 	ExtractLiquid(LandscapeWidth()/2,285);
+	ExtractLiquid(340,340);
+	ExtractLiquid(400,340);
+	ExtractLiquid(1100,340);
+	ExtractLiquid(1160,340);
 	if(!Random(3)) for(var obj in FindObjects(Find_Or(Find_InRect(0,-250,300,280),Find_InRect(LandscapeWidth()-300,-250,300,280))))
 	{
 		obj->~DoEnergy(-1); 
