@@ -56,8 +56,6 @@ protected func Initialize()
 	AddEffect("GeysirExplosion", nil, 100, 1);
 	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();
-	// No Seaweed in snowy regions.
-	RemoveAll(Find_ID(Seaweed));
 	return;
 }
 
@@ -255,8 +253,6 @@ global func FxFillOtherChestTimer(object target)
 	return 1;
 }
 
-
-
 global func CreateChestContents(id obj_id)
 {
 	if (!this)
@@ -266,17 +262,6 @@ global func CreateChestContents(id obj_id)
 		obj->CreateContents(Arrow);
 	if (obj_id == Musket)
 		obj->CreateContents(LeadShot);
-	if (obj_id == GrappleBow)
-		AddEffect("NotTooLong",obj,100,36);
-	obj->Enter(this);
-	
+	obj->Enter(this);	
 	return;
-}
-
-
-global func FxNotTooLongTimer(object target, int num)
-{	if (!(target->Contained())) return 1;
-	if (target->Contained()->GetID() == Clonk) EffectVar(0, target, num)++;
-	if (EffectVar(0, target, num) > 40) return target->RemoveObject();
-	else if (EffectVar(0, target, num) > 35) target->Message("@<c ff%x%x>%d",(41-EffectVar(0, target, num))*50,(41-EffectVar(0, target, num))*50,41-EffectVar(0, target, num));
 }

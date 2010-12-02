@@ -1,6 +1,6 @@
 [Head]
 Icon=13
-Title=BB
+Title=FrozenFortress
 Version=4,10,0,0
 MinPlayer=2
 MaxPlayer=8
@@ -21,15 +21,12 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Vegetation=Seaweed=4;Fern=4
-VegetationLevel=70
 InEarth=Rock=1;Loam=1;Firestone=1
 InEarthLevel=40
 Sky=Clouds2
-MapWidth=280
-MapHeight=70
+MapWidth=150
+MapHeight=50
 SkyScrollMode=2
-BottomOpen=0
 
 [Weather]
 Climate=100,0,0,100
