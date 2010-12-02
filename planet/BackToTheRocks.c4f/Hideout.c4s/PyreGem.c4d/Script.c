@@ -36,9 +36,6 @@ global func FxGemPyreStart(object target, int num, int temporary, x, y, e, owner
 	EffectVar(2, target, num)=e;
 	EffectVar(3, target, num)=owner;
 	EffectVar(4, target, num)=0;
-	
-	Log("OK");
-		
 }
 global func FxGemPyreTimer(object target, int num, int time)
 {
@@ -48,7 +45,7 @@ global func FxGemPyreTimer(object target, int num, int time)
 	
 	if(time > 60) return -1;
 	
-	for(var i=0; i<(70 + time); i++)
+	for(var i=0; i<(20 + time); i++)
 	{
 		var r = Random(360);
 		var d = Random((((time/2)+1)*6)-((time/2)*4))+((time/2)*4)+RandomX(-2,2);

@@ -34,26 +34,24 @@ global func FxGemSlowFieldStart(object target, int num, int temporary, x, y, e)
 	EffectVar(0, target, num)=x;
 	EffectVar(1, target, num)=y;
 	EffectVar(2, target, num)=e;	
-	Log("OK");
-		
 }
 global func FxGemSlowFieldTimer(object target, int num, int time)
 {
 	var x=EffectVar(0, target, num);
 	var y=EffectVar(1, target, num);
 	var e=EffectVar(2, target, num);
-	if(time > (36*5)) return -1;
+	if(time > (126)) return -1;
 	for(var i=0; i<40; i++)
 	{
 		var r=Random(360);
-		var d=Min(Random(20)+Random(130),50);
+		var d=Min(Random(20)+Random(130),75);
 		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
 		var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 		if(e)clr=RGB(190+Random(10),0,20+Random(20));
 		if(Random(2))CreateParticle("MagicSpark", x + Sin(r,d), y - Cos(r,d),0,0,10+Random(12),clr);
 		else CreateParticle("Magic", x + Sin(r,d), y - Cos(r,d),0,0,10+Random(6),clr);
 	}
-	for(var obj in FindObjects(Find_Distance(50,x,y)))
+	for(var obj in FindObjects(Find_Distance(75,x,y)))
 	{
 		if(!PathFree(x,y,obj->GetX(),obj->GetY())) continue;
 		if(Distance(0,0,obj->GetXDir(),obj->GetYDir()) < 16 ) continue;
