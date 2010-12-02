@@ -561,6 +561,9 @@ namespace C4GUI
 		AbortContext(false);
 		// GamePad
 		if (pGamePadOpener) delete pGamePadOpener;
+		// fields reset
+		fExclusive = true;
+		fZoom = 1.0f;
 	}
 
 	Screen::~Screen()
