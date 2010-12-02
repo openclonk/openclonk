@@ -257,6 +257,8 @@ const char *LoadSecStr(const char *szString)
 
 C4ConfigShareware::C4ConfigShareware()
 {
+	RegistrationValid = false;
+	RegData[0] = 0;
 	KeyFile[0] = 0;
 	InvalidKeyFile[0] = 0;
 }
@@ -268,7 +270,10 @@ C4ConfigShareware::~C4ConfigShareware()
 
 void C4ConfigShareware::Default()
 {
-	ZeroMem(this, sizeof (C4ConfigShareware));
+	RegistrationValid = false;
+	*RegData = 0;
+	*KeyFile = 0;
+	*InvalidKeyFile = 0;
 	C4Config::Default();
 }
 

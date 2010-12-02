@@ -712,8 +712,6 @@ namespace C4GUI
 	void Control::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
 		if (!IsVisible()) return;
-		// inherited
-		Window::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 		// left down on click=focus-components?
 		if (IsFocusOnClick() && IsFocusElement()) if (iButton == C4MC_Button_LeftDown && !HasFocus())
 			{
@@ -727,6 +725,8 @@ namespace C4GUI
 						pParentDlg->SetFocus(this, true);
 				}
 			}
+		// inherited - processing child elements
+		Window::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 	}
 
 	bool Control::HasDrawFocus()
