@@ -118,7 +118,7 @@
           }
       } else { //list availabe games
           $list = array();
-          if (!isset($_REQUEST['action']) || $_REQUEST['action'] != 'version')
+          if (!isset($_REQUEST['action']) || $_REQUEST['action'] != 'version') {
             $list = $server->getReferenceArray(false);
           }
           $message = '';
