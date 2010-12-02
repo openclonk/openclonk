@@ -71,8 +71,9 @@ public func FxFuseTimer(object target, int num, int timer)
 	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
 	if(timer > 90)
 	{
-		//20-50 explosion radius
-		Explode(Sqrt(1 + ContentsCount() * 2) * 10);
+		//17-32 explosion radius
+		var radius = Sqrt(64 * (4 + ContentsCount()));
+		Explode(radius);
 	}
 }
 
