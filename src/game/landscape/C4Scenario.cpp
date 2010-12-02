@@ -124,9 +124,6 @@ int32_t C4Scenario::GetMinPlayer()
 	// MinPlayer is specified.
 	if (Head.MinPlayer != 0)
 		return Head.MinPlayer;
-	// Melee? Need at least two.
-	if (Game.IsMelee())
-		return 2;
 	// Otherwise/unknown: need at least one.
 	return 1;
 }
