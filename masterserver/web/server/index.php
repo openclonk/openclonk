@@ -37,15 +37,16 @@
           die();
       }
       $server->cleanUp(true); //Cleanup old stuff
-      if (ParseINI::parseValue('oc_enable_update', $config) == 1 && isset($_GET['action']) && $_GET['action'] == 'release-file' && isset($_GET['file']) && isset($_GET['hash']) && isset($_GET['new_version']) && isset($_GET['platform'])) {
-          $file = ParseINI::parseValue('oc_update_path', $config) . $_GET['file'];
-          if (file_exists($file) && hash_hmac_file('sha256', $file, ParseINI::parseValue('oc_update_secret', $config)) == $_GET['hash']) {
-              $old_version = isset($_GET['old_version']) ? explode(',', mysql_real_escape_string($_GET['old_version'], $link)) : array();
-              $new_version = mysql_real_escape_string($_GET['new_version'], $link);
-              $platform = mysql_real_escape_string($_GET['platform'], $link);
+      if (ParseINI::parseValue('oc_enable_update', $config) == 1 && isset($_REQUEST['action']) && $_REQUEST['action'] == 'release-file' && isset($_REQUEST['file']) && isset($_REQUEST['hash']) && isset($_REQUEST['new_version']) && isset($_REQUEST['platform'])) {
+          $file = ParseINI::parseValue('oc_update_path', $config) . $_REQUEST['file'];
+          if (file_exists($file)) {
+			if(hash_hmac_file('sha256', $file, ParseINI::parseValue('oc_update_secret', $config)) == $_REQUEST['hash']) {
+              $old_version = isset($_REQUEST['old_version']) ? explode(',', mysql_real_escape_string($_REQUEST['old_version'], $link)) : array();
+              $new_version = mysql_real_escape_string($_REQUEST['new_version'], $link);
+              $platform = mysql_real_escape_string($_REQUEST['platform'], $link);
               $file = mysql_real_escape_string($file, $link);
               if (!empty($old_version)) {
-                  if (isset($_GET['delete_old_files']) && $_GET['delete_old_files'] == 'yes') {
+                  if (isset($_REQUEST['delete_old_files']) && $_REQUEST['delete_old_files'] == 'yes') {
                       $result = mysql_query('SELECT `file` FROM `' . $prefix . 'update` WHERE `new_version` != \'' . $new_version . '\' AND `old_version` != \'\' AND `platform` = \'' . $platform . '\'');
                       while (($row = mysql_fetch_assoc($result)) != false) {
                           unlink(ParseINI::parseValue('oc_update_path', $config) . $row['file']);
@@ -56,16 +57,19 @@
                       mysql_query('INSERT INTO `' . $prefix . 'update` (`old_version`, `new_version`, `platform`, `file`) VALUES (\'' . $version . '\', \'' . $new_version . '\', \'' . $platform . '\', \'' . $file . '\')');
                   }
               } else {
-                  if (isset($_GET['delete_old_files']) && $_GET['delete_old_files'] == 'yes') {
+                  if (isset($_REQUEST['delete_old_files']) && $_REQUEST['delete_old_files'] == 'yes') {
                       $row = mysql_fetch_assoc(mysql_query('SELECT `file` FROM `' . $prefix . 'update` WHERE `old_version` = \'\' AND `platform` = \'' . $platform . '\''));
                       unlink(ParseINI::parseValue('oc_update_path', $config) . $row['file']);
                   }
                   mysql_query('DELETE FROM `' . $prefix . 'update` WHERE `old_version` = \'\' AND `platform` = \'' . $platform . '\'');
                   mysql_query('INSERT INTO `' . $prefix . 'update` (`old_version`, `new_version`, `platform`, `file`) VALUES (\'\', \'' . $new_version . '\', \'' . $platform . '\', \'' . $file . '\')');
               }
-          } else {
-              C4Network::sendAnswer(C4Network::createError('File not found or hash incorrect.'));
-          }
+            } else {
+                C4Network::sendAnswer(C4Network::createError('Hash incorrect.'));
+            }
+		  } else {
+			  C4Network::sendAnswer(C4Network::createError('Specified file not found.'));
+		  }
       } else if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) { //data sent from engine?
           $input = $GLOBALS['HTTP_RAW_POST_DATA'];
           $action = ParseINI::parseValue('Action', $input);
@@ -113,12 +117,12 @@
               C4Network::sendAnswer(C4Network::createError('Wrong engine, "' . ParseINI::parseValue('Game', $input) . '" expected.'));
           }
       } else { //list availabe games
-          if (!isset($_GET['action']) || $_GET['action'] == 'version')
+          if (!isset($_REQUEST['action']) || $_REQUEST['action'] == 'version')
               $list = $server->getReferenceArray(false);
           $message = '';
           $engine = ParseINI::parseValue('c4ms_title_engine', $config);
-          $platform = isset($_GET['platform']) ? mysql_real_escape_string($_GET['platform'], $link) : 0;
-          $client_version = isset($_GET['version']) ? mysql_real_escape_string($_GET['version'], $link) : 0;
+          $platform = isset($_REQUEST['platform']) ? mysql_real_escape_string($_REQUEST['platform'], $link) : 0;
+          $client_version = isset($_REQUEST['version']) ? mysql_real_escape_string($_REQUEST['version'], $link) : 0;
           if (!empty($engine)) {
               $message .= '[' . $engine . ']' . PHP_EOL;
               if (ParseINI::parseValue('oc_enable_update', $config) == 1) {
