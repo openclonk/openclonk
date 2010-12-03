@@ -40,6 +40,8 @@ protected func Initialize()
 				break;
 		}
 		goal->AddCheckpoint(x, y, cp_mode);
+		CreateObject(Dynamite,x,y,-1)->Explode(25); //Safety for materials
+		CreateObject(Dynamite,x,y,-1)->Explode(25); //Safety granite
 	}
 	
 	/* --Environmental Effects-- */
