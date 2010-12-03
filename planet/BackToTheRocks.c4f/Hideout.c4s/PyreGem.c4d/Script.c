@@ -65,7 +65,7 @@ global func FxGemPyreTimer(object target, int num, int time)
 		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
 		var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 		if(e)clr=RGB(190+Random(10),0,20+Random(20));
-		if(Random(2))CreateParticle("AirIntake", x + Sin(r,d), y - Cos(r,d),RandomX(-5,5),RandomX(-5,-10),BoundBy((40-time),1,25)*2 + 5 + Random(10),clr);
+		if(Random(2))CreateParticle("AirIntake", x + Sin(r,d), y - Cos(r,d),RandomX(-5,5),RandomX(-5,-10),BoundBy((30-time),1,25)*2 + 10 + Random(10),clr);
 		else CreateParticle("Magic", x + Sin(r,d), y - Cos(r,d),0,0,BoundBy((40-time),1,25) + 5 + Random(10),clr);
 	}
 	
@@ -77,7 +77,7 @@ global func FxGemPyreTimer(object target, int num, int time)
 		if(end) continue;
 		if(PathFree(x,y,obj->GetX(),obj->GetY()))
 		{
-			obj->DoEnergy(-BoundBy((40-time),1,25));
+			obj->DoEnergy(-BoundBy((30-time),1,25));
 			EffectVar(5+EffectVar(4, target, num), target, num) = obj;
 			EffectVar(4, target, num)++;
 		}	
