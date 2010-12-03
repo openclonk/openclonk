@@ -253,3 +253,10 @@ global func FxNotTooLongTimer(object target, int num)
 	if (EffectVar(0, target, num) > 40) return target->RemoveObject();
 	else if (EffectVar(0, target, num) > 35) target->Message("@<c ff%x%x>%d",(41-EffectVar(0, target, num))*50,(41-EffectVar(0, target, num))*50,41-EffectVar(0, target, num));
 }
+
+func OnClonkDeath(object clonk, int killed_by)
+{
+	// create a magic healing gem on Clonk death
+	clonk->CreateObject(LifeGem, 0, 0, killed_by);
+	return _inherited(clonk, killed_by);
+}
