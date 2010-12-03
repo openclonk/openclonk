@@ -172,7 +172,7 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ControlPreSend,          "ControlPreSend",       -1            ));
 	pComp->Value(mkNamingAdapt(s(WorkPath),             "WorkPath",             "Network"     ,false, true));
 	pComp->Value(mkNamingAdapt(Lobby,                   "Lobby",                0             ));
-	pComp->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        0             ,false, true));
+	pComp->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        1             ,false, true));
 	pComp->Value(mkNamingAdapt(NoReferenceRequest,      "NoReferenceRequest",   0             ));
 	pComp->Value(mkNamingAdapt(MaxResSearchRecursion,   "MaxResSearchRecursion",1             ,false, true));
 	pComp->Value(mkNamingAdapt(Comment,                 "Comment",              ""            ,false, true));
