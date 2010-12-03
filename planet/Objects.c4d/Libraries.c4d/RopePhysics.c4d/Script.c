@@ -35,7 +35,6 @@ protected func StartRope()
 {
 	objects = [[this, 0], [nil, nil]];
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
-
 	length = Rope_SegmentLength;
 
 	ParticleCount = 1;
@@ -408,6 +407,7 @@ private func Verlet()
 		particles[i][0][0] += x[0]-oldx[0]+a[0];
 		particles[i][0][1] += x[1]-oldx[1]+a[1];
 		particles[i][1] = temp;
+		particles[i][4] = 0;
 	}
 }
 
@@ -488,6 +488,7 @@ public func ConstraintLandscape()
 				// Moving up?
 				if(particles[i][0][1] < particles[i][1][1])
 					ydir = 1;
+				var found = 0;
 				// Look for all possible places where the particle could move (from nearest to farest)
 				for(var pos in TestArray)
 				{
@@ -496,33 +497,22 @@ public func ConstraintLandscape()
 						// Calculate the new position (if we don't move in a direction don't overwrite the old value)
 						var new = [0,0];
 						if(pos[0])
-							new[0] = (GetPartX(i)+xdir*pos[0])*Rope_Precision-xdir*Rope_Precision/2;
+							new[0] = (GetPartX(i)+xdir*pos[0])*Rope_Precision-xdir*Rope_Precision/2+xdir;
 						else
 							new[0] = particles[i][0][0];
 						if(pos[1])
-							new[1] = (GetPartY(i)+ydir*pos[1])*Rope_Precision-ydir*Rope_Precision/2;
+							new[1] = (GetPartY(i)+ydir*pos[1])*Rope_Precision-ydir*Rope_Precision/2+ydir;
 						else
 							new[1] = particles[i][0][1];
-						// Calculate the normalvector to apply the normal force accordingly
-						var dif = Vec_Sub(new, particles[i][0]);
-						var vel = Vec_Sub(particles[i][0], particles[i][1]);
-						var tang = [dif[1], -dif[0]];
-						var speed = Vec_Length(vel);
-						var normalforce = Vec_Length(dif);
-						// if the force is smaller then the speed decelerate
-						if(normalforce < speed)
-						{
-							vel = Vec_Mul(vel, 1000-normalforce*1000/speed);
-							vel = Vec_Div(vel, 1000);
-							particles[i][1] = Vec_Sub(new, vel);
-						}
-						// If not stop instantly
-						else
-							particles[i][1] = new;
+						particles[i][4] = 1; // Notifier for applying friction after the constraints
 						particles[i][0] = new;
+						found = 1;
 						break;
 					}
 				}
+				// No possibility to move the particle out? Then reset it. The old position should be valid
+				if(!found)
+					particles[i][0] = particles[i][1][:];
 			}
 		}
 }
@@ -537,6 +527,15 @@ private func SatisfyConstraints()
 		ConstraintObjects();
 		ConstraintLength();
 		ConstraintLandscape();
+	}
+	// Apply friction for those how have the notifier for it.
+	// Friction just means that the velocity is divided by 2 to simulatie a friction force
+	for(var i=0; i < ParticleCount; i++)
+	{
+		if(!particles[i][4]) continue;
+		var newvel = Vec_Sub(particles[i][0], particles[i][1]);
+		newvel = Vec_Div(newvel, 2);
+		particles[i][1] = Vec_Sub(particles[i][0], newvel);
 	}
 }
 
@@ -622,9 +621,9 @@ private func LogArray()
 {
 	// Helperfunction which has created "TestArray"
 	var array = [];
-	for(var dist = 1; dist < 10; dist++)
-		for(var x = 0; x < 10; x++)
-			for(var y = 0; y < 10; y++)
+	for(var dist = 1; dist < 20; dist++)
+		for(var x = 0; x < 20; x++)
+			for(var y = 0; y < 20; y++)
 			{
 				if(Distance(0,0,x,y) != dist) continue;
 				array[GetLength(array)] = [x,y];
