@@ -171,7 +171,7 @@ bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strRemoteURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
 	{
 		// Download failed, open browser so the user can download a full package
-		OpenURL("http://wiki.openclonk.org/w/Download");
+		OpenURL("http://www.openclonk.org/download.php");
 		// return success, because error message has already been shown
 		return true;
 	}
