@@ -1601,6 +1601,9 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
+	// creation selected the new context - switch back to previous context
+	RenderTarget = NULL;
+	pCurrCtx = NULL;
 	// done
 	return pCtx;
 }
@@ -1616,7 +1619,16 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
-	if (!pMainCtx) pMainCtx = pCtx;
+	if (!pMainCtx)
+	{
+		pMainCtx = pCtx;
+	}
+	else
+	{
+		// creation selected the new context - switch back to previous context
+		RenderTarget = NULL;
+		pCurrCtx = NULL;
+	}
 	// done
 	return pCtx;
 }
