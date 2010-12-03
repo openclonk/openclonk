@@ -38,13 +38,13 @@
       }
       $server->cleanUp(true); //Cleanup old stuff
       if (ParseINI::parseValue('oc_enable_update', $config) == 1 && isset($_REQUEST['action']) && $_REQUEST['action'] == 'release-file' && isset($_REQUEST['file']) && isset($_REQUEST['hash']) && isset($_REQUEST['new_version']) && isset($_REQUEST['platform'])) {
-          $file = ParseINI::parseValue('oc_update_path', $config) . $_REQUEST['file'];
-          if (file_exists($file)) {
-			if(hash_hmac_file('sha256', $file, ParseINI::parseValue('oc_update_secret', $config)) == $_REQUEST['hash']) {
+          $absolutefile = ParseINI::parseValue('oc_update_path', $config) . $_REQUEST['file'];
+          if (file_exists($absolutefile)) {
+			if(hash_hmac_file('sha256', $absolutefile, ParseINI::parseValue('oc_update_secret', $config)) == $_REQUEST['hash']) {
               $old_version = isset($_REQUEST['old_version']) ? explode(',', mysql_real_escape_string($_REQUEST['old_version'], $link)) : array();
               $new_version = mysql_real_escape_string($_REQUEST['new_version'], $link);
               $platform = mysql_real_escape_string($_REQUEST['platform'], $link);
-              $file = mysql_real_escape_string($file, $link);
+              $file = mysql_real_escape_string($_REQUEST['file'], $link);
               if (!empty($old_version)) {
                   if (isset($_REQUEST['delete_old_files']) && $_REQUEST['delete_old_files'] == 'yes') {
                       $result = mysql_query('SELECT `file` FROM `' . $prefix . 'update` WHERE `new_version` != \'' . $new_version . '\' AND `old_version` != \'\' AND `platform` = \'' . $platform . '\'');
