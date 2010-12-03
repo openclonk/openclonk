@@ -45,8 +45,8 @@ clonk.xsl also uses it to match the processing for it. -->
 		<li><a href="http://wiki.openclonk.org/w/About">About</a></li>
 	</ul>
 	</li>
-	<li><!--[if lt IE 9]><span><![endif]--><a href="http://wiki.openclonk.org/w/Download">Download</a><!--[if lt IE 9]></span><![endif]-->	<ul>
-		<li><a href="http://wiki.openclonk.org/w/Download">Latest Release</a></li>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://www.openclonk.org/w/download">Download</a><!--[if lt IE 9]></span><![endif]-->	<ul>
+		<li><a href="http://www.openclonk.org/download">Latest Release</a></li>
 		<li><a href="http://www.openclonk.org/nightly-builds">Nightly builds</a></li>
 	</ul>
 	</li>
