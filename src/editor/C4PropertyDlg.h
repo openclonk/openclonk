@@ -46,7 +46,7 @@ public:
 	bool Active;
 #ifdef _WIN32
 	HWND hDialog;
-	friend BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #else
 #ifdef WITH_DEVELOPER_MODE
 //    GtkWidget* window;

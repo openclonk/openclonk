@@ -105,7 +105,7 @@ namespace
 
 #ifdef _WIN32
 #include <commctrl.h>
-BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	int32_t iValue;
 	switch (Msg)

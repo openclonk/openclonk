@@ -125,7 +125,7 @@ protected:
 	int MenuIndexHelp;
 #ifdef _WIN32
 	void UpdateMenuText(HMENU hMenu);
-	BOOL RegisterConsoleWindowClass(HINSTANCE hInst);
+	bool RegisterConsoleWindowClass(HINSTANCE hInst);
 	bool AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool fEnabled=true);
 	virtual bool Win32DialogMessageHandling(MSG * msg)
 	{

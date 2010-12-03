@@ -45,7 +45,7 @@ const int32_t C4TLS_GradeMax     = 50,
 class C4ToolsDlg
 {
 #ifdef _WIN32
-	friend BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 public:
 	C4ToolsDlg();

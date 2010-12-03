@@ -266,7 +266,7 @@ protected:
 public:
 	HWND hWindow;
 protected:
-	BOOL RegisterWindowClass(HINSTANCE hInst);
+	bool RegisterWindowClass(HINSTANCE hInst);
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
 protected:

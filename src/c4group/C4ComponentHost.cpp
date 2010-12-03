@@ -32,7 +32,7 @@ C4ComponentHost *pCmpHost=NULL;
 #ifdef _WIN32
 #include "resource.h"
 
-BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	if (!pCmpHost) return false;
 

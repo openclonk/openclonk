@@ -60,7 +60,7 @@ CStdWindow::~CStdWindow ()
 {
 }
 
-BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst)
+bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 {
 	WNDCLASSEXW WndClass = {0};
 	WndClass.cbSize        = sizeof(WNDCLASSEX);
@@ -287,7 +287,7 @@ bool CStdApp::FlushMessages()
 
 int GLMonitorInfoEnumCount;
 
-BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
 	// get to indexed monitor
 	if (GLMonitorInfoEnumCount--) return true;

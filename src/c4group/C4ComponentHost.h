@@ -59,7 +59,7 @@ protected:
 #ifdef _WIN32
 	HWND hDialog;
 	void InitDialog(HWND hDlg);
-	friend BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 };
 
