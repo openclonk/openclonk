@@ -17,7 +17,7 @@ SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 SET(C4XVER1             4)
 SET(C4XVER2             10)
 SET(C4XVER3             0)
-SET(C4XVER4             8)
+SET(C4XVER4             9)
 
 SET(C4VERSIONBUILDNAME  "Back to the Rocks")
 
