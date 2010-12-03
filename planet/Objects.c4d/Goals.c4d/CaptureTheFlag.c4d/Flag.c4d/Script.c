@@ -165,7 +165,7 @@ protected func Destruction()
 	{
 		var flag = CreateObject(Goal_Flag, 0, 0, GetOwner());
 		flag->SetTeam(GetTeam());
-		flag->SetPosition(base->GetX(), base->GetY() - 10);
+		flag->SetPosition(base->GetX() + 7, base->GetY() - 13);
 		Log("$MsgFlagRestored$", GetTeamName(team));
 	}
 	return;
@@ -188,7 +188,7 @@ private func BeamFlag(bool msg)
 	if (base)
 	{
 		if(ObjectDistance(base) > 30)
-			SetPosition(base->GetX(), base->GetY() - 13);
+			SetPosition(base->GetX() + 7, base->GetY() - 13);
 	}
 	else 
 		RemoveObject();
