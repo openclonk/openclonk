@@ -4,15 +4,28 @@ local e;
 
 protected func Initialize()
 {
-	if(this->GetX() < LandscapeWidth()/2){
+	if(Random(2))
+	{
 		SetGraphics("E");
-		e=true;
+		e=true;	
 	}
-	else 
+	else
 	{
 		SetGraphics("");
 		e=false;
 	}
+	
+	if(this->GetX() < 920)
+	{
+		SetGraphics("E");
+		e=true;
+	}
+	else if(this->GetX() > 1280)
+	{
+		SetGraphics("");
+		e=false;
+	}
+	 
 	SetR(Random(360));
 }
 

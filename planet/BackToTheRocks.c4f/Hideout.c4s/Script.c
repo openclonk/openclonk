@@ -207,7 +207,7 @@ global func FxFillOtherChestTimer(object target)
 
 global func FxFillSpecialChestTimer(object target)
 {
-	if (Random(3)) return 1;
+	if (Random(2)) return 1;
 	
 	var w_list = [PyreGem, ShieldGem, SlowGem];
 	var r=Random(3);
@@ -231,10 +231,7 @@ global func CreateChestContents(id obj_id)
 {
 	if (!this)
 		return;
-	if(GetX() > LandscapeWidth()/2 -50 && GetX() < LandscapeWidth()/2 +50)
-		var obj = CreateObject(obj_id,RandomX(0,LandscapeWidth()),-500,NO_OWNER);
-	else
-		var obj = CreateObject(obj_id);
+	var obj = CreateObject(obj_id);
 		
 	if (obj_id == Bow)
 		obj->CreateContents(Arrow);
