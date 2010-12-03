@@ -128,6 +128,7 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 {
 	if (temp)
 		return 1;
+	SetAction("Idle");	
 	this.Visibility = VIS_All;
 	if (target)
 	{	
