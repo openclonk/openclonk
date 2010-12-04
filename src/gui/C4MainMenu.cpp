@@ -831,7 +831,6 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	{
 		if (!ValidPlr(Player)) return false; // observers may not look at goal/rule info, because it requires queue activation
 		Close(true);
-		// TODO!
 		C4Object *pObj; C4ID idItem(szCommand+12);
 		if ((pObj = ::Objects.Find(idItem)))
 			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
