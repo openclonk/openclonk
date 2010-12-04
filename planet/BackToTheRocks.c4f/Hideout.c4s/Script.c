@@ -53,17 +53,17 @@ protected func Initialize()
 	// Chests with weapons.
 	var chest;
 	chest = CreateObject(Chest, 110, 590, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
 	chest = CreateObject(Chest, 25, 460, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
 	chest = CreateObject(Chest, 730, 390, NO_OWNER);
-	AddEffect("FillOtherChest", chest, 100, 2 * 36);
+	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
-	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
+	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
 	chest = CreateObject(Chest, LandscapeWidth() - 730, 390, NO_OWNER);
-	AddEffect("FillOtherChest", chest, 100, 2 * 36);
+	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
 	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
@@ -149,8 +149,8 @@ global func FxFillBaseChestTimer(object target, int num)
 	}
 	else
 	{
-		var w_list = [ Sword, Javelin, Musket, ShieldGem, PyreGem];
-		var maxcount = [1,2,1,1,2];
+		var w_list = [Sword, Javelin, Musket, ShieldGem, PyreGem];
+		var maxcount = [1,2,1,1,1];
 	}
 	
 	var contents;
