@@ -1,5 +1,9 @@
 /*--- Life Gem ---*/
 
+local Collectible = 1;
+local Name = "$Name$";
+local Description = "$Description$";
+
 func Initialize()
 {
 	AddEffect("Sparkle", this, 10, 2, this);
