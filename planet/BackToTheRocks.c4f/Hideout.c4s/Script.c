@@ -68,6 +68,8 @@ protected func Initialize()
 	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
 	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
 	
+	/*
+	// No Cannons
 	// Cannons loaded with 12 shots.
 	var cannon;
 	cannon = CreateObject(Cannon, 429, 444, NO_OWNER);
@@ -78,7 +80,7 @@ protected func Initialize()
 	cannon->SetDir(DIR_Left);
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
-	
+	*/
 	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();
 
