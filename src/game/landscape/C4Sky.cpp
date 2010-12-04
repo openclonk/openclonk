@@ -224,7 +224,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 		// blit parallax sky
 		float zoom = cgo.Zoom;
 		float targetx = cgo.TargetX; float targety = cgo.TargetY;
-		int width = cgo.Wdt; int height = cgo.Hgt;
+
 		float parx = 10.0f / ParX; float pary = 10.0f / ParY;
 		float par = parx; //todo: pary?
 

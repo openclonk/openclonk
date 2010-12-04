@@ -1910,9 +1910,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 {
 	// Variables
 	C4FacetSurface fctSymbol;
-	char szCaption[256+1],szCommand[256+1];
-	int32_t cnt,iCount;
-	C4Def *pDef;
 	C4Player *pPlayer;
 	C4IDList ListItems;
 	// Close any other menu
@@ -1932,9 +1929,8 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// Create symbol
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 		pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
-		sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
 		// Init
-		Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_None,0,iMenu);
+		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_None,0,iMenu);
 		Menu->SetPermanent(true);
 		Menu->SetRefillObject(pTarget);
 		// Success
@@ -1961,8 +1957,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 		//pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 		DrawMenuSymbol(C4MN_Sell, fctSymbol, pTarget->Owner);
-		sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
-		Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_Value,0,iMenu);
+		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_Value,0,iMenu);
 		Menu->SetPermanent(true);
 		Menu->SetRefillObject(pTarget);
 		// Success
@@ -1977,8 +1972,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// Create symbol & init
 		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 		pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
-		sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
-		Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_None,0,iMenu);
+		Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName()).getData(),this,C4MN_Extra_None,0,iMenu);
 		Menu->SetPermanent(true);
 		Menu->SetRefillObject(pTarget);
 		// Success
@@ -5127,7 +5121,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	int iParX, iParY;
 	GetParallaxity(&iParX, &iParY);
 	float targetx = cgo.TargetX; float targety = cgo.TargetY;
-	int width = cgo.Wdt; int height = cgo.Hgt;
+
 	float parx = iParX / 100.0f; float pary = iParY / 100.0f;
 	float par = parx; //todo: pary?
 	// Old
