@@ -6,8 +6,8 @@ autom4te.cache
 .deps
 deps
 *.o
-clonk
-c4group
+./clonk
+./c4group
 .dirstamp
 *.a
 *.c4p
