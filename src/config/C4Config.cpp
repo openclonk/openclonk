@@ -168,7 +168,7 @@ void C4ConfigSound::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(ControlRate,             "ControlRate",          1             ,false, true));
+	pComp->Value(mkNamingAdapt(ControlRate,             "ControlRate",          3            ,false, true));
 	pComp->Value(mkNamingAdapt(ControlPreSend,          "ControlPreSend",       -1            ));
 	pComp->Value(mkNamingAdapt(s(WorkPath),             "WorkPath",             "Network"     ,false, true));
 	pComp->Value(mkNamingAdapt(Lobby,                   "Lobby",                0             ));
