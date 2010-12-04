@@ -51,6 +51,7 @@ const C4ID C4ID::Blast(std::string("FXB1"));
 const C4ID C4ID::Melee(std::string("MELE"));
 const C4ID C4ID::TeamworkMelee(std::string("MEL2"));
 const C4ID C4ID::Rivalry(std::string("RVLR"));
+const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }
 

@@ -44,6 +44,8 @@ private:
 	static LookupTable lookup;
 	static NamesList names;
 	void assign(const std::string &s);
+	template<size_t N>
+	explicit C4ID(const char (&s)[N]) { assign(s); }
 public:
 	static const C4ID None; // Invalid ID
 	static const C4ID Contents; // Not-ID for funny stuff
@@ -64,14 +66,13 @@ public:
 	DEPRECATED static const C4ID Melee;
 	DEPRECATED static const C4ID TeamworkMelee;
 	DEPRECATED static const C4ID Rivalry;
+	DEPRECATED static const C4ID Bubble;
 
 	C4ID(): v(None.v) {}
 	C4ID(const C4ID &other): v(other.v) {}
 	C4ID &operator =(const C4ID &other) { v = other.v; return *this; }
 
 	explicit C4ID(const std::string &s);
-	template<size_t N>
-	DEPRECATED explicit C4ID(const char (&s)[N]) { assign(s); }
 	explicit C4ID(const StdStrBuf &s) { assign(s.getData()); }
 
 	explicit inline C4ID(Handle i): v(i)

@@ -46,7 +46,6 @@ public:
 	int32_t GetTemperature();
 	int32_t GetSeason();
 	int32_t GetClimate();
-	bool LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStrength, const char *szPrecipitation);
 	void SetSeasonGamma();    // set gamma adjustment for season
 	void CompileFunc(StdCompiler *pComp);
 };
