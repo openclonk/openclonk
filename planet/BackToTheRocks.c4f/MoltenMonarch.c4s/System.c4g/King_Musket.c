@@ -2,8 +2,8 @@
 
 local king_size;
 
-public func MakeKingSize() { king_size = true; return(SetMeshMaterial("KingMusket")); }
-public func MakeNormalSize() { king_size = false; return(SetMeshMaterial("Musket")); }
+public func MakeKingSize() { king_size = true; return(SetMeshMaterial("KingMusket",1)); }
+public func MakeNormalSize() { king_size = false; return(SetMeshMaterial("Musket",1)); }
 public func Departure() { MakeNormalSize(); }
 
 private func FireWeapon(object clonk, int angle)
