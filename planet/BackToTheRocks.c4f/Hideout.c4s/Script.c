@@ -32,9 +32,9 @@ protected func Initialize()
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
 	//wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 846, 480, NO_OWNER);
+	gate = CreateObject(StoneDoor, 695, 539, NO_OWNER);
 	gate->DoDamage(80);		//Middle dors even easier
-	wheel = CreateObject(SpinWheel, 780, 480, NO_OWNER);
+	wheel = CreateObject(SpinWheel, 660, 500, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 420, NO_OWNER);
 	gate->DoDamage(50);		//Upper doors are easier to destroy
@@ -45,9 +45,9 @@ protected func Initialize()
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
 	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 844, 480, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 695, 539, NO_OWNER);
 	gate->DoDamage(80);		//Middle dors even easier
-	wheel = CreateObject(SpinWheel, LandscapeWidth() - 780, 480, NO_OWNER);
+	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 500, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
@@ -56,17 +56,13 @@ protected func Initialize()
 	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
 	chest = CreateObject(Chest, 25, 460, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
-	chest = CreateObject(Chest, 810, 600, NO_OWNER);
-	AddEffect("FillOtherChest", chest, 100, 2 * 36);
-	chest = CreateObject(Chest, 860, 350, NO_OWNER);
+	chest = CreateObject(Chest, 730, 390, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 2 * 36,nil,nil,false);
-	chest = CreateObject(Chest, LandscapeWidth() - 810, 600, NO_OWNER);
-	AddEffect("FillOtherChest", chest, 100, 2 * 36);
-	chest = CreateObject(Chest, LandscapeWidth() - 860, 350, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 730, 390, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 2 * 36);
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
@@ -78,7 +74,7 @@ protected func Initialize()
 	cannon->SetDir(DIR_Right);
 	cannon->SetR(15);
 	cannon->CreateContents(PowderKeg);
-	cannon = CreateObject(Cannon, 1772, 444, NO_OWNER);
+	cannon = CreateObject(Cannon, LandscapeWidth() - 429, 444, NO_OWNER);
 	cannon->SetDir(DIR_Left);
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
@@ -94,16 +90,18 @@ protected func Initialize()
 
 global func PlaceEdges()
 {
-	var x=[695, 655, 385, 345, 255, 275, 295, 105, 95, 45, 185, 155, 145, 825, 815, 805, 755, 765, 775, 785, 625, 615, 395, 335, 265, 245, 225, 215, 105, 95, 75];
-	var y=[515, 545, 385, 405, 485, 475, 465, 365, 375, 465, 545, 575, 585, 355, 365, 375, 405, 415, 425, 435, 555, 565, 445, 455, 575, 565, 555, 545, 495, 485, 475];
+	var x=[565, 595, 675, 635, 385, 255, 275, 295, 105, 95, 45, 185, 155, 145, 395, 335, 265, 245, 225, 215, 105, 95, 75, 315, 625, 615, 605, 655, 665, 675, 555, 515, 685, 575, 555, 605];
+	var y=[415, 415, 495, 495, 385, 485, 475, 465, 365, 375, 465, 545, 575, 585, 445, 455, 575, 565, 555, 545, 495, 485, 475, 545, 485, 475, 465, 435, 425, 415, 555, 565, 545, 285, 425, 425];
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
 		edge->Initialize();
 		edge->PermaEdge();
+
 		var edge=CreateObject(BrickEdge, LandscapeWidth()-x[i]+5, y[i] + 5, NO_OWNER);
 		edge->Initialize();
 		edge->PermaEdge();
+		
 	}
 	return 1;
 }
