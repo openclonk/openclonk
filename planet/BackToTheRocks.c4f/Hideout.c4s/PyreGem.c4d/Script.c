@@ -77,9 +77,10 @@ global func FxGemPyreTimer(object target, int num, int time)
 		if(end) continue;
 		if(PathFree(x,y,obj->GetX(),obj->GetY()))
 		{
-			obj->DoEnergy(-BoundBy((30-time),1,25));
+			obj->DoEnergy((-BoundBy((30-time),1,25)*3)/4);
 			obj->CastParticles("MagicFire",20 + (BoundBy((30-time),1,25)*2),(BoundBy((30-time),5,25)*2),0,0,25,40,clr,clr);
 			obj->CastParticles("Air",10 + BoundBy((30-time),1,25),10,0,0,15,30,clr,clr);
+			obj->Fling(RandomX(-2,2),-2-(BoundBy((30-time),10,30)/10));
 			EffectVar(5+EffectVar(4, target, num), target, num) = obj;
 			EffectVar(4, target, num)++;
 		}	
