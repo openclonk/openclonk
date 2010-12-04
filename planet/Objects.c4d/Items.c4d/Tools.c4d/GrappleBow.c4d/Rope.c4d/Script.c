@@ -91,7 +91,7 @@ public func MaxLengthReached()
 	{
 		for(var i = 0; i < ParticleCount; i++)
 			particles[i][1] = particles[i][0][:];
-		DrawIn();
+		DrawIn(1);
 	}
 }
 
@@ -121,7 +121,7 @@ func FxDrawInTimer()
 	}
 }
 
-func DrawIn()
+func DrawIn(fNoControl)
 {
 	DrawingIn = 1;
 	if(!GetEffect("DrawIn", this))
@@ -133,7 +133,7 @@ func DrawIn()
 		ConnectPull();
 		var clonk = objects[1][0];
 		if(clonk->Contained()) clonk = clonk->Contained();
-		RemoveEffect("IntGrappleControl", clonk);
+		if(!fNoControl) RemoveEffect("IntGrappleControl", clonk);
 	}
 }
 

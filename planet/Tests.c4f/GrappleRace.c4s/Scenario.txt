@@ -2,6 +2,9 @@
 Icon=37
 Title=GrappleRace
 
+[Definitions]
+Definition1=Objects.c4d
+
 [Game]
 Goals=Goal_Parkour
 
