@@ -9,6 +9,7 @@
 #include Library_HasExtraSlot
 
 local aim_anim;
+local turn_anim;
 local olddir;
 
 static const Fire_Velocity = 175;
@@ -111,7 +112,7 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 	var r = ConvertAngle(Angle(0,0,ix,iy));
 
 	var iColor = RGB(255,255,255);
-	if (!Contents(0) || GetEffect("Cooldown",this))
+	if (!Contents(0) || GetEffect("IntCooldown",this))
 		iColor = RGB(255,0,0);
 	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r-90, Fire_Velocity), Sin(r-90, Fire_Velocity), iColor, 20);
 
@@ -158,8 +159,8 @@ public func ControlUseStop(object clonk, int ix, int iy)
 		return true;
 	}
 
-	//Can't fire if cannon is cooling down
-	if(GetEffect("Cooldown",this))	return true;
+	//Can't fire if cannon is cooling down or turning
+	if(GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
 	
 	if (projectile)
 	{
@@ -170,7 +171,7 @@ public func ControlUseStop(object clonk, int ix, int iy)
 			//If there is a powder keg, take powder from it
 			powder->RemoveObject();
 			DoFire(projectile, clonk, Angle(0,0,ix,iy));
-			AddEffect("Cooldown",this,1,1,this);
+			AddEffect("IntCooldown",this,1,1,this);
 			if(Contents(0)->ContentsCount() == 0)
 			{
 				Contents(0)->RemoveObject();
@@ -196,8 +197,8 @@ public func ControlUseAltStop(object clonk, int ix, int iy)
 		return true;
 	}
 
-	//Can't fire if cannon is cooling down
-	if(GetEffect("Cooldown",this))	return true;
+	//Can't fire if cannon is cooling down or turning
+	if(GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
 	
 	if (projectile)
 	{
@@ -208,7 +209,7 @@ public func ControlUseAltStop(object clonk, int ix, int iy)
 			//If there is a powder keg, take powder from it
 			powder->RemoveObject();
 			DoFire(projectile, clonk, Angle(0,0,ix,iy));
-			AddEffect("Cooldown",this,1,1,this);
+			AddEffect("IntCooldown",this,1,1,this);
 			if(Contents(0)->ContentsCount() == 0)
 			{
 				Contents(0)->RemoveObject();
@@ -230,7 +231,7 @@ public func ControlUseAltCancel()
 	return ControlUseCancel();
 }
 
-public func FxCooldownTimer(object target, int num, int timer)
+public func FxIntCooldownTimer(object target, int num, int timer)
 {
 	if(timer > 72) return -1;
 }
@@ -286,15 +287,40 @@ func Timer()
 	{
 		if(olddir == 0)
 		{
-			PlayAnimation("TurnRight", 5, Anim_Linear(0, 0, GetAnimationLength("TurnRight"), 36, ANIM_Remove), Anim_Const(1000));
+			if(!GetEffect("IntTurning",this))
+			{
+				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(0, 0, GetAnimationLength("TurnRight"), 36, ANIM_Remove), Anim_Const(1000));
+				AddEffect("IntTurning",this,1,1,this);
+			}
+			else
+			{
+				var new_dist = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
+				var old_effect = 36 - GetEffect("IntTurning",this,nil,3);
+				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
+			}
 		}
 		
 		if(olddir == 1)
 		{
-			PlayAnimation("TurnLeft", 5, Anim_Linear(0, 0, GetAnimationLength("TurnLeft"), 36, ANIM_Remove), Anim_Const(1000));
+			if(!GetEffect("IntTurning",this))
+			{
+				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(0, 0, GetAnimationLength("TurnLeft"), 36, ANIM_Remove), Anim_Const(1000));
+				AddEffect("IntTurning",this,1,1,this);
+			}
+			else
+			{
+				var new_dist = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
+				var old_effect = 36 - GetEffect("IntTurning",this,nil,3);
+				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
+			}
 		}
 	}
 	olddir = GetDir();
+}
+
+private func FxIntTurningTimer(object target, int num, int timer)
+{
+	if(timer > 36) return -1;
 }
 
 local ActMap = {
