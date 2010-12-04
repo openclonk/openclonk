@@ -639,12 +639,6 @@ bool C4Player::ScenarioInit()
 	C4Team *pTeam; int32_t i;
 	if (Team && (pTeam = Game.Teams.GetTeamByID(Team))) if ((i=pTeam->GetPlrStartIndex())) PlrStartIndex=i-1;
 
-	// Set color
-	int32_t iColor=BoundBy<int32_t>(PrefColor,0,C4MaxColor-1);
-	while (::Players.ColorTaken(iColor))
-		{ ++iColor%=C4MaxColor; if (iColor==PrefColor) break; }
-	Color=iColor;
-
 	C4PlayerInfo *pInfo = GetInfo();
 	if (!pInfo) { assert(false); LogF("Internal error: ScenarioInit for ghost player %s!", GetName()); return false; }
 
@@ -1207,7 +1201,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(Eliminated,          "Eliminated",           0));
 	pComp->Value(mkNamingAdapt(Surrendered,         "Surrendered",          0));
 	pComp->Value(mkNamingAdapt(Evaluated,            "Evaluated",            false));
-	pComp->Value(mkNamingAdapt(Color,               "Color",                -1));
 	pComp->Value(mkNamingAdapt(ColorDw,             "ColorDw",              0u));
 	pComp->Value(mkNamingAdapt(Position,            "Position",             0));
 	pComp->Value(mkNamingAdapt(ViewMode,            "ViewMode",             C4PVM_Cursor));
@@ -1339,7 +1332,6 @@ void C4Player::DefaultRuntimeData()
 	Surrendered=0;
 	AtClient=C4ClientIDUnknown;
 	SCopy("Local",AtClientName);
-	Color=-1;
 	ControlSet = NULL;
 	ControlSetName.Clear();
 	MouseControl=false;

@@ -87,8 +87,7 @@ public:
 	int32_t Number;
 	int32_t ID; // unique player ID
 	int32_t Team; // team ID - may be 0 for no teams
-	int32_t Color; // OldGfx color index
-	uint32_t ColorDw; // color as DWord for newgfx
+	uint32_t ColorDw;
 	class C4PlayerControlAssignmentSet *ControlSet;
 	StdCopyStrBuf ControlSetName;
 	int32_t MouseControl;

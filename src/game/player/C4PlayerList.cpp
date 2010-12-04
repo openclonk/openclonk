@@ -117,14 +117,6 @@ bool C4PlayerList::PositionTaken(int iPosition) const
 	return false;
 }
 
-bool C4PlayerList::ColorTaken(int iColor) const
-{
-	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->Color==iColor)
-			return true;
-	return false;
-}
-
 int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 {
 	// maximum difference
