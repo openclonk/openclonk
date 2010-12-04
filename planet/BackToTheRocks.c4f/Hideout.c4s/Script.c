@@ -56,13 +56,13 @@ protected func Initialize()
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
 	chest = CreateObject(Chest, 25, 460, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, 730, 390, NO_OWNER);
+	chest = CreateObject(Chest, 730, 400, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, LandscapeWidth() - 730, 390, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 730, 400, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
