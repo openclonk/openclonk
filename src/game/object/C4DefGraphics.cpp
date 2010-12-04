@@ -178,8 +178,8 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 			return false;
 		delete[] buf;
 
-		// Create mirrored animations (#401)
-		Mesh->MirrorAnimations();
+		// Create mirrored animations (#401), order submeshes
+		Mesh->PostInit();
 	}
 	catch (const std::runtime_error& ex)
 	{

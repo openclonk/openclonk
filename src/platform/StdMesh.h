@@ -277,7 +277,7 @@ public:
 
 	// TODO: This code should maybe better be placed in StdMeshLoader...
 	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
-	void MirrorAnimations();
+	void PostInit();
 
 private:
 	void AddMasterBone(StdMeshBone* bone);
