@@ -2629,7 +2629,7 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				// Sky
 				if (!pix)
 				{
-					Surface32->SetPixDw(iX, iY, GetClrByTex(iX, iY));
+					Surface32->SetPixDw(iX, iY, 0x00ffffff);
 					continue;
 				}
 				// get density
@@ -2638,8 +2638,12 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				iOwnDens *= 2;
 				iOwnDens += GetPlacement(iX + 1, iY) + GetPlacement(iX - 1, iY);
 				iOwnDens /= 4;
-				// Normal color
-				DWORD dwBackClr = GetClrByTex(iX, iY);
+				// get texture map entry for pixel
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(PixCol2Tex(pix));
+				assert(pTex);
+				// get texture contents
+				DWORD dwBackClr;
+				if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
 				// get density of surrounding materials
 				int iCompareDens = AboveDensity / 8;
 				if (iOwnDens > iCompareDens)
@@ -2662,20 +2666,6 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	Surface32->Unlock();
 	// done
 	return true;
-}
-
-DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
-{
-	// Get pixel and default color
-	BYTE pix = _GetPix(iX, iY);
-	// get texture map entry for pixel
-	const C4TexMapEntry *pTex;
-	if (pix && (pTex = ::TextureMap.GetEntry(PixCol2Tex(pix))))
-	{
-		// pattern color
-		return pTex->GetPattern().PatternClr(iX, iY);
-	}
-	return Surface8->pPal->GetClr(pix);
 }
 
 bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)

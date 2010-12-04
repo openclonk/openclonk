@@ -230,7 +230,6 @@ protected:
 	CSurface8 * CreateMapS2(C4Group &ScenFile); // create map by def file
 	bool Relight(C4Rect To);
 	bool ApplyLighting(C4Rect To);
-	DWORD GetClrByTex(int32_t iX, int32_t iY);
 	bool Mat2Pal(); // assign material colors to landscape palette
 	void DigFreeSinglePix(int32_t x, int32_t y, int32_t dx, int32_t dy)
 	{
