@@ -69,7 +69,7 @@ global func FxGemPyreTimer(object target, int num, int time)
 		else CreateParticle("Magic", x + Sin(r,d), y - Cos(r,d),0,0,BoundBy((40-time),1,25) + 5 + Random(10),clr);
 	}
 	
-	for(var obj in FindObjects(Find_Distance(((time/2)+1)*6,x,y),Find_Not(Find_Distance((time/2)*4,x,y)),Find_ID(Clonk)))
+	for(var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(((time/2)+1)*6,x,y),Find_Not(Find_Distance((time/2)*4,x,y)),Find_ID(Clonk)))
 	{
 		var end=false;	
 		for(var i = 0; i < EffectVar(4, target, num) ; i++)
