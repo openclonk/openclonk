@@ -1921,6 +1921,7 @@ static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * Pro
 	                                pDef->Shape.Wdt,pDef->Shape.Hgt,
 	                                pDef->Category,
 	                                20);
+	if(!result) return 0;
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(v1));
 	pArray->SetItem(1, C4VInt(v2));
