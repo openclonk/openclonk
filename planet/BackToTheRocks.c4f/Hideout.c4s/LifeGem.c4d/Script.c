@@ -4,6 +4,9 @@ local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 
+// does not fade out. Who wants to leave it lying around anyway!
+func HasNoFadeOut(){return true;}
+
 func Initialize()
 {
 	AddEffect("Sparkle", this, 10, 2, this);
