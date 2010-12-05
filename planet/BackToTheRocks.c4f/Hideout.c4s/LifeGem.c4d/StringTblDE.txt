@@ -1,2 +1,2 @@
-Name=LifeGem
-Description=LifeGem
+Name=Lebens-Kristall
+Description=Benutzen, um den Clonk zu heilen. Schaden bricht den Heileffekt ab.
