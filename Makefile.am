@@ -684,7 +684,6 @@ EXTRA_DIST = \
   src/res/Play_Trans.png \
   src/res/Rect_Trans.png \
   src/res/Static_Trans.png \
-  src/c4group/c4group_cmdl.cpp \
   src/c4group/resource.h \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \

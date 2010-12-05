@@ -97,12 +97,6 @@ void C4Group_SetSortList(const char **ppSortList)
 	C4Group_SortList = ppSortList;
 }
 
-void C4Group_SetPasswords(const char *szPassword)
-{
-	if (!szPassword) C4Group_Passwords[0]=0;
-	else SCopy(szPassword,C4Group_Passwords,CFG_MaxString);
-}
-
 void C4Group_SetTempPath(const char *szPath)
 {
 	if (!szPath || !szPath[0]) C4Group_TempPath[0]=0;
@@ -135,16 +129,7 @@ int C4Group_GetCreation(const char *szFilename)
 	C4Group hGroup;
 	if (hGroup.Open(szFilename)) { iResult=hGroup.GetCreation(); hGroup.Close(); }
 	return iResult;
-}
-
-bool C4Group_SetOriginal(const char *szFilename, bool fOriginal)
-{
-	C4Group hGroup;
-	if (!hGroup.Open(szFilename)) return false;
-	hGroup.MakeOriginal(fOriginal);
-	if (!hGroup.Close()) return false;
-	return true;
-}
+	}
 
 bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort, bool fResetAttributes)
 {
@@ -542,7 +527,7 @@ void C4GroupHeader::Init()
 	Ver1=C4GroupFileVer1; Ver2=C4GroupFileVer2;
 	Entries=0;
 	SCopy("New C4Group",pad1,C4GroupMaxMaker);
-	Password[0]=0;
+	pad2[0]=0;
 }
 
 C4GroupEntryCore::C4GroupEntryCore()
@@ -597,7 +582,6 @@ C4Group::C4Group()
 	Init();
 	StdOutput=false;
 	fnProcessCallback=NULL;
-	MadeOriginal=false;
 	NoSort=false;
 }
 
@@ -916,9 +900,6 @@ bool C4Group::Close()
 
 	// Creation stamp
 	Head.Creation = time(NULL);
-
-	// Lose original on any save unless made in this session
-	if (!MadeOriginal) Head.Original=0;
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
@@ -1977,95 +1958,7 @@ bool C4Group::FindNextEntry(const char *szWildCard,
 	if (fChild) *fChild=!!centry->ChildGroup;
 	return true;
 }
-#ifdef _WIN32
-bool C4Group::Add(const char *szFiles)
-{
-	bool fMove = false;
 
-	if (StdOutput) printf("%s...\n",fMove ? "Moving" : "Adding");
-
-	// Add files & directories
-	char szFileName[_MAX_FNAME+1];
-	int iFileCount = 0;
-	long lAttrib = 0x037; // _A_ALL
-	struct _finddata_t fdt; long fdthnd;
-
-	// Process segmented path & search wildcards
-	char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
-	for (int cseg=0; SCopySegment(szFiles, cseg, szFileName, cSeparator); cseg++)
-		if ((fdthnd=_findfirst( (char*) szFileName, &fdt))>=0)
-		{
-			do
-			{
-				if (fdt.attrib & lAttrib)
-				{
-					// ignore
-					if (C4Group_TestIgnore(fdt.name)) continue;
-					// Compose item path
-					SCopy(szFiles,szFileName,_MAX_FNAME); *GetFilename(szFileName) = 0;
-					SAppend(fdt.name, szFileName, _MAX_FNAME);
-					// File count
-					iFileCount++;
-					// Process output & callback
-					if (StdOutput) printf("%s\n",GetFilename(szFileName));
-					if (fnProcessCallback) fnProcessCallback(GetFilename(szFileName),0); // cbytes/tbytes
-					// AddEntryOnDisk
-					AddEntryOnDisk(szFileName, NULL, fMove);
-				}
-			}
-			while (_findnext(fdthnd,&fdt)==0);
-			_findclose(fdthnd);
-		}
-
-	if (StdOutput) printf("%d file(s) %s.\n",iFileCount,fMove ? "moved" : "added");
-
-	return true;
-}
-
-bool C4Group::Move(const char *szFiles)
-{
-	bool fMove = true;
-
-	if (StdOutput) printf("%s...\n",fMove ? "Moving" : "Adding");
-
-	// Add files & directories
-	char szFileName[_MAX_FNAME+1];
-	int iFileCount = 0;
-	long lAttrib = 0x037; // _A_ALL
-	struct _finddata_t fdt; long fdthnd;
-
-	// Process segmented path & search wildcards
-	char cSeparator = (SCharCount(';', szFiles) ? ';' : '|');
-	for (int cseg=0; SCopySegment(szFiles, cseg, szFileName, cSeparator); cseg++)
-		if ((fdthnd=_findfirst( (char*) szFileName, &fdt))>=0)
-		{
-			do
-			{
-				if (fdt.attrib & lAttrib)
-				{
-					// ignore
-					if (C4Group_TestIgnore(fdt.name)) continue;
-					// Compose item path
-					SCopy(szFiles,szFileName,_MAX_FNAME); *GetFilename(szFileName) = 0;
-					SAppend(fdt.name, szFileName, _MAX_FNAME);
-					// File count
-					iFileCount++;
-					// Process output & callback
-					if (StdOutput) printf("%s\n",GetFilename(szFileName));
-					if (fnProcessCallback) fnProcessCallback(GetFilename(szFileName),0); // cbytes/tbytes
-					// AddEntryOnDisk
-					AddEntryOnDisk(szFileName, NULL, fMove);
-				}
-			}
-			while (_findnext(fdthnd,&fdt)==0);
-			_findclose(fdthnd);
-		}
-
-	if (StdOutput) printf("%d file(s) %s.\n",iFileCount,fMove ? "moved" : "added");
-
-	return true;
-}
-#endif
 bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, bool fHoldBuffer, int iTime, bool fExecutable)
 {
 	return AddEntry(C4GRES_InMemory,
@@ -2244,28 +2137,6 @@ bool C4Group::LoadEntryString(const char *szEntryName, StdStrBuf &Buf)
 	return true;
 }
 
-void C4Group::SetPassword(const char *szPassword)
-{
-	if (!SEqual(szPassword,Head.Password)) Modified=true;
-	SCopy(szPassword,Head.Password,C4GroupMaxPassword);
-}
-
-
-const char* C4Group::GetPassword()
-{
-	return Head.Password;
-}
-
-int C4Group::GetVersion()
-{
-	return Head.Ver1*10+Head.Ver2;
-}
-
-void C4Group::SetProcessCallback(bool (*fnCallback)(const char *, int))
-{
-	fnProcessCallback = fnCallback;
-}
-
 int SortRank(const char *szElement, const char *szSortList)
 {
 	int cnt;
@@ -2420,32 +2291,6 @@ StdStrBuf C4Group::GetFullName() const
 	return sResult;
 }
 
-void C4Group::MakeOriginal(bool fOriginal)
-{
-	Modified=true;
-	if (fOriginal) { Head.Original=1234567; MadeOriginal=true; }
-	else { Head.Original=0; MadeOriginal=false; }
-}
-
-bool C4Group::GetOriginal()
-{
-	return (Head.Original==1234567);
-}
-
-bool C4Group::Add(const char *szEntryname, C4Group &hSource)
-{
-	char *bpBuf; size_t iSize;
-	// Load entry from source group to buffer
-	if (!hSource.LoadEntry(szEntryname, &bpBuf, &iSize)) return false;
-	// Determine executable
-	bool fExecutable = GetEntry(szEntryname) ? !!GetEntry(szEntryname)->Executable : false;
-	// Add entry (hold buffer)
-	if (!Add(szEntryname, bpBuf, iSize, false, true, 0, fExecutable))
-		{ delete [] bpBuf; return false; }
-	// Success
-	return true;
-}
-
 bool C4Group::CalcCRC32(C4GroupEntry *pEntry)
 {
 	// checksum already calculated?
@@ -2593,7 +2438,7 @@ void C4Group::PrintInternals(const char *szIndent)
 	//printf("%sHead.Maker: '%s'\n", szIndent, Head.Maker);
 	//printf("Head.Password: '%s'\n", szIndent, Head.Password);
 	printf("%sHead.Creation: %d\n", szIndent, Head.Creation);
-	printf("%sHead.Original: %d\n", szIndent, Head.Original);
+	//printf("%sHead.Original: %d\n", szIndent, Head.Original);
 	for (C4GroupEntry * p = FirstEntry; p; p = p->Next)
 	{
 		printf("%sEntry '%s':\n", szIndent, p->FileName);

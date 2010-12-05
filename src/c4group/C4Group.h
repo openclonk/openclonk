@@ -69,7 +69,6 @@ const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 #define C4GroupFileID "RedWolf Design GrpFolder"
 
 bool C4Group_TestIgnore(const char *szFilename);
-void C4Group_SetPasswords(const char *szPassword);
 void C4Group_SetTempPath(const char *szPath);
 const char* C4Group_GetTempPath();
 void C4Group_SetSortList(const char **ppSortList);
@@ -103,9 +102,10 @@ public:
 	int Ver1,Ver2;
 	int Entries;
 	char pad1[C4GroupMaxMaker+2];
-	char Password[C4GroupMaxPassword+2];
-	int Creation,Original;
-	BYTE fbuf[92];
+	char pad2[C4GroupMaxPassword+2];
+	int Creation;
+	int pad3;
+	BYTE pad4[92];
 public:
 	void Init();
 };
@@ -190,7 +190,6 @@ protected:
 	bool StdOutput;
 	bool (*fnProcessCallback)(const char *, int);
 	char ErrorString[C4GroupMaxError+1];
-	bool MadeOriginal;
 
 	bool NoSort; // If this flag is set, all entries will be marked NoSort in AddEntry
 
@@ -202,14 +201,11 @@ public:
 	bool OpenAsChild(C4Group *pMother, const char *szEntryName, bool fExclusive=false, bool fCreate=false);
 	bool OpenChild(const char* strEntry);
 	bool OpenMother();
-	bool Add(const char *szFiles);
 	bool Add(const char *szFile, const char *szAddAs);
 	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
 	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
 	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
-	bool Add(const char *szEntryname, C4Group &hSource);
 	bool Merge(const char *szFolders);
-	bool Move(const char *szFiles);
 	bool Move(const char *szFile, const char *szAddAs);
 	bool Extract(const char *szFiles, const char *szExtractTo=NULL, const char *szExclude=NULL);
 	bool ExtractEntry(const char *szFilename, const char *szExtractTo=NULL);
@@ -219,7 +215,6 @@ public:
 	bool Sort(const char *szSortList);
 	bool SortByList(const char **ppSortList, const char *szFilename=NULL);
 	bool View(const char *szFiles);
-	bool GetOriginal();
 	bool AccessEntry(const char *szWildCard,
 	                 size_t *iSize=NULL, char *sFileName=NULL,
 	                 bool *fChild=NULL, bool NeedsToBeAGroup = false);
@@ -241,13 +236,9 @@ public:
 	                   bool fStartAtFilename=false);
 	bool Read(void *pBuffer, size_t iSize);
 	bool Advance(int iOffset);
-	void SetPassword(const char *szPassword);
 	void SetStdOutput(bool fStatus);
-	void SetProcessCallback(bool (*fnCallback)(const char *, int));
-	void MakeOriginal(bool fOriginal);
 	void ResetSearch();
 	const char *GetError();
-	const char *GetPassword();
 	const char *GetName();
 	StdStrBuf GetFullName() const;
 	int EntryCount(const char *szWildCard=NULL);
@@ -255,7 +246,6 @@ public:
 	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
 	int EntryTime(const char *szFilename);
 	unsigned int EntryCRC32(const char *szWildCard=NULL);
-	int GetVersion();
 	int GetCreation();
 	int GetStatus();
 	inline bool IsOpen() { return Status != GRPF_Inactive; }

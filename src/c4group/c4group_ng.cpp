@@ -117,98 +117,6 @@ bool ProcessGroup(const char *FilenamePar)
 					// Handle commands
 					switch (argv[iArg][1])
 					{
-						// Add
-					case 'a':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
-							fprintf(stderr, "Missing argument for add command\n");
-						else
-						{
-							if ((argv[iArg][2] == 's') || (argv[iArg][2] && (argv[iArg][3] == 's')))
-							{
-								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-'))
-								{
-									fprintf(stderr, "Missing argument for add as command\n");
-								}
-								else
-								{
-									hGroup.Add(argv[iArg + 1], argv[iArg + 2]);
-									iArg += 2;
-								}
-							}
-							else
-							{
-								while (iArg + 1 < argc && argv[iArg + 1][0] != '-')
-								{
-									++iArg;
-#ifdef _WIN32
-									// manually expand wildcards
-									hGroup.Add(argv[iArg]);
-#else
-									hGroup.Add(argv[iArg], GetFilename(argv[iArg]));
-#endif
-								}
-							}
-						}
-						break;
-						// Move
-					case 'm':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
-						{
-							fprintf(stderr, "Missing argument for move command\n");
-						}
-						else
-						{
-							while (iArg + 1 < argc && argv[iArg + 1][0] != '-')
-							{
-								++iArg;
-#ifdef _WIN32
-								// manually expand wildcards
-								hGroup.Move(argv[iArg]);
-#else
-								hGroup.Move(argv[iArg], argv[iArg]);
-#endif
-							}
-						}
-						break;
-						// Extract
-					case 'e':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
-						{
-							fprintf(stderr, "Missing argument for extract command\n");
-						}
-						else
-						{
-							if ((argv[iArg][2] == 't') || (argv[iArg][2] && (argv[iArg][3] == 's')))
-							{
-								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-'))
-								{
-									fprintf(stderr, "Missing argument for extract as command\n");
-								}
-								else
-								{
-									hGroup.Extract(argv[iArg + 1], argv[iArg + 2]);
-									iArg += 2;
-								}
-							}
-							else
-							{
-								hGroup.Extract(argv[iArg + 1]);
-								iArg++;
-							}
-						}
-						break;
-						// Delete
-					case 'd':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
-						{
-							fprintf(stderr, "Missing argument for delete command\n");
-						}
-						else
-						{
-							hGroup.Delete(argv[iArg + 1], fRecursive);
-							iArg++;
-						}
-						break;
 						// Sort
 					case 's':
 						// First sort parameter overrides default Clonk sort list
@@ -225,19 +133,6 @@ bool ProcessGroup(const char *FilenamePar)
 							iArg++;
 						}
 						break;
-						// Rename
-					case 'r':
-						if ((iArg + 2 >= argc) || (argv[iArg + 1][0] == '-')
-						    || (argv[iArg + 2][0] == '-'))
-						{
-							fprintf(stderr, "Missing argument(s) for rename command\n");
-						}
-						else
-						{
-							hGroup.Rename(argv[iArg + 1], argv[iArg + 2]);
-							iArg += 2;
-						}
-						break;
 						// View
 					case 'l':
 						hGroup.SetStdOutput(true);
@@ -251,10 +146,6 @@ bool ProcessGroup(const char *FilenamePar)
 							iArg++;
 						}
 						hGroup.SetStdOutput(!fQuiet);
-						break;
-						// Make original
-					case 'o':
-						hGroup.MakeOriginal(true);
 						break;
 						// Pack
 					case 'p':
@@ -563,28 +454,22 @@ int main(int argc, char *argv[])
 #endif
 	}
 	// Too few parameters: output help (if we didn't register stuff)
-	else if (!fRegisterShell && !fUnregisterShell)
-	{
+	else if (!fRegisterShell && !fUnregisterShell) {
 		printf("\n");
 		printf("Usage:    c4group [options] group(s) command(s)\n\n");
-		printf("Commands: -a[s] Add [as]  -m Move  -e[t] Extract [to]\n");
-		printf("          -l List  -d Delete  -r Rename  -s Sort\n");
-		printf("          -p Pack  -u Unpack  -x Explode\n");
-		printf("          -k Print maker\n");
-		printf("          -g [source] [target] [title] Make update\n");
+		printf("Commands: -l List\n");
+		printf("          -x Explode\n");
+		printf("          -u Unpack\n");
+		printf("          -p Pack\n");
 		printf("          -y Apply update\n");
+		printf("          -g [source] [target] [title] Make update\n");
+		printf("          -s Sort\n");
 		printf("\n");
 		printf("Options:  -v Verbose -r Recursive\n");
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
 		printf("\n");
-		printf("Examples: c4group pack.c4g -a myfile.dat -l \"*.dat\"\n");
-		printf("          c4group pack.c4g -as myfile.dat myfile.bin\n");
-		printf("          c4group -v pack.c4g -et \"*.dat\" \\data\\mydatfiles\\\n");
-		printf("          c4group pack.c4g -et myfile.dat myfile.bak\n");
-		printf("          c4group pack.c4g -s \"*.bin|*.dat\"\n");
-		printf("          c4group pack.c4g -x\n");
-		printf("          c4group pack.c4g -k\n");
+		printf("Examples: c4group pack.c4g -x\n");
 		printf("          c4group update.c4u -g ver1.c4f ver2.c4f New_Version\n");
 		printf("          c4group -i\n");
 	}
