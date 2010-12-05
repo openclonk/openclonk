@@ -388,7 +388,6 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	if (!fFullScreen)
 	{
 		XResizeWindow(dpy, pWindow->wnd, iXRes, iYRes);
-		OnResolutionChanged(iXRes, iYRes);
 		return true;
 	}
 	if (Priv->xf86vmode_targetmode.hdisplay == iXRes && Priv->xf86vmode_targetmode.vdisplay == iYRes)
@@ -538,7 +537,6 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd)
 		}
 	}
 	XGrabPointer(pApp->dpy, wnd, true, 0, GrabModeAsync, GrabModeAsync, wnd, None, LastEventTime);
-	pApp->OnResolutionChanged(wdt, hgt);
 	return true;
 }
 
