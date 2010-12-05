@@ -21,8 +21,8 @@ SetCompressor lzma
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-;!define MUI_HEADERIMAGE_BITMAP "header.bmp"
-;!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
+!define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
