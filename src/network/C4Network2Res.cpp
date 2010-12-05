@@ -91,7 +91,7 @@ C4Network2ResCore::C4Network2ResCore()
 {
 }
 
-void C4Network2ResCore::Set(C4Network2ResType enType, int32_t iResID, const char *strFileName, uint32_t inContentsCRC, const char *strAuthor)
+void C4Network2ResCore::Set(C4Network2ResType enType, int32_t iResID, const char *strFileName, uint32_t inContentsCRC)
 {
 	// Initialize base data
 	eType = enType; iID = iResID; iDerID = -1;
@@ -99,7 +99,6 @@ void C4Network2ResCore::Set(C4Network2ResType enType, int32_t iResID, const char
 	iFileSize = iFileCRC = ~0; iContentsCRC = inContentsCRC;
 	iChunkSize = C4NetResChunkSize;
 	FileName.Copy(strFileName);
-	Author.Copy(strAuthor);
 }
 
 void C4Network2ResCore::SetLoadable(uint32_t iSize, uint32_t iCRC)
@@ -115,7 +114,6 @@ void C4Network2ResCore::Clear()
 	iID = iDerID = -1;
 	fLoadable = false;
 	FileName.Clear();
-	Author.Clear();
 	iFileSize = iFileCRC = iContentsCRC = ~0;
 	fHasFileSHA = false;
 }
@@ -140,7 +138,6 @@ void C4Network2ResCore::CompileFunc(StdCompiler *pComp)
 	if (fHasFileSHA)
 		pComp->Value(mkNamingAdapt(mkHexAdapt(FileSHA), "FileSHA"));
 	pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(FileName), "Filename", ""));
-	pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(Author), "Author", ""));
 }
 
 // *** C4Network2ResLoad
@@ -401,7 +398,7 @@ bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2Res
 	LogSilentF("Network: Resource: complete %d:%s is file %s (%s)", iResID, szResName, szFile, fTemp ? "temp" : "static");
 #endif
 	// set core
-	Core.Set(eType, iResID, szResName, iCRC32, "");
+	Core.Set(eType, iResID, szResName, iCRC32);
 	// set own data
 	fDirty = true;
 	fTempFile = fTemp;
@@ -428,7 +425,7 @@ bool C4Network2Res::SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eTyp
 	}
 	SCopy(pGrp->GetFullName().getData(), szFile, sizeof(szFile)-1);
 	// set core
-	Core.Set(eType, iResID, sResName.getData(), pGrp->EntryCRC32(), pGrp->GetMaker());
+	Core.Set(eType, iResID, sResName.getData(), pGrp->EntryCRC32());
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
 	LogSilentF("Network: Resource: complete %d:%s is file %s (%s)", iResID, sResName.getData(), szFile, fTemp ? "temp" : "static");
@@ -534,7 +531,7 @@ bool C4Network2Res::SetDerived(const char *strName, const char *strFilePath, boo
 	Clear();
 	CStdLock FileLock(&FileCSec);
 	// set core
-	Core.Set(eType, C4NetResIDAnonymous, strName, ~0, "");
+	Core.Set(eType, C4NetResIDAnonymous, strName, ~0);
 	Core.SetDerived(iDResID);
 	// save file path
 	SCopy(strFilePath, szFile, _MAX_PATH);

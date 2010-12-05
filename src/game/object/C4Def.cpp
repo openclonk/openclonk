@@ -393,7 +393,6 @@ void C4Def::Default()
 	DefaultDefCore();
 	Next=NULL;
 	Temporary=false;
-	Maker[0]=0;
 	Filename[0]=0;
 	Creation=0;
 	Count=0;
@@ -447,7 +446,6 @@ bool C4Def::Load(C4Group &hGroup,
 
 	// Store filename, maker, creation
 	SCopy(hGroup.GetFullName().getData(),Filename);
-	SCopy(hGroup.GetMaker(),Maker,C4MaxName);
 	Creation = hGroup.GetCreation();
 
 	// Verbose log filename

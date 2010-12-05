@@ -100,7 +100,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 		}
 	}
 	// Init C4Group
-	C4Group_SetMaker(Config.General.Name);
 	C4Group_SetProcessCallback(&ProcessCallback);
 	C4Group_SetTempPath(Config.General.TempPath);
 	C4Group_SetSortList(C4CFN_FLS);
@@ -132,11 +131,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 		// No language table was loaded - bad luck...
 		if (!IsResStrTableLoaded())
 			Log("WARNING: No language string table loaded!");
-
-	// Set unregistered user name
-	if (!Config.Registered())
-		C4Group_SetMaker(LoadResStr("IDS_PRC_UNREGUSER"));
-
 
 #ifdef WIN32
 	// Windows: handle incoming updates directly, even before starting up the gui

@@ -481,7 +481,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
 		if (!Game.IsRunning) return false;
 		if (!Game.DebugMode) return false;
-		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return false;
+		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
 		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
 		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);

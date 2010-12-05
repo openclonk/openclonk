@@ -97,12 +97,6 @@ void C4Group_SetSortList(const char **ppSortList)
 	C4Group_SortList = ppSortList;
 }
 
-void C4Group_SetMaker(const char *szMaker)
-{
-	if (!szMaker) C4Group_Maker[0]=0;
-	else SCopy(szMaker,C4Group_Maker,C4GroupMaxMaker);
-}
-
 void C4Group_SetPasswords(const char *szPassword)
 {
 	if (!szPassword) C4Group_Passwords[0]=0;
@@ -547,7 +541,7 @@ void C4GroupHeader::Init()
 	SCopy(C4GroupFileID,id,sizeof(id)-1);
 	Ver1=C4GroupFileVer1; Ver2=C4GroupFileVer2;
 	Entries=0;
-	SCopy("New C4Group",Maker,C4GroupMaxMaker);
+	SCopy("New C4Group",pad1,C4GroupMaxMaker);
 	Password[0]=0;
 }
 
@@ -723,7 +717,6 @@ bool C4Group::OpenReal(const char *szFilename)
 			return false;
 		// OpenReal: Simply set status and return
 		Status=GRPF_Folder;
-		SCopy("Open directory",Head.Maker,C4GroupMaxMaker);
 		ResetSearch();
 		// Success
 		return true;
@@ -926,9 +919,6 @@ bool C4Group::Close()
 
 	// Lose original on any save unless made in this session
 	if (!MadeOriginal) Head.Original=0;
-
-	// Automatic maker
-	if (C4Group_Maker[0]) SCopy(C4Group_Maker,Head.Maker,C4GroupMaxMaker);
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
@@ -1397,10 +1387,8 @@ bool C4Group::View(const char *szFiles)
 		bcount+=centry->Size;
 		maxfnlen=Max<int>(maxfnlen, static_cast<int>(SLen(centry->FileName)));
 	}
-	printf("Maker: %s  Creation: %i  %s\n\rVersion: %d.%d  CRC: %u (%X)\n",
-	       GetMaker(),
+	printf("Creation: %i\nVersion: %d.%d  CRC: %u (%X)\n",
 	       Head.Creation,
-	       GetOriginal() ? "Original" : "",
 	       Head.Ver1,Head.Ver2,
 	       crc, crc);
 	ResetSearch();
@@ -1830,7 +1818,6 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 	if (DirectoryExists(path))
 	{
 		SCopy(path,FileName, _MAX_FNAME);
-		SCopy("Open directory",Head.Maker,C4GroupMaxMaker);
 		Status=GRPF_Folder;
 		ResetSearch();
 		return true;
@@ -2257,22 +2244,12 @@ bool C4Group::LoadEntryString(const char *szEntryName, StdStrBuf &Buf)
 	return true;
 }
 
-void C4Group::SetMaker(const char *szMaker)
-{
-	if (!SEqual(szMaker,Head.Maker)) Modified=true;
-	SCopy(szMaker,Head.Maker,C4GroupMaxMaker);
-}
-
 void C4Group::SetPassword(const char *szPassword)
 {
 	if (!SEqual(szPassword,Head.Password)) Modified=true;
 	SCopy(szPassword,Head.Password,C4GroupMaxPassword);
 }
 
-const char* C4Group::GetMaker()
-{
-	return Head.Maker;
-}
 
 const char* C4Group::GetPassword()
 {
@@ -2613,7 +2590,7 @@ void C4Group::PrintInternals(const char *szIndent)
 	printf("%sHead.Ver1: %d\n", szIndent, Head.Ver1);
 	printf("%sHead.Ver2: %d\n", szIndent, Head.Ver2);
 	printf("%sHead.Entries: %d\n", szIndent, Head.Entries);
-	printf("%sHead.Maker: '%s'\n", szIndent, Head.Maker);
+	//printf("%sHead.Maker: '%s'\n", szIndent, Head.Maker);
 	//printf("Head.Password: '%s'\n", szIndent, Head.Password);
 	printf("%sHead.Creation: %d\n", szIndent, Head.Creation);
 	printf("%sHead.Original: %d\n", szIndent, Head.Original);

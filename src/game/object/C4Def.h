@@ -213,7 +213,6 @@ public:
 	C4Def();
 	~C4Def();
 public:
-	char Maker[C4MaxName+1];
 	char Filename[_MAX_FNAME+1];
 	int32_t Creation;
 	int32_t Count; // number of instanciations

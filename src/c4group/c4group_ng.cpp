@@ -313,10 +313,6 @@ bool ProcessGroup(const char *FilenamePar)
 							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 						}
 						break;
-						// Print maker
-					case 'k':
-						printf("%s\n", hGroup.GetMaker());
-						break;
 						// Generate update
 					case 'g':
 						if ((iArg + 3 >= argc) || (argv[iArg + 1][0] == '-')
@@ -528,8 +524,6 @@ int main(int argc, char *argv[])
 	  Config.Load(false);*/
 
 	// Init C4Group
-	/*  C4Group_SetMaker(Config.General.Name);
-	  C4Group_SetTempPath(Config.General.TempPath);*/
 	C4Group_SetSortList(C4CFN_FLS);
 
 	// Store command line parameters

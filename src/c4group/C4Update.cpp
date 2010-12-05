@@ -315,10 +315,6 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 			{
 				// packed?
 				bool fPacked = TargetGrp.IsPacked();
-				// maker check (someone might try to unpack directories w/o asking user)
-				if (fPacked)
-					if (!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker()))
-						return false;
 				// Close Group
 				TargetGrp.Close(true);
 				if (fPacked)
@@ -491,8 +487,6 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 		while (ItemGroupFrom.FindNextEntry("*", ItemFileName))
 			if (!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
 				DoUpdate(&ItemGroupFrom, &ItemGroupTo, ItemFileName);
-		// set maker (always)
-		ItemGroupTo.SetMaker(ItemGroupFrom.GetMaker());
 		if (GrpUpdate)
 		{
 			DoGrpUpdate(&ItemGroupFrom, &ItemGroupTo);
@@ -712,11 +706,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	//           in the base group)
 
 	// compare headers
-	if (!pGrp1 ||
-	    pGrp1->GetCreation() != pGrp2->GetCreation() ||
-	    pGrp1->GetOriginal() != pGrp2->GetOriginal() ||
-	    !SEqual(pGrp1->GetMaker(), pGrp2->GetMaker()) ||
-	    !SEqual(pGrp1->GetPassword(), pGrp2->GetPassword()))
+	if (!pGrp1 || pGrp1->GetCreation() != pGrp2->GetCreation())
 		*fModified = true;
 	// set header
 	pUpGrp->SetHead(*pGrp2);

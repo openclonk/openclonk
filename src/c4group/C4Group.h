@@ -69,7 +69,6 @@ const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 #define C4GroupFileID "RedWolf Design GrpFolder"
 
 bool C4Group_TestIgnore(const char *szFilename);
-void C4Group_SetMaker(const char *szMaker);
 void C4Group_SetPasswords(const char *szPassword);
 void C4Group_SetTempPath(const char *szPath);
 const char* C4Group_GetTempPath();
@@ -103,7 +102,7 @@ public:
 	char id[24+4];
 	int Ver1,Ver2;
 	int Entries;
-	char Maker[C4GroupMaxMaker+2];
+	char pad1[C4GroupMaxMaker+2];
 	char Password[C4GroupMaxPassword+2];
 	int Creation,Original;
 	BYTE fbuf[92];
@@ -242,14 +241,12 @@ public:
 	                   bool fStartAtFilename=false);
 	bool Read(void *pBuffer, size_t iSize);
 	bool Advance(int iOffset);
-	void SetMaker(const char *szMaker);
 	void SetPassword(const char *szPassword);
 	void SetStdOutput(bool fStatus);
 	void SetProcessCallback(bool (*fnCallback)(const char *, int));
 	void MakeOriginal(bool fOriginal);
 	void ResetSearch();
 	const char *GetError();
-	const char *GetMaker();
 	const char *GetPassword();
 	const char *GetName();
 	StdStrBuf GetFullName() const;
