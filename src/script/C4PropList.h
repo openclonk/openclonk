@@ -31,7 +31,7 @@ class C4Property
 public:
 	C4Property() : Key(0) {}
 	C4Property(C4String *Key, const C4Value &Value) : Key(Key), Value(Value)
-	{ assert(Key); Key->IncRef(); assert(Strings.Set.Has(Key)); }
+	{ assert(Key); Key->IncRef(); /*assert(Strings.Set.Has(Key));*/ }
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
 	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
@@ -65,13 +65,13 @@ public:
 
 	bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
-	{ return GetPropertyByS(Strings.P[k], pResult); }
+	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	// not allowed on frozen proplists
 	void SetPropertyByS(C4String * k, const C4Value & to);
 	void SetProperty(C4PropertyName k, const C4Value & to)
-	{ SetPropertyByS(Strings.P[k], to); }
+	{ SetPropertyByS(&Strings.P[k], to); }
 	void ResetProperty(C4String * k);
 
 	static C4PropList * New(C4PropList * prototype = 0);

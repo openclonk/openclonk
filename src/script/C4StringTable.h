@@ -30,7 +30,8 @@ class C4Group;
 class C4String
 {
 	explicit C4String(StdStrBuf strString);
-	explicit C4String(const char *strString);
+	C4String();
+	void operator=(const char * s);
 
 	StdCopyStrBuf Data; // string data
 	int iRefCnt; // reference count on string (by C4Value)
@@ -227,11 +228,11 @@ public:
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
 	// Find existing C4String
 	C4String *FindString(const char *strString);
-	// Check wether the pointer is a C4String
-	C4String *FindString(C4String *pString);
 
+	C4String P[P_LAST];
+private:
 	C4Set<C4String *> Set;
-	C4String * P[P_LAST];
+	friend class C4String;
 };
 
 extern C4StringTable Strings;

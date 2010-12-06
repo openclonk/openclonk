@@ -49,9 +49,14 @@ C4String::C4String(StdStrBuf strString)
 {
 	// take string
 	Data.Take(std::move(strString));
-	Hash = C4Set<C4String*>::Hash(Data.getData());
+	Hash = Strings.Set.Hash(Data.getData());
 	// reg
 	Strings.Set.Add(this);
+}
+
+C4String::C4String()
+		: iRefCnt(0)
+{
 }
 
 C4String::~C4String()
@@ -59,6 +64,17 @@ C4String::~C4String()
 	// unreg
 	iRefCnt = 1;
 	Strings.Set.Remove(this);
+}
+
+void C4String::operator=(const char * s)
+{
+	assert(!iRefCnt);
+	assert(!Data);
+	// ref string
+	Data.Ref(s);
+	Hash = Strings.Set.Hash(Data.getData());
+	// reg
+	Strings.Set.Add(this);
 }
 
 void C4String::IncRef()
@@ -77,57 +93,57 @@ void C4String::DecRef()
 
 C4StringTable::C4StringTable()
 {
-	P[P_Prototype] = RegString("Prototype");
-	P[P_Name] = RegString("Name");
-	P[P_Collectible] = RegString("Collectible");
-	P[P_ActMap] = RegString("ActMap");
-	P[P_Procedure] = RegString("Procedure");
-	P[P_Attach] = RegString("Attach");
-	P[P_Directions] = RegString("Directions");
-	P[P_FlipDir] = RegString("FlipDir");
-	P[P_Length] = RegString("Length");
-	P[P_Delay] = RegString("Delay");
-	P[P_X] = RegString("X");
-	P[P_Y] = RegString("Y");
-	P[P_Wdt] = RegString("Wdt");
-	P[P_Hgt] = RegString("Hgt");
-	P[P_OffX] = RegString("OffX");
-	P[P_OffY] = RegString("OffY");
-	P[P_FacetBase] = RegString("FacetBase");
-	P[P_FacetTopFace] = RegString("FacetTopFace");
-	P[P_FacetTargetStretch] = RegString("FacetTargetStretch");
-	P[P_NextAction] = RegString("NextAction");
-	P[P_Hold] = RegString("Hold");
-	P[P_Idle] = RegString("Idle");
-	P[P_NoOtherAction] = RegString("NoOtherAction");
-	P[P_StartCall] = RegString("StartCall");
-	P[P_EndCall] = RegString("EndCall");
-	P[P_AbortCall] = RegString("AbortCall");
-	P[P_PhaseCall] = RegString("PhaseCall");
-	P[P_Sound] = RegString("Sound");
-	P[P_ObjectDisabled] = RegString("ObjectDisabled");
-	P[P_DigFree] = RegString("DigFree");
-	P[P_EnergyUsage] = RegString("EnergyUsage");
-	P[P_InLiquidAction] = RegString("InLiquidAction");
-	P[P_TurnAction] = RegString("TurnAction");
-	P[P_Reverse] = RegString("Reverse");
-	P[P_Step] = RegString("Step");
-	P[P_Animation] = RegString("Animation");
-	P[P_Action] = RegString("Action");
-	P[P_Visibility] = RegString("Visibility");
-	P[P_Parallaxity] = RegString("Parallaxity");
-	P[P_LineColors] = RegString("LineColors");
-	P[P_LineAttach] = RegString("LineAttach");
-	P[P_MouseDragImage] = RegString("MouseDragImage");
-	P[P_PictureTransformation] = RegString("PictureTransformation");
-	P[P_MeshTransformation] = RegString("MeshTransformation");
-	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
+	P[P_Prototype] = "Prototype";
+	P[P_Name] = "Name";
+	P[P_Collectible] = "Collectible";
+	P[P_ActMap] = "ActMap";
+	P[P_Procedure] = "Procedure";
+	P[P_Attach] = "Attach";
+	P[P_Directions] = "Directions";
+	P[P_FlipDir] = "FlipDir";
+	P[P_Length] = "Length";
+	P[P_Delay] = "Delay";
+	P[P_X] = "X";
+	P[P_Y] = "Y";
+	P[P_Wdt] = "Wdt";
+	P[P_Hgt] = "Hgt";
+	P[P_OffX] = "OffX";
+	P[P_OffY] = "OffY";
+	P[P_FacetBase] = "FacetBase";
+	P[P_FacetTopFace] = "FacetTopFace";
+	P[P_FacetTargetStretch] = "FacetTargetStretch";
+	P[P_NextAction] = "NextAction";
+	P[P_Hold] = "Hold";
+	P[P_Idle] = "Idle";
+	P[P_NoOtherAction] = "NoOtherAction";
+	P[P_StartCall] = "StartCall";
+	P[P_EndCall] = "EndCall";
+	P[P_AbortCall] = "AbortCall";
+	P[P_PhaseCall] = "PhaseCall";
+	P[P_Sound] = "Sound";
+	P[P_ObjectDisabled] = "ObjectDisabled";
+	P[P_DigFree] = "DigFree";
+	P[P_EnergyUsage] = "EnergyUsage";
+	P[P_InLiquidAction] = "InLiquidAction";
+	P[P_TurnAction] = "TurnAction";
+	P[P_Reverse] = "Reverse";
+	P[P_Step] = "Step";
+	P[P_Animation] = "Animation";
+	P[P_Action] = "Action";
+	P[P_Visibility] = "Visibility";
+	P[P_Parallaxity] = "Parallaxity";
+	P[P_LineColors] = "LineColors";
+	P[P_LineAttach] = "LineAttach";
+	P[P_MouseDragImage] = "MouseDragImage";
+	P[P_PictureTransformation] = "PictureTransformation";
+	P[P_MeshTransformation] = "MeshTransformation";
+	// Prevent the individual strings from being deleted, they are not created with new
+	for (unsigned int i = 0; i < P_LAST; ++i) P[i].IncRef();
 }
 
 C4StringTable::~C4StringTable()
 {
-	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->DecRef();
-	assert(!Set.GetSize());
+	assert(Set.GetSize() == P_LAST);
 }
 
 C4String *C4StringTable::RegString(StdStrBuf String)
@@ -142,14 +158,6 @@ C4String *C4StringTable::RegString(StdStrBuf String)
 C4String *C4StringTable::FindString(const char *strString)
 {
 	return Set.Get(strString);
-}
-
-C4String *C4StringTable::FindString(C4String *pString)
-{
-	for (C4String * const * i = Set.First(); i; i = Set.Next(i))
-		if (*i == pString)
-			return pString;
-	return NULL;
 }
 
 C4StringTable Strings;

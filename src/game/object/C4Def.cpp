@@ -1352,7 +1352,7 @@ C4PropList *C4Def::GetActionByName(C4String *actname)
 {
 	assert(actname);
 	// If we get the null string or ActIdle by name, return NULL action
-	if (!actname || actname == Strings.P[P_Idle]) return NULL;
+	if (!actname || actname == &Strings.P[P_Idle]) return NULL;
 	// otherwise, query actmap
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
 	if (!ActMap.getPropList()) return false;

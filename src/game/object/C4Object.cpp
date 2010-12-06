@@ -1287,7 +1287,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,false);
 	// Pre change resets
 	SetAction(0);
-	ResetProperty(::Strings.P[P_Action]); // Enforce ActIdle because SetAction may have failed due to NoOtherAction
+	ResetProperty(&Strings.P[P_Action]); // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	Def->Count--;
@@ -3468,7 +3468,7 @@ bool C4Object::SetActionByName(C4String *ActName,
 {
 	assert(ActName);
 	// If we get the null string or ActIdle by name, set ActIdle
-	if (!ActName || ActName == Strings.P[P_Idle])
+	if (!ActName || ActName == &Strings.P[P_Idle])
 		return SetAction(0,0,0,iCalls,fForce);
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
 	if (!ActMap.getPropList()) return false;
@@ -4679,7 +4679,7 @@ void C4Object::ExecAction()
 				if (!next_action)
 					Action.Phase = 0;
 				// set new action if it's not Hold
-				else if (next_action == Strings.P[P_Hold])
+				else if (next_action == &Strings.P[P_Hold])
 				{
 					Action.Phase = pActionDef->GetPropertyInt(P_Length)-1;
 					Action.PhaseDelay = pActionDef->GetPropertyInt(P_Delay)-1;
