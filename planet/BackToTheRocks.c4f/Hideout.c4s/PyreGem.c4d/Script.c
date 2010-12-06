@@ -39,15 +39,15 @@ protected func Departure( from)
 func Hit()
 {
 
-	AddEffect("GemPyre",nil,100,1,nil,nil,GetX(),GetY(),e,this->GetOwner(),thrower);
+	AddEffect("GemPyre",nil,100,1,nil,nil,[GetX(),GetY()],e,this->GetOwner(),thrower);
 	RemoveObject();
 }
-global func FxGemPyreStart(object target, int num, int temporary, x, y, e, owner,thrower)
+global func FxGemPyreStart(object target, int num, int temporary, c, e, owner,thrower)
 {
 	if (temporary) 
 		return 1;
-	EffectVar(0, target, num)=x;
-	EffectVar(1, target, num)=y;
+	EffectVar(0, target, num)=c[0];
+	EffectVar(1, target, num)=c[1];
 	EffectVar(2, target, num)=e;
 	EffectVar(3, target, num)=thrower;
 	EffectVar(4, target, num)=owner;
