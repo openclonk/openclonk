@@ -39,7 +39,7 @@ protected func Departure( from)
 func Hit()
 {
 
-	AddEffect("GemPyre",nil,100,1,nil,nil,[GetX(),GetY()],e,this->GetOwner(),thrower);
+	AddEffect("GemPyre",nil,100,1,nil,nil,[GetX(),GetY()],e,this->GetOwner(),thrower->GetOwner());
 	RemoveObject();
 }
 global func FxGemPyreStart(object target, int num, int temporary, c, e, owner,thrower)
