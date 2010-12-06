@@ -257,6 +257,11 @@ global func FxNotTooLongTimer(object target, int num)
 func OnClonkDeath(object clonk, int killed_by)
 {
 	// create a magic healing gem on Clonk death
-	clonk->CreateObject(LifeGem, 0, 0, killed_by);
+	if(Hostile(clonk->GetOwner(), killed_by))
+	{
+		var gem=clonk->CreateObject(LifeGem, 0, 0, killed_by);
+		if(GetPlayerTeam(killed_by) == 1)
+			gem->SetGraphics("E");
+	}
 	return _inherited(clonk, killed_by);
 }

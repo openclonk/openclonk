@@ -38,9 +38,11 @@ func FxGemHealingTimer(target, effect_number, effect_time)
 		return -1;
 	}
 	target->DoEnergy(500, true);
-	CreateParticle("MagicSpark", AbsX(target->GetX()) + RandomX(-8,8), AbsY(target->GetY()) + RandomX(-10,10), 0, -2, 200, RGB(255,200,200), target, Random(2));
-	if(!Random(5))
-		CreateParticle("MagicFire", AbsX(target->GetX()) + RandomX(-8,8), AbsY(target->GetY()) + RandomX(-5,10), 0, -2, 50, RGB(200,255,255), target, Random(2));
+	var xoff=RandomX(-5,5);
+	for(var fac=-1; fac <= 1;fac+=2)CreateParticle("Magic", AbsX(target->GetX()) + fac * xoff, AbsY(target->GetY()) + RandomX(-8,8), 0, -2, 40, RGB(255,200,200), target, Random(2));
+	if(!Random(10)) EffectVar(0, target, effect_number)=!EffectVar(0, target, effect_number);
+	if(EffectVar(0, target, effect_number))
+		CreateParticle("MagicSpark", AbsX(target->GetX()) + RandomX(-3,3), AbsY(target->GetY()) + RandomX(-0,8), 0, -2, 30, RGBa(255,55,55, 50), target, Random(2));
 }
 
 func FxGemHealingDamage(target, effect_number, damage, cause)
