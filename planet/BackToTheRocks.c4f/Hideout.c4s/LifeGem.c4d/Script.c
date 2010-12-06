@@ -46,7 +46,7 @@ func FxGemHealingTimer(target, effect_number, effect_time)
 func FxGemHealingDamage(target, effect_number, damage, cause)
 {
 	if(damage >= 0) return damage;
-	RemoveEffect(nil, nil, effect_number);
+	RemoveEffect(nil, target, effect_number);
 	
 	// can actually block one source of damage - use wisely
 	return 0;
