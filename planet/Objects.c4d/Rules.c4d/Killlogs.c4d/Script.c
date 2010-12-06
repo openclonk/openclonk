@@ -16,6 +16,7 @@ func OnClonkDeath(object clonk, int killed_by)
 {
 	var plr=clonk->GetOwner();
 	if(plr == NO_OWNER) return;
+	if(!clonk) return;
 	
 	// assert there are three StringTbl entries for each
 	var which_one=Random(3)+1;
