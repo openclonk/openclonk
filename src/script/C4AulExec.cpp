@@ -229,18 +229,18 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!pCurCtx->Obj)
 					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
 				PushNullVals(1);
-				pCurCtx->Obj->GetPropertyVal(pCPos->Par.s, pCurVal);
+				pCurCtx->Obj->GetPropertyByS(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
 				if (!pCurCtx->Obj)
 					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
-				pCurCtx->Obj->SetProperty(pCPos->Par.s, pCurVal[0]);
+				pCurCtx->Obj->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				break;
 
 			case AB_PROP:
 				if (!(pCurVal->ConvertTo(C4V_PropList) && pCurVal->_getPropList()))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
-				if (!pCurVal->_getPropList()->GetPropertyVal(pCPos->Par.s, pCurVal))
+				if (!pCurVal->_getPropList()->GetPropertyByS(pCPos->Par.s, pCurVal))
 					pCurVal->Set0();
 				break;
 			case AB_PROP_SET:
@@ -250,7 +250,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
 				if (pPropList->_getPropList()->IsFrozen())
 					throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");
-				pPropList->_getPropList()->SetProperty(pCPos->Par.s, pCurVal[0]);
+				pPropList->_getPropList()->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				pPropList->Set(pCurVal[0]);
 				PopValue();
 				break;
@@ -459,7 +459,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: proplist expected, got %s", pPropSet->GetTypeName()).getData());
 				if (!pKey->ConvertTo(C4V_String))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: string expected, got %s", pPropSet->GetTypeName()).getData());
-				pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
+				pPropSet->_getPropList()->SetPropertyByS(pKey->_getStr(), *pValue);
 				PopValues(2);
 				break;
 			}
@@ -476,7 +476,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				{
 					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
 					C4PropList *pPropList = pStruct->_getPropList();
-					if (!pPropList->GetPropertyVal(pIndex->_getStr(), pResult))
+					if (!pPropList->GetPropertyByS(pIndex->_getStr(), pResult))
 						pResult->Set0();
 				}
 				// Remove index
@@ -497,7 +497,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					C4PropList *pPropList = pStruct->_getPropList();
 					if (pPropList->IsFrozen())
 						throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");					
-					pPropList->SetProperty(pIndex->_getStr(), *pValue);
+					pPropList->SetPropertyByS(pIndex->_getStr(), *pValue);
 				}
 				// Set result, remove array and index from stack
 				*pResult = *pValue;

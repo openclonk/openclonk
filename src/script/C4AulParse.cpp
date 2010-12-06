@@ -2853,7 +2853,7 @@ void C4AulParseState::Parse_Local()
 			Shift(Ref, false);
 			// register as constant
 			if (Type == PREPARSER)
-				a->Def->SetProperty(Strings.RegString(Name), Parse_ConstExpression());
+				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
 			else
 				Parse_ConstExpression();
 		}
@@ -3010,7 +3010,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 					UnexpectedToken("':' or '='");
 				Shift();
 				if (Type == PREPARSER)
-					r._getPropList()->SetProperty(pKey, Parse_ConstExpression());
+					r._getPropList()->SetPropertyByS(pKey, Parse_ConstExpression());
 				else
 					Parse_ConstExpression();
 				if (TokenType == ATT_COMMA)

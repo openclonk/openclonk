@@ -101,7 +101,7 @@ C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype), constant(false)
 {
 	if (prototype)
-		SetProperty(Strings.P[P_Prototype], C4VPropList(prototype));
+		SetProperty(P_Prototype, C4VPropList(prototype));
 }
 
 void C4PropList::DenumeratePointers()
@@ -113,7 +113,7 @@ void C4PropList::DenumeratePointers()
 		p = Properties.Next(p);
 	}
 	C4Value v;
-	if(GetPropertyVal(Strings.P[P_Prototype], &v))
+	if(GetProperty(P_Prototype, &v))
 		prototype = v.getPropList();
 }
 
@@ -231,8 +231,7 @@ void C4PropList::SetName(const char* NewName)
 		ResetProperty(Strings.P[P_Name]);
 	else
 	{
-		C4Value v = C4VString(NewName);
-		SetProperty(Strings.P[P_Name], v);
+		SetProperty(P_Name, C4VString(NewName));
 	}
 }
 
@@ -282,7 +281,7 @@ unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
 	return p.Key->Hash;
 }
 
-bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult) const
+bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
 {
 	if (Properties.Has(k))
 	{
@@ -290,7 +289,7 @@ bool C4PropList::GetPropertyVal(C4String * k, C4Value *pResult) const
 		return true;
 	}
 	else if(prototype)
-		return prototype->GetPropertyVal(k, pResult);
+		return prototype->GetPropertyByS(k, pResult);
 	else
 		return false;
 }
@@ -323,7 +322,7 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	return 0;
 }
 
-void C4PropList::SetProperty(C4String * k, const C4Value & to)
+void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);
 	assert(Strings.Set.Has(k));

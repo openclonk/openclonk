@@ -736,12 +736,12 @@ void C4GraphicsOverlay::UpdateFacet()
 			return;
 
 		C4Value v;
-		pDef->GetPropertyVal(P_ActMap, &v);
+		pDef->GetProperty(P_ActMap, &v);
 		C4PropList *actmap = v.getPropList();
 		if (!actmap)
 			return;
 
-		actmap->GetPropertyVal(::Strings.RegString(Action), &v);
+		actmap->GetPropertyByS(::Strings.RegString(Action), &v);
 		C4PropList *action = v.getPropList();
 		if (!action)
 			return;
@@ -1083,7 +1083,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			}
 
 			C4Value value;
-			pDef->GetPropertyVal(P_MeshTransformation, &value);
+			pDef->GetProperty(P_MeshTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
@@ -1108,7 +1108,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			}
 
 			C4Value value;
-			pDef->GetPropertyVal(P_PictureTransformation, &value);
+			pDef->GetProperty(P_PictureTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
@@ -1186,7 +1186,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		C4Def *pDef = pSourceGfx->pDef;
 
 		C4Value value;
-		pDef->GetPropertyVal(P_PictureTransformation, &value);
+		pDef->GetProperty(P_PictureTransformation, &value);
 		StdMeshMatrix matrix;
 		if (C4ValueToMatrix(value, &matrix))
 			lpDDraw->SetMeshTransform(&matrix);

@@ -40,7 +40,8 @@ public:
 	C4String * Key;
 	C4Value Value;
 	operator const void * () const { return Key; }
-	C4Property & operator = (void * p) { assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	C4Property & operator = (void * p)
+	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
 };
 class C4PropListNumbered;
 class C4PropList
@@ -62,12 +63,15 @@ public:
 	// Whether this proplist should be saved as a reference to a C4Def
 	virtual bool IsDef() const { return false; }
 
-	bool GetPropertyVal(C4String *k, C4Value *pResult) const;
-	bool GetPropertyVal(C4PropertyName k, C4Value *pResult) const { return GetPropertyVal(Strings.P[k], pResult); }
+	bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	bool GetProperty(C4PropertyName k, C4Value *pResult) const
+	{ return GetPropertyByS(Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	// not allowed on frozen proplists
-	void SetProperty(C4String * k, const C4Value & to);
+	void SetPropertyByS(C4String * k, const C4Value & to);
+	void SetProperty(C4PropertyName k, const C4Value & to)
+	{ SetPropertyByS(Strings.P[k], to); }
 	void ResetProperty(C4String * k);
 
 	static C4PropList * New(C4PropList * prototype = 0);
