@@ -48,6 +48,7 @@ public:
 	bool fIsNoOwnerViewport; // this viewport is found for searches of NO_OWNER-viewports; even if it has a player assigned (for network obs)
 
 	float GetZoom() { return Zoom; }
+	void SetZoom(float zoomValue);
 	void Default();
 	void Clear();
 	void Execute();

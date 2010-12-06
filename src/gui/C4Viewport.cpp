@@ -457,6 +457,13 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 		return float(ViewWdt) / size_x;
 }
 
+void C4Viewport::SetZoom(float zoomValue)
+{
+	Zoom = zoomValue;
+	// also set target to prevent zoom from changing back
+	ZoomTarget = zoomValue;
+}
+
 void C4Viewport::AdjustPosition()
 {
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
