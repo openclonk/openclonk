@@ -47,7 +47,6 @@ class C4PropListNumbered;
 class C4PropList
 {
 public:
-	int32_t Status;
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
@@ -95,10 +94,12 @@ protected:
 
 private:
 	C4Set<C4Property> Properties;
+	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
 
-	C4PropList * prototype;
 	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
+public:
+	int32_t Status;
 };
 
 class C4PropListNumbered: public C4PropList

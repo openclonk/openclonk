@@ -181,11 +181,11 @@ protected:
 	// data
 	C4V_Data Data;
 
-	// data type
-	C4V_Type Type;
-
 	// proplist reference list
 	C4Value * NextRef;
+
+	// data type
+	C4V_Type Type;
 
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL)
 	{ Type = (nData || IsNullableType(nType) ? nType : C4V_Any); AddDataRef(); }

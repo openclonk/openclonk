@@ -98,8 +98,6 @@ public:
 
 protected:
 
-	// Reference? Otherwise, this object holds the data.
-	bool fRef;
 	// Data
 	union
 	{
@@ -109,7 +107,9 @@ protected:
 		char *szString; // for debugger preview
 #endif
 	};
-	size_t iSize;
+	unsigned int iSize;
+	// Reference? Otherwise, this object holds the data.
+	bool fRef;
 
 public:
 
