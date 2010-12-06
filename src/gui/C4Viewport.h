@@ -64,6 +64,7 @@ public:
 	float GetZoomTarget() const { return ZoomTarget; }
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
 	bool Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
+	void DropFile(const char* fileName, float x, float y);
 #ifdef _WIN32
 	bool DropFiles(HANDLE hDrop);
 #endif

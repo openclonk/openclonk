@@ -50,6 +50,11 @@ namespace
 	const int32_t ViewportScrollSpeed=10;
 }
 
+void C4Viewport::DropFile(const char* fileName, float x, float y)
+{
+	Game.DropFile(fileName, ViewX+x/Zoom, ViewY+y/Zoom);
+}
+
 #ifdef _WIN32
 #include <shellapi.h>
 
@@ -64,7 +69,7 @@ bool C4Viewport::DropFiles(HANDLE hDrop)
 	{
 		DragQueryFile((HDROP)hDrop,cnt,szFilename,500);
 		DragQueryPoint((HDROP)hDrop,&pntPoint);
-		Game.DropFile(szFilename,ViewX+float(pntPoint.x)/Zoom,ViewY+float(pntPoint.y)/Zoom);
+		DropFile(szFilename, (float)pntPoint.x, (float)pntPoint.y);
 	}
 	DragFinish((HDROP)hDrop);
 	return true;
