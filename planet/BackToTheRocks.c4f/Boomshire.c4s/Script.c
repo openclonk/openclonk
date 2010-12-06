@@ -108,11 +108,29 @@ protected func Decoration()
 	}
 	
 	}
-	CreateObject(Plane,3030,315,0);
-	CreateObject(Plane,3160,315,1);
+	
+	AddEffect("PlaneReset",CreateObject(Plane,3030,315,0),100,10,nil,nil);
+	AddEffect("PlaneReset",CreateObject(Plane,3160,315,1),100,10,nil,nil);
 }
 
-
+global func FxPlaneResetTimer(object target, int num, int time)
+{
+	if(target->GetX() > 3000 || target->Contents())
+	{
+		EffectVar(0, target, num)=0;
+		return 1;	
+	}
+	else
+		EffectVar(0, target, num)++;
+	
+	if(EffectVar(0, target, num)<4) return 1;
+	
+	DrawParticleLine("AirIntake",target->GetX()+3,target->GetY(),3030,315,1,40);
+	DrawParticleLine("MagicSpark",target->GetX()-3,target->GetY(),3030,315,2,40);
+	target->SetPosition(3030,315);
+	target->SetR(-90);
+	target->SetDir(0);
+}
 
 protected func Doors()
 {
