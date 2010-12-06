@@ -20,6 +20,7 @@ protected func Initialize()
 	// Rules
 	CreateObject(Rule_Restart);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
+	CreateObject(Rule_KillLogs);
 	
 	// Doors and spinwheels.
 	var gate, wheel;
