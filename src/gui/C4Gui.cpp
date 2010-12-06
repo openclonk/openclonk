@@ -142,7 +142,7 @@ namespace C4GUI
 		// remove from any container
 		if (pParent)
 			pParent->RemoveElement(this);
-		else if (this != Screen::GetScreenS())
+		else if (this != Screen::GetScreenS() && Screen::GetScreenS())
 			// always ensure removal from screen!
 			Screen::GetScreenS()->RemoveElement(this);
 	}
