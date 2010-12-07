@@ -11,6 +11,7 @@ protected func Initialize()
 {
 	// Goal.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
+	CreateObject(Rule_KillLogs);
 	
 	// Mood.
 	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));

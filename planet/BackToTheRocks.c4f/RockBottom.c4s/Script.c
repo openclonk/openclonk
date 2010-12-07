@@ -10,6 +10,7 @@ protected func Initialize()
 {
 	// Goal.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
+	CreateObject(Rule_KillLogs);
 	
 	// Chests with weapons.
 	CreateObject(Chest, 108, 230, NO_OWNER);
