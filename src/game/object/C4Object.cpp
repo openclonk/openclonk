@@ -819,11 +819,6 @@ void C4Object::SetOCF()
 		OCF|=OCF_Living;
 		if (Alive) OCF|=OCF_Alive;
 	}
-	// OCF_FightReady
-	if (OCF & OCF_Alive)
-		if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
-			if (!Def->NoFight)
-				OCF|=OCF_FightReady;
 	// OCF_LineConstruct
 	if (OCF & OCF_FullCon)
 		if (Def->LineConnect)
@@ -930,11 +925,6 @@ void C4Object::UpdateOCF()
 			if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
 				if (NoCollectDelay==0)
 					OCF|=OCF_Collection;
-	// OCF_FightReady
-	if (OCF & OCF_Alive)
-		if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
-			if (!Def->NoFight)
-				OCF|=OCF_FightReady;
 	// OCF_NotContained
 	if (!Contained)
 		OCF|=OCF_NotContained;
@@ -4470,43 +4460,6 @@ void C4Object::ExecAction()
 		xdir=ydir=0;
 		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
-		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_FIGHT:
-		// Valid check
-		if (!Action.Target || (Action.Target->GetProcedure()!=DFA_FIGHT))
-			{ ObjectActionStand(this); return; }
-
-		// Fighting through doors only if doors open
-		if (Action.Target->Contained != Contained)
-			if ((Contained && !Contained->EntranceStatus) || (Action.Target->Contained && !Action.Target->Contained->EntranceStatus))
-				{ ObjectActionStand(this); return; }
-
-		// Physical training
-		if (!::Game.iTick5)
-			TrainPhysical(&C4PhysicalInfo::Fight, 1, C4MaxPhysical);
-
-		// Direction
-		if (Action.Target->GetX()>GetX()) SetDir(DIR_Right);
-		if (Action.Target->GetX()<GetX()) SetDir(DIR_Left);
-		// Position
-		iTargetX=GetX();
-		if (Action.Dir==DIR_Left)  iTargetX=Action.Target->GetX()+Action.Target->Shape.Wdt/2+2;
-		if (Action.Dir==DIR_Right) iTargetX=Action.Target->GetX()-Action.Target->Shape.Wdt/2-2;
-		lLimit=ValByPhysical(95, pPhysical->Walk);
-		if (GetX()==iTargetX) Towards(xdir,Fix0,lLimit);
-		if (GetX()<iTargetX) Towards(xdir,+lLimit,lLimit);
-		if (GetX()>iTargetX) Towards(xdir,-lLimit,lLimit);
-		// Distance check
-		if ( (Abs(GetX()-Action.Target->GetX())>Shape.Wdt)
-		     || (Abs(GetY()-Action.Target->GetY())>Shape.Wdt) )
-			{ ObjectActionStand(this); return; }
-		// Other
-		Action.t_attach|=CNAT_Bottom;
-		ydir=0;
-		Mobile=1;
-		// Experience
-		if (!::Game.iTick35) DoExperience(+2);
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_LIFT:

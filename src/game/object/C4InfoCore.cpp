@@ -178,7 +178,6 @@ struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; } C
 	{ "Swim",            &C4PhysicalInfo::Swim            },
 	{ "Throw",           &C4PhysicalInfo::Throw           },
 	{ "Push",            &C4PhysicalInfo::Push            },
-	{ "Fight",           &C4PhysicalInfo::Fight           },
 	{ "Magic",           &C4PhysicalInfo::Magic           },
 	{ "Float",           &C4PhysicalInfo::Float           },
 	{ "CanScale",        &C4PhysicalInfo::CanScale        },
@@ -206,7 +205,6 @@ void C4PhysicalInfo::PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysica
 		Scale = pTrainDef->Physical.Scale + (C4MaxPhysical - pTrainDef->Physical.Scale) * iTrainRank / 20;
 		Hangle = pTrainDef->Physical.Hangle + (C4MaxPhysical - pTrainDef->Physical.Hangle) * iTrainRank / 20;
 		Swim = pTrainDef->Physical.Swim + (C4MaxPhysical - pTrainDef->Physical.Swim) * iTrainRank / 20;
-		Fight = pTrainDef->Physical.Fight + (C4MaxPhysical - pTrainDef->Physical.Fight) * iTrainRank / 20;
 		// do script updates for any physicals as required (this will train stuff like magic)
 		const char *szPhysName; C4PhysicalInfo::Offset PhysOff;
 		for (int32_t iPhysIdx=0; (szPhysName = GetNameByIndex(iPhysIdx, &PhysOff)); ++iPhysIdx)

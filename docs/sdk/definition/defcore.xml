@@ -386,11 +386,6 @@
           <col>0 or 1. If 1 the object can not be taken from containers by a clonk.</col>
         </row>
         <row>
-          <literal_col>NoFight</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1 the object will never enter into a fight with other living beings.</col>
-        </row>
-        <row>
           <literal_col>LiftTop</literal_col>
           <col>Integer</col>
           <col>If an object with Action procedure "<emlink href="definition/procedures.html">LIFT</emlink>" lifts its target to this value above object center the function LiftTop is called in the object script.</col>
@@ -474,11 +469,6 @@
           <literal_col>Push</literal_col>
           <col>Integer</col>
           <col>0-100000. Push power.</col>
-        </row>
-        <row>
-          <literal_col>Fight</literal_col>
-          <col>Integer</col>
-          <col>0-100000. Fight power.</col>
         </row>
         <row>
           <literal_col>Magic</literal_col>

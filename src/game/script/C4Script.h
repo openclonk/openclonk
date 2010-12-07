@@ -167,7 +167,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_RejectHostilityChange    "~RejectHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility
 #define PSF_RejectTeamSwitch         "~RejectTeamSwitch" // int iPlr, int idNewTeam
 #define PSF_RejectEntrance           "~RejectEntrance" // C4Object *pIntoObj
-#define PSF_RejectFight              "~RejectFight" // C4Object* pEnemy
 #define PSF_RejectCollection         "~RejectCollect" // idObject, pObject
 #define PSF_RejectContents           "~RejectContents" // blocks opening of activate/get/contents menus; no parameters
 

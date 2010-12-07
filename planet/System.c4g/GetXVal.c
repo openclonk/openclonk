@@ -66,7 +66,6 @@ global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); 
 global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
 global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
 global func GetDefNoSell()      { return GetDefCoreVal("NoSell", "DefCore"); }
-global func GetDefNoFight()     { return GetDefCoreVal("NoFight", "DefCore"); }
 
 // GetObjectVal
 global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }

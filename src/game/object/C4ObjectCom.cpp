@@ -167,11 +167,6 @@ bool ObjectActionPush(C4Object *cObj, C4Object *target)
 	return cObj->SetActionByName("Push",target);
 }
 
-bool ObjectActionFight(C4Object *cObj, C4Object *target)
-{
-	return cObj->SetActionByName("Fight",target);
-}
-
 bool ObjectActionChop(C4Object *cObj, C4Object *target)
 {
 	return cObj->SetActionByName("Chop",target);
@@ -751,9 +746,6 @@ bool ObjectComTake2(C4Object *cObj) // by C4CMD_Take2
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 {
 	if (!cObj || !pTarget) return false;
-	if (!punch)
-		if (pTarget->GetPhysical()->Fight)
-			punch=BoundBy<int32_t>(5*cObj->GetPhysical()->Fight/pTarget->GetPhysical()->Fight,0,10);
 	if (!punch) return true;
 	bool fBlowStopped = !!pTarget->Call(PSF_QueryCatchBlow,&C4AulParSet(C4VObj(cObj)));
 	if (fBlowStopped && punch>1) punch=punch/2; // half damage for caught blow, so shield+armor help in fistfight and vs monsters

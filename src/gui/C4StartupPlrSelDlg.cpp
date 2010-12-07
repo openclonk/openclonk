@@ -514,8 +514,6 @@ void C4StartupPlrSelDlg::CrewListItem::SetSelectionInfo(C4GUI::TextWindow *pSele
 	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Push, "IDS_DESC_PUSH").getData(),
 	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Fight, "IDS_DESC_FIGHT").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	if (Core.Physical.Magic) pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Magic, "IDS_DESC_MAGIC").getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	pSelectionInfo->UpdateHeight();

@@ -48,7 +48,6 @@ public:
 	int32_t Swim;
 	int32_t Throw;
 	int32_t Push;
-	int32_t Fight;
 	int32_t Magic;
 	int32_t CanScale;
 	int32_t CanHangle;

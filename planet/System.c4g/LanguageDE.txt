@@ -376,7 +376,6 @@ IDS_DESC_ENERGY=Energie:
 IDS_DESC_ENGINE=Dieses Zusatzprogramm ist für die Ausführung von Spielrunden verantwortlich.\n\nBei Auswahl eines Szenarios zeigt die rote Markierung an, welche Engine für die Ausführung des jeweiligen Szenarios verwendet wird.\n\nDurch Aktivierung oder Deaktivierung einer Engine (Kästchen wird grün) kann bestimmt werden, welche Engine eingesetzt werden soll, falls mehrere gleichermaßen geeignete Engines vorhanden sind.
 IDS_DESC_EXPECTING=Teilnehmer werden erwartet.
 IDS_DESC_FAIRCREWSTRENGTH=Bestimmt die Stärke der Clonks in einem Spiel mit "Fairen Clonks".
-IDS_DESC_FIGHT=Kämpfen:
 IDS_DESC_FONTSIZE=Schriftgröße auswählen. Bei Wechsel der Bildschirmauflösung wird die Schriftgröße automatisch angepasst.
 IDS_DESC_GAMEMUSIC=Steuert Hintergrundmusik im Spiel.
 IDS_DESC_GAMEPADFORMENU=Mit dieser Option kann das Gamepad für die Steuerung des Menüsystems verwendet werden.

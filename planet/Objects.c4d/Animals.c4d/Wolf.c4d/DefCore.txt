@@ -29,7 +29,6 @@ IncompleteActivity=1
 VehicleControl=2
 Pathfinder=1
 ClosedContainer=2
-NoFight=1
 
 [Physical]
 Energy=50000
@@ -42,5 +41,4 @@ Dig=40000
 Swim=60000
 Throw=50000
 Push=40000
-Fight=50000
 CanDig=1
