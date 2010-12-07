@@ -954,7 +954,8 @@ void C4AulScript::ClearCode()
 {
 	while(Code.size() > 0)
 		RemoveLastBCC();
-	CPos = 0;
+	// add one empty chunk to init CPos
+	AddBCC(AB_ERR);
 }
 
 int C4AulScript::GetLineOfCode(C4AulBCC * bcc)
@@ -973,7 +974,8 @@ bool C4AulScript::Preparse()
 	  however, this is just a few bytes per updated definition in developer mode, which
 	  seems acceptable for me. The mem will be released when destroying the list */
 	Includes = NULL; Appends=NULL;
-	CPos = &Code[0];
+	// reset code
+	ClearCode();
 	while (Func0)
 	{
 		// belongs to this script?

@@ -1160,6 +1160,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	{
 		pScript->Def = NULL;
 	}
+	pScript->ClearCode();
 	pScript->Reg2List(Engine, this);
 	// Add a new function
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, "");
@@ -1178,7 +1179,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		delete pScript;
 		return C4VNull;
 	}
-	pFunc->Code = &pScript->Code[0];
+	pFunc->Code = &pScript->Code[1];
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));
