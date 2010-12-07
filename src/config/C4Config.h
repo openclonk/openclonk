@@ -245,7 +245,6 @@ class C4ConfigControls
 public:
 	int32_t GamepadGuiControl;
 	int32_t MouseAScroll; // auto scroll strength
-	int32_t Keyboard[C4MaxKeyboardSet][C4MaxKey];
 	void CompileFunc(StdCompiler *pComp, bool fKeysOnly=false);
 	void ResetKeys(); // reset all keys to default
 };

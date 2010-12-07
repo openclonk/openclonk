@@ -270,76 +270,11 @@ void C4ConfigGamepad::Reset()
 void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
 {
 #ifndef USE_CONSOLE
-#ifdef _WIN32
-#define KEY(win, x, sdl) win
-#elif defined(USE_X11)
-#define KEY(win, x, sdl) x
-#else
-#define KEY(win, x, sdl) sdl
-#endif
-
-	bool fGer = isGermanSystem();
-
-	pComp->Value(mkNamingAdapt(Keyboard[0][0],    "Kbd1Key1",             KEY('Q',          XK_q,             SDLK_q)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][1],    "Kbd1Key2",             KEY('W',          XK_w,             SDLK_w)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][2],    "Kbd1Key3",             KEY('E',          XK_e,             SDLK_e)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][3],    "Kbd1Key4",             KEY('A',          XK_a,             SDLK_a)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][4],    "Kbd1Key5",             KEY('S',          XK_s,             SDLK_s)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][5],    "Kbd1Key6",             KEY('D',          XK_d,             SDLK_d)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][6],    "Kbd1Key7",             fGer ? KEY('Y', XK_y, SDLK_y) : KEY('Z', XK_z, SDLK_z)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][7],    "Kbd1Key8",             KEY('X',          XK_x,             SDLK_x)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][8],    "Kbd1Key9",             KEY('C',          XK_c,             SDLK_c)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][9],    "Kbd1Key10",            fGer ? KEY(226, XK_less, SDLK_LESS) : KEY('R', XK_r, SDLK_r)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][10],   "Kbd1Key11",            KEY('V',          XK_v,             SDLK_v)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][11],   "Kbd1Key12",            KEY('F',          XK_f,             SDLK_f)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[1][0],    "Kbd2Key1",             KEY(103,          XK_KP_Home,       SDLK_KP7)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][1],    "Kbd2Key2",             KEY(104,          XK_KP_Up,         SDLK_KP8)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][2],    "Kbd2Key3",             KEY(105,          XK_KP_Page_Up,    SDLK_KP9)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][3],    "Kbd2Key4",             KEY(100,          XK_KP_Left,       SDLK_KP4)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][4],    "Kbd2Key5",             KEY(101,          XK_KP_Begin,      SDLK_KP5)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][5],    "Kbd2Key6",             KEY(102,          XK_KP_Right,      SDLK_KP6)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][6],    "Kbd2Key7",             KEY(97,           XK_KP_End,        SDLK_KP1)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][7],    "Kbd2Key8",             KEY(98,           XK_KP_Down,       SDLK_KP2)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][8],    "Kbd2Key9",             KEY(99,           XK_KP_Page_Down,  SDLK_KP3)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][9],    "Kbd2Key10",            KEY(96,           XK_KP_Insert,     SDLK_KP0)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][10],   "Kbd2Key11",            KEY(110,          XK_KP_Delete,     SDLK_KP_PERIOD)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][11],   "Kbd2Key12",            KEY(107,          XK_KP_Add,        SDLK_KP_PLUS)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[2][0],    "Kbd3Key1",             KEY('I',          XK_i,             SDLK_i)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][1],    "Kbd3Key2",             KEY('O',          XK_o,             SDLK_o)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][2],    "Kbd3Key3",             KEY('P',          XK_p,             SDLK_p)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][3],    "Kbd3Key4",             KEY('K',          XK_k,             SDLK_k)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][4],    "Kbd3Key5",             KEY('L',          XK_l,             SDLK_l)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][5],    "Kbd3Key6",             fGer ? KEY(192, XK_odiaeresis, SDLK_WORLD_4) : KEY(0xBA, XK_semicolon, SDLK_SEMICOLON)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][6],    "Kbd3Key7",             KEY(188, XK_comma, SDLK_COMMA)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][7],    "Kbd3Key8",             KEY(190, XK_period, SDLK_PERIOD)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][8],    "Kbd3Key9",             fGer ? KEY(189, XK_minus, SDLK_MINUS) : KEY(0xBF, XK_slash, SDLK_SLASH)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][9],    "Kbd3Key10",            KEY('M', XK_m, SDLK_m)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][10],   "Kbd3Key11",            KEY(222, XK_adiaeresis, SDLK_WORLD_3)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][11],   "Kbd3Key12",            KEY(186, XK_udiaeresis, SDLK_WORLD_2)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[3][0],    "Kbd4Key1",             KEY(VK_INSERT,    XK_Insert,        SDLK_INSERT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][1],    "Kbd4Key2",             KEY(VK_HOME,      XK_Home,          SDLK_HOME)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][2],    "Kbd4Key3",             KEY(VK_PRIOR,     XK_Page_Up,       SDLK_PAGEUP)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][3],    "Kbd4Key4",             KEY(VK_DELETE,    XK_Delete,        SDLK_DELETE)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][4],    "Kbd4Key5",             KEY(VK_UP,        XK_Up,            SDLK_UP)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][5],    "Kbd4Key6",             KEY(VK_NEXT,      XK_Page_Down,     SDLK_PAGEDOWN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][6],    "Kbd4Key7",             KEY(VK_LEFT,      XK_Left,          SDLK_LEFT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][7],    "Kbd4Key8",             KEY(VK_DOWN,      XK_Down,          SDLK_DOWN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][8],    "Kbd4Key9",             KEY(VK_RIGHT,     XK_Right,         SDLK_RIGHT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][9],    "Kbd4Key10",            KEY(VK_END,       XK_End,           SDLK_END)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][10],   "Kbd4Key11",            KEY(VK_RETURN,    XK_Return,        SDLK_RETURN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][11],   "Kbd4Key12",            KEY(VK_BACK,      XK_BackSpace,     SDLK_BACKSPACE)));
-
 	if (fKeysOnly) return;
 
 	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
-
-#undef KEY
-#undef s
-#endif //USE_CONSOLE
+#endif
 }
 
 const char *CfgAtTempPath(const char *szFilename)

@@ -376,9 +376,6 @@ void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
 		for (i = 0; i < C4MaxKey; ++i)
 			KeyControlBtns[i]->SetKey(Config.Gamepads[iSelectedCtrlSet].Button[i]);
 	}
-	else
-		for (i = 0; i < C4MaxKey; ++i)
-			KeyControlBtns[i]->SetKey(Config.Controls.Keyboard[iSelectedCtrlSet][i]);
 	// open gamepad
 	if (fGamepad && Config.General.GamepadEnabled)
 	{
@@ -408,8 +405,6 @@ void C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn(C4GUI::Control *btn)
 	// and update config
 	if (fGamepad)
 		Config.Gamepads[iSelectedCtrlSet].Button[idKey] = key;
-	else
-		Config.Controls.Keyboard[iSelectedCtrlSet][idKey] = key;
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn(C4GUI::Control *btn)
