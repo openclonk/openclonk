@@ -96,7 +96,7 @@ protected func FxFlagAutoPickupTimer(object target, int num)
 	if(target->GetAction() == "AttachCarrier")
 		return 1;
 		
-	var clnk = FindObjects(Find_ID(Clonk),Find_Distance(20));
+	var clnk = FindObjects(Find_ID(Clonk),Find_Distance(20),Find_OCF(OCF_Alive));
 	if(GetLength(clnk) == 0) return 1;
 	var r=Random(GetLength(clnk));
 	if(!clnk[r]) return 1; 
@@ -171,6 +171,7 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 	this.Visibility = VIS_All;
 	if (reason == 4)
 		SetAction("Idle");
+	Log("$MsgFlagDropped$", GetTaggedTeamName(GetPlayerTeam(target->GetOwner())), GetTaggedTeamName(team));
 	if (target)
 	{	
 		target->DetachMesh(EffectVar(0, target, num));
