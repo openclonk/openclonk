@@ -318,6 +318,7 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 
 #ifdef _DEBUG
 	static int dbg_counter = 0;
+	if (dbg_idx) delete dbg_idx;
 	dbg_idx = new int;
 	*dbg_idx = dbg_counter++;
 #endif

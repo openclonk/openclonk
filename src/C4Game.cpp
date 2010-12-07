@@ -1567,7 +1567,7 @@ void C4Game::Default()
 	ScenarioLangStringTable.Default();
 	ScenarioSysLangStringTable.Default();
 	Script.Default();
-	GraphicsResource.Default();
+	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();
 	PathFinder.Default();

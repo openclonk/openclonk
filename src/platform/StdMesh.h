@@ -403,6 +403,13 @@ public:
 				IDs->push_back(this);
 			}
 
+			virtual ~IDBase()
+			{
+				assert(IDs);
+				IDs->erase(std::find(IDs->begin(), IDs->end(), this));
+				if (!IDs->size()) { delete IDs; IDs = NULL; }
+			}
+
 		public:
 			const char* name;
 			const std::type_info& type;

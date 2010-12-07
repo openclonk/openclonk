@@ -29,6 +29,15 @@
 #include <config.h>
 #endif // HAVE_CONFIG_H
 
+#ifdef _MSC_VER
+#define DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED
+#endif
+
+
 #ifdef _WIN32
 # ifndef _INC_WINDOWS
 #  ifdef _WIN64
@@ -56,38 +65,6 @@
 #pragma warning(disable : 4786) // long symbol names
 #pragma warning(disable: 4706)
 #pragma warning(disable: 4239)
-#endif
-
-
-
-#ifdef _MSC_VER
-#define DEPRECATED __declspec(deprecated)
-#elif defined(__GNUC__)
-#define DEPRECATED __attribute__((deprecated))
-#else
-#define DEPRECATED
-#endif
-
-
-
-// debug memory management
-#ifndef NODEBUGMEM
-#if defined(_DEBUG) && defined(_MSC_VER)
-#if _MSC_VER <= 1200
-#include <new>
-#include <memory>
-#include <crtdbg.h>
-#include <malloc.h>
-inline void *operator new(unsigned int s, const char *szFile, long iLine)
-{ return ::operator new(s, _NORMAL_BLOCK, szFile, iLine); }
-inline void operator delete(void *p, const char *, long)
-{ ::operator delete(p); }
-#define new new(__FILE__, __LINE__)
-#define malloc(size) ::_malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__)
-#else
-#include <crtdbg.h>
-#endif
-#endif
 #endif
 
 

@@ -22,8 +22,6 @@
 #include "StdSync.h"
 #include "StdWindow.h"
 
-#include <boost/function.hpp>
-
 // Event types
 enum C4InteractiveEventType
 {

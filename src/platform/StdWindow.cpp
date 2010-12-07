@@ -71,7 +71,7 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	WndClass.lpszClassName = C4FullScreenClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-	return RegisterClassExW(&WndClass);
+	return !!RegisterClassExW(&WndClass);
 }
 
 #define ADDL2(s) L##s
