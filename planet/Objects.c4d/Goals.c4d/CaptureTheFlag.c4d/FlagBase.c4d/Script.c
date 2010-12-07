@@ -32,7 +32,12 @@ public func FindTeam(int find_team)
 // Returns whether there is a flag at this base.
 public func IsBaseWithFlag()
 {
-	return !!FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team), Find_Distance(30));
+	var flag = FindObject(Find_ID(Goal_Flag), Find_Func("FindTeam", team));
+	if (flag->GetAction() != "AttachBase")
+		return false;
+	if (flag->GetActionTarget() != this)
+		return false;
+	return true;
 }
 
 private func UpdateColor()
