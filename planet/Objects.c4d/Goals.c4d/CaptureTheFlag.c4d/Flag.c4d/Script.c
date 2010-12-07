@@ -37,7 +37,7 @@ public func FindTeam(int find_team)
 // Flag can be picked up by interaction.
 public func IsInteractable(object clonk)
 {
-	if (GetAction() == "Attach")
+	if (GetAction() == "AttachCarrier")
 		if (GetActionTarget() != clonk)
 			return false;
 	var controller = clonk->GetController();
@@ -56,7 +56,7 @@ public func GetInteractionMetaInfo(object clonk)
 	var ctrl_team = GetPlayerTeam(controller);
 	if (team == ctrl_team)
 		return { Description = "$MsgBeamFlag$" };
-	if (GetAction() == "Attach" && GetActionTarget() == clonk)
+	if (GetAction() == "AttachCarrier" && GetActionTarget() == clonk)
 		return { Description = "$MsgDropFlag$" };
 	return { Description = "$MsgGrabFlag$" };
 }
@@ -72,16 +72,16 @@ public func Interact(object clonk)
 		return true;
 	}
 	// Carrying clonk, drop flag.
-	if (GetAction() == "Attach" && GetActionTarget() == clonk)
+	if (GetAction() == "AttachCarrier" && GetActionTarget() == clonk)
 	{
 		SetAction("Idle");
 		RemoveEffect("FlagCarried", clonk);
-		Log("$MsgFlagDropped$", GetTeamName(ctrl_team), GetTeamName(team));
+		Log("$MsgFlagDropped$", GetTaggedTeamName(ctrl_team), GetTaggedTeamName(team));
 		return true;		
 	}
 	// Fiendly team, grab flag.
-	SetAction("Attach", clonk);
-	Log("$MsgFlagStolen$", GetTeamName(ctrl_team), GetTeamName(team));
+	SetAction("AttachCarrier", clonk);
+	Log("$MsgFlagStolen$", GetTaggedTeamName(ctrl_team), GetTaggedTeamName(team));
 	AddEffect("FlagCarried", clonk, 100, 5, this);
 	return true;
 }
@@ -91,8 +91,6 @@ protected func Initialize()
 	PlayAnimation("Wave", 1, Anim_Linear(0, 0, GetAnimationLength("Wave"), 78, ANIM_Loop), Anim_Const(1000));
 	return;
 }
-
-public func HasNoFadeOut() { return true; }
 
 protected func FxFlagCarriedStart(object target, int num, int temp)
 {
@@ -111,13 +109,13 @@ protected func FxFlagCarriedTimer(object target, int num)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
-	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(30));
+	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
 	if (base && base->IsBaseWithFlag()) 
 	{
 		var goal = FindObject(Find_ID(Goal_CaptureTheFlag));
 		if (goal)
 			goal->AddTeamScore(ctrl_team);
-		Log("$MsgFlagCaptured$", GetTeamName(ctrl_team));
+		Log("$MsgFlagCaptured$", GetTaggedTeamName(ctrl_team));
 		BeamFlag(false);
 		return -1;
 	}
@@ -128,8 +126,9 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 {
 	if (temp)
 		return 1;
-	SetAction("Idle");	
 	this.Visibility = VIS_All;
+	if (reason == 4)
+		SetAction("Idle");
 	if (target)
 	{	
 		target->DetachMesh(EffectVar(0, target, num));
@@ -165,8 +164,8 @@ protected func Destruction()
 	{
 		var flag = CreateObject(Goal_Flag, 0, 0, GetOwner());
 		flag->SetTeam(GetTeam());
-		flag->SetPosition(base->GetX() + 7, base->GetY() - 13);
-		Log("$MsgFlagRestored$", GetTeamName(team));
+		SetAction("AttachBase", base);
+		Log("$MsgFlagRestored$", GetTaggedTeamName(team));
 	}
 	return;
 }
@@ -174,7 +173,9 @@ protected func Destruction()
 // Returns whether the flag is at its base.
 public func IsAtBase()
 {
-	return !!FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team), Find_Distance(30));
+	if (GetAction() == "AttachBase")
+		return true;
+	return false;
 }
 
 private func BeamFlag(bool msg)
@@ -182,14 +183,11 @@ private func BeamFlag(bool msg)
 	if (IsAtBase())
 		return;
 	if (msg)
-		Log("$MsgFlagBeamed$", GetTeamName(team));
-	SetAction("Idle");
+		Log("$MsgFlagBeamed$", GetTaggedTeamName(team));
+	//SetAction("Idle");
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base)
-	{
-		if(ObjectDistance(base) > 30)
-			SetPosition(base->GetX() + 7, base->GetY() - 13);
-	}
+		SetAction("AttachBase", base);
 	else 
 		RemoveObject();
 	return;
@@ -197,9 +195,18 @@ private func BeamFlag(bool msg)
 
 local Name = "$Name$";
 local ActMap = {
-	Attach = {
+	AttachCarrier = {
 		Prototype = Action,
-		Name = "Attach",
+		Name = "AttachCarrier",
+		Procedure = DFA_ATTACH,
+		Length = 1,
+		Delay = 0,
+		NextAction = "Attach",
+		Animation = "Wave",
+	},
+	AttachBase = {
+		Prototype = Action,
+		Name = "AttachBase",
 		Procedure = DFA_ATTACH,
 		Length = 1,
 		Delay = 0,
