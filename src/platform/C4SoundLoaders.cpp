@@ -257,10 +257,10 @@ bool FMODSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length
 		FSOUND_Sample_Free(pSample);
 		return false;
 	}
-	result.sample_rate = iSampleRate;
-	result.sample_length = static_cast<double>(iSamples) / iSampleRate;
-	result.final_handle = pSample;
-	assert(result.sample_length > 0);
+	result->sample_rate = iSampleRate;
+	result->sample_length = static_cast<double>(iSamples) / iSampleRate;
+	result->final_handle = pSample;
+	assert(result->sample_length > 0);
 	return true;
 }
 
