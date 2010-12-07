@@ -99,8 +99,8 @@ protected func FxFlagAutoPickupTimer(object target, int num)
 	var clnk = FindObjects(Find_ID(Clonk),Find_Distance(20));
 	if(GetLength(clnk) == 0) return 1;
 	var r=Random(GetLength(clnk));
-	Log("%v, %v",r, clnk[r]);
 	if(!clnk[r]) return 1; 
+	
 	if(GetPlayerTeam(clnk[r]->GetOwner()) != target->GetTeam())
 	{
 		// Fiendly team, grab flag.
