@@ -124,6 +124,8 @@ protected func FxFlagCarriedStart(object target, int num, int temp)
 {
 	if (temp == 0)
 	{
+		EffectVar(1, target, num)=target->GetX();
+		EffectVar(2, target, num)=target->GetY();
 		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
 		EffectVar(0, target, num) = target->AttachMesh(this, "pos_back1", "main", trans);
 		this.Visibility = VIS_None;
@@ -137,6 +139,18 @@ protected func FxFlagCarriedTimer(object target, int num)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
+	var x = EffectVar(1, target, num);
+	var y = EffectVar(2, target, num);
+	var newx = target->GetX();
+	var newy = target->GetY();
+	if(Distance(x,y,newx,newy) > 2 )
+	{
+	
+		DrawParticleLine("FlagTracer",AbsX(x),AbsY(y),AbsX(newx),AbsY(newy),4,30-Random(4),GetTeamColor(this->GetTeam()) | 255 <<24,GetTeamColor(this->GetTeam()) | 255 <<24);
+		EffectVar(1, target, num)=newx;
+		EffectVar(2, target, num)=newy;
+	}
+	
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
 	if (base && base->IsBaseWithFlag()) 
 	{
@@ -162,7 +176,7 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 		target->DetachMesh(EffectVar(0, target, num));
 		ResetPhysicals(target);
 	}
-	AddEffect("FlagReturnDelay",EffectVar(0, target, num),100,100,nil,Goal_Flag);
+	AddEffect("FlagReturnDelay",this,100,100,nil,Goal_Flag);
 	return 1;
 }
 
