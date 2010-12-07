@@ -53,7 +53,6 @@ bool ObjectActionBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionChop(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionCornerScale(C4Object *cObj);
-bool ObjectActionFight(C4Object *cObj, C4Object *pTarget);
 
 bool ObjectComMovement(C4Object *cObj, int32_t iComDir);
 bool ObjectComTurn(C4Object *cObj);

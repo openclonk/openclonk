@@ -4422,25 +4422,6 @@ static bool FnDrawMaterialQuad(C4AulContext* ctx, C4String *szMaterial, long iX1
 	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
 }
 
-static bool FnFightWith(C4AulObjectContext *ctx, C4Object *pTarget)
-{
-	// safety
-	if (!pTarget) return false;
-	C4Object *pClonk = ctx->Obj;
-	// check OCF
-	if (~(pTarget->OCF & pClonk->OCF) & OCF_FightReady) return false;
-	// RejectFight callback
-	C4AulParSet parset1(C4VObj(pTarget) );
-	C4AulParSet parset2(C4VObj(pClonk) );
-	if (pTarget->Call(PSF_RejectFight, &parset1).getBool() ) return false;
-	if (pClonk->Call(PSF_RejectFight, &parset2).getBool() ) return false;
-	// begin fighting
-	ObjectActionFight(pClonk,pTarget);
-	ObjectActionFight(pTarget,pClonk);
-	// success
-	return true;
-}
-
 static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
 {
 	// check player
@@ -6237,7 +6218,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
 	AddFunc(pEngine, "SetObjectOrder", FnSetObjectOrder);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
-	AddFunc(pEngine, "FightWith", FnFightWith);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
 	AddFunc(pEngine, "ClearMenuItems", FnClearMenuItems);
 	AddFunc(pEngine, "GetObjectLayer", FnGetObjectLayer, false);
@@ -6428,7 +6408,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "OCF_Collection"         ,C4V_Int,          OCF_Collection},
 	{ "OCF_Living"             ,C4V_Int,          OCF_Living},
 	{ "OCF_HitSpeed4"          ,C4V_Int,          OCF_HitSpeed4},
-	{ "OCF_FightReady"         ,C4V_Int,          OCF_FightReady},
 	{ "OCF_LineConstruct"      ,C4V_Int,          OCF_LineConstruct},
 	{ "OCF_Prey"               ,C4V_Int,          OCF_Prey},
 	{ "OCF_AttractLightning"   ,C4V_Int,          OCF_AttractLightning},
@@ -6512,7 +6491,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "FX_Call_EngAsphyxiation"   ,C4V_Int,      C4FxCall_EngAsphyxiation   }, // energy loss through asphyxiaction
 	{ "FX_Call_EngCorrosion"      ,C4V_Int,      C4FxCall_EngCorrosion      }, // energy loss through corrosion (acid)
 	{ "FX_Call_EngStruct"         ,C4V_Int,      C4FxCall_EngStruct         }, // regular structure energy loss (normally not called)
-	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss during fighting
+	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss from punch
 
 	{ "GFXOV_MODE_None"           ,C4V_Int,      C4GraphicsOverlay::MODE_None },    // gfx overlay modes
 	{ "GFXOV_MODE_Base"           ,C4V_Int,      C4GraphicsOverlay::MODE_Base },    //

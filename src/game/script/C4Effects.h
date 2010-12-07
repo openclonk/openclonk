@@ -65,7 +65,7 @@
 #define C4FxCall_EngAsphyxiation  37 // energy loss through asphyxiaction
 #define C4FxCall_EngCorrosion     38 // energy loss through corrosion (acid)
 #define C4FxCall_EngStruct        39 // regular structure energy loss (normally not called)
-#define C4FxCall_EngGetPunched    40 // energy loss during fighting
+#define C4FxCall_EngGetPunched    40 // energy loss from Punch
 
 // fire drawing modes
 #define C4Fx_FireMode_Default      0 // determine mode by category

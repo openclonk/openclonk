@@ -215,9 +215,6 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 
 	// Checks for this frame
 	focf=tocf=OCF_None;
-	// Medium level: Fight
-	if (!::Game.iTick5)
-		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
 	// Very low level: Incineration
 	if (!::Game.iTick35)
 		{ focf|=OCF_OnFire; tocf|=OCF_Inflammable; }
@@ -229,25 +226,10 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 				{
 					ocf1=obj1->OCF; ocf2=tocf;
 					if ((obj2=AtObject(obj1->GetX(),obj1->GetY(),ocf2,obj1)))
-					{
 						// Incineration
 						if ((ocf1 & OCF_OnFire) && (ocf2 & OCF_Inflammable))
 							if (!Random(obj2->Def->ContactIncinerate))
 								{ obj2->Incinerate(obj1->GetFireCausePlr(), false, obj1); continue; }
-						// Fight
-						if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-							if (::Players.Hostile(obj1->Owner,obj2->Owner))
-							{
-								// RejectFight callback
-								C4AulParSet parset1(C4VObj(obj2) );
-								C4AulParSet parset2(C4VObj(obj1) );
-								if (obj1->Call(PSF_RejectFight, &parset1).getBool() ) continue;
-								if (obj2->Call(PSF_RejectFight, &parset2).getBool() ) continue;
-								ObjectActionFight(obj1,obj2);
-								ObjectActionFight(obj2,obj1);
-								continue;
-							}
-					}
 				}
 
 	// Reverse area check: Checks for all obj2 at obj1
@@ -313,38 +295,6 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 												}
 									}
 out1: ;
-			}
-
-	// Contained-Check: Checks for matching Contained
-
-	// Checks for this frame
-	focf=tocf=OCF_None;
-	// Low level: Fight
-	if (!::Game.iTick10)
-		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
-
-	if (focf && tocf)
-		for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1=*iter); ++iter)
-			if (obj1->Status && obj1->Contained && (obj1->OCF & focf))
-			{
-				for (C4ObjectList::iterator iter2 = obj1->Contained->Contents.begin(); iter2 != end() && (obj2=*iter2); ++iter2)
-					if (obj2->Status && obj2->Contained && (obj2!=obj1) && (obj2->OCF & tocf))
-						if (obj1->Layer == obj2->Layer)
-						{
-							ocf1=obj1->OCF; ocf2=obj2->OCF;
-							// Fight
-							if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-								if (::Players.Hostile(obj1->Owner,obj2->Owner))
-								{
-									ObjectActionFight(obj1,obj2);
-									ObjectActionFight(obj2,obj1);
-									// obj1 might have been tampered with
-									if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-										goto out2;
-									continue;
-								}
-						}
-out2: ;
 			}
 }
 

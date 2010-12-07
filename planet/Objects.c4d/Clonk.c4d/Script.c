@@ -115,7 +115,6 @@ protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
 	RedefinePhysical("Swim", idTo);
 	RedefinePhysical("Throw", idTo);
 	RedefinePhysical("Push", idTo);
-	RedefinePhysical("Fight", idTo);
 	RedefinePhysical("Magic", idTo);
 	RedefinePhysical("Float", idTo);
 	/*if (GetRank()<4) RedefinePhysical("CanScale", idTo);
@@ -146,7 +145,6 @@ protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
 	ResetPhysical("CanDig");
 	ResetPhysical("Float");
 	ResetPhysical("Magic");
-	ResetPhysical("Fight");
 	ResetPhysical("Push");
 	ResetPhysical("Throw");
 	ResetPhysical("Swim");

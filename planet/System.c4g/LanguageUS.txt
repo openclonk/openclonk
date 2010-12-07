@@ -376,7 +376,6 @@ IDS_DESC_ENERGY=Energy:
 IDS_DESC_ENGINE=Engine modules are used to run the game.\n\nWhen selecting a scenario, the red check mark will indicate which engine is going to be used to run that scenario.\n\nBy activating or deactivating an engine (check box will turn green) you can determine which engine will be used if there are multiple, equally well suited engines present.
 IDS_DESC_EXPECTING=Awaiting participants.
 IDS_DESC_FAIRCREWSTRENGTH=Controls the strength of Clonks in a game with "Fair Crew".
-IDS_DESC_FIGHT=Fight:
 IDS_DESC_FONTSIZE=Select font size. When you change the screen resolution, the font size will be automatically adjusted.
 IDS_DESC_GAMEMUSIC=Enable background music in the game.
 IDS_DESC_GAMEPADFORMENU=If enabled, you can control the startup menu system with your gamepad.

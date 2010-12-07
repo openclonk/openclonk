@@ -191,7 +191,6 @@ public:
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
 	int32_t NoSell;           // if set, object can't be sold (doesn't even appear in sell-menu)
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
-	int32_t NoFight;          // if set, object is never OCF_FightReady
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
@@ -359,11 +358,10 @@ inline C4Def *C4Id2Def(C4ID id)
 #define DFA_LIFT    12
 #define DFA_FLOAT   13
 #define DFA_ATTACH  14
-#define DFA_FIGHT   15
-#define DFA_CONNECT 16
-#define DFA_PULL    17
+#define DFA_CONNECT 15
+#define DFA_PULL    16
 
-#define C4D_MaxDFA  18
+#define C4D_MaxDFA  17
 
 // procedure name table
 extern const char *ProcedureName[C4D_MaxDFA];

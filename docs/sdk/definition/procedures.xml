@@ -111,12 +111,6 @@
         <col>CNAT_None</col>
       </row>
       <row>
-        <col>FIGHT</col>
-        <col>Fighting</col>
-        <col>Fight against <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="definition/defcore.html#SektionPhysical">Fight physical</emlink>.</col>
-        <col>CNAT_Bottom</col>
-      </row>
-      <row>
         <col>CONNECT</col>
         <col>Line connections</col>
         <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
