@@ -13,7 +13,7 @@ protected func Initialize()
 	CreateObject(Chest, 180, 404, NO_OWNER);
 	CreateObject(Chest, 261, 163, NO_OWNER);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
-	
+	CreateObject(Rule_KillLogs);
 	AddEffect("IntFillChests", nil, 100, 70, this);
 	return;
 }

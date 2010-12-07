@@ -16,6 +16,7 @@ protected func Initialize()
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
+	CreateObject(Rule_KillLogs);
 	
 	//make lava collapse
 	CreateObject(Firestone,625,480);
