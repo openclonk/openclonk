@@ -174,6 +174,8 @@ protected func Construction()
 	using = nil;
 	using_type = nil;
 
+	backpack_open = false;
+	
 	return _inherited(...);
 }
 
@@ -376,6 +378,7 @@ local alt;
 local mlastx, mlasty;
 local virtual_cursor;
 local noholdingcallbacks;
+local backpack_open;
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
@@ -387,11 +390,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// open / close backpack
 	if (ctrl == CON_Backpack)
 	{
-		if (GetMenu())
+		var closed = false;
+		var backpack_was_open = backpack_open;
+		// close if menu was open
+		if(GetMenu())
 		{
 			GetMenu()->Close();
+			closed = true;
 		}
-		else if(MaxContentsCount() > 2)
+		// open if no menu was open or it was not the backpack menu which was open
+		if(MaxContentsCount() > 2 && (!closed || !backpack_was_open))
 		{
 			// Cancel usage
 			CancelUse();
@@ -407,6 +415,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				GetMenu()->AddItem(item,nil,i);
 			}
 			// finally, show the menu.
+			backpack_open = true;
 			GetMenu()->Show();
 		}
 		return true;
@@ -1278,6 +1287,7 @@ func SetMenu(object m)
 
 func MenuClosed()
 {
+	backpack_open = false;
 	SetMenu(nil);
 }
 
