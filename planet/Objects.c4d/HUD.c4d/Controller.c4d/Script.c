@@ -138,8 +138,12 @@ public func Destruction()
 public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder
-	clonk->GetSelector()->CrewGone();
-	ReorderCrewSelectors(clonk);
+	var selector = clonk->GetSelector();
+	if(selector)
+	{
+		selector->CrewGone();
+		ReorderCrewSelectors(clonk);
+	}
 }
 
 public func OnCrewEnabled(object clonk)
