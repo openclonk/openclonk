@@ -21,7 +21,6 @@
 	layer 0 - unused
 	layer 1 - title
 	layer 2 - actionicon
-	layer 3,4 - hands
 	
 	layer 12 - hotkey
 
@@ -454,41 +453,4 @@ public func UpdateSelectionStatus()
 		}
 	}
 	SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
-	
-	UpdateHands();
-}
-
-public func UpdateHands()
-{
-	if(!crew) return;
-
-	// the hands...
-	var hands = selected;
-	// .. are not displayed for inventory if the clonk is inside
-	// a building or is pushing something because the controls
-	// are redirected to those objects
-	if(actiontype == ACTIONTYPE_INVENTORY)
-		if(crew->Contained() || crew->GetProcedure() == "PUSH")
-			hands = 0;
-			
-	if(hands)
-	{
-		if(hands & 1 || actiontype != ACTIONTYPE_INVENTORY)
-		{
-			SetGraphics("One",GetID(),3,GFXOV_MODE_Base);
-			SetObjDrawTransform(HandSize(),0,-16000,0,HandSize(),-12000, 3);
-		}
-		else SetGraphics(nil,nil,3);
-		if(hands & 2 || actiontype != ACTIONTYPE_INVENTORY)
-		{
-			SetGraphics("Two",GetID(),4,GFXOV_MODE_Base);
-			SetObjDrawTransform(HandSize(),0,8000,0,HandSize(),-12000, 4);
-		}
-		else SetGraphics(nil,nil,4);
-	}
-	else
-	{
-		SetGraphics(nil,nil,3);
-		SetGraphics(nil,nil,4);
-	}
 }
