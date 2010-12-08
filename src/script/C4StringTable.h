@@ -214,6 +214,24 @@ enum C4PropertyName
 	P_MouseDragImage,
 	P_Animation,
 	P_Action,
+// Default Action Procedures
+	DFA_WALK,
+	DFA_FLIGHT,
+	DFA_KNEEL,
+	DFA_SCALE,
+	DFA_HANGLE,
+	DFA_DIG,
+	DFA_SWIM,
+	DFA_THROW,
+	DFA_BRIDGE,
+	DFA_BUILD,
+	DFA_PUSH,
+	DFA_CHOP,
+	DFA_LIFT,
+	DFA_FLOAT,
+	DFA_ATTACH,
+	DFA_CONNECT,
+	DFA_PULL,
 	P_LAST
 };
 

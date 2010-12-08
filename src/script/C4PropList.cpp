@@ -308,6 +308,23 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 	return 0;
 }
 
+C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		C4String * v = Properties.Get(k).Value.getStr();
+		if (v >= &Strings.P[0] && v < &Strings.P[P_LAST])
+			return C4PropertyName(v - &Strings.P[0]);
+		return P_LAST;
+	}
+	if (prototype)
+	{
+		return prototype->GetPropertyP(n);
+	}
+	return P_LAST;
+}
+
 int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 {
 	C4String * k = &Strings.P[n];

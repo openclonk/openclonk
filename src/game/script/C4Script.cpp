@@ -772,7 +772,7 @@ static bool FnSetBridgeActionData(C4AulObjectContext *cthr, long iBridgeLength, 
 	C4PropList* pActionDef = cthr->Obj->GetAction();
 	// action must be BRIDGE
 	if (!pActionDef) return false;
-	if (pActionDef->GetPropertyInt(P_Procedure) != DFA_BRIDGE) return false;
+	if (pActionDef->GetPropertyP(P_Procedure) != DFA_BRIDGE) return false;
 	// set data
 	cthr->Obj->Action.SetBridgeData(iBridgeLength, fMoveClonk, fWall, iBridgeMaterial);
 	return true;
@@ -783,10 +783,10 @@ static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 	if (!cthr->Obj->Status) return false;
 	C4PropList* pActionDef = cthr->Obj->GetAction();
 	// bridge: Convert from old style
-	if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_BRIDGE))
+	if (pActionDef && (pActionDef->GetPropertyP(P_Procedure) == DFA_BRIDGE))
 		return FnSetBridgeActionData(cthr, 0, false, false, iData);
 	// attach: check for valid vertex indices
-	if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)) // Fixed Action.Act check here... matthes
+	if (pActionDef && (pActionDef->GetPropertyP(P_Procedure) == DFA_ATTACH))
 		if (((iData&255) >= C4D_MaxVertex) || ((iData>>8) >= C4D_MaxVertex))
 			return false;
 	// set data
@@ -3310,11 +3310,7 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	C4PropList* pActionDef = cthr->Obj->GetAction();
 	if (!pActionDef) return NULL;
 	// get proc
-	long iProc = pActionDef->GetPropertyInt(P_Procedure);
-	// NONE?
-	if (iProc <= DFA_NONE) return NULL;
-	// return procedure name
-	return String(ProcedureName[iProc]);
+	return pActionDef->GetPropertyStr(P_Procedure);
 }
 
 static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)

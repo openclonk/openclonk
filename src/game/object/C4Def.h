@@ -339,30 +339,4 @@ inline C4Def *C4Id2Def(C4ID id)
 	return ::Definitions.ID2Def(id);
 }
 
-// Default Action Procedures
-
-#define DFA_NONE    -1
-#define DFA_WALK     0
-#define DFA_FLIGHT   1
-#define DFA_KNEEL    2
-#define DFA_SCALE    3
-#define DFA_HANGLE   4
-#define DFA_DIG      5
-#define DFA_SWIM     6
-#define DFA_THROW    7
-#define DFA_BRIDGE   8
-#define DFA_BUILD    9
-#define DFA_PUSH    10
-#define DFA_CHOP    11
-#define DFA_LIFT    12
-#define DFA_FLOAT   13
-#define DFA_ATTACH  14
-#define DFA_CONNECT 15
-#define DFA_PULL    16
-
-#define C4D_MaxDFA  17
-
-// procedure name table
-extern const char *ProcedureName[C4D_MaxDFA];
-
 #endif

@@ -661,11 +661,11 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
 	int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
-	int32_t iProc = DFA_NONE;
+	int32_t iProc = -1;
 	C4PropList* pActionDef = cObj->GetAction();
 	if (pActionDef)
 	{
-		iProc = pActionDef->GetPropertyInt(P_Procedure);
+		iProc = pActionDef->GetPropertyP(P_Procedure);
 		if (iProc == DFA_HANGLE || iProc == DFA_SWIM) isHanglingOrSwimming = true;
 	}
 	int32_t iOutposReduction = 1; // don't exit object too far forward during jump

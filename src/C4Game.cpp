@@ -1135,7 +1135,7 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 											if (cObj->Category & C4D_Vehicle)
 												continue;
 											if (pActionDef)
-												if (pActionDef->GetPropertyInt(P_Procedure) == DFA_FLOAT)
+												if (pActionDef->GetPropertyP(P_Procedure) == DFA_FLOAT)
 													continue;
 										}
 										if (cObj->Category & C4D_Living)

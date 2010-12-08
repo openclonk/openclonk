@@ -184,7 +184,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
 					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt,CNAT_Left,CNAT_Right);
@@ -203,7 +203,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
 					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
@@ -571,7 +571,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (!pActionDef || !Action.Target || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+		if (!pActionDef || !Action.Target || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
 			bool fRemove = true;
 			// never remove HUD objects

@@ -476,7 +476,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 		{
 			C4PropList* pActionDef = cObj->GetAction();
 			if (pActionDef)
-				if (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)
+				if (pActionDef->GetPropertyP(P_Procedure) == DFA_ATTACH)
 					for (iFunction=0; (pFunction=cObj->Def->Script.GetSFunc(iFunction, "AttachContext")); iFunction++)
 						if (!pFunction->OverloadedBy)
 							if (!pFunction->Condition || !! pFunction->Condition->Exec(cObj, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage), C4VObj(pTarget))))

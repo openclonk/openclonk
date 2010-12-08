@@ -137,6 +137,23 @@ C4StringTable::C4StringTable()
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
 	P[P_MeshTransformation] = "MeshTransformation";
+	P[DFA_WALK] = "WALK";
+	P[DFA_FLIGHT] = "FLIGHT";
+	P[DFA_KNEEL] = "KNEEL";
+	P[DFA_SCALE] = "SCALE";
+	P[DFA_HANGLE] = "HANGLE";
+	P[DFA_DIG] = "DIG";
+	P[DFA_SWIM] = "SWIM";
+	P[DFA_THROW] = "THROW";
+	P[DFA_BRIDGE] = "BRIDGE";
+	P[DFA_BUILD] = "BUILD";
+	P[DFA_PUSH] = "PUSH";
+	P[DFA_CHOP] = "CHOP";
+	P[DFA_LIFT] = "LIFT";
+	P[DFA_FLOAT] = "FLOAT";
+	P[DFA_ATTACH] = "ATTACH";
+	P[DFA_CONNECT] = "CONNECT";
+	P[DFA_PULL] = "PULL";
 	// Prevent the individual strings from being deleted, they are not created with new
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i].IncRef();
 }

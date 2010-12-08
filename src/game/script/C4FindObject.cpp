@@ -144,7 +144,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	}
 
 	case C4FO_Procedure:
-		return new C4FindObjectProcedure(Data[1].getInt());
+		return new C4FindObjectProcedure(Data[1].getStr());
 
 	case C4FO_Container:
 		return new C4FindObjectContainer(Data[1].getObj());
@@ -639,12 +639,13 @@ bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
 	C4Value v;
 	pObj->GetAction()->GetProperty(P_Procedure, &v);
-	return v != C4VNull && v.getInt() == procedure;
+	return v != C4VNull && v.getStr() == procedure;
 }
 
 bool C4FindObjectProcedure::IsImpossible()
 {
-	return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
+	//return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
+	return false;
 }
 
 bool C4FindObjectContainer::Check(C4Object *pObj)

@@ -7,24 +7,24 @@
 
 
 // Stuff for the proplist changes.
-static const DFA_NONE    = -1;
-static const DFA_WALK    =  0;
-static const DFA_FLIGHT  =  1;
-static const DFA_KNEEL   =  2;
-static const DFA_SCALE   =  3;
-static const DFA_HANGLE  =  4;
-static const DFA_DIG     =  5;
-static const DFA_SWIM    =  6;
-static const DFA_THROW   =  7;
-static const DFA_BRIDGE  =  8;
-static const DFA_BUILD   =  9;
-static const DFA_PUSH    = 10;
-static const DFA_CHOP    = 11;
-static const DFA_LIFT    = 12;
-static const DFA_FLOAT   = 13;
-static const DFA_ATTACH  = 14;
-static const DFA_CONNECT = 15;
-static const DFA_PULL    = 16;
+static const DFA_NONE    = nil;
+static const DFA_WALK    =  "WALK";
+static const DFA_FLIGHT  =  "FLIGHT";
+static const DFA_KNEEL   =  "KNEEL";
+static const DFA_SCALE   =  "SCALE";
+static const DFA_HANGLE  =  "HANGLE";
+static const DFA_DIG     =  "DIG";
+static const DFA_SWIM    =  "SWIM";
+static const DFA_THROW   =  "THROW";
+static const DFA_BRIDGE  =  "BRIDGE";
+static const DFA_BUILD   =  "BUILD";
+static const DFA_PUSH    =  "PUSH";
+static const DFA_CHOP    =  "CHOP";
+static const DFA_LIFT    =  "LIFT";
+static const DFA_FLOAT   =  "FLOAT";
+static const DFA_ATTACH  =  "ATTACH";
+static const DFA_CONNECT =  "CONNECT";
+static const DFA_PULL    =  "PULL";
 static const Action = {
 	Length = 1,
 	Directions = 1,

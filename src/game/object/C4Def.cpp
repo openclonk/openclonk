@@ -41,29 +41,6 @@
 #include "C4Network2Res.h"
 #include <C4Material.h>
 
-
-//-------------------------- Default Action Procedures --------------------------------------
-
-const char *ProcedureName[C4D_MaxDFA]={ "WALK",
-                                        "FLIGHT",
-                                        "KNEEL",
-                                        "SCALE",
-                                        "HANGLE",
-                                        "DIG",
-                                        "SWIM",
-                                        "THROW",
-                                        "BRIDGE",
-                                        "BUILD",
-                                        "PUSH",
-                                        "CHOP",
-                                        "LIFT",
-                                        "FLOAT",
-                                        "ATTACH",
-                                        "CONNECT",
-                                        "PULL"
-                                      };
-
-
 //--------------------------------- C4DefCore ----------------------------------------------
 
 void C4Def::DefaultDefCore()

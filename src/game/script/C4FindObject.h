@@ -293,10 +293,10 @@ protected:
 class C4FindObjectProcedure : public C4FindObject
 {
 public:
-	C4FindObjectProcedure(int32_t procedure)
-			: procedure(procedure) { }
+	C4FindObjectProcedure(C4String * procedure)
+			: procedure(procedure) { /* no need to incref, the pointer is never dereferenced */ }
 private:
-	int32_t procedure;
+	C4String * procedure;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();

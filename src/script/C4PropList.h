@@ -66,6 +66,7 @@ public:
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
+	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	// not allowed on frozen proplists
 	void SetPropertyByS(C4String * k, const C4Value & to);

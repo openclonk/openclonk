@@ -3373,8 +3373,8 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	{
 		Action.Time=0;
 		// reset action data if procedure is changed
-		if ((Act ? Act->GetPropertyInt(P_Procedure) : DFA_NONE)
-		    != (LastAction ? LastAction->GetPropertyInt(P_Procedure) : DFA_NONE))
+		if ((Act ? Act->GetPropertyP(P_Procedure) : -1)
+		    != (LastAction ? LastAction->GetPropertyP(P_Procedure) : -1))
 			Action.Data = 0;
 	}
 	// Set new action
@@ -3511,8 +3511,8 @@ void C4Object::SetDir(int32_t iDir)
 int32_t C4Object::GetProcedure()
 {
 	C4PropList* pActionDef = GetAction();
-	if (!pActionDef) return DFA_NONE;
-	return pActionDef->GetPropertyInt(P_Procedure);
+	if (!pActionDef) return -1;
+	return pActionDef->GetPropertyP(P_Procedure);
 }
 
 void GrabLost(C4Object *cObj)
@@ -3579,7 +3579,7 @@ void C4Object::ContactAction()
 	// Determine Procedure
 	C4PropList* pActionDef = GetAction();
 	if (!pActionDef) return;
-	int32_t iProcedure=pActionDef->GetPropertyInt(P_Procedure);
+	int32_t iProcedure=pActionDef->GetPropertyP(P_Procedure);
 	int32_t fDisabled=pActionDef->GetPropertyInt(P_ObjectDisabled);
 
 	//------------------------------- Hit Bottom ---------------------------------------------
@@ -3999,7 +3999,7 @@ void C4Object::ExecAction()
 	// if an object is in controllable state, so it can be assumed that if it dies later because of NO_OWNER's cause,
 	// it has been its own fault and not the fault of the last one who threw a flint on it
 	// do not reset for burning objects to make sure the killer is set correctly if they fall out of the map while burning
-	if (!pActionDef->GetPropertyInt(P_ObjectDisabled) && pActionDef->GetPropertyInt(P_Procedure) != DFA_FLIGHT && !OnFire)
+	if (!pActionDef->GetPropertyInt(P_ObjectDisabled) && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT && !OnFire)
 		LastEnergyLossCausePlayer = NO_OWNER;
 
 	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
@@ -4014,7 +4014,7 @@ void C4Object::ExecAction()
 	C4Real lFloatAccel;
 	C4Real rFloatAccel;
 
-	switch (pActionDef->GetPropertyInt(P_Procedure))
+	switch (pActionDef->GetPropertyP(P_Procedure))
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_WALK:

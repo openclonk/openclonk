@@ -412,7 +412,7 @@ public:
 		       && !(Category & (C4D_StaticBack | C4D_Structure))
 		       && !Contained
 		       && ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
-		       && (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
+		       && (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_FLOAT)
 		       ;
 	}
 
