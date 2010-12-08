@@ -1391,7 +1391,7 @@ public func ControlJump()
 			ydir = BoundBy(GetPhysical("Swim")/2500,24,38);
 	}		
 	
-	if (ydir)
+	if (ydir && !Stuck())
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
