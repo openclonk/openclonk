@@ -29,6 +29,10 @@
 #	define _USE_MATH_DEFINES
 #endif
 
+// boost headers
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
 #include "PlatformAbstraction.h"
 #include "Standard.h"
 #include "C4Prototypes.h"
@@ -55,10 +59,6 @@
 
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
-
-// boost headers
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 
 // debug memory management - must come after boost headers,
 // because boost uses placement new
