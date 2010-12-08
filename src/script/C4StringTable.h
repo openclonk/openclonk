@@ -29,25 +29,27 @@ class C4Group;
 
 class C4String
 {
+	int RefCnt;
+public:
+	unsigned int Hash;
+private:
+	StdCopyStrBuf Data; // string data
+
 	explicit C4String(StdStrBuf strString);
 	C4String();
 	void operator=(const char * s);
-
-	StdCopyStrBuf Data; // string data
-	int iRefCnt; // reference count on string (by C4Value)
 
 	friend class C4StringTable;
 public:
 	~C4String();
 
-	// increment/decrement reference count on this string
-	void IncRef();
-	void DecRef();
+	// Add/Remove Reference
+	void IncRef() { ++RefCnt; }
+	void DecRef() { if (!--RefCnt) delete this; }
 
 	const char * GetCStr() const { return Data.getData(); }
 	StdStrBuf GetData() const { return Data.getRef(); }
 
-	unsigned int Hash;
 };
 
 template<typename T> class C4Set

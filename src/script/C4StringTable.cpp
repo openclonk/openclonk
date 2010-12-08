@@ -45,7 +45,7 @@ bool C4Set<C4String *>::Equals<const char *>(C4String * a, const char * b)
 // *** C4String
 
 C4String::C4String(StdStrBuf strString)
-		: iRefCnt(0)
+: RefCnt(0)
 {
 	// take string
 	Data.Take(std::move(strString));
@@ -55,38 +55,29 @@ C4String::C4String(StdStrBuf strString)
 }
 
 C4String::C4String()
-		: iRefCnt(0)
+: RefCnt(0)
 {
 }
 
 C4String::~C4String()
 {
 	// unreg
-	iRefCnt = 1;
+	static bool remove = false;
+	assert(!remove);
+	remove = true;
 	Strings.Set.Remove(this);
+	remove = false;
 }
 
 void C4String::operator=(const char * s)
 {
-	assert(!iRefCnt);
+	assert(!RefCnt);
 	assert(!Data);
 	// ref string
 	Data.Ref(s);
 	Hash = Strings.Set.Hash(Data.getData());
 	// reg
 	Strings.Set.Add(this);
-}
-
-void C4String::IncRef()
-{
-	++iRefCnt;
-}
-
-void C4String::DecRef()
-{
-	--iRefCnt;
-	if (iRefCnt <= 0)
-		delete this;
 }
 
 // *** C4StringTable
