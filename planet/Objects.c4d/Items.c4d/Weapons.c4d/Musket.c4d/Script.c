@@ -49,6 +49,8 @@ local reload;
 local yOffset;
 local iBarrel;
 
+local holding;
+
 local MuskUp; local MuskFront; local MuskDown; local MuskOffset;
 
 protected func HoldingEnabled() { return true; }
@@ -79,6 +81,8 @@ func ControlUseStart(object clonk, int x, int y)
 
 	fAiming = 1;
 
+	holding = true;
+	
 	// reload weapon if not loaded yet
 	if(!loaded)
 		clonk->StartLoad(this);
@@ -95,7 +99,8 @@ public func FinishedLoading(object clonk)
 {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1)));
 	loaded = true;
-	return false; // false means stop here and reset the clonk
+	clonk->StartAim(this);
+	return holding; // false means stop here and reset the clonk
 }
 
 func ControlUseHolding(object clonk, ix, iy)
@@ -110,6 +115,7 @@ func ControlUseHolding(object clonk, ix, iy)
 
 protected func ControlUseStop(object clonk, ix, iy)
 {
+	holding = false;
 	clonk->StopAim();
 	return true;
 }
