@@ -59,7 +59,10 @@ func ControlUseStart(object clonk, int x, int y)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
+	{
+		holding = true;
 		return true;
+	}
 
 	// nothing in extraslot?
 	if(!Contents(0))
@@ -99,7 +102,7 @@ public func FinishedLoading(object clonk)
 {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(500,1000,-000),Trans_Rotate(130,0,1,0),Trans_Rotate(20,0,0,1)));
 	loaded = true;
-	clonk->StartAim(this);
+	if(holding) clonk->StartAim(this);
 	return holding; // false means stop here and reset the clonk
 }
 
