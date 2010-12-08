@@ -6,7 +6,7 @@ local begin_frame;    // Starting frame of briding process
 local target_x, target_y; // local target coordinates during bridging
 local loamused;       // amound of loam already used
 
-static const LOAM_Bridge_Amount = 28; // bridge length in pixels
+static const LOAM_Bridge_Amount = 37; // bridge length in pixels
 
 protected func Construction()
 {
