@@ -1,2 +1,2 @@
 Name=Frostbolt Scroll
-Description=Hurl a frozen bolt into your enemies.
+Description=Hurl a frozen bolt into your enemies. Only hurts Clonks.
