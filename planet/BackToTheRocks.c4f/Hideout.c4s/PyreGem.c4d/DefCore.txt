@@ -8,7 +8,7 @@ Offset=-4,-4
 Vertices=4
 VertexX=-4,0,4,0
 VertexY=0,-4,0,4
-VertexFriction=20
+VertexFriction=70,70,70,70
 Value=5
 Mass=10
 Components=Sulphur=1
