@@ -1,2 +1,2 @@
 Name=Frostbolzen-Schriftrolle
-Description=Schleudere einen gefrorenen Blitz in die Gegnermenge.
+Description=Schleudere einen gefrorenen Blitz in die Gegnermenge. Schädigt nur Clonks.
