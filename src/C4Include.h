@@ -29,11 +29,12 @@
 #	define _USE_MATH_DEFINES
 #endif
 
-// boost headers
+#include "PlatformAbstraction.h"
+
+// boost headers - after PlatformAbstraction to prevent redefines of stdint
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#include "PlatformAbstraction.h"
 #include "Standard.h"
 #include "C4Prototypes.h"
 #include "C4Real.h"
