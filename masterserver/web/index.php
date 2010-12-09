@@ -8,7 +8,8 @@
  * @license http://creativecommons.org/licenses/by/3.0/ CC-BY 3.0
  */
 
-//error_reporting(E_NONE); //suppress errors
+error_reporting(E_NONE); //suppress errors
+header('Content-Type: text/html; charset=utf-8'); //utf-8
 
 require_once('frontend.php');
 
