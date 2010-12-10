@@ -12,7 +12,7 @@ protected func Initialize()
 	// Goal.
 	var goal = CreateObject(Goal_KingOfTheHill, 555, 250, NO_OWNER);
 	goal->SetRadius(80);
-	goal->SetPointLimit(10);
+	goal->SetPointLimit(12);
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
@@ -131,17 +131,6 @@ global func PlaceEdges()
 	}
 	return 1;
 }
-
-// Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	SetFoW(false,plr);
-	return;
-}
-
 
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, int num, int temporary)
