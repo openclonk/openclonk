@@ -127,20 +127,22 @@ public func IsFulfilled()
 func OnClonkDeath(object clonk, int killer)
 {	
 	ScheduleCall(this, "RefreshScoreboard", 1);
-	if(clonk->GetAlive()) return;
-	if(GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetAlive()) return;
+	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
-	if(!Hostile(clonk->GetOwner(), killer)) //Shame on the one who kills himself (this applies for NO_OWNER too)
-	{
-		DoPoint(clonk->GetOwner(),-1);
-		return;
-	}
+	 // Shame on the king who kills himself.
+	if (killer == clonk->GetOwner() || killer == NO_OWNER)
+		if (location->GetKing() == clonk)
+		{
+			DoPoint(clonk->GetOwner(),-1);
+			return;
+		}
 	
-	if(location->GetKing() != nil) 
+	if (location->GetKing() != nil) 
 	{
-		if(location->GetKing()->GetOwner() == killer)
+		if (location->GetKing()->GetOwner() == killer)
 			DoPoint(killer);
-		else if(location->GetKing() == clonk)
+		else if (location->GetKing() == clonk)
 		{
 			DoPoint(killer);
 			location->SetKing(GetCursor(killer));
