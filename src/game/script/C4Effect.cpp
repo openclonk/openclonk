@@ -404,6 +404,10 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 			// effect denied to be removed: recover it
 			iPriority = iPrevPrio;
 		}
+	// Update OnFire cache
+	if (pObj && WildcardMatch(C4Fx_AnyFire, Name) && IsDead())
+		if (!Get(C4Fx_AnyFire))
+			pObj->SetOnFire(false);
 }
 
 void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
