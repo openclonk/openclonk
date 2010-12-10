@@ -470,15 +470,6 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 	return true;
 }
 
-StdStrBuf C4StartupPlrSelDlg::CrewListItem::GetPhysicalTextLine(int32_t iPhysValue, const char *idsName)
-{
-	const int32_t iMaxBars = 10;
-	StdStrBuf sResult;
-	sResult.Format("%s ", LoadResStr(idsName));
-	sResult.AppendChars('·', iMaxBars * iPhysValue / C4MaxPhysical);
-	return sResult;
-}
-
 void C4StartupPlrSelDlg::CrewListItem::SetSelectionInfo(C4GUI::TextWindow *pSelectionInfo)
 {
 	// write info text for player
@@ -494,28 +485,6 @@ void C4StartupPlrSelDlg::CrewListItem::SetSelectionInfo(C4GUI::TextWindow *pSele
 	                            Core.TypeName, Core.Experience, Core.Rounds, Core.DeathCount,
 	                            sPromo.getData(), TimeString(Core.TotalPlayingTime).getData(), DateString(Core.Birthday).getData()).getData(),
 	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Energy, "IDS_DESC_ENERGY").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Breath, "IDS_DESC_BREATH").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Walk, "IDS_DESC_WALK").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Jump, "IDS_DESC_JUMP").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	if (Core.Physical.CanScale) pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Scale, "IDS_DESC_SCALE").getData(),
-		    &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	if (Core.Physical.CanHangle) pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Hangle, "IDS_DESC_HANGLE").getData(),
-		    &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Dig, "IDS_DESC_DIG").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Swim, "IDS_DESC_SWIM").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Throw, "IDS_DESC_THROW").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Push, "IDS_DESC_PUSH").getData(),
-	                            &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
-	if (Core.Physical.Magic) pSelectionInfo->AddTextLine(GetPhysicalTextLine(Core.Physical.Magic, "IDS_DESC_MAGIC").getData(),
-		    &C4Startup::Get()->Graphics.BookFont, ClrPlayerItem, false, false);
 	pSelectionInfo->UpdateHeight();
 }
 

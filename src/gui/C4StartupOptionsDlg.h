@@ -80,9 +80,6 @@ private:
 	bool OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void UpdateFontControls();
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
-	int32_t FairCrewSlider2Strength(int32_t iSliderVal);
-	int32_t FairCrewStrength2Slider(int32_t iStrengthVal);
-	void OnFairCrewStrengthSliderChange(int32_t iNewVal);
 	void OnResetConfigBtn(C4GUI::Control *btn);
 
 	// graphics tab -------------------------------------------------------

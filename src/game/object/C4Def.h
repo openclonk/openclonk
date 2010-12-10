@@ -234,9 +234,6 @@ public:
 	C4PortraitGraphics *Portraits; // Portraits (linked list of C4AdditionalDefGraphics)
 
 protected:
-	// copy of the physical info used in FairCrew-mode
-	C4PhysicalInfo *pFairCrewPhysical;
-
 	C4Facet MainFace;
 
 protected:
@@ -252,8 +249,6 @@ public:
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
-	C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
-	void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 	void Synchronize();
 	virtual C4Def const * GetDef() const { return this; }	
 	virtual C4Def * GetDef() { return this; }

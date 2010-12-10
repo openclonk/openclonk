@@ -145,7 +145,7 @@ void C4SHead::Default()
 	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
-	Film = ForcedFairCrew = FairCrewStrength = 0;
+	Film = 0;
 	NetworkGame = NetworkRuntimeJoin = false;
 
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
@@ -179,8 +179,6 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
 		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
-		pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedFairCrew",          0));
-		pComp->Value(mkNamingAdapt(FairCrewStrength,          "FairCrewStrength",       0));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
 		if (pComp->isCompiler()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);

@@ -192,33 +192,6 @@ struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; } C
 	{ NULL, NULL }
 };
 
-void C4PhysicalInfo::PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysicals, C4Def *pTrainDef)
-{
-	if (iRank>=0) { CanDig=1; CanChop=1; CanConstruct=1; }
-	if (iRank>=0) { CanScale=1; }
-	if (iRank>=0) { CanHangle=1; }
-	Energy= Max<int32_t>( Energy, (50+5*BoundBy<int32_t>(iRank,0,10)) *C4MaxPhysical/100 );
-	if (fUpdateTrainablePhysicals && pTrainDef)
-	{
-		// do standard training: Expect everything to be trained fully at rank 20
-		int32_t iTrainRank = BoundBy<int32_t>(iRank, 0,20);
-		Scale = pTrainDef->Physical.Scale + (C4MaxPhysical - pTrainDef->Physical.Scale) * iTrainRank / 20;
-		Hangle = pTrainDef->Physical.Hangle + (C4MaxPhysical - pTrainDef->Physical.Hangle) * iTrainRank / 20;
-		Swim = pTrainDef->Physical.Swim + (C4MaxPhysical - pTrainDef->Physical.Swim) * iTrainRank / 20;
-		// do script updates for any physicals as required (this will train stuff like magic)
-		const char *szPhysName; C4PhysicalInfo::Offset PhysOff;
-		for (int32_t iPhysIdx=0; (szPhysName = GetNameByIndex(iPhysIdx, &PhysOff)); ++iPhysIdx)
-		{
-			C4Value PhysVal(this->*PhysOff);
-			C4AulParSet Pars(C4VString(szPhysName), C4VInt(iRank), PhysVal);
-			if (C4Value NewVal = pTrainDef->Script.Call(PSF_GetFairCrewPhysical, 0, &Pars))
-			{
-				this->*PhysOff = NewVal.getInt();
-			}
-		}
-	}
-}
-
 C4PhysicalInfo::C4PhysicalInfo()
 {
 	Default();
@@ -397,18 +370,12 @@ void C4ObjectInfoCore::Default(C4ID n_id,
 	if (pDefs) UpdateCustomRanks(pDefs);
 
 	// Physical
-	Physical.Default();
-	if (pDef) Physical = pDef->Physical;
-	Physical.PromotionUpdate(Rank);
-
-	// Old format
-
+	OldPhysical.Default();
 }
 
 void C4ObjectInfoCore::Promote(int32_t iRank, C4RankSystem &rRanks, bool fForceRankName)
 {
 	Rank=iRank;
-	Physical.PromotionUpdate(Rank);
 	// copy new rank name if defined only, or forced to use highest defined rank for too high info ranks
 	StdStrBuf sNewRank(rRanks.GetRankName(Rank,fForceRankName));
 	if (sNewRank) sRankName.Copy(sNewRank);
@@ -513,7 +480,7 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ExtraData,               "ExtraData",        C4ValueMapData()));
 
 	pComp->FollowName("Physical");
-	pComp->Value(Physical);
+	pComp->Value(OldPhysical);
 }
 
 bool C4ObjectInfoCore::Compile(const char *szSource)
@@ -522,8 +489,6 @@ bool C4ObjectInfoCore::Compile(const char *szSource)
 	             mkNamingAdapt(*this, "ObjectInfo"),
 	             StdStrBuf(szSource),
 	             "ObjectInfo");
-	// Do a promotion update to set physicals right
-	Physical.PromotionUpdate(Rank);
 	// DeathMessages are not allowed to stay forever
 	if ('@' == DeathMessage[0]) DeathMessage[0] = ' ';
 	return ret;

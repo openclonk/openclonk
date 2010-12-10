@@ -1465,13 +1465,6 @@ void C4StartupScenSelDlg::OnClosed(bool fOK)
 	}
 }
 
-void C4StartupScenSelDlg::UpdateUseCrewBtn()
-{
-	C4ScenarioListLoader::Entry *pSel = GetSelectedEntry();
-	C4SForceFairCrew eOpt = pSel ? pSel->GetFairCrewAllowed() : C4SFairCrew_Free;
-	pGameOptionButtons->SetForceFairCrewState(eOpt);
-}
-
 void C4StartupScenSelDlg::UpdateList()
 {
 	AbortRenaming();
@@ -1592,8 +1585,6 @@ void C4StartupScenSelDlg::UpdateSelection()
 	if (sVersion) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DLG_VERSION"), sVersion.getData()).getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
 	pSelectionInfo->UpdateHeight();
-	// usecrew-button
-	UpdateUseCrewBtn();
 }
 
 C4StartupScenSelDlg::ScenListItem *C4StartupScenSelDlg::GetSelectedItem()

@@ -731,25 +731,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetGeneral->AddElement(pCheck);
 #endif
-	// fair crew strength
-	C4GUI::GroupBox *pGroupFairCrewStrength = new C4GUI::GroupBox(caSheetProgram.GetGridCell(0,2,5,7,-1,pUseFont->GetLineHeight()*2+iIndentY2*2+C4GUI_ScrollBarHgt, true, 1,2));
-	pGroupFairCrewStrength->SetTitle(LoadResStr("IDS_CTL_FAIRCREWSTRENGTH"));
-	pGroupFairCrewStrength->SetFont(pUseFont);
-	pGroupFairCrewStrength->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
-	pSheetGeneral->AddElement(pGroupFairCrewStrength);
-	C4GUI::ComponentAligner caGroupFairCrewStrength(pGroupFairCrewStrength->GetClientRect(), 1,0, true);
-	StdStrBuf sLabelTxt; sLabelTxt.Copy(LoadResStr("IDS_CTL_FAIRCREWWEAK"));
-	w=20; q=12; pUseFont->GetTextExtent(sLabelTxt.getData(), w,q, true);
-	pGroupFairCrewStrength->AddElement(new C4GUI::Label(sLabelTxt.getData(), caGroupFairCrewStrength.GetFromLeft(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	sLabelTxt.Copy(LoadResStr("IDS_CTL_FAIRCREWSTRONG"));
-	pUseFont->GetTextExtent(sLabelTxt.getData(), w,q, true);
-	pGroupFairCrewStrength->AddElement(new C4GUI::Label(sLabelTxt.getData(), caGroupFairCrewStrength.GetFromRight(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t> *pCB = new C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t>(this, &C4StartupOptionsDlg::OnFairCrewStrengthSliderChange);
-	C4GUI::ScrollBar *pSlider = new C4GUI::ScrollBar(caGroupFairCrewStrength.GetCentered(caGroupFairCrewStrength.GetInnerWidth(), C4GUI_ScrollBarHgt), true, pCB, 101);
-	pSlider->SetDecoration(&C4Startup::Get()->Graphics.sfctBookScroll, false);
-	pGroupFairCrewStrength->SetToolTip(LoadResStr("IDS_DESC_FAIRCREWSTRENGTH"));
-	pSlider->SetScrollPos(FairCrewStrength2Slider(Config.General.FairCrewStrength));
-	pGroupFairCrewStrength->AddElement(pSlider);
 	// reset configuration
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETCONFIG");
 	C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton> *pSmallBtn;
@@ -937,6 +918,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	int32_t i;
 	for (i=0; i<2; ++i)
 	{
+		StdStrBuf sLabelTxt;
 		C4GUI::ComponentAligner caVolumeSlider(caGroupVolume.GetGridCell(0,1,i,2, -1, pUseFont->GetLineHeight()+iIndentY2*2+C4GUI_ScrollBarHgt, true), 1,0,false);
 		pGroupVolume->AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr(i ? "IDS_CTL_SOUNDFX" : "IDS_CTL_MUSIC")).getData(), caVolumeSlider.GetFromTop(pUseFont->GetLineHeight()), ALeft, C4StartupFontClr, pUseFont, false, false));
 		sLabelTxt.Copy(LoadResStr("IDS_CTL_SILENT"));
@@ -1012,24 +994,6 @@ void C4StartupOptionsDlg::OnClosed(bool fOK)
 	// callback when dlg got closed - save config
 	SaveConfig(true, false);
 	C4StartupDlg::OnClosed(fOK);
-}
-
-int32_t C4StartupOptionsDlg::FairCrewSlider2Strength(int32_t iSliderVal)
-{
-	// slider linear in rank to value linear in exp
-	return int32_t(pow(double(iSliderVal)/9.5, 1.5) * 1000.0);
-}
-
-int32_t C4StartupOptionsDlg::FairCrewStrength2Slider(int32_t iStrengthVal)
-{
-	// value linear in exp to slider linear in rank
-	return int32_t(pow(double(iStrengthVal)/1000.0, 1.0/1.5) * 9.5);
-}
-
-void C4StartupOptionsDlg::OnFairCrewStrengthSliderChange(int32_t iNewVal)
-{
-	// fair crew strength determined by exponential fn
-	Config.General.FairCrewStrength = FairCrewSlider2Strength(iNewVal);
 }
 
 void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)

@@ -470,7 +470,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
 		LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 		LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-		LogF("/set faircrew [on/off] - %s", LoadResStr("IDS_TEXT_ENABLEORDISABLEFAIRCREW"));
 		LogF("/set maxplayer [4] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 		LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
 		LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
@@ -519,20 +518,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			if (!::Network.isEnabled() || !::Network.isHost()) return false;
 			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
 			if (pLobby) pLobby->UpdatePassword();
-			return true;
-		}
-		if (SEqual2(pCmdPar, "faircrew "))
-		{
-			C4ControlSet *pSet = NULL;
-			if (SEqual(pCmdPar + 9, "on"))
-				pSet = new C4ControlSet(C4CVT_FairCrew, Config.General.FairCrewStrength);
-			else if (SEqual(pCmdPar + 9, "off"))
-				pSet = new C4ControlSet(C4CVT_FairCrew, -1);
-			else if (isdigit((unsigned char)pCmdPar[9]))
-				pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
-			else
-				return false;
-			::Control.DoInput(CID_Set, pSet, CDT_Decide);
 			return true;
 		}
 		// unknown property

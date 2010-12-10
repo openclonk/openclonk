@@ -40,3 +40,6 @@ Push=40000
 CanDig=1
 CanConstruct=1
 CanChop=1
+CanScale=1
+CanHangle=1
+

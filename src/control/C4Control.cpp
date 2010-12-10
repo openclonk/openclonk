@@ -215,52 +215,6 @@ void C4ControlSet::Execute() const
 		// set new value
 		Game.Teams.SetTeamColors(!!iData);
 		break;
-
-	case C4CVT_FairCrew:
-		// host only
-		if (!HostControl()) break;
-		// deny setting if it's fixed by scenario
-		if (Game.Parameters.FairCrewForced)
-		{
-			if (::Control.isCtrlHost()) Log(LoadResStr("IDS_MSG_NOMODIFYFAIRCREW"));
-			break;
-		}
-		// set new value
-		if (iData < 0)
-		{
-			Game.Parameters.UseFairCrew = false;
-			Game.Parameters.FairCrewStrength = 0;
-		}
-		else
-		{
-			Game.Parameters.UseFairCrew = true;
-			Game.Parameters.FairCrewStrength = iData;
-		}
-		// runtime updates for runtime fairness adjustments
-		if (Game.IsRunning)
-		{
-			// invalidate fair crew physicals
-			const int iDefCount = ::Definitions.GetDefCount();
-			for (int i = 0; i < iDefCount; i++)
-				::Definitions.GetDef(i)->ClearFairCrewPhysicals();
-			// show msg
-			if (Game.Parameters.UseFairCrew)
-			{
-				int iRank = ::DefaultRanks.RankByExperience(Game.Parameters.FairCrewStrength);
-				::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), ::DefaultRanks.GetRankName(iRank, true).getData()).getData());
-			}
-			else
-				::GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));
-		}
-		// lobby updates
-		if (::Network.isLobbyActive())
-		{
-			::Network.GetLobby()->UpdateFairCrew();
-		}
-		// this setting is part of the reference
-		if (::Network.isEnabled() && ::Network.isHost())
-			::Network.InvalidateReference();
-		break;
 	}
 }
 

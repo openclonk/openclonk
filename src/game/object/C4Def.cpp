@@ -381,7 +381,6 @@ void C4Def::Default()
 	iNumRankSymbols=1;
 	PortraitCount = 0;
 	Portraits = NULL;
-	pFairCrewPhysical = NULL;
 }
 
 C4Def::~C4Def()
@@ -399,7 +398,6 @@ void C4Def::Clear()
 	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=NULL;
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
-	if (pFairCrewPhysical) { delete pFairCrewPhysical; pFairCrewPhysical = NULL; }
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 
 	PortraitCount = 0;
@@ -675,35 +673,8 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 	return iValue;
 }
 
-C4PhysicalInfo *C4Def::GetFairCrewPhysicals()
-{
-	// if fair crew physicals have been created, assume they are valid
-	if (!pFairCrewPhysical)
-	{
-		pFairCrewPhysical = new C4PhysicalInfo(Physical);
-		// determine the rank
-		int32_t iExpGain = Game.Parameters.FairCrewStrength;
-		C4RankSystem *pRankSys=&::DefaultRanks;
-		if (pRankNames) pRankSys = pRankNames;
-		int32_t iRank = pRankSys->RankByExperience(iExpGain);
-		// promote physicals for rank
-		pFairCrewPhysical->PromotionUpdate(iRank, true, this);
-	}
-	return pFairCrewPhysical;
-}
-
-void C4Def::ClearFairCrewPhysicals()
-{
-	// invalidate physicals so the next call to GetFairCrewPhysicals will
-	// reacreate them
-	delete pFairCrewPhysical; pFairCrewPhysical = NULL;
-}
-
 void C4Def::Synchronize()
 {
-	// because recreation of fair crew physicals does a script call, which *might* do a call to e.g. Random
-	// fair crew physicals must be cleared and recalculated for everyone
-	ClearFairCrewPhysicals();
 }
 
 

@@ -442,9 +442,6 @@ void C4StartupNetListEntry::SetReference(C4Network2Reference *pRef)
 	// runtime join
 	if (pRef->isJoinAllowed() && pRef->getGameStatus().isPastLobby()) // A little workaround to determine RuntimeJoin...
 		AddStatusIcon(C4GUI::Ico_RuntimeJoin, LoadResStr("IDS_NET_RUNTIMEJOINFREE"));
-	// fair crew
-	if (pRef->Parameters.UseFairCrew)
-		AddStatusIcon(C4GUI::Ico_Ex_FairCrew, LoadResStr("IDS_CTL_FAIRCREW_DESC"));
 	// official server
 	if (pRef->isOfficialServer() && !Config.Network.UseAlternateServer) // Offical server icon is only displayed if references are obtained from official league server
 	{

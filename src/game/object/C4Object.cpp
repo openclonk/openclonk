@@ -2131,18 +2131,6 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 {
 	// Temporary physical
 	if (PhysicalTemporary && !fPermanent) return &TemporaryPhysical;
-	// Info physical: Available only if there's an info and it should be used
-	if (Info)
-	{
-		if (!Game.Parameters.UseFairCrew)
-			return &(Info->Physical);
-		else if (Info->pDef)
-			return Info->pDef->GetFairCrewPhysicals();
-		else
-			// shouldn't really happen, but who knows.
-			// Maybe some time it will be possible to have crew infos that aren't tied to a specific definition
-			return Def->GetFairCrewPhysicals();
-	}
 	// Definition physical
 	return &(Def->Physical);
 }
@@ -2150,7 +2138,6 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain)
 {
 	int i=0;
-	long iMode = 0;
 	int32_t iPhysValue = 0;
 
 	// Train temp
@@ -2158,16 +2145,6 @@ bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy,
 	{
 		TemporaryPhysical.Train(mpiOffset, iTrainBy, iMaxTrain);
 		iPhysValue = TemporaryPhysical.*mpiOffset;
-		iMode = 2; // 2 = PHYS_Permanent
-		++i;
-	}
-	// train permanent, if existant
-	// this also trains if fair crew is used!
-	if (Info)
-	{
-		Info->Physical.Train(mpiOffset, iTrainBy, iMaxTrain);
-		iPhysValue = Info->Physical.*mpiOffset;
-		iMode = 1; // 1 = PHYS_Permanent
 		++i;
 	}
 
@@ -2179,7 +2156,7 @@ bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy,
 		long iChange = BoundBy<long>(iTrainBy, 0, iMaxTrain - iPhysValue);
 		if (iChange > 0)
 		{
-			C4AulParSet wabbel = C4AulParSet(C4VString(physname), C4VInt(iChange), C4VInt(iMode));
+			C4AulParSet wabbel = C4AulParSet(C4VString(physname), C4VInt(iChange));
 			Call(PSF_PhysicalChange,&wabbel);
 		}
 	}
@@ -2200,7 +2177,7 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
-	Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull, C4VInt(1)));
+	Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull));
 	// silent update?
 	if (!pRankSys->GetRankName(torank,false)) return false;
 	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_PROMOTION"),GetName (),Info->sRankName.getData()).getData(),this);

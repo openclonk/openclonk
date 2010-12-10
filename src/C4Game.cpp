@@ -3549,11 +3549,6 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
 			return true;
 		}
-		else if (SEqual2(szSpec, "FairCrew"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_FairCrew);
-			return true;
-		}
 	}
 	// portrait spec?
 	else if (SEqual2(szSpec, "Portrait:"))

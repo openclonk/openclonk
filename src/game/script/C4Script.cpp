@@ -548,7 +548,6 @@ static long FnGetMagicEnergy(C4AulObjectContext *cthr)
 enum PhysicalMode
 {
 	PHYS_Current = 0,
-	PHYS_Permanent = 1,
 	PHYS_Temporary = 2,
 	PHYS_StackTemporary = 3
 };
@@ -565,25 +564,12 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		// Currently active physical
 	case PHYS_Current:
 		// Info objects or temporary mode only
-		if (!cthr->Obj->PhysicalTemporary) if (!cthr->Obj->Info || Game.Parameters.UseFairCrew) return false;
+		if (!cthr->Obj->PhysicalTemporary) if (!cthr->Obj->Info) return false;
 		// Set physical
 		iChange = iValue - cthr->Obj->GetPhysical()->*off;
 		cthr->Obj->GetPhysical()->*off = iValue;
 		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
-		return true;
-		// Permanent physical
-	case PHYS_Permanent:
-		// Info objects only
-		if (!cthr->Obj->Info) return false;
-		// In fair crew mode, changing the permanent physicals is only allowed via TrainPhysical
-		// Otherwise, stuff like SetPhysical(..., GetPhysical(...)+1, ...) would screw up the crew in fair crew mode
-		if (Game.Parameters.UseFairCrew) return false;
-		// Set physical
-		iChange = iValue - cthr->Obj->Info->Physical.*off;
-		cthr->Obj->Info->Physical.*off = iValue;
-		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange)));
 		return true;
 		// Temporary physical
 	case PHYS_Temporary:
@@ -601,7 +587,7 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		iChange = iValue - cthr->Obj->TemporaryPhysical.*off;
 		cthr->Obj->TemporaryPhysical.*off = iValue;
 		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange)));
 		return true;
 	}
 	// Invalid mode
@@ -633,7 +619,7 @@ static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 		if (!cthr->Obj->TemporaryPhysical.ResetPhysical(off)) return false;
 
 		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VNull, C4VInt(PHYS_Permanent)));
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VNull));
 		called = true;
 
 		// if other physical changes remain, do not reset complete physicals
@@ -644,7 +630,7 @@ static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 	cthr->Obj->PhysicalTemporary = false;
 	cthr->Obj->TemporaryPhysical.Default();
 	// call to object
-	if (!called) cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull, C4VInt(PHYS_Permanent)));
+	if (!called) cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull));
 
 	return true;
 }
@@ -675,20 +661,6 @@ static Nillable<long> FnGetPhysical(C4AulContext *cthr, C4String *szPhysical, lo
 	case PHYS_Current:
 		// Get physical
 		return cthr->Obj->GetPhysical()->*off;
-		// Permanent physical
-	case PHYS_Permanent:
-		// Info objects only
-		if (!cthr->Obj->Info) return C4VNull;
-		// In fair crew mode, scripts may not read permanent physical values - fallback to fair def physical instead!
-		if (Game.Parameters.UseFairCrew)
-		{
-			if (cthr->Obj->Info->pDef)
-				return cthr->Obj->Info->pDef->GetFairCrewPhysicals()->*off;
-			else
-				return cthr->Obj->Def->GetFairCrewPhysicals()->*off;
-		}
-		// Get physical
-		return cthr->Obj->Info->Physical.*off;
 		// Temporary physical
 	case PHYS_Temporary:
 		// Info objects only
@@ -6607,7 +6579,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4SO_Func"                 ,C4V_Int,     C4SO_Func           },
 
 	{ "PHYS_Current"              ,C4V_Int,     PHYS_Current        },
-	{ "PHYS_Permanent"            ,C4V_Int,     PHYS_Permanent      },
 	{ "PHYS_Temporary"            ,C4V_Int,     PHYS_Temporary      },
 	{ "PHYS_StackTemporary"       ,C4V_Int,     PHYS_StackTemporary },
 

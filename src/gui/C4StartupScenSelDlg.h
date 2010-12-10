@@ -97,8 +97,6 @@ public:
 		virtual StdStrBuf GetOpenText() = 0; // get open button text
 		virtual StdStrBuf GetOpenTooltip() = 0;
 
-		virtual C4SForceFairCrew GetFairCrewAllowed() const { return C4SFairCrew_Free; }
-
 		virtual const char *GetDefaultExtension() { return NULL; } // extension to be added when item is renamed
 		virtual bool SetTitleInGroup(C4Group &rGrp, const char *szNewTitle);
 		bool RenameTo(const char *szNewName); // change name+filename
@@ -127,8 +125,6 @@ public:
 		virtual StdStrBuf GetOpenText(); // get open button text
 		virtual StdStrBuf GetOpenTooltip();
 		const C4Scenario &GetC4S() const { return C4S; } // get scenario core
-
-		virtual C4SForceFairCrew GetFairCrewAllowed() const { return static_cast<C4SForceFairCrew>(C4S.Head.ForcedFairCrew); }
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
 
@@ -443,7 +439,6 @@ protected:
 	void OnNextBtn(C4GUI::Control *btn) { DoOK(); }
 	void OnSelChange(class C4GUI::Element *pEl) { UpdateSelection(); }
 	void OnSelDblClick(class C4GUI::Element *pEl) { DoOK(); }
-	void UpdateUseCrewBtn();
 	void OnButtonScenario(C4GUI::Control *pEl);
 
 	friend class C4MapFolderData;

@@ -527,7 +527,7 @@ C4Network2StartWaitDlg::C4Network2StartWaitDlg()
 // C4GameOptionButtons
 
 C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, bool fHost, bool fLobby)
-		: C4GUI::Window(), eForceFairCrewState(C4SFairCrew_Free), fNetwork(fNetwork), fHost(fHost), fLobby(fLobby), fCountdown(false)
+		: C4GUI::Window(), fNetwork(fNetwork), fHost(fHost), fLobby(fLobby), fCountdown(false)
 {
 	SetBounds(rcBounds);
 	// calculate button size from area
@@ -586,13 +586,10 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 		AddElement(btnComment);
 	}
 	else btnPassword=btnComment=NULL;
-	btnFairCrew= new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(C4GUI::Ico_Ex_NormalCrew, caButtons.GetFromLeft(iIconSize, iIconSize), 'F' /* 2do */, &C4GameOptionButtons::OnBtnFairCrew, this);
 	btnRecord = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(Game.Record || fIsLeague ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff, caButtons.GetFromLeft(iIconSize, iIconSize), 'R' /* 2do */, &C4GameOptionButtons::OnBtnRecord, this);
 	btnRecord->SetEnabled(!fIsLeague);
 	btnRecord->SetToolTip(LoadResStr("IDS_DLGTIP_RECORD"));
-	AddElement(btnFairCrew);
 	AddElement(btnRecord);
-	UpdateFairCrewBtn();
 }
 
 void C4GameOptionButtons::OnBtnInternet(C4GUI::Control *btn)
@@ -632,25 +629,6 @@ void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 	btnRecord->SetEnabled(!fCheck);
 	// if the league is turned on, the game must be signed up at the masterserver
 	if (fCheck && !Config.Network.MasterServerSignUp) OnBtnInternet(btnInternet);
-}
-
-void C4GameOptionButtons::OnBtnFairCrew(C4GUI::Control *btn)
-{
-	if (!fHost) return;
-	if (fLobby)
-	{
-		// altering button in lobby: Must be distributed as a control to all clients
-		if (Game.Parameters.FairCrewForced) return;
-		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_FairCrew, Game.Parameters.UseFairCrew ? -1 : Config.General.FairCrewStrength), CDT_Sync);
-		// button will be updated through control
-	}
-	else
-	{
-		// altering scenario selection setting: Simply changes config setting
-		if (eForceFairCrewState != C4SFairCrew_Free) return;
-		Config.General.FairCrew = !Config.General.FairCrew;
-		UpdateFairCrewBtn();
-	}
 }
 
 void C4GameOptionButtons::OnBtnRecord(C4GUI::Control *btn)
@@ -726,43 +704,10 @@ void C4GameOptionButtons::OnCommentSet(const StdStrBuf &rsNewComment)
 	C4GUI::GUISound("Connect");
 }
 
-void C4GameOptionButtons::SetForceFairCrewState(C4SForceFairCrew eToState)
-{
-	eForceFairCrewState = eToState;
-	UpdateFairCrewBtn();
-}
-
 void C4GameOptionButtons::SetCountdown(bool fToVal)
 {
 	fCountdown = fToVal;
-	UpdateFairCrewBtn();
 }
-
-void C4GameOptionButtons::UpdateFairCrewBtn()
-{
-	if (!btnFairCrew) return;
-	bool fFairCrew, fChoiceFree;
-	if (fLobby)
-	{
-		// the host may change the fair crew state unless countdown is running (so noone is tricked into an unfair-crew-game) or the scenario fixes the setting
-		fChoiceFree = !fCountdown && fHost && !Game.Parameters.FairCrewForced;
-		fFairCrew = Game.Parameters.UseFairCrew;
-	}
-	else
-	{
-		fChoiceFree = (eForceFairCrewState==C4SFairCrew_Free);
-		fFairCrew = fChoiceFree ? !!Config.General.FairCrew : (eForceFairCrewState == C4SFairCrew_FairCrew);
-	}
-	btnFairCrew->SetIcon(fChoiceFree ?
-	                     (!fFairCrew ? C4GUI::Ico_Ex_NormalCrew : C4GUI::Ico_Ex_FairCrew) // fair crew setting by user
-			                     : (!fFairCrew ? C4GUI::Ico_Ex_NormalCrewGray : C4GUI::Ico_Ex_FairCrewGray)); // fair crew setting by scenario preset or host
-	btnFairCrew->SetToolTip(LoadResStr(fFairCrew ? "IDS_CTL_FAIRCREW_DESC" : "IDS_CTL_NORMALCREW_DESC"));
-	btnFairCrew->SetEnabled(fChoiceFree);
-	// Directly update current tooltip - otherwise old tooltip might be shown again
-	/*C4GUI::Screen *pScreen = GetScreen();     if we do this, the tooltip might show in placed where it shouldn't... how to do it properly?
-	if (pScreen) pScreen->DoStatus(btnFairCrew->GetToolTip());*/
-}
-
 
 // ---------------------------------------------------
 // C4Chart

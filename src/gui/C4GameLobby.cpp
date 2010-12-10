@@ -600,7 +600,6 @@ namespace C4GameLobby
 					LogF("/plrclr [RGB] - %s", LoadResStr("IDS_TEXT_CHANGEYOUROWNPLAYERCOLOR"));
 					LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 					LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-					LogF("/set faircrew [on/off] - %s", LoadResStr("IDS_TEXT_ENABLEORDISABLEFAIRCREW"));
 					LogF("/set maxplayer [number] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 					LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
 				}
@@ -844,12 +843,6 @@ namespace C4GameLobby
 			pEdt->SelectAll();
 		}
 		return true;
-	}
-
-	void MainDlg::UpdateFairCrew()
-	{
-		// if the fair crew setting has changed, make sure the buttons reflect this change
-		pGameOptionButtons->UpdateFairCrewBtn();
 	}
 
 	void MainDlg::UpdatePassword()

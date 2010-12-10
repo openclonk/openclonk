@@ -30,10 +30,6 @@ protected func Construction()
 {
 	_inherited(...);
 
-	// Fix clonks with magic physical from erroneous scenarios
-	if (GetID () == Clonk)
-		if (GetPhysical ("Magic", 1))
-			SetPhysical ("Magic", 0, 1);
 	SetAction("Walk");
 	SetDir(Random(2));
 	// Broadcast for rules

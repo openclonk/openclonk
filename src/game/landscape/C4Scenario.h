@@ -56,13 +56,6 @@ public:
 #define C4S_SAVE_OBJECTS   2
 #define C4S_KEEP_EFFECTS   4
 
-enum C4SForceFairCrew
-{
-	C4SFairCrew_Free       = 0,
-	C4SFairCrew_FairCrew   = 1,
-	C4SFairCrew_NormalCrew = 2
-};
-
 enum C4SFilmMode
 {
 	C4SFilm_None      = 0,
@@ -90,8 +83,6 @@ public:
 	char MissionAccess[C4MaxTitle+1];
 	bool NetworkGame;
 	bool NetworkRuntimeJoin;
-	int32_t ForcedFairCrew;           // 0: free; 1: force FairCrew; 2: force normal Crew (C4SForceFairCrew)
-	int32_t FairCrewStrength;
 	StdCopyStrBuf Origin; // original oath and filename to scenario (for records and savegames)
 public:
 	void Default();

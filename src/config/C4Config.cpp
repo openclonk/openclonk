@@ -90,9 +90,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Record,              "Record",             0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
 	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
-	pComp->Value(mkNamingAdapt(FairCrew,            "NoCrew",             0              ));
-	pComp->Value(mkNamingAdapt(FairCrewStrength,    "DefCrewStrength",    1000           ));
-	pComp->Value(mkNamingAdapt(MaxFairCrewStrength, "MaxFairCrewStrength",1000           ));
 	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
 	pComp->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
 #ifdef _WIN32
