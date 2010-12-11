@@ -42,7 +42,6 @@ public:
 	int32_t Breath;
 	int32_t Jump;
 	int32_t Dig;
-	int32_t Swim;
 	int32_t Throw;
 	int32_t Push;
 	int32_t Magic;

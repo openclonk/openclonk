@@ -172,7 +172,6 @@ struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; } C
 	{ "Breath",          &C4PhysicalInfo::Breath          },
 	{ "Jump",            &C4PhysicalInfo::Jump            },
 	{ "Dig",             &C4PhysicalInfo::Dig             },
-	{ "Swim",            &C4PhysicalInfo::Swim            },
 	{ "Throw",           &C4PhysicalInfo::Throw           },
 	{ "Push",            &C4PhysicalInfo::Push            },
 	{ "Magic",           &C4PhysicalInfo::Magic           },

@@ -4129,26 +4129,24 @@ void C4Object::ExecAction()
 	}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_SWIM:
-		lLimit=ValByPhysical(160, pPhysical->Swim);
-
 		// ComDir changes xdir/ydir
 		switch (Action.ComDir)
 		{
-		case COMD_Up:       ydir-=SwimAccel; break;
-		case COMD_UpRight:  ydir-=SwimAccel;  xdir+=SwimAccel; break;
-		case COMD_Right:                      xdir+=SwimAccel; break;
-		case COMD_DownRight:ydir+=SwimAccel;  xdir+=SwimAccel; break;
-		case COMD_Down:     ydir+=SwimAccel; break;
-		case COMD_DownLeft: ydir+=SwimAccel;  xdir-=SwimAccel; break;
-		case COMD_Left:                       xdir-=SwimAccel; break;
-		case COMD_UpLeft:   ydir-=SwimAccel;  xdir-=SwimAccel; break;
+		case COMD_Up:       ydir-=accel; break;
+		case COMD_UpRight:  ydir-=accel;  xdir+=accel; break;
+		case COMD_Right:                  xdir+=accel; break;
+		case COMD_DownRight:ydir+=accel;  xdir+=accel; break;
+		case COMD_Down:     ydir+=accel; break;
+		case COMD_DownLeft: ydir+=accel;  xdir-=accel; break;
+		case COMD_Left:                   xdir-=accel; break;
+		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
 		case COMD_Stop:
-			if (xdir<0) xdir+=SwimAccel;
-			if (xdir>0) xdir-=SwimAccel;
-			if ((xdir>-SwimAccel) && (xdir<+SwimAccel)) xdir=0;
-			if (ydir<0) ydir+=SwimAccel;
-			if (ydir>0) ydir-=SwimAccel;
-			if ((ydir>-SwimAccel) && (ydir<+SwimAccel)) ydir=0;
+			if (xdir<0) xdir+=accel;
+			if (xdir>0) xdir-=accel;
+			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
+			if (ydir<0) ydir+=accel;
+			if (ydir>0) ydir-=accel;
+			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
 			break;
 		}
 
@@ -4156,7 +4154,7 @@ void C4Object::ExecAction()
 		if (!InLiquid)
 		{
 			// Just above liquid: move down
-			if (GBackLiquid(GetX(),GetY()+1+Def->Float*Con/FullCon-1)) ydir=+SwimAccel;
+			if (GBackLiquid(GetX(),GetY()+1+Def->Float*Con/FullCon-1)) ydir=+accel;
 			// Free fall: walk
 			else { ObjectActionWalk(this); return; }
 		}
