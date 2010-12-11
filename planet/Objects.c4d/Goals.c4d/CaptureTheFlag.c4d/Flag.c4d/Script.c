@@ -32,92 +32,47 @@ public func FindTeam(int find_team)
 	return team == find_team;
 }
 
-/*-- Interaction --
-
-// Flag can be picked up by interaction.
-public func IsInteractable(object clonk)
-{
-	if (GetAction() == "AttachCarrier")
-		if (GetActionTarget() != clonk)
-			return false;
-	var controller = clonk->GetController();
-	var ctrl_team = GetPlayerTeam(controller);
-	if (ctrl_team == 0)
-		return false;
-	if (team == ctrl_team)
-		if (IsAtBase())
-			return false;
-	return true;
-}
-
-public func GetInteractionMetaInfo(object clonk)
-{
-	var controller = clonk->GetController();
-	var ctrl_team = GetPlayerTeam(controller);
-	if (team == ctrl_team)
-		return { Description = "$MsgBeamFlag$" };
-	if (GetAction() == "AttachCarrier" && GetActionTarget() == clonk)
-		return { Description = "$MsgDropFlag$" };
-	return { Description = "$MsgGrabFlag$" };
-}
-
-public func Interact(object clonk)
-{
-	var controller = clonk->GetController();
-	var ctrl_team = GetPlayerTeam(controller);
-	// Picked up by owning team, beam flag to base.
-	if (team == ctrl_team)
-	{
-		BeamFlag(true);
-		return true;
-	}
-	// Carrying clonk, drop flag.
-	if (GetAction() == "AttachCarrier" && GetActionTarget() == clonk)
-	{
-		SetAction("Idle");
-		RemoveEffect("FlagCarried", clonk);
-		Log("$MsgFlagDropped$", GetTaggedTeamName(ctrl_team), GetTaggedTeamName(team));
-		return true;		
-	}
-	
-	return true;
-}
-*/
-
 protected func Initialize()
 {
 	PlayAnimation("Wave", 1, Anim_Linear(0, 0, GetAnimationLength("Wave"), 78, ANIM_Loop), Anim_Const(1000));
-	AddEffect("FlagAutoPickup",this,100,2,this,this->GetID());
+	AddEffect("FlagAutoPickup", this, 100, 2, this);
 	return;
 }
 
+// Handles automatic picking up of the flag.
 protected func FxFlagAutoPickupTimer(object target, int num)
 {
-	if(target->GetAction() == "AttachCarrier")
+	// Do nothing if flag is being carried.
+	if (target->GetAction() == "AttachCarrier")
 		return 1;
-		
-	var clnk = FindObjects(Find_ID(Clonk),Find_Distance(20),Find_OCF(OCF_Alive));
-	if(GetLength(clnk) == 0) return 1;
-	var r=Random(GetLength(clnk));
-	if(!clnk[r]) return 1; 
-	
-	if(GetPlayerTeam(clnk[r]->GetOwner()) != target->GetTeam())
+
+	// Find a near clonk which can grab the flag.
+	for(var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20), Sort_Distance()))
 	{
-		// Fiendly team, grab flag.
-		SetAction("AttachCarrier", clnk[r]);
-		Log("$MsgFlagStolen$", GetTaggedTeamName(GetPlayerTeam(clnk[r]->GetOwner())), GetTaggedTeamName(target->GetTeam()));
-		AddEffect("FlagCarried", clnk[r], 100, 5, this);
-		return 1;
-	}
-	else
-	{
-		if(target->IsAtBase()) return 1;
-		if(GetEffect("FlagReturnDelay",target)) return 1;
-		target->BeamFlag(true);
-		return 1;
+		var plr = clonk->GetOwner();	
+		if(GetPlayerTeam(plr) != team)
+		{
+			// Fiendly team, grab flag.
+			SetAction("AttachCarrier", clonk);
+			Log("$MsgFlagStolen$", GetTaggedTeamName(GetPlayerTeam(plr)), GetTaggedTeamName(team));
+			AddEffect("FlagCarried", clonk, 100, 5, this);
+			return 1;
+		}
+		else
+		{
+			// Friendly team can only beam flag if return delay is over.
+			if (target->IsAtBase()) 
+				continue;
+			if(GetEffect("FlagReturnDelay",target))
+				continue;
+			target->BeamFlag(true);
+			return 1;
+		}
 	}
 	return 1;
 }
+
+// Return delay for friendly team after flag has been dropped.
 protected func FxFlagReturnDelayTimer() { return -1; }
 
 protected func FxFlagCarriedStart(object target, int num, int temp)
@@ -143,14 +98,14 @@ protected func FxFlagCarriedTimer(object target, int num)
 	var y = EffectVar(2, target, num);
 	var newx = target->GetX();
 	var newy = target->GetY();
-	if(Distance(x,y,newx,newy) > 2 )
+	// Draw partical line following the flag.
+	if (Distance(x, y, newx, newy) > 2)
 	{
-	
 		DrawParticleLine("FlagTracer",AbsX(x),AbsY(y),AbsX(newx),AbsY(newy),4,30-Random(4),GetTeamColor(this->GetTeam()) | 255 <<24,GetTeamColor(this->GetTeam()) | 255 <<24);
 		EffectVar(1, target, num)=newx;
 		EffectVar(2, target, num)=newy;
 	}
-	
+	// Search for nearby base to drop flag and score a point.
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
 	if (base && base->IsBaseWithFlag()) 
 	{
@@ -170,14 +125,17 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 		return 1;
 	this.Visibility = VIS_All;
 	if (reason == 4)
+	{
 		SetAction("Idle");
-	Log("$MsgFlagDropped$", GetTaggedTeamName(GetPlayerTeam(target->GetOwner())), GetTaggedTeamName(team));
+		Log("$MsgFlagDropped$", GetTaggedTeamName(GetPlayerTeam(target->GetOwner())), GetTaggedTeamName(team));
+	}
 	if (target)
 	{	
 		target->DetachMesh(EffectVar(0, target, num));
 		ResetPhysicals(target);
 	}
-	AddEffect("FlagReturnDelay",this,100,100,nil,Goal_Flag);
+	// Prevent beaming flag for 3 seconds.
+	AddEffect("FlagReturnDelay", this, 100, 36 * 3, this);
 	return 1;
 }
 
@@ -228,7 +186,6 @@ private func BeamFlag(bool msg)
 		return;
 	if (msg)
 		Log("$MsgFlagBeamed$", GetTaggedTeamName(team));
-	//SetAction("Idle");
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", team));
 	if (base)
 		SetAction("AttachBase", base);
