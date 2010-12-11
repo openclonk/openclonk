@@ -213,7 +213,7 @@ void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.ham.de.euirc.net", false, true));
 	pComp->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
-	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk-lobby"    , false, true));
+	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));
 	pComp->Value(mkNamingAdapt(AllowAllChannels,        "AllowAllChannels",     0                     , false, true));
 }
 
