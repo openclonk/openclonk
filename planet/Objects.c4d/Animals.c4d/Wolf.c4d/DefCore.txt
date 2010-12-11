@@ -36,5 +36,4 @@ Breath=50000
 Jump=35000
 Dig=40000
 Throw=50000
-Push=40000
 CanDig=1

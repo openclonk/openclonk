@@ -2020,6 +2020,7 @@ Push = {
 	Name = "Push",
 	Procedure = DFA_PUSH,
 	Speed = 196,
+	Accel = 100,
 	Directions = 2,
 	Length = 8,
 	Delay = 15,

@@ -4257,7 +4257,7 @@ void C4Object::ExecAction()
 		case COMD_Stop: case COMD_Down:       iTXDir=0;       break;
 		}
 		// Push object
-		if (!Action.Target->Push(iTXDir,ValByPhysical(250, pPhysical->Push),fStraighten))
+		if (!Action.Target->Push(iTXDir,accel,fStraighten))
 			{ StopActionDelayCommand(this); return; }
 		// Set target controller
 		Action.Target->Controller=Controller;
@@ -4325,7 +4325,7 @@ void C4Object::ExecAction()
 		iTXDir = fMove + fWalk * BoundBy<int32_t>(iPullX-Action.Target->GetX(),-10,+10) / 10;
 
 		// Push object
-		if (!Action.Target->Push(iTXDir,ValByPhysical(250, pPhysical->Push),false))
+		if (!Action.Target->Push(iTXDir,accel,false))
 			{ StopActionDelayCommand(this); return; }
 		// Set target controller
 		Action.Target->Controller=Controller;
