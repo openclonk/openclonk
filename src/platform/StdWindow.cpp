@@ -483,3 +483,9 @@ bool CStdApp::IsClipboardFull(bool fClipboard)
 void CStdApp::ClearClipboard(bool fClipboard)
 {
 }
+
+void CStdWindow::RequestUpdate()
+{
+	// just invoke directly
+	PerformUpdate();
+}

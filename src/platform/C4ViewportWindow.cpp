@@ -148,10 +148,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		// posts a new WM_ACTIVATE to us, and so on, ultimately leading to a hang.
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
-			if (Console.PropertyDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
-			if (Console.ToolsDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
+			Console.Win32KeepDialogsFloating();
 		}
 		else
 		{
@@ -159,10 +156,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_MOUSEACTIVATE:
 			// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
 			// Setting the window owner here avoids z-order flickering.
-			if (Console.PropertyDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
-			if (Console.ToolsDlg.hDialog)
-				SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
+			Console.Win32KeepDialogsFloating(hwnd);
 		}
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
@@ -250,7 +244,7 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
 }
 
-CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
+CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
 {
 	Active = true;
 	// Create window
@@ -665,10 +659,12 @@ void C4ViewportWindow::OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_
 	static_cast<C4ViewportWindow*>(user_data)->cvp->ViewPositionByScrollBars();
 }
 
-#else // WITH_DEVELOPER_MODE
+#endif // WITH_DEVELOPER_MODE
+
+#if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 bool C4Viewport::TogglePlayerLock() { return false; }
 bool C4Viewport::ScrollBarsByViewPosition() { return false; }
-#if defined(USE_X11)
+
 void C4ViewportWindow::HandleMessage (XEvent & e)
 {
 	switch (e.type)
@@ -800,7 +796,15 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 	}
 }
 #endif // USE_X11
-#endif // WITH_DEVELOPER_MODE/_WIN32
+
+void C4ViewportWindow::PerformUpdate()
+{
+	if (cvp)
+	{
+		cvp->UpdateOutputSize();
+		cvp->Execute();
+	}
+}
 
 void C4ViewportWindow::Close()
 {

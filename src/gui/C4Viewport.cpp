@@ -50,6 +50,7 @@ namespace
 
 #ifdef _WIN32
 #include <shellapi.h>
+
 bool C4Viewport::DropFiles(HANDLE hDrop)
 {
 	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
@@ -771,7 +772,10 @@ void C4ViewportList::Execute(bool DrawBackground)
 	if (DrawBackground)
 		DrawFullscreenBackground();
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		cvp->Execute();
+	{
+		if (cvp->GetWindow())
+			cvp->GetWindow()->RequestUpdate();
+	}
 }
 
 void C4ViewportList::DrawFullscreenBackground()

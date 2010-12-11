@@ -116,7 +116,7 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
 	// Set usage time
 	UsageTime=Game.Time;
 	Static=fStatic;
-	return pSample;
+	return !!pSample;
 }
 
 void C4SoundEffect::Execute()

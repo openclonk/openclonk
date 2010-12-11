@@ -41,7 +41,7 @@ public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
 #ifdef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
+	virtual CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
 	static bool RegisterViewportClass(HINSTANCE hInst);
 #elif defined(WITH_DEVELOPER_MODE)
 	virtual GtkWidget* InitGUI();
@@ -70,6 +70,7 @@ public:
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
 	virtual void Close();
+	virtual void PerformUpdate();
 };
 
 #define C4ViewportClassName "C4Viewport"

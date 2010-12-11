@@ -60,10 +60,10 @@ CStdWindow::~CStdWindow ()
 }
 CStdWindow * CStdWindow::Init(CStdApp * pApp)
 {
-	return Init(pApp, C4ENGINENAME);
+	return Init(CStdWindow::W_Viewport, pApp, C4ENGINENAME);
 }
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;

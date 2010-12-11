@@ -414,6 +414,7 @@ namespace C4GUI
 		virtual bool IsOwnPtrElement() { return false; } // if true is returned, item will not be deleted when container is cleared
 		virtual bool IsExternalDrawDialog() { return false; }
 		virtual bool IsMenu() { return false; }
+		virtual class DialogWindow* GetDialogWindow() { return NULL; } // return DialogWindow if this element is a dialog
 
 		// for listbox-selection by character input
 		virtual bool CheckNameHotkey(const char * c) { return false; }
@@ -1937,16 +1938,21 @@ namespace C4GUI
 		friend class ComboBox_FillCB;
 	};
 
+	class Dialog;
+
 	// EM window class
 	class DialogWindow : public CStdWindow
 	{
 	public:
+		Dialog* pDialog;
+		DialogWindow(): CStdWindow(), pDialog(NULL) {}
 		using CStdWindow::Init;
-		CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
+		CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
-#if defined(USE_X11)
+#ifdef USE_X11
 		virtual void HandleMessage (XEvent &);
 #endif
+		virtual void PerformUpdate();
 	};
 
 	// information on how to draw dialog borders and face
@@ -1978,7 +1984,7 @@ namespace C4GUI
 	};
 
 	// a dialog
-	class Dialog : public Window
+	class Dialog: public Window
 	{
 	private:
 		enum Fade { eFadeNone=0, eFadeOut, eFadeIn };
@@ -2024,6 +2030,7 @@ namespace C4GUI
 		void SetFocus(Control *pCtrl, bool fByMouse);
 		Control *GetFocus() { return pActiveCtrl; }
 		virtual Dialog *GetDlg() { return this; } // this is the dialog
+		virtual DialogWindow* GetDialogWindow() { return pWindow; }
 
 		virtual bool CharIn(const char * c);                                 // input: character key pressed - should return false for none-character-inputs  (forward to focused control)
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls

@@ -41,6 +41,7 @@
 #ifdef _WIN32
 #include "resource.h"
 #endif
+
 #ifdef USE_X11
 #define None Die_XLib_Die
 #include <X11/Xlib.h>
@@ -190,7 +191,7 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef _WIN32
-	CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;
 		// calculate required size
@@ -311,18 +312,21 @@ namespace C4GUI
 		return !!RegisterClassEx(&WndClass);
 	}
 #else
-	CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
 	{
-		if (CStdWindow::Init(pApp, Title, pParent, false))
+		CStdWindow *result;
+		if (CStdWindow::Init(windowKind, pApp, Title, pParent, false))
 		{
 			// update pos
 			if (szID && *szID)
 				RestorePosition(FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			else
 				SetSize(rcBounds.Wdt, rcBounds.Hgt);
-			return this;
+			result = this;
 		}
-		return NULL;
+		else
+			result = NULL;
+		return result;
 	}
 #ifdef USE_X11
 	void DialogWindow::HandleMessage (XEvent &e)
@@ -427,6 +431,26 @@ namespace C4GUI
 #endif
 #endif // _WIN32
 
+	void DialogWindow::PerformUpdate()
+	{
+		if (!pDialog)
+			return; // safety
+		RECT r;
+		GetSize(&r);
+		if (pSurface)
+		{
+			pSurface->Wdt = r.right;
+			pSurface->Hgt = r.bottom;
+#ifdef USE_GL
+			pGL->PrepareRendering(pSurface);
+			glClear(GL_COLOR_BUFFER_BIT);
+#endif
+		}
+		C4TargetFacet cgo;
+		cgo.Set(NULL, 0, 0, r.right, r.bottom, 0, 0);
+		pDialog->Draw(cgo);
+	}
+
 	void DialogWindow::Close()
 	{
 		// FIXME: Close the dialog of this window
@@ -440,7 +464,7 @@ namespace C4GUI
 		if (pWindow) return true;
 		// create it!
 		pWindow = new DialogWindow();
-		if (!pWindow->Init(&Application, TitleString.getData(), &Console, rcBounds, GetID()))
+		if (!pWindow->Init(CStdWindow::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
 		{
 			delete pWindow;
 			pWindow = NULL;
@@ -448,6 +472,7 @@ namespace C4GUI
 		}
 		// create rendering context
 		pWindow->pSurface = new CSurface(&Application, pWindow);
+		pWindow->pDialog = this;
 		return true;
 	}
 

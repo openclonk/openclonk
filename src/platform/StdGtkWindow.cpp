@@ -205,3 +205,9 @@ GtkWidget* CStdGtkWindow::InitGUI()
 {
 	return window;
 }
+
+void CStdWindow::RequestUpdate()
+{
+	// just invoke directly
+	PerformUpdate();
+}

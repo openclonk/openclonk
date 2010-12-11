@@ -94,6 +94,8 @@ protected:
 	void DrawPlayerInfo(C4TargetFacet &cgo);
 	void BlitOutput();
 	void AdjustPosition();
+public:
+	C4ViewportWindow* GetWindow() {return pWindow;}
 	bool UpdateOutputSize();
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();

@@ -430,7 +430,7 @@ void C4FullScreen::Execute()
 	// Execute menu
 	if (pMenu) pMenu->Execute();
 	// Draw
-	::GraphicsSystem.Execute();
+	RequestUpdate();
 }
 
 bool C4FullScreen::ViewportCheck()
@@ -520,6 +520,11 @@ void C4FullScreen::CloseMenu()
 		delete pMenu;
 		pMenu = NULL;
 	}
+}
+
+void C4FullScreen::PerformUpdate()
+{
+	GraphicsSystem.Execute();
 }
 
 bool C4FullScreen::MenuKeyControl(BYTE byCom)

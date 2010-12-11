@@ -172,6 +172,8 @@ set(OC_CLONK_SOURCES
 	src/control/C4Teams.h
 	src/editor/C4Console.cpp
 	src/editor/C4Console.h
+	src/editor/C4ConsoleGUI.h
+	src/editor/C4ConsoleGUICommon.cpp
 	src/editor/C4DevmodeDlg.cpp
 	src/editor/C4DevmodeDlg.h
 	src/editor/C4EditCursor.cpp
@@ -478,6 +480,8 @@ set(OC_CLONK_SOURCES
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
 	src/platform/StdWindow.h
+	src/platform/StdAppCommon.h
+	src/platform/StdAppCommon.cpp
 	src/script/C4AList.cpp
 	src/script/C4AList.h
 	src/script/C4Aul.cpp
@@ -518,6 +522,7 @@ if(WIN32)
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
+		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
 
@@ -583,6 +588,7 @@ if(USE_GTK)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/StdGtkWindow.cpp
 		src/platform/StdGtkWindow.h
+		src/editor/C4ConsoleGTK.cpp
 	)
 endif()
 

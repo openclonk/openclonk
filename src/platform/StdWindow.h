@@ -241,6 +241,13 @@ typedef struct _XDisplay Display;
 class CStdWindow
 {
 public:
+	enum WindowKind
+	{
+		W_GuiWindow,
+		W_Viewport,
+		W_Fullscreen
+	};
+public:
 	CStdWindow ();
 	virtual ~CStdWindow ();
 	bool Active;
@@ -253,7 +260,7 @@ public:
 	virtual void CharIn(const char * c) { }
 	virtual CStdWindow * Init(CStdApp * pApp);
 #ifndef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
 #endif
 	bool StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize = true);
 	bool RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden = false);
@@ -261,7 +268,7 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
-protected:
+
 #ifdef _WIN32
 public:
 	HWND hWindow;
@@ -287,6 +294,12 @@ private:
 protected:
 	virtual void HandleMessage(SDL_Event&) {}
 #endif
+public:
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
+public:
 	friend class CStdDDraw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
@@ -375,28 +388,13 @@ public:
 	virtual void Clear();
 
 	bool Init(int argc, char * argv[]);
-	void Run()
-	{
-		// Main message loop
-		while (!fQuitMsgReceived)
-			ScheduleProcs();
-	}
+	void Run();
 	virtual void Quit();
 
 	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor);
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
-	bool ScheduleProcs(int iTimeout = -1)
-	{
-		// Always fail after quit message
-		if (fQuitMsgReceived)
-			return false;
-#if defined(USE_SDL_MAINLOOP)
-		// Unfortunately, the SDL event loop needs to be polled
-		FlushMessages();
-#endif
-		return StdScheduler::ScheduleProcs(iTimeout);
-	}
+	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	CStdWindow * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate

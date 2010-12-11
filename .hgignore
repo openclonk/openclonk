@@ -93,6 +93,7 @@ BuildLog.htm
 
 # XCode temporary files + Xcode not temporary files
 .DS_Store
+._*
 xcode/build
 *.xcodeproj
 
