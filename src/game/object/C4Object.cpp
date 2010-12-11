@@ -4112,7 +4112,6 @@ void C4Object::ExecAction()
 			Action.t_attach |= CNAT_Bottom;
 		}
 		smpx=GetX(); smpy=GetY();
-		lLimit=ValByPhysical(125, pPhysical->Dig);
 		bool fAttachOK = false;
 		if (Action.t_attach & CNAT_Bottom && Shape.Attach(smpx,smpy,CNAT_Bottom)) fAttachOK = true;
 		else if (Action.t_attach & CNAT_Left && Shape.Attach(smpx,smpy,CNAT_Left)) { fAttachOK = true; }

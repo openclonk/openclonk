@@ -71,7 +71,7 @@ func FxIntBridgeTimer(clonk, number)
 	var x = target_x + GetX(), y = target_y + GetY();
 
 	// bridge speed by dig physical
-	var speed = clonk->GetPhysical("Dig")/4500;
+	var speed = clonk.ActMap.Dig.Speed/6;
 
 	// build bridge in chunks (for better angle precision)
 	var dt = FrameCounter() - last_frame;

@@ -1887,6 +1887,7 @@ Dig = {
 	Prototype = Action,
 	Name = "Dig",
 	Procedure = DFA_DIG,
+	Speed = 50,
 	Directions = 2,
 	Length = 16,
 	Delay = 0,//15*3*0,
