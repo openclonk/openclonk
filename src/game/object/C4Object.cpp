@@ -4013,8 +4013,6 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_SCALE:
 	{
-		lLimit=ValByPhysical(200, pPhysical->Scale);
-
 		int ComDir = Action.ComDir;
 		if (Action.Dir == DIR_Left && ComDir == COMD_Left)
 			ComDir = COMD_Up;
@@ -4023,13 +4021,13 @@ void C4Object::ExecAction()
 		switch (ComDir)
 		{
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
-			ydir-=ScaleAccel; if (ydir<-lLimit) ydir=-lLimit; break;
+			ydir-=accel; if (ydir<-lLimit) ydir=-lLimit; break;
 		case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
-			ydir+=ScaleAccel; if (ydir>+lLimit) ydir=+lLimit; break;
+			ydir+=accel; if (ydir>+lLimit) ydir=+lLimit; break;
 		case COMD_Left: case COMD_Right: case COMD_Stop:
-			if (ydir<0) ydir+=ScaleAccel;
-			if (ydir>0) ydir-=ScaleAccel;
-			if ((ydir>-ScaleAccel) && (ydir<+ScaleAccel)) ydir=0;
+			if (ydir<0) ydir+=accel;
+			if (ydir>0) ydir-=accel;
+			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
 			break;
 		}
 		iPhaseAdvance=0;
@@ -4043,26 +4041,23 @@ void C4Object::ExecAction()
 	}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_HANGLE:
-
-		lLimit=ValByPhysical(160, pPhysical->Hangle);
-
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=ScaleAccel; if (xdir<-lLimit) xdir=-lLimit;
+			xdir-=accel; if (xdir<-lLimit) xdir=-lLimit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=ScaleAccel; if (xdir>+lLimit) xdir=+lLimit;
+			xdir+=accel; if (xdir>+lLimit) xdir=+lLimit;
 			break;
 		case COMD_Up:
-			xdir += (Action.Dir == DIR_Left) ? -ScaleAccel : ScaleAccel;
+			xdir += (Action.Dir == DIR_Left) ? -accel : accel;
 			if (xdir<-lLimit) xdir=-lLimit;
 			if (xdir>+lLimit) xdir=+lLimit;
 			break;
 		case COMD_Stop: case COMD_Down:
-			if (xdir<0) xdir+=ScaleAccel;
-			if (xdir>0) xdir-=ScaleAccel;
-			if ((xdir>-ScaleAccel) && (xdir<+ScaleAccel)) xdir=0;
+			if (xdir<0) xdir+=accel;
+			if (xdir>0) xdir-=accel;
+			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
 			break;
 		}
 		iPhaseAdvance=0;

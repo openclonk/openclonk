@@ -1233,6 +1233,20 @@ func FxFallTimer(object target, int num, int timer)
 
 /* Hangle */
 
+/* Replaces the named action by an instance with a different speed */
+func PushActionSpeed(string action, int n)
+{
+	if (ActMap == this.Prototype.ActMap)
+		ActMap = { Prototype = this.Prototype.ActMap };
+	ActMap[action] = { Prototype = ActMap[action], Speed = n };
+}
+
+/* Resets the named action to the previous one */
+func PopActionSpeed(string action, int n) {
+	// FIXME: This only works if PushActionSpeed and PopActionSpeed are the only functions manipulating the ActMap
+	ActMap[action] = ActMap[action].Prototype;
+}
+
 func StartHangle()
 {
 /*	if(Clonk_HangleStates == nil)
@@ -1252,7 +1266,8 @@ func StopHangle()
 
 func FxIntHangleStart(pTarget, iNumber, fTmp)
 {
-	EffectVar(10, pTarget, iNumber) = GetPhysical("Hangle");
+	EffectVar(10, pTarget, iNumber) = ActMap.Hangle.Speed;
+	PushActionSpeed("Hangle", EffectVar(10, pTarget, iNumber));
 	if(fTmp) return;
 
 	// EffectVars:
@@ -1268,7 +1283,7 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 
 func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
 {
-	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber), 2);
+	PopActionSpeed("Hangle");
 	if(fTmp) return;
 }
 
@@ -1283,11 +1298,11 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 	{
 		// Use a cosine-shaped movement speed (the clonk only moves when he makes a "stroke")
 		var iSpeed = 50-Cos(GetAnimationPosition(EffectVar(1, pTarget, iNumber))/10*360*2/1000, 50);
-		SetPhysical("Hangle", EffectVar(10, pTarget, iNumber)/50*iSpeed, 2);
+		ActMap.Hangle.Speed = EffectVar(10, pTarget, iNumber)*iSpeed/50;
 
 		// Exec movement animation (TODO: Use Anim_Linear?)
 		var position = GetAnimationPosition(EffectVar(1, pTarget, iNumber));
-		position += (EffectVar(10, pTarget, iNumber)/6000*1000/(14*2));
+		position += (EffectVar(10, pTarget, iNumber)*5/48*1000/(14*2));
 
 		SetAnimationPosition(EffectVar(1, pTarget, iNumber), Anim_Const(position % GetAnimationLength("Hangle")));
 
@@ -1832,6 +1847,8 @@ Scale = {
 	Prototype = Action,
 	Name = "Scale",
 	Procedure = DFA_SCALE,
+	Speed = 60,
+	Accel = 20,
 	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
@@ -1916,6 +1933,8 @@ Hangle = {
 	Prototype = Action,
 	Name = "Hangle",
 	Procedure = DFA_HANGLE,
+	Speed = 48,
+	Accel = 20,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
