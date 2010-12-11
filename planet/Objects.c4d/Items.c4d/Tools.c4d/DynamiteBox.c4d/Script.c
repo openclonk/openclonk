@@ -34,8 +34,6 @@ local pWire;
 
 public func ControlUse(object clonk, int x, int y)
 {
-	//if(clonk->GetAction() != "Walk") return true;
-
 	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
 	if(!pDyna->ControlUse(clonk, x, y, 1))
 	{

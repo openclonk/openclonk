@@ -40,7 +40,6 @@ public:
 public:
 	int32_t Energy;
 	int32_t Breath;
-	int32_t Walk;
 	int32_t Jump;
 	int32_t Dig;
 	int32_t Swim;

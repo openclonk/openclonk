@@ -29,7 +29,6 @@ Oversize=1
 [Physical]
 Energy=50000
 Breath=100000
-Walk=70000
 Jump=40000
 Dig=40000
 Swim=60000

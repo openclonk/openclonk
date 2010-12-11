@@ -33,7 +33,6 @@ ClosedContainer=2
 [Physical]
 Energy=50000
 Breath=50000
-Walk=80000
 Jump=35000
 Dig=40000
 Swim=60000

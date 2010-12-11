@@ -721,12 +721,12 @@ func UpdateBackwardsSpeed()
 func FxIntWalkBackStart(pTarget, iNumber, fTmp, iValue)
 {
 	if(iValue == nil) iValue = 30000;
-	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", iValue);
 }
 
 func FxIntWalkBackStop(pTarget, iNumber)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 }
 
 /* Walk */
@@ -1801,6 +1801,9 @@ Walk = {
 	Prototype = Action,
 	Name = "Walk",
 	Procedure = DFA_WALK,
+	Accel = 16,
+	Decel = 22,
+	Speed = 196,
 	Directions = 2,
 	FlipDir = 0,
 	Length = 1,
@@ -2014,6 +2017,7 @@ Push = {
 	Prototype = Action,
 	Name = "Push",
 	Procedure = DFA_PUSH,
+	Speed = 196,
 	Directions = 2,
 	Length = 8,
 	Delay = 15,

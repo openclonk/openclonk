@@ -18,8 +18,8 @@
 		ShootTime       = 20,           // The duration of shooting
 		ShootTime2      =  5,           // For a callback ShootTime2 frames after StartShoot: DuringShoot
 		TurnType        = 1,            // Specify a special turn type (0: turn 120 degrees, 1: turn 180 degrees, 2: turn 220 degrees) see SetTurnType in clonk
-		WalkSpeed       = 30000,        // Reduce the walk speed during aiming
-		WalkBack        = 20000,        // Reduce the walk speed for walking backwards (speed 0 means no walking backwards at all)
+		WalkSpeed       = 84,           // Reduce the walk speed during aiming
+		WalkBack        = 56,           // Reduce the walk speed for walking backwards (speed 0 means no walking backwards at all)
 		AimSpeed        = 5,            // the speed of aiming default 5° per frame
 		AnimationReplacements = [      // Replace some animations with others during load/aim/shoot
 			["Walk", "BowWalk"],
@@ -438,10 +438,10 @@ public func ResetHands(bool pause)
 func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
 {
 	if(iValue == nil) iValue = 30000;
-	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", iValue);
 }
 
 func FxIntWalkSlowStop(pTarget, iNumber)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 }

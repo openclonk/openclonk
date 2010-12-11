@@ -217,13 +217,13 @@ func CheckStrike(iTime)
 
 func FxSwordStrikeStopStart(pTarget, iEffectNumber, iTemp)
 {
-	pTarget->SetPhysical("Walk", (pTarget->GetPhysical("Walk", 0) * 1)/100, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
 	if(iTemp) return;
 }
 
 func FxSwordStrikeStopStop(pTarget, iEffectNumber, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 }
 
@@ -234,12 +234,8 @@ func FxSwordStrikeStopTimer(pTarget, iEffectNumber)
 
 func FxSwordStrikeSpeedUpStart(pTarget, iEffectNumber, iTemp)
 {
-	
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 3, PHYS_StackTemporary);
-	if(iTemp) return;
-	var dir=-1;
-	if(pTarget->GetDir() == DIR_Right) dir=1;
-	pTarget->SetXDir(pTarget->GetPhysical("Walk")*dir, 100000);
+	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed * 3);
+	pTarget.ActMap.Walk.Accel = 210;
 }
 
 func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
@@ -251,8 +247,7 @@ func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
 
 func FxSwordStrikeSpeedUpStop(pTarget, iEffectNumber, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
-	//pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 2, PHYS_Temporary);
+	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
@@ -262,7 +257,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, iEffectNumber, iCause, iTemp)
 
 func FxSwordStrikeSlowStart(pTarget, iEffectNumber, iTemp, iTime)
 {
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 3, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed / 3);
 	if(iTemp) return;
 	EffectVar(0, pTarget, iEffectNumber) = iTime;
 }
@@ -274,8 +269,7 @@ func FxSwordStrikeSlowTimer(pTarget, iEffectNumber, iEffectTime)
 
 func FxSwordStrikeSlowStop(pTarget, iEffectNumber, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
-	//pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 2, PHYS_Temporary);
+	pTarget->PopActionSpeed("Walk");
 }
 
 func Definition(def) {

@@ -31,8 +31,8 @@ func Initialize()
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		TurnType       = 1,
-		WalkSpeed      = 30000,
-		WalkBack       = 20000,
+		WalkSpeed      = 84,
+		WalkBack       = 56,
 		AimSpeed       = 20,            // the speed of aiming
 	};
 	OnRopeBreak();

@@ -36,8 +36,8 @@ func Initialize()
 		LoadTime       = 100,
 		AnimationShoot = nil,
 		ShootTime      = 20,
-		WalkSpeed      = 30000,
-		WalkBack       = 20000,
+		WalkSpeed      = 84,
+		WalkBack       = 56,
 	};
 }
 

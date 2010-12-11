@@ -3906,7 +3906,6 @@ void C4Object::ExecAction()
 	// Determine ActDef & Physical Info
 	//C4PropList * pAction = Action.pActionDef;
 	C4PhysicalInfo *pPhysical=GetPhysical();
-	C4Real lLimit;
 	C4Real fWalk,fMove;
 	int32_t smpx,smpy;
 
@@ -3952,7 +3951,9 @@ void C4Object::ExecAction()
 	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
 	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
 	int32_t dir = Action.Dir;
-	C4Real accel = WalkAccel;
+	C4Real accel = C4REAL100(pActionDef->GetPropertyInt(P_Accel));
+	C4Real decel = C4REAL100(pActionDef->GetPropertyInt(P_Decel));
+	C4Real lLimit = C4REAL100(pActionDef->GetPropertyInt(P_Speed));
 
 	C4Real xlFloatAccel;
 	C4Real xrFloatAccel;
@@ -3965,23 +3966,27 @@ void C4Object::ExecAction()
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_WALK:
-		lLimit=ValByPhysical(280, pPhysical->Walk);
-
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
 			// breaaak!!!
-			if (dir == DIR_Right) accel = WalkBreak;
-			xdir-=accel; if (xdir<-lLimit) xdir=-lLimit;
+			if (dir == DIR_Right)
+				xdir-=decel;
+			else
+				xdir-=accel;
+			if (xdir<-lLimit) xdir=-lLimit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			if (dir == DIR_Left) accel = WalkBreak;
-			xdir+=accel; if (xdir>+lLimit) xdir=+lLimit;
+			if (dir == DIR_Left)
+				xdir+=decel;
+			else
+				xdir+=accel;
+			if (xdir>+lLimit) xdir=+lLimit;
 			break;
 		case COMD_Stop: case COMD_Up: case COMD_Down:
-			if (xdir<0) xdir+=WalkBreak;
-			if (xdir>0) xdir-=WalkBreak;
-			if ((xdir>-WalkBreak) && (xdir<+WalkBreak)) xdir=0;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
 			break;
 		}
 		iPhaseAdvance=0;
@@ -4244,7 +4249,6 @@ void C4Object::ExecAction()
 		// Target pushing force
 		bool fStraighten;
 		iTXDir=0; fStraighten=false;
-		lLimit=ValByPhysical(280, pPhysical->Walk);
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_DownLeft:   iTXDir=-lLimit; break;
@@ -4314,7 +4318,7 @@ void C4Object::ExecAction()
 		if (Action.ComDir==COMD_Right) iPullX = GetX()-iPullDistance;
 		if (Action.ComDir==COMD_Left) iPullX = GetX()+iPullDistance;
 
-		fWalk = ValByPhysical(280, pPhysical->Walk);
+		fWalk = lLimit;
 
 		fMove = 0;
 		if (Action.ComDir==COMD_Right) fMove = +fWalk;

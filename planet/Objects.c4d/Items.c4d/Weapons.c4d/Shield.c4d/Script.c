@@ -174,13 +174,13 @@ func HitByWeapon(by, iDamage)
 
 func FxShieldStopControlStart(object target, int num, temp)
 {
-	target->SetPhysical("Walk", 30000, PHYS_StackTemporary);
+	target->PushActionSpeed("Walk", 84);
 	if(temp) return;
 }
 
 func FxShieldStopControlStop(object target, int num, iCause, temp)
 {
-	target->ResetPhysical("Walk");
+	target->PopActionSpeed("Walk");
 	if(temp) return;
 }
 

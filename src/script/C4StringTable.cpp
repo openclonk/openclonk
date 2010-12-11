@@ -89,6 +89,9 @@ C4StringTable::C4StringTable()
 	P[P_Collectible] = "Collectible";
 	P[P_ActMap] = "ActMap";
 	P[P_Procedure] = "Procedure";
+	P[P_Speed] = "Speed";
+	P[P_Accel] = "Accel";
+	P[P_Decel] = "Decel";
 	P[P_Attach] = "Attach";
 	P[P_Directions] = "Directions";
 	P[P_FlipDir] = "FlipDir";
