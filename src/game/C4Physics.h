@@ -31,7 +31,6 @@ const int CornerRange=AttachRange+2;
 
 #define GravAccel (::Landscape.Gravity)
 
-extern const C4Real FloatAccel;
 extern const C4Real HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;
 extern const C4Real FloatFriction;
 extern const C4Real RotateAccel;

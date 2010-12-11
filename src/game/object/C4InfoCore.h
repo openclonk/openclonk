@@ -52,7 +52,6 @@ public:
 	int32_t CanFly;
 	int32_t CorrosionResist;
 	int32_t BreatheWater;
-	int32_t Float;
 public:
 	void Default();
 	void PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysicals=false, class C4Def *pTrainDef=NULL);

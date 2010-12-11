@@ -389,7 +389,7 @@ void C4Command::MoveTo()
 	{
 		C4Real dx = itofix(Tx._getInt()) - cObj->fix_x, dy = itofix(Ty) - cObj->fix_y;
 		// normalize
-		C4Real dScale = C4REAL100(cObj->GetPhysical()->Float) / Max(Abs(dx), Abs(dy));
+		C4Real dScale = C4REAL100(cObj->GetAction()->GetPropertyInt(P_Speed)) / Max(Abs(dx), Abs(dy));
 		dx *= dScale; dy *= dScale;
 		// difference to momentum
 		dx -= cObj->xdir; dy -= cObj->ydir;

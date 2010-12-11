@@ -3477,7 +3477,7 @@ void GrabLost(C4Object *cObj)
 		}
 }
 
-void DoGravity(C4Object *cobj, bool fFloatFriction=true);
+static void DoGravity(C4Object *cobj);
 
 void C4Object::NoAttachAction()
 {
@@ -3828,20 +3828,17 @@ bool DoBridge(C4Object *clk)
 	return true;
 }
 
-void DoGravity(C4Object *cobj, bool fFloatFriction)
+static void DoGravity(C4Object *cobj)
 {
 	// Floatation in liquids
 	if (cobj->InLiquid && cobj->Def->Float)
 	{
-		cobj->ydir-=FloatAccel;
-		if (cobj->ydir<FloatAccel*-10) cobj->ydir=FloatAccel*-10;
-		if (fFloatFriction)
-		{
-			if (cobj->xdir<-FloatFriction) cobj->xdir+=FloatFriction;
-			if (cobj->xdir>+FloatFriction) cobj->xdir-=FloatFriction;
-			if (cobj->rdir<-FloatFriction) cobj->rdir+=FloatFriction;
-			if (cobj->rdir>+FloatFriction) cobj->rdir-=FloatFriction;
-		}
+		cobj->ydir-=GravAccel * C4REAL100(80);
+		if (cobj->ydir<C4REAL100(-160)) cobj->ydir=C4REAL100(-160);
+		if (cobj->xdir<-FloatFriction) cobj->xdir+=FloatFriction;
+		if (cobj->xdir>+FloatFriction) cobj->xdir-=FloatFriction;
+		if (cobj->rdir<-FloatFriction) cobj->rdir+=FloatFriction;
+		if (cobj->rdir>+FloatFriction) cobj->rdir-=FloatFriction;
 		if (!GBackLiquid(cobj->GetX(),cobj->GetY()-1+ cobj->Def->Float*cobj->GetCon()/FullCon -1 ))
 			if (cobj->ydir<0) cobj->ydir=0;
 	}
@@ -4082,9 +4079,8 @@ void C4Object::ExecAction()
 				SetCommand(C4CMD_Exit);
 			}
 
-		lLimit = itofix(2);
-		lFloatAccel = Max(Min(lLimit+xdir,FloatAccel),itofix(0));
-		rFloatAccel = Max(Min(lLimit-xdir,FloatAccel),itofix(0));
+		lFloatAccel = Max(Min(lLimit+xdir,accel),itofix(0));
+		rFloatAccel = Max(Min(lLimit-xdir,accel),itofix(0));
 
 		switch (Action.ComDir)
 		{
@@ -4416,11 +4412,10 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLOAT:
 		// Float speed
-		lLimit=C4REAL100(pPhysical->Float);
-		xlFloatAccel = Max(Min(lLimit+xdir,FloatAccel),itofix(0));
-		xrFloatAccel = Max(Min(lLimit-xdir,FloatAccel),itofix(0));
-		yuFloatAccel = Max(Min(lLimit+ydir,FloatAccel),itofix(0));
-		ydFloatAccel = Max(Min(lLimit-ydir,FloatAccel),itofix(0));
+		xlFloatAccel = Max(Min(lLimit+xdir,accel),itofix(0));
+		xrFloatAccel = Max(Min(lLimit-xdir,accel),itofix(0));
+		yuFloatAccel = Max(Min(lLimit+ydir,accel),itofix(0));
+		ydFloatAccel = Max(Min(lLimit-ydir,accel),itofix(0));
 
 		// ComDir changes xdir/ydir
 		switch (Action.ComDir)
