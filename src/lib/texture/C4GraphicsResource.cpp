@@ -67,7 +67,6 @@ void C4GraphicsResource::Default()
 	fctLogo.Default();
 	fctConstruction.Default();
 	fctEnergy.Default();
-	fctMagic.Default();
 	fctArrow.Default();
 	fctExit.Default();
 	fctHand.Default();
@@ -117,7 +116,6 @@ void C4GraphicsResource::Clear()
 	fctLogo.Clear();
 	fctConstruction.Clear();
 	fctEnergy.Clear();
-	fctMagic.Clear();
 	fctOptions.Clear();
 	fctArrow.Clear();
 	fctExit.Clear();
@@ -238,7 +236,6 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctLogo,        "Logo",         Files))               return false;
 	if (!LoadFile(fctConstruction,"Construction", Files))               return false; // (new)
 	if (!LoadFile(fctEnergy,      "Energy",       Files))               return false; // (new)
-	if (!LoadFile(fctMagic,       "Magic",        Files))               return false; // (new)
 	if (!LoadFile(fctOptions,     "Options",      Files, C4FCT_Height)) return false;
 	if (!LoadFile(fctUpperBoard,  "UpperBoard",   Files))               return false;
 	if (!LoadFile(fctArrow,       "Arrow",        Files, C4FCT_Height)) return false;

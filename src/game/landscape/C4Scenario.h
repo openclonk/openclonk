@@ -155,7 +155,6 @@ public:
 	C4IDList BuildKnowledge;
 	C4IDList HomeBaseMaterial;
 	C4IDList HomeBaseProduction;
-	C4IDList Magic;
 public:
 	void Default();
 	bool EquipmentEqual(C4SPlrStart &rhs);

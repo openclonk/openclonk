@@ -51,11 +51,7 @@ enum
 	C4MN_Extra_None       = 0,
 	C4MN_Extra_Components = 1,
 	C4MN_Extra_Value      = 2,
-	C4MN_Extra_MagicValue = 3,
 	C4MN_Extra_Info       = 4,
-	C4MN_Extra_ComponentsMagic= 5,
-	C4MN_Extra_LiveMagicValue = 6,
-	C4MN_Extra_ComponentsLiveMagic = 7
 };
 enum
 {

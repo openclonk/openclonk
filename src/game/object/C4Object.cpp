@@ -172,7 +172,6 @@ void C4Object::Default()
 	Mass=OwnMass=0;
 	Damage=0;
 	Energy=0;
-	MagicEnergy=0;
 	Alive=0;
 	Breath=0;
 	FirePhase=0;
@@ -1019,31 +1018,6 @@ bool C4Object::ExecLife()
 					if (Con<FullCon)
 						// Grow
 						DoCon(Def->Growth*100);
-
-	// Magic reload
-	int32_t transfer;
-	if (!::Game.iTick3) if (Alive)
-			if (Contained)
-				if (!Hostile(Owner,Contained->Owner))
-					if (MagicEnergy<GetPhysical()->Magic)
-					{
-						transfer=Min<int32_t>(Min<int32_t>(2*MagicPhysicalFactor,Contained->MagicEnergy),GetPhysical()->Magic-MagicEnergy) / MagicPhysicalFactor;
-						if (transfer)
-						{
-							// do energy transfer via script, so it can be overloaded by No-Magic-Energy-rule
-							// always use global func instead of local to save double search
-							C4AulFunc *pMagicEnergyFn = ::ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
-							if (pMagicEnergyFn) // should always be true
-							{
-								C4AulParSet pars(C4VInt(-transfer), C4VObj(Contained));
-								if (!!pMagicEnergyFn->Exec(NULL, &pars))
-								{
-									C4AulParSet pars(C4VInt(+transfer), C4VObj(this));
-									pMagicEnergyFn->Exec(NULL, &pars);
-								}
-							}
-						}
-					}
 
 	// Breathing
 	if (!::Game.iTick5)
@@ -2664,7 +2638,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Mass,                             "Mass",               0                 ));
 	pComp->Value(mkNamingAdapt( Damage,                           "Damage",             0                 ));
 	pComp->Value(mkNamingAdapt( Energy,                           "Energy",             0                 ));
-	pComp->Value(mkNamingAdapt( MagicEnergy,                      "MagicEnergy",        0                 ));
 	pComp->Value(mkNamingAdapt( Alive,                            "Alive",              false             ));
 	pComp->Value(mkNamingAdapt( Breath,                           "Breath",             0                 ));
 	pComp->Value(mkNamingAdapt( FirePhase,                        "FirePhase",          0                 ));

@@ -75,8 +75,6 @@
 #define VIS_LayerToggle 64
 #define VIS_OverlayOnly 128
 
-const int32_t MagicPhysicalFactor=1000;
-
 class C4SolidMask;
 class C4Command;
 class C4MaterialList;
@@ -145,7 +143,6 @@ public:
 	int32_t Mass, OwnMass;
 	int32_t Damage;
 	int32_t Energy;
-	int32_t MagicEnergy;
 	int32_t Breath;
 	int32_t FirePhase;
 	int32_t InMat; // SyncClearance-NoSave //

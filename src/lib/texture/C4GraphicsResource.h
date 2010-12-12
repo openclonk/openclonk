@@ -65,7 +65,6 @@ public:
 	C4FacetID fctLogo;
 	C4FacetID fctConstruction;
 	C4FacetID fctEnergy;
-	C4FacetID fctMagic;
 	C4FacetID fctArrow;
 	C4FacetID fctExit;
 	C4FacetID fctHand;

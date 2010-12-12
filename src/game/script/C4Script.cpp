@@ -510,41 +510,6 @@ static C4Void FnDoDamage(C4AulObjectContext *cthr, long iChange, Nillable<long> 
 	return C4VNull;
 }
 
-static bool FnDoMagicEnergy(C4AulObjectContext *cthr, long iChange, bool fAllowPartial)
-{
-	// Physical modification factor
-	iChange *= MagicPhysicalFactor;
-	// Maximum load
-	if (iChange>0)
-		if (cthr->Obj->MagicEnergy + iChange > cthr->Obj->GetPhysical()->Magic)
-		{
-			if (!fAllowPartial) return false;
-			iChange = cthr->Obj->GetPhysical()->Magic - cthr->Obj->MagicEnergy;
-			if (!iChange) return false;
-			// partial change to max allowed
-		}
-	// Insufficient load
-	if (iChange<0)
-		if (cthr->Obj->MagicEnergy+iChange<0)
-		{
-			if (!fAllowPartial) return false;
-			iChange = -cthr->Obj->MagicEnergy;
-			if (!iChange) return false;
-			// partial change to zero allowed
-		}
-	// Change energy level
-	iChange = BoundBy<long>(iChange, -cthr->Obj->MagicEnergy, cthr->Obj->GetPhysical()->Magic - cthr->Obj->MagicEnergy);
-	cthr->Obj->MagicEnergy += iChange;
-	// call to object
-	cthr->Obj->Call(PSF_MagicEnergyChange,&C4AulParSet(C4VInt(iChange)));
-	return true;
-}
-
-static long FnGetMagicEnergy(C4AulObjectContext *cthr)
-{
-	return cthr->Obj->MagicEnergy/MagicPhysicalFactor;
-}
-
 enum PhysicalMode
 {
 	PHYS_Current = 0,
@@ -2564,36 +2529,6 @@ static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V
 	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
 	return C4VID(::Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex ));
-}
-
-static long FnSetPlrMagic(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
-{
-	C4Player *pPlr=::Players.Get(iPlr);
-	if (!pPlr) return false;
-	if (fRemove)
-	{
-		long iIndex=pPlr->Magic.GetIndex(id);
-		if (iIndex<0) return false;
-		return pPlr->Magic.DeleteItem(iIndex);
-	}
-	else
-	{
-		if (!C4Id2Def(id)) return false;
-		return pPlr->Magic.SetIDCount(id,1,true);
-	}
-}
-
-static C4Value FnGetPlrMagic_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V)
-{
-	long iPlr = iPlr_C4V->getInt();
-	C4ID id = id_C4V->getC4ID();
-	long iIndex = iIndex_C4V->getInt();
-
-	if (!ValidPlr(iPlr)) return C4VBool(false);
-	// Search by id, check if available, return bool
-	if (id) return C4VBool(::Players.Get(iPlr)->Magic.GetIDCount(id,1) != 0);
-	// Search indexed item of given category, return C4ID
-	return C4VID(::Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_All, iIndex ));
 }
 
 static long FnGetWealth(C4AulContext *cthr, long iPlr)
@@ -5963,8 +5898,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoDamage", FnDoDamage);
 	AddFunc(pEngine, "DoEnergy", FnDoEnergy);
 	AddFunc(pEngine, "DoBreath", FnDoBreath);
-	AddFunc(pEngine, "DoMagicEnergy", FnDoMagicEnergy);
-	AddFunc(pEngine, "GetMagicEnergy", FnGetMagicEnergy);
 	AddFunc(pEngine, "EnergyCheck", FnEnergyCheck);
 	AddFunc(pEngine, "CheckEnergyNeedChain", FnCheckEnergyNeedChain);
 	AddFunc(pEngine, "GetEnergy", FnGetEnergy);
@@ -6053,7 +5986,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetActionTargets", FnSetActionTargets);
 	AddFunc(pEngine, "SetPlrView", FnSetPlrView);
 	AddFunc(pEngine, "SetPlrKnowledge", FnSetPlrKnowledge);
-	AddFunc(pEngine, "SetPlrMagic", FnSetPlrMagic);
 	AddFunc(pEngine, "GetPlrViewMode", FnGetPlrViewMode);
 	AddFunc(pEngine, "ResetCursorView", FnResetCursorView);
 	AddFunc(pEngine, "GetPlrView", FnGetPlrView);
@@ -6422,11 +6354,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4MN_Extra_None"        ,C4V_Int,          C4MN_Extra_None},
 	{ "C4MN_Extra_Components"  ,C4V_Int,          C4MN_Extra_Components},
 	{ "C4MN_Extra_Value"       ,C4V_Int,          C4MN_Extra_Value},
-	{ "C4MN_Extra_MagicValue"  ,C4V_Int,          C4MN_Extra_MagicValue},
 	{ "C4MN_Extra_Info"        ,C4V_Int,          C4MN_Extra_Info},
-	{ "C4MN_Extra_ComponentsMagic",C4V_Int,      C4MN_Extra_ComponentsMagic},
-	{ "C4MN_Extra_LiveMagicValue" ,C4V_Int,      C4MN_Extra_LiveMagicValue},
-	{ "C4MN_Extra_ComponentsLiveMagic",C4V_Int,  C4MN_Extra_ComponentsLiveMagic},
 
 	{ "C4MN_Add_ImgRank"       ,C4V_Int,          C4MN_Add_ImgRank},
 	{ "C4MN_Add_ImgIndexed"    ,C4V_Int,          C4MN_Add_ImgIndexed},
@@ -6667,7 +6595,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "DefinitionCall",       1  ,C4V_Any      ,{ C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
 	{ "Call",                 0  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
 	{ "GetPlrKnowledge",      1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
-	{ "GetPlrMagic",          1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrMagic_C4V ,           0 },
 	{ "GetComponent",         1  ,C4V_Int      ,{ C4V_PropList,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
 	{ "PlayerMessage",        1  ,C4V_Int      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,         0 },
 	{ "Message",              1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnMessage_C4V,               0 },

@@ -128,7 +128,6 @@ public:
 	int32_t CrewCnt; // No Save //
 	// Knowledge
 	C4IDList Knowledge;
-	C4IDList Magic;
 	// Control
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;

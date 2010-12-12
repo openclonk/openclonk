@@ -839,16 +839,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	}
 
 	// live max magic
-	int32_t iUseExtraData = 0;
-	if (Extra == C4MN_Extra_LiveMagicValue || Extra == C4MN_Extra_ComponentsLiveMagic)
-	{
-		C4Object *pMagicSourceObj = ::Objects.SafeObjectPointer(ExtraData);
-		if (pMagicSourceObj) iUseExtraData = pMagicSourceObj->MagicEnergy/MagicPhysicalFactor;
-	}
-	else
-	{
-		iUseExtraData = ExtraData;
-	}
+	int32_t iUseExtraData = ExtraData;
 
 	// Draw specified extra
 	switch (Extra)
@@ -863,26 +854,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		C4Player *pParentPlr = ::Players.Get(GetControllingPlayer());
 	}
 	break;
-	case C4MN_Extra_MagicValue:
-	case C4MN_Extra_LiveMagicValue:
-		if (pDef)
-		{
-			::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
-		}
-		break;
-	case C4MN_Extra_ComponentsMagic:
-	case C4MN_Extra_ComponentsLiveMagic:
-		// magic value and components
-		if (pItem)
-		{
-			// DrawValue2 kills the facet...
-			int32_t iOriginalX = cgoExtra.X;
-			::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
-			cgoExtra.Wdt = cgoExtra.X - iOriginalX - 5;
-			cgoExtra.X = iOriginalX;
-			pItem->Components.Draw(cgoExtra,-1,::Definitions,C4D_All,true,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
-		}
-		break;
 	}
 
 	// Restore global clipper

@@ -220,7 +220,6 @@ void C4SPlrStart::Default()
 	BuildKnowledge.Default();
 	HomeBaseMaterial.Default();
 	HomeBaseProduction.Default();
-	Magic.Default();
 }
 
 bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
@@ -239,8 +238,7 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 	       && (ReadyMaterial == rhs.ReadyMaterial)
 	       && (BuildKnowledge == rhs.BuildKnowledge)
 	       && (HomeBaseMaterial == rhs.HomeBaseMaterial)
-	       && (HomeBaseProduction == rhs.HomeBaseProduction)
-	       && (Magic == rhs.Magic);
+	       && (HomeBaseProduction == rhs.HomeBaseProduction);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
@@ -257,7 +255,6 @@ void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,        "HomeBaseMaterial",      C4IDList()));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,      "HomeBaseProduction",    C4IDList()));
-	pComp->Value(mkNamingAdapt(Magic,                   "Magic",                 C4IDList()));
 }
 
 void C4SLandscape::Default()

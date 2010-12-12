@@ -657,9 +657,6 @@ bool C4Player::ScenarioInit()
 	HomeBaseProduction.ConsolidateValids(::Definitions);
 	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
 	Knowledge.ConsolidateValids(::Definitions);
-	Magic=Game.C4S.PlrStart[PlrStartIndex].Magic;
-	Magic.ConsolidateValids(::Definitions);
-	Magic.SortByValue(::Definitions);
 
 	// Starting position
 	ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
@@ -1232,7 +1229,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
-	pComp->Value(mkNamingAdapt(Magic,               "Magic"                 ));
 	pComp->Value(mkNamingAdapt(Crew,                "Crew"                  ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
@@ -1355,7 +1351,6 @@ void C4Player::DefaultRuntimeData()
 	HomeBaseMaterial.Default();
 	HomeBaseProduction.Default();
 	Knowledge.Default();
-	Magic.Default();
 	FlashCom=0;
 }
 
