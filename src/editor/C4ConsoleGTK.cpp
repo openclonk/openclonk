@@ -156,6 +156,7 @@ public:
 	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
+	gulong handlerDestroy;
 	gulong handlerPlay;
 	gulong handlerHalt;
 	gulong handlerModePlay;
@@ -166,13 +167,39 @@ public:
 	{
 		cursorDefault = NULL;
 		cursorWait = NULL;
-		itemNet = NULL;
-		txtLog = NULL;
-		txtScript = NULL;
+		
+		Clear();
+	}
+
+	~State()
+	{
+		if(cursorDefault)
+			gdk_cursor_unref(cursorDefault);
+		if(cursorWait)
+			gdk_cursor_unref(cursorWait);
+
+		// This is just to be sure, it should not be necessary since
+		// the widgets will be removed anyway as soon as the state is.
+		if(handlerDestroy)
+			g_signal_handler_disconnect(GetOwner()->window, handlerDestroy);
+		if(handlerPlay)
+			g_signal_handler_disconnect(btnPlay, handlerPlay);
+		if(handlerHalt)
+			g_signal_handler_disconnect(btnHalt, handlerHalt);
+		if(handlerModePlay)
+			g_signal_handler_disconnect(btnModePlay, handlerModePlay);
+		if(handlerModeEdit)
+			g_signal_handler_disconnect(btnModeEdit, handlerModeEdit);
+		if(handlerModeDraw)
+			g_signal_handler_disconnect(btnModeDraw, handlerModeDraw);
 	}
 
 	void InitGUI();
+	void Clear();
+
 	void DoEnableControls(bool fEnable);
+
+	static void OnDestroy(GtkWidget* window, gpointer data);
 
 	static void OnScriptEntry(GtkWidget* entry, gpointer data);
 	static void OnPlay(GtkWidget* button, gpointer data);
@@ -524,6 +551,7 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), topbox);
 
 	// ------------ Signals ---------------------
+	handlerDestroy = g_signal_connect(G_OBJECT(GetOwner()->window), "destroy", G_CALLBACK(OnDestroy), this);
 	handlerPlay = g_signal_connect(G_OBJECT(btnPlay), "toggled", G_CALLBACK(OnPlay), this);
 	handlerHalt = g_signal_connect(G_OBJECT(btnHalt), "toggled", G_CALLBACK(OnHalt), this);
 	handlerModePlay = g_signal_connect(G_OBJECT(btnModePlay), "toggled", G_CALLBACK(OnModePlay), this);
@@ -546,6 +574,58 @@ void C4ConsoleGUI::State::InitGUI()
 	g_signal_connect(G_OBJECT(plrJoin), "activate", G_CALLBACK(OnPlrJoin), this);
 	g_signal_connect(G_OBJECT(viewNew), "activate", G_CALLBACK(OnViewNew), this);
 	g_signal_connect(G_OBJECT(helpAbout), "activate", G_CALLBACK(OnHelpAbout), this);
+}
+
+void C4ConsoleGUI::State::Clear()
+{
+	// Clear widget pointers
+	txtLog = NULL;
+	txtScript = NULL;
+	btnPlay = NULL;
+	btnHalt = NULL;
+	btnModePlay = NULL;
+	btnModeEdit = NULL;
+	btnModeDraw = NULL;
+
+	menuBar = NULL;
+	itemNet = NULL;
+	menuNet = NULL;
+
+	menuViewport = NULL;
+	menuPlayer = NULL;
+
+	fileOpen = NULL;
+	fileOpenWithPlayers = NULL;
+	fileSave = NULL;
+	fileSaveAs = NULL;
+	fileSaveGame = NULL;
+	fileSaveGameAs = NULL;
+	fileRecord = NULL;
+	fileClose = NULL;
+	fileQuit = NULL;
+
+	compScript = NULL;
+	compTitle = NULL;
+	compInfo = NULL;
+	compObjects = NULL;
+
+	plrJoin = NULL;
+
+	viewNew = NULL;
+
+	helpAbout = NULL;
+
+	lblCursor = NULL;
+	lblFrame = NULL;
+	lblScript = NULL;
+	lblTime = NULL;
+
+	handlerDestroy = 0;
+	handlerPlay = 0;
+	handlerHalt = 0;
+	handlerModePlay = 0;
+	handlerModeEdit = 0;
+	handlerModeDraw = 0;
 }
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
@@ -581,6 +661,9 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 
 void C4ConsoleGUI::ClearViewportMenu()
 {
+	// Don't need to do anything if the GUI is not created
+	if(state->menuViewport == NULL) return;
+
 	GList* children = gtk_container_get_children(GTK_CONTAINER(state->menuViewport));
 	for (GList* item = children; item != NULL; item = item->next)
 	{
@@ -803,6 +886,9 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 
 void C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::Stage stage)
 {
+	// Don't need to do anything if the GUI is not created
+	if(state->menuBar == NULL || state->itemNet == NULL) return;
+
 	switch (stage)
 	{
 	case C4ConsoleGUI::STAGE_Start:
@@ -816,6 +902,9 @@ void C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::Stage stage)
 
 void C4ConsoleGUI::ClearInput()
 {
+	// Don't need to do anything if the GUI is not created
+	if(state->txtScript == NULL) return;
+
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
 	if (!completion)
 	{
@@ -836,6 +925,9 @@ void C4ConsoleGUI::ClearInput()
 
 void C4ConsoleGUI::ClearPlayerMenu()
 {
+	// Don't need to do anything if the GUI is not created
+	if(state->menuPlayer == NULL) return;
+
 	GList* children = gtk_container_get_children(GTK_CONTAINER(state->menuPlayer));
 	for (GList* item = children; item != NULL; item = item->next)
 	{
@@ -858,6 +950,8 @@ void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_tex
 
 bool C4ConsoleGUI::ClearLog()
 {
+	if(state->txtLog == NULL) return false;
+
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->txtLog)), "", 0);
 	return true;
 }
@@ -1405,6 +1499,13 @@ void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg* dlg)
 }
 
 // GTK+ Callbacks
+
+void C4ConsoleGUI::State::OnDestroy(GtkWidget* window, gpointer data)
+{
+	// The main window was destroyed, so clear all widget pointers in our
+	// state, so that we don't try to use it anymore.
+	static_cast<C4ConsoleGUI::State*>(data)->Clear();
+}
 
 void C4ConsoleGUI::State::OnScriptEntry(GtkWidget* entry, gpointer data)
 {
