@@ -37,7 +37,7 @@ protected func Initialize()
 	
 	// Second section: Weak opponent with javelins.
 	var spearman1 = CreateObject(Clonk, 1050, 560, NO_OWNER);
-	spearman1->SetPhysical("Energy", 40000, PHYS_Temporary);
+	spearman1.MaxEnergy = 40000;
 	spearman1->DoEnergy(-10);
 	spearman1->CreateContents(Javelin);
 	spearman1->AI_GuardArea(800, 400, 400, 250);
@@ -51,7 +51,7 @@ protected func Initialize()
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
 	var spearman2 = CreateObject(Clonk, 1753, 410, NO_OWNER);
-	spearman2->SetPhysical("Energy", 40000, PHYS_Temporary);
+	spearman2.MaxEnergy = 40000;
 	spearman2->DoEnergy(-10);
 	spearman2->CreateContents(Javelin);
 	spearman2->AI_GuardArea(1350, 200, 500, 400);
@@ -59,7 +59,7 @@ protected func Initialize()
 	CreateObject(EnergyBar)->SetTarget(spearman2);
 	// Upper part: a normal bowman.
 	var bowman = CreateObject(Clonk, 1732, 330, NO_OWNER);
-	bowman->SetPhysical("Energy", 45000, PHYS_Temporary);
+	bowman.MaxEnergy = 45000;
 	bowman->DoEnergy(-5);
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
 	bowman->AI_GuardArea(1350, 200, 500, 400);
@@ -72,7 +72,7 @@ protected func Initialize()
 	
 	// Fourth section: Opponent with sword and shield.
 	var swordman = CreateObject(Clonk, 2250, 330, NO_OWNER);
-	swordman->SetPhysical("Energy", 60000, PHYS_Temporary);
+	swordman.MaxEnergy = 60000;
 	swordman->DoEnergy(10);
 	swordman->CreateContents(Shield);
 	swordman->CreateContents(Sword);
@@ -333,4 +333,5 @@ global func FxIntContentRemovalStop(object target, int num, int reason)
 	for (var obj in FindObjects(Find_Container(target)))
 			obj->RemoveObject();
 	return 1;
-}	
+}
+

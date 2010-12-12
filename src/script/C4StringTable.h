@@ -221,6 +221,7 @@ enum C4PropertyName
 	P_Action,
 	P_BreatheWater,
 	P_CorrosionResist,
+	P_MaxEnergy,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

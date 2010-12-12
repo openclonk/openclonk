@@ -38,7 +38,6 @@ public:
 	typedef int32_t C4PhysicalInfo::* Offset;
 
 public:
-	int32_t Energy;
 	int32_t Breath;
 	int32_t Jump;
 	int32_t Throw;

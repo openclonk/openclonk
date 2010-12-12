@@ -85,3 +85,5 @@ Work = {
 },
 };
 local Name = "$Name$";
+local MaxEnergy = 100000;
+

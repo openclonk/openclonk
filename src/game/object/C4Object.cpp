@@ -273,7 +273,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// Life, energy, breath
 	if (Category & C4D_Living) Alive=1;
-	if (Alive) Energy=GetPhysical()->Energy;
+	if (Alive) Energy=GetPropertyInt(P_MaxEnergy);
 	Breath=GetPhysical()->Breath;
 
 	// Components
@@ -1373,7 +1373,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 		if (!iChange) return;
 	}
 	// Do change
-	iChange = BoundBy<int32_t>(iChange, -Energy, GetPhysical()->Energy - Energy);
+	iChange = BoundBy<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;
 	// call to object
 	Call(PSF_EnergyChange,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedByPlr)));

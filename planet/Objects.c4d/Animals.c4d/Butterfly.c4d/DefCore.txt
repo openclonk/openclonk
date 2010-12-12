@@ -24,5 +24,4 @@ NoBurnDecay=1
 IncompleteActivity=1
 
 [Physical]
-Energy=40000
 Breath=50000

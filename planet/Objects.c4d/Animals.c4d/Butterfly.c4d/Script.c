@@ -131,6 +131,7 @@ Flutter = {
 },
 };
 local Name = "Butterfly";
+local MaxEnergy = 40000;
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);

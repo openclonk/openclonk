@@ -31,7 +31,6 @@ Pathfinder=1
 ClosedContainer=2
 
 [Physical]
-Energy=50000
 Breath=50000
 Jump=35000
 Throw=50000

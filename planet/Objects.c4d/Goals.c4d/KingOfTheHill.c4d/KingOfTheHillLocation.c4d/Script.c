@@ -124,7 +124,7 @@ func AdjustStarColor()
 	++timer;
 	if(king)
 	{
-		var percent=(king->GetEnergy()  * 100) / (king->GetPhysical("Energy") / 1000);
+		var percent=(king->GetEnergy()  * 100) / (king.MaxEnergy / 1000);
 		var red=255; if(percent > 50) red=(255*(100-2*(percent-50))) / 100;
 		var green=255; if(percent < 50) green=(255*(2*percent)) / 100;
 		color=RGB(red/2, green/2, 0);

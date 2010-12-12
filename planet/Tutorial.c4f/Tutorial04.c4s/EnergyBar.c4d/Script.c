@@ -35,7 +35,7 @@ protected func UpdateEnergy()
 	var energy = target->GetEnergy();
 	if (!energy)
 		return RemoveObject();
-	var phys = target->GetPhysical("Energy");
+	var phys = target.MaxEnergy;
 	var promille;
 	if (phys == 0) 
 		promille = 0;

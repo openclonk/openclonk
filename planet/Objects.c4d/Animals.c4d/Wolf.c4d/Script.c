@@ -418,3 +418,5 @@ Dead = {
 },
 };
 local Name = "$Name$";
+local MaxEnergy = 50000;
+

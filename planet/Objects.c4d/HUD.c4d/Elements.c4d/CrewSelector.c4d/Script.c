@@ -184,7 +184,7 @@ public func UpdateTitleGraphic()
 public func UpdateHealthBar()
 {
 	if(!crew) return;
-	var phys = crew->GetPhysical("Energy");
+	var phys = crew.MaxEnergy;
 	var promille;
 	if(phys == 0) promille = 0;
 	else promille = 1000 * crew->GetEnergy() / (phys / 1000);
