@@ -274,7 +274,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	// Life, energy, breath
 	if (Category & C4D_Living) Alive=1;
 	if (Alive) Energy=GetPropertyInt(P_MaxEnergy);
-	Breath=GetPhysical()->Breath;
+	Breath=GetPropertyInt(P_MaxBreath);
 
 	// Components
 	Component=Def->Component;
@@ -1044,7 +1044,7 @@ bool C4Object::ExecLife()
 			else
 			{
 				// Take breath
-				int32_t takebreath = GetPhysical()->Breath - Breath;
+				int32_t takebreath = GetPropertyInt(P_MaxBreath) - Breath;
 				takebreath = 100 * takebreath / C4MaxPhysical;
 				if (takebreath > 0) DoBreath(takebreath);
 			}
@@ -1397,7 +1397,7 @@ void C4Object::DoBreath(int32_t iChange)
 	// iChange 100% = Physical 100000
 	iChange=iChange*C4MaxPhysical/100;
 	// Do change
-	iChange = BoundBy<int32_t>(iChange, -Breath, GetPhysical()->Breath - Breath);
+	iChange = BoundBy<int32_t>(iChange, -Breath, GetPropertyInt(P_MaxBreath) - Breath);
 	Breath += iChange;
 	// call to object
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));

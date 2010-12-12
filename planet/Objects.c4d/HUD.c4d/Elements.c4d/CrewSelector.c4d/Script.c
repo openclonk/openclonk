@@ -198,7 +198,7 @@ public func UpdateHealthBar()
 public func UpdateBreathBar()
 {
 	if(!crew) return;
-	var phys = crew->GetPhysical("Breath");
+	var phys = crew.MaxBreath;
 	var promille;
 	if(phys == 0) promille = 0;
 	else promille = 1000 * crew->GetBreath() / (phys / 1000);

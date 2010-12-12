@@ -134,6 +134,7 @@ C4StringTable::C4StringTable()
 	P[P_BreatheWater] = "BreatheWater";
 	P[P_CorrosionResist] = "CorrosionResist";
 	P[P_MaxEnergy] = "MaxEnergy";
+	P[P_MaxBreath] = "MaxBreath";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

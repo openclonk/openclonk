@@ -23,5 +23,3 @@ StretchGrowth=1
 NoBurnDecay=1
 IncompleteActivity=1
 
-[Physical]
-Breath=50000

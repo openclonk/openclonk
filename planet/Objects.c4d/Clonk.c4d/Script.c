@@ -2072,6 +2072,7 @@ HangOnto = {
 };
 local Name = "Clonk";
 local MaxEnergy = 50000;
+local MaxBreath = 100000;
 
 func Definition(def) {
 	// Set perspective
