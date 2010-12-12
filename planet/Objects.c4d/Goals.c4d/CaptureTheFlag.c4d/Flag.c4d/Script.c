@@ -142,18 +142,20 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 // Reduces physicals by 80%.
 private func ReducePhysicals(object clonk)
 {
-	var phys = ["Walk", "Jump", "Scale", "Hangle", "Swim"];
+	clonk->SetPhysical("Jump", (8 * clonk->GetPhysical("Jump", PHYS_Current)) / 10, PHYS_StackTemporary);
+	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
-		clonk->SetPhysical(phys[i], (8 * clonk->GetPhysical(phys[i], PHYS_Current)) / 10, PHYS_StackTemporary);
+		clonk->PushActionSpeed(phys[i], 8 * clonk.ActMap[phys[i]].Speed / 10);
 	return;
 }
 
 // Resets physicals.
 private func ResetPhysicals(object clonk)
 {
-	var phys = ["Walk", "Jump", "Scale", "Hangle", "Swim"];
+	clonk->ResetPhysical("Jump");
+	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
-		clonk->ResetPhysical(phys[i]);
+		clonk->PopActionSpeed(phys[i]);
 	return;
 
 }
