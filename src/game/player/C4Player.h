@@ -263,8 +263,10 @@ public:
 	void SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease);
 	void SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
 	void SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
-	void ZoomToViewport(bool direct, bool no_increase=false, bool no_decrease=false);
-	void ZoomLimitsToViewport();
+	void ZoomToViewports(bool direct, bool no_increase=false, bool no_decrease=false);
+	void ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase=false, bool no_decrease=false);
+	void ZoomLimitsToViewports();
+	void ZoomLimitsToViewport(C4Viewport* vp);
 
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);

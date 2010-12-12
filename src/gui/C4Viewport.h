@@ -120,7 +120,7 @@ public:
 	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer);
+	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = NULL);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * cvp);
 #ifdef _WIN32

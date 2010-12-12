@@ -383,8 +383,10 @@ void C4Viewport::InitZoom()
 	C4Player *plr = Players.Get(Player);
 	if (plr)
 	{
-		plr->ZoomLimitsToViewport();
-		plr->ZoomToViewport(true);
+		// Note this affects all viewports for this player (not just
+		// this one), but it is a noop for the others.
+		plr->ZoomLimitsToViewport(this);
+		plr->ZoomToViewport(this, true);
 	}
 	else
 	{
@@ -969,9 +971,9 @@ int32_t C4ViewportList::GetViewportCount()
 	return iResult;
 }
 
-C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer)
+C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer, C4Viewport* pPrev)
 {
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
+	for (C4Viewport *cvp=pPrev ? pPrev->Next : FirstViewport; cvp; cvp=cvp->Next)
 		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
 			return cvp;
 	return NULL;

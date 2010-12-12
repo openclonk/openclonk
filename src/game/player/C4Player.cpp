@@ -1960,27 +1960,32 @@ void C4Player::SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool dir
 {
 	AdjustZoomParameter(&ZoomWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomHgt, range_hgt, no_increase, no_decrease);
-	ZoomToViewport(direct, no_decrease, no_increase); // inc/dec swapped for zoom, because it's inversely proportional to range
+	ZoomToViewports(direct, no_decrease, no_increase); // inc/dec swapped for zoom, because it's inversely proportional to range
 }
 
 void C4Player::SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMinWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomLimitMinHgt, range_hgt, no_increase, no_decrease);
-	ZoomLimitsToViewport();
+	ZoomLimitsToViewports();
 }
 
 void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMaxWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomLimitMaxHgt, range_hgt, no_increase, no_decrease);
-	ZoomLimitsToViewport();
+	ZoomLimitsToViewports();
 }
 
-void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
+void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
-	C4Viewport *vp = ::Viewports.GetViewport(Number);
-	if (!vp) return;
+	C4Viewport *vp = NULL;
+	while((vp = ::Viewports.GetViewport(Number, vp)) != NULL)
+		ZoomToViewport(vp, direct, no_increase, no_decrease);
+}
+
+void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, bool no_decrease)
+{
 	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
 	if (new_zoom > old_zoom && no_increase) return;
@@ -1988,10 +1993,15 @@ void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 	vp->SetZoom(new_zoom, direct);
 }
 
-void C4Player::ZoomLimitsToViewport()
+void C4Player::ZoomLimitsToViewports()
 {
-	C4Viewport *vp = ::Viewports.GetViewport(Number);
-	if (!vp) return;
+	C4Viewport *vp = NULL;
+	while((vp = ::Viewports.GetViewport(Number, vp)) != NULL)
+		ZoomLimitsToViewport(vp);
+}
+
+void C4Player::ZoomLimitsToViewport(C4Viewport* vp)
+{
 	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
 	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
 	vp->SetZoomLimits(zoom_min, zoom_max);
