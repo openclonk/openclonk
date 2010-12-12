@@ -87,12 +87,12 @@ protected:
 	void InitGradeCtrl();
 	void InitMaterialCtrls();
 	void UpdateToolCtrls();
-	void SetTexture(const char *szTexture);
-	void SetMaterial(const char *szMaterial);
 	void UpdateTextures();
 	void SetColorPattern(const char *szMaterial, const char *szTexture);
 public:
 	void UpdateLandscapeModeCtrls();
+	void SetTexture(const char *szTexture);
+	void SetMaterial(const char *szMaterial);
 };
 
 #endif //INC_C4ToolsDlg
