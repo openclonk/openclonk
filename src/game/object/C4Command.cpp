@@ -124,16 +124,6 @@ void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShape
 
 }
 
-bool FreeMoveTo(C4Object *cObj)
-{
-	// Floating: we accept any move-to target
-	if (cObj->GetProcedure()==DFA_FLOAT) return true;
-	// Can fly: we accept any move-to target
-	if (cObj->GetPhysical()->CanFly) return true;
-	// Assume we're walking: move-to targets are adjusted
-	return false;
-}
-
 bool AdjustSolidOffset(int32_t &rX, int32_t &rY, int32_t iXOff, int32_t iYOff)
 {
 	// In solid: fail
@@ -733,9 +723,6 @@ void C4Command::Chop()
 	DWORD ocf;
 	// No target: fail
 	if (!Target) { Finish(); return; }
-	// Can not chop: fail
-	if (!cObj->GetPhysical()->CanChop)
-		{ Finish(); return; }
 	// Target not chopable: done (assume was successfully chopped)
 	if (!(Target->OCF & OCF_Chop))
 		{ Finish(true); return; }
@@ -771,12 +758,6 @@ void C4Command::Build()
 	// No target: cancel
 	if (!Target)
 		{ Finish(); return; }
-	// Lost the ability to build? Fail.
-	if (cObj->GetPhysical() && !cObj->GetPhysical()->CanConstruct)
-	{
-		Finish(false, FormatString(LoadResStr("IDS_TEXT_CANTBUILD"), cObj->GetName()).getData());
-		return;
-	}
 	// Target complete: Command fulfilled
 	if (Target->GetCon()>=FullCon)
 	{
@@ -1514,7 +1495,7 @@ bool C4Command::InitEvaluation()
 		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
+		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1523,7 +1504,7 @@ bool C4Command::InitEvaluation()
 	{
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
-		AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
+		AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);
 		Tx.SetInt(iTx);
 		return true;
 	}
@@ -1567,12 +1548,6 @@ void C4Command::Clear()
 
 void C4Command::Construct()
 {
-	// Only those who can
-	if (cObj->GetPhysical() && !cObj->GetPhysical()->CanConstruct)
-	{
-		Finish(false, FormatString(LoadResStr("IDS_TEXT_CANTBUILD"), cObj->GetName()).getData());
-		return;
-	}
 	// No target type to construct: fail
 	if (!Data)
 	{
@@ -1674,8 +1649,6 @@ void C4Command::Construct()
 
 bool C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 {
-	// Objects with CanFly physical only
-	if (!cObj->GetPhysical()->CanFly) return false;
 	// Crew members or pathfinder objects only
 	if (!((cObj->OCF & OCF_CrewMember) || cObj->Def->Pathfinder)) return false;
 
@@ -1700,7 +1673,7 @@ bool C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 			if (iTopFree>=15)
 			{
 				// Take off
-				cObj->SetActionByName("Fly"); // This is a little primitive... we should have a ObjectActionFly or maybe a command for this...
+				return cObj->SetActionByName("Fly"); // This is a little primitive... we should have a ObjectActionFly or maybe a command for this...
 			}
 		}
 

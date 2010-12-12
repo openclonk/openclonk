@@ -43,13 +43,6 @@ public:
 	int32_t Jump;
 	int32_t Throw;
 	int32_t Magic;
-	int32_t CanScale;
-	int32_t CanHangle;
-	int32_t CanDig;
-	int32_t CanConstruct;
-	int32_t CanChop;
-	int32_t CanSwimDig;
-	int32_t CanFly;
 	int32_t CorrosionResist;
 	int32_t BreatheWater;
 public:

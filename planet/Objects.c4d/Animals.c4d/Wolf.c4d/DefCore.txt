@@ -35,4 +35,4 @@ Energy=50000
 Breath=50000
 Jump=35000
 Throw=50000
-CanDig=1
+

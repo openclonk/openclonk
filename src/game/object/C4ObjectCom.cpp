@@ -369,7 +369,7 @@ bool ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
 bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 {
 	C4PhysicalInfo *phys=cObj->GetPhysical();
-	if (!phys->CanDig || !ObjectActionDig(cObj))
+	if (!ObjectActionDig(cObj))
 	{
 		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
 		return false;
@@ -398,12 +398,6 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	DWORD ocf;
 
 	ObjectActionStand(cObj);
-
-	// Check physical
-	if (!cObj->GetPhysical()->CanConstruct)
-	{
-		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName()).getData(),cObj); return false;
-	}
 
 	// - - - - - - - - - - - - - - - - - - Line pickup - - - - - - - - - - - - - - - - -
 
@@ -564,23 +558,21 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 
 	// Chop
 	ocf=OCF_Chop;
-	if (phys->CanChop)
-		if (cObj->GetProcedure()!=DFA_SWIM)
-			if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-				if (ocf & OCF_Chop)
-				{
-					PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
-					return;
-				}
+	if (cObj->GetProcedure()!=DFA_SWIM)
+		if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+			if (ocf & OCF_Chop)
+			{
+				PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
+				return;
+			}
 
 	// Line construction pick up
 	ocf=OCF_LineConstruct;
-	if (phys->CanConstruct)
-		if (!cObj->Contents.GetObject())
-			if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-				if (ocf & OCF_LineConstruct)
-					if (ObjectComLineConstruction(cObj))
-						return;
+	if (!cObj->Contents.GetObject())
+		if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+			if (ocf & OCF_LineConstruct)
+				if (ObjectComLineConstruction(cObj))
+					return;
 
 	// Own activation call
 	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
@@ -690,11 +682,6 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 bool ObjectComChop(C4Object *cObj, C4Object *pTarget)
 {
 	if (!pTarget) return false;
-	if (!cObj->GetPhysical()->CanChop)
-	{
-		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
-		return false;
-	}
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	return ObjectActionChop(cObj,pTarget);
 }

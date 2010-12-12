@@ -1742,18 +1742,12 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 	}
 
 	// Do con (mass- and builder-relative)
-	int32_t iBuildSpeed=100; C4PhysicalInfo *pPhys;
-	if (pBuilder) if ((pPhys=pBuilder->GetPhysical()))
-		{
-			iBuildSpeed=pPhys->CanConstruct;
-			if (!iBuildSpeed)
-			{
-				// shouldn't even have gotten here. Looks like the Clonk lost the ability to build recently
-				return false;
-			}
-			if (iBuildSpeed<=1) iBuildSpeed=100;
-		}
-	DoCon(iLevel*iBuildSpeed*150/Def->Mass, false, fNeedMaterial);
+	int32_t iBuildSpeed=100*150;
+	if (pBuilder && pBuilder->GetAction())
+	{
+		iBuildSpeed=pBuilder->GetAction()->GetPropertyInt(P_Speed);
+	}
+	DoCon(iLevel*iBuildSpeed/Def->Mass, false, fNeedMaterial);
 
 	// TurnTo
 	if (Def->BuildTurnTo!=C4ID::None)
@@ -3586,14 +3580,10 @@ void C4Object::ContactAction()
 			// Scale: Try hangle, else stop if going upward
 			if (ComDirLike(Action.ComDir, COMD_Up))
 			{
-				if (pPhysical->CanHangle)
-				{
-					iDir=DIR_Left;
-					if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
-					ObjectActionHangle(this,iDir); return;
-				}
-				else
-					Action.ComDir=COMD_Stop;
+				iDir=DIR_Left;
+				if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
+				if (ObjectActionHangle(this,iDir)) return;
+				Action.ComDir=COMD_Stop;
 			}
 			break;
 		case DFA_FLIGHT:
@@ -3601,8 +3591,7 @@ void C4Object::ContactAction()
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
 				{ ObjectActionTumble(this,Action.Dir,Fix0,Fix0); break; }
-			if (pPhysical->CanHangle)
-				{ ObjectActionHangle(this,Action.Dir); return; }
+			if (ObjectActionHangle(this,Action.Dir)) return;
 			break;
 		case DFA_DIG:
 			// Dig: Stop
@@ -3622,15 +3611,13 @@ void C4Object::ContactAction()
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
 				{ ObjectActionTumble(this,DIR_Left,C4REAL100(+150),Fix0); break; }
 			// Else
-			else if (pPhysical->CanScale)
-				{ ObjectActionScale(this,DIR_Left); return; }
+			else if (ObjectActionScale(this,DIR_Left)) return;
 			break;
 		case DFA_WALK:
 			// Walk: Try scale, else stop
 			if (ComDirLike(Action.ComDir, COMD_Left))
 			{
-				if (pPhysical->CanScale)
-					{ ObjectActionScale(this,DIR_Left); return; }
+				if (ObjectActionScale(this,DIR_Left)) return;
 				// Else stop
 				Action.ComDir=COMD_Stop;
 			}
@@ -3644,16 +3631,14 @@ void C4Object::ContactAction()
 		case DFA_SWIM:
 			// Try scale
 			if (ComDirLike(Action.ComDir, COMD_Left))
-				if (pPhysical->CanScale)
-					{ ObjectActionScale(this,DIR_Left); return; }
+				if (ObjectActionScale(this,DIR_Left)) return;
 			// Try corner scale out
 			if (ObjectActionCornerScale(this)) return;
 			return;
 		case DFA_HANGLE:
 			// Hangle: Try scale, else stop
-			if (pPhysical->CanScale)
-				if (ObjectActionScale(this,DIR_Left))
-					return;
+			if (ObjectActionScale(this,DIR_Left))
+				return;
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:
@@ -3673,15 +3658,13 @@ void C4Object::ContactAction()
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
 				{ ObjectActionTumble(this,DIR_Right,C4REAL100(-150),Fix0); break; }
 			// Else Scale
-			else if (pPhysical->CanScale)
-				{ ObjectActionScale(this,DIR_Right); return; }
+			else if (ObjectActionScale(this,DIR_Right)) return;
 			break;
 		case DFA_WALK:
 			// Walk: Try scale, else stop
 			if (ComDirLike(Action.ComDir, COMD_Right))
 			{
-				if (pPhysical->CanScale)
-					{ ObjectActionScale(this,DIR_Right); return; }
+				if (ObjectActionScale(this,DIR_Right)) return;
 				Action.ComDir=COMD_Stop;
 			}
 			// Heading away from solid
@@ -3694,17 +3677,15 @@ void C4Object::ContactAction()
 		case DFA_SWIM:
 			// Try scale
 			if (ComDirLike(Action.ComDir, COMD_Right))
-				if (pPhysical->CanScale)
-					{ ObjectActionScale(this,DIR_Right); return; }
+				if (ObjectActionScale(this,DIR_Right)) return;
 			// Try corner scale out
 			if (ObjectActionCornerScale(this)) return;
 			// Skip to enable walk out
 			return;
 		case DFA_HANGLE:
 			// Hangle: Try scale, else stop
-			if (pPhysical->CanScale)
-				if (ObjectActionScale(this,DIR_Right))
-					return;
+			if (ObjectActionScale(this,DIR_Right))
+				return;
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:

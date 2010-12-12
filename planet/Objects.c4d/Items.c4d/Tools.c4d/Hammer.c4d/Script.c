@@ -16,13 +16,6 @@ public func ControlUse(object clonk, int ix, int iy)
 	// Stop clonk
 	clonk->SetComDir(COMD_Stop);
 
-	// Is the clonk able to build?
-	if (clonk && !clonk->GetPhysical("CanConstruct", PHYS_Current) && CheckCanUse(clonk)==true)
-	{
-		PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", clonk->GetName());
-		return 1;
-	}
-
 	if(clonk->GetAction()=="Build") //Stop building
 	{
 		clonk->Message("Cancelling building");
