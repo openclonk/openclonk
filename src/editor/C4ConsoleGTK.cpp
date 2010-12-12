@@ -1509,112 +1509,112 @@ void C4ConsoleGUI::State::OnDestroy(GtkWidget* window, gpointer data)
 
 void C4ConsoleGUI::State::OnScriptEntry(GtkWidget* entry, gpointer data)
 {
-	C4Console* console = static_cast<C4Console*>(data);
-	console->In(gtk_entry_get_text(GTK_ENTRY(console->state->txtScript)));
-	gtk_editable_select_region(GTK_EDITABLE(console->state->txtScript), 0, -1);
+	C4ConsoleGUI::State* state = static_cast<C4ConsoleGUI::State*>(data);
+	Console.In(gtk_entry_get_text(GTK_ENTRY(state->txtScript)));
+	gtk_editable_select_region(GTK_EDITABLE(state->txtScript), 0, -1);
 }
 
 void C4ConsoleGUI::State::OnPlay(GtkWidget* button, gpointer data)
 {
-	static_cast<C4Console*>(data)->DoPlay();
+	Console.DoPlay();
 
 	// Must update haltctrls even if DoPlay did noting to restore
 	// previous settings since GTK may have released this toggle button
-	static_cast<C4Console*>(data)->UpdateHaltCtrls(!!Game.HaltCount);
+	static_cast<C4ConsoleGUI::State*>(data)->GetOwner()->UpdateHaltCtrls(!!Game.HaltCount);
 }
 
 void C4ConsoleGUI::State::OnHalt(GtkWidget* button, gpointer data)
 {
-	static_cast<C4Console*>(data)->DoHalt();
+	Console.DoHalt();
 
 	// Must update haltctrls even if DoPlay did noting to restore
 	// previous settings since GTK may have released this toggle button
-	static_cast<C4Console*>(data)->UpdateHaltCtrls(!!Game.HaltCount);
+	static_cast<C4ConsoleGUI::State*>(data)->GetOwner()->UpdateHaltCtrls(!!Game.HaltCount);
 }
 
 void C4ConsoleGUI::State::OnModePlay(GtkWidget* button, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditCursor.SetMode(C4CNS_ModePlay);
+	Console.EditCursor.SetMode(C4CNS_ModePlay);
 }
 
 void C4ConsoleGUI::State::OnModeEdit(GtkWidget* button, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditCursor.SetMode(C4CNS_ModeEdit);
+	Console.EditCursor.SetMode(C4CNS_ModeEdit);
 }
 
 void C4ConsoleGUI::State::OnModeDraw(GtkWidget* button, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditCursor.SetMode(C4CNS_ModeDraw);
+	Console.EditCursor.SetMode(C4CNS_ModeDraw);
 }
 
 void C4ConsoleGUI::State::OnFileOpen(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileOpen();
+	Console.FileOpen();
 }
 
 void C4ConsoleGUI::State::OnFileOpenWPlrs(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileOpenWPlrs();
+	Console.FileOpenWPlrs();
 }
 
 void C4ConsoleGUI::State::OnFileSave(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileSave(false);
+	Console.FileSave(false);
 }
 
 void C4ConsoleGUI::State::OnFileSaveAs(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileSaveAs(false);
+	Console.FileSaveAs(false);
 }
 
 void C4ConsoleGUI::State::OnFileSaveGame(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileSave(true);
+	Console.FileSave(true);
 }
 
 void C4ConsoleGUI::State::OnFileSaveGameAs(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileSaveAs(true);
+	Console.FileSaveAs(true);
 }
 
 void C4ConsoleGUI::State::OnFileRecord(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileRecord();
+	Console.FileRecord();
 }
 
 void C4ConsoleGUI::State::OnFileClose(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileClose();
+	Console.FileClose();
 }
 
 void C4ConsoleGUI::State::OnFileQuit(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->FileQuit();
+	Console.FileQuit();
 }
 
 void C4ConsoleGUI::State::OnCompObjects(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditObjects();
+	Console.EditObjects();
 }
 
 void C4ConsoleGUI::State::OnCompScript(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditScript();
+	Console.EditScript();
 }
 
 void C4ConsoleGUI::State::OnCompTitle(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditTitle();
+	Console.EditTitle();
 }
 
 void C4ConsoleGUI::State::OnCompInfo(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->EditInfo();
+	Console.EditInfo();
 }
 
 void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->PlayerJoin();
+	Console.PlayerJoin();
 }
 
 void C4ConsoleGUI::State::OnPlrQuit(GtkWidget* item, gpointer data)
@@ -1624,7 +1624,7 @@ void C4ConsoleGUI::State::OnPlrQuit(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnViewNew(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->ViewportNew();
+	Console.ViewportNew();
 }
 
 void C4ConsoleGUI::State::OnViewNewPlr(GtkWidget* item, gpointer data)
@@ -1634,7 +1634,7 @@ void C4ConsoleGUI::State::OnViewNewPlr(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnHelpAbout(GtkWidget* item, gpointer data)
 {
-	static_cast<C4Console*>(data)->HelpAbout();
+	Console.HelpAbout();
 }
 
 void C4ConsoleGUI::State::OnNetClient(GtkWidget* item, gpointer data)
