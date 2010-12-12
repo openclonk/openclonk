@@ -125,8 +125,8 @@ public:
 	{
 		if (query_time < 0) return true;
 		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
-		g_main_context_dispatch(context);
 		query_time = -1;
+		g_main_context_dispatch(context);
 		return true;
 	}
 };
