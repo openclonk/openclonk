@@ -63,6 +63,10 @@ public:
 	int max_priority;
 
 private:
+	// Obtain the timeout and FDs from the glib mainloop. We then pass them
+	// to the StdScheduler in GetFDs() and GetNextTick() so that it can
+	// poll the file descriptors, along with the file descriptors from
+	// other sources that it might have.
 	void query(int Now)
 	{
 		// If Execute() has not yet been called, then finish the current iteration first.
@@ -87,6 +91,8 @@ public:
 	// Iterate the Glib main loop until all pending events have been
 	// processed. Don't use g_main_context_pending() directly as the
 	// CGLibProc might have initiated a loop iteration already.
+	// This is mainly used to update the log in the editor window while
+	// a scenario is being loaded.
 	void IteratePendingEvents()
 	{
 		// TODO: I think we can also iterate the context manually,
@@ -125,6 +131,13 @@ public:
 	{
 		if (query_time < 0) return true;
 		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
+
+		// g_main_context_dispatch makes callbacks from the main loop.
+		// We allow the callback to iterate the mainloop via
+		// IteratePendingEvents so reset query_time before to not call
+		// g_main_context_check() twice for the current iteration.
+		// This would otherwise lead to a freeze since
+		// g_main_context_check() seems to block when called twice.
 		query_time = -1;
 		g_main_context_dispatch(context);
 		return true;
