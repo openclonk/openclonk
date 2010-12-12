@@ -984,7 +984,7 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 void C4ToolsDlg::UpdateToolCtrls()
 {
 	HWND hDialog = state->hDialog;
-	int32_t Tool = Tool;
+	int32_t Tool = this->Tool;
 	SendDlgItemMessage(hDialog,IDC_BUTTONBRUSH,BM_SETSTATE,(Tool==C4TLS_Brush),0);
 	UpdateWindow(GetDlgItem(hDialog,IDC_BUTTONBRUSH));
 	SendDlgItemMessage(hDialog,IDC_BUTTONLINE,BM_SETSTATE,(Tool==C4TLS_Line),0);
