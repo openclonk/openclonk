@@ -42,8 +42,6 @@ public:
 	int32_t Breath;
 	int32_t Jump;
 	int32_t Throw;
-	int32_t CorrosionResist;
-	int32_t BreatheWater;
 public:
 	void Default();
 	void PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysicals=false, class C4Def *pTrainDef=NULL);

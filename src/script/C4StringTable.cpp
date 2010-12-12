@@ -131,6 +131,8 @@ C4StringTable::C4StringTable()
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
 	P[P_MeshTransformation] = "MeshTransformation";
+	P[P_BreatheWater] = "BreatheWater";
+	P[P_CorrosionResist] = "CorrosionResist";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

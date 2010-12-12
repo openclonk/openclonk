@@ -219,6 +219,8 @@ enum C4PropertyName
 	P_MouseDragImage,
 	P_Animation,
 	P_Action,
+	P_BreatheWater,
+	P_CorrosionResist,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

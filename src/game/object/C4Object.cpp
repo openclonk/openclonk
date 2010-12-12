@@ -1028,7 +1028,7 @@ bool C4Object::ExecLife()
 			// Forcefields are breathable.
 			if (GBackMat(GetX(), GetY()+Shape.GetY()/2)==MVehic)
 				{ Breathe=true; }
-			else if (GetPhysical()->BreatheWater)
+			else if (GetPropertyInt(P_BreatheWater))
 				{ if (GBackMat(GetX(), GetY())==MWater) Breathe=true; }
 			else
 				{ if (!GBackSemiSolid(GetX(), GetY()+Shape.GetY()/2)) Breathe=true; }
@@ -1055,7 +1055,7 @@ bool C4Object::ExecLife()
 		if (Alive)
 			if (InMat!=MNone)
 				if (::MaterialMap.Map[InMat].Corrosive)
-					if (!GetPhysical()->CorrosionResist)
+					if (!GetPropertyInt(P_CorrosionResist))
 						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
 
 	// InMat incineration
