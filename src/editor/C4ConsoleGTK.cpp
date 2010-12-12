@@ -336,7 +336,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
 	state->cursorDefault = gdk_cursor_new(GDK_ARROW);
 
 	// Calls InitGUI
-	CStdWindow* retval = C4ConsoleBase::Init(pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();

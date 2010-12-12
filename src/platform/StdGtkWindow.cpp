@@ -40,7 +40,7 @@ CStdGtkWindow::~CStdGtkWindow()
 	Clear();
 }
 
-CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
