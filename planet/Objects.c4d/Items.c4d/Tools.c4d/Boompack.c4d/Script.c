@@ -117,15 +117,15 @@ private func JumpOff(object clonk, int speed)
 	if(!(clonk->GetProcedure() == "ATTACH")) return;
 	if(!(clonk->GetActionTarget() == this)) return;
 	
-	var xdir = 20;
-	var ydir = clonk->GetPhysical("Jump")/1000;
+	var xdir = 200;
+	var ydir = clonk.JumpSpeed;
 	// which direction does the clonk jump?
 	if(GetRDir() == 0) xdir = 0;
 	if(GetRDir() < 0) xdir = -xdir;
 	
 	clonk->SetAction("Tumble");
-	clonk->SetXDir(GetXDir()/2+speed*xdir/100);
-	clonk->SetYDir(GetYDir()/2-speed*ydir/100);
+	clonk->SetXDir(GetXDir(50)+speed*xdir/100,100);
+	clonk->SetYDir(GetYDir(50)-speed*ydir/100,100);
 }
 
 protected func Hit()

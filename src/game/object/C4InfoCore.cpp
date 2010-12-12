@@ -168,7 +168,6 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 
 struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; } C4PhysInfoNameMap[] =
 {
-	{ "Jump",            &C4PhysicalInfo::Jump            },
 	{ "Throw",           &C4PhysicalInfo::Throw           },
 	{ NULL, NULL }
 };

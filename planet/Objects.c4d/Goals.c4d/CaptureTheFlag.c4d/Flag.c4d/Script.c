@@ -77,6 +77,7 @@ protected func FxFlagReturnDelayTimer() { return -1; }
 
 protected func FxFlagCarriedStart(object target, int num, int temp)
 {
+	ReducePhysicals(target, num);
 	if (temp == 0)
 	{
 		EffectVar(1, target, num)=target->GetX();
@@ -84,7 +85,6 @@ protected func FxFlagCarriedStart(object target, int num, int temp)
 		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
 		EffectVar(0, target, num) = target->AttachMesh(this, "pos_back1", "main", trans);
 		this.Visibility = VIS_None;
-		ReducePhysicals(target);
 	}
 	return 1;
 }
@@ -121,6 +121,8 @@ protected func FxFlagCarriedTimer(object target, int num)
 
 protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 {
+	if (target)
+		ResetPhysicals(target, num);
 	if (temp)
 		return 1;
 	this.Visibility = VIS_All;
@@ -132,7 +134,6 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 	if (target)
 	{	
 		target->DetachMesh(EffectVar(0, target, num));
-		ResetPhysicals(target);
 	}
 	// Prevent beaming flag for 3 seconds.
 	AddEffect("FlagReturnDelay", this, 100, 36 * 3, this);
@@ -140,9 +141,10 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 }
 
 // Reduces physicals by 80%.
-private func ReducePhysicals(object clonk)
+private func ReducePhysicals(object clonk, int num)
 {
-	clonk->SetPhysical("Jump", (8 * clonk->GetPhysical("Jump", PHYS_Current)) / 10, PHYS_StackTemporary);
+	EffectVar(3, clonk, num) = clonk.JumpSpeed;
+	clonk.JumpSpeed = clonk.JumpSpeed * 8 / 10;
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PushActionSpeed(phys[i], 8 * clonk.ActMap[phys[i]].Speed / 10);
@@ -150,9 +152,9 @@ private func ReducePhysicals(object clonk)
 }
 
 // Resets physicals.
-private func ResetPhysicals(object clonk)
+private func ResetPhysicals(object clonk, int num)
 {
-	clonk->ResetPhysical("Jump");
+	clonk.JumpSpeed = EffectVar(3, clonk, num);
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PopActionSpeed(phys[i]);

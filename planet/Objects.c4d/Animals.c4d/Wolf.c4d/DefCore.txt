@@ -31,6 +31,5 @@ Pathfinder=1
 ClosedContainer=2
 
 [Physical]
-Jump=35000
 Throw=50000
 

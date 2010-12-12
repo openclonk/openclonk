@@ -1378,26 +1378,24 @@ public func ControlThrow(object target, int x, int y)
 public func ControlJump()
 {
 	var ydir = 0;
-	var xdir = 0;
-	var max_xdir = 20;
 	
 	if (GetProcedure() == "WALK")
 	{
-		ydir = GetPhysical("Jump")/1000;
+		ydir = this.JumpSpeed;
 	}
 	else if (InLiquid())
 	{
 		if (!GBackSemiSolid(0,-5))
-			ydir = BoundBy(GetPhysical("Jump")/1667,24,38);
+			ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
 	}		
 	
 	if (ydir && !Stuck())
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
-		SetXDir(BoundBy((GetXDir()+(GetDir()*2-1)*xdir)*GetCon()/100,-max_xdir,max_xdir));
-		SetYDir(-ydir*GetCon()/100);
+		SetYDir(-ydir * GetCon(), 100 * 100);
 		return true;
 	}
 	return false;
 }
+
