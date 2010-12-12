@@ -73,6 +73,7 @@ public:
 	void SetProperty(C4PropertyName k, const C4Value & to)
 	{ SetPropertyByS(&Strings.P[k], to); }
 	void ResetProperty(C4String * k);
+	bool HasProperty(C4String * k) { return Properties.Has(k); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
 	static C4PropList * NewAnon(C4PropList * prototype = 0);

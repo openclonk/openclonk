@@ -1011,6 +1011,21 @@ static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 	return C4VTrue;
 }
 
+static C4Value FnResetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
+{
+	C4PropList * pObj = pObj_C4V->_getPropList();
+	if (!pObj) pObj=cthr->Obj;
+	if (!pObj) pObj=cthr->Def;
+	if (!pObj) return C4VFalse;
+	C4String * key = key_C4V->_getStr();
+	if (!key) return C4VFalse;
+	if (!pObj->HasProperty(key)) return C4VFalse;
+	if (pObj->IsFrozen())
+		throw new C4AulExecError(cthr->Obj, "proplist write: proplist is readonly");
+	pObj->ResetProperty(key);
+	return C4VTrue;
+}
+
 static C4String *FnGetName(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
@@ -6675,6 +6690,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 
 	{ "SetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
 	{ "GetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
+	{ "ResetProperty",        1  ,C4V_Any      ,{ C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnResetProperty_C4V ,         0 },
 	{ "PlayerObjectCommand",  1  ,C4V_Bool     ,{ C4V_Int     ,C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any    ,C4V_Int    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnPlayerObjectCommand },
 	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
 	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
