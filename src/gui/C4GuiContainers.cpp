@@ -78,6 +78,8 @@ namespace C4GUI
 				pFirst->pParent = NULL;
 				if ((pFirst = pANext))
 					pFirst->pPrev = NULL;
+				else
+					pLast = NULL;
 			}
 			else
 				delete pFirst;
