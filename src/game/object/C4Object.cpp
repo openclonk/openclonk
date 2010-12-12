@@ -3336,7 +3336,9 @@ C4PropList* C4Object::GetAction()
 
 bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
 {
-	C4PropList * LastAction = GetAction();
+	C4Value vLastAction;
+	GetProperty(P_Action, &vLastAction);
+	C4PropList * LastAction = vLastAction.getPropList();
 	int32_t iLastPhase=Action.Phase;
 	C4Object *pLastTarget = Action.Target;
 	C4Object *pLastTarget2 = Action.Target2;
