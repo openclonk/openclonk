@@ -775,6 +775,8 @@ void C4ViewportList::Execute(bool DrawBackground)
 	{
 		if (cvp->GetWindow())
 			cvp->GetWindow()->RequestUpdate();
+		else
+			cvp->Execute();
 	}
 }
 
