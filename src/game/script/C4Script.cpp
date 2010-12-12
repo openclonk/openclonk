@@ -594,15 +594,6 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 	throw new C4AulExecError(cthr->Obj, FormatString("SetPhysical: invalid physical mode %ld", iMode).getData());
 }
 
-static bool FnTrainPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long iTrainBy, long iMaxTrain)
-{
-	// Get physical offset
-	C4PhysicalInfo::Offset off;
-	if (!C4PhysicalInfo::GetOffsetByName(FnStringPar(szPhysical), &off)) return false;
-	// train it
-	return cthr->Obj->TrainPhysical(off, iTrainBy, iMaxTrain);
-}
-
 static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 {
 	const char *szPhysical = FnStringPar(sPhysical);
@@ -6139,7 +6130,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoHomebaseProduction", FnDoHomebaseProduction);
 	AddFunc(pEngine, "GainMissionAccess", FnGainMissionAccess);
 	AddFunc(pEngine, "SetPhysical", FnSetPhysical);
-	AddFunc(pEngine, "TrainPhysical", FnTrainPhysical);
 	AddFunc(pEngine, "GetPhysical", FnGetPhysical);
 	AddFunc(pEngine, "ResetPhysical", FnResetPhysical);
 	AddFunc(pEngine, "SetTransferZone", FnSetTransferZone);

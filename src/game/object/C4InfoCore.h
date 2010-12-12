@@ -71,12 +71,6 @@ public:
 
 	// comparison
 	bool operator ==(const C4PhysicalInfo &cmp) const;
-
-	// physical training
-protected:
-	static void TrainValue(int32_t *piVal, int32_t iTrainBy, int32_t iMaxTrain);
-public:
-	void Train(Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 };
 
 class C4PhysicalChange
@@ -115,9 +109,6 @@ public:
 	bool ResetPhysical(C4PhysicalInfo::Offset mpiOffset);  // undo given physical change
 
 	bool HasChanges(C4PhysicalInfo *pRefPhysical); // return true if changes list is not empty
-
-	// also trains any change buffered physicals
-	void Train(Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 
 	C4PhysicalInfo &operator =(const C4PhysicalInfo &rSet)
 	{ Clear(); static_cast<C4PhysicalInfo &>(*this) = rSet; return *this; }

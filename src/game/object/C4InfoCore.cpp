@@ -237,20 +237,6 @@ void C4PhysicalInfo::CompileFunc(StdCompiler *pComp)
 		pComp->Value(mkNamingAdapt((this->*(entry->off)), entry->szName, 0));
 }
 
-void C4PhysicalInfo::TrainValue(int32_t *piVal, int32_t iTrainBy, int32_t iMaxTrain)
-{
-	// only do training if value was nonzero before (e.g., Magic for revaluated Clonks)
-	if (*piVal)
-		// do train value: Do not increase above maximum, but never decrease either
-		*piVal = Max(Min(*piVal + iTrainBy, iMaxTrain), *piVal);
-}
-
-void C4PhysicalInfo::Train(Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain)
-{
-	// train own value
-	TrainValue(&(this->*mpiOffset), iTrainBy, iMaxTrain);
-}
-
 bool C4PhysicalInfo::operator ==(const C4PhysicalInfo &cmp) const
 {
 	// all fields must be equal
@@ -264,16 +250,6 @@ void C4TempPhysicalInfo::CompileFunc(StdCompiler *pComp)
 {
 	C4PhysicalInfo::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt( mkSTLContainerAdapt(Changes), "Changes", std::vector<C4PhysicalChange>()));
-}
-
-void C4TempPhysicalInfo::Train(Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain)
-{
-	// train own value
-	C4PhysicalInfo::Train(mpiOffset, iTrainBy, iMaxTrain);
-	// train all temp values
-	for (std::vector<C4PhysicalChange>::iterator i = Changes.begin(); i != Changes.end(); ++i)
-		if (i->mpiOffset == mpiOffset)
-			TrainValue(&(i->PrevVal), iTrainBy, iMaxTrain);
 }
 
 bool C4TempPhysicalInfo::HasChanges(C4PhysicalInfo *pRefPhysical)

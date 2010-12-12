@@ -1065,8 +1065,6 @@ bool C4Object::ExecLife()
 				// Reduce breath, then energy, bubble
 				if (Breath > 0) DoBreath(-2);
 				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
-				// Physical training
-				TrainPhysical(&C4PhysicalInfo::Breath, 2, C4MaxPhysical);
 			}
 			// Supply
 			else
@@ -2133,36 +2131,6 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 	if (PhysicalTemporary && !fPermanent) return &TemporaryPhysical;
 	// Definition physical
 	return &(Def->Physical);
-}
-
-bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain)
-{
-	int i=0;
-	int32_t iPhysValue = 0;
-
-	// Train temp
-	if (PhysicalTemporary)
-	{
-		TemporaryPhysical.Train(mpiOffset, iTrainBy, iMaxTrain);
-		iPhysValue = TemporaryPhysical.*mpiOffset;
-		++i;
-	}
-
-	// call to object
-	if (!!i)
-	{
-		// a bit adventurous to get all the information together...
-		const char* physname = C4PhysicalInfo::GetNameByOffset(mpiOffset);
-		long iChange = BoundBy<long>(iTrainBy, 0, iMaxTrain - iPhysValue);
-		if (iChange > 0)
-		{
-			C4AulParSet wabbel = C4AulParSet(C4VString(physname), C4VInt(iChange));
-			Call(PSF_PhysicalChange,&wabbel);
-		}
-	}
-
-	// return whether anything was trained
-	return !!i;
 }
 
 bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
@@ -4047,10 +4015,6 @@ void C4Object::ExecAction()
 	{
 		lLimit=ValByPhysical(200, pPhysical->Scale);
 
-		// Physical training
-		if (!::Game.iTick5)
-			if (Abs(ydir)==lLimit)
-				TrainPhysical(&C4PhysicalInfo::Scale, 1, C4MaxPhysical);
 		int ComDir = Action.ComDir;
 		if (Action.Dir == DIR_Left && ComDir == COMD_Left)
 			ComDir = COMD_Up;
@@ -4081,11 +4045,6 @@ void C4Object::ExecAction()
 	case DFA_HANGLE:
 
 		lLimit=ValByPhysical(160, pPhysical->Hangle);
-
-		// Physical training
-		if (!::Game.iTick5)
-			if (Abs(xdir)==lLimit)
-				TrainPhysical(&C4PhysicalInfo::Hangle, 1, C4MaxPhysical);
 
 		switch (Action.ComDir)
 		{
@@ -4171,11 +4130,6 @@ void C4Object::ExecAction()
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_SWIM:
 		lLimit=ValByPhysical(160, pPhysical->Swim);
-
-		// Physical training
-		if (!::Game.iTick10)
-			if (Abs(xdir)==lLimit)
-				TrainPhysical(&C4PhysicalInfo::Swim, 1, C4MaxPhysical);
 
 		// ComDir changes xdir/ydir
 		switch (Action.ComDir)

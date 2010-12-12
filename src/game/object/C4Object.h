@@ -339,7 +339,6 @@ public:
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();
 	C4PhysicalInfo *GetPhysical(bool fPermanent=false);
-	bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
