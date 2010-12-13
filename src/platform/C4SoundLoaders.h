@@ -16,11 +16,8 @@
  */
 
 #ifdef USE_OPEN_AL
-extern "C"
-{
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
-}
 #endif
 
 #include <vector>

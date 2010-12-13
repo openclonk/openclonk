@@ -28,14 +28,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 #endif
 
-#ifdef USE_OPEN_AL
-extern "C"
-{
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
-}
-#endif
-
 using namespace C4SoundLoaders;
 
 SoundLoader* SoundLoader::first_loader(NULL);
