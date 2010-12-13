@@ -2074,6 +2074,7 @@ local Name = "Clonk";
 local MaxEnergy = 50000;
 local MaxBreath = 100000;
 local JumpSpeed = 400;
+local ThrowSpeed = 294;
 
 func Definition(def) {
 	// Set perspective

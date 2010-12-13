@@ -38,8 +38,6 @@ public:
 	typedef int32_t C4PhysicalInfo::* Offset;
 
 public:
-	int32_t Throw;
-public:
 	void Default();
 	void PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysicals=false, class C4Def *pTrainDef=NULL);
 	void CompileFunc(StdCompiler *pComp);

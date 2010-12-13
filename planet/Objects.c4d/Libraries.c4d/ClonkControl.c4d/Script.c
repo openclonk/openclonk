@@ -1345,22 +1345,20 @@ private func DoThrow(object obj, int angle)
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 
-	var speed = GetPhysical("Throw");
-
-	iXDir = speed * Sin(angle,1000) / 17000;
-	iYDir = speed * Cos(angle,-1000) / 17000;
+	iXDir = Sin(angle,this.ThrowSpeed);
+	iYDir = Cos(angle,-this.ThrowSpeed);
 	// throw boost (throws stronger upwards than downwards)
 	if (iYDir < 0) iYDir = iYDir * 13/10;
 	if (iYDir > 0) iYDir = iYDir * 8/10;
 	
 	// add own velocity
-	iXDir += GetXDir(1000)/2;
-	iYDir += GetYDir(1000)/2;
+	iXDir += GetXDir(100)/2;
+	iYDir += GetYDir(100)/2;
 
 	// throw
 	obj->Exit(iX, iY, iR, 0, 0, iRDir);
-	obj->SetXDir(iXDir,1000);
-	obj->SetYDir(iYDir,1000);
+	obj->SetXDir(iXDir,100);
+	obj->SetYDir(iYDir,100);
 	
 	return true;
 }

@@ -137,7 +137,7 @@ bool ObjectActionThrow(C4Object *cObj, C4Object *pThing)
 	// Nothing to throw
 	if (!pThing) return false;
 	// Force and direction
-	C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	C4Real pthrow=C4REAL100(cObj->GetPropertyInt(P_ThrowSpeed));
 	int32_t iDir=1; if (cObj->Action.Dir==DIR_Left) iDir=-1;
 	// Set action
 	if (!cObj->SetActionByName("Throw")) return false;
@@ -650,7 +650,7 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	// When dropping diagonally, drop from edge of shape
 	// When doing a diagonal forward drop during flight, exit a bit closer to the Clonk to allow planned tumbling
 	// Except when hangling, so you can mine effectively form the ceiling, and when swimming because you cannot tumble then
-	C4Real pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	C4Real pthrow=C4REAL100(cObj->GetPropertyInt(P_ThrowSpeed));
 	int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = -1;

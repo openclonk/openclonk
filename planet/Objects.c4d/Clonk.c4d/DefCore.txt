@@ -26,6 +26,4 @@ NoBurnDecay=1
 IncompleteActivity=1
 Oversize=1
 
-[Physical]
-Throw=50000
 

@@ -30,6 +30,4 @@ VehicleControl=2
 Pathfinder=1
 ClosedContainer=2
 
-[Physical]
-Throw=50000
 

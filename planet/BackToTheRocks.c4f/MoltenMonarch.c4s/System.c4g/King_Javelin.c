@@ -29,7 +29,7 @@ public func DoThrow(object clonk, int angle)
 	var div = 60; // 40% is converted to the direction of the throwing angle.
 	var xdir = clonk->GetXDir(1000);
 	var ydir = clonk->GetYDir(1000);
-	var speed = clonk->GetPhysical("Throw") / 8 + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
+	var speed = clonk.ThrowSpeed * 21 + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
 	var jav_x = div * xdir / 100 + Sin(angle, speed);
 	var jav_y = div * ydir / 100 - Cos(angle, speed);
 		

@@ -12,7 +12,7 @@ public func AI_IsLoaded() { return true; }
 public func AI_CommandString() { return "AI_JavelinAttack"; }
 public func AI_CanHitTarget(object target) 
 {
-	var v = Contained()->GetPhysical("Throw") / 800;
+	var v = Contained().ThrowSpeed * 21 / 100;
 	var x = target->GetX() - Contained()->GetX();
 	var y = target->GetY() - Contained()->GetY();
 	
@@ -65,7 +65,7 @@ protected func FxAI_JavelinAimStart(object clonk, int num, int temporary, object
 	EffectVar(0, clonk, num) = target;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
-	var angle = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, lob_shot);
+	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);
 	
 	if (angle == nil)
 	{
@@ -88,7 +88,7 @@ protected func FxAI_JavelinAimTimer(object clonk, int num, int time)
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
-	var angle = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, lob_shot);
+	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);
 	if (angle == nil)
 	{
 		ControlUseCancel(clonk);
@@ -103,7 +103,7 @@ protected func FxAI_JavelinAimStop(object clonk, int num, int reason, bool tempo
 	var target = EffectVar(0, clonk, num);
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
-	var angle = AI_AimPos(dx, dy, clonk->GetPhysical("Throw") / 800, lob_shot);
+	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);
 	if (angle == nil)
 	{
 		ControlUseCancel(clonk);
