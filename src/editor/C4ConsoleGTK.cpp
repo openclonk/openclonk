@@ -386,34 +386,32 @@ void C4ConsoleGUI::State::InitGUI()
 	GtkWidget* image_mode_edit = CreateImageFromInlinedPixbuf(cursor_pixbuf_data);
 	GtkWidget* image_mode_draw = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
 
-	btnPlay = gtk_toggle_button_new();
-	btnHalt = gtk_toggle_button_new();
-	btnModePlay = gtk_toggle_button_new();
-	btnModeEdit = gtk_toggle_button_new();
-	btnModeDraw = gtk_toggle_button_new();
+	btnPlay = GTK_WIDGET(gtk_toggle_tool_button_new());
+	btnHalt = GTK_WIDGET(gtk_toggle_tool_button_new());
+	btnModePlay = GTK_WIDGET(gtk_toggle_tool_button_new());
+	btnModeEdit = GTK_WIDGET(gtk_toggle_tool_button_new());
+	btnModeDraw = GTK_WIDGET(gtk_toggle_tool_button_new());
 
-	gtk_container_add(GTK_CONTAINER(btnPlay), image_play);
-	gtk_container_add(GTK_CONTAINER(btnHalt), image_pause);
-	gtk_container_add(GTK_CONTAINER(btnModePlay), image_mode_play);
-	gtk_container_add(GTK_CONTAINER(btnModeEdit), image_mode_edit);
-	gtk_container_add(GTK_CONTAINER(btnModeDraw), image_mode_draw);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnPlay), image_play);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnHalt), image_pause);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModePlay), image_mode_play);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeEdit), image_mode_edit);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(btnModeDraw), image_mode_draw);
 
-	GtkWidget* top_hbox = gtk_hbox_new(false, 18);
-	GtkWidget* play_hbox = gtk_hbox_new(false, 6);
-	GtkWidget* mode_hbox = gtk_hbox_new(false, 6);
+	
+	GtkWidget* top_hbox = gtk_toolbar_new();
 
-	gtk_box_pack_start(GTK_BOX(play_hbox), btnPlay, false, true, 0);
-	gtk_box_pack_start(GTK_BOX(play_hbox), btnHalt, false, true, 0);
-	gtk_box_pack_start(GTK_BOX(mode_hbox), btnModePlay, false, true, 0);
-	gtk_box_pack_start(GTK_BOX(mode_hbox), btnModeEdit, false, true, 0);
-	gtk_box_pack_start(GTK_BOX(mode_hbox), btnModeDraw, false, true, 0);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnPlay), -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnHalt), -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), gtk_separator_tool_item_new(), -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModePlay), -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeEdit), -1);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeDraw), -1);
 
 	lblCursor = gtk_label_new("");
-	gtk_misc_set_alignment(GTK_MISC(lblCursor), 0.0, 0.5);
-
-	gtk_box_pack_start(GTK_BOX(top_hbox), lblCursor, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(top_hbox), play_hbox, false, true, 0);
-	gtk_box_pack_start(GTK_BOX(top_hbox), mode_hbox, false, true, 0);
+	GtkToolItem * itmCursor = gtk_tool_item_new();
+	gtk_container_add(GTK_CONTAINER(itmCursor), lblCursor);
+	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itmCursor, -1);
 
 	// ------------ Statusbar ---------------------
 	GtkWidget* statusbar = gtk_hbox_new(false, 6);
@@ -442,10 +440,13 @@ void C4ConsoleGUI::State::InitGUI()
 	// ------------ Log view and script entry ---------------------
 	GtkWidget* scroll = gtk_scrolled_window_new(NULL, NULL);
 
+//	int scrollbar_spacing = 0;
+//	gtk_widget_style_get (widget, "scrollbar-spacing", &scrollBarSpacing, NULL);
+//	g_object_set (scroll, "scrollbar-spacing", 0, NULL);
+
 	txtLog = gtk_text_view_new();
 	txtScript = gtk_entry_new();
 
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(txtLog), false);
 
@@ -534,21 +535,17 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuHelp), helpAbout);
 
 	// ------------ Window ---------------------
-	GtkWidget* topbox = gtk_vbox_new(false, 0);
-	GtkWidget* midbox = gtk_vbox_new(false, 6);
-	gtk_container_set_border_width(GTK_CONTAINER(midbox), 6);
+	GtkWidget* box = gtk_vbox_new(false, 0);
 
-	gtk_box_pack_start(GTK_BOX(midbox), scroll, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(midbox), txtScript, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(midbox), top_hbox, false, true, 0);
-
-	gtk_box_pack_start(GTK_BOX(topbox), menuBar, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(topbox), midbox, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(topbox), status_frame, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(box), menuBar, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(box), top_hbox, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(box), scroll, true, true, 0);
+	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
 
 	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
 
-	gtk_container_add(GTK_CONTAINER(GetOwner()->window), topbox);
+	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
 
 	// ------------ Signals ---------------------
 	handlerDestroy = g_signal_connect(G_OBJECT(GetOwner()->window), "destroy", G_CALLBACK(OnDestroy), this);
@@ -701,9 +698,9 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	g_signal_handler_block(state->btnModeEdit, state->handlerModeEdit);
 	g_signal_handler_block(state->btnModeDraw, state->handlerModeDraw);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(state->btnModePlay), iMode == C4CNS_ModePlay);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(state->btnModeEdit), iMode == C4CNS_ModeEdit);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(state->btnModeDraw), iMode == C4CNS_ModeDraw);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(state->btnModePlay), iMode == C4CNS_ModePlay);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(state->btnModeEdit), iMode == C4CNS_ModeEdit);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(state->btnModeDraw), iMode == C4CNS_ModeDraw);
 
 	g_signal_handler_unblock(state->btnModePlay, state->handlerModePlay);
 	g_signal_handler_unblock(state->btnModeEdit, state->handlerModeEdit);
@@ -963,9 +960,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 	g_signal_handler_block(state->btnHalt, state->handlerHalt);
 
 	//gtk_widget_set_sensitive(btnPlay, fHalt);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(state->btnPlay), !fHalt);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(state->btnPlay), !fHalt);
 	//gtk_widget_set_sensitive(btnHalt, !fHalt);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(state->btnHalt), fHalt);
+	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(state->btnHalt), fHalt);
 
 	g_signal_handler_unblock(state->btnPlay, state->handlerPlay);
 	g_signal_handler_unblock(state->btnHalt, state->handlerHalt);
