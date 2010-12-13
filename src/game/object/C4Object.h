@@ -186,9 +186,6 @@ public:
 	C4Effect *pEffects; // linked list of effects
 	C4ParticleList FrontParticles, BackParticles; // lists of object local particles
 
-	bool PhysicalTemporary; // physical temporary counter
-	C4TempPhysicalInfo TemporaryPhysical;
-
 	uint32_t ColorMod; // color by which the object-drawing is modulated
 	uint32_t BlitMode; // extra blitting flags (like additive, ClrMod2, etc.)
 	bool CrewDisabled;  // CrewMember-functionality currently disabled
@@ -335,7 +332,6 @@ public:
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();
-	C4PhysicalInfo *GetPhysical(bool fPermanent=false);
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);

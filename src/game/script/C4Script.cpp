@@ -510,129 +510,6 @@ static C4Void FnDoDamage(C4AulObjectContext *cthr, long iChange, Nillable<long> 
 	return C4VNull;
 }
 
-enum PhysicalMode
-{
-	PHYS_Current = 0,
-	PHYS_Temporary = 2,
-	PHYS_StackTemporary = 3
-};
-
-static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long iValue, long iMode)
-{
-	// Get physical offset
-	C4PhysicalInfo::Offset off;
-	if (!C4PhysicalInfo::GetOffsetByName(FnStringPar(szPhysical), &off)) return false;
-	long iChange = 0;
-	// Set by mode
-	switch (static_cast<PhysicalMode>(iMode)) // Cast so compiler may warn when new modes are added but not handled
-	{
-		// Currently active physical
-	case PHYS_Current:
-		// Info objects or temporary mode only
-		if (!cthr->Obj->PhysicalTemporary) if (!cthr->Obj->Info) return false;
-		// Set physical
-		iChange = iValue - cthr->Obj->GetPhysical()->*off;
-		cthr->Obj->GetPhysical()->*off = iValue;
-		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange)));
-		return true;
-		// Temporary physical
-	case PHYS_Temporary:
-	case PHYS_StackTemporary:
-		// Automatically switch to temporary mode
-		if (!cthr->Obj->PhysicalTemporary)
-		{
-			cthr->Obj->TemporaryPhysical = *(cthr->Obj->GetPhysical());
-			cthr->Obj->PhysicalTemporary = true;
-		}
-		// if old value is to be remembered, register the change
-		if (iMode == PHYS_StackTemporary)
-			cthr->Obj->TemporaryPhysical.RegisterChange(off);
-		// Set physical
-		iChange = iValue - cthr->Obj->TemporaryPhysical.*off;
-		cthr->Obj->TemporaryPhysical.*off = iValue;
-		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange)));
-		return true;
-	}
-	// Invalid mode
-	throw new C4AulExecError(cthr->Obj, FormatString("SetPhysical: invalid physical mode %ld", iMode).getData());
-}
-
-static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
-{
-	const char *szPhysical = FnStringPar(sPhysical);
-	bool called = false;
-
-	// Reset to permanent physical
-	if (!cthr->Obj->PhysicalTemporary) return false;
-
-	// reset specified physical only?
-	if (szPhysical && *szPhysical)
-	{
-		C4PhysicalInfo::Offset off;
-		if (!C4PhysicalInfo::GetOffsetByName(szPhysical, &off)) return false;
-		if (!cthr->Obj->TemporaryPhysical.ResetPhysical(off)) return false;
-
-		// call to object
-		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VNull));
-		called = true;
-
-		// if other physical changes remain, do not reset complete physicals
-		if (cthr->Obj->TemporaryPhysical.HasChanges(cthr->Obj->GetPhysical(true))) return true;
-	}
-
-	// actual reset of temp physicals
-	cthr->Obj->PhysicalTemporary = false;
-	cthr->Obj->TemporaryPhysical.Default();
-	// call to object
-	if (!called) cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull));
-
-	return true;
-}
-
-static Nillable<long> FnGetPhysical(C4AulContext *cthr, C4String *szPhysical, long iMode)
-{
-	// Get physical offset
-	C4PhysicalInfo::Offset off;
-	if (!C4PhysicalInfo::GetOffsetByName(FnStringPar(szPhysical), &off)) return C4VNull;
-	// no object context?
-	if (!cthr->Obj)
-	{
-		// def given?
-		if (cthr->Def)
-		{
-			// get def
-			// return physical value
-			return cthr->Def->Physical.*off;
-		}
-		return C4VNull;
-	}
-
-	assert(cthr->Obj);
-	// Get by mode
-	switch (static_cast<PhysicalMode>(iMode))
-	{
-		// Currently active physical
-	case PHYS_Current:
-		// Get physical
-		return cthr->Obj->GetPhysical()->*off;
-		// Temporary physical
-	case PHYS_Temporary:
-		// Info objects only
-		if (!cthr->Obj->Info) return C4VNull;
-		// Only if in temporary mode
-		if (!cthr->Obj->PhysicalTemporary) return C4VNull;
-		// Get physical
-		return cthr->Obj->TemporaryPhysical.*off;
-	case PHYS_StackTemporary:
-		// TODO
-		break;
-	}
-	// Invalid mode
-	throw new C4AulExecError(cthr->Obj, FormatString("GetPhysical: invalid physical mode %ld", iMode).getData());
-}
-
 static C4Void FnSetEntrance(C4AulObjectContext *cthr, bool e_status)
 {
 	cthr->Obj->EntranceStatus = e_status;
@@ -6061,9 +5938,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoHomebaseMaterial", FnDoHomebaseMaterial);
 	AddFunc(pEngine, "DoHomebaseProduction", FnDoHomebaseProduction);
 	AddFunc(pEngine, "GainMissionAccess", FnGainMissionAccess);
-	AddFunc(pEngine, "SetPhysical", FnSetPhysical);
-	AddFunc(pEngine, "GetPhysical", FnGetPhysical);
-	AddFunc(pEngine, "ResetPhysical", FnResetPhysical);
 	AddFunc(pEngine, "SetTransferZone", FnSetTransferZone);
 	AddFunc(pEngine, "IsNetwork", FnIsNetwork);
 	AddFunc(pEngine, "GetLeague", FnGetLeague);
@@ -6495,10 +6369,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4SO_Mass"                 ,C4V_Int,     C4SO_Mass           },
 	{ "C4SO_Value"                ,C4V_Int,     C4SO_Value          },
 	{ "C4SO_Func"                 ,C4V_Int,     C4SO_Func           },
-
-	{ "PHYS_Current"              ,C4V_Int,     PHYS_Current        },
-	{ "PHYS_Temporary"            ,C4V_Int,     PHYS_Temporary      },
-	{ "PHYS_StackTemporary"       ,C4V_Int,     PHYS_StackTemporary },
 
 	{ "C4CMD_Base"                ,C4V_Int,     C4CMD_Mode_Base },
 	{ "C4CMD_SilentBase"          ,C4V_Int,     C4CMD_Mode_SilentBase },

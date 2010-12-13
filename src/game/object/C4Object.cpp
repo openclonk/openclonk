@@ -204,8 +204,6 @@ void C4Object::Default()
 	Contained=NULL;
 	TopFace.Default();
 	Menu=NULL;
-	PhysicalTemporary=false;
-	TemporaryPhysical.Default();
 	MaterialContents=NULL;
 	Marker=0;
 	ColorMod=0xffffffff;
@@ -2093,14 +2091,6 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 	return iValue;
 }
 
-C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
-{
-	// Temporary physical
-	if (PhysicalTemporary && !fPermanent) return &TemporaryPhysical;
-	// Definition physical
-	return &(Def->Physical);
-}
-
 bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 {
 	if (!Info) return false;
@@ -2113,7 +2103,6 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
-	Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull));
 	// silent update?
 	if (!pRankSys->GetRankName(torank,false)) return false;
 	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_PROMOTION"),GetName (),Info->sRankName.getData()).getData(),this);
@@ -2657,7 +2646,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
-	pComp->Value(mkNamingAdapt( PhysicalTemporary,                "PhysicalTemporary",  false             ));
 	pComp->Value(mkNamingAdapt( NeedEnergy,                       "NeedEnergy",         false             ));
 	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                  ));
 	pComp->Value(Action);
@@ -2692,12 +2680,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 /*		pComp->Value(mkNamingContextPtrAdapt( pMeshInstance, *pGraphics->Mesh, "Mesh"));
 		if(!pMeshInstance)
 			pComp->excCorrupt("Mesh graphics without mesh instance");*/
-	}
-
-	if (PhysicalTemporary)
-	{
-		pComp->FollowName("Physical");
-		pComp->Value(TemporaryPhysical);
 	}
 
 	// TODO: Animations / attached meshes
@@ -3488,7 +3470,6 @@ void C4Object::ContactAction()
 	C4Real last_xdir;
 
 	int32_t iDir;
-	C4PhysicalInfo *pPhysical=GetPhysical();
 
 	// Determine Procedure
 	C4PropList* pActionDef = GetAction();
@@ -3854,9 +3835,6 @@ void C4Object::ExecAction()
 	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
 		{ SetAction(0); return; }
 
-	// Determine ActDef & Physical Info
-	//C4PropList * pAction = Action.pActionDef;
-	C4PhysicalInfo *pPhysical=GetPhysical();
 	C4Real fWalk,fMove;
 	int32_t smpx,smpy;
 

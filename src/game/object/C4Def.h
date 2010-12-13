@@ -124,7 +124,6 @@ public:
 	C4ID id;
 	int32_t rC4XVer[4];
 	C4IDList RequireDef;
-	C4PhysicalInfo Physical;
 	C4Shape Shape;
 	C4Rect Entrance;
 	C4Rect Collection;

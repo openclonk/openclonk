@@ -180,7 +180,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnTeamSwitch             "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
 #define PSF_OnOwnerRemoved           "~OnOwnerRemoved"
 #define PSF_Promotion                "~OnPromotion"
-#define PSF_PhysicalChange           "~OnPhysicalChange" // C4String *Physical, int iChange, int iMode
 #define PSF_CrewEnabled              "~OnCrewEnabled"
 #define PSF_CrewDisabled             "~OnCrewDisabled"
 #define PSF_NameChange               "~OnNameChanged" // bool inInfoSection

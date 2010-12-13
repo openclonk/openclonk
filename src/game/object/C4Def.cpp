@@ -47,7 +47,6 @@ void C4Def::DefaultDefCore()
 {
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
 	RequireDef.Clear();
-	Physical.Default();
 	Shape.Default();
 	Entrance.Default();
 	Collection.Default();
@@ -349,9 +348,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),
 	                           "AllowPictureStack",   0                ));
-
-	pComp->FollowName("Physical");
-	pComp->Value(Physical);
 }
 
 //-------------------------------- C4Def -------------------------------------------------------

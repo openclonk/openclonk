@@ -301,7 +301,6 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	// Calculate direction & forces
 	C4Real TXDir=Fix0;
-	C4PhysicalInfo *pPhysical=cObj->GetPhysical();
 	C4Real iPhysicalWalk = itofix(0);//FIXME: ValByPhysical(280, pPhysical->Walk) * itofix(cObj->GetCon(), FullCon);
 	C4Real iPhysicalJump = itofix(0);//FIXME: ValByPhysical(1000, pPhysical->Jump) * itofix(cObj->GetCon(), FullCon);
 
@@ -368,7 +367,6 @@ bool ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
 
 bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 {
-	C4PhysicalInfo *phys=cObj->GetPhysical();
 	if (!ObjectActionDig(cObj))
 	{
 		GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
@@ -542,7 +540,6 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 {
 	C4Object *pTarget;
 	DWORD ocf;
-	C4PhysicalInfo *phys=cObj->GetPhysical();
 
 	// Contents activation (first contents object only)
 	if (cObj->Contents.GetObject())
