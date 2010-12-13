@@ -13,3 +13,4 @@ KilledByGaya3=%s lost a %s to Gaya.
 Teamkill1=%s has lost a %s to %s. Teamkiller!
 Teamkill2=%s's %s fell out of %s's favour.
 Teamkill3=%s's %s was denied by %s.
+Relaunches=%s has %d relaunches left!

@@ -19,17 +19,39 @@ func OnClonkDeath(object clonk, int killed_by)
 	// Only log for existing players and clonks.
 	if (plr == NO_OWNER || !GetPlayerName(plr) || !clonk) 
 		return;
-	
+	ScheduleCall(this, "OnClonkDeathEx", 1, 0, clonk, plr, killed_by);
+	return _inherited(clonk, killed_by, ...);
+}
+
+func OnClonkDeathEx(object clonk, int plr, int killed_by)
+{
+	if(!GetPlayerName(plr)) return;
+	var name="Clonk";
+	if(clonk) name=clonk.Prototype->GetName();
 	// Assert there are three StringTbl entries for each.
 	var which_one = Random(3) + 1;
-	
+	var log="";
 	if (!GetPlayerName(killed_by))
- 		return Log(Translate(Format("KilledByGaya%d", which_one)), GetTaggedPlayerName(plr), clonk.Prototype->GetName());
- 	if (plr == killed_by)
-		return Log(Translate(Format("Selfkill%d", which_one)), GetTaggedPlayerName(plr), clonk.Prototype->GetName());
- 	if (!Hostile(plr,killed_by))
-  		return Log(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), clonk.Prototype->GetName(), GetTaggedPlayerName(killed_by));
-	Log(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), clonk.Prototype->GetName(), GetTaggedPlayerName(killed_by));
+ 		 log=Format(Translate(Format("KilledByGaya%d", which_one)), GetTaggedPlayerName(plr), name);
+ 	else if (plr == killed_by)
+		log=Format(Translate(Format("Selfkill%d", which_one)), GetTaggedPlayerName(plr), name);
+ 	else if (!Hostile(plr,killed_by))
+  		log=Format(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
+	else log=Format(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
+	
+	var relaunches=GameCall("GetPlayerRelaunches", plr);
+	if(relaunches != nil)
+	{
+		log=Format("%s %s", log, Format(Translate("Relaunches"), GetTaggedPlayerName(plr), relaunches));
+	}
+	
+	var other=GameCall("GetAdditionalPlayerRelaunchString", clonk, plr, killed_by);
+	if(other)
+	{
+		log=Format("%s %s", log, other);
+	}
+	
+	Log(log);
 }
 
 local Name = "$Name$";
