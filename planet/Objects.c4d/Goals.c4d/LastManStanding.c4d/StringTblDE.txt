@@ -1,13 +1,9 @@
 Name=Last Man Standing
 
-MsgKill=%s wurde von %s getötet und hat
-MsgSelfKill=%s ist gestorben und hat
-MsgTeamKill=%s wurde von seinem Kameraden %s getötet und hat
-
-MsgRelaunch0=keine Relaunches mehr übrig.
-MsgRelaunch1=noch einen Relauch übrig.
-MsgRelaunchX=noch %d Relaunches übrig.
-MsgFail=verloren.
+MsgRelaunch0=hat keine Relaunches mehr übrig.
+MsgRelaunch1=hat noch einen Relauch übrig.
+MsgRelaunchX=hat noch %d Relaunches übrig.
+MsgFail=hat verloren.
 
 MsgRelaunchGained=%s has made four kills and gained a relaunch.
 

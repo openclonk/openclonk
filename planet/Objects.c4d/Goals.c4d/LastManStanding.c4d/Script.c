@@ -67,8 +67,8 @@ protected func RelaunchPlayer(int plr, int killer)
 	if (GetRelaunchCount(plr) < 0)
 		return EliminatePlayer(plr);
 	
-	// Log messages.
-	LogKill(killer, plr);
+	// the kill logs rule cares about logging the respawn
+	// ..
 	
 	// Kill bonus: 1 extra relaunch per MIME_KillsToRelaunch kills.
 	// Only if killer exists and has not committed suicide.
@@ -136,17 +136,11 @@ protected func RemovePlayer(int plr)
 
 /*-- Statistics --*/
 
-private func LogKill(int killer, int victim)
+func GetAdditionalPlayerRelaunchString(object clonk, int victim, int killer)
 {
-	var msg;
-	// Determine kill-part.
-	if (killer == victim || !GetPlayerName(killer)) // Suicide or unknown killer.
-		msg = Format("$MsgSelfKill$", GetPlayerName(victim));
-	else if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(victim)) // Teamkill.
-		msg = Format("$MsgTeamKill$", GetPlayerName(victim), GetPlayerName(killer));
-	else // Normal kill.
-		msg = Format("$MsgKill$", GetPlayerName(victim), GetPlayerName(killer));
-	// Determine relaunch part.
+	if(!GetPlayerName(victim)) return;
+
+	var msg=GetTaggedPlayerName(victim);
 	if (GetRelaunchCount(victim) < 0) // Player eliminated.
 		msg = Format("%s %s", msg, "$MsgFail$");
 	else if (GetRelaunchCount(victim) == 0) // Last relaunch.
@@ -155,9 +149,8 @@ private func LogKill(int killer, int victim)
 		msg = Format("%s %s", msg, "$MsgRelaunch1$");
 	else // Multiple relaunches remaining.
 		msg = Format("%s %s", msg, Format("$MsgRelaunchX$", GetRelaunchCount(victim)));
-	// Log message.
-	Log(msg);
-	return;
+	
+	return msg;
 }
 
 local Name = "$Name$";
