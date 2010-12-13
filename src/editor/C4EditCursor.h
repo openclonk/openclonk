@@ -70,6 +70,7 @@ public:
 	bool Duplicate();
 	bool OpenPropTools();
 	bool Delete();
+	void GrabContents();
 	bool LeftButtonUp();
 	bool LeftButtonDown(bool fControl);
 	bool RightButtonUp();
@@ -88,7 +89,6 @@ protected:
 	void ToolFailure();
 	void PutContents();
 	void UpdateDropTarget(WORD wKeyFlags);
-	void GrabContents();
 	bool DoContextMenu();
 	void ApplyToolFill();
 	void ApplyToolRect();

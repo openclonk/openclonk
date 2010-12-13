@@ -20,7 +20,8 @@
 
 @class ClonkWindowController;
 
-@interface ClonkOpenGLView : NSView {
+@interface ClonkOpenGLView : NSView
+{
 @private
 	NSOpenGLContext* context;
 }
@@ -32,6 +33,14 @@
 - (BOOL) shouldHideMouseCursor;
 
 @property(readwrite, retain) NSOpenGLContext* context;
+@end
+
+@interface ClonkEditorOpenGLView: ClonkOpenGLView
+{
+}
+- (IBAction) grabContents:(id) sender;
+- (IBAction) copy:(id) sender;
+- (IBAction) delete:(id) sender;
 @end
 
 #endif

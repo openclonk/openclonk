@@ -369,6 +369,25 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 
 @end
 
+@implementation ClonkEditorOpenGLView
+
+- (void) copy:(id) sender
+{
+	Console.EditCursor.Duplicate();
+}
+
+- (void) delete:(id) sender
+{
+	Console.EditCursor.Delete();
+}
+
+- (IBAction) grabContents:(id) sender
+{
+	Console.EditCursor.GrabContents();
+}
+
+@end
+
 // Implementation of some CStdGLCtx methods - fits here, more or less
 
 void* CStdGLCtx::GetNativeCtx()
