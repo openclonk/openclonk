@@ -201,7 +201,7 @@ public func UpdateBreathBar()
 	var phys = crew.MaxBreath;
 	var promille;
 	if(phys == 0) promille = 0;
-	else promille = 1000 * crew->GetBreath() / (phys / 1000);
+	else promille = 1000 * crew->GetBreath() / phys;
 
 	// remove breath bar if full breath
 	if(promille == 1000)

@@ -14,20 +14,14 @@
         <param>
           <type>int</type>
           <name>change</name>
-          <desc>Change of the breath value (positive or negative) in percent of the maximum value. 100% correspond to the maximum physical value 100,000.</desc>
-        </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object of which you want to change breath. Can be 0 in local calls.</desc>
-          <optional />
+          <desc>Change of the breath value in frames.</desc>
         </param>
       </params>
     </syntax>
     <desc>Changes the breath value of an object.</desc>
     <examples>
       <example>
-        <code>DoBreath(<funclink>GetPhysical</funclink>(&quot;Breath&quot;, 0, <funclink>GetCursor</funclink>(0))*50/100000, <funclink>GetCursor</funclink>(0));</code>
+        <code>GetCursor()->DoBreath(GetCursor().MaxBreath / 2);</code>
         <text>Gives 50% more breath to the selected clonk of the first player.</text>
       </example>
     </examples>

@@ -1035,7 +1035,7 @@ bool C4Object::ExecLife()
 			if (!Breathe)
 			{
 				// Reduce breath, then energy, bubble
-				if (Breath > 0) DoBreath(-2);
+				if (Breath > 0) DoBreath(-5);
 				else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
 			}
 			// Supply
@@ -1043,7 +1043,6 @@ bool C4Object::ExecLife()
 			{
 				// Take breath
 				int32_t takebreath = GetPropertyInt(P_MaxBreath) - Breath;
-				takebreath = 100 * takebreath / C4MaxPhysical;
 				if (takebreath > 0) DoBreath(takebreath);
 			}
 		}
@@ -1392,8 +1391,6 @@ void C4Object::UpdatLastEnergyLossCause(int32_t iNewCausePlr)
 
 void C4Object::DoBreath(int32_t iChange)
 {
-	// iChange 100% = Physical 100000
-	iChange=iChange*C4MaxPhysical/100;
 	// Do change
 	iChange = BoundBy<int32_t>(iChange, -Breath, GetPropertyInt(P_MaxBreath) - Breath);
 	Breath += iChange;

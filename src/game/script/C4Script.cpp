@@ -953,7 +953,7 @@ static long FnGetEnergy(C4AulObjectContext *cthr)
 
 static long FnGetBreath(C4AulObjectContext *cthr)
 {
-	return 100*cthr->Obj->Breath/C4MaxPhysical;
+	return cthr->Obj->Breath;
 }
 
 static long FnGetMass(C4AulContext *cthr)

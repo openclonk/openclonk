@@ -419,7 +419,7 @@ Dead = {
 };
 local Name = "$Name$";
 local MaxEnergy = 50000;
-local MaxBreath = 50000;
+local MaxBreath = 125;
 local JumpSpeed = 350;
 local ThrowSpeed = 294;
 
