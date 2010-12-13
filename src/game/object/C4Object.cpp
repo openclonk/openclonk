@@ -1365,10 +1365,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
 	// Living things: ask effects for change first
 	if (pEffects && Alive)
-	{
 		pEffects->DoDamage(this, iChange, iCause, iCausedByPlr);
-		if (!iChange) return;
-	}
 	// Do change
 	iChange = BoundBy<int32_t>(iChange, -Energy, GetPropertyInt(P_MaxEnergy) - Energy);
 	Energy += iChange;

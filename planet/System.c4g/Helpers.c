@@ -105,6 +105,26 @@ global func GetAvailableObjectCheck(int plr)
 	return true;
 }
 
+// Sets the MaxEnergy value of an object and does the necessary callbacks.
+global func SetMaxEnergy(int value)
+{
+	if (!this)
+		return;
+	var old_maxenergy = this.MaxEnergy;
+	this.MaxEnergy = value;
+	// Change current energy percentage wise and implicit callback.
+	DoEnergy(GetEnergy() * (value - old_maxenergy) / old_maxenergy);
+	return;
+}
+
+// Returns the MaxEnergy value of an object.
+global func GetMaxEnergy()
+{
+	if (!this)
+		return;
+	return this.MaxEnergy;
+}
+
 // Sets the MaxBreath value of an object and does the necessary callbacks.
 global func SetMaxBreath(int value)
 {
