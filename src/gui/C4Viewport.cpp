@@ -414,8 +414,11 @@ void C4Viewport::ChangeZoom(float by_factor)
 void C4Viewport::SetZoom(float to_value, bool direct)
 {
 	ZoomTarget = to_value;
-	if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
-	if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	if (Player != NO_OWNER || !::Application.isEditor)
+	{
+		if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
+		if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	}
 	// direct: Set zoom without scrolling to it
 	if (direct) Zoom = ZoomTarget;
 }
