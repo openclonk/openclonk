@@ -138,6 +138,11 @@
 int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 {
 	modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
+	if ([event modifierFlags] & NSCommandKeyMask)
+	{
+		// treat cmd and ctrl the same
+		modifierFlags |= NSControlKeyMask;
+	}
 	switch (event.type)
 	{
 		case NSLeftMouseDown:
@@ -276,7 +281,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 		[event keyCode]+CocoaKeycodeOffset, // offset keycode by some value to distinguish between those special key defines
 		type,
 		[event modifierFlags] & NSAlternateKeyMask,
-		[event modifierFlags] & NSControlKeyMask,
+		([event modifierFlags] & NSControlKeyMask) || ([event modifierFlags] & NSCommandKeyMask),
 		[event modifierFlags] & NSShiftKeyMask,
 		false, NULL
 	);
