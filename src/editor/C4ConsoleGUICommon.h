@@ -15,10 +15,6 @@
 
 // To be directly included by platform-specific implementations
 
-#include <C4Include.h>
-
-#ifdef CONSOLEGUICOMMONINCLUDE
-
 C4ConsoleGUI::C4ConsoleGUI()
 {
 	state = new C4ConsoleGUI::State(this);
@@ -90,5 +86,3 @@ void C4PropertyDlg::Clear()
 }
 
 const char *C4ConsoleGUI::LIST_DIVIDER = "divid0r";
-
-#endif

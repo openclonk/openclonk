@@ -1197,5 +1197,4 @@ void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg *dlg)
 	EnableWindow(GetDlgItem(hDialog,IDC_PREVIEW),(iLandscapeMode>=C4LSC_Static));
 }
 
-#define CONSOLEGUICOMMONINCLUDE
-#include "C4ConsoleGUICommon.cpp"
+#include "C4ConsoleGUICommon.h"

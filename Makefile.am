@@ -219,6 +219,8 @@ src/control/C4Teams.cpp \
 src/control/C4Teams.h \
 src/editor/C4Console.cpp \
 src/editor/C4Console.h \
+src/editor/C4ConsoleGUI.h \
+src/editor/C4ConsoleGUICommon.h \
 src/editor/C4DevmodeDlg.cpp \
 src/editor/C4DevmodeDlg.h \
 src/editor/C4EditCursor.cpp \
@@ -438,6 +440,8 @@ src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/OpenURL.cpp \
 src/platform/PlatformAbstraction.h \
+src/platform/StdAppCommon.h \
+src/platform/StdAppCommon.cpp \
 src/platform/StdConfig.cpp \
 src/platform/StdConfig.h \
 src/platform/StdD3D.cpp \
@@ -527,7 +531,7 @@ src/C4Version.h.in
 ##hgrevision.h
 
 if WIN32
-clonk_SOURCES += src/platform/C4FileClasses.cpp
+clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp
 clonk_SOURCES += src/res/engine.rc src/res/resource.h
 clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
 endif
@@ -544,7 +548,7 @@ clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platfo
 endif
 endif
 if DEVELOPER_MODE
-clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h
+clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h src/editor/C4ConsoleGTK.cpp
 endif
 
 clonk_LDADD = \

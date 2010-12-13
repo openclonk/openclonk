@@ -173,7 +173,7 @@ set(OC_CLONK_SOURCES
 	src/editor/C4Console.cpp
 	src/editor/C4Console.h
 	src/editor/C4ConsoleGUI.h
-	src/editor/C4ConsoleGUICommon.cpp
+	src/editor/C4ConsoleGUICommon.h
 	src/editor/C4DevmodeDlg.cpp
 	src/editor/C4DevmodeDlg.h
 	src/editor/C4EditCursor.cpp

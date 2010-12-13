@@ -1719,5 +1719,4 @@ void C4ToolsDlg::State::OnWindowHide(GtkWidget* widget, gpointer data)
 	static_cast<C4ToolsDlg::State*>(data)->GetOwner()->Active = false;
 }
 
-#define CONSOLEGUICOMMONINCLUDE
-#include "C4ConsoleGUICommon.cpp"
+#include "C4ConsoleGUICommon.h"
