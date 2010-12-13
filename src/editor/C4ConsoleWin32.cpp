@@ -201,6 +201,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		return true;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_INITDIALOG:
+		Console.Active = true;
 		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
 		C4ConsoleGUI::State::UpdateMenuText(Console, GetMenu(hDlg));
 		return true;
