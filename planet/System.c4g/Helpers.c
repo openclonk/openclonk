@@ -104,3 +104,24 @@ global func GetAvailableObjectCheck(int plr)
 		return false;
 	return true;
 }
+
+// Sets the MaxBreath value of an object and does the necessary callbacks.
+global func SetMaxBreath(int value)
+{
+	if (!this)
+		return;
+	var old_maxbreath = this.MaxBreath;
+	this.MaxBreath = value;
+	// Change current breath percentage wise and implicit callback.
+	DoBreath(GetBreath() * (value - old_maxbreath) / old_maxbreath);
+	return;
+}
+
+// Returns the MaxBreath value of an object.
+global func GetMaxBreath()
+{
+	if (!this)
+		return;
+	return this.MaxBreath;
+}
+
