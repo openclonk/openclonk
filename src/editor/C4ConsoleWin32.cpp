@@ -37,6 +37,10 @@
 #include <StdGL.h>
 #endif
 
+#ifdef USE_DIRECTX
+#include <StdD3D.h>
+#endif
+
 #include "C4ConsoleGUI.h"
 #include "C4Viewport.h"
 
@@ -1091,7 +1095,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	if (pD3D)
 		pD3D->BlitSurface2Window( sfcPreview,
 		                          0,0,iPrvWdt,iPrvHgt,
-		                          GetDlgItem(hDialog,IDC_PREVIEW),
+		                          GetDlgItem(state->hDialog,IDC_PREVIEW),
 		                          rect.left,rect.top,rect.right,rect.bottom);
 #endif
 #ifdef USE_GL
