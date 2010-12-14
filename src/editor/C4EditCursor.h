@@ -82,7 +82,7 @@ public:
 	bool AltDown();
 	bool AltUp();
 protected:
-	bool UpdateStatusBar();
+	void UpdateStatusBar();
 	void ApplyToolPicker();
 	void ToolFailure();
 	void PutContents();

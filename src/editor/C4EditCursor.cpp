@@ -187,7 +187,7 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 	return true;
 }
 
-bool C4EditCursor::UpdateStatusBar()
+void C4EditCursor::UpdateStatusBar()
 {
 	int32_t X=this->X, Y=this->Y;
 	StdStrBuf str;
@@ -207,7 +207,7 @@ bool C4EditCursor::UpdateStatusBar()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	return Console.UpdateCursorBar(str.getData());
+	Console.DisplayInfoText(C4ConsoleGUI::CONSOLE_Cursor, str);
 }
 
 void C4EditCursor::OnSelectionChanged()

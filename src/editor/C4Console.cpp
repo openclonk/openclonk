@@ -134,9 +134,9 @@ void C4Console::DoHalt()
 	Game.Pause();
 }
 
-bool C4Console::UpdateStatusBars()
+void C4Console::UpdateStatusBars()
 {
-	if (!Active) return false;
+	if (!Active) return;
 	// Frame counter
 	if (Game.FrameCounter!=FrameCounter)
 	{
@@ -162,7 +162,6 @@ bool C4Console::UpdateStatusBars()
 		str.Format("%02d:%02d:%02d (%i FPS)",Time/3600,(Time%3600)/60,Time%60,FPS);
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_TimeFPS, str);
 	}
-	return true;
 }
 
 bool C4Console::SaveGame(bool fSaveGame)

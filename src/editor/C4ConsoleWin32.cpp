@@ -728,9 +728,14 @@ void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
 
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& text)
 {
+	if (!Active)
+		return;
 	int dialog_item;
 	switch (type)
 	{
+	case CONSOLE_Cursor:
+		dialog_item = IDC_STATICCURSOR;
+		break;
 	case CONSOLE_FrameCounter:
 		dialog_item = IDC_STATICFRAME;
 		break;
@@ -761,16 +766,6 @@ void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 {
 	StdStrBuf strMessage; strMessage.Format("%s %s\n\n%s", C4ENGINECAPTION, C4VERSION, copyright.getData());
 	MessageBox(NULL, strMessage.getData(), C4ENGINECAPTION, MB_ICONINFORMATION | MB_TASKMODAL);
-}
-
-bool C4ConsoleGUI::UpdateCursorBar(const char *szCursor)
-{
-	if (!Active)
-		return false;
-	// Cursor
-	SetDlgItemText(hWindow,IDC_STATICCURSOR,szCursor);
-	UpdateWindow(GetDlgItem(hWindow,IDC_STATICCURSOR));
-	return true;
 }
 
 bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)

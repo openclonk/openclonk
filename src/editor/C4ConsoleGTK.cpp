@@ -626,10 +626,15 @@ void C4ConsoleGUI::State::Clear()
 }
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
-{
+{		
+	if (!Active)
+		return;
 	GtkWidget* label;
 	switch (type)
 	{
+	case CONSOLE_Cursor:
+		label = state->lblCursor;
+		break;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
 		break;
@@ -678,14 +683,6 @@ void C4ConsoleGUI::RecordingEnabled()
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 {
 	gtk_show_about_dialog(GTK_WINDOW(window), "name", C4ENGINECAPTION, "version", C4VERSION, "copyright", copyright.getData(), NULL);
-}
-
-bool C4ConsoleGUI::UpdateCursorBar(const char *szCursor)
-{
-	if (!Active)
-		return false;
-	gtk_label_set_label(GTK_LABEL(state->lblCursor), szCursor);
-	return true;
 }
 
 bool C4ConsoleGUI::UpdateModeCtrls(int iMode)

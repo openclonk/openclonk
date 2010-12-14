@@ -58,6 +58,7 @@ public:
 	
 	enum InfoTextType
 	{
+		CONSOLE_Cursor,
 		CONSOLE_FrameCounter,
 		CONSOLE_ScriptCounter,
 		CONSOLE_TimeFPS
@@ -90,7 +91,6 @@ public:
 	void SetCursor(Cursor cursor);
 	void RecordingEnabled();
 	void ShowAboutWithCopyright(StdStrBuf &copyright);
-	bool UpdateCursorBar(const char *szCursor);
 	bool UpdateModeCtrls(int iMode);
 	void UpdateNetMenu(Stage stage);
 	void ClearNetMenu(Stage stage);

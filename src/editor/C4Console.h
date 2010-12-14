@@ -74,7 +74,7 @@ public:
 	bool CloseGame();
 	bool UpdatePlayerMenu();
 	bool UpdateViewportMenu();
-	bool UpdateStatusBars();
+	void UpdateStatusBars();
 	// Menu	
 	void ClearViewportMenu();
 	void UpdateNetMenu();
