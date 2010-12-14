@@ -39,10 +39,20 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
   		log=Format(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	else log=Format(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	
-	var relaunches=GameCall("GetPlayerRelaunches", plr);
+	var relaunches=GameCall("GetRelaunchCount", plr);
 	if(relaunches != nil)
 	{
-		log=Format("%s %s", log, Format(Translate("Relaunches"), GetTaggedPlayerName(plr), relaunches));
+		var msg="";
+		if (relaunches < 0) // Player eliminated.
+		msg = Format("$MsgFail$", GetTaggedPlayerName(plr));
+	else if (relaunches == 0) // Last relaunch.
+		msg = Format("$MsgRelaunch0$", GetTaggedPlayerName(plr));
+	else if (relaunches == 1) // One relaunch remaining.
+		msg = Format("$MsgRelaunch1$", GetTaggedPlayerName(plr));
+	else // Multiple relaunches remaining.
+		msg = Format("$MsgRelaunchX$", GetTaggedPlayerName(plr), relaunches);
+		
+		log=Format("%s %s", log, msg);
 	}
 	
 	var other=GameCall("GetAdditionalPlayerRelaunchString", clonk, plr, killed_by);

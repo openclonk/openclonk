@@ -1,10 +1,5 @@
 Name=Last Man Standing
 
-MsgRelaunch0=hat keine Relaunches mehr übrig.
-MsgRelaunch1=hat noch einen Relauch übrig.
-MsgRelaunchX=hat noch %d Relaunches übrig.
-MsgFail=hat verloren.
-
 MsgRelaunchGained=%s has made four kills and gained a relaunch.
 
 MsgGoalFulfilled=Eure Gegner sind eliminiert.
