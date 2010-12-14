@@ -110,6 +110,7 @@ global func SetMaxEnergy(int value)
 {
 	if (!this)
 		return;
+	value *= 1000;
 	var old_maxenergy = this.MaxEnergy;
 	this.MaxEnergy = value;
 	// Change current energy percentage wise and implicit callback.
@@ -122,7 +123,7 @@ global func GetMaxEnergy()
 {
 	if (!this)
 		return;
-	return this.MaxEnergy;
+	return this.MaxEnergy / 1000;
 }
 
 // Sets the MaxBreath value of an object and does the necessary callbacks.

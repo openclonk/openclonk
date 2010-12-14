@@ -184,10 +184,10 @@ public func UpdateTitleGraphic()
 public func UpdateHealthBar()
 {
 	if(!crew) return;
-	var phys = crew.MaxEnergy;
+	var phys = crew->GetMaxEnergy();
 	var promille;
 	if(phys == 0) promille = 0;
-	else promille = 1000 * crew->GetEnergy() / (phys / 1000);
+	else promille = 1000 * crew->GetEnergy() / phys;
 
 	energypos = -GetDefWidth()/2*(1000-promille)/1000;
 
@@ -198,7 +198,7 @@ public func UpdateHealthBar()
 public func UpdateBreathBar()
 {
 	if(!crew) return;
-	var phys = crew.MaxBreath;
+	var phys = crew->GetMaxBreath();
 	var promille;
 	if(phys == 0) promille = 0;
 	else promille = 1000 * crew->GetBreath() / phys;

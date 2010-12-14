@@ -32,7 +32,7 @@ public func ControlUse(object clonk, int ix, int iy)
 
 func FxGemHealingTimer(target, effect_number, effect_time)
 {
-	if(target->GetEnergy() >= target.MaxEnergy/1000)
+	if(target->GetEnergy() >= target->GetMaxEnergy())
 	{
 		if(effect_time < 36) return 0;
 		return -1;

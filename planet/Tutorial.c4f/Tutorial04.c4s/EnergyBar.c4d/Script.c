@@ -35,12 +35,12 @@ protected func UpdateEnergy()
 	var energy = target->GetEnergy();
 	if (!energy)
 		return RemoveObject();
-	var phys = target.MaxEnergy;
+	var phys = target->GetMaxEnergy();
 	var promille;
 	if (phys == 0) 
 		promille = 0;
 	else 
-		promille = 1000 * energy / (phys / 1000);
+		promille = 1000 * energy / phys;
 	SetBarProgress(promille, 0);	
 	return;
 }
