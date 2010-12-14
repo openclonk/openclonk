@@ -134,23 +134,5 @@ protected func RemovePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-/*-- Statistics --*/
-
-func GetAdditionalPlayerRelaunchString(object clonk, int victim, int killer)
-{
-	if(!GetPlayerName(victim)) return;
-
-	var msg=GetTaggedPlayerName(victim);
-	if (GetRelaunchCount(victim) < 0) // Player eliminated.
-		msg = Format("%s %s", msg, "$MsgFail$");
-	else if (GetRelaunchCount(victim) == 0) // Last relaunch.
-		msg = Format("%s %s", msg, "$MsgRelaunch0$");
-	else if (GetRelaunchCount(victim) == 1) // One relaunch remaining.
-		msg = Format("%s %s", msg, "$MsgRelaunch1$");
-	else // Multiple relaunches remaining.
-		msg = Format("%s %s", msg, Format("$MsgRelaunchX$", GetRelaunchCount(victim)));
-	
-	return msg;
-}
 
 local Name = "$Name$";
