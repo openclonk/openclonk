@@ -26,12 +26,14 @@ local player_deaths;
 local location;
 local point_limit;
 local radius;
+local player_suicides;
 
 func Initialize()
 {
 	// standards
 	player_points=[];
 	player_deaths=[];
+	player_suicides=[];
 	SetRadius(300);
 	SetPointLimit(10);
 	
@@ -113,10 +115,11 @@ func DoPoint(int player, int count)
 	player_points[player] = Max(player_points[player] + count, 0);
 }
 
-protected func InitializePlayer()
+protected func InitializePlayer(plr)
 {
 	ScheduleCall(this, "RefreshScoreboard", 1);
-	return Goal_Melee->InitializePlayer(...); // TODO
+	player_suicides[plr]=0;
+	return Goal_Melee->InitializePlayer(plr, ...); // TODO
 }
 
 public func IsFulfilled()
@@ -128,15 +131,28 @@ func OnClonkDeath(object clonk, int killer)
 {	
 	ScheduleCall(this, "RefreshScoreboard", 1);
 	if (clonk->GetAlive()) return;
+		
 	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
 	 // Shame on the king who kills himself.
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
+	{
 		if (location->GetKing() == clonk)
 		{
 			DoPoint(clonk->GetOwner(),-1);
 			return;
 		}
+		else
+		{
+			// non-king suicide
+			player_suicides[killer]++;
+			if(player_suicides[killer] % 2 == 0)
+			{
+				DoPoint(killer,-1);
+			}
+		}
+		
+	}
 	
 	if (location->GetKing() != nil) 
 	{
