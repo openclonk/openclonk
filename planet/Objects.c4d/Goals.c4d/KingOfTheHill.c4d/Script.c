@@ -134,9 +134,11 @@ func OnClonkDeath(object clonk, int killer)
 		
 	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
-	 // Shame on the king who kills himself.
+	 
+	if(GetPlayerName(clonk->GetOwner()))
 	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
+		// shame on the king who kills himself
 		if (location->GetKing() == clonk)
 		{
 			DoPoint(clonk->GetOwner(),-1);
@@ -145,10 +147,10 @@ func OnClonkDeath(object clonk, int killer)
 		else
 		{
 			// non-king suicide
-			player_suicides[killer]++;
-			if(player_suicides[killer] % 2 == 0)
+			player_suicides[clonk->GetOwner()]++;
+			if(player_suicides[clonk->GetOwner()] % 2 == 0)
 			{
-				DoPoint(killer,-1);
+				DoPoint(clonk->GetOwner(),-1);
 			}
 		}
 		
