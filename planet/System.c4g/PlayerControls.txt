@@ -441,12 +441,16 @@
 	GUIName=Zoom in
 	GUIDesc=Increase viewport zoom
 	Action=ZoomIn
+	Hold=1
+	RepeatDelay=3
 	
 	[ControlDef]
 	Identifier=ZoomOut
 	GUIName=Zoom out
 	GUIDesc=Decrease viewport zoom
 	Action=ZoomOut
+	Hold=1
+	RepeatDelay=3
 	
 
 	
