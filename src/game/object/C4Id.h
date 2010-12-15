@@ -49,7 +49,6 @@ private:
 public:
 	static const C4ID None; // Invalid ID
 	static const C4ID Contents; // Not-ID for funny stuff
-	DEPRECATED static const C4ID Energy; // Buildings need energy
 	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material
 	DEPRECATED static const C4ID StructuresSnowIn;
 	DEPRECATED static const C4ID Flag;
@@ -58,7 +57,6 @@ public:
 	DEPRECATED static const C4ID Conkit; // Construction kit
 	DEPRECATED static const C4ID SourcePipe;
 	DEPRECATED static const C4ID DrainPipe;
-	DEPRECATED static const C4ID PowerLine;
 	DEPRECATED static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
 	DEPRECATED static const C4ID Meteor;

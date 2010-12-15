@@ -8,4 +8,4 @@ Vertices=2
 Value=0
 Mass=0
 Picture=0,0,64,64
-Line=C4D_LinePower
+Line=C4D_LineColored

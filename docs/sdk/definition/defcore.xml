@@ -173,7 +173,7 @@
         <row>
           <literal_col>Line</literal_col>
           <col>Integer</col>
-          <col>1 energy line, 2 source pipe, 3 drain pipe.</col>
+          <col>1 source pipe, 2 drain pipe.</col>
         </row>
         <row>
           <literal_col>LineConnect</literal_col>
@@ -423,7 +423,7 @@
         <row>
           <literal_col>Energy</literal_col>
           <col>Integer</col>
-          <col>0-100000. Maximum energy (electric or life).</col>
+          <col>0-100000. Maximum life energy.</col>
         </row>
         <row>
           <literal_col>Breath</literal_col>

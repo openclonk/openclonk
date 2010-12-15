@@ -55,7 +55,7 @@ const char *CommandName(int32_t iCommand)
 		"None","Follow","MoveTo","Enter","Exit","Grab","Build","Throw","Chop",
 		"UnGrab","Jump","Wait","Get","Put","Drop","Dig","Activate","PushTo",
 		"Construct","Transfer","Attack","Context","Buy","Sell","Acquire",
-		"Energy","Retry","Home","Call","Take","Take2"
+		"Retry","Home","Call","Take","Take2"
 	};
 
 	if (!Inside<int32_t>(iCommand,C4CMD_First,C4CMD_Last)) return "None";
@@ -764,22 +764,6 @@ void C4Command::Build()
 		// Activate internal vehicles
 		if (Target->Contained && (Target->Category & C4D_Vehicle))
 			cObj->AddCommand(C4CMD_Activate,Target);
-		// Energy supply (if necessary and nobody else is doing so already)
-		if (Game.Rules & C4RULE_StructuresNeedEnergy)
-			if (Target->Def->LineConnect & C4D_Power_Input)
-				if (!Game.FindObjectByCommand(C4CMD_Energy,Target))
-				{
-					// if another Clonk is also building this structure and carries a linekit already, that Clonk should rather perform the energy command
-					C4Object *pOtherBuilder = NULL;
-					if (!cObj->Contents.Find(C4ID::Linekit))
-					{
-						while ((pOtherBuilder = Game.FindObjectByCommand(C4CMD_Build,Target, C4VNull,0, NULL, pOtherBuilder)))
-							if (pOtherBuilder->Contents.Find(C4ID::Linekit))
-								break;
-					}
-					if (!pOtherBuilder)
-						cObj->AddCommand(C4CMD_Energy,Target);
-				}
 		// Done
 		cObj->Action.ComDir=COMD_Stop;
 		Finish(true); return;
@@ -1441,7 +1425,6 @@ void C4Command::Execute()
 	case C4CMD_Buy: Buy(); break;
 	case C4CMD_Sell: Sell(); break;
 	case C4CMD_Acquire: Acquire(); break;
-	case C4CMD_Energy: Energy(); break;
 	case C4CMD_Retry: Retry(); break;
 	case C4CMD_Home: Home(); break;
 	case C4CMD_Call: Call(); break;
@@ -1994,66 +1977,6 @@ void C4Command::Fail(const char *szFailMessage)
 
 C4Object *CreateLine(C4ID idType, int32_t iOwner, C4Object *pFrom, C4Object *pTo);
 
-void C4Command::Energy()
-{
-	DWORD ocf=OCF_All;
-	// No target: fail
-	if (!Target) { Finish(); return; }
-	// Target can't be supplied: fail
-	if (!(Target->Def->LineConnect & C4D_Power_Input)) { Finish(); return; }
-	// Target supplied
-	if ( !(Game.Rules & C4RULE_StructuresNeedEnergy)
-	     || (Game.FindObject(C4ID::PowerLine,0,0,0,0,OCF_All,"Connect",Target) && !Target->NeedEnergy) )
-		{ Finish(true); return; }
-	// No energy supply specified: find one
-	if (!Target2) Target2=Game.FindObject(C4ID::None,Target->GetX(),Target->GetY(),-1,-1,OCF_PowerSupply,NULL,NULL,Target);
-	// No energy supply: fail
-	if (!Target2) { Finish(); return; }
-	// Energy supply too far away: fail
-	if (Distance(cObj->GetX(),cObj->GetY(),Target2->GetX(),Target2->GetY())>650) { Finish(); return; }
-	// Not a valid energy supply: fail
-	if (!(Target2->Def->LineConnect & C4D_Power_Output)) { Finish(); return; }
-	// No linekit: get one
-	C4Object *pKit, *pLine = NULL, *pKitWithLine;
-	if (!(pKit=cObj->Contents.Find(C4ID::Linekit)))
-		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(C4ID::Linekit)); return; }
-	// Find line constructing kit
-	for (int32_t cnt=0; (pKitWithLine=cObj->Contents.GetObject(cnt)); cnt++)
-		if ((pKitWithLine->id==C4ID::Linekit) && (pLine=Game.FindObject(C4ID::PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
-			break;
-	// No line constructed yet
-	if (!pLine)
-	{
-		// Move to supply
-		if (!Target2->At(cObj->GetX(),cObj->GetY(),ocf))
-			{ cObj->AddCommand(C4CMD_MoveTo,Target2,0,0,50); return; }
-		// At power supply: connect
-		pLine = CreateLine(C4ID::PowerLine,cObj->Owner,Target2,pKit);
-		if (!pLine) { Finish(); return; }
-		StartSoundEffect("Connect",false,100,cObj);
-		return;
-	}
-	else
-	{
-		// A line is already present: Make sure not to override the target
-		if (pLine->Action.Target == pKitWithLine)
-			Target2 = pLine->Action.Target2;
-		else
-			Target2 = pLine->Action.Target;
-	}
-	// Move to target
-	if (!Target->At(cObj->GetX(),cObj->GetY(),ocf))
-		{ cObj->AddCommand(C4CMD_MoveTo,Target,0,0,50); return; }
-	// Connect
-	pLine->SetActionByName("Connect",Target2,Target);
-	pKitWithLine->AssignRemoval();
-	StartSoundEffect("Connect",0,100,cObj);
-	// Done
-	cObj->Action.ComDir=COMD_Stop;
-	// Success
-	Finish(true);
-}
-
 void C4Command::Retry()
 {
 
@@ -2236,7 +2159,6 @@ int32_t C4Command::GetExpGain()
 	case C4CMD_Chop:
 	case C4CMD_Build:
 	case C4CMD_Construct:
-	case C4CMD_Energy:
 		return 5;
 
 		// victory!

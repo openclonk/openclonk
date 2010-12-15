@@ -112,7 +112,7 @@
           <col></col>
           <col></col>
           <col></col>
-          <col>Build the target object and supply it with energy when done.</col>
+          <col>Build the target object.</col>
         </row>
         <row>
           <literal_col>Buy</literal_col>
@@ -217,22 +217,6 @@
           <col></col>
           <col></col>
           <col>Collect the target object and drop it at the target position.</col>
-        </row>
-        <row>
-          <literal_col>Energy</literal_col>
-          <col>Target object</col>
-          <col></col>
-          <col></col>
-          <col></col>
-          <col>Supply the target object with energy from the closest supplier.</col>
-        </row>
-        <row>
-          <literal_col>Energy</literal_col>
-          <col>Target object</col>
-          <col>0,0</col>
-          <col>Supplier</col>
-          <col></col>
-          <col>Supply the target object with energy from this supplier.</col>
         </row>
         <row>
           <literal_col>Enter</literal_col>

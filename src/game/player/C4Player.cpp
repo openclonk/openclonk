@@ -533,12 +533,6 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 
 C4Object *CreateLine(C4ID linetype, int32_t owner, C4Object *fobj, C4Object *tobj);
 
-bool CreatePowerConnection(C4Object *fbase, C4Object *tbase)
-{
-	if (CreateLine(C4ID::PowerLine,fbase->Owner,fbase,tbase)) return true;
-	return false;
-}
-
 void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 {
 	int32_t cnt,cnt2,ctx,cty;
@@ -559,21 +553,9 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 						// FirstBase
 						if (!(*pFirstBase)) if ((cbase->Def->Entrance.Wdt>0) && (cbase->Def->Entrance.Hgt>0))
 								{ *pFirstBase=cbase; tx=(*pFirstBase)->GetX(); ty=(*pFirstBase)->GetY(); }
-						// First power plant
-						if (cbase->Def->LineConnect & C4D_Power_Generator)
-							if (!fpower) fpower=cbase;
 					}
 			}
 	}
-
-	// Power connections
-	C4ObjectLink *clnk; C4Object *cobj;
-	if (Game.Rules & C4RULE_StructuresNeedEnergy)
-		if (fpower)
-			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-				if (cobj->Owner==Number)
-					if (cobj->Def->LineConnect & C4D_Power_Consumer)
-						CreatePowerConnection(fpower,cobj);
 }
 
 void C4Player::PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)

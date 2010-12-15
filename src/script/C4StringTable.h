@@ -211,7 +211,6 @@ enum C4PropertyName
 	P_Sound,
 	P_ObjectDisabled,
 	P_DigFree,
-	P_EnergyUsage,
 	P_InLiquidAction,
 	P_TurnAction,
 	P_Reverse,

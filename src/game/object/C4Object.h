@@ -158,7 +158,6 @@ public:
 	bool Initializing; // NoSave //
 	bool InLiquid;
 	bool EntranceStatus;
-	bool NeedEnergy;
 	uint32_t t_contact; // SyncClearance-NoSave //
 	uint32_t OCF;
 	unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave

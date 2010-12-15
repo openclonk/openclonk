@@ -17,7 +17,6 @@ Components=Wood=6;Metal=3
 Entrance=-8,0,25,20
 Exclusive=1
 BlastIncinerate=100
-LineConnect=C4D_PowerInput|C4D_PowerOutput|C4D_PowerConsumer
 Construction=1
 Rotate=1
 ContainBlast=1

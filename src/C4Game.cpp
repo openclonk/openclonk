@@ -3284,7 +3284,6 @@ void C4Game::UpdateRules()
 {
 	if (::Game.iTick255) return;
 	Rules=0;
-	if (ObjectCount(C4ID::Energy))           Rules|=C4RULE_StructuresNeedEnergy;
 	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
 	if (ObjectCount(C4ID::FlagRemvbl))       Rules|=C4RULE_FlagRemoveable;
 	if (ObjectCount(C4ID::StructuresSnowIn)) Rules|=C4RULE_StructuresSnowIn;

@@ -34,7 +34,6 @@ const C4ID C4ID::None(std::string("None"));
 const C4ID C4ID::Contents(std::string("Contents"));
 
 // TODO: Remove these eventually, since they are deprecated.
-const C4ID C4ID::Energy(std::string("Rule_NeedEnergy"));
 const C4ID C4ID::StructuresSnowIn(std::string("STSN"));
 const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
@@ -43,7 +42,6 @@ const C4ID C4ID::Linekit(std::string("CableReel"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
 const C4ID C4ID::SourcePipe(std::string("SPIP"));
 const C4ID C4ID::DrainPipe(std::string("DPIP"));
-const C4ID C4ID::PowerLine(std::string("PowerLine"));
 const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Flame(std::string("FLAM"));
 const C4ID C4ID::Meteor(std::string("METO"));

@@ -8,4 +8,3 @@ Vertices=2
 Value=10
 Mass=15
 Picture=0,0,36,32
-Line=C4D_LinePower

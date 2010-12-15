@@ -187,7 +187,6 @@ void C4Object::Default()
 	InLiquid=0;
 	EntranceStatus=0;
 	Audible=0;
-	NeedEnergy=0;
 	Timer=0;
 	t_contact=0;
 	OCF=0;
@@ -854,15 +853,6 @@ void C4Object::SetOCF()
 	if (!Contained || (Contained->Def->GrabPutGet & C4D_Grab_Get) || (Contained->OCF & OCF_Entrance))
 		if (!GBackSemiSolid(GetX(), GetY()-1) || (!GBackSolid(GetX(), GetY()-1) && !GBackSemiSolid(GetX(), GetY()-8)))
 			OCF|=OCF_Available;
-	// OCF_PowerConsumer
-	if (Def->LineConnect & C4D_Power_Consumer)
-		if (OCF & OCF_FullCon)
-			OCF|=OCF_PowerConsumer;
-	// OCF_PowerSupply
-	if ( (Def->LineConnect & C4D_Power_Generator)
-	     || ((Def->LineConnect & C4D_Power_Output) && (Energy>0)) )
-		if (OCF & OCF_FullCon)
-			OCF|=OCF_PowerSupply;
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
@@ -892,8 +882,7 @@ void C4Object::UpdateOCF()
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	           /*| OCF_Chop - now updated regularly, see below */
 	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
-	           | OCF_LineConstruct | OCF_Prey | OCF_CrewMember | OCF_AttractLightning
-	           | OCF_PowerConsumer);
+	           | OCF_LineConstruct | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
 		OCF|=OCF_Carryable;
@@ -941,11 +930,6 @@ void C4Object::UpdateOCF()
 	if (!Contained || (Contained->Def->GrabPutGet & C4D_Grab_Get) || (Contained->OCF & OCF_Entrance))
 		if (!GBackSemiSolid(GetX(), GetY()-1) || (!GBackSolid(GetX(), GetY()-1) && !GBackSemiSolid(GetX(), GetY()-8)))
 			OCF|=OCF_Available;
-	// OCF_PowerSupply
-	if ( (Def->LineConnect & C4D_Power_Generator)
-	     || ((Def->LineConnect & C4D_Power_Output) && (Energy>0)) )
-		if (OCF & OCF_FullCon)
-			OCF|=OCF_PowerSupply;
 	// OCF_Container
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
@@ -1061,13 +1045,6 @@ bool C4Object::ExecLife()
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 					Incinerate(NO_OWNER);
-
-	// Nonlife normal energy loss
-	if (!::Game.iTick10) if (Energy)
-			if (!(Category & C4D_Living))
-				// don't loose if assigned as Energy-holder
-				if (!(Def->LineConnect & C4D_EnergyHolder))
-					DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
 
 	// birthday
 	if (!::Game.iTick255)
@@ -1456,8 +1433,6 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 					if (Contained) cobj->Enter(Contained);
 					else cobj->Exit(cobj->GetX(),cobj->GetY());
 			}
-			// No energy need
-			NeedEnergy=0;
 		}
 		// Decay from full stop action
 		if (fWasFull && (Con<FullCon))
@@ -2381,15 +2356,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// local particles in front of the object
 	if (FrontParticles) if (eDrawMode!=ODM_BaseOnly) FrontParticles.Draw(cgo,this);
 
-	// Energy shortage
-	/*if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
-			{
-				C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
-				int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
-				fctEnergy.Draw(cgo.Surface,cgo.X+tx,cgo.Y+ty);
-			}*/
-
-
 	// Debug Display ////////////////////////////////////////////////////////////////////////
 	if (::GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
 		{
@@ -2565,9 +2531,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
 		switch (Def->Line)
 		{
-		case C4D_Line_Power:
 		case C4D_Line_Source: case C4D_Line_Drain:
-		case C4D_Line_Rope:
 		case C4D_Line_Vertex:
 		case C4D_Line_Colored:
 			cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
@@ -2639,7 +2603,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
-	pComp->Value(mkNamingAdapt( NeedEnergy,                       "NeedEnergy",         false             ));
 	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                  ));
 	pComp->Value(Action);
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
@@ -3831,25 +3794,6 @@ void C4Object::ExecAction()
 	C4Real fWalk,fMove;
 	int32_t smpx,smpy;
 
-	// Energy usage
-	if (Game.Rules & C4RULE_StructuresNeedEnergy)
-		if (pActionDef->GetPropertyInt(P_EnergyUsage))
-		{
-			if (pActionDef->GetPropertyInt(P_EnergyUsage) <= Energy )
-			{
-				Energy -= pActionDef->GetPropertyInt(P_EnergyUsage);
-				// No general DoEnergy-Process
-				NeedEnergy=0;
-			}
-			// Insufficient energy for action: same as idle
-			else
-			{
-				NeedEnergy=1;
-				if (Mobile) DoGravity(this);
-				return;
-			}
-		}
-
 	// Action time advance
 	Action.Time++;
 
@@ -4121,8 +4065,7 @@ void C4Object::ExecAction()
 		if (!Action.Target) { ObjectComStop(this); return; }
 		// Target internal: container needs to support by own DFA_BUILD
 		if (Action.Target->Contained)
-			if ( (Action.Target->Contained->GetProcedure()!=DFA_BUILD)
-			     || (Action.Target->Contained->NeedEnergy) )
+			if (Action.Target->Contained->GetProcedure() != DFA_BUILD)
 				return;
 		// Build speed
 		int32_t iLevel;

@@ -239,10 +239,8 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	const StdBitfieldEntry<int32_t> LineTypes[] =
 	{
 
-		{ "C4D_LinePower"          ,C4D_Line_Power},
 		{ "C4D_LineSource"         ,C4D_Line_Source},
 		{ "C4D_LineDrain"          ,C4D_Line_Drain},
-		{ "C4D_LineRope"           ,C4D_Line_Rope},
 		{ "C4D_LineColored"        ,C4D_Line_Colored},
 		{ "C4D_LineVertex"         ,C4D_Line_Vertex},
 
@@ -255,15 +253,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	const StdBitfieldEntry<int32_t> LineConnectTypes[] =
 	{
 
-		{ "C4D_PowerInput"         ,C4D_Power_Input},
-		{ "C4D_PowerOutput"        ,C4D_Power_Output},
 		{ "C4D_LiquidInput"        ,C4D_Liquid_Input},
 		{ "C4D_LiquidOutput"       ,C4D_Liquid_Output},
-		{ "C4D_PowerGenerator"     ,C4D_Power_Generator},
-		{ "C4D_PowerConsumer"      ,C4D_Power_Consumer},
 		{ "C4D_LiquidPump"         ,C4D_Liquid_Pump},
-		{ "C4D_ConnectRope"        ,C4D_Connect_Rope},
-		{ "C4D_EnergyHolder"       ,C4D_EnergyHolder},
 
 		{ NULL,                     0}
 	};

@@ -36,7 +36,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Adjusts the energy value of an object. Energy signifies electrical energy in buildings and life energy in living beings.</desc>
+    <desc>Adjusts the energy value of an object. Energy signifies life energy in living beings.</desc>
     <examples>
       <example>
         <code><funclink>GetCursor</funclink>(0)-&gt;DoEnergy(<funclink>GetCursor</funclink>(0)-&gt;<funclink>GetPhysical</funclink>(&quot;Energy&quot;)*50/100000);</code>
@@ -45,7 +45,6 @@
     </examples>
     <related>
       <funclink>GetEnergy</funclink>
-      <funclink>EnergyCheck</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>

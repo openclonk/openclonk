@@ -117,7 +117,6 @@ C4StringTable::C4StringTable()
 	P[P_Sound] = "Sound";
 	P[P_ObjectDisabled] = "ObjectDisabled";
 	P[P_DigFree] = "DigFree";
-	P[P_EnergyUsage] = "EnergyUsage";
 	P[P_InLiquidAction] = "InLiquidAction";
 	P[P_TurnAction] = "TurnAction";
 	P[P_Reverse] = "Reverse";

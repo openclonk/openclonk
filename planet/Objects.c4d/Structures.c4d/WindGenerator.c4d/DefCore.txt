@@ -18,7 +18,6 @@ Picture=30,0,80,94
 Exclusive=1
 ContactIncinerate=4
 BlastIncinerate=60
-LineConnect=C4D_PowerOutput|C4D_PowerGenerator
 Construction=1
 Rotate=1
 Float=1

@@ -151,32 +151,6 @@ static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4V
 	return StringBuf;
 }
 
-
-bool CheckEnergyNeedChain(C4Object *pObj, C4ObjectList &rEnergyChainChecked)
-{
-
-	if (!pObj) return false;
-
-	// No recursion, flag check
-	if (rEnergyChainChecked.GetLink(pObj)) return false;
-	rEnergyChainChecked.Add(pObj, C4ObjectList::stNone);
-
-	// This object needs energy
-	if (pObj->Def->LineConnect & C4D_Power_Consumer)
-		if (pObj->NeedEnergy)
-			return true;
-
-	// Check all power line connected structures
-	C4Object *cline; C4ObjectLink *clnk;
-	for (clnk=::Objects.First; clnk && (cline=clnk->Obj); clnk=clnk->Next)
-		if (cline->Status) if (cline->Def->id==C4ID::PowerLine)
-				if (cline->Action.Target==pObj)
-					if (CheckEnergyNeedChain(cline->Action.Target2,rEnergyChainChecked))
-						return true;
-
-	return false;
-}
-
 typedef int32_t t_int;
 typedef bool t_bool;
 typedef C4ID t_id;
@@ -1598,25 +1572,6 @@ static C4Object *FnFindOtherContents(C4AulObjectContext *cthr, C4ID c_id)
 static bool FnActIdle(C4AulObjectContext *cthr)
 {
 	return !cthr->Obj->GetAction();
-}
-
-static bool FnCheckEnergyNeedChain(C4AulObjectContext *cthr)
-{
-	C4ObjectList EnergyChainChecked;
-	return CheckEnergyNeedChain(cthr->Obj,EnergyChainChecked);
-}
-
-static bool FnEnergyCheck(C4AulObjectContext *cthr, long energy)
-{
-	if (!(Game.Rules & C4RULE_StructuresNeedEnergy)
-	    || (cthr->Obj->Energy>=energy)
-	    || !(cthr->Obj->Def->LineConnect & C4D_Power_Consumer))
-	{
-		cthr->Obj->NeedEnergy=0;
-		return true;
-	}
-	cthr->Obj->NeedEnergy=1;
-	return false;
 }
 
 static bool FnStuck(C4AulObjectContext *cthr)
@@ -5847,8 +5802,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoDamage", FnDoDamage);
 	AddFunc(pEngine, "DoEnergy", FnDoEnergy);
 	AddFunc(pEngine, "DoBreath", FnDoBreath);
-	AddFunc(pEngine, "EnergyCheck", FnEnergyCheck);
-	AddFunc(pEngine, "CheckEnergyNeedChain", FnCheckEnergyNeedChain);
 	AddFunc(pEngine, "GetEnergy", FnGetEnergy);
 	AddFunc(pEngine, "OnFire", FnOnFire);
 	AddFunc(pEngine, "Smoke", FnSmoke);
@@ -6201,22 +6154,14 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4D_GrabGet"            ,C4V_Int,          C4D_Grab_Get},
 	{ "C4D_GrabPut"            ,C4V_Int,          C4D_Grab_Put},
 
-	{ "C4D_LinePower"          ,C4V_Int,          C4D_Line_Power},
 	{ "C4D_LineSource"         ,C4V_Int,          C4D_Line_Source},
 	{ "C4D_LineDrain"          ,C4V_Int,          C4D_Line_Drain},
-	{ "C4D_LineRope"           ,C4V_Int,          C4D_Line_Rope},
 	{ "C4D_LineColored"        ,C4V_Int,          C4D_Line_Colored},
 	{ "C4D_LineVertex"         ,C4V_Int,          C4D_Line_Vertex},
 
-	{ "C4D_PowerInput"         ,C4V_Int,          C4D_Power_Input},
-	{ "C4D_PowerOutput"        ,C4V_Int,          C4D_Power_Output},
 	{ "C4D_LiquidInput"        ,C4V_Int,          C4D_Liquid_Input},
 	{ "C4D_LiquidOutput"       ,C4V_Int,          C4D_Liquid_Output},
-	{ "C4D_PowerGenerator"     ,C4V_Int,          C4D_Power_Generator},
-	{ "C4D_PowerConsumer"      ,C4V_Int,          C4D_Power_Consumer},
 	{ "C4D_LiquidPump"         ,C4V_Int,          C4D_Liquid_Pump},
-	//{ "C4D_ConnectRope"        ,C4V_Int,          C4D_Connect_Rope},
-	{ "C4D_EnergyHolder"       ,C4V_Int,          C4D_EnergyHolder},
 
 	{ "C4V_Any"                ,C4V_Int,          C4V_Any},
 	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
@@ -6266,8 +6211,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "OCF_InSolid"            ,C4V_Int,          OCF_InSolid},
 	{ "OCF_InFree"             ,C4V_Int,          OCF_InFree},
 	{ "OCF_Available"          ,C4V_Int,          OCF_Available},
-	{ "OCF_PowerConsumer"      ,C4V_Int,          OCF_PowerConsumer},
-	{ "OCF_PowerSupply"        ,C4V_Int,          OCF_PowerSupply},
 	{ "OCF_Container"          ,C4V_Int,          OCF_Container},
 	{ "OCF_Alive"              ,C4V_Int,          (int) OCF_Alive},
 
@@ -6334,7 +6277,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "FX_Call_EngBaseRefresh"    ,C4V_Int,      C4FxCall_EngBaseRefresh    }, // energy reload in base (also by base object, but that's normally not called)
 	{ "FX_Call_EngAsphyxiation"   ,C4V_Int,      C4FxCall_EngAsphyxiation   }, // energy loss through asphyxiaction
 	{ "FX_Call_EngCorrosion"      ,C4V_Int,      C4FxCall_EngCorrosion      }, // energy loss through corrosion (acid)
-	{ "FX_Call_EngStruct"         ,C4V_Int,      C4FxCall_EngStruct         }, // regular structure energy loss (normally not called)
 	{ "FX_Call_EngGetPunched"     ,C4V_Int,      C4FxCall_EngGetPunched     }, // energy loss from punch
 
 	{ "GFXOV_MODE_None"           ,C4V_Int,      C4GraphicsOverlay::MODE_None },    // gfx overlay modes

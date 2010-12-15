@@ -463,10 +463,6 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		bool connect_okay=false;
 		switch (cline->Def->Line)
 		{
-		case C4D_Line_Power:
-			if (tstruct->Def->LineConnect & C4D_Power_Input) connect_okay=true;
-			if (tstruct->Def->LineConnect & C4D_Power_Output) connect_okay=true;
-			break;
 		case C4D_Line_Source:
 			if (tstruct->Def->LineConnect & C4D_Liquid_Output) connect_okay=true; break;
 		case C4D_Line_Drain:
@@ -515,10 +511,6 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		if (tstruct->Def->LineConnect & C4D_Liquid_Output)
 			if (!Game.FindObject(C4ID::DrainPipe,0,0,0,0,OCF_All,"Connect",tstruct))
 				linetype = C4ID::DrainPipe;
-	// Check power
-	if (linetype==C4ID::None)
-		if (tstruct->Def->LineConnect & C4D_Power_Output)
-			linetype = C4ID::PowerLine;
 	// No good
 	if (linetype==C4ID::None)
 	{

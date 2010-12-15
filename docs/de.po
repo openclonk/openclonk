@@ -88,8 +88,6 @@ msgstr "Kategorie"
 #: sdk/content.xml.in:85(emlink)
 #: sdk/script/fn/OCF_Rotate.xml:9(subcat)
 #: sdk/script/fn/OCF_Prey.xml:9(subcat)
-#: sdk/script/fn/OCF_PowerSupply.xml:9(subcat)
-#: sdk/script/fn/OCF_PowerConsumer.xml:9(subcat)
 #: sdk/script/fn/OCF_OnFire.xml:9(subcat)
 #: sdk/script/fn/OCF_NotContained.xml:9(subcat)
 #: sdk/script/fn/OCF_Living.xml:9(subcat)
@@ -1446,8 +1444,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/Object.xml:8(category)
 #: sdk/script/fn/OCF_Rotate.xml:8(category)
 #: sdk/script/fn/OCF_Prey.xml:8(category)
-#: sdk/script/fn/OCF_PowerSupply.xml:8(category)
-#: sdk/script/fn/OCF_PowerConsumer.xml:8(category)
 #: sdk/script/fn/OCF_OnFire.xml:8(category)
 #: sdk/script/fn/OCF_NotContained.xml:8(category)
 #: sdk/script/fn/OCF_Living.xml:8(category)
@@ -1564,7 +1560,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/Explode.xml:8(category)
 #: sdk/script/fn/Exit.xml:8(category)
 #: sdk/script/fn/Enter.xml:8(category)
-#: sdk/script/fn/EnergyCheck.xml:8(category)
 #: sdk/script/fn/DoMagicEnergy.xml:8(category)
 #: sdk/script/fn/DoEnergy.xml:8(category)
 #: sdk/script/fn/DoDamage.xml:8(category)
@@ -1589,7 +1584,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/CloseMenu.xml:8(category)
 #: sdk/script/fn/ClearMenuItems.xml:8(category)
 #: sdk/script/fn/CheckVisibility.xml:8(category)
-#: sdk/script/fn/CheckEnergyNeedChain.xml:8(category)
 #: sdk/script/fn/ChangeDef.xml:8(category)
 #: sdk/script/fn/CastObjects.xml:8(category)
 #: sdk/script/fn/CanConcatPictureWith.xml:8(category)
@@ -1823,8 +1817,6 @@ msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für de
 #: sdk/script/fn/SkyPar_Keep.xml:12(remark)
 #: sdk/script/fn/OCF_Rotate.xml:13(remark)
 #: sdk/script/fn/OCF_Prey.xml:13(remark)
-#: sdk/script/fn/OCF_PowerSupply.xml:13(remark)
-#: sdk/script/fn/OCF_PowerConsumer.xml:13(remark)
 #: sdk/script/fn/OCF_OnFire.xml:13(remark)
 #: sdk/script/fn/OCF_NotContained.xml:13(remark)
 #: sdk/script/fn/OCF_Living.xml:13(remark)
@@ -2117,12 +2109,10 @@ msgstr "Setzt die MeshTransformation für das aufrufende Objekt zurück."
 #: sdk/script/fn/GetContact.xml:9(subcat)
 #: sdk/script/fn/GetCon.xml:9(subcat)
 #: sdk/script/fn/Extinguish.xml:9(subcat)
-#: sdk/script/fn/EnergyCheck.xml:9(subcat)
 #: sdk/script/fn/DoMagicEnergy.xml:9(subcat)
 #: sdk/script/fn/DoEnergy.xml:9(subcat)
 #: sdk/script/fn/DoDamage.xml:9(subcat)
 #: sdk/script/fn/DoCon.xml:9(subcat)
-#: sdk/script/fn/CheckEnergyNeedChain.xml:9(subcat)
 #: sdk/script/fn/ChangeDef.xml:9(subcat)
 msgid "Status"
 msgstr "Status"
@@ -6114,8 +6104,6 @@ msgstr "Object character flag: Objekt ist drehbar."
 
 #: sdk/script/fn/OCF_Rotate.xml:14(remark)
 #: sdk/script/fn/OCF_Prey.xml:14(remark)
-#: sdk/script/fn/OCF_PowerSupply.xml:14(remark)
-#: sdk/script/fn/OCF_PowerConsumer.xml:14(remark)
 #: sdk/script/fn/OCF_OnFire.xml:14(remark)
 #: sdk/script/fn/OCF_NotContained.xml:14(remark)
 #: sdk/script/fn/OCF_Living.xml:14(remark)
@@ -6146,8 +6134,6 @@ msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten
 
 #: sdk/script/fn/OCF_Rotate.xml:18(emlink)
 #: sdk/script/fn/OCF_Prey.xml:18(emlink)
-#: sdk/script/fn/OCF_PowerSupply.xml:18(emlink)
-#: sdk/script/fn/OCF_PowerConsumer.xml:18(emlink)
 #: sdk/script/fn/OCF_OnFire.xml:18(emlink)
 #: sdk/script/fn/OCF_NotContained.xml:19(emlink)
 #: sdk/script/fn/OCF_Living.xml:18(emlink)
@@ -6182,14 +6168,6 @@ msgstr "Object character flags"
 #: sdk/script/fn/OCF_Prey.xml:12(desc)
 msgid "Object character flag: prey for certain animals (usual prey are wipfs, clonks etc.)"
 msgstr "Object character flag: Beutetier, wie zum Beispiel Wipfe, Clonks, etc."
-
-#: sdk/script/fn/OCF_PowerSupply.xml:12(desc)
-msgid "Object character flag: Energy supplier. This property is controlled by <emlink href=\"definition/defcore.html\">DefCore</emlink> entry \"LineConnect\". This will apply to sole energy suppliers but also to energy consumers, if they are completely built, have some energy stored, and an outgoing energy line can be connected."
-msgstr "Object character flag: Energiequelle. Diese Eigenschaft wird durch den <emlink href=\"definition/defcore.html\">DefCore</emlink>-Eintrag \"LineConnect\" geregelt. Dabei zählen immer reine Energieerzeuger, sowie auch normale Energieverbraucher, wenn sie einen momentanen Energiewert &gt;0 bestizen und eine Energieleitung angeschlossen werden kann. Das Gebäude muss außerdem fertig gebaut sein."
-
-#: sdk/script/fn/OCF_PowerConsumer.xml:12(desc)
-msgid "Object character flag: Energy consumer. This property is controlled by <emlink href=\"definition/defcore.html\">DefCore</emlink> entry \"LineConnect\". The object must also be completely built."
-msgstr "Object character flag: Energieverbraucher. Diese Eigenschaft wird durch den <emlink href=\"definition/defcore.html\">DefCore</emlink>-Eintrag \"LineConnect\" geregelt. Das Gebäude muss außerdem fertig gebaut sein."
 
 #: sdk/script/fn/OCF_OnFire.xml:12(desc)
 msgid "Object character flag: a burning object."
@@ -8838,18 +8816,6 @@ msgstr "Versetzt das aufrufende Objekt in ein anderes hinein. Bei diesem Vorgang
 msgid "The selected clonk is moved into the first found hut."
 msgstr "Der ausgewählte Clonk des ersten Spielers wird in die erstbeste Hütte versetzt."
 
-#: sdk/script/fn/EnergyCheck.xml:17(desc)
-msgid "Requested energy value."
-msgstr "Abgefragter Energiewert"
-
-#: sdk/script/fn/EnergyCheck.xml:21(desc)
-msgid "Returns whether an object's energy value is greater than or equal to the specified level. If the game rule \"Energy Usage\" is not enabled, this function always returns true. Otherwise, this call will also create an energy demand which will cause connected energy lines to transfer energy into this object."
-msgstr "Gibt zurück, ob der Energiewert des aufrufenden Objekts größer oder gleich energy ist. Wenn die Spielregel \"Energiebedarf\" nicht aktiviert ist, gibt diese Funktion immer TRUE zurück. Außerdem werden Leitungen dazu motiviert, Energie hierhin zu transferieren."
-
-#: sdk/script/fn/EnergyCheck.xml:25(text)
-msgid "Starts the activity \"Working\" if sufficient energy is available."
-msgstr "Startet die Aktivität \"Working\", wenn genug Energie vorhanden ist."
-
 #: sdk/script/fn/EliminatePlayer.xml:16(desc)
 msgid "Number of the player to be eliminated."
 msgstr "Spielernummer des zu eliminierenden Spielers"
@@ -9888,18 +9854,6 @@ msgstr "Spieler für den die Sichtbarkeit abgefragt wird."
 #: sdk/script/fn/CheckVisibility.xml:28(desc)
 msgid "Checks whether the given object is visible for the given player."
 msgstr "Prüft ob das angegebene Objekt für den angegebenen Spieler sichtbar ist."
-
-#: sdk/script/fn/CheckEnergyNeedChain.xml:12(desc)
-msgid "Checks whether any energy user connected to the specified object currently requires energy. The search will also include indirectly connected objects (via multiple lines)."
-msgstr "Überprüft, ob ein an das aufrufende Objekt angeschlossener Verbraucher Energie benötigt. Dabei werden auch indirekt (also über mehrere Leitungen über einen weiteren Verbraucher) angeschlossene Verbraucher überprüft."
-
-#: sdk/script/fn/CheckEnergyNeedChain.xml:13(remark)
-msgid "The search is performed only in the direction in which energy is also transferred, meaning from suppliers to users."
-msgstr "Es wird nur in die Richtung geprüft, in der auch Energie durch Energieleitungen fließen kann. Also vom Versorger zum Verbraucher."
-
-#: sdk/script/fn/CheckEnergyNeedChain.xml:17(text)
-msgid "Script for a power plant: if any of the connected users needs energy, the furnace is started."
-msgstr "Script für ein Kraftwerk: Wenn einer der angeschlossenen Verbraucher Energie benötigt, wird der Ofen angeheizt."
 
 #: sdk/script/fn/CheckEffect.xml:16(desc)
 #: sdk/script/fn/AddEffect.xml:16(desc)
@@ -17008,17 +16962,9 @@ msgstr "Sind sowohl \"MeshTransformation\" als auch <placeholder-1/> gesetzt, so
 msgid "The LineConnect attribute is a bitmask and determines which lines can be connected to an object and what the object conducts."
 msgstr "Die LineConnect-Eigenschaft (DWord-Bitmaske) eines Objekts bestimmt, welche Leitungen an das Objekt angeschlossen werden können und welches Leitungsverhalten das Objekt hat."
 
-#: sdk/definition/lineconnect.xml:20(col)
-msgid "C4D_PowerInput"
-msgstr "C4D_PowerInput"
-
 #: sdk/definition/lineconnect.xml:21(col)
 msgid "The end of an energy line can be connected."
 msgstr "Das Ende einer Energieleitung kann angeschlossen werden."
-
-#: sdk/definition/lineconnect.xml:26(col)
-msgid "C4D_PowerOutput"
-msgstr "C4D_PowerOutput"
 
 #: sdk/definition/lineconnect.xml:27(col)
 msgid "The start of an energy line can be connected."
@@ -17040,17 +16986,9 @@ msgstr "C4D_LiquidOutput"
 msgid "The beginning of a pipe can be connected."
 msgstr "Der Anfang eines Rohres kann angeschlossen werden."
 
-#: sdk/definition/lineconnect.xml:44(col)
-msgid "C4D_PowerGenerator"
-msgstr "C4D_PowerGenerator"
-
 #: sdk/definition/lineconnect.xml:45(col)
 msgid "The object is a power generator."
 msgstr "Das Objekt ist ein Energieerzeuger."
-
-#: sdk/definition/lineconnect.xml:50(col)
-msgid "C4D_PowerConsumer"
-msgstr "C4D_PowerConsumer"
 
 #: sdk/definition/lineconnect.xml:51(col)
 msgid "The object is an energy consumer."

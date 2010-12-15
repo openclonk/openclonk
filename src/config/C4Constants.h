@@ -121,10 +121,8 @@ const uint32_t
 	OCF_InSolid = 1<<24,
 	OCF_InFree = 1<<25,
 	OCF_Available = 1<<26,
-	OCF_PowerConsumer = 1<<27,
-	OCF_PowerSupply = 1<<28,
-	OCF_Container = 1<<29,
-	OCF_Alive = 1<<30;
+	OCF_Container = 1<<27,
+	OCF_Alive = 1<<28;
 
 //================================== Contact / Attachment ==============================================
 

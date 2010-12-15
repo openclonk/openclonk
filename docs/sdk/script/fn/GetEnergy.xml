@@ -9,7 +9,7 @@
     <version>4.6.5.0 CP</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current energy value of an object. 100% representing the maximum physical value of 100,000. Also see DefCore section [Physical]. obj can be 0 in local calls.</desc>
-    <remark>"Energy" signifies life energy in living beings and electrical energy in buildings.</remark>
+    <remark>"Energy" signifies life energy in living beings.</remark>
     <related><funclink>GetPhysical</funclink></related>
   </func>
   <author>jwk</author><date>2002-06</date>
