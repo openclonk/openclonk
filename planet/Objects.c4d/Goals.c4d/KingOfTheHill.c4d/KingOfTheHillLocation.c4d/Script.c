@@ -90,7 +90,7 @@ func SetKing(object to)
 
 func FxKOTHKingTimer(target, effect_time)
 {
-	target->DoEnergy(1);
+	//target->DoEnergy(1);
 }
 
 func FxKOTHKingStop(target, effect_number, reason, temp)
