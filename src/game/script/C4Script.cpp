@@ -2162,18 +2162,6 @@ C4Object* FnPlaceAnimal(C4AulContext *cthr, C4ID id)
 	return Game.PlaceAnimal(id);
 }
 
-static bool FnDrawVolcanoBranch(C4AulContext *cthr, long mat, long fx, long fy, long tx, long ty, long size)
-{
-	long cx,cx2,cy;
-	for (cy=ty; cy<fy; cy++)
-	{
-		cx=fx+(tx-fx)*(cy-fy)/(ty-fy);
-		for (cx2=cx-size/2; cx2<cx+size/2; cx2++)
-			SBackPix(cx2,cy,Mat2PixColDefault(mat)+GBackIFT(cx2,cy));
-	}
-	return true;
-}
-
 static bool FnHostile(C4AulContext *cthr, long iPlr1, long iPlr2, bool fCheckOneWayOnly)
 {
 	if (fCheckOneWayOnly)
@@ -5916,7 +5904,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "BlastObject", FnBlastObject);
 	AddFunc(pEngine, "BlastFree", FnBlastFree);
 	AddFunc(pEngine, "InsertMaterial", FnInsertMaterial);
-	AddFunc(pEngine, "DrawVolcanoBranch", FnDrawVolcanoBranch, false);
 	AddFunc(pEngine, "LandscapeWidth", FnLandscapeWidth);
 	AddFunc(pEngine, "LandscapeHeight", FnLandscapeHeight);
 	AddFunc(pEngine, "Resort", FnResort);
