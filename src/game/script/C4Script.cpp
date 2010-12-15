@@ -6133,8 +6133,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4D_LinePower"          ,C4V_Int,          C4D_Line_Power},
 	{ "C4D_LineSource"         ,C4V_Int,          C4D_Line_Source},
 	{ "C4D_LineDrain"          ,C4V_Int,          C4D_Line_Drain},
-	{ "C4D_LineLightning"      ,C4V_Int,          C4D_Line_Lightning},
-	{ "C4D_LineVolcano"        ,C4V_Int,          C4D_Line_Volcano},
 	{ "C4D_LineRope"           ,C4V_Int,          C4D_Line_Rope},
 	{ "C4D_LineColored"        ,C4V_Int,          C4D_Line_Colored},
 	{ "C4D_LineVertex"         ,C4V_Int,          C4D_Line_Vertex},

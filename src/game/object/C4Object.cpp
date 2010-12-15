@@ -2567,7 +2567,6 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 		{
 		case C4D_Line_Power:
 		case C4D_Line_Source: case C4D_Line_Drain:
-		case C4D_Line_Lightning:
 		case C4D_Line_Rope:
 		case C4D_Line_Vertex:
 		case C4D_Line_Colored:
