@@ -409,6 +409,7 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), GTK_TOOL_ITEM(btnModeDraw), -1);
 
 	lblCursor = gtk_label_new("");
+	gtk_misc_set_padding(GTK_MISC(lblCursor), 3, 0);
 	GtkToolItem * itmCursor = gtk_tool_item_new();
 	gtk_container_add(GTK_CONTAINER(itmCursor), lblCursor);
 	gtk_toolbar_insert(GTK_TOOLBAR(top_hbox), itmCursor, -1);
@@ -447,8 +448,10 @@ void C4ConsoleGUI::State::InitGUI()
 	txtLog = gtk_text_view_new();
 	txtScript = gtk_entry_new();
 
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(txtLog), false);
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(txtLog), 2);
 
 	gtk_container_add(GTK_CONTAINER(scroll), txtLog);
 
@@ -540,7 +543,7 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_box_pack_start(GTK_BOX(box), menuBar, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(box), top_hbox, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(box), scroll, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 0);
+	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 3);
 	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
 
 	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
