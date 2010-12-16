@@ -452,6 +452,17 @@
 	Hold=1
 	RepeatDelay=3
 	
+	[ControlDef]
+	Identifier=WheelZoomIn
+	GUIName=Zoom in
+	GUIDesc=Increase viewport zoom
+	Action=ZoomIn
+	
+	[ControlDef]
+	Identifier=WheelZoomOut
+	GUIName=Zoom out
+	GUIDesc=Decrease viewport zoom
+	Action=ZoomOut
 
 	
 	
@@ -609,12 +620,12 @@
 		[Assignment]
 		Key=Mouse1Wheel1Up
 		Priority=100
-		Control=ZoomIn
+		Control=WheelZoomIn
 		
 		[Assignment]
 		Key=Mouse1Wheel1Down
 		Priority=100
-		Control=ZoomOut
+		Control=WheelZoomOut
 
 		
 	# ======================================================================= #
@@ -730,12 +741,12 @@
 		[Assignment]
 		Key=Mouse1Wheel1Up
 		Priority=100
-		Control=ZoomIn
+		Control=WheelZoomIn
 		
 		[Assignment]
 		Key=Mouse1Wheel1Down
 		Priority=100
-		Control=ZoomOut
+		Control=WheelZoomOut
 		
 		
 	# ======================================================================= #
