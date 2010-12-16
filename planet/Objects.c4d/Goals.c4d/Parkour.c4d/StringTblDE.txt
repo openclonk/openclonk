@@ -14,15 +14,8 @@ MsgRespawn2=Haha, %s!
 MsgRespawn3=We're mourning %s.
 MsgNewRespawn=You'll now respawn here.
 
-#Description
-MsgDescFirst=You are in| first place.
-MsgDescSecond=You are in| second place.
-MsgDescThird=You are in| third place.
-MsgDescNth=You are in| %dth place.
-MsgDescTeamFirst=Your team is| in first place.
-MsgDescTeamSecond=Your team is| in second place.
-MsgDescTeamThird=Your team is| in third place.
-MsgDescTeamNth=Your team is|in %dth place.
+#Short Description
+MsgShortDesc=Fertig: %d%
 
 #Scoreboard
 MsgCaptionX=Parkour over %d checkpoints.
