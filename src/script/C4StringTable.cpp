@@ -159,7 +159,17 @@ C4StringTable::C4StringTable()
 
 C4StringTable::~C4StringTable()
 {
+#ifdef _DEBUG
+	if(Set.GetSize() != P_LAST)
+	{
+		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
+		{
+			fprintf(stderr, "\"%s\"\n", (*s)->GetCStr());
+		}
+	}
+#endif
 	assert(Set.GetSize() == P_LAST);
+	for (unsigned int i = 0; i < P_LAST; ++i) P[i].Data.Clear();
 }
 
 C4String *C4StringTable::RegString(StdStrBuf String)
