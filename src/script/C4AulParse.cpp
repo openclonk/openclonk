@@ -138,7 +138,7 @@ public:
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
-	long cInt; // current int constant (long for compatibility with x86_64)
+	intptr_t cInt; // current int constant
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
@@ -169,7 +169,7 @@ public:
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
 	enum HoldStringsPolicy { Discard, Hold, Ref };
 	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(char *pToken, long *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
+	C4AulTokenType GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
 
 	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
 	void Match(C4AulTokenType TokenType, const char * Message = NULL);
@@ -557,7 +557,7 @@ void C4AulParseState::ClearToken()
 	}
 }
 
-C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
+C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
 {
 	// clear mem of prev token
 	ClearToken();
