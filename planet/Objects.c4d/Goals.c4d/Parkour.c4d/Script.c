@@ -198,52 +198,72 @@ public func Activate(int plr)
 public func GetShortDescription(int plr)
 {
 	var team = GetPlayerTeam(plr);
-	var msg, pos;
+	var length;
 	if (team)
-	{
-		pos = GetTeamPosition(team);
-		if (pos == 1)
-			msg = "$MsgDescTeamFirst$";
-		if (pos == 2)
-			msg = "$MsgDescTeamSecond$";
-		if (pos == 3)
-			msg = "$MsgDescTeamThird$";
-		if (pos >= 4)
-			msg = Format("$MsgDescTeamNth$", pos);
-	}
+		length = GetTeamPosition(team);
 	else
-	{
-		pos = GetPlayerPosition(plr);
-		if (pos == 1)
-			msg = "$MsgDescFirst$";
-		if (pos == 2)
-			msg = "$MsgDescSecond$";
-		if (pos == 3)
-			msg = "$MsgDescThird$";
-		if (pos >= 4)
-			msg = Format("$MsgDescNth$", pos);
-	}
-	return msg;
+		length = GetPlayerPosition(plr);
+	var percentage =  100 * length / GetParkourLength();
+	var red = BoundBy(255 - percentage * 255 / 100, 0, 255);
+	var green = BoundBy(percentage * 255 / 100, 0, 255);
+	var color = RGB(red, green, 0);
+	return Format("<c %x>$MsgShortDesc$</c>", color, percentage, color);
 }
 
+// Returns the length the player has completed.
 private func GetPlayerPosition(int plr)
 {
-	var pos = 1;
 	var plrid = GetPlayerID(plr);
-	for (var i = 0; i < GetPlayerCount(); i++)
-		if (plr_list[plrid] < plr_list[GetPlayerID(GetPlayerByIndex(i))])
-			pos++;
-	return pos;
+	var cleared = plr_list[plrid];
+	var length = 0;
+	// Add length of cleared checkpoints.
+	for (var i = 0; i < cleared; i++)
+		length += ObjectDistance(cp_list[i], cp_list[i + 1]);
+	// Add length of current checkpoint.
+	var add_length = 0;
+	if (cleared < cp_count)
+	{
+		var path_length = ObjectDistance(cp_list[cleared], cp_list[cleared + 1]);
+		add_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], GetCursor(plr)), 0);
+	}
+	return length + add_length;
 }
 
+// Returns the length the team has completed.
 private func GetTeamPosition(int team)
 {
-	var pos = 1;
-	for (var i = 0; i < GetTeamCount(); i++)
-		if (team_list[team] < team_list[GetTeamByIndex(i)])
-			pos++;
-	return pos;
+	var cleared = team_list[team];
+	var length = 0;
+	// Add length of cleared checkpoints.
+	for (var i = 0; i < cleared; i++)
+		length += ObjectDistance(cp_list[i], cp_list[i + 1]);
+	// Add length of current checkpoint.
+	var add_length = 0;
+	if (cleared < cp_count)
+	{
+		for (var i = 0; i < GetPlayerCount(); i++)
+		{
+			var plr = GetPlayerByIndex(i);
+			if (GetPlayerTeam(plr) == team)
+			{
+				var path_length = ObjectDistance(cp_list[cleared], cp_list[cleared + 1]);
+				var test_length = Max(path_length - ObjectDistance(cp_list[cleared + 1], GetCursor(plr)), 0);
+				if (test_length > add_length)
+					add_length = test_length;
+			}			
+		}
+	}
+	return length + add_length;
 }
+
+// Returns the length of this parkour.
+private func GetParkourLength()
+{
+	var length = 0;
+	for (var i = 0; i < cp_count; i++)
+		length += ObjectDistance(cp_list[i], cp_list[i + 1]);
+	return length;
+}	
 
 private func IsWinner(int plr)
 {
@@ -399,7 +419,11 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510);
 	var red = BoundBy(dist, 0, 255);
 	var green = BoundBy(510 - dist, 0, 255);
-	var color = RGBa(red, green, 0, 128);
+	var blue = 0;
+	// Arrow is colored a little different for the finish.
+	if (cp->GetCPMode() & PARKOUR_CP_Finish)
+		blue = 128;
+	var color = RGBa(red, green, blue, 128);
 	// Draw arrow.
 	arrow->SetR(angle);
 	arrow->SetClrModulation(color);
