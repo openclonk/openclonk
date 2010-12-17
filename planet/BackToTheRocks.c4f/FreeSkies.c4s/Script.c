@@ -1,8 +1,8 @@
 /*-- 
-	ForgottenHeights
+	Thunderous Skies
 	Author: Mimmo_O
 	
-	Last man Standing on sky islands for up to 12 players.
+	King of the hill high in the skies.
 --*/
 
 
@@ -46,15 +46,15 @@ protected func Initialize()
 }
 global func FxLifestealDamage(object target, int num, int damage, int cause, int from)
 {
-	if(!FindObject(Find_ID(KingOfTheHill_Location))->GetKing()) return damage;
-	if(from == -1) return damage;
-	if(damage > 0) return damage;
-	if(target->GetOwner() == from) return damage;
-	if(FindObject(Find_ID(KingOfTheHill_Location))->GetKing()->GetOwner() == from)
-	{
-		var king=FindObject(Find_ID(KingOfTheHill_Location))->GetKing();
+	var goal = FindObject(Find_ID(KingOfTheHill_Location));
+	if (!goal) return damage;
+	var king = goal->GetKing();
+	if (!king) return damage;
+	if (from == -1) return damage;
+	if (damage > 0) return damage;
+	if (target->GetOwner() == from) return damage;
+	if (king->GetOwner() == from)
 		AddEffect("Lifedrain",king,100,1,nil,nil,damage/3);
-	}
 	return damage;
 }
 global func FxLifedrainStart(object target, int num, int temporary,damage)
@@ -243,16 +243,6 @@ private func MakeTarget(int x, int y)
 
 }
 
-// Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
-{
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
-	return;
-}
-
-
 // Refill/fill chests.
 global func FxIntFillChestsStart(object target, int num, int temporary)
 {
@@ -312,6 +302,11 @@ if (!this)
 	return;
 }
 
+protected func InitializePlayer(int plr)
+{
+	return JoinPlayer(plr);
+}
+
 // GameCall from RelaunchContainer.
 protected func RelaunchPlayer(int plr)
 {
@@ -329,9 +324,8 @@ protected func JoinPlayer(int plr)
 	var position = [[180,150],[310,320],[600,290],[650,180],[790,110],[440,190]];
 	var r=Random(GetLength(position));
 	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObject(RelaunchContainer, x,y+49, clonk->GetOwner());
+	var relaunch = CreateObject(RelaunchContainer, x, y + 49, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
-
 	return;
 }
 

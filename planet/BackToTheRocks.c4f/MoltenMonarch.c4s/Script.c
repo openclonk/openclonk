@@ -1,8 +1,8 @@
 /*-- 
-	Down the Fountain
+	Molten Monarch
 	Author: Mimmo_O
 	
-	An arena like last man standing round for up two to three players.
+	A king of the hill in a lava cave.
 --*/
 
 
@@ -170,6 +170,11 @@ global func CreateChestContents(id obj_id)
 	return;
 }
 
+protected func InitializePlayer(int plr)
+{
+	return JoinPlayer(plr);
+}
+
 // GameCall from RelaunchContainer.
 protected func RelaunchPlayer(int plr)
 {
@@ -187,9 +192,8 @@ protected func JoinPlayer(int plr)
 	var position = [[420,150],[300,370],[130,160],[140,350],[700,150],[670,300],[750,410],[440,350],[40,240]];
 	var r=Random(GetLength(position));
 	var x = position[r][0], y = position[r][1];
-	var relaunch = CreateObject(RelaunchContainer, x,y, clonk->GetOwner());
+	var relaunch = CreateObject(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
-
 	return;
 }
 
