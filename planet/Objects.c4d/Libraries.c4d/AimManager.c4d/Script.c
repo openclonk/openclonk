@@ -437,7 +437,7 @@ public func ResetHands(bool pause)
 
 func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
 {
-	if(iValue == nil) iValue = 30000;
+	if(iValue == nil) iValue = 84;
 	pTarget->PushActionSpeed("Walk", iValue);
 }
 
