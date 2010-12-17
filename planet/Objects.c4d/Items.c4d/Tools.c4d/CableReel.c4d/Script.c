@@ -9,60 +9,59 @@ public func IsToolProduct() { return 1; }
 
 /*-- Line connection --*/
 
-// Called with double dig: will connect power line to building at the clonk's position.
-protected func Activate(object pClonk)
+// Use will connect power line to building at the clonk's position.
+protected func ControlUse(object clonk, int x, int y)
 {
-	[$TxtConnectLine$]
-	
-	pClonk->SetComDir(COMD_Stop);
-	
 	// Is there an object which accepts power lines?
-	var pObj = FindObject(Find_AtPoint(), Find_Func("CanPowerConnect"));
+	var obj = FindObject(Find_AtPoint(), Find_Func("CanPowerConnect"));
 	// No such object -> message.
-	if(!pObj)
-		return pClonk->Message("$TxtNoNewLine$");
+	if (!obj)
+		return clonk->Message("$TxtNoNewLine$");
 	// Is there a power line connected to this wire roll?
-	var pLine = FindObject(Find_PowerLine());
-		
-	if(pLine) // There already is a power line.
+	var line = FindObject(Find_PowerLine());
+	// There already is a power line.
+	if (line)
 	{
-		if(pObj == pLine->GetActionTarget(0) || pObj == pLine->GetActionTarget(1)) // Power line is already connected to pObj -> remove line.
+		if (obj == line->GetActionTarget(0) || obj == line->GetActionTarget(1)) 
 		{
-			pLine->RemoveObject();
+			// Power line is already connected to obj -> remove line.
+			line->RemoveObject();
 			Sound("Connect");
-			pClonk->Message("$TxtLineRemoval$");
+			clonk->Message("$TxtLineRemoval$");
 			return true;
 		}
-		else // Connect existing power line to pObj.
+		else 
 		{
-			if(pLine->GetActionTarget(0) == this)
-				pLine->SetActionTargets(pObj, pLine->GetActionTarget(1));
-			else if(pLine->GetActionTarget(1) == this)
-				pLine->SetActionTargets(pLine->GetActionTarget(0), pObj);
+			// Connect existing power line to obj.
+			if(line->GetActionTarget(0) == this)
+				line->SetActionTargets(obj, line->GetActionTarget(1));
+			else if(line->GetActionTarget(1) == this)
+				line->SetActionTargets(line->GetActionTarget(0), obj);
 			else
 				return;
 			Sound("Connect");
-			pClonk->Message("$TxtConnect$", pObj->GetName());
+			clonk->Message("$TxtConnect$", obj->GetName());
 			RemoveObject();
 			return true;
 		}
 	}
 	else // A new power line needs to be created.
 	{
-		pLine = CreateObject(PowerLine, 0, 0, NO_OWNER);
-		pLine->SetActionTargets(this, pObj);
+		line = CreateObject(PowerLine, 0, 0, NO_OWNER);
+		line->SetActionTargets(this, obj);
 		Sound("Connect");
-		pClonk->Message("$TxtConnect$", pObj->GetName());
+		clonk->Message("$TxtConnect$", obj->GetName());
 		return true;
 	}
-//	return true;
+	return true;
 }
 
-// Finds all power lines connected to pObject (can be nil in local calls).
-private func Find_PowerLine(object pObject)
+// Finds all power lines connected to obj (can be nil in local calls).
+private func Find_PowerLine(object obj)
 {
-	if(!pObject) pObject = this;
-	return [C4FO_Func, "IsConnectedTo", pObject];
+	if (!obj)
+		obj = this;
+	return [C4FO_Func, "IsConnectedTo", obj];
 }
 
 local Name = "$Name$";

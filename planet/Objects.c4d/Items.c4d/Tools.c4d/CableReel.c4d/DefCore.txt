@@ -5,9 +5,10 @@ Category=C4D_Object
 Width=8
 Height=6
 Offset=-4,-3
-Vertices=1
-VertexY=1
-VertexFriction=50
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=50,50,50
 Value=10
 Mass=15
 Components=Metal=1

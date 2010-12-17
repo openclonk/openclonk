@@ -1,24 +1,23 @@
-/*--
+/**
 	Power consumer
-	Author: Maikel
+	Should be included by all power consumers. The consumer can check and consume power by calling
+	the function CheckPower(int power_check, bool no_substract), see below for an explanation.
 	
-	To be included by all objects that need a supply of energy.
-	The object then can check and consume power by calling it's
-	function CheckPower(int power_check, bool no_substract),
-	see below for an explanation.
---*/
+	@author Maikel
+*/
 
 
-/*-- Public calls --*/
-// Functions that specify object properties, should be overloaded by the consumer.
-
-// Returns whether the object is a power consumer.
+/** Determines whether the object is a power consumer.
+	@return \c true if the object is a power consumer and \c false otherwise.
+*/
 public func IsPowerConsumer()
 {
 	return true;
 }
 
-// Returns if a power line can be connected to this object.
+/** Determines whether a power line can be connected.
+	@return \c true if a power line can be connected to this object, \c false otherwise.
+*/
 public func CanPowerConnect() // Other name?
 {
 	return GetCon() >= 100;
@@ -26,16 +25,18 @@ public func CanPowerConnect() // Other name?
 
 /*-- Power consumption --*/
 
-// Checks whether there is enough power to sustain powerNeed.
-// returns true and substracts powerNeed if there is enough power, otherwise false.
-// fSubstract determines whether the check substracts powerNeed.
-// If false it starts showing the power need object.
-// If true it stops showing the power need object.
+/** Inspects the network connected to the calling consumer for power.
+	@param power_check amount of power to extract from the network.
+	@param no_substract determines whether the check should substract power_check.
+	@return \c true if the amount of power was available in the network, \c false otherwise.
+*/
 public func CheckPower(int power_check, bool no_substract)
 {
-	if (!FindObject(Find_ID(Rule_NeedEnergy))) // Rule: Consumers do not need power.
+	// Power consumer only need energy if the rule is active.
+	if (!FindObject(Find_ID(Rule_EnergyNeed)))
 		return true;
 	// Check all power generators connected to this consumer and sort them according to priority.
+	// TODO: Maybe substract partial amounts from high priority generators.
 	for (var generator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority()))
 	{
 		var power = generator->GetPower();
@@ -51,7 +52,7 @@ public func CheckPower(int power_check, bool no_substract)
 	return false;
 }
 
-// Finds all power generators connected to pConsumer (can be nil in local calls).
+// Finds all power generators connected to consumer (can be nil in local calls).
 private func Find_PowerGenerator(object consumer)
 {
 	if (!consumer)
@@ -67,43 +68,47 @@ private func Sort_GeneratorPriority()
 
 /*-- Effect to show energy need --*/
 
-private func FxEnergyNeedStart(object trg, int fxnum, int temp)
+private func FxEnergyNeedStart(object target, int fxnum, int temp)
 {
 	// Start showing energy need symbol.
-	trg->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
-	trg->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-	EffectVar(0, trg, fxnum) = true; // Effect is showing symbol.
+	target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
+	target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
+	EffectVar(0, target, fxnum) = true; // Effect is showing symbol.
 	return 1;
 }
 
-private func FxEnergyNeedStop(object trg, int fxnum, int iReason, bool temp)
-{
-	// Stop showing energy need symbol.
-	trg->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
-	return 1;
-}
-
-private func FxEnergyNeedEffect(string name, object trg, int fxnum, int fxnum_new)
-{
-	// Only one effect per object.
-	return -1;
-}
-
-private func FxEnergyNeedTimer(object trg, int fxnum, int time)
+private func FxEnergyNeedTimer(object target, int fxnum, int time)
 {
 	// Alternate showing of the symbol: timer interval of AddEffect determines alternation time.
-	if (EffectVar(0, trg, fxnum)) // Effect was showing symbol.
+	if (EffectVar(0, target, fxnum)) // Effect was showing symbol.
 	{
 		// Do not show symbol.
-		trg->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
-		EffectVar(0, trg, fxnum) = false;
+		target->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
+		EffectVar(0, target, fxnum) = false;
 	}
 	else // Effect was not showing symbol.
 	{
 		// Do show symbol.
-		trg->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
-		trg->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-		EffectVar(0, trg, fxnum) = true;
+		target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
+		target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
+		EffectVar(0, target, fxnum) = true;
 	}
 	return 1;
 }
+
+private func FxEnergyNeedStop(object target, int fxnum, int iReason, bool temp)
+{
+	// Stop showing energy need symbol.
+	target->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
+	return 1;
+}
+
+private func FxEnergyNeedEffect(string name, object target, int fxnum, int fxnum_new)
+{
+	// Only one energy need effect per consumer.
+	if (name == "EnergyNeed")
+		return -1;
+	return 1;
+}
+
+
