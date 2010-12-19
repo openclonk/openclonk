@@ -622,8 +622,6 @@ void StdCompilerINIRead::String(char *szString, size_t iMaxLength, RawCompileTyp
 }
 void StdCompilerINIRead::String(char **pszString, RawCompileType eType)
 {
-	// For Backwards compatibility: Escaped strings default to normal strings if no escaped string is given
-	if (eType == RCT_Escaped && pPos && *pPos!='"') eType = RCT_All;
 	// Get length
 	size_t iLength = GetStringLength(eType);
 	// Read data

@@ -138,7 +138,8 @@ void C4Team::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(piPlayers, iPlayerCount, -1), "Players"));
 	pComp->Value(mkNamingAdapt(dwClr,                "Color",        0u));
-	pComp->Value(mkNamingAdapt(sIconSpec,            "IconSpec",     StdCopyStrBuf()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sIconSpec, StdCompiler::RCT_All),
+	                                                 "IconSpec",     StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(iMaxPlayer,           "MaxPlayer",    0));
 }
 
@@ -561,7 +562,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(fTeamColors, "TeamColors", false));
 	pComp->Value(mkNamingAdapt(iMaxScriptPlayers, "MaxScriptPlayers", 0));
-	pComp->Value(mkNamingAdapt(sScriptPlayerNames, "ScriptPlayerNames", StdStrBuf()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sScriptPlayerNames, StdCompiler::RCT_All), "ScriptPlayerNames", StdStrBuf()));
 
 	int32_t iOldTeamCount = iTeamCount;
 	pComp->Value(mkNamingCountAdapt(iTeamCount,  "Team"));
