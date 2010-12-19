@@ -42,17 +42,15 @@ global func FxThunderStrikeTimer(pTarget, iEffectNumber, iEffectTime)
 	
 	for(var i = (x-wdt); i < (wdt*2); i++ )
 	{
-		if(!(i%3))
-			for(var k=0; k<y[i+wdt]; k+=12+Random(6))
+		if(!(i%5))
+			for(var k=0; k<y[i+wdt]; k+=10+Random(5))
 			{	
-	
-				CreateParticle("Air",i+move,k,RandomX(-1,1),RandomX(-1,1),20+Random(41),RGB(255-Random(100),255-Random(50),255-Random(10)),nil,Random(2));
-				if(!Random(4)) 
-					CreateParticle("AirIntake",i+move,k,RandomX(-1,1),RandomX(-5,1),40+Random(21),RGB(255-Random(100),255-Random(50),255-Random(10)),nil,Random(2));
+					CreateParticle("LightningSpark",i+move,k,RandomX(-12,12),RandomX(-40,-10),40+Random(21),RGB(255-Random(100),255-Random(50),255-Random(10)),nil,Random(2));
 			}
 		
 		for(var l=0; l<3; l++)
-			CreateParticle("AirIntake",i+move,y[i+wdt]-l-2,i+RandomX(-10,10),-10+Random(6),30+Random(30),RGB(255-Random(50),255-Random(30),255-Random(5)),nil,Random(2));
+			CreateParticle("LightningSpark",i+move,y[i+wdt]-l-2,RandomX(-20,20),-20-Random(10),30+Random(30),RGB(255-Random(50),255-Random(30),255-Random(5)),nil,Random(2));
+		if(i%3) CreateParticle("LightningStrike",i+move,y[i+wdt]-l-10,0,0,64,RGBa(255-Random(50),255-Random(30),255-Random(5),255-Random(20)),nil,Random(2));
 		
 		for(var t in FindObjects(Find_Or(Find_And(Find_ID(Clonk),Find_OCF(OCF_Alive)), Find_ID(TargetBalloon)),Find_OnLine(i+move,-0,i+move,y[i+wdt])))
 		{
