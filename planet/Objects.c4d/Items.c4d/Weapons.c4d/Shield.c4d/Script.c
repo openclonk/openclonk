@@ -45,6 +45,8 @@ public func ControlUseCancel(object clonk)
 		RemoveEffect("IntShieldSuspend", clonk);
 }
 
+var hand_ending;
+
 private func StartUsage(object clonk)
 {
 	var hand;
@@ -52,16 +54,19 @@ private func StartUsage(object clonk)
 	if(clonk->GetItemPos(this) == 0)
 	{
 		carry_bone = "pos_hand2";
-		hand = "ShieldArmsR";
+		hand = "ShieldArms.R";
 	}
 	if(clonk->GetItemPos(this) == 1)
 	{
 		carry_bone = "pos_hand1";
-		hand = "ShieldArmsL";
+		hand = "ShieldArms.L";
 	}
 
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 	clonk->UpdateAttach();
+	clonk->ReplaceAction("Stand", ["ShieldStandUp.L", "ShieldStandDown.L", 500]);
+	clonk->ReplaceAction("Walk", ["ShieldWalkUp.L", "ShieldWalkDown.L", 500]);
+	clonk->ReplaceAction("Run", ["ShieldWalkUp.L", "ShieldWalkDown.L", 500]);
 
 	StartWeaponHitCheckEffect(clonk, -1, 1);
 	
@@ -76,6 +81,11 @@ private func EndUsage(object clonk)
 	iAngle = 0;
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->UpdateAttach();
+
+	clonk->ReplaceAction("Stand", nil);
+	clonk->ReplaceAction("Walk",  nil);
+	clonk->ReplaceAction("Run",   nil);
+	
 	AdjustSolidMaskHelper();
 	if(GetEffect("ShieldStopControl", clonk))
 		RemoveEffect("ShieldStopControl", clonk);
@@ -99,6 +109,13 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	}
 
 	iAngle=angle;
+
+	var weight = 0;
+	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
+
+	clonk->ReplaceAction("Stand", ["ShieldStandUp.L", "ShieldStandDown.L", weight]);
+	clonk->ReplaceAction("Walk", ["ShieldWalkUp.L", "ShieldWalkDown.L", weight]);
+	clonk->ReplaceAction("Run", ["ShieldWalkUp.L", "ShieldWalkDown.L", weight]);
 
 	if(!GetEffect("IntShieldSuspend", clonk))
 	{

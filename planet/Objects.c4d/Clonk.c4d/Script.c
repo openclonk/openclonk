@@ -592,7 +592,7 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 		EffectVar(0, pTarget, iNumber) = GetDirection();
 		EffectVar(5, pTarget, iNumber) = iLastTurn;
 		// Notify effects
-		ResetAnimationEffects();
+//		ResetAnimationEffects();
 	}
 	if(iRot != EffectVar(3, pTarget, iNumber))
 	{
@@ -729,7 +729,31 @@ public func ReplaceAction(string action, byaction)
 		Log("ERROR: No animation %s in Definition %s", byaction, GetID()->GetName());
 		return false;
 	}*/
+	if(GetType(byaction) == C4V_Array)
+	{
+		var old = GetProperty(action, PropAnimations);
+		SetProperty(action, byaction, PropAnimations);
+		if(GetType(old) == C4V_Array)
+		{
+			if(ActualReplace == nil) return true;
+			if(old[0] == byaction[0] && old[1] == byaction[1])
+			{
+				var i = 0;
+				for (test in ActualReplace)
+				{
+					if(test && test[0] == action)
+						break;
+					i++;
+				}
+				if(i < GetLength(ActualReplace))
+					SetAnimationWeight(ActualReplace[i][1], Anim_Const(byaction[2]));
+				return true;
+			}
+		}
+	}
 	SetProperty(action, byaction, PropAnimations);
+//	if(ActualReplace != nil)
+//		SetAnimationWeight(ActualReplace, Anim_Const(byaction[2]));
 	ResetAnimationEffects();
 	return true;
 }
@@ -742,19 +766,42 @@ public func ResetAnimationEffects()
 		StartJump();
 }
 
+local ActualReplace;
+
 public func PlayAnimation(string animation, int index, array position, array weight, int sibling)
 {
+	if(!ActualReplace) ActualReplace = [];
+	ActualReplace[index] = nil;
 	if(PropAnimations != nil)
 		if(GetProperty(animation, PropAnimations) != nil)
-			animation = GetProperty(animation, PropAnimations);
+		{
+			var replacement = GetProperty(animation, PropAnimations);
+			if(GetType(replacement) == C4V_Array)
+			{
+				var animation1 = inherited(replacement[0], index, position, weight);
+				var animation2 = inherited(replacement[1], index, position, Anim_Const(500), animation1);
+				var animationKnot = animation2 + 1;
+				ActualReplace[index] = [animation, animationKnot];
+				SetAnimationWeight(animationKnot, Anim_Const(replacement[2]));
+				return animation1;
+			}
+			else
+				animation = GetProperty(animation, PropAnimations);
+		}
 	return inherited(animation, index, position, weight, sibling, ...);
 }
 
 public func GetAnimationLength(string animation)
 {
+	var replacement;
 	if(PropAnimations != nil)
-		if(GetProperty(animation, PropAnimations))
-			animation = GetProperty(animation, PropAnimations);
+		if(replacement = GetProperty(animation, PropAnimations))
+		{
+			if(GetType(replacement) == C4V_Array)
+				animation = replacement[0];
+			else
+				animation = replacement;
+		}
 	return inherited(animation, ...);
 }
 
@@ -1306,7 +1353,8 @@ func StartJump()
 //		if (SimFlight(iX,iY,iXDir,iYDir,25)) // SimFlight behavior changed. (10/1/10)
 //			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
 //				PlayAnimation("Dive", 5, Anim_Linear(0, 0, GetAnimationLength("Dive"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));;
-	AddEffect("Fall",this,1,1,this);
+	if(!GetEffect("Fall", this))
+		AddEffect("Fall",this,1,1,this);
 }
 
 func FxFallEffect(string new_name, object target, int num)
