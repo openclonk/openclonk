@@ -571,7 +571,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		Comp.Begin();
 		// get current version
 		Comp.Value(mkNamingAdapt(
-		             mkNamingAdapt(UpdateURL,"UpdateURL"),
+		             mkNamingAdapt(mkParAdapt(UpdateURL, StdCompiler::RCT_All), "UpdateURL", ""),
 		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
