@@ -2,8 +2,8 @@
 
 local king_size;
 
-public func MakeKingSize() { king_size = true; SetMeshMaterial("KingSword2",1); }
-public func MakeNormalSize() { king_size = false; SetMeshMaterial("Sword2",1); }
+public func MakeKingSize() { king_size = true; SetMeshMaterial("KingSword2",0); }
+public func MakeNormalSize() { king_size = false; SetMeshMaterial("Sword2",0); }
 public func Departure() { MakeNormalSize(); }
 
 
