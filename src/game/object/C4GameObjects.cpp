@@ -88,7 +88,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 		    pComp->NameEnd();
 		    }*/
 		for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-			if (!dynamic_cast<C4Object *>(*ppPropList) && !dynamic_cast<C4Def *>(*ppPropList))
+			if ((*ppPropList)->IsScriptPropList())
 			{
 				pComp->Value(mkNamingAdapt(**ppPropList, "PropList"));
 			}
@@ -149,7 +149,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 		// Load proplists
 		for (int i = 0; i < iPropListCnt; i++)
 		{
-			C4PropListNumbered *pPropList = NULL;
+			C4PropListScript *pPropList = NULL;
 			try
 			{
 				pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pPropList), "PropList"));
@@ -642,8 +642,9 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	C4ObjectLink *pInFirst = NULL;
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
+	Denumerate();
 	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		(*ppPropList)->DenumeratePointers();
+		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
 	Game.ObjectEnumerationIndex = Max(Game.ObjectEnumerationIndex, iMaxObjectNumber);
 	// end faking and adjust object numbers

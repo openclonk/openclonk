@@ -75,6 +75,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
 	AssignCallbackFunctions();
+	AcquireNumber();
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
 	// assign a unique number for that object
@@ -189,6 +190,7 @@ void C4Effect::DenumeratePointers()
 		pEff->EffectVars.DenumeratePointers();
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
+		pEff->C4PropList::DenumeratePointers();
 	}
 	while ((pEff=pEff->pNext));
 }
@@ -520,7 +522,9 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// read object number
 	pComp->Value(CommandTarget); pComp->Separator();
 	// read ID
-	pComp->Value(idCommandTarget);
+	pComp->Value(idCommandTarget); pComp->Separator();
+	// proplist
+	C4PropListNumbered::CompileFuncNonames(pComp);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
 	// read variables
 	if (pComp->isCompiler() || EffectVars.GetSize() > 0)

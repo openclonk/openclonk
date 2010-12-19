@@ -42,22 +42,21 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 		pVal->NextRef = pNextRef;
 	}
 	if (FirstRef) return;
-	// These classes have their own memory management
-	if (dynamic_cast<C4Object *>(this)) return;
-	if (dynamic_cast<C4Def *>(this)) return;
-	delete this;
+	// Only pure script proplists are garbage collected here, host proplists
+	// like definitions and effects have their own memory management.
+	if (IsScriptPropList()) delete this;
 }
 
 C4PropList * C4PropList::New(C4PropList * prototype)
 {
-	C4PropListNumbered * r = new C4PropListNumbered(prototype);
+	C4PropListNumbered * r = new C4PropListScript(prototype);
 	r->AcquireNumber();
 	return r;
 }
 
 C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 {
-	C4PropList * r = new C4PropList(prototype);
+	C4PropList * r = new C4PropListAnonScript(prototype);
 	return r;
 }
 
@@ -84,6 +83,16 @@ void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Number, "Number"));
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
+	if (pComp->isCompiler())
+		::Objects.PropLists.Add(this);
+}
+
+void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
+{
+	pComp->Value(Number);
+	pComp->Separator();
+	// reuse C4PropList::CompileFunc(pComp);
+	pComp->Value(static_cast<C4PropList&>(*this));
 	if (pComp->isCompiler())
 		::Objects.PropLists.Add(this);
 }
@@ -258,6 +267,12 @@ C4Def const * C4PropList::GetDef() const
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
 	if (prototype) return prototype->GetPropListNumbered();
+	return 0;
+}
+
+C4Effect * C4PropList::GetEffect()
+{
+	if (prototype) return prototype->GetEffect();
 	return 0;
 }
 

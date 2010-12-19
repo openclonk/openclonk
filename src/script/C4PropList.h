@@ -56,11 +56,14 @@ public:
 	virtual C4Def const * GetDef() const;
 	virtual C4Def * GetDef();
 	virtual C4Object * GetObject();
+	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
 
 	// Whether this proplist should be saved as a reference to a C4Def
 	virtual bool IsDef() const { return false; }
+	// Whether this proplist is a pure script proplist, not a host object
+	virtual bool IsScriptPropList() { return false; }
 
 	bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
@@ -108,12 +111,27 @@ class C4PropListNumbered: public C4PropList
 {
 public:
 	int32_t Number;
-	C4PropListNumbered(C4PropList * prototype = 0);
 	~C4PropListNumbered();
 	void CompileFunc(StdCompiler *pComp);
+	void CompileFuncNonames(StdCompiler *pComp);
 	virtual C4PropListNumbered * GetPropListNumbered();
 	void AcquireNumber();
+protected:
+	C4PropListNumbered(C4PropList * prototype = 0);
 };
 
+class C4PropListScript: public C4PropListNumbered
+{
+public:
+	C4PropListScript(C4PropList * prototype = 0): C4PropListNumbered(prototype) { }
+	bool IsScriptPropList() { return true; }
+};
+
+class C4PropListAnonScript: public C4PropList
+{
+public:
+	C4PropListAnonScript(C4PropList * prototype = 0): C4PropList(prototype) { }
+	bool IsScriptPropList() { return true; }
+};
 
 #endif // C4PROPLIST_H

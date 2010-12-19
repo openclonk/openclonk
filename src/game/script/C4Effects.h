@@ -78,7 +78,7 @@
 #define C4Fx_FireParticle2   "Fire2"
 
 // generic object effect
-class C4Effect
+class C4Effect: public C4PropListNumbered
 {
 public:
 	char Name[C4MaxDefString+1]; // name of effect
@@ -139,6 +139,7 @@ public:
 	void OnObjectChangedDef(C4Object *pObj);
 
 	void CompileFunc(StdCompiler *pComp);
+	virtual C4Effect * GetEffect() { return this; }
 
 protected:
 	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
