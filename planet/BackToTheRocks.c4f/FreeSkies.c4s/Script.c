@@ -22,11 +22,11 @@ protected func Initialize()
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
 	Sound("BirdsLoop.ogg",true,100,nil,+1);
 		
-	CreateObject(Column,650,360);
-	CreateObject(Column,350,390);
-	CreateObject(Column,160,220);
-	CreateObject(Column,448,240);
-	CreateObject(Column,810,170);
+	CreateObject(Column,650,379);
+	CreateObject(Column,350,409);
+	CreateObject(Column,160,229);
+	CreateObject(Column,448,269);
+	CreateObject(Column,810,179);
 
 	// Chests with weapons.
 	CreateObject(Chest, 175, 200, NO_OWNER);
