@@ -158,10 +158,10 @@ inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4E
 #define C4Fx_FireTimer      1
 
 // fire effect
-int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
-int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTime);
-int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iReason, bool fTemp);
-C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber);
+int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
+int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTime);
+int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iReason, bool fTemp);
+C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect);
 class C4Value &FxFireVarCausedBy(C4Effect *pEffect);
 
 // some other hardcoded engine effects
