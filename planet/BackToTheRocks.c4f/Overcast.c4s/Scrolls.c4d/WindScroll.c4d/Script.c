@@ -8,20 +8,21 @@
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("WindScrollStorm", 0, 100, 1, 0, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	AddEffect("WindScrollStorm", 0, 100, 1, 0, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY(), pClonk->GetOwner());
 	RemoveObject();
 	return 1;
 }
 
 
 
-public func FxWindScrollStormStart(pTarget, iEffectNumber, iTemp, angle, x, y)
+public func FxWindScrollStormStart(pTarget, iEffectNumber, iTemp, angle, x, y, owner)
 {
 	if(iTemp) return;
 	EffectVar(0, pTarget, iEffectNumber)=Sin(angle,32);
 	EffectVar(1, pTarget, iEffectNumber)=-Cos(angle,32);
 	EffectVar(2, pTarget, iEffectNumber)=x+Sin(angle,43);
 	EffectVar(3, pTarget, iEffectNumber)=y-Cos(angle,43);
+	EffectVar(4, pTarget, iEffectNumber)=owner;
 
 	
 }
@@ -53,6 +54,8 @@ public func FxWindScrollStormTimer(pTarget, iEffectNumber, iEffectTime)
 		{
 			if(PathFree(x,y,obj->GetX(),obj->GetY()))
 			{
+				if(obj->GetID() == Clonk)
+					obj->SetKiller(EffectVar(4, pTarget, iEffectNumber));
 				if(xdir<0)
 				{if(obj->GetXDir() > xdir) obj->SetXDir(obj->GetXDir(100) + (xdir*3)/2,100); }
 				else 
