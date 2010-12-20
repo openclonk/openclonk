@@ -14,7 +14,6 @@
       Because of the complexity of Clonk, it may not always be possible to determine the actual killer of a Clonk in chain reactions. In order to determine energy losses, every object stores a controller (see <funclink>GetController</funclink> for details). The controller is used to determine the player responsible for energy loss on a Clonk:<br/>
       <ul>
         <li>For object hits: The controlling player of the thrown object. The controller will automatically be set upon collection.</li>
-        <li>For clonk-to-clonk-fights: The controlling player of the fighting opponent. This is usually the owner.</li>
         <li>For fire: The controller of the original fire causing player, i.e. the calling object of the original call to <funclink>Incinerate</funclink>(). The causing player is kept independently of owners and controllers of the burning object in incineration chains. If, for example, player A incinerates a Clonk of player B and player B uses his burning Clonk to incinerate a Clonk of player C, both incinerations are marked as caused by player A.</li>
       </ul>
  The energy loss causing player is automatically reset to NO_OWNER (no player), whenever the Clonk executes an action that does not have ObjectDisabled=1 set (e.g. "Walk").<br/> Energy loss caused by the controller of the Clonk itself only sets the field if it was NO_OWNER before. This prevents players from committing suicide in order to deny scores from other players. Consequently, if a Clonk is hit by a rock and falls out of the bottom of the map, the killer is the player who threw the rock.
@@ -33,6 +32,7 @@
       </example>
     </examples>
     <related>
+	  <funclink>SetKiller</funclink>
       <funclink>GetController</funclink>
       <funclink>GetOwner</funclink>
       <funclink>SetController</funclink>
