@@ -73,8 +73,8 @@ global func FxThunderStrikeTimer(pTarget, iEffectNumber, iEffectTime)
 		{
 			if(t->GetOwner() != owner)
 			{
-				t->DoEnergy(-16,0,0,owner);
-				t->Fling((t->GetX()-(move))/4,-6);
+				t->DoEnergy(-15,0,0,owner);
+				t->Fling(BoundBy((t->GetX()-(move))/4,-3,3),-6);
 			}
 		}
 	}
