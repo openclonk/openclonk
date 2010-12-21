@@ -38,13 +38,13 @@ public func CanStrikeWithWeapon(clonk)
 func FxDelayTranslateVelocityStart(pTarget, iEffectNumber, temp, p1)
 {
 	if(temp) return;
-	EffectVar(0, pTarget, iEffectNumber) = p1;
+	iEffectNumber.var0 = p1;
 }
 
 func FxDelayTranslateVelocityTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	//if(EffectVar(0, pTarget, iEffectNumber))
-	//	if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
+	//if(iEffectNumber.var0)
+	//	if(iEffectTime > iEffectNumber.var0) return -1;
 	if(pTarget->GetContact(-1) & CNAT_Bottom) return -1;
 	return 1;
 }
@@ -62,9 +62,9 @@ func FxIntWeaponChargeStart(pTarget, iEffectNumber, iTemp, length)
 	if(iTemp) return;
 	
 	// saved velocity
-	EffectVar(0, pTarget, iEffectNumber) = 0;
+	iEffectNumber.var0 = 0;
 	// save length
-	EffectVar(2, pTarget, iEffectNumber) = length;
+	iEffectNumber.var2 = length;
 }
 
 func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
@@ -81,7 +81,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 	}*/
 	if(this->Contained() != pTarget) return -1;
 	if(!pTarget->~IsWalking() && !pTarget->~IsJumping()) return -1;
-	var strikeTime=EffectVar(2, pTarget, iEffectNumber);
+	var strikeTime=iEffectNumber.var2;
 	if(strikeTime != -1 && iEffectTime > strikeTime)
 	{
 		this->~WeaponStrikeExpired();
@@ -164,12 +164,12 @@ func FxIntWeaponChargeStop(pTarget, iEffectNumber, iReason, iTemp)
 
 func FxIntWeaponChargeAddWeaponSlow(pTarget, iEffectNumber, iStrength)
 {
-	EffectVar(0, pTarget, iEffectNumber) += iStrength;
+	iEffectNumber.var0 += iStrength;
 }
 
 func FxIntWeaponChargeGetWeaponSlow(pTarget, iEffectNumber)
 {
-	return EffectVar(0, pTarget, iEffectNumber);
+	return iEffectNumber.var0;
 }
 
 func FxIntWeaponChargeGetBash(pTarget, iEffectNumber)
@@ -186,14 +186,14 @@ func FxIntWeaponChargeHitByWeapon(pTarget, iEffectNumber)
 func FxIntIsBeingStruckStart(pTarget, iEffectNumber, iTemp, iDamage, angle)
 {
 	if(iTemp) return;
-	EffectVar(0, pTarget, iEffectNumber) = 3;
-	EffectVar(1, pTarget, iEffectNumber) = iDamage;
-	EffectVar(2, pTarget, iEffectNumber) = angle;
+	iEffectNumber.var0 = 3;
+	iEffectNumber.var1 = iDamage;
+	iEffectNumber.var2 = angle;
 }
 
 func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(EffectVar(0, pTarget, iEffectNumber) -- == 0)
+	if(iEffectNumber.var0 -- == 0)
 	{
 		// FALCON PUNCH
 		if(pTarget->GetContact(-1) & CNAT_Bottom)
@@ -203,12 +203,12 @@ func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
 				pTarget->SetPosition(pTarget->GetX(), pTarget->GetY()-1);
 				if(pTarget->Stuck()) pTarget->SetPosition(pTarget->GetX(), pTarget->GetY()+1);
 			}
-			if(EffectVar(1, pTarget, iEffectNumber) > 60)
+			if(iEffectNumber.var1 > 60)
 				pTarget->Fling();
 		}
-		//if(EffectVar(1, pTarget, iEffectNumber) > 20) EffectVar(1, pTarget, iEffectNumber) = 20;
-		pTarget->SetXDir(Sin(EffectVar(2, pTarget, iEffectNumber), EffectVar(1, pTarget, iEffectNumber) ), 100);
-		pTarget->SetYDir(-Abs(Cos(EffectVar(2, pTarget, iEffectNumber), EffectVar(1, pTarget, iEffectNumber) )), 100);
+		//if(iEffectNumber.var1 > 20) iEffectNumber.var1 = 20;
+		pTarget->SetXDir(Sin(iEffectNumber.var2, iEffectNumber.var1 ), 100);
+		pTarget->SetYDir(-Abs(Cos(iEffectNumber.var2, iEffectNumber.var1 )), 100);
 		return -1;
 	}
 	
@@ -224,21 +224,21 @@ func FxIntIsBeingStruckEffect(string szNewEffectName, object pTarget, int iEffec
 func FxIntIsBeingStruckAdd (object pTarget, int iEffectNumber, string szNewEffectName, int iNewEffectTimer, int damage, int angle)
 {
 	// reset delay
-	EffectVar(0, pTarget, iEffectNumber) = 3;
+	iEffectNumber.var0 = 3;
 	
 	// add damage!
-	if(damage > EffectVar(1, pTarget, iEffectNumber))
-		EffectVar(1, pTarget, iEffectNumber) = damage;
+	if(damage > iEffectNumber.var1)
+		iEffectNumber.var1 = damage;
 	else
-	EffectVar(1, pTarget, iEffectNumber) = (EffectVar(1, pTarget, iEffectNumber)*2 + damage) / 2;
+	iEffectNumber.var1 = (iEffectNumber.var1*2 + damage) / 2;
 	
 	// check angle
-	if(!EffectVar(2, pTarget, iEffectNumber))
-		EffectVar(2, pTarget, iEffectNumber) = angle;
+	if(!iEffectNumber.var2)
+		iEffectNumber.var2 = angle;
 	else if(angle)
 		// should actually set the new angle to the average between the old and the new one. but I don't feel like doing such calculations now
 		// let's see if anyone notices it
-		EffectVar(2, pTarget, iEffectNumber) = angle;
+		iEffectNumber.var2 = angle;
 }
 
 func GetStrikeAnimation()

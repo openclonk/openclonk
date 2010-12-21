@@ -21,15 +21,15 @@ global func FxHitCheckStart(object target, int effect, int temp, object by_obj, 
 {
 	if (temp)
 		return;
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	EffectVar(2, target, effect) = by_obj;
-	EffectVar(4, target, effect) = false;
-	EffectVar(5, target, effect) = never_shooter;
+	effect.var2 = by_obj;
+	effect.var4 = false;
+	effect.var5 = never_shooter;
 	
 	// C4D_Object has a hitcheck too -> change to vehicle to supress that.
 	if (target->GetCategory() & C4D_Object)
@@ -57,8 +57,8 @@ global func FxHitCheckDoCheck(object target, int effect)
 	var newy = target->GetY() + target->GetYDir() / 10;
 	var dist = Distance(oldx, oldy, newx, newy);
 	
-	var shooter = EffectVar(2, target, effect);
-	var live = EffectVar(4, target, effect);
+	var shooter = effect.var2;
+	var live = effect.var4;
 	
 	if (live)
 		shooter = target;
@@ -102,15 +102,15 @@ global func FxHitCheckEffect(string newname)
 
 global func FxHitCheckAdd(object target, int effect, string neweffectname, int newtimer, by_obj, never_shooter)
 {
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	EffectVar(2, target, effect) = by_obj;
-	EffectVar(4, target, effect) = false;
-	EffectVar(5, target, effect) = never_shooter;
+	effect.var2 = by_obj;
+	effect.var4 = false;
+	effect.var5 = never_shooter;
 	return;
 }
 
@@ -122,11 +122,11 @@ global func FxHitCheckTimer(object target, int effect, int time)
 	if (!target)
 		return -1;
 	
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
-	var live = EffectVar(4, target, effect);
-	var never_shooter = EffectVar(5, target, effect);
-	var shooter = EffectVar(2, target, effect);
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
+	var live = effect.var4;
+	var never_shooter = effect.var5;
+	var shooter = effect.var2;
 
 	// The projectile will be only switched to "live", meaning that it can hit the
 	// shooter himself when the shot exited the shape of the shooter one time.
@@ -145,7 +145,7 @@ global func FxHitCheckTimer(object target, int effect, int time)
 			}
 			// Otherwise, the shot will be live.
 			if (ready)
-				EffectVar(4, target, effect) = true;
+				effect.var4 = true;
 		}
 	}
 	return;

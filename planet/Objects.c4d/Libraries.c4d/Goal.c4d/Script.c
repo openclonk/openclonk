@@ -68,7 +68,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 {
 	if (!time)
 		return true;
-	var curr_goal = EffectVar(0, trg, num);
+	var curr_goal = num.var0;
 	// Check current goal object
 	if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
 	{
@@ -83,7 +83,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 		++goal_count;
 		if (!curr_goal->~IsFulfilled())
 		{
-			EffectVar(0, trg, num) = curr_goal;
+			num.var0 = curr_goal;
 			curr_goal->NotifyHUD();
 			return true;
 		}

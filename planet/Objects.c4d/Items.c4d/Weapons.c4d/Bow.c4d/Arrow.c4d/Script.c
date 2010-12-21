@@ -98,13 +98,13 @@ public func Hit()
 public func FxInFlightStart(object target, int effect, int temp)
 {
 	if(temp) return;
-	EffectVar(0,target,effect) = target->GetX();
-	EffectVar(1,target,effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 }
 public func FxInFlightTimer(object target, int effect, int time)
 {
-	var oldx = EffectVar(0,target,effect);
-	var oldy = EffectVar(1,target,effect);
+	var oldx = effect.var0;
+	var oldy = effect.var1;
 	var newx = GetX();
 	var newy = GetY();
 	
@@ -113,18 +113,18 @@ public func FxInFlightTimer(object target, int effect, int time)
 	if(oldx == newx && oldy == newy)
 	{
 		// but we give the arrow 5 frames to speed up again
-		EffectVar(2,target,effect)++;
-		if(EffectVar(2,target,effect) >= 10)
+		effect.var2++;
+		if(effect.var2 >= 10)
 			return Hit();
 	}
 	else
-		EffectVar(2,target,effect) = 0;
+		effect.var2 = 0;
 
 	// rotate arrow according to speed
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	SetRDir(anglediff/2);
-	EffectVar(0,target,effect) = newx;
-	EffectVar(1,target,effect) = newy;
+	effect.var0 = newx;
+	effect.var1 = newy;
 
 }
 

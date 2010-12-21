@@ -22,34 +22,34 @@ public func FxFrostboltStart(pTarget, iEffectNumber, iTemp, owner, angle, x, y)
 	if(iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	EffectVar(0, pTarget, iEffectNumber)=owner;
-	EffectVar(1, pTarget, iEffectNumber)=angle;
-	EffectVar(2, pTarget, iEffectNumber)=x;
-	EffectVar(3, pTarget, iEffectNumber)=y;
+	iEffectNumber.var0=owner;
+	iEffectNumber.var1=angle;
+	iEffectNumber.var2=x;
+	iEffectNumber.var3=y;
 }
 
 public func FxFrostboltTimer(pTarget, iEffectNumber, iEffectTime)
 {	
-	var angle=EffectVar(1, pTarget, iEffectNumber);
-	var x=EffectVar(2, pTarget, iEffectNumber);
-	var y=EffectVar(3, pTarget, iEffectNumber);
+	var angle=iEffectNumber.var1;
+	var x=iEffectNumber.var2;
+	var y=iEffectNumber.var3;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
 	 		FindObject(
-	 		Find_Hostile(EffectVar(0, pTarget, iEffectNumber)),
+	 		Find_Hostile(iEffectNumber.var0),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
 	 		Find_Distance(16,x,y)
 	 		)
 	 	)
 	{
-		CreateObject(Dynamite,x,y,EffectVar(0,pTarget,iEffectNumber))->BlueExplode();
+		CreateObject(Dynamite,x,y,iEffectNumber.var0)->BlueExplode();
 		CreateObject(Star,x,y,-1)->Sound("glass.ogg");
 		for(var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
-			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, EffectVar(0, pTarget, iEffectNumber), nil);
+			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, iEffectNumber.var0, nil);
 			}
 		return -1;
 	}	
@@ -61,8 +61,8 @@ public func FxFrostboltTimer(pTarget, iEffectNumber, iEffectTime)
 		angle+=Sin(iEffectTime*50,2)*8;
 		x+=Sin(angle, 9);
 		y+=-Cos(angle, 9);
-		EffectVar(2, pTarget, iEffectNumber)=x;
-		EffectVar(3, pTarget, iEffectNumber)=y;
+		iEffectNumber.var2=x;
+		iEffectNumber.var3=y;
 		for(var i=0;i<6;++i)
 		{
 			var c=HSL(128+Random(40), 200+Random(25), Random(100));

@@ -62,7 +62,7 @@ protected func FxAI_JavelinAimStart(object clonk, int num, int temporary, object
 {
 	if (temporary == 1)
 		return;
-	EffectVar(0, clonk, num) = target;
+	num.var0 = target;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
 	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);
@@ -85,7 +85,7 @@ protected func FxAI_JavelinAimTimer(object clonk, int num, int time)
 {
 	if (time > 16)
 		return -1;
-	var target = EffectVar(0, clonk, num);
+	var target = num.var0;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
 	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);
@@ -100,7 +100,7 @@ protected func FxAI_JavelinAimTimer(object clonk, int num, int time)
 
 protected func FxAI_JavelinAimStop(object clonk, int num, int reason, bool temporary)
 {
-	var target = EffectVar(0, clonk, num);
+	var target = num.var0;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY() + 10;
 	var angle = AI_AimPos(dx, dy, clonk.ThrowSpeed * 21 / 100, lob_shot);

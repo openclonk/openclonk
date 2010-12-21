@@ -117,13 +117,13 @@ global func FxPlaneResetTimer(object target, int num, int time)
 {
 	if(target->GetX() > 3000 || target->Contents())
 	{
-		EffectVar(0, target, num)=0;
+		num.var0=0;
 		return 1;	
 	}
 	else
-		EffectVar(0, target, num)++;
+		num.var0++;
 	
-	if(EffectVar(0, target, num)<4) return 1;
+	if(num.var0<4) return 1;
 	
 	DrawParticleLine("AirIntake",target->GetX()+3,target->GetY(),3030,315,1,40);
 	DrawParticleLine("MagicSpark",target->GetX()-3,target->GetY(),3030,315,2,40);

@@ -208,7 +208,7 @@ protected func ContainedThrow()
 	[$TxtDrop$]
 	var iEffectNumber, pSorcerer;
 	if (iEffectNumber = GetEffect("PossessionSpell", this))
-		if (pSorcerer = EffectVar(0, this, iEffectNumber))
+		if (pSorcerer = iEffectNumber.var0)
 		{
 			if (pSorcerer->Contents()) pSorcerer->Contents()->Exit(0,0,6);
 			AddEffect("IntCollectionDelay", this(), 1, 70);

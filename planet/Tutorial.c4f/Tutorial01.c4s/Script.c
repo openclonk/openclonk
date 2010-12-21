@@ -56,8 +56,8 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(230, 955);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 230;
-	EffectVar(2, clonk, effect) = 955;
+	effect.var1 = 230;
+	effect.var2 = 955;
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
 	SetPlayerViewLock(plr, true);
@@ -230,14 +230,14 @@ global func FxClonkRestoreTimer(object target, int num, int time)
 	// Respawn to new location if reached bow & arrow chest.
 	if(FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
-		EffectVar(1, target, num) = 1240;
-		EffectVar(2, target, num) = 1070;		
+		num.var1 = 1240;
+		num.var2 = 1070;		
 	}
 	// Respawn to new location if reached brick climb.
 	if(FindObject(Find_ID(Clonk), Find_InRect(1990, 1020, 130, 90)))
 	{
-		EffectVar(1, target, num) = 2010;
-		EffectVar(2, target, num) = 1020;		
+		num.var1 = 2010;
+		num.var2 = 1020;		
 	}
 	return 1;
 }
@@ -251,8 +251,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);

@@ -43,16 +43,16 @@ global func FxGemShieldCreationStart(object target, int num, int temporary, x, y
 {
 	if (temporary) 
 		return 1;
-	EffectVar(0, target, num)=x;
-	EffectVar(1, target, num)=y;
-	EffectVar(2, target, num)=e;	
+	num.var0=x;
+	num.var1=y;
+	num.var2=e;	
 }
 global func FxGemShieldCreationTimer(object target, int num, int time)
 {
 	if(time > 26) return -1;
-	var x=EffectVar(0, target, num);
-	var y=EffectVar(1, target, num);
-	var e=EffectVar(2, target, num);
+	var x=num.var0;
+	var y=num.var1;
+	var e=num.var2;
 	var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 	if(e)clr=RGB(190+Random(10),0,20+Random(20));
 	var shield=CreateObject(CrystalShield,x+Sin(time*7,35),y+Cos(time*7,35));

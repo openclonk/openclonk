@@ -63,7 +63,7 @@ protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
 
 global func FxGeysirExplosionTimer(object target, int num)
 {
-	EffectVar(0, target, num)++;
+	num.var0++;
 	
 	if(Random(2))
 	{
@@ -76,10 +76,10 @@ global func FxGeysirExplosionTimer(object target, int num)
 		}
 		Bubble(1,x,y);
 	}
-	if(EffectVar(0, target, num)>1900 && EffectVar(0, target, num)<2030)
+	if(num.var0>1900 && num.var0<2030)
 	{
 
-		for(var i=0; i<(-(1900-EffectVar(0, target, num))); i+=10 )
+		for(var i=0; i<(-(1900-num.var0)); i+=10 )
 		{
 			var x=600+Random(300);
 			var y=250+Random(200);
@@ -91,7 +91,7 @@ global func FxGeysirExplosionTimer(object target, int num)
 			Bubble(1,x,y);
 		}
 	}
-	if(EffectVar(0, target, num)>2000)
+	if(num.var0>2000)
 	{
 		var x=LandscapeWidth()/2;
 		var y=280;
@@ -100,7 +100,7 @@ global func FxGeysirExplosionTimer(object target, int num)
 		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60))-Sin(num*10,60));
 		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50))-Sin(num*10,60));
 		CreateParticle("Air",x+RandomX(-6,6),y-Random(3),-RandomX(-15,15),RandomX(-86,-2),100+Random(130));
-		if(EffectVar(0, target, num)>2072) EffectVar(0, target, num)=0;
+		if(num.var0>2072) num.var0=0;
 		for(var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
 		{
 			obj->SetYDir(Max(obj->GetYDir()-15,-50));
@@ -115,9 +115,9 @@ global func FxSnowyWinterTimer(object target, int num, int time)
 	if(time%1200 == 100 ) 
 	{
 		var add=RandomX(-2,2);
-		EffectVar(0, target, num)=BoundBy(EffectVar(0, target, num)+add,1,5);	
+		num.var0=BoundBy(num.var0+add,1,5);	
 	}
-	for(var i=0; i<(EffectVar(0, target, num)); i++)
+	for(var i=0; i<(num.var0); i++)
 	{
 		InsertMaterial(Material("Snow"),RandomX(300,LandscapeWidth()-300),1,RandomX(-10,10),10);
 		ExtractLiquid(LandscapeWidth()/2,295);
@@ -182,8 +182,8 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 	if (temporary) 
 		return 1;
 		
-	EffectVar(0, target, num)=supply;
-	if(EffectVar(0, target, num)) 
+	num.var0=supply;
+	if(num.var0) 
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
 	else
 		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
@@ -195,7 +195,7 @@ global func FxFillBaseChestTimer(object target, int num)
 {
 	var maxcount = [];
 	
-	if(EffectVar(0, target, num)) 
+	if(num.var0) 
 	{
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
 		var maxcount = [2,2,1,2,1];

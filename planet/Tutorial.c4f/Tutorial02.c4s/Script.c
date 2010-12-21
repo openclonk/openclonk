@@ -63,8 +63,8 @@ protected func Initialize()
 	// Cannon to blast through rock & chest with powderkeg and firestones.
 	var cannon = CreateObject(Cannon, 700, 420, NO_OWNER);
 	effect = AddEffect("CannonRestore", cannon, 100, 10);
-	EffectVar(1, cannon, effect) = 700;
-	EffectVar(2, cannon, effect) = 420;
+	effect.var1 = 700;
+	effect.var2 = 420;
 
 	// Chest with flints and dynamite to blast underwater rocks.
 	chest = CreateObject(Chest, 870, 680, NO_OWNER);
@@ -77,7 +77,7 @@ protected func Initialize()
 	dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
 	dynamite->Enter(chest);
 	effect = AddEffect("DynamiteRestore", dynamite, 100, 10);
-	EffectVar(0, dynamite, effect) = chest;
+	effect.var0 = chest;
 	
 	// Another chest with flints and dynamite to blast underwater rocks.
 	chest = CreateObject(Chest, 950, 600, NO_OWNER);
@@ -86,7 +86,7 @@ protected func Initialize()
 		dynamite = CreateObject(DynamiteBox, 0, 0, NO_OWNER);
 		dynamite->Enter(chest);
 		effect = AddEffect("DynamiteRestore", dynamite, 100, 10);
-		EffectVar(0, dynamite, effect) = chest;
+		effect.var0 = chest;
 	}
 	firestone = CreateObject(Firestone, 0, 0, NO_OWNER);
 	firestone->Enter(chest);
@@ -99,12 +99,12 @@ protected func Initialize()
 		grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
 		grapple->Enter(chest);
 		effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
-		EffectVar(0, grapple, effect) = chest;
+		effect.var0 = chest;
 	}
 	var shovel = CreateObject(Shovel, 0, 0, NO_OWNER);
 	shovel->Enter(chest);
 	effect = AddEffect("ClonkContentRestore", shovel, 100, 10);
-	EffectVar(0, shovel, effect) = chest;
+	effect.var0 = chest;
 	
 	// Chest with boompack for fast players.
 	chest = CreateObject(Chest, 1800, 660, NO_OWNER);
@@ -141,23 +141,23 @@ protected func InitializePlayer(int plr)
 	clonk = GetCrew(plr, 1);
 	clonk->SetPosition(200, 440);
 	effect = AddEffect("ClonkOneRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 200;
-	EffectVar(2, clonk, effect) = 440;
+	effect.var1 = 200;
+	effect.var2 = 440;
 	grapple = CreateObject(GrappleBow, 0, 0, NO_OWNER);
 	grapple->Enter(clonk);
 	effect = AddEffect("ClonkContentRestore", grapple, 100, 10);
-	EffectVar(0, grapple, effect) = clonk;
+	effect.var0 = clonk;
 	ropeladder = CreateObject(Ropeladder, 0, 0, NO_OWNER);
 	ropeladder->Enter(clonk);
 	effect = AddEffect("ClonkContentRestore", ropeladder, 100, 10);
-	EffectVar(0, ropeladder, effect) = clonk;
+	effect.var0 = clonk;
 	
 	// Second clonk.
 	clonk = GetCrew(plr, 0);
 	clonk->SetPosition(30, 680);
 	effect = AddEffect("ClonkTwoRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 30;
-	EffectVar(2, clonk, effect) = 680;
+	effect.var1 = 30;
+	effect.var2 = 680;
 	
 	// Select first clonk
 	SetCursor(plr, GetCrew(plr, 1));
@@ -240,25 +240,25 @@ global func FxTutorialFoundInteractableTimer(object target, int num)
 		{
 			if (clonk->FindContents(PowderKeg) && clonk->FindContents(Firestone))
 			{
-				if (!EffectVar(0, target, num))
+				if (!num.var0)
 					guide->AddGuideMessage("$MsgTutCannon$");
-				if (!EffectVar(1, target, num))
+				if (!num.var1)
 					guide->AddGuideMessage("$MsgTutExplosivesChest$");
 				guide->AddGuideMessage("$MsgTutFireCannon$");
 				AddEffect("TutorialRockBlasted", nil, 100, 5);
 				return -1;
 			}
-			else if (!EffectVar(0, target, num))
+			else if (!num.var0)
 			{
 				guide->AddGuideMessage("$MsgTutCannon$");
-				EffectVar(0, target, num) = true;				
+				num.var0 = true;				
 			}		
 		}
 	}
-	if (!EffectVar(1, target, num) && FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
+	if (!num.var1 && FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
 	{
 		guide->AddGuideMessage("$MsgTutExplosivesChest$");
-		EffectVar(1, target, num) = true;
+		num.var1 = true;
 	}
 	return 1;
 }
@@ -406,40 +406,40 @@ global func FxClonkOneRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "ClonkOneRestore");
 		return -1;
 	}
 	// Respawn to new location if reached cliff to grapple from.
 	if (Distance(target->GetX(), target->GetY(), 400, 250) < 40)
 	{
-		EffectVar(1, target, num) = 400;
-		EffectVar(2, target, num) = 250;		
+		num.var1 = 400;
+		num.var2 = 250;		
 	}
 	// Respawn to new location if reached ledge.
 	if (Distance(target->GetX(), target->GetY(), 680, 260) < 40)
 	{
-		EffectVar(1, target, num) = 680;
-		EffectVar(2, target, num) = 260;		
+		num.var1 = 680;
+		num.var2 = 260;		
 	}
 	// Respawn to new location if reached lake.
 	if (Distance(target->GetX(), target->GetY(), 960, 360) < 40)
 	{
-		EffectVar(1, target, num) = 960;
-		EffectVar(2, target, num) = 360;		
+		num.var1 = 960;
+		num.var2 = 360;		
 	}
 	// Respawn to new location if reached granite blasting.
 	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		EffectVar(1, target, num) = 1560;
-		EffectVar(2, target, num) = 350;		
+		num.var1 = 1560;
+		num.var2 = 350;		
 	}
 	// Respawn to new location if reached acid lake.
 	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
 	{
-		EffectVar(1, target, num) = 2130;
-		EffectVar(2, target, num) = 330;		
+		num.var1 = 2130;
+		num.var2 = 330;		
 	}
 	return 1;
 }
@@ -453,8 +453,8 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -468,7 +468,7 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
 			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
-			EffectVar(0, obj, effect) = clonk;
+			effect.var0 = clonk;
 		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkOneRestore");
 	}
@@ -480,26 +480,26 @@ global func FxClonkTwoRestoreTimer(object target, int num, int time)
 	// Respawn to new location if reached ledge.
 	if (Distance(target->GetX(), target->GetY(), 680, 260) < 40)
 	{
-		EffectVar(1, target, num) = 680;
-		EffectVar(2, target, num) = 260;		
+		num.var1 = 680;
+		num.var2 = 260;		
 	}
 	// Respawn to new location if reached lake.
 	if (Distance(target->GetX(), target->GetY(), 960, 360) < 40)
 	{
-		EffectVar(1, target, num) = 960;
-		EffectVar(2, target, num) = 360;		
+		num.var1 = 960;
+		num.var2 = 360;		
 	}
 	// Respawn to new location if reached granite blasting.
 	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		EffectVar(1, target, num) = 1560;
-		EffectVar(2, target, num) = 350;		
+		num.var1 = 1560;
+		num.var2 = 350;		
 	}
 	// Respawn to new location if reached acid lake.
 	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
 	{
-		EffectVar(1, target, num) = 2130;
-		EffectVar(2, target, num) = 330;		
+		num.var1 = 2130;
+		num.var2 = 330;		
 	}
 	return 1;
 }
@@ -513,8 +513,8 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -528,7 +528,7 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
 			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
-			EffectVar(0, obj, effect) = clonk;
+			effect.var0 = clonk;
 		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkTwoRestore");
 	}
@@ -552,7 +552,7 @@ global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = EffectVar(0, target, num);
+		var to_container = num.var0;
 		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");
 	}
@@ -574,8 +574,8 @@ global func FxCannonRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CannonRestore");
 		return -1;
 	}
@@ -591,8 +591,8 @@ global func FxCataRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
 		return -1;
 	}
@@ -608,8 +608,8 @@ global func FxCataRestoreStop(object target, int num, int reason, bool  temporar
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
 	}
 	return 1;
@@ -624,7 +624,7 @@ global func FxRopeladderRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = EffectVar(0, target, num);
+		var to_container = num.var0;
 		restorer->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
 		return -1;
 	}
@@ -640,7 +640,7 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = EffectVar(0, target, num);
+		var to_container = num.var0;
 		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");
 	}
@@ -653,7 +653,7 @@ global func FxClonkContentRestoreTimer(object target, int num, int time)
 
 	// Content objects to the container containing them last.
 	if (target->Contained())
-		EffectVar(0, target, num) = target->Contained();
+		num.var0 = target->Contained();
 	return 1;
 }
 
@@ -666,7 +666,7 @@ global func FxClonkContentRestoreStop(object target, int num, int reason, bool  
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = EffectVar(0, target, num);
+		var to_container = num.var0;
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");
 	}

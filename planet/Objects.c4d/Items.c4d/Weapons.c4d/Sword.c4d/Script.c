@@ -259,12 +259,12 @@ func FxSwordStrikeSlowStart(pTarget, iEffectNumber, iTemp, iTime)
 {
 	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed / 3);
 	if(iTemp) return;
-	EffectVar(0, pTarget, iEffectNumber) = iTime;
+	iEffectNumber.var0 = iTime;
 }
 
 func FxSwordStrikeSlowTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
+	if(iEffectTime > iEffectNumber.var0) return -1;
 }
 
 func FxSwordStrikeSlowStop(pTarget, iEffectNumber, iCause, iTemp)

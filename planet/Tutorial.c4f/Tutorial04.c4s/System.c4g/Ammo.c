@@ -31,8 +31,8 @@ public func HitObject()
 
 protected func FxIntFadeOutStart(object target, int num) 
 {
-	EffectVar(0, target, num) = target->GetClrModulation() & 0x00ffffff;
-	EffectVar(1, target, num) = target->GetClrModulation() >> 24 & 255;
+	num.var0 = target->GetClrModulation() & 0x00ffffff;
+	num.var1 = target->GetClrModulation() >> 24 & 255;
 }
 
 protected func FxIntFadeOutTimer(object target, int num, int time)
@@ -49,10 +49,10 @@ protected func FxIntFadeOutTimer(object target, int num, int time)
 	}
 	else
 	{
-		target->SetClrModulation(EffectVar(1, target, num) << 24 | EffectVar(0, target, num));
+		target->SetClrModulation(num.var1 << 24 | num.var0);
 		return -1;
 	}
-	target->SetClrModulation(((144 - time) * EffectVar(1, target, num) / (144/3)) << 24 | EffectVar(0, target, num));
+	target->SetClrModulation(((144 - time) * num.var1 / (144/3)) << 24 | num.var0);
 	return 1;
 }
 

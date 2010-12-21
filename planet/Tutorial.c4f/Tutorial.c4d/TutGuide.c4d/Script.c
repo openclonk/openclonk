@@ -93,7 +93,7 @@ public func MouseSelection(int plr)
 	var effect = GetEffect("MessageShown", this, nil, 0);
 	if (effect)
 	{
-		if (EffectVar(0, this, effect) == index)
+		if (effect.var0 == index)
 			return ClearGuideMessage();
 		else
 			RemoveEffect("MessageShown", this);
@@ -120,10 +120,10 @@ private func GuideMessage(int show_index)
 	// Message as regular one, don't stop the player.
 	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
-	EffectVar(0, this, effect) = show_index;
+	effect.var0 = show_index;
 	// Messages with @ in front are shown infinetely long.
 	if(GetChar(message, 0) == GetChar("@", 0))
-		EffectVar(1, this, effect) = true;
+		effect.var1 = true;
 	return true;
 }
 
@@ -141,7 +141,7 @@ protected func FxMessageShownTimer(object target, int num, int time)
 {
 	// Delete effect if time has passed, i.e. message has disappeared.
 	// But only if it is not a message of infinite length, with @ in front.
-	if (time && !EffectVar(1, target, num))
+	if (time && !num.var1)
 		return -1;
 	return 1;
 }

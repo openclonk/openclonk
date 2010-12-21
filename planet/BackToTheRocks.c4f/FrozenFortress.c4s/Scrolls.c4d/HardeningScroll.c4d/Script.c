@@ -18,20 +18,20 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxHardeningSpellStart(pTarget, iEffectNumber, iTemp, angle, x, y)
 {
 	if(iTemp) return;
-	EffectVar(0, pTarget, iEffectNumber)=Sin(angle,4);
-	EffectVar(1, pTarget, iEffectNumber)=-Cos(angle,4);
-	EffectVar(2, pTarget, iEffectNumber)=x;
-	EffectVar(3, pTarget, iEffectNumber)=y;
-	EffectVar(4, pTarget, iEffectNumber)=0;
+	iEffectNumber.var0=Sin(angle,4);
+	iEffectNumber.var1=-Cos(angle,4);
+	iEffectNumber.var2=x;
+	iEffectNumber.var3=y;
+	iEffectNumber.var4=0;
 	
 }
 
 public func FxHardeningSpellTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	var xdir = EffectVar(0, pTarget, iEffectNumber);
-	var ydir = EffectVar(1, pTarget, iEffectNumber);
-	var x = EffectVar(2, pTarget, iEffectNumber);
-	var y = EffectVar(3, pTarget, iEffectNumber);
+	var xdir = iEffectNumber.var0;
+	var ydir = iEffectNumber.var1;
+	var x = iEffectNumber.var2;
+	var y = iEffectNumber.var3;
 	for(var i=0; i<4; i++)
 	{
 		var r = Random(360);
@@ -41,23 +41,23 @@ public func FxHardeningSpellTimer(pTarget, iEffectNumber, iEffectTime)
 	}
 	if(!GBackSolid(x,y))
 	{
-		EffectVar(2, pTarget, iEffectNumber)+=EffectVar(0, pTarget, iEffectNumber);
-		EffectVar(3, pTarget, iEffectNumber)+=EffectVar(1, pTarget, iEffectNumber);
+		iEffectNumber.var2+=iEffectNumber.var0;
+		iEffectNumber.var3+=iEffectNumber.var1;
 		return 1;
 	}
 	for(var i=0; i<5; i++)
 	{
 		var r = Random(360);
 		var d = Random(8) + Random(6) + Random(6) + Random(6)+Random(3);
-		x= Sin(r,d) + EffectVar(2, pTarget, iEffectNumber);
-		y = -Cos(r,d) + EffectVar(3, pTarget, iEffectNumber);
+		x= Sin(r,d) + iEffectNumber.var2;
+		y = -Cos(r,d) + iEffectNumber.var3;
 		if(GetMaterial(x,y) == Material("Snow"))
 		{
 			DrawMaterialQuad("Ice",x,y,x+1,y,x+1,y+1,x,y+1);
 			CreateParticle("Air",x ,y ,xdir/3 ,ydir/3 ,35);
 		}
 	}
-	if(iEffectTime > 360 || EffectVar(4, pTarget, iEffectNumber) > 500) { return -1; }
+	if(iEffectTime > 360 || iEffectNumber.var4 > 500) { return -1; }
 
 
 	

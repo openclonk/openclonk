@@ -194,15 +194,15 @@ protected func FxFlightStart(object pTarget, int iEffectNumber)
 protected func FxFlightTimer(object pTarget,int iEffectNumber, int iEffectTime)
 {
 	//Using Newton's arrow rotation. This would be much easier if we had tan^-1 :(
-	var oldx = EffectVar(0,pTarget,iEffectNumber);
-	var oldy = EffectVar(1,pTarget,iEffectNumber);
+	var oldx = iEffectNumber.var0;
+	var oldy = iEffectNumber.var1;
 	var newx = GetX();
 	var newy = GetY();
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	pTarget->SetRDir(anglediff/2);
-	EffectVar(0,pTarget,iEffectNumber) = newx;
-	EffectVar(1,pTarget,iEffectNumber) = newy;
+	iEffectNumber.var0 = newx;
+	iEffectNumber.var1 = newy;
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 

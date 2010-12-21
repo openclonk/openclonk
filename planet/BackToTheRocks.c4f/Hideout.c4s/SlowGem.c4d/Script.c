@@ -44,15 +44,15 @@ global func FxGemSlowFieldStart(object target, int num, int temporary, x, y, e)
 {
 	if (temporary) 
 		return 1;
-	EffectVar(0, target, num)=x;
-	EffectVar(1, target, num)=y;
-	EffectVar(2, target, num)=e;	
+	num.var0=x;
+	num.var1=y;
+	num.var2=e;	
 }
 global func FxGemSlowFieldTimer(object target, int num, int time)
 {
-	var x=EffectVar(0, target, num);
-	var y=EffectVar(1, target, num);
-	var e=EffectVar(2, target, num);
+	var x=num.var0;
+	var y=num.var1;
+	var e=num.var2;
 	if(time > (150)) return -1;
 	for(var i=0; i<40; i++)
 	{

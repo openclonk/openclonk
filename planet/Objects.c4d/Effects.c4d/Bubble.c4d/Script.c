@@ -48,13 +48,13 @@ public func FxFadeStart(object target, int num, int temporary)
 {
 	// Store alpha here
 	if (temporary == 0)
-		EffectVar(0, target, num) = 255;
+		num.var0 = 255;
 	return 1;
 }
 
 public func FxFadeTimer(object target, int num)
 {
-	var alpha = EffectVar(0, target, num);
+	var alpha = num.var0;
 	if (alpha <= 0)
 	{
 		RemoveEffect("Move", this);
@@ -62,6 +62,6 @@ public func FxFadeTimer(object target, int num)
 		return -1;
 	}
 	SetClrModulation(RGBa(255, 255, 255, alpha));
-	EffectVar(0, target, num) = alpha - 5;
+	num.var0 = alpha - 5;
 	return 1;
 }

@@ -42,12 +42,12 @@ public func AutoProductionFailed()
 
 public func FxIntNotAvailableStart(target, number)
 {
-	EffectVar(0, target, number) = this;
+	number.var0 = this;
 }
 
 public func FxIntNotAvailableTimer(target, number)
 {
-	var clonk = EffectVar(0, target, number);
+	var clonk = number.var0;
 	// Check wether the clonk still wants to get the object
 	for (var i = 0; clonk->GetCommand(0,i); ++i)
 	{

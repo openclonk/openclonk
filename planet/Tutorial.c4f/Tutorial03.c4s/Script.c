@@ -85,8 +85,8 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(30, 620);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 30;
-	EffectVar(2, clonk, effect) = 620;
+	effect.var1 = 30;
+	effect.var2 = 620;
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
@@ -226,14 +226,14 @@ global func FxClonkRestoreTimer(object target, int num, int time)
 	// Respawn to new location if reached bow & arrow chest.
 	if (Distance(target->GetX(), target->GetY(), 830, 560) < 40)
 	{
-		EffectVar(1, target, num) = 830;
-		EffectVar(2, target, num) = 560;		
+		num.var1 = 830;
+		num.var2 = 560;		
 	}
 	// Respawn to new location if reached brick climb.
 	if (Distance(target->GetX(), target->GetY(), 1490, 470) < 40)
 	{
-		EffectVar(1, target, num) = 1490;
-		EffectVar(2, target, num) = 470;		
+		num.var1 = 1490;
+		num.var2 = 470;		
 	}
 	return 1;
 }
@@ -247,8 +247,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = num.var1;
+		var to_y = num.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);

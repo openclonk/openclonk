@@ -18,17 +18,17 @@ global func Schedule(string script, int interval, int repeats, object obj)
 	if (!effect)
 		return false;
 	// Set variables.
-	EffectVar(0, obj, effect) = script;
-	EffectVar(1, obj, effect) = repeats;
+	effect.var0 = script;
+	effect.var1 = repeats;
 	return true;
 }
 
 global func FxIntScheduleTimer(object obj, int effect)
 {
 	// Just a specific number of repeats.
-	var done = --EffectVar(1, obj, effect) <= 0;
+	var done = --effect.var1 <= 0;
 	// Execute.
-	eval(EffectVar(0, obj, effect));
+	eval(effect.var0);
 	return -done;
 }
 
@@ -45,10 +45,10 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 	if (!effect)
 		return false;
 	// Set variables.
-	EffectVar(0, obj, effect) = function;
-	EffectVar(1, obj, effect) = repeats;
+	effect.var0 = function;
+	effect.var1 = repeats;
 	// EffectVar(2): Just there for backwards compatibility.
-	EffectVar(2, obj, effect) = obj;
+	effect.var2 = obj;
 	for (var i = 0; i < 5; i++)
 		EffectVar(i + 3, obj, effect) = Par(i + 4);
 	return true;
@@ -57,9 +57,9 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 global func FxIntScheduleCallTimer(object obj, int effect)
 {
 	// Just a specific number of repeats.
-	var done = --EffectVar(1, obj, effect) <= 0;
+	var done = --effect.var1 <= 0;
 	// Execute.
-	Call(EffectVar(0, obj, effect), EffectVar(3, obj, effect), EffectVar(4, obj, effect), EffectVar(5, obj, effect), EffectVar(6, obj, effect), EffectVar(7, obj, effect));
+	Call(effect.var0, effect.var3, effect.var4, effect.var5, effect.var6, effect.var7);
 	return -done;
 }
 
@@ -72,7 +72,7 @@ global func ClearScheduleCall(object obj, string function)
 		// Check All ScheduleCall-Effects.
 		if (effect = GetEffect("IntScheduleCall", obj, i))
 			// Found right function.
-			if (EffectVar(0, obj, effect) == function)
+			if (effect.var0 == function)
 				// Remove effect.
 				RemoveEffect(0, obj, effect);
 	return;

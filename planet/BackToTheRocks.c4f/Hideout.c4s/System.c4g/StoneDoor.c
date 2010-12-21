@@ -51,7 +51,7 @@ private func IsClosed()
 protected func FxAutoControlStart(object target, int num, int temporary, int team)
 {
 	if (temporary == 0)
-	EffectVar(0, target, num) =  team;
+	num.var0 =  team;
 	return 1;
 }
 
@@ -60,7 +60,7 @@ protected func FxAutoControlTimer(object target, int num, int time)
 	var d = 0;
 	if (IsOpen())
 		d = 30;
-	var team = EffectVar(0, target, num);
+	var team = num.var0;
 	var open_door = false;
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
 	{

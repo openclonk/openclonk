@@ -98,11 +98,11 @@ func FxIntSearchLadderStop(target, number, reason, tmp)
 func FxIntClimbControlStart(target, number, tmp, ladder)
 {
 	if (tmp) return;
-	EffectVar(0, target, number) = ladder;
+	number.var0 = ladder;
 	SetXDir(0);
 	SetYDir(0);
 	SetComDir(COMD_Stop);
-	EffectVar(2, target, number) = 0; // odd or even segment?
+	number.var2 = 0; // odd or even segment?
 	SetHandAction(1);
 	SetTurnType(1);
 }
@@ -114,14 +114,14 @@ func LadderStep(target, number, fUp)
 {
 	if (fUp == 1)
 	{
-		EffectVar(1, target, number) += 10;
-		if (EffectVar(1, target, number) > 100)
+		number.var1 += 10;
+		if (number.var1 > 100)
 		{
-			EffectVar(1, target, number) = 0;
-			EffectVar(0, target, number) = EffectVar(0, target, number)->GetNextLadder();
-			EffectVar(2, target, number) = !EffectVar(2, target, number);
+			number.var1 = 0;
+			number.var0 = number.var0->GetNextLadder();
+			number.var2 = !number.var2;
 		}
-		if (EffectVar(0, target, number) == nil)
+		if (number.var0 == nil)
 		{
 			var contact = GetContact(-1);
 			if (contact & CNAT_Left || contact & CNAT_Right)
@@ -138,14 +138,14 @@ func LadderStep(target, number, fUp)
 	}
 	else
 	{
-		EffectVar(1, target, number) -= 10;
-		if(EffectVar(1, target, number) < 0)
+		number.var1 -= 10;
+		if(number.var1 < 0)
 		{
-			EffectVar(1, target, number) = 100;
-			EffectVar(0, target, number) = EffectVar(0, target, number)->GetPreviousLadder();
-			EffectVar(2, target, number) = !EffectVar(2, target, number);
+			number.var1 = 100;
+			number.var0 = number.var0->GetPreviousLadder();
+			number.var2 = !number.var2;
 		}
-		if (EffectVar(0, target, number) == nil)
+		if (number.var0 == nil)
 		{
 			var contact = GetContact(-1);
 			if (contact & CNAT_Left || contact & CNAT_Right)
@@ -158,15 +158,15 @@ func LadderStep(target, number, fUp)
 			return 0;
 		}
 	}
-	if (EffectVar(0, target, number) == nil) return 0;
+	if (number.var0 == nil) return 0;
 	return true;
 }
 
 func FxIntClimbControlTimer(target, number, time)
 {
 	if (GetAction() != "Climb" || Contained()) return -1;
-	if(EffectVar(0, target, number) && EffectVar(0, target, number)->CanNotBeClimbed(1)) EffectVar(0, target, number) = 0;
-	if(!EffectVar(0, target, number))
+	if(number.var0 && number.var0->CanNotBeClimbed(1)) number.var0 = 0;
+	if(!number.var0)
 	{
 		no_ladder_counter = 5;
 		SetAction("Jump");
@@ -198,10 +198,10 @@ func FxIntClimbControlTimer(target, number, time)
 		}
 		return -1;
 	}
-	var data = EffectVar(0, target, number)->GetLadderData();
+	var data = number.var0->GetLadderData();
 	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
-	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5000-100*GetTurnPhase();
-	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
+	var x = startx + (endx-startx)*number.var1/100+5000-100*GetTurnPhase();
+	var y = starty + (endy-starty)*number.var1/100;
 	var lx = LadderToLandscapeCoordinates(x);
 	var ly = LadderToLandscapeCoordinates(y);
 	var old_x = GetX(), old_y = GetY();
@@ -209,7 +209,7 @@ func FxIntClimbControlTimer(target, number, time)
 		return -1;
 	SetPosition(lx, ly);
 	SetXDir(0); SetYDir(0);
-	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//EffectVar(2, target, number));
+	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//number.var2);
 	if (Stuck())
 	{
 		var dir = -1;
@@ -238,7 +238,7 @@ func FxIntClimbControlTimer(target, number, time)
 			SetDir(0);
 		}
 	}
-	else EffectVar(0, target, number)->~OnLadderClimb(this);
+	else number.var0->~OnLadderClimb(this);
 	// Make the animation synchron with movement TODO: this only makes the feet synchronous for the arms the animation has to be adapted
 	var animation = GetRootAnimation(5);
 	if (animation != nil)
@@ -246,7 +246,7 @@ func FxIntClimbControlTimer(target, number, time)
 		if (GetAnimationName(animation) != nil)
 		{
 			var length = GetAnimationLength(GetAnimationName(animation));
-			var pos = EffectVar(1, target, number)*length/200+length/2*EffectVar(2, target, number);
+			var pos = number.var1*length/200+length/2*number.var2;
 			//pos = BoundBy(pos, 1, length-1);
 			SetAnimationPosition(animation, Anim_Const(pos));
 		}

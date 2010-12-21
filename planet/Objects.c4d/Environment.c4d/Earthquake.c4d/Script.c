@@ -32,13 +32,13 @@ protected func Initialize()
 public func GetChance()
 {
 	var effect = GetEffect("IntEarthquakeControl", this);
-	return EffectVar(0, this, effect);
+	return effect.var0;
 }
 
 public func SetChance(int chance)
 {
 	var effect = GetEffect("IntEarthquakeControl", this);
-	EffectVar(0, this, effect) = BoundBy(chance, 0, 100);
+	effect.var0 = BoundBy(chance, 0, 100);
 	return;
 }
 
@@ -50,7 +50,7 @@ public func DoChance(int chance)
 
 protected func FxIntEarthquakeControlTimer(object target, int fxnum, int time)
 {
-	var chance = EffectVar(0, this, fxnum);
+	var chance = fxnum.var0;
 	if (!Random(8))
 		if (Random(100) < chance)
 			LaunchEarthquake(Random(LandscapeWidth()), Random(LandscapeHeight()), Random(40) + 35);
@@ -67,10 +67,10 @@ global func LaunchEarthquake(int x, int y, int strength)
 	strength = BoundBy(strength, 15, 100);
 	// The earthquake is handled by a global effect.
 	var effect = AddEffect("IntEarthquake", 0, 100, 1, nil, Earthquake);
-	EffectVar(0, 0, effect) = x; // Epicentre x coordinate.
-	EffectVar(1, 0, effect) = y; // Epicentre y coordinate.
-	EffectVar(2, 0, effect) = strength / 3; // Earthquake strength.
-	EffectVar(3, 0, effect) = 3 * strength / 2; // Earthquake length.
+	effect.var0 = x; // Epicentre x coordinate.
+	effect.var1 = y; // Epicentre y coordinate.
+	effect.var2 = strength / 3; // Earthquake strength.
+	effect.var3 = 3 * strength / 2; // Earthquake length.
 	return true;
 }
 
@@ -93,19 +93,19 @@ protected func FxIntEarthquakeStop(object target, int fxnum)
 protected func FxIntEarthquakeTimer(object target, int fxnum, int time)
 {
 	// Time is up?
-	if (time > EffectVar(3, 0, fxnum))
+	if (time > fxnum.var3)
 		return FX_Execute_Kill;
 	// Some randomness.
 	if (Random(3))
 		return FX_OK;
 	// Get strength.
-	var str = EffectVar(2, 0, fxnum);
+	var str = fxnum.var2;
 	// Shake viewport.
 	if (!Random(10))
 		ShakeViewPort(str, x, y);
 	// Get quake coordinates.
-	var x = EffectVar(0, 0, fxnum);
-	var y = EffectVar(1, 0, fxnum);
+	var x = fxnum.var0;
+	var y = fxnum.var1;
 	// Shake ground & objects.
 	ShakeFree(x, y, Random(str / 2) + str / 5 + 5);
 	ShakeObjects(x, y, 4 * str);
@@ -121,8 +121,8 @@ protected func FxIntEarthquakeTimer(object target, int fxnum, int time)
 	if (cnt >= 10)
 		return FX_Execute_Kill;
 	// Set new position.
-	EffectVar(0, 0, fxnum) += dx;
-	EffectVar(1, 0, fxnum) += dy;
+	fxnum.var0 += dx;
+	fxnum.var1 += dy;
 	// Done.
 	return FX_OK;
 }

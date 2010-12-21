@@ -71,7 +71,7 @@ protected func FxAI_BowAimStart(object clonk, int num, int temporary, object tar
 {
 	if (temporary == 1)
 		return;
-	EffectVar(0, clonk, num) = target;
+	num.var0 = target;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
 	var angle = AI_AimPos(dx, dy, 100, lob_shot);
@@ -94,7 +94,7 @@ protected func FxAI_BowAimTimer(object clonk, int num, int time)
 {
 	if (time > 30)
 		return -1;
-	var target = EffectVar(0, clonk, num);
+	var target = num.var0;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
 	var angle = AI_AimPos(dx, dy, 100, lob_shot);
@@ -109,7 +109,7 @@ protected func FxAI_BowAimTimer(object clonk, int num, int time)
 
 protected func FxAI_BowAimStop(object clonk, int num, int reason, bool temporary)
 {
-	var target = EffectVar(0, clonk, num);
+	var target = num.var0;
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
 	var angle = AI_AimPos(dx, dy, 100, lob_shot);

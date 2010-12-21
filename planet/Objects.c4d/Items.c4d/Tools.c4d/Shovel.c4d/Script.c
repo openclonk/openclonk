@@ -102,7 +102,7 @@ public func FxShovelDigTimer(object clonk, int num, int time)
 		// Adjust speed at current animation position
 		var speed = clonk.ActMap.Dig.Speed*2;
 
-		var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
+		var iAnimation = GetEffect("IntDig", clonk).var1;
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
 
@@ -119,7 +119,7 @@ public func FxShovelDigTimer(object clonk, int num, int time)
 public func Dust(object target)
 {
 	// Only when the clonk moves the shovel
-	var iAnimation = EffectVar(1, target, GetEffect("IntDig", target));
+	var iAnimation = GetEffect("IntDig", target).var1;
 	var iPosition = target->GetAnimationPosition(iAnimation)*100/target->GetAnimationLength("Dig");
 	if(iPosition > 50)
 		return;

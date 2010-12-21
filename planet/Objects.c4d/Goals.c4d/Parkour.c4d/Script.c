@@ -395,7 +395,7 @@ protected func FxIntDirNextCPStart(object target, int fxnum)
 {
 	var arrow = CreateObject(GUI_GoalArrow, 0, 0, target->GetOwner());
 	arrow->SetAction("Show", target);
-	EffectVar(0, target, fxnum) = arrow;
+	fxnum.var0 = arrow;
 	return FX_OK;
 }
 
@@ -403,7 +403,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 {
 	var plr = target->GetOwner();
 	var team = GetPlayerTeam(plr);
-	var arrow = EffectVar(0, target, fxnum);
+	var arrow = fxnum.var0;
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
@@ -450,7 +450,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 
 protected func FxIntDirNextCPStop(object target, int fxnum)
 {
-	EffectVar(0, target, fxnum)->RemoveObject();
+	fxnum.var0->RemoveObject();
 	return;
 }
 
@@ -460,7 +460,7 @@ protected func FxIntDirNextCPStop(object target, int fxnum)
 private func DoBestTime(int plr)
 {
 	var effect = GetEffect("IntBestTime", this);
-	var time = EffectVar(0, this, effect);
+	var time = effect.var0;
 	var winteam = GetPlayerTeam(plr);
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
@@ -483,7 +483,7 @@ private func DoBestTime(int plr)
 // Starts at goal initialization, should be equivalent to gamestart.
 protected func FxIntBestTimeTimer(object pTarget, int iEffectNumber, int iEffectTime)
 {
-	EffectVar(0, pTarget, iEffectNumber) = iEffectTime;
+	iEffectNumber.var0 = iEffectTime;
 	return FX_OK;
 }
 
@@ -506,7 +506,7 @@ private func SetEvalData(int winner)
 {
 	var winteam = GetPlayerTeam(winner);
 	var effect = GetEffect("IntBestTime", this);
-	var time = EffectVar(0, this, effect);
+	var time = effect.var0;
 	var msg;
 	// General data.
 	if (winteam)
