@@ -4469,10 +4469,14 @@ static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szEffect || !*szEffect || !iPrio) return C4Value();
 	// create effect
-	// return assigned effect number - may be 0 if he effect has been denied by another effect
-	// may also be the number of another effect
 	int32_t iEffectNumber;
-	return C4VPropList(new C4Effect(pTarget, szEffect, iPrio, iTimerIntervall, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4, true, iEffectNumber));
+	new C4Effect(pTarget, szEffect, iPrio, iTimerIntervall, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4, true, iEffectNumber);
+	// return effect - may be 0 if he effect has been denied by another effect
+	// may also be another effect
+	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
+	if (!pEffect) return C4Value();
+	pEffect = pEffect->Get(iEffectNumber, true);
+	return C4VPropList(pEffect);
 }
 
 static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pvEffect, C4Value *pviQueryValue, C4Value *pviMaxPriority)
@@ -4481,9 +4485,8 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	C4String *psEffectName = pvsEffectName->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
 	long iQueryValue = pviQueryValue->getInt(), iMaxPriority = pviMaxPriority->getInt();
-	C4Effect * pEffect2 = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
+	int iNumber = pvEffect->getPropList() && pvEffect->getPropList()->GetEffect() ? pvEffect->getPropList()->GetEffect()->iNumber : 0;
 	const char *szEffect = FnStringPar(psEffectName);
-	if (!pEffect2) return C4Value();
 	// get effects
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
@@ -4492,7 +4495,7 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 		pEffect = pEffect->Get(szEffect, 0, iMaxPriority);
 	else
 		// otherwise, get by number
-		pEffect = pEffect->Get(pEffect2->iNumber, true, iMaxPriority);
+		pEffect = pEffect->Get(iNumber, true, iMaxPriority);
 	// effect found?
 	if (!pEffect) return C4Value();
 	// evaluate desired value

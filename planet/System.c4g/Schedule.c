@@ -15,7 +15,7 @@ global func Schedule(string script, int interval, int repeats, object obj)
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
-	if (effect <= 0)
+	if (!effect)
 		return false;
 	// Set variables.
 	EffectVar(0, obj, effect) = script;
@@ -42,7 +42,7 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
-	if (effect <= 0)
+	if (!effect)
 		return false;
 	// Set variables.
 	EffectVar(0, obj, effect) = function;
