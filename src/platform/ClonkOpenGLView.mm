@@ -236,16 +236,19 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 
 - (void) magnifyWithEvent:(NSEvent *)event
 {
-//	NSLog(@"%f",  [event magnification]);
-	C4Viewport* viewport = self.controller.viewport;
-	if (viewport)
+	if (Game.IsRunning)
 	{
-//		float x = viewport->ViewX+ ::pGUI->Mouse.x/viewport->GetZoom();
-//		float y = viewport->ViewY+ ::pGUI->Mouse.y/viewport->GetZoom();
-		viewport->SetZoom(viewport->GetZoom()+[event magnification], true);
-//		viewport->ViewX = x - ::pGUI->Mouse.x/viewport->GetZoom();
-//		viewport->ViewY = y - ::pGUI->Mouse.y/viewport->GetZoom();
+		C4Viewport* viewport = self.controller.viewport;
+		if (viewport)
+		{
+			viewport->SetZoom(viewport->GetZoom()+[event magnification], true);
+		}
 	}
+	else
+	{
+		[self.controller setFullscreen:[event magnification] > 0];
+	}
+
 }
 
 - (void) swipeWithEvent:(NSEvent*)event

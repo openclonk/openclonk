@@ -84,7 +84,6 @@
 			[fullscreenWindow setHidesOnDeactivate:YES];
 			[fullscreenWindow setContentView:openGLView];
 			[fullscreenWindow setReleasedWhenClosed:YES];
-			//[openGLView setFrame:fullscreenRect];
 			[fullscreenWindow setDelegate:self];
 			[self.window orderOut:self];
 			[fullscreenWindow setInitialFirstResponder:openGLView];
@@ -105,7 +104,8 @@
 			[self.window orderFront:self];
 			[openGLView setFrame:[self.window.contentView frame]];
 			[openGLView enableEvents];
-			[openGLView display];	
+			[openGLView display];
+			[self.window makeKeyAndOrderFront:self];
 		}
 		// fade in again
 		[self fadeIn:token];
