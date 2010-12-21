@@ -4596,33 +4596,6 @@ static long FnGetEffectCount(C4AulContext *ctx, C4String *psEffectName, C4Object
 	return pEffect->GetCount(szEffect, iMaxPriority);
 }
 
-static C4Value FnEffectVar(C4AulContext *cthr, int32_t iVarIndex, C4Object *pObj, C4Effect * pEffect2)
-{
-	// safety
-	if (!pEffect2) return C4Value();
-	if (iVarIndex<0) return C4Value();
-	// get effect
-	C4Effect *pEffect = pObj ? pObj->pEffects : Game.pGlobalEffects;
-	if (!pEffect) return C4Value();
-	if (!(pEffect = pEffect->Get(pEffect2->iNumber, true))) return C4Value();
-	// return var
-	return pEffect->EffectVars[iVarIndex];
-}
-
-static C4Value FnSetEffectVar(C4AulContext *cthr, int32_t iVarIndex, C4Object *pObj, C4Effect * pEffect2, const C4Value &Value)
-{
-	// safety
-	if (!pEffect2) return C4Value();
-	if (iVarIndex<0) return C4Value();
-	// get effect
-	C4Effect *pEffect = pObj ? pObj->pEffects : Game.pGlobalEffects;
-	if (!pEffect) return C4Value();
-	if (!(pEffect = pEffect->Get(pEffect2->iNumber, true))) return C4Value();
-	// set and return value
-	pEffect->EffectVars[iVarIndex] = Value;
-	return Value;
-}
-
 static C4Value FnEffectCall_C4V(C4AulContext *ctx, C4Value *pvpTarget, C4Value *pvEffect, C4Value *pvsCallFn, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4, C4Value *pvVal5, C4Value *pvVal6, C4Value *pvVal7)
 {
 	// evaluate parameters
@@ -6075,8 +6048,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FatalError", FnFatalError, false);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
-	AddFunc(pEngine, "EffectVar", FnEffectVar);
-	AddFunc(pEngine, "SetEffectVar", FnSetEffectVar);
 	AddFunc(pEngine, "PlayVideo", FnPlayVideo);
 	AddFunc(pEngine, "StartCallTrace", FnStartCallTrace);
 	AddFunc(pEngine, "StartScriptProfiler", FnStartScriptProfiler);

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-24 22:24+0100\n"
+"POT-Creation-Date: 2010-12-21 21:56+0100\n"
 "PO-Revision-Date: 2010-11-24 22:17+0100\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -296,7 +296,6 @@ msgstr "#appendto"
 #: sdk/script/fn/RemoveEffect.xml:8(category)
 #: sdk/script/fn/GetEffectCount.xml:8(category)
 #: sdk/script/fn/GetEffect.xml:8(category)
-#: sdk/script/fn/EffectVar.xml:8(category)
 #: sdk/script/fn/EffectCall.xml:8(category)
 #: sdk/script/fn/CheckEffect.xml:8(category)
 #: sdk/script/fn/ChangeEffect.xml:8(category)
@@ -339,7 +338,7 @@ msgstr "Folgende Operatoren werden unterstützt:"
 
 #: sdk/script/operatoren.xml:16(col)
 #: sdk/script/fn/GetEffect.xml:63(col)
-#: sdk/script/Effects.xml:162(col)
+#: sdk/script/Effects.xml:159(col)
 msgid "Priority"
 msgstr "Priorität"
 
@@ -383,7 +382,7 @@ msgstr "Operator"
 #: sdk/definition/procedures.xml:13(col)
 #: sdk/definition/lineconnect.xml:15(col)
 #: sdk/definition/defcore.xml:16(col)
-#: sdk/definition/defcore.xml:426(col)
+#: sdk/definition/defcore.xml:421(col)
 #: sdk/definition/cnat.xml:15(col)
 #: sdk/definition/category.xml:14(col)
 #: sdk/definition/actmap.xml:15(col)
@@ -1048,8 +1047,8 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/script/fn/CreateMenu.xml:37(col)
 #: sdk/script/fn/CreateMenu.xml:93(col)
 #: sdk/script/fn/AddCommand.xml:76(col)
-#: sdk/script/Effects.xml:491(col)
-#: sdk/script/Effects.xml:543(col)
+#: sdk/script/Effects.xml:483(col)
+#: sdk/script/Effects.xml:535(col)
 #: sdk/scenario/basefunc.xml:18(col)
 #: sdk/scenario/Teams.xml:34(col)
 #: sdk/scenario/Teams.xml:52(col)
@@ -1058,7 +1057,6 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/scenario/Teams.xml:99(col)
 #: sdk/scenario/Teams.xml:111(col)
 #: sdk/material/c4m.xml:299(col)
-#: sdk/definition/lineconnect.xml:18(col)
 #: sdk/definition/cnat.xml:18(col)
 msgid "0"
 msgstr "0"
@@ -1089,15 +1087,15 @@ msgstr "0"
 #: sdk/script/fn/CreateMenu.xml:42(col)
 #: sdk/script/fn/CreateMenu.xml:98(col)
 #: sdk/script/fn/AddCommand.xml:97(col)
-#: sdk/script/Effects.xml:206(col)
-#: sdk/script/Effects.xml:495(col)
-#: sdk/script/Effects.xml:548(col)
+#: sdk/script/Effects.xml:203(col)
+#: sdk/script/Effects.xml:487(col)
+#: sdk/script/Effects.xml:540(col)
 #: sdk/scenario/basefunc.xml:19(col)
 #: sdk/scenario/basefunc.xml:24(col)
 #: sdk/scenario/Teams.xml:22(col)
 #: sdk/material/c4m.xml:304(col)
+#: sdk/definition/lineconnect.xml:18(col)
 #: sdk/definition/lineconnect.xml:19(col)
-#: sdk/definition/lineconnect.xml:24(col)
 #: sdk/definition/cnat.xml:19(col)
 #: sdk/definition/cnat.xml:24(col)
 msgid "1"
@@ -1364,7 +1362,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/VIS_Enemies.xml:8(category)
 #: sdk/script/fn/VIS_Allies.xml:8(category)
 #: sdk/script/fn/VIS_All.xml:8(category)
-#: sdk/script/fn/TrainPhysical.xml:8(category)
 #: sdk/script/fn/Stuck.xml:8(category)
 #: sdk/script/fn/Split2Components.xml:8(category)
 #: sdk/script/fn/Sort_Value.xml:8(category)
@@ -1404,6 +1401,7 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/SetMeshMaterial.xml:8(category)
 #: sdk/script/fn/SetMenuSize.xml:8(category)
 #: sdk/script/fn/SetMass.xml:8(category)
+#: sdk/script/fn/SetKiller.xml:8(category)
 #: sdk/script/fn/SetGraphics.xml:8(category)
 #: sdk/script/fn/SetEntrance.xml:8(category)
 #: sdk/script/fn/SetDir.xml:8(category)
@@ -1502,7 +1500,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/GetMenuSelection.xml:8(category)
 #: sdk/script/fn/GetMenu.xml:8(category)
 #: sdk/script/fn/GetMass.xml:8(category)
-#: sdk/script/fn/GetMagicEnergy.xml:8(category)
 #: sdk/script/fn/GetKiller.xml:8(category)
 #: sdk/script/fn/GetID.xml:8(category)
 #: sdk/script/fn/GetHiRank.xml:8(category)
@@ -1560,7 +1557,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/Explode.xml:8(category)
 #: sdk/script/fn/Exit.xml:8(category)
 #: sdk/script/fn/Enter.xml:8(category)
-#: sdk/script/fn/DoMagicEnergy.xml:8(category)
 #: sdk/script/fn/DoEnergy.xml:8(category)
 #: sdk/script/fn/DoDamage.xml:8(category)
 #: sdk/script/fn/DoCrewExp.xml:8(category)
@@ -1764,21 +1760,19 @@ msgstr "Prüft, ob der Name des aufrufenden Objekts \"purz\" enthält (wo ist eg
 #: sdk/script/fn/SetCommand.xml:183(col)
 #: sdk/script/fn/SetCommand.xml:215(col)
 #: sdk/script/fn/SetCommand.xml:223(col)
-#: sdk/script/fn/SetCommand.xml:231(col)
 #: sdk/script/fn/SetCommand.xml:239(col)
-#: sdk/script/fn/SetCommand.xml:255(col)
+#: sdk/script/fn/SetCommand.xml:247(col)
+#: sdk/script/fn/SetCommand.xml:257(col)
 #: sdk/script/fn/SetCommand.xml:263(col)
-#: sdk/script/fn/SetCommand.xml:273(col)
-#: sdk/script/fn/SetCommand.xml:279(col)
-#: sdk/script/fn/SetCommand.xml:311(col)
+#: sdk/script/fn/SetCommand.xml:295(col)
+#: sdk/script/fn/SetCommand.xml:319(col)
+#: sdk/script/fn/SetCommand.xml:329(col)
 #: sdk/script/fn/SetCommand.xml:335(col)
-#: sdk/script/fn/SetCommand.xml:345(col)
+#: sdk/script/fn/SetCommand.xml:343(col)
 #: sdk/script/fn/SetCommand.xml:351(col)
 #: sdk/script/fn/SetCommand.xml:359(col)
 #: sdk/script/fn/SetCommand.xml:367(col)
-#: sdk/script/fn/SetCommand.xml:375(col)
-#: sdk/script/fn/SetCommand.xml:383(col)
-#: sdk/script/fn/SetCommand.xml:431(col)
+#: sdk/script/fn/SetCommand.xml:415(col)
 msgid "Target object"
 msgstr "Zielobjekt"
 
@@ -2085,64 +2079,6 @@ msgstr "Liefert eine 3x4-Einheitsmatrix. Sie kann als Transformation für <place
 msgid "Resets the MeshTransformation for the calling object."
 msgstr "Setzt die MeshTransformation für das aufrufende Objekt zurück."
 
-#: sdk/script/fn/TrainPhysical.xml:9(subcat)
-#: sdk/script/fn/Stuck.xml:9(subcat)
-#: sdk/script/fn/SetTransferZone.xml:9(subcat)
-#: sdk/script/fn/SetSolidMask.xml:9(subcat)
-#: sdk/script/fn/SetPhysical.xml:9(subcat)
-#: sdk/script/fn/SetOwner.xml:9(subcat)
-#: sdk/script/fn/SetName.xml:9(subcat)
-#: sdk/script/fn/SetMass.xml:9(subcat)
-#: sdk/script/fn/SetController.xml:9(subcat)
-#: sdk/script/fn/SetContactDensity.xml:9(subcat)
-#: sdk/script/fn/SetCon.xml:9(subcat)
-#: sdk/script/fn/ResetPhysical.xml:9(subcat)
-#: sdk/script/fn/OnFire.xml:9(subcat)
-#: sdk/script/fn/GetValue.xml:9(subcat)
-#: sdk/script/fn/GetPhysical.xml:9(subcat)
-#: sdk/script/fn/GetOwner.xml:9(subcat)
-#: sdk/script/fn/GetNeededMatStr.xml:9(subcat)
-#: sdk/script/fn/GetMass.xml:9(subcat)
-#: sdk/script/fn/GetKiller.xml:9(subcat)
-#: sdk/script/fn/GetDefBottom.xml:9(subcat)
-#: sdk/script/fn/GetDamage.xml:9(subcat)
-#: sdk/script/fn/GetContact.xml:9(subcat)
-#: sdk/script/fn/GetCon.xml:9(subcat)
-#: sdk/script/fn/Extinguish.xml:9(subcat)
-#: sdk/script/fn/DoMagicEnergy.xml:9(subcat)
-#: sdk/script/fn/DoEnergy.xml:9(subcat)
-#: sdk/script/fn/DoDamage.xml:9(subcat)
-#: sdk/script/fn/DoCon.xml:9(subcat)
-#: sdk/script/fn/ChangeDef.xml:9(subcat)
-msgid "Status"
-msgstr "Status"
-
-#: sdk/script/fn/TrainPhysical.xml:17(desc)
-#: sdk/script/fn/SetPhysical.xml:17(desc)
-msgid "Name of property to be changed."
-msgstr "Name Eigenschaft, die geändert werden soll"
-
-#: sdk/script/fn/TrainPhysical.xml:22(desc)
-msgid "0-100000: added training value"
-msgstr "0-100000: Wert, um den trainiert wird"
-
-#: sdk/script/fn/TrainPhysical.xml:27(desc)
-msgid "Maximum training value. In no case, the physical property of the clonk will be modified, even if its value is lower than the value specified here."
-msgstr "Wert, der durch das Training nie überschritten wird. Es wird allerdings in keinem Fall die Physical reduziert, auch wenn der Zielwert unter dem hier angegebenen Wert läge.<br/>"
-
-#: sdk/script/fn/TrainPhysical.xml:31(desc)
-msgid "Increases the physical property of an object by train_by. This function will train permanent physicals as well as temporary and temporarily stacked physicals. This function can be used e.g. to enhance magic capabilities after casting spells."
-msgstr "Erhöht den Wert der physischen Eigenschaft des aufrufenden Objekts um den in train_by angegebenen Wert. Mit diesem Aufruf werden sowohl die permanenten, als auch temporäre und temporär gestapelte Physicals trainiert. Dieser Befehl kann beispielsweise genutzt werden, um nach einem Zauber die Magiephysical zu trainieren."
-
-#: sdk/script/fn/TrainPhysical.xml:53(text)
-msgid "Example from System.c4g: improves the sorcerer's magic physical value after each successfull spell. It is ensured that the physical value will not surpass the maximum limit specified in MaxMagicPhysical() of the definition."
-msgstr "Beispiel aus der System.c4g: Trainiert bei einem erfolgreichen Zauber die Magiephsical des Zauberers. Dabei wird sicher gestellt, dass der zaubernde Clonk nicht über das durch die Funktion MaxMagicPhysical() in seiner Definition angegebene Limit trainiert werden kann."
-
-#: sdk/script/fn/TrainPhysical.xml:57(emlink)
-#: sdk/script/fn/SetPhysical.xml:90(emlink)
-msgid "DefCore.txt, [Physical]"
-msgstr "DefCore.txt, [Physical]"
-
 #: sdk/script/fn/ToggleBit.xml:16(desc)
 #: sdk/script/fn/SetBit.xml:16(desc)
 #: sdk/script/fn/GetBit.xml:16(desc)
@@ -2180,6 +2116,37 @@ msgstr "Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch die
 #: sdk/script/fn/Tan.xml:31(desc)
 msgid "Returns tan(angle) * radius."
 msgstr "Liefert tan(angle) * radius."
+
+#: sdk/script/fn/Stuck.xml:9(subcat)
+#: sdk/script/fn/SetTransferZone.xml:9(subcat)
+#: sdk/script/fn/SetSolidMask.xml:9(subcat)
+#: sdk/script/fn/SetPhysical.xml:9(subcat)
+#: sdk/script/fn/SetOwner.xml:9(subcat)
+#: sdk/script/fn/SetName.xml:9(subcat)
+#: sdk/script/fn/SetMass.xml:9(subcat)
+#: sdk/script/fn/SetKiller.xml:9(subcat)
+#: sdk/script/fn/SetController.xml:9(subcat)
+#: sdk/script/fn/SetContactDensity.xml:9(subcat)
+#: sdk/script/fn/SetCon.xml:9(subcat)
+#: sdk/script/fn/ResetPhysical.xml:9(subcat)
+#: sdk/script/fn/OnFire.xml:9(subcat)
+#: sdk/script/fn/GetValue.xml:9(subcat)
+#: sdk/script/fn/GetPhysical.xml:9(subcat)
+#: sdk/script/fn/GetOwner.xml:9(subcat)
+#: sdk/script/fn/GetNeededMatStr.xml:9(subcat)
+#: sdk/script/fn/GetMass.xml:9(subcat)
+#: sdk/script/fn/GetKiller.xml:9(subcat)
+#: sdk/script/fn/GetDefBottom.xml:9(subcat)
+#: sdk/script/fn/GetDamage.xml:9(subcat)
+#: sdk/script/fn/GetContact.xml:9(subcat)
+#: sdk/script/fn/GetCon.xml:9(subcat)
+#: sdk/script/fn/Extinguish.xml:9(subcat)
+#: sdk/script/fn/DoEnergy.xml:9(subcat)
+#: sdk/script/fn/DoDamage.xml:9(subcat)
+#: sdk/script/fn/DoCon.xml:9(subcat)
+#: sdk/script/fn/ChangeDef.xml:9(subcat)
+msgid "Status"
+msgstr "Status"
 
 #: sdk/script/fn/Stuck.xml:12(desc)
 msgid "Returns whether the object is stuck, meaning that one of its vertices is enclosed in solid matter."
@@ -2635,34 +2602,36 @@ msgid "Movement"
 msgstr "Bewegung"
 
 #: sdk/script/fn/SimFlight.xml:17(desc)
-msgid "X coordinate of the starting position. Always global."
-msgstr "X-Koordinate der Startposition. Immer global."
+msgid "X offset of the starting position. (NOT optional if used in nil object context)"
+msgstr ""
 
-#: sdk/script/fn/SimFlight.xml:22(desc)
-msgid "Y coordinate of the starting position. Always global."
-msgstr "Y-Koordinate der Startposition. Immer global."
+#: sdk/script/fn/SimFlight.xml:23(desc)
+msgid "Y offset of the starting position. (NOT optional if used in nil object context)"
+msgstr ""
 
-#: sdk/script/fn/SimFlight.xml:27(desc)
-msgid "Initial horizontal speed."
-msgstr "X-Anfangsgeschwindigkeit."
+#: sdk/script/fn/SimFlight.xml:29(desc)
+msgid "Initial horizontal speed. If not specified this will default to the object's horizontal speed. (NOT optional if used in nil object context)"
+msgstr ""
 
-#: sdk/script/fn/SimFlight.xml:32(desc)
-msgid "Initial vertical speed."
-msgstr "Y-Anfangsgeschwindigkeit."
+#: sdk/script/fn/SimFlight.xml:35(desc)
+msgid "Initial vertical speed. If not specified this will default to the object's vertical speed. (NOT optional if used in nil object context)"
+msgstr ""
 
-#: sdk/script/fn/SimFlight.xml:37(desc)
+#: sdk/script/fn/SimFlight.xml:41(desc)
 msgid "Mininum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material)."
 msgstr "Minimale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material)."
 
-#: sdk/script/fn/SimFlight.xml:43(desc)
-msgid "Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material)."
+#: sdk/script/fn/SimFlight.xml:47(desc)
+#, fuzzy
+msgid "Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 100."
 msgstr "Maximale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material)."
 
-#: sdk/script/fn/SimFlight.xml:49(desc)
-msgid "Number of simulated frames for which the projection runs. If not specified or 0 the simultion will run indefinitely until material or the limits of the landscape are encountered."
+#: sdk/script/fn/SimFlight.xml:53(desc)
+#, fuzzy
+msgid "Number of simulated frames for which the projection runs. If not specified or nonpositive the simultion will run indefinitely until material or the limits of the landscape are encountered."
 msgstr "Anzahl der simulierten Frames bis zum Abbruch der Simulation. Keine Angabe oder Null entspricht -1 (Kein Abbruch)."
 
-#: sdk/script/fn/SimFlight.xml:55(desc)
+#: sdk/script/fn/SimFlight.xml:59(desc)
 #: sdk/script/fn/SetYDir.xml:22(desc)
 #: sdk/script/fn/SetXDir.xml:22(desc)
 #: sdk/script/fn/SetSpeed.xml:33(desc)
@@ -2671,11 +2640,11 @@ msgstr "Anzahl der simulierten Frames bis zum Abbruch der Simulation. Keine Anga
 msgid "Precision. Default 10 if not specified or 0."
 msgstr "Genauigkeit. Keine Angabe oder Null entspricht 10."
 
-#: sdk/script/fn/SimFlight.xml:60(desc)
-msgid "Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for x and y, the horizontal and vertical speed at the time of interception in xdir and ydir respectively. See <emlink href=\"script/Funcs.html#referenzen\">references</emlink> for details."
-msgstr "Simuliert die Bewegung eines freien Falles mit Anfangsgeschwindigkeit in die angegebene Richtung. Wenn die simulierte Bewegung ein Material mit der gewünschten Dichte durchläuft, gibt diese Funktion true zurück, ansonsten false.<br/> Bei true wird die X- und Y-Position des Aufpralls in den angegebenen Variablen für x und y gespeichert, die Aufprallgeschwindigkeit in den angegebenen Variablen fü xdir und ydir. Siehe dazu <emlink href=\"script/Funcs.html#referenzen\">Referenzen</emlink>."
+#: sdk/script/fn/SimFlight.xml:64(desc)
+msgid "Simulates the motion of a falling object with a given starting position and initial speed. The returned array will contain [int x_final, int y_final, int xdir_final, int ydir_final, int time_passed]. <br/> If the projected trajectory encounters a material of the specified density, the simulation will stop and time_passed will be non-negative. Otherwise, time_passed will be negative."
+msgstr ""
 
-#: sdk/script/fn/SimFlight.xml:68(text)
+#: sdk/script/fn/SimFlight.xml:73(text)
 msgid "If the calling clonk is situated in mid-air and it appears that he will hit the ground at high speed, he will call out."
 msgstr "Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen ist, dass er mit hoher Geschwindigkeit auf den Boden aufprallen wird, ruft dies der Clonk aus. Bei einer Aufprallgeschwindigkeit von mindestens 8 Pixeln pro Frame landet der Clonk nicht mehr auf seinen Füßen und muss sich erst wieder aufrichten.<br/>Die ersten vier Parameter von SimFlight sind <emlink href=\"script/Funcs.html#referenzen\">Referenzen</emlink>."
 
@@ -3034,7 +3003,7 @@ msgstr "Index des Vertex."
 #: sdk/folder/foldermap.xml:44(col)
 #: sdk/definition/lineconnect.xml:13(col)
 #: sdk/definition/defcore.xml:14(col)
-#: sdk/definition/defcore.xml:424(col)
+#: sdk/definition/defcore.xml:419(col)
 #: sdk/definition/cnat.xml:13(col)
 #: sdk/definition/actmap.xml:13(col)
 msgid "Value"
@@ -3047,9 +3016,9 @@ msgstr "Wert"
 #: sdk/script/fn/GetVertex.xml:26(col)
 #: sdk/script/fn/GetPhysical.xml:28(col)
 #: sdk/script/fn/Format.xml:31(col)
-#: sdk/script/Effects.xml:430(col)
-#: sdk/script/Effects.xml:488(col)
-#: sdk/script/Effects.xml:539(col)
+#: sdk/script/Effects.xml:422(col)
+#: sdk/script/Effects.xml:480(col)
+#: sdk/script/Effects.xml:531(col)
 msgid "Meaning"
 msgstr "Bedeutung"
 
@@ -3761,6 +3730,10 @@ msgstr "Ändert die Repräsentativgrafik des aufrufenden Objekts auf ein neues Z
 msgid "Global function: changes the picture of obj to that of another object (Warning: this may make the game graphics or SolidMasks of the object invalid)."
 msgstr "Globale Funktion: Ändert die Repräsentativgrafik von obj auf die eines anderen Objekts (Achtung: Macht die Spielgrafik und eventuelle SolidMasks durch SetGraphics möglicherweise ungültig!)"
 
+#: sdk/script/fn/SetPhysical.xml:17(desc)
+msgid "Name of property to be changed."
+msgstr "Name Eigenschaft, die geändert werden soll"
+
 #: sdk/script/fn/SetPhysical.xml:22(desc)
 msgid "0-100000: new value for the property"
 msgstr "0-100000: Neuer Wert für diese Eigenschaft"
@@ -3814,13 +3787,13 @@ msgstr "PHYS_Temporary"
 #: sdk/script/fn/CreateMenu.xml:47(col)
 #: sdk/script/fn/CreateMenu.xml:103(col)
 #: sdk/script/fn/AddCommand.xml:90(col)
-#: sdk/script/Effects.xml:499(col)
-#: sdk/script/Effects.xml:553(col)
+#: sdk/script/Effects.xml:491(col)
+#: sdk/script/Effects.xml:545(col)
 #: sdk/scenario/basefunc.xml:25(col)
 #: sdk/scenario/basefunc.xml:30(col)
 #: sdk/material/c4m.xml:309(col)
+#: sdk/definition/lineconnect.xml:24(col)
 #: sdk/definition/lineconnect.xml:25(col)
-#: sdk/definition/lineconnect.xml:30(col)
 #: sdk/definition/cnat.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
 msgid "2"
@@ -3844,10 +3817,10 @@ msgstr "PHYS_StackTemporary"
 #: sdk/script/fn/CreateMenu.xml:52(col)
 #: sdk/script/fn/CreateMenu.xml:108(col)
 #: sdk/script/fn/AddCommand.xml:83(col)
-#: sdk/script/Effects.xml:503(col)
-#: sdk/script/Effects.xml:558(col)
+#: sdk/script/Effects.xml:495(col)
+#: sdk/script/Effects.xml:550(col)
 #: sdk/scenario/basefunc.xml:36(col)
-#: sdk/definition/lineconnect.xml:36(col)
+#: sdk/definition/lineconnect.xml:30(col)
 #: sdk/definition/cnat.xml:36(col)
 msgid "3"
 msgstr "3"
@@ -3871,6 +3844,10 @@ msgstr "Script für eine Magiepille: Der essende Clonk bekommt temporär Zaubere
 #: sdk/script/fn/SetPhysical.xml:86(text)
 msgid "Script of an effect named JumpBoost: If created on a Clonk, it can jump higher until the effect is deleted again. Using PHYS_StackTemporary and <placeholder-1/> in this manner ensures that multiple effects written in this style can be combined without causing unwanted behaviour when one effect wears off while another remains."
 msgstr "Script für einen Effekt namens JumpBoost: Wenn auf ein Objekt angewendet, kann es bis zum Löschen des Effektes höher springen. Die Kombination von PHYS_StackTemporary beim Setzen und Angabe der geänderten Physical in <placeholder-1/> sorgt dafür, dass sich mehrere solcher Effekte problemlos kombinieren lassen."
+
+#: sdk/script/fn/SetPhysical.xml:90(emlink)
+msgid "DefCore.txt, [Physical]"
+msgstr "DefCore.txt, [Physical]"
 
 #: sdk/script/fn/SetPhase.xml:9(subcat)
 #: sdk/script/fn/SetDir.xml:9(subcat)
@@ -3980,11 +3957,10 @@ msgstr "GFX_BLIT_ClrSfc_OwnClr"
 #: sdk/script/fn/GetSystemTime.xml:45(col)
 #: sdk/script/fn/GetEffect.xml:70(col)
 #: sdk/script/fn/CreateMenu.xml:57(col)
-#: sdk/script/Effects.xml:507(col)
+#: sdk/script/Effects.xml:499(col)
 #: sdk/scenario/basefunc.xml:31(col)
 #: sdk/scenario/basefunc.xml:42(col)
 #: sdk/definition/lineconnect.xml:31(col)
-#: sdk/definition/lineconnect.xml:42(col)
 #: sdk/definition/cnat.xml:31(col)
 #: sdk/definition/cnat.xml:42(col)
 msgid "4"
@@ -4001,8 +3977,6 @@ msgstr "GFX_BLIT_ClrSfc_Mod2"
 #: sdk/script/fn/SetObjectBlitMode.xml:54(col)
 #: sdk/scenario/basefunc.xml:37(col)
 #: sdk/material/c4m.xml:431(col)
-#: sdk/definition/lineconnect.xml:37(col)
-#: sdk/definition/lineconnect.xml:66(col)
 #: sdk/definition/cnat.xml:37(col)
 msgid "8"
 msgstr "8"
@@ -4029,7 +4003,6 @@ msgstr "GFX_BLIT_Custom"
 
 #: sdk/script/fn/SetObjectBlitMode.xml:64(col)
 #: sdk/script/fn/CreateMenu.xml:113(col)
-#: sdk/definition/lineconnect.xml:61(col)
 msgid "128"
 msgstr "128"
 
@@ -4042,7 +4015,6 @@ msgid "GFX_BLIT_Parent"
 msgstr "GFX_BLIT_Parent"
 
 #: sdk/script/fn/SetObjectBlitMode.xml:69(col)
-#: sdk/definition/lineconnect.xml:67(col)
 msgid "256"
 msgstr "256"
 
@@ -4226,6 +4198,21 @@ msgstr "Färbt ein Pixel in der Landschaft ein. Diese Funktion ist nicht im 8Bit
 msgid "Colors the landscape pixel directly behind the calling object brown."
 msgstr "Färbt das Landschaftspixel direkt hinter dem aufrufenden Objekt braun."
 
+#: sdk/script/fn/SetKiller.xml:17(desc)
+#, fuzzy
+msgid "Player number of the new killer. -1 for no owner."
+msgstr "Spielernummer des neuen Besitzers. -1 für keinen Besitzer."
+
+#: sdk/script/fn/SetKiller.xml:21(desc)
+#, fuzzy
+msgid "Sets the killer of the calling object."
+msgstr "Ändert den steuernden Spieler des aufrufenden Objekts."
+
+#: sdk/script/fn/SetKiller.xml:22(remark)
+#, fuzzy
+msgid "See <placeholder-1/> for details."
+msgstr "Siehe <placeholder-1/>."
+
 #: sdk/script/fn/SetHostility.xml:16(desc)
 msgid "Player whose hostility towards another player you want to change."
 msgstr "Der Spieler, dessen Bündnisverhältnis gesetzt wird"
@@ -4287,7 +4274,7 @@ msgstr "Index der zu setzenden Overlaygrafik. Muss wenn angegeben größer 0 sei
 
 #: sdk/script/fn/SetGraphics.xml:41(col)
 #: sdk/script/fn/CreateMenu.xml:33(col)
-#: sdk/script/Effects.xml:161(col)
+#: sdk/script/Effects.xml:158(col)
 msgid "Effect"
 msgstr "Effekt"
 
@@ -4341,7 +4328,6 @@ msgstr "GFXOV_MODE_Object"
 #: sdk/script/fn/GetEffect.xml:74(col)
 #: sdk/script/fn/CreateMenu.xml:62(col)
 #: sdk/scenario/basefunc.xml:48(col)
-#: sdk/definition/lineconnect.xml:48(col)
 #: sdk/definition/cnat.xml:48(col)
 msgid "5"
 msgstr "5"
@@ -4358,7 +4344,6 @@ msgstr "GFXOV_MODE_ExtraGraphics"
 #: sdk/script/fn/SetGamma.xml:68(col)
 #: sdk/script/fn/GetSystemTime.xml:53(col)
 #: sdk/script/fn/GetEffect.xml:78(col)
-#: sdk/definition/lineconnect.xml:54(col)
 #: sdk/definition/cnat.xml:54(col)
 msgid "6"
 msgstr "6"
@@ -4476,7 +4461,6 @@ msgstr "Zaubereffekte"
 #: sdk/script/fn/SetGamma.xml:72(col)
 #: sdk/script/fn/GetSystemTime.xml:57(col)
 #: sdk/material/c4m.xml:425(col)
-#: sdk/definition/lineconnect.xml:60(col)
 msgid "7"
 msgstr "7"
 
@@ -4777,17 +4761,17 @@ msgstr "Data"
 #: sdk/script/fn/SetCommand.xml:185(col)
 #: sdk/script/fn/SetCommand.xml:191(col)
 #: sdk/script/fn/SetCommand.xml:207(col)
-#: sdk/script/fn/SetCommand.xml:271(col)
+#: sdk/script/fn/SetCommand.xml:255(col)
+#: sdk/script/fn/SetCommand.xml:287(col)
+#: sdk/script/fn/SetCommand.xml:297(col)
 #: sdk/script/fn/SetCommand.xml:303(col)
-#: sdk/script/fn/SetCommand.xml:313(col)
-#: sdk/script/fn/SetCommand.xml:319(col)
-#: sdk/script/fn/SetCommand.xml:321(col)
-#: sdk/script/fn/SetCommand.xml:377(col)
-#: sdk/script/fn/SetCommand.xml:385(col)
-#: sdk/script/fn/SetCommand.xml:391(col)
-#: sdk/script/fn/SetCommand.xml:423(col)
-#: sdk/script/fn/SetCommand.xml:447(col)
-#: sdk/script/fn/SetCommand.xml:449(col)
+#: sdk/script/fn/SetCommand.xml:305(col)
+#: sdk/script/fn/SetCommand.xml:361(col)
+#: sdk/script/fn/SetCommand.xml:369(col)
+#: sdk/script/fn/SetCommand.xml:375(col)
+#: sdk/script/fn/SetCommand.xml:407(col)
+#: sdk/script/fn/SetCommand.xml:431(col)
+#: sdk/script/fn/SetCommand.xml:433(col)
 msgid "Null"
 msgstr "Null"
 
@@ -4795,13 +4779,12 @@ msgstr "Null"
 #: sdk/script/fn/SetCommand.xml:88(col)
 #: sdk/script/fn/SetCommand.xml:120(col)
 #: sdk/script/fn/SetCommand.xml:168(col)
-#: sdk/script/fn/SetCommand.xml:232(col)
-#: sdk/script/fn/SetCommand.xml:312(col)
-#: sdk/script/fn/SetCommand.xml:344(col)
-#: sdk/script/fn/SetCommand.xml:368(col)
+#: sdk/script/fn/SetCommand.xml:296(col)
+#: sdk/script/fn/SetCommand.xml:328(col)
+#: sdk/script/fn/SetCommand.xml:352(col)
+#: sdk/script/fn/SetCommand.xml:360(col)
 #: sdk/script/fn/SetCommand.xml:376(col)
-#: sdk/script/fn/SetCommand.xml:392(col)
-#: sdk/script/fn/SetCommand.xml:448(col)
+#: sdk/script/fn/SetCommand.xml:432(col)
 msgid "0,0"
 msgstr "0,0"
 
@@ -4816,11 +4799,11 @@ msgstr "Behälter ignorieren"
 #: sdk/script/fn/SetCommand.xml:170(col)
 #: sdk/script/fn/SetCommand.xml:178(col)
 #: sdk/script/fn/SetCommand.xml:186(col)
-#: sdk/script/fn/SetCommand.xml:274(col)
+#: sdk/script/fn/SetCommand.xml:258(col)
+#: sdk/script/fn/SetCommand.xml:362(col)
+#: sdk/script/fn/SetCommand.xml:370(col)
 #: sdk/script/fn/SetCommand.xml:378(col)
 #: sdk/script/fn/SetCommand.xml:386(col)
-#: sdk/script/fn/SetCommand.xml:394(col)
-#: sdk/script/fn/SetCommand.xml:402(col)
 msgid "Object type (id)"
 msgstr "Objekttyp (id)"
 
@@ -4838,10 +4821,10 @@ msgstr "Holen-Menü für Inhalt des Zielobjekts öffnen."
 
 #: sdk/script/fn/SetCommand.xml:96(col)
 #: sdk/script/fn/SetCommand.xml:128(col)
-#: sdk/script/fn/SetCommand.xml:272(col)
-#: sdk/script/fn/SetCommand.xml:360(col)
+#: sdk/script/fn/SetCommand.xml:256(col)
+#: sdk/script/fn/SetCommand.xml:344(col)
+#: sdk/script/fn/SetCommand.xml:368(col)
 #: sdk/script/fn/SetCommand.xml:384(col)
-#: sdk/script/fn/SetCommand.xml:400(col)
 msgid "Number,0"
 msgstr "Anzahl,0"
 
@@ -4854,8 +4837,9 @@ msgid "Attack the target object."
 msgstr "Zielobjekt angreifen."
 
 #: sdk/script/fn/SetCommand.xml:115(col)
-msgid "Build the target object and supply it with energy when done."
-msgstr "Zielobjekt bauen und anschließend mit Energie versorgen."
+#, fuzzy
+msgid "Build the target object."
+msgstr "Schlägt obj."
 
 #: sdk/script/fn/SetCommand.xml:123(col)
 msgid "Buy an object of the specified type at the closest friendly home base."
@@ -4863,8 +4847,8 @@ msgstr "Objekt von Objekttyp in nächstgelegener Basis kaufen."
 
 #: sdk/script/fn/SetCommand.xml:127(col)
 #: sdk/script/fn/SetCommand.xml:135(col)
-#: sdk/script/fn/SetCommand.xml:399(col)
-#: sdk/script/fn/SetCommand.xml:407(col)
+#: sdk/script/fn/SetCommand.xml:383(col)
+#: sdk/script/fn/SetCommand.xml:391(col)
 #: sdk/script/fn/Pow.xml:17(desc)
 msgid "Basis"
 msgstr "Basis"
@@ -4878,8 +4862,8 @@ msgid "Open the Buy menu for the specified home base."
 msgstr "Kaufen-Menü für angegebene Basis öffnen."
 
 #: sdk/script/fn/SetCommand.xml:143(col)
-#: sdk/script/fn/SetCommand.xml:343(col)
-#: sdk/script/fn/SetCommand.xml:369(col)
+#: sdk/script/fn/SetCommand.xml:327(col)
+#: sdk/script/fn/SetCommand.xml:353(col)
 #: sdk/script/Typechecks.xml:50(col)
 msgid "Object"
 msgstr "Objekt"
@@ -4916,11 +4900,11 @@ msgstr "An der nächstmöglichen Zielposition Baustelle errichten."
 #: sdk/script/fn/SetCommand.xml:192(col)
 #: sdk/script/fn/SetCommand.xml:208(col)
 #: sdk/script/fn/SetCommand.xml:216(col)
+#: sdk/script/fn/SetCommand.xml:288(col)
 #: sdk/script/fn/SetCommand.xml:304(col)
 #: sdk/script/fn/SetCommand.xml:320(col)
-#: sdk/script/fn/SetCommand.xml:336(col)
-#: sdk/script/fn/SetCommand.xml:424(col)
-#: sdk/script/fn/SetCommand.xml:432(col)
+#: sdk/script/fn/SetCommand.xml:408(col)
+#: sdk/script/fn/SetCommand.xml:416(col)
 msgid "Target position"
 msgstr "Zielposition"
 
@@ -4953,140 +4937,128 @@ msgid "Collect the target object and drop it at the target position."
 msgstr "Zielobjekt einsammeln und an Zielposition ablegen."
 
 #: sdk/script/fn/SetCommand.xml:227(col)
-msgid "Supply the target object with energy from the closest supplier."
-msgstr "Zielobjekt vom nächsten Versorger mit Energie versorgen."
-
-#: sdk/script/fn/SetCommand.xml:233(col)
-msgid "Supplier"
-msgstr "Versorger"
-
-#: sdk/script/fn/SetCommand.xml:235(col)
-msgid "Supply the target object with energy from this supplier."
-msgstr "Zielobjekt vom Versorger mit Energie versorgen."
-
-#: sdk/script/fn/SetCommand.xml:243(col)
 msgid "Enter the target object."
 msgstr "Das Zielobjekt betreten."
 
-#: sdk/script/fn/SetCommand.xml:251(col)
+#: sdk/script/fn/SetCommand.xml:235(col)
 msgid "Exit the current container."
 msgstr "Den aktuellen Behälter verlassen."
 
-#: sdk/script/fn/SetCommand.xml:259(col)
+#: sdk/script/fn/SetCommand.xml:243(col)
 msgid "Follow the target object (permanently)."
 msgstr "Dem Zielobjekt folgen (dauerhaft)."
 
-#: sdk/script/fn/SetCommand.xml:267(col)
+#: sdk/script/fn/SetCommand.xml:251(col)
 msgid "Collect the target object, dig it out if necessary."
 msgstr "Zielobjekt einsammeln (ggf. ausgraben)."
 
-#: sdk/script/fn/SetCommand.xml:275(col)
+#: sdk/script/fn/SetCommand.xml:259(col)
 msgid "Get the specified number of objects from the target object. From 4.9.8.3."
 msgstr "Anzahl Objekte von Objekttyp aus Zielobjekt holen. Ab 4.9.8.3."
 
-#: sdk/script/fn/SetCommand.xml:280(col)
+#: sdk/script/fn/SetCommand.xml:264(col)
 msgid "Offset"
 msgstr "Offset"
 
-#: sdk/script/fn/SetCommand.xml:283(col)
+#: sdk/script/fn/SetCommand.xml:267(col)
 msgid "Grab the target object at the specified offset to the object center."
 msgstr "Das Zielobjekt am Offset zur Objektmitte anfassen."
 
-#: sdk/script/fn/SetCommand.xml:291(col)
+#: sdk/script/fn/SetCommand.xml:275(col)
 msgid "Return to the closest friendly home base."
 msgstr "Zurück zur nächstgelegenen Heimatbasis."
 
-#: sdk/script/fn/SetCommand.xml:299(col)
+#: sdk/script/fn/SetCommand.xml:283(col)
 msgid "Jump into the current direction."
 msgstr "In aktuelle Richtung springen."
 
-#: sdk/script/fn/SetCommand.xml:307(col)
+#: sdk/script/fn/SetCommand.xml:291(col)
 msgid "Jump into the direction of the target position."
 msgstr "In Richtung der Zielposition springen."
 
-#: sdk/script/fn/SetCommand.xml:314(col)
-#: sdk/script/fn/SetCommand.xml:322(col)
+#: sdk/script/fn/SetCommand.xml:298(col)
+#: sdk/script/fn/SetCommand.xml:306(col)
 msgid "No automatic adjustment? (bool)"
 msgstr "Keine Anpassung? (bool)"
 
-#: sdk/script/fn/SetCommand.xml:315(col)
+#: sdk/script/fn/SetCommand.xml:299(col)
 msgid "Move to the position of the target object. Set iData to true to avoid automatic adjustment of the target coordinates to landscape surface."
 msgstr "Zur Position des Zielobjekts bewegen. iData true um die Koordinaten nicht an die Landschaftsform anzupassen."
 
-#: sdk/script/fn/SetCommand.xml:323(col)
+#: sdk/script/fn/SetCommand.xml:307(col)
 msgid "Move to the target position. Set iData to true to avoid automatic adjustment of the target coordinates to landscape surface."
 msgstr "Zur Zielposition bewegen. iData true um die Koordinaten nicht an die Landschaftsform anzupassen."
 
-#: sdk/script/fn/SetCommand.xml:331(col)
+#: sdk/script/fn/SetCommand.xml:315(col)
 msgid "Clear all current commands."
 msgstr "Aktuelle Befehle löschen."
 
-#: sdk/script/fn/SetCommand.xml:339(col)
+#: sdk/script/fn/SetCommand.xml:323(col)
 msgid "Push the target object to the target position."
 msgstr "Zielobjekt an Zielposition schieben."
 
-#: sdk/script/fn/SetCommand.xml:347(col)
+#: sdk/script/fn/SetCommand.xml:331(col)
 msgid "Push the target object into the secondary target object."
 msgstr "Objekt in Zielobjekt schieben."
 
-#: sdk/script/fn/SetCommand.xml:355(col)
+#: sdk/script/fn/SetCommand.xml:339(col)
 msgid "Put the first inventory object into the target object."
 msgstr "Erstes getragenes Objekt im Zielobjekt ablegen."
 
-#: sdk/script/fn/SetCommand.xml:363(col)
+#: sdk/script/fn/SetCommand.xml:347(col)
 msgid "Put the specified number of inventory objects into the target object. From 4.9.8.3."
 msgstr "Die angegebene Anzahl getragener Objekte im Zielobjekt ablegen. Ab 4.9.8.3."
 
-#: sdk/script/fn/SetCommand.xml:371(col)
+#: sdk/script/fn/SetCommand.xml:355(col)
 msgid "Collect the target object and put it into the secondary target object."
 msgstr "Objekt einsammeln und im Zielobjekt ablegen."
 
-#: sdk/script/fn/SetCommand.xml:379(col)
+#: sdk/script/fn/SetCommand.xml:363(col)
 msgid "Put the inventory object of the specified type into the target object."
 msgstr "Getragenes Objekt von Objekttyp im Zielobjekt ablegen."
 
-#: sdk/script/fn/SetCommand.xml:387(col)
+#: sdk/script/fn/SetCommand.xml:371(col)
 msgid "Put the specified number of inventory objects of the specified type into the target object. From 4.9.8.3."
 msgstr "Die angegebene Anzahl getragener Objekte von Objekttyp im Zielobjekt ablegen. Ab 4.9.8.3."
 
-#: sdk/script/fn/SetCommand.xml:393(col)
-#: sdk/script/fn/SetCommand.xml:401(col)
+#: sdk/script/fn/SetCommand.xml:377(col)
+#: sdk/script/fn/SetCommand.xml:385(col)
 msgid "Object2"
 msgstr "Objekt2"
 
-#: sdk/script/fn/SetCommand.xml:395(col)
+#: sdk/script/fn/SetCommand.xml:379(col)
 msgid "Sell an object of the specified type at the closest home base. If Object2 is specified, this one will be sold first."
 msgstr "Objekt von Objekttyp in nächstgelegener Basis verkaufen. Bei angegebenem Objekt2 wird zuerst dieses verkauft, wenn es in der Basis ist."
 
-#: sdk/script/fn/SetCommand.xml:403(col)
+#: sdk/script/fn/SetCommand.xml:387(col)
 msgid "Sell a number of objects of the specified type at the home base. If Object2 is specified, this one will be sold first."
 msgstr "Anzahl Objekte von Objekttyp in Basis verkaufen. Bei angegebenem Objekt2 wird zuerst dieses verkauft, wenn es in der Basis ist."
 
-#: sdk/script/fn/SetCommand.xml:411(col)
+#: sdk/script/fn/SetCommand.xml:395(col)
 msgid "Open Sell menu for the specified base object."
 msgstr "Verkaufen-Menü für angegebene Basis öffnen."
 
-#: sdk/script/fn/SetCommand.xml:419(col)
+#: sdk/script/fn/SetCommand.xml:403(col)
 msgid "Throw the first inventory item immediately."
 msgstr "Erstes getragenes Objekt sofort werfen."
 
-#: sdk/script/fn/SetCommand.xml:427(col)
+#: sdk/script/fn/SetCommand.xml:411(col)
 msgid "Throw the first inventory item towards the target position."
 msgstr "Erstes getragenes Objekt auf Zielposition werfen."
 
-#: sdk/script/fn/SetCommand.xml:435(col)
+#: sdk/script/fn/SetCommand.xml:419(col)
 msgid "Collect the target object and throw it towards the target position."
 msgstr "Zielobjekt einsammeln und an Zielposition werfen."
 
-#: sdk/script/fn/SetCommand.xml:443(col)
+#: sdk/script/fn/SetCommand.xml:427(col)
 msgid "Let go of the object currently grabbed."
 msgstr "Aktuell angefaßtes Objekt loslassen."
 
-#: sdk/script/fn/SetCommand.xml:450(col)
+#: sdk/script/fn/SetCommand.xml:434(col)
 msgid "Frames"
 msgstr "Frames"
 
-#: sdk/script/fn/SetCommand.xml:451(col)
+#: sdk/script/fn/SetCommand.xml:435(col)
 msgid "Wait specified number of frames/ticks."
 msgstr "Anzahl Frames/Ticks warten."
 
@@ -5094,7 +5066,7 @@ msgstr "Anzahl Frames/Ticks warten."
 msgid "The following commands are defined: <placeholder-1/>"
 msgstr "Es sind folgende Kommandos definiert: <placeholder-1/>"
 
-#: sdk/script/fn/SetCommand.xml:459(text)
+#: sdk/script/fn/SetCommand.xml:443(text)
 msgid "This script gives the clonk the order to attack the closest clonk of player 1. If the command fails (e.g. due to unsuccessful pathfinding), retry 10 times."
 msgstr "Dieser Script gibt dem ausführenden Clonk den Befehl, den nächstgelegenen Clonk von Spieler 1 zu attackieren. Dabei soll er nicht so schnell aufgeben und (wenn er z.B. daran scheitert, den Weg zum Feind zu finden) es 10 Mal zu versuchen, bis er sein Ziel erreicht hat oder abbricht."
 
@@ -5591,7 +5563,6 @@ msgstr "Beispiel siehe <placeholder-1/>. Achtung: Wenn sich ein Effekt mit diese
 #: sdk/script/fn/RemoveEffect.xml:48(emlink)
 #: sdk/script/fn/GetEffectCount.xml:36(emlink)
 #: sdk/script/fn/GetEffect.xml:105(emlink)
-#: sdk/script/fn/EffectVar.xml:34(emlink)
 #: sdk/script/fn/EffectCall.xml:39(emlink)
 #: sdk/script/fn/CheckEffect.xml:65(emlink)
 #: sdk/script/fn/ChangeEffect.xml:60(emlink)
@@ -6224,10 +6195,6 @@ msgstr "Object character flag: Anfassbares Objekt"
 #: sdk/script/fn/OCF_Fullcon.xml:12(desc)
 msgid "Object character flag: object is 100% complete, i.e. the object is not a construction site or growing animal."
 msgstr "Object character flag: Zu mindestens 100% fertig gebautes Objekt. Das Objekt ist also zum Beispiel keine Baustelle, bzw. als Lebwesen ist es mindestens voll ausgewachsen."
-
-#: sdk/script/fn/OCF_FightReady.xml:12(desc)
-msgid "Object character flag: object is a living being, has an activity, and no ObjectDisabled flag in that activity."
-msgstr "Object character flag: Das Objekt ist ein Lebewesen, hat eine Aktivität und kein ObjectDisabled in dieser Aktivität."
 
 #: sdk/script/fn/OCF_Exclusive.xml:12(desc)
 msgid "Object character flag: the object blocks (covers) objects behind it and prevents other objects from being built in front. This flag is set by <emlink href=\"definition/defcore.html\">DefCore</emlink> entry \"Exclusive\"."
@@ -7567,10 +7534,6 @@ msgstr "Liefert die Masse des aufrufenden Objekts (inklusive aller Inhaltsobjekt
 msgid "Twiggy"
 msgstr "Magersucht"
 
-#: sdk/script/fn/GetMagicEnergy.xml:11(desc)
-msgid "Returns the current magic energy value of the calling object."
-msgstr "Liefert den aktuellen Zauberenergiewert des aufrufenden Objekts."
-
 #: sdk/script/fn/GetLength.xml:17(desc)
 msgid "String or array of which to get the length"
 msgstr "Zeichenkette oder Array, von der die Länge abgefragt wird"
@@ -7588,10 +7551,6 @@ msgid "For object hits: The controlling player of the thrown object. The control
 msgstr "Bei Objekttreffern der steuernde Spieler des geworfenen Objektes. Dieser wird für Gegenstände automatisch beim Einsammeln gesetzt."
 
 #: sdk/script/fn/GetKiller.xml:17(li)
-msgid "For clonk-to-clonk-fights: The controlling player of the fighting opponent. This is usually the owner."
-msgstr "Bei Clonk-zu-Clonk-Kämpfen gilt direkt der steuernde Spieler des Kampfgegners als Schadensverursacher. Das ist im Normalfall der Besitzer."
-
-#: sdk/script/fn/GetKiller.xml:18(li)
 msgid "For fire: The controller of the original fire causing player, i.e. the calling object of the original call to <placeholder-1/>(). The causing player is kept independently of owners and controllers of the burning object in incineration chains. If, for example, player A incinerates a Clonk of player B and player B uses his burning Clonk to incinerate a Clonk of player C, both incinerations are marked as caused by player A."
 msgstr "Bei Feuer gilt der Controller des ursprünglichen Verursachers des Feuers, also dem aufrufenden Objekt in <placeholder-1/>()-Aufrufen. Der Verursacher wird durch die Entzündketten weitergetragen, unabhängig von Besitzern oder steuernden Spielern der brennenden Objekte. Zündet also zum Beispiel Spieler A einen Clonk von Spieler B an und selbiger entzündet einen Clonk von Spieler C, so gelten beide Feuer als von Spieler A verursacht."
 
@@ -7599,7 +7558,7 @@ msgstr "Bei Feuer gilt der Controller des ursprünglichen Verursachers des Feuer
 msgid "Because of the complexity of Clonk, it may not always be possible to determine the actual killer of a Clonk in chain reactions. In order to determine energy losses, every object stores a controller (see <placeholder-1/> for details). The controller is used to determine the player responsible for energy loss on a Clonk:<br/><placeholder-2/> The energy loss causing player is automatically reset to NO_OWNER (no player), whenever the Clonk executes an action that does not have ObjectDisabled=1 set (e.g. \"Walk\").<br/> Energy loss caused by the controller of the Clonk itself only sets the field if it was NO_OWNER before. This prevents players from committing suicide in order to deny scores from other players. Consequently, if a Clonk is hit by a rock and falls out of the bottom of the map, the killer is the player who threw the rock."
 msgstr "Aufgrund der Komplexität der Spielwelt von Clonk ist es nicht immer möglich, den tatsächlichen Schadensverursacher in Kettenreaktionen korrekt ausfindig zu machen. Zur Schadensverfolgung speichert jedes Objekt einen steuernden Spieler, der die Spielernummer des Spielers angibt, der ein Objekt zuletzt kontrolliert bzw. geworfen, geschoben, abgeschossen, etc. hat (für Details siehe <placeholder-1/>). Dieses Feld wird benutzt, um den Schaden erzeugenden Spieler zu ermitteln:<br/><placeholder-2/> Der Schadensverursacher eines Clonks wird aumatisch auf NO_OWNER (kein Spieler) zurück gesetzt, wenn der Clonk eine Aktivität ausführt, für die nicht ObjectDisabled=1 gesetzt ist (zum Beispiel \"Walk\").<br/> Selbst verursachter Schaden setzt das Feld nur dann auf den eigenen Spieler, wenn es vorher NO_OWNER war. Das verhindert, dass ein Spieler durch schnellen Selbstmord anderen Spielern Punkte wegnehmen kann. Wenn man unten herausfällt, gilt also derjenige als Mörder, der zuletzt Schaden verursacht hat. Wurde der Clonk mit einem Steintreffer herunter geschleudert, gilt in dem Fall der Steinwerfer."
 
-#: sdk/script/fn/GetKiller.xml:32(text)
+#: sdk/script/fn/GetKiller.xml:31(text)
 msgid "Script for the death of a Clonk: Customized death messages which show the murderer are shown."
 msgstr "Script für den Tod eines Clonks: Anstatt der normalen Todesnachricht richtet sich die Nachricht danach, wer den Clonk getötet hat."
 
@@ -7686,7 +7645,8 @@ msgid "Returns the current energy value of an object. 100% representing the maxi
 msgstr "Liefert den aktuellen Energiewert des aufrufenden Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical]."
 
 #: sdk/script/fn/GetEnergy.xml:12(remark)
-msgid "\"Energy\" signifies life energy in living beings and electrical energy in buildings."
+#, fuzzy
+msgid "\"Energy\" signifies life energy in living beings."
 msgstr "\"Energy\" ist bei Lebewesen deren Lebensenergie und bei Gebäuden die im Objekt vorhandene elektrische Energie."
 
 #: sdk/script/fn/GetEffectCount.xml:16(desc)
@@ -8044,8 +8004,9 @@ msgid "Incinerates the object if it is a building."
 msgstr "Zündet obj an, wenn es ein Gebäude ist."
 
 #: sdk/script/fn/GetBreath.xml:12(desc)
-msgid "Returns the current breath value of an object in percent. 100% represent the maximum physical value of 100,000. Also see DefCore section [Physical]."
-msgstr "Liefert den aktuellen Atemwert des aufrufenden Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical]."
+#, fuzzy
+msgid "Returns the current breath value of an object, this is the number of frames an object can still hold its breath"
+msgstr "Gibt einen Eigenschaftswert des aufrufenden Objekts nach seinem Namen in der Objects.txt zurück."
 
 #: sdk/script/fn/GetBit.xml:21(desc)
 msgid "The requested bit."
@@ -8354,7 +8315,7 @@ msgstr "s"
 #: sdk/folder/foldermap.xml:80(col)
 #: sdk/folder/foldermap.xml:85(col)
 #: sdk/folder/foldermap.xml:95(col)
-#: sdk/definition/actmap.xml:134(col)
+#: sdk/definition/actmap.xml:129(col)
 msgid "String"
 msgstr "Zeichenkette"
 
@@ -8698,18 +8659,6 @@ msgstr "Sucht eine Heimatbasis eines Spielers. Die Heimatbasis ist zumeist das G
 msgid "Gives the selected clonk the order to enter his home base."
 msgstr "Gibt dem ausgewählten Clonk des ersten Spielers das Kommando, seine Basis zu betreten."
 
-#: sdk/script/fn/FightWith.xml:17(desc)
-msgid "Object to be fought."
-msgstr "Objekt, das bekämpft werden soll."
-
-#: sdk/script/fn/FightWith.xml:21(desc)
-msgid "Starts a clonk-to-clonk fight. Using this command you can also make allied clonks fight. Both participants must be <placeholder-1/>."
-msgstr "Beginnt einen Zweikampf. Mit diesem Befehl können auch Clonks nicht verfeindeter Spieler einen Kampf beginnen. Beide Teilnehmer müssen <placeholder-1/> sein."
-
-#: sdk/script/fn/FightWith.xml:25(text)
-msgid "Fights another object close-by."
-msgstr "Bekämpft ein direkt in der Nähe stehendes Objekt."
-
 #: sdk/script/fn/ExtractMaterialAmount.xml:17(desc)
 #: sdk/script/fn/ExtractLiquid.xml:17(desc)
 msgid "X position at which material is extracted. Offset in local calls."
@@ -8828,30 +8777,13 @@ msgstr "Eliminiert einen Spieler. Die Runde gilt für diesen Spieler als verlore
 msgid "The first player is eliminated if he has no more flags."
 msgstr "Wenn der erste Spieler keine Flagge mehr hat, wird er eliminiert."
 
-#: sdk/script/fn/EffectVar.xml:16(desc)
-msgid "Index of the variable. Theoretically, any number of variables can be used. As, however, any newly accessed variable has to internally allocated first, you should only use as many variables as really necessary."
-msgstr "Index der Variable. Es sind theoretisch beliebig viele Variablen möglich; da aber die Liste beim Abfragen von Variablen außerhalb des erzeugten Bereiches neu erstellt werden muss, sollten hier nicht größere Werte als nötig genommen werden."
-
-#: sdk/script/fn/EffectVar.xml:21(desc)
 #: sdk/script/fn/EffectCall.xml:16(desc)
 msgid "Target object of the effect the of which you want to access variables. 0 for global effects."
 msgstr "Zielobjekt des Effektes, auf dessen Variablenspeicher zugegriffen wird. 0 für globale Effekte."
 
-#: sdk/script/fn/EffectVar.xml:27(desc)
 #: sdk/script/fn/EffectCall.xml:22(desc)
 msgid "Effect number. Effect numbers are passed to effect callback functions, they are the return values of <placeholder-1/> and can be determined from an effect name via <placeholder-2/>."
 msgstr "Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <placeholder-1/> und lassen sich über <placeholder-2/> aus dem Effektnamen herausfinden."
-
-#: sdk/script/fn/EffectVar.xml:31(desc)
-msgid "Returns a reference to an effect local variable. This reference can be used to read or write values."
-msgstr "Liefert eine Referenz auf eine effektlokale Variable. Diese kann zum Lesen und schreiben verwendet werden."
-
-#: sdk/script/fn/EffectVar.xml:32(remark)
-#: sdk/script/fn/EffectCall.xml:37(remark)
-#: sdk/script/fn/CheckEffect.xml:63(remark)
-#: sdk/script/fn/AddEffect.xml:74(remark)
-msgid "For examples and more information see the <emlink href=\"script/Effects.html\">effects documentation</emlink>."
-msgstr "Für Beispiele und weitere Hinweise siehe <emlink href=\"script/Effects.html\">Effekte-Dokumentation</emlink>."
 
 #: sdk/script/fn/EffectCall.xml:27(desc)
 msgid "Function to be called. The prefix 'Fx' is automatically prepended to the function name. Do not include 'Fx' in the parameter."
@@ -8864,6 +8796,12 @@ msgstr "Zusätzliche Aufrufparameter"
 #: sdk/script/fn/EffectCall.xml:36(desc)
 msgid "Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect index. The remaining parameters can be freely chosen."
 msgstr "Führt einen Funktionsaufruf im angegebenen Effekt durch. Der Aufruf erhält den Befehlskontext des Effektes, und die ersten beiden Aufrufparameter sind immer Zielobjekt und Effektindex. Die weiteren Parameter können frei gewählt werden."
+
+#: sdk/script/fn/EffectCall.xml:37(remark)
+#: sdk/script/fn/CheckEffect.xml:63(remark)
+#: sdk/script/fn/AddEffect.xml:74(remark)
+msgid "For examples and more information see the <emlink href=\"script/Effects.html\">effects documentation</emlink>."
+msgstr "Für Beispiele und weitere Hinweise siehe <emlink href=\"script/Effects.html\">Effekte-Dokumentation</emlink>."
 
 #: sdk/script/fn/EditCursor.xml:11(desc)
 msgid "In the developer mode of the engine this function returns the object which is currently under the mouse cursor (in edit mode: select and move)."
@@ -9078,22 +9016,6 @@ msgstr "Verändert den Punktewert eines Spielers."
 msgid "Deducts 100 points from this player."
 msgstr "Zieht dem Spieler 100 Punkte ab."
 
-#: sdk/script/fn/DoMagicEnergy.xml:17(desc)
-msgid "Change of magic value (positive or negative)."
-msgstr "Veränderung des Magiewertes; positiv oder negativ"
-
-#: sdk/script/fn/DoMagicEnergy.xml:22(desc)
-msgid "If true, the function will also transfer magical energy partially instead of failing. In this case, the function will only fail if the magical energy is not changed at all. Since CR."
-msgstr "Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR."
-
-#: sdk/script/fn/DoMagicEnergy.xml:27(desc)
-msgid "Adjusts the magic value of an object. The change is only performed as a whole - if the specified change would pass the upper or lower physical limit of the object, it is not performed and the function returns false. The effect is that with only one call you can make a change and check whether the change is even possible."
-msgstr "Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung change nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist."
-
-#: sdk/script/fn/DoMagicEnergy.xml:31(text)
-msgid "Casts a lightning spell if enough magic energy is available."
-msgstr "Zaubert einen Blitzzauber, wenn die nötige magische Aufladung dafür vorhanden ist."
-
 #: sdk/script/fn/DoHomebaseProduction.xml:16(desc)
 msgid "Number of the player whose home base resupply list you want to change."
 msgstr "Spielernummer des Spielers, dessen Heimatbasismaterial-Nachlieferung verändert werden soll"
@@ -9152,7 +9074,8 @@ msgid "Number of the player who has caused the damage."
 msgstr "Spielernummer des Spielers, der den Schaden verursacht hat."
 
 #: sdk/script/fn/DoEnergy.xml:39(desc)
-msgid "Adjusts the energy value of an object. Energy signifies electrical energy in buildings and life energy in living beings."
+#, fuzzy
+msgid "Adjusts the energy value of an object. Energy signifies life energy in living beings."
 msgstr "Verändert die Energie des aufrufenden Objekts. Die Energie entspricht bei Gebäuden der elektrischen Energie, und bei Lebewesen der Lebensenergie."
 
 #: sdk/script/fn/DoEnergy.xml:43(text)
@@ -9208,18 +9131,15 @@ msgid "Robs the selected crewmember half of its normal size, if the object was f
 msgstr "Raubt dem angewähltem Mannschaftsmitglied von Spieler plr die Hälfte seiner normalen Größe. Wenn es vorher ausgewachsen war, hat es danach halbe normale Größe, wenn es halbe normale Größe hatte ist es danach weg."
 
 #: sdk/script/fn/DoBreath.xml:17(desc)
-msgid "Change of the breath value (positive or negative) in percent of the maximum value. 100% correspond to the maximum physical value 100,000."
-msgstr "Veränderung des Atemwertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000."
+#, fuzzy
+msgid "Change of the breath value in frames."
+msgstr "Verändert den Atemwert eines Objekts."
 
-#: sdk/script/fn/DoBreath.xml:22(desc)
-msgid "Object of which you want to change breath. Can be 0 in local calls."
-msgstr "Objekt, dessen Atem verändert wird. 0 bei lokalem Aufruf."
-
-#: sdk/script/fn/DoBreath.xml:27(desc)
+#: sdk/script/fn/DoBreath.xml:21(desc)
 msgid "Changes the breath value of an object."
 msgstr "Verändert den Atemwert eines Objekts."
 
-#: sdk/script/fn/DoBreath.xml:31(text)
+#: sdk/script/fn/DoBreath.xml:25(text)
 msgid "Gives 50% more breath to the selected clonk of the first player."
 msgstr "Gibt den ausgewählten Clonk des ersten Spielers 50% mehr Atemluft."
 
@@ -11011,7 +10931,7 @@ msgstr "Beispiel"
 #: sdk/definition/defcore.xml:400(col)
 #: sdk/definition/defcore.xml:405(col)
 #: sdk/definition/defcore.xml:410(col)
-#: sdk/definition/defcore.xml:415(col)
+#: sdk/definition/defcore.xml:425(col)
 #: sdk/definition/defcore.xml:430(col)
 #: sdk/definition/defcore.xml:435(col)
 #: sdk/definition/defcore.xml:440(col)
@@ -11029,8 +10949,6 @@ msgstr "Beispiel"
 #: sdk/definition/defcore.xml:500(col)
 #: sdk/definition/defcore.xml:505(col)
 #: sdk/definition/defcore.xml:510(col)
-#: sdk/definition/defcore.xml:515(col)
-#: sdk/definition/defcore.xml:520(col)
 #: sdk/definition/actmap.xml:29(col)
 #: sdk/definition/actmap.xml:34(col)
 #: sdk/definition/actmap.xml:39(col)
@@ -11042,7 +10960,6 @@ msgstr "Beispiel"
 #: sdk/definition/actmap.xml:84(col)
 #: sdk/definition/actmap.xml:119(col)
 #: sdk/definition/actmap.xml:124(col)
-#: sdk/definition/actmap.xml:129(col)
 msgid "Integer"
 msgstr "Integer"
 
@@ -11741,11 +11658,13 @@ msgid "There are also some other methods of indirect calls. See <placeholder-1/>
 msgstr "Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe dazu <placeholder-1/> und <placeholder-2/>. Besondere Beachtung verdienen außerdem noch <placeholder-3/> und <placeholder-4/>. Sie ermöglichen die Umgehung der <emlink href=\"script/Funcs.html#Aufrufb\">Aufrufbeschränkung</emlink> und existieren nur in der \"Indirekt-Aufruf-Version\"."
 
 #: sdk/script/Effects.xml:9(text)
-msgid "Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration. Effects are available from CE on."
+#, fuzzy
+msgid "Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration."
 msgstr "Ab CE ist es möglich, an jedes Objekt variable Mengen an Zusatzeffekten zu binden ohne dafür zusätzliche Objekte zu benötigen. Dieses System ist besonders für Zauber interessant."
 
 #: sdk/script/Effects.xml:11(text)
-msgid "Effects are, roughly put, dynamic timers that can be attached to objects. Effects themselves have no visible or acoustic representation - for this you would use objects or particles instead - effects are pure scripting helpers. They also offer a general interface that can be used to resolve conflicts of temporary status changes made to objects by other objects at the same time."
+#, fuzzy
+msgid "Effects are, roughly put, dynamic timers with properties that can be attached to objects. Effects themselves have no visible or acoustic representation - for this you would use objects or particles instead - effects are pure scripting helpers. They also offer a general interface that can be used to resolve conflicts of temporary status changes made to objects by other objects at the same time."
 msgstr "Effekte sind, grob gesehen, dynamische Timer, die sich an ein Zielobjekt binden lassen. Effekte an sich bieten keinerlei graphische oder akustische Funktionen - dafür sind Partikel oder Objekte zuständig - sondern sind eine reine Scripthilfe. Zudem liefern sie ein allgemeines Interface, über das sich Statusveränderungen an Objekten untereinander abstimmen lassen."
 
 #: sdk/script/Effects.xml:12(text)
@@ -11768,647 +11687,651 @@ msgstr "Anwendung"
 msgid "Effects are created using <placeholder-1/> and removed with <placeholder-2/>. If an effect was successfully created, the callback Fx*Start is made (* is replaced with the effect name). Depending on the parameters, there can also be an Fx*Timer call for continuous activity such as casting sparks, adjusting energy etc. Finally, when the effect is deleted, the callback Fx*Stop is made. Now, the invisibility spell implemented using effects:"
 msgstr "Effekte werden mit der Scriptfunktion <placeholder-1/> erstellt und analog mit <placeholder-2/> entfernt. Wenn ein Effekt erfolgreich zum Objekt hinzugefügt wurde, wird der Callback Fx*Start aufgerufen (* steht dabei für den Effektnamen). Je nach Parametern kann dann ein periodischer Aufruf von Fx*Timer erfolgen, in dem der Effekt Partikel sprühen, Lebensenergie abziehen oder sonstige Dinge tun kann. Schließlich erfolgt, wenn der Effekt entfernt wird, ein Aufruf Fx*Stop, durchgeführt, in dem sich der Effekt entfernen sollte. Als Beispiel hier der oben beschriebene Unsichtbarkeitszauber mit Effekten:"
 
-#: sdk/script/Effects.xml:99(text)
+#: sdk/script/Effects.xml:96(text)
 msgid "In this case, the magic spell object only starts the effect, then deletes itself immediately. The engine ensures that there are no conflicts with multiple effects modifying the visibility: effects are stored in a stack which ensures that effects are always removed in the opposite order of their addition. For this, there are a couple of extra Start and Stop calls to be made which are explained in detail later."
 msgstr "Hier startet das Zauberobjekt nur noch den Effekt, und entfernt sich dann. Die Engine sorgt dafür, dass keine Probleme bei der Sichtbarkeit auftreten: Effekte werden in einem Stapel angelegt, der sicher stellt, dass jeder Effekte immer in der umgekehrten Reihenfolge entfernt werden, in der sie hinzugefügt wurden. Dazu sind ein paar zusätzliche Start- und Stop-Aufrufe notwendig, auf die später noch eingegangen wird."
 
-#: sdk/script/Effects.xml:100(text)
+#: sdk/script/Effects.xml:97(text)
 msgid "This effects does not have a timer function. It does, however, define a timer interval of 1111 which will invoke the standard timer function after 1111 frames which will delete the effect. Alternatively, you could define a timer function as such:"
 msgstr "Der Effekt hat außerdem keinen Timer-Aufruf, aber trotzdem ein angegebenes TimerIntervall von 1111. Das sorgt dafür, dass mit dem ersten Aufruf nach 1111 Frames der Standard-Timer ausgelöst wird, der den Effekt löscht. Alternativ hätte man auch eine Timerfunktion definieren können:"
 
-#: sdk/script/Effects.xml:106(text)
-msgid "To store the previous status of the target object, special storage space in <placeholder-1/>() is used. This is necessary because in this case the effect callbacks to not have any object script context. So you cannot access any object local variables in the effect callbacks - remember that the magic spell object which has created the effect is already deleted. If you require an object context in the effect callbacks you can specify one in <placeholder-2/>(). In that case, effect callbacks would be in object local context and the effect would automatically be deleted if the target object is destroyed."
+#: sdk/script/Effects.xml:103(text)
+#, fuzzy
+msgid "To store the previous status of the target object, properties of the effect are used. This is necessary because in this case the effect callbacks do not have any object script context. So you cannot access any object local variables in the effect callbacks - remember that the magic spell object which has created the effect is already deleted. If you require an object context in the effect callbacks you can specify one in <placeholder-1/>(). In that case, effect callbacks would be in object local context and the effect would automatically be deleted if the target object is destroyed."
 msgstr "Zum Speichern der vorherigen Statuswerte des Effektziels wird der spezielle Speicherbereich in <placeholder-1/>() verwendet. Dies ist nötig, da die Effekt-Callbacks in diesem Fall keinen Befehlskontext haben. Es können also keine objektlokalen Variablen (<code>local</code>) verwendet werden - das Zauberobjekt wurde schließlich gelöscht. Falls ein Objektkontext benötigt wird, kann man diesen auch an <placeholder-2/>() übergeben. Die Aufrufe sind dann objektlokal, und der Effekt wird automatisch gelöscht, wenn das Befehlszielobjekt gelöscht wurde."
 
-#: sdk/script/Effects.xml:107(h)
+#: sdk/script/Effects.xml:104(h)
 #: sdk/playercontrols.xml:357(h)
 msgid "Priorities"
 msgstr "Prioritäten"
 
-#: sdk/script/Effects.xml:108(text)
+#: sdk/script/Effects.xml:105(text)
 msgid "When creating an effect you always specify a priority value which determines the effect order. The engine ensures that effects with lower priority are added before effects with a higher priority - even if this means deleting an existing effect of higher priority. So if one effect colors the clonk green and another colors the clonk red, the result will be that of the effect with higher priority. If two effects have the same priority, the order is undefined. However, it is guaranteed that effects added later always notify the Fx*Effect callback of the same priority."
 msgstr "Beim Erstellen eines Effektes wird immer eine Priorität mit angegeben, die die Überladungsreihenfolge der Effekte angibt. Die Engine garantiert dabei, dass Effekte mit niedriger Priorität immer vor Effekten mit hoher Priorität hinzugefügt werden - notfalls durch temporäres Entfernen von Effekten mit höherer Priorität. Wenn also ein Effekt einen Clonk grün färbt, und ein anderer rot, so wird das Ergebnis das des Effektes mit höherer Priorität sein, da dieser Effekt zuletzt angewendet wurde. Haben zwei Effekte die gleiche Priorität, ist die Reihenfolge nicht definiert. Es ist jedoch garantiert, dass später zugewiesene Effekte stets an den Fx*Effect-Callback gleicher Priorität mit übergeben werden."
 
-#: sdk/script/Effects.xml:109(text)
+#: sdk/script/Effects.xml:106(text)
 msgid "In the case of the red and green color, one effect could also determine the previous coloring and then mix a result using ModulateColor. But priorities also have another function: an effect of higher priority can prevent the addition of other effects of lower priority. This is done through the Fx*Effect callback. If any existing effect reacts to this callback with the return value -1, the new effect is not added (the same applies to the Start callback of the effect itself). Here an example:"
 msgstr "Im Falle der Grün-/Rotfärbung von Clonks sollte ein Effekt natürlich möglichst die vorherige Färbung abfragen, und dann zum Beispiel mit ModulateColor mischen. Die Prioritäten haben allerdings noch eine weitere Funktion: Ein Effekt mit hoher Priorität kann das Hinzufügen anderer Effekte mit niedrigerer Priorität verhindern. Dazu dient der Callback Fx*Effect. Gibt irgendein Effekt als Reaktion auf diesen Callback -1 zurück, wird der neue Effekt nicht hinzugefügt (dasselbe gilt für den Start-Callback beim Effekt selber). Dazu ein Beispiel:"
 
-#: sdk/script/Effects.xml:140(text)
+#: sdk/script/Effects.xml:137(text)
 msgid "This effect makes the clonk fire-proof for 30 seconds. The effect is implemented without any Timer or Stop callbacks as the complete functionality is achieved by simply blocking other effects which might have \"Fire\" as part of their name. This especially applies to the engine internal fire which has exactly the name \"Fire\". Of course, you could still add a Timer callback for graphic effects so the player can see that his clonk is immune. Also, you could create special visual effects when preventing incineration in FxBanBurnPSpellEffect. For the like:"
 msgstr "Dieser Zauber macht den Clonk für 30 Sekunden gegen Feuer immun. Der Effekt kommt ohne Timer- und Stop-Callbacks aus, da die gesamte Funktionalität schon im Abblocken aller Effekte besteht, die \"Fire\" als Teilzeichenkette enthalten. Dies gilt insbesondere auch für das engineinterne Feuer, das genau den Effektnamen \"Fire\" hat. Man könnte hier natürlich trotzdem einen Timer für grafische Effekte hinzufügen, damit der Spieler sieht, dass er gerade nicht brennen kann. Außerdem könnte beim Abblocken eines Feuers in FxBanBurnPSpellEffect zusätzliche Effekte ausführen, wie zum Beispiel:"
 
-#: sdk/script/Effects.xml:156(text)
+#: sdk/script/Effects.xml:153(text)
 msgid "This would even delete all burning objects which would otherwise incinerate the target object. The type check for var3 avoids possible conflicts with other \"Fire\" effects that might have differing parameters. Obviously, conflict situations like this should be avoided at all cost."
 msgstr "Dies würde sogar alle brennenden Objekte löschen, die das Zielobjekt ansonsten anzünden würden. Der Typecheck für var3 ist enthalten, weil sich andere Effekte ebenfalls Fire in den Namen setzen und andere Parameter haben könnten. Es ist offensichtlich, dass man dies vermeiden sollte, weil Funktionen wie die obige dann im ungünstigsten Fall ein völlig anderes Objekt löschen könnten."
 
-#: sdk/script/Effects.xml:157(text)
+#: sdk/script/Effects.xml:154(text)
 msgid "The following table contains general guidelines for priorities in effects of the original pack:"
 msgstr "Die folgende Tabelle enthält grobe Richtlinien für Prioritäten von Originalpackeffekten:"
 
-#: sdk/script/Effects.xml:165(col)
+#: sdk/script/Effects.xml:162(col)
 msgid "Short special effects"
 msgstr "Kurzer Spezialeffekt"
 
-#: sdk/script/Effects.xml:166(col)
+#: sdk/script/Effects.xml:163(col)
 msgid "300-350"
 msgstr "300-350"
 
-#: sdk/script/Effects.xml:169(col)
+#: sdk/script/Effects.xml:166(col)
 msgid "Effects which cannot be banned"
 msgstr "Nicht bannbare Effekte"
 
-#: sdk/script/Effects.xml:170(col)
+#: sdk/script/Effects.xml:167(col)
 msgid "250-300"
 msgstr "250-300"
 
-#: sdk/script/Effects.xml:173(col)
+#: sdk/script/Effects.xml:170(col)
 msgid "Magic ban spell"
 msgstr "Magie-Bannzauber"
 
-#: sdk/script/Effects.xml:174(col)
+#: sdk/script/Effects.xml:171(col)
 msgid "200-250"
 msgstr "200-250"
 
-#: sdk/script/Effects.xml:177(col)
+#: sdk/script/Effects.xml:174(col)
 msgid "Permanent magic ban spell"
 msgstr "Andauernde Magie-Bannzauber"
 
-#: sdk/script/Effects.xml:178(col)
+#: sdk/script/Effects.xml:175(col)
 msgid "180-200"
 msgstr "180-200"
 
-#: sdk/script/Effects.xml:181(col)
+#: sdk/script/Effects.xml:178(col)
 msgid "Short term, benevolent magic effects"
 msgstr "Kurzfristige, positive Zaubereffekte"
 
-#: sdk/script/Effects.xml:182(col)
+#: sdk/script/Effects.xml:179(col)
 msgid "150-180"
 msgstr "150-180"
 
-#: sdk/script/Effects.xml:185(col)
+#: sdk/script/Effects.xml:182(col)
 msgid "Short term, malevolent magic effects"
 msgstr "Kurzfristige, negative Zaubereffekte"
 
-#: sdk/script/Effects.xml:186(col)
+#: sdk/script/Effects.xml:183(col)
 msgid "120-150"
 msgstr "120-150"
 
-#: sdk/script/Effects.xml:189(col)
+#: sdk/script/Effects.xml:186(col)
 msgid "Normal Effects"
 msgstr "Normale Effekte"
 
-#: sdk/script/Effects.xml:190(col)
+#: sdk/script/Effects.xml:187(col)
 msgid "100-120"
 msgstr "100-120"
 
-#: sdk/script/Effects.xml:193(col)
+#: sdk/script/Effects.xml:190(col)
 msgid "Fire as used by the engine"
 msgstr "Engineinternes Feuer"
 
-#: sdk/script/Effects.xml:194(col)
+#: sdk/script/Effects.xml:191(col)
 msgid "100"
 msgstr "100"
 
-#: sdk/script/Effects.xml:197(col)
+#: sdk/script/Effects.xml:194(col)
 msgid "Permanent magic effects"
 msgstr "Permanente Zaubereffekte"
 
-#: sdk/script/Effects.xml:198(col)
+#: sdk/script/Effects.xml:195(col)
 msgid "50-100"
 msgstr "50-100"
 
-#: sdk/script/Effects.xml:201(col)
+#: sdk/script/Effects.xml:198(col)
 msgid "Permanent other effects"
 msgstr "Permanente, sonstige Effekte"
 
-#: sdk/script/Effects.xml:202(col)
+#: sdk/script/Effects.xml:199(col)
 msgid "20-50"
 msgstr "20-50"
 
-#: sdk/script/Effects.xml:205(col)
+#: sdk/script/Effects.xml:202(col)
 msgid "Internal effects, data storage etc."
 msgstr "Interne Effekte als Datenspeicher, etc."
 
-#: sdk/script/Effects.xml:210(text)
+#: sdk/script/Effects.xml:207(text)
 msgid "Generally, effect priorities should be chosen by dependency: if one effect should prevent another it needs a higher priority to do this (even if it is a permanent effect). Short term effects should have a higher priority than long term effects so that short term changes in the object are visible on top of long term effects."
 msgstr "Allgemein richten sich Effekte natürlich erst einmal nach den Abhängigkeiten: Wenn ein Effekt einen anderen verhindern soll, braucht der verhindernde Effekt höhere Priorität (Selbst wenn es ein permanenter Effekt ist). Dann sollten kurzfristige Effekte gegenüber den längerfristigen eine höhere Priorität bekommen, damit die kurzfristigen Statusänderungen bei demselben Statuselement gegenüber den langfristigen Statuselementen eher zu sehen sind."
 
-#: sdk/script/Effects.xml:211(text)
+#: sdk/script/Effects.xml:208(text)
 msgid "The engine internal fire is of priority 100. So a magic fire which also uses the properties of the engine fire should have a slightly higher priority and should call the respective FxFire* functions within its callbacks. For proper functioning all effect callback (i.e. Start, Timer, and Stop) should be forwarded as each might depend on the action of the others. If this is not possible in your case, you should reimplement the complete fire functionality by script."
 msgstr "Das engineinterne Feuer liegt natürlich fest bei 100. Ein magisches Feuer, das die Eigenschaften des engineinternen Feuers auch benutzt, sollte entsprechend leicht darüber liegen, und in allen seinen Callbacks die entsprechenden FxFire*-Aufrufe mit aufrufen. Dabei sollten stets alle Callbacks (also Start, Timer und Stop) weitergeleitet werden, da diese voneinander abhängen und sich diese Abhängigkeiten auch in verschiedenen Engineversionen verschieben können. Wenn das nicht geht, sollte das Verhalten besser gleich komplett per Script emuliert werden."
 
-#: sdk/script/Effects.xml:212(text)
+#: sdk/script/Effects.xml:209(text)
 msgid "Effects with priority 1 are a special case: Other effects are never temporarily removed for them and they are never temporarily removed themselves."
 msgstr "Effekte mit Priorität 1 sind ein Spezialfall: Für sie werden nie andere Effekte temporär entfernt und sie selber werden ebenfalls nie temporär entfernt."
 
-#: sdk/script/Effects.xml:213(h)
+#: sdk/script/Effects.xml:210(h)
 msgid "Special Add/Remove Calls"
 msgstr "Spezielle Add/Remove-Aufrufe"
 
-#: sdk/script/Effects.xml:214(text)
+#: sdk/script/Effects.xml:211(text)
 msgid "For the engine to ensure that effects are always removed in opposite order, it might in some cases be necessary to temporarily remove and later re-add existing effects. In these situations, the scripter should obviously take care to remove any object changes and reapply them after re-adding so that other effects will behave accordingly."
 msgstr "Damit die Engine sicherstellen kann, dass Effekte immer in umgekehrter Reihenfolge entfernt werden, wie sie hinzugefügt wurden, müssen zuweilen Effekte temporär entfernt und wieder hinzugefügt werden. In diesen Aufrufen sollte der Scripter natürlich alle Statuszustände löschen und wiederherstellen, damit sich die anderen Effekte danach ausrichten können. Aktionen, die nur einmal beim Starten oder enden des Effektes ausgeführt werden sollen. Dazu gehört zum Beispiel das Löschen des Zielobjektes beim letzten Beispielscript, oder auch Soundeffekte."
 
-#: sdk/script/Effects.xml:215(text)
+#: sdk/script/Effects.xml:212(text)
 msgid "Effects are also removed when the target object is deleted or dies - the cause for the removal is passed in the reason parameter to the Remove function of the effect. This can be used e.g. to reanimate a clonk immediately upon his death:"
 msgstr "Effekte werden auch dann entfernt, wenn das Zielobjekt entfernt wird oder stirbt - der Grund wird im reason-Parameter an die Remove-Funktion der Effekte übergeben. Auf diese Weise kann man beispielsweise dafür sorgen, dass ein Clonk nach dem Sterben sofort wiederbelebt wird:"
 
-#: sdk/script/Effects.xml:257(text)
+#: sdk/script/Effects.xml:250(text)
 msgid "This effect reanimates the clonk as many times as he has cast the reanimation spell."
 msgstr "Dieser Effekt belebt den Clonk beim Tod so oft wieder, wie er den Zauber gesprochen hat."
 
-#: sdk/script/Effects.xml:258(h)
+#: sdk/script/Effects.xml:251(h)
 msgid "Global Effects"
 msgstr "Globale Effekte"
 
-#: sdk/script/Effects.xml:259(text)
+#: sdk/script/Effects.xml:252(text)
 msgid "Global effects are effects that are not bound to any target object. With global effects, too, priorities are observed and temporary Add/Remove calls might be necessary to ensure order. Simply imagine all global effects are attached to an imaginary object. Global effects are accessed whenever you specify 0 for the target object."
 msgstr "Globale Effekte sind einfach Effekte, die an kein Zielobjekt gebunden sind. Innerhalb der globalen Effekte werden aber trotzdem Prioritäten beachtet und temporäre Add/Remove-Aufrufe durchgeführt. Man kann sich vorstellen, dass alle globalen Effekte an einem imaginären, globalen Objekt hängen. Globale Effekte werden entsprechend immer angesprochen, indem man an die Effektfunktionen als Zielobjekt 0 übergibt."
 
-#: sdk/script/Effects.xml:260(text)
+#: sdk/script/Effects.xml:253(text)
 msgid "This can be used to make changes to gravity, sky color, etc. Here's an example for a spell that temporarily reduces gravity and then resets the original value:"
 msgstr "Hiermit lassen sich zum Beispiel Änderungen an der Gravitation, Himmelsfärbung, etc. durchführen. Ein Beispiel für einen Zauber, der die Gravitation reduziert und mit der Zeit wieder an den regulären Wert anpasst:"
 
-#: sdk/script/Effects.xml:326(text)
-msgid "target will be 0 in all these effect calls. You should still pass this parameter to calls such as <placeholder-1/>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed."
+#: sdk/script/Effects.xml:318(text)
+#, fuzzy
+msgid "<code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <placeholder-1/>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed."
 msgstr "target wird hier in allen Effektaufrufen 0 sein. Trotzdem sollte der Parameter immer an Aufrufe wie <placeholder-1/>() übergeben werden, da es dann auch möglich ist, den Effekt an den Zauberer oder ggf. den Zauberturm zu binden. In diesem Fall würde die Gravitation automatisch zurückgesetzt, sobald der Zauberer stirbt oder der Turm gelöscht wird."
 
-#: sdk/script/Effects.xml:327(h)
+#: sdk/script/Effects.xml:319(h)
 msgid "Adding Effects"
 msgstr "Zusammenfassen von Effekten"
 
-#: sdk/script/Effects.xml:328(text)
+#: sdk/script/Effects.xml:320(text)
 msgid "In the previous example, several gravitational effects were combined so that the gravity change lasts longer if the spell is casted multiple times. Adding these effects cannot be done in the Effect callback because the gravitation effect might always be prevented by another effect with higher priority (e.g. a no-spells-whatsoever-effect). Through the special Fx*Add callback you can achieve the desired result more easily, or at least in a more structured fashion."
 msgstr "Im letzten Beispiel wurden mehrere Gravitationseffekte zusammen gefasst, so dass die Änderung der Gravitation länger andauert, wenn mehrmals gezaubert wurde. Die Zusammenfassung durfte nicht im Effect-Callback passieren, da der Gravitationseffekt immer noch von einem Effekt mit höherer Priorität (beispielsweise ein keine-globalen-Zauber-erlauben-Effekt) abgelehnt werden könnte. Über den speziellen Fx*Add-Callback kann man dasselbe Ergebnis aber auch einfacher (oder zumindest übersichtlicher) erreichen:"
 
-#: sdk/script/Effects.xml:348(text)
-msgid "Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect number of the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all."
+#: sdk/script/Effects.xml:340(text)
+#, fuzzy
+msgid "Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all."
 msgstr "Die Rückgabe von -3 an den Fx*Effect-Callback, sorgt dafür, dass der Fx*Add-Callback für den neuen Effekt ausgeführt wird. Der neue Effekt wird dabei nicht erzeugt, und die entsprechende AddEffect-Funktion gibt die Effektnummer des Effektes zurück, der den neuen Effekt übernommen hat. Die Methode hat gegenüber der weiter oben verwendeten also den Vorteil, dass der Rückgabewert von AddEffect benutzt werden kann, um festzustellen, ob der Effekt überhaupt erzeugt werden konnte."
 
-#: sdk/script/Effects.xml:349(h)
+#: sdk/script/Effects.xml:341(h)
 msgid "User Defined Properties"
 msgstr "Benutzerdefinierte Eigenschaften"
 
-#: sdk/script/Effects.xml:350(text)
+#: sdk/script/Effects.xml:342(text)
 msgid "Effects can be easily classified by name. In this way, e.g. all magic spell effects can easily be found through the respective wildcard string. If, however, you want to create user-defined properties which also apply to existing effects you can do this by defining additional effect functions:"
 msgstr "Viele Klassifizierungen von Effekten können einfach über den Namen geregelt werden. Auf diese Weise können beispielsweise schnell alle Zaubereffekte über Wildcards gesucht und entfernt werden. Falls man aber zum Beispiel eigene Eigenschaften definieren will, die auch für existierende Effekte gelten, kann man zusätzliche Effektfunktionen definieren:"
 
-#: sdk/script/Effects.xml:364(text)
+#: sdk/script/Effects.xml:356(text)
 msgid "Using <placeholder-1/>() you can of course also call functions in the effect, e.g. to extend certain effects."
 msgstr "Über <placeholder-1/>() können natürlich auch Funktionen im Effekt ausgelöst werden; beispielsweise um bestimmte Effekte zu verlängern."
 
-#: sdk/script/Effects.xml:365(h)
+#: sdk/script/Effects.xml:357(h)
 msgid "Blind Effects"
 msgstr "Blindeffekte"
 
-#: sdk/script/Effects.xml:366(text)
+#: sdk/script/Effects.xml:358(text)
 msgid "Sometimes effects only need to be created in order to produce the respective callbacks in other effects - for example with magic spells which don't have any animation or long term effects but which nonetheless might be blocked by other effects. Example for the earthquake spell:"
 msgstr "Manchmal müsste ein Effekt nur erzeugt werden, um die entsprechenden Callbacks in anderen Effekten auszuführen - beispielsweise bei Zaubern, die keine längere Animation benötigen, aber trotzdem durch andere Effekte blockiert können werden sollen. Ein Beispiel ist der Erdbebenzauber:"
 
-#: sdk/script/Effects.xml:382(text)
+#: sdk/script/Effects.xml:374(text)
 msgid "The return value of <placeholder-1/>() is -1 if the effect was rejected and a positive value or -2 if the effect was accepted. In both cases the effect itself should not be executed, but in the latter case the Activate function may signal success by returning 1."
 msgstr "Der Rückgabewert von <placeholder-1/>() ist -1 wenn der Effekt abgelehnt, und positiv oder -2 wenn er aufgenommen wurde. In beiden Fällen sollte der Effekt selber nicht ausgeführt werden; aber in letzterem Fall kann die Activate-Funktion Erfolg signalisieren und 1 zurückgeben."
 
-#: sdk/script/Effects.xml:383(h)
+#: sdk/script/Effects.xml:375(h)
 msgid "Extended Possibilities"
 msgstr "Erweiterte Möglichkeiten"
 
-#: sdk/script/Effects.xml:384(text)
+#: sdk/script/Effects.xml:376(text)
 msgid "As every effect has its own data storage, effects are also a way of attaching external data to objects without having to change the object definition for that. Also, simple calls can be delayed, e.g. for one frame after destruction of the object as is done at one place in the Knights pack:"
 msgstr "Da jeder Effekt seinen eigenen Datenspeicher hat, ist dies eine Möglichkeit, extern Daten an Objekte zu binden, ohne dabei die Definitionen verändern zu müssen. Außerdem können so einfache Aufrufe verzögert durchgeführt werden - beispielsweise erst ein Frame nach der Zerstörung eines Objekts, wie an einer Stelle im Ritterpack:"
 
-#: sdk/script/Effects.xml:406(text)
+#: sdk/script/Effects.xml:398(text)
 msgid "For this application, the effect name should start with \"Int\" (especially if working with global callbacks) followed by the id of the object to avoid any kind of name conflict with other effects."
 msgstr "Bei derartigen Effekten sollte der Name mit \"Int\" beginnen; insbesondere falls sie mit globalem Callback erzeugt werden, sollte darauf die ID des Objekts folgen, um Namenskollisionen zu vermeiden."
 
-#: sdk/script/Effects.xml:407(text)
+#: sdk/script/Effects.xml:399(text)
 msgid "Also, certain action can be taken at the death of an object without having to modify that object's definition. A scenario script might contain:"
 msgstr "Zudem können bestimmte Aktionen beim Tod von Lebewesen ausgeführt werden, ohne dafür gleich eine neue Objektdefinition zu benötigen. In einem Szenarioscript kann beispielsweise stehen:"
 
-#: sdk/script/Effects.xml:423(text)
+#: sdk/script/Effects.xml:415(text)
 msgid "All wipfs present at the beginning of the scenario will explode on death!"
 msgstr "Alle Wipfe, die von Anfang an im Szenario waren, explodieren beim Tod."
 
-#: sdk/script/Effects.xml:424(h)
+#: sdk/script/Effects.xml:416(h)
 msgid "Naming"
 msgstr "Benennung"
 
-#: sdk/script/Effects.xml:425(text)
+#: sdk/script/Effects.xml:417(text)
 msgid "So that effects might properly recognize and manipulate each other you should stick to the following naming scheme (\"*abc\" means endings, \"abc*\" means prefixes, and \"*abc*\" means string parts which might occur anywhere in the name)."
 msgstr "Damit sich Effekte untereinander erkennen und manipulieren können, sollten folgende Benennungsschemata verwendet werden (\"*abc\" steht für Endungen, \"abc*\" für Namensanfänge und \"*abc*\" für Zeichenketten, die irgendwo im Namen vorkommen sollten."
 
-#: sdk/script/Effects.xml:429(col)
+#: sdk/script/Effects.xml:421(col)
 msgid "Name section"
 msgstr "Namensteil"
 
-#: sdk/script/Effects.xml:433(col)
+#: sdk/script/Effects.xml:425(col)
 msgid "*Spell"
 msgstr "*Spell"
 
-#: sdk/script/Effects.xml:434(col)
+#: sdk/script/Effects.xml:426(col)
 msgid "Magic effect"
 msgstr "Magischer Effekt"
 
-#: sdk/script/Effects.xml:437(col)
+#: sdk/script/Effects.xml:429(col)
 msgid "*PSpell"
 msgstr "*PSpell"
 
-#: sdk/script/Effects.xml:438(col)
+#: sdk/script/Effects.xml:430(col)
 msgid "Benevolent magic effect"
 msgstr "Für das Zielobjekt positiver, magischer Effekt"
 
-#: sdk/script/Effects.xml:441(col)
+#: sdk/script/Effects.xml:433(col)
 msgid "*NSpell"
 msgstr "*NSpell"
 
-#: sdk/script/Effects.xml:442(col)
+#: sdk/script/Effects.xml:434(col)
 msgid "Malevolent magic effect"
 msgstr "Für das Zielobjekt negativer, magischer Effekt"
 
-#: sdk/script/Effects.xml:445(col)
+#: sdk/script/Effects.xml:437(col)
 msgid "*USpell"
 msgstr "*USpell"
 
-#: sdk/script/Effects.xml:446(col)
+#: sdk/script/Effects.xml:438(col)
 msgid "Neutral magic effect"
 msgstr "Neutraler, magischer Effekt"
 
-#: sdk/script/Effects.xml:449(col)
+#: sdk/script/Effects.xml:441(col)
 msgid "*Fire*"
 msgstr "*Fire*"
 
-#: sdk/script/Effects.xml:450(col)
+#: sdk/script/Effects.xml:442(col)
 msgid "Fire effect - the function <placeholder-1/>() removes all effects of this name"
 msgstr "Feuereffekt - die Funktion <placeholder-1/>() entfernt alle Effekte dieser Maske."
 
-#: sdk/script/Effects.xml:453(col)
+#: sdk/script/Effects.xml:445(col)
 msgid "*Curse*"
 msgstr "*Curse*"
 
-#: sdk/script/Effects.xml:454(col)
+#: sdk/script/Effects.xml:446(col)
 msgid "Curse"
 msgstr "Fluch"
 
-#: sdk/script/Effects.xml:457(col)
+#: sdk/script/Effects.xml:449(col)
 msgid "*Ban*"
 msgstr "*Ban*"
 
-#: sdk/script/Effects.xml:458(col)
+#: sdk/script/Effects.xml:450(col)
 msgid "Effect preventing other effects (e.g. fire proofness or immunity)"
 msgstr "Effekt, der andere Effekte bannt (z.B. Feuer- oder Zauberimmunität)"
 
-#: sdk/script/Effects.xml:461(col)
+#: sdk/script/Effects.xml:453(col)
 msgid "Int*"
 msgstr "Int*"
 
-#: sdk/script/Effects.xml:462(col)
+#: sdk/script/Effects.xml:454(col)
 msgid "Internal effect (data storage etc.)"
 msgstr "Interner Effekt (Variablenspeicher, etc.)"
 
-#: sdk/script/Effects.xml:465(col)
+#: sdk/script/Effects.xml:457(col)
 msgid "*Potion"
 msgstr "*Potion"
 
-#: sdk/script/Effects.xml:466(col)
+#: sdk/script/Effects.xml:458(col)
 msgid "Magic potion"
 msgstr "Zaubertrank"
 
-#: sdk/script/Effects.xml:470(text)
+#: sdk/script/Effects.xml:462(text)
 msgid "Warning: as function names may not be more than 100 characters in length (and you will lose oversight eventually), you should not stuff too much information into the effect name. Effect names are case sensitive. Also, you should avoid using any of these identifiers in your effect names if your effect doesn't have anything to do with them."
 msgstr "Achtung: Da Funktionsnamen maximal 100 Zeichen lang sein dürfen (und irgendwann auch die Übersicht verloren geht), sollte man nicht endlos Statusinformationen in den Namen packen. Alle Effektfunktionen unterscheiden zwischen Groß- und Kleinschreibung. Umgekehrt sollte man vermeiden, die entsprechenden Zeichenketten im Effektnamen vorkommen zu lassen, wenn sie nichts mit den jeweiligen Bedeutungen zu tun haben."
 
-#: sdk/script/Effects.xml:471(h)
+#: sdk/script/Effects.xml:463(h)
 msgid "Callback Reference"
 msgstr "Callback-Referenz"
 
-#: sdk/script/Effects.xml:473(text)
+#: sdk/script/Effects.xml:465(text)
 msgid "The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name."
 msgstr "Folgenge Callbacks werden von der Engine ausgeführt, und sollten - je nach Bedarf - im Script implementiert werden. * steht jeweils für den Effektnamen."
 
-#: sdk/script/Effects.xml:474(h)
+#: sdk/script/Effects.xml:466(h)
 msgid "Fx*Start"
 msgstr "Fx*Start"
 
-#: sdk/script/Effects.xml:476(text)
-msgid "Called at the start of the effect. target is the target object of the effect. num is the effect index. These two parameters can be used to identify the effect, e.g. to manipulate corresponding variables in <placeholder-1/>()."
+#: sdk/script/Effects.xml:468(text)
+#, fuzzy
+msgid "Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. These two parameters can be used to identify the effect, e.g. to manipulate effect details with <placeholder-1/>()."
 msgstr "Wird beim Start des Effektes aufgerufen. target gibt das Zielobjekt des Effektes an, und num den Index. Über diese beiden Parameter lässt sich der Effekt eindeutig identifizieren, um beispielsweise zugehörige Variablen in <placeholder-1/>() zu manipulieren."
 
-#: sdk/script/Effects.xml:477(text)
+#: sdk/script/Effects.xml:469(text)
 msgid "In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow)."
 msgstr "Der Parameter temporary ist 0 beim normalen Hinzufügen des Effektes, 1 wenn der Effekt nur hinzugefügt wird, weil er vorher temporär entfernt wurde, und 2 wenn der Effekt hinzugefügt wird, weil er zuvor temporär entfernt wurde aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-Aufruf)."
 
-#: sdk/script/Effects.xml:478(text)
+#: sdk/script/Effects.xml:470(text)
 msgid "Values var1 to var4 are the additional parameters passed to <placeholder-1/>() and can be custom used."
 msgstr "Die Werte var1 bis var4 entsprechen den übergebenen Parametern an <placeholder-1/>(), und können verwendet werden, um Effekte mit unterschiedlichen Eigenschaften zu erzeugen."
 
-#: sdk/script/Effects.xml:479(text)
+#: sdk/script/Effects.xml:471(text)
 msgid "If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <placeholder-1/>() call returns 0."
 msgstr "Wenn temporary 0 ist und dieser Callback -1 zurückgibt, wird der Effekt nicht erzeugt und der zugehörige <placeholder-1/>()-Aufruf gibt 0 zurück."
 
-#: sdk/script/Effects.xml:480(h)
+#: sdk/script/Effects.xml:472(h)
 msgid "Fx*Stop"
 msgstr "Fx*Stop"
 
-#: sdk/script/Effects.xml:482(text)
-msgid "When the effect is temporarily or permanently removed. target again is the target object and num the index into the effects list of that object."
+#: sdk/script/Effects.xml:474(text)
+#, fuzzy
+msgid "When the effect is temporarily or permanently removed. target again is the target object and <code>effect</code> the effect itself."
 msgstr "Aufruf, wenn der Effekt temporär oder permanent entfernt wird. target ist wieder das Effekt-Zielobjekt und num der Effektindex in der Effekteliste des Objekts."
 
-#: sdk/script/Effects.xml:483(text)
+#: sdk/script/Effects.xml:475(text)
 msgid "reason contains the cause of the removal and can be one of the following values:"
 msgstr "reason gibt den Grund für das Entfernen des Effektes an, und kann einer der folgenden Werte sein:"
 
-#: sdk/script/Effects.xml:487(col)
+#: sdk/script/Effects.xml:479(col)
 msgid "reason"
 msgstr "reason"
 
-#: sdk/script/Effects.xml:492(col)
+#: sdk/script/Effects.xml:484(col)
 msgid "Normal removal"
 msgstr "Effekt wird regulär entfernt"
 
-#: sdk/script/Effects.xml:496(col)
+#: sdk/script/Effects.xml:488(col)
 msgid "Temporary removal (temporary is 1)."
 msgstr "Effekt wird nur temporär entfernt. temporary ist in dem Fall 1."
 
-#: sdk/script/Effects.xml:500(col)
+#: sdk/script/Effects.xml:492(col)
 msgid "Not used"
 msgstr "nicht verwendet"
 
-#: sdk/script/Effects.xml:504(col)
+#: sdk/script/Effects.xml:496(col)
 msgid "The target object has been deleted"
 msgstr "Effekt wird entfernt, weil das Objekt gelöscht wird"
 
-#: sdk/script/Effects.xml:508(col)
+#: sdk/script/Effects.xml:500(col)
 msgid "The target object has died"
 msgstr "Effekt wird entfernt, weil das Objekt stirbt"
 
-#: sdk/script/Effects.xml:512(text)
+#: sdk/script/Effects.xml:504(text)
 msgid "The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted."
 msgstr "Wenn der Effekt nicht gelöscht werden soll, kann in der Funktion -1 zurückgegeben werden, um das Löschen zu verhindern. Bei temporären Aufrufen oder wenn das Zielobjekt gelöscht wird, bringt dies natürlich nichts."
 
-#: sdk/script/Effects.xml:513(h)
+#: sdk/script/Effects.xml:505(h)
 msgid "Fx*Timer"
 msgstr "Fx*Timer"
 
-#: sdk/script/Effects.xml:515(text)
-msgid "Periodic timer call, if a timer interval has been specified at effect creation. target and num as usual."
+#: sdk/script/Effects.xml:507(text)
+#, fuzzy
+msgid "Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual."
 msgstr "Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall angegeben wurde. target und num spezifizieren auch hier Zielobjekt und Effekt."
 
-#: sdk/script/Effects.xml:516(text)
+#: sdk/script/Effects.xml:508(text)
 msgid "time specifies how long the effect has now been active. This might alternatively be determined using <placeholder-1/>()."
 msgstr "time gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch über <placeholder-1/>() mit entsprechenden Parametern abfragen."
 
-#: sdk/script/Effects.xml:517(text)
+#: sdk/script/Effects.xml:509(text)
 msgid "If this function is not implemented or returns -1, the effect will be deleted after this call."
 msgstr "Ein Rückgabewert von -1 bedeutet, dass der Effekt nach dem Aufruf gelöscht wird. Dasselbe passiert, wenn die Funktion nicht implementiert wird."
 
-#: sdk/script/Effects.xml:518(h)
+#: sdk/script/Effects.xml:510(h)
 msgid "Fx*Effect"
 msgstr "Fx*Effect"
 
-#: sdk/script/Effects.xml:520(text)
-msgid "A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; num is the index of the effect being called; and ew_num is the index of the new effect."
+#: sdk/script/Effects.xml:512(text)
+#, fuzzy
+msgid "A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>effect</code> is the effect being called."
 msgstr "Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu demselben Objekt (target) hinzugefügt werden soll. new_name gibt den Namen des neuen Effektes an; num den Effektindex des Effektes, bei dem angefragt wird, und new_num den Index des neu zu erzeugenden Effektes."
 
-#: sdk/script/Effects.xml:521(text)
+#: sdk/script/Effects.xml:513(text)
 msgid "Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set. The new_num can however be used to request information via <placeholder-1/>(). In calls made by <placeholder-2/>() new_num is always 0."
 msgstr "Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert. Der new_num-Parameter kann aber verwendet werden, um mit <placeholder-1/>() Informationen über den Effekt abzufragen. Bei Aufrufen durch die <placeholder-2/>()-Funktion ist new_num 0."
 
-#: sdk/script/Effects.xml:522(text)
+#: sdk/script/Effects.xml:514(text)
 msgid "This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback."
 msgstr "Die Funktion sollte -1 zurückgeben, wenn sie den neuen Effekt ablehnt. Da der Effekt auch noch von einem anderen Effekt abgelehnt werden kann, sollte dieser Callback nicht dazu verwendet werden, um beispielsweise Effekte zusammenzufassen (siehe Beispiel zum Gravitationszauber). Überhaupt sollte es möglichst vermieden werden, in diesem Aufruf die Effektliste zu manipulieren."
 
-#: sdk/script/Effects.xml:523(text)
+#: sdk/script/Effects.xml:515(text)
 msgid "Return -2 or -3 to accept the new effect. As long as the new effect is not rejected by any other effect, the Fx*Add call is then made to the accepting effect, the new effect is not actually created, and the calling AddEffect function returns the effect index of the accepting effect. The return value -3 will also temporarily remove all higher prioriy effects just before the Fx*Add callback and re-add them later."
 msgstr "Ein Rückgabewert von -2 oder -3 sollte angegeben werden, wenn der Effekt übernommen wird. Sofern der Effekt dann von keinem anderen Effekt abgelehnt wurde (über Rückgabewert -1), wird ein Fx*Add-Aufruf an den übernehmenden Effekt gesendet, der neue Effekt selber entfernt, und die aufrufende AddEffect-Funktion erhält als Rückgabewert die Nummer des übernehmenden Effektes. Rückgabewert -3 bedeutet dabei im Gegensatz zu -2, dass vor dem Fx*Add-Aufruf alle Effekte mit höherer Priorität temporär entfernt, und nach dem Aufruf dieselben wieder temporär hinzugefügt werden."
 
-#: sdk/script/Effects.xml:524(text)
+#: sdk/script/Effects.xml:516(text)
 msgid "var1 bis var4 are the parameters passed to <placeholder-1/>()"
 msgstr "var1 bis var4 sind die Parameter, die an die <placeholder-1/>()-Funktion übergeben wurden."
 
-#: sdk/script/Effects.xml:525(h)
+#: sdk/script/Effects.xml:517(h)
 msgid "Fx*Add"
 msgstr "Fx*Add"
 
-#: sdk/script/Effects.xml:527(text)
-msgid "Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. num identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects)."
+#: sdk/script/Effects.xml:519(text)
+#, fuzzy
+msgid "Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. <code>effect</code> identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects)."
 msgstr "Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-Callback hin -2 oder -3 zurückgegeben hat. num gibt die Nummer des Effektes an, zu dem hinzugefügt wird; target das Zielobjekt (0 bei globalen Effekten)."
 
-#: sdk/script/Effects.xml:528(text)
+#: sdk/script/Effects.xml:520(text)
 msgid "new_timer is the timer interval of the new effect; var1 to var4 are the parameters from AddEffect. Notice: in temporary calls, these parameters are not available - here they will be 0."
 msgstr "new_timer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann 0."
 
-#: sdk/script/Effects.xml:529(text)
+#: sdk/script/Effects.xml:521(text)
 msgid "If -1 is returned, the accepting effect is deleted also. Logically, the calling AddEffect function will then return -2."
 msgstr "Wird -1 zurückgegeben, wird auch der übernehmende Effekt entfernt. Logischerweise gibt die erzeugende AddEffect-Funktion dann -2 zurück."
 
-#: sdk/script/Effects.xml:530(h)
+#: sdk/script/Effects.xml:522(h)
 msgid "Fx*Damage"
 msgstr "Fx*Damage"
 
-#: sdk/script/Effects.xml:532(text)
+#: sdk/script/Effects.xml:524(text)
 msgid "Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change."
 msgstr "Jeder Effekt erhält diesen Callback, wann immer sich der Energie- oder Schadenswert des Zielobjektes ändert. Falls die Funktion definiert wird, sollte der Rückgabewert dabei die erlaubte Änderung angeben."
 
-#: sdk/script/Effects.xml:533(text)
+#: sdk/script/Effects.xml:525(text)
 msgid "This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:"
 msgstr "Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber umgekehrt. cause gibt den geänderten Wert und den Grund an:"
 
-#: sdk/script/Effects.xml:537(col)
+#: sdk/script/Effects.xml:529(col)
 msgid "Script constant"
 msgstr "Scriptkonstante"
 
-#: sdk/script/Effects.xml:538(col)
+#: sdk/script/Effects.xml:530(col)
 msgid "cause"
 msgstr "cause"
 
-#: sdk/script/Effects.xml:542(col)
+#: sdk/script/Effects.xml:534(col)
 msgid "FX_Call_DmgScript"
 msgstr "FX_Call_DmgScript"
 
-#: sdk/script/Effects.xml:544(col)
+#: sdk/script/Effects.xml:536(col)
 msgid "Damage by script call <placeholder-1/>()"
 msgstr "Schaden durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:547(col)
+#: sdk/script/Effects.xml:539(col)
 msgid "FX_Call_DmgBlast"
 msgstr "FX_Call_DmgBlast"
 
-#: sdk/script/Effects.xml:549(col)
+#: sdk/script/Effects.xml:541(col)
 msgid "Damage by explosion"
 msgstr "Schaden durch Explosion"
 
-#: sdk/script/Effects.xml:552(col)
+#: sdk/script/Effects.xml:544(col)
 msgid "FX_Call_DmgFire"
 msgstr "FX_Call_DmgFire"
 
-#: sdk/script/Effects.xml:554(col)
+#: sdk/script/Effects.xml:546(col)
 msgid "Damage by fire"
 msgstr "Schaden durch Feuer"
 
-#: sdk/script/Effects.xml:557(col)
+#: sdk/script/Effects.xml:549(col)
 msgid "FX_Call_DmgChop"
 msgstr "FX_Call_DmgChop"
 
-#: sdk/script/Effects.xml:559(col)
+#: sdk/script/Effects.xml:551(col)
 msgid "Damage by chopping (only trees)"
 msgstr "Schaden durch Fällen (nur Bäume)"
 
-#: sdk/script/Effects.xml:562(col)
+#: sdk/script/Effects.xml:554(col)
 msgid "FX_Call_EngScript"
 msgstr "FX_Call_EngScript"
 
-#: sdk/script/Effects.xml:563(col)
+#: sdk/script/Effects.xml:555(col)
 #: sdk/scenario/basefunc.xml:49(col)
-#: sdk/definition/lineconnect.xml:49(col)
 #: sdk/definition/cnat.xml:49(col)
 msgid "32"
 msgstr "32"
 
-#: sdk/script/Effects.xml:564(col)
+#: sdk/script/Effects.xml:556(col)
 msgid "Energy value change by script call <placeholder-1/>()"
 msgstr "Energieänderung durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:567(col)
+#: sdk/script/Effects.xml:559(col)
 msgid "FX_Call_EngBlast"
 msgstr "FX_Call_EngBlast"
 
-#: sdk/script/Effects.xml:568(col)
+#: sdk/script/Effects.xml:560(col)
 msgid "33"
 msgstr "33"
 
-#: sdk/script/Effects.xml:569(col)
+#: sdk/script/Effects.xml:561(col)
 msgid "Energy loss by explosion"
 msgstr "Energieverlust durch Explosion"
 
-#: sdk/script/Effects.xml:572(col)
+#: sdk/script/Effects.xml:564(col)
 msgid "FX_Call_EngObjHit"
 msgstr "FX_Call_EngObjHit"
 
-#: sdk/script/Effects.xml:573(col)
+#: sdk/script/Effects.xml:565(col)
 msgid "34"
 msgstr "34"
 
-#: sdk/script/Effects.xml:574(col)
+#: sdk/script/Effects.xml:566(col)
 msgid "Energy loss by object hit"
 msgstr "Energieverlust durch Objekttreffer"
 
-#: sdk/script/Effects.xml:577(col)
+#: sdk/script/Effects.xml:569(col)
 msgid "FX_Call_EngFire"
 msgstr "FX_Call_EngFire"
 
-#: sdk/script/Effects.xml:578(col)
+#: sdk/script/Effects.xml:570(col)
 msgid "35"
 msgstr "35"
 
-#: sdk/script/Effects.xml:579(col)
+#: sdk/script/Effects.xml:571(col)
 msgid "Energy loss by fire"
 msgstr "Energieverlust durch Feuer"
 
-#: sdk/script/Effects.xml:582(col)
+#: sdk/script/Effects.xml:574(col)
 msgid "FX_Call_EngBaseRefresh"
 msgstr "FX_Call_EngBaseRefresh"
 
-#: sdk/script/Effects.xml:583(col)
+#: sdk/script/Effects.xml:575(col)
 msgid "36"
 msgstr "36"
 
-#: sdk/script/Effects.xml:584(col)
+#: sdk/script/Effects.xml:576(col)
 msgid "Energy recharge at the home base"
 msgstr "Energieaufnahme in der Basis - auch Abgabe und Kauf der Basis, wenn die Basis ein Lebewesen ist"
 
-#: sdk/script/Effects.xml:587(col)
+#: sdk/script/Effects.xml:579(col)
 msgid "FX_Call_EngAsphyxiation"
 msgstr "FX_Call_EngAsphyxiation"
 
-#: sdk/script/Effects.xml:588(col)
+#: sdk/script/Effects.xml:580(col)
 msgid "37"
 msgstr "37"
 
-#: sdk/script/Effects.xml:589(col)
+#: sdk/script/Effects.xml:581(col)
 msgid "Energy loss by suffocation"
 msgstr "Energieverlust durch Ersticken"
 
-#: sdk/script/Effects.xml:592(col)
+#: sdk/script/Effects.xml:584(col)
 msgid "FX_Call_EngCorrosion"
 msgstr "FX_Call_EngCorrosion"
 
-#: sdk/script/Effects.xml:593(col)
+#: sdk/script/Effects.xml:585(col)
 msgid "38"
 msgstr "38"
 
-#: sdk/script/Effects.xml:594(col)
+#: sdk/script/Effects.xml:586(col)
 msgid "Energy loss through acid"
 msgstr "Energieverlust durch Säure"
 
-#: sdk/script/Effects.xml:597(col)
+#: sdk/script/Effects.xml:589(col)
 msgid "FX_Call_EngStruct"
 msgstr "FX_Call_EngStruct"
 
-#: sdk/script/Effects.xml:598(col)
+#: sdk/script/Effects.xml:590(col)
 msgid "39"
 msgstr "39"
 
-#: sdk/script/Effects.xml:599(col)
+#: sdk/script/Effects.xml:591(col)
 msgid "Energy loss of buildings (only \"living\" buildings)"
 msgstr "Energieverlust von Gebäuden (Nur lebende Gebäude)"
 
-#: sdk/script/Effects.xml:602(col)
+#: sdk/script/Effects.xml:594(col)
 msgid "FX_Call_EngGetPunched"
 msgstr "FX_Call_EngGetPunched"
 
-#: sdk/script/Effects.xml:603(col)
+#: sdk/script/Effects.xml:595(col)
 msgid "40"
 msgstr "40"
 
-#: sdk/script/Effects.xml:604(col)
+#: sdk/script/Effects.xml:596(col)
 msgid "Energy loss through clonk-to-clonk battle"
 msgstr "Energieverlust im Clonk-zu-Clonk-Kampf"
 
-#: sdk/script/Effects.xml:608(text)
-msgid "Generally, the expression \"cause &amp; 32\" can be used to determine whether the energy or damage values were changed. Energy values are exact, meaning 100,000 is the full energy value of a normal clonk of rank 10 (C4MaxPhysical)."
+#: sdk/script/Effects.xml:600(text)
+#, fuzzy
+msgid "Generally, the expression \"cause &amp; 32\" can be used to determine whether the energy or damage values were changed."
 msgstr "Allgemein kann der Ausdruck \"cause &amp; 32\" verwendet werden, um festzustellen, ob Energie oder Schadenswert verändert wurden. Werte für die Energie sind dabei exakt, das heißt 100.000 entspricht der vollen Energie eines normalen Clonks mit Rang 10 (C4MaxPhysical)."
 
-#: sdk/script/Effects.xml:609(text)
+#: sdk/script/Effects.xml:601(text)
 msgid "Using this callback, damage to an object can be prevented, lessened, or increased. You could deduct magic energy instead, transfer damage to other objects, or something similar."
 msgstr "Über diesen Callback kann zum Beispiel Schaden an einem Objekt verhindert, abgeschwächt oder verstärkt werden; man kann Lebensschaden zunächst nur von der Zauberenergie abziehen, gleichmäßig auf verbundene Clonks verteilen und so weiter."
 
-#: sdk/script/Effects.xml:611(h)
+#: sdk/script/Effects.xml:603(h)
 msgid "Function Reference"
 msgstr "Funktions-Referenz"
 
-#: sdk/script/Effects.xml:612(text)
+#: sdk/script/Effects.xml:604(text)
 msgid "There are the following functions for manipulation of effects:"
 msgstr "Es gibt folgende Funktionen sind zum Manipulieren und Abfragen von Effekten:"
 
-#: sdk/script/Effects.xml:615(li)
+#: sdk/script/Effects.xml:607(li)
 msgid "<placeholder-1/>() - for effect creation"
 msgstr "<placeholder-1/>() - zum Erzeugen von Effekten"
 
-#: sdk/script/Effects.xml:616(li)
+#: sdk/script/Effects.xml:608(li)
 msgid "<placeholder-1/>() - for effect removal"
 msgstr "<placeholder-1/>() - zum Entfernen von Effekten"
 
-#: sdk/script/Effects.xml:617(li)
+#: sdk/script/Effects.xml:609(li)
 msgid "<placeholder-1/>() - to request effect parameters"
 msgstr "<placeholder-1/>() - zum Abfragen von Effekten und Parametern"
 
-#: sdk/script/Effects.xml:618(li)
+#: sdk/script/Effects.xml:610(li)
 msgid "<placeholder-1/>() - for effect counting"
 msgstr "<placeholder-1/>() - um Effekte zu zählen"
 
-#: sdk/script/Effects.xml:619(li)
+#: sdk/script/Effects.xml:611(li)
 msgid "<placeholder-1/>() - for user defined calls in effects"
 msgstr "<placeholder-1/>() - für Benutzeraufrufe in Effekten"
 
-#: sdk/script/Effects.xml:620(li)
-msgid "<placeholder-1/>() - to request effect variables"
-msgstr "<placeholder-1/>() - zum Abfragen von Effektvariablen"
-
-#: sdk/script/Effects.xml:621(li)
+#: sdk/script/Effects.xml:612(li)
 msgid "<placeholder-1/>() - to modify effect names and timers (e.g. for multi-stage effects)"
 msgstr "<placeholder-1/>() - zum Ändern von Effektnamen und -timern (beispielsweise für mehrstufige Effekte)"
 
-#: sdk/script/Effects.xml:622(li)
+#: sdk/script/Effects.xml:613(li)
 msgid "<placeholder-1/>() - to cause effects callbacks without actually creating an effect"
 msgstr "<placeholder-1/>() - um Effekt-Callbacks auszuführen, ohne den Effekt selber zu erstellen"
 
@@ -12535,7 +12458,7 @@ msgstr "Sektion [Head]"
 #: sdk/folder/foldermap.xml:45(col)
 #: sdk/folder/foldermap.xml:70(col)
 #: sdk/definition/defcore.xml:15(col)
-#: sdk/definition/defcore.xml:425(col)
+#: sdk/definition/defcore.xml:420(col)
 #: sdk/definition/actmap.xml:14(col)
 msgid "Data type"
 msgstr "Datentyp"
@@ -13343,7 +13266,6 @@ msgid "Objects can be sold at the base."
 msgstr "Objekte können in der Basis verkauft werden."
 
 #: sdk/scenario/basefunc.xml:43(col)
-#: sdk/definition/lineconnect.xml:43(col)
 #: sdk/definition/cnat.xml:43(col)
 msgid "16"
 msgstr "16"
@@ -16599,8 +16521,7 @@ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</
 #: sdk/definition/procedures.xml:81(col)
 #: sdk/definition/procedures.xml:87(col)
 #: sdk/definition/procedures.xml:93(col)
-#: sdk/definition/procedures.xml:117(col)
-#: sdk/definition/procedures.xml:129(col)
+#: sdk/definition/procedures.xml:123(col)
 #: sdk/definition/cnat.xml:38(col)
 msgid "CNAT_Bottom"
 msgstr "CNAT_Bottom"
@@ -16623,7 +16544,7 @@ msgstr "Nur Schwerkraft."
 #: sdk/definition/procedures.xml:99(col)
 #: sdk/definition/procedures.xml:105(col)
 #: sdk/definition/procedures.xml:111(col)
-#: sdk/definition/procedures.xml:123(col)
+#: sdk/definition/procedures.xml:117(col)
 msgid "CNAT_None"
 msgstr "CNAT_None"
 
@@ -16790,42 +16711,30 @@ msgid "Adjusts object position at vertex a to the position of vertex b of the <e
 msgstr "Richtet Objektposition Vertex a an Vertex b des <emlink href=\"script/fn/SetAction.html\">Zielobjekts</emlink> aus. a und b sind die beiden niederwertigen Bytes von <emlink href=\"script/fn/SetActionData.html\">ActionData</emlink> (Siehe <emlink href=\"script/fn/SetActionData.html\">SetActionData</emlink> für Beispiel). Erweitert ab CE."
 
 #: sdk/definition/procedures.xml:114(col)
-msgid "FIGHT"
-msgstr "FIGHT"
-
-#: sdk/definition/procedures.xml:115(col)
-msgid "Fighting"
-msgstr "Kämpfen"
-
-#: sdk/definition/procedures.xml:116(col)
-msgid "Fight against <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">Fight physical</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Fight gegen <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink>."
-
-#: sdk/definition/procedures.xml:120(col)
 msgid "CONNECT"
 msgstr "CONNECT"
 
-#: sdk/definition/procedures.xml:121(col)
+#: sdk/definition/procedures.xml:115(col)
 msgid "Line connections"
 msgstr "Verbinden"
 
-#: sdk/definition/procedures.xml:122(col)
+#: sdk/definition/procedures.xml:116(col)
 msgid "Only <emlink href=\"definition/lineconnect.html\">line objects</emlink>. Connects <emlink href=\"script/fn/SetAction.html\">target object 1</emlink> and <emlink href=\"script/fn/SetAction.html\">target object 2</emlink>."
 msgstr "Nur <emlink href=\"definition/lineconnect.html\">Leitungsobjekte</emlink>. Verbindet <emlink href=\"script/fn/SetAction.html\">Zielobjekt 1</emlink> und <emlink href=\"script/fn/SetAction.html\">Zielobjekt 2</emlink>."
 
-#: sdk/definition/procedures.xml:126(col)
+#: sdk/definition/procedures.xml:120(col)
 msgid "PULL"
 msgstr "PULL"
 
-#: sdk/definition/procedures.xml:127(col)
+#: sdk/definition/procedures.xml:121(col)
 msgid "Pulling"
 msgstr "Ziehen"
 
-#: sdk/definition/procedures.xml:128(col)
+#: sdk/definition/procedures.xml:122(col)
 msgid "Pulls the <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Push and <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 msgstr "Zieht das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Push und <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
-#: sdk/definition/procedures.xml:133(text)
+#: sdk/definition/procedures.xml:127(text)
 msgid "Procedures are hardcoded in the engine and are from older times in which is was not yet possible to implement the same functionality in script. Most procedures represent highly complex behaviour which is useful only for clonks."
 msgstr "Prozeduren sind in der Engine fest programmiert und stammen aus alten Zeiten, bevor entsprechendes Verhalten flexibler auf der Ebene von Aktivitäten und Scripts möglich war. Hinter den meisten Prozeduren verbirgt sich extrem komplexes Verhalten und sie lassen sich nur in ihrer ursprünglichen Verwendung in Clonks sinnvoll einsetzen."
 
@@ -16858,7 +16767,8 @@ msgid "The following OCFs are defined in C4Script:"
 msgstr "Es sind folgende OCFs im Script definiert:"
 
 #: sdk/definition/ocf.xml:17(text)
-msgid "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>, <placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
+#, fuzzy
+msgid "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>"
 msgstr "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>, <placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
 
 #: sdk/definition/meshes.xml:6(title)
@@ -16962,62 +16872,29 @@ msgstr "Sind sowohl \"MeshTransformation\" als auch <placeholder-1/> gesetzt, so
 msgid "The LineConnect attribute is a bitmask and determines which lines can be connected to an object and what the object conducts."
 msgstr "Die LineConnect-Eigenschaft (DWord-Bitmaske) eines Objekts bestimmt, welche Leitungen an das Objekt angeschlossen werden können und welches Leitungsverhalten das Objekt hat."
 
-#: sdk/definition/lineconnect.xml:21(col)
-msgid "The end of an energy line can be connected."
-msgstr "Das Ende einer Energieleitung kann angeschlossen werden."
-
-#: sdk/definition/lineconnect.xml:27(col)
-msgid "The start of an energy line can be connected."
-msgstr "Der Anfang einer Energieleitung kann angeschlossen werden."
-
-#: sdk/definition/lineconnect.xml:32(col)
+#: sdk/definition/lineconnect.xml:20(col)
 msgid "C4D_LiquidInput"
 msgstr "C4D_LiquidInput"
 
-#: sdk/definition/lineconnect.xml:33(col)
+#: sdk/definition/lineconnect.xml:21(col)
 msgid "The end of a pipe can be connected."
 msgstr "Das Ende eines Rohres kann angeschlossen werden."
 
-#: sdk/definition/lineconnect.xml:38(col)
+#: sdk/definition/lineconnect.xml:26(col)
 msgid "C4D_LiquidOutput"
 msgstr "C4D_LiquidOutput"
 
-#: sdk/definition/lineconnect.xml:39(col)
+#: sdk/definition/lineconnect.xml:27(col)
 msgid "The beginning of a pipe can be connected."
 msgstr "Der Anfang eines Rohres kann angeschlossen werden."
 
-#: sdk/definition/lineconnect.xml:45(col)
-msgid "The object is a power generator."
-msgstr "Das Objekt ist ein Energieerzeuger."
-
-#: sdk/definition/lineconnect.xml:51(col)
-msgid "The object is an energy consumer."
-msgstr "Das Objekt ist ein Energieverbraucher."
-
-#: sdk/definition/lineconnect.xml:55(col)
-#: sdk/definition/cnat.xml:55(col)
-msgid "64"
-msgstr "64"
-
-#: sdk/definition/lineconnect.xml:56(col)
+#: sdk/definition/lineconnect.xml:32(col)
 msgid "C4D_LiquidPump"
 msgstr "C4D_LiquidPump"
 
-#: sdk/definition/lineconnect.xml:57(col)
+#: sdk/definition/lineconnect.xml:33(col)
 msgid "The object is a pump."
 msgstr "Das Objekt ist eine Pumpe."
-
-#: sdk/definition/lineconnect.xml:63(col)
-msgid "Reserved, unused."
-msgstr "Reserviert, wird nicht benutzt."
-
-#: sdk/definition/lineconnect.xml:68(col)
-msgid "C4D_EnergyHolder"
-msgstr "C4D_EnergyHolder"
-
-#: sdk/definition/lineconnect.xml:69(col)
-msgid "The object does not loose energy by itself, even if it is not alive or a base."
-msgstr "Das Objekt verliert nicht von allein Energie, auch wenn es kein Lebewesen oder Basis ist."
 
 #: sdk/definition/index.xml:9(text)
 msgid "Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:"
@@ -17303,7 +17180,8 @@ msgid "0 or 1. Determines whether the building can be a home base."
 msgstr "0 oder 1. Legt fest, ob das Objekt Heimatbasis sein kann."
 
 #: sdk/definition/defcore.xml:176(col)
-msgid "1 energy line, 2 source pipe, 3 drain pipe."
+#, fuzzy
+msgid "1 source pipe, 2 drain pipe."
 msgstr "1 Energieleitung, 2 Zuflussrohr, 3 Abflussrohr."
 
 #: sdk/definition/defcore.xml:181(col)
@@ -17475,114 +17353,107 @@ msgid "0 or 1. If 1 the object can not be taken from containers by a clonk."
 msgstr "0 oder 1. Bei 1 kann das Objekt nicht manuell aus anderen Objekten heraus genommen werden.01."
 
 #: sdk/definition/defcore.xml:391(col)
-msgid "0 or 1. If 1 the object will never enter into a fight with other living beings."
-msgstr "0 oder 1. Bei 1 kämpft das Objekt nicht mit anderen Lebewesen, selbst wenn es selber ein Lebewesen ist."
-
-#: sdk/definition/defcore.xml:396(col)
 msgid "If an object with Action procedure \"<emlink href=\"definition/procedures.html\">LIFT</emlink>\" lifts its target to this value above object center the function LiftTop is called in the object script."
 msgstr "Wird ein Objekt bei einer Action mit der Procedure \"<emlink href=\"definition/procedures.html\">LIFT</emlink>\" mehr als die angegebene Höhe über der Objektmitte angehoben, wird die Funktion LiftTop im Script aufgerufen."
 
-#: sdk/definition/defcore.xml:401(col)
+#: sdk/definition/defcore.xml:396(col)
 msgid "0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees. From 4.95.4."
 msgstr "0 Eingang ist nur bei aufgerichtetem Objekt geöffnet, 1 Eingang ist immer geöffnet, 2-360 Eingang ist innerhalb des entsprechenden Bereichs geöffnet. Ab 4.95.4."
 
-#: sdk/definition/defcore.xml:406(col)
+#: sdk/definition/defcore.xml:401(col)
 msgid "Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5. From 4.95.4."
 msgstr "Maximale Distanz, mit der ein Bewegungskommando einen Zielpunkt treffen muss, damit das Bewegungskommando als erfüllt gilt. Vorgabewert 5. Ab 4.95.4."
 
-#: sdk/definition/defcore.xml:411(col)
+#: sdk/definition/defcore.xml:406(col)
 msgid "0 or 1. If 1 the object's pathfinding will ignore any transfer zones. From 4.95.4."
 msgstr "0 oder 1. Bei 1 berücksichtigt die Wegfindung des Objekts keine Transferzonen an Gebäuden. Ab 4.95.4."
 
-#: sdk/definition/defcore.xml:416(col)
+#: sdk/definition/defcore.xml:411(col)
 msgid "0 or 1. If 1, the building's context menu will open automatically upon entry. From 4.9.7.7."
 msgstr "0 oder 1. Bei 1 wird für dieses Gebäude beim Betreten automatisch das Kontextmenü geöffnet. Ab 4.9.7.7."
 
-#: sdk/definition/defcore.xml:422(caption)
+#: sdk/definition/defcore.xml:417(caption)
 msgid "Section [Physical]"
 msgstr "Sektion [Physical]"
 
-#: sdk/definition/defcore.xml:431(col)
-msgid "0-100000. Maximum energy (electric or life)."
-msgstr "0-100000. Maximale Energie bzw. Lebensenergie."
+#: sdk/definition/defcore.xml:426(col)
+#, fuzzy
+msgid "0-100000. Maximum life energy."
+msgstr "0-100000. Maximale Zauberenergie."
 
-#: sdk/definition/defcore.xml:436(col)
+#: sdk/definition/defcore.xml:431(col)
 msgid "0-100000. Maximum breath."
 msgstr "0-100000. Maximaler Atem."
 
-#: sdk/definition/defcore.xml:441(col)
+#: sdk/definition/defcore.xml:436(col)
 msgid "0-100000. Walking speed."
 msgstr "0-100000. Laufgeschwindigkeit."
 
-#: sdk/definition/defcore.xml:446(col)
+#: sdk/definition/defcore.xml:441(col)
 msgid "0-100000. Jump force."
 msgstr "0-100000. Sprungkraft."
 
-#: sdk/definition/defcore.xml:451(col)
+#: sdk/definition/defcore.xml:446(col)
 msgid "0-100000. Scaling speed."
 msgstr "0-100000. Klettergeschwindigkeit."
 
-#: sdk/definition/defcore.xml:456(col)
+#: sdk/definition/defcore.xml:451(col)
 msgid "0-100000. Hangling speed."
 msgstr "0-100000. Hangelgeschwindigkeit."
 
-#: sdk/definition/defcore.xml:461(col)
+#: sdk/definition/defcore.xml:456(col)
 msgid "0-100000. Digging speed."
 msgstr "0-100000. Grabgeschwindigkeit."
 
-#: sdk/definition/defcore.xml:466(col)
+#: sdk/definition/defcore.xml:461(col)
 msgid "0-100000. Swimming speed."
 msgstr "0-100000. Schwimmgeschwindigkeit."
 
-#: sdk/definition/defcore.xml:471(col)
+#: sdk/definition/defcore.xml:466(col)
 msgid "0-100000. Throwing force."
 msgstr "0-100000. Wurfkraft."
 
-#: sdk/definition/defcore.xml:476(col)
+#: sdk/definition/defcore.xml:471(col)
 msgid "0-100000. Push power."
 msgstr "0-100000. Schiebekraft."
 
-#: sdk/definition/defcore.xml:481(col)
-msgid "0-100000. Fight power."
-msgstr "0-100000. Kampfkraft."
-
-#: sdk/definition/defcore.xml:486(col)
+#: sdk/definition/defcore.xml:476(col)
 msgid "0-100000. Maximal magic energy."
 msgstr "0-100000. Maximale Zauberenergie."
 
-#: sdk/definition/defcore.xml:491(col)
+#: sdk/definition/defcore.xml:481(col)
 msgid "0-100. Flight speed."
 msgstr "0-100. Fluggeschwindigkeit."
 
-#: sdk/definition/defcore.xml:496(col)
+#: sdk/definition/defcore.xml:486(col)
 msgid "0 or 1. Scale."
 msgstr "0 oder 1. Klettern."
 
-#: sdk/definition/defcore.xml:501(col)
+#: sdk/definition/defcore.xml:491(col)
 msgid "0 or 1. Brachiation."
 msgstr "0 oder 1. Hangeln."
 
-#: sdk/definition/defcore.xml:506(col)
+#: sdk/definition/defcore.xml:496(col)
 msgid "0 or 1. Dig."
 msgstr "0 oder 1. Graben."
 
-#: sdk/definition/defcore.xml:511(col)
+#: sdk/definition/defcore.xml:501(col)
 msgid "0 or 1. Construct. If greater than 1, percentage construction speed. (100 normal, 50 half, etc.)"
 msgstr "0 oder 1. Bauen. Bei Werten größer 1: Prozentuale Baugeschwindigkeit (100 entspricht dem Standard; 50 ist halbe Standardgeschwindigkeit). Erweitert"
 
-#: sdk/definition/defcore.xml:516(col)
+#: sdk/definition/defcore.xml:506(col)
 msgid "0 or 1. Determines wether the object resists acid."
 msgstr "0 oder 1. Legt fest, ob das Objekt Säure widersteht."
 
-#: sdk/definition/defcore.xml:521(col)
+#: sdk/definition/defcore.xml:511(col)
 msgid "0 object breathes air, 1 object breathes water."
 msgstr "0 Objekt atmet Luft, 1 Objekt atmet Wasser."
 
-#: sdk/definition/defcore.xml:525(h)
+#: sdk/definition/defcore.xml:515(h)
 msgid "Note:"
 msgstr "Hinweis:"
 
-#: sdk/definition/defcore.xml:526(text)
+#: sdk/definition/defcore.xml:516(text)
 msgid "When a crew member is created, it gets an own physical section in it's Objectinfo (c4i). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects."
 msgstr "Sobald ein Mannschaftsmitglied erschaffen wird, wird für dieses eine eigenständige Physical-Sektion erschaffen, die zusammen mit dem Mannschaftsmitglied in der Objektinfo (c4i) gespeichert wird. Jedes Mannschaftsmitglied behält seine eigene Physical-Sektion, da hier alle individuellen Veränderungen (z.B. erweiterte Fähigkeiten durch Beförderung) vorgenommen werden. Die Physical-Sektion der Objektdefinition wird also nur bei der Erschaffung des Objekts verwendet und nicht etwa bei ChangeDef."
 
@@ -17629,6 +17500,10 @@ msgstr "CNAT_MultiAttach"
 #: sdk/definition/cnat.xml:51(col)
 msgid "Special flag: new attachment behaviour for objects with the same direction value at several vertices (from version 4.95.4)."
 msgstr "Zusatz-Flag: neues Attachment-Verhalten für Objekte mit gleicher Richtung an mehreren Vertices (ab Version 4.95.4)"
+
+#: sdk/definition/cnat.xml:55(col)
+msgid "64"
+msgstr "64"
 
 #: sdk/definition/cnat.xml:56(col)
 msgid "CNAT_NoCollision"
@@ -17956,10 +17831,6 @@ msgid "Area that is dug free during this action. If 1, the area covered by the o
 msgstr "Freigraben während dieser Aktion. Objektrechteck 1, sonst Kreisradius."
 
 #: sdk/definition/actmap.xml:130(col)
-msgid "Energy required for this action. Normal machines should use about 500."
-msgstr "Nötige Energie für diese Aktion. Maschinen 500."
-
-#: sdk/definition/actmap.xml:135(col)
 msgid "Since OC. Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href=\"definition/animations.html\">Animationen</emlink> for further documentation on animations."
 msgstr "Ab OC. Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink> für weitergehende Dokumentation zu Animationen."
 
@@ -18290,6 +18161,135 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:127(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "0-100000: added training value"
+#~ msgstr "0-100000: Wert, um den trainiert wird"
+
+#~ msgid "Maximum training value. In no case, the physical property of the clonk will be modified, even if its value is lower than the value specified here."
+#~ msgstr "Wert, der durch das Training nie überschritten wird. Es wird allerdings in keinem Fall die Physical reduziert, auch wenn der Zielwert unter dem hier angegebenen Wert läge.<br/>"
+
+#~ msgid "Increases the physical property of an object by train_by. This function will train permanent physicals as well as temporary and temporarily stacked physicals. This function can be used e.g. to enhance magic capabilities after casting spells."
+#~ msgstr "Erhöht den Wert der physischen Eigenschaft des aufrufenden Objekts um den in train_by angegebenen Wert. Mit diesem Aufruf werden sowohl die permanenten, als auch temporäre und temporär gestapelte Physicals trainiert. Dieser Befehl kann beispielsweise genutzt werden, um nach einem Zauber die Magiephysical zu trainieren."
+
+#~ msgid "Example from System.c4g: improves the sorcerer's magic physical value after each successfull spell. It is ensured that the physical value will not surpass the maximum limit specified in MaxMagicPhysical() of the definition."
+#~ msgstr "Beispiel aus der System.c4g: Trainiert bei einem erfolgreichen Zauber die Magiephsical des Zauberers. Dabei wird sicher gestellt, dass der zaubernde Clonk nicht über das durch die Funktion MaxMagicPhysical() in seiner Definition angegebene Limit trainiert werden kann."
+
+#~ msgid "X coordinate of the starting position. Always global."
+#~ msgstr "X-Koordinate der Startposition. Immer global."
+
+#~ msgid "Y coordinate of the starting position. Always global."
+#~ msgstr "Y-Koordinate der Startposition. Immer global."
+
+#~ msgid "Initial horizontal speed."
+#~ msgstr "X-Anfangsgeschwindigkeit."
+
+#~ msgid "Initial vertical speed."
+#~ msgstr "Y-Anfangsgeschwindigkeit."
+
+#~ msgid "Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for x and y, the horizontal and vertical speed at the time of interception in xdir and ydir respectively. See <emlink href=\"script/Funcs.html#referenzen\">references</emlink> for details."
+#~ msgstr "Simuliert die Bewegung eines freien Falles mit Anfangsgeschwindigkeit in die angegebene Richtung. Wenn die simulierte Bewegung ein Material mit der gewünschten Dichte durchläuft, gibt diese Funktion true zurück, ansonsten false.<br/> Bei true wird die X- und Y-Position des Aufpralls in den angegebenen Variablen für x und y gespeichert, die Aufprallgeschwindigkeit in den angegebenen Variablen fü xdir und ydir. Siehe dazu <emlink href=\"script/Funcs.html#referenzen\">Referenzen</emlink>."
+
+#~ msgid "Build the target object and supply it with energy when done."
+#~ msgstr "Zielobjekt bauen und anschließend mit Energie versorgen."
+
+#~ msgid "Supply the target object with energy from the closest supplier."
+#~ msgstr "Zielobjekt vom nächsten Versorger mit Energie versorgen."
+
+#~ msgid "Supplier"
+#~ msgstr "Versorger"
+
+#~ msgid "Supply the target object with energy from this supplier."
+#~ msgstr "Zielobjekt vom Versorger mit Energie versorgen."
+
+#~ msgid "Object character flag: object is a living being, has an activity, and no ObjectDisabled flag in that activity."
+#~ msgstr "Object character flag: Das Objekt ist ein Lebewesen, hat eine Aktivität und kein ObjectDisabled in dieser Aktivität."
+
+#~ msgid "Returns the current magic energy value of the calling object."
+#~ msgstr "Liefert den aktuellen Zauberenergiewert des aufrufenden Objekts."
+
+#~ msgid "For clonk-to-clonk-fights: The controlling player of the fighting opponent. This is usually the owner."
+#~ msgstr "Bei Clonk-zu-Clonk-Kämpfen gilt direkt der steuernde Spieler des Kampfgegners als Schadensverursacher. Das ist im Normalfall der Besitzer."
+
+#~ msgid "Returns the current breath value of an object in percent. 100% represent the maximum physical value of 100,000. Also see DefCore section [Physical]."
+#~ msgstr "Liefert den aktuellen Atemwert des aufrufenden Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical]."
+
+#~ msgid "Object to be fought."
+#~ msgstr "Objekt, das bekämpft werden soll."
+
+#~ msgid "Starts a clonk-to-clonk fight. Using this command you can also make allied clonks fight. Both participants must be <placeholder-1/>."
+#~ msgstr "Beginnt einen Zweikampf. Mit diesem Befehl können auch Clonks nicht verfeindeter Spieler einen Kampf beginnen. Beide Teilnehmer müssen <placeholder-1/> sein."
+
+#~ msgid "Fights another object close-by."
+#~ msgstr "Bekämpft ein direkt in der Nähe stehendes Objekt."
+
+#~ msgid "Index of the variable. Theoretically, any number of variables can be used. As, however, any newly accessed variable has to internally allocated first, you should only use as many variables as really necessary."
+#~ msgstr "Index der Variable. Es sind theoretisch beliebig viele Variablen möglich; da aber die Liste beim Abfragen von Variablen außerhalb des erzeugten Bereiches neu erstellt werden muss, sollten hier nicht größere Werte als nötig genommen werden."
+
+#~ msgid "Returns a reference to an effect local variable. This reference can be used to read or write values."
+#~ msgstr "Liefert eine Referenz auf eine effektlokale Variable. Diese kann zum Lesen und schreiben verwendet werden."
+
+#~ msgid "Change of magic value (positive or negative)."
+#~ msgstr "Veränderung des Magiewertes; positiv oder negativ"
+
+#~ msgid "If true, the function will also transfer magical energy partially instead of failing. In this case, the function will only fail if the magical energy is not changed at all. Since CR."
+#~ msgstr "Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR."
+
+#~ msgid "Adjusts the magic value of an object. The change is only performed as a whole - if the specified change would pass the upper or lower physical limit of the object, it is not performed and the function returns false. The effect is that with only one call you can make a change and check whether the change is even possible."
+#~ msgstr "Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung change nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist."
+
+#~ msgid "Casts a lightning spell if enough magic energy is available."
+#~ msgstr "Zaubert einen Blitzzauber, wenn die nötige magische Aufladung dafür vorhanden ist."
+
+#~ msgid "Change of the breath value (positive or negative) in percent of the maximum value. 100% correspond to the maximum physical value 100,000."
+#~ msgstr "Veränderung des Atemwertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000."
+
+#~ msgid "Object of which you want to change breath. Can be 0 in local calls."
+#~ msgstr "Objekt, dessen Atem verändert wird. 0 bei lokalem Aufruf."
+
+#~ msgid "<placeholder-1/>() - to request effect variables"
+#~ msgstr "<placeholder-1/>() - zum Abfragen von Effektvariablen"
+
+#~ msgid "FIGHT"
+#~ msgstr "FIGHT"
+
+#~ msgid "Fighting"
+#~ msgstr "Kämpfen"
+
+#~ msgid "Fight against <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">Fight physical</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Fight gegen <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink>."
+
+#~ msgid "The end of an energy line can be connected."
+#~ msgstr "Das Ende einer Energieleitung kann angeschlossen werden."
+
+#~ msgid "The start of an energy line can be connected."
+#~ msgstr "Der Anfang einer Energieleitung kann angeschlossen werden."
+
+#~ msgid "The object is a power generator."
+#~ msgstr "Das Objekt ist ein Energieerzeuger."
+
+#~ msgid "The object is an energy consumer."
+#~ msgstr "Das Objekt ist ein Energieverbraucher."
+
+#~ msgid "Reserved, unused."
+#~ msgstr "Reserviert, wird nicht benutzt."
+
+#~ msgid "C4D_EnergyHolder"
+#~ msgstr "C4D_EnergyHolder"
+
+#~ msgid "The object does not loose energy by itself, even if it is not alive or a base."
+#~ msgstr "Das Objekt verliert nicht von allein Energie, auch wenn es kein Lebewesen oder Basis ist."
+
+#~ msgid "0 or 1. If 1 the object will never enter into a fight with other living beings."
+#~ msgstr "0 oder 1. Bei 1 kämpft das Objekt nicht mit anderen Lebewesen, selbst wenn es selber ein Lebewesen ist."
+
+#~ msgid "0-100000. Maximum energy (electric or life)."
+#~ msgstr "0-100000. Maximale Energie bzw. Lebensenergie."
+
+#~ msgid "0-100000. Fight power."
+#~ msgstr "0-100000. Kampfkraft."
+
+#~ msgid "Energy required for this action. Normal machines should use about 500."
+#~ msgstr "Nötige Energie für diese Aktion. Maschinen 500."
 
 #~ msgid "Constant for FindObject: search uncontained objects."
 #~ msgstr "Konstante für FindObject: Suche außerhalb aller Objekte."

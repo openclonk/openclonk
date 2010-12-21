@@ -215,7 +215,7 @@ func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
 	return true;
 }
 
-func FxIntIsBeingStruckEffect(string szNewEffectName, object pTarget, int iEffectNumber, int iNewEffectNumber)
+func FxIntIsBeingStruckEffect(string szNewEffectName, object pTarget)
 {
 	if(szNewEffectName == "IntIsBeingStruck") return -2;
 	return 0;

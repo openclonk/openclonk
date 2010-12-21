@@ -223,6 +223,10 @@ enum C4PropertyName
 	P_MaxEnergy,
 	P_MaxBreath,
 	P_ThrowSpeed,
+	P_Mode,
+	P_CausedBy,
+	P_Blasted,
+	P_IncineratingObj,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

@@ -41,7 +41,6 @@
       <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
-      <funclink>EffectVar</funclink>
       <funclink>GetEffect</funclink>
       <funclink>RemoveEffect</funclink>
     </related>

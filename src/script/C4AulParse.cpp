@@ -1211,17 +1211,10 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
 	case AB_CALL:
+	case AB_FUNC:
 		// Huge hacks would required to make this work. EffectVar should get the Var treatment
 		// and become a BCC of its own anyway.
 		throw new C4AulParseError(this, "Setting a call result does not work, sorry!");
-	case AB_FUNC:
-		// This one at least works somewhat
-		if(SEqual(Value.Par.f->Name, "EffectVar"))
-		{
-			Setter.Par.f = a->GetFuncRecursive("SetEffectVar");
-			break;
-		}
-		// falthru
 	default: 
 		throw new C4AulParseError(this, "assignment not possible for this value!");
 	}

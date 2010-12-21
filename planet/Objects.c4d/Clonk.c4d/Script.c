@@ -1262,7 +1262,7 @@ func StartJump()
 		AddEffect("Fall",this,1,1,this);
 }
 
-func FxFallEffect(string new_name, object target, int num)
+func FxFallEffect(string new_name, object target)
 {
 	// reject more than one fall effects.
 	if(new_name == "Fall") return -1;

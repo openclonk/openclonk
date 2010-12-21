@@ -108,7 +108,6 @@ i = <funclink>GetEffectCount</funclink>();
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>
-      <funclink>EffectVar</funclink>
       <funclink>RemoveEffect</funclink>
     </related>
   </func>

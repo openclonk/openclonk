@@ -6,9 +6,9 @@
   <title>Effects</title>
   <h>Effects</h>
   <part>
-    <text>Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration. Effects are available from CE on.</text>
+    <text>Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration.</text>
     <h id="Intro">Introduction</h>
-    <text>Effects are, roughly put, dynamic timers that can be attached to objects. Effects themselves have no visible or acoustic representation - for this you would use objects or particles instead - effects are pure scripting helpers. They also offer a general interface that can be used to resolve conflicts of temporary status changes made to objects by other objects at the same time.</text>
+    <text>Effects are, roughly put, dynamic timers with properties that can be attached to objects. Effects themselves have no visible or acoustic representation - for this you would use objects or particles instead - effects are pure scripting helpers. They also offer a general interface that can be used to resolve conflicts of temporary status changes made to objects by other objects at the same time.</text>
     <text>Here an example of implementing an invisibility spell without effects:</text>
     <code>/* Unsichtbarkeitszauber ohne Effektsystem */
 
@@ -56,12 +56,9 @@ protected func Destruction()
     <h id="Usage">Application</h>
     <text>Effects are created using <funclink>AddEffect</funclink> and removed with <funclink>RemoveEffect</funclink>. If an effect was successfully created, the callback Fx*Start is made (* is replaced with the effect name). Depending on the parameters, there can also be an Fx*Timer call for continuous activity such as casting sparks, adjusting energy etc. Finally, when the effect is deleted, the callback Fx*Stop is made. Now, the invisibility spell implemented using effects:</text>
     <code>/* Unsichtbarkeitszauber mit Effektsystem */
-	
 
-
-// EffectVars:
-//   0 - Vorheriger Sichtbarkeitsstatus
-//   1 - Vorherige Farbmodulation
+// visibility - Vorheriger Sichtbarkeitsstatus
+// old_mod - Vorherige Farbmodulation
 
 public func Activate(caster, caster2)
 {
@@ -75,24 +72,24 @@ public func Activate(caster, caster2)
   return(RemoveObject());
 }
 
-protected func FxInvisPSpellStart(target, num)
+protected func FxInvisPSpellStart(target, effect)
 {
   // Vorherige Sichtbarkeit des Zauberers speichern
-  EffectVar(0, target, num) = GetVisibility(target);
-  var old_mod = EffectVar(1, target, num) = GetClrModulation(target);
+  effect.visibility = GetVisibility(target);
+  effect.old_mod = GetClrModulation(target);
   // Zauberer unsichtbar machen
   SetVisibility(VIS_Owner() | VIS_Allies() | VIS_God(), target);
   // Halbdurchsichtig bläulich für den Besitzer und Verbündete
-  SetClrModulation(ModulateColor(old_mod, RGBa(127,127,255,127)), target);
+  SetClrModulation(ModulateColor(effect.old_mod, RGBa(127,127,255,127)), target);
   // Fertig
   return true;
 }
 
-protected func FxInvisPSpellStop(target, num)
+protected func FxInvisPSpellStop(target, effect)
 {
   // Status wiederherstellen
-  SetClrModulation(EffectVar(1, target, num), target);
-  SetVisibility(EffectVar(0, target, num), target);
+  SetClrModulation(effect.old_mod, target);
+  SetVisibility(effect.visibility, target);
   // Fertig
   return true;
 }</code>
@@ -103,7 +100,7 @@ protected func FxInvisPSpellStop(target, num)
   // Rückgabewert -1 bedeutet, dass der Effekt gelöscht wird
   return -1;
 }</code>
-    <text>To store the previous status of the target object, special storage space in <funclink>EffectVar</funclink>() is used. This is necessary because in this case the effect callbacks to not have any object script context. So you cannot access any object local variables in the effect callbacks - remember that the magic spell object which has created the effect is already deleted. If you require an object context in the effect callbacks you can specify one in <funclink>AddEffect</funclink>(). In that case, effect callbacks would be in object local context and the effect would automatically be deleted if the target object is destroyed.</text>
+    <text>To store the previous status of the target object, properties of the effect are used. This is necessary because in this case the effect callbacks do not have any object script context. So you cannot access any object local variables in the effect callbacks - remember that the magic spell object which has created the effect is already deleted. If you require an object context in the effect callbacks you can specify one in <funclink>AddEffect</funclink>(). In that case, effect callbacks would be in object local context and the effect would automatically be deleted if the target object is destroyed.</text>
     <h id="Priorities">Priorities</h>
     <text>When creating an effect you always specify a priority value which determines the effect order. The engine ensures that effects with lower priority are added before effects with a higher priority - even if this means deleting an existing effect of higher priority. So if one effect colors the clonk green and another colors the clonk red, the result will be that of the effect with higher priority. If two effects have the same priority, the order is undefined. However, it is guaranteed that effects added later always notify the Fx*Effect callback of the same priority.</text>
     <text>In the case of the red and green color, one effect could also determine the previous coloring and then mix a result using ModulateColor. But priorities also have another function: an effect of higher priority can prevent the addition of other effects of lower priority. This is done through the Fx*Effect callback. If any existing effect reacts to this callback with the return value -1, the new effect is not added (the same applies to the Start callback of the effect itself). Here an example:</text>
@@ -215,10 +212,6 @@ protected func FxBanBurnPSpellEffect(new_name, target, num, new_num, var1, var2,
     <text>Effects are also removed when the target object is deleted or dies - the cause for the removal is passed in the reason parameter to the Remove function of the effect. This can be used e.g. to reanimate a clonk immediately upon his death:</text>
     <code>/* Wiederbelebungszauber */
 
-
-
-// EffectVars: 0 - Anzahl der zusätzlichen Wiederbelebungen
-
 public func Activate(caster, caster2)
 {
   // Zauberer ermitteln
@@ -262,8 +255,8 @@ protected func FxReincarnationPSpellStop(target, num, reason, temporary)
 
 
 
-// EffectVars: 0 - Vorherige Gravitation
-//             1 - Änderung durch den Zauber
+// grav - Vorherige Gravitation
+// change - Änderung durch den Zauber
 
 public func Activate(caster, caster2)
 {
@@ -276,59 +269,58 @@ public func Activate(caster, caster2)
   return true;
 }
 
-protected func FxGravChangeUSpellStart(target, num, temporary, change)
+protected func FxGravChangeUSpellStart(target, effect, temporary, change)
 {
   // Anderen Gravitationseffekt suchen
   if (!temporary)
   {
-    var iOtherEffect = GetEffect(&quot;GravChangeUSpell&quot;, target);
-    if (iOtherEffect == num) iOtherEffect = GetEffect(&quot;GravChangeUSpell&quot;, target, 1);
-    if (iOtherEffect)
+    var otherEffect = GetEffect(&quot;GravChangeUSpell&quot;, target);
+    if (otherEffect == num) iOtherEffect = GetEffect(&quot;GravChangeUSpell&quot;, target, 1);
+    if (otherEffect)
     {
       // Gravitationsänderung auf diesen Effekt aufrechnen
-      EffectVar(1, target, iOtherEffect) += change;
+      otherEffect.change += change;
       SetGravity(GetGravity() + change);
       // Selbst entfernen
       return -1;
     }
   }
   // Vorherige Gravitation sichern
-  var iOldGrav = EffectVar(0, target, num) = GetGravity();
+  effect.grav = GetGravity();
   // Für nichttemporäre Aufrufe wird change übergeben, und auf den Änderungswert aufgerechnet
-  if (change) EffectVar(1, target, num) += change;
+  if (change) effect.change += change;
   // Gravitationsänderung setzen
   // Die Änderung kann in temporären Aufrufen auch ungleich change sein
-  SetGravity(iOldGrav + EffectVar(1, target, num));
+  SetGravity(effect.grav + effect.change);
   // Fertig
   return true;
 }
 
-protected func FxGravChangeUSpellTimer(target, num)
+protected func FxGravChangeUSpellTimer(target, effect)
 {
   // Gravitation in Richtung Normalwert schrauben
-  var gravity_change = EffectVar(1, target, num);
   // Fertig?
-  if (Inside(gravity_change, -1, 1)) return -1;
+  if (Inside(effect.change, -1, 1)) return -1;
   // Anpassen
-  var iDir = -gravity_change/Abs(gravity_change);
-  EffectVar(1, target, num) += iDir;
+  var iDir = -effect.change/Abs(effect.change);
+  effect.change += iDir;
   SetGravity(GetGravity() + iDir);
   return true;
 }
 
-protected func FxGravChangeUSpellStop(target, num)
+protected func FxGravChangeUSpellStop(target, effect)
 {
   // Gravitation Wiederherstellen
-  SetGravity(EffectVar(0, target, num));
+  SetGravity(effect.grav);
   // Effekt entfernen
   return true;
 }</code>
-    <text>target will be 0 in all these effect calls. You should still pass this parameter to calls such as <funclink>EffectVar</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
+    <text><code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <funclink>ChangeEffect</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
     <h id="AddEffects">Adding Effects</h>
     <text>In the previous example, several gravitational effects were combined so that the gravity change lasts longer if the spell is casted multiple times. Adding these effects cannot be done in the Effect callback because the gravitation effect might always be prevented by another effect with higher priority (e.g. a no-spells-whatsoever-effect). Through the special Fx*Add callback you can achieve the desired result more easily, or at least in a more structured fashion.</text>
     <code>[...]
 
-protected func FxGravChangeUSpellEffect(new_name, target, num)
+protected func FxGravChangeUSpellEffect(new_name, target, effect)
 {
   // Falls der neu hinzugefügte Effekt auch eine Gravitationsänderung ist, Interesse am Übernehmen anmelden
   if (new_name eq &quot;GravChangeUSpell&quot;) return (-3);
@@ -336,16 +328,16 @@ protected func FxGravChangeUSpellEffect(new_name, target, num)
   return();
 }
 
-protected func FxGravChangeUSpellAdd(target, num, new_name, target, new_timer, change)
+protected func FxGravChangeUSpellAdd(target, effect, new_name, target, new_timer, change)
 {
   // Aufruf erfolgt, wenn der Effekt übernommen werden konnte
   // Gravitationsänderung auf diesen Effekt aufrechnen
-  EffectVar(1, target, num) += change;
+  effect.change += change;
   SetGravity(GetGravity() + change);  
   // Fertig
   return true;
 }</code>
-    <text>Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect number of the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all.</text>
+    <text>Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all.</text>
     <h id="UserCallbacks">User Defined Properties</h>
     <text>Effects can be easily classified by name. In this way, e.g. all magic spell effects can easily be found through the respective wildcard string. If, however, you want to create user-defined properties which also apply to existing effects you can do this by defining additional effect functions:</text>
     <code>global func FxFireIsHot() { return true; } // Feuer is heiß
@@ -472,14 +464,14 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
     <part>
       <text>The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name.</text>
       <h>Fx*Start</h>
-      <text><code>int Fx*Start (object target, int num, int temporary, any var1, any var2, any var3, any var4);</code></text>
-      <text>Called at the start of the effect. target is the target object of the effect. num is the effect index. These two parameters can be used to identify the effect, e.g. to manipulate corresponding variables in <funclink>EffectVar</funclink>().</text>
+      <text><code>int Fx*Start (object target, effect, int temporary, any var1, any var2, any var3, any var4);</code></text>
+      <text>Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. These two parameters can be used to identify the effect, e.g. to manipulate effect details with <funclink>ChangeEffect</funclink>().</text>
       <text>In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow).</text>
       <text>Values var1 to var4 are the additional parameters passed to <placeholder-1/>() and can be custom used.</text>
       <text>If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <funclink>AddEffect</funclink>() call returns 0.</text>
       <h>Fx*Stop</h>
-      <text><code>int Fx*Stop (object target, int num, int reason, bool temporary);</code></text>
-      <text>When the effect is temporarily or permanently removed. target again is the target object and num the index into the effects list of that object.</text>
+      <text><code>int Fx*Stop (object target, effect, int reason, bool temporary);</code></text>
+      <text>When the effect is temporarily or permanently removed. target again is the target object and <code>effect</code> the effect itself.</text>
       <text>reason contains the cause of the removal and can be one of the following values:</text>
       <text>
         <table>
@@ -511,24 +503,24 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       </text>
       <text>The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted.</text>
       <h>Fx*Timer</h>
-      <text><code>int Fx*Timer (object target, int num, int time);</code></text>
-      <text>Periodic timer call, if a timer interval has been specified at effect creation. target and num as usual.</text>
+      <text><code>int Fx*Timer (object target, effect, int time);</code></text>
+      <text>Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual.</text>
       <text>time specifies how long the effect has now been active. This might alternatively be determined using <funclink>GetEffect</funclink>().</text>
       <text>If this function is not implemented or returns -1, the effect will be deleted after this call.</text>
       <h>Fx*Effect</h>
-      <text><code>int Fx*Effect (string new_name, object target, int num, int new_num, any var1, any var2, any var3, any var4);</code></text>
-      <text>A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; num is the index of the effect being called; and ew_num is the index of the new effect.</text>
+      <text><code>int Fx*Effect (string new_name, object target, effect, reserved, any var1, any var2, any var3, any var4);</code></text>
+      <text>A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>effect</code> is the effect being called.</text>
       <text>Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set. The new_num can however be used to request information via <funclink>EffectCall</funclink>(). In calls made by <funclink>CheckEffect</funclink>() new_num is always 0.</text>
       <text>This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback.</text>
       <text>Return -2 or -3 to accept the new effect. As long as the new effect is not rejected by any other effect, the Fx*Add call is then made to the accepting effect, the new effect is not actually created, and the calling AddEffect function returns the effect index of the accepting effect. The return value -3 will also temporarily remove all higher prioriy effects just before the Fx*Add callback and re-add them later.</text>
       <text>var1 bis var4 are the parameters passed to <funclink>AddEffect</funclink>()</text>
       <h>Fx*Add</h>
-      <text><code>int Fx*Add (object target, int num, string new_name, int new_timer, any var1, any var2, any var3, any var4);</code></text>
-      <text>Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. num identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects).</text>
+      <text><code>int Fx*Add (object target, effect, string new_name, int new_timer, any var1, any var2, any var3, any var4);</code></text>
+      <text>Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. <code>effect</code> identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects).</text>
       <text>new_timer is the timer interval of the new effect; var1 to var4 are the parameters from AddEffect. Notice: in temporary calls, these parameters are not available - here they will be 0.</text>
       <text>If -1 is returned, the accepting effect is deleted also. Logically, the calling AddEffect function will then return -2.</text>
       <h>Fx*Damage</h>
-      <text><code>int Fx*Damage (object target, int num, int damage, int cause);</code></text>
+      <text><code>int Fx*Damage (object target, effect, int damage, int cause);</code></text>
       <text>Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change.</text>
       <text>This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
       <text>
@@ -605,7 +597,7 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
           </row>
         </table>
       </text>
-      <text>Generally, the expression "cause &amp; 32" can be used to determine whether the energy or damage values were changed. Energy values are exact, meaning 100,000 is the full energy value of a normal clonk of rank 10 (C4MaxPhysical).</text>
+      <text>Generally, the expression "cause &amp; 32" can be used to determine whether the energy or damage values were changed.</text>
       <text>Using this callback, damage to an object can be prevented, lessened, or increased. You could deduct magic energy instead, transfer damage to other objects, or something similar.</text>
     </part>
     <h id="FnRef">Function Reference</h>
@@ -617,7 +609,6 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
         <li><funclink>GetEffect</funclink>() - to request effect parameters</li>
         <li><funclink>GetEffectCount</funclink>() - for effect counting</li>
         <li><funclink>EffectCall</funclink>() - for user defined calls in effects</li>
-        <li><funclink>EffectVar</funclink>() - to request effect variables</li>
         <li><funclink>ChangeEffect</funclink>() - to modify effect names and timers (e.g. for multi-stage effects)</li>
         <li><funclink>CheckEffect</funclink>() - to cause effects callbacks without actually creating an effect</li>
       </ul>

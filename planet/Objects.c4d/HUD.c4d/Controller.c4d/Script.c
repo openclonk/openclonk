@@ -178,7 +178,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	}
 }
 
-public func FxIntSearchInteractionObjectsEffect(string newname, object target, int num, int new_num)
+public func FxIntSearchInteractionObjectsEffect(string newname, object target)
 {
 	if(newname == "IntSearchInteractionObjects")
 		return -1;

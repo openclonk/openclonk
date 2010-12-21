@@ -63,7 +63,6 @@ C4AulScript *C4Effect::GetCallbackScript()
 }
 
 C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
-		: EffectVars(0)
 {
 	C4Effect *pPrev, *pCheck;
 	// assign values
@@ -143,7 +142,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	riStoredAsNumber = iNumber;
 }
 
-C4Effect::C4Effect(StdCompiler *pComp) : EffectVars(0)
+C4Effect::C4Effect(StdCompiler *pComp)
 {
 	// defaults
 	iNumber=iPriority=iTime=iIntervall=0;
@@ -186,8 +185,6 @@ void C4Effect::DenumeratePointers()
 	{
 		// command target
 		pEff->CommandTarget.DenumeratePointers();
-		// variable pointers
-		pEff->EffectVars.DenumeratePointers();
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
 		pEff->C4PropList::DenumeratePointers();
@@ -526,17 +523,6 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// proplist
 	C4PropListNumbered::CompileFuncNonames(pComp);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
-	// read variables
-	if (pComp->isCompiler() || EffectVars.GetSize() > 0)
-	{
-		if (pComp->Separator(StdCompiler::SEP_START2)) // '['
-		{
-			pComp->Value(EffectVars);
-			pComp->Separator(StdCompiler::SEP_END2); // ']'
-		}
-		else
-			EffectVars.Reset();
-	}
 	// is there a next effect?
 	bool fNext = !! pNext;
 	if (pComp->hasNaming())
@@ -554,11 +540,6 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 
 
 // Internal fire effect
-
-C4Value &FxFireVarMode(C4Effect *pEffect) { return pEffect->EffectVars[0]; }
-C4Value &FxFireVarCausedBy(C4Effect *pEffect) { return pEffect->EffectVars[1]; }
-C4Value &FxFireVarBlasted(C4Effect *pEffect) { return pEffect->EffectVars[2]; }
-C4Value &FxFireVarIncineratingObj(C4Effect *pEffect) { return pEffect->EffectVars[3]; }
 
 int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
 {
@@ -624,10 +605,10 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int3
 		iFireMode = C4Fx_FireMode_Object;
 	}
 	// store causes in effect vars
-	FxFireVarMode(pEffect).SetInt(iFireMode);
-	FxFireVarCausedBy(pEffect).SetInt(iCausedBy); // used in C4Object::GetFireCause and timer!
-	FxFireVarBlasted(pEffect).SetBool(fBlasted);
-	FxFireVarIncineratingObj(pEffect).SetObject(pIncineratingObject);
+	pEffect->SetProperty(P_Mode, C4VInt(iFireMode));
+	pEffect->SetProperty(P_CausedBy, C4VInt(iCausedBy)); // used in C4Object::GetFireCause and timer!
+	pEffect->SetProperty(P_Blasted, C4VBool(fBlasted));
+	pEffect->SetProperty(P_IncineratingObj, C4VObj(pIncineratingObject));
 	// Set values
 	pObj->FirePhase=Random(MaxFirePhase);
 	if (pObj->Shape.Wdt*pObj->Shape.Hgt>500) StartSoundEffect("Inflame",false,100,pObj);
@@ -646,7 +627,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int3
 	int iNumber = pEffect->iNumber;
 	// get cause
 	int32_t iCausedByPlr = NO_OWNER;
-	iCausedByPlr = FxFireVarCausedBy(pEffect).getInt();
+	iCausedByPlr = pEffect->GetPropertyInt(P_CausedBy);
 	if (!ValidPlr(iCausedByPlr)) iCausedByPlr = NO_OWNER;
 
 	// causes on object
@@ -664,7 +645,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int3
 	/* Fire execution behaviour transferred from script (FIRE) */
 
 	// get fire mode
-	int32_t iFireMode = FxFireVarMode(pEffect).getInt();
+	int32_t iFireMode = pEffect->GetPropertyInt(P_Mode);
 
 	// special effects only each four frames, except for objects (e.g.: Projectiles)
 	if (iTime%4 && iFireMode!=C4Fx_FireMode_Object) return C4Fx_OK;

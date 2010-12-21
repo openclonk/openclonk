@@ -135,6 +135,10 @@ C4StringTable::C4StringTable()
 	P[P_MaxEnergy] = "MaxEnergy";
 	P[P_MaxBreath] = "MaxBreath";
 	P[P_ThrowSpeed] = "ThrowSpeed";
+	P[P_Mode] = "Mode";
+	P[P_CausedBy] = "CausedBy";
+	P[P_Blasted] = "Blasted";
+	P[P_IncineratingObj] = "IncineratingObj";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

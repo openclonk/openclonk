@@ -103,7 +103,7 @@ private func FxEnergyNeedStop(object target, int fxnum, int iReason, bool temp)
 	return 1;
 }
 
-private func FxEnergyNeedEffect(string name, object target, int fxnum, int fxnum_new)
+private func FxEnergyNeedEffect(string name, object target)
 {
 	// Only one energy need effect per consumer.
 	if (name == "EnergyNeed")

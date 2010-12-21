@@ -86,7 +86,6 @@ public:
 	C4ID idCommandTarget;     // ID of command target definition
 
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
-	C4ValueList EffectVars; // custom effect variables
 	int32_t iTime, iIntervall;  // effect time; effect callback intervall
 	int32_t iNumber;            // effect number for addressing
 

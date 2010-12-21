@@ -33,19 +33,19 @@
     <desc>If a mesh was previously attached to another mesh then this function can be used to change one or both of the bones at which they are attached. To only change a single bone the other parameter can be set to <code>nil</code>.</desc>
     <examples>
       <example>
-        <code>func FxIntCarryBowStart(object target, int number)
+        <code>func FxIntCarryBowStart(object target, effect)
 {
-	<funclink>EffectVar</funclink>(0, target, number) = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
-	<funclink>EffectVar</funclink>(1, target, number) = true;
+	effect.mesh = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
+	effect.inhand1 = true;
 }
 
-func FxIntCarryBowTimer(object target, int number)
+func FxIntCarryBowTimer(object target, effect)
 {
-	<funclink>if</funclink>(<funclink>EffectVar</funclink>(1, target, number))
-		target-&gt;<funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), &quot;pos_hand2&quot;, nil);
+	<funclink>if</funclink>(effect.inhand1)
+		target-&gt;<funclink>SetAttachBones</funclink>(effect.mesh, &quot;pos_hand2&quot;, nil);
 	else
-		target-&gt;<funclink>SetAttachBones</funclink>(<funclink>EffectVar</funclink>(0, target, number), &quot;pos_hand1&quot;, nil);
-	<funclink>EffectVar</funclink>(1, target, number) = !<funclink>EffectVar</funclink>(1, target, number);
+		target-&gt;<funclink>SetAttachBones</funclink>(effect.mesh, &quot;pos_hand1&quot;, nil);
+	effect.inhand1 = !effect.inhand1;
 }</code>
         <text>Script for an <emlink href="script/Effects.html">effect</emlink>: Initially the clonk carries a bow and for each timer call the bow is switched from its left hand to its right hand or vice versa.</text>
       </example>

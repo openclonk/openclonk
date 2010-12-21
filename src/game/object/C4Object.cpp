@@ -5271,7 +5271,7 @@ int32_t C4Object::GetFireCausePlr()
 	C4Effect *pFire = pEffects->Get(C4Fx_Fire);
 	if (!pFire) return NO_OWNER;
 	// get causing player
-	int32_t iFireCausePlr = FxFireVarCausedBy(pFire).getInt();
+	int32_t iFireCausePlr = pFire->GetPropertyInt(P_CausedBy);
 	// return if valid
 	if (ValidPlr(iFireCausePlr)) return iFireCausePlr; else return NO_OWNER;
 }
