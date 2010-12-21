@@ -86,7 +86,6 @@ void C4Def::DefaultDefCore()
 	UprightAttach=0;
 	ContactFunctionCalls=0;
 	Line=0;
-	LineConnect=0;
 	LineIntersect=0;
 	NoBurnDecay=0;
 	IncompleteActivity=0;
@@ -235,35 +234,8 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,             "ContactIncinerate",  0                 ));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,               "BlastIncinerate",    0                 ));
-	pComp->Value(mkNamingAdapt(BurnTurnTo,        "BurnTo",             C4ID::None          ));
-
-	const StdBitfieldEntry<int32_t> LineTypes[] =
-	{
-
-		{ "C4D_LineSource"         ,C4D_Line_Source},
-		{ "C4D_LineDrain"          ,C4D_Line_Drain},
-		{ "C4D_LineColored"        ,C4D_Line_Colored},
-		{ "C4D_LineVertex"         ,C4D_Line_Vertex},
-
-		{ NULL,                     0}
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(Line, LineTypes),"Line",             0                 ));
-
-
-	const StdBitfieldEntry<int32_t> LineConnectTypes[] =
-	{
-
-		{ "C4D_LiquidInput"        ,C4D_Liquid_Input},
-		{ "C4D_LiquidOutput"       ,C4D_Liquid_Output},
-		{ "C4D_LiquidPump"         ,C4D_Liquid_Pump},
-
-		{ NULL,                     0}
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(LineConnect, LineConnectTypes),
-	                           "LineConnect",        0                 ));
-
+	pComp->Value(mkNamingAdapt(BurnTurnTo,                    "BurnTo",             C4ID::None        ));
+	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
 	pComp->Value(mkNamingAdapt(Prey,                          "Prey",               0                 ));
 	pComp->Value(mkNamingAdapt(Edible,                        "Edible",             0                 ));
@@ -272,8 +244,8 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Growth,                        "Growth",             0                 ));
 	pComp->Value(mkNamingAdapt(Rebuyable,                     "Rebuy",              0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
-	pComp->Value(mkNamingAdapt(BuildTurnTo,     "ConstructTo",        C4ID::None                  ));
-	pComp->Value(mkNamingAdapt(Grab,                      "Grab",               0                 ));
+	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));
+	pComp->Value(mkNamingAdapt(Grab,                          "Grab",               0                 ));
 
 	const StdBitfieldEntry<int32_t> GrabPutGetTypes[] =
 	{

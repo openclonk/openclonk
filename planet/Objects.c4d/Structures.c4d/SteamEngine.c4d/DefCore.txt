@@ -17,7 +17,6 @@ Picture=0,0,64,52
 Collection=-53,15,15,17
 Exclusive=1
 BlastIncinerate=130
-LineConnect=C4D_LiquidInput
 Construction=1
 ContainBlast=1
 AutoContextMenu=1

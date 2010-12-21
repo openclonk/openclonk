@@ -376,159 +376,6 @@ bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 	return true;
 }
 
-C4Object *CreateLine(C4ID idType, int32_t iOwner, C4Object *pFrom, C4Object *pTo)
-{
-	C4Object *pLine;
-	if (!pFrom || !pTo) return NULL;
-	if (!(pLine=Game.CreateObject(idType,pFrom,iOwner,0,0))) return NULL;
-	pLine->Shape.VtxNum=2;
-	pLine->Shape.VtxX[0]=pFrom->GetX();
-	pLine->Shape.VtxY[0]=pFrom->GetY()+pFrom->Shape.Hgt/4;
-	pLine->Shape.VtxX[1]=pTo->GetX();
-	pLine->Shape.VtxY[1]=pTo->GetY()+pTo->Shape.Hgt/4;
-	pLine->Action.Target=pFrom;
-	pLine->Action.Target2=pTo;
-	return pLine;
-}
-
-bool ObjectComLineConstruction(C4Object *cObj)
-{
-	C4Object *linekit,*tstruct,*cline;
-	DWORD ocf;
-
-	ObjectActionStand(cObj);
-
-	// - - - - - - - - - - - - - - - - - - Line pickup - - - - - - - - - - - - - - - - -
-
-	// Check for linekit
-	if (!(linekit=cObj->Contents.Find(C4ID::Linekit)))
-	{
-		// Check line pickup
-		ocf=OCF_LineConstruct;
-		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
-		if (!tstruct || !(ocf & OCF_LineConstruct)) return false;
-		if (!(cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",tstruct))) return false;
-		// Check line connected to linekit at other end
-		if ( (cline->Action.Target && (cline->Action.Target->Def->id==C4ID::Linekit))
-		     || (cline->Action.Target2 && (cline->Action.Target2->Def->id==C4ID::Linekit)) )
-		{
-			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj); return false;
-		}
-		// Create new linekit
-		if (!(linekit=Game.CreateObject(C4ID::Linekit,cObj,cline->Owner))) return false;
-		// Enter linekit into clonk
-		bool fRejectCollect;
-		if (!linekit->Enter(cObj, true, true, &fRejectCollect))
-		{
-			// Enter failed: abort operation
-			linekit->AssignRemoval(); return false;
-		}
-		// Attach line to collected linekit
-		StartSoundEffect("Connect",false,100,cObj);
-		if (cline->Action.Target==tstruct) cline->Action.Target=linekit;
-		if (cline->Action.Target2==tstruct) cline->Action.Target2=linekit;
-		// Message
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_DISCONNECT"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
-		return true;
-	}
-
-	// - - - - - - - - - -  - - - - - Active construction - - - - - - - - - - - - - - - - -
-
-	// Active line construction
-	if ((cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",linekit)))
-	{
-
-		// Check for structure connection
-		ocf=OCF_LineConstruct;
-		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
-		// No structure
-		if (!tstruct || !(ocf & OCF_LineConstruct))
-		{
-			// No connect
-			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObjectError(LoadResStr("IDS_OBJ_NOCONNECT"),cObj);  return false;
-		}
-
-		// Check short circuit -> removal
-		if ((cline->Action.Target==tstruct)
-		    || (cline->Action.Target2==tstruct))
-		{
-			StartSoundEffect("Connect",false,100,cObj);
-			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_LINEREMOVAL"),cline->GetName()).getData(),tstruct);
-			cline->AssignRemoval();
-			return true;
-		}
-
-		// Check for correct connection type
-		bool connect_okay=false;
-		switch (cline->Def->Line)
-		{
-		case C4D_Line_Source:
-			if (tstruct->Def->LineConnect & C4D_Liquid_Output) connect_okay=true; break;
-		case C4D_Line_Drain:
-			if (tstruct->Def->LineConnect & C4D_Liquid_Input) connect_okay=true;  break;
-		default: return false; // Undefined line type
-		}
-		if (!connect_okay)
-		{
-			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOCONNECTTYPE"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
-			return false;
-		}
-
-		// Connect line to structure
-		StartSoundEffect("Connect",false,100,cObj);
-		if (cline->Action.Target==linekit) cline->Action.Target=tstruct;
-		if (cline->Action.Target2==linekit) cline->Action.Target2=tstruct;
-		linekit->Exit();
-		linekit->AssignRemoval();
-
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_CONNECT"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
-
-		return true;
-	}
-
-	// - - - - - - - - - - - - - - - - New line - - - - - - - - - - - - - - - - - - - - -
-
-	// Check for new structure connection
-	ocf=OCF_LineConstruct;
-	tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
-	if (!tstruct || !(ocf & OCF_LineConstruct))
-	{
-		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObjectError(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
-	}
-
-	// Determine new line type
-	C4ID linetype=C4ID::None;
-	// Check source pipe
-	if (linetype==C4ID::None)
-		if (tstruct->Def->LineConnect & C4D_Liquid_Pump)
-			if (!Game.FindObject(C4ID::SourcePipe,0,0,0,0,OCF_All,"Connect",tstruct))
-				linetype = C4ID::SourcePipe;
-	// Check drain pipe
-	if (linetype==C4ID::None)
-		if (tstruct->Def->LineConnect & C4D_Liquid_Output)
-			if (!Game.FindObject(C4ID::DrainPipe,0,0,0,0,OCF_All,"Connect",tstruct))
-				linetype = C4ID::DrainPipe;
-	// No good
-	if (linetype==C4ID::None)
-	{
-		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObjectError(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);  return false;
-	}
-
-	// Create new line
-	C4Object *newline=CreateLine(linetype,cObj->Owner,
-	                             tstruct,linekit);
-	if (!newline) return false;
-	StartSoundEffect("Connect",false,100,cObj);
-	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NEWLINE"),newline->GetName()).getData(),tstruct);
-
-	return true;
-}
-
 void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DFA_SWIM
 {
 	C4Object *pTarget;
@@ -539,13 +386,6 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 		if (!! cObj->Contents.GetObject()->Call(PSF_Activate,&C4AulParSet(C4VObj(cObj))))
 			return;
 
-	// Linekit: Line construction (move to linekit script...)
-	if (cObj->Contents.GetObject() && (cObj->Contents.GetObject()->id==C4ID::Linekit))
-	{
-		ObjectComLineConstruction(cObj);
-		return;
-	}
-
 	// Chop
 	ocf=OCF_Chop;
 	if (cObj->GetProcedure()!=DFA_SWIM)
@@ -555,14 +395,6 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 				PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
 				return;
 			}
-
-	// Line construction pick up
-	ocf=OCF_LineConstruct;
-	if (!cObj->Contents.GetObject())
-		if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-			if (ocf & OCF_LineConstruct)
-				if (ObjectComLineConstruction(cObj))
-					return;
 
 	// Own activation call
 	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;

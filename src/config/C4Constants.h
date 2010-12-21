@@ -112,18 +112,17 @@ const uint32_t
 	OCF_Collection = 1<<14,
 	OCF_Living = 1<<15,
 	OCF_HitSpeed4 = 1<<16,
-	OCF_LineConstruct = 1<<17,
-	OCF_Prey = 1<<18,
-	OCF_AttractLightning = 1<<19,
-	OCF_NotContained = 1<<20,
-	OCF_CrewMember = 1<<21,
-	OCF_Edible = 1<<22,
-	OCF_InLiquid = 1<<23,
-	OCF_InSolid = 1<<24,
-	OCF_InFree = 1<<25,
-	OCF_Available = 1<<26,
-	OCF_Container = 1<<27,
-	OCF_Alive = 1<<28;
+	OCF_Prey = 1<<17,
+	OCF_AttractLightning = 1<<18,
+	OCF_NotContained = 1<<19,
+	OCF_CrewMember = 1<<20,
+	OCF_Edible = 1<<21,
+	OCF_InLiquid = 1<<22,
+	OCF_InSolid = 1<<23,
+	OCF_InFree = 1<<24,
+	OCF_Available = 1<<25,
+	OCF_Container = 1<<26,
+	OCF_Alive = 1<<27;
 
 //================================== Contact / Attachment ==============================================
 

@@ -16868,34 +16868,6 @@ msgstr "<placeholder-1/> wird auch nach der Beleuchtung angewandt. Die transform
 msgid "If both \"MeshTransformation\" and <placeholder-1/> are set then first the \"MeshTransformation\" is applied to the mesh and then <placeholder-2/>."
 msgstr "Sind sowohl \"MeshTransformation\" als auch <placeholder-1/> gesetzt, so wird zuerst die \"MeshTransformation\" auf das Mesh angewandt und dann <placeholder-2/>."
 
-#: sdk/definition/lineconnect.xml:8(text)
-msgid "The LineConnect attribute is a bitmask and determines which lines can be connected to an object and what the object conducts."
-msgstr "Die LineConnect-Eigenschaft (DWord-Bitmaske) eines Objekts bestimmt, welche Leitungen an das Objekt angeschlossen werden können und welches Leitungsverhalten das Objekt hat."
-
-#: sdk/definition/lineconnect.xml:20(col)
-msgid "C4D_LiquidInput"
-msgstr "C4D_LiquidInput"
-
-#: sdk/definition/lineconnect.xml:21(col)
-msgid "The end of a pipe can be connected."
-msgstr "Das Ende eines Rohres kann angeschlossen werden."
-
-#: sdk/definition/lineconnect.xml:26(col)
-msgid "C4D_LiquidOutput"
-msgstr "C4D_LiquidOutput"
-
-#: sdk/definition/lineconnect.xml:27(col)
-msgid "The beginning of a pipe can be connected."
-msgstr "Der Anfang eines Rohres kann angeschlossen werden."
-
-#: sdk/definition/lineconnect.xml:32(col)
-msgid "C4D_LiquidPump"
-msgstr "C4D_LiquidPump"
-
-#: sdk/definition/lineconnect.xml:33(col)
-msgid "The object is a pump."
-msgstr "Das Objekt ist eine Pumpe."
-
 #: sdk/definition/index.xml:9(text)
 msgid "Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:"
 msgstr "Mit Objektdefinitionen werden alle in Clonk vorkommenden Spielobjekte - vom Feuermonsterei über Holzhütten bis zum Clonk selber - definiert. Eine Objektdefinition ist eine Gruppendatei, die sich aus folgenden Komponenten zusammen setzt:"

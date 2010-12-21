@@ -75,15 +75,6 @@ C4D_Border_Top    = 2,
 C4D_Border_Bottom = 4,
 C4D_Border_Layer  = 8,
 
-C4D_Line_Source    = 1,
-C4D_Line_Drain     = 2,
-C4D_Line_Colored   = 3,
-C4D_Line_Vertex    = 4,
-
-C4D_Liquid_Input    =   1,
-C4D_Liquid_Output   =   2,
-C4D_Liquid_Pump     =  4,
-
 C4D_Place_Surface    = 0,
 C4D_Place_Liquid     = 1,
 C4D_Place_Air        = 2;
@@ -151,7 +142,6 @@ public:
 	int32_t UprightAttach;
 	int32_t ContactFunctionCalls;
 	int32_t Line;
-	int32_t LineConnect;
 	int32_t LineIntersect;
 	int32_t NoBurnDecay;
 	int32_t IncompleteActivity;

@@ -173,12 +173,7 @@
         <row>
           <literal_col>Line</literal_col>
           <col>Integer</col>
-          <col>1 source pipe, 2 drain pipe.</col>
-        </row>
-        <row>
-          <literal_col>LineConnect</literal_col>
-          <col>Integer</col>
-          <col>Connection behaviour for lines. See <emlink href="definition/lineconnect.html">LineConnect</emlink>.</col>
+          <col>0 or 1. If 1 the object is a line and exhibits special behaviour.</col>
         </row>
         <row>
           <literal_col>Prey</literal_col>

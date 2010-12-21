@@ -533,8 +533,6 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 
 }
 
-C4Object *CreateLine(C4ID linetype, int32_t owner, C4Object *fobj, C4Object *tobj);
-
 void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 {
 	int32_t cnt,cnt2,ctx,cty;

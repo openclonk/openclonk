@@ -6073,15 +6073,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4D_GrabGet"            ,C4V_Int,          C4D_Grab_Get},
 	{ "C4D_GrabPut"            ,C4V_Int,          C4D_Grab_Put},
 
-	{ "C4D_LineSource"         ,C4V_Int,          C4D_Line_Source},
-	{ "C4D_LineDrain"          ,C4V_Int,          C4D_Line_Drain},
-	{ "C4D_LineColored"        ,C4V_Int,          C4D_Line_Colored},
-	{ "C4D_LineVertex"         ,C4V_Int,          C4D_Line_Vertex},
-
-	{ "C4D_LiquidInput"        ,C4V_Int,          C4D_Liquid_Input},
-	{ "C4D_LiquidOutput"       ,C4V_Int,          C4D_Liquid_Output},
-	{ "C4D_LiquidPump"         ,C4V_Int,          C4D_Liquid_Pump},
-
 	{ "C4V_Any"                ,C4V_Int,          C4V_Any},
 	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
 	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
@@ -6120,7 +6111,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "OCF_Collection"         ,C4V_Int,          OCF_Collection},
 	{ "OCF_Living"             ,C4V_Int,          OCF_Living},
 	{ "OCF_HitSpeed4"          ,C4V_Int,          OCF_HitSpeed4},
-	{ "OCF_LineConstruct"      ,C4V_Int,          OCF_LineConstruct},
 	{ "OCF_Prey"               ,C4V_Int,          OCF_Prey},
 	{ "OCF_AttractLightning"   ,C4V_Int,          OCF_AttractLightning},
 	{ "OCF_NotContained"       ,C4V_Int,          OCF_NotContained},

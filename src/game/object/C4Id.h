@@ -55,10 +55,7 @@ public:
 	DEPRECATED static const C4ID StructuresSnowIn;
 	DEPRECATED static const C4ID Flag;
 	DEPRECATED static const C4ID FlagRemvbl; // Flag removable
-	DEPRECATED static const C4ID Linekit;
 	DEPRECATED static const C4ID Conkit; // Construction kit
-	DEPRECATED static const C4ID SourcePipe;
-	DEPRECATED static const C4ID DrainPipe;
 	DEPRECATED static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
 	DEPRECATED static const C4ID Meteor;

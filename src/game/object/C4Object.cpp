@@ -816,10 +816,6 @@ void C4Object::SetOCF()
 		OCF|=OCF_Living;
 		if (Alive) OCF|=OCF_Alive;
 	}
-	// OCF_LineConstruct
-	if (OCF & OCF_FullCon)
-		if (Def->LineConnect)
-			OCF|=OCF_LineConstruct;
 	// OCF_Prey
 	if (Def->Prey)
 		if (Alive)
@@ -883,7 +879,7 @@ void C4Object::UpdateOCF()
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	           /*| OCF_Chop - now updated regularly, see below */
 	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
-	           | OCF_LineConstruct | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
+	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
 		OCF|=OCF_Carryable;
@@ -2527,19 +2523,13 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	int32_t color0 = 0xFFFF00FF, color1 = 0xFFFF00FF; // use bright colors so author notices
 	if (colors)
 	{
-		color0 = colors->GetItem(0).getInt(); color1 = colors->GetItem(1).getInt();
+		color0 = colors->GetItem(0).getInt();
+		color1 = colors->GetItem(1).getInt();
 	}
 	for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
-		switch (Def->Line)
-		{
-		case C4D_Line_Source: case C4D_Line_Drain:
-		case C4D_Line_Vertex:
-		case C4D_Line_Colored:
-			cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
-			               Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-			               color0, color1);
-			break;
-		}
+		cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
+						Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
+						color0, color1);
 	// reset blit mode
 	FinishedDrawing();
 }
@@ -4345,18 +4335,9 @@ void C4Object::ExecAction()
 
 		bool fBroke;
 		fBroke=false;
-		int32_t iConnectX,iConnectY;
-		int32_t attachVertex0,attachVertex1;
-		attachVertex0=attachVertex1=0;
-		{
-			C4Value lineAttachV; GetProperty(P_LineAttach, &lineAttachV);
-			C4ValueArray *lineAttach = lineAttachV.getArray();
-			if (lineAttach)
-			{
-				attachVertex0 = lineAttach->GetItem(0).getInt();
-				attachVertex1 = lineAttach->GetItem(1).getInt();
-			}
-		}
+		int32_t iConnectX, iConnectY;
+		int32_t iAttachX, iAttachY;
+		iAttachX = iAttachY = 0;
 
 		// Line destruction check: Target missing or incomplete
 		if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
@@ -4371,17 +4352,16 @@ void C4Object::ExecAction()
 		// Movement by Target
 		if (Action.Target)
 		{
-			// Connect to vertex
-			if (Def->Line == C4D_Line_Vertex)
+			// Connect to attach vertex
+			C4Value lineAttachV;
+			Action.Target->GetProperty(P_LineAttach, &lineAttachV);
+			C4ValueArray *lineAttach = lineAttachV.getArray();
+			iConnectX = Action.Target->GetX();
+			iConnectY = Action.Target->GetY();
+			if (lineAttach)
 			{
-				iConnectX=Action.Target->GetX()+Action.Target->Shape.GetVertexX(attachVertex0);
-				iConnectY=Action.Target->GetY()+Action.Target->Shape.GetVertexY(attachVertex0);
-			}
-			// Connect to bottom center
-			else
-			{
-				iConnectX=Action.Target->GetX();
-				iConnectY=Action.Target->GetY()+Action.Target->Shape.Hgt/4;
+				iConnectX += lineAttach->GetItem(0).getInt();
+				iConnectY += lineAttach->GetItem(1).getInt();
 			}
 			if ((iConnectX!=Shape.VtxX[0]) || (iConnectY!=Shape.VtxY[0]))
 			{
@@ -4397,17 +4377,16 @@ void C4Object::ExecAction()
 		// Movement by Target2
 		if (Action.Target2)
 		{
-			// Connect to vertex
-			if (Def->Line == C4D_Line_Vertex)
+			// Connect to attach vertex
+			C4Value lineAttachV;
+			Action.Target2->GetProperty(P_LineAttach, &lineAttachV);
+			C4ValueArray *lineAttach = lineAttachV.getArray();
+			iConnectX = Action.Target2->GetX();
+			iConnectY = Action.Target2->GetY();
+			if (lineAttach)
 			{
-				iConnectX=Action.Target2->GetX()+Action.Target2->Shape.GetVertexX(attachVertex1);
-				iConnectY=Action.Target2->GetY()+Action.Target2->Shape.GetVertexY(attachVertex1);
-			}
-			// Connect to bottom center
-			else
-			{
-				iConnectX=Action.Target2->GetX();
-				iConnectY=Action.Target2->GetY()+Action.Target2->Shape.Hgt/4;
+				iConnectX += lineAttach->GetItem(0).getInt();
+				iConnectY += lineAttach->GetItem(1).getInt();
 			}
 			if ((iConnectX!=Shape.VtxX[Shape.VtxNum-1]) || (iConnectY!=Shape.VtxY[Shape.VtxNum-1]))
 			{

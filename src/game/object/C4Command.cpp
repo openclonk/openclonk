@@ -1849,15 +1849,12 @@ void C4Command::Acquire()
 			// Object is near enough
 			if (Inside(cObj->GetX()-pMaterial->GetX(),-Tx._getInt(),+Tx._getInt()))
 				if (Inside(cObj->GetY()-pMaterial->GetY(),-Ty,+Ty))
-					// Object is not connected to a pipe (for line construction kits)
-					if (!Game.FindObject(C4ID::SourcePipe,0,0,0,0,OCF_All,"Connect",pMaterial))
-						if (!Game.FindObject(C4ID::DrainPipe,0,0,0,0,OCF_All,"Connect",pMaterial))
-							// Must be complete
-							if (pMaterial->OCF & OCF_FullCon)
-								// Doesn't burn
-								if (!pMaterial->GetOnFire())
-									// We found one
-									break;
+					// Must be complete
+					if (pMaterial->OCF & OCF_FullCon)
+						// Doesn't burn
+						if (!pMaterial->GetOnFire())
+							// We found one
+							break;
 
 	// Available material found: get material
 	if (pMaterial)
@@ -1976,8 +1973,6 @@ void C4Command::Fail(const char *szFailMessage)
 			}
 	}
 }
-
-C4Object *CreateLine(C4ID idType, int32_t iOwner, C4Object *pFrom, C4Object *pTo);
 
 void C4Command::Retry()
 {
