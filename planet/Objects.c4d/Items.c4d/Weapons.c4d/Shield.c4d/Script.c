@@ -45,8 +45,6 @@ public func ControlUseCancel(object clonk)
 		RemoveEffect("IntShieldSuspend", clonk);
 }
 
-var hand_ending;
-
 private func StartUsage(object clonk)
 {
 	var hand;
