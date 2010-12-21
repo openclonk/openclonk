@@ -46,18 +46,18 @@ global func FxGemPyreStart(object target, int num, int temporary, c, e, owner,th
 {
 	if (temporary) 
 		return 1;
-	num.var0=c[0];
-	num.var1=c[1];
-	num.var2=e;
-	num.var3=thrower;
-	num.var4=owner;
-	num.var5=0;
+	num.x=c[0];
+	num.y=c[1];
+	num.e=e;
+	num.thrower=thrower;
+	num.owner=owner;
+	num.objects=[];
 }
 global func FxGemPyreTimer(object target, int num, int time)
 {
-	var x=num.var0;
-	var y=num.var1;
-	var e=num.var2;
+	var x=num.x;
+	var y=num.y;
+	var e=num.e;
 	
 	if(time > 32) return -1;
 	
@@ -75,17 +75,16 @@ global func FxGemPyreTimer(object target, int num, int time)
 	for(var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(((time/2)+1)*6,x,y),Find_Not(Find_Distance((time/2)*4,x,y)),Find_ID(Clonk)))
 	{
 		var end=false;	
-		for(var i = 0; i < num.var5 ; i++)
-			if(obj == EffectVar(6+i, target, num)) end=true;
+		for(var i = 0; i < GetLength(num.objects); i++)
+			if(obj == num.objects[i]) end=true;
 		if(end) continue;
 		if(PathFree(x,y,obj->GetX(),obj->GetY()))
 		{
-			obj->DoEnergy((-BoundBy((30-time),1,26)*3)/5,0,0,num.var3);
+			obj->DoEnergy((-BoundBy((30-time),1,26)*3)/5,0,0,num.thrower);
 			obj->CastParticles("MagicFire",20 + (BoundBy((30-time),1,26)*2),(BoundBy((30-time),6,26)*2),0,0,26,50,clr,clr);
 			obj->CastParticles("Air",10 + BoundBy((30-time),1,26),10,0,0,16,30,clr,clr);
 			obj->Fling(RandomX(-2,2),-2-(BoundBy((30-time),10,30)/10));
-			EffectVar(6+num.var5, target, num) = obj;
-			num.var5++;
+			num.objects[GetLength(num.objects)] = obj;
 		}	
 	}
 	return 1;
