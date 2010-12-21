@@ -252,7 +252,7 @@ global func ShakeViewPort(int level, int x_off, int y_off)
 // Duration of the effect: as soon as strength==0
 // Strength of the effect: strength=level/(1.5*fxtime+3)-fxtime^2/400
 
-global func FxShakeEffectTimer(object target, int fxnum, int fxtime)
+global func FxShakeEffectTimer(object target, fxnum, int fxtime)
 {
 	var strength;
 

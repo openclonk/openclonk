@@ -4515,7 +4515,6 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 
 static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
 {
-	if (!pEffect2) return false;
 	// evaluate parameters
 	const char *szEffect = FnStringPar(psEffectName);
 	// get effects
@@ -4526,7 +4525,7 @@ static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 		pEffect = pEffect->Get(szEffect, 0);
 	else
 		// otherwise, get by number
-		pEffect = pEffect->Get(pEffect2->iNumber, false);
+		pEffect = pEffect->Get(pEffect2 ? pEffect2->iNumber : 0, false);
 	// effect found?
 	if (!pEffect) return 0;
 	// kill it
@@ -4540,7 +4539,6 @@ static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 
 static bool FnChangeEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, C4Effect * pEffect2, C4String *psNewEffectName, long iNewTimer)
 {
-	if (!pEffect2) return false;
 	// evaluate parameters
 	const char *szEffect = FnStringPar(psEffectName);
 	const char *szNewEffect = FnStringPar(psNewEffectName);
@@ -4553,7 +4551,7 @@ static bool FnChangeEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 		pEffect = pEffect->Get(szEffect, 0);
 	else
 		// otherwise, get by number
-		pEffect = pEffect->Get(pEffect2->iNumber, false);
+		pEffect = pEffect->Get(pEffect2 ? pEffect2->iNumber : 0, false);
 	// effect found?
 	if (!pEffect) return false;
 	// set new name
