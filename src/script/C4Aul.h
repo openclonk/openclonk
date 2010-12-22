@@ -72,11 +72,11 @@ struct C4AulBCC;
 class C4AulError
 {
 protected:
-	StdStrBuf sMessage;
+	StdCopyStrBuf sMessage;
 
 public:
+	bool shown;
 	C4AulError();
-	C4AulError(const C4AulError& Error) { sMessage.Copy(Error.sMessage); } // copy - constructor
 	virtual ~C4AulError() { } // destructor
 	virtual void show(); // present error message
 };

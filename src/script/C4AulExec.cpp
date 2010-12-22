@@ -654,6 +654,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPars = pCurVal - pFunc->GetParCount() + 1;
 				// Save current position
 				pCurCtx->CPos = pCPos;
+				assert(pCurCtx->Func->GetCode() < pCPos);
 				// Do the call
 				C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
 				if (pJump)
@@ -766,6 +767,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
+				assert(pCurCtx->Func->GetCode() < pCPos);
 
 				// Call function
 				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
@@ -797,26 +799,28 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	}
 	catch (C4AulError *e)
 	{
-		// Save current position
-		pOldCtx->CPos = pCPos;
-		// Pass?
-		if (fPassErrors)
-			throw;
 		// Show
-		e->show();
-		delete e;
-		// Trace
-		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
-			pCtx->dump(StdStrBuf(" by: "));
+		if(!e->shown) e->show();
+		// Save current position
+		assert(pCurCtx->Func->GetCode() < pCPos);
+		pCurCtx->CPos = pCPos;
 		// Unwind stack
 		C4Value *pUntil = NULL;
 		while (pCurCtx >= pOldCtx)
 		{
+			pCurCtx->dump(StdStrBuf(" by: "));
 			pUntil = pCurCtx->Pars - 1;
 			PopContext();
 		}
 		if (pUntil)
 			PopValuesUntil(pUntil);
+		// Pass?
+		if (fPassErrors)
+			throw;
+		// Trace
+		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
+			pCtx->dump(StdStrBuf(" by: "));
+		delete e;
 	}
 
 	// Return nothing

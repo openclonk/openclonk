@@ -960,7 +960,7 @@ void C4AulScript::ClearCode()
 
 int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
 {
-	return SGetLine(GetCodeOwner()->GetScript(), GetCodeOwner()->PosForCode[bcc - &GetCodeOwner()->Code[0]]);
+	return SGetLine(pOrgScript->GetScript(), GetCodeOwner()->PosForCode[bcc - &GetCodeOwner()->Code[0]]);
 }
 
 C4AulBCC * C4AulScriptFunc::GetCode()

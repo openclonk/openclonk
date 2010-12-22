@@ -32,10 +32,11 @@
 #include <C4Application.h>
 #include <C4LangStringTable.h>
 
-C4AulError::C4AulError() {}
+C4AulError::C4AulError(): shown(false) {}
 
 void C4AulError::show()
 {
+	shown = true;
 	// simply log error message
 	if (sMessage)
 		DebugLog(sMessage.getData());
