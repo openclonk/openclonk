@@ -230,7 +230,6 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				                           ColorDw,ACenter);
 				return;
 			}
-		fprintf(stderr, "%f %f '%s'\n", iMsgX, iMsgY, Text.getData());
 	}
 }
 
