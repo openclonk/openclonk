@@ -98,7 +98,7 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
 		                  Func->pOrgScript->ScriptName.getData(),
-		                  CPos ? Func->pOrgScript->GetLineOfCode(CPos) : SGetLine(Func->pOrgScript->GetScript(), Func->Script));
+		                  CPos ? Func->GetLineOfCode(CPos) : SGetLine(Func->pOrgScript->GetScript(), Func->Script));
 	// Return it
 	return Dump;
 }
@@ -144,7 +144,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 	PushContext(ctx);
 
 	// Execute
-	return Exec(pSFunc->Code, fPassErrors);
+	return Exec(pSFunc->GetCode(), fPassErrors);
 }
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
@@ -871,11 +871,11 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 #ifndef NOAULDEBUG
 		// Notify debugger
 		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
-			pDebug->DebugStepIn(pSFunc->Code);
+			pDebug->DebugStepIn(pSFunc->GetCode());
 #endif
 
 		// Jump to code
-		return pSFunc->Code;
+		return pSFunc->GetCode();
 	}
 	else
 	{
@@ -1179,7 +1179,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		delete pScript;
 		return C4VNull;
 	}
-	pFunc->Code = &pScript->Code[1];
+	pFunc->CodePos = 1;
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));

@@ -207,6 +207,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	// toggle breakpoint
 	else if (SEqualNoCase(szCmd, "TBR"))
 	{
+		// FIXME: this doesn't find functions which were included/appended
 		StdStrBuf scriptPath;
 		scriptPath.CopyUntil(szData, ':');
 		const char* lineStart = szData+1+scriptPath.getLength();
@@ -229,7 +230,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 				{
 				case AB_DEBUG:
 					{
-					int lineOfThisOne = script->GetLineOfCode(chunk);
+					int lineOfThisOne = SGetLine(scriptText, script->PosForCode[chunk - &script->Code[0]]);
 					if (lineOfThisOne == line)
 					{
 						foundDebugChunk = chunk;
@@ -473,7 +474,7 @@ void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 {
 	// Get position in script
-	int iLine = pCtx->Func->pOrgScript->GetLineOfCode(pCPos);
+	int iLine = pCtx->Func->GetLineOfCode(pCPos);
 	// Format
 	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
 }

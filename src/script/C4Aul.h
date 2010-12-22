@@ -310,6 +310,7 @@ public:
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
 	void ParseDesc(); // evaluate desc (i.e. get idImage and Condition
+	int CodePos; // code pos
 
 public:
 	C4AulAccess Access;
@@ -321,7 +322,6 @@ public:
 	C4AulFunc *Condition; // func condition
 	int32_t ControlMethod; // 0 = all, 1 = Classic, 2 = Jump+Run
 	const char *Script; // script pos
-	C4AulBCC *Code; // code pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
@@ -347,6 +347,9 @@ public:
 	void CopyBody(C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 
 	StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
+	int GetLineOfCode(C4AulBCC * bcc);
+	C4AulBCC * GetCode();
+	C4AulScript * GetCodeOwner();
 
 	time_t tProfileTime; // internally set by profiler
 
@@ -469,7 +472,6 @@ public:
 
 	// helper functions
 	void Warn(const char *pMsg, const char *pIdtf);
-	int GetLineOfCode(C4AulBCC * CPos);
 
 	friend class C4AulParseError;
 	friend class C4AulFunc;

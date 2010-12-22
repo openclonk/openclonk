@@ -958,9 +958,19 @@ void C4AulScript::ClearCode()
 	AddBCC(AB_ERR);
 }
 
-int C4AulScript::GetLineOfCode(C4AulBCC * bcc)
+int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
 {
-	return SGetLine(GetScript(), PosForCode[bcc - &Code[0]]);
+	return SGetLine(GetCodeOwner()->GetScript(), GetCodeOwner()->PosForCode[bcc - &GetCodeOwner()->Code[0]]);
+}
+
+C4AulBCC * C4AulScriptFunc::GetCode()
+{
+	return &GetCodeOwner()->Code[CodePos];
+}
+
+C4AulScript * C4AulScriptFunc::GetCodeOwner()
+{
+	return Owner == Owner->Engine ? LinkedTo->Owner : Owner;
 }
 
 bool C4AulScript::Preparse()
@@ -1368,7 +1378,8 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContex
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
-	Fn->Code = (C4AulBCC *) (CPos - &Code[0]);
+	assert(Fn->GetCodeOwner() == this);
+	Fn->CodePos = CPos - &Code[0];
 	// parse
 	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
@@ -3138,7 +3149,7 @@ bool C4AulScript::Parse()
 				delete err;
 				// make all jumps that don't have their destination yet jump here
 				// intptr_t to make it work on 64bit
-				for (intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - &Code[0]; i++)
+				for (int i = Fn->CodePos; i < CPos - &Code[0]; i++)
 				{
 					C4AulBCC *pBCC = &Code[i];
 					if (IsJump(pBCC->bccType))
@@ -3168,7 +3179,7 @@ bool C4AulScript::Parse()
 			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 		}
 		if (Fn)
-			Fn->Code = &Code[(intptr_t) Fn->Code];
+			assert(Fn->GetCodeOwner() == this);
 	}
 
 	// save line count
@@ -3187,10 +3198,10 @@ bool C4AulScript::Parse()
 			if (!Fn)
 				continue;
 			fprintf(stderr, "%s:\n", Fn->Name);
-			for (C4AulBCC *pBCC = Fn->Code;; pBCC++)
+			for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
 			{
 				C4AulBCCType eType = pBCC->bccType;
-				fprintf(stderr, "\t%d\t%s", GetLineOfCode(pBCC), GetTTName(eType));
+				fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
 				switch (eType)
 				{
 				case AB_FUNC:
