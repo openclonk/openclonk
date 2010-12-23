@@ -67,11 +67,7 @@ bool CStdApp::Init(int argc, char * argv[])
 	}
 
 	SDL_EnableUNICODE(1);
-#ifdef __APPLE__
-	SDL_EnableKeyRepeat(MacUtility::keyRepeatDelay(SDL_DEFAULT_REPEAT_DELAY), MacUtility::keyRepeatInterval(SDL_DEFAULT_REPEAT_INTERVAL));
-#else
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-#endif
 
 	// Custom initialization
 	return DoInit (argc, argv);
