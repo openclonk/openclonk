@@ -1,11 +1,14 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006, 2008-2010  Günther Brammer
  * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Tobias Zwick
+ * Copyright (c) 2010  Caesar
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any

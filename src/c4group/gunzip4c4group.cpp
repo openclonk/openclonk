@@ -2,7 +2,8 @@
 #include <stdio.h>
 
 /*
- * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2007, 2010  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

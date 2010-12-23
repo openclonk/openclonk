@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2010  Mortimer
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *

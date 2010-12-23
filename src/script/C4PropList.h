@@ -1,5 +1,9 @@
 /*
- * Copyright (c) 2009  Günther Brammer <gbrammer@gmx.de>
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2009-2010  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

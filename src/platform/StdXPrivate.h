@@ -2,7 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005, 2008-2009  Günther Brammer
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

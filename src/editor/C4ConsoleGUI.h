@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2010  Mortimer
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *

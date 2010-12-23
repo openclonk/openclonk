@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001  Michael Käser
  * Copyright (c) 2005, 2007  Sven Eberhardt
- * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 2008-2010  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
