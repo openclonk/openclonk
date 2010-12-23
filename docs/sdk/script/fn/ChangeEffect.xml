@@ -23,9 +23,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
-          <name>index</name>
-          <desc>Effect index. If name is given then if there are more effects matching the search mask the one with the given index is refered to. If name is not given then the effect with the correspoding effect number will be changed. For indices it is guaranteed that, in contrast to effect numbers, they start at 0 and count up to the number of effects</desc>
+          <type>proplist</type>
+          <name>effect</name>
+          <desc>Effect that will be changed. If name is given then the first effect with that name will be changed.</desc>
           <optional />
         </param>
         <param>

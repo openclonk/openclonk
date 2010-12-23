@@ -4489,17 +4489,16 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	C4String *psEffectName = pvsEffectName->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
 	long iQueryValue = pviQueryValue->getInt(), iMaxPriority = pviMaxPriority->getInt();
-	int iNumber = pvEffect->getPropList() && pvEffect->getPropList()->GetEffect() ? pvEffect->getPropList()->GetEffect()->iNumber : 0;
 	const char *szEffect = FnStringPar(psEffectName);
 	// get effects
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
 	// name/wildcard given: find effect by name and index
 	if (szEffect && *szEffect)
-		pEffect = pEffect->Get(szEffect, 0, iMaxPriority);
+		pEffect = pEffect->Get(szEffect, pvEffect->getInt(), iMaxPriority);
 	else
-		// otherwise, get by number
-		pEffect = pEffect->Get(iNumber, true, iMaxPriority);
+		// otherwise, use given effect
+		pEffect = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
 	// effect found?
 	if (!pEffect) return C4Value();
 	// evaluate desired value
@@ -4528,8 +4527,7 @@ static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 	if (szEffect && *szEffect)
 		pEffect = pEffect->Get(szEffect, 0);
 	else
-		// otherwise, get by number
-		pEffect = pEffect->Get(pEffect2 ? pEffect2->iNumber : 0, false);
+		pEffect = pEffect2;
 	// effect found?
 	if (!pEffect) return 0;
 	// kill it
@@ -4554,8 +4552,7 @@ static bool FnChangeEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 	if (szEffect && *szEffect)
 		pEffect = pEffect->Get(szEffect, 0);
 	else
-		// otherwise, get by number
-		pEffect = pEffect->Get(pEffect2 ? pEffect2->iNumber : 0, false);
+		pEffect = pEffect2;
 	// effect found?
 	if (!pEffect) return false;
 	// set new name
@@ -4605,16 +4602,12 @@ static C4Value FnEffectCall_C4V(C4AulContext *ctx, C4Value *pvpTarget, C4Value *
 	// evaluate parameters
 	C4String *psCallFn = pvsCallFn->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
-	C4Effect * pEffect2 = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
+	C4Effect * pEffect = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
 	const char *szCallFn = FnStringPar(psCallFn);
 	// safety
-	if (!pEffect2) return C4Value();
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szCallFn || !*szCallFn) return C4Value();
-	// get effect
-	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
-	if (!(pEffect = pEffect->Get(pEffect2->iNumber, true))) return C4Value();
 	// do call
 	return pEffect->DoCall(pTarget, szCallFn, *pvVal1, *pvVal2, *pvVal3, *pvVal4, *pvVal5, *pvVal6, *pvVal7);
 }
@@ -6483,7 +6476,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
 	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "AddEffect",            1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnAddEffect_C4V,             0 },
-	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },
+	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },
 	{ "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
 	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
 
