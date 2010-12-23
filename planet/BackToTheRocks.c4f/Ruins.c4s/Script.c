@@ -79,7 +79,7 @@ protected func OnPlayerRelaunch(int plr)
 }
 
 
-global func FxRainTimer(object pTarget, int noum, int timer)
+global func FxRainTimer(object pTarget, effect, int timer)
 {
 	if(timer<400)
 	{
@@ -98,7 +98,7 @@ global func FxRainTimer(object pTarget, int noum, int timer)
 	
 	return 1;
 }
-global func FxDryTimeTimer(object pTarget, int noum, int timer)
+global func FxDryTimeTimer(object pTarget, effect, int timer)
 {
 	if(timer<(380+Random(300))){
 	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
@@ -116,7 +116,7 @@ global func FxDryTimeTimer(object pTarget, int noum, int timer)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary)
+global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));

@@ -18,7 +18,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 	return 1;
 }
 
-func FxNoDropTimer(object target, int num, int timer)
+func FxNoDropTimer(object target, effect, int timer)
 {
 	if(target->Contained() != user)
 	{

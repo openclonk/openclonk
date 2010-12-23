@@ -58,7 +58,7 @@ private func OpenWeaponMenu(object clonk)
 	}
 }
 
-func FxIntTimeLimitTimer(object target, int num, int fxtime)
+func FxIntTimeLimitTimer(object target, effect, int fxtime)
 {
 	var clonk = Contents();
 	if (fxtime >= time)

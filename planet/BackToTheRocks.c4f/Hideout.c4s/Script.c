@@ -129,13 +129,13 @@ func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Shovel, Firesto
 
 /*-- Chest filler effects --*/
 
-global func FxFillBaseChestStart(object target, int num, int temporary, bool supply)
+global func FxFillBaseChestStart(object target, effect, int temporary, bool supply)
 {
 	if (temporary) 
 		return 1;
 		
-	num.var0=supply;
-	if(num.var0) 
+	effect.var0=supply;
+	if(effect.var0) 
 		var w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
 		var w_list = [Bow, Sword, Javelin, PyreGem];
@@ -143,9 +143,9 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
-global func FxFillBaseChestTimer(object target, int num)
+global func FxFillBaseChestTimer(object target, effect)
 {
-	if(num.var0)
+	if(effect.var0)
 	{ 
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
 		var maxcount = [2,2,1,2,1,2,1];
@@ -173,7 +173,7 @@ global func FxFillBaseChestTimer(object target, int num)
 	return 1;
 }
 
-global func FxFillOtherChestStart(object target, int num, int temporary)
+global func FxFillOtherChestStart(object target, effect, int temporary)
 {
 	if (temporary) 
 		return 1;
@@ -248,11 +248,11 @@ global func CreateChestContents(id obj_id)
 
 protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
 
-global func FxNotTooLongTimer(object target, int num)
+global func FxNotTooLongTimer(object target, effect)
 {	if (!(target->Contained())) return 1;
-	if (target->Contained()->GetID() == Clonk) num.var0++;
-	if (num.var0 > 40) return target->RemoveObject();
-	else if (num.var0 > 35) target->Message("@<c ff%x%x>%d",(41-num.var0)*50,(41-num.var0)*50,41-num.var0);
+	if (target->Contained()->GetID() == Clonk) effect.var0++;
+	if (effect.var0 > 40) return target->RemoveObject();
+	else if (effect.var0 > 35) target->Message("@<c ff%x%x>%d",(41-effect.var0)*50,(41-effect.var0)*50,41-effect.var0);
 }
 
 func OnClonkDeath(object clonk, int killed_by)

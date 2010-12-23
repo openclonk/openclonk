@@ -99,7 +99,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 	return;
 }
 
-global func FxSnowfallTimer(object target, int num, int timer)
+global func FxSnowfallTimer(object target, effect, int timer)
 {
 	CastPXS("Snow", 5, 1, RandomX(0, LandscapeWidth()), 1);
 	return 1;

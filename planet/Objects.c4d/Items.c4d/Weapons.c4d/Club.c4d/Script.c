@@ -98,29 +98,29 @@ public func DuringShoot(object clonk, int angle)
 	// DoStrike(clonk, angle);
 }
 
-func FxDuringClubShootControlStart(target, effect_number, temp, p1)
+func FxDuringClubShootControlStart(target, effect, temp, p1)
 {
 	if(temp) return;
-	effect_number.var0=p1;
+	effect.var0=p1;
 }
 
-func FxDuringClubShootControlStop(target, effect_number, reason, temp)
+func FxDuringClubShootControlStop(target, effect, reason, temp)
 {
 	if(temp) return;
 	AddEffect("AfterClubShootControl", target, 1, 15, this);
 }
 
-func FxDuringClubShootControlTimer(target, effect_number, effect_time)
+func FxDuringClubShootControlTimer(target, effect, effect_time)
 {
 	if(effect_time > 16) return -1;
 	if(!this) return -1;
-	this->DoStrike(target, effect_number.var0);
+	this->DoStrike(target, effect.var0);
 }
 
 // you are not going to be hit by objects you fling away
-func FxDuringClubShootControlQueryCatchBlow(object target, int num, object obj)
+func FxDuringClubShootControlQueryCatchBlow(object target, effect, object obj)
 {
-	this->DoStrike(target, num.var0);
+	this->DoStrike(target, effect.var0);
 	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 	if(GetEffect(en, obj)) return true;
 	return false;
@@ -131,7 +131,7 @@ func FxAfterClubShootControlTimer()
 	return -1;
 }
 
-func FxAfterClubShootControlQueryCatchBlow(object target, int effect_number, object obj)
+func FxAfterClubShootControlQueryCatchBlow(object target, effect, object obj)
 {
 	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 	if(GetEffect(en, obj)) return true;

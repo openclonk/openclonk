@@ -8,7 +8,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-protected func FxNoRemovalStop(object target, int num, int reason)
+protected func FxNoRemovalStop(object target, effect, int reason)
 {
 	if (reason == 3)
 	{

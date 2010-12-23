@@ -192,28 +192,28 @@ private func MakeTarget(int x, int y, bool flying)
 }
 
 // Blasts the first sand barrier on destruction.
-global func FxBlastStop(object target, int num, int reason, bool temporary)
+global func FxBlastStop(object target, effect, int reason, bool temporary)
 {
 	CreateObject(Rock, AbsX(430), AbsY(618), NO_OWNER)->Explode(25);
 	return 1;
 }
 
 // Creates a ropeladder on destruction to reach the final edge.
-global func FxRopeladderStop(object target, int num, int reason, bool temporary)
+global func FxRopeladderStop(object target, effect, int reason, bool temporary)
 {
 	CreateObject(Ropeladder, AbsX(2140), AbsY(320), NO_OWNER)->Unroll(-1);
 	return 1;
 }
 
 // Target moves horizontal.
-global func FxHorizontalMovingTimer(object target, int num, int time)
+global func FxHorizontalMovingTimer(object target, effect, int time)
 {
 	target->SetXDir(Sin(time, 20));
 	return 1;
 }
 
 // Drops a firestone on destruction.
-global func FxFlintDropStop(object target, int num, int reason, bool temporary)
+global func FxFlintDropStop(object target, effect, int reason, bool temporary)
 {
 	CreateObject(Firestone, 0, 0, NO_OWNER);
 	return 1;
@@ -221,25 +221,25 @@ global func FxFlintDropStop(object target, int num, int reason, bool temporary)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkRestoreTimer(object target, int num, int time)
+global func FxClonkRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached bow & arrow chest.
 	if (Distance(target->GetX(), target->GetY(), 830, 560) < 40)
 	{
-		num.var1 = 830;
-		num.var2 = 560;		
+		effect.var1 = 830;
+		effect.var2 = 560;		
 	}
 	// Respawn to new location if reached brick climb.
 	if (Distance(target->GetX(), target->GetY(), 1490, 470) < 40)
 	{
-		num.var1 = 1490;
-		num.var2 = 470;		
+		effect.var1 = 1490;
+		effect.var2 = 470;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -247,8 +247,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);

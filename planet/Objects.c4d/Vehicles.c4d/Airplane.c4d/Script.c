@@ -87,7 +87,7 @@ public func ContainedUseCancel(object clonk, int ix, int iy)
 	return 1;
 }
 
-public func FxIntCooldownTimer(object target, int num, int timer)
+public func FxIntCooldownTimer(object target, effect, int timer)
 {
 	if(timer > 50) return -1;
 }
@@ -173,7 +173,7 @@ public func CancelFlight()
 	throttle = 0;
 }
 
-private func FxIntSoundDelayTimer(object target, int num, int timer)
+private func FxIntSoundDelayTimer(object target, effect, int timer)
 {
 	if(timer >= 78)
 	{
@@ -182,7 +182,7 @@ private func FxIntSoundDelayTimer(object target, int num, int timer)
 	}
 }
 
-private func FxIntPlaneTimer(object target, int num, int timer)
+private func FxIntPlaneTimer(object target, effect, int timer)
 {
 	//Lift
 	var lift = Distance(0,0,GetXDir(),GetYDir()) / 2;

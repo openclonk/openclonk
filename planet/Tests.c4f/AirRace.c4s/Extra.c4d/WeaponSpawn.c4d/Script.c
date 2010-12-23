@@ -29,7 +29,7 @@ protected func Initialize()
 	return;
 }
 
-protected func FxIntWeaponSpawnTimer(object target, int fxnum, int fxtime)
+protected func FxIntWeaponSpawnTimer(object target, effect, int fxtime)
 {
 	// Check if there is a weapon.
 	if (!spawn_weapon && !GetEffect("IntSpawnWait", this))

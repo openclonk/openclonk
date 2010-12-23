@@ -120,7 +120,7 @@ public func SetObject(object obj)
 
 }
 
-public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
+public func FxIntRemoveGuardStop(object target, effect, int reason, bool temp)
 {
 	if(reason == 3)
 		if(target == myobject)

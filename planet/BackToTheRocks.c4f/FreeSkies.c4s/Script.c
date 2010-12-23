@@ -44,7 +44,7 @@ protected func Initialize()
 	PlaceGras();
 	return;
 }
-global func FxLifestealDamage(object target, int num, int damage, int cause, int from)
+global func FxLifestealDamage(object target, effect, int damage, int cause, int from)
 {
 	var goal = FindObject(Find_ID(KingOfTheHill_Location));
 	if (!goal) return damage;
@@ -57,22 +57,22 @@ global func FxLifestealDamage(object target, int num, int damage, int cause, int
 		AddEffect("Lifedrain",king,100,1,nil,nil,damage/3);
 	return damage;
 }
-global func FxLifedrainStart(object target, int num, int temporary,damage)
+global func FxLifedrainStart(object target, effect, int temporary,damage)
 {
 	if(temporary) return 1;
-	num.var0=damage/10;
+	effect.var0=damage/10;
 }
-global func FxLifedrainAdd(object target, int num, string new_name, int new_timer, damage)
+global func FxLifedrainAdd(object target, effect, string new_name, int new_timer, damage)
 {
-	num.var0+=damage/10;
+	effect.var0+=damage/10;
 }
-global func FxLifedrainTimer(object target, int num, int timer)
+global func FxLifedrainTimer(object target, effect, int timer)
 {
-	if(num.var0>0) return -1;
+	if(effect.var0>0) return -1;
 	target->DoEnergy(+100,1,0,-1);
-	num.var0+=10;
+	effect.var0+=10;
 }
-global func FxBlessTheKingTimer(object target, int num, int timer)
+global func FxBlessTheKingTimer(object target, effect, int timer)
 {
 	
 	//evil effect abuse :O
@@ -244,7 +244,7 @@ private func MakeTarget(int x, int y)
 }
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary)
+global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));

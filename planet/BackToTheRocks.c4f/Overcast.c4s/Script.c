@@ -109,7 +109,7 @@ protected func OnPlayerRelaunch(int plr)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary)
+global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));

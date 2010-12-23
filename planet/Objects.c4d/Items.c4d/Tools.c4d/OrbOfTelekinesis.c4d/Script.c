@@ -78,7 +78,7 @@ protected func ControlUseStop(object pClonk, ix, iy)
 	return 1;
 }
 
-protected func FxChargeTimer(object pTarget, int iEffectNumber, int iEffectTime)
+protected func FxChargeTimer(object pTarget, effect, int iEffectTime)
 {
 	if(magic<500)
 	{

@@ -228,7 +228,7 @@ global func FxTutorialBlastedThroughTimer()
 }
 
 // TODO move this around a little
-global func FxTutorialFoundInteractableTimer(object target, int num)
+global func FxTutorialFoundInteractableTimer(object target, effect)
 {
 	var clonk = GetCursor(GetPlayerByIndex(0));
 	var cannon = FindObject(Find_ID(Cannon));
@@ -240,25 +240,25 @@ global func FxTutorialFoundInteractableTimer(object target, int num)
 		{
 			if (clonk->FindContents(PowderKeg) && clonk->FindContents(Firestone))
 			{
-				if (!num.var0)
+				if (!effect.var0)
 					guide->AddGuideMessage("$MsgTutCannon$");
-				if (!num.var1)
+				if (!effect.var1)
 					guide->AddGuideMessage("$MsgTutExplosivesChest$");
 				guide->AddGuideMessage("$MsgTutFireCannon$");
 				AddEffect("TutorialRockBlasted", nil, 100, 5);
 				return -1;
 			}
-			else if (!num.var0)
+			else if (!effect.var0)
 			{
 				guide->AddGuideMessage("$MsgTutCannon$");
-				num.var0 = true;				
+				effect.var0 = true;				
 			}		
 		}
 	}
-	if (!num.var1 && FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
+	if (!effect.var1 && FindObject(Find_OCF(OCF_CrewMember), Find_Distance(40, 510, 740)))
 	{
 		guide->AddGuideMessage("$MsgTutExplosivesChest$");
-		num.var1 = true;
+		effect.var1 = true;
 	}
 	return 1;
 }
@@ -397,7 +397,7 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkOneRestoreTimer(object target, int num, int time)
+global func FxClonkOneRestoreTimer(object target, effect, int time)
 {
 	// Restore clonk to its original location if there is no hanging rope ladder and clonk has fallen down in first sector.
 	if (target->GetY() > 360 && Inside(target->GetX(), 360, 720) && !FindObject(Find_InRect(340, 310, 30, 80), Find_Func("IsLadder")))
@@ -406,46 +406,46 @@ global func FxClonkOneRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "ClonkOneRestore");
 		return -1;
 	}
 	// Respawn to new location if reached cliff to grapple from.
 	if (Distance(target->GetX(), target->GetY(), 400, 250) < 40)
 	{
-		num.var1 = 400;
-		num.var2 = 250;		
+		effect.var1 = 400;
+		effect.var2 = 250;		
 	}
 	// Respawn to new location if reached ledge.
 	if (Distance(target->GetX(), target->GetY(), 680, 260) < 40)
 	{
-		num.var1 = 680;
-		num.var2 = 260;		
+		effect.var1 = 680;
+		effect.var2 = 260;		
 	}
 	// Respawn to new location if reached lake.
 	if (Distance(target->GetX(), target->GetY(), 960, 360) < 40)
 	{
-		num.var1 = 960;
-		num.var2 = 360;		
+		effect.var1 = 960;
+		effect.var2 = 360;		
 	}
 	// Respawn to new location if reached granite blasting.
 	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		num.var1 = 1560;
-		num.var2 = 350;		
+		effect.var1 = 1560;
+		effect.var2 = 350;		
 	}
 	// Respawn to new location if reached acid lake.
 	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
 	{
-		num.var1 = 2130;
-		num.var2 = 330;		
+		effect.var1 = 2130;
+		effect.var2 = 330;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkOneRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -453,8 +453,8 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -467,45 +467,45 @@ global func FxClonkOneRestoreStop(object target, int num, int reason, bool  temp
 		{
 			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
-			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
-			effect.var0 = clonk;
+			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
+			new_effect.var0 = clonk;
 		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkOneRestore");
 	}
 	return 1;
 }
 
-global func FxClonkTwoRestoreTimer(object target, int num, int time)
+global func FxClonkTwoRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached ledge.
 	if (Distance(target->GetX(), target->GetY(), 680, 260) < 40)
 	{
-		num.var1 = 680;
-		num.var2 = 260;		
+		effect.var1 = 680;
+		effect.var2 = 260;		
 	}
 	// Respawn to new location if reached lake.
 	if (Distance(target->GetX(), target->GetY(), 960, 360) < 40)
 	{
-		num.var1 = 960;
-		num.var2 = 360;		
+		effect.var1 = 960;
+		effect.var2 = 360;		
 	}
 	// Respawn to new location if reached granite blasting.
 	if (Distance(target->GetX(), target->GetY(), 1560, 350) < 40)
 	{
-		num.var1 = 1560;
-		num.var2 = 350;		
+		effect.var1 = 1560;
+		effect.var2 = 350;		
 	}
 	// Respawn to new location if reached acid lake.
 	if (Distance(target->GetX(), target->GetY(), 2130, 330) < 40)
 	{
-		num.var1 = 2130;
-		num.var2 = 330;		
+		effect.var1 = 2130;
+		effect.var2 = 330;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkTwoRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -513,8 +513,8 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -527,8 +527,8 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 		{
 			var obj = CreateObject(transfer->GetID(), 0, 0, NO_OWNER);
 			obj->Enter(clonk);
-			var effect = AddEffect("ClonkContentRestore", obj, 100, 10);
-			effect.var0 = clonk;
+			var new_effect = AddEffect("ClonkContentRestore", obj, 100, 10);
+			new_effect.var0 = clonk;
 		}
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkTwoRestore");
 	}
@@ -544,7 +544,7 @@ global func FxClonkTwoRestoreStop(object target, int num, int reason, bool  temp
 // Effectvar 2: y-coordinate to which must be restored.
 
 // Dynamite box, needs seperate effect since changedef call.
-global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxDynamiteRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
@@ -552,7 +552,7 @@ global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temp
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = num.var0;
+		var to_container = effect.var0;
 		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");
 	}
@@ -560,13 +560,13 @@ global func FxDynamiteRestoreStop(object target, int num, int reason, bool  temp
 }
 
 // Dynamite box, effect timer is always needed.
-global func FxDynamiteRestoreTimer(object target, int num, int time)
+global func FxDynamiteRestoreTimer(object target, effect, int time)
 {
 	return 1;
 }
 
 // Cannon, restore position if pushed to far to the right.
-global func FxCannonRestoreTimer(object target, int num, int time)
+global func FxCannonRestoreTimer(object target, effect, int time)
 {
 	if ((target->GetX() < 595 && target->GetY() > 415) && !target->Contained())
 	{
@@ -574,8 +574,8 @@ global func FxCannonRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CannonRestore");
 		return -1;
 	}
@@ -583,7 +583,7 @@ global func FxCannonRestoreTimer(object target, int num, int time)
 }
 
 // Catapult, restore position if pushed to far to the left or right.
-global func FxCataRestoreTimer(object target, int num, int time)
+global func FxCataRestoreTimer(object target, effect, int time)
 {
 	if ((target->GetX() < 1110 || target->GetX() > 1650 || target->GetY() > 460) && !target->Contained())
 	{
@@ -591,8 +591,8 @@ global func FxCataRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
 		return -1;
 	}
@@ -600,7 +600,7 @@ global func FxCataRestoreTimer(object target, int num, int time)
 }
 
 // Catapult, might be dropped within 1100 X-coordinate.
-global func FxCataRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxCataRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
@@ -608,15 +608,15 @@ global func FxCataRestoreStop(object target, int num, int reason, bool  temporar
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		restorer->SetRestoreObject(target, nil, to_x, to_y, "CataRestore");
 	}
 	return 1;
 }
 
 // Ropeladder, restore if thrown away to unreachable location.
-global func FxRopeladderRestoreTimer(object target, int num, int time)
+global func FxRopeladderRestoreTimer(object target, effect, int time)
 {
 	if (target->GetX() < 680 && target->GetY() > 340 && !target->Contained())
 	{
@@ -624,7 +624,7 @@ global func FxRopeladderRestoreTimer(object target, int num, int time)
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = num.var0;
+		var to_container = effect.var0;
 		restorer->SetRestoreObject(target, to_container, nil, nil, "RopeladderRestore");
 		return -1;
 	}
@@ -632,7 +632,7 @@ global func FxRopeladderRestoreTimer(object target, int num, int time)
 }
 
 // Ropeladder, restore if destroyed.
-global func FxRopeladderRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxRopeladderRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
@@ -640,7 +640,7 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = num.var0;
+		var to_container = effect.var0;
 		var restored = CreateObject(Ropeladder, 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "RopeladderRestore");
 	}
@@ -648,17 +648,17 @@ global func FxRopeladderRestoreStop(object target, int num, int reason, bool  te
 }
 
 // Clonk content, set new restore location to last clonk.
-global func FxClonkContentRestoreTimer(object target, int num, int time)
+global func FxClonkContentRestoreTimer(object target, effect, int time)
 {
 
 	// Content objects to the container containing them last.
 	if (target->Contained())
-		num.var0 = target->Contained();
+		effect.var0 = target->Contained();
 	return 1;
 }
 
 // Clonk content, restore if destroyed.
-global func FxClonkContentRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkContentRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
@@ -666,7 +666,7 @@ global func FxClonkContentRestoreStop(object target, int num, int reason, bool  
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = num.var0;
+		var to_container = effect.var0;
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, nil, nil, "ClonkContentRestore");
 	}

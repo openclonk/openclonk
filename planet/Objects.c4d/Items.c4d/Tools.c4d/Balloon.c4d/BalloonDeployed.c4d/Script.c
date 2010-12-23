@@ -85,7 +85,7 @@ public func OnProjectileHit()
 	RemoveObject();
 }
 
-private func FxFloatTimer(object target, int num, int time)
+private func FxFloatTimer(object target, effect, int time)
 {
 	var speed = 7;
 	if(GetYDir() > speed) SetYDir(GetYDir() - 1);

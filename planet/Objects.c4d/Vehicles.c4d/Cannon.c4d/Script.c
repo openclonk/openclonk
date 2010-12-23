@@ -231,7 +231,7 @@ public func ControlUseAltCancel()
 	return ControlUseCancel();
 }
 
-public func FxIntCooldownTimer(object target, int num, int timer)
+public func FxIntCooldownTimer(object target, effect, int timer)
 {
 	if(timer > 72) return -1;
 }
@@ -318,7 +318,7 @@ func Timer()
 	olddir = GetDir();
 }
 
-private func FxIntTurningTimer(object target, int num, int timer)
+private func FxIntTurningTimer(object target, effect, int timer)
 {
 	if(timer > 36) return -1;
 }

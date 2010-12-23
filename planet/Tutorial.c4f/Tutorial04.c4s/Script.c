@@ -271,31 +271,31 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkRestoreTimer(object target, int num, int time)
+global func FxClonkRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached second section.
 	if (Distance(target->GetX(), target->GetY(), 635, 450) < 40)
 	{
-		num.var1 = 635;
-		num.var2 = 450;		
+		effect.var1 = 635;
+		effect.var2 = 450;		
 	}
 	// Respawn to new location if reached third section.
 	if (Distance(target->GetX(), target->GetY(), 1370, 545) < 40)
 	{
-		num.var1 = 1370;
-		num.var2 = 545;		
+		effect.var1 = 1370;
+		effect.var2 = 545;		
 	}
 	// Respawn to new location if reached fourth section.
 	if (Distance(target->GetX(), target->GetY(), 1910, 485) < 40)
 	{
-		num.var1 = 1910;
-		num.var2 = 485;		
+		effect.var1 = 1910;
+		effect.var2 = 485;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -303,8 +303,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -322,7 +322,7 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 /*-- Item restoring --*/
 
 // Removes content on death.
-global func FxIntContentRemovalStop(object target, int num, int reason)
+global func FxIntContentRemovalStop(object target, effect, int reason)
 {
 	if (reason != 4)
 		return 1;

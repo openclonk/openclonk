@@ -9,7 +9,7 @@ protected func Construction()
 	AddEffect("RootSurface",this,RandomX(100,120),1,this);
 }
 
-global func FxRootSurfaceTimer(object target, int num, int timer)
+global func FxRootSurfaceTimer(object target, effect, int timer)
 {
 	target->RootSurface();
 	if(timer > 36) return -1;

@@ -59,7 +59,7 @@ protected func InitializePlayer(int plr)
 }
 
 
-global func FxDynamiteEruptionTimer(object nobject, int noum, int timer)
+global func FxDynamiteEruptionTimer(object nobject, effect, int timer)
 {
 	var dyn=CreateObject(Firestone,2460+Random(20),670);
 	dyn->SetYDir(-80);
@@ -67,7 +67,7 @@ global func FxDynamiteEruptionTimer(object nobject, int noum, int timer)
 	dyn->SetRDir(RandomX(-30,30));
 }
 
-global func FxAutoOpenTimer(object pTarget, int noum, int timer)
+global func FxAutoOpenTimer(object pTarget, effect, int timer)
 {
 	if(FindObject(Find_ID(Plane),Find_InRect(0,0,2000,500)))
 	{
@@ -77,7 +77,7 @@ global func FxAutoOpenTimer(object pTarget, int noum, int timer)
 	else return 1;
 }
 
-global func FxSparklingAttentionTimer(object pTarget, int noum, int timer)
+global func FxSparklingAttentionTimer(object pTarget, effect, int timer)
 {
 	CastParticles("Flash",Random(10)+10,60,pTarget->GetX(),pTarget->GetY(),100,120,RGBa(255,235,200,80+Random(36)));
 }
@@ -113,17 +113,17 @@ protected func Decoration()
 	AddEffect("PlaneReset",CreateObject(Plane,3160,315,1),100,10,nil,nil);
 }
 
-global func FxPlaneResetTimer(object target, int num, int time)
+global func FxPlaneResetTimer(object target, effect, int time)
 {
 	if(target->GetX() > 3000 || target->Contents())
 	{
-		num.var0=0;
+		effect.var0=0;
 		return 1;	
 	}
 	else
-		num.var0++;
+		effect.var0++;
 	
-	if(num.var0<4) return 1;
+	if(effect.var0<4) return 1;
 	
 	DrawParticleLine("AirIntake",target->GetX()+3,target->GetY(),3030,315,1,40);
 	DrawParticleLine("MagicSpark",target->GetX()-3,target->GetY(),3030,315,2,40);

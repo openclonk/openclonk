@@ -187,19 +187,19 @@ func HitByWeapon(by, iDamage)
 
 /* main shield effect */
 
-func FxShieldStopControlStart(object target, int num, temp)
+func FxShieldStopControlStart(object target, effect, temp)
 {
 	target->PushActionSpeed("Walk", 84);
 	if(temp) return;
 }
 
-func FxShieldStopControlStop(object target, int num, iCause, temp)
+func FxShieldStopControlStop(object target, effect, iCause, temp)
 {
 	target->PopActionSpeed("Walk");
 	if(temp) return;
 }
 
-func FxShieldStopControlTimer(object target, int num)
+func FxShieldStopControlTimer(object target, effect)
 {
 	// suspend usage if not walking
 	if(!target->IsWalking())
@@ -209,7 +209,7 @@ func FxShieldStopControlTimer(object target, int num)
 	}
 }
 
-func FxShieldStopControlQueryCatchBlow(object target, int num, object obj)
+func FxShieldStopControlQueryCatchBlow(object target, effect, object obj)
 {
 	if (obj->GetOCF() & OCF_Alive) return false;
 	
@@ -247,7 +247,7 @@ func FxShieldStopControlQueryCatchBlow(object target, int num, object obj)
 
 /* Suspend effect */
 
-func FxIntShieldSuspendTimer(object target, int num)
+func FxIntShieldSuspendTimer(object target, effect)
 {
 	if(target->IsWalking() && CanStrikeWithWeapon(target))
 	{

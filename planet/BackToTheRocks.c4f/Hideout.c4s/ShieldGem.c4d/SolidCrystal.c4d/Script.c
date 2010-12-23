@@ -7,7 +7,7 @@ protected func Initialize()
 	return;
 }
 
-func FxSelfdestructionTimer(object target, int noum, int timer)
+func FxSelfdestructionTimer(object target, effect, int timer)
 {
 	CreateParticle("Magic",RandomX(-4,4),RandomX(-4,4),0,0,12+Random(10),target->GetClrModulation());
  	if(timer>175) target->RemoveObject();

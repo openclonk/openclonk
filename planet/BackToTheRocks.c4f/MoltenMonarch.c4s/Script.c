@@ -74,7 +74,7 @@ global func FxRemoveCorpsesTimer()
 
 }
 
-global func FxBlessTheKingTimer(object target, int num, int timer)
+global func FxBlessTheKingTimer(object target, effect, int timer)
 {
 
 
@@ -92,7 +92,7 @@ global func FxBlessTheKingTimer(object target, int num, int timer)
 	CreateParticle("MagicFire2",king->GetX()+RandomX(-4,4),king->GetY()+RandomX(-7,8),RandomX(-6,6),RandomX(-10,3),30+Random(30),RGBa(255,255-Random(100),255-Random(100),10+Random(20)));
 	return 1;
 }
-global func FxDeathByFireTimer(object target, int noum, int timer)
+global func FxDeathByFireTimer(object target, effect, int timer)
 {
 	for(var obj in FindObjects(Find_InRect(55,0,50,50,70),Find_OCF(OCF_Alive)))
 		obj->~Kill();
@@ -107,7 +107,7 @@ global func FxDeathByFireTimer(object target, int noum, int timer)
 	}
 }
 
-global func FxLavaBrickResetTimer(object target, int noum, int timer)
+global func FxLavaBrickResetTimer(object target, effect, int timer)
 {
 	if(target->GetY() < 10)
 	{
@@ -134,7 +134,7 @@ global func PlaceEdges()
 }
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary)
+global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));

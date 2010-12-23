@@ -9,7 +9,7 @@
 
 public func MaxStackCount() { return 2; }
 
-protected func FxIntFlightTimer(object target, int num, int time)
+protected func FxIntFlightTimer(object target, effect, int time)
 {
 	if(fuel<=0)
 		DoFireworks();

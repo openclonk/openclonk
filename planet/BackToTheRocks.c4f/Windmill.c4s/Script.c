@@ -31,7 +31,7 @@ func Initialize()
 	Sound("WindLoop.ogg",true,40,nil,+1);
 }
 
-global func FxBoomAttackTimer(object target, int effect, int time)
+global func FxBoomAttackTimer(object target, effect, int time)
 {
 	var wave = 1+time/35/Boomattack_wave_delay;
 

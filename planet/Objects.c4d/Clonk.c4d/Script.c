@@ -450,14 +450,14 @@ func SetTurnForced(int dir)
 	turn_forced = dir+1;
 }
 
-func FxIntTurnStart(pTarget, iNumber, fTmp)
+func FxIntTurnStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
-	iNumber.var0 = GetDirection();
+	effect.var0 = GetDirection();
 	var iTurnPos = 0;
-	if(iNumber.var0 == COMD_Right) iTurnPos = 1;
+	if(effect.var0 == COMD_Right) iTurnPos = 1;
 
-	iNumber.var3 = 24;
+	effect.var3 = 24;
 //	SetProperty("MeshTransformation", Trans_Rotate(iNumber.var3, 0, 1, 0));
 /*
 	iTurnAction  = PlayAnimation("TurnRoot120", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot120")), Anim_Const(1000));
@@ -466,20 +466,20 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	iTurnAction3 = PlayAnimation("TurnRoot240", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot240")), Anim_Const(1000), iTurnAction2);
 	iTurnKnot2 = iTurnAction3+1;
 */
-	iNumber.var1 = 0;
-	iNumber.var4 = 25;
-	iNumber.var5 = -1;
+	effect.var1 = 0;
+	effect.var4 = 25;
+	effect.var5 = -1;
 	SetTurnType(0);
 }
 
-func FxIntTurnTimer(pTarget, iNumber, iTime)
+func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
-	var iRot = iNumber.var4;
-	if(iNumber.var0 != GetDirection() || iNumber.var5 != iLastTurn)
+	var iRot = effect.var4;
+	if(effect.var0 != GetDirection() || effect.var5 != iLastTurn)
 	{
-		iNumber.var0 = GetDirection();
-		if(iNumber.var0 == COMD_Right)
+		effect.var0 = GetDirection();
+		if(effect.var0 == COMD_Right)
 		{
 			if(iLastTurn == 0)
 				iRot = 180-25;
@@ -494,23 +494,23 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 				iRot = 0;
 		}
 		// Save new ComDir
-		iNumber.var0 = GetDirection();
-		iNumber.var5 = iLastTurn;
+		effect.var0 = GetDirection();
+		effect.var5 = iLastTurn;
 		// Notify effects
 //		ResetAnimationEffects();
 	}
-	if(iRot != iNumber.var3)
+	if(iRot != effect.var3)
 	{
-		iNumber.var3 += BoundBy(iRot-iNumber.var3, -18, 18);
-		SetMeshTransformation(Trans_Rotate(iNumber.var3, 0, 1, 0), 0);
+		effect.var3 += BoundBy(iRot-effect.var3, -18, 18);
+		SetMeshTransformation(Trans_Rotate(effect.var3, 0, 1, 0), 0);
 //		SetProperty("MeshTransformation", Trans_Rotate(iNumber.var3, 0, 1, 0));
 	}
-	iNumber.var4 = iRot;
+	effect.var4 = iRot;
 	return;
 	// Check wether the clonk wants to turn (Not when he wants to stop)
-	if(iNumber.var0 != GetDirection())
+	if(effect.var0 != GetDirection())
 	{
-		if(iNumber.var0 == COMD_Right)
+		if(effect.var0 == COMD_Right)
 		{
 			SetAnimationPosition(iTurnAction,  Anim_Linear(GetAnimationLength("TurnRoot120"), GetAnimationLength("TurnRoot120"), 0, CLONK_TurnTime, ANIM_Hold));
 			SetAnimationPosition(iTurnAction2, Anim_Linear(GetAnimationLength("TurnRoot180"), GetAnimationLength("TurnRoot180"), 0, CLONK_TurnTime, ANIM_Hold));
@@ -523,16 +523,16 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 			SetAnimationPosition(iTurnAction3, Anim_Linear(0, 0, GetAnimationLength("TurnRoot240"), CLONK_TurnTime, ANIM_Hold));
 		}
 		// Save new ComDir
-		iNumber.var0 = GetDirection();
-		iNumber.var1 = CLONK_TurnTime;
+		effect.var0 = GetDirection();
+		effect.var1 = CLONK_TurnTime;
 		// Notify effects
 		ResetAnimationEffects();
 	}
 	// Turning
-	if(iNumber.var1)
+	if(effect.var1)
 	{
-		iNumber.var1--;
-		if(iNumber.var1 == 0)
+		effect.var1--;
+		if(effect.var1 == 0)
 		{
 			SetAnimationPosition(iTurnAction,  Anim_Const(GetAnimationLength("TurnRoot120")*(GetDirection()==COMD_Right)));
 			SetAnimationPosition(iTurnAction2, Anim_Const(GetAnimationLength("TurnRoot180")*(GetDirection()==COMD_Right)));
@@ -711,18 +711,18 @@ public func GetAnimationLength(string animation)
 }
 
 /* Eyes */
-func FxIntEyesTimer(target, number, time)
+func FxIntEyesTimer(target, effect, time)
 {
 	if(!Random(4))
 		AddEffect("IntEyesClosed", this, 10, 6, this);
 }
 
-func FxIntEyesClosedStart(target, number, tmp)
+func FxIntEyesClosedStart(target, effect, tmp)
 {
 	CloseEyes(1);
 }
 
-func FxIntEyesClosedStop(target, number, reason, tmp)
+func FxIntEyesClosedStop(target, effect, reason, tmp)
 {
 	CloseEyes(-1);
 }
@@ -765,13 +765,13 @@ func UpdateBackwardsSpeed()
 	}
 }
 
-func FxIntWalkBackStart(pTarget, iNumber, fTmp, iValue)
+func FxIntWalkBackStart(pTarget, effect, fTmp, iValue)
 {
 	if(iValue == nil) iValue = 84;
 	pTarget->PushActionSpeed("Walk", iValue);
 }
 
-func FxIntWalkBackStop(pTarget, iNumber)
+func FxIntWalkBackStop(pTarget, effect)
 {
 	pTarget->PopActionSpeed("Walk");
 }
@@ -838,24 +838,24 @@ func GetWalkAnimationPosition(string anim, int pos)
 		return Anim_X(pos, 0, GetAnimationLength(anim), 50*dir);
 }
 
-func FxIntWalkStart(pTarget, iNumber, fTmp)
+func FxIntWalkStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
 	// Always start in Stand for now... should maybe fade properly from previous animation instead
 	var anim = "Stand";  //GetCurrentWalkAnimation();
-	iNumber.var0 = anim;
-	iNumber.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	iNumber.var2 = 0;
+	effect.var0 = anim;
+	effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.var2 = 0;
 
-	iNumber.var3 = 0; // Idle counter
-	iNumber.var5 = Random(300); // Random offset for idle time
+	effect.var3 = 0; // Idle counter
+	effect.var5 = Random(300); // Random offset for idle time
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn
 	SetTurnType(0);
 }
 
-func FxIntWalkTimer(pTarget, iNumber)
+func FxIntWalkTimer(pTarget, effect)
 {
 /*	if(iNumber.var4)
 	{
@@ -865,42 +865,42 @@ func FxIntWalkTimer(pTarget, iNumber)
 	}*/
 	if(BackwardsSpeed != nil)
 		UpdateBackwardsSpeed();
-	if(iNumber.var2)
+	if(effect.var2)
 	{
-		iNumber.var2--;
-		if(iNumber.var2 == 0)
-			iNumber.var0 = 0;
+		effect.var2--;
+		if(effect.var2 == 0)
+			effect.var0 = 0;
 	}
 	var anim = GetCurrentWalkAnimation();
-	if(anim != iNumber.var0 && !iNumber.var4)
+	if(anim != effect.var0 && !effect.var4)
 	{
-		iNumber.var0 = anim;
-		iNumber.var3 = 0;
-		iNumber.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		effect.var0 = anim;
+		effect.var3 = 0;
+		effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
 	else if(anim == Clonk_WalkStand && !GetHandAction())
 	{
-		if(!iNumber.var2)
+		if(!effect.var2)
 		{
-			iNumber.var3++;
-			if(iNumber.var3 > 300+iNumber.var5)
+			effect.var3++;
+			if(effect.var3 > 300+effect.var5)
 			{
-				iNumber.var3 = 0;
-				iNumber.var5 = Random(300);
+				effect.var3 = 0;
+				effect.var5 = Random(300);
 				var rand = Random(GetLength(Clonk_IdleActions));
 				PlayAnimation(Clonk_IdleActions[rand][0], 5, Anim_Linear(0, 0, GetAnimationLength(Clonk_IdleActions[rand][0]), Clonk_IdleActions[rand][1], ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-				iNumber.var2 = Clonk_IdleActions[rand][1]-5;
+				effect.var2 = Clonk_IdleActions[rand][1]-5;
 			}
 		}
 	}
 	else
 	{
-		iNumber.var3 = 0;
-		if(iNumber.var2)
+		effect.var3 = 0;
+		if(effect.var2)
 		{
-			iNumber.var0 = 0;
-			iNumber.var2 = 0;
+			effect.var0 = 0;
+			effect.var2 = 0;
 		}
 	}
 /*	// Check wether the clonk wants to turn (Not when he wants to stop)
@@ -928,9 +928,9 @@ func FxIntWalkTimer(pTarget, iNumber)
 	}*/
 }
 
-func FxIntWalkReset(pTarget, iNumber)
+func FxIntWalkReset(pTarget, effect)
 {
-	iNumber.var0 = 0;
+	effect.var0 = 0;
 }
 
 func StartStand()
@@ -1094,12 +1094,12 @@ func StopScale()
 	if(GetAction() != "Scale") RemoveEffect("IntScale", this);
 }
 
-func FxIntScaleStart(target, number, tmp)
+func FxIntScaleStart(target, effect, tmp)
 {
 	if(tmp) return;
 	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	number.var0 = -1;
-	number.var3 = 0;
+	effect.var0 = -1;
+	effect.var3 = 0;
 //	FxIntScaleTimer(target, number, 0);
 }
 
@@ -1120,14 +1120,14 @@ func CheckScaleTop()
 	return true;
 }
 
-func FxIntScaleStart(target, number, tmp)
+func FxIntScaleStart(target, effect, tmp)
 {
 	if(tmp) return;
-	number.var1 = PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	number.var0 = 0;
+	effect.var1 = PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.var0 = 0;
 }
 
-func FxIntScaleTimer(target, number, time)
+func FxIntScaleTimer(target, effect, time)
 {
 	if(GetAction() != "Scale") return;
 	// When the clonk reaches the top play an extra animation
@@ -1217,7 +1217,7 @@ func SetScaleRotation (int r, int xoff, int yoff) {
 	);
 }*/
 
-func FxIntScaleStop(target, number, reason, tmp)
+func FxIntScaleStop(target, effect, reason, tmp)
 {
 	if(tmp) return;
 /*	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
@@ -1268,7 +1268,7 @@ func FxFallEffect(string new_name, object target)
 	if(new_name == "Fall") return -1;
 }
 
-func FxFallTimer(object target, int num, int timer)
+func FxFallTimer(object target, effect, int timer)
 {
 	if(GetYDir() > 55 && GetAction() == "Jump")
 	{
@@ -1316,10 +1316,10 @@ func StopHangle()
 	if(GetAction() != "Hangle") RemoveEffect("IntHangle", this);
 }
 
-func FxIntHangleStart(pTarget, iNumber, fTmp)
+func FxIntHangleStart(pTarget, effect, fTmp)
 {
-	iNumber.var10 = ActMap.Hangle.Speed;
-	PushActionSpeed("Hangle", iNumber.var10);
+	effect.var10 = ActMap.Hangle.Speed;
+	PushActionSpeed("Hangle", effect.var10);
 	if(fTmp) return;
 
 	// EffectVars:
@@ -1329,40 +1329,40 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 	// 7: Whether the HangleStand animation is shown front-facing or back-facing
 	// 10: Previous Hangle physical
 
-	iNumber.var1 = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.var1 = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 }
 
-func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
+func FxIntHangleStop(pTarget, effect, iReasonm, fTmp)
 {
 	PopActionSpeed("Hangle");
 	if(fTmp) return;
 }
 
-func FxIntHangleTimer(pTarget, iNumber, iTime)
+func FxIntHangleTimer(pTarget, effect, iTime)
 {
 	// (TODO: Instead of iNumber.var0 we should be able
 	// to query the current animation... maybe via a to-be-implemented
 	// GetAnimationName() engine function.
 
 	// If we are currently moving
-	if(iNumber.var0)
+	if(effect.var0)
 	{
 		// Use a cosine-shaped movement speed (the clonk only moves when he makes a "stroke")
-		var iSpeed = 50-Cos(GetAnimationPosition(iNumber.var1)/10*360*2/1000, 50);
-		ActMap.Hangle.Speed = iNumber.var10*iSpeed/50;
+		var iSpeed = 50-Cos(GetAnimationPosition(effect.var1)/10*360*2/1000, 50);
+		ActMap.Hangle.Speed = effect.var10*iSpeed/50;
 
 		// Exec movement animation (TODO: Use Anim_Linear?)
-		var position = GetAnimationPosition(iNumber.var1);
-		position += (iNumber.var10*5/48*1000/(14*2));
+		var position = GetAnimationPosition(effect.var1);
+		position += (effect.var10*5/48*1000/(14*2));
 
-		SetAnimationPosition(iNumber.var1, Anim_Const(position % GetAnimationLength("Hangle")));
+		SetAnimationPosition(effect.var1, Anim_Const(position % GetAnimationLength("Hangle")));
 
 		// Continue movement, if the clonk still has momentum
 		if(GetComDir() == COMD_Stop && iSpeed>10)
 		{
 			// Make it stop after the current movement
-			iNumber.var6 = 1;
+			effect.var6 = 1;
 
 			if(GetDir())
 				SetComDir(COMD_Right);
@@ -1370,22 +1370,22 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 				SetComDir(COMD_Left);
 		}
 		// Stop movement if the clonk has lost his momentum
-		else if(iSpeed <= 10 && (GetComDir() == COMD_Stop || iNumber.var6))
+		else if(iSpeed <= 10 && (GetComDir() == COMD_Stop || effect.var6))
 		{
-			iNumber.var6 = 0;
+			effect.var6 = 0;
 			SetComDir(COMD_Stop);
 
 			// and remeber the pose (front or back)
-			if(GetAnimationPosition(iNumber.var1) > 2500 && GetAnimationPosition(iNumber.var1) < 7500)
-				iNumber.var7 = 1;
+			if(GetAnimationPosition(effect.var1) > 2500 && GetAnimationPosition(effect.var1) < 7500)
+				effect.var7 = 1;
 			else
-				iNumber.var7 = 0;
+				effect.var7 = 0;
 
 			// Change to HangleStand animation
-			var begin = 4000*iNumber.var7;
+			var begin = 4000*effect.var7;
 			var end = 2000+begin;
-			iNumber.var1 = PlayAnimation("HangleStand", 5, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-			iNumber.var0 = 0;
+			effect.var1 = PlayAnimation("HangleStand", 5, Anim_Linear(begin, begin, end, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			effect.var0 = 0;
 		}
 	}
 	else
@@ -1394,10 +1394,10 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 		if(GetComDir() != COMD_Stop)
 		{
 			// Switch to move
-			iNumber.var0 = 1;
+			effect.var0 = 1;
 			// start with frame 100 or from the back hanging pose frame 600
-			var begin = 10*(100 + 500*iNumber.var7);
-			iNumber.var1 = PlayAnimation("Hangle", 5, Anim_Const(begin), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			var begin = 10*(100 + 500*effect.var7);
+			effect.var1 = PlayAnimation("Hangle", 5, Anim_Const(begin), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		}
 	}
 }
@@ -1419,12 +1419,12 @@ func StopSwim()
 	SetVertex(1,VTX_Y,-7,2);
 }
 
-func FxIntSwimStart(pTarget, iNumber, fTmp)
+func FxIntSwimStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
 
-	iNumber.var0 = "SwimStand";
-	iNumber.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.var0 = "SwimStand";
+	effect.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 /*
 	for(var i = 0; i < GetLength(Clonk_SwimStates); i++)
 	AnimationPlay(Clonk_SwimStates[i], 0);
@@ -1447,7 +1447,7 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	SetAnimationWeight(iTurnKnot2, Anim_Const(1000));
 }
 
-func FxIntSwimTimer(pTarget, iNumber, iTime)
+func FxIntSwimTimer(pTarget, effect, iTime)
 {
 //	DoEnergy(1); //TODO Remove this! Endless Energy while diving is only for the testers
 
@@ -1463,10 +1463,10 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 			SetAction("Walk");
 			return -1;
 		}
-		if(iNumber.var0 != "SwimStand")
+		if(effect.var0 != "SwimStand")
 		{
-			iNumber.var0 = "SwimStand";
-			iNumber.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			effect.var0 = "SwimStand";
+			effect.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
 		SetAnimationWeight(iTurnKnot1, Anim_Const(0));
 	}
@@ -1474,9 +1474,9 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 	else if(!GBackSemiSolid(0, -5))
 	{
 		// Animation speed by X
-		if(iNumber.var0 != "Swim")
+		if(effect.var0 != "Swim")
 		{
-			iNumber.var0 = "Swim";
+			effect.var0 = "Swim";
 			// TODO: Determine starting position from previous animation
 			PlayAnimation("Swim", 5, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
@@ -1485,28 +1485,28 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 	// Diving
 	else
 	{
-		if(iNumber.var0 != "SwimDive")
+		if(effect.var0 != "SwimDive")
 		{
-			iNumber.var0 = "SwimDive";
+			effect.var0 = "SwimDive";
 			// TODO: Determine starting position from previous animation
-			iNumber.var2 = PlayAnimation("SwimDiveUp", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveUp"), 40, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
-			iNumber.var3 = PlayAnimation("SwimDiveDown", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveDown"), 40, ANIM_Loop), Anim_Const(500), iNumber.var2);
-			iNumber.var1 = iNumber.var3 + 1;
+			effect.var2 = PlayAnimation("SwimDiveUp", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveUp"), 40, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			effect.var3 = PlayAnimation("SwimDiveDown", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveDown"), 40, ANIM_Loop), Anim_Const(500), effect.var2);
+			effect.var1 = effect.var3 + 1;
 
 			// TODO: This should depend on which animation we come from
 			// Guess for SwimStand we should fade from 0, otherwise from 90.
-			iNumber.var4 = 90;
+			effect.var4 = 90;
 		}
 
 		if(iSpeed)
 		{
 			var iRot = Angle(-Abs(GetXDir()), GetYDir());
-			iNumber.var4 += BoundBy(iRot - iNumber.var4, -4, 4);
+			effect.var4 += BoundBy(iRot - effect.var4, -4, 4);
 		}
 
 		// TODO: Shouldn't weight go by sin^2 or cos^2 instead of linear in angle?
-		var weight = 1000*iNumber.var4/180;
-		SetAnimationWeight(iNumber.var1, Anim_Const(1000 - weight));
+		var weight = 1000*effect.var4/180;
+		SetAnimationWeight(effect.var1, Anim_Const(1000 - weight));
 		SetAnimationWeight(iTurnKnot1, Anim_Const(1000 - weight));
 	}
 }
@@ -1603,10 +1603,10 @@ func StopDigging()
 	if(GetAction() != "Dig") RemoveEffect("IntDig", this);
 }
 
-func FxIntDigStart(pTarget, iNumber, fTmp)
+func FxIntDigStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
-	iNumber.var1 = PlayAnimation("Dig", 5, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.var1 = PlayAnimation("Dig", 5, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	// Update carried items
 	UpdateAttach();
@@ -1618,7 +1618,7 @@ func FxIntDigStart(pTarget, iNumber, fTmp)
 	SetTurnType(0);
 }
 
-func FxIntDigTimer(pTarget, iNumber, iTime)
+func FxIntDigTimer(pTarget, effect, iTime)
 {
 	if(iTime % 36 == 0)
 	{
@@ -1667,28 +1667,28 @@ public func ControlThrow(object target, int x, int y)
 	return false;
 }
 
-func FxIntThrowStart(target, number, tmp, targetobj, throwAngle)
+func FxIntThrowStart(target, effect, tmp, targetobj, throwAngle)
 {
 	var iThrowTime = 16;
 	if(tmp) return;
 	PlayAnimation("ThrowArms", 10, Anim_Linear(0, 0, GetAnimationLength("ThrowArms"), iThrowTime), Anim_Const(1000));
-	number.var0 = targetobj;
-	number.var1 = throwAngle;
+	effect.var0 = targetobj;
+	effect.var1 = throwAngle;
 }
 
-func FxIntThrowTimer(target, number, time)
+func FxIntThrowTimer(target, effect, time)
 {
 	// cancel throw if object does not exist anymore
-	if(!number.var0)
+	if(!effect.var0)
 		return -1;
 	var iThrowTime = 16;
 	if(time == iThrowTime*8/15)
-		DoThrow(number.var0, number.var1);
+		DoThrow(effect.var0, effect.var1);
 	if(time >= iThrowTime)
 		return -1;
 }
 
-func FxIntThrowStop(target, number, reason, tmp)
+func FxIntThrowStop(target, effect, reason, tmp)
 {
 	if(tmp) return;
 	StopAnimation(GetRootAnimation(10));
@@ -1744,7 +1744,7 @@ public func StopRiding()
 		RemoveEffect("IntRiding", this);
 }
 
-func FxIntRidingStart(pTarget, iNumber, fTmp)
+func FxIntRidingStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
 	var pMount = GetActionTarget();
@@ -1753,20 +1753,20 @@ func FxIntRidingStart(pTarget, iNumber, fTmp)
 	{
 		// if mount has returned true we should be attached
 		// So make the clonk object invisible
-		iNumber.var0 = GetProperty("Visibility");
+		effect.var0 = GetProperty("Visibility");
 		SetProperty("Visibility", VIS_None);
 	}
-	else iNumber.var0 = -1;
-	iNumber.var1 = pMount;
+	else effect.var0 = -1;
+	effect.var1 = pMount;
 }
 
-func FxIntRidingStop(pTarget, iNumber, fTmp)
+func FxIntRidingStop(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
-	if(iNumber.var0 != -1)
-		SetProperty("Visibility", iNumber.var0);
+	if(effect.var0 != -1)
+		SetProperty("Visibility", effect.var0);
 
-	var pMount = iNumber.var1;
+	var pMount = effect.var1;
 	if(pMount)
 		pMount->~OnUnmount(this);
 }
@@ -1787,7 +1787,7 @@ func OnMaterialChanged(int new, int old)
 		RemoveEffect("Bubble", this);
 }
 
-func FxBubbleTimer(pTarget, iNumber, iTime)
+func FxBubbleTimer(pTarget, effect, iTime)
 {
 	if(GBackLiquid(0,-5)) Bubble();
 }

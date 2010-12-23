@@ -39,20 +39,20 @@ func Hit()
 	AddEffect("GemShieldCreation",nil,100,1,nil,nil,GetX(),GetY(),e);
 	RemoveObject();
 }
-global func FxGemShieldCreationStart(object target, int num, int temporary, x, y, e)
+global func FxGemShieldCreationStart(object target, effect, int temporary, x, y, e)
 {
 	if (temporary) 
 		return 1;
-	num.var0=x;
-	num.var1=y;
-	num.var2=e;	
+	effect.var0=x;
+	effect.var1=y;
+	effect.var2=e;	
 }
-global func FxGemShieldCreationTimer(object target, int num, int time)
+global func FxGemShieldCreationTimer(object target, effect, int time)
 {
 	if(time > 26) return -1;
-	var x=num.var0;
-	var y=num.var1;
-	var e=num.var2;
+	var x=effect.var0;
+	var y=effect.var1;
+	var e=effect.var2;
 	var clr=RGB(122+Random(20),18+Random(10),90+Random(20));
 	if(e)clr=RGB(190+Random(10),0,20+Random(20));
 	var shield=CreateObject(CrystalShield,x+Sin(time*7,35),y+Cos(time*7,35));

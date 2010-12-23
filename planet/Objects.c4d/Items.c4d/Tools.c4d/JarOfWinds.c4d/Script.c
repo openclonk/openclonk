@@ -13,7 +13,7 @@ local sound;
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 600; }
 
-public func FxJarReloadTimer(object target, int effect, int time)
+public func FxJarReloadTimer(object target, effect, int time)
 {
 	target->Load();
 }

@@ -25,7 +25,7 @@ protected func Construction()
 
 protected func MaxContentsCount() {	return 12;	}
 
-public func FxUpdateTimer(object target, int num, int timer)
+public func FxUpdateTimer(object target, effect, int timer)
 {
 	if(ContentsCount() != oldcount)
 		UpdatePicture();
@@ -66,7 +66,7 @@ public func Incineration()
 	AddEffect("Fuse",this,1,1,this);
 }
 
-public func FxFuseTimer(object target, int num, int timer)
+public func FxFuseTimer(object target, effect, int timer)
 {
 	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
 	if(timer > 90)

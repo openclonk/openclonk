@@ -48,19 +48,19 @@ private func IsClosed()
 }
 
 // Automatically open for team stored in effect var 0.
-protected func FxAutoControlStart(object target, int num, int temporary, int team)
+protected func FxAutoControlStart(object target, effect, int temporary, int team)
 {
 	if (temporary == 0)
-	num.var0 =  team;
+	effect.var0 =  team;
 	return 1;
 }
 
-protected func FxAutoControlTimer(object target, int num, int time)
+protected func FxAutoControlTimer(object target, effect, int time)
 {
 	var d = 0;
 	if (IsOpen())
 		d = 30;
-	var team = num.var0;
+	var team = effect.var0;
 	var open_door = false;
 	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
 	{

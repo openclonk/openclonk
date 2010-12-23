@@ -323,7 +323,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	UpdateSelectionStatus();
 }
 
-public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
+public func FxIntRemoveGuardStop(object target, effect, int reason, bool temp)
 {
 	if(reason == 3)
 		if(target == myobject)

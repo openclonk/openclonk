@@ -130,23 +130,23 @@ private func GuideMessage(int show_index)
 // Effect exists as long as the message is shown.
 // Message index is stored in EffectVar 0.
 // For messages with @ in front, EffectVar 1 is true.
-protected func FxMessageShownStart(object target, int num, int temporary)
+protected func FxMessageShownStart(object target, effect, int temporary)
 {
 	if (temporary == 0)
 		GameCall("OnGuideMessageShown", target->GetOwner(), index);
 	return 1;
 }
 
-protected func FxMessageShownTimer(object target, int num, int time)
+protected func FxMessageShownTimer(object target, effect, int time)
 {
 	// Delete effect if time has passed, i.e. message has disappeared.
 	// But only if it is not a message of infinite length, with @ in front.
-	if (time && !num.var1)
+	if (time && !effect.var1)
 		return -1;
 	return 1;
 }
 
-protected func FxMessageShownStop(object target, int num, int reason, bool temporary)
+protected func FxMessageShownStop(object target, effect, int reason, bool temporary)
 {
 	if (!temporary)
 		GameCall("OnGuideMessageRemoved", target->GetOwner(), index);
@@ -154,7 +154,7 @@ protected func FxMessageShownStop(object target, int num, int reason, bool tempo
 }
 
 // Effect to display the player notification for some time.
-protected func FxNotifyPlayerStart(object target, int num, int temporary)
+protected func FxNotifyPlayerStart(object target, effect, int temporary)
 {
 	// Display notifier.
 	SetGraphics("SpeakBubble", GetID(), 1, GFXOV_MODE_Base);
@@ -162,7 +162,7 @@ protected func FxNotifyPlayerStart(object target, int num, int temporary)
 	return 1;
 }
 
-protected func FxNotifyPlayerTimer(object target, int num, int time)
+protected func FxNotifyPlayerTimer(object target, effect, int time)
 {
 	// Delete effect if time has passed.
 	if (time)
@@ -170,7 +170,7 @@ protected func FxNotifyPlayerTimer(object target, int num, int time)
 	return 1;
 }
 
-protected func FxNotifyPlayerStop(object target, int num, int reason, bool temporary)
+protected func FxNotifyPlayerStop(object target, effect, int reason, bool temporary)
 {
 	// Remove notifier.
 	SetGraphics(nil, nil, 1);

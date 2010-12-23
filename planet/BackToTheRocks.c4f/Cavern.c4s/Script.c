@@ -98,20 +98,20 @@ protected func GivePlrBonus(int plr, object cp)
 }
 
 // Snow effect.
-global func FxIntSnowStart(object target, int fxnum)
+global func FxIntSnowStart(object target, effect)
 {
-	fxnum.var0 = 0;
+	effect.var0 = 0;
 	return FX_OK;
 }
 
-global func FxIntSnowTimer(object target, int fxnum)
+global func FxIntSnowTimer(object target, effect)
 {
-	fxnum.var0 += RandomX(-10, 12);
-	fxnum.var0 %= LandscapeWidth();
-	if (GetMaterial(fxnum.var0, 1) != Material("Sky"))
+	effect.var0 += RandomX(-10, 12);
+	effect.var0 %= LandscapeWidth();
+	if (GetMaterial(effect.var0, 1) != Material("Sky"))
 		return FX_OK;
 	if (Random(3))
 		return FX_OK;
-	CastPXS("Snow", RandomX(8, 16), 10, fxnum.var0, 1, RandomX(160, 200));
+	CastPXS("Snow", RandomX(8, 16), 10, effect.var0, 1, RandomX(160, 200));
 	return FX_OK;
 }

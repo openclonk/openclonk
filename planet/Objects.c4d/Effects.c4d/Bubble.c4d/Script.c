@@ -18,7 +18,7 @@ protected func Initialize()
 	return;
 }
 
-public func FxMoveTimer(object target, int num, int time)
+public func FxMoveTimer(object target, effect, int time)
 {
 	if (!GBackLiquid(0, -3) && !GetEffect("Fade", this) || time > 108)
 		AddEffect("Fade", target, 100, 1, target);
@@ -44,17 +44,17 @@ public func FxMoveTimer(object target, int num, int time)
 	return 1;
 }
 
-public func FxFadeStart(object target, int num, int temporary)
+public func FxFadeStart(object target, effect, int temporary)
 {
 	// Store alpha here
 	if (temporary == 0)
-		num.var0 = 255;
+		effect.var0 = 255;
 	return 1;
 }
 
-public func FxFadeTimer(object target, int num)
+public func FxFadeTimer(object target, effect)
 {
-	var alpha = num.var0;
+	var alpha = effect.var0;
 	if (alpha <= 0)
 	{
 		RemoveEffect("Move", this);
@@ -62,6 +62,6 @@ public func FxFadeTimer(object target, int num)
 		return -1;
 	}
 	SetClrModulation(RGBa(255, 255, 255, alpha));
-	num.var0 = alpha - 5;
+	effect.var0 = alpha - 5;
 	return 1;
 }

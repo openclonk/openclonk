@@ -95,13 +95,13 @@ public func Hit()
 }
 
 // rotate arrow according to speed
-public func FxInFlightStart(object target, int effect, int temp)
+public func FxInFlightStart(object target, effect, int temp)
 {
 	if(temp) return;
 	effect.var0 = target->GetX();
 	effect.var1 = target->GetY();
 }
-public func FxInFlightTimer(object target, int effect, int time)
+public func FxInFlightTimer(object target, effect, int time)
 {
 	var oldx = effect.var0;
 	var oldy = effect.var1;

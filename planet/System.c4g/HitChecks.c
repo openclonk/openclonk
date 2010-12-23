@@ -17,7 +17,7 @@
 // 4 - live? If true, the shooter can be hit by the projectile
 // 5 - never hit the shooter. True or false
 
-global func FxHitCheckStart(object target, int effect, int temp, object by_obj, bool never_shooter)
+global func FxHitCheckStart(object target, effect, int temp, object by_obj, bool never_shooter)
 {
 	if (temp)
 		return;
@@ -37,7 +37,7 @@ global func FxHitCheckStart(object target, int effect, int temp, object by_obj, 
 	return;
 }
 
-global func FxHitCheckStop(object target, int effect, int reason, bool temp)
+global func FxHitCheckStop(object target, effect, int reason, bool temp)
 {
 	if (temp)
 		return;
@@ -46,7 +46,7 @@ global func FxHitCheckStop(object target, int effect, int reason, bool temp)
 	return;
 }
 
-global func FxHitCheckDoCheck(object target, int effect)
+global func FxHitCheckDoCheck(object target, effect)
 {
 	var obj;
 	// rather search in front of the projectile, since a hit might delete the effect,
@@ -100,7 +100,7 @@ global func FxHitCheckEffect(string newname)
 	return;
 }
 
-global func FxHitCheckAdd(object target, int effect, string neweffectname, int newtimer, by_obj, never_shooter)
+global func FxHitCheckAdd(object target, effect, string neweffectname, int newtimer, by_obj, never_shooter)
 {
 	effect.var0 = target->GetX();
 	effect.var1 = target->GetY();
@@ -114,7 +114,7 @@ global func FxHitCheckAdd(object target, int effect, string neweffectname, int n
 	return;
 }
 
-global func FxHitCheckTimer(object target, int effect, int time)
+global func FxHitCheckTimer(object target, effect, int time)
 {
 	EffectCall(target, effect, "DoCheck");
 	// It could be that it hit something and removed itself. thus check if target is still there.

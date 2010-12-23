@@ -11,7 +11,7 @@ local rope; // The rope is the connection between the hook
 local clonk;
 local pull;
 local grappler;
-local effect;
+local fx_hook;
 
 public func ArrowStrength() { return 10; }
 
@@ -92,13 +92,13 @@ public func StartPull()
 {
 	pull = 1;
 
-	effect = AddEffect("IntGrappleControl", clonk, 1, 1, this);
+	fx_hook = AddEffect("IntGrappleControl", clonk, 1, 1, this);
 	if(clonk->GetAction() == "Jump")
 	{
 		rope->AdjustClonkMovement();
 		rope->ConnectPull();
-		effect.var5 = 1;
-		effect.var6 = 10;
+		fx_hook.var5 = 1;
+		fx_hook.var6 = 10;
 	}
 }
 
@@ -108,13 +108,13 @@ public func Hit(x, y)
 }
 
 // rotate arrow according to speed
-public func FxInFlightStart(object target, int effect, int temp)
+public func FxInFlightStart(object target, effect, int temp)
 {
 	if(temp) return;
 	effect.var0 = target->GetX();
 	effect.var1 = target->GetY();
 }
-public func FxInFlightTimer(object target, int effect, int time)
+public func FxInFlightTimer(object target, effect, int time)
 {
 	var oldx = effect.var0;
 	var oldy = effect.var1;
@@ -152,7 +152,7 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
-	RemoveEffect(0, clonk, effect);
+	RemoveEffect(0, clonk, fx_hook);
 	RemoveObject();
 	return;
 }
@@ -162,7 +162,7 @@ local Name = "$Name$";
 
 /*-- Grapple rope controls --*/
 
-public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,strength, repeat, release)
+public func FxIntGrappleControlControl(object target, fxnum, ctrl, x,y,strength, repeat, release)
 {
 	// Cancel this effect if clonk is now attached to something
 	if (target->GetProcedure() == "ATTACH") {
@@ -198,7 +198,7 @@ public func FxIntGrappleControlControl(object target, int fxnum, ctrl, x,y,stren
 local iSwingAnimation;
 
 // Effect for smooth movement.
-public func FxIntGrappleControlTimer(object target, int fxnum, int time)
+public func FxIntGrappleControlTimer(object target, fxnum, int time)
 {
 	// Cancel this effect if clonk is now attached to something
 	// this check is also in the timer because on a high control rate
@@ -304,7 +304,7 @@ public func FxIntGrappleControlTimer(object target, int fxnum, int time)
 	return FX_OK;
 }
 
-public func FxIntGrappleControlStop(object target, int fxnum, int reason, int tmp)
+public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 {
 	if(tmp) return;
 	target->SetTurnType(0);

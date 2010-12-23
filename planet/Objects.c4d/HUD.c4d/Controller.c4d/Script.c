@@ -184,18 +184,18 @@ public func FxIntSearchInteractionObjectsEffect(string newname, object target)
 		return -1;
 }
 
-public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt)
+public func FxIntSearchInteractionObjectsStart(object target, effect, int temp, startAt)
 {
 	if(temp != 0) return;
-	num.var0 = startAt;
-	EffectCall(target,num,"Timer",target,num,0);
+	effect.var0 = startAt;
+	EffectCall(target,effect,"Timer",target,effect,0);
 }
 
-public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
+public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 {
 
 	// find vehicles & structures & script interactables
-	var startAt = num.var0;
+	var startAt = effect.var0;
 	var i = startAt;
 	
 	var vehicles = CreateArray();

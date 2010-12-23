@@ -185,28 +185,28 @@ func Entrance()
 	SetVertex(2,VTX_Y,0,1);
 }
 
-protected func FxFlightStart(object pTarget, int iEffectNumber)
+protected func FxFlightStart(object pTarget, effect)
 {
 	pTarget->SetProperty("Collectible",0);
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
-protected func FxFlightTimer(object pTarget,int iEffectNumber, int iEffectTime)
+protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	//Using Newton's arrow rotation. This would be much easier if we had tan^-1 :(
-	var oldx = iEffectNumber.var0;
-	var oldy = iEffectNumber.var1;
+	var oldx = effect.var0;
+	var oldy = effect.var1;
 	var newx = GetX();
 	var newy = GetY();
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	pTarget->SetRDir(anglediff/2);
-	iEffectNumber.var0 = newx;
-	iEffectNumber.var1 = newy;
+	effect.var0 = newx;
+	effect.var1 = newy;
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
-protected func FxFlightStop(object pTarget,int iEffectNumber)
+protected func FxFlightStop(object pTarget, effect)
 {
 	pTarget->SetProperty("Collectible", 1);
 }

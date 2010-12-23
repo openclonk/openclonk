@@ -40,14 +40,14 @@ public func AutoProductionFailed()
 	return 1;
 }
 
-public func FxIntNotAvailableStart(target, number)
+public func FxIntNotAvailableStart(target, effect)
 {
-	number.var0 = this;
+	effect.var0 = this;
 }
 
-public func FxIntNotAvailableTimer(target, number)
+public func FxIntNotAvailableTimer(target, effect)
 {
-	var clonk = number.var0;
+	var clonk = effect.var0;
 	// Check wether the clonk still wants to get the object
 	for (var i = 0; clonk->GetCommand(0,i); ++i)
 	{

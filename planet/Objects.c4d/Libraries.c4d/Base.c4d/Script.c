@@ -114,7 +114,7 @@ public func MakeBase(bool fRemoveBase)
 
 // ---------- Healing, Extinguishing and Autosell -----------
 
-func FxIntBaseTimer(pThis, iEffect, iTime)
+func FxIntBaseTimer(pThis, effect, iTime)
 {
 	var pObj;
 	// Can this base heal? Then look for clonks that need some
@@ -146,7 +146,7 @@ func FxIntBaseTimer(pThis, iEffect, iTime)
 	}
 }
 
-func FxIntBaseHealTimer(pClonk, iEffect)
+func FxIntBaseHealTimer(pClonk, effect)
 {
 	// The clonk has left the base? Stop!
 	if(pClonk->Contained() != this) return -1;

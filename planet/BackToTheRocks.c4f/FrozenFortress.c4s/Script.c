@@ -61,9 +61,9 @@ protected func Initialize()
 
 protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
 
-global func FxGeysirExplosionTimer(object target, int num)
+global func FxGeysirExplosionTimer(object target, effect)
 {
-	num.var0++;
+	effect.var0++;
 	
 	if(Random(2))
 	{
@@ -76,10 +76,10 @@ global func FxGeysirExplosionTimer(object target, int num)
 		}
 		Bubble(1,x,y);
 	}
-	if(num.var0>1900 && num.var0<2030)
+	if(effect.var0>1900 && effect.var0<2030)
 	{
 
-		for(var i=0; i<(-(1900-num.var0)); i+=10 )
+		for(var i=0; i<(-(1900-effect.var0)); i+=10 )
 		{
 			var x=600+Random(300);
 			var y=250+Random(200);
@@ -91,16 +91,16 @@ global func FxGeysirExplosionTimer(object target, int num)
 			Bubble(1,x,y);
 		}
 	}
-	if(num.var0>2000)
+	if(effect.var0>2000)
 	{
 		var x=LandscapeWidth()/2;
 		var y=280;
 		while(!GBackLiquid(x,y)) y++;
 		y-=3;
-		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60))-Sin(num*10,60));
-		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50))-Sin(num*10,60));
+		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
+		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));
 		CreateParticle("Air",x+RandomX(-6,6),y-Random(3),-RandomX(-15,15),RandomX(-86,-2),100+Random(130));
-		if(num.var0>2072) num.var0=0;
+		if(effect.var0>2072) effect.var0=0;
 		for(var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
 		{
 			obj->SetYDir(Max(obj->GetYDir()-15,-50));
@@ -110,14 +110,14 @@ global func FxGeysirExplosionTimer(object target, int num)
 	}
 }
 
-global func FxSnowyWinterTimer(object target, int num, int time)
+global func FxSnowyWinterTimer(object target, effect, int time)
 {
 	if(time%1200 == 100 ) 
 	{
 		var add=RandomX(-2,2);
-		num.var0=BoundBy(num.var0+add,1,5);	
+		effect.var0=BoundBy(effect.var0+add,1,5);	
 	}
-	for(var i=0; i<(num.var0); i++)
+	for(var i=0; i<(effect.var0); i++)
 	{
 		InsertMaterial(Material("Snow"),RandomX(300,LandscapeWidth()-300),1,RandomX(-10,10),10);
 		ExtractLiquid(LandscapeWidth()/2,295);
@@ -177,13 +177,13 @@ func RelaunchWeaponList() { return [Musket, Sword, Javelin,  FrostboltScroll, Sh
 
 /*-- Chest filler effects --*/
 
-global func FxFillBaseChestStart(object target, int num, int temporary, bool supply)
+global func FxFillBaseChestStart(object target, effect, int temporary, bool supply)
 {
 	if (temporary) 
 		return 1;
 		
-	num.var0=supply;
-	if(num.var0) 
+	effect.var0=supply;
+	if(effect.var0) 
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
 	else
 		var w_list = [Bow, Shield, Sword, Javelin, Musket, FrostboltScroll];
@@ -191,11 +191,11 @@ global func FxFillBaseChestStart(object target, int num, int temporary, bool sup
 		target->CreateChestContents(w_list[i]);
 	return 1;
 }
-global func FxFillBaseChestTimer(object target, int num)
+global func FxFillBaseChestTimer(object target, effect)
 {
 	var maxcount = [];
 	
-	if(num.var0) 
+	if(effect.var0) 
 	{
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder];
 		var maxcount = [2,2,1,2,1];
@@ -224,7 +224,7 @@ global func FxFillBaseChestTimer(object target, int num)
 }
 
 
-global func FxFillOtherChestStart(object target, int num, int temporary)
+global func FxFillOtherChestStart(object target, effect, int temporary)
 {
 	if (temporary) 
 		return 1;

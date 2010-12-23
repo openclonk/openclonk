@@ -81,7 +81,7 @@ func SetTurnType  () { return _inherited(...); }
 func SetTurnForced() { return _inherited(...); }
 func SetBackwardsSpeed() { return _inherited(...); }
 
-func FxIntAimCheckProcedureStart(target, number, tmp)
+func FxIntAimCheckProcedureStart(target, effect, tmp)
 {
 	if(tmp) return;
 	aim_pause = 0;
@@ -150,7 +150,7 @@ func FxIntAimCheckProcedureTimer()
 	}
 }
 
-func FxIntAimCheckProcedureStop(target, number, reason, tmp)
+func FxIntAimCheckProcedureStop(target, effect, reason, tmp)
 {
 	if(tmp) return;
 	if(reason == 4)
@@ -252,7 +252,7 @@ public func StartAim(object weapon, int angle)
 	AddEffect("IntAim", this, 1, 1, this);
 }
 
-func FxIntAimTimer(target, number, time)
+func FxIntAimTimer(target, effect, time)
 {
 	var angle, delta_angle, length;
 	var speed = aim_set["AimSpeed"];;
@@ -435,13 +435,13 @@ public func ResetHands(bool pause)
 
 /* +++++++++++ Slow walk +++++++++++ */
 
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
+func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
 	if(iValue == nil) iValue = 84;
 	pTarget->PushActionSpeed("Walk", iValue);
 }
 
-func FxIntWalkSlowStop(pTarget, iNumber)
+func FxIntWalkSlowStop(pTarget, effect)
 {
 	pTarget->PopActionSpeed("Walk");
 }

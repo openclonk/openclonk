@@ -40,19 +40,19 @@ func Hit()
 	AddEffect("GemSlowField",nil,100,1,nil,nil,GetX(),GetY(),e);
 	RemoveObject();
 }
-global func FxGemSlowFieldStart(object target, int num, int temporary, x, y, e)
+global func FxGemSlowFieldStart(object target, effect, int temporary, x, y, e)
 {
 	if (temporary) 
 		return 1;
-	num.var0=x;
-	num.var1=y;
-	num.var2=e;	
+	effect.var0=x;
+	effect.var1=y;
+	effect.var2=e;	
 }
-global func FxGemSlowFieldTimer(object target, int num, int time)
+global func FxGemSlowFieldTimer(object target, effect, int time)
 {
-	var x=num.var0;
-	var y=num.var1;
-	var e=num.var2;
+	var x=effect.var0;
+	var y=effect.var1;
+	var e=effect.var2;
 	if(time > (150)) return -1;
 	for(var i=0; i<40; i++)
 	{

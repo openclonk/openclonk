@@ -32,7 +32,7 @@ protected func Initialize()
 	return;
 }
 
-global func FxRefillerTimer(object pTarget, int noum, int timer)
+global func FxRefillerTimer(object pTarget, effect, int timer)
 {
 	for(var i=0; i<10; i++) if(!GBackLiquid(100,315)) InsertMaterial(Material("Water"),135,385);
 }
@@ -64,7 +64,7 @@ protected func OnPlayerRelaunch(int plr)
 
 
 // Refill/fill chests.
-global func FxIntFillChestsStart(object target, int num, int temporary)
+global func FxIntFillChestsStart(object target, effect, int temporary)
 {
 	if(temporary) return 1;
 	var chests = FindObjects(Find_ID(Chest));

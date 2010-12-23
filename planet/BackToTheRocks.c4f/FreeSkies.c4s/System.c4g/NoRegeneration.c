@@ -2,7 +2,7 @@
 
 #appendto KingOfTheHill_Location
 
-func FxKOTHKingTimer(target, effect_time)
+func FxKOTHKingTimer(target, effect)
 {
 	//target->DoEnergy(1);
 }

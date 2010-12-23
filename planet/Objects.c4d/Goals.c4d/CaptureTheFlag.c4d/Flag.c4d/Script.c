@@ -40,7 +40,7 @@ protected func Initialize()
 }
 
 // Handles automatic picking up of the flag.
-protected func FxFlagAutoPickupTimer(object target, int num)
+protected func FxFlagAutoPickupTimer(object target, effect)
 {
 	// Do nothing if flag is being carried.
 	if (target->GetAction() == "AttachCarrier")
@@ -75,35 +75,35 @@ protected func FxFlagAutoPickupTimer(object target, int num)
 // Return delay for friendly team after flag has been dropped.
 protected func FxFlagReturnDelayTimer() { return -1; }
 
-protected func FxFlagCarriedStart(object target, int num, int temp)
+protected func FxFlagCarriedStart(object target, effect, int temp)
 {
-	ReducePhysicals(target, num);
+	ReducePhysicals(target, effect);
 	if (temp == 0)
 	{
-		num.var1=target->GetX();
-		num.var2=target->GetY();
+		effect.var1=target->GetX();
+		effect.var2=target->GetY();
 		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
-		num.var0 = target->AttachMesh(this, "pos_back1", "main", trans);
+		effect.var0 = target->AttachMesh(this, "pos_back1", "main", trans);
 		this.Visibility = VIS_None;
 	}
 	return 1;
 }
 
 // Checks whether the carrier has reached its base.
-protected func FxFlagCarriedTimer(object target, int num)
+protected func FxFlagCarriedTimer(object target, effect)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
-	var x = num.var1;
-	var y = num.var2;
+	var x = effect.var1;
+	var y = effect.var2;
 	var newx = target->GetX();
 	var newy = target->GetY();
 	// Draw partical line following the flag.
 	if (Distance(x, y, newx, newy) > 2)
 	{
 		DrawParticleLine("FlagTracer",AbsX(x),AbsY(y),AbsX(newx),AbsY(newy),4,30-Random(4),GetTeamColor(this->GetTeam()) | 255 <<24,GetTeamColor(this->GetTeam()) | 255 <<24);
-		num.var1=newx;
-		num.var2=newy;
+		effect.var1=newx;
+		effect.var2=newy;
 	}
 	// Search for nearby base to drop flag and score a point.
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
@@ -119,10 +119,10 @@ protected func FxFlagCarriedTimer(object target, int num)
 	return 1;
 }
 
-protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
+protected func FxFlagCarriedStop(object target, effect, int reason, bool temp)
 {
 	if (target)
-		ResetPhysicals(target, num);
+		ResetPhysicals(target, effect);
 	if (temp)
 		return 1;
 	this.Visibility = VIS_All;
@@ -133,7 +133,7 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 	}
 	if (target)
 	{	
-		target->DetachMesh(num.var0);
+		target->DetachMesh(effect.var0);
 	}
 	// Prevent beaming flag for 3 seconds.
 	AddEffect("FlagReturnDelay", this, 100, 36 * 3, this);
@@ -141,9 +141,9 @@ protected func FxFlagCarriedStop(object target, int num, int reason, bool temp)
 }
 
 // Reduces physicals by 80%.
-private func ReducePhysicals(object clonk, int num)
+private func ReducePhysicals(object clonk, effect)
 {
-	num.var3 = clonk.JumpSpeed;
+	effect.var3 = clonk.JumpSpeed;
 	clonk.JumpSpeed = clonk.JumpSpeed * 8 / 10;
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
@@ -152,9 +152,9 @@ private func ReducePhysicals(object clonk, int num)
 }
 
 // Resets physicals.
-private func ResetPhysicals(object clonk, int num)
+private func ResetPhysicals(object clonk, effect)
 {
-	clonk.JumpSpeed = num.var3;
+	clonk.JumpSpeed = effect.var3;
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PopActionSpeed(phys[i]);

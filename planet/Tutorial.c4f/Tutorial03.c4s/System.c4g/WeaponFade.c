@@ -24,7 +24,7 @@ public func HitObject(object obj)
 	return _inherited(obj, ...);
 }
 
-protected func FxFadeTimer(object target, int num, int time)
+protected func FxFadeTimer(object target, effect, int time)
 {
 	if (Contained() != nil)
 	{
@@ -48,7 +48,7 @@ protected func FxFadeTimer(object target, int num, int time)
 }
 
 // Only one fade effect allowed.
-protected func FxFadeEffect(string new_name, object target, int num, int new_num)
+protected func FxFadeEffect(string new_name, object target)
 {
 	if (new_name == "Fade")
 		return -1;

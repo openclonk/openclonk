@@ -35,13 +35,13 @@ public func CanStrikeWithWeapon(clonk)
 	return true;
 }
 
-func FxDelayTranslateVelocityStart(pTarget, iEffectNumber, temp, p1)
+func FxDelayTranslateVelocityStart(pTarget, effect, temp, p1)
 {
 	if(temp) return;
-	iEffectNumber.var0 = p1;
+	effect.var0 = p1;
 }
 
-func FxDelayTranslateVelocityTimer(pTarget, iEffectNumber, iEffectTime)
+func FxDelayTranslateVelocityTimer(pTarget, effect, iEffectTime)
 {
 	//if(iEffectNumber.var0)
 	//	if(iEffectTime > iEffectNumber.var0) return -1;
@@ -49,7 +49,7 @@ func FxDelayTranslateVelocityTimer(pTarget, iEffectNumber, iEffectTime)
 	return 1;
 }
 
-func FxDelayTranslateVelocityStop(pTarget, iEffectNumber, reason, temp)
+func FxDelayTranslateVelocityStop(pTarget, effect, reason, temp)
 {
 	if(temp) return;
 	if(!(pTarget->GetContact(-1) & CNAT_Bottom))
@@ -57,17 +57,17 @@ func FxDelayTranslateVelocityStop(pTarget, iEffectNumber, reason, temp)
 		pTarget->SetSpeed(pTarget->GetXDir()/3, pTarget->GetYDir()/3);
 }
 
-func FxIntWeaponChargeStart(pTarget, iEffectNumber, iTemp, length)
+func FxIntWeaponChargeStart(pTarget, effect, iTemp, length)
 {
 	if(iTemp) return;
 	
 	// saved velocity
-	iEffectNumber.var0 = 0;
+	effect.var0 = 0;
 	// save length
-	iEffectNumber.var2 = length;
+	effect.var2 = length;
 }
 
-func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
+func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 {
 	// check whether the Clonk is still striking
 	/*if(this->GetChargeType() == L_WN_straight)
@@ -81,7 +81,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 	}*/
 	if(this->Contained() != pTarget) return -1;
 	if(!pTarget->~IsWalking() && !pTarget->~IsJumping()) return -1;
-	var strikeTime=iEffectNumber.var2;
+	var strikeTime=effect.var2;
 	if(strikeTime != -1 && iEffectTime > strikeTime)
 	{
 		this->~WeaponStrikeExpired();
@@ -149,7 +149,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 		}*/
 }
 
-func FxIntWeaponChargeStop(pTarget, iEffectNumber, iReason, iTemp)
+func FxIntWeaponChargeStop(pTarget, effect, iReason, iTemp)
 {
 	if(iTemp) return;
 	if(!pTarget) return;
@@ -162,38 +162,38 @@ func FxIntWeaponChargeStop(pTarget, iEffectNumber, iReason, iTemp)
 	
 }
 
-func FxIntWeaponChargeAddWeaponSlow(pTarget, iEffectNumber, iStrength)
+func FxIntWeaponChargeAddWeaponSlow(pTarget, effect, iStrength)
 {
-	iEffectNumber.var0 += iStrength;
+	effect.var0 += iStrength;
 }
 
-func FxIntWeaponChargeGetWeaponSlow(pTarget, iEffectNumber)
+func FxIntWeaponChargeGetWeaponSlow(pTarget, effect)
 {
-	return iEffectNumber.var0;
+	return effect.var0;
 }
 
-func FxIntWeaponChargeGetBash(pTarget, iEffectNumber)
+func FxIntWeaponChargeGetBash(pTarget, effect)
 {
 	return 0;
 	//return (this->WeaponBash() * Sqrt((pTarget->GetXDir())**2+(pTarget->GetYDir())**2)) / 1000;
 }
 
-func FxIntWeaponChargeHitByWeapon(pTarget, iEffectNumber)
+func FxIntWeaponChargeHitByWeapon(pTarget, effect)
 {
 	return this->~HitByWeapon(...);
 }
 
-func FxIntIsBeingStruckStart(pTarget, iEffectNumber, iTemp, iDamage, angle)
+func FxIntIsBeingStruckStart(pTarget, effect, iTemp, iDamage, angle)
 {
 	if(iTemp) return;
-	iEffectNumber.var0 = 3;
-	iEffectNumber.var1 = iDamage;
-	iEffectNumber.var2 = angle;
+	effect.var0 = 3;
+	effect.var1 = iDamage;
+	effect.var2 = angle;
 }
 
-func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
+func FxIntIsBeingStruckTimer(pTarget, effect, iEffectTime)
 {
-	if(iEffectNumber.var0 -- == 0)
+	if(effect.var0 -- == 0)
 	{
 		// FALCON PUNCH
 		if(pTarget->GetContact(-1) & CNAT_Bottom)
@@ -203,12 +203,12 @@ func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
 				pTarget->SetPosition(pTarget->GetX(), pTarget->GetY()-1);
 				if(pTarget->Stuck()) pTarget->SetPosition(pTarget->GetX(), pTarget->GetY()+1);
 			}
-			if(iEffectNumber.var1 > 60)
+			if(effect.var1 > 60)
 				pTarget->Fling();
 		}
 		//if(iEffectNumber.var1 > 20) iEffectNumber.var1 = 20;
-		pTarget->SetXDir(Sin(iEffectNumber.var2, iEffectNumber.var1 ), 100);
-		pTarget->SetYDir(-Abs(Cos(iEffectNumber.var2, iEffectNumber.var1 )), 100);
+		pTarget->SetXDir(Sin(effect.var2, effect.var1 ), 100);
+		pTarget->SetYDir(-Abs(Cos(effect.var2, effect.var1 )), 100);
 		return -1;
 	}
 	
@@ -221,24 +221,24 @@ func FxIntIsBeingStruckEffect(string szNewEffectName, object pTarget)
 	return 0;
 }
 
-func FxIntIsBeingStruckAdd (object pTarget, int iEffectNumber, string szNewEffectName, int iNewEffectTimer, int damage, int angle)
+func FxIntIsBeingStruckAdd (object pTarget, effect, string szNewEffectName, int iNewEffectTimer, int damage, int angle)
 {
 	// reset delay
-	iEffectNumber.var0 = 3;
+	effect.var0 = 3;
 	
 	// add damage!
-	if(damage > iEffectNumber.var1)
-		iEffectNumber.var1 = damage;
+	if(damage > effect.var1)
+		effect.var1 = damage;
 	else
-	iEffectNumber.var1 = (iEffectNumber.var1*2 + damage) / 2;
+	effect.var1 = (effect.var1*2 + damage) / 2;
 	
 	// check angle
-	if(!iEffectNumber.var2)
-		iEffectNumber.var2 = angle;
+	if(!effect.var2)
+		effect.var2 = angle;
 	else if(angle)
 		// should actually set the new angle to the average between the old and the new one. but I don't feel like doing such calculations now
 		// let's see if anyone notices it
-		iEffectNumber.var2 = angle;
+		effect.var2 = angle;
 }
 
 func GetStrikeAnimation()

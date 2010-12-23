@@ -55,7 +55,7 @@ func NewPosition()
 	CreateStarCircle();
 }
 
-func FxTimerTimer(target, effect_number, effect_time)
+func FxTimerTimer(target, effect, effect_time)
 {
 	this->AdjustStarColor();
 	this->CheckNewKing();
@@ -88,12 +88,12 @@ func SetKing(object to)
 		AddEffect("KOTHKing", king, 10, 35, this);
 }
 
-func FxKOTHKingTimer(target, effect_time)
+func FxKOTHKingTimer(target, effect)
 {
 	//target->DoEnergy(1);
 }
 
-func FxKOTHKingStop(target, effect_number, reason, temp)
+func FxKOTHKingStop(target, effect, reason, temp)
 {
 	if(temp) return;
 	if(!target) return;

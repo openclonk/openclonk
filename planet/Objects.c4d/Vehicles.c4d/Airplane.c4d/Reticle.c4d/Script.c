@@ -7,7 +7,7 @@ protected func Initialize()
 	return;
 }
 
-public func FxIntRotateTimer(object target, int num, int timer)
+public func FxIntRotateTimer(object target, effect, int timer)
 {
 	if(!GetActionTarget()) RemoveObject();
 	if(!target || !GetActionTarget()) return -1;

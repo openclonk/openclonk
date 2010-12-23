@@ -85,7 +85,7 @@ private func UpdatePicture()
 local fWarning;
 local fWarningColor;
 
-func FxIntLengthTimer(pTarget, iNumber, iTime)
+func FxIntLengthTimer(pTarget, effect, iTime)
 {
 	var iLength = 0;
 	var i = GetLength(aWires)-1;
@@ -148,7 +148,7 @@ protected func Incineration() { DoExplode(); }
 
 protected func Damage() { DoExplode(); }
 
-func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
+func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 {
 	for(var i = 0; i < GetLength(aWires); i++)
 			if(aWires[i]) aWires[i]->SetColorWarning(0);

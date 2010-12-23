@@ -23,7 +23,7 @@ global func Schedule(string script, int interval, int repeats, object obj)
 	return true;
 }
 
-global func FxIntScheduleTimer(object obj, int effect)
+global func FxIntScheduleTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
 	var done = --effect.var1 <= 0;
@@ -51,7 +51,7 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 	return true;
 }
 
-global func FxIntScheduleCallTimer(object obj, int effect)
+global func FxIntScheduleCallTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
 	var done = --effect.var1 <= 0;

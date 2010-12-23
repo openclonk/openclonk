@@ -99,7 +99,7 @@ global func FxTutorialIntro3Stop()
 	return 1;
 }
 
-global func FxTutorialScaleTimer(object target, int num, int timer)
+global func FxTutorialScaleTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(650, 990, 140, 90)))
 	{
@@ -112,7 +112,7 @@ global func FxTutorialScaleTimer(object target, int num, int timer)
 	}
 }
 
-global func FxTutorialHangleTimer(object target, int num, int timer)
+global func FxTutorialHangleTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(820, 940, 190, 140)))
 	{
@@ -122,7 +122,7 @@ global func FxTutorialHangleTimer(object target, int num, int timer)
 	}
 }
 
-global func FxTutorialSwimTimer(object target, int num, int timer)
+global func FxTutorialSwimTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
@@ -132,7 +132,7 @@ global func FxTutorialSwimTimer(object target, int num, int timer)
 	}
 }
 
-global func FxTutorialDigTimer(object target, int num, int timer)
+global func FxTutorialDigTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(1530, 1040, 130, 60)))
 	{
@@ -147,7 +147,7 @@ global func FxTutorialDigStop()
 	return 1;
 }
 
-global func FxShovelGetTimer(object target, int num, int timer)
+global func FxShovelGetTimer(object target, effect, int timer)
 {
 	if(target->Contained() != nil)
 	{
@@ -159,7 +159,7 @@ global func FxShovelGetTimer(object target, int num, int timer)
 	}
 }
 
-global func FxTutorialChestTimer(object target, int num, int timer)
+global func FxTutorialChestTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(1750, 1030, 130, 80)))
 	{
@@ -168,7 +168,7 @@ global func FxTutorialChestTimer(object target, int num, int timer)
 	}
 }
 
-global func FxLoamGetTimer(object target, int num, int timer)
+global func FxLoamGetTimer(object target, effect, int timer)
 {
 	if(target->Contained()->GetID() != Chest)
 	{
@@ -179,7 +179,7 @@ global func FxLoamGetTimer(object target, int num, int timer)
 	}
 }
 
-global func FxTutorialFlintTimer(object target, int num, int timer)
+global func FxTutorialFlintTimer(object target, effect, int timer)
 {
 	if(FindObject(Find_ID(Clonk), Find_InRect(1990, 1020, 130, 90)))
 	{
@@ -225,25 +225,25 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkRestoreTimer(object target, int num, int time)
+global func FxClonkRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached bow & arrow chest.
 	if(FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
-		num.var1 = 1240;
-		num.var2 = 1070;		
+		effect.var1 = 1240;
+		effect.var2 = 1070;		
 	}
 	// Respawn to new location if reached brick climb.
 	if(FindObject(Find_ID(Clonk), Find_InRect(1990, 1020, 130, 90)))
 	{
-		num.var1 = 2010;
-		num.var2 = 1020;		
+		effect.var1 = 2010;
+		effect.var2 = 1020;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -251,8 +251,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = num.var1;
-		var to_y = num.var2;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);

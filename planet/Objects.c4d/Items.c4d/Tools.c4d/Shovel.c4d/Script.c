@@ -54,7 +54,7 @@ public func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
-public func FxShovelDigTimer(object clonk, int num, int time)
+public func FxShovelDigTimer(object clonk, effect, int time)
 {
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?

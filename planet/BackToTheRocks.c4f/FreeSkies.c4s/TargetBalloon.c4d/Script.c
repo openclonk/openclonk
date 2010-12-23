@@ -14,7 +14,7 @@ protected func Initialize()
 	AddEffect("Float",this,1,1,this);
 }
 
-func FxFloatTimer(object target, int num, int time)
+func FxFloatTimer(object target, effect, int time)
 {
 	if(ysin >= 360) ysin = 0;
 	if(ysin <= 360)
@@ -24,7 +24,7 @@ func FxFloatTimer(object target, int num, int time)
 	target->SetYDir(Sin(ysin,2));
 }
 
-global func FxHorizontalMovingTimer(object target, int num, int time)
+global func FxHorizontalMovingTimer(object target, effect, int time)
 {
 	if(target->GetX()<100) target->SetXDir(Min(target->GetXDir()+1,6));
 	if(target->GetX()>810) target->SetXDir(Max(target->GetXDir()-1,-7));
@@ -43,7 +43,7 @@ public func OnProjectileHit(object projectile)
 	RemoveObject();
 }
 
-func FxFlyOffTimer(target, num, time)
+func FxFlyOffTimer(target, effect, time)
 {
 	RemoveEffect("Float", this);
 	RemoveEffect("HorizontalMoving", this);

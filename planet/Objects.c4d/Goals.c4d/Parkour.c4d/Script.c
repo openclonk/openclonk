@@ -391,19 +391,19 @@ private func UpdateScoreboard(int plr)
 /*-- Direction indication --*/
 
 // Effect for direction indication for the clonk.
-protected func FxIntDirNextCPStart(object target, int fxnum)
+protected func FxIntDirNextCPStart(object target, effect)
 {
 	var arrow = CreateObject(GUI_GoalArrow, 0, 0, target->GetOwner());
 	arrow->SetAction("Show", target);
-	fxnum.var0 = arrow;
+	effect.var0 = arrow;
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPTimer(object target, int fxnum)
+protected func FxIntDirNextCPTimer(object target, effect)
 {
 	var plr = target->GetOwner();
 	var team = GetPlayerTeam(plr);
-	var arrow = fxnum.var0;
+	var arrow = effect.var0;
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
@@ -448,9 +448,9 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	return FX_OK;
 }
 
-protected func FxIntDirNextCPStop(object target, int fxnum)
+protected func FxIntDirNextCPStop(object target, effect)
 {
-	fxnum.var0->RemoveObject();
+	effect.var0->RemoveObject();
 	return;
 }
 
@@ -481,9 +481,9 @@ private func DoBestTime(int plr)
 }
 
 // Starts at goal initialization, should be equivalent to gamestart.
-protected func FxIntBestTimeTimer(object pTarget, int iEffectNumber, int iEffectTime)
+protected func FxIntBestTimeTimer(object target, effect, time)
 {
-	iEffectNumber.var0 = iEffectTime;
+	effect.var0 = time;
 	return FX_OK;
 }
 

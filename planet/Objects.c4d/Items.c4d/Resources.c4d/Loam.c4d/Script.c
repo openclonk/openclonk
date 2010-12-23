@@ -49,7 +49,7 @@ func ControlUseStart(object clonk, int x, int y)
 
 func HoldingEnabled() { return true; }
 
-func FxIntBridgeTimer(clonk, number)
+func FxIntBridgeTimer(clonk, effect)
 {
 	// something happened - don't try to dig anymore
 	if(clonk->GetAction() != "Bridge")

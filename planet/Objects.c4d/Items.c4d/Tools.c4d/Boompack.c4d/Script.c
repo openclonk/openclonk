@@ -75,7 +75,7 @@ func ControlUse(object clonk, int x, int y)
 }
 
 
-protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
+protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	// clonk does sense the danger and with great presence of mind jumps of the rocket
 	if(fuel<20 && rider)

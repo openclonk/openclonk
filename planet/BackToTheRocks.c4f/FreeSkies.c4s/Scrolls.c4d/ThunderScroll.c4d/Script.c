@@ -14,20 +14,20 @@ public func ControlUse(object pClonk)
 	RemoveObject();
 	return 1;
 }
-global func FxThunderStrikeStart(pTarget, iEffectNumber, iTemp, owner, x)
+global func FxThunderStrikeStart(pTarget, effect, iTemp, owner, x)
 {
 	if(iTemp) return;
-	iEffectNumber.var0=owner;
-	iEffectNumber.var1=x;
+	effect.var0=owner;
+	effect.var1=x;
 }
-global func FxThunderStrikeTimer(pTarget, iEffectNumber, iEffectTime)
+global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 {
-	var move = iEffectNumber.var1;
+	var move = effect.var1;
 
 	if(iEffectTime>36)
 	{
 
-	var owner = iEffectNumber.var0;
+	var owner = effect.var0;
 	var x=0;
 	var wdt = 18;
 	var y = [];

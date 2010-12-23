@@ -180,7 +180,7 @@ public func IsActiveForTeam(int team)
 
 /*-- Checkpoint activity --*/
 
-protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
+protected func FxIntCheckpointTimer(object target, effect, int fxtime)
 {
 	// Check every 5 frames.
 	if (!(fxtime % 5))

@@ -11,7 +11,7 @@ protected func Initialize()
 	AddEffect("Fade",this,1,1,this);
 }
 
-func FxFadeTimer(object target, int num, int time)
+func FxFadeTimer(object target, effect, int time)
 {
 	if(GetYDir()<10) SetYDir(GetYDir()+1);
 	SetClrModulation(RGBa(255-(time/2),255-(time/2),-(time/2),255-time));

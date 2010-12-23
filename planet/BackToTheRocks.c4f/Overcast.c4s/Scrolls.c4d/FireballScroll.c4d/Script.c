@@ -17,27 +17,27 @@ public func ControlUse(object pClonk, int ix, int iy)
 
 
 
-public func FxFireballStart(pTarget, iEffectNumber, iTemp, owner, angle, x, y)
+public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 {
 	if(iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	iEffectNumber.var0=owner;
-	iEffectNumber.var1=angle;
-	iEffectNumber.var2=x;
-	iEffectNumber.var3=y;
+	effect.var0=owner;
+	effect.var1=angle;
+	effect.var2=x;
+	effect.var3=y;
 }
 
-public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
+public func FxFireballTimer(pTarget, effect, iEffectTime)
 {
-	var angle=iEffectNumber.var1;
-	var x=iEffectNumber.var2;
-	var y=iEffectNumber.var3;
+	var angle=effect.var1;
+	var x=effect.var2;
+	var y=effect.var3;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
 	 		FindObject(
-	 		Find_Hostile(iEffectNumber.var0),
+	 		Find_Hostile(effect.var0),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
 	 		Find_Distance(16,x,y)
@@ -57,8 +57,8 @@ public func FxFireballTimer(pTarget, iEffectNumber, iEffectTime)
 		angle+=Sin(iEffectTime*30,18);
 		x+=Sin(angle, 6);
 		y+=-Cos(angle, 6);
-		iEffectNumber.var2=x;
-		iEffectNumber.var3=y;
+		effect.var2=x;
+		effect.var3=y;
 		for(var i=0;i<6;++i)
 		{
 			var c=HSL(Random(50), 200+Random(25), Random(100));

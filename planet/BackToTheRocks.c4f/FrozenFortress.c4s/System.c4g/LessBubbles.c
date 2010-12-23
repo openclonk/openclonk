@@ -1,7 +1,7 @@
 #appendto Fx_Bubble
 
 
-public func FxMoveTimer(object target, int num, int time)
+public func FxMoveTimer(object target, effect, int time)
 {
 	if (!GBackLiquid(0, -3) && !GetEffect("Fade", this) || time > 108)
 		AddEffect("Fade", target, 100, 1, target);

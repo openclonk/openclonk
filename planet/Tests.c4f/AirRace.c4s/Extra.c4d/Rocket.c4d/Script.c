@@ -56,7 +56,7 @@ public func Launch(object plane, int angle)
 	rocket->SetVelocity(angle, speed);
 }
 
-protected func FxIntFlightTimer(object target, int num, int time)
+protected func FxIntFlightTimer(object target, effect, int time)
 {
 	if(fuel<=0)
 		DoFireworks();

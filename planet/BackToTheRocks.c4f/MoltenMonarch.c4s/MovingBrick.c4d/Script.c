@@ -30,7 +30,7 @@ func Room(int xa, int ya, int a,int xd, int yd)
 	else		 {	SetGraphics(Format("%d",1+Random(4))); size=4;}
 }
 
-func FxMovingAroundTimer(object pTarget, int noum, int timer)
+func FxMovingAroundTimer(object pTarget, effect, int timer)
 {
  	pTarget->Move(timer%360);
 }

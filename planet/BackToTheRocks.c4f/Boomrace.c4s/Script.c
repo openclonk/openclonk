@@ -31,7 +31,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 	clonk->CreateContents(Boompack);
 }
 
-global func FxRespawnBoomTimer(object target, int num, int time)
+global func FxRespawnBoomTimer(object target, effect, int time)
 {
 	target->CreateContents(Boompack);
 	return -1;

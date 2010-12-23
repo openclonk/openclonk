@@ -215,59 +215,59 @@ func CheckStrike(iTime)
 
 }
 
-func FxSwordStrikeStopStart(pTarget, iEffectNumber, iTemp)
+func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
 	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
 	if(iTemp) return;
 }
 
-func FxSwordStrikeStopStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 }
 
-func FxSwordStrikeStopTimer(pTarget, iEffectNumber)
+func FxSwordStrikeStopTimer(pTarget, effect)
 {
 	return 1;
 }
 
-func FxSwordStrikeSpeedUpStart(pTarget, iEffectNumber, iTemp)
+func FxSwordStrikeSpeedUpStart(pTarget, effect, iTemp)
 {
 	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed * 3);
 	pTarget.ActMap.Walk.Accel = 210;
 }
 
-func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
+func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
 {
 	if(!pTarget->GetContact( -1) & CNAT_Bottom)
 		return -1;
 	if(iEffectTime > 35*2) return -1;
 }
 
-func FxSwordStrikeSpeedUpStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
-	var time=GetEffect(0, 0, iEffectNumber, 6);
+	var time=GetEffect(0, 0, effect, 6);
 	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, time);
 }
 
-func FxSwordStrikeSlowStart(pTarget, iEffectNumber, iTemp, iTime)
+func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)
 {
 	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed / 3);
 	if(iTemp) return;
-	iEffectNumber.var0 = iTime;
+	effect.var0 = iTime;
 }
 
-func FxSwordStrikeSlowTimer(pTarget, iEffectNumber, iEffectTime)
+func FxSwordStrikeSlowTimer(pTarget, effect, iEffectTime)
 {
-	if(iEffectTime > iEffectNumber.var0) return -1;
+	if(iEffectTime > effect.var0) return -1;
 }
 
-func FxSwordStrikeSlowStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk");
 }
