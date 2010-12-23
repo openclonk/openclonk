@@ -4505,7 +4505,7 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	// evaluate desired value
 	switch (iQueryValue)
 	{
-	case 0: return C4VInt(pEffect->iNumber);        // 0: number
+	case 0: return C4VPropList(pEffect);            // 0: effect
 	case 1: return C4VString(pEffect->Name);        // 1: name
 	case 2: return C4VInt(Abs(pEffect->iPriority)); // 2: priority (may be negative for deactivated effects)
 	case 3: return C4VInt(pEffect->iIntervall);     // 3: timer intervall
