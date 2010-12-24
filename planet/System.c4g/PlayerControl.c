@@ -208,7 +208,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	while (i--)
 		{
 		iEffect = GetEffect("*Control*", this, i);
-		if ( GetEffect(0, this, iEffect, 1) )
+		if (iEffect)
 			if (EffectCall(this, iEffect, "Control", ctrl, x,y,strength, repeat, release))
 				return true;
 		}

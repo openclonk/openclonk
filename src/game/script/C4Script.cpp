@@ -4460,12 +4460,12 @@ static bool FnAdjustWalkRotation(C4AulObjectContext *ctx, long iRangeX, long iRa
 	return ctx->Obj->AdjustWalkRotation(iRangeX, iRangeY, iSpeed);
 }
 
-static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerIntervall, C4Value *pvpCmdTarget, C4Value *pvidCmdTarget, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
+static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvpCmdTarget, C4Value *pvidCmdTarget, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
 {
 	// evaluate parameters
 	C4String *psEffectName = pvsEffectName->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
-	long iPrio = pviPrio->getInt(), iTimerIntervall = pviTimerIntervall->getInt();
+	long iPrio = pviPrio->getInt(), iTimerInterval = pviTimerInterval->getInt();
 	C4Object *pCmdTarget = pvpCmdTarget->getObj();
 	C4ID idCmdTarget = pvidCmdTarget->getC4ID();
 	const char *szEffect = FnStringPar(psEffectName);
@@ -4474,7 +4474,7 @@ static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	if (!szEffect || !*szEffect || !iPrio) return C4Value();
 	// create effect
 	int32_t iEffectNumber;
-	new C4Effect(pTarget, szEffect, iPrio, iTimerIntervall, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4, true, iEffectNumber);
+	new C4Effect(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4, true, iEffectNumber);
 	// return effect - may be 0 if he effect has been denied by another effect
 	// may also be another effect
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
@@ -4483,37 +4483,16 @@ static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	return C4VPropList(pEffect);
 }
 
-static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pvEffect, C4Value *pviQueryValue, C4Value *pviMaxPriority)
+static C4Effect * FnGetEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, int index, int iMaxPriority)
 {
-	// evaluate parameters
-	C4String *psEffectName = pvsEffectName->getStr();
-	C4Object *pTarget = pvpTarget->getObj();
-	long iQueryValue = pviQueryValue->getInt(), iMaxPriority = pviMaxPriority->getInt();
 	const char *szEffect = FnStringPar(psEffectName);
 	// get effects
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
-	if (!pEffect) return C4Value();
+	if (!pEffect) return NULL;
 	// name/wildcard given: find effect by name and index
 	if (szEffect && *szEffect)
-		pEffect = pEffect->Get(szEffect, pvEffect->getInt(), iMaxPriority);
-	else
-		// otherwise, use given effect
-		pEffect = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
-	// effect found?
-	if (!pEffect) return C4Value();
-	// evaluate desired value
-	switch (iQueryValue)
-	{
-	case 0: return C4VPropList(pEffect);            // 0: effect
-	case 1: return C4VString(pEffect->Name);        // 1: name
-	case 2: return C4VInt(Abs(pEffect->iPriority)); // 2: priority (may be negative for deactivated effects)
-	case 3: return C4VInt(pEffect->iIntervall);     // 3: timer intervall
-	case 4: return C4VObj(pEffect->CommandTarget);  // 4: command target
-	case 5: return C4VID(pEffect->idCommandTarget); // 5: command target ID
-	case 6: return C4VInt(pEffect->iTime);          // 6: effect time
-	}
-	// invalid data queried
-	return C4Value();
+		return pEffect->Get(szEffect, index, iMaxPriority);
+	return NULL;
 }
 
 static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, C4Effect * pEffect2, bool fDoNoCalls)
@@ -4561,19 +4540,19 @@ static bool FnChangeEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 	// set new timer
 	if (iNewTimer>=0)
 	{
-		pEffect->iIntervall = iNewTimer;
+		pEffect->iInterval = iNewTimer;
 		pEffect->iTime = 0;
 	}
 	// done, success
 	return true;
 }
 
-static C4Value FnCheckEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerIntervall, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
+static C4Value FnCheckEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
 {
 	// evaluate parameters
 	C4String *psEffectName = pvsEffectName->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
-	long iPrio = pviPrio->getInt(), iTimerIntervall = pviTimerIntervall->getInt();
+	long iPrio = pviPrio->getInt(), iTimerInterval = pviTimerInterval->getInt();
 	const char *szEffect = FnStringPar(psEffectName);
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
@@ -4582,7 +4561,7 @@ static C4Value FnCheckEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Va
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
 	// let them check
-	return C4VInt(pEffect->Check(pTarget, szEffect, iPrio, iTimerIntervall, *pvVal1, *pvVal2, *pvVal3, *pvVal4));
+	return C4VInt(pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, *pvVal1, *pvVal2, *pvVal3, *pvVal4));
 }
 
 static long FnGetEffectCount(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, long iMaxPriority)
@@ -6016,6 +5995,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FxFireStop", FnFxFireStop, false);
 	AddFunc(pEngine, "FxFireInfo", FnFxFireInfo, false);
 	AddFunc(pEngine, "RemoveEffect", FnRemoveEffect);
+	AddFunc(pEngine, "GetEffect", FnGetEffect);
 	AddFunc(pEngine, "ChangeEffect", FnChangeEffect);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
@@ -6476,7 +6456,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
 	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "AddEffect",            1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnAddEffect_C4V,             0 },
-	{ "GetEffect",            1  ,C4V_Any      ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetEffect_C4V,             0 },
 	{ "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
 	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
 

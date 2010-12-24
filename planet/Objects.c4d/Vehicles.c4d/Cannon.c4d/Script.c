@@ -295,7 +295,7 @@ func Timer()
 			else
 			{
 				var new_dist = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
-				var old_effect = 36 - GetEffect("IntTurning",this,nil,3);
+				var old_effect = 36 - GetEffect("IntTurning",this).Interval;
 				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
 			}
 		}
@@ -310,7 +310,7 @@ func Timer()
 			else
 			{
 				var new_dist = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
-				var old_effect = 36 - GetEffect("IntTurning",this,nil,3);
+				var old_effect = 36 - GetEffect("IntTurning",this).Interval;
 				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
 			}
 		}

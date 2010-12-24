@@ -64,14 +64,14 @@ C4AulScript *C4Effect::GetCallbackScript()
 	return pSrcScript;
 }
 
-C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
+C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
 {
 	C4Effect *pPrev, *pCheck;
 	// assign values
 	SCopy(szName, Name, C4MaxDefString);
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	riStoredAsNumber = 0;
-	iIntervall = iTimerIntervall;
+	iInterval = iTimerInterval;
 	iTime = 0;
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
@@ -109,7 +109,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	// so the priority is assigned after this call, marking this effect dead before it's definitely valid
 	if (fRemoveUpper && pNext)
 	{
-		int32_t iResult = pNext->Check(pForObj, Name, iPrio, iIntervall, rVal1, rVal2, rVal3, rVal4);
+		int32_t iResult = pNext->Check(pForObj, Name, iPrio, iInterval, rVal1, rVal2, rVal3, rVal4);
 		if (iResult)
 		{
 			// effect denied (iResult = -1), added to an effect (iResult = Number of that effect)
@@ -147,7 +147,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 C4Effect::C4Effect(StdCompiler *pComp)
 {
 	// defaults
-	iNumber=iPriority=iTime=iIntervall=0;
+	iNumber=iPriority=iTime=iInterval=0;
 	CommandTarget=NULL;
 	pNext = NULL;
 	// compile
@@ -336,7 +336,7 @@ void C4Effect::Execute(C4Object *pObj)
 			// execute effect: time elapsed
 			++pEffect->iTime;
 			// check timer execution
-			if (pEffect->iIntervall && !(pEffect->iTime % pEffect->iIntervall))
+			if (pEffect->iInterval && !(pEffect->iTime % pEffect->iInterval))
 			{
 				if (pEffect->pFnTimer)
 				{
@@ -517,7 +517,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	pComp->Value(iPriority); pComp->Separator();
 	// read time and intervall
 	pComp->Value(iTime); pComp->Separator();
-	pComp->Value(iIntervall); pComp->Separator();
+	pComp->Value(iInterval); pComp->Separator();
 	// read object number
 	pComp->Value(CommandTarget); pComp->Separator();
 	// read ID
@@ -540,6 +540,72 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// denumeration and callback assignment will be done later
 }
 
+void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name:
+				if (!to.getStr() || !*to.getStr()->GetCStr())
+					throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+				SCopy(to.getStr()->GetCStr(), Name, C4MaxName);
+				ReAssignCallbackFunctions();
+				return;
+			case P_Priority:
+				throw new C4AulExecError(0, "effect: Priority is readonly");
+			case P_Interval: iInterval = to.getInt(); return;
+			case P_CommandTarget:
+				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+			case P_Time: iTime = to.getInt(); return;
+		}
+	}
+	C4PropListNumbered::SetPropertyByS(k, to);
+}
+
+void C4Effect::ResetProperty(C4String * k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name:
+				throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+			case P_Priority:
+				throw new C4AulExecError(0, "effect: Priority is readonly");
+			case P_Interval: iInterval = 0; return;
+			case P_CommandTarget:
+				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+			case P_Time: iTime = 0; return;
+		}
+	}
+	C4PropListNumbered::ResetProperty(k);
+}
+
+bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name: *pResult = C4VString(Name); return true;
+			case P_Priority: *pResult = C4VInt(Abs(iPriority)); return true;
+			case P_Interval: *pResult = C4VInt(iInterval); return true;
+			case P_CommandTarget:
+				if (CommandTarget)
+					*pResult = C4VObj(CommandTarget);
+				else if (idCommandTarget)
+					*pResult = C4VPropList(Definitions.ID2Def(idCommandTarget));
+				else
+					*pResult = C4VNull;
+				//*pResult = CommandTarget ? C4VObj(CommandTarget) :
+				//           (idCommandTarget ? C4VPropList(Definitions.ID2Def(idCommandTarget)) : C4VNull);
+				return true;
+			case P_Time: *pResult = C4VInt(iTime); return true;
+		}
+	}
+	return C4PropListNumbered::GetPropertyByS(k, pResult);
+}
 
 // Internal fire effect
 

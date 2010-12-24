@@ -41,7 +41,7 @@ public func SetCycleSpeed(int speed)
 
 public func GetCycleSpeed()
 {
-	return GetEffect("IntTimeCycle", this, nil, 3);
+	return GetEffect("IntTimeCycle", this).Interval;
 }
 
 local time_set;

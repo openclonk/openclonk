@@ -86,6 +86,10 @@ C4StringTable::C4StringTable()
 {
 	P[P_Prototype] = "Prototype";
 	P[P_Name] = "Name";
+	P[P_Priority] = "Priority";
+	P[P_Interval] = "Interval";
+	P[P_CommandTarget] = "CommandTarget";
+	P[P_Time] = "Time";
 	P[P_Collectible] = "Collectible";
 	P[P_ActMap] = "ActMap";
 	P[P_Procedure] = "Procedure";

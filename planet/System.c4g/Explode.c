@@ -285,7 +285,7 @@ global func FxShakeEffectTimer(object target, effect, int fxtime)
 
 global func FxShakeEffectStart(object target, effect)
 {
-	FxShakeEffectTimer(target, effect, GetEffect(nil, target, effect, 6));
+	FxShakeEffectTimer(target, effect, effect.Time);
 }
 
 global func FxShakeEffectStop()

@@ -110,7 +110,7 @@ bool C4PropertyDlg::Update()
 			}
 			Output.Append(LineFeed);
 			// Effect name
-			Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iIntervall);
+			Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iInterval);
 		}
 		// Store selected def
 		idSelectedDef=cobj->id;

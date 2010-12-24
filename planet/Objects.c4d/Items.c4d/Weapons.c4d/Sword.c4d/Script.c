@@ -251,8 +251,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
-	var time=GetEffect(0, 0, effect, 6);
-	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, time);
+	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, effect.Time);
 }
 
 func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)

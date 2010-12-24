@@ -174,6 +174,10 @@ enum C4PropertyName
 {
 	P_Prototype,
 	P_Name,
+	P_Priority,
+	P_Interval,
+	P_CommandTarget,
+	P_Time,
 	P_Collectible,
 	P_ActMap,
 	P_Attach,

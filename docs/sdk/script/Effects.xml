@@ -349,9 +349,9 @@ global func RemoveAllHotEffects(target)
   if (!target) target=this();
   // Alle Effekte durchsuchen und die heißen entfernen
   var effect_num, i;
-  while (effect_num = GetEffect(&quot;*&quot;, target, i++))
-    if (EffectCall(target, effect_num, &quot;IsHot&quot;))
-      RemoveEffect(0, target, effect_num);
+  while (effect = GetEffect(&quot;*&quot;, target, i++))
+    if (EffectCall(target, effect, &quot;IsHot&quot;))
+      RemoveEffect(0, target, effect);
 }</code>
     <text>Using <funclink>EffectCall</funclink>() you can of course also call functions in the effect, e.g. to extend certain effects.</text>
     <h id="BlendFx">Blind Effects</h>
@@ -460,6 +460,8 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       </table>
     </text>
     <text>Warning: as function names may not be more than 100 characters in length (and you will lose oversight eventually), you should not stuff too much information into the effect name. Effect names are case sensitive. Also, you should avoid using any of these identifiers in your effect names if your effect doesn't have anything to do with them.</text>
+    <h id="Properties">Properties Reference</h>
+    <text>Effects have a number of standard properties: Name, Priority, Interval, CommandTarget and Time. Name, Interval and Time can be changed, Priority and CommandTarget are read-only. CommandTarget returns either the command object or command definition, depending on which is used.</text>
     <h id="CBRef">Callback Reference</h>
     <part>
       <text>The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name.</text>
@@ -505,7 +507,7 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       <h>Fx*Timer</h>
       <text><code>int Fx*Timer (object target, effect, int time);</code></text>
       <text>Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual.</text>
-      <text>time specifies how long the effect has now been active. This might alternatively be determined using <funclink>GetEffect</funclink>().</text>
+      <text>time specifies how long the effect has now been active. This might alternatively be determined using effect.Time.</text>
       <text>If this function is not implemented or returns -1, the effect will be deleted after this call.</text>
       <h>Fx*Effect</h>
       <text><code>int Fx*Effect (string new_name, object target, effect, reserved, any var1, any var2, any var3, any var4);</code></text>
@@ -606,7 +608,7 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       <ul>
         <li><funclink>AddEffect</funclink>() - for effect creation</li>
         <li><funclink>RemoveEffect</funclink>() - for effect removal</li>
-        <li><funclink>GetEffect</funclink>() - to request effect parameters</li>
+        <li><funclink>GetEffect</funclink>() - to search for effects</li>
         <li><funclink>GetEffectCount</funclink>() - for effect counting</li>
         <li><funclink>EffectCall</funclink>() - for user defined calls in effects</li>
         <li><funclink>ChangeEffect</funclink>() - to modify effect names and timers (e.g. for multi-stage effects)</li>

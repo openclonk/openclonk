@@ -86,7 +86,7 @@ public:
 	C4ID idCommandTarget;     // ID of command target definition
 
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
-	int32_t iTime, iIntervall;  // effect time; effect callback intervall
+	int32_t iTime, iInterval;  // effect time; effect callback intervall
 	int32_t iNumber;            // effect number for addressing
 
 	C4Effect *pNext;        // next effect in linked list
@@ -101,7 +101,7 @@ protected:
 	void AssignCallbackFunctions(); // resolve callback function names
 
 public:
-	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
+	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
 	C4Effect(StdCompiler *pComp); // ctor: compile
 	~C4Effect();                      // dtor - deletes all following effects
 
@@ -139,6 +139,9 @@ public:
 
 	void CompileFunc(StdCompiler *pComp);
 	virtual C4Effect * GetEffect() { return this; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 
 protected:
 	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority

@@ -69,18 +69,23 @@ public:
 	// Whether this proplist is a pure script proplist, not a host object
 	virtual bool IsScriptPropList() { return false; }
 
-	bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	// These three operate on properties as seen by script, which can be dynamic
+	// or reflect C++ variables
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	// not allowed on frozen proplists
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+
+	// helper functions to get dynamic properties from other parts of the engine
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
+	bool HasProperty(C4String * k) { return Properties.Has(k); }
 	// not allowed on frozen proplists
-	void SetPropertyByS(C4String * k, const C4Value & to);
 	void SetProperty(C4PropertyName k, const C4Value & to)
 	{ SetPropertyByS(&Strings.P[k], to); }
-	void ResetProperty(C4String * k);
-	bool HasProperty(C4String * k) { return Properties.Has(k); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
 	static C4PropList * NewAnon(C4PropList * prototype = 0);
