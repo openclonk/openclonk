@@ -466,7 +466,7 @@ bool C4Network2::FinalInit()
 		// wait for go acknowledgement
 		Log(LoadResStr("IDS_NET_JOINREADY"));
 
-		// any pending keyboard commands should not be routed to cancel the wait dialog - flish the message queue!
+		// any pending keyboard commands should not be routed to cancel the wait dialog - flush the message queue!
 		if (!Application.FlushMessages()) return false;
 
 		// show box
