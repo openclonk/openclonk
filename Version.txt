@@ -16,12 +16,12 @@ SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 
 SET(C4XVER1             5)
 SET(C4XVER2             1)
-SET(C4XVER3             0)
-SET(C4XVER4             0)
+SET(C4XVER3             1)
+SET(C4XVER4             3)
 
 SET(C4VERSIONBUILDNAME  "Back to the Rocks")
 
-SET(C4VERSIONEXTRA      "Beta")
+SET(C4VERSIONEXTRA      "")
 
 ############################################################################
 # Get revision from Mercurial
