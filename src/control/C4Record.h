@@ -253,6 +253,7 @@ class C4Record // demo recording
 {
 private:
 	CStdFile CtrlRec; // control file handle
+	CStdFile LogRec; // handle for additional log file in record
 	StdStrBuf sFilename; // recorded scenario file name
 	C4Group RecordGrp; // record scenario group
 	bool fRecording; // set if recording is active
@@ -282,6 +283,8 @@ public:
 	bool StartStreaming(bool fInitial);
 	void ClearStreamingBuf(unsigned int iAmount);
 	void StopStreaming();
+
+	CStdFile * GetLogFile() { return &LogRec; }
 
 private:
 	void Stream(const C4RecordChunkHead &Head, const StdBuf &sBuf);

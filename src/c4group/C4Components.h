@@ -74,6 +74,7 @@
 #define C4CFN_MassMover       "MassMover.c4b"
 #define C4CFN_CtrlRec         "CtrlRec.c4b"
 #define C4CFN_CtrlRecText     "CtrlRec.txt"
+#define C4CFN_LogRec          "Record.log"
 #define C4CFN_TexMap          "TexMap.txt"
 #define C4CFN_MatMap          "MatMap.txt"
 #define C4CFN_Title           "Title%s.txt|Title.txt"

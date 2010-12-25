@@ -130,6 +130,16 @@ bool LogSilent(const char *szMessage, bool fConsole)
 			fflush(C4LogFile);
 		}
 
+		// Save into record log file, if available
+		if(Control.GetRecord())
+		{
+			Control.GetRecord()->GetLogFile()->Write(Line.getData(), Line.getLength());
+			#ifdef IMMEDIATEREC
+				Control.GetRecord()->GetLogFile()->Flush();
+			#endif
+		}
+
+
 		// Write to console
 		if (fConsole)
 		{

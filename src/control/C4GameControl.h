@@ -102,6 +102,7 @@ public:
 	bool isReplay() const { return eMode == CM_Replay; }
 	bool isCtrlHost() const { return fHost; }
 	bool isRecord() const { return !! pRecord; }
+	C4Record * GetRecord() { return pRecord; }
 	int32_t  ClientID() const { return iClientID; }
 	bool SyncMode() const { return eMode != CM_Local || pRecord; }
 
