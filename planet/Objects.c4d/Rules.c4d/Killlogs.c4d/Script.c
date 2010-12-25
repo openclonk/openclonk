@@ -39,7 +39,16 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
   		log=Format(Translate(Format("Teamkill%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	else log=Format(Translate(Format("KilledByPlayer%d", which_one)), GetTaggedPlayerName(plr), name, GetTaggedPlayerName(killed_by));
 	
-	var relaunches=GameCallEx("GetRelaunchCount", plr);
+	// okay, why is GetRelaunchCount not a global function..?
+	// and why are the relaunches not stored in a static variable or a singleton that can be accessed somehow..
+	var relaunches=nil;
+	for(var goal in FindObjects(Find_Or(Find_Category(C4D_Goal), Find_Category(C4D_Rule))))
+	{
+		relaunches = goal->~GetRelaunchCount(plr);
+		if(relaunches != nil) break;
+	}
+	if(relaunches == nil) relaunches=GameCall("GetRelaunchCount", plr);
+
 	if(relaunches != nil)
 	{
 		var msg="";
@@ -55,7 +64,19 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
 		log=Format("%s %s", log, msg);
 	}
 	
-	var other=GameCallEx("GetAdditionalPlayerRelaunchString", clonk, plr, killed_by);
+	// this is also not a global function, but that is okay. So..
+	// get additional strings from goals/rules ("%s is now king!!")
+	for(var goal in FindObjects(Find_Or(Find_Category(C4D_Goal), Find_Category(C4D_Rule))))
+	{
+		var other=goal->~GetAdditionalPlayerRelaunchString(clonk, plr, killed_by);GameCallEx("GetAdditionalPlayerRelaunchString", clonk, plr, killed_by);
+		if(other)
+		{
+			log=Format("%s %s", log, other);
+		}
+	}
+	
+	// get additional stuff from scenario
+	var other=GameCall("GetAdditionalPlayerRelaunchString", clonk, plr, killed_by);
 	if(other)
 	{
 		log=Format("%s %s", log, other);
