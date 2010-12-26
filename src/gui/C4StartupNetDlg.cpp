@@ -706,11 +706,13 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	btnRecord->SetToolTip(LoadResStr("IDS_DLGTIP_RECORD"));
 	btnRecord->SetText(LoadResStr("IDS_CTL_RECORD"));
 	AddElement(btnRecord);
+#ifdef WITH_AUTOMATIC_UPDATE
 	btnUpdate = new C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton>(C4GUI::Ico_Ex_Update, caConfigArea.GetFromTop(iIconSize, iIconSize), '\0', &C4StartupNetDlg::OnBtnUpdate);
 	btnUpdate->SetVisibility(false); // update only available if masterserver notifies it
 	btnUpdate->SetToolTip(LoadResStr("IDS_DLGTIP_UPDATE"));
 	btnUpdate->SetText(LoadResStr("IDS_CTL_UPDATE"));
 	AddElement(btnUpdate);
+#endif
 
 	// button area
 	C4GUI::CallbackButton<C4StartupNetDlg> *btn;
@@ -842,6 +844,7 @@ void C4StartupNetDlg::OnBtnRecord(C4GUI::Control *btn)
 	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 
+#ifdef WITH_AUTOMATIC_UPDATE
 void C4StartupNetDlg::OnBtnUpdate(C4GUI::Control *btn)
 {
 	// do update
@@ -850,6 +853,7 @@ void C4StartupNetDlg::OnBtnUpdate(C4GUI::Control *btn)
 		GetScreen()->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 	}
 }
+#endif
 
 void C4StartupNetDlg::UpdateMasterserver()
 {
@@ -1198,6 +1202,7 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 
 void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL)
 {
+#ifdef WITH_AUTOMATIC_UPDATE
 	// Is a valid update
 	if (C4UpdateDlg::IsValidUpdate(szUpdateURL))
 	{
@@ -1206,7 +1211,16 @@ void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL)
 	}
 	// Otherwise: no update available
 	else
+	{
 		btnUpdate->SetVisibility(false);
+	}
+#else
+	if(szUpdateURL && *szUpdateURL)
+	{
+		// TODO: We could show an item notifying the user that an
+		// update is available externally.
+	}
+#endif
 }
 
 void C4StartupNetDlg::OnChatTitleChange(const StdStrBuf &sNewTitle)

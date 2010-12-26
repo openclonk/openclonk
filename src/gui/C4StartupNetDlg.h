@@ -137,7 +137,10 @@ private:
 	C4GUI::ListBox *pGameSelList;        // game selection listbox
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward;
 	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnGameList , *btnChat; // left side buttons
-	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnInternet, *btnRecord, *btnUpdate; // right side buttons
+	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnInternet, *btnRecord; // right side buttons
+#ifdef WITH_AUTOMATIC_UPDATE
+	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnUpdate;
+#endif
 	C4GUI::Button *btnJoin, *btnRefresh;
 	C4GUI::Edit *pJoinAddressEdt;
 	C4GUI::Edit *pSearchFieldEdt;
@@ -178,7 +181,9 @@ protected:
 	void OnBtnChat(C4GUI::Control *btn);
 	void OnBtnInternet(C4GUI::Control *btn);
 	void OnBtnRecord(C4GUI::Control *btn);
+#ifdef WITH_AUTOMATIC_UPDATE
 	void OnBtnUpdate(C4GUI::Control *btn);
+#endif
 	C4GUI::Edit::InputResult OnJoinAddressEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
 	{ DoOK(); return C4GUI::Edit::IR_Abort; }
 	C4GUI::Edit::InputResult OnSearchFieldEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)

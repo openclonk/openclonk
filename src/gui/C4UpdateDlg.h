@@ -21,6 +21,10 @@
 #ifndef INC_C4UpdateDialogs
 #define INC_C4UpdateDialogs
 
+#include "PlatformAbstraction.h"
+
+#ifdef WITH_AUTOMATIC_UPDATE
+
 #include "C4Gui.h"
 #include "C4GameVersion.h"
 #include "C4Network2Reference.h"
@@ -67,4 +71,5 @@ public:
 	bool GetUpdateURL(StdStrBuf *pUpdateURL);
 };
 
+#endif // WITH_AUTOMATIC_UPDATE
 #endif // INC_C4UpdateDialogs

@@ -176,6 +176,9 @@
 /* Use GTK+3 for the developer mode */
 #cmakedefine WITH_GTK3 1
 
+/* Enable the automatic update system */
+#cmakedefine WITH_AUTOMATIC_UPDATE 1
+
 /* Define to 1 if the X Window System is missing or not being used. */
 #cmakedefine X_DISPLAY_MISSING 1
 

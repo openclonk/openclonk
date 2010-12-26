@@ -54,6 +54,7 @@ endif()
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
+option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" ON)
 
 ############################################################################
 # Check for compiler quirks and features

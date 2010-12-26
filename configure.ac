@@ -282,6 +282,13 @@ if test "$with_directx" = yes; then
   AC_DEFINE([USE_DIRECTX], 1, [DirectX graphics])
 fi
 
+AC_ARG_WITH([automatic-update],
+  [AC_HELP_STRING([--with-automatic-update],[enable support for automatic engine updates [default=yes]])],
+  , [with_automatic_update="yes"])
+if test "$with_automatic_update" = "yes"; then
+  AC_DEFINE([WITH_AUTOMATIC_UPDATE], 1, [Enable automatic update system])
+fi
+
 if test $win32 = false; then
   # pthread
   AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
