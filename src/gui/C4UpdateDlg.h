@@ -52,11 +52,11 @@ public:
 	void Write(const char *szText);
 
 public:
-	static bool IsValidUpdate(const char *szUpdateURL); // Returns whether we can update to the specified version
+	static bool IsValidUpdate(const char *szVersion); // Returns whether we can update to the specified version
 	static bool CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic = false); // Checks for available updates and prompts the user whether to apply
 	static bool DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen); // Static funtion for downloading and applying updates
 	static bool ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4GUI::Screen *pScreen); // Static funtion for applying updates
-
+	static void RedirectToDownloadPage(); // open browser with download page
 };
 
 // Loads current update url string (mini-HTTP-client)
@@ -69,6 +69,7 @@ public:
 
 	bool QueryUpdateURL();
 	bool GetUpdateURL(StdStrBuf *pUpdateURL);
+	bool GetVersion(StdStrBuf *pVersion);
 };
 
 #endif // WITH_AUTOMATIC_UPDATE

@@ -569,9 +569,12 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		StdCompilerINIRead Comp;
 		Comp.setInput(ResultString);
 		Comp.Begin();
-		// get current version
+		// get current version and update url
 		Comp.Value(mkNamingAdapt(
 		             mkNamingAdapt(UpdateURL,"UpdateURL"),
+		             C4ENGINENAME));
+		Comp.Value(mkNamingAdapt(
+		             mkNamingAdapt(mkParAdapt(Version, StdCompiler::RCT_All), "Version", ""),
 		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
@@ -594,7 +597,7 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	for (int i = 0; i < rRefCount; i++)
 		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
 	// validate version
-	if (UpdateURL.getData() != NULL) fUrlSet = true;
+	if (Version.getData() != NULL) fUrlSet = true;
 	// Done
 	ResetError();
 	return true;
@@ -608,3 +611,10 @@ bool C4Network2RefClient::GetUpdateURL(StdStrBuf *pUpdateURL)
 	return true;
 }
 
+bool C4Network2RefClient::GetVersion(StdStrBuf *pVersion)
+{
+	// call only after GetReferences
+	if (!fUrlSet) return false;
+	*pVersion = Version;
+	return true;
+}

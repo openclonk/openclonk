@@ -164,8 +164,23 @@ static bool IsWindowsWithUAC()
 	return false;
 }
 
+void C4UpdateDlg::RedirectToDownloadPage()
+{
+	OpenURL("http://www.openclonk.org/download");
+}
+
 bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 {
+	if(szUpdateURL == NULL || strlen(szUpdateURL) == 0)
+	{
+		if (pScreen->ShowMessageModal(LoadResStr("IDS_MSG_NEWRELEASEAVAILABLE"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
+		{
+			RedirectToDownloadPage();
+			return true;
+		}
+		return false;
+	}
+
 	// Determine local filename for update group
 	StdCopyStrBuf strLocalFilename(Config.AtTempPath(GetFilename(szUpdateURL)));
 	StdCopyStrBuf strRemoteURL(szUpdateURL);
@@ -175,7 +190,7 @@ bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strRemoteURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
 	{
 		// Download failed, open browser so the user can download a full package
-		OpenURL("http://www.openclonk.org/download");
+		RedirectToDownloadPage();
 		// return success, because error message has already been shown
 		return true;
 	}
@@ -281,9 +296,11 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	return succeeded;
 }
 
-bool C4UpdateDlg::IsValidUpdate(const char *szUpdateURL)
+bool C4UpdateDlg::IsValidUpdate(const char *szVersion)
 {
-	return szUpdateURL != NULL && strlen(szUpdateURL) > 0;
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	if (szVersion == NULL || strlen(szVersion) == 0) return false;
+	return strcmp(szVersion,strVersion.getData()) != 0;
 }
 
 bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
@@ -294,8 +311,9 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			return false;
 	// Store the time of this update check (whether it's automatic or not or successful or not)
 	Config.Network.LastUpdateTime = time(NULL);
-	// Get current update url from server
+	// Get current update url and version info from server
 	StdStrBuf UpdateURL;
+	StdStrBuf VersionInfo;
 	C4GUI::Dialog *pWaitDlg = NULL;
 	if (C4GUI::IsGUIValid())
 	{
@@ -319,7 +337,11 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			// check for dialog close
 			if (pWaitDlg) if (!C4GUI::IsGUIValid() || !pWaitDlg->IsShown())  { fAborted = true; break; }
 		}
-		if (!fAborted) fSuccess = UpdateClient.GetUpdateURL(&UpdateURL);
+		if (!fAborted) 
+		{
+			fSuccess = UpdateClient.GetVersion(&VersionInfo);
+			UpdateClient.GetUpdateURL(&UpdateURL);
+		}
 		Application.InteractiveThread.RemoveProc(&UpdateClient);
 		UpdateClient.SetNotify(NULL);
 	}
@@ -343,7 +365,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 		return false;
 	}
 	// Applicable update available
-	if (C4UpdateDlg::IsValidUpdate(UpdateURL.getData()))
+	if (C4UpdateDlg::IsValidUpdate(VersionInfo.getData()))
 	{
 		// Prompt user, then apply update
 		if (pScreen->ShowMessageModal(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
@@ -383,6 +405,25 @@ bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
 	{
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
 		                                     mkNamingAdapt(*pUpdateURL,"UpdateURL"),
+		                                     C4ENGINENAME), ResultString);
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		SetError(pExc->Msg.getData());
+		return false;
+	}
+	// done; version OK!
+	return true;
+}
+
+{
+	// Sanity check
+	if (isBusy() || !isSuccess()) return false;
+	// Parse response
+	try
+	{
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
+		                                     mkNamingAdapt(*pVersion,"Version"),
 		                                     C4ENGINENAME), ResultString);
 	}
 	catch (StdCompiler::Exception *pExc)

@@ -214,7 +214,7 @@ public:
 
 	void OnSec1Timer(); // idle proc: update list
 
-	void CheckVersionUpdate(const char *szUpdateURL); // make an update button visible if the passed url is a valid update url
+	void CheckVersionUpdate(const char *szUpdateURL, const char *szVersion); // make an update button visible if the passed url is a valid update url
 };
 
 
