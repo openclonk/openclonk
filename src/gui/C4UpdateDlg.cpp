@@ -21,6 +21,10 @@
 // dialogs for update, and the actual update application code
 
 #include "C4Include.h"
+
+// Don't compile this class if automatic update is disabled
+#ifdef WITH_AUTOMATIC_UPDATE
+
 #include "C4UpdateDlg.h"
 #include "C4DownloadDlg.h"
 
@@ -388,3 +392,5 @@ bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
 	// done; version OK!
 	return true;
 }
+
+#endif // WITH_AUTOMATIC_UPDATE

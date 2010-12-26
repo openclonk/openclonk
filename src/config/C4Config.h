@@ -177,10 +177,12 @@ public:
 	int32_t MaxLoadFileSize;
 	char LastPassword[CFG_MaxString+1];
 	char AlternateServerAddress[CFG_MaxString+1];
-	char UpdateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
+#ifdef WITH_AUTOMATIC_UPDATE
+	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
 	int32_t LastUpdateTime;
+#endif
 	int32_t AsyncMaxWait;
 public:
 	void CompileFunc(StdCompiler *pComp);

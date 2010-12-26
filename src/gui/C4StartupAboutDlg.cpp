@@ -23,6 +23,7 @@
 #include <C4StartupAboutDlg.h>
 #include <C4UpdateDlg.h>
 #include <C4GraphicsResource.h>
+#include <C4Version.h>
 
 #include <C4StartupMainDlg.h>
 
@@ -63,8 +64,10 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	int32_t iButtonWidth = caButtons.GetInnerWidth() / 4;
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_BACK"), caButtons.GetGridCell(0,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
+#ifdef WITH_AUTOMATIC_UPDATE
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_CHECKFORUPDATES"), caButtons.GetGridCell(2,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnUpdateBtn));
 	btn->SetToolTip(LoadResStr("IDS_DESC_CHECKONLINEFORNEWVERSIONS"));
+#endif
 }
 
 C4StartupAboutDlg::~C4StartupAboutDlg()
@@ -109,7 +112,9 @@ void C4StartupAboutDlg::OnRegisterBtn(C4GUI::Control *btn)
 	OpenURL(FormatString("http://www.clonk.de/register.php?lng=%s&product=cr", sLangCode.getData()).getData());
 }
 
+#ifdef WITH_AUTOMATIC_UPDATE
 void C4StartupAboutDlg::OnUpdateBtn(C4GUI::Control *btn)
 {
 	C4UpdateDlg::CheckForUpdates(GetScreen());
 }
+#endif

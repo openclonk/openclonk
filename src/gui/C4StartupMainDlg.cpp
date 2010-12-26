@@ -290,7 +290,7 @@ bool C4StartupMainDlg::KeyEnterUp()
 
 void C4StartupMainDlg::OnShown()
 {
-
+#ifdef WITH_AUTOMATIC_UPDATE
 	// Incoming update
 	if (Application.IncomingUpdate)
 	{
@@ -309,6 +309,7 @@ void C4StartupMainDlg::OnShown()
 		if (Config.Network.AutomaticUpdate)
 			C4UpdateDlg::CheckForUpdates(GetScreen(), true);
 	}
+#endif
 
 	// first start evaluation
 	if (Config.General.FirstStart)
