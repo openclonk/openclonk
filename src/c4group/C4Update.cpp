@@ -42,8 +42,29 @@ bool C4Group_CopyEntry(C4Group *pFrom, C4Group *pTo, const char *strItemName)
 	return true;
 }
 
-bool C4Group_ApplyUpdate(C4Group &hGroup)
+bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 {
+	// Wait for parent process to terminate (so we can safely replace the executable)
+#ifdef _WIN32
+	if(ParentProcessID)
+	{
+		HANDLE ParentProcess = OpenProcess(SYNCHRONIZE, FALSE, ParentProcessID);
+		if(ParentProcess)
+		{
+			// If we couldn't find a handle then either
+			// a) the process terminated already, which is great.
+			// b) OpenProcess() failed, which is not so great. But let's still try to do
+			//    the update.
+			printf("Waiting for parent process to terminate...");
+			DWORD res = WaitForSingleObject(ParentProcess, 10000);
+			if(res == WAIT_TIMEOUT)
+				fprintf(stderr, "Parent process did not terminate after 10 seconds. Continuing...");
+		}
+	}
+#else
+	// We could use waitpid on Unix, but we don't need that functionality there anyway...
+#endif
+
 	// Process object update group (GRPUP_Entries.txt found)
 	C4UpdatePackage Upd;
 	if (hGroup.FindEntry(C4CFN_UpdateEntries))
@@ -129,7 +150,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup)
 		while (hGroup.FindNextEntry("*.c4u", strEntry))
 			if (hChild.OpenAsChild(&hGroup, strEntry))
 			{
-				bool ok = C4Group_ApplyUpdate(hChild);
+				bool ok = C4Group_ApplyUpdate(hChild, 0);
 				hChild.Close();
 				// Failure on child update
 				if (!ok) return false;

@@ -349,11 +349,29 @@ bool ProcessGroup(const char *FilenamePar)
 
 						// Apply an update
 					case 'y':
-						Log("Applying update...");
-						if (C4Group_ApplyUpdate(hGroup))
-							{ if (argv[iArg][2]=='d') fDeleteGroup = true; }
-						else
-							fprintf(stderr,"Update failed.\n");
+						{
+							Log("Applying update...");
+							bool success = false;
+							unsigned long pid = 0;
+							bool have_pid = false;
+
+							if(iArg + 1 < argc)
+							{
+								errno = 0;
+								pid = strtoul(argv[iArg+1], NULL, 10);
+								if(errno == 0)
+									have_pid = true;
+								else
+									pid = 0;
+							}
+
+							if(C4Group_ApplyUpdate(hGroup, pid))
+								{ if (argv[iArg][2]=='d') fDeleteGroup = true; }
+							else
+								fprintf(stderr,"Update failed.\n");
+
+							if(have_pid) ++iArg;
+						}
 						break;
 #ifdef _DEBUG
 					case 'z':
@@ -578,7 +596,7 @@ int main(int argc, char *argv[])
 		printf("          -p Pack  -u Unpack  -x Explode\n");
 		printf("          -k Print maker\n");
 		printf("          -g [source] [target] [title] Make update\n");
-		printf("          -y Apply update\n");
+		printf("          -y [ppid] Apply update (waiting for ppid to terminate first)\n");
 		printf("\n");
 		printf("Options:  -v Verbose -r Recursive\n");
 		printf("          -i Register shell -u Unregister shell\n");

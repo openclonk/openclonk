@@ -72,6 +72,6 @@ protected:
 	void WriteLog(const char *strMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 };
 
-bool C4Group_ApplyUpdate(C4Group &hGroup);
+bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID);
 
 #endif
