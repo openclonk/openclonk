@@ -16,7 +16,7 @@
 builddir/Makefile:
 	dh_testdir
 	# Add here commands to configure the package.
-	autoreconf -i && ./configure --with-gtk
+	autoreconf -i && ./configure --with-gtk --without-automatic-update
 
 build: build-stamp
 
