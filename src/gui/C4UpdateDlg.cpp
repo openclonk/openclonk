@@ -190,7 +190,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	strUpdateProg += ".exe";
 #endif
 	// Determine name of local extract of update program
-	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(strUpdateProg);
+	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(Config.AtExePath(strUpdateProg.getData()));
 	// Windows Vista/7: rename update program to setup.exe for UAC elevation and in temp path
 	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
 	// Extract update program (the update should be applied using the new version)
@@ -199,6 +199,8 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (!UpdateGroup.Open(strUpdateFile)) return false;
 	// Look for update program at top level
 	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
+		return false;
+#if 0
 		// ASK: What is this? Why should an update program not be found at the top
 		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
@@ -209,15 +211,32 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 				SubGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData());
 				SubGroup.Close();
 			}
+#endif
 	UpdateGroup.Close();
 	// Execute update program
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
 	succeeded = true;
 #ifdef _WIN32
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
-	StdStrBuf strUpdateArgs; strUpdateArgs.Format("\"%s\" /p -w \"" C4ENGINECAPTION "\" -w \"" C4EDITORCAPTION "\" -w 2000 %s", strUpdateFile, fDeleteUpdate ? "-yd" : "-y");
-	int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
-	if (iError <= 32) return false;
+	DWORD ProcessID = GetCurrentProcessId();
+	StdStrBuf strUpdateArgs, strTitle;
+	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
+
+	STARTUPINFO startupInfo;
+	startupInfo.cb = sizeof(startupInfo);
+	startupInfo.lpReserved = NULL;
+	startupInfo.lpDesktop = NULL;
+	startupInfo.lpTitle = "Updating OpenClonk...";
+	startupInfo.dwFlags = STARTF_USESHOWWINDOW;
+	startupInfo.wShowWindow = SW_SHOW;
+	startupInfo.cbReserved2 = 0;
+	startupInfo.lpReserved2 = NULL;
+	PROCESS_INFORMATION procInfo;
+	BOOL success = CreateProcess(strUpdateProgEx.getData(), strUpdateArgs.getMData(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath, &startupInfo, &procInfo);
+	if(!success) return false;
+
+	//int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
+	//if (iError <= 32) return false;
 	// must quit ourselves for update program to work
 	if (succeeded) Application.Quit();
 #else
