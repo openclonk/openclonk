@@ -927,6 +927,7 @@ IDS_MSG_TRYLEAGUESIGNUP=Liga-Anmeldung für Spieler %s...
 IDS_MSG_UPDATEFAILED=Update fehlgeschlagen.
 IDS_MSG_UPDATEINPROGRESS=Update-Vorgang läuft noch. Bitte warten.
 IDS_MSG_UPDATENOTAVAILABLE=Das Update ist eventuell noch nicht für dieses Betriebssystem verfügbar.
+IDS_MSG_NEWRELEASEAVAILABLE=Neue Version verfügbar. Bitte von der Download-Seite herunterladen und installieren.
 IDS_MSG_USINGPLR=Mit %s spielen
 IDS_MSG_USINGPLR_DESC=Diesen Spieler benutzen um das Spiel fortzusetzen
 IDS_MSG_WASKICKEDFROMTHECHANNEL=%s wurde aus dem Chat-Kanal geworfen (%s).

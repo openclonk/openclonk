@@ -194,6 +194,7 @@ class C4Network2RefClient : public C4Network2HTTPClient
 {
 private:
 	StdStrBuf UpdateURL;
+	StdStrBuf Version;
 	bool fUrlSet;
 protected:
 	virtual int32_t GetDefaultPort() { return C4NetStdPortRefServer; }
@@ -203,6 +204,7 @@ public:
 	bool QueryReferences();
 	bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);
 	bool GetUpdateURL(StdStrBuf *pUpdateURL); // call only after GetReferences
+	bool GetVersion(StdStrBuf *pVersion);
 };
 
 #endif // C4NETWORK2REFERENCE_H

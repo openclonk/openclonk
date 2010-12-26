@@ -274,8 +274,9 @@ bool C4StartupNetListEntry::OnReference()
 	{
 		// masterserver is official: So check version
 		StdStrBuf updURL;
-		if (pRefClient->GetUpdateURL(&updURL))
-			pNetDlg->CheckVersionUpdate(updURL.getData());
+		StdStrBuf versInf;
+		if (pRefClient->GetUpdateURL(&updURL) && pRefClient->GetVersion(&versInf))
+			pNetDlg->CheckVersionUpdate(updURL.getData(),versInf.getData());
 		// masterserver: schedule next query
 		sInfoText[1].Format(LoadResStr("IDS_NET_INFOGAMES"), (int) iNewRefCount);
 		SetTimeout(TT_Masterserver);
@@ -1200,11 +1201,11 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 		pEntry->UpdateCollapsed(true);
 }
 
-void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL)
+void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL, const char *szVersion)
 {
 #ifdef WITH_AUTOMATIC_UPDATE
 	// Is a valid update
-	if (C4UpdateDlg::IsValidUpdate(szUpdateURL))
+	if (C4UpdateDlg::IsValidUpdate(szVersion))
 	{
 		UpdateURL = szUpdateURL;
 		btnUpdate->SetVisibility(true);
