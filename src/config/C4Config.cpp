@@ -39,6 +39,7 @@
 #include <StdFile.h>
 #include <StdWindow.h>
 #include <StdRegistry.h>
+#include <StdWindow.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -49,20 +50,6 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
-
-#include "MacUtility.h"
-
-bool isGermanSystem()
-{
-#ifdef _WIN32
-	if (PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN) return true;
-#elif defined(__APPLE__)
-	return MacUtility::isGerman();
-#else
-	if (strstr(setlocale(LC_MESSAGES, 0), "de")) return true;
-#endif
-	return false;
-}
 
 C4Config *pConfig;
 
@@ -764,16 +751,12 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 	}
 }
 
-namespace
-{
-}
-
 void C4ConfigGeneral::DefaultLanguage()
 {
 	// No language defined: default to German or English by system language
 	if (!Language[0])
 	{
-		if (isGermanSystem())
+		if (IsGermanSystem())
 			SCopy("DE - Deutsch", Language);
 		else
 			SCopy("US - English", Language);

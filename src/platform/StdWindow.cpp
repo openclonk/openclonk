@@ -52,6 +52,9 @@
 #include "resource.h"
 #include "C4Version.h"
 
+#include <shellapi.h>
+#include <fcntl.h>
+
 #define C4FullScreenClassName L"C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -490,4 +493,31 @@ void CStdWindow::RequestUpdate()
 {
 	// just invoke directly
 	PerformUpdate();
+}
+
+bool OpenURL(const char *szURL)
+{
+	return (intptr_t)ShellExecute(NULL, "open", szURL, NULL, NULL, SW_SHOW) > 32;
+}
+
+bool EraseItemSafe(const char *szFilename)
+{
+	char Filename[_MAX_PATH+1];
+	SCopy(szFilename, Filename, _MAX_PATH);
+	Filename[SLen(Filename)+1]=0;
+	SHFILEOPSTRUCT shs;
+	shs.hwnd=0;
+	shs.wFunc=FO_DELETE;
+	shs.pFrom=Filename;
+	shs.pTo=NULL;
+	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
+	shs.fAnyOperationsAborted=false;
+	shs.hNameMappings=0;
+	shs.lpszProgressTitle=NULL;
+	return !SHFileOperation(&shs);
+}
+
+bool IsGermanSystem()
+{
+	return PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN;
 }

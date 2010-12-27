@@ -17,6 +17,10 @@
 #include <C4Include.h>
 #include "StdAppCommon.h"
 
+#ifdef WITH_GLIB
+#include <glib.h>
+#endif
+
 void CStdApp::Run()
 {
 	// Main message loop
@@ -35,6 +39,23 @@ bool CStdApp::ScheduleProcs(int iTimeout)
 #endif
 	return StdScheduler::ScheduleProcs(iTimeout);
 }
+
+#if !defined(__APPLE__) && !defined(_WIN32)
+
+bool IsGermanSystem()
+{
+	if (strstr(setlocale(LC_MESSAGES, 0), "de"))
+		return true;
+	else
+		return false;
+}
+
+bool EraseItemSafe(const char *szFilename)
+{
+	return false;
+}
+
+#endif
 
 void CStdWindow::PerformUpdate()
 {

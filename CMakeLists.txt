@@ -439,7 +439,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4VideoPlayback.h
 	src/platform/C4ViewportWindow.cpp
 	src/platform/C4ViewportWindow.h
-	src/platform/OpenURL.cpp
 	src/platform/PlatformAbstraction.h
 	src/platform/StdConfig.cpp
 	src/platform/StdConfig.h

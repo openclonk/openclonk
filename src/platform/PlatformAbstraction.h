@@ -209,10 +209,13 @@ inline int stricmp(const char *s1, const char *s2)
 #define C4_OS "unknown";
 #endif
 
+// delete item to the recycle bin
+bool EraseItemSafe(const char *szFilename);
+
+// Check whether the OS is "German"
+bool IsGermanSystem();
 
 // open a weblink in an external browser
-bool OpenURL(const char *szURL);
-
-bool EraseItemSafe(const char *szFilename);
+bool OpenURL(const char* szURL);
 
 #endif // INC_PLATFORMABSTRACTION

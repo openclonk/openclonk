@@ -23,6 +23,7 @@
 
 #include <C4Include.h>
 #include <StdWindow.h>
+#include <string>
 
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
@@ -76,4 +77,28 @@ bool CStdApp::ReadStdInCommand()
 	} else if(isprint((unsigned char)c))
 		CmdBuf.AppendChar(c);
 	return true;
+}
+
+bool IsGermanSystem()
+{
+	id languages = [[NSUserDefaults standardUserDefaults] valueForKey:@"AppleLanguages"];
+	return languages && [[languages objectAtIndex:0] isEqualToString:@"de"];
+}
+
+bool OpenURL(const char* szURL)
+{
+	std::string command = std::string("open ") + '"' + szURL + '"';
+	std::system(command.c_str());
+	return true;
+}
+
+bool EraseItemSafe(const char* szFilename)
+{
+	NSString* filename = [NSString stringWithUTF8String: szFilename];
+	return [[NSWorkspace sharedWorkspace]
+		performFileOperation: NSWorkspaceRecycleOperation
+		source: [filename stringByDeletingLastPathComponent]
+		destination: @""
+		files: [NSArray arrayWithObject: [filename lastPathComponent]]
+		tag: 0];
 }
