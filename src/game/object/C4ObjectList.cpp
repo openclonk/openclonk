@@ -159,16 +159,16 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 		if (!fUnsorted)
 		{
 
-			// Find successor by matching category / id
-			// Sort by matching category/id is necessary for inventory shifting.
+			// Find successor by matching Plane / id
+			// Sort by matching Plane/id is necessary for inventory shifting.
 			// It is not done for static back to allow multiobject outside structure.
 			// Unsorted objects are ignored in comparison.
 			if (!(nObj->Category & C4D_StaticBack))
 				for (cPrev=NULL,cLnk=First; cLnk; cLnk=cLnk->Next)
 					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 					{
-						if ( (cLnk->Obj->Category & C4D_SortLimit)==(nObj->Category & C4D_SortLimit) )
-							if ( cLnk->Obj->id == nObj->id )
+						if (cLnk->Obj->GetPlane() == nObj->GetPlane())
+							if (cLnk->Obj->id == nObj->id)
 								break;
 						cPrev=cLnk;
 					}
@@ -178,7 +178,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 				for (cPrev=NULL, cLnk=First; cLnk; cLnk=cLnk->Next)
 					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 					{
-						if ((cLnk->Obj->Category & C4D_SortLimit)<=(nObj->Category & C4D_SortLimit))
+						if (cLnk->Obj->GetPlane() <= nObj->GetPlane())
 							break;
 						cPrev=cLnk;
 					}
@@ -900,7 +900,7 @@ void C4ObjectList::CheckCategorySort()
 	for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
 		if (!cLnk->Obj->Unsorted && cLnk->Obj->Status)
 		{
-			if (cPrev) assert( (cPrev->Obj->Category & C4D_SortLimit) >= (cLnk->Obj->Category & C4D_SortLimit));
+			if (cPrev) assert(cPrev->Obj->GetPlane() >= cLnk->Obj->GetPlane());
 			cPrev = cLnk;
 		}
 }

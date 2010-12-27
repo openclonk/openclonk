@@ -133,11 +133,37 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
 
 		// Check category
-		if (!(Category & C4D_SortLimit))
+		if (!GetPlane() && Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
 		{
-			DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
-			// assign a default category here
-			Category = (Category & ~C4D_SortLimit) | 1;
+			int Plane; bool gotplane = true;
+			switch (Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
+			{
+				case C4D_StaticBack: Plane = 100; break;
+				case C4D_Structure: Plane = C4Plane_Structure; break;
+				case C4D_Vehicle: Plane = 300; break;
+				case C4D_Living: Plane = 400; break;
+				case C4D_Object: Plane = 500; break;
+				case C4D_StaticBack | C4D_Background: Plane = -500; break;
+				case C4D_Structure | C4D_Background: Plane = -400; break;
+				case C4D_Vehicle | C4D_Background: Plane = -300; break;
+				case C4D_Living | C4D_Background: Plane = -200; break;
+				case C4D_Object | C4D_Background: Plane = -100; break;
+				case C4D_StaticBack | C4D_Foreground: Plane = 1100; break;
+				case C4D_Structure | C4D_Foreground: Plane = 1200; break;
+				case C4D_Vehicle | C4D_Foreground: Plane = 1300; break;
+				case C4D_Living | C4D_Foreground: Plane = 1400; break;
+				case C4D_Object | C4D_Foreground: Plane = 1500; break;
+				default:
+					DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
+					gotplane = false;
+					break;
+			}
+			if (gotplane) SetProperty(P_Plane, C4VInt(Plane));
+		}
+		if (!GetPlane())
+		{
+			DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", GetName(), id.ToString(), hGroup.GetFullName().getData());
+			SetProperty(P_Plane, C4VInt(60));
 		}
 		// Check mass
 		if (Mass < 0)

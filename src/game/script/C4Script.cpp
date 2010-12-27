@@ -593,7 +593,6 @@ static C4Void FnSetDir(C4AulObjectContext *cthr, long ndir)
 
 static C4Void FnSetCategory(C4AulObjectContext *cthr, long iCategory)
 {
-	if (!(iCategory & C4D_SortLimit)) iCategory |= (cthr->Obj->Category & C4D_SortLimit);
 	cthr->Obj->SetCategory(iCategory);
 	return C4VNull;
 }
@@ -1700,7 +1699,7 @@ static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * Pro
 	// Search for real
 	bool result = !!FindConSiteSpot(v1, v2,
 	                                pDef->Shape.Wdt,pDef->Shape.Hgt,
-	                                pDef->Category,
+	                                pDef->GetPlane(),
 	                                20);
 	if(!result) return 0;
 	C4ValueArray *pArray = new C4ValueArray(2);

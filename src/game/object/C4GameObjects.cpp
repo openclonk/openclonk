@@ -616,31 +616,20 @@ void C4GameObjects::FixObjectOrder()
 		C4ObjectLink *pLnk1stUnsorted=NULL, *pLnkLastUnsorted=NULL, *pLnkPrev=NULL, *pLnk;
 		C4Object *pLastWarnObj = NULL;
 		// forward fix
-		uint32_t dwLastCategory = C4D_SortLimit;
+		int lastPlane = 2147483647; //INT32_MAX;
 		for (pLnk = pLnk0; pLnk!=pLnkL->Next; pLnk=pLnk->Next)
 		{
 			C4Object *pObj = pLnk->Obj;
 			if (pObj->Unsorted || !pObj->Status) continue;
-			DWORD dwCategory = pObj->Category & C4D_SortLimit;
-			// must have exactly one SortOrder-bit set
-			if (!dwCategory)
+			int currentPlane = pObj->GetPlane();
+			// must have nonzero Plane
+			if (!currentPlane)
 			{
-				DebugLogF("Objects.txt: Object #%d is missing sorting category!", (int) pObj->Number);
-				++pObj->Category; dwCategory = 1;
-			}
-			else
-			{
-				DWORD dwCat2=dwCategory; int i=0;
-				while (~dwCat2&1) { dwCat2 = dwCat2>>1; ++i; }
-				if (dwCat2 != 1)
-				{
-					DebugLogF("Objects.txt: Object #%d has invalid sorting category %x!", (int) pObj->Number, (unsigned int) dwCategory);
-					dwCategory = (1<<i);
-					pObj->Category = (pObj->Category & ~C4D_SortLimit) | dwCategory;
-				}
+				DebugLogF("Objects.txt: Object #%d has zero Plane!", (int) pObj->Number);
+				pObj->SetPlane(lastPlane); currentPlane = lastPlane;
 			}
 			// fix order
-			if (dwCategory > dwLastCategory)
+			if (currentPlane > lastPlane)
 			{
 				// SORT ERROR! (note that pLnkPrev can't be 0)
 				if (pLnkPrev->Obj != pLastWarnObj)
@@ -653,19 +642,19 @@ void C4GameObjects::FixObjectOrder()
 				pLnkLastUnsorted = pLnkPrev;
 			}
 			else
-				dwLastCategory = dwCategory;
+				lastPlane = currentPlane;
 			pLnkPrev = pLnk;
 		}
 		if (!pLnkLastUnsorted) break; // done
 		pLnkL = pLnkLastUnsorted;
 		// backwards fix
-		dwLastCategory = 0;
+		lastPlane = -2147483647-1; //INT32_MIN;
 		for (pLnk = pLnkL; pLnk!=pLnk0->Prev; pLnk=pLnk->Prev)
 		{
 			C4Object *pObj = pLnk->Obj;
 			if (pObj->Unsorted || !pObj->Status) continue;
-			DWORD dwCategory = pObj->Category & C4D_SortLimit;
-			if (dwCategory < dwLastCategory)
+			int currentPlane = pObj->GetPlane();
+			if (currentPlane < lastPlane)
 			{
 				// SORT ERROR! (note that pLnkPrev can't be 0)
 				if (pLnkPrev->Obj != pLastWarnObj)
@@ -678,7 +667,7 @@ void C4GameObjects::FixObjectOrder()
 				pLnk1stUnsorted = pLnkPrev;
 			}
 			else
-				dwLastCategory = dwCategory;
+				lastPlane = currentPlane;
 			pLnkPrev = pLnk;
 		}
 		if (!pLnk1stUnsorted) break; // done

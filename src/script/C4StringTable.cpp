@@ -144,6 +144,7 @@ C4StringTable::C4StringTable()
 	P[P_CausedBy] = "CausedBy";
 	P[P_Blasted] = "Blasted";
 	P[P_IncineratingObj] = "IncineratingObj";
+	P[P_Plane] = "Plane";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

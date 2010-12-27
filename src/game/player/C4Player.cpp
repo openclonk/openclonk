@@ -545,7 +545,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 			{
 				ctx=tx; cty=ty;
 				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
-				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->Category,20))
+				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->GetPlane(),20))
 					if ((cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,true)))
 					{
 						// FirstBase
@@ -672,7 +672,7 @@ bool C4Player::ScenarioInit()
 		// Use nearest above-ground...
 		FindSolidGround(ptx,pty,30);
 		// Might have hit a small lake, or similar: Seach a real site spot from here
-		FindConSiteSpot(ptx, pty, 30,50,C4D_Structure, 400);
+		FindConSiteSpot(ptx, pty, 30,50,C4Plane_Structure, 400);
 	}
 
 	// Place Readies

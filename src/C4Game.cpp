@@ -1098,7 +1098,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 	return pObj;
 }
 
-C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t category)
+C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane)
 {
 	C4Object *cObj; C4ObjectLink *clnk;
 	C4Rect rect1,rect2;
@@ -1106,12 +1106,12 @@ C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	C4LArea Area(&::Objects.Sectors, tx, ty, wdt, hgt); C4LSector *pSector;
 	for (C4ObjectList *pObjs = Area.FirstObjectShapes(&pSector); pSector; pObjs = Area.NextObjectShapes(pObjs, &pSector))
 		for (clnk=pObjs->First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-			if (cObj->Status) if (!cObj->Contained)
-					if (cObj->Category & category & C4D_SortLimit)
-					{
-						rect2=cObj->Shape; rect2.x+=cObj->GetX(); rect2.y+=cObj->GetY();
-						if (rect1.Overlap(rect2)) return cObj;
-					}
+			if (cObj->Status && !cObj->Contained)
+				if (cObj->GetPlane() == Plane)
+				{
+					rect2=cObj->Shape; rect2.x+=cObj->GetX(); rect2.y+=cObj->GetY();
+					if (rect1.Overlap(rect2)) return cObj;
+				}
 	return NULL;
 }
 

@@ -238,6 +238,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	id=Def->id;
 	if (Info) SetName(pInfo->Name);
 	Category=Def->Category;
+	Plane = Def->GetPlane(); assert(Plane);
 	Def->Count++;
 	if (pCreator) Layer=pCreator->Layer;
 
@@ -2350,6 +2351,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Controller,                       "Controller",         NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));
+	pComp->Value(mkNamingAdapt( Plane,                              "Plane",                0                 ));
 
 	pComp->Value(mkNamingAdapt( r,                                "Rotation",           0                 ));
 
@@ -5055,4 +5057,45 @@ bool C4Object::IsUserPlayerObject()
 	if (!pOwner || pOwner->GetType() != C4PT_User) return false;
 	// otherwise, it's a user playeer object
 	return true;
+}
+
+void C4Object::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane:
+				if (!to.getInt()) throw new C4AulExecError(this, "invalid Plane 0");
+				SetPlane(to.getInt());
+				return;
+		}
+	}
+	C4PropListNumbered::SetPropertyByS(k, to);
+}
+
+void C4Object::ResetProperty(C4String * k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane:
+				SetPlane(GetPropertyInt(P_Plane));
+				return;
+		}
+	}
+	return C4PropListNumbered::ResetProperty(k);
+}
+
+bool C4Object::GetPropertyByS(C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane: *pResult = C4VInt(Plane); return true;
+		}
+	}
+	return C4PropListNumbered::GetPropertyByS(k, pResult);
 }

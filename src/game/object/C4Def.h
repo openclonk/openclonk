@@ -67,6 +67,8 @@ C4D_IgnoreFoW        =  1<<17,
 
 C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
 
+const int32_t C4Plane_Structure = 200;
+
 const int32_t C4D_Grab_Put = 1,
 C4D_Grab_Get = 2,
 
@@ -224,6 +226,7 @@ public:
 	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0,C4DrawTransform* trans=NULL);
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
+	int32_t GetPlane() { return GetPropertyInt(P_Plane); }
 	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 	void Synchronize();
 	virtual C4Def const * GetDef() const { return this; }	

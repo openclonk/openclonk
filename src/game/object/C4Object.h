@@ -199,10 +199,13 @@ public:
 protected:
 	bool OnFire;
 	int32_t Con;
+	int32_t Plane;
 	bool Alive;
 	C4SolidMask *pSolidMaskData; // NoSave //
 public:
 	void Resort();
+	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
+	int32_t GetPlane() { return Plane; }
 	int32_t GetAudible();
 	void DigOutMaterialCast(bool fRequest);
 	void AddMaterialContents(int32_t iMaterial, int32_t iAmount);
@@ -417,6 +420,9 @@ public:
 
 	// overloaded from C4PropList
 	virtual C4Object * GetObject() { return this; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 };
 
 #endif

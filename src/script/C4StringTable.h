@@ -22,8 +22,6 @@
 
 #define C4STRINGTABLE_H
 
-#include <vector>
-
 class C4StringTable;
 class C4Group;
 
@@ -232,6 +230,7 @@ enum C4PropertyName
 	P_CausedBy,
 	P_Blasted,
 	P_IncineratingObj,
+	P_Plane,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
