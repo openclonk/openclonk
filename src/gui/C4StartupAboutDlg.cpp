@@ -103,15 +103,6 @@ void C4StartupAboutDlg::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32
 	C4StartupDlg::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 }
 
-void C4StartupAboutDlg::OnRegisterBtn(C4GUI::Control *btn)
-{
-	// open hardcoded registration URL
-	// URL needs lowercase language code, two-character code only
-	StdStrBuf sLangCode; sLangCode.Format("%.2s", Config.General.Language);
-	sLangCode.ToLowerCase();
-	OpenURL(FormatString("http://www.clonk.de/register.php?lng=%s&product=cr", sLangCode.getData()).getData());
-}
-
 #ifdef WITH_AUTOMATIC_UPDATE
 void C4StartupAboutDlg::OnUpdateBtn(C4GUI::Control *btn)
 {
