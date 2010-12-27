@@ -501,8 +501,8 @@ set(OC_CLONK_SOURCES
 	src/script/C4StringTable.h
 	src/script/C4Value.cpp
 	src/script/C4Value.h
-	src/script/C4ValueList.cpp
-	src/script/C4ValueList.h
+	src/script/C4ValueArray.cpp
+	src/script/C4ValueArray.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
 	src/tinyxml/tinystr.cpp

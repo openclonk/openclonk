@@ -20,7 +20,7 @@
 #include "C4Include.h"
 #include "C4MeshAnimation.h"
 #include "C4Object.h"
-#include "C4ValueList.h"
+#include "C4ValueArray.h"
 #include "C4Game.h"
 
 namespace

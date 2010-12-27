@@ -230,7 +230,7 @@ extern const C4NullValue C4VNull;
  in common situations because the Type of the new value is known. In any case,
  inlining them does speed up the script engine on at least one artificial benchmark. */
 
-#include "C4ValueList.h"
+#include "C4ValueArray.h"
 #include "C4PropList.h"
 
 ALWAYS_INLINE void C4Value::AddDataRef()

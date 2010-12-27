@@ -31,7 +31,6 @@
 #define INC_C4Aul
 
 #include <C4AList.h>
-#include <C4ValueList.h>
 #include <C4ValueMap.h>
 #include <C4Id.h>
 #include <C4Script.h>

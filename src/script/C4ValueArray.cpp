@@ -20,42 +20,42 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include <C4Include.h>
-#include <C4ValueList.h>
+#include <C4ValueArray.h>
 #include <algorithm>
 
 #include <C4Aul.h>
 #include <C4FindObject.h>
 
-C4ValueList::C4ValueList()
-		: iSize(0), pData(NULL)
+C4ValueArray::C4ValueArray()
+		: iSize(0), pData(NULL), iRefCnt(0)
 {
 }
 
-C4ValueList::C4ValueList(int32_t inSize)
-		: iSize(0), pData(NULL)
+C4ValueArray::C4ValueArray(int32_t inSize)
+		: iSize(0), pData(NULL), iRefCnt(0)
 {
 	SetSize(inSize);
 }
 
-C4ValueList::C4ValueList(const C4ValueList &ValueList2)
+C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
 		: iSize(0), pData(NULL)
 {
-	SetSize(ValueList2.GetSize());
+	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
-		pData[i].Set(ValueList2.GetItem(i));
+		pData[i].Set(ValueArray2.GetItem(i));
 }
 
-C4ValueList::~C4ValueList()
+C4ValueArray::~C4ValueArray()
 {
 	delete[] pData; pData = NULL;
 	iSize = 0;
 }
 
-C4ValueList &C4ValueList::operator =(const C4ValueList& ValueList2)
+C4ValueArray &C4ValueArray::operator =(const C4ValueArray& ValueArray2)
 {
-	this->SetSize(ValueList2.GetSize());
+	this->SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
-		pData[i].Set(ValueList2.GetItem(i));
+		pData[i].Set(ValueArray2.GetItem(i));
 	return *this;
 }
 
@@ -103,7 +103,7 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 		std::stable_sort(pData, pData+iSize, C4SortObjectSTL(rSort));
 }
 
-C4Value &C4ValueList::operator[](int32_t iElem)
+C4Value &C4ValueArray::operator[](int32_t iElem)
 {
 	assert(iElem < MaxSize);
 	assert(iElem >= 0);
@@ -114,7 +114,7 @@ C4Value &C4ValueList::operator[](int32_t iElem)
 	return pData[iElem];
 }
 
-void C4ValueList::SetItem(int32_t iElem, const C4Value &Value)
+void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 {
 	// enlarge
 	if (iElem < -iSize)
@@ -129,7 +129,7 @@ void C4ValueList::SetItem(int32_t iElem, const C4Value &Value)
 	pData[iElem]=Value;
 }
 
-void C4ValueList::SetSize(int32_t inSize)
+void C4ValueArray::SetSize(int32_t inSize)
 {
 	// array made smaller? Well, just ignore the additional allocated mem then
 	if (inSize<=iSize)
@@ -158,7 +158,7 @@ void C4ValueList::SetSize(int32_t inSize)
 	iSize = inSize;
 }
 
-bool C4ValueList::operator==(const C4ValueList& IntList2) const
+bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
 {
 	for (int32_t i=0; i<Max(iSize, IntList2.GetSize()); i++)
 		if (GetItem(i) != IntList2.GetItem(i))
@@ -167,19 +167,19 @@ bool C4ValueList::operator==(const C4ValueList& IntList2) const
 	return true;
 }
 
-void C4ValueList::Reset()
+void C4ValueArray::Reset()
 {
 	delete[] pData; pData = NULL;
 	iSize = 0;
 }
 
-void C4ValueList::DenumeratePointers()
+void C4ValueArray::DenumeratePointers()
 {
 	for (int32_t i = 0; i < iSize; i++)
 		pData[i].DenumeratePointer();
 }
 
-void C4ValueList::CompileFunc(class StdCompiler *pComp)
+void C4ValueArray::CompileFunc(class StdCompiler *pComp)
 {
 	int32_t inSize = iSize;
 	// Size. Reset if not found.
@@ -193,20 +193,6 @@ void C4ValueList::CompileFunc(class StdCompiler *pComp)
 	if (pComp->isCompiler()) this->SetSize(inSize);
 	// Values
 	pComp->Value(mkArrayAdapt(pData, iSize, C4Value()));
-}
-
-C4ValueArray::C4ValueArray()
-		: C4ValueList(), iRefCnt(0)
-{
-}
-
-C4ValueArray::C4ValueArray(int32_t inSize)
-		: C4ValueList(inSize), iRefCnt(0)
-{
-}
-
-C4ValueArray::~C4ValueArray()
-{
 }
 
 enum { C4VALUEARRAY_DEBUG = 0 };

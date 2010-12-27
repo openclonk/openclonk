@@ -30,7 +30,6 @@
 #include "C4Id.h"
 #include "C4Sector.h"
 #include "C4Value.h"
-#include "C4ValueList.h"
 #include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"

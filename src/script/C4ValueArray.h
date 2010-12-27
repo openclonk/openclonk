@@ -24,23 +24,20 @@
 
 #include "C4Value.h"
 
-class C4ValueList
+// reference counted array of C4Values
+class C4ValueArray
 {
 public:
 	enum { MaxSize = 1000000 }; // ye shalt not create arrays larger than that!
 
-	C4ValueList();
-	C4ValueList(int32_t inSize);
-	C4ValueList(const C4ValueList &ValueList2);
-	~C4ValueList();
+	C4ValueArray();
+	C4ValueArray(int32_t inSize);
+	C4ValueArray(const C4ValueArray &);
 
-	C4ValueList &operator =(const C4ValueList& ValueList2);
+	~C4ValueArray();
 
-protected:
-	int32_t iSize;
-	C4Value* pData;
+	C4ValueArray &operator =(const C4ValueArray&);
 
-public:
 	int32_t GetSize() const { return iSize; }
 
 	const C4Value &GetItem(int32_t iElem) const
@@ -63,37 +60,28 @@ public:
 	void DenumeratePointers();
 
 	// comparison
-	bool operator==(const C4ValueList& IntList2) const;
+	bool operator==(const C4ValueArray&) const;
 
 	// Compilation
 	void CompileFunc(class StdCompiler *pComp);
-};
 
-// value list with reference count, used for arrays
-class C4ValueArray : public C4ValueList
-{
-public:
-	C4ValueArray();
-	C4ValueArray(int32_t inSize);
-
-	~C4ValueArray();
 
 	// Add/Remove Reference
 	void IncRef() { iRefCnt++; }
 	void DecRef() { if (!--iRefCnt) delete this;  }
 
-	// Return sub-array [startIndex, endIndex), or reference for [0, iSize). Throws C4AulExecError.
+	// Return sub-array [startIndex, endIndex). Throws C4AulExecError.
 	C4ValueArray * GetSlice(int32_t startIndex, int32_t endIndex);
 	// Sets sub-array [startIndex, endIndex). Might resize the array.
 	void SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val);
-	// Change length
-	void SetLength(int32_t size);
 
 	void Sort(class C4SortObject &rSort);
 
 private:
 	// Reference counter
 	unsigned int iRefCnt;
+	int32_t iSize;
+	C4Value* pData;
 };
 
 #endif
