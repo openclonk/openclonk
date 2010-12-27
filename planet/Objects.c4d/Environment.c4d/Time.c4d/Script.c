@@ -33,7 +33,7 @@ public func GetTime()
 // Setting minute lenght to 0 will stop day-night cycle.
 public func SetCycleSpeed(int speed)
 {
-	//ChangeEffect("IntTimeCycle", this, nil, nil, Max(0, speed));
+	//GetEffect("IntTimeCycle", this).Interval = Max(0, speed);
 	RemoveEffect("IntTimeCycle", this);
 	AddEffect("IntTimeCycle", this, 100, Max(0, speed), this);
 	return;

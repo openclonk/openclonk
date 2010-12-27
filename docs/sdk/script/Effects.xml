@@ -315,7 +315,7 @@ protected func FxGravChangeUSpellStop(target, effect)
   // Effekt entfernen
   return true;
 }</code>
-    <text><code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <funclink>ChangeEffect</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
+    <text><code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <funclink>EffectCall</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
     <h id="AddEffects">Adding Effects</h>
     <text>In the previous example, several gravitational effects were combined so that the gravity change lasts longer if the spell is casted multiple times. Adding these effects cannot be done in the Effect callback because the gravitation effect might always be prevented by another effect with higher priority (e.g. a no-spells-whatsoever-effect). Through the special Fx*Add callback you can achieve the desired result more easily, or at least in a more structured fashion.</text>
     <code>[...]
@@ -467,7 +467,7 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       <text>The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name.</text>
       <h>Fx*Start</h>
       <text><code>int Fx*Start (object target, effect, int temporary, any var1, any var2, any var3, any var4);</code></text>
-      <text>Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. These two parameters can be used to identify the effect, e.g. to manipulate effect details with <funclink>ChangeEffect</funclink>().</text>
+      <text>Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. <code>effect</code> can be used to manipulate the effect, for example with <code>effect.Interval=newinterval</code>.</text>
       <text>In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow).</text>
       <text>Values var1 to var4 are the additional parameters passed to <placeholder-1/>() and can be custom used.</text>
       <text>If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <funclink>AddEffect</funclink>() call returns 0.</text>
@@ -611,7 +611,6 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
         <li><funclink>GetEffect</funclink>() - to search for effects</li>
         <li><funclink>GetEffectCount</funclink>() - for effect counting</li>
         <li><funclink>EffectCall</funclink>() - for user defined calls in effects</li>
-        <li><funclink>ChangeEffect</funclink>() - to modify effect names and timers (e.g. for multi-stage effects)</li>
         <li><funclink>CheckEffect</funclink>() - to cause effects callbacks without actually creating an effect</li>
       </ul>
     </text>

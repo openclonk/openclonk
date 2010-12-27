@@ -36,7 +36,7 @@
           <type>object</type>
           <name>command_target</name>
           <optional />
-          <desc>Command target. If specified, all callbacks are executed in this object. Otherwise the callbacks are made without any object context. If the command target object is deleted, all effects belonging to this object are deleted without any further callbacks. If the target object changes its definition, belonging effects should reassign their callback functions using <funclink>ChangeEffect</funclink>.</desc>
+          <desc>Command target. If specified, all callbacks are executed in this object. Otherwise the callbacks are made without any object context. If the command target object is deleted, all effects belonging to this object are deleted without any further callbacks. If the target object changes its definition, belonging effects should reassign their callback functions using <code>effect.Name = effect.Name</code>.</desc>
         </param>
         <param>
           <type>id </type>
@@ -74,7 +74,6 @@
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
-      <funclink>ChangeEffect</funclink>
       <funclink>CheckEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>

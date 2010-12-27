@@ -64,7 +64,6 @@
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
-      <funclink>ChangeEffect</funclink>
       <funclink>GetEffectCount</funclink>
       <funclink>EffectCall</funclink>
       <funclink>GetEffect</funclink>

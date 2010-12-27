@@ -4518,35 +4518,6 @@ static bool FnRemoveEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *
 	return true;
 }
 
-static bool FnChangeEffect(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, C4Effect * pEffect2, C4String *psNewEffectName, long iNewTimer)
-{
-	// evaluate parameters
-	const char *szEffect = FnStringPar(psEffectName);
-	const char *szNewEffect = FnStringPar(psNewEffectName);
-	if (!szNewEffect || !*szNewEffect) return false;
-	// get effects
-	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
-	if (!pEffect) return false;
-	// name/wildcard given: find effect by name and index
-	if (szEffect && *szEffect)
-		pEffect = pEffect->Get(szEffect, 0);
-	else
-		pEffect = pEffect2;
-	// effect found?
-	if (!pEffect) return false;
-	// set new name
-	SCopy(szNewEffect, pEffect->Name, C4MaxName);
-	pEffect->ReAssignCallbackFunctions();
-	// set new timer
-	if (iNewTimer>=0)
-	{
-		pEffect->iInterval = iNewTimer;
-		pEffect->iTime = 0;
-	}
-	// done, success
-	return true;
-}
-
 static C4Value FnCheckEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
 {
 	// evaluate parameters
@@ -5996,7 +5967,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FxFireInfo", FnFxFireInfo, false);
 	AddFunc(pEngine, "RemoveEffect", FnRemoveEffect);
 	AddFunc(pEngine, "GetEffect", FnGetEffect);
-	AddFunc(pEngine, "ChangeEffect", FnChangeEffect);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
 	AddFunc(pEngine, "GetContact", FnGetContact);

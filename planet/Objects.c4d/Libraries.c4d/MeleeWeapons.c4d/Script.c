@@ -145,7 +145,8 @@ func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 		
 		if(iEffectTime == GetStrikeTime()+1)
 		{
-			ChangeEffect(0, 0, iEffectNumber, "IntWeaponCharge", 3);
+			effect.Interval = 3;
+			effect.Time = 0;
 		}*/
 }
 
