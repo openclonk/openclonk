@@ -74,7 +74,10 @@ private:
 		// Note that we cannot simply ignore the query() call, as new
 		// FDs or Timeouts may have been added to the Glib loop in the meanwhile
 		if (query_time >= 0)
-			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
+		{
+			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
+			Execute();
+		}
 
 		g_main_context_prepare (context, &max_priority);
 		unsigned int fd_count;
@@ -103,8 +106,9 @@ public:
 		int old_query_time = query_time;
 		if (query_time >= 0)
 		{
-			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
-			query_time = -1;
+			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
+			//query_time = -1;
+			Execute();
 		}
 
 		// Run the loop
@@ -131,7 +135,7 @@ public:
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
 		if (query_time < 0) return true;
-		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
+		g_main_context_check(context, max_priority, fds.empty() ? NULL : readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
 
 		// g_main_context_dispatch makes callbacks from the main loop.
 		// We allow the callback to iterate the mainloop via
