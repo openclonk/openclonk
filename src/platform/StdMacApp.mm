@@ -61,3 +61,19 @@ void CStdApp::MessageDialog(const char * message)
 void CStdWindow::FlashWindow() {
 	[NSApp requestUserAttention:NSCriticalRequest];
 }
+
+// Event-pipe-whatever stuff I do not understand.
+
+bool CStdApp::ReadStdInCommand()
+{
+	char c;
+	if(read(0, &c, 1) != 1)
+		return false;
+	if(c == '\n') {
+		if(!CmdBuf.isNull()) {
+			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
+		}
+	} else if(isprint((unsigned char)c))
+		CmdBuf.AppendChar(c);
+	return true;
+}
