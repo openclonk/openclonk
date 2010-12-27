@@ -16,11 +16,8 @@ separate_arguments(OC_CXX_FLAGS_DEBUG)
 ############################################################################
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_GL "Enable OpenGL support" ON)
-if(APPLE)
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
-else()
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
-endif()
+SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
+SET(INITIAL_USE_OPEN_AL OFF)
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
@@ -38,7 +35,7 @@ else()
 	SET(USE_DIRECTX OFF)
 	SET(HAVE_FMOD OFF)
 endif()
-if(UNIX AND NOT USE_SDL_MAINLOOP)
+if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
 	option(USE_GTK "Use GTK for the developer mode" ON)
 	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
@@ -47,10 +44,17 @@ else()
 	SET(USE_GTK OFF)
 	SET(USE_GTK3 OFF)
 endif()
+if(APPLE)
+	option(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON)
+	SET(INITIAL_USE_OPEN_AL ON)
+else()
+	option(USE_COCOA OFF)
+endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
+option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
@@ -144,7 +148,6 @@ set(OC_CLONK_SOURCES
 	src/C4Include.h
 	src/C4Prototypes.h
 	src/C4Version.h
-	src/C4WinMain.cpp
 	src/config/C4Config.cpp
 	src/config/C4Config.h
 	src/config/C4ConfigShareware.cpp
@@ -559,12 +562,32 @@ elseif(USE_X11)
 		src/platform/StdXPrivate.h
 	)
 endif()
+
+if(NOT APPLE)
+	list(APPEND OC_SYSTEM_SOURCES src/C4WinMain.cpp)
+endif()
+
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/MacUtility.mm
 		src/platform/StdMacApp.mm
 		src/platform/C4FileMonitorMac.mm
+		src/platform/StdMacWindow.mm
+		src/platform/ClonkAppDelegate.h
+		src/platform/ClonkAppDelegate.mm
 	)
+	if(USE_COCOA)
+		list(APPEND OC_SYSTEM_SOURCES
+			src/platform/ConsoleWindowController.h
+			src/platform/ConsoleWindowController.mm
+			src/platform/ClonkWindowController.h
+			src/platform/ClonkWindowController.mm
+			src/platform/ClonkOpenGLView.h
+			src/platform/ClonkOpenGLView.mm
+			src/platform/CocoaKeycodeMap.h
+			src/editor/C4ConsoleCocoa.mm
+			src/platform/ClonkMainMenuActions.mm
+		)
+	endif()
 endif()
 if(USE_GTK)
 	list(APPEND OC_CLONK_SOURCES
@@ -745,6 +768,25 @@ if(APPLE)
 		src/res/Clonk.icns
 		src/res/C4D.icns src/res/C4F.icns src/res/C4G.icns src/res/C4K.icns
 		src/res/C4P.icns src/res/C4S.icns src/res/C4U.icns
+		src/res/MainMenu.xib
+		src/res/FullscreenWindow.xib
+		src/res/ConsoleGUIWindow.xib
+		src/res/ClonkWindow.xib
+		src/res/ConsoleWindow.xib
+		src/res/Mouse_Trans.png
+		src/res/Cursor_Trans.png
+		src/res/Brush_Trans.png
+		src/res/Play_Trans.png
+		src/res/Halt_Trans.png
+		src/res/Dynamic_Trans.png
+		src/res/Static_Trans.png
+		src/res/Exact_Trans.png
+		src/res/Line_Trans.png
+		src/res/Rect_Trans.png
+		src/res/Fill_Trans.png
+		src/res/Picker_Trans.png
+		src/res/Ift_Trans.png
+		src/res/NoIft_Trans.png
 	)
 	
 	# Add icon resources
@@ -774,6 +816,12 @@ if(USE_GTK)
 	if(GTK_FOUND)
 		link_directories(${GTK_LIBRARY_DIRS})
 	endif()
+endif()
+
+if(USE_OPEN_AL)
+	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
+	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
+	FINDLIB(OGG_LIBRARY NAMES ogg)
 endif()
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -807,6 +855,9 @@ target_link_libraries(clonk
 	${JPEG_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 	${ICONV_LIBRARY}
+	${VORBIS_LIBRARY}
+	${VORBISFILE_LIBRARY}
+	${OGG_LIBRARY}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
@@ -815,25 +866,39 @@ target_link_libraries(c4group
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
+if (APPLE)
+	add_custom_command(TARGET clonk
+		POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs.sh"
+	)
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+endif()
+
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
-set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/res/Info.plist")
+set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
 ############################################################################
 # build to planet
 ############################################################################
 if(BUILD_TO_PLANET) 
-	if(MSVC) #get the files out of the Build folders
-		if(CMAKE_VERSION VERSION_LESS "2.8")
-			message(SEND_ERROR "You need CMake 2.8 or higher for BUILD_TO_PLANET to get the builds out of MSVCs folders. You have ${CMAKE_VERSION}")
-		else()
-			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELEASE "../Clonk")
-			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_DEBUG "../ClonkD")
-			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_MINSIZEREL "../ClonkMSR")
-			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELWITHDEBINFO "../ClonkRD")
-		endif()
+	if(CMAKE_VERSION VERSION_LESS "2.8")
+		message(SEND_ERROR "You need CMake 2.8 or higher for BUILD_TO_PLANET to get the builds out of the sub folders. You have ${CMAKE_VERSION}")
+	else()
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/planet)
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/planet)
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_CURRENT_SOURCE_DIR}/planet)
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_SOURCE_DIR}/planet)
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELEASE "Clonk")
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_DEBUG "ClonkD")
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_MINSIZEREL "ClonkMSR")
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELWITHDEBINFO "ClonkRD")
+		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet)
 	endif()
-	set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet)
 endif()
 
 ############################################################################
@@ -933,6 +998,10 @@ if(USE_X11)
 		${XRANDR_LIBRARIES}
 	)
 endif()
+if(USE_COCOA)
+	#stupid fix: just link to iconv that way
+	TARGET_LINK_LIBRARIES(clonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
+endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
 	# So just pretend that everything is fine
@@ -948,25 +1017,27 @@ if (WIN32)
 	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 
-	if(MSVC_VERSION)
-		if(CMAKE_CL_64)
-			FINDLIB(FMOD_LIBRARIES fmod64vc)
-		else()
-			FINDLIB(FMOD_LIBRARIES fmodvc)
+	if(NOT USE_OPEN_AL)
+		if(MSVC_VERSION)
+			if(CMAKE_CL_64)
+				FINDLIB(FMOD_LIBRARIES fmod64vc)
+			else()
+				FINDLIB(FMOD_LIBRARIES fmodvc)
+			endif()
+		elseif(CMAKE_COMPILER_IS_GNUCXX)
+			FINDLIB(FMOD_LIBRARIES fmod)
 		endif()
-	elseif(CMAKE_COMPILER_IS_GNUCXX)
-		FINDLIB(FMOD_LIBRARIES fmod)
-	endif()
-	if(FMOD_LIBRARIES)
-		set(HAVE_FMOD TRUE)
-		target_link_libraries(clonk
-			${FMOD_LIBRARIES}
-		)
-	else()
-		set(HAVE_FMOD FALSE)
+		if(FMOD_LIBRARIES)
+			set(HAVE_FMOD TRUE)
+			target_link_libraries(clonk
+				${FMOD_LIBRARIES}
+			)
+		else()
+			set(HAVE_FMOD FALSE)
+		endif()
 	endif()
 endif()
-if(NOT HAVE_FMOD OR USE_SDL_MAINLOOP)
+if((NOT HAVE_FMOD OR USE_SDL_MAINLOOP) AND NOT USE_OPEN_AL)
 	include(FindSDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	if(SDL_FOUND)

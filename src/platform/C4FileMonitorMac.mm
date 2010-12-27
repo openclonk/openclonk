@@ -59,7 +59,7 @@ static void FSEvents_Callback(
 	// FSEvents only tells us about directories in which some files were modified
 	char** paths = (char**)eventPaths;
 	C4FileMonitor* mon = (C4FileMonitor*)clientCallBackInfo;
-	for (int i = 0; i < numEvents; i++)
+	for (unsigned int i = 0; i < numEvents; i++)
 	{
 		NSString* dir = [NSString stringWithUTF8String:paths[i]];
 		NSArray* filesInDir = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dir error:NULL];

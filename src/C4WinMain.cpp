@@ -32,8 +32,6 @@
 #include <C4Version.h>
 #include "C4Network2.h"
 
-#include "MacUtility.h"
-
 #ifdef _WIN32
 #include <shellapi.h>
 
@@ -193,12 +191,6 @@ static void crash_handler(int signo)
 }
 #endif // HAVE_SIGNAL_H
 
-#ifdef __APPLE__
-void restart(char* args[])
-{
-	MacUtility::restart(args);
-}
-#else
 static void restart(char * argv[])
 {
 	// Close all file descriptors except stdin, stdout, stderr
@@ -208,7 +200,6 @@ static void restart(char * argv[])
 	// Execute the new engine
 	execlp(argv[0], argv[0], static_cast<char *>(0));
 }
-#endif
 
 int main (int argc, char * argv[])
 {

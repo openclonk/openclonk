@@ -1,12 +1,6 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2004, 2007  G√É¬ºnther Brammer
- * Copyright (c) 2008  Peter Wortmann
- * Copyright (c) 2009  Mortimer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
- *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -19,15 +13,25 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#ifdef __APPLE__
-namespace MacUtility
-{
-	bool isGerman();
-	bool sendFileToTrash(const char* szFilename);
-	void restart(char*[]);
-	int keyRepeatDelay(int defaultValue);
-	int keyRepeatInterval(int defaultValue);
+#import <Cocoa/Cocoa.h>
+#include <StdWindow.h>
 
-	void ensureWindowInFront();
+#ifdef USE_COCOA
+
+@class ClonkWindowController;
+
+@interface ClonkOpenGLView : NSView {
+@private
+	NSOpenGLContext* context;
 }
+- (ClonkWindowController*) controller;
+- (void)update;
+- (void) enableEvents;
+- (void) showCursor;
+- (void) hideCursor;
+- (BOOL) shouldHideMouseCursor;
+
+@property(readwrite, retain) NSOpenGLContext* context;
+@end
+
 #endif

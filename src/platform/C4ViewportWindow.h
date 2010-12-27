@@ -41,7 +41,6 @@ public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
 #ifdef _WIN32
-	virtual CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
 	static bool RegisterViewportClass(HINSTANCE hInst);
 #elif defined(WITH_DEVELOPER_MODE)
 	virtual GtkWidget* InitGUI();
@@ -67,6 +66,9 @@ public:
 	GtkWidget* drawing_area;
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
+#endif
+#if defined(USE_COCOA) || defined(_WIN32)
+	virtual CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
 	virtual void Close();

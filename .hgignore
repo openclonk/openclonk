@@ -58,6 +58,8 @@ planet/cmake_install.cmake
 planet/clonk.sln
 planet/clonk.ilk
 planet/CMakeCache.txt
+build
+planet/clonk.app
 Release
 RelWithDebInfo
 MinSizeRel
@@ -100,9 +102,14 @@ xcode/build
 .anjuta*
 
 # Binaries
-planet/Clonk.app
+*.app
 *.exe
 
 # Development files explicitely excluded
 planet/nohg*
 
+# Eclipse project file
+planet/.project
+
+# MacOSX saved searches
+*.savedSearch

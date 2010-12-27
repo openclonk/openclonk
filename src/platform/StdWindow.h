@@ -220,8 +220,52 @@ const int SEC1_TIMER=1,SEC1_MSEC=1000;
 #define KEY_A 0
 #define MK_SHIFT 0
 #define MK_CONTROL 0
-#else
-#error need window system
+#elif defined(USE_COCOA)
+// declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
+const int CocoaKeycodeOffset = 300;
+extern int K_F1;
+extern int K_F2;
+extern int K_F3;
+extern int K_F4;
+extern int K_F5;
+extern int K_F6;
+extern int K_F7;
+extern int K_F8;
+extern int K_F9;
+extern int K_F10;
+extern int K_F11;
+extern int K_F12;
+extern int K_ADD;
+extern int K_SUBTRACT;
+extern int K_MULTIPLY;
+extern int K_ESCAPE;
+extern int K_PAUSE;
+extern int K_TAB;
+extern int K_RETURN;
+extern int K_DELETE;
+extern int K_INSERT;
+extern int K_BACK;
+extern int K_SPACE;
+extern int K_UP;
+extern int K_DOWN;
+extern int K_LEFT;
+extern int K_RIGHT;
+extern int K_HOME;
+extern int K_END;
+extern int K_SCROLL;
+extern int K_MENU;
+extern int K_PAGEUP;
+extern int K_PAGEDOWN;
+extern int KEY_M;
+extern int KEY_T;
+extern int KEY_W;
+extern int KEY_I;
+extern int KEY_C;
+extern int KEY_V;
+extern int KEY_X;
+extern int KEY_A;
+extern int MK_SHIFT;
+extern int MK_CONTROL;
 #endif
 
 enum C4AppHandleResult
@@ -294,6 +338,12 @@ private:
 	int width, height;
 protected:
 	virtual void HandleMessage(SDL_Event&) {}
+#elif defined(USE_COCOA)
+protected:
+	/*ClonkWindowController*/void* controller;
+	virtual void HandleMessage(/*NSEvent*/void*);
+public:	
+	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
 public:
 	// request that this window be redrawn in the near future (including immediately)
@@ -466,6 +516,9 @@ protected:
 #  if defined(USE_SDL_MAINLOOP)
 	void HandleSDLEvent(SDL_Event& event);
 #  endif
+#ifdef USE_COCOA
+	void HandleNSEvent(/*NSEvent*/void* event);
+#endif
 	const char * Location;
 	pthread_t MainThread;
 	bool DoNotDelay;

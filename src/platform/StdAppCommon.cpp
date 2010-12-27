@@ -33,7 +33,7 @@ bool CStdApp::ScheduleProcs(int iTimeout)
 	// Always fail after quit message
 	if(fQuitMsgReceived)
 		return false;
-#if defined(USE_SDL_MAINLOOP)
+#if defined(USE_SDL_MAINLOOP) || defined(USE_COCOA)
 	// Unfortunately, the SDL event loop needs to be polled
 	FlushMessages();
 #endif

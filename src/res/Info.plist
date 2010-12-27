@@ -172,6 +172,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
@@ -179,7 +181,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>(c) ${C4COPYRIGHT_YEAR}, ${C4PROJECT}</string>
 	<key>CFBundleDisplayName</key>
-	<string>${C4ENGINEINFOLONG}</string>
+	<string>${C4ENGINEINFO}</string>
 	<key>CFBundleShortVersionString</key>
 	<string>${C4VERSION}</string>
 	<key>CFBundleVersion</key>

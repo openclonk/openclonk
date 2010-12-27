@@ -34,6 +34,9 @@
 /* Define to 1 if FMOD is available */
 #cmakedefine HAVE_FMOD 1
 
+/* Use OpenAL for playing sounds */
+#cmakedefine USE_OPEN_AL 1
+
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
@@ -194,3 +197,5 @@
 /* Define to 1 if you have support for nullptr. */
 #cmakedefine HAVE_NULLPTR 1
 
+/* Use Apple Cocoa for the UI */
+#cmakedefine USE_COCOA 1

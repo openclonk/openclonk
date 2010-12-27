@@ -1,18 +1,53 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
+ */
 // Roughly adapted from the original ClonkAppDelegate.m; haxxed to death by teh Gurkendoktor.
 // Look at main() to get an idea for what happens here.
 
+#include <C4Include.h>
+#include <C4Application.h>
+#include <C4Game.h>
+
 #import "ClonkAppDelegate.h"
+#ifdef USE_SDL_MAINLOOP
 #import "SDL/SDL.h"
+#endif
 
 /* The main class of the application, the appl¤ication's delegate */
 @implementation ClonkAppDelegate
 
++ (ClonkAppDelegate*) instance;
+{
+	return (ClonkAppDelegate*)[[NSApplication sharedApplication] delegate];
+}
+
++ (BOOL) isConsoleAndGameRunning
+{
+	return Application.isEditor && Game.IsRunning;
+}
+
+#ifdef USE_COCOA
+@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu;
+#endif
+
 - (id) init
 {
-	if (self = [super init]) {
+	self = [super init];
+	if (self)
+	{
 		NSArray* args = [[NSProcessInfo processInfo] arguments];
 		gatheredArguments = [args copy];
-		gameState = GS_NotYetStarted;
 	}
 	return self;
 }
@@ -33,7 +68,7 @@
 	{
 		// later decide whether to install or run
 		addonSupplied = filename;
-		if (gameState == GS_Running)
+		if (running)
 		{
 			// if application is already running install immediately
 			[self installAddOn];
@@ -48,49 +83,78 @@
 	[gatheredArguments addObject:url];
 }
 
-- (void)gameLoop
+- (void) quitAndMaybeRestart
 {
-	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
-
-	[NSApp activateIgnoringOtherApps:YES];
-
-    // Hand off to Clonk code
-	char** newArgv;
-	int newArgc;
-	[self makeFakeArgs:&newArgv argc:&newArgc];
-	int status = SDL_main(newArgc, newArgv);
-	for (int i = newArgc-1; i >= 0; i--) {free (newArgv[i]);}
-	free(newArgv);
+	// free app stuff
+	Application.Clear();
+	if (Application.restartAtEnd)
+	{
+		NSString* filename = [[NSBundle mainBundle] bundlePath];
+		NSString* cmd = [@"open " stringByAppendingString: filename];
+		system([cmd UTF8String]);
+	}
 }
 
-/* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
 	if (!([self argsLookLikeItShouldBeInstallation] && [self installAddOn]))
 	{
-		gameState = GS_Running;
-		[self gameLoop];
-		gameState = GS_Finished;
+		[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
+		[NSApp activateIgnoringOtherApps:YES];
+
+		[self makeFakeArgs];
+
+#ifdef USE_SDL_MAINLOOP
+		running = true;
+		SDL_main(newArgc, newArgv);
+		running = NO;
+		[self quitAndMaybeRestart];
+		[NSApp terminate:self];
+#endif
+
+#ifdef USE_COCOA
+		// Init application
+		if (!Application.Init(argc, argv))
+		{
+			Application.Clear();
+			[NSApp terminate:self];
+		}
+		[[NSRunLoop currentRunLoop] performSelector:@selector(delayedRun:) target:self argument:self order:0 modes:[NSArray arrayWithObject:NSDefaultRunLoopMode]];
+#endif
 	}
+}
+
+- (void) delayedRun:(id)sender
+{
+	running = YES;
+	while (!Application.fQuitMsgReceived)
+		Application.ScheduleProcs();
+	running = NO;
+	[self quitAndMaybeRestart];
 	[NSApp terminate:self];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
 {
-	if (gameState == GS_Running)
+	if (running)
 	{
 		[self terminate:application];
-		return NSTerminateCancel; // cancels logoff but it's the only way that does not interrupt the lifecycle of the application
+		return NSTerminateCancel;
 	}
 	return NSTerminateNow;
 }
 
 - (void)terminate:(NSApplication*)sender
 {
+#ifdef USE_SDL_MAINLOOP
     // Post an SDL_QUIT event
 	SDL_Event event;
 	event.type = SDL_QUIT;
 	SDL_PushEvent(&event);
+#endif
+#ifdef USE_COCOA
+	Application.Quit();
+#endif
 }
 
 // arguments that should be converted to a c char* array and then passed on to SDL_main
@@ -139,7 +203,6 @@
 	// Already installed?
 	if ([destPath isEqualToString:addonSupplied])
 	{
-		[gatheredArguments addObject:@"/fullscreen"];
 		return NO; // run scenarios when they are already in the clonk directory
 	}
 	
@@ -147,7 +210,7 @@
 	if ([fileManager fileExistsAtPath:destPath])
 		// better to throw it into the trash. everything else seems so dangerously destructive
 		[[NSWorkspace sharedWorkspace] performFileOperation:NSWorkspaceRecycleOperation source:[self clonkDirectory] destination:@"" files:[NSArray arrayWithObject:justFileName] tag:0];
-	if ([fileManager copyPath:addonSupplied toPath:destPath handler:nil])
+	if ([fileManager copyItemAtPath:addonSupplied toPath:destPath error:NULL])
 		formatString = NSLocalizedString(@"AddOnInstallationSuccess", nil);
 	else
 		formatString = NSLocalizedString(@"AddOnInstallationFailure", nil);
@@ -160,16 +223,15 @@
 }
 
 // convert gatheredArguments to c array
-- (void)makeFakeArgs:(char***)argv argc:(int*)argc
+- (void)makeFakeArgs
 {
 	int argCount = [gatheredArguments count];
-	char** args = (char**)malloc(sizeof(char*) * argCount);
+	argv = (char**)malloc(sizeof(char*) * argCount);
 	for (int i = 0; i < argCount; i++)
 	{
-		args[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding]);
+		argv[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding]);
 	}
-	*argv = args;
-	*argc = argCount;
+	argc = argCount;
 }
 
 @end

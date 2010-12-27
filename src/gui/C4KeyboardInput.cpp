@@ -29,7 +29,7 @@
 
 #include <C4Game.h>
 
-#ifndef _WIN32
+#ifdef USE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h> // XConvertCase
 #endif
@@ -325,6 +325,8 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Default, "None", NULL},
 	{ KEY_Undefined, NULL, NULL }
 };
+#elif defined(USE_COCOA)
+#include "CocoaKeycodeMap.h"
 #endif
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
@@ -429,7 +431,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		}
 
 	}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(USE_COCOA)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName)
@@ -527,7 +529,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		}
 	}
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(USE_COCOA)
 
 //  TODO: Works?
 //  StdStrBuf Name; Name.SetLength(1000);

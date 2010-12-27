@@ -77,6 +77,7 @@ public:
 	bool ToggleShowVertices();
 	bool ToggleShowAction();
 	bool ToggleShowHelp();
+	friend class C4FullScreen;
 };
 
 extern C4GraphicsSystem GraphicsSystem;

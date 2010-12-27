@@ -46,6 +46,9 @@ public:
 #else
 	bool Init(CStdWindow * pWindow, CStdApp *pApp);
 #endif
+#ifdef USE_COCOA
+	/*NSOpenGLContext*/void* GetNativeCtx();
+#endif
 
 	bool Select(bool verbose = false);              // select this context
 	void Deselect();              // select this context
@@ -62,6 +65,8 @@ protected:
 	HDC hDC;                    // device context handle
 #elif defined(USE_X11)
 	/*GLXContext*/void * ctx;
+#elif defined(USE_COCOA)
+	/*NSOpenGLContext*/void* ctx;
 #endif
 	unsigned int cx,cy;                 // context window size
 
