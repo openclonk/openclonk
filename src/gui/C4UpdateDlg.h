@@ -59,18 +59,5 @@ public:
 	static void RedirectToDownloadPage(); // open browser with download page
 };
 
-// Loads current update url string (mini-HTTP-client)
-class C4Network2UpdateClient : public C4Network2HTTPClient
-{
-protected:
-	virtual int32_t GetDefaultPort() { return C4NetStdPortHTTP; }
-public:
-	C4Network2UpdateClient() : C4Network2HTTPClient() {}
-
-	bool QueryUpdateURL();
-	bool GetUpdateURL(StdStrBuf *pUpdateURL);
-	bool GetVersion(StdStrBuf *pVersion);
-};
-
 #endif // WITH_AUTOMATIC_UPDATE
 #endif // INC_C4UpdateDialogs
