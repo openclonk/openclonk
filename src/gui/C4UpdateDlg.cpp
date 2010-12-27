@@ -174,12 +174,9 @@ bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
 {
 	if(szUpdateURL == NULL || strlen(szUpdateURL) == 0)
 	{
-		if (pScreen->ShowMessageModal(LoadResStr("IDS_MSG_NEWRELEASEAVAILABLE"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
-		{
-			RedirectToDownloadPage();
-			return true;
-		}
-		return false;
+		pScreen->ShowMessageModal(LoadResStr("IDS_MSG_NEWRELEASEAVAILABLE"), LoadResStr("IDS_TYPE_UPDATE"),C4GUI::MessageDialog::btnOK, C4GUI::Ico_Ex_Update);
+		RedirectToDownloadPage();
+		return true;
 	}
 
 	// Determine local filename for update group
@@ -386,52 +383,5 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	return false;
 }
 
-
-// *** C4Network2UpdateClient
-
-bool C4Network2UpdateClient::QueryUpdateURL()
-{
-	// Perform an Query query
-	return Query(NULL, false);
-}
-
-bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
-{
-	// Sanity check
-	if (isBusy() || !isSuccess()) return false;
-	// Parse response
-	try
-	{
-		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
-		                                     mkNamingAdapt(*pUpdateURL,"UpdateURL"),
-		                                     C4ENGINENAME), ResultString);
-	}
-	catch (StdCompiler::Exception *pExc)
-	{
-		SetError(pExc->Msg.getData());
-		return false;
-	}
-	// done; version OK!
-	return true;
-}
-
-{
-	// Sanity check
-	if (isBusy() || !isSuccess()) return false;
-	// Parse response
-	try
-	{
-		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
-		                                     mkNamingAdapt(*pVersion,"Version"),
-		                                     C4ENGINENAME), ResultString);
-	}
-	catch (StdCompiler::Exception *pExc)
-	{
-		SetError(pExc->Msg.getData());
-		return false;
-	}
-	// done; version OK!
-	return true;
-}
 
 #endif // WITH_AUTOMATIC_UPDATE

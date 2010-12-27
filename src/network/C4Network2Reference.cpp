@@ -548,13 +548,58 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 	return true;
 }
 
+// *** C4Network2UpdateClient
+
+bool C4Network2UpdateClient::QueryUpdateURL()
+{
+	// Perform an Query query
+	return Query(NULL, false);
+}
+
+bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
+{
+	// Sanity check
+	if (isBusy() || !isSuccess()) return false;
+	// Parse response
+	try
+	{
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
+		                                     mkNamingAdapt(mkParAdapt(*pUpdateURL, StdCompiler::RCT_All), "UpdateURL", ""),
+		                                     C4ENGINENAME), ResultString);
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		SetError(pExc->Msg.getData());
+		return false;
+	}
+	// done; version OK!
+	return true;
+}
+
+bool C4Network2UpdateClient::GetVersion(StdStrBuf *pVersion)
+{
+	// Sanity check
+	if (isBusy() || !isSuccess()) return false;
+	// Parse response
+	try
+	{
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
+		                                     mkNamingAdapt(mkParAdapt(*pVersion, StdCompiler::RCT_All), "Version", ""),
+		                                     C4ENGINENAME), ResultString);
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		SetError(pExc->Msg.getData());
+		return false;
+	}
+	// done; version OK!
+	return true;
+}
 
 // *** C4Network2RefClient
 
 bool C4Network2RefClient::QueryReferences()
 {
-	// invalidate version
-	fUrlSet = false;
 	// Perform an Query query
 	return Query(NULL, false);
 }
@@ -563,8 +608,6 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 {
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
-	// Parse response
-	fUrlSet = false;
 	// local update test
 	try
 	{
@@ -572,13 +615,6 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		StdCompilerINIRead Comp;
 		Comp.setInput(ResultString);
 		Comp.Begin();
-		// get current version and update url
-		Comp.Value(mkNamingAdapt(
-		             mkNamingAdapt(mkParAdapt(UpdateURL, StdCompiler::RCT_All), "UpdateURL", ""),
-		             C4ENGINENAME));
-		Comp.Value(mkNamingAdapt(
-		             mkNamingAdapt(mkParAdapt(Version, StdCompiler::RCT_All), "Version", ""),
-		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
 		// Create reference array and initialize
@@ -599,25 +635,8 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	// Set source ip
 	for (int i = 0; i < rRefCount; i++)
 		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
-	// validate version
-	if (Version.getData() != NULL) fUrlSet = true;
 	// Done
 	ResetError();
 	return true;
 }
 
-bool C4Network2RefClient::GetUpdateURL(StdStrBuf *pUpdateURL)
-{
-	// call only after GetReferences
-	if (!fUrlSet) return false;
-	*pUpdateURL = UpdateURL;
-	return true;
-}
-
-bool C4Network2RefClient::GetVersion(StdStrBuf *pVersion)
-{
-	// call only after GetReferences
-	if (!fUrlSet) return false;
-	*pVersion = Version;
-	return true;
-}
