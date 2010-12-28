@@ -132,7 +132,7 @@ void CStdFont::DestroyFont(CStdVectorFont * pFont)
 		delete pFont;
 }
 #else
-CStdVectorFont * CStdFont::CreateFont(const StdBuf & Data)
+CStdVectorFont * CStdFont::CreateFont(StdBuf & Data)
 {
 	return 0;
 }
