@@ -28,6 +28,7 @@ InEarthLevel=80,0,0,100
 Sky=Clouds1
 MapWidth=100,0,64,250
 MapHeight=250,0,40,250
+TopOpen=0
 SkyScrollMode=2
 
 [Weather]
