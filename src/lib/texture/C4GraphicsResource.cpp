@@ -183,7 +183,7 @@ bool C4GraphicsResource::Init()
 	}
 
 	Game.SetInitProgress(11.0f);
-	ProgressStart = 12.0f; ProgressIncrement = 0.4f;
+	ProgressStart = 12.0f; ProgressIncrement = 0.35f; // TODO: This should be changed so that it stops at 25%, no matter how many graphics we load.
 	// The progress bar is the only graphic besides the background that is
 	// used during startup, so load it early
 	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;

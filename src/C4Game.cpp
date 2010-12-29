@@ -121,8 +121,8 @@ bool C4Game::InitDefs()
 	// Load specified defs
 	for (pDef = Parameters.GameRes.iterRes(NULL, NRT_Definitions); pDef; pDef = Parameters.GameRes.iterRes(pDef, NRT_Definitions))
 	{
-		int iMinProgress = 10 + (25 * i) / iDefResCount;
-		int iMaxProgress = 10 + (25 * (i + 1)) / iDefResCount;
+		int iMinProgress = 25 + (25 * i) / iDefResCount;
+		int iMaxProgress = 25 + (25 * (i + 1)) / iDefResCount;
 		++i;
 		iDefs+=::Definitions.Load(pDef->getFile(),C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,true,iMinProgress,iMaxProgress);
 
@@ -2133,11 +2133,11 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		Log(LoadResStr("IDS_PRC_GFXRES"));
 		if (!GraphicsResource.Init())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
-		SetInitProgress(10);
+		SetInitProgress(25);
 
 		// Definitions
 		if (!InitDefs()) return false;
-		SetInitProgress(40);
+		SetInitProgress(55);
 
 		// Scenario scripts (and local system.c4g)
 		// After defs to get overloading priority
