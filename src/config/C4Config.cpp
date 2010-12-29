@@ -136,6 +136,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(EnableShaders,         "Shader",               0             ,false, true));
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
+	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)

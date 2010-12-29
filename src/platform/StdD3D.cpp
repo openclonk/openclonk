@@ -70,7 +70,7 @@ void CStdD3D::Default()
 void CStdD3D::Clear()
 {
 	NoPrimaryClipper();
-	if (pTexMgr) pTexMgr->IntUnlock();
+	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	if (lpDevice)
 	{
 		EndScene();

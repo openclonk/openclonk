@@ -135,6 +135,7 @@ public:
 	int32_t EnableShaders; // enable pixel shaders on engines that support them
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
+	int32_t MultiSampling; // multisampling samples
 
 	void CompileFunc(StdCompiler *pComp);
 };

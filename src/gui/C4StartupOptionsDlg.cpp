@@ -837,6 +837,28 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupOptions->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
 	pSheetGraphics->AddElement(pGroupOptions);
 	C4GUI::ComponentAligner caGroupOptions(pGroupOptions->GetClientRect(), iIndentX1, iIndentY2, true);
+	// multisampling
+	C4GUI::ComponentAligner msBox(caGroupOptions.GetFromTop(C4GUI::ComboBox::GetDefaultHeight()), 0, 0, false);
+	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_ANTIALIASING"), w,q, true);
+	pGroupOptions->AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_ANTIALIASING"), msBox.GetFromLeft(w+C4GUI_DefDlgSmallIndent), ALeft, C4StartupFontClr, pUseFont, false, false));
+
+	pUseFont->GetTextExtent("Off", w, q, true);
+	C4GUI::ComboBox *pGfxMSCombo = new C4GUI::ComboBox(msBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
+	pGfxMSCombo->SetToolTip(LoadResStr("IDS_MSG_ANTIALIASING_DESC"));
+	pGfxMSCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxMSComboFill, &C4StartupOptionsDlg::OnGfxMSComboSelChange));
+	pGfxMSCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
+	pGfxMSCombo->SetFont(pUseFont);
+	pGfxMSCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
+	// Pre-Select current setting
+	StdStrBuf Current;
+	if(Config.Graphics.MultiSampling) Current.Format("%dx", Config.Graphics.MultiSampling);
+	else Current.Copy("Off");
+	pGfxMSCombo->SetText(Current.getData());
+	// Set control read only if multisampling is not available
+	std::vector<int> multisamples;
+	Application.pWindow->EnumerateMultiSamples(multisamples);
+	pGfxMSCombo->SetReadOnly(multisamples.empty());
+	pGroupOptions->AddElement(pGfxMSCombo);
 	// --subgroup effects
 	C4GUI::GroupBox *pGroupEffects = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,2,3));
 	pGroupEffects->SetTitle(LoadResStrNoAmp("IDS_CTL_SMOKE"));
@@ -1036,6 +1058,64 @@ void C4StartupOptionsDlg::OnGfxEngineCheck(C4GUI::Element *pCheckBox)
 	SaveGfxTroubleshoot();
 	Config.Graphics.Engine = i;
 	LoadGfxTroubleshoot();
+}
+
+void C4StartupOptionsDlg::OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller)
+{
+	// clear all old entries first to allow a clean refill
+	pFiller->ClearEntries();
+
+	pFiller->AddEntry("Off", 0);
+
+	std::vector<int> multisamples;
+	Application.pWindow->EnumerateMultiSamples(multisamples);
+
+	std::sort(multisamples.begin(), multisamples.end());
+	for(unsigned int i = 0; i < multisamples.size(); ++i)
+	{
+		StdStrBuf text;
+		text.Format("%dx", multisamples[i]);
+		pFiller->AddEntry(text.getData(), multisamples[i]);
+	}
+}
+
+bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
+{
+	if(pTexMgr) pTexMgr->IntLock();
+#ifdef USE_GL
+	lpDDraw->InvalidateDeviceObjects();
+	// Note: This assumes there is only one GL context (the main context). This
+	// is true in fullscreen mode, and since the startup dlg is only shown in
+	// fullscreen mode we are safe this way.
+	if(pGL) pGL->pMainCtx->Clear();
+#endif
+#ifdef USE_DIRECTX
+	// It should also be possible to clear+reinit DDraw also for GL, however,
+	// if ReInit() does _not_ create a new window on X11 then all rendering
+	// stops until the Window is being moved again (or tasked-out and back in
+	// in fullscreen mode). This does not happen when only reinitializing the
+	// GL context instead of whole DDraw so that's why we do this currently.
+	if(pD3D) lpDDraw->Clear();
+#endif
+
+	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
+	Config.Graphics.MultiSampling = idNewSelection;
+	bool success = Application.pWindow->ReInit(&Application);
+
+#ifdef USE_GL
+	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
+	lpDDraw->RestoreDeviceObjects();
+#endif
+#ifdef USE_DIRECTX
+	// Note: Editor is hardcoded to false at this point... I guess that's OK
+	// because C4StartupOptionsDlg is never shown in editor mode anyway.
+	if(pD3D) lpDDraw->Init(pApp, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
+#endif
+
+	if(pTexMgr) pTexMgr->IntUnlock();
+	
+	if(!success) Config.Graphics.MultiSampling = PrevMultiSampling;
+	return !success;
 }
 
 void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)

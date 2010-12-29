@@ -83,7 +83,7 @@ CStdGL::~CStdGL()
 void CStdGL::Clear()
 {
 	NoPrimaryClipper();
-	if (pTexMgr) pTexMgr->IntUnlock();
+	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
 	RenderTarget = NULL;
@@ -109,6 +109,7 @@ bool CStdGL::UpdateClipper()
 	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
 	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
 	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
+
 	if (iWdt<=0 || iHgt<=0)
 	{
 		ClipAll=true;
@@ -2013,9 +2014,10 @@ void CStdGL::TaskOut()
 {
 	// deactivate
 	// backup textures
+#ifdef _WIN32
 	if (pTexMgr && !Editor) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
-#ifdef _WIN32
+
 	if (!Editor && !Config.Graphics.Windowed)
 	{
 		::ChangeDisplaySettings(NULL, 0);
@@ -2028,10 +2030,10 @@ void CStdGL::TaskIn()
 {
 	// restore gl
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
+#ifdef _WIN32
 	// restore textures
 	if (pTexMgr && !Editor) pTexMgr->IntUnlock();
 
-#ifdef _WIN32
 	if (!Editor && !Config.Graphics.Windowed)
 	{
 		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);

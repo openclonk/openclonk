@@ -307,6 +307,17 @@ public:
 #ifndef _WIN32
 	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
 #endif
+
+	// Reinitialize the window with updated configuration settings.
+	// Keep window kind, title and size as they are. Currently the only point
+	// at which it makes sense for this function to be called is when the
+	// multisampling configuration option changes, since, for the change to
+	// take effect, we need to choose another visual or pixel format, respectively.
+	virtual bool ReInit(CStdApp* pApp);
+
+	// Creates a list of available samples for multisampling
+	virtual void EnumerateMultiSamples(std::vector<int>& samples) const;
+
 	bool StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize = true);
 	bool RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden = false);
 	bool GetSize(RECT * pRect);
@@ -317,12 +328,13 @@ public:
 #ifdef _WIN32
 public:
 	HWND hWindow;
+	HWND hRenderWindow;
 protected:
 	bool RegisterWindowClass(HINSTANCE hInst);
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
 protected:
-	bool FindInfo();
+	bool FindInfo(unsigned int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
@@ -556,6 +568,7 @@ protected:
 	bool ReadStdInCommand();
 
 	friend class CStdGL;
+	friend class CStdGLCtx;
 	friend class CStdWindow;
 	friend class CStdGtkWindow;
 };

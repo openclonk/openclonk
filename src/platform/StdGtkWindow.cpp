@@ -46,7 +46,13 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 	Active = true;
 	dpy = pApp->dpy;
 
-	if (!FindInfo()) return 0;
+	if(!FindInfo(Config.Graphics.MultiSampling, &Info))
+	{
+		// Disable multisampling if we don't find a visual which
+		// supports the currently configured setting.
+		if(!FindInfo(0, &Info)) return NULL;
+		Config.Graphics.MultiSampling = 0;
+	}
 
 	assert(!window);
 
@@ -130,6 +136,14 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 	return this;
 }
 
+bool CStdGtkWindow::ReInit(CStdApp* pApp)
+{
+	// TODO: Recreate the window with a newly chosen visual
+	// Probably we don't need this, since there is no way to change
+	// MultiSampling when no window is open.
+	return false;
+}
+
 void CStdGtkWindow::Clear()
 {
 	if (window != NULL)
@@ -148,7 +162,7 @@ void CStdGtkWindow::Clear()
 	// We must free it here since we do not call CStdWindow::Clear()
 	if (Info)
 	{
-		XFree(Info);
+		delete static_cast<XVisualInfo*>(Info);
 		Info = 0;
 	}
 }

@@ -95,8 +95,17 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp)
 	            C4FullScreenClassName,
 	            ADDL(C4ENGINENAME),
 	            WS_OVERLAPPEDWINDOW,
-	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
+	            CW_USEDEFAULT,CW_USEDEFAULT, Config.Graphics.ResX, Config.Graphics.ResY,
 	            NULL,NULL,pApp->hInstance,NULL);
+	if(!hWindow) return NULL;
+
+	RECT rc;
+	GetClientRect(hWindow, &rc);
+	hRenderWindow = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
+	                                0, 0, rc.right - rc.left, rc.bottom - rc.top,
+	                                hWindow, NULL, pApp->hInstance, NULL);
+	if(!hRenderWindow) { DestroyWindow(hWindow); return NULL; }
+	ShowWindow(hRenderWindow, SW_SHOW);
 
 #ifndef USE_CONSOLE
 	// Show & focus
@@ -107,10 +116,34 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp)
 	return this;
 }
 
+bool CStdWindow::ReInit(CStdApp* pApp)
+{
+	// We don't need to change anything with the window for any
+	// configuration option changes on Windows.
+	
+	// However, re-create the render window so that another pixel format can
+	// be chosen for it. The pixel format is chosen in CStdGLCtx::Init.
+
+	RECT rc;
+	GetClientRect(hWindow, &rc);
+	HWND hNewRenderWindow = CreateWindowExW(0, L"STATIC", NULL, WS_CHILD,
+	                                        0, 0, rc.right - rc.left, rc.bottom - rc.top,
+	                                        hWindow, NULL, pApp->hInstance, NULL);
+	if(!hNewRenderWindow) return false;
+
+	ShowWindow(hNewRenderWindow, SW_SHOW);
+	DestroyWindow(hRenderWindow);
+	hRenderWindow = hNewRenderWindow;
+
+	return true;
+}
+
 void CStdWindow::Clear()
 {
 	// Destroy window
+	if (hRenderWindow) DestroyWindow(hRenderWindow);
 	if (hWindow) DestroyWindow(hWindow);
+	hRenderWindow = NULL;
 	hWindow = NULL;
 }
 
@@ -147,6 +180,10 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
 		cx = rect.right - rect.left;
 		cy = rect.bottom - rect.top;
 		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+
+		// Also resize child window
+		GetClientRect(hWindow, &rect);
+		::SetWindowPos(hRenderWindow, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 
@@ -155,6 +192,18 @@ void CStdWindow::FlashWindow()
 	// please activate me!
 	if (hWindow)
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
+}
+
+void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+{
+#ifdef USE_GL
+	if(pGL && pGL->pMainCtx)
+		samples = pGL->pMainCtx->EnumerateMultiSamples();
+#endif
+
+#ifdef USE_DIRECTX
+	// TODO: Enumerate multi samples
+#endif
 }
 
 /* CStdTimerProc */

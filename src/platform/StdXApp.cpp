@@ -363,6 +363,7 @@ void CStdApp::HandleXMessage()
 	case ConfigureNotify:
 		if (pWindow && event.xany.window == pWindow->wnd)
 		{
+			XResizeWindow(dpy, pWindow->renderwnd, event.xconfigure.width, event.xconfigure.height);
 			OnResolutionChanged(event.xconfigure.width, event.xconfigure.height);
 		}
 		break;

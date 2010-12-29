@@ -58,7 +58,19 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	return this;
 }
 
+bool CStdWindow::ReInit(CStdApp* pApp)
+{
+	// TODO: How do we enable multisampling with SDL?
+	// Maybe re-call SDL_SetVideoMode?
+	return false;
+}
+
 void CStdWindow::Clear() {}
+
+void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+{
+	// TODO: Enumerate multi samples
+}
 
 bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
 

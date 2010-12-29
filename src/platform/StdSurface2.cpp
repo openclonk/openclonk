@@ -1581,7 +1581,20 @@ void CTexMgr::IntLock()
 	for (std::list<CTexRef *>::iterator i=Textures.begin(); j--; ++i)
 	{
 		CTexRef *pRef = *i;
-		if (pRef->Lock() && !pRef->texLock.pBits) pRef->fIntLock = true;
+		if (pRef->Lock() && pRef->texLock.pBits)
+		{
+			pRef->fIntLock = true;
+#ifdef USE_GL
+			// Release the underlying texture with GL and recreate
+			// it on unlock, so that the texture survives
+			// context recreation.
+			if(pGL)
+			{
+				glDeleteTextures(1, &pRef->texName);
+				pRef->texName = 0;
+			}
+#endif
+		}
 	}
 }
 
