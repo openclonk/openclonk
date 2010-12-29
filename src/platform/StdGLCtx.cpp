@@ -246,7 +246,7 @@ bool CStdGLCtx::InitGlew(HINSTANCE hInst)
 	return glewInitialized;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), hrc(0), hDC(0), cx(0), cy(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), hrc(0), hDC(0) { }
 
 void CStdGLCtx::Clear()
 {
@@ -260,7 +260,7 @@ void CStdGLCtx::Clear()
 		ReleaseDC(pWindow ? pWindow->hRenderWindow : hWindow, hDC);
 		hDC=0;
 	}
-	pWindow = 0; cx = cy = 0; hWindow = NULL;
+	pWindow = 0; hWindow = NULL;
 }
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
@@ -443,7 +443,7 @@ bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 #include <X11/extensions/xf86vmode.h>
 #undef bool
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), cx(0), cy(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
 void CStdGLCtx::Clear()
 {
@@ -454,7 +454,6 @@ void CStdGLCtx::Clear()
 		ctx = 0;
 	}
 	pWindow = 0;
-	cx = cy = 0;
 }
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
@@ -561,12 +560,11 @@ bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
 
 #elif defined(USE_SDL_MAINLOOP)
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), cx(0), cy(0) { }
+CStdGLCtx::CStdGLCtx(): pWindow(0) { }
 
 void CStdGLCtx::Clear()
 {
 	pWindow = 0;
-	cx = cy = 0;
 }
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)

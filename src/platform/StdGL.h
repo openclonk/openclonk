@@ -72,7 +72,6 @@ protected:
 #elif defined(USE_COCOA)
 	/*NSOpenGLContext*/void* ctx;
 #endif
-	unsigned int cx,cy;                 // context window size
 
 	friend class CStdGL;
 	friend class CSurface;
