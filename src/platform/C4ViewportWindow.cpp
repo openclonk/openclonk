@@ -256,7 +256,13 @@ CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp *
 	            C4ViewportClassName, Title, C4ViewportWindowStyle,
 	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
 	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
-	return hWindow ? this : 0;
+	if(!hWindow) return NULL;
+
+	// We don't re-init viewport windows currently, so we don't need a child window
+	// for now: Render into main window.
+	hRenderWindow = hWindow;
+
+	return this;
 }
 
 void UpdateWindowLayout(HWND hwnd)

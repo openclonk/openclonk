@@ -142,7 +142,7 @@ void CStdWindow::Clear()
 {
 	// Destroy window
 	if (hRenderWindow) DestroyWindow(hRenderWindow);
-	if (hWindow) DestroyWindow(hWindow);
+	if (hWindow && hWindow != hRenderWindow) DestroyWindow(hWindow);
 	hRenderWindow = NULL;
 	hWindow = NULL;
 }
@@ -292,8 +292,8 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 /* CStdApp */
 
 CStdApp::CStdApp() :
-		Active(false), fQuitMsgReceived(false), hInstance(NULL),
-		fDspModeSet(false)
+		Active(false), pWindow(NULL), fQuitMsgReceived(false),
+		hInstance(NULL), fDspModeSet(false)
 {
 	ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
