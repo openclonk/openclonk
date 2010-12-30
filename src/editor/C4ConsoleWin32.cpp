@@ -646,6 +646,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 	UpdateWindow(hWindow);
 	SetFocus(hWindow);
 	ShowCursor(true);
+	hRenderWindow = hWindow;
 	// Success
 	return this;
 }
