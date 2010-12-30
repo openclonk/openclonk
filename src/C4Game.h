@@ -259,7 +259,6 @@ protected:
 	void Ticks();
 	const char *FoldersWithLocalsDefs(const char *szPath);
 	bool CheckObjectEnumeration();
-	bool LocalFileMatch(const char *szFilename, int32_t iCreation);
 	bool DefinitionFilenamesFromSaveGame();
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();

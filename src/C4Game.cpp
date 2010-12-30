@@ -2991,14 +2991,6 @@ void C4Game::ShowGameOverDlg()
 #endif
 }
 
-bool C4Game::LocalFileMatch(const char *szFilename, int32_t iCreation)
-{
-	// Check file (szFilename relative to SysDataPath)
-	if ( C4Group_GetCreation(Config.AtSystemDataPath(szFilename)) == iCreation) return true;
-	// No match
-	return false;
-}
-
 void C4Game::SyncClearance()
 {
 	PXS.SyncClearance();
