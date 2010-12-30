@@ -549,24 +549,30 @@ bool C4Def::Load(C4Group &hGroup,
 		if (pSoundSystem)
 			pSoundSystem->LoadEffects(hGroup);
 
-	// Bitmap post-load settings
-	if (Graphics.GetBitmap())
+	if(Graphics.Type == C4DefGraphics::TYPE_Bitmap)
 	{
-		// check SolidMask
-		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
-		// Set MainFace (unassigned bitmap: will be set by GetMainFace())
-		MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
-	}
+		// Bitmap post-load settings
+		if (Graphics.GetBitmap())
+		{
+			// check SolidMask
+			if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
+			// Set MainFace (unassigned bitmap: will be set by GetMainFace())
+			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
+		}
 
-	// validate TopFace
-	if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
+		// validate TopFace
+		if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
+		{
+			TopFace.Default();
+			// warn in debug mode
+			DebugLogF("invalid TopFace in %s (%s)", GetName(), id.ToString());
+		}
+	}
+	else
 	{
 		TopFace.Default();
-		// warn in debug mode
-		DebugLogF("invalid TopFace in %s(%s)", GetName(), id.ToString());
+		SolidMask.Default();
 	}
-
-
 
 	// Temporary flag
 	if (dwLoadWhat & C4D_Load_Temporary) Temporary=true;
