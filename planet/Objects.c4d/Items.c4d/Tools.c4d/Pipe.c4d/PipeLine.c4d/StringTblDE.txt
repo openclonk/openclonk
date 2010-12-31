@@ -1,0 +1,2 @@
+TxtPipeBroke=Rohr gerissen
+Name=Rohr leiting
