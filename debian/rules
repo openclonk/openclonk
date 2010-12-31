@@ -16,7 +16,8 @@
 builddir/Makefile:
 	dh_testdir
 	# Add here commands to configure the package.
-	autoreconf -i && ./configure --with-gtk --without-automatic-update
+	#autoreconf -i && ./configure --with-gtk --without-automatic-update
+	cmake . -DWITH_AUTOMATIC_UPDATE=0
 
 build: build-stamp
 
@@ -48,17 +49,17 @@ install: build
 	# Add here commands to install the package into debian/openclonk.
 	
 	#Make the dir where game data is stored
-	mkdir -p $(CURDIR)/debian/openclonk/usr/share/games/clonk
-	cp -r $(CURDIR)/planet/* $(CURDIR)/debian/openclonk/usr/share/games/clonk/
+	mkdir -p "$(CURDIR)"/debian/openclonk/usr/share/games/clonk
+	cp -r "$(CURDIR)"/planet/* "$(CURDIR)"/debian/openclonk/usr/share/games/clonk/
 
 	# Make the link
-	mkdir -p $(CURDIR)/debian/openclonk/usr/games
-	cp -a $(CURDIR)/clonk $(CURDIR)/debian/openclonk/usr/games/clonk.bin
-	ln -s /usr/games/clonk.bin $(CURDIR)/debian/openclonk/usr/share/games/clonk/clonk
-	echo '#!/bin/sh\n/usr/share/games/clonk/clonk $$@' > $(CURDIR)/debian/openclonk/usr/games/clonk
-	chmod a+x $(CURDIR)/debian/openclonk/usr/games/clonk
+	mkdir -p "$(CURDIR)"/debian/openclonk/usr/games
+	cp -a "$(CURDIR)"/clonk "$(CURDIR)"/debian/openclonk/usr/games/clonk.bin
+	ln -s /usr/games/clonk.bin "$(CURDIR)"/debian/openclonk/usr/share/games/clonk/clonk
+	echo '#!/bin/sh\n/usr/share/games/clonk/clonk $$@' > "$(CURDIR)"/debian/openclonk/usr/games/clonk
+	chmod a+x "$(CURDIR)"/debian/openclonk/usr/games/clonk
 	$(MAKE) c4group
-	./c4group $(CURDIR)/debian/openclonk/usr/share/games/clonk/* -p
+	./c4group "$(CURDIR)"/debian/openclonk/usr/share/games/clonk/* -p
 
 # Build architecture-independent files here.
 binary-indep: install
