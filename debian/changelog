@@ -1,3 +1,11 @@
+openclonk (5.1.1.0-0ubuntu1-ppa4) maverick; urgency=low
+
+  * Mercurial as Build Dependency
+  * Switch to cmake as build system
+  * Fixed spacing issues in $(CURDIR)
+
+ -- Sebastian Rühl <sebastian.ruehl@mni.fh-giessen.de>  Sun, 31 Dec 2010 15:38:26 +0100
+
 openclonk (5.1.1.0-0ubuntu1-ppa3) maverick; urgency=low
 
   * Fixed Icons
