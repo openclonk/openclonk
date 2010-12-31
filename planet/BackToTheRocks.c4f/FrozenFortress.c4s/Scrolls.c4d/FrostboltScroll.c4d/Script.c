@@ -49,7 +49,7 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		for(var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
-			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, iEffectNumber.var0, nil);
+			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.var0, nil);
 			}
 		return -1;
 	}	
