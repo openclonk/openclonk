@@ -1109,7 +1109,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 #ifdef USE_DIRECTX
 	// Note: Editor is hardcoded to false at this point... I guess that's OK
 	// because C4StartupOptionsDlg is never shown in editor mode anyway.
-	if(pD3D) lpDDraw->Init(pApp, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
+	if(pD3D) lpDDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
 #endif
 
 	if(pTexMgr) pTexMgr->IntUnlock();
