@@ -213,6 +213,7 @@ namespace C4GUI
 		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
 		if (hWindow)
 		{
+			hRenderWindow = hWindow;
 			// update pos
 			if (szID && *szID)
 				RestoreWindowPosition(hWindow, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
