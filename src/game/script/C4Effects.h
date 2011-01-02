@@ -53,7 +53,6 @@
 #define C4FxCall_DmgScript         0 // damage through script call
 #define C4FxCall_DmgBlast          1 // damage through blast
 #define C4FxCall_DmgFire           2 // damage through fire
-#define C4FxCall_DmgChop           3 // damage through chopping
 
 // energy loss callbacks
 #define C4FxCall_EngScript        32 // energy loss through script call

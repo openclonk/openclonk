@@ -781,12 +781,6 @@ void C4Object::SetOCF()
 	// OCF_FullCon: Is fully completed/grown
 	if (Con>=FullCon)
 		OCF|=OCF_FullCon;
-	// OCF_Chop: Can be chopped
-	DWORD cocf = OCF_Exclusive;
-	if (Def->Chopable)
-		if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
-				OCF|=OCF_Chop;
 	// OCF_Rotate: Can be rotated
 	if (Def->Rotateable)
 		// Don't rotate minimum (invisible) construction sites
@@ -877,7 +871,6 @@ void C4Object::UpdateOCF()
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
-	           /*| OCF_Chop - now updated regularly, see below */
 	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
 	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
@@ -891,12 +884,6 @@ void C4Object::UpdateOCF()
 	if ((Def->Entrance.Wdt>0) && (Def->Entrance.Hgt>0))
 		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (r <= Def->RotatedEntrance)))
 			OCF|=OCF_Entrance;
-	// OCF_Chop: Can be chopped
-	DWORD cocf = OCF_Exclusive;
-	if (Def->Chopable)
-		if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
-				OCF|=OCF_Chop;
 	// HitSpeeds
 	if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
 	if (cspeed>=HitSpeed2) OCF|=OCF_HitSpeed2;
@@ -1608,16 +1595,6 @@ bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
 			return true;
 	// Failure
 	return false;
-}
-
-bool C4Object::Chop(C4Object *pByObject)
-{
-	// Valid check
-	if (!Status || !Def || Contained || !(OCF & OCF_Chop))
-		return false;
-	// Chop
-	if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
-	return true;
 }
 
 bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
@@ -3660,7 +3637,6 @@ bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 void C4Object::ExecAction()
 {
 	Action.t_attach=CNAT_None;
-	DWORD ocf;
 	C4Real iTXDir;
 	C4Real lftspeed,tydir;
 	int32_t iTargetX;
@@ -4090,25 +4066,6 @@ void C4Object::ExecAction()
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_CHOP:
-		// Valid check
-		if (!Action.Target) { ObjectActionStand(this); return; }
-		// Chop
-		if (!::Game.iTick3)
-			if (!Action.Target->Chop(this))
-				{ ObjectActionStand(this); return; }
-		// Valid check (again, target might have been destroyed)
-		if (!Action.Target) { ObjectActionStand(this); return; }
-		// AtObject check
-		ocf=OCF_Chop;
-		if (!Action.Target->At(GetX(),GetY(),ocf)) { ObjectActionStand(this); return; }
-		// Position
-		SetDir( (GetX()>Action.Target->GetX()) ? DIR_Left : DIR_Right );
-		xdir=ydir=0;
-		Action.t_attach|=CNAT_Bottom;
-		Mobile=1;
-		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_LIFT:
 		// Valid check
 		if (!Action.Target) { SetAction(0); return; }

@@ -103,7 +103,7 @@ const uint32_t
 	OCF_HitSpeed1 = 1<<5,
 	OCF_FullCon = 1<<6,
 	OCF_Inflammable = 1<<7,
-	OCF_Chop = 1<<8,
+
 	OCF_Rotate = 1<<9,
 	OCF_Exclusive = 1<<10,
 	OCF_Entrance = 1<<11,

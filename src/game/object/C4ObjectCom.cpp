@@ -168,11 +168,6 @@ bool ObjectActionPush(C4Object *cObj, C4Object *target)
 	return cObj->SetActionByName("Push",target);
 }
 
-bool ObjectActionChop(C4Object *cObj, C4Object *target)
-{
-	return cObj->SetActionByName("Chop",target);
-}
-
 bool CornerScaleOkay(C4Object *cObj, int32_t iRangeX, int32_t iRangeY)
 {
 	int32_t ctx,cty;
@@ -378,23 +373,10 @@ bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 
 void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DFA_SWIM
 {
-	C4Object *pTarget;
-	DWORD ocf;
-
 	// Contents activation (first contents object only)
 	if (cObj->Contents.GetObject())
 		if (!! cObj->Contents.GetObject()->Call(PSF_Activate,&C4AulParSet(C4VObj(cObj))))
 			return;
-
-	// Chop
-	ocf=OCF_Chop;
-	if (cObj->GetProcedure()!=DFA_SWIM)
-		if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-			if (ocf & OCF_Chop)
-			{
-				PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
-				return;
-			}
 
 	// Own activation call
 	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
@@ -485,13 +467,6 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	ObjectComUnGrab(cObj);
 	// Done
 	return true;
-}
-
-bool ObjectComChop(C4Object *cObj, C4Object *pTarget)
-{
-	if (!pTarget) return false;
-	if (cObj->GetProcedure()!=DFA_WALK) return false;
-	return ObjectActionChop(cObj,pTarget);
 }
 
 bool ObjectComBuild(C4Object *cObj, C4Object *pTarget)

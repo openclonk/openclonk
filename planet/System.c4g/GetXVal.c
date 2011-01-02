@@ -37,7 +37,6 @@ global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }
 global func GetDefGrabPutGet()  { return GetDefCoreVal("GrabPutGet", "DefCore"); }
 global func GetDefCollectible() { return GetDefCoreVal("Collectible", "DefCore"); }
 global func GetDefRotate()      { return GetDefCoreVal("Rotate", "DefCore"); }
-global func GetDefChop()        { return GetDefCoreVal("Chop", "DefCore"); }
 global func GetDefFloat()       { return GetDefCoreVal("Float", "DefCore"); }
 global func GetDefContainBlast(){ return GetDefCoreVal("ContainBlast", "DefCore"); }
 global func GetDefHorizontalFix() { return GetDefCoreVal("HorizontalFix", "DefCore"); }

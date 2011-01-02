@@ -75,7 +75,6 @@ void C4Def::DefaultDefCore()
 	Carryable=0;
 	Rotateable=0;
 	RotatedEntrance=0;
-	Chopable=0;
 	Float=0;
 	ColorByOwner=0;
 	NoHorizontalMove=0;
@@ -262,7 +261,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Carryable,                     "Collectible",        0                 ));
 	pComp->Value(mkNamingAdapt(Rotateable,                    "Rotate",             0                 ));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,               "RotatedEntrance",    0                 ));
-	pComp->Value(mkNamingAdapt(Chopable,                      "Chop",               0                 ));
 	pComp->Value(mkNamingAdapt(Float,                         "Float",              0                 ));
 	pComp->Value(mkNamingAdapt(ContainBlast,                  "ContainBlast",       0                 ));
 	pComp->Value(mkNamingAdapt(ColorByOwner,                  "ColorByOwner",       0                 ));

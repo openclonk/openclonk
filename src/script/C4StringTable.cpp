@@ -153,7 +153,6 @@ C4StringTable::C4StringTable()
 	P[DFA_THROW] = "THROW";
 	P[DFA_BRIDGE] = "BRIDGE";
 	P[DFA_PUSH] = "PUSH";
-	P[DFA_CHOP] = "CHOP";
 	P[DFA_LIFT] = "LIFT";
 	P[DFA_FLOAT] = "FLOAT";
 	P[DFA_ATTACH] = "ATTACH";

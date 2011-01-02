@@ -6025,7 +6025,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "OCF_HitSpeed1"          ,C4V_Int,          OCF_HitSpeed1},
 	{ "OCF_Fullcon"            ,C4V_Int,          OCF_FullCon},
 	{ "OCF_Inflammable"        ,C4V_Int,          OCF_Inflammable},
-	{ "OCF_Chop"               ,C4V_Int,          OCF_Chop},
 	{ "OCF_Rotate"             ,C4V_Int,          OCF_Rotate},
 	{ "OCF_Exclusive"          ,C4V_Int,          OCF_Exclusive},
 	{ "OCF_Entrance"           ,C4V_Int,          OCF_Entrance},
@@ -6100,7 +6099,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "FX_Call_DmgScript"         ,C4V_Int,      C4FxCall_DmgScript         }, // damage through script call
 	{ "FX_Call_DmgBlast"          ,C4V_Int,      C4FxCall_DmgBlast          }, // damage through blast
 	{ "FX_Call_DmgFire"           ,C4V_Int,      C4FxCall_DmgFire           }, // damage through fire
-	{ "FX_Call_DmgChop"           ,C4V_Int,      C4FxCall_DmgChop           }, // damage through chopping
 	{ "FX_Call_Energy"            ,C4V_Int,      32                         }, // bitmask for generic energy loss
 	{ "FX_Call_EngScript"         ,C4V_Int,      C4FxCall_EngScript         }, // energy loss through script call
 	{ "FX_Call_EngBlast"          ,C4V_Int,      C4FxCall_EngBlast          }, // energy loss through blast

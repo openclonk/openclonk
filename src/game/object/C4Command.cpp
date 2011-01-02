@@ -61,7 +61,6 @@ const char *CommandName(int32_t iCommand)
 		case C4CMD_Exit: return "Exit";
 		case C4CMD_Grab: return "Grab";
 		case C4CMD_Throw: return "Throw";
-		case C4CMD_Chop: return "Chop";
 		case C4CMD_UnGrab: return "UnGrab";
 		case C4CMD_Jump: return "Jump";
 		case C4CMD_Wait: return "Wait";
@@ -97,7 +96,6 @@ const char* CommandNameID(int32_t iCommand)
 		case C4CMD_Exit: return "IDS_COMM_EXIT";
 		case C4CMD_Grab: return "IDS_COMM_GRAB";
 		case C4CMD_Throw: return "IDS_COMM_THROW";
-		case C4CMD_Chop: return "IDS_COMM_CHOP";
 		case C4CMD_UnGrab: return "IDS_COMM_UNGRAB";
 		case C4CMD_Jump: return "IDS_COMM_JUMP";
 		case C4CMD_Wait: return "IDS_COMM_WAIT";
@@ -313,8 +311,8 @@ void C4Command::MoveTo()
 			if (cObj->Action.Target)
 				{ cx=cObj->Action.Target->GetX(); cy=cObj->Action.Target->GetY(); }
 		break;
-		// Chop, build, dig, bridge: stop
-	case DFA_CHOP: case DFA_DIG: case DFA_BRIDGE:
+		// dig, bridge: stop
+	case DFA_DIG: case DFA_BRIDGE:
 		ObjectComStop(cObj);
 		break;
 	}
@@ -462,10 +460,6 @@ void C4Command::Dig()
 	if (cObj->Contained)
 		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
 
-	// Building or chopping: stop
-	if (cObj->GetProcedure()==DFA_CHOP)
-		ObjectComStop(cObj);
-
 	// Scaling or hangling: let go
 	if ((cObj->GetProcedure()==DFA_SCALE) || (cObj->GetProcedure()==DFA_HANGLE))
 		ObjectComLetGo(cObj,(cObj->Action.Dir==DIR_Left) ? +1 : -1);
@@ -570,10 +564,6 @@ void C4Command::Enter()
 	// Already in target object
 	if (cObj->Contained==Target) { Finish(true); return; }
 
-	// Building or chopping: stop
-	if (cObj->GetProcedure()==DFA_CHOP)
-		ObjectComStop(cObj);
-
 	// Digging: stop
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 
@@ -676,9 +666,6 @@ void C4Command::Grab()
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target==Target)
 			{ Finish(true); return; }
-	// Building or chopping: stop
-	if (cObj->GetProcedure()==DFA_CHOP)
-		ObjectComStop(cObj);
 	// Digging: stop
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 	// Grabbing: let go
@@ -732,10 +719,6 @@ void C4Command::PushTo()
 			}
 	}
 
-	// Building or chopping: stop
-	if (cObj->GetProcedure()==DFA_CHOP)
-		ObjectComStop(cObj);
-
 	// Digging: stop
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 
@@ -753,40 +736,6 @@ void C4Command::PushTo()
 	else
 		{ cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,40, NULL, true, C4Value(C4CMD_MoveTo_PushTarget)); return; }
 
-}
-
-void C4Command::Chop()
-{
-	DWORD ocf;
-	// No target: fail
-	if (!Target) { Finish(); return; }
-	// Target not chopable: done (assume was successfully chopped)
-	if (!(Target->OCF & OCF_Chop))
-		{ Finish(true); return; }
-	// Chopping target: wait
-	if ((cObj->GetProcedure()==DFA_CHOP) && (cObj->Action.Target==Target))
-		return;
-	// Grabbing: let go
-	if (cObj->GetProcedure()==DFA_PUSH)
-		{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
-	// Building, digging or chopping other: stop
-	if ((cObj->GetProcedure()==DFA_DIG) || (cObj->GetProcedure()==DFA_CHOP))
-		{ ObjectComStop(cObj); return; }
-	// At target object, in correct shopping position
-	ocf=OCF_All;
-	if (!cObj->Contained && Target->At(cObj->GetX(),cObj->GetY(),ocf) && Inside<int32_t>(Abs(cObj->GetX() - Target->GetX()), 4, 9))
-	{
-		cObj->Action.ComDir=COMD_Stop;
-		ObjectComChop(cObj,Target);
-	}
-	// Else, move to object
-	else
-	{
-		cObj->AddCommand(C4CMD_MoveTo, NULL, (cObj->GetX() > Target->GetX()) ? Target->GetX()+6 : Target->GetX()-6, Target->GetY(), 50);
-		// Too close? Move away first.
-		if (Abs(cObj->GetX() - Target->GetX()) < 5)
-			cObj->AddCommand(C4CMD_MoveTo, NULL, (cObj->GetX() > Target->GetX()) ? Target->GetX()+15 : Target->GetX()-15, Target->GetY(), 50);
-	}
 }
 
 void C4Command::UnGrab()
@@ -1393,7 +1342,6 @@ void C4Command::Execute()
 	case C4CMD_Grab: Grab(); break;
 	case C4CMD_UnGrab: UnGrab(); break;
 	case C4CMD_Throw: Throw(); break;
-	case C4CMD_Chop: Chop(); break;
 	case C4CMD_Jump: Jump(); break;
 	case C4CMD_Wait: Wait(); break;
 	case C4CMD_Get: Get(); break;
@@ -2020,10 +1968,6 @@ int32_t C4Command::GetExpGain()
 	case C4CMD_Acquire:
 	case C4CMD_Home:
 		return 2;
-
-		// advanced activities
-	case C4CMD_Chop:
-		return 5;
 
 		// victory!
 	case C4CMD_Attack:

@@ -18,7 +18,6 @@ static const DFA_SWIM    =  "SWIM";
 static const DFA_THROW   =  "THROW";
 static const DFA_BRIDGE  =  "BRIDGE";
 static const DFA_PUSH    =  "PUSH";
-static const DFA_CHOP    =  "CHOP";
 static const DFA_LIFT    =  "LIFT";
 static const DFA_FLOAT   =  "FLOAT";
 static const DFA_ATTACH  =  "ATTACH";

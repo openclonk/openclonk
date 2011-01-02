@@ -36,7 +36,6 @@ enum C4CMD
 	C4CMD_Exit,
 	C4CMD_Grab,
 	C4CMD_Throw,
-	C4CMD_Chop,
 	C4CMD_UnGrab,
 	C4CMD_Jump,
 	C4CMD_Wait,
@@ -123,7 +122,6 @@ protected:
 	void Grab();
 	void UnGrab();
 	void Throw();
-	void Chop();
 	void Jump();
 	void Wait();
 	void Take();
