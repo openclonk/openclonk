@@ -110,7 +110,7 @@ const uint32_t
 	OCF_HitSpeed2 = 1<<12,
 	OCF_HitSpeed3 = 1<<13,     
 	OCF_Collection = 1<<14,
-	OCF_Living = 1<<15,
+
 	OCF_HitSpeed4 = 1<<16,
 	OCF_Prey = 1<<17,
 	OCF_AttractLightning = 1<<18,

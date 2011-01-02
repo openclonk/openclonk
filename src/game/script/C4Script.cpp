@@ -6038,7 +6038,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "OCF_HitSpeed2"          ,C4V_Int,          OCF_HitSpeed2},
 	{ "OCF_HitSpeed3"          ,C4V_Int,          OCF_HitSpeed3},
 	{ "OCF_Collection"         ,C4V_Int,          OCF_Collection},
-	{ "OCF_Living"             ,C4V_Int,          OCF_Living},
 	{ "OCF_HitSpeed4"          ,C4V_Int,          OCF_HitSpeed4},
 	{ "OCF_Prey"               ,C4V_Int,          OCF_Prey},
 	{ "OCF_AttractLightning"   ,C4V_Int,          OCF_AttractLightning},

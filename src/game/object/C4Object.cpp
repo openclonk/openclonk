@@ -804,12 +804,8 @@ void C4Object::SetOCF()
 			if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
 				if (NoCollectDelay==0)
 					OCF|=OCF_Collection;
-	// OCF_Living
-	if (Category & C4D_Living)
-	{
-		OCF|=OCF_Living;
-		if (Alive) OCF|=OCF_Alive;
-	}
+	// OCF_Alive
+	if (Alive) OCF|=OCF_Alive;
 	// OCF_Prey
 	if (Def->Prey)
 		if (Alive)
@@ -871,7 +867,7 @@ void C4Object::UpdateOCF()
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
-	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
+	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Alive
 	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))

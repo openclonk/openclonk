@@ -3057,9 +3057,7 @@ void C4AulParseState::Parse_Const()
 		if (TokenType != ATT_IDTF)
 			UnexpectedToken("constant name");
 		SCopy(Idtf, Name);
-		// check func lists - functions of same name are allowed for backwards compatibility
-		// (e.g., for overloading constants such as OCF_Living() in chaos scenarios)
-		// it is not encouraged though, so better warn
+		// check func lists - functions of same name are not allowed
 		if (a->Engine->GetFuncRecursive(Idtf))
 			Error("definition of constant hidden by function ", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
