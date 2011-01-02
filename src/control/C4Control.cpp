@@ -425,10 +425,8 @@ C4ControlSyncCheck::C4ControlSyncCheck()
 
 void C4ControlSyncCheck::Set()
 {
-	extern int32_t FRndPtr3;
 	Frame = Game.FrameCounter;
 	ControlTick = ::Control.ControlTick;
-	Random3 = FRndPtr3;
 	RandomCount = ::RandomCount;
 	AllCrewPosX = GetAllCrewPosX();
 	PXSCount = ::PXS.Count;
@@ -463,7 +461,6 @@ void C4ControlSyncCheck::Execute() const
 	// Not equal
 	if ( Frame                  != pSyncCheck->Frame
 	     ||(ControlTick            != pSyncCheck->ControlTick   && !::Control.isReplay())
-	     || Random3                != pSyncCheck->Random3
 	     || RandomCount            != pSyncCheck->RandomCount
 	     || AllCrewPosX            != pSyncCheck->AllCrewPosX
 	     || PXSCount               != pSyncCheck->PXSCount
@@ -477,8 +474,8 @@ void C4ControlSyncCheck::Execute() const
 			{ const char *szTemp = szThis; szThis = szOther; szOther = szTemp; }
 		// Message
 		LogFatal("Network: Synchronization loss!");
-		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Rn3 %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szThis, Frame,ControlTick,RandomCount,Random3,AllCrewPosX,PXSCount,MassMoverIndex,ObjectCount,ObjectEnumerationIndex, SectShapeSum).getData());
-		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Rn3 %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.Random3,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
+		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szThis, Frame,ControlTick,RandomCount,AllCrewPosX,PXSCount,MassMoverIndex,ObjectCount,ObjectEnumerationIndex, SectShapeSum).getData());
+		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
 		StartSoundEffect("SyncError");
 #ifdef _DEBUG
 		// Debug safe
@@ -503,7 +500,6 @@ void C4ControlSyncCheck::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Frame), "Frame", -1));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ControlTick), "ControlTick", 0));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Random3), "Random3", 0));
 	pComp->Value(mkNamingAdapt(RandomCount, "RandomCount", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(AllCrewPosX), "AllCrewPosX", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(PXSCount), "PXSCount", 0));

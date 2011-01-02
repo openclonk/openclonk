@@ -223,7 +223,6 @@ public:
 protected:
 	int32_t Frame;
 	int32_t ControlTick;
-	int32_t Random3;
 	int32_t RandomCount;
 	int32_t AllCrewPosX;
 	int32_t PXSCount;
