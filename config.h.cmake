@@ -199,3 +199,6 @@
 
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
+
+/* Generate minidumps on crash */
+#cmakedefine GENERATE_MINI_DUMP 1
