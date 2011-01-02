@@ -2606,6 +2606,12 @@ static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad, bool fRequ
 	return C4VNull;
 }
 
+static C4Void FnDigFreeMat(C4AulContext *cthr, long x, long y, long wdt, long hgt, long mat)
+{
+	::Landscape.DigFreeMat(x, y, wdt, hgt, mat);
+	return C4VNull;
+}
+
 static C4Void FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, bool fRequest)
 {
 	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,fRequest,cthr->Obj);
@@ -5752,6 +5758,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ShakeFree", FnShakeFree);
 	AddFunc(pEngine, "ShakeObjects", FnShakeObjects);
 	AddFunc(pEngine, "DigFree", FnDigFree);
+	AddFunc(pEngine, "DigFreeMat", FnDigFreeMat);
 	AddFunc(pEngine, "FreeRect", FnFreeRect);
 	AddFunc(pEngine, "DigFreeRect", FnDigFreeRect);
 	AddFunc(pEngine, "Hostile", FnHostile);
