@@ -34,7 +34,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	NSString* string = [NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding];
 	if (![pasteboard setString:string forType:NSStringPboardType])
 	{
-		NSLog(@"Writing to Cocoa pasteboard failed");
+		Log("Writing to Cocoa pasteboard failed");
 		return false;
 	}
 	return true;
@@ -153,21 +153,6 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	}
 	CFRelease(array);
 	return good_index;
-}
-
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
-{
-	pWindow->SetSize(iXRes, iYRes);
-	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
-	[controller setFullscreen:fFullScreen];
-	NSWindow* window = controller.window;
-	[window center];
-	[window setContentMinSize:NSMakeSize(iXRes, iYRes)];
-	[window setContentMaxSize:NSMakeSize(iXRes, iYRes)];
-	if (!fFullScreen)
-		[window makeKeyAndOrderFront:nil];
-	OnResolutionChanged(iXRes, iYRes);
-	return true;
 }
 
 void CStdApp::RestoreVideoMode()

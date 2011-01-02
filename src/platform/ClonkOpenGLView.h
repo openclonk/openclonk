@@ -31,6 +31,7 @@
 - (void) showCursor;
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
++ (CGDirectDisplayID) displayID;
 
 @property(readwrite, retain) NSOpenGLContext* context;
 @end

@@ -133,6 +133,11 @@ void CStdWindow::RequestUpdate()
 	[ctrler.openGLView display];
 }
 
+bool CStdWindow::ReInit(CStdApp* pApp)
+{
+	return true;
+}
+
 int K_F1 = 122 + CocoaKeycodeOffset;
 int K_F2 = 120 + CocoaKeycodeOffset;
 int K_F3 = 99 + CocoaKeycodeOffset;
