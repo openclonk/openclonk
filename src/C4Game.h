@@ -203,7 +203,6 @@ public:
 	                                   int32_t con=1, bool terrain=false);
 	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 	                           int32_t tx=50, int32_t ty=50);
-	void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
 	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt,
 	                        int32_t category);
 	C4Object *FindObject(C4ID id,

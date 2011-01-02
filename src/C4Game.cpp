@@ -1098,67 +1098,6 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 	return pObj;
 }
 
-void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj)
-{
-	C4Object *cObj; C4ObjectLink *clnk;
-
-	// layer check: Blast in same layer only
-	if (pByObj) pByObj = pByObj->Layer;
-
-	// Contained blast
-	if (inobj)
-	{
-		inobj->Blast(level,iCausedBy);
-		for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-			if (cObj->Status) if (cObj->Contained==inobj) if (cObj->Layer==pByObj)
-						cObj->Blast(level,iCausedBy);
-	}
-
-	// Uncontained blast local outside objects
-	else
-	{
-		for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-			if (cObj->Status) if (!cObj->Contained) if (cObj->Layer==pByObj)
-					{
-						// Direct hit (5 pixel range to all sides)
-						if (Inside<int32_t>( ty-(cObj->GetY()+cObj->Shape.y), -5, cObj->Shape.Hgt-1+10 ))
-							if (Inside<int32_t>( tx-(cObj->GetX()+cObj->Shape.x), -5, cObj->Shape.Wdt-1+10 ))
-								cObj->Blast(level,iCausedBy);
-						// Shock wave hit (if in level range, living, object and vehicle only. No structures/StatickBack, as this would mess up castles, elevators, etc.!)
-						if (cObj->Category & (C4D_Living | C4D_Object | C4D_Vehicle))
-							if (!cObj->Def->NoHorizontalMove)
-								if (Abs(ty-cObj->GetY())<=level)
-									if (Abs(tx-cObj->GetX())<=level)
-									{
-										// vehicles and floating objects only if grab+pushable (no throne, no tower entrances...)
-										C4PropList* pActionDef = cObj->GetAction();
-										if (cObj->Def->Grab !=1)
-										{
-											if (cObj->Category & C4D_Vehicle)
-												continue;
-											if (pActionDef)
-												if (pActionDef->GetPropertyP(P_Procedure) == DFA_FLOAT)
-													continue;
-										}
-										if (cObj->Category & C4D_Living)
-										{
-											// living takes additional dmg from blasts
-											cObj->DoEnergy(-level/2, false, C4FxCall_EngBlast, iCausedBy);
-											cObj->DoDamage(level/2,iCausedBy, C4FxCall_DmgBlast);
-										}
-										else if (cObj->Category & C4D_Object)
-										{
-											// tracing indirect killers
-											cObj->Controller = iCausedBy;
-										}
-
-										cObj->Fling( itofix(Sign(cObj->GetX()-tx+Random(3))*(level-Abs(tx-cObj->GetX()))) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20),
-										             itofix(-level+Abs(ty-cObj->GetY())) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20), true );
-									}
-					}
-	}
-}
-
 C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t category)
 {
 	C4Object *cObj; C4ObjectLink *clnk;

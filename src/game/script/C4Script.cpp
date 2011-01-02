@@ -1914,13 +1914,6 @@ static long FnExtractMaterialAmount(C4AulContext *cthr, long x, long y, long mat
 	return extracted;
 }
 
-static C4Void FnBlastObjects(C4AulContext *cthr, long iX, long iY, long iLevel, C4Object *pInObj, Nillable<long> iCausedBy)
-{
-	if (iCausedBy.IsNil() && cthr->Obj) iCausedBy = cthr->Obj->Controller;
-	Game.BlastObjects(iX,iY,iLevel,pInObj,iCausedBy,cthr->Obj);
-	return C4VNull;
-}
-
 static bool FnBlastObject(C4AulObjectContext *cthr, long iLevel, Nillable<long> iCausedBy)
 {
 	if (iCausedBy.IsNil() && cthr->Obj) iCausedBy = cthr->Obj->Controller;
@@ -5785,7 +5778,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GBackLiquid", FnGBackLiquid);
 	AddFunc(pEngine, "GBackSky", FnGBackSky);
 	AddFunc(pEngine, "Material", FnMaterial);
-	AddFunc(pEngine, "BlastObjects", FnBlastObjects);
 	AddFunc(pEngine, "BlastObject", FnBlastObject);
 	AddFunc(pEngine, "BlastFree", FnBlastFree);
 	AddFunc(pEngine, "InsertMaterial", FnInsertMaterial);
