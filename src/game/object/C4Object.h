@@ -259,7 +259,6 @@ public:
 	void ExecAction();
 	bool ExecLife();
 	bool ExecuteCommand();
-	void ExecBase();
 	void AssignDeath(bool fForced); // assigns death - if forced, it's killed even if an effect stopped this
 	void ContactAction();
 	void NoAttachAction();

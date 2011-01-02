@@ -1054,22 +1054,6 @@ bool C4Object::ExecLife()
 	return true;
 }
 
-void C4Object::ExecBase()
-{
-	// Environmental action
-	if (!::Game.iTick35)
-	{
-		// Structures dig free snow
-		if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
-			if (r==0)
-			{
-				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
-				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
-			}
-	}
-
-}
-
 void C4Object::Execute()
 {
 #ifdef DEBUGREC
@@ -1107,8 +1091,6 @@ void C4Object::Execute()
 	}
 	// Life
 	ExecLife();
-	// Base
-	ExecBase();
 	// Animation. If the mesh is attached, then don't execute animation here but let the parent object do it to make sure it is only executed once a frame.
 	if (pMeshInstance && !pMeshInstance->GetAttachParent())
 		pMeshInstance->ExecuteAnimation(1.0f/37.0f /* play smoothly at 37 FPS */);

@@ -35,7 +35,6 @@ const C4ID C4ID::None(std::string("None"));
 const C4ID C4ID::Contents(std::string("Contents"));
 
 // TODO: Remove these eventually, since they are deprecated.
-const C4ID C4ID::StructuresSnowIn(std::string("STSN"));
 const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
 const C4ID C4ID::FlagRemvbl(std::string("FGRV"));
