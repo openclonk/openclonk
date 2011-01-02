@@ -480,6 +480,12 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
+	if(shaders[0] && fUseClrModMap)
+	{
+		glClientActiveTexture(GL_TEXTURE3);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTexture(GL_TEXTURE0);
+	}
 	glLoadIdentity();
 	if (!fExact)
 	{
@@ -1581,6 +1587,13 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			{
 				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
 				glDrawArrays(GL_QUADS, 0, 4);
+			}
+
+			if(shaders[0] && fUseClrModMap)
+			{
+				glClientActiveTexture(GL_TEXTURE3);
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				glClientActiveTexture(GL_TEXTURE0);
 			}
 
 		}
