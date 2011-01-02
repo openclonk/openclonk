@@ -88,7 +88,12 @@ int WINAPI WinMain (HINSTANCE hInst,
 	int argc = 0;
 	LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
 	if (!wargv)
-		throw std::runtime_error("Unable to split command line");
+	{
+		const char *error = "Internal error: Unable to split command line! Exiting.";
+		Log(error);
+		Application.MessageDialog(error);
+		return C4XRV_Failure;
+	}
 	argv.reserve(argc);
 		
 	// Convert args to UTF-8
