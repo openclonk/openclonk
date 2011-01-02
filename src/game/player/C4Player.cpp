@@ -195,8 +195,6 @@ void C4Player::Execute()
 	UpdateView();
 	ExecuteControl();
 	Menu.Execute();
-	if (Cursor)
-		Cursor->AutoContextMenu(-1);
 
 	// decay of dead viewtargets
 	C4ObjectLink *pLnkNext = FoWViewObjs.First, *pLnk;

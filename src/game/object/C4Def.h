@@ -174,7 +174,6 @@ public:
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
-	int32_t AutoContextMenu;  // automatically open context menu for this object
 	int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 public:
 	void DefaultDefCore();

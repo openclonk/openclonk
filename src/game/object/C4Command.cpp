@@ -72,7 +72,6 @@ const char *CommandName(int32_t iCommand)
 		case C4CMD_PushTo: return "PushTo";
 		case C4CMD_Transfer: return "Transfer";
 		case C4CMD_Attack: return "Attack";
-		case C4CMD_Context: return "Context";
 		case C4CMD_Buy: return "Buy";
 		case C4CMD_Sell: return "Sell";
 		case C4CMD_Acquire: return "Acquire";
@@ -107,7 +106,6 @@ const char* CommandNameID(int32_t iCommand)
 		case C4CMD_PushTo: return "IDS_COMM_PUSHTO";
 		case C4CMD_Transfer: return "IDS_COMM_TRANSFER";
 		case C4CMD_Attack: return "IDS_COMM_ATTACK";
-		case C4CMD_Context: return "IDS_COMM_CONTEXT";
 		case C4CMD_Buy: return "IDS_COMM_BUY";
 		case C4CMD_Sell: return "IDS_COMM_SELL";
 		case C4CMD_Acquire: return "IDS_COMM_ACQUIRE";
@@ -908,22 +906,6 @@ void C4Command::Wait()
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
 }
 
-void C4Command::Context()
-{
-	// Not context object specified (in Target2): fail
-	if (!Target2) { Finish(); return; }
-	// Open context menu for target
-	cObj->ActivateMenu(C4MN_Context,0,0,0,Target2);
-	if (Tx._getInt()!=0 && Ty!=0)
-		if (cObj->Menu)
-		{
-			cObj->Menu->SetAlignment(C4MN_Align_Free);
-			cObj->Menu->SetLocation(Tx._getInt(),Ty);
-		}
-	// Done
-	Finish(true);
-}
-
 bool C4Command::GetTryEnter()
 {
 	// Target contained and container has RejectContents: fail
@@ -1352,7 +1334,6 @@ void C4Command::Execute()
 	case C4CMD_PushTo:  PushTo(); break;
 	case C4CMD_Transfer: Transfer(); break;
 	case C4CMD_Attack: Attack(); break;
-	case C4CMD_Context: Context(); break;
 	case C4CMD_Buy: Buy(); break;
 	case C4CMD_Sell: Sell(); break;
 	case C4CMD_Acquire: Acquire(); break;
@@ -1957,7 +1938,6 @@ int32_t C4Command::GetExpGain()
 	case C4CMD_Activate:
 	case C4CMD_PushTo:
 	case C4CMD_Dig:
-	case C4CMD_Context:
 	case C4CMD_Buy:
 	case C4CMD_Sell:
 	case C4CMD_Take:

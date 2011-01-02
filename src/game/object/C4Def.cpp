@@ -294,7 +294,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoSell,                        "NoSell",             0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
-	pComp->Value(mkNamingAdapt(AutoContextMenu,               "AutoContextMenu",    0                 ));
 	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));
 
 	const StdBitfieldEntry<int32_t> AllowPictureStackModes[] =

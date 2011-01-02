@@ -1684,7 +1684,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	//CloseMenu(true);
 	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return false;
 	// Create menu
-	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems(true);
+	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems();
 	// Open menu
 	switch (iMenu)
 	{
@@ -1746,27 +1746,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// Success
 		return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Context:
-	{
-		// Target by parameter
-		if (!pTarget) break;
-
-		// Create symbol & init menu
-		pPlayer=::Players.Get(pTarget->Owner);
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		pTarget->Def->Draw(fctSymbol,false,pTarget->Color, pTarget);
-		Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
-
-		Menu->SetPermanent(!!iMenuData);
-		Menu->SetRefillObject(pTarget);
-
-		// Preselect
-		Menu->SetSelection(iMenuSelect, false, true);
-		Menu->SetPosition(iMenuPosition);
-	}
-	// Success
-	return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4MN_Info:
 		// Target by parameter
 		if (!pTarget) break;
@@ -1800,28 +1779,6 @@ bool C4Object::CloseMenu(bool fForce)
 		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=NULL; } // protect menu deletion from recursive menu operation calls
 	}
 	return true;
-}
-
-void C4Object::AutoContextMenu(int32_t iMenuSelect)
-{
-	// Auto Context Menu - the "new structure menus"
-	// No command set and no menu open
-	if (!Command && !(Menu && Menu->IsActive()))
-		// In a container with AutoContextMenu
-		if (Contained && Contained->Def->AutoContextMenu)
-			// Crew members only
-			if (OCF & OCF_CrewMember)
-			{
-				// Player has AutoContextMenus enabled
-				C4Player* pPlayer = ::Players.Get(Controller);
-				if (pPlayer && pPlayer->PrefAutoContextMenu)
-				{
-					// Open context menu for structure
-					ActivateMenu(C4MN_Context, iMenuSelect, 1, 0, Contained);
-					// Closing the menu exits the building (all selected clonks)
-					Menu->SetCloseCommand("PlayerObjectCommand(GetOwner(), \"Exit\") && ExecuteCommand()");
-				}
-			}
 }
 
 BYTE C4Object::GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt)

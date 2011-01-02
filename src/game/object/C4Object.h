@@ -281,7 +281,6 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf);
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
-	void AutoContextMenu(int32_t iMenuSelect);
 	int32_t ContactCheck(int32_t atx, int32_t aty);
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);

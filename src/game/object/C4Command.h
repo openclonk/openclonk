@@ -47,7 +47,6 @@ enum C4CMD
 	C4CMD_PushTo,
 	C4CMD_Transfer,
 	C4CMD_Attack,
-	C4CMD_Context,
 	C4CMD_Buy,
 	C4CMD_Sell,
 	C4CMD_Acquire,
@@ -133,7 +132,6 @@ protected:
 	void Dig();
 	void Activate();
 	void PushTo();
-	void Context();
 	int32_t CallFailed();
 	bool JumpControl();
 	bool FlightControl();

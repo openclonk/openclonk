@@ -1190,7 +1190,7 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4ID iSymbol, C4Object *pComm
 
 	// Clear any old menu, init new menu
 	if (!cthr->Obj->CloseMenu(false)) return false;
-	if (!cthr->Obj->Menu) cthr->Obj->Menu = new C4ObjectMenu; else cthr->Obj->Menu->ClearItems(true);
+	if (!cthr->Obj->Menu) cthr->Obj->Menu = new C4ObjectMenu; else cthr->Obj->Menu->ClearItems();
 	cthr->Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,(idMenuID ? idMenuID : iSymbol).GetHandle(),iStyle,true);
 
 	// Set permanent
@@ -4105,7 +4105,7 @@ static bool FnClearMenuItems(C4AulObjectContext *ctx)
 	// check menu
 	if (!ctx->Obj->Menu) return false;
 	// clear the items
-	ctx->Obj->Menu->ClearItems(true);
+	ctx->Obj->Menu->ClearItems();
 	// success
 	return true;
 }

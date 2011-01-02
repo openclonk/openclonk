@@ -252,7 +252,6 @@ C4Menu::C4Menu() : C4GUI::Dialog(100, 100, NULL, true) // will be re-adjusted la
 	// initially invisible: Will be made visible at first drawing by viewport
 	// when the location will be inialized
 	SetVisibility(false);
-	LastSelection = -1;
 }
 
 void C4Menu::Default()
@@ -839,9 +838,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		DrawFrame(cgoExtra.Surface, cgoExtra.X-1, cgoExtra.Y-1, cgoExtra.Wdt+1, cgoExtra.Hgt+1);
 	}
 
-	// live max magic
-	int32_t iUseExtraData = ExtraData;
-
 	// Draw specified extra
 	switch (Extra)
 	{
@@ -851,8 +847,6 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	case C4MN_Extra_Value:
 	{
 		if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
-		// Flag parent object's owner's wealth display
-		C4Player *pParentPlr = ::Players.Get(GetControllingPlayer());
 	}
 	break;
 	}
@@ -904,18 +898,11 @@ bool C4Menu::RefillInternal()
 	return true;
 }
 
-void C4Menu::ClearItems(bool fResetSelection)
+void C4Menu::ClearItems()
 {
 	C4MenuItem *pItem;
 	while ((pItem = GetItem(0))) delete pItem;
 	ItemCount=0;
-	if (fResetSelection)
-	{
-		// Remember selection for nested menus
-		LastSelection = Selection;
-		SetSelection(-1, true, false);
-		LocationSet=false;
-	}
 	UpdateScrollBar();
 }
 
