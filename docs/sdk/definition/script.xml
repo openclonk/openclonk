@@ -18,7 +18,7 @@
     <text>An object with this script will be given a rock right after it has been created. The Initialize function is called only when the object has reached full size (a building only when its construction has been completed and a living being only when it is fully grown).</text>
     <h>TimerCall</h>
     <text>Each object definition can define a timer call in its <emlink href="definition/defcore.html">DefCore</emlink>. The TimerCall is a function which will be called at regular intervals. The DefCore entry Timer determines the rate of calls. If no rate is specifed, the default value is 35 frames (roughly once per second).</text>
-    <h>ActMap.txt</h>
+    <h>ActMap</h>
     <text>An active object can also define activity script calls in its <emlink href="definition/actmap.html">ActMap</emlink>. The defined StartCall is made whenever an action begins (or repeats), an EndCall is made at the end of each activity. PhaseCall is called at each animation phase step and should only be used for very short animations. The call frequency of PhaseCalls is determined by the speed of the animation.</text>
     <h>#include</h>
     <text>An object script can also include the functionality of another script.</text>

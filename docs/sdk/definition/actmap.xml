@@ -3,26 +3,41 @@
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-  <title>ActMap.txt</title>
+  <title>ActMap</title>
   <h id="ActMap">ActMap</h>
-  <text>The ActMap.txt-component describes possible actions (i.e., activities like walking and scaling for clonks; or opening/closing doors of buildings), of an object. The animation phases of each activity are placed as adjacent images in the Graphics.png (and/or Overlay.png/Graphics.bmp). These animations are being referenced using image coordinates in the ActMap.txt. Animations may be started by script (see <emlink href="script/fn/SetAction.html">SetAction</emlink>) or directly by the engine. Some activities - especially those of clonks and animals - use an engine-intrenal <emlink href="definition/procedures.html">procedure</emlink>, which controls the movement of an object while such an activity is set.</text>
+  <text>The ActMap property describes possible actions (i.e., activities like walking and scaling for clonks; or opening/closing doors of buildings), of an object. It is almost always inherited from their definition. The animation phases of each activity are placed as adjacent images in the Graphics.png (and/or Overlay.png/Graphics.bmp). These animations are being referenced using image coordinates in the ActMap. Animations may be started by script (see <emlink href="script/fn/SetAction.html">SetAction</emlink>) or directly by the engine. Some activities - especially those of clonks and animals - use an engine-internal <emlink href="definition/procedures.html">procedure</emlink>, which controls the movement of an object while such an activity is set.</text>
   <text>
     <table>
-      <caption id="BeliebigvieleSektionenAction">Any number of sections [Action]</caption>
+      <caption id="BeliebigvieleSektionenAction">Any number of proplists</caption>
       <rowh>
-        <col>Value</col>
+        <col>Property</col>
         <col>Data type</col>
         <col>Description</col>
       </rowh>
       <row>
         <literal_col>Name</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Name of the activity. See <emlink href="script/fn/SetAction.html">SetAction</emlink>().</col>
       </row>
       <row>
         <literal_col>Procedure</literal_col>
-        <col>String (max. 30 chars)</col>
-        <col>Internal standard procedure. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+        <col>String</col>
+        <col>Internal procedure. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Speed</literal_col>
+        <col>Integer</col>
+        <col>The maximum speed in 1/100 px/frame an internal procedure will move the object with. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Accel</literal_col>
+        <col>Integer</col>
+        <col>The acceleration in 1/100 px/frame² an internal procedure will apply to the object. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
+      </row>
+      <row>
+        <literal_col>Decel</literal_col>
+        <col>Integer</col>
+        <col>The deceleration in 1/100 px/frame² the internal procedure WALK will apply to the object. See <emlink href="definition/procedures.html">Procedures</emlink>.</col>
       </row>
       <row>
         <literal_col>Directions</literal_col>
@@ -76,7 +91,7 @@
       </row>
       <row>
         <literal_col>NextAction</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Next action being set after the current one has reached its end.</col>
       </row>
       <row>
@@ -106,7 +121,7 @@
       </row>
       <row>
         <literal_col>InLiquidAction</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Action to be set if the object plunges into water.</col>
       </row>
       <row>
@@ -133,4 +148,5 @@
   </text>
   <author>Sven2</author><date>2002-04</date>
   <author>matthes</author><date>2004-06</date>
+  <author>Günther</author><date>2011-01</date>
 </doc>

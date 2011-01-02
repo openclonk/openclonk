@@ -3,13 +3,12 @@
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-  <title>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</title>
+  <title>GetDefCoreVal, GetObjectVal, GetScenarioVal</title>
   <h>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</h>
   <part>
     <text>
       <ul>
         <li>GetDefCoreVal(string entry, string section, id definition);</li>
-        <li>GetActMapVal(string entry, string action, id definition);</li>
         <li>GetObjectVal(string entry, string section, object obj);</li>
         <li>GetObjectInfoCoreVal(string entry, string section, object obj);</li>
         <li>GetScenarioVal(string entry, string section);</li>
@@ -28,10 +27,6 @@
         <row>
           <col>GetDefCoreVal</col>
           <col>DefCore.txt</col>
-        </row>
-        <row>
-          <col>GetActMapVal</col>
-          <col>ActMap.txt</col>
         </row>
         <row>
           <col>GetObjectVal</col>
@@ -55,8 +50,8 @@
         </row>
       </table>
     </text>
-    <text>The property to be accessed is referenced through its name and section, if applicable (if no value is given for the section, all sections will be searched for the property). If a matching property was not found or does not correspond to a valid C4Script data type (e.g. ID lists) the result is 0.</text>
-    <text>If 0 is given for obj/definition in a call to GetObjectVal, the object or the definition of the object from which the call was made is used.</text>
+    <text>The property to be accessed is referenced through its name and section, if applicable (if no value is given for the section, all sections will be searched for the property). If a matching property was not found or does not correspond to a valid C4Script data type (e.g. ID lists) the result is <code>nil</code>.</text>
+    <text>If <code>nil</code> is given for obj/definition in a call to GetObjectVal, the object or the definition of the object from which the call was made is used.</text>
     <text>There is a number of additional wrapper functions located in System.c4g/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>("Width", 0, -obj-)</code>).</text>
   </part>
   <author>Peter</author><date>2001-11</date>

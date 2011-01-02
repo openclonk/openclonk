@@ -30,7 +30,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets the activity of the calling object. Also see <emlink href="definition/actmap.html">ActMap.txt</emlink>.</desc>
+    <desc>Sets the activity of the calling object. Also see <emlink href="definition/actmap.html">the ActMap</emlink>.</desc>
     <remark>If target1 or target2 is omitted or 0, the previously set action target(s) will be preserved. To effectively clear action targets, use <funclink>SetActionTargets</funclink>.</remark>
     <remark>The StartCall of the defined action is called during the execution of SetAction. So if the StartCall should happen to delete the object you must not access the object in any way following the call to SetAction!</remark>
     <examples>

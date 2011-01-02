@@ -15,7 +15,7 @@
         <col>CNAT</col>
       </rowh>
       <row>
-        <col>NONE</col>
+        <col>nil</col>
         <col>No procedure</col>
         <col>Only gravitational effects or attachment as specified in the <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>[Action] Attach</col>
