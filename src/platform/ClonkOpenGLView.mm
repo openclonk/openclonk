@@ -265,11 +265,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 	if (::pGUI)
 	{
 		NSString* str = [insertString isKindOfClass:[NSAttributedString class]] ? [(NSAttributedString*)insertString string] : (NSString*)insertString;
-		for (unsigned int i = 0; i < [str length]; i++)
-		{
-			unichar c = [str characterAtIndex:i];
-			::pGUI->CharIn((const char*)&c);
-		}
+		const char* cstr = [str cStringUsingEncoding:NSUTF8StringEncoding];
+		::pGUI->CharIn(cstr);
 	}
 }
 
