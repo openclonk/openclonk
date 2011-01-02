@@ -83,12 +83,20 @@ public func AddCheckpoint(int x, int y, int mode)
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
 	cp->SetCPController(this);
-	if (mode & PARKOUR_CP_Check || mode & PARKOUR_CP_Ordered)
+	// Only increase cp count and update list if mode is check.
+	if (!(cp->GetCPMode() & PARKOUR_CP_Check))
+		return cp;
+	// Move finish one place further in checkpoint list.
+	if (cp_list[cp_count] && cp_list[cp_count]->GetCPMode() & PARKOUR_CP_Finish)
 	{
-		cp_count++;
-		cp_list[cp_count + 1] = cp_list[cp_count]; // Finish 1 place further.
+		cp_list[cp_count + 1] = cp_list[cp_count];
 		cp_list[cp_count] = cp;
 	}
+	else
+	{
+		cp_list[cp_count + 1] = cp;
+	}
+	cp_count++;
 	return cp;
 }
 
