@@ -634,10 +634,6 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 				scaleY2 = scaleY * iTexSizeY;
 			}
 
-			// Size of this texture actually containing image data
-			const int iImgSizeX = (iX == sfcSource->iTexX-1) ? ((sfcSource->Wdt - 1) % iTexSizeX + 1) : (iTexSizeX);
-			const int iImgSizeY = (iY == sfcSource->iTexY-1) ? ((sfcSource->Hgt - 1) % iTexSizeY + 1) : (iTexSizeY);
-
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
 			fTexBlt.left  = Max<float>(fx - iBlitX, 0);
@@ -672,6 +668,9 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 			// in question is currently fixed by using non-power-of-two
 			// and non-square textures.
 #if 0
+			// Size of this texture actually containing image data
+			const int iImgSizeX = (iX == sfcSource->iTexX-1) ? ((sfcSource->Wdt - 1) % iTexSizeX + 1) : (iTexSizeX);
+			const int iImgSizeY = (iY == sfcSource->iTexY-1) ? ((sfcSource->Hgt - 1) % iTexSizeY + 1) : (iTexSizeY);			
 			// Make sure we don't access border pixels. Normally this is prevented
 			// by GL_CLAMP_TO_EDGE anyway but for the bottom and rightmost textures
 			// this does not work as the textures might only be partially filled.

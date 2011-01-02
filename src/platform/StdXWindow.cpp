@@ -208,7 +208,7 @@ static std::vector<XVisualInfo> EnumerateVisuals(Display* dpy)
 static Window CreateRenderWindow(Display* dpy, Window parent, XVisualInfo* info)
 {
 	XWindowAttributes parent_attr;
-	if(!XGetWindowAttributes(dpy, parent, &parent_attr)) return NULL;
+	if(!XGetWindowAttributes(dpy, parent, &parent_attr)) return None;
 
 	XSetWindowAttributes attr;
 	attr.border_pixel = 0;
@@ -372,7 +372,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp,
 	renderwnd = CreateRenderWindow(dpy, wnd, static_cast<XVisualInfo*>(Info));
 	if(!renderwnd)
 	{
-		XDestroyWindow(dpy, wnd); wnd = NULL;
+		XDestroyWindow(dpy, wnd); wnd = None;
 		Log("Error creating render window.");
 		return NULL;
 	}
@@ -447,7 +447,7 @@ void CStdWindow::Clear()
 	Info = NULL;
 }
 
-bool CStdWindow::FindInfo(unsigned int samples, void** info)
+bool CStdWindow::FindInfo(int samples, void** info)
 {
 #ifdef USE_GL
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);

@@ -334,7 +334,7 @@ protected:
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
 protected:
-	bool FindInfo(unsigned int samples, void** info);
+	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;

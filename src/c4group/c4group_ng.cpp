@@ -240,7 +240,6 @@ bool ProcessGroup(const char *FilenamePar)
 					case 'y':
 						{
 							Log("Applying update...");
-							bool success = false;
 							unsigned long pid = 0;
 							bool have_pid = false;
 

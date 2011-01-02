@@ -538,7 +538,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 	int32_t cnt,cnt2,ctx,cty;
 	C4Def *def;
 	C4ID cid;
-	C4Object *cbase,*fpower=NULL;
+	C4Object *cbase;
 	// Create ready base structures
 	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetID(cnt)); cnt++)
 	{

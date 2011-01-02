@@ -211,12 +211,12 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
 	// Extract update program (the update should be applied using the new version)
 	C4Group UpdateGroup, SubGroup;
-	char strSubGroup[1024+1];
 	if (!UpdateGroup.Open(strUpdateFile)) return false;
 	// Look for update program at top level
 	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
 		return false;
 #if 0
+	char strSubGroup[1024+1];
 		// ASK: What is this? Why should an update program not be found at the top
 		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
