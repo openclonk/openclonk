@@ -80,56 +80,48 @@ int WINAPI WinMain (HINSTANCE hInst,
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-#if defined(GENERATE_MINI_DUMP) && !defined(_MSC_VER)
+#if defined(GENERATE_MINI_DUMP)
 	SetUnhandledExceptionFilter(GenerateDump);
 #endif
-
-#if defined(GENERATE_MINI_DUMP) && defined(_MSC_VER)
-	__try
-	{
-#endif
-		// Split wide command line to wide argv array
-		std::vector<char*> argv;
-		int argc = 0;
-		LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
-		if (!wargv)
-			throw std::runtime_error("Unable to split command line");
-		argv.reserve(argc);
+	// Split wide command line to wide argv array
+	std::vector<char*> argv;
+	int argc = 0;
+	LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (!wargv)
+		throw std::runtime_error("Unable to split command line");
+	argv.reserve(argc);
 		
-		// Convert args to UTF-8
-		LPWSTR *curwarg = wargv;
-		while(argc--)
-		{
-			int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
-			char *utf8arg = new char[arglen ? arglen : 1];
-			WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
-			argv.push_back(utf8arg);
-			++curwarg;
-		}
-		LocalFree(wargv);
+	// Convert args to UTF-8
+	LPWSTR *curwarg = wargv;
+	while(argc--)
+	{
+		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
+		char *utf8arg = new char[arglen ? arglen : 1];
+		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
+		argv.push_back(utf8arg);
+		++curwarg;
+	}
+	LocalFree(wargv);
 
-		// Init application
-		Application.SetInstance(hInst);
-		if (!Application.Init(argv.size(), &argv[0]))
-		{
-			Application.Clear();
-			return C4XRV_Failure;
-		}
-
-		// Run it
-		Application.Run();
+	// Init application
+	Application.SetInstance(hInst);
+	if (!Application.Init(argv.size(), &argv[0]))
+	{
 		Application.Clear();
+		return C4XRV_Failure;
+	}
 
-		// delete arguments
-		for(std::vector<char*>::const_iterator it = argv.begin(); it != argv.end(); ++it)
-			delete[] *it;
-		argv.clear();
-		// Return exit code
-		if (!Game.GameOver) return C4XRV_Aborted;
-		return C4XRV_Completed;
-#if defined(GENERATE_MINI_DUMP) && defined(_MSC_VER)
-	} __except(GenerateDump(GetExceptionInformation())) { return C4XRV_Failure; }
-#endif
+	// Run it
+	Application.Run();
+	Application.Clear();
+
+	// delete arguments
+	for(std::vector<char*>::const_iterator it = argv.begin(); it != argv.end(); ++it)
+		delete[] *it;
+	argv.clear();
+	// Return exit code
+	if (!Game.GameOver) return C4XRV_Aborted;
+	return C4XRV_Completed;
 }
 
 int main()
