@@ -1505,7 +1505,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	}
 	// Assume that the new container controls this object, if it cannot control itself (i.e.: Alive)
 	// So it can be traced back who caused the damage, if a projectile hits its target
-	if (!(Alive && (Category & C4D_Living)))
+	if (!Alive)
 		Controller = pTarget->Controller;
 	// Misc updates
 	// motion must be copied immediately, so the position will be correct when OCF is set, and
