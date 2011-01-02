@@ -1159,22 +1159,6 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 	}
 }
 
-void C4Game::ShakeObjects(int32_t tx, int32_t ty, int32_t range)
-{
-	C4Object *cObj; C4ObjectLink *clnk;
-
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-		if (cObj->Status) if (!cObj->Contained)
-				if (cObj->Category & C4D_Living)
-					if (Abs(ty-cObj->GetY())<=range)
-						if (Abs(tx-cObj->GetX())<=range)
-							if (!Random(3))
-								if (cObj->Action.t_attach)
-									if (!MatVehicle(cObj->Shape.AttachMat))
-										cObj->Fling(itofix(Random(3)),Fix0,false);
-}
-
-
 C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t category)
 {
 	C4Object *cObj; C4ObjectLink *clnk;

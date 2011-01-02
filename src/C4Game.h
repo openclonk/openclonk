@@ -204,7 +204,6 @@ public:
 	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 	                           int32_t tx=50, int32_t ty=50);
 	void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
-	void ShakeObjects(int32_t tx, int32_t ry, int32_t range);
 	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt,
 	                        int32_t category);
 	C4Object *FindObject(C4ID id,

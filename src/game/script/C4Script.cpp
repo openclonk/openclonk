@@ -2594,12 +2594,6 @@ static C4Void FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 	return C4VNull;
 }
 
-static C4Void FnShakeObjects(C4AulContext *cthr, long x, long y, long rad)
-{
-	Game.ShakeObjects(x,y,rad);
-	return C4VNull;
-}
-
 static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad, bool fRequest)
 {
 	::Landscape.DigFree(x,y,rad,fRequest,cthr->Obj);
@@ -5756,7 +5750,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetTemperature", FnGetTemperature);
 	AddFunc(pEngine, "SetTemperature", FnSetTemperature);
 	AddFunc(pEngine, "ShakeFree", FnShakeFree);
-	AddFunc(pEngine, "ShakeObjects", FnShakeObjects);
 	AddFunc(pEngine, "DigFree", FnDigFree);
 	AddFunc(pEngine, "DigFreeMat", FnDigFreeMat);
 	AddFunc(pEngine, "FreeRect", FnFreeRect);
