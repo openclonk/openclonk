@@ -34,9 +34,12 @@ if(WIN32)
 	else()
 		
 	endif()
+
+	option(GENERATE_MINI_DUMP "Generate a minidump on crash" ON)
 else()
 	SET(USE_DIRECTX OFF)
 	SET(HAVE_FMOD OFF)
+	SET(GENERATE_MINI_DUMP OFF)
 endif()
 if(UNIX AND NOT USE_SDL_MAINLOOP)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -879,6 +882,15 @@ if(NOT HAVE_GETOPT_H)
 elseif(MINGW)
 	# Link libiberty which contains getopt with mingw
 	target_link_libraries(clonk iberty)
+endif()
+
+CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+
+if(GENERATE_MINI_DUMP)
+	FIND_PATH(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
+	FINDLIB(DBGHELP_LIBRARIES NAMES dbghelp)
+	target_link_libraries(clonk ${DBGHELP_LIBRARIES})
+	include_directories(${DBGHELP_INCLUDE_DIR})
 endif()
 
 if(USE_GL)

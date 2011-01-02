@@ -36,10 +36,6 @@
 #ifdef _WIN32
 #include <shellapi.h>
 
-#if defined(_MSC_VER) && !defined(_DEBUG)
-//#define GENERATE_MINI_DUMP
-#endif
-
 #ifdef GENERATE_MINI_DUMP
 
 // Dump generation on crash
@@ -49,7 +45,7 @@
 
 static bool FirstCrash = true;
 
-int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
+WINAPI LONG GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
 	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
 	FirstCrash = false;
@@ -85,7 +81,11 @@ int WINAPI WinMain (HINSTANCE hInst,
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-#ifdef GENERATE_MINI_DUMP
+#if defined(GENERATE_MINI_DUMP) && !defined(_MSC_VER)
+	SetUnhandledExceptionFilter(GenerateDump);
+#endif
+
+#if defined(GENERATE_MINI_DUMP) && defined(_MSC_VER)
 	__try
 	{
 #endif
@@ -128,7 +128,7 @@ int WINAPI WinMain (HINSTANCE hInst,
 		// Return exit code
 		if (!Game.GameOver) return C4XRV_Aborted;
 		return C4XRV_Completed;
-#ifdef GENERATE_MINI_DUMP
+#if defined(GENERATE_MINI_DUMP) && defined(_MSC_VER)
 	} __except(GenerateDump(GetExceptionInformation())) { return C4XRV_Failure; }
 #endif
 }

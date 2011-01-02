@@ -194,3 +194,6 @@
 /* Define to 1 if you have support for nullptr. */
 #cmakedefine HAVE_NULLPTR 1
 
+
+/* Generate minidumps on crash */
+#cmakedefine GENERATE_MINI_DUMP 1
