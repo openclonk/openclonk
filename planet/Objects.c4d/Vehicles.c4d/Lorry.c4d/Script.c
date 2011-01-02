@@ -119,3 +119,4 @@ func Definition(def)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Touchable = 1;

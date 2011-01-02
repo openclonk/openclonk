@@ -91,6 +91,7 @@ C4StringTable::C4StringTable()
 	P[P_CommandTarget] = "CommandTarget";
 	P[P_Time] = "Time";
 	P[P_Collectible] = "Collectible";
+	P[P_Touchable] = "Touchable";
 	P[P_ActMap] = "ActMap";
 	P[P_Procedure] = "Procedure";
 	P[P_Speed] = "Speed";

@@ -765,7 +765,7 @@ void C4Object::SetOCF()
 	    && (r==0) && !OnFire)
 		OCF|=OCF_Construct;
 	// OCF_Grab: Can be pushed
-	if (Def->Grab && !(Category & C4D_StaticBack))
+	if (GetPropertyInt(P_Touchable))
 		OCF|=OCF_Grab;
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
@@ -1560,7 +1560,7 @@ bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 	// Valid check
 	if (!Status || !Def || Contained || !(OCF & OCF_Grab)) return false;
 	// Grabbing okay, no pushing
-	if (Def->Grab==2) return true;
+	if (GetPropertyInt(P_Touchable)==2) return true;
 	// Mobilization check (pre-mobilization zero)
 	if (!Mobile)
 		{ xdir=ydir=Fix0; }

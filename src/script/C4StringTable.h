@@ -179,6 +179,7 @@ enum C4PropertyName
 	P_CommandTarget,
 	P_Time,
 	P_Collectible,
+	P_Touchable,
 	P_ActMap,
 	P_Attach,
 	P_Visibility,

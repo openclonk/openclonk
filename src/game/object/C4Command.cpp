@@ -292,7 +292,7 @@ void C4Command::MoveTo()
 	// Pushing grab only or not desired: let go (pulling, too?)
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target)
-			if (cObj->Action.Target->Def->Grab == 2 || !(Data.getInt() & C4CMD_MoveTo_PushTarget))
+			if (cObj->Action.Target->GetPropertyInt(P_Touchable) == 2 || !(Data.getInt() & C4CMD_MoveTo_PushTarget))
 			{
 				// Re-evaluate this command because vehicle control might have blocked evaluation
 				Evaluated=false;
@@ -568,7 +568,7 @@ void C4Command::Enter()
 	// Pushing grab only or pushing not desired: let go
 	if (cObj->GetProcedure()==DFA_PUSH)
 		if (cObj->Action.Target)
-			if (cObj->Action.Target->Def->Grab == 2 || !(Data.getInt() & C4CMD_Enter_PushTarget))
+			if (cObj->Action.Target->GetPropertyInt(P_Touchable) == 2 || !(Data.getInt() & C4CMD_Enter_PushTarget))
 				{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
 
 	// Pushing target: let go

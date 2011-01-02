@@ -16,7 +16,6 @@ Mass=75
 Components=Metal=2;Wood=1;
 Collection=-12,-8,24,10
 Rebuy=1
-Grab=1
 GrabPutGet=C4D_GrabGet|C4D_GrabPut
 Rotate=30
 UprightAttach=8

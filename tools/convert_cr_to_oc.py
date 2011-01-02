@@ -87,8 +87,8 @@ for root, dirs, files in os.walk('.'):
 			properties["Name"] = convertname(root, files, m.group(2))
 		elif m and m.group(1) == "Collectible":
 			properties["Collectible"] = m.group(2)
-		#elif m and m.group(1) == "Grab":
-			#properties["Touchable"] = m.group(2)
+		elif m and m.group(1) == "Grab":
+			properties["Touchable"] = m.group(2)
 		else:
 			f.write(line)
 			f.write("\n")	

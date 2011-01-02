@@ -71,7 +71,6 @@ void C4Def::DefaultDefCore()
 	ContactIncinerate=0;
 	BlastIncinerate=0;
 	Constructable=0;
-	Grab=0;
 	Rotateable=0;
 	RotatedEntrance=0;
 	Float=0;
@@ -243,7 +242,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Rebuyable,                     "Rebuy",              0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
 	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));
-	pComp->Value(mkNamingAdapt(Grab,                          "Grab",               0                 ));
 
 	const StdBitfieldEntry<int32_t> GrabPutGetTypes[] =
 	{
