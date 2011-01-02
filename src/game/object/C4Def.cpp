@@ -72,7 +72,6 @@ void C4Def::DefaultDefCore()
 	BlastIncinerate=0;
 	Constructable=0;
 	Grab=0;
-	Carryable=0;
 	Rotateable=0;
 	RotatedEntrance=0;
 	Float=0;
@@ -258,7 +257,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(GrabPutGet, GrabPutGetTypes),
 	                           "GrabPutGet",         0                 ));
 
-	pComp->Value(mkNamingAdapt(Carryable,                     "Collectible",        0                 ));
 	pComp->Value(mkNamingAdapt(Rotateable,                    "Rotate",             0                 ));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,               "RotatedEntrance",    0                 ));
 	pComp->Value(mkNamingAdapt(Float,                         "Float",              0                 ));
@@ -545,8 +543,6 @@ bool C4Def::Load(C4Group &hGroup,
 
 	// Temporary flag
 	if (dwLoadWhat & C4D_Load_Temporary) Temporary=true;
-
-	if (Carryable) SetProperty(P_Collectible, C4VTrue);
 
 	return true;
 }

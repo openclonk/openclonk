@@ -12,7 +12,6 @@ VertexFriction=80,80
 Value=12
 Mass=10
 Components=Wood=2;Metal=1;Rope=1;
-Collectible=1
 Rebuy=1
 Rotate=1
 ContactIncinerate=5

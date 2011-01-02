@@ -14,6 +14,5 @@ Value=15
 Mass=20
 Components=Wood=1;Metal=1;
 Rebuy=1
-Collectible=1
 Rotate=1
  

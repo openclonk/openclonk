@@ -12,6 +12,5 @@ Value=15
 Mass=8
 Components=Wood=3
 Picture=4,0,21,21
-Collectible=1
 Rotate=1
 Float=1

@@ -14,5 +14,4 @@ Value=8
 Mass=12
 Components=Ore=1
 Rebuy=1
-Collectible=1
 Rotate=1

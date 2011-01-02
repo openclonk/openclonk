@@ -12,7 +12,6 @@ VertexFriction=40,40,40
 Picture=0,0,8,8
 Value=20
 Mass=7
-Collectible=1
 Components=Crystal=4;
 Rebuy=1
 Rotate=1

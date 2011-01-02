@@ -5,7 +5,7 @@ import re
 
 namere = re.compile("([^=]+)=(.+)");
 langre = re.compile("(..):(.+)");
-funcre = re.compile("func Definition\((proplist )?(.+)\) {")
+localre = re.compile("local (\w+) ?= ?(.+);");
 idre = re.compile("[A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_]")
 
 def convertname(root, files, name):
@@ -87,35 +87,27 @@ for root, dirs, files in os.walk('.'):
 			properties["Name"] = convertname(root, files, m.group(2))
 		elif m and m.group(1) == "Collectible":
 			properties["Collectible"] = m.group(2)
+		#elif m and m.group(1) == "Grab":
+			#properties["Touchable"] = m.group(2)
 		else:
 			f.write(line)
-			f.write("\r\n")	
+			f.write("\n")	
 	if "ActMap.txt" in files:
 		properties["ActMap"] = convertactmap(root, files)
-	proplistname = "def"
-	rest = "}\r\n"
 	try:
 		f = open(os.path.join(root, "Script.c"),"r+b")
 		lines = f.read().splitlines()
 	except:
-		lines = ("#strict 2","")
+		lines = ("")
 	f = open(os.path.join(root, "Script.c"),"wb")
 	for i, line in enumerate(lines):
-		f.write(line)
-		f.write("\r\n")
-		m = funcre.match(line)
+		m = localre.match(line)
 		if m:
-			proplistname = m.group(2)
-			rest = ""
-			break
-	else:
-		f.write("func Definition(def) {\r\n")
-	for prop, value in properties.iteritems():
-		f.write("  SetProperty(\"" + prop + "\", " + value + ", " + proplistname + ");\r\n")
-	f.write(rest)
-	for j, line in enumerate(lines):
-		if j <= i:
-			continue
+			if properties.get(m.group(1)):
+				print root, m.group(1), properties.get(m.group(1)), m.group(2)
+			properties.pop(m.group(1), None)
 		f.write(line)
-		f.write("\r\n")
+		f.write("\n")
+	for prop, value in properties.iteritems():
+		f.write("local " + prop + " = " + value + ";\n")
 

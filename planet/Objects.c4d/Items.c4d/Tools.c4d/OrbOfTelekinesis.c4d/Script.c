@@ -96,3 +96,4 @@ protected func FxChargeTimer(object pTarget, effect, int iEffectTime)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = 1;

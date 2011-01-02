@@ -13,7 +13,6 @@ Value=20
 Mass=20
 Components=Barrel=1;Sulphur=1;Coal=1;
 Rebuy=1
-Collectible=1
 ContactIncinerate=2
 BlastIncinerate=1
 NoBurnDecay=1

@@ -129,7 +129,6 @@ public:
 	int32_t BlastIncinerate; // 0 off 1 - x if > damage
 	int32_t Constructable;
 	int32_t Grab; // 0 not 1 push 2 grab only
-	int32_t Carryable;
 	int32_t Rotateable;
 	int32_t Float;
 	int32_t ColorByOwner;

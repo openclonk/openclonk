@@ -36,3 +36,4 @@ protected func ControlUse(object clonk, int iX, int iY)
 }
 
 local Name = "$Name$";
+local Collectible = 0;

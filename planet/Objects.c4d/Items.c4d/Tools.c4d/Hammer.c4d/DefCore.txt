@@ -13,6 +13,5 @@ Value=3
 Mass=15
 Components=Wood=1;Rock=1;
 Rebuy=1
-Collectible=1
 Rotate=1
  

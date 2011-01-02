@@ -12,6 +12,5 @@ VertexFriction=50,50,70
 Value=18
 Mass=15
 Components=Metal=2;Wood=1;
-Collectible=1
 Rebuy=1
 Rotate=1

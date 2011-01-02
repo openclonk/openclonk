@@ -12,6 +12,5 @@ VertexFriction=50
 Picture=8,0,8,8
 Value=10
 Mass=5
-Collectible=1
 Components=Metal=1;Blackpowder=1;
 Rebuy=1

@@ -13,7 +13,6 @@ VertexFriction=90,90,90
 Value=3
 Mass=8
 Components=Blackpowder=2;
-Collectible=1
 Rotate=1
 ContactIncinerate=1
 BlastIncinerate=1

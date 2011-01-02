@@ -423,3 +423,4 @@ local MaxBreath = 125;
 local JumpSpeed = 350;
 local ThrowSpeed = 294;
 
+local Collectible = 1;
