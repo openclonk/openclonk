@@ -44,7 +44,7 @@
 
 static bool FirstCrash = true;
 
-WINAPI LONG GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
+LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
 	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
 	FirstCrash = false;
