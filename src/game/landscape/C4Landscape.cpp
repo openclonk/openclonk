@@ -2195,7 +2195,6 @@ void C4Landscape::ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt
 	for (int32_t y=iTy; y<iTy+iHgt; y++)
 	{
 		for (int32_t x=iTx; x<iTx+iWdt; x++) ClearPix(x,y);
-		if (Rnd3()) Rnd3();
 	}
 }
 
@@ -2219,7 +2218,6 @@ void C4Landscape::ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32
 			if (Inside(GetDensity(x, y), iMinDensity, iMaxDensity))
 				ClearPix(x,y);
 		}
-		if (Rnd3()) Rnd3();
 	}
 }
 

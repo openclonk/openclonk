@@ -1152,7 +1152,7 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 											cObj->Controller = iCausedBy;
 										}
 
-										cObj->Fling( itofix(Sign(cObj->GetX()-tx+Rnd3())*(level-Abs(tx-cObj->GetX()))) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20),
+										cObj->Fling( itofix(Sign(cObj->GetX()-tx+Random(3))*(level-Abs(tx-cObj->GetX()))) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20),
 										             itofix(-level+Abs(ty-cObj->GetY())) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20), true );
 									}
 					}
@@ -1171,7 +1171,7 @@ void C4Game::ShakeObjects(int32_t tx, int32_t ty, int32_t range)
 							if (!Random(3))
 								if (cObj->Action.t_attach)
 									if (!MatVehicle(cObj->Shape.AttachMat))
-										cObj->Fling(itofix(Rnd3()),Fix0,false);
+										cObj->Fling(itofix(Random(3)),Fix0,false);
 }
 
 
@@ -2909,7 +2909,6 @@ void C4Game::FixRandom(int32_t iSeed)
 {
 	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
-	Randomize3();
 }
 
 bool C4Game::DefinitionFilenamesFromSaveGame()

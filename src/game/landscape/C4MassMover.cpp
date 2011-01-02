@@ -174,7 +174,7 @@ bool C4MassMover::Execute()
 		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
 	// Create new mover at target
-	::MassMover.Create(tx,ty,!Rnd3());
+	::MassMover.Create(tx,ty,!Random(3));
 
 	return true;
 }

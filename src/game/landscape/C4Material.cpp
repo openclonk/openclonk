@@ -613,7 +613,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Incindiary mats smoke on contact even before doing their slide
 	if (::MaterialMap.Map[iPxsMat].Incindiary)
-		if (!Random(25)) Smoke(iX, iY, 4+Rnd3() );
+		if (!Random(25)) Smoke(iX, iY, 4+Random(3) );
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
@@ -694,8 +694,8 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 	case meeMassMove: // MassMover-movement
 	case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
-		if (!Rnd3()) Smoke(iX,iY,3);
-		if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) Smoke(iX,iY,3);
+		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
 
 	case meePXSMove: // PXS movement
@@ -706,8 +706,8 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 				return false;
 		// Always kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
-		if (!Rnd3()) Smoke(iX,iY,3);
-		if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) Smoke(iX,iY,3);
+		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
 	}
 	// not handled
