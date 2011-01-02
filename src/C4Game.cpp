@@ -999,7 +999,7 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 	// AssignRemoval called? (Con 0)
 	if (!pObj->Status) { return NULL; }
 	// Do initial con
-	pObj->DoCon(iCon,true);
+	pObj->DoCon(iCon);
 	// AssignRemoval called? (Con 0)
 	if (!pObj->Status) { return NULL; }
 	// Success

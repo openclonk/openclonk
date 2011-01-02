@@ -307,7 +307,7 @@ public:
 	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
-	void DoCon(int32_t iChange, bool fInitial=false, bool fNoComponentChange=false);
+	void DoCon(int32_t iChange);
 	int32_t GetCon() { return Con; }
 	void DoExperience(int32_t change);
 	bool Promote(int32_t torank, bool exception, bool fForceRankName);

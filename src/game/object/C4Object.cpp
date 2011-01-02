@@ -1368,7 +1368,7 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 			Incinerate(iCausedBy,true);
 }
 
-void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
+void C4Object::DoCon(int32_t iChange)
 {
 	int32_t iStepSize=FullCon/100;
 	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
@@ -1397,15 +1397,12 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 		// Face
 		UpdateFace(true);
 		// component update
-		if (!fNoComponentChange)
-		{
-			// Decay: reduce components
-			if (iChange<0)
-				ComponentConCutoff();
-			// Growth: gain components
-			else
-				ComponentConGain();
-		}
+		// Decay: reduce components
+		if (iChange<0)
+			ComponentConCutoff();
+		// Growth: gain components
+		else
+			ComponentConGain();
 		// Unfullcon
 		if (Con<FullCon)
 		{
@@ -1423,27 +1420,14 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 			if (!Def->IncompleteActivity)
 				SetAction(0);
 	}
-	else
-		// set first position
-		if (fInitial) UpdatePos();
 
-	// Straight Con bottom y-adjust
-	if (!r || fInitial)
+	// bottom y-adjust
+	if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
 	{
-		if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
-		{
-			fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
-			UpdatePos(); UpdateSolidMask(false);
-		}
+		fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
+		UpdatePos(); UpdateSolidMask(false);
 	}
-	else if (Category & C4D_Structure) if (iStepDiff > 0)
-		{
-			// even rotated buildings need to be moved upwards
-			// but by con difference, because with keep-bottom-method, they might still be sinking
-			// besides, moving the building up may often stabilize it
-			fix_y -= ((iLastStep+iStepDiff) * Def->Shape.Hgt / 100) - (iLastStep * Def->Shape.Hgt / 100);
-			UpdatePos(); UpdateSolidMask(false);
-		}
+
 	// Completion (after bottom GetY()-adjust for correct position)
 	if (!fWasFull && (Con>=FullCon))
 	{
