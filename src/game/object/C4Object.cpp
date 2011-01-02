@@ -775,9 +775,7 @@ void C4Object::SetOCF()
 		OCF|=OCF_OnFire;
 	// OCF_Inflammable: Is not burning and is inflammable
 	if (!OnFire && Def->ContactIncinerate>0)
-		// Is not a dead living
-		if (!(Category & C4D_Living) || Alive)
-			OCF|=OCF_Inflammable;
+		OCF|=OCF_Inflammable;
 	// OCF_FullCon: Is fully completed/grown
 	if (Con>=FullCon)
 		OCF|=OCF_FullCon;
@@ -1237,8 +1235,6 @@ bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncinerat
 {
 	// Already on fire
 	if (OnFire) return false;
-	// Dead living don't burn
-	if ((Category & C4D_Living) && !Alive) return false;
 	// add effect
 	int32_t iEffNumber;
 	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
