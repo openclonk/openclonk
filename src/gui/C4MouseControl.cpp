@@ -1026,8 +1026,9 @@ void C4MouseControl::ButtonUpDragConstruct()
 	Drag=C4MC_Drag_None;
 	DragImage.Default();
 	// Command
-	if (DragImagePhase==0) // if ConstructionCheck was okay (check again?)
-		SendCommand(C4CMD_Construct,int32_t(GameX),int32_t(GameY),NULL,NULL,DragID.GetHandle());
+	// FIXME: Lots and lots of dead code in this file.
+	//if (DragImagePhase==0) // if ConstructionCheck was okay (check again?)
+		//SendCommand(C4CMD_Construct,int32_t(GameX),int32_t(GameY),NULL,NULL,DragID.GetHandle());
 	// Clear selection (necessary?)
 	Selection.Clear();
 }

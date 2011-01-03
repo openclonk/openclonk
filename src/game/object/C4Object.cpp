@@ -2223,10 +2223,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			case C4CMD_Call:
 				sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
 				break;
-			case C4CMD_Construct:
-				C4Def *pDef; pDef=C4Id2Def(pCom->Data.getC4ID());
-				sprintf(szCommand,"%s %s",CommandName(pCom->Command),pDef ? pDef->GetName() : "");
-				break;
 			case C4CMD_None:
 				szCommand[0]=0;
 				break;

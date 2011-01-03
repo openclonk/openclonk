@@ -27,36 +27,37 @@
 #include "C4ObjectPtr.h"
 #include "C4Value.h"
 
-const int32_t C4CMD_None      = 0,
-              C4CMD_Follow    = 1,
-              C4CMD_MoveTo    = 2,
-              C4CMD_Enter     = 3,
-              C4CMD_Exit      = 4,
-              C4CMD_Grab      = 5,
-              C4CMD_Build     = 6,
-              C4CMD_Throw     = 7,
-              C4CMD_Chop      = 8,
-              C4CMD_UnGrab    = 9,
-              C4CMD_Jump      = 10,
-              C4CMD_Wait      = 11,
-              C4CMD_Get       = 12,
-              C4CMD_Put       = 13,
-              C4CMD_Drop      = 14,
-              C4CMD_Dig       = 15,
-              C4CMD_Activate  = 16,
-              C4CMD_PushTo    = 17,
-              C4CMD_Construct = 18,
-              C4CMD_Transfer  = 19,
-              C4CMD_Attack    = 20,
-              C4CMD_Context   = 21,
-              C4CMD_Buy       = 22,
-              C4CMD_Sell      = 23,
-              C4CMD_Acquire   = 24,
-              C4CMD_Retry     = 25,
-              C4CMD_Home      = 26,
-              C4CMD_Call      = 27,
-              C4CMD_Take      = 28, // carlo
-              C4CMD_Take2     = 29; // carlo
+enum C4CMD
+{
+	C4CMD_None,
+	C4CMD_Follow,
+	C4CMD_MoveTo,
+	C4CMD_Enter,
+	C4CMD_Exit,
+	C4CMD_Grab,
+	C4CMD_Throw,
+	C4CMD_Chop,
+	C4CMD_UnGrab,
+	C4CMD_Jump,
+	C4CMD_Wait,
+	C4CMD_Get,
+	C4CMD_Put,
+	C4CMD_Drop,
+	C4CMD_Dig,
+	C4CMD_Activate,
+	C4CMD_PushTo,
+	C4CMD_Transfer,
+	C4CMD_Attack,
+	C4CMD_Context,
+	C4CMD_Buy,
+	C4CMD_Sell,
+	C4CMD_Acquire,
+	C4CMD_Retry,
+	C4CMD_Home,
+	C4CMD_Call,
+	C4CMD_Take,
+	C4CMD_Take2,
+};
 
 const int32_t C4CMD_First     = C4CMD_Follow,
               C4CMD_Last      = C4CMD_Take2; // carlo
@@ -114,7 +115,6 @@ protected:
 	void Buy();
 	void Attack();
 	void Transfer();
-	void Construct();
 	void Finish(bool fSuccess=false, const char *szFailMessage=0);
 	void Follow();
 	void MoveTo();
@@ -124,7 +124,6 @@ protected:
 	void UnGrab();
 	void Throw();
 	void Chop();
-	void Build();
 	void Jump();
 	void Wait();
 	void Take();

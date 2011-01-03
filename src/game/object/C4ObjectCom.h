@@ -71,7 +71,6 @@ bool ObjectComDig(C4Object *cObj);
 bool ObjectComChop(C4Object *cObj, C4Object *pTarget);
 bool ObjectComBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectComEnter(C4Object *cObj);
-bool ObjectComDownDouble(C4Object *cObj);
 bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing=NULL);
 bool ObjectComTake(C4Object *cObj, C4ID id);
 bool ObjectComTake(C4Object *cObj); // carlo

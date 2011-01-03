@@ -401,20 +401,6 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 
 }
 
-bool ObjectComDownDouble(C4Object *cObj) // by DFA_WALK
-{
-	C4Object *pTarget;
-	DWORD ocf= OCF_Construct | OCF_Grab;
-	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-	{
-		if (ocf & OCF_Construct)
-			{ PlayerObjectCommand(cObj->Owner,C4CMD_Build,pTarget); return true; }
-		if (ocf & OCF_Grab)
-			{ PlayerObjectCommand(cObj->Owner,C4CMD_Grab,pTarget); return true; }
-	}
-	return false;
-}
-
 bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
 {
 	// No object specified, first from contents
