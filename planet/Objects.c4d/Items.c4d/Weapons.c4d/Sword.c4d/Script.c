@@ -25,7 +25,7 @@ public func IsToolProduct() { return 1; }
 
 local magic_number;
 local carry_bone;
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUse(object clonk, int x, int y)
 {
 	// cooldown?
 	if(!CanStrikeWithWeapon(clonk)) return true;
@@ -95,13 +95,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	
 	this->Sound(Format("WeaponSwing%d.ogg", 1+Random(3)), false, nil, nil, nil);
 	return true;
-}
-
-
-
-func ControlUseStop(object clonk, int x, int y)
-{
-	//StopWeaponHitCheckEffect(clonk);
 }
 
 func OnWeaponHitCheckStop(clonk)

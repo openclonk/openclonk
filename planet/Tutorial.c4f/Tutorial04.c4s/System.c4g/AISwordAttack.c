@@ -24,7 +24,7 @@ protected func AI_SwordAttack(object clonk, int x, int y, object target)
 	if (dx > 0 && clonk->GetDir() == DIR_Left)
 		clonk->SetDir(DIR_Right);
 	
-	ControlUseStart(clonk, dx, dy);
+	ControlUse(clonk, dx, dy);
 	
 	clonk->AppendCommand("Wait", nil, 20, nil, nil, nil, 20);
 	clonk->AppendCommand("Call", clonk, nil, nil, target, nil, "AI_MeleeAttack");
