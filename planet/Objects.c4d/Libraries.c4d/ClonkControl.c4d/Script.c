@@ -518,14 +518,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// appropiate procedure:
 	if (proc != "ATTACH" && proc != "PUSH")
 		vehicle = nil;
-	var contents = GetItem(0);
-	var contents2 = GetItem(1);
 	
 	// menu
 	if (menu)
 	{
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
+	
+	var contents = GetItem(0);
+	var contents2 = GetItem(1);	
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
@@ -568,12 +569,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
-		if ((contents || (release && using)) && ctrl == CON_Use || ctrl == CON_UseDelayed )
+		if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
 				return true;
 		}
-		else if ((contents2 || (release && using)) && ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
+		else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents2))
 				return true;
