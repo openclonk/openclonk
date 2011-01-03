@@ -2458,11 +2458,10 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 	C4Def *pDef;
 	if (!(pDef=C4Id2Def(id))) return NULL;
 
-	// No growth specified: full or random growth
+	// No growth specified: full growth
 	if (iGrowth<=0)
 	{
 		iGrowth=FullCon;
-		if (pDef->Growth) if (!Random(3)) iGrowth=Random(FullCon)+1;
 	}
 
 	// Place by placement type
@@ -2491,7 +2490,6 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			iMaterial = GBackMat(iTx,iTy);
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
-					if (!pDef->Growth) iGrowth=FullCon;
 					iTy+=5;
 					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
 				}

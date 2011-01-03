@@ -66,7 +66,6 @@ void C4Def::DefaultDefCore()
 	Value=0;
 	Exclusive=0;
 	Category=0;
-	Growth=0;
 	Rebuyable=0;
 	ContactIncinerate=0;
 	BlastIncinerate=0;
@@ -238,7 +237,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Edible,                        "Edible",             0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
-	pComp->Value(mkNamingAdapt(Growth,                        "Growth",             0                 ));
 	pComp->Value(mkNamingAdapt(Rebuyable,                     "Rebuy",              0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
 	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));

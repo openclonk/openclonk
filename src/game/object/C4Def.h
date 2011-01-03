@@ -123,7 +123,6 @@ public:
 	int32_t Value;
 	int32_t Exclusive;
 	int32_t Category;
-	int32_t Growth;
 	int32_t Rebuyable;
 	int32_t ContactIncinerate; // 0 off 1 high - 5 low
 	int32_t BlastIncinerate; // 0 off 1 - x if > damage

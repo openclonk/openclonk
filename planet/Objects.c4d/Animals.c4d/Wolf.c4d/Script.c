@@ -4,6 +4,11 @@
 
 public func IsPossessible() { return 1; }
 
+func Construction()
+{
+	StartGrowth(15);
+}
+
 /* Initialize */
 
 protected func Initialize() { return Birth(); }

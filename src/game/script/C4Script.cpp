@@ -447,15 +447,17 @@ static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCh
 	return C4VNull;
 }
 
-static C4Void FnDoCon(C4AulObjectContext *cthr, long iChange) // in percent
+static C4Void FnDoCon(C4AulObjectContext *cthr, long iChange, long iPrec)
 {
-	cthr->Obj->DoCon(FullCon*iChange/100);
+	if (!iPrec) iPrec = 100;
+	cthr->Obj->DoCon(FullCon*iChange/iPrec);
 	return C4VNull;
 }
 
-static long FnGetCon(C4AulObjectContext *cthr) // in percent
+static long FnGetCon(C4AulObjectContext *cthr, long iPrec)
 {
-	return 100*cthr->Obj->GetCon()/FullCon;
+	if (!iPrec) iPrec = 100;
+	return iPrec*cthr->Obj->GetCon()/FullCon;
 }
 
 static C4Void FnDoEnergy(C4AulObjectContext *cthr, long iChange, bool fExact, Nillable<long> iEngType, Nillable<long> iCausedBy)

@@ -13,7 +13,6 @@ VertexY=0,3
 VertexCNAT=4,3
 VertexFriction=10,100
 Mass=6
-Growth=3
 Edible=1
 StretchGrowth=4
 Oversize=1

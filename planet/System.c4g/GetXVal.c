@@ -29,7 +29,6 @@ global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefPrey()        { return GetDefCoreVal("Prey", "DefCore"); }
 global func GetDefEdible()      { return GetDefCoreVal("Edible", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("Prey", "DefCore"); }
-global func GetDefGrowth()      { return GetDefCoreVal("Growth", "DefCore"); }
 global func GetDefRebuy()       { return GetDefCoreVal("Rebuy", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
 global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }

@@ -964,21 +964,6 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 
 bool C4Object::ExecLife()
 {
-
-	// Growth
-	if (!::Game.iTick35)
-		// Growth specified by definition
-		if (Def->Growth)
-			// Alive livings && trees only
-			if ( ((Category & C4D_Living) && Alive)
-			     || (Category & C4D_StaticBack) )
-				// Not burning
-				if (!OnFire)
-					// Not complete yet
-					if (Con<FullCon)
-						// Grow
-						DoCon(Def->Growth*100);
-
 	// Breathing
 	if (!::Game.iTick5)
 		if (Alive && !Def->NoBreath)

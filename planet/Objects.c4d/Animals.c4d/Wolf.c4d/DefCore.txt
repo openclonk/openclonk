@@ -19,7 +19,6 @@ Picture=432,0,64,64
 Collection=-12,-9,24,18
 ContactIncinerate=1
 Prey=1
-Growth=15
 Float=1
 BorderBound=1
 StretchGrowth=1
