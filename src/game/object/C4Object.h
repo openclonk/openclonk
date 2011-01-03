@@ -312,7 +312,6 @@ public:
 	void DoExperience(int32_t change);
 	bool Promote(int32_t torank, bool exception, bool fForceRankName);
 	void Blast(int32_t iLevel, int32_t iCausedBy);
-	bool Build(int32_t iLevel, C4Object *pBuilder);
 	bool Chop(C4Object *pByObject);
 	bool Push(C4Real txdir, C4Real dforce, bool fStraighten);
 	bool Lift(C4Real tydir, C4Real dforce);

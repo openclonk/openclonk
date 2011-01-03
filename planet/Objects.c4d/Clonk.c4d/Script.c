@@ -2095,7 +2095,6 @@ Push = {
 Build = {
 	Prototype = Action,
 	Name = "Build",
-	Procedure = DFA_BUILD,
 	Directions = 2,
 	Length = 8,
 	Delay = 15,
@@ -2105,6 +2104,7 @@ Build = {
 	Hgt = 20,
 	NextAction = "Build",
 	InLiquidAction = "Swim",
+	Attach = CNAT_Bottom,
 },
 HangOnto = {
 	Prototype = Action,

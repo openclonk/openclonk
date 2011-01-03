@@ -314,7 +314,7 @@ void C4Command::MoveTo()
 				{ cx=cObj->Action.Target->GetX(); cy=cObj->Action.Target->GetY(); }
 		break;
 		// Chop, build, dig, bridge: stop
-	case DFA_CHOP: case DFA_BUILD: case DFA_DIG: case DFA_BRIDGE:
+	case DFA_CHOP: case DFA_DIG: case DFA_BRIDGE:
 		ObjectComStop(cObj);
 		break;
 	}
@@ -463,7 +463,7 @@ void C4Command::Dig()
 		{ cObj->AddCommand(C4CMD_Exit,NULL,0,0,50); return; }
 
 	// Building or chopping: stop
-	if ((cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD))
+	if (cObj->GetProcedure()==DFA_CHOP)
 		ObjectComStop(cObj);
 
 	// Scaling or hangling: let go
@@ -571,7 +571,7 @@ void C4Command::Enter()
 	if (cObj->Contained==Target) { Finish(true); return; }
 
 	// Building or chopping: stop
-	if ((cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD))
+	if (cObj->GetProcedure()==DFA_CHOP)
 		ObjectComStop(cObj);
 
 	// Digging: stop
@@ -636,10 +636,6 @@ void C4Command::Exit()
 	// Outside: done
 	if (!cObj->Contained) { Finish(true); return; }
 
-	// Building: stop
-	if (cObj->GetProcedure()==DFA_BUILD)
-		ObjectComStop(cObj);
-
 	// Entrance open, leave object
 	if (cObj->Contained->EntranceStatus)
 	{
@@ -681,7 +677,7 @@ void C4Command::Grab()
 		if (cObj->Action.Target==Target)
 			{ Finish(true); return; }
 	// Building or chopping: stop
-	if ((cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD))
+	if (cObj->GetProcedure()==DFA_CHOP)
 		ObjectComStop(cObj);
 	// Digging: stop
 	if (cObj->GetProcedure()==DFA_DIG) ObjectComStop(cObj);
@@ -737,7 +733,7 @@ void C4Command::PushTo()
 	}
 
 	// Building or chopping: stop
-	if ((cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD))
+	if (cObj->GetProcedure()==DFA_CHOP)
 		ObjectComStop(cObj);
 
 	// Digging: stop
@@ -774,7 +770,7 @@ void C4Command::Chop()
 	if (cObj->GetProcedure()==DFA_PUSH)
 		{ cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
 	// Building, digging or chopping other: stop
-	if ((cObj->GetProcedure()==DFA_DIG) || (cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD))
+	if ((cObj->GetProcedure()==DFA_DIG) || (cObj->GetProcedure()==DFA_CHOP))
 		{ ObjectComStop(cObj); return; }
 	// At target object, in correct shopping position
 	ocf=OCF_All;
