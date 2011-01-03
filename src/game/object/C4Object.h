@@ -393,13 +393,13 @@ public:
 
 	int32_t GetFireCausePlr();
 
-	bool IsMoveableBySolidMask()
+	bool IsMoveableBySolidMask(int ComparisonPlane)
 	{
 		C4PropList* pActionDef = GetAction();
 		return (Status == C4OS_NORMAL)
-		       && !(Category & (C4D_StaticBack | C4D_Structure))
+		       && !(Category & C4D_StaticBack)
+		       && (ComparisonPlane < GetPlane())
 		       && !Contained
-		       && ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
 		       && (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_FLOAT)
 		       ;
 	}
