@@ -469,7 +469,7 @@ global func FxExplodeOnDeathCurseStop(target, num, reason)
       <text><code>int Fx*Start (object target, effect, int temporary, any var1, any var2, any var3, any var4);</code></text>
       <text>Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. <code>effect</code> can be used to manipulate the effect, for example with <code>effect.Interval=newinterval</code>.</text>
       <text>In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow).</text>
-      <text>Values var1 to var4 are the additional parameters passed to <placeholder-1/>() and can be custom used.</text>
+      <text>If temporary is 0, var1 to var4 are the additional parameters passed to <funclink>AddEffect</funclink>().</text>
       <text>If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <funclink>AddEffect</funclink>() call returns 0.</text>
       <h>Fx*Stop</h>
       <text><code>int Fx*Stop (object target, effect, int reason, bool temporary);</code></text>
