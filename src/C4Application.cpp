@@ -199,7 +199,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 void C4Application::ClearCommandLine()
 {
-	SCopy(Config.General.Definitions, Game.DefinitionFilenames);
 	*Game.PlayerFilenames = 0;
 	Game.StartupPlayerCount = 0;
 }
@@ -554,8 +553,6 @@ bool C4Application::OpenGame()
 
 void C4Application::Quit()
 {
-	// Clear definitions passed by frontend for this round
-	Config.General.Definitions[0] = 0;
 	// Participants should not be cleared for usual startup dialog
 	//Config.General.Participants[0] = 0;
 	// Save config if there was no loading error
