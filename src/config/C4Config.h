@@ -42,7 +42,6 @@ public:
 	char Name[CFG_MaxString+1];
 	char Language[CFG_MaxString+1]; // entered by user in frontend options (may contain comma separated list or long language descriptions)
 	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
-	char Definitions[CFG_MaxString+1];
 	char Participants[CFG_MaxString+1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
 	char RXFontName[CFG_MaxString+1];

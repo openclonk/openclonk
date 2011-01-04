@@ -62,7 +62,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(Name),             "Name",               ""             ));
 	pComp->Value(mkNamingAdapt(s(Language),         "Language",           "", false, true));
 	pComp->Value(mkNamingAdapt(s(LanguageEx),       "LanguageEx",         "", false, true));
-	pComp->Value(mkNamingAdapt(s(Definitions),      "Definitions",        ""             ));
 	pComp->Value(mkNamingAdapt(s(Participants),     "Participants",       ""             ));
 
 	// deliberately not grandfathering UserPath setting, since it was written to config by default
