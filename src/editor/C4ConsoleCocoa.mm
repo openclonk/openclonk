@@ -400,28 +400,14 @@ void C4ConsoleGUI::RecordingEnabled()
 	[[[ClonkAppDelegate instance] recordMenuItem] setEnabled:NO];
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:NO];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:NO];
 }
 
-void C4ConsoleGUI::ClearNetMenu(Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:YES];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:YES];
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)

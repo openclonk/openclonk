@@ -86,6 +86,12 @@ public:
 	HBITMAP hbmPlay2;
 	HBITMAP hbmHalt;
 	HBITMAP hbmHalt2;
+	int MenuIndexFile;
+	int MenuIndexComponents;
+	int MenuIndexPlayer;
+	int MenuIndexViewport;
+	int MenuIndexNet;
+	int MenuIndexHelp;
 
 	State(C4ConsoleGUI *console)
 	{
@@ -99,6 +105,12 @@ public:
 		hbmPlay2=NULL;
 		hbmHalt=NULL;
 		hbmHalt2=NULL;
+		MenuIndexFile       =  0;
+		MenuIndexComponents =  1;
+		MenuIndexPlayer     =  2;
+		MenuIndexViewport   =  3;
+		MenuIndexNet        = -1;
+		MenuIndexHelp       =  4;
 	}
 
 	~State()
@@ -130,13 +142,13 @@ public:
 		hbmHalt2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_HALT2));
 	}
 
-	static void UpdateMenuText(C4Console &console, HMENU hMenu)
+	void UpdateMenuText(C4ConsoleGUI &console, HMENU hMenu)
 	{
 		HMENU hSubMenu;
 		if (!console.Active) return;
 		// File
-		ModifyMenu(hMenu,console.MenuIndexFile,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_FILE"));
-		hSubMenu = GetSubMenu(hMenu,console.MenuIndexFile);
+		ModifyMenu(hMenu,MenuIndexFile,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_FILE"));
+		hSubMenu = GetSubMenu(hMenu,MenuIndexFile);
 		SetMenuItemText(hSubMenu,IDM_FILE_OPEN,LoadResStr("IDS_MNU_OPEN"));
 		SetMenuItemText(hSubMenu,IDM_FILE_OPENWPLRS,LoadResStr("IDS_MNU_OPENWPLRS"));
 		SetMenuItemText(hSubMenu,IDM_FILE_RECORD,LoadResStr("IDS_MNU_RECORD"));
@@ -147,26 +159,28 @@ public:
 		SetMenuItemText(hSubMenu,IDM_FILE_CLOSE,LoadResStr("IDS_MNU_CLOSE"));
 		SetMenuItemText(hSubMenu,IDM_FILE_QUIT,LoadResStr("IDS_MNU_QUIT"));
 		// Components
-		ModifyMenu(hMenu,console.MenuIndexComponents,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_COMPONENTS"));
-		hSubMenu = GetSubMenu(hMenu,console.MenuIndexComponents);
+		ModifyMenu(hMenu,MenuIndexComponents,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_COMPONENTS"));
+		hSubMenu = GetSubMenu(hMenu,MenuIndexComponents);
 		SetMenuItemText(hSubMenu,IDM_COMPONENTS_SCRIPT,LoadResStr("IDS_MNU_SCRIPT"));
 		SetMenuItemText(hSubMenu,IDM_COMPONENTS_TITLE,LoadResStr("IDS_MNU_TITLE"));
 		SetMenuItemText(hSubMenu,IDM_COMPONENTS_INFO,LoadResStr("IDS_MNU_INFO"));
 		// Player
-		ModifyMenu(hMenu,console.MenuIndexPlayer,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_PLAYER"));
-		hSubMenu = GetSubMenu(hMenu,console.MenuIndexPlayer);
+		ModifyMenu(hMenu,MenuIndexPlayer,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_PLAYER"));
+		hSubMenu = GetSubMenu(hMenu,MenuIndexPlayer);
 		SetMenuItemText(hSubMenu,IDM_PLAYER_JOIN,LoadResStr("IDS_MNU_JOIN"));
 		// Viewport
-		ModifyMenu(hMenu,console.MenuIndexViewport,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_VIEWPORT"));
-		hSubMenu = GetSubMenu(hMenu,console.MenuIndexViewport);
+		ModifyMenu(hMenu,MenuIndexViewport,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_VIEWPORT"));
+		hSubMenu = GetSubMenu(hMenu,MenuIndexViewport);
 		SetMenuItemText(hSubMenu,IDM_VIEWPORT_NEW,LoadResStr("IDS_MNU_NEW"));
 		// Help
-		hSubMenu = GetSubMenu(hMenu,console.MenuIndexHelp);
+		hSubMenu = GetSubMenu(hMenu,MenuIndexHelp);
 		SetMenuItemText(hSubMenu,IDM_HELP_ABOUT,LoadResStr("IDS_MENU_ABOUT"));
 	}
 };
 
-void ClearDlg(HWND &handle)
+void C4ConsoleGUI::UpdateMenuText(HMENU hMenu) { state->UpdateMenuText(*this, hMenu); }
+
+static void ClearDlg(HWND &handle)
 {
 	if (handle)
 		DestroyWindow(handle);
@@ -214,7 +228,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 	case WM_INITDIALOG:
 		Console.Active = true;
 		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
-		C4ConsoleGUI::State::UpdateMenuText(Console, GetMenu(hDlg));
+		Console.UpdateMenuText(GetMenu(hDlg));
 		return true;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_COMMAND:
@@ -806,50 +820,39 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),Console.MenuIndexViewport),IDM_VIEWPORT_NEW1+player->Number,player_text.getData(), true);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexViewport),IDM_VIEWPORT_NEW1+player->Number,player_text.getData(), true);
 }
 
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),Console.MenuIndexPlayer),IDM_PLAYER_QUIT1+player->Number,player_text.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexPlayer),IDM_PLAYER_QUIT1+player->Number,player_text.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		if (!InsertMenu(GetMenu(hWindow),Console.MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT_PTR)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
-		break;
-	case C4ConsoleGUI::STAGE_Intermediate:
-		DrawMenuBar(hWindow);
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		break;
-	}
+	if (!InsertMenu(GetMenu(hWindow),state->MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT_PTR)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
+	state->MenuIndexNet=state->MenuIndexHelp;
+	state->MenuIndexHelp++;
+	DrawMenuBar(hWindow);
 }
 
-void C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		DeleteMenu(GetMenu(hWindow),Console.MenuIndexNet,MF_BYPOSITION);
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		DrawMenuBar(hWindow);
-		break;
-	}
+	if (state->MenuIndexNet<0) return;
+	DeleteMenu(GetMenu(hWindow),state->MenuIndexNet,MF_BYPOSITION);
+	state->MenuIndexNet=-1;
+	state->MenuIndexHelp--;
+	DrawMenuBar(hWindow);
 }
 
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 {
-	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),Console.MenuIndexNet), IDM_NET_CLIENT1+Game.Clients.getLocalID(), text.getData(), true);
+	AddMenuItem(this, GetSubMenu(GetMenu(hWindow),state->MenuIndexNet), IDM_NET_CLIENT1+Game.Clients.getLocalID(), text.getData(), true);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
 {
-	HMENU hMenu = GetSubMenu(GetMenu(hWindow),Console.MenuIndexViewport);
+	HMENU hMenu = GetSubMenu(GetMenu(hWindow),state->MenuIndexViewport);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 }
 
@@ -936,7 +939,7 @@ void C4ConsoleGUI::SetInputFunctions(std::vector<char*> &functions)
 void C4ConsoleGUI::ClearPlayerMenu()
 {
 	if (!Active) return;
-	HMENU hMenu = GetSubMenu(GetMenu(hWindow),Console.MenuIndexPlayer);
+	HMENU hMenu = GetSubMenu(GetMenu(hWindow),state->MenuIndexPlayer);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 }
 

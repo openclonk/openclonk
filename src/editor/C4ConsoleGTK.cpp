@@ -859,24 +859,13 @@ void C4ConsoleGUI::Out(const char *message)
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(state->txtLog), gtk_text_buffer_get_insert(buffer), 0.0, false, 0.0, 0.0);
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-	{
-		state->itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
-		state->menuNet = gtk_menu_new();
-		gtk_menu_item_set_submenu(GTK_MENU_ITEM(state->itemNet), state->menuNet);
-		gtk_menu_shell_insert(GTK_MENU_SHELL(state->menuBar), state->itemNet, Console.MenuIndexHelp);
-		break;
-	}
-	case C4ConsoleGUI::STAGE_Intermediate:
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		gtk_widget_show_all(state->itemNet);
-		break;
-	}
+	state->itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
+	state->menuNet = gtk_menu_new();
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(state->itemNet), state->menuNet);
+	gtk_menu_shell_insert(GTK_MENU_SHELL(state->menuBar), state->itemNet, 4 /*MenuIndexHelp*/);
+	gtk_widget_show_all(state->itemNet);
 }
 
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
@@ -884,22 +873,16 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 	GtkWidget* item = gtk_menu_item_new_with_label(text.getData());
 	gtk_menu_shell_append(GTK_MENU_SHELL(state->menuNet), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(State::OnNetClient), GINT_TO_POINTER(Game.Clients.getLocalID()));
+	gtk_widget_show_all(item);
 }
 
-void C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
 	// Don't need to do anything if the GUI is not created
 	if(state->menuBar == NULL || state->itemNet == NULL) return;
 
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		gtk_container_remove(GTK_CONTAINER(state->menuBar), state->itemNet);
-		state->itemNet = NULL;
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		break;
-	}
+	gtk_container_remove(GTK_CONTAINER(state->menuBar), state->itemNet);
+	state->itemNet = NULL;
 }
 
 void C4ConsoleGUI::ClearInput()
@@ -934,7 +917,7 @@ void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
 	g_assert(store);
  	for (int i = 0; i < functions.size(); ++i)
 	{
-		if (item == C4ConsoleGUI::LIST_DIVIDER) continue;
+		if (functions[i] == C4ConsoleGUI::LIST_DIVIDER) continue;
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, functions[i], -1);
 	}

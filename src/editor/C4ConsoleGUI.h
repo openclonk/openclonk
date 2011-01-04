@@ -94,8 +94,8 @@ public:
 	void RecordingEnabled();
 	void ShowAboutWithCopyright(StdStrBuf &copyright);
 	bool UpdateModeCtrls(int iMode);
-	void UpdateNetMenu(Stage stage);
-	void ClearNetMenu(Stage stage);
+	void AddNetMenu();
+	void ClearNetMenu();
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
@@ -145,6 +145,7 @@ public:
 #ifdef _WIN32
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
+	void UpdateMenuText(HMENU hMenu);
 #endif
 #ifdef WITH_DEVELOPER_MODE
 	virtual GtkWidget* InitGUI();

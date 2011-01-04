@@ -62,13 +62,6 @@ C4Console::C4Console(): C4ConsoleGUI()
 #ifdef _WIN32
 	hWindow=NULL;
 #endif
-
-	MenuIndexFile       =  0,
-	MenuIndexComponents =  1,
-	MenuIndexPlayer     =  2,
-	MenuIndexViewport   =  3,
-	MenuIndexNet        = -1,
-	MenuIndexHelp       =  4;
 }
 
 C4Console::~C4Console()
@@ -539,11 +532,7 @@ void C4Console::UpdateNetMenu()
 	// Clear old
 	ClearNetMenu();
 	// Insert menu
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_Start);
-	MenuIndexNet=MenuIndexHelp;
-	MenuIndexHelp++;
-
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_Intermediate);
+	C4ConsoleGUI::AddNetMenu();
 
 	// Host
 	StdStrBuf str;
@@ -556,18 +545,13 @@ void C4Console::UpdateNetMenu()
 		           pClient->getName(), pClient->getID());
 		AddNetMenuItemForPlayer(IDM_NET_CLIENT1+pClient->getID(), str);
 	}
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_End);
 	return;
 }
 
 void C4Console::ClearNetMenu()
 {
 	if (!Active) return;
-	if (MenuIndexNet<0) return;
-	C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::STAGE_Start);
-	MenuIndexNet=-1;
-	MenuIndexHelp--;
-	C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::STAGE_End);
+	C4ConsoleGUI::ClearNetMenu();
 }
 
 void C4Console::SetCaptionToFilename(const char* szFilename)
