@@ -102,7 +102,7 @@ public:
 	void SetInputFunctions(std::vector<char*> &functions);
 	
 	CStdWindow* CreateConsoleWindow(CStdApp *application);
-	bool Out(const char* message);
+	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
 	void SetCaptionToFileName(const char* file_name);

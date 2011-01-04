@@ -705,10 +705,10 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 	return true;
 }
 
-bool C4ConsoleGUI::Out(const char* message)
+void C4ConsoleGUI::Out(const char* message)
 {
-	if (!Active) return false;
-	if (!message || !*message) return true;
+	if (!Active) return;
+	if (!message || !*message) return;
 	int len,len2,lines; char *buffer, *buffer2;
 	len = 65000;//SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINELENGTH,(WPARAM)0,(LPARAM)0);
 	len2 = len+Min<int32_t>(strlen(message)+2, 5000);
@@ -723,7 +723,6 @@ bool C4ConsoleGUI::Out(const char* message)
 	lines = SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_GETLINECOUNT,(WPARAM)0,(LPARAM)0);
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)lines);
 	UpdateWindow(hWindow);
-	return true;
 }
 
 bool C4ConsoleGUI::ClearLog()

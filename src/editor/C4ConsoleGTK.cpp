@@ -844,10 +844,10 @@ bool C4ConsoleGUI::Message(const char *message, bool query)
 	return response == GTK_RESPONSE_OK;
 }
 
-bool C4ConsoleGUI::Out(const char *message)
+void C4ConsoleGUI::Out(const char *message)
 {
 	// Append text to log
-	if (!window) return true;
+	if (!window) return;
 
 	GtkTextIter end;
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->txtLog));
@@ -1474,6 +1474,7 @@ bool C4ToolsDlg::PopMaterial()
 	if (!state->hbox) return false;
 	gtk_widget_grab_focus(state->materials);
 	gtk_combo_box_popup(GTK_COMBO_BOX(state->materials));
+	return true;
 }
 
 bool C4ToolsDlg::PopTextures()
@@ -1481,6 +1482,7 @@ bool C4ToolsDlg::PopTextures()
 	if (!state->hbox) return false;
 	gtk_widget_grab_focus(state->textures);
 	gtk_combo_box_popup(GTK_COMBO_BOX(state->textures));
+	return true;
 }
 
 void C4ConsoleGUI::ClearDlg(void* dlg)

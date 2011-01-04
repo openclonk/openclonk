@@ -83,7 +83,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 	return this;
 }
 
-bool C4ConsoleGUI::Out(const char* message)
+void C4ConsoleGUI::Out(const char* message)
 {
 	ConsoleWindowController* controller;
 	if (controller = ctrler(this))
@@ -92,7 +92,6 @@ bool C4ConsoleGUI::Out(const char* message)
 		[textStorage appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]] autorelease]];
 		[controller.outputTextView scrollRangeToVisible:NSMakeRange([textStorage length]-1, 1)];
 	}
-	return true;
 }
 
 bool C4ConsoleGUI::ClearLog()

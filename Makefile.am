@@ -535,7 +535,21 @@ clonk_SOURCES += src/res/engine.rc src/res/resource.h
 clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
 endif
 if MACOSX
-clonk_SOURCES += src/platform/MacUtility.h src/platform/MacUtility.mm src/platform/StdMacApp.mm
+clonk_SOURCES += \
+src/platform/StdMacApp.mm \
+src/platform/C4FileMonitorMac.mm \
+src/platform/StdMacWindow.mm \
+src/platform/ClonkAppDelegate.h \
+src/platform/ClonkAppDelegate.mm \
+src/platform/ConsoleWindowController.h \
+src/platform/ConsoleWindowController.mm \
+src/platform/ClonkWindowController.h \
+src/platform/ClonkWindowController.mm \
+src/platform/ClonkOpenGLView.h \
+src/platform/ClonkOpenGLView.mm \
+src/platform/CocoaKeycodeMap.h \
+src/editor/C4ConsoleCocoa.mm \
+src/platform/ClonkMainMenuActions.mm
 endif
 if SDL_MAIN_LOOP
 clonk_SOURCES += src/platform/StdSDLApp.cpp src/platform/StdSDLWindow.cpp
