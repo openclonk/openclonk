@@ -919,10 +919,25 @@ void C4ConsoleGUI::ClearInput()
 		g_object_unref(G_OBJECT(completion));
 	}
 
-	GtkTreeIter iter;
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	g_assert(store);
 	gtk_list_store_clear(store);
+}
+
+void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
+{
+	if(state->txtScript == NULL) return;
+
+	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
+	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
+	GtkTreeIter iter;
+	g_assert(store);
+ 	for (int i = 0; i < functions.size(); ++i)
+	{
+		if (item == C4ConsoleGUI::LIST_DIVIDER) continue;
+		gtk_list_store_append(store, &iter);
+		gtk_list_store_set(store, &iter, 0, functions[i], -1);
+	}
 }
 
 void C4ConsoleGUI::ClearPlayerMenu()
@@ -1491,10 +1506,6 @@ void C4ConsoleGUI::ClearDlg(void* dlg)
 }
 
 void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
-{
-}
-
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
 {
 }
 
