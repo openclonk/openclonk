@@ -1498,8 +1498,21 @@ void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
 {
 }
 
-void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg* dlg)
+void C4ToolsDlg::EnableControls()
 {
+	int32_t iLandscapeMode=::Landscape.Mode;
+	gtk_widget_set_sensitive(state->brush, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->line, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->rect, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->fill, iLandscapeMode>=C4LSC_Exact);
+	gtk_widget_set_sensitive(state->picker, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->ift, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->no_ift, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->materials, (iLandscapeMode>=C4LSC_Static));
+	gtk_widget_set_sensitive(state->textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->scale, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->preview, iLandscapeMode>=C4LSC_Static);
+	NeedPreviewUpdate();
 }
 
 // GTK+ Callbacks

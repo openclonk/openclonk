@@ -152,12 +152,6 @@ bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 	return true;
 }
 
-void C4ToolsDlg::EnableControls()
-{
-	Console.ToolsDlgEnableControls(this);
-	NeedPreviewUpdate();
-}
-
 void C4ToolsDlg::AssertValidTexture()
 {
 	// Static map mode only

@@ -139,7 +139,6 @@ public:
 	void ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg);
 	void ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material);
-	void ToolsDlgEnableControls(C4ToolsDlg *dlg);
 	void ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material);
 

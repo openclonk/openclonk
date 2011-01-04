@@ -433,8 +433,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 	return true;
 }
 
-void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg *dlg)
+void C4ToolsDlg::EnableControls()
 {
+	NeedPreviewUpdate();
 }
 
 void C4ConsoleGUI::ClearInput()
