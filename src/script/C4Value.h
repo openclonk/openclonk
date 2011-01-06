@@ -222,6 +222,17 @@ public:
 		operator--();
 		return nrv;
 	}
+	C4Value Pow(const C4Value &rhs) const
+	{
+		assert(ConvertTo(C4V_Numeric));
+		assert(rhs.ConvertTo(C4V_Numeric));
+		C4Value nrv;
+		if (Type == C4V_Float || rhs.Type == C4V_Float)
+			nrv.SetFloat(::Pow(getFloat(), rhs.getFloat()));
+		else
+			nrv.SetInt(::Pow(getInt(), rhs.getInt()));
+		return nrv;
+	}
 
 	// getters
 	C4V_Data GetData()    const { return Data; }

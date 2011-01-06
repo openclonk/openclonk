@@ -296,7 +296,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(Pow(pPar1->_getInt(), pPar2->_getInt()));
+				pPar1->Set(pPar1->Pow(*pPar2));
 				PopValue();
 				break;
 			}

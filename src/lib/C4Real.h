@@ -67,6 +67,7 @@ class C4RealBase
 
 	friend C4RealBase Sin(const C4RealBase &);
 	friend C4RealBase Cos(const C4RealBase &);
+	friend C4RealBase Pow(const C4RealBase &, const C4RealBase &);
 	friend typename C4RealImpl;
 
 public:

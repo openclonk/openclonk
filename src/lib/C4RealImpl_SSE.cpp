@@ -42,4 +42,11 @@ C4Real_SSE_Float Cos(const C4Real_SSE_Float &real)
 {
 	return C4RealImpl_SSE(cos_ps(_mm_mul_ps(real.value.value, deg2rad)));
 }
-
+C4Real_SSE_Float Pow(const C4Real_SSE_Float &x, const C4Real_SSE_Float &y)
+{
+	C4RealImpl_SSE val;
+	val.value = log_ps(x.value.value);
+	val *= y.value;
+	val.value = exp_ps(val.value);
+	return val;
+}

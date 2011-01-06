@@ -440,7 +440,7 @@ C4ScriptOpDef C4ScriptOpMap[] =
 	{ 16, "--", AB_Dec,             AB_Inc,  1, 1, 1, C4V_Int,  C4V_Numeric,    C4V_Any},
 	
 	// postfix
-	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Numeric,    C4V_Numeric},
 	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 13, "%",  AB_Mod,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},

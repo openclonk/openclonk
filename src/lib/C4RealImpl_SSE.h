@@ -30,11 +30,14 @@ class C4RealImpl_SSE
 {
 	friend C4Real_SSE_Float Sin(const C4Real_SSE_Float &);
 	friend C4Real_SSE_Float Cos(const C4Real_SSE_Float &);
+	friend C4Real_SSE_Float Pow(const C4Real_SSE_Float &, const C4Real_SSE_Float &);
 	__m128 value;
+	C4RealImpl_SSE Pow(const C4RealImpl_SSE &y) const; // power function
 
 	inline C4RealImpl_SSE(__m128 rhs)
 		: value(rhs)
 	{}
+
 
 public:
 	inline C4RealImpl_SSE()

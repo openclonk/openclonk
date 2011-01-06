@@ -37,6 +37,10 @@ inline C4Real_FPU_Float Cos(const C4Real_FPU_Float &real)
 {
 	return std::cos(real.value * static_cast<float>(M_PI) / 180.0f);
 }
+inline C4Real_FPU_Float Pow(const C4Real_FPU_Float &x, const C4Real_FPU_Float &y)
+{
+	return std::pow(x.value, y.value);
+}
 
 // Overload to avoid conversion warning
 template<>
