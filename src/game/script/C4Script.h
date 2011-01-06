@@ -126,8 +126,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_SellTo              "~SellTo" // int iByPlr
 #define PSF_InputCallback       "InputCallback" // const char *szText
 #define PSF_MenuQueryCancel     "~MenuQueryCancel" // int iSelection
-#define PSF_IsFulfilled         "~IsFulfilled"
-#define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
+#define PSF_IsFulfilled         "~IsFulfilled" // int for_plr
 #define PSF_AttachTargetLost    "~AttachTargetLost"
 #define PSF_CrewSelection       "~CrewSelection" // bool fDeselect
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj

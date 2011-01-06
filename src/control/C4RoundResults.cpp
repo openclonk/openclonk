@@ -289,7 +289,11 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 		bool fFulfilled = false;;
 		C4Object *pObj;
 		if ((pObj = ::Objects.Find(idGoal)))
-			fFulfilled = !!pObj->Call(PSF_IsFulfilled);
+		{
+			// Check fulfilled per player, this enables the possibility of rivalry.
+			C4AulParSet pars(C4VInt(iPlayerNumber));
+			fFulfilled = !!pObj->Call(PSF_IsFulfilled, &pars);
+		}
 		GoalList.SetIDCount(idGoal, cnt, true);
 		if (fFulfilled) FulfilledGoalList.SetIDCount(idGoal, 1, true);
 	}
