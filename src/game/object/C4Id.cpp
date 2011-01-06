@@ -38,15 +38,10 @@ const C4ID C4ID::Contents(std::string("Contents"));
 const C4ID C4ID::StructuresSnowIn(std::string("STSN"));
 const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
-const C4ID C4ID::FlagRemvbl(std::string("FGRV"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
 const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Flame(std::string("FLAM"));
-const C4ID C4ID::Meteor(std::string("METO"));
-const C4ID C4ID::Blast(std::string("FXB1"));
 const C4ID C4ID::Melee(std::string("MELE"));
-const C4ID C4ID::TeamworkMelee(std::string("MEL2"));
-const C4ID C4ID::Rivalry(std::string("RVLR"));
 const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }

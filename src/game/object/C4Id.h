@@ -54,15 +54,10 @@ public:
 	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material
 	DEPRECATED static const C4ID StructuresSnowIn;
 	DEPRECATED static const C4ID Flag;
-	DEPRECATED static const C4ID FlagRemvbl; // Flag removable
 	DEPRECATED static const C4ID Conkit; // Construction kit
 	DEPRECATED static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
-	DEPRECATED static const C4ID Meteor;
-	DEPRECATED static const C4ID Blast;
 	DEPRECATED static const C4ID Melee;
-	DEPRECATED static const C4ID TeamworkMelee;
-	DEPRECATED static const C4ID Rivalry;
 	DEPRECATED static const C4ID Bubble;
 
 	C4ID(): v(None.v) {}

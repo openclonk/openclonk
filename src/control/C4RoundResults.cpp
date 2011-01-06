@@ -282,7 +282,6 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	// clear prev
 	GoalList.Clear(); FulfilledGoalList.Clear();
 	// Items
-	bool fRivalvry = !!Game.ObjectCount(C4ID::Rivalry);
 	int32_t cnt; C4ID idGoal;
 	for (cnt=0; (idGoal=::Objects.GetListID(C4D_Goal,cnt)); cnt++)
 	{
@@ -290,15 +289,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 		bool fFulfilled = false;;
 		C4Object *pObj;
 		if ((pObj = ::Objects.Find(idGoal)))
-		{
-			if (fRivalvry)
-			{
-				C4AulParSet pars(C4VInt(iPlayerNumber));
-				fFulfilled = !!pObj->Call(PSF_IsFulfilledforPlr, &pars);
-			}
-			else
-				fFulfilled = !!pObj->Call(PSF_IsFulfilled);
-		}
+			fFulfilled = !!pObj->Call(PSF_IsFulfilled);
 		GoalList.SetIDCount(idGoal, cnt, true);
 		if (fFulfilled) FulfilledGoalList.SetIDCount(idGoal, 1, true);
 	}
