@@ -110,8 +110,11 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	Revision.Ref(C4REVISION);
 
+	// Initialize game data paths
+	Reloc.Init();
+
 	// init system group
-	if (!SystemGroup.Open(C4CFN_System))
+	if (!Reloc.Open(SystemGroup, C4CFN_System))
 	{
 		// Error opening system group - no LogFatal, because it needs language table.
 		// This will *not* use the FatalErrors stack, but this will cause the game
@@ -204,7 +207,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 	ClearCommandLine();
 	Game.NetworkActive = false;
-	Config.General.ClearAdditionalDataPaths();
+	Reloc.Init(); // re-init from config
 	isEditor = 2;
 	int c;
 	while (1)
@@ -303,7 +306,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		// startup start screen
 		case 's': C4Startup::SetStartScreen(optarg); break;
 		// additional read-only data path
-		case 'd': Config.General.AddAdditionalDataPath(optarg); break;
+		case 'd': Reloc.AddPath(optarg); break;
 		// debug options
 		case 'D': Game.DebugPort = atoi(optarg); break;
 		case 'P': Game.DebugPassword = optarg; break;
@@ -345,7 +348,11 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		// Scenario file
 		if (SEqualNoCase(GetExtension(szParameter),"c4s"))
 		{
-			Game.SetScenarioFilename(Config.AtDataReadPath(szParameter, true));
+			if(IsGlobalPath(szParameter))
+				Game.SetScenarioFilename(szParameter);
+			else
+				Game.SetScenarioFilename((std::string(GetWorkingDirectory()) + DirSep + szParameter).c_str());
+
 			continue;
 		}
 		if (SEqualNoCase(GetFilename(szParameter),"scenario.txt"))
@@ -356,8 +363,11 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		// Player file
 		if (SEqualNoCase(GetExtension(szParameter),"c4p"))
 		{
-			const char *param = Config.AtDataReadPath(szParameter, true);
-			SAddModule(Game.PlayerFilenames,param);
+			if(IsGlobalPath(szParameter))
+				SAddModule(Game.PlayerFilenames, szParameter);
+			else
+				SAddModule(Game.PlayerFilenames, (std::string(GetWorkingDirectory()) + DirSep + szParameter).c_str());
+
 			continue;
 		}
 		// Definition file

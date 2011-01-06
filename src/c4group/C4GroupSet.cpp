@@ -357,7 +357,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 					delete pGroup; return false;
 				}
 			}
-			else if (!pGroup->Open(szParentfolder+iPos))
+			else if (!Reloc.Open(*pGroup, szParentfolder+iPos))
 			{
 				LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
 				delete pGroup; return false;

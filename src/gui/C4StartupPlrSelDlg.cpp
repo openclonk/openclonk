@@ -73,7 +73,7 @@ static bool GetPortrait(char **ppBytes, size_t *ipSize)
 	C4Group GfxGroup;
 	int iCount;
 	StdStrBuf EntryName;
-	if (!GfxGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics))) return false;
+	if (!Reloc.Open(GfxGroup, C4CFN_Graphics)) return false;
 	if ((iCount = GfxGroup.EntryCount("Portrait*.png")) < 1) return false;
 	EntryName.Format("Portrait%d.png", SafeRandom(iCount) + 1);
 	if (!GfxGroup.LoadEntry(EntryName.getData(), ppBytes, ipSize)) return false;
@@ -1245,7 +1245,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		// Set initial portrait and bigicon
 		C4Group hGroup;
 		StdStrBuf strPortrait; strPortrait.Format("Portrait%d.png", 1 + Random(5));
-		if (hGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
+		if (Reloc.Open(hGroup, C4CFN_Graphics))
 		{
 			hGroup.Extract(strPortrait.getData(), Config.AtTempPath("Portrait.png"));
 			hGroup.Close();

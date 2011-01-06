@@ -181,9 +181,14 @@ bool C4Game::OpenScenario()
 			{ LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), (const char *)ScenarioFilename); return false; }
 	}
 	else
+	{
 		// open directly
-		if (!ScenarioFile.Open(ScenarioFilename))
+		if (!Reloc.Open(ScenarioFile, ScenarioFilename))
 			{ LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), (const char *)ScenarioFilename); return false; }
+	}
+
+	// Remember full (absolute) path
+	SCopy(ScenarioFile.GetFullName().getData(), ScenarioFilename, _MAX_PATH);
 
 	// add scenario to group
 	GroupSet.RegisterGroup(ScenarioFile, false, C4GSPrio_Scenario, C4GSCnt_Scenario);
@@ -818,7 +823,7 @@ bool C4Game::InitMaterialTexture()
 			// Find next external material source
 			pMatRes = Game.Parameters.GameRes.iterRes(pMatRes, NRT_Material);
 			if (!pMatRes) break;
-			if (!Mats.Open(pMatRes->getFile()))
+			if (!Reloc.Open(Mats, pMatRes->getFile()))
 				return false;
 		}
 
@@ -3209,9 +3214,6 @@ const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
 {
 	static char szDefs[10*_MAX_PATH+1];
 	szDefs[0]=0;
-
-	// Get relative path
-	szPath = Config.AtRelativePath(szPath);
 
 	// Scan path for folder names
 	int32_t cnt,iBackslash;

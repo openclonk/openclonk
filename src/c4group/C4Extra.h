@@ -33,8 +33,7 @@ public:
 	bool Init();      // init extra group, using scneario presets
 	bool InitGroup(); // open extra group
 
-	C4Group ExtraSysGrp; // extra.c4g root folder
-	C4Group ExtraUserGrp; // extra.c4g root folder
+	std::vector<C4Group*> ExtraGroups; // extra.c4g root folders
 
 protected:
 	bool LoadDef(C4Group &hGroup, const char *szName); // load preset for definition

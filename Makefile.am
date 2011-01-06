@@ -36,7 +36,7 @@ GCC_FLAGS =
 WARNING_FLAGS = -Wall
 endif
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS)
+AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS) -DOC_SYSTEM_DATA_DIR=\"${datadir}/openclonk\"
 
 AM_CFLAGS = -Wall $(GCC_FLAGS)
 
@@ -196,6 +196,8 @@ src/config/C4Config.h \
 src/config/C4ConfigShareware.cpp \
 src/config/C4ConfigShareware.h \
 src/config/C4Constants.h \
+src/config/C4Reloc.cpp \
+src/config/C4Reloc.h \
 src/config/C4SecurityCertificates.cpp \
 src/config/C4SecurityCertificates.h \
 src/control/C4Control.cpp \
