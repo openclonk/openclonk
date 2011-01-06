@@ -227,15 +227,18 @@ public:
 	C4Value operator-() const
 	{
 		C4Value nrv;
-		nrv.Data.Int = Data.Int ^ 0x80000000;
 		switch (Type)
 		{
 		case C4V_Any:
 		case C4V_Int:
 		case C4V_Bool:
-			nrv.Type = C4V_Int; break;
+			nrv.Data.Int = -Data.Int;
+			nrv.Type = C4V_Int;
+			break;
 		case C4V_Float:
-			nrv.Type = C4V_Float; break;
+			nrv.Data.Int = Data.Int ^ 0x80000000;
+			nrv.Type = C4V_Float;
+			break;
 		default:
 			assert(!"Can't negate a non-numeric value");
 			return *this;
