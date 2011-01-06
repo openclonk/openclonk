@@ -54,6 +54,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_PropList:
 		return "proplist";
+	case C4V_Numeric:
+		return "any numeric";
 	default:
 		return "!Fehler!";
 	}

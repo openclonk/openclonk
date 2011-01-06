@@ -38,6 +38,8 @@ enum C4V_Type
 	C4V_String,
 	C4V_Array,
 
+	C4V_Numeric,  // any numeric value; marker in operator table
+
 	C4V_C4ObjectEnum, // enumerated object
 	C4V_C4DefEnum     // enumerated object
 };
@@ -234,6 +236,11 @@ public:
 
 	inline bool ConvertTo(C4V_Type vtToType) const // convert to dest type
 	{
+		if (vtToType == C4V_Numeric)
+			return Type == C4V_Float || Type == C4V_Int || Type == C4V_Bool || Type == C4V_Any;
+		assert(vtToType <= C4V_Last);
+		if (vtToType > C4V_Last)
+			return false;
 		switch (C4ScriptCnvMap[Type][vtToType].Function)
 		{
 		case C4VCnvFn::CnvOK:
@@ -249,6 +256,10 @@ public:
 	}
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
 	{
+		assert(vtFromType <= C4V_Last);
+		assert(vtToType <= C4V_Last);
+		if (vtFromType > C4V_Last || vtToType > C4V_Last)
+			return false;
 		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
 	}
 

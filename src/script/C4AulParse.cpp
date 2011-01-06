@@ -428,24 +428,24 @@ C4ScriptOpDef C4ScriptOpMap[] =
 	// |  |     Bytecode            Result   |  |  no second id
 	// |  |     |                   Modifier |  |  |  RetType   ParType1    ParType2
 	// prefix
-	{ 15, "++", AB_Inc,             AB_ERR,  0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "--", AB_Dec,             AB_ERR,  0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "++", AB_Inc,             AB_ERR,  0, 1, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
+	{ 15, "--", AB_Dec,             AB_ERR,  0, 1, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
 	{ 15, "~",  AB_BitNot,          AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
 	{ 15, "!",  AB_Not,             AB_ERR,  0, 0, 0, C4V_Bool, C4V_Bool,   C4V_Any},
-	{ 15, "+",  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "-",  AB_Neg,             AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "+",  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
+	{ 15, "-",  AB_Neg,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
 	
 	// postfix (whithout second statement)
-	{ 16, "++", AB_Inc,             AB_Dec,  1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 16, "--", AB_Dec,             AB_Inc,  1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 16, "++", AB_Inc,             AB_Dec,  1, 1, 1, C4V_Int,  C4V_Numeric,    C4V_Any},
+	{ 16, "--", AB_Dec,             AB_Inc,  1, 1, 1, C4V_Int,  C4V_Numeric,    C4V_Any},
 	
 	// postfix
 	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
-	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
+	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
+	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 13, "%",  AB_Mod,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
-	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Any,    C4V_Any},
+	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
+	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 11, "<<", AB_LeftShift,       AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 11, ">>", AB_RightShift,      AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 10, "<",  AB_LessThan,        AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},

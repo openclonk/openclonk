@@ -5483,9 +5483,11 @@ static Nillable<int> FnInt(C4AulContext *ctx, C4Real f)
 	return static_cast<int>(f);
 }
 
-static C4Real FnFloat(C4AulContext *ctx, int i)
+static Nillable<C4Real> FnFloat(C4AulContext *ctx, C4Value i)
 {
-	return i;
+	if (!i.ConvertTo(C4V_Float))
+		return C4VNull;
+	return i.getFloat();
 }
 
 //=========================== C4Script Function Map ===================================
@@ -5624,7 +5626,7 @@ protected:
 #define TYPENAMES(N) typename Par##N##_t
 #define PARS(N) Par##N##_t
 #define CONV_TYPE(N) C4ValueConv<Par##N##_t>::Type()
-#define CONV_FROM_C4V(N) C4ValueConv<Par##N##_t>::_FromC4V(pPars[N])
+#define CONV_FROM_C4V(N) C4ValueConv<Par##N##_t>::FromC4V(pPars[N])
 
 // N is the number of parameters pFunc needs. Templates can only have a fixed number of arguments,
 // so eleven templates are needed
