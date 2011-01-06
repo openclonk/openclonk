@@ -55,8 +55,10 @@
 #define C4REAL_MODE C4REAL_MODE_SSE_FLOAT
 #endif
 
+#include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/type_traits/is_pod.hpp>
+#include <boost/type_traits/is_arithmetic.hpp>
 
 template<class C4RealImpl>
 class C4RealBase
@@ -65,14 +67,17 @@ class C4RealBase
 
 	friend C4RealBase Sin(const C4RealBase &);
 	friend C4RealBase Cos(const C4RealBase &);
+	friend typename C4RealImpl;
 
 public:
 	inline C4RealBase(int32_t val = 0) : value(val) { }
-	inline C4RealBase(float val) : value(val) {}
 	inline C4RealBase(int32_t val, int32_t prec) : value(val) { operator/=(C4RealBase(prec)); }
+	template <class T>
+	inline C4RealBase(typename boost::enable_if<boost::is_arithmetic<T>, T>::type val) : value(val) { }
+	inline C4RealBase(const C4RealImpl &val) : value(val) { }
 	// Conversion between different implementations of C4RealBase
-	template<class T>
-	inline C4RealBase(const C4RealBase<T> &val) : value(static_cast<float>(val)) { }
+/*	template<class T>
+	inline C4RealBase(const C4RealBase<T> &val) : value(static_cast<float>(val)) { }*/
 
 	// Copy ctor and assignment
 	inline C4RealBase(const C4RealBase &rhs) : value(rhs.value) {}

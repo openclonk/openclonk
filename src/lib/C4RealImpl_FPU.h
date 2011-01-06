@@ -31,11 +31,11 @@
 
 inline C4Real_FPU_Float Sin(const C4Real_FPU_Float &real)
 {
-	return C4Real_FPU_Float(std::sin(real.value * static_cast<float>(M_PI) / 180.0f));
+	return std::sin(real.value * static_cast<float>(M_PI) / 180.0f);
 }
 inline C4Real_FPU_Float Cos(const C4Real_FPU_Float &real)
 {
-	return C4Real_FPU_Float(std::cos(real.value * static_cast<float>(M_PI) / 180.0f));
+	return std::cos(real.value * static_cast<float>(M_PI) / 180.0f);
 }
 
 // Overload to avoid conversion warning

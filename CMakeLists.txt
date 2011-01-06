@@ -526,6 +526,7 @@ set(OC_CLONK_SOURCES
 	src/tinyxml/tinyxmlparser.cpp
 	src/zlib/gzio.c
 	src/zlib/zutil.h
+	thirdparty/simdmath/sse_mathfun.h
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
@@ -663,6 +664,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/game/object
 	${CMAKE_CURRENT_SOURCE_DIR}/src/lib/texture
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
+	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
 
 ############################################################################

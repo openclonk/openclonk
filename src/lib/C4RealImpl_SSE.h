@@ -20,6 +20,7 @@
 
 #ifndef INC_C4Real
 #error C4RealImpl_SSE.h must not be included by itself; include C4Real.h instead
+#include "C4Real.h"
 #endif
 
 #include <cassert>
@@ -31,12 +32,9 @@ class C4RealImpl_SSE
 	friend C4Real_SSE_Float Cos(const C4Real_SSE_Float &);
 	__m128 value;
 
-	static const __m128 iee754_sign_mask; // -0.0
-	static const __m128 cephes_FOPI; // 4/pi
-	static const __m128 cephes_deg2rad; // pi/180
-	static const __m128 cephes_appx_coeffs[3]; // approximation coefficients
-	static const __m128 cephes_scaling_factors[3]; // factors for quick scaling to -pi/4..pi/4
-	C4RealImpl_SSE SinCos(bool cosine) const; // approximation of sine and cosine
+	inline C4RealImpl_SSE(__m128 rhs)
+		: value(rhs)
+	{}
 
 public:
 	inline C4RealImpl_SSE()
@@ -50,6 +48,9 @@ public:
 	{}
 	inline C4RealImpl_SSE(float fVal)
 		: value(_mm_set_ss(fVal))
+	{}
+	inline C4RealImpl_SSE(const C4Real_SSE_Float &rhs)
+		: value(rhs.value.value)
 	{}
 
 	operator int () const
@@ -111,14 +112,4 @@ public:
 	operator bool () const { return _mm_comineq_ss(value, _mm_setzero_ps()) != 0; }
 	bool operator ! () const { return _mm_comieq_ss(value, _mm_setzero_ps()) != 0; }
 };
-
-inline C4Real_SSE_Float Sin(const C4Real_SSE_Float &real)
-{
-	return C4Real_SSE_Float(static_cast<float>(real.value.SinCos(false)));
-}
-inline C4Real_SSE_Float Cos(const C4Real_SSE_Float &real)
-{
-	return C4Real_SSE_Float(static_cast<float>(real.value.SinCos(true)));
-}
-
 #endif
