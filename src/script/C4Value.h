@@ -186,6 +186,7 @@ public:
 	{
 		switch (Type)
 		{
+		case C4V_Any:
 		case C4V_Int:
 		case C4V_Bool:
 			++Data.Int; Type = C4V_Int; break;
@@ -206,6 +207,7 @@ public:
 	{
 		switch (Type)
 		{
+		case C4V_Any:
 		case C4V_Int:
 		case C4V_Bool:
 			--Data.Int; Type = C4V_Int; break;
@@ -220,6 +222,24 @@ public:
 	{
 		C4Value nrv(*this);
 		operator--();
+		return nrv;
+	}
+	C4Value operator-() const
+	{
+		C4Value nrv;
+		nrv.Data.Int = Data.Int ^ 0x80000000;
+		switch (Type)
+		{
+		case C4V_Any:
+		case C4V_Int:
+		case C4V_Bool:
+			nrv.Type = C4V_Int; break;
+		case C4V_Float:
+			nrv.Type = C4V_Float; break;
+		default:
+			assert(!"Can't negate a non-numeric value");
+			return *this;
+		}
 		return nrv;
 	}
 	C4Value Pow(const C4Value &rhs) const
@@ -265,8 +285,6 @@ public:
 	}
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
 	{
-		assert(vtFromType <= C4V_Last);
-		assert(vtToType <= C4V_Last);
 		if (vtFromType > C4V_Last || vtToType > C4V_Last)
 			return false;
 		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
