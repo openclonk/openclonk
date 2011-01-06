@@ -101,8 +101,9 @@
 		NSBeep();
 		return;
 	}
+	[gameWindowController setFullscreen:Config.Graphics.Windowed];
 	Config.Graphics.Windowed = !Config.Graphics.Windowed;
-	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+	
 }
 
 - (IBAction) simulateKeyPressed:(C4KeyCode)key

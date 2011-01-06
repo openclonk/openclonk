@@ -31,7 +31,12 @@
 - (void) showCursor;
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
+- (void) setContextSurfaceBackingSizeToOwnDimensions;
+
 + (CGDirectDisplayID) displayID;
++ (NSOpenGLContext*) mainContext;
++ (void) setSurfaceBackingSizeOf:(NSOpenGLContext*) context width:(int)wdt height:(int)hgt;
++ (NSOpenGLContext*) createContext:(CStdGLCtx*) pMainCtx;
 
 @property(readwrite, retain) NSOpenGLContext* context;
 @end

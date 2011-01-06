@@ -124,13 +124,15 @@
 	// don't draw if tab-switched away from fullscreen
 	if ([self.controller isFullscreen] && ![NSApp isActive]) // ugh - no way to find out if window is hidden due hidesondeactivate?
 		return;
+	if ([self.window isMiniaturized] || ![self.window isVisible])
+		return;
 	[self.context update];
 	CStdWindow* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
-	{
 		stdWindow->PerformUpdate();
-	}
+	else
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 - (ClonkWindowController*) controller {return (ClonkWindowController*)[self.window delegate];}
@@ -409,6 +411,11 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 	}
 }
 
+- (void) setContextSurfaceBackingSizeToOwnDimensions
+{
+	[ClonkOpenGLView setSurfaceBackingSizeOf:self.context width:self.frame.size.width height:self.frame.size.height];
+}
+
 static NSOpenGLContext* MainContext;
 
 + (NSOpenGLContext*) mainContext
@@ -497,13 +504,13 @@ void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
 
 bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
 {
-	pWindow->SetSize(iXRes, iYRes);
 	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
-	[controller setFullscreen:fFullScreen];
 	NSWindow* window = controller.window;
+
+	pWindow->SetSize(iXRes, iYRes);
+	[controller setFullscreen:fFullScreen];
+	[window setAspectRatio:[[window contentView] frame].size];
 	[window center];
-	[window setContentMinSize:NSMakeSize(iXRes, iYRes)];
-	[window setContentMaxSize:NSMakeSize(iXRes, iYRes)];
 	if (!fFullScreen)
 		[window makeKeyAndOrderFront:nil];
 	OnResolutionChanged(iXRes, iYRes);

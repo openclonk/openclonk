@@ -30,6 +30,7 @@
 	NSString *clonkDirectory;
 	NSString *addonSupplied;
 	ConsoleWindowController *consoleController;
+	ClonkWindowController *gameWindowController;
 	// declared here since ConsoleWindow.xib can't refer to objects in MainMenu.xib -.-
 	IBOutlet NSMenuItem *newViewportForPlayerMenuItem;
 	IBOutlet NSMenuItem *kickPlayerMenuItem;
@@ -53,6 +54,7 @@
 @property(readonly) NSMenuItem* newViewportForPlayerMenuItem;
 @property(readonly) NSMenuItem* kickPlayerMenuItem;
 @property(readwrite, retain) ConsoleWindowController* consoleController;
+@property(readwrite, retain) ClonkWindowController* gameWindowController;
 @property(readonly) NSMenuItem* recordMenuItem;
 @property(readonly) NSMenuItem* netMenu;
 #endif

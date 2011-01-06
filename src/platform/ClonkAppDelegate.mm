@@ -38,7 +38,7 @@
 }
 
 #ifdef USE_COCOA
-@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu;
+@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController;
 #endif
 
 - (id) init
