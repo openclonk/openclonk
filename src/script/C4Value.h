@@ -106,17 +106,17 @@ public:
 	// Checked getters
 	int32_t getInt() const
 	{
-		if (!CanConvertTo(C4V_Int))
+		if (!ConvertTo(C4V_Int))
 			return 0;
 		else if (Type == C4V_Float)
 			return C4Real(Data.Float);
 		else 
 			return Data.Int;
 	}
-	bool getBool() const { return CanConvertTo(C4V_Bool) ? !! Data : 0; }
+	bool getBool() const { return ConvertTo(C4V_Bool) ? !! Data : 0; }
 	C4Real getFloat() const
 	{
-		if (!CanConvertTo(C4V_Float))
+		if (!ConvertTo(C4V_Float))
 			return C4Real(0);
 		else if (Type == C4V_Float)
 			return Data.Float;
@@ -124,10 +124,10 @@ public:
 			return static_cast<int32_t>(Data.Int);
 	}
 	C4ID getC4ID() const;
-	C4Object * getObj() const { return CanConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
-	C4PropList * getPropList() const { return CanConvertTo(C4V_PropList) ? Data.PropList : NULL; }
-	C4String * getStr() const { return CanConvertTo(C4V_String) ? Data.Str : NULL; }
-	C4ValueArray * getArray() const { return CanConvertTo(C4V_Array) ? Data.Array : NULL; }
+	C4Object * getObj() const { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
+	C4PropList * getPropList() const { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
+	C4String * getStr() const { return ConvertTo(C4V_String) ? Data.Str : NULL; }
+	C4ValueArray * getArray() const { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -236,7 +236,7 @@ public:
 
 	StdStrBuf GetDataString() const;
 
-	inline bool CanConvertTo(C4V_Type vtToType) const // convert to dest type
+	inline bool ConvertTo(C4V_Type vtToType) const // convert to dest type
 	{
 		switch (C4ScriptCnvMap[Type][vtToType].Function)
 		{
@@ -248,29 +248,9 @@ public:
 		case C4VCnvFn::CnvError: return false;
 		case C4VCnvFn::CnvObject: return FnCnvObject();
 		}
-		assert(!"C4Value::CanConvertTo: Invalid conversion function specified");
-		return false;
-	}
-	inline bool ConvertTo(C4V_Type vtToType)
-	{
-		// Don't actually convert to C4V_Any; it's used as a marker where multiple types are acceptable
-		if (Data && vtToType == C4V_Any) return true;
-		if (!CanConvertTo(vtToType)) return false;
-		switch (C4ScriptCnvMap[Type][vtToType].Function)
-		{
-		case C4VCnvFn::CnvOK: case C4VCnvFn::CnvOK0:
-			if (Data || IsNullableType(vtToType))
-				Type = vtToType;
-			return true;
-		case C4VCnvFn::CnvError: return false;
-		case C4VCnvFn::CnvObject: Type = C4V_C4Object; return true;
-		case C4VCnvFn::CnvF2I: SetInt(getFloat()); return true;
-		case C4VCnvFn::CnvI2F: SetFloat(getInt()); return true;
-		}
 		assert(!"C4Value::ConvertTo: Invalid conversion function specified");
 		return false;
 	}
-
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
 	{
 		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
