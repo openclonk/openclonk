@@ -6,8 +6,8 @@ autom4te.cache
 .deps
 deps
 *.o
-clonk
-c4group
+./clonk
+./c4group
 .dirstamp
 *.a
 *.c4p
@@ -58,6 +58,8 @@ planet/cmake_install.cmake
 planet/clonk.sln
 planet/clonk.ilk
 planet/CMakeCache.txt
+build
+planet/clonk.app
 Release
 RelWithDebInfo
 MinSizeRel
@@ -93,15 +95,21 @@ BuildLog.htm
 
 # XCode temporary files + Xcode not temporary files
 .DS_Store
+._*
 xcode/build
 *.xcodeproj
 
 .anjuta*
 
 # Binaries
-planet/Clonk.app
+*.app
 *.exe
 
 # Development files explicitely excluded
 planet/nohg*
 
+# Eclipse project file
+planet/.project
+
+# MacOSX saved searches
+*.savedSearch

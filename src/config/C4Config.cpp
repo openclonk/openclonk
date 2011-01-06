@@ -39,6 +39,7 @@
 #include <StdFile.h>
 #include <StdWindow.h>
 #include <StdRegistry.h>
+#include <StdWindow.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -49,20 +50,6 @@
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
-
-#include "MacUtility.h"
-
-bool isGermanSystem()
-{
-#ifdef _WIN32
-	if (PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN) return true;
-#elif defined(__APPLE__)
-	return MacUtility::isGerman();
-#else
-	if (strstr(setlocale(LC_MESSAGES, 0), "de")) return true;
-#endif
-	return false;
-}
 
 C4Config *pConfig;
 
@@ -86,14 +73,10 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SaveGameFolder,      "SaveGameFolder",     "Savegames.c4f", false, true));
 	pComp->Value(mkNamingAdapt(SaveDemoFolder,      "SaveDemoFolder",     "Records.c4f",   false, true  ));
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
-	pComp->Value(mkNamingAdapt(s(UpdateURL),        "UpdateURL",          "openclonk.org/updates/oc_%d_%d_%d_%d_%s.c4u"));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	pComp->Value(mkNamingAdapt(Record,              "Record",             0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
 	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
-	pComp->Value(mkNamingAdapt(FairCrew,            "NoCrew",             0              ));
-	pComp->Value(mkNamingAdapt(FairCrewStrength,    "DefCrewStrength",    1000           ));
-	pComp->Value(mkNamingAdapt(MaxFairCrewStrength, "MaxFairCrewStrength",1000           ));
 	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
 	pComp->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
 #ifdef _WIN32
@@ -153,6 +136,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(EnableShaders,         "Shader",               0             ,false, true));
 	pComp->Value(mkNamingAdapt(NoOffscreenBlits,      "NoOffscreenBlits",     1             ));
 	pComp->Value(mkNamingAdapt(ClipManuallyE,         "ClipManuallyE",        1             ));
+	pComp->Value(mkNamingAdapt(MultiSampling,         "MultiSampling",        4             ));
 }
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)
@@ -169,11 +153,11 @@ void C4ConfigSound::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(ControlRate,             "ControlRate",          1             ,false, true));
+	pComp->Value(mkNamingAdapt(ControlRate,             "ControlRate",          3            ,false, true));
 	pComp->Value(mkNamingAdapt(ControlPreSend,          "ControlPreSend",       -1            ));
 	pComp->Value(mkNamingAdapt(s(WorkPath),             "WorkPath",             "Network"     ,false, true));
 	pComp->Value(mkNamingAdapt(Lobby,                   "Lobby",                0             ));
-	pComp->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        0             ,false, true));
+	pComp->Value(mkNamingAdapt(NoRuntimeJoin,           "NoRuntimeJoin",        1             ,false, true));
 	pComp->Value(mkNamingAdapt(NoReferenceRequest,      "NoReferenceRequest",   0             ));
 	pComp->Value(mkNamingAdapt(MaxResSearchRecursion,   "MaxResSearchRecursion",1             ,false, true));
 	pComp->Value(mkNamingAdapt(Comment,                 "Comment",              ""            ,false, true));
@@ -193,10 +177,12 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(LeagueServerSignUp,      "LeagueServerSignUp",   0             ));
 	pComp->Value(mkNamingAdapt(UseAlternateServer,      "UseAlternateServer",   0             ));
 	pComp->Value(mkNamingAdapt(s(AlternateServerAddress),"AlternateServerAddress", "boom.openclonk.org:80/server/"));
-	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "boom.openclonk.org:80/server/"));
 	pComp->Value(mkNamingAdapt(s(LastPassword),         "LastPassword",         "Wipf"        ));
+#ifdef WITH_AUTOMATIC_UPDATE
+	pComp->Value(mkNamingAdapt(s(UpdateServerAddress),  "UpdateServerAddress",     "boom.openclonk.org:80/server/"));
 	pComp->Value(mkNamingAdapt(AutomaticUpdate,         "AutomaticUpdate",      0             ,false, true));
 	pComp->Value(mkNamingAdapt(LastUpdateTime,          "LastUpdateTime",       0             ));
+#endif
 	pComp->Value(mkNamingAdapt(AsyncMaxWait,            "AsyncMaxWait",         2             ));
 
 	pComp->Value(mkNamingAdapt(s(PuncherAddress),       "PuncherAddress",       "clonk.de:11115")); // maybe store default for this one?
@@ -214,7 +200,7 @@ void C4ConfigIRC::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(Server),               "Server",               "irc.ham.de.euirc.net", false, true));
 	pComp->Value(mkNamingAdapt(s(Nick),                 "Nick",                 ""                    , false, true));
 	pComp->Value(mkNamingAdapt(s(RealName),             "RealName",             ""                    , false, true));
-	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk-lobby"    , false, true));
+	pComp->Value(mkNamingAdapt(s(Channel),              "Channel",              "#openclonk"    , false, true));
 	pComp->Value(mkNamingAdapt(AllowAllChannels,        "AllowAllChannels",     0                     , false, true));
 }
 
@@ -271,76 +257,11 @@ void C4ConfigGamepad::Reset()
 void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
 {
 #ifndef USE_CONSOLE
-#ifdef _WIN32
-#define KEY(win, x, sdl) win
-#elif defined(USE_X11)
-#define KEY(win, x, sdl) x
-#else
-#define KEY(win, x, sdl) sdl
-#endif
-
-	bool fGer = isGermanSystem();
-
-	pComp->Value(mkNamingAdapt(Keyboard[0][0],    "Kbd1Key1",             KEY('Q',          XK_q,             SDLK_q)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][1],    "Kbd1Key2",             KEY('W',          XK_w,             SDLK_w)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][2],    "Kbd1Key3",             KEY('E',          XK_e,             SDLK_e)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][3],    "Kbd1Key4",             KEY('A',          XK_a,             SDLK_a)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][4],    "Kbd1Key5",             KEY('S',          XK_s,             SDLK_s)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][5],    "Kbd1Key6",             KEY('D',          XK_d,             SDLK_d)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][6],    "Kbd1Key7",             fGer ? KEY('Y', XK_y, SDLK_y) : KEY('Z', XK_z, SDLK_z)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][7],    "Kbd1Key8",             KEY('X',          XK_x,             SDLK_x)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][8],    "Kbd1Key9",             KEY('C',          XK_c,             SDLK_c)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][9],    "Kbd1Key10",            fGer ? KEY(226, XK_less, SDLK_LESS) : KEY('R', XK_r, SDLK_r)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][10],   "Kbd1Key11",            KEY('V',          XK_v,             SDLK_v)));
-	pComp->Value(mkNamingAdapt(Keyboard[0][11],   "Kbd1Key12",            KEY('F',          XK_f,             SDLK_f)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[1][0],    "Kbd2Key1",             KEY(103,          XK_KP_Home,       SDLK_KP7)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][1],    "Kbd2Key2",             KEY(104,          XK_KP_Up,         SDLK_KP8)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][2],    "Kbd2Key3",             KEY(105,          XK_KP_Page_Up,    SDLK_KP9)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][3],    "Kbd2Key4",             KEY(100,          XK_KP_Left,       SDLK_KP4)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][4],    "Kbd2Key5",             KEY(101,          XK_KP_Begin,      SDLK_KP5)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][5],    "Kbd2Key6",             KEY(102,          XK_KP_Right,      SDLK_KP6)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][6],    "Kbd2Key7",             KEY(97,           XK_KP_End,        SDLK_KP1)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][7],    "Kbd2Key8",             KEY(98,           XK_KP_Down,       SDLK_KP2)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][8],    "Kbd2Key9",             KEY(99,           XK_KP_Page_Down,  SDLK_KP3)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][9],    "Kbd2Key10",            KEY(96,           XK_KP_Insert,     SDLK_KP0)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][10],   "Kbd2Key11",            KEY(110,          XK_KP_Delete,     SDLK_KP_PERIOD)));
-	pComp->Value(mkNamingAdapt(Keyboard[1][11],   "Kbd2Key12",            KEY(107,          XK_KP_Add,        SDLK_KP_PLUS)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[2][0],    "Kbd3Key1",             KEY('I',          XK_i,             SDLK_i)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][1],    "Kbd3Key2",             KEY('O',          XK_o,             SDLK_o)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][2],    "Kbd3Key3",             KEY('P',          XK_p,             SDLK_p)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][3],    "Kbd3Key4",             KEY('K',          XK_k,             SDLK_k)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][4],    "Kbd3Key5",             KEY('L',          XK_l,             SDLK_l)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][5],    "Kbd3Key6",             fGer ? KEY(192, XK_odiaeresis, SDLK_WORLD_4) : KEY(0xBA, XK_semicolon, SDLK_SEMICOLON)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][6],    "Kbd3Key7",             KEY(188, XK_comma, SDLK_COMMA)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][7],    "Kbd3Key8",             KEY(190, XK_period, SDLK_PERIOD)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][8],    "Kbd3Key9",             fGer ? KEY(189, XK_minus, SDLK_MINUS) : KEY(0xBF, XK_slash, SDLK_SLASH)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][9],    "Kbd3Key10",            KEY('M', XK_m, SDLK_m)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][10],   "Kbd3Key11",            KEY(222, XK_adiaeresis, SDLK_WORLD_3)));
-	pComp->Value(mkNamingAdapt(Keyboard[2][11],   "Kbd3Key12",            KEY(186, XK_udiaeresis, SDLK_WORLD_2)));
-
-	pComp->Value(mkNamingAdapt(Keyboard[3][0],    "Kbd4Key1",             KEY(VK_INSERT,    XK_Insert,        SDLK_INSERT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][1],    "Kbd4Key2",             KEY(VK_HOME,      XK_Home,          SDLK_HOME)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][2],    "Kbd4Key3",             KEY(VK_PRIOR,     XK_Page_Up,       SDLK_PAGEUP)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][3],    "Kbd4Key4",             KEY(VK_DELETE,    XK_Delete,        SDLK_DELETE)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][4],    "Kbd4Key5",             KEY(VK_UP,        XK_Up,            SDLK_UP)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][5],    "Kbd4Key6",             KEY(VK_NEXT,      XK_Page_Down,     SDLK_PAGEDOWN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][6],    "Kbd4Key7",             KEY(VK_LEFT,      XK_Left,          SDLK_LEFT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][7],    "Kbd4Key8",             KEY(VK_DOWN,      XK_Down,          SDLK_DOWN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][8],    "Kbd4Key9",             KEY(VK_RIGHT,     XK_Right,         SDLK_RIGHT)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][9],    "Kbd4Key10",            KEY(VK_END,       XK_End,           SDLK_END)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][10],   "Kbd4Key11",            KEY(VK_RETURN,    XK_Return,        SDLK_RETURN)));
-	pComp->Value(mkNamingAdapt(Keyboard[3][11],   "Kbd4Key12",            KEY(VK_BACK,      XK_BackSpace,     SDLK_BACKSPACE)));
-
 	if (fKeysOnly) return;
 
 	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
-
-#undef KEY
-#undef s
-#endif //USE_CONSOLE
+#endif
 }
 
 const char *CfgAtTempPath(const char *szFilename)
@@ -371,6 +292,29 @@ void C4Config::Default()
 	fConfigLoaded=false;
 }
 
+void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile)
+{
+	if (szConfigFile)
+	{
+		// Config filename is specified
+		filename.Ref(szConfigFile);
+		// make sure we're at the correct path to load it
+		if (forceWorkingDirectory) General.DeterminePaths(true);
+	}
+	else
+	{
+		// Config filename from home
+		StdStrBuf home(getenv("HOME"));
+		if (home) { home += "/"; }
+		filename.Copy(home);
+#ifdef __APPLE__
+		filename += "Library/Preferences/" C4ENGINEID ".config";
+#else
+		filename += ".clonk/" C4ENGINENICK "/config";
+#endif
+	}
+}
+
 bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 {
 	try
@@ -387,25 +331,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 		{
 			// Nonwindows or explicit config file: Determine filename to load config from
 			StdStrBuf filename;
-			if (szConfigFile)
-			{
-				// Config filename is specified
-				filename.Ref(szConfigFile);
-				// make sure we're at the correct path to load it
-				if (forceWorkingDirectory) General.DeterminePaths(true);
-			}
-			else
-			{
-				// Config filename from home
-				StdStrBuf home(getenv("HOME"));
-				if (home) { home += "/"; }
-				filename.Copy(home);
-#ifdef __APPLE__
-				filename += "Library/Preferences/" C4ENGINEID ".config";
-#else
-				filename += ".clonk/" C4ENGINENICK "/config";
-#endif
-			}
+			GetConfigFileName(filename, forceWorkingDirectory, szConfigFile);
 
 			// Load config file into buf
 			StdStrBuf buf;
@@ -500,20 +426,7 @@ bool C4Config::Save()
 #endif
 		{
 			StdStrBuf filename;
-			if (ConfigFilename.getLength())
-			{
-				filename.Ref(ConfigFilename);
-			}
-			else
-			{
-				filename.Copy(getenv("HOME"));
-				if (filename) { filename += "/"; }
-#ifdef __APPLE__
-				filename += "Library/Preferences/de.clonk." C4ENGINENICK ".config";
-#else
-				filename += ".clonk/" C4ENGINENICK "/config";
-#endif
-			}
+			GetConfigFileName(filename, false, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
 			StdCompilerINIWrite IniWrite;
 			IniWrite.Decompile(*this);
 			IniWrite.getOutput().SaveToFile(filename.getData());
@@ -839,16 +752,12 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 	}
 }
 
-namespace
-{
-}
-
 void C4ConfigGeneral::DefaultLanguage()
 {
 	// No language defined: default to German or English by system language
 	if (!Language[0])
 	{
-		if (isGermanSystem())
+		if (IsGermanSystem())
 			SCopy("DE - Deutsch", Language);
 		else
 			SCopy("US - English", Language);

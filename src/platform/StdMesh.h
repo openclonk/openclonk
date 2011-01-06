@@ -1,7 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010 Armin Burgmeier
+ * Copyright (c) 2006, 2010  Sven Eberhardt
+ * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -277,7 +280,7 @@ public:
 
 	// TODO: This code should maybe better be placed in StdMeshLoader...
 	void MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& animation);
-	void MirrorAnimations();
+	void PostInit();
 
 private:
 	void AddMasterBone(StdMeshBone* bone);
@@ -401,6 +404,13 @@ public:
 			{
 				if(!IDs) IDs = new std::vector<IDBase*>;
 				IDs->push_back(this);
+			}
+
+			virtual ~IDBase()
+			{
+				assert(IDs);
+				IDs->erase(std::find(IDs->begin(), IDs->end(), this));
+				if (!IDs->size()) { delete IDs; IDs = NULL; }
 			}
 
 		public:

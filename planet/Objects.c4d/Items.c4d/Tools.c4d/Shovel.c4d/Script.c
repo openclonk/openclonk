@@ -54,7 +54,7 @@ public func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
-public func FxShovelDigTimer(object clonk, int num, int time)
+public func FxShovelDigTimer(object clonk, effect, int time)
 {
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?
@@ -100,9 +100,9 @@ public func FxShovelDigTimer(object clonk, int num, int time)
 	if(fDigging)
 	{
 		// Adjust speed at current animation position
-		var speed = clonk->GetPhysical("Dig")/400;
+		var speed = clonk.ActMap.Dig.Speed*2;
 
-		var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
+		var iAnimation = GetEffect("IntDig", clonk).var1;
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
 
@@ -119,7 +119,7 @@ public func FxShovelDigTimer(object clonk, int num, int time)
 public func Dust(object target)
 {
 	// Only when the clonk moves the shovel
-	var iAnimation = EffectVar(1, target, GetEffect("IntDig", target));
+	var iAnimation = GetEffect("IntDig", target).var1;
 	var iPosition = target->GetAnimationPosition(iAnimation)*100/target->GetAnimationLength("Dig");
 	if(iPosition > 50)
 		return;

@@ -1,10 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2007, 2009-2010  Günther Brammer
  * Copyright (c) 2007  Peter Wortmann
- * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2007  Sven Eberhardt
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -836,9 +839,14 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 	// command?
 	if (*szInput == '/' && !SEqual2NoCase(szInput + 1, "me "))
 	{
-		StdStrBuf sCommand, sParam("");; sCommand.Copy(szInput+1);
+		StdStrBuf sCommand, sParam(""); sCommand.Copy(szInput+1);
 		sCommand.SplitAtChar(' ', &sParam);
-		if (SEqualNoCase(sCommand.getData(), "quit"))
+		if (SEqualNoCase(sCommand.getData(), "help"))
+		{
+			pChatSheet->DoError(LoadResStr("IDS_ERR_HELPCMD"));
+			fResult = false;
+		}
+		else if (SEqualNoCase(sCommand.getData(), "quit"))
 		{
 			// query disconnect from IRC server
 			fIRCSuccess = pIRCClient->Quit(sParam.getData());
@@ -900,7 +908,11 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 			if (!sParam.getLength())
 				pChatSheet->DoError(FormatString(LoadResStr("IDS_ERR_INSUFFICIENTPARAMETERS"), sCommand.getData()).getData());
 			else
+			{
+				StdStrBuf sMsg;
+				sParam.SplitAtChar(' ', &sMsg);
 				OpenQuery(sParam.getData(), true, NULL);
+			}
 		}
 		else if (SEqualNoCase(sCommand.getData(), "nick"))
 		{
@@ -983,7 +995,6 @@ C4ChatDlg::~C4ChatDlg()
 
 C4ChatDlg *C4ChatDlg::ShowChat()
 {
-	if (!::pGUI) return NULL;
 	if (!pInstance)
 	{
 		pInstance = new C4ChatDlg();

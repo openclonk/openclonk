@@ -4,7 +4,9 @@
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
  * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -62,19 +64,19 @@ C4AulScript *C4Effect::GetCallbackScript()
 	return pSrcScript;
 }
 
-C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
-		: EffectVars(0)
+C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
 {
 	C4Effect *pPrev, *pCheck;
 	// assign values
 	SCopy(szName, Name, C4MaxDefString);
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	riStoredAsNumber = 0;
-	iIntervall = iTimerIntervall;
+	iInterval = iTimerInterval;
 	iTime = 0;
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
 	AssignCallbackFunctions();
+	AcquireNumber();
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
 	// assign a unique number for that object
@@ -107,7 +109,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	// so the priority is assigned after this call, marking this effect dead before it's definitely valid
 	if (fRemoveUpper && pNext)
 	{
-		int32_t iResult = pNext->Check(pForObj, Name, iPrio, iIntervall, rVal1, rVal2, rVal3, rVal4);
+		int32_t iResult = pNext->Check(pForObj, Name, iPrio, iInterval, rVal1, rVal2, rVal3, rVal4);
 		if (iResult)
 		{
 			// effect denied (iResult = -1), added to an effect (iResult = Number of that effect)
@@ -129,7 +131,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	if (pForObj && !pForObj->Status) return; // this will be invalid!
 	iPriority = iPrio; // validate effect now
 	if (pFnStart)
-		if (pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pForObj), C4VInt(iNumber), C4VInt(0), rVal1, rVal2, rVal3, rVal4)).getInt() == C4Fx_Start_Deny)
+		if (pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pForObj), C4VPropList(this), C4VInt(0), rVal1, rVal2, rVal3, rVal4)).getInt() == C4Fx_Start_Deny)
 			// the effect denied to start: assume it hasn't, and mark it dead
 			SetDead();
 	if (fRemoveUpper && pNext && pFnStart)
@@ -142,10 +144,10 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	riStoredAsNumber = iNumber;
 }
 
-C4Effect::C4Effect(StdCompiler *pComp) : EffectVars(0)
+C4Effect::C4Effect(StdCompiler *pComp)
 {
 	// defaults
-	iNumber=iPriority=iTime=iIntervall=0;
+	iNumber=iPriority=iTime=iInterval=0;
 	CommandTarget=NULL;
 	pNext = NULL;
 	// compile
@@ -185,10 +187,9 @@ void C4Effect::DenumeratePointers()
 	{
 		// command target
 		pEff->CommandTarget.DenumeratePointers();
-		// variable pointers
-		pEff->EffectVars.DenumeratePointers();
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
+		pEff->C4PropList::DenumeratePointers();
 	}
 	while ((pEff=pEff->pNext));
 }
@@ -275,7 +276,7 @@ int32_t C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iP
 	{
 		if (!pCheck->IsDead() && pCheck->pFnEffect && pCheck->iPriority >= iPrio)
 		{
-			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VInt(pCheck->iNumber), C4Value(), rVal1, rVal2, rVal3, rVal4)).getInt();
+			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VPropList(pCheck), C4Value(), rVal1, rVal2, rVal3, rVal4)).getInt();
 			if (iResult == C4Fx_Effect_Deny)
 				// effect denied
 				return C4Fx_Effect_Deny;
@@ -335,11 +336,11 @@ void C4Effect::Execute(C4Object *pObj)
 			// execute effect: time elapsed
 			++pEffect->iTime;
 			// check timer execution
-			if (pEffect->iIntervall && !(pEffect->iTime % pEffect->iIntervall))
+			if (pEffect->iInterval && !(pEffect->iTime % pEffect->iInterval))
 			{
 				if (pEffect->pFnTimer)
 				{
-					if (pEffect->pFnTimer->Exec(pEffect->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(pEffect->iNumber), C4VInt(pEffect->iTime))).getInt() == C4Fx_Execute_Kill)
+					if (pEffect->pFnTimer->Exec(pEffect->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEffect), C4VInt(pEffect->iTime))).getInt() == C4Fx_Execute_Kill)
 					{
 						// safety: this class got deleted!
 						if (pObj && !pObj->Status) return;
@@ -371,11 +372,11 @@ void C4Effect::Kill(C4Object *pObj)
 	else
 		// otherwise: temp reactivate before real removal
 		// this happens only if a lower priority effect removes an upper priority effect in its add- or removal-call
-		if (pFnStart && iPriority!=1) pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(iNumber), C4VInt(C4FxCall_TempAddForRemoval)));
+		if (pFnStart && iPriority!=1) pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_TempAddForRemoval)));
 	// remove this effect
 	int32_t iPrevPrio = iPriority; SetDead();
 	if (pFnStop)
-		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(iNumber))).getInt() == C4Fx_Stop_Deny)
+		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this))).getInt() == C4Fx_Stop_Deny)
 			// effect denied to be removed: recover
 			iPriority = iPrevPrio;
 	// reactivate other effects
@@ -396,7 +397,7 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 	int32_t iPrevPrio = iPriority;
 	SetDead();
 	if (pFnStop)
-		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(iNumber), C4VInt(iClearFlag))).getInt() == C4Fx_Stop_Deny)
+		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(iClearFlag))).getInt() == C4Fx_Stop_Deny)
 		{
 			// this stop-callback might have deleted the object and then denied its own removal
 			// must not modify self in this case...
@@ -404,6 +405,10 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 			// effect denied to be removed: recover it
 			iPriority = iPrevPrio;
 		}
+	// Update OnFire cache
+	if (pObj && WildcardMatch(C4Fx_AnyFire, Name) && IsDead())
+		if (!Get(C4Fx_AnyFire))
+			pObj->SetOnFire(false);
 }
 
 void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr)
@@ -413,7 +418,7 @@ void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, 
 	do
 	{
 		if (!pEff->IsDead() && pEff->pFnDamage)
-			riDamage = pEff->pFnDamage->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(pEff->iNumber), C4VInt(riDamage), C4VInt(iDamageType), C4VInt(iCausePlr))).getInt();
+			riDamage = pEff->pFnDamage->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEff), C4VInt(riDamage), C4VInt(iDamageType), C4VInt(iCausePlr))).getInt();
 		if (pObj && !pObj->Status) return;
 	}
 	while ((pEff = pEff->pNext) && riDamage);
@@ -439,7 +444,7 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Val
 	// call it
 	C4AulFunc *pFn = pSrcScript->GetFuncRecursive(fn);
 	if (!pFn) return C4Value();
-	return pFn->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(iNumber), rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	return pFn->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 }
 
 void C4Effect::OnObjectChangedDef(C4Object *pObj)
@@ -476,7 +481,7 @@ void C4Effect::TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Ef
 			if (!Get(C4Fx_AnyFire))
 				pObj->SetOnFire(false);
 		// temp callbacks only for higher priority effects
-		if (pFnStop && iPriority!=1) pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(iNumber), C4VInt(C4FxCall_Temp), C4VBool(true)));
+		if (pFnStop && iPriority!=1) pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_Temp), C4VBool(true)));
 		if (!*ppLastRemovedEffect) *ppLastRemovedEffect = this;
 	}
 }
@@ -492,7 +497,7 @@ void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
 		if (pEff->IsInactiveAndNotDead())
 		{
 			pEff->FlipActive();
-			if (pEff->pFnStart && pEff->iPriority!=1) pEff->pFnStart->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(pEff->iNumber), C4VInt(C4FxCall_Temp)));
+			if (pEff->pFnStart && pEff->iPriority!=1) pEff->pFnStart->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEff), C4VInt(C4FxCall_Temp)));
 			if (pObj && WildcardMatch(C4Fx_AnyFire, pEff->Name))
 				pObj->SetOnFire(true);
 		}
@@ -512,23 +517,14 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	pComp->Value(iPriority); pComp->Separator();
 	// read time and intervall
 	pComp->Value(iTime); pComp->Separator();
-	pComp->Value(iIntervall); pComp->Separator();
+	pComp->Value(iInterval); pComp->Separator();
 	// read object number
 	pComp->Value(CommandTarget); pComp->Separator();
 	// read ID
-	pComp->Value(idCommandTarget);
+	pComp->Value(idCommandTarget); pComp->Separator();
+	// proplist
+	C4PropListNumbered::CompileFuncNonames(pComp);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
-	// read variables
-	if (pComp->isCompiler() || EffectVars.GetSize() > 0)
-	{
-		if (pComp->Separator(StdCompiler::SEP_START2)) // '['
-		{
-			pComp->Value(EffectVars);
-			pComp->Separator(StdCompiler::SEP_END2); // ']'
-		}
-		else
-			EffectVars.Reset();
-	}
 	// is there a next effect?
 	bool fNext = !! pNext;
 	if (pComp->hasNaming())
@@ -544,15 +540,76 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// denumeration and callback assignment will be done later
 }
 
+void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name:
+				if (!to.getStr() || !*to.getStr()->GetCStr())
+					throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+				SCopy(to.getStr()->GetCStr(), Name, C4MaxName);
+				ReAssignCallbackFunctions();
+				return;
+			case P_Priority:
+				throw new C4AulExecError(0, "effect: Priority is readonly");
+			case P_Interval: iInterval = to.getInt(); return;
+			case P_CommandTarget:
+				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+			case P_Time: iTime = to.getInt(); return;
+		}
+	}
+	C4PropListNumbered::SetPropertyByS(k, to);
+}
+
+void C4Effect::ResetProperty(C4String * k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name:
+				throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+			case P_Priority:
+				throw new C4AulExecError(0, "effect: Priority is readonly");
+			case P_Interval: iInterval = 0; return;
+			case P_CommandTarget:
+				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+			case P_Time: iTime = 0; return;
+		}
+	}
+	C4PropListNumbered::ResetProperty(k);
+}
+
+bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Name: *pResult = C4VString(Name); return true;
+			case P_Priority: *pResult = C4VInt(Abs(iPriority)); return true;
+			case P_Interval: *pResult = C4VInt(iInterval); return true;
+			case P_CommandTarget:
+				if (CommandTarget)
+					*pResult = C4VObj(CommandTarget);
+				else if (idCommandTarget)
+					*pResult = C4VPropList(Definitions.ID2Def(idCommandTarget));
+				else
+					*pResult = C4VNull;
+				//*pResult = CommandTarget ? C4VObj(CommandTarget) :
+				//           (idCommandTarget ? C4VPropList(Definitions.ID2Def(idCommandTarget)) : C4VNull);
+				return true;
+			case P_Time: *pResult = C4VInt(iTime); return true;
+		}
+	}
+	return C4PropListNumbered::GetPropertyByS(k, pResult);
+}
 
 // Internal fire effect
 
-C4Value &FxFireVarMode(C4Effect *pEffect) { return pEffect->EffectVars[0]; }
-C4Value &FxFireVarCausedBy(C4Effect *pEffect) { return pEffect->EffectVars[1]; }
-C4Value &FxFireVarBlasted(C4Effect *pEffect) { return pEffect->EffectVars[2]; }
-C4Value &FxFireVarIncineratingObj(C4Effect *pEffect) { return pEffect->EffectVars[3]; }
-
-int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
+int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
 {
 	// safety
 	if (!pObj) return -1;
@@ -560,10 +617,6 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	if (iTemp) { return 1; }
 	// fail if already on fire
 	if (pObj->GetOnFire()) return -1;
-	// get associated effect
-	C4Effect *pEffect;
-	if (!(pEffect = pObj->pEffects)) return -1;
-	if (!(pEffect = pEffect->Get(iNumber, true))) return -1;
 	// structures must eject contents now, because DoCon is not guaranteed to be executed!
 	// In extinguishing material
 	bool fFireCaused=true;
@@ -590,7 +643,7 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 		while ((cobj = Game.FindObject(C4ID::None, 0, 0, 0, 0, OCF_All, 0, pObj, 0, 0, ANY_OWNER, cobj)))
 		{
 			C4PropList* pActionDef = cobj->GetAction();
-			if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH))
+			if (pActionDef && (pActionDef->GetPropertyP(P_Procedure) == DFA_ATTACH))
 				cobj->SetAction(0);
 		}
 	// fire caused?
@@ -620,10 +673,10 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 		iFireMode = C4Fx_FireMode_Object;
 	}
 	// store causes in effect vars
-	FxFireVarMode(pEffect).SetInt(iFireMode);
-	FxFireVarCausedBy(pEffect).SetInt(iCausedBy); // used in C4Object::GetFireCause and timer!
-	FxFireVarBlasted(pEffect).SetBool(fBlasted);
-	FxFireVarIncineratingObj(pEffect).SetObject(pIncineratingObject);
+	pEffect->SetProperty(P_Mode, C4VInt(iFireMode));
+	pEffect->SetProperty(P_CausedBy, C4VInt(iCausedBy)); // used in C4Object::GetFireCause and timer!
+	pEffect->SetProperty(P_Blasted, C4VBool(fBlasted));
+	pEffect->SetProperty(P_IncineratingObj, C4VObj(pIncineratingObject));
 	// Set values
 	pObj->FirePhase=Random(MaxFirePhase);
 	if (pObj->Shape.Wdt*pObj->Shape.Hgt>500) StartSoundEffect("Inflame",false,100,pObj);
@@ -634,19 +687,16 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	return C4Fx_OK;
 }
 
-int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTime)
+int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect *pEffect, int32_t iTime)
 {
 	// safety
 	if (!pObj) return C4Fx_Execute_Kill;
 
+	int iNumber = pEffect->iNumber;
 	// get cause
-	int32_t iCausedByPlr = NO_OWNER; C4Effect *pEffect;
-	if ((pEffect = pObj->pEffects))
-		if ((pEffect = pEffect->Get(iNumber, true)))
-		{
-			iCausedByPlr = FxFireVarCausedBy(pEffect).getInt();
-			if (!ValidPlr(iCausedByPlr)) iCausedByPlr = NO_OWNER;
-		}
+	int32_t iCausedByPlr = NO_OWNER;
+	iCausedByPlr = pEffect->GetPropertyInt(P_CausedBy);
+	if (!ValidPlr(iCausedByPlr)) iCausedByPlr = NO_OWNER;
 
 	// causes on object
 	pObj->ExecFire(iNumber, iCausedByPlr);
@@ -655,6 +705,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	if (!::Particles.IsFireParticleLoaded()) return C4Fx_OK;
 
 	// get effect: May be NULL after object fire execution, in which case the fire has been extinguished
+	// FIXME: this is bogus
 	if (!pObj->GetOnFire()) return C4Fx_Execute_Kill;
 	if (!(pEffect = pObj->pEffects)) return C4Fx_Execute_Kill;
 	if (!(pEffect = pEffect->Get(iNumber, true))) return C4Fx_Execute_Kill;
@@ -662,7 +713,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	/* Fire execution behaviour transferred from script (FIRE) */
 
 	// get fire mode
-	int32_t iFireMode = FxFireVarMode(pEffect).getInt();
+	int32_t iFireMode = pEffect->GetPropertyInt(P_Mode);
 
 	// special effects only each four frames, except for objects (e.g.: Projectiles)
 	if (iTime%4 && iFireMode!=C4Fx_FireMode_Object) return C4Fx_OK;
@@ -766,7 +817,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	return C4Fx_OK;
 }
 
-int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iReason, bool fTemp)
+int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iReason, bool fTemp)
 {
 	// safety
 	if (!pObj) return false;
@@ -781,7 +832,7 @@ int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t
 	return true;
 }
 
-C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)
+C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect)
 {
 	return Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
 }
@@ -831,9 +882,9 @@ void BubbleOut(int32_t tx, int32_t ty)
 	// User-defined smoke level
 	int32_t SmokeLevel = GetSmokeLevel();
 	// Enough bubbles out there already
-	if (::Objects.ObjectCount(C4ID("FXU1")) >= SmokeLevel) return;
+	if (::Objects.ObjectCount(C4ID::Bubble) >= SmokeLevel) return;
 	// Create bubble
-	Game.CreateObject(C4ID("FXU1"),NULL,NO_OWNER,tx,ty);
+	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
 }
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
@@ -843,61 +894,4 @@ void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 		::Particles.Create(::Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
 		return;
 	}
-	// User-defined smoke level
-	int32_t SmokeLevel = GetSmokeLevel();
-	// Enough smoke out there already
-	if (::Objects.ObjectCount(C4ID("FXS1")) >= SmokeLevel) return;
-	// Create smoke
-	level=BoundBy<int32_t>(level,3,32);
-	C4Object *pObj;
-	if ((pObj = Game.CreateObjectConstruction(C4Id2Def(C4ID("FXS1")),NULL,NO_OWNER,tx,ty,FullCon*level/32)))
-		pObj->Call(PSF_Activate);
 }
-
-void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj, C4ID idEffect, const char *szEffect)
-{
-	int32_t grade=BoundBy((level/10)-1,1,3);
-	// Sound
-	StdStrBuf sound = FormatString("Blast%c", '0'+grade);
-	StartSoundEffect(sound.getData(),false,100,pByObj);
-	// Check blast containment
-	C4Object *container=inobj;
-	while (container && !container->Def->ContainBlast) container=container->Contained;
-	// Uncontained blast effects
-	if (!container)
-	{
-		// Incinerate landscape
-		if (!::Landscape.Incinerate(tx,ty))
-			if (!::Landscape.Incinerate(tx,ty-10))
-				if (!::Landscape.Incinerate(tx-5,ty-5))
-					::Landscape.Incinerate(tx+5,ty-5);
-		// Create blast object or particle
-		C4Object *pBlast;
-		C4ParticleDef *pPrtDef = ::Particles.pBlast;
-		// particle override
-		if (szEffect)
-		{
-			C4ParticleDef *pPrtDef2 = ::Particles.GetDef(szEffect);
-			if (pPrtDef2) pPrtDef = pPrtDef2;
-		}
-		else if (idEffect) pPrtDef = NULL;
-		// create particle
-		if (pPrtDef)
-		{
-			::Particles.Create(pPrtDef, (float) tx, (float) ty, 0.0f, 0.0f, (float) level, 0);
-			if (SEqual2(pPrtDef->Name.getData(), "Blast"))
-				::Particles.Cast(::Particles.pFSpark, level/5+1, (float) tx, (float) ty, level, level/2+1.0f, 0x00ef0000, level+1.0f, 0xffff1010);
-		}
-		else if ((pBlast = Game.CreateObjectConstruction(C4Id2Def(idEffect ? idEffect : C4ID("FXB1")),pByObj,iCausedBy,tx,ty+level,FullCon*level/20)))
-			pBlast->Call(PSF_Activate);
-	}
-	// Blast objects
-	Game.BlastObjects(tx,ty,level,inobj,iCausedBy,pByObj);
-	if (container!=inobj) Game.BlastObjects(tx,ty,level,container,iCausedBy,pByObj);
-	if (!container)
-	{
-		// Blast free landscape. After blasting objects so newly mined materials don't get flinged
-		::Landscape.BlastFree(tx,ty,level,grade, iCausedBy);
-	}
-}
-

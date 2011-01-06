@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +21,10 @@
 
 #ifndef INC_C4UpdateDialogs
 #define INC_C4UpdateDialogs
+
+#include "PlatformAbstraction.h"
+
+#ifdef WITH_AUTOMATIC_UPDATE
 
 #include "C4Gui.h"
 #include "C4GameVersion.h"
@@ -48,24 +53,12 @@ public:
 	void Write(const char *szText);
 
 public:
-	static bool IsValidUpdate(const C4GameVersion &rNewVer); // Returns whether we can update to the specified version
+	static bool IsValidUpdate(const char *szVersion); // Returns whether we can update to the specified version
 	static bool CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic = false); // Checks for available updates and prompts the user whether to apply
-	static bool DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *pScreen); // Static funtion for downloading and applying updates
+	static bool DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen); // Static funtion for downloading and applying updates
 	static bool ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4GUI::Screen *pScreen); // Static funtion for applying updates
-
+	static void RedirectToDownloadPage(); // open browser with download page
 };
 
-// Loads current version string (mini-HTTP-client)
-class C4Network2VersionInfoClient : public C4Network2HTTPClient
-{
-	C4GameVersion Version;
-protected:
-	virtual int32_t GetDefaultPort() { return C4NetStdPortHTTP; }
-public:
-	C4Network2VersionInfoClient() : C4Network2HTTPClient() {}
-
-	bool QueryVersion();
-	bool GetVersion(C4GameVersion *pSaveToVer);
-};
-
+#endif // WITH_AUTOMATIC_UPDATE
 #endif // INC_C4UpdateDialogs

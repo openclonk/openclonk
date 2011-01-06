@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
-	SetSkyAdjust (RGB(230,210,150), RGB(150,100,0));
+	SetSkyAdjust(RGB(230, 210, 150), RGB(150, 100, 0));
 	//Environment
 	PlaceGrass(80);
 	// Chests.
@@ -12,8 +12,8 @@ protected func Initialize()
 	CreateObject(Chest, 1123, 124, NO_OWNER);
 	CreateObject(Chest, 180, 404, NO_OWNER);
 	CreateObject(Chest, 261, 163, NO_OWNER);
-	CreateObject(Rule_ObjectFade)->DoFadeTime(5*37);
-	
+	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
+	CreateObject(Rule_KillLogs);
 	AddEffect("IntFillChests", nil, 100, 70, this);
 	return;
 }
@@ -31,7 +31,7 @@ protected func OnPlayerRelaunch(int plr)
 global func FxIntFillChestsTimer()
 {
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Loam,Firestone,Balloon,JarOfWinds,GrappleBow];
+	var w_list = [Shovel,Bow,Musket,Club,Javelin,Boompack,Loam,Firestone,JarOfWinds,GrappleBow];
 	
 	if (chest->ContentsCount() < 5)
 		chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
@@ -57,4 +57,4 @@ func OnClonkLeftRelaunch(object clonk)
 }
 
 func KillsToRelaunch() { return 0; }
-func RelaunchWeaponList(){ return [Boompack, Balloon, JarOfWinds, GrappleBow, Shovel]; }
+func RelaunchWeaponList(){ return [Boompack, JarOfWinds, GrappleBow, Shovel]; }

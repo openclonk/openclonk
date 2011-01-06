@@ -4,11 +4,13 @@
  * Copyright (c) 1998-2000, 2003-2005, 2007-2008  Matthes Bender
  * Copyright (c) 2001-2009  Peter Wortmann
  * Copyright (c) 2001-2009  Sven Eberhardt
- * Copyright (c) 2004-2009  Günther Brammer
+ * Copyright (c) 2004-2010  Günther Brammer
  * Copyright (c) 2004  Tobias Zwick
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2008  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2008, 2010  Armin Burgmeier
+ * Copyright (c) 2009  David Dormagen
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -119,8 +121,8 @@ bool C4Game::InitDefs()
 	// Load specified defs
 	for (pDef = Parameters.GameRes.iterRes(NULL, NRT_Definitions); pDef; pDef = Parameters.GameRes.iterRes(pDef, NRT_Definitions))
 	{
-		int iMinProgress = 10 + (25 * i) / iDefResCount;
-		int iMaxProgress = 10 + (25 * (i + 1)) / iDefResCount;
+		int iMinProgress = 25 + (25 * i) / iDefResCount;
+		int iMaxProgress = 25 + (25 * (i + 1)) / iDefResCount;
 		++i;
 		iDefs+=::Definitions.Load(pDef->getFile(),C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,true,iMinProgress,iMaxProgress);
 
@@ -306,7 +308,7 @@ bool C4Game::PreInit()
 	// Timer flags
 	GameGo=false;
 	// set gamma
-	GraphicsSystem.SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	lpDDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -327,12 +329,7 @@ bool C4Game::PreInit()
 		{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); return false; }
 
 	// load GUI
-	if (!pGUI)
-	{
-		int32_t iGuiResX = Config.Graphics.ResX;
-		int32_t iGuiResY = Config.Graphics.ResY;
-		pGUI = new C4GUIScreen(0, 0, iGuiResX, iGuiResY);
-	}
+	pGUI->Init(0, 0, Config.Graphics.ResX, Config.Graphics.ResY);
 
 	fPreinited = true;
 
@@ -486,7 +483,7 @@ bool C4Game::Init()
 	SetInitProgress(99);
 
 	// Gamma
-	GraphicsSystem.ApplyGamma();
+	lpDDraw->ApplyGamma();
 
 	// Message board and upper board
 	if (!Application.isEditor)
@@ -514,10 +511,7 @@ bool C4Game::Init()
 	Log(LoadResStr(C4S.Head.NetworkGame ? "IDS_PRC_JOIN" : C4S.Head.SaveGame ? "IDS_PRC_RESUME" : "IDS_PRC_START"));
 
 	// set non-exclusive GUI
-	if (pGUI)
-	{
-		pGUI->SetExclusive(false);
-	}
+	pGUI->SetExclusive(false);
 
 	// after GUI is made non-exclusive, recheck the scoreboard
 	Scoreboard.DoDlgShow(0, false);
@@ -527,6 +521,15 @@ bool C4Game::Init()
 	GraphicsSystem.InvalidateBg();
 
 	return true;
+}
+
+void C4Game::SetScenarioFilename(const char * c4sfile)
+{
+	SCopy(c4sfile,ScenarioFilename,_MAX_PATH);
+	if (SEqualNoCase(GetFilename(c4sfile),"scenario.txt"))
+	{
+		if (GetFilename(ScenarioFilename) != ScenarioFilename) *(GetFilename(ScenarioFilename) - 1) = 0;
+	}
 }
 
 void C4Game::Clear()
@@ -552,8 +555,8 @@ void C4Game::Clear()
 	C4AulProfiler::Abort();
 
 	// exit gui
-	if (pGUI) { delete pGUI; pGUI=NULL; }
-
+	pGUI->Clear();
+	
 	// next mission (shoud have been transferred to C4Application now if next mission was desired)
 	NextMission.Clear(); NextMissionText.Clear(); NextMissionDesc.Clear();
 
@@ -882,10 +885,8 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 	Application.SoundSystem.ClearPointers(pObj);
 }
 
-void C4Game::ClearPointers(C4PropList * PropList)
+void C4Game::ClearPointers(C4Object * pObj)
 {
-	C4Object * pObj = dynamic_cast<C4Object *>(PropList);
-	if (!pObj) return; // FIXME
 	::Objects.BackObjects.ClearPointers(pObj);
 	::Objects.ForeObjects.ClearPointers(pObj);
 	::Messages.ClearPointers(pObj);
@@ -1136,7 +1137,7 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 											if (cObj->Category & C4D_Vehicle)
 												continue;
 											if (pActionDef)
-												if (pActionDef->GetPropertyInt(P_Procedure) == DFA_FLOAT)
+												if (pActionDef->GetPropertyP(P_Procedure) == DFA_FLOAT)
 													continue;
 										}
 										if (cObj->Category & C4D_Living)
@@ -1151,7 +1152,7 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 											cObj->Controller = iCausedBy;
 										}
 
-										cObj->Fling( itofix(Sign(cObj->GetX()-tx+Rnd3())*(level-Abs(tx-cObj->GetX()))) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20),
+										cObj->Fling( itofix(Sign(cObj->GetX()-tx+Random(3))*(level-Abs(tx-cObj->GetX()))) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20),
 										             itofix(-level+Abs(ty-cObj->GetY())) / BoundBy<int32_t>(cObj->Mass/10, 4, (cObj->Category & C4D_Living) ? 8 : 20), true );
 									}
 					}
@@ -1170,7 +1171,7 @@ void C4Game::ShakeObjects(int32_t tx, int32_t ty, int32_t range)
 							if (!Random(3))
 								if (cObj->Action.t_attach)
 									if (!MatVehicle(cObj->Shape.AttachMat))
-										cObj->Fling(itofix(Rnd3()),Fix0,false);
+										cObj->Fling(itofix(Random(3)),Fix0,false);
 }
 
 
@@ -1243,7 +1244,7 @@ C4Object* C4Game::FindObject(C4ID id,
 								// ActionTarget
 								if (!pActionTarget || (pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 									// Container
-									if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<intptr_t>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<intptr_t>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
+									if ( !pContainer || (cObj->Contained == pContainer))
 										// Owner
 										if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
 											// Area
@@ -1534,7 +1535,6 @@ void C4Game::Default()
 	HaltCount=0;
 	fReferenceDefinitionOverride=false;
 	Evaluated=false;
-	RegJoinOnly=false;
 	TimeGo=false;
 	Time=0;
 	StartTime=0;
@@ -1569,14 +1569,13 @@ void C4Game::Default()
 	ScenarioLangStringTable.Default();
 	ScenarioSysLangStringTable.Default();
 	Script.Default();
-	GraphicsResource.Default();
+	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();
 	PathFinder.Default();
 	TransferZones.Default();
 	GroupSet.Default();
 	pParentGroup=NULL;
-	pGUI=NULL;
 	pScenarioSections=pCurrentScenarioSection=NULL;
 	*CurrentScenarioSection=0;
 	pGlobalEffects=NULL;
@@ -1885,7 +1884,7 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 	{
 		if (IsRunning) InScope = KEYSCOPE_Generic;
 		// if GUI has keyfocus, this overrides regular controls
-		if (pGUI && (pGUI->HasKeyboardFocus() || pForDialog))
+		if (pGUI->HasKeyboardFocus() || pForDialog)
 		{
 			InScope |= KEYSCOPE_Gui;
 			// control to console mode dialog: Make current keyboard target the active dlg,
@@ -2134,11 +2133,11 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		Log(LoadResStr("IDS_PRC_GFXRES"));
 		if (!GraphicsResource.Init())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
-		SetInitProgress(10);
+		SetInitProgress(25);
 
 		// Definitions
 		if (!InitDefs()) return false;
-		SetInitProgress(40);
+		SetInitProgress(55);
 
 		// Scenario scripts (and local system.c4g)
 		// After defs to get overloading priority
@@ -2680,220 +2679,6 @@ void C4Game::InitAnimals()
 			PlaceInEarth(idAnimal);
 }
 
-void C4Game::ParseCommandLine(const char *szCmdLine)
-{
-	Log("Command line: "); Log(szCmdLine);
-
-	// Definitions by registry config
-	SCopy(Config.General.Definitions, DefinitionFilenames);
-	*PlayerFilenames = 0;
-	NetworkActive = false;
-	Config.General.ClearAdditionalDataPaths();
-
-	// Scan additional parameters from command line
-	char szParameter[_MAX_PATH+1];
-	for (int32_t iPar=0; SGetParameter(szCmdLine, iPar, szParameter, _MAX_PATH); iPar++)
-	{
-		{ // Strip trailing / that result from tab-completing unpacked c4groups
-			int iLen = SLen(szParameter);
-			if (iLen > 5 && szParameter[iLen-1] == '/' && szParameter[iLen-5] == '.' && szParameter[iLen-4] == 'c' && szParameter[iLen-3] == '4')
-			{
-				szParameter[iLen-1] = '\0';
-			}
-		}
-		// Scenario file
-		if (SEqualNoCase(GetExtension(szParameter),"c4s"))
-		{
-			SCopy(Config.AtDataReadPath(szParameter, true),ScenarioFilename,_MAX_PATH);
-			continue;
-		}
-		if (SEqualNoCase(GetFilename(szParameter),"scenario.txt"))
-		{
-			SCopy(szParameter,ScenarioFilename,_MAX_PATH);
-			if (GetFilename(ScenarioFilename) != ScenarioFilename) *(GetFilename(ScenarioFilename) - 1) = 0;
-			continue;
-		}
-		// Player file
-		if (SEqualNoCase(GetExtension(szParameter),"c4p"))
-		{
-			const char *param = Config.AtDataReadPath(szParameter, true);
-			SAddModule(PlayerFilenames,param);
-			continue;
-		}
-		// Definition file
-		if (SEqualNoCase(GetExtension(szParameter),"c4d"))
-		{
-			SAddModule(DefinitionFilenames,szParameter);
-			continue;
-		}
-		// Key file
-		if (SEqualNoCase(GetExtension(szParameter),"c4k"))
-		{
-			Application.IncomingKeyfile.Copy(szParameter);
-			continue;
-		}
-		// Update file
-		if (SEqualNoCase(GetExtension(szParameter),"c4u"))
-		{
-			Application.IncomingUpdate.Copy(szParameter);
-			continue;
-		}
-		// record stream
-		if (SEqualNoCase(GetExtension(szParameter),"c4r"))
-		{
-			RecordStream.Copy(szParameter);
-		}
-		// Record
-		if (SEqualNoCase(szParameter, "/record"))
-			{ Record = true; }
-		// Network
-		if (SEqualNoCase(szParameter, "/network"))
-			NetworkActive = true;
-		if (SEqualNoCase(szParameter, "/nonetwork"))
-			NetworkActive = false;
-		// Signup
-		if (SEqualNoCase(szParameter, "/signup"))
-		{
-			NetworkActive = true;
-			Config.Network.MasterServerSignUp = true;
-		}
-		if (SEqualNoCase(szParameter, "/nosignup"))
-			Config.Network.MasterServerSignUp = Config.Network.LeagueServerSignUp = false;
-		// League
-		if (SEqualNoCase(szParameter, "/league"))
-		{
-			NetworkActive = true;
-			Config.Network.MasterServerSignUp = Config.Network.LeagueServerSignUp = true;
-		}
-		if (SEqualNoCase(szParameter, "/noleague"))
-			Config.Network.LeagueServerSignUp = false;
-		// Lobby
-		if (SEqual2NoCase(szParameter, "/lobby"))
-		{
-			NetworkActive = true; fLobby = true;
-			// lobby timeout specified? (e.g. /lobby:120)
-			if (szParameter[6] == ':')
-			{
-				iLobbyTimeout = atoi(szParameter + 7);
-				if (iLobbyTimeout < 0) iLobbyTimeout = 0;
-			}
-		}
-		// Observe
-		if (SEqualNoCase(szParameter, "/observe"))
-			{ NetworkActive = true; fObserve = true; }
-		// Enable runtime join
-		if (SEqualNoCase(szParameter, "/runtimejoin"))
-			Config.Network.NoRuntimeJoin = false;
-		// Disable runtime join
-		if (SEqualNoCase(szParameter, "/noruntimejoin"))
-			Config.Network.NoRuntimeJoin = true;
-		// Check for update
-		if (SEqualNoCase(szParameter, "/update"))
-			Application.CheckForUpdates = true;
-		// No splash (only on this program start, independent of Config.Startup.NoSplash)
-		if (SEqualNoCase(szParameter, "/nosplash"))
-			Application.NoSplash = true;
-		// Fair Crew
-		if (SEqualNoCase(szParameter, "/ncrw") || SEqualNoCase(szParameter, "/faircrew"))
-			Config.General.FairCrew = true;
-		// Trained Crew (Player Crew)
-		if (SEqualNoCase(szParameter, "/ucrw") || SEqualNoCase(szParameter, "/trainedcrew"))
-			Config.General.FairCrew = false;
-		// Direct join
-		if (SEqual2NoCase(szParameter, "/join:"))
-		{
-			NetworkActive = true;
-			SCopy(szParameter + 6, DirectJoinAddress, _MAX_PATH);
-			continue;
-		}
-		// Direct join by URL
-		if (SEqual2NoCase(szParameter, "clonk:"))
-		{
-			// Store address
-			SCopy(szParameter + 6, DirectJoinAddress, _MAX_PATH);
-			SClearFrontBack(DirectJoinAddress, '/');
-			// Special case: if the target address is "update" then this is used for update initiation by url
-			if (SEqualNoCase(DirectJoinAddress, "update"))
-			{
-				Application.CheckForUpdates = true;
-				DirectJoinAddress[0] = 0;
-				continue;
-			}
-			// Self-enable network
-			NetworkActive = true;
-			continue;
-		}
-		// port overrides
-		if (SEqual2NoCase(szParameter, "/tcpport:"))
-			Config.Network.PortTCP = atoi(szParameter + 9);
-		if (SEqual2NoCase(szParameter, "/udpport:"))
-			Config.Network.PortUDP = atoi(szParameter + 9);
-		// network game password
-		if (SEqual2NoCase(szParameter, "/pass:"))
-			Network.SetPassword(szParameter + 6);
-		// registered join only
-		if (SEqualNoCase(szParameter, "/regjoinonly"))
-			RegJoinOnly = true;
-		// network game comment
-		if (SEqual2NoCase(szParameter, "/comment:"))
-			Config.Network.Comment.CopyValidated(szParameter + 9);
-		// record dump
-		if (SEqual2NoCase(szParameter, "/recdump:"))
-			RecordDumpFile.Copy(szParameter + 9);
-		// record stream
-		if (SEqual2NoCase(szParameter, "/stream:"))
-			RecordStream.Copy(szParameter + 8);
-		// startup start screen
-		if (SEqual2NoCase(szParameter, "/startup:"))
-			C4Startup::SetStartScreen(szParameter + 9);
-		// additional read-only data path
-		if (SEqual2NoCase(szParameter, "/data:"))
-			Config.General.AddAdditionalDataPath(szParameter + 6);
-		// debug options
-		if (SEqual2NoCase(szParameter, "/debug:"))
-			DebugPort = atoi(szParameter + 7);
-		if (SEqual2NoCase(szParameter, "/debugpass:"))
-			DebugPassword = szParameter + 11;
-		if (SEqual2NoCase(szParameter, "/debughost:"))
-			DebugHost = szParameter + 11;
-		if (SEqual2NoCase(szParameter, "/debugwait"))
-			DebugWait = true;
-#ifdef _DEBUG
-		// debug configs
-		if (SEqualNoCase(szParameter, "/host"))
-		{
-			NetworkActive = true;
-			fLobby = true;
-			Config.Network.PortTCP = 11112;
-			Config.Network.PortUDP = 11113;
-			Config.Network.MasterServerSignUp = Config.Network.LeagueServerSignUp = false;
-		}
-		if (SEqual2NoCase(szParameter, "/client:"))
-		{
-			NetworkActive = true;
-			SCopy("localhost", DirectJoinAddress, _MAX_PATH);
-			fLobby = true;
-			Config.Network.PortTCP = 11112 + 2*(atoi(szParameter + 8)+1);
-			Config.Network.PortUDP = 11113 + 2*(atoi(szParameter + 8)+1);
-		}
-#endif
-	}
-
-	// Check for fullscreen switch in command line
-	if (SSearchNoCase(szCmdLine, "/console")
-	    || (!SSearchNoCase(szCmdLine, "/fullscreen") && *ScenarioFilename))
-		Application.isEditor = true;
-
-	// Determine startup player count
-	StartupPlayerCount = SModuleCount(PlayerFilenames);
-
-	// default record?
-	Record = Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && NetworkActive);
-
-	// startup dialog required?
-	Application.UseStartupDialog = !Application.isEditor && !*DirectJoinAddress && !*ScenarioFilename && !RecordStream.getSize();
-
-}
 
 bool C4Game::LoadScenarioComponents()
 {
@@ -3124,7 +2909,6 @@ void C4Game::FixRandom(int32_t iSeed)
 {
 	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
-	Randomize3();
 }
 
 bool C4Game::DefinitionFilenamesFromSaveGame()
@@ -3188,7 +2972,7 @@ void C4Game::ShowGameOverDlg()
 	// console engine quits here directly
 	Application.QuitGame();
 #else
-	if (pGUI && !Application.isEditor)
+	if (!Application.isEditor)
 	{
 		C4GameOverDlg *pDlg = new C4GameOverDlg();
 		pDlg->SetDelOnClose();
@@ -3276,7 +3060,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 	Log(Message.getData());
 	// Set up wait dialog
 	C4GUI::MessageDialog *pDlg = NULL;
-	if (::pGUI && !Console.Active)
+	if (!Application.isEditor)
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(Message.getData(), LoadResStr("IDS_NET_REFQUERY_QUERYTITLE"),
@@ -3290,7 +3074,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 		if (!Application.ScheduleProcs(100) ||
 		    (pDlg && pDlg->IsAborted()))
 		{
-			if (::pGUI && pDlg) delete pDlg;
+			delete pDlg;
 			return false;
 		}
 		// Check if reference is received
@@ -3298,7 +3082,7 @@ bool C4Game::InitNetworkFromAddress(const char *szAddress)
 			break;
 	}
 	// Close dialog
-	if (::pGUI && pDlg) delete pDlg;
+	delete pDlg;
 	// Error?
 	if (!RefClient.isSuccess())
 		{ LogFatal(FormatString(strRefQueryFailed.getData(), RefClient.GetError()).getData()); return false; }
@@ -3501,7 +3285,6 @@ void C4Game::UpdateRules()
 {
 	if (::Game.iTick255) return;
 	Rules=0;
-	if (ObjectCount(C4ID::Energy))           Rules|=C4RULE_StructuresNeedEnergy;
 	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
 	if (ObjectCount(C4ID::FlagRemvbl))       Rules|=C4RULE_FlagRemoveable;
 	if (ObjectCount(C4ID::StructuresSnowIn)) Rules|=C4RULE_StructuresSnowIn;
@@ -3525,8 +3308,7 @@ void C4Game::SetInitProgress(float fToProgress)
 void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// update anything that's dependant on screen resolution
-	if (pGUI)
-		pGUI->SetBounds(C4Rect(0,0,iXRes,iYRes));
+	pGUI->SetBounds(C4Rect(0,0,iXRes,iYRes));
 	if (FullScreen.Active)
 		InitFullscreenComponents(!!IsRunning);
 	// note that this may fail if the gfx groups are closed already (runtime resolution change)
@@ -3765,16 +3547,6 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 		else if (SEqual2(szSpec, "RuntimeJoin"))
 		{
 			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-			return true;
-		}
-		else if (SEqual2(szSpec, "FairCrew"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_FairCrew);
-			return true;
-		}
-		else if (SEqual2(szSpec, "Settlement"))
-		{
-			((C4Facet &) fctTarget) = GraphicsResource.fctScore;
 			return true;
 		}
 	}

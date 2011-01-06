@@ -1,12 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007, 2009  Günther Brammer
+ * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
  * Copyright (c) 2005, 2009  Peter Wortmann
  * Copyright (c) 2005  Sven Eberhardt
  * Copyright (c) 2006  Julian Raschke
  * Copyright (c) 2006, 2008  Armin Burgmeier
  * Copyright (c) 2007  Alex
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -219,8 +220,52 @@ const int SEC1_TIMER=1,SEC1_MSEC=1000;
 #define KEY_A 0
 #define MK_SHIFT 0
 #define MK_CONTROL 0
-#else
-#error need window system
+#elif defined(USE_COCOA)
+// declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
+const int CocoaKeycodeOffset = 300;
+extern int K_F1;
+extern int K_F2;
+extern int K_F3;
+extern int K_F4;
+extern int K_F5;
+extern int K_F6;
+extern int K_F7;
+extern int K_F8;
+extern int K_F9;
+extern int K_F10;
+extern int K_F11;
+extern int K_F12;
+extern int K_ADD;
+extern int K_SUBTRACT;
+extern int K_MULTIPLY;
+extern int K_ESCAPE;
+extern int K_PAUSE;
+extern int K_TAB;
+extern int K_RETURN;
+extern int K_DELETE;
+extern int K_INSERT;
+extern int K_BACK;
+extern int K_SPACE;
+extern int K_UP;
+extern int K_DOWN;
+extern int K_LEFT;
+extern int K_RIGHT;
+extern int K_HOME;
+extern int K_END;
+extern int K_SCROLL;
+extern int K_MENU;
+extern int K_PAGEUP;
+extern int K_PAGEDOWN;
+extern int KEY_M;
+extern int KEY_T;
+extern int KEY_W;
+extern int KEY_I;
+extern int KEY_C;
+extern int KEY_V;
+extern int KEY_X;
+extern int KEY_A;
+extern int MK_SHIFT;
+extern int MK_CONTROL;
 #endif
 
 enum C4AppHandleResult
@@ -241,6 +286,13 @@ typedef struct _XDisplay Display;
 class CStdWindow
 {
 public:
+	enum WindowKind
+	{
+		W_GuiWindow,
+		W_Viewport,
+		W_Fullscreen
+	};
+public:
 	CStdWindow ();
 	virtual ~CStdWindow ();
 	bool Active;
@@ -253,24 +305,36 @@ public:
 	virtual void CharIn(const char * c) { }
 	virtual CStdWindow * Init(CStdApp * pApp);
 #ifndef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
 #endif
+
+	// Reinitialize the window with updated configuration settings.
+	// Keep window kind, title and size as they are. Currently the only point
+	// at which it makes sense for this function to be called is when the
+	// multisampling configuration option changes, since, for the change to
+	// take effect, we need to choose another visual or pixel format, respectively.
+	virtual bool ReInit(CStdApp* pApp);
+
+	// Creates a list of available samples for multisampling
+	virtual void EnumerateMultiSamples(std::vector<int>& samples) const;
+
 	bool StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize = true);
 	bool RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden = false);
 	bool GetSize(RECT * pRect);
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
-protected:
+
 #ifdef _WIN32
 public:
 	HWND hWindow;
+	HWND hRenderWindow;
 protected:
-	BOOL RegisterWindowClass(HINSTANCE hInst);
+	bool RegisterWindowClass(HINSTANCE hInst);
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
 protected:
-	bool FindInfo();
+	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
@@ -286,7 +350,19 @@ private:
 	int width, height;
 protected:
 	virtual void HandleMessage(SDL_Event&) {}
+#elif defined(USE_COCOA)
+protected:
+	/*ClonkWindowController*/void* controller;
+	virtual void HandleMessage(/*NSEvent*/void*);
+public:	
+	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
+public:
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
+public:
 	friend class CStdDDraw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
@@ -374,35 +450,20 @@ public:
 
 	virtual void Clear();
 
-	void Run()
-	{
-		// Main message loop
-		while (!fQuitMsgReceived)
-			ScheduleProcs();
-	}
+	bool Init(int argc, char * argv[]);
+	void Run();
 	virtual void Quit();
 
 	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor);
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
-	bool ScheduleProcs(int iTimeout = -1)
-	{
-		// Always fail after quit message
-		if (fQuitMsgReceived)
-			return false;
-#if defined(USE_SDL_MAINLOOP)
-		// Unfortunately, the SDL event loop needs to be polled
-		FlushMessages();
-#endif
-		return StdScheduler::ScheduleProcs(iTimeout);
-	}
+	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	CStdWindow * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
-	const char *GetCommandLine() { return szCmdLine; }
 
 	// Copy the text to the clipboard or the primary selection
-	void Copy(const StdStrBuf & text, bool fClipboard = true);
+	bool Copy(const StdStrBuf & text, bool fClipboard = true);
 	// Paste the text from the clipboard or the primary selection
 	StdStrBuf Paste(bool fClipboard = true);
 	// Is there something in the clipboard?
@@ -433,22 +494,22 @@ private:
 	CStdMessageProc MessageProc;
 
 public:
-	bool Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine);
 	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
 	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
 	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
 	HWND GetWindowHandle() { return pWindow ? pWindow->hWindow : NULL; }
+	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
 	HINSTANCE GetInstance() const { return hInstance; }
 	bool DialogMessageHandling(MSG *pMsg) { return pWindow ? pWindow->Win32DialogMessageHandling(pMsg) : false; }
 	bool AssertMainThread()
 	{
-#ifdef _DEBUG
+#  ifdef _DEBUG
 		if (hMainThread && hMainThread != ::GetCurrentThread())
 		{
 			assert(false);
 			return false;
 		}
-#endif
+#  endif
 		return true;
 	}
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
@@ -458,18 +519,20 @@ protected:
 	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODE dspMode, OldDspMode;// display mode for fullscreen
 #else
-#if defined(USE_X11)
+#  if defined(USE_X11)
 	Display * dpy;
 	int xf86vmode_major_version, xf86vmode_minor_version;
 	int xrandr_major_version, xrandr_minor_version;
-#endif
+#  endif
 
-#if defined(USE_SDL_MAINLOOP)
+#  if defined(USE_SDL_MAINLOOP)
 	void HandleSDLEvent(SDL_Event& event);
+#  endif
+#ifdef USE_COCOA
+	void HandleNSEvent(/*NSEvent*/void* event);
 #endif
 	const char * Location;
 	pthread_t MainThread;
-	bool Init(int argc, char * argv[]);
 	bool DoNotDelay;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
@@ -485,28 +548,27 @@ protected:
 	void OnXInput();
 	void OnStdInInput();
 protected:
-#if defined(USE_SDL_MAINLOOP) || defined(USE_CONSOLE)
-	int argc; char ** argv;
-#endif
-#ifdef USE_X11
+#  ifdef USE_X11
 	class CStdAppPrivate * Priv;
 	void HandleXMessage();
-#endif
+#  endif
 	unsigned int KeyMask;
 #endif
+protected:
+	int argc; char ** argv;
 #ifdef USE_CONSOLE
 	CStdInProc InProc;
 #endif
-	const char *szCmdLine;
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit() = 0;
+	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	// commands from stdin (console only)
 	StdCopyStrBuf CmdBuf;
 	bool ReadStdInCommand();
 
 	friend class CStdGL;
+	friend class CStdGLCtx;
 	friend class CStdWindow;
 	friend class CStdGtkWindow;
 };

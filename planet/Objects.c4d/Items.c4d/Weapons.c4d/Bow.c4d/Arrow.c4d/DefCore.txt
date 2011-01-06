@@ -1,6 +1,6 @@
 [DefCore]
 id=Arrow
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Object
 Width=4
 Height=15
@@ -10,7 +10,7 @@ VertexY=-6,6,0
 VertexFriction=120,120,120
 Value=15
 Mass=8
-Components=Wood=5
+Components=Wood=3
 Picture=4,0,21,21
 Collectible=1
 Rotate=1

@@ -6,7 +6,7 @@ local begin_frame;    // Starting frame of briding process
 local target_x, target_y; // local target coordinates during bridging
 local loamused;       // amound of loam already used
 
-static const LOAM_Bridge_Amount = 28; // bridge length in pixels
+static const LOAM_Bridge_Amount = 37; // bridge length in pixels
 
 protected func Construction()
 {
@@ -49,7 +49,7 @@ func ControlUseStart(object clonk, int x, int y)
 
 func HoldingEnabled() { return true; }
 
-func FxIntBridgeTimer(clonk, number)
+func FxIntBridgeTimer(clonk, effect)
 {
 	// something happened - don't try to dig anymore
 	if(clonk->GetAction() != "Bridge")
@@ -71,7 +71,7 @@ func FxIntBridgeTimer(clonk, number)
 	var x = target_x + GetX(), y = target_y + GetY();
 
 	// bridge speed by dig physical
-	var speed = clonk->GetPhysical("Dig")/4500;
+	var speed = clonk.ActMap.Dig.Speed/6;
 
 	// build bridge in chunks (for better angle precision)
 	var dt = FrameCounter() - last_frame;

@@ -75,7 +75,7 @@ global func ExplosionEffect(int level, int x, int y)
 	// Blast particle.
 	CreateParticle("Blast", x, y, 0, 0, level * 10, RGBa(255, 255, 255, 100));
 	if(!GBackLiquid(x,y)) CastParticles("Spark", 10, 80 + level, x, y, 35, 40, RGB(255, 200, 0), RGB(255, 255, 150));
-	if(GBackLiquid(x,y)) CastObjects(Bubble1, level * 7 / 10, level, x, y);
+	if(GBackLiquid(x,y)) CastObjects(Fx_Bubble, level * 7 / 10, level, x, y);
 	//CastParticles("FSpark", level/5+1, level, x,y, level*5+10,level*10+10, 0x00ef0000,0xffff1010));
 
 	// Smoke trails.
@@ -221,7 +221,7 @@ global func ShakeViewPort(int level, int x_off, int y_off)
 
 	if (eff)
 	{
-		EffectVar(0, this, eff) += level;
+		eff.var0 += level;
 		return true;
 	}
 
@@ -229,17 +229,17 @@ global func ShakeViewPort(int level, int x_off, int y_off)
 	if (!eff)
 		return false;
 
-	EffectVar(0, this, eff) = level;
+	eff.var0 = level;
 
 	if (x_off || y_off)
 	{
-		EffectVar(1, this, eff) = x_off;
-		EffectVar(2, this, eff) = y_off;
+		eff.var1 = x_off;
+		eff.var2 = y_off;
 	}
 	else
 	{
-		EffectVar(1, this, eff) = GetX();
-		EffectVar(2, this, eff) = GetY();
+		eff.var1 = GetX();
+		eff.var2 = GetY();
 	}
 	return true;
 }
@@ -252,19 +252,22 @@ global func ShakeViewPort(int level, int x_off, int y_off)
 // Duration of the effect: as soon as strength==0
 // Strength of the effect: strength=level/(1.5*fxtime+3)-fxtime^2/400
 
-global func FxShakeEffectTimer(object target, int fxnum, int fxtime)
+global func FxShakeEffectTimer(object target, effect, int fxtime)
 {
 	var strength;
 
-	var str = EffectVar(0, target, fxnum);
-	var xpos = EffectVar(1, target, fxnum);
-	var ypos = EffectVar(2, target, fxnum);
+	var str = effect.var0;
+	var xpos = effect.var1;
+	var ypos = effect.var2;
 
 
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		var distance = Distance(GetCursor(plr)->GetX(), GetCursor(plr)->GetY(), xpos, ypos);
+		var cursor = GetCursor(plr);
+		if (!cursor)
+			continue;
+		var distance = Distance(cursor->GetX(), cursor->GetY(), xpos, ypos);
 
 		// Shake effect lowers as a function of the distance.
 		var level = (300 * str) / Max(300, distance);
@@ -276,13 +279,13 @@ global func FxShakeEffectTimer(object target, int fxnum, int fxtime)
 		SetViewOffset(plr, Sin(fxtime * 100, strength), Cos(fxtime * 100, strength));
 	}
 
-	if (EffectVar(0, target, fxnum) / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400 <= 0)
+	if (str / ((3 * fxtime) / 2 + 3) - fxtime**2 / 400 <= 0)
 		return -1;
 }
 
-global func FxShakeEffectStart(object target, int fxnum)
+global func FxShakeEffectStart(object target, effect)
 {
-	FxShakeEffectTimer(target, fxnum, GetEffect(nil, target, fxnum, 6));
+	FxShakeEffectTimer(target, effect, effect.Time);
 }
 
 global func FxShakeEffectStop()
@@ -302,8 +305,8 @@ global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, b
 	var num = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, strength, angle, x, y);
 	if (!color)
 		color = RGBa(130, 130, 130, 70);
-	EffectVar(6, nil, num) = color;
-	EffectVar(7, nil, num) = noblast;
+	num.var6 = color;
+	num.var7 = noblast;
 	return;
 }
 
@@ -316,7 +319,7 @@ global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, b
 // 5 - Starting-Y-Speed
 // 6 - color [opt]
 // 7 - no blast
-global func FxSmokeTrailStart(object target, int fxnum, int temp, strength, angle, x, y)
+global func FxSmokeTrailStart(object target, effect, int temp, strength, angle, x, y)
 {
 	if (temp)
 		return;
@@ -325,23 +328,23 @@ global func FxSmokeTrailStart(object target, int fxnum, int temp, strength, angl
 		angle += 1;
 	strength = Max(strength, 5);
 
-	EffectVar(0, target, fxnum) = strength;
-	EffectVar(1, target, fxnum) = strength;
-	EffectVar(2, target, fxnum) = x;
-	EffectVar(3, target, fxnum) = y;
-	EffectVar(4, target, fxnum) = Sin(angle, strength * 40);
-	EffectVar(5, target, fxnum) = -Cos(angle, strength * 40);
+	effect.var0 = strength;
+	effect.var1 = strength;
+	effect.var2 = x;
+	effect.var3 = y;
+	effect.var4 = Sin(angle, strength * 40);
+	effect.var5 = -Cos(angle, strength * 40);
 }
 
-global func FxSmokeTrailTimer(object target, int fxnum, int fxtime)
+global func FxSmokeTrailTimer(object target, effect, int fxtime)
 {
-	var strength = EffectVar(0, target, fxnum);
-	var str = EffectVar(1, target, fxnum);
-	var x = EffectVar(2, target, fxnum);
-	var y = EffectVar(3, target, fxnum);
-	var x_dir = EffectVar(4, target, fxnum);
-	var y_dir = EffectVar(5, target, fxnum);
-	var color = EffectVar(6, target, fxnum);
+	var strength = effect.var0;
+	var str = effect.var1;
+	var x = effect.var2;
+	var y = effect.var3;
+	var x_dir = effect.var4;
+	var y_dir = effect.var5;
+	var color = effect.var6;
 
 	str = Max(1, str - str / 5);
 	str--;
@@ -356,7 +359,7 @@ global func FxSmokeTrailTimer(object target, int fxnum, int fxtime)
 	
 	// draw
 	CreateParticle("ExploSmoke", x, y, RandomX(-2, 2), RandomX(-2, 4), 150 + str * 12, color);
-	if (!EffectVar(7, target, fxnum))
+	if (!effect.var7)
 		CreateParticle("Blast", x, y, 0, 0, 10 + str * 8, RGBa(255, 100, 50, 150));
 
 	// then calc next position
@@ -368,10 +371,10 @@ global func FxSmokeTrailTimer(object target, int fxnum, int fxtime)
 	if (str <= 3)
 		return -1;
 	
-	EffectVar(1, target, fxnum) = str;
-	EffectVar(2, target, fxnum) = x;
-	EffectVar(3, target, fxnum) = y;
-	EffectVar(5, target, fxnum) = y_dir;
+	effect.var1 = str;
+	effect.var2 = x;
+	effect.var3 = y;
+	effect.var5 = y_dir;
 }
 
 /*-- Fireworks --*/
@@ -386,7 +389,7 @@ global func Fireworks(int color, int x, int y)
 	{
 		var oangle = Random(70);
 		var num = AddEffect("Firework", nil, 300, 1, nil, nil, Cos(oangle,speed), i * 10 + Random(5), x + GetX(), y + GetY());
-		EffectVar(4,nil,num) = color;
+		num.var4 = color;
 	}
 	
 	for (var i = 0; i < 16; ++i)
@@ -399,23 +402,23 @@ global func Fireworks(int color, int x, int y)
 	return;
 }
 
-global func FxFireworkStart(object target, int num, int tmp, speed, angle, x, y, color)
+global func FxFireworkStart(object target, effect, int tmp, speed, angle, x, y, color)
 {
 	if (tmp)
 		return;
 
-	EffectVar(0, target, num) = speed * 100;
-	EffectVar(1, target, num) = angle;
-	EffectVar(2, target, num) = x * 100;
-	EffectVar(3, target, num) = y * 100;
+	effect.var0 = speed * 100;
+	effect.var1 = angle;
+	effect.var2 = x * 100;
+	effect.var3 = y * 100;
 }
 
-global func FxFireworkTimer(object target, int num, int time)
+global func FxFireworkTimer(object target, effect, int time)
 {
-	var speed = EffectVar(0, target, num);
-	var angle = EffectVar(1, target, num);
-	var x = EffectVar(2, target, num);
-	var y = EffectVar(3, target, num);
+	var speed = effect.var0;
+	var angle = effect.var1;
+	var x = effect.var2;
+	var y = effect.var3;
 	
 	if (time > 65) return -1;
 	
@@ -428,13 +431,13 @@ global func FxFireworkTimer(object target, int num, int time)
 	var x_dir = Sin(angle, speed);
 	var y_dir = -Cos(angle, speed);
 	
-	CreateParticle("Flash", x / 100, y / 100, x_dir / 100, y_dir / 100, 50, EffectVar(4, target, num) | (200 & 255) << 24);
+	CreateParticle("Flash", x / 100, y / 100, x_dir / 100, y_dir / 100, 50, effect.var4 | (200 & 255) << 24);
 	
 	// gravity
 	y_dir += GetGravity() * 18 / 100;
 	
-	EffectVar(0, target, num) = speed;
-	EffectVar(1, target, num) = Angle(0, 0, x_dir, y_dir);
-	EffectVar(2, target, num) = x + x_dir;
-	EffectVar(3, target, num) = y + y_dir;
+	effect.var0 = speed;
+	effect.var1 = Angle(0, 0, x_dir, y_dir);
+	effect.var2 = x + x_dir;
+	effect.var3 = y + y_dir;
 }

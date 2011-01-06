@@ -1,0 +1,17 @@
+[DefCore]
+id=Rocket
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=14
+Offset=-4,-7
+Vertices=4
+VertexX=2,-2,-4,4
+VertexY=-4,-4,7,7
+VertexFriction=80,60,60
+Value=10
+Mass=8
+Components=Blackpowder=3;Wood=1;Metal=1;
+Rebuy=1
+Rotate=1
+ColorByOwner=1

@@ -2,9 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2002, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2005-2007  Sven Eberhardt
  * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006-2007  Günther Brammer
+ * Copyright (c) 2006-2007, 2009  Günther Brammer
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -262,7 +263,7 @@ C4MaterialMap::~C4MaterialMap()
 
 void C4MaterialMap::Clear()
 {
-	if (Map) delete [] Map; Map=NULL;
+	if (Map) delete [] Map; Map=NULL; Num=0;
 	delete [] ppReactionMap; ppReactionMap = NULL;
 }
 
@@ -612,7 +613,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Incindiary mats smoke on contact even before doing their slide
 	if (::MaterialMap.Map[iPxsMat].Incindiary)
-		if (!Random(25)) Smoke(iX, iY, 4+Rnd3() );
+		if (!Random(25)) Smoke(iX, iY, 4+Random(3) );
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
@@ -693,8 +694,8 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 	case meeMassMove: // MassMover-movement
 	case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
-		if (!Rnd3()) Smoke(iX,iY,3);
-		if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) Smoke(iX,iY,3);
+		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
 
 	case meePXSMove: // PXS movement
@@ -705,8 +706,8 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 				return false;
 		// Always kill both landscape and PXS mat
 		::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
-		if (!Rnd3()) Smoke(iX,iY,3);
-		if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
+		if (!Random(3)) Smoke(iX,iY,3);
+		if (!Random(3)) StartSoundEffectAt("Pshshsh", iX, iY);
 		return true;
 	}
 	// not handled

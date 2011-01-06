@@ -5,6 +5,7 @@
  * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2006-2007  Armin Burgmeier
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,12 +27,14 @@
 
 #include "C4ObjectList.h"
 
-#ifdef WITH_DEVELOPER_MODE
-# include <gtk/gtk.h>
-#endif
+#include "C4ConsoleGUI.h"
 
 class C4PropertyDlg
 {
+	friend class C4ConsoleGUI;
+private:
+	class State;
+	State *state;
 public:
 	C4PropertyDlg();
 	~C4PropertyDlg();
@@ -44,24 +47,7 @@ public:
 	bool Update();
 	bool Update(C4ObjectList &rSelection);
 	bool Active;
-#ifdef _WIN32
-	HWND hDialog;
-	friend BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
-#else
-#ifdef WITH_DEVELOPER_MODE
-//    GtkWidget* window;
-	GtkWidget* vbox;
-	GtkWidget* textview;
-	GtkWidget* entry;
-
-	gulong handlerHide;
-
-	static void OnScriptActivate(GtkWidget* widget, gpointer data);
-	static void OnWindowHide(GtkWidget* widget, gpointer data);
-//    static void OnDestroy(GtkWidget* widget, gpointer data);
-#endif
-#endif
-protected:
+public: // ToolsDlg fields are public as well...
 	C4ID idSelectedDef;
 	C4ObjectList Selection;
 };

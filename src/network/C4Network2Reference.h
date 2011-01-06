@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2006-2007  Peter Wortmann
  * Copyright (c) 2007-2008  Sven Eberhardt
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -52,7 +53,6 @@ private:
 	bool ObservingAllowed;
 	bool PasswordNeeded;
 	bool OfficialServer;
-	bool RegJoinOnly;
 
 	// Engine information
 	C4GameVersion Game;
@@ -70,7 +70,6 @@ public:
 	const char *getComment() const { return Comment.getData(); }
 	const C4GameVersion &getGameVersion() const { return Game; }
 	bool isPasswordNeeded() const { return PasswordNeeded; }
-	bool isRegJoinOnly() const { return RegJoinOnly; }
 	bool isJoinAllowed() const { return JoinAllowed; }
 	bool isOfficialServer() const { return OfficialServer; }
 	int32_t getSortOrder() const;
@@ -190,19 +189,29 @@ private:
 
 };
 
-// Loads references (mini-HTTP-client)
-class C4Network2RefClient : public C4Network2HTTPClient
+// Loads current update url string (mini-HTTP-client)
+class C4Network2UpdateClient : public C4Network2HTTPClient
 {
-	C4GameVersion MasterVersion;
-	bool fVerSet;
+protected:
+	virtual int32_t GetDefaultPort() { return C4NetStdPortHTTP; }
+public:
+	C4Network2UpdateClient() : C4Network2HTTPClient() {}
+
+	bool QueryUpdateURL();
+	bool GetUpdateURL(StdStrBuf *pUpdateURL);
+	bool GetVersion(StdStrBuf *pVersion);
+};
+
+// Loads references + current update url string (mini-HTTP-client)
+class C4Network2RefClient : public C4Network2UpdateClient
+{
 protected:
 	virtual int32_t GetDefaultPort() { return C4NetStdPortRefServer; }
 public:
-	C4Network2RefClient() : C4Network2HTTPClient(), fVerSet(false) {}
+	C4Network2RefClient() : C4Network2UpdateClient() {}
 
 	bool QueryReferences();
 	bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);
-	bool GetMasterVersion(C4GameVersion *pSaveToVer); // call only after GetReferences
 };
 
 #endif // C4NETWORK2REFERENCE_H

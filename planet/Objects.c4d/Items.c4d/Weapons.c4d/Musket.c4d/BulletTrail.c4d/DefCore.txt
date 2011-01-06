@@ -10,5 +10,3 @@ VertexY=0
 VertexFriction=100
 BorderBound=7
 
-[Physical]
-Float=100000

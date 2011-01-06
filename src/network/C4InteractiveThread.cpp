@@ -1,8 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007, 2009  Peter Wortmann
+ * Copyright (c) 2004-2005, 2007, 2009  Peter Wortmann
  * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

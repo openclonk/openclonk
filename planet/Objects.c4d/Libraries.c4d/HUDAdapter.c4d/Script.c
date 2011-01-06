@@ -50,7 +50,7 @@ protected func OnBreathChange() { if (HUDselector) HUDselector->UpdateBreathBar(
 protected func OnMagicEnergyChange() { if (HUDselector) HUDselector->UpdateMagicBar(); return _inherited(...); }
 protected func OnNameChanged() { if (HUDselector) HUDselector->UpdateName(); return _inherited(...); }
 
-protected func OnPhysicalChange(string physical, int change, int mode)
+protected func OnPhysicalChange(string physical, int change)
 {
 	if (HUDselector)
 	{		
@@ -65,7 +65,7 @@ protected func OnPhysicalChange(string physical, int change, int mode)
 		else if (physical == "Breath") HUDselector->UpdateBreathBar();
 		else if (physical == "Magic") HUDselector->UpdateMagicBar();
 	}
-	return _inherited(physical, change, mode, ...);
+	return _inherited(physical, change, ...);
 }
 
 // calls to both crew selector and controller

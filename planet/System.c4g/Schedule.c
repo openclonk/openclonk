@@ -15,20 +15,20 @@ global func Schedule(string script, int interval, int repeats, object obj)
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
-	if (effect <= 0)
+	if (!effect)
 		return false;
 	// Set variables.
-	EffectVar(0, obj, effect) = script;
-	EffectVar(1, obj, effect) = repeats;
+	effect.var0 = script;
+	effect.var1 = repeats;
 	return true;
 }
 
-global func FxIntScheduleTimer(object obj, int effect)
+global func FxIntScheduleTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
-	var done = --EffectVar(1, obj, effect) <= 0;
+	var done = --effect.var1 <= 0;
 	// Execute.
-	eval(EffectVar(0, obj, effect));
+	eval(effect.var0);
 	return -done;
 }
 
@@ -42,24 +42,21 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 		obj = this;
 	// Create effect.
 	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
-	if (effect <= 0)
+	if (!effect)
 		return false;
 	// Set variables.
-	EffectVar(0, obj, effect) = function;
-	EffectVar(1, obj, effect) = repeats;
-	// EffectVar(2): Just there for backwards compatibility.
-	EffectVar(2, obj, effect) = obj;
-	for (var i = 0; i < 5; i++)
-		EffectVar(i + 3, obj, effect) = Par(i + 4);
+	effect.function = function;
+	effect.var1 = repeats;
+	effect.par = [par0, par1, par2, par3, par4];
 	return true;
 }
 
-global func FxIntScheduleCallTimer(object obj, int effect)
+global func FxIntScheduleCallTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
-	var done = --EffectVar(1, obj, effect) <= 0;
+	var done = --effect.var1 <= 0;
 	// Execute.
-	Call(EffectVar(0, obj, effect), EffectVar(3, obj, effect), EffectVar(4, obj, effect), EffectVar(5, obj, effect), EffectVar(6, obj, effect), EffectVar(7, obj, effect));
+	Call(effect.function, effect.par[0], effect.par[1], effect.par[2], effect.par[3], effect.par[4]);
 	return -done;
 }
 
@@ -72,7 +69,7 @@ global func ClearScheduleCall(object obj, string function)
 		// Check All ScheduleCall-Effects.
 		if (effect = GetEffect("IntScheduleCall", obj, i))
 			// Found right function.
-			if (EffectVar(0, obj, effect) == function)
+			if (effect.function == function)
 				// Remove effect.
 				RemoveEffect(0, obj, effect);
 	return;

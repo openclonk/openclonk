@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2002, 2005, 2007  Sven Eberhardt
  * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -51,17 +51,6 @@ void C4Weather::Init(bool fScenario)
 		Temperature=Climate;
 		// Wind
 		Wind=TargetWind=Game.C4S.Weather.Wind.Evaluate();
-		// Precipitation
-		if (!Game.C4S.Head.NoInitialize)
-			if (Game.C4S.Weather.Rain.Evaluate())
-				for (int32_t iClouds = Min(GBackWdt/500,5); iClouds>0; iClouds--)
-				{
-					volatile int iWidth = GBackWdt/15+Random(320);
-					volatile int iX = Random(GBackWdt);
-					LaunchCloud(iX,-1,iWidth,
-					            Game.C4S.Weather.Rain.Evaluate(),
-					            Game.C4S.Weather.Precipitation);
-				}
 		// gamma?
 		NoGamma=Game.C4S.Weather.NoGamma;
 	}
@@ -125,18 +114,6 @@ void C4Weather::Default()
 	Temperature=Climate=0;
 	TemperatureRange=30;
 	NoGamma=true;
-}
-
-bool C4Weather::LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStrength, const char *szPrecipitation)
-{
-	if (::MaterialMap.Get(szPrecipitation)==MNone) return false;
-	C4Object *pObj;
-	if ((pObj=Game.CreateObject(C4ID("FXP1"),NULL,NO_OWNER,iX,iY)))
-		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(::MaterialMap.Get(szPrecipitation)),
-		                 C4VInt(iWidth),
-		                 C4VInt(iStrength))))
-			return true;
-	return false;
 }
 
 void C4Weather::SetWind(int32_t iWind)
@@ -208,7 +185,7 @@ void C4Weather::SetSeasonGamma()
 			dwClr[i] |= BoundBy<int32_t>(iChanVal,0,255)<<iChan;
 		}
 	// apply gamma ramp
-	::GraphicsSystem.SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
+	lpDDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
 }
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
@@ -229,7 +206,7 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		dwGammaDefaults[i*3+1] = 0x808080;
 		dwGammaDefaults[i*3+2] = 0xffffff;
 	}
-	pComp->Value(mkNamingAdapt(mkArrayAdaptM(::GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptM(lpDDraw->dwGamma), "Gamma", dwGammaDefaults));
 }
 
 C4Weather Weather;

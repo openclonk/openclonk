@@ -208,20 +208,17 @@ public:
 class C4GameOptionButtons : public C4GUI::Window
 {
 private:
-	C4GUI::IconButton *btnInternet, *btnLeague, *btnPassword, *btnComment, *btnFairCrew, *btnRecord;
-	C4SForceFairCrew eForceFairCrewState;
+	C4GUI::IconButton *btnInternet, *btnLeague, *btnPassword, *btnComment, *btnRecord;
 	bool fNetwork, fHost, fLobby, fCountdown;
 
 public:
 	C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, bool fHost, bool fLobby);
 	~C4GameOptionButtons() {}
 
-	void SetForceFairCrewState(C4SForceFairCrew eToState);
 	void SetCountdown(bool fToVal);
 protected:
 	void OnBtnInternet(C4GUI::Control *btn);
 	void OnBtnLeague(C4GUI::Control *btn);
-	void OnBtnFairCrew(C4GUI::Control *btn);
 	void OnBtnRecord(C4GUI::Control *btn);
 	void OnBtnPassword(C4GUI::Control *btn);
 	void OnPasswordSet(const StdStrBuf &rsNewPassword);
@@ -229,7 +226,6 @@ protected:
 	void OnCommentSet(const StdStrBuf &rsNewComment);
 
 public:
-	void UpdateFairCrewBtn();
 	void UpdatePasswordBtn();
 };
 

@@ -1,12 +1,14 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008  Sven Eberhardt
- * Copyright (c) 2005  Armin Burgmeier
- * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2004-2008, 2010  Sven Eberhardt
+ * Copyright (c) 2005, 2009-2010  Armin Burgmeier
+ * Copyright (c) 2005-2006, 2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Randrian
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -178,8 +180,8 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 			return false;
 		delete[] buf;
 
-		// Create mirrored animations (#401)
-		Mesh->MirrorAnimations();
+		// Create mirrored animations (#401), order submeshes
+		Mesh->PostInit();
 	}
 	catch (const std::runtime_error& ex)
 	{
@@ -736,12 +738,12 @@ void C4GraphicsOverlay::UpdateFacet()
 			return;
 
 		C4Value v;
-		pDef->GetPropertyVal(P_ActMap, &v);
+		pDef->GetProperty(P_ActMap, &v);
 		C4PropList *actmap = v.getPropList();
 		if (!actmap)
 			return;
 
-		actmap->GetPropertyVal(::Strings.RegString(Action), &v);
+		actmap->GetPropertyByS(::Strings.RegString(Action), &v);
 		C4PropList *action = v.getPropList();
 		if (!action)
 			return;
@@ -1083,7 +1085,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			}
 
 			C4Value value;
-			pDef->GetPropertyVal(P_MeshTransformation, &value);
+			pDef->GetProperty(P_MeshTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
@@ -1108,7 +1110,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			}
 
 			C4Value value;
-			pDef->GetPropertyVal(P_PictureTransformation, &value);
+			pDef->GetProperty(P_PictureTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
@@ -1186,7 +1188,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		C4Def *pDef = pSourceGfx->pDef;
 
 		C4Value value;
-		pDef->GetPropertyVal(P_PictureTransformation, &value);
+		pDef->GetProperty(P_PictureTransformation, &value);
 		StdMeshMatrix matrix;
 		if (C4ValueToMatrix(value, &matrix))
 			lpDDraw->SetMeshTransform(&matrix);

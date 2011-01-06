@@ -18,11 +18,11 @@ public func SetRestoreObject(object to_restore, object to_container, int to_x, i
 {
 	to_restore->Enter(this);
 	var effect = AddEffect("Restore", this, 100, 1, this);
-	EffectVar(0, this, effect) = to_restore;
-	EffectVar(1, this, effect) = to_container;
-	EffectVar(2, this, effect) = to_x;
-	EffectVar(3, this, effect) = to_y;
-	EffectVar(4, this, effect) = ctrl_string;
+	effect.var0 = to_restore;
+	effect.var1 = to_container;
+	effect.var2 = to_x;
+	effect.var3 = to_y;
+	effect.var4 = ctrl_string;
 	return;
 }
 
@@ -34,22 +34,22 @@ public func SetRestoreObject(object to_restore, object to_container, int to_x, i
 // Effectvar 4: Effect which must be reinstated after restoring.
 // Effectvar 5: x-coordinate from which is restored.
 // Effectvar 6: y-coordinate from which is restored.
-protected func FxRestoreStart(object target, int num, int temporary)
+protected func FxRestoreStart(object target, effect, int temporary)
 {
-	EffectVar(5, target, num) = target->GetX();
-	EffectVar(6, target, num) = target->GetY();
+	effect.var5 = target->GetX();
+	effect.var6 = target->GetY();
 	return 1;
 }
 
-protected func FxRestoreTimer(object target, int num, int time)
+protected func FxRestoreTimer(object target, effect, int time)
 {
 	// Remove effect if there is nothing to restore.
-	if (!EffectVar(0, target, num))
+	if (!effect.var0)
 		return -1;
 	// Get coordinates.
-	var init_x = EffectVar(5, target, num);
-	var init_y = EffectVar(6, target, num);
-	var to_container = EffectVar(1, target, num);
+	var init_x = effect.var5;
+	var init_y = effect.var6;
+	var to_container = effect.var1;
 	if (to_container)
 	{
 		var to_x = to_container->GetX();
@@ -57,13 +57,13 @@ protected func FxRestoreTimer(object target, int num, int time)
 	}
 	else
 	{
-		var to_x = EffectVar(2, target, num);
-		var to_y = EffectVar(3, target, num);
+		var to_x = effect.var2;
+		var to_y = effect.var3;
 	}
 	// Are the coordinates specified now, if not remove effect.
 	if (to_x == nil || to_y == nil)
 	{
-		EffectVar(0, target, num)->RemoveObject();
+		effect.var0->RemoveObject();
 		return -1;		
 	}
 	// Move to the object with a weighed sin-wave centered around the halfway point.
@@ -93,13 +93,13 @@ protected func FxRestoreTimer(object target, int num, int time)
 	return 1;
 }
 
-protected func FxRestoreStop(object target, int num, int reason, bool temporary)
+protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 {
-	var to_restore = EffectVar(0, target, num);
-	var to_container = EffectVar(1, target, num);
-	var to_x = EffectVar(2, target, num);
-	var to_y = EffectVar(3, target, num);
-	var ctrl_string = EffectVar(4, target, num);
+	var to_restore = effect.var0;
+	var to_container = effect.var1;
+	var to_x = effect.var2;
+	var to_y = effect.var3;
+	var ctrl_string = effect.var4;
 	// Only if there is something to restore.
 	if (to_restore)
 	{			
@@ -114,10 +114,10 @@ protected func FxRestoreStop(object target, int num, int reason, bool temporary)
 			// Add new restore mode, either standard one or effect supplied in EffectVar 4.
 			if (ctrl_string)
 			{
-				var effect = AddEffect(ctrl_string, to_restore, 100, 10);
-				EffectVar(0, to_restore, effect) = to_container;
-				EffectVar(1, to_restore, effect) = to_x;
-				EffectVar(2, to_restore, effect) = to_y;
+				var new_effect = AddEffect(ctrl_string, to_restore, 100, 10);
+				new_effect.var0 = to_container;
+				new_effect.var1 = to_x;
+				new_effect.var2 = to_y;
 			}
 			else
 				to_restore->AddRestoreMode(to_container, to_x, to_y);
@@ -150,9 +150,9 @@ global func AddRestoreMode(object to_container, int to_x, int to_y)
 	if (!this)
 		return;
 	var effect = AddEffect("RestoreMode", this, 100);
-	EffectVar(0, this, effect) = to_container;
-	EffectVar(1, this, effect) = to_x;
-	EffectVar(2, this, effect) = to_y;
+	effect.var0 = to_container;
+	effect.var1 = to_x;
+	effect.var2 = to_y;
 	return;
 }
 
@@ -160,7 +160,7 @@ global func AddRestoreMode(object to_container, int to_x, int to_y)
 // Effectvar 0: Container to which must be restored.
 // Effectvar 1: x-coordinate to which must be restored.
 // Effectvar 2: y-coordinate to which must be restored.
-global func FxRestoreModeStop(object target, int num, int reason, bool  temporary)
+global func FxRestoreModeStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3)
 	{
@@ -168,9 +168,9 @@ global func FxRestoreModeStop(object target, int num, int reason, bool  temporar
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = EffectVar(0, target, num);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_container = effect.var0;
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, to_x, to_y);
 	}

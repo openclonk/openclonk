@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -19,7 +20,7 @@
 #include "C4Include.h"
 #include "C4MeshAnimation.h"
 #include "C4Object.h"
-#include "C4ValueList.h"
+#include "C4ValueArray.h"
 #include "C4Game.h"
 
 namespace

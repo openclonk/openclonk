@@ -13,10 +13,6 @@
       <dd>
         <text>Object properties.</text>
       </dd>
-      <dt><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/actmap.html">ActMap.txt</emlink></dt>
-      <dd>
-        <text>Table for activities.</text>
-      </dd>
       <dt id="Graphicspng"><img height="16" src="../../images/icon_image.gif" width="16"/>Graphics.png</dt>
       <dd>
         <text>Graphics of the object. Base graphics, animation phases and a picture for display in menus are stored in a 32 bit picture with transparency channel (PNG format, 32 bit RGBA color, non interlaced).</text>
@@ -52,6 +48,10 @@
       <dt id="ScriptcScript__c"><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/script.html">Script.c</emlink></dt>
       <dd>
         <text>The object script. See <emlink href="script/index.html">script documentation</emlink> and <emlink href="lang.html">localization</emlink>.</text>
+      </dd>
+      <dt><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/actmap.html">ActMap in the Script.c</emlink></dt>
+      <dd>
+        <text>Table for activities.</text>
       </dd>
       <dt id="Namestxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Names.txt</dt>
       <dd>

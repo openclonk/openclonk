@@ -104,7 +104,7 @@ func TestMoveOut(xdir, ydir)
 
 public func Unroll(int dir, int unrolldir, int length)
 {
-	if(!unrolldir) unrolldir == COMD_Down;
+	if(!unrolldir) unrolldir = COMD_Down;
 	SwitchRopes = 0;
 	// Unroll dir
 	if(unrolldir == COMD_Left || unrolldir == COMD_Right)

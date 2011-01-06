@@ -1,10 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003, 2008  Matthes Bender
  * Copyright (c) 2002, 2004-2008  Sven Eberhardt
- * Copyright (c) 2003, 2008  Matthes Bender
+ * Copyright (c) 2005, 2007-2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2007-2008  Günther Brammer
+ * Copyright (c) 2009-2010  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -94,7 +95,9 @@ void CSurface::Default()
 #endif
 	ppTex=NULL;
 	pMainSfc=NULL;
+#ifdef USE_GL
 	pCtx=NULL;
+#endif
 	pWindow=NULL;
 	ClrByOwnerClr=0;
 	iTexSize=iTexX=iTexY=0;
@@ -318,6 +321,7 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 
 #ifdef _DEBUG
 	static int dbg_counter = 0;
+	if (dbg_idx) delete dbg_idx;
 	dbg_idx = new int;
 	*dbg_idx = dbg_counter++;
 #endif
@@ -792,7 +796,7 @@ bool CSurface::Unlock()
 				// if tex refs exist, free them
 				/*FreeTextures();*/
 				// otherwise, emulated primary locks in OpenGL
-				delete PrimarySurfaceLockBits;
+				delete[] PrimarySurfaceLockBits;
 				PrimarySurfaceLockBits = 0;
 				return true;
 			}
@@ -1577,7 +1581,20 @@ void CTexMgr::IntLock()
 	for (std::list<CTexRef *>::iterator i=Textures.begin(); j--; ++i)
 	{
 		CTexRef *pRef = *i;
-		if (pRef->Lock() && !pRef->texLock.pBits) pRef->fIntLock = true;
+		if (pRef->Lock() && pRef->texLock.pBits)
+		{
+			pRef->fIntLock = true;
+#ifdef USE_GL
+			// Release the underlying texture with GL and recreate
+			// it on unlock, so that the texture survives
+			// context recreation.
+			if(pGL)
+			{
+				glDeleteTextures(1, &pRef->texName);
+				pRef->texName = 0;
+			}
+#endif
+		}
 	}
 }
 

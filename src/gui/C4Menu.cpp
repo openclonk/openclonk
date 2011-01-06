@@ -3,7 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
  * Copyright (c) 2001-2008  Sven Eberhardt
- * Copyright (c) 2004-2008  Günther Brammer
+ * Copyright (c) 2004-2010  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -45,48 +46,6 @@ const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
                                                                                                                                                            C4MN_DlgPortraitIndent = 5; // space between portrait and text
 
 const int32_t C4MN_InfoCaption_Delay = 90;
-
-/* Obsolete helper function still used by CreateMenu(iSymbol) */
-
-#include <C4ObjectMenu.h> // only needed for menu symbol constants below
-
-void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj)
-{
-	C4Facet ccgo;
-
-	DWORD dwColor=0;
-	if (ValidPlr(iOwner)) dwColor=::Players.Get(iOwner)->ColorDw;
-
-	switch (iMenu)
-	{
-	case C4MN_Construction:
-	{
-		C4Def *pDef;
-		if ((pDef=C4Id2Def(C4ID("CXCN"))))
-			pDef->Draw(cgo);
-		else if ((pDef=C4Id2Def(C4ID("WKS1"))))
-			pDef->Draw(cgo);
-	}
-	break;
-	case C4MN_Buy:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 0);
-		break;
-	case C4MN_Sell:
-		::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), true, dwColor);
-		::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-		::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), false, 1);
-		break;
-		/*case C4MN_Main:
-		  ::GraphicsResource.fctFlagClr.DrawClr(cgo,true,dwColor);
-		  ccgo.Set(cgo.Surface,cgo.X,cgo.Y+cgo.Hgt/2,cgo.Wdt,cgo.Hgt/2);
-		  ::GraphicsResource.fctCrewClr.DrawClr(ccgo,true,dwColor);
-		  break;*/
-	}
-}
-
-
 
 // -----------------------------------------------------------
 // C4MenuItem
@@ -338,7 +297,7 @@ bool C4Menu::TryClose(bool fOK, bool fControl)
 	// close the menu
 	Close(fOK);
 	Clear();
-	if (::pGUI) ::pGUI->RemoveElement(this);
+	::pGUI->RemoveElement(this);
 
 	// invoke close command
 	if (fControl && CloseCommand.getData())
@@ -381,7 +340,7 @@ bool C4Menu::InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, i
 		Columns=1;
 	if (iStyle & C4MN_Style_EqualItemHeight) SetEqualItemHeight(true);
 	if (Style == C4MN_Style_Dialog) Alignment = C4MN_Align_Top;
-	if (::pGUI) ::pGUI->ShowDialog(this, false);
+	::pGUI->ShowDialog(this, false);
 	fTextProgressing = false;
 	fActive = true;
 	return true;
@@ -833,7 +792,7 @@ void C4Menu::Draw(C4TargetFacet &cgo)
 	if (!fTextProgressing) ++TimeOnSelection;
 	if (TimeOnSelection >= C4MN_InfoCaption_Delay)
 		if (Style != C4MN_Style_Info) // No tooltips in info menus - doesn't make any sense...
-			if (!::Control.isReplay() && ::pGUI)
+			if (!::Control.isReplay())
 				if (!::pGUI->Mouse.IsActiveInput())
 				{
 					C4MenuItem *pSel = GetSelectedItem();
@@ -881,16 +840,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	}
 
 	// live max magic
-	int32_t iUseExtraData = 0;
-	if (Extra == C4MN_Extra_LiveMagicValue || Extra == C4MN_Extra_ComponentsLiveMagic)
-	{
-		C4Object *pMagicSourceObj = ::Objects.SafeObjectPointer(ExtraData);
-		if (pMagicSourceObj) iUseExtraData = pMagicSourceObj->MagicEnergy/MagicPhysicalFactor;
-	}
-	else
-	{
-		iUseExtraData = ExtraData;
-	}
+	int32_t iUseExtraData = ExtraData;
 
 	// Draw specified extra
 	switch (Extra)
@@ -903,29 +853,8 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
 		// Flag parent object's owner's wealth display
 		C4Player *pParentPlr = ::Players.Get(GetControllingPlayer());
-		if (pParentPlr) pParentPlr->ViewWealth = C4ViewDelay;
 	}
 	break;
-	case C4MN_Extra_MagicValue:
-	case C4MN_Extra_LiveMagicValue:
-		if (pDef)
-		{
-			::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
-		}
-		break;
-	case C4MN_Extra_ComponentsMagic:
-	case C4MN_Extra_ComponentsLiveMagic:
-		// magic value and components
-		if (pItem)
-		{
-			// DrawValue2 kills the facet...
-			int32_t iOriginalX = cgoExtra.X;
-			::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
-			cgoExtra.Wdt = cgoExtra.X - iOriginalX - 5;
-			cgoExtra.X = iOriginalX;
-			pItem->Components.Draw(cgoExtra,-1,::Definitions,C4D_All,true,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
-		}
-		break;
 	}
 
 	// Restore global clipper

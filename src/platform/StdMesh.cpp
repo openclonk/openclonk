@@ -1,7 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2009  Mark Haßelbusch
  * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -30,6 +32,15 @@ std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstanc
 
 namespace
 {
+	// Helper to sort submeshes so that opaque ones appear before non-opaque ones
+	struct StdMeshSubMeshVisibilityCmpPred
+	{
+		bool operator()(const StdSubMesh& first, const StdSubMesh& second)
+		{
+			return first.GetMaterial().IsOpaque() > second.GetMaterial().IsOpaque();
+		}
+	};
+
 	// Helper to sort faces for FaceOrdering
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
@@ -989,7 +1000,7 @@ void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& ani
 	}
 }
 
-void StdMesh::MirrorAnimations()
+void StdMesh::PostInit()
 {
 	// Mirror .R and .L animations without counterpart
 	for(std::map<StdCopyStrBuf, StdMeshAnimation>::iterator iter = Animations.begin(); iter != Animations.end(); ++iter)
@@ -1005,6 +1016,9 @@ void StdMesh::MirrorAnimations()
 				MirrorAnimation(buf, iter->second);
 		}
 	}
+
+	// Order submeshes so that opaque submeshes come before non-opaque ones
+	std::sort(SubMeshes.begin(), SubMeshes.end(), StdMeshSubMeshVisibilityCmpPred());
 }
 
 StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
@@ -1043,6 +1057,9 @@ void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 			PassData[i].TexUnits.push_back(unit);
 		}
 	}
+
+	// TODO: Reorder this submesh so that opaque submeshes are drawn
+	// before non-opaque ones.
 }
 
 void StdMeshInstance::SerializableValueProvider::CompileFunc(StdCompiler* pComp)

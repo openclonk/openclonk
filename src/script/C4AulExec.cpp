@@ -1,9 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2006-2007  Sven Eberhardt
- * Copyright (c) 2001-2002, 2005-2007  Peter Wortmann
- * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2001-2002, 2005-2007, 2009-2010  Peter Wortmann
+ * Copyright (c) 2001-2002, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -95,10 +98,10 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	else if (Func->Owner->Def != NULL)
 		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
-	if (!fDirectExec && Func->Owner)
+	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
 		                  Func->pOrgScript->ScriptName.getData(),
-		                  SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
+		                  CPos ? Func->GetLineOfCode(CPos) : SGetLine(Func->pOrgScript->GetScript(), Func->Script));
 	// Return it
 	return Dump;
 }
@@ -144,7 +147,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 	PushContext(ctx);
 
 	// Execute
-	return Exec(pSFunc->Code, fPassErrors);
+	return Exec(pSFunc->GetCode(), fPassErrors);
 }
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
@@ -233,18 +236,19 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!pCurCtx->Obj)
 					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
 				PushNullVals(1);
-				pCurCtx->Obj->GetPropertyVal(pCPos->Par.s, pCurVal);
+				pCurCtx->Obj->GetPropertyByS(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
 				if (!pCurCtx->Obj)
 					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
-				pCurCtx->Obj->SetProperty(pCPos->Par.s, pCurVal[0]);
+				pCurCtx->Obj->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				break;
 
 			case AB_PROP:
 				if (!(pCurVal->ConvertTo(C4V_PropList) && pCurVal->_getPropList()))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
-				pCurVal->_getPropList()->GetPropertyVal(pCPos->Par.s, pCurVal);
+				if (!pCurVal->_getPropList()->GetPropertyByS(pCPos->Par.s, pCurVal))
+					pCurVal->Set0();
 				break;
 			case AB_PROP_SET:
 			{
@@ -253,7 +257,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
 				if (pPropList->_getPropList()->IsFrozen())
 					throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");
-				pPropList->_getPropList()->SetProperty(pCPos->Par.s, pCurVal[0]);
+				pPropList->_getPropList()->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				pPropList->Set(pCurVal[0]);
 				PopValue();
 				break;
@@ -462,7 +466,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: proplist expected, got %s", pPropSet->GetTypeName()).getData());
 				if (!pKey->ConvertTo(C4V_String))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: string expected, got %s", pPropSet->GetTypeName()).getData());
-				pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
+				pPropSet->_getPropList()->SetPropertyByS(pKey->_getStr(), *pValue);
 				PopValues(2);
 				break;
 			}
@@ -479,7 +483,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				{
 					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
 					C4PropList *pPropList = pStruct->_getPropList();
-					if (!pPropList->GetPropertyVal(pIndex->_getStr(), pResult))
+					if (!pPropList->GetPropertyByS(pIndex->_getStr(), pResult))
 						pResult->Set0();
 				}
 				// Remove index
@@ -500,7 +504,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					C4PropList *pPropList = pStruct->_getPropList();
 					if (pPropList->IsFrozen())
 						throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");					
-					pPropList->SetProperty(pIndex->_getStr(), *pValue);
+					pPropList->SetPropertyByS(pIndex->_getStr(), *pValue);
 				}
 				// Set result, remove array and index from stack
 				*pResult = *pValue;
@@ -657,6 +661,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPars = pCurVal - pFunc->GetParCount() + 1;
 				// Save current position
 				pCurCtx->CPos = pCPos;
+				assert(pCurCtx->Func->GetCode() < pCPos);
 				// Do the call
 				C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
 				if (pJump)
@@ -769,6 +774,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
+				assert(pCurCtx->Func->GetCode() < pCPos);
 
 				// Call function
 				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
@@ -800,26 +806,28 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	}
 	catch (C4AulError *e)
 	{
-		// Save current position
-		pOldCtx->CPos = pCPos;
-		// Pass?
-		if (fPassErrors)
-			throw;
 		// Show
-		e->show();
-		delete e;
-		// Trace
-		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
-			pCtx->dump(StdStrBuf(" by: "));
+		if(!e->shown) e->show();
+		// Save current position
+		assert(pCurCtx->Func->GetCode() < pCPos);
+		pCurCtx->CPos = pCPos;
 		// Unwind stack
 		C4Value *pUntil = NULL;
 		while (pCurCtx >= pOldCtx)
 		{
+			pCurCtx->dump(StdStrBuf(" by: "));
 			pUntil = pCurCtx->Pars - 1;
 			PopContext();
 		}
 		if (pUntil)
 			PopValuesUntil(pUntil);
+		// Pass?
+		if (fPassErrors)
+			throw;
+		// Trace
+		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
+			pCtx->dump(StdStrBuf(" by: "));
+		delete e;
 	}
 
 	// Return nothing
@@ -874,11 +882,11 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 #ifndef NOAULDEBUG
 		// Notify debugger
 		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
-			pDebug->DebugStepIn(pSFunc->Code);
+			pDebug->DebugStepIn(pSFunc->GetCode());
 #endif
 
 		// Jump to code
-		return pSFunc->Code;
+		return pSFunc->GetCode();
 	}
 	else
 	{
@@ -1163,6 +1171,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	{
 		pScript->Def = NULL;
 	}
+	pScript->ClearCode();
 	pScript->Reg2List(Engine, this);
 	// Add a new function
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, "");
@@ -1181,7 +1190,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		delete pScript;
 		return C4VNull;
 	}
-	pFunc->Code = pScript->Code;
+	pFunc->CodePos = 1;
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));

@@ -1,9 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2006-2008  Sven Eberhardt
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Günther Brammer
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -436,7 +437,7 @@ bool C4DefinitionSelDlg::SelectDefinitions(C4GUI::Screen *pOnScreen, StdStrBuf *
 	{
 		pSelection->Copy(pDlg->GetSelection(pSelection->getData(), true));
 	}
-	if (C4GUI::IsGUIValid()) delete pDlg;
+	delete pDlg;
 	return fResult;
 }
 
@@ -668,6 +669,6 @@ bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSele
 		*pfSetPicture = pDlg->IsSetPicture();
 		*pfSetBigIcon = pDlg->IsSetBigIcon();
 	}
-	if (C4GUI::IsGUIValid()) delete pDlg;
+	delete pDlg;
 	return fResult;
 }

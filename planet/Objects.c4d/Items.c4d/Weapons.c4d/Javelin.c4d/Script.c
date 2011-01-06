@@ -97,21 +97,16 @@ public func DoThrow(object clonk, int angle)
 {
 	var javelin=TakeObject();
 	
-	// how fast the javelin is thrown depends very much on
-	// the speed of the clonk
-	//var speed = 1200 * clonk->GetPhysical("Throw") / 12000 + 150 * Abs(clonk->GetXDir());
-	//var xdir = Sin(angle,+speed);
-	//var ydir = Cos(angle,-speed);
-	// The clonk can convert some, indicated by div in percentages, of its own kinetic energy to change the momenta of the javelin, a miracle.
 	var div = 60; // 40% is converted to the direction of the throwing angle.
 	var xdir = clonk->GetXDir(1000);
 	var ydir = clonk->GetYDir(1000);
-	var speed = clonk->GetPhysical("Throw") / 8 + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
+	var speed = clonk.ThrowSpeed * 21 + (100 - div) * Sqrt(xdir**2 + ydir**2) / 100;
 	var jav_x = div * xdir / 100 + Sin(angle, speed);
 	var jav_y = div * ydir / 100 - Cos(angle, speed);
 		
 	javelin->SetXDir(jav_x, 1000);
 	javelin->SetYDir(jav_y, 1000);
+	javelin->SetPosition(javelin->GetX(),javelin->GetY()+6);
 	
 	SetController(clonk->GetController());
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
@@ -131,10 +126,11 @@ public func HitObject(object obj)
 	var relx = GetXDir() - obj->GetXDir();
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
-	Stick();
 
 	var dmg = JavelinStrength()*speed/100;
-	ProjectileHit(obj,dmg,true);
+	ProjectileHit(obj,dmg,ProjectileHit_tumble);
+	
+	Stick();
 }
 
 // called by successful hit of object after from ProjectileHit(...)
@@ -173,11 +169,11 @@ protected func Stick()
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
-			if(GetMaterialVal("DigFree","Material",mat))
-			{
+			//if(GetMaterialVal("DigFree","Material",mat))
+			//{
 			// stick in landscape
 			SetVertex(2,VTX_Y,-18,1);
-			}
+			//}
 		}
 		return;
 	}
@@ -189,28 +185,28 @@ func Entrance()
 	SetVertex(2,VTX_Y,0,1);
 }
 
-protected func FxFlightStart(object pTarget, int iEffectNumber)
+protected func FxFlightStart(object pTarget, effect)
 {
 	pTarget->SetProperty("Collectible",0);
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
-protected func FxFlightTimer(object pTarget,int iEffectNumber, int iEffectTime)
+protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	//Using Newton's arrow rotation. This would be much easier if we had tan^-1 :(
-	var oldx = EffectVar(0,pTarget,iEffectNumber);
-	var oldy = EffectVar(1,pTarget,iEffectNumber);
+	var oldx = effect.var0;
+	var oldy = effect.var1;
 	var newx = GetX();
 	var newy = GetY();
 
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	pTarget->SetRDir(anglediff/2);
-	EffectVar(0,pTarget,iEffectNumber) = newx;
-	EffectVar(1,pTarget,iEffectNumber) = newy;
+	effect.var0 = newx;
+	effect.var1 = newy;
 	pTarget->SetR(Angle(0,0,pTarget->GetXDir(),pTarget->GetYDir()));
 }
 
-protected func FxFlightStop(object pTarget,int iEffectNumber)
+protected func FxFlightStop(object pTarget, effect)
 {
 	pTarget->SetProperty("Collectible", 1);
 }

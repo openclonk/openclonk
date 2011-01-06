@@ -1,7 +1,7 @@
 [DefCore]
 id=SwordTarget
 Version=4,10,0,0
-Category=C4D_Living
+Category=C4D_Vehicle
 Width=12
 Height=20
 Offset=-6,-10

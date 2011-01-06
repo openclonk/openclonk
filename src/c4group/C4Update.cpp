@@ -42,8 +42,29 @@ bool C4Group_CopyEntry(C4Group *pFrom, C4Group *pTo, const char *strItemName)
 	return true;
 }
 
-bool C4Group_ApplyUpdate(C4Group &hGroup)
+bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 {
+	// Wait for parent process to terminate (so we can safely replace the executable)
+#ifdef _WIN32
+	if(ParentProcessID)
+	{
+		HANDLE ParentProcess = OpenProcess(SYNCHRONIZE, FALSE, ParentProcessID);
+		if(ParentProcess)
+		{
+			// If we couldn't find a handle then either
+			// a) the process terminated already, which is great.
+			// b) OpenProcess() failed, which is not so great. But let's still try to do
+			//    the update.
+			printf("Waiting for parent process to terminate...");
+			DWORD res = WaitForSingleObject(ParentProcess, 10000);
+			if(res == WAIT_TIMEOUT)
+				fprintf(stderr, "Parent process did not terminate after 10 seconds. Continuing...");
+		}
+	}
+#else
+	// We could use waitpid on Unix, but we don't need that functionality there anyway...
+#endif
+
 	// Process object update group (GRPUP_Entries.txt found)
 	C4UpdatePackage Upd;
 	if (hGroup.FindEntry(C4CFN_UpdateEntries))
@@ -129,7 +150,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup)
 		while (hGroup.FindNextEntry("*.c4u", strEntry))
 			if (hChild.OpenAsChild(&hGroup, strEntry))
 			{
-				bool ok = C4Group_ApplyUpdate(hChild);
+				bool ok = C4Group_ApplyUpdate(hChild, 0);
 				hChild.Close();
 				// Failure on child update
 				if (!ok) return false;
@@ -315,10 +336,6 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 			{
 				// packed?
 				bool fPacked = TargetGrp.IsPacked();
-				// maker check (someone might try to unpack directories w/o asking user)
-				if (fPacked)
-					if (!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker()))
-						return false;
 				// Close Group
 				TargetGrp.Close(true);
 				if (fPacked)
@@ -491,8 +508,6 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 		while (ItemGroupFrom.FindNextEntry("*", ItemFileName))
 			if (!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
 				DoUpdate(&ItemGroupFrom, &ItemGroupTo, ItemFileName);
-		// set maker (always)
-		ItemGroupTo.SetMaker(ItemGroupFrom.GetMaker());
 		if (GrpUpdate)
 		{
 			DoGrpUpdate(&ItemGroupFrom, &ItemGroupTo);
@@ -712,11 +727,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	//           in the base group)
 
 	// compare headers
-	if (!pGrp1 ||
-	    pGrp1->GetCreation() != pGrp2->GetCreation() ||
-	    pGrp1->GetOriginal() != pGrp2->GetOriginal() ||
-	    !SEqual(pGrp1->GetMaker(), pGrp2->GetMaker()) ||
-	    !SEqual(pGrp1->GetPassword(), pGrp2->GetPassword()))
+	if (!pGrp1 || pGrp1->GetCreation() != pGrp2->GetCreation())
 		*fModified = true;
 	// set header
 	pUpGrp->SetHead(*pGrp2);

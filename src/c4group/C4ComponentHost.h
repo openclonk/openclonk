@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -59,7 +59,7 @@ protected:
 #ifdef _WIN32
 	HWND hDialog;
 	void InitDialog(HWND hDlg);
-	friend BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 };
 

@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2006-2007  Peter Wortmann
+ * Copyright (c) 2010  Caesar
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -137,7 +138,10 @@ private:
 	C4GUI::ListBox *pGameSelList;        // game selection listbox
 	C4KeyBinding *pKeyRefresh, *pKeyBack, *pKeyForward;
 	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnGameList , *btnChat; // left side buttons
-	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnInternet, *btnRecord, *btnUpdate; // right side buttons
+	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnInternet, *btnRecord; // right side buttons
+#ifdef WITH_AUTOMATIC_UPDATE
+	C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton> *btnUpdate;
+#endif
 	C4GUI::Button *btnJoin, *btnRefresh;
 	C4GUI::Edit *pJoinAddressEdt;
 	C4GUI::Edit *pSearchFieldEdt;
@@ -146,7 +150,7 @@ private:
 	C4StartupNetListEntry *pMasterserverClient; // set if masterserver query is enabled: Checks clonk.de for new games
 	bool fIsCollapsed; // set if the number of games in the list requires them to be displayed in a condensed format
 	bool fUpdatingList; // set during list update - prevent selection update calls
-	C4GameVersion UpdateVersion; // set if update button is visible: Version to be updated to
+	StdCopyStrBuf UpdateURL; // set if update button is visible: Version to be updated to
 
 	C4Network2IODiscoverClient DiscoverClient; // disocver client to search for local hosts
 	int iGameDiscoverInterval;                 // next time until a game discovery is started
@@ -178,7 +182,9 @@ protected:
 	void OnBtnChat(C4GUI::Control *btn);
 	void OnBtnInternet(C4GUI::Control *btn);
 	void OnBtnRecord(C4GUI::Control *btn);
+#ifdef WITH_AUTOMATIC_UPDATE
 	void OnBtnUpdate(C4GUI::Control *btn);
+#endif
 	C4GUI::Edit::InputResult OnJoinAddressEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
 	{ DoOK(); return C4GUI::Edit::IR_Abort; }
 	C4GUI::Edit::InputResult OnSearchFieldEnter(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
@@ -209,7 +215,7 @@ public:
 
 	void OnSec1Timer(); // idle proc: update list
 
-	void CheckVersionUpdate(const C4GameVersion &rNewVer); // make an update button visible if the passed verionis an update to this version
+	void CheckVersionUpdate(const char *szUpdateURL, const char *szVersion); // make an update button visible if the passed url is a valid update url
 };
 
 

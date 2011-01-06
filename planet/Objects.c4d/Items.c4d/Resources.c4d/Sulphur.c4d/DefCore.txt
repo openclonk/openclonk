@@ -1,8 +1,7 @@
 [DefCore]
 id=Sulphur
-Version=4,9,10,0
+Version=4,10,0,0
 Category=C4D_Object
-MaxUserSelect=50
 Width=8
 Height=8
 Offset=-4,-4
@@ -11,7 +10,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40
-Components=Sulphur=1;
-Value=5
+Value=4
 Mass=10
+Components=Sulphur=1;
 Rotate=1

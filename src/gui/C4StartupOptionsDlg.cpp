@@ -2,11 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006, 2008  Günther Brammer
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2006, 2008, 2010  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2008  Armin Burgmeier
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2008, 2010  Armin Burgmeier
+ * Copyright (c) 2009  Carli@Carli-PC
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -376,9 +378,6 @@ void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
 		for (i = 0; i < C4MaxKey; ++i)
 			KeyControlBtns[i]->SetKey(Config.Gamepads[iSelectedCtrlSet].Button[i]);
 	}
-	else
-		for (i = 0; i < C4MaxKey; ++i)
-			KeyControlBtns[i]->SetKey(Config.Controls.Keyboard[iSelectedCtrlSet][i]);
 	// open gamepad
 	if (fGamepad && Config.General.GamepadEnabled)
 	{
@@ -408,8 +407,6 @@ void C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn(C4GUI::Control *btn)
 	// and update config
 	if (fGamepad)
 		Config.Gamepads[iSelectedCtrlSet].Button[idKey] = key;
-	else
-		Config.Controls.Keyboard[iSelectedCtrlSet][idKey] = key;
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn(C4GUI::Control *btn)
@@ -736,25 +733,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetGeneral->AddElement(pCheck);
 #endif
-	// fair crew strength
-	C4GUI::GroupBox *pGroupFairCrewStrength = new C4GUI::GroupBox(caSheetProgram.GetGridCell(0,2,5,7,-1,pUseFont->GetLineHeight()*2+iIndentY2*2+C4GUI_ScrollBarHgt, true, 1,2));
-	pGroupFairCrewStrength->SetTitle(LoadResStr("IDS_CTL_FAIRCREWSTRENGTH"));
-	pGroupFairCrewStrength->SetFont(pUseFont);
-	pGroupFairCrewStrength->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
-	pSheetGeneral->AddElement(pGroupFairCrewStrength);
-	C4GUI::ComponentAligner caGroupFairCrewStrength(pGroupFairCrewStrength->GetClientRect(), 1,0, true);
-	StdStrBuf sLabelTxt; sLabelTxt.Copy(LoadResStr("IDS_CTL_FAIRCREWWEAK"));
-	w=20; q=12; pUseFont->GetTextExtent(sLabelTxt.getData(), w,q, true);
-	pGroupFairCrewStrength->AddElement(new C4GUI::Label(sLabelTxt.getData(), caGroupFairCrewStrength.GetFromLeft(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	sLabelTxt.Copy(LoadResStr("IDS_CTL_FAIRCREWSTRONG"));
-	pUseFont->GetTextExtent(sLabelTxt.getData(), w,q, true);
-	pGroupFairCrewStrength->AddElement(new C4GUI::Label(sLabelTxt.getData(), caGroupFairCrewStrength.GetFromRight(w,q), ACenter, C4StartupFontClr, pUseFont, false, false));
-	C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t> *pCB = new C4GUI::ParCallbackHandler<C4StartupOptionsDlg, int32_t>(this, &C4StartupOptionsDlg::OnFairCrewStrengthSliderChange);
-	C4GUI::ScrollBar *pSlider = new C4GUI::ScrollBar(caGroupFairCrewStrength.GetCentered(caGroupFairCrewStrength.GetInnerWidth(), C4GUI_ScrollBarHgt), true, pCB, 101);
-	pSlider->SetDecoration(&C4Startup::Get()->Graphics.sfctBookScroll, false);
-	pGroupFairCrewStrength->SetToolTip(LoadResStr("IDS_DESC_FAIRCREWSTRENGTH"));
-	pSlider->SetScrollPos(FairCrewStrength2Slider(Config.General.FairCrewStrength));
-	pGroupFairCrewStrength->AddElement(pSlider);
 	// reset configuration
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETCONFIG");
 	C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton> *pSmallBtn;
@@ -859,16 +837,28 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupOptions->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
 	pSheetGraphics->AddElement(pGroupOptions);
 	C4GUI::ComponentAligner caGroupOptions(pGroupOptions->GetClientRect(), iIndentX1, iIndentY2, true);
-	// add new crew portraits
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_ADDPORTRAITS"), NULL, &Config.Graphics.AddNewCrewPortraits);
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_ADDPORTRAITS_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
-	// store default portraits in crew
-	pCheck = new BoolConfig(caGroupOptions.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_STOREPORTRAITS"), NULL, &Config.Graphics.SaveDefaultPortraits);
-	pCheck->SetToolTip(LoadResStr("IDS_DESC_STOREPORTRAITS"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupOptions->AddElement(pCheck);
+	// multisampling
+	C4GUI::ComponentAligner msBox(caGroupOptions.GetFromTop(C4GUI::ComboBox::GetDefaultHeight()), 0, 0, false);
+	w=20; q=12; pUseFont->GetTextExtent(LoadResStr("IDS_CTL_ANTIALIASING"), w,q, true);
+	pGroupOptions->AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_ANTIALIASING"), msBox.GetFromLeft(w+C4GUI_DefDlgSmallIndent), ALeft, C4StartupFontClr, pUseFont, false, false));
+
+	pUseFont->GetTextExtent("Off", w, q, true);
+	C4GUI::ComboBox *pGfxMSCombo = new C4GUI::ComboBox(msBox.GetFromLeft(w+40,C4GUI::ComboBox::GetDefaultHeight()));
+	pGfxMSCombo->SetToolTip(LoadResStr("IDS_MSG_ANTIALIASING_DESC"));
+	pGfxMSCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxMSComboFill, &C4StartupOptionsDlg::OnGfxMSComboSelChange));
+	pGfxMSCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
+	pGfxMSCombo->SetFont(pUseFont);
+	pGfxMSCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
+	// Pre-Select current setting
+	StdStrBuf Current;
+	if(Config.Graphics.MultiSampling) Current.Format("%dx", Config.Graphics.MultiSampling);
+	else Current.Copy("Off");
+	pGfxMSCombo->SetText(Current.getData());
+	// Set control read only if multisampling is not available
+	std::vector<int> multisamples;
+	Application.pWindow->EnumerateMultiSamples(multisamples);
+	pGfxMSCombo->SetReadOnly(multisamples.empty());
+	pGroupOptions->AddElement(pGfxMSCombo);
 	// --subgroup effects
 	C4GUI::GroupBox *pGroupEffects = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,2,3));
 	pGroupEffects->SetTitle(LoadResStrNoAmp("IDS_CTL_SMOKE"));
@@ -896,8 +886,8 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupEffects->AddElement(pCheck);
 	// high resolution landscape
-	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("[!]High resolution landscape"), NULL, &Config.Graphics.HighResLandscape);
-	pCheck->SetToolTip(LoadResStr("[!]An expensive effect."));
+	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_HIGHRESLANDSCAPE"), NULL, &Config.Graphics.HighResLandscape);
+	pCheck->SetToolTip(LoadResStr("IDS_MSG_HIGHRESLANDSCAPE_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupEffects->AddElement(pCheck);
 
@@ -952,6 +942,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	int32_t i;
 	for (i=0; i<2; ++i)
 	{
+		StdStrBuf sLabelTxt;
 		C4GUI::ComponentAligner caVolumeSlider(caGroupVolume.GetGridCell(0,1,i,2, -1, pUseFont->GetLineHeight()+iIndentY2*2+C4GUI_ScrollBarHgt, true), 1,0,false);
 		pGroupVolume->AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr(i ? "IDS_CTL_SOUNDFX" : "IDS_CTL_MUSIC")).getData(), caVolumeSlider.GetFromTop(pUseFont->GetLineHeight()), ALeft, C4StartupFontClr, pUseFont, false, false));
 		sLabelTxt.Copy(LoadResStr("IDS_CTL_SILENT"));
@@ -997,10 +988,12 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pLeagueServerCfg = new NetworkServerAddressConfig(caSheetNetwork.GetFromTop(iServerCfgHgt), sServerText.getData(), &(Config.Network.UseAlternateServer), Config.Network.AlternateServerAddress, iServerCfgWdtMid);
 	pLeagueServerCfg->SetToolTip(LoadResStr("IDS_NET_MASTERSRV_DESC"));
 	pSheetNetwork->AddElement(pLeagueServerCfg);
+#ifdef WITH_AUTOMATIC_UPDATE
 	pCheck = new BoolConfig(caSheetNetwork.GetFromTop(pUseFont->GetLineHeight()), LoadResStr("IDS_CTL_AUTOMATICUPDATES"), NULL, &Config.Network.AutomaticUpdate, false);
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOMATICUPDATES"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetNetwork->AddElement(pCheck);
+#endif
 	const char *szNameCfgText = LoadResStr("IDS_NET_USERNAME");
 	int iNameCfgWdt=200, iNameCfgHgt=48; C4StartupOptionsDlg::EditConfig::GetControlSize(&iNameCfgWdt, &iNameCfgHgt, szNameCfgText, false);
 	iNameCfgWdt += 5;
@@ -1027,24 +1020,6 @@ void C4StartupOptionsDlg::OnClosed(bool fOK)
 	// callback when dlg got closed - save config
 	SaveConfig(true, false);
 	C4StartupDlg::OnClosed(fOK);
-}
-
-int32_t C4StartupOptionsDlg::FairCrewSlider2Strength(int32_t iSliderVal)
-{
-	// slider linear in rank to value linear in exp
-	return int32_t(pow(double(iSliderVal)/9.5, 1.5) * 1000.0);
-}
-
-int32_t C4StartupOptionsDlg::FairCrewStrength2Slider(int32_t iStrengthVal)
-{
-	// value linear in exp to slider linear in rank
-	return int32_t(pow(double(iStrengthVal)/1000.0, 1.0/1.5) * 9.5);
-}
-
-void C4StartupOptionsDlg::OnFairCrewStrengthSliderChange(int32_t iNewVal)
-{
-	// fair crew strength determined by exponential fn
-	Config.General.FairCrewStrength = FairCrewSlider2Strength(iNewVal);
 }
 
 void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)
@@ -1083,6 +1058,64 @@ void C4StartupOptionsDlg::OnGfxEngineCheck(C4GUI::Element *pCheckBox)
 	SaveGfxTroubleshoot();
 	Config.Graphics.Engine = i;
 	LoadGfxTroubleshoot();
+}
+
+void C4StartupOptionsDlg::OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller)
+{
+	// clear all old entries first to allow a clean refill
+	pFiller->ClearEntries();
+
+	pFiller->AddEntry("Off", 0);
+
+	std::vector<int> multisamples;
+	Application.pWindow->EnumerateMultiSamples(multisamples);
+
+	std::sort(multisamples.begin(), multisamples.end());
+	for(unsigned int i = 0; i < multisamples.size(); ++i)
+	{
+		StdStrBuf text;
+		text.Format("%dx", multisamples[i]);
+		pFiller->AddEntry(text.getData(), multisamples[i]);
+	}
+}
+
+bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
+{
+	if(pTexMgr) pTexMgr->IntLock();
+#ifdef USE_GL
+	lpDDraw->InvalidateDeviceObjects();
+	// Note: This assumes there is only one GL context (the main context). This
+	// is true in fullscreen mode, and since the startup dlg is only shown in
+	// fullscreen mode we are safe this way.
+	if(pGL) pGL->pMainCtx->Clear();
+#endif
+#ifdef USE_DIRECTX
+	// It should also be possible to clear+reinit DDraw also for GL, however,
+	// if ReInit() does _not_ create a new window on X11 then all rendering
+	// stops until the Window is being moved again (or tasked-out and back in
+	// in fullscreen mode). This does not happen when only reinitializing the
+	// GL context instead of whole DDraw so that's why we do this currently.
+	if(pD3D) lpDDraw->Clear();
+#endif
+
+	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
+	Config.Graphics.MultiSampling = idNewSelection;
+	bool success = Application.pWindow->ReInit(&Application);
+
+#ifdef USE_GL
+	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
+	lpDDraw->RestoreDeviceObjects();
+#endif
+#ifdef USE_DIRECTX
+	// Note: Editor is hardcoded to false at this point... I guess that's OK
+	// because C4StartupOptionsDlg is never shown in editor mode anyway.
+	if(pD3D) lpDDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
+#endif
+
+	if(pTexMgr) pTexMgr->IntUnlock();
+	
+	if(!success) Config.Graphics.MultiSampling = PrevMultiSampling;
+	return !success;
 }
 
 void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
@@ -1159,13 +1192,10 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
 	{
 		// abort: Restore screen, if this was not some program abort
-		if (C4GUI::IsGUIValid())
+		if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
 		{
-			if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
-			{
-				if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
-				RecreateDialog(false);
-			}
+			if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
+			RecreateDialog(false);
 		}
 
 		return false;

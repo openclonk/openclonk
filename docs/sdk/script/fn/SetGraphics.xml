@@ -101,7 +101,7 @@
       </params>
     </syntax>
     <desc>Changes the graphics of the object. This affects the display of the given object everywhere in the game: in the landscape, in menus, or on control buttons.</desc>
-    <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.bmp/-.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">ActMap.txt</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
+    <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.bmp/-.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">the ActMap</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
     <examples>
       <example>
         <code><funclink>FindObject</funclink>(Rock)-&gt;SetGraphics(nil, Gold);</code>

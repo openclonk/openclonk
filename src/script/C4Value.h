@@ -2,8 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001, 2004  Sven Eberhardt
- * Copyright (c) 2001-2002, 2006  Peter Wortmann
- * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2001-2002, 2006, 2010  Peter Wortmann
+ * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,13 +24,7 @@
 
 #include "C4Id.h"
 #include "C4Real.h"
-
-// class declarations
-class C4Value;
-class C4Object;
-class C4PropList;
-class C4String;
-class C4ValueArray;
+#include "C4StringTable.h"
 
 // C4Value type
 enum C4V_Type
@@ -266,11 +262,11 @@ protected:
 	// data
 	C4V_Data Data;
 
-	// data type
-	C4V_Type Type;
-
 	// proplist reference list
 	C4Value * NextRef;
+
+	// data type
+	C4V_Type Type;
 
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL)
 	{ Type = (nData || IsNullableType(nType) ? nType : C4V_Any); AddDataRef(); }
@@ -303,89 +299,87 @@ inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);
 
-// converter templates
-template <> struct C4ValueConv<int32_t>
-{
-	inline static C4V_Type Type() { return C4V_Int; }
-	inline static int32_t FromC4V(C4Value &v) { return v.getInt(); }
-	inline static int32_t _FromC4V(C4Value &v) { return v._getInt(); }
-	inline static C4Value ToC4V(int32_t v) { return C4VInt(v); }
-};
-template <> struct C4ValueConv<C4Real>
-{
-	inline static C4V_Type Type() { return C4V_Float; }
-	inline static C4Real FromC4V(C4Value &v) { return v.getFloat(); }
-	inline static C4Real _FromC4V(C4Value &v) { return v._getFloat(); }
-	inline static C4Value ToC4V(C4Real v) { return C4VFloat(v); }
-};
-template <> struct C4ValueConv<bool>
-{
-	inline static C4V_Type Type() { return C4V_Bool; }
-	inline static bool FromC4V(C4Value &v) { return v.getBool(); }
-	inline static bool _FromC4V(C4Value &v) { return v._getBool(); }
-	inline static C4Value ToC4V(bool v) { return C4VBool(v); }
-};
-template <> struct C4ValueConv<C4ID>
-{
-	inline static C4V_Type Type() { return C4V_PropList; }
-	inline static C4ID FromC4V(C4Value &v) { return v.getC4ID(); }
-	inline static C4ID _FromC4V(C4Value &v) { return FromC4V(v); }
-	inline static C4Value ToC4V(C4ID v) { return C4VID(v); }
-};
-template <> struct C4ValueConv<C4Object *>
-{
-	inline static C4V_Type Type() { return C4V_C4Object; }
-	inline static C4Object *FromC4V(C4Value &v) { return v.getObj(); }
-	inline static C4Object *_FromC4V(C4Value &v) { return v._getObj(); }
-	inline static C4Value ToC4V(C4Object *v) { return C4VObj(v); }
-};
-template <> struct C4ValueConv<C4String *>
-{
-	inline static C4V_Type Type() { return C4V_String; }
-	inline static C4String *FromC4V(C4Value &v) { return v.getStr(); }
-	inline static C4String *_FromC4V(C4Value &v) { return v._getStr(); }
-	inline static C4Value ToC4V(C4String *v) { return C4VString(v); }
-};
-template <> struct C4ValueConv<C4ValueArray *>
-{
-	inline static C4V_Type Type() { return C4V_Array; }
-	inline static C4ValueArray *FromC4V(C4Value &v) { return v.getArray(); }
-	inline static C4ValueArray *_FromC4V(C4Value &v) { return v._getArray(); }
-	inline static C4Value ToC4V(C4ValueArray *v) { return C4VArray(v); }
-};
-template <> struct C4ValueConv<C4PropList *>
-{
-	inline static C4V_Type Type() { return C4V_PropList; }
-	inline static C4PropList *FromC4V(C4Value &v) { return v.getPropList(); }
-	inline static C4PropList *_FromC4V(C4Value &v) { return v._getPropList(); }
-	inline static C4Value ToC4V(C4PropList *v) { return C4VPropList(v); }
-};
-template <> struct C4ValueConv<const C4Value &>
-{
-	inline static C4V_Type Type() { return C4V_Any; }
-	inline static const C4Value &FromC4V(C4Value &v) { return v; }
-	inline static const C4Value &_FromC4V(C4Value &v) { return v; }
-	inline static C4Value ToC4V(const C4Value &v) { return v; }
-};
-template <> struct C4ValueConv<C4Value>
-{
-	inline static C4V_Type Type() { return C4V_Any; }
-	inline static C4Value FromC4V(C4Value &v) { return v; }
-	inline static C4Value _FromC4V(C4Value &v) { return v; }
-	inline static C4Value ToC4V(C4Value v) { return v; }
-};
-
-// aliases
-template <> struct C4ValueConv<long> : public C4ValueConv<int32_t> { };
-#if defined(_MSC_VER) && _MSC_VER <= 1100
-template <> struct C4ValueConv<int> : public C4ValueConv<int32_t> { };
-#endif
-
 extern const C4Value C4VFalse, C4VTrue;
 
 // type tag to allow other code to recognize C4VNull at compile time
 class C4NullValue : public C4Value {};
 extern const C4NullValue C4VNull;
+
+/* These are by far the most often called C4Value functions.
+ They also often do redundant checks the compiler should be able to optimize away
+ in common situations because the Type of the new value is known. In any case,
+ inlining them does speed up the script engine on at least one artificial benchmark. */
+
+#include "C4ValueArray.h"
+#include "C4PropList.h"
+
+ALWAYS_INLINE void C4Value::AddDataRef()
+{
+	assert(Type != C4V_Any || !Data);
+	switch (Type)
+	{
+	case C4V_Array: Data.Array->IncRef(); break;
+	case C4V_String: Data.Str->IncRef(); break;
+	case C4V_C4Object:
+#ifdef _DEBUG
+		// check if the object actually exists
+		/*if (!::Objects.ObjectNumber(Data.Obj))
+			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }*/
+#endif
+	case C4V_PropList:
+#ifdef _DEBUG
+		if (!Data.PropList->Status)
+			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
+#endif
+		Data.PropList->AddRef(this);
+		break;
+	default: break;
+	}
+}
+
+ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
+{
+	// clean up
+	switch (Type)
+	{
+	case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
+	case C4V_Array: Data.Array->DecRef(); break;
+	case C4V_String: Data.Str->DecRef(); break;
+	default: break;
+	}
+}
+
+ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
+{
+	assert(nType != C4V_Any || !nData);
+	// Do not add this to the same linked list twice.
+	if (Data == nData && Type == nType) return;
+
+	C4V_Data oData = Data;
+	C4V_Type oType = Type;
+	C4Value * oNextRef = NextRef;
+
+	// change
+	Data = nData;
+	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
+
+	// hold new data & clean up old
+	AddDataRef();
+	DelDataRef(oData, oType, oNextRef);
+}
+
+ALWAYS_INLINE void C4Value::Set0()
+{
+	C4V_Data oData = Data;
+	C4V_Type oType = Type;
+
+	// change
+	Data.Obj = 0;
+	Type = C4V_Any;
+
+	// clean up (save even if Data was 0 before)
+	DelDataRef(oData, oType, NextRef);
+}
 
 #endif
 

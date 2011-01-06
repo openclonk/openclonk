@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2008  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -26,7 +27,7 @@
 enum
 {
 	C4MN_None         = 0,
-	C4MN_Construction = 1,
+	/*C4MN_Construction = 1, obsolete, now reserved */
 	/*C4MN_Bridge       = 2, obsolete, now reserved */
 	C4MN_Take         = 3,
 	C4MN_Buy          = 4,

@@ -15,7 +15,7 @@
 // Include modular scoreboard columns, notice the reverse order.
 #include Scoreboard_KillStreak
 #include Scoreboard_Kill
-#include Scoreboard_Death
+//#include Scoreboard_Death
 #include Scoreboard_Relaunch
 #include Scoreboard_Player
 
@@ -67,8 +67,8 @@ protected func RelaunchPlayer(int plr, int killer)
 	if (GetRelaunchCount(plr) < 0)
 		return EliminatePlayer(plr);
 	
-	// Log messages.
-	LogKill(killer, plr);
+	// the kill logs rule cares about logging the respawn
+	// ..
 	
 	// Kill bonus: 1 extra relaunch per MIME_KillsToRelaunch kills.
 	// Only if killer exists and has not committed suicide.
@@ -87,7 +87,10 @@ protected func RelaunchPlayer(int plr, int killer)
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
-	// Show scoreboard for a while.
+	// Show scoreboard for a while & sort.
+	SortScoreboard(Scoreboard_KillStreak->GetKillStreakCol(), true);
+	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
+	SortScoreboard(Scoreboard_Relaunch->GetRelaunchCol(), true);
 	DoScoreboardShow(1, plr + 1);
 	Schedule(Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	return; // _inherited(plr, killer, ...);
@@ -131,30 +134,5 @@ protected func RemovePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-/*-- Statistics --*/
-
-private func LogKill(int killer, int victim)
-{
-	var msg;
-	// Determine kill-part.
-	if (killer == victim || !GetPlayerName(killer)) // Suicide or unknown killer.
-		msg = Format("$MsgSelfKill$", GetPlayerName(victim));
-	else if (GetPlayerTeam(killer) && GetPlayerTeam(killer) == GetPlayerTeam(victim)) // Teamkill.
-		msg = Format("$MsgTeamKill$", GetPlayerName(victim), GetPlayerName(killer));
-	else // Normal kill.
-		msg = Format("$MsgKill$", GetPlayerName(victim), GetPlayerName(killer));
-	// Determine relaunch part.
-	if (GetRelaunchCount(victim) < 0) // Player eliminated.
-		msg = Format("%s %s", msg, "$MsgFail$");
-	else if (GetRelaunchCount(victim) == 0) // Last relaunch.
-		msg = Format("%s %s", msg, "$MsgRelaunch0$");
-	else if (GetRelaunchCount(victim) == 1) // One relaunch remaining.
-		msg = Format("%s %s", msg, "$MsgRelaunch1$");
-	else // Multiple relaunches remaining.
-		msg = Format("%s %s", msg, Format("$MsgRelaunchX$", GetRelaunchCount(victim)));
-	// Log message.
-	Log(msg);
-	return;
-}
 
 local Name = "$Name$";

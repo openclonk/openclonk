@@ -34,6 +34,9 @@
 /* Define to 1 if FMOD is available */
 #cmakedefine HAVE_FMOD 1
 
+/* Use OpenAL for playing sounds */
+#cmakedefine USE_OPEN_AL 1
+
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
@@ -176,6 +179,9 @@
 /* Use GTK+3 for the developer mode */
 #cmakedefine WITH_GTK3 1
 
+/* Enable the automatic update system */
+#cmakedefine WITH_AUTOMATIC_UPDATE 1
+
 /* Define to 1 if the X Window System is missing or not being used. */
 #cmakedefine X_DISPLAY_MISSING 1
 
@@ -190,6 +196,12 @@
 
 /* Define to 1 if you have support for nullptr. */
 #cmakedefine HAVE_NULLPTR 1
+
+/* Use Apple Cocoa for the UI */
+#cmakedefine USE_COCOA 1
+
+/* Generate minidumps on crash */
+#cmakedefine GENERATE_MINI_DUMP 1
 
 /* Define to 1 if your compiler supports static_assert */
 #cmakedefine HAVE_STATIC_ASSERT 1

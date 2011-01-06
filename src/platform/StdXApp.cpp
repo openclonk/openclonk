@@ -2,8 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2006, 2008  Armin Burgmeier
+ * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2006, 2008-2009  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -69,6 +70,7 @@ static CStdApp * readline_callback_use_this_app = 0;
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
+# include "c4x.xpm"
 # include <gtk/gtk.h>
 #endif
 
@@ -118,6 +120,14 @@ bool CStdApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
+	// FIXME: This should only be done in developer mode.
+#ifdef WITH_DEVELOPER_MODE
+	gtk_init(&argc, &argv);
+
+	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
+	gtk_window_set_default_icon(icon);
+	g_object_unref(icon);
+#endif
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 	static char dir[PATH_MAX];
@@ -132,15 +142,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	{
 		Location = dir;
 	}
-	// botch arguments
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
 
 	if (!(dpy = XOpenDisplay (0)))
 	{
@@ -195,7 +196,7 @@ bool CStdApp::Init(int argc, char * argv[])
 #endif
 
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()
@@ -362,6 +363,7 @@ void CStdApp::HandleXMessage()
 	case ConfigureNotify:
 		if (pWindow && event.xany.window == pWindow->wnd)
 		{
+			XResizeWindow(dpy, pWindow->renderwnd, event.xconfigure.width, event.xconfigure.height);
 			OnResolutionChanged(event.xconfigure.width, event.xconfigure.height);
 		}
 		break;
@@ -388,7 +390,6 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	if (!fFullScreen)
 	{
 		XResizeWindow(dpy, pWindow->wnd, iXRes, iYRes);
-		OnResolutionChanged(iXRes, iYRes);
 		return true;
 	}
 	if (Priv->xf86vmode_targetmode.hdisplay == iXRes && Priv->xf86vmode_targetmode.vdisplay == iYRes)
@@ -538,7 +539,6 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd)
 		}
 	}
 	XGrabPointer(pApp->dpy, wnd, true, 0, GrabModeAsync, GrabModeAsync, wnd, None, LastEventTime);
-	pApp->OnResolutionChanged(wdt, hgt);
 	return true;
 }
 
@@ -568,15 +568,17 @@ void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd)
 }
 
 // Copy the text to the clipboard or the primary selection
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
 	Window owner = XGetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
-	if (owner != pWindow->wnd) return;
+	if (owner != pWindow->wnd) return false;
 	d.Text.Copy(text);
 	d.AcquirationTime = Priv->LastEventTime;
+	return true;
 }
+
 // Paste the text from the clipboard or the primary selection
 StdStrBuf CStdApp::Paste(bool fClipboard)
 {
@@ -614,11 +616,13 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 	XFree (data);
 	return res;
 }
+
 // Is there something in the clipboard?
 bool CStdApp::IsClipboardFull(bool fClipboard)
 {
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 }
+
 // Give up Selection ownership
 void CStdApp::ClearClipboard(bool fClipboard)
 {

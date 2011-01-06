@@ -47,8 +47,9 @@ protected:
 	virtual void DrawElement(C4TargetFacet &cgo);
 	bool KeyBack() { DoBack(); return true; }
 	void OnBackBtn(C4GUI::Control *btn) { DoBack(); }
-	void OnRegisterBtn(C4GUI::Control *btn);
+#ifdef WITH_AUTOMATIC_UPDATE
 	void OnUpdateBtn(C4GUI::Control *btn);
+#endif
 
 public:
 	void OnSec1Timer();

@@ -1,12 +1,10 @@
-/*--
-	Tutorial Guide
-	Author: Maikel
-		
-	The tutorial guide can be clicked on by the player, it supplies the player with information and hints.
-	Callbacks to the scenario script:
-	* OnGuideMessageShown(int plr, int index) when a message is shown
-	* OnGuideMessageRemoved(int plr, int index) when a message is removed, all events
---*/
+/** Tutorial Guide
+* The tutorial guide can be clicked by the player, it supplies the player with information and hints.
+* The following callbacks are made to the scenario script:
+* - \c OnGuideMessageShown(int plr, int index) when a message is shown
+* - \c OnGuideMessageRemoved(int plr, int index) when a message is removed, all events
+* @author Maikel
+*/
 
 
 local messages; // A container to hold all messages.
@@ -23,7 +21,10 @@ protected func Initialize()
 	return;
 }
 
-// Creates the tutorial guide in the upper hud, returns the guide as a pointer.
+/* Creates the tutorial guide in the upper part of the HUD, returns the guide as a pointer.
+* @param plr The player for which the guide should be created.
+* @return the guide object.
+*/
 global func CreateTutorialGuide(int plr)
 {
 	var guide = CreateObject(TutorialGuide, 0, 0 , plr);
@@ -39,7 +40,10 @@ public func SetGuideIndex(int to_index)
 	return;
 }
 
-// Add a message to the guide, the index is set to this message.
+/* Adds a message to the guide. The internal index is set to this message meaning that this message will
+* be shown if the player clicks the guide.
+* @param msg Message that should be added to the message stack.
+*/
 public func AddGuideMessage(string msg)
 {
 	// Automatically set index to current.
@@ -51,12 +55,16 @@ public func AddGuideMessage(string msg)
 	return;
 }
 
-// Shows a guide message to the player, also resets the index to that point.
+/* Shows a guide message to the player, also resets the internal index to that point.
+*	@param show_index The message corresponding to this index will be shown.
+*/
 public func ShowGuideMessage(int show_index)
 {
 	index = Max(0, show_index);
 	if (!messages[index])
 		return;
+	if (GetEffect("MessageShown", this))
+		RemoveEffect("MessageShown", this);
 	if (GetEffect("NotifyPlayer", this))
 		RemoveEffect("NotifyPlayer", this);
 	GuideMessage(index);
@@ -83,8 +91,13 @@ public func MouseSelection(int plr)
 		RemoveEffect("NotifyPlayer", this);
 	// Clear guide message if the latest is already shown.
 	var effect = GetEffect("MessageShown", this, nil, 0);
-	if (effect && EffectVar(0, this, effect) == index)
-		return ClearGuideMessage();
+	if (effect)
+	{
+		if (effect.var0 == index)
+			return ClearGuideMessage();
+		else
+			RemoveEffect("MessageShown", this);
+	}
 	// Show guide message if there is a new one, and increase index if possible.
 	if (!messages[index])
 		return;
@@ -107,29 +120,33 @@ private func GuideMessage(int show_index)
 	// Message as regular one, don't stop the player.
 	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
-	EffectVar(0, this, effect) = show_index;
+	effect.var0 = show_index;
+	// Messages with @ in front are shown infinetely long.
+	if(GetChar(message, 0) == GetChar("@", 0))
+		effect.var1 = true;
 	return true;
 }
 
 // Effect exists as long as the message is shown.
-// Message string is stored in EffectVar 0.
-// TODO account for infinite messages, those with @ in front.
-protected func FxMessageShownStart(object target, int num, int temporary)
+// Message index is stored in EffectVar 0.
+// For messages with @ in front, EffectVar 1 is true.
+protected func FxMessageShownStart(object target, effect, int temporary)
 {
 	if (temporary == 0)
 		GameCall("OnGuideMessageShown", target->GetOwner(), index);
 	return 1;
 }
 
-protected func FxMessageShownTimer(object target, int num, int time)
+protected func FxMessageShownTimer(object target, effect, int time)
 {
 	// Delete effect if time has passed, i.e. message has disappeared.
-	if (time)
+	// But only if it is not a message of infinite length, with @ in front.
+	if (time && !effect.var1)
 		return -1;
 	return 1;
 }
 
-protected func FxMessageShownStop(object target, int num, int reason, bool temporary)
+protected func FxMessageShownStop(object target, effect, int reason, bool temporary)
 {
 	if (!temporary)
 		GameCall("OnGuideMessageRemoved", target->GetOwner(), index);
@@ -137,15 +154,15 @@ protected func FxMessageShownStop(object target, int num, int reason, bool tempo
 }
 
 // Effect to display the player notification for some time.
-protected func FxNotifyPlayerStart(object target, int num, int temporary)
+protected func FxNotifyPlayerStart(object target, effect, int temporary)
 {
 	// Display notifier.
-	SetGraphics("SpeakBubble", GetID(), 1, GFXOV_MODE_Base); //TODO get rid of this placeholder image.
-	SetObjDrawTransform(500, 0, -20000, 0, 500, -10000, 1);
+	SetGraphics("SpeakBubble", GetID(), 1, GFXOV_MODE_Base);
+	SetObjDrawTransform(500, 0, -24000, 0, 500, -2000, 1);
 	return 1;
 }
 
-protected func FxNotifyPlayerTimer(object target, int num, int time)
+protected func FxNotifyPlayerTimer(object target, effect, int time)
 {
 	// Delete effect if time has passed.
 	if (time)
@@ -153,7 +170,7 @@ protected func FxNotifyPlayerTimer(object target, int num, int time)
 	return 1;
 }
 
-protected func FxNotifyPlayerStop(object target, int num, int reason, bool temporary)
+protected func FxNotifyPlayerStop(object target, effect, int reason, bool temporary)
 {
 	// Remove notifier.
 	SetGraphics(nil, nil, 1);
@@ -162,7 +179,8 @@ protected func FxNotifyPlayerStop(object target, int num, int reason, bool tempo
 
 protected func FxNotifyPlayerEffect(string new_name)
 {
-	if(new_name == "NotifyPlayer") return -1;
+	if (new_name == "NotifyPlayer") 
+		return -1;
 }
 
 local Name = "$Name$";

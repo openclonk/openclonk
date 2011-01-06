@@ -4,7 +4,7 @@
  * flooding attempts by ip.
  *
  * @package C4Masterserver
- * @version 1.1.5-en
+ * @version 1.2.0-en
  * @author  Benedict Etzel <b.etzel@live.de>
  * @license http://creativecommons.org/licenses/by/3.0/ CC-BY 3.0
  */
@@ -49,7 +49,7 @@ class FloodProtection {
      * @param  int $maxflood
      * @return void
      */
-    public function SetMaxflood($maxflood) {
+    public function setMaxflood($maxflood) {
         $this->maxflood = $maxflood;
     }
 
@@ -59,7 +59,7 @@ class FloodProtection {
      * @param  string $ip
      * @return bool
      */
-    public function CheckRequest($ip) {
+    public function checkRequest($ip) {
         if(!$this->link) return false;
         if($this->UserKnown($ip)) {
             $this->UpdateUser($ip);
@@ -77,7 +77,7 @@ class FloodProtection {
      * @param  string $ip
      * @return bool
      */
-    private function UserKnown($ip) {
+    private function userKnown($ip) {
         if(!$this->link) return false;
         $query = mysql_query('SELECT `time` FROM `'.$this->prefix.'flood` WHERE `ip` = \' '.$ip. '\' LIMIT 1', $this->link);
         if(mysql_num_rows($query) > 0) {
@@ -92,7 +92,7 @@ class FloodProtection {
      * @param  string $ip
      * @return bool
      */
-    private function AddUser($ip) {
+    private function addUser($ip) {
         if(!$this->link) return false;
         $query = mysql_query('INSERT INTO `'.$this->prefix.'flood` (`ip`, `count`, `time`) VALUES (\' '.$ip. '\',  \'0\',\''. time() .'\') ', $this->link);
         if(!$query) {
@@ -107,7 +107,7 @@ class FloodProtection {
      * @param  string $ip
      * @return bool
      */
-    private function UpdateUser($ip) {
+    private function updateUser($ip) {
         if(!$this->link) return false;
         mysql_query('UPDATE `'.$this->prefix.'flood` SET `count` = \'0\'  WHERE `ip` = \' '.$ip.'\' AND `time` != \''.time().'\'', $this->link);
         mysql_query('UPDATE `'.$this->prefix.'flood` SET `count` = `count`+\'1\', `time` = \''.time().'\'  WHERE `ip` = \' '. mysql_real_escape_string($ip, $this->link).'\'', $this->link);
@@ -119,7 +119,7 @@ class FloodProtection {
      * @param  string $ip
      * @return bool
      */
-    private function UserFlooding($ip) {
+    private function userFlooding($ip) {
         if(!$this->link) return false;
         $query = mysql_query('SELECT `time` FROM `'.$this->prefix.'flood` WHERE `ip` = \' '.$ip.'\' AND `count` >= \''.$this->maxflood.'\' LIMIT 1', $this->link);
         if(mysql_num_rows($query) > 0) {
@@ -133,7 +133,7 @@ class FloodProtection {
      *
      * @return void
      */
-    private function CleanUp() {
+    private function cleanUp() {
         mysql_query('DELETE FROM `'.$this->prefix.'flood` WHERE `time` <= \'' . (time()- 600) . '\'',  $this->link);
     }
 }

@@ -2,10 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
+ * Copyright (c) 2005-2010  Günther Brammer
  * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2005-2008  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2010  Carl-Philip Hänsch
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -414,6 +417,7 @@ namespace C4GUI
 		virtual bool IsOwnPtrElement() { return false; } // if true is returned, item will not be deleted when container is cleared
 		virtual bool IsExternalDrawDialog() { return false; }
 		virtual bool IsMenu() { return false; }
+		virtual class DialogWindow* GetDialogWindow() { return NULL; } // return DialogWindow if this element is a dialog
 
 		// for listbox-selection by character input
 		virtual bool CheckNameHotkey(const char * c) { return false; }
@@ -695,19 +699,19 @@ namespace C4GUI
 		Ico_Star           = 48,
 		Ico_Disconnect     = 49,
 		Ico_View           = 50,
-		Ico_RegJoinOnly    = 51,
+//		Ico_RegJoinOnly    = 51,
 		Ico_Ignored        = 52,
 
 		Ico_Ex_RecordOff     = Ico_Extended + 0,
 		Ico_Ex_RecordOn      = Ico_Extended + 1,
-		Ico_Ex_FairCrew      = Ico_Extended + 2,
+//		Ico_Ex_FairCrew      = Ico_Extended + 2,
 		Ico_Ex_NormalCrew    = Ico_Extended + 3,
 		Ico_Ex_LeagueOff     = Ico_Extended + 4,
 		Ico_Ex_LeagueOn      = Ico_Extended + 5,
 		Ico_Ex_InternetOff   = Ico_Extended + 6,
 		Ico_Ex_InternetOn    = Ico_Extended + 7,
 		Ico_Ex_League        = Ico_Extended + 8,
-		Ico_Ex_FairCrewGray  = Ico_Extended + 9,
+//		Ico_Ex_FairCrewGray  = Ico_Extended + 9,
 		Ico_Ex_NormalCrewGray= Ico_Extended + 10,
 		Ico_Ex_Locked        = Ico_Extended + 11,
 		Ico_Ex_Unlocked      = Ico_Extended + 12,
@@ -1937,16 +1941,21 @@ namespace C4GUI
 		friend class ComboBox_FillCB;
 	};
 
+	class Dialog;
+
 	// EM window class
 	class DialogWindow : public CStdWindow
 	{
 	public:
+		Dialog* pDialog;
+		DialogWindow(): CStdWindow(), pDialog(NULL) {}
 		using CStdWindow::Init;
-		CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
+		CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
-#if defined(USE_X11)
+#ifdef USE_X11
 		virtual void HandleMessage (XEvent &);
 #endif
+		virtual void PerformUpdate();
 	};
 
 	// information on how to draw dialog borders and face
@@ -1978,7 +1987,7 @@ namespace C4GUI
 	};
 
 	// a dialog
-	class Dialog : public Window
+	class Dialog: public Window
 	{
 	private:
 		enum Fade { eFadeNone=0, eFadeOut, eFadeIn };
@@ -2024,6 +2033,7 @@ namespace C4GUI
 		void SetFocus(Control *pCtrl, bool fByMouse);
 		Control *GetFocus() { return pActiveCtrl; }
 		virtual Dialog *GetDlg() { return this; } // this is the dialog
+		virtual DialogWindow* GetDialogWindow() { return pWindow; }
 
 		virtual bool CharIn(const char * c);                                 // input: character key pressed - should return false for none-character-inputs  (forward to focused control)
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls
@@ -2512,8 +2522,11 @@ namespace C4GUI
 
 		Dialog *GetTopDialog(); // get topmost dlg
 	public:
-		Screen(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt); // ctor
-		~Screen(); // dtor
+		Screen();
+		~Screen();
+
+		void Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt);
+		void Clear();
 
 		void Render(bool fDoBG);                 // render to lpDDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
@@ -2711,22 +2724,22 @@ namespace C4GUI
 	};
 
 	// shortcut for check whether GUI is active
-	inline bool IsGUIValid() { return !!Screen::GetScreenS(); }
-	inline bool IsActive() { return Screen::GetScreenS() && Screen::GetScreenS()->IsActive(); }
-	inline bool IsExclusive() { return Screen::GetScreenS() && Screen::GetScreenS()->IsExclusive(); }
+	inline bool IsActive() { return Screen::GetScreenS()->IsActive(); }
+	inline bool IsExclusive() { return Screen::GetScreenS()->IsExclusive(); }
 
 	// shortcut for GUI screen size
-	inline int32_t GetScreenWdt() { Screen *pScreen = Screen::GetScreenS(); return pScreen ? pScreen->GetBounds().Wdt : Config.Graphics.ResX; }
-	inline int32_t GetScreenHgt() { Screen *pScreen = Screen::GetScreenS(); return pScreen ? pScreen->GetBounds().Hgt : Config.Graphics.ResY; }
+	inline int32_t GetScreenWdt() { return Screen::GetScreenS()->GetBounds().Wdt; }
+	inline int32_t GetScreenHgt() { return Screen::GetScreenS()->GetBounds().Hgt; }
 
 	// sound effect in GUI: Only if enabled
 	void GUISound(const char *szSound);
 
 	// Zoom
-	inline float GetZoom() { Screen *s=Screen::GetScreenS(); return s ? s->GetZoom() : 1.0f; }
+	inline float GetZoom() { return Screen::GetScreenS()->GetZoom(); }
 	inline void MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, class C4Viewport *pVP) // pVP specified for console mode viewports only
-	{ Screen *s=Screen::GetScreenS(); if(s) s->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
+	{ Screen::GetScreenS()->MouseMove(iButton, iX, iY, dwKeyParam, pVP); }
 
+	extern Screen TheScreen;
 } // end of namespace
 
 typedef C4GUI::Screen C4GUIScreen;

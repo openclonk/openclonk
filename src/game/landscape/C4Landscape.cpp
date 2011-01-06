@@ -2,9 +2,12 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
+ * Copyright (c) 2001-2008, 2010  Sven Eberhardt
  * Copyright (c) 2002, 2004-2008  Peter Wortmann
- * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -2192,7 +2195,6 @@ void C4Landscape::ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt
 	for (int32_t y=iTy; y<iTy+iHgt; y++)
 	{
 		for (int32_t x=iTx; x<iTx+iWdt; x++) ClearPix(x,y);
-		if (Rnd3()) Rnd3();
 	}
 }
 
@@ -2216,7 +2218,6 @@ void C4Landscape::ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32
 			if (Inside(GetDensity(x, y), iMinDensity, iMaxDensity))
 				ClearPix(x,y);
 		}
-		if (Rnd3()) Rnd3();
 	}
 }
 
@@ -2629,7 +2630,7 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				// Sky
 				if (!pix)
 				{
-					Surface32->SetPixDw(iX, iY, GetClrByTex(iX, iY));
+					Surface32->SetPixDw(iX, iY, 0x00ffffff);
 					continue;
 				}
 				// get density
@@ -2638,8 +2639,12 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				iOwnDens *= 2;
 				iOwnDens += GetPlacement(iX + 1, iY) + GetPlacement(iX - 1, iY);
 				iOwnDens /= 4;
-				// Normal color
-				DWORD dwBackClr = GetClrByTex(iX, iY);
+				// get texture map entry for pixel
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(PixCol2Tex(pix));
+				assert(pTex);
+				// get texture contents
+				DWORD dwBackClr;
+				if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
 				// get density of surrounding materials
 				int iCompareDens = AboveDensity / 8;
 				if (iOwnDens > iCompareDens)
@@ -2662,20 +2667,6 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	Surface32->Unlock();
 	// done
 	return true;
-}
-
-DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
-{
-	// Get pixel and default color
-	BYTE pix = _GetPix(iX, iY);
-	// get texture map entry for pixel
-	const C4TexMapEntry *pTex;
-	if (pix && (pTex = ::TextureMap.GetEntry(PixCol2Tex(pix))))
-	{
-		// pattern color
-		return pTex->GetPattern().PatternClr(iX, iY);
-	}
-	return Surface8->pPal->GetClr(pix);
 }
 
 bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)

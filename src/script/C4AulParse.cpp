@@ -1,11 +1,14 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2004, 2006-2008  Sven Eberhardt
- * Copyright (c) 2001-2004, 2006-2008  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2006-2009  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2001-2004, 2006-2008, 2010  Peter Wortmann
+ * Copyright (c) 2001-2004, 2006-2008, 2010  Sven Eberhardt
+ * Copyright (c) 2004, 2007  Matthes Bender
+ * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -97,9 +100,7 @@ enum C4AulTokenType
 	ATT_IDTF,   // identifier
 	ATT_INT,    // integer constant
 	ATT_FLOAT,  // floating point constant
-	ATT_BOOL,   // boolean constant
 	ATT_STRING, // string constant
-	ATT_NIL,    // "nil"
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
@@ -141,7 +142,7 @@ public:
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
-	long cInt; // current int constant (long for compatibility with x86_64)
+	intptr_t cInt; // current int constant
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
@@ -172,7 +173,7 @@ public:
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
 	enum HoldStringsPolicy { Discard, Hold, Ref };
 	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(char *pToken, long *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
+	C4AulTokenType GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
 
 	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
 	void Match(C4AulTokenType TokenType, const char * Message = NULL);
@@ -565,7 +566,7 @@ void C4AulParseState::ClearToken()
 	}
 }
 
-C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
+C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
 {
 	// clear mem of prev token
 	ClearToken();
@@ -716,10 +717,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				SCopy(SPos0, pToken, Len);
 				// directive?
 				if (State == TGS_Dir) return ATT_DIR;
-				// check reserved names
-				if (SEqual(pToken, C4AUL_False)) { *pInt = false; return ATT_BOOL; }
-				if (SEqual(pToken, C4AUL_True))  { *pInt = true; return ATT_BOOL; }
-				if (SEqual(pToken, C4AUL_Nil))   { return ATT_NIL; }
 				// everything else is an identifier
 				return ATT_IDTF;
 			}
@@ -919,13 +916,13 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CALLFS: return "CALLFS";  // failsafe direct call
 	case AB_STACK: return "STACK";    // push nulls / pop
 	case AB_INT: return "INT";      // constant: int
-	case AB_BOOL: return "bool";    // constant: bool
+	case AB_BOOL: return "BOOL";    // constant: bool
 	case AB_STRING: return "STRING";  // constant: string
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
 	case AB_CARRAY: return "CARRAY";  // constant: array
 	case AB_NIL: return "NIL";    // constant: nil
-	case AB_DUP: return "DUP";    // constant: nil
 	case AB_ARRAY: return "ARRAY";    // semi-constant: array
+	case AB_DUP: return "DUP";    // constant: nil
 	case AB_PROPLIST: return "PROPLIST";    // semi-constant: array
 	case AB_IPROPLIST: return "IPROPLIST";
 	case AB_IVARN: return "IVARN";    // initialization of named var
@@ -937,6 +934,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_FOREACH_NEXT: return "FOREACH_NEXT"; // foreach: next element
 	case AB_RETURN: return "RETURN";  // return statement
 	case AB_ERR: return "ERR";      // parse error at this position
+	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
 	case AB_EOF: return "EOF";
 
@@ -946,59 +944,61 @@ static const char * GetTTName(C4AulBCCType e)
 
 void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 {
-	// range check
-	if (CodeSize >= CodeBufSize)
-	{
-		// create new buffer
-		CodeBufSize = CodeBufSize ? 2 * CodeBufSize : C4AUL_CodeBufSize;
-		C4AulBCC *nCode = new C4AulBCC [CodeBufSize];
-		// copy data
-		memcpy(nCode, Code, sizeof(*Code) * CodeSize );
-		// replace buffer
-		delete[] Code;
-		Code = nCode;
-		// adjust pointer
-		CPos = Code + CodeSize;
-	}
 	// store chunk
-	CPos->bccType = eType;
-	CPos->Par.X = X;
-	CPos->SPos = SPos;
+	C4AulBCC bcc;
+	bcc.bccType = eType;
+	bcc.Par.X = X;
+	Code.push_back(bcc);
+	PosForCode.push_back(SPos);
+
+	CPos = &Code.back();
 	switch (eType)
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
 	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
 		CPos->Par.s->IncRef();
 		break;
-	default:
-		// TODO
-		break;
+	default: break;
 	}
-	CPos++; CodeSize++;
+	CPos++;
 }
 
 void C4AulScript::RemoveLastBCC()
 {
-	C4AulBCC *pBCC = Code + CodeSize - 1;
+	C4AulBCC *pBCC = &Code.back();
 	switch (pBCC->bccType)
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 		pBCC->Par.s->DecRef();
 		break;
-	default: break; // I don't want to do anything, thank you very much. Stupid warnings.
+	default: break;
 	}
-	CodeSize--;
+	Code.pop_back();
+	PosForCode.pop_back();
 	CPos--;
 }
 
 void C4AulScript::ClearCode()
 {
-	while(CodeSize > 0)
+	while(Code.size() > 0)
 		RemoveLastBCC();
-	delete[] Code;
-	Code = 0;
-	CodeSize = CodeBufSize = 0;
-	CPos = Code;
+	// add one empty chunk to init CPos
+	AddBCC(AB_ERR);
+}
+
+int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
+{
+	return SGetLine(pOrgScript->GetScript(), GetCodeOwner()->PosForCode[bcc - &GetCodeOwner()->Code[0]]);
+}
+
+C4AulBCC * C4AulScriptFunc::GetCode()
+{
+	return &GetCodeOwner()->Code[CodePos];
+}
+
+C4AulScript * C4AulScriptFunc::GetCodeOwner()
+{
+	return Owner == Owner->Engine ? LinkedTo->Owner : Owner;
 }
 
 bool C4AulScript::Preparse()
@@ -1012,7 +1012,8 @@ bool C4AulScript::Preparse()
 	  however, this is just a few bytes per updated definition in developer mode, which
 	  seems acceptable for me. The mem will be released when destroying the list */
 	Includes = NULL; Appends=NULL;
-	CPos = Code;
+	// reset code
+	ClearCode();
 	while (Func0)
 	{
 		// belongs to this script?
@@ -1157,7 +1158,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 	}
 
 	// Join checks only if it's not a jump target
-	if (!fJump && a->CPos > a->Code)
+	if (!fJump && a->CPos > &a->Code[0])
 	{
 		// Join together stack operations
 		C4AulBCC *pCPos1 = a->CPos - 1;
@@ -1249,17 +1250,10 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
 	case AB_CALL:
+	case AB_FUNC:
 		// Huge hacks would required to make this work. EffectVar should get the Var treatment
 		// and become a BCC of its own anyway.
 		throw new C4AulParseError(this, "Setting a call result does not work, sorry!");
-	case AB_FUNC:
-		// This one at least works somewhat
-		if(SEqual(Value.Par.f->Name, "EffectVar"))
-		{
-			Setter.Par.f = a->GetFuncRecursive("SetEffectVar");
-			break;
-		}
-		// falthru
 	default: 
 		throw new C4AulParseError(this, "assignment not possible for this value!");
 	}
@@ -1364,9 +1358,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_DIR: return "directive";
 	case ATT_IDTF: return "identifier";
 	case ATT_INT: return "integer constant";
-	case ATT_BOOL: return "boolean constant";
 	case ATT_STRING: return "string constant";
-	case ATT_NIL: return "nil";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
 	case ATT_DCOLON: return "'::'";
@@ -1415,7 +1407,8 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContex
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
-	Fn->Code = (C4AulBCC *) (CPos - Code);
+	assert(Fn->GetCodeOwner() == this);
+	Fn->CodePos = CPos - &Code[0];
 	// parse
 	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
@@ -1814,7 +1807,6 @@ void C4AulParseState::Parse_Statement()
 	case ATT_SET:
 	case ATT_OPERATOR:
 	case ATT_INT: // constant in cInt
-	case ATT_BOOL:  // constant in cInt
 	case ATT_STRING: // reference in cInt
 	{
 		Parse_Expression();
@@ -2434,6 +2426,21 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			AddBCC(AB_LOCALN, (intptr_t) pKey);
 			Shift();
 		}
+		else if (SEqual(Idtf, C4AUL_True))
+		{
+			AddBCC(AB_BOOL, 1);
+			Shift();
+		}
+		else if (SEqual(Idtf, C4AUL_False))
+		{
+			AddBCC(AB_BOOL, 0);
+			Shift();
+		}
+		else if (SEqual(Idtf, C4AUL_Nil))
+		{
+			AddBCC(AB_NIL);
+			Shift();
+		}
 		// check for global variable (static)
 		else if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 		{
@@ -2578,21 +2585,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		Shift();
 		break;
 	}
-	case ATT_BOOL:  // constant in cInt
-	{
-		AddBCC(AB_BOOL, cInt);
-		Shift();
-		break;
-	}
 	case ATT_STRING: // reference in cInt
 	{
 		AddBCC(AB_STRING, cInt);
-		Shift();
-		break;
-	}
-	case ATT_NIL:
-	{
-		AddBCC(AB_NIL);
 		Shift();
 		break;
 	}
@@ -2903,7 +2898,7 @@ void C4AulParseState::Parse_Local()
 			Shift(Ref, false);
 			// register as constant
 			if (Type == PREPARSER)
-				a->Def->SetProperty(Strings.RegString(Name), Parse_ConstExpression());
+				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
 			else
 				Parse_ConstExpression();
 		}
@@ -2971,12 +2966,16 @@ C4Value C4AulParseState::Parse_ConstExpression()
 	switch (TokenType)
 	{
 	case ATT_INT: r.SetInt(cInt); break;
-	case ATT_BOOL: r.SetBool(!!cInt); break;
 	case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-	case ATT_NIL: r.Set0(); break;
 	case ATT_IDTF:
 		// identifier is only OK if it's another constant
-		if (!a->Engine->GetGlobalConstant(Idtf, &r))
+		if (SEqual(Idtf, C4AUL_True))
+			r.SetBool(true);
+		else if (SEqual(Idtf, C4AUL_False))
+			r.SetBool(false);
+		else if (SEqual(Idtf, C4AUL_Nil))
+			r.Set0();
+		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
 			UnexpectedToken("constant value");
 		break;
 	case ATT_BOPEN2:
@@ -3056,7 +3055,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 					UnexpectedToken("':' or '='");
 				Shift();
 				if (Type == PREPARSER)
-					r._getPropList()->SetProperty(pKey, Parse_ConstExpression());
+					r._getPropList()->SetPropertyByS(pKey, Parse_ConstExpression());
 				else
 					Parse_ConstExpression();
 				if (TokenType == ATT_COMMA)
@@ -3143,8 +3142,8 @@ bool C4AulScript::Parse()
 	{
 		C4ScriptHost * scripthost = 0;
 		if (Def) scripthost = &Def->Script;
-		if (scripthost) LogSilentF("parsing %s...\n", scripthost->GetFilePath());
-		else LogSilentF("parsing unknown...\n");
+		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->GetFilePath());
+		else fprintf(stderr, "parsing unknown...\n");
 	}
 	// parse children
 	C4AulScript *s = Child0;
@@ -3191,12 +3190,12 @@ bool C4AulScript::Parse()
 				delete err;
 				// make all jumps that don't have their destination yet jump here
 				// intptr_t to make it work on 64bit
-				for (intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - Code; i++)
+				for (int i = Fn->CodePos; i < CPos - &Code[0]; i++)
 				{
-					C4AulBCC *pBCC = Code + i;
+					C4AulBCC *pBCC = &Code[i];
 					if (IsJump(pBCC->bccType))
 						if (!pBCC->Par.i)
-							pBCC->Par.i = CPos - Code - i;
+							pBCC->Par.i = CPos - &Code[0] - i;
 				}
 				// add an error chunk
 				AddBCC(AB_ERR);
@@ -3221,7 +3220,7 @@ bool C4AulScript::Parse()
 			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 		}
 		if (Fn)
-			Fn->Code = Code + (intptr_t) Fn->Code;
+			assert(Fn->GetCodeOwner() == this);
 	}
 
 	// save line count
@@ -3237,23 +3236,30 @@ bool C4AulScript::Parse()
 				if (f->LinkedTo) Fn = f->LinkedTo->SFunc();
 				if (Fn) if (Fn->Owner != Engine) Fn=NULL;
 			}
-			if (Fn)
+			if (!Fn)
+				continue;
+			fprintf(stderr, "%s:\n", Fn->Name);
+			for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
 			{
-				LogSilentF("%s:", Fn->Name);
-				for (C4AulBCC *pBCC = Fn->Code;; pBCC++)
+				C4AulBCCType eType = pBCC->bccType;
+				fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
+				switch (eType)
 				{
-					C4AulBCCType eType = pBCC->bccType;
-					switch (eType)
-					{
-					case AB_FUNC:
-						LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.f->Name); break;
-					case AB_STRING: case AB_CALL: case AB_CALLFS:
-						LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.s->GetCStr()); break;
-					default:
-						LogSilentF("%s\t%ld\n", GetTTName(eType), static_cast<long>(pBCC->Par.X)); break;
-					}
-					if (eType == AB_EOFN) break;
+				case AB_FUNC:
+					fprintf(stderr, "\t%s\n", pBCC->Par.f->Name); break;
+				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
+					fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
+				case AB_STRING:
+					fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
+				case AB_DEBUG: case AB_NIL: case AB_RETURN:
+				case AB_PROPLIST: case AB_IPROPLIST: case AB_PAR:
+				case AB_ARRAYA: case AB_ARRAY_SLICE: case AB_ERR:
+				case AB_EOFN: case AB_EOF:
+					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+				default:
+					fprintf(stderr, "\t%ld\n", static_cast<long>(pBCC->Par.X)); break;
 				}
+				if (eType == AB_EOFN) break;
 			}
 		}
 

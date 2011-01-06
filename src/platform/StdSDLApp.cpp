@@ -3,6 +3,9 @@
  *
  * Copyright (c) 2006  Julian Raschke
  * Copyright (c) 2008-2009  Günther Brammer
+ * Copyright (c) 2009  Mortimer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Peter Wortmann
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -59,16 +62,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	SCopy(argv[0], dir);
 	Location = dir;
 
-	// Build command line.
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
-
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
 	{
 		Log("Error initializing SDL.");
@@ -83,7 +76,7 @@ bool CStdApp::Init(int argc, char * argv[])
 #endif
 
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 
@@ -185,7 +178,7 @@ void CStdApp::RestoreVideoMode()
 #ifndef __APPLE__
 
 // stubs
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 }
 

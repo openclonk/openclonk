@@ -181,6 +181,9 @@
 /* Define to 1 if the X Window System is used */
 #undef USE_X11
 
+/* Enable automatic update system */
+#undef WITH_AUTOMATIC_UPDATE
+
 /* Developer mode */
 #undef WITH_DEVELOPER_MODE
 

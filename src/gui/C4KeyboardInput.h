@@ -1,8 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2009  Sven Eberhardt
  * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -61,37 +62,38 @@ const C4KeyCode KEY_JOY_Mask = 0x420000;
 // Mouse codes (KEY_MOUSE_*): Masked as 0x430000; bit 8-15 used for mouse index
 const C4KeyCode KEY_MOUSE_Mask = 0x430000;
 
-const C4KeyCode KEY_Default = 0,  // no key
-                              KEY_Any     = ~0, // used for default key processing
-                                            KEY_Undefined = (~0)^1, // used to indicate an unknown key
-                                                            KEY_JOY_Left   = 1, // joypad axis control: Any x axis min
-                                                                             KEY_JOY_Up     = 2, // joypad axis control: Any y axis min
-                                                                                              KEY_JOY_Right  = 3, // joypad axis control: Any x axis max
-                                                                                                               KEY_JOY_Down   = 4, // joypad axis control: Any y axis max
-                                                                                                                                KEY_JOY_Button1       = 0x10,   // key index of joypad buttons + button index for more buttons
-                                                                                                                                                        KEY_JOY_ButtonMax     = KEY_JOY_Button1+0x1f, // maximum number of supported buttons on a gamepad
-                                                                                                                                                                                KEY_JOY_Axis1Min      = 0x30,
-                                                                                                                                                                                                        KEY_JOY_Axis1Max      = 0x31,
-                                                                                                                                                                                                                                KEY_JOY_AxisMax       = KEY_JOY_Axis1Min + 0x20,
-                                                                                                                                                                                                                                                        KEY_JOY_AnyButton     = 0xff, // any joypad button (not axis)
-                                                                                                                                                                                                                                                                                KEY_JOY_AnyOddButton  = 0xfe, // joypad buttons 1, 3, 5, etc.
-                                                                                                                                                                                                                                                                                                        KEY_JOY_AnyEvenButton = 0xfd, // joypad buttons 2, 4, 6, etc.
-                                                                                                                                                                                                                                                                                                                                KEY_JOY_AnyLowButton  = 0xfc, // joypad buttons 1 - 4
-                                                                                                                                                                                                                                                                                                                                                        KEY_JOY_AnyHighButton = 0xfb, // joypad buttons > 4
-                                                                                                                                                                                                                                                                                                                                                                                KEY_MOUSE_Move        = 1,    // mouse control: mouse movement
-                                                                                                                                                                                                                                                                                                                                                                                                        KEY_MOUSE_Button1     = 0x10, // key index of mouse buttons + button index for more buttons
-                                                                                                                                                                                                                                                                                                                                                                                                                                KEY_MOUSE_ButtonLeft  = KEY_MOUSE_Button1 + 0,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        KEY_MOUSE_ButtonRight = KEY_MOUSE_Button1 + 1,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                KEY_MOUSE_ButtonMiddle= KEY_MOUSE_Button1 + 2,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        KEY_MOUSE_ButtonMax   = KEY_MOUSE_Button1 + 0x1f, // max number of supported mouse buttons
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                KEY_MOUSE_Button1Double     = 0x30, // double clicks have special events because double click speed is issued by OS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              KEY_MOUSE_ButtonLeftDouble  = KEY_MOUSE_Button1Double + 0,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            KEY_MOUSE_ButtonRightDouble = KEY_MOUSE_Button1Double + 1,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          KEY_MOUSE_ButtonMiddleDouble= KEY_MOUSE_Button1Double + 2,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        KEY_MOUSE_ButtonMaxDouble   = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      KEY_MOUSE_Wheel1Up          = 0x40,    // mouse control: wheel up
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    KEY_MOUSE_Wheel1Down        = 0x41,    // mouse control: wheel down
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  KEY_MOUSE_GameMask          = 0x80;    // if set, contorl is sent in game coordinates
+const C4KeyCode
+	KEY_Default                  = 0,  // no key
+	KEY_Any                      = ~0, // used for default key processing
+	KEY_Undefined                = (~0)^1, // used to indicate an unknown key
+	KEY_JOY_Left                 = 1, // joypad axis control: Any x axis min
+	KEY_JOY_Up                   = 2, // joypad axis control: Any y axis min
+	KEY_JOY_Right                = 3, // joypad axis control: Any x axis max
+	KEY_JOY_Down                 = 4, // joypad axis control: Any y axis max
+	KEY_JOY_Button1              = 0x10,   // key index of joypad buttons + button index for more buttons
+	KEY_JOY_ButtonMax            = KEY_JOY_Button1+0x1f, // maximum number of supported buttons on a gamepad
+	KEY_JOY_Axis1Min             = 0x30,
+	KEY_JOY_Axis1Max             = 0x31,
+	KEY_JOY_AxisMax              = KEY_JOY_Axis1Min + 0x20,
+	KEY_JOY_AnyButton            = 0xff, // any joypad button (not axis)
+	KEY_JOY_AnyOddButton         = 0xfe, // joypad buttons 1, 3, 5, etc.
+	KEY_JOY_AnyEvenButton        = 0xfd, // joypad buttons 2, 4, 6, etc.
+	KEY_JOY_AnyLowButton         = 0xfc, // joypad buttons 1 - 4
+	KEY_JOY_AnyHighButton        = 0xfb, // joypad buttons > 4
+	KEY_MOUSE_Move               = 1,    // mouse control: mouse movement
+	KEY_MOUSE_Button1            = 0x10, // key index of mouse buttons + button index for more buttons
+	KEY_MOUSE_ButtonLeft         = KEY_MOUSE_Button1 + 0,
+	KEY_MOUSE_ButtonRight        = KEY_MOUSE_Button1 + 1,
+	KEY_MOUSE_ButtonMiddle       = KEY_MOUSE_Button1 + 2,
+	KEY_MOUSE_ButtonMax          = KEY_MOUSE_Button1 + 0x1f, // max number of supported mouse buttons
+	KEY_MOUSE_Button1Double      = 0x30, // double clicks have special events because double click speed is issued by OS
+	KEY_MOUSE_ButtonLeftDouble   = KEY_MOUSE_Button1Double + 0,
+	KEY_MOUSE_ButtonRightDouble  = KEY_MOUSE_Button1Double + 1,
+	KEY_MOUSE_ButtonMiddleDouble = KEY_MOUSE_Button1Double + 2,
+	KEY_MOUSE_ButtonMaxDouble    = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
+	KEY_MOUSE_Wheel1Up           = 0x40,    // mouse control: wheel up
+	KEY_MOUSE_Wheel1Down         = 0x41,    // mouse control: wheel down
+	KEY_MOUSE_GameMask           = 0x80;    // if set, contorl is sent in game coordinates
 
 inline uint8_t KEY_JOY_Button(uint8_t idx) { return KEY_JOY_Button1+idx; }
 inline uint8_t KEY_JOY_Axis(uint8_t idx, bool fMax) { return KEY_JOY_Axis1Min+2*idx+fMax; }

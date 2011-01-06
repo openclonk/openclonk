@@ -2,7 +2,6 @@
 id=Boomattack
 Version=4,9,10,10
 Category=C4D_Object
-MaxUserSelect=15
 ContactCalls=1
 Width=15
 Height=27

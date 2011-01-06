@@ -91,7 +91,7 @@ public func OpenMenu(object clonk)
 	return true;
 }
 
-func FxClonkStillThereTimer(object target, int num, int time)
+func FxClonkStillThereTimer(object target, effect, int time)
 {
 	if(!content_menu) return -1;
 	var clonk = content_menu->GetMenuObject();

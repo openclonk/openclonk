@@ -1,8 +1,7 @@
 [DefCore]
 id=Shield_SolidMask
-Version=4,9,5
+Version=4,10,0,0
 Category=C4D_Vehicle
-MaxUserSelect=0
 Width=8
 Height=11
 Offset=-4,-5

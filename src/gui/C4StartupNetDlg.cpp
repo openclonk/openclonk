@@ -1,11 +1,14 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006, 2008-2010  Günther Brammer
  * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Tobias Zwick
+ * Copyright (c) 2010  Caesar
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -270,9 +273,10 @@ bool C4StartupNetListEntry::OnReference()
 	if (eQueryType == NRQT_Masterserver)
 	{
 		// masterserver is official: So check version
-		C4GameVersion MasterVersion;
-		if (pRefClient->GetMasterVersion(&MasterVersion))
-			pNetDlg->CheckVersionUpdate(MasterVersion);
+		StdStrBuf updURL;
+		StdStrBuf versInf;
+		if (pRefClient->GetUpdateURL(&updURL) && pRefClient->GetVersion(&versInf))
+			pNetDlg->CheckVersionUpdate(updURL.getData(),versInf.getData());
 		// masterserver: schedule next query
 		sInfoText[1].Format(LoadResStr("IDS_NET_INFOGAMES"), (int) iNewRefCount);
 		SetTimeout(TT_Masterserver);
@@ -430,9 +434,6 @@ void C4StartupNetListEntry::SetReference(C4Network2Reference *pRef)
 	// password
 	if (pRef->isPasswordNeeded())
 		AddStatusIcon(C4GUI::Ico_Ex_LockedFrontal, LoadResStr("IDS_NET_INFOPASSWORD"));
-	// reg join only
-	if (pRef->isRegJoinOnly())
-		AddStatusIcon(C4GUI::Ico_RegJoinOnly, LoadResStr("IDS_NET_REGJOINONLY"));
 	// league
 	if (pRef->Parameters.isLeague())
 		AddStatusIcon(C4GUI::Ico_Ex_League, pRef->Parameters.getLeague());
@@ -445,9 +446,6 @@ void C4StartupNetListEntry::SetReference(C4Network2Reference *pRef)
 	// runtime join
 	if (pRef->isJoinAllowed() && pRef->getGameStatus().isPastLobby()) // A little workaround to determine RuntimeJoin...
 		AddStatusIcon(C4GUI::Ico_RuntimeJoin, LoadResStr("IDS_NET_RUNTIMEJOINFREE"));
-	// fair crew
-	if (pRef->Parameters.UseFairCrew)
-		AddStatusIcon(C4GUI::Ico_Ex_FairCrew, LoadResStr("IDS_CTL_FAIRCREW_DESC"));
 	// official server
 	if (pRef->isOfficialServer() && !Config.Network.UseAlternateServer) // Offical server icon is only displayed if references are obtained from official league server
 	{
@@ -709,11 +707,13 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	btnRecord->SetToolTip(LoadResStr("IDS_DLGTIP_RECORD"));
 	btnRecord->SetText(LoadResStr("IDS_CTL_RECORD"));
 	AddElement(btnRecord);
+#ifdef WITH_AUTOMATIC_UPDATE
 	btnUpdate = new C4GUI::CallbackButton<C4StartupNetDlg, C4GUI::IconButton>(C4GUI::Ico_Ex_Update, caConfigArea.GetFromTop(iIconSize, iIconSize), '\0', &C4StartupNetDlg::OnBtnUpdate);
 	btnUpdate->SetVisibility(false); // update only available if masterserver notifies it
 	btnUpdate->SetToolTip(LoadResStr("IDS_DLGTIP_UPDATE"));
 	btnUpdate->SetText(LoadResStr("IDS_CTL_UPDATE"));
 	AddElement(btnUpdate);
+#endif
 
 	// button area
 	C4GUI::CallbackButton<C4StartupNetDlg> *btn;
@@ -845,14 +845,16 @@ void C4StartupNetDlg::OnBtnRecord(C4GUI::Control *btn)
 	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 
+#ifdef WITH_AUTOMATIC_UPDATE
 void C4StartupNetDlg::OnBtnUpdate(C4GUI::Control *btn)
 {
 	// do update
-	if (!C4UpdateDlg::DoUpdate(UpdateVersion, GetScreen()))
+	if (!C4UpdateDlg::DoUpdate(UpdateURL.getData(), GetScreen()))
 	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 	}
 }
+#endif
 
 void C4StartupNetDlg::UpdateMasterserver()
 {
@@ -868,7 +870,9 @@ void C4StartupNetDlg::UpdateMasterserver()
 	else
 	{
 		pMasterserverClient = new C4StartupNetListEntry(pGameSelList, NULL, this);
-		pMasterserverClient->SetRefQuery(Config.Network.GetLeagueServerAddress(), C4StartupNetListEntry::NRQT_Masterserver);
+		StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+		StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s", Config.Network.GetLeagueServerAddress(), strVersion.getData(), C4_OS);
+		pMasterserverClient->SetRefQuery(strQuery.getData(), C4StartupNetListEntry::NRQT_Masterserver);
 	}
 }
 
@@ -1197,17 +1201,27 @@ void C4StartupNetDlg::OnReferenceEntryAdd(C4StartupNetListEntry *pEntry)
 		pEntry->UpdateCollapsed(true);
 }
 
-void C4StartupNetDlg::CheckVersionUpdate(const C4GameVersion &rNewVer)
+void C4StartupNetDlg::CheckVersionUpdate(const char *szUpdateURL, const char *szVersion)
 {
+#ifdef WITH_AUTOMATIC_UPDATE
 	// Is a valid update
-	if (C4UpdateDlg::IsValidUpdate(rNewVer))
+	if (C4UpdateDlg::IsValidUpdate(szVersion))
 	{
-		UpdateVersion = rNewVer;
+		UpdateURL = szUpdateURL;
 		btnUpdate->SetVisibility(true);
 	}
 	// Otherwise: no update available
 	else
+	{
 		btnUpdate->SetVisibility(false);
+	}
+#else
+	if(szUpdateURL && *szUpdateURL)
+	{
+		// TODO: We could show an item notifying the user that an
+		// update is available externally.
+	}
+#endif
 }
 
 void C4StartupNetDlg::OnChatTitleChange(const StdStrBuf &sNewTitle)

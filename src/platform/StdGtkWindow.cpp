@@ -1,7 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2008  Armin Burgmeier
+ * Copyright (c) 2006-2008, 2010  Armin Burgmeier
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -40,12 +41,18 @@ CStdGtkWindow::~CStdGtkWindow()
 	Clear();
 }
 
-CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
 
-	if (!FindInfo()) return 0;
+	if(!FindInfo(Config.Graphics.MultiSampling, &Info))
+	{
+		// Disable multisampling if we don't find a visual which
+		// supports the currently configured setting.
+		if(!FindInfo(0, &Info)) return NULL;
+		Config.Graphics.MultiSampling = 0;
+	}
 
 	assert(!window);
 
@@ -129,6 +136,14 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	return this;
 }
 
+bool CStdGtkWindow::ReInit(CStdApp* pApp)
+{
+	// TODO: Recreate the window with a newly chosen visual
+	// Probably we don't need this, since there is no way to change
+	// MultiSampling when no window is open.
+	return false;
+}
+
 void CStdGtkWindow::Clear()
 {
 	if (window != NULL)
@@ -147,7 +162,7 @@ void CStdGtkWindow::Clear()
 	// We must free it here since we do not call CStdWindow::Clear()
 	if (Info)
 	{
-		XFree(Info);
+		delete static_cast<XVisualInfo*>(Info);
 		Info = 0;
 	}
 }
@@ -204,4 +219,32 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 GtkWidget* CStdGtkWindow::InitGUI()
 {
 	return window;
+}
+
+void CStdWindow::RequestUpdate()
+{
+	// just invoke directly
+	PerformUpdate();
+}
+
+bool OpenURL(const char *szURL)
+{
+	const char * argv[][3] =
+	{
+		{ "xdg-open", szURL, 0 },
+		{ "sensible-browser", szURL, 0 },
+		{ "firefox", szURL, 0 },
+		{ "mozilla", szURL, 0 },
+		{ "konqueror", szURL, 0 },
+		{ "epiphany", szURL, 0 },
+		{ 0, 0, 0 }
+	};
+	for (int i = 0; argv[i][0]; ++i)
+	{
+		GError * error = 0;
+		if (g_spawn_async (g_get_home_dir(), const_cast<char**>(argv[i]), 0, G_SPAWN_SEARCH_PATH, 0, 0, 0, &error))
+			return true;
+		else fprintf(stderr, "%s\n", error->message);
+	}
+	return false;
 }

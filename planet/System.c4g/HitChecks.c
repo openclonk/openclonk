@@ -17,19 +17,19 @@
 // 4 - live? If true, the shooter can be hit by the projectile
 // 5 - never hit the shooter. True or false
 
-global func FxHitCheckStart(object target, int effect, int temp, object by_obj, bool never_shooter)
+global func FxHitCheckStart(object target, effect, int temp, object by_obj, bool never_shooter)
 {
 	if (temp)
 		return;
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	EffectVar(2, target, effect) = by_obj;
-	EffectVar(4, target, effect) = false;
-	EffectVar(5, target, effect) = never_shooter;
+	effect.var2 = by_obj;
+	effect.var4 = false;
+	effect.var5 = never_shooter;
 	
 	// C4D_Object has a hitcheck too -> change to vehicle to supress that.
 	if (target->GetCategory() & C4D_Object)
@@ -37,7 +37,7 @@ global func FxHitCheckStart(object target, int effect, int temp, object by_obj, 
 	return;
 }
 
-global func FxHitCheckStop(object target, int effect, int reason, bool temp)
+global func FxHitCheckStop(object target, effect, int reason, bool temp)
 {
 	if (temp)
 		return;
@@ -46,7 +46,7 @@ global func FxHitCheckStop(object target, int effect, int reason, bool temp)
 	return;
 }
 
-global func FxHitCheckDoCheck(object target, int effect)
+global func FxHitCheckDoCheck(object target, effect)
 {
 	var obj;
 	// rather search in front of the projectile, since a hit might delete the effect,
@@ -57,8 +57,8 @@ global func FxHitCheckDoCheck(object target, int effect)
 	var newy = target->GetY() + target->GetYDir() / 10;
 	var dist = Distance(oldx, oldy, newx, newy);
 	
-	var shooter = EffectVar(2, target, effect);
-	var live = EffectVar(4, target, effect);
+	var shooter = effect.var2;
+	var live = effect.var4;
 	
 	if (live)
 		shooter = target;
@@ -100,21 +100,21 @@ global func FxHitCheckEffect(string newname)
 	return;
 }
 
-global func FxHitCheckAdd(object target, int effect, string neweffectname, int newtimer, by_obj, never_shooter)
+global func FxHitCheckAdd(object target, effect, string neweffectname, int newtimer, by_obj, never_shooter)
 {
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	EffectVar(2, target, effect) = by_obj;
-	EffectVar(4, target, effect) = false;
-	EffectVar(5, target, effect) = never_shooter;
+	effect.var2 = by_obj;
+	effect.var4 = false;
+	effect.var5 = never_shooter;
 	return;
 }
 
-global func FxHitCheckTimer(object target, int effect, int time)
+global func FxHitCheckTimer(object target, effect, int time)
 {
 	EffectCall(target, effect, "DoCheck");
 	// It could be that it hit something and removed itself. thus check if target is still there.
@@ -122,11 +122,11 @@ global func FxHitCheckTimer(object target, int effect, int time)
 	if (!target)
 		return -1;
 	
-	EffectVar(0, target, effect) = target->GetX();
-	EffectVar(1, target, effect) = target->GetY();
-	var live = EffectVar(4, target, effect);
-	var never_shooter = EffectVar(5, target, effect);
-	var shooter = EffectVar(2, target, effect);
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
+	var live = effect.var4;
+	var never_shooter = effect.var5;
+	var shooter = effect.var2;
 
 	// The projectile will be only switched to "live", meaning that it can hit the
 	// shooter himself when the shot exited the shape of the shooter one time.
@@ -145,36 +145,59 @@ global func FxHitCheckTimer(object target, int effect, int time)
 			}
 			// Otherwise, the shot will be live.
 			if (ready)
-				EffectVar(4, target, effect) = true;
+				effect.var4 = true;
 		}
 	}
 	return;
 }
 
-global func ProjectileHit(object obj, int dmg, bool tumble)
+// flags for the ProjectileHit function
+static const ProjectileHit_tumble=1; // the target tumbles
+static const ProjectileHit_no_query_catch_blow_callback=2; // if you want to call QueryCatchBlow manually
+static const ProjectileHit_exact_damage=4; // exact damage, factor 1000
+static const ProjectileHit_no_on_projectile_hit_callback=8;
+
+global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
 {
+	if(flags == nil) flags=0;
+	if(!damage_type) damage_type=FX_Call_EngObjHit;
+	var tumble=flags & ProjectileHit_tumble;
+	
 	if (!this || !obj)
 		return;
 	
-	if (obj->GetAlive())
-		if (obj->~QueryCatchBlow(this))
+	if(!(flags & ProjectileHit_no_query_catch_blow_callback))
+	{
+		if (obj->GetAlive())
+			if (obj->~QueryCatchBlow(this))
+				return;
+				
+		if (!this || !obj)
 			return;
-	if (!this || !obj)
-		return;
-		
-	obj->~OnProjectileHit(this);
-	if (!this || !obj)
-		return;
+	}
+	
+	if(!(flags & ProjectileHit_no_on_projectile_hit_callback))
+	{
+		obj->~OnProjectileHit(this);
+		if (!this || !obj)
+			return;
+	}
 	
 	this->~OnStrike(obj);
+	if (!this || !obj)
+		return;
 	if (obj->GetAlive())
 	{
-		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetController());
+		obj->DoEnergy(-dmg, (flags & ProjectileHit_exact_damage), damage_type, GetController());
+		if(!obj) return;
 		obj->~CatchBlow(-dmg, this);
 	}
 	else
 	{
-		obj->DoDamage(dmg, FX_Call_EngObjHit, GetController());
+		var true_dmg=dmg;
+		if(flags & ProjectileHit_exact_damage) true_dmg/=1000;
+		
+		obj->DoDamage(true_dmg, damage_type, GetController());
 	}
 	// Target could have done something with this projectile.
 	if (!this || !obj)

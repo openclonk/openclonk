@@ -2,8 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2001, 2005, 2010  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -48,6 +48,7 @@ public:
 	bool fIsNoOwnerViewport; // this viewport is found for searches of NO_OWNER-viewports; even if it has a player assigned (for network obs)
 
 	float GetZoom() { return Zoom; }
+	void SetZoom(float zoomValue);
 	void Default();
 	void Clear();
 	void Execute();
@@ -64,6 +65,7 @@ public:
 	float GetZoomTarget() const { return ZoomTarget; }
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
 	bool Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
+	void DropFile(const char* fileName, float x, float y);
 #ifdef _WIN32
 	bool DropFiles(HANDLE hDrop);
 #endif
@@ -94,6 +96,8 @@ protected:
 	void DrawPlayerInfo(C4TargetFacet &cgo);
 	void BlitOutput();
 	void AdjustPosition();
+public:
+	C4ViewportWindow* GetWindow() {return pWindow;}
 	bool UpdateOutputSize();
 	bool ViewPositionByScrollBars();
 	bool ScrollBarsByViewPosition();
@@ -118,7 +122,7 @@ public:
 	bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	bool CloseViewport(int32_t iPlayer, bool fSilent);
 	int32_t GetViewportCount();
-	C4Viewport* GetViewport(int32_t iPlayer);
+	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = NULL);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * cvp);
 #ifdef _WIN32

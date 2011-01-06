@@ -28,7 +28,6 @@
 #define INC_C4Effects
 
 #include <C4Constants.h>
-#include <C4ValueList.h>
 #include <C4ObjectPtr.h>
 
 // callback return values
@@ -65,7 +64,7 @@
 #define C4FxCall_EngAsphyxiation  37 // energy loss through asphyxiaction
 #define C4FxCall_EngCorrosion     38 // energy loss through corrosion (acid)
 #define C4FxCall_EngStruct        39 // regular structure energy loss (normally not called)
-#define C4FxCall_EngGetPunched    40 // energy loss during fighting
+#define C4FxCall_EngGetPunched    40 // energy loss from Punch
 
 // fire drawing modes
 #define C4Fx_FireMode_Default      0 // determine mode by category
@@ -78,7 +77,7 @@
 #define C4Fx_FireParticle2   "Fire2"
 
 // generic object effect
-class C4Effect
+class C4Effect: public C4PropListNumbered
 {
 public:
 	char Name[C4MaxDefString+1]; // name of effect
@@ -86,8 +85,7 @@ public:
 	C4ID idCommandTarget;     // ID of command target definition
 
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
-	C4ValueList EffectVars; // custom effect variables
-	int32_t iTime, iIntervall;  // effect time; effect callback intervall
+	int32_t iTime, iInterval;  // effect time; effect callback intervall
 	int32_t iNumber;            // effect number for addressing
 
 	C4Effect *pNext;        // next effect in linked list
@@ -102,7 +100,7 @@ protected:
 	void AssignCallbackFunctions(); // resolve callback function names
 
 public:
-	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
+	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
 	C4Effect(StdCompiler *pComp); // ctor: compile
 	~C4Effect();                      // dtor - deletes all following effects
 
@@ -139,6 +137,10 @@ public:
 	void OnObjectChangedDef(C4Object *pObj);
 
 	void CompileFunc(StdCompiler *pComp);
+	virtual C4Effect * GetEffect() { return this; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 
 protected:
 	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
@@ -157,15 +159,14 @@ inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4E
 #define C4Fx_FireTimer      1
 
 // fire effect
-int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
-int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTime);
-int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iReason, bool fTemp);
-C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber);
+int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
+int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTime);
+int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iReason, bool fTemp);
+C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect);
 class C4Value &FxFireVarCausedBy(C4Effect *pEffect);
 
 // some other hardcoded engine effects
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj);
-void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj, C4ID idEffect, const char *szEffect);
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr=0);
 void BubbleOut(int32_t tx, int32_t ty);
 

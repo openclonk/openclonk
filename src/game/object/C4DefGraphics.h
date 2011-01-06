@@ -4,6 +4,8 @@
  * Copyright (c) 2004-2006  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

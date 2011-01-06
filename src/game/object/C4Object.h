@@ -5,6 +5,8 @@
  * Copyright (c) 2001-2005, 2007  Sven Eberhardt
  * Copyright (c) 2004-2005  Peter Wortmann
  * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,7 +30,6 @@
 #include "C4Id.h"
 #include "C4Sector.h"
 #include "C4Value.h"
-#include "C4ValueList.h"
 #include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"
@@ -74,11 +75,6 @@
 #define VIS_God     32
 #define VIS_LayerToggle 64
 #define VIS_OverlayOnly 128
-
-const int32_t MagicPhysicalFactor=1000;
-
-#define ANY_CONTAINER (123)
-#define NO_CONTAINER (124)
 
 class C4SolidMask;
 class C4Command;
@@ -148,13 +144,11 @@ public:
 	int32_t Mass, OwnMass;
 	int32_t Damage;
 	int32_t Energy;
-	int32_t MagicEnergy;
 	int32_t Breath;
 	int32_t FirePhase;
 	int32_t InMat; // SyncClearance-NoSave //
 	uint32_t Color;
 	int32_t Timer;
-	int32_t ViewEnergy; // NoSave //
 	int32_t Audible, AudiblePan; // NoSave //
 	int32_t PlrViewRange;
 	C4Real fix_x,fix_y,fix_r; // SyncClearance-Fix //
@@ -165,7 +159,6 @@ public:
 	bool Initializing; // NoSave //
 	bool InLiquid;
 	bool EntranceStatus;
-	bool NeedEnergy;
 	uint32_t t_contact; // SyncClearance-NoSave //
 	uint32_t OCF;
 	unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
@@ -192,9 +185,6 @@ public:
 	StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 	C4Effect *pEffects; // linked list of effects
 	C4ParticleList FrontParticles, BackParticles; // lists of object local particles
-
-	bool PhysicalTemporary; // physical temporary counter
-	C4TempPhysicalInfo TemporaryPhysical;
 
 	uint32_t ColorMod; // color by which the object-drawing is modulated
 	uint32_t BlitMode; // extra blitting flags (like additive, ClrMod2, etc.)
@@ -307,8 +297,7 @@ public:
 	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=NULL);
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
-	void ForcePosition(int32_t tx, int32_t ty);
-	void ForcePosition(int32_t tx, int32_t ty, long iPrec);
+	void ForcePosition(C4Real tx, C4Real ty);
 	void MovePosition(int32_t dx, int32_t dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
@@ -343,8 +332,6 @@ public:
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();
-	C4PhysicalInfo *GetPhysical(bool fPermanent=false);
-	bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
@@ -417,7 +404,7 @@ public:
 		       && !(Category & (C4D_StaticBack | C4D_Structure))
 		       && !Contained
 		       && ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
-		       && (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
+		       && (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_FLOAT)
 		       ;
 	}
 

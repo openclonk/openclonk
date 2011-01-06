@@ -57,11 +57,12 @@ private func Stick()
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
-			if(GetMaterialVal("DigFree","Material",mat))
-			{
+			// sticks in any material now
+			//if(GetMaterialVal("DigFree","Material",mat))
+			//{
 			// stick in landscape
 			SetVertex(2,VTX_Y,-12,1);
-			}
+			//}
 		}
 	}
 }
@@ -72,7 +73,7 @@ public func HitObject(object obj)
 	var rely = GetYDir() - obj->GetYDir();
 	var speed = Sqrt(relx*relx+rely*rely);
 	var dmg = ArrowStrength()*speed/100;
-	ProjectileHit(obj,dmg,true);
+	ProjectileHit(obj,dmg,ProjectileHit_tumble);
 	// Stick does something unwanted to controller.
 	Stick();
 }
@@ -94,16 +95,16 @@ public func Hit()
 }
 
 // rotate arrow according to speed
-public func FxInFlightStart(object target, int effect, int temp)
+public func FxInFlightStart(object target, effect, int temp)
 {
 	if(temp) return;
-	EffectVar(0,target,effect) = target->GetX();
-	EffectVar(1,target,effect) = target->GetY();
+	effect.var0 = target->GetX();
+	effect.var1 = target->GetY();
 }
-public func FxInFlightTimer(object target, int effect, int time)
+public func FxInFlightTimer(object target, effect, int time)
 {
-	var oldx = EffectVar(0,target,effect);
-	var oldy = EffectVar(1,target,effect);
+	var oldx = effect.var0;
+	var oldy = effect.var1;
 	var newx = GetX();
 	var newy = GetY();
 	
@@ -112,18 +113,18 @@ public func FxInFlightTimer(object target, int effect, int time)
 	if(oldx == newx && oldy == newy)
 	{
 		// but we give the arrow 5 frames to speed up again
-		EffectVar(2,target,effect)++;
-		if(EffectVar(2,target,effect) >= 10)
+		effect.var2++;
+		if(effect.var2 >= 10)
 			return Hit();
 	}
 	else
-		EffectVar(2,target,effect) = 0;
+		effect.var2 = 0;
 
 	// rotate arrow according to speed
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	SetRDir(anglediff/2);
-	EffectVar(0,target,effect) = newx;
-	EffectVar(1,target,effect) = newy;
+	effect.var0 = newx;
+	effect.var1 = newy;
 
 }
 

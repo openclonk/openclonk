@@ -59,7 +59,7 @@ public func Precipitation()
 		iAcidity = --iAcidity;
 	}
 	//Lightning Strike; only during rain
-	if(iWaitTime <= 0 && iSize >= 650 && Random(100) >= 100-(iStrikeChance/16) && szMat=="Water") LaunchLightning(GetX(), GetY(), 0, 100, 100, 10, true);
+	if(iWaitTime <= 0 && iSize >= 650 && Random(100) >= 100-(iStrikeChance/16) && szMat=="Water") LaunchLightning(GetX(), GetY(), RandomX(60, 100), 0, 100, 100, 10, true);
 }
 
 public func TimedEvents()
@@ -157,6 +157,8 @@ Fly = {
 	Prototype = Action,
 	Name = "Fly",
 	Procedure = DFA_FLOAT,
+	Speed = 20,
+	Accel = 16,
 	X = 0,
 	Y = 0,
 	Wdt = 512,

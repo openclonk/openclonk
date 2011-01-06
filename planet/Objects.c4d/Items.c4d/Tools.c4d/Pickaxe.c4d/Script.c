@@ -136,7 +136,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 //		Message("Hit nothing"); //for debug
 }
 
-func FxIntPickaxeTimer(clonk, number, time)
+func FxIntPickaxeTimer(clonk, effect, time)
 {
 	++swingtime;
 	if(swingtime >= Pickaxe_SwingTime) //Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)

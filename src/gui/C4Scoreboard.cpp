@@ -3,7 +3,8 @@
  *
  * Copyright (c) 2005, 2007-2008  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006-2007  Günther Brammer
+ * Copyright (c) 2006-2007, 2009  Günther Brammer
+ * Copyright (c) 2009  mizipzor
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -261,8 +262,7 @@ void C4Scoreboard::InvalidateRows()
 
 void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 {
-	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
+	if (::pGUI->IsExclusive()) return;
 	// update dlg show
 	iDlgShow += iChange;
 	if (!fUserToggle)
@@ -285,8 +285,7 @@ void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 
 void C4Scoreboard::HideDlg()
 {
-	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
+	if (::pGUI->IsExclusive()) return;
 	// hide scoreboard if it was active
 	if (pDlg) pDlg->Close(false);
 }

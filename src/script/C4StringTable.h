@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002  Peter Wortmann
- * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2009-2010  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,24 +29,27 @@ class C4Group;
 
 class C4String
 {
-	explicit C4String(StdStrBuf strString);
-	explicit C4String(const char *strString);
-
+	int RefCnt;
+public:
+	unsigned int Hash;
+private:
 	StdCopyStrBuf Data; // string data
-	int iRefCnt; // reference count on string (by C4Value)
+
+	explicit C4String(StdStrBuf strString);
+	C4String();
+	void operator=(const char * s);
 
 	friend class C4StringTable;
 public:
 	~C4String();
 
-	// increment/decrement reference count on this string
-	void IncRef();
-	void DecRef();
+	// Add/Remove Reference
+	void IncRef() { ++RefCnt; }
+	void DecRef() { if (!--RefCnt) delete this; }
 
 	const char * GetCStr() const { return Data.getData(); }
 	StdStrBuf GetData() const { return Data.getRef(); }
 
-	unsigned int Hash;
 };
 
 template<typename T> class C4Set
@@ -171,6 +174,10 @@ enum C4PropertyName
 {
 	P_Prototype,
 	P_Name,
+	P_Priority,
+	P_Interval,
+	P_CommandTarget,
+	P_Time,
 	P_Collectible,
 	P_ActMap,
 	P_Attach,
@@ -181,6 +188,9 @@ enum C4PropertyName
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,
+	P_Speed,
+	P_Accel,
+	P_Decel,
 	P_Directions,
 	P_FlipDir,
 	P_Length,
@@ -205,7 +215,6 @@ enum C4PropertyName
 	P_Sound,
 	P_ObjectDisabled,
 	P_DigFree,
-	P_EnergyUsage,
 	P_InLiquidAction,
 	P_TurnAction,
 	P_Reverse,
@@ -213,6 +222,33 @@ enum C4PropertyName
 	P_MouseDragImage,
 	P_Animation,
 	P_Action,
+	P_BreatheWater,
+	P_CorrosionResist,
+	P_MaxEnergy,
+	P_MaxBreath,
+	P_ThrowSpeed,
+	P_Mode,
+	P_CausedBy,
+	P_Blasted,
+	P_IncineratingObj,
+// Default Action Procedures
+	DFA_WALK,
+	DFA_FLIGHT,
+	DFA_KNEEL,
+	DFA_SCALE,
+	DFA_HANGLE,
+	DFA_DIG,
+	DFA_SWIM,
+	DFA_THROW,
+	DFA_BRIDGE,
+	DFA_BUILD,
+	DFA_PUSH,
+	DFA_CHOP,
+	DFA_LIFT,
+	DFA_FLOAT,
+	DFA_ATTACH,
+	DFA_CONNECT,
+	DFA_PULL,
 	P_LAST
 };
 
@@ -227,11 +263,11 @@ public:
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
 	// Find existing C4String
 	C4String *FindString(const char *strString);
-	// Check wether the pointer is a C4String
-	C4String *FindString(C4String *pString);
 
+	C4String P[P_LAST];
+private:
 	C4Set<C4String *> Set;
-	C4String * P[P_LAST];
+	friend class C4String;
 };
 
 extern C4StringTable Strings;

@@ -98,7 +98,7 @@ global func Find_ActionTargets(object target)
 	return [C4FO_Or, Find_ActionTarget(target), Find_ActionTarget2(target)];
 }
 
-global func Find_Procedure(int procedure)
+global func Find_Procedure(string procedure)
 {
 	return [C4FO_Procedure, procedure];
 }

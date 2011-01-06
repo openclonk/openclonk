@@ -28,7 +28,7 @@ protected func Initialize()
 	CreateObject(SwordTarget, 340, 648, NO_OWNER)->SetR(RandomX(-10, 10));
 	CreateObject(SwordTarget, 430, 600, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(CastleDoor, 556, 640, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 556, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
@@ -37,42 +37,53 @@ protected func Initialize()
 	
 	// Second section: Weak opponent with javelins.
 	var spearman1 = CreateObject(Clonk, 1050, 560, NO_OWNER);
-	spearman1->SetPhysical("Energy", 30000, PHYS_Temporary);
+	spearman1->SetMaxEnergy(40);
 	spearman1->CreateContents(Javelin);
 	spearman1->AI_GuardArea(800, 400, 400, 250);
 	AddEffect("IntContentRemoval", spearman1, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman1);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1216, 550, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
 	var spearman2 = CreateObject(Clonk, 1753, 410, NO_OWNER);
-	spearman2->SetPhysical("Energy", 30000, PHYS_Temporary);
+	spearman2->SetMaxEnergy(40);
 	spearman2->CreateContents(Javelin);
 	spearman2->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", spearman2, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman2);
 	// Upper part: a normal bowman.
 	var bowman = CreateObject(Clonk, 1732, 330, NO_OWNER);
-	bowman->SetPhysical("Energy", 40000, PHYS_Temporary);
+	bowman->SetMaxEnergy(45);
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
 	bowman->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", bowman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(bowman);
 	// Gate that can be opened with a spin wheel.
-	var gate = CreateObject(CastleDoor, 1856, 500, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1856, 500, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
-	wheel->SetCastleDoor(gate);
+	wheel->SetStoneDoor(gate);
 	
 	// Fourth section: Opponent with sword and shield.
 	var swordman = CreateObject(Clonk, 2250, 330, NO_OWNER);
+	swordman->SetMaxEnergy(60);
 	swordman->CreateContents(Shield);
 	swordman->CreateContents(Sword);
 	swordman->AI_GuardArea(2050, 300, 300, 100);
 	AddEffect("IntContentRemoval", swordman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(swordman);
 	// Chest with some extra weapons.
 	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
-	chest->CreateContents(Club);	
+	chest->CreateContents(Club);
+	
+	// Brick edges.
+	var edges = [[620,640],[630,630],[540,560],[530,550],[530,480],[520,470],[1160,570],[1170,560],[1830,450],[1840,440],[1850,430],[1830,370],[1800,360]];
+	for(var i = 0; i < GetLength(edges); i++)
+		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
+
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
@@ -99,8 +110,8 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(30, 620);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 30;
-	EffectVar(2, clonk, effect) = 620;
+	effect.var1 = 30;
+	effect.var2 = 620;
 	// Clonk starts with sword and shield.
 	clonk->CreateContents(Sword);
 	clonk->CreateContents(Shield);
@@ -260,31 +271,31 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkRestoreTimer(object target, int num, int time)
+global func FxClonkRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached second section.
 	if (Distance(target->GetX(), target->GetY(), 635, 450) < 40)
 	{
-		EffectVar(1, target, num) = 635;
-		EffectVar(2, target, num) = 450;		
+		effect.var1 = 635;
+		effect.var2 = 450;		
 	}
 	// Respawn to new location if reached third section.
 	if (Distance(target->GetX(), target->GetY(), 1370, 545) < 40)
 	{
-		EffectVar(1, target, num) = 1370;
-		EffectVar(2, target, num) = 545;		
+		effect.var1 = 1370;
+		effect.var2 = 545;		
 	}
 	// Respawn to new location if reached fourth section.
 	if (Distance(target->GetX(), target->GetY(), 1910, 485) < 40)
 	{
-		EffectVar(1, target, num) = 1910;
-		EffectVar(2, target, num) = 485;		
+		effect.var1 = 1910;
+		effect.var2 = 485;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -292,8 +303,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);
@@ -311,11 +322,12 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 /*-- Item restoring --*/
 
 // Removes content on death.
-global func FxIntContentRemovalStop(object target, int num, int reason)
+global func FxIntContentRemovalStop(object target, effect, int reason)
 {
 	if (reason != 4)
 		return 1;
 	for (var obj in FindObjects(Find_Container(target)))
 			obj->RemoveObject();
 	return 1;
-}	
+}
+

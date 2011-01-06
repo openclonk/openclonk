@@ -67,7 +67,7 @@ AM_CPPFLAGS = \
 ##$(srcdir)/.hg/dirstate:
 
 BUILT_SOURCES = C4Version.h
-EXTRA_DIST = automake.in
+CLEANFILES = C4Version.h
 do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
   -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
   -e 's,[@]C4PROJECT_TLD[@],org,g' \
@@ -91,7 +91,7 @@ C4Version.h: $(srcdir)/src/C4Version.h.in
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
 BUILT_SOURCES += C4Include.h.gch
-CLEANFILES = C4Include.h.gch
+CLEANFILES += C4Include.h.gch
 DISTCLEANFILES = @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
 
 # Adapted from the automake compile-command for normal source files.
@@ -224,6 +224,8 @@ src/control/C4Teams.cpp \
 src/control/C4Teams.h \
 src/editor/C4Console.cpp \
 src/editor/C4Console.h \
+src/editor/C4ConsoleGUI.h \
+src/editor/C4ConsoleGUICommon.h \
 src/editor/C4DevmodeDlg.cpp \
 src/editor/C4DevmodeDlg.h \
 src/editor/C4EditCursor.cpp \
@@ -441,8 +443,9 @@ src/platform/C4VideoPlayback.cpp \
 src/platform/C4VideoPlayback.h \
 src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
-src/platform/OpenURL.cpp \
 src/platform/PlatformAbstraction.h \
+src/platform/StdAppCommon.h \
+src/platform/StdAppCommon.cpp \
 src/platform/StdConfig.cpp \
 src/platform/StdConfig.h \
 src/platform/StdD3D.cpp \
@@ -514,8 +517,8 @@ src/script/C4StringTable.cpp \
 src/script/C4StringTable.h \
 src/script/C4Value.cpp \
 src/script/C4Value.h \
-src/script/C4ValueList.cpp \
-src/script/C4ValueList.h \
+src/script/C4ValueArray.cpp \
+src/script/C4ValueArray.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
 src/tinyxml/tinystr.cpp \
@@ -532,7 +535,7 @@ src/C4Version.h.in
 ##hgrevision.h
 
 if WIN32
-clonk_SOURCES += src/platform/C4FileClasses.cpp
+clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp
 clonk_SOURCES += src/res/engine.rc src/res/resource.h
 clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
 endif
@@ -549,7 +552,7 @@ clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platfo
 endif
 endif
 if DEVELOPER_MODE
-clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h
+clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h src/editor/C4ConsoleGTK.cpp
 endif
 
 clonk_LDADD = \
@@ -635,6 +638,7 @@ src/platform/StdConfig.cpp \
 src/zlib/gzio.c
 
 gunzip4c4group_LDADD = \
+  $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 ## puncher
@@ -665,7 +669,9 @@ endif
 
 ## other stuff
 
-EXTRA_DIST += \
+EXTRA_DIST = \
+  planet/System.c4g/LanguageUS.txt \
+  planet/System.c4g/LanguageDE.txt \
   clonk.anjuta \
   licenses \
   xcode \
@@ -686,7 +692,6 @@ EXTRA_DIST += \
   src/res/Play_Trans.png \
   src/res/Rect_Trans.png \
   src/res/Static_Trans.png \
-  src/c4group/c4group_cmdl.cpp \
   src/c4group/resource.h \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \

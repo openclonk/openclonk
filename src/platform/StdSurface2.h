@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002, 2004-2005, 2008  Sven Eberhardt
- * Copyright (c) 2004-2005, 2007-2008  Günther Brammer
+ * Copyright (c) 2004-2005, 2007-2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -135,7 +135,6 @@ public:
 	int IsLocked() const { return Locked; }
 	// Note: This uses partial locks, anything but SetPixDw and Unlock is undefined afterwards until unlock.
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
-	void ClearBox8Only(int iX, int iY, int iWdt, int iHgt); // clear box in 8bpp-surface only
 	bool Unlock();
 	bool Lock();
 	bool GetTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
@@ -166,7 +165,7 @@ public:
 	IDirect3DSurface9 *GetSurface(); // get internal surface
 #endif
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
-	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr?toClr:0xff; }
+	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
 	bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
 protected:

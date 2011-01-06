@@ -2,8 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2007  Sven Eberhardt
- * Copyright (c) 2006-2007  Günther Brammer
+ * Copyright (c) 2006-2007, 2009-2010  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -146,11 +147,8 @@ C4Startup::C4Startup() : fInStartup(false), fAborted(false), pLastDlg(NULL), pCu
 C4Startup::~C4Startup()
 {
 	pInstance = NULL;
-	if (::pGUI)
-	{
-		if (pLastDlg) delete pLastDlg;
-		if (pCurrDlg) delete pCurrDlg;
-	}
+	delete pLastDlg;
+	delete pCurrDlg;
 }
 
 void C4Startup::Start()
@@ -308,12 +306,10 @@ bool C4Startup::DoStartup()
 	}
 
 	// while state startup: keep looping
-	while (fInStartup && ::pGUI && !pCurrDlg->IsAborted())
+	while (fInStartup && !pCurrDlg->IsAborted())
 		if (!Application.ScheduleProcs()) return false;
 
-	// check whether startup was aborted; first checking ::pGUI
-	// (because an external call to Game.Clear() would invalidate dialogs)
-	if (!::pGUI) return false;
+	// check whether startup was aborted
 	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
 	if (pCurrDlg)
 	{
@@ -335,11 +331,11 @@ bool C4Startup::DoStartup()
 	fInStartup = false;
 
 	// after startup: cleanup
-	if (::pGUI) ::pGUI->CloseAllDialogs(true);
+	::pGUI->CloseAllDialogs(true);
 
 	// reinit keyboard to reflect any config changes that might have been done
 	// this is a good time to do it, because no GUI dialogs are opened
-	if (::pGUI) if (!Game.InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
+	if (!Game.InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
 
 	// all okay; return whether startup finished with a game start selection
 	return !fAborted;

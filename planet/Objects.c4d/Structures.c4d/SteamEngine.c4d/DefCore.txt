@@ -1,8 +1,7 @@
 [DefCore]
 id=SteamEngine
-Version=4,9,8
-Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
-MaxUserSelect=1
+Version=4,10,0,0
+Category=C4D_Structure
 TimerCall=ContentsCheck
 Width=110
 Height=80
@@ -18,10 +17,7 @@ Picture=0,0,64,52
 Collection=-53,15,15,17
 Exclusive=1
 BlastIncinerate=130
-LineConnect=C4D_PowerOutput|C4D_PowerGenerator|C4D_LiquidInput
 Construction=1
 ContainBlast=1
 AutoContextMenu=1
 
-[Physical]
-Energy=100000

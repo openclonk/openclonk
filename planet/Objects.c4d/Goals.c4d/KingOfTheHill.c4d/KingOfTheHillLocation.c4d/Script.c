@@ -55,7 +55,7 @@ func NewPosition()
 	CreateStarCircle();
 }
 
-func FxTimerTimer(target, effect_number, effect_time)
+func FxTimerTimer(target, effect, effect_time)
 {
 	this->AdjustStarColor();
 	this->CheckNewKing();
@@ -88,12 +88,12 @@ func SetKing(object to)
 		AddEffect("KOTHKing", king, 10, 35, this);
 }
 
-func FxKOTHKingTimer(target, effect_time)
+func FxKOTHKingTimer(target, effect)
 {
-	target->DoEnergy(1);
+	//target->DoEnergy(1);
 }
 
-func FxKOTHKingStop(target, effect_number, reason, temp)
+func FxKOTHKingStop(target, effect, reason, temp)
 {
 	if(temp) return;
 	if(!target) return;
@@ -124,7 +124,7 @@ func AdjustStarColor()
 	++timer;
 	if(king)
 	{
-		var percent=(king->GetEnergy()  * 100) / (king->GetPhysical("Energy") / 1000);
+		var percent=(king->GetEnergy() * 100) / (king->GetMaxEnergy());
 		var red=255; if(percent > 50) red=(255*(100-2*(percent-50))) / 100;
 		var green=255; if(percent < 50) green=(255*(2*percent)) / 100;
 		color=RGB(red/2, green/2, 0);

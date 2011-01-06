@@ -2,9 +2,12 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2004, 2007-2008  Matthes Bender
- * Copyright (c) 2004-2005, 2007  Günther Brammer
+ * Copyright (c) 2004-2005, 2007, 2009  Günther Brammer
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2007  Peter Wortmann
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -257,6 +260,8 @@ const char *LoadSecStr(const char *szString)
 
 C4ConfigShareware::C4ConfigShareware()
 {
+	RegistrationValid = false;
+	RegData[0] = 0;
 	KeyFile[0] = 0;
 	InvalidKeyFile[0] = 0;
 }
@@ -268,7 +273,10 @@ C4ConfigShareware::~C4ConfigShareware()
 
 void C4ConfigShareware::Default()
 {
-	ZeroMem(this, sizeof (C4ConfigShareware));
+	RegistrationValid = false;
+	*RegData = 0;
+	*KeyFile = 0;
+	*InvalidKeyFile = 0;
 	C4Config::Default();
 }
 
@@ -394,12 +402,6 @@ bool C4ConfigShareware::LoadRegistration(const char *keyFile)
 
 	// Now truncate the signature from the registration key
 	*delim = 0;
-
-	// Date check: Clonk Rage allows valid c4k keys which are newer than 2006-04-01
-	int iYear, iMonth, iDay;
-	sscanf(GetRegistrationData("Date"), "%d-%d-%d", &iYear, &iMonth, &iDay);
-	if ((iYear < 2006) || ((iYear == 2006) && (iMonth < 4)))
-		return HandleError("Registration key is too old for this version.");
 
 	// Set registered flag
 	RegistrationValid = true;

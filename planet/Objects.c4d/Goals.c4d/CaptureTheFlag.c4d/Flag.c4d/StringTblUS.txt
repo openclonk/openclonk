@@ -1,0 +1,11 @@
+Name=Flag
+
+MsgBeamFlag=Beam the flag to your base.
+MsgGrabFlag=Grab the flag and carry it to your base.
+MsgDropFlag=Drop the flag here.
+
+MsgFlagStolen=%s stole the flag of %s.
+MsgFlagDropped=%s dropped the flag of %s.
+MsgFlagBeamed=%s beamed the flag to their base.
+MsgFlagCaptured=%s successfully captured a flag, and scored a point.
+MsgFlagRestored=The flag of %s got restored.

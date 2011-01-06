@@ -1,1 +1,1 @@
-Name=Prof. clonkine
+Name=Tutorial guide

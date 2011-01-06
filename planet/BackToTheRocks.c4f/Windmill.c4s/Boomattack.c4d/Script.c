@@ -14,7 +14,7 @@ protected func Construction()
 }
 
 
-protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
+protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 {
 	if(fuel<=0)
 	{

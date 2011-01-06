@@ -2,10 +2,11 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
  * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -600,7 +601,6 @@ namespace C4GameLobby
 					LogF("/plrclr [RGB] - %s", LoadResStr("IDS_TEXT_CHANGEYOUROWNPLAYERCOLOR"));
 					LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 					LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-					LogF("/set faircrew [on/off] - %s", LoadResStr("IDS_TEXT_ENABLEORDISABLEFAIRCREW"));
 					LogF("/set maxplayer [number] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 					LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
 				}
@@ -844,12 +844,6 @@ namespace C4GameLobby
 			pEdt->SelectAll();
 		}
 		return true;
-	}
-
-	void MainDlg::UpdateFairCrew()
-	{
-		// if the fair crew setting has changed, make sure the buttons reflect this change
-		pGameOptionButtons->UpdateFairCrewBtn();
 	}
 
 	void MainDlg::UpdatePassword()

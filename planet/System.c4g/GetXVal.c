@@ -12,7 +12,6 @@
 
 // GetDefCoreVal
 global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
-global func GetDefMaxUserSelect() { return GetDefCoreVal("MaxUserSelect", "DefCore"); }
 global func GetDefWidth()       { return GetDefCoreVal("Width", "DefCore"); }
 global func GetDefHeight()      { return GetDefCoreVal("Height", "DefCore"); }
 global func GetDefOffset(nr)   { return GetDefCoreVal("Offset", "DefCore", nr); }
@@ -27,7 +26,6 @@ global func GetDefBlastIncinerate() { return GetDefCoreVal("BlastIncinerate", "D
 global func GetDefBurnTo()      { return GetDefCoreVal("BurnTo", "DefCore"); }
 global func GetDefBase()        { return GetDefCoreVal("Base", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
-global func GetDefLineConnect() { return GetDefCoreVal("Exclusive", "DefCore"); }
 global func GetDefPrey()        { return GetDefCoreVal("Prey", "DefCore"); }
 global func GetDefEdible()      { return GetDefCoreVal("Edible", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("Prey", "DefCore"); }
@@ -67,7 +65,6 @@ global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); 
 global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
 global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
 global func GetDefNoSell()      { return GetDefCoreVal("NoSell", "DefCore"); }
-global func GetDefNoFight()     { return GetDefCoreVal("NoFight", "DefCore"); }
 
 // GetObjectVal
 global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }

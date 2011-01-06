@@ -26,12 +26,14 @@ local player_deaths;
 local location;
 local point_limit;
 local radius;
+local player_suicides;
 
 func Initialize()
 {
 	// standards
 	player_points=[];
 	player_deaths=[];
+	player_suicides=[];
 	SetRadius(300);
 	SetPointLimit(10);
 	
@@ -106,15 +108,18 @@ public func SetRadius(int to)
 	radius=to;
 }
 
-func DoPoint(player)
+func DoPoint(int player, int count)
 {
-	++player_points[player];
+	if (count == nil) 
+		count = 1;
+	player_points[player] = Max(player_points[player] + count, 0);
 }
 
-protected func InitializePlayer()
+protected func InitializePlayer(plr)
 {
 	ScheduleCall(this, "RefreshScoreboard", 1);
-	return Goal_Melee->InitializePlayer(...); // TODO
+	player_suicides[plr]=0;
+	return Goal_Melee->InitializePlayer(plr, ...); // TODO
 }
 
 public func IsFulfilled()
@@ -123,20 +128,55 @@ public func IsFulfilled()
 }
 
 func OnClonkDeath(object clonk, int killer)
-{
+{	
 	ScheduleCall(this, "RefreshScoreboard", 1);
-	if(clonk->GetAlive()) return;
-	if(GetPlayerName(clonk->GetOwner()))
+	if (clonk->GetAlive()) return;
+		
+	if (GetPlayerName(clonk->GetOwner()))
 		++player_deaths[clonk->GetOwner()];
-	if(!Hostile(clonk->GetOwner(), killer)) return;
-	
-	if(location->GetKing() != nil)
-	if(location->GetKing() == clonk || location->GetKing()->GetOwner() == killer)
+	 
+	if(GetPlayerName(clonk->GetOwner()))
+	if (killer == clonk->GetOwner() || killer == NO_OWNER)
 	{
-		DoPoint(killer);
+		// shame on the king who kills himself
+		if (location->GetKing() == clonk)
+		{
+			DoPoint(clonk->GetOwner(),-1);
+			return;
+		}
+		else
+		{
+			// non-king suicide
+			player_suicides[clonk->GetOwner()]++;
+			if(player_suicides[clonk->GetOwner()] % 2 == 0)
+			{
+				DoPoint(clonk->GetOwner(),-1);
+			}
+		}
+		
+	}
+	
+	if (location->GetKing() != nil) 
+	{
+		if (location->GetKing()->GetOwner() == killer)
+			DoPoint(killer);
+		else if (location->GetKing() == clonk)
+		{
+			DoPoint(killer);
+			location->SetKing(GetCursor(killer));
+		}
 	}
 	CheckForWinner();
 	return;
+}
+
+func GetAdditionalPlayerRelaunchString(object clonk, int plr, int killed_by)
+{
+	if(!Hostile(killed_by, plr)) return;
+	if(!location->GetKing()) return;
+	if(location->GetKing()->GetOwner() != killed_by) return;
+	var msg=Format("$IsNowKing$", GetTaggedPlayerName(killed_by));
+	return msg;
 }
 
 private func CheckForWinner()

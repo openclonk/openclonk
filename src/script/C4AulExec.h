@@ -1,3 +1,21 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2001, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2006, 2009-2010  Peter Wortmann
+ * Copyright (c) 2007, 2009-2010  Günther Brammer
+ * 
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
 #ifndef C4AULEXEC_H
 #define C4AULEXEC_H
@@ -146,13 +164,13 @@ private:
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)
 	{
-		if (pStructure->ConvertTo(C4V_Array) && pStructure->GetType() != C4V_Any)
+		if (pStructure->ConvertTo(C4V_Array) && pStructure->_getArray())
 		{
 			if (!pIndex->ConvertTo(C4V_Int))
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
-		else if (pStructure->ConvertTo(C4V_PropList) && pStructure->GetType() != C4V_Any)
+		else if (pStructure->ConvertTo(C4V_PropList) && pStructure->_getPropList())
 		{
 			if (!pIndex->ConvertTo(C4V_String) || !pIndex->_getStr())
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());

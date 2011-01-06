@@ -2,7 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2001, 2004-2007, 2010  Sven Eberhardt
+ * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -87,8 +89,7 @@ public:
 	int32_t Number;
 	int32_t ID; // unique player ID
 	int32_t Team; // team ID - may be 0 for no teams
-	int32_t Color; // OldGfx color index
-	uint32_t ColorDw; // color as DWord for newgfx
+	uint32_t ColorDw;
 	class C4PlayerControlAssignmentSet *ControlSet;
 	StdCopyStrBuf ControlSetName;
 	int32_t MouseControl;
@@ -108,7 +109,6 @@ public:
 	C4Real ViewX,ViewY; // FIXED because this is saved/synchronized
 	bool ViewLock; // if set, no scrolling is allowed
 	C4Object *ViewTarget; // NoSave //
-	int32_t ViewWealth,ViewScore;
 	bool ShowStartup;
 	int32_t FlashCom; // NoSave //
 	bool fFogOfWar;
@@ -130,7 +130,6 @@ public:
 	int32_t CrewCnt; // No Save //
 	// Knowledge
 	C4IDList Knowledge;
-	C4IDList Magic;
 	// Control
 	C4PlayerControl Control;
 	C4ObjectPtr Cursor, ViewCursor;
@@ -265,8 +264,10 @@ public:
 	void SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool direct, bool no_increase, bool no_decrease);
 	void SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
 	void SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease);
-	void ZoomToViewport(bool direct, bool no_increase=false, bool no_decrease=false);
-	void ZoomLimitsToViewport();
+	void ZoomToViewports(bool direct, bool no_increase=false, bool no_decrease=false);
+	void ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase=false, bool no_decrease=false);
+	void ZoomLimitsToViewports();
+	void ZoomLimitsToViewport(C4Viewport* vp);
 
 private:
 	bool AdjustZoomParameter(int32_t *range_par, int32_t new_val, bool no_increase, bool no_decrease);

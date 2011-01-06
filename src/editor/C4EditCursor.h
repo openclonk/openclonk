@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005  Sven Eberhardt
  * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -39,7 +40,7 @@ protected:
 	bool fAltWasDown;
 	bool fSelectionChanged;
 	int32_t Mode;
-	int32_t X,Y,X2,Y2;
+	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
 	C4Object *Target,*DropTarget;
 #ifdef _WIN32
@@ -82,7 +83,7 @@ public:
 	bool AltDown();
 	bool AltUp();
 protected:
-	bool UpdateStatusBar();
+	void UpdateStatusBar();
 	void ApplyToolPicker();
 	void ToolFailure();
 	void PutContents();
@@ -95,8 +96,8 @@ protected:
 	void ApplyToolBrush();
 	void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r);
 	void FrameSelection();
-	void MoveSelection(int32_t iXOff, int32_t iYOff);
-	void EMMoveObject(enum C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
+	void MoveSelection(C4Real iXOff, C4Real iYOff);
+	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 
 #ifdef WITH_DEVELOPER_MODE

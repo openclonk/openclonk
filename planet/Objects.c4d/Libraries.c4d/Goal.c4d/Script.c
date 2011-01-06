@@ -64,11 +64,11 @@ protected func InitializePlayer(int plr)
 		HUD->OnGoalUpdate(this);
 }
 
-global func FxIntGoalCheckTimer(object trg, int num, int time)
+global func FxIntGoalCheckTimer(object trg, effect, int time)
 {
 	if (!time)
 		return true;
-	var curr_goal = EffectVar(0, trg, num);
+	var curr_goal = effect.var0;
 	// Check current goal object
 	if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
 	{
@@ -83,7 +83,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
 		++goal_count;
 		if (!curr_goal->~IsFulfilled())
 		{
-			EffectVar(0, trg, num) = curr_goal;
+			effect.var0 = curr_goal;
 			curr_goal->NotifyHUD();
 			return true;
 		}
@@ -100,8 +100,8 @@ global func AllGoalsFulfilled()
 {
 	// Goals fulfilled: Set mission password(s)
 	for (var goal in FindObjects(Find_Category(C4D_Goal)))
-		if (goal->LocalN("mission_password"))
-			GainMissionAccess(goal->LocalN("mission_password"));
+		if (goal.mission_password)
+			GainMissionAccess(goal.mission_password);
 	// Custom scenario goal evaluation?
 	if (GameCall("OnGoalsFulfilled")) return true;
 	// We're done. Play some sound and schedule game over call

@@ -2,9 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2001, 2003, 2006  Matthes Bender
- * Copyright (c) 2002, 2004-2009  Sven Eberhardt
+ * Copyright (c) 2002, 2004-2010  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
  * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -55,7 +55,6 @@ void C4GraphicsResource::Default()
 	fctPlayer.Default();
 	fctFlag.Default();
 	fctCrew.Default();
-	fctScore.Default();
 	fctWealth.Default();
 	fctRank.Default();
 	fctFire.Default();
@@ -68,7 +67,6 @@ void C4GraphicsResource::Default()
 	fctLogo.Default();
 	fctConstruction.Default();
 	fctEnergy.Default();
-	fctMagic.Default();
 	fctArrow.Default();
 	fctExit.Default();
 	fctHand.Default();
@@ -106,7 +104,6 @@ void C4GraphicsResource::Clear()
 	fctPlayer.Clear();
 	fctFlag.Clear();
 	fctCrew.Clear();
-	fctScore.Clear();
 	fctWealth.Clear();
 	fctRank.Clear();
 	fctFire.Clear();
@@ -119,7 +116,6 @@ void C4GraphicsResource::Clear()
 	fctLogo.Clear();
 	fctConstruction.Clear();
 	fctEnergy.Clear();
-	fctMagic.Clear();
 	fctOptions.Clear();
 	fctArrow.Clear();
 	fctExit.Clear();
@@ -187,7 +183,7 @@ bool C4GraphicsResource::Init()
 	}
 
 	Game.SetInitProgress(11.0f);
-	ProgressStart = 12.0f; ProgressIncrement = 0.4f;
+	ProgressStart = 12.0f; ProgressIncrement = 0.35f; // TODO: This should be changed so that it stops at 25%, no matter how many graphics we load.
 	// The progress bar is the only graphic besides the background that is
 	// used during startup, so load it early
 	if (!LoadFile(fctProgressBar, "GUIProgress", Files)) return false;
@@ -230,7 +226,6 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctBackground,  "Background",   Files))               return false;
 	if (!LoadFile(fctFlag,        "Flag",         Files))               return false; // (new format)
 	if (!LoadFile(fctCrew,        "Crew",         Files))               return false; // (new format)
-	if (!LoadFile(fctScore,       "Score",        Files))               return false; // (new)
 	if (!LoadFile(fctWealth,      "Wealth",       Files))               return false; // (new)
 	if (!LoadFile(fctPlayer,      "Player",       Files))               return false; // (new format)
 	if (!LoadFile(fctRank,        "Rank",         Files, C4FCT_Height)) return false;
@@ -241,7 +236,6 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(fctLogo,        "Logo",         Files))               return false;
 	if (!LoadFile(fctConstruction,"Construction", Files))               return false; // (new)
 	if (!LoadFile(fctEnergy,      "Energy",       Files))               return false; // (new)
-	if (!LoadFile(fctMagic,       "Magic",        Files))               return false; // (new)
 	if (!LoadFile(fctOptions,     "Options",      Files, C4FCT_Height)) return false;
 	if (!LoadFile(fctUpperBoard,  "UpperBoard",   Files))               return false;
 	if (!LoadFile(fctArrow,       "Arrow",        Files, C4FCT_Height)) return false;

@@ -1,2 +1,0 @@
-Name=Airplane bullet
-Description=Ammunition for the musket.

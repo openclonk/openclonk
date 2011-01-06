@@ -1,8 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -86,22 +89,13 @@ bool CStdApp::Init(int argc, char * argv[])
 	{
 		Location = dir;
 	}
-	// botch arguments
-	static std::string s("\"");
-	for (int i = 1; i < argc; ++i)
-	{
-		s.append(argv[i]);
-		s.append("\" \"");
-	}
-	s.append("\"");
-	szCmdLine = s.c_str();
 
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_install (">", readline_callback);
 	readline_callback_use_this_app = this;
 #endif
 	// Custom initialization
-	return DoInit ();
+	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()
@@ -135,7 +129,7 @@ void CStdApp::RestoreVideoMode() {}
 bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
 
 // Copy the text to the clipboard or the primary selection
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 }
 

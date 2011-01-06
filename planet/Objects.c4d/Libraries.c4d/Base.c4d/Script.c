@@ -114,14 +114,14 @@ public func MakeBase(bool fRemoveBase)
 
 // ---------- Healing, Extinguishing and Autosell -----------
 
-func FxIntBaseTimer(pThis, iEffect, iTime)
+func FxIntBaseTimer(pThis, effect, iTime)
 {
 	var pObj;
 	// Can this base heal? Then look for clonks that need some
 	if(CanHeal() && GetHeal())
 		for(pObj in FindObjects(Find_Container(this), Find_OCF(OCF_CrewMember), Find_Allied(GetOwner())))
 		{
-			if(pObj->GetEnergy() < pObj->GetPhysical("Energy")/1000 && !GetEffect("IntBaseHeal", pObj))
+			if(pObj->GetEnergy() < pObj->GetMaxEnergy() && !GetEffect("IntBaseHeal", pObj))
 				AddEffect("IntBaseHeal", pObj, 1, 1, this);
 		}
 	// Can this base extinguish? Then look for something on fire
@@ -146,12 +146,12 @@ func FxIntBaseTimer(pThis, iEffect, iTime)
 	}
 }
 
-func FxIntBaseHealTimer(pClonk, iEffect)
+func FxIntBaseHealTimer(pClonk, effect)
 {
 	// The clonk has left the base? Stop!
 	if(pClonk->Contained() != this) return -1;
 	// Full energy? Stop too.
-	if(pClonk->GetEnergy() >= pClonk->GetPhysical("Energy")/1000) return -1;
+	if(pClonk->GetEnergy() >= pClonk->GetMaxEnergy()) return -1;
 
 	// No energy left? Buy some
 	if(!iEnergy)

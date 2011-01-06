@@ -1,14 +1,13 @@
 [DefCore]
 id=Clonk
 Version=4,10,0,0
-Category=C4D_Living|C4D_SelectHomebase
-MaxUserSelect=10
+Category=C4D_Living
 Width=8
 Height=20
 Offset=-4,-10
 Vertices=7
 VertexX=0,0,0,-2,2,-4,4
-VertexY=2,-7,9,-3,-3,3,3
+VertexY=2,-7,9,-3,-3,2,2
 VertexCNAT=0,4,8,1,2,1,2
 VertexFriction=300,300,100,300,300,300,300
 Value=25
@@ -18,6 +17,7 @@ Collection=-8,-10,16,27
 ContactIncinerate=1
 Prey=1
 CrewMember=1
+NoGet=1
 Float=-2
 ColorByOwner=1
 BorderBound=1
@@ -25,20 +25,5 @@ StretchGrowth=1
 NoBurnDecay=1
 IncompleteActivity=1
 Oversize=1
-NoFight=1
 
-[Physical]
-Energy=50000
-Breath=50000
-Walk=70000
-Jump=40000
-Scale=30000
-Hangle=30000
-Dig=40000
-Swim=60000
-Throw=50000
-Push=40000
-Fight=50000
-CanDig=1
-CanConstruct=1
-CanChop=1
+

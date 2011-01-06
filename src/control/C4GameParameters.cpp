@@ -1,10 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2004, 2006-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2005-2007  Peter Wortmann
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -424,13 +424,6 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 		// network game?
 		IsNetworkGame = Game.NetworkActive;
-
-		// FairCrew-flag by command line
-		if (!FairCrewForced)
-			UseFairCrew = !!Config.General.FairCrew;
-		if (!FairCrewStrength && UseFairCrew)
-			FairCrewStrength = Config.General.FairCrewStrength;
-
 	}
 
 
@@ -447,14 +440,6 @@ void C4GameParameters::EnforceLeagueRules(C4Scenario *pScenario)
 	GameRes.CalcHashes();
 	Teams.EnforceLeagueRules();
 	AllowDebug = false;
-	// Fair crew enabled in league, if not explicitely disabled by scenario
-	// Fair crew strengt to a moderately high value
-	if (!Game.Parameters.FairCrewForced)
-	{
-		Game.Parameters.UseFairCrew = true;
-		Game.Parameters.FairCrewForced = true;
-		Game.Parameters.FairCrewStrength = 20000;
-	}
 	if (pScenario) MaxPlayers = pScenario->Head.MaxPlayerLeague;
 }
 
@@ -489,9 +474,6 @@ bool C4GameParameters::InitNetwork(C4Network2ResList *pResList)
 void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 {
 	pComp->Value(mkNamingAdapt(MaxPlayers,        "MaxPlayers",       !pScenario ? 0 : pScenario->Head.MaxPlayer));
-	pComp->Value(mkNamingAdapt(UseFairCrew,       "UseFairCrew",      !pScenario ? false : (pScenario->Head.ForcedFairCrew == C4SFairCrew_FairCrew)));
-	pComp->Value(mkNamingAdapt(FairCrewForced,    "FairCrewForced",   !pScenario ? false : (pScenario->Head.ForcedFairCrew != C4SFairCrew_Free)));
-	pComp->Value(mkNamingAdapt(FairCrewStrength,  "FairCrewStrength", !pScenario ? 0 : pScenario->Head.FairCrewStrength));
 	pComp->Value(mkNamingAdapt(AllowDebug,        "AllowDebug",       true));
 	pComp->Value(mkNamingAdapt(IsNetworkGame,     "IsNetworkGame",    false));
 	pComp->Value(mkNamingAdapt(ControlRate,       "ControlRate",      -1));

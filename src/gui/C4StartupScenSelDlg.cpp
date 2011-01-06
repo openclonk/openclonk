@@ -2,12 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005, 2007-2008  Matthes Bender
- * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
  * Copyright (c) 2005-2008  Sven Eberhardt
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Carl-Philip Hänsch
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -515,8 +516,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		}
 		// load any entryx-type-specific custom data (e.g. fallbacks for scenario title, and icon)
 		if (!LoadCustom(Group, fNameLoaded, fIconLoaded)) return false;
-		// store maker
-		sMaker.Copy(Group.GetMaker());
 		fBaseLoaded = true;
 	}
 	// load extended stuff: title picture
@@ -535,23 +534,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
 			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
 		fExLoaded = true;
-		// load author
-		if (Group.IsPacked())
-		{
-			const char *strSecAuthors = "RedWolf Design;Clonk History Project;GWE-Team"; // Now hardcoded...
-			if (SIsModule(strSecAuthors, Group.GetMaker()) && Group.LoadEntryString(C4CFN_Author, sAuthor))
-			{
-				// OK; custom author by txt
-			}
-			else
-				// defeault author by group
-				sAuthor.Copy(Group.GetMaker());
-		}
-		else
-		{
-			// unpacked groups do not have an author
-			sAuthor.Clear();
-		}
 		// load version
 		Group.LoadEntryString(C4CFN_Version, sVersion);
 	}
@@ -1484,13 +1466,6 @@ void C4StartupScenSelDlg::OnClosed(bool fOK)
 	}
 }
 
-void C4StartupScenSelDlg::UpdateUseCrewBtn()
-{
-	C4ScenarioListLoader::Entry *pSel = GetSelectedEntry();
-	C4SForceFairCrew eOpt = pSel ? pSel->GetFairCrewAllowed() : C4SFairCrew_Free;
-	pGameOptionButtons->SetForceFairCrewState(eOpt);
-}
-
 void C4StartupScenSelDlg::UpdateList()
 {
 	AbortRenaming();
@@ -1604,15 +1579,13 @@ void C4StartupScenSelDlg::UpdateSelection()
 	// set data in selection component
 	pSelectionInfo->ClearText(false);
 	pSelectionInfo->SetPicture(fctTitle);
-	if (!!sTitle && (!sDesc || !*sDesc.getData())) pSelectionInfo->AddTextLine(sTitle.getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrScenarioItem, false, false);
-	if (!!sDesc) pSelectionInfo->AddTextLine(sDesc.getData(), &C4Startup::Get()->Graphics.BookFont, ClrScenarioItem, false, false, &C4Startup::Get()->Graphics.BookFontCapt);
-	if (!!sAuthor) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_CTL_AUTHOR"), sAuthor.getData()).getData(),
+	if (sTitle && (!sDesc || !*sDesc.getData())) pSelectionInfo->AddTextLine(sTitle.getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrScenarioItem, false, false);
+	if (sDesc) pSelectionInfo->AddTextLine(sDesc.getData(), &C4Startup::Get()->Graphics.BookFont, ClrScenarioItem, false, false, &C4Startup::Get()->Graphics.BookFontCapt);
+	if (sAuthor) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_CTL_AUTHOR"), sAuthor.getData()).getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
-	if (!!sVersion) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DLG_VERSION"), sVersion.getData()).getData(),
+	if (sVersion) pSelectionInfo->AddTextLine(FormatString(LoadResStr("IDS_DLG_VERSION"), sVersion.getData()).getData(),
 		    &C4Startup::Get()->Graphics.BookFont, ClrScenarioItemXtra, false, false);
 	pSelectionInfo->UpdateHeight();
-	// usecrew-button
-	UpdateUseCrewBtn();
 }
 
 C4StartupScenSelDlg::ScenListItem *C4StartupScenSelDlg::GetSelectedItem()
@@ -1752,17 +1725,7 @@ bool C4StartupScenSelDlg::KeyDelete()
 	if (!pSel) return false;
 	C4ScenarioListLoader::Entry *pEnt = pSel->GetEntry();
 	StdStrBuf sWarning;
-	bool fOriginal = false;
-	if (C4Group_IsGroup(pEnt->GetEntryFilename().getData()))
-	{
-		C4Group Grp;
-		if (Grp.Open(pEnt->GetEntryFilename().getData()))
-		{
-			fOriginal = !!Grp.GetOriginal();
-		}
-		Grp.Close();
-	}
-	sWarning.Format(LoadResStr(fOriginal ? "IDS_MSG_DELETEORIGINAL" : "IDS_MSG_PROMPTDELETE"), FormatString("%s %s", pEnt->GetTypeName().getData(), pEnt->GetName().getData()).getData());
+	sWarning.Format(LoadResStr("IDS_MSG_PROMPTDELETE"), FormatString("%s %s", pEnt->GetTypeName().getData(), pEnt->GetName().getData()).getData());
 	GetScreen()->ShowRemoveDlg(new C4GUI::ConfirmationDialog(sWarning.getData(), LoadResStr("IDS_MNU_DELETE"),
 	                           new C4GUI::CallbackHandlerExPar<C4StartupScenSelDlg, ScenListItem *>(this, &C4StartupScenSelDlg::DeleteConfirm, pSel), C4GUI::MessageDialog::btnYesNo));
 	return true;

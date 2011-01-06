@@ -74,6 +74,7 @@
 #define C4CFN_MassMover       "MassMover.c4b"
 #define C4CFN_CtrlRec         "CtrlRec.c4b"
 #define C4CFN_CtrlRecText     "CtrlRec.txt"
+#define C4CFN_LogRec          "Record.log"
 #define C4CFN_TexMap          "TexMap.txt"
 #define C4CFN_MatMap          "MatMap.txt"
 #define C4CFN_Title           "Title%s.txt|Title.txt"
@@ -95,7 +96,6 @@
 #define C4CFN_DefGraphicsScaled    "Graphics.*.bmp"
 #define C4CFN_DefGraphicsScaledPNG "Graphics.*.png"
 #define C4CFN_ClrByOwnerExPNG "Overlay*.png"
-#define C4CFN_DefActMap       "ActMap.txt"
 #define C4CFN_DefDesc         "Desc%s.txt"
 #define C4CFN_BigIcon         "BigIcon.png"
 #define C4CFN_Portrait        "Portrait.png"
@@ -182,7 +182,7 @@
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.c4s|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
 #define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.c4m"
 #define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FontEndeavour12.png|FontEndeavour24.png|FontEndeavour16.png|FontEndeavour10.png|Font*.png"\
-            "|*.pal|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Score.png|Wealth.png|Player.png|Rank.png|Entry.png|Captain.png|Cursor.png|CursorSmall.png|CursorMedium.png|CursorLarge.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Magic.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Liquid.png"\
+            "|*.pal|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Entry.png|Captain.png|Cursor.png|CursorSmall.png|CursorMedium.png|CursorLarge.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Liquid.png"\
             "|GUICaption.png|GUIButton.png|GUIButtonDown.png|GUIButtonHighlight.png|GUIIcons.png|GUIIcons2.png|GUIScroll.png|GUIContext.png|GUISubmenu.png|GUICheckBox.png|GUIBigArrows.png|GUIProgress.png"\
             "|StartupScenSelBG.*|StartupPlrSelBG.*|StartupPlrPropBG.*|StartupNetworkBG.*|StartupAboutBG.*|StartupBigButton.png|StartupBigButtonDown.png|StartupBookScroll.png|StartupContext.png|StartupScenSelIcons.png|StartupScenSelTitleOv.png|StartupDlgPaper.png|StartupOptionIcons.png|StartupTabClip.png|StartupNetGetRef.png|StartupLogo.png"
 #define C4FLS_Objects   "Names*.txt|Desc*.txt|*.c4d"
@@ -191,7 +191,5 @@
 #define C4FLS_Easy      "*.txt|*.rtf|Title.bmp|Title.png|Icon.bmp|Goldmine.c4s|Monsterkill.c4s|Economy.c4s|Melee.c4s|Lake.c4s|Castle.c4s"
 #define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|Alchem.c|StringTbl*.txt|*.c|Names.txt"
 #define C4FLS_Music     "Frontend.*|Credits.*"
-// western foldermap hardcoded...
-#define C4FLS_Western   C4FLS_Folder "|ScenGCBase.png|ScenGC.png|ScenDMVBase.png|ScenDMV.png|ScenFSBase.png|ScenFS.png|ScenCTFBase.png|ScenCTF.png|ScenLHBase.png|ScenLH.png|ScenMCBase.png|ScenMC.png|ScenMWBase.png|ScenMW.png|ScenBRBase.png|ScenBR.png|ScenTHBase.png|ScenTH.png|ScenGRBase.png|ScenGR.png|ScenSTSBase.png|ScenSTS.png|ScenNWBase.png|ScenNW.png|AccLH.png|AccFS.png|AccGC.png|AccGR.png|AccMW.png|AccNW.png"
 
 #endif

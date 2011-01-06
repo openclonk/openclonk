@@ -1,10 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005, 2008-2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2008-2009  Günther Brammer
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009  mizipzor
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -98,8 +101,6 @@ public:
 
 protected:
 
-	// Reference? Otherwise, this object holds the data.
-	bool fRef;
 	// Data
 	union
 	{
@@ -109,7 +110,9 @@ protected:
 		char *szString; // for debugger preview
 #endif
 	};
-	size_t iSize;
+	unsigned int iSize;
+	// Reference? Otherwise, this object holds the data.
+	bool fRef;
 
 public:
 
@@ -433,6 +436,15 @@ public:
 	explicit StdStrBuf(const char *pData, bool fCopy = false)
 			: StdBuf(pData, pData ? strlen(pData) + 1 : 0, fCopy)
 	{ }
+
+#ifdef _WIN32
+	explicit StdStrBuf(const wchar_t * utf16)
+	{
+		int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
+		SetSize(len);
+		WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
+	}
+#endif
 
 	// As previous constructor, but set length manually.
 	StdStrBuf(const char *pData, long int iLength)

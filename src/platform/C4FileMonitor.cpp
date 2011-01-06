@@ -299,7 +299,7 @@ HANDLE C4FileMonitor::GetEvent()
 void C4FileMonitor::HandleNotify(const char *szDir, const _FILE_NOTIFY_INFORMATION *pNotify)
 {
 	// Get filename length
-	UINT iCodePage = CP_ACP /* future: CP_UTF8 */;
+	UINT iCodePage = CP_UTF8;
 	int iFileNameBytes = WideCharToMultiByte(iCodePage, 0,
 	                     pNotify->FileName, pNotify->FileNameLength / 2, NULL, 0, NULL, NULL);
 	// Set up filename buffer

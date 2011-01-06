@@ -138,8 +138,12 @@ public func Destruction()
 public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder
-	clonk->GetSelector()->CrewGone();
-	ReorderCrewSelectors(clonk);
+	var selector = clonk->GetSelector();
+	if(selector)
+	{
+		selector->CrewGone();
+		ReorderCrewSelectors(clonk);
+	}
 }
 
 public func OnCrewEnabled(object clonk)
@@ -174,24 +178,24 @@ public func OnCrewSelection(object clonk, bool deselect)
 	}
 }
 
-public func FxIntSearchInteractionObjectsEffect(string newname, object target, int num, int new_num)
+public func FxIntSearchInteractionObjectsEffect(string newname, object target)
 {
 	if(newname == "IntSearchInteractionObjects")
 		return -1;
 }
 
-public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt)
+public func FxIntSearchInteractionObjectsStart(object target, effect, int temp, startAt)
 {
 	if(temp != 0) return;
-	EffectVar(0,target,num) = startAt;
-	EffectCall(target,num,"Timer",target,num,0);
+	effect.var0 = startAt;
+	EffectCall(target,effect,"Timer",target,effect,0);
 }
 
-public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
+public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 {
 
 	// find vehicles & structures & script interactables
-	var startAt = EffectVar(0,target,num);
+	var startAt = effect.var0;
 	var i = startAt;
 	
 	var vehicles = CreateArray();
@@ -250,11 +254,6 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	}
 	
 	ClearButtons(i);
-	
-	// if a vehicle or structure is selected, the hands need to be removed
-	// from the inventory
-	if(actionbar[0]) actionbar[0]->UpdateHands();
-	if(actionbar[1]) actionbar[1]->UpdateHands();
 	
 	return;
 }

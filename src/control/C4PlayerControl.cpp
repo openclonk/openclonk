@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2009-2010  Sven Eberhardt
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -977,8 +980,8 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	case C4PlayerControlDef::CDA_ObjectMenuRight:        if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuRight,0); return true; // navigate
 	case C4PlayerControlDef::CDA_ObjectMenuDown:         if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuDown ,0); return true; // navigate
 
-	case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
-	case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom
+	case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || fUp || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
+	case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || fUp || !(pVP = ::Viewports.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom
 
 		//unknown action
 	default: return false;

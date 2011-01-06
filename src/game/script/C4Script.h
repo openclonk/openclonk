@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2004, 2007  Sven Eberhardt
  * Copyright (c) 2001  Peter Wortmann
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -133,8 +134,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
 #define PSF_FireMode            "~FireMode"
 #define PSF_FrameDecoration     "~FrameDecoration%s"
-#define PSF_GetFairCrewPhysical "~GetFairCrewPhysical" // C4String *szPhysicalName, int iRank, int iPrevPhysical
-#define PSF_DoMagicEnergy       "DoMagicEnergy" // int iChange, C4Object *pObj, bool fAllowPartial
 #define PSF_GetCustomComponents "~GetCustomComponents" // C4Object *pBuilder
 #define PSF_CalcBuyValue        "~CalcBuyValue" // C4ID idItem, int iDefValue
 #define PSF_CalcSellValue       "~CalcSellValue" // C4Object *pObj, int iObjValue
@@ -167,7 +166,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_RejectHostilityChange    "~RejectHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility
 #define PSF_RejectTeamSwitch         "~RejectTeamSwitch" // int iPlr, int idNewTeam
 #define PSF_RejectEntrance           "~RejectEntrance" // C4Object *pIntoObj
-#define PSF_RejectFight              "~RejectFight" // C4Object* pEnemy
 #define PSF_RejectCollection         "~RejectCollect" // idObject, pObject
 #define PSF_RejectContents           "~RejectContents" // blocks opening of activate/get/contents menus; no parameters
 
@@ -182,9 +180,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnHostilityChange        "~OnHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility, bool fOldHostility
 #define PSF_OnTeamSwitch             "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
 #define PSF_OnOwnerRemoved           "~OnOwnerRemoved"
-#define PSF_MagicEnergyChange        "~OnMagicEnergyChange" // int iChange
 #define PSF_Promotion                "~OnPromotion"
-#define PSF_PhysicalChange           "~OnPhysicalChange" // C4String *Physical, int iChange, int iMode
 #define PSF_CrewEnabled              "~OnCrewEnabled"
 #define PSF_CrewDisabled             "~OnCrewDisabled"
 #define PSF_NameChange               "~OnNameChanged" // bool inInfoSection

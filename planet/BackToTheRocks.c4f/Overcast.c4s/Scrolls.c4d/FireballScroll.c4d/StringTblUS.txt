@@ -1,0 +1,2 @@
+Name=Fireball Scroll
+Description=Hurl a fiery ball into your enemies.

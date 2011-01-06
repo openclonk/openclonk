@@ -1,11 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2006  Peter Wortmann
  * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  David Dormagen
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -161,7 +163,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		// reroute to message input class
 		::MessageInput.ProcessInput(szInputText);
 	// safety: message board commands may do strange things
-	if (!C4GUI::IsGUIValid() || this!=pInstance) return C4GUI::Edit::IR_Abort;
+	if (this!=pInstance) return C4GUI::Edit::IR_Abort;
 	// select all text to be removed with next keypress
 	// just for pasting mode; usually the dlg will be closed now anyway
 	pEdt->SelectAll();
@@ -289,14 +291,13 @@ bool C4MessageInput::CloseTypeIn()
 {
 	// close dialog if present and valid
 	C4ChatInputDialog *pDlg = GetTypeIn();
-	if (!pDlg || !C4GUI::IsGUIValid()) return false;
+	if (!pDlg) return false;
 	pDlg->Close(false);
 	return true;
 }
 
 bool C4MessageInput::StartTypeIn(bool fObjInput, C4Object *pObj, bool fUpperCase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery)
 {
-	if (!C4GUI::IsGUIValid()) return false;
 	// close any previous
 	if (IsTypeIn()) CloseTypeIn();
 	// start new
@@ -313,8 +314,6 @@ bool C4MessageInput::KeyStartTypeIn(bool fTeam)
 
 bool C4MessageInput::ToggleTypeIn()
 {
-	// safety
-	if (!C4GUI::IsGUIValid()) return false;
 	// toggle off?
 	if (IsTypeIn())
 	{
@@ -330,7 +329,7 @@ bool C4MessageInput::ToggleTypeIn()
 bool C4MessageInput::IsTypeIn()
 {
 	// check GUI and dialog
-	return C4GUI::IsGUIValid() && C4ChatInputDialog::IsShown();
+	return C4ChatInputDialog::IsShown();
 }
 
 bool C4MessageInput::ProcessInput(const char *szText)
@@ -473,7 +472,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
 		LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 		LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-		LogF("/set faircrew [on/off] - %s", LoadResStr("IDS_TEXT_ENABLEORDISABLEFAIRCREW"));
 		LogF("/set maxplayer [4] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 		LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
 		LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
@@ -484,7 +482,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
 		if (!Game.IsRunning) return false;
 		if (!Game.DebugMode) return false;
-		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return false;
+		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
 		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
 		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
@@ -522,20 +520,6 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			if (!::Network.isEnabled() || !::Network.isHost()) return false;
 			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
 			if (pLobby) pLobby->UpdatePassword();
-			return true;
-		}
-		if (SEqual2(pCmdPar, "faircrew "))
-		{
-			C4ControlSet *pSet = NULL;
-			if (SEqual(pCmdPar + 9, "on"))
-				pSet = new C4ControlSet(C4CVT_FairCrew, Config.General.FairCrewStrength);
-			else if (SEqual(pCmdPar + 9, "off"))
-				pSet = new C4ControlSet(C4CVT_FairCrew, -1);
-			else if (isdigit((unsigned char)pCmdPar[9]))
-				pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
-			else
-				return false;
-			::Control.DoInput(CID_Set, pSet, CDT_Decide);
 			return true;
 		}
 		// unknown property

@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005  Sven Eberhardt
+ * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -53,7 +55,6 @@ bool ObjectActionBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionChop(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionCornerScale(C4Object *cObj);
-bool ObjectActionFight(C4Object *cObj, C4Object *pTarget);
 
 bool ObjectComMovement(C4Object *cObj, int32_t iComDir);
 bool ObjectComTurn(C4Object *cObj);

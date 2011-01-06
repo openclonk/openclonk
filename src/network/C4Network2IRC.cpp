@@ -18,6 +18,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+
 #include "C4Include.h"
 #include "C4Network2IRC.h"
 #include "C4Config.h"
@@ -25,8 +26,6 @@
 #include "C4InteractiveThread.h"
 
 #include "C4Gui.h" // for clearly visi
-
-#include <boost/bind.hpp>
 
 #include <cctype> // for isdigit
 
@@ -380,15 +379,12 @@ bool C4Network2IRCClient::Join(const char *szChannel)
 {
 	// Newbie limitation: can only join channels beginning with #clonk
 	if (!Config.IRC.AllowAllChannels)
-		if (!SEqual2NoCase(szChannel, "#clonk") && !SEqual2NoCase(szChannel, "#openclonk"))
+		if (!SWildcardMatchEx(szChannel, "#*clonk*"))
 		{
 			const char* message = LoadResStr("IDS_ERR_CHANNELNOTALLOWED");
 			PushMessage(MSG_Status, "", "", message);
 			SetError("Joining this channel not allowed");
-			if (C4GUI::Screen* screen = C4GUI::Screen::GetScreenS())
-			{
-				Application.InteractiveThread.ThreadPostAsync(boost::bind(&C4GUI::Screen::ShowMessage, screen,message, LoadResStr("IDS_DLG_CHAT"), boost::cref(C4GUI::Ico_Error), static_cast<int32_t* const &>(0)));
-			}
+			Application.InteractiveThread.ThreadPostAsync(boost::bind(&C4GUI::Screen::ShowMessage, ::pGUI, message, LoadResStr("IDS_DLG_CHAT"), boost::cref(C4GUI::Ico_Error), static_cast<int32_t* const &>(0)));
 			return false;
 		}
 	return Send("JOIN", szChannel);

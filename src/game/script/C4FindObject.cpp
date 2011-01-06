@@ -2,8 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2008  Peter Wortmann
- * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2006-2009  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -144,7 +146,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	}
 
 	case C4FO_Procedure:
-		return new C4FindObjectProcedure(Data[1].getInt());
+		return new C4FindObjectProcedure(Data[1].getStr());
 
 	case C4FO_Container:
 		return new C4FindObjectContainer(Data[1].getObj());
@@ -638,13 +640,14 @@ bool C4FindObjectActionTarget::Check(C4Object *pObj)
 bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
 	C4Value v;
-	pObj->GetAction()->GetPropertyVal(P_Procedure, &v);
-	return v != C4VNull && v.getInt() == procedure;
+	pObj->GetAction()->GetProperty(P_Procedure, &v);
+	return v != C4VNull && v.getStr() == procedure;
 }
 
 bool C4FindObjectProcedure::IsImpossible()
 {
-	return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
+	//return procedure < DFA_NONE || procedure >= C4D_MaxDFA;
+	return false;
 }
 
 bool C4FindObjectContainer::Check(C4Object *pObj)

@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2006-2007  Sven Eberhardt
  * Copyright (c) 2006  Peter Wortmann
+ * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -80,7 +81,6 @@ public:
 	bool Hostile(int iPlayer1, int iPlayer2) const;
 	bool HostilityDeclared(int iPlayer1, int iPlayer2) const; // check whether iPlayer1 treats iPlayer2 as hostile, but not vice versa!
 	bool PositionTaken(int iPosition) const;
-	bool ColorTaken(int iColor) const;
 	int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
 	bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
 protected:

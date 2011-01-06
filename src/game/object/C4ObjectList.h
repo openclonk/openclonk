@@ -3,7 +3,8 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -187,7 +188,7 @@ private:
 	C4ObjectListIterator(const C4ObjectListIterator &rCopy); // no copy ctor
 public:
 	C4ObjectListIterator(C4ObjectList &rList) : rList(rList), pCurr(rList.end()), pCurrID(rList.begin()) {} // ctor
-	C4Object *GetNext(int32_t *piCount, uint32_t dwCategory=0); // get next object; return NULL if end is reached
+	C4Object *GetNext(int32_t *piCount); // get next object; return NULL if end is reached
 };
 
 #endif

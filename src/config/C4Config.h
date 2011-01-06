@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2001, 2004, 2006-2007  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -52,13 +52,10 @@ public:
 	StdStrBuf SaveDemoFolder;
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
-	char UpdateURL[CFG_MaxString+1];
 	int32_t FPS;
 	int32_t Record;
 	int32_t DefRec;
 	int32_t MMTimer;  // use multimedia-timers
-	int32_t FairCrew;   // don't use permanent crew physicals
-	int32_t FairCrewStrength, MaxFairCrewStrength; // strength of clonks in fair crew mode
 	int32_t ScrollSmooth; // view movement smoothing
 	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got currupted and must be reset
 	// Determined at run-time
@@ -138,6 +135,7 @@ public:
 	int32_t EnableShaders; // enable pixel shaders on engines that support them
 	int32_t ClipManuallyE; // do manual clipping in the easy cases
 	int32_t NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
+	int32_t MultiSampling; // multisampling samples
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -180,10 +178,12 @@ public:
 	int32_t MaxLoadFileSize;
 	char LastPassword[CFG_MaxString+1];
 	char AlternateServerAddress[CFG_MaxString+1];
-	char UpdateServerAddress[CFG_MaxString+1];
 	char PuncherAddress[CFG_MaxString+1];
+#ifdef WITH_AUTOMATIC_UPDATE
+	char UpdateServerAddress[CFG_MaxString+1];
 	int32_t AutomaticUpdate;
 	int32_t LastUpdateTime;
+#endif
 	int32_t AsyncMaxWait;
 public:
 	void CompileFunc(StdCompiler *pComp);
@@ -246,7 +246,6 @@ class C4ConfigControls
 public:
 	int32_t GamepadGuiControl;
 	int32_t MouseAScroll; // auto scroll strength
-	int32_t Keyboard[C4MaxKeyboardSet][C4MaxKey];
 	void CompileFunc(StdCompiler *pComp, bool fKeysOnly=false);
 	void ResetKeys(); // reset all keys to default
 };
@@ -302,6 +301,7 @@ public:
 	bool RemoveModule(const char *szPath, char *szModules);
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
+	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 private:

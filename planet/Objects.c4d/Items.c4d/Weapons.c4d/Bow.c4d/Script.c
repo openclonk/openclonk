@@ -35,8 +35,8 @@ func Initialize()
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		TurnType       = 1,
-		WalkSpeed      = 30000,
-		WalkBack       = 20000,
+		WalkSpeed      = 84,
+		WalkBack       = 56,
 		AnimationReplacements = [
 			["Walk", "BowWalk"],
 			["Walk_Position", 20],
@@ -194,15 +194,15 @@ private func ClonkAimLimit(object clonk, int angle)
 
 /* +++++++++++ Slow walk +++++++++++ */
 
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
+func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
-	if(iValue == nil || iValue == 0) iValue = 30000;
-	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+	if(iValue == nil || iValue == 0) iValue = 84;
+	pTarget->PushActionSpeed("Walk", iValue);
 }
 
-func FxIntWalkSlowStop(pTarget, iNumber)
+func FxIntWalkSlowStop(pTarget, effect)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 }
 
 /* +++++++++++ Various callbacks +++++++++ */

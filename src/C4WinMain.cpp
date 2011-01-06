@@ -2,11 +2,12 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2005, 2007-2008  Günther Brammer
+ * Copyright (c) 2005, 2007-2008, 2010  Günther Brammer
  * Copyright (c) 2005, 2008  Peter Wortmann
  * Copyright (c) 2005  Sven Eberhardt
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,13 +32,8 @@
 #include <C4Version.h>
 #include "C4Network2.h"
 
-#include "MacUtility.h"
-
 #ifdef _WIN32
-
-#if defined(_MSC_VER) && !defined(_DEBUG)
-//#define GENERATE_MINI_DUMP
-#endif
+#include <shellapi.h>
 
 #ifdef GENERATE_MINI_DUMP
 
@@ -48,7 +44,7 @@
 
 static bool FirstCrash = true;
 
-int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
+LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
 	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
 	FirstCrash = false;
@@ -84,48 +80,58 @@ int WINAPI WinMain (HINSTANCE hInst,
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-#ifdef GENERATE_MINI_DUMP
-	__try
+#if defined(GENERATE_MINI_DUMP)
+	SetUnhandledExceptionFilter(GenerateDump);
+#endif
+	// Split wide command line to wide argv array
+	std::vector<char*> argv;
+	int argc = 0;
+	LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (!wargv)
 	{
-#endif
+		const char *error = "Internal error: Unable to split command line! Exiting.";
+		Log(error);
+		Application.MessageDialog(error);
+		return C4XRV_Failure;
+	}
+	argv.reserve(argc);
+		
+	// Convert args to UTF-8
+	LPWSTR *curwarg = wargv;
+	while(argc--)
+	{
+		int arglen = WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, NULL, 0, 0, 0);
+		char *utf8arg = new char[arglen ? arglen : 1];
+		WideCharToMultiByte(CP_UTF8, 0, *curwarg, -1, utf8arg, arglen, 0, 0);
+		argv.push_back(utf8arg);
+		++curwarg;
+	}
+	LocalFree(wargv);
 
-		// Init application
-		if (!Application.Init(hInst,nCmdShow,lpszCmdParam))
-		{
-			Application.Clear();
-			return C4XRV_Failure;
-		}
-
-		// Run it
-		Application.Run();
+	// Init application
+	Application.SetInstance(hInst);
+	if (!Application.Init(argv.size(), &argv[0]))
+	{
 		Application.Clear();
+		return C4XRV_Failure;
+	}
 
-		// Return exit code
-		if (!Game.GameOver) return C4XRV_Aborted;
-		return C4XRV_Completed;
+	// Run it
+	Application.Run();
+	Application.Clear();
 
-#ifdef GENERATE_MINI_DUMP
-	} __except(GenerateDump(GetExceptionInformation())) { return C4XRV_Failure; }
-#endif
+	// delete arguments
+	for(std::vector<char*>::const_iterator it = argv.begin(); it != argv.end(); ++it)
+		delete[] *it;
+	argv.clear();
+	// Return exit code
+	if (!Game.GameOver) return C4XRV_Aborted;
+	return C4XRV_Completed;
 }
 
 int main()
 {
-	// Get command line, go over program name
-	char *pCommandLine = GetCommandLine();
-	if (*pCommandLine == '"')
-	{
-		pCommandLine++;
-		while (*pCommandLine && *pCommandLine != '"')
-			pCommandLine++;
-		if (*pCommandLine == '"') pCommandLine++;
-	}
-	else
-		while (*pCommandLine && *pCommandLine != ' ')
-			pCommandLine++;
-	while (*pCommandLine == ' ') pCommandLine++;
-	// Call
-	return WinMain(GetModuleHandle(NULL), 0, pCommandLine, 0);
+	return WinMain(GetModuleHandle(NULL), 0, 0, 0);
 }
 
 #else // _WIN32
@@ -135,11 +141,6 @@ int main()
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-
-#ifdef WITH_DEVELOPER_MODE
-# include "c4x.xpm"
-# include <gtk/gtk.h>
 #endif
 
 #ifdef HAVE_SIGNAL_H
@@ -187,12 +188,6 @@ static void crash_handler(int signo)
 }
 #endif // HAVE_SIGNAL_H
 
-#ifdef __APPLE__
-void restart(char* args[])
-{
-	MacUtility::restart(args);
-}
-#else
 static void restart(char * argv[])
 {
 	// Close all file descriptors except stdin, stdout, stderr
@@ -202,7 +197,6 @@ static void restart(char * argv[])
 	// Execute the new engine
 	execlp(argv[0], argv[0], static_cast<char *>(0));
 }
-#endif
 
 int main (int argc, char * argv[])
 {
@@ -221,15 +215,6 @@ int main (int argc, char * argv[])
 	signal(SIGQUIT, crash_handler);
 	signal(SIGFPE, crash_handler);
 	signal(SIGTERM, crash_handler);
-#endif
-
-	// FIXME: This should only be done in developer mode.
-#ifdef WITH_DEVELOPER_MODE
-	gtk_init(&argc, &argv);
-
-	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
-	gtk_window_set_default_icon(icon);
-	g_object_unref(icon);
 #endif
 
 	// Init application

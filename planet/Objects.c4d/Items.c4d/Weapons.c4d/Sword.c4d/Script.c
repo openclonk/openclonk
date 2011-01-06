@@ -15,6 +15,7 @@ public func Initialize()
 
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
+public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform() { return Trans_Rotate(90, 0, 1, 0); }
 
 
@@ -23,13 +24,25 @@ public func IsTool() { return 1; }
 public func IsToolProduct() { return 1; }
 
 local magic_number;
-public func ControlUseStart(object clonk, int x, int y)
+local carry_bone;
+public func ControlUse(object clonk, int x, int y)
 {
+	// cooldown?
 	if(!CanStrikeWithWeapon(clonk)) return true;
+	
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
+		return true;
+		
 	var slow=GetEffect("SwordStrikeSlow", clonk);
 
 	var arm = "R";
-	if(clonk->GetItemPos(this) == 1) arm = "L";
+	carry_bone = "pos_hand2";
+	if(clonk->GetItemPos(this) == 1)
+	{
+		arm = "L";
+		carry_bone = "pos_hand1";
+	}
 	var rand = Random(2)+1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	if(clonk->GetAction() == "Jump")
@@ -75,6 +88,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+	clonk->UpdateAttach();
 	
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, length, 1);
@@ -83,15 +97,10 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
-
-
-func ControlUseStop(object clonk, int x, int y)
-{
-	//StopWeaponHitCheckEffect(clonk);
-}
-
 func OnWeaponHitCheckStop(clonk)
 {
+	carry_bone = nil;
+	clonk->UpdateAttach();
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
 	//if(GetEffect("DelayTranslateVelocity", clonk))
@@ -110,17 +119,15 @@ func WeaponStrikeExpired()
 func CheckStrike(iTime)
 {
 	//if(iTime < 20) return;
-	var  offset_x=10;
+	var  offset_x=7;
 	var offset_y=0;
 	if(Contained()->GetDir() == DIR_Left) offset_x*=-1;
 	
 	if(!(Contained()->GetContact(-1) & CNAT_Bottom))
 		offset_y=10;
 	
-	var width=8;
+	var width=10;
 	var height=20;
-	var slowedVelocity=GetWeaponSlow(Contained());
-	var found=false;
 	var angle=0;
 	
 	var doBash=Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5;
@@ -133,152 +140,128 @@ func CheckStrike(iTime)
 		else angle=(Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained()), Find_Layer(GetObjectLayer())))
+	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
+							   Find_NoContainer(),
+							   Find_Exclude(Contained()),
+							   Find_Layer(GetObjectLayer())))
 	{
-		// check for second hit
-		var effect_name=Format("HasBeenHitBySwordEffect%d", magic_number);
-		var sword_name=Format("HasBeenHitBySword%d", this->ObjectNumber());
-		var first=true;
-		if(GetEffect(effect_name, obj))
+		if (obj->~IsProjectileTarget(this, Contained()) || obj->GetOCF() & OCF_Alive)
 		{
-			//Log("already hit");
-			continue;
-		} else
-		{
-			//Log("first hit by this effect");
-			AddEffect(effect_name, obj, 1, 60 /* arbitrary */, 0, 0);
-			
-			if(GetEffect(sword_name, obj))
+			var effect_name=Format("HasBeenHitBySwordEffect%d", magic_number);
+			var sword_name=Format("HasBeenHitBySword%d", this->ObjectNumber());
+			var first=true;
+			// don't hit objects twice
+			if(!GetEffect(effect_name, obj))
 			{
-				//Log("successive hit");
-				first=false;
-			}
-			else
-			{
-				//Log("first hit overall");
-				AddEffect(sword_name, obj, 1, 40, 0, 0);
-			}
-		}
-		
-		found=true;
-		
-		/*if(iTime < 20)
-		{
-			DoWeaponSlow(obj, 800);
-			continue;
-		}*/
-		
-		/*var velocity=GetRelativeVelocity(Contained(), obj) * 2;
-		velocity+= slowedVelocity / 10;
-		velocity=velocity*3;*/
-		//if(velocity > 300) velocity=300;
-		
-		var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
-		if(shield == 100)
-			continue;
-		// fixed damage for now, not taking velocity into account
-		var damage=(((100-shield)*(125 * 1000) / 100) / 15);
-		obj->DoEnergy(-damage, true, 0, Contained()->GetOwner());
-		
-		
-		if(offset_y)
-			ApplyWeaponBash(obj, 100, 0);
-		else
-			if(!first)
-				ApplyWeaponBash(obj, damage/50, Angle(0, 0, angle, -10));
-		else
-			if(!offset_y)
-				DoWeaponSlow(obj, 300);
-		
-		
-		// particle
-		var x=-1;
-		var p="Slice2";
-		if(Contained()->GetDir() == DIR_Right)
-		{
-			x=1;
-			p="Slice1";
-		} 
+				AddEffect(effect_name, obj, 1, 60 /* arbitrary */, 0, 0);
+				
+				if(GetEffect(sword_name, obj))
+				{
+					//Log("successive hit");
+					first=false;
+				}
+				else
+				{
+					//Log("first hit overall");
+					AddEffect(sword_name, obj, 1, 40, 0, 0);
+				}
 
-		CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
-	}
-	if(found)
-	{
-		/*if(iTime < 20)
-		{
-			DoWeaponSlow(Contained(), 1000);
+				
+				// Reduce damage by shield
+				var shield=ApplyShieldFactor(Contained(), obj, 0); // damage out of scope?
+				if(shield == 100)
+					continue;
+					
+				// fixed damage (9)
+				var damage=((100-shield)*9*1000 / 100);
+				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
+				
+				// object has not been deleted?
+				if(obj)
+				{
+					if(offset_y)
+						ApplyWeaponBash(obj, 100, 0);
+					else
+						if(!first)
+							ApplyWeaponBash(obj, damage/50, Angle(0, 0, angle, -10));
+					else
+						if(!offset_y)
+							DoWeaponSlow(obj, 300);
+					
+					// Particle effect
+					var x=-1;
+					var p="Slice2";
+					if(Contained()->GetDir() == DIR_Right)
+					{
+						x=1;
+						p="Slice1";
+					} 
+					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
+				}
+				
+				// sound and done. We can only hit one target
+				Sound(Format("WeaponHit%d.ogg", 1+Random(3)), false);
+				break;
+			}
 		}
-		else*/
-		{
-			this->Sound(Format("WeaponHit%d.ogg", 1+Random(3)), false);
-			//if(doBash)
-			//	DoWeaponSlow(Contained(), 2000);
-			//this->StopWeaponHitCheckEffect(Contained());
-		}
 	}
+
 }
 
-func FxSwordStrikeStopStart(pTarget, iEffectNumber, iTemp)
+func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
-	pTarget->SetPhysical("Walk", (pTarget->GetPhysical("Walk", 0) * 1)/100, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
 	if(iTemp) return;
 }
 
-func FxSwordStrikeStopStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 }
 
-func FxSwordStrikeStopTimer(pTarget, iEffectNumber)
+func FxSwordStrikeStopTimer(pTarget, effect)
 {
 	return 1;
 }
 
-func FxSwordStrikeSpeedUpStart(pTarget, iEffectNumber, iTemp)
+func FxSwordStrikeSpeedUpStart(pTarget, effect, iTemp)
 {
-	
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 3, PHYS_StackTemporary);
-	if(iTemp) return;
-	var dir=-1;
-	if(pTarget->GetDir() == DIR_Right) dir=1;
-	pTarget->SetXDir(pTarget->GetPhysical("Walk")*dir, 100000);
+	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed * 3);
+	pTarget.ActMap.Walk.Accel = 210;
 }
 
-func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
+func FxSwordStrikeSpeedUpTimer(pTarget, effect, iEffectTime)
 {
 	if(!pTarget->GetContact( -1) & CNAT_Bottom)
 		return -1;
 	if(iEffectTime > 35*2) return -1;
 }
 
-func FxSwordStrikeSpeedUpStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
-	//pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 2, PHYS_Temporary);
+	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
-	var time=GetEffect(0, 0, iEffectNumber, 6);
-	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, time);
+	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, effect.Time);
 }
 
-func FxSwordStrikeSlowStart(pTarget, iEffectNumber, iTemp, iTime)
+func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)
 {
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 3, PHYS_StackTemporary);
+	pTarget->PushActionSpeed("Walk", pTarget.ActMap.Walk.Speed / 3);
 	if(iTemp) return;
-	EffectVar(0, pTarget, iEffectNumber) = iTime;
+	effect.var0 = iTime;
 }
 
-func FxSwordStrikeSlowTimer(pTarget, iEffectNumber, iEffectTime)
+func FxSwordStrikeSlowTimer(pTarget, effect, iEffectTime)
 {
-	if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
+	if(iEffectTime > effect.var0) return -1;
 }
 
-func FxSwordStrikeSlowStop(pTarget, iEffectNumber, iCause, iTemp)
+func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->ResetPhysical("Walk");
-	//pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 2, PHYS_Temporary);
+	pTarget->PopActionSpeed("Walk");
 }
 
 func Definition(def) {

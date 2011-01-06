@@ -1,12 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2002, 2005-2006, 2010  Sven Eberhardt
  * Copyright (c) 2005-2009  Günther Brammer <gbrammer@gmx.de>
+ * Copyright (c) 2005-2010  Günther Brammer
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  Carl-Philip Hänsch <c-p.haensch@vr-web.de>
+ * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009  Carli@Carli-PC
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
- * Copyright (c) 2009 Carl-Philip Hänsch <c-p.haensch@vr-web.de>
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -78,7 +83,7 @@ CStdGL::~CStdGL()
 void CStdGL::Clear()
 {
 	NoPrimaryClipper();
-	if (pTexMgr) pTexMgr->IntUnlock();
+	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
 	RenderTarget = NULL;
@@ -104,6 +109,7 @@ bool CStdGL::UpdateClipper()
 	int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
 	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
 	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
+
 	if (iWdt<=0 || iHgt<=0)
 	{
 		ClipAll=true;
@@ -474,6 +480,12 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
+	if(shaders[0] && fUseClrModMap)
+	{
+		glClientActiveTexture(GL_TEXTURE3);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTexture(GL_TEXTURE0);
+	}
 	glLoadIdentity();
 	if (!fExact)
 	{
@@ -1577,6 +1589,13 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				glDrawArrays(GL_QUADS, 0, 4);
 			}
 
+			if(shaders[0] && fUseClrModMap)
+			{
+				glClientActiveTexture(GL_TEXTURE3);
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				glClientActiveTexture(GL_TEXTURE0);
+			}
+
 		}
 	}
 	if (mattextures)
@@ -1601,6 +1620,9 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
+	// creation selected the new context - switch back to previous context
+	RenderTarget = NULL;
+	pCurrCtx = NULL;
 	// done
 	return pCtx;
 }
@@ -1616,7 +1638,16 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 	}
-	if (!pMainCtx) pMainCtx = pCtx;
+	if (!pMainCtx)
+	{
+		pMainCtx = pCtx;
+	}
+	else
+	{
+		// creation selected the new context - switch back to previous context
+		RenderTarget = NULL;
+		pCurrCtx = NULL;
+	}
 	// done
 	return pCtx;
 }
@@ -1996,9 +2027,10 @@ void CStdGL::TaskOut()
 {
 	// deactivate
 	// backup textures
+#ifdef _WIN32
 	if (pTexMgr && !Editor) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
-#ifdef _WIN32
+
 	if (!Editor && !Config.Graphics.Windowed)
 	{
 		::ChangeDisplaySettings(NULL, 0);
@@ -2011,10 +2043,10 @@ void CStdGL::TaskIn()
 {
 	// restore gl
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
+#ifdef _WIN32
 	// restore textures
 	if (pTexMgr && !Editor) pTexMgr->IntUnlock();
 
-#ifdef _WIN32
 	if (!Editor && !Config.Graphics.Windowed)
 	{
 		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);

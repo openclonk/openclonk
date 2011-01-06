@@ -3,8 +3,9 @@
  *
  * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -173,6 +174,11 @@ bool C4Record::Start(bool fInitial)
 	sprintf(szCtrlRecFilename, "%s" DirSep C4CFN_CtrlRec, sFilename.getData());
 	if (!CtrlRec.Create(szCtrlRecFilename)) return false;
 
+	// open log file in record
+	char szLogRecFilename[_MAX_PATH+1 + _MAX_FNAME];
+	sprintf(szLogRecFilename, "%s" DirSep C4CFN_LogRec, sFilename.getData());
+	if (!LogRec.Create(szLogRecFilename)) return false;
+
 	// open record group
 	if (!RecordGrp.Open(sFilename.getData()))
 		return false;
@@ -207,6 +213,8 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 	Head.Type = RCT_End;
 	CtrlRec.Write(&Head, sizeof(Head));
 	CtrlRec.Close();
+
+	LogRec.Close();
 
 	// pack group
 #ifndef DEBUGREC

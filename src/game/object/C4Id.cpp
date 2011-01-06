@@ -4,7 +4,8 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2008  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -34,16 +35,11 @@ const C4ID C4ID::None(std::string("None"));
 const C4ID C4ID::Contents(std::string("Contents"));
 
 // TODO: Remove these eventually, since they are deprecated.
-const C4ID C4ID::Energy(std::string("Rule_NeedEnergy"));
 const C4ID C4ID::StructuresSnowIn(std::string("STSN"));
 const C4ID C4ID::CnMaterial(std::string("CNMT"));
 const C4ID C4ID::Flag(std::string("FLAG"));
 const C4ID C4ID::FlagRemvbl(std::string("FGRV"));
-const C4ID C4ID::Linekit(std::string("CableReel"));
 const C4ID C4ID::Conkit(std::string("CNKT"));
-const C4ID C4ID::SourcePipe(std::string("SPIP"));
-const C4ID C4ID::DrainPipe(std::string("DPIP"));
-const C4ID C4ID::PowerLine(std::string("PowerLine"));
 const C4ID C4ID::Clonk(std::string("Clonk"));
 const C4ID C4ID::Flame(std::string("FLAM"));
 const C4ID C4ID::Meteor(std::string("METO"));
@@ -51,6 +47,7 @@ const C4ID C4ID::Blast(std::string("FXB1"));
 const C4ID C4ID::Melee(std::string("MELE"));
 const C4ID C4ID::TeamworkMelee(std::string("MEL2"));
 const C4ID C4ID::Rivalry(std::string("RVLR"));
+const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }
 

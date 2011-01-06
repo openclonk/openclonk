@@ -111,11 +111,6 @@ public:
 	// Maximum player count allowed
 	int32_t MaxPlayers;
 
-	// Fair crew option
-	bool UseFairCrew;
-	bool FairCrewForced; // true for scenarios in which this setting may not be altered
-	int32_t FairCrewStrength;
-
 	// Original network game? Also set in replays of network games for sync safety
 	bool IsNetworkGame;
 

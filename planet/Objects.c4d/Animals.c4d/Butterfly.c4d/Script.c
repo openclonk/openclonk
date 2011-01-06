@@ -97,6 +97,8 @@ Fly = {
 	Prototype = Action,
 	Name = "Fly",
 	Procedure = DFA_FLOAT,
+	Speed = 200,
+	Accel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 1,
@@ -113,6 +115,8 @@ Flutter = {
 	Prototype = Action,
 	Name = "Flutter",
 	Procedure = DFA_FLOAT,
+	Speed = 200,
+	Accel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 11,
@@ -127,7 +131,10 @@ Flutter = {
 },
 };
 local Name = "Butterfly";
+local MaxEnergy = 40000;
+local MaxBreath = 125;
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
 }
+

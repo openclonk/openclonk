@@ -156,7 +156,6 @@ namespace C4GameLobby
 		void OnCountdownPacket(const C4PacketCountdown &Pkt); // called when a countdown packet is received: Update countdown state
 
 		bool IsCountdown();
-		void UpdateFairCrew();
 		void UpdatePassword();
 		void ClearLog();
 	};

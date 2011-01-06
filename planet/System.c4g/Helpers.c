@@ -100,7 +100,49 @@ global func GetAvailableObjectCheck(int plr)
 	if (FindObject (Find_ActionTarget(this), Find_Procedure(DFA_CONNECT)))
 		return false;
 	// Not chosen by another friendly clonk
-	if (GetEffect("IntNotAvailable", this) && !Hostile(plr, EffectVar(0, this, GetEffect("IntNotAvailable", this))->GetOwner()))
+	if (GetEffect("IntNotAvailable", this) && !Hostile(plr, GetEffect("IntNotAvailable", this).var0->GetOwner()))
 		return false;
 	return true;
 }
+
+// Sets the MaxEnergy value of an object and does the necessary callbacks.
+global func SetMaxEnergy(int value)
+{
+	if (!this)
+		return;
+	value *= 1000;
+	var old_maxenergy = this.MaxEnergy;
+	this.MaxEnergy = value;
+	// Change current energy percentage wise and implicit callback.
+	DoEnergy(GetEnergy() * (value - old_maxenergy) / old_maxenergy);
+	return;
+}
+
+// Returns the MaxEnergy value of an object.
+global func GetMaxEnergy()
+{
+	if (!this)
+		return;
+	return this.MaxEnergy / 1000;
+}
+
+// Sets the MaxBreath value of an object and does the necessary callbacks.
+global func SetMaxBreath(int value)
+{
+	if (!this)
+		return;
+	var old_maxbreath = this.MaxBreath;
+	this.MaxBreath = value;
+	// Change current breath percentage wise and implicit callback.
+	DoBreath(GetBreath() * (value - old_maxbreath) / old_maxbreath);
+	return;
+}
+
+// Returns the MaxBreath value of an object.
+global func GetMaxBreath()
+{
+	if (!this)
+		return;
+	return this.MaxBreath;
+}
+

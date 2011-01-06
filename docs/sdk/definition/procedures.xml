@@ -15,7 +15,7 @@
         <col>CNAT</col>
       </rowh>
       <row>
-        <col>NONE</col>
+        <col>nil</col>
         <col>No procedure</col>
         <col>Only gravitational effects or attachment as specified in the <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>[Action] Attach</col>
@@ -109,12 +109,6 @@
         <col>Attachment to another object</col>
         <col>Adjusts object position at vertex a to the position of vertex b of the <emlink href="script/fn/SetAction.html">target object</emlink>. a and b are the two low bytes of <emlink href="script/fn/SetActionData.html">ActionData</emlink> (see <emlink href="script/fn/SetActionData.html">SetActionData</emlink> for an example).</col>
         <col>CNAT_None</col>
-      </row>
-      <row>
-        <col>FIGHT</col>
-        <col>Fighting</col>
-        <col>Fight against <emlink href="script/fn/SetAction.html">target object</emlink> according to <emlink href="definition/defcore.html#SektionPhysical">Fight physical</emlink>.</col>
-        <col>CNAT_Bottom</col>
       </row>
       <row>
         <col>CONNECT</col>

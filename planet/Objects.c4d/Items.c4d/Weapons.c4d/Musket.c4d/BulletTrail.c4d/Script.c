@@ -20,8 +20,8 @@ public func Set(int iWidth, int iLength, object pSht)
 {
 	pShot = pSht;
 
-	w = 1000*iWidth/this["ActMap"]["Travel"]["Wdt"];
-	l = 1000*iLength/this["ActMap"]["Travel"]["Hgt"];
+	w = 1000*iWidth/ActMap.Travel.Wdt;
+	l = 1000*iLength/ActMap.Travel.Hgt;
 
 	var iXDir = pShot->GetXDir(1000);
 	var iYDir = pShot->GetYDir(1000);
@@ -76,7 +76,7 @@ public func Hit()
 public func Remove() {
 	SetXDir();
 	SetYDir();
-	l = Min(l,1000*Distance(x,y,GetX(),GetY())/this["ActMap"]["Travel"]["Hgt"]);
+	l = Min(l,1000*Distance(x,y,GetX(),GetY())/ActMap.Travel.Hgt);
 	fRemove = true;
 	pShot = nil;
 }
@@ -84,7 +84,7 @@ public func Remove() {
 public func DrawTransform() {
 
 	var distance = Distance(x,y,GetX(),GetY());
-	var relative_length = 1000*distance/this["ActMap"]["Travel"]["Hgt"];
+	var relative_length = 1000*distance/ActMap.Travel.Hgt;
 
 	// skip because nothing has to be transformed
 	if(!fRemove && l < relative_length) return;
@@ -97,7 +97,7 @@ public func DrawTransform() {
 
 	var fsin = -Sin(r, 1000), fcos = Cos(r, 1000);
 
-	var xoff = -(this["ActMap"]["Travel"]["Wdt"]*w/1000)/2;
+	var xoff = -(ActMap.Travel.Wdt*w/1000)/2;
 	var yoff = 0;
 
 	var width = +fcos*w/1000, height = +fcos*h/1000;
@@ -119,6 +119,8 @@ Travel = {
 	Prototype = Action,
 	Name = "Travel",
 	Procedure = DFA_FLOAT,
+	Speed = 100000,
+	Accel = 16,
 	NextAction = "Travel",
 	Length = 1,
 	Delay = 1,

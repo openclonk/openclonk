@@ -34,8 +34,6 @@ local pWire;
 
 public func ControlUse(object clonk, int x, int y)
 {
-	//if(clonk->GetAction() != "Walk") return true;
-
 	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
 	if(!pDyna->ControlUse(clonk, x, y, 1))
 	{
@@ -45,8 +43,8 @@ public func ControlUse(object clonk, int x, int y)
 	if(pWire)
 		pWire->Connect(aDynamites[iCount], pDyna);
 	// First? then add Timer
-	else
-		AddEffect("IntLength", this, 1, 10, this);
+/*	else
+		AddEffect("IntLength", this, 1, 10, this);*/
 
 	pWire = CreateObject(Fuse);
 	pWire->Connect(pDyna, this);
@@ -87,7 +85,7 @@ private func UpdatePicture()
 local fWarning;
 local fWarningColor;
 
-func FxIntLengthTimer(pTarget, iNumber, iTime)
+func FxIntLengthTimer(pTarget, effect, iTime)
 {
 	var iLength = 0;
 	var i = GetLength(aWires)-1;
@@ -150,7 +148,7 @@ protected func Incineration() { DoExplode(); }
 
 protected func Damage() { DoExplode(); }
 
-func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
+func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 {
 	for(var i = 0; i < GetLength(aWires); i++)
 			if(aWires[i]) aWires[i]->SetColorWarning(0);

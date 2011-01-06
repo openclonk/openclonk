@@ -2,9 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2005, 2008  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2004-2005, 2008-2009  Sven Eberhardt
  * Copyright (c) 2004, 2006  Peter Wortmann
- * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2005, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -119,7 +119,6 @@ public:
 	bool fReferenceDefinitionOverride;
 	bool NetworkActive;
 	bool Record;
-	bool RegJoinOnly; // default false; set to true only by command line parameter or in console builds
 	StdStrBuf RecordDumpFile;
 	StdStrBuf RecordStream;
 	bool TempScenarioFile;
@@ -148,10 +147,9 @@ public:
 	bool DebugMode;
 	// next mission to be played after this one
 	StdCopyStrBuf NextMission, NextMissionText, NextMissionDesc;
-private:
 	// debug settings
-	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; bool DebugWait;
-public:
+	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; int DebugWait;
+
 	// Init and execution
 	void Default();
 	void Clear();
@@ -163,7 +161,7 @@ public:
 	void FixRandom(int32_t iSeed);
 	bool Init();
 	bool PreInit();
-	void ParseCommandLine(const char *szCmdLine);
+	void SetScenarioFilename(const char*);
 	bool Execute();
 	class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	bool DoGameOver();
@@ -191,7 +189,7 @@ public:
 	bool ReloadDef(C4ID id);
 	bool ReloadParticle(const char *szName);
 	// Object functions
-	void ClearPointers(C4PropList *cobj);
+	void ClearPointers(C4Object *cobj);
 	C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
 	                       int32_t x=50, int32_t y=50, int32_t r=0,
 	                       C4Real xdir=Fix0, C4Real ydir=Fix0, C4Real rdir=Fix0, int32_t iController=NO_OWNER);
@@ -313,10 +311,10 @@ public:
 };
 
 
-const int32_t C4RULE_StructuresNeedEnergy      = 1,
-    C4RULE_ConstructionNeedsMaterial = 2,
-                                       C4RULE_FlagRemoveable            = 4,
-                                                                          C4RULE_StructuresSnowIn          = 8;
+const int32_t
+	C4RULE_ConstructionNeedsMaterial = 1,
+	C4RULE_FlagRemoveable            = 2,
+	C4RULE_StructuresSnowIn          = 4;
 
 extern C4Game         Game;
 

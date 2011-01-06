@@ -1,2 +1,0 @@
-DE:Environment Test
-US:Environment Test

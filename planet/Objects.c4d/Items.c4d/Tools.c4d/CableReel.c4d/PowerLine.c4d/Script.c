@@ -5,7 +5,8 @@ protected func Initialize()
 	SetAction("Connect");
 	SetVertexXY(0, GetX(), GetY());
 	SetVertexXY(1, GetX(), GetY());
-	SetPosition(0, 0);
+	SetProperty("LineColors", [RGB(80,80,80), RGB(80,80,80)]);
+	return;
 }
 
 // Returns true if this object is a functioning power line.
@@ -14,45 +15,48 @@ public func IsPowerLine()
 	return GetAction() == "Connect";
 }
 
-// Returns whether this power line is connected to pObject.
-public func IsConnectedTo(object pObject)
+// Returns whether this power line is connected to an object.
+public func IsConnectedTo(object obj)
 {
-	return GetActionTarget(0) == pObject || GetActionTarget(1) == pObject;
+	return GetActionTarget(0) == obj || GetActionTarget(1) == obj;
 }
 
-// Returns the object which is connected to pObject through this power line.
-public func GetConnectedObject(object pObject)
+// Returns the object which is connected to obj through this power line.
+public func GetConnectedObject(object obj)
 {
-	if(GetActionTarget(0) == pObject)
+	if (GetActionTarget(0) == obj)
 		return GetActionTarget(1);
-	if(GetActionTarget(1) == pObject)
+	if (GetActionTarget(1) == obj)
 		return GetActionTarget(0);
 	return;
 }
 
-protected func LineBreak(bool fNoMsg)
+protected func LineBreak(bool no_msg)
 {
 	Sound("LineBreak");
-	if(!fNoMsg) BreakMessage();
+	if (!no_msg) 
+		BreakMessage();
+	return;
 }
 
 private func BreakMessage()
 {
-	var pLine = GetActionTarget(0);
-	if(pLine->GetID() != CableReel) pLine = GetActionTarget(1);
+	var line_end = GetActionTarget(0);
+	if (line_end->GetID() != CableReel) 
+		line_end = GetActionTarget(1);
 
-	pLine->Message("$TxtLinebroke$");
+	line_end->Message("$TxtLinebroke$");
+	return;
 }
 
 local ActMap = {
-		Connect = {
+	Connect = {
 		Prototype = Action,
 		Name = "Connect",
-		Length = 0,
-		Delay = 0,
 		Procedure = DFA_CONNECT,
 		NextAction = "Connect",
-},
+	},
 };
+
 local Name = "$Name$";
 		

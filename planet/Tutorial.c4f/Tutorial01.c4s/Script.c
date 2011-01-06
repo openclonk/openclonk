@@ -8,14 +8,12 @@
 static guide; // guide object
 static loam_chest; // chest containing loam
 static flint_chest; // chest containing flints
-static tutstage; // how far has the player gotten? used for respawn location
 
 protected func Initialize()
 {
 	// Tutorial goal.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
 	goal->CreateGoalFlag(2330, 1040);
-	AddEffect("TutorialScale", nil, 100, 5);
 	
 	// Environment.
 	PlaceGrass(85);
@@ -40,7 +38,7 @@ protected func Initialize()
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial01.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
-	return true;
+	return;
 }
 
 // Gamecall from goals, set next mission.
@@ -58,8 +56,8 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(230, 955);
 	var effect = AddEffect("ClonkRestore", clonk, 100, 10);
-	EffectVar(1, clonk, effect) = 230;
-	EffectVar(2, clonk, effect) = 955;
+	effect.var1 = 230;
+	effect.var2 = 955;
 
 	// Standard player zoom for tutorials, player is not allowed to zoom in/out.
 	SetPlayerViewLock(plr, true);
@@ -70,7 +68,8 @@ protected func InitializePlayer(int plr)
 	guide->AddGuideMessage("@$MsgTutIntro0$");
 	guide->ShowGuideMessage(0);
 	AddEffect("TutorialIntro1", nil, 100, 36 * 3);
-	return true;
+	AddEffect("TutorialScale", nil, 100, 5);
+	return;
 }
 
 /*-- Guide Messages --*/
@@ -100,84 +99,90 @@ global func FxTutorialIntro3Stop()
 	return 1;
 }
 
-global func FxTutorialScaleTimer(object target, int num, int timer)
+global func FxTutorialScaleTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(650, 990, 140, 90)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(650, 990, 140, 90)))
 	{
-		while (GetEffect("TutotialIntro*"))
-			RemoveEffect("TutotialIntro*");
+		while (GetEffect("TutorialIntro*"))
+			RemoveEffect("TutorialIntro*");
+		guide->ClearGuideMessage();
 		guide->AddGuideMessage("$MsgTutScale$");
-		AddEffect("TutorialHangle", 0, 1, 18);
+		AddEffect("TutorialHangle", 0, 100, 18);
 		return -1;
 	}
 }
 
-global func FxTutorialHangleTimer(object target, int num, int timer)
+global func FxTutorialHangleTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(820, 940, 190, 140)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(820, 940, 190, 140)))
 	{
 		guide->AddGuideMessage("$MsgTutHangle$");
-		AddEffect("TutorialSwim", 0, 1, 18);
+		AddEffect("TutorialSwim", 0, 100, 18);
 		return -1;
 	}
 }
 
-global func FxTutorialSwimTimer(object target, int num, int timer)
+global func FxTutorialSwimTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1120, 1030, 140, 60)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
-		tutstage = 1;
 		guide->AddGuideMessage("$MsgTutSwim$");
-		AddEffect("TutorialDig", 0, 1, 18);
+		AddEffect("TutorialDig", 0, 100, 18);
 		return -1;
 	}
 }
 
-global func FxTutorialDigTimer(object target, int num, int timer)
+global func FxTutorialDigTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1550, 1040, 130, 60)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(1530, 1040, 130, 60)))
 	{
-		guide->AddGuideMessage("$MsgTutDig$");
 		return -1;
 	}
+	return 1;
 }
 
-global func FxShovelGetTimer(object target, int num, int timer)
+global func FxTutorialDigStop()
+{
+	guide->AddGuideMessage("$MsgTutDig$");
+	return 1;
+}
+
+global func FxShovelGetTimer(object target, effect, int timer)
 {
 	if(target->Contained() != nil)
 	{
+		if (GetEffect("TutorialDig"))
+			RemoveEffect("TutorialDig");
 		guide->AddGuideMessage("$MsgTutTools$");
-		RemoveEffect("TutorialDig");
-		AddEffect("TutorialChest", 0, 1, 18);
+		AddEffect("TutorialChest", 0, 100, 18);
 		return -1;
 	}
 }
 
-global func FxTutorialChestTimer(object target, int num, int timer)
+global func FxTutorialChestTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1750, 1030, 130, 80)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(1750, 1030, 130, 80)))
 	{
 		guide->AddGuideMessage("$MsgTutChest$");
 		return -1;
 	}
 }
 
-global func FxLoamGetTimer(object target, int num, int timer)
+global func FxLoamGetTimer(object target, effect, int timer)
 {
 	if(target->Contained()->GetID() != Chest)
 	{
 		guide->AddGuideMessage("$MsgTutLoam$");
 		RemoveEffect("TutorialChest");
-		AddEffect("TutorialFlint", 0, 1, 18);
+		AddEffect("TutorialFlint", 0, 100, 18);
 		return -1;
 	}
 }
 
-global func FxTutorialFlintTimer(object target, int num, int timer)
+global func FxTutorialFlintTimer(object target, effect, int timer)
 {
-	if(FindObject(Find_ID(Clonk),Find_InRect(1990, 1020, 130, 90)))
+	if(FindObject(Find_ID(Clonk), Find_InRect(1990, 1020, 130, 90)))
 	{
-		tutstage = 2;
 		guide->AddGuideMessage("$MsgTutFlint$");
 		return -1;
 	}
@@ -190,10 +195,25 @@ protected func OnGuideMessageShown(int plr, int index)
 		TutArrowShowTarget(GetCrew(GetPlayerByIndex()), 225, 24);
 	// Show where the goal is located in the HUD.
 	if (index == 2)
-		TutArrowShowGUIPos(- 64 - 16 - GUI_Goal->GetDefHeight() / 2,8 + GUI_Goal->GetDefHeight() / 2, 0, 40);
+		TutArrowShowGUIPos(- 64 - 16 - GUI_Goal->GetDefHeight() / 2, 8 + GUI_Goal->GetDefHeight() / 2, 0, 40);
 	// Show where the guide is located in the HUD.
 	if (index == 3)	
 		TutArrowShowGUIPos(- 128 - 32 - TutorialGuide->GetDefWidth() / 2, 8 + TutorialGuide->GetDefHeight() / 2, 0, 40);
+	// Show wall to climb.
+	if (index == 5)
+		TutArrowShowPos(800, 1030, 90);		
+	// Show ceiling to hangle.
+	if (index == 6)
+		TutArrowShowPos(1030, 1030, 45);		
+	// Show shovel under water.
+	if (index == 8)
+		TutArrowShowTarget(FindObject(Find_ID(Shovel)), 225);
+	// Show inventory slots.
+	if (index == 9)
+	{
+		TutArrowShowGUIPos(32 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 40);
+		TutArrowShowGUIPos(32 + 12 + 3 * GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 40);
+	}
 	return;
 }
 
@@ -205,25 +225,25 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Clonk restoring --*/
 
-global func FxClonkRestoreTimer(object target, int num, int time)
+global func FxClonkRestoreTimer(object target, effect, int time)
 {
 	// Respawn to new location if reached bow & arrow chest.
-	if(tutstage == 1)
+	if(FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
-		EffectVar(1, target, num) = 1240;
-		EffectVar(2, target, num) = 1070;		
+		effect.var1 = 1240;
+		effect.var2 = 1070;		
 	}
 	// Respawn to new location if reached brick climb.
-	if(tutstage == 2)
+	if(FindObject(Find_ID(Clonk), Find_InRect(1990, 1020, 130, 90)))
 	{
-		EffectVar(1, target, num) = 2010;
-		EffectVar(2, target, num) = 1020;		
+		effect.var1 = 2010;
+		effect.var2 = 1020;		
 	}
 	return 1;
 }
 
 // Relaunches the clonk, from death or removal.
-global func FxClonkRestoreStop(object target, int num, int reason, bool  temporary)
+global func FxClonkRestoreStop(object target, effect, int reason, bool  temporary)
 {
 	if (reason == 3 || reason == 4)
 	{
@@ -231,8 +251,8 @@ global func FxClonkRestoreStop(object target, int num, int reason, bool  tempora
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_x = EffectVar(1, target, num);
-		var to_y = EffectVar(2, target, num);
+		var to_x = effect.var1;
+		var to_y = effect.var2;
 		// Respawn new clonk.
 		var plr = target->GetOwner();
 		var clonk = CreateObject(Clonk, 0, 0, plr);

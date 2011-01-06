@@ -1,4 +1,0 @@
-RelaunchMsg0=%s tries it again.
-RelaunchMsg1=%s is dead.
-RelaunchMsg2=Haha, %s!
-RelaunchMsg3=We're mourning %s.

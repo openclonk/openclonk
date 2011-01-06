@@ -2,10 +2,11 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2004  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2001-2003, 2005-2007, 2009-2010  Sven Eberhardt
  * Copyright (c) 2002, 2004  Peter Wortmann
- * Copyright (c) 2005-2006, 2008  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -203,7 +204,7 @@ void C4MouseControl::UpdateClip()
 	// fullscreen only
 	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
-	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
+	if (!Active || !Application.Active || ::pGUI->HasMouseFocus()) { ClipCursor(NULL); return; }
 	// get controlled viewport
 	C4Viewport *pVP=::Viewports.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
@@ -219,8 +220,7 @@ void C4MouseControl::UpdateClip()
 	}
 	ClipCursor(&vpRct);
 	// and inform GUI
-	if (::pGUI)
-		::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
+	::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
 #endif
 	//StdWindow manages this.
 }

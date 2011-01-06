@@ -1,4 +1,4 @@
-body {
+#masterserver, #masterserver td {
     font-family: 'Verdana', sans-serif;
 }
 
@@ -14,6 +14,10 @@ body {
     font-size: 10pt;
     color: black;
     text-decoration: none;
+}
+
+#masterserver .error {
+	color: red;
 }
 
 #masterserver a {
@@ -41,14 +45,13 @@ body {
     padding: 5px 30px;
 }
 
-#masterserver_footer {
+#masterserver .footer {
     margin-top: 10px;
     border-top: 1px dotted gray;
-}
-
-#masterserver_footer p {
     color: gray;
     font-size: 0.7em;
     margin-top: 2px;
-    float: right;
+	text-align: right;
+    width: 100%;
 }
+

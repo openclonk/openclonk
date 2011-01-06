@@ -26,13 +26,14 @@
 #define C4CFN_StartupBackgroundMain    "StartupMainMenuBG"
 
 // special colors for startup designs
-const int32_t C4StartupFontClr         = 0xff000000,
+const int32_t
+	C4StartupFontClr         = 0xff000000,
     C4StartupFontClrDisabled = 0xff7f7f7f,
-                               C4StartupEditBGColor     = 0x00000000,
-                                                          C4StartupEditBorderColor = 0xffa4947a,
-                                                                                     C4StartupBtnFontClr      = 0xff202020,
-                                                                                                                C4StartupBtnBorderColor1 = 0xffccc3b4,
-                                                                                                                                           C4StartupBtnBorderColor2 = 0xff94846a;
+	C4StartupEditBGColor     = 0x00000000,
+	C4StartupEditBorderColor = 0xffa4947a,
+	C4StartupBtnFontClr      = 0xff202020,
+	C4StartupBtnBorderColor1 = 0xffccc3b4,
+	C4StartupBtnBorderColor2 = 0xff94846a;
 
 // graphics needed only by startup
 class C4StartupGraphics

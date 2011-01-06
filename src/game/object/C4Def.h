@@ -4,7 +4,9 @@
  * Copyright (c) 1998-2001  Matthes Bender
  * Copyright (c) 2001-2007  Sven Eberhardt
  * Copyright (c) 2003  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2010  Maikel de Vries
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -53,30 +55,15 @@ C4D_Object         =    1<<4,
 C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
 
 C4D_Goal             =  1<<5,
-C4D_Environment      =  1<<6,
+C4D_Rule             =  1<<6,
+C4D_Environment      =  1<<7,
 
-C4D_SelectBuilding   =  1<<7,
-C4D_SelectVehicle    =  1<<8,
-C4D_SelectMaterial   =  1<<9,
-C4D_SelectKnowledge  =  1<<10,
-C4D_SelectHomebase   =  1<<11,
-C4D_SelectAnimal     =  1<<12,
-C4D_SelectNest       =  1<<13,
-C4D_SelectInEarth    =  1<<14,
-C4D_SelectVegetation =  1<<15,
-
-C4D_TradeLiving      =  1<<16,
-C4D_Magic            =  1<<17,
-C4D_CrewMember       =  1<<18,
-
-C4D_Rule             =  1<<19,
-
-C4D_Background       =  1<<20,
-C4D_Parallax         =  1<<21,
-C4D_MouseSelect      =  1<<22,
-C4D_Foreground       =  1<<23,
-C4D_MouseIgnore      =  1<<24,
-C4D_IgnoreFoW        =  1<<25,
+C4D_Background       =  1<<12,
+C4D_Parallax         =  1<<13,
+C4D_MouseSelect      =  1<<14,
+C4D_Foreground       =  1<<15,
+C4D_MouseIgnore      =  1<<16,
+C4D_IgnoreFoW        =  1<<17,
 
 C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
 
@@ -88,25 +75,6 @@ C4D_Border_Top    = 2,
 C4D_Border_Bottom = 4,
 C4D_Border_Layer  = 8,
 
-C4D_Line_Power     = 1,
-C4D_Line_Source    = 2,
-C4D_Line_Drain     = 3,
-C4D_Line_Lightning = 4,
-C4D_Line_Volcano   = 5,
-C4D_Line_Rope      = 6,
-C4D_Line_Colored   = 7,
-C4D_Line_Vertex    = 8,
-
-C4D_Power_Input     =   1,
-C4D_Power_Output    =   2,
-C4D_Liquid_Input    =   4,
-C4D_Liquid_Output   =   8,
-C4D_Power_Generator =  16,
-C4D_Power_Consumer  =  32,
-C4D_Liquid_Pump     =  64,
-C4D_Connect_Rope    = 128,
-C4D_EnergyHolder    = 256,
-
 C4D_Place_Surface    = 0,
 C4D_Place_Liquid     = 1,
 C4D_Place_Air        = 2;
@@ -114,11 +82,6 @@ C4D_Place_Air        = 2;
 const int32_t C4D_VehicleControl_None     = 0,
 C4D_VehicleControl_Outside  = 1,
 C4D_VehicleControl_Inside   = 2;
-
-const int32_t C4D_Sell     = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Object | C4D_TradeLiving,
-C4D_Get      = C4D_Sell,
-C4D_Take     = C4D_Get,
-C4D_Activate = C4D_Get;
 
 const DWORD C4D_Load_None      =  0,
 C4D_Load_Picture   =  1,
@@ -144,7 +107,6 @@ public:
 	C4ID id;
 	int32_t rC4XVer[4];
 	C4IDList RequireDef;
-	C4PhysicalInfo Physical;
 	C4Shape Shape;
 	C4Rect Entrance;
 	C4Rect Collection;
@@ -179,9 +141,7 @@ public:
 	int32_t ContainBlast;
 	int32_t UprightAttach;
 	int32_t ContactFunctionCalls;
-	int32_t MaxUserSelect;
 	int32_t Line;
-	int32_t LineConnect;
 	int32_t LineIntersect;
 	int32_t NoBurnDecay;
 	int32_t IncompleteActivity;
@@ -212,7 +172,6 @@ public:
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
 	int32_t NoSell;           // if set, object can't be sold (doesn't even appear in sell-menu)
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
-	int32_t NoFight;          // if set, object is never OCF_FightReady
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
@@ -234,7 +193,6 @@ public:
 	C4Def();
 	~C4Def();
 public:
-	char Maker[C4MaxName+1];
 	char Filename[_MAX_FNAME+1];
 	int32_t Creation;
 	int32_t Count; // number of instanciations
@@ -257,9 +215,6 @@ public:
 	C4PortraitGraphics *Portraits; // Portraits (linked list of C4AdditionalDefGraphics)
 
 protected:
-	// copy of the physical info used in FairCrew-mode
-	C4PhysicalInfo *pFairCrewPhysical;
-
 	C4Facet MainFace;
 
 protected:
@@ -275,8 +230,6 @@ public:
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
-	C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
-	void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 	void Synchronize();
 	virtual C4Def const * GetDef() const { return this; }	
 	virtual C4Def * GetDef() { return this; }
@@ -361,32 +314,5 @@ inline C4Def *C4Id2Def(C4ID id)
 {
 	return ::Definitions.ID2Def(id);
 }
-
-// Default Action Procedures
-
-#define DFA_NONE    -1
-#define DFA_WALK     0
-#define DFA_FLIGHT   1
-#define DFA_KNEEL    2
-#define DFA_SCALE    3
-#define DFA_HANGLE   4
-#define DFA_DIG      5
-#define DFA_SWIM     6
-#define DFA_THROW    7
-#define DFA_BRIDGE   8
-#define DFA_BUILD    9
-#define DFA_PUSH    10
-#define DFA_CHOP    11
-#define DFA_LIFT    12
-#define DFA_FLOAT   13
-#define DFA_ATTACH  14
-#define DFA_FIGHT   15
-#define DFA_CONNECT 16
-#define DFA_PULL    17
-
-#define C4D_MaxDFA  18
-
-// procedure name table
-extern const char *ProcedureName[C4D_MaxDFA];
 
 #endif

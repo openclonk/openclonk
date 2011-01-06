@@ -1,9 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2003-2008  Sven Eberhardt
  * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 2008, 2010  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -78,6 +79,8 @@ namespace C4GUI
 				pFirst->pParent = NULL;
 				if ((pFirst = pANext))
 					pFirst->pPrev = NULL;
+				else
+					pLast = NULL;
 			}
 			else
 				delete pFirst;
@@ -712,8 +715,6 @@ namespace C4GUI
 	void Control::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
 		if (!IsVisible()) return;
-		// inherited
-		Window::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 		// left down on click=focus-components?
 		if (IsFocusOnClick() && IsFocusElement()) if (iButton == C4MC_Button_LeftDown && !HasFocus())
 			{
@@ -727,6 +728,8 @@ namespace C4GUI
 						pParentDlg->SetFocus(this, true);
 				}
 			}
+		// inherited - processing child elements
+		Window::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 	}
 
 	bool Control::HasDrawFocus()

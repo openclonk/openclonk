@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2005-2006, 2008, 2010  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -41,7 +41,6 @@ public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
 #ifdef _WIN32
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
 	static bool RegisterViewportClass(HINSTANCE hInst);
 #elif defined(WITH_DEVELOPER_MODE)
 	virtual GtkWidget* InitGUI();
@@ -68,7 +67,12 @@ public:
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
 #endif
+#if defined(USE_COCOA) || defined(_WIN32)
+	virtual CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
+#endif
+	void EditCursorMove(int X, int Y, uint16_t);
 	virtual void Close();
+	virtual void PerformUpdate();
 };
 
 #define C4ViewportClassName "C4Viewport"

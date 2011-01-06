@@ -1,6 +1,6 @@
 [DefCore]
 id=Igniter
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_Object
 Width=4
 Height=6
@@ -10,7 +10,6 @@ VertexY=1,5
 VertexFriction=120,120,120
 Value=15
 Mass=15
-Components=Wood=5
 Picture=4,0,21,21
 Collectible=1
 Rotate=1

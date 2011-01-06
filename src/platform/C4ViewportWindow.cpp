@@ -4,8 +4,11 @@
  * Copyright (c) 1998-2000, 2004, 2007-2008  Matthes Bender
  * Copyright (c) 2001-2002, 2005-2008  Sven Eberhardt
  * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -148,10 +151,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		// posts a new WM_ACTIVATE to us, and so on, ultimately leading to a hang.
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
-			if (Console.PropertyDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
-			if (Console.ToolsDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
+			Console.Win32KeepDialogsFloating();
 		}
 		else
 		{
@@ -159,10 +159,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_MOUSEACTIVATE:
 			// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
 			// Setting the window owner here avoids z-order flickering.
-			if (Console.PropertyDlg.hDialog)
-				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
-			if (Console.ToolsDlg.hDialog)
-				SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
+			Console.Win32KeepDialogsFloating(hwnd);
 		}
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
@@ -208,7 +205,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
-			Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);
+			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam);
 			Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(); break;
@@ -217,7 +214,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE: Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam); break;
+		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		}
 	}
@@ -250,7 +247,7 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
 }
 
-CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
+CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
 {
 	Active = true;
 	// Create window
@@ -259,7 +256,13 @@ CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWind
 	            C4ViewportClassName, Title, C4ViewportWindowStyle,
 	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
 	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
-	return hWindow ? this : 0;
+	if(!hWindow) return NULL;
+
+	// We don't re-init viewport windows currently, so we don't need a child window
+	// for now: Render into main window.
+	hRenderWindow = hWindow;
+
+	return this;
 }
 
 void UpdateWindowLayout(HWND hwnd)
@@ -628,7 +631,7 @@ gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotio
 	}
 	else
 	{
-		Console.EditCursor.Move(window->cvp->ViewX + event->x/window->cvp->Zoom, window->cvp->ViewY + event->y/window->cvp->Zoom, event->state);
+		window->EditCursorMove(event->x, event->y, event->state);
 	}
 
 	return true;
@@ -665,10 +668,12 @@ void C4ViewportWindow::OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_
 	static_cast<C4ViewportWindow*>(user_data)->cvp->ViewPositionByScrollBars();
 }
 
-#else // WITH_DEVELOPER_MODE
+#endif // WITH_DEVELOPER_MODE
+
+#if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 bool C4Viewport::TogglePlayerLock() { return false; }
 bool C4Viewport::ScrollBarsByViewPosition() { return false; }
-#if defined(USE_X11)
+
 void C4ViewportWindow::HandleMessage (XEvent & e)
 {
 	switch (e.type)
@@ -791,7 +796,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 		}
 		else
 		{
-			Console.EditCursor.Move(cvp->ViewX + e.xbutton.x, cvp->ViewY + e.xbutton.y, e.xbutton.state);
+			EditCursorMove(e.xbutton.x, e.xbutton.y, e.xbutton.state);
 		}
 		break;
 	case ConfigureNotify:
@@ -800,9 +805,21 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 	}
 }
 #endif // USE_X11
-#endif // WITH_DEVELOPER_MODE/_WIN32
+
+void C4ViewportWindow::PerformUpdate()
+{
+	if (cvp)
+	{
+		cvp->UpdateOutputSize();
+		cvp->Execute();
+	}
+}
 
 void C4ViewportWindow::Close()
 {
 	::Viewports.CloseViewport(cvp);
+}
+void C4ViewportWindow::EditCursorMove(int X, int Y, uint16_t state)
+{
+	Console.EditCursor.Move(cvp->ViewX + X / cvp->Zoom, cvp->ViewY + Y / cvp->Zoom, state);
 }

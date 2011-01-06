@@ -2,11 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
+ * Copyright (c) 2001-2010  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
- * Copyright (c) 2004  Armin Burgmeier
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2004, 2010  Armin Burgmeier
+ * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2009  Tobias Zwick
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -221,8 +223,6 @@ void C4Player::Execute()
 	// Delays
 	if (MessageStatus>0) MessageStatus--;
 	if (RetireDelay>0) RetireDelay--;
-	if (ViewWealth>0) ViewWealth--;
-	if (ViewScore>0) ViewScore--;
 	if (CursorFlash>0) CursorFlash--;
 }
 
@@ -533,20 +533,12 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 
 }
 
-C4Object *CreateLine(C4ID linetype, int32_t owner, C4Object *fobj, C4Object *tobj);
-
-bool CreatePowerConnection(C4Object *fbase, C4Object *tbase)
-{
-	if (CreateLine(C4ID::PowerLine,fbase->Owner,fbase,tbase)) return true;
-	return false;
-}
-
 void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 {
 	int32_t cnt,cnt2,ctx,cty;
 	C4Def *def;
 	C4ID cid;
-	C4Object *cbase,*fpower=NULL;
+	C4Object *cbase;
 	// Create ready base structures
 	for (cnt=0; (cid=Game.C4S.PlrStart[PlrStartIndex].ReadyBase.GetID(cnt)); cnt++)
 	{
@@ -561,21 +553,9 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 						// FirstBase
 						if (!(*pFirstBase)) if ((cbase->Def->Entrance.Wdt>0) && (cbase->Def->Entrance.Hgt>0))
 								{ *pFirstBase=cbase; tx=(*pFirstBase)->GetX(); ty=(*pFirstBase)->GetY(); }
-						// First power plant
-						if (cbase->Def->LineConnect & C4D_Power_Generator)
-							if (!fpower) fpower=cbase;
 					}
 			}
 	}
-
-	// Power connections
-	C4ObjectLink *clnk; C4Object *cobj;
-	if (Game.Rules & C4RULE_StructuresNeedEnergy)
-		if (fpower)
-			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-				if (cobj->Owner==Number)
-					if (cobj->Def->LineConnect & C4D_Power_Consumer)
-						CreatePowerConnection(fpower,cobj);
 }
 
 void C4Player::PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
@@ -641,12 +621,6 @@ bool C4Player::ScenarioInit()
 	C4Team *pTeam; int32_t i;
 	if (Team && (pTeam = Game.Teams.GetTeamByID(Team))) if ((i=pTeam->GetPlrStartIndex())) PlrStartIndex=i-1;
 
-	// Set color
-	int32_t iColor=BoundBy<int32_t>(PrefColor,0,C4MaxColor-1);
-	while (::Players.ColorTaken(iColor))
-		{ ++iColor%=C4MaxColor; if (iColor==PrefColor) break; }
-	Color=iColor;
-
 	C4PlayerInfo *pInfo = GetInfo();
 	if (!pInfo) { assert(false); LogF("Internal error: ScenarioInit for ghost player %s!", GetName()); return false; }
 
@@ -665,10 +639,6 @@ bool C4Player::ScenarioInit()
 	HomeBaseProduction.ConsolidateValids(::Definitions);
 	Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
 	Knowledge.ConsolidateValids(::Definitions);
-	Magic=Game.C4S.PlrStart[PlrStartIndex].Magic;
-	Magic.ConsolidateValids(::Definitions);
-	if (Magic.IsClear()) Magic.Load(::Definitions,C4D_Magic); // All magic default if empty
-	Magic.SortByValue(::Definitions);
 
 	// Starting position
 	ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
@@ -792,7 +762,6 @@ bool C4Player::SetWealth(int32_t iVal)
 	if (iVal == Wealth) return true;
 
 	Wealth=BoundBy<int32_t>(iVal,0,10000);
-	ViewWealth = C4ViewDelay;
 
 	Game.Script.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
@@ -1211,7 +1180,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(Eliminated,          "Eliminated",           0));
 	pComp->Value(mkNamingAdapt(Surrendered,         "Surrendered",          0));
 	pComp->Value(mkNamingAdapt(Evaluated,            "Evaluated",            false));
-	pComp->Value(mkNamingAdapt(Color,               "Color",                -1));
 	pComp->Value(mkNamingAdapt(ColorDw,             "ColorDw",              0u));
 	pComp->Value(mkNamingAdapt(Position,            "Position",             0));
 	pComp->Value(mkNamingAdapt(ViewMode,            "ViewMode",             C4PVM_Cursor));
@@ -1224,8 +1192,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxHgt,     "ZoomLimitMaxHgt",      0));
 	pComp->Value(mkNamingAdapt(ZoomWdt,             "ZoomWdt",              0));
 	pComp->Value(mkNamingAdapt(ZoomHgt,             "ZoomHgt",              0));
-	pComp->Value(mkNamingAdapt(ViewWealth,          "ViewWealth",           0));
-	pComp->Value(mkNamingAdapt(ViewScore,           "ViewScore",            0));
 	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
@@ -1245,7 +1211,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
-	pComp->Value(mkNamingAdapt(Magic,               "Magic"                 ));
 	pComp->Value(mkNamingAdapt(Crew,                "Crew"                  ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
@@ -1345,7 +1310,6 @@ void C4Player::DefaultRuntimeData()
 	Surrendered=0;
 	AtClient=C4ClientIDUnknown;
 	SCopy("Local",AtClientName);
-	Color=-1;
 	ControlSet = NULL;
 	ControlSetName.Clear();
 	MouseControl=false;
@@ -1357,7 +1321,6 @@ void C4Player::DefaultRuntimeData()
 	ViewTarget=NULL;
 	ShowStartup=true;
 	CrewCnt=0;
-	ViewWealth=ViewScore=0;
 	Wealth=0;
 	CurrentScore=InitialScore=0;
 	ObjectsOwned=0;
@@ -1370,7 +1333,6 @@ void C4Player::DefaultRuntimeData()
 	HomeBaseMaterial.Default();
 	HomeBaseProduction.Default();
 	Knowledge.Default();
-	Magic.Default();
 	FlashCom=0;
 }
 
@@ -1446,7 +1408,6 @@ void C4Player::NotifyOwnedObjects()
 bool C4Player::DoScore(int32_t iChange)
 {
 	CurrentScore = BoundBy<int32_t>( CurrentScore+iChange, -100000, 100000 );
-	ViewScore = C4ViewDelay;
 	return true;
 }
 
@@ -1826,8 +1787,6 @@ void C4Player::CountControl(ControlType eType, int32_t iID, int32_t iCntAdd)
 
 void C4Player::ExecMsgBoardQueries()
 {
-	// query now possible?
-	if (!C4GUI::IsGUIValid()) return;
 	// already active?
 	if (::MessageInput.IsTypeIn()) return;
 	// find an un-evaluated query
@@ -1978,27 +1937,32 @@ void C4Player::SetZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool dir
 {
 	AdjustZoomParameter(&ZoomWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomHgt, range_hgt, no_increase, no_decrease);
-	ZoomToViewport(direct, no_decrease, no_increase); // inc/dec swapped for zoom, because it's inversely proportional to range
+	ZoomToViewports(direct, no_decrease, no_increase); // inc/dec swapped for zoom, because it's inversely proportional to range
 }
 
 void C4Player::SetMinZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMinWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomLimitMinHgt, range_hgt, no_increase, no_decrease);
-	ZoomLimitsToViewport();
+	ZoomLimitsToViewports();
 }
 
 void C4Player::SetMaxZoomByViewRange(int32_t range_wdt, int32_t range_hgt, bool no_increase, bool no_decrease)
 {
 	AdjustZoomParameter(&ZoomLimitMaxWdt, range_wdt, no_increase, no_decrease);
 	AdjustZoomParameter(&ZoomLimitMaxHgt, range_hgt, no_increase, no_decrease);
-	ZoomLimitsToViewport();
+	ZoomLimitsToViewports();
 }
 
-void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
+void C4Player::ZoomToViewports(bool direct, bool no_increase, bool no_decrease)
 {
-	C4Viewport *vp = ::Viewports.GetViewport(Number);
-	if (!vp) return;
+	C4Viewport *vp = NULL;
+	while((vp = ::Viewports.GetViewport(Number, vp)) != NULL)
+		ZoomToViewport(vp, direct, no_increase, no_decrease);
+}
+
+void C4Player::ZoomToViewport(C4Viewport* vp, bool direct, bool no_increase, bool no_decrease)
+{
 	float new_zoom = vp->GetZoomByViewRange((ZoomWdt || ZoomHgt) ? ZoomWdt : C4VP_DefViewRangeX,ZoomHgt);
 	float old_zoom = vp->GetZoomTarget();
 	if (new_zoom > old_zoom && no_increase) return;
@@ -2006,10 +1970,15 @@ void C4Player::ZoomToViewport(bool direct, bool no_increase, bool no_decrease)
 	vp->SetZoom(new_zoom, direct);
 }
 
-void C4Player::ZoomLimitsToViewport()
+void C4Player::ZoomLimitsToViewports()
 {
-	C4Viewport *vp = ::Viewports.GetViewport(Number);
-	if (!vp) return;
+	C4Viewport *vp = NULL;
+	while((vp = ::Viewports.GetViewport(Number, vp)) != NULL)
+		ZoomLimitsToViewport(vp);
+}
+
+void C4Player::ZoomLimitsToViewport(C4Viewport* vp)
+{
 	float zoom_max = vp->GetZoomByViewRange((ZoomLimitMinWdt || ZoomLimitMinHgt) ? ZoomLimitMinWdt : C4VP_DefMinViewRangeX,ZoomLimitMinHgt);
 	float zoom_min = vp->GetZoomByViewRange((ZoomLimitMaxWdt || ZoomLimitMaxHgt) ? ZoomLimitMaxWdt : C4VP_DefMaxViewRangeX,ZoomLimitMaxHgt);
 	vp->SetZoomLimits(zoom_min, zoom_max);

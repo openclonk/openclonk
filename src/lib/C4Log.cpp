@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2008  Matthes Bender
  * Copyright (c) 2004-2006  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2005-2007, 2009  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -130,6 +130,16 @@ bool LogSilent(const char *szMessage, bool fConsole)
 			fflush(C4LogFile);
 		}
 
+		// Save into record log file, if available
+		if(Control.GetRecord())
+		{
+			Control.GetRecord()->GetLogFile()->Write(Line.getData(), Line.getLength());
+			#ifdef IMMEDIATEREC
+				Control.GetRecord()->GetLogFile()->Flush();
+			#endif
+		}
+
+
 		// Write to console
 		if (fConsole)
 		{
@@ -169,7 +179,7 @@ bool Log(const char *szMessage)
 	Console.Out(szMessage);
 	// pass on to lobby
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
-	if (pLobby && ::pGUI) pLobby->OnLog(szMessage);
+	if (pLobby) pLobby->OnLog(szMessage);
 
 	// Add message to log buffer
 	bool fNotifyMsgBoard = false;

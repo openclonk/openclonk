@@ -80,9 +80,6 @@ private:
 	bool OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void UpdateFontControls();
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
-	int32_t FairCrewSlider2Strength(int32_t iSliderVal);
-	int32_t FairCrewStrength2Slider(int32_t iStrengthVal);
-	void OnFairCrewStrengthSliderChange(int32_t iNewVal);
 	void OnResetConfigBtn(C4GUI::Control *btn);
 
 	// graphics tab -------------------------------------------------------
@@ -133,6 +130,8 @@ private:
 	{ SaveGfxTroubleshoot(); } // immediate save and test
 	void OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
+	void OnGfxMSComboFill(C4GUI::ComboBox_FillCB *pFiller);
+	bool OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	bool TryNewResolution(int32_t iResX, int32_t iResY);
 	void OnGfxClrDepthCheck(C4GUI::Element *pCheckBox);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox

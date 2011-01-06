@@ -5,8 +5,9 @@
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2006  Peter Wortmann
- * Copyright (c) 2006  Sven Eberhardt
+ * Copyright (c) 2006, 2010  Sven Eberhardt
  * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -369,8 +370,8 @@ void C4GamePadOpener::SetGamePad(int iGamepad)
 // Dedicated server and everything else with neither Win32 nor SDL.
 
 C4GamePadControl::C4GamePadControl() { Log("WARNING: Engine without Gamepad support"); }
-C4GamePadControl::~C4GamePadControl(bool send_axis_strength_changes) { }
-void C4GamePadControl::Execute() { }
+C4GamePadControl::~C4GamePadControl() { }
+void C4GamePadControl::Execute(bool) { }
 int C4GamePadControl::GetGamePadCount() { return 0; }
 bool C4GamePadControl::AnyButtonDown() { return false; }
 

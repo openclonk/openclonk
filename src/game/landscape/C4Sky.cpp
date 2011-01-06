@@ -3,8 +3,9 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2002, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005-2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -224,7 +225,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 		// blit parallax sky
 		float zoom = cgo.Zoom;
 		float targetx = cgo.TargetX; float targety = cgo.TargetY;
-		int width = cgo.Wdt; int height = cgo.Hgt;
+
 		float parx = 10.0f / ParX; float pary = 10.0f / ParY;
 		float par = parx; //todo: pary?
 

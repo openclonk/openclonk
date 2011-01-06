@@ -4,7 +4,8 @@
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2002, 2004-2008  Sven Eberhardt
  * Copyright (c) 2004-2005  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -124,9 +125,6 @@ int32_t C4Scenario::GetMinPlayer()
 	// MinPlayer is specified.
 	if (Head.MinPlayer != 0)
 		return Head.MinPlayer;
-	// Melee? Need at least two.
-	if (Game.IsMelee())
-		return 2;
 	// Otherwise/unknown: need at least one.
 	return 1;
 }
@@ -148,7 +146,7 @@ void C4SHead::Default()
 	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
-	Film = ForcedFairCrew = FairCrewStrength = 0;
+	Film = 0;
 	NetworkGame = NetworkRuntimeJoin = false;
 
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
@@ -182,8 +180,6 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
 		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
-		pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedFairCrew",          0));
-		pComp->Value(mkNamingAdapt(FairCrewStrength,          "FairCrewStrength",       0));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),  "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
 		if (pComp->isCompiler()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
@@ -225,7 +221,6 @@ void C4SPlrStart::Default()
 	BuildKnowledge.Default();
 	HomeBaseMaterial.Default();
 	HomeBaseProduction.Default();
-	Magic.Default();
 }
 
 bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
@@ -244,8 +239,7 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 	       && (ReadyMaterial == rhs.ReadyMaterial)
 	       && (BuildKnowledge == rhs.BuildKnowledge)
 	       && (HomeBaseMaterial == rhs.HomeBaseMaterial)
-	       && (HomeBaseProduction == rhs.HomeBaseProduction)
-	       && (Magic == rhs.Magic);
+	       && (HomeBaseProduction == rhs.HomeBaseProduction);
 }
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
@@ -262,7 +256,6 @@ void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BuildKnowledge,          "Knowledge",             C4IDList()));
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,        "HomeBaseMaterial",      C4IDList()));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,      "HomeBaseProduction",    C4IDList()));
-	pComp->Value(mkNamingAdapt(Magic,                   "Magic",                 C4IDList()));
 }
 
 void C4SLandscape::Default()

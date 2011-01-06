@@ -7,29 +7,33 @@
     <title>SimFlight</title>
     <category>Objects</category>
     <subcat>Movement</subcat>
-    <version>4.9.5.0 CE</version>
+    <version>OC</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>array</rtype>
       <params>
         <param>
-          <type>int &amp;</type>
+          <type>int</type>
           <name>x</name>
-          <desc>X coordinate of the starting position. Always global.</desc>
+          <desc>X offset of the starting position. (NOT optional if used in nil object context)</desc>
+		  <optional />
         </param>
         <param>
-          <type>int &amp;</type>
+          <type>int</type>
           <name>y</name>
-          <desc>Y coordinate of the starting position. Always global.</desc>
+          <desc>Y offset of the starting position. (NOT optional if used in nil object context)</desc>
+		  <optional />
         </param>
         <param>
-          <type>int &amp;</type>
+          <type>int</type>
           <name>xdir</name>
-          <desc>Initial horizontal speed.</desc>
+          <desc>Initial horizontal speed. If not specified this will default to the object's horizontal speed. (NOT optional if used in nil object context)</desc>
+		  <optional />
         </param>
         <param>
-          <type>int &amp;</type>
+          <type>int</type>
           <name>ydir</name>
-          <desc>Initial vertical speed.</desc>
+          <desc>Initial vertical speed. If not specified this will default to the object's vertical speed. (NOT optional if used in nil object context)</desc>
+		  <optional />
         </param>
         <param>
           <type>int</type>
@@ -40,13 +44,13 @@
         <param>
           <type>int</type>
           <name>max_density</name>
-          <desc>Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material).</desc>
+          <desc>Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 100.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>iterations</name>
-          <desc>Number of simulated frames for which the projection runs. If not specified or 0 the simultion will run indefinitely until material or the limits of the landscape are encountered.</desc>
+          <desc>Number of simulated frames for which the projection runs. If not specified or nonpositive the simultion will run indefinitely until material or the limits of the landscape are encountered.</desc>
           <optional />
         </param>
         <param>
@@ -57,17 +61,19 @@
         </param>
       </params>
     </syntax>
-    <desc>Simulates the motion of a falling object with a given starting position and initial speed. If the projected trajectory encounters a material of the specified density, the simulation will stop and the function will return 'true'. Otherwise the function will return 'false'. <br/> If the return value is 'true', the x and y coordinates of the point of interception will be stored in the specified variables for x and y, the horizontal and vertical speed at the time of interception in xdir and ydir respectively. See <emlink href="script/Funcs.html#referenzen">references</emlink> for details.</desc>
+    <desc>Simulates the motion of a falling object with a given starting position and initial speed. The returned array will contain [int x_final, int y_final, int xdir_final, int ydir_final, int time_passed]. <br/> If the projected trajectory encounters a material of the specified density, the simulation will stop and time_passed will be non-negative. Otherwise, time_passed will be negative.</desc>
     <examples>
       <example>
-        <code>var x = <funclink>GetX</funclink>(), y = <funclink>GetY</funclink>(), xdir = <funclink>GetXDir</funclink>(), ydir = <funclink>GetYDir</funclink>();
-if (<funclink>GetAction</funclink>()eq&quot;Jump&quot;)
-  if (SimFlight(x, y, xdir, ydir))
-    if (ydir &gt;= 80)
-      <funclink>Message</funclink>(&quot;Oh oh, das wird ein harter Aufprall!&quot;);</code>
+        <code>if (<funclink>GetAction</funclink>()eq&quot;Jump&quot;)
+{
+	var end = SimFlight()
+	if (end[3] &gt;= 80)
+		<funclink>Message</funclink>(&quot;Oh oh, das wird ein harter Aufprall!&quot;);
+}</code>
         <text>If the calling clonk is situated in mid-air and it appears that he will hit the ground at high speed, he will call out.</text>
       </example>
     </examples>
   </func>
   <author>Newton</author><date>2004-03</date>
+  <author>Peewee</author><date>2010-10</date>
 </funcs>

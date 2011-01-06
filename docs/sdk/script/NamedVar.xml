@@ -7,7 +7,7 @@
   <h>Variables</h>
   <part>
     <text>Variables are placeholders for values stored in a script. A variable stores a value in one of several <emlink href="script/Typechecks.html">data types</emlink>.</text>
-    <text>There are three different scopes in which a variable can be declared. Variables are not visible outside their declared scope.</text>
+    <text>There are three different scopes in which a variable can be declared. </text>
     <text>
       <table>
         <row>
@@ -35,16 +35,15 @@
     <text>Variables are declared using the following syntax:</text>
     <code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
     <text>The variable's scope, followed by the variable's name.</text>
-    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is possible for function local (<code>var</code>) variables only. Without initialization variables always start with <code>nil</code>.</text>
+    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is not possible for global variables. Without initialization variables always start with <code>nil</code>.</text>
     <text>Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon.</text>
     <h>Example:</h>
     <code>static object_count;
-local  time_to_live;
+local  time_to_live = 100;
 
 protected func Initialize()
 {
   object_count++;
-  time_to_live = 100;
 }
 
 protected func Destruction()
@@ -60,7 +59,7 @@ protected func Timer()
     <funclink>return</funclink>();
   }
 
-  var obj = <funclink>FindObject</funclink>(Clonk, 0, 0, -1, -1);
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk), <funclink>Sort_Distance</funclink>());
 
   if(<funclink>ObjectDistance</funclink>(obj) &lt; 20)
     <funclink>DoDamage</funclink>(-10, obj);
@@ -71,12 +70,13 @@ protected func Timer()
     <text>
       <ul>
         <li>Object local variable declarations are also valid in #appendto or #include script extensions.</li>
-        <li>Using the functions <funclink>VarN</funclink>(), <funclink>LocalN</funclink>(), and <funclink>GlobalN</funclink>() you can access variables indirectly. Using <funclink>LocalN</funclink>() you can specifically access local variables in other objects.</li>
+        <li>Using the <code>obj.foo</code> or <code>obj["foo"]</code> notation one can access local variables in other objects.</li>
         <li>If two variables of the same name but differing scope are valid at the same time, then the variable of the smaller scope will be used, meaning for example an object local variable will "cover up" a global variable within its own scope.</li>
-        <li>If the same variable is declared multiply, then still the variable will exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively.</li>
+        <li>If the same variable is declared multiple times, the variable will still exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively.</li>
         <li>A <code>static</code> variable may also be used in object scripts (see example). If a <code>static</code> variable of the same name is defined in another script, the name will refer to the same variable.</li>
       </ul>
     </text>
   </part>
   <author>PeterW</author><date>her-long ago</date>
+  <author>Günther</author><date>2010</date>
 </doc>

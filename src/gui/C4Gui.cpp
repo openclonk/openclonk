@@ -2,8 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2006-2010  Günther Brammer
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -142,10 +143,9 @@ namespace C4GUI
 		// remove from any container
 		if (pParent)
 			pParent->RemoveElement(this);
-		else if (this != Screen::GetScreenS())
+		else if (this != Screen::GetScreenS() && Screen::GetScreenS())
 			// always ensure removal from screen!
-			if (Screen::GetScreenS())
-				Screen::GetScreenS()->RemoveElement(this);
+			Screen::GetScreenS()->RemoveElement(this);
 	}
 
 	void Element::RemoveElement(Element *pChild)
@@ -155,10 +155,9 @@ namespace C4GUI
 			pParent->RemoveElement(pChild);
 		else if (this != Screen::GetScreenS())
 			// always ensure removal from screen!
-			if (Screen::GetScreenS())
-				// but not if this is the context menu, to avoid endless flip-flop!
-				if (!IsMenu())
-					Screen::GetScreenS()->RemoveElement(pChild);
+			// but not if this is the context menu, to avoid endless flip-flop!
+			if (!IsMenu())
+				Screen::GetScreenS()->RemoveElement(pChild);
 	}
 
 	void Element::UpdateSize()
@@ -530,10 +529,18 @@ namespace C4GUI
 		}
 	}
 
-	Screen::Screen(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt) : Window(), Mouse(tx+twdt/2, ty+thgt/2), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
+	Screen::Screen() : Window(), Mouse(0, 0), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
 	{
 		// no dialog active
 		pActiveDlg = NULL;
+		// set static var
+		pScreen = this;
+	}
+
+	void Screen::Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt)
+	{
+		Mouse.x = tx+twdt/2;
+		Mouse.y = ty+thgt/2;
 		// calculate zoom
 		float fZoomX = float(Config.Graphics.ResX) / twdt;
 		float fZoomY = float(Config.Graphics.ResY) / thgt;
@@ -541,21 +548,27 @@ namespace C4GUI
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
-		// set static var
-		pScreen = this;
 		// GamePad
 		if (Application.pGamePadControl && Config.Controls.GamepadGuiControl)
 			pGamePadOpener = new C4GamePadOpener(0);
 	}
 
-	Screen::~Screen()
+	void Screen::Clear()
 	{
+		Container::Clear();
 		// dtor: Close context menu
 		AbortContext(false);
-		// clear singleton
-		if (this == pScreen) pScreen = NULL;
 		// GamePad
 		if (pGamePadOpener) delete pGamePadOpener;
+		// fields reset
+		fExclusive = true;
+		fZoom = 1.0f;
+	}
+
+	Screen::~Screen()
+	{
+		// clear singleton
+		if (this == pScreen) pScreen = NULL;
 	}
 
 	void Screen::ElementPosChanged(Element *pOfElement)
@@ -726,12 +739,9 @@ namespace C4GUI
 
 	bool Screen::Execute()
 	{
-		if (!IsGUIValid()) return false;
 		// process messages
 		if (!Application.FlushMessages())
 			return false;
-		// check status
-		if (!IsGUIValid()) return false;
 		return true;
 	}
 
@@ -918,8 +928,6 @@ namespace C4GUI
 							{
 								// Okay; do input
 								pDlg->MouseInput(Mouse, iButton, fX - rcDlgBounds.x - iOffX, fY - rcDlgBounds.y - iOffY, dwKeyParam);
-								// dlgs may destroy GUI
-								if (!IsGUIValid()) return false;
 								// CAUTION: pDlg may be invalid now!
 								// set processed-flag manually
 								fProcessed = true;
@@ -933,8 +941,6 @@ namespace C4GUI
 							}
 						}
 			}
-			// check valid GUI; might be destroyed by mouse input
-			if (!IsGUIValid()) return false;
 		}
 
 		// check if MouseOver has changed
@@ -1050,6 +1056,7 @@ namespace C4GUI
 		}
 	}
 
+	Screen TheScreen;
 
 // --------------------------------------------------
 // ComponentAligner
@@ -1186,4 +1193,4 @@ namespace C4GUI
 
 } // end of namespace
 
-C4GUIScreen *pGUI;
+C4GUIScreen *pGUI = &C4GUI::TheScreen;

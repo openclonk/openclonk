@@ -35,7 +35,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Gets activity data from the <emlink href="definition/actmap.html">ActMap.txt</emlink> of an object.</desc>
+    <desc>Gets activity data from <emlink href="definition/actmap.html">the ActMap</emlink> of an object.</desc>
     <examples>
       <example>
         <code>var act_length = GetActMapVal(&quot;Length&quot;, <funclink>GetAction</funclink>()) * GetActMapVal(&quot;Delay&quot;, <funclink>GetAction</funclink>());</code>

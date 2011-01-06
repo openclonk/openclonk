@@ -1,1 +1,0 @@
-Scriptziel, kann von andere Scripte erfüllt werden, z.B. ein Szenarioscript.

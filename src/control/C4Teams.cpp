@@ -4,7 +4,8 @@
  * Copyright (c) 2005-2009  Sven Eberhardt
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -138,7 +139,8 @@ void C4Team::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(piPlayers, iPlayerCount, -1), "Players"));
 	pComp->Value(mkNamingAdapt(dwClr,                "Color",        0u));
-	pComp->Value(mkNamingAdapt(sIconSpec,            "IconSpec",     StdCopyStrBuf()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sIconSpec, StdCompiler::RCT_All),
+	                                                 "IconSpec",     StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(iMaxPlayer,           "MaxPlayer",    0));
 }
 
@@ -561,7 +563,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(fTeamColors, "TeamColors", false));
 	pComp->Value(mkNamingAdapt(iMaxScriptPlayers, "MaxScriptPlayers", 0));
-	pComp->Value(mkNamingAdapt(sScriptPlayerNames, "ScriptPlayerNames", StdStrBuf()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sScriptPlayerNames, StdCompiler::RCT_All), "ScriptPlayerNames", StdStrBuf()));
 
 	int32_t iOldTeamCount = iTeamCount;
 	pComp->Value(mkNamingCountAdapt(iTeamCount,  "Team"));

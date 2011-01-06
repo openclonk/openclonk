@@ -2,11 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2004, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2009  Sven Eberhardt
- * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2001-2003, 2005-2010  Sven Eberhardt
  * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
+ * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -48,8 +50,14 @@ namespace
 	const int32_t ViewportScrollSpeed=10;
 }
 
+void C4Viewport::DropFile(const char* fileName, float x, float y)
+{
+	Game.DropFile(fileName, ViewX+x/Zoom, ViewY+y/Zoom);
+}
+
 #ifdef _WIN32
 #include <shellapi.h>
+
 bool C4Viewport::DropFiles(HANDLE hDrop)
 {
 	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
@@ -61,7 +69,7 @@ bool C4Viewport::DropFiles(HANDLE hDrop)
 	{
 		DragQueryFile((HDROP)hDrop,cnt,szFilename,500);
 		DragQueryPoint((HDROP)hDrop,&pntPoint);
-		Game.DropFile(szFilename,ViewX+float(pntPoint.x)/Zoom,ViewY+float(pntPoint.y)/Zoom);
+		DropFile(szFilename, (float)pntPoint.x, (float)pntPoint.y);
 	}
 	DragFinish((HDROP)hDrop);
 	return true;
@@ -152,7 +160,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
 			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
-			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
+			if (pWindow) ::pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
 		}
 	}
@@ -382,8 +390,10 @@ void C4Viewport::InitZoom()
 	C4Player *plr = Players.Get(Player);
 	if (plr)
 	{
-		plr->ZoomLimitsToViewport();
-		plr->ZoomToViewport(true);
+		// Note this affects all viewports for this player (not just
+		// this one), but it is a noop for the others.
+		plr->ZoomLimitsToViewport(this);
+		plr->ZoomToViewport(this, true);
 	}
 	else
 	{
@@ -404,8 +414,11 @@ void C4Viewport::ChangeZoom(float by_factor)
 void C4Viewport::SetZoom(float to_value, bool direct)
 {
 	ZoomTarget = to_value;
-	if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
-	if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	if (Player != NO_OWNER || !::Application.isEditor)
+	{
+		if (ZoomLimitMin && ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
+		if (ZoomLimitMax && ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	}
 	// direct: Set zoom without scrolling to it
 	if (direct) Zoom = ZoomTarget;
 }
@@ -433,10 +446,11 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 		// no x size passed - zoom by y
 		zoom_by_y = true;
 	}
-	else if (!size_x)
+	else
 	{
 		// 0/0 size passed - zoom to default
-		size_x = C4FOW_Def_View_RangeX * 2;
+		if (!size_x)
+			size_x = C4FOW_Def_View_RangeX * 2;
 		zoom_by_y = false;
 	}
 	// zoom calculation
@@ -444,6 +458,13 @@ float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
 		return float(ViewHgt) / size_y;
 	else
 		return float(ViewWdt) / size_x;
+}
+
+void C4Viewport::SetZoom(float zoomValue)
+{
+	Zoom = zoomValue;
+	// also set target to prevent zoom from changing back
+	ZoomTarget = zoomValue;
 }
 
 void C4Viewport::AdjustPosition()
@@ -623,7 +644,7 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	fIsNoOwnerViewport = (Player == NO_OWNER);
 	// Create window
 	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
+	if (!pWindow->Init(CStdWindow::W_Viewport, pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
 		return false;
 	pWindow->pSurface = new CSurface(pApp, pWindow);
 	// Position and size
@@ -693,9 +714,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 		{
 			::MouseControl.UpdateClip();
 			// and inform GUI
-			if (::pGUI)
-				//::pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
-				::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+			::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
 		}
 }
 
@@ -773,7 +792,12 @@ void C4ViewportList::Execute(bool DrawBackground)
 	if (DrawBackground)
 		DrawFullscreenBackground();
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		cvp->Execute();
+	{
+		if (cvp->GetWindow())
+			cvp->GetWindow()->RequestUpdate();
+		else
+			cvp->Execute();
+	}
 }
 
 void C4ViewportList::DrawFullscreenBackground()
@@ -897,7 +921,7 @@ void C4ViewportList::RecalculateViewports()
 	SortViewportsByPlayerControl();
 
 	// Viewport area
-	int32_t iBorderTop = 0, iBorderBottom = 0;
+	int32_t iBorderTop = 0;
 	if (Config.Graphics.UpperBoard)
 		iBorderTop = C4UpperBoardHeight;
 	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop);
@@ -911,8 +935,7 @@ void C4ViewportList::RecalculateViewports()
 	// StdWindow handles this.
 #endif
 	// reset GUI dlg pos
-	if (::pGUI)
-		::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
+	::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
 
 	// fullscreen background: First, cover all of screen
 	BackgroundAreas.Clear();
@@ -966,9 +989,9 @@ int32_t C4ViewportList::GetViewportCount()
 	return iResult;
 }
 
-C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer)
+C4Viewport* C4ViewportList::GetViewport(int32_t iPlayer, C4Viewport* pPrev)
 {
-	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
+	for (C4Viewport *cvp=pPrev ? pPrev->Next : FirstViewport; cvp; cvp=cvp->Next)
 		if (cvp->Player==iPlayer || (iPlayer==NO_OWNER && cvp->fIsNoOwnerViewport))
 			return cvp;
 	return NULL;

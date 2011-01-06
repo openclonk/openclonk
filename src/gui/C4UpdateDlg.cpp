@@ -4,6 +4,7 @@
  * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +21,10 @@
 // dialogs for update, and the actual update application code
 
 #include "C4Include.h"
+
+// Don't compile this class if automatic update is disabled
+#ifdef WITH_AUTOMATIC_UPDATE
+
 #include "C4UpdateDlg.h"
 #include "C4DownloadDlg.h"
 
@@ -147,7 +152,7 @@ void C4UpdateDlg::UpdateText()
 // --------------------------------------------------
 // static update application function
 
-static bool IsWindowsVista()
+static bool IsWindowsWithUAC()
 {
 #ifdef _WIN32
 	// Determine windows version
@@ -155,34 +160,39 @@ static bool IsWindowsVista()
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	bool fWindowsXP = false;
 	if (GetVersionEx((LPOSVERSIONINFO) &ver))
-		return ((ver.dwMajorVersion == 6) && (ver.dwMinorVersion == 0));
+		return (ver.dwMajorVersion == 6);
 #endif
 	return false;
 }
 
-bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *pScreen)
+void C4UpdateDlg::RedirectToDownloadPage()
 {
-	StdStrBuf strUpdateURL;
-	// Double check for valid update
-	if (!IsValidUpdate(rUpdateVersion)) return false;
-	// Major update: we will update to the first minor of the next major version - we can not skip major versions or jump directly to a higher minor of the next major version.
-	if (rUpdateVersion.iVer[0] > C4XVER1)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1 + 1, 0, 0, 0, C4_OS);
-	else if (rUpdateVersion.iVer[1] > C4XVER2)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2 + 1, 0, 0, C4_OS);
-	else if (rUpdateVersion.iVer[2] > C4XVER3)
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3 + 1, 0, C4_OS);
-	// Minor update: apply cumulative update
-	else
-		strUpdateURL.Format(Config.General.UpdateURL, C4XVER1, C4XVER2, C4XVER3, (int)rUpdateVersion.iVer[3], C4_OS);
-	// Determine local filename for update group
-	StdStrBuf strLocalFilename; strLocalFilename.Copy(GetFilename(strUpdateURL.getData()));
-	// Windows Vista: download update group to temp path
-	if (IsWindowsVista()) strLocalFilename.Copy(Config.AtTempPath(strLocalFilename.getData()));
-	// Download update group
-	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strUpdateURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
-		// Download failed (return success, because error message has already been shown)
+	OpenURL("http://www.openclonk.org/download");
+}
+
+bool C4UpdateDlg::DoUpdate(const char *szUpdateURL, C4GUI::Screen *pScreen)
+{
+	if(szUpdateURL == NULL || strlen(szUpdateURL) == 0)
+	{
+		pScreen->ShowMessageModal(LoadResStr("IDS_MSG_NEWRELEASEAVAILABLE"), LoadResStr("IDS_TYPE_UPDATE"),C4GUI::MessageDialog::btnOK, C4GUI::Ico_Ex_Update);
+		RedirectToDownloadPage();
 		return true;
+	}
+
+	// Determine local filename for update group
+	StdCopyStrBuf strLocalFilename(Config.AtTempPath(GetFilename(szUpdateURL)));
+	StdCopyStrBuf strRemoteURL(szUpdateURL);
+	// cut off http://
+	strRemoteURL.Replace("http://","");
+	// Download update group
+	if (!C4DownloadDlg::DownloadFile(LoadResStr("IDS_TYPE_UPDATE"), pScreen, strRemoteURL.getData(), strLocalFilename.getData(), LoadResStr("IDS_MSG_UPDATENOTAVAILABLE")))
+	{
+		// Download failed, open browser so the user can download a full package
+		RedirectToDownloadPage();
+		// return success, because error message has already been shown
+		return true;
+	}
+
 	// Apply downloaded update
 	return ApplyUpdate(strLocalFilename.getData(), true, pScreen);
 }
@@ -192,17 +202,23 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	// Determine name of update program
 	StdStrBuf strUpdateProg; strUpdateProg.Copy(C4CFN_UpdateProgram);
 	// Windows: manually append extension because ExtractEntry() cannot properly glob and Extract() doesn't return failure values
-	if (SEqual(C4_OS, "win32")) strUpdateProg += ".exe";
+#ifdef _WIN32
+	strUpdateProg += ".exe";
+#endif
 	// Determine name of local extract of update program
-	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(strUpdateProg);
-	// Windows Vista: rename update program to setup.exe for UAC elevation and in temp path
-	if (IsWindowsVista()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
+	StdStrBuf strUpdateProgEx; strUpdateProgEx.Copy(Config.AtExePath(strUpdateProg.getData()));
+	// Windows Vista/7: rename update program to setup.exe for UAC elevation and in temp path
+	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
 	// Extract update program (the update should be applied using the new version)
 	C4Group UpdateGroup, SubGroup;
-	char strSubGroup[1024+1];
 	if (!UpdateGroup.Open(strUpdateFile)) return false;
 	// Look for update program at top level
 	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
+		return false;
+#if 0
+	char strSubGroup[1024+1];
+		// ASK: What is this? Why should an update program not be found at the top
+		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
 		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.c4u", C4_OS).getData(), strSubGroup))
 			// Extract update program from sub group
@@ -211,15 +227,32 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 				SubGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData());
 				SubGroup.Close();
 			}
+#endif
 	UpdateGroup.Close();
 	// Execute update program
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
 	succeeded = true;
 #ifdef _WIN32
 	// Notice: even if the update program and update group are in the temp path, they must be executed in our working directory
-	StdStrBuf strUpdateArgs; strUpdateArgs.Format("\"%s\" /p -w \"" C4ENGINECAPTION "\" -w \"" C4EDITORCAPTION "\" -w 2000 %s", strUpdateFile, fDeleteUpdate ? "-yd" : "-y");
-	int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
-	if (iError <= 32) return false;
+	DWORD ProcessID = GetCurrentProcessId();
+	StdStrBuf strUpdateArgs, strTitle;
+	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
+
+	STARTUPINFO startupInfo;
+	startupInfo.cb = sizeof(startupInfo);
+	startupInfo.lpReserved = NULL;
+	startupInfo.lpDesktop = NULL;
+	startupInfo.lpTitle = "Updating OpenClonk...";
+	startupInfo.dwFlags = STARTF_USESHOWWINDOW;
+	startupInfo.wShowWindow = SW_SHOW;
+	startupInfo.cbReserved2 = 0;
+	startupInfo.lpReserved2 = NULL;
+	PROCESS_INFORMATION procInfo;
+	BOOL success = CreateProcess(strUpdateProgEx.getData(), strUpdateArgs.getMData(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath, &startupInfo, &procInfo);
+	if(!success) return false;
+
+	//int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
+	//if (iError <= 32) return false;
 	// must quit ourselves for update program to work
 	if (succeeded) Application.Quit();
 #else
@@ -261,20 +294,11 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	return succeeded;
 }
 
-bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
+bool C4UpdateDlg::IsValidUpdate(const char *szVersion)
 {
-	// Engine or game version mismatch
-	if ( (rNewVer.iVer[0] != C4XVER1) || (rNewVer.iVer[1] != C4XVER2) ) return false;
-	// Objects major is higher...
-	if ( (rNewVer.iVer[2] > C4XVER3)
-	     // ...or objects major is the same and objects minor is higher...
-	     || ((rNewVer.iVer[2] == C4XVER3) && (rNewVer.iVer[3] > C4XVER4))
-	     // ...or build number is higher
-	     /*|| (rNewVer.iBuild > C4XVERBUILD)*/ )
-		// Update okay
-		return true;
-	// Otherwise
-	return false;
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	if (szVersion == NULL || strlen(szVersion) == 0) return false;
+	return strcmp(szVersion,strVersion.getData()) != 0;
 }
 
 bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
@@ -285,35 +309,39 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 			return false;
 	// Store the time of this update check (whether it's automatic or not or successful or not)
 	Config.Network.LastUpdateTime = time(NULL);
-	// Get current update version from server
-	C4GameVersion UpdateVersion;
+	// Get current update url and version info from server
+	StdStrBuf UpdateURL;
+	StdStrBuf VersionInfo;
 	C4GUI::Dialog *pWaitDlg = NULL;
-	if (C4GUI::IsGUIValid())
-	{
-		pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
-		pWaitDlg->SetDelOnClose(false);
-		pScreen->ShowDialog(pWaitDlg, false);
-	}
-	C4Network2VersionInfoClient VerChecker;
+	pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
+	pWaitDlg->SetDelOnClose(false);
+	pScreen->ShowDialog(pWaitDlg, false);
+
+	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
-	StdStrBuf strQuery; strQuery.Format("%s?action=version", Config.Network.UpdateServerAddress);
-	if (VerChecker.Init() && VerChecker.SetServer(strQuery.getData()) && VerChecker.QueryVersion())
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
+	if (UpdateClient.Init() && UpdateClient.SetServer(strQuery.getData()) && UpdateClient.QueryUpdateURL())
 	{
-		VerChecker.SetNotify(&Application.InteractiveThread);
-		Application.InteractiveThread.AddProc(&VerChecker);
+		UpdateClient.SetNotify(&Application.InteractiveThread);
+		Application.InteractiveThread.AddProc(&UpdateClient);
 		// wait for version check to terminate
-		while (VerChecker.isBusy())
+		while (UpdateClient.isBusy())
 		{
 			// wait, check for program abort
 			if (!Application.ScheduleProcs()) { fAborted = true; break; }
 			// check for dialog close
-			if (pWaitDlg) if (!C4GUI::IsGUIValid() || !pWaitDlg->IsShown())  { fAborted = true; break; }
+			if (pWaitDlg) if (!pWaitDlg->IsShown())  { fAborted = true; break; }
 		}
-		if (!fAborted) fSuccess = VerChecker.GetVersion(&UpdateVersion);
-		Application.InteractiveThread.RemoveProc(&VerChecker);
-		VerChecker.SetNotify(NULL);
+		if (!fAborted) 
+		{
+			fSuccess = UpdateClient.GetVersion(&VersionInfo);
+			UpdateClient.GetUpdateURL(&UpdateURL);
+		}
+		Application.InteractiveThread.RemoveProc(&UpdateClient);
+		UpdateClient.SetNotify(NULL);
 	}
-	if (C4GUI::IsGUIValid() && pWaitDlg) delete pWaitDlg;
+	delete pWaitDlg;
 	// User abort
 	if (fAborted)
 	{
@@ -323,7 +351,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	if (!fSuccess)
 	{
 		StdStrBuf sError; sError.Copy(LoadResStr("IDS_MSG_UPDATEFAILED"));
-		const char *szErrMsg = VerChecker.GetError();
+		const char *szErrMsg = UpdateClient.GetError();
 		if (szErrMsg)
 		{
 			sError.Append(": ");
@@ -333,13 +361,12 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 		return false;
 	}
 	// Applicable update available
-	if (C4UpdateDlg::IsValidUpdate(UpdateVersion))
+	if (C4UpdateDlg::IsValidUpdate(VersionInfo.getData()))
 	{
 		// Prompt user, then apply update
-		StdStrBuf strMsg; strMsg.Format(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), UpdateVersion.GetString().getData());
-		if (pScreen->ShowMessageModal(strMsg.getData(), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
+		if (pScreen->ShowMessageModal(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
 		{
-			if (!DoUpdate(UpdateVersion, pScreen))
+			if (!DoUpdate(UpdateURL.getData(), pScreen))
 				pScreen->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 			else
 				return true;
@@ -357,39 +384,4 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 }
 
 
-// *** C4Network2VersionInfoClient
-
-bool C4Network2VersionInfoClient::QueryVersion()
-{
-	// Perform an Query query
-	return Query(NULL, false);
-}
-
-bool C4Network2VersionInfoClient::GetVersion(C4GameVersion *piVerOut)
-{
-	// Sanity check
-	if (isBusy() || !isSuccess()) return false;
-	// Parse response
-	piVerOut->Set("", 0,0,0,0);
-	try
-	{
-		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
-		                                     mkNamingAdapt(
-		                                       mkParAdapt(*piVerOut, false),
-		                                       "Version"),
-		                                     C4ENGINENAME), ResultString);
-	}
-	catch (StdCompiler::Exception *pExc)
-	{
-		SetError(pExc->Msg.getData());
-		return false;
-	}
-	// validate version
-	if (!piVerOut->iVer[0])
-	{
-		SetError(LoadResStr("IDS_ERR_INVALIDREPLYFROMSERVER"));
-		return false;
-	}
-	// done; version OK!
-	return true;
-}
+#endif // WITH_AUTOMATIC_UPDATE

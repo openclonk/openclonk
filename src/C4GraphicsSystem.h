@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
  * Copyright (c) 2001, 2005, 2008  Sven Eberhardt
- * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2005, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -45,8 +45,6 @@ public:
 	bool ShowPathfinder;
 	bool ShowNetstatus;
 	bool ShowSolidMask;
-	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
-	bool fSetGamma;     // must gamma ramp be reassigned?
 	C4Video Video;
 	C4LoaderScreen *pLoaderScreen;
 	void Default();
@@ -64,8 +62,6 @@ public:
 	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);
 	inline void InvalidateBg() { iRedrawBackground=2; }
 	inline void OverwriteBg() { InvalidateBg(); }
-	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
-	void ApplyGamma();                                        // apply gamma ramp to ddraw
 protected:
 	char FlashMessageText[C4MaxTitle+1];
 	int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
@@ -81,6 +77,7 @@ public:
 	bool ToggleShowVertices();
 	bool ToggleShowAction();
 	bool ToggleShowHelp();
+	friend class C4FullScreen;
 };
 
 extern C4GraphicsSystem GraphicsSystem;

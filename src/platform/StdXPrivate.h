@@ -2,7 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005, 2008-2009  Günther Brammer
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -63,13 +64,20 @@ public:
 	int max_priority;
 
 private:
+	// Obtain the timeout and FDs from the glib mainloop. We then pass them
+	// to the StdScheduler in GetFDs() and GetNextTick() so that it can
+	// poll the file descriptors, along with the file descriptors from
+	// other sources that it might have.
 	void query(int Now)
 	{
 		// If Execute() has not yet been called, then finish the current iteration first.
 		// Note that we cannot simply ignore the query() call, as new
 		// FDs or Timeouts may have been added to the Glib loop in the meanwhile
 		if (query_time >= 0)
-			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
+		{
+			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
+			Execute();
+		}
 
 		g_main_context_prepare (context, &max_priority);
 		unsigned int fd_count;
@@ -87,6 +95,8 @@ public:
 	// Iterate the Glib main loop until all pending events have been
 	// processed. Don't use g_main_context_pending() directly as the
 	// CGLibProc might have initiated a loop iteration already.
+	// This is mainly used to update the log in the editor window while
+	// a scenario is being loaded.
 	void IteratePendingEvents()
 	{
 		// TODO: I think we can also iterate the context manually,
@@ -96,8 +106,9 @@ public:
 		int old_query_time = query_time;
 		if (query_time >= 0)
 		{
-			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
-			query_time = -1;
+			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
+			//query_time = -1;
+			Execute();
 		}
 
 		// Run the loop
@@ -124,9 +135,16 @@ public:
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
 		if (query_time < 0) return true;
-		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
-		g_main_context_dispatch(context);
+		g_main_context_check(context, max_priority, fds.empty() ? NULL : readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
+
+		// g_main_context_dispatch makes callbacks from the main loop.
+		// We allow the callback to iterate the mainloop via
+		// IteratePendingEvents so reset query_time before to not call
+		// g_main_context_check() twice for the current iteration.
+		// This would otherwise lead to a freeze since
+		// g_main_context_check() seems to block when called twice.
 		query_time = -1;
+		g_main_context_dispatch(context);
 		return true;
 	}
 };

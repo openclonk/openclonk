@@ -4,6 +4,9 @@
  * Copyright (c) 2006-2008  Peter Wortmann
  * Copyright (c) 2007-2009  Sven Eberhardt
  * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,7 +34,7 @@
 C4Network2Reference::C4Network2Reference()
 		: Icon(0), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
 		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
-		RegJoinOnly(false), iAddrCnt(0)
+		iAddrCnt(0)
 {
 
 }
@@ -72,7 +75,6 @@ void C4Network2Reference::InitLocal()
 	JoinAllowed = ::Network.isJoinAllowed();
 	ObservingAllowed = ::Network.isObservingAllowed();
 	PasswordNeeded = ::Network.isPassworded();
-	RegJoinOnly = ::Game.RegJoinOnly;
 	Game.Set();
 
 	// Addresses
@@ -112,7 +114,6 @@ void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(JoinAllowed,       "JoinAllowed",      true));
 	pComp->Value(mkNamingAdapt(ObservingAllowed,  "ObservingAllowed", true));
 	pComp->Value(mkNamingAdapt(PasswordNeeded,    "PasswordNeeded",   false));
-	pComp->Value(mkNamingAdapt(RegJoinOnly,       "RegJoinOnly",      false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddrCnt), "AddressCount", 0));
 	iAddrCnt = Min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));
@@ -547,13 +548,58 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 	return true;
 }
 
+// *** C4Network2UpdateClient
+
+bool C4Network2UpdateClient::QueryUpdateURL()
+{
+	// Perform an Query query
+	return Query(NULL, false);
+}
+
+bool C4Network2UpdateClient::GetUpdateURL(StdStrBuf *pUpdateURL)
+{
+	// Sanity check
+	if (isBusy() || !isSuccess()) return false;
+	// Parse response
+	try
+	{
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
+		                                     mkNamingAdapt(mkParAdapt(*pUpdateURL, StdCompiler::RCT_All), "UpdateURL", ""),
+		                                     C4ENGINENAME), ResultString);
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		SetError(pExc->Msg.getData());
+		return false;
+	}
+	// done; version OK!
+	return true;
+}
+
+bool C4Network2UpdateClient::GetVersion(StdStrBuf *pVersion)
+{
+	// Sanity check
+	if (isBusy() || !isSuccess()) return false;
+	// Parse response
+	try
+	{
+		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
+		                                     mkNamingAdapt(mkParAdapt(*pVersion, StdCompiler::RCT_All), "Version", ""),
+		                                     C4ENGINENAME), ResultString);
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		SetError(pExc->Msg.getData());
+		return false;
+	}
+	// done; version OK!
+	return true;
+}
 
 // *** C4Network2RefClient
 
 bool C4Network2RefClient::QueryReferences()
 {
-	// invalidate version
-	fVerSet = false;
 	// Perform an Query query
 	return Query(NULL, false);
 }
@@ -562,9 +608,6 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 {
 	// Sanity check
 	if (isBusy() || !isSuccess()) return false;
-	// Parse response
-	MasterVersion.Set("", 0,0,0,0);
-	fVerSet = false;
 	// local update test
 	try
 	{
@@ -572,12 +615,6 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		StdCompilerINIRead Comp;
 		Comp.setInput(ResultString);
 		Comp.Begin();
-		// get current version
-		Comp.Value(mkNamingAdapt(
-		             mkNamingAdapt(
-		               mkParAdapt(MasterVersion, false),
-		               "Version"),
-		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
 		// Create reference array and initialize
@@ -598,18 +635,8 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 	// Set source ip
 	for (int i = 0; i < rRefCount; i++)
 		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
-	// validate version
-	if (MasterVersion.iVer[0]) fVerSet = true;
 	// Done
 	ResetError();
-	return true;
-}
-
-bool C4Network2RefClient::GetMasterVersion(C4GameVersion *piVerOut)
-{
-	// call only after GetReferences
-	if (!fVerSet) return false;
-	*piVerOut = MasterVersion;
 	return true;
 }
 

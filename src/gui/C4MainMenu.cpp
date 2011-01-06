@@ -1,9 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2008  Sven Eberhardt
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 1998-2000, 2003, 2007-2008  Matthes Bender
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2003, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2004, 2008-2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -630,10 +633,11 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_MENU_CPNEWPLAYER"),GfxR->fctPlayerClr.GetPhase(),"ActivateMenu:NewPlayer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPNEWPLAYERINFO"));
 	}
 	// Save game (player menu only - should we allow saving games with no players in it?)
+	/*
 	if (pPlr && (!::Network.isEnabled() || ::Network.isHost()))
 	{
 		AddRefSym(LoadResStr("IDS_MENU_CPSAVEGAME"),GfxR->fctMenu.GetPhase(0),"ActivateMenu:Save:Game",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPSAVEGAMEINFO"));
-	}
+	}*/
 	// Options
 	AddRefSym(LoadResStr("IDS_MNU_OPTIONS"), GfxR->fctOptions.GetPhase(0), "ActivateMenu:Options",C4MN_Item_NoCount, NULL, LoadResStr("IDS_MNU_OPTIONSINFO"));
 	// Disconnect
@@ -830,7 +834,6 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	{
 		if (!ValidPlr(Player)) return false; // observers may not look at goal/rule info, because it requires queue activation
 		Close(true);
-		// TODO!
 		C4Object *pObj; C4ID idItem(szCommand+12);
 		if ((pObj = ::Objects.Find(idItem)))
 			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);

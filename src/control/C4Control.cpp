@@ -2,12 +2,15 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
  * Copyright (c) 2004-2008  Peter Wortmann
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006, 2009-2010  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -214,52 +217,6 @@ void C4ControlSet::Execute() const
 		if (!HostControl()) break;
 		// set new value
 		Game.Teams.SetTeamColors(!!iData);
-		break;
-
-	case C4CVT_FairCrew:
-		// host only
-		if (!HostControl()) break;
-		// deny setting if it's fixed by scenario
-		if (Game.Parameters.FairCrewForced)
-		{
-			if (::Control.isCtrlHost()) Log(LoadResStr("IDS_MSG_NOMODIFYFAIRCREW"));
-			break;
-		}
-		// set new value
-		if (iData < 0)
-		{
-			Game.Parameters.UseFairCrew = false;
-			Game.Parameters.FairCrewStrength = 0;
-		}
-		else
-		{
-			Game.Parameters.UseFairCrew = true;
-			Game.Parameters.FairCrewStrength = iData;
-		}
-		// runtime updates for runtime fairness adjustments
-		if (Game.IsRunning)
-		{
-			// invalidate fair crew physicals
-			const int iDefCount = ::Definitions.GetDefCount();
-			for (int i = 0; i < iDefCount; i++)
-				::Definitions.GetDef(i)->ClearFairCrewPhysicals();
-			// show msg
-			if (Game.Parameters.UseFairCrew)
-			{
-				int iRank = ::DefaultRanks.RankByExperience(Game.Parameters.FairCrewStrength);
-				::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), ::DefaultRanks.GetRankName(iRank, true).getData()).getData());
-			}
-			else
-				::GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));
-		}
-		// lobby updates
-		if (::Network.isLobbyActive())
-		{
-			::Network.GetLobby()->UpdateFairCrew();
-		}
-		// this setting is part of the reference
-		if (::Network.isEnabled() && ::Network.isHost())
-			::Network.InvalidateReference();
 		break;
 	}
 }
@@ -468,10 +425,8 @@ C4ControlSyncCheck::C4ControlSyncCheck()
 
 void C4ControlSyncCheck::Set()
 {
-	extern int32_t FRndPtr3;
 	Frame = Game.FrameCounter;
 	ControlTick = ::Control.ControlTick;
-	Random3 = FRndPtr3;
 	RandomCount = ::RandomCount;
 	AllCrewPosX = GetAllCrewPosX();
 	PXSCount = ::PXS.Count;
@@ -506,7 +461,6 @@ void C4ControlSyncCheck::Execute() const
 	// Not equal
 	if ( Frame                  != pSyncCheck->Frame
 	     ||(ControlTick            != pSyncCheck->ControlTick   && !::Control.isReplay())
-	     || Random3                != pSyncCheck->Random3
 	     || RandomCount            != pSyncCheck->RandomCount
 	     || AllCrewPosX            != pSyncCheck->AllCrewPosX
 	     || PXSCount               != pSyncCheck->PXSCount
@@ -520,8 +474,8 @@ void C4ControlSyncCheck::Execute() const
 			{ const char *szTemp = szThis; szThis = szOther; szOther = szTemp; }
 		// Message
 		LogFatal("Network: Synchronization loss!");
-		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Rn3 %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szThis, Frame,ControlTick,RandomCount,Random3,AllCrewPosX,PXSCount,MassMoverIndex,ObjectCount,ObjectEnumerationIndex, SectShapeSum).getData());
-		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Rn3 %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.Random3,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
+		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szThis, Frame,ControlTick,RandomCount,AllCrewPosX,PXSCount,MassMoverIndex,ObjectCount,ObjectEnumerationIndex, SectShapeSum).getData());
+		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
 		StartSoundEffect("SyncError");
 #ifdef _DEBUG
 		// Debug safe
@@ -546,7 +500,6 @@ void C4ControlSyncCheck::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Frame), "Frame", -1));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ControlTick), "ControlTick", 0));
-	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Random3), "Random3", 0));
 	pComp->Value(mkNamingAdapt(RandomCount, "RandomCount", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(AllCrewPosX), "AllCrewPosX", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(PXSCount), "PXSCount", 0));
@@ -839,7 +792,7 @@ void C4ControlJoinPlayer::Strip()
 		StdBuf NewPlrData;
 		if (!NewPlrData.LoadFromFile(PlayerFilename.getData()))
 			{ EraseFile(PlayerFilename.getData()); return; }
-		PlrData = NewPlrData;
+		PlrData = std::move(NewPlrData);
 		// Done
 		EraseFile(PlayerFilename.getData());
 	}
@@ -901,7 +854,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlEMMoveObject
 
-C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
+C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
@@ -927,7 +880,7 @@ void C4ControlEMMoveObject::Execute() const
 		for (int i=0; i<iObjectNum; ++i)
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i]))) if (pObj->Status)
 				{
-					pObj->ForcePosition(pObj->GetX()+tx,pObj->GetY()+ty);
+					pObj->ForcePosition(pObj->fix_x+tx,pObj->fix_y+ty);
 					pObj->xdir=pObj->ydir=0;
 					pObj->Mobile = false;
 				}
@@ -977,8 +930,8 @@ void C4ControlEMMoveObject::Execute() const
 			ScriptCtrl.SetTargetObj(pObjects[i]);
 			ScriptCtrl.Execute();
 		}
-		break;
 	}
+	break;
 	case EMMO_Remove:
 	{
 		if (!pObjects) return;
@@ -988,7 +941,7 @@ void C4ControlEMMoveObject::Execute() const
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				pObj->AssignRemoval();
 	}
-	break; // Here was fallthrough. Seemed wrong. ck.
+	break;
 	case EMMO_Exit:
 	{
 		if (!pObjects) return;
@@ -998,7 +951,7 @@ void C4ControlEMMoveObject::Execute() const
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
 	}
-	break; // Same. ck.
+	break;
 	}
 	// update property dlg & status bar
 	if (fLocalCall)

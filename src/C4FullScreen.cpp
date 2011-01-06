@@ -3,9 +3,11 @@
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
  * Copyright (c) 2001-2003, 2005, 2008  Sven Eberhardt
- * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2005-2007, 2010  Günther Brammer
  * Copyright (c) 2006-2007  Julian Raschke
+ * Copyright (c) 2009-2010  Mortimer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -101,15 +103,11 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	{
 		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
 		char c[5] = {0};
-		WCHAR wc[1] = {0};
-		if(!MultiByteToWideChar(CP_ACP, 0L, reinterpret_cast<LPCSTR>(&wParam), 1, wc, 1))
-			return 0;
-		if(!WideCharToMultiByte(CP_UTF8, 0L, wc, 1, c, 4, 0, 0))
+		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
 			return 0;
 		// GUI: forward
-		if (::pGUI)
-			if (::pGUI->CharIn(c))
-				return 0;
+		if (::pGUI->CharIn(c))
+			return 0;
 		return false;
 	}
 	case WM_USER_LOG:
@@ -151,11 +149,13 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case SIZE_RESTORED:
 		case SIZE_MAXIMIZED:
 			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
+			if(Application.pWindow) // this might be called from CStdWindow::Init in which case Application.pWindow is not yet set
+				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
 		break;
 	}
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }
 
 #elif defined(USE_X11)
@@ -364,7 +364,7 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		char c[2];
 		c[0] = e.key.keysym.unicode;
 		c[1] = 0;
-		if (::pGUI && !isSpecialKey(e.key.keysym.unicode))
+		if (!isSpecialKey(e.key.keysym.unicode))
 			::pGUI->CharIn(c);
 		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
 		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
@@ -434,7 +434,7 @@ void C4FullScreen::Execute()
 	// Execute menu
 	if (pMenu) pMenu->Execute();
 	// Draw
-	::GraphicsSystem.Execute();
+	RequestUpdate();
 }
 
 bool C4FullScreen::ViewportCheck()
@@ -497,8 +497,6 @@ bool C4FullScreen::ViewportCheck()
 
 bool C4FullScreen::ShowAbortDlg()
 {
-	// no gui?
-	if (!::pGUI) return false;
 	// abort dialog already shown
 	if (C4AbortGameDialog::IsShown()) return false;
 	// not while game over dialog is open
@@ -526,6 +524,11 @@ void C4FullScreen::CloseMenu()
 		delete pMenu;
 		pMenu = NULL;
 	}
+}
+
+void C4FullScreen::PerformUpdate()
+{
+	GraphicsSystem.Execute();
 }
 
 bool C4FullScreen::MenuKeyControl(BYTE byCom)

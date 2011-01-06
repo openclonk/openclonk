@@ -1,5 +1,5 @@
 [DefCore]
 id=Library_Animal
-Version=4,9,8
+Version=4,10,0,0
 Category=C4D_StaticBack
 Picture=0,0,64,64

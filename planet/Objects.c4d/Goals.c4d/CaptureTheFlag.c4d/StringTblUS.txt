@@ -1,0 +1,13 @@
+Name=Capture The Flag
+
+MsgGoalCaptureTheFlag=Capture enemy flags and bring them to your base. They can only be returned if your own flag is at its base.
+MsgGoalFulfilled=You have won this round!
+MsgGoalUnfulfilled1=You still need to capture one flag to win.
+MsgGoalUnfulfilledX=You still need to capture %d flags to win.
+
+MsgShortSteal=Capture a flag!
+MsgShortCaptured=Your flag has| been captured!
+MsgShortReturn=Return this flag| to your base.
+
+MsgScoreboard1=Capture one flag.
+MsgScoreboardX=Capture %d flags.

@@ -18,8 +18,8 @@
 		ShootTime       = 20,           // The duration of shooting
 		ShootTime2      =  5,           // For a callback ShootTime2 frames after StartShoot: DuringShoot
 		TurnType        = 1,            // Specify a special turn type (0: turn 120 degrees, 1: turn 180 degrees, 2: turn 220 degrees) see SetTurnType in clonk
-		WalkSpeed       = 30000,        // Reduce the walk speed during aiming
-		WalkBack        = 20000,        // Reduce the walk speed for walking backwards (speed 0 means no walking backwards at all)
+		WalkSpeed       = 84,           // Reduce the walk speed during aiming
+		WalkBack        = 56,           // Reduce the walk speed for walking backwards (speed 0 means no walking backwards at all)
 		AimSpeed        = 5,            // the speed of aiming default 5° per frame
 		AnimationReplacements = [      // Replace some animations with others during load/aim/shoot
 			["Walk", "BowWalk"],
@@ -81,7 +81,7 @@ func SetTurnType  () { return _inherited(...); }
 func SetTurnForced() { return _inherited(...); }
 func SetBackwardsSpeed() { return _inherited(...); }
 
-func FxIntAimCheckProcedureStart(target, number, tmp)
+func FxIntAimCheckProcedureStart(target, effect, tmp)
 {
 	if(tmp) return;
 	aim_pause = 0;
@@ -150,7 +150,7 @@ func FxIntAimCheckProcedureTimer()
 	}
 }
 
-func FxIntAimCheckProcedureStop(target, number, reason, tmp)
+func FxIntAimCheckProcedureStop(target, effect, reason, tmp)
 {
 	if(tmp) return;
 	if(reason == 4)
@@ -159,12 +159,14 @@ func FxIntAimCheckProcedureStop(target, number, reason, tmp)
 
 func PauseAim()
 {
+	if(!aim_weapon) return CancelAiming();
 	ResetHands(1);
 	aim_weapon->~OnPauseAim(this);
 }
 
 func RestartAim()
 {
+	if(!aim_weapon) return false;
 	if(!aim_weapon->~OnRestartAim(this)) return false;
 	// Applay the set
 	ApplySet(aim_set);
@@ -250,7 +252,7 @@ public func StartAim(object weapon, int angle)
 	AddEffect("IntAim", this, 1, 1, this);
 }
 
-func FxIntAimTimer(target, number, time)
+func FxIntAimTimer(target, effect, time)
 {
 	var angle, delta_angle, length;
 	var speed = aim_set["AimSpeed"];;
@@ -433,13 +435,13 @@ public func ResetHands(bool pause)
 
 /* +++++++++++ Slow walk +++++++++++ */
 
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
+func FxIntWalkSlowStart(pTarget, effect, fTmp, iValue)
 {
-	if(iValue == nil) iValue = 30000;
-	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+	if(iValue == nil) iValue = 84;
+	pTarget->PushActionSpeed("Walk", iValue);
 }
 
-func FxIntWalkSlowStop(pTarget, iNumber)
+func FxIntWalkSlowStop(pTarget, effect)
 {
-	pTarget->ResetPhysical("Walk");
+	pTarget->PopActionSpeed("Walk");
 }

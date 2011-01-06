@@ -39,12 +39,14 @@ func UpdateTransferZone()
 }
 
 local ActMap = {
-		Fly = {
-			Prototype = Action,
-			Name = "Fly",
-			Procedure = DFA_FLOAT,
-			NextAction = "Hold"
-		},
+Fly = {
+	Prototype = Action,
+	Name = "Fly",
+	Procedure = DFA_FLOAT,
+	Speed = 1000,
+	Accel = 16,
+	NextAction = "Hold"
+},
 };
 local Name = "Cloud";
 

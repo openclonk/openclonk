@@ -21,8 +21,8 @@ SetCompressor lzma
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-;!define MUI_HEADERIMAGE_BITMAP "header.bmp"
-;!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
+!define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -97,7 +97,6 @@ Section "MainSection" SEC01
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-;  CreateShortCut "$SMPROGRAMS\Clonk Rage\Clonk Editor.lnk" "$INSTDIR\Editor.exe"
   CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\Uninstall.lnk" "$INSTDIR\uninst.exe"

@@ -127,8 +127,8 @@ private func UpdateTexts()
 	if(crew->GetEnergy() > 0)
 		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), energypos, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
 	
-	if(crew->GetMagicEnergy() > 0)
-		CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), magicpos, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);
+/*	if(crew->GetMagicEnergy() > 0)
+		CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), magicpos, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);*/
 	
 	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, GetDefHeight(), nil, nil, nil, MSG_Multiple);
 }
@@ -184,10 +184,10 @@ public func UpdateTitleGraphic()
 public func UpdateHealthBar()
 {
 	if(!crew) return;
-	var phys = crew->GetPhysical("Energy");
+	var phys = crew->GetMaxEnergy();
 	var promille;
 	if(phys == 0) promille = 0;
-	else promille = 1000 * crew->GetEnergy() / (phys / 1000);
+	else promille = 1000 * crew->GetEnergy() / phys;
 
 	energypos = -GetDefWidth()/2*(1000-promille)/1000;
 
@@ -198,10 +198,10 @@ public func UpdateHealthBar()
 public func UpdateBreathBar()
 {
 	if(!crew) return;
-	var phys = crew->GetPhysical("Breath");
+	var phys = crew->GetMaxBreath();
 	var promille;
 	if(phys == 0) promille = 0;
-	else promille = 1000 * crew->GetBreath() / (phys / 1000);
+	else promille = 1000 * crew->GetBreath() / phys;
 
 	// remove breath bar if full breath
 	if(promille == 1000)
@@ -223,9 +223,9 @@ public func UpdateBreathBar()
 public func UpdateMagicBar()
 {
 	if(!crew) return;
-	var phys = crew->GetPhysical("Magic");
+	var phys = 0;
 	var promille = 0;
-	if(phys != 0) promille = 1000 * crew->GetMagicEnergy() / (phys / 1000);
+	//if(phys != 0) promille = 1000 * crew->GetMagicEnergy() / (phys / 1000);
 
 	magicpos = -GetDefWidth()/2*(1000-promille)/1000;
 		

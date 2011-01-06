@@ -2,10 +2,11 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2004-2008  Günther Brammer
+ * Copyright (c) 2004-2010  Günther Brammer
  * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -69,7 +70,7 @@ void CStdD3D::Default()
 void CStdD3D::Clear()
 {
 	NoPrimaryClipper();
-	if (pTexMgr) pTexMgr->IntUnlock();
+	//if (pTexMgr) pTexMgr->IntUnlock(); // cannot do this here or we can't preserve textures across GL reinitialization as required when changing multisampling
 	if (lpDevice)
 	{
 		EndScene();

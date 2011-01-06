@@ -208,7 +208,7 @@ protected func ContainedThrow()
 	[$TxtDrop$]
 	var iEffectNumber, pSorcerer;
 	if (iEffectNumber = GetEffect("PossessionSpell", this))
-		if (pSorcerer = EffectVar(0, this, iEffectNumber))
+		if (pSorcerer = iEffectNumber.var0)
 		{
 			if (pSorcerer->Contents()) pSorcerer->Contents()->Exit(0,0,6);
 			AddEffect("IntCollectionDelay", this(), 1, 70);
@@ -228,6 +228,9 @@ Walk = {
 	Prototype = Action,
 	Name = "Walk",
 	Procedure = DFA_WALK,
+	Accel = 16,
+	Decel = 22,
+	Speed = 224,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 14,
@@ -243,6 +246,9 @@ Run = {
 	Prototype = Action,
 	Name = "Run",
 	Procedure = DFA_WALK,
+	Accel = 16,
+	Decel = 22,
+	Speed = 224,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 18,
@@ -258,6 +264,8 @@ Jump = {
 	Prototype = Action,
 	Name = "Jump",
 	Procedure = DFA_FLIGHT,
+	Speed = 200,
+	Accel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 17,
@@ -291,6 +299,8 @@ Lunge = {
 	Prototype = Action,
 	Name = "Lunge",
 	Procedure = DFA_FLIGHT,
+	Speed = 200,
+	Accel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 22,
@@ -324,6 +334,8 @@ Swim = {
 	Prototype = Action,
 	Name = "Swim",
 	Procedure = DFA_SWIM,
+	Speed = 96,
+	Accel = 7,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 16,
@@ -406,3 +418,8 @@ Dead = {
 },
 };
 local Name = "$Name$";
+local MaxEnergy = 50000;
+local MaxBreath = 125;
+local JumpSpeed = 350;
+local ThrowSpeed = 294;
+

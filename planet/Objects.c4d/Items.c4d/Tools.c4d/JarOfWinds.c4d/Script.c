@@ -8,13 +8,20 @@
 
 local Amount;
 local MaxCap;
+local sound;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 600; }
 
-public func FxJarReloadTimer(object target, int effect, int time)
+public func FxJarReloadTimer(object target, effect, int time)
 {
 	target->Load();
+}
+
+public func DoFullLoad()
+{
+	Amount = MaxCap;
+	return;
 }
 
 protected func Initialize()
@@ -22,10 +29,13 @@ protected func Initialize()
 	MaxCap = 60; //Changes duration and power of the Jar
 	SetR(-45);
 	AddEffect("JarReload",this,100,2,this);
+	sound=false;
 }
 
 protected func ControlUse(object pClonk, iX, iY)
 {
+	if(CheckCanUse(pClonk) == false) return 1;
+
 	if(!GetEffect("JarReload",this))
 	{
 		if(!GBackLiquid())
@@ -34,6 +44,7 @@ protected func ControlUse(object pClonk, iX, iY)
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);
 			Sound("WindCharge.ogg",false,nil,nil,1);
+			sound=true;
 		}
 		
 		return true;
@@ -43,12 +54,12 @@ protected func ControlUse(object pClonk, iX, iY)
 		pClonk->Message("Reloading!");
 		return true;
 	}
-	ChargeSoundStop();
+//	ChargeSoundStop();
 }
 
 protected func Load()
 {
-
+	
 	if(Amount <= MaxCap)
 	{
 		var R=RandomX(-25,25);
@@ -59,6 +70,11 @@ protected func Load()
 		
 		if(!GBackSolid(SX,SY) && !GBackLiquid(SX,SY) && !GBackSolid(0,0) && !GBackLiquid(0,0)) //when on a random spot in front is air...
 		{
+			if(!sound)
+			{
+				Sound("WindCharge.ogg",false,nil,nil,1);
+				sound=true;
+			}
 			Amount += 2; //Air is sucked in.
 			CreateParticle("AirIntake",
 				SX,SY,
@@ -68,11 +84,18 @@ protected func Load()
 				RGBa(255,255,255,128)
 			);
 		}
+		else if(GBackSolid(0,0) || GBackLiquid(0,0))
+		{
+			if(sound)
+			ChargeSoundStop();
+		}
+
 	}
 	else
 	{
 		RemoveEffect("JarReload",this);
 		ChargeSoundStop();
+		
 	}
 }
 
@@ -80,6 +103,7 @@ protected func ChargeSoundStop()
 {
 	Sound("WindCharge.ogg",false,nil,nil,-1);
 	Sound("WindChargeStop.ogg");
+	sound=false;
 }
 
 private func FireWeapon(object pClonk,iX,iY)
@@ -102,7 +126,7 @@ private func FireWeapon(object pClonk,iX,iY)
 					SX,SY,
 					Sin(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
 					Cos(180 - Angle(0,0,iX,iY) + (R),(Amount / 2) + 25),
-					Max(i + 30, 90),
+					Max(i + 30, 90) + 75,
 					);
 		}
 	}
@@ -125,6 +149,7 @@ private func FireWeapon(object pClonk,iX,iY)
 			Find_Distance(25,Sin(180 - Angle(0,0,iX,iY),70),Cos(180 - Angle(0,0,iX,iY),70))
 				),
 		Find_Not(Find_Category(C4D_Structure)),
+		Find_Not(Find_Func("NoWindjarForce")),
 		Find_Layer(GetObjectLayer()), Find_NoContainer()
 								)
 		)
@@ -138,6 +163,12 @@ private func FireWeapon(object pClonk,iX,iY)
 			obj->SetYDir((y) + cosspeed);
 		}
 	}
+}
+
+private func CheckCanUse(object pClonk)
+{
+	if(pClonk->GetProcedure() == "ATTACH") return false;
+	else true;
 }
 
 local Name = "$Name$";

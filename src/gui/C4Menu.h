@@ -3,7 +3,8 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2005, 2007-2008  Sven Eberhardt
- * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -51,11 +52,7 @@ enum
 	C4MN_Extra_None       = 0,
 	C4MN_Extra_Components = 1,
 	C4MN_Extra_Value      = 2,
-	C4MN_Extra_MagicValue = 3,
 	C4MN_Extra_Info       = 4,
-	C4MN_Extra_ComponentsMagic= 5,
-	C4MN_Extra_LiveMagicValue = 6,
-	C4MN_Extra_ComponentsLiveMagic = 7
 };
 enum
 {
@@ -73,8 +70,6 @@ enum
 {
 	C4MN_AdjustPosition = 1<<31
 };
-
-void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj);
 
 class C4MenuItem : public C4GUI::Element
 {

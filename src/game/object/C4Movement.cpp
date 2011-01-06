@@ -4,7 +4,11 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001-2002, 2004-2006, 2008  Sven Eberhardt
  * Copyright (c) 2002-2004  Peter Wortmann
- * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2010  Peewee
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -36,11 +40,6 @@ const C4Real FFriction=C4REAL100(30);
 const C4Real FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
 const C4Real FloatFriction=C4REAL100(2);
 const C4Real RotateAccel=C4REAL100(20);
-const C4Real FloatAccel=C4REAL100(10);
-const C4Real WalkAccel=C4REAL100(12);
-const C4Real WalkBreak=C4REAL100(18);
-const C4Real ScaleAccel=C4REAL100(20);
-const C4Real SwimAccel=C4REAL100(7);
 const C4Real HitSpeed1=C4REAL100(150); // Hit Event
 const C4Real HitSpeed2=itofix(2); // Cross Check Hit
 const C4Real HitSpeed3=itofix(6); // Scale disable, kneel
@@ -184,7 +183,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
 					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt,CNAT_Left,CNAT_Right);
@@ -203,7 +202,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
-			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
 					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
@@ -504,16 +503,9 @@ void C4Object::CopyMotion(C4Object *from)
 	xdir=from->xdir; ydir=from->ydir;
 }
 
-void C4Object::ForcePosition(int32_t tx, int32_t ty)
+void C4Object::ForcePosition(C4Real tx, C4Real ty)
 {
-	fix_x=itofix(tx); fix_y=itofix(ty);
-	UpdatePos();
-	UpdateSolidMask(false);
-}
-
-void C4Object::ForcePosition(int32_t tx, int32_t ty, long iPrec)
-{
-	fix_x=itofix(tx, iPrec); fix_y=itofix(ty, iPrec);
+	fix_x=tx; fix_y=ty;
 	UpdatePos();
 	UpdateSolidMask(false);
 }
@@ -578,7 +570,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (!pActionDef || !Action.Target || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+		if (!pActionDef || !Action.Target || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 		{
 			bool fRemove = true;
 			// never remove HUD objects

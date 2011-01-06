@@ -3,9 +3,11 @@
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005-2010  Günther Brammer
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +30,15 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif // HAVE_CONFIG_H
+
+#ifdef _MSC_VER
+#define DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED
+#endif
+
 
 #ifdef _WIN32
 # ifndef _INC_WINDOWS
@@ -56,38 +67,6 @@
 #pragma warning(disable : 4786) // long symbol names
 #pragma warning(disable: 4706)
 #pragma warning(disable: 4239)
-#endif
-
-
-
-#ifdef _MSC_VER
-#define DEPRECATED __declspec(deprecated)
-#elif defined(__GNUC__)
-#define DEPRECATED __attribute__((deprecated))
-#else
-#define DEPRECATED
-#endif
-
-
-
-// debug memory management
-#ifndef NODEBUGMEM
-#if defined(_DEBUG) && defined(_MSC_VER)
-#if _MSC_VER <= 1200
-#include <new>
-#include <memory>
-#include <crtdbg.h>
-#include <malloc.h>
-inline void *operator new(unsigned int s, const char *szFile, long iLine)
-{ return ::operator new(s, _NORMAL_BLOCK, szFile, iLine); }
-inline void operator delete(void *p, const char *, long)
-{ ::operator delete(p); }
-#define new new(__FILE__, __LINE__)
-#define malloc(size) ::_malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__)
-#else
-#include <crtdbg.h>
-#endif
-#endif
 #endif
 
 
@@ -221,20 +200,29 @@ inline int stricmp(const char *s1, const char *s2)
 
 
 
-#ifdef _WIN32
-#define C4_OS "win32"
+#ifdef _WIN64
+#define C4_OS "win-x86_64"
+#elif defined(_WIN32)
+#define C4_OS "win-x86"
 #elif defined(__linux__)
-#define C4_OS "linux"
+#if defined(__x86_64__)
+#define C4_OS "linux-x86_64"
+#else
+#define C4_OS "linux-x86"
+#endif
 #elif defined(__APPLE__)
-#define C4_OS "mac"
+#define C4_OS "mac-x86"
 #else
 #define C4_OS "unknown";
 #endif
 
+// delete item to the recycle bin
+bool EraseItemSafe(const char *szFilename);
+
+// Check whether the OS is "German"
+bool IsGermanSystem();
 
 // open a weblink in an external browser
-bool OpenURL(const char *szURL);
-
-bool EraseItemSafe(const char *szFilename);
+bool OpenURL(const char* szURL);
 
 #endif // INC_PLATFORMABSTRACTION

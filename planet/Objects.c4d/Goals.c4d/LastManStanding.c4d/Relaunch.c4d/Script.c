@@ -10,6 +10,8 @@
 
 local time;
 local menu;
+local hold;
+local has_selected;
 
 protected func Initialize()
 {
@@ -18,11 +20,13 @@ protected func Initialize()
 }
 
 // Sets the time, in seconds, the clonk is held in the container.
-public func SetRelaunchTime(int to_time)
+public func SetRelaunchTime(int to_time, bool to_hold)
 {
 	time = to_time * 36;
+	hold = to_hold;
 	return;
 }
+
 // Returns the time, in seconds the clonk is held.
 public func GetRelaunchTime() { return time / 36; }
 
@@ -54,15 +58,17 @@ private func OpenWeaponMenu(object clonk)
 	}
 }
 
-func FxIntTimeLimitTimer(target, num, fxtime)
+func FxIntTimeLimitTimer(object target, effect, int fxtime)
 {
 	var clonk = Contents();
 	if (fxtime >= time)
 	{
+		if (!has_selected)
+			GiveWeapon(WeaponList()[Random(GetLength(WeaponList()))]);
 		RelaunchClonk();
 		return -1;
 	}
-	if (WeaponList())
+	if (menu)
 		PlayerMessage(clonk->GetOwner(), Format("$MsgWeapon$", (time - fxtime) / 36));
 	else
 		PlayerMessage(clonk->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / 36));
@@ -75,16 +81,12 @@ public func Selected(object menu, object selector, bool alt)
 		return false;
 	
 	for (var i = 0; i < selector->GetAmount(); i++)
-	{
-		var newobj = CreateObject(selector->GetSymbol());
-		if (newobj->GetID() == Bow)
-			newobj->CreateContents(Arrow);
-		if (newobj->GetID() == Musket)
-			newobj->CreateContents(LeadShot);
-		Contents()->Collect(newobj, nil, alt);
-	}
-	menu->Show();
-	RelaunchClonk();
+		GiveWeapon(selector->GetSymbol(), alt);
+	
+	has_selected = true;
+
+	if (!hold)
+		RelaunchClonk();
 	return true;
 }
 
@@ -97,6 +99,17 @@ private func RelaunchClonk()
 		menu->Close();
 	PlayerMessage(clonk->GetOwner(), "");
 	RemoveObject();
+	return;
+}
+
+private func GiveWeapon(id weapon_id, bool alt)
+{
+	var newobj = CreateObject(weapon_id);
+	if (weapon_id == Bow)
+		newobj->CreateContents(Arrow);
+	if (weapon_id == Musket)
+		newobj->CreateContents(LeadShot);
+	Contents()->Collect(newobj, nil, alt);
 	return;
 }
 

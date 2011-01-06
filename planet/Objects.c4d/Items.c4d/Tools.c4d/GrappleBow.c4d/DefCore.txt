@@ -1,5 +1,6 @@
 [DefCore]
 id=GrappleBow
+Version=4,10,0,0
 Category=C4D_Object
 Width=8
 Height=6
@@ -8,11 +9,10 @@ Vertices=2
 VertexX=-3,3
 VertexY=0,0
 VertexFriction=80,80
-Picture=4,0,21,21
-Value=8
+Value=12
 Mass=10
+Components=Wood=2;Metal=1;Rope=1;
 Collectible=1
-Components=Wood=2;Metal=1;
 Rebuy=1
 Rotate=1
 ContactIncinerate=5

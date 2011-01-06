@@ -25,40 +25,7 @@ protected func Construction()
 
 protected func MaxContentsCount() {	return 12;	}
 
-/*
-public func ControlUse(object clonk, int iX, int iY)
-{
-	if(Contents(0) && clonk->ContentsCount() < clonk->MaxContentsCount())
-	{
-		Contents(0)->Enter(clonk);
-		Sound("Grab"); //todo sound
-		UpdatePicture();
-		if(ContentsCount() == 0)
-		{
-			if(clonk->ContentsCount() < clonk->MaxContentsCount())
-			{
-				clonk->CreateContents(Barrel);
-			}
-			else
-				CreateObject(Barrel);
-			//Switch to proper postion
-			var pBarrel = FindObject(Find_ID(Barrel),Find_Container(clonk));
-			var pPowderKeg = FindObject(Find_ID(PowderKeg),Find_Container(clonk));
-			if(clonk->GetID() == Clonk)
-			{
-				clonk->Switch2Items(clonk->GetItemPos(pBarrel),clonk->GetItemPos(pPowderKeg));
-			}
-			else
-				pBarrel->Exit();	//If the powder keg was in a cannon, then exit the cannon
-			Exit();
-			RemoveObject();
-		}
-	}
-	return 1;
-}
-*/
-
-public func FxUpdateTimer(object target, int num, int timer)
+public func FxUpdateTimer(object target, effect, int timer)
 {
 	if(ContentsCount() != oldcount)
 		UpdatePicture();
@@ -99,19 +66,25 @@ public func Incineration()
 	AddEffect("Fuse",this,1,1,this);
 }
 
-public func FxFuseTimer(object target, int num, int timer)
+public func FxFuseTimer(object target, effect, int timer)
 {
 	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
 	if(timer > 90)
 	{
-		//20-50 explosion radius
-		Explode(Sqrt(1 + ContentsCount() * 2) * 10);
+		//17-32 explosion radius
+		var radius = Sqrt(64 * (4 + ContentsCount()));
+		Explode(radius);
 	}
 }
 
 public func IsProjectileTarget(target,shooter)
 {
 	return 1;
+}
+
+public func Damage(int change, int byplayer)
+{
+	Incinerate();
 }
 
 public func OnProjectileHit()

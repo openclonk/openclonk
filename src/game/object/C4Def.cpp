@@ -2,11 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
- * Copyright (c) 2001-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2001-2007, 2009-2010  Sven Eberhardt
  * Copyright (c) 2003-2008  Peter Wortmann
- * Copyright (c) 2004-2006, 2008  Günther Brammer
- * Copyright (c) 2005  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2004-2006, 2008-2010  Günther Brammer
+ * Copyright (c) 2005, 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Randrian
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -33,7 +35,6 @@
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Config.h>
-#include <C4ValueList.h>
 #include <C4RankSystem.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
@@ -41,37 +42,12 @@
 #include "C4Network2Res.h"
 #include <C4Material.h>
 
-
-//-------------------------- Default Action Procedures --------------------------------------
-
-const char *ProcedureName[C4D_MaxDFA]={ "WALK",
-                                        "FLIGHT",
-                                        "KNEEL",
-                                        "SCALE",
-                                        "HANGLE",
-                                        "DIG",
-                                        "SWIM",
-                                        "THROW",
-                                        "BRIDGE",
-                                        "BUILD",
-                                        "PUSH",
-                                        "CHOP",
-                                        "LIFT",
-                                        "FLOAT",
-                                        "ATTACH",
-                                        "FIGHT",
-                                        "CONNECT",
-                                        "PULL"
-                                      };
-
-
 //--------------------------------- C4DefCore ----------------------------------------------
 
 void C4Def::DefaultDefCore()
 {
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
 	RequireDef.Clear();
-	Physical.Default();
 	Shape.Default();
 	Entrance.Default();
 	Collection.Default();
@@ -109,9 +85,7 @@ void C4Def::DefaultDefCore()
 	ContainBlast=0;
 	UprightAttach=0;
 	ContactFunctionCalls=0;
-	MaxUserSelect=0;
 	Line=0;
-	LineConnect=0;
 	LineIntersect=0;
 	NoBurnDecay=0;
 	IncompleteActivity=0;
@@ -139,7 +113,6 @@ void C4Def::DefaultDefCore()
 	NoBreath=0;
 	ConSizeOff=0;
 	NoSell=NoGet=0;
-	NoFight=0;
 	NeededGfxMode=0;
 	NoTransferZones=0;
 }
@@ -159,9 +132,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Adjust category: C4D_CrewMember by CrewMember flag
-		if (CrewMember) Category|=C4D_CrewMember;
-
 		// Adjust picture rect
 		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
 			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
@@ -169,9 +139,7 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		// Check category
 		if (!(Category & C4D_SortLimit))
 		{
-			// special: Allow this for spells
-			if (~Category & C4D_Magic)
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
+			DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
 			// assign a default category here
 			Category = (Category & ~C4D_SortLimit) | 1;
 		}
@@ -233,23 +201,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ "C4D_Object",                   C4D_Object              },
 
 		{ "C4D_Goal",                     C4D_Goal                },
-		{ "C4D_Environment",              C4D_Environment         },
-		{ "C4D_SelectBuilding",           C4D_SelectBuilding      },
-		{ "C4D_SelectVehicle",            C4D_SelectVehicle       },
-		{ "C4D_SelectMaterial",           C4D_SelectMaterial      },
-		{ "C4D_SelectKnowledge",          C4D_SelectKnowledge     },
-		{ "C4D_SelectHomebase",           C4D_SelectHomebase      },
-		{ "C4D_SelectAnimal",             C4D_SelectAnimal        },
-		{ "C4D_SelectNest",               C4D_SelectNest          },
-		{ "C4D_SelectInEarth",            C4D_SelectInEarth       },
-		{ "C4D_SelectVegetation",         C4D_SelectVegetation    },
-
-		{ "C4D_TradeLiving",              C4D_TradeLiving         },
-		{ "C4D_Magic",                    C4D_Magic               },
-		{ "C4D_CrewMember",               C4D_CrewMember          },
-
 		{ "C4D_Rule",                     C4D_Rule                },
-
+		{ "C4D_Environment",              C4D_Environment         },
+		
 		{ "C4D_Background",               C4D_Background          },
 		{ "C4D_Parallax",                 C4D_Parallax            },
 		{ "C4D_MouseSelect",              C4D_MouseSelect         },
@@ -263,7 +217,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkNamingAdapt(MaxUserSelect,                 "MaxUserSelect",      0                 ));
 	pComp->Value(mkNamingAdapt(Timer,                         "Timer",              35                ));
 	pComp->Value(mkNamingAdapt(toC4CStr(STimerCall),          "TimerCall",          ""                ));
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
@@ -281,45 +234,8 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,             "ContactIncinerate",  0                 ));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,               "BlastIncinerate",    0                 ));
-	pComp->Value(mkNamingAdapt(BurnTurnTo,        "BurnTo",             C4ID::None          ));
-
-	const StdBitfieldEntry<int32_t> LineTypes[] =
-	{
-
-		{ "C4D_LinePower"          ,C4D_Line_Power},
-		{ "C4D_LineSource"         ,C4D_Line_Source},
-		{ "C4D_LineDrain"          ,C4D_Line_Drain},
-		{ "C4D_LineLightning"      ,C4D_Line_Lightning},
-		{ "C4D_LineVolcano"        ,C4D_Line_Volcano},
-		{ "C4D_LineRope"           ,C4D_Line_Rope},
-		{ "C4D_LineColored"        ,C4D_Line_Colored},
-		{ "C4D_LineVertex"         ,C4D_Line_Vertex},
-
-		{ NULL,                     0}
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(Line, LineTypes),"Line",             0                 ));
-
-
-	const StdBitfieldEntry<int32_t> LineConnectTypes[] =
-	{
-
-		{ "C4D_PowerInput"         ,C4D_Power_Input},
-		{ "C4D_PowerOutput"        ,C4D_Power_Output},
-		{ "C4D_LiquidInput"        ,C4D_Liquid_Input},
-		{ "C4D_LiquidOutput"       ,C4D_Liquid_Output},
-		{ "C4D_PowerGenerator"     ,C4D_Power_Generator},
-		{ "C4D_PowerConsumer"      ,C4D_Power_Consumer},
-		{ "C4D_LiquidPump"         ,C4D_Liquid_Pump},
-		{ "C4D_ConnectRope"        ,C4D_Connect_Rope},
-		{ "C4D_EnergyHolder"       ,C4D_EnergyHolder},
-
-		{ NULL,                     0}
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(LineConnect, LineConnectTypes),
-	                           "LineConnect",        0                 ));
-
+	pComp->Value(mkNamingAdapt(BurnTurnTo,                    "BurnTo",             C4ID::None        ));
+	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
 	pComp->Value(mkNamingAdapt(Prey,                          "Prey",               0                 ));
 	pComp->Value(mkNamingAdapt(Edible,                        "Edible",             0                 ));
@@ -328,8 +244,8 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Growth,                        "Growth",             0                 ));
 	pComp->Value(mkNamingAdapt(Rebuyable,                     "Rebuy",              0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
-	pComp->Value(mkNamingAdapt(BuildTurnTo,     "ConstructTo",        C4ID::None                  ));
-	pComp->Value(mkNamingAdapt(Grab,                      "Grab",               0                 ));
+	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));
+	pComp->Value(mkNamingAdapt(Grab,                          "Grab",               0                 ));
 
 	const StdBitfieldEntry<int32_t> GrabPutGetTypes[] =
 	{
@@ -379,7 +295,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));
 	pComp->Value(mkNamingAdapt(NoSell,                        "NoSell",             0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
-	pComp->Value(mkNamingAdapt(NoFight,                       "NoFight",            0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
 	pComp->Value(mkNamingAdapt(AutoContextMenu,               "AutoContextMenu",    0                 ));
 	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));
@@ -396,9 +311,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),
 	                           "AllowPictureStack",   0                ));
-
-	pComp->FollowName("Physical");
-	pComp->Value(Physical);
 }
 
 //-------------------------------- C4Def -------------------------------------------------------
@@ -414,7 +326,6 @@ void C4Def::Default()
 	DefaultDefCore();
 	Next=NULL;
 	Temporary=false;
-	Maker[0]=0;
 	Filename[0]=0;
 	Creation=0;
 	Count=0;
@@ -429,7 +340,6 @@ void C4Def::Default()
 	iNumRankSymbols=1;
 	PortraitCount = 0;
 	Portraits = NULL;
-	pFairCrewPhysical = NULL;
 }
 
 C4Def::~C4Def()
@@ -447,7 +357,6 @@ void C4Def::Clear()
 	if (pClonkNames && fClonkNamesOwned) delete pClonkNames; pClonkNames=NULL;
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
-	if (pFairCrewPhysical) { delete pFairCrewPhysical; pFairCrewPhysical = NULL; }
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 
 	PortraitCount = 0;
@@ -468,7 +377,6 @@ bool C4Def::Load(C4Group &hGroup,
 
 	// Store filename, maker, creation
 	SCopy(hGroup.GetFullName().getData(),Filename);
-	SCopy(hGroup.GetMaker(),Maker,C4MaxName);
 	Creation = hGroup.GetCreation();
 
 	// Verbose log filename
@@ -613,29 +521,35 @@ bool C4Def::Load(C4Group &hGroup,
 		if (pSoundSystem)
 			pSoundSystem->LoadEffects(hGroup);
 
-	// Bitmap post-load settings
-	if (Graphics.GetBitmap())
+	if(Graphics.Type == C4DefGraphics::TYPE_Bitmap)
 	{
-		// check SolidMask
-		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
-		// Set MainFace (unassigned bitmap: will be set by GetMainFace())
-		MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
-	}
+		// Bitmap post-load settings
+		if (Graphics.GetBitmap())
+		{
+			// check SolidMask
+			if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
+			// Set MainFace (unassigned bitmap: will be set by GetMainFace())
+			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
+		}
 
-	// validate TopFace
-	if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
+		// validate TopFace
+		if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
+		{
+			TopFace.Default();
+			// warn in debug mode
+			DebugLogF("invalid TopFace in %s (%s)", GetName(), id.ToString());
+		}
+	}
+	else
 	{
 		TopFace.Default();
-		// warn in debug mode
-		DebugLogF("invalid TopFace in %s(%s)", GetName(), id.ToString());
+		SolidMask.Default();
 	}
-
-
 
 	// Temporary flag
 	if (dwLoadWhat & C4D_Load_Temporary) Temporary=true;
 
-	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
+	if (Carryable) SetProperty(P_Collectible, C4VTrue);
 
 	return true;
 }
@@ -673,13 +587,13 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 		if (pObj)
 		{
 			instance = pObj->pMeshInstance;
-			pObj->GetPropertyVal(P_PictureTransformation, &value);
+			pObj->GetProperty(P_PictureTransformation, &value);
 		}
 		else
 		{
 			dummy.reset(new StdMeshInstance(*graphics->Mesh));
 			instance = dummy.get();
-			GetPropertyVal(P_PictureTransformation, &value);
+			GetProperty(P_PictureTransformation, &value);
 		}
 
 		StdMeshMatrix matrix;
@@ -724,35 +638,8 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 	return iValue;
 }
 
-C4PhysicalInfo *C4Def::GetFairCrewPhysicals()
-{
-	// if fair crew physicals have been created, assume they are valid
-	if (!pFairCrewPhysical)
-	{
-		pFairCrewPhysical = new C4PhysicalInfo(Physical);
-		// determine the rank
-		int32_t iExpGain = Game.Parameters.FairCrewStrength;
-		C4RankSystem *pRankSys=&::DefaultRanks;
-		if (pRankNames) pRankSys = pRankNames;
-		int32_t iRank = pRankSys->RankByExperience(iExpGain);
-		// promote physicals for rank
-		pFairCrewPhysical->PromotionUpdate(iRank, true, this);
-	}
-	return pFairCrewPhysical;
-}
-
-void C4Def::ClearFairCrewPhysicals()
-{
-	// invalidate physicals so the next call to GetFairCrewPhysicals will
-	// reacreate them
-	delete pFairCrewPhysical; pFairCrewPhysical = NULL;
-}
-
 void C4Def::Synchronize()
 {
-	// because recreation of fair crew physicals does a script call, which *might* do a call to e.g. Random
-	// fair crew physicals must be cleared and recalculated for everyone
-	ClearFairCrewPhysicals();
 }
 
 
@@ -1378,11 +1265,11 @@ C4PropList *C4Def::GetActionByName(C4String *actname)
 {
 	assert(actname);
 	// If we get the null string or ActIdle by name, return NULL action
-	if (!actname || actname == Strings.P[P_Idle]) return NULL;
+	if (!actname || actname == &Strings.P[P_Idle]) return NULL;
 	// otherwise, query actmap
-	C4Value ActMap; GetPropertyVal(P_ActMap, &ActMap);
+	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
 	if (!ActMap.getPropList()) return false;
-	C4Value Action; ActMap.getPropList()->GetPropertyVal(actname, &Action);
+	C4Value Action; ActMap.getPropList()->GetPropertyByS(actname, &Action);
 	if (!Action.getPropList()) return false;
 	return Action.getPropList();
 }
