@@ -2661,9 +2661,19 @@ static long FnSetTransferZone(C4AulObjectContext *cthr, long iX, long iY, long i
 	return Game.TransferZones.Set(iX,iY,iWdt,iHgt,cthr->Obj);
 }
 
-static long FnAbs(C4AulContext *cthr, long iVal)
+static C4NumericValue FnAbs(C4AulContext *cthr, C4NumericValue val)
 {
-	return Abs(iVal);
+	switch (val.GetType())
+	{
+	case C4V_Int:
+	case C4V_Bool:
+		return Abs(val._getInt());
+	case C4V_Float:
+		return Abs(val._getFloat());
+	default:
+		assert(!"Non-numeric value passed through C4NumericValue");
+		return 0;
+	}
 }
 
 static long FnSin(C4AulContext *cthr, long iAngle, long iRadius, long iPrec)
