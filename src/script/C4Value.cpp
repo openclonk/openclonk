@@ -135,8 +135,6 @@ bool C4Value::FnCnvObject() const
 #define CnvOK0       C4VCnvFn::CnvOK0, true
 #define CnvError     C4VCnvFn::CnvError, true
 #define CnvObject    C4VCnvFn::CnvObject, false
-#define CnvI2F       C4VCnvFn::CnvI2F, false       // convert int->C4Real
-#define CnvF2I       C4VCnvFn::CnvF2I, false       // convert C4Real->int
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 {
@@ -153,7 +151,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Int
 		{ CnvOK   }, // any
 		{ CnvOK   }, // int        same
-		{ CnvI2F  }, // float
+		{ CnvOK   }, // float
 		{ CnvOK   }, // Bool
 		{ CnvOK0  }, // PropList   only if 0
 		{ CnvOK0  }, // C4Object   only if 0
@@ -162,9 +160,9 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	},
 	{ // C4V_Float
 		{ CnvOK   }, // any
-		{ CnvF2I  }, // int
+		{ CnvOK   }, // int
 		{ CnvOK   }, // float      same
-		{ CnvF2I  }, // Bool
+		{ CnvOK   }, // Bool
 		{ CnvOK0  }, // PropList   only if 0
 		{ CnvOK0  }, // C4Object   only if 0
 		{ CnvOK0  }, // String     only if 0
@@ -173,7 +171,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 	{ // C4V_Bool
 		{ CnvOK   }, // any
 		{ CnvOK   }, // int        might be used
-		{ CnvI2F  }, // float
+		{ CnvOK   }, // float
 		{ CnvOK   }, // Bool       same
 		{ CnvError  }, // PropList   NEVER!
 		{ CnvError  }, // C4Object   NEVER!
@@ -224,8 +222,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
 
 #undef CnvOK
 #undef CnvOK0
-#undef CnvI2F
-#undef CnvF2I
 #undef CnvError
 #undef CnvObject
 

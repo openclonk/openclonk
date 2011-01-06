@@ -67,7 +67,7 @@ union C4V_Data
 // converter function, used in converter table
 struct C4VCnvFn
 {
-	enum { CnvOK, CnvOK0, CnvError, CnvObject, CnvF2I, CnvI2F } Function;
+	enum { CnvOK, CnvOK0, CnvError, CnvObject } Function;
 	bool Warn;
 };
 
@@ -255,8 +255,6 @@ public:
 		switch (C4ScriptCnvMap[Type][vtToType].Function)
 		{
 		case C4VCnvFn::CnvOK:
-		case C4VCnvFn::CnvF2I:
-		case C4VCnvFn::CnvI2F:
 			return true;
 		case C4VCnvFn::CnvOK0: return !*this;
 		case C4VCnvFn::CnvError: return false;
