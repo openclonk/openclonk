@@ -264,10 +264,13 @@ public:
 	// Find existing C4String
 	C4String *FindString(const char *strString);
 
-	C4String P[P_LAST];
 private:
 	C4Set<C4String *> Set;
 	friend class C4String;
+
+public:
+	// After the set, so these are destroyed with the set still alive
+	C4String P[P_LAST];
 };
 
 extern C4StringTable Strings;
