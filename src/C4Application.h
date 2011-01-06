@@ -67,7 +67,8 @@ public:
 	void NextTick();
 
 	virtual void Quit();
-	void QuitGame(); // quit game only, but restart application if in fullscreen startup menu mode
+	void OpenGame(const char * scenario = 0); // start game in the next main loop round
+	void QuitGame(); // quit game, and application if in fullscreen without startup
 	void Activate(); // activate app to gain full focus in OS
 	void SetNextMission(const char *szMissionFilename);
 
@@ -82,12 +83,11 @@ public:
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
 	int CheckForUpdates;	
 protected:
-	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_Quit } AppState;
+	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_AfterGame, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;
 
 	virtual bool DoInit(int argc, char * argv[]);
 	void ParseCommandLine(int argc, char * argv[]);
-	bool OpenGame();
 	bool PreInit();
 	static bool ProcessCallback(const char *szMessage, int iProcess);
 	void ApplyResolutionConstraints();

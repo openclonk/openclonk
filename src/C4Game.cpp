@@ -343,6 +343,10 @@ bool C4Game::Init()
 	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
 	SetInitProgress(0);
 
+	// reinit keyboard to reflect any config changes that might have been done
+	// this is a good time to do it, because no GUI dialogs are opened
+	if (!InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
+
 	// start log pos (used by startup)
 	StartupLogPos=GetLogPos();
 	fQuitWithError = false;
@@ -520,6 +524,9 @@ bool C4Game::Init()
 	// and redraw background
 	GraphicsSystem.InvalidateBg();
 
+	// Notify editor
+	Console.InitGame();
+
 	return true;
 }
 
@@ -614,6 +621,9 @@ void C4Game::Clear()
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
 	FullScreen.CloseMenu();
+
+	// notify editor
+	Console.CloseGame();
 
 	// Message
 	// avoid double message by not printing it if no restbl is loaded

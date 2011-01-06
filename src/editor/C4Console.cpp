@@ -271,9 +271,8 @@ bool C4Console::FileOpen()
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	Application.ClearCommandLine();
-	Game.SetScenarioFilename(c4sfile);
 	// Open game
-	OpenGame();
+	Application.OpenGame(c4sfile);
 	return true;
 }
 
@@ -293,7 +292,6 @@ bool C4Console::FileOpenWPlrs()
 	               )) return false;
 	// Compose command line
 	Application.ClearCommandLine();
-	Game.SetScenarioFilename(c4sfile);
 	if (DirectoryExists(c4pfile)) // Multiplayer
 	{
 		const char *cptr = c4pfile + SLen(c4pfile) + 1;
@@ -312,13 +310,15 @@ bool C4Console::FileOpenWPlrs()
 		SAddModule(Game.PlayerFilenames, c4pfile);
 	}
 	// Open game
-	OpenGame();
+	Application.OpenGame(c4sfile);
 	return true;
 }
 
 bool C4Console::FileClose()
 {
-	return CloseGame();
+	if (!fGameOpen) return false;
+	Application.QuitGame();
+	return true;
 }
 
 bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
@@ -569,29 +569,14 @@ void C4Console::Execute()
 	::GraphicsSystem.Execute();
 }
 
-bool C4Console::OpenGame()
+void C4Console::InitGame()
 {
-	bool fGameWasOpen = fGameOpen;
-	// Close any old game
-	CloseGame();
-
+	if (!Active) return;
 	// Default game dependent members
 	Default();
-	SetCaption(GetFilename(Game.ScenarioFile.GetName()));
+	SetCaptionToFilename(Game.ScenarioFilename);
 	// Init game dependent members
-	if (!EditCursor.Init()) return false;
-	// Default game - only if open before, because we do not want to default out the GUI
-	if (fGameWasOpen) Game.Default();
-
-	// PreInit is required because GUI has been deleted
-	if (!Game.PreInit() ) { Game.Clear(); return false; }
-
-	// Init game
-	if (!Game.Init())
-	{
-		Game.Clear();
-		return false;
-	}
+	EditCursor.Init();
 
 	// Console updates
 	fGameOpen=true;
@@ -599,21 +584,14 @@ bool C4Console::OpenGame()
 	EnableControls(fGameOpen);
 	UpdatePlayerMenu();
 	UpdateViewportMenu();
-	SetCaptionToFilename(Game.ScenarioFilename);
-
-	return true;
 }
 
-bool C4Console::CloseGame()
+void C4Console::CloseGame()
 {
-	if (!fGameOpen) return false;
-	Game.Clear();
-	Game.GameOver=false; // No leftover values when exiting on closed game
-	Game.GameOverDlgShown=false;
+	if (!Active || !fGameOpen) return;
 	fGameOpen=false;
 	EnableControls(fGameOpen);
 	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
-	return true;
 }
 
 bool C4Console::TogglePause()

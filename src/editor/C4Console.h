@@ -69,10 +69,10 @@ public:
 	void DoHalt();	
 	void UpdateInputCtrl();
 	void UpdateMenus();
-	bool OpenGame();
+	void InitGame();
 	bool TogglePause(); // key callpack: pause
 public:
-	bool CloseGame();
+	void CloseGame();
 	bool UpdatePlayerMenu();
 	bool UpdateViewportMenu();
 	void UpdateStatusBars();

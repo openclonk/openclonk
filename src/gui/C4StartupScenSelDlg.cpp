@@ -1621,11 +1621,12 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 		// for no user change, just set default objects. Custom settings will override later anyway
 		SCopy("Objects.c4d", Game.DefinitionFilenames);
 	// set other default startup parameters
-	SCopy(pStartScen->GetEntryFilename().getData(), Game.ScenarioFilename);
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;
+	// record if desired
+	if (Config.General.Record) Game.Record = true;
 	// start with this set!
-	C4Startup::Get()->Start();
+	Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;
 }
 

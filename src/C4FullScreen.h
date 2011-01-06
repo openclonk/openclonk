@@ -38,7 +38,6 @@ public:
 	void Execute();
 	bool Restart();
 	bool ViewportCheck();
-	bool OpenGame(const char *szCmdLine);
 	bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
 	bool ActivateMenuMain();
 	bool MenuCommand(const char *szCommand);

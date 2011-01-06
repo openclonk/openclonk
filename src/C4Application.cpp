@@ -88,7 +88,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 		if (sConfigFilename)
 		{
 			// custom config corrupted: Fail
-			Log("Warning: Custom configuration corrupted - program abort!\n");
+			Log("ERROR: Custom configuration corrupted - program abort!\n");
 			return false;
 		}
 		else
@@ -413,7 +413,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	Game.Record = Game.Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && Game.NetworkActive);
 
 	// startup dialog required?
-	UseStartupDialog = !isEditor && !*Game.DirectJoinAddress && !*Game.ScenarioFilename && !Game.RecordStream.getSize();
+	UseStartupDialog = !*Game.DirectJoinAddress && !*Game.ScenarioFilename && !Game.RecordStream.getSize();
 }
 
 void C4Application::ApplyResolutionConstraints()
@@ -461,7 +461,7 @@ bool C4Application::PreInit()
 	Game.SetInitProgress(0.0f);
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
-	if (fDoUseStartupDialog)
+	if (fDoUseStartupDialog && !isEditor)
 	{
 		//Log(LoadResStr("IDS_PRC_INITLOADER"));
 		bool fUseBlackScreenLoader = UseStartupDialog && !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
@@ -484,7 +484,17 @@ bool C4Application::PreInit()
 
 	Game.SetInitProgress(fDoUseStartupDialog ? 35.0f : 3.0f);
 
-	AppState = fDoUseStartupDialog ? C4AS_Startup : C4AS_StartGame;
+	if (fDoUseStartupDialog)
+	{
+		AppState = C4AS_Startup;
+		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
+		if (!isEditor)
+			C4Startup::InitStartup();
+	}
+	else
+	{
+		AppState = C4AS_StartGame;
+	}
 
 	return true;
 }
@@ -525,23 +535,6 @@ void C4Application::Clear()
 	CStdApp::Clear();
 }
 
-bool C4Application::OpenGame()
-{
-	if (!isEditor)
-	{
-		// Open game
-		return Game.Init();
-	}
-	else
-	{
-		// Execute command line
-		if (Game.ScenarioFilename[0] || Game.DirectJoinAddress[0])
-			return Console.OpenGame();
-	}
-	// done; success
-	return true;
-}
-
 void C4Application::Quit()
 {
 	// Participants should not be cleared for usual startup dialog
@@ -557,27 +550,27 @@ void C4Application::Quit()
 	AppState = C4AS_Quit;
 }
 
+void C4Application::OpenGame(const char * scenario)
+{
+	if (AppState == C4AS_Startup)
+	{
+		if (scenario) Game.SetScenarioFilename(scenario);
+		AppState = C4AS_StartGame;
+	}
+	else
+	{
+		SetNextMission(scenario);
+		AppState = C4AS_AfterGame;
+	}
+	
+}
+
 void C4Application::QuitGame()
 {
 	// reinit desired? Do restart
-	if (UseStartupDialog || NextMission)
+	if (UseStartupDialog || NextMission || isEditor)
 	{
-		// backup last start params
-		bool fWasNetworkActive = Game.NetworkActive;
-		// stop game
-		Game.Clear();
-		Game.Default();
-		AppState = C4AS_PreInit;
-		// if a next mission is desired, set to start it
-		if (NextMission)
-		{
-			SCopy(NextMission.getData(), Game.ScenarioFilename, _MAX_PATH);
-			SReplaceChar(Game.ScenarioFilename, '\\', DirSep[0]); // linux/mac: make sure we are using forward slashes
-			Game.fLobby = Game.NetworkActive = fWasNetworkActive;
-			Game.fObserve = false;
-			Game.Record = !!Config.General.Record;
-			NextMission.Clear();
-		}
+		AppState = C4AS_AfterGame;
 	}
 	else
 	{
@@ -600,24 +593,37 @@ void C4Application::GameTick()
 		if (!PreInit()) Quit();
 		break;
 	case C4AS_Startup:
-		AppState = C4AS_Game;
-		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
-		if (!C4Startup::Execute()) { Quit(); return; }
-		AppState = C4AS_StartGame;
+		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
 		// immediate progress to next state; OpenGame will enter HandleMessage-loops in startup and lobby!
+		C4Startup::CloseStartup();
 		AppState = C4AS_Game;
 		// first-time game initialization
-		if (!OpenGame())
+		if (!Game.Init())
 		{
 			// set error flag (unless this was a lobby user abort)
 			if (!C4GameLobby::UserAbort)
 				Game.fQuitWithError = true;
 			// no start: Regular QuitGame; this may reset the engine to startup mode if desired
 			QuitGame();
+			break;
 		}
 		break;
+	case C4AS_AfterGame:
+		// stop game
+		Game.Clear();
+		Game.Default();
+		AppState = C4AS_PreInit;
+		// if a next mission is desired, set to start it
+		if (NextMission)
+		{
+			Game.SetScenarioFilename(NextMission.getData());
+			Game.fLobby = Game.NetworkActive;
+			Game.fObserve = false;
+			Game.Record = !!Config.General.Record;
+			NextMission.Clear();
+		}
 	case C4AS_Game:
 		// Game
 		if (Game.IsRunning)
@@ -726,7 +732,11 @@ void C4Application::SetNextMission(const char *szMissionFilename)
 {
 	// set next mission if any is desired
 	if (szMissionFilename)
+	{
 		NextMission.Copy(szMissionFilename);
+		// scenarios tend to use the wrong slash
+		SReplaceChar(NextMission.getMData(), AltDirectorySeparator, DirectorySeparator);
+	}
 	else
 		NextMission.Clear();
 }
