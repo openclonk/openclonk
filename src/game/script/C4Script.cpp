@@ -175,6 +175,20 @@ inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
 
 #define PAR(type, name) t_##type name = getPar_##type(pPars++)
 
+// Tag class to only allow numeric arguments to functions
+class C4NumericValue : public C4Value
+{
+public:
+	template<class T> C4NumericValue(const T &v) : C4Value(v) {}
+};
+template<>
+struct C4ValueConv<C4NumericValue>
+{
+	inline static C4NumericValue FromC4V(C4Value &v) { return v; }
+	inline static C4NumericValue _FromC4V(C4Value &v) { return v; }
+	inline static C4V_Type Type() { return C4V_Numeric; }
+	inline static C4Value ToC4V(const C4NumericValue &v) { return v; }
+};
 // Allow parameters to be nil
 template<typename T>
 class Nillable
