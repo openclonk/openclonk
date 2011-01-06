@@ -60,9 +60,9 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
 	// clean up
 	switch (Type)
 	{
-	case C4V_C4Object: case C4V_PropList: assert(Data.PropList); Data.PropList->DelRef(this, pNextRef); break;
-	case C4V_Array: assert(Data.Array); Data.Array->DecRef(); break;
-	case C4V_String: assert(Data.Str); Data.Str->DecRef(); break;
+	case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
+	case C4V_Array: Data.Array->DecRef(); break;
+	case C4V_String: Data.Str->DecRef(); break;
 	default: break;
 	}
 }
