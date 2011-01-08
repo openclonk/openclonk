@@ -40,7 +40,7 @@
 #include <C4Physics.h> // For GravAccel
 
 
-int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone,MGranite=MNone;
+int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;
 BYTE MCVehic=0;
 
 // -------------------------------------- C4MaterialReaction
@@ -491,7 +491,6 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
 	MTunnel  = Get("Tunnel");
 	MWater   = Get("Water");
-	MGranite = Get("Granite");
 	MEarth   = Get(Game.C4S.Landscape.Material);
 	if ((MVehic==MNone) || (MTunnel==MNone))
 		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }

@@ -207,7 +207,7 @@ const int32_t C4M_Flat    = 0,
 
 const int32_t MNone = -1;
 
-extern int32_t MVehic,MTunnel,MWater,MEarth,MGranite; // presearched materials
+extern int32_t MVehic,MTunnel,MWater,MEarth; // presearched materials
 extern BYTE MCVehic; // precalculated material color
 
 inline bool MatValid(int32_t mat)
