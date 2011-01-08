@@ -36,11 +36,6 @@ CStdWindow::CStdWindow ():
 
 CStdWindow::~CStdWindow () {}
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp)
-{
-	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
-}
-
 static NSString* windowNibNameForWindowKind(CStdWindow::WindowKind kind)
 {
 	switch (kind)
