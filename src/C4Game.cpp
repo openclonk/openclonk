@@ -181,9 +181,14 @@ bool C4Game::OpenScenario()
 			{ LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), (const char *)ScenarioFilename); return false; }
 	}
 	else
+	{
 		// open directly
-		if (!ScenarioFile.Open(ScenarioFilename))
+		if (!Reloc.Open(ScenarioFile, ScenarioFilename))
 			{ LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), (const char *)ScenarioFilename); return false; }
+	}
+
+	// Remember full (absolute) path
+	SCopy(ScenarioFile.GetFullName().getData(), ScenarioFilename, _MAX_PATH);
 
 	// add scenario to group
 	GroupSet.RegisterGroup(ScenarioFile, false, C4GSPrio_Scenario, C4GSCnt_Scenario);
@@ -342,6 +347,10 @@ bool C4Game::Init()
 
 	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
 	SetInitProgress(0);
+
+	// reinit keyboard to reflect any config changes that might have been done
+	// this is a good time to do it, because no GUI dialogs are opened
+	if (!InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
 
 	// start log pos (used by startup)
 	StartupLogPos=GetLogPos();
@@ -520,6 +529,9 @@ bool C4Game::Init()
 	// and redraw background
 	GraphicsSystem.InvalidateBg();
 
+	// Notify editor
+	Console.InitGame();
+
 	return true;
 }
 
@@ -614,6 +626,9 @@ void C4Game::Clear()
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
 	FullScreen.CloseMenu();
+
+	// notify editor
+	Console.CloseGame();
 
 	// Message
 	// avoid double message by not printing it if no restbl is loaded
@@ -808,7 +823,7 @@ bool C4Game::InitMaterialTexture()
 			// Find next external material source
 			pMatRes = Game.Parameters.GameRes.iterRes(pMatRes, NRT_Material);
 			if (!pMatRes) break;
-			if (!Mats.Open(pMatRes->getFile()))
+			if (!Reloc.Open(Mats, pMatRes->getFile()))
 				return false;
 		}
 
@@ -2898,14 +2913,6 @@ void C4Game::ShowGameOverDlg()
 #endif
 }
 
-bool C4Game::LocalFileMatch(const char *szFilename, int32_t iCreation)
-{
-	// Check file (szFilename relative to SysDataPath)
-	if ( C4Group_GetCreation(Config.AtSystemDataPath(szFilename)) == iCreation) return true;
-	// No match
-	return false;
-}
-
 void C4Game::SyncClearance()
 {
 	PXS.SyncClearance();
@@ -3125,9 +3132,6 @@ const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
 	static char szDefs[10*_MAX_PATH+1];
 	szDefs[0]=0;
 
-	// Get relative path
-	szPath = Config.AtRelativePath(szPath);
-
 	// Scan path for folder names
 	int32_t cnt,iBackslash;
 	char szFoldername[_MAX_PATH+1];
@@ -3203,7 +3207,6 @@ void C4Game::UpdateRules()
 	if (::Game.iTick255) return;
 	Rules=0;
 	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
-	if (ObjectCount(C4ID::FlagRemvbl))       Rules|=C4RULE_FlagRemoveable;
 }
 
 void C4Game::SetInitProgress(float fToProgress)

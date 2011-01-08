@@ -83,7 +83,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 	return this;
 }
 
-bool C4ConsoleGUI::Out(const char* message)
+void C4ConsoleGUI::Out(const char* message)
 {
 	ConsoleWindowController* controller;
 	if (controller = ctrler(this))
@@ -92,7 +92,6 @@ bool C4ConsoleGUI::Out(const char* message)
 		[textStorage appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]] autorelease]];
 		[controller.outputTextView scrollRangeToVisible:NSMakeRange([textStorage length]-1, 1)];
 	}
-	return true;
 }
 
 bool C4ConsoleGUI::ClearLog()
@@ -401,28 +400,14 @@ void C4ConsoleGUI::RecordingEnabled()
 	[[[ClonkAppDelegate instance] recordMenuItem] setEnabled:NO];
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:NO];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:NO];
 }
 
-void C4ConsoleGUI::ClearNetMenu(Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:YES];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:YES];
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
@@ -434,8 +419,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 	return true;
 }
 
-void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg *dlg)
+void C4ToolsDlg::EnableControls()
 {
+	NeedPreviewUpdate();
 }
 
 void C4ConsoleGUI::ClearInput()

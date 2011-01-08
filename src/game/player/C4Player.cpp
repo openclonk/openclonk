@@ -236,10 +236,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	}
 	// Status init
 	Status=PS_Normal;
-	if (szFilename)
-		SCopy(Config.AtDataReadPath(szFilename),Filename);
-	else
-		*Filename='\0';
 	Number = iNumber;
 	ID = pInfo->GetID();
 	Team = pInfo->GetTeam();
@@ -248,14 +244,14 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	// At client
 	AtClient=iAtClient; SCopy(szAtClientName,AtClientName,C4MaxTitle);
 
-	if (Filename)
+	if (szFilename)
 	{
 		// Load core & crew info list
 		// do not load portraits for remote players
 		// this will prevent portraits from being shown for "remotely controlled"-Clonks of other players
 		bool fLoadPortraits = (AtClient==C4ClientIDUnknown) || SEqualNoCase(AtClientName, Game.Clients.getLocalName());
 		// fLoadPortraits = true
-		if (!Load(Filename, !fScenarioInit, fLoadPortraits)) return false;
+		if (!Load(szFilename, !fScenarioInit, fLoadPortraits)) return false;
 	}
 	else
 	{
@@ -982,7 +978,7 @@ bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 {
 	C4Group hGroup;
 	// Open group
-	if (!hGroup.Open(szFilename)) return false;
+	if (!Reloc.Open(hGroup, szFilename)) return false;
 	// Load core
 	if (!C4PlayerInfoCore::Load(hGroup))
 		{ hGroup.Close(); return false; }

@@ -69,10 +69,10 @@ public:
 	void DoHalt();	
 	void UpdateInputCtrl();
 	void UpdateMenus();
-	bool OpenGame();
+	void InitGame();
 	bool TogglePause(); // key callpack: pause
 public:
-	bool CloseGame();
+	void CloseGame();
 	bool UpdatePlayerMenu();
 	bool UpdateViewportMenu();
 	void UpdateStatusBars();
@@ -107,12 +107,6 @@ public:
 	int ScriptCounter;
 	int FrameCounter;
 	int Time,FPS;
-	int MenuIndexFile;
-	int MenuIndexComponents;
-	int MenuIndexPlayer;
-	int MenuIndexViewport;
-	int MenuIndexNet;
-	int MenuIndexHelp;
 #if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
 #endif

@@ -1105,7 +1105,7 @@ bool C4StartupNetDlg::DoOK()
 	Game.fObserve = false;
 	Game.pJoinReference = pRef;
 	// start with this set!
-	C4Startup::Get()->Start();
+	Application.OpenGame();
 	return true;
 }
 

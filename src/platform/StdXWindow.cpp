@@ -230,10 +230,6 @@ CStdWindow::~CStdWindow ()
 {
 	Clear();
 }
-CStdWindow * CStdWindow::Init(CStdApp * pApp)
-{
-	return Init(CStdWindow::W_Viewport, pApp, C4ENGINENAME);
-}
 
 CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {

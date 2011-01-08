@@ -82,7 +82,7 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 #define ADDL2(s) L##s
 #define ADDL(s) ADDL2(s)
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp)
+CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 
@@ -113,6 +113,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp)
 	SetFocus(hWindow);
 #endif
 
+	SetTitle(Title);
 	return this;
 }
 
@@ -161,6 +162,7 @@ bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey,
 
 void CStdWindow::SetTitle(const char *szToTitle)
 {
+	// FIXME: use SetWindowTextW here 
 	if (hWindow) SetWindowText(hWindow, szToTitle ? szToTitle : "");
 }
 

@@ -73,7 +73,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 	{
 		// open it
 		GfxGrp.Close();
-		if (!GfxGrp.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
+		if (!Reloc.Open(GfxGrp, C4CFN_Graphics))
 		{
 			LogFatal(FormatString(LoadResStr("IDS_PRC_NOGFXFILE"),C4CFN_Graphics,GfxGrp.GetError()).getData());
 			return false;

@@ -42,7 +42,6 @@ public:
 	char Name[CFG_MaxString+1];
 	char Language[CFG_MaxString+1]; // entered by user in frontend options (may contain comma separated list or long language descriptions)
 	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
-	char Definitions[CFG_MaxString+1];
 	char Participants[CFG_MaxString+1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
 	char RXFontName[CFG_MaxString+1];
@@ -69,9 +68,6 @@ public:
 	bool FirstStart;
 	bool UserPortraitsWritten; // set when default portraits have been copied to the UserPath (this is only done once)
 
-	// Additional paths to read data from (prioritized lower than UserDataPath/SystemDataPath)
-	typedef std::list<const char *> PathList;
-	PathList AdditionalDataPaths;
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
 	void DefaultLanguage();
@@ -79,9 +75,6 @@ public:
 	void AdoptOldSettings();
 	void DeterminePaths(bool forceWorkingDirectory);
 	void CompileFunc(StdCompiler *pComp);
-	void AddAdditionalDataPath(const char *szPath);
-	void ClearAdditionalDataPaths();
-	~C4ConfigGeneral() { ClearAdditionalDataPaths(); }
 
 private:
 	struct
@@ -293,7 +286,6 @@ public:
 	const char *AtSystemDataPath(const char *szFilename);
 	const char *AtSystemDataRelativePath(const char *szFilename);
 	const char *AtRelativePath(const char *szFilename); // Returns ASDRP or AUDRP depending on location
-	const char *AtDataReadPath(const char *szFilename, bool fPreferWorkdir = false);
 	const char *GetRegistrationData(const char* strField) { return ""; }
 	void ForceRelativePath(StdStrBuf *sFilename); // try AtRelativePath; force GetC4Filename if not possible
 	void CompileFunc(StdCompiler *pComp);
@@ -304,8 +296,6 @@ public:
 	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
-private:
-	const char *AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir = false);
 };
 
 #include <C4ConfigShareware.h>

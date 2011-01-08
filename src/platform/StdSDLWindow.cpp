@@ -29,8 +29,6 @@
 
 #include "C4Version.h"
 
-#include "MacUtility.h"
-
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
@@ -43,17 +41,17 @@ CStdWindow::~CStdWindow ()
 	Clear();
 }
 
-// Only set title.
-// FIXME: Read from application bundle on the Mac.
-
-CStdWindow * CStdWindow::Init(CStdApp * pApp)
-{
-	return Init(pApp, C4ENGINENAME);
-}
-
-CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow * CStdWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
+	// SDL doesn't support multiple monitors.
+	if (!SDL_SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
+	{
+		Log(SDL_GetError());
+		return 0;
+	}
+	SDL_ShowCursor(HideCursor ? SDL_DISABLE : SDL_ENABLE);
+	SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	SetTitle(Title);
 	return this;
 }

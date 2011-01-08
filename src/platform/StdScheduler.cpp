@@ -264,6 +264,8 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 						OnError(ppProcs[i]);
 						fSuccess = false;
 					}
+					// leave the loop, the list of procs might have been changed
+					i = iProcCnt;
 					break;
 				}
 			}

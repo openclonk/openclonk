@@ -256,7 +256,6 @@ protected:
 	void Ticks();
 	const char *FoldersWithLocalsDefs(const char *szPath);
 	bool CheckObjectEnumeration();
-	bool LocalFileMatch(const char *szFilename, int32_t iCreation);
 	bool DefinitionFilenamesFromSaveGame();
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();
@@ -309,8 +308,7 @@ public:
 
 
 const int32_t
-	C4RULE_ConstructionNeedsMaterial = 1,
-	C4RULE_FlagRemoveable            = 2;
+	C4RULE_ConstructionNeedsMaterial = 1;
 
 extern C4Game         Game;
 

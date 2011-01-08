@@ -1044,7 +1044,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 	ClearChildren();
 	// regular folders must exist and not be within group!
 	assert(!pFromGrp);
-	if (sFilename[0])
+	if (sFilename.getData() && sFilename[0])
 		Merge(sFilename.getData());
 
 	// get number of entries, to estimate progress
@@ -1167,7 +1167,10 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	if (!BeginActivity(true)) return false;
 	if (pRootFolder) { delete pRootFolder; pRootFolder = NULL; }
 	pCurrFolder = pRootFolder = new RegularFolder(NULL);
-	pRootFolder->Merge(Config.General.UserDataPath);
+	// Load regular game data if no explicit path specified
+	if(!sRootFolder.getData())
+		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
+			pRootFolder->Merge(iter->getData());
 	bool fSuccess = pRootFolder->LoadContents(this, NULL, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
@@ -1438,7 +1441,7 @@ void C4StartupScenSelDlg::OnShown()
 	// init file list
 	fIsInitialLoading = true;
 	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader();
-	pScenLoader->Load(StdStrBuf(Config.General.ExePath));
+	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
 	UpdateList();
 	UpdateSelection();
 	fIsInitialLoading = false;
@@ -1621,11 +1624,12 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 		// for no user change, just set default objects. Custom settings will override later anyway
 		SCopy("Objects.c4d", Game.DefinitionFilenames);
 	// set other default startup parameters
-	SCopy(pStartScen->GetEntryFilename().getData(), Game.ScenarioFilename);
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;
+	// record if desired
+	if (Config.General.Record) Game.Record = true;
 	// start with this set!
-	C4Startup::Get()->Start();
+	Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;
 }
 

@@ -36,8 +36,6 @@
 #include <time.h>
 #include <errno.h>
 
-#include "MacUtility.h"
-
 /* CStdApp */
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
@@ -62,7 +60,7 @@ bool CStdApp::Init(int argc, char * argv[])
 	SCopy(argv[0], dir);
 	Location = dir;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
 	{
 		Log("Error initializing SDL.");
 		return false;
@@ -158,6 +156,9 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 
 bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
 {
+	//RECT r;
+	//pWindow->GetSize(&r);
+	// FIXME: optimize redundant calls away. maybe make all platforms implicitely call SetVideoMode in CStdWindow::Init?
 	// SDL doesn't support multiple monitors.
 	if (!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
 	{

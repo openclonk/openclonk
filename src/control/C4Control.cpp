@@ -667,35 +667,40 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 		idInfo(iIDInfo), fByRes(false)
 {
 	// load from file if filename is given - which may not be the case for script players
-	if (szFilename)
+	StdStrBuf filename;
+	if (szFilename && Reloc.LocateItem(szFilename, filename))
 	{
-		StdStrBuf filename_buf;
-		const char *filename = Config.AtDataReadPath(szFilename);
 		bool file_is_temp = false;
-		if (DirectoryExists(filename))
+		if (DirectoryExists(filename.getData()))
 		{
 			// the player file is unpacked - temp pack and read
-			filename_buf.Copy(Config.AtTempPath(GetFilenameOnly(filename)));
+			StdStrBuf filename_buf;
+			filename_buf.Copy(Config.AtTempPath(GetFilenameOnly(filename.getData())));
 			MakeTempFilename(&filename_buf);
-			if (C4Group_PackDirectoryTo(filename, filename_buf.getData()))
+			if (C4Group_PackDirectoryTo(filename.getData(), filename_buf.getData()))
 			{
-				filename = filename_buf.getData();
+				filename = filename_buf;
 				file_is_temp = true;
 			}
 			else
 			{
 				// pack failed
-				LogF("[!]Error packing player file %s to %s for join: Pack failed.", filename, filename_buf.getData());
+				LogF("[!]Error packing player file %s to %s for join: Pack failed.", filename.getData(), filename_buf.getData());
 				assert(false);
 			}
 		}
-		bool fSuccess = PlrData.LoadFromFile(filename);
+		bool fSuccess = PlrData.LoadFromFile(filename.getData());
 		if (!fSuccess)
 		{
+			LogF("[!]Error loading player file from %s.", filename.getData());
 			assert(false);
-			LogF("[!]Error loading player file from %s.", filename);
 		}
-		if (file_is_temp) EraseFile(filename);
+		if (file_is_temp) EraseFile(filename.getData());
+	}
+	else
+	{
+		LogF("[!]Error loading player file from %s.", szFilename ? szFilename : "(null)");
+		assert(false);
 	}
 }
 

@@ -206,7 +206,7 @@ void C4StartupMainDlg::OnClosed(bool fOK)
 {
 	// if dlg got aborted (by user), quit startup
 	// if it got closed with OK, the user pressed one of the buttons and dialog switching has been done already
-	if (!fOK) C4Startup::Get()->Exit();
+	if (!fOK) Application.Quit();
 }
 
 void C4StartupMainDlg::OnStartBtn(C4GUI::Control *btn)
@@ -250,7 +250,7 @@ void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
 	Game.fObserve = false;
 	SCopy(rsHostAddress.getData(), Game.DirectJoinAddress, sizeof(Game.DirectJoinAddress)-1);
 	// start with this set!
-	C4Startup::Get()->Start();
+	Application.OpenGame();
 }
 
 void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)
@@ -268,7 +268,7 @@ void C4StartupMainDlg::OnAboutBtn(C4GUI::Control *btn)
 void C4StartupMainDlg::OnExitBtn(C4GUI::Control *btn)
 {
 	// callback: exit button pressed
-	C4Startup::Get()->Exit();
+	Application.Quit();
 }
 
 void C4StartupMainDlg::OnTODO(C4GUI::Control *btn)

@@ -35,18 +35,20 @@ void C4Extra::Default()
 void C4Extra::Clear()
 {
 	// free class members
-	ExtraSysGrp.Close();
-	ExtraUserGrp.Close();
+	for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
+		delete ExtraGroups[i];
+	ExtraGroups.clear();
 }
 
 bool C4Extra::InitGroup()
 {
 	// register extra root into game group set
-	if (ItemExists(Config.AtSystemDataPath(C4CFN_Extra)) && ExtraSysGrp.Open(Config.AtSystemDataPath(C4CFN_Extra)))
-		Game.GroupSet.RegisterGroup(ExtraSysGrp, false, C4GSPrio_ExtraRoot, C4GSCnt_ExtraRoot);
-	// Add user Extra.c4g
-	if (ItemExists(Config.AtUserDataPath(C4CFN_Extra)) && ExtraUserGrp.Open(Config.AtUserDataPath(C4CFN_Extra)))
-		Game.GroupSet.RegisterGroup(ExtraUserGrp, false, C4GSPrio_ExtraRoot, C4GSCnt_ExtraRoot);
+	for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
+	{
+		std::auto_ptr<C4Group> pGroup(new C4Group);
+		if(pGroup->Open( (*iter + DirSep + C4CFN_Extra).getData()))
+			ExtraGroups.push_back(pGroup.release());
+	}
 
 	// done, success
 	return true;
@@ -55,15 +57,23 @@ bool C4Extra::InitGroup()
 bool C4Extra::Init()
 {
 	// no group: OK
-	if (!ExtraSysGrp.IsOpen() && !ExtraUserGrp.IsOpen()) return true;
+	if (ExtraGroups.empty()) return true;
 	// load from all definitions that are activated
 	// add first definition first, so the priority will be lowest
 	// (according to definition load/overload order)
 	char szSegment[_MAX_PATH+1];
 	bool fAnythingLoaded=false;
 	for (int cseg=0; SCopySegment(Game.DefinitionFilenames,cseg,szSegment,';',_MAX_PATH); cseg++)
-		if (LoadDef(ExtraUserGrp,GetFilename(szSegment)) || LoadDef(ExtraSysGrp,GetFilename(szSegment)))
-			fAnythingLoaded=true;
+	{
+		for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
+		{
+			if(LoadDef(*ExtraGroups[i], GetFilename(szSegment)))
+			{
+				fAnythingLoaded=true;
+				break;
+			}
+		}
+	}
 	// done, success
 	return true;
 }
@@ -73,7 +83,7 @@ bool C4Extra::LoadDef(C4Group &hGroup, const char *szName)
 	// check if file exists
 	if (!hGroup.FindEntry(szName)) return false;
 	// log that extra group is loaded
-	LogF(LoadResStr("IDS_PRC_LOADEXTRA"), ExtraSysGrp.GetName(), szName);
+	LogF(LoadResStr("IDS_PRC_LOADEXTRA"), hGroup.GetName(), szName);
 	// open and add group to set
 	C4Group *pGrp = new C4Group;
 	if (!pGrp->OpenAsChild(&hGroup, szName)) { Log(LoadResStr("IDS_ERR_FAILURE")); delete pGrp; return false; }

@@ -103,7 +103,7 @@ public:
 	enum DialogID { SDID_Main=0, SDID_ScenSel, SDID_ScenSelNetwork, SDID_NetJoin, SDID_Options, SDID_About, SDID_PlrSel, SDID_Back };
 
 private:
-	bool fInStartup, fAborted, fLastDlgWasBack;
+	bool fInStartup, fLastDlgWasBack;
 	static C4Startup *pInstance; // singleton instance
 	static DialogID eLastDlgID;
 	static bool fFirstRun;
@@ -111,11 +111,8 @@ private:
 	C4StartupDlg *pLastDlg, *pCurrDlg; // startup dlg that is currently shown, and dialog that was last shown
 
 protected:
-	// break modal loop and...
-	void Start(); // ...start game
-	void Exit();  // ...quit to system
-
-	bool DoStartup(); // run main dlg
+	void DoStartup(); // create main dlg
+	void DontStartup(); // close main dlg
 	class C4StartupDlg *SwitchDialog(DialogID eToDlg, bool fFade=true); // do transition to another dialog
 
 	friend class C4StartupMainDlg;
@@ -128,7 +125,8 @@ protected:
 public:
 	static C4Startup *EnsureLoaded(); // create and load startup data if not done yet
 	static void Unload(); // make sure startup data is destroyed
-	static bool Execute(); // run startup - return false if game is to be closed
+	static void InitStartup();
+	static void CloseStartup();
 	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
 
 	static C4Startup *Get() { assert(pInstance); return pInstance; }

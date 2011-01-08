@@ -303,10 +303,7 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char * c) { }
-	virtual CStdWindow * Init(CStdApp * pApp);
-#ifndef _WIN32
 	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
-#endif
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
