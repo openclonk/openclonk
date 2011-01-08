@@ -97,4 +97,6 @@ public:
 
 };
 
+extern C4GameScriptHost GameScript;
+
 #endif

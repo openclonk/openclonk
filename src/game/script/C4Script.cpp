@@ -292,7 +292,7 @@ static C4Object *Fn_this(C4AulContext *cthr)
 
 static C4Void Fn_goto(C4AulContext *cthr, long iCounter)
 {
-	Game.Script.Counter=iCounter;
+	::GameScript.Counter=iCounter;
 	return C4VNull;
 }
 
@@ -2093,7 +2093,7 @@ static C4Value FnAddMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value
 
 static bool FnScriptGo(C4AulContext *cthr, bool go)
 {
-	Game.Script.Go=!!go;
+	::GameScript.Go=!!go;
 	return true;
 }
 
@@ -2132,14 +2132,14 @@ static bool FnSetHostility(C4AulContext *cthr, long iPlr, long iPlr2, bool fHost
 	// do rejection test first
 	if (!fNoCalls)
 	{
-		if (!!Game.Script.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile)), true, true))
+		if (!!::GameScript.GRBroadcast(PSF_RejectHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile)), true, true))
 			return false;
 	}
 	// OK; set hostility
 	bool fOldHostility = ::Players.HostilityDeclared(iPlr, iPlr2);
 	if (!pPlr->SetHostility(iPlr2,fHostile, fSilent)) return false;
 	// calls afterwards
-	Game.Script.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
+	::GameScript.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
 	return true;
 }
 
@@ -2833,7 +2833,7 @@ static C4Value FnGameCall_C4V(C4AulContext *cthr,
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
 	// Call
-	return Game.Script.Call(szFunc2, 0, &Pars, true);
+	return ::GameScript.Call(szFunc2, 0, &Pars, true);
 }
 
 static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
@@ -2850,7 +2850,7 @@ static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
 	// Call
-	return Game.Script.GRBroadcast(szFunc2,&Pars, true);
+	return ::GameScript.GRBroadcast(szFunc2,&Pars, true);
 }
 
 static C4Value FnProtectedCall_C4V(C4AulContext *cthr,
@@ -2957,14 +2957,14 @@ static bool FnOnMessageBoardAnswer(C4AulContext *cthr, C4Object *pObj, long iFor
 	if (!szAnswerString || !szAnswerString->GetCStr()) return true;
 	// get script
 	C4ScriptHost *scr;
-	if (pObj) scr = &pObj->Def->Script; else scr = &Game.Script;
+	if (pObj) scr = &pObj->Def->Script; else scr = &::GameScript;
 	// exec func
 	return !!scr->Call(PSF_InputCallback, pObj, &C4AulParSet(C4VString(FnStringPar(szAnswerString)), C4VInt(iForPlr)));
 }
 
 static long FnScriptCounter(C4AulContext *cthr)
 {
-	return Game.Script.Counter;
+	return ::GameScript.Counter;
 }
 
 static C4Void FnSetMass(C4AulObjectContext *cthr, long iValue)
@@ -3577,7 +3577,7 @@ static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 	else if (cthr->Def)
 		return cthr->Def->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 	else
-		return Game.Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 }
 
 static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj, C4ID idDef)
@@ -4625,7 +4625,7 @@ static bool FnSetPlayerTeam(C4AulContext *cthr, long iPlayer, long idNewTeam, bo
 	// ask script if it's allowed
 	if (!fNoCalls)
 	{
-		if (!!Game.Script.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam)), true, true))
+		if (!!::GameScript.GRBroadcast(PSF_RejectTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam)), true, true))
 			return false;
 	}
 	// exit previous team
@@ -4658,7 +4658,7 @@ static bool FnSetPlayerTeam(C4AulContext *cthr, long iPlayer, long idNewTeam, bo
 	}
 	// do callback to reflect change in scenario
 	if (!fNoCalls)
-		Game.Script.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam), C4VInt(idOldTeam)), true);
+		::GameScript.GRBroadcast(PSF_OnTeamSwitch, &C4AulParSet(C4VInt(iPlayer), C4VInt(idNewTeam), C4VInt(idOldTeam)), true);
 	return true;
 }
 
@@ -5367,7 +5367,7 @@ static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int i
 	if (iSubMesh < 0 || (unsigned int)iSubMesh >= ctx->Obj->pMeshInstance->GetNumSubMeshes()) return false;
 	if (!Material) return false;
 
-	const StdMeshMaterial* material = Game.MaterialManager.GetMaterial(Material->GetData().getData());
+	const StdMeshMaterial* material = ::MeshMaterialManager.GetMaterial(Material->GetData().getData());
 	if (!material) return false;
 
 	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);

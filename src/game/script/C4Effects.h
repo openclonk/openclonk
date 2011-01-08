@@ -29,6 +29,7 @@
 
 #include <C4Constants.h>
 #include <C4ObjectPtr.h>
+#include <C4PropList.h>
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks

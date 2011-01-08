@@ -29,10 +29,8 @@
 
 #include <C4Include.h>
 #include <C4Game.h>
-#include <C4Version.h>
-#include <C4Network2Reference.h>
-#include <C4FileMonitor.h>
 
+#include <C4FileMonitor.h>
 #include <C4GameSave.h>
 #include <C4Record.h>
 #include <C4Application.h>
@@ -66,6 +64,7 @@
 #include <C4RankSystem.h>
 #include <C4GameMessage.h>
 #include <C4Material.h>
+#include <C4Network2Reference.h>
 #include <C4Weather.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
@@ -75,6 +74,7 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include <C4Fonts.h>
+#include <C4Version.h>
 
 #include <StdFile.h>
 
@@ -598,7 +598,7 @@ void C4Game::Clear()
 	MessageInput.Clear();
 	Info.Clear();
 	Title.Clear();
-	Script.Clear();
+	::GameScript.Clear();
 	Names.Clear();
 	GameText.Clear();
 	RecordDumpFile.Clear();
@@ -621,7 +621,7 @@ void C4Game::Clear()
 	PlayList.Clear();
 	PlayerControlAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
-	MaterialManager.Clear();
+	::MeshMaterialManager.Clear();
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -684,7 +684,7 @@ C4ST_NEW(PlayersStat,       "C4Game::Execute Players.Execute")
 C4ST_NEW(LandscapeStat,     "C4Game::Execute Landscape.Execute")
 C4ST_NEW(MusicSystemStat,   "C4Game::Execute MusicSystem.Execute")
 C4ST_NEW(MessagesStat,      "C4Game::Execute Messages.Execute")
-C4ST_NEW(ScriptStat,        "C4Game::Execute Script.Execute")
+C4ST_NEW(ScriptStat,        "C4Game::Execute ::GameScript.Execute")
 
 #define EXEC_S(Expressions, Stat) \
   { C4ST_START(Stat) Expressions C4ST_STOP(Stat) }
@@ -744,7 +744,7 @@ bool C4Game::Execute() // Returns true if the game is over
 	//FIXME: C4Application::Execute should do this, but what about the stats?
 	EXEC_S_DR(  Application.MusicSystem.Execute();            , MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();               , MessagesStat        , "MsgEx")
-	EXEC_S_DR(  Script.Execute();                 , ScriptStat          , "Scrpt")
+	EXEC_S_DR(  ::GameScript.Execute();                 , ScriptStat          , "Scrpt")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
@@ -1502,7 +1502,7 @@ void C4Game::Default()
 	MainSysLangStringTable.Default();
 	ScenarioLangStringTable.Default();
 	ScenarioSysLangStringTable.Default();
-	Script.Default();
+	::GameScript.Default();
 	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();
@@ -1661,7 +1661,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->NameEnd();
 	}
 
-	pComp->Value(mkNamingAdapt(mkInsertAdapt(Script, ScriptEngine),                "Script"));
+	pComp->Value(mkNamingAdapt(mkInsertAdapt(::GameScript, ScriptEngine),                "Script"));
 
 	if (comp.fExact)
 	{
@@ -2218,7 +2218,7 @@ bool C4Game::InitGameFinal()
 
 	// Script constructor call
 	int32_t iObjCount = Objects.ObjectCount();
-	if (!C4S.Head.SaveGame) Script.Call(PSF_Initialize);
+	if (!C4S.Head.SaveGame) ::GameScript.Call(PSF_Initialize);
 	if (Objects.ObjectCount()!=iObjCount) fScriptCreatedObjects=true;
 
 	// Player final init
@@ -2648,8 +2648,8 @@ bool C4Game::LoadScenarioComponents()
 bool C4Game::LoadScenarioScripts()
 {
 	// Script
-	Script.Reg2List(&ScriptEngine, &ScriptEngine);
-	Script.Load(LoadResStr("IDS_CNS_SCRIPT"),ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
+	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
+	::GameScript.Load(LoadResStr("IDS_CNS_SCRIPT"),ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
 	// additional system scripts?
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
@@ -2886,7 +2886,7 @@ bool C4Game::DoGameOver()
 	// Flag, log, call
 	GameOver=true;
 	Log(LoadResStr("IDS_PRC_GAMEOVER"));
-	Script.GRBroadcast(PSF_OnGameOver);
+	::GameScript.GRBroadcast(PSF_OnGameOver);
 	// Flag all surviving players as winners
 	for (C4Player *pPlayer = Players.First; pPlayer; pPlayer = pPlayer->Next)
 		if (!pPlayer->Eliminated)
@@ -2942,32 +2942,6 @@ void C4Game::Synchronize(bool fSavePlayerFiles)
 	// TransferZone synchronization: Must do this after dynamic creation to avoid synchronization loss
 	// if UpdateTransferZone-callbacks do sync-relevant changes
 	TransferZones.Synchronize();
-}
-
-C4Object* C4Game::FindObjectByCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Object *pFindNext)
-{
-	C4Object *cObj; C4ObjectLink *clnk;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-	{
-		// find next
-		if (pFindNext) { if (cObj==pFindNext) pFindNext=NULL; continue; }
-		// Status
-		if (cObj->Status)
-			// Check commands
-			for (C4Command *pCommand=cObj->Command; pCommand; pCommand=pCommand->Next)
-				// Command
-				if (pCommand->Command==iCommand)
-					// Target
-					if (!pTarget || (pCommand->Target==pTarget))
-						// Position
-						if ((!iTx && !iTy) || ((pCommand->Tx==iTx) && (pCommand->Ty==iTy)))
-							// Target2
-							if (!pTarget2 || (pCommand->Target2==pTarget2))
-								// Found
-								return cObj;
-	}
-	// Not found
-	return NULL;
 }
 
 bool C4Game::InitNetworkFromAddress(const char *szAddress)

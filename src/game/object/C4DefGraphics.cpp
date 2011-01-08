@@ -173,9 +173,9 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 	try
 	{
 		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, Game.MaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader);
 		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshXml(buf, size, Game.MaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader);
 		else
 			return false;
 		delete[] buf;
@@ -208,7 +208,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 		{
 			try
 			{
-				Game.MaterialManager.Parse(material.getData(), Filename, loader);
+				::MeshMaterialManager.Parse(material.getData(), Filename, loader);
 			}
 			catch (const StdMeshMaterialError& ex)
 			{

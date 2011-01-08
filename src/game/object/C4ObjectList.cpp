@@ -330,15 +330,13 @@ C4ObjectLink* C4ObjectList::GetLink(C4Object *pObj)
 	return NULL;
 }
 
-int C4ObjectList::ObjectCount(C4ID id, int32_t dwCategory) const
+int C4ObjectList::ObjectCount(C4ID id) const
 {
 	C4ObjectLink *cLnk;
 	int iCount=0;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			if ( (id==C4ID::None) || (cLnk->Obj->Def->id==id) )
-				if ( (dwCategory==C4D_All) || (cLnk->Obj->Category & dwCategory) )
-					iCount++;
+		if (cLnk->Obj->Status && (id==C4ID::None || cLnk->Obj->Def->id==id))
+			iCount++;
 	return iCount;
 }
 
@@ -579,13 +577,13 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSaveRefs, bool fSkipPla
 	}
 }
 
-StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
+StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
 {
 	int cpos,idcount;
 	C4ID c_id;
 	C4Def *cdef;
 	StdStrBuf Buf;
-	for (cpos=0; (c_id=GetListID(dwCategory,cpos)); cpos++)
+	for (cpos=0; (c_id=GetListID(C4D_All,cpos)); cpos++)
 		if ((cdef=rDefs.ID2Def(c_id)))
 		{
 			idcount=ObjectCount(c_id);
@@ -622,26 +620,6 @@ void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->ClearInfo(pInfo);
-}
-
-void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)
-{
-	int iSections = cgo.GetSectionCount();
-	int iObjects = ObjectCount(C4ID::None,dwCategory);
-	int iFirstVisible = BoundBy(iSelection-iSections/2,0,Max(iObjects-iSections,0));
-	C4Facet cgo2;
-	int iObj=0,iSec=0;
-	C4ObjectLink *cLnk; C4Object *cObj;
-	for (cLnk=First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
-		if (cObj->Status && (cObj->Category && dwCategory))
-		{
-			if (Inside(iObj,iFirstVisible,iFirstVisible+iSections-1))
-			{
-				cgo2 = cgo.GetSection(iSec++);
-				cObj->DrawPicture(cgo2,(iObj==iSelection));
-			}
-			iObj++;
-		}
 }
 
 void C4ObjectList::Sort()

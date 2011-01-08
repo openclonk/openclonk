@@ -27,8 +27,9 @@
 
 #include <C4Include.h>
 #include <C4Console.h>
-#include <C4Application.h>
 
+#include <C4Application.h>
+#include <C4Def.h>
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
@@ -39,6 +40,7 @@
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
 #include <C4Viewport.h>
+#include <C4ScriptHost.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 
@@ -141,9 +143,9 @@ void C4Console::UpdateStatusBars()
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_FrameCounter, str);
 	}
 	// Script counter
-	if (Game.Script.Counter!=ScriptCounter)
+	if (::GameScript.Counter!=ScriptCounter)
 	{
-		ScriptCounter=Game.Script.Counter;
+		ScriptCounter=::GameScript.Counter;
 		StdStrBuf str;
 		str.Format("Script: %i",ScriptCounter);
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_ScriptCounter, str);
@@ -417,7 +419,7 @@ void C4Console::EditTitle()
 void C4Console::EditScript()
 {
 	if (::Network.isEnabled()) return;
-	Game.Script.Open();
+	::GameScript.Open();
 	::ScriptEngine.ReLink(&::Definitions);
 }
 
@@ -448,9 +450,9 @@ void C4Console::UpdateInputCtrl()
 		}
 	}
 	// Add scenario script functions
-	if (pRef=Game.Script.GetSFunc(0))
+	if (pRef=::GameScript.GetSFunc(0))
 		functions.push_back((char*)C4ConsoleGUI::LIST_DIVIDER);
-	for (cnt=0; (pRef=Game.Script.GetSFunc(cnt)); cnt++)
+	for (cnt=0; (pRef=::GameScript.GetSFunc(cnt)); cnt++)
 	{
 		functions.push_back(pRef->Name);
 	}

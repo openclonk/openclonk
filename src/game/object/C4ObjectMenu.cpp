@@ -67,7 +67,7 @@ bool C4ObjectMenu::IsCloseDenied()
 			if (Object) fResult = !!Object->Call(PSF_MenuQueryCancel, &pars);
 		}
 		else if (eCallbackType == CB_Scenario)
-			fResult = !!Game.Script.Call(PSF_MenuQueryCancel, 0, &pars);
+			fResult = !!::GameScript.Call(PSF_MenuQueryCancel, 0, &pars);
 		CloseQuerying = false;
 		if (fResult) return true;
 	}
@@ -106,7 +106,7 @@ void C4ObjectMenu::OnSelectionChanged(int32_t iNewSelection)
 		if (eCallbackType == CB_Object && Object)
 			Object->Call(PSF_MenuSelection, &pars);
 		else if (eCallbackType == CB_Scenario)
-			Game.Script.Call(PSF_MenuSelection, 0, &pars);
+			::GameScript.Call(PSF_MenuSelection, 0, &pars);
 	}
 }
 
@@ -310,7 +310,7 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 
 	case CB_Scenario:
 		// Object menu with scenario script callback
-		Game.Script.DirectExec(NULL, szCommand, "MenuCommand");
+		::GameScript.DirectExec(NULL, szCommand, "MenuCommand");
 		break;
 
 	case CB_None:

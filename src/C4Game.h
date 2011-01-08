@@ -24,20 +24,15 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#include <StdMeshMaterial.h>
 #include <C4GameParameters.h>
-#include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
 #include <C4Scenario.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
 #include <C4Extra.h>
-#include <C4Effects.h>
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
-#include <C4ScriptHost.h>
 #include <C4PlayerControl.h>
-class C4ObjectInfo;
 
 class C4Game
 {
@@ -76,7 +71,6 @@ public:
 	C4ComponentHost     Title;
 	C4ComponentHost     Names;
 	C4ComponentHost     GameText;
-	C4GameScriptHost    Script;
 	C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
 	StdStrBuf           PlayerNames;
 	C4Control          &Input; // shortcut
@@ -93,7 +87,6 @@ public:
 	C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
 	C4Scoreboard        Scoreboard;
 	C4VideoPlayer       VideoPlayer;
-	StdMeshMatManager   MaterialManager;
 	class C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
 	class C4KeyboardInput &KeyboardInput;
 	class C4FileMonitor *pFileMonitor;
@@ -225,7 +218,6 @@ public:
 	     C4Object *pContainer=NULL,
 	                 int32_t iOwner=ANY_OWNER);*/
 	int32_t ObjectCount(C4ID id);
-	C4Object *FindObjectByCommand(int32_t iCommand, C4Object *pTarget=NULL, C4Value iTx=C4VNull, int32_t iTy=0, C4Object *pTarget2=NULL, C4Object *pFindNext=NULL);
 	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
 	void BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController=NO_OWNER);
 	C4Object *PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);

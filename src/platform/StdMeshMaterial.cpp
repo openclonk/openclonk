@@ -1036,3 +1036,5 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 	if (iter == Materials.end()) return NULL;
 	return &iter->second;
 }
+
+StdMeshMatManager MeshMaterialManager;

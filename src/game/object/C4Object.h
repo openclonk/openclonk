@@ -28,6 +28,7 @@
 
 #include "C4Facet.h"
 #include "C4Id.h"
+#include "C4Def.h"
 #include "C4Sector.h"
 #include "C4Value.h"
 #include "C4Effects.h"

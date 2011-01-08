@@ -239,7 +239,7 @@ void C4ControlScript::Execute() const
 	C4Object *pObj = NULL;
 	C4AulScript *pScript;
 	if (iTargetObj == SCOPE_Console)
-		pScript = &Game.Script;
+		pScript = &::GameScript;
 	else if (iTargetObj == SCOPE_Global)
 		pScript = &::ScriptEngine;
 	else if ((pObj = ::Objects.SafeObjectPointer(iTargetObj)))

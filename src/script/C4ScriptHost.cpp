@@ -254,3 +254,5 @@ void C4GameScriptHost::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Go,             "Go",                    false));
 	pComp->Value(mkNamingAdapt(Counter,        "Counter",               0));
 }
+
+C4GameScriptHost GameScript;

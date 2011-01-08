@@ -28,6 +28,7 @@
 #include <C4Game.h>
 #include <C4Aul.h>
 #include <C4Material.h>
+#include <C4ScriptHost.h>
 #include <C4Texture.h>
 #include <C4Record.h>
 
@@ -427,7 +428,7 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 			case C4MCV_ScriptFunc:
 			{
 				// get script func of main script
-				C4AulFunc *pSFunc = Game.Script.GetSFunc(StrPar, AA_PROTECTED);
+				C4AulFunc *pSFunc = ::GameScript.GetSFunc(StrPar, AA_PROTECTED);
 				if (!pSFunc) throw C4MCParserErr(pParser, C4MCErr_SFuncNotFound, StrPar);
 				// add to main
 				Target.As<C4MCCallbackArray*>() = new C4MCCallbackArray(pSFunc, MapCreator);
@@ -1608,7 +1609,7 @@ bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
 	// get script function
-	C4AulFunc *pFunc = Game.Script.GetSFunc(FormatString("ScriptAlgo%s", pOvrl->Name).getData());
+	C4AulFunc *pFunc = ::GameScript.GetSFunc(FormatString("ScriptAlgo%s", pOvrl->Name).getData());
 	// failsafe
 	if (!pFunc) return false;
 	// ok, call func

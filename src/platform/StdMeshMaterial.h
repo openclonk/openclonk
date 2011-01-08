@@ -337,4 +337,6 @@ private:
 	std::map<StdCopyStrBuf, StdMeshMaterial> Materials;
 };
 
+extern StdMeshMatManager MeshMaterialManager;
+
 #endif

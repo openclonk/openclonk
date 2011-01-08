@@ -23,7 +23,6 @@
 
 #include <C4Include.h>
 #include <C4GameSave.h>
-#include <C4Version.h>
 
 #include <C4Components.h>
 #include <C4Game.h>
@@ -34,9 +33,11 @@
 #include <C4Landscape.h>
 #include <C4PXS.h>
 #include <C4MassMover.h>
+#include <C4ScriptHost.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Record.h>
+#include <C4Version.h>
 
 // *** C4GameSave main class
 
@@ -211,7 +212,7 @@ bool C4GameSave::SaveRuntimeData()
 	// such modifications cannot possibly be done before game start
 	// so it's runtime data
 	// Script
-	if (!Game.Script.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_SCRIPT")); /* nofail */
+	if (!::GameScript.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_SCRIPT")); /* nofail */
 	// Title - unexact only, because in savegames, the title will be set in core
 	if (!IsExact()) if (!Game.Title.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_TITLE")); /* nofail */
 	// Info

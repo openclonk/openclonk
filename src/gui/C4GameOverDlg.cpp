@@ -25,6 +25,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4Include.h>
 #include <C4GameOverDlg.h>
 
+#include <C4Def.h>
 #include <C4Game.h>
 #include <C4FullScreen.h>
 #include <C4Player.h>

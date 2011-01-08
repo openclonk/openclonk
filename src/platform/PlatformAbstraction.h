@@ -67,6 +67,8 @@
 #pragma warning(disable : 4786) // long symbol names
 #pragma warning(disable: 4706)
 #pragma warning(disable: 4239)
+// Get non-standard <cmath> constants (M_PI etc.)
+#	define _USE_MATH_DEFINES
 #endif
 
 

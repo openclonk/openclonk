@@ -22,11 +22,11 @@
 
 /* Property lists */
 
-#ifndef C4PROPLIST_H
-#define C4PROPLIST_H
-
 #include "C4Value.h"
 #include "C4StringTable.h"
+
+#ifndef C4PROPLIST_H
+#define C4PROPLIST_H
 
 class C4Def;
 

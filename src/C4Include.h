@@ -25,11 +25,6 @@
 #ifndef INC_C4Include
 #define INC_C4Include
 
-#ifdef _MSC_VER
-// Get non-standard <cmath> constants (M_PI etc.)
-#	define _USE_MATH_DEFINES
-#endif
-
 #include "PlatformAbstraction.h"
 
 // boost headers - after PlatformAbstraction to prevent redefines of stdint
@@ -44,8 +39,6 @@
 #include "StdResStr2.h"
 #include "C4Log.h"
 #include "C4Reloc.h"
-
-#include "C4PlayerControl.h"
 
 #include "C4Game.h"
 

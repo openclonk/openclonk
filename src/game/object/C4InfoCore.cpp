@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4InfoCore.h>
 
+#include <C4Def.h>
 #include <C4Random.h>
 #include <C4RankSystem.h>
 #include <C4Group.h>

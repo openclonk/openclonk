@@ -22,7 +22,6 @@
 
 #include <utility>
 #include "C4Gui.h"
-#include "C4StringTable.h"
 
 class C4Scoreboard
 {
