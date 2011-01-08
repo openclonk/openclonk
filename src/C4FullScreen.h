@@ -43,6 +43,8 @@ public:
 	bool MenuCommand(const char *szCommand);
 	void CloseMenu();
 	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
+	using CStdWindow::Init;
+	virtual CStdWindow * Init(CStdApp * pApp);
 	// User requests close
 	virtual void Close();
 	virtual void Clear();

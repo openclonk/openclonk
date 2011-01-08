@@ -598,3 +598,67 @@ bool C4Console::TogglePause()
 {
 	return Game.TogglePause();
 }
+
+#ifdef USE_SDL_MAINLOOP
+class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
+{
+	public: State(C4ConsoleGUI *console): Super(console) {}
+};
+class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
+{
+	public:	State(C4PropertyDlg* dlg): Super(dlg) {}
+	void Clear() {}
+	void Default() {}
+};
+class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
+{
+	public: State(C4ToolsDlg* dlg): Super(dlg) {}
+	void Clear() {}
+	void Default() {}
+};
+void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
+void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenu() {}
+void C4ConsoleGUI::ClearDlg(void*) {}
+void C4ConsoleGUI::ClearInput() {}
+bool C4ConsoleGUI::ClearLog() {return 0;}
+void C4ConsoleGUI::ClearNetMenu() {}
+void C4ConsoleGUI::ClearPlayerMenu() {}
+void C4ConsoleGUI::ClearViewportMenu() {}
+CStdWindow * C4ConsoleGUI::CreateConsoleWindow(CStdApp*) {return 0;}
+void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
+void C4ConsoleGUI::DoEnableControls(bool) {}
+bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
+bool C4ConsoleGUI::FileSelect(char*, int, char const*, unsigned int, bool) {return 0;}
+bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
+void C4ConsoleGUI::Out(char const*) {}
+bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg*) {return 0;}
+void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg*, std::vector<char*, std::allocator<char*> >&) {}
+void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg*, StdStrBuf&) {}
+void C4ConsoleGUI::RecordingEnabled() {}
+void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
+void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
+void C4ConsoleGUI::SetInputFunctions(std::vector<char*, std::allocator<char*> >&) {}
+void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
+void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
+bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}
+void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSetMaterial(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSetTexture(C4ToolsDlg*, char const*) {}
+bool C4ConsoleGUI::UpdateModeCtrls(int) {return 0;}
+void C4ToolsDlg::EnableControls() {}
+void C4ToolsDlg::InitGradeCtrl() {}
+void C4ToolsDlg::NeedPreviewUpdate() {}
+bool C4ToolsDlg::PopMaterial() {return 0;}
+bool C4ToolsDlg::PopTextures() {return 0;}
+void C4ToolsDlg::UpdateIFTControls() {}
+void C4ToolsDlg::UpdateLandscapeModeCtrls() {}
+void C4ToolsDlg::UpdateTextures() {}
+void C4ToolsDlg::UpdateToolCtrls() {}
+bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
+bool C4Viewport::TogglePlayerLock() {return 0;}
+void CStdWindow::RequestUpdate() {}
+bool OpenURL(char const*) {return 0;}
+#include "C4ConsoleGUICommon.h"
+#endif

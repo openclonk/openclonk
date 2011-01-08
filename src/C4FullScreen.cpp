@@ -414,6 +414,12 @@ C4FullScreen::~C4FullScreen()
 	if (pSurface) delete pSurface;
 }
 
+
+CStdWindow * C4FullScreen::Init(CStdApp * pApp)
+{
+	return Init(CStdWindow::W_Viewport, pApp, C4ENGINENAME);
+}
+
 void C4FullScreen::Close()
 {
 	if (Game.IsRunning)
