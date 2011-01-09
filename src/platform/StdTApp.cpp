@@ -25,17 +25,7 @@
 #include <C4Include.h>
 #ifdef USE_CONSOLE
 #include <StdWindow.h>
-#include <StdGL.h>
-#include <StdDDraw2.h>
-#include <StdFile.h>
-#include <StdBuf.h>
-
-#include <string>
-#include <sstream>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <time.h>
-#include <errno.h>
+#include <C4Application.h>
 
 #ifdef HAVE_LIBREADLINE
 #  if defined(HAVE_READLINE_READLINE_H)
@@ -44,7 +34,6 @@
 #    include <readline.h>
 #  endif
 static void readline_callback (char *);
-static CStdApp * readline_callback_use_this_app = 0;
 #endif /* HAVE_LIBREADLINE */
 
 #ifdef HAVE_READLINE_HISTORY
@@ -65,10 +54,12 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
 #endif
 		fDspModeSet(false)
 {
+	Add(&InProc);
 }
 
 CStdApp::~CStdApp()
 {
+	Remove(&InProc);
 }
 
 bool CStdApp::Init(int argc, char * argv[])
@@ -76,7 +67,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	// Set locale
 	setlocale(LC_ALL,"");
 	// Try to figure out the location of the executable
-	this->argc=argc; this->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	if (dir[0] != '/')
@@ -90,35 +80,19 @@ bool CStdApp::Init(int argc, char * argv[])
 		Location = dir;
 	}
 
-#if USE_CONSOLE && HAVE_LIBREADLINE
-	rl_callback_handler_install (">", readline_callback);
-	readline_callback_use_this_app = this;
-#endif
 	// Custom initialization
 	return DoInit (argc, argv);
 }
 
 void CStdApp::Clear()
 {
-#if USE_CONSOLE && HAVE_LIBREADLINE
-	rl_callback_handler_remove();
-#endif
 }
 
 void CStdApp::Quit()
 {
 	fQuitMsgReceived = true;
 }
-/*
-    // handle commands
-    if(FD_ISSET(0, &rfds))
-    {
-      // Do not call OnStdInInput to be able to return
-      // HR_Failure when ReadStdInCommand returns false
-      if(!ReadStdInCommand())
-        return HR_Failure;
-    }
-*/
+
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
 {
 	return false;
@@ -131,6 +105,7 @@ bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned in
 // Copy the text to the clipboard or the primary selection
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
+	return false;
 }
 
 // Paste the text from the clipboard or the primary selection
@@ -147,35 +122,58 @@ bool CStdApp::IsClipboardFull(bool fClipboard)
 void CStdApp::ClearClipboard(bool fClipboard)
 {
 }
-/*
-CStdWindow * CStdAppPrivate::GetWindow(unsigned long wnd) {
-  WindowListT::iterator i = WindowList.find(wnd);
-  if (i != WindowList.end()) return i->second;
-  return 0;
-}
-void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow) {
-  if (!pWindow) {
-    WindowList.erase(wnd);
-  } else {
-    WindowList[wnd] = pWindow;
-  }
-}*/
 
-bool CStdApp::ReadStdInCommand()
+CStdInProc::CStdInProc()
 {
-#if HAVE_LIBREADLINE
+#if USE_CONSOLE && HAVE_LIBREADLINE
+	rl_callback_handler_install (">", readline_callback);
+#endif
+}
+
+CStdInProc::~CStdInProc()
+{
+#if USE_CONSOLE && HAVE_LIBREADLINE
+	rl_callback_handler_remove();
+#endif
+}
+
+bool CStdInProc::Execute(int iTimeout, pollfd *)
+{
+#ifdef _WIN32
+	while (_kbhit())
+	{
+		// Surely not the most efficient way to do it, but we won't have to read much data anyway.
+		char c = getch();
+		if (c == '\r')
+		{
+			if (!CmdBuf.isNull())
+			{
+				OnCommand(CmdBuf.getData());
+				CmdBuf.Clear();
+			}
+		}
+		else if (isprint((unsigned char)c))
+			CmdBuf.AppendChar(c);
+	}
+	// FIXME: handle stdin-close
+	return true;
+#elif defined(HAVE_LIBREADLINE)
 	rl_callback_read_char();
 	return true;
 #else
 	// Surely not the most efficient way to do it, but we won't have to read much data anyway.
 	char c;
 	if (read(0, &c, 1) != 1)
+	{
+		Application.Quit();
 		return false;
+	}
 	if (c == '\n')
 	{
 		if (!CmdBuf.isNull())
 		{
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
+			OnCommand(CmdBuf.getData());
+			CmdBuf.Clear();
 		}
 	}
 	else if (isprint((unsigned char)c))
@@ -183,16 +181,17 @@ bool CStdApp::ReadStdInCommand()
 	return true;
 #endif
 }
+
 #if HAVE_LIBREADLINE
 static void readline_callback (char * line)
 {
 	if (!line)
 	{
-		readline_callback_use_this_app->Quit();
+		Application.Quit();
 	}
 	else
 	{
-		readline_callback_use_this_app->OnCommand(line);
+		Application.OnCommand(line);
 	}
 #if HAVE_READLINE_HISTORY
 	if (line && *line)
@@ -209,17 +208,28 @@ bool CStdDDraw::SaveDefaultGammaRamp(CStdWindow * pWindow)
 	return true;
 }
 
-void CStdApp::OnStdInInput()
-{
-	if (!ReadStdInCommand())
-	{
-		// TODO: This should only cause HandleMessage to return
-		// HR_Failure...
-		Quit();
-	}
-}
-
 void CStdApp::MessageDialog(const char * message)
 {
 }
+
+bool CStdApp::FlushMessages()
+{
+	// Always fail after quit message
+	if (fQuitMsgReceived)
+		return false;
+	return true;
+}
+
+void CStdWindow::Clear() {}
+CStdWindow::CStdWindow() {}
+CStdWindow::~CStdWindow() {}
+void CStdWindow::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
+void CStdWindow::FlashWindow() {}
+bool CStdWindow::GetSize(RECT*) {return 0;}
+CStdWindow* CStdWindow::Init(CStdWindow::WindowKind, CStdApp*, char const*, CStdWindow*, bool) {return this;}
+bool CStdWindow::ReInit(CStdApp*) {return 0;}
+bool CStdWindow::RestorePosition(char const*, char const*, bool) {return 0;}
+void CStdWindow::SetSize(unsigned int, unsigned int) {}
+void CStdWindow::SetTitle(char const*) {}
+
 #endif // USE_CONSOLE

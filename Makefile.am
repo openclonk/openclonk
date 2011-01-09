@@ -480,6 +480,7 @@ src/platform/StdSurface2.h \
 src/platform/StdSurface8.cpp \
 src/platform/StdSurface8.h \
 src/platform/StdSync.h \
+src/platform/StdTApp.cpp \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
 src/platform/StdWindow.h \
@@ -559,7 +560,7 @@ else
 if WIN32
 clonk_SOURCES += src/platform/StdWindow.cpp
 else
-clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h src/platform/StdTApp.cpp
+clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h
 endif
 endif
 if DEVELOPER_MODE

@@ -161,22 +161,6 @@ void CStdApp::RestoreVideoMode()
 
 #endif
 
-// Event-pipe-whatever stuff I do not understand.
-
-bool CStdApp::ReadStdInCommand()
-{
-	char c;
-	if(read(0, &c, 1) != 1)
-		return false;
-	if(c == '\n') {
-		if(!CmdBuf.isNull()) {
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-		}
-	} else if(isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-}
-
 bool IsGermanSystem()
 {
 	id languages = [[NSUserDefaults standardUserDefaults] valueForKey:@"AppleLanguages"];

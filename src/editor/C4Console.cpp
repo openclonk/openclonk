@@ -601,7 +601,7 @@ bool C4Console::TogglePause()
 	return Game.TogglePause();
 }
 
-#ifdef USE_SDL_MAINLOOP
+#if !(defined(_WIN32) || defined(USE_COCOA) || defined(WITH_DEVELOPER_MODE))
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}

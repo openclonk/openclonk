@@ -55,7 +55,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	// SDLmain.m copied the executable path into argv[0];
 	// just copy it (not sure if original buffer is guaranteed
 	// to be permanent).
-	this->argc=argc; this->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	Location = dir;
@@ -198,22 +197,3 @@ void CStdApp::MessageDialog(const char * message)
 }
 
 #endif
-
-// Event-pipe-whatever stuff I do not understand.
-
-bool CStdApp::ReadStdInCommand()
-{
-	char c;
-	if (read(0, &c, 1) != 1)
-		return false;
-	if (c == '\n')
-	{
-		if (!CmdBuf.isNull())
-		{
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-		}
-	}
-	else if (isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-}

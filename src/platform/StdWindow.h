@@ -420,13 +420,8 @@ class CStdInProc : public StdSchedulerProc
 {
 public:
 	CStdInProc();
-	~CStdInProc() { }
+	~CStdInProc();
 
-public:
-	void Notify();
-	bool Check();
-	bool CheckAndReset();
-public:
 	// StdSchedulerProc override
 	virtual bool Execute(int iTimeout, pollfd *);
 	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
@@ -434,6 +429,9 @@ public:
 		pollfd pfd = { 0, POLLIN, 0 };
 		checkfds.push_back(pfd);
 	}
+private:
+	// commands from stdin
+	StdCopyStrBuf CmdBuf;
 };
 #endif
 
@@ -543,7 +541,6 @@ protected:
 	// the glib main loop that are in an anonymous namespace in
 	// StdXApp.cpp.
 	void OnXInput();
-	void OnStdInInput();
 protected:
 #  ifdef USE_X11
 	class CStdAppPrivate * Priv;
@@ -552,17 +549,12 @@ protected:
 	unsigned int KeyMask;
 #endif
 protected:
-	int argc; char ** argv;
 #ifdef USE_CONSOLE
 	CStdInProc InProc;
 #endif
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit(int argc, char * argv[]) = 0;
-
-	// commands from stdin (console only)
-	StdCopyStrBuf CmdBuf;
-	bool ReadStdInCommand();
+	virtual bool DoInit(int argc, char * argv[]) = 0;;
 
 	friend class CStdGL;
 	friend class CStdGLCtx;
