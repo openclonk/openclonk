@@ -523,7 +523,7 @@ void C4ConsoleGUI::State::InitGUI()
 
 	compObjects = gtk_menu_item_new_with_label(LoadResStr("IDS_BTN_OBJECTS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compObjects);
-
+#if 0
 	compScript = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SCRIPT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compScript);
 
@@ -532,7 +532,7 @@ void C4ConsoleGUI::State::InitGUI()
 
 	compInfo = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_INFO"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compInfo);
-
+#endif
 	plrJoin = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_JOIN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), plrJoin);
 

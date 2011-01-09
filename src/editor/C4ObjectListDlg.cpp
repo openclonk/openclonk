@@ -791,11 +791,11 @@ void C4ObjectListDlg::Open()
 
 		GtkTreeViewColumn * col = gtk_tree_view_column_new();
 		GtkCellRenderer * renderer;
-
+#if 0
 		renderer = gtk_cell_renderer_pixbuf_new();
 		gtk_tree_view_column_pack_start(col, renderer, false);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, icon_cell_data_func, g_hash_table_new_full(NULL, NULL, NULL, (GDestroyNotify)g_object_unref), (GDestroyNotify)g_hash_table_unref);
-
+#endif
 		renderer = gtk_cell_renderer_text_new();
 		gtk_tree_view_column_pack_start(col, renderer, true);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, name_cell_data_func, NULL, NULL);
