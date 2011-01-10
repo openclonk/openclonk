@@ -170,6 +170,7 @@ public:
 	XIC xic;
 	Bool detectable_autorepeat_supported;
 	CX11Proc X11Proc;
+	int argc; char ** argv;
 };
 
 #endif // INC_STD_X_PRIVATE_H

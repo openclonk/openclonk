@@ -110,6 +110,7 @@ bool CStdApp::Init(int argc, char * argv[])
 	g_object_unref(icon);
 #endif
 	// Try to figure out the location of the executable
+	Priv->argc=argc; Priv->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	if (dir[0] != '/')
