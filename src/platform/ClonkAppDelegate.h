@@ -43,7 +43,7 @@
 }
 - (NSString*) clonkDirectory;
 - (BOOL) argsLookLikeItShouldBeInstallation;
-- (void)makeFakeArgs:(char***)argv argc:(int*)argc;
+- (void)makeFakeArgs;
 - (BOOL)installAddOn;
 - (void)terminate:(NSApplication*)sender;
 
