@@ -120,6 +120,7 @@ src/config/C4SecurityCertificates.cpp \
 src/config/C4SecurityCertificates.h \
 src/lib/C4InputValidation.cpp \
 src/lib/C4InputValidation.h \
+src/lib/SHA1.h \
 src/lib/Standard.cpp \
 src/lib/Standard.h \
 src/lib/StdBuf.cpp \
@@ -576,8 +577,7 @@ clonk_LDADD = \
   $(SDL_LIBS) \
   $(PTHREAD_LIBS) \
   $(Z_LIBS) \
-  $(CLONK_LIBS) \
-  $(OPENSSL_LIBS)
+  $(CLONK_LIBS)
 
 # build the resources
 .rc.o:
@@ -614,7 +614,6 @@ c4group_LDADD = \
   lib.a \
   $(LIBICONV) \
   $(Z_LIBS) \
-  $(OPENSSL_LIBS) \
   $(PTHREAD_LIBS)
 
 ## gunzip4c4group
@@ -676,7 +675,6 @@ src/c4group/C4LangStringTable.cpp
 
 c4script_LDADD = \
   lib.a \
-  $(OPENSSL_LIBS) \
   $(Z_LIBS)
 
 dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt licenses/OpenSSL.txt Credits.txt

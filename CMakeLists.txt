@@ -397,6 +397,7 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Stat.h
 	src/lib/PathFinder.cpp
 	src/lib/PathFinder.h
+	src/lib/SHA1.h
 	src/lib/Standard.cpp
 	src/lib/Standard.h
 	src/lib/StdAdaptors.h
@@ -784,11 +785,6 @@ macro(FINDLIB lib)
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
 
-# isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
-FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
-FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
-include_directories(${OPENSSL_INCLUDE_DIR})
-
 if(USE_CONSOLE)
 	find_package(Readline)
 	include_directories(${READLINE_INCLUDE_DIRS})
@@ -950,7 +946,6 @@ target_link_libraries(clonk
 	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
-	${OPENSSL_LIBRARIES}
 	${ICONV_LIBRARY}
 	${VORBIS_LIBRARY}
 	${VORBISFILE_LIBRARY}
@@ -958,11 +953,9 @@ target_link_libraries(clonk
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
-	${OPENSSL_LIBRARIES}
 )
 target_link_libraries(c4script
 	${ZLIB_LIBRARIES}
-	${OPENSSL_LIBRARIES}
 )
 if(HAVE_PTHREAD)
 	target_link_libraries(netpuncher
@@ -1298,8 +1291,8 @@ set(CPACK_PACKAGE_FILE_NAME "openclonk-${C4XVER1}.${C4XVER2}.${C4XVER3}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "openclonk-src-${C4XVER1}.${C4XVER2}.${C4XVER3}")
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 # Somebody who uses Debian/Ubuntu should set this
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
 
 include(CPack)
