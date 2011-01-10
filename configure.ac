@@ -213,10 +213,6 @@ AX_BOOST_BASE([1.40.0], [], [
   AC_MSG_ERROR([Boost not found.])
 ])
 
-# OpenSSL
-AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
-  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
-
 # Check for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, [
   CLONK_LIBS="-ljpeg $CLONK_LIBS"

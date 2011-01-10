@@ -28,6 +28,7 @@
 #endif
 #include <StdFile.h>
 #include <CStdFile.h>
+#include <SHA1.h>
 
 #include <zlib.h>
 #include <stdio.h>
@@ -36,7 +37,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
-#include <openssl/sha.h>
 
 CStdFile::CStdFile()
 {
@@ -369,8 +369,7 @@ bool GetFileSHA1(const char *szFilename, BYTE *pSHA1)
 	if (!File.Open(szFilename))
 		return false;
 	// calculcate CRC
-	SHA_CTX ctx;
-	if (!SHA1_Init(&ctx)) return false;
+	sha1 ctx;
 	for (;;)
 	{
 		// read a chunk of data
@@ -379,12 +378,11 @@ bool GetFileSHA1(const char *szFilename, BYTE *pSHA1)
 			if (!iSize)
 				break;
 		// update CRC
-		if (!SHA1_Update(&ctx, szData, iSize))
-			return false;
+		ctx.process_bytes(szData, iSize);
 	}
 	// close file
 	File.Close();
 	// finish calculation
-	SHA1_Final(pSHA1, &ctx);
+	ctx.get_digest((sha1::digest_type) pSHA1);
 	return true;
 }

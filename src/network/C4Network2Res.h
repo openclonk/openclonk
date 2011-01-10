@@ -24,7 +24,7 @@
 #include <StdAdaptors.h>
 #include <StdSync.h>
 
-#include <openssl/sha.h>
+#include <SHA1.h>
 
 const uint32_t C4NetResChunkSize = 10U * 1024U;
 
