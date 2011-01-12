@@ -625,6 +625,12 @@ void C4ObjectListDlg::OnDestroy(GtkWidget* widget, C4ObjectListDlg* dlg)
 	dlg->treeview = 0;
 }
 
+void C4ObjectListDlg::OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg)
+{
+	Console.EditCursor.SetMode(C4CNS_ModeEdit);
+	Console.EditCursor.OpenPropTools();
+}
+
 void C4ObjectListDlg::OnSelectionChanged(GtkTreeSelection* selection, C4ObjectListDlg* dlg)
 {
 	if (dlg->updating_selection) return;
@@ -786,6 +792,8 @@ void C4ObjectListDlg::Open()
 		treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
 
 		g_object_unref(model); /* destroy store automatically with view */
+
+		g_signal_connect(G_OBJECT(treeview), "row-activated", G_CALLBACK(OnRowActivated), this);
 
 		GtkTreeViewColumn * col = gtk_tree_view_column_new();
 		GtkCellRenderer * renderer;

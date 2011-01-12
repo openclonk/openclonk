@@ -48,6 +48,7 @@ private:
 	bool updating_selection;
 
 	static void OnDestroy(GtkWidget * widget, C4ObjectListDlg * dlg);
+	static void OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg);
 	static void OnSelectionChanged(GtkTreeSelection * selection, C4ObjectListDlg * dlg);
 #endif // WITH_DEVELOPER_MODE
 };
