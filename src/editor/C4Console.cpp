@@ -429,11 +429,6 @@ void C4Console::EditInfo()
 	Game.Info.Open();
 }
 
-void C4Console::EditObjects()
-{
-	ObjectListDlg.Open();
-}
-
 void C4Console::UpdateInputCtrl()
 {
 	int cnt;

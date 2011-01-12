@@ -697,7 +697,7 @@ static void name_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	g_object_set(G_OBJECT(renderer), "text", object->GetName(), (gpointer)NULL);
 }
 
-#define ICON_SIZE 24
+enum { ICON_SIZE = 24 };
 
 static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* model, GtkTreeIter* iter, gpointer data)
 {
@@ -755,8 +755,6 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 
 	g_object_set(G_OBJECT(renderer), "pixbuf", pixbuf, NULL);
 }
-
-#undef ICON_SIZE
 
 void C4ObjectListDlg::Open()
 {
@@ -818,6 +816,10 @@ void C4ObjectListDlg::Open()
 		gtk_container_add(GTK_CONTAINER(window), vbox);
 
 		gtk_widget_show_all(window);
+	}
+	else
+	{
+		gtk_window_present_with_time(GTK_WINDOW(window), gtk_get_current_event_time());
 	}
 }
 

@@ -81,7 +81,6 @@ public:
 	void UpdateNetMenu();
 	void ClearNetMenu();
 	void PlayerJoin();
-	void EditObjects();
 	void EditInfo();
 	void EditScript();
 	void EditTitle();

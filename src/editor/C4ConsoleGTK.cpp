@@ -1605,7 +1605,7 @@ void C4ConsoleGUI::State::OnFileQuit(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnCompObjects(GtkWidget* item, gpointer data)
 {
-	Console.EditObjects();
+	Console.ObjectListDlg.Open();
 }
 
 void C4ConsoleGUI::State::OnCompScript(GtkWidget* item, gpointer data)
