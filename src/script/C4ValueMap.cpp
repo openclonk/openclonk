@@ -312,7 +312,7 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 		// Set
 		CreateTempNameList();
 		pNames->SetNameArray(const_cast<const char **>(ppNames), iValueCnt);
-		for (int32_t i = 0; i < iValueCnt; i++) delete ppNames[i];
+		for (int32_t i = 0; i < iValueCnt; i++) free(ppNames[i]);
 		delete [] ppNames; delete [] pData;
 		pData = pValues;
 		// Assign old name list
