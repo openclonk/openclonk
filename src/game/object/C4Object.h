@@ -289,7 +289,7 @@ public:
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
-	C4PropList* GetAction();
+	C4PropList* GetAction() const;
 	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
@@ -332,6 +332,7 @@ public:
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();
+	StdStrBuf GetDataString();
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
@@ -367,7 +368,6 @@ public:
 	void BoundsCheck(C4Real &ctcox, C4Real &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
 	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
-public:
 	bool DoSelect(); // cursor callback if not disabled
 	void UnSelect(); // unselect callback
 	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)       // get position this object is seen at (for given scroll)

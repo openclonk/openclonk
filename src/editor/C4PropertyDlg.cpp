@@ -58,76 +58,15 @@ bool C4PropertyDlg::Update(C4ObjectList &rSelection)
 bool C4PropertyDlg::Update()
 {
 	if (!Active) return false;
-
-	StdStrBuf Output;
-
-	idSelectedDef=C4ID::None;
-
-	// Compose info text by selected object(s)
-	switch (Selection.ObjectCount())
-	{
-		// No selection
-	case 0:
-		Output = LoadResStr("IDS_CNS_NOOBJECT");
-		break;
-		// One selected object
-	case 1:
-	{
-		C4Object *cobj=Selection.GetObject();
-		cobj->EnumeratePointers();
-		DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*cobj, "Object"), &Output, "C4PropertyDlg::Update");
-		cobj->DenumeratePointers();
-		// Type
-		Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),cobj->Def->id.ToString());
-		// Owner
-		if (ValidPlr(cobj->Owner))
-		{
-			Output.Append(LineFeed);
-			Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(cobj->Owner)->GetName());
-		}
-		// Contents
-		if (cobj->Contents.ObjectCount())
-		{
-			Output.Append(LineFeed);
-			Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
-			Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(::Definitions)));
-		}
-		// Action
-		if (cobj->GetAction())
-		{
-			Output.Append(LineFeed);
-			Output.Append(LoadResStr("IDS_CNS_ACTION"));
-			Output.Append(cobj->GetAction()->GetName());
-		}
-		// Effects
-		for (C4Effect *pEffect = cobj->pEffects; pEffect; pEffect = pEffect->pNext)
-		{
-			// Header
-			if (pEffect == cobj->pEffects)
-			{
-				Output.Append(LineFeed);
-				Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
-			}
-			Output.Append(LineFeed);
-			// Effect name
-			Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iInterval);
-		}
-		// Store selected def
-		idSelectedDef=cobj->id;
-		break;
-	}
-	// Multiple selected objects
-	default:
-		Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"),Selection.ObjectCount());
-		break;
-	}
 	// Update info edit control
-	Console.PropertyDlgUpdate(this, Output);
+	Console.PropertyDlgUpdate(this, Selection.GetDataString());
 	return true;
 }
 
 void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 {
+	// Store selected def
+	idSelectedDef=pObj->id;
 	// add global and standard functions
 	std::vector<char*> functions;
 	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))

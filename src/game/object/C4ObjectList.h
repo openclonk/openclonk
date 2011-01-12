@@ -114,6 +114,7 @@ public:
 	virtual bool AssignInfo();
 	virtual bool ValidateOwners();
 	StdStrBuf GetNameList(C4DefList &rDefs);
+	StdStrBuf GetDataString();
 	bool IsClear() const;
 	bool DenumerateRead();
 	bool Write(char *szTarget);

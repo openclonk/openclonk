@@ -1812,6 +1812,53 @@ C4Real C4Object::GetSpeed()
 	return cobjspd;
 }
 
+StdStrBuf C4Object::GetDataString()
+{
+	StdStrBuf Output;
+	// Type
+	Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),GetName(),Def->id.ToString());
+	// Owner
+	if (ValidPlr(Owner))
+	{
+		Output.Append(LineFeed);
+		Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(Owner)->GetName());
+	}
+	// Contents
+	if (Contents.ObjectCount())
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
+		Output.Append(Contents.GetNameList(::Definitions));
+	}
+	// Action
+	if (GetAction())
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_ACTION"));
+		Output.Append(GetAction()->GetName());
+	}
+	// Effects
+	if (pEffects)
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
+	}
+	for (C4Effect *pEffect = pEffects; pEffect; pEffect = pEffect->pNext)
+	{
+		Output.Append(LineFeed);
+		// Effect name
+		Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iInterval);
+	}
+
+	StdStrBuf Output2;
+	EnumeratePointers();
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "Object"), &Output2, "C4Object::GetDataString");
+	DenumeratePointers();
+	Output.Append(LineFeed);
+	Output.Append(Output2);
+	return Output;
+}
+
 void C4Object::SetName(const char * NewName)
 {
 	if (!NewName && Info)
@@ -2955,7 +3002,7 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 }
 
-C4PropList* C4Object::GetAction()
+C4PropList* C4Object::GetAction() const
 {
 	C4Value value;
 	GetProperty(P_Action, &value);

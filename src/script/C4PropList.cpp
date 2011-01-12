@@ -231,7 +231,7 @@ void C4Property::CompileFunc(StdCompiler *pComp)
 }
 
 
-const char * C4PropList::GetName()
+const char * C4PropList::GetName() const
 {
 	C4String * s = GetPropertyStr(P_Name);
 	if (!s) return "";

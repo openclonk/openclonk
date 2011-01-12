@@ -1106,7 +1106,7 @@ bool C4PropertyDlg::State::Open()
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(class C4PropertyDlg* dlg, StdStrBuf &text)
+void C4ConsoleGUI::PropertyDlgUpdate(class C4PropertyDlg* dlg, StdStrBuf RREF text)
 {
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(dlg->state->textview));
 	gtk_text_buffer_set_text(buffer, text.getData(), -1);

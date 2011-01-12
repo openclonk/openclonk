@@ -54,7 +54,7 @@ public:
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
-	const char *GetName();
+	const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
 
 	virtual C4Def const * GetDef() const;

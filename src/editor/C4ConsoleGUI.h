@@ -132,7 +132,7 @@ public:
 	bool DoUpdateHaltCtrls(bool fHalt);
 	
 	bool PropertyDlgOpen(class C4PropertyDlg *dlg);
-	void PropertyDlgUpdate(class C4PropertyDlg *dlg, StdStrBuf &text);
+	void PropertyDlgUpdate(class C4PropertyDlg *dlg, StdStrBuf RREF text);
 	void PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions);
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);

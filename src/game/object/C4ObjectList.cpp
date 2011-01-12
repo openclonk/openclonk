@@ -593,6 +593,29 @@ StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
 	return Buf;
 }
 
+StdStrBuf C4ObjectList::GetDataString()
+{
+	StdStrBuf Output;
+
+	// Compose info text by selected object(s)
+	switch (ObjectCount())
+	{
+		// No selection
+	case 0:
+		Output = LoadResStr("IDS_CNS_NOOBJECT");
+		break;
+		// One selected object
+	case 1:
+		Output.Take(GetObject()->GetDataString());
+		break;
+	// Multiple selected objects
+	default:
+		Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"),ObjectCount());
+		break;
+	}
+	return Output;
+}
+
 bool C4ObjectList::ValidateOwners()
 {
 	C4ObjectLink *cLnk;
