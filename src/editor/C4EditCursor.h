@@ -38,7 +38,6 @@ public:
 	~C4EditCursor();
 protected:
 	bool fAltWasDown;
-	bool fSelectionChanged;
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;

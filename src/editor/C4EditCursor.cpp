@@ -90,14 +90,6 @@ void C4EditCursor::Execute()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	// selection update
-	if (fSelectionChanged)
-	{
-		fSelectionChanged = false;
-		UpdateStatusBar();
-		Console.PropertyDlg.Update(Selection);
-		Console.ObjectListDlg.Update(Selection);
-	}
 }
 
 bool C4EditCursor::Init()
@@ -213,7 +205,8 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged()
 {
-	fSelectionChanged = true;
+	Console.PropertyDlg.Update(Selection);
+	Console.ObjectListDlg.Update(Selection);
 }
 
 bool C4EditCursor::LeftButtonDown(bool fControl)
@@ -521,7 +514,6 @@ void C4EditCursor::Default()
 #endif
 	Hold=DragFrame=DragLine=false;
 	Selection.Default();
-	fSelectionChanged = false;
 }
 
 void C4EditCursor::Clear()
