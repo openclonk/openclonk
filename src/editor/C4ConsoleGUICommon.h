@@ -76,13 +76,11 @@ void C4PropertyDlg::Default()
 	state->Default();
 	Active = false;
 	//idSelectedDef=C4ID::None;
-	Selection.Default();
 }
 
 void C4PropertyDlg::Clear()
 {
 	state->Clear();
-	Selection.Clear();
 	Console.ClearDlg(this);
 	Active = false;
 }

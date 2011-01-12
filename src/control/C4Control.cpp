@@ -919,7 +919,7 @@ void C4ControlEMMoveObject::Execute() const
 		if (fLocalCall)
 		{
 			Console.EditCursor.SetHold(true);
-			Console.PropertyDlg.Update(Console.EditCursor.GetSelection());
+			Console.EditCursor.OnSelectionChanged();
 		}
 	}
 	break;

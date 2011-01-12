@@ -494,7 +494,7 @@ void C4EditCursor::FrameSelection()
 				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
 					Selection.Add(cobj, C4ObjectList::stNone);
 			}
-	Console.PropertyDlg.Update(Selection);
+	OnSelectionChanged();
 }
 
 bool C4EditCursor::In(const char *szText)
@@ -668,7 +668,7 @@ void C4EditCursor::GrabContents()
 	C4Object *pFrom;
 	if (!( pFrom = Selection.GetObject() )) return;
 	Selection.Copy(pFrom->Contents);
-	Console.PropertyDlg.Update(Selection);
+	OnSelectionChanged();
 	Hold=true;
 
 	// Exit all objects

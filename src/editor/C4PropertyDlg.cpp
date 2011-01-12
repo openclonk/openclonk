@@ -44,29 +44,18 @@ bool C4PropertyDlg::Open()
 	return true;
 }
 
-bool C4PropertyDlg::Update(C4ObjectList &rSelection)
+void C4PropertyDlg::Update(C4ObjectList &rSelection)
 {
-	if (!Active) return false;
-	// Set new selection
-	Selection.Copy(rSelection);
-	// Update input control
-	UpdateInputCtrl(Selection.GetObject());
-	// Update contents
-	return Update();
-}
+	if (!Active) return;
+	C4Object * pObj = rSelection.GetObject();
 
-bool C4PropertyDlg::Update()
-{
-	if (!Active) return false;
 	// Update info edit control
-	Console.PropertyDlgUpdate(this, Selection.GetDataString());
-	return true;
-}
+	Console.PropertyDlgUpdate(this, rSelection.GetDataString());
 
-void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
-{
 	// Store selected def
 	idSelectedDef=pObj->id;
+
+	// Update input control
 	// add global and standard functions
 	std::vector<char*> functions;
 	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
@@ -100,10 +89,6 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 
 void C4PropertyDlg::Execute()
 {
-	if (!::Game.iTick35) Update();
-}
-
-void C4PropertyDlg::ClearPointers(C4Object *pObj)
-{
-	Selection.ClearPointers(pObj);
+	if (!::Game.iTick35)
+		Console.PropertyDlgUpdate(this, Console.EditCursor.GetSelection().GetDataString());
 }

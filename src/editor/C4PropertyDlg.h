@@ -41,15 +41,11 @@ public:
 	void Default();
 	void Clear();
 	void Execute();
-	void ClearPointers(C4Object *pObj);
-	void UpdateInputCtrl(C4Object *pObj);
 	bool Open();
-	bool Update();
-	bool Update(C4ObjectList &rSelection);
+	void Update(C4ObjectList &rSelection);
 	bool Active;
 public: // ToolsDlg fields are public as well...
 	C4ID idSelectedDef;
-	C4ObjectList Selection;
 };
 
 #endif

@@ -342,7 +342,6 @@ bool C4Console::FileRecord()
 void C4Console::ClearPointers(C4Object *pObj)
 {
 	EditCursor.ClearPointers(pObj);
-	PropertyDlg.ClearPointers(pObj);
 }
 
 void C4Console::Default()
