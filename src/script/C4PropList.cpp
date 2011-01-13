@@ -230,6 +230,19 @@ void C4Property::CompileFunc(StdCompiler *pComp)
 	pComp->Value(Value);
 }
 
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim)
+{
+	StdStrBuf & DataString = *out;
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		DataString.Append(p->Key->GetData());
+		DataString.Append(" = ");
+		DataString.Append(p->Value.GetDataString());
+		p = Properties.Next(p);
+		if (p) DataString.Append(delim);
+	}
+}
 
 const char * C4PropList::GetName() const
 {

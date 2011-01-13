@@ -1837,6 +1837,11 @@ StdStrBuf C4Object::GetDataString()
 		Output.Append(LoadResStr("IDS_CNS_ACTION"));
 		Output.Append(GetAction()->GetName());
 	}
+	// Properties
+	Output.Append(LineFeed);
+	Output.Append(LoadResStr("IDS_CNS_PROPERTIES"));
+	Output.Append(LineFeed "  ");
+	AppendDataString(&Output, LineFeed "  ");
 	// Effects
 	if (pEffects)
 	{
@@ -1847,7 +1852,7 @@ StdStrBuf C4Object::GetDataString()
 	{
 		Output.Append(LineFeed);
 		// Effect name
-		Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iInterval);
+		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->Name, pEffect->iPriority, pEffect->iInterval);
 	}
 
 	StdStrBuf Output2;

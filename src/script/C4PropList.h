@@ -99,6 +99,7 @@ public:
 
 	// Every proplist has to be initialized by either Init or CompileFunc.
 	void CompileFunc(StdCompiler *pComp);
+	void AppendDataString(StdStrBuf * out, const char * delim);
 
 	bool operator==(const C4PropList &b) const;
 
