@@ -430,9 +430,10 @@ void C4ConsoleGUI::State::InitGUI()
 	txtScript = gtk_entry_new();
 
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(txtLog), false);
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(txtLog), 2);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(txtLog), GTK_WRAP_CHAR);
 
 	gtk_container_add(GTK_CONTAINER(scroll), txtLog);
 
@@ -1008,10 +1009,10 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 {
 	if (state->propertydlg == NULL)
 	{
-		GtkWidget * vbox = state->propertydlg = gtk_vbox_new(false, 6);
+		GtkWidget * vbox = state->propertydlg = gtk_vbox_new(false, 3);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
-		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_SHADOW_IN);
 
 		GtkWidget * textview = state->propertydlg_textview = gtk_text_view_new();
@@ -1022,6 +1023,8 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 		gtk_box_pack_start(GTK_BOX(vbox), entry, false, false, 0);
 
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false);
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_CHAR);
 		gtk_widget_set_sensitive(entry, Console.Editing);
 
 		gtk_widget_show_all(vbox);
