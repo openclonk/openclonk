@@ -440,11 +440,11 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 	[ClonkAppDelegate.instance.netMenu.submenu addItem:item];
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
 {
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions)
+void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object *)
 {
 }
 

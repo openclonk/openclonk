@@ -570,9 +570,7 @@ public:
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	C4AulFunc * GetFirstFunc() { return Func0; }
-	C4AulFunc * GetNextFunc(C4AulFunc * pFunc) { return pFunc->Next; }
-
+	std::list<char*> GetFunctionNames(C4AulScript *);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL

@@ -84,5 +84,3 @@ void C4PropertyDlg::Clear()
 	Console.ClearDlg(this);
 	Active = false;
 }
-
-const char *C4ConsoleGUI::LIST_DIVIDER = "divid0r";

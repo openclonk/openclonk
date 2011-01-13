@@ -435,21 +435,7 @@ void C4Console::UpdateInputCtrl()
 
 	ClearInput();
 	// add global and standard functions
-	std::vector<char*> functions;
-	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
-	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->Name);
-		}
-	}
-	// Add scenario script functions
-	if (pRef=::GameScript.GetSFunc(0))
-		functions.push_back((char*)C4ConsoleGUI::LIST_DIVIDER);
-	for (cnt=0; (pRef=::GameScript.GetSFunc(cnt)); cnt++)
-	{
-		functions.push_back(pRef->Name);
-	}
+	std::list <char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
 	SetInputFunctions(functions);
 }
 
@@ -630,12 +616,12 @@ bool C4ConsoleGUI::FileSelect(char*, int, char const*, unsigned int, bool) {retu
 bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
 bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg*) {return 0;}
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg*, std::vector<char*, std::allocator<char*> >&) {}
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg*, StdStrBuf&) {}
+void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg*, C4Object *) {}
+void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg*, StdStrBuf RREF) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*, std::allocator<char*> >&) {}
+void C4ConsoleGUI::SetInputFunctions(std::list<char*, std::allocator<char*> >&) {}
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}

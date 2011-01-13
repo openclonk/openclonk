@@ -22,14 +22,16 @@
 
 #include <C4Include.h>
 #include <C4Console.h>
-#include <C4Application.h>
 
+#include <C4Aul.h>
+#include <C4Application.h>
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
+#include <C4Object.h>
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
@@ -895,7 +897,7 @@ bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg * dlg)
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf &text)
+void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf RREF text)
 {
 	HWND hDialog = dlg->state->hDialog;
 	int iLine = SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_GETFIRSTVISIBLELINE,(WPARAM)0,(LPARAM)0);
@@ -904,20 +906,21 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf &text)
 	UpdateWindow(GetDlgItem(hDialog,IDC_EDITOUTPUT));
 }
 
-void SetComboItems(HWND hCombo, std::vector<char*> &items)
+static void SetComboItems(HWND hCombo, std::list<char*> &items)
 {
-	for (std::vector<char*>::iterator it = items.begin(); it != items.end(); it++)
+	for (std::list<char*>::iterator it = items.begin(); it != items.end(); it++)
 	{
 		char *item = *it;
-		if (item == C4ConsoleGUI::LIST_DIVIDER)
+		if (!item)
 			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------");
 		else
 			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)*it);
 	}
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions)
+void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object * object)
 {
+	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(object ? &object->Def->Script : 0);
 	HWND hCombo = GetDlgItem(dlg->state->hDialog, IDC_COMBOINPUT);
 	char szLastText[500+1];
 	// Remember old window text
@@ -931,7 +934,7 @@ void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*
 	SetWindowText(hCombo, szLastText);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
 {
 	SetComboItems(GetDlgItem(hWindow,IDC_COMBOINPUT), functions);
 }

@@ -555,6 +555,37 @@ bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const 
 	return true;
 }
 
+std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
+{
+	std::list<char*> functions;
+	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
+	{
+		if (pFn->GetPublic())
+		{
+			functions.push_back(pFn->Name);
+		}
+	}
+	// Add object or scenario script functions
+	if (script)
+	{
+		// Insert divider if necessary
+		if (script->GetSFunc(0))
+			functions.push_back(0);
+		C4AulScriptFunc *pRef;
+		// Scan all functions
+		for (int cnt=0; (pRef=script->GetSFunc(cnt)); cnt++)
+		{
+			// Public functions only
+			if ((pRef->Access=AA_PUBLIC))
+			{
+				// Add function
+				functions.push_back(pRef->Name);
+			}
+		}
+	}
+	return functions;
+}
+
 /*--- C4AulFuncMap ---*/
 static const size_t CapacityInc = 1024;
 

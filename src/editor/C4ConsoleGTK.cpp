@@ -20,14 +20,16 @@
 
 #include <C4Include.h>
 #include <C4Console.h>
-#include <C4Application.h>
 
+#include <C4Aul.h>
+#include <C4Application.h>
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
+#include <C4Object.h>
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
@@ -907,7 +909,7 @@ void C4ConsoleGUI::ClearInput()
 	gtk_list_store_clear(store);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
 {
 	if(state->txtScript == NULL) return;
 
@@ -915,11 +917,12 @@ void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
 	g_assert(store);
- 	for (int i = 0; i < functions.size(); ++i)
+	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); ++it)
 	{
-		if (functions[i] == C4ConsoleGUI::LIST_DIVIDER) continue;
+		char* fn = *it;
+		if (!fn) continue;
 		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter, 0, functions[i], -1);
+		gtk_list_store_set(store, &iter, 0, fn, -1);
 	}
 }
 
@@ -988,8 +991,9 @@ void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 	g_signal_handler_unblock(state->materials, state->handlerMaterials);
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions)
+void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object * object)
 {
+	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(object ? &object->Def->Script : 0);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(dlg->state->entry));
 	GtkListStore* store;
 
@@ -1015,10 +1019,10 @@ void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*
 	GtkTreeIter iter;
 	gtk_list_store_clear(store);
 
-	for (std::vector<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
 	{
 		char* fn = *it;
-		if (fn != C4ConsoleGUI::LIST_DIVIDER)
+		if (fn)
 		{
 			gtk_list_store_append(store, &iter);
 			gtk_list_store_set(store, &iter, 0, fn, -1);

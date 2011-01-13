@@ -56,35 +56,7 @@ void C4PropertyDlg::Update(C4ObjectList &rSelection)
 	idSelectedDef=pObj->id;
 
 	// Update input control
-	// add global and standard functions
-	std::vector<char*> functions;
-	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
-	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->Name);
-		}
-	}
-	// Add object script functions
-	bool fDivider = false;
-	C4AulScriptFunc *pRef;
-	// Object script available
-	if (pObj && pObj->Def)
-	{
-		// Scan all functions
-		for (int cnt=0; (pRef=pObj->Def->Script.GetSFunc(cnt)); cnt++)
-		{
-			// Public functions only
-			if ((pRef->Access=AA_PUBLIC))
-			{
-				// Insert divider if necessary
-				if (!fDivider) { functions.push_back((char*)C4ConsoleGUI::LIST_DIVIDER); fDivider=true; }
-				// Add function
-				functions.push_back(pRef->Name);
-			}
-		}
-	}
-	Console.PropertyDlgSetFunctions(this, functions);
+	Console.PropertyDlgSetFunctions(this, pObj);
 }
 
 void C4PropertyDlg::Execute()

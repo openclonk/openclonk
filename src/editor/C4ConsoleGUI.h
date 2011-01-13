@@ -45,8 +45,6 @@ class C4ConsoleGUI: public C4ConsoleBase
 {
 public:
 
-	static const char *LIST_DIVIDER;
-
 	template<class T> class InternalState
 	{
 	protected:
@@ -99,7 +97,7 @@ public:
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
-	void SetInputFunctions(std::vector<char*> &functions);
+	void SetInputFunctions(std::list<char*> &functions);
 	
 	CStdWindow* CreateConsoleWindow(CStdApp *application);
 	void Out(const char* message);
@@ -133,7 +131,7 @@ public:
 	
 	bool PropertyDlgOpen(class C4PropertyDlg *dlg);
 	void PropertyDlgUpdate(class C4PropertyDlg *dlg, StdStrBuf RREF text);
-	void PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions);
+	void PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object *);
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);
 	void ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg);
