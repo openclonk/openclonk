@@ -475,6 +475,11 @@ static NSOpenGLContext* MainContext;
 	Console.EditCursor.GrabContents();
 }
 
+- (IBAction) resetZoom:(id) sender
+{
+	self.controller.viewport->SetZoom(1, true);
+}
+
 @end
 
 #pragma mark CStdGLCtx: Initialization

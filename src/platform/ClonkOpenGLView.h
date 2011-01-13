@@ -47,6 +47,7 @@
 - (IBAction) grabContents:(id) sender;
 - (IBAction) copy:(id) sender;
 - (IBAction) delete:(id) sender;
+- (IBAction) resetZoom:(id) sender;
 @end
 
 #endif
