@@ -52,9 +52,6 @@ void C4PropertyDlg::Update(C4ObjectList &rSelection)
 	// Update info edit control
 	Console.PropertyDlgUpdate(this, rSelection.GetDataString());
 
-	// Store selected def
-	idSelectedDef=pObj->id;
-
 	// Update input control
 	Console.PropertyDlgSetFunctions(this, pObj);
 }

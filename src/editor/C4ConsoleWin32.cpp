@@ -579,8 +579,12 @@ INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPar
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONRELOADDEF:
-			Game.ReloadDef( Console.PropertyDlg.idSelectedDef );
+			{
+			C4Object * pObj = Console.EditCursor.GetSelection().GetObject();
+			if (pObj)
+				Game.ReloadDef(pObj->id);
 			return true;
+			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 		return false;

@@ -44,8 +44,6 @@ public:
 	bool Open();
 	void Update(C4ObjectList &rSelection);
 	bool Active;
-public: // ToolsDlg fields are public as well...
-	C4ID idSelectedDef;
 };
 
 #endif

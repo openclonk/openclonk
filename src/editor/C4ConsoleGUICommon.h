@@ -75,7 +75,6 @@ void C4PropertyDlg::Default()
 {
 	state->Default();
 	Active = false;
-	//idSelectedDef=C4ID::None;
 }
 
 void C4PropertyDlg::Clear()
