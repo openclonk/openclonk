@@ -48,7 +48,7 @@
 {
 	if (notification.object == objectsPanel)
 	{
-		Console.PropertyDlg.Clear();
+		Console.PropertyDlgClose();
 	}
 	else if (notification.object == toolsPanel)
 	{

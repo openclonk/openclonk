@@ -54,7 +54,7 @@ DEFINE_STANDARD_DLG_METHODS(C4ToolsDlg)
 void C4ToolsDlg::Clear()
 {
 	state->Clear();
-	Console.ClearDlg(this);
+	Console.ToolsDlgClose();
 	Active = false;
 }
 
@@ -67,19 +67,4 @@ void C4ToolsDlg::Default()
 	ModeIFT = true;
 	SCopy("Earth",Material);
 	SCopy("earth",Texture);
-}
-
-DEFINE_STANDARD_DLG_METHODS(C4PropertyDlg)
-
-void C4PropertyDlg::Default()
-{
-	state->Default();
-	Active = false;
-}
-
-void C4PropertyDlg::Clear()
-{
-	state->Clear();
-	Console.ClearDlg(this);
-	Active = false;
 }

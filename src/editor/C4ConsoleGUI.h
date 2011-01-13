@@ -129,11 +129,13 @@ public:
 	}
 	bool DoUpdateHaltCtrls(bool fHalt);
 	
-	bool PropertyDlgOpen(class C4PropertyDlg *dlg);
-	void PropertyDlgUpdate(class C4PropertyDlg *dlg, StdStrBuf RREF text);
-	void PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object *);
+	bool PropertyDlgOpen();
+	void PropertyDlgClose();
+	void PropertyDlgUpdate(C4ObjectList &rSelection);
+	C4Object * PropertyDlgObject;
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);
+	void ToolsDlgClose();
 	void ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg);
 	void ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material);
@@ -148,8 +150,6 @@ public:
 #ifdef WITH_DEVELOPER_MODE
 	virtual GtkWidget* InitGUI();
 #endif
-	
-	void ClearDlg(void *dlg);
 };
 
 #endif

@@ -26,7 +26,6 @@
 #define INC_C4Console
 
 #include "C4ConsoleGUI.h"
-#include "C4PropertyDlg.h"
 #include "C4ToolsDlg.h"
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
@@ -98,7 +97,6 @@ public:
 	bool FileRecord();
 	void SetCaptionToFilename(const char* szFilename);
 public:
-	C4PropertyDlg   PropertyDlg;
 	C4ToolsDlg      ToolsDlg;
 	C4ObjectListDlg ObjectListDlg;
 	C4EditCursor    EditCursor;

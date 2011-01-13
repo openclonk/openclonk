@@ -78,6 +78,7 @@ class C4ConsoleGUI::State
 public:
 	BOOL RegisterConsoleWindowClass(HINSTANCE hInst);
 	bool AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool fEnabled=true);
+	HWND hPropertyDlg;
 	HBITMAP hbmMouse;
 	HBITMAP hbmMouse2;
 	HBITMAP hbmCursor;
@@ -188,21 +189,6 @@ static void ClearDlg(HWND &handle)
 		DestroyWindow(handle);
 	handle = NULL;
 }
-
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<C4PropertyDlg>
-{
-	friend class C4ConsoleGUI;
-public:
-	HWND hDialog;
-	State(C4PropertyDlg *dlg): Super(dlg), hDialog(0) {}
-	friend INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
-	void Clear()
-	{
-	}
-	void Default()
-	{
-	}
-};
 
 INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -554,7 +540,7 @@ INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPar
 	{
 		//------------------------------------------------------------------------------------------------
 	case WM_CLOSE:
-		Console.PropertyDlg.Clear();
+		Console.PropertyDlgClose();
 		break;
 		//------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
@@ -597,15 +583,15 @@ void C4ConsoleGUI::Win32KeepDialogsFloating(HWND hwnd)
 {
 	if (!hwnd)
 		hwnd = hWindow;
-	if (Console.PropertyDlg.state->hDialog)
-		SetWindowLongPtr(Console.PropertyDlg.state->hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
+	if (Console.state->hPropertyDlg)
+		SetWindowLongPtr(Console.state->hPropertyDlg, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
 	if (Console.ToolsDlg.state->hDialog)
 		SetWindowLongPtr(Console.ToolsDlg.state->hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
 }
 
 bool C4ConsoleGUI::Win32DialogMessageHandling(MSG *msg)
 {
-	return (hWindow && IsDialogMessage(hWindow,msg)) || (Console.PropertyDlg.state->hDialog && IsDialogMessage(Console.PropertyDlg.state->hDialog,msg));
+	return (hWindow && IsDialogMessage(hWindow,msg)) || (Console.state->hPropertyDlg && IsDialogMessage(Console.state->hPropertyDlg,msg));
 }
 
 void C4ConsoleGUI::SetCursor(Cursor cursor)
@@ -862,12 +848,9 @@ void C4ConsoleGUI::ClearViewportMenu()
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 }
 
-void C4ConsoleGUI::ClearDlg(void *dlg)
+void C4ConsoleGUI::ToolsDlgClose()
 {
-	if (dlg == &Console.ToolsDlg)
-		::ClearDlg(Console.ToolsDlg.state->hDialog);
-	else if (dlg == &Console.PropertyDlg)
-		::ClearDlg(Console.PropertyDlg.state->hDialog);
+	::ClearDlg(Console.ToolsDlg.state->hDialog);
 }
 
 void C4ConsoleGUI::ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture)
@@ -880,34 +863,31 @@ void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *materi
 	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)material);
 }
 
-bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg * dlg)
+bool C4ConsoleGUI::PropertyDlgOpen()
 {
-	if (Console.PropertyDlg.state->hDialog) return true;
-	dlg->state->hDialog = CreateDialog(Application.GetInstance(),
+	if (state->hPropertyDlg) return true;
+	HWND hDialog = CreateDialog(Application.GetInstance(),
 	                       MAKEINTRESOURCE(IDD_PROPERTIES),
 	                       Console.hWindow,
 	                       (DLGPROC) PropertyDlgProc);
-	if (!Console.PropertyDlg.state->hDialog) return false;
+	if (!hDialog) return false;
+	state->hPropertyDlg = hDialog;
 	// Set text
-	SetWindowText(Console.PropertyDlg.state->hDialog,LoadResStr("IDS_DLG_PROPERTIES"));
+	SetWindowText(hDialog,LoadResStr("IDS_DLG_PROPERTIES"));
 	// Enable controls
-	EnableWindow( GetDlgItem(Console.PropertyDlg.state->hDialog,IDOK), Console.Editing );
-	EnableWindow( GetDlgItem(Console.PropertyDlg.state->hDialog,IDC_COMBOINPUT), Console.Editing );
-	EnableWindow( GetDlgItem(Console.PropertyDlg.state->hDialog,IDC_BUTTONRELOADDEF), Console.Editing );
+	EnableWindow( GetDlgItem(hDialog,IDOK), Editing );
+	EnableWindow( GetDlgItem(hDialog,IDC_COMBOINPUT), Editing );
+	EnableWindow( GetDlgItem(hDialog,IDC_BUTTONRELOADDEF), Editing );
 	// Show window
-	RestoreWindowPosition(Console.PropertyDlg.state->hDialog, "Property", Config.GetSubkeyPath("Console"));
-	SetWindowPos(Console.PropertyDlg.state->hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
-	ShowWindow(Console.PropertyDlg.state->hDialog,SW_SHOWNOACTIVATE);
+	RestoreWindowPosition(hDialog, "Property", Config.GetSubkeyPath("Console"));
+	SetWindowPos(hDialog,hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
+	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf RREF text)
+void C4ConsoleGUI::PropertyDlgClose()
 {
-	HWND hDialog = dlg->state->hDialog;
-	int iLine = SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_GETFIRSTVISIBLELINE,(WPARAM)0,(LPARAM)0);
-	SetDlgItemText(hDialog,IDC_EDITOUTPUT,text.getData());
-	SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)iLine);
-	UpdateWindow(GetDlgItem(hDialog,IDC_EDITOUTPUT));
+	::ClearDlg(state->hPropertyDlg);
 }
 
 static void SetComboItems(HWND hCombo, std::list<char*> &items)
@@ -922,17 +902,27 @@ static void SetComboItems(HWND hCombo, std::list<char*> &items)
 	}
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object * object)
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 {
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(object ? &object->Def->Script : 0);
-	HWND hCombo = GetDlgItem(dlg->state->hDialog, IDC_COMBOINPUT);
+	HWND hDialog = state->hPropertyDlg;
+	if (!hDialog) return;
+	int iLine = SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_GETFIRSTVISIBLELINE,(WPARAM)0,(LPARAM)0);
+	SetDlgItemText(hDialog,IDC_EDITOUTPUT,rSelection.GetDataString().getData());
+	SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)iLine);
+	UpdateWindow(GetDlgItem(hDialog,IDC_EDITOUTPUT));
+
+	if (PropertyDlgObject == rSelection.GetObject()) return;
+	PropertyDlgObject = rSelection.GetObject();
+	
+	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	HWND hCombo = GetDlgItem(state->hPropertyDlg, IDC_COMBOINPUT);
 	char szLastText[500+1];
 	// Remember old window text
 	GetWindowText(hCombo, szLastText, 500);
 	// Clear
 	SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
 
-	SetComboItems(GetDlgItem(dlg->state->hDialog,IDC_COMBOINPUT), functions);
+	SetComboItems(GetDlgItem(state->hPropertyDlg,IDC_COMBOINPUT), functions);
 	
 	// Restore
 	SetWindowText(hCombo, szLastText);

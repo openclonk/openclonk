@@ -163,6 +163,10 @@ public:
 	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
+	GtkWidget* propertydlg;
+	GtkWidget* propertydlg_textview;
+	GtkWidget* propertydlg_entry;
+
 	gulong handlerDestroy;
 	gulong handlerPlay;
 	gulong handlerHalt;
@@ -199,6 +203,11 @@ public:
 			g_signal_handler_disconnect(btnModeEdit, handlerModeEdit);
 		if(handlerModeDraw)
 			g_signal_handler_disconnect(btnModeDraw, handlerModeDraw);
+		if (propertydlg)
+		{
+			C4DevmodeDlg::RemovePage(propertydlg);
+			propertydlg = NULL;
+		}
 	}
 
 	void InitGUI();
@@ -237,38 +246,8 @@ public:
 	static void OnHelpAbout(GtkWidget* item, gpointer data);
 
 	static void OnNetClient(GtkWidget* item, gpointer data);
-};
-
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
-{
-public:
-//    GtkWidget* window;
-	GtkWidget* vbox;
-	GtkWidget* textview;
-	GtkWidget* entry;
-
-	gulong handlerHide;
 
 	static void OnScriptActivate(GtkWidget* widget, gpointer data);
-	static void OnWindowHide(GtkWidget* widget, gpointer data);
-//    static void OnDestroy(GtkWidget* widget, gpointer data);
-
-	~State()
-	{
-		if (vbox != NULL)
-		{
-			g_signal_handler_disconnect(G_OBJECT(C4DevmodeDlg::GetWindow()), handlerHide);
-			C4DevmodeDlg::RemovePage(vbox);
-			vbox = NULL;
-		}
-	}
-
-	State(C4PropertyDlg* dlg): Super(dlg), vbox(NULL) {}
-
-	bool Open();
-
-	void Clear() {}
-	void Default() {}
 };
 
 class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
@@ -352,16 +331,11 @@ public:
 	void Default() {}
 };
 
-void C4PropertyDlg::State::OnScriptActivate(GtkWidget* widget, gpointer data)
+void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 {
 	const gchar* text = gtk_entry_get_text(GTK_ENTRY(widget));
 	if (text && text[0])
 		Console.EditCursor.In(text);
-}
-
-void C4PropertyDlg::State::OnWindowHide(GtkWidget* widget, gpointer user_data)
-{
-	static_cast<C4PropertyDlg*>(user_data)->Active = false;
 }
 
 CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
@@ -991,48 +965,6 @@ void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 	g_signal_handler_unblock(state->materials, state->handlerMaterials);
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object * object)
-{
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(object ? &object->Def->Script : 0);
-	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(dlg->state->entry));
-	GtkListStore* store;
-
-	// Uncouple list store from completion so that the completion is not
-	// notified for every row we are going to insert. This enhances
-	// performance significantly.
-	if (!completion)
-	{
-		completion = gtk_entry_completion_new();
-		store = gtk_list_store_new(1, G_TYPE_STRING);
-
-		gtk_entry_completion_set_text_column(completion, 0);
-		gtk_entry_set_completion(GTK_ENTRY(dlg->state->entry), completion);
-		g_object_unref(G_OBJECT(completion));
-	}
-	else
-	{
-		store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
-		g_object_ref(G_OBJECT(store));
-		gtk_entry_completion_set_model(completion, NULL);
-	}
-
-	GtkTreeIter iter;
-	gtk_list_store_clear(store);
-
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
-	{
-		char* fn = *it;
-		if (fn)
-		{
-			gtk_list_store_append(store, &iter);
-			gtk_list_store_set(store, &iter, 0, fn, -1);
-		}
-	}
-
-	// Reassociate list store with completion
-	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
-}
-
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
 	state->DoEnableControls(fEnable);
@@ -1072,23 +1004,18 @@ void C4ConsoleGUI::State::DoEnableControls(bool fEnable)
 	gtk_widget_set_sensitive(viewNew, fEnable);
 }
 
-bool C4ConsoleGUI::PropertyDlgOpen(class C4PropertyDlg* dlg)
+bool C4ConsoleGUI::PropertyDlgOpen()
 {
-	return dlg->state->Open();
-}
-
-bool C4PropertyDlg::State::Open()
-{
-	if (vbox == NULL)
+	if (state->propertydlg == NULL)
 	{
-		vbox = gtk_vbox_new(false, 6);
+		GtkWidget * vbox = state->propertydlg = gtk_vbox_new(false, 6);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_SHADOW_IN);
 
-		textview = gtk_text_view_new();
-		entry = gtk_entry_new();
+		GtkWidget * textview = state->propertydlg_textview = gtk_text_view_new();
+		GtkWidget * entry = state->propertydlg_entry = gtk_entry_new();
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), textview);
 		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
@@ -1101,19 +1028,70 @@ bool C4PropertyDlg::State::Open()
 
 		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_PROPERTIES"));
 
-		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(OnScriptActivate), this);
-
-		handlerHide = g_signal_connect(G_OBJECT(C4DevmodeDlg::GetWindow()), "hide", G_CALLBACK(OnWindowHide), this);
+		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(State::OnScriptActivate), this);
 	}
 
-	C4DevmodeDlg::SwitchPage(vbox);
+	C4DevmodeDlg::SwitchPage(state->propertydlg);
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(class C4PropertyDlg* dlg, StdStrBuf RREF text)
+void C4ConsoleGUI::PropertyDlgClose()
 {
-	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(dlg->state->textview));
-	gtk_text_buffer_set_text(buffer, text.getData(), -1);
+}
+
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
+{
+	if (!state->propertydlg) return;
+	if (!C4DevmodeDlg::GetWindow()) return;
+#if GTK_CHECK_VERSION(2,18,0)
+	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
+#else
+	if (!GTK_WIDGET_VISIBLE(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
+#endif
+	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
+	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
+
+	if (PropertyDlgObject == rSelection.GetObject()) return;
+	PropertyDlgObject = rSelection.GetObject();
+	
+	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
+	GtkListStore* store;
+
+	// Uncouple list store from completion so that the completion is not
+	// notified for every row we are going to insert. This enhances
+	// performance significantly.
+	if (!completion)
+	{
+		completion = gtk_entry_completion_new();
+		store = gtk_list_store_new(1, G_TYPE_STRING);
+
+		gtk_entry_completion_set_text_column(completion, 0);
+		gtk_entry_set_completion(GTK_ENTRY(state->propertydlg_entry), completion);
+		g_object_unref(G_OBJECT(completion));
+	}
+	else
+	{
+		store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
+		g_object_ref(G_OBJECT(store));
+		gtk_entry_completion_set_model(completion, NULL);
+	}
+
+	GtkTreeIter iter;
+	gtk_list_store_clear(store);
+
+	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	{
+		char* fn = *it;
+		if (fn)
+		{
+			gtk_list_store_append(store, &iter);
+			gtk_list_store_set(store, &iter, 0, fn, -1);
+		}
+	}
+
+	// Reassociate list store with completion
+	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
 }
 
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
@@ -1491,7 +1469,7 @@ bool C4ToolsDlg::PopTextures()
 	return true;
 }
 
-void C4ConsoleGUI::ClearDlg(void* dlg)
+void C4ConsoleGUI::ToolsDlgClose()
 {
 	// nope
 }

@@ -65,14 +65,6 @@ public:
 	void Clear() {}
 };
 
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
-{
-public:
-	State(C4PropertyDlg *dlg): Super(dlg) {}
-	void Default() {}
-	void Clear() {}
-};
-
 CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 {
 	ClonkWindowController* controller = [ConsoleWindowController new];
@@ -174,23 +166,28 @@ bool C4ConsoleGUI::Message(const char *message, bool query)
 	return true;
 }
 
-bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg* dlg)
+bool C4ConsoleGUI::PropertyDlgOpen()
 {
 	[ctrler(this).objectsPanel orderFront:nil];
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf &text)
+void C4ConsoleGUI::PropertyDlgClose()
 {
+	[ctrler(this).objectsPanel orderOut:nil];
+}
+
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
+{	
+	if (![ctrler(this).objectsPanel isVisible])
+		return;
+	StdStrBuf text = rSelection.GetDataString();
 	[ctrler(this).objectPropertiesText.textStorage setAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:text.getData()]] autorelease]];
 }
 
-void C4ConsoleGUI::ClearDlg(void *dlg)
+void C4ConsoleGUI::ToolsDlgClose()
 {
-	if (dlg == &Console.PropertyDlg)
-		[ctrler(this).objectsPanel orderOut:nil];
-	else if (dlg == &Console.ToolsDlg)
-		[ctrler(this).toolsPanel orderOut:nil];
+	[ctrler(this).toolsPanel orderOut:nil];
 }
 
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
@@ -441,10 +438,6 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 }
 
 void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
-{
-}
-
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, C4Object *)
 {
 }
 

@@ -90,6 +90,8 @@ void C4EditCursor::Execute()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
+	if (!::Game.iTick35)
+		Console.PropertyDlgUpdate(Selection);
 }
 
 bool C4EditCursor::Init()
@@ -205,7 +207,7 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged()
 {
-	Console.PropertyDlg.Update(Selection);
+	Console.PropertyDlgUpdate(Selection);
 	Console.ObjectListDlg.Update(Selection);
 }
 
@@ -377,8 +379,8 @@ bool C4EditCursor::OpenPropTools()
 	switch (Mode)
 	{
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		Console.PropertyDlg.Open();
-		Console.PropertyDlg.Update(Selection);
+		Console.PropertyDlgOpen();
+		Console.PropertyDlgUpdate(Selection);
 		break;
 	case C4CNS_ModeDraw:
 		Console.ToolsDlg.Open();
@@ -537,20 +539,20 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Set mode
 	Mode = iMode;
 	// Update prop tools by mode
-	bool fOpenPropTools = false;
 	switch (Mode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-		Console.ToolsDlg.Clear();
-		if (fOpenPropTools) OpenPropTools();
+		if (Console.ToolsDlg.Active)
+		{
+			Console.ToolsDlg.Clear();
+			OpenPropTools();
+		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
-		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-		Console.PropertyDlg.Clear();
-		if (fOpenPropTools) OpenPropTools();
+		Console.PropertyDlgClose();
+		OpenPropTools();
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}

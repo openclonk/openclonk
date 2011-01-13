@@ -347,7 +347,7 @@ void C4Console::ClearPointers(C4Object *pObj)
 void C4Console::Default()
 {
 	EditCursor.Default();
-	PropertyDlg.Default();
+	PropertyDlgObject = 0;
 	ToolsDlg.Default();
 }
 
@@ -355,8 +355,8 @@ void C4Console::Clear()
 {
 	C4ConsoleBase::Clear();
 	EditCursor.Clear();
-	PropertyDlg.Clear();
 	ToolsDlg.Clear();
+	PropertyDlgClose();
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
@@ -545,7 +545,6 @@ void C4Console::SetCaptionToFilename(const char* szFilename)
 void C4Console::Execute()
 {
 	EditCursor.Execute();
-	PropertyDlg.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
 	::GraphicsSystem.Execute();
@@ -586,12 +585,6 @@ class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}
 };
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
-{
-	public:	State(C4PropertyDlg* dlg): Super(dlg) {}
-	void Clear() {}
-	void Default() {}
-};
 class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 {
 	public: State(C4ToolsDlg* dlg): Super(dlg) {}
@@ -602,7 +595,7 @@ void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
 void C4ConsoleGUI::AddNetMenu() {}
-void C4ConsoleGUI::ClearDlg(void*) {}
+void C4ConsoleGUI::ToolsDlgClose() {}
 void C4ConsoleGUI::ClearInput() {}
 bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
@@ -615,9 +608,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
 bool C4ConsoleGUI::FileSelect(char*, int, char const*, unsigned int, bool) {return 0;}
 bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
-bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg*) {return 0;}
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg*, C4Object *) {}
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg*, StdStrBuf RREF) {}
+bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
+void C4ConsoleGUI::PropertyDlgClose() {}
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}

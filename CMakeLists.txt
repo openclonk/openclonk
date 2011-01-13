@@ -189,8 +189,6 @@ set(OC_CLONK_SOURCES
 	src/editor/C4EditCursor.h
 	src/editor/C4ObjectListDlg.cpp
 	src/editor/C4ObjectListDlg.h
-	src/editor/C4PropertyDlg.cpp
-	src/editor/C4PropertyDlg.h
 	src/editor/C4ToolsDlg.cpp
 	src/editor/C4ToolsDlg.h
 	src/game/C4GameVersion.h
