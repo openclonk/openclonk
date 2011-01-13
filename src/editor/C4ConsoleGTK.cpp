@@ -1454,6 +1454,10 @@ void C4ToolsDlg::State::UpdateIFTControls()
 
 void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material)
 {
+	C4ToolsDlg::State* state = dlg->state;
+	g_signal_handler_block(state->materials, state->handlerMaterials);
+	SelectComboBoxText(GTK_COMBO_BOX(state->materials), material);
+	g_signal_handler_unblock(state->materials, state->handlerMaterials);
 }
 
 void C4ToolsDlg::InitGradeCtrl()
