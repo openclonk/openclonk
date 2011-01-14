@@ -206,12 +206,15 @@ public func Activate(int plr)
 public func GetShortDescription(int plr)
 {
 	var team = GetPlayerTeam(plr);
+	var parkour_length = GetParkourLength();
+	if (parkour_length == 0)
+		return "";
 	var length;
 	if (team)
 		length = GetTeamPosition(team);
 	else
 		length = GetPlayerPosition(plr);
-	var percentage =  100 * length / GetParkourLength();
+	var percentage =  100 * length / parkour_length;
 	var red = BoundBy(255 - percentage * 255 / 100, 0, 255);
 	var green = BoundBy(percentage * 255 / 100, 0, 255);
 	var color = RGB(red, green, 0);
