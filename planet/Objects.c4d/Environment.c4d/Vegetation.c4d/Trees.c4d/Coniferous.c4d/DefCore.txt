@@ -1,7 +1,7 @@
 [DefCore]
 id=Tree_Coniferous
 Version=4,10,0,0
-Category=C4D_Vehicle|C4D_StaticBack
+Category=C4D_StaticBack
 Timer=350
 TimerCall=Seed
 Width=60

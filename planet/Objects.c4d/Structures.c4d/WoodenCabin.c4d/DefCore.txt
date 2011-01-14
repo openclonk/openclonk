@@ -19,4 +19,3 @@ Construction=1
 Rotate=1
 ContainBlast=1
 RotatedEntrance=1
-AutoContextMenu=1

@@ -19,5 +19,3 @@ Exclusive=1
 BlastIncinerate=130
 Construction=1
 ContainBlast=1
-AutoContextMenu=1
-

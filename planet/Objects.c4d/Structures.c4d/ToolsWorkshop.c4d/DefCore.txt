@@ -20,4 +20,3 @@ BlastIncinerate=100
 Construction=1
 Rotate=1
 ContainBlast=1
-AutoContextMenu=1
