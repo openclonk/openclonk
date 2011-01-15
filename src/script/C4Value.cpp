@@ -494,14 +494,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 		assert(!Data);
 		return Value2.Type == Type;
 	case C4V_Int:
-		switch (Value2.Type)
-		{
-		case C4V_Int:
-		case C4V_Bool:
-			return Data == Value2.Data;
-		default:
-			return false;
-		}
 	case C4V_Bool:
 		switch (Value2.Type)
 		{
@@ -512,7 +504,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return false;
 		}
 	case C4V_C4Object: case C4V_PropList:
-		if (Type == Value2.Type)
+		if (Value2.Type == C4V_C4Object || Value2.Type == C4V_PropList)
 		{
 			// Compare as equal if and only if the proplists are indistinguishable
 			// If one or both are mutable, they have to be the same
