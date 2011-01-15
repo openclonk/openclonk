@@ -654,8 +654,12 @@ gunzip4c4group_LDADD = \
 ## puncher
 
 puncher_SOURCES = \
-  src/netpuncher/main.cpp \
-  src/network/C4NetIO.cpp
+src/netpuncher/main.cpp \
+src/platform/StdScheduler.cpp \
+src/lib/Standard.cpp \
+src/lib/StdBuf.cpp \
+src/platform/StdFile.cpp \
+src/network/C4NetIO.cpp
 
 puncher_LDADD = \
   $(PTHREAD_LIBS)
