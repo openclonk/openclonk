@@ -189,15 +189,15 @@ func PickPixel(int x, int y, int x_obj, int y_obj)
 
 	// Create freed objects from blast or dig
 	var amount = GetMaterialVal("Blast2ObjectRatio", "Material", mat);
-	var obj = C4Id(GetMaterialVal("Blast2Object", "Material", mat));
+	var def = GetMaterialVal("Blast2Object", "Material", mat);
 	if(!amount && !GetMaterialVal("Dig2ObjectRequest", "Material", mat))
 	{
 		amount = GetMaterialVal("Dig2ObjectRatio", "Material", mat);
-		obj = C4Id(GetMaterialVal("Dig2Object", "Material", mat));
+		def = GetMaterialVal("Dig2Object", "Material", mat);
 	}
 	if(amount && picked_materials[mat_name] >= amount)
 	{
-		CreateObject(obj, x_obj, y_obj);
+		CreateObject(def, x_obj, y_obj);
 		picked_materials[mat_name] -= amount;
 	}
 }

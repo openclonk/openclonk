@@ -63,12 +63,12 @@ void C4ID::CompileFunc(StdCompiler *pComp)
 	if (pComp->isDecompiler())
 	{
 		assert(v < names.size());
-		pComp->String(&names[v][0], names[v].size(), StdCompiler::RCT_Idtf);
+		pComp->String(&names[v][0], names[v].size(), StdCompiler::RCT_ID);
 	}
 	else
 	{
 		char *data;
-		pComp->String(&data, StdCompiler::RCT_Idtf);
+		pComp->String(&data, StdCompiler::RCT_ID);
 		v = C4ID(data).v;
 		StdBuf::DeletePointer(data);
 	}
