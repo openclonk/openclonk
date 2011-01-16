@@ -180,8 +180,38 @@ bool CStdApp::Init(int argc, char * argv[])
 	return DoInit (argc, argv);
 }
 
+#ifdef WITH_GLIB
+
+static void
+gtk_clipboard_store_all (void)
+{
+  GtkClipboard *clipboard;
+  GSList *displays, *list;
+  
+  displays = gdk_display_manager_list_displays (gdk_display_manager_get ());
+
+  list = displays;
+  while (list)
+    {
+      GdkDisplay *display = static_cast<GdkDisplay *>(list->data);
+
+      clipboard = gtk_clipboard_get_for_display (display, GDK_SELECTION_CLIPBOARD);
+
+      if (clipboard)
+	gtk_clipboard_store (clipboard);
+      
+      list = list->next;
+    }
+  g_slist_free (displays);
+  
+}
+#endif
+
 void CStdApp::Clear()
 {
+#ifdef WITH_GLIB
+	gtk_clipboard_store_all();
+#endif
 	XCloseDisplay(dpy);
 	dpy = 0;
 #if USE_CONSOLE && HAVE_LIBREADLINE
