@@ -1626,8 +1626,6 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	// set other default startup parameters
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;
-	// record if desired
-	if (Config.General.Record) Game.Record = true;
 	// start with this set!
 	Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;

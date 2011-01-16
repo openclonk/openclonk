@@ -631,7 +631,6 @@ void C4Application::GameTick()
 			Game.SetScenarioFilename(NextMission.getData());
 			Game.fLobby = Game.NetworkActive;
 			Game.fObserve = false;
-			Game.Record = !!Config.General.Record;
 			NextMission.Clear();
 		}
 	case C4AS_Game:

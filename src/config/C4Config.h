@@ -52,18 +52,16 @@ public:
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
 	int32_t FPS;
-	int32_t Record;
 	int32_t DefRec;
 	int32_t MMTimer;  // use multimedia-timers
 	int32_t ScrollSmooth; // view movement smoothing
-	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got currupted and must be reset
+	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got corrupted and must be reset
 	// Determined at run-time
 	char ExePath[CFG_MaxString+1];
 	char TempPath[CFG_MaxString+1];
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];
-	char BetaCode[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
 	bool UserPortraitsWritten; // set when default portraits have been copied to the UserPath (this is only done once)

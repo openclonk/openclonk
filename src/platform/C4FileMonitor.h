@@ -44,7 +44,6 @@ public:
 
 	void StartMonitoring();
 	void AddDirectory(const char *szDir);
-	void AddTree(const char *szDir);
 	//void Remove(const char * file);
 
 	// StdSchedulerProc:
