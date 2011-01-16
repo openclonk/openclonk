@@ -90,11 +90,8 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 {
-#ifdef _WIN32
-	pComp->Value(mkNamingAdapt(AutoEditScan,        "AutoEditScan",       1              ));
-#endif
-	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1              ));
-	pComp->Value(mkNamingAdapt(AllErrorsFatal,      "AllErrorsFatal",     0              ));
+	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1              ,false, true));
+	pComp->Value(mkNamingAdapt(ExtraWarnings,      "ExtraWarnings",     0              ,false, true));
 }
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)

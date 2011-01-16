@@ -85,10 +85,7 @@ class C4ConfigDeveloper
 {
 public:
 	int32_t AutoFileReload;
-#ifdef _WIN32
-	int32_t AutoEditScan;
-#endif
-	int32_t AllErrorsFatal;
+	int32_t ExtraWarnings;
 	void CompileFunc(StdCompiler *pComp);
 };
 

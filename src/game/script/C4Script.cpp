@@ -5679,7 +5679,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAlive", FnSetAlive);
 	AddFunc(pEngine, "GetAlive", FnGetAlive);
 	AddFunc(pEngine, "GetDamage", FnGetDamage);
-	AddFunc(pEngine, "ComponentAll", FnComponentAll);
+	AddFunc(pEngine, "ComponentAll", FnComponentAll, false);
 	AddFunc(pEngine, "SetComDir", FnSetComDir);
 	AddFunc(pEngine, "GetComDir", FnGetComDir);
 	AddFunc(pEngine, "SetDir", FnSetDir);
@@ -5718,9 +5718,9 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ScrollContents", FnScrollContents);
 	AddFunc(pEngine, "Contained", FnContained);
 	AddFunc(pEngine, "ContentsCount", FnContentsCount);
-	AddFunc(pEngine, "FindContents", FnFindContents);
+	AddFunc(pEngine, "FindContents", FnFindContents, false);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
-	AddFunc(pEngine, "FindOtherContents", FnFindOtherContents);
+	AddFunc(pEngine, "FindOtherContents", FnFindOtherContents, false);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
@@ -5753,7 +5753,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PlaceVegetation", FnPlaceVegetation);
 	AddFunc(pEngine, "PlaceAnimal", FnPlaceAnimal);
 	AddFunc(pEngine, "GameOver", FnGameOver);
-	AddFunc(pEngine, "C4Id", FnC4Id);
+	AddFunc(pEngine, "C4Id", FnC4Id, false);
 	AddFunc(pEngine, "ScriptGo", FnScriptGo);
 	AddFunc(pEngine, "GetHiRank", FnGetHiRank);
 	AddFunc(pEngine, "GetCrew", FnGetCrew);
@@ -5860,20 +5860,20 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
 	AddFunc(pEngine, "ClearMenuItems", FnClearMenuItems);
-	AddFunc(pEngine, "GetObjectLayer", FnGetObjectLayer, false);
-	AddFunc(pEngine, "SetObjectLayer", FnSetObjectLayer, false);
+	AddFunc(pEngine, "GetObjectLayer", FnGetObjectLayer);
+	AddFunc(pEngine, "SetObjectLayer", FnSetObjectLayer);
 	AddFunc(pEngine, "SetShape", FnSetShape);
 	AddFunc(pEngine, "AddMsgBoardCmd", FnAddMsgBoardCmd);
 	AddFunc(pEngine, "SetGameSpeed", FnSetGameSpeed, false);
 	AddFunc(pEngine, "DrawMatChunks", FnDrawMatChunks, false);
 	AddFunc(pEngine, "GetPathLength", FnGetPathLength);
-	AddFunc(pEngine, "SetTextureIndex", FnSetTextureIndex, false);
-	AddFunc(pEngine, "RemoveUnusedTexMapEntries", FnRemoveUnusedTexMapEntries, false);
+	AddFunc(pEngine, "SetTextureIndex", FnSetTextureIndex);
+	AddFunc(pEngine, "RemoveUnusedTexMapEntries", FnRemoveUnusedTexMapEntries);
 	AddFunc(pEngine, "SetObjDrawTransform", FnSetObjDrawTransform);
 	AddFunc(pEngine, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
 	AddFunc(pEngine, "SimFlight", FnSimFlight);
 	AddFunc(pEngine, "SetPortrait", FnSetPortrait);
-	AddFunc(pEngine, "LoadScenarioSection", FnLoadScenarioSection, false);
+	AddFunc(pEngine, "LoadScenarioSection", FnLoadScenarioSection);
 	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
 	AddFunc(pEngine, "GetObjectStatus", FnGetObjectStatus, false);
 	AddFunc(pEngine, "AdjustWalkRotation", FnAdjustWalkRotation, false);
@@ -5890,7 +5890,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetObjectBlitMode", FnGetObjectBlitMode);
 	AddFunc(pEngine, "SetViewOffset", FnSetViewOffset);
 	AddFunc(pEngine, "SetPreSend", FnSetPreSend, false);
-	AddFunc(pEngine, "GetPlayerID", FnGetPlayerID, false);
+	AddFunc(pEngine, "GetPlayerID", FnGetPlayerID);
 	AddFunc(pEngine, "GetPlayerTeam", FnGetPlayerTeam);
 	AddFunc(pEngine, "SetPlayerTeam", FnSetPlayerTeam);
 	AddFunc(pEngine, "GetTeamConfig", FnGetTeamConfig);
@@ -5900,23 +5900,23 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetTeamCount", FnGetTeamCount);
 	AddFunc(pEngine, "InitScenarioPlayer", FnInitScenarioPlayer, false);
 	AddFunc(pEngine, PSF_OnOwnerRemoved, FnOnOwnerRemoved, false);
-	AddFunc(pEngine, "SetScoreboardData", FnSetScoreboardData, false);
+	AddFunc(pEngine, "SetScoreboardData", FnSetScoreboardData);
 	AddFunc(pEngine, "GetScoreboardString", FnGetScoreboardString, false);
 	AddFunc(pEngine, "GetScoreboardData", FnGetScoreboardData, false);
-	AddFunc(pEngine, "DoScoreboardShow", FnDoScoreboardShow, false);
-	AddFunc(pEngine, "SortScoreboard", FnSortScoreboard, false);
-	AddFunc(pEngine, "AddEvaluationData", FnAddEvaluationData, false);
-	AddFunc(pEngine, "HideSettlementScoreInEvaluation", FnHideSettlementScoreInEvaluation, false);
+	AddFunc(pEngine, "DoScoreboardShow", FnDoScoreboardShow);
+	AddFunc(pEngine, "SortScoreboard", FnSortScoreboard);
+	AddFunc(pEngine, "AddEvaluationData", FnAddEvaluationData);
+	AddFunc(pEngine, "HideSettlementScoreInEvaluation", FnHideSettlementScoreInEvaluation);
 	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
-	AddFunc(pEngine, "FatalError", FnFatalError, false);
+	AddFunc(pEngine, "FatalError", FnFatalError);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
-	AddFunc(pEngine, "PlayVideo", FnPlayVideo);
+	AddFunc(pEngine, "PlayVideo", FnPlayVideo, false);
 	AddFunc(pEngine, "StartCallTrace", FnStartCallTrace);
 	AddFunc(pEngine, "StartScriptProfiler", FnStartScriptProfiler);
 	AddFunc(pEngine, "StopScriptProfiler", FnStopScriptProfiler);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
-	AddFunc(pEngine, "PauseGame", FnPauseGame);
+	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
 	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
 	AddFunc(pEngine, "PathFree", FnPathFree);
@@ -5954,7 +5954,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Punch", FnPunch);
 	AddFunc(pEngine, "Kill", FnKill);
 	AddFunc(pEngine, "Fling", FnFling);
-	AddFunc(pEngine, "Jump", FnJump);
+	AddFunc(pEngine, "Jump", FnJump, false);
 	AddFunc(pEngine, "Enter", FnEnter);
 	AddFunc(pEngine, "DeathAnnounce", FnDeathAnnounce);
 	AddFunc(pEngine, "SetSolidMask", FnSetSolidMask);
@@ -6291,12 +6291,12 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "FindObject",           1  ,C4V_C4Object ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObject },
 	{ "FindObjects",          1  ,C4V_Array    ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObjects },
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
-	{ "ProtectedCall",        1  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnProtectedCall_C4V ,         0 },
-	{ "PrivateCall",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnPrivateCall_C4V ,           0 },
+	{ "ProtectedCall",        0  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnProtectedCall_C4V ,         0 },
+	{ "PrivateCall",          0  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnPrivateCall_C4V ,           0 },
 	{ "GameCall",             1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
 	{ "GameCallEx",           1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCallEx_C4V ,            0 },
-	{ "DefinitionCall",       1  ,C4V_Any      ,{ C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
-	{ "Call",                 0  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
+	{ "DefinitionCall",       0  ,C4V_Any      ,{ C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
+	{ "Call",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
 	{ "GetPlrKnowledge",      1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
 	{ "GetComponent",         1  ,C4V_Int      ,{ C4V_PropList,C4V_Int     ,C4V_C4Object,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
 	{ "PlayerMessage",        1  ,C4V_Int      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,         0 },

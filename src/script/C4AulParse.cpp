@@ -1645,7 +1645,6 @@ void C4AulParseState::Parse_FuncHead()
 			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
-			// ampersand?
 			if (TokenType != ATT_IDTF)
 			{
 				UnexpectedToken("parameter name");
@@ -2006,7 +2005,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				C4V_Type from;
 				switch ((a->CPos-1)->bccType)
 				{
-				case AB_INT: from = (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
+				case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 				case AB_STRING: from = C4V_String; break;
 				case AB_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 				case AB_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
@@ -2486,6 +2485,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			}
 			else if (FoundFn)
 			{
+				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
+					Warn("using deprecated function ", Idtf);
 				Shift();
 				// Function parameters for all functions except "this", which can be used without
 				if (!SEqual(FoundFn->Name, C4AUL_this) || TokenType == ATT_BOPEN)
