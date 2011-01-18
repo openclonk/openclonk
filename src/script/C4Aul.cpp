@@ -570,7 +570,7 @@ std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 	{
 		// Insert divider if necessary
 		if (script->GetSFunc(0))
-			functions.push_back(0);
+			functions.push_back(static_cast<char*>(0));
 		C4AulScriptFunc *pRef;
 		// Scan all functions
 		for (int cnt=0; (pRef=script->GetSFunc(cnt)); cnt++)
