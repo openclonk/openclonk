@@ -701,8 +701,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 
-	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy bindung
-//  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
 
 	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy binding
 //  gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_HIDEREADONLY) == 0);
