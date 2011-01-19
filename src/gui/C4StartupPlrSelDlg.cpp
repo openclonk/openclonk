@@ -155,13 +155,12 @@ void C4StartupPlrSelDlg::ListItem::LoadPortrait(C4Group &rGrp, bool fUseDefault)
 {
 	bool fPortraitLinked = false;
 	if (!rGrp.FindEntry(C4CFN_Portrait) || !fctPortraitBase.Load(rGrp, C4CFN_Portrait))
-		if (!rGrp.FindEntry(C4CFN_Portrait_Old) || !fctPortraitBase.Load(rGrp, C4CFN_Portrait_Old))
-		{
-			// no custom portrait: Link to some default if desired
-			if (!fUseDefault) return;
-			SetDefaultPortrait();
-			fPortraitLinked = true;
-		}
+	{
+		// no custom portrait: Link to some default if desired
+		if (!fUseDefault) return;
+		SetDefaultPortrait();
+		fPortraitLinked = true;
+	}
 	if (!fPortraitLinked) CreateColoredPortrait();
 }
 

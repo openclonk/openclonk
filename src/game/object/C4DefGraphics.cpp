@@ -116,23 +116,12 @@ void C4DefGraphics::Clear()
 	pNext = NULL; fColorBitmapAutoCreated = false;
 }
 
-bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner)
+bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner)
 {
-	// try png
-	char strScaledMaskPNG[_MAX_FNAME + 1]; SCopy(szFilenamePNG, strScaledMaskPNG, _MAX_FNAME);
-	SCopy("*.", GetExtension(strScaledMaskPNG)); SAppend(GetExtension(szFilenamePNG), strScaledMaskPNG);
-	if (szFilenamePNG && (hGroup.FindEntry(szFilenamePNG) || hGroup.FindEntry(strScaledMaskPNG)))
-	{
-		Bmp.Bitmap = new C4Surface();
-		if (!Bmp.Bitmap->Load(hGroup, szFilenamePNG)) return false;
-	}
-	else
-	{
-		if (szFilename)
-			if ( !hGroup.AccessEntry(szFilename)
-			     || !(Bmp.Bitmap=GroupReadSurface(hGroup)) )
-				return false;
-	}
+	if (!szFilenamePNG) return false;
+	Bmp.Bitmap = new C4Surface();
+	if (!Bmp.Bitmap->Load(hGroup, szFilenamePNG)) return false;
+
 	// Create owner color bitmaps
 	if (fColorByOwner)
 	{
@@ -146,10 +135,8 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 			// set as Clr-surface, also checking size
 			if (!Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap))
 			{
-				const char *szFn = szFilenamePNG ? szFilenamePNG : szFilename;
-				if (!szFn) szFn = "???";
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
-				          hGroup.GetFullName().getData(), szFn, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
+				          hGroup.GetFullName().getData(), szFilenamePNG, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
 				          szOverlayPNG, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
 				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
 				return false;
@@ -220,10 +207,9 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	// Try from Mesh first
 	if (LoadMesh(hGroup, loader)) return true;
 	// load basic graphics
-	if (!LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
+	if (!LoadBitmap(hGroup, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
 
 	// load additional graphics
-	// first, search all png-graphics in NewGfx
 	C4DefGraphics *pLastGraphics = this;
 	int32_t iWildcardPos;
 	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsExPNG);
@@ -260,32 +246,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 			EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
 		}
 		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, NULL, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
-			return false;
-	}
-	// load bitmap-graphics
-	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsEx);
-	hGroup.ResetSearch();
-	*Filename=0;
-	while (hGroup.FindNextEntry(C4CFN_DefGraphicsEx, Filename, NULL, NULL, !!*Filename))
-	{
-		// skip def graphics
-		if (SEqualNoCase(Filename, C4CFN_DefGraphics)) continue;
-		// skip scaled def graphics
-		if (WildcardMatch(C4CFN_DefGraphicsScaled, Filename)) continue;
-		// get graphics name
-		char GrpName[_MAX_PATH+1];
-		SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
-		RemoveExtension(GrpName);
-		// clip to max length
-		GrpName[C4MaxName]=0;
-		// check if graphics already exist (-> loaded as PNG)
-		if (Get(GrpName)) continue;
-		// create new graphics
-		pLastGraphics->pNext = new C4AdditionalDefGraphics(pDef, GrpName);
-		pLastGraphics = pLastGraphics->pNext;
-		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, Filename, NULL, NULL, fColorByOwner))
+		if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
 			return false;
 	}
 	// load portrait graphics
@@ -301,28 +262,22 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 		// clip to max length
 		GrpName[C4MaxName]=0;
 		// determine file type (bmp or png)
-		char OverlayFn[_MAX_PATH+1]; bool fBMP; *OverlayFn=0;
-		if (SEqualNoCase(GetExtension(Filename), "bmp"))
-			fBMP=true;
-		else
+		char OverlayFn[_MAX_PATH+1]; *OverlayFn=0;
+		if (!SEqualNoCase(GetExtension(Filename), "png")) continue;
+		// create overlay-filename for PNGs
+		if (fColorByOwner)
 		{
-			fBMP=false;
-			if (!SEqualNoCase(GetExtension(Filename), "png")) continue;
-			// create overlay-filename for PNGs
-			if (fColorByOwner)
-			{
-				// PortraitX.png -> OverlayX.png
-				SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
-				OverlayFn[iOverlayWildcardPos]=0;
-				SAppend(Filename + iWildcardPos, OverlayFn);
-				EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
-			}
+			// PortraitX.png -> OverlayX.png
+			SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
+			OverlayFn[iOverlayWildcardPos]=0;
+			SAppend(Filename + iWildcardPos, OverlayFn);
+			EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
 		}
 		// create new graphics
 		pLastGraphics->pNext = new C4PortraitGraphics(pDef, GrpName);
 		pLastGraphics = pLastGraphics->pNext;
 		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, fBMP ? Filename : NULL, fBMP ? NULL : Filename, *OverlayFn ? OverlayFn : NULL, fColorByOwner))
+		if (!pLastGraphics->LoadBitmap(hGroup, Filename, *OverlayFn ? OverlayFn : NULL, fColorByOwner))
 			return false;
 	}
 	// done, success
@@ -565,14 +520,14 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 
 
 
-bool C4Portrait::Load(C4Group &rGrp, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG)
+bool C4Portrait::Load(C4Group &rGrp, const char *szFilenamePNG, const char *szOverlayPNG)
 {
 	// clear previous
 	Clear();
 	// create new gfx
 	pGfxPortrait = new C4DefGraphics();
 	// load
-	if (!pGfxPortrait->LoadBitmap(rGrp, szFilename, szFilenamePNG, szOverlayPNG, true))
+	if (!pGfxPortrait->LoadBitmap(rGrp, szFilenamePNG, szOverlayPNG, true))
 	{
 		// load failure
 		delete pGfxPortrait; pGfxPortrait=NULL;

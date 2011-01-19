@@ -105,7 +105,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 			// try to load it
 			if (pCustomPortrait) delete pCustomPortrait;
 			pCustomPortrait = new C4Portrait();
-			if (pCustomPortrait->Load(hGroup, C4CFN_Portrait_Old, C4CFN_Portrait, C4CFN_PortraitOverlay))
+			if (pCustomPortrait->Load(hGroup, C4CFN_Portrait, C4CFN_PortraitOverlay))
 			{
 				// link portrait to custom portrait
 				Portrait.Link(pCustomPortrait->GetGfx());
@@ -154,7 +154,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 	if (!*PortraitFile && fLoadPortrait)
 	{
 		// try to load a custom portrait
-		if (!fPortraitFileChecked && Portrait.Load(hGroup, C4CFN_Portrait_Old, C4CFN_Portrait, C4CFN_PortraitOverlay))
+		if (!fPortraitFileChecked && Portrait.Load(hGroup, C4CFN_Portrait, C4CFN_PortraitOverlay))
 			// assign it as custom portrait
 			SCopy(C4Portrait_Custom, PortraitFile);
 		else if (Config.Graphics.AddNewCrewPortraits)
@@ -212,8 +212,6 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 		{
 			C4Portrait *pSavePortrait = pNewPortrait ? pNewPortrait : &Portrait;
 			C4DefGraphics *pPortraitGfx;
-			// erase any old-style portrait
-			hGroup.Delete(C4CFN_Portrait_Old, false);
 			// save new
 			if (pSavePortrait->GetGfx()) pSavePortrait->SavePNG(hTemp, C4CFN_Portrait, C4CFN_PortraitOverlay);
 			// save spec
