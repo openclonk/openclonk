@@ -59,7 +59,7 @@ private:
 public:
 	C4Game();
 	~C4Game();
-public:
+
 	C4ClientList       &Clients; // Shortcut
 	C4GameParameters    Parameters;
 	C4TeamList         &Teams; // Shortcut
@@ -144,7 +144,6 @@ public:
 	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; int DebugWait;
 
 	// Init and execution
-	void Default();
 	void Clear();
 	void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
 	void Evaluate();
@@ -234,6 +233,7 @@ public:
 	bool InitPlayerControlSettings();
 
 protected:
+	void Default();
 	void InitInEarth();
 	void InitVegetation();
 	void InitAnimals();

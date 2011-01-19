@@ -599,6 +599,7 @@ void C4Game::Clear()
 	Info.Clear();
 	Title.Clear();
 	::GameScript.Clear();
+	::GameScript.Default();
 	Names.Clear();
 	GameText.Clear();
 	RecordDumpFile.Clear();
@@ -646,6 +647,8 @@ void C4Game::Clear()
 	QuitLogPos = GetLogPos();
 
 	fPreinited = false;
+	// FIXME: remove this
+	Default();
 }
 
 bool C4Game::GameOverCheck()
@@ -1502,7 +1505,6 @@ void C4Game::Default()
 	MainSysLangStringTable.Default();
 	ScenarioLangStringTable.Default();
 	ScenarioSysLangStringTable.Default();
-	::GameScript.Default();
 	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();

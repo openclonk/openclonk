@@ -623,7 +623,6 @@ void C4Application::GameTick()
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
-		Game.Default();
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)

@@ -82,7 +82,7 @@ class C4GameScriptHost : public C4ScriptHost
 public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
-	bool Delete() { return false; } // do NOT delete this - it's just a class member!
+	bool Delete() { return false; } // do NOT delete this - it's a global!
 	void Default();
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 
