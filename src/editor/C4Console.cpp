@@ -409,25 +409,6 @@ void C4Console::ClearViewportMenu()
 	C4ConsoleGUI::ClearViewportMenu();
 }
 
-void C4Console::EditTitle()
-{
-	if (::Network.isEnabled()) return;
-	Game.Title.Open();
-}
-
-void C4Console::EditScript()
-{
-	if (::Network.isEnabled()) return;
-	::GameScript.Open();
-	::ScriptEngine.ReLink(&::Definitions);
-}
-
-void C4Console::EditInfo()
-{
-	if (::Network.isEnabled()) return;
-	Game.Info.Open();
-}
-
 void C4Console::UpdateInputCtrl()
 {
 	int cnt;

@@ -100,7 +100,6 @@ namespace C4GameLobby
 					rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 					sDesc.Take(rtf.GetPlainText());
 				}
-				DefDesc.Close();
 				if (!!sDesc)
 					pDescBox->AddTextLine(sDesc.getData(), &rTextFont, C4GUI_MessageFontClr, false, true, &rTitleFont);
 				else

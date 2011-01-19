@@ -29,68 +29,6 @@
 #include <C4Language.h>
 #include <StdRegistry.h>
 
-C4ComponentHost *pCmpHost=NULL;
-
-#ifdef _WIN32
-#include "resource.h"
-
-INT_PTR CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	if (!pCmpHost) return false;
-
-	switch (Msg)
-	{
-		//------------------------------------------------------------------
-	case WM_CLOSE:
-		pCmpHost->Close();
-		break;
-		//-------------------------------------------------------------------------------------------------
-	case WM_DESTROY:
-		StoreWindowPosition(hDlg, "Component", Config.GetSubkeyPath("Console"), false);
-		break;
-		//-------------------------------------------------------------------------------------------------
-	case WM_INITDIALOG:
-		pCmpHost->InitDialog(hDlg);
-		RestoreWindowPosition(hDlg, "Component", Config.GetSubkeyPath("Console"));
-		return true;
-		//-------------------------------------------------------------------------------------------------
-	case WM_COMMAND:
-		// Evaluate command
-		switch (LOWORD(wParam))
-		{
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDCANCEL:
-			pCmpHost->Close();
-			return true;
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDOK:
-			// IDC_EDITDATA to Data
-			char buffer[65000];
-			GetDlgItemText(hDlg,IDC_EDITDATA,buffer,65000);
-			pCmpHost->Modified=true;
-			pCmpHost->Data.Copy(buffer);
-			pCmpHost->Close();
-			return true;
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		}
-		return false;
-		//-----------------------------------------------------------------------------------------------------------------------------------
-	}
-	return false;
-}
-
-void C4ComponentHost::InitDialog(HWND hDlg)
-{
-	hDialog=hDlg;
-	// Set text
-	SetWindowText(hDialog,Name);
-	SetDlgItemText(hDialog,IDOK,LoadResStr("IDS_BTN_OK"));
-	SetDlgItemText(hDialog,IDCANCEL,LoadResStr("IDS_BTN_CANCEL"));
-	if (Data.getLength()) SetDlgItemText(hDialog,IDC_EDITDATA,Data.getData());
-}
-
-#endif
-
 C4ComponentHost::C4ComponentHost()
 {
 	Default();
@@ -104,23 +42,15 @@ C4ComponentHost::~C4ComponentHost()
 void C4ComponentHost::Default()
 {
 	Data.Clear();
-	Modified=false;
 	Name[0]=0;
 	Filename[0]=0;
 	FilePath[0]=0;
-#ifdef _WIN32
-	hDialog=0;
-#endif
 }
 
 void C4ComponentHost::Clear()
 {
 	Data.Clear();
 	OnLoad();
-
-#ifdef _WIN32
-	if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
-#endif
 }
 
 bool C4ComponentHost::Load(const char *szName,
@@ -304,36 +234,6 @@ void C4ComponentHost::CopyFilePathFromGroup(const C4Group &hGroup)
 	SAppend(Filename, FilePath, _MAX_PATH);
 }
 
-bool C4ComponentHost::Set(const char *szData)
-{
-	// clear existing data
-	Clear();
-	// copy new data
-	Data.Copy(szData);
-	// Notify
-	OnLoad();
-	return true;
-}
-
-bool C4ComponentHost::Save(C4Group &hGroup)
-{
-	if (!Modified) return true;
-	if (!Data) return hGroup.Delete(Filename);
-	return hGroup.Add(Filename,Data);
-}
-
-void C4ComponentHost::Open()
-{
-#ifdef _WIN32
-	pCmpHost=this;
-	DialogBox(Application.GetInstance(),
-	          MAKEINTRESOURCE(IDD_COMPONENT),
-	          Application.GetWindowHandle(),
-	          (DLGPROC) ComponentDlgProc);
-#endif
-	pCmpHost=NULL;
-}
-
 bool C4ComponentHost::GetLanguageString(const char *szLanguage, StdStrBuf &rTarget)
 {
 	const char *cptr;
@@ -356,53 +256,4 @@ bool C4ComponentHost::GetLanguageString(const char *szLanguage, StdStrBuf &rTarg
 	}
 	// Language string not found
 	return false;
-}
-
-void C4ComponentHost::Close()
-{
-#ifdef _WIN32
-	if (!hDialog) return;
-	EndDialog(hDialog,1);
-	hDialog=false;
-#endif
-}
-
-/*bool C4ComponentHost::SetLanguageString(const char *szLanguage, const char *szString)
-  {
-  // Safety
-  if (!szLanguage || !szString) return false;
-  // Allocate temp buffer
-  char *cpBuffer = new char [Size+SLen(szLanguage)+1+SLen(szString)+2+1];
-  cpBuffer[0]=0;
-  // Copy all lines except language line
-  const char *cpPos=Data;
-  while (cpPos && *cpPos)
-    {
-    if (!SEqual2(cpPos,szLanguage))
-      {
-      SCopyUntil( cpPos, cpBuffer+SLen(cpBuffer), 0x0A );
-      if (cpBuffer[0]) if (cpBuffer[SLen(cpBuffer)-1]!=0x0D) SAppendChar(0x0D,cpBuffer);
-      SAppendChar(0x0A,cpBuffer);
-      }
-    cpPos = SAdvancePast(cpPos,0x0A);
-    }
-  // Append new language line
-  SAppend(szLanguage,cpBuffer);
-  SAppendChar(':',cpBuffer);
-  SAppend(szString,cpBuffer);
-  // Set new data, delete temp buffer
-  delete [] Data; Data=NULL;
-  Data = new char [SLen(cpBuffer)+1];
-  SCopy(cpBuffer,Data);
-  Size=SLen(Data);
-  delete [] cpBuffer;
-  // Success
-  Modified=true;
-  return true;
-  }*/
-
-void C4ComponentHost::TrimSpaces()
-{
-	Data.TrimSpaces();
-	Modified=true;
 }

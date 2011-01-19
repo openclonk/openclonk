@@ -313,12 +313,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "QUIT",                        IDM_FILE_QUIT
     END
-    POPUP "COMPONENTS"
-    BEGIN
-        MENUITEM "SCRIPT",                      IDM_COMPONENTS_SCRIPT
-        MENUITEM "TITLE",                       IDM_COMPONENTS_TITLE
-        MENUITEM "INFO",                        IDM_COMPONENTS_INFO
-    END
     POPUP "PLAYER"
     BEGIN
         MENUITEM "NEW",                         IDM_PLAYER_JOIN

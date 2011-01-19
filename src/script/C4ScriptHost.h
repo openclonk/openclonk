@@ -42,7 +42,6 @@ public:
 public:
 	void Default();
 	void Clear();
-	void Close();
 	bool Load(const char *szName, C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, class C4LangStringTable *pLocalTable, bool fLoadTable = false);
 	const char *GetControlDesc(const char *szFunctionFormat, int32_t iCom, C4ID *pidImage=NULL, int32_t* piImagePhase = NULL);

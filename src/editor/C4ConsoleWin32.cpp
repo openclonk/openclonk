@@ -90,7 +90,6 @@ public:
 	HBITMAP hbmHalt;
 	HBITMAP hbmHalt2;
 	int MenuIndexFile;
-	int MenuIndexComponents;
 	int MenuIndexPlayer;
 	int MenuIndexViewport;
 	int MenuIndexNet;
@@ -109,11 +108,10 @@ public:
 		hbmHalt=NULL;
 		hbmHalt2=NULL;
 		MenuIndexFile       =  0;
-		MenuIndexComponents =  1;
-		MenuIndexPlayer     =  2;
-		MenuIndexViewport   =  3;
+		MenuIndexPlayer     =  1;
+		MenuIndexViewport   =  2;
 		MenuIndexNet        = -1;
-		MenuIndexHelp       =  4;
+		MenuIndexHelp       =  3;
 	}
 
 	~State()
@@ -161,12 +159,6 @@ public:
 		SetMenuItemText(hSubMenu,IDM_FILE_SAVEGAMEAS,LoadResStr("IDS_MNU_SAVEGAMEAS"));
 		SetMenuItemText(hSubMenu,IDM_FILE_CLOSE,LoadResStr("IDS_MNU_CLOSE"));
 		SetMenuItemText(hSubMenu,IDM_FILE_QUIT,LoadResStr("IDS_MNU_QUIT"));
-		// Components
-		ModifyMenu(hMenu,MenuIndexComponents,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_COMPONENTS"));
-		hSubMenu = GetSubMenu(hMenu,MenuIndexComponents);
-		SetMenuItemText(hSubMenu,IDM_COMPONENTS_SCRIPT,LoadResStr("IDS_MNU_SCRIPT"));
-		SetMenuItemText(hSubMenu,IDM_COMPONENTS_TITLE,LoadResStr("IDS_MNU_TITLE"));
-		SetMenuItemText(hSubMenu,IDM_COMPONENTS_INFO,LoadResStr("IDS_MNU_INFO"));
 		// Player
 		ModifyMenu(hMenu,MenuIndexPlayer,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_PLAYER"));
 		hSubMenu = GetSubMenu(hMenu,MenuIndexPlayer);
@@ -275,12 +267,6 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		case IDM_PLAYER_JOIN: Console.PlayerJoin(); return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDM_VIEWPORT_NEW: Console.ViewportNew(); return true;
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDM_COMPONENTS_TITLE: Console.EditTitle(); return true;
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDM_COMPONENTS_INFO: Console.EditInfo(); return true;
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDM_COMPONENTS_SCRIPT: Console.EditScript(); return true;
 		}
 		// New player viewport
 		if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
@@ -691,11 +677,6 @@ void C4ConsoleGUI::DoEnableControls(bool fEnable)
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEAS, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_CLOSE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
-
-	// Components menu
-	EnableMenuItem(GetMenu(hWindow),IDM_COMPONENTS_SCRIPT, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_COMPONENTS_INFO, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_COMPONENTS_TITLE, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));
 
 	// Player & viewport menu
 	EnableMenuItem(GetMenu(hWindow),IDM_PLAYER_JOIN, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));

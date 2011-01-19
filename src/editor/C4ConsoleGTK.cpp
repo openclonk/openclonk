@@ -68,14 +68,6 @@ using namespace OpenFileFlags;
 
 namespace
 {
-	/*GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
-	{
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
-		GtkWidget* image = gtk_image_new_from_pixbuf(pixbuf);
-		gdk_pixbuf_unref(pixbuf);
-		return image;
-	}*/
-	
 	void SelectComboBoxText(GtkComboBox* combobox, const char* text)
 	{
 		GtkTreeModel* model = gtk_combo_box_get_model(combobox);
@@ -147,9 +139,6 @@ public:
 	GtkWidget* fileClose;
 	GtkWidget* fileQuit;
 
-	GtkWidget* compScript;
-	GtkWidget* compTitle;
-	GtkWidget* compInfo;
 	GtkWidget* compObjects;
 
 	GtkWidget* plrJoin;
@@ -235,9 +224,6 @@ public:
 	static void OnFileQuit(GtkWidget* item, gpointer data);
 
 	static void OnCompObjects(GtkWidget* item, gpointer data);
-	static void OnCompScript(GtkWidget* item, gpointer data);
-	static void OnCompTitle(GtkWidget* item, gpointer data);
-	static void OnCompInfo(GtkWidget* item, gpointer data);
 
 	static void OnPlrJoin(GtkWidget* item, gpointer data);
 	static void OnPlrQuit(GtkWidget* item, gpointer data);
@@ -500,16 +486,7 @@ void C4ConsoleGUI::State::InitGUI()
 
 	compObjects = gtk_menu_item_new_with_label(LoadResStr("IDS_BTN_OBJECTS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compObjects);
-#if 0
-	compScript = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SCRIPT"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compScript);
 
-	compTitle = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_TITLE"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compTitle);
-
-	compInfo = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_INFO"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compInfo);
-#endif
 	plrJoin = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_JOIN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), plrJoin);
 
@@ -550,9 +527,6 @@ void C4ConsoleGUI::State::InitGUI()
 	g_signal_connect(G_OBJECT(fileClose), "activate", G_CALLBACK(OnFileClose), this);
 	g_signal_connect(G_OBJECT(fileQuit), "activate", G_CALLBACK(OnFileQuit), this);
 	g_signal_connect(G_OBJECT(compObjects), "activate", G_CALLBACK(OnCompObjects), this);
-	g_signal_connect(G_OBJECT(compScript), "activate", G_CALLBACK(OnCompScript), this);
-	g_signal_connect(G_OBJECT(compTitle), "activate", G_CALLBACK(OnCompTitle), this);
-	g_signal_connect(G_OBJECT(compInfo), "activate", G_CALLBACK(OnCompInfo), this);
 	g_signal_connect(G_OBJECT(plrJoin), "activate", G_CALLBACK(OnPlrJoin), this);
 	g_signal_connect(G_OBJECT(viewNew), "activate", G_CALLBACK(OnViewNew), this);
 	g_signal_connect(G_OBJECT(helpAbout), "activate", G_CALLBACK(OnHelpAbout), this);
@@ -586,9 +560,6 @@ void C4ConsoleGUI::State::Clear()
 	fileClose = NULL;
 	fileQuit = NULL;
 
-	compScript = NULL;
-	compTitle = NULL;
-	compInfo = NULL;
 	compObjects = NULL;
 
 	plrJoin = NULL;
@@ -996,10 +967,6 @@ void C4ConsoleGUI::State::DoEnableControls(bool fEnable)
 
 	// Components menu
 	gtk_widget_set_sensitive(compObjects, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compScript, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compInfo, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compTitle, fEnable && GetOwner()->Editing);
-
 	// Player & viewport menu
 	gtk_widget_set_sensitive(plrJoin, fEnable && GetOwner()->Editing);
 	gtk_widget_set_sensitive(viewNew, fEnable);
@@ -1595,21 +1562,6 @@ void C4ConsoleGUI::State::OnFileQuit(GtkWidget* item, gpointer data)
 void C4ConsoleGUI::State::OnCompObjects(GtkWidget* item, gpointer data)
 {
 	Console.ObjectListDlg.Open();
-}
-
-void C4ConsoleGUI::State::OnCompScript(GtkWidget* item, gpointer data)
-{
-	Console.EditScript();
-}
-
-void C4ConsoleGUI::State::OnCompTitle(GtkWidget* item, gpointer data)
-{
-	Console.EditTitle();
-}
-
-void C4ConsoleGUI::State::OnCompInfo(GtkWidget* item, gpointer data)
-{
-	Console.EditInfo();
 }
 
 void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)

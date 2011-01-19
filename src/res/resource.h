@@ -72,9 +72,6 @@
 #define IDI_11_C4L                      4011
 #define IDI_12_C4K                      4012
 #define IDI_13_C4U                      4013
-#define IDM_COMPONENTS_INFO             5000
-#define IDM_COMPONENTS_SCRIPT           5001
-#define IDM_COMPONENTS_TITLE            5002
 #define IDM_FILE_CLOSE                  5003
 #define IDM_FILE_OPEN                   5004
 #define IDM_FILE_OPENWPLRS              5005

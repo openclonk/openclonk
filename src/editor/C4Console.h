@@ -80,9 +80,6 @@ public:
 	void UpdateNetMenu();
 	void ClearNetMenu();
 	void PlayerJoin();
-	void EditInfo();
-	void EditScript();
-	void EditTitle();
 	void ViewportNew();
 	void HelpAbout();
 	bool FileSelect(char *sFilename, int iSize, const char *szFilter, DWORD dwFlags, bool fSave=false);

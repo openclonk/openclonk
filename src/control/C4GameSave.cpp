@@ -208,15 +208,6 @@ bool C4GameSave::SaveRuntimeData()
 	// Teams
 	if (!Game.Teams.Save(*pSaveGroup))
 		{ Log(LoadResStr(LoadResStr("IDS_ERR_ERRORSAVINGTEAMS"))); return false; }
-	// some scenario components possiby modified in console mode
-	// such modifications cannot possibly be done before game start
-	// so it's runtime data
-	// Script
-	if (!::GameScript.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_SCRIPT")); /* nofail */
-	// Title - unexact only, because in savegames, the title will be set in core
-	if (!IsExact()) if (!Game.Title.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_TITLE")); /* nofail */
-	// Info
-	if (!Game.Info.Save((*pSaveGroup))) Log(LoadResStr("IDS_ERR_SAVE_INFO")); /* nofail */
 	if (GetSaveUserPlayers() || GetSaveScriptPlayers())
 	{
 		// player infos

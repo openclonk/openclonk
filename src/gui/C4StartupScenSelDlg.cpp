@@ -484,7 +484,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 		if (DefNames.LoadEx("Title", Group, C4CFN_Title, Config.General.LanguageEx))
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
-		DefNames.Close();
 		// load entry icon
 		if (Group.FindEntry(C4CFN_IconPNG) && fctIcon.Load(Group, C4CFN_IconPNG))
 			fIconLoaded = true;
@@ -529,7 +528,6 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 			sDesc.Take(rtf.GetPlainText());
 		}
-		DefDesc.Close();
 		// load title
 		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
 			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);

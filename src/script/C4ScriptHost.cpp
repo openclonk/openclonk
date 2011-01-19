@@ -89,16 +89,6 @@ void C4ScriptHost::MakeScript()
 	Preparse();
 }
 
-void C4ScriptHost::Close()
-{
-	// Base close
-	C4ComponentHost::Close();
-	// Make executable script
-	MakeScript();
-	// Update console
-	Console.UpdateInputCtrl();
-}
-
 int32_t C4ScriptHost::GetControlMethod(int32_t com, int32_t first, int32_t second)
 {
 	return ((first >> com) & 0x01) | (((second >> com) & 0x01) << 1);
