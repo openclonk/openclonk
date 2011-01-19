@@ -503,16 +503,11 @@ bool C4Def::Load(C4Group &hGroup,
 	{
 		// clear any previous
 		if (pRankSymbols) delete pRankSymbols; pRankSymbols=NULL;
-		// load new: try png first
+		// load new
 		if (hGroup.AccessEntry(C4CFN_RankFacesPNG))
 		{
 			pRankSymbols = new C4FacetSurface();
 			if (!pRankSymbols->GetFace().ReadPNG(hGroup)) { delete pRankSymbols; pRankSymbols=NULL; }
-		}
-		else if (hGroup.AccessEntry(C4CFN_RankFaces))
-		{
-			pRankSymbols = new C4FacetSurface();
-			if (!pRankSymbols->GetFace().ReadBMP(hGroup)) { delete pRankSymbols; pRankSymbols=NULL; }
 		}
 		// set size
 		if (pRankSymbols)
