@@ -31,7 +31,6 @@
 #include <C4GameVersion.h>
 #include <C4FileMonitor.h>
 
-#include <C4SurfaceFile.h>
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Config.h>

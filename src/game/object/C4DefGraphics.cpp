@@ -27,7 +27,6 @@
 #include <C4Include.h>
 #include <C4DefGraphics.h>
 
-#include <C4SurfaceFile.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
 #include <C4Config.h>

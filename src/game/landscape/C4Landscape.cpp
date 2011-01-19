@@ -26,16 +26,17 @@
 
 #include <C4Include.h>
 #include <C4Landscape.h>
+
 #include <C4SolidMask.h>
 #include <C4Game.h>
-
+#include <C4Group.h>
 #include <C4Map.h>
 #include <C4MapCreatorS2.h>
 #include <C4SolidMask.h>
 #include <C4Object.h>
 #include <C4Physics.h>
 #include <C4Random.h>
-#include <C4SurfaceFile.h>
+#include <C4Surface.h>
 #include <C4ToolsDlg.h>
 #ifdef DEBUGREC
 #include <C4Record.h>
@@ -52,7 +53,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Record.h>
-
+#include <StdSurface8.h>
 #include <StdPNG.h>
 
 const int C4LS_MaxLightDistY = 8;
@@ -601,6 +602,24 @@ bool C4Landscape::PostInitMap()
 	if (!Game.C4S.Landscape.KeepMapCreator) { delete pMapCreator; pMapCreator=NULL; }
 	// done, success
 	return true;
+}
+
+static CSurface8 *GroupReadSurface8(CStdStream &hGroup)
+{
+	// create surface
+	CSurface8 *pSfc=new CSurface8();
+	if (!pSfc->Read(hGroup))
+		{ delete pSfc; return NULL; }
+	return pSfc;
+}
+
+static CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
+{
+	// create surface
+	CSurface8 *pSfc=new CSurface8();
+	if (!pSfc->Read(hGroup))
+		{ delete pSfc; return NULL; }
+	return pSfc;
 }
 
 bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame)

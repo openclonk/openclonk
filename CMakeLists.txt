@@ -394,8 +394,6 @@ set(OC_CLONK_SOURCES
 	src/lib/texture/C4GraphicsResource.cpp
 	src/lib/texture/C4GraphicsResource.h
 	src/lib/texture/C4Surface.cpp
-	src/lib/texture/C4SurfaceFile.cpp
-	src/lib/texture/C4SurfaceFile.h
 	src/lib/texture/C4Surface.h
 	src/lib/texture/StdPNG.cpp
 	src/lib/texture/StdPNG.h

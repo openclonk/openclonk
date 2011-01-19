@@ -38,7 +38,6 @@
 #include <C4ObjectInfo.h>
 #include <C4Random.h>
 #include <C4ObjectCom.h>
-#include <C4SurfaceFile.h>
 #include <C4FullScreen.h>
 #include <C4Startup.h>
 #include <C4Viewport.h>

@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4Texture.h>
 
-#include <C4SurfaceFile.h>
 #include <C4Group.h>
 #include <C4Game.h>
 #include <C4Config.h>
