@@ -374,6 +374,16 @@ set(OC_CLONK_SOURCES
 	src/lib/StdCompiler.h
 	src/lib/StdMarkup.cpp
 	src/lib/StdMarkup.h
+	src/lib/StdMesh.cpp
+	src/lib/StdMesh.h
+	src/lib/StdMeshLoader.h
+	src/lib/StdMeshLoaderBinary.cpp
+	src/lib/StdMeshLoaderBinaryChunks.cpp
+	src/lib/StdMeshLoaderBinaryChunks.h
+	src/lib/StdMeshLoaderDataStream.h
+	src/lib/StdMeshLoaderXml.cpp
+	src/lib/StdMeshMaterial.cpp
+	src/lib/StdMeshMaterial.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/lib/StdResStr.h
@@ -462,16 +472,6 @@ set(OC_CLONK_SOURCES
 	src/platform/StdGL.cpp
 	src/platform/StdGLCtx.cpp
 	src/platform/StdGL.h
-	src/platform/StdMesh.cpp
-	src/platform/StdMesh.h
-	src/platform/StdMeshLoader.h
-	src/platform/StdMeshLoaderBinary.cpp
-	src/platform/StdMeshLoaderBinaryChunks.cpp
-	src/platform/StdMeshLoaderBinaryChunks.h
-	src/platform/StdMeshLoaderDataStream.h
-	src/platform/StdMeshLoaderXml.cpp
-	src/platform/StdMeshMaterial.cpp
-	src/platform/StdMeshMaterial.h
 	src/platform/StdNoGfx.cpp
 	src/platform/StdNoGfx.h
 	src/platform/StdRegistry.cpp
