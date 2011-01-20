@@ -67,7 +67,8 @@ AM_CPPFLAGS = \
 ##$(srcdir)/.hg/dirstate:
 
 BUILT_SOURCES = C4Version.h
-CLEANFILES = C4Version.h
+CLEANFILES =
+DISTCLEANFILES = C4Version.h
 do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
   -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
   -e 's,[@]C4PROJECT_TLD[@],org,g' \
@@ -92,7 +93,7 @@ C4Version.h: $(srcdir)/src/C4Version.h.in
 if RECENT_GCC
 BUILT_SOURCES += C4Include.h.gch
 CLEANFILES += C4Include.h.gch
-DISTCLEANFILES = @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
+DISTCLEANFILES += @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
 
 # Adapted from the automake compile-command for normal source files.
 # Has to be updated after certain changes in this file.
@@ -197,7 +198,6 @@ src/c4group/CStdFile.cpp \
 src/c4group/CStdFile.h \
 src/C4Include.h \
 src/C4Prototypes.h \
-src/C4Version.h \
 src/C4WinMain.cpp \
 src/config/C4Config.cpp \
 src/config/C4Config.h \
@@ -682,16 +682,17 @@ endif
 ## other stuff
 
 EXTRA_DIST = \
+  Version.txt \
+  CMakeLists.txt \
+  config.h.cmake \
   planet/System.c4g/LanguageUS.txt \
   planet/System.c4g/LanguageDE.txt \
   clonk.anjuta \
   licenses \
-  xcode \
   src/netio/NetIO.dsp \
   src/netpuncher/Puncher.dsp \
   src/res/Brush_Trans.png \
   src/res/Cursor_Trans.png \
-  src/res/cz.ico \
   src/res/Dynamic_Trans.png \
   src/res/Exact_Trans.png \
   src/res/Fill_Trans.png \
@@ -704,7 +705,6 @@ EXTRA_DIST = \
   src/res/Play_Trans.png \
   src/res/Rect_Trans.png \
   src/res/Static_Trans.png \
-  src/c4group/resource.h \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
   src/res/c4g.ico \
