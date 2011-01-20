@@ -5288,14 +5288,16 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 
 //=========================== C4Script Function Map ===================================
 
+extern void InitObjectFunctionMap(C4AulScriptEngine *pEngine);
 
 void InitFunctionMap(C4AulScriptEngine *pEngine)
 {
+	InitObjectFunctionMap(pEngine);
 	// add all def constants (all Int)
 	for (C4ScriptConstDef *pCDef = &C4ScriptConstMap[0]; pCDef->Identifier; pCDef++)
 	{
 		assert(pCDef->ValType == C4V_Int); // only int supported currently
-		::ScriptEngine.RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
+		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
 
 	// add all def script funcs
