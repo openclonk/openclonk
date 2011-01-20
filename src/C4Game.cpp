@@ -30,6 +30,7 @@
 #include <C4Include.h>
 #include <C4Game.h>
 
+#include <C4Effects.h>
 #include <C4FileMonitor.h>
 #include <C4GameSave.h>
 #include <C4Record.h>

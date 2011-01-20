@@ -31,7 +31,6 @@
 #include "C4Def.h"
 #include "C4Sector.h"
 #include "C4Value.h"
-#include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"
 #include "C4ObjectPtr.h"

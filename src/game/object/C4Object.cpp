@@ -30,6 +30,7 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4Effects.h>
 #include <C4ObjectInfo.h>
 #include <C4Physics.h>
 #include <C4ObjectCom.h>

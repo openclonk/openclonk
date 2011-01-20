@@ -28,6 +28,7 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4Effects.h>
 #include <C4Physics.h>
 #include <C4SolidMask.h>
 #include <C4Landscape.h>
