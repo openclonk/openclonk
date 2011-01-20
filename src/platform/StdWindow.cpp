@@ -354,7 +354,7 @@ static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LP
 	return true;
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// prepare search struct
 	DEVMODE dmode;
@@ -368,6 +368,7 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	if (piXRes) *piXRes = dmode.dmPelsWidth;
 	if (piYRes) *piYRes = dmode.dmPelsHeight;
 	if (piBitDepth) *piBitDepth = dmode.dmBitsPerPel;
+	if (piRefreshRate) *piRefreshRate = dmode.dmDisplayFrequency;
 	return true;
 }
 
@@ -375,7 +376,7 @@ void CStdApp::RestoreVideoMode()
 {
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 #ifdef USE_DIRECTX
 	if (pD3D)
@@ -410,25 +411,29 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	StdStrBuf Mon;
 	if (iMonitor)
 		Mon.Format("\\\\.\\Display%d", iMonitor+1);
+
+	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
+	
+	// Get current display settings
+	if (!EnumDisplaySettings(Mon.getData(), ENUM_CURRENT_SETTINGS, &dmode))
+		return false;
+	if (!iRefreshRate)
+	{
+		// Default to current
+		iRefreshRate = dmode.dmDisplayFrequency;
+	}
+	int orientation = dmode.dmDisplayOrientation;
 	// enumerate modes
 	int i=0;
-	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
 	while (EnumDisplaySettings(Mon.getData(), i++, &dmode))
-		// size and bit depth is OK?
-		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==0)
+		// compare enumerated mode with requested settings
+		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation && dmode.dmDisplayFrequency==iRefreshRate)
 		{
-			// compare with found one
-			if (fFound)
-				// try getting a mode that is close to 85Hz, rather than taking the one with highest refresh rate
-				// (which may set absurd modes on some devices)
-				if (Abs<int>(85-dmode.dmDisplayFrequency)>Abs<int>(85-dspMode.dmDisplayFrequency))
-					// the previous one was better
-					continue;
-			// choose this one
 			fFound=true;
 			dspMode=dmode;
+			break;
 		}
-
+	if (!fFound) return false;
 	// change mode
 	if (!fFullScreen)
 	{
@@ -436,25 +441,14 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
-	// save original display mode
-	// if a monitor is given, use that
 	else
 	{
-		if (iMonitor)
-		{
 			dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-			if (ChangeDisplaySettingsEx(Mon.getData(), &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+		if (ChangeDisplaySettingsEx(iMonitor ? Mon.getData() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 			{
 				return false;
 			}
-		}
-		else
-		{
-			if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-			{
-				return false;
-			}
-		}
+
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
