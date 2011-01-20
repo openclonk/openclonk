@@ -1088,7 +1088,7 @@ ENDIF()
 ")
 
 # Remove previously installed data files
-FILE(GLOB OC_INSTALLED_DATA_FILES "${CMAKE_INSTALL_PREFIX}/share/openclonk/*.c4?")
+FILE(GLOB OC_INSTALLED_DATA_FILES "${CMAKE_INSTALL_PREFIX}/share/openclonk/*.c4[dfgs]")
 install(CODE "
 FOREACH(CURRENT_FILE ${OC_INSTALLED_DATA_FILES})
 	FILE(REMOVE \${CURRENT_FILE})
@@ -1096,7 +1096,7 @@ ENDFOREACH()
 ")
 
 # Install new files
-FILE(GLOB OC_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/planet/*.c4?")
+FILE(GLOB OC_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/planet/*.c4[dfgs]")
 install(DIRECTORY ${OC_DATA_FILES} DESTINATION share/openclonk)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
 
