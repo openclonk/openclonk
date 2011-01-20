@@ -90,14 +90,14 @@ void CStdApp::Quit()
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	return false;
 }
 
 void CStdApp::RestoreVideoMode() {}
 
-bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
+bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
 
 // Copy the text to the clipboard or the primary selection
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)

@@ -2042,7 +2042,7 @@ void CStdGL::TaskIn()
 #ifdef _WIN32
 	if (!Editor && !Config.Graphics.Windowed)
 	{
-		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 	}
 #endif
 }

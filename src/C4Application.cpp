@@ -178,7 +178,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	if (!isEditor)
 	{
-		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	}
 
@@ -428,13 +428,13 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 void C4Application::ApplyResolutionConstraints()
 {
 	// Enumerate display modes
-	int32_t idx = 0, iXRes, iYRes, iBitDepth;
+	int32_t idx = 0, iXRes, iYRes, iBitDepth, iRefreshRate;
 	int32_t best_match = -1;
 	uint32_t best_delta = ~0;
-	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
+	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor))
 	{
 		uint32_t delta = std::abs(Config.Graphics.ResX*Config.Graphics.ResY - iXRes*iYRes);
-		if (!delta && iBitDepth == Config.Graphics.BitDepth)
+		if (!delta && iBitDepth == Config.Graphics.BitDepth && iRefreshRate == Config.Graphics.RefreshRate)
 			return; // Exactly the expected mode
 		if (delta < best_delta)
 		{
@@ -446,12 +446,14 @@ void C4Application::ApplyResolutionConstraints()
 	if (best_match != -1)
 	{
 		// Apply next-best mode
-		GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
+		GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor);
 		if (iXRes != Config.Graphics.ResX || iYRes != Config.Graphics.ResY)
 			// Don't warn if only bit depth changes
 			// Also, lang table not loaded yet
 			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", Config.Graphics.ResX, Config.Graphics.ResY, iXRes, iYRes);
 		Config.Graphics.ResX = iXRes; Config.Graphics.ResY = iYRes;
+		Config.Graphics.BitDepth = iBitDepth;
+		Config.Graphics.RefreshRate = iRefreshRate;
 	}
 }
 
