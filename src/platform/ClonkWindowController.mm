@@ -193,12 +193,6 @@ void C4FullScreen::HandleMessage (void* event)
 
 // C4ViewportWindow
 
-CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool b)
-{
-	CStdWindow* result = CStdWindow::Init(windowKind, pApp, Title, pParent, b);
-	return result;
-}
-
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;

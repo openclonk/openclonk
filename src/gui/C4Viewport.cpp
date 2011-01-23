@@ -82,8 +82,8 @@ bool C4Viewport::UpdateOutputSize()
 	if (!pWindow) return false;
 	// Output size
 	RECT rect;
-#ifdef WITH_DEVELOPER_MODE
 
+#ifdef WITH_DEVELOPER_MODE
 	GtkAllocation allocation;
 #if GTK_CHECK_VERSION(2,18,0)
 	gtk_widget_get_allocation(pWindow->drawing_area, &allocation);
@@ -644,11 +644,8 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	fIsNoOwnerViewport = (Player == NO_OWNER);
 	// Create window
 	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(CStdWindow::W_Viewport, pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
+	if (!pWindow->Init(pParent, pApp, Player))
 		return false;
-	pWindow->pSurface = new CSurface(pApp, pWindow);
-	// Position and size
-	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	//UpdateWindow(hWnd);
 	// Updates
 	UpdateOutputSize();
