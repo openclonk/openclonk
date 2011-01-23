@@ -23,6 +23,7 @@
 #include <StdGtkWindow.h>
 
 #include <X11/Xlib.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
@@ -67,7 +68,11 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 
 	GtkWidget* render_widget = InitGUI();
 
-	gtk_widget_set_colormap(render_widget, gdk_colormap_new(gdkx_visual_get(((XVisualInfo*)Info)->visualid), true));
+	GdkScreen * scr = gtk_widget_get_screen(render_widget);
+	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
+	GdkColormap * cmap = gdk_colormap_new(vis, true);
+	gtk_widget_set_colormap(render_widget, cmap);
+	g_object_unref(cmap);
 
 	gtk_widget_show_all(window);
 
@@ -199,7 +204,7 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 
 	// For keypress/relases, event->state contains the state _before_
 	// the event, but we need to store the current state.
-#if !GTK_CHECK_VERSION(2,90,7)
+#if !GTK_CHECK_VERSION(2,21,8)
 # define GDK_KEY_Shift_L GDK_Shift_L
 # define GDK_KEY_Shift_R GDK_Shift_R
 # define GDK_KEY_Control_L GDK_Control_L

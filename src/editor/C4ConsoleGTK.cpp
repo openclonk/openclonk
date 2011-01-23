@@ -111,8 +111,6 @@ namespace
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 public:
-	GdkCursor* cursorDefault;
-	GdkCursor* cursorWait;
 
 	GtkWidget* txtLog;
 	GtkWidget* txtScript;
@@ -164,20 +162,12 @@ public:
 	gulong handlerModeDraw;
 
 	State(C4ConsoleGUI *console): Super(console)
-	{
-		cursorDefault = NULL;
-		cursorWait = NULL;
-		
+	{	
 		Clear();
 	}
 
 	~State()
 	{
-		if(cursorDefault)
-			gdk_cursor_unref(cursorDefault);
-		if(cursorWait)
-			gdk_cursor_unref(cursorWait);
-
 		// This is just to be sure, it should not be necessary since
 		// the widgets will be removed anyway as soon as the state is.
 		if(handlerDestroy)
@@ -326,9 +316,6 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
 {
-	state->cursorWait = gdk_cursor_new(GDK_WATCH);
-	state->cursorDefault = gdk_cursor_new(GDK_ARROW);
-
 	// Calls InitGUI
 	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
@@ -614,7 +601,24 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player *player, StdStrBuf &player_text
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
 	// Seems not to work. Don't know why...
-	gdk_window_set_cursor(window->window, state->cursorWait);
+	GdkDisplay * display = gtk_widget_get_display(window);
+	GdkCursor * gdkcursor;
+
+	if (cursor == CURSOR_Wait)
+		gdkcursor = gdk_cursor_new_for_display(display, GDK_WATCH);
+	else
+		gdkcursor = NULL;
+
+#if GTK_CHECK_VERSION(2,14,0)
+	GdkWindow* window_wnd = gtk_widget_get_window(window);
+#else
+	GdkWindow* window_wnd = window->window;
+#endif
+
+	gdk_window_set_cursor(window_wnd, gdkcursor);
+	gdk_display_flush(display);
+	if (cursor)
+		gdk_cursor_unref (gdkcursor);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
@@ -1147,9 +1151,13 @@ bool C4ToolsDlg::State::Open()
 		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, false, false, 0);
 
 		vbox = gtk_vbox_new(false, 6);
-
+#if GTK_CHECK_VERSION(2,23,0)
+		materials = gtk_combo_box_text_new();
+		textures = gtk_combo_box_text_new();		
+#else
 		materials = gtk_combo_box_new_text();
 		textures = gtk_combo_box_new_text();
+#endif
 
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(materials), RowSeparatorFunc, NULL, NULL);
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(textures), RowSeparatorFunc, NULL, NULL);
@@ -1189,6 +1197,11 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg *dlg)
 	dlg->state->InitMaterialCtrls();
 }
 
+#if GTK_CHECK_VERSION(2,23,0)
+#define gtk_combo_box_append_text(c,t) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),t)
+#define	gtk_combo_box_prepend_text(c,t) gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(c),t)
+#define gtk_combo_box_get_active_text(c) gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(c))
+#endif
 void C4ToolsDlg::State::InitMaterialCtrls()
 {
 	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(materials)));
@@ -1197,6 +1210,7 @@ void C4ToolsDlg::State::InitMaterialCtrls()
 	gtk_list_store_clear(list);
 
 	gtk_combo_box_append_text(GTK_COMBO_BOX(materials), C4TLS_MatSky);
+
 	for (int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
 		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), ::MaterialMap.Map[cnt].Name);

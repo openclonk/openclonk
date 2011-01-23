@@ -339,9 +339,6 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	table = gtk_table_new(2, 2, false);
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(h_scrollbar));
-	adjustment->lower = 0;
-	adjustment->upper = GBackWdt;
-	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
 	  G_OBJECT(adjustment),
@@ -351,9 +348,6 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	);
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(v_scrollbar));
-	adjustment->lower = 0;
-	adjustment->upper = GBackHgt;
-	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
 	  G_OBJECT(adjustment),
@@ -422,17 +416,45 @@ bool C4Viewport::ScrollBarsByViewPosition()
 #endif
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
+
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_configure(adjustment,
+	                         ViewX, // value
+	                         0, // lower
+	                         GBackWdt, // upper
+	                         ViewportScrollSpeed, // step_increment
+	                         allocation.width, // page_increment
+	                         allocation.width // page_size
+	                         );
+#else
+	adjustment->value = ViewX;
+	adjustment->lower = 0;
+	adjustment->upper = GBackWdt;
+	adjustment->step_increment = ViewportScrollSpeed;
 	adjustment->page_increment = allocation.width;
 	adjustment->page_size = allocation.width;
-	adjustment->value = ViewX;
 	gtk_adjustment_changed(adjustment);
+#endif
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_configure(adjustment,
+	                         ViewY, // value
+	                         0, // lower
+	                         GBackHgt, // upper
+	                         ViewportScrollSpeed, // step_increment
+	                         allocation.height, // page_increment
+	                         allocation.height // page_size
+	                         );
+#else	
+	adjustment->lower = 0;
+	adjustment->upper = GBackHgt;
+	adjustment->step_increment = ViewportScrollSpeed;
 	adjustment->page_increment = allocation.height;
 	adjustment->page_size = allocation.height;
 	adjustment->value = ViewY;
 	gtk_adjustment_changed(adjustment);
-
+#endif
 	return true;
 }
 
@@ -441,10 +463,10 @@ bool C4Viewport::ViewPositionByScrollBars()
 	if (PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-	ViewX = static_cast<int32_t>(adjustment->value);
+	ViewX = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	ViewY = static_cast<int32_t>(adjustment->value);
+	ViewY = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
 
 	return true;
 }
