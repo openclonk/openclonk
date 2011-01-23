@@ -234,6 +234,16 @@ void CStdWindow::RequestUpdate()
 
 bool OpenURL(const char *szURL)
 {
+	GError *error = 0;
+#if GTK_CHECK_VERSION(2,14,0)
+	if (gtk_show_uri(NULL, szURL, GDK_CURRENT_TIME, &error))
+		return true;
+	if (error != NULL)
+	{
+		fprintf (stderr, "Unable to open URL: %s\n", error->message);
+		g_error_free (error);
+	}
+#endif
 	const char * argv[][3] =
 	{
 		{ "xdg-open", szURL, 0 },
@@ -246,10 +256,14 @@ bool OpenURL(const char *szURL)
 	};
 	for (int i = 0; argv[i][0]; ++i)
 	{
-		GError * error = 0;
+		error = 0;
 		if (g_spawn_async (g_get_home_dir(), const_cast<char**>(argv[i]), 0, G_SPAWN_SEARCH_PATH, 0, 0, 0, &error))
 			return true;
-		else fprintf(stderr, "%s\n", error->message);
+		else
+		{
+			fprintf(stderr, "%s\n", error->message);
+			g_error_free (error);
+		}
 	}
 	return false;
 }
