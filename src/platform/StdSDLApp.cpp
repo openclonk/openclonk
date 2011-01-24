@@ -117,7 +117,7 @@ void CStdApp::HandleSDLEvent(SDL_Event& event)
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	if (iMonitor != 0)
@@ -149,7 +149,7 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
 {
 	//RECT r;
 	//pWindow->GetSize(&r);
