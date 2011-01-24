@@ -28,6 +28,7 @@
 #include <C4Random.h>
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
+#include <C4SoundSystem.h>
 
 C4Weather::C4Weather()
 {

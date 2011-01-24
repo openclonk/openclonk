@@ -21,7 +21,6 @@
 #ifndef INC_C4VideoPlayback
 #define INC_C4VideoPlayback
 
-#include "C4Gui.h"
 #include <StdVideo.h>
 
 typedef struct _SMPEG SMPEG;
@@ -49,47 +48,6 @@ public:
 	const char *GetFilename() const { return sFilename.getData(); }
 
 	void SetNext(C4VideoFile *pNewNext) { pNext = pNewNext; }
-};
-
-
-// playback dialog
-class C4VideoShowDialog : public C4GUI::FullscreenDialog
-{
-private:
-#ifdef _WIN32
-	CStdAVIFile AVIFile;
-	C4SoundEffect *pAudioTrack;
-#endif
-#ifdef HAVE_LIBSDL_MIXER
-	SMPEG * mpeg;
-	SMPEG_Info * mpeg_info;
-	SDL_Surface * surface;
-#endif
-	C4FacetSurface fctBuffer;
-	time_t iStartFrameTime;
-
-protected:
-	virtual int32_t GetZOrdering() { return C4GUI_Z_VIDEO; }
-	virtual bool IsExclusiveDialog() { return true; }
-
-	void VideoDone(); // mark video done
-
-public:
-	C4VideoShowDialog() : C4GUI::FullscreenDialog(NULL, NULL)
-#ifdef _WIN32
-			, pAudioTrack(NULL)
-#endif
-#ifdef HAVE_LIBSDL_MIXER
-			, mpeg(0)
-			, mpeg_info(0)
-			, surface(0)
-#endif
-	{}
-	~C4VideoShowDialog();
-
-	bool LoadVideo(C4VideoFile *pVideoFile);
-
-	virtual void DrawElement(C4TargetFacet &cgo); // draw current video frame
 };
 
 // main playback class (C4Game member)

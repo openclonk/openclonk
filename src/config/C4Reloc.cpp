@@ -18,6 +18,8 @@
 #include <C4Include.h>
 #include <C4Reloc.h>
 
+#include <C4Config.h>
+
 C4Reloc Reloc; // singleton
 
 void C4Reloc::Init()

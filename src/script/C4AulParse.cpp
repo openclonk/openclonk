@@ -32,6 +32,7 @@
 #include <C4Def.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4Config.h>
 
 #define DEBUG_BYTECODE_DUMP 0
 

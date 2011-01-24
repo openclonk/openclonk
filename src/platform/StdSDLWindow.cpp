@@ -28,6 +28,7 @@
 #include <StdBuf.h>
 
 #include "C4Version.h"
+#include <C4Config.h>
 
 /* CStdWindow */
 

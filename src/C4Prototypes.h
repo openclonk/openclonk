@@ -132,7 +132,11 @@ class CStdApp;
 class CStdWindow;
 class CSurface;
 
-namespace C4GUI { class Screen; }
+namespace C4GUI
+{
+	class Screen;
+	class Dialog;
+}
 typedef C4GUI::Screen C4GUIScreen;
 
 #endif // INC_C4Prototypes

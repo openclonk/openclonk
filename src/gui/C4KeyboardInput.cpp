@@ -240,7 +240,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ VK_F23            , "F23"          , NULL },
 	{ VK_F24            , "F24"          , NULL },
 	{ VK_NUMLOCK        , "NumLock"      , "NLock" },
-	{ K_SCROLL         , "Scroll"        , NULL },
+	{ VK_SCROLL         , "Scroll"        , NULL },
 
 	{ VK_PROCESSKEY     , "PROCESSKEY"   , NULL },
 

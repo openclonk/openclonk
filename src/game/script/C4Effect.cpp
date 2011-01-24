@@ -34,6 +34,7 @@
 #include <C4PXS.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4SoundSystem.h>
 
 void C4Effect::AssignCallbackFunctions()
 {

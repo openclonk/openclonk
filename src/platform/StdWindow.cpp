@@ -25,14 +25,16 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
+#include <StdWindow.h>
+
 #include <StdRegistry.h>
+#include <C4Config.h>
 #ifdef USE_GL
 #include <StdGL.h>
 #endif
 #ifdef USE_DIRECTX
 #include <StdD3D.h>
 #endif
-#include <StdWindow.h>
 #include <mmsystem.h>
 #include <stdio.h>
 #include <io.h>

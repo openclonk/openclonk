@@ -40,6 +40,7 @@
 #include <C4Object.h>
 #include "C4Network2Res.h"
 #include <C4Material.h>
+#include <C4SoundSystem.h>
 
 //--------------------------------- C4DefCore ----------------------------------------------
 

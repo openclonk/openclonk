@@ -36,6 +36,7 @@
 #include <StdD3D.h>
 #include <Bitmap256.h>
 #include <StdPNG.h>
+#include <C4Config.h>
 
 
 #ifdef HAVE_IO_H

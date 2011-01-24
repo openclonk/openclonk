@@ -23,6 +23,8 @@
 #include <C4Include.h>
 #include "C4SoundLoaders.h"
 
+#include <C4Application.h>
+
 #if defined(USE_OPEN_AL) && defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>

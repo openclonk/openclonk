@@ -22,13 +22,15 @@
 #include <C4Include.h>
 #include <StdGtkWindow.h>
 
+#include "C4Version.h"
+#include "C4Config.h"
+
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-#include "C4Version.h"
 
 /* CStdGtkWindow */
 
