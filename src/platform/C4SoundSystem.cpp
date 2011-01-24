@@ -35,6 +35,11 @@
 #include <C4Viewport.h>
 #include <C4SoundLoaders.h>
 
+#ifdef HAVE_LIBSDL_MIXER
+#define USE_RWOPS
+#include <SDL_mixer.h>
+#endif
+
 using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():

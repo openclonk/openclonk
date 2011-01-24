@@ -217,6 +217,9 @@ VorbisLoader VorbisLoader::singleton;
 #endif
 
 #ifdef HAVE_LIBSDL_MIXER
+#define USE_RWOPS
+#include <SDL_mixer.h>
+
 bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
 {
 	// Be paranoid about SDL_Mixer initialisation
