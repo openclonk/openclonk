@@ -70,10 +70,13 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 
 	GdkScreen * scr = gtk_widget_get_screen(render_widget);
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
+#if GTK_CHECK_VERSION(2,91,0)
+	gtk_widget_set_visual(render_widget,vis);
+#else
 	GdkColormap * cmap = gdk_colormap_new(vis, true);
 	gtk_widget_set_colormap(render_widget, cmap);
 	g_object_unref(cmap);
-
+#endif
 	gtk_widget_show_all(window);
 
 //  XVisualInfo vitmpl; int blub;
@@ -97,7 +100,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(window);
-	wnd = GDK_WINDOW_XWINDOW(window_wnd);
+	wnd = GDK_WINDOW_XID(window_wnd);
 	gdk_window_add_filter(window_wnd, OnFilter, this);
 
 	XWMHints * wm_hint = XGetWMHints(dpy, wnd);
@@ -112,7 +115,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 		GdkWindow* bin_wnd = GTK_LAYOUT(render_widget)->bin_window;
 #endif
 
-		renderwnd = GDK_WINDOW_XWINDOW(bin_wnd);
+		renderwnd = GDK_WINDOW_XID(bin_wnd);
 	}
 	else
 	{
@@ -122,7 +125,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 		GdkWindow* render_wnd = render_widget->window;
 #endif
 
-		renderwnd = GDK_WINDOW_XWINDOW(render_wnd);
+		renderwnd = GDK_WINDOW_XID(render_wnd);
 	}
 
 	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);

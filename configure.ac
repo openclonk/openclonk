@@ -103,18 +103,37 @@ AC_ARG_ENABLE([sound],
   , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
 # GTK+
-GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
+GTK2_REQUIRED="glib-2.0 >= 2.8 gtk+-2.0 >= 2.8"
+GTK3_REQUIRED="glib-2.0 >= 2.27.5 gtk+-3.0 >= 2.99.0"
+PKG_PROG_PKG_CONFIG
+AC_MSG_CHECKING([which gtk+ version to compile against])
 AC_ARG_WITH([gtk],
-  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
-  , [AS_IF([test $enable_console = no],[PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])],[with_gtk=no])])
-AS_IF([test $with_gtk = yes],[
+  [AS_HELP_STRING([--with-gtk=2.0|3.0],[which gtk+ version to compile against [default: auto]])],
+  [case "$with_gtk" in
+     2.0|3.0) ;;
+     no) ;;
+     *) AC_MSG_ERROR([invalid gtk version specified]) ;;
+   esac],
+  [AS_IF([test $enable_console = no],
+    [PKG_CHECK_EXISTS([$GTK3_REQUIRED],
+      [with_gtk=3.0],
+      [PKG_CHECK_EXISTS([$GTK2_REQUIRED],
+        [with_gtk=2.0],
+        [with_gtk=no])])],
+    [with_gtk=no])])
+AC_MSG_RESULT([$with_gtk])
+AS_IF([test $with_gtk != no],[
+  case "$with_gtk" in
+  2.0) GTK_REQUIRED="$GTK2_REQUIRED"
+       ;;
+  3.0) GTK_REQUIRED="$GTK3_REQUIRED"
+       ;;
+  esac
   PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
-  DEVELOPER_MODE=true
 ])
-AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk = yes])
-
+AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk != no])
 
 # OpenAL
 AC_ARG_WITH([openal],
