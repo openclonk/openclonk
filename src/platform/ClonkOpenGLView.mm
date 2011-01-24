@@ -507,7 +507,7 @@ void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
 	[ClonkOpenGLView enumerateMultiSamples:samples];
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
 	NSWindow* window = controller.window;

@@ -137,7 +137,7 @@ static int32_t bitDepthFromPixelEncoding(CFStringRef encoding)
 		return -1; // fail
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	CFArrayRef array = CGDisplayCopyAllDisplayModes(iMonitor, NULL);
