@@ -423,8 +423,8 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	                         0, // lower
 	                         GBackWdt, // upper
 	                         ViewportScrollSpeed, // step_increment
-	                         allocation.width, // page_increment
-	                         allocation.width // page_size
+	                         allocation.width / Zoom, // page_increment
+	                         allocation.width / Zoom // page_size
 	                         );
 #else
 	adjustment->value = ViewX;
@@ -443,8 +443,8 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	                         0, // lower
 	                         GBackHgt, // upper
 	                         ViewportScrollSpeed, // step_increment
-	                         allocation.height, // page_increment
-	                         allocation.height // page_size
+	                         allocation.height / Zoom, // page_increment
+	                         allocation.height / Zoom // page_size
 	                         );
 #else	
 	adjustment->lower = 0;
