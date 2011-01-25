@@ -38,7 +38,11 @@ else()
 	SET(HAVE_FMOD OFF)
 	SET(GENERATE_MINI_DUMP OFF)
 endif()
-if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE)
+if(NOT USE_GL AND NOT USE_DIRECTX)
+	message(STATUS "No graphics display enabled; building dedicated server")
+	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+endif()
+if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
 	option(USE_GTK "Use GTK for the developer mode" ON)
 	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
@@ -52,10 +56,6 @@ if(APPLE)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
 	option(USE_COCOA OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
@@ -849,6 +849,16 @@ add_executable(c4group
 	src/zlib/gzio.c
 	src/C4Include.cpp
 )
+
+add_executable(netpuncher
+	src/lib/StdBuf.cpp
+	src/lib/Standard.cpp
+	src/platform/StdScheduler.cpp
+	src/platform/StdFile.cpp
+	src/network/C4NetIO.cpp
+	src/netpuncher/main.cpp
+)
+
 target_link_libraries(clonk
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
@@ -863,6 +873,9 @@ target_link_libraries(clonk
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
+)
+target_link_libraries(netpuncher
+	pthread
 )
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
@@ -1032,6 +1045,7 @@ if (WIN32)
 
 	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
+	target_link_libraries(netpuncher ws2_32 winmm)
 
 	if(NOT USE_OPEN_AL)
 		if(MSVC_VERSION)
@@ -1053,7 +1067,7 @@ if (WIN32)
 		endif()
 	endif()
 endif()
-if((NOT HAVE_FMOD OR USE_SDL_MAINLOOP) AND NOT USE_OPEN_AL)
+if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	include(FindSDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	if(SDL_FOUND)
