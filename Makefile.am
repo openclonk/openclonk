@@ -59,6 +59,7 @@ AM_CPPFLAGS = \
   -I$(srcdir)/src/game/object \
   -I$(srcdir)/src/lib/texture \
   -I$(srcdir)/src/script \
+  -I$(srcdir)/thirdparty \
   $(GLEW_CFLAGS) $(GTK_CFLAGS) $(OPENAL_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
 
 ##BUILT_SOURCES = hgrevision.h
@@ -521,12 +522,17 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
-src/tinyxml/tinystr.cpp \
-src/tinyxml/tinystr.h \
-src/tinyxml/tinyxml.cpp \
-src/tinyxml/tinyxmlerror.cpp \
-src/tinyxml/tinyxml.h \
-src/tinyxml/tinyxmlparser.cpp
+src/zlib/gzio.c \
+src/zlib/zutil.h \
+src/script/C4AulDebug.h \
+src/script/C4AulExec.h \
+src/C4Version.h.in \
+thirdparty/tinyxml/tinystr.cpp \
+thirdparty/tinyxml/tinystr.h \
+thirdparty/tinyxml/tinyxml.cpp \
+thirdparty/tinyxml/tinyxml.h \
+thirdparty/tinyxml/tinyxmlerror.cpp \
+thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
 clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp

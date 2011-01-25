@@ -508,12 +508,6 @@ set(OC_CLONK_SOURCES
 	src/script/C4ValueArray.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
-	src/tinyxml/tinystr.cpp
-	src/tinyxml/tinystr.h
-	src/tinyxml/tinyxml.cpp
-	src/tinyxml/tinyxml.h
-	src/tinyxml/tinyxmlerror.cpp
-	src/tinyxml/tinyxmlparser.cpp
 	src/zlib/gzio.c
 	src/zlib/zutil.h
 )
@@ -653,6 +647,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/game/object
 	${CMAKE_CURRENT_SOURCE_DIR}/src/lib/texture
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
+	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
 
 ############################################################################
@@ -926,7 +921,7 @@ if(HAVE_PRECOMPILED_HEADERS)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
 			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
-			if(FILE_EXT STREQUAL ".cpp" AND NOT FILE_NAME_WE MATCHES "tiny.*")
+			if(FILE_EXT STREQUAL ".cpp")
 				# This check is necessary since gzio.c gets compiled as C
 				# code, which can't use C++ PCH.
 				set_property(SOURCE ${FILE} PROPERTY COMPILE_FLAGS /YuC4Include.h)
@@ -974,6 +969,10 @@ elseif(MINGW)
 endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+
+# TinyXML
+add_subdirectory(thirdparty/tinyxml)
+target_link_libraries(clonk tinyxml)
 
 if(GENERATE_MINI_DUMP)
 	FIND_PATH(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
