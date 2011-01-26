@@ -48,6 +48,8 @@
 - (IBAction) copy:(id) sender;
 - (IBAction) delete:(id) sender;
 - (IBAction) resetZoom:(id) sender;
+- (IBAction) increaseZoom:(id)sender;
+- (IBAction) decreaseZoom:(id)sender;
 @end
 
 #endif

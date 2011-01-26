@@ -480,6 +480,18 @@ static NSOpenGLContext* MainContext;
 	self.controller.viewport->SetZoom(1, true);
 }
 
+- (IBAction) increaseZoom:(id)sender
+{
+	C4Viewport* v = self.controller.viewport;
+	v->SetZoom(v->GetZoom()*2, false);
+}
+
+- (IBAction) decreaseZoom:(id)sender
+{
+	C4Viewport* v = self.controller.viewport;
+	v->SetZoom(v->GetZoom()/2, false);
+}
+
 @end
 
 #pragma mark CStdGLCtx: Initialization

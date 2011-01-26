@@ -786,6 +786,24 @@
 									<reference key="NSOnImage" ref="236001633"/>
 									<reference key="NSMixedImage" ref="855621955"/>
 								</object>
+								<object class="NSMenuItem" id="935699378">
+									<reference key="NSMenu" ref="520246036"/>
+									<string key="NSTitle">Increase Zoom</string>
+									<string key="NSKeyEquiv">+</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="236001633"/>
+									<reference key="NSMixedImage" ref="855621955"/>
+								</object>
+								<object class="NSMenuItem" id="748532086">
+									<reference key="NSMenu" ref="520246036"/>
+									<string key="NSTitle">Decrease Zoom</string>
+									<string key="NSKeyEquiv">-</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="236001633"/>
+									<reference key="NSMixedImage" ref="855621955"/>
+								</object>
 								<object class="NSMenuItem" id="413385622">
 									<reference key="NSMenu" ref="520246036"/>
 									<string key="NSTitle">Reset Zoom</string>
@@ -1519,6 +1537,22 @@
 					</object>
 					<int key="connectionID">702</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">decreaseZoom:</string>
+						<reference key="source" ref="22732454"/>
+						<reference key="destination" ref="748532086"/>
+					</object>
+					<int key="connectionID">705</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">increaseZoom:</string>
+						<reference key="source" ref="22732454"/>
+						<reference key="destination" ref="935699378"/>
+					</object>
+					<int key="connectionID">706</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -1844,6 +1878,8 @@
 							<reference ref="507769252"/>
 							<reference ref="413385622"/>
 							<reference ref="642072037"/>
+							<reference ref="935699378"/>
+							<reference ref="748532086"/>
 						</object>
 						<reference key="parent" ref="295774848"/>
 					</object>
@@ -2321,6 +2357,16 @@
 						<reference key="object" ref="642072037"/>
 						<reference key="parent" ref="520246036"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">703</int>
+						<reference key="object" ref="935699378"/>
+						<reference key="parent" ref="520246036"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">704</int>
+						<reference key="object" ref="748532086"/>
+						<reference key="parent" ref="520246036"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -2468,6 +2514,8 @@
 					<string>698.IBPluginDependency</string>
 					<string>700.IBPluginDependency</string>
 					<string>701.IBPluginDependency</string>
+					<string>703.IBPluginDependency</string>
+					<string>704.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2529,7 +2577,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{305, 648}, {239, 73}}</string>
+					<string>{{305, 608}, {240, 113}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2612,6 +2660,8 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -2630,7 +2680,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">702</int>
+			<int key="maxID">706</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2708,12 +2758,16 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>copy:</string>
+							<string>decreaseZoom:</string>
 							<string>delete:</string>
 							<string>grabContents:</string>
+							<string>increaseZoom:</string>
 							<string>resetZoom:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -2725,8 +2779,10 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>copy:</string>
+							<string>decreaseZoom:</string>
 							<string>delete:</string>
 							<string>grabContents:</string>
+							<string>increaseZoom:</string>
 							<string>resetZoom:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -2736,11 +2792,19 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">decreaseZoom:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">delete:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">grabContents:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">increaseZoom:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
