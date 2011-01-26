@@ -126,7 +126,7 @@
 		return;
 	if ([self.window isMiniaturized] || ![self.window isVisible])
 		return;
-	[self.context update];
+	//[self.context update];
 	CStdWindow* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
