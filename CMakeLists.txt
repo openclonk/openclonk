@@ -874,9 +874,11 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 )
-target_link_libraries(netpuncher
-	pthread
-)
+if(HAVE_PTHREAD)
+	target_link_libraries(netpuncher
+		pthread
+	)
+endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
