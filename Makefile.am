@@ -14,9 +14,9 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group
+bin_PROGRAMS = clonk c4group puncher
 
-EXTRA_PROGRAMS = tstc4netio puncher gunzip4c4group
+EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 
 noinst_LIBRARIES = lib.a
 
@@ -113,63 +113,39 @@ WARNING_FLAGS += -Winvalid-pch
 endif
 
 lib_a_SOURCES = \
+src/c4group/C4Group.cpp \
+src/c4group/C4Group.h \
+src/c4group/C4Update.cpp \
+src/c4group/C4Update.h \
+src/c4group/CStdFile.cpp \
+src/c4group/CStdFile.h \
+src/config/C4SecurityCertificates.cpp \
+src/config/C4SecurityCertificates.h \
 src/lib/C4InputValidation.cpp \
 src/lib/C4InputValidation.h \
-src/lib/C4LogBuf.cpp \
-src/lib/C4LogBuf.h \
-src/lib/C4Random.cpp \
-src/lib/C4Random.h \
-src/lib/C4Real.cpp \
-src/lib/C4Real.h \
-src/lib/C4Rect.cpp \
-src/lib/C4Rect.h \
-src/lib/C4RTF.cpp \
-src/lib/C4RTF.h \
-src/lib/C4Stat.cpp \
-src/lib/C4Stat.h \
-src/lib/PathFinder.cpp \
-src/lib/PathFinder.h \
 src/lib/Standard.cpp \
 src/lib/Standard.h \
-src/lib/StdAdaptors.h \
-src/lib/StdBase64.cpp \
-src/lib/StdBase64.h \
 src/lib/StdBuf.cpp \
 src/lib/StdBuf.h \
-src/lib/StdColors.h \
 src/lib/StdCompiler.cpp \
 src/lib/StdCompiler.h \
 src/lib/StdMarkup.cpp \
 src/lib/StdMarkup.h \
 src/lib/StdResStr2.cpp \
 src/lib/StdResStr2.h \
-src/lib/StdResStr.h \
-src/lib/texture/C4Facet.cpp \
-src/lib/texture/C4FacetEx.cpp \
-src/lib/texture/C4FacetEx.h \
-src/lib/texture/C4Facet.h \
-src/lib/texture/C4Surface.cpp \
-src/lib/texture/C4Surface.h \
-src/lib/texture/StdPNG.cpp \
-src/lib/texture/StdPNG.h
+src/network/C4NetIO.cpp \
+src/platform/StdConfig.cpp \
+src/platform/StdConfig.h \
+src/platform/StdFile.cpp \
+src/platform/StdFile.h \
+src/platform/StdRegistry.cpp \
+src/platform/StdRegistry.h \
+src/platform/StdScheduler.cpp \
+src/platform/StdScheduler.h \
+src/zlib/gzio.c \
+src/zlib/zutil.h
 
 clonk_SOURCES = \
-src/lib/C4Log.cpp \
-src/lib/C4Log.h \
-src/lib/C4NameList.cpp \
-src/lib/C4NameList.h \
-src/lib/StdMesh.cpp \
-src/lib/StdMesh.h \
-src/lib/StdMeshLoader.h \
-src/lib/StdMeshLoaderBinary.cpp \
-src/lib/StdMeshLoaderBinaryChunks.cpp \
-src/lib/StdMeshLoaderBinaryChunks.h \
-src/lib/StdMeshLoaderDataStream.h \
-src/lib/StdMeshLoaderXml.cpp \
-src/lib/StdMeshMaterial.cpp \
-src/lib/StdMeshMaterial.h \
-src/lib/texture/C4GraphicsResource.cpp \
-src/lib/texture/C4GraphicsResource.h \
 src/C4Application.cpp \
 src/C4Application.h \
 src/C4FullScreen.cpp \
@@ -179,25 +155,20 @@ src/C4Game.h \
 src/C4Globals.cpp \
 src/C4GraphicsSystem.cpp \
 src/C4GraphicsSystem.h \
-src/c4group/C4LangStringTable.cpp \
-src/c4group/C4LangStringTable.h \
-src/c4group/C4Components.h \
 src/c4group/C4ComponentHost.cpp \
 src/c4group/C4ComponentHost.h \
+src/c4group/C4Components.h \
 src/c4group/C4Extra.cpp \
 src/c4group/C4Extra.h \
-src/c4group/C4Group.cpp \
-src/c4group/C4Group.h \
 src/c4group/C4GroupSet.cpp \
 src/c4group/C4GroupSet.h \
+src/c4group/C4LangStringTable.cpp \
+src/c4group/C4LangStringTable.h \
 src/c4group/C4Language.cpp \
 src/c4group/C4Language.h \
-src/c4group/C4Update.cpp \
-src/c4group/C4Update.h \
-src/c4group/CStdFile.cpp \
-src/c4group/CStdFile.h \
 src/C4Include.h \
 src/C4Prototypes.h \
+src/C4Version.h.in \
 src/C4WinMain.cpp \
 src/config/C4Config.cpp \
 src/config/C4Config.h \
@@ -206,8 +177,6 @@ src/config/C4ConfigShareware.h \
 src/config/C4Constants.h \
 src/config/C4Reloc.cpp \
 src/config/C4Reloc.h \
-src/config/C4SecurityCertificates.cpp \
-src/config/C4SecurityCertificates.h \
 src/control/C4Control.cpp \
 src/control/C4Control.h \
 src/control/C4GameControl.cpp \
@@ -228,9 +197,9 @@ src/control/C4RoundResults.h \
 src/control/C4Teams.cpp \
 src/control/C4Teams.h \
 src/editor/C4Console.cpp \
-src/editor/C4Console.h \
-src/editor/C4ConsoleGUI.h \
 src/editor/C4ConsoleGUICommon.h \
+src/editor/C4ConsoleGUI.h \
+src/editor/C4Console.h \
 src/editor/C4DevmodeDlg.cpp \
 src/editor/C4DevmodeDlg.h \
 src/editor/C4EditCursor.cpp \
@@ -390,6 +359,49 @@ src/gui/C4UpperBoard.h \
 src/gui/C4UserMessages.h \
 src/gui/C4Viewport.cpp \
 src/gui/C4Viewport.h \
+src/lib/C4LogBuf.cpp \
+src/lib/C4LogBuf.h \
+src/lib/C4Log.cpp \
+src/lib/C4Log.h \
+src/lib/C4NameList.cpp \
+src/lib/C4NameList.h \
+src/lib/C4Random.cpp \
+src/lib/C4Random.h \
+src/lib/C4Real.cpp \
+src/lib/C4Real.h \
+src/lib/C4Rect.cpp \
+src/lib/C4Rect.h \
+src/lib/C4RTF.cpp \
+src/lib/C4RTF.h \
+src/lib/C4Stat.cpp \
+src/lib/C4Stat.h \
+src/lib/PathFinder.cpp \
+src/lib/PathFinder.h \
+src/lib/StdAdaptors.h \
+src/lib/StdBase64.cpp \
+src/lib/StdBase64.h \
+src/lib/StdColors.h \
+src/lib/StdMesh.cpp \
+src/lib/StdMesh.h \
+src/lib/StdMeshLoaderBinaryChunks.cpp \
+src/lib/StdMeshLoaderBinaryChunks.h \
+src/lib/StdMeshLoaderBinary.cpp \
+src/lib/StdMeshLoaderDataStream.h \
+src/lib/StdMeshLoader.h \
+src/lib/StdMeshLoaderXml.cpp \
+src/lib/StdMeshMaterial.cpp \
+src/lib/StdMeshMaterial.h \
+src/lib/StdResStr.h \
+src/lib/texture/C4Facet.cpp \
+src/lib/texture/C4FacetEx.cpp \
+src/lib/texture/C4FacetEx.h \
+src/lib/texture/C4Facet.h \
+src/lib/texture/C4GraphicsResource.cpp \
+src/lib/texture/C4GraphicsResource.h \
+src/lib/texture/C4Surface.cpp \
+src/lib/texture/C4Surface.h \
+src/lib/texture/StdPNG.cpp \
+src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
 src/network/C4Client.h \
 src/network/C4GameControlNetwork.cpp \
@@ -436,10 +448,10 @@ src/platform/C4MusicFile.cpp \
 src/platform/C4MusicFile.h \
 src/platform/C4MusicSystem.cpp \
 src/platform/C4MusicSystem.h \
+src/platform/C4SoundLoaders.cpp \
+src/platform/C4SoundLoaders.h \
 src/platform/C4SoundSystem.cpp \
 src/platform/C4SoundSystem.h \
-src/platform/C4SoundLoaders.h \
-src/platform/C4SoundLoaders.cpp \
 src/platform/C4Video.cpp \
 src/platform/C4Video.h \
 src/platform/C4VideoPlayback.cpp \
@@ -447,10 +459,8 @@ src/platform/C4VideoPlayback.h \
 src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/PlatformAbstraction.h \
-src/platform/StdAppCommon.h \
 src/platform/StdAppCommon.cpp \
-src/platform/StdConfig.cpp \
-src/platform/StdConfig.h \
+src/platform/StdAppCommon.h \
 src/platform/StdD3D.cpp \
 src/platform/StdD3D.h \
 src/platform/StdD3DShader.cpp \
@@ -458,8 +468,6 @@ src/platform/StdD3DShader.h \
 src/platform/StdDDraw2.cpp \
 src/platform/StdDDraw2.h \
 src/platform/StdFacet.h \
-src/platform/StdFile.cpp \
-src/platform/StdFile.h \
 src/platform/StdFont.cpp \
 src/platform/StdFont.h \
 src/platform/StdGL.cpp \
@@ -467,10 +475,6 @@ src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
 src/platform/StdNoGfx.cpp \
 src/platform/StdNoGfx.h \
-src/platform/StdRegistry.cpp \
-src/platform/StdRegistry.h \
-src/platform/StdScheduler.cpp \
-src/platform/StdScheduler.h \
 src/platform/StdSurface2.cpp \
 src/platform/StdSurface2.h \
 src/platform/StdSurface8.cpp \
@@ -499,7 +503,9 @@ src/script/C4AList.cpp \
 src/script/C4AList.h \
 src/script/C4Aul.cpp \
 src/script/C4AulDebug.cpp \
+src/script/C4AulDebug.h \
 src/script/C4AulExec.cpp \
+src/script/C4AulExec.h \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
@@ -509,24 +515,18 @@ src/script/C4ScriptHost.cpp \
 src/script/C4ScriptHost.h \
 src/script/C4StringTable.cpp \
 src/script/C4StringTable.h \
-src/script/C4Value.cpp \
-src/script/C4Value.h \
 src/script/C4ValueArray.cpp \
 src/script/C4ValueArray.h \
+src/script/C4Value.cpp \
+src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
 src/tinyxml/tinystr.cpp \
 src/tinyxml/tinystr.h \
 src/tinyxml/tinyxml.cpp \
-src/tinyxml/tinyxml.h \
 src/tinyxml/tinyxmlerror.cpp \
-src/tinyxml/tinyxmlparser.cpp \
-src/zlib/gzio.c \
-src/zlib/zutil.h \
-src/script/C4AulDebug.h \
-src/script/C4AulExec.h \
-src/C4Version.h.in
-##hgrevision.h
+src/tinyxml/tinyxml.h \
+src/tinyxml/tinyxmlparser.cpp
 
 if WIN32
 clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp
@@ -600,27 +600,14 @@ c4group_CPPFLAGS = \
   -I$(srcdir)/src/script
 
 c4group_SOURCES = \
-src/c4group/c4group_ng.cpp \
-src/c4group/C4Group.cpp \
-src/lib/C4InputValidation.cpp \
-src/config/C4SecurityCertificates.cpp \
-src/c4group/C4Update.cpp \
-src/lib/Standard.cpp \
-src/c4group/CStdFile.cpp \
-src/lib/StdMarkup.cpp \
-src/lib/StdBuf.cpp \
-src/lib/StdCompiler.cpp \
-src/platform/StdFile.cpp \
-src/platform/StdRegistry.cpp \
-src/lib/StdResStr2.cpp \
-src/platform/StdConfig.cpp \
-src/zlib/gzio.c
+src/c4group/c4group_ng.cpp
 
 if WIN32
 c4group_SOURCES += src/c4group/Resource.rc
 endif
 
 c4group_LDADD = \
+  lib.a \
   $(LIBICONV) \
   $(Z_LIBS) \
   $(OPENSSL_LIBS) \
@@ -653,13 +640,10 @@ gunzip4c4group_LDADD = \
 
 puncher_SOURCES = \
 src/netpuncher/main.cpp \
-src/platform/StdScheduler.cpp \
-src/lib/Standard.cpp \
-src/lib/StdBuf.cpp \
-src/platform/StdFile.cpp \
 src/network/C4NetIO.cpp
 
 puncher_LDADD = \
+  lib.a \
   $(PTHREAD_LIBS)
 
 if WIN32
@@ -669,8 +653,7 @@ endif
 ## tstc4netio
 
 tstc4netio_SOURCES = \
-  src/netio/TstC4NetIO.cpp \
-  src/network/C4NetIO.cpp
+  src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
   $(PTHREAD_LIBS) -lz
