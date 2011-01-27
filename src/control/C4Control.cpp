@@ -697,9 +697,9 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 		}
 		if (file_is_temp) EraseFile(filename.getData());
 	}
-	else
+	else if(szFilename)
 	{
-		LogF("[!]Error loading player file from %s.", szFilename ? szFilename : "(null)");
+		LogF("[!]Error loading player file from %s.", szFilename);
 		assert(false);
 	}
 }
