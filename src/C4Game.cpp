@@ -598,7 +598,6 @@ void C4Game::Clear()
 	Info.Clear();
 	Title.Clear();
 	::GameScript.Clear();
-	::GameScript.Default();
 	Names.Clear();
 	GameText.Clear();
 	RecordDumpFile.Clear();
@@ -646,6 +645,7 @@ void C4Game::Clear()
 	QuitLogPos = GetLogPos();
 
 	fPreinited = false;
+	::GameScript.Default();
 	// FIXME: remove this
 	Default();
 }
