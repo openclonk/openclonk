@@ -1,0 +1,4 @@
+Furnace sounds	-	Dynamicell
+Sizzle (cast)	-	Mirors_
+Pop				-	Traveler
+Clonk			-	Stickinthemud
