@@ -41,10 +41,7 @@
 
 // implementation of C4Console GUI for Mac OS X
 
-namespace
-{
-	inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return (ConsoleWindowController*)gui->GetController();}
-}
+static inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return (ConsoleWindowController*)gui->GetController();}
 
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
@@ -409,6 +406,7 @@ void C4ConsoleGUI::ClearNetMenu()
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
+	[ctrler(this).modeSelector setEnabled:fEnable];
 }
 
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)

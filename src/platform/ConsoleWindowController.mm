@@ -123,14 +123,14 @@ int indexFromSender(id sender)
 
 - (IBAction) consoleIn:(id)sender
 {
-	if (![ClonkAppDelegate isConsoleAndGameRunning])
+	if (![ClonkAppDelegate isEditorAndGameRunning])
 		return;
 	Console.In([[consoleCombo stringValue] cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (IBAction) objectIn:(id)sender
 {
-	if (![ClonkAppDelegate isConsoleAndGameRunning])
+	if (![ClonkAppDelegate isEditorAndGameRunning])
 		return;
 	Console.EditCursor.In([[objectCombo stringValue] cStringUsingEncoding:NSUTF8StringEncoding]);
 }
@@ -144,11 +144,12 @@ int indexFromSender(id sender)
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
 {
-	// enabled when game running and in console mode
+	// enabled when game running and in editor mode
 	SEL gameRunningInConsoleModeSelectors[] =
 	{
 		@selector(play:),
 		@selector(halt:),
+		@selector(selectMode:),
 		nil
 	};
 	int i = 0;
@@ -156,7 +157,7 @@ int indexFromSender(id sender)
 	while (s = gameRunningInConsoleModeSelectors[i++])
 	{
 		if (s == [item action])
-			return [ClonkAppDelegate isConsoleAndGameRunning];
+			return [ClonkAppDelegate isEditorAndGameRunning];
 	}
 	
 	// always enabled

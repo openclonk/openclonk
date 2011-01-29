@@ -174,6 +174,7 @@
 		@selector(joinPlayer:),
 		@selector(openPropTools:),
 		@selector(setConsoleMode:),
+		@selector(setDrawingTool:),
 		nil
 	};
 	int i = 0;

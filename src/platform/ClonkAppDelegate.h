@@ -48,7 +48,7 @@
 - (void)terminate:(NSApplication*)sender;
 
 + (ClonkAppDelegate*) instance;
-+ (BOOL) isConsoleAndGameRunning;
++ (BOOL) isEditorAndGameRunning;
 
 #ifdef USE_COCOA
 @property(readonly) NSMenuItem* newViewportForPlayerMenuItem;

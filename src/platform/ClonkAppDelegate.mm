@@ -32,7 +32,7 @@
 	return (ClonkAppDelegate*)[[NSApplication sharedApplication] delegate];
 }
 
-+ (BOOL) isConsoleAndGameRunning
++ (BOOL) isEditorAndGameRunning
 {
 	return Application.isEditor && Game.IsRunning;
 }
