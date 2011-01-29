@@ -771,8 +771,6 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 	return iResult;
 }
 
-extern bool C4EngineLoadProcess(const char *szMessage, int32_t iProcess);
-
 int32_t C4DefList::Load(const char *szSearch,
                         DWORD dwLoadWhat, const char *szLanguage,
                         C4SoundSystem *pSoundSystem,
