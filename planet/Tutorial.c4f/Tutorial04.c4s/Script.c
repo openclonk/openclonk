@@ -33,48 +33,18 @@ protected func Initialize()
 	
 	// Script player as opponent.
 	SetMaxPlayer(2);
-	CreateScriptPlayer("Opponent", 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, AI_Opponent);
+	CreateScriptPlayer("Opponent", RGB(40,30,20), nil, CSPF_FixedAttributes);
 	
-	// Second section: Weak opponent with javelins.
-	var spearman1 = CreateObject(Clonk, 1050, 560, NO_OWNER);
-	spearman1->SetMaxEnergy(40);
-	spearman1->CreateContents(Javelin);
-	spearman1->AI_GuardArea(800, 400, 400, 250);
-	AddEffect("IntContentRemoval", spearman1, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(spearman1);
-	// Gate that can be opened with a spin wheel.
+	// Second section: gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
-	// Third section: Two opponents in a tower.
-	// Lower part: a weak spearman.
-	var spearman2 = CreateObject(Clonk, 1753, 410, NO_OWNER);
-	spearman2->SetMaxEnergy(40);
-	spearman2->CreateContents(Javelin);
-	spearman2->AI_GuardArea(1350, 200, 500, 400);
-	AddEffect("IntContentRemoval", spearman2, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(spearman2);
-	// Upper part: a normal bowman.
-	var bowman = CreateObject(Clonk, 1732, 330, NO_OWNER);
-	bowman->SetMaxEnergy(45);
-	bowman->CreateContents(Bow)->CreateContents(Arrow);
-	bowman->AI_GuardArea(1350, 200, 500, 400);
-	AddEffect("IntContentRemoval", bowman, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(bowman);
-	// Gate that can be opened with a spin wheel.
+	// Third section: gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1856, 500, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
-	// Fourth section: Opponent with sword and shield.
-	var swordman = CreateObject(Clonk, 2250, 330, NO_OWNER);
-	swordman->SetMaxEnergy(60);
-	swordman->CreateContents(Shield);
-	swordman->CreateContents(Sword);
-	swordman->AI_GuardArea(2050, 300, 300, 100);
-	AddEffect("IntContentRemoval", swordman, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(swordman);
 	// Chest with some extra weapons.
 	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
 	chest->CreateContents(Club);
@@ -83,7 +53,6 @@ protected func Initialize()
 	var edges = [[620,640],[630,630],[540,560],[530,550],[530,480],[520,470],[1160,570],[1170,560],[1830,450],[1840,440],[1850,430],[1830,370],[1800,360]];
 	for(var i = 0; i < GetLength(edges); i++)
 		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
-
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
@@ -102,6 +71,10 @@ protected func OnGoalsFulfilled()
 
 protected func InitializePlayer(int plr)
 {
+	// Initiate script player.
+	if (GetPlayerType(plr) == C4PT_Script)
+		return InitializeScriptPlayer(plr);
+
 	// Standard player zoom for tutorials.
 	SetPlayerViewLock(plr, true);
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);
@@ -121,6 +94,55 @@ protected func InitializePlayer(int plr)
 	guide->AddGuideMessage("$MsgTutWelcome$");
 	guide->ShowGuideMessage(0);
 	AddEffect("TutorialStrawTargets", nil, 100, 5);
+	return;
+}
+
+private func InitializeScriptPlayer(int plr)
+{
+	// Remove old crew.
+	var index = 0;
+	while (GetCrew(plr, index))
+	{
+		GetCrew(plr, index)->RemoveObject();
+		index++;
+	}
+
+	// Second section: Weak opponent with javelins.
+	var spearman1 = CreateObject(Clonk, 1050, 560, plr);
+	spearman1->MakeCrewMember(plr);
+	spearman1->SetMaxEnergy(40);
+	spearman1->CreateContents(Javelin);
+	spearman1->AI_GuardArea(800, 400, 400, 250);
+	AddEffect("IntContentRemoval", spearman1, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman1);
+	
+	// Third section: Two opponents in a tower.
+	// Lower part: a weak spearman.
+	var spearman2 = CreateObject(Clonk, 1753, 410, plr);
+	spearman2->MakeCrewMember(plr);
+	spearman2->SetMaxEnergy(40);
+	spearman2->CreateContents(Javelin);
+	spearman2->AI_GuardArea(1350, 200, 500, 400);
+	AddEffect("IntContentRemoval", spearman2, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(spearman2);
+	// Upper part: a normal bowman.
+	var bowman = CreateObject(Clonk, 1732, 330, plr);
+	bowman->MakeCrewMember(plr);
+	bowman->SetMaxEnergy(45);
+	bowman->CreateContents(Bow)->CreateContents(Arrow);
+	bowman->AI_GuardArea(1350, 200, 500, 400);
+	AddEffect("IntContentRemoval", bowman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(bowman);
+	
+	// Fourth section: Opponent with sword and shield.
+	var swordman = CreateObject(Clonk, 2250, 330, plr);
+	swordman->MakeCrewMember(plr);
+	swordman->SetMaxEnergy(60);
+	swordman->CreateContents(Shield);
+	swordman->CreateContents(Sword);
+	swordman->AI_GuardArea(2050, 300, 300, 100);
+	AddEffect("IntContentRemoval", swordman, 100, 0);
+	CreateObject(EnergyBar)->SetTarget(swordman);
 	return;
 }
 
