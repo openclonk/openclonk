@@ -18,6 +18,7 @@
  */
 #include "C4Include.h"
 #include <StdNoGfx.h>
+#include <StdMeshMaterial.h>
 
 CStdNoGfx::CStdNoGfx()
 {
@@ -34,6 +35,12 @@ bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsig
 	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
-	MaxTexSize = 64;
+	MaxTexSize = 2147483647;
 	return true;
 }
+
+bool CStdNoGfx::PrepareMaterial(StdMeshMaterial& mesh)
+{
+   	mesh.BestTechniqueIndex=0; return true;
+}
+
