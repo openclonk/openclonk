@@ -522,11 +522,6 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
-src/zlib/gzio.c \
-src/zlib/zutil.h \
-src/script/C4AulDebug.h \
-src/script/C4AulExec.h \
-src/C4Version.h.in \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
 thirdparty/tinyxml/tinyxml.cpp \
