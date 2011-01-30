@@ -203,7 +203,13 @@ void C4Application::ClearCommandLine()
 
 void C4Application::ParseCommandLine(int argc, char * argv[])
 {
-	//Log("Command line: "); Log(szCmdLine);
+
+	StdStrBuf CmdLine("Command line:");
+	for(int i = 0; i < argc; ++i) {
+		CmdLine.Append(" ");
+		CmdLine.Append(argv[i]);
+	}
+	Log(CmdLine.getData());
 
 	ClearCommandLine();
 	Game.NetworkActive = false;
