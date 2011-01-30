@@ -434,6 +434,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundSystem.h
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundLoaders.cpp
+	src/platform/StdTApp.cpp
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
@@ -647,6 +648,11 @@ CHECK_INCLUDE_FILE_CXX(langinfo.h HAVE_LANGINFO_H)
 CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
 CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
 CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
+if(USE_CONSOLE)
+	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
+	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
+endif()
+
 
 # ck 09-09-20: The following headers require Xlib.h for things such as
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
@@ -723,6 +729,12 @@ endmacro(FINDLIB)
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
 include_directories(${OPENSSL_INCLUDE_DIR})
+
+if(USE_CONSOLE)
+	include(./FindReadline.cmake)
+	include_directories(${READLINE_INCLUDE_DIRS})
+	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
+endif()
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
@@ -810,6 +822,12 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 )
+if(USE_CONSOLE)
+	target_link_libraries(clonk
+		pthread
+		${READLINE_LIBRARIES}
+	)
+endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
