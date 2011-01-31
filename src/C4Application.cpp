@@ -433,6 +433,7 @@ void C4Application::ApplyResolutionConstraints()
 	uint32_t best_delta = ~0;
 	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor))
 	{
+		if (iBitDepth != Config.Graphics.BitDepth) continue;
 		uint32_t delta = std::abs(Config.Graphics.ResX*Config.Graphics.ResY - iXRes*iYRes);
 		if (!delta && iBitDepth == Config.Graphics.BitDepth && iRefreshRate == Config.Graphics.RefreshRate)
 			return; // Exactly the expected mode
