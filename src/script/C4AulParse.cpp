@@ -1960,7 +1960,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			// () -> size 0, (*,) -> size 2, (*,*,) -> size 3
 			if (size > 0)
 			{
-				AddBCC(AB_INT, 0);
+				AddBCC(AB_NIL);
 				++size;
 			}
 			fDone = true;
@@ -1969,7 +1969,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		case ATT_COMMA:
 		{
 			// got no parameter before a ","? then push a 0-constant
-			AddBCC(AB_INT, 0);
+			AddBCC(AB_NIL);
 			Shift();
 			++size;
 			break;
