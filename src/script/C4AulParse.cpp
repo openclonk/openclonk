@@ -2081,6 +2081,8 @@ void C4AulParseState::Parse_Array()
 			// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 			if (size > 0)
 			{
+				if (Config.Developer.ExtraWarnings)
+					Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 				AddBCC(AB_NIL);
 				++size;
 			}
@@ -2090,6 +2092,8 @@ void C4AulParseState::Parse_Array()
 		case ATT_COMMA:
 		{
 			// got no parameter before a ","? then push nil
+			if (Config.Developer.ExtraWarnings)
+				Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 			AddBCC(AB_NIL);
 			Shift();
 			++size;
