@@ -1960,6 +1960,8 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			// () -> size 0, (*,) -> size 2, (*,*,) -> size 3
 			if (size > 0)
 			{
+				if (sWarn && Config.Developer.ExtraWarnings)
+					Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
 				AddBCC(AB_NIL);
 				++size;
 			}
@@ -1969,6 +1971,8 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		case ATT_COMMA:
 		{
 			// got no parameter before a ","? then push a 0-constant
+			if (sWarn && Config.Developer.ExtraWarnings)
+				Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
 			AddBCC(AB_NIL);
 			Shift();
 			++size;
@@ -2035,7 +2039,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				}
 				if (C4Value::WarnAboutConversion(from, to))
 				{
-					Warn(FormatString("Conversion from \"%s\" to \"%s\" in parameter %d of \"%s\"", GetC4VName(from), GetC4VName(to), size, sWarn).getData(), NULL);
+					Warn(FormatString("parameter %d of call to %s is %s instead of %s", size, sWarn, GetC4VName(from), GetC4VName(to)).getData(), NULL);
 				}
 			}
 			++size;
@@ -2054,7 +2058,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 	while (!fDone);
 	// too many parameters?
 	if (sWarn && size > iMaxCnt && Type == PARSER)
-		Warn(FormatString("%s: passing %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
+		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
 	// Balance stack
 	if (size != iMaxCnt)
 		AddBCC(AB_STACK, iMaxCnt - size);
