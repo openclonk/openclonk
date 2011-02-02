@@ -43,6 +43,7 @@ private func Pack()
 	RemoveObject();
 	rider->SetAction("Jump");
 	rider->SetSpeed(GetXDir(),GetYDir());
+	rider->SetComDir(COMD_Down);
 }
 
 func HoldingEnabled() { return true; }
