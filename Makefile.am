@@ -412,7 +412,6 @@ src/network/C4InteractiveThread.cpp \
 src/network/C4InteractiveThread.h \
 src/network/C4League.cpp \
 src/network/C4League.h \
-src/network/C4NetIO.cpp \
 src/network/C4NetIO.h \
 src/network/C4Network2Client.cpp \
 src/network/C4Network2Client.h \
@@ -619,31 +618,17 @@ c4group_LDADD = \
 ## gunzip4c4group
 
 gunzip4c4group_SOURCES = \
-src/c4group/gunzip4c4group.cpp \
-src/c4group/C4Group.cpp \
-src/lib/C4InputValidation.cpp \
-src/config/C4SecurityCertificates.cpp \
-src/c4group/C4Update.cpp \
-src/lib/Standard.cpp \
-src/c4group/CStdFile.cpp \
-src/lib/StdMarkup.cpp \
-src/lib/StdBuf.cpp \
-src/lib/StdCompiler.cpp \
-src/platform/StdFile.cpp \
-src/platform/StdRegistry.cpp \
-src/lib/StdResStr2.cpp \
-src/platform/StdConfig.cpp \
-src/zlib/gzio.c
+src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
+  lib.a \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 ## puncher
 
 puncher_SOURCES = \
-src/netpuncher/main.cpp \
-src/network/C4NetIO.cpp
+src/netpuncher/main.cpp
 
 puncher_LDADD = \
   lib.a \
@@ -656,10 +641,11 @@ endif
 ## tstc4netio
 
 tstc4netio_SOURCES = \
-  src/netio/TstC4NetIO.cpp
+src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
-  $(PTHREAD_LIBS) -lz
+  $(Z_LIBS) \
+  $(PTHREAD_LIBS)
 
 if WIN32
 tstc4netio_LDADD += -lwinmm -lws2_32
