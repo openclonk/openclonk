@@ -145,7 +145,7 @@ bool CStdInProc::Execute(int iTimeout, pollfd *)
 		{
 			if (!CmdBuf.isNull())
 			{
-				OnCommand(CmdBuf.getData());
+				Application.OnCommand(CmdBuf.getData());
 				CmdBuf.Clear();
 			}
 		}
@@ -169,7 +169,7 @@ bool CStdInProc::Execute(int iTimeout, pollfd *)
 	{
 		if (!CmdBuf.isNull())
 		{
-			OnCommand(CmdBuf.getData());
+			Application.OnCommand(CmdBuf.getData());
 			CmdBuf.Clear();
 		}
 	}
