@@ -148,6 +148,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 			OutputDebugString(Line.getData());
 #endif
 			fputs(Line.getData(),stdout);
+			fflush(stdout);
 		}
 
 	}
