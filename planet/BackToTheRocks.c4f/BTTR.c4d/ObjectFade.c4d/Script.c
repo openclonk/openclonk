@@ -10,6 +10,12 @@
 
 local fade_time;
 
+protected func Activate(int plr)
+{
+	MessageWindow(GetProperty("Description"), plr);
+	return true;
+}
+
 public func DoFadeTime(int to_add)
 {
 	fade_time += to_add;
@@ -79,3 +85,4 @@ public func FxIntFadeOutTimerEffect(string new_effect_name)
 }
 
 local Name = "Object Fade";
+local Description = "$Description$";

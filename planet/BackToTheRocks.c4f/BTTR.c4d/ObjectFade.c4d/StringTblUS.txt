@@ -1,0 +1,2 @@
+Name=Fading objects
+Description=When this rule is activated, dropped objects fade out over time
