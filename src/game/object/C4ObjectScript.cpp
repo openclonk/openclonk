@@ -1761,7 +1761,7 @@ static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfG
 			szPortrait = C4Portrait::EvaluatePortraitString(szPortrait, idPortraitSource, pObj->Info->id, NULL);
 			// return desired value
 			if (fGetID)
-				return idPortraitSource ? C4VID(idPortraitSource) : C4Value();
+				return idPortraitSource ? C4VPropList(C4Id2Def(idPortraitSource)) : C4Value();
 			else
 				return szPortrait ? C4VString(szPortrait) : C4Value();
 		}
@@ -1775,7 +1775,7 @@ static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfG
 	if (!pPortraitGfx) return C4Value();
 	// get def or name
 	if (fGetID)
-		return (pPortraitGfx->pDef ? C4VID(pPortraitGfx->pDef->id) : C4Value());
+		return (pPortraitGfx->pDef ? C4VPropList(pPortraitGfx->pDef) : C4Value());
 	else
 	{
 		const char *szPortraitName = pPortraitGfx->GetName();

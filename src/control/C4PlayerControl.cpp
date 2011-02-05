@@ -1006,7 +1006,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 	// control down
 	C4AulFunc *pFunc = ::ScriptEngine.GetFunc(PSF_PlayerControl, &ScriptEngine, NULL);
 	if (!pFunc) return false;
-	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
+	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
 	return !!pFunc->Exec(NULL, &Pars);
 }
 

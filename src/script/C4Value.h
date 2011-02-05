@@ -210,7 +210,6 @@ protected:
 // converter
 inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
 inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
-C4Value C4VID(C4ID iVal);
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
 inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }

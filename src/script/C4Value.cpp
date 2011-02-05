@@ -463,7 +463,6 @@ bool C4Value::operator != (const C4Value& Value2) const
 	return !(*this == Value2);
 }
 
-C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
 C4ID C4Value::getC4ID() const
 {
 	C4PropList * p = getPropList();

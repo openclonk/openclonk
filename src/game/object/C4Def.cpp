@@ -643,7 +643,7 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 	{
 		C4AulFunc *pFn;
 		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VID(id), C4VInt(iValue))).getInt();
+			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VPropList(this), C4VInt(iValue))).getInt();
 	}
 	return iValue;
 }

@@ -930,7 +930,7 @@ static C4Value FnGetPlrKnowledge_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Va
 	// Search by id, check if available, return bool
 	if (id) return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
 static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
@@ -959,7 +959,7 @@ static C4Value FnGetComponent_C4V(C4AulContext *cthr, C4Value* idComponent_C4V, 
 		// Component count
 		if (idComponent) return C4VInt(pDef->GetComponentCount(idComponent, cthr->Obj));
 		// Indexed component
-		return C4VID(pDef->GetIndexedComponent(iIndex, cthr->Obj));
+		return C4VPropList(C4Id2Def(pDef->GetIndexedComponent(iIndex, cthr->Obj)));
 	}
 	// Object component
 	else
@@ -969,7 +969,7 @@ static C4Value FnGetComponent_C4V(C4AulContext *cthr, C4Value* idComponent_C4V, 
 		// Component count
 		if (idComponent) return C4VInt(pObj->Component.GetIDCount(idComponent));
 		// Indexed component
-		return C4VID(pObj->Component.GetID(iIndex));
+		return C4VPropList(C4Id2Def(pObj->Component.GetID(iIndex)));
 	}
 	return C4Value();
 }
@@ -985,7 +985,7 @@ static C4Value FnGetHomebaseMaterial_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, 
 	// Search by id, return available count
 	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(::Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
 static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
@@ -999,7 +999,7 @@ static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V
 	// Search by id, return available count
 	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(::Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
 static long FnGetWealth(C4AulContext *cthr, long iPlr)
@@ -1797,9 +1797,9 @@ protected:
 	virtual void ProcessChar(char &rChar)  { Res = C4VString(FormatString("%c", rChar)); }
 
 	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID)
-	{ Res = (fIsID ? C4VID(C4ID(szString)) : C4VString(szString)); }
+	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(szString))) : C4VString(szString)); }
 	virtual void ProcessString(char **pszString, bool fIsID)
-	{ Res = (fIsID ? C4VID(C4ID(*pszString)) : C4VString(*pszString)); }
+	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(*pszString))) : C4VString(*pszString)); }
 };
 
 // Use the compiler to find a named value in a structure

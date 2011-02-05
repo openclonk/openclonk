@@ -155,7 +155,7 @@ template <> struct C4ValueConv<C4ID>
 	inline static C4V_Type Type() { return C4V_PropList; }
 	inline static C4ID FromC4V(C4Value &v) { return v.getC4ID(); }
 	inline static C4ID _FromC4V(C4Value &v) { return FromC4V(v); }
-	inline static C4Value ToC4V(C4ID v) { return C4VID(v); }
+	inline static C4Value ToC4V(C4ID v) { return C4VPropList(C4Id2Def(v)); }
 };
 template <> struct C4ValueConv<C4Object *>
 {

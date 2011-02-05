@@ -694,7 +694,7 @@ bool C4Player::ScenarioInit()
 	                        C4VInt(pty),
 	                        C4VObj(FirstBase),
 	                        C4VInt(Team),
-	                        C4VID(GetInfo()->GetScriptPlayerExtraID())));
+	                        C4VPropList(C4Id2Def(GetInfo()->GetScriptPlayerExtraID()))));
 	return true;
 }
 

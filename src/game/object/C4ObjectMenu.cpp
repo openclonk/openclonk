@@ -212,7 +212,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				if (!(pObj->OCF & OCF_Carryable)) fGet = false; // not a carryable item
 				if (Identification == C4MN_Contents)
 				{
-					if (Object && !!Object->Call(PSF_RejectCollection, &C4AulParSet(C4VID(pObj->Def->id), C4VObj(pObj)))) fGet = false; // collection rejected
+					if (Object && !!Object->Call(PSF_RejectCollection, &C4AulParSet(C4VPropList(pObj->Def), C4VObj(pObj)))) fGet = false; // collection rejected
 				}
 				if (!(pTarget->OCF & OCF_Entrance)) fGet = true; // target object has no entrance: cannot activate - force get
 				// Caption

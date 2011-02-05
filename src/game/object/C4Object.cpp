@@ -1469,7 +1469,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// Check RejectCollect, if desired
 	if (pfRejectCollect)
 	{
-		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VID(Def->id), C4VObj(this))))
+		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VPropList(Def), C4VObj(this))))
 		{
 			*pfRejectCollect = true;
 			return false;
@@ -2752,7 +2752,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	if (fInsufficient)
 	{
 		// BuildNeedsMaterial call to object...
-		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VID(idNeeded), C4VInt(iNeeded))))
+		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VPropList(C4Id2Def(idNeeded)), C4VInt(iNeeded))))
 			// ...game message if not overloaded
 			GameMsgObjectError(Needs.getData(),this);
 		// Return
@@ -4548,7 +4548,7 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	if (Contents.GetObject() == pTarget) return;
 	// select object via script?
 	if (fDoCalls)
-		if (!! Call("~ControlContents", &C4AulParSet(C4VID(pTarget->id))))
+		if (Call("~ControlContents", &C4AulParSet(C4VPropList(pTarget))))
 			return;
 	// default action
 	if (!(Contents.ShiftContents(pTarget))) return;
