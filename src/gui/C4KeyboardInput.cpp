@@ -326,6 +326,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Undefined, NULL, NULL }
 };
 #elif defined(USE_COCOA)
+#include "StdWindow.h"
 #include "CocoaKeycodeMap.h"
 #endif
 
