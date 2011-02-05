@@ -88,7 +88,14 @@ void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
 	if (pComp->isCompiler())
+	{
+		if (PropLists.Get(Number))
+		{
+			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			return;
+		}
 		::Objects.PropLists.Add(this);
+	}
 }
 
 void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
@@ -98,7 +105,14 @@ void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(static_cast<C4PropList&>(*this));
 	if (pComp->isCompiler())
+	{
+		if (PropLists.Get(Number))
+		{
+			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			return;
+		}
 		::Objects.PropLists.Add(this);
+	}
 }
 
 C4PropListNumbered::~C4PropListNumbered()
