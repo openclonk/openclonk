@@ -192,6 +192,13 @@ template <> struct C4ValueConv<C4Effect *>
 	inline static C4Effect *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetEffect() : 0; }
 	inline static C4Value ToC4V(C4Effect *v) { return C4VPropList(v); }
 };
+template <> struct C4ValueConv<C4Def *>
+{
+	inline static C4V_Type Type() { return C4V_PropList; }
+	inline static C4Def *FromC4V(C4Value &v) { C4PropList * p = v.getPropList(); return p ? p->GetDef() : 0; }
+	inline static C4Def *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetDef() : 0; }
+	inline static C4Value ToC4V(C4Effect *v) { return C4VPropList(v); }
+};
 template <> struct C4ValueConv<const C4Value &>
 {
 	inline static C4V_Type Type() { return C4V_Any; }
@@ -311,12 +318,12 @@ public C4AulDefFuncHelper {                   \
     Func pFunc;                               \
   };                                          \
 template <typename RType LIST(N, TYPENAMES)> \
-static void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulContext * LIST(N, PARS)), bool Public=true) \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulContext * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   } \
 template <typename RType LIST(N, TYPENAMES)> \
-static void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulObjectContext * LIST(N, PARS)), bool Public=true) \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulObjectContext * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   }

@@ -845,7 +845,7 @@ static Nillable<C4ID> FnGetMenu(C4AulObjectContext *cthr)
 	return C4VNull;
 }
 
-static bool FnCreateMenu(C4AulObjectContext *cthr, C4ID iSymbol, C4Object *pCommandObj,
+static bool FnCreateMenu(C4AulObjectContext *cthr, C4Def *pDef, C4Object *pCommandObj,
                          long iExtra, C4String *szCaption, long iExtraData,
                          long iStyle, bool fPermanent, C4ID idMenuID)
 {
@@ -855,15 +855,14 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4ID iSymbol, C4Object *pComm
 	// else scenario script callback: No command object OK
 
 	// Create symbol
-	C4Def *pDef;
 	C4FacetSurface fctSymbol;
 	fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-	if ((pDef = C4Id2Def(iSymbol))) pDef->Draw(fctSymbol);
+	if (pDef) pDef->Draw(fctSymbol);
 
 	// Clear any old menu, init new menu
 	if (!cthr->Obj->CloseMenu(false)) return false;
 	if (!cthr->Obj->Menu) cthr->Obj->Menu = new C4ObjectMenu; else cthr->Obj->Menu->ClearItems();
-	cthr->Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,(idMenuID ? idMenuID : iSymbol).GetHandle(),iStyle,true);
+	cthr->Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,(idMenuID ? idMenuID : pDef ? pDef->id : C4ID::None).GetHandle(),iStyle,true);
 
 	// Set permanent
 	cthr->Obj->Menu->SetPermanent(fPermanent);
@@ -886,21 +885,9 @@ const int C4MN_Add_ImgRank     =   1,
 #define _snprintf snprintf
 #endif
 
-static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
+static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4String * szCommand, C4Def * pDef, int iCount, const C4Value & Parameter, C4String * szInfoCaption, int iExtra, const C4Value & XPar, const C4Value & XPar2)
 {
-	PAR(string, szCaption);
-	PAR(string, szCommand);
-	PAR(id,     idItem);
-	PAR(int,    iCount);
-	PAR(any,    Parameter);
-	PAR(string, szInfoCaption);
-	PAR(int,    iExtra);
-	PAR(any,    XPar);
-	PAR(any,    XPar2);
-
-	if (!cthr->Obj)
-		throw new NeedObjectContext("AddMenuItem");
-	if (!cthr->Obj->Menu) return C4VFalse;
+	if (!cthr->Obj->Menu) return false;
 
 	char caption[256+1];
 	char parameter[256+1];
@@ -911,9 +898,6 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 
 	// get needed symbol size
 	int iSymbolSize = cthr->Obj->Menu->GetSymbolSize();
-
-	// Check specified def
-	C4Def *pDef = C4Id2Def(idItem);
 
 	// Compose caption with def name
 	if (szCaption)
@@ -1003,14 +987,14 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 			if (iExtra & C4MN_Add_PassValue)
 			{
 				// with value
-				sprintf(command,"%s(%s,%s,0,%ld)",szScriptCom,idItem.ToString(),parameter,iValue);
-				sprintf(command2,"%s(%s,%s,1,%ld)",szScriptCom,idItem.ToString(),parameter,iValue);
+				sprintf(command,"%s(%s,%s,0,%ld)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter,iValue);
+				sprintf(command2,"%s(%s,%s,1,%ld)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter,iValue);
 			}
 			else
 			{
 				// without value
-				sprintf(command,"%s(%s,%s)",szScriptCom,idItem.ToString(),parameter);
-				sprintf(command2,"%s(%s,%s,1)",szScriptCom,idItem.ToString(),parameter);
+				sprintf(command,"%s(%s,%s)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter);
+				sprintf(command2,"%s(%s,%s,1)",szScriptCom,pDef ? pDef->id.ToString() : "nil",parameter);
 			}
 		}
 		else
@@ -1052,7 +1036,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	case C4MN_Add_ImgObjRank:
 	{
 		// draw current gfx of XPar_C4V including rank
-		if (XPar.GetType() != C4V_C4Object) return C4VFalse;
+		if (XPar.GetType() != C4V_C4Object) return false;
 		C4Object *pGfxObj = XPar.getObj();
 		if (pGfxObj && pGfxObj->Status)
 		{
@@ -1121,7 +1105,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		C4FacetSurface fctSymSpec;
 		uint32_t dwClr = XPar.getInt();
 		if (!szCaption || !Game.DrawTextSpecImage(fctSymSpec, caption, dwClr ? dwClr : 0xff))
-			return C4Value();
+			return false;
 		fctSymbol.Create(iSymbolSize,iSymbolSize);
 		fctSymSpec.Draw(fctSymbol, true);
 		*caption = '\0';
@@ -1137,7 +1121,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 
 	default:
 		// default: by def, if it is not specifically NONE
-		if (pDef && idItem != C4ID::None)
+		if (pDef)
 		{
 			fctSymbol.Create(iSymbolSize,iSymbolSize);
 			pDef->Draw(fctSymbol);
@@ -1156,9 +1140,9 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	bool fIsSelectable = !!*command;
 
 	// Add menu item
-	cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,idItem,command2,fOwnValue,iValue,fIsSelectable);
+	cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
 
-	return C4VTrue;
+	return true;
 }
 
 static bool FnSelectMenuItem(C4AulObjectContext *cthr, long iItem)
@@ -1468,13 +1452,12 @@ static bool FnCanConcatPictureWith(C4AulObjectContext *pCtx, C4Object *pObj)
 	return pCtx->Obj->CanConcatPictureWith(pObj);
 }
 
-static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idSrcGfx, long iOverlayID, long iOverlayMode, C4String *pAction, long dwBlitMode, C4Object *pOverlayObject)
+static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4Def *pSrcDef, long iOverlayID, long iOverlayMode, C4String *pAction, long dwBlitMode, C4Object *pOverlayObject)
 {
 	// safety
 	if (!pCtx->Obj->Status) return false;
 	// get def for source graphics
-	C4Def *pSrcDef=NULL;
-	if (idSrcGfx) if (!(pSrcDef=C4Id2Def(idSrcGfx))) return false;
+	if (!pSrcDef) return false;
 	// setting overlay?
 	if (iOverlayID)
 	{
@@ -2161,16 +2144,10 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, Nillable<int> iAnimati
 	return true;
 }
 
-static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
+static Nillable<int> FnAttachMesh(C4AulObjectContext *ctx, C4PropList* Mesh, C4String * szParentBone, C4String * szChildBone, C4ValueArray * Transformation, int Flags)
 {
-	if (!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
-	//if(!Mesh) return C4VNull;
-
-	PAR(any, Mesh);
-	PAR(string, szParentBone);
-	PAR(string, szChildBone);
-	PAR(array, Transformation);
-	PAR(int, Flags);
+	if (!ctx->Obj->pMeshInstance) return C4VNull;
+	if (!Mesh) return C4VNull;
 
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if (Transformation)
@@ -2178,7 +2155,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 			throw new C4AulExecError(ctx->Obj, "AttachMesh: Transformation is not a valid 3x4 matrix");
 
 	StdMeshInstance::AttachedMesh* attach;
-	C4Object* pObj = Mesh.getObj();
+	C4Object* pObj = Mesh->GetObject();
 	if (pObj)
 	{
 		if (!pObj->pMeshInstance) return C4VNull;
@@ -2186,16 +2163,14 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 	}
 	else
 	{
-		C4ID id = Mesh.getC4ID();
-		if (id == C4ID::None) return C4VNull;
-
-		C4Def* pDef = C4Id2Def(id);
+		C4Def* pDef = Mesh->GetDef();
+		if (!pDef) return C4VNull;
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
 		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
 	}
 
 	if (!attach) return C4VNull;
-	return C4VInt(attach->Number);
+	return attach->Number;
 }
 
 static bool FnDetachMesh(C4AulObjectContext *ctx, long iAttachNumber)
@@ -2446,11 +2421,9 @@ C4ScriptFnDef C4ScriptObjectFnMap[]=
 	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
 	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
-	{ "AddMenuItem",          1  ,C4V_Bool     ,{ C4V_String  ,C4V_String  ,C4V_PropList,C4V_Int     ,C4V_Any     ,C4V_String  ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAddMenuItem },
 	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
-	{ "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Int     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
 
 	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
 };
@@ -2545,6 +2518,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
 	AddFunc(pEngine, "BlastObject", FnBlastObject);
 	AddFunc(pEngine, "CreateMenu", FnCreateMenu);
+	AddFunc(pEngine, "AddMenuItem", FnAddMenuItem);
 	AddFunc(pEngine, "SelectMenuItem", FnSelectMenuItem);
 	AddFunc(pEngine, "SetMenuDecoration", FnSetMenuDecoration);
 	AddFunc(pEngine, "SetMenuTextProgress", FnSetMenuTextProgress);
@@ -2602,7 +2576,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
 	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
 	AddFunc(pEngine, "SetAnimationWeight", FnSetAnimationWeight);
-	//AddFunc(pEngine, "AttachMesh", FnAttachMesh); defined in C4ScriptFnMap
+	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
 	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
 	AddFunc(pEngine, "SetAttachBones", FnSetAttachBones);
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
