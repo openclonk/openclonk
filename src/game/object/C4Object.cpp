@@ -756,7 +756,7 @@ void C4Object::SetOCF()
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
-	if (Contained && !::Objects.ObjectNumber(Contained))
+	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
@@ -861,7 +861,7 @@ void C4Object::UpdateOCF()
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
-	if (Contained && !::Objects.ObjectNumber(Contained))
+	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }

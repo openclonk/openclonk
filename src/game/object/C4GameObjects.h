@@ -57,7 +57,6 @@ public:
 	void UpdateSolidMasks();
 
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-	int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int Load(C4Group &hGroup, bool fKeepInactive);

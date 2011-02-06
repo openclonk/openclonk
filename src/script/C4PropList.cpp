@@ -72,6 +72,19 @@ C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
 	return PropLists.Get(iNumber);
 }
 
+bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
+{
+	if (!pObj) return false;
+	C4PropListNumbered * const * p = PropLists.First();
+	while (p)
+	{
+		if (*p == pObj)
+			return true;
+		p = PropLists.Next(p);
+	}
+	return false;
+}
+
 void C4PropListNumbered::DenumerateAll(int32_t iMaxObjectNumber)
 {
 	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
@@ -176,7 +189,7 @@ C4PropList::~C4PropList()
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;
 	}
-	assert(!::Objects.ObjectNumber(this));
+	assert(!C4PropListNumbered::CheckPropList(this));
 }
 
 bool C4PropList::operator==(const C4PropList &b) const

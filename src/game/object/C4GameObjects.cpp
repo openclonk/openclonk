@@ -295,22 +295,6 @@ C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	return 0;
 }
 
-int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
-{
-	if (!pObj) return 0;
-	C4PropListNumbered * const * p = C4PropListNumbered::PropLists.First();
-	while (p)
-	{
-		if (*p == pObj)
-		{
-			if ((*p)->GetPropListNumbered()) return (*p)->GetPropListNumbered()->Number;
-			return 0;
-		}
-		p = C4PropListNumbered::PropLists.Next(p);
-	}
-	return 0;
-}
-
 C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
 {
 	C4Object *pObj = ObjectPointer(iNumber);

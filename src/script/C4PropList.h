@@ -130,6 +130,7 @@ public:
 	void AcquireNumber();
 
 	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
+	static bool CheckPropList(C4PropList *); // sanity check: true when the proplist is in the list and not a stale pointer
 	static void DenumerateAll(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
