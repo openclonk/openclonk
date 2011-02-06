@@ -15,7 +15,7 @@ overlay Mat {
 // Fills the specified region with some random materials.
 overlay MatFiller {
 	overlay { mat=Earth; tex=earth; loosebounds=1; };
-	Mat { mat=Granite; tex=gold; a=25; };
+	Mat { mat=Granite; tex=granite; a=25; };
 	Mat { mat=Ore; tex= ore; a=20; };
 	Mat { mat=Tunnel; tex=tunnel; a=20; };
 	Mat { mat=Rock; tex=rock; a=20; };

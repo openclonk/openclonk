@@ -1,0 +1,6 @@
+Name=Resource extraction
+
+#Goal window
+MsgGoalFulfilled=Congratulations, all resources have been successfully extracted.
+MsgGoalExtraction=Successful completion of this goal includes the extraction of the following resources:
+MsgGoalResource=|{{%i}} %d units of solid material and %d chunks.

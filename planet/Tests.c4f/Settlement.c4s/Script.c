@@ -7,6 +7,10 @@
 
 protected func Initialize()
 {
+	// Goal: Resource extraction, set to gold mining.
+	var goal = CreateObject(Goal_ResourceExtraction);
+	goal->SetResource("Gold");
+	goal->SetResource("Ore");
 	DoEnvironment();
 }
 
