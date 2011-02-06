@@ -326,14 +326,13 @@ public func ClearButtonMessages()
 // hotkey control
 public func ControlHotkey(int hotindex)
 {
-	if(!actionbar[0]) return false;
+	if(!actionbar[hotindex]) return false;
 	var clonk = actionbar[hotindex]->GetCrew();
 	if(!clonk) return false;
 	hotindex += clonk->HandObjects();
-	if(GetLength(actionbar) <= hotindex) return false;
+	if(!actionbar[hotindex]) return false;
 	// only if it is not already used
 	actionbar[hotindex]->~MouseSelection(GetOwner());
-	
 	return true;
 }
 
