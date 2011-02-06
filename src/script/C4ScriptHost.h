@@ -33,7 +33,7 @@ const int32_t C4SCR_MaxIDLen = 100,
 
 
 // generic script host for objects
-class C4ScriptHost : public C4AulScript, public C4ComponentHost
+class C4ScriptHost : public C4AulScript
 {
 public:
 	C4ScriptHost();
@@ -51,7 +51,8 @@ public:
 protected:
 	void SetError(const char *szMessage);
 	void MakeScript();
-	bool ReloadScript(const char *szPath);
+	bool ReloadScript(const char *szPath, const char *szLanguage);
+	C4ComponentHost ComponentHost;
 };
 
 

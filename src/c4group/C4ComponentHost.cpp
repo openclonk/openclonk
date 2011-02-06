@@ -53,13 +53,14 @@ void C4ComponentHost::Clear()
 }
 
 bool C4ComponentHost::Load(C4Group &hGroup,
-                           const char *szFilename,
+                           const char *fname,
                            const char *szLanguage)
 {
 	// Clear any old stuff
 	Clear();
 	// Store filename
-	SCopy(szFilename, Filename);
+	if (fname)
+		SCopy(fname, Filename);
 	// Load component - try all segmented filenames
 	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
 	for (int iFilename = 0; SCopySegment(Filename, iFilename, strEntry, '|'); iFilename++)
@@ -99,13 +100,14 @@ bool C4ComponentHost::Load(C4Group &hGroup,
 }
 
 bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
-                           const char *szFilename,
+                           const char *fname,
                            const char *szLanguage)
 {
 	// Clear any old stuff
 	Clear();
 	// Store filename
-	SCopy(szFilename, Filename);
+	if (fname)
+		SCopy(fname, Filename);
 	// Load component - try all segmented filenames
 	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
 	for (int iFilename = 0; SCopySegment(Filename, iFilename, strEntry, '|'); iFilename++)

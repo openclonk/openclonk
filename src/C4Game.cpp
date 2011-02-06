@@ -1947,7 +1947,7 @@ bool C4Game::ReloadFile(const char *szFile)
 	if ((pDef = ::Definitions.GetByPath(szRelativePath)))
 		return ReloadDef(pDef->id);
 	// script?
-	if (ScriptEngine.ReloadScript(szRelativePath, &::Definitions))
+	if (ScriptEngine.ReloadScript(szRelativePath, &::Definitions, Config.General.LanguageEx))
 	{
 		return true;
 	}

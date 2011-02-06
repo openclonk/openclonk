@@ -520,7 +520,7 @@ protected:
 	void AppendTo(C4AulScript &Scr, bool bHighPrio); // append to given script
 	void UnLink(); // reset to unlinked state
 	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
-	virtual bool ReloadScript(const char *szPath); // reload given script
+	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 
 	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
 
@@ -561,7 +561,7 @@ public:
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
 	using C4AulScript::ReloadScript;
-	bool ReloadScript(const char *szScript, C4DefList *pDefs); // search script and reload + relink, if found
+	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)

@@ -33,6 +33,7 @@ public:
 	void Default();
 	void Clear();
 	const char *GetData() const { return Data.getData(); }
+	const StdStrBuf & GetDataBuf() const { return Data; }
 	size_t GetDataSize() const { return Data.getLength(); }
 	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
 	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);

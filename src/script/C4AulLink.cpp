@@ -212,11 +212,11 @@ void C4AulScript::AfterLink()
 	for (C4AulScript *s = Child0; s; s = s->Next) s->AfterLink();
 }
 
-bool C4AulScript::ReloadScript(const char *szPath)
+bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// call for childs
 	for (C4AulScript *s = Child0; s; s = s->Next)
-		if (s->ReloadScript(szPath))
+		if (s->ReloadScript(szPath, szLanguage))
 			return true;
 	return false;
 }
@@ -305,10 +305,10 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	::MaterialMap.UpdateScriptPointers();
 }
 
-bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)
+bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage)
 {
 	// reload
-	if (!C4AulScript::ReloadScript(szScript))
+	if (!C4AulScript::ReloadScript(szScript, szLanguage))
 		return false;
 	// relink
 	ReLink(pDefs);

@@ -40,13 +40,13 @@ C4ScriptHost::~C4ScriptHost() { Clear(); }
 void C4ScriptHost::Default()
 {
 	C4AulScript::Default();
-	C4ComponentHost::Default();
+	ComponentHost.Default();
 }
 
 void C4ScriptHost::Clear()
 {
 	C4AulScript::Clear();
-	C4ComponentHost::Clear();
+	ComponentHost.Clear();
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -55,14 +55,14 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 	// Set definition and id
 	Def = pDef;
 	// Base load
-	bool fSuccess = C4ComponentHost::Load(hGroup,szFilename,szLanguage);
+	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
 	// String Table
 	stringTable = pLocalTable;
 	// load it if specified
 	if (stringTable && fLoadTable)
 		stringTable->LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
 	// set name
-	ScriptName.Format("%s" DirSep "%s", hGroup.GetFullName().getData(), Filename);
+	ScriptName.Ref(ComponentHost.GetFilePath());
 	// preparse script
 	MakeScript();
 	// Success
@@ -78,11 +78,11 @@ void C4ScriptHost::MakeScript()
 	// create script
 	if (stringTable)
 	{
-		stringTable->ReplaceStrings(Data, Script, FilePath);
+		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script, ComponentHost.GetFilePath());
 	}
 	else
 	{
-		Script.Ref(Data);
+		Script.Ref(ComponentHost.GetDataBuf());
 	}
 
 	// preparse script
@@ -127,20 +127,20 @@ C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *
 	return pFn->Exec(pObj,Pars, fPassError);
 }
 
-bool C4ScriptHost::ReloadScript(const char *szPath)
+bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?
-	if (SEqualNoCase(szPath, FilePath) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
+	if (SEqualNoCase(szPath, ComponentHost.GetFilePath()) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
 	{
 		// try reload
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(ParentGrp, Filename, Config.General.Language, NULL, stringTable))
+				if (Load(ParentGrp, NULL, szLanguage, NULL, stringTable))
 					return true;
 	}
 	// call for childs
-	return C4AulScript::ReloadScript(szPath);
+	return C4AulScript::ReloadScript(szPath, szLanguage);
 }
 
 void C4ScriptHost::SetError(const char *szMessage)

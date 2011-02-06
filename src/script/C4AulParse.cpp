@@ -3112,7 +3112,7 @@ bool C4AulScript::Parse()
 	{
 		C4ScriptHost * scripthost = 0;
 		if (Def) scripthost = &Def->Script;
-		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->GetFilePath());
+		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->ScriptName.getData());
 		else fprintf(stderr, "parsing unknown...\n");
 	}
 	// parse children
