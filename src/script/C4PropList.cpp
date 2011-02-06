@@ -158,12 +158,19 @@ C4PropListNumbered::~C4PropListNumbered()
 		Log("removing numbered proplist without number");
 }
 
+#ifdef _DEBUG
+C4Set<C4PropList *> C4PropList::PropLists;
+#endif
+
 C4PropList::C4PropList(C4PropList * prototype):
 		Status(1),
 		FirstRef(NULL), prototype(prototype), constant(false)
 {
 	if (prototype)
 		SetProperty(P_Prototype, C4VPropList(prototype));
+#ifdef _DEBUG	
+	PropLists.Add(this);
+#endif
 }
 
 void C4PropList::DenumeratePointers()
@@ -189,6 +196,10 @@ C4PropList::~C4PropList()
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;
 	}
+#ifdef _DEBUG
+	assert(PropLists.Has(this));
+	PropLists.Remove(this);
+#endif
 	assert(!C4PropListNumbered::CheckPropList(this));
 }
 
@@ -484,4 +495,10 @@ template<> template<>
 bool C4Set<C4PropListNumbered *>::Equals<C4PropList *>(C4PropListNumbered * a, C4PropList * b)
 {
 	return a == b;
+}
+
+template<> template<>
+unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * e)
+{
+	return C4Set<C4PropListNumbered *>::Hash(static_cast<int>(reinterpret_cast<intptr_t>(e)));
 }

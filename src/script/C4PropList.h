@@ -102,6 +102,9 @@ public:
 	void AppendDataString(StdStrBuf * out, const char * delim);
 
 	bool operator==(const C4PropList &b) const;
+#ifdef _DEBUG
+	static C4Set<C4PropList *> PropLists;
+#endif	
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
