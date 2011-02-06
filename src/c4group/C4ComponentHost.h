@@ -34,10 +34,9 @@ public:
 	void Clear();
 	const char *GetData() const { return Data.getData(); }
 	size_t GetDataSize() const { return Data.getLength(); }
-	bool Load(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-	bool Load(const char *szName, C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
-	bool LoadEx(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-	bool LoadAppend(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
+	bool LoadEx(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
 	bool GetLanguageString(const char *szLanguage, class StdStrBuf &rTarget);
 protected:
 	// The component host's Data has changed. This callback can be used by
@@ -45,7 +44,6 @@ protected:
 	virtual void OnLoad() {}
 
 	StdCopyStrBuf Data;
-	char Name[_MAX_FNAME+1];
 	char Filename[_MAX_FNAME+1];
 	char FilePath[_MAX_PATH+1];
 	void CopyFilePathFromGroup(const C4Group &hGroup);

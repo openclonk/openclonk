@@ -49,18 +49,18 @@ void C4ScriptHost::Clear()
 	C4ComponentHost::Clear();
 }
 
-bool C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilename,
+bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
                         const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable, bool fLoadTable)
 {
 	// Set definition and id
 	Def = pDef;
 	// Base load
-	bool fSuccess = C4ComponentHost::LoadAppend(szName,hGroup,szFilename,szLanguage);
+	bool fSuccess = C4ComponentHost::Load(hGroup,szFilename,szLanguage);
 	// String Table
 	stringTable = pLocalTable;
 	// load it if specified
 	if (stringTable && fLoadTable)
-		stringTable->LoadEx("StringTbl", hGroup, C4CFN_ScriptStringTbl, szLanguage);
+		stringTable->LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
 	// set name
 	ScriptName.Format("%s" DirSep "%s", hGroup.GetFullName().getData(), Filename);
 	// preparse script
@@ -136,7 +136,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath)
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(Name, ParentGrp, Filename, Config.General.Language, NULL, stringTable))
+				if (Load(ParentGrp, Filename, Config.General.Language, NULL, stringTable))
 					return true;
 	}
 	// call for childs

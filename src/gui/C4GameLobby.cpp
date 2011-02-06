@@ -94,7 +94,7 @@ namespace C4GameLobby
 				StdStrBuf sDesc;
 				// load desc
 				C4ComponentHost DefDesc;
-				if (DefDesc.LoadEx("Desc", ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+				if (DefDesc.LoadEx(ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 				{
 					C4RTFFile rtf;
 					rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));

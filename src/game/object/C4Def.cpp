@@ -459,7 +459,7 @@ bool C4Def::Load(C4Group &hGroup,
 		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
 		// Load script - loads string table as well, because that must be done after script load
 		// for downwards compatibility with packing order
-		Script.Load("Script", hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
+		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
 	}
 
 	// read clonknames
@@ -471,7 +471,7 @@ bool C4Def::Load(C4Group &hGroup,
 		{
 			// create new
 			pClonkNames = new C4ComponentHost();
-			if (!pClonkNames->LoadEx(LoadResStr("IDS_CNS_NAMES"), hGroup, C4CFN_ClonkNames, szLanguage))
+			if (!pClonkNames->LoadEx(hGroup, C4CFN_ClonkNames, szLanguage))
 			{
 				delete pClonkNames; pClonkNames = NULL;
 			}
@@ -719,7 +719,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	if (!fPrimaryDef && fLoadSysGroups) if (SysGroup.OpenAsChild(&hGroup, C4CFN_System))
 		{
 			C4LangStringTable SysGroupString;
-			SysGroupString.LoadEx("StringTbl", SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+			SysGroupString.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 			// load all scripts in there
 			SysGroup.ResetSearch();
 			while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, (char *) &fn, NULL, NULL, !!fn[0]))
@@ -727,7 +727,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 				// host will be destroyed by script engine, so drop the references
 				C4ScriptHost *scr = new C4ScriptHost();
 				scr->Reg2List(&::ScriptEngine, &::ScriptEngine);
-				scr->Load(NULL, SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
+				scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
 			}
 			// if it's a physical group: watch out for changes
 			if (!SysGroup.IsPacked() && Game.pFileMonitor)

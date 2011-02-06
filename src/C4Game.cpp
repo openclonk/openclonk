@@ -242,19 +242,19 @@ bool C4Game::OpenScenario()
 			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
 
 	// Title
-	Title.LoadEx(LoadResStr("IDS_CNS_TITLE"), ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
+	Title.LoadEx(ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
 	if (!Title.GetLanguageString(Config.General.LanguageEx, ScenarioTitle))
 		ScenarioTitle.Copy(C4S.Head.Title);
 
 	// Game (runtime data)
-	GameText.Load(C4CFN_Game,ScenarioFile,C4CFN_Game);
+	GameText.Load(ScenarioFile,C4CFN_Game);
 
 	// SaveGame definition preset override (not needed with new scenarios that
 	// have def specs in scenario core, keep for downward compatibility)
 	if (C4S.Head.SaveGame) DefinitionFilenamesFromSaveGame();
 
 	// String tables
-	ScenarioLangStringTable.LoadEx("StringTbl", ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	ScenarioLangStringTable.LoadEx(ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
 	// Load parameters (not as network client, because then team info has already been sent by host)
 	if (!Network.isEnabled() || Network.isHost())
@@ -2266,7 +2266,7 @@ bool C4Game::InitScriptEngine()
 		// host will be destroyed by script engine, so drop the references
 		C4ScriptHost *scr = new C4ScriptHost();
 		scr->Reg2List(&ScriptEngine, &ScriptEngine);
-		scr->Load(NULL, File, fn, Config.General.LanguageEx, NULL, &MainSysLangStringTable);
+		scr->Load(File, fn, Config.General.LanguageEx, NULL, &MainSysLangStringTable);
 	}
 
 	// if it's a physical group: watch out for changes
@@ -2274,7 +2274,7 @@ bool C4Game::InitScriptEngine()
 		Game.pFileMonitor->AddDirectory(File.GetFullName().getData());
 
 	// load standard clonk names
-	Names.Load(LoadResStr("IDS_CNS_NAMES"), File, C4CFN_Names);
+	Names.Load(File, C4CFN_Names);
 
 	return true;
 }
@@ -2617,10 +2617,10 @@ void C4Game::InitAnimals()
 bool C4Game::LoadScenarioComponents()
 {
 	// Info
-	Info.Load(LoadResStr("IDS_CNS_INFO"),ScenarioFile,C4CFN_Info);
+	Info.Load(ScenarioFile,C4CFN_Info);
 	// Overload clonk names from scenario file
 	if (ScenarioFile.EntryCount(C4CFN_Names))
-		Names.Load(LoadResStr("IDS_CNS_NAMES"), ScenarioFile, C4CFN_Names);
+		Names.Load(ScenarioFile, C4CFN_Names);
 	// scenario sections
 	char fn[_MAX_FNAME+1] = { 0 };
 	ScenarioFile.ResetSearch(); *fn=0;
@@ -2651,13 +2651,13 @@ bool C4Game::LoadScenarioScripts()
 {
 	// Script
 	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
-	::GameScript.Load(LoadResStr("IDS_CNS_SCRIPT"),ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
+	::GameScript.Load(ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
 	// additional system scripts?
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&ScenarioFile, C4CFN_System))
 	{
-		ScenarioSysLangStringTable.LoadEx("StringTbl", SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		ScenarioSysLangStringTable.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
@@ -2683,7 +2683,7 @@ bool C4Game::LoadScenarioScripts()
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();
 			scr->Reg2List(&ScriptEngine, &ScriptEngine);
-			scr->Load(NULL, SysGroup, fn, Config.General.LanguageEx, NULL, &ScenarioSysLangStringTable);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &ScenarioSysLangStringTable);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)
@@ -2799,7 +2799,7 @@ bool C4Game::InitKeyboard()
 void C4Game::UpdateLanguage()
 {
 	// Reload System.c4g string table
-	MainSysLangStringTable.LoadEx("StringTbl", Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	MainSysLangStringTable.LoadEx(Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 }
 
 bool C4Game::InitPlayerControlSettings()

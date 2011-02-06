@@ -103,7 +103,7 @@ bool C4RankSystem::Load(C4Group &hGroup, const char *szFilenames, int DefRankBas
 	assert(szFilenames); assert(szLanguage);
 	// load new
 	C4ComponentHost Ranks;
-	if (!Ranks.LoadEx("Ranks", hGroup, szFilenames, szLanguage)) return false;
+	if (!Ranks.LoadEx(hGroup, szFilenames, szLanguage)) return false;
 	size_t iSize = Ranks.GetDataSize();
 	if (!iSize) return false;
 	szRankNames=new char[iSize+1];

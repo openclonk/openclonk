@@ -42,7 +42,6 @@ C4ComponentHost::~C4ComponentHost()
 void C4ComponentHost::Default()
 {
 	Data.Clear();
-	Name[0]=0;
 	Filename[0]=0;
 	FilePath[0]=0;
 }
@@ -53,15 +52,13 @@ void C4ComponentHost::Clear()
 	OnLoad();
 }
 
-bool C4ComponentHost::Load(const char *szName,
-                           C4Group &hGroup,
+bool C4ComponentHost::Load(C4Group &hGroup,
                            const char *szFilename,
                            const char *szLanguage)
 {
 	// Clear any old stuff
 	Clear();
-	// Store name & filename
-	SCopy(szName, Name);
+	// Store filename
 	SCopy(szFilename, Filename);
 	// Load component - try all segmented filenames
 	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
@@ -101,15 +98,13 @@ bool C4ComponentHost::Load(const char *szName,
 	return false;
 }
 
-bool C4ComponentHost::Load(const char *szName,
-                           C4GroupSet &hGroupSet,
+bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
                            const char *szFilename,
                            const char *szLanguage)
 {
 	// Clear any old stuff
 	Clear();
-	// Store name & filename
-	SCopy(szName, Name);
+	// Store filename
 	SCopy(szFilename, Filename);
 	// Load component - try all segmented filenames
 	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
@@ -145,8 +140,7 @@ bool C4ComponentHost::Load(const char *szName,
 	return false;
 }
 
-bool C4ComponentHost::LoadEx(const char *szName,
-                             C4Group &hGroup,
+bool C4ComponentHost::LoadEx(C4Group &hGroup,
                              const char *szFilename,
                              const char *szLanguage)
 {
@@ -156,74 +150,7 @@ bool C4ComponentHost::LoadEx(const char *szName,
 	hGroups.RegisterGroup(hGroup, false, 1000, C4GSCnt_Component); // Provided group gets highest priority
 	hGroups.RegisterGroups(Languages.GetPackGroups(pConfig->AtRelativePath(hGroup.GetFullName().getData())), C4GSCnt_Language);
 	// Load from group set
-	return Load(szName, hGroups, szFilename, szLanguage);
-}
-
-bool C4ComponentHost::LoadAppend(const char *szName,
-                                 C4Group &hGroup, const char *szFilename,
-                                 const char *szLanguage)
-{
-	Clear();
-
-	// Store name & filename
-	SCopy(szName,Name);
-	SCopy(szFilename,Filename);
-
-	// Load component (segmented filename)
-	char str1[_MAX_FNAME+1],str2[_MAX_FNAME+1];
-	int iFileCnt = 0, iFileSizeSum = 0;
-	int cseg, clseg;
-	for (cseg=0; SCopySegment(Filename,cseg,str1,'|'); cseg++)
-	{
-		char szLang[3] = "";
-		for (clseg=0; SCopySegment(szLanguage ? szLanguage : "", clseg, szLang, ',', 2); clseg++)
-		{
-			sprintf(str2,str1,szLang);
-			// Check existance
-			size_t iFileSize;
-			if (hGroup.FindEntry(str2, NULL, &iFileSize))
-			{
-				iFileCnt++;
-				iFileSizeSum += 1 + iFileSize;
-				break;
-			}
-			if (!SSearch(str1, "%s")) break;
-		}
-	}
-
-	// No matching files found?
-	if (!iFileCnt) return false;
-
-	// Allocate memory
-	Data.SetLength(iFileSizeSum);
-
-	// Search files to read contents
-	char *pPos = Data.getMData(); *pPos = 0;
-	for (cseg=0; SCopySegment(Filename,cseg,str1,'|'); cseg++)
-	{
-		char szLang[3] = "";
-		for (clseg=0; SCopySegment(szLanguage ? szLanguage : "", clseg, szLang, ',', 2); clseg++)
-		{
-			sprintf(str2,str1,szLang);
-			// Load data
-			char *pTemp;
-			if (hGroup.LoadEntry(str2,&pTemp,NULL,1))
-			{
-				*pPos++ = '\n';
-				SCopy(pTemp, pPos, Data.getPtr(Data.getLength()) - pPos);
-				pPos += SLen(pPos);
-				delete[] pTemp;
-				break;
-			}
-			delete [] pTemp;
-			if (!SSearch(str1, "%s")) break;
-		}
-	}
-
-	SReplaceChar(Filename,'|',0);
-	CopyFilePathFromGroup(hGroup);
-	OnLoad();
-	return !! iFileCnt;
+	return Load(hGroups, szFilename, szLanguage);
 }
 
 // Construct full path
