@@ -26,7 +26,6 @@
 #include <C4Include.h>
 #include <C4ComponentHost.h>
 #include <C4Application.h>
-#include <C4Language.h>
 #include <StdRegistry.h>
 
 C4ComponentHost::C4ComponentHost()
@@ -140,19 +139,6 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	FilePath[0] = 0;
 	// Not loaded
 	return false;
-}
-
-bool C4ComponentHost::LoadEx(C4Group &hGroup,
-                             const char *szFilename,
-                             const char *szLanguage)
-{
-	// Load from a group set containing the provided group and
-	// alternative groups for cross-loading from a language pack
-	C4GroupSet hGroups;
-	hGroups.RegisterGroup(hGroup, false, 1000, C4GSCnt_Component); // Provided group gets highest priority
-	hGroups.RegisterGroups(Languages.GetPackGroups(Config.AtRelativePath(hGroup.GetFullName().getData())), C4GSCnt_Language);
-	// Load from group set
-	return Load(hGroups, szFilename, szLanguage);
 }
 
 // Construct full path
