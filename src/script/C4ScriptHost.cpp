@@ -50,7 +50,7 @@ void C4ScriptHost::Clear()
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
-                        const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable, bool fLoadTable)
+                        const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable)
 {
 	// Set definition and id
 	Def = pDef;
@@ -58,9 +58,6 @@ bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
 	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
 	// String Table
 	stringTable = pLocalTable;
-	// load it if specified
-	if (stringTable && fLoadTable)
-		stringTable->LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
 	// set name
 	ScriptName.Ref(ComponentHost.GetFilePath());
 	// preparse script

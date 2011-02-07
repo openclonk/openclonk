@@ -452,14 +452,16 @@ bool C4Def::Load(C4Group &hGroup,
 			return false;
 		}
 
+	// Read string table
+	StringTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
+
 	// Read script
 	if (dwLoadWhat & C4D_Load_Script)
 	{
 		// reg script to engine
 		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
-		// Load script - loads string table as well, because that must be done after script load
-		// for downwards compatibility with packing order
-		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
+		// Load script
+		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable);
 	}
 
 	// read clonknames

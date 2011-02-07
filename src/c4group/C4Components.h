@@ -173,7 +173,7 @@
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.c4b|MassMover.c4b"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt"
-#define C4FLS_Def       "Particle.txt|DefCore.txt|Graphics.bmp|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|Portrait*.png|Portrait*.bmp|ActMap.txt|Script.c|Script*.c|C4Script.c|StringTbl*.txt|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank.bmp|Rank.png|Desc*.txt|Overlay.png|Title.bmp|Title.png|Icon.bmp|Author.txt|Version.txt|*.wav|*.c4d"
+#define C4FLS_Def       "Particle.txt|DefCore.txt|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|Portrait*.png|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank.png|Desc*.txt|Overlay.png|Title.png|Icon.bmp|Author.txt|Version.txt|*.wav|*.c4d"
 #define C4FLS_Player    "Player.txt|Portrait.png|Portrait.bmp|*.c4i"
 #define C4FLS_Object    "ObjectInfo.txt|Portrait.png|Portrait.bmp"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.c4s|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
