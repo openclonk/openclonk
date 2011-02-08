@@ -70,6 +70,7 @@ public:
 	void QuitGame(); // quit game only, but restart application if in fullscreen startup menu mode
 	void Activate(); // activate app to gain full focus in OS
 	void SetNextMission(const char *szMissionFilename);
+	virtual void OnCommand(const char *szCmd);
 
 	const char *GetRevision() const { return Revision.getData(); }
 
@@ -91,8 +92,6 @@ protected:
 	bool PreInit();
 	static bool ProcessCallback(const char *szMessage, int iProcess);
 	void ApplyResolutionConstraints();
-
-	virtual void OnCommand(const char *szCmd);
 
 	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
 	int UseStartupDialog;

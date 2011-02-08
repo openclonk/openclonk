@@ -410,25 +410,6 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 #endif
 }
 
-bool CStdApp::ReadStdInCommand()
-{
-	while (_kbhit())
-	{
-		// Surely not the most efficient way to do it, but we won't have to read much data anyway.
-		char c = getch();
-		if (c == '\r')
-		{
-			if (!CmdBuf.isNull())
-			{
-				OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-			}
-		}
-		else if (isprint((unsigned char)c))
-			CmdBuf.AppendChar(c);
-	}
-	return true;
-}
-
 void CStdApp::MessageDialog(const char * message)
 {
 	MessageBox(0, message, C4ENGINECAPTION, MB_ICONERROR);

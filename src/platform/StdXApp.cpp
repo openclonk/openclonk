@@ -44,24 +44,6 @@
 #include <time.h>
 #include <errno.h>
 
-#ifdef HAVE_LIBREADLINE
-#  if defined(HAVE_READLINE_READLINE_H)
-#    include <readline/readline.h>
-#  elif defined(HAVE_READLINE_H)
-#    include <readline.h>
-#  endif
-static void readline_callback (char *);
-static CStdApp * readline_callback_use_this_app = 0;
-#endif /* HAVE_LIBREADLINE */
-
-#ifdef HAVE_READLINE_HISTORY
-#  if defined(HAVE_READLINE_HISTORY_H)
-#    include <readline/history.h>
-#  elif defined(HAVE_HISTORY_H)
-#    include <history.h>
-#  endif
-#endif /* HAVE_READLINE_HISTORY */
-
 /* CStdApp */
 
 #ifdef WITH_GLIB
@@ -128,7 +110,6 @@ bool CStdApp::Init(int argc, char * argv[])
 	g_object_unref(icon);
 #endif
 	// Try to figure out the location of the executable
-	Priv->argc=argc; Priv->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	if (dir[0] != '/')
@@ -651,49 +632,6 @@ void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow)
 	}
 }
 
-bool CStdApp::ReadStdInCommand()
-{
-#if HAVE_LIBREADLINE
-	rl_callback_read_char();
-	return true;
-#else
-	// Surely not the most efficient way to do it, but we won't have to read much data anyway.
-	char c;
-	if (read(0, &c, 1) != 1)
-		return false;
-	if (c == '\n')
-	{
-		if (!CmdBuf.isNull())
-		{
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-		}
-	}
-	else if (isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-#endif
-}
-#if HAVE_LIBREADLINE
-static void readline_callback (char * line)
-{
-	if (!line)
-	{
-		readline_callback_use_this_app->Quit();
-	}
-	else
-	{
-		readline_callback_use_this_app->OnCommand(line);
-	}
-#if HAVE_READLINE_HISTORY
-	if (line && *line)
-	{
-		add_history (line);
-	}
-#endif
-	free(line);
-}
-#endif
-
 void CStdApp::OnXInput()
 {
 	while (XEventsQueued(dpy, QueuedAfterReading))
@@ -712,14 +650,6 @@ void CStdApp::OnXInput()
 	// having issued X11 commands, even if most events
 	// are mouse moves that don't generate X11 commands.
 	XFlush(dpy);
-}
-
-void CStdApp::OnStdInInput()
-{
-	if (!ReadStdInCommand())
-	{
-		Quit();
-	}
 }
 
 void CStdApp::MessageDialog(const char * message)
