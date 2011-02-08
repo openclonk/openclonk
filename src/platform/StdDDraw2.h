@@ -130,10 +130,8 @@ public:
 // This is the format required by GL_T2F_C4UB_V3F
 struct CBltVertex
 {
-#ifdef USE_GL
-	GLfloat tx, ty; // texture positions
-	GLubyte color[4]; // color modulation
-#endif
+	float tx, ty; // texture positions
+	unsigned char color[4]; // color modulation
 	float ftx,fty,ftz; // blit positions
 };
 

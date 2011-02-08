@@ -100,7 +100,7 @@ void CStdApp::RestoreVideoMode() {}
 bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
 
 // Copy the text to the clipboard or the primary selection
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	return false;
 }

@@ -94,7 +94,9 @@ void CSurface::Default()
 #endif
 	ppTex=NULL;
 	pMainSfc=NULL;
+#ifdef USE_GL
 	pCtx=NULL;
+#endif
 	pWindow=NULL;
 	ClrByOwnerClr=0;
 	iTexSize=iTexX=iTexY=0;
