@@ -1,5 +1,5 @@
 [DefCore]
-id=OrbOfTelekinesis
+id=TeleGlove
 Version=4,10,0,0
 Category=C4D_Object
 Width=8
@@ -12,6 +12,6 @@ VertexFriction=40,40,40
 Picture=0,0,8,8
 Value=20
 Mass=7
-Components=Crystal=4;
+Components=Metal=2;Crystal=2;
 Rebuy=1
 Rotate=1
