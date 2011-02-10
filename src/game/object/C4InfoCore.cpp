@@ -166,30 +166,30 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 
 //------------------------------- Physical Info ----------------------------------------
 
-struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; } C4PhysInfoNameMap[] =
+struct C4PhysInfoNameMap_t { const char *szName; C4PhysicalInfo::Offset off; int32_t def; } C4PhysInfoNameMap[] =
 {
-	{ "Energy",          &C4PhysicalInfo::Energy          },
-	{ "Breath",          &C4PhysicalInfo::Breath          },
-	{ "Walk",            &C4PhysicalInfo::Walk            },
-	{ "Jump",            &C4PhysicalInfo::Jump            },
-	{ "Scale",           &C4PhysicalInfo::Scale           },
-	{ "Hangle",          &C4PhysicalInfo::Hangle          },
-	{ "Dig",             &C4PhysicalInfo::Dig             },
-	{ "Swim",            &C4PhysicalInfo::Swim            },
-	{ "Throw",           &C4PhysicalInfo::Throw           },
-	{ "Push",            &C4PhysicalInfo::Push            },
-	{ "Magic",           &C4PhysicalInfo::Magic           },
-	{ "Float",           &C4PhysicalInfo::Float           },
-	{ "CanScale",        &C4PhysicalInfo::CanScale        },
-	{ "CanHangle",       &C4PhysicalInfo::CanHangle       },
-	{ "CanDig",          &C4PhysicalInfo::CanDig          },
-	{ "CanConstruct",    &C4PhysicalInfo::CanConstruct    },
-	{ "CanChop",         &C4PhysicalInfo::CanChop         },
-	{ "CanSwimDig",      &C4PhysicalInfo::CanSwimDig      },
-	{ "CanFly",          &C4PhysicalInfo::CanFly          },
-	{ "CorrosionResist", &C4PhysicalInfo::CorrosionResist },
-	{ "BreatheWater",    &C4PhysicalInfo::BreatheWater    },
-	{ NULL, NULL }
+	{ "Energy",          &C4PhysicalInfo::Energy,          50000  },
+	{ "Breath",          &C4PhysicalInfo::Breath,          100000 },
+	{ "Walk",            &C4PhysicalInfo::Walk,            70000  },
+	{ "Jump",            &C4PhysicalInfo::Jump,            40000  },
+	{ "Scale",           &C4PhysicalInfo::Scale,           30000  },
+	{ "Hangle",          &C4PhysicalInfo::Hangle,          30000  },
+	{ "Dig",             &C4PhysicalInfo::Dig,             40000  },
+	{ "Swim",            &C4PhysicalInfo::Swim,            60000  },
+	{ "Throw",           &C4PhysicalInfo::Throw,           50000  },
+	{ "Push",            &C4PhysicalInfo::Push,            40000  },
+	{ "Magic",           &C4PhysicalInfo::Magic,           0      },
+	{ "Float",           &C4PhysicalInfo::Float,           0      },
+	{ "CanScale",        &C4PhysicalInfo::CanScale,        0      },
+	{ "CanHangle",       &C4PhysicalInfo::CanHangle,       0      },
+	{ "CanDig",          &C4PhysicalInfo::CanDig,          1      },
+	{ "CanConstruct",    &C4PhysicalInfo::CanConstruct,    1      },
+	{ "CanChop",         &C4PhysicalInfo::CanChop,         1      },
+	{ "CanSwimDig",      &C4PhysicalInfo::CanSwimDig,      0      },
+	{ "CanFly",          &C4PhysicalInfo::CanFly,          0      },
+	{ "CorrosionResist", &C4PhysicalInfo::CorrosionResist, 0      },
+	{ "BreatheWater",    &C4PhysicalInfo::BreatheWater,    0      },
+	{ NULL, NULL, 0 }
 };
 
 void C4PhysicalInfo::PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysicals, C4Def *pTrainDef)
@@ -261,7 +261,7 @@ const char *C4PhysicalInfo::GetNameByIndex(int32_t iIdx, Offset *pmpiOut)
 void C4PhysicalInfo::CompileFunc(StdCompiler *pComp)
 {
 	for (C4PhysInfoNameMap_t *entry = C4PhysInfoNameMap; entry->szName; ++entry)
-		pComp->Value(mkNamingAdapt((this->*(entry->off)), entry->szName, 0));
+		pComp->Value(mkNamingAdapt((this->*(entry->off)), entry->szName, entry->def));
 }
 
 void C4PhysicalInfo::TrainValue(int32_t *piVal, int32_t iTrainBy, int32_t iMaxTrain)
