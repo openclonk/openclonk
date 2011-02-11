@@ -171,7 +171,7 @@ protected func ControlUseCancel(object clonk, int ix, int iy)
 protected func CancelUse(object clonk)
 {
 	EndUsage(clonk);
-	Log("CancelUse");
+	//Log("CancelUse");
 	Sound("Electrical.ogg",nil,nil,nil,-1);
 	PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold), Anim_Const(1000));
 	StopAnimation(anim_spin);
