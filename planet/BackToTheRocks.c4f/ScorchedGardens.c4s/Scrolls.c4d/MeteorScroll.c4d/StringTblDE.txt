@@ -1,0 +1,2 @@
+Name=Meteor-Schriftrolle
+Description=Schleudere einen Meteor auf deine Feinde!
