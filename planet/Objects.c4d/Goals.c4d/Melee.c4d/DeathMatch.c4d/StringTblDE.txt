@@ -1,0 +1,6 @@
+Name=Deathmatch
+
+MsgVictory=Der Sieg gebührt deinem Team.
+MsgAhead=Du bist %d kills voraus. Dein stärkster Verfolger ist %s.
+MsgBehind=Du hast %d kills rückstand auf %s.
+MsgEqual=Du liegst mit %s gleichauf.

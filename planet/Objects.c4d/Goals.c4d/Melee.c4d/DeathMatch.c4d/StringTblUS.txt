@@ -1,0 +1,6 @@
+Name=Deathmatch
+
+MsgVictory=You won.
+MsgAhead=You are %d kills ahead. The closest follower is %s.
+MsgBehind=You are %d kills behind %s.
+MsgEqual=%s scored as often as you.
