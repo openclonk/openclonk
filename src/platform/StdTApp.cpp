@@ -221,8 +221,8 @@ void CStdWindow::Clear() {}
 CStdWindow::CStdWindow() {}
 CStdWindow::~CStdWindow() {}
 void CStdWindow::FlashWindow() {}
-CStdWindow * CStdWindow::Init(CStdApp*) {return 0;}
-CStdWindow * CStdWindow::Init(CStdApp*, char const*, CStdWindow*, bool) {return 0;}
+CStdWindow * CStdWindow::Init(CStdApp*) {return this;}
+CStdWindow * CStdWindow::Init(CStdApp*, char const*, CStdWindow*, bool) {return this;}
 bool CStdWindow::GetSize(RECT*) {return 0;}
 bool CStdWindow::RestorePosition(char const*, char const*, bool) {return 0;}
 void CStdWindow::SetSize(unsigned int, unsigned int) {}
