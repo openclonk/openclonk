@@ -11,7 +11,7 @@ protected func Initialize()
 {
 
 	// Goal.
-	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
+	CreateObject(Goal_DeathMatch, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
 	
 	//Enviroment.
@@ -198,5 +198,5 @@ func OnClonkLeftRelaunch(object clonk)
 	return;
 }
 
-func KillsToRelaunch() { return 3; }
+func WinKillCount() { return 5; }
 func RelaunchWeaponList() { return [Bow, FireballScroll, MeteorScroll, TeleGlove, Sword]; }
