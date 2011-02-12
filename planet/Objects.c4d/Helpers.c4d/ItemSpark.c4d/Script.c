@@ -9,9 +9,18 @@
 	global func StopItemSparks()
 		self-explanatory
 		
-	scenario callback func GetSparkItem(int x, int y)
+	scenario callbacks:
+	 func GetSparkItem(int x, int y)
 		returns the item ID one spark should spawn.
 		called at the creation of the sparks (x=nil, y=nil) for mirrored sparks and on Hit() again, if it returned nil before
+	
+	 func GetSparkRange()
+	 	returns the area where the sparks spawn as an array, standard equals return [0, LandscapeWidth()]
+	 
+	 func SetupSparkItem(object obj)
+	 	called after an item is spawned. Can be used to put arrows into bows, for example
+
+
 */
 
 local toSpawn;
@@ -37,8 +46,20 @@ global func FxGlobalItemSparksStart(_, effect, temp, rate, mir)
 global func FxGlobalItemSparksTimer(_, effect, time)
 {
 	if(Random(1000) >= effect.rate) return;
-	var max=LandscapeWidth();
-	var start=0;
+	var range=GameCall("GetSparkRange");
+	var max, start;
+	if(range != nil)
+	{
+		start=range[0];
+		max=range[1]-start;
+		if(effect.mirror) if(max>LandscapeWidth()) max=LandscapeWidth();
+	}
+	else
+	{
+		max=LandscapeWidth();
+		start=0;
+	}
+
 	if(effect.mirror){ max/=2; if(Random(2)) start=LandscapeWidth()/2;}
 	
 	var x=Random(max)+start;
@@ -136,7 +157,10 @@ func DoSpawn()
 {
 	if(toSpawn == nil)
 		toSpawn=GameCall("GetSparkItem", GetX(), GetY());
-	CreateObject(toSpawn, 0, 0, NO_OWNER)->SetYDir(-1);
+	var o=CreateObject(toSpawn, 0, 0, NO_OWNER);
+	o->SetYDir(-1);
+	GameCall("SetupSparkItem", o);
+	
 	for(var cnt=0;cnt<5;++cnt) 
 	{
 		var effect=AddEffect("SparkleDeath", nil, 5, 1, nil, GetID());
