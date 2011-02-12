@@ -16,12 +16,11 @@ protected func Initialize()
 	
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	StartItemSparks(60+GetPlayerCount()*10,false);
 	SetSkyAdjust(RGB(255,128,0));	
 	CreateObject(Column,160,229);
 	CreateObject(Column,448,269);
 	
-	AddEffect("RandomMeteor", nil, 100, 72, this);
+	AddEffect("RandomMeteor", nil, 100, 36-Min(GetPlayerCount()*3,20), this);
 	AddEffect("RemoveCorpses", nil, 100, 1, this);
 	// Smooth brick edges.
 	PlaceEdges();
@@ -29,13 +28,6 @@ protected func Initialize()
 	return;
 }
 
-protected func GetSparkItem(int x, int y)
-{
-	if(x==nil)
-		return nil;
-	var objects=[Firestone, Firestone, Firestone, Firestone, PowderKeg, Dynamite, Dynamite];
-	return objects[Random(GetLength(objects))];
-}
 global func FxRemoveCorpsesTimer()
 {
 	//uber effect abuse
@@ -54,11 +46,12 @@ global func FxRemoveCorpsesTimer()
 }
 global func FxRandomMeteorTimer()
 {
-	if(Random(2)) return ;
+	if(!Random(10)) return ;
 	
 	var flint = CreateObject(Firestone,50+Random(LandscapeWidth()-100),-10);
 	flint->SetYDir(25+Random(6));
 	flint->SetXDir(RandomX(-20,20));
+	flint->SetMass(0);
 	AddEffect("Meteorsparkle",flint,100,1,nil,nil,true);
 }
 
@@ -129,7 +122,7 @@ protected func OnPlayerRelaunch(int plr)
 	clonk->DoEnergy(100000);
 	var x = RandomX(75,500);
 	var y=100;
-	while(!GBackSolid(x,y)) y+=10;
+	while(!GBackSolid(x,y)) y+=1;
 	y-=30;
 	var relaunch = CreateObject(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
@@ -143,6 +136,13 @@ func OnClonkLeftRelaunch(object clonk)
 	CastParticles("Magic",36,12,clonk->GetX(),clonk->GetY(),30,60,clonk->GetColor(),clonk->GetColor(),clonk);
 	clonk->SetYDir(-5);
 	return;
+}
+
+func OnClonkDeath(object clonk)
+{
+	for(var i=0; i<clonk->ContentsCount(); i++)
+	if(clonk->Contents(i))
+		clonk->Contents(i)->RemoveObject();
 }
 
 func WinKillCount() { return 5; }
