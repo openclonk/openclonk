@@ -545,31 +545,19 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 
 bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive)
 {
-	// Save to temp file
-	char szFilename[_MAX_PATH+1]; SCopy( Config.AtTempPath(C4CFN_ScenarioObjects), szFilename );
-	if (!Save(szFilename,fSaveGame,fSaveInactive)) return false;
-
-	// Move temp file to group
-	hGroup.Move(szFilename, NULL); // check?
-	// Success
-	return true;
-}
-
-bool C4GameObjects::Save(const char *szFilename, bool fSaveGame, bool fSaveInactive)
-{
 	// Enumerate
 	Enumerate();
 	InactiveObjects.Enumerate();
 
 	// Decompile objects to buffer
 	StdStrBuf Buffer;
-	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, szFilename);
+	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, C4CFN_ScenarioObjects);
 
 	// Decompile inactives
 	if (fSaveInactive)
 	{
 		StdStrBuf InactiveBuffer;
-		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, szFilename);
+		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, C4CFN_ScenarioObjects);
 		Buffer.Append("\r\n");
 		Buffer.Append(InactiveBuffer);
 	}
@@ -583,7 +571,7 @@ bool C4GameObjects::Save(const char *szFilename, bool fSaveGame, bool fSaveInact
 		return false;
 
 	// Write
-	return Buffer.SaveToFile(szFilename);
+	return hGroup.Add(C4CFN_ScenarioObjects, Buffer, false, true);
 }
 
 void C4GameObjects::UpdateScriptPointers()

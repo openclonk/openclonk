@@ -63,7 +63,6 @@ public:
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int Load(C4Group &hGroup, bool fKeepInactive);
-	bool Save(const char *szFilename, bool fSaveGame, bool fSaveInactive);
 	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *
