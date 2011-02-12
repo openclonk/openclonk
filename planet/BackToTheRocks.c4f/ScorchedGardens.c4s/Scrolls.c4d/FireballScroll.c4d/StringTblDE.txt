@@ -1,2 +1,0 @@
-Name=Feuerball-Schriftrolle
-Description=Schleudere einen feurigen Ball in die Gegnermenge.
