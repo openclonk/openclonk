@@ -16,21 +16,25 @@ protected func Initialize()
 	
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
+	StartItemSparks(60+GetPlayerCount()*10,false);
 	SetSkyAdjust(RGB(255,128,0));	
 	CreateObject(Column,160,229);
 	CreateObject(Column,448,269);
-
-	// Chests with weapons.
-	CreateObject(Chest, 175, 200, NO_OWNER);
-	CreateObject(Chest, 430, 240, NO_OWNER);
 	
-	AddEffect("IntFillChests", nil, 100, 2 * 36, this);
 	AddEffect("RandomMeteor", nil, 100, 72, this);
 	AddEffect("RemoveCorpses", nil, 100, 1, this);
 	// Smooth brick edges.
 	PlaceEdges();
 	PlaceGras();
 	return;
+}
+
+protected func GetSparkItem(int x, int y)
+{
+	if(x==nil)
+		return nil;
+	var objects=[Firestone, Firestone, Firestone, Firestone, PowderKeg, Dynamite, Dynamite, Sword, Shield, Club, Javelin];
+	return objects[Random(GetLength(objects))];
 }
 global func FxRemoveCorpsesTimer()
 {
@@ -50,7 +54,7 @@ global func FxRemoveCorpsesTimer()
 }
 global func FxRandomMeteorTimer()
 {
-	if(Random(20)) return ;
+	if(Random(2)) return ;
 	
 	var flint = CreateObject(Firestone,50+Random(LandscapeWidth()-100),-10);
 	flint->SetYDir(25+Random(6));
@@ -119,65 +123,6 @@ global func PlaceGras()
 	return 1;
 }
 
-// Refill/fill chests.
-global func FxIntFillChestsStart(object target, effect, int temporary)
-{
-	if(temporary) return 1;
-	var chests = FindObjects(Find_ID(Chest),Find_InRect(0,0,LandscapeWidth(),610));
-	var w_list = [MeteorScroll, Javelin, FireballScroll, Musket];
-	
-	for(var chest in chests)
-		for(var i=0; i<4; ++i)
-			chest->CreateChestContents(w_list[i]);
-	return 1;
-}
-
-global func FxIntFillChestsTimer()
-{
-	SetTemperature(100);
-	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Javelin, Musket, Boompack, Dynamite, Shield, MeteorScroll, FireballScroll, Firestone];
-	var maxcount = [1,1,1,1,1,2,2,3];
-	
-	var contents;
-	for(var i=0; i<chest->GetLength(w_list); i++)
-		contents+=chest->ContentsCount(w_list[i]);
-	if(contents > 6) return 1;
-	
-	if(!FindObject(Find_ID(Clonk),Find_Distance(20,chest->GetX(),chest->GetY())) && chest->ContentsCount()>2)
-	{
-		var r=chest->Random(chest->ContentsCount());
-		var remove=true;
-		for(var i=0; i<GetLength(w_list); i++)
-			if(chest->Contents(r)->GetID() == w_list[i]) remove=false;
-		if(remove) chest->Contents(r)->RemoveObject();			
-	}
-	
-	for(var i=0; i<2 ; i++)
-	{
-		var r = Random(GetLength(w_list));
-		if (chest->ContentsCount(w_list[r]) < maxcount[r])
-		{
-			chest->CreateChestContents(w_list[r]);
-			i=3;
-		}
-	}
-	return 1;
-}
-
-global func CreateChestContents(id obj_id)
-{
-if (!this)
-		return;
-	var obj = CreateObject(obj_id);
-	if (obj_id == Bow)
-		obj->CreateContents(Arrow);
-	if (obj_id == Musket)
-		obj->CreateContents(LeadShot);
-	obj->Enter(this);
-	return;
-}
-
 protected func OnPlayerRelaunch(int plr)
 {
 	var clonk = GetCrew(plr);
@@ -188,6 +133,8 @@ protected func OnPlayerRelaunch(int plr)
 	y-=30;
 	var relaunch = CreateObject(RelaunchContainer, x, y, clonk->GetOwner());
 	relaunch->StartRelaunch(clonk);
+	relaunch->SetRelaunchTime(3);
+	clonk->CreateContents(TeleGlove);
 	return;
 }
 
@@ -199,4 +146,4 @@ func OnClonkLeftRelaunch(object clonk)
 }
 
 func WinKillCount() { return 5; }
-func RelaunchWeaponList() { return [Bow, FireballScroll, MeteorScroll, TeleGlove, Sword]; }
+func RelaunchWeaponList() { return []; }

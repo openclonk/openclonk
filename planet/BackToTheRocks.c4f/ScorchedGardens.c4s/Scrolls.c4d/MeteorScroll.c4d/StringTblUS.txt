@@ -1,2 +1,0 @@
-Name=Meteor Scroll
-Description=Toss a meteor onto your enemies!

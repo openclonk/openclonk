@@ -6,7 +6,7 @@ public func MaxStackCount() { return 8; }
 
 public func IsMusketAmmo() { return 1; }
 
-public func ProjectileDamage() { return 10; }
+public func ProjectileDamage() { return 15; }
 public func FlightTime() { return 30; }
 
 protected func Hit()

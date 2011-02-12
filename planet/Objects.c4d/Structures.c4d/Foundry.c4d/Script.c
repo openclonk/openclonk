@@ -66,7 +66,7 @@ public func FxSmeltingTimer(object target, int num, int timer)
 	Message(Format("Smelting %d",timer));
 	//Visuals
 	//Fire
-	CreateParticle("Fire",10,14,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255));
+	CreateParticle("Fire",10,14,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 
 	//Smoke
 	CreateParticle("ExploSmoke",9,-35,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,125),RGBa(255,255,255,50));
