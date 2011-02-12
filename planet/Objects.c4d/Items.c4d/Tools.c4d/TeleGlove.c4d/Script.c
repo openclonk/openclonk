@@ -6,6 +6,9 @@
 --*/
 
 local reach;
+local radius; //actual effect radius to grab objects
+local radiusparticle; //radius of particles around object
+
 local aiming;
 local anim_spin;
 
@@ -13,9 +16,13 @@ local iAngle;
 local aim_anim;
 local carry_bone;
 
+local target_object;
+
 protected func Initialize()
 {
 	reach = 150;
+	radius = 60;
+	radiusparticle = 60;
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
@@ -114,8 +121,8 @@ public func ControlUseHolding(object clonk, ix, iy)
 	UpdateGloveAngle(clonk, ix, iy);
 
 	//effects
-	var xs = Sin(Random(359),30);
-	var ys = -Cos(Random(359),30);
+	var xs = Sin(Random(359),radiusparticle/2);
+	var ys = -Cos(Random(359),radiusparticle/2);
 	var anglep = Angle(0,0,ix,iy);
 	var distp = Distance(0,0,ix,iy);
 
@@ -124,37 +131,89 @@ public func ControlUseHolding(object clonk, ix, iy)
 		//Particles moving towards object
 		for(var i; i < 2; i++)
 		{
-			CreateParticle("Spark1", ix + xs, iy + ys, -xs/15, -ys/15, RandomX(30,90), RGB(185,250,250));
-			CreateParticle("Spark2", ix + xs, iy + ys, -xs/15, -ys/15, RandomX(30,90), RGB(185,250,250));
+			CreateParticle("Spark1", ix + xs, iy + ys, -xs/3, -ys/3, RandomX(30,90), RGB(185,250,250));
+			CreateParticle("Spark2", ix + xs, iy + ys, -xs/3, -ys/3, RandomX(30,90), RGB(185,250,250));
 		}
 		
+		//Particles emitting from clonk
 		var wp = 1;
 		if(Random(2)) wp = -1;
-		var xp = anglep - 90 + (Angle(0,0,distp,30 * wp));
-		var yp = anglep - 90 + (Angle(0,0,distp,30 * wp));
+		var xp = anglep - 90 + (Angle(0,0,distp,radiusparticle/2 * wp));
+		var yp = anglep - 90 + (Angle(0,0,distp,radiusparticle/2 * wp));
 
 		CreateParticle("Spark1", Sin(xp, Random(distp)), -Cos(yp, Random(distp)), Sin(xp, 10), -Cos(yp, 10), RandomX(30,90), RGB(185,250,250));
 	}
 
-	var target = FindObject(Find_Exclude(this),
-				Find_NoContainer(),
-				Find_Category(C4D_Object),
-				Find_And(Find_Distance(60, ix, iy),
-				Find_Distance(reach - 15)),
-				Sort_Distance(ix,iy));
-	if(target && !target->Stuck())
+	if(target_object)
 	{
-		var angle = Angle(target->GetX(), target->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
-		var dist = Distance(target->GetX(), target->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
+		radiusparticle = 30;
+
+		if(Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy) > radius ||
+		Distance(target_object->GetX(), target_object->GetY(), clonk->GetX(), clonk->GetY()) > reach)
+		{
+			LostTargetObject(target);
+			target_object = nil;
+		}
+	}
+
+	if(!target_object)
+	{
+		radiusparticle = 60;
+
+		var target = FindObject(Find_Exclude(this),
+					Find_NoContainer(),
+					Find_Category(C4D_Object),
+					Find_And(Find_Distance(radius, ix, iy),
+					Find_Distance(reach - 15)),
+					Sort_Distance(ix,iy));
+
+		if(target)
+		{
+			GainedTargetObject(target);
+			target_object = target;
+		}
+	}
+
+
+	if(target_object && !target_object->Stuck())
+	{
+		var angle = Angle(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
+		var dist = Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
 		var speed = dist;
 
 		//Set speed
-		target->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
+		target_object->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
 
 		//Particles emitting from object
-		target->CreateParticle("Spark1", 0, 0, xs/10, ys/10, RandomX(20,40), RGB(185,250,250));
+		target_object->CreateParticle("Spark1", 0, 0, xs/10, ys/10, RandomX(20,40), RGB(185,250,250));
 	}
 	return 1;
+}
+
+public func GainedTargetObject(object target)
+{
+	if(!GetEffect("TeleGloveWeight", target))
+	{
+		AddEffect("TeleGloveWeight", target, 1, 0, target);
+		return 1;
+	}
+	else
+		return 0;
+}
+
+public func LostTargetObject(object target)
+{
+	RemoveEffect("TeleGloveWeight", target);
+}
+
+global func FxTeleGloveWeightStart(object target, int num)
+{
+	target->SetMass(target->GetMass()/2);
+}
+
+global func FxTeleGloveWeightStop(object target, int num, int reason, bool temp)
+{
+	target->SetMass(target->GetDefCoreVal("Mass", "DefCore"));
 }
 
 protected func ControlUseStop(object clonk, ix, iy)
@@ -176,6 +235,9 @@ protected func CancelUse(object clonk)
 	PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold), Anim_Const(1000));
 	StopAnimation(anim_spin);
 	aiming = 0;
+	if(target_object) LostTargetObject(target_object);
+	target_object = nil;
+	radiusparticle = 60;
 	return 1;
 }
 
