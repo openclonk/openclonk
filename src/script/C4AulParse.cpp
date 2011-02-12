@@ -1999,7 +1999,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		{
 			// get a parameter
 			Parse_Expression();
-			if (pFunc && (Type == PARSER))
+			if (pFunc && (Type == PARSER) && size < iMaxCnt)
 			{
 				C4V_Type to = pFunc->GetParType()[size];
 				// pFunc either was the return value from a GetFirstFunc-Call or
