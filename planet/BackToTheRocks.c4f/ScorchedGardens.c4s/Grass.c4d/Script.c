@@ -7,18 +7,15 @@ protected func Initialize()
 		SetGraphics("1");
 }
 
-public func Incineration()
-{
-	Destroy();
-	return;
-}
 
 public func CanBeHitByShockwaves() { return true; }
 
-public func OnShockwaveHit()
-{	
-	Destroy();
-	return true;
+protected func Damage()
+{
+	if (GetDamage() > 80 && !Random(5))
+	{
+		Destroy();
+	}
 }
 
 private func Destroy()
