@@ -33,7 +33,7 @@ protected func GetSparkItem(int x, int y)
 {
 	if(x==nil)
 		return nil;
-	var objects=[Firestone, Firestone, Firestone, Firestone, PowderKeg, Dynamite, Dynamite, Sword, Shield, Club, Javelin];
+	var objects=[Firestone, Firestone, Firestone, Firestone, PowderKeg, Dynamite, Dynamite];
 	return objects[Random(GetLength(objects))];
 }
 global func FxRemoveCorpsesTimer()
