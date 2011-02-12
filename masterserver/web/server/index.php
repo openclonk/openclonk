@@ -41,7 +41,7 @@
           $absolutefile = ParseINI::parseValue('oc_update_path', $config) . $_REQUEST['file'];
           if (file_exists($absolutefile)) {
 			if(hash_hmac_file('sha256', $absolutefile, ParseINI::parseValue('oc_update_secret', $config)) == $_REQUEST['hash']) {
-              $old_version = isset($_REQUEST['old_version']) ? explode(',', mysql_real_escape_string($_REQUEST['old_version'], $link)) : array();
+              $old_version = isset($_REQUEST['old_version']) && !empty($_REQUEST['old_version']) ? explode(',', mysql_real_escape_string($_REQUEST['old_version'], $link)) : array();
               $new_version = mysql_real_escape_string($_REQUEST['new_version'], $link);
               $platform = mysql_real_escape_string($_REQUEST['platform'], $link);
               $file = mysql_real_escape_string($_REQUEST['file'], $link);
