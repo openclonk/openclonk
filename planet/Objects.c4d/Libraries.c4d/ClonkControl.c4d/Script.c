@@ -590,6 +590,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw
 			if (ctrl == CON_Throw)
 			{
+				CancelUse();
 				if (proc == "SCALE" || proc == "HANGLE")
 					return ObjectCommand("Drop", contents);
 				else
@@ -598,6 +599,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
 			{
+				CancelUse();
 				if (release)
 				{
 					VirtualCursor()->StopAim();
@@ -616,6 +618,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// drop
 			if (ctrl == CON_Drop)
 			{
+				CancelUse();
 				return ObjectCommand("Drop", contents);
 			}
 		}
@@ -625,6 +628,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw
 			if (ctrl == CON_ThrowAlt)
 			{
+				CancelUse();
 				if (proc == "SCALE" || proc == "HANGLE")
 					return ObjectCommand("Drop", contents2);
 				else
@@ -633,6 +637,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
 			{
+				CancelUse();
 				if (release)
 				{
 					VirtualCursor()->StopAim();
@@ -644,6 +649,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				}
 				else
 				{
+					CancelUse();
 					VirtualCursor()->StartAim(this);
 					return true;
 				}
@@ -815,8 +821,6 @@ private func CancelUseControl(int x, int y)
 
 private func StopUseControl(int x, int y, object obj, bool cancel)
 {
-	var holding_enabled = obj->Call("~HoldingEnabled");
-	
 	var stop = "Stop";
 	if (cancel) stop = "Cancel";
 	
@@ -891,8 +895,6 @@ private func HoldingUseControl(int ctrl, int x, int y, object obj)
 
 private func StopUseDelayedControl(object obj)
 {
-	var holding_enabled = obj->Call("~HoldingEnabled");
-	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
 	
 	var handled = obj->Call(GetUseCallString("Stop"),this,mlastx,mlasty);
