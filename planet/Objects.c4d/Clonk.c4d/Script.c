@@ -843,7 +843,7 @@ func FxIntWalkStart(pTarget, effect, fTmp)
 	if(fTmp) return;
 	// Always start in Stand for now... should maybe fade properly from previous animation instead
 	var anim = "Stand";  //GetCurrentWalkAnimation();
-	effect.var0 = anim;
+	effect.anim = anim;
 	effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	effect.var2 = 0;
 
@@ -863,18 +863,30 @@ func FxIntWalkTimer(pTarget, effect)
 		if(iNumber.var4 == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}*/
+	// Test Waterlevel
+	if(GBackSemiSolid(0, -5))
+	{
+		SetAction("Swim");
+		if(GetComDir() == COMD_Left)
+			SetComDir(COMD_UpLeft);
+		else if(GetComDir() == COMD_Right)
+			SetComDir(COMD_UpRight);
+		else if(GetComDir() != COMD_Down && GetComDir() != COMD_DownLeft && GetComDir() != COMD_DownRight)
+			SetComDir(COMD_Up);
+		return;
+	}
 	if(BackwardsSpeed != nil)
 		UpdateBackwardsSpeed();
 	if(effect.var2)
 	{
 		effect.var2--;
 		if(effect.var2 == 0)
-			effect.var0 = 0;
+			effect.anim = 0;
 	}
 	var anim = GetCurrentWalkAnimation();
-	if(anim != effect.var0 && !effect.var4)
+	if(anim != effect.anim && !effect.var4)
 	{
-		effect.var0 = anim;
+		effect.anim = anim;
 		effect.var3 = 0;
 		effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
@@ -899,7 +911,7 @@ func FxIntWalkTimer(pTarget, effect)
 		effect.var3 = 0;
 		if(effect.var2)
 		{
-			effect.var0 = 0;
+			effect.anim = 0;
 			effect.var2 = 0;
 		}
 	}
@@ -930,7 +942,7 @@ func FxIntWalkTimer(pTarget, effect)
 
 func FxIntWalkReset(pTarget, effect)
 {
-	effect.var0 = 0;
+	effect.anim = 0;
 }
 
 func StartStand()
@@ -1473,6 +1485,20 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 	// Swimming
 	else if(!GBackSemiSolid(0, -5))
 	{
+		var percent = GetAnimationPosition(GetRootAnimation(5))*200/GetAnimationLength("Swim");
+		percent = (percent%100);
+		if( percent < 40 )
+		{
+			for(var i = 0; i < 2; i++)
+				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
+			if(iTime%5 == 0)
+			{
+				var particle_name = "WaveLeft";
+				if( GetDir() == 1 ) particle_name = "WaveRight";
+				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, RGB(255,255,255), this, 1);
+			}
+			Sound("Splash*");
+		}
 		// Animation speed by X
 		if(effect.var0 != "Swim")
 		{
