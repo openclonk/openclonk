@@ -861,6 +861,7 @@ add_executable(c4group
 )
 
 add_executable(netpuncher
+	src/C4Include.cpp
 	src/lib/StdBuf.cpp
 	src/lib/Standard.cpp
 	src/platform/StdScheduler.cpp

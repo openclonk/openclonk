@@ -7,6 +7,7 @@ autom4te.cache
 deps
 *.o
 ./clonk
+./netpuncher
 ./c4group
 .dirstamp
 *.a
@@ -32,6 +33,12 @@ autotools/missing
 configure
 intermediate
 build*
+CMakeFiles
+CMakeCache.txt
+planet/CMakeFiles
+planet/CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
 
 # Documentation
 *.pyc
@@ -49,7 +56,6 @@ planet/Release
 planet/RelWithDebInfo
 planet/Debug
 planet/MinSizeRel
-planet/CMakeFiles
 planet/clonk.dir
 planet/c4group.dir
 planet/ZERO_CHECK.dir
@@ -58,14 +64,13 @@ planet/fmod.dll
 planet/cmake_install.cmake
 planet/clonk.sln
 planet/clonk.ilk
-planet/CMakeCache.txt
+
 build
 planet/clonk.app
 Release
 RelWithDebInfo
 MinSizeRel
 Debug
-CMakeFiles
 clonk.dir
 c4group.dir
 ZERO_CHECK.dir
@@ -74,8 +79,9 @@ fmod.dll
 cmake_install.cmake
 clonk.sln
 clonk.ilk
-CMakeCache.txt
 *.vcproj
+*.vcxproj
+*.vcxproj.filters
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -111,6 +117,11 @@ planet/nohg*
 
 # Eclipse project file
 planet/.project
+
+# Code::Blocks files
+clonk.layout
+clonk.sdf
+clonk.cbp
 
 # MacOSX saved searches
 *.savedSearch
