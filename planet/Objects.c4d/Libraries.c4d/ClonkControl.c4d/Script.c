@@ -828,9 +828,15 @@ private func StopUseControl(int x, int y, object obj, bool cancel)
 	var handled = obj->Call(GetUseCallString(stop),this,x,y);
 	if (obj == using)
 	{
-		using = nil;
-		using_type = nil;
-		alt = false;
+		// if ControlUseStop returned -1, the current object is kept as "used object"
+		// but no more callbacks except for ControlUseCancel are made. The usage of this
+		// object is finally cancelled on ControlUseCancel.
+		if(cancel || handled != -1)
+		{
+			using = nil;
+			using_type = nil;
+			alt = false;
+		}
 		noholdingcallbacks = false;
 		
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
@@ -904,9 +910,13 @@ private func StopUseDelayedControl(object obj)
 	if (obj == using)
 	{
 		VirtualCursor()->StopAim();
-		using = nil;
-		using_type = nil;
-		alt = false;
+		// see StopUseControl
+		if(handled != -1)
+		{
+			using = nil;
+			using_type = nil;
+			alt = false;
+		}
 		noholdingcallbacks = false;
 	}
 		

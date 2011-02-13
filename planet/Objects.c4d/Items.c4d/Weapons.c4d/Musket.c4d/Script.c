@@ -33,7 +33,7 @@ func Initialize()
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
 		AnimationAim   = "MusketAimArms",
 		AnimationLoad  = "MusketLoadArms",
-		LoadTime       = 100,
+		LoadTime       = 80,
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		WalkSpeed      = 84,
@@ -120,7 +120,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 {
 	holding = false;
 	clonk->StopAim();
-	return true;
+	return -1;
 }
 
 // Callback from the clonk, when he actually has stopped aiming
