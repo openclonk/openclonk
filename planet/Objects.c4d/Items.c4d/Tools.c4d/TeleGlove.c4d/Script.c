@@ -174,8 +174,12 @@ public func ControlUseHolding(object clonk, ix, iy)
 		}
 	}
 
-
-	if(target_object && !target_object->Stuck())
+	//Has the object recently been thrown by another player?
+	var e = GetEffect("TeleGloveReleased", target_object);
+	var old_controller; if(e) old_controller = e.controller;
+	if(target_object 
+		&& !target_object->Stuck()
+		&& (!e || old_controller == Contained()->GetOwner()))
 	{
 		var angle = Angle(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
 		var dist = Distance(target_object->GetX(), target_object->GetY(), clonk->GetX() + ix, clonk->GetY() + iy);
@@ -183,11 +187,12 @@ public func ControlUseHolding(object clonk, ix, iy)
 
 		//Set speed
 		target_object->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
-		target_object->SetController(clonk->GetController());
 
 		//Particles emitting from object
 		target_object->CreateParticle("Spark1", 0, 0, xs/10, ys/10, RandomX(20,40), RGB(185,250,250));
 	}
+	else
+		LostTargetObject(target_object);
 	return 1;
 }
 
@@ -195,6 +200,8 @@ public func GainedTargetObject(object target)
 {
 	if(!GetEffect("TeleGloveWeight", target))
 	{
+		//Who holds the object? For killtracing
+		target->SetController(Contained()->GetController());
 		AddEffect("TeleGloveWeight", target, 1, 0, target);
 		return 1;
 	}
@@ -205,6 +212,13 @@ public func GainedTargetObject(object target)
 public func LostTargetObject(object target)
 {
 	RemoveEffect("TeleGloveWeight", target);
+	var effect = AddEffect("TeleGloveReleased", target, 1, 35*5);
+	effect.controller = Contained()->GetController();
+}
+
+global func FxTeleGloveReleasedStart(object target, effect)
+{
+	return;
 }
 
 global func FxTeleGloveWeightStart(object target, int num)
@@ -231,9 +245,8 @@ protected func ControlUseCancel(object clonk, int ix, int iy)
 protected func CancelUse(object clonk)
 {
 	EndUsage(clonk);
-	//Log("CancelUse");
 	Sound("Electrical.ogg",nil,nil,nil,-1);
-	PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold), Anim_Const(1000));
+	if(aiming = 1) PlayAnimation("Closing", -5, Anim_Linear(0,0,GetAnimationLength("Closing"), 10, ANIM_Hold), Anim_Const(1000));
 	StopAnimation(anim_spin);
 	aiming = 0;
 	if(target_object) LostTargetObject(target_object);
