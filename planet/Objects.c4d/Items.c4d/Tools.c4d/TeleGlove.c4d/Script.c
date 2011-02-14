@@ -183,6 +183,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 
 		//Set speed
 		target_object->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
+		target_object->SetController(clonk->GetController());
 
 		//Particles emitting from object
 		target_object->CreateParticle("Spark1", 0, 0, xs/10, ys/10, RandomX(20,40), RGB(185,250,250));
