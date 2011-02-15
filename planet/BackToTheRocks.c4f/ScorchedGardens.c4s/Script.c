@@ -138,12 +138,7 @@ func OnClonkLeftRelaunch(object clonk)
 	return;
 }
 
-func OnClonkDeath(object clonk)
-{
-	for(var i=0; i<clonk->ContentsCount(); i++)
-	if(clonk->Contents(i))
-		clonk->Contents(i)->RemoveObject();
-}
+
 
 func WinKillCount() { return 5; }
 func RelaunchWeaponList() { return []; }
