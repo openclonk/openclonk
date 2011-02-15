@@ -349,7 +349,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 		if (viewport)
 		{
 			NSScrollView* scrollView = self.controller.scrollView;
-			NSPoint p = NSMakePoint(2*-[event deltaX]/(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/(GBackHgt-viewport->ViewHgt));
+			NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
 			[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
 			[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
 			viewport->ViewPositionByScrollBars();

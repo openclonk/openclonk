@@ -184,6 +184,33 @@
 
 @end
 
+@interface NSScroller (ClonkZoom)
+- (void) setToLandscapeCoordinate:(float)lc
+	size:(int) s
+	viewportSize:(int) vs
+	zoom: (float) z;
+- (float) landscapeCoordinateForSize:(int) s
+	viewportSize:(int) vs
+	zoom:(float) z;
+@end
+@implementation NSScroller (ClonkZoom)
+- (void) setToLandscapeCoordinate:(float)lc
+	size:(int) s
+	viewportSize:(int) vs
+	zoom: (float) z
+{
+	self.doubleValue = (double)lc/((double)s - (double)vs/z);
+	self.knobProportion = (CGFloat)std::min(1.0, (double)vs/(s*z));
+}
+
+- (float) landscapeCoordinateForSize:(int) s
+	viewportSize:(int) vs
+	zoom:(float) z
+{	
+	return self.doubleValue * ((double)s - (double)vs/z);
+}
+@end
+
 // C4Fullscreen
 
 void C4FullScreen::HandleMessage (void* event)
@@ -197,18 +224,16 @@ bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
-	[scrollView.horizontalScroller setFloatValue:ViewX/(GBackWdt-ViewWdt)*GetZoom()];
-	[scrollView.verticalScroller   setFloatValue:ViewY/(GBackHgt-ViewHgt)*GetZoom()];
-	[scrollView.horizontalScroller setKnobProportion:(float)ViewWdt/(float)GBackWdt/GetZoom()];
-	[scrollView.verticalScroller setKnobProportion:(float)ViewHgt/(float)GBackHgt/GetZoom()];
+	[scrollView.horizontalScroller setToLandscapeCoordinate:ViewX size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
+	[scrollView.verticalScroller setToLandscapeCoordinate:ViewY size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
 	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
-	ViewX = [scrollView.horizontalScroller floatValue] * (GBackWdt-ViewWdt) / GetZoom();
-	ViewY = [scrollView.verticalScroller floatValue] * (GBackHgt-ViewHgt) / GetZoom();
+	ViewX = [scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
+	ViewY = [scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
