@@ -1456,8 +1456,6 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4Def *p
 {
 	// safety
 	if (!pCtx->Obj->Status) return false;
-	// get def for source graphics
-	if (!pSrcDef) return false;
 	// setting overlay?
 	if (iOverlayID)
 	{
