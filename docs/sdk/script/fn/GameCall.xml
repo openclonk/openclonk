@@ -33,7 +33,6 @@
     </examples>
     <related>
       <funclink>Call</funclink>
-      <funclink>ObjectCall</funclink>
       <funclink>DefinitionCall</funclink>
     </related>
   </func>
