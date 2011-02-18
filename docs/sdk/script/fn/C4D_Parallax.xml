@@ -9,12 +9,13 @@
     <subcat>Category</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax><rtype>int </rtype></syntax>
-    <desc>Object category: the object moves parallax with respect to the landscape. This means that the apparent object position changes depending on the scroll position of the viewport. This can be used to have objects apparently moving in the far background or to create status overlays.<br/>Parallax deviation from the normal location is specified in percent and stored in the first two indexed, local variables (see <funclink>Local</funclink>) of the object (Local(0) for horizontal, Local(1) for vertical deviation). This means for normal location these two values should be 100. A value of 0 will lock the object to the viewport. For parallax background object use values between 0 and 100. From NET, object positions can also be negative values. Those objects will then be aligned with the right or bottom edge of the screen respectively.</desc>
+    <desc>Object category: the object moves parallax with respect to the landscape. This means that the apparent object position changes depending on the scroll position of the viewport. This can be used to have objects apparently moving in the far background or to create status overlays.<br/>Parallax deviation from the normal location is specified in percent and stored in an array in the <emlink href="definition/properties.html#Parallaxity"><code>Parallaxity</code> property</emlink> of the object (<code>Parallaxity[0]</code> for horizontal, <code>Parallaxity[1]</code> for vertical deviation). This means for normal location these two values should be 100. A value of 0 will lock the object to the viewport. For parallax background object use values between 0 and 100. Object positions can also be negative values. Those objects will then be aligned with the right or bottom edge of the screen respectively.</desc>
     <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code><funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Parallax() | <funclink>C4D_Background</funclink>());
-<funclink>Local</funclink>()=50; <funclink>Local</funclink>(1)=100;
+        <code><funclink>this</funclink>.<emlink href="definition/properties.html#Plane">Plane</emlink> = -1000;
+<funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Parallax());
+<funclink>this</funclink>.Parallaxity = [50, 50];
 </code>
         <text>Moves the calling object into the background and adds horizontal parallaxity.</text>
       </example>

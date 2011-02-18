@@ -27,12 +27,12 @@ Stand = {
         </rowh>
         <row>
           <col><code>Prototype</code></col>
-          <col></col>
+          <col>proplist</col>
           <col></col>
         </row>
         <row>
           <col><code>Name</code></col>
-          <col></col>
+          <col>string</col>
           <col></col>
         </row>
         <row>
@@ -47,16 +47,11 @@ Stand = {
         </row>
         <row>
           <col><code>ActMap</code></col>
-          <col></col>
+          <col>proplist</col>
           <col></col>
         </row>
         <row>
           <col><code>Visibility</code></col>
-          <col></col>
-          <col></col>
-        </row>
-        <row>
-          <col><code>Parallaxity</code></col>
           <col></col>
           <col></col>
         </row>
@@ -92,7 +87,7 @@ Stand = {
         </row>
         <row>
           <col><code>Action</code></col>
-          <col></col>
+          <col>proplist</col>
           <col></col>
         </row>
         <row>
@@ -107,23 +102,28 @@ Stand = {
         </row>
         <row>
           <col><code>MaxEnergy</code></col>
-          <col></col>
+          <col>int</col>
           <col></col>
         </row>
         <row>
           <col><code>MaxBreath</code></col>
-          <col></col>
+          <col>int</col>
           <col></col>
         </row>
         <row>
           <col><code>ThrowSpeed</code></col>
-          <col></col>
+          <col>int</col>
           <col></col>
         </row>
-        <row>
+        <row id="Parallaxity">
+          <col><code>Parallaxity</code></col>
+          <col>[int, int]</col>
+          <col>The Objects's major Z-Position. See <funclink>C4D_Parallax</funclink>.</col>
+        </row>
+        <row id="Plane">
           <col><code>Plane</code></col>
-          <col></col>
-          <col></col>
+          <col>int</col>
+          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it.</col>
         </row>
       </table>
     </text>
