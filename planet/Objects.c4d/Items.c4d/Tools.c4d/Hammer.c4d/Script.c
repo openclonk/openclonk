@@ -10,59 +10,129 @@ public func GetCarryMode()	{	return CARRY_HandBack;	}
 public func GetCarryBone()	{	return "main";	}
 public func GetCarryTransform()	{	return Trans_Rotate(90,0,1,0);	}
 
-public func ControlUse(object clonk, int ix, int iy)
+public func ControlUseStart(object clonk, int x, int y)
 {
-	clonk->Message("Using hammer");
-	// Stop clonk
-	clonk->SetComDir(COMD_Stop);
-
-	if(clonk->GetAction()=="Build") //Stop building
+	// Is the clonk able to construct?
+	if(clonk->GetProcedure() != "WALK")
 	{
-		clonk->Message("Cancelling building");
-		clonk->SetAction("Walk");
-		clonk->SetActionTargets(0,0);
-		return 1;
+		clonk->CancelUse();
+		return true;
 	}
-
-	//Start building
-	var structure=FindObject(Find_Category(C4D_Structure),Find_Distance(30),Find_Layer(GetObjectLayer()));
-	if(structure) {
-		if(structure->GetCon()<100)
+	// Is the clonk at an construction site?
+	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
+	if (structure)
+	{
+		if (structure->GetCon() < 100)
 		{
-			clonk->Message("Building");
-			clonk->SetAction("Build",structure);
-			return 1;
-		}}
+			Construct(clonk, structure);
+			return true;
+		}
+		if (structure->GetDamage() > 0)
+		{
+			Repair(clonk, structure);
+			return true;
+		}
+		clonk->CancelUse();
+		return true;
+	}
 	
-	// Create menu and fill it with the player's plans
+	// Otherwise create a menu with possible structures to build.
 	clonk->CreateMenu(Hammer, this, 1, "$TxtNoconstructionplansa$");
-	var idType; var i = 0;
-	while (idType = GetPlrKnowledge(clonk->GetOwner(), 0, i++, C4D_Structure))
-		clonk->AddMenuItem("$TxtConstructions$", "CreateConstructionSite", idType);
-	return 1;
+	var structure_id, index = 0;
+	while (structure_id = GetPlrKnowledge(clonk->GetOwner(), 0, index++, C4D_Structure))
+		clonk->AddMenuItem("$TxtConstructions$", "CreateConstructionSite", structure_id);
+	clonk->CancelUse();
+	return true;
 }
 
-protected func CreateConstructionSite(idType)
+public func HoldingEnabled() { return true; }
+
+public func ControlUseHolding(object clonk, int x, int y)
 {
+	// Is the clonk still able to construct?
+	if (clonk->GetProcedure() != "WALK")
+	{
+		clonk->CancelUse();
+		return true;
+	}
+	// Is the clonk still at an construction site?
+	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
+	if (structure)
+	{	
+		if (structure->GetCon() < 100)
+		{
+			Construct(clonk, structure);
+			return true;
+		}
+		if (structure->GetDamage() > 0)
+		{
+			Repair(clonk, structure);
+			return true;
+		}
+	}	
+	clonk->CancelUse();
+	return true;
+}
+
+private func Construct(object clonk, object structure)
+{
+	// Look for missing components.
+	var structure_id = structure->GetID();
+	var con = structure->GetCon();
+	var comp, index = 0;
+	while (comp = structure->GetComponent(nil, index))
+	{
+		var current_amount = structure->GetComponent(comp);
+		var max_amount = GetComponent(comp, nil, nil, structure_id);
+		// Check if there is enough material for current con.
+		if (100 * current_amount / max_amount < con)
+		{
+			var content = FindObject(Find_Container(clonk), Find_ID(comp));
+			if (!content)
+			{
+				clonk->Message("Construction needs {{%i}}", comp);
+				clonk->CancelUse();
+				return;
+			}
+			clonk->Message("Used {{%i}}", comp);
+			content->RemoveObject();
+			structure->SetComponent(comp, current_amount+1);			
+		}
+		index++;
+	}
+	structure->DoCon(1);
+	clonk->Message("Constructing %d%", structure->GetCon());
+	return;
+}
+
+private func Repair(object clonk, object structure)
+{
+
+
+
+	return;
+}
+
+protected func CreateConstructionSite(id structure_id)
+{
+	var clonk = Contained();
 	// Only when the clonk is standing and outdoors
-	if (Contained()->GetAction() != "Walk") return 0;
-	if (Contained()->Contained()) return 0;
+	if (clonk->GetAction() != "Walk")
+		return false;
+	if (clonk->Contained()) 
+		return false;
 	// Check if the building can be build here
-	if (idType->~RejectConstruction(0, 10, Contained()) ) return 0;
+	if (structure_id->~RejectConstruction(0, 10, clonk)) 
+		return false;
 	// Set owner for CreateConstruction
-	SetOwner(Contained()->GetOwner());
+	SetOwner(clonk->GetOwner());
 	// Create construction site
-	var pSite;
-	if (!(pSite = CreateConstruction(idType, 0, 10, Contained()->GetOwner(), 1, 1,1))) return 0;
+	var site;
+	if (!(site = CreateConstruction(structure_id, 0, 10, Contained()->GetOwner(), 1, 1,1)))
+		return false;
 	// Message
-	Contained()->Message("$TxtConstructions$", pSite->GetName());
-	return 1;
-}
-
-protected func CheckCanUse(object clonk)
-{
-	if(clonk->GetProcedure()=="WALK") return true;
-	return false;
+	clonk->Message("$TxtConstructions$", site->GetName());
+	return true;
 }
 
 public func IsTool() { return 1; }
