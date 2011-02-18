@@ -864,7 +864,7 @@ func FxIntWalkTimer(pTarget, effect)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}*/
 	// Test Waterlevel
-	if(GBackSemiSolid(0, -5))
+	if(GBackLiquid(0, -5))
 	{
 		SetAction("Swim");
 		if(GetComDir() == COMD_Left)
