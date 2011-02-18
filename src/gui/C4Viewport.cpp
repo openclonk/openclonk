@@ -267,7 +267,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
-	::Objects.BackObjects.DrawAll(cgo, Player);
+	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
@@ -281,7 +281,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	// draw objects
 	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-	::Objects.Draw(cgo, Player);
+	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
 	C4ST_STOP(ObjStat)
 
 	// draw global particles

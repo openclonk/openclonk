@@ -95,9 +95,8 @@ public:
 	void Enumerate();
 	void Denumerate();
 	void Copy(const C4ObjectList &rList);
-	void DrawAll(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects, including bg
 	void DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert); // draw all objects that match dwCat (or don't match if fInvert)
-	void Draw(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects
+	void Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane); // draw all objects
 	void DrawIDList(C4Facet &cgo, int iSelection, C4DefList &rDefs, int32_t dwCategory, C4RegionList *pRegions=NULL, int iRegionCom=COM_None, bool fDrawOneCounts=true);
 	void DrawSelectMark(C4TargetFacet &cgo);
 	void CloseMenus();

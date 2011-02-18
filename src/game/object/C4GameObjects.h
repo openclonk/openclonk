@@ -41,7 +41,6 @@ public:
 public:
 	C4LSectors Sectors; // section object lists
 	C4ObjectList InactiveObjects; // inactive objects (Status=2)
-	C4ObjectList BackObjects; // objects in background (C4D_Background)
 	C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
 
 	unsigned int LastUsedMarker; // last used value for C4Object::Marker

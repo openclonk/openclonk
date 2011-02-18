@@ -50,7 +50,6 @@ void C4GameObjects::Default()
 {
 	Sectors.Clear();
 	LastUsedMarker = 0;
-	BackObjects.Default();
 	ForeObjects.Default();
 }
 
@@ -174,9 +173,6 @@ bool C4GameObjects::Add(C4Object *nObj)
 	// add inactive objects to the inactive list only
 	if (nObj->Status == C4OS_INACTIVE)
 		return InactiveObjects.Add(nObj, C4ObjectList::stMain);
-	// if this is a background object, add it to the list
-	if (nObj->Category & C4D_Background)
-		::Objects.BackObjects.Add(nObj, C4ObjectList::stMain);
 	// if this is a foreground object, add it to the list
 	if (nObj->Category & C4D_Foreground)
 		::Objects.ForeObjects.Add(nObj, C4ObjectList::stMain);
@@ -195,8 +191,6 @@ bool C4GameObjects::Remove(C4Object *pObj)
 	if (pObj->Status == C4OS_INACTIVE) return InactiveObjects.Remove(pObj);
 	// remove from sectors
 	Sectors.Remove(pObj);
-	// remove from backlist
-	::Objects.BackObjects.Remove(pObj);
 	// remove from forelist
 	::Objects.ForeObjects.Remove(pObj);
 	// manipulate main list
@@ -376,7 +370,6 @@ void C4GameObjects::DeleteObjects(bool fDeleteInactive)
 {
 	C4ObjectList::DeleteObjects();
 	Sectors.ClearObjects();
-	BackObjects.Clear();
 	ForeObjects.Clear();
 	if (fDeleteInactive) InactiveObjects.DeleteObjects();
 }
@@ -424,9 +417,6 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		}
 		// keep track of numbers
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
-		// add to list of backobjects
-		if (pObj->Category & C4D_Background)
-			::Objects.BackObjects.Add(pObj, C4ObjectList::stMain, this);
 		// add to list of foreobjects
 		if (pObj->Category & C4D_Foreground)
 			::Objects.ForeObjects.Add(pObj, C4ObjectList::stMain, this);

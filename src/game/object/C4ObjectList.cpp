@@ -417,15 +417,30 @@ int C4ObjectList::ClearPointers(C4Object *pObj)
 	return rval;
 }
 
-void C4ObjectList::DrawAll(C4TargetFacet &cgo, int iPlayer)
+void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane)
 {
-	C4ObjectLink *clnk;
+	C4ObjectLink * clnk, * first;
+	for (first=Last; first; first=first->Prev)
+		if (first->Obj->GetPlane() >= MinPlane)
+			break;
 	// Draw objects (base)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
+	for (clnk=first; clnk; clnk=clnk->Prev)
+	{
+		if (first->Obj->GetPlane() > MaxPlane)
+			break;
+		if (clnk->Obj->Category & C4D_Foreground)
+			continue;
 		clnk->Obj->Draw(cgo, iPlayer);
+	}
 	// Draw objects (top face)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
+	for (clnk=first; clnk; clnk=clnk->Prev)
+	{
+		if (first->Obj->GetPlane() > MaxPlane)
+			break;
+		if (clnk->Obj->Category & C4D_Foreground)
+			continue;
 		clnk->Obj->DrawTopFace(cgo, iPlayer);
+	}
 }
 
 void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert)
@@ -438,19 +453,6 @@ void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCa
 	// Draw objects (top face)
 	for (clnk=Last; clnk; clnk=clnk->Prev)
 		if (!(clnk->Obj->Category & dwCat) == fInvert)
-			clnk->Obj->DrawTopFace(cgo, iPlayer);
-}
-
-void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer)
-{
-	C4ObjectLink *clnk;
-	// Draw objects (base)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
-		if (!(clnk->Obj->Category & C4D_BackgroundOrForeground))
-			clnk->Obj->Draw(cgo, iPlayer);
-	// Draw objects (top face)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
-		if (!(clnk->Obj->Category & C4D_BackgroundOrForeground))
 			clnk->Obj->DrawTopFace(cgo, iPlayer);
 }
 

@@ -905,7 +905,6 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 
 void C4Game::ClearPointers(C4Object * pObj)
 {
-	::Objects.BackObjects.ClearPointers(pObj);
 	::Objects.ForeObjects.ClearPointers(pObj);
 	::Messages.ClearPointers(pObj);
 	ClearObjectPtrs(pObj);
@@ -1285,7 +1284,6 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 		}
 		// next list
 		if (pLst == &::Objects.ForeObjects) pLst = &Objects;
-		else if (pLst == &Objects) pLst = &::Objects.BackObjects;
 		else pLst = NULL;
 	}
 
