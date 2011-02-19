@@ -104,7 +104,6 @@ enum C4AulTokenType
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
-	ATT_DCOLON, // "::"
 	ATT_SCOLON, // ";"
 	ATT_BOPEN,  // "("
 	ATT_BCLOSE, // ")"
@@ -114,8 +113,8 @@ enum C4AulTokenType
 	ATT_BLCLOSE,// "}"
 	ATT_SEP,    // "|"
 	ATT_CALL,   // "->"
+	ATT_CALLFS, // "->~"
 	ATT_STAR,   // "*"
-	ATT_TILDE,  // '~'
 	ATT_LDOTS,  // '...'
 	ATT_SET,    // '='
 	ATT_OPERATOR,// operator
@@ -611,23 +610,17 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			else if (C == ']') {SPos++; return ATT_BCLOSE2;}// "]"
 			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
 			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
-			else if (C == ':')                              // ":"
+			else if (C == ':') {SPos++; return ATT_COLON; } // ":"
+			else if (C == '=') {SPos++; return ATT_SET;   } // "="
+			else if (C == '-' && *(SPos + 1) == '>' && *(SPos + 2) == '~') // "->~"
 			{
-				SPos++;
-				// double-colon?
-				if (*SPos == ':')                             // "::"
-				{
-					SPos++;
-					return ATT_DCOLON;
-				}
-				else                                          // ":"
-					return ATT_COLON;
+				SPos+=3; return ATT_CALLFS;
 			}
-			else if (C == '-' && *(SPos + 1) == '>')        // "->"
+			else if (C == '-' && *(SPos + 1) == '>') // "->"
 			{
 				SPos+=2; return ATT_CALL;
 			}
-			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.')        // "..."
+			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.') // "..."
 			{
 				SPos+=3; return ATT_LDOTS;
 			}
@@ -645,52 +638,36 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 						SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
 						return ATT_OPERATOR;
 					}
-					// set?
-					if (*SPos == '=')
-					{
-						SPos++;
-						return ATT_SET;
-					}
 				}
 				else if (C == '*') { SPos++; return ATT_STAR; }   // "*"
-				else if (C == '~') { SPos++; return ATT_TILDE; }  // "~"
 
-				// identifier by all non-special chars
-				if (C >= '@')
+				// identifier by alphabet or '_'
+				if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
 				{
-					// only the alphabet and '_' is allowed
-					if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
-					{
-						State = TGS_Ident;
-						break;
-					}
-					// unrecognized char
-					// make sure to skip the invalid char so the error won't be output forever
-					++SPos;
+					State = TGS_Ident;
+					break;
 				}
-				else
+				// no operator expected and '-' or '+' found?
+				// this could be an int const; parse it directly
+				else if (!bOperator && (C=='-' || C=='+'))
 				{
 					// examine next char
 					++SPos; ++ Len;
-					// no operator expected and '-' or '+' found?
-					// this could be an int const; parse it directly
-					if (!bOperator && (C=='-' || C=='+'))
+					// skip spaces between sign and int constant
+					if (AdvanceSpaces())
 					{
-						// skip spaces between sign and int constant
-						if (AdvanceSpaces())
+						// continue parsing int, if a numeral follows
+						C = *SPos;
+						if (((C >= '0') && (C <= '9')))
 						{
-							// continue parsing int, if a numeral follows
-							C = *SPos;
-							if (((C >= '0') && (C <= '9')))
-							{
-								State = TGS_Int;
-								break;
-							}
+							State = TGS_Int;
+							break;
 						}
 					}
-					// special char and/or error getting it as a signed int
 				}
 				// unrecognized char
+				// make sure to skip the invalid char so the error won't be output forever
+				++SPos;
 				// show appropriate error message
 				if (C >= '!' && C <= '~')
 					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", (int)(unsigned char) C).getData());
@@ -1337,7 +1314,6 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_DOT: return "'.'";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
-	case ATT_DCOLON: return "'::'";
 	case ATT_SCOLON: return "';'";
 	case ATT_BOPEN: return "'('";
 	case ATT_BCLOSE: return "')'";
@@ -1347,8 +1323,8 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_BLCLOSE: return "'}'";
 	case ATT_SEP: return "'|'";
 	case ATT_CALL: return "'->'";
+	case ATT_CALLFS: return "'->~'";
 	case ATT_STAR: return "'*'";
-	case ATT_TILDE: return "'~'";
 	case ATT_LDOTS: return "'...'";
 	case ATT_SET: return "'='";
 	case ATT_OPERATOR: return "operator";
@@ -1576,7 +1552,7 @@ void C4AulParseState::Parse_FuncHead()
 	// check for func declaration
 	if (SEqual(Idtf, C4AUL_Func))
 	{
-		Shift(Discard, false);
+		Shift();
 		// get next token, must be func name
 		if (TokenType != ATT_IDTF)
 			UnexpectedToken("function name");
@@ -1614,11 +1590,11 @@ void C4AulParseState::Parse_FuncHead()
 		// set up func (in the case we got an error)
 		Fn->Script = SPos; // temporary
 		Fn->Access = Acc; Fn->pOrgScript = a;
-		Shift(Discard,false);
+		Shift();
 		// expect an opening bracket now
 		if (TokenType != ATT_BOPEN)
 			UnexpectedToken("'('");
-		Shift(Discard,false);
+		Shift();
 		// get pars
 		Fn->ParNamed.Reset(); // safety :)
 		int cpar = 0;
@@ -1641,13 +1617,13 @@ void C4AulParseState::Parse_FuncHead()
 				UnexpectedToken("parameter or closing bracket");
 			}
 			// type identifier?
-			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
+			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
 			if (TokenType != ATT_IDTF)
 			{
 				UnexpectedToken("parameter name");
@@ -1667,7 +1643,7 @@ void C4AulParseState::Parse_FuncHead()
 			// must be a comma now
 			if (TokenType != ATT_COMMA)
 				UnexpectedToken("comma or closing bracket");
-			Shift(Discard,false);
+			Shift();
 			cpar++;
 		}
 		Fn->Script = SPos;
@@ -2763,21 +2739,12 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			Shift();
 			break;
 		}
-		case ATT_CALL:
+		case ATT_CALL: case ATT_CALLFS:
 		{
-			// Here, a '~' is not an operator, but a token
-			Shift(Discard, false);
-			// C4ID -> namespace given
 			C4AulFunc *pFunc = NULL;
 			C4String *pName = NULL;
-			C4AulBCCType eCallType = AB_CALL;
-			// may it be a failsafe call?
-			if (TokenType == ATT_TILDE)
-			{
-				// store this and get the next token
-				eCallType = AB_CALLFS;
-				Shift();
-			}
+			C4AulBCCType eCallType = (TokenType == ATT_CALL) ? AB_CALL : AB_CALLFS;
+			Shift();
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF) throw new C4AulParseError(this, "expecting func name after '->'");
 			// search a function with the given name
@@ -2869,6 +2836,7 @@ void C4AulParseState::Parse_Local()
 			if (!a->Def)
 				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
 			// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
+			// Parse numbers beginning with + or - as a number, not operator+number
 			Shift(Ref, false);
 			// register as constant
 			if (Type == PREPARSER)
