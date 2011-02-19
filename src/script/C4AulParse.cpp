@@ -170,14 +170,14 @@ public:
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
-	enum HoldStringsPolicy { Discard, Hold, Ref };
+	enum OperatorPolicy { OperatorsPlease = 0, StarsPlease };
 	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
+	C4AulTokenType GetNextToken(OperatorPolicy Operator = OperatorsPlease); // get next token of SPos
 
-	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
+	void Shift(OperatorPolicy Operator = OperatorsPlease);
 	void Match(C4AulTokenType TokenType, const char * Message = NULL);
 	void UnexpectedToken(const char * Expected) NORETURN;
-	const char * GetTokenName(C4AulTokenType TokenType);
+	static const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, const char *pIdtf=0);
 	void Error(const char *pMsg, const char *pIdtf=0);
@@ -519,7 +519,7 @@ static int ToNumber(char c)
 	return 0;
 }
 
-static int32_t StrToI32(char *s, int base, char **scan_end)
+static int32_t StrToI32(const char *s, int base, const char **scan_end)
 {
 	int sign = 1;
 	int32_t result = 0;
@@ -560,7 +560,7 @@ void C4AulParseState::ClearToken()
 	}
 }
 
-C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
+C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 {
 	// clear mem of prev token
 	ClearToken();
@@ -593,84 +593,55 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 		{
 		case TGS_None:
 		{
-			// get token type by first char (+/- are operators)
-			if (((C >= '0') && (C <= '9')))
+			int iOpID;
+			// Mostly sorted by frequency, except that tokens that have
+			// other tokens as prefixes need to be checked for first.
+			if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
+			{
+				// SPos will be increased at the end of the loop
+				State = TGS_Ident;
+			}
+			else if (C == '(') {SPos++; return ATT_BOPEN; } // "("
+			else if (C == ')') {SPos++; return ATT_BCLOSE;} // ")"
+			else if (C == ',') {SPos++; return ATT_COMMA; } // ","
+			else if (C == ';') {SPos++; return ATT_SCOLON;} // ";"
+			else if (((C >= '0') && (C <= '9')))
 				State = TGS_Int;            // integer by 0-9
+			else if (C == '-' && *(SPos + 1) == '>' && *(SPos + 2) == '~')
+					  { SPos+=3;return ATT_CALLFS;} // "->~"
+			else if (C == '-' && *(SPos + 1) == '>')
+					  { SPos+=2;return ATT_CALL;  } // "->"
+			else if (C == '*' && Operator == StarsPlease)
+					  { SPos++; return ATT_STAR;  } // "*"
+			else if ((iOpID = GetOperator(SPos)) != -1)
+			{
+				SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
+				cInt = iOpID;
+				return ATT_OPERATOR;
+			}
+			else if (C == '=') {SPos++; return ATT_SET;    } // "="
+			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
+			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
 			else if (C == '"')
 			{
 				State = TGS_String;  // string by "
 				strbuf.reserve(512); // assume most strings to be smaller than this
 			}
-			else if (C == '#')  State = TGS_Dir;            // directive by "#"
-			else if (C == ',') {SPos++; return ATT_COMMA; } // ","
-			else if (C == ';') {SPos++; return ATT_SCOLON;} // ";"
-			else if (C == '(') {SPos++; return ATT_BOPEN; } // "("
-			else if (C == ')') {SPos++; return ATT_BCLOSE;} // ")"
 			else if (C == '[') {SPos++; return ATT_BOPEN2;} // "["
 			else if (C == ']') {SPos++; return ATT_BCLOSE2;}// "]"
-			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
-			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
-			else if (C == ':') {SPos++; return ATT_COLON; } // ":"
-			else if (C == '=') {SPos++; return ATT_SET;   } // "="
-			else if (C == '-' && *(SPos + 1) == '>' && *(SPos + 2) == '~') // "->~"
-			{
-				SPos+=3; return ATT_CALLFS;
-			}
-			else if (C == '-' && *(SPos + 1) == '>') // "->"
-			{
-				SPos+=2; return ATT_CALL;
-			}
-			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.') // "..."
-			{
-				SPos+=3; return ATT_LDOTS;
-			}
+			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.')
+					  { SPos+=3;return ATT_LDOTS; } // "..."
 			else if (C == '.') {SPos++; return ATT_DOT;   } // "."
+			else if (C == '#')  State = TGS_Dir;            // directive by "#"
+			else if (C == ':') {SPos++; return ATT_COLON; } // ":"
 			else
 			{
-				if (bOperator)
-				{
-					// may it be an operator?
-					int iOpID;
-					if ((iOpID = GetOperator(SPos)) != -1)
-					{
-						// store operator ID in pInt
-						*pInt = iOpID;
-						SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
-						return ATT_OPERATOR;
-					}
-				}
-				else if (C == '*') { SPos++; return ATT_STAR; }   // "*"
-
-				// identifier by alphabet or '_'
-				if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
-				{
-					State = TGS_Ident;
-					break;
-				}
-				// no operator expected and '-' or '+' found?
-				// this could be an int const; parse it directly
-				else if (!bOperator && (C=='-' || C=='+'))
-				{
-					// examine next char
-					++SPos; ++ Len;
-					// skip spaces between sign and int constant
-					if (AdvanceSpaces())
-					{
-						// continue parsing int, if a numeral follows
-						C = *SPos;
-						if (((C >= '0') && (C <= '9')))
-						{
-							State = TGS_Int;
-							break;
-						}
-					}
-				}
 				// unrecognized char
 				// make sure to skip the invalid char so the error won't be output forever
 				++SPos;
 				// show appropriate error message
 				if (C >= '!' && C <= '~')
-					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", (int)(unsigned char) C).getData());
+					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
 				else
 					throw new C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
 			}
@@ -685,7 +656,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			{
 				// return ident/directive
 				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, pToken, Len);
+				SCopy(SPos0, Idtf, Len);
 				// directive?
 				if (State == TGS_Dir) return ATT_DIR;
 				// everything else is an identifier
@@ -717,11 +688,12 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 				}
 				// return integer
 				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, pToken, Len);
+				SCopy(SPos0, Idtf, Len);
 				// do not parse 0x prefix for hex
+				const char * pToken = Idtf;
 				if (State == TGS_IntHex) pToken += 2;
 				// it's not, so return the int
-				*pInt = StrToI32(pToken, base, 0);
+				cInt = StrToI32(pToken, base, 0);
 				return ATT_INT;
 			}
 			break;
@@ -732,14 +704,12 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			if (C == '"')
 			{
 				SPos++;
-				// no string expected?
-				if (HoldStrings == Discard) { pInt=0; return ATT_STRING; }
-				// reg string (if not already done so)
 				C4String *pString;
 				pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
+				// hold onto string, ClearToken will deref it
 				pString->IncRef();
 				// return pointer on string object
-				*pInt = (intptr_t) pString;
+				cInt = (intptr_t) pString;
 				return ATT_STRING;
 			}
 			else
@@ -1333,9 +1303,9 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	}
 }
 
-void C4AulParseState::Shift(HoldStringsPolicy HoldStrings, bool bOperator)
+void C4AulParseState::Shift(OperatorPolicy Operator)
 {
-	TokenType = GetNextToken(Idtf, &cInt, HoldStrings, bOperator);
+	TokenType = GetNextToken(Operator);
 }
 void C4AulParseState::Match(C4AulTokenType RefTokenType, const char * Message)
 {
@@ -1416,7 +1386,7 @@ void C4AulParseState::Parse_Script()
 				else if (SEqual(Idtf, C4AUL_Append))
 				{
 					// for #appendto * '*' needs to be ATT_STAR, not an operator.
-					Shift(Hold, false);
+					Shift(StarsPlease);
 					// get id of script to include/append
 					C4ID Id;
 					switch (TokenType)
@@ -1836,7 +1806,7 @@ void C4AulParseState::Parse_Statement()
 				Shift();
 			// variable and "in"
 			if (TokenType == ATT_IDTF /*&& (iVarID = Fn->VarNamed.GetItemNr(Idtf)) != -1*/
-			    && GetNextToken(Idtf, &cInt, Discard, true) == ATT_IDTF
+			    && GetNextToken() == ATT_IDTF
 			    && SEqual(Idtf, C4AUL_In))
 			{
 				// reparse the stuff in the brackets like normal statements
@@ -2835,9 +2805,8 @@ void C4AulParseState::Parse_Local()
 		{
 			if (!a->Def)
 				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
-			// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
 			// Parse numbers beginning with + or - as a number, not operator+number
-			Shift(Ref, false);
+			Shift();
 			// register as constant
 			if (Type == PREPARSER)
 				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
@@ -2975,7 +2944,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		}
 	case ATT_BLOPEN:
 		{
-			Shift(Type == PREPARSER ? Hold : Discard);
+			Shift();
 			if (Type == PREPARSER)
 				r.SetPropList(C4PropList::NewAnon());
 			while (TokenType != ATT_BLCLOSE)
@@ -3001,7 +2970,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				else
 					Parse_ConstExpression();
 				if (TokenType == ATT_COMMA)
-					Shift(Type == PREPARSER ? Hold : Discard);
+					Shift();
 				else if (TokenType != ATT_BLCLOSE)
 					UnexpectedToken("'}' or ','");
 			}
@@ -3009,6 +2978,29 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				r._getPropList()->Freeze();
 			break;
 		}
+	case ATT_OPERATOR:
+		{
+			// -> must be a prefix operator
+			// get operator ID
+			int OpID = cInt;
+			if (SEqual(C4ScriptOpMap[OpID].Identifier, "+"))
+			{
+				Shift();
+				if (TokenType == ATT_INT)
+				{
+					r.SetInt(cInt); break;
+				}
+			}
+			if (SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
+			{
+				Shift();
+				if (TokenType == ATT_INT)
+				{
+					r.SetInt(-cInt); break;
+				}
+			}
+		}
+		// fallthrough
 	default:
 		UnexpectedToken("constant value");
 	}
@@ -3050,9 +3042,8 @@ void C4AulParseState::Parse_Const()
 		// this would allow for definitions like "static const OCF_Edible = 1<<23"
 		// However, such stuff should better be generalized, so the preparser (and parser)
 		// can evaluate any constant expression, including functions with constant retval (e.g. Sqrt)
-		// So allow only direct constants for now.
-		// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
-		Shift(Ref, false);
+		// So allow only simple constants for now.
+		Shift();
 
 		// register as constant
 		a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression());
