@@ -13,5 +13,4 @@ Picture=0,0,8,8
 Value=20
 Mass=7
 Components=Metal=2;Crystal=2;
-Rebuy=1
 Rotate=1

@@ -66,7 +66,6 @@ void C4Def::DefaultDefCore()
 	Value=0;
 	Exclusive=0;
 	Category=0;
-	Rebuyable=0;
 	ContactIncinerate=0;
 	BlastIncinerate=0;
 	Constructable=0;
@@ -108,7 +107,7 @@ void C4Def::DefaultDefCore()
 	BlitMode=C4D_Blit_Normal;
 	NoBreath=0;
 	ConSizeOff=0;
-	NoSell=NoGet=0;
+	NoGet=0;
 	NeededGfxMode=0;
 	NoTransferZones=0;
 }
@@ -263,7 +262,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Edible,                        "Edible",             0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
-	pComp->Value(mkNamingAdapt(Rebuyable,                     "Rebuy",              0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
 	pComp->Value(mkNamingAdapt(BuildTurnTo,                   "ConstructTo",        C4ID::None        ));
 
@@ -311,7 +309,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BlitMode,                      "BlitMode",           C4D_Blit_Normal   ));
 	pComp->Value(mkNamingAdapt(NoBreath,                      "NoBreath",           0                 ));
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));
-	pComp->Value(mkNamingAdapt(NoSell,                        "NoSell",             0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
 	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));

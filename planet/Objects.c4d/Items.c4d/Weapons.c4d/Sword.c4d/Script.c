@@ -271,3 +271,4 @@ func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
 }
 local Collectible = 1;
+local Rebuy = true;

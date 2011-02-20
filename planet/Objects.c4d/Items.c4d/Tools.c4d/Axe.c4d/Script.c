@@ -28,3 +28,4 @@ public func IsToolProduct() { return 1; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Rebuy = true;

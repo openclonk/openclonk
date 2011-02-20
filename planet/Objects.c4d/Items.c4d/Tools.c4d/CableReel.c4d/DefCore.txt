@@ -13,4 +13,3 @@ Value=10
 Mass=15
 Components=Metal=1
 Picture=0,6,64,64
-Rebuy=1

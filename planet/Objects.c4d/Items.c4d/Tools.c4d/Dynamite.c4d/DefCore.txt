@@ -16,4 +16,3 @@ Components=Blackpowder=2;
 Rotate=1
 ContactIncinerate=1
 BlastIncinerate=1
-Rebuy=1

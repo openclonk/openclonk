@@ -63,28 +63,28 @@ local aHomabaseProduction;
 global func GetHomebaseMaterial (int iPlr, id idDef, int iIndex, int dwCategory)
 {
 	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
+	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
 	if(pObj) return pObj->DoGetHomebaseMaterial(idDef, iIndex, dwCategory);
 }
 
 global func GetHomebaseProduction (int iPlr, id idDef, int iIndex, int dwCategory)
 {
 	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
+	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
 	if(pObj) return pObj->DoGetHomebaseProduction(idDef, iIndex, dwCategory);
 }
 
 global func DoHomebaseMaterial (int iPlr, id idID, int iChange)
 {
 	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
+	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
 	if(pObj) return pObj->DoDoHomebaseMaterial(idID, iChange);
 }
 
 global func DoHomebaseProduction (int iPlr, id idID, int iChange)
 {
 	var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
-	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
+	if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),iPlr);
 	if(pObj) return pObj->DoDoHomebaseProduction(idID, iChange);
 }
 
@@ -93,7 +93,7 @@ global func DoHomebaseProduction (int iPlr, id idID, int iChange)
 public func DoGetHomebaseMaterial (id idDef, int iIndex, int dwCategory)
 {
 	var aArray;
-	var iCount;
+	var iCount = 0;
 	// An ID given? Then try to get the count
 	if(idDef)
 	{
@@ -116,7 +116,7 @@ public func DoGetHomebaseMaterial (id idDef, int iIndex, int dwCategory)
 public func DoGetHomebaseProduction (id idDef, int iIndex, int dwCategory)
 {
 	var aArray;
-	var iCount;
+	var iCount = 0;
 	// An ID given? Then try to get the count
 	if(idDef)
 	{
@@ -140,7 +140,7 @@ public func DoDoHomebaseMaterial (id idID, int iChange)
 {
 	if(iChange == 0) return;
 	var aArray;
-	var iIndex;
+	var iIndex = 0;
 	for(aArray in aHomebaseMaterial)
 	{
 		if(aArray[0] == idID)
@@ -161,7 +161,7 @@ public func DoDoHomebaseProduction (id idID, int iChange)
 {
 	if(iChange == 0) return;
 	var aArray;
-	var iIndex;
+	var iIndex = 0;
 	for(aArray in aHomabaseProduction)
 	{
 		if(aArray[0] == idID)

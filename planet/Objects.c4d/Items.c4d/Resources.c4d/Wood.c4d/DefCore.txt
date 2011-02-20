@@ -15,7 +15,6 @@ Mass=6
 Components=Wood=1
 ContactIncinerate=1
 BlastIncinerate=5
-Rebuy=1
 Rotate=1
 Float=1
 StretchGrowth=1

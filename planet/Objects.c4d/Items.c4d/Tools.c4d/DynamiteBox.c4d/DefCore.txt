@@ -13,5 +13,4 @@ Picture=0,0,64,64
 Value=16
 Mass=30
 Components=Wood=1;Metal=1;Blackpowder=5;
-Rebuy=1
 Rotate=1

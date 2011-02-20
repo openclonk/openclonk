@@ -125,7 +125,6 @@ public:
 	int32_t Value;
 	int32_t Exclusive;
 	int32_t Category;
-	int32_t Rebuyable;
 	int32_t ContactIncinerate; // 0 off 1 high - 5 low
 	int32_t BlastIncinerate; // 0 off 1 - x if > damage
 	int32_t Constructable;
@@ -168,7 +167,6 @@ public:
 	int32_t BlitMode;         // special blit mode for objects of this def. C4D_Blit_X
 	int32_t NoBreath;         // object does not need to breath, although it's living
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
-	int32_t NoSell;           // if set, object can't be sold (doesn't even appear in sell-menu)
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation

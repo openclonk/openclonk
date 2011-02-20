@@ -171,21 +171,6 @@ func FxIntBaseHealTimer(pClonk, effect)
 	}
 }
 
-// ---------------------- Context controls -----------------------------
-
-// Add buy and sell entries in the context menu
-
-func ContextSell(object pClonk)
-{
-	[$Sell$|Image=BaseMaterial|Condition=IsBase]
-	return OpenSellMenu(pClonk);
-}
-
-func ContextBuy(object pClonk)
-{
-	[$Buy$|Image=Library_Base|Condition=IsBase]
-	return OpenBuyMenu(pClonk);
-}
 // ------------------------ Buying -------------------------------------
 
 local aClonkBuyList;
@@ -290,7 +275,7 @@ func UpdateSellList()
 	for(pObj in GetSellableContents())
 	{
 		// Are we allowed to sell the object?
-		if(GetID()->GetDefCoreVal("NoSell", "DefCore")) continue;
+		if (pObj.NoSell) continue;
 		// Only check the last item to stack, the engine normally sorts the objects so this should be enought to check
 		if(iIndex && CanStack(aSellList[iIndex-1][2], pObj))
 			aSellList[iIndex-1][1]++;
@@ -371,7 +356,7 @@ func SellDummy(id idDef, object pClonk, bool bRight)
 func DoSell(object pObj, int iPlr, bool bRight)
 {
 	// Test the object
-	if(pObj->GetID()->GetDefCoreVal("NoSell", "DefCore") || pObj->GetOCF() & OCF_CrewMember)
+	if(pObj.NoSell || pObj->GetOCF() & OCF_CrewMember)
 	{
 		// Enter base (needed for NoSell objects in other objects which are sold)
 		if(pObj->Contained() != this)
@@ -385,7 +370,7 @@ func DoSell(object pObj, int iPlr, bool bRight)
 	// Give the player the cash
 	DoWealth(iPlr, GetSellValue(pObj));
 	Sound("Cash", 0, 100, iPlr+1); // TODO: get sound
-	if(pObj->GetID()->GetDefCoreVal("Rebuy", "DefCore"))
+	if(pObj.Rebuy)
 		DoBaseMaterial(pObj->GetID(), 1);
 	// right clicked? then sell other objects too
 	var pNewObj;
@@ -438,3 +423,5 @@ global func GetBase ()
 }
 
 local Name = "$Name$";
+
+

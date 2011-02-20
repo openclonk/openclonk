@@ -10,5 +10,4 @@ VertexFriction=100
 Picture=0,0,10,10
 Value=8
 Mass=1
-Rebuy=1
 Rotate=1

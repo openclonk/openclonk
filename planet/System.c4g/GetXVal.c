@@ -29,7 +29,6 @@ global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefPrey()        { return GetDefCoreVal("Prey", "DefCore"); }
 global func GetDefEdible()      { return GetDefCoreVal("Edible", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("Prey", "DefCore"); }
-global func GetDefRebuy()       { return GetDefCoreVal("Rebuy", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
 global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }
 global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }
@@ -62,7 +61,6 @@ global func GetDefTemporaryCrew() { return GetDefCoreVal("TemporaryCrew", "DefCo
 global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); }
 global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
 global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
-global func GetDefNoSell()      { return GetDefCoreVal("NoSell", "DefCore"); }
 
 // GetObjectVal
 global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }

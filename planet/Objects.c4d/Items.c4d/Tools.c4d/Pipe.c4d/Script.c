@@ -66,3 +66,4 @@ private func Find_PipeLine(object obj)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
+local Rebuy = true;
