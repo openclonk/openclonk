@@ -159,11 +159,6 @@ bool ObjectActionDig(C4Object *cObj)
 	return true;
 }
 
-bool ObjectActionBuild(C4Object *cObj, C4Object *target)
-{
-	return cObj->SetActionByName("Build",target);
-}
-
 bool ObjectActionPush(C4Object *cObj, C4Object *target)
 {
 	return cObj->SetActionByName("Push",target);
@@ -468,16 +463,6 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	ObjectComUnGrab(cObj);
 	// Done
 	return true;
-}
-
-bool ObjectComBuild(C4Object *cObj, C4Object *pTarget)
-{
-	if (!pTarget) return false;
-	// Needs to be idle or walking
-	if (cObj->GetAction())
-		if (cObj->GetProcedure()!=DFA_WALK)
-			return false;
-	return ObjectActionBuild(cObj,pTarget);
 }
 
 bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing) // by C4CMD_Throw

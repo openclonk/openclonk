@@ -51,7 +51,6 @@ bool ObjectActionScale(C4Object *cObj, int32_t dir);
 bool ObjectActionHangle(C4Object *cObj, int32_t dir);
 bool ObjectActionThrow(C4Object *cObj, C4Object *pThing=NULL);
 bool ObjectActionDig(C4Object *cObj);
-bool ObjectActionBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionCornerScale(C4Object *cObj);
 
@@ -67,7 +66,6 @@ bool ObjectComJump(C4Object *cObj);
 bool ObjectComLetGo(C4Object *cObj, int32_t xdirf);
 bool ObjectComUp(C4Object *cObj);
 bool ObjectComDig(C4Object *cObj);
-bool ObjectComBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectComEnter(C4Object *cObj);
 bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing=NULL);
 bool ObjectComTake(C4Object *cObj, C4ID id);
