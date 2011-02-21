@@ -141,7 +141,8 @@ public:
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
-	intptr_t cInt; // current int constant
+	int32_t cInt; // current int constant
+	C4String * cStr; // current string constant
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
@@ -553,9 +554,9 @@ static int32_t StrToI32(const char *s, int base, const char **scan_end)
 void C4AulParseState::ClearToken()
 {
 	// if last token was a string, make sure its ref is deleted
-	if (TokenType == ATT_STRING && cInt)
+	if (TokenType == ATT_STRING && cStr)
 	{
-		reinterpret_cast<C4String *>(cInt)->DecRef();
+		cStr->DecRef();
 		TokenType = ATT_INVALID;
 	}
 }
@@ -704,12 +705,9 @@ C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 			if (C == '"')
 			{
 				SPos++;
-				C4String *pString;
-				pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
+				cStr = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
 				// hold onto string, ClearToken will deref it
-				pString->IncRef();
-				// return pointer on string object
-				cInt = (intptr_t) pString;
+				cStr->IncRef();
 				return ATT_STRING;
 			}
 			else
@@ -1728,8 +1726,8 @@ void C4AulParseState::Parse_Statement()
 	case ATT_BOPEN2:
 	case ATT_SET:
 	case ATT_OPERATOR:
-	case ATT_INT: // constant in cInt
-	case ATT_STRING: // reference in cInt
+	case ATT_INT:
+	case ATT_STRING:
 	{
 		Parse_Expression();
 		AddBCC(AB_STACK, -1);
@@ -2085,7 +2083,7 @@ void C4AulParseState::Parse_PropList()
 		}
 		else if (TokenType == ATT_STRING)
 		{
-			AddBCC(AB_STRING, cInt);
+			AddBCC(AB_STRING, reinterpret_cast<intptr_t>(cStr));
 			Shift();
 		}
 		else UnexpectedToken("string or identifier");
@@ -2505,9 +2503,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		Shift();
 		break;
 	}
-	case ATT_STRING: // reference in cInt
+	case ATT_STRING: // reference in cStr
 	{
-		AddBCC(AB_STRING, cInt);
+		AddBCC(AB_STRING, reinterpret_cast<intptr_t>(cStr));
 		Shift();
 		break;
 	}
@@ -2877,7 +2875,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 	switch (TokenType)
 	{
 	case ATT_INT: r.SetInt(cInt); break;
-	case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
+	case ATT_STRING: r.SetString(cStr); break; // increases ref count of C4String in cStr
 	case ATT_IDTF:
 		// identifier is only OK if it's another constant
 		if (SEqual(Idtf, C4AUL_True))
@@ -2958,7 +2956,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				}
 				else if (TokenType == ATT_STRING)
 				{
-					pKey = reinterpret_cast<C4String*>(cInt);
+					pKey = cStr;
 					Shift();
 				}
 				else UnexpectedToken("string or identifier");
