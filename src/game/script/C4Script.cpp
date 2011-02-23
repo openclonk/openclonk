@@ -2398,24 +2398,12 @@ static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
 	return true;
 }
 
-static bool FnAddMsgBoardCmd(C4AulContext *ctx, C4String *pstrCommand, C4String *pstrScript, long iRestriction)
+static bool FnAddMsgBoardCmd(C4AulContext *ctx, C4String *pstrCommand, C4String *pstrScript)
 {
 	// safety
 	if (!pstrCommand || !pstrScript) return false;
-	// unrestricted commands cannot be set by direct-exec script (like /script).
-	if (iRestriction != C4MessageBoardCommand::C4MSGCMDR_Identifier)
-		if (!ctx->Caller || !*ctx->Caller->Func->Name)
-			return false;
-	C4MessageBoardCommand::Restriction eRestriction;
-	switch (iRestriction)
-	{
-	case C4MessageBoardCommand::C4MSGCMDR_Escaped: eRestriction = C4MessageBoardCommand::C4MSGCMDR_Escaped; break;
-	case C4MessageBoardCommand::C4MSGCMDR_Plain: eRestriction = C4MessageBoardCommand::C4MSGCMDR_Plain; break;
-	case C4MessageBoardCommand::C4MSGCMDR_Identifier: eRestriction = C4MessageBoardCommand::C4MSGCMDR_Identifier; break;
-	default: return false;
-	}
 	// add command
-	::MessageInput.AddCommand(FnStringPar(pstrCommand), FnStringPar(pstrScript), eRestriction);
+	::MessageInput.AddCommand(FnStringPar(pstrCommand), FnStringPar(pstrScript));
 	return true;
 }
 
@@ -3333,10 +3321,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "TEAM_AllowTeamSwitch"      ,C4V_Int,      C4TeamList::TEAM_AllowTeamSwitch      },
 	{ "TEAM_AutoGenerateTeams"    ,C4V_Int,      C4TeamList::TEAM_AutoGenerateTeams    },
 	{ "TEAM_TeamColors"           ,C4V_Int,      C4TeamList::TEAM_TeamColors           },
-
-	{ "C4MSGCMDR_Escaped"         ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Escaped },
-	{ "C4MSGCMDR_Plain"           ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Plain },
-	{ "C4MSGCMDR_Identifier"      ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Identifier },
 
 	{ "C4FO_Not"                  ,C4V_Int,     C4FO_Not            },
 	{ "C4FO_And"                  ,C4V_Int,     C4FO_And            },

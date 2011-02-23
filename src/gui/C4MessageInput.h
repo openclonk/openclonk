@@ -101,8 +101,6 @@ public:
 public:
 	char Name[C4MaxName + 1];
 	char Script[_MAX_FNAME+30+1];
-	enum Restriction { C4MSGCMDR_Escaped=0, C4MSGCMDR_Plain, C4MSGCMDR_Identifier };
-	Restriction eRestriction;
 
 	C4MessageBoardCommand *Next;
 };
@@ -125,7 +123,7 @@ private:
 private:
 	class C4MessageBoardCommand *pCommands;
 public:
-	void AddCommand(const char *strCommand, const char *strScript, C4MessageBoardCommand::Restriction eRestriction = C4MessageBoardCommand::C4MSGCMDR_Escaped);
+	void AddCommand(const char *strCommand, const char *strScript);
 	class C4MessageBoardCommand *GetCommand(const char *strName);
 
 	// Input

@@ -680,37 +680,12 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			}
 			else if (SSearch(CmdScript.getData(), "%s"))
 			{
-				// Unrestricted parameters?
-				// That's kind of a security risk as it will allow anyone to execute code
-				switch (pCmd->eRestriction)
-				{
-				case C4MessageBoardCommand::C4MSGCMDR_Escaped:
-				{
-					// escape strings
-					StdStrBuf Par;
-					Par.Copy(pCmdPar);
-					Par.EscapeString();
-					// compose script
-					Script.Format(CmdScript.getData(), Par.getData());
-				}
-				break;
-
-				case C4MessageBoardCommand::C4MSGCMDR_Plain:
-					// unescaped
-					Script.Format(CmdScript.getData(), pCmdPar);
-					break;
-
-				case C4MessageBoardCommand::C4MSGCMDR_Identifier:
-				{
-					// only allow identifier-characters
-					StdStrBuf Par;
-					while (IsIdentifier(*pCmdPar) || isspace((unsigned char)*pCmdPar))
-						Par.AppendChar(*pCmdPar++);
-					// compose script
-					Script.Format(CmdScript.getData(), Par.getData());
-				}
-				break;
-				}
+				// escape strings
+				StdStrBuf Par;
+				Par.Copy(pCmdPar);
+				Par.EscapeString();
+				// compose script
+				Script.Format(CmdScript.getData(), Par.getData());
 			}
 			else
 				Script = CmdScript.getData();
@@ -726,14 +701,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	return false;
 }
 
-void C4MessageInput::AddCommand(const char *strCommand, const char *strScript, C4MessageBoardCommand::Restriction eRestriction)
+void C4MessageInput::AddCommand(const char *strCommand, const char *strScript)
 {
 	if (GetCommand(strCommand)) return;
 	// create entry
 	C4MessageBoardCommand *pCmd = new C4MessageBoardCommand();
 	SCopy(strCommand, pCmd->Name, C4MaxName);
 	SCopy(strScript, pCmd->Script, _MAX_FNAME+30);
-	pCmd->eRestriction = eRestriction;
 	// add to list
 	pCmd->Next = pCommands; pCommands = pCmd;
 }
