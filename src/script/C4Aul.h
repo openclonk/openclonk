@@ -21,11 +21,6 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// C4Aul script engine CP conversion
-// (cut C4Aul of classes/structs and put everything in namespace C4Aul instead?)
-// drop uncompiled scripts when not in developer mode
-// -> build string table
-// -> clear the string table in UnLink? ReLink won't happen to be called in player mode anyway
 
 #ifndef INC_C4Aul
 #define INC_C4Aul
@@ -37,11 +32,6 @@
 #include <C4StringTable.h>
 #include <string>
 #include <vector>
-
-// debug mode?
-#ifdef _DEBUG
-#define C4AUL_DEBUG
-#endif
 
 class C4Def;
 class C4DefList;

@@ -56,6 +56,7 @@ public:
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
+	void LogCallStack();
 
 private:
 	void PushContext(const C4AulScriptContext &rContext);

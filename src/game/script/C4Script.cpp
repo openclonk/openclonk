@@ -33,6 +33,7 @@
 
 #include <C4Application.h>
 #include <C4AulDefFunc.h>
+#include <C4AulExec.h>
 #include <C4Command.h>
 #include <C4Console.h>
 #include <C4Game.h>
@@ -371,8 +372,6 @@ static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * Pro
 	// Get def
 	C4Def *pDef;
 	if (!(pDef=PropList->GetDef())) return false;
-	// Get thread vars
-	if (!cthr->Caller) return false;
 	// Construction check at starting position
 	if (ConstructionCheck(PropList,v1,v2))
 		return NULL;
@@ -1980,8 +1979,6 @@ static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 {
 	// execute script in the same object
 	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
-	if (cthr->Caller)
-		Strict = cthr->Caller->Func->pOrgScript->Strict;
 	if (cthr->Obj)
 		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 	else if (cthr->Def)
@@ -2899,10 +2896,7 @@ static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
 	{
 		DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
 		// Trace
-		for (C4AulScriptContext *cursor = ctx->Caller; cursor; cursor = cursor->Caller)
-		{
-			cursor->dump(StdStrBuf(" by: "));
-		}
+		AulExec.LogCallStack();
 		return text;
 	}
 }

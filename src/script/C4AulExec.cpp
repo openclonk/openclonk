@@ -112,6 +112,12 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 	DebugLog(ReturnDump(Dump).getData());
 }
 
+void C4AulExec::LogCallStack()
+{
+	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
+		pCtx->dump(StdStrBuf(" by: "));
+}
+
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 {
 
@@ -821,8 +827,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 		if (fPassErrors)
 			throw;
 		// Trace
-		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
-			pCtx->dump(StdStrBuf(" by: "));
+		LogCallStack();
 		delete e;
 	}
 
