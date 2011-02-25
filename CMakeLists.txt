@@ -488,8 +488,6 @@ set(OC_CLONK_SOURCES
 	src/platform/StdWindow.h
 	src/platform/StdAppCommon.h
 	src/platform/StdAppCommon.cpp
-	src/script/C4AList.cpp
-	src/script/C4AList.h
 	src/script/C4Aul.cpp
 	src/script/C4AulExec.h
 	src/script/C4AulExec.cpp

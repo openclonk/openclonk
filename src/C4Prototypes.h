@@ -26,7 +26,6 @@
 
 // class declarations
 class C4Action;
-class C4AList;
 struct C4AulContext;
 class C4AulDefFunc;
 class C4AulFunc;

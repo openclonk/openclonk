@@ -188,8 +188,8 @@ void C4AulScript::Default()
 	Owner = Engine = NULL;
 	Func0 = FuncL = NULL;
 	// prepare include list
-	Includes = NULL;
-	Appends = NULL;
+	Includes.clear();
+	Appends.clear();
 
 	stringTable = 0;
 }
@@ -216,7 +216,8 @@ void C4AulScript::Unreg()
 void C4AulScript::Clear()
 {
 	// remove includes
-	Includes = NULL;
+	Includes.clear();
+	Appends.clear();
 	// delete child scripts + funcs
 	while (Child0) // Child0->Unreg();
 			if (Child0->Delete()) delete Child0; else Child0->Unreg();
@@ -464,8 +465,6 @@ void C4AulScriptEngine::Clear()
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
-	// clear tables
-	itbl.Clear(); atbl.Clear();
 	// reset values
 	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too

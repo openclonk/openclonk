@@ -111,7 +111,6 @@ enum C4AulTokenType
 	ATT_BCLOSE2,// "]"
 	ATT_BLOPEN, // "{"
 	ATT_BLCLOSE,// "}"
-	ATT_SEP,    // "|"
 	ATT_CALL,   // "->"
 	ATT_CALLFS, // "->~"
 	ATT_STAR,   // "*"
@@ -233,7 +232,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 {
 	// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
-	if (Fn && !Fn->Owner->Def && Fn->Owner->Appends) return;
+	if (Fn && !Fn->Owner->Def && !Fn->Owner->Appends.empty()) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
 	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
@@ -929,10 +928,7 @@ bool C4AulScript::Preparse()
 	if (!Script) { State = ASS_PREPARSED; return true; }
 
 	// clear stuff
-	/* simply setting Includes to NULL will waste some space in the associative list
-	  however, this is just a few bytes per updated definition in developer mode, which
-	  seems acceptable for me. The mem will be released when destroying the list */
-	Includes = NULL; Appends=NULL;
+	Includes.clear(); Appends.clear();
 	// reset code
 	ClearCode();
 	while (Func0)
@@ -1289,7 +1285,6 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_BCLOSE2: return "']'";
 	case ATT_BLOPEN: return "'{'";
 	case ATT_BLCLOSE: return "'}'";
-	case ATT_SEP: return "'|'";
 	case ATT_CALL: return "'->'";
 	case ATT_CALLFS: return "'->~'";
 	case ATT_STAR: return "'*'";
@@ -1377,8 +1372,7 @@ void C4AulParseState::Parse_Script()
 					C4ID Id = C4ID(StdStrBuf(Idtf));
 					Shift();
 					// add to include list
-					C4AListEntry *e = a->Engine->itbl.push(Id);
-					if (!a->Includes) a->Includes = e;
+					a->Includes.push_front(Id);
 					IncludeCount++;
 				}
 				else if (SEqual(Idtf, C4AUL_Append))
@@ -1402,8 +1396,7 @@ void C4AulParseState::Parse_Script()
 						UnexpectedToken("identifier or '*'");
 					}
 					// add to append list
-					C4AListEntry *e = a->Engine->atbl.push(Id);
-					if (!a->Appends) a->Appends = e;
+					a->Appends.push_back(Id);
 				}
 				else if (SEqual(Idtf, C4AUL_Strict))
 				{
@@ -1479,33 +1472,6 @@ void C4AulParseState::Parse_Script()
 			err->show();
 		all_ok = false;
 		delete err;
-	}
-
-	// includes were added?
-	if (a->Includes)
-	{
-		// reverse include order, for compatiblity with the C4Script syntax
-		if (IncludeCount > 1)
-		{
-			C4AListEntry *i = a->Includes;
-			while (IncludeCount > 1)
-			{
-				C4AListEntry *i2 = i;
-				for (int cnt = IncludeCount - 1; cnt; cnt--) i2 = i2->next();
-				C4AListEntry xchg = *i; *i = *i2; *i2 = xchg;
-				i = i->next(); IncludeCount -= 2;
-			}
-
-		}
-		// push stop entry for include list
-		a->Engine->itbl.push();
-	}
-
-	// appends were added?
-	if (a->Appends)
-	{
-		// push stop entry for append list
-		a->Engine->atbl.push();
 	}
 }
 
@@ -3106,7 +3072,7 @@ bool C4AulScript::Parse()
 			catch (C4AulError *err)
 			{
 				// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
-				if (Fn->Owner->Def || !Fn->Owner->Appends)
+				if (Fn->Owner->Def || Fn->Owner->Appends.empty())
 				{
 					// show
 					err->show();
