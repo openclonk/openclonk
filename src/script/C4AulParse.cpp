@@ -1334,6 +1334,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_IDTF: return "identifier";
 	case ATT_INT: return "integer constant";
 	case ATT_STRING: return "string constant";
+	case ATT_DOT: return "'.'";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
 	case ATT_DCOLON: return "'::'";
@@ -1349,6 +1350,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_STAR: return "'*'";
 	case ATT_TILDE: return "'~'";
 	case ATT_LDOTS: return "'...'";
+	case ATT_SET: return "'='";
 	case ATT_OPERATOR: return "operator";
 	case ATT_EOF: return "end of file";
 	default: return "unrecognized token";
