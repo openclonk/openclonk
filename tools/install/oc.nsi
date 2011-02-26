@@ -90,8 +90,6 @@ Section "MainSection" SEC01
 ; Create user path shortcut in program directory
   CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
-; Copy key file from installer position - for cd-on-demand use (might want to move it directly into user path...)
-;  CopyFiles /silent /filesonly "$EXEDIR\*.c4k" "$INSTDIR"
   ; Start menu shortcuts (All Users)
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenClonk"
@@ -99,7 +97,6 @@ Section "MainSection" SEC01
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
   CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\Uninstall.lnk" "$INSTDIR\uninst.exe"
 
 SectionEnd
 
