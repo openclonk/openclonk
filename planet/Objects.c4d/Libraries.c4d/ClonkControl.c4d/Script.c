@@ -383,7 +383,7 @@ local backpack_open;
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	if (!this) return false;
+	if (!this) return CON_Unhandled;
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
@@ -418,7 +418,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			backpack_open = true;
 			GetMenu()->Show();
 		}
-		return true;
+		return CON_OK;
 	}
 	
 	/* aiming with mouse:
@@ -458,7 +458,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
 		// in any case, CON_Aim* is called but it is only successful if the virtual cursor is aiming
-		return success && VirtualCursor()->IsAiming();
+		if(success && VirtualCursor()->IsAiming()) return CON_OK;
+		else return CON_Unhandled;
 	}
 	
 	// save last mouse position:
@@ -486,7 +487,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (hot > 0)
 	{
 		this->~ControlHotkey(hot-1);
-		return true;
+		return CON_OK;
 	}
 	
 	var proc = GetProcedure();
@@ -495,20 +496,20 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (using && ctrl == CON_CancelUse)
 	{
 		CancelUse();
-		return true;
+		return CON_OK;
 	}
 
 	// Push controls
 	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
-		return ObjectControlPush(plr, ctrl);
+		if(ObjectControlPush(plr, ctrl)) return CON_OK; else return CON_Unhandled;
 
 	// Entrance controls
 	if (ctrl == CON_Enter || ctrl == CON_Exit)
-		return ObjectControlEntrance(plr,ctrl);
+		if(ObjectControlEntrance(plr,ctrl)) return CON_OK; else return CON_Unhandled;
 		
 	// Interact controls
 	if (ctrl == CON_Interact)
-		return ObjectControlInteract(plr,ctrl);
+		if(ObjectControlInteract(plr,ctrl)) return CON_OK; else return CON_Unhandled;
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -522,7 +523,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// menu
 	if (menu)
 	{
-		return Control2Menu(ctrl, x,y,strength, repeat, release);
+		if(Control2Menu(ctrl, x,y,strength, repeat, release)) return CON_OK;
+		else return CON_Unhandled;
 	}
 	
 	var contents = GetItem(0);
@@ -534,12 +536,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if (house)
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, house);
+			if(ControlUse2Script(ctrl, x, y, strength, repeat, release, house)) return CON_OK;
+			else return CON_Unhandled;
 		}
 		// control to grabbed vehicle
 		else if (vehicle && proc == "PUSH")
 		{
-			return ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle);
+			if(ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle)) return CON_OK;
+			else return CON_Unhandled;
 		}
 		else if (vehicle && proc == "ATTACH")
 		{
@@ -556,15 +560,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			  */
 
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, vehicle))
-				return true;
+				return CON_OK;
 			else
 			{
 				// handled if the horse is the used object
 				// ("using" is set to the object in StartUse(Delayed)Control - when the
 				// object returns true on that callback. Exactly what we want)
-				if (using == vehicle) return true;
+				if (using == vehicle) return CON_OK;
 				// has been cancelled (it is not the start of the usage but no object is used)
-				if (!using && (repeat || release)) return true;
+				if (!using && (repeat || release)) return CON_OK;
 			}
 		}
 		// Release commands are always forwarded even if contents is 0, in case we
@@ -572,12 +576,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
-				return true;
+				return CON_OK;
 		}
 		else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents2))
-				return true;
+				return CON_OK;
 		}
 	}
 
@@ -592,9 +596,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				CancelUse();
 				if (proc == "SCALE" || proc == "HANGLE")
-					return ObjectCommand("Drop", contents);
+					{if(ObjectCommand("Drop", contents)) return CON_OK; else return CON_Unhandled;}
 				else
-					return ObjectCommand("Throw", contents, x, y);
+					{if(ObjectCommand("Throw", contents, x, y)) return CON_OK; else return CON_Unhandled;}
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
@@ -605,21 +609,22 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return ObjectCommand("Drop", contents);
+						{if(ObjectCommand("Drop", contents)) return CON_OK; else return CON_Unhandled;}
 					else
-						return ObjectCommand("Throw", contents, mlastx, mlasty);
+						{if(ObjectCommand("Throw", contents, mlastx, mlasty)) return CON_OK; else return CON_Unhandled;}
 				}
 				else
 				{
 					VirtualCursor()->StartAim(this);
-					return true;
+					return CON_OK;
 				}
 			}
 			// drop
 			if (ctrl == CON_Drop)
 			{
 				CancelUse();
-				return ObjectCommand("Drop", contents);
+				if(ObjectCommand("Drop", contents)) return CON_OK;
+				else return CON_Unhandled;
 			}
 		}
 		// same for contents2 (copypasta)
@@ -630,9 +635,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				CancelUse();
 				if (proc == "SCALE" || proc == "HANGLE")
-					return ObjectCommand("Drop", contents2);
+					{if(ObjectCommand("Drop", contents2)) return CON_OK; else return CON_Unhandled;}
 				else
-					return ObjectCommand("Throw", contents2, x, y);
+					{if(ObjectCommand("Throw", contents2, x, y)) return CON_OK; else return CON_Unhandled;}
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
@@ -643,21 +648,22 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-						return ObjectCommand("Drop", contents2);
+						{if(ObjectCommand("Drop", contents2)) return CON_OK; else return CON_Unhandled;}
 					else
-						return ObjectCommand("Throw", contents2, mlastx, mlasty);
+						{if(ObjectCommand("Throw", contents2, mlastx, mlasty)) return CON_OK; else return CON_Unhandled;}
 				}
 				else
 				{
 					CancelUse();
 					VirtualCursor()->StartAim(this);
-					return true;
+					return CON_OK;
 				}
 			}
 			// drop
 			if (ctrl == CON_DropAlt)
 			{
-				return ObjectCommand("Drop", contents2);
+				if(ObjectCommand("Drop", contents2)) return CON_OK;
+				else return CON_Unhandled;
 			}
 		}
 	}
@@ -668,18 +674,19 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// forward to script...
 		if (house)
 		{
-			return ControlMovement2Script(ctrl, x, y, strength, repeat, release, house);
+			if(ControlMovement2Script(ctrl, x, y, strength, repeat, release, house)) return CON_OK; else return CON_Unhandled;
 		}
 		else if (vehicle)
 		{
-			if (ControlMovement2Script(ctrl, x, y, strength, repeat, release, vehicle)) return true;
+			if(ControlMovement2Script(ctrl, x, y, strength, repeat, release, vehicle)) return CON_OK;
 		}
 	
-		return ObjectControlMovement(plr, ctrl, strength, release);
+		if(ObjectControlMovement(plr, ctrl, strength, release)) return CON_OK;
+		else return CON_Unhandled;
 	}
 	
 	// Unhandled control
-	return false;
+	return CON_Unhandled;
 }
 
 public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
@@ -1066,28 +1073,28 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	if (ctrl == CON_Enter)
 	{
 		// contained
-		if (Contained()) return false;
+		if (Contained()) return CON_Unhandled;
 		// enter only if... one can
-		if (!CanEnter()) return false;
+		if (!CanEnter()) return CON_Unhandled;
 
 		// a building with an entrance at right position is there?
 		var obj = GetEntranceObject();
-		if (!obj) return false;
+		if (!obj) return CON_Unhandled;
 		
 		ObjectCommand("Enter", obj);
-		return true;
+		return CON_OK;
 	}
 	
 	// exit
 	if (ctrl == CON_Exit)
 	{
-		if (!Contained()) return false;
+		if (!Contained()) return CON_Unhandled;
 		
 		ObjectCommand("Exit");
-		return true;
+		return CON_OK;
 	}
 	
-	return false;
+	return CON_Unhandled;
 }
 
 private func ObjectControlInteract(int plr, int ctrl)
@@ -1103,7 +1110,7 @@ private func ObjectControlInteract(int plr, int ctrl)
 // Handles push controls
 private func ObjectControlPush(int plr, int ctrl)
 {
-	if (!this) return false;
+	if (!this) return CON_Unhandled;
 	
 	var proc = GetProcedure();
 	
@@ -1111,47 +1118,47 @@ private func ObjectControlPush(int plr, int ctrl)
 	if (ctrl == CON_Grab)
 	{
 		// grab only if he walks
-		if (proc != "WALK") return false;
+		if (proc != "WALK") return CON_Unhandled;
 		
 		// only if there is someting to grab
 		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this), Find_Layer(GetObjectLayer()));
-		if (!obj) return false;
+		if (!obj) return CON_Unhandled;
 		
 		// grab
 		ObjectCommand("Grab", obj);
-		return true;
+		return CON_OK;
 	}
 	
 	// grab next/previous
 	if (ctrl == CON_GrabNext)
-		return ShiftVehicle(plr, false);
+		if(ShiftVehicle(plr, false)) return CON_OK; else return CON_Unhandled;
 	if (ctrl == CON_GrabPrevious)
-		return ShiftVehicle(plr, true);
+		if(ShiftVehicle(plr, true)) return CON_OK; else return CON_Unhandled;
 	
 	// ungrabbing
 	if (ctrl == CON_Ungrab)
 	{
 		// ungrab only if he pushes
-		if (proc != "PUSH") return false;
+		if (proc != "PUSH") return CON_Unhandled;
 
 		ObjectCommand("UnGrab");
-		return true;
+		return CON_OK;
 	}
 	
 	// push into building
 	if (ctrl == CON_PushEnter)
 	{
-		if (proc != "PUSH") return false;
+		if (proc != "PUSH") return CON_Unhandled;
 		
 		// respect no push enter
-		if (GetActionTarget()->GetDefCoreVal("NoPushEnter","DefCore")) return false;
+		if (GetActionTarget()->GetDefCoreVal("NoPushEnter","DefCore")) return CON_Unhandled;
 		
 		// a building with an entrance at right position is there?
 		var obj = GetActionTarget()->GetEntranceObject();
-		if (!obj) return false;
+		if (!obj) return CON_Unhandled;
 
 		ObjectCommand("PushTo", GetActionTarget(), 0, 0, obj);
-		return true;
+		return CON_OK;
 	}
 	
 }
