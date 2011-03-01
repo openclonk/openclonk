@@ -529,9 +529,14 @@ thirdparty/tinyxml/tinyxmlerror.cpp \
 thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
-clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp
-clonk_SOURCES += src/res/engine.rc src/res/resource.h
-clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
+clonk_SOURCES += \
+src/platform/C4FileClasses.cpp \
+src/editor/C4ConsoleWin32.cpp \
+src/platform/C4CrashHandlerWin32.cpp \
+src/res/engine.rc \
+src/res/resource.h \
+src/platform/StdJoystick.cpp \
+src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \
