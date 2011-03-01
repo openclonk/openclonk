@@ -168,6 +168,34 @@ bool ProcessGroup(const char *FilenamePar)
 							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 						}
 						break;
+						// Pack To
+					case 't':
+						if ((iArg + 1 >= argc))
+						{
+							fprintf(stderr, "Pack failed: too few arguments\n");
+							break;
+						}
+						++iArg;
+						Log("Packing...");
+						// Close
+						if (!hGroup.Close())
+						{
+							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
+						}
+						// Pack
+						else if (!C4Group_PackDirectoryTo(szFilename, argv[iArg]))
+						{
+							fprintf(stderr, "Pack failed\n");
+							break;
+						}
+						free(szFilename);
+						szFilename = strdup(argv[iArg]);
+						// Reopen
+						if (!hGroup.Open(szFilename))
+						{
+							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
+						}
+						break;
 						// Unpack
 					case 'u':
 						LogF("Unpacking...");
@@ -480,6 +508,7 @@ int main(int argc, char *argv[])
 		printf("          -x Explode\n");
 		printf("          -u Unpack\n");
 		printf("          -p Pack\n");
+		printf("          -t [filename] Pack To\n");
 		printf("          -y [ppid] Apply update (waiting for ppid to terminate first)\n");
 		printf("          -g [source] [target] [title] Make update\n");
 		printf("          -s Sort\n");
