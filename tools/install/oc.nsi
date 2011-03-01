@@ -22,17 +22,11 @@ SetCompressor lzma
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 
-; Welcome page
-!insertmacro MUI_PAGE_WELCOME
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
-; Finish page
-;!define MUI_FINISHPAGE_RUN "$INSTDIR\Clonk.exe" Do not launch application after completion...
-!insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
