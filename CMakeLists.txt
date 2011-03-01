@@ -521,6 +521,7 @@ if(WIN32)
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
+		src/platform/C4CrashHandlerWin32.cpp
 		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
