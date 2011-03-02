@@ -713,26 +713,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 		}
 
 	// load additional system scripts for def groups only
-	C4Group SysGroup;
-	char fn[_MAX_FNAME+1] = { 0 };
-	if (!fPrimaryDef && fLoadSysGroups) if (SysGroup.OpenAsChild(&hGroup, C4CFN_System))
-		{
-			C4LangStringTable SysGroupString;
-			SysGroupString.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
-			// load all scripts in there
-			SysGroup.ResetSearch();
-			while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, (char *) &fn, NULL, NULL, !!fn[0]))
-			{
-				// host will be destroyed by script engine, so drop the references
-				C4ScriptHost *scr = new C4ScriptHost();
-				scr->Reg2List(&::ScriptEngine, &::ScriptEngine);
-				scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
-			}
-			// if it's a physical group: watch out for changes
-			if (!SysGroup.IsPacked() && Game.pFileMonitor)
-				Game.pFileMonitor->AddDirectory(SysGroup.GetFullName().getData());
-			SysGroup.Close();
-		}
+	if (!fPrimaryDef && fLoadSysGroups) Game.LoadAdditionalSystemGroup(hGroup);
 
 	if (fThisSearchMessage) { LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 

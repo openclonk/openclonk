@@ -385,6 +385,11 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
 		Graphics.Engine = GFXENGN_OPENGL;
 #endif
+	// bit depth sanity check (might be corrupted by resolution check bug in old version)
+	if (Graphics.BitDepth < 16)
+	{
+		Graphics.BitDepth = 32;
+	}
 	// Warning against invalid ports
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 	{
