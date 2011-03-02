@@ -118,7 +118,7 @@ const char* C4Value::GetTypeInfo()
 bool C4Value::FnCnvObject() const
 {
 	// try casting
-	if (dynamic_cast<C4Object *>(Data.PropList)) return true;
+	if (Data.PropList->GetObject()) return true;
 	return false;
 }
 // Type conversion table
