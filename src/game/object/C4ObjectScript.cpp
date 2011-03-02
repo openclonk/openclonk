@@ -62,14 +62,14 @@ static bool FnExtinguish(C4AulObjectContext *cthr)
 static C4Void FnSetSolidMask(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
 {
 	cthr->Obj->SetSolidMask(iX,iY,iWdt,iHgt,iTX,iTY);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDeathAnnounce(C4AulObjectContext *cthr)
 {
 	const long MaxDeathMsg=7;
 	if (Game.C4S.Head.Film)
-		return C4VNull;
+		return C4Void();
 	// Check if crew member has an own death message
 	if (cthr->Obj->Info && *(cthr->Obj->Info->DeathMessage))
 	{
@@ -80,7 +80,7 @@ static C4Void FnDeathAnnounce(C4AulObjectContext *cthr)
 		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
 		GameMsgObject(FormatString(LoadResStr(idDeathMsg), cthr->Obj->GetName()).getData(), cthr->Obj);
 	}
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnGrabContents(C4AulObjectContext *cthr, C4Object *from)
@@ -116,7 +116,7 @@ static C4Void FnFling(C4AulObjectContext *cthr, long iXDir, long iYDir, long iPr
 	// unstick from ground, because Fling command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	cthr->Obj->Action.t_attach=0;
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnJump(C4AulObjectContext *cthr)
@@ -156,7 +156,7 @@ static bool FnCollect(C4AulObjectContext *cthr, C4Object *pItem, bool ignoreOCF)
 static C4Void FnRemoveObject(C4AulObjectContext *cthr, bool fEjectContents)
 {
 	cthr->Obj->AssignRemoval(fEjectContents);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCheckBounds, long iPrec)
@@ -171,14 +171,14 @@ static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCh
 	cthr->Obj->ForcePosition(i_x, i_y);
 	// update liquid
 	cthr->Obj->UpdateInLiquid();
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDoCon(C4AulObjectContext *cthr, long iChange, long iPrec)
 {
 	if (!iPrec) iPrec = 100;
 	cthr->Obj->DoCon(FullCon*iChange/iPrec);
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetCon(C4AulObjectContext *cthr, long iPrec)
@@ -314,13 +314,13 @@ static C4Void FnDoEnergy(C4AulObjectContext *cthr, long iChange, bool fExact, Ni
 		//else
 		iCausedBy = NO_OWNER;
 	cthr->Obj->DoEnergy(iChange, fExact, iEngType, iCausedBy);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDoBreath(C4AulObjectContext *cthr, long iChange)
 {
 	cthr->Obj->DoBreath(iChange);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDoDamage(C4AulObjectContext *cthr, long iChange, Nillable<long> iDmgType, Nillable<long> iCausedBy)
@@ -332,13 +332,13 @@ static C4Void FnDoDamage(C4AulObjectContext *cthr, long iChange, Nillable<long> 
 		//else
 		iCausedBy = NO_OWNER;
 	cthr->Obj->DoDamage(iChange,iCausedBy, iDmgType);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetEntrance(C4AulObjectContext *cthr, bool e_status)
 {
 	cthr->Obj->EntranceStatus = e_status;
-	return C4VNull;
+	return C4Void();
 }
 
 
@@ -352,7 +352,7 @@ static C4Void FnSetXDir(C4AulObjectContext *cthr, long nxdir, long iPrec)
 	//if (nxdir<0) pObj->xdir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetRDir(C4AulObjectContext *cthr, long nrdir, long iPrec)
@@ -365,7 +365,7 @@ static C4Void FnSetRDir(C4AulObjectContext *cthr, long nrdir, long iPrec)
 	//if (nrdir<0) pObj->rdir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetYDir(C4AulObjectContext *cthr, long nydir, long iPrec)
@@ -377,7 +377,7 @@ static C4Void FnSetYDir(C4AulObjectContext *cthr, long nydir, long iPrec)
 	// special: negative dirs must be rounded
 	//if (nydir<0) pObj->ydir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetR(C4AulObjectContext *cthr, long nr)
@@ -385,7 +385,7 @@ static C4Void FnSetR(C4AulObjectContext *cthr, long nr)
 	// set rotation
 	cthr->Obj->SetRotation(nr);
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnSetAction(C4AulObjectContext *cthr, C4String *szAction,
@@ -427,25 +427,25 @@ static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 {
 	cthr->Obj->Action.ComDir=ncomdir;
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetDir(C4AulObjectContext *cthr, long ndir)
 {
 	cthr->Obj->SetDir(ndir);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetCategory(C4AulObjectContext *cthr, long iCategory)
 {
 	cthr->Obj->SetCategory(iCategory);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetAlive(C4AulObjectContext *cthr, bool nalv)
 {
 	cthr->Obj->SetAlive(nalv);
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnSetOwner(C4AulObjectContext *cthr, long iOwner)
@@ -593,7 +593,7 @@ static C4Void FnSetActionTargets(C4AulObjectContext *cthr, C4Object *pTarget1, C
 	// set targets
 	cthr->Obj->Action.Target=pTarget1;
 	cthr->Obj->Action.Target2=pTarget2;
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetDir(C4AulObjectContext *cthr)
@@ -685,7 +685,7 @@ enum VertexUpdateMode
 
 static Nillable<long> FnGetVertex(C4AulObjectContext *cthr, long iIndex, long iValueToGet)
 {
-	if (cthr->Obj->Shape.VtxNum<1) return C4VNull;
+	if (cthr->Obj->Shape.VtxNum<1) return C4Void();
 	iIndex=Min<long>(iIndex,cthr->Obj->Shape.VtxNum-1);
 	switch (static_cast<VertexDataIndex>(iValueToGet))
 	{
@@ -695,12 +695,12 @@ static Nillable<long> FnGetVertex(C4AulObjectContext *cthr, long iIndex, long iV
 	case VTX_Friction: return cthr->Obj->Shape.VtxFriction[iIndex]; break;
 	default:
 		DebugLog(FormatString("GetVertex: Unknown vertex attribute: %ld", iValueToGet).getData());
-		return C4VNull;
+		return C4Void();
 		break;
 	}
 	// impossible mayhem!
 	assert(!"FnGetVertex: unreachable code reached");
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnSetVertex(C4AulObjectContext *cthr, long iIndex, long iValueToSet, long iValue, long iOwnVertexMode)
@@ -749,7 +749,7 @@ static bool FnRemoveVertex(C4AulObjectContext *cthr, long iIndex)
 static C4Void FnSetContactDensity(C4AulObjectContext *cthr, long iDensity)
 {
 	cthr->Obj->Shape.ContactDensity = iDensity;
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnGetAlive(C4AulObjectContext *cthr)
@@ -843,7 +843,7 @@ static Nillable<C4ID> FnGetMenu(C4AulObjectContext *cthr)
 {
 	if (cthr->Obj->Menu && cthr->Obj->Menu->IsActive())
 		return C4ID(cthr->Obj->Menu->GetIdentification());
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnCreateMenu(C4AulObjectContext *cthr, C4Def *pDef, C4Object *pCommandObj,
@@ -1346,7 +1346,7 @@ static C4Void FnSetMass(C4AulObjectContext *cthr, long iValue)
 {
 	cthr->Obj->OwnMass=iValue-cthr->Obj->Def->Mass;
 	cthr->Obj->UpdateMass();
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetColor(C4AulObjectContext *cthr)
@@ -1359,7 +1359,7 @@ static C4Void FnSetColor(C4AulObjectContext *cthr, long iValue)
 	cthr->Obj->Color=iValue;
 	cthr->Obj->UpdateGraphics(false);
 	cthr->Obj->UpdateFace(false);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetPlrViewRange(C4AulObjectContext *cthr, long iRange)
@@ -1367,7 +1367,7 @@ static C4Void FnSetPlrViewRange(C4AulObjectContext *cthr, long iRange)
 	// set range
 	cthr->Obj->SetPlrViewRange(iRange);
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetPicture(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt)
@@ -1375,7 +1375,7 @@ static C4Void FnSetPicture(C4AulObjectContext *cthr, long iX, long iY, long iWdt
 	// set new picture rect
 	cthr->Obj->PictureRect.Set(iX, iY, iWdt, iHgt);
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4String *FnGetProcedure(C4AulObjectContext *cthr)
@@ -1425,7 +1425,7 @@ static Nillable<long> FnGetClrModulation(C4AulObjectContext *cthr, long iOverlay
 		if (!pOverlay)
 		{
 			DebugLogF("GetClrModulation: Overlay %d not defined for object %d (%s)", (int) iOverlayID, (int) cthr->Obj->Number, cthr->Obj->GetName());
-			return C4VNull;
+			return C4Void();
 		}
 		return pOverlay->GetClrModulation();
 	}
@@ -1441,7 +1441,7 @@ static bool FnCloseMenu(C4AulObjectContext *cthr)
 
 static Nillable<long> FnGetMenuSelection(C4AulObjectContext *cthr)
 {
-	if (!cthr->Obj->Menu || !cthr->Obj->Menu->IsActive()) return C4VNull;
+	if (!cthr->Obj->Menu || !cthr->Obj->Menu->IsActive()) return C4Void();
 	return cthr->Obj->Menu->GetSelection();
 }
 
@@ -1588,7 +1588,7 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 	}
 
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDoCrewExp(C4AulObjectContext* ctx, long iChange)
@@ -1596,7 +1596,7 @@ static C4Void FnDoCrewExp(C4AulObjectContext* ctx, long iChange)
 	// do exp
 	ctx->Obj->DoExperience(iChange);
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnClearMenuItems(C4AulObjectContext *ctx)
@@ -1624,7 +1624,7 @@ static C4Void FnSetObjectLayer(C4AulObjectContext *ctx, C4Object *pNewLayer)
 		if ((ctx->Obj=pLnk->Obj) && ctx->Obj->Status)
 			ctx->Obj->Layer = pNewLayer;
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetShape(C4AulObjectContext *ctx, long iX, long iY, long iWdt, long iHgt)
@@ -1637,7 +1637,7 @@ static C4Void FnSetShape(C4AulObjectContext *ctx, long iX, long iY, long iWdt, l
 	// section list needs refresh
 	ctx->Obj->UpdatePos();
 	// done, success
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnSetObjDrawTransform(C4AulObjectContext *ctx, long iA, long iB, long iC, long iD, long iE, long iF, long iOverlayID)
@@ -1865,7 +1865,7 @@ static Nillable<long> FnGetObjectBlitMode(C4AulObjectContext *ctx, long iOverlay
 		if (!pOverlay)
 		{
 			DebugLogF("SetObjectBlitMode: Overlay %d not defined for object %d (%s)", (int) iOverlayID, (int) ctx->Obj->Number, ctx->Obj->GetName());
-			return C4VNull;
+			return C4Void();
 		}
 		return pOverlay->GetBlitMode();
 	}
@@ -1933,23 +1933,23 @@ static long FnGetUnusedOverlayID(C4AulObjectContext *ctx, long iBaseIndex)
 static C4Void FnDoNoCollectDelay(C4AulObjectContext *ctx, int change)
 {
 	ctx->Obj->NoCollectDelay = Max<int32_t>(ctx->Obj->NoCollectDelay + change, 0);
-	return C4VNull;
+	return C4Void();
 }
 
 static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
-	if (iSlot == 0) return C4VNull; // Reserved for ActMap animations
-	if (!PositionProvider) return C4VNull;
-	if (!WeightProvider) return C4VNull;
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
+	if (iSlot == 0) return C4Void(); // Reserved for ActMap animations
+	if (!PositionProvider) return C4Void();
+	if (!WeightProvider) return C4Void();
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
@@ -1957,7 +1957,7 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	if (!iSibling.IsNil())
 	{
 		s_node = Instance->GetAnimationNodeByNumber(iSibling);
-		if (!s_node || s_node->GetSlot() != iSlot) return C4VNull;
+		if (!s_node || s_node->GetSlot() != iSlot) return C4Void();
 	}
 
 	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(ctx->Obj, *PositionProvider);
@@ -1966,11 +1966,11 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	{
 		delete p_provider;
 		delete w_provider;
-		return C4VNull;
+		return C4Void();
 	}
 
 	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
-	if (!n_node) return C4VNull;
+	if (!n_node) return C4Void();
 
 	return n_node->GetNumber();
 }
@@ -1999,99 +1999,99 @@ static bool FnStopAnimation(C4AulObjectContext *ctx, Nillable<int> iAnimationNum
 
 static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
 	StdMeshInstance::AnimationNode* node = Instance->GetRootAnimationForSlot(iSlot);
-	if (!node) return C4VNull;
+	if (!node) return C4Void();
 	return node->GetNumber();
 }
 
 static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szAnimation, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
 	const StdMeshAnimation* animation = Instance->Mesh.GetAnimationByName(szAnimation->GetData());
-	if (!animation) return C4VNull;
+	if (!animation) return C4Void();
 	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical
 }
 
 static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
-	if (iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
+	if (iAnimationNumber.IsNil()) return C4Void(); // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
 	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
-	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
+	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4Void();
 	return String(node->GetAnimation()->Name.getData());
 }
 
 static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
-	if (iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
+	if (iAnimationNumber.IsNil()) return C4Void(); // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
 	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
-	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
+	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4Void();
 	return fixtoi(node->GetPosition(), 1000);
 }
 
 static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
-	if (!ctx->Obj) return C4VNull;
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
-	if (iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
+	if (!ctx->Obj) return C4Void();
+	if (!ctx->Obj->pMeshInstance) return C4Void();
+	if (iAnimationNumber.IsNil()) return C4Void(); // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if (!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
 		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
-		if (!Attached || !Attached->OwnChild) return C4VNull;
+		if (!Attached || !Attached->OwnChild) return C4Void();
 		Instance = Attached->Child;
 	}
 
 	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
-	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return C4VNull;
+	if (!node || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return C4Void();
 	return fixtoi(node->GetWeight(), 1000);
 }
 
@@ -2145,8 +2145,8 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, Nillable<int> iAnimati
 
 static Nillable<int> FnAttachMesh(C4AulObjectContext *ctx, C4PropList* Mesh, C4String * szParentBone, C4String * szChildBone, C4ValueArray * Transformation, int Flags)
 {
-	if (!ctx->Obj->pMeshInstance) return C4VNull;
-	if (!Mesh) return C4VNull;
+	if (!ctx->Obj->pMeshInstance) return C4Void();
+	if (!Mesh) return C4Void();
 
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if (Transformation)
@@ -2157,18 +2157,18 @@ static Nillable<int> FnAttachMesh(C4AulObjectContext *ctx, C4PropList* Mesh, C4S
 	C4Object* pObj = Mesh->GetObject();
 	if (pObj)
 	{
-		if (!pObj->pMeshInstance) return C4VNull;
+		if (!pObj->pMeshInstance) return C4Void();
 		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
 	}
 	else
 	{
 		C4Def* pDef = Mesh->GetDef();
-		if (!pDef) return C4VNull;
-		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
+		if (!pDef) return C4Void();
+		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4Void();
 		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
 	}
 
-	if (!attach) return C4VNull;
+	if (!attach) return C4Void();
 	return attach->Number;
 }
 
@@ -2216,8 +2216,8 @@ static bool FnSetAttachTransform(C4AulObjectContext* ctx, long iAttachNumber, C4
 
 static Nillable<C4String*> FnGetMeshMaterial(C4AulObjectContext* ctx, int iSubMesh)
 {
-	if (!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
-	if (iSubMesh < 0 || (unsigned int)iSubMesh >= ctx->Obj->pMeshInstance->GetNumSubMeshes()) return C4VNull;
+	if (!ctx->Obj || !ctx->Obj->pMeshInstance) return C4Void();
+	if (iSubMesh < 0 || (unsigned int)iSubMesh >= ctx->Obj->pMeshInstance->GetNumSubMeshes()) return C4Void();
 
 	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);
 	return String(submesh.GetMaterial().Name.getData());

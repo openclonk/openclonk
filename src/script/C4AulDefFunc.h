@@ -60,7 +60,9 @@ class Nillable
 	T _val;
 public:
 	inline Nillable(const T &value) : _nil(!value && !C4Value::IsNullableType(C4ValueConv<T>::Type())), _val(value) {}
-	inline Nillable(const C4NullValue &) : _nil(true), _val(T()) {}
+	inline Nillable() : _nil(true), _val(T()) {}
+	template <typename T2> inline Nillable(const Nillable<T2> & n2) : _nil(n2._nil), _val(n2._val) {}
+	inline Nillable(const Nillable<void> & n2) : _nil(true), _val(T()) {}
 	inline bool IsNil() const { return _nil; }
 	inline operator T() const { return _val; }
 	inline Nillable<T> &operator =(const T &val)
@@ -86,7 +88,7 @@ template<>
 class Nillable<void>
 {
 public:
-	inline Nillable(const C4NullValue &) {}
+	inline Nillable() {}
 	inline bool IsNil() const { return true; }
 };
 
@@ -126,8 +128,8 @@ typedef Nillable<void> C4Void;
 template<typename T>
 struct C4ValueConv<Nillable<T> >
 {
-	inline static Nillable<T> FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4VNull; else return C4ValueConv<T>::FromC4V(v); }
-	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4VNull; else return C4ValueConv<T>::_FromC4V(v); }
+	inline static Nillable<T> FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4Void(); else return C4ValueConv<T>::FromC4V(v); }
+	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4Void(); else return C4ValueConv<T>::_FromC4V(v); }
 	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
 	inline static C4Value ToC4V(const Nillable<T> &v) { if (v.IsNil()) return C4Value(); else return C4ValueConv<T>::ToC4V(v.operator T()); }
 };

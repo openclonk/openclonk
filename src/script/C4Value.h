@@ -221,9 +221,7 @@ C4Value C4VString(const char *strString);
 #define C4VFalse C4VBool(false)
 #define C4VTrue C4VBool(true)
 
-// type tag to allow other code to recognize C4VNull at compile time
-class C4NullValue : public C4Value {};
-extern const C4NullValue C4VNull;
+extern const C4Value C4VNull;
 
 /* These are by far the most often called C4Value functions.
  They also often do redundant checks the compiler should be able to optimize away

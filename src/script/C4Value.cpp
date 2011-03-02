@@ -31,7 +31,7 @@
 #include <C4Object.h>
 #include <C4Log.h>
 
-const C4NullValue C4VNull = C4NullValue();
+const C4Value C4VNull;
 
 const char* GetC4VName(const C4V_Type Type)
 {

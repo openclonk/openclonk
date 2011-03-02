@@ -181,7 +181,7 @@ static C4Object *Fn_this(C4AulContext *cthr)
 static C4Void Fn_goto(C4AulContext *cthr, long iCounter)
 {
 	::GameScript.Counter=iCounter;
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnIncinerateLandscape(C4AulContext *cthr, long iX, long iY)
@@ -193,7 +193,7 @@ static bool FnIncinerateLandscape(C4AulContext *cthr, long iX, long iY)
 static C4Void FnSetGravity(C4AulContext *cthr, long iGravity)
 {
 	::Landscape.Gravity = itofix(BoundBy<long>(iGravity,-300,300)) / 500;
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetGravity(C4AulContext *cthr)
@@ -296,14 +296,14 @@ static long FnGetPlayerColor(C4AulContext *cthr, long iPlayer)
 
 static Nillable<long> FnGetX(C4AulContext *cthr, long iPrec)
 {
-	if (!cthr->Obj) return C4VNull;
+	if (!cthr->Obj) return C4Void();
 	if (!iPrec) iPrec = 1;
 	return fixtoi(cthr->Obj->fix_x, iPrec);
 }
 
 static Nillable<long> FnGetY(C4AulContext *cthr, long iPrec)
 {
-	if (!cthr->Obj) return C4VNull;
+	if (!cthr->Obj) return C4Void();
 	if (!iPrec) iPrec = 1;
 	return fixtoi(cthr->Obj->fix_y, iPrec);
 }
@@ -539,10 +539,10 @@ static C4String *FnGetTexture(C4AulContext* cthr, long x, long y)
 static Nillable<long> FnGetAverageTextureColor(C4AulContext* cthr, C4String* Texture)
 {
 	// Safety
-	if(!Texture) return C4VNull;
+	if(!Texture) return C4Void();
 	// Check texture
 	C4Texture* Tex = ::TextureMap.GetTexture(Texture->GetData().getData());
-	if(!Tex) return C4VNull;
+	if(!Tex) return C4Void();
 	return Tex->GetAverageColor();
 }
 
@@ -592,7 +592,7 @@ static C4Void FnBlastFree(C4AulContext *cthr, long iX, long iY, long iLevel, Nil
 	}
 	int grade = BoundBy<int>((iLevel/10)-1,1,3);
 	::Landscape.BlastFree(iX, iY, iLevel, grade, iCausedBy);
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnSound(C4AulContext *cthr, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, bool fMultiple, long iCustomFalloffDistance)
@@ -819,7 +819,7 @@ static C4Void FnResetCursorView(C4AulContext *cthr, long plr)
 {
 	C4Player *pplr = ::Players.Get(plr);
 	if (pplr) pplr->ResetCursorView();
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Object *FnGetPlrView(C4AulContext *cthr, long iPlr)
@@ -1180,13 +1180,13 @@ static long FnGetWind(C4AulContext *cthr, long x, long y, bool fGlobal)
 static C4Void FnSetWind(C4AulContext *cthr, long iWind)
 {
 	::Weather.SetWind(iWind);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnSetTemperature(C4AulContext *cthr, long iTemperature)
 {
 	::Weather.SetTemperature(iTemperature);
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetTemperature(C4AulContext *cthr)
@@ -1197,7 +1197,7 @@ static long FnGetTemperature(C4AulContext *cthr)
 static C4Void FnSetSeason(C4AulContext *cthr, long iSeason)
 {
 	::Weather.SetSeason(iSeason);
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetSeason(C4AulContext *cthr)
@@ -1208,7 +1208,7 @@ static long FnGetSeason(C4AulContext *cthr)
 static C4Void FnSetClimate(C4AulContext *cthr, long iClimate)
 {
 	::Weather.SetClimate(iClimate);
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnGetClimate(C4AulContext *cthr)
@@ -1229,25 +1229,25 @@ static long FnLandscapeHeight(C4AulContext *cthr)
 static C4Void FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 {
 	::Landscape.ShakeFree(x,y,rad);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad, bool fRequest)
 {
 	::Landscape.DigFree(x,y,rad,fRequest,cthr->Obj);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDigFreeMat(C4AulContext *cthr, long x, long y, long wdt, long hgt, long mat)
 {
 	::Landscape.DigFreeMat(x, y, wdt, hgt, mat);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, bool fRequest)
 {
 	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,fRequest,cthr->Obj);
-	return C4VNull;
+	return C4Void();
 }
 
 static C4Void FnFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, long iFreeDensity)
@@ -1256,7 +1256,7 @@ static C4Void FnFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long i
 		::Landscape.ClearRectDensity(iX,iY,iWdt,iHgt,iFreeDensity);
 	else
 		::Landscape.ClearRect(iX,iY,iWdt,iHgt);
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnPathFree(C4AulContext *cthr, long X1, long Y1, long X2, long Y2)
@@ -1592,11 +1592,11 @@ static long FnScriptCounter(C4AulContext *cthr)
 static C4Void FnSetFoW(C4AulContext *cthr, bool fEnabled, long iPlr)
 {
 	// safety
-	if (!ValidPlr(iPlr)) return C4VNull;
+	if (!ValidPlr(iPlr)) return C4Void();
 	// set enabled
 	::Players.Get(iPlr)->SetFoW(!!fEnabled);
 	// success
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnSetMaxPlayer(C4AulContext *cthr, long iTo)
@@ -1661,7 +1661,7 @@ static C4Void FnSetLength(C4AulContext *cthr, C4ValueArray *pArray, int iNewSize
 
 	// set new size
 	pArray->SetSize(iNewSize);
-	return C4VNull;
+	return C4Void();
 }
 
 static bool FnGetMissionAccess(C4AulContext *cthr, C4String *strMissionAccess)
@@ -2782,7 +2782,7 @@ static bool FnAddEvaluationData(C4AulContext *cthr, C4String *pText, long idPlay
 static C4Void FnHideSettlementScoreInEvaluation(C4AulContext *cthr, bool fHide)
 {
 	Game.RoundResults.HideSettlementScore(fHide);
-	return C4VNull;
+	return C4Void();
 }
 
 static long FnActivateGameGoalMenu(C4AulContext *ctx, long iPlayer)
@@ -3038,7 +3038,7 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 		}
 	}
 	// nothing found (at index)
-	return C4VNull;
+	return C4Void();
 }
 
 //=========================== C4Script Function Map ===================================
