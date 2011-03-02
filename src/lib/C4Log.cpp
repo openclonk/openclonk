@@ -37,6 +37,10 @@
 #include <C4Components.h>
 #include <StdWindow.h>
 
+#ifdef HAVE_SYS_FILE_H
+#include <sys/file.h>
+#endif
+
 #if defined(HAVE_SHARE_H) || defined(_WIN32)
 #include <share.h>
 #endif
@@ -53,10 +57,13 @@ bool OpenLog()
 	sLogFileName = C4CFN_Log; int iLog = 2;
 #ifdef _WIN32
 	while (!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
+#elif HAVE_SYS_FILE_H
+	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")) || flock(fileno(C4LogFile),LOCK_EX|LOCK_NB))
 #else
 	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
 #endif
 	{
+		if(C4LogFile) fclose(C4LogFile); // Already locked by another instance?
 		// If the file does not yet exist, the directory is r/o
 		// don't go on then, or we have an infinite loop
 		if (access(Config.AtUserDataPath(sLogFileName.getData()), 0))
