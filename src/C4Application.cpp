@@ -435,10 +435,10 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 void C4Application::ApplyResolutionConstraints()
 {
 	// Enumerate display modes
-	int32_t idx = 0, iXRes, iYRes, iBitDepth, iRefreshRate;
+	int32_t idx = -1, iXRes, iYRes, iBitDepth, iRefreshRate;
 	int32_t best_match = -1;
 	uint32_t best_delta = ~0;
-	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor))
+	while (GetIndexedDisplayMode(++idx, &iXRes, &iYRes, &iBitDepth, &iRefreshRate, Config.Graphics.Monitor))
 	{
 		if (iBitDepth != Config.Graphics.BitDepth) continue;
 		uint32_t delta = std::abs(Config.Graphics.ResX*Config.Graphics.ResY - iXRes*iYRes);
