@@ -129,13 +129,13 @@ struct C4ValueConv<Nillable<T> >
 	inline static Nillable<T> FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4VNull; else return C4ValueConv<T>::FromC4V(v); }
 	inline static Nillable<T> _FromC4V(C4Value &v) { if (v.GetType() == C4V_Any) return C4VNull; else return C4ValueConv<T>::_FromC4V(v); }
 	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
-	inline static C4Value ToC4V(const Nillable<T> &v) { if (v.IsNil()) return C4VNull; else return C4ValueConv<T>::ToC4V(v.operator T()); }
+	inline static C4Value ToC4V(const Nillable<T> &v) { if (v.IsNil()) return C4Value(); else return C4ValueConv<T>::ToC4V(v.operator T()); }
 };
 template<>
 struct C4ValueConv<Nillable<void> >
 {
 	inline static C4V_Type Type() { return C4VNull.GetType(); }
-	inline static C4Value ToC4V(const Nillable<void> &) { return C4VNull; }
+	inline static C4Value ToC4V(const Nillable<void> &) { return C4Value(); }
 };
 template <> struct C4ValueConv<int32_t>
 {

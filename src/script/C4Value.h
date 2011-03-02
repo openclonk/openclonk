@@ -208,8 +208,8 @@ protected:
 };
 
 // converter
-inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
-inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
+inline C4Value C4VInt(int32_t i) { return C4Value(i); }
+inline C4Value C4VBool(bool b) { return C4Value(b); }
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
 inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
@@ -218,7 +218,8 @@ inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);
 
-extern const C4Value C4VFalse, C4VTrue;
+#define C4VFalse C4VBool(false)
+#define C4VTrue C4VBool(true)
 
 // type tag to allow other code to recognize C4VNull at compile time
 class C4NullValue : public C4Value {};
