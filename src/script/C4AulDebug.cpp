@@ -42,6 +42,33 @@ C4AulDebug::~C4AulDebug()
 {
 	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
 		{delete *it;}
+	if (pDebug == this) pDebug = NULL;
+}
+
+bool C4AulDebug::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
+{
+	// Create debug object
+	if (!pDebug) pDebug = new C4AulDebug();
+	// Initialize
+	pDebug->SetPassword(szPassword);
+	pDebug->SetAllowed(szHost);
+	pDebug->SetEngine(&AulExec);
+	if (!pDebug->Init(iPort))
+		{ LogFatal("C4Aul debugger failed to initialize!"); return false; }
+	// Log
+	LogF("C4Aul debugger initialized on port %d", iPort);
+	// Add to application
+	Application.Add(pDebug);
+	// Wait for connection
+	if (fWait)
+	{
+		Log("C4Aul debugger waiting for connection...");
+		while (!pDebug->isConnected())
+			if (!Application.ScheduleProcs())
+				return false;
+	}
+	// Done
+	return true;
 }
 
 void C4AulDebug::PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf)
@@ -497,5 +524,7 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 	// Format
 	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
 }
+
+C4AulDebug * C4AulDebug::pDebug = NULL;
 
 #endif

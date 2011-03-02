@@ -250,7 +250,7 @@ void C4ControlScript::Execute() const
 	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, C4AulScript::MAXSTRICT, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
-	if ( (pDebug = ::ScriptEngine.GetDebugger()) )
+	if ( (pDebug = C4AulDebug::GetDebugger()) )
 	{
 		pDebug->ControlScriptEvaluated(szScript, rVal.GetDataString().getData());
 	}

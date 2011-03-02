@@ -30,6 +30,7 @@
 #include <C4Include.h>
 #include <C4Game.h>
 
+#include <C4AulDebug.h>
 #include <C4DefList.h>
 #include <C4Effects.h>
 #include <C4FileMonitor.h>
@@ -2286,7 +2287,7 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::ScriptEngine.InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
+		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
 			return false;
 
 	return true;

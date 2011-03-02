@@ -180,7 +180,7 @@ bool Log(const char *szMessage)
 
 #ifndef NOAULDEBUG
 	// Pass on to debugger
-	if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+	if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		pDebug->OnLog(szMessage);
 #endif
 	// Pass on to console
