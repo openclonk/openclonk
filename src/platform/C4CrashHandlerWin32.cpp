@@ -111,6 +111,11 @@ namespace {
 			LOG_STATIC_TEXT("Additional information for the exception: The thread ");
 			switch (exc->ExceptionRecord->ExceptionInformation[0])
 			{
+#ifndef EXCEPTION_READ_FAULT
+#	define EXCEPTION_READ_FAULT 0
+#	define EXCEPTION_WRITE_FAULT 1
+#	define EXCEPTION_EXECUTE_FAULT 8
+#endif
 			case EXCEPTION_READ_FAULT: LOG_STATIC_TEXT("tried to read from memory"); break;
 			case EXCEPTION_WRITE_FAULT: LOG_STATIC_TEXT("tried to write to memory"); break;
 			case EXCEPTION_EXECUTE_FAULT: LOG_STATIC_TEXT("caused an user-mode DEP violation"); break;
