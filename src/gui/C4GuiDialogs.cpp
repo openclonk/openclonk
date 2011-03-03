@@ -27,6 +27,7 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 
+#include <C4DefList.h>
 #include <C4FullScreen.h>
 #include <C4LoaderScreen.h>
 #include <C4Application.h>

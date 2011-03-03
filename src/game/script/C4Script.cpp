@@ -35,6 +35,7 @@
 #include <C4AulDefFunc.h>
 #include <C4AulExec.h>
 #include <C4Command.h>
+#include <C4DefList.h>
 #include <C4Console.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>

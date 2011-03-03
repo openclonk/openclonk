@@ -25,6 +25,7 @@
 #include <C4IDList.h>
 
 #include <C4Def.h>
+#include <C4DefList.h>
 #include <C4Application.h>
 #include <C4GraphicsResource.h>
 

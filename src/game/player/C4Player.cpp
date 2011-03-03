@@ -29,6 +29,7 @@
 #include <C4Player.h>
 
 #include <C4Application.h>
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
 #include <C4Command.h>

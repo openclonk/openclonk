@@ -22,6 +22,7 @@
 #include "C4Include.h"
 #include "C4PlayerControl.h"
 
+#include <C4DefList.h>
 #include "C4LangStringTable.h"
 #include "C4Player.h"
 #include "C4PlayerList.h"

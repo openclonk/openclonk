@@ -22,9 +22,10 @@
 
 #include <C4Include.h>
 #include <C4Value.h>
+
+#include <C4DefList.h>
 #include <C4StringTable.h>
 #include <C4ValueArray.h>
-
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Object.h>

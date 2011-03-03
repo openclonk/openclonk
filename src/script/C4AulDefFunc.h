@@ -23,6 +23,7 @@
 
 #include <C4Object.h>
 #include <C4Effects.h>
+#include <C4DefList.h>
 
 typedef int32_t t_int;
 typedef bool t_bool;

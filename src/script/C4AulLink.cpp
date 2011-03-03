@@ -23,6 +23,7 @@
 #include <C4Aul.h>
 
 #include <C4Def.h>
+#include <C4DefList.h>
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>

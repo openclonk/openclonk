@@ -27,6 +27,7 @@
 #include <C4Aul.h>
 #include <C4AulDefFunc.h>
 #include <C4Command.h>
+#include <C4DefList.h>
 #include <C4GameMessage.h>
 #include <C4GraphicsResource.h>
 #include <C4Material.h>
