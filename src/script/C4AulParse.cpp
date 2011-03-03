@@ -67,7 +67,6 @@
 #define C4AUL_Image         "Image"
 #define C4AUL_Contents      "Contents"
 #define C4AUL_Condition     "Condition"
-#define C4AUL_Method        "Method"
 #define C4AUL_Desc          "Desc"
 
 #define C4AUL_MethodAll                 "All"
@@ -347,21 +346,6 @@ void C4AulScriptFunc::ParseDesc()
 			else if (SEqual2(DPos0, C4AUL_Condition))
 				// condition? get condition func
 				Condition = Owner->GetFuncRecursive(Val.getData());
-			// Method
-			else if (SEqual2(DPos0, C4AUL_Method))
-			{
-				if (SEqual2(Val.getData(), C4AUL_MethodAll))
-					ControlMethod = C4AUL_ControlMethod_All;
-				else if (SEqual2(Val.getData(), C4AUL_MethodNone))
-					ControlMethod = C4AUL_ControlMethod_None;
-				else if (SEqual2(Val.getData(), C4AUL_MethodClassic))
-					ControlMethod = C4AUL_ControlMethod_Classic;
-				else if (SEqual2(Val.getData(), C4AUL_MethodJumpAndRun))
-					ControlMethod = C4AUL_ControlMethod_JumpAndRun;
-				else
-					// unrecognized: Default to all
-					ControlMethod = C4AUL_ControlMethod_All;
-			}
 			// Long Description
 			else if (SEqual2(DPos0, C4AUL_Desc))
 			{

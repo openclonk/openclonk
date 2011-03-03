@@ -202,7 +202,6 @@ void C4AulScriptFunc::UnLink()
 	idImage = C4ID::None;
 	iImagePhase = 0;
 	Condition = NULL;
-	ControlMethod = C4AUL_ControlMethod_All;
 
 	C4AulFunc::UnLink();
 }

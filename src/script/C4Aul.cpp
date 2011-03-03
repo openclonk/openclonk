@@ -414,7 +414,6 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	Condition = FromFunc.Condition;
 	idImage = FromFunc.idImage;
 	iImagePhase = FromFunc.iImagePhase;
-	ControlMethod = FromFunc.ControlMethod;
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;
