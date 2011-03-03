@@ -51,8 +51,6 @@
 #include <locale.h>
 #endif
 
-C4Config *pConfig;
-
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {
 	// For those without the ability to intuitively guess what the falses and trues mean:
@@ -260,25 +258,14 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
 #endif
 }
 
-const char *CfgAtTempPath(const char *szFilename)
-{
-	// safety
-	if (!pConfig) return NULL;
-	// get at temp path
-	return pConfig->AtTempPath(szFilename);
-}
-
-
 C4Config::C4Config()
 {
-	pConfig=this;
 	Default();
 }
 
 C4Config::~C4Config()
 {
 	fConfigLoaded = false;
-	pConfig=NULL;
 }
 
 void C4Config::Default()
