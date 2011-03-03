@@ -67,12 +67,18 @@ namespace {
 #	if defined(_MSC_VER)
 #		define POINTER_FORMAT "0x%016Ix"
 #	elif defined(__GNUC__)
-#		define POINTER_FORMAT "0x%016lx"
+#		define POINTER_FORMAT "0x%016zx"
 #	else
 #		define POINTER_FORMAT "0x%016p"
 #	endif
 #elif OC_MACHINE == OC_MACHINE_X86
-#	define POINTER_FORMAT "0x%08x"
+#	if defined(_MSC_VER)
+#		define POINTER_FORMAT "0x%08Ix"
+#	elif defined(__GNUC__)
+#		define POINTER_FORMAT "0x%08zx"
+#	else
+#		define POINTER_FORMAT "0x%08p"
+#	endif
 #else
 #	define POINTER_FORMAT "0x%p"
 #endif
@@ -90,7 +96,7 @@ namespace {
 		LOG_EXCEPTION(EXCEPTION_GUARD_PAGE,               "The thread accessed memory allocated with the PAGE_GUARD modifier.");
 #undef LOG_EXCEPTION
 		default:
-			LOG_DYNAMIC_TEXT("%#08x: The thread raised an unknown exception.\n", exc->ExceptionRecord->ExceptionCode);
+			LOG_DYNAMIC_TEXT("%#08x: The thread raised an unknown exception.\n", static_cast<unsigned int>(exc->ExceptionRecord->ExceptionCode));
 			break;
 		}
 		if (exc->ExceptionRecord->ExceptionFlags == EXCEPTION_NONCONTINUABLE)
@@ -119,13 +125,13 @@ namespace {
 			case EXCEPTION_READ_FAULT: LOG_STATIC_TEXT("tried to read from memory"); break;
 			case EXCEPTION_WRITE_FAULT: LOG_STATIC_TEXT("tried to write to memory"); break;
 			case EXCEPTION_EXECUTE_FAULT: LOG_STATIC_TEXT("caused an user-mode DEP violation"); break;
-			default: LOG_DYNAMIC_TEXT("tried to access (%#x) memory", exc->ExceptionRecord->ExceptionInformation[0]); break;
+			default: LOG_DYNAMIC_TEXT("tried to access (%#x) memory", static_cast<unsigned int>(exc->ExceptionRecord->ExceptionInformation[0])); break;
 			}
-			LOG_DYNAMIC_TEXT(" at address " POINTER_FORMAT ".\n", exc->ExceptionRecord->ExceptionInformation[1]);
+			LOG_DYNAMIC_TEXT(" at address " POINTER_FORMAT ".\n", static_cast<size_t>(exc->ExceptionRecord->ExceptionInformation[1]));
 			if (exc->ExceptionRecord->ExceptionCode == EXCEPTION_IN_PAGE_ERROR)
 			{
 				if (exc->ExceptionRecord->NumberParameters >= 3)
-					LOG_DYNAMIC_TEXT("The NTSTATUS code that resulted in this exception was " POINTER_FORMAT ".\n", exc->ExceptionRecord->ExceptionInformation[2]);
+					LOG_DYNAMIC_TEXT("The NTSTATUS code that resulted in this exception was " POINTER_FORMAT ".\n", static_cast<size_t>(exc->ExceptionRecord->ExceptionInformation[2]));
 				else
 					LOG_STATIC_TEXT("The NTSTATUS code that resulted in this exception was not provided.\n");
 			}
@@ -136,26 +142,32 @@ namespace {
 #if OC_MACHINE == OC_MACHINE_X64
 		LOG_STATIC_TEXT("\nProcessor registers (x86_64):\n");
 		LOG_DYNAMIC_TEXT("RAX: " POINTER_FORMAT ", RBX: " POINTER_FORMAT ", RCX: " POINTER_FORMAT ", RDX: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Rax, exc->ContextRecord->Rbx, exc->ContextRecord->Rcx, exc->ContextRecord->Rdx);
+			static_cast<size_t>(exc->ContextRecord->Rax), static_cast<size_t>(exc->ContextRecord->Rbx),
+			static_cast<size_t>(exc->ContextRecord->Rcx), static_cast<size_t>(exc->ContextRecord->Rdx));
 		LOG_DYNAMIC_TEXT("RBP: " POINTER_FORMAT ", RSI: " POINTER_FORMAT ", RDI: " POINTER_FORMAT ",  R8: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Rbp, exc->ContextRecord->Rsi, exc->ContextRecord->Rdi, exc->ContextRecord->R8);
+			static_cast<size_t>(exc->ContextRecord->Rbp), static_cast<size_t>(exc->ContextRecord->Rsi),
+			static_cast<size_t>(exc->ContextRecord->Rdi), static_cast<size_t>(exc->ContextRecord->R8));
 		LOG_DYNAMIC_TEXT(" R9: " POINTER_FORMAT ", R10: " POINTER_FORMAT ", R11: " POINTER_FORMAT ", R12: " POINTER_FORMAT "\n",
-			exc->ContextRecord->R9, exc->ContextRecord->R10, exc->ContextRecord->R11, exc->ContextRecord->R12);
+			static_cast<size_t>(exc->ContextRecord->R9), static_cast<size_t>(exc->ContextRecord->R10),
+			static_cast<size_t>(exc->ContextRecord->R11), static_cast<size_t>(exc->ContextRecord->R12));
 		LOG_DYNAMIC_TEXT("R13: " POINTER_FORMAT ", R14: " POINTER_FORMAT ", R15: " POINTER_FORMAT "\n",
-			exc->ContextRecord->R13, exc->ContextRecord->R14, exc->ContextRecord->R15);
+			static_cast<size_t>(exc->ContextRecord->R13), static_cast<size_t>(exc->ContextRecord->R14),
+			static_cast<size_t>(exc->ContextRecord->R15));
 		LOG_DYNAMIC_TEXT("RSP: " POINTER_FORMAT ", RIP: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Rsp, exc->ContextRecord->Rip);
+			static_cast<size_t>(exc->ContextRecord->Rsp), static_cast<size_t>(exc->ContextRecord->Rip));
 #elif OC_MACHINE == OC_MACHINE_X86
 		LOG_STATIC_TEXT("\nProcessor registers (x86):\n");
 		LOG_DYNAMIC_TEXT("EAX: " POINTER_FORMAT ", EBX: " POINTER_FORMAT ", ECX: " POINTER_FORMAT ", EDX: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Eax, exc->ContextRecord->Ebx, exc->ContextRecord->Ecx, exc->ContextRecord->Edx);
+			static_cast<size_t>(exc->ContextRecord->Eax), static_cast<size_t>(exc->ContextRecord->Ebx),
+			static_cast<size_t>(exc->ContextRecord->Ecx), static_cast<size_t>(exc->ContextRecord->Edx));
 		LOG_DYNAMIC_TEXT("ESI: " POINTER_FORMAT ", EDI: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Esi, exc->ContextRecord->Edi);
+			static_cast<size_t>(exc->ContextRecord->Esi), static_cast<size_t>(exc->ContextRecord->Edi));
 		LOG_DYNAMIC_TEXT("EBP: " POINTER_FORMAT ", ESP: " POINTER_FORMAT ", EIP: " POINTER_FORMAT "\n",
-			exc->ContextRecord->Ebp, exc->ContextRecord->Esp, exc->ContextRecord->Eip);
+			static_cast<size_t>(exc->ContextRecord->Ebp), static_cast<size_t>(exc->ContextRecord->Esp),
+			static_cast<size_t>(exc->ContextRecord->Eip));
 #endif
 #if OC_MACHINE == OC_MACHINE_X64 || OC_MACHINE == OC_MACHINE_X86
-		LOG_DYNAMIC_TEXT("EFLAGS: " POINTER_FORMAT "(%c%c%c%c%c%c%c)\n", exc->ContextRecord->EFlags,
+		LOG_DYNAMIC_TEXT("EFLAGS: %#08x (%c%c%c%c%c%c%c)\n", static_cast<unsigned int>(exc->ContextRecord->EFlags),
 			exc->ContextRecord->EFlags & 0x800 ? 'O' : '.',
 			exc->ContextRecord->EFlags & 0x400 ? 'D' : '.',
 			exc->ContextRecord->EFlags &  0x80 ? 'S' : '.',
@@ -190,7 +202,7 @@ namespace {
 					if (dump_row_cursor < dump_min || dump_row_cursor > dump_max)
 						LOG_STATIC_TEXT("   ");
 					else
-						LOG_DYNAMIC_TEXT("%02x ", (unsigned int)(unsigned char)*reinterpret_cast<char*>(dump_row_cursor)); // Safe, since it's inside the VM of our process
+						LOG_DYNAMIC_TEXT("%02x ", (unsigned int)*reinterpret_cast<unsigned char*>(dump_row_cursor)); // Safe, since it's inside the VM of our process
 				}
 				LOG_STATIC_TEXT("   ");
 				// Text dump
@@ -200,11 +212,11 @@ namespace {
 						LOG_STATIC_TEXT(" ");
 					else
 					{
-						char c = *reinterpret_cast<char*>(dump_row_cursor); // Safe, since it's inside the VM of our process
+						unsigned char c = *reinterpret_cast<unsigned char*>(dump_row_cursor); // Safe, since it's inside the VM of our process
 						if (c < 0x20 || (c > 0x7e && c < 0xa1))
 							LOG_STATIC_TEXT(".");
 						else
-							LOG_DYNAMIC_TEXT("%c", c);
+							LOG_DYNAMIC_TEXT("%c", static_cast<char>(c));
 					}
 				}
 				LOG_STATIC_TEXT("\n");
@@ -263,12 +275,12 @@ namespace {
 				}
 				else
 				{
-					LOG_DYNAMIC_TEXT("[" POINTER_FORMAT "]", frame.AddrPC.Offset);
+					LOG_DYNAMIC_TEXT("[" POINTER_FORMAT "]", static_cast<size_t>(frame.AddrPC.Offset));
 				}
 				DWORD disp;
 				if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &disp, line))
 				{
-					LOG_DYNAMIC_TEXT(" (%s Line %d + %#lx bytes)", line->FileName, line->LineNumber, static_cast<long>(disp));
+					LOG_DYNAMIC_TEXT(" (%s Line %u + %#lx bytes)", line->FileName, static_cast<unsigned int>(line->LineNumber), static_cast<long>(disp));
 				}
 				LOG_STATIC_TEXT("\n");
 				++frame_number;
@@ -293,7 +305,8 @@ namespace {
 			for (BOOL success = Module32First(snapshot, module); success; success = Module32Next(snapshot, module))
 			{
 				LOG_DYNAMIC_TEXT("%32s loaded at " POINTER_FORMAT " - " POINTER_FORMAT " (%s)\n", module->szModule,
-					module->modBaseAddr, module->modBaseAddr + module->modBaseSize, module->szExePath);
+					reinterpret_cast<size_t>(module->modBaseAddr), reinterpret_cast<size_t>(module->modBaseAddr + module->modBaseSize),
+					module->szExePath);
 			}
 			CloseHandle(snapshot);
 		}
