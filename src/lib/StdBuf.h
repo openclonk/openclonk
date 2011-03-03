@@ -101,6 +101,8 @@ public:
 
 protected:
 
+	// Reference? Otherwise, this object holds the data.
+	bool fRef;
 	// Data
 	union
 	{
@@ -111,8 +113,6 @@ protected:
 #endif
 	};
 	unsigned int iSize;
-	// Reference? Otherwise, this object holds the data.
-	bool fRef;
 
 public:
 
