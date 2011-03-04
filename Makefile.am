@@ -290,7 +290,7 @@ src/game/script/C4Effect.cpp \
 src/game/script/C4Effects.h \
 src/game/script/C4FindObject.cpp \
 src/game/script/C4FindObject.h \
-src/game/script/C4Script.cpp \
+src/game/script/C4GameScript.cpp \
 src/game/script/C4Script.h \
 src/game/script/C4TransferZone.cpp \
 src/game/script/C4TransferZone.h \
@@ -513,6 +513,7 @@ src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
 src/script/C4PropList.cpp \
 src/script/C4PropList.h \
+src/script/C4Script.cpp \
 src/script/C4ScriptHost.cpp \
 src/script/C4ScriptHost.h \
 src/script/C4StringTable.cpp \

@@ -2249,7 +2249,9 @@ bool C4Game::InitGameFinal()
 bool C4Game::InitScriptEngine()
 {
 	// engine functions
-	InitFunctionMap(&ScriptEngine);
+	InitCoreFunctionMap(&ScriptEngine);
+	InitObjectFunctionMap(&ScriptEngine);
+	InitGameFunctionMap(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())

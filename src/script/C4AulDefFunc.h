@@ -51,6 +51,9 @@ inline C4String *String(const char * str)
 {
 	return str ? ::Strings.RegString(str) : NULL;
 }
+StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
+                                C4Value * Par4=0, C4Value * Par5=0, C4Value * Par6=0, C4Value * Par7=0, C4Value * Par8=0, C4Value * Par9=0);
+enum { MaxFnStringParLen=500 };
 
 // Allow parameters to be nil
 template<typename T>
