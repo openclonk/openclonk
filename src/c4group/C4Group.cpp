@@ -700,7 +700,7 @@ bool C4Group::OpenReal(const char *szFilename)
 	{
 		// Ignore
 		if (C4Group_TestIgnore(szFilename))
-			return false;
+			return Error(FormatString("OpenReal: filename '%s' ignored", szFilename).getData());
 		// OpenReal: Simply set status and return
 		Status=GRPF_Folder;
 		ResetSearch();
