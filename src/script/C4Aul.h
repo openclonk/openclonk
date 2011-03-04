@@ -425,7 +425,6 @@ class C4AulScript
 public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
-	void Default(); // init
 	void Clear(); // remove script, byte code and children
 	void Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner); // reg to linked list
 	void Unreg(); // remove from list
