@@ -23,7 +23,6 @@
         <text>This function checks the performance of the function "<funclink>Cos</funclink>". To do this, it executes the function 100 times and calculates the processinf time using GetTime().</text>
       </example>
     </examples>
-    <related><funclink>GetSystemTime</funclink></related>
   </func>
   <author>Peter</author><date>2002-08</date>
 </funcs>
