@@ -513,6 +513,21 @@ void C4GameObjects::UpdateScriptPointers()
 	if (Game.pGlobalEffects) Game.pGlobalEffects->ReAssignAllCallbackFunctions();
 }
 
+C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
+{
+	// call objects first - scenario script might overwrite hostility, etc...
+	C4Object *pObj;
+	::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
+		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
+		{
+			C4Value vResult = pObj->Call(szFunction, pPars, fPassError);
+			// rejection tests abort on first nonzero result
+			if (fRejectTest && !!vResult) return vResult;
+		}
+	return C4Value();
+}
+
 void C4GameObjects::UpdatePos(C4Object *pObj)
 {
 	// Position might have changed. Update sector lists

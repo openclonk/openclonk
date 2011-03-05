@@ -746,9 +746,9 @@ bool C4Game::Execute() // Returns true if the game is over
 	EXEC_S_DR(  Landscape.Execute();              , LandscapeStat       , "LdsEx")
 	EXEC_S_DR(  Players.Execute();                , PlayersStat         , "PlrEx")
 	//FIXME: C4Application::Execute should do this, but what about the stats?
-	EXEC_S_DR(  Application.MusicSystem.Execute();            , MusicSystemStat     , "Music")
-	EXEC_S_DR(  ::Messages.Execute();               , MessagesStat        , "MsgEx")
-	EXEC_S_DR(  ::GameScript.Execute();                 , ScriptStat          , "Scrpt")
+	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
+	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
+	EXEC_S_DR(  ::GameScript.Execute(iTick10);    , ScriptStat          , "Scrpt")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 

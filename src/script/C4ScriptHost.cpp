@@ -134,14 +134,12 @@ void C4DefScriptHost::AfterLink()
 C4GameScriptHost::C4GameScriptHost(): Counter(0), Go(false) { }
 C4GameScriptHost::~C4GameScriptHost() { }
 
-bool C4GameScriptHost::Execute()
+bool C4GameScriptHost::Execute(int iTick10)
 {
 	if (!Script) return false;
-	char buffer[500];
-	if (Go && !::Game.iTick10)
+	if (Go && !iTick10)
 	{
-		sprintf(buffer,PSF_Script,Counter++);
-		return !! Call(buffer);
+		return !! Call(FormatString(PSF_Script,Counter++).getData());
 	}
 	return false;
 }
@@ -149,15 +147,9 @@ bool C4GameScriptHost::Execute()
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
 	// call objects first - scenario script might overwrite hostility, etc...
-	C4Object *pObj;
-	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next) if ((pObj=clnk->Obj))
-			if (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment))
-				if (pObj->Status)
-				{
-					C4Value vResult(pObj->Call(szFunction, pPars, fPassError));
-					// rejection tests abort on first nonzero result
-					if (fRejectTest) if (!!vResult) return vResult;
-				}
+	C4Value vResult = ::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	// rejection tests abort on first nonzero result
+	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
 	return Call(szFunction, 0, pPars, fPassError);
 }

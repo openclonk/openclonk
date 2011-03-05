@@ -80,10 +80,9 @@ public:
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 
 	// Global script data
-	// FIXME: Move to C4AulScriptEngine
 	int32_t Counter;
 	bool Go;
-	bool Execute();
+	bool Execute(int);
 	void Clear() { Counter = 0; Go = false; C4ScriptHost::Clear(); }
 
 	// Compile scenario script data

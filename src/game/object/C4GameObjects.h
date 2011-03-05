@@ -63,6 +63,7 @@ public:
 	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *
+	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest);  // call function in all goals/rules/environment objects
 
 	void UpdatePos(C4Object *pObj);
 	void UpdatePosResort(C4Object *pObj);
