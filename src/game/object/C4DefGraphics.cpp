@@ -188,7 +188,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 
 	// Load all materials for this definition:
 	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, NULL, !!*Filename))
+	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, !!*Filename))
 	{
 		StdStrBuf material;
 		if (hGroup.LoadEntryString(Filename, &material))
@@ -215,7 +215,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsExPNG);
 	int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerExPNG);
 	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefGraphicsExPNG, Filename, NULL, NULL, !!*Filename))
+	while (hGroup.FindNextEntry(C4CFN_DefGraphicsExPNG, Filename, NULL, !!*Filename))
 	{
 		// skip def graphics
 		if (SEqualNoCase(Filename, C4CFN_DefGraphicsPNG)) continue;
@@ -253,7 +253,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	iWildcardPos = SCharPos('*', C4CFN_Portraits);
 	hGroup.ResetSearch();
 	*Filename=0;
-	while (hGroup.FindNextEntry(C4CFN_Portraits, Filename, NULL, NULL, !!*Filename))
+	while (hGroup.FindNextEntry(C4CFN_Portraits, Filename, NULL, !!*Filename))
 	{
 		// get graphics name
 		char GrpName[_MAX_PATH+1];

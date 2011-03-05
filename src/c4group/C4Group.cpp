@@ -1813,7 +1813,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 
 	// Access entry in mother group
 	size_t iSize;
-	if ((!Mother->AccessEntry(FileName, &iSize, NULL, NULL, true)))
+	if ((!Mother->AccessEntry(FileName, &iSize, NULL, true)))
 	{
 		if (!fCreate)
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry not in mother group"); }
@@ -1874,23 +1874,23 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 
 bool C4Group::AccessEntry(const char *szWildCard,
                           size_t *iSize, char *sFileName,
-                          bool *fChild, bool NeedsToBeAGroup)
+                          bool NeedsToBeAGroup)
 {
 #ifdef C4GROUP_DUMP_ACCESS
 	LogF("Group access in %s: %s", GetFullName().getData(), szWildCard);
 #endif
-	char fname[_MAX_FNAME+1];
-	if (!FindEntry(szWildCard,fname,&iCurrFileSize,fChild))
+	StdStrBuf fname;
+	if (!FindEntry(szWildCard,&fname,&iCurrFileSize))
 		return false;
 #ifdef _DEBUG
-	szCurrAccessedEntry = fname;
+	szCurrAccessedEntry = fname.getMData();
 #endif
-	bool fResult = SetFilePtr2Entry(fname, NULL, NeedsToBeAGroup);
+	bool fResult = SetFilePtr2Entry(fname.getData(), NULL, NeedsToBeAGroup);
 #ifdef _DEBUG
 	szCurrAccessedEntry = NULL;
 #endif
 	if (!fResult) return false;
-	if (sFileName) SCopy(fname,sFileName);
+	if (sFileName) SCopy(fname.getData(),sFileName);
 	if (iSize) *iSize=iCurrFileSize;
 	return true;
 }
@@ -1936,28 +1936,26 @@ bool C4Group::SetFilePtr2Entry(const char *szName, C4Group *pByChild, bool Needs
 	return false;
 }
 
-bool C4Group::FindEntry(const char *szWildCard, char *sFileName, size_t *iSize, bool *fChild)
+bool C4Group::FindEntry(const char *szWildCard, StdStrBuf *sFileName, size_t *iSize)
 {
 	ResetSearch();
-	return FindNextEntry(szWildCard,sFileName,iSize,fChild);
+	return FindNextEntry(szWildCard,sFileName,iSize);
 }
 
 bool C4Group::FindNextEntry(const char *szWildCard,
-                            char *sFileName,
+                            StdStrBuf *sFileName,
                             size_t *iSize,
-                            bool *fChild,
                             bool fStartAtFilename)
 {
 	C4GroupEntry *centry;
 	if (!szWildCard) return false;
 
 	// Reset search to specified position
-	if (fStartAtFilename) FindEntry(sFileName);
+	if (fStartAtFilename) FindEntry(sFileName->getData());
 
 	if (!(centry=SearchNextEntry(szWildCard))) return false;
-	if (sFileName) SCopy(centry->FileName,sFileName);
+	if (sFileName) sFileName->Copy(centry->FileName);
 	if (iSize) *iSize=centry->Size;
-	if (fChild) *fChild=!!centry->ChildGroup;
 	return true;
 }
 

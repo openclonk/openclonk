@@ -736,7 +736,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	strItemName[0] = strItemName2[0] = 0;
 	pGrp2->ResetSearch(); if (!*fModified) pGrp1->ResetSearch();
 	int iChangedEntries = 0;
-	while (pGrp2->FindNextEntry("*", strItemName, NULL, NULL, !! strItemName[0]))
+	while (pGrp2->FindNextEntry("*", strItemName, NULL, !! strItemName[0]))
 	{
 		// add to entry list
 		if (!!EntryList) EntryList.AppendChar('|');
@@ -744,7 +744,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 		// no modification detected yet? then check order
 		if (!*fModified)
 		{
-			if (!pGrp1->FindNextEntry("*", strItemName2, NULL, NULL, !! strItemName2[0]))
+			if (!pGrp1->FindNextEntry("*", strItemName2, NULL, !! strItemName2[0]))
 				*fModified = true;
 			else if (!SEqual(strItemName, strItemName2))
 				*fModified = true;

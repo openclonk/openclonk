@@ -30,7 +30,7 @@ class C4ComponentHost
 public:
 	C4ComponentHost();
 	virtual ~C4ComponentHost();
-	const char *GetFilePath() const { return FilePath; }
+	const char *GetFilePath() const { return FilePath.getData(); }
 	void Clear();
 	const char *GetData() const { return Data.getData(); }
 	const StdStrBuf & GetDataBuf() const { return Data; }
@@ -49,9 +49,10 @@ protected:
 	virtual void OnLoad() {}
 
 	StdCopyStrBuf Data;
-	char Filename[_MAX_FNAME+1];
-	char FilePath[_MAX_PATH+1];
+	StdCopyStrBuf Filename;
+	StdCopyStrBuf FilePath;
 	void CopyFilePathFromGroup(const C4Group &hGroup);
+	void FinishLoad(const StdStrBuf &, C4Group &hGroup);
 };
 
 #endif

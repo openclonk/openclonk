@@ -51,31 +51,21 @@ bool C4ComponentHost::Load(C4Group &hGroup,
 	Clear();
 	// Store filename
 	if (fname)
-		SCopy(fname, Filename);
+		Filename.Copy(fname);
 	// Load component - try all segmented filenames
-	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
-	for (int iFilename = 0; SCopySegment(Filename, iFilename, strEntry, '|'); iFilename++)
+	char strEntry[_MAX_FNAME+1];
+	StdStrBuf strEntryWithLanguage;
+	for (int iFilename = 0; SCopySegment(Filename.getData(), iFilename, strEntry, '|'); iFilename++)
 	{
 		// Try to insert all language codes provided into the filename
 		char strCode[3] = "";
 		for (int iLang = 0; SCopySegment(szLanguage ? szLanguage : "", iLang, strCode, ',', 2); iLang++)
 		{
 			// Insert language code
-			sprintf(strEntryWithLanguage, strEntry, strCode);
+			strEntryWithLanguage.Format(strEntry, strCode);
 			if (hGroup.LoadEntryString(strEntryWithLanguage, &Data))
 			{
-				Data.EnsureUnicode();
-				// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
-				if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
-				{
-					Data.Move(3,Data.getSize()-3);
-					Data.Shrink(3);
-				}
-				// Store actual filename
-				hGroup.FindEntry(strEntryWithLanguage, Filename);
-				CopyFilePathFromGroup(hGroup);
-				// Notify
-				OnLoad();
+				FinishLoad(strEntryWithLanguage, hGroup);
 				// Got it
 				return true;
 			}
@@ -84,7 +74,7 @@ bool C4ComponentHost::Load(C4Group &hGroup,
 		}
 	}
 	// Truncate any additional segments from stored filename
-	SReplaceChar(Filename, '|', 0);
+	SReplaceChar(Filename.getMData(), '|', 0);
 	CopyFilePathFromGroup(hGroup);
 	// Not loaded
 	return false;
@@ -98,26 +88,22 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	Clear();
 	// Store filename
 	if (fname)
-		SCopy(fname, Filename);
+		Filename.Copy(fname);
 	// Load component - try all segmented filenames
-	char strEntry[_MAX_FNAME+1], strEntryWithLanguage[_MAX_FNAME+1];
-	for (int iFilename = 0; SCopySegment(Filename, iFilename, strEntry, '|'); iFilename++)
+	char strEntry[_MAX_FNAME+1];
+	StdStrBuf strEntryWithLanguage;
+	for (int iFilename = 0; SCopySegment(Filename.getData(), iFilename, strEntry, '|'); iFilename++)
 	{
 		// Try to insert all language codes provided into the filename
 		char strCode[3] = "";
 		for (int iLang = 0; SCopySegment(szLanguage ? szLanguage : "", iLang, strCode, ',', 2); iLang++)
 		{
 			// Insert language code
-			sprintf(strEntryWithLanguage, strEntry, strCode);
+			strEntryWithLanguage.Format(strEntry, strCode);
 			if (hGroupSet.LoadEntryString(strEntryWithLanguage, &Data))
 			{
-				Data.EnsureUnicode();
-				// Store actual filename
-				C4Group *pGroup = hGroupSet.FindEntry(strEntryWithLanguage);
-				pGroup->FindEntry(strEntryWithLanguage, Filename);
-				CopyFilePathFromGroup(*pGroup);
-				// Notify
-				OnLoad();
+				C4Group *pGroup = hGroupSet.FindEntry(strEntryWithLanguage.getData());
+				FinishLoad(strEntryWithLanguage, *pGroup);
 				// Got it
 				return true;
 			}
@@ -126,19 +112,35 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 		}
 	}
 	// Truncate any additional segments from stored filename
-	SReplaceChar(Filename, '|', 0);
+	SReplaceChar(Filename.getMData(), '|', 0);
 	// skip full path (unknown)
-	FilePath[0] = 0;
+	FilePath.Clear();
 	// Not loaded
 	return false;
+}
+
+void C4ComponentHost::FinishLoad(const StdStrBuf & name, C4Group &hGroup)
+{
+	Data.EnsureUnicode();
+	// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
+	if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
+	{
+		Data.Move(3,Data.getSize()-3);
+		Data.Shrink(3);
+	}
+	// Store actual filename
+	hGroup.FindEntry(name.getData(), &Filename);
+	CopyFilePathFromGroup(hGroup);
+	// Notify
+	OnLoad();
 }
 
 // Construct full path
 void C4ComponentHost::CopyFilePathFromGroup(const C4Group &hGroup)
 {
-	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), FilePath, _MAX_PATH - 1);
-	SAppendChar(DirectorySeparator, FilePath);
-	SAppend(Filename, FilePath, _MAX_PATH);
+	FilePath.Copy(Config.AtRelativePath(hGroup.GetFullName().getData()));
+	FilePath.AppendBackslash();
+	FilePath.Append(Filename);
 }
 
 bool C4ComponentHost::GetLanguageString(const char *szLanguage, StdStrBuf &rTarget)

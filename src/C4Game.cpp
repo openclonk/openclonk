@@ -2255,7 +2255,7 @@ bool C4Game::InitScriptEngine()
 	// get scripts
 	char fn[_MAX_FNAME+1] = { 0 };
 	File.ResetSearch();
-	while (File.FindNextEntry(C4CFN_ScriptFiles, (char *) &fn, NULL, NULL, !!fn[0]))
+	while (File.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 	{
 		// host will be destroyed by script engine, so drop the references
 		C4ScriptHost *scr = new C4ScriptHost();
@@ -2618,7 +2618,7 @@ bool C4Game::LoadScenarioComponents()
 	// scenario sections
 	char fn[_MAX_FNAME+1] = { 0 };
 	ScenarioFile.ResetSearch(); *fn=0;
-	while (ScenarioFile.FindNextEntry(C4CFN_ScenarioSections, (char *) &fn, NULL, NULL, !!*fn))
+	while (ScenarioFile.FindNextEntry(C4CFN_ScenarioSections, fn, NULL, !!*fn))
 	{
 		// get section name
 		char SctName[_MAX_FNAME+1];
@@ -2678,7 +2678,7 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 		}
 		// load all scripts in there
 		SysGroup.ResetSearch();
-		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, (char *) &fn, NULL, NULL, !!fn[0]))
+		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 		{
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();

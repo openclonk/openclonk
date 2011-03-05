@@ -602,6 +602,7 @@ public:
 	{
 		AppendChars(cChar, 1);
 	}
+	void AppendBackslash();
 	void InsertChar(char cChar, size_t insert_before)
 	{
 		assert(insert_before <= getLength());
