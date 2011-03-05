@@ -30,19 +30,11 @@
 
 C4ComponentHost::C4ComponentHost()
 {
-	Default();
 }
 
 C4ComponentHost::~C4ComponentHost()
 {
 	Clear();
-}
-
-void C4ComponentHost::Default()
-{
-	Data.Clear();
-	Filename[0]=0;
-	FilePath[0]=0;
 }
 
 void C4ComponentHost::Clear()

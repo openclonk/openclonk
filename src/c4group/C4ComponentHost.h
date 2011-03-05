@@ -31,7 +31,6 @@ public:
 	C4ComponentHost();
 	virtual ~C4ComponentHost();
 	const char *GetFilePath() const { return FilePath; }
-	void Default();
 	void Clear();
 	const char *GetData() const { return Data.getData(); }
 	const StdStrBuf & GetDataBuf() const { return Data; }

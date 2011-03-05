@@ -1497,12 +1497,6 @@ void C4Game::Default()
 	C4S.Default();
 	::Messages.Default();
 	MessageInput.Default();
-	Info.Default();
-	Title.Default();
-	Names.Default();
-	GameText.Default();
-	MainSysLangStringTable.Default();
-	ScenarioLangStringTable.Default();
 	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();

@@ -40,7 +40,7 @@ C4ScriptHost::~C4ScriptHost() { Clear(); }
 void C4ScriptHost::Default()
 {
 	C4AulScript::Clear();
-	ComponentHost.Default();
+	ComponentHost.Clear();
 }
 
 void C4ScriptHost::Clear()
