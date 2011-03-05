@@ -117,6 +117,8 @@ public:
 	int32_t Status;
 };
 
+// Proplists that are created during a game and get saved in a savegame
+// Examples: Objects, Effects, scriptcreated proplists
 class C4PropListNumbered: public C4PropList
 {
 public:
@@ -126,10 +128,21 @@ public:
 	void CompileFuncNonames(StdCompiler *pComp);
 	virtual C4PropListNumbered * GetPropListNumbered();
 	void AcquireNumber();
+
+	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
+	static void DenumerateAll(int32_t iMaxObjectNumber);
+	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
+	static void ResetEnumerationIndex();
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
+
+	static C4Set<C4PropListNumbered *> PropLists;
+	static int32_t EnumerationIndex;
+	friend class C4GameObjects;
+	friend class C4Game;
 };
 
+// Proplists created by script at runtime
 class C4PropListScript: public C4PropListNumbered
 {
 public:
@@ -137,6 +150,7 @@ public:
 	bool IsScriptPropList() { return true; }
 };
 
+// Proplist constants
 class C4PropListAnonScript: public C4PropList
 {
 public:

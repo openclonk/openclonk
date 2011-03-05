@@ -647,6 +647,7 @@ void C4Game::Clear()
 	QuitLogPos = GetLogPos();
 
 	fPreinited = false;
+	C4PropListNumbered::ResetEnumerationIndex();
 	// FIXME: remove this
 	Default();
 }
@@ -998,7 +999,7 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
 	rc.id=pDef->Number;
-	rc.oei=ObjectEnumerationIndex+1;
+	rc.oei=C4PropListNumbered::GetEnumerationIndex()+1;
 	rc.x=iX; rc.y=iY; rc.ownr=iOwner;
 	AddDbgRec(RCT_CrObj, &rc, sizeof(rc));
 #endif
@@ -1479,7 +1480,6 @@ void C4Game::Default()
 	fLobby=fObserve=false;
 	iLobbyTimeout=0;
 	iTick2=iTick3=iTick5=iTick10=iTick35=iTick255=iTick1000=0;
-	ObjectEnumerationIndex=0;
 	FullSpeed=false;
 	FrameSkip=1; DoSkipFrame=false;
 	::Definitions.Default();
@@ -1642,7 +1642,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->Value(mkNamingAdapt(iTick255,              "Tick255",               0));
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
-		pComp->Value(mkNamingAdapt(ObjectEnumerationIndex,"ObjectEnumerationIndex",0));
+		pComp->Value(mkNamingAdapt(C4PropListNumbered::EnumerationIndex,"ObjectEnumerationIndex",0));
 		pComp->Value(mkNamingAdapt(Rules,                 "Rules",                 0));
 		pComp->Value(mkNamingAdapt(PlayList,              "PlayList",""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(CurrentScenarioSection),        "CurrentScenarioSection", ""));
@@ -3097,7 +3097,7 @@ bool C4Game::CheckObjectEnumeration()
 			clnk=clnk->Next;
 	}
 	// Adjust enumeration index
-	if (iMax>ObjectEnumerationIndex) ObjectEnumerationIndex=iMax;
+	if (iMax>C4PropListNumbered::EnumerationIndex) C4PropListNumbered::EnumerationIndex=iMax;
 	// Done
 	return true;
 }

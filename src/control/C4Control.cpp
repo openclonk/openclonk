@@ -432,7 +432,7 @@ void C4ControlSyncCheck::Set()
 	PXSCount = ::PXS.Count;
 	MassMoverIndex = ::MassMover.CreatePtr;
 	ObjectCount = ::Objects.ObjectCount();
-	ObjectEnumerationIndex = Game.ObjectEnumerationIndex;
+	ObjectEnumerationIndex = C4PropListNumbered::GetEnumerationIndex();
 	SectShapeSum = ::Objects.Sectors.getShapeSum();
 }
 

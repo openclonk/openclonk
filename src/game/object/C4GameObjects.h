@@ -57,7 +57,6 @@ public:
 	void UpdateSolidMasks();
 
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-	virtual C4PropList *PropListPointer(int32_t iNumber); // object pointer by number
 	int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
@@ -81,9 +80,6 @@ public:
 	void ResetAudibility();
 	void UpdateTransferZones();
 	void SetOCF();
-protected:
-	C4Set<C4PropListNumbered *> PropLists;
-	friend class C4PropListNumbered;
 };
 
 extern C4GameObjects Objects;

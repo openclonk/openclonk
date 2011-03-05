@@ -270,7 +270,7 @@ void C4Value::DenumeratePointer()
 	if (Type != C4V_C4ObjectEnum) return;
 	// get obj id, search object
 	int iObjID = Data.Int;
-	C4PropList *pObj = Objects.PropListPointer(iObjID);
+	C4PropList *pObj = C4PropListNumbered::GetByNumber(iObjID);
 	if (pObj)
 		// set
 		SetPropList(pObj);

@@ -123,7 +123,6 @@ public:
 	int32_t StartTime;
 	int32_t InitProgress; int32_t LastInitProgress; int32_t LastInitProgressShowTime;
 	int32_t RandomSeed;
-	int32_t ObjectEnumerationIndex;
 	int32_t Rules;
 	bool GameGo;
 	bool FullSpeed;

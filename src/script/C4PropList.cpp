@@ -64,6 +64,28 @@ C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 	return r;
 }
 
+C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+int32_t C4PropListNumbered::EnumerationIndex = 0;
+
+C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
+{
+	return PropLists.Get(iNumber);
+}
+
+void C4PropListNumbered::DenumerateAll(int32_t iMaxObjectNumber)
+{
+	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
+		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
+	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
+}
+
+void C4PropListNumbered::ResetEnumerationIndex()
+{
+	assert(!PropLists.GetSize());
+	EnumerationIndex = 0;
+}
+
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
@@ -72,9 +94,9 @@ void C4PropListNumbered::AcquireNumber()
 {
 	// Enumerate object
 	do
-		Number = ++Game.ObjectEnumerationIndex;
-	while (::Objects.PropLists.Get(Number));
-	::Objects.PropLists.Add(this);
+		Number = ++EnumerationIndex;
+	while (PropLists.Get(Number));
+	PropLists.Add(this);
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
@@ -84,17 +106,17 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(Number, "Number"));
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
+	pComp->Value(mkNamingAdapt(Number, "Number"));
 	if (pComp->isCompiler())
 	{
-		if (::Objects.PropLists.Get(Number))
+		if (PropLists.Get(Number))
 		{
 			pComp->excCorrupt("multiple PropLists with Number %d", Number);
 			return;
 		}
-		::Objects.PropLists.Add(this);
+		PropLists.Add(this);
 	}
 }
 
@@ -106,19 +128,19 @@ void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
 	pComp->Value(static_cast<C4PropList&>(*this));
 	if (pComp->isCompiler())
 	{
-		if (::Objects.PropLists.Get(Number))
+		if (PropLists.Get(Number))
 		{
 			pComp->excCorrupt("multiple PropLists with Number %d", Number);
 			return;
 		}
-		::Objects.PropLists.Add(this);
+		PropLists.Add(this);
 	}
 }
 
 C4PropListNumbered::~C4PropListNumbered()
 {
 	if (Number != -1)
-		::Objects.PropLists.Remove(this);
+		PropLists.Remove(this);
 	else
 		Log("removing numbered proplist without number");
 }
