@@ -292,9 +292,6 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	// unlink defs
 	if (rDefs) rDefs->ResetIncludeDependencies();
 
-	// clear string table
-	::GameScript.UnLink();
-
 	// re-link
 	Link(rDefs);
 
