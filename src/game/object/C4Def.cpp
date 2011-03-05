@@ -106,7 +106,7 @@ void C4Def::DefaultDefCore()
 bool C4Def::LoadDefCore(C4Group &hGroup)
 {
 	StdStrBuf Source;
-	if (hGroup.LoadEntryString(C4CFN_DefCore,Source))
+	if (hGroup.LoadEntryString(C4CFN_DefCore,&Source))
 	{
 		StdStrBuf Name = hGroup.GetFullName() + (const StdStrBuf &)FormatString("%cDefCore.txt", DirectorySeparator);
 		if (!Compile(Source.getData(), Name.getData()))

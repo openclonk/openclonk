@@ -111,7 +111,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 		if (!pLastUsedFont)
 		{
 			StdBuf Data;
-			if (pGrp->LoadEntry(FileName, Data))
+			if (pGrp->LoadEntry(FileName, &Data))
 			{
 				try
 				{

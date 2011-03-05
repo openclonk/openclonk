@@ -2103,36 +2103,36 @@ bool C4Group::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize,
 	return true;
 }
 
-bool C4Group::LoadEntry(const char *szEntryName, StdBuf &Buf)
+bool C4Group::LoadEntry(const char *szEntryName, StdBuf * Buf)
 {
 	size_t size;
 	// Access entry, allocate buffer, read data
 	if (!AccessEntry(szEntryName,&size)) return Error("LoadEntry: Not found");
 	// Allocate memory
-	Buf.New(size);
+	Buf->New(size);
 	// Load data
-	if (!Read(Buf.getMData(),size))
+	if (!Read(Buf->getMData(),size))
 	{
-		Buf.Clear();
+		Buf->Clear();
 		return Error("LoadEntry: Reading error");
 	}
 	// ok
 	return true;
 }
 
-bool C4Group::LoadEntryString(const char *szEntryName, StdStrBuf &Buf)
+bool C4Group::LoadEntryString(const char *szEntryName, StdStrBuf *Buf)
 {
 	size_t size;
 	// Access entry, allocate buffer, read data
 	if (!AccessEntry(szEntryName,&size)) return Error("LoadEntry: Not found");
 	// Allocate memory
-	Buf.SetLength(size);
+	Buf->SetLength(size);
 	// other parts crash when they get a zero length buffer, so fail here
 	if (!size) return false;
 	// Load data
-	if (!Read(Buf.getMData(),size))
+	if (!Read(Buf->getMData(),size))
 	{
-		Buf.Clear();
+		Buf->Clear();
 		return Error("LoadEntry: Reading error");
 	}
 	// ok

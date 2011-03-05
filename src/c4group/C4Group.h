@@ -223,8 +223,10 @@ public:
 	                     bool *fChild=NULL);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf,
 	               size_t *ipSize=NULL, int iAppendZeros=0);
-	bool LoadEntry(const char *szEntryName, StdBuf &Buf);
-	bool LoadEntryString(const char *szEntryName, StdStrBuf &Buf);
+	bool LoadEntry(const char *szEntryName, StdBuf * Buf);
+	bool LoadEntry(const StdStrBuf & name, StdBuf * Buf) { return LoadEntry(name.getData(), Buf); }
+	bool LoadEntryString(const char *szEntryName, StdStrBuf * Buf);
+	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	bool FindEntry(const char *szWildCard,
 	               char *sFileName=NULL,
 	               size_t *iSize=NULL,

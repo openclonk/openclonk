@@ -390,7 +390,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 
 	// Load data component
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, Source))
+	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, &Source))
 		return 0;
 
 	// Compile

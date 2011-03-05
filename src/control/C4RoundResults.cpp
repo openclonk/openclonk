@@ -382,7 +382,7 @@ bool C4RoundResults::Load(C4Group &hGroup, const char *szFilename)
 	Clear();
 	// load file contents
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(szFilename, Buf)) return false;
+	if (!hGroup.LoadEntryString(szFilename, &Buf)) return false;
 	// compile
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "RoundResults"), Buf, szFilename)) return false;
 	// done, success

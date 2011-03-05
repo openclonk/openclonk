@@ -606,7 +606,7 @@ bool C4TeamList::Load(C4Group &hGroup, class C4Scenario *pInitDefault, class C4L
 	Clear();
 	// load file contents
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(C4CFN_Teams, Buf))
+	if (!hGroup.LoadEntryString(C4CFN_Teams, &Buf))
 	{
 		// no teams: Try default init
 		if (!pInitDefault) return false;

@@ -415,7 +415,7 @@ bool C4Playback::Open(C4Group &rGrp)
 	bool fStrip = false;
 	// get text record file
 	StdStrBuf TextBuf;
-	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, TextBuf))
+	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, &TextBuf))
 	{
 		if (!ReadText(TextBuf))
 			return false;
@@ -444,7 +444,7 @@ bool C4Playback::Open(C4Group &rGrp)
 		{
 			// non-sequential reading: Just read as a whole
 			StdBuf BinaryBuf;
-			if (rGrp.LoadEntry(C4CFN_CtrlRec, BinaryBuf))
+			if (rGrp.LoadEntry(C4CFN_CtrlRec, &BinaryBuf))
 			{
 				if (!ReadBinary(BinaryBuf))
 					return false;

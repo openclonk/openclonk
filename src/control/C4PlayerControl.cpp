@@ -626,7 +626,7 @@ bool C4PlayerControlFile::Load(C4Group &hGroup, const char *szFilename, C4LangSt
 	Clear();
 	// load and prepare file contents
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(szFilename, Buf)) return false;
+	if (!hGroup.LoadEntryString(szFilename, &Buf)) return false;
 	if (pLang) pLang->ReplaceStrings(Buf);
 	// parse it!
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Buf, szFilename)) return false;

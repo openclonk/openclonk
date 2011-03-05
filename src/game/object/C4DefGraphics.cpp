@@ -68,7 +68,7 @@ public:
 	virtual StdStrBuf LoadSkeleton(const char* filename)
 	{
 		StdStrBuf ret;
-		if (!Group.LoadEntryString(filename, ret)) return StdStrBuf();
+		if (!Group.LoadEntryString(filename, &ret)) return StdStrBuf();
 		return ret;
 	}
 
@@ -191,7 +191,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, NULL, !!*Filename))
 	{
 		StdStrBuf material;
-		if (hGroup.LoadEntryString(Filename, material))
+		if (hGroup.LoadEntryString(Filename, &material))
 		{
 			try
 			{

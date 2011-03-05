@@ -104,7 +104,8 @@ public:
 	int32_t GetGroupCount();
 	C4Group *GetGroup(int32_t iIndex);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize=NULL, int32_t iAppendZeros=0);
-	bool LoadEntryString(const char *szEntryName, StdStrBuf & rBuf);
+	bool LoadEntryString(const char *szEntryName, StdStrBuf * rBuf);
+	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	C4Group *RegisterParentFolders(const char *szScenFilename); // register all parent .c4f groups to the given scenario filename and return an open group file of the innermost parent c4f
 
 	static int32_t CheckGroupContents(C4Group &rGroup, int32_t Contents);

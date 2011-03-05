@@ -261,7 +261,7 @@ bool C4UpdatePackageCore::Load(C4Group &hGroup)
 {
 	// Load from group
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_UpdateCore,Source))
+	if (!hGroup.LoadEntryString(C4CFN_UpdateCore,&Source))
 		return false;
 	try
 	{
@@ -300,7 +300,7 @@ bool C4UpdatePackage::Load(C4Group *pGroup)
 {
 	// read update core
 	StdStrBuf Source;
-	if (!pGroup->LoadEntryString(C4CFN_UpdateCore,Source))
+	if (!pGroup->LoadEntryString(C4CFN_UpdateCore,&Source))
 		return false;
 	try
 	{

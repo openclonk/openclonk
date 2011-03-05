@@ -229,7 +229,7 @@ bool C4GroupSet::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSi
 	return false;
 }
 
-bool C4GroupSet::LoadEntryString(const char *szEntryName, StdStrBuf & rBuf)
+bool C4GroupSet::LoadEntryString(const char *szEntryName, StdStrBuf * rBuf)
 {
 	// Load the entry from the first group that has it
 	C4Group *pGroup;

@@ -62,7 +62,7 @@ bool C4ComponentHost::Load(C4Group &hGroup,
 		{
 			// Insert language code
 			sprintf(strEntryWithLanguage, strEntry, strCode);
-			if (hGroup.LoadEntryString(strEntryWithLanguage, Data))
+			if (hGroup.LoadEntryString(strEntryWithLanguage, &Data))
 			{
 				Data.EnsureUnicode();
 				// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
@@ -109,7 +109,7 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 		{
 			// Insert language code
 			sprintf(strEntryWithLanguage, strEntry, strCode);
-			if (hGroupSet.LoadEntryString(strEntryWithLanguage, Data))
+			if (hGroupSet.LoadEntryString(strEntryWithLanguage, &Data))
 			{
 				Data.EnsureUnicode();
 				// Store actual filename
