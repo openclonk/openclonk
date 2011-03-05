@@ -28,21 +28,6 @@
 #include <C4Application.h>
 #include <StdRegistry.h>
 
-C4ComponentHost::C4ComponentHost()
-{
-}
-
-C4ComponentHost::~C4ComponentHost()
-{
-	Clear();
-}
-
-void C4ComponentHost::Clear()
-{
-	Data.Clear();
-	OnLoad();
-}
-
 bool C4ComponentHost::Load(C4Group &hGroup,
                            const char *fname,
                            const char *szLanguage)

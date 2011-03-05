@@ -163,7 +163,6 @@ StdStrBuf C4AulScriptFunc::GetFullName()
 
 C4AulScript::C4AulScript()
 {
-	// init defaults
 	// not compiled
 	State = ASS_NONE;
 	Script = NULL;

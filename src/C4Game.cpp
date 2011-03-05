@@ -647,7 +647,6 @@ void C4Game::Clear()
 	QuitLogPos = GetLogPos();
 
 	fPreinited = false;
-	::GameScript.Default();
 	// FIXME: remove this
 	Default();
 }

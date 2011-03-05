@@ -34,14 +34,8 @@
 
 /*--- C4ScriptHost ---*/
 
-C4ScriptHost::C4ScriptHost() { Default(); }
+C4ScriptHost::C4ScriptHost() { }
 C4ScriptHost::~C4ScriptHost() { Clear(); }
-
-void C4ScriptHost::Default()
-{
-	C4AulScript::Clear();
-	ComponentHost.Clear();
-}
 
 void C4ScriptHost::Clear()
 {
@@ -118,12 +112,6 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 /*--- C4DefScriptHost ---*/
 
-void C4DefScriptHost::Default()
-{
-	C4ScriptHost::Default();
-	SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL;
-}
-
 void C4DefScriptHost::AfterLink()
 {
 	C4AulScript::AfterLink();
@@ -145,14 +133,6 @@ void C4DefScriptHost::AfterLink()
 
 C4GameScriptHost::C4GameScriptHost(): Counter(0), Go(false) { }
 C4GameScriptHost::~C4GameScriptHost() { }
-
-
-void C4GameScriptHost::Default()
-{
-	C4ScriptHost::Default();
-	Counter=0;
-	Go=false;
-}
 
 bool C4GameScriptHost::Execute()
 {

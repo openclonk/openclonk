@@ -28,10 +28,10 @@
 class C4ComponentHost
 {
 public:
-	C4ComponentHost();
-	virtual ~C4ComponentHost();
+	C4ComponentHost() { }
+	virtual ~C4ComponentHost() { Clear(); }
 	const char *GetFilePath() const { return FilePath.getData(); }
-	void Clear();
+	void Clear() { Data.Clear(); OnLoad(); }
 	const char *GetData() const { return Data.getData(); }
 	const StdStrBuf & GetDataBuf() const { return Data; }
 	size_t GetDataSize() const { return Data.getLength(); }

@@ -336,7 +336,7 @@ void C4Def::Default()
 	Count=0;
 	TimerCall=NULL;
 	MainFace.Set(NULL,0,0,0,0);
-	Script.Default();
+	Script.Clear();
 	StringTable.Clear();
 	pClonkNames=NULL;
 	pRankNames=NULL;

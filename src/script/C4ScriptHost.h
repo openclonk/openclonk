@@ -40,7 +40,6 @@ public:
 	~C4ScriptHost();
 	bool Delete() { return true; }
 public:
-	void Default();
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, class C4LangStringTable *pLocalTable);
@@ -57,9 +56,8 @@ protected:
 class C4DefScriptHost : public C4ScriptHost
 {
 public:
-	C4DefScriptHost() : C4ScriptHost() { Default(); }
-
-	void Default();
+	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL; }
+	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL; C4ScriptHost::Clear(); }
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 protected:
@@ -79,7 +77,6 @@ public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
 	bool Delete() { return false; } // do NOT delete this - it's a global!
-	void Default();
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 
 	// Global script data
@@ -87,6 +84,7 @@ public:
 	int32_t Counter;
 	bool Go;
 	bool Execute();
+	void Clear() { Counter = 0; Go = false; C4ScriptHost::Clear(); }
 
 	// Compile scenario script data
 	void CompileFunc(StdCompiler *pComp);
