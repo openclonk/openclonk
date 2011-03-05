@@ -63,7 +63,7 @@ public:
 	bool shown;
 	C4AulError();
 	virtual ~C4AulError() { } // destructor
-	virtual void show(); // present error message
+	void show(); // present error message
 };
 
 // parse error
@@ -80,7 +80,6 @@ class C4AulExecError : public C4AulError
 	C4Object *cObj;
 public:
 	C4AulExecError(C4Object *pObj, const char *szError); // constructor
-	virtual void show(); // present error message
 };
 
 // function access

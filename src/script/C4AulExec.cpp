@@ -43,20 +43,6 @@ C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	sMessage.Format("ERROR: %s.", szError ? szError : "(no error message)");
 }
 
-void C4AulExecError::show()
-{
-	// log
-	C4AulError::show();
-	// debug mode object message
-	if (Game.DebugMode)
-	{
-		if (cObj)
-			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
-		else
-			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
-	}
-}
-
 StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 {
 	if (!Func)
