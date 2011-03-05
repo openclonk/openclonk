@@ -486,22 +486,6 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 	return true;
 }
 
-static long FnGetSystemTime(C4AulContext *cthr, long iWhat)
-{
-#ifdef _WIN32
-	// check network, record, etc
-	if (::Control.SyncMode()) return 0;
-	// check bounds
-	if (!Inside<long>(iWhat, 0, 7)) return 0;
-	SYSTEMTIME time;
-	GetLocalTime(&time);
-	// return queried value
-	return *(((WORD *) &time) + iWhat);
-#else
-	return 0;
-#endif
-}
-
 struct C4ModLandscapeMatRec
 {
 	long iMode, iClr1, iClr2;
@@ -695,7 +679,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Distance", FnDistance);
 	AddFunc(pEngine, "Angle", FnAngle);
 	AddFunc(pEngine, "GetChar", FnGetChar);
-	AddFunc(pEngine, "GetSystemTime", FnGetSystemTime, false);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
 	AddFunc(pEngine, "FatalError", FnFatalError);
