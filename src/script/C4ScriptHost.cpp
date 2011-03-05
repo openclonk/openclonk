@@ -75,7 +75,7 @@ void C4ScriptHost::MakeScript()
 	// create script
 	if (stringTable)
 	{
-		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script, ComponentHost.GetFilePath());
+		stringTable->ReplaceStrings(ComponentHost.GetDataBuf(), Script);
 	}
 	else
 	{
