@@ -66,11 +66,11 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 	{
 		if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
 		{
-			return CON_OK;
+			return 1;
 		}
 	}
 	// No overloaded command
-	return CON_Unhandled;
+	return 0;
 }
 
 
