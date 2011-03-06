@@ -44,9 +44,6 @@ public:
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, class C4LangStringTable *pLocalTable);
-	const char *GetControlDesc(const char *szFunctionFormat, int32_t iCom, C4ID *pidImage=NULL, int32_t* piImagePhase = NULL);
-	void GetControlMethodMask(const char *szFunctionFormat, int32_t& first, int32_t& second);
-	int32_t GetControlMethod(int32_t com, int32_t first, int32_t second);
 	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 protected:
 	void SetError(const char *szMessage);
@@ -72,7 +69,6 @@ public:
 	C4AulScriptFunc *SFn_SellTo; // player par(0) sold the object
 	C4AulScriptFunc *SFn_ControlTransfer; // object par(0) tries to get to par(1)/par(2)
 	C4AulScriptFunc *SFn_CustomComponents; // PSF_GetCustomComponents
-	int32_t ControlMethod[2],ContainedControlMethod[2],ActivationControlMethod[2];
 };
 
 

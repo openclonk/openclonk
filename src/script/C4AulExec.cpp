@@ -161,7 +161,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 #ifndef NOAULDEBUG
 	// Debugger pointer
-	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
+	C4AulDebug * const pDebug = C4AulDebug::GetDebugger();
 	if (pDebug)
 		pDebug->DebugStepIn(pCPos);
 #endif
@@ -882,7 +882,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 			pDebug->DebugStepIn(pSFunc->GetCode());
 #endif
 
@@ -945,7 +945,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		{
 			// Make dummy context
 			C4AulScriptContext ctx;

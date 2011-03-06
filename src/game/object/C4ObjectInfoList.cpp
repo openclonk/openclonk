@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4ObjectInfoList.h>
 
+#include <C4DefList.h>
 #include <C4ObjectInfo.h>
 #include <C4Components.h>
 #include <C4Game.h>

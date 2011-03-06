@@ -549,62 +549,6 @@ void ObjectComStopDig(C4Object *cObj)
 			cObj->ClearCommand(cObj->Command);
 }
 
-int32_t ComOrder(int32_t iIndex)
-{
-	static BYTE bComOrder[ComOrderNum] =
-	{
-		COM_Left, COM_Right, COM_Up, COM_Down, COM_Throw, COM_Dig, COM_Special, COM_Special2,
-		COM_Left_S, COM_Right_S, COM_Up_S, COM_Down_S, COM_Throw_S, COM_Dig_S, COM_Special_S, COM_Special2_S,
-		COM_Left_D, COM_Right_D, COM_Up_D, COM_Down_D, COM_Throw_D, COM_Dig_D, COM_Special_D, COM_Special2_D
-	};
-
-	if (Inside<int32_t>(iIndex,0,ComOrderNum-1)) return bComOrder[iIndex];
-
-	return COM_None;
-}
-
-const char *ComName(int32_t iCom)
-{
-	switch (iCom)
-	{
-	case COM_Up:          return "Up";
-	case COM_Up_S:        return "UpSingle";
-	case COM_Up_D:        return "UpDouble";
-	case COM_Up_R:        return "UpReleased";
-	case COM_Down:        return "Down";
-	case COM_Down_S:      return "DownSingle";
-	case COM_Down_D:      return "DownDouble";
-	case COM_Down_R:      return "DownReleased";
-	case COM_Left:        return "Left";
-	case COM_Left_S:      return "LeftSingle";
-	case COM_Left_D:      return "LeftDouble";
-	case COM_Left_R:      return "LeftReleased";
-	case COM_Right:       return "Right";
-	case COM_Right_S:     return "RightSingle";
-	case COM_Right_D:     return "RightDouble";
-	case COM_Right_R:     return "RightReleased";
-	case COM_Dig:         return "Dig";
-	case COM_Dig_S:       return "DigSingle";
-	case COM_Dig_D:       return "DigDouble";
-	case COM_Dig_R:       return "DigReleased";
-	case COM_Throw:       return "Throw";
-	case COM_Throw_S:     return "ThrowSingle";
-	case COM_Throw_D:     return "ThrowDouble";
-	case COM_Throw_R:     return "ThrowReleased";
-	case COM_Special:     return "Special";
-	case COM_Special_S:   return "SpecialSingle";
-	case COM_Special_D:   return "SpecialDouble";
-	case COM_Special_R:     return "SpecialReleased";
-	case COM_Special2:    return "Special2";
-	case COM_Special2_S:  return "Special2Single";
-	case COM_Special2_D:  return "Special2Double";
-	case COM_Special2_R:    return "Special2Released";
-	case COM_WheelUp:     return "WheelUp";
-	case COM_WheelDown:   return "WheelDown";
-	}
-	return "Undefined";
-}
-
 int32_t Coms2ComDir(int32_t iComs)
 {
 	// This is possible because COM_Left - COM_Down are < 32

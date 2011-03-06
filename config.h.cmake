@@ -91,6 +91,9 @@
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 #cmakedefine HAVE_SYS_INOTIFY_H 1
 
+/* Define to 1 if you have the <sys/file.h> header file. */
+#cmakedefine HAVE_SYS_FILE_H 1
+
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #cmakedefine HAVE_SYS_SOCKET_H 1
 

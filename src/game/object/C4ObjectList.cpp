@@ -27,6 +27,7 @@
 #include <C4Include.h>
 #include <C4ObjectList.h>
 
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4Region.h>

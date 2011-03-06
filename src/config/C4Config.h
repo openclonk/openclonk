@@ -30,8 +30,6 @@
 #include "C4InputValidation.h"
 #include <list>
 
-const char *CfgAtTempPath(const char *szFilename);
-
 #define C4DEFAULT_FONT_NAME "Endeavour"
 
 class C4ConfigGeneral
@@ -296,6 +294,4 @@ public:
 
 #include <C4ConfigShareware.h>
 
-extern C4Config *pConfig; // Some cheap temporary hack to get to config in Engine + Frontend...
-// This is so good - we can use it everywear!!!!
 #endif // INC_C4Config

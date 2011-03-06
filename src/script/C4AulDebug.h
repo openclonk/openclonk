@@ -30,10 +30,13 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 public:
 	C4AulDebug();
 	~C4AulDebug();
+	static bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+	static inline C4AulDebug *GetDebugger() { return pDebug; }
 
 private:
 	bool fInit, fConnected;
 	class C4AulExec *pExec;
+	static C4AulDebug *pDebug;
 	C4NetIO::addr_t PeerAddr, AllowedAddr;
 	StdCopyStrBuf Password;
 

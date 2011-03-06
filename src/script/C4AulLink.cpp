@@ -23,6 +23,7 @@
 #include <C4Aul.h>
 
 #include <C4Def.h>
+#include <C4DefList.h>
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
@@ -201,7 +202,6 @@ void C4AulScriptFunc::UnLink()
 	idImage = C4ID::None;
 	iImagePhase = 0;
 	Condition = NULL;
-	ControlMethod = C4AUL_ControlMethod_All;
 
 	C4AulFunc::UnLink();
 }

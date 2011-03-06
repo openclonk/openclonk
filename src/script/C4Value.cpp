@@ -22,17 +22,16 @@
 
 #include <C4Include.h>
 #include <C4Value.h>
+
+#include <C4DefList.h>
 #include <C4StringTable.h>
 #include <C4ValueArray.h>
-
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>
 
-const C4NullValue C4VNull = C4NullValue();
-const C4Value C4VTrue = C4VBool(true);
-const C4Value C4VFalse = C4VBool(false);
+const C4Value C4VNull;
 
 const char* GetC4VName(const C4V_Type Type)
 {
@@ -118,7 +117,7 @@ const char* C4Value::GetTypeInfo()
 bool C4Value::FnCnvObject() const
 {
 	// try casting
-	if (dynamic_cast<C4Object *>(Data.PropList)) return true;
+	if (Data.PropList->GetObject()) return true;
 	return false;
 }
 // Type conversion table

@@ -26,6 +26,7 @@
 #include <C4Include.h>
 #include <C4MouseControl.h>
 
+#include <C4DefList.h>
 #include <C4Viewport.h>
 #include <C4Object.h>
 #include <C4Command.h>

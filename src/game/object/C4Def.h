@@ -43,9 +43,7 @@
 #include <functional>
 #include <set>
 
-const int32_t C4D_None           =    0,
-C4D_All            =    ~C4D_None,
-
+const int32_t
 C4D_StaticBack     =    1<<0,
 C4D_Structure      =    1<<1,
 C4D_Vehicle        =    1<<2,
@@ -248,67 +246,5 @@ public:
 	C4PropList *GetActionByName(const char *actname);
 	C4PropList *GetActionByName(C4String *actname);
 };
-
-class C4DefList
-		: public CStdFont::CustomImages
-{
-public:
-	C4DefList();
-	virtual ~C4DefList();
-public:
-	bool LoadFailure;
-	typedef std::map<C4ID, C4Def*> Table;
-	Table table;
-protected:
-	C4Def *FirstDef;
-public:
-	void Default();
-	void Clear();
-	int32_t Load(C4Group &hGroup,
-	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
-	             bool fOverload = false,
-	             bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
-	int32_t Load(const char *szSearch,
-	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
-	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadFolderLocal(const char *szPath,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadForScenario(const char *szScenario,
-	                        const char *szSpecified,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	C4Def *ID2Def(C4ID id);
-	C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
-	C4Def *GetByPath(const char *szPath);
-	int32_t GetDefCount(DWORD dwCategory = C4D_All);
-	int32_t GetIndex(C4ID id);
-	int32_t RemoveTemporary();
-	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
-	int32_t CheckRequireDef();
-	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
-	void Remove(C4Def *def);
-	bool Remove(C4ID id);
-	bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
-	bool Add(C4Def *ndef, bool fOverload);
-	void BuildTable();
-	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
-	void CallEveryDefinition();
-	void Synchronize();
-
-	// callback from font renderer: get ID image
-	virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
-};
-
-extern C4DefList Definitions;
-
-inline C4Def *C4Id2Def(C4ID id)
-{
-	return ::Definitions.ID2Def(id);
-}
 
 #endif

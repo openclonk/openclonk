@@ -53,11 +53,6 @@ struct C4AulBCC;
 #define C4AUL_MAX_Par         10  // max number of parameters
 #define C4AUL_MAX_Var         10  // max number of func local vars
 
-#define C4AUL_ControlMethod_None 0
-#define C4AUL_ControlMethod_Classic 1
-#define C4AUL_ControlMethod_JumpAndRun 2
-#define C4AUL_ControlMethod_All 3
-
 // generic C4Aul error class
 class C4AulError
 {
@@ -310,7 +305,6 @@ public:
 	C4ID idImage; // associated image
 	int32_t iImagePhase; // Image phase
 	C4AulFunc *Condition; // func condition
-	int32_t ControlMethod; // 0 = all, 1 = Classic, 2 = Jump+Run
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
@@ -318,7 +312,7 @@ public:
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All),
+			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL),
 			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
@@ -522,9 +516,6 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
-#ifndef NOAULDEBUG
-	C4AulDebug *pDebug;
-#endif
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
@@ -563,11 +554,6 @@ public:
 
 	bool DenumerateVariablePointers();
 	void UnLink(); // called when a script is being reloaded (clears string table)
-
-	bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
-#ifndef NOAULDEBUG
-	inline C4AulDebug *GetDebugger() const { return pDebug; }
-#endif
 
 	// Compile scenario script data (without strings and constants)
 	void CompileFunc(StdCompiler *pComp);

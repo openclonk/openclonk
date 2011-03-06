@@ -85,7 +85,7 @@ do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
   -e 's,[@]C4VERSIONBUILDNAME[@],'"$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4VERSIONEXTRA[@],'$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)',g'
 
-C4Version.h: $(srcdir)/src/C4Version.h.in
+C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
 
 
@@ -247,6 +247,8 @@ src/game/object/C4Command.h \
 src/game/object/C4Def.cpp \
 src/game/object/C4DefGraphics.cpp \
 src/game/object/C4DefGraphics.h \
+src/game/object/C4DefList.cpp \
+src/game/object/C4DefList.h \
 src/game/object/C4Def.h \
 src/game/object/C4GameObjects.cpp \
 src/game/object/C4GameObjects.h \
@@ -288,7 +290,7 @@ src/game/script/C4Effect.cpp \
 src/game/script/C4Effects.h \
 src/game/script/C4FindObject.cpp \
 src/game/script/C4FindObject.h \
-src/game/script/C4Script.cpp \
+src/game/script/C4GameScript.cpp \
 src/game/script/C4Script.h \
 src/game/script/C4TransferZone.cpp \
 src/game/script/C4TransferZone.h \
@@ -511,6 +513,7 @@ src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
 src/script/C4PropList.cpp \
 src/script/C4PropList.h \
+src/script/C4Script.cpp \
 src/script/C4ScriptHost.cpp \
 src/script/C4ScriptHost.h \
 src/script/C4StringTable.cpp \
@@ -529,9 +532,14 @@ thirdparty/tinyxml/tinyxmlerror.cpp \
 thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
-clonk_SOURCES += src/platform/C4FileClasses.cpp src/editor/C4ConsoleWin32.cpp
-clonk_SOURCES += src/res/engine.rc src/res/resource.h
-clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
+clonk_SOURCES += \
+src/platform/C4FileClasses.cpp \
+src/editor/C4ConsoleWin32.cpp \
+src/platform/C4CrashHandlerWin32.cpp \
+src/res/engine.rc \
+src/res/resource.h \
+src/platform/StdJoystick.cpp \
+src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \

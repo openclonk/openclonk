@@ -150,7 +150,7 @@ bool C4ComponentHost::LoadEx(C4Group &hGroup,
 	// alternative groups for cross-loading from a language pack
 	C4GroupSet hGroups;
 	hGroups.RegisterGroup(hGroup, false, 1000, C4GSCnt_Component); // Provided group gets highest priority
-	hGroups.RegisterGroups(Languages.GetPackGroups(pConfig->AtRelativePath(hGroup.GetFullName().getData())), C4GSCnt_Language);
+	hGroups.RegisterGroups(Languages.GetPackGroups(Config.AtRelativePath(hGroup.GetFullName().getData())), C4GSCnt_Language);
 	// Load from group set
 	return Load(hGroups, szFilename, szLanguage);
 }
@@ -158,7 +158,7 @@ bool C4ComponentHost::LoadEx(C4Group &hGroup,
 // Construct full path
 void C4ComponentHost::CopyFilePathFromGroup(const C4Group &hGroup)
 {
-	SCopy(pConfig->AtRelativePath(hGroup.GetFullName().getData()), FilePath, _MAX_PATH - 1);
+	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), FilePath, _MAX_PATH - 1);
 	SAppendChar(DirectorySeparator, FilePath);
 	SAppend(Filename, FilePath, _MAX_PATH);
 }

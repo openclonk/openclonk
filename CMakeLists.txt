@@ -229,6 +229,8 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4Def.cpp
 	src/game/object/C4DefGraphics.cpp
 	src/game/object/C4DefGraphics.h
+	src/game/object/C4DefList.cpp
+	src/game/object/C4DefList.h
 	src/game/object/C4Def.h
 	src/game/object/C4GameObjects.cpp
 	src/game/object/C4GameObjects.h
@@ -270,7 +272,7 @@ set(OC_CLONK_SOURCES
 	src/game/script/C4Effects.h
 	src/game/script/C4FindObject.cpp
 	src/game/script/C4FindObject.h
-	src/game/script/C4Script.cpp
+	src/game/script/C4GameScript.cpp
 	src/game/script/C4Script.h
 	src/game/script/C4TransferZone.cpp
 	src/game/script/C4TransferZone.h
@@ -499,6 +501,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4AulParse.cpp
 	src/script/C4PropList.cpp
 	src/script/C4PropList.h
+	src/script/C4Script.cpp
 	src/script/C4ScriptHost.cpp
 	src/script/C4ScriptHost.h
 	src/script/C4StringTable.cpp
@@ -521,6 +524,7 @@ if(WIN32)
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
+		src/platform/C4CrashHandlerWin32.cpp
 		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
@@ -669,6 +673,7 @@ CHECK_INCLUDE_FILE_CXX(langinfo.h HAVE_LANGINFO_H)
 CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
 CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
 CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
 if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)

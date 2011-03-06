@@ -30,6 +30,8 @@
 #include <C4Include.h>
 #include <C4Game.h>
 
+#include <C4AulDebug.h>
+#include <C4DefList.h>
 #include <C4Effects.h>
 #include <C4FileMonitor.h>
 #include <C4GameSave.h>
@@ -459,7 +461,7 @@ bool C4Game::Init()
 	C4Startup::Unload();
 
 	// Init debugmode
-	DebugMode = Application.isEditor;
+	DebugMode = !!Application.isEditor;
 	if (Config.General.AlwaysDebug)
 		DebugMode = true;
 	if (!Parameters.AllowDebug)
@@ -613,7 +615,6 @@ void C4Game::Clear()
 	ScriptEngine.Clear();
 	MainSysLangStringTable.Clear();
 	ScenarioLangStringTable.Clear();
-	ScenarioSysLangStringTable.Clear();
 	CloseScenario();
 	GroupSet.Clear();
 	KeyboardInput.Clear();
@@ -1502,7 +1503,6 @@ void C4Game::Default()
 	GameText.Default();
 	MainSysLangStringTable.Default();
 	ScenarioLangStringTable.Default();
-	ScenarioSysLangStringTable.Default();
 	//GraphicsResource.Default();
 	//Control.Default();
 	MouseControl.Default();
@@ -2075,7 +2075,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 
 		// Scenario scripts (and local system.c4g)
 		// After defs to get overloading priority
-		if (!LoadScenarioScripts())
+		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(57);
 
@@ -2249,7 +2249,9 @@ bool C4Game::InitGameFinal()
 bool C4Game::InitScriptEngine()
 {
 	// engine functions
-	InitFunctionMap(&ScriptEngine);
+	InitCoreFunctionMap(&ScriptEngine);
+	InitObjectFunctionMap(&ScriptEngine);
+	InitGameFunctionMap(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())
@@ -2287,7 +2289,7 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::ScriptEngine.InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
+		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
 			return false;
 
 	return true;
@@ -2650,18 +2652,24 @@ bool C4Game::LoadScenarioScripts()
 	// Script
 	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
 	::GameScript.Load(ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
-	// additional system scripts?
+	return true;
+}
+
+bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
+{
+	// called for scenario local and definition local System.c4g groups
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
-	if (SysGroup.OpenAsChild(&ScenarioFile, C4CFN_System))
+	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
 	{
-		ScenarioSysLangStringTable.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		C4LangStringTable SysGroupString;
+		SysGroupString.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
 			Log("[!]Loading local scenario player control definitions...");
 			C4PlayerControlFile PlayerControlFile;
-			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, &ScenarioSysLangStringTable))
+			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, &SysGroupString))
 			{
 				// non-fatal error here
 				Log("[!]Error loading scenario defined player controls");
@@ -2681,7 +2689,7 @@ bool C4Game::LoadScenarioScripts()
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();
 			scr->Reg2List(&ScriptEngine, &ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &ScenarioSysLangStringTable);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)

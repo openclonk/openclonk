@@ -71,7 +71,7 @@ public:
 	C4ComponentHost     Title;
 	C4ComponentHost     Names;
 	C4ComponentHost     GameText;
-	C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
+	C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable;
 	StdStrBuf           PlayerNames;
 	C4Control          &Input; // shortcut
 
@@ -252,6 +252,7 @@ protected:
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();
 public:
+	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);
 protected:
 	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky);

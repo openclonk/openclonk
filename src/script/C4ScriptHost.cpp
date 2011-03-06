@@ -86,35 +86,6 @@ void C4ScriptHost::MakeScript()
 	Preparse();
 }
 
-int32_t C4ScriptHost::GetControlMethod(int32_t com, int32_t first, int32_t second)
-{
-	return ((first >> com) & 0x01) | (((second >> com) & 0x01) << 1);
-}
-
-void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& first, int32_t& second)
-{
-	first = second = 0;
-	//int32_t iResult = 0;
-
-	if (!Script) return;
-
-	// Scan for com defined control functions
-	int32_t iCom;
-	char szFunction[256+1];
-	for (iCom=0; iCom<ComOrderNum; iCom++)
-	{
-		sprintf( szFunction, szFunctionFormat, ComName( ComOrder(iCom) ) );
-		C4AulScriptFunc* func = GetSFunc(szFunction);
-
-		if (func)
-		{
-			first  |= ((func->ControlMethod     ) & 0x01) << iCom;
-			second |= ((func->ControlMethod >> 1) & 0x01) << iCom;
-		}
-	}
-}
-
-
 C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
 {
 	// get function
@@ -145,33 +116,12 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
-const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t iCom, C4ID *pidImage, int32_t* piImagePhase)
-{
-	// Compose script function
-	char szFunction[256+1];
-	sprintf(szFunction,szFunctionFormat,ComName(iCom));
-	// Remove failsafe indicator
-	if (szFunction[0]=='~') memmove(szFunction,szFunction+1,sizeof(szFunction));
-	// Find function reference
-	C4AulScriptFunc *pFn = GetSFunc(szFunction);
-	// Get image id
-	if (pidImage) { if (Def) *pidImage=Def->id; else *pidImage=C4ID::None; if (pFn) *pidImage=pFn->idImage; }
-// Get image phase
-if (piImagePhase) { *piImagePhase = 0; if (pFn) *piImagePhase = pFn->iImagePhase; }
-// Return function desc
-if (pFn && pFn->Desc.getLength()) return pFn->DescText.getData();
-// No function
-return NULL;
-}
-
-
 /*--- C4DefScriptHost ---*/
 
 void C4DefScriptHost::Default()
 {
 	C4ScriptHost::Default();
 	SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL;
-	ControlMethod[0]=ControlMethod[1]=ContainedControlMethod[0]=ContainedControlMethod[1]=ActivationControlMethod[0]=ActivationControlMethod[1]=0;
 }
 
 void C4DefScriptHost::AfterLink()
@@ -187,10 +137,6 @@ void C4DefScriptHost::AfterLink()
 		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;
 		Def->TimerCall=GetSFuncWarn((const char *) Def->STimerCall, CallAccess, "TimerCall");
 	}
-	// Check if there are any Control/Contained/Activation script functions
-	GetControlMethodMask(PSF_Control, ControlMethod[0], ControlMethod[1]);
-	GetControlMethodMask(PSF_ContainedControl, ContainedControlMethod[0], ContainedControlMethod[1]);
-	GetControlMethodMask(PSF_Activate, ActivationControlMethod[0], ActivationControlMethod[1]);
 }
 
 

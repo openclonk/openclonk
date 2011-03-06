@@ -27,6 +27,7 @@
 #include <C4Include.h>
 #include <C4Effects.h>
 
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Random.h>
 #include <C4Log.h>
