@@ -69,7 +69,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 	//int32_t iDefCnt = ::Definitions.GetDefCount();
 	//pComp->Value(mkNamingCountAdapt(iDefCnt, "Def"));
 	// "PropList" section count
-	int32_t iPropListCnt = PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
+	int32_t iPropListCnt = C4PropListNumbered::PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
 	pComp->Value(mkNamingCountAdapt(iPropListCnt, "PropList"));
 	// skipping player objects would screw object counting in non-naming compilers
 	assert(!fSkipPlayerObjects || pComp->hasNaming());
@@ -80,15 +80,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 			if (pPos->Obj->Status)
 				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
 					pComp->Value(mkNamingAdapt(*pPos->Obj, "Object"));
-		/*for(C4PropList * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		  if (dynamic_cast<C4Def *>(*ppPropList))
-		    {
-		    pComp->Name("Def");
-		    pComp->Value(mkNamingAdapt(mkC4IDAdapt(dynamic_cast<C4Def *>(*ppPropList)->id), "id", C4ID_None));
-		    pComp->Value(mkNamingAdapt((*ppPropList)->Number, "Number", -1));
-		    pComp->NameEnd();
-		    }*/
-		for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
+		for (C4PropListNumbered * const * ppPropList = C4PropListNumbered::PropLists.First(); ppPropList; ppPropList = C4PropListNumbered::PropLists.Next(ppPropList))
 			if ((*ppPropList)->IsScriptPropList())
 			{
 				pComp->Value(mkNamingAdapt(**ppPropList, "PropList"));
@@ -100,7 +92,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 		assert(!fSkipPlayerObjects);
 		// Remove previous data
 		Clear();
-		//assert(PropLists.GetSize() == ::Definitions.GetDefCount());
+		//assert(C4PropListNumbered::PropLists.GetSize() == ::Definitions.GetDefCount());
 		// Load objects, add them to the list.
 		for (int i = 0; i < iObjCnt; i++)
 		{
@@ -120,33 +112,6 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 				delete pExc;
 			}
 		}
-		// Load object numbers of the definitions
-		/*for(int i = 0; i < iDefCnt; i++)
-		  {
-		  try
-		    {
-		    pComp->Name("Def");
-		    C4ID id;
-		    pComp->Value(mkNamingAdapt(mkC4IDAdapt(id), "id", C4ID_None));
-		    C4Def * pDef = ::Definitions.ID2Def(id);
-		    if (!pDef)
-		      { pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); continue; }
-		    PropLists.Remove(static_cast<C4PropList *>(pDef));
-		    pComp->Value(mkNamingAdapt(pDef->Number, "Number", -1));
-		    PropLists.Add(static_cast<C4PropList *>(pDef));
-		    }
-		  catch (StdCompiler::Exception *pExc)
-		    {
-		    // Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-		    if(!pExc->Pos.getLength())
-		      LogF("ERROR: Definition loading: %s", pExc->Msg.getData());
-		    else
-		      LogF("ERROR: Definition loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-		    delete pExc;
-		      pComp->NameEnd(true);
-		    }
-		  pComp->NameEnd();
-		  }*/
 		// Load proplists
 		for (int i = 0; i < iPropListCnt; i++)
 		{
@@ -325,29 +290,8 @@ void C4GameObjects::Synchronize()
 C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 {
 	// search own list
-	C4PropList *pObj = PropLists.Get(iNumber);
+	C4PropList *pObj = C4PropListNumbered::GetByNumber(iNumber);
 	if (pObj) return pObj->GetObject();
-	return 0;
-}
-
-C4PropList *C4GameObjects::PropListPointer(int32_t iNumber)
-{
-	return PropLists.Get(iNumber);
-}
-
-int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
-{
-	if (!pObj) return 0;
-	C4PropListNumbered * const * p = PropLists.First();
-	while (p)
-	{
-		if (*p == pObj)
-		{
-			if ((*p)->GetPropListNumbered()) return (*p)->GetPropListNumbered()->Number;
-			return 0;
-		}
-		p = PropLists.Next(p);
-	}
 	return 0;
 }
 
@@ -382,15 +326,13 @@ void C4GameObjects::Clear(bool fClearInactive)
 	LastUsedMarker = 0;
 }
 
-#define C4CV_Section_Object "[Object]"
-
 int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 {
 	Clear(!fKeepInactive);
 
 	// Load data component
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, Source))
+	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, &Source))
 		return 0;
 
 	// Compile
@@ -430,10 +372,8 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate();
-	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
-	Game.ObjectEnumerationIndex = Max(Game.ObjectEnumerationIndex, iMaxObjectNumber);
+	C4PropListNumbered::DenumerateAll(iMaxObjectNumber);
 	// end faking and adjust object numbers
 	if (fObjectNumberCollision)
 	{
@@ -441,7 +381,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		// simply renumber all inactive objects
 		for (cLnk=InactiveObjects.First; cLnk; cLnk=cLnk->Next)
 			if ((pObj=cLnk->Obj)->Status)
-				pObj->Number = ++Game.ObjectEnumerationIndex;
+				pObj->Number = ++C4PropListNumbered::EnumerationIndex;
 	}
 
 	// special checks:
@@ -571,6 +511,21 @@ void C4GameObjects::UpdateScriptPointers()
 	InactiveObjects.UpdateScriptPointers();
 	// adjust global effects
 	if (Game.pGlobalEffects) Game.pGlobalEffects->ReAssignAllCallbackFunctions();
+}
+
+C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
+{
+	// call objects first - scenario script might overwrite hostility, etc...
+	C4Object *pObj;
+	::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
+	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
+		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
+		{
+			C4Value vResult = pObj->Call(szFunction, pPars, fPassError);
+			// rejection tests abort on first nonzero result
+			if (fRejectTest && !!vResult) return vResult;
+		}
+	return C4Value();
 }
 
 void C4GameObjects::UpdatePos(C4Object *pObj)

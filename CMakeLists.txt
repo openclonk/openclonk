@@ -873,6 +873,47 @@ add_executable(netpuncher
 	src/netpuncher/main.cpp
 )
 
+add_executable(c4script EXCLUDE_FROM_ALL
+	src/c4group/C4Group.cpp
+	src/c4group/C4Group.h
+	src/c4group/CStdFile.cpp
+	src/c4group/CStdFile.h
+	src/lib/C4InputValidation.cpp
+	src/lib/C4InputValidation.h
+	src/lib/Standard.cpp
+	src/lib/Standard.h
+	src/lib/StdBuf.cpp
+	src/lib/StdBuf.h
+	src/lib/StdCompiler.cpp
+	src/lib/StdCompiler.h
+	src/lib/StdMarkup.cpp
+	src/lib/StdMarkup.h
+	src/lib/StdResStr2.cpp
+	src/lib/StdResStr2.h
+	src/platform/StdConfig.cpp
+	src/platform/StdConfig.h
+	src/platform/StdFile.cpp
+	src/platform/StdFile.h
+	src/lib/C4Real.cpp
+	src/lib/C4Random.cpp
+	src/script/shell.cpp
+	src/script/C4Aul.cpp
+	src/script/C4AulExec.cpp
+	src/script/C4AulLink.cpp
+	src/script/C4AulParse.cpp
+	src/script/C4StringTable.cpp
+	src/script/C4PropList.cpp
+	src/script/C4ScriptHost.cpp
+	src/script/C4ValueArray.cpp
+	src/script/C4Value.cpp
+	src/script/C4ValueMap.cpp
+	src/game/object/C4Id.cpp
+	src/script/C4Script.cpp
+	src/c4group/C4GroupSet.cpp
+	src/c4group/C4ComponentHost.cpp
+	src/c4group/C4LangStringTable.cpp
+)
+
 target_link_libraries(clonk
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
@@ -888,9 +929,16 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 )
+target_link_libraries(c4script
+	${ZLIB_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+)
 if(HAVE_PTHREAD)
 	target_link_libraries(netpuncher
 		pthread
+	)
+	target_link_libraries(c4script
+		pthread	
 	)
 endif()
 if(USE_CONSOLE)
@@ -1071,6 +1119,7 @@ if (WIN32)
 	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(netpuncher ws2_32 winmm)
+	target_link_libraries(c4script ws2_32 winmm)
 
 	if(NOT USE_OPEN_AL)
 		if(MSVC_VERSION)

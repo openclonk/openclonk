@@ -93,18 +93,19 @@ public:
 	void Default();
 
 	C4GroupSet();   // ctor
-	C4GroupSet(C4GroupSet &rCopy); // copy-constructor that registers all groups with all contents
+	C4GroupSet(const C4GroupSet &rCopy); // copy-constructor that registers all groups with all contents	
 	~C4GroupSet();  // dtor
 
 	bool RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, int32_t Contents, bool fCheckContent=true); // add group to list
-	bool RegisterGroups(C4GroupSet &rCopy, int32_t Contents, const char *szFilename=NULL, int32_t iMaxSkipID=0);  // add all matching (child-)groups of the set
+	bool RegisterGroups(const C4GroupSet &rCopy, int32_t Contents, const char *szFilename=NULL, int32_t iMaxSkipID=0);  // add all matching (child-)groups of the set
 	C4Group *FindGroup(int32_t Contents, C4Group *pAfter=NULL, bool fSamePrio=false);       // search for suitable group in list
 	C4Group *FindEntry(const char *szWildcard, int32_t *pPriority=NULL, int32_t *pID=NULL);                   // find entry in groups; store priority of group if ptr is given
 	C4Group *FindSuitableFile(const char *szName, const char * const extensions[], char *szFileName, int32_t *pID=NULL);
 	int32_t GetGroupCount();
 	C4Group *GetGroup(int32_t iIndex);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize=NULL, int32_t iAppendZeros=0);
-	bool LoadEntryString(const char *szEntryName, StdStrBuf & rBuf);
+	bool LoadEntryString(const char *szEntryName, StdStrBuf * rBuf);
+	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	C4Group *RegisterParentFolders(const char *szScenFilename); // register all parent .c4f groups to the given scenario filename and return an open group file of the innermost parent c4f
 
 	static int32_t CheckGroupContents(C4Group &rGroup, int32_t Contents);

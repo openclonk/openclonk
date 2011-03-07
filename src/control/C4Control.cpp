@@ -383,7 +383,7 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
     C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
 		: iPlr(iPlr), iCmd(iCmd), iX(iX), iY(iY),
-		iTarget(::Objects.ObjectNumber(pTarget)), iTarget2(::Objects.ObjectNumber(pTarget2)),
+		iTarget(pTarget ? pTarget->Number : 0), iTarget2(pTarget2 ? pTarget2->Number : 0),
 		iData(iData), iAddMode(iAddMode)
 {
 
@@ -432,7 +432,7 @@ void C4ControlSyncCheck::Set()
 	PXSCount = ::PXS.Count;
 	MassMoverIndex = ::MassMover.CreatePtr;
 	ObjectCount = ::Objects.ObjectCount();
-	ObjectEnumerationIndex = Game.ObjectEnumerationIndex;
+	ObjectEnumerationIndex = C4PropListNumbered::GetEnumerationIndex();
 	SectShapeSum = ::Objects.Sectors.getShapeSum();
 }
 
@@ -861,7 +861,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
-		: eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
+		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
 {
 

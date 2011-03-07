@@ -192,6 +192,12 @@ void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
 #endif
 }
 
+void StdStrBuf::AppendBackslash()
+{
+	if(getLength() && *getPtr(getLength() - 1) == DirectorySeparator) return;
+	AppendChar(DirectorySeparator);
+}
+
 void StdStrBuf::CompileFunc(StdCompiler *pComp, int iRawType)
 {
 	if (pComp->isCompiler())

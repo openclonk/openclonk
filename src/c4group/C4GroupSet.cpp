@@ -77,7 +77,7 @@ C4GroupSet::C4GroupSet()
 	iIndex=0;
 }
 
-C4GroupSet::C4GroupSet(C4GroupSet &rCopy)
+C4GroupSet::C4GroupSet(const C4GroupSet &rCopy)
 {
 	// zero fields
 	Default();
@@ -132,7 +132,7 @@ int32_t C4GroupSet::CheckGroupContents(C4Group &rGroup, int32_t Contents)
 	return Contents;
 }
 
-bool C4GroupSet::RegisterGroups(C4GroupSet &rCopy, int32_t Contents, const char *szFilename, int32_t iMaxSkipID)
+bool C4GroupSet::RegisterGroups(const C4GroupSet &rCopy, int32_t Contents, const char *szFilename, int32_t iMaxSkipID)
 {
 	// get all groups of rCopy
 	int32_t Contents2;
@@ -229,7 +229,7 @@ bool C4GroupSet::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSi
 	return false;
 }
 
-bool C4GroupSet::LoadEntryString(const char *szEntryName, StdStrBuf & rBuf)
+bool C4GroupSet::LoadEntryString(const char *szEntryName, StdStrBuf * rBuf)
 {
 	// Load the entry from the first group that has it
 	C4Group *pGroup;

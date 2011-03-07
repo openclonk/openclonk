@@ -129,7 +129,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	bool fHasLangTable = !!LangTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 	// load core data
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, Buf)) return false;
+	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, &Buf)) return false;
 	if (fHasLangTable) LangTable.ReplaceStrings(Buf);
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "FolderMap"), Buf, C4CFN_MapFolderData)) return false;
 	// check resolution requirement
@@ -533,7 +533,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
 		fExLoaded = true;
 		// load version
-		Group.LoadEntryString(C4CFN_Version, sVersion);
+		Group.LoadEntryString(C4CFN_Version, &sVersion);
 	}
 	//LogF("dbg: Loaded \"%s\" as \"%s\". (%s)", (const char *) sFilename, (const char *) sName, GetIsFolder() ? "Folder" : "Scenario");
 	// done, success
@@ -677,7 +677,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 {
 	// load scenario core first
 	StdStrBuf sFileContents;
-	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, sFileContents)) return false;
+	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
 	return true;
@@ -925,7 +925,7 @@ bool C4ScenarioListLoader::Folder::LoadCustomPre(C4Group &rGrp)
 {
 	// load folder core if available
 	StdStrBuf sFileContents;
-	if (rGrp.LoadEntryString(C4CFN_FolderCore, sFileContents))
+	if (rGrp.LoadEntryString(C4CFN_FolderCore, &sFileContents))
 		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(C4F, sFileContents, (rGrp.GetFullName() + DirSep C4CFN_FolderCore).getData()))
 			return false;
 	return true;

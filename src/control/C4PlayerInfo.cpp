@@ -1215,7 +1215,7 @@ bool C4PlayerInfoList::Load(C4Group &hGroup, const char *szFromFile, C4LangStrin
 	Clear();
 	// load file contents
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(szFromFile, Buf))
+	if (!hGroup.LoadEntryString(szFromFile, &Buf))
 		// no file is OK; means no player infos
 		return true;
 	// replace strings

@@ -241,11 +241,12 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 	case C4V_C4Object:
 #ifdef _DEBUG
 		// check if the object actually exists
-		/*if (!::Objects.ObjectNumber(Data.Obj))
-			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }*/
+		if (!C4PropListNumbered::CheckPropList(Data.PropList))
+			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }
 #endif
 	case C4V_PropList:
 #ifdef _DEBUG
+		assert(C4PropList::PropLists.Has(Data.PropList));
 		if (!Data.PropList->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
 #endif

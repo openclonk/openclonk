@@ -56,7 +56,7 @@ void C4ObjectPtr::EnumeratePointers()
 {
 	assert(fDenumerated);
 
-	data.nptr = ::Objects.ObjectNumber(data.ptr);
+	data.nptr = data.ptr ? data.ptr->Number : 0;
 
 #ifndef NDEBUG
 	fDenumerated = false;

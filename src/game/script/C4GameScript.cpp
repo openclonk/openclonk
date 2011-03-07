@@ -737,15 +737,9 @@ static C4Value FnGetPlrKnowledge_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Va
 	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
-static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
+static C4Def * FnGetDefinition(C4AulContext *cthr, long iIndex)
 {
-	C4Def *pDef;
-	// Default: all categories
-	if (!dwCategory) dwCategory=C4D_All;
-	// Get def
-	if (!(pDef = ::Definitions.GetDef(iIndex,dwCategory))) return C4ID::None;
-	// Return id
-	return pDef->id;
+	return ::Definitions.GetDef(iIndex);
 }
 
 static C4Value FnGetComponent_C4V(C4AulContext *cthr, C4Value* idComponent_C4V, C4Value* iIndex_C4V, C4Value* pObj_C4V, C4Value* idDef_C4V)

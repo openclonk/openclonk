@@ -106,7 +106,7 @@ void C4Def::DefaultDefCore()
 bool C4Def::LoadDefCore(C4Group &hGroup)
 {
 	StdStrBuf Source;
-	if (hGroup.LoadEntryString(C4CFN_DefCore,Source))
+	if (hGroup.LoadEntryString(C4CFN_DefCore,&Source))
 	{
 		StdStrBuf Name = hGroup.GetFullName() + (const StdStrBuf &)FormatString("%cDefCore.txt", DirectorySeparator);
 		if (!Compile(Source.getData(), Name.getData()))
@@ -336,8 +336,8 @@ void C4Def::Default()
 	Count=0;
 	TimerCall=NULL;
 	MainFace.Set(NULL,0,0,0,0);
-	Script.Default();
-	StringTable.Default();
+	Script.Clear();
+	StringTable.Clear();
 	pClonkNames=NULL;
 	pRankNames=NULL;
 	pRankSymbols=NULL;

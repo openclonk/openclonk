@@ -79,7 +79,7 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 {
 	// New version
 	StdStrBuf Source;
-	if (hGroup.LoadEntryString(C4CFN_PlayerInfoCore,Source))
+	if (hGroup.LoadEntryString(C4CFN_PlayerInfoCore,&Source))
 	{
 		// Compile
 		StdStrBuf GrpName = hGroup.GetFullName(); GrpName.Append(DirSep C4CFN_PlayerInfoCore);
@@ -284,7 +284,7 @@ bool C4ObjectInfoCore::GetNextRankInfo(C4RankSystem &rDefaultRanks, int32_t *piN
 bool C4ObjectInfoCore::Load(C4Group &hGroup)
 {
 	StdStrBuf Source;
-	return hGroup.LoadEntryString(C4CFN_ObjectInfoCore, Source) &&
+	return hGroup.LoadEntryString(C4CFN_ObjectInfoCore, &Source) &&
 	       Compile(Source.getData());
 }
 

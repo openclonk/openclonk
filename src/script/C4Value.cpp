@@ -213,13 +213,15 @@ StdStrBuf C4Value::GetDataString() const
 	case C4V_PropList:
 	{
 		// obj exists?
-		if (!::Objects.ObjectNumber(Data.PropList))
+		if (!C4PropListNumbered::CheckPropList(Data.PropList))
 			return FormatString("%ld", static_cast<long>(Data.Int));
-		else if (Data.PropList)
-			if (Data.Obj->Status == C4OS_NORMAL)
-				return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+		else if (Data.PropList && Data.PropList->GetPropListNumbered())
+			if (Data.PropList->Status == C4OS_NORMAL)
+				return FormatString("%s #%d", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
 			else
-				return FormatString("{%s #%d}", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+				return FormatString("{%s #%d}", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
+		else if (Data.PropList)
+			return FormatString("{}");
 		else
 			return StdStrBuf("0"); // (impossible)
 	}
@@ -270,7 +272,7 @@ void C4Value::DenumeratePointer()
 	if (Type != C4V_C4ObjectEnum) return;
 	// get obj id, search object
 	int iObjID = Data.Int;
-	C4PropList *pObj = Objects.PropListPointer(iObjID);
+	C4PropList *pObj = C4PropListNumbered::GetByNumber(iObjID);
 	if (pObj)
 		// set
 		SetPropList(pObj);
@@ -350,7 +352,8 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			pComp->Value(p->GetDef()->id);
 		else
 		{
-			iTmp = ::Objects.ObjectNumber(getPropList());
+			assert(getPropList()->GetPropListNumbered());
+			iTmp = getPropList()->GetPropListNumbered()->Number;
 			pComp->Value(iTmp);
 		}
 		break;

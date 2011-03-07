@@ -180,7 +180,7 @@ bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOv
 {
 	// Load the file
 	StdStrBuf TexMap;
-	if (!hGroup.LoadEntryString(szEntryName, TexMap))
+	if (!hGroup.LoadEntryString(szEntryName, &TexMap))
 		return false;
 	// Reset flags
 	if (pOverloadMaterials) *pOverloadMaterials = false;

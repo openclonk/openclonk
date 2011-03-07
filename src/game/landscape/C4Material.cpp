@@ -154,7 +154,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
                           const char *szEntryName)
 {
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(szEntryName,Source))
+	if (!hGroup.LoadEntryString(szEntryName,&Source))
 		return false;
 	StdStrBuf Name = hGroup.GetFullName() + DirSep + szEntryName;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
@@ -523,7 +523,7 @@ bool C4MaterialMap::LoadEnumeration(C4Group &hGroup)
 {
 	// Load enumeration map (from savegame), succeed if not present
 	StdStrBuf mapbuf;
-	if (!hGroup.LoadEntryString(C4CFN_MatMap, mapbuf)) return true;
+	if (!hGroup.LoadEntryString(C4CFN_MatMap, &mapbuf)) return true;
 
 	// Sort material array by enumeration map, fail if some missing
 	const char *csearch;

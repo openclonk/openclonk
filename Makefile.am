@@ -14,7 +14,7 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group puncher
+bin_PROGRAMS = clonk c4group puncher c4script
 
 EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 
@@ -656,6 +656,32 @@ tstc4netio_LDADD = \
 if WIN32
 tstc4netio_LDADD += -lwinmm -lws2_32
 endif
+
+## c4script shell
+c4script_SOURCES = \
+src/lib/C4Real.cpp \
+src/lib/C4Random.cpp \
+src/script/shell.cpp \
+src/script/C4Aul.cpp \
+src/script/C4AulExec.cpp \
+src/script/C4AulLink.cpp \
+src/script/C4AulParse.cpp \
+src/script/C4StringTable.cpp \
+src/script/C4PropList.cpp \
+src/script/C4ScriptHost.cpp \
+src/script/C4ValueArray.cpp \
+src/script/C4Value.cpp \
+src/script/C4ValueMap.cpp \
+src/game/object/C4Id.cpp \
+src/script/C4Script.cpp \
+src/c4group/C4GroupSet.cpp \
+src/c4group/C4ComponentHost.cpp \
+src/c4group/C4LangStringTable.cpp
+
+c4script_LDADD = \
+  lib.a \
+  $(OPENSSL_LIBS) \
+  $(Z_LIBS)
 
 ## other stuff
 

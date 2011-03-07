@@ -79,7 +79,7 @@ bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, bool fStatic)
 	if (!Config.Sound.RXSound) return false;
 	// Locate sound in file
 	StdBuf WaveBuffer;
-	if (!hGroup.LoadEntry(szFileName, WaveBuffer)) return false;
+	if (!hGroup.LoadEntry(szFileName, &WaveBuffer)) return false;
 	// load it from mem
 	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize(), fStatic)) return false;
 	// Set name

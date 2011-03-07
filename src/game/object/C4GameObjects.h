@@ -57,14 +57,13 @@ public:
 	void UpdateSolidMasks();
 
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-	virtual C4PropList *PropListPointer(int32_t iNumber); // object pointer by number
-	int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int Load(C4Group &hGroup, bool fKeepInactive);
 	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *
+	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest);  // call function in all goals/rules/environment objects
 
 	void UpdatePos(C4Object *pObj);
 	void UpdatePosResort(C4Object *pObj);
@@ -81,9 +80,6 @@ public:
 	void ResetAudibility();
 	void UpdateTransferZones();
 	void SetOCF();
-protected:
-	C4Set<C4PropListNumbered *> PropLists;
-	friend class C4PropListNumbered;
 };
 
 extern C4GameObjects Objects;

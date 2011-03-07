@@ -217,23 +217,41 @@ public:
 	bool View(const char *szFiles);
 	bool AccessEntry(const char *szWildCard,
 	                 size_t *iSize=NULL, char *sFileName=NULL,
-	                 bool *fChild=NULL, bool NeedsToBeAGroup = false);
+	                 bool NeedsToBeAGroup = false);
 	bool AccessNextEntry(const char *szWildCard,
 	                     size_t *iSize=NULL, char *sFileName=NULL,
 	                     bool *fChild=NULL);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf,
 	               size_t *ipSize=NULL, int iAppendZeros=0);
-	bool LoadEntry(const char *szEntryName, StdBuf &Buf);
-	bool LoadEntryString(const char *szEntryName, StdStrBuf &Buf);
+	bool LoadEntry(const char *szEntryName, StdBuf * Buf);
+	bool LoadEntry(const StdStrBuf & name, StdBuf * Buf) { return LoadEntry(name.getData(), Buf); }
+	bool LoadEntryString(const char *szEntryName, StdStrBuf * Buf);
+	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
 	bool FindEntry(const char *szWildCard,
-	               char *sFileName=NULL,
-	               size_t *iSize=NULL,
-	               bool *fChild=NULL);
+	               StdStrBuf *sFileName=NULL,
+	               size_t *iSize=NULL);
+	bool FindEntry(const char *szWildCard,
+	               char *sFileName)
+	{
+		StdStrBuf name;
+		bool r = FindEntry(szWildCard, &name);
+		if(sFileName) SCopy(name.getData(),sFileName);
+		return r;
+	}
 	bool FindNextEntry(const char *szWildCard,
-	                   char *sFileName=NULL,
+	                   StdStrBuf *sFileName=NULL,
 	                   size_t *iSize=NULL,
-	                   bool *fChild=NULL,
 	                   bool fStartAtFilename=false);
+	bool FindNextEntry(const char *szWildCard,
+	                   char *sFileName,
+	                   size_t *iSize=NULL,
+	                   bool fStartAtFilename=false)
+	{
+		StdStrBuf name;
+		bool r = FindNextEntry(szWildCard, &name, iSize, fStartAtFilename);
+		if(sFileName) SCopy(name.getData(),sFileName);
+		return r;
+	}
 	bool Read(void *pBuffer, size_t iSize);
 	bool Advance(int iOffset);
 	void SetStdOutput(bool fStatus);

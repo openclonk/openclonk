@@ -257,22 +257,23 @@ int C4Language::GetInfoCount()
 
 // Returns a set of groups at the specified relative path within all open language packs.
 
-C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
+C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 {
-	// Variables
+	// Build a group set containing the provided group and
+	// alternative groups for cross-loading from a language pack
 	char strTargetLocation[_MAX_PATH + 1];
 	char strPackPath[_MAX_PATH + 1];
 	char strPackGroupLocation[_MAX_PATH + 1];
 	char strAdvance[_MAX_PATH + 1];
 
 	// Store wanted target location
-	SCopy(strRelativePath, strTargetLocation, _MAX_PATH);
+	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strTargetLocation, _MAX_PATH);
 
 	// Adjust location by scenario origin
 	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "c4s"))
 	{
-		const char *szScenarioRelativePath = GetRelativePathS(strRelativePath, Config.AtRelativePath(Game.ScenarioFilename));
-		if (szScenarioRelativePath != strRelativePath)
+		const char *szScenarioRelativePath = GetRelativePathS(strTargetLocation, Config.AtRelativePath(Game.ScenarioFilename));
+		if (szScenarioRelativePath != strTargetLocation)
 		{
 			// this is a path within the scenario! Change to origin.
 			size_t iRestPathLen = SLen(szScenarioRelativePath);
@@ -288,9 +289,8 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 		}
 	}
 
-	// Target location has not changed: return last list of pack groups
-	if (SEqualNoCase(strTargetLocation, PackGroupLocation))
-		return PackGroups;
+	//if (SEqualNoCase(strTargetLocation, PackGroupLocation))
+		//LogF("Reloading for %s", strTargetLocation);
 
 	// Process all language packs (and their respective pack groups)
 	C4Group *pPack, *pPackGroup;
@@ -350,8 +350,12 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 	// Store new target location
 	SCopy(strTargetLocation, PackGroupLocation, _MAX_FNAME);
 
-	// Return currently open pack groups
-	return PackGroups;
+	C4GroupSet r;
+	// Provided group gets highest priority
+	r.RegisterGroup(hGroup, false, 1000, C4GSCnt_Component);
+	// register currently open pack groups
+	r.RegisterGroups(PackGroups, C4GSCnt_Language);
+	return r;
 }
 
 void C4Language::InitInfos()

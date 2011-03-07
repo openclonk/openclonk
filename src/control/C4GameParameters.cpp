@@ -405,7 +405,7 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 	// Compile data
 	StdStrBuf Buf;
-	if (hGroup.LoadEntryString(C4CFN_Parameters, Buf))
+	if (hGroup.LoadEntryString(C4CFN_Parameters, &Buf))
 	{
 		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
 		      mkNamingAdapt(mkParAdapt(*this, pScenario), "Parameters"),
