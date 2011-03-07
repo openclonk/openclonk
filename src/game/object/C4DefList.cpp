@@ -302,25 +302,23 @@ int32_t C4DefList::GetIndex(C4ID id)
 	return -1;
 }
 
-int32_t C4DefList::GetDefCount(DWORD dwCategory)
+int32_t C4DefList::GetDefCount()
 {
 	C4Def *cdef; int32_t ccount=0;
 	for (cdef=FirstDef; cdef; cdef=cdef->Next)
-		if (cdef->Category & dwCategory)
-			ccount++;
+		ccount++;
 	return ccount;
 }
 
-C4Def* C4DefList::GetDef(int32_t iIndex, DWORD dwCategory)
+C4Def* C4DefList::GetDef(int32_t iIndex)
 {
 	C4Def *pDef; int32_t iCurrentIndex;
 	if (iIndex<0) return NULL;
 	for (pDef=FirstDef,iCurrentIndex=-1; pDef; pDef=pDef->Next)
-		if (pDef->Category & dwCategory)
-		{
-			iCurrentIndex++;
-			if (iCurrentIndex==iIndex) return pDef;
-		}
+	{
+		iCurrentIndex++;
+		if (iCurrentIndex==iIndex) return pDef;
+	}
 	return NULL;
 }
 

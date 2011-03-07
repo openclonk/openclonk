@@ -203,7 +203,7 @@ template <> struct C4ValueConv<C4Def *>
 	inline static C4V_Type Type() { return C4V_PropList; }
 	inline static C4Def *FromC4V(C4Value &v) { C4PropList * p = v.getPropList(); return p ? p->GetDef() : 0; }
 	inline static C4Def *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetDef() : 0; }
-	inline static C4Value ToC4V(C4Effect *v) { return C4VPropList(v); }
+	inline static C4Value ToC4V(C4Def *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<const C4Value &>
 {

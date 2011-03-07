@@ -60,9 +60,9 @@ public:
 	                        C4SoundSystem *pSoundSystem = NULL,
 	                        bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	C4Def *ID2Def(C4ID id);
-	C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
+	C4Def *GetDef(int32_t Index);
 	C4Def *GetByPath(const char *szPath);
-	int32_t GetDefCount(DWORD dwCategory = C4D_All);
+	int32_t GetDefCount();
 	int32_t GetIndex(C4ID id);
 	int32_t RemoveTemporary();
 	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);

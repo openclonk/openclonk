@@ -15,18 +15,20 @@
           <name>index</name>
           <desc>Index of the definition.</desc>
         </param>
-        <param>
-          <type>int</type>
-          <name>category</name>
-          <desc>Category of the definition.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
-    <desc>Returns the id of the indicated definition from the list of definitions of the specified category as currently loaded by the engine (category 0 for all categories).</desc>
+    <desc>Returns the id of the indicated definition from the list of definitions as currently loaded by the engine.</desc>
     <examples>
       <example>
-        <text>see <funclink>C4D_Goal</funclink>.</text>
+        <code>
+var index = 0, weapon_def, weapon_list = [];
+while (weapon_def = GetDefinition(index))
+{
+	if (weapon_def->~IsPlaneWeapon())
+		weapon_list[GetLength(weapon_list)] = weapon_def;
+	index++;
+}
+spawn_weapon = weapon_list[Random(GetLength(weapon_list))];</code>
       </example>
     </examples>
     <related>

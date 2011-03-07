@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-18 21:42+0100\n"
+"POT-Creation-Date: 2011-03-07 21:09+0100\n"
 "PO-Revision-Date: 2010-11-24 22:17+0100\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -7557,17 +7557,10 @@ msgstr "Hinweis: <placeholder-1/> = 0 / <placeholder-2/> = 1"
 msgid "Index of the definition."
 msgstr "Index der gesuchten Definition."
 
-#: sdk/script/fn/GetDefinition.xml:21(desc)
-msgid "Category of the definition."
-msgstr "Die Kategorie, in der die gesuchte Definition ist."
-
-#: sdk/script/fn/GetDefinition.xml:26(desc)
-msgid "Returns the id of the indicated definition from the list of definitions of the specified category as currently loaded by the engine (category 0 for all categories)."
+#: sdk/script/fn/GetDefinition.xml:20(desc)
+#, fuzzy
+msgid "Returns the id of the indicated definition from the list of definitions as currently loaded by the engine."
 msgstr "Liefert das ID der indizierten von der Engine in dieser Runde geladenen Objektdefinition der angegebenen Kategorie (category 0 für alle Objektkategorien)."
-
-#: sdk/script/fn/GetDefinition.xml:29(text)
-msgid "see <placeholder-1/>."
-msgstr "siehe <placeholder-1/>."
 
 #: sdk/script/fn/GetDefCoreVal.xml:32(desc)
 msgid "Returns the property value of an object definition by its name in the <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>."
@@ -16292,11 +16285,30 @@ msgstr "Über das Condition-Feld kann bestimmt werden, dass die Funktion nur dan
 msgid "Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href=\"definition/index.html#Objektdefinitionen\">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href=\"definition/script.html#Objektscripte\">Definition's script</emlink>:"
 msgstr ""
 
-#: sdk/definition/properties.xml:120(col)
+#: sdk/definition/properties.xml:30(col)
+#: sdk/definition/properties.xml:50(col)
+#: sdk/definition/properties.xml:90(col)
+#, fuzzy
+msgid "proplist"
+msgstr "Proplisten"
+
+#: sdk/definition/properties.xml:35(col)
+#, fuzzy
+msgid "string"
+msgstr "Zeichenkette"
+
+#: sdk/definition/properties.xml:105(col)
+#: sdk/definition/properties.xml:110(col)
+#: sdk/definition/properties.xml:115(col)
 #: sdk/definition/properties.xml:125(col)
 #, fuzzy
 msgid "int"
 msgstr "Bit"
+
+#: sdk/definition/properties.xml:120(col)
+#, fuzzy
+msgid "[int, int]"
+msgstr "int, int"
 
 #: sdk/definition/properties.xml:121(col)
 #, fuzzy
@@ -16831,10 +16843,6 @@ msgstr "Lokale Objektdefinitionen, die nur als Teil eines Szenarios verbreitet w
 #: sdk/definition/index.xml:92(text)
 msgid "Object definitions created by community players but publicly released should use the format AB3C of which the first two characters should identify the object and the second two (one digit and one character) should identify the developer. This is to avoid id conflicts with other developers."
 msgstr "Von Spielern erstellte Objektdefinitionen, die auch einzeln veröffentlicht werden, sollten das Format AB3C nutzen, wobei nur die ersten beiden Zeichen frei vergeben werden können und die letzten beiden Zeichen (1 Ziffer und 1 Buchstabe) das Entwickler-ID des Spielers darstellen, welches frei wählbar ist, wobei allerdings Überschneidungen mit bereits von anderen Entwicklern benutzten IDs vermieden werden sollten."
-
-#: sdk/definition/index.xml:96(script)
-msgid "if (netscape.security.PrivilegeManager.enablePrivilege) window.onload = tr; function tr() { try { netscape.security.PrivilegeManager.enablePrivilege(\"UniversalBrowserRead\"); } catch (e) { return; } var xhr = new XMLHttpRequest(); xhr.open(\"GET\", \"../../clonk.xsl\", false); xhr.send(null); var xsltProcessor = new XSLTProcessor(); xsltProcessor.importStylesheet(xhr.responseXML); document.replaceChild(xsltProcessor.transformToDocument(document).documentElement, document.documentElement); };"
-msgstr ""
 
 #: sdk/definition/defcore.xml:9(text)
 msgid "The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id. Also see <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">object and developer identification</emlink>."
@@ -17980,6 +17988,12 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:127(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Category of the definition."
+#~ msgstr "Die Kategorie, in der die gesuchte Definition ist."
+
+#~ msgid "see <placeholder-1/>."
+#~ msgstr "siehe <placeholder-1/>."
 
 #~ msgid "LineConnect"
 #~ msgstr "LineConnect"

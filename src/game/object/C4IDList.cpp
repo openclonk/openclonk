@@ -368,14 +368,6 @@ bool C4IDList::Add(C4IDList &rList)
 	return true;
 }
 
-// Removes all empty id gaps from the list.
-
-bool C4IDList::Consolidate()
-{
-	// however, there ain't be any of those crappy gaps!
-	return false;
-}
-
 bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
 {
 	bool fIDsRemoved=false;
@@ -403,53 +395,6 @@ bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
 	return fIDsRemoved;
 }
 
-void C4IDList::SortByValue(C4DefList &rDefs)
-{
-	bool fBubble;
-	size_t cnt;
-	C4Def *cdef1,*cdef2;
-	do
-	{
-		fBubble=false;
-		for (cnt=0; cnt+1<Count; cnt++)
-			if ((cdef1=rDefs.ID2Def(GetID(cnt))) && (cdef2=rDefs.ID2Def(GetID(cnt+1))))
-				// FIXME: Should call GetValue here
-				if (cdef1->Value > cdef2->Value)
-				{
-					SwapItems(cnt, cnt+1);
-					fBubble=true;
-				}
-	}
-	while (fBubble);
-}
-
-void C4IDList::Load(C4DefList &rDefs, int32_t dwCategory)
-{
-	// (deprecated, use StdCompiler instead)
-	C4Def *cdef; size_t cntl=0,cnt=0;
-	// clear list
-	Clear();
-	// add all IDs of def list
-	C4IDListChunk *pChunk=this;
-	while ((cdef=rDefs.GetDef(cnt++,dwCategory)))
-	{
-		// add new chunk if necessary
-		if (cntl==C4IDListChunkSize)
-		{
-			C4IDListChunk *pLast=this;
-			while (pLast->pNext) pLast=pLast->pNext;
-			pChunk=new C4IDListChunk();
-			pLast->pNext=pChunk;
-			cntl=0;
-		}
-		// set def
-		pChunk->id[cntl]=cdef->id;
-		pChunk->Count[cntl]=0;
-		// advance in own list
-		++cntl; ++Count;
-	}
-}
-
 void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
                     C4DefList &rDefs, DWORD dwCategory,
                     bool fCounts, int32_t iAlign) const
@@ -475,52 +420,6 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 void C4IDList::Default()
 {
 	Clear();
-}
-
-bool C4IDList::ConsolidateCounts()
-{
-	bool fIDsRemoved=false;
-	C4IDListChunk *pQueryChunk=this;
-	size_t cnt=Count,cntl=0;
-	while (cnt--)
-	{
-		if (!pQueryChunk->Count[cntl])
-		{
-			// delete it
-			DeleteItem(Count-cnt-1);
-			// handle this list index again!
-			--cntl;
-			// something was done
-			fIDsRemoved=true;
-		}
-		if (++cntl==C4IDListChunkSize)
-		{
-			pQueryChunk=pQueryChunk->pNext;
-			cntl=0;
-		}
-	}
-	return fIDsRemoved;
-}
-
-bool C4IDList::SwapItems(size_t iIndex1, size_t iIndex2)
-{
-	// Invalid index
-	if (!Inside<size_t>(iIndex1+1,1u,Count)) return false;
-	if (!Inside<size_t>(iIndex2+1,1u,Count)) return false;
-	// get first+second chunk and index
-	C4IDListChunk *pChunk1=this;
-	while (iIndex1>=C4IDListChunkSize) { pChunk1=pChunk1->pNext; iIndex1-=C4IDListChunkSize; }
-	C4IDListChunk *pChunk2=this;
-	while (iIndex2>=C4IDListChunkSize) { pChunk2=pChunk2->pNext; iIndex2-=C4IDListChunkSize; }
-	// swap id & count
-	int32_t iTemp               = pChunk1->Count[iIndex1];
-	C4ID idTemp             = pChunk1->id[iIndex1];
-	pChunk1->Count[iIndex1] = pChunk2->Count[iIndex2];
-	pChunk1->id   [iIndex1] = pChunk2->id   [iIndex2];
-	pChunk2->Count[iIndex2] = iTemp;
-	pChunk2->id   [iIndex2] = idTemp;
-	// done
-	return true;
 }
 
 // Clear index entry and shift all entries behind down by one.

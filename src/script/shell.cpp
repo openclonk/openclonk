@@ -59,8 +59,8 @@ C4DefList Definitions;
 C4DefList::C4DefList() {}
 C4DefList::~C4DefList() {}
 C4Def* C4DefList::ID2Def(C4ID id) {return NULL;}
-C4Def * C4DefList::GetDef(int, unsigned int) {return 0;}
-int C4DefList::GetDefCount(unsigned int) {return 0;}
+C4Def * C4DefList::GetDef(int) {return 0;}
+int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
 bool C4DefList::GetFontImage(char const*, CFacet&) {return false;}
