@@ -37,69 +37,47 @@
 #ifndef INC_C4Real
 #define INC_C4Real
 
-// C4RealBase modes:
-//   C4REAL_MODE_SOFTWARE:   fixpoint math, all operations emulated by
-//                           software
-//   C4REAL_MODE_SOFT_FLOAT: floating-point math, all operations emulated by
-//                           software
-//   C4REAL_MODE_FPU_FLOAT:  floating-point math, all operations run on FPU
-//   C4REAL_MODE_SSE_FLOAT:  floating-point math, all operations run on SSE
-//                           unit (which is usually the FPU as well, but w/o
-//                           extended precision)
-#define C4REAL_MODE_SOFTWARE   1
-//#define C4REAL_MODE_SOFT_FLOAT 2
-#define C4REAL_MODE_FPU_FLOAT  3
-#define C4REAL_MODE_SSE_FLOAT  4
+#include <xmmintrin.h>
 
-#ifndef C4REAL_MODE
-#define C4REAL_MODE C4REAL_MODE_SSE_FLOAT
-#endif
-
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_class.hpp>
-#include <boost/type_traits/is_pod.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-
-template<class C4RealImpl>
-class C4RealBase
+class C4Real
 {
-	C4RealImpl value;
+	__m128 value;
 
-	friend C4RealBase Sin(const C4RealBase &);
-	friend C4RealBase Cos(const C4RealBase &);
-	friend C4RealBase Pow(const C4RealBase &, const C4RealBase &);
-	friend typename C4RealImpl;
+	friend C4Real Sin(const C4Real &);
+	friend C4Real Cos(const C4Real &);
+	friend C4Real Pow(const C4Real &, const C4Real &);
 
 public:
-	inline C4RealBase(int32_t val = 0) : value(val) { }
-	inline C4RealBase(int32_t val, int32_t prec) : value(val) { operator/=(C4RealBase(prec)); }
-	template <class T>
-	inline C4RealBase(typename boost::enable_if<boost::is_arithmetic<T>, T>::type val) : value(val) { }
-	inline C4RealBase(const C4RealImpl &val) : value(val) { }
-	// Conversion between different implementations of C4RealBase
-/*	template<class T>
-	inline C4RealBase(const C4RealBase<T> &val) : value(static_cast<float>(val)) { }*/
+	inline C4Real(float val = 0.0f) : value(_mm_set_ss(val)) { }
+	inline C4Real(int32_t val, int32_t prec)
+	{
+		value = _mm_div_ss(_mm_cvtsi32_ss(value, val), _mm_cvtsi32_ss(value, prec));
+	}
 
 	// Copy ctor and assignment
-	inline C4RealBase(const C4RealBase &rhs) : value(rhs.value) {}
-	inline C4RealBase &operator = (const C4RealBase &rhs) { value = rhs.value; return *this; }
-	inline C4RealBase &operator = (float rhs) { value = C4RealImpl(rhs); return *this; }
-	inline C4RealBase &operator = (int rhs) { value = C4RealImpl(rhs); return *this; }
+	inline C4Real(const C4Real &rhs) : value(rhs.value) {}
+	inline C4Real &operator = (const C4Real &rhs) { value = rhs.value; return *this; }
 
-	// arithmetic operations
+	// Arithmetics
+	// We're using _ps intrinsics for everything except division because they
+	// have the same latency as their _ss counterparts, but their representa-
+	// tion is one byte shorter (0F xx instead of F3 0F xx).
+	// DIVPS is about half as fast as DIVSS, so we use the scalar instruction
+	// here.
+	inline C4Real &operator += (const C4Real &rhs) { value = _mm_add_ps(value, rhs.value); return *this; }
+	inline C4Real &operator -= (const C4Real &rhs) { value = _mm_sub_ps(value, rhs.value); return *this; }
+	inline C4Real &operator *= (const C4Real &rhs) { value = _mm_mul_ps(value, rhs.value); return *this; }
+	inline C4Real &operator /= (const C4Real &rhs) { value = _mm_div_ss(value, rhs.value); return *this; }
+
 #define C4REAL_ARITHMETIC_OPERATOR(op) \
-	/* combined arithmetic and assignment ops */ \
-	inline C4RealBase &operator op##= (const C4RealBase &rhs) { value op##= rhs.value; return *this; } \
-	inline C4RealBase &operator op##= (float rhs) { return *this op##= C4RealBase(rhs); } \
-	inline C4RealBase &operator op##= (int rhs) { return *this op##= C4RealBase(rhs); } \
 	/* arithmetic operations on copies */ \
-	inline C4RealBase operator op (const C4RealBase &rhs) const { C4RealBase nrv(*this); nrv op##= rhs; return nrv; } \
-	inline C4RealBase operator op (float rhs) const { C4RealBase nrv(*this); nrv op##= rhs; return nrv; } \
-	inline C4RealBase operator op (int rhs) const { C4RealBase nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (const C4Real &rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (float rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (int rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
 	/* arithmetic operations on copies, right-hand C4Real */ \
 	/* friends defined in the class are implicitly inline */ \
-	friend C4RealBase operator op (float lhs, const C4RealBase &rhs) { C4RealBase nrv(lhs); nrv op##= rhs; return nrv; } \
-	friend C4RealBase operator op (int lhs, const C4RealBase &rhs) { C4RealBase nrv(lhs); nrv op##= rhs; return nrv; }
+	friend C4Real operator op (float lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; } \
+	friend C4Real operator op (int lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; }
 
 	C4REAL_ARITHMETIC_OPERATOR(+)
 	C4REAL_ARITHMETIC_OPERATOR(-)
@@ -107,79 +85,54 @@ public:
 	C4REAL_ARITHMETIC_OPERATOR(/)
 #undef C4REAL_ARITHMETIC_OPERATOR
 	
-	inline C4RealBase operator + () const { return *this; }
-	inline C4RealBase operator - () const
+	inline C4Real operator + () const { return *this; }
+	inline C4Real operator - () const
 {
-		C4RealBase nrv(*this);
-		nrv.value = -nrv.value;
+		C4Real nrv;
+		nrv -= *this;
 		return nrv;
 	}
 
-#define C4REAL_COMPARISON_OPERATOR(op) \
-	inline bool operator op (const C4RealBase &rhs) const { return value op rhs.value; } \
-	inline bool operator op (float rhs) const { return *this op C4RealBase(rhs); } \
-	inline bool operator op (int rhs) const { return *this op C4RealBase(rhs); }
-	C4REAL_COMPARISON_OPERATOR(<)
-	C4REAL_COMPARISON_OPERATOR(<=)
-	C4REAL_COMPARISON_OPERATOR(==)
-	C4REAL_COMPARISON_OPERATOR(>=)
-	C4REAL_COMPARISON_OPERATOR(>)
-	C4REAL_COMPARISON_OPERATOR(!=)
+#define C4REAL_COMPARISON_OPERATOR(op, intrinsic) \
+	friend bool operator op (const C4Real &lhs, const C4Real &rhs) { return _mm_##intrinsic##_ss(lhs.value, rhs.value) != 0; } \
+	friend bool operator op (const C4Real &lhs, float rhs) { return lhs op C4Real(rhs); } \
+	friend bool operator op (const C4Real &lhs, int rhs) { return lhs op C4Real(rhs); } \
+	friend bool operator op (float lhs, const C4Real &rhs) { return C4Real(lhs) op rhs; } \
+	friend bool operator op (int lhs, const C4Real &rhs) { return C4Real(lhs) op rhs; }
+	C4REAL_COMPARISON_OPERATOR(<, comilt)
+	C4REAL_COMPARISON_OPERATOR(<=, comile)
+	C4REAL_COMPARISON_OPERATOR(==, comieq)
+	C4REAL_COMPARISON_OPERATOR(>=, comige)
+	C4REAL_COMPARISON_OPERATOR(>, comigt)
+	C4REAL_COMPARISON_OPERATOR(!=, comineq)
 #undef C4REAL_COMPARISON_OPERATOR
 
 	// Conversion
-	inline operator int() const { return value; }
-	inline operator float() const { return value; }
+	inline operator int() const { return _mm_cvtss_si32(value); }
+	inline operator float() const { float nrv; _mm_store_ss(&nrv, value); return nrv; }
 
 	// Boolean operators
 	// Not using safe-bool-idiom here, because we already define conversions
 	// to integer, which is why we don't need to worry about unwanted con-
 	// versions via operator bool
-	inline operator bool() const { return static_cast<bool>(value); }
+	inline operator bool() const { return _mm_comineq_ss(value, _mm_setzero_ps()) != 0; }
 	inline bool operator !() const { return !operator bool(); }
 
-	// C++03 doesn't support explicitly defaulted ctors, so C4RealBase can't
-	// be a POD, so we can't directly store it into unions. Find a type that
-	// allows this.
-	template<class T, class IsPOD> struct StorageTypeSelector;
-	template<class T>
-	struct StorageTypeSelector<T, boost::false_type> { T v; };
-	template<class T>
-	struct StorageTypeSelector<T, boost::true_type> { typename T::StorageType v; };
-
-	typedef StorageTypeSelector<C4RealImpl, typename boost::is_class<C4RealImpl>::type> StorageType;
+	// C++03 doesn't support explicitly defaulted ctors, so C4Real can't
+	// be a POD, so we can't directly store it into unions.
+	struct StorageType
+	{
+		int32_t v;
+	};
 #ifdef HAVE_WORKING_IS_POD
-	static_assert(boost::is_pod<StorageType>::value, "C4RealBase: StorageType is not a POD type");
+	static_assert(boost::is_pod<StorageType>::value, "C4Real: StorageType is not a POD type");
 #endif
 
 	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
 
-	C4RealBase(StorageType rhs) : value(rhs.v) {}
-	operator StorageType() const { StorageType nrv = {value}; return nrv; }
+	C4Real(StorageType rhs) : value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v))) {}
+	operator StorageType() const { StorageType nrv; _mm_store_ss(reinterpret_cast<float*>(&nrv.v), value); return nrv; }
 };
-
-typedef C4RealBase<class C4RealImpl_Fixed> C4Real_Fixed;
-typedef C4RealBase<float> C4Real_FPU_Float;
-typedef C4RealBase<class C4RealImpl_SSE> C4Real_SSE_Float;
-
-#include "C4RealImpl_Fixed.h"
-#include "C4RealImpl_FPU.h"
-#include "C4RealImpl_SSE.h"
-
-// *** wrap C4Real to requested C4RealBase instantiation
-
-#if C4REAL_MODE == C4REAL_MODE_SOFTWARE
-typedef C4Real_Fixed C4Real;
-#elif C4REAL_MODE == C4REAL_MODE_FPU_FLOAT
-typedef C4Real_FPU_Float C4Real;
-#elif C4REAL_MODE == C4REAL_MODE_SSE_FLOAT
-typedef C4Real_SSE_Float C4Real;
-#endif
-
-// Instantiate other C4RealBases as well
-template class C4RealBase<C4RealImpl_Fixed>;
-template class C4RealBase<float>;
-template class C4RealBase<C4RealImpl_SSE>;
 
 // conversion
 inline float fixtof(const C4Real &x) { return static_cast<float>(x); }
