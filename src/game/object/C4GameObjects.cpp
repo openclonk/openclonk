@@ -517,7 +517,6 @@ C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, b
 {
 	// call objects first - scenario script might overwrite hostility, etc...
 	C4Object *pObj;
-	::Objects.GRBroadcast(szFunction, pPars, fPassError, fRejectTest);
 	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
 		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
 		{
