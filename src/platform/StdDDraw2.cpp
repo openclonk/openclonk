@@ -32,6 +32,7 @@
 #include <StdFont.h>
 #include <StdWindow.h>
 #include "C4Rect.h"
+#include <C4Config.h>
 #include "StdMesh.h"
 
 #include <stdio.h>

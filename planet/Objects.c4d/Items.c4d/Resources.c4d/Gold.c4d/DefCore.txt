@@ -12,5 +12,4 @@ VertexFriction=40,40,40
 Value=25
 Mass=12
 Components=Gold=1
-Rebuy=0
 Rotate=1

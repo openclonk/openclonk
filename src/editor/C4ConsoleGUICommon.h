@@ -54,7 +54,7 @@ DEFINE_STANDARD_DLG_METHODS(C4ToolsDlg)
 void C4ToolsDlg::Clear()
 {
 	state->Clear();
-	Console.ClearDlg(this);
+	Console.ToolsDlgClose();
 	Active = false;
 }
 
@@ -68,23 +68,3 @@ void C4ToolsDlg::Default()
 	SCopy("Earth",Material);
 	SCopy("earth",Texture);
 }
-
-DEFINE_STANDARD_DLG_METHODS(C4PropertyDlg)
-
-void C4PropertyDlg::Default()
-{
-	state->Default();
-	Active = false;
-	//idSelectedDef=C4ID::None;
-	Selection.Default();
-}
-
-void C4PropertyDlg::Clear()
-{
-	state->Clear();
-	Selection.Clear();
-	Console.ClearDlg(this);
-	Active = false;
-}
-
-const char *C4ConsoleGUI::LIST_DIVIDER = "divid0r";

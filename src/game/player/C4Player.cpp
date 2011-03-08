@@ -29,6 +29,7 @@
 #include <C4Player.h>
 
 #include <C4Application.h>
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
 #include <C4Command.h>
@@ -195,8 +196,6 @@ void C4Player::Execute()
 	UpdateView();
 	ExecuteControl();
 	Menu.Execute();
-	if (Cursor)
-		Cursor->AutoContextMenu(-1);
 
 	// decay of dead viewtargets
 	C4ObjectLink *pLnkNext = FoWViewObjs.First, *pLnk;
@@ -238,10 +237,6 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	}
 	// Status init
 	Status=PS_Normal;
-	if (szFilename)
-		SCopy(Config.AtDataReadPath(szFilename),Filename);
-	else
-		*Filename='\0';
 	Number = iNumber;
 	ID = pInfo->GetID();
 	Team = pInfo->GetTeam();
@@ -250,14 +245,14 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	// At client
 	AtClient=iAtClient; SCopy(szAtClientName,AtClientName,C4MaxTitle);
 
-	if (Filename)
+	if (szFilename)
 	{
 		// Load core & crew info list
 		// do not load portraits for remote players
 		// this will prevent portraits from being shown for "remotely controlled"-Clonks of other players
 		bool fLoadPortraits = (AtClient==C4ClientIDUnknown) || SEqualNoCase(AtClientName, Game.Clients.getLocalName());
 		// fLoadPortraits = true
-		if (!Load(Filename, !fScenarioInit, fLoadPortraits)) return false;
+		if (!Load(szFilename, !fScenarioInit, fLoadPortraits)) return false;
 	}
 	else
 	{
@@ -331,7 +326,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		{
 			// player preinit: In case a team needs to be chosen first, no InitializePlayer-broadcast is done
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
-			Game.Script.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
+			::GameScript.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
 			// direct init
 			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 		}
@@ -547,7 +542,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 			{
 				ctx=tx; cty=ty;
 				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
-				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->Category,20))
+				    || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->GetPlane(),20))
 					if ((cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,true)))
 					{
 						// FirstBase
@@ -674,7 +669,7 @@ bool C4Player::ScenarioInit()
 		// Use nearest above-ground...
 		FindSolidGround(ptx,pty,30);
 		// Might have hit a small lake, or similar: Seach a real site spot from here
-		FindConSiteSpot(ptx, pty, 30,50,C4D_Structure, 400);
+		FindConSiteSpot(ptx, pty, 30,50,C4Plane_Structure, 400);
 	}
 
 	// Place Readies
@@ -695,12 +690,12 @@ bool C4Player::ScenarioInit()
 	}
 
 	// Scenario script initialization
-	Game.Script.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
+	::GameScript.GRBroadcast(PSF_InitializePlayer, &C4AulParSet(C4VInt(Number),
 	                        C4VInt(ptx),
 	                        C4VInt(pty),
 	                        C4VObj(FirstBase),
 	                        C4VInt(Team),
-	                        C4VID(GetInfo()->GetScriptPlayerExtraID())));
+	                        C4VPropList(C4Id2Def(GetInfo()->GetScriptPlayerExtraID()))));
 	return true;
 }
 
@@ -763,7 +758,7 @@ bool C4Player::SetWealth(int32_t iVal)
 
 	Wealth=BoundBy<int32_t>(iVal,0,10000);
 
-	Game.Script.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
+	::GameScript.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
 
 	return true;
 }
@@ -984,7 +979,7 @@ bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 {
 	C4Group hGroup;
 	// Open group
-	if (!hGroup.Open(szFilename)) return false;
+	if (!Reloc.Open(hGroup, szFilename)) return false;
 	// Load core
 	if (!C4PlayerInfoCore::Load(hGroup))
 		{ hGroup.Close(); return false; }

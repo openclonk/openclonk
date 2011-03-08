@@ -16,7 +16,6 @@ VertexCNAT=4,8,1,2
 VertexFriction=100,100,100,100,100,100
 Placement=2
 ContactIncinerate=0
-Growth=15
 Float=1
 BorderBound=7
 StretchGrowth=1

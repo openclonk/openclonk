@@ -203,3 +203,4 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 }
 
 local Name = "$Name$";
+local Collectible = 1;

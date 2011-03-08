@@ -27,7 +27,6 @@
     <related>
       <funclink>ProtectedCall</funclink>
       <funclink>PrivateCall</funclink>
-      <funclink>ObjectCall</funclink>
       <funclink>GameCall</funclink>
       <funclink>eval</funclink>
     </related>

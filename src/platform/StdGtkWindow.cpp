@@ -22,12 +22,15 @@
 #include <C4Include.h>
 #include <StdGtkWindow.h>
 
+#include "C4Version.h"
+#include "C4Config.h"
+
 #include <X11/Xlib.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-#include "C4Version.h"
 
 /* CStdGtkWindow */
 
@@ -67,8 +70,15 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 
 	GtkWidget* render_widget = InitGUI();
 
-	gtk_widget_set_colormap(render_widget, gdk_colormap_new(gdkx_visual_get(((XVisualInfo*)Info)->visualid), true));
-
+	GdkScreen * scr = gtk_widget_get_screen(render_widget);
+	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
+#if GTK_CHECK_VERSION(2,91,0)
+	gtk_widget_set_visual(render_widget,vis);
+#else
+	GdkColormap * cmap = gdk_colormap_new(vis, true);
+	gtk_widget_set_colormap(render_widget, cmap);
+	g_object_unref(cmap);
+#endif
 	gtk_widget_show_all(window);
 
 //  XVisualInfo vitmpl; int blub;
@@ -92,7 +102,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(window);
-	wnd = GDK_WINDOW_XWINDOW(window_wnd);
+	wnd = GDK_WINDOW_XID(window_wnd);
 	gdk_window_add_filter(window_wnd, OnFilter, this);
 
 	XWMHints * wm_hint = XGetWMHints(dpy, wnd);
@@ -107,7 +117,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 		GdkWindow* bin_wnd = GTK_LAYOUT(render_widget)->bin_window;
 #endif
 
-		renderwnd = GDK_WINDOW_XWINDOW(bin_wnd);
+		renderwnd = GDK_WINDOW_XID(bin_wnd);
 	}
 	else
 	{
@@ -117,7 +127,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 		GdkWindow* render_wnd = render_widget->window;
 #endif
 
-		renderwnd = GDK_WINDOW_XWINDOW(render_wnd);
+		renderwnd = GDK_WINDOW_XID(render_wnd);
 	}
 
 	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
@@ -199,7 +209,7 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 
 	// For keypress/relases, event->state contains the state _before_
 	// the event, but we need to store the current state.
-#if !GTK_CHECK_VERSION(2,90,7)
+#if !GTK_CHECK_VERSION(2,21,8)
 # define GDK_KEY_Shift_L GDK_Shift_L
 # define GDK_KEY_Shift_R GDK_Shift_R
 # define GDK_KEY_Control_L GDK_Control_L
@@ -229,6 +239,16 @@ void CStdWindow::RequestUpdate()
 
 bool OpenURL(const char *szURL)
 {
+	GError *error = 0;
+#if GTK_CHECK_VERSION(2,14,0)
+	if (gtk_show_uri(NULL, szURL, GDK_CURRENT_TIME, &error))
+		return true;
+	if (error != NULL)
+	{
+		fprintf (stderr, "Unable to open URL: %s\n", error->message);
+		g_error_free (error);
+	}
+#endif
 	const char * argv[][3] =
 	{
 		{ "xdg-open", szURL, 0 },
@@ -241,10 +261,14 @@ bool OpenURL(const char *szURL)
 	};
 	for (int i = 0; argv[i][0]; ++i)
 	{
-		GError * error = 0;
+		error = 0;
 		if (g_spawn_async (g_get_home_dir(), const_cast<char**>(argv[i]), 0, G_SPAWN_SEARCH_PATH, 0, 0, 0, &error))
 			return true;
-		else fprintf(stderr, "%s\n", error->message);
+		else
+		{
+			fprintf(stderr, "%s\n", error->message);
+			g_error_free (error);
+		}
 	}
 	return false;
 }

@@ -41,10 +41,7 @@
 
 // implementation of C4Console GUI for Mac OS X
 
-namespace
-{
-	inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return (ConsoleWindowController*)gui->GetController();}
-}
+static inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return (ConsoleWindowController*)gui->GetController();}
 
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
@@ -65,14 +62,6 @@ public:
 	void Clear() {}
 };
 
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
-{
-public:
-	State(C4PropertyDlg *dlg): Super(dlg) {}
-	void Default() {}
-	void Clear() {}
-};
-
 CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 {
 	ClonkWindowController* controller = [ConsoleWindowController new];
@@ -83,7 +72,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 	return this;
 }
 
-bool C4ConsoleGUI::Out(const char* message)
+void C4ConsoleGUI::Out(const char* message)
 {
 	ConsoleWindowController* controller;
 	if (controller = ctrler(this))
@@ -92,7 +81,6 @@ bool C4ConsoleGUI::Out(const char* message)
 		[textStorage appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]] autorelease]];
 		[controller.outputTextView scrollRangeToVisible:NSMakeRange([textStorage length]-1, 1)];
 	}
-	return true;
 }
 
 bool C4ConsoleGUI::ClearLog()
@@ -175,23 +163,28 @@ bool C4ConsoleGUI::Message(const char *message, bool query)
 	return true;
 }
 
-bool C4ConsoleGUI::PropertyDlgOpen(C4PropertyDlg* dlg)
+bool C4ConsoleGUI::PropertyDlgOpen()
 {
 	[ctrler(this).objectsPanel orderFront:nil];
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(C4PropertyDlg *dlg, StdStrBuf &text)
+void C4ConsoleGUI::PropertyDlgClose()
 {
+	[ctrler(this).objectsPanel orderOut:nil];
+}
+
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
+{	
+	if (![ctrler(this).objectsPanel isVisible])
+		return;
+	StdStrBuf text = rSelection.GetDataString();
 	[ctrler(this).objectPropertiesText.textStorage setAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:text.getData()]] autorelease]];
 }
 
-void C4ConsoleGUI::ClearDlg(void *dlg)
+void C4ConsoleGUI::ToolsDlgClose()
 {
-	if (dlg == &Console.PropertyDlg)
-		[ctrler(this).objectsPanel orderOut:nil];
-	else if (dlg == &Console.ToolsDlg)
-		[ctrler(this).toolsPanel orderOut:nil];
+	[ctrler(this).toolsPanel orderOut:nil];
 }
 
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
@@ -401,32 +394,19 @@ void C4ConsoleGUI::RecordingEnabled()
 	[[[ClonkAppDelegate instance] recordMenuItem] setEnabled:NO];
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:NO];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:NO];
 }
 
-void C4ConsoleGUI::ClearNetMenu(Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		[ClonkAppDelegate.instance.netMenu setHidden:YES];
-		break;
-	default:
-		break;
-	}
+	[ClonkAppDelegate.instance.netMenu setHidden:YES];
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
+	[ctrler(this).modeSelector setEnabled:fEnable];
 }
 
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
@@ -434,8 +414,9 @@ bool C4ConsoleGUI::DoUpdateHaltCtrls(bool fHalt)
 	return true;
 }
 
-void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg *dlg)
+void C4ToolsDlg::EnableControls()
 {
+	NeedPreviewUpdate();
 }
 
 void C4ConsoleGUI::ClearInput()
@@ -454,11 +435,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 	[ClonkAppDelegate.instance.netMenu.submenu addItem:item];
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*> &functions)
-{
-}
-
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
 {
 }
 

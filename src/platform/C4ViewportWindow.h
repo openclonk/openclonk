@@ -26,8 +26,6 @@
 
 #include <StdWindow.h>
 
-class C4Viewport;
-
 #ifdef WITH_DEVELOPER_MODE
 #include <StdGtkWindow.h>
 typedef CStdGtkWindow C4ViewportBase;
@@ -67,15 +65,10 @@ public:
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
 #endif
-#if defined(USE_COCOA) || defined(_WIN32)
-	virtual CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool);
-#endif
 	void EditCursorMove(int X, int Y, uint16_t);
+	CStdWindow * Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
 	virtual void Close();
 	virtual void PerformUpdate();
 };
-
-#define C4ViewportClassName "C4Viewport"
-#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
 
 #endif

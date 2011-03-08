@@ -328,10 +328,9 @@ protected:
 };
 
 // converter
-inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
+inline C4Value C4VInt(int32_t i) { return C4Value(i); }
+inline C4Value C4VBool(bool b) { return C4Value(b); }
 inline C4Value C4VFloat(C4Real f) { return C4Value(f); }
-inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
-C4Value C4VID(C4ID iVal);
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
 inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
@@ -340,11 +339,10 @@ inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);
 
-extern const C4Value C4VFalse, C4VTrue;
+#define C4VFalse C4VBool(false)
+#define C4VTrue C4VBool(true)
 
-// type tag to allow other code to recognize C4VNull at compile time
-class C4NullValue : public C4Value {};
-extern const C4NullValue C4VNull;
+extern const C4Value C4VNull;
 
 /* These are by far the most often called C4Value functions.
  They also often do redundant checks the compiler should be able to optimize away
@@ -364,11 +362,12 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 	case C4V_C4Object:
 #ifdef _DEBUG
 		// check if the object actually exists
-		/*if (!::Objects.ObjectNumber(Data.Obj))
-			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }*/
+		if (!C4PropListNumbered::CheckPropList(Data.PropList))
+			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.Obj)); }
 #endif
 	case C4V_PropList:
 #ifdef _DEBUG
+		assert(C4PropList::PropLists.Has(Data.PropList));
 		if (!Data.PropList->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
 #endif

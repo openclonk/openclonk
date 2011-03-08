@@ -303,10 +303,7 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char * c) { }
-	virtual CStdWindow * Init(CStdApp * pApp);
-#ifndef _WIN32
 	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
-#endif
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -423,13 +420,8 @@ class CStdInProc : public StdSchedulerProc
 {
 public:
 	CStdInProc();
-	~CStdInProc() { }
+	~CStdInProc();
 
-public:
-	void Notify();
-	bool Check();
-	bool CheckAndReset();
-public:
 	// StdSchedulerProc override
 	virtual bool Execute(int iTimeout, pollfd *);
 	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
@@ -437,6 +429,9 @@ public:
 		pollfd pfd = { 0, POLLIN, 0 };
 		checkfds.push_back(pfd);
 	}
+private:
+	// commands from stdin
+	StdCopyStrBuf CmdBuf;
 };
 #endif
 
@@ -454,8 +449,8 @@ public:
 	void Run();
 	virtual void Quit();
 
-	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor);
-	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen);
+	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor);
+	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
@@ -546,7 +541,6 @@ protected:
 	// the glib main loop that are in an anonymous namespace in
 	// StdXApp.cpp.
 	void OnXInput();
-	void OnStdInInput();
 protected:
 #  ifdef USE_X11
 	class CStdAppPrivate * Priv;
@@ -555,17 +549,12 @@ protected:
 	unsigned int KeyMask;
 #endif
 protected:
-	int argc; char ** argv;
 #ifdef USE_CONSOLE
 	CStdInProc InProc;
 #endif
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit(int argc, char * argv[]) = 0;
-
-	// commands from stdin (console only)
-	StdCopyStrBuf CmdBuf;
-	bool ReadStdInCommand();
+	virtual bool DoInit(int argc, char * argv[]) = 0;;
 
 	friend class CStdGL;
 	friend class CStdGLCtx;

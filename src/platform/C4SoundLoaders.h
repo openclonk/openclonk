@@ -21,6 +21,7 @@
 #endif
 
 #include <vector>
+#include <C4SoundSystem.h>
 
 namespace C4SoundLoaders
 {

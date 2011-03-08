@@ -30,8 +30,6 @@
 #include "C4InputValidation.h"
 #include <list>
 
-const char *CfgAtTempPath(const char *szFilename);
-
 #define C4DEFAULT_FONT_NAME "Endeavour"
 
 class C4ConfigGeneral
@@ -42,7 +40,6 @@ public:
 	char Name[CFG_MaxString+1];
 	char Language[CFG_MaxString+1]; // entered by user in frontend options (may contain comma separated list or long language descriptions)
 	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
-	char Definitions[CFG_MaxString+1];
 	char Participants[CFG_MaxString+1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
 	char RXFontName[CFG_MaxString+1];
@@ -53,25 +50,20 @@ public:
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
 	int32_t FPS;
-	int32_t Record;
 	int32_t DefRec;
 	int32_t MMTimer;  // use multimedia-timers
 	int32_t ScrollSmooth; // view movement smoothing
-	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got currupted and must be reset
+	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got corrupted and must be reset
 	// Determined at run-time
 	char ExePath[CFG_MaxString+1];
 	char TempPath[CFG_MaxString+1];
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];
-	char BetaCode[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
 	bool UserPortraitsWritten; // set when default portraits have been copied to the UserPath (this is only done once)
 
-	// Additional paths to read data from (prioritized lower than UserDataPath/SystemDataPath)
-	typedef std::list<const char *> PathList;
-	PathList AdditionalDataPaths;
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
 	void DefaultLanguage();
@@ -79,9 +71,6 @@ public:
 	void AdoptOldSettings();
 	void DeterminePaths(bool forceWorkingDirectory);
 	void CompileFunc(StdCompiler *pComp);
-	void AddAdditionalDataPath(const char *szPath);
-	void ClearAdditionalDataPaths();
-	~C4ConfigGeneral() { ClearAdditionalDataPaths(); }
 
 private:
 	struct
@@ -94,10 +83,7 @@ class C4ConfigDeveloper
 {
 public:
 	int32_t AutoFileReload;
-#ifdef _WIN32
-	int32_t AutoEditScan;
-#endif
-	int32_t AllErrorsFatal;
+	int32_t ExtraWarnings;
 	void CompileFunc(StdCompiler *pComp);
 };
 
@@ -117,6 +103,7 @@ public:
 	int32_t UpperBoard;
 	int32_t ShowClock;
 	int32_t ResX,ResY;
+	int32_t RefreshRate;	// monitor vertical refresh rate
 	int32_t GuiResX,GuiResY;
 	int32_t Windowed;
 	int32_t ShowAllResolutions;
@@ -293,7 +280,6 @@ public:
 	const char *AtSystemDataPath(const char *szFilename);
 	const char *AtSystemDataRelativePath(const char *szFilename);
 	const char *AtRelativePath(const char *szFilename); // Returns ASDRP or AUDRP depending on location
-	const char *AtDataReadPath(const char *szFilename, bool fPreferWorkdir = false);
 	const char *GetRegistrationData(const char* strField) { return ""; }
 	void ForceRelativePath(StdStrBuf *sFilename); // try AtRelativePath; force GetC4Filename if not possible
 	void CompileFunc(StdCompiler *pComp);
@@ -304,12 +290,8 @@ public:
 	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
-private:
-	const char *AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir = false);
 };
 
 #include <C4ConfigShareware.h>
 
-extern C4Config *pConfig; // Some cheap temporary hack to get to config in Engine + Frontend...
-// This is so good - we can use it everywear!!!!
 #endif // INC_C4Config

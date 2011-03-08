@@ -45,8 +45,6 @@ class C4ConsoleGUI: public C4ConsoleBase
 {
 public:
 
-	static const char *LIST_DIVIDER;
-
 	template<class T> class InternalState
 	{
 	protected:
@@ -94,15 +92,15 @@ public:
 	void RecordingEnabled();
 	void ShowAboutWithCopyright(StdStrBuf &copyright);
 	bool UpdateModeCtrls(int iMode);
-	void UpdateNetMenu(Stage stage);
-	void ClearNetMenu(Stage stage);
+	void AddNetMenu();
+	void ClearNetMenu();
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
-	void SetInputFunctions(std::vector<char*> &functions);
+	void SetInputFunctions(std::list<char*> &functions);
 	
 	CStdWindow* CreateConsoleWindow(CStdApp *application);
-	bool Out(const char* message);
+	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
 	void SetCaptionToFileName(const char* file_name);
@@ -131,27 +129,27 @@ public:
 	}
 	bool DoUpdateHaltCtrls(bool fHalt);
 	
-	bool PropertyDlgOpen(class C4PropertyDlg *dlg);
-	void PropertyDlgUpdate(class C4PropertyDlg *dlg, StdStrBuf &text);
-	void PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions);
+	bool PropertyDlgOpen();
+	void PropertyDlgClose();
+	void PropertyDlgUpdate(C4ObjectList &rSelection);
+	C4Object * PropertyDlgObject;
 	
 	bool ToolsDlgOpen(class C4ToolsDlg *dlg);
+	void ToolsDlgClose();
 	void ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg);
 	void ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material);
-	void ToolsDlgEnableControls(C4ToolsDlg *dlg);
 	void ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material);
 
 #ifdef _WIN32
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
+	void UpdateMenuText(HMENU hMenu);
 #endif
 #ifdef WITH_DEVELOPER_MODE
 	virtual GtkWidget* InitGUI();
 #endif
-	
-	void ClearDlg(void *dlg);
 };
 
 #endif

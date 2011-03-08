@@ -61,6 +61,11 @@ private func OpenWeaponMenu(object clonk)
 func FxIntTimeLimitTimer(object target, effect, int fxtime)
 {
 	var clonk = Contents();
+	if (!clonk)
+	{
+		RemoveObject();
+		return -1;
+	}
 	if (fxtime >= time)
 	{
 		if (!has_selected)

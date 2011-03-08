@@ -30,6 +30,8 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4DefList.h>
+#include <C4Effects.h>
 #include <C4ObjectInfo.h>
 #include <C4Physics.h>
 #include <C4ObjectCom.h>
@@ -238,6 +240,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	id=Def->id;
 	if (Info) SetName(pInfo->Name);
 	Category=Def->Category;
+	Plane = Def->GetPlane(); assert(Plane);
 	Def->Count++;
 	if (pCreator) Layer=pCreator->Layer;
 
@@ -753,7 +756,7 @@ void C4Object::SetOCF()
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
-	if (Contained && !::Objects.ObjectNumber(Contained))
+	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
@@ -765,7 +768,7 @@ void C4Object::SetOCF()
 	    && (r==0) && !OnFire)
 		OCF|=OCF_Construct;
 	// OCF_Grab: Can be pushed
-	if (Def->Grab && !(Category & C4D_StaticBack))
+	if (GetPropertyInt(P_Touchable))
 		OCF|=OCF_Grab;
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
@@ -775,18 +778,10 @@ void C4Object::SetOCF()
 		OCF|=OCF_OnFire;
 	// OCF_Inflammable: Is not burning and is inflammable
 	if (!OnFire && Def->ContactIncinerate>0)
-		// Is not a dead living
-		if (!(Category & C4D_Living) || Alive)
-			OCF|=OCF_Inflammable;
+		OCF|=OCF_Inflammable;
 	// OCF_FullCon: Is fully completed/grown
 	if (Con>=FullCon)
 		OCF|=OCF_FullCon;
-	// OCF_Chop: Can be chopped
-	DWORD cocf = OCF_Exclusive;
-	if (Def->Chopable)
-		if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
-				OCF|=OCF_Chop;
 	// OCF_Rotate: Can be rotated
 	if (Def->Rotateable)
 		// Don't rotate minimum (invisible) construction sites
@@ -810,12 +805,8 @@ void C4Object::SetOCF()
 			if (!pActionDef || (!pActionDef->GetPropertyInt(P_ObjectDisabled)))
 				if (NoCollectDelay==0)
 					OCF|=OCF_Collection;
-	// OCF_Living
-	if (Category & C4D_Living)
-	{
-		OCF|=OCF_Living;
-		if (Alive) OCF|=OCF_Alive;
-	}
+	// OCF_Alive
+	if (Alive) OCF|=OCF_Alive;
 	// OCF_Prey
 	if (Def->Prey)
 		if (Alive)
@@ -870,15 +861,14 @@ void C4Object::UpdateOCF()
 	// Update the object character flag according to the object's current situation
 	C4Real cspeed=GetSpeed();
 #ifdef _DEBUG
-	if (Contained && !::Objects.ObjectNumber(Contained))
+	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
 	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
-	           /*| OCF_Chop - now updated regularly, see below */
-	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
+	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Alive
 	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
@@ -891,12 +881,6 @@ void C4Object::UpdateOCF()
 	if ((Def->Entrance.Wdt>0) && (Def->Entrance.Hgt>0))
 		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (r <= Def->RotatedEntrance)))
 			OCF|=OCF_Entrance;
-	// OCF_Chop: Can be chopped
-	DWORD cocf = OCF_Exclusive;
-	if (Def->Chopable)
-		if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
-				OCF|=OCF_Chop;
 	// HitSpeeds
 	if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
 	if (cspeed>=HitSpeed2) OCF|=OCF_HitSpeed2;
@@ -983,21 +967,6 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 
 bool C4Object::ExecLife()
 {
-
-	// Growth
-	if (!::Game.iTick35)
-		// Growth specified by definition
-		if (Def->Growth)
-			// Alive livings && trees only
-			if ( ((Category & C4D_Living) && Alive)
-			     || (Category & C4D_StaticBack) )
-				// Not burning
-				if (!OnFire)
-					// Not complete yet
-					if (Con<FullCon)
-						// Grow
-						DoCon(Def->Growth*100);
-
 	// Breathing
 	if (!::Game.iTick5)
 		if (Alive && !Def->NoBreath)
@@ -1067,22 +1036,6 @@ bool C4Object::ExecLife()
 	return true;
 }
 
-void C4Object::ExecBase()
-{
-	// Environmental action
-	if (!::Game.iTick35)
-	{
-		// Structures dig free snow
-		if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
-			if (r==0)
-			{
-				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
-				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
-			}
-	}
-
-}
-
 void C4Object::Execute()
 {
 #ifdef DEBUGREC
@@ -1120,8 +1073,6 @@ void C4Object::Execute()
 	}
 	// Life
 	ExecLife();
-	// Base
-	ExecBase();
 	// Animation. If the mesh is attached, then don't execute animation here but let the parent object do it to make sure it is only executed once a frame.
 	if (pMeshInstance && !pMeshInstance->GetAttachParent())
 		pMeshInstance->ExecuteAnimation(1.0f/37.0f /* play smoothly at 37 FPS */);
@@ -1272,8 +1223,6 @@ bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncinerat
 {
 	// Already on fire
 	if (OnFire) return false;
-	// Dead living don't burn
-	if ((Category & C4D_Living) && !Alive) return false;
 	// add effect
 	int32_t iEffNumber;
 	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
@@ -1381,7 +1330,7 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 			Incinerate(iCausedBy,true);
 }
 
-void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
+void C4Object::DoCon(int32_t iChange)
 {
 	int32_t iStepSize=FullCon/100;
 	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
@@ -1410,15 +1359,12 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 		// Face
 		UpdateFace(true);
 		// component update
-		if (!fNoComponentChange)
-		{
-			// Decay: reduce components
-			if (iChange<0)
-				ComponentConCutoff();
-			// Growth: gain components
-			else
-				ComponentConGain();
-		}
+		// Decay: reduce components
+		if (iChange<0)
+			ComponentConCutoff();
+		// Growth: gain components
+		else
+			ComponentConGain();
 		// Unfullcon
 		if (Con<FullCon)
 		{
@@ -1436,27 +1382,14 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 			if (!Def->IncompleteActivity)
 				SetAction(0);
 	}
-	else
-		// set first position
-		if (fInitial) UpdatePos();
 
-	// Straight Con bottom y-adjust
-	if (!r || fInitial)
+	// bottom y-adjust
+	if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
 	{
-		if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
-		{
-			fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
-			UpdatePos(); UpdateSolidMask(false);
-		}
+		fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
+		UpdatePos(); UpdateSolidMask(false);
 	}
-	else if (Category & C4D_Structure) if (iStepDiff > 0)
-		{
-			// even rotated buildings need to be moved upwards
-			// but by con difference, because with keep-bottom-method, they might still be sinking
-			// besides, moving the building up may often stabilize it
-			fix_y -= ((iLastStep+iStepDiff) * Def->Shape.Hgt / 100) - (iLastStep * Def->Shape.Hgt / 100);
-			UpdatePos(); UpdateSolidMask(false);
-		}
+
 	// Completion (after bottom GetY()-adjust for correct position)
 	if (!fWasFull && (Con>=FullCon))
 	{
@@ -1537,7 +1470,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// Check RejectCollect, if desired
 	if (pfRejectCollect)
 	{
-		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VID(Def->id), C4VObj(this))))
+		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VPropList(Def), C4VObj(this))))
 		{
 			*pfRejectCollect = true;
 			return false;
@@ -1560,7 +1493,7 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	}
 	// Assume that the new container controls this object, if it cannot control itself (i.e.: Alive)
 	// So it can be traced back who caused the damage, if a projectile hits its target
-	if (!(Alive && (Category & C4D_Living)))
+	if (!Alive)
 		Controller = pTarget->Controller;
 	// Misc updates
 	// motion must be copied immediately, so the position will be correct when OCF is set, and
@@ -1610,110 +1543,12 @@ bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
 	return false;
 }
 
-bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
-{
-	int32_t cnt;
-	C4ID NeededMaterial;
-	int32_t NeededMaterialCount = 0;
-	C4Object *pMaterial;
-
-	// Invalid or complete: no build
-	if (!Status || !Def || (Con>=FullCon)) return false;
-
-	// Material check (if rule set or any other than structure or castle-part)
-	bool fNeedMaterial = (Game.Rules & C4RULE_ConstructionNeedsMaterial) || !(Category & (C4D_Structure|C4D_StaticBack));
-	if (fNeedMaterial)
-	{
-		// Determine needed components (may be overloaded)
-		C4IDList NeededComponents;
-		Def->GetComponents(&NeededComponents, NULL, pBuilder);
-
-		// Grab any needed components from builder
-		C4ID idMat;
-		for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
-			if (Component.GetIDCount(idMat)<NeededComponents.GetCount(cnt))
-				if ((pMaterial=pBuilder->Contents.Find(idMat)))
-					if (!pMaterial->OnFire) if (pMaterial->OCF & OCF_FullCon)
-						{
-							Component.SetIDCount(idMat,Component.GetIDCount(idMat)+1, true);
-							pBuilder->Contents.Remove(pMaterial);
-							pMaterial->AssignRemoval();
-						}
-		// Grab any needed components from container
-		if (Contained)
-			for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
-				if (Component.GetIDCount(idMat)<NeededComponents.GetCount(cnt))
-					if ((pMaterial=Contained->Contents.Find(idMat)))
-						if (!pMaterial->OnFire) if (pMaterial->OCF & OCF_FullCon)
-							{
-								Component.SetIDCount(idMat,Component.GetIDCount(idMat)+1, true);
-								Contained->Contents.Remove(pMaterial);
-								pMaterial->AssignRemoval();
-							}
-		// Check for needed components at current con
-		for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
-			if (NeededComponents.GetCount(cnt)!=0)
-				if ( (100*Component.GetIDCount(idMat)/NeededComponents.GetCount(cnt)) < (100*Con/FullCon) )
-				{
-					NeededMaterial = NeededComponents.GetID(cnt);
-					NeededMaterialCount = NeededComponents.GetCount(cnt)-Component.GetCount(cnt);
-					break;
-				}
-	}
-
-	// Needs components
-	if (NeededMaterialCount)
-	{
-		// BuildNeedsMaterial call to builder script...
-		if (!pBuilder->Call(PSF_BuildNeedsMaterial,
-		                    &C4AulParSet(C4VID(NeededMaterial),C4VInt(NeededMaterialCount))))
-		{
-			// Builder is a crew member...
-			if (pBuilder->OCF & OCF_CrewMember)
-				// ...tell builder to acquire the material
-				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(NeededMaterial),false,1);
-			// ...game message if not overloaded
-			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
-		}
-		// Still in need: done/fail
-		return false;
-	}
-
-	// Do con (mass- and builder-relative)
-	int32_t iBuildSpeed=100*150;
-	if (pBuilder && pBuilder->GetAction())
-	{
-		iBuildSpeed=pBuilder->GetAction()->GetPropertyInt(P_Speed);
-	}
-	DoCon(iLevel*iBuildSpeed/Def->Mass, false, fNeedMaterial);
-
-	// TurnTo
-	if (Def->BuildTurnTo!=C4ID::None)
-		ChangeDef(Def->BuildTurnTo);
-
-	// Repair
-	Damage=0;
-
-	// Done/success
-	return true;
-}
-
-bool C4Object::Chop(C4Object *pByObject)
-{
-	// Valid check
-	if (!Status || !Def || Contained || !(OCF & OCF_Chop))
-		return false;
-	// Chop
-	if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
-	return true;
-}
-
 bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 {
 	// Valid check
 	if (!Status || !Def || Contained || !(OCF & OCF_Grab)) return false;
 	// Grabbing okay, no pushing
-	if (Def->Grab==2) return true;
+	if (GetPropertyInt(P_Touchable)==2) return true;
 	// Mobilization check (pre-mobilization zero)
 	if (!Mobile)
 		{ xdir=ydir=Fix0; }
@@ -1837,7 +1672,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	//CloseMenu(true);
 	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return false;
 	// Create menu
-	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems(true);
+	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems();
 	// Open menu
 	switch (iMenu)
 	{
@@ -1899,27 +1734,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// Success
 		return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MN_Context:
-	{
-		// Target by parameter
-		if (!pTarget) break;
-
-		// Create symbol & init menu
-		pPlayer=::Players.Get(pTarget->Owner);
-		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-		pTarget->Def->Draw(fctSymbol,false,pTarget->Color, pTarget);
-		Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
-
-		Menu->SetPermanent(!!iMenuData);
-		Menu->SetRefillObject(pTarget);
-
-		// Preselect
-		Menu->SetSelection(iMenuSelect, false, true);
-		Menu->SetPosition(iMenuPosition);
-	}
-	// Success
-	return true;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4MN_Info:
 		// Target by parameter
 		if (!pTarget) break;
@@ -1953,28 +1767,6 @@ bool C4Object::CloseMenu(bool fForce)
 		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=NULL; } // protect menu deletion from recursive menu operation calls
 	}
 	return true;
-}
-
-void C4Object::AutoContextMenu(int32_t iMenuSelect)
-{
-	// Auto Context Menu - the "new structure menus"
-	// No command set and no menu open
-	if (!Command && !(Menu && Menu->IsActive()))
-		// In a container with AutoContextMenu
-		if (Contained && Contained->Def->AutoContextMenu)
-			// Crew members only
-			if (OCF & OCF_CrewMember)
-			{
-				// Player has AutoContextMenus enabled
-				C4Player* pPlayer = ::Players.Get(Controller);
-				if (pPlayer && pPlayer->PrefAutoContextMenu)
-				{
-					// Open context menu for structure
-					ActivateMenu(C4MN_Context, iMenuSelect, 1, 0, Contained);
-					// Closing the menu exits the building (all selected clonks)
-					Menu->SetCloseCommand("PlayerObjectCommand(GetOwner(), \"Exit\") && ExecuteCommand()");
-				}
-			}
 }
 
 BYTE C4Object::GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt)
@@ -2020,6 +1812,58 @@ C4Real C4Object::GetSpeed()
 	if (xdir<0) cobjspd-=xdir; else cobjspd+=xdir;
 	if (ydir<0) cobjspd-=ydir; else cobjspd+=ydir;
 	return cobjspd;
+}
+
+StdStrBuf C4Object::GetDataString()
+{
+	StdStrBuf Output;
+	// Type
+	Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),GetName(),Def->id.ToString());
+	// Owner
+	if (ValidPlr(Owner))
+	{
+		Output.Append(LineFeed);
+		Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(Owner)->GetName());
+	}
+	// Contents
+	if (Contents.ObjectCount())
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
+		Output.Append(Contents.GetNameList(::Definitions));
+	}
+	// Action
+	if (GetAction())
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_ACTION"));
+		Output.Append(GetAction()->GetName());
+	}
+	// Properties
+	Output.Append(LineFeed);
+	Output.Append(LoadResStr("IDS_CNS_PROPERTIES"));
+	Output.Append(LineFeed "  ");
+	AppendDataString(&Output, LineFeed "  ");
+	// Effects
+	if (pEffects)
+	{
+		Output.Append(LineFeed);
+		Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
+	}
+	for (C4Effect *pEffect = pEffects; pEffect; pEffect = pEffect->pNext)
+	{
+		Output.Append(LineFeed);
+		// Effect name
+		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->Name, pEffect->iPriority, pEffect->iInterval);
+	}
+
+	StdStrBuf Output2;
+	EnumeratePointers();
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "Object"), &Output2, "C4Object::GetDataString");
+	DenumeratePointers();
+	Output.Append(LineFeed);
+	Output.Append(Output2);
+	return Output;
 }
 
 void C4Object::SetName(const char * NewName)
@@ -2222,10 +2066,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				break;
 			case C4CMD_Call:
 				sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
-				break;
-			case C4CMD_Construct:
-				C4Def *pDef; pDef=C4Id2Def(pCom->Data.getC4ID());
-				sprintf(szCommand,"%s %s",CommandName(pCom->Command),pDef ? pDef->GetName() : "");
 				break;
 			case C4CMD_None:
 				szCommand[0]=0;
@@ -2565,6 +2405,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Controller,                       "Controller",         NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));
+	pComp->Value(mkNamingAdapt( Plane,                              "Plane",                0                 ));
 
 	pComp->Value(mkNamingAdapt( r,                                "Rotation",           0                 ));
 
@@ -2912,7 +2753,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	if (fInsufficient)
 	{
 		// BuildNeedsMaterial call to object...
-		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VID(idNeeded), C4VInt(iNeeded))))
+		if (!Call(PSF_BuildNeedsMaterial,&C4AulParSet(C4VPropList(C4Id2Def(idNeeded)), C4VInt(iNeeded))))
 			// ...game message if not overloaded
 			GameMsgObjectError(Needs.getData(),this);
 		// Return
@@ -3168,7 +3009,7 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 }
 
-C4PropList* C4Object::GetAction()
+C4PropList* C4Object::GetAction() const
 {
 	C4Value value;
 	GetProperty(P_Action, &value);
@@ -3752,7 +3593,6 @@ bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 void C4Object::ExecAction()
 {
 	Action.t_attach=CNAT_None;
-	DWORD ocf;
 	C4Real iTXDir;
 	C4Real lftspeed,tydir;
 	int32_t iTargetX;
@@ -4047,51 +3887,6 @@ void C4Object::ExecAction()
 		Mobile=1;
 	}
 	break;
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_BUILD:
-		// Woa, structures can build without target
-		if ((Category & C4D_Structure) || (Category & C4D_StaticBack))
-			if (!Action.Target) break;
-		// No target
-		if (!Action.Target) { ObjectComStop(this); return; }
-		// Target internal: container needs to support by own DFA_BUILD
-		if (Action.Target->Contained)
-			if (Action.Target->Contained->GetProcedure() != DFA_BUILD)
-				return;
-		// Build speed
-		int32_t iLevel;
-		// Clonk-standard
-		iLevel=10;
-		// Internal builds slower
-		if (Action.Target->Contained) iLevel=1;
-		// Out of target area: stop
-		if ( !Inside<int32_t>(GetX()-(Action.Target->GetX()+Action.Target->Shape.GetX()),0,Action.Target->Shape.Wdt)
-		     || !Inside<int32_t>(GetY()-(Action.Target->GetY()+Action.Target->Shape.GetY()),-16,Action.Target->Shape.Hgt+16) )
-			{ ObjectComStop(this); return; }
-		// Build target
-		if (!Action.Target->Build(iLevel,this))
-		{
-			// Cannot build because target is complete (or removed, ugh): we're done
-			if (!Action.Target || Action.Target->Con>=FullCon)
-			{
-				// Stop
-				ObjectComStop(this);
-				// Exit target if internal
-				if (Action.Target) if (Action.Target->Contained==this)
-						Action.Target->SetCommand(C4CMD_Exit);
-			}
-			// Cannot build because target needs material (assumeably)
-			else
-			{
-				// Stop
-				ObjectComStop(this);
-			}
-			return;
-		}
-		xdir=ydir=0;
-		Action.t_attach|=CNAT_Bottom;
-		Mobile=1;
-		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_PUSH:
 		// No target
@@ -4227,25 +4022,6 @@ void C4Object::ExecAction()
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case DFA_CHOP:
-		// Valid check
-		if (!Action.Target) { ObjectActionStand(this); return; }
-		// Chop
-		if (!::Game.iTick3)
-			if (!Action.Target->Chop(this))
-				{ ObjectActionStand(this); return; }
-		// Valid check (again, target might have been destroyed)
-		if (!Action.Target) { ObjectActionStand(this); return; }
-		// AtObject check
-		ocf=OCF_Chop;
-		if (!Action.Target->At(GetX(),GetY(),ocf)) { ObjectActionStand(this); return; }
-		// Position
-		SetDir( (GetX()>Action.Target->GetX()) ? DIR_Left : DIR_Right );
-		xdir=ydir=0;
-		Action.t_attach|=CNAT_Bottom;
-		Mobile=1;
-		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_LIFT:
 		// Valid check
 		if (!Action.Target) { SetAction(0); return; }
@@ -4773,7 +4549,7 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	if (Contents.GetObject() == pTarget) return;
 	// select object via script?
 	if (fDoCalls)
-		if (!! Call("~ControlContents", &C4AulParSet(C4VID(pTarget->id))))
+		if (Call("~ControlContents", &C4AulParSet(C4VPropList(pTarget))))
 			return;
 	// default action
 	if (!(Contents.ShiftContents(pTarget))) return;
@@ -5335,4 +5111,45 @@ bool C4Object::IsUserPlayerObject()
 	if (!pOwner || pOwner->GetType() != C4PT_User) return false;
 	// otherwise, it's a user playeer object
 	return true;
+}
+
+void C4Object::SetPropertyByS(C4String * k, const C4Value & to)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane:
+				if (!to.getInt()) throw new C4AulExecError(this, "invalid Plane 0");
+				SetPlane(to.getInt());
+				return;
+		}
+	}
+	C4PropListNumbered::SetPropertyByS(k, to);
+}
+
+void C4Object::ResetProperty(C4String * k)
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane:
+				SetPlane(GetPropertyInt(P_Plane));
+				return;
+		}
+	}
+	return C4PropListNumbered::ResetProperty(k);
+}
+
+bool C4Object::GetPropertyByS(C4String *k, C4Value *pResult) const
+{
+	if (k >= &Strings.P[0] && k < &Strings.P[P_LAST])
+	{
+		switch(k - &Strings.P[0])
+		{
+			case P_Plane: *pResult = C4VInt(Plane); return true;
+		}
+	}
+	return C4PropListNumbered::GetPropertyByS(k, pResult);
 }

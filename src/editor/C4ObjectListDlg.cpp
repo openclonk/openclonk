@@ -625,6 +625,12 @@ void C4ObjectListDlg::OnDestroy(GtkWidget* widget, C4ObjectListDlg* dlg)
 	dlg->treeview = 0;
 }
 
+void C4ObjectListDlg::OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg)
+{
+	Console.EditCursor.SetMode(C4CNS_ModeEdit);
+	Console.EditCursor.OpenPropTools();
+}
+
 void C4ObjectListDlg::OnSelectionChanged(GtkTreeSelection* selection, C4ObjectListDlg* dlg)
 {
 	if (dlg->updating_selection) return;
@@ -697,7 +703,7 @@ static void name_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	g_object_set(G_OBJECT(renderer), "text", object->GetName(), (gpointer)NULL);
 }
 
-#define ICON_SIZE 24
+enum { ICON_SIZE = 24 };
 
 static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* model, GtkTreeIter* iter, gpointer data)
 {
@@ -756,8 +762,6 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	g_object_set(G_OBJECT(renderer), "pixbuf", pixbuf, NULL);
 }
 
-#undef ICON_SIZE
-
 void C4ObjectListDlg::Open()
 {
 	// Create Window if necessary
@@ -789,13 +793,15 @@ void C4ObjectListDlg::Open()
 
 		g_object_unref(model); /* destroy store automatically with view */
 
+		g_signal_connect(G_OBJECT(treeview), "row-activated", G_CALLBACK(OnRowActivated), this);
+
 		GtkTreeViewColumn * col = gtk_tree_view_column_new();
 		GtkCellRenderer * renderer;
-
+#if 0
 		renderer = gtk_cell_renderer_pixbuf_new();
 		gtk_tree_view_column_pack_start(col, renderer, false);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, icon_cell_data_func, g_hash_table_new_full(NULL, NULL, NULL, (GDestroyNotify)g_object_unref), (GDestroyNotify)g_hash_table_unref);
-
+#endif
 		renderer = gtk_cell_renderer_text_new();
 		gtk_tree_view_column_pack_start(col, renderer, true);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, name_cell_data_func, NULL, NULL);
@@ -818,6 +824,10 @@ void C4ObjectListDlg::Open()
 		gtk_container_add(GTK_CONTAINER(window), vbox);
 
 		gtk_widget_show_all(window);
+	}
+	else
+	{
+		gtk_window_present_with_time(GTK_WINDOW(window), gtk_get_current_event_time());
 	}
 }
 

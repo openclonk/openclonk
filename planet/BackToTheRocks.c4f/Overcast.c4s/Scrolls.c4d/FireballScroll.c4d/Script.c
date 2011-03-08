@@ -76,3 +76,4 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = 1;

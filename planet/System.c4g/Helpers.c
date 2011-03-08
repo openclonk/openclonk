@@ -146,3 +146,27 @@ global func GetMaxBreath()
 	return this.MaxBreath;
 }
 
+// Makes an object gain Con until it is FullCon
+global func StartGrowth(int value)
+{
+	return AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+}
+
+global func StopGrowth()
+{
+	return RemoveEffect("IntGrowth", this);
+}
+
+global func FxIntGrowthStart(object obj, effect, int temporary, int value)
+{
+	if (!temporary) effect.growth = value;
+}
+
+global func FxIntGrowthTimer(object obj, effect)
+{
+	if (obj->OnFire()) return;
+	obj->DoCon(effect.growth, 1000);
+	var done = obj->GetCon(1000) >= 1000;
+	return -done;
+}
+

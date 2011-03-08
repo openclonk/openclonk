@@ -19,10 +19,10 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include "C4Value.h"
+
 #ifndef INC_C4ValueList
 #define INC_C4ValueList
-
-#include "C4Value.h"
 
 // reference counted array of C4Values
 class C4ValueArray

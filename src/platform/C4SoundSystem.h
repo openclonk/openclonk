@@ -40,9 +40,7 @@ class C4SoundInstance;
 #include <fmod.h>
 typedef FSOUND_SAMPLE* C4SoundHandle;
 #elif defined(HAVE_LIBSDL_MIXER)
-#define USE_RWOPS
-#include <SDL_mixer.h>
-typedef Mix_Chunk* C4SoundHandle;
+typedef struct Mix_Chunk* C4SoundHandle;
 #elif defined(USE_OPEN_AL)
 #ifdef __APPLE__
 #import <OpenAL/al.h>

@@ -12,6 +12,5 @@ VertexFriction=70,70,70,70
 Value=5
 Mass=10
 Components=Sulphur=1
-Rebuy=1
 Rotate=1
 Projectile=1

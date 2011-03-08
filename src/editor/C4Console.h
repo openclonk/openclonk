@@ -26,7 +26,6 @@
 #define INC_C4Console
 
 #include "C4ConsoleGUI.h"
-#include "C4PropertyDlg.h"
 #include "C4ToolsDlg.h"
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
@@ -69,10 +68,10 @@ public:
 	void DoHalt();	
 	void UpdateInputCtrl();
 	void UpdateMenus();
-	bool OpenGame();
+	void InitGame();
 	bool TogglePause(); // key callpack: pause
 public:
-	bool CloseGame();
+	void CloseGame();
 	bool UpdatePlayerMenu();
 	bool UpdateViewportMenu();
 	void UpdateStatusBars();
@@ -81,10 +80,6 @@ public:
 	void UpdateNetMenu();
 	void ClearNetMenu();
 	void PlayerJoin();
-	void EditObjects();
-	void EditInfo();
-	void EditScript();
-	void EditTitle();
 	void ViewportNew();
 	void HelpAbout();
 	bool FileSelect(char *sFilename, int iSize, const char *szFilter, DWORD dwFlags, bool fSave=false);
@@ -99,7 +94,6 @@ public:
 	bool FileRecord();
 	void SetCaptionToFilename(const char* szFilename);
 public:
-	C4PropertyDlg   PropertyDlg;
 	C4ToolsDlg      ToolsDlg;
 	C4ObjectListDlg ObjectListDlg;
 	C4EditCursor    EditCursor;
@@ -107,12 +101,6 @@ public:
 	int ScriptCounter;
 	int FrameCounter;
 	int Time,FPS;
-	int MenuIndexFile;
-	int MenuIndexComponents;
-	int MenuIndexPlayer;
-	int MenuIndexViewport;
-	int MenuIndexNet;
-	int MenuIndexHelp;
 #if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 	virtual void HandleMessage (XEvent &);
 #endif

@@ -22,17 +22,16 @@
 
 #include <C4Include.h>
 #include <C4Value.h>
+
+#include <C4DefList.h>
 #include <C4StringTable.h>
 #include <C4ValueArray.h>
-
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>
 
-const C4NullValue C4VNull = C4NullValue();
-const C4Value C4VTrue = C4VBool(true);
-const C4Value C4VFalse = C4VBool(false);
+const C4Value C4VNull;
 
 const char* GetC4VName(const C4V_Type Type)
 {
@@ -126,7 +125,7 @@ const char* C4Value::GetTypeInfo()
 bool C4Value::FnCnvObject() const
 {
 	// try casting
-	if (dynamic_cast<C4Object *>(Data.PropList)) return true;
+	if (Data.PropList->GetObject()) return true;
 	return false;
 }
 
@@ -242,13 +241,15 @@ StdStrBuf C4Value::GetDataString() const
 	case C4V_PropList:
 	{
 		// obj exists?
-		if (!::Objects.ObjectNumber(Data.PropList))
+		if (!C4PropListNumbered::CheckPropList(Data.PropList))
 			return FormatString("%ld", static_cast<long>(Data.Int));
-		else if (Data.PropList)
-			if (Data.Obj->Status == C4OS_NORMAL)
-				return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+		else if (Data.PropList && Data.PropList->GetPropListNumbered())
+			if (Data.PropList->Status == C4OS_NORMAL)
+				return FormatString("%s #%d", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
 			else
-				return FormatString("{%s #%d}", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+				return FormatString("{%s #%d}", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
+		else if (Data.PropList)
+			return FormatString("{}");
 		else
 			return StdStrBuf("0"); // (impossible)
 	}
@@ -299,7 +300,7 @@ void C4Value::DenumeratePointer()
 	if (Type != C4V_C4ObjectEnum) return;
 	// get obj id, search object
 	int iObjID = Data.Int;
-	C4PropList *pObj = Objects.PropListPointer(iObjID);
+	C4PropList *pObj = C4PropListNumbered::GetByNumber(iObjID);
 	if (pObj)
 		// set
 		SetPropList(pObj);
@@ -385,7 +386,8 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			pComp->Value(p->GetDef()->id);
 		else
 		{
-			iTmp = ::Objects.ObjectNumber(getPropList());
+			assert(getPropList()->GetPropListNumbered());
+			iTmp = getPropList()->GetPropListNumbered()->Number;
 			pComp->Value(iTmp);
 		}
 		break;
@@ -486,7 +488,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return false;
 		}
 	case C4V_C4Object: case C4V_PropList:
-		if (Type == Value2.Type)
+		if (Value2.Type == C4V_C4Object || Value2.Type == C4V_PropList)
 		{
 			// Compare as equal if and only if the proplists are indistinguishable
 			// If one or both are mutable, they have to be the same
@@ -510,7 +512,6 @@ bool C4Value::operator != (const C4Value& Value2) const
 	return !(*this == Value2);
 }
 
-C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
 C4ID C4Value::getC4ID() const
 {
 	C4PropList * p = getPropList();

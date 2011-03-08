@@ -12,7 +12,7 @@ Rules=Rule_EnergyNeed=1
 [Player1]
 Wealth=250
 Crew=Clonk=2
-Buildings=ToolsWorkshop=1;WindGenerator=2;SteamEngine=1;WoodenCabin=1;Pump=1
+Buildings=ToolsWorkshop=1;WindGenerator=2;SteamEngine=1;WoodenCabin=1;Pump=1;Foundry=1;
 
 [Player2]
 Wealth=50,0,0,250

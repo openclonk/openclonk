@@ -6,6 +6,11 @@ private func SeedChance() { return 400; }
 private func SeedAreaSize() { return 200; }
 private func SeedAmount() { return 6; }
 
+func Construction()
+{
+	StartGrowth(1);
+}
+
 private func Initialize()
 {
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));

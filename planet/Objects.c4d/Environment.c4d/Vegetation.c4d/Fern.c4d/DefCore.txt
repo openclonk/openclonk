@@ -17,4 +17,4 @@ Oversize=1
 ContactIncinerate=3
 BlastIncinerate=1
 Float=1
-Growth=1
+

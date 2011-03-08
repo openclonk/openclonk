@@ -70,7 +70,6 @@ protected func Initialize()
 	if (FindObject(Find_ID(Environment_Celestial)))
 	{
 		var moon=CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
-		moon->Resort();
 		PlaceStars();
 	}
 	return;

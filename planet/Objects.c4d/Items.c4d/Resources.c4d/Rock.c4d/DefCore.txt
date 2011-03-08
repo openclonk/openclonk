@@ -12,7 +12,6 @@ VertexFriction=20
 Value=1
 Mass=10
 Components=Rock=1
-Rebuy=1
 Projectile=1
 Rotate=1
 

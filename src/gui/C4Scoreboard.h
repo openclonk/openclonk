@@ -21,8 +21,6 @@
 #define INC_C4Scoreboard
 
 #include <utility>
-#include "C4Gui.h"
-#include "C4StringTable.h"
 
 class C4Scoreboard
 {
@@ -92,33 +90,6 @@ public:
 	bool KeyUserShow() { DoDlgShow(0, true); return true; }
 
 	void CompileFunc(StdCompiler *pComp);
-};
-
-class C4ScoreboardDlg : public C4GUI::Dialog
-{
-private:
-	int32_t *piColWidths;
-	C4Scoreboard *pBrd;
-
-	enum { XIndent = 4, YIndent = 4, XMargin = 3, YMargin = 3 };
-
-public:
-	C4ScoreboardDlg(C4Scoreboard *pForScoreboard);
-	~C4ScoreboardDlg();
-
-protected:
-	void InvalidateRows() { delete [] piColWidths; piColWidths = NULL; }
-	void Update(); // update row widths and own size and caption
-
-	virtual bool DoPlacement(C4GUI::Screen *pOnScreen, const C4Rect &rPreferredDlgRect);
-	virtual void Draw(C4TargetFacet &cgo);
-	virtual void DrawElement(C4TargetFacet &cgo);
-
-	virtual const char *GetID() { return "Scoreboard"; }
-
-	virtual bool IsMouseControlled() { return false; }
-
-	friend class C4Scoreboard;
 };
 
 

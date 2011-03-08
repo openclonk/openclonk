@@ -20,7 +20,8 @@
 
 @class ClonkWindowController;
 
-@interface ClonkOpenGLView : NSView {
+@interface ClonkOpenGLView : NSView
+{
 @private
 	NSOpenGLContext* context;
 }
@@ -30,8 +31,25 @@
 - (void) showCursor;
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
+- (void) setContextSurfaceBackingSizeToOwnDimensions;
+
++ (CGDirectDisplayID) displayID;
++ (NSOpenGLContext*) mainContext;
++ (void) setSurfaceBackingSizeOf:(NSOpenGLContext*) context width:(int)wdt height:(int)hgt;
++ (NSOpenGLContext*) createContext:(CStdGLCtx*) pMainCtx;
 
 @property(readwrite, retain) NSOpenGLContext* context;
+@end
+
+@interface ClonkEditorOpenGLView: ClonkOpenGLView
+{
+}
+- (IBAction) grabContents:(id) sender;
+- (IBAction) copy:(id) sender;
+- (IBAction) delete:(id) sender;
+- (IBAction) resetZoom:(id) sender;
+- (IBAction) increaseZoom:(id)sender;
+- (IBAction) decreaseZoom:(id)sender;
 @end
 
 #endif

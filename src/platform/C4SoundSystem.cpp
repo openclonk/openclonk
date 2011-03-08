@@ -35,6 +35,11 @@
 #include <C4Viewport.h>
 #include <C4SoundLoaders.h>
 
+#ifdef HAVE_LIBSDL_MIXER
+#define USE_RWOPS
+#include <SDL_mixer.h>
+#endif
+
 using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
@@ -74,7 +79,7 @@ bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, bool fStatic)
 	if (!Config.Sound.RXSound) return false;
 	// Locate sound in file
 	StdBuf WaveBuffer;
-	if (!hGroup.LoadEntry(szFileName, WaveBuffer)) return false;
+	if (!hGroup.LoadEntry(szFileName, &WaveBuffer)) return false;
 	// load it from mem
 	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize(), fStatic)) return false;
 	// Set name
@@ -447,7 +452,7 @@ bool C4SoundSystem::Init()
 	ClearEffects();
 	// Open sound file
 	if (!SoundFile.IsOpen())
-		if (!SoundFile.Open(Config.AtSystemDataPath(C4CFN_Sound))) return false;
+		if (!Reloc.Open(SoundFile, C4CFN_Sound)) return false;
 #ifdef HAVE_LIBSDL_MIXER
 	Mix_AllocateChannels(C4MaxSoundInstances);
 #endif

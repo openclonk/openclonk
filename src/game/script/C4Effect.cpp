@@ -25,7 +25,9 @@
 /* Also contains some helper functions for various landscape effects */
 
 #include <C4Include.h>
+#include <C4Effects.h>
 
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Random.h>
 #include <C4Log.h>
@@ -34,6 +36,7 @@
 #include <C4PXS.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4SoundSystem.h>
 
 void C4Effect::AssignCallbackFunctions()
 {

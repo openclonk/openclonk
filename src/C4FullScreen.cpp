@@ -350,7 +350,7 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
-			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 			lpDDraw->InvalidateDeviceObjects();
 			lpDDraw->RestoreDeviceObjects();
 
@@ -412,6 +412,12 @@ C4FullScreen::~C4FullScreen()
 {
 	if (pMenu) delete pMenu;
 	if (pSurface) delete pSurface;
+}
+
+
+CStdWindow * C4FullScreen::Init(CStdApp * pApp)
+{
+	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
 }
 
 void C4FullScreen::Close()

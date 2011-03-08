@@ -23,6 +23,8 @@
 
 #include "C4Log.h"
 #include "C4Components.h"
+#include "C4Def.h"
+#include <C4DefList.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
@@ -403,7 +405,7 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 	// Compile data
 	StdStrBuf Buf;
-	if (hGroup.LoadEntryString(C4CFN_Parameters, Buf))
+	if (hGroup.LoadEntryString(C4CFN_Parameters, &Buf))
 	{
 		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
 		      mkNamingAdapt(mkParAdapt(*this, pScenario), "Parameters"),

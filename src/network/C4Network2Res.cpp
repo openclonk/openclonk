@@ -386,20 +386,21 @@ bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2Res
 	SCopy(strFilePath, szFile, sizeof(szFile)-1);
 	// group?
 	C4Group Grp;
-	if (Grp.Open(strFilePath))
+	if (Reloc.Open(Grp, strFilePath))
 		return SetByGroup(&Grp, fTemp, eType, iResID, szResName, fSilent);
 	// so it needs to be a file
-	if (!FileExists(szFile))
+	StdStrBuf szFullFile;
+	if (!Reloc.LocateItem(szFile, szFullFile))
 		{ if (!fSilent) LogF("SetByFile: file %s not found!", strFilePath); return false; }
 	// calc checksum
 	uint32_t iCRC32;
-	if (!C4Group_GetFileCRC(szFile, &iCRC32)) return false;
+	if (!C4Group_GetFileCRC(szFullFile.getData(), &iCRC32)) return false;
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
 	LogSilentF("Network: Resource: complete %d:%s is file %s (%s)", iResID, szResName, szFile, fTemp ? "temp" : "static");
 #endif
 	// set core
-	Core.Set(eType, iResID, szResName, iCRC32);
+	Core.Set(eType, iResID, Config.AtRelativePath(szFullFile.getData()), iCRC32);
 	// set own data
 	fDirty = true;
 	fTempFile = fTemp;

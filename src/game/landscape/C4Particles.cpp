@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4Particles.h>
 
+#include <C4Config.h>
 #include <C4Physics.h>
 #include <C4Object.h>
 #include <C4Random.h>

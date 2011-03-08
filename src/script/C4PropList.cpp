@@ -64,6 +64,41 @@ C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 	return r;
 }
 
+C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+int32_t C4PropListNumbered::EnumerationIndex = 0;
+
+C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
+{
+	return PropLists.Get(iNumber);
+}
+
+bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
+{
+	if (!pObj) return false;
+	C4PropListNumbered * const * p = PropLists.First();
+	while (p)
+	{
+		if (*p == pObj)
+			return true;
+		p = PropLists.Next(p);
+	}
+	return false;
+}
+
+void C4PropListNumbered::DenumerateAll(int32_t iMaxObjectNumber)
+{
+	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
+		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
+	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
+}
+
+void C4PropListNumbered::ResetEnumerationIndex()
+{
+	assert(!PropLists.GetSize());
+	EnumerationIndex = 0;
+}
+
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
@@ -72,9 +107,9 @@ void C4PropListNumbered::AcquireNumber()
 {
 	// Enumerate object
 	do
-		Number = ++Game.ObjectEnumerationIndex;
-	while (::Objects.PropLists.Get(Number));
-	::Objects.PropLists.Add(this);
+		Number = ++EnumerationIndex;
+	while (PropLists.Get(Number));
+	PropLists.Add(this);
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
@@ -84,11 +119,18 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(Number, "Number"));
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
+	pComp->Value(mkNamingAdapt(Number, "Number"));
 	if (pComp->isCompiler())
-		::Objects.PropLists.Add(this);
+	{
+		if (PropLists.Get(Number))
+		{
+			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			return;
+		}
+		PropLists.Add(this);
+	}
 }
 
 void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
@@ -98,16 +140,27 @@ void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
 	// reuse C4PropList::CompileFunc(pComp);
 	pComp->Value(static_cast<C4PropList&>(*this));
 	if (pComp->isCompiler())
-		::Objects.PropLists.Add(this);
+	{
+		if (PropLists.Get(Number))
+		{
+			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			return;
+		}
+		PropLists.Add(this);
+	}
 }
 
 C4PropListNumbered::~C4PropListNumbered()
 {
 	if (Number != -1)
-		::Objects.PropLists.Remove(this);
+		PropLists.Remove(this);
 	else
 		Log("removing numbered proplist without number");
 }
+
+#ifdef _DEBUG
+C4Set<C4PropList *> C4PropList::PropLists;
+#endif
 
 C4PropList::C4PropList(C4PropList * prototype):
 		Status(1),
@@ -115,6 +168,9 @@ C4PropList::C4PropList(C4PropList * prototype):
 {
 	if (prototype)
 		SetProperty(P_Prototype, C4VPropList(prototype));
+#ifdef _DEBUG	
+	PropLists.Add(this);
+#endif
 }
 
 void C4PropList::DenumeratePointers()
@@ -140,7 +196,11 @@ C4PropList::~C4PropList()
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;
 	}
-	assert(!::Objects.ObjectNumber(this));
+#ifdef _DEBUG
+	assert(PropLists.Has(this));
+	PropLists.Remove(this);
+#endif
+	assert(!C4PropListNumbered::CheckPropList(this));
 }
 
 bool C4PropList::operator==(const C4PropList &b) const
@@ -230,8 +290,21 @@ void C4Property::CompileFunc(StdCompiler *pComp)
 	pComp->Value(Value);
 }
 
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim)
+{
+	StdStrBuf & DataString = *out;
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		DataString.Append(p->Key->GetData());
+		DataString.Append(" = ");
+		DataString.Append(p->Value.GetDataString());
+		p = Properties.Next(p);
+		if (p) DataString.Append(delim);
+	}
+}
 
-const char * C4PropList::GetName()
+const char * C4PropList::GetName() const
 {
 	C4String * s = GetPropertyStr(P_Name);
 	if (!s) return "";
@@ -422,4 +495,10 @@ template<> template<>
 bool C4Set<C4PropListNumbered *>::Equals<C4PropList *>(C4PropListNumbered * a, C4PropList * b)
 {
 	return a == b;
+}
+
+template<> template<>
+unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * e)
+{
+	return C4Set<C4PropListNumbered *>::Hash(static_cast<int>(reinterpret_cast<intptr_t>(e)));
 }

@@ -5,6 +5,11 @@
 	A small fluttering being.
 */
 
+func Construction()
+{
+	StartGrowth(15);
+}
+
 protected func Initialize()
 {
 	// TODO: Fix mesh extents?

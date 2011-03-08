@@ -23,6 +23,8 @@
 #include <C4Include.h>
 #include "C4SoundLoaders.h"
 
+#include <C4Application.h>
+
 #if defined(USE_OPEN_AL) && defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -217,6 +219,9 @@ VorbisLoader VorbisLoader::singleton;
 #endif
 
 #ifdef HAVE_LIBSDL_MIXER
+#define USE_RWOPS
+#include <SDL_mixer.h>
+
 bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
 {
 	// Be paranoid about SDL_Mixer initialisation

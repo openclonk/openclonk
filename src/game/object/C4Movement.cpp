@@ -28,6 +28,7 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
+#include <C4Effects.h>
 #include <C4Physics.h>
 #include <C4SolidMask.h>
 #include <C4Landscape.h>
@@ -185,10 +186,7 @@ void C4Object::SideBounds(C4Real &ctcox)
 			C4PropList* pActionDef = GetAction();
 			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
-				if (Category & C4D_StaticBack)
-					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt,CNAT_Left,CNAT_Right);
-				else
-					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX()-Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt+Shape.GetX(),CNAT_Left,CNAT_Right);
+				TargetBounds(ctcox, Layer->GetX() + Layer->Shape.GetX() - Shape.GetX(), Layer->GetX() + Layer->Shape.GetX() + Layer->Shape.Wdt + Shape.GetX(), CNAT_Left, CNAT_Right);
 			}
 		}
 	// landscape bounds
@@ -204,10 +202,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 			C4PropList* pActionDef = GetAction();
 			if (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_ATTACH)
 			{
-				if (Category & C4D_StaticBack)
-					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
-				else
-					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY()-Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
+				TargetBounds(ctcoy, Layer->GetY() + Layer->Shape.GetY() - Shape.GetY(), Layer->GetY() + Layer->Shape.GetY() + Layer->Shape.Hgt + Shape.GetY(), CNAT_Top, CNAT_Bottom);
 			}
 		}
 	// landscape bounds

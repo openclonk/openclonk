@@ -261,7 +261,7 @@ bool FindSolidGround(int32_t &rx, int32_t &ry, int32_t width);
 bool FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
 bool FindSurfaceLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
 bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange);
-bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, DWORD category, int32_t hrange=-1);
+bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, int32_t Plane, int32_t hrange=-1);
 bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, int32_t iHeight, int32_t &rX, int32_t &rY);
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);

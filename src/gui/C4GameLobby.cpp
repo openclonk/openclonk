@@ -94,13 +94,12 @@ namespace C4GameLobby
 				StdStrBuf sDesc;
 				// load desc
 				C4ComponentHost DefDesc;
-				if (DefDesc.LoadEx("Desc", ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+				if (DefDesc.LoadEx(ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 				{
 					C4RTFFile rtf;
 					rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 					sDesc.Take(rtf.GetPlainText());
 				}
-				DefDesc.Close();
 				if (!!sDesc)
 					pDescBox->AddTextLine(sDesc.getData(), &rTextFont, C4GUI_MessageFontClr, false, true, &rTitleFont);
 				else

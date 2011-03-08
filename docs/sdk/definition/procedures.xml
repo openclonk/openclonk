@@ -75,12 +75,6 @@
         <col>CNAT_Bottom</col>
       </row>
       <row>
-        <col>BUILD</col>
-        <col>Building</col>
-        <col>Builds the <emlink href="script/fn/SetAction.html">target object</emlink>.</col>
-        <col>CNAT_Bottom</col>
-      </row>
-      <row>
         <col>PUSH</col>
         <col>Pushing</col>
         <col>Pushes the <emlink href="script/fn/SetAction.html">target object </emlink> according to <emlink href="definition/defcore.html#SektionPhysical">physical</emlink> Push and <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>

@@ -91,6 +91,7 @@ C4StringTable::C4StringTable()
 	P[P_CommandTarget] = "CommandTarget";
 	P[P_Time] = "Time";
 	P[P_Collectible] = "Collectible";
+	P[P_Touchable] = "Touchable";
 	P[P_ActMap] = "ActMap";
 	P[P_Procedure] = "Procedure";
 	P[P_Speed] = "Speed";
@@ -143,6 +144,7 @@ C4StringTable::C4StringTable()
 	P[P_CausedBy] = "CausedBy";
 	P[P_Blasted] = "Blasted";
 	P[P_IncineratingObj] = "IncineratingObj";
+	P[P_Plane] = "Plane";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
@@ -152,9 +154,7 @@ C4StringTable::C4StringTable()
 	P[DFA_SWIM] = "SWIM";
 	P[DFA_THROW] = "THROW";
 	P[DFA_BRIDGE] = "BRIDGE";
-	P[DFA_BUILD] = "BUILD";
 	P[DFA_PUSH] = "PUSH";
-	P[DFA_CHOP] = "CHOP";
 	P[DFA_LIFT] = "LIFT";
 	P[DFA_FLOAT] = "FLOAT";
 	P[DFA_ATTACH] = "ATTACH";
@@ -171,12 +171,14 @@ C4StringTable::~C4StringTable()
 	{
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
-			fprintf(stderr, "\"%s\"\n", (*s)->GetCStr());
+			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
+				fprintf(stderr, " \"%s\"\n", (*s)->GetCStr());
+			else
+				fprintf(stderr, "\"%s\"\n", (*s)->GetCStr());
 		}
 	}
 #endif
 	assert(Set.GetSize() == P_LAST);
-	for (unsigned int i = 0; i < P_LAST; ++i) P[i].Data.Clear();
 }
 
 C4String *C4StringTable::RegString(StdStrBuf String)

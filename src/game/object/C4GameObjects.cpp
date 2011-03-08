@@ -25,6 +25,7 @@
 #include <C4Include.h>
 #include <C4GameObjects.h>
 
+#include <C4Effects.h>
 #include <C4Object.h>
 #include <C4ObjectCom.h>
 #include <C4Physics.h>
@@ -47,10 +48,8 @@ C4GameObjects::~C4GameObjects()
 
 void C4GameObjects::Default()
 {
-	ResortProc=NULL;
 	Sectors.Clear();
 	LastUsedMarker = 0;
-	BackObjects.Default();
 	ForeObjects.Default();
 }
 
@@ -70,7 +69,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 	//int32_t iDefCnt = ::Definitions.GetDefCount();
 	//pComp->Value(mkNamingCountAdapt(iDefCnt, "Def"));
 	// "PropList" section count
-	int32_t iPropListCnt = PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
+	int32_t iPropListCnt = C4PropListNumbered::PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
 	pComp->Value(mkNamingCountAdapt(iPropListCnt, "PropList"));
 	// skipping player objects would screw object counting in non-naming compilers
 	assert(!fSkipPlayerObjects || pComp->hasNaming());
@@ -81,15 +80,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 			if (pPos->Obj->Status)
 				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
 					pComp->Value(mkNamingAdapt(*pPos->Obj, "Object"));
-		/*for(C4PropList * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		  if (dynamic_cast<C4Def *>(*ppPropList))
-		    {
-		    pComp->Name("Def");
-		    pComp->Value(mkNamingAdapt(mkC4IDAdapt(dynamic_cast<C4Def *>(*ppPropList)->id), "id", C4ID_None));
-		    pComp->Value(mkNamingAdapt((*ppPropList)->Number, "Number", -1));
-		    pComp->NameEnd();
-		    }*/
-		for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
+		for (C4PropListNumbered * const * ppPropList = C4PropListNumbered::PropLists.First(); ppPropList; ppPropList = C4PropListNumbered::PropLists.Next(ppPropList))
 			if ((*ppPropList)->IsScriptPropList())
 			{
 				pComp->Value(mkNamingAdapt(**ppPropList, "PropList"));
@@ -101,7 +92,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 		assert(!fSkipPlayerObjects);
 		// Remove previous data
 		Clear();
-		//assert(PropLists.GetSize() == ::Definitions.GetDefCount());
+		//assert(C4PropListNumbered::PropLists.GetSize() == ::Definitions.GetDefCount());
 		// Load objects, add them to the list.
 		for (int i = 0; i < iObjCnt; i++)
 		{
@@ -121,33 +112,6 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 				delete pExc;
 			}
 		}
-		// Load object numbers of the definitions
-		/*for(int i = 0; i < iDefCnt; i++)
-		  {
-		  try
-		    {
-		    pComp->Name("Def");
-		    C4ID id;
-		    pComp->Value(mkNamingAdapt(mkC4IDAdapt(id), "id", C4ID_None));
-		    C4Def * pDef = ::Definitions.ID2Def(id);
-		    if (!pDef)
-		      { pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); continue; }
-		    PropLists.Remove(static_cast<C4PropList *>(pDef));
-		    pComp->Value(mkNamingAdapt(pDef->Number, "Number", -1));
-		    PropLists.Add(static_cast<C4PropList *>(pDef));
-		    }
-		  catch (StdCompiler::Exception *pExc)
-		    {
-		    // Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-		    if(!pExc->Pos.getLength())
-		      LogF("ERROR: Definition loading: %s", pExc->Msg.getData());
-		    else
-		      LogF("ERROR: Definition loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-		    delete pExc;
-		      pComp->NameEnd(true);
-		    }
-		  pComp->NameEnd();
-		  }*/
 		// Load proplists
 		for (int i = 0; i < iPropListCnt; i++)
 		{
@@ -174,9 +138,6 @@ bool C4GameObjects::Add(C4Object *nObj)
 	// add inactive objects to the inactive list only
 	if (nObj->Status == C4OS_INACTIVE)
 		return InactiveObjects.Add(nObj, C4ObjectList::stMain);
-	// if this is a background object, add it to the list
-	if (nObj->Category & C4D_Background)
-		::Objects.BackObjects.Add(nObj, C4ObjectList::stMain);
 	// if this is a foreground object, add it to the list
 	if (nObj->Category & C4D_Foreground)
 		::Objects.ForeObjects.Add(nObj, C4ObjectList::stMain);
@@ -195,8 +156,6 @@ bool C4GameObjects::Remove(C4Object *pObj)
 	if (pObj->Status == C4OS_INACTIVE) return InactiveObjects.Remove(pObj);
 	// remove from sectors
 	Sectors.Remove(pObj);
-	// remove from backlist
-	::Objects.BackObjects.Remove(pObj);
 	// remove from forelist
 	::Objects.ForeObjects.Remove(pObj);
 	// manipulate main list
@@ -324,7 +283,6 @@ void C4GameObjects::Synchronize()
 {
 	// synchronize unsorted objects
 	ResortUnsorted();
-	ExecuteResorts();
 	// synchronize solidmasks
 	UpdateSolidMasks();
 }
@@ -332,29 +290,8 @@ void C4GameObjects::Synchronize()
 C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 {
 	// search own list
-	C4PropList *pObj = PropLists.Get(iNumber);
+	C4PropList *pObj = C4PropListNumbered::GetByNumber(iNumber);
 	if (pObj) return pObj->GetObject();
-	return 0;
-}
-
-C4PropList *C4GameObjects::PropListPointer(int32_t iNumber)
-{
-	return PropLists.Get(iNumber);
-}
-
-int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
-{
-	if (!pObj) return 0;
-	C4PropListNumbered * const * p = PropLists.First();
-	while (p)
-	{
-		if (*p == pObj)
-		{
-			if ((*p)->GetPropListNumbered()) return (*p)->GetPropListNumbered()->Number;
-			return 0;
-		}
-		p = PropLists.Next(p);
-	}
 	return 0;
 }
 
@@ -377,7 +314,6 @@ void C4GameObjects::DeleteObjects(bool fDeleteInactive)
 {
 	C4ObjectList::DeleteObjects();
 	Sectors.ClearObjects();
-	BackObjects.Clear();
 	ForeObjects.Clear();
 	if (fDeleteInactive) InactiveObjects.DeleteObjects();
 }
@@ -387,214 +323,8 @@ void C4GameObjects::Clear(bool fClearInactive)
 	DeleteObjects(fClearInactive);
 	if (fClearInactive)
 		InactiveObjects.Clear();
-	ResortProc = NULL;
 	LastUsedMarker = 0;
 }
-
-/* C4ObjResort */
-
-C4ObjResort::C4ObjResort()
-{
-	Category=0;
-	OrderFunc=NULL;
-	Next=NULL;
-	pSortObj = pObjBefore = NULL;
-	fSortAfter = false;
-}
-
-C4ObjResort::~C4ObjResort()
-{
-}
-
-void C4ObjResort::Execute()
-{
-	// no order func: resort given objects
-	if (!OrderFunc)
-	{
-		// no objects given?
-		if (!pSortObj || !pObjBefore) return;
-		// object to be resorted died or changed category
-		if (pSortObj->Status != C4OS_NORMAL || pSortObj->Unsorted) return;
-		// exchange
-		if (fSortAfter)
-			::Objects.OrderObjectAfter(pSortObj, pObjBefore);
-		else
-			::Objects.OrderObjectBefore(pSortObj, pObjBefore);
-		// done
-		return;
-	}
-	else if (pSortObj)
-	{
-		// sort single object
-		SortObject();
-		return;
-	}
-	// get first link to start sorting
-	C4ObjectLink *pLnk=::Objects.Last; if (!pLnk) return;
-	// sort all categories given; one by one (sort by category is ensured by C4ObjectList::Add)
-	for (int iCat=1; iCat<C4D_SortLimit; iCat<<=1)
-		if (iCat & Category)
-		{
-			// get first link of this category
-			while (!(pLnk->Obj->Status && (pLnk->Obj->Category & iCat) ))
-				if (!(pLnk=pLnk->Prev))
-					// no more objects to sort: done
-					break;
-			// first link found?
-			if (pLnk)
-			{
-				// get last link of this category
-				C4ObjectLink *pNextLnk=pLnk;
-				while (!pLnk->Obj->Status || (pNextLnk->Obj->Category & iCat))
-					if (!(pNextLnk=pNextLnk->Prev))
-						// no more objects: end of list reached
-						break;
-				// get previous link, which is the last in the list of this category
-				C4ObjectLink *pLastLnk;
-				if (pNextLnk) pLastLnk=pNextLnk->Next; else pLastLnk=::Objects.First;
-				// get next valid (there must be at least one: pLnk; so this loop should be safe)
-				while (!pLastLnk->Obj->Status) pLastLnk=pLastLnk->Next;
-				// now sort this portion of the list
-				Sort(pLastLnk, pLnk);
-				// start searching at end of this list next time
-				// if the end has already been reached: stop here
-				if (!(pLnk=pNextLnk)) return;
-			}
-			// continue with next category
-		}
-}
-
-void C4ObjResort::SortObject()
-{
-	// safety
-	if (pSortObj->Status != C4OS_NORMAL || pSortObj->Unsorted) return;
-	// pre-build parameters
-	C4AulParSet Pars;
-	Pars[1].Set(C4VObj(pSortObj));
-	// first, check forward in list
-	C4ObjectLink *pMoveLink=NULL;
-	C4ObjectLink *pLnk = ::Objects.GetLink(pSortObj);
-	C4ObjectLink *pLnkBck = pLnk;
-	C4Object *pObj2; int iResult;
-	if (!pLnk) return;
-	while ((pLnk = pLnk->Next))
-	{
-		// get object
-		pObj2 = pLnk->Obj;
-		if (!pObj2->Status) continue;
-		// does the category still match?
-		if (!(pObj2->Category & pSortObj->Category)) break;
-		// perform the check
-		Pars[0].Set(C4VObj(pObj2));
-		iResult = OrderFunc->Exec(NULL, &Pars).getInt();
-		if (iResult > 0) break;
-		if (iResult < 0) pMoveLink=pLnk;
-	}
-	// check if movement has to be done
-	if (pMoveLink)
-	{
-		// move link directly after pMoveLink
-		// FIXME: Inform C4ObjectList that this is a reorder, not a remove+insert
-		// move out of current position
-		::Objects.RemoveLink(pLnkBck);
-		// put into new position
-		::Objects.InsertLink(pLnkBck, pMoveLink);
-	}
-	else
-	{
-		// no movement yet: check backwards in list
-		Pars[0].Set(C4VObj(pSortObj));
-		pLnk = pLnkBck;
-		while ((pLnk = pLnk->Prev))
-		{
-			// get object
-			pObj2 = pLnk->Obj;
-			if (!pObj2->Status) continue;
-			// does the category still match?
-			if (!(pObj2->Category & pSortObj->Category)) break;
-			// perform the check
-			Pars[1].Set(C4VObj(pObj2));
-			iResult = OrderFunc->Exec(NULL, &Pars).getInt();
-			if (iResult > 0) break;
-			if (iResult < 0) pMoveLink=pLnk;
-		}
-		// no movement to be done? finish
-		if (!pMoveLink) return;
-		// move link directly before pMoveLink
-		// move out of current position
-		::Objects.RemoveLink(pLnkBck);
-		// put into new position
-		::Objects.InsertLinkBefore(pLnkBck, pMoveLink);
-	}
-	// object has been resorted: resort into area lists, too
-	::Objects.UpdatePosResort(pSortObj);
-	// done
-}
-
-void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
-{
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-	// do a simple insertion-like sort
-	C4ObjectLink *pCurr; // current link to analyse
-	C4ObjectLink *pCurr2; // second (previous) link to analyse
-	C4ObjectLink *pNewFirst; // next link to be first
-
-	C4ObjectLink *pFirstBck=pFirst; // backup of first link
-
-	// pre-build parameters
-	C4AulParSet Pars;
-
-	// loop until there's nothing left to sort
-	while (pFirst != pLast)
-	{
-		// start from the very end of the list
-		pCurr=pNewFirst=pLast;
-		// loop the checks up to the first list item to check
-		while (pCurr != pFirst)
-		{
-			// get second check item
-			pCurr2=pCurr->Prev;
-			while (!pCurr2->Obj->Status) pCurr2=pCurr2->Prev;
-			// perform the check
-			Pars[0].Set(C4VObj(pCurr->Obj)); Pars[1].Set(C4VObj(pCurr2->Obj));
-			if (OrderFunc->Exec(NULL, &Pars).getInt() < 0)
-			{
-				// so there's something to be reordered: swap the links
-				// FIXME: Inform C4ObjectList about this reorder
-				C4Object *pObj=pCurr->Obj; pCurr->Obj=pCurr2->Obj; pCurr2->Obj=pObj;
-				// and readd to sector lists
-				pCurr->Obj->Unsorted=pCurr2->Obj->Unsorted=true;
-				// grow list section to scan next
-				pNewFirst=pCurr;
-			}
-			// advance in list
-			pCurr=pCurr2;
-		}
-		//reduce area to be checked
-		pFirst=pNewFirst;
-	}
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-	// resort objects in sector lists
-	for (pCurr=pFirstBck; pCurr!=pLast->Next; pCurr=pCurr->Next)
-	{
-		C4Object *pObj=pCurr->Obj;
-		if (pObj->Status && pObj->Unsorted)
-		{
-			pObj->Unsorted=false;
-			::Objects.UpdatePosResort(pObj);
-		}
-	}
-#ifdef _DEBUG
-	assert(::Objects.Sectors.CheckSort());
-#endif
-}
-
-
-#define C4CV_Section_Object "[Object]"
 
 int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 {
@@ -602,7 +332,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 
 	// Load data component
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, Source))
+	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, &Source))
 		return 0;
 
 	// Compile
@@ -629,9 +359,6 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		}
 		// keep track of numbers
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
-		// add to list of backobjects
-		if (pObj->Category & C4D_Background)
-			::Objects.BackObjects.Add(pObj, C4ObjectList::stMain, this);
 		// add to list of foreobjects
 		if (pObj->Category & C4D_Foreground)
 			::Objects.ForeObjects.Add(pObj, C4ObjectList::stMain, this);
@@ -645,10 +372,8 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate();
-	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
-	Game.ObjectEnumerationIndex = Max(Game.ObjectEnumerationIndex, iMaxObjectNumber);
+	C4PropListNumbered::DenumerateAll(iMaxObjectNumber);
 	// end faking and adjust object numbers
 	if (fObjectNumberCollision)
 	{
@@ -656,7 +381,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		// simply renumber all inactive objects
 		for (cLnk=InactiveObjects.First; cLnk; cLnk=cLnk->Next)
 			if ((pObj=cLnk->Obj)->Status)
-				pObj->Number = ++Game.ObjectEnumerationIndex;
+				pObj->Number = ++C4PropListNumbered::EnumerationIndex;
 	}
 
 	// special checks:
@@ -750,31 +475,19 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 
 bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive)
 {
-	// Save to temp file
-	char szFilename[_MAX_PATH+1]; SCopy( Config.AtTempPath(C4CFN_ScenarioObjects), szFilename );
-	if (!Save(szFilename,fSaveGame,fSaveInactive)) return false;
-
-	// Move temp file to group
-	hGroup.Move(szFilename, NULL); // check?
-	// Success
-	return true;
-}
-
-bool C4GameObjects::Save(const char *szFilename, bool fSaveGame, bool fSaveInactive)
-{
 	// Enumerate
 	Enumerate();
 	InactiveObjects.Enumerate();
 
 	// Decompile objects to buffer
 	StdStrBuf Buffer;
-	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, szFilename);
+	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, C4CFN_ScenarioObjects);
 
 	// Decompile inactives
 	if (fSaveInactive)
 	{
 		StdStrBuf InactiveBuffer;
-		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, szFilename);
+		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, C4CFN_ScenarioObjects);
 		Buffer.Append("\r\n");
 		Buffer.Append(InactiveBuffer);
 	}
@@ -788,7 +501,7 @@ bool C4GameObjects::Save(const char *szFilename, bool fSaveGame, bool fSaveInact
 		return false;
 
 	// Write
-	return Buffer.SaveToFile(szFilename);
+	return hGroup.Add(C4CFN_ScenarioObjects, Buffer, false, true);
 }
 
 void C4GameObjects::UpdateScriptPointers()
@@ -798,6 +511,20 @@ void C4GameObjects::UpdateScriptPointers()
 	InactiveObjects.UpdateScriptPointers();
 	// adjust global effects
 	if (Game.pGlobalEffects) Game.pGlobalEffects->ReAssignAllCallbackFunctions();
+}
+
+C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
+{
+	// call objects first - scenario script might overwrite hostility, etc...
+	C4Object *pObj;
+	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
+		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
+		{
+			C4Value vResult = pObj->Call(szFunction, pPars, fPassError);
+			// rejection tests abort on first nonzero result
+			if (fRejectTest && !!vResult) return vResult;
+		}
+	return C4Value();
 }
 
 void C4GameObjects::UpdatePos(C4Object *pObj)
@@ -813,34 +540,6 @@ void C4GameObjects::UpdatePosResort(C4Object *pObj)
 	Sectors.Add(pObj, this);
 }
 
-bool C4GameObjects::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
-{
-	// check that this won't screw the category sort
-	if ((pObj1->Category & C4D_SortLimit) < (pObj2->Category & C4D_SortLimit))
-		return false;
-	// reorder
-	if (!C4ObjectList::OrderObjectBefore(pObj1, pObj2))
-		return false;
-	// update area lists
-	UpdatePosResort(pObj1);
-	// done, success
-	return true;
-}
-
-bool C4GameObjects::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
-{
-	// check that this won't screw the category sort
-	if ((pObj1->Category & C4D_SortLimit) > (pObj2->Category & C4D_SortLimit))
-		return false;
-	// reorder
-	if (!C4ObjectList::OrderObjectAfter(pObj1, pObj2))
-		return false;
-	// update area lists
-	UpdatePosResort(pObj1);
-	// done, success
-	return true;
-}
-
 void C4GameObjects::FixObjectOrder()
 {
 	// fixes the object order so it matches the global object order sorting constraints
@@ -850,31 +549,20 @@ void C4GameObjects::FixObjectOrder()
 		C4ObjectLink *pLnk1stUnsorted=NULL, *pLnkLastUnsorted=NULL, *pLnkPrev=NULL, *pLnk;
 		C4Object *pLastWarnObj = NULL;
 		// forward fix
-		uint32_t dwLastCategory = C4D_SortLimit;
+		int lastPlane = 2147483647; //INT32_MAX;
 		for (pLnk = pLnk0; pLnk!=pLnkL->Next; pLnk=pLnk->Next)
 		{
 			C4Object *pObj = pLnk->Obj;
 			if (pObj->Unsorted || !pObj->Status) continue;
-			DWORD dwCategory = pObj->Category & C4D_SortLimit;
-			// must have exactly one SortOrder-bit set
-			if (!dwCategory)
+			int currentPlane = pObj->GetPlane();
+			// must have nonzero Plane
+			if (!currentPlane)
 			{
-				DebugLogF("Objects.txt: Object #%d is missing sorting category!", (int) pObj->Number);
-				++pObj->Category; dwCategory = 1;
-			}
-			else
-			{
-				DWORD dwCat2=dwCategory; int i=0;
-				while (~dwCat2&1) { dwCat2 = dwCat2>>1; ++i; }
-				if (dwCat2 != 1)
-				{
-					DebugLogF("Objects.txt: Object #%d has invalid sorting category %x!", (int) pObj->Number, (unsigned int) dwCategory);
-					dwCategory = (1<<i);
-					pObj->Category = (pObj->Category & ~C4D_SortLimit) | dwCategory;
-				}
+				DebugLogF("Objects.txt: Object #%d has zero Plane!", (int) pObj->Number);
+				pObj->SetPlane(lastPlane); currentPlane = lastPlane;
 			}
 			// fix order
-			if (dwCategory > dwLastCategory)
+			if (currentPlane > lastPlane)
 			{
 				// SORT ERROR! (note that pLnkPrev can't be 0)
 				if (pLnkPrev->Obj != pLastWarnObj)
@@ -887,19 +575,19 @@ void C4GameObjects::FixObjectOrder()
 				pLnkLastUnsorted = pLnkPrev;
 			}
 			else
-				dwLastCategory = dwCategory;
+				lastPlane = currentPlane;
 			pLnkPrev = pLnk;
 		}
 		if (!pLnkLastUnsorted) break; // done
 		pLnkL = pLnkLastUnsorted;
 		// backwards fix
-		dwLastCategory = 0;
+		lastPlane = -2147483647-1; //INT32_MIN;
 		for (pLnk = pLnkL; pLnk!=pLnk0->Prev; pLnk=pLnk->Prev)
 		{
 			C4Object *pObj = pLnk->Obj;
 			if (pObj->Unsorted || !pObj->Status) continue;
-			DWORD dwCategory = pObj->Category & C4D_SortLimit;
-			if (dwCategory < dwLastCategory)
+			int currentPlane = pObj->GetPlane();
+			if (currentPlane < lastPlane)
 			{
 				// SORT ERROR! (note that pLnkPrev can't be 0)
 				if (pLnkPrev->Obj != pLastWarnObj)
@@ -912,7 +600,7 @@ void C4GameObjects::FixObjectOrder()
 				pLnk1stUnsorted = pLnkPrev;
 			}
 			else
-				dwLastCategory = dwCategory;
+				lastPlane = currentPlane;
 			pLnkPrev = pLnk;
 		}
 		if (!pLnk1stUnsorted) break; // done
@@ -942,20 +630,6 @@ void C4GameObjects::ResortUnsorted()
 	}
 }
 
-void C4GameObjects::ExecuteResorts()
-{
-	// custom object sort
-	C4ObjResort *pRes = ResortProc;
-	while (pRes)
-	{
-		C4ObjResort *pNextRes=pRes->Next;
-		pRes->Execute();
-		delete pRes;
-		pRes=pNextRes;
-	}
-	ResortProc=NULL;
-}
-
 bool C4GameObjects::ValidateOwners()
 {
 	// validate in sublists
@@ -980,26 +654,6 @@ void C4GameObjects::AssignPlrViewRange()
 	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->AssignPlrViewRange();
-}
-
-void C4GameObjects::SortByCategory()
-{
-	C4ObjectLink *cLnk;
-	bool fSorted;
-	// Sort by category
-	do
-	{
-		fSorted = true;
-		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
-			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
-			{
-				RemoveLink(cLnk);
-				InsertLink(cLnk,cLnk->Next);
-				fSorted = false;
-				break;
-			}
-	}
-	while (!fSorted);
 }
 
 void C4GameObjects::SyncClearance()

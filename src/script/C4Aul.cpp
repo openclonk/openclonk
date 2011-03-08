@@ -163,13 +163,6 @@ StdStrBuf C4AulScriptFunc::GetFullName()
 
 C4AulScript::C4AulScript()
 {
-	// init defaults
-	Default();
-}
-
-
-void C4AulScript::Default()
-{
 	// not compiled
 	State = ASS_NONE;
 	Script = NULL;
@@ -188,12 +181,11 @@ void C4AulScript::Default()
 	Owner = Engine = NULL;
 	Func0 = FuncL = NULL;
 	// prepare include list
-	Includes = NULL;
-	Appends = NULL;
+	Includes.clear();
+	Appends.clear();
 
 	stringTable = 0;
 }
-
 
 C4AulScript::~C4AulScript()
 {
@@ -216,7 +208,8 @@ void C4AulScript::Unreg()
 void C4AulScript::Clear()
 {
 	// remove includes
-	Includes = NULL;
+	Includes.clear();
+	Appends.clear();
 	// delete child scripts + funcs
 	while (Child0) // Child0->Unreg();
 			if (Child0->Delete()) delete Child0; else Child0->Unreg();
@@ -413,7 +406,6 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	Condition = FromFunc.Condition;
 	idImage = FromFunc.idImage;
 	iImagePhase = FromFunc.iImagePhase;
-	ControlMethod = FromFunc.ControlMethod;
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;
@@ -446,10 +438,6 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
-
-#ifndef NOAULDEBUG
-	pDebug = NULL;
-#endif
 }
 
 
@@ -459,13 +447,11 @@ void C4AulScriptEngine::Clear()
 {
 #ifndef NOAULDEBUG
 	// stop debugger
-	delete pDebug; pDebug = NULL;
+	delete C4AulDebug::GetDebugger();
 #endif
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
-	// clear tables
-	itbl.Clear(); atbl.Clear();
 	// reset values
 	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
@@ -527,32 +513,35 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));
 }
 
-bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
+std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 {
-#ifndef NOAULDEBUG
-	// Create debug object
-	if (!pDebug) pDebug = new C4AulDebug();
-	// Initialize
-	pDebug->SetPassword(szPassword);
-	pDebug->SetAllowed(szHost);
-	pDebug->SetEngine(&AulExec);
-	if (!pDebug->Init(iPort))
-		{ LogFatal("C4Aul debugger failed to initialize!"); return false; }
-	// Log
-	LogF("C4Aul debugger initialized on port %d", iPort);
-	// Add to application
-	Application.Add(pDebug);
-	// Wait for connection
-	if (fWait)
+	std::list<char*> functions;
+	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
 	{
-		Log("C4Aul debugger waiting for connection...");
-		while (!pDebug->isConnected())
-			if (!Application.ScheduleProcs())
-				return false;
+		if (pFn->GetPublic())
+		{
+			functions.push_back(pFn->Name);
+		}
 	}
-#endif
-	// Done
-	return true;
+	// Add object or scenario script functions
+	if (script)
+	{
+		// Insert divider if necessary
+		if (script->GetSFunc(0))
+			functions.push_back(static_cast<char*>(0));
+		C4AulScriptFunc *pRef;
+		// Scan all functions
+		for (int cnt=0; (pRef=script->GetSFunc(cnt)); cnt++)
+		{
+			// Public functions only
+			if ((pRef->Access=AA_PUBLIC))
+			{
+				// Add function
+				functions.push_back(pRef->Name);
+			}
+		}
+	}
+	return functions;
 }
 
 /*--- C4AulFuncMap ---*/

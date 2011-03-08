@@ -26,16 +26,17 @@
 
 #include <C4Include.h>
 #include <C4Landscape.h>
+
 #include <C4SolidMask.h>
 #include <C4Game.h>
-
+#include <C4Group.h>
 #include <C4Map.h>
 #include <C4MapCreatorS2.h>
 #include <C4SolidMask.h>
 #include <C4Object.h>
 #include <C4Physics.h>
 #include <C4Random.h>
-#include <C4SurfaceFile.h>
+#include <C4Surface.h>
 #include <C4ToolsDlg.h>
 #ifdef DEBUGREC
 #include <C4Record.h>
@@ -52,7 +53,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Record.h>
-
+#include <StdSurface8.h>
 #include <StdPNG.h>
 
 const int C4LS_MaxLightDistY = 8;
@@ -601,6 +602,24 @@ bool C4Landscape::PostInitMap()
 	if (!Game.C4S.Landscape.KeepMapCreator) { delete pMapCreator; pMapCreator=NULL; }
 	// done, success
 	return true;
+}
+
+static CSurface8 *GroupReadSurface8(CStdStream &hGroup)
+{
+	// create surface
+	CSurface8 *pSfc=new CSurface8();
+	if (!pSfc->Read(hGroup))
+		{ delete pSfc; return NULL; }
+	return pSfc;
+}
+
+static CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
+{
+	// create surface
+	CSurface8 *pSfc=new CSurface8();
+	if (!pSfc->Read(hGroup))
+		{ delete pSfc; return NULL; }
+	return pSfc;
 }
 
 bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame)
@@ -1983,7 +2002,7 @@ bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange)
 // Returns bottom center of surface found.
 
 bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt,
-                     DWORD category, int32_t hrange)
+                     int32_t Plane, int32_t hrange)
 {
 	bool fFound=false;
 
@@ -2035,10 +2054,10 @@ bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt,
 
 		// Check runs & object overlap
 		if (rl1>=wdt) if (cx1>0)
-				if (!Game.OverlapObject(cx1,cy1-hgt-10,wdt,hgt+40,category))
+				if (!Game.OverlapObject(cx1,cy1-hgt-10,wdt,hgt+40,Plane))
 					{ rx=cx1+wdt/2; ry=cy1; fFound=true; break; }
 		if (rl2>=wdt) if (cx2<GBackWdt)
-				if (!Game.OverlapObject(cx2-wdt,cy2-hgt-10,wdt,hgt+40,category))
+				if (!Game.OverlapObject(cx2-wdt,cy2-hgt-10,wdt,hgt+40,Plane))
 					{ rx=cx2-wdt/2; ry=cy2; fFound=true; break; }
 	}
 
@@ -2171,7 +2190,7 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 	}
 	// Check other structures
 	C4Object *other;
-	if ((other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category)))
+	if ((other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->GetPlane())))
 	{
 		if (pByObj) GameMsgObjectError(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj);
 		return false;

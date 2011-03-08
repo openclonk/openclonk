@@ -30,7 +30,6 @@
     </syntax>
     <desc>Calls the protected or public function szFunction in obj. You should reconsider whether this workaround is really necessary.</desc>
     <related>
-      <funclink>ObjectCall</funclink>
       <funclink>PrivateCall</funclink>
       <funclink>Call</funclink>
       <funclink>GameCall</funclink>

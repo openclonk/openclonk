@@ -38,7 +38,11 @@ else()
 	SET(HAVE_FMOD OFF)
 	SET(GENERATE_MINI_DUMP OFF)
 endif()
-if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE)
+if(NOT USE_GL AND NOT USE_DIRECTX)
+	message(STATUS "No graphics display enabled; building dedicated server")
+	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+endif()
+if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
 	option(USE_GTK "Use GTK for the developer mode" ON)
 	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
@@ -52,10 +56,6 @@ if(APPLE)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
 	option(USE_COCOA OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
@@ -159,6 +159,8 @@ set(OC_CLONK_SOURCES
 	src/config/C4ConfigShareware.cpp
 	src/config/C4ConfigShareware.h
 	src/config/C4Constants.h
+	src/config/C4Reloc.cpp
+	src/config/C4Reloc.h
 	src/config/C4SecurityCertificates.cpp
 	src/config/C4SecurityCertificates.h
 	src/control/C4Control.cpp
@@ -190,8 +192,6 @@ set(OC_CLONK_SOURCES
 	src/editor/C4EditCursor.h
 	src/editor/C4ObjectListDlg.cpp
 	src/editor/C4ObjectListDlg.h
-	src/editor/C4PropertyDlg.cpp
-	src/editor/C4PropertyDlg.h
 	src/editor/C4ToolsDlg.cpp
 	src/editor/C4ToolsDlg.h
 	src/game/C4GameVersion.h
@@ -232,6 +232,8 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4Def.cpp
 	src/game/object/C4DefGraphics.cpp
 	src/game/object/C4DefGraphics.h
+	src/game/object/C4DefList.cpp
+	src/game/object/C4DefList.h
 	src/game/object/C4Def.h
 	src/game/object/C4GameObjects.cpp
 	src/game/object/C4GameObjects.h
@@ -256,6 +258,7 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4ObjectList.h
 	src/game/object/C4ObjectMenu.cpp
 	src/game/object/C4ObjectMenu.h
+	src/game/object/C4ObjectScript.cpp
 	src/game/object/C4ObjectPtr.cpp
 	src/game/object/C4ObjectPtr.h
 	src/game/object/C4Sector.cpp
@@ -272,7 +275,7 @@ set(OC_CLONK_SOURCES
 	src/game/script/C4Effects.h
 	src/game/script/C4FindObject.cpp
 	src/game/script/C4FindObject.h
-	src/game/script/C4Script.cpp
+	src/game/script/C4GameScript.cpp
 	src/game/script/C4Script.h
 	src/game/script/C4TransferZone.cpp
 	src/game/script/C4TransferZone.h
@@ -382,6 +385,16 @@ set(OC_CLONK_SOURCES
 	src/lib/StdCompiler.h
 	src/lib/StdMarkup.cpp
 	src/lib/StdMarkup.h
+	src/lib/StdMesh.cpp
+	src/lib/StdMesh.h
+	src/lib/StdMeshLoader.h
+	src/lib/StdMeshLoaderBinary.cpp
+	src/lib/StdMeshLoaderBinaryChunks.cpp
+	src/lib/StdMeshLoaderBinaryChunks.h
+	src/lib/StdMeshLoaderDataStream.h
+	src/lib/StdMeshLoaderXml.cpp
+	src/lib/StdMeshMaterial.cpp
+	src/lib/StdMeshMaterial.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/lib/StdResStr.h
@@ -392,8 +405,6 @@ set(OC_CLONK_SOURCES
 	src/lib/texture/C4GraphicsResource.cpp
 	src/lib/texture/C4GraphicsResource.h
 	src/lib/texture/C4Surface.cpp
-	src/lib/texture/C4SurfaceFile.cpp
-	src/lib/texture/C4SurfaceFile.h
 	src/lib/texture/C4Surface.h
 	src/lib/texture/StdPNG.cpp
 	src/lib/texture/StdPNG.h
@@ -447,6 +458,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundSystem.h
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundLoaders.cpp
+	src/platform/StdTApp.cpp
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
@@ -470,16 +482,6 @@ set(OC_CLONK_SOURCES
 	src/platform/StdGL.cpp
 	src/platform/StdGLCtx.cpp
 	src/platform/StdGL.h
-	src/platform/StdMesh.cpp
-	src/platform/StdMesh.h
-	src/platform/StdMeshLoader.h
-	src/platform/StdMeshLoaderBinary.cpp
-	src/platform/StdMeshLoaderBinaryChunks.cpp
-	src/platform/StdMeshLoaderBinaryChunks.h
-	src/platform/StdMeshLoaderDataStream.h
-	src/platform/StdMeshLoaderXml.cpp
-	src/platform/StdMeshMaterial.cpp
-	src/platform/StdMeshMaterial.h
 	src/platform/StdNoGfx.cpp
 	src/platform/StdNoGfx.h
 	src/platform/StdRegistry.cpp
@@ -496,18 +498,18 @@ set(OC_CLONK_SOURCES
 	src/platform/StdWindow.h
 	src/platform/StdAppCommon.h
 	src/platform/StdAppCommon.cpp
-	src/script/C4AList.cpp
-	src/script/C4AList.h
 	src/script/C4Aul.cpp
 	src/script/C4AulExec.h
 	src/script/C4AulExec.cpp
 	src/script/C4AulDebug.h
 	src/script/C4AulDebug.cpp
+	src/script/C4AulDefFunc.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
 	src/script/C4PropList.cpp
 	src/script/C4PropList.h
+	src/script/C4Script.cpp
 	src/script/C4ScriptHost.cpp
 	src/script/C4ScriptHost.h
 	src/script/C4StringTable.cpp
@@ -518,12 +520,6 @@ set(OC_CLONK_SOURCES
 	src/script/C4ValueArray.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
-	src/tinyxml/tinystr.cpp
-	src/tinyxml/tinystr.h
-	src/tinyxml/tinyxml.cpp
-	src/tinyxml/tinyxml.h
-	src/tinyxml/tinyxmlerror.cpp
-	src/tinyxml/tinyxmlparser.cpp
 	src/zlib/gzio.c
 	src/zlib/zutil.h
 	thirdparty/simdmath/sse_mathfun.h
@@ -537,6 +533,7 @@ if(WIN32)
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
+		src/platform/C4CrashHandlerWin32.cpp
 		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
@@ -685,6 +682,12 @@ CHECK_INCLUDE_FILE_CXX(langinfo.h HAVE_LANGINFO_H)
 CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
 CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
 CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE_CXX(sys/file.h HAVE_SYS_FILE_H)
+if(USE_CONSOLE)
+	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
+	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
+endif()
+
 
 # ck 09-09-20: The following headers require Xlib.h for things such as
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
@@ -767,6 +770,12 @@ FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+if(USE_CONSOLE)
+	include(./FindReadline.cmake)
+	include_directories(${READLINE_INCLUDE_DIRS})
+	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
+endif()
+
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
 ############################################################################
@@ -832,6 +841,7 @@ if(USE_GTK)
 		endif()
 	endif()
 	if(GTK_FOUND)
+		include_directories(${GTK_INCLUDE_DIRS})
 		link_directories(${GTK_LIBRARY_DIRS})
 	endif()
 endif()
@@ -866,6 +876,58 @@ add_executable(c4group
 	src/zlib/gzio.c
 	src/C4Include.cpp
 )
+
+add_executable(netpuncher
+	src/C4Include.cpp
+	src/lib/StdBuf.cpp
+	src/lib/Standard.cpp
+	src/platform/StdScheduler.cpp
+	src/platform/StdFile.cpp
+	src/network/C4NetIO.cpp
+	src/netpuncher/main.cpp
+)
+
+add_executable(c4script EXCLUDE_FROM_ALL
+	src/c4group/C4Group.cpp
+	src/c4group/C4Group.h
+	src/c4group/CStdFile.cpp
+	src/c4group/CStdFile.h
+	src/lib/C4InputValidation.cpp
+	src/lib/C4InputValidation.h
+	src/lib/Standard.cpp
+	src/lib/Standard.h
+	src/lib/StdBuf.cpp
+	src/lib/StdBuf.h
+	src/lib/StdCompiler.cpp
+	src/lib/StdCompiler.h
+	src/lib/StdMarkup.cpp
+	src/lib/StdMarkup.h
+	src/lib/StdResStr2.cpp
+	src/lib/StdResStr2.h
+	src/platform/StdConfig.cpp
+	src/platform/StdConfig.h
+	src/platform/StdFile.cpp
+	src/platform/StdFile.h
+	src/lib/C4Real.cpp
+	src/lib/C4Random.cpp
+	src/script/shell.cpp
+	src/script/C4Aul.cpp
+	src/script/C4AulExec.cpp
+	src/script/C4AulLink.cpp
+	src/script/C4AulParse.cpp
+	src/script/C4StringTable.cpp
+	src/script/C4PropList.cpp
+	src/script/C4ScriptHost.cpp
+	src/script/C4ValueArray.cpp
+	src/script/C4Value.cpp
+	src/script/C4ValueMap.cpp
+	src/game/object/C4Id.cpp
+	src/script/C4Script.cpp
+	src/c4group/C4GroupSet.cpp
+	src/c4group/C4ComponentHost.cpp
+	src/c4group/C4LangStringTable.cpp
+)
+
 target_link_libraries(clonk
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
@@ -881,6 +943,24 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 )
+target_link_libraries(c4script
+	${ZLIB_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+)
+if(HAVE_PTHREAD)
+	target_link_libraries(netpuncher
+		pthread
+	)
+	target_link_libraries(c4script
+		pthread	
+	)
+endif()
+if(USE_CONSOLE)
+	target_link_libraries(clonk
+		pthread
+		${READLINE_LIBRARIES}
+	)
+endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
@@ -928,7 +1008,7 @@ if(HAVE_PRECOMPILED_HEADERS)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
 			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
-			if(FILE_EXT STREQUAL ".cpp" AND NOT FILE_NAME_WE MATCHES "tiny.*")
+			if(FILE_EXT STREQUAL ".cpp")
 				# This check is necessary since gzio.c gets compiled as C
 				# code, which can't use C++ PCH.
 				set_property(SOURCE ${FILE} PROPERTY COMPILE_FLAGS /YuC4Include.h)
@@ -941,6 +1021,12 @@ endif()
 ############################################################################
 # Assemble compiler flags
 ############################################################################
+if(UNIX)
+	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
+	# and when the path is changed both the old and new definition appears
+	# in the list of flags.
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/openclonk\"")
+endif()
 if(OC_CXX_FLAGS)
 	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
 endif()
@@ -970,6 +1056,10 @@ elseif(MINGW)
 endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
+
+# TinyXML
+add_subdirectory(thirdparty/tinyxml)
+target_link_libraries(clonk tinyxml)
 
 if(GENERATE_MINI_DUMP)
 	FIND_PATH(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
@@ -1004,7 +1094,6 @@ if(USE_DIRECTX)
 endif()
 if(USE_GTK)
 	if(GTK_FOUND)
-		include_directories(${GTK_INCLUDE_DIRS})
 		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 		SET(WITH_GLIB ${GTK_FOUND})
 		SET(WITH_GTK3 ${USE_GTK3})
@@ -1043,6 +1132,8 @@ if (WIN32)
 
 	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
+	target_link_libraries(netpuncher ws2_32 winmm)
+	target_link_libraries(c4script ws2_32 winmm)
 
 	if(NOT USE_OPEN_AL)
 		if(MSVC_VERSION)
@@ -1064,7 +1155,7 @@ if (WIN32)
 		endif()
 	endif()
 endif()
-if((NOT HAVE_FMOD OR USE_SDL_MAINLOOP) AND NOT USE_OPEN_AL)
+if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	include(FindSDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	if(SDL_FOUND)
@@ -1082,3 +1173,66 @@ endif()
 
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+############################################################################
+# installation
+############################################################################
+# Install the icon into share/icons/hicolor/48x48/apps/clonk.png. Do this by
+# extracting the correct size from oc.ico. Currently this is layer 2 - let's
+# hope that it stays this way.
+# TODO: Check for convert at configure step?
+install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
+install(CODE "
+EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
+IF(NOT \${CONVERT_RESULT} EQUAL 0)
+	MESSAGE(SEND_ERROR \"Creating icon failed\")
+ENDIF()
+")
+
+# Remove previously installed data files
+FILE(GLOB OC_INSTALLED_DATA_FILES "${CMAKE_INSTALL_PREFIX}/share/openclonk/*.c4[dfgs]")
+install(CODE "
+FOREACH(CURRENT_FILE ${OC_INSTALLED_DATA_FILES})
+	FILE(REMOVE \${CURRENT_FILE})
+ENDFOREACH()
+")
+
+# Install new files
+FILE(GLOB OC_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/planet/*.c4[dfgs]")
+install(DIRECTORY ${OC_DATA_FILES} DESTINATION share/openclonk)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
+
+# Pack them
+install(CODE "
+FOREACH(CURRENT_FILE ${OC_DATA_FILES})
+	GET_FILENAME_COMPONENT(CURRENT_FILENAME \"\${CURRENT_FILE}\" NAME)
+	MESSAGE(\"Packing \${CURRENT_FILENAME}...\")
+	EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_INSTALL_PREFIX}/share/openclonk/\${CURRENT_FILENAME}\" \"-p\" RESULT_VARIABLE C4GROUP_RESULT)
+	IF(NOT \${C4GROUP_RESULT} EQUAL 0)
+		MESSAGE(SEND_ERROR \"Packing ${CURRENT_FILENAME} failed\")
+	ENDIF()
+ENDFOREACH()
+")
+
+# Install binaries
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+
+############################################################################
+# CPack support
+############################################################################
+set(CPACK_PACKAGE_NAME "openclonk")
+set(CPACK_PACKAGE_VENDOR "${C4PROJECT_URL}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenClonk - A game mix out of tactic, strategy and Jump & Run")
+set(CPACK_PACKAGE_VERSION "${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${C4XVER1}")
+set(CPACK_PACKAGE_VERSION_MINOR "${C4XVER2}")
+set(CPACK_PACKAGE_VERSION_PATCH "${C4XVER3}")
+set(CPACK_PACKAGE_FILE_NAME "openclonk-${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "openclonk-src-${C4XVER1}.${C4XVER2}.${C4XVER3}")
+set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+# Somebody who uses Debian/Ubuntu should set this
+#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_REQUIRES "libc6, libgcc1, libx11, libXrandr, libXpm, libGLEW, libGL, libpng, libssl, libSDL-1.2, libSDL_mixer-1.2, gtk2, libjpeg, zlib")
+
+include(CPack)

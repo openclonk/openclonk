@@ -24,8 +24,9 @@
 
 #include <C4Include.h>
 #include <C4Scenario.h>
-#include <C4InputValidation.h>
 
+#include <C4Config.h>
+#include <C4InputValidation.h>
 #include <C4Random.h>
 #include <C4Group.h>
 #include <C4Components.h>
@@ -526,7 +527,7 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 
 bool C4SGame::IsMelee()
 {
-	return (Goals.GetIDCount(C4ID::Melee) || Goals.GetIDCount(C4ID::TeamworkMelee));
+	return (Goals.GetIDCount(C4ID::Melee));
 }
 
 // scenario sections

@@ -106,9 +106,23 @@ protected func FxIntEarthquakeTimer(object target, effect, int time)
 	// Get quake coordinates.
 	var x = effect.var0;
 	var y = effect.var1;
+	var l = 4 * str;
 	// Shake ground & objects.
 	ShakeFree(x, y, Random(str / 2) + str / 5 + 5);
-	ShakeObjects(x, y, 4 * str);
+	for (var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_InRect(x - l, y - l, l, l)))
+	{
+		if (Random(3)) continue;
+		if (!obj->GetAction()) continue;
+		var act = obj.ActMap[obj->GetAction()];
+		if (act.Attach || (act.Procedure
+		    && act.Procedure != DFA_FLIGHT
+		    && act.Procedure != DFA_LIFT
+		    && act.Procedure != DFA_FLOAT
+		    && act.Procedure != DFA_ATTACH
+		    && act.Procedure != DFA_CONNECT))
+			//if (!MatVehicle(obj->Shape.AttachMat))
+			obj->Fling(Random(3)-1);
+	}
 	// Move the quake around a little.
 	var dx, dy, cnt = 0;
 	do

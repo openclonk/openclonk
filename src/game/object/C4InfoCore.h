@@ -107,7 +107,6 @@ public:
 	int32_t PrefColor;
 	uint32_t PrefColorDw, PrefColor2Dw;
 	int32_t PrefPosition;
-	int32_t PrefAutoContextMenu; // enable automatically opened context menus in structures
 	// Old control method - loaded for backwards compatilibity if PrefControl is unassigned
 	// and stored back so you can use the same player file for CR and OC
 	int32_t OldPrefControl;

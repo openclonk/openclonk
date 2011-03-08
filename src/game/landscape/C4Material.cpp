@@ -40,7 +40,7 @@
 #include <C4Physics.h> // For GravAccel
 
 
-int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
+int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MEarth=MNone;
 BYTE MCVehic=0;
 
 // -------------------------------------- C4MaterialReaction
@@ -154,7 +154,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
                           const char *szEntryName)
 {
 	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(szEntryName,Source))
+	if (!hGroup.LoadEntryString(szEntryName,&Source))
 		return false;
 	StdStrBuf Name = hGroup.GetFullName() + DirSep + szEntryName;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
@@ -491,9 +491,6 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
 	MTunnel  = Get("Tunnel");
 	MWater   = Get("Water");
-	MSnow    = Get("Snow");
-	MGranite = Get("Granite");
-	MFlyAshes= Get("FlyAshes");
 	MEarth   = Get(Game.C4S.Landscape.Material);
 	if ((MVehic==MNone) || (MTunnel==MNone))
 		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }
@@ -526,7 +523,7 @@ bool C4MaterialMap::LoadEnumeration(C4Group &hGroup)
 {
 	// Load enumeration map (from savegame), succeed if not present
 	StdStrBuf mapbuf;
-	if (!hGroup.LoadEntryString(C4CFN_MatMap, mapbuf)) return true;
+	if (!hGroup.LoadEntryString(C4CFN_MatMap, &mapbuf)) return true;
 
 	// Sort material array by enumeration map, fail if some missing
 	const char *csearch;

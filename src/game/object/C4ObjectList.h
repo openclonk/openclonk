@@ -26,7 +26,6 @@
 #define INC_C4ObjectList
 
 #include <C4Id.h>
-#include <C4Def.h>
 
 class C4Object;
 class C4ObjectList;
@@ -96,10 +95,8 @@ public:
 	void Enumerate();
 	void Denumerate();
 	void Copy(const C4ObjectList &rList);
-	void DrawAll(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects, including bg
 	void DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert); // draw all objects that match dwCat (or don't match if fInvert)
-	void Draw(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects
-	void DrawList(C4Facet &cgo, int iSelection=-1, DWORD dwCategory=C4D_All);
+	void Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane); // draw all objects
 	void DrawIDList(C4Facet &cgo, int iSelection, C4DefList &rDefs, int32_t dwCategory, C4RegionList *pRegions=NULL, int iRegionCom=COM_None, bool fDrawOneCounts=true);
 	void DrawSelectMark(C4TargetFacet &cgo);
 	void CloseMenus();
@@ -115,7 +112,8 @@ public:
 
 	virtual bool AssignInfo();
 	virtual bool ValidateOwners();
-	StdStrBuf GetNameList(C4DefList &rDefs, DWORD dwCategory=C4D_All);
+	StdStrBuf GetNameList(C4DefList &rDefs);
+	StdStrBuf GetDataString();
 	bool IsClear() const;
 	bool DenumerateRead();
 	bool Write(char *szTarget);
@@ -123,7 +121,7 @@ public:
 
 	bool IsContained(C4Object *pObj);
 	int ClearPointers(C4Object *pObj);
-	int ObjectCount(C4ID id=C4ID::None, int32_t dwCategory=C4D_All) const;
+	int ObjectCount(C4ID id=C4ID::None) const;
 	int MassCount();
 	int ListIDCount(int32_t dwCategory);
 
@@ -134,9 +132,6 @@ public:
 	C4ObjectLink* GetLink(C4Object *pObj);
 
 	C4ID GetListID(int32_t dwCategory, int Index);
-
-	virtual bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-	virtual bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
 
 	bool ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
 
@@ -156,7 +151,6 @@ protected:
 	void RemoveIter(iterator * iter);
 
 	friend class iterator;
-	friend class C4ObjResort;
 };
 
 class C4NotifyingObjectList: public C4ObjectList
@@ -170,7 +164,6 @@ protected:
 	virtual void InsertLinkBefore(C4ObjectLink *pLink, C4ObjectLink *pBefore);
 	virtual void InsertLink(C4ObjectLink *pLink, C4ObjectLink *pAfter);
 	virtual void RemoveLink(C4ObjectLink *pLnk);
-	friend class C4ObjResort;
 };
 
 // This iterator is used to return objects of same ID and picture as grouped.

@@ -32,3 +32,4 @@ public func ControlUse(object pClonk, int ix, int iy)
 local Name = "$Name$";
 local Description = "$Description$";
 
+local Collectible = 1;

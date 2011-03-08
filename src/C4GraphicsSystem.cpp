@@ -29,7 +29,6 @@
 #include <C4Application.h>
 #include <C4Console.h>
 #include <C4Random.h>
-#include <C4SurfaceFile.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
 #include <C4LoaderScreen.h>

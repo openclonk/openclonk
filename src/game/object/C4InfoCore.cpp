@@ -24,6 +24,8 @@
 #include <C4Include.h>
 #include <C4InfoCore.h>
 
+#include <C4Def.h>
+#include <C4DefList.h>
 #include <C4Random.h>
 #include <C4RankSystem.h>
 #include <C4Group.h>
@@ -56,7 +58,6 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	PrefPosition=0;
 	PrefMouse=1;
 	OldPrefControlStyle = 0;
-	PrefAutoContextMenu = 0;
 	OldPrefAutoContextMenu = 0;
 	PrefControl.Clear();
 	ExtraData.Reset();
@@ -78,7 +79,7 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 {
 	// New version
 	StdStrBuf Source;
-	if (hGroup.LoadEntryString(C4CFN_PlayerInfoCore,Source))
+	if (hGroup.LoadEntryString(C4CFN_PlayerInfoCore,&Source))
 	{
 		// Compile
 		StdStrBuf GrpName = hGroup.GetFullName(); GrpName.Append(DirSep C4CFN_PlayerInfoCore);
@@ -152,7 +153,6 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PrefColorDw,              "ColorDw",          0xffu));
 	pComp->Value(mkNamingAdapt(PrefColor2Dw,             "AlternateColorDw", 0u));
 	pComp->Value(mkNamingAdapt(PrefPosition,             "Position",         0));
-	pComp->Value(mkNamingAdapt(PrefAutoContextMenu,      "AutoContextMenu2", 0)); // temp solution - to be removed
 	pComp->Value(mkNamingAdapt(PrefMouse,                "Mouse",            1));
 	pComp->Value(mkNamingAdapt(OldPrefControl,           "Control",          C4P_Control_Keyboard2));
 	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
@@ -284,7 +284,7 @@ bool C4ObjectInfoCore::GetNextRankInfo(C4RankSystem &rDefaultRanks, int32_t *piN
 bool C4ObjectInfoCore::Load(C4Group &hGroup)
 {
 	StdStrBuf Source;
-	return hGroup.LoadEntryString(C4CFN_ObjectInfoCore, Source) &&
+	return hGroup.LoadEntryString(C4CFN_ObjectInfoCore, &Source) &&
 	       Compile(Source.getData());
 }
 

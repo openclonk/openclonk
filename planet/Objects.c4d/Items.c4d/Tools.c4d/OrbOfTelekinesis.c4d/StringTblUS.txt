@@ -1,2 +1,0 @@
-Name=Telekinesis
-Description=You can slowly drag a small object lying about through the landscape by pointing on it while holding the mouse button.

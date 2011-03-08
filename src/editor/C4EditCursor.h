@@ -26,6 +26,7 @@
 
 #include "C4ObjectList.h"
 #include "C4Control.h"
+#include "C4Rect.h"
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
@@ -38,7 +39,6 @@ public:
 	~C4EditCursor();
 protected:
 	bool fAltWasDown;
-	bool fSelectionChanged;
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
@@ -70,6 +70,7 @@ public:
 	bool Duplicate();
 	bool OpenPropTools();
 	bool Delete();
+	void GrabContents();
 	bool LeftButtonUp();
 	bool LeftButtonDown(bool fControl);
 	bool RightButtonUp();
@@ -88,7 +89,6 @@ protected:
 	void ToolFailure();
 	void PutContents();
 	void UpdateDropTarget(WORD wKeyFlags);
-	void GrabContents();
 	bool DoContextMenu();
 	void ApplyToolFill();
 	void ApplyToolRect();

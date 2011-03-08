@@ -43,9 +43,7 @@
 #include <functional>
 #include <set>
 
-const int32_t C4D_None           =    0,
-C4D_All            =    ~C4D_None,
-
+const int32_t
 C4D_StaticBack     =    1<<0,
 C4D_Structure      =    1<<1,
 C4D_Vehicle        =    1<<2,
@@ -66,6 +64,8 @@ C4D_MouseIgnore      =  1<<16,
 C4D_IgnoreFoW        =  1<<17,
 
 C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
+
+const int32_t C4Plane_Structure = 200;
 
 const int32_t C4D_Grab_Put = 1,
 C4D_Grab_Get = 2,
@@ -123,15 +123,10 @@ public:
 	int32_t Value;
 	int32_t Exclusive;
 	int32_t Category;
-	int32_t Growth;
-	int32_t Rebuyable;
 	int32_t ContactIncinerate; // 0 off 1 high - 5 low
 	int32_t BlastIncinerate; // 0 off 1 - x if > damage
 	int32_t Constructable;
-	int32_t Grab; // 0 not 1 push 2 grab only
-	int32_t Carryable;
 	int32_t Rotateable;
-	int32_t Chopable;
 	int32_t Float;
 	int32_t ColorByOwner;
 	int32_t NoHorizontalMove;
@@ -170,12 +165,10 @@ public:
 	int32_t BlitMode;         // special blit mode for objects of this def. C4D_Blit_X
 	int32_t NoBreath;         // object does not need to breath, although it's living
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
-	int32_t NoSell;           // if set, object can't be sold (doesn't even appear in sell-menu)
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
 	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
-	int32_t AutoContextMenu;  // automatically open context menu for this object
 	int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 public:
 	void DefaultDefCore();
@@ -229,6 +222,7 @@ public:
 	void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0,C4DrawTransform* trans=NULL);
 
 	inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
+	int32_t GetPlane() { return GetPropertyInt(P_Plane); }
 	int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 	void Synchronize();
 	virtual C4Def const * GetDef() const { return this; }	
@@ -252,67 +246,5 @@ public:
 	C4PropList *GetActionByName(const char *actname);
 	C4PropList *GetActionByName(C4String *actname);
 };
-
-class C4DefList
-		: public CStdFont::CustomImages
-{
-public:
-	C4DefList();
-	virtual ~C4DefList();
-public:
-	bool LoadFailure;
-	typedef std::map<C4ID, C4Def*> Table;
-	Table table;
-protected:
-	C4Def *FirstDef;
-public:
-	void Default();
-	void Clear();
-	int32_t Load(C4Group &hGroup,
-	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
-	             bool fOverload = false,
-	             bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
-	int32_t Load(const char *szSearch,
-	             DWORD dwLoadWhat, const char *szLanguage,
-	             C4SoundSystem *pSoundSystem = NULL,
-	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadFolderLocal(const char *szPath,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadForScenario(const char *szScenario,
-	                        const char *szSpecified,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	C4Def *ID2Def(C4ID id);
-	C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
-	C4Def *GetByPath(const char *szPath);
-	int32_t GetDefCount(DWORD dwCategory = C4D_All);
-	int32_t GetIndex(C4ID id);
-	int32_t RemoveTemporary();
-	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
-	int32_t CheckRequireDef();
-	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
-	void Remove(C4Def *def);
-	bool Remove(C4ID id);
-	bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
-	bool Add(C4Def *ndef, bool fOverload);
-	void BuildTable();
-	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
-	void CallEveryDefinition();
-	void Synchronize();
-
-	// callback from font renderer: get ID image
-	virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
-};
-
-extern C4DefList Definitions;
-
-inline C4Def *C4Id2Def(C4ID id)
-{
-	return ::Definitions.ID2Def(id);
-}
 
 #endif

@@ -14,4 +14,3 @@ Mass=10
 Components=Wood=2;Rope=2;
 Rotate=1
 NoStabilize=1
-Collectible=1

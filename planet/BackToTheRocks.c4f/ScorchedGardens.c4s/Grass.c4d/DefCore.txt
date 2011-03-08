@@ -1,0 +1,14 @@
+[DefCore]
+id=Grass
+Version=4,10,0,0
+Category=C4D_StaticBack|C4D_Background
+Width=12
+Height=7
+Offset=-6,-3
+Vertices=1
+VertexY=1
+Mass=1
+Rotate=1
+Placement=0
+StretchGrowth=1
+Oversize=1

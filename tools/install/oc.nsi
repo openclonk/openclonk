@@ -22,17 +22,11 @@ SetCompressor lzma
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 
-; Welcome page
-!insertmacro MUI_PAGE_WELCOME
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
-; Finish page
-;!define MUI_FINISHPAGE_RUN "$INSTDIR\Clonk.exe" Do not launch application after completion...
-!insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -90,16 +84,13 @@ Section "MainSection" SEC01
 ; Create user path shortcut in program directory
   CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
-; Copy key file from installer position - for cd-on-demand use (might want to move it directly into user path...)
-;  CopyFiles /silent /filesonly "$EXEDIR\*.c4k" "$INSTDIR"
-
   ; Start menu shortcuts (All Users)
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
+  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
   CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\Uninstall.lnk" "$INSTDIR\uninst.exe"
 
 SectionEnd
 

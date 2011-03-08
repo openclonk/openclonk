@@ -36,11 +36,6 @@ CStdWindow::CStdWindow ():
 
 CStdWindow::~CStdWindow () {}
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp)
-{
-	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
-}
-
 static NSString* windowNibNameForWindowKind(CStdWindow::WindowKind kind)
 {
 	switch (kind)
@@ -136,6 +131,11 @@ void CStdWindow::HandleMessage(void*)
 void CStdWindow::RequestUpdate()
 {
 	[ctrler.openGLView display];
+}
+
+bool CStdWindow::ReInit(CStdApp* pApp)
+{
+	return true;
 }
 
 int K_F1 = 122 + CocoaKeycodeOffset;

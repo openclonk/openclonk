@@ -32,8 +32,6 @@ class C4Object;
 
 int32_t Coms2ComDir(int32_t iComs);
 bool ComDirLike(int32_t iComDir, int32_t iSample);
-const char *ComName(int32_t iCom);
-int32_t ComOrder(int32_t iCom);
 
 const int32_t ComOrderNum = 24;
 
@@ -51,9 +49,7 @@ bool ObjectActionScale(C4Object *cObj, int32_t dir);
 bool ObjectActionHangle(C4Object *cObj, int32_t dir);
 bool ObjectActionThrow(C4Object *cObj, C4Object *pThing=NULL);
 bool ObjectActionDig(C4Object *cObj);
-bool ObjectActionBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);
-bool ObjectActionChop(C4Object *cObj, C4Object *pTarget);
 bool ObjectActionCornerScale(C4Object *cObj);
 
 bool ObjectComMovement(C4Object *cObj, int32_t iComDir);
@@ -68,10 +64,7 @@ bool ObjectComJump(C4Object *cObj);
 bool ObjectComLetGo(C4Object *cObj, int32_t xdirf);
 bool ObjectComUp(C4Object *cObj);
 bool ObjectComDig(C4Object *cObj);
-bool ObjectComChop(C4Object *cObj, C4Object *pTarget);
-bool ObjectComBuild(C4Object *cObj, C4Object *pTarget);
 bool ObjectComEnter(C4Object *cObj);
-bool ObjectComDownDouble(C4Object *cObj);
 bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing=NULL);
 bool ObjectComTake(C4Object *cObj, C4ID id);
 bool ObjectComTake(C4Object *cObj); // carlo

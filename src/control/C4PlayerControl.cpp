@@ -22,6 +22,7 @@
 #include "C4Include.h"
 #include "C4PlayerControl.h"
 
+#include <C4DefList.h>
 #include "C4LangStringTable.h"
 #include "C4Player.h"
 #include "C4PlayerList.h"
@@ -625,7 +626,7 @@ bool C4PlayerControlFile::Load(C4Group &hGroup, const char *szFilename, C4LangSt
 	Clear();
 	// load and prepare file contents
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(szFilename, Buf)) return false;
+	if (!hGroup.LoadEntryString(szFilename, &Buf)) return false;
 	if (pLang) pLang->ReplaceStrings(Buf);
 	// parse it!
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Buf, szFilename)) return false;
@@ -1006,7 +1007,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 	// control down
 	C4AulFunc *pFunc = ::ScriptEngine.GetFunc(PSF_PlayerControl, &ScriptEngine, NULL);
 	if (!pFunc) return false;
-	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
+	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
 	return !!pFunc->Exec(NULL, &Pars);
 }
 

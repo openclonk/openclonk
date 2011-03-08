@@ -73,7 +73,7 @@ static bool GetPortrait(char **ppBytes, size_t *ipSize)
 	C4Group GfxGroup;
 	int iCount;
 	StdStrBuf EntryName;
-	if (!GfxGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics))) return false;
+	if (!Reloc.Open(GfxGroup, C4CFN_Graphics)) return false;
 	if ((iCount = GfxGroup.EntryCount("Portrait*.png")) < 1) return false;
 	EntryName.Format("Portrait%d.png", SafeRandom(iCount) + 1);
 	if (!GfxGroup.LoadEntry(EntryName.getData(), ppBytes, ipSize)) return false;
@@ -155,13 +155,12 @@ void C4StartupPlrSelDlg::ListItem::LoadPortrait(C4Group &rGrp, bool fUseDefault)
 {
 	bool fPortraitLinked = false;
 	if (!rGrp.FindEntry(C4CFN_Portrait) || !fctPortraitBase.Load(rGrp, C4CFN_Portrait))
-		if (!rGrp.FindEntry(C4CFN_Portrait_Old) || !fctPortraitBase.Load(rGrp, C4CFN_Portrait_Old))
-		{
-			// no custom portrait: Link to some default if desired
-			if (!fUseDefault) return;
-			SetDefaultPortrait();
-			fPortraitLinked = true;
-		}
+	{
+		// no custom portrait: Link to some default if desired
+		if (!fUseDefault) return;
+		SetDefaultPortrait();
+		fPortraitLinked = true;
+	}
 	if (!fPortraitLinked) CreateColoredPortrait();
 }
 
@@ -723,7 +722,7 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 		SetTitle(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName).getData());
 		// crew mode: Insert complete crew of player (2do: sort)
 		bool fSucc; char szFn[_MAX_PATH+1];
-		for (fSucc=CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles, szFn); fSucc; fSucc=CurrPlayer.Grp.FindNextEntry(C4CFN_ObjectInfoFiles, szFn, NULL, NULL, true))
+		for (fSucc=CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles, szFn); fSucc; fSucc=CurrPlayer.Grp.FindNextEntry(C4CFN_ObjectInfoFiles, szFn, NULL, true))
 		{
 			CrewListItem *pCrewItem = new CrewListItem(this, pPlrListBox, CurrPlayer.Core.PrefColorDw);
 			try
@@ -1245,7 +1244,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		// Set initial portrait and bigicon
 		C4Group hGroup;
 		StdStrBuf strPortrait; strPortrait.Format("Portrait%d.png", 1 + Random(5));
-		if (hGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
+		if (Reloc.Open(hGroup, C4CFN_Graphics))
 		{
 			hGroup.Extract(strPortrait.getData(), Config.AtTempPath("Portrait.png"));
 			hGroup.Close();

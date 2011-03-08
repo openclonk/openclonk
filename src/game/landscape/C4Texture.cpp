@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4Texture.h>
 
-#include <C4SurfaceFile.h>
 #include <C4Group.h>
 #include <C4Game.h>
 #include <C4Config.h>
@@ -181,7 +180,7 @@ bool C4TextureMap::LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOv
 {
 	// Load the file
 	StdStrBuf TexMap;
-	if (!hGroup.LoadEntryString(szEntryName, TexMap))
+	if (!hGroup.LoadEntryString(szEntryName, &TexMap))
 		return false;
 	// Reset flags
 	if (pOverloadMaterials) *pOverloadMaterials = false;

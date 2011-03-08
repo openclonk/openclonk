@@ -63,10 +63,10 @@ struct C4ScriptFnDef
 	C4Value (*FunctionC4V2)(struct C4AulContext *, C4Value *);
 };
 
-extern C4ScriptConstDef C4ScriptConstMap[];
-extern C4ScriptFnDef C4ScriptFnMap[];
-
-void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
+// add functions to engine
+void InitGameFunctionMap(C4AulScriptEngine *pEngine);
+void InitObjectFunctionMap(C4AulScriptEngine *pEngine);
+void InitCoreFunctionMap(C4AulScriptEngine *pEngine);
 
 bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix);
 bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
@@ -126,8 +126,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_SellTo              "~SellTo" // int iByPlr
 #define PSF_InputCallback       "InputCallback" // const char *szText
 #define PSF_MenuQueryCancel     "~MenuQueryCancel" // int iSelection
-#define PSF_IsFulfilled         "~IsFulfilled"
-#define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
+#define PSF_IsFulfilled         "~IsFulfilled" // int for_plr
 #define PSF_AttachTargetLost    "~AttachTargetLost"
 #define PSF_CrewSelection       "~CrewSelection" // bool fDeselect
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj

@@ -34,7 +34,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	NSString* string = [NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding];
 	if (![pasteboard setString:string forType:NSStringPboardType])
 	{
-		NSLog(@"Writing to Cocoa pasteboard failed");
+		Log("Writing to Cocoa pasteboard failed");
 		return false;
 	}
 	return true;
@@ -137,7 +137,7 @@ static int32_t bitDepthFromPixelEncoding(CFStringRef encoding)
 		return -1; // fail
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	CFArrayRef array = CGDisplayCopyAllDisplayModes(iMonitor, NULL);
@@ -155,42 +155,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return good_index;
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
-{
-	pWindow->SetSize(iXRes, iYRes);
-	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
-	[controller setFullscreen:fFullScreen];
-	NSWindow* window = controller.window;
-	[window center];
-	[window setContentMinSize:NSMakeSize(iXRes, iYRes)];
-	[window setContentMaxSize:NSMakeSize(iXRes, iYRes)];
-	if (!fFullScreen)
-		[window makeKeyAndOrderFront:nil];
-	OnResolutionChanged(iXRes, iYRes);
-	return true;
-}
-
 void CStdApp::RestoreVideoMode()
 {
 }
 
 #endif
-
-// Event-pipe-whatever stuff I do not understand.
-
-bool CStdApp::ReadStdInCommand()
-{
-	char c;
-	if(read(0, &c, 1) != 1)
-		return false;
-	if(c == '\n') {
-		if(!CmdBuf.isNull()) {
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-		}
-	} else if(isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-}
 
 bool IsGermanSystem()
 {

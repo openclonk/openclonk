@@ -137,7 +137,7 @@ bool C4Startup::fFirstRun = false;
 // startup singleton instance
 C4Startup *C4Startup::pInstance = NULL;
 
-C4Startup::C4Startup() : fInStartup(false), fAborted(false), pLastDlg(NULL), pCurrDlg(NULL)
+C4Startup::C4Startup() : fInStartup(false), pLastDlg(NULL), pCurrDlg(NULL)
 {
 	// must be single!
 	assert(!pInstance);
@@ -149,25 +149,6 @@ C4Startup::~C4Startup()
 	pInstance = NULL;
 	delete pLastDlg;
 	delete pCurrDlg;
-}
-
-void C4Startup::Start()
-{
-	assert(fInStartup);
-	// record if desired
-	if (Config.General.Record) Game.Record = true;
-	// flag game start
-	fAborted = false;
-	fInStartup = false;
-	fLastDlgWasBack = false;
-}
-
-void C4Startup::Exit()
-{
-	assert(fInStartup);
-	// flag game start
-	fAborted = true;
-	fInStartup = false;
 }
 
 C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
@@ -250,7 +231,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 	return pToDlg;
 }
 
-bool C4Startup::DoStartup()
+void C4Startup::DoStartup()
 {
 	assert(!fInStartup);
 	assert(::pGUI);
@@ -282,7 +263,7 @@ bool C4Startup::DoStartup()
 	if (pCurrDlg) { delete pCurrDlg; pCurrDlg = NULL; }
 
 	// start with the last dlg that was shown - at first startup main dialog
-	if (!SwitchDialog(eLastDlgID)) return false;
+	SwitchDialog(eLastDlgID);
 
 	// show error dlg if restart
 	if (Game.fQuitWithError || GetFatalError())
@@ -304,22 +285,16 @@ bool C4Startup::DoStartup()
 		}
 		ResetFatalError();
 	}
+}
 
-	// while state startup: keep looping
-	while (fInStartup && !pCurrDlg->IsAborted())
-		if (!Application.ScheduleProcs()) return false;
-
+void C4Startup::DontStartup()
+{
 	// check whether startup was aborted
-	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
+	delete pLastDlg; pLastDlg = NULL;
 	if (pCurrDlg)
 	{
 		// deinit last shown dlg
-		if (pCurrDlg->IsAborted())
-		{
-			// force abort flag if dlg abort done by user
-			fAborted = true;
-		}
-		else if (pCurrDlg->IsShown())
+		if (pCurrDlg->IsShown())
 		{
 			pCurrDlg->Close(true);
 		}
@@ -332,13 +307,11 @@ bool C4Startup::DoStartup()
 
 	// after startup: cleanup
 	::pGUI->CloseAllDialogs(true);
+}
 
-	// reinit keyboard to reflect any config changes that might have been done
-	// this is a good time to do it, because no GUI dialogs are opened
-	if (!Game.InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
-
-	// all okay; return whether startup finished with a game start selection
-	return !fAborted;
+void C4Startup::CloseStartup()
+{
+	if (pInstance) pInstance->DontStartup();
 }
 
 C4Startup *C4Startup::EnsureLoaded()
@@ -363,14 +336,17 @@ void C4Startup::Unload()
 	if (pInstance) { delete pInstance; pInstance=NULL; }
 }
 
-bool C4Startup::Execute()
+void C4Startup::InitStartup()
 {
 	// ensure gfx are loaded
 	C4Startup *pStartup = EnsureLoaded();
-	if (!pStartup) return false;
+	if (!pStartup)
+	{
+		Application.Quit();
+		return;
+	}
 	// exec it
-	bool fResult = pStartup->DoStartup();
-	return fResult;
+	pStartup->DoStartup();
 }
 
 bool C4Startup::SetStartScreen(const char *szScreen)

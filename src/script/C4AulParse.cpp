@@ -32,6 +32,7 @@
 #include <C4Def.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4Config.h>
 
 #define DEBUG_BYTECODE_DUMP 0
 
@@ -66,7 +67,6 @@
 #define C4AUL_Image         "Image"
 #define C4AUL_Contents      "Contents"
 #define C4AUL_Condition     "Condition"
-#define C4AUL_Method        "Method"
 #define C4AUL_Desc          "Desc"
 
 #define C4AUL_MethodAll                 "All"
@@ -104,7 +104,6 @@ enum C4AulTokenType
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
 	ATT_COLON,  // ":"
-	ATT_DCOLON, // "::"
 	ATT_SCOLON, // ";"
 	ATT_BOPEN,  // "("
 	ATT_BCLOSE, // ")"
@@ -112,10 +111,9 @@ enum C4AulTokenType
 	ATT_BCLOSE2,// "]"
 	ATT_BLOPEN, // "{"
 	ATT_BLCLOSE,// "}"
-	ATT_SEP,    // "|"
 	ATT_CALL,   // "->"
+	ATT_CALLFS, // "->~"
 	ATT_STAR,   // "*"
-	ATT_TILDE,  // '~'
 	ATT_LDOTS,  // '...'
 	ATT_SET,    // '='
 	ATT_OPERATOR,// operator
@@ -142,7 +140,8 @@ public:
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
-	intptr_t cInt; // current int constant
+	int32_t cInt; // current int constant
+	C4String * cStr; // current string constant
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
@@ -171,14 +170,14 @@ public:
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
-	enum HoldStringsPolicy { Discard, Hold, Ref };
+	enum OperatorPolicy { OperatorsPlease = 0, StarsPlease };
 	void ClearToken(); // clear any data held with the current token
-	C4AulTokenType GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
+	C4AulTokenType GetNextToken(OperatorPolicy Operator = OperatorsPlease); // get next token of SPos
 
-	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
+	void Shift(OperatorPolicy Operator = OperatorsPlease);
 	void Match(C4AulTokenType TokenType, const char * Message = NULL);
 	void UnexpectedToken(const char * Expected) NORETURN;
-	const char * GetTokenName(C4AulTokenType TokenType);
+	static const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, const char *pIdtf=0);
 	void Error(const char *pMsg, const char *pIdtf=0);
@@ -233,7 +232,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 {
 	// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
-	if (Fn && !Fn->Owner->Def && Fn->Owner->Appends) return;
+	if (Fn && !Fn->Owner->Def && !Fn->Owner->Appends.empty()) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
 	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
@@ -348,21 +347,6 @@ void C4AulScriptFunc::ParseDesc()
 			else if (SEqual2(DPos0, C4AUL_Condition))
 				// condition? get condition func
 				Condition = Owner->GetFuncRecursive(Val.getData());
-			// Method
-			else if (SEqual2(DPos0, C4AUL_Method))
-			{
-				if (SEqual2(Val.getData(), C4AUL_MethodAll))
-					ControlMethod = C4AUL_ControlMethod_All;
-				else if (SEqual2(Val.getData(), C4AUL_MethodNone))
-					ControlMethod = C4AUL_ControlMethod_None;
-				else if (SEqual2(Val.getData(), C4AUL_MethodClassic))
-					ControlMethod = C4AUL_ControlMethod_Classic;
-				else if (SEqual2(Val.getData(), C4AUL_MethodJumpAndRun))
-					ControlMethod = C4AUL_ControlMethod_JumpAndRun;
-				else
-					// unrecognized: Default to all
-					ControlMethod = C4AUL_ControlMethod_All;
-			}
 			// Long Description
 			else if (SEqual2(DPos0, C4AUL_Desc))
 			{
@@ -520,7 +504,7 @@ static int ToNumber(char c)
 	return 0;
 }
 
-static int32_t StrToI32(char *s, int base, char **scan_end)
+static int32_t StrToI32(const char *s, int base, const char **scan_end)
 {
 	int sign = 1;
 	int32_t result = 0;
@@ -559,14 +543,14 @@ static float StrToF32(const char *s, char **scan_end)
 void C4AulParseState::ClearToken()
 {
 	// if last token was a string, make sure its ref is deleted
-	if (TokenType == ATT_STRING && cInt)
+	if (TokenType == ATT_STRING && cStr)
 	{
-		reinterpret_cast<C4String *>(cInt)->DecRef();
+		cStr->DecRef();
 		TokenType = ATT_INVALID;
 	}
 }
 
-C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
+C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 {
 	// clear mem of prev token
 	ClearToken();
@@ -600,106 +584,55 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 		{
 		case TGS_None:
 		{
-			// get token type by first char (+/- are operators)
-			if (((C >= '0') && (C <= '9')))
+			int iOpID;
+			// Mostly sorted by frequency, except that tokens that have
+			// other tokens as prefixes need to be checked for first.
+			if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
+			{
+				// SPos will be increased at the end of the loop
+				State = TGS_Ident;
+			}
+			else if (C == '(') {SPos++; return ATT_BOPEN; } // "("
+			else if (C == ')') {SPos++; return ATT_BCLOSE;} // ")"
+			else if (C == ',') {SPos++; return ATT_COMMA; } // ","
+			else if (C == ';') {SPos++; return ATT_SCOLON;} // ";"
+			else if (((C >= '0') && (C <= '9')))
 				State = TGS_Int;            // integer by 0-9
+			else if (C == '-' && *(SPos + 1) == '>' && *(SPos + 2) == '~')
+					  { SPos+=3;return ATT_CALLFS;} // "->~"
+			else if (C == '-' && *(SPos + 1) == '>')
+					  { SPos+=2;return ATT_CALL;  } // "->"
+			else if (C == '*' && Operator == StarsPlease)
+					  { SPos++; return ATT_STAR;  } // "*"
+			else if ((iOpID = GetOperator(SPos)) != -1)
+			{
+				SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
+				cInt = iOpID;
+				return ATT_OPERATOR;
+			}
+			else if (C == '=') {SPos++; return ATT_SET;    } // "="
+			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
+			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
 			else if (C == '"')
 			{
 				State = TGS_String;  // string by "
 				strbuf.reserve(512); // assume most strings to be smaller than this
 			}
-			else if (C == '#')  State = TGS_Dir;            // directive by "#"
-			else if (C == ',') {SPos++; return ATT_COMMA; } // ","
-			else if (C == ';') {SPos++; return ATT_SCOLON;} // ";"
-			else if (C == '(') {SPos++; return ATT_BOPEN; } // "("
-			else if (C == ')') {SPos++; return ATT_BCLOSE;} // ")"
 			else if (C == '[') {SPos++; return ATT_BOPEN2;} // "["
 			else if (C == ']') {SPos++; return ATT_BCLOSE2;}// "]"
-			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
-			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
-			else if (C == ':')                              // ":"
-			{
-				SPos++;
-				// double-colon?
-				if (*SPos == ':')                             // "::"
-				{
-					SPos++;
-					return ATT_DCOLON;
-				}
-				else                                          // ":"
-					return ATT_COLON;
-			}
-			else if (C == '-' && *(SPos + 1) == '>')        // "->"
-			{
-				SPos+=2; return ATT_CALL;
-			}
-			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.')        // "..."
-			{
-				SPos+=3; return ATT_LDOTS;
-			}
+			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.')
+					  { SPos+=3;return ATT_LDOTS; } // "..."
 			else if (C == '.') {SPos++; return ATT_DOT;   } // "."
+			else if (C == '#')  State = TGS_Dir;            // directive by "#"
+			else if (C == ':') {SPos++; return ATT_COLON; } // ":"
 			else
 			{
-				if (bOperator)
-				{
-					// may it be an operator?
-					int iOpID;
-					if ((iOpID = GetOperator(SPos)) != -1)
-					{
-						// store operator ID in pInt
-						*pInt = iOpID;
-						SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
-						return ATT_OPERATOR;
-					}
-					// set?
-					if (*SPos == '=')
-					{
-						SPos++;
-						return ATT_SET;
-					}
-				}
-				else if (C == '*') { SPos++; return ATT_STAR; }   // "*"
-				else if (C == '~') { SPos++; return ATT_TILDE; }  // "~"
-
-				// identifier by all non-special chars
-				if (C >= '@')
-				{
-					// only the alphabet and '_' is allowed
-					if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
-					{
-						State = TGS_Ident;
-						break;
-					}
-					// unrecognized char
-					// make sure to skip the invalid char so the error won't be output forever
-					++SPos;
-				}
-				else
-				{
-					// examine next char
-					++SPos; ++ Len;
-					// no operator expected and '-' or '+' found?
-					// this could be an int const; parse it directly
-					if (!bOperator && (C=='-' || C=='+'))
-					{
-						// skip spaces between sign and int constant
-						if (AdvanceSpaces())
-						{
-							// continue parsing int, if a numeral follows
-							C = *SPos;
-							if (((C >= '0') && (C <= '9')))
-							{
-								State = TGS_Int;
-								break;
-							}
-						}
-					}
-					// special char and/or error getting it as a signed int
-				}
 				// unrecognized char
+				// make sure to skip the invalid char so the error won't be output forever
+				++SPos;
 				// show appropriate error message
 				if (C >= '!' && C <= '~')
-					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", (int)(unsigned char) C).getData());
+					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
 				else
 					throw new C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
 			}
@@ -714,7 +647,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			{
 				// return ident/directive
 				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, pToken, Len);
+				SCopy(SPos0, Idtf, Len);
 				// directive?
 				if (State == TGS_Dir) return ATT_DIR;
 				// everything else is an identifier
@@ -753,11 +686,12 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 				}
 				// return integer
 				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, pToken, Len);
+				SCopy(SPos0, Idtf, Len);
 				// do not parse 0x prefix for hex
+				const char * pToken = Idtf;
 				if (State == TGS_IntHex) pToken += 2;
 				// it's not, so return the int
-				*pInt = StrToI32(pToken, base, 0);
+				cInt = StrToI32(pToken, base, 0);
 				return ATT_INT;
 			}
 			break;
@@ -766,9 +700,9 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			if ((C < '0') || (C > '9'))
 			{
 				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, pToken, Len);
-				float value = StrToF32(pToken, 0);
-				*pInt = *reinterpret_cast<int*>(&value);
+				SCopy(SPos0, Idtf, Len);
+				float value = StrToF32(Idtf, 0);
+				cInt = *reinterpret_cast<int*>(&value);
 				return ATT_FLOAT;
 			}
 			break;
@@ -779,14 +713,9 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, intptr_t *pInt, HoldS
 			if (C == '"')
 			{
 				SPos++;
-				// no string expected?
-				if (HoldStrings == Discard) { pInt=0; return ATT_STRING; }
-				// reg string (if not already done so)
-				C4String *pString;
-				pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
-				pString->IncRef();
-				// return pointer on string object
-				*pInt = (intptr_t) pString;
+				cStr = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
+				// hold onto string, ClearToken will deref it
+				cStr->IncRef();
 				return ATT_STRING;
 			}
 			else
@@ -1008,10 +937,7 @@ bool C4AulScript::Preparse()
 	if (!Script) { State = ASS_PREPARSED; return true; }
 
 	// clear stuff
-	/* simply setting Includes to NULL will waste some space in the associative list
-	  however, this is just a few bytes per updated definition in developer mode, which
-	  seems acceptable for me. The mem will be released when destroying the list */
-	Includes = NULL; Appends=NULL;
+	Includes.clear(); Appends.clear();
 	// reset code
 	ClearCode();
 	while (Func0)
@@ -1359,9 +1285,9 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_IDTF: return "identifier";
 	case ATT_INT: return "integer constant";
 	case ATT_STRING: return "string constant";
+	case ATT_DOT: return "'.'";
 	case ATT_COMMA: return "','";
 	case ATT_COLON: return "':'";
-	case ATT_DCOLON: return "'::'";
 	case ATT_SCOLON: return "';'";
 	case ATT_BOPEN: return "'('";
 	case ATT_BCLOSE: return "')'";
@@ -1369,20 +1295,20 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 	case ATT_BCLOSE2: return "']'";
 	case ATT_BLOPEN: return "'{'";
 	case ATT_BLCLOSE: return "'}'";
-	case ATT_SEP: return "'|'";
 	case ATT_CALL: return "'->'";
+	case ATT_CALLFS: return "'->~'";
 	case ATT_STAR: return "'*'";
-	case ATT_TILDE: return "'~'";
 	case ATT_LDOTS: return "'...'";
+	case ATT_SET: return "'='";
 	case ATT_OPERATOR: return "operator";
 	case ATT_EOF: return "end of file";
 	default: return "unrecognized token";
 	}
 }
 
-void C4AulParseState::Shift(HoldStringsPolicy HoldStrings, bool bOperator)
+void C4AulParseState::Shift(OperatorPolicy Operator)
 {
-	TokenType = GetNextToken(Idtf, &cInt, HoldStrings, bOperator);
+	TokenType = GetNextToken(Operator);
 }
 void C4AulParseState::Match(C4AulTokenType RefTokenType, const char * Message)
 {
@@ -1456,14 +1382,13 @@ void C4AulParseState::Parse_Script()
 					C4ID Id = C4ID(StdStrBuf(Idtf));
 					Shift();
 					// add to include list
-					C4AListEntry *e = a->Engine->itbl.push(Id);
-					if (!a->Includes) a->Includes = e;
+					a->Includes.push_front(Id);
 					IncludeCount++;
 				}
 				else if (SEqual(Idtf, C4AUL_Append))
 				{
 					// for #appendto * '*' needs to be ATT_STAR, not an operator.
-					Shift(Hold, false);
+					Shift(StarsPlease);
 					// get id of script to include/append
 					C4ID Id;
 					switch (TokenType)
@@ -1481,8 +1406,7 @@ void C4AulParseState::Parse_Script()
 						UnexpectedToken("identifier or '*'");
 					}
 					// add to append list
-					C4AListEntry *e = a->Engine->atbl.push(Id);
-					if (!a->Appends) a->Appends = e;
+					a->Appends.push_back(Id);
 				}
 				else if (SEqual(Idtf, C4AUL_Strict))
 				{
@@ -1559,33 +1483,6 @@ void C4AulParseState::Parse_Script()
 		all_ok = false;
 		delete err;
 	}
-
-	// includes were added?
-	if (a->Includes)
-	{
-		// reverse include order, for compatiblity with the C4Script syntax
-		if (IncludeCount > 1)
-		{
-			C4AListEntry *i = a->Includes;
-			while (IncludeCount > 1)
-			{
-				C4AListEntry *i2 = i;
-				for (int cnt = IncludeCount - 1; cnt; cnt--) i2 = i2->next();
-				C4AListEntry xchg = *i; *i = *i2; *i2 = xchg;
-				i = i->next(); IncludeCount -= 2;
-			}
-
-		}
-		// push stop entry for include list
-		a->Engine->itbl.push();
-	}
-
-	// appends were added?
-	if (a->Appends)
-	{
-		// push stop entry for append list
-		a->Engine->atbl.push();
-	}
 }
 
 void C4AulParseState::Parse_FuncHead()
@@ -1599,7 +1496,7 @@ void C4AulParseState::Parse_FuncHead()
 	// check for func declaration
 	if (SEqual(Idtf, C4AUL_Func))
 	{
-		Shift(Discard, false);
+		Shift();
 		// get next token, must be func name
 		if (TokenType != ATT_IDTF)
 			UnexpectedToken("function name");
@@ -1637,11 +1534,11 @@ void C4AulParseState::Parse_FuncHead()
 		// set up func (in the case we got an error)
 		Fn->Script = SPos; // temporary
 		Fn->Access = Acc; Fn->pOrgScript = a;
-		Shift(Discard,false);
+		Shift();
 		// expect an opening bracket now
 		if (TokenType != ATT_BOPEN)
 			UnexpectedToken("'('");
-		Shift(Discard,false);
+		Shift();
 		// get pars
 		Fn->ParNamed.Reset(); // safety :)
 		int cpar = 0;
@@ -1664,14 +1561,13 @@ void C4AulParseState::Parse_FuncHead()
 				UnexpectedToken("parameter or closing bracket");
 			}
 			// type identifier?
-			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
-			// ampersand?
+			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
+			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
 			if (TokenType != ATT_IDTF)
 			{
 				UnexpectedToken("parameter name");
@@ -1691,7 +1587,7 @@ void C4AulParseState::Parse_FuncHead()
 			// must be a comma now
 			if (TokenType != ATT_COMMA)
 				UnexpectedToken("comma or closing bracket");
-			Shift(Discard,false);
+			Shift();
 			cpar++;
 		}
 		Fn->Script = SPos;
@@ -1806,8 +1702,8 @@ void C4AulParseState::Parse_Statement()
 	case ATT_BOPEN2:
 	case ATT_SET:
 	case ATT_OPERATOR:
-	case ATT_INT: // constant in cInt
-	case ATT_STRING: // reference in cInt
+	case ATT_INT:
+	case ATT_STRING:
 	{
 		Parse_Expression();
 		AddBCC(AB_STACK, -1);
@@ -1884,7 +1780,7 @@ void C4AulParseState::Parse_Statement()
 				Shift();
 			// variable and "in"
 			if (TokenType == ATT_IDTF /*&& (iVarID = Fn->VarNamed.GetItemNr(Idtf)) != -1*/
-			    && GetNextToken(Idtf, &cInt, Discard, true) == ATT_IDTF
+			    && GetNextToken() == ATT_IDTF
 			    && SEqual(Idtf, C4AUL_In))
 			{
 				// reparse the stuff in the brackets like normal statements
@@ -1987,7 +1883,9 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			// () -> size 0, (*,) -> size 2, (*,*,) -> size 3
 			if (size > 0)
 			{
-				AddBCC(AB_INT, 0);
+				if (sWarn && Config.Developer.ExtraWarnings)
+					Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
+				AddBCC(AB_NIL);
 				++size;
 			}
 			fDone = true;
@@ -1996,7 +1894,9 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		case ATT_COMMA:
 		{
 			// got no parameter before a ","? then push a 0-constant
-			AddBCC(AB_INT, 0);
+			if (sWarn && Config.Developer.ExtraWarnings)
+				Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
+			AddBCC(AB_NIL);
 			Shift();
 			++size;
 			break;
@@ -2021,7 +1921,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		{
 			// get a parameter
 			Parse_Expression();
-			if (pFunc && (Type == PARSER))
+			if (pFunc && (Type == PARSER) && size < iMaxCnt)
 			{
 				C4V_Type to = pFunc->GetParType()[size];
 				// pFunc either was the return value from a GetFirstFunc-Call or
@@ -2032,7 +1932,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				C4V_Type from;
 				switch ((a->CPos-1)->bccType)
 				{
-				case AB_INT: from = (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
+				case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 				case AB_STRING: from = C4V_String; break;
 				case AB_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 				case AB_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
@@ -2062,7 +1962,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				}
 				if (C4Value::WarnAboutConversion(from, to))
 				{
-					Warn(FormatString("Conversion from \"%s\" to \"%s\" in parameter %d of \"%s\"", GetC4VName(from), GetC4VName(to), size, sWarn).getData(), NULL);
+					Warn(FormatString("parameter %d of call to %s is %s instead of %s", size, sWarn, GetC4VName(from), GetC4VName(to)).getData(), NULL);
 				}
 			}
 			++size;
@@ -2081,7 +1981,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 	while (!fDone);
 	// too many parameters?
 	if (sWarn && size > iMaxCnt && Type == PARSER)
-		Warn(FormatString("%s: passing %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
+		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
 	// Balance stack
 	if (size != iMaxCnt)
 		AddBCC(AB_STACK, iMaxCnt - size);
@@ -2104,6 +2004,8 @@ void C4AulParseState::Parse_Array()
 			// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 			if (size > 0)
 			{
+				if (Config.Developer.ExtraWarnings)
+					Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 				AddBCC(AB_NIL);
 				++size;
 			}
@@ -2113,6 +2015,8 @@ void C4AulParseState::Parse_Array()
 		case ATT_COMMA:
 		{
 			// got no parameter before a ","? then push nil
+			if (Config.Developer.ExtraWarnings)
+				Warn(FormatString("array entry %d is empty", size).getData(), NULL);
 			AddBCC(AB_NIL);
 			Shift();
 			++size;
@@ -2155,7 +2059,7 @@ void C4AulParseState::Parse_PropList()
 		}
 		else if (TokenType == ATT_STRING)
 		{
-			AddBCC(AB_STRING, cInt);
+			AddBCC(AB_STRING, reinterpret_cast<intptr_t>(cStr));
 			Shift();
 		}
 		else UnexpectedToken("string or identifier");
@@ -2512,6 +2416,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			}
 			else if (FoundFn)
 			{
+				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
+					Warn("using deprecated function ", Idtf);
 				Shift();
 				// Function parameters for all functions except "this", which can be used without
 				if (!SEqual(FoundFn->Name, C4AUL_this) || TokenType == ATT_BOPEN)
@@ -2585,9 +2491,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		Shift();
 		break;
 	}
-	case ATT_STRING: // reference in cInt
+	case ATT_STRING: // reference in cStr
 	{
-		AddBCC(AB_STRING, cInt);
+		AddBCC(AB_STRING, reinterpret_cast<intptr_t>(cStr));
 		Shift();
 		break;
 	}
@@ -2789,21 +2695,12 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			Shift();
 			break;
 		}
-		case ATT_CALL:
+		case ATT_CALL: case ATT_CALLFS:
 		{
-			// Here, a '~' is not an operator, but a token
-			Shift(Discard, false);
-			// C4ID -> namespace given
 			C4AulFunc *pFunc = NULL;
 			C4String *pName = NULL;
-			C4AulBCCType eCallType = AB_CALL;
-			// may it be a failsafe call?
-			if (TokenType == ATT_TILDE)
-			{
-				// store this and get the next token
-				eCallType = AB_CALLFS;
-				Shift();
-			}
+			C4AulBCCType eCallType = (TokenType == ATT_CALL) ? AB_CALL : AB_CALLFS;
+			Shift();
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF) throw new C4AulParseError(this, "expecting func name after '->'");
 			// search a function with the given name
@@ -2894,8 +2791,8 @@ void C4AulParseState::Parse_Local()
 		{
 			if (!a->Def)
 				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
-			// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
-			Shift(Ref, false);
+			// Parse numbers beginning with + or - as a number, not operator+number
+			Shift();
 			// register as constant
 			if (Type == PREPARSER)
 				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
@@ -2966,7 +2863,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 	switch (TokenType)
 	{
 	case ATT_INT: r.SetInt(cInt); break;
-	case ATT_STRING: r.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
+	case ATT_STRING: r.SetString(cStr); break; // increases ref count of C4String in cStr
 	case ATT_IDTF:
 		// identifier is only OK if it's another constant
 		if (SEqual(Idtf, C4AUL_True))
@@ -3033,7 +2930,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		}
 	case ATT_BLOPEN:
 		{
-			Shift(Type == PREPARSER ? Hold : Discard);
+			Shift();
 			if (Type == PREPARSER)
 				r.SetPropList(C4PropList::NewAnon());
 			while (TokenType != ATT_BLCLOSE)
@@ -3047,7 +2944,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				}
 				else if (TokenType == ATT_STRING)
 				{
-					pKey = reinterpret_cast<C4String*>(cInt);
+					pKey = cStr;
 					Shift();
 				}
 				else UnexpectedToken("string or identifier");
@@ -3059,7 +2956,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				else
 					Parse_ConstExpression();
 				if (TokenType == ATT_COMMA)
-					Shift(Type == PREPARSER ? Hold : Discard);
+					Shift();
 				else if (TokenType != ATT_BLCLOSE)
 					UnexpectedToken("'}' or ','");
 			}
@@ -3067,6 +2964,29 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				r._getPropList()->Freeze();
 			break;
 		}
+	case ATT_OPERATOR:
+		{
+			// -> must be a prefix operator
+			// get operator ID
+			int OpID = cInt;
+			if (SEqual(C4ScriptOpMap[OpID].Identifier, "+"))
+			{
+				Shift();
+				if (TokenType == ATT_INT)
+				{
+					r.SetInt(cInt); break;
+				}
+			}
+			if (SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
+			{
+				Shift();
+				if (TokenType == ATT_INT)
+				{
+					r.SetInt(-cInt); break;
+				}
+			}
+		}
+		// fallthrough
 	default:
 		UnexpectedToken("constant value");
 	}
@@ -3095,9 +3015,7 @@ void C4AulParseState::Parse_Const()
 		if (TokenType != ATT_IDTF)
 			UnexpectedToken("constant name");
 		SCopy(Idtf, Name);
-		// check func lists - functions of same name are allowed for backwards compatibility
-		// (e.g., for overloading constants such as OCF_Living() in chaos scenarios)
-		// it is not encouraged though, so better warn
+		// check func lists - functions of same name are not allowed
 		if (a->Engine->GetFuncRecursive(Idtf))
 			Error("definition of constant hidden by function ", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
@@ -3110,9 +3028,8 @@ void C4AulParseState::Parse_Const()
 		// this would allow for definitions like "static const OCF_Edible = 1<<23"
 		// However, such stuff should better be generalized, so the preparser (and parser)
 		// can evaluate any constant expression, including functions with constant retval (e.g. Sqrt)
-		// So allow only direct constants for now.
-		// Do not set a string constant to "Hold" (which would delete it in the next UnLink())
-		Shift(Ref, false);
+		// So allow only simple constants for now.
+		Shift();
 
 		// register as constant
 		a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression());
@@ -3142,7 +3059,7 @@ bool C4AulScript::Parse()
 	{
 		C4ScriptHost * scripthost = 0;
 		if (Def) scripthost = &Def->Script;
-		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->GetFilePath());
+		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->ScriptName.getData());
 		else fprintf(stderr, "parsing unknown...\n");
 	}
 	// parse children
@@ -3177,7 +3094,7 @@ bool C4AulScript::Parse()
 			catch (C4AulError *err)
 			{
 				// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
-				if (Fn->Owner->Def || !Fn->Owner->Appends)
+				if (Fn->Owner->Def || Fn->Owner->Appends.empty())
 				{
 					// show
 					err->show();

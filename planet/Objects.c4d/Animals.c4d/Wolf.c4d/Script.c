@@ -4,6 +4,11 @@
 
 public func IsPossessible() { return 1; }
 
+func Construction()
+{
+	StartGrowth(15);
+}
+
 /* Initialize */
 
 protected func Initialize() { return Birth(); }
@@ -423,3 +428,4 @@ local MaxBreath = 125;
 local JumpSpeed = 350;
 local ThrowSpeed = 294;
 
+local Collectible = 1;

@@ -22,8 +22,6 @@
 
 #define C4STRINGTABLE_H
 
-#include <vector>
-
 class C4StringTable;
 class C4Group;
 
@@ -179,6 +177,7 @@ enum C4PropertyName
 	P_CommandTarget,
 	P_Time,
 	P_Collectible,
+	P_Touchable,
 	P_ActMap,
 	P_Attach,
 	P_Visibility,
@@ -231,6 +230,7 @@ enum C4PropertyName
 	P_CausedBy,
 	P_Blasted,
 	P_IncineratingObj,
+	P_Plane,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,
@@ -241,9 +241,7 @@ enum C4PropertyName
 	DFA_SWIM,
 	DFA_THROW,
 	DFA_BRIDGE,
-	DFA_BUILD,
 	DFA_PUSH,
-	DFA_CHOP,
 	DFA_LIFT,
 	DFA_FLOAT,
 	DFA_ATTACH,
@@ -264,10 +262,13 @@ public:
 	// Find existing C4String
 	C4String *FindString(const char *strString);
 
-	C4String P[P_LAST];
 private:
 	C4Set<C4String *> Set;
 	friend class C4String;
+
+public:
+	// After the set, so these are destroyed with the set still alive
+	C4String P[P_LAST];
 };
 
 extern C4StringTable Strings;

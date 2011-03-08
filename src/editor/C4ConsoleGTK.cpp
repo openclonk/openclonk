@@ -20,14 +20,16 @@
 
 #include <C4Include.h>
 #include <C4Console.h>
-#include <C4Application.h>
 
+#include <C4Aul.h>
+#include <C4Application.h>
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
+#include <C4Object.h>
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
@@ -66,14 +68,6 @@ using namespace OpenFileFlags;
 
 namespace
 {
-	/*GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
-	{
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
-		GtkWidget* image = gtk_image_new_from_pixbuf(pixbuf);
-		gdk_pixbuf_unref(pixbuf);
-		return image;
-	}*/
-	
 	void SelectComboBoxText(GtkComboBox* combobox, const char* text)
 	{
 		GtkTreeModel* model = gtk_combo_box_get_model(combobox);
@@ -117,8 +111,6 @@ namespace
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 public:
-	GdkCursor* cursorDefault;
-	GdkCursor* cursorWait;
 
 	GtkWidget* txtLog;
 	GtkWidget* txtScript;
@@ -145,9 +137,6 @@ public:
 	GtkWidget* fileClose;
 	GtkWidget* fileQuit;
 
-	GtkWidget* compScript;
-	GtkWidget* compTitle;
-	GtkWidget* compInfo;
 	GtkWidget* compObjects;
 
 	GtkWidget* plrJoin;
@@ -161,6 +150,10 @@ public:
 	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
+	GtkWidget* propertydlg;
+	GtkWidget* propertydlg_textview;
+	GtkWidget* propertydlg_entry;
+
 	gulong handlerDestroy;
 	gulong handlerPlay;
 	gulong handlerHalt;
@@ -169,20 +162,12 @@ public:
 	gulong handlerModeDraw;
 
 	State(C4ConsoleGUI *console): Super(console)
-	{
-		cursorDefault = NULL;
-		cursorWait = NULL;
-		
+	{	
 		Clear();
 	}
 
 	~State()
 	{
-		if(cursorDefault)
-			gdk_cursor_unref(cursorDefault);
-		if(cursorWait)
-			gdk_cursor_unref(cursorWait);
-
 		// This is just to be sure, it should not be necessary since
 		// the widgets will be removed anyway as soon as the state is.
 		if(handlerDestroy)
@@ -197,6 +182,11 @@ public:
 			g_signal_handler_disconnect(btnModeEdit, handlerModeEdit);
 		if(handlerModeDraw)
 			g_signal_handler_disconnect(btnModeDraw, handlerModeDraw);
+		if (propertydlg)
+		{
+			C4DevmodeDlg::RemovePage(propertydlg);
+			propertydlg = NULL;
+		}
 	}
 
 	void InitGUI();
@@ -224,9 +214,6 @@ public:
 	static void OnFileQuit(GtkWidget* item, gpointer data);
 
 	static void OnCompObjects(GtkWidget* item, gpointer data);
-	static void OnCompScript(GtkWidget* item, gpointer data);
-	static void OnCompTitle(GtkWidget* item, gpointer data);
-	static void OnCompInfo(GtkWidget* item, gpointer data);
 
 	static void OnPlrJoin(GtkWidget* item, gpointer data);
 	static void OnPlrQuit(GtkWidget* item, gpointer data);
@@ -235,38 +222,8 @@ public:
 	static void OnHelpAbout(GtkWidget* item, gpointer data);
 
 	static void OnNetClient(GtkWidget* item, gpointer data);
-};
-
-class C4PropertyDlg::State: public C4ConsoleGUI::InternalState<class C4PropertyDlg>
-{
-public:
-//    GtkWidget* window;
-	GtkWidget* vbox;
-	GtkWidget* textview;
-	GtkWidget* entry;
-
-	gulong handlerHide;
 
 	static void OnScriptActivate(GtkWidget* widget, gpointer data);
-	static void OnWindowHide(GtkWidget* widget, gpointer data);
-//    static void OnDestroy(GtkWidget* widget, gpointer data);
-
-	~State()
-	{
-		if (vbox != NULL)
-		{
-			g_signal_handler_disconnect(G_OBJECT(C4DevmodeDlg::GetWindow()), handlerHide);
-			C4DevmodeDlg::RemovePage(vbox);
-			vbox = NULL;
-		}
-	}
-
-	State(C4PropertyDlg* dlg): Super(dlg), vbox(NULL) {}
-
-	bool Open();
-
-	void Clear() {}
-	void Default() {}
 };
 
 class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
@@ -350,23 +307,15 @@ public:
 	void Default() {}
 };
 
-void C4PropertyDlg::State::OnScriptActivate(GtkWidget* widget, gpointer data)
+void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 {
 	const gchar* text = gtk_entry_get_text(GTK_ENTRY(widget));
 	if (text && text[0])
 		Console.EditCursor.In(text);
 }
 
-void C4PropertyDlg::State::OnWindowHide(GtkWidget* widget, gpointer user_data)
-{
-	static_cast<C4PropertyDlg*>(user_data)->Active = false;
-}
-
 CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
 {
-	state->cursorWait = gdk_cursor_new(GDK_WATCH);
-	state->cursorDefault = gdk_cursor_new(GDK_ARROW);
-
 	// Calls InitGUI
 	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
@@ -454,9 +403,10 @@ void C4ConsoleGUI::State::InitGUI()
 	txtScript = gtk_entry_new();
 
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(txtLog), false);
 	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(txtLog), 2);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(txtLog), GTK_WRAP_CHAR);
 
 	gtk_container_add(GTK_CONTAINER(scroll), txtLog);
 
@@ -524,15 +474,6 @@ void C4ConsoleGUI::State::InitGUI()
 	compObjects = gtk_menu_item_new_with_label(LoadResStr("IDS_BTN_OBJECTS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compObjects);
 
-	compScript = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SCRIPT"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compScript);
-
-	compTitle = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_TITLE"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compTitle);
-
-	compInfo = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_INFO"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compInfo);
-
 	plrJoin = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_JOIN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), plrJoin);
 
@@ -573,9 +514,6 @@ void C4ConsoleGUI::State::InitGUI()
 	g_signal_connect(G_OBJECT(fileClose), "activate", G_CALLBACK(OnFileClose), this);
 	g_signal_connect(G_OBJECT(fileQuit), "activate", G_CALLBACK(OnFileQuit), this);
 	g_signal_connect(G_OBJECT(compObjects), "activate", G_CALLBACK(OnCompObjects), this);
-	g_signal_connect(G_OBJECT(compScript), "activate", G_CALLBACK(OnCompScript), this);
-	g_signal_connect(G_OBJECT(compTitle), "activate", G_CALLBACK(OnCompTitle), this);
-	g_signal_connect(G_OBJECT(compInfo), "activate", G_CALLBACK(OnCompInfo), this);
 	g_signal_connect(G_OBJECT(plrJoin), "activate", G_CALLBACK(OnPlrJoin), this);
 	g_signal_connect(G_OBJECT(viewNew), "activate", G_CALLBACK(OnViewNew), this);
 	g_signal_connect(G_OBJECT(helpAbout), "activate", G_CALLBACK(OnHelpAbout), this);
@@ -609,9 +547,6 @@ void C4ConsoleGUI::State::Clear()
 	fileClose = NULL;
 	fileQuit = NULL;
 
-	compScript = NULL;
-	compTitle = NULL;
-	compInfo = NULL;
 	compObjects = NULL;
 
 	plrJoin = NULL;
@@ -666,7 +601,24 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player *player, StdStrBuf &player_text
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
 	// Seems not to work. Don't know why...
-	gdk_window_set_cursor(window->window, state->cursorWait);
+	GdkDisplay * display = gtk_widget_get_display(window);
+	GdkCursor * gdkcursor;
+
+	if (cursor == CURSOR_Wait)
+		gdkcursor = gdk_cursor_new_for_display(display, GDK_WATCH);
+	else
+		gdkcursor = NULL;
+
+#if GTK_CHECK_VERSION(2,14,0)
+	GdkWindow* window_wnd = gtk_widget_get_window(window);
+#else
+	GdkWindow* window_wnd = window->window;
+#endif
+
+	gdk_window_set_cursor(window_wnd, gdkcursor);
+	gdk_display_flush(display);
+	if (cursor)
+		gdk_cursor_unref (gdkcursor);
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
@@ -753,8 +705,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 
-	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy bindung
-//  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
 
 	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy binding
 //  gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_HIDEREADONLY) == 0);
@@ -844,10 +795,10 @@ bool C4ConsoleGUI::Message(const char *message, bool query)
 	return response == GTK_RESPONSE_OK;
 }
 
-bool C4ConsoleGUI::Out(const char *message)
+void C4ConsoleGUI::Out(const char *message)
 {
 	// Append text to log
-	if (!window) return true;
+	if (!window) return;
 
 	GtkTextIter end;
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->txtLog));
@@ -859,24 +810,13 @@ bool C4ConsoleGUI::Out(const char *message)
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(state->txtLog), gtk_text_buffer_get_insert(buffer), 0.0, false, 0.0, 0.0);
 }
 
-void C4ConsoleGUI::UpdateNetMenu(Stage stage)
+void C4ConsoleGUI::AddNetMenu()
 {
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-	{
-		state->itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
-		state->menuNet = gtk_menu_new();
-		gtk_menu_item_set_submenu(GTK_MENU_ITEM(state->itemNet), state->menuNet);
-		gtk_menu_shell_insert(GTK_MENU_SHELL(state->menuBar), state->itemNet, Console.MenuIndexHelp);
-		break;
-	}
-	case C4ConsoleGUI::STAGE_Intermediate:
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		gtk_widget_show_all(state->itemNet);
-		break;
-	}
+	state->itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
+	state->menuNet = gtk_menu_new();
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(state->itemNet), state->menuNet);
+	gtk_menu_shell_insert(GTK_MENU_SHELL(state->menuBar), state->itemNet, 4 /*MenuIndexHelp*/);
+	gtk_widget_show_all(state->itemNet);
 }
 
 void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
@@ -884,22 +824,16 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 	GtkWidget* item = gtk_menu_item_new_with_label(text.getData());
 	gtk_menu_shell_append(GTK_MENU_SHELL(state->menuNet), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(State::OnNetClient), GINT_TO_POINTER(Game.Clients.getLocalID()));
+	gtk_widget_show_all(item);
 }
 
-void C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::Stage stage)
+void C4ConsoleGUI::ClearNetMenu()
 {
 	// Don't need to do anything if the GUI is not created
 	if(state->menuBar == NULL || state->itemNet == NULL) return;
 
-	switch (stage)
-	{
-	case C4ConsoleGUI::STAGE_Start:
-		gtk_container_remove(GTK_CONTAINER(state->menuBar), state->itemNet);
-		state->itemNet = NULL;
-		break;
-	case C4ConsoleGUI::STAGE_End:
-		break;
-	}
+	gtk_container_remove(GTK_CONTAINER(state->menuBar), state->itemNet);
+	state->itemNet = NULL;
 }
 
 void C4ConsoleGUI::ClearInput()
@@ -919,10 +853,26 @@ void C4ConsoleGUI::ClearInput()
 		g_object_unref(G_OBJECT(completion));
 	}
 
-	GtkTreeIter iter;
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	g_assert(store);
 	gtk_list_store_clear(store);
+}
+
+void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
+{
+	if(state->txtScript == NULL) return;
+
+	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->txtScript));
+	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
+	GtkTreeIter iter;
+	g_assert(store);
+	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); ++it)
+	{
+		char* fn = *it;
+		if (!fn) continue;
+		gtk_list_store_append(store, &iter);
+		gtk_list_store_set(store, &iter, 0, fn, -1);
+	}
 }
 
 void C4ConsoleGUI::ClearPlayerMenu()
@@ -990,47 +940,6 @@ void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 	g_signal_handler_unblock(state->materials, state->handlerMaterials);
 }
 
-void C4ConsoleGUI::PropertyDlgSetFunctions(C4PropertyDlg *dlg, std::vector<char*> &functions)
-{
-	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(dlg->state->entry));
-	GtkListStore* store;
-
-	// Uncouple list store from completion so that the completion is not
-	// notified for every row we are going to insert. This enhances
-	// performance significantly.
-	if (!completion)
-	{
-		completion = gtk_entry_completion_new();
-		store = gtk_list_store_new(1, G_TYPE_STRING);
-
-		gtk_entry_completion_set_text_column(completion, 0);
-		gtk_entry_set_completion(GTK_ENTRY(dlg->state->entry), completion);
-		g_object_unref(G_OBJECT(completion));
-	}
-	else
-	{
-		store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
-		g_object_ref(G_OBJECT(store));
-		gtk_entry_completion_set_model(completion, NULL);
-	}
-
-	GtkTreeIter iter;
-	gtk_list_store_clear(store);
-
-	for (std::vector<char*>::iterator it(functions.begin()); it != functions.end(); it++)
-	{
-		char* fn = *it;
-		if (fn != C4ConsoleGUI::LIST_DIVIDER)
-		{
-			gtk_list_store_append(store, &iter);
-			gtk_list_store_set(store, &iter, 0, fn, -1);
-		}
-	}
-
-	// Reassociate list store with completion
-	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
-}
-
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
 {
 	state->DoEnableControls(fEnable);
@@ -1061,57 +970,101 @@ void C4ConsoleGUI::State::DoEnableControls(bool fEnable)
 
 	// Components menu
 	gtk_widget_set_sensitive(compObjects, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compScript, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compInfo, fEnable && GetOwner()->Editing);
-	gtk_widget_set_sensitive(compTitle, fEnable && GetOwner()->Editing);
-
 	// Player & viewport menu
 	gtk_widget_set_sensitive(plrJoin, fEnable && GetOwner()->Editing);
 	gtk_widget_set_sensitive(viewNew, fEnable);
 }
 
-bool C4ConsoleGUI::PropertyDlgOpen(class C4PropertyDlg* dlg)
+bool C4ConsoleGUI::PropertyDlgOpen()
 {
-	return dlg->state->Open();
-}
-
-bool C4PropertyDlg::State::Open()
-{
-	if (vbox == NULL)
+	if (state->propertydlg == NULL)
 	{
-		vbox = gtk_vbox_new(false, 6);
+		GtkWidget * vbox = state->propertydlg = gtk_vbox_new(false, 3);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
-		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_SHADOW_IN);
 
-		textview = gtk_text_view_new();
-		entry = gtk_entry_new();
+		GtkWidget * textview = state->propertydlg_textview = gtk_text_view_new();
+		GtkWidget * entry = state->propertydlg_entry = gtk_entry_new();
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), textview);
 		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), entry, false, false, 0);
 
 		gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false);
+		gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
+		gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_CHAR);
 		gtk_widget_set_sensitive(entry, Console.Editing);
 
 		gtk_widget_show_all(vbox);
 
 		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_PROPERTIES"));
 
-		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(OnScriptActivate), this);
-
-		handlerHide = g_signal_connect(G_OBJECT(C4DevmodeDlg::GetWindow()), "hide", G_CALLBACK(OnWindowHide), this);
+		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(State::OnScriptActivate), this);
 	}
 
-	C4DevmodeDlg::SwitchPage(vbox);
+	C4DevmodeDlg::SwitchPage(state->propertydlg);
 	return true;
 }
 
-void C4ConsoleGUI::PropertyDlgUpdate(class C4PropertyDlg* dlg, StdStrBuf &text)
+void C4ConsoleGUI::PropertyDlgClose()
 {
-	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(dlg->state->textview));
-	gtk_text_buffer_set_text(buffer, text.getData(), -1);
+}
+
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
+{
+	if (!state->propertydlg) return;
+	if (!C4DevmodeDlg::GetWindow()) return;
+#if GTK_CHECK_VERSION(2,18,0)
+	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
+#else
+	if (!GTK_WIDGET_VISIBLE(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
+#endif
+	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
+	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
+
+	if (PropertyDlgObject == rSelection.GetObject()) return;
+	PropertyDlgObject = rSelection.GetObject();
+	
+	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
+	GtkListStore* store;
+
+	// Uncouple list store from completion so that the completion is not
+	// notified for every row we are going to insert. This enhances
+	// performance significantly.
+	if (!completion)
+	{
+		completion = gtk_entry_completion_new();
+		store = gtk_list_store_new(1, G_TYPE_STRING);
+
+		gtk_entry_completion_set_text_column(completion, 0);
+		gtk_entry_set_completion(GTK_ENTRY(state->propertydlg_entry), completion);
+		g_object_unref(G_OBJECT(completion));
+	}
+	else
+	{
+		store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
+		g_object_ref(G_OBJECT(store));
+		gtk_entry_completion_set_model(completion, NULL);
+	}
+
+	GtkTreeIter iter;
+	gtk_list_store_clear(store);
+
+	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	{
+		char* fn = *it;
+		if (fn)
+		{
+			gtk_list_store_append(store, &iter);
+			gtk_list_store_set(store, &iter, 0, fn, -1);
+		}
+	}
+
+	// Reassociate list store with completion
+	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
 }
 
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
@@ -1198,9 +1151,13 @@ bool C4ToolsDlg::State::Open()
 		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, false, false, 0);
 
 		vbox = gtk_vbox_new(false, 6);
-
+#if GTK_CHECK_VERSION(2,23,0)
+		materials = gtk_combo_box_text_new();
+		textures = gtk_combo_box_text_new();		
+#else
 		materials = gtk_combo_box_new_text();
 		textures = gtk_combo_box_new_text();
+#endif
 
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(materials), RowSeparatorFunc, NULL, NULL);
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(textures), RowSeparatorFunc, NULL, NULL);
@@ -1240,6 +1197,11 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg *dlg)
 	dlg->state->InitMaterialCtrls();
 }
 
+#if GTK_CHECK_VERSION(2,23,0)
+#define gtk_combo_box_append_text(c,t) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),t)
+#define	gtk_combo_box_prepend_text(c,t) gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(c),t)
+#define gtk_combo_box_get_active_text(c) gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(c))
+#endif
 void C4ToolsDlg::State::InitMaterialCtrls()
 {
 	GtkListStore* list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(materials)));
@@ -1248,6 +1210,7 @@ void C4ToolsDlg::State::InitMaterialCtrls()
 	gtk_list_store_clear(list);
 
 	gtk_combo_box_append_text(GTK_COMBO_BOX(materials), C4TLS_MatSky);
+
 	for (int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
 		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), ::MaterialMap.Map[cnt].Name);
@@ -1456,6 +1419,10 @@ void C4ToolsDlg::State::UpdateIFTControls()
 
 void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material)
 {
+	C4ToolsDlg::State* state = dlg->state;
+	g_signal_handler_block(state->materials, state->handlerMaterials);
+	SelectComboBoxText(GTK_COMBO_BOX(state->materials), material);
+	g_signal_handler_unblock(state->materials, state->handlerMaterials);
 }
 
 void C4ToolsDlg::InitGradeCtrl()
@@ -1474,6 +1441,7 @@ bool C4ToolsDlg::PopMaterial()
 	if (!state->hbox) return false;
 	gtk_widget_grab_focus(state->materials);
 	gtk_combo_box_popup(GTK_COMBO_BOX(state->materials));
+	return true;
 }
 
 bool C4ToolsDlg::PopTextures()
@@ -1481,9 +1449,10 @@ bool C4ToolsDlg::PopTextures()
 	if (!state->hbox) return false;
 	gtk_widget_grab_focus(state->textures);
 	gtk_combo_box_popup(GTK_COMBO_BOX(state->textures));
+	return true;
 }
 
-void C4ConsoleGUI::ClearDlg(void* dlg)
+void C4ConsoleGUI::ToolsDlgClose()
 {
 	// nope
 }
@@ -1492,12 +1461,21 @@ void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
 {
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::vector<char*>& functions)
+void C4ToolsDlg::EnableControls()
 {
-}
-
-void C4ConsoleGUI::ToolsDlgEnableControls(C4ToolsDlg* dlg)
-{
+	int32_t iLandscapeMode=::Landscape.Mode;
+	gtk_widget_set_sensitive(state->brush, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->line, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->rect, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->fill, iLandscapeMode>=C4LSC_Exact);
+	gtk_widget_set_sensitive(state->picker, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->ift, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->no_ift, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->materials, (iLandscapeMode>=C4LSC_Static));
+	gtk_widget_set_sensitive(state->textures, iLandscapeMode >= C4LSC_Static && !SEqual(Material,C4TLS_MatSky));
+	gtk_widget_set_sensitive(state->scale, iLandscapeMode>=C4LSC_Static);
+	gtk_widget_set_sensitive(state->preview, iLandscapeMode>=C4LSC_Static);
+	NeedPreviewUpdate();
 }
 
 // GTK+ Callbacks
@@ -1596,22 +1574,7 @@ void C4ConsoleGUI::State::OnFileQuit(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnCompObjects(GtkWidget* item, gpointer data)
 {
-	Console.EditObjects();
-}
-
-void C4ConsoleGUI::State::OnCompScript(GtkWidget* item, gpointer data)
-{
-	Console.EditScript();
-}
-
-void C4ConsoleGUI::State::OnCompTitle(GtkWidget* item, gpointer data)
-{
-	Console.EditTitle();
-}
-
-void C4ConsoleGUI::State::OnCompInfo(GtkWidget* item, gpointer data)
-{
-	Console.EditInfo();
+	Console.ObjectListDlg.Open();
 }
 
 void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)

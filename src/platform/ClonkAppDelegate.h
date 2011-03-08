@@ -30,6 +30,7 @@
 	NSString *clonkDirectory;
 	NSString *addonSupplied;
 	ConsoleWindowController *consoleController;
+	ClonkWindowController *gameWindowController;
 	// declared here since ConsoleWindow.xib can't refer to objects in MainMenu.xib -.-
 	IBOutlet NSMenuItem *newViewportForPlayerMenuItem;
 	IBOutlet NSMenuItem *kickPlayerMenuItem;
@@ -42,17 +43,18 @@
 }
 - (NSString*) clonkDirectory;
 - (BOOL) argsLookLikeItShouldBeInstallation;
-- (void)makeFakeArgs:(char***)argv argc:(int*)argc;
+- (void)makeFakeArgs;
 - (BOOL)installAddOn;
 - (void)terminate:(NSApplication*)sender;
 
 + (ClonkAppDelegate*) instance;
-+ (BOOL) isConsoleAndGameRunning;
++ (BOOL) isEditorAndGameRunning;
 
 #ifdef USE_COCOA
 @property(readonly) NSMenuItem* newViewportForPlayerMenuItem;
 @property(readonly) NSMenuItem* kickPlayerMenuItem;
 @property(readwrite, retain) ConsoleWindowController* consoleController;
+@property(readwrite, retain) ClonkWindowController* gameWindowController;
 @property(readonly) NSMenuItem* recordMenuItem;
 @property(readonly) NSMenuItem* netMenu;
 #endif

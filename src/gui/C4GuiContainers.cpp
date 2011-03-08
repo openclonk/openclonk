@@ -45,7 +45,12 @@ namespace C4GUI
 			{
 				// skip viewport dialogs
 				if (!pEl->IsExternalDrawDialog())
-					pEl->Draw(cgo);
+				{
+					if (pEl->GetDialogWindow())
+						pEl->GetDialogWindow()->RequestUpdate();
+					else
+						pEl->Draw(cgo);
+				}
 			}
 	}
 

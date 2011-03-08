@@ -75,7 +75,7 @@ public:
 	C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 	virtual ~C4DefGraphics() { Clear(); }; // dtor
 
-	bool LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
+	bool LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
 	bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 	bool LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader);
 	bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group
@@ -167,7 +167,7 @@ public:
 	bool CopyFrom(C4DefGraphics &rCopyGfx); // copy portrait from graphics
 	bool CopyFrom(C4Portrait &rCopy); // copy portrait
 
-	bool Load(C4Group &rGrp, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG); // load own portrait from group
+	bool Load(C4Group &rGrp, const char *szFilenamePNG, const char *szOverlayPNG); // load own portrait from group
 	bool Link(C4DefGraphics *pGfxPortrait);        // link with a present portrait surface
 	bool SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN); // store portrait gfx to file (including overlay)
 

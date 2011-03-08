@@ -27,8 +27,9 @@
 
 #include <C4Include.h>
 #include <C4Console.h>
-#include <C4Application.h>
 
+#include <C4Application.h>
+#include <C4Def.h>
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
@@ -39,6 +40,7 @@
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
 #include <C4Viewport.h>
+#include <C4ScriptHost.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
 
@@ -62,13 +64,6 @@ C4Console::C4Console(): C4ConsoleGUI()
 #ifdef _WIN32
 	hWindow=NULL;
 #endif
-
-	MenuIndexFile       =  0,
-	MenuIndexComponents =  1,
-	MenuIndexPlayer     =  2,
-	MenuIndexViewport   =  3,
-	MenuIndexNet        = -1,
-	MenuIndexHelp       =  4;
 }
 
 C4Console::~C4Console()
@@ -148,9 +143,9 @@ void C4Console::UpdateStatusBars()
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_FrameCounter, str);
 	}
 	// Script counter
-	if (Game.Script.Counter!=ScriptCounter)
+	if (::GameScript.Counter!=ScriptCounter)
 	{
-		ScriptCounter=Game.Script.Counter;
+		ScriptCounter=::GameScript.Counter;
 		StdStrBuf str;
 		str.Format("Script: %i",ScriptCounter);
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_ScriptCounter, str);
@@ -278,9 +273,8 @@ bool C4Console::FileOpen()
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	Application.ClearCommandLine();
-	Game.SetScenarioFilename(c4sfile);
 	// Open game
-	OpenGame();
+	Application.OpenGame(c4sfile);
 	return true;
 }
 
@@ -300,7 +294,6 @@ bool C4Console::FileOpenWPlrs()
 	               )) return false;
 	// Compose command line
 	Application.ClearCommandLine();
-	Game.SetScenarioFilename(c4sfile);
 	if (DirectoryExists(c4pfile)) // Multiplayer
 	{
 		const char *cptr = c4pfile + SLen(c4pfile) + 1;
@@ -319,13 +312,15 @@ bool C4Console::FileOpenWPlrs()
 		SAddModule(Game.PlayerFilenames, c4pfile);
 	}
 	// Open game
-	OpenGame();
+	Application.OpenGame(c4sfile);
 	return true;
 }
 
 bool C4Console::FileClose()
 {
-	return CloseGame();
+	if (!fGameOpen) return false;
+	Application.QuitGame();
+	return true;
 }
 
 bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
@@ -347,13 +342,12 @@ bool C4Console::FileRecord()
 void C4Console::ClearPointers(C4Object *pObj)
 {
 	EditCursor.ClearPointers(pObj);
-	PropertyDlg.ClearPointers(pObj);
 }
 
 void C4Console::Default()
 {
 	EditCursor.Default();
-	PropertyDlg.Default();
+	PropertyDlgObject = 0;
 	ToolsDlg.Default();
 }
 
@@ -361,8 +355,8 @@ void C4Console::Clear()
 {
 	C4ConsoleBase::Clear();
 	EditCursor.Clear();
-	PropertyDlg.Clear();
 	ToolsDlg.Clear();
+	PropertyDlgClose();
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
@@ -415,30 +409,6 @@ void C4Console::ClearViewportMenu()
 	C4ConsoleGUI::ClearViewportMenu();
 }
 
-void C4Console::EditTitle()
-{
-	if (::Network.isEnabled()) return;
-	Game.Title.Open();
-}
-
-void C4Console::EditScript()
-{
-	if (::Network.isEnabled()) return;
-	Game.Script.Open();
-	::ScriptEngine.ReLink(&::Definitions);
-}
-
-void C4Console::EditInfo()
-{
-	if (::Network.isEnabled()) return;
-	Game.Info.Open();
-}
-
-void C4Console::EditObjects()
-{
-	ObjectListDlg.Open();
-}
-
 void C4Console::UpdateInputCtrl()
 {
 	int cnt;
@@ -446,21 +416,7 @@ void C4Console::UpdateInputCtrl()
 
 	ClearInput();
 	// add global and standard functions
-	std::vector<char*> functions;
-	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
-	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->Name);
-		}
-	}
-	// Add scenario script functions
-	if (pRef=Game.Script.GetSFunc(0))
-		functions.push_back((char*)C4ConsoleGUI::LIST_DIVIDER);
-	for (cnt=0; (pRef=Game.Script.GetSFunc(cnt)); cnt++)
-	{
-		functions.push_back(pRef->Name);
-	}
+	std::list <char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
 	SetInputFunctions(functions);
 }
 
@@ -539,11 +495,7 @@ void C4Console::UpdateNetMenu()
 	// Clear old
 	ClearNetMenu();
 	// Insert menu
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_Start);
-	MenuIndexNet=MenuIndexHelp;
-	MenuIndexHelp++;
-
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_Intermediate);
+	C4ConsoleGUI::AddNetMenu();
 
 	// Host
 	StdStrBuf str;
@@ -556,18 +508,13 @@ void C4Console::UpdateNetMenu()
 		           pClient->getName(), pClient->getID());
 		AddNetMenuItemForPlayer(IDM_NET_CLIENT1+pClient->getID(), str);
 	}
-	C4ConsoleGUI::UpdateNetMenu(C4ConsoleGUI::STAGE_End);
 	return;
 }
 
 void C4Console::ClearNetMenu()
 {
 	if (!Active) return;
-	if (MenuIndexNet<0) return;
-	C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::STAGE_Start);
-	MenuIndexNet=-1;
-	MenuIndexHelp--;
-	C4ConsoleGUI::ClearNetMenu(C4ConsoleGUI::STAGE_End);
+	C4ConsoleGUI::ClearNetMenu();
 }
 
 void C4Console::SetCaptionToFilename(const char* szFilename)
@@ -579,35 +526,19 @@ void C4Console::SetCaptionToFilename(const char* szFilename)
 void C4Console::Execute()
 {
 	EditCursor.Execute();
-	PropertyDlg.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
 	::GraphicsSystem.Execute();
 }
 
-bool C4Console::OpenGame()
+void C4Console::InitGame()
 {
-	bool fGameWasOpen = fGameOpen;
-	// Close any old game
-	CloseGame();
-
+	if (!Active) return;
 	// Default game dependent members
 	Default();
-	SetCaption(GetFilename(Game.ScenarioFile.GetName()));
+	SetCaptionToFilename(Game.ScenarioFilename);
 	// Init game dependent members
-	if (!EditCursor.Init()) return false;
-	// Default game - only if open before, because we do not want to default out the GUI
-	if (fGameWasOpen) Game.Default();
-
-	// PreInit is required because GUI has been deleted
-	if (!Game.PreInit() ) { Game.Clear(); return false; }
-
-	// Init game
-	if (!Game.Init())
-	{
-		Game.Clear();
-		return false;
-	}
+	EditCursor.Init();
 
 	// Console updates
 	fGameOpen=true;
@@ -615,24 +546,75 @@ bool C4Console::OpenGame()
 	EnableControls(fGameOpen);
 	UpdatePlayerMenu();
 	UpdateViewportMenu();
-	SetCaptionToFilename(Game.ScenarioFilename);
-
-	return true;
 }
 
-bool C4Console::CloseGame()
+void C4Console::CloseGame()
 {
-	if (!fGameOpen) return false;
-	Game.Clear();
-	Game.GameOver=false; // No leftover values when exiting on closed game
-	Game.GameOverDlgShown=false;
+	if (!Active || !fGameOpen) return;
 	fGameOpen=false;
 	EnableControls(fGameOpen);
 	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
-	return true;
 }
 
 bool C4Console::TogglePause()
 {
 	return Game.TogglePause();
 }
+
+#if !(defined(_WIN32) || defined(USE_COCOA) || defined(WITH_DEVELOPER_MODE))
+class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
+{
+	public: State(C4ConsoleGUI *console): Super(console) {}
+};
+class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
+{
+	public: State(C4ToolsDlg* dlg): Super(dlg) {}
+	void Clear() {}
+	void Default() {}
+};
+void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player*, StdStrBuf&, bool) {}
+void C4ConsoleGUI::AddMenuItemForPlayer(C4Player*, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenuItemForPlayer(int, StdStrBuf&) {}
+void C4ConsoleGUI::AddNetMenu() {}
+void C4ConsoleGUI::ToolsDlgClose() {}
+void C4ConsoleGUI::ClearInput() {}
+bool C4ConsoleGUI::ClearLog() {return 0;}
+void C4ConsoleGUI::ClearNetMenu() {}
+void C4ConsoleGUI::ClearPlayerMenu() {}
+void C4ConsoleGUI::ClearViewportMenu() {}
+CStdWindow * C4ConsoleGUI::CreateConsoleWindow(CStdApp*) {return 0;}
+void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
+void C4ConsoleGUI::DoEnableControls(bool) {}
+bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
+bool C4ConsoleGUI::FileSelect(char*, int, char const*, unsigned int, bool) {return 0;}
+bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
+void C4ConsoleGUI::Out(char const*) {}
+bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}
+void C4ConsoleGUI::PropertyDlgClose() {}
+void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection) {}
+void C4ConsoleGUI::RecordingEnabled() {}
+void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
+void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
+void C4ConsoleGUI::SetInputFunctions(std::list<char*, std::allocator<char*> >&) {}
+void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
+void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
+bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}
+void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSetMaterial(C4ToolsDlg*, char const*) {}
+void C4ConsoleGUI::ToolsDlgSetTexture(C4ToolsDlg*, char const*) {}
+bool C4ConsoleGUI::UpdateModeCtrls(int) {return 0;}
+void C4ToolsDlg::EnableControls() {}
+void C4ToolsDlg::InitGradeCtrl() {}
+void C4ToolsDlg::NeedPreviewUpdate() {}
+bool C4ToolsDlg::PopMaterial() {return 0;}
+bool C4ToolsDlg::PopTextures() {return 0;}
+void C4ToolsDlg::UpdateIFTControls() {}
+void C4ToolsDlg::UpdateLandscapeModeCtrls() {}
+void C4ToolsDlg::UpdateTextures() {}
+void C4ToolsDlg::UpdateToolCtrls() {}
+bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
+bool C4Viewport::TogglePlayerLock() {return 0;}
+void CStdWindow::RequestUpdate() {}
+bool OpenURL(char const*) {return 0;}
+#include "C4ConsoleGUICommon.h"
+#endif

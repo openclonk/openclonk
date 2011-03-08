@@ -32,43 +32,10 @@
 #include <C4Version.h>
 #include "C4Network2.h"
 
+void InstallCrashHandler();
+
 #ifdef _WIN32
 #include <shellapi.h>
-
-#ifdef GENERATE_MINI_DUMP
-
-// Dump generation on crash
-#include <specstrings.h>
-#include <dbghelp.h>
-#include <fcntl.h>
-
-static bool FirstCrash = true;
-
-LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
-{
-	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
-	FirstCrash = false;
-
-	// Open dump file
-	const char *szFilename = Config.AtExePath("Clonk.dmp");
-	HANDLE file = CreateFile(szFilename, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, 0);
-
-	// Write dump
-	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
-	ExpParam.ThreadId = GetCurrentThreadId();
-	ExpParam.ExceptionPointers = pExceptionPointers;
-	ExpParam.ClientPointers = true;
-	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-	                  file, MiniDumpNormal, &ExpParam, NULL, NULL);
-
-	// (Try to) log it
-	LogF("FATAL: Clonk crashed! Some developer might be interested in Clonk.dmp...");
-
-	// Pass exception
-	return EXCEPTION_EXECUTE_HANDLER;
-}
-
-#endif // GENERATE_MINI_DUMP
 
 int WINAPI WinMain (HINSTANCE hInst,
                     HINSTANCE hPrevInstance,
@@ -80,9 +47,8 @@ int WINAPI WinMain (HINSTANCE hInst,
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-#if defined(GENERATE_MINI_DUMP)
-	SetUnhandledExceptionFilter(GenerateDump);
-#endif
+	InstallCrashHandler();
+
 	// Split wide command line to wide argv array
 	std::vector<char*> argv;
 	int argc = 0;

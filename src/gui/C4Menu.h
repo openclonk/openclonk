@@ -151,7 +151,6 @@ protected:
 	int32_t Lines; // async
 	int32_t Alignment;
 	int32_t VisibleCount;
-	int32_t LastSelection; // used by AutoContextMenus
 	StdStrBuf CloseCommand; // script command that will be executed on menu close
 	char Caption[C4MaxTitle+1];
 	C4FacetSurface Symbol;
@@ -193,7 +192,7 @@ public:
 	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 	         const char *szInfoCaption=NULL,
 	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
-	void ClearItems(bool fResetSelection=false);
+	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport
 	bool SetTextProgress(int32_t iToProgress, bool fAdd); // enable/disable progressive text display and set starting pos

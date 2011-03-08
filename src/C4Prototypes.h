@@ -26,18 +26,20 @@
 
 // class declarations
 class C4Action;
-class C4AList;
+struct C4AulContext;
 class C4AulDefFunc;
 class C4AulFunc;
 class C4AulScript;
 class C4AulScriptEngine;
 class C4AulScriptFunc;
+struct C4AulParSet;
 class C4ClientPlayerInfos;
 class C4Command;
 class C4Config;
 class C4Console;
 class C4Def;
 class C4DefList;
+class C4DefGraphics;
 class C4Effect;
 class C4Facet;
 class C4FacetSurface;
@@ -129,7 +131,11 @@ class CStdApp;
 class CStdWindow;
 class CSurface;
 
-namespace C4GUI { class Screen; }
+namespace C4GUI
+{
+	class Screen;
+	class Dialog;
+}
 typedef C4GUI::Screen C4GUIScreen;
 
 #endif // INC_C4Prototypes

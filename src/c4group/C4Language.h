@@ -65,7 +65,7 @@ public:
 	void Clear();
 	// Handling of external language packs
 	int GetPackCount();
-	C4GroupSet& GetPackGroups(const char *strRelativePath);
+	C4GroupSet GetPackGroups(C4Group &);
 	// Handling of language info loaded from string tables
 	int GetInfoCount();
 	C4LanguageInfo *GetInfo(int iIndex);

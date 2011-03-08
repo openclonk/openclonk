@@ -103,13 +103,12 @@ bool C4RankSystem::Load(C4Group &hGroup, const char *szFilenames, int DefRankBas
 	assert(szFilenames); assert(szLanguage);
 	// load new
 	C4ComponentHost Ranks;
-	if (!Ranks.LoadEx("Ranks", hGroup, szFilenames, szLanguage)) return false;
+	if (!Ranks.LoadEx(hGroup, szFilenames, szLanguage)) return false;
 	size_t iSize = Ranks.GetDataSize();
 	if (!iSize) return false;
 	szRankNames=new char[iSize+1];
 	memcpy(szRankNames, Ranks.GetData(), iSize * sizeof(char));
 	szRankNames[iSize]=0;
-	Ranks.Close();
 	// replace line breaks by zero-chars
 	unsigned int i=0;
 	for (; i<iSize; ++i)

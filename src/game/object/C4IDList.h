@@ -86,15 +86,9 @@ public:
 	// IDList merge
 	bool Add(C4IDList &rList);
 	// Aux
-	bool Consolidate();
 	bool ConsolidateValids(C4DefList &rDefs, int32_t dwCategory = 0);
-	bool ConsolidateCounts();
-	void SortByCategory(C4DefList &rDefs);
-	void SortByValue(C4DefList &rDefs);
-	void Load(C4DefList &rDefs, int32_t dwCategory);
 	// Item operation
 	bool DeleteItem(size_t iIndex);
-	bool SwapItems(size_t iIndex1, size_t iIndex2);
 	// Graphics
 	void Draw(C4Facet &cgo, int32_t iSelection,
 	          C4DefList &rDefs, DWORD dwCategory,

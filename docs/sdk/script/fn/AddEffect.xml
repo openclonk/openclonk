@@ -8,7 +8,7 @@
     <category>Effects</category>
     <version>4.9.5.0 CE</version>
     <syntax>
-      <rtype>int</rtype>
+      <rtype>proplist</rtype>
       <params>
         <param>
           <type>string</type>
@@ -70,7 +70,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Creates an effect. Returns the effect index if successful or 0 if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is -2.</desc>
+    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably nil.</desc>
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>

@@ -6,7 +6,7 @@ public func MaxStackCount() { return 8; }
 
 public func IsMusketAmmo() { return 1; }
 
-public func ProjectileDamage() { return 10; }
+public func ProjectileDamage() { return 15; }
 public func FlightTime() { return 30; }
 
 protected func Hit()
@@ -123,4 +123,5 @@ local ActMap = {
 };
 local Name = "$Name$";
 local Description = "$Description$";
-	
+local Collectible = 1;
+local Rebuy = true;

@@ -32,13 +32,13 @@
 	return (ClonkAppDelegate*)[[NSApplication sharedApplication] delegate];
 }
 
-+ (BOOL) isConsoleAndGameRunning
++ (BOOL) isEditorAndGameRunning
 {
 	return Application.isEditor && Game.IsRunning;
 }
 
 #ifdef USE_COCOA
-@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu;
+@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController;
 #endif
 
 - (id) init

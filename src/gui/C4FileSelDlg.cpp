@@ -569,10 +569,10 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPict
 	char path[_MAX_PATH+1];
 	// add common picture locations
 	StdStrBuf strLocation;
-	SCopy(Config.AtUserDataPath(""), path, _MAX_PATH); TruncateBackslash(path);
+	SCopy(Config.General.UserDataPath, path, _MAX_PATH); TruncateBackslash(path);
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_USERPATH"));
 	AddLocation(strLocation.getData(), path);
-	SCopy(Config.AtSystemDataPath(""), path, _MAX_PATH); TruncateBackslash(path);
+	SCopy(Config.General.SystemDataPath, path, _MAX_PATH); TruncateBackslash(path);
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_PROGRAMDIRECTORY"));
 	AddCheckedLocation(strLocation.getData(), Config.General.ExePath);
 #ifdef _WIN32
@@ -653,7 +653,7 @@ bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSele
 	{
 		Log("Copying default portraits to user path...");
 		C4Group hGroup;
-		if (hGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
+		if (Reloc.Open(hGroup, C4CFN_Graphics))
 		{
 			hGroup.Extract("Portrait1.png", Config.AtUserDataPath("Clonk.png"));
 			hGroup.Close();

@@ -30,7 +30,6 @@
     </syntax>
     <desc>Calls the specified private, protected, or public function in the target object. You should reconsider whether this workaround is really necessary.</desc>
     <related>
-      <funclink>ObjectCall</funclink>
       <funclink>ProtectedCall</funclink>
       <funclink>Call</funclink>
       <funclink>GameCall</funclink>

@@ -191,7 +191,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			for (int i = 0; i < iAttachingObjectsCount; ++i)
 			{
 				C4Object *pObj = ppAttachingObjects[i];
-				if (pObj->IsMoveableBySolidMask())
+				if (pObj->IsMoveableBySolidMask(pForObject->GetPlane()))
 					if (!pObj->Shape.ContactCheck(pObj->GetX()+dx, pObj->GetY()+dy))
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
@@ -289,7 +289,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 		C4LSector *pSct; C4Object *pObj;
 		for (C4ObjectList *pLst=SolidArea.FirstObjectShapes(&pSct); pLst; pLst=SolidArea.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *clnk=pLst->First; clnk; clnk=clnk->Next)
-				if ((pObj = clnk->Obj) && pObj != pForObject && pObj->IsMoveableBySolidMask() && !pObj->Shape.CheckContact(pObj->GetX(),pObj->GetY()))
+				if ((pObj = clnk->Obj) && pObj != pForObject && pObj->IsMoveableBySolidMask(pForObject->GetPlane()) && !pObj->Shape.CheckContact(pObj->GetX(),pObj->GetY()))
 				{
 					// check for any contact to own SolidMask - attach-directions, bottom - "stuck" (CNAT_Center) is ignored, because that causes problems with things being stuck in basements :(
 					int iVtx = 0;

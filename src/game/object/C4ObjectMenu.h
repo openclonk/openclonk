@@ -39,7 +39,7 @@ enum
 	/*C4MN_Magic        = 10, obsolete, now reserved*/
 	/*C4MN_Main         = 12, now defined in C4MainMenu*/
 	C4MN_Get          = 13,
-	C4MN_Context      = 14,
+	/*C4MN_Context      = 14, obsolete, now reserved*/
 	C4MN_Info         = 15,
 	/*C4MN_TeamSelection= 16, now defined in C4MainMenu */
 	/*C4MN_TeamSwitch   = 17, now defined in C4MainMenu */
@@ -86,9 +86,6 @@ protected:
 	virtual void OnUserEnter(int32_t Player, int32_t iIndex, bool fRight);
 	virtual void OnUserClose();
 	virtual int32_t GetControllingPlayer();
-
-private:
-	int32_t AddContextFunctions(C4Object *pTarget, bool fCountOnly = false);
 };
 
 #endif

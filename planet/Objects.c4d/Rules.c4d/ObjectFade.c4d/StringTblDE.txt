@@ -1,0 +1,2 @@
+Name=Verblassende Objekte
+Description=Wenn diese Spielregel aktiviert ist, verschwinden fallengelassene Objekte mit der Zeit

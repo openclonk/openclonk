@@ -126,10 +126,10 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	Clear();
 	// load localization info
 	C4LangStringTable LangTable;
-	bool fHasLangTable = !!LangTable.LoadEx("StringTbl", hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	bool fHasLangTable = !!LangTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 	// load core data
 	StdStrBuf Buf;
-	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, Buf)) return false;
+	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, &Buf)) return false;
 	if (fHasLangTable) LangTable.ReplaceStrings(Buf);
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "FolderMap"), Buf, C4CFN_MapFolderData)) return false;
 	// check resolution requirement
@@ -481,10 +481,9 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			return false;
 		// Load entry name
 		C4ComponentHost DefNames;
-		if (DefNames.LoadEx("Title", Group, C4CFN_Title, Config.General.LanguageEx))
+		if (DefNames.LoadEx(Group, C4CFN_Title, Config.General.LanguageEx))
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
-		DefNames.Close();
 		// load entry icon
 		if (Group.FindEntry(C4CFN_IconPNG) && fctIcon.Load(Group, C4CFN_IconPNG))
 			fIconLoaded = true;
@@ -523,19 +522,18 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	{
 		// load desc
 		C4ComponentHost DefDesc;
-		if (DefDesc.LoadEx("Desc", Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+		if (DefDesc.LoadEx(Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 		{
 			C4RTFFile rtf;
 			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 			sDesc.Take(rtf.GetPlainText());
 		}
-		DefDesc.Close();
 		// load title
 		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
 			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
 		fExLoaded = true;
 		// load version
-		Group.LoadEntryString(C4CFN_Version, sVersion);
+		Group.LoadEntryString(C4CFN_Version, &sVersion);
 	}
 	//LogF("dbg: Loaded \"%s\" as \"%s\". (%s)", (const char *) sFilename, (const char *) sName, GetIsFolder() ? "Folder" : "Scenario");
 	// done, success
@@ -679,7 +677,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 {
 	// load scenario core first
 	StdStrBuf sFileContents;
-	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, sFileContents)) return false;
+	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, &sFileContents)) return false;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
 	return true;
@@ -927,7 +925,7 @@ bool C4ScenarioListLoader::Folder::LoadCustomPre(C4Group &rGrp)
 {
 	// load folder core if available
 	StdStrBuf sFileContents;
-	if (rGrp.LoadEntryString(C4CFN_FolderCore, sFileContents))
+	if (rGrp.LoadEntryString(C4CFN_FolderCore, &sFileContents))
 		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(C4F, sFileContents, (rGrp.GetFullName() + DirSep C4CFN_FolderCore).getData()))
 			return false;
 	return true;
@@ -1044,7 +1042,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 	ClearChildren();
 	// regular folders must exist and not be within group!
 	assert(!pFromGrp);
-	if (sFilename[0])
+	if (sFilename.getData() && sFilename[0])
 		Merge(sFilename.getData());
 
 	// get number of entries, to estimate progress
@@ -1167,7 +1165,10 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	if (!BeginActivity(true)) return false;
 	if (pRootFolder) { delete pRootFolder; pRootFolder = NULL; }
 	pCurrFolder = pRootFolder = new RegularFolder(NULL);
-	pRootFolder->Merge(Config.General.UserDataPath);
+	// Load regular game data if no explicit path specified
+	if(!sRootFolder.getData())
+		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
+			pRootFolder->Merge(iter->getData());
 	bool fSuccess = pRootFolder->LoadContents(this, NULL, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
@@ -1438,7 +1439,7 @@ void C4StartupScenSelDlg::OnShown()
 	// init file list
 	fIsInitialLoading = true;
 	if (!pScenLoader) pScenLoader = new C4ScenarioListLoader();
-	pScenLoader->Load(StdStrBuf(Config.General.ExePath));
+	pScenLoader->Load(StdStrBuf()); //Config.General.ExePath));
 	UpdateList();
 	UpdateSelection();
 	fIsInitialLoading = false;
@@ -1621,11 +1622,10 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 		// for no user change, just set default objects. Custom settings will override later anyway
 		SCopy("Objects.c4d", Game.DefinitionFilenames);
 	// set other default startup parameters
-	SCopy(pStartScen->GetEntryFilename().getData(), Game.ScenarioFilename);
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;
 	// start with this set!
-	C4Startup::Get()->Start();
+	Application.OpenGame(pStartScen->GetEntryFilename().getData());
 	return true;
 }
 

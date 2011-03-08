@@ -22,6 +22,7 @@
 #include <C4Include.h>
 #include <C4FindObject.h>
 
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4Random.h>

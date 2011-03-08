@@ -28,9 +28,9 @@
 
 #include "C4Facet.h"
 #include "C4Id.h"
+#include "C4Def.h"
 #include "C4Sector.h"
 #include "C4Value.h"
-#include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"
 #include "C4ObjectPtr.h"
@@ -199,10 +199,13 @@ public:
 protected:
 	bool OnFire;
 	int32_t Con;
+	int32_t Plane;
 	bool Alive;
 	C4SolidMask *pSolidMaskData; // NoSave //
 public:
 	void Resort();
+	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
+	int32_t GetPlane() { return Plane; }
 	int32_t GetAudible();
 	void DigOutMaterialCast(bool fRequest);
 	void AddMaterialContents(int32_t iMaterial, int32_t iAmount);
@@ -259,7 +262,6 @@ public:
 	void ExecAction();
 	bool ExecLife();
 	bool ExecuteCommand();
-	void ExecBase();
 	void AssignDeath(bool fForced); // assigns death - if forced, it's killed even if an effect stopped this
 	void ContactAction();
 	void NoAttachAction();
@@ -282,12 +284,11 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf);
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
-	void AutoContextMenu(int32_t iMenuSelect);
 	int32_t ContactCheck(int32_t atx, int32_t aty);
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
-	C4PropList* GetAction();
+	C4PropList* GetAction() const;
 	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
@@ -307,13 +308,11 @@ public:
 	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
-	void DoCon(int32_t iChange, bool fInitial=false, bool fNoComponentChange=false);
+	void DoCon(int32_t iChange);
 	int32_t GetCon() { return Con; }
 	void DoExperience(int32_t change);
 	bool Promote(int32_t torank, bool exception, bool fForceRankName);
 	void Blast(int32_t iLevel, int32_t iCausedBy);
-	bool Build(int32_t iLevel, C4Object *pBuilder);
-	bool Chop(C4Object *pByObject);
 	bool Push(C4Real txdir, C4Real dforce, bool fStraighten);
 	bool Lift(C4Real tydir, C4Real dforce);
 	void Fling(C4Real txdir, C4Real tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
@@ -332,6 +331,7 @@ public:
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();
+	StdStrBuf GetDataString();
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
@@ -367,7 +367,6 @@ public:
 	void BoundsCheck(C4Real &ctcox, C4Real &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
 	{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
-public:
 	bool DoSelect(); // cursor callback if not disabled
 	void UnSelect(); // unselect callback
 	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)       // get position this object is seen at (for given scroll)
@@ -397,13 +396,13 @@ public:
 
 	int32_t GetFireCausePlr();
 
-	bool IsMoveableBySolidMask()
+	bool IsMoveableBySolidMask(int ComparisonPlane)
 	{
 		C4PropList* pActionDef = GetAction();
 		return (Status == C4OS_NORMAL)
-		       && !(Category & (C4D_StaticBack | C4D_Structure))
+		       && !(Category & C4D_StaticBack)
+		       && (ComparisonPlane < GetPlane())
 		       && !Contained
-		       && ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
 		       && (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_FLOAT)
 		       ;
 	}
@@ -421,6 +420,9 @@ public:
 
 	// overloaded from C4PropList
 	virtual C4Object * GetObject() { return this; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 };
 
 #endif

@@ -21,27 +21,16 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// C4Aul script engine CP conversion
-// (cut C4Aul of classes/structs and put everything in namespace C4Aul instead?)
-// drop uncompiled scripts when not in developer mode
-// -> build string table
-// -> clear the string table in UnLink? ReLink won't happen to be called in player mode anyway
 
 #ifndef INC_C4Aul
 #define INC_C4Aul
 
-#include <C4AList.h>
 #include <C4ValueMap.h>
 #include <C4Id.h>
 #include <C4Script.h>
 #include <C4StringTable.h>
 #include <string>
 #include <vector>
-
-// debug mode?
-#ifdef _DEBUG
-#define C4AUL_DEBUG
-#endif
 
 class C4Def;
 class C4DefList;
@@ -64,11 +53,6 @@ struct C4AulBCC;
 #define C4AUL_MAX_Par         10  // max number of parameters
 #define C4AUL_MAX_Var         10  // max number of func local vars
 
-#define C4AUL_ControlMethod_None 0
-#define C4AUL_ControlMethod_Classic 1
-#define C4AUL_ControlMethod_JumpAndRun 2
-#define C4AUL_ControlMethod_All 3
-
 // generic C4Aul error class
 class C4AulError
 {
@@ -79,7 +63,7 @@ public:
 	bool shown;
 	C4AulError();
 	virtual ~C4AulError() { } // destructor
-	virtual void show(); // present error message
+	void show(); // present error message
 };
 
 // parse error
@@ -96,7 +80,6 @@ class C4AulExecError : public C4AulError
 	C4Object *cObj;
 public:
 	C4AulExecError(C4Object *pObj, const char *szError); // constructor
-	virtual void show(); // present error message
 };
 
 // function access
@@ -323,7 +306,6 @@ public:
 	C4ID idImage; // associated image
 	int32_t iImagePhase; // Image phase
 	C4AulFunc *Condition; // func condition
-	int32_t ControlMethod; // 0 = all, 1 = Classic, 2 = Jump+Run
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
@@ -331,7 +313,7 @@ public:
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All),
+			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL),
 			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
@@ -444,7 +426,6 @@ class C4AulScript
 public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
-	void Default(); // init
 	void Clear(); // remove script, byte code and children
 	void Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner); // reg to linked list
 	void Unreg(); // remove from list
@@ -500,8 +481,8 @@ protected:
 	bool Preparsing; // set while preparse
 	bool Resolving; // set while include-resolving, to catch circular includes
 
-	C4AListEntry *Includes; // include list
-	C4AListEntry *Appends; // append list
+	std::list<C4ID> Includes; // include list
+	std::list<C4ID> Appends; // append list
 
 	// internal function used to find overloaded functions
 	C4AulFunc *GetOverloadedFunc(C4AulFunc *ByFunc);
@@ -522,7 +503,7 @@ protected:
 	void AppendTo(C4AulScript &Scr, bool bHighPrio); // append to given script
 	void UnLink(); // reset to unlinked state
 	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
-	virtual bool ReloadScript(const char *szPath); // reload given script
+	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 
 	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
 
@@ -533,14 +514,8 @@ protected:
 // holds all C4AulScripts
 class C4AulScriptEngine : public C4AulScript
 {
-
 protected:
-	C4AList itbl; // include table
-	C4AList atbl; // append table
 	C4AulFuncMap FuncLookUp;
-#ifndef NOAULDEBUG
-	C4AulDebug *pDebug;
-#endif
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
@@ -563,7 +538,7 @@ public:
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
 	using C4AulScript::ReloadScript;
-	bool ReloadScript(const char *szScript, C4DefList *pDefs); // search script and reload + relink, if found
+	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
@@ -572,20 +547,13 @@ public:
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	C4AulFunc * GetFirstFunc() { return Func0; }
-	C4AulFunc * GetNextFunc(C4AulFunc * pFunc) { return pFunc->Next; }
-
+	std::list<char*> GetFunctionNames(C4AulScript *);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
 
 	bool DenumerateVariablePointers();
 	void UnLink(); // called when a script is being reloaded (clears string table)
-
-	bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
-#ifndef NOAULDEBUG
-	inline C4AulDebug *GetDebugger() const { return pDebug; }
-#endif
 
 	// Compile scenario script data (without strings and constants)
 	void CompileFunc(StdCompiler *pComp);

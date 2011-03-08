@@ -124,13 +124,15 @@
 	// don't draw if tab-switched away from fullscreen
 	if ([self.controller isFullscreen] && ![NSApp isActive]) // ugh - no way to find out if window is hidden due hidesondeactivate?
 		return;
-	[self.context update];
+	if ([self.window isMiniaturized] || ![self.window isVisible])
+		return;
+	//[self.context update];
 	CStdWindow* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
-	{
 		stdWindow->PerformUpdate();
-	}
+	else
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 - (ClonkWindowController*) controller {return (ClonkWindowController*)[self.window delegate];}
@@ -138,6 +140,11 @@
 int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 {
 	modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
+	if ([event modifierFlags] & NSCommandKeyMask)
+	{
+		// treat cmd and ctrl the same
+		modifierFlags |= NSControlKeyMask;
+	}
 	switch (event.type)
 	{
 		case NSLeftMouseDown:
@@ -231,16 +238,19 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 
 - (void) magnifyWithEvent:(NSEvent *)event
 {
-//	NSLog(@"%f",  [event magnification]);
-	C4Viewport* viewport = self.controller.viewport;
-	if (viewport)
+	if (Game.IsRunning)
 	{
-//		float x = viewport->ViewX+ ::pGUI->Mouse.x/viewport->GetZoom();
-//		float y = viewport->ViewY+ ::pGUI->Mouse.y/viewport->GetZoom();
-		viewport->SetZoom(viewport->GetZoom()+[event magnification], true);
-//		viewport->ViewX = x - ::pGUI->Mouse.x/viewport->GetZoom();
-//		viewport->ViewY = y - ::pGUI->Mouse.y/viewport->GetZoom();
+		C4Viewport* viewport = self.controller.viewport;
+		if (viewport)
+		{
+			viewport->SetZoom(viewport->GetZoom()+[event magnification], true);
+		}
 	}
+	else
+	{
+		[self.controller setFullscreen:[event magnification] > 0];
+	}
+
 }
 
 - (void) swipeWithEvent:(NSEvent*)event
@@ -257,11 +267,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 	if (::pGUI)
 	{
 		NSString* str = [insertString isKindOfClass:[NSAttributedString class]] ? [(NSAttributedString*)insertString string] : (NSString*)insertString;
-		for (unsigned int i = 0; i < [str length]; i++)
-		{
-			unichar c = [str characterAtIndex:i];
-			::pGUI->CharIn((const char*)&c);
-		}
+		const char* cstr = [str cStringUsingEncoding:NSUTF8StringEncoding];
+		::pGUI->CharIn(cstr);
 	}
 }
 
@@ -276,7 +283,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 		[event keyCode]+CocoaKeycodeOffset, // offset keycode by some value to distinguish between those special key defines
 		type,
 		[event modifierFlags] & NSAlternateKeyMask,
-		[event modifierFlags] & NSControlKeyMask,
+		([event modifierFlags] & NSControlKeyMask) || ([event modifierFlags] & NSCommandKeyMask),
 		[event modifierFlags] & NSShiftKeyMask,
 		false, NULL
 	);
@@ -342,7 +349,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 		if (viewport)
 		{
 			NSScrollView* scrollView = self.controller.scrollView;
-			NSPoint p = NSMakePoint(2*-[event deltaX]/(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/(GBackHgt-viewport->ViewHgt));
+			NSPoint p = NSMakePoint(2*-[event deltaX]/abs(GBackWdt-viewport->ViewWdt), 2*-[event deltaY]/abs(GBackHgt-viewport->ViewHgt));
 			[scrollView.horizontalScroller setDoubleValue:scrollView.horizontalScroller.doubleValue+p.x];
 			[scrollView.verticalScroller setDoubleValue:scrollView.verticalScroller.doubleValue+p.y];
 			viewport->ViewPositionByScrollBars();
@@ -367,16 +374,134 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 	[context update];
 }
 
++ (CGDirectDisplayID) displayID
+{
+	return (CGDirectDisplayID)[[[[[NSApp keyWindow] screen] deviceDescription] valueForKey:@"NSScreenNumber"] intValue];
+}
+
++ (void) enumerateMultiSamples:(std::vector<int>&)samples
+{
+	CGDirectDisplayID displayID = self.displayID;
+	CGOpenGLDisplayMask displayMask = CGDisplayIDToOpenGLDisplayMask(displayID);
+	int numRenderers = 0;
+	CGLRendererInfoObj obj = NULL;
+	GLint sampleModes;
+	
+	CGLQueryRendererInfo(displayMask, &obj, &numRenderers);
+	CGLDescribeRenderer(obj, 0, kCGLRPSampleModes, &sampleModes);
+	CGLDestroyRendererInfo(obj);
+	
+	if (sampleModes & kCGLMultisampleBit)
+	{
+		samples.push_back(1);
+		samples.push_back(2);
+		samples.push_back(4);
+	}
+}
+
++ (void) setSurfaceBackingSizeOf:(NSOpenGLContext*) context width:(int)wdt height:(int)hgt
+{
+	if (context && !Application.isEditor)
+	{
+		// Make back buffer size fixed ( http://developer.apple.com/library/mac/#documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_contexts/opengl_contexts.html )
+		GLint dim[2] = {wdt, hgt};
+		CGLContextObj ctx = (CGLContextObj)context.CGLContextObj;
+		CGLSetParameter(ctx, kCGLCPSurfaceBackingSize, dim);
+		CGLEnable (ctx, kCGLCESurfaceBackingSize);	
+	}
+}
+
+- (void) setContextSurfaceBackingSizeToOwnDimensions
+{
+	[ClonkOpenGLView setSurfaceBackingSizeOf:self.context width:self.frame.size.width height:self.frame.size.height];
+}
+
+static NSOpenGLContext* MainContext;
+
++ (NSOpenGLContext*) mainContext
+{
+	return MainContext;
+}
+
++ (NSOpenGLContext*) createContext:(CStdGLCtx*) pMainCtx
+{
+	std::vector<NSOpenGLPixelFormatAttribute> attribs;
+	attribs.push_back(NSOpenGLPFADepthSize);
+	attribs.push_back(16);
+	if (!Application.isEditor && Config.Graphics.MultiSampling > 0)
+	{
+		std::vector<int> samples;
+		[self enumerateMultiSamples:samples];
+		if (!samples.empty())
+		{
+			attribs.push_back(NSOpenGLPFAMultisample);
+			attribs.push_back(NSOpenGLPFASampleBuffers);
+			attribs.push_back(1);
+			attribs.push_back(NSOpenGLPFASamples);
+			attribs.push_back(Config.Graphics.MultiSampling);
+		}
+	}
+	attribs.push_back(NSOpenGLPFANoRecovery);
+	//attribs.push_back(NSOpenGLPFADoubleBuffer);
+	attribs.push_back(NSOpenGLPFAWindow);
+	attribs.push_back(0);
+	NSOpenGLPixelFormat* format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:&attribs[0]] autorelease];
+
+	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? (NSOpenGLContext*)pMainCtx->GetNativeCtx() : nil];
+	[self setSurfaceBackingSizeOf:result width:Config.Graphics.ResX height:Config.Graphics.ResY];
+	if (!MainContext)
+	{
+		MainContext = result;
+	}
+	return result;
+}
+
 @end
 
-// Implementation of some CStdGLCtx methods - fits here, more or less
+@implementation ClonkEditorOpenGLView
+
+- (void) copy:(id) sender
+{
+	Console.EditCursor.Duplicate();
+}
+
+- (void) delete:(id) sender
+{
+	Console.EditCursor.Delete();
+}
+
+- (IBAction) grabContents:(id) sender
+{
+	Console.EditCursor.GrabContents();
+}
+
+- (IBAction) resetZoom:(id) sender
+{
+	self.controller.viewport->SetZoom(1, true);
+}
+
+- (IBAction) increaseZoom:(id)sender
+{
+	C4Viewport* v = self.controller.viewport;
+	v->SetZoom(v->GetZoom()*2, false);
+}
+
+- (IBAction) decreaseZoom:(id)sender
+{
+	C4Viewport* v = self.controller.viewport;
+	v->SetZoom(v->GetZoom()/2, false);
+}
+
+@end
+
+#pragma mark CStdGLCtx: Initialization
 
 void* CStdGLCtx::GetNativeCtx()
 {
 	return ctx;
 }
 
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(nil), cx(0), cy(0) {}
+CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(nil) {}
 
 void CStdGLCtx::Clear()
 {
@@ -387,29 +512,26 @@ void CStdGLCtx::Clear()
 		ctx = nil;
 	}
 	pWindow = 0;
-	cx = cy = 0;
 }
 
-NSOpenGLContext* CreateCocoaContext(CStdGLCtx* pMainCtx, NSOpenGLPixelFormat* format)
+void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-	if (!format)
-	{
-		NSOpenGLPixelFormatAttribute attrs[] = {
-			NSOpenGLPFADepthSize, 16,
-			0
-		};
-		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attrs] autorelease];
-	}
-	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? (NSOpenGLContext*)pMainCtx->GetNativeCtx() : nil];
-	if (!Application.isEditor)
-	{
-		// Make back buffer size fixed ( http://developer.apple.com/library/mac/#documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_contexts/opengl_contexts.html )
-		GLint dim[2] = {Config.Graphics.ResX, Config.Graphics.ResY};
-		CGLContextObj ctx = (CGLContextObj)result.CGLContextObj;
-		CGLSetParameter(ctx, kCGLCPSurfaceBackingSize, dim);
-		CGLEnable (ctx, kCGLCESurfaceBackingSize);
-	}
-	return result;
+	[ClonkOpenGLView enumerateMultiSamples:samples];
+}
+
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+{
+	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
+	NSWindow* window = controller.window;
+
+	pWindow->SetSize(iXRes, iYRes);
+	[controller setFullscreen:fFullScreen];
+	[window setAspectRatio:[[window contentView] frame].size];
+	[window center];
+	if (!fFullScreen)
+		[window makeKeyAndOrderFront:nil];
+	OnResolutionChanged(iXRes, iYRes);
+	return true;
 }
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
@@ -420,7 +542,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	this->pWindow = pWindow;
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
-	NSOpenGLContext* ctx = CreateCocoaContext(pGL->pMainCtx, nil);//[NSOpenGLView defaultPixelFormat]);
+	NSOpenGLContext* ctx = [ClonkOpenGLView createContext:pGL->pMainCtx];
 	this->ctx = (void*)ctx;
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -439,6 +561,8 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	}
 	return true;
 }
+
+#pragma mark CStdGLCtx: Select/Deselect
 
 bool CStdGLCtx::Select(bool verbose)
 {
@@ -464,26 +588,6 @@ void CStdGLCtx::Deselect()
     }
 }
 
-/*
-bool CStdGLCtx::UpdateSize()
-{
-	// safety
-	if (!pWindow) return false;
-	// get size
-    RECT rc;
-    pWindow->GetSize(&rc);
-    int width = rc.right - rc.left, height = rc.bottom - rc.top;
-	// assign if different
-	if (cx!=width || cy!=height)
-    {
-		cx=width; cy=height;
-		if (pGL) pGL->UpdateClipper();
-    }
-	// success
-	return true;
-}
-*/
-
 bool CStdGLCtx::PageFlip()
 {
 	// flush GL buffer
@@ -492,6 +596,8 @@ bool CStdGLCtx::PageFlip()
 	//SDL_GL_SwapBuffers();
 	return true;
 }
+
+#pragma mark CStdGLCtx: Gamma
 
 namespace
 {
@@ -527,7 +633,7 @@ bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 		g[i] = GammaRampConversionTable::singleton.green[ramp.green[i]];
 		b[i] = GammaRampConversionTable::singleton.blue[ramp.blue[i]];
 	}
-	CGSetDisplayTransferByTable((CGDirectDisplayID)[[[[[NSApp keyWindow] screen] deviceDescription] valueForKey:@"NSScreenNumber"] intValue], 256, r, g, b);
+	CGSetDisplayTransferByTable(ClonkOpenGLView.displayID, 256, r, g, b);
 	return true;
 }
 

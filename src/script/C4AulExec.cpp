@@ -43,20 +43,6 @@ C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	sMessage.Format("ERROR: %s.", szError ? szError : "(no error message)");
 }
 
-void C4AulExecError::show()
-{
-	// log
-	C4AulError::show();
-	// debug mode object message
-	if (Game.DebugMode)
-	{
-		if (cObj)
-			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
-		else
-			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
-	}
-}
-
 StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 {
 	if (!Func)
@@ -112,6 +98,12 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 	DebugLog(ReturnDump(Dump).getData());
 }
 
+void C4AulExec::LogCallStack()
+{
+	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
+		pCtx->dump(StdStrBuf(" by: "));
+}
+
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 {
 
@@ -155,7 +147,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 #ifndef NOAULDEBUG
 	// Debugger pointer
-	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
+	C4AulDebug * const pDebug = C4AulDebug::GetDebugger();
 	if (pDebug)
 		pDebug->DebugStepIn(pCPos);
 #endif
@@ -825,8 +817,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 		if (fPassErrors)
 			throw;
 		// Trace
-		for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
-			pCtx->dump(StdStrBuf(" by: "));
+		LogCallStack();
 		delete e;
 	}
 
@@ -881,7 +872,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 			pDebug->DebugStepIn(pSFunc->GetCode());
 #endif
 
@@ -944,7 +935,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		{
 			// Make dummy context
 			C4AulScriptContext ctx;

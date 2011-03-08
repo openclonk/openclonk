@@ -51,8 +51,6 @@
 #include <locale.h>
 #endif
 
-C4Config *pConfig;
-
 void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 {
 	// For those without the ability to intuitively guess what the falses and trues mean:
@@ -62,7 +60,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(s(Name),             "Name",               ""             ));
 	pComp->Value(mkNamingAdapt(s(Language),         "Language",           "", false, true));
 	pComp->Value(mkNamingAdapt(s(LanguageEx),       "LanguageEx",         "", false, true));
-	pComp->Value(mkNamingAdapt(s(Definitions),      "Definitions",        ""             ));
 	pComp->Value(mkNamingAdapt(s(Participants),     "Participants",       ""             ));
 
 	// deliberately not grandfathering UserPath setting, since it was written to config by default
@@ -74,7 +71,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SaveDemoFolder,      "SaveDemoFolder",     "Records.c4f",   false, true  ));
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
-	pComp->Value(mkNamingAdapt(Record,              "Record",             0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
 	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
 	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
@@ -92,17 +88,15 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 {
-#ifdef _WIN32
-	pComp->Value(mkNamingAdapt(AutoEditScan,        "AutoEditScan",       1              ));
-#endif
-	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1              ));
-	pComp->Value(mkNamingAdapt(AllErrorsFatal,      "AllErrorsFatal",     0              ));
+	pComp->Value(mkNamingAdapt(AutoFileReload,      "AutoFileReload",     1              ,false, true));
+	pComp->Value(mkNamingAdapt(ExtraWarnings,      "ExtraWarnings",     0              ,false, true));
 }
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",          800           ,false, true));
 	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",          600           ,false, true));
+	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
 	pComp->Value(mkNamingAdapt(GuiResX,                 "GuiResolutionX",       800           ,false, true));
 	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
@@ -264,25 +258,14 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
 #endif
 }
 
-const char *CfgAtTempPath(const char *szFilename)
-{
-	// safety
-	if (!pConfig) return NULL;
-	// get at temp path
-	return pConfig->AtTempPath(szFilename);
-}
-
-
 C4Config::C4Config()
 {
-	pConfig=this;
 	Default();
 }
 
 C4Config::~C4Config()
 {
 	fConfigLoaded = false;
-	pConfig=NULL;
 }
 
 void C4Config::Default()
@@ -389,6 +372,11 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
 		Graphics.Engine = GFXENGN_OPENGL;
 #endif
+	// bit depth sanity check (might be corrupted by resolution check bug in old version)
+	if (Graphics.BitDepth < 16)
+	{
+		Graphics.BitDepth = 32;
+	}
 	// Warning against invalid ports
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 	{
@@ -480,8 +468,14 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	SCopy(GetWorkingDirectory(),SystemDataPath);
 	AppendBackslash(SystemDataPath);
 #elif defined(__linux__)
-	// FIXME: Where to put this?
-	SCopy(ExePath,SystemDataPath);
+
+#ifdef OC_SYSTEM_DATA_DIR
+	SCopy(OC_SYSTEM_DATA_DIR, SystemDataPath);
+	AppendBackslash(SystemDataPath);
+#else
+#error Please define OC_SYSTEM_DATA_DIR!
+	//SCopy(ExePath,SystemDataPath);
+#endif
 #endif
 
 	// Find user-specific data path
@@ -541,21 +535,7 @@ void C4ConfigGeneral::AdoptOldSettings()
 	}
 }
 
-void C4ConfigGeneral::ClearAdditionalDataPaths()
-{
-	for (PathList::iterator it = AdditionalDataPaths.begin(); it != AdditionalDataPaths.end(); ++it)
-		delete[] *it;
-	AdditionalDataPaths.clear();
-}
-
-void C4ConfigGeneral::AddAdditionalDataPath(const char *szPath)
-{
-	char *clone = new char[SLen(szPath)+1];
-	SCopy(szPath,clone);
-	AdditionalDataPaths.push_back(clone);
-}
-
-char AtPathFilename[_MAX_PATH+1];
+static char AtPathFilename[_MAX_PATH+1];
 
 const char* C4Config::AtExePath(const char *szFilename)
 {
@@ -659,54 +639,6 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 void C4ConfigControls::ResetKeys()
 {
 	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, true));
-}
-
-const char* C4Config::AtDataReadPath(const char *szFilename, bool fPreferWorkdir)
-{
-	if (IsGlobalPath(szFilename)) return szFilename;
-	StdCopyStrBuf sfn(szFilename);
-	do
-	{
-		const char *path = AtDataReadPathCore(sfn.getData(), fPreferWorkdir);
-		if (path)
-		{
-			if (path != AtPathFilename) SCopy(path,AtPathFilename);
-			AtPathFilename[_MAX_PATH] = '\0';
-			AppendBackslash(AtPathFilename);
-			SAppend(szFilename,AtPathFilename,_MAX_PATH);
-			return AtPathFilename;
-		}
-	}
-	while (TruncatePath(sfn.getMData()));
-	return szFilename;
-}
-
-const char* C4Config::AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir)
-{
-	if (fPreferWorkdir && FileExists(szFilename))
-	{
-		SCopy(GetWorkingDirectory(),AtPathFilename,_MAX_PATH-1);
-		return AtPathFilename;
-	}
-	// Check extra data paths
-	for (C4ConfigGeneral::PathList::iterator it = General.AdditionalDataPaths.begin();
-	     it != General.AdditionalDataPaths.end();
-	     ++it)
-	{
-		SCopy(*it, AtPathFilename, _MAX_PATH-1);
-		AppendBackslash(AtPathFilename);
-		SAppend(szFilename,AtPathFilename,_MAX_PATH);
-		if (FileExists(AtPathFilename))
-			return *it;
-	}
-	if (FileExists(AtUserDataPath(szFilename))) return General.UserDataPath;
-	if (FileExists(AtSystemDataPath(szFilename))) return General.SystemDataPath;
-	if (!fPreferWorkdir && FileExists(szFilename))
-	{
-		SCopy(GetWorkingDirectory(),AtPathFilename,_MAX_PATH-1);
-		return AtPathFilename;
-	}
-	return NULL;
 }
 
 const char* C4Config::AtUserDataRelativePath(const char *szFilename)

@@ -107,14 +107,6 @@
           <col>Attack the target object.</col>
         </row>
         <row>
-          <literal_col>Build</literal_col>
-          <col>Target object</col>
-          <col></col>
-          <col></col>
-          <col></col>
-          <col>Build the target object.</col>
-        </row>
-        <row>
           <literal_col>Buy</literal_col>
           <col>Null</col>
           <col>0,0</col>
@@ -153,38 +145,6 @@
           <col></col>
           <col></col>
           <col>Fell the target object object (tree).</col>
-        </row>
-        <row>
-          <literal_col>Construct</literal_col>
-          <col></col>
-          <col></col>
-          <col></col>
-          <col></col>
-          <col>Open the Construction menu.</col>
-        </row>
-        <row>
-          <literal_col>Construct</literal_col>
-          <col>Null</col>
-          <col>0,0</col>
-          <col>Null</col>
-          <col>Object type (id)</col>
-          <col>Create a construction site at the closest possible position.</col>
-        </row>
-        <row>
-          <literal_col>Construct</literal_col>
-          <col>Null</col>
-          <col>Target position</col>
-          <col>Null</col>
-          <col>Object type (id)</col>
-          <col>Create a construction site at the target position and start building.</col>
-        </row>
-        <row>
-          <literal_col>Construct</literal_col>
-          <col>Target object</col>
-          <col>Target position [opt]</col>
-          <col>Null</col>
-          <col>Object type (id)</col>
-          <col>Help the target object with the construction (help building as soon as the site is created).</col>
         </row>
         <row>
           <literal_col>Dig</literal_col>

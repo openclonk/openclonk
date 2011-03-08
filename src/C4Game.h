@@ -24,20 +24,15 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#include <StdMeshMaterial.h>
 #include <C4GameParameters.h>
-#include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
 #include <C4Scenario.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
 #include <C4Extra.h>
-#include <C4Effects.h>
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
-#include <C4ScriptHost.h>
 #include <C4PlayerControl.h>
-class C4ObjectInfo;
 
 class C4Game
 {
@@ -64,7 +59,7 @@ private:
 public:
 	C4Game();
 	~C4Game();
-public:
+
 	C4ClientList       &Clients; // Shortcut
 	C4GameParameters    Parameters;
 	C4TeamList         &Teams; // Shortcut
@@ -76,8 +71,7 @@ public:
 	C4ComponentHost     Title;
 	C4ComponentHost     Names;
 	C4ComponentHost     GameText;
-	C4GameScriptHost    Script;
-	C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
+	C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable;
 	StdStrBuf           PlayerNames;
 	C4Control          &Input; // shortcut
 
@@ -93,7 +87,6 @@ public:
 	C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
 	C4Scoreboard        Scoreboard;
 	C4VideoPlayer       VideoPlayer;
-	StdMeshMatManager   MaterialManager;
 	class C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
 	class C4KeyboardInput &KeyboardInput;
 	class C4FileMonitor *pFileMonitor;
@@ -130,7 +123,6 @@ public:
 	int32_t StartTime;
 	int32_t InitProgress; int32_t LastInitProgress; int32_t LastInitProgressShowTime;
 	int32_t RandomSeed;
-	int32_t ObjectEnumerationIndex;
 	int32_t Rules;
 	bool GameGo;
 	bool FullSpeed;
@@ -151,7 +143,6 @@ public:
 	uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; int DebugWait;
 
 	// Init and execution
-	void Default();
 	void Clear();
 	void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
 	void Evaluate();
@@ -203,10 +194,7 @@ public:
 	                                   int32_t con=1, bool terrain=false);
 	C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 	                           int32_t tx=50, int32_t ty=50);
-	void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
-	void ShakeObjects(int32_t tx, int32_t ry, int32_t range);
-	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt,
-	                        int32_t category);
+	C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t Plane);
 	C4Object *FindObject(C4ID id,
 	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
 	                     DWORD ocf=OCF_All,
@@ -228,7 +216,6 @@ public:
 	     C4Object *pContainer=NULL,
 	                 int32_t iOwner=ANY_OWNER);*/
 	int32_t ObjectCount(C4ID id);
-	C4Object *FindObjectByCommand(int32_t iCommand, C4Object *pTarget=NULL, C4Value iTx=C4VNull, int32_t iTy=0, C4Object *pTarget2=NULL, C4Object *pFindNext=NULL);
 	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
 	void BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController=NO_OWNER);
 	C4Object *PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);
@@ -245,6 +232,7 @@ public:
 	bool InitPlayerControlSettings();
 
 protected:
+	void Default();
 	void InitInEarth();
 	void InitVegetation();
 	void InitAnimals();
@@ -259,11 +247,11 @@ protected:
 	void Ticks();
 	const char *FoldersWithLocalsDefs(const char *szPath);
 	bool CheckObjectEnumeration();
-	bool LocalFileMatch(const char *szFilename, int32_t iCreation);
 	bool DefinitionFilenamesFromSaveGame();
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();
 public:
+	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);
 protected:
 	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky);
@@ -312,9 +300,7 @@ public:
 
 
 const int32_t
-	C4RULE_ConstructionNeedsMaterial = 1,
-	C4RULE_FlagRemoveable            = 2,
-	C4RULE_StructuresSnowIn          = 4;
+	C4RULE_ConstructionNeedsMaterial = 1;
 
 extern C4Game         Game;
 

@@ -239,7 +239,7 @@ void C4ControlScript::Execute() const
 	C4Object *pObj = NULL;
 	C4AulScript *pScript;
 	if (iTargetObj == SCOPE_Console)
-		pScript = &Game.Script;
+		pScript = &::GameScript;
 	else if (iTargetObj == SCOPE_Global)
 		pScript = &::ScriptEngine;
 	else if ((pObj = ::Objects.SafeObjectPointer(iTargetObj)))
@@ -250,7 +250,7 @@ void C4ControlScript::Execute() const
 	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, C4AulScript::MAXSTRICT, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
-	if ( (pDebug = ::ScriptEngine.GetDebugger()) )
+	if ( (pDebug = C4AulDebug::GetDebugger()) )
 	{
 		pDebug->ControlScriptEvaluated(szScript, rVal.GetDataString().getData());
 	}
@@ -383,7 +383,7 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
     C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
 		: iPlr(iPlr), iCmd(iCmd), iX(iX), iY(iY),
-		iTarget(::Objects.ObjectNumber(pTarget)), iTarget2(::Objects.ObjectNumber(pTarget2)),
+		iTarget(pTarget ? pTarget->Number : 0), iTarget2(pTarget2 ? pTarget2->Number : 0),
 		iData(iData), iAddMode(iAddMode)
 {
 
@@ -432,7 +432,7 @@ void C4ControlSyncCheck::Set()
 	PXSCount = ::PXS.Count;
 	MassMoverIndex = ::MassMover.CreatePtr;
 	ObjectCount = ::Objects.ObjectCount();
-	ObjectEnumerationIndex = Game.ObjectEnumerationIndex;
+	ObjectEnumerationIndex = C4PropListNumbered::GetEnumerationIndex();
 	SectShapeSum = ::Objects.Sectors.getShapeSum();
 }
 
@@ -667,35 +667,40 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 		idInfo(iIDInfo), fByRes(false)
 {
 	// load from file if filename is given - which may not be the case for script players
-	if (szFilename)
+	StdStrBuf filename;
+	if (szFilename && Reloc.LocateItem(szFilename, filename))
 	{
-		StdStrBuf filename_buf;
-		const char *filename = Config.AtDataReadPath(szFilename);
 		bool file_is_temp = false;
-		if (DirectoryExists(filename))
+		if (DirectoryExists(filename.getData()))
 		{
 			// the player file is unpacked - temp pack and read
-			filename_buf.Copy(Config.AtTempPath(GetFilenameOnly(filename)));
+			StdStrBuf filename_buf;
+			filename_buf.Copy(Config.AtTempPath(GetFilenameOnly(filename.getData())));
 			MakeTempFilename(&filename_buf);
-			if (C4Group_PackDirectoryTo(filename, filename_buf.getData()))
+			if (C4Group_PackDirectoryTo(filename.getData(), filename_buf.getData()))
 			{
-				filename = filename_buf.getData();
+				filename = filename_buf;
 				file_is_temp = true;
 			}
 			else
 			{
 				// pack failed
-				LogF("[!]Error packing player file %s to %s for join: Pack failed.", filename, filename_buf.getData());
+				LogF("[!]Error packing player file %s to %s for join: Pack failed.", filename.getData(), filename_buf.getData());
 				assert(false);
 			}
 		}
-		bool fSuccess = PlrData.LoadFromFile(filename);
+		bool fSuccess = PlrData.LoadFromFile(filename.getData());
 		if (!fSuccess)
 		{
+			LogF("[!]Error loading player file from %s.", filename.getData());
 			assert(false);
-			LogF("[!]Error loading player file from %s.", filename);
 		}
-		if (file_is_temp) EraseFile(filename);
+		if (file_is_temp) EraseFile(filename.getData());
+	}
+	else if(szFilename)
+	{
+		LogF("[!]Error loading player file from %s.", szFilename);
+		assert(false);
 	}
 }
 
@@ -856,7 +861,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
-		: eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
+		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
 {
 
@@ -914,7 +919,7 @@ void C4ControlEMMoveObject::Execute() const
 		if (fLocalCall)
 		{
 			Console.EditCursor.SetHold(true);
-			Console.PropertyDlg.Update(Console.EditCursor.GetSelection());
+			Console.EditCursor.OnSelectionChanged();
 		}
 	}
 	break;

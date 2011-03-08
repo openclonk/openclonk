@@ -36,8 +36,6 @@
 #include <time.h>
 #include <errno.h>
 
-#include "MacUtility.h"
-
 /* CStdApp */
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
@@ -57,23 +55,18 @@ bool CStdApp::Init(int argc, char * argv[])
 	// SDLmain.m copied the executable path into argv[0];
 	// just copy it (not sure if original buffer is guaranteed
 	// to be permanent).
-	this->argc=argc; this->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	Location = dir;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
 	{
 		Log("Error initializing SDL.");
 		return false;
 	}
 
 	SDL_EnableUNICODE(1);
-#ifdef __APPLE__
-	SDL_EnableKeyRepeat(MacUtility::keyRepeatDelay(SDL_DEFAULT_REPEAT_DELAY), MacUtility::keyRepeatInterval(SDL_DEFAULT_REPEAT_INTERVAL));
-#else
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-#endif
 
 	// Custom initialization
 	return DoInit (argc, argv);
@@ -124,7 +117,7 @@ void CStdApp::HandleSDLEvent(SDL_Event& event)
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	if (iMonitor != 0)
@@ -156,8 +149,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
 {
+	//RECT r;
+	//pWindow->GetSize(&r);
+	// FIXME: optimize redundant calls away. maybe make all platforms implicitely call SetVideoMode in CStdWindow::Init?
 	// SDL doesn't support multiple monitors.
 	if (!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
 	{
@@ -201,22 +197,3 @@ void CStdApp::MessageDialog(const char * message)
 }
 
 #endif
-
-// Event-pipe-whatever stuff I do not understand.
-
-bool CStdApp::ReadStdInCommand()
-{
-	char c;
-	if (read(0, &c, 1) != 1)
-		return false;
-	if (c == '\n')
-	{
-		if (!CmdBuf.isNull())
-		{
-			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
-		}
-	}
-	else if (isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-}

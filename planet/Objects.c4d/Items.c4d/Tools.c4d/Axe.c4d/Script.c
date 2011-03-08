@@ -12,7 +12,7 @@ public func ControlUse(object pByClonk, int iX, int iY)
 	           Find_Layer(GetObjectLayer()), Find_NoContainer());
 	if( tree )
 	{
-		pByClonk->SetCommand("Chop", tree);
+		pByClonk->SetAction("Chop"); //FIXME: actually implement this
 		Sound("KnightConfirm*");
 	} else {
 		if(pByClonk->GetAction() == "Chop")
@@ -28,3 +28,4 @@ public func IsToolProduct() { return 1; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Rebuy = true;

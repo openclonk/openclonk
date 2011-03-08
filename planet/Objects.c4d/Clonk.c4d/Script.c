@@ -843,7 +843,7 @@ func FxIntWalkStart(pTarget, effect, fTmp)
 	if(fTmp) return;
 	// Always start in Stand for now... should maybe fade properly from previous animation instead
 	var anim = "Stand";  //GetCurrentWalkAnimation();
-	effect.var0 = anim;
+	effect.anim = anim;
 	effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	effect.var2 = 0;
 
@@ -863,18 +863,30 @@ func FxIntWalkTimer(pTarget, effect)
 		if(iNumber.var4 == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}*/
+	// Test Waterlevel
+	if(GBackLiquid(0, -5))
+	{
+		SetAction("Swim");
+		if(GetComDir() == COMD_Left)
+			SetComDir(COMD_UpLeft);
+		else if(GetComDir() == COMD_Right)
+			SetComDir(COMD_UpRight);
+		else if(GetComDir() != COMD_Down && GetComDir() != COMD_DownLeft && GetComDir() != COMD_DownRight)
+			SetComDir(COMD_Up);
+		return;
+	}
 	if(BackwardsSpeed != nil)
 		UpdateBackwardsSpeed();
 	if(effect.var2)
 	{
 		effect.var2--;
 		if(effect.var2 == 0)
-			effect.var0 = 0;
+			effect.anim = 0;
 	}
 	var anim = GetCurrentWalkAnimation();
-	if(anim != effect.var0 && !effect.var4)
+	if(anim != effect.anim && !effect.var4)
 	{
-		effect.var0 = anim;
+		effect.anim = anim;
 		effect.var3 = 0;
 		effect.var1 = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
@@ -899,7 +911,7 @@ func FxIntWalkTimer(pTarget, effect)
 		effect.var3 = 0;
 		if(effect.var2)
 		{
-			effect.var0 = 0;
+			effect.anim = 0;
 			effect.var2 = 0;
 		}
 	}
@@ -930,7 +942,7 @@ func FxIntWalkTimer(pTarget, effect)
 
 func FxIntWalkReset(pTarget, effect)
 {
-	effect.var0 = 0;
+	effect.anim = 0;
 }
 
 func StartStand()
@@ -1423,8 +1435,8 @@ func FxIntSwimStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
 
-	effect.var0 = "SwimStand";
-	effect.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	effect.animation_name = "SwimStand";
+	effect.animation = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 /*
 	for(var i = 0; i < GetLength(Clonk_SwimStates); i++)
 	AnimationPlay(Clonk_SwimStates[i], 0);
@@ -1463,20 +1475,34 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 			SetAction("Walk");
 			return -1;
 		}
-		if(effect.var0 != "SwimStand")
+		if(effect.animation_name != "SwimStand")
 		{
-			effect.var0 = "SwimStand";
-			effect.var1 = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			effect.animation_name = "SwimStand";
+			effect.animation = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
 		SetAnimationWeight(iTurnKnot1, Anim_Const(0));
 	}
 	// Swimming
 	else if(!GBackSemiSolid(0, -5))
 	{
-		// Animation speed by X
-		if(effect.var0 != "Swim")
+		var percent = GetAnimationPosition(GetRootAnimation(5))*200/GetAnimationLength("Swim");
+		percent = (percent%100);
+		if( percent < 40 )
 		{
-			effect.var0 = "Swim";
+			for(var i = 0; i < 2; i++)
+				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
+			if(iTime%5 == 0)
+			{
+				var particle_name = "WaveLeft";
+				if( GetDir() == 1 ) particle_name = "WaveRight";
+				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, RGB(255,255,255), this, 1);
+			}
+			Sound("Splash*");
+		}
+		// Animation speed by X
+		if(effect.animation_name != "Swim")
+		{
+			effect.animation_name = "Swim";
 			// TODO: Determine starting position from previous animation
 			PlayAnimation("Swim", 5, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
@@ -1485,30 +1511,37 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 	// Diving
 	else
 	{
-		if(effect.var0 != "SwimDive")
+		if(effect.animation_name != "SwimDive")
 		{
-			effect.var0 = "SwimDive";
+			effect.animation_name = "SwimDive";
 			// TODO: Determine starting position from previous animation
-			effect.var2 = PlayAnimation("SwimDiveUp", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveUp"), 40, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
-			effect.var3 = PlayAnimation("SwimDiveDown", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveDown"), 40, ANIM_Loop), Anim_Const(500), effect.var2);
-			effect.var1 = effect.var3 + 1;
+			effect.animation2 = PlayAnimation("SwimDiveUp", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveUp"), 40, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			effect.animation3 = PlayAnimation("SwimDiveDown", 5, Anim_Linear(0, 0, GetAnimationLength("SwimDiveDown"), 40, ANIM_Loop), Anim_Const(500), effect.animation2);
+			effect.animation = effect.animation3 + 1;
 
 			// TODO: This should depend on which animation we come from
 			// Guess for SwimStand we should fade from 0, otherwise from 90.
-			effect.var4 = 90;
+			effect.rot = 90;
 		}
 
 		if(iSpeed)
 		{
 			var iRot = Angle(-Abs(GetXDir()), GetYDir());
-			effect.var4 += BoundBy(iRot - effect.var4, -4, 4);
+			effect.rot += BoundBy(iRot - effect.rot, -4, 4);
 		}
 
 		// TODO: Shouldn't weight go by sin^2 or cos^2 instead of linear in angle?
-		var weight = 1000*effect.var4/180;
-		SetAnimationWeight(effect.var1, Anim_Const(1000 - weight));
+		var weight = 1000*effect.rot/180;
+		SetAnimationWeight(effect.animation, Anim_Const(1000 - weight));
 		SetAnimationWeight(iTurnKnot1, Anim_Const(1000 - weight));
 	}
+}
+
+func GetSwimRotation()
+{
+	var effect = GetEffect("IntSwim", this);
+	if(!effect) return 0;
+	return effect.rot*(-1+2*(GetDirection()==COMD_Right));
 }
 
 /*
@@ -1781,7 +1814,7 @@ func OnMaterialChanged(int new, int old)
 	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
 	// into water
 	if(newliquid && !oldliquid)
-		AddEffect("Bubble", this, 1, 72, this);
+		AddEffect("Bubble", this, 1, 52, this);
 	// out of water
 	else if(!newliquid && oldliquid)
 		RemoveEffect("Bubble", this);
@@ -1789,7 +1822,11 @@ func OnMaterialChanged(int new, int old)
 
 func FxBubbleTimer(pTarget, effect, iTime)
 {
-	if(GBackLiquid(0,-5)) Bubble();
+	if(GBackLiquid(0,-5))
+	{
+		var iRot = GetSwimRotation();
+		Bubble(1, +Sin(iRot, 9), Cos(iRot, 9));
+	}
 }
 
 func StartPushing()
@@ -1855,7 +1892,7 @@ Walk = {
 	Procedure = DFA_WALK,
 	Accel = 16,
 	Decel = 22,
-	Speed = 196,
+	Speed = 200,
 	Directions = 2,
 	FlipDir = 0,
 	Length = 1,
@@ -1922,7 +1959,7 @@ Tumble = {
 	Name = "Tumble",
 	Procedure = DFA_FLIGHT,
 	Speed = 200,
-	Accel = 16,
+	Accel = 0,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
@@ -2013,7 +2050,7 @@ Jump = {
 	Name = "Jump",
 	Procedure = DFA_FLIGHT,
 	Speed = 200,
-	Accel = 16,
+	Accel = 14,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
@@ -2078,7 +2115,7 @@ Push = {
 	Prototype = Action,
 	Name = "Push",
 	Procedure = DFA_PUSH,
-	Speed = 196,
+	Speed = 200,
 	Accel = 100,
 	Directions = 2,
 	Length = 8,
@@ -2095,7 +2132,6 @@ Push = {
 Build = {
 	Prototype = Action,
 	Name = "Build",
-	Procedure = DFA_BUILD,
 	Directions = 2,
 	Length = 8,
 	Delay = 15,
@@ -2105,6 +2141,7 @@ Build = {
 	Hgt = 20,
 	NextAction = "Build",
 	InLiquidAction = "Swim",
+	Attach = CNAT_Bottom,
 },
 HangOnto = {
 	Prototype = Action,

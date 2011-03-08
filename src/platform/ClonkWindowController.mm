@@ -51,6 +51,13 @@
 
 @synthesize stdWindow, openGLView, scrollView;
 
+- (void) awakeFromNib
+{
+	[super awakeFromNib];
+	if (!Application.isEditor)
+		ClonkAppDelegate.instance.gameWindowController = self;
+}
+
 - (void) fadeOut:(CGDisplayFadeReservationToken*)token
 {
 	if (CGAcquireDisplayFadeReservation(15, token) == 0)
@@ -72,9 +79,11 @@
 {
 	if (fullscreen != [self isFullscreen])
 	{
-		// fade out
+		// fade out
+#ifndef _DEBUG
 		CGDisplayFadeReservationToken token;
 		[self fadeOut:&token];
+#endif
 		if (![self isFullscreen])
 		{
 			NSRect fullscreenRect = NSScreen.mainScreen.frame;
@@ -84,11 +93,11 @@
 			[fullscreenWindow setHidesOnDeactivate:YES];
 			[fullscreenWindow setContentView:openGLView];
 			[fullscreenWindow setReleasedWhenClosed:YES];
-			//[openGLView setFrame:fullscreenRect];
 			[fullscreenWindow setDelegate:self];
 			[self.window orderOut:self];
 			[fullscreenWindow setInitialFirstResponder:openGLView];
 			[fullscreenWindow makeKeyAndOrderFront:self];
+			//[openGLView setContextSurfaceBackingSizeToOwnDimensions];
 			[openGLView enableEvents];
 			// hide cursor completely
 			[NSCursor hide];
@@ -101,14 +110,17 @@
 			[openGLView retain];
 			[fullscreenWindow close];
 			fullscreenWindow = nil;
-			[self.window.contentView addSubview:openGLView];
+			[self.window setContentView:openGLView];
 			[self.window orderFront:self];
 			[openGLView setFrame:[self.window.contentView frame]];
 			[openGLView enableEvents];
-			[openGLView display];	
+			[self.window makeKeyAndOrderFront:self];
 		}
+		[openGLView display];
+#ifndef _DEBUG
 		// fade in again
 		[self fadeIn:token];
+#endif
 	}
 }
 
@@ -147,10 +159,21 @@
 
 - (void) windowDidResize:(NSNotification *)notification
 {
-	C4Viewport* viewport = self.viewport;
-	if (viewport && Application.isEditor)
+	if (Application.isEditor)
 	{
-		viewport->ScrollBarsByViewPosition();
+		C4Viewport* viewport = self.viewport;
+		if (viewport && Application.isEditor)
+		{
+			viewport->ScrollBarsByViewPosition();
+		}
+	}
+	else
+	{
+	/*
+		NSSize newRes = openGLView.frame.size;
+		[ClonkOpenGLView setSurfaceBackingSizeOf:ClonkOpenGLView.mainContext width:newRes.width height:newRes.height];
+		Config.Graphics.ResX = newRes.width;
+		Config.Graphics.ResY = newRes.height; */
 	}
 }
 
@@ -159,6 +182,33 @@
 	return self.window.inLiveResize;
 }
 
+@end
+
+@interface NSScroller (ClonkZoom)
+- (void) setToLandscapeCoordinate:(float)lc
+	size:(int) s
+	viewportSize:(int) vs
+	zoom: (float) z;
+- (float) landscapeCoordinateForSize:(int) s
+	viewportSize:(int) vs
+	zoom:(float) z;
+@end
+@implementation NSScroller (ClonkZoom)
+- (void) setToLandscapeCoordinate:(float)lc
+	size:(int) s
+	viewportSize:(int) vs
+	zoom: (float) z
+{
+	self.doubleValue = (double)lc/((double)s - (double)vs/z);
+	self.knobProportion = (CGFloat)std::min(1.0, (double)vs/(s*z));
+}
+
+- (float) landscapeCoordinateForSize:(int) s
+	viewportSize:(int) vs
+	zoom:(float) z
+{	
+	return self.doubleValue * ((double)s - (double)vs/z);
+}
 @end
 
 // C4Fullscreen
@@ -170,28 +220,20 @@ void C4FullScreen::HandleMessage (void* event)
 
 // C4ViewportWindow
 
-CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool b)
-{
-	CStdWindow* result = CStdWindow::Init(windowKind, pApp, Title, pParent, b);
-	return result;
-}
-
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
 	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
-	[scrollView.horizontalScroller setFloatValue:ViewX/(GBackWdt-ViewWdt)*GetZoom()];
-	[scrollView.verticalScroller   setFloatValue:ViewY/(GBackHgt-ViewHgt)*GetZoom()];
-	[scrollView.horizontalScroller setKnobProportion:(float)ViewWdt/(float)GBackWdt/GetZoom()];
-	[scrollView.verticalScroller setKnobProportion:(float)ViewHgt/(float)GBackHgt/GetZoom()];
+	[scrollView.horizontalScroller setToLandscapeCoordinate:ViewX size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
+	[scrollView.verticalScroller setToLandscapeCoordinate:ViewY size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
 	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
-	ViewX = [scrollView.horizontalScroller floatValue] * (GBackWdt-ViewWdt) / GetZoom();
-	ViewY = [scrollView.verticalScroller floatValue] * (GBackHgt-ViewHgt) / GetZoom();
+	ViewX = [scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
+	ViewY = [scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
 }
 

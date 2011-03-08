@@ -56,6 +56,9 @@ namespace
 #include <shellapi.h>
 #include "resource.h"
 
+#define C4ViewportClassName "C4Viewport"
+#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Determine viewport
@@ -247,24 +250,6 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
 }
 
-CStdWindow * C4ViewportWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
-{
-	Active = true;
-	// Create window
-	hWindow = CreateWindowEx (
-	            WS_EX_ACCEPTFILES,
-	            C4ViewportClassName, Title, C4ViewportWindowStyle,
-	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
-	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
-	if(!hWindow) return NULL;
-
-	// We don't re-init viewport windows currently, so we don't need a child window
-	// for now: Render into main window.
-	hRenderWindow = hWindow;
-
-	return this;
-}
-
 void UpdateWindowLayout(HWND hwnd)
 {
 	bool fMinimized = !!IsIconic(hwnd);
@@ -354,9 +339,6 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	table = gtk_table_new(2, 2, false);
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(h_scrollbar));
-	adjustment->lower = 0;
-	adjustment->upper = GBackWdt;
-	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
 	  G_OBJECT(adjustment),
@@ -366,9 +348,6 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	);
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(v_scrollbar));
-	adjustment->lower = 0;
-	adjustment->upper = GBackHgt;
-	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
 	  G_OBJECT(adjustment),
@@ -437,17 +416,45 @@ bool C4Viewport::ScrollBarsByViewPosition()
 #endif
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
+
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_configure(adjustment,
+	                         ViewX, // value
+	                         0, // lower
+	                         GBackWdt, // upper
+	                         ViewportScrollSpeed, // step_increment
+	                         allocation.width / Zoom, // page_increment
+	                         allocation.width / Zoom // page_size
+	                         );
+#else
+	adjustment->value = ViewX;
+	adjustment->lower = 0;
+	adjustment->upper = GBackWdt;
+	adjustment->step_increment = ViewportScrollSpeed;
 	adjustment->page_increment = allocation.width;
 	adjustment->page_size = allocation.width;
-	adjustment->value = ViewX;
 	gtk_adjustment_changed(adjustment);
+#endif
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
+#if GTK_CHECK_VERSION(2,14,0)
+	gtk_adjustment_configure(adjustment,
+	                         ViewY, // value
+	                         0, // lower
+	                         GBackHgt, // upper
+	                         ViewportScrollSpeed, // step_increment
+	                         allocation.height / Zoom, // page_increment
+	                         allocation.height / Zoom // page_size
+	                         );
+#else	
+	adjustment->lower = 0;
+	adjustment->upper = GBackHgt;
+	adjustment->step_increment = ViewportScrollSpeed;
 	adjustment->page_increment = allocation.height;
 	adjustment->page_size = allocation.height;
 	adjustment->value = ViewY;
 	gtk_adjustment_changed(adjustment);
-
+#endif
 	return true;
 }
 
@@ -456,10 +463,10 @@ bool C4Viewport::ViewPositionByScrollBars()
 	if (PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
-	ViewX = static_cast<int32_t>(adjustment->value);
+	ViewX = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-	ViewY = static_cast<int32_t>(adjustment->value);
+	ViewY = static_cast<int32_t>(gtk_adjustment_get_value(adjustment));
 
 	return true;
 }
@@ -813,6 +820,37 @@ void C4ViewportWindow::PerformUpdate()
 		cvp->UpdateOutputSize();
 		cvp->Execute();
 	}
+}
+
+
+CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, CStdApp * pApp, int32_t Player)
+{
+	CStdWindow* result;
+	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();
+#ifdef _WIN32
+	Active = true;
+	// Create window
+	hWindow = CreateWindowEx (
+	            WS_EX_ACCEPTFILES,
+	            C4ViewportClassName, Title, C4ViewportWindowStyle,
+	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
+	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+	if(!hWindow) return NULL;
+
+	// We don't re-init viewport windows currently, so we don't need a child window
+	// for now: Render into main window.
+	hRenderWindow = hWindow;
+
+	result = this;
+#else
+	result = C4ViewportBase::Init(CStdWindow::W_Viewport, pApp, Title, pParent, false);
+#endif
+	if (!result) return result;
+
+	pSurface = new CSurface(pApp, this);
+	// Position and size
+	RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
+	return result;
 }
 
 void C4ViewportWindow::Close()

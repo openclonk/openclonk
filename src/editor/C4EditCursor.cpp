@@ -90,14 +90,8 @@ void C4EditCursor::Execute()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	// selection update
-	if (fSelectionChanged)
-	{
-		fSelectionChanged = false;
-		UpdateStatusBar();
-		Console.PropertyDlg.Update(Selection);
-		Console.ObjectListDlg.Update(Selection);
-	}
+	if (!::Game.iTick35)
+		Console.PropertyDlgUpdate(Selection);
 }
 
 bool C4EditCursor::Init()
@@ -213,7 +207,8 @@ void C4EditCursor::UpdateStatusBar()
 
 void C4EditCursor::OnSelectionChanged()
 {
-	fSelectionChanged = true;
+	Console.PropertyDlgUpdate(Selection);
+	Console.ObjectListDlg.Update(Selection);
 }
 
 bool C4EditCursor::LeftButtonDown(bool fControl)
@@ -384,8 +379,8 @@ bool C4EditCursor::OpenPropTools()
 	switch (Mode)
 	{
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		Console.PropertyDlg.Open();
-		Console.PropertyDlg.Update(Selection);
+		Console.PropertyDlgOpen();
+		Console.PropertyDlgUpdate(Selection);
 		break;
 	case C4CNS_ModeDraw:
 		Console.ToolsDlg.Open();
@@ -501,7 +496,7 @@ void C4EditCursor::FrameSelection()
 				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
 					Selection.Add(cobj, C4ObjectList::stNone);
 			}
-	Console.PropertyDlg.Update(Selection);
+	OnSelectionChanged();
 }
 
 bool C4EditCursor::In(const char *szText)
@@ -521,7 +516,6 @@ void C4EditCursor::Default()
 #endif
 	Hold=DragFrame=DragLine=false;
 	Selection.Default();
-	fSelectionChanged = false;
 }
 
 void C4EditCursor::Clear()
@@ -545,20 +539,20 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Set mode
 	Mode = iMode;
 	// Update prop tools by mode
-	bool fOpenPropTools = false;
 	switch (Mode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-		Console.ToolsDlg.Clear();
-		if (fOpenPropTools) OpenPropTools();
+		if (Console.ToolsDlg.Active)
+		{
+			Console.ToolsDlg.Clear();
+			OpenPropTools();
+		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
-		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-		Console.PropertyDlg.Clear();
-		if (fOpenPropTools) OpenPropTools();
+		Console.PropertyDlgClose();
+		OpenPropTools();
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
@@ -676,7 +670,7 @@ void C4EditCursor::GrabContents()
 	C4Object *pFrom;
 	if (!( pFrom = Selection.GetObject() )) return;
 	Selection.Copy(pFrom->Contents);
-	Console.PropertyDlg.Update(Selection);
+	OnSelectionChanged();
 	Hold=true;
 
 	// Exit all objects

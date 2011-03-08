@@ -82,8 +82,8 @@ bool C4Viewport::UpdateOutputSize()
 	if (!pWindow) return false;
 	// Output size
 	RECT rect;
-#ifdef WITH_DEVELOPER_MODE
 
+#ifdef WITH_DEVELOPER_MODE
 	GtkAllocation allocation;
 #if GTK_CHECK_VERSION(2,18,0)
 	gtk_widget_get_allocation(pWindow->drawing_area, &allocation);
@@ -267,7 +267,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
-	::Objects.BackObjects.DrawAll(cgo, Player);
+	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
@@ -281,7 +281,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	// draw objects
 	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-	::Objects.Draw(cgo, Player);
+	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
 	C4ST_STOP(ObjStat)
 
 	// draw global particles
@@ -644,11 +644,8 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	fIsNoOwnerViewport = (Player == NO_OWNER);
 	// Create window
 	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(CStdWindow::W_Viewport, pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
+	if (!pWindow->Init(pParent, pApp, Player))
 		return false;
-	pWindow->pSurface = new CSurface(pApp, pWindow);
-	// Position and size
-	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	//UpdateWindow(hWnd);
 	// Updates
 	UpdateOutputSize();

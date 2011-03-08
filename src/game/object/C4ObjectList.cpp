@@ -27,6 +27,7 @@
 #include <C4Include.h>
 #include <C4ObjectList.h>
 
+#include <C4DefList.h>
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4Region.h>
@@ -159,16 +160,16 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 		if (!fUnsorted)
 		{
 
-			// Find successor by matching category / id
-			// Sort by matching category/id is necessary for inventory shifting.
+			// Find successor by matching Plane / id
+			// Sort by matching Plane/id is necessary for inventory shifting.
 			// It is not done for static back to allow multiobject outside structure.
 			// Unsorted objects are ignored in comparison.
 			if (!(nObj->Category & C4D_StaticBack))
 				for (cPrev=NULL,cLnk=First; cLnk; cLnk=cLnk->Next)
 					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 					{
-						if ( (cLnk->Obj->Category & C4D_SortLimit)==(nObj->Category & C4D_SortLimit) )
-							if ( cLnk->Obj->id == nObj->id )
+						if (cLnk->Obj->GetPlane() == nObj->GetPlane())
+							if (cLnk->Obj->id == nObj->id)
 								break;
 						cPrev=cLnk;
 					}
@@ -178,7 +179,7 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 				for (cPrev=NULL, cLnk=First; cLnk; cLnk=cLnk->Next)
 					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
 					{
-						if ((cLnk->Obj->Category & C4D_SortLimit)<=(nObj->Category & C4D_SortLimit))
+						if (cLnk->Obj->GetPlane() <= nObj->GetPlane())
 							break;
 						cPrev=cLnk;
 					}
@@ -330,15 +331,13 @@ C4ObjectLink* C4ObjectList::GetLink(C4Object *pObj)
 	return NULL;
 }
 
-int C4ObjectList::ObjectCount(C4ID id, int32_t dwCategory) const
+int C4ObjectList::ObjectCount(C4ID id) const
 {
 	C4ObjectLink *cLnk;
 	int iCount=0;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			if ( (id==C4ID::None) || (cLnk->Obj->Def->id==id) )
-				if ( (dwCategory==C4D_All) || (cLnk->Obj->Category & dwCategory) )
-					iCount++;
+		if (cLnk->Obj->Status && (id==C4ID::None || cLnk->Obj->Def->id==id))
+			iCount++;
 	return iCount;
 }
 
@@ -419,15 +418,30 @@ int C4ObjectList::ClearPointers(C4Object *pObj)
 	return rval;
 }
 
-void C4ObjectList::DrawAll(C4TargetFacet &cgo, int iPlayer)
+void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane)
 {
-	C4ObjectLink *clnk;
+	C4ObjectLink * clnk, * first;
+	for (first=Last; first; first=first->Prev)
+		if (first->Obj->GetPlane() >= MinPlane)
+			break;
 	// Draw objects (base)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
+	for (clnk=first; clnk; clnk=clnk->Prev)
+	{
+		if (first->Obj->GetPlane() > MaxPlane)
+			break;
+		if (clnk->Obj->Category & C4D_Foreground)
+			continue;
 		clnk->Obj->Draw(cgo, iPlayer);
+	}
 	// Draw objects (top face)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
+	for (clnk=first; clnk; clnk=clnk->Prev)
+	{
+		if (first->Obj->GetPlane() > MaxPlane)
+			break;
+		if (clnk->Obj->Category & C4D_Foreground)
+			continue;
 		clnk->Obj->DrawTopFace(cgo, iPlayer);
+	}
 }
 
 void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert)
@@ -440,19 +454,6 @@ void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCa
 	// Draw objects (top face)
 	for (clnk=Last; clnk; clnk=clnk->Prev)
 		if (!(clnk->Obj->Category & dwCat) == fInvert)
-			clnk->Obj->DrawTopFace(cgo, iPlayer);
-}
-
-void C4ObjectList::Draw(C4TargetFacet &cgo, int iPlayer)
-{
-	C4ObjectLink *clnk;
-	// Draw objects (base)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
-		if (!(clnk->Obj->Category & C4D_BackgroundOrForeground))
-			clnk->Obj->Draw(cgo, iPlayer);
-	// Draw objects (top face)
-	for (clnk=Last; clnk; clnk=clnk->Prev)
-		if (!(clnk->Obj->Category & C4D_BackgroundOrForeground))
 			clnk->Obj->DrawTopFace(cgo, iPlayer);
 }
 
@@ -579,13 +580,13 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSaveRefs, bool fSkipPla
 	}
 }
 
-StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
+StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
 {
 	int cpos,idcount;
 	C4ID c_id;
 	C4Def *cdef;
 	StdStrBuf Buf;
-	for (cpos=0; (c_id=GetListID(dwCategory,cpos)); cpos++)
+	for (cpos=0; (c_id=GetListID(C4D_All,cpos)); cpos++)
 		if ((cdef=rDefs.ID2Def(c_id)))
 		{
 			idcount=ObjectCount(c_id);
@@ -593,6 +594,29 @@ StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
 			Buf.AppendFormat("%dx %s",idcount,cdef->GetName());
 		}
 	return Buf;
+}
+
+StdStrBuf C4ObjectList::GetDataString()
+{
+	StdStrBuf Output;
+
+	// Compose info text by selected object(s)
+	switch (ObjectCount())
+	{
+		// No selection
+	case 0:
+		Output = LoadResStr("IDS_CNS_NOOBJECT");
+		break;
+		// One selected object
+	case 1:
+		Output.Take(GetObject()->GetDataString());
+		break;
+	// Multiple selected objects
+	default:
+		Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"),ObjectCount());
+		break;
+	}
+	return Output;
 }
 
 bool C4ObjectList::ValidateOwners()
@@ -622,26 +646,6 @@ void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->ClearInfo(pInfo);
-}
-
-void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)
-{
-	int iSections = cgo.GetSectionCount();
-	int iObjects = ObjectCount(C4ID::None,dwCategory);
-	int iFirstVisible = BoundBy(iSelection-iSections/2,0,Max(iObjects-iSections,0));
-	C4Facet cgo2;
-	int iObj=0,iSec=0;
-	C4ObjectLink *cLnk; C4Object *cObj;
-	for (cLnk=First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
-		if (cObj->Status && (cObj->Category && dwCategory))
-		{
-			if (Inside(iObj,iFirstVisible,iFirstVisible+iSections-1))
-			{
-				cgo2 = cgo.GetSection(iSec++);
-				cObj->DrawPicture(cgo2,(iObj==iSelection));
-			}
-			iObj++;
-		}
 }
 
 void C4ObjectList::Sort()
@@ -767,52 +771,6 @@ void C4ObjectList::Default()
 	First=Last=NULL;
 	Mass=0;
 	pEnumerated=NULL;
-}
-
-bool C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
-{
-	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
-	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
-	// check if requirements are already fulfilled
-	C4ObjectLink *pLnk=pLnk1;
-	while ((pLnk=pLnk->Next)) if (pLnk==pLnk2) break;
-	if (pLnk) return true;
-	// if not, reorder pLnk1 directly before pLnk2
-	// unlink from current position
-	// no need to check pLnk1->Prev here, because pLnk1 cannot be first in the list
-	// (at least pLnk2 must lie before it!)
-	if ((pLnk1->Prev->Next=pLnk1->Next)) pLnk1->Next->Prev=pLnk1->Prev; else Last=pLnk1->Prev;
-	// relink into new one
-	if ((pLnk1->Prev=pLnk2->Prev)) pLnk2->Prev->Next=pLnk1; else First=pLnk1;
-	pLnk1->Next=pLnk2; pLnk2->Prev=pLnk1;
-	// done, success
-	return true;
-}
-
-bool C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
-{
-	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
-	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
-	// check if requirements are already fulfilled
-	C4ObjectLink *pLnk=pLnk1;
-	while ((pLnk=pLnk->Prev)) if (pLnk==pLnk2) break;
-	if (pLnk) return true;
-	// if not, reorder pLnk1 directly after pLnk2
-	// unlink from current position
-	// no need to check pLnk1->Next here, because pLnk1 cannot be last in the list
-	// (at least pLnk2 must lie after it!)
-	if ((pLnk1->Next->Prev=pLnk1->Prev)) pLnk1->Prev->Next=pLnk1->Next; else First=pLnk1->Next;
-	// relink into new one
-	if ((pLnk1->Next=pLnk2->Next)) pLnk2->Next->Prev=pLnk1; else Last=pLnk1;
-	pLnk1->Prev=pLnk2; pLnk2->Next=pLnk1;
-	// done, success
-	return true;
 }
 
 bool C4ObjectList::ShiftContents(C4Object *pNewFirst)
@@ -946,7 +904,7 @@ void C4ObjectList::CheckCategorySort()
 	for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
 		if (!cLnk->Obj->Unsorted && cLnk->Obj->Status)
 		{
-			if (cPrev) assert( (cPrev->Obj->Category & C4D_SortLimit) >= (cLnk->Obj->Category & C4D_SortLimit));
+			if (cPrev) assert(cPrev->Obj->GetPlane() >= cLnk->Obj->GetPlane());
 			cPrev = cLnk;
 		}
 }
