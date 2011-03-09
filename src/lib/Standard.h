@@ -76,6 +76,17 @@ inline size_t SLenUntil(const char *szStr, char cUntil)
 	return end ? end-szStr : std::strlen(szStr);
 }
 
+// get a character at the current string pos and advance pos by that character
+uint32_t GetNextUTF8Character(const char **pszString); // GetNextCharacter helper
+inline uint32_t GetNextCharacter(const char **pszString)
+{
+	unsigned char c=**pszString;
+	if (c<128) { ++*pszString; return c; }
+	else return GetNextUTF8Character(pszString);
+}
+// Get string length in characters (not bytes)
+int GetCharacterCount(const char * s);
+
 inline bool SEqual(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?!std::strcmp(szStr1,szStr2):false; }
 bool SEqual2(const char *szStr1, const char *szStr2);
 bool SEqualUntil(const char *szStr1, const char *szStr2, char cWild);

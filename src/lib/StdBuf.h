@@ -614,6 +614,7 @@ public:
 	{
 		AppendChars(cChar, 1);
 	}
+	void AppendCharacter(uint32_t unicodechar);
 	void AppendBackslash();
 	void InsertChar(char cChar, size_t insert_before)
 	{

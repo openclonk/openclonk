@@ -374,6 +374,34 @@ void StdStrBuf::ToLowerCase()
 			*szPos = tolower(*szPos);
 }
 
+void StdStrBuf::AppendCharacter(uint32_t unicodechar)
+{
+	if (unicodechar < 0x80)
+		AppendChar(unicodechar);
+	else if (unicodechar < 0x800)
+	{
+		Grow(2);
+		*getMPtr(getLength() - 2) = (0xC0 | (unicodechar >> 6));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else if (unicodechar < 0x10000)
+	{
+		Grow(3);
+		*getMPtr(getLength() - 3) = (0xE0 | (unicodechar >> 12));
+		*getMPtr(getLength() - 2) = (0x80 | ((unicodechar >> 6) & 0x3F));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else if (unicodechar < 0x110000)
+	{
+		Grow(4);
+		*getMPtr(getLength() - 4) = (0xF0 | (unicodechar >> 18));
+		*getMPtr(getLength() - 3) = (0x80 | ((unicodechar >> 12) & 0x3F));
+		*getMPtr(getLength() - 2) = (0x80 | ((unicodechar >> 6) & 0x3F));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else /* not an unicode code point, ignore */;
+}
+
 void StdStrBuf::EnsureUnicode()
 {
 	// assume that it's windows-1252 and convert to utf-8

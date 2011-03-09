@@ -62,10 +62,18 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			switch (*cpType)
 			{
 				// number
-			case 'd': case 'x': case 'X': case 'c':
+			case 'd': case 'x': case 'X':
 			{
 				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
 				StringBuf.AppendFormat(szField, Par[cPar++]->getInt());
+				cpFormat+=SLen(szField);
+				break;
+			}
+			// character
+			case 'c':
+			{
+				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				StringBuf.AppendCharacter(Par[cPar++]->getInt());
 				cpFormat+=SLen(szField);
 				break;
 			}
@@ -365,7 +373,7 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 		return C4VInt(pArray->GetSize());
 	C4String * pStr = pPars->getStr();
 	if (pStr)
-		return C4VInt(pStr->GetData().getLength());
+		return C4VInt(GetCharacterCount(pStr->GetData().getData()));
 	throw new C4AulExecError(cthr->Obj, "func \"GetLength\" par 0 cannot be converted to string or array");
 }
 
@@ -378,12 +386,9 @@ static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 	const C4ValueArray * pArray = pPars[1].getArray();
 	if (!pArray)
 		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 1 cannot be converted to array");
-	// find the element by comparing data only - this may result in bogus results if an object ptr array is searched for an int
-	// however, that's rather unlikely and strange scripting style
 	int32_t iSize = pArray->GetSize();
-	long cmp = pPars[0].GetData().Int;
 	for (int32_t i = 0; i<iSize; ++i)
-		if (cmp == pArray->GetItem(i).GetData().Int)
+		if (pPars[0] == pArray->GetItem(i))
 			// element found
 			return C4VInt(i);
 	// element not found
@@ -405,11 +410,14 @@ static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 {
 	const char *szText = FnStringPar(pString);
 	if (!szText) return 0;
-	// loop and check for end of string
-	for (int i=0; i<iIndex; i++, szText++)
-		if (!*szText) return 0;
-	// return indiced character value
-	return (unsigned char) *szText;
+	// C4Strings are UTF-8 encoded, so decode to get the indicated character
+	uint32_t c = GetNextCharacter(&szText);
+	for (int i = 0; i < iIndex; ++i)
+	{
+		c = GetNextCharacter(&szText);
+		if (!c) return 0;
+	}
+	return c;
 }
 
 static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)

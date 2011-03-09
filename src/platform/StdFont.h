@@ -100,14 +100,6 @@ protected:
 	bool CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt);
 	bool AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget);
 
-	// get a character at the current string pos and advance pos by that character
-	inline uint32_t GetNextCharacter(const char **pszString)
-	{
-		unsigned char c=**pszString;
-		if (c<128) { ++*pszString; return c; }
-		else return GetNextUTF8Character(pszString);
-	}
-	uint32_t GetNextUTF8Character(const char **pszString);
 	CFacet &GetCharacterFacet(uint32_t c)
 	{
 		if (c<128) return fctAsciiTexCoords[c-' ']; else return GetUnicodeCharacterFacet(c);

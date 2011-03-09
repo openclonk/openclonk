@@ -298,41 +298,6 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 	return true;
 }
 
-uint32_t CStdFont::GetNextUTF8Character(const char **pszString)
-{
-	// assume the current character is UTF8 already (i.e., highest bit set)
-	const char *szString = *pszString;
-	unsigned char c = *szString++;
-	uint32_t dwResult = '?';
-	assert(c>127);
-	if (c>191 && c<224)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&31)<<6) | (c2&63); // two char code
-	}
-	else if (c >= 224 && c <= 239)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
-	}
-	else if (c >= 240 && c <= 247)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c4 = *szString++;
-		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
-	}
-	*pszString = szString;
-	return dwResult;
-}
-
 CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 {
 	// find/add facet in map

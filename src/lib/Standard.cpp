@@ -849,3 +849,70 @@ bool IsValidUtf8(const char *text, int length)
 	// Looks fine
 	return true;
 }
+
+// UTF-8 iteration
+uint32_t GetNextUTF8Character(const char **pszString)
+{
+	// assume the current character is UTF8 already (i.e., highest bit set)
+	const char *szString = *pszString;
+	unsigned char c = *szString++;
+	uint32_t dwResult = '?';
+	assert(c>127);
+	if (c>191 && c<224)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&31)<<6) | (c2&63); // two char code
+	}
+	else if (c >= 224 && c <= 239)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
+	}
+	else if (c >= 240 && c <= 247)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c4 = *szString++;
+		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
+	}
+	*pszString = szString;
+	return dwResult;
+}
+
+int GetCharacterCount(const char * s)
+{
+	int l = 0;
+	while (*s)
+	{
+		unsigned char c = *s;
+		if (c < 128 || c > 247)
+		{
+			++l;
+			s += 1;
+		}
+		else if (c > 191 && c < 224)
+		{
+			++l;
+			s += 2;
+		}
+		else if (c >= 224 && c <= 239)
+		{
+			++l;
+			s += 3;
+		}
+		else if (c >= 240 && c <= 247)
+		{
+			++l;
+			s += 4;
+		}
+		else assert(false);
+	}
+	return l;
+}
