@@ -425,8 +425,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	// Determine startup player count
 	Game.StartupPlayerCount = SModuleCount(Game.PlayerFilenames);
 
-	// default record?
-	Game.Record = Game.Record || Config.General.DefRec || (Config.Network.LeagueServerSignUp && Game.NetworkActive);
+	// record?
+	Game.Record = Game.Record || (Config.Network.LeagueServerSignUp && Game.NetworkActive);
 
 	// startup dialog required?
 	UseStartupDialog = !*Game.DirectJoinAddress && !*Game.ScenarioFilename && !Game.RecordStream.getSize();
@@ -506,6 +506,8 @@ bool C4Application::PreInit()
 	if (fDoUseStartupDialog)
 	{
 		AppState = C4AS_Startup;
+		// default record?
+		Game.Record = Game.Record || Config.General.DefRec;
 		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
 		if (!isEditor)
 			C4Startup::InitStartup();
@@ -581,7 +583,7 @@ void C4Application::OpenGame(const char * scenario)
 		SetNextMission(scenario);
 		AppState = C4AS_AfterGame;
 	}
-	
+
 }
 
 void C4Application::QuitGame()

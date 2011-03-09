@@ -634,7 +634,7 @@ void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 
 void C4GameOptionButtons::OnBtnRecord(C4GUI::Control *btn)
 {
-	bool fCheck = Game.Record = !Game.Record;
+	bool fCheck = Config.General.DefRec = Game.Record = !Game.Record;
 	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 
