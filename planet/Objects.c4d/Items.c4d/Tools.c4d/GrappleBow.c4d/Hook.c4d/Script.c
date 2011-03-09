@@ -205,6 +205,9 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	// (higher than 1 actually), the timer could be called first
 	if (target->GetProcedure() == "ATTACH")
 		return -1;
+	// Also cancel if the clonk is contained
+	if (target->Contained())
+		return -1;
 
 	// EffectVars:
 	// 0 - movement up
