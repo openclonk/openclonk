@@ -81,8 +81,6 @@ int iC4GroupRewindFilePtrNoWarn=0;
 
 //---------------------------- Global C4Group_Functions -------------------------------------------
 
-char C4Group_Maker[C4GroupMaxMaker+1]="";
-char C4Group_Passwords[CFG_MaxString+1]="";
 char C4Group_TempPath[_MAX_PATH+1]="";
 char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db";
 const char **C4Group_SortList = NULL;

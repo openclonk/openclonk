@@ -1575,8 +1575,6 @@ static C4String *FnMaterialName(C4AulContext* cthr, long iMat)
 	return String(::MaterialMap.Map[iMat].Name);
 }
 
-char NeededMat[C4MaxMessage];
-
 static C4String *FnGetNeededMatStr(C4AulContext* cthr, C4Object *pObj)
 {
 	// local/safety

@@ -49,8 +49,6 @@ void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 {
 	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 }
-#else
-bool DoDebugRec=false;
 #endif
 
 C4DebugRecOff::C4DebugRecOff() : fDoOff(true)

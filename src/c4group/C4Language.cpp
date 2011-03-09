@@ -45,7 +45,7 @@ iconv_t C4Language::local_to_host = iconv_t(-1);
 
 C4Language Languages;
 
-char strLog[2048 + 1];
+//char strLog[2048 + 1];
 
 C4Language::C4Language()
 {

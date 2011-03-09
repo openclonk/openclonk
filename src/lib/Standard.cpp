@@ -747,49 +747,6 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard)
 	return !*pWild && !*pPos;
 }
 
-const char* SGetParameter(const char *strCommandLine, int iParameter, char *strTarget, int iSize, bool *pWasQuoted)
-{
-	// Safeties
-	if (iParameter < 0) return NULL;
-	// Parse command line which may contain spaced or quoted parameters
-	static char strParameter[2048 + 1];
-	const char* c = strCommandLine;
-	bool fQuoted;
-	while (c && *c)
-	{
-		// Quoted parameter
-		if ((fQuoted = (*c == '"')))
-		{
-			SCopyUntil(++c, strParameter, '"', 2048);
-			c += SLen(strParameter);
-			if (*c == '"') c++;
-		}
-		// Spaced parameter
-		else
-		{
-			bool fWrongQuote = (SCharPos('"', c) > -1) && (SCharPos('"', c) < SCharPos(' ', c));
-			SCopyUntil(c, strParameter, fWrongQuote ? '"' : ' ', 2048);
-			c += Max<size_t>(SLen(strParameter), 1);
-		}
-		// Process (non-empty) parameter
-		if (strParameter[0])
-		{
-			// Success
-			if (iParameter == 0)
-			{
-				if (strTarget) SCopy(strParameter, strTarget, iSize);
-				if (pWasQuoted) *pWasQuoted = fQuoted;
-				return strParameter;
-			}
-			// Continue
-			else
-				iParameter--;
-		}
-	}
-	// Not found
-	return NULL;
-}
-
 /* Some part of the Winapi */
 
 #ifdef NEED_FALLBACK_ATOMIC_FUNCS

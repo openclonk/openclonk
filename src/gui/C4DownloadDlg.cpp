@@ -27,10 +27,6 @@
 
 C4Network2HTTPClient HTTPClient;
 
-C4GUI::Label *pStatusLabel;
-C4GUI::ProgressBar *pProgressBar;
-
-
 C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_ProgressDlgWdt, 100, FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), false), szError(NULL)
 {
 #ifdef HAVE_WINSOCK

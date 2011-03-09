@@ -126,8 +126,6 @@ bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive=false
 bool SRemoveModules(char *szList, const char *szModules, bool fCaseSensitive=false);
 int SModuleCount(const char *szList);
 
-const char* SGetParameter(const char *strCommandLine, int iParameter, char *strTarget = NULL, int iSize = -1, bool *pWasQuoted = NULL);
-
 void SRemoveComments(char *szScript);
 void SNewSegment(char *szStr, const char *szSepa=";");
 void SCapitalize(char *szString);
