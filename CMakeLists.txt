@@ -73,7 +73,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 	endif()
 endif()
-CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 
 # ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
 include(CheckCXXSourceCompiles)
@@ -88,6 +87,7 @@ set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
+CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
 if(MSVC_VERSION GREATER 1499)
