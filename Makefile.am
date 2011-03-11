@@ -683,6 +683,10 @@ c4script_LDADD = \
   $(OPENSSL_LIBS) \
   $(Z_LIBS)
 
+if WIN32
+c4script_LDADD += -lwinmm
+endif
+
 ## other stuff
 
 EXTRA_DIST = \
