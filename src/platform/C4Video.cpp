@@ -34,7 +34,6 @@
 #include <C4PlayerList.h>
 
 #ifdef _WIN32
-#include <vfw.h>
 #include <StdVideo.h>
 #endif
 

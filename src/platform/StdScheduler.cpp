@@ -22,6 +22,8 @@
  */
 #include "C4Include.h"
 #include "StdScheduler.h"
+
+#include <StdWindow.h>
 #include <stdio.h>
 
 #include <assert.h>

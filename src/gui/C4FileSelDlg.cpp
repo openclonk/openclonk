@@ -25,6 +25,7 @@
 
 #include <C4GraphicsResource.h> // only for single use of ::GraphicsResource.fctOKCancel below...
 #include <C4Version.h>
+#include <StdDDraw2.h>
 
 #ifdef _WIN32
 #ifndef _WIN32_IE

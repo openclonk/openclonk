@@ -21,8 +21,6 @@
 #ifndef INC_C4VideoPlayback
 #define INC_C4VideoPlayback
 
-#include <StdVideo.h>
-
 typedef struct _SMPEG SMPEG;
 typedef struct _SMPEG_Info SMPEG_Info;
 typedef struct SDL_Surface SDL_Surface;

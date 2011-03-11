@@ -25,6 +25,8 @@
 
 #include "C4Include.h"
 #include <StdFont.h>
+
+#include <StdWindow.h>
 #include <StdBuf.h>
 #include <StdDDraw2.h>
 #include <StdSurface2.h>
@@ -54,7 +56,7 @@ public:
 	HDC hDC = ::CreateCompatibleDC(NULL);
 	if (hDC)
 	{
-		HFONT hFont = ::CreateFont(0, 0, 0, 0, FW_DONTCARE, false,
+		HFONT hFont = ::CreateFontA(0, 0, 0, 0, FW_DONTCARE, false,
 		                           false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
 		                           CLIP_DEFAULT_PRECIS, 5,
 		                           VARIABLE_PITCH, FontFaceName);

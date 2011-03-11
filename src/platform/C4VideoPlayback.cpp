@@ -26,6 +26,8 @@
 #include "C4Gui.h"
 #include <C4Log.h>
 
+#include <StdVideo.h>
+
 #ifdef HAVE_LIBSMPEG
 #include <smpeg/smpeg.h>
 #include <SDL.h>

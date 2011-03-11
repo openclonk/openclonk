@@ -26,8 +26,6 @@
 #include <StdVideo.h>
 #include <StdSurface2.h>
 
-#include <windows.h>
-
 bool AVIOpenOutput(const char *szFilename,
                    PAVIFILE *ppAviFile,
                    PAVISTREAM *ppAviStream,

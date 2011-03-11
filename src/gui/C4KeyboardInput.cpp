@@ -29,6 +29,7 @@
 
 #include <C4Components.h>
 #include <C4Game.h>
+#include <StdWindow.h>
 
 #ifdef USE_X11
 #include <X11/Xlib.h>

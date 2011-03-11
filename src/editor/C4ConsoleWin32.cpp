@@ -56,6 +56,8 @@
 #include <commdlg.h>
 #include "resource.h"
 
+#define LoadBitmap LoadBitmapA
+
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText);
 
 bool AddMenuItem(C4ConsoleGUI *console, HMENU hMenu, DWORD dwID, const char *szString, bool fEnabled)
