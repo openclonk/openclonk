@@ -28,7 +28,6 @@
 #include <C4SoundSystem.h>
 #include <C4Components.h>
 #include <C4InteractiveThread.h>
-#include <C4Network2IRC.h>
 #include <StdWindow.h>
 
 class CStdDDraw;
@@ -52,7 +51,7 @@ public:
 	// Thread for interactive processes (automatically starts as needed)
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
-	C4Network2IRCClient IRCClient;
+	C4Network2IRCClient &IRCClient;
 	void Clear();
 	void ClearCommandLine();
 	// Tick timing

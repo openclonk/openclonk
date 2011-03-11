@@ -45,13 +45,17 @@
 #include <C4GameLobby.h>
 #include <C4Fonts.h>
 #include <C4Network2.h>
+#include <C4Network2IRC.h>
 
 #include <StdRegistry.h> // For DDraw emulation warning
 
 #include <getopt.h>
 
+static C4Network2IRCClient ApplicationIRCClient;
+
 C4Application::C4Application():
 		isEditor(false),
+		IRCClient(ApplicationIRCClient),
 		UseStartupDialog(true),
 		CheckForUpdates(false),
 		NoSplash(false),

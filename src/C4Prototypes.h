@@ -74,6 +74,7 @@ class C4NameList;
 class C4Network;
 class C4NetworkClient;
 class C4NetworkClientList;
+class C4Network2IRCClient;
 class C4Object;
 class C4ObjectInfo;
 class C4ObjectInfoCore;
