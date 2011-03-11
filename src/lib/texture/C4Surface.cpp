@@ -291,12 +291,9 @@ bool C4Surface::Copy(C4Surface &fromSfc)
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
-/* avoid conflict with conflicting boolean and FAR typedefs */
-#undef __RPCNDR_H__
+/* avoid conflict with conflicting FAR typedefs */
 #undef FAR
-#define boolean jpeg_boolean
 #include <jpeglib.h>
-#undef boolean
 }
 #include <setjmp.h>
 
@@ -327,7 +324,7 @@ static void my_output_message (j_common_ptr cinfo)
 }
 static void jpeg_noop (j_decompress_ptr cinfo) {}
 static const unsigned char end_of_input = JPEG_EOI;
-static jpeg_boolean fill_input_buffer (j_decompress_ptr cinfo)
+static boolean fill_input_buffer (j_decompress_ptr cinfo)
 {
 	// The doc says to give fake end-of-inputs if there is no more data
 	cinfo->src->next_input_byte = &end_of_input;
