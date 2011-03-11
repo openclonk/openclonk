@@ -128,9 +128,9 @@ int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 			DWORD dwClr2=pPlr->ColorDw;
 			// assign difference, if less than smallest difference found
 			iDiff=Min(iDiff,
-			          Abs(GetRValue(dwColor) - GetRValue(dwClr2))
-			          + Abs(GetGValue(dwColor) - GetGValue(dwClr2))
-			          + Abs(GetBValue(dwColor) - GetBValue(dwClr2)));
+			          Abs(GetBlueValue(dwColor) - GetBlueValue(dwClr2))
+			          + Abs(GetGreenValue(dwColor) - GetGreenValue(dwClr2))
+			          + Abs(GetRedValue(dwColor) - GetRedValue(dwClr2)));
 		}
 	// return the difference
 	return iDiff;

@@ -203,15 +203,15 @@ void CGammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
 void CGammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
 {
 	// set red, green and blue channel
-	SetClrChannel(ramp.red  , GetBValue(dwClr1), GetBValue(dwClr2), GetBValue(dwClr3));
-	SetClrChannel(ramp.green, GetGValue(dwClr1), GetGValue(dwClr2), GetGValue(dwClr3));
-	SetClrChannel(ramp.blue , GetRValue(dwClr1), GetRValue(dwClr2), GetRValue(dwClr3));
+	SetClrChannel(ramp.red  , GetRedValue(dwClr1), GetRedValue(dwClr2), GetRedValue(dwClr3));
+	SetClrChannel(ramp.green, GetGreenValue(dwClr1), GetGreenValue(dwClr2), GetGreenValue(dwClr3));
+	SetClrChannel(ramp.blue , GetBlueValue(dwClr1), GetBlueValue(dwClr2), GetBlueValue(dwClr3));
 }
 
 DWORD CGammaControl::ApplyTo(DWORD dwClr)
 {
 	// apply to red, green and blue color component
-	return RGBA(ramp.red[GetBValue(dwClr)]>>8, ramp.green[GetGValue(dwClr)]>>8, ramp.blue[GetRValue(dwClr)]>>8, dwClr>>24);
+	return RGBA(ramp.red[GetRedValue(dwClr)]>>8, ramp.green[GetGreenValue(dwClr)]>>8, ramp.blue[GetBlueValue(dwClr)]>>8, dwClr>>24);
 }
 
 
@@ -340,13 +340,13 @@ uint32_t CClrModAddMap::GetModAt(int x, int y) const
 
 	// TODO: Alphafixed. Correct?
 	unsigned char Vis = pMap[ty*Wdt+tx];
-	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
+	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty*Wdt+tx2];
-	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
+	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx];
-	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
+	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx2];
-	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
+	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
 	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c2, c3, c4);
 	return clrs.GetColorAt(x, y);
 #endif
@@ -1155,7 +1155,7 @@ void CStdDDraw::Grayscale(SURFACE sfcSfc, int32_t iOffset)
 		for (xcnt=0; xcnt<wdt; xcnt++)
 		{
 			DWORD dwColor = sfcSfc->GetPixDw(xcnt,ycnt,false);
-			uint32_t r = GetRValue(dwColor), g = GetGValue(dwColor), b = GetBValue(dwColor), a = dwColor >> 24;
+			uint32_t r = GetRedValue(dwColor), g = GetGreenValue(dwColor), b = GetBlueValue(dwColor), a = dwColor >> 24;
 			int32_t gray = BoundBy<int32_t>((r + g + b) / 3 + iOffset, 0, 255);
 			sfcSfc->SetPixDw(xcnt, ycnt, RGBA(gray, gray, gray, a));
 		}

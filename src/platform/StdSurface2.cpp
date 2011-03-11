@@ -371,10 +371,10 @@ bool ClrByOwner(DWORD &dwClr) // new style, based on Microsoft Knowledge Base Ar
 	WORD R,G,B;
 	BYTE cMax,cMin;
 	WORD  Rdelta,Gdelta,Bdelta;
-	// get RGB (from BGR...?)
-	R = GetBValue(dwClr);
-	G = GetGValue(dwClr);
-	B = GetRValue(dwClr);
+	// get RGB
+	R = GetRedValue(dwClr);
+	G = GetGreenValue(dwClr);
+	B = GetBlueValue(dwClr);
 	// calculate lightness
 	cMax = Max<int>(Max<int>(R,G),B);
 	cMin = Min<int>(Min<int>(R,G),B);
@@ -412,8 +412,8 @@ bool ClrByOwner(DWORD &dwClr) // new style, based on Microsoft Knowledge Base Ar
 	// Not blue
 	if (!(Inside(H, 145, 175) && (S > 100))) return false;
 	// It's blue: make it gray
-	BYTE b = GetRValue(dwClr);
-	dwClr = RGB(b, b, b) | (dwClr & 0xff000000);
+	BYTE b = GetBlueValue(dwClr);
+	dwClr = C4RGB(b, b, b) | (dwClr & 0xff000000);
 	return true;
 }
 

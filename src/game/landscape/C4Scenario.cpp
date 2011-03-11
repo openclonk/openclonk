@@ -31,6 +31,7 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
+#include <StdColors.h>
 
 //==================================== C4SVal ==============================================
 

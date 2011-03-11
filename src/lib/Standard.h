@@ -27,8 +27,6 @@
 
 #include "PlatformAbstraction.h"
 
-// Color triplets
-#define C4RGB(r, g, b) (((DWORD)(0xff)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 
 // Small helpers
 template <class T> inline T Max(T val1, T val2) { return val1 > val2 ? val1 : val2; }

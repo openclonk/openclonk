@@ -195,10 +195,6 @@ inline int stricmp(const char *s1, const char *s2)
 	return strcasecmp(s1, s2);
 }
 
-#define GetRValue(rgb) ((unsigned char)(rgb))
-#define GetGValue(rgb) ((unsigned char)(((unsigned short)(rgb)) >> 8))
-#define GetBValue(rgb) ((unsigned char)((rgb)>>16))
-#define RGB(r,g,b) ((DWORD)((BYTE)(r)|((BYTE)(g) << 8)|((BYTE)(b) << 16)))
 #define ZeroMemory(d,l) memset((d), 0, (l))
 #endif //_WIN32
 

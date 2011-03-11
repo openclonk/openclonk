@@ -602,11 +602,6 @@ void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object
 	}
 }
 
-DWORD RandomPlayerColor() // generate a random player color
-{
-	return 0xff<<24 | RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
-}
-
 bool C4Player::ScenarioInit()
 {
 	int32_t ptx,pty;
