@@ -39,6 +39,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Player.h>
 #include <C4RankSystem.h>
+#include <C4RoundResults.h>
 #include <C4PXS.h>
 #include <C4MassMover.h>
 #include <C4GameMessage.h>

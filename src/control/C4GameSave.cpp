@@ -36,6 +36,7 @@
 #include <C4ScriptHost.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4RoundResults.h>
 #include <C4Record.h>
 #include <C4Version.h>
 

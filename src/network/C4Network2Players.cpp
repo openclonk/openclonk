@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4Network2.h>
 #include <C4GameControl.h>
+#include <C4RoundResults.h>
 
 #include "C4Control.h"
 

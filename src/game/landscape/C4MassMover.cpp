@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4MassMover.h>
 
+#include <C4Components.h>
 #include <C4Random.h>
 #include <C4Material.h>
 #include <C4Game.h>

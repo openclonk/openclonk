@@ -39,6 +39,7 @@
 #include <C4PlayerList.h>
 #include <C4Random.h>
 #include <C4RankSystem.h>
+#include <C4Teams.h>
 
 static bool FnChangeDef(C4AulObjectContext *cthr, C4ID to_id)
 {

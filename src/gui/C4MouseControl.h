@@ -23,6 +23,7 @@
 #ifndef INC_C4MouseControl
 #define INC_C4MouseControl
 
+#include <C4Facet.h>
 #include "C4ObjectList.h"
 #include "C4Region.h"
 

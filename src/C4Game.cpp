@@ -55,6 +55,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
+#include <C4GameParameters.h>
 #include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
@@ -64,6 +65,7 @@
 #include <C4MessageInput.h>
 #include <C4MassMover.h>
 #include <C4RankSystem.h>
+#include <C4RoundResults.h>
 #include <C4GameMessage.h>
 #include <C4Material.h>
 #include <C4Network2Reference.h>
@@ -88,11 +90,16 @@ public:
 	void OnSec1Timer();
 };
 
+static C4GameParameters GameParameters;
+static C4RoundResults GameRoundResults;
+
 C4Game::C4Game()
 		: Clients(Parameters.Clients),
+		Parameters(GameParameters),
 		Teams(Parameters.Teams),
 		PlayerInfos(Parameters.PlayerInfos),
 		RestorePlayerInfos(Parameters.RestorePlayerInfos),
+		RoundResults(GameRoundResults),
 		Input(Control.Input),
 		KeyboardInput(C4KeyboardInput_Init()),
 		pFileMonitor(NULL),

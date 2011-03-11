@@ -25,6 +25,7 @@
 #include "C4Include.h"
 #include "C4ObjectMenu.h"
 
+#include "C4Control.h"
 #include "C4Object.h"
 #include "C4ObjectCom.h"
 #include "C4Player.h"

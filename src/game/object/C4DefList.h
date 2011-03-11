@@ -23,6 +23,9 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
+#include <StdFont.h>
+#include <StdFacet.h>
+
 const int32_t C4D_None           =    0,
 C4D_All            =    ~C4D_None;
 

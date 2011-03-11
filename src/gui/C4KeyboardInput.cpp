@@ -27,6 +27,7 @@
 #include <C4Include.h>
 #include <C4KeyboardInput.h>
 
+#include <C4Components.h>
 #include <C4Game.h>
 
 #ifdef USE_X11

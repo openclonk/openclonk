@@ -46,6 +46,7 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4PXS.h>
+#include <C4RoundResults.h>
 #include <C4Texture.h>
 #include <C4Weather.h>
 #include <C4Viewport.h>

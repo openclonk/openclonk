@@ -24,10 +24,7 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#include <C4GameParameters.h>
-#include <C4RoundResults.h>
 #include <C4Scenario.h>
-#include <C4Control.h>
 #include <C4PathFinder.h>
 #include <C4Extra.h>
 #include "C4Scoreboard.h"
@@ -61,11 +58,11 @@ public:
 	~C4Game();
 
 	C4ClientList       &Clients; // Shortcut
-	C4GameParameters    Parameters;
+	C4GameParameters    &Parameters;
 	C4TeamList         &Teams; // Shortcut
 	C4PlayerInfoList   &PlayerInfos; // Shortcut
 	C4PlayerInfoList   &RestorePlayerInfos; // Shortcut
-	C4RoundResults      RoundResults;
+	C4RoundResults      &RoundResults;
 	C4Scenario          C4S;
 	C4ComponentHost     Info;
 	C4ComponentHost     Title;
@@ -87,10 +84,10 @@ public:
 	C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
 	C4Scoreboard        Scoreboard;
 	C4VideoPlayer       VideoPlayer;
-	class C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
-	class C4KeyboardInput &KeyboardInput;
-	class C4FileMonitor *pFileMonitor;
-	class C4GameSec1Timer *pSec1Timer;
+	C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
+	C4KeyboardInput &KeyboardInput;
+	C4FileMonitor *pFileMonitor;
+	C4GameSec1Timer *pSec1Timer;
 
 	char CurrentScenarioSection[C4MaxName+1];
 	char ScenarioFilename[_MAX_PATH+1];
@@ -98,7 +95,7 @@ public:
 	char PlayerFilenames[20*_MAX_PATH+1];
 	char DefinitionFilenames[20*_MAX_PATH+1];
 	char DirectJoinAddress[_MAX_PATH+1];
-	class C4Network2Reference *pJoinReference;
+	C4Network2Reference *pJoinReference;
 	int32_t StartupPlayerCount;
 	int32_t FPS,cFPS;
 	int32_t HaltCount;
@@ -154,7 +151,7 @@ public:
 	bool PreInit();
 	void SetScenarioFilename(const char*);
 	bool Execute();
-	class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
+	C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	bool DoGameOver();
 	bool CanQuickSave();
 	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);

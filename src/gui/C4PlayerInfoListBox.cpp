@@ -39,6 +39,7 @@
 #include <C4MouseControl.h>
 #include <C4Network2.h>
 #include <C4GameControl.h>
+#include <C4RoundResults.h>
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
 

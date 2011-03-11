@@ -35,6 +35,7 @@
 #include <C4Viewport.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4RoundResults.h>
 
 C4PlayerList::C4PlayerList()
 {
