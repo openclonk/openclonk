@@ -119,7 +119,9 @@ typedef ptrdiff_t ssize_t;
 
 #ifndef HAVE_STATIC_ASSERT
 #include <boost/static_assert.hpp>
+#ifndef BOOST_HAS_STATIC_ASSERT
 #define static_assert(x, y) BOOST_STATIC_ASSERT(x)
+#endif
 #endif
 
 
