@@ -66,13 +66,6 @@
 #define C4FxCall_EngStruct        39 // regular structure energy loss (normally not called)
 #define C4FxCall_EngGetPunched    40 // energy loss from Punch
 
-// fire drawing modes
-#define C4Fx_FireMode_Default      0 // determine mode by category
-#define C4Fx_FireMode_LivingVeg    2 // C4D_Living and C4D_StaticBack
-#define C4Fx_FireMode_StructVeh    1 // C4D_Structure and C4D_Vehicle
-#define C4Fx_FireMode_Object       3 // other (C4D_Object and no bit set (magic))
-#define C4Fx_FireMode_Last         3 // largest valid fire mode
-
 #define C4Fx_FireParticle1   "Fire"
 #define C4Fx_FireParticle2   "Fire2"
 
@@ -157,13 +150,6 @@ inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4E
 #define C4Fx_Internal       "Int*"
 #define C4Fx_FirePriority   100
 #define C4Fx_FireTimer      1
-
-// fire effect
-int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
-int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iTime);
-int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect, int32_t iReason, bool fTemp);
-C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, C4Effect * pEffect);
-class C4Value &FxFireVarCausedBy(C4Effect *pEffect);
 
 // some other hardcoded engine effects
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj);

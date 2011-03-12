@@ -927,43 +927,6 @@ void C4Object::UpdateOCF()
 #endif
 }
 
-bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
-{
-	// Fire Phase
-	FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
-	// Decay
-	if (!Def->NoBurnDecay)
-		DoCon(-100);
-	// Damage
-	if (!::Game.iTick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
-	// Energy
-	if (!::Game.iTick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
-	// Effects
-	int32_t smoke_level=2*Shape.Wdt/3;
-	int32_t smoke_rate=Def->SmokeRate;
-	if (smoke_rate)
-	{
-		smoke_rate=50*smoke_level/smoke_rate;
-		if (!((Game.FrameCounter+(Number*7))%Max<int32_t>(smoke_rate,3)) || (Abs(xdir)>2))
-			Smoke(GetX(), GetY(),smoke_level);
-	}
-	// Background Effects
-	if (!::Game.iTick5)
-	{
-		int32_t mat;
-		if (MatValid(mat=GBackMat(GetX(), GetY())))
-		{
-			// Extinguish
-			if (::MaterialMap.Map[mat].Extinguisher)
-				{ Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
-			// Inflame
-			if (!Random(3))
-				::Landscape.Incinerate(GetX(), GetY());
-		}
-	}
-
-	return true;
-}
 
 bool C4Object::ExecLife()
 {
@@ -1010,7 +973,13 @@ bool C4Object::ExecLife()
 		if (InMat!=MNone)
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
-					Incinerate(NO_OWNER);
+				{
+					C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnInIncendiaryMaterial);
+					if (pCallFunc)
+					{
+						pCallFunc->Exec(this, &C4AulParSet());
+					}
+				}
 
 	// birthday
 	if (!::Game.iTick255)
@@ -1219,51 +1188,6 @@ bool C4Object::ChangeDef(C4ID idNew)
 	return true;
 }
 
-bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
-{
-	// Already on fire
-	if (OnFire) return false;
-	// add effect
-	int32_t iEffNumber;
-	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
-	new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, true, iEffNumber);
-	return !!iEffNumber;
-}
-
-bool C4Object::Extinguish(int32_t iFireNumber)
-{
-	// any effects?
-	if (!pEffects) return false;
-	// fire number known: extinguish that fire
-	C4Effect *pEffFire;
-	if (iFireNumber)
-	{
-		pEffFire = pEffects->Get(iFireNumber, false);
-		if (!pEffFire) return false;
-		pEffFire->Kill(this);
-	}
-	else
-	{
-		// otherwise, kill all fires
-		// (keep checking from beginning of pEffects, as Kill might delete or change effects)
-		int32_t iFiresKilled = 0;
-		while (pEffects && (pEffFire = pEffects->Get(C4Fx_AnyFire)))
-		{
-			while (pEffFire && WildcardMatch(C4Fx_Internal, pEffFire->Name))
-			{
-				pEffFire = pEffFire->pNext;
-				if (pEffFire) pEffFire = pEffFire->Get(C4Fx_AnyFire);
-			}
-			if (!pEffFire) break;
-			pEffFire->Kill(this);
-			++iFiresKilled;
-		}
-		if (!iFiresKilled) return false;
-	}
-	// done, success
-	return true;
-}
-
 void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 {
 	// non-living: ask effects first
@@ -1327,7 +1251,14 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 	// Incinerate
 	if (Def->BlastIncinerate)
 		if (Damage>=Def->BlastIncinerate)
-			Incinerate(iCausedBy,true);
+		{
+			C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnBlastIncinerationDamage);
+			if (pCallFunc)
+			{
+				C4AulParSet Pars(C4VInt(iLevel), C4VInt(iCausedBy));
+				pCallFunc->Exec(this, &Pars);
+			}
+		}
 }
 
 void C4Object::DoCon(int32_t iChange)
@@ -2522,15 +2453,10 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 		if (pMeshInstance)
 		{
-			// Set Action animation by slot 0		
+			// Set Action animation by slot 0
 			Action.Animation = pMeshInstance->GetRootAnimationForSlot(0);
 			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 		}
-
-		// if on fire but no effect is present (old-style savegames), re-incinerate
-		int32_t iFireNumber;
-		C4Value Par1, Par2, Par3, Par4;
-		if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, false, iFireNumber);
 
 		// blit mode not assigned? use definition default then
 		if (!BlitMode) BlitMode = Def->BlitMode;
@@ -5018,18 +4944,6 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
 	}
 	// concat OK
 	return true;
-}
-
-int32_t C4Object::GetFireCausePlr()
-{
-	// get fire effect
-	if (!pEffects) return NO_OWNER;
-	C4Effect *pFire = pEffects->Get(C4Fx_Fire);
-	if (!pFire) return NO_OWNER;
-	// get causing player
-	int32_t iFireCausePlr = pFire->GetPropertyInt(P_CausedBy);
-	// return if valid
-	if (ValidPlr(iFireCausePlr)) return iFireCausePlr; else return NO_OWNER;
 }
 
 void C4Object::UpdateScriptPointers()

@@ -175,23 +175,6 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// AtObject-Check: Checks for first match of obj1 at obj2
 
 	// Checks for this frame
-	focf=tocf=OCF_None;
-	// Very low level: Incineration
-	if (!::Game.iTick35)
-		{ focf|=OCF_OnFire; tocf|=OCF_Inflammable; }
-
-	if (focf && tocf)
-		for (C4ObjectList::iterator iter=begin(); iter != end() && (obj1=*iter); ++iter)
-			if (obj1->Status && !obj1->Contained)
-				if (obj1->OCF & focf)
-				{
-					ocf1=obj1->OCF; ocf2=tocf;
-					if ((obj2=AtObject(obj1->GetX(),obj1->GetY(),ocf2,obj1)))
-						// Incineration
-						if ((ocf1 & OCF_OnFire) && (ocf2 & OCF_Inflammable))
-							if (!Random(obj2->Def->ContactIncinerate))
-								{ obj2->Incinerate(obj1->GetFireCausePlr(), false, obj1); continue; }
-				}
 
 	// Reverse area check: Checks for all obj2 at obj1
 
@@ -228,7 +211,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 												{
 													int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5 );
 													// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
-													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); 
+													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy);
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
 													C4PropList* pActionDef = obj1->GetAction();

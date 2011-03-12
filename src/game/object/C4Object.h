@@ -258,7 +258,6 @@ public:
 	void Execute();
 	void ClearPointers(C4Object *ptr);
 	bool ExecMovement();
-	bool ExecFire(int32_t iIndex, int32_t iCausedByPlr);
 	void ExecAction();
 	bool ExecLife();
 	bool ExecuteCommand();
@@ -303,7 +302,6 @@ public:
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
 	bool Incinerate(int32_t iCausedBy, bool fBlasted=false, C4Object *pIncineratingObject=NULL);
-	bool Extinguish(int32_t iFireNumber);
 	void DoDamage(int32_t iLevel, int32_t iCausedByPlr, int32_t iCause);
 	void DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr);
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
@@ -393,8 +391,6 @@ public:
 	StdStrBuf GetInfoString(); // return def desc plus effects
 
 	bool CanConcatPictureWith(C4Object *pOtherObject); // return whether this object should be grouped with the other in activation lists, contents list, etc.
-
-	int32_t GetFireCausePlr();
 
 	bool IsMoveableBySolidMask(int ComparisonPlane)
 	{

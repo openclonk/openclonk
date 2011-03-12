@@ -1938,7 +1938,7 @@ static C4ValueArray* FnSimFlight(C4AulContext *ctx, int X, int Y, Nillable<int> 
 	if (!SimFlight(x, y, xdir, ydir, iDensityMin, iDensityMax, iIter))
 	{
 		iIter *= -1;
-	}	
+	}
 
 	// write results to array
 	C4ValueArray *pResults = new C4ValueArray(5);
@@ -2573,10 +2573,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "RemoveUnusedTexMapEntries", FnRemoveUnusedTexMapEntries);
 	AddFunc(pEngine, "SimFlight", FnSimFlight);
 	AddFunc(pEngine, "LoadScenarioSection", FnLoadScenarioSection);
-	AddFunc(pEngine, "FxFireStart", FnFxFireStart, false);
-	AddFunc(pEngine, "FxFireTimer", FnFxFireTimer, false);
-	AddFunc(pEngine, "FxFireStop", FnFxFireStop, false);
-	AddFunc(pEngine, "FxFireInfo", FnFxFireInfo, false);
 	AddFunc(pEngine, "RemoveEffect", FnRemoveEffect);
 	AddFunc(pEngine, "GetEffect", FnGetEffect);
 	AddFunc(pEngine, "SetViewOffset", FnSetViewOffset);
@@ -2728,7 +2724,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "DMQ_Sky"                   ,C4V_Int,      DMQ_Sky },
 	{ "DMQ_Sub"                   ,C4V_Int,      DMQ_Sub },
 	{ "DMQ_Bridge"                ,C4V_Int,      DMQ_Bridge },
-	
+
 	{ "PLRZOOM_Direct"            ,C4V_Int,      PLRZOOM_Direct },
 	{ "PLRZOOM_NoIncrease"        ,C4V_Int,      PLRZOOM_NoIncrease },
 	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },

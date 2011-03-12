@@ -53,12 +53,6 @@ static bool FnIncinerate(C4AulObjectContext *cthr, Nillable<long> causedBy)
 	return !!cthr->Obj->Incinerate(iCausedBy);
 }
 
-static bool FnExtinguish(C4AulObjectContext *cthr)
-{
-	// extinguish all fires
-	return !!cthr->Obj->Extinguish(0);
-}
-
 static C4Void FnSetSolidMask(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
 {
 	cthr->Obj->SetSolidMask(iX,iY,iWdt,iHgt,iTX,iTY);
@@ -2221,7 +2215,7 @@ static Nillable<C4String*> FnGetMeshMaterial(C4AulObjectContext* ctx, int iSubMe
 
 	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);
 	return String(submesh.GetMaterial().Name.getData());
-} 
+}
 
 static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int iSubMesh)
 {
@@ -2404,7 +2398,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "ANIM_Loop"                 ,C4V_Int,      ANIM_Loop },
 	{ "ANIM_Hold"                 ,C4V_Int,      ANIM_Hold },
 	{ "ANIM_Remove"               ,C4V_Int,      ANIM_Remove },
-	
+
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
 
@@ -2554,10 +2548,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
 	AddFunc(pEngine, "GetObjectStatus", FnGetObjectStatus, false);
 	AddFunc(pEngine, "AdjustWalkRotation", FnAdjustWalkRotation, false);
-	AddFunc(pEngine, "FxFireStart", FnFxFireStart, false);
-	AddFunc(pEngine, "FxFireTimer", FnFxFireTimer, false);
-	AddFunc(pEngine, "FxFireStop", FnFxFireStop, false);
-	AddFunc(pEngine, "FxFireInfo", FnFxFireInfo, false);
 	AddFunc(pEngine, "GetContact", FnGetContact);
 	AddFunc(pEngine, "SetObjectBlitMode", FnSetObjectBlitMode);
 	AddFunc(pEngine, "GetObjectBlitMode", FnGetObjectBlitMode);
@@ -2582,8 +2572,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
-	AddFunc(pEngine, "Incinerate", FnIncinerate);
-	AddFunc(pEngine, "Extinguish", FnExtinguish);
 	AddFunc(pEngine, "GrabContents", FnGrabContents);
 	AddFunc(pEngine, "Punch", FnPunch);
 	AddFunc(pEngine, "Kill", FnKill);
