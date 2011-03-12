@@ -9,6 +9,7 @@ Picture=0,0,8,8
 Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
+VertexFriction=60,60,60
 Value=5
 Mass=9
 Rotate=1
