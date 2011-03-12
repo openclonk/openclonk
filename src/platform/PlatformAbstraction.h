@@ -60,9 +60,6 @@
 #   define NOMINMAX
 #  endif
 #  include <windef.h>
-#  include <winnt.h>
-#  include <cstdarg>
-#  include <winbase.h>
 #  include <mmsystem.h>
 # endif
 #endif

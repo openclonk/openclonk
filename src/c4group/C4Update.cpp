@@ -25,6 +25,7 @@
 C4Config *GetCfg();
 
 #ifdef _WIN32
+#include <windows.h>
 #include <direct.h>
 #endif
 

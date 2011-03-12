@@ -22,6 +22,7 @@
 #define INC_StdSync
 
 #ifdef _WIN32
+#include <winbase.h>
 
 class CStdCSec
 {
