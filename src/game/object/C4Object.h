@@ -145,7 +145,6 @@ public:
 	int32_t Damage;
 	int32_t Energy;
 	int32_t Breath;
-	int32_t FirePhase;
 	int32_t InMat; // SyncClearance-NoSave //
 	uint32_t Color;
 	int32_t Timer;

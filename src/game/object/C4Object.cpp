@@ -177,7 +177,6 @@ void C4Object::Default()
 	Energy=0;
 	Alive=0;
 	Breath=0;
-	FirePhase=0;
 	InMat=MNone;
 	Color=0;
 	PlrViewRange=0;
@@ -2078,7 +2077,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				        offY + fr.y,
 				        fr.Wdt, fr.Hgt);
 			}
-			::GraphicsResource.fctFire.Draw(fgo,false,FirePhase);
+			::GraphicsResource.fctFire.Draw(fgo,false,(Number + Game.FrameCounter) % MaxFirePhase);
 		}
 
 	// color modulation (including construction sign...)
@@ -2349,7 +2348,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Energy,                           "Energy",             0                 ));
 	pComp->Value(mkNamingAdapt( Alive,                            "Alive",              false             ));
 	pComp->Value(mkNamingAdapt( Breath,                           "Breath",             0                 ));
-	pComp->Value(mkNamingAdapt( FirePhase,                        "FirePhase",          0                 ));
 	pComp->Value(mkNamingAdapt( Color,                            "Color",              0u                )); // TODO: Convert
 	pComp->Value(mkNamingAdapt( Color,                            "ColorDw",            0u                ));
 	pComp->Value(mkNamingAdapt( fix_x,                            "X",                Fix0                  ));

@@ -29,7 +29,7 @@ global func DoFireStrength(int strength)
 	if(!this) return false;
 	var effect=GetEffect("Fire", this);
 	if(!effect) return false;
-	return EffectCall(nil, effect, "DoFireStrength", strength);
+	effect.strength = BoundBy(effect.strength + strength, 0, 100);
 }
 
 global func Extinguish(strength)
@@ -49,9 +49,9 @@ global func Incinerate(strength, int caused_by, blasted, incinerating_object)
 	if(strength == nil) strength=100;
 	else if(!strength) return false;
 	
-	if(this->OnFire())
-		this->DoFireStrength(strength);
-	else AddEffect("Fire", this, 100, 1, this, nil, caused_by, !!blasted, incinerating_object, strength);
+	var effect=GetEffect("Fire", this);
+	if(effect) {effect.strength = BoundBy(effect.strength + strength, 0, 100); return true;}
+	else AddEffect("Fire", this, 100, 2, this, nil, caused_by, !!blasted, incinerating_object, strength);
 	return true;
 }
 
@@ -142,6 +142,7 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	effect.caused_by = caused_by; // used in C4Object::GetFireCause and timer! <- fixme?
 	effect.blasted = blasted;
 	effect.incinerating_obj = incinerating_object;
+	effect.no_burn_decay = target->GetDefCoreVal("NoBurnDecay", "DefCore");
 
 	// Set values
 	//target->FirePhase=Random(MaxFirePhase);
@@ -159,12 +160,12 @@ global func FxFireTimer(object target, effect, int time)
 	if (!target) return FX_Execute_Kill;
 
 	// get cause
-	if(!GetPlayerName(effect.caused_by)) effect.caused_by=NO_OWNER;;
+	//if(!GetPlayerName(effect.caused_by)) effect.caused_by=NO_OWNER;;
 		
 	// strength changes over time
 	if(time % 4 == 0)
 	{
-		if(effect.strength < 50){ if(time % 8 == 0) effect.strength=Max(effect.strength-1, 0);}
+		if(effect.strength < 50){ if(time % 8 == 0) effect.strength=Max(effect.strength-1, 0); if(effect.strength <= 0) return FX_Execute_Kill;}
 		else effect.strength=Min(effect.strength+1, 100);
 	}
 	
@@ -172,7 +173,7 @@ global func FxFireTimer(object target, effect, int time)
 	var height=target->GetDefCoreVal("Height", "DefCore")/2;
 	
 	// target is in liquid?
-	if(time % 15 == 0)
+	if(time % 24 == 0)
 	{
 		
 		var mat;
@@ -195,45 +196,47 @@ global func FxFireTimer(object target, effect, int time)
 		}
 	}
 	
-	target->Message(Format("<c ee0000>%d</c>", effect.strength));
+	if(time % 20 == 0)target->Message(Format("<c ee0000>%d</c>", effect.strength));
 	// causes on object
 	//target->ExecFire(effect_number, caused_by);
 	if(target->GetAlive())
 	{
-		target->DoEnergy(-effect.strength, true, FX_Call_EngFire, effect.caused_by); 
+		target->DoEnergy(-effect.strength*2, true, FX_Call_EngFire, effect.caused_by); 
 	}
 	else 
 	{
 		if((time*10) % 100 <= effect.strength)
 		{
-			target->DoDamage(1, true, FX_Call_DmgFire, effect.caused_by);
-			if(target) if(!Random(4)) if(!target->GetDefCoreVal("NoBurnDecay", "DefCore")) target->DoCon(-1);
+			target->DoDamage(2, true, FX_Call_DmgFire, effect.caused_by);
+			if(target) if(!Random(2)) if(!effect.no_burn_decay) target->DoCon(-1);
 		} 
 	}
 	if(!target) return FX_Execute_Kill;
-	if(!(time % 2 == 0)) return FX_OK;
+	//if(!(time % 2 == 0)) return FX_OK;
 	
-	if(!target->OnFire()) {return FX_Execute_Kill;}
+	//if(!target->OnFire()) {return FX_Execute_Kill;}
 	if(target->Contained()) return FX_OK;
 	
 	// particles
-	var smoke, sparks, bright;
-	smoke=BoundBy((effect.strength*3)/4, 0, 100);
-	sparks=BoundBy((effect.strength*3)/4, 0, 100);
+	//var smoke;//, sparks, bright;
+	//smoke=BoundBy(effect.strength, 0, 100);
+	//sparks=BoundBy((effect.strength*3)/4, 0, 100);
 	//bright=BoundBy((effect.strength-50), 0, 100);
-	
-	var wind=BoundBy(GetWind(target->GetX(), target->GetY()), -5, 5);
-	
-	var smoke_color; if(effect.strength < 50) smoke_color=RGBa(255,255,255, 100); else smoke_color=RGBa(100, 100, 100, 100);
-	for(var i=0;i<Max(1, smoke/20);++i)
+	if(time % 4 == 0)
 	{
-		CreateParticle("ExploSmoke", RandomX(-width, width), RandomX(-height, height), wind, -smoke/10, BoundBy(5*Max(width, height), 50, 500), smoke_color);
+		var size = BoundBy(10*Max(width, height), 50, 800);
+		if(size > 300) if(time % 8 == 0) return;
+		
+		var wind=BoundBy(GetWind(target->GetX(), target->GetY()), -5, 5);
+		var smoke_color; if(effect.strength < 50) smoke_color=RGBa(255,255,255, 50); else smoke_color=RGBa(100, 100, 100, 50);
+		
+		CreateParticle("ExploSmoke", RandomX(-width, width), RandomX(-height, height), wind, -effect.strength/8, size, smoke_color);
 	}
 	
-	for(var i=0;i<Max(1, sparks/20);++i)
+	/*for(var i=0;i<Max(1, sparks/20);++i)
 	{
 		CreateParticle("MagicSpark", RandomX(-width, width), RandomX(-height, height), wind/2, -10, 100, RGBa(255,255,255, 200), target, Random(2));
-	}
+	}*/
 	
 	/*for(var i=0;i<bright/10;++i)
 	{
@@ -261,15 +264,4 @@ global func FxFireStop(object target, int effect_number, int reason, bool temp)
 global func FxFireInfo(object target,  effect)
 {
 	return Format("Is on %d%% fire.", effect.strength); // todo: <--
-}
-
-global func FxFireDoFireStrength(target, effect, amount)
-{
-	effect.strength = BoundBy(effect.strength + amount, 0, 100);
-	
-	if(effect.strength == 0)
-	{
-		RemoveEffect(nil, target, effect);
-	}
-	return true;
 }
