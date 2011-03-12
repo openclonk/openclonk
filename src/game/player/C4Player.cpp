@@ -980,6 +980,8 @@ bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 	C4Group hGroup;
 	// Open group
 	if (!Reloc.Open(hGroup, szFilename)) return false;
+	// Remember filename
+	SCopy(hGroup.GetFullName().getData(), Filename, _MAX_PATH);
 	// Load core
 	if (!C4PlayerInfoCore::Load(hGroup))
 		{ hGroup.Close(); return false; }
