@@ -30,6 +30,7 @@
 #ifdef GENERATE_MINI_DUMP
 
 // Dump generation on crash
+#include <windows.h>
 #include <dbghelp.h>
 #include <fcntl.h>
 #include <string.h>

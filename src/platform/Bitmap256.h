@@ -25,7 +25,7 @@
 #define BITMAP256_H_INC
 
 #ifdef _WIN32
-#include <windows.h>
+#include <StdWindow.h>
 #else
 #pragma pack(push,2)
 typedef struct tagBITMAPFILEHEADER

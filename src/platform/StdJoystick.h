@@ -23,7 +23,6 @@
 #ifndef INC_StdJoystick
 #define INC_StdJoystick
 
-#include <windows.h>
 #include <mmsystem.h>
 
 const int32_t PAD_Axis_POVx = 6;

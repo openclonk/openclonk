@@ -24,7 +24,7 @@
 #define INC_STDREGISTRY
 
 #ifdef _WIN32
-#include <windows.h>
+
 #include "StdCompiler.h"
 bool DeleteRegistryValue(HKEY hKey, const char *szSubKey,
                          const char *szValueName);
