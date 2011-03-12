@@ -55,9 +55,6 @@
 const char *C4CFN_FLS[] =
 {
 	C4CFN_System,           C4FLS_System,
-	C4CFN_Mouse,            C4FLS_Mouse,
-	C4CFN_Keyboard,         C4FLS_Keyboard,
-	C4CFN_Easy,             C4FLS_Easy,
 	C4CFN_Material,         C4FLS_Material,
 	C4CFN_Graphics,         C4FLS_Graphics,
 	C4CFN_DefFiles,         C4FLS_Def,

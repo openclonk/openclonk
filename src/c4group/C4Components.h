@@ -39,10 +39,6 @@
 
 #define C4CFN_Objects         "Objects.c4d"
 
-#define C4CFN_Mouse           "Mouse.c4f"
-#define C4CFN_Keyboard        "Keyboard.c4f"
-#define C4CFN_Easy            "Easy.c4f"
-
 #define C4CFN_ScenarioCore    "Scenario.txt"
 #define C4CFN_FolderCore      "Folder.txt"
 #define C4CFN_PlayerInfoCore  "Player.txt"
@@ -183,10 +179,7 @@
             "|GUICaption.png|GUIButton.png|GUIButtonDown.png|GUIButtonHighlight.png|GUIIcons.png|GUIIcons2.png|GUIScroll.png|GUIContext.png|GUISubmenu.png|GUICheckBox.png|GUIBigArrows.png|GUIProgress.png"\
             "|StartupScenSelBG.*|StartupPlrSelBG.*|StartupPlrPropBG.*|StartupNetworkBG.*|StartupAboutBG.*|StartupBigButton.png|StartupBigButtonDown.png|StartupBookScroll.png|StartupContext.png|StartupScenSelIcons.png|StartupScenSelTitleOv.png|StartupDlgPaper.png|StartupOptionIcons.png|StartupTabClip.png|StartupNetGetRef.png|StartupLogo.png"
 #define C4FLS_Objects   "Names*.txt|Desc*.txt|*.c4d"
-#define C4FLS_Mouse     "*.txt|*.rtf|Title.bmp|Title.png|Icon.bmp|Tutorial01.c4s|Tutorial02.c4s|Tutorial03.c4s|Objects.c4d"
-#define C4FLS_Keyboard  "*.txt|*.rtf|Title.bmp|Title.png|Icon.bmp|Tutorial01.c4s|Tutorial02.c4s|Tutorial03.c4s|Tutorial04.c4s|Tutorial05.c4s|Tutorial06.c4s|Tutorial07.c4s|Tutorial08.c4s|Tutorial09.c4s|Tutorial10.c4s"
-#define C4FLS_Easy      "*.txt|*.rtf|Title.bmp|Title.png|Icon.bmp|Goldmine.c4s|Monsterkill.c4s|Economy.c4s|Melee.c4s|Lake.c4s|Castle.c4s"
-#define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|Alchem.c|StringTbl*.txt|*.c|Names.txt"
+#define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|*.c|Names.txt"
 #define C4FLS_Music     "Frontend.*|Credits.*"
 
 #endif
