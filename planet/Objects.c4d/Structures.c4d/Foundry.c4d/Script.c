@@ -80,7 +80,7 @@ public func FxSmeltingTimer(object target, int num, int timer)
 	}
 
 	//Molten metal hits cast... Sizzling sound
-	if(timer == 256) Sound("Cast.ogg");
+	if(timer == 256) Sound("Sizzle.ogg");
 
 	if(timer > 244 && timer < 290)
 	{
