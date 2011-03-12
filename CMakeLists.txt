@@ -1035,6 +1035,23 @@ foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
 endforeach()
 
 ############################################################################
+# Precompiled header support, gcc part (it needs the cxx flags)
+############################################################################
+
+include(GccPchSupport.cmake)
+if(CMAKE_COMPILER_IS_GNUCXX)
+	if(NOT DEFINED USE_GCC_PCH)
+		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
+	endif()
+	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
+endif()
+if(USE_GCC_PCH)
+	add_precompiled_header(clonk src/C4Include.h)
+	add_precompiled_header(c4group src/C4Include.h)
+	#c4script is rarely compiled and
+endif()
+
+############################################################################
 # Locate optional libraries (if so desired)
 ############################################################################
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
