@@ -294,11 +294,7 @@ extern "C"
 /* avoid conflict with conflicting boolean and FAR typedefs */
 #undef __RPCNDR_H__
 #undef FAR
-#ifdef jpeg_boolean
-    #define boolean jpeg_boolean
-#else
-    #define jpeg_boolean boolean
-#endif
+#define boolean jpeg_boolean
 #include <jpeglib.h>
 #undef boolean
 }
