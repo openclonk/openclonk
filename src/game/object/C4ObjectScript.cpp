@@ -45,14 +45,6 @@ static bool FnChangeDef(C4AulObjectContext *cthr, C4ID to_id)
 	return !!cthr->Obj->ChangeDef(to_id);
 }
 
-static bool FnIncinerate(C4AulObjectContext *cthr, Nillable<long> causedBy)
-{
-	long iCausedBy = causedBy;
-	if (causedBy.IsNil()) iCausedBy = cthr->Obj->Controller;
-
-	return !!cthr->Obj->Incinerate(iCausedBy);
-}
-
 static C4Void FnSetSolidMask(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
 {
 	cthr->Obj->SetSolidMask(iX,iY,iWdt,iHgt,iTX,iTY);
