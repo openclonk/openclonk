@@ -94,7 +94,7 @@ bool CSurface8::Create(int iWdt, int iHgt)
 
 	Bits=new BYTE[Wdt*Hgt];
 	if (!Bits) return false;
-	ZeroMemory(Bits, Wdt*Hgt);
+	memset(Bits, 0, Wdt*Hgt);
 	Pitch=Wdt;
 	// update clipping
 	NoClip();

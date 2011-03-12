@@ -260,7 +260,7 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 	iTexY=(Hgt-1)/iTexSize +1;
 	// get mem for texture array
 	ppTex = new CTexRef * [iTexX*iTexY];
-	ZeroMemory(ppTex, iTexX*iTexY*sizeof(CTexRef *));
+	memset(ppTex, 0, iTexX*iTexY*sizeof(CTexRef *));
 	// cvan't be render target if it's not a single surface
 	if (!IsSingleSurface()) fIsRenderTarget = false;
 	// create textures

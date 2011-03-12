@@ -575,7 +575,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 		if ((iTeamCapacity = iTeamCount))
 		{
 			ppList = new C4Team *[iTeamCapacity];
-			ZeroMemory(ppList, sizeof(C4Team *)*iTeamCapacity);
+			memset(ppList, 0, sizeof(C4Team *)*iTeamCapacity);
 		}
 		else
 			ppList = NULL;

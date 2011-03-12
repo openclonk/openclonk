@@ -210,7 +210,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 		if (iScenCount)
 		{
 			ppScenList = new Scenario *[iScenCount];
-			ZeroMemory(ppScenList, sizeof(Scenario *)*iScenCount);
+			memset(ppScenList, 0, sizeof(Scenario *)*iScenCount);
 		}
 		else
 			ppScenList = NULL;
@@ -230,7 +230,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 		if (iAccessGfxCount)
 		{
 			ppAccessGfxList = new AccessGfx *[iAccessGfxCount];
-			ZeroMemory(ppAccessGfxList, sizeof(AccessGfx *)*iAccessGfxCount);
+			memset(ppAccessGfxList, 0, sizeof(AccessGfx *)*iAccessGfxCount);
 		}
 		else
 			ppAccessGfxList = NULL;

@@ -1345,7 +1345,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 	naddr.sin_family = AF_INET;
 	naddr.sin_port = (iPort == P_NONE ? 0 : htons(iPort));
 	naddr.sin_addr.s_addr = INADDR_ANY;
-	ZeroMemory(naddr.sin_zero, sizeof naddr.sin_zero);
+	memset(naddr.sin_zero, 0, sizeof naddr.sin_zero);
 	if (::bind(sock, reinterpret_cast<sockaddr *>(&naddr), sizeof naddr) == SOCKET_ERROR)
 	{
 		SetError("could not bind socket", true);
@@ -1863,7 +1863,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 		// set up adress
 		MCAddr.sin_family = AF_INET;
 		MCAddr.sin_port = htons(iPort);
-		ZeroMemory(&MCAddr.sin_zero, sizeof MCAddr.sin_zero);
+		memset(&MCAddr.sin_zero, 0, sizeof MCAddr.sin_zero);
 		// search for a free one
 		for (int iRetries = 1000; iRetries; iRetries--)
 		{

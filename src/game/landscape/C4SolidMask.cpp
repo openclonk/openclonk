@@ -422,7 +422,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// the upper left corner is here the [objpos]+rot([shapexy]+[targetxy]+[realWH]/2)-maxWH/2
 	MatBuffPitch = (int) sqrt(double(pForObject->SolidMask.Wdt * pForObject->SolidMask.Wdt + pForObject->SolidMask.Hgt * pForObject->SolidMask.Hgt))+1;
 	if (!(pSolidMaskMatBuff= new BYTE [MatBuffPitch * MatBuffPitch] )) return;
-	ZeroMemory(pSolidMaskMatBuff, MatBuffPitch * MatBuffPitch);
+	memset(pSolidMaskMatBuff, 0, MatBuffPitch * MatBuffPitch);
 	sfcBitmap->Unlock();
 }
 

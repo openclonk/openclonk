@@ -116,7 +116,7 @@ void C4MCCallbackArray::EnablePixel(int32_t iX, int32_t iY)
 		// create bitmap
 		int32_t iSize=(iWdt*iHgt+7)/8;
 		pMap = new BYTE[iSize];
-		ZeroMemory(pMap, iSize);
+		memset(pMap, 0, iSize);
 		// done
 	}
 	// safety: do not set outside map!

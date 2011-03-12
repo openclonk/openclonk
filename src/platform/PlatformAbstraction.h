@@ -195,7 +195,6 @@ inline int stricmp(const char *s1, const char *s2)
 	return strcasecmp(s1, s2);
 }
 
-#define ZeroMemory(d,l) memset((d), 0, (l))
 #endif //_WIN32
 
 
