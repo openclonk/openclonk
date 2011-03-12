@@ -63,7 +63,6 @@
 #  include <winnt.h>
 #  include <cstdarg>
 #  include <winbase.h>
-#  include <winnls.h>
 #  include <mmsystem.h>
 # endif
 #endif

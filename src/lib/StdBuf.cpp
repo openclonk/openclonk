@@ -28,6 +28,7 @@
 #include <stdio.h>
 #ifdef _WIN32
 #include <io.h>
+#include <windows.h>
 #define vsnprintf _vsnprintf
 #else
 #define O_BINARY 0
@@ -126,6 +127,15 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 }
 
 // *** StdStringBuf
+
+#ifdef _WIN32
+StdStrBuf::StdStrBuf(const wchar_t * utf16)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
+	SetSize(len);
+	WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
+}
+#endif
 
 void StdStrBuf::Format(const char *szFmt, ...)
 {
