@@ -341,13 +341,13 @@ uint32_t CClrModAddMap::GetModAt(int x, int y) const
 
 	// TODO: Alphafixed. Correct?
 	unsigned char Vis = pMap[ty*Wdt+tx];
-	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
+	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty*Wdt+tx2];
-	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
+	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx];
-	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
+	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx2];
-	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|C4RGB(Vis, Vis, Vis);
+	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : C4RGB(Vis, Vis, Vis);
 	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c2, c3, c4);
 	return clrs.GetColorAt(x, y);
 #endif

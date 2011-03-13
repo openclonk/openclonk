@@ -281,9 +281,8 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 				// because blitting on a black pixel reduces luminosity as compared to shadowless font,
 				// assume luminosity as if blitting shadowless font on a 50% gray background
 				unsigned char cBack = bAlpha;
-				dwPixVal = C4RGB(cBack/2, cBack/2, cBack/2);
+				dwPixVal = RGBA(cBack/2, cBack/2, cBack/2, bAlphaShadow);
 			}
-			dwPixVal += bAlphaShadow << 24;
 			BltAlpha(dwPixVal, bAlpha << 24 | 0xffffff);
 			sfcCurrent->SetPixDw(at_x + x, at_y + y, dwPixVal);
 		}

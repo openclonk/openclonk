@@ -413,7 +413,7 @@ bool ClrByOwner(DWORD &dwClr) // new style, based on Microsoft Knowledge Base Ar
 	if (!(Inside(H, 145, 175) && (S > 100))) return false;
 	// It's blue: make it gray
 	BYTE b = GetBlueValue(dwClr);
-	dwClr = C4RGB(b, b, b) | (dwClr & 0xff000000);
+	dwClr = RGBA(b, b, b, 0) | (dwClr & 0xff000000);
 	return true;
 }
 
