@@ -183,11 +183,6 @@ typedef uint32_t       DWORD;
 typedef uint8_t        BYTE;
 typedef uint16_t       WORD;
 
-typedef struct
-{
-	int32_t left; int32_t top; int32_t right; int32_t bottom;
-} RECT;
-
 #include <strings.h>
 inline int stricmp(const char *s1, const char *s2)
 {

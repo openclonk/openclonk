@@ -292,14 +292,9 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 {
 	SURFACE sfcPreview;
 	int32_t iPrvWdt,iPrvHgt;
-	RECT rect;
-	
-	rect.left = rect.top = 0;
-	rect.bottom = [ctrler(&Console).previewView frame].size.height;
-	rect.right  = [ctrler(&Console).previewView frame].size.width;
 
-	iPrvWdt=rect.right-rect.left;
-	iPrvHgt=rect.bottom-rect.top;
+	iPrvWdt = [ctrler(&Console).previewView frame].size.width;
+	iPrvHgt = [ctrler(&Console).previewView frame].size.height;
 
 	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return NULL;
 

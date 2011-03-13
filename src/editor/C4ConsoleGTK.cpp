@@ -1305,15 +1305,9 @@ void C4ToolsDlg::State::UpdatePreview()
 
 	int32_t iPrvWdt,iPrvHgt;
 
-	RECT rect;
 	/* TODO: Set size request for image to read size from image's size request? */
-	rect.left = 0;
-	rect.top = 0;
-	rect.bottom = 64;
-	rect.right = 64;
-
-	iPrvWdt=rect.right-rect.left;
-	iPrvHgt=rect.bottom-rect.top;
+	iPrvWdt=64;
+	iPrvHgt=64;
 
 	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
 
