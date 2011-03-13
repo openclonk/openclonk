@@ -346,9 +346,9 @@ void C4Viewport::BlitOutput()
 {
 	if (pWindow)
 	{
-		RECT rtSrc,rtDst;
-		rtSrc.left=DrawX; rtSrc.top=DrawY;  rtSrc.right=DrawX+ViewWdt; rtSrc.bottom=DrawY+ViewHgt;
-		rtDst.left=OutX;  rtDst.top=OutY;   rtDst.right=OutX+ ViewWdt; rtDst.bottom=OutY+ ViewHgt;
+		C4Rect rtSrc,rtDst;
+		rtSrc.x = DrawX; rtSrc.y = DrawY;  rtSrc.Wdt = ViewWdt; rtSrc.Hgt = ViewHgt;
+		rtDst.x = OutX;  rtDst.y = OutY;   rtDst.Wdt = ViewWdt; rtDst.Hgt = ViewHgt;
 		pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
 	}
 }

@@ -152,7 +152,7 @@ public:
 #endif
 	// Only for surfaces which map to a window
 	bool UpdateSize(int wdt, int hgt);
-	bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL);
+	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL);
 
 	void Clear();
 	void Default();

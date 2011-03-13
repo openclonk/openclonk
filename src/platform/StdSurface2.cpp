@@ -498,7 +498,7 @@ bool CSurface::UpdateSize(int wdt, int hgt)
 	return true;
 }
 
-bool CSurface::PageFlip(RECT *pSrcRt, RECT *pDstRt)
+bool CSurface::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt)
 {
 	assert(fPrimary);
 	if (!fPrimary)

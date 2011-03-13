@@ -116,7 +116,7 @@ public:
 	// General
 	void Clear();
 	void Default();
-	bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL);
+	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL, CStdWindow * pWindow = NULL);
 	bool BeginScene(); // prepare device for drawing
 	void EndScene();   // prepare device for surface locking, flipping etc.
 	virtual int GetEngine() { return fSoftware ? 2 : 0; }   // get indexed engine

@@ -88,15 +88,30 @@ void CStdD3D::Clear()
 
 /* Direct3D initialization */
 
-bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
+bool CStdD3D::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt, CStdWindow * pWindow)
 {
+	RECT SrcRt, DstRt;
+	if (pSrcRt)
+	{
+		SrcRt.left = pSrcRt->x;
+		SrcRt.top = pSrcRt->y;
+		SrcRt.right = pSrcRt->x + pSrcRt->Wdt;
+		SrcRt.bottom = pSrcRt->y + pSrcRt->Hgt;
+	}
+	if (pDstRt)
+	{
+		DstRt.left = pDstRt->x;
+		DstRt.top = pDstRt->y;
+		DstRt.right = pDstRt->x + pDstRt->Wdt;
+		DstRt.bottom = pDstRt->y + pDstRt->Hgt;
+	}
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// safety
 	if (!lpDevice) return false;
 	// end the scene and present it
 	EndScene();
-	if (lpDevice->Present(pSrcRt, pDstRt, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
+	if (lpDevice->Present(pSrcRt ? &SrcRt : 0, pDstRt ? &DstRt : 0, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
 	{
 		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return false;
 		if (!RestoreDeviceObjects()) return false;

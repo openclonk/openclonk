@@ -713,9 +713,9 @@ namespace C4GUI
 		// blit output to own window
 		if (pWindow)
 		{
-			RECT rtSrc,rtDst;
-			rtSrc.left=rcBounds.x; rtSrc.top=rcBounds.y;  rtSrc.right=rcBounds.x+rcBounds.Wdt; rtSrc.bottom=rcBounds.y+rcBounds.Hgt;
-			rtDst.left=0; rtDst.top=0;    rtDst.right=rcBounds.Wdt; rtDst.bottom=rcBounds.Hgt;
+			C4Rect rtSrc,rtDst;
+			rtSrc.x=rcBounds.x; rtSrc.y=rcBounds.y;  rtSrc.Wdt=rcBounds.Wdt; rtSrc.Hgt=rcBounds.Hgt;
+			rtDst.x=0; rtDst.y=0;    rtDst.Wdt=rcBounds.Wdt; rtDst.Hgt=rcBounds.Hgt;
 			pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
 		}
 	}
