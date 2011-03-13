@@ -480,7 +480,7 @@ void C4ControlSyncCheck::Execute() const
 #ifdef _DEBUG
 		// Debug safe
 		C4GameSaveNetwork SaveGame(false);
-		SaveGame.Save(Config.AtExePath("Desync.c4s"));
+		SaveGame.Save(Config.AtExePath("Desync.ocs"));
 #endif
 		// league: Notify regular client disconnect within the game
 		::Network.LeagueNotifyDisconnect(C4ClientIDHost, C4LDR_Desync);

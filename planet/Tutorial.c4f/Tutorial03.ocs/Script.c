@@ -62,7 +62,7 @@ protected func Initialize()
 	AddEffect("Ropeladder", target, 1, 0, target);
 
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.c4f\\Tutorial03.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -70,7 +70,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
-	 SetNextMission("Tutorial.c4f\\Tutorial04.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	 SetNextMission("Tutorial.c4f\\Tutorial04.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }

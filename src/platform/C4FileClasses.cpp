@@ -48,7 +48,7 @@ bool SetProtocol(const char *szProtocol, const char *szCommand, const char *szMo
 bool SetC4FileClasses(const char *szEnginePath)
 {
 
-	if (!SetRegFileClass("Clonk4.Scenario",   "c4s", "Clonk 4 Scenario",          szEnginePath, 1, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Scenario",   ,"ocs", "OpenClonk Scenario",          szEnginePath, 1, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Group",      "c4g", "Clonk 4 Group",             szEnginePath, 2, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Folder",     "c4f", "Clonk 4 Folder",            szEnginePath, 3, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Player",     "c4p", "Clonk 4 Player",            szEnginePath, 4, C4FileClassContentType)) return false;

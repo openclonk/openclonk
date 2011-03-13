@@ -128,7 +128,7 @@ public:
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_SCENARIO"), true); }
 
-		virtual const char *GetDefaultExtension() { return "c4s"; }
+		virtual const char *GetDefaultExtension() { return "ocs"; }
 
 		virtual bool IsScenario() { return true; }
 	};

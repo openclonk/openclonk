@@ -150,7 +150,7 @@ bool C4Record::Start(bool fInitial)
 			Index++;
 
 	// compose record filename
-	sFilename.Format("%s" DirSep "%03i-%s.c4s", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
+	sFilename.Format("%s" DirSep "%03i-%s.ocs", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
 
 	// log
 	StdStrBuf sLog; sLog.Format(LoadResStr("IDS_PRC_RECORDINGTO"),sFilename.getData());
@@ -1199,7 +1199,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	SCopy(szStream, szRecord, _MAX_PATH);
 	if (GetExtension(szRecord))
 		*(GetExtension(szRecord) - 1) = 0;
-	SAppend(".c4s", szRecord, _MAX_PATH);
+	SAppend(".ocs", szRecord, _MAX_PATH);
 	LogF("Original scenario is %s, creating %s.", szOrigin, szRecord);
 	if (!C4Group_CopyItem(szOrigin, szRecord, false, false))
 		return false;

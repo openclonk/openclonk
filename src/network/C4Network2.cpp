@@ -525,7 +525,7 @@ bool C4Network2::RetrieveScenario(char *szScenario)
 		return false;
 
 	// create unpacked copy of scenario
-	if (!ResList.FindTempResFileName(FormatString("Combined%d.c4s", Game.Clients.getLocalID()).getData(), szScenario) ||
+	if (!ResList.FindTempResFileName(FormatString("Combined%d.ocs", Game.Clients.getLocalID()).getData(), szScenario) ||
 	    !C4Group_CopyItem(pScenario->getFile(), szScenario) ||
 	    !C4Group_UnpackDirectory(szScenario))
 		return false;

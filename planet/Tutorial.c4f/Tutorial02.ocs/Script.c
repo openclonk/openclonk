@@ -116,7 +116,7 @@ protected func Initialize()
 	PlaceGrass(85);
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial02.c4s", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.c4f\\Tutorial02.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -124,7 +124,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
-	SetNextMission("Tutorial.c4f\\Tutorial03.c4s", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextMission("Tutorial.c4f\\Tutorial03.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }

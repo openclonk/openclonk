@@ -460,7 +460,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 			return true;
 		}
 	}
-	// get and search for filename without specified folder (e.g., Castle.c4s when the opened game is Easy.c4f\Castle.c4s)
+	// get and search for filename without specified folder (e.g., Castle.ocs when the opened game is Easy.c4f\Castle.ocs)
 	const char *szFilenameOnly = GetFilename(szFilename);
 	const char *szFilenameC4 = GetC4Filename(szFilename);
 	if (szFilenameOnly != szFilenameC4)
@@ -489,7 +489,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 			if (!*GetExtension(*i)) // directories without extension only
 				if (!szNetPath || !*szNetPath || !ItemIdentical(*i, szNetPath)) // ignore network path
 				{
-					// search for complete name at subpath (e.g. MyFolder\Easy.c4f\Castle.c4s)
+					// search for complete name at subpath (e.g. MyFolder\Easy.c4f\Castle.ocs)
 					sFilename.Format("%s%c%s", *i, DirectorySeparator, szFilenameC4);
 					if (SetByCore(nCore, fSilent, sFilename.getData(), iRecursion + 1))
 						return true;

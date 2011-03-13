@@ -677,7 +677,7 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 		// not in ExePath: Is it a global path?
 		if (IsGlobalPath(sFilename->getData()))
 		{
-			// then shorten it (e.g. C:\Temp\Missions.c4f\Goldmine.c4s to Missions.c4f\Goldmine.c4s)
+			// then shorten it (e.g. C:\Temp\Missions.c4f\Goldmine.ocs to Missions.c4f\Goldmine.ocs)
 			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(sFilename->getData()));
 			sFilename->Take(std::move(sTemp));
 		}

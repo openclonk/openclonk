@@ -716,7 +716,7 @@ EXTRA_DIST = \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
   src/res/c4g.ico \
-  src/res/c4s.ico \
+  src/res/ocs.ico \
   src/res/Cursor2.bmp \
   src/res/Game.pal \
   src/res/line1.bmp \

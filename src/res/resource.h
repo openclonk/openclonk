@@ -59,7 +59,7 @@
 #define IDD_PROPERTIES                  3002
 #define IDD_TOOLS                       3003
 #define IDI_00_C4X                      4000
-#define IDI_01_C4S                      4001
+#define IDI_01_OCS                      4001
 #define IDI_02_C4G                      4002
 #define IDI_03_C4F                      4003
 #define IDI_04_C4P                      4004

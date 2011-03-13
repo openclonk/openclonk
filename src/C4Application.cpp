@@ -352,7 +352,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			}
 		}
 		// Scenario file
-		if (SEqualNoCase(GetExtension(szParameter),"c4s"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocs"))
 		{
 			if(IsGlobalPath(szParameter))
 				Game.SetScenarioFilename(szParameter);

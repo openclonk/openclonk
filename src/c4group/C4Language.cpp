@@ -270,7 +270,7 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strTargetLocation, _MAX_PATH);
 
 	// Adjust location by scenario origin
-	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "c4s"))
+	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "ocs"))
 	{
 		const char *szScenarioRelativePath = GetRelativePathS(strTargetLocation, Config.AtRelativePath(Game.ScenarioFilename));
 		if (szScenarioRelativePath != strTargetLocation)

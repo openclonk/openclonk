@@ -103,8 +103,8 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 ; Register file types  
-  WriteRegStr HKCR ".c4s" "" "Clonk4.Scenario"
-  WriteRegStr HKCR ".c4s\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
+  WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".c4g" "" "Clonk4.Group"
   WriteRegStr HKCR ".c4g\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".c4f" "" "Clonk4.Folder"
@@ -126,8 +126,8 @@ Section -Post
   WriteRegStr HKCR ".c4u" "" "Clonk4.Update"
   WriteRegStr HKCR ".c4u\Content Type" "" "vnd.clonk.c4group"
 ; Register file classes  
-  WriteRegStr HKCR "Clonk4.Scenario" "" "Clonk 4 Scenario"
-  WriteRegStr HKCR "Clonk4.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
+  WriteRegStr HKCR "OpenClonk.Scenario" "" "OpenClonk Scenario"
+  WriteRegStr HKCR "OpenClonk.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
   WriteRegStr HKCR "Clonk4.Group" "" "Clonk 4 Group"
   WriteRegStr HKCR "Clonk4.Group\DefaultIcon" "" "$INSTDIR\Clonk.exe,2"
   WriteRegStr HKCR "Clonk4.Folder" "" "Clonk 4 Folder"
@@ -195,8 +195,8 @@ Section Uninstall
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   
   ; Registry: classes
-  DeleteRegKey HKCR ".c4s"
-  DeleteRegKey HKCR "Clonk4.Scenario"
+  DeleteRegKey HKCR ".ocs"
+  DeleteRegKey HKCR "OpenClonk.Scenario"
   DeleteRegKey HKCR ".c4g"
   DeleteRegKey HKCR "Clonk4.Group"
   DeleteRegKey HKCR ".c4f"
