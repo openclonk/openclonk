@@ -184,7 +184,7 @@ void C4StartupMainDlg::UpdateParticipants()
 		strPlayerFile.append(szPlayer);
 		if (!szPlayer || !*szPlayer) continue;
 		if (!FileExists(strPlayerFile.c_str())) continue;
-		if (!SEqualNoCase(GetExtension(szPlayer), "c4p")) continue; // additional sanity check to clear strange exe-path-only entries in player list?
+		if (!SEqualNoCase(GetExtension(szPlayer), "ocp")) continue; // additional sanity check to clear strange exe-path-only entries in player list?
 		SAddModule(Config.General.Participants, szPlayer);
 	}
 	// Draw selected players - we are currently displaying the players stored in Config.General.Participants.

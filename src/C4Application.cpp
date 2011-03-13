@@ -367,7 +367,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Player file
-		if (SEqualNoCase(GetExtension(szParameter),"c4p"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocp"))
 		{
 			if(IsGlobalPath(szParameter))
 				SAddModule(Game.PlayerFilenames, szParameter);

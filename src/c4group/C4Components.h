@@ -145,7 +145,7 @@
 #define C4CFN_TempLeagueInfo  "~league.tmp"
 
 #define C4CFN_DefFiles        "*.c4d"
-#define C4CFN_PlayerFiles     "*.c4p"
+#define C4CFN_PlayerFiles     "*.ocp"
 #define C4CFN_MaterialFiles   "*.c4m"
 #define C4CFN_ObjectInfoFiles "*.c4i"
 #define C4CFN_MusicFiles      "*.mid"

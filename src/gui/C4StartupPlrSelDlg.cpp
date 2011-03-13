@@ -883,7 +883,7 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 	SReplaceChar(Filename.getMData(), '>', '_');
 	SReplaceChar(Filename.getMData(), '|', '_');
 	if (*Filename.getData() == '.') *Filename.getMData() = '_';
-	Filename.Append(".c4p");
+	Filename.Append(".ocp");
 	StdStrBuf Path(Config.General.UserDataPath); // start at local path
 //  Path.Append(Config.General.PlayerPath);
 	Path.Append(Filename);

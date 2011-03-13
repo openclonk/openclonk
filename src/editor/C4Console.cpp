@@ -289,7 +289,7 @@ bool C4Console::FileOpenWPlrs()
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-	                "Clonk 4 Player\0*.c4p\0\0",
+	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return false;
 	// Compose command line
@@ -451,7 +451,7 @@ void C4Console::PlayerJoin()
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-	                "Clonk 4 Player\0*.c4p\0\0",
+	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return;
 

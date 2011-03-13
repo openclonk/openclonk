@@ -296,7 +296,7 @@ bool C4Record::AddFile(const char *szLocalFilename, const char *szAddAs, bool fD
 
 		// Special stripping for streaming
 		StdCopyStrBuf szFile(szLocalFilename);
-		if (SEqualNoCase(GetExtension(szAddAs), "c4p"))
+		if (SEqualNoCase(GetExtension(szAddAs), "ocp"))
 		{
 			// Create a copy
 			MakeTempFilename(&szFile);

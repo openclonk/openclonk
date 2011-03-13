@@ -79,7 +79,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 		GfxR->fctPlayerClr.Surface->SetClr(0xff);
 	InitRefSym(GfxR->fctPlayerClr, LoadResStr("IDS_MENU_NOPLRFILES"), iPlayer);
 	for (DirectoryIterator iter(Config.General.UserDataPath); *iter; ++iter)
-		if (WildcardMatch("*.c4p", *iter))
+		if (WildcardMatch("*.ocp", *iter))
 		{
 			char szFilename[_MAX_PATH+1], szCommand[_MAX_PATH+30+1];
 			SCopy(*iter, szFilename, _MAX_PATH);
