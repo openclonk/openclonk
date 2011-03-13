@@ -410,48 +410,6 @@ void C4Facet::Set(CSurface &rSfc)
 	Set(&rSfc,0,0,rSfc.Wdt,rSfc.Hgt);
 }
 
-#ifdef _WIN32
-void C4Facet::Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect, int32_t iPhaseX, int32_t iPhaseY)
-{
-#if defined(USE_DIRECTX)
-	if (!pD3D || !Surface || !hWnd || !Wdt || !Hgt) return;
-
-	if (fAspect)
-	{
-		int32_t iTx2=iTx,iTy2=iTy,iTWdt2=iTWdt,iTHgt2=iTHgt;
-		// Adjust height aspect by width aspect
-		if (100*iTWdt/Wdt<100*iTHgt/Hgt)
-		{
-			iTHgt2=Hgt*iTWdt/Wdt;
-			iTy2+=(iTHgt-iTHgt2)/2;
-		}
-		// Adjust width aspect by height aspect
-		else if (100*iTHgt/Hgt<100*iTWdt/Wdt)
-		{
-			iTWdt2=Wdt*iTHgt/Hgt;
-			iTx2+=(iTWdt-iTWdt2)/2;
-		}
-		// Blit
-		pD3D->BlitSurface2Window(Surface,
-		                         X+Wdt*iPhaseX,Y+Hgt*iPhaseY,Wdt,Hgt,
-		                         hWnd,
-		                         iTx2,iTy2,iTWdt2,iTHgt2
-		                         /*true*/);
-	}
-
-	else
-	{
-		// Blit
-		pD3D->BlitSurface2Window(Surface,
-		                         X+Wdt*iPhaseX,Y+Hgt*iPhaseY,Wdt,Hgt,
-		                         hWnd,
-		                         iTx,iTy,iTWdt,iTHgt
-		                         /*true*/);
-	}
-#endif
-}
-#endif
-
 void C4Facet::DrawTile(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 {
 	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;

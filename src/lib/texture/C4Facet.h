@@ -159,9 +159,6 @@ public:
 	{ return iHeight * Wdt / (Hgt ? Hgt : 1); }
 	int32_t GetHeightByWidth(int32_t iWidth) // calc height so it matches facet aspect to width
 	{ return iWidth * Hgt / (Wdt ? Wdt : 1); }
-#ifdef _WIN32
-	void Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0);
-#endif
 };
 
 #endif // INC_C4Facet
