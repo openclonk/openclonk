@@ -540,7 +540,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	return true;
 }
 
-// helper func: Recursive check whether a directory contains a .ocs or .c4f file
+// helper func: Recursive check whether a directory contains a .ocs or .ocf file
 bool DirContainsScenarios(const char *szDir)
 {
 	// create iterator on free store to avoid stack overflow with deeply recursed folders

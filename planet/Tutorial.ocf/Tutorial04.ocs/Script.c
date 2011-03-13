@@ -55,7 +55,7 @@ protected func Initialize()
 		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -64,7 +64,7 @@ protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
 	// Uncomment if there is a 5th tutorial.
-	// SetNextMission("Tutorial.c4f\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
+	// SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
 	// Normal scenario ending by goal library.
 	return false;
 }

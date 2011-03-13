@@ -747,7 +747,7 @@ EXTRA_DIST = \
   src/res/fill1.bmp \
   src/res/ift1.bmp \
   src/res/NoIFT.bmp \
-  src/res/c4f.ico \
+  src/res/ocf.ico \
   src/res/c4p.ico \
   src/res/Fill.bmp \
   src/res/IFT.bmp \

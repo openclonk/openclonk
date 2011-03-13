@@ -172,7 +172,7 @@ bool C4Game::OpenScenario()
 	if (!ScenarioFilename[0]) { LogFatal(LoadResStr("IDS_PRC_NOC4S")); return false; }
 	LogF(LoadResStr("IDS_PRC_LOADC4S"),ScenarioFilename);
 
-	// get parent folder, if it's c4f
+	// get parent folder, if it's ocf
 	pParentGroup = GroupSet.RegisterParentFolders(ScenarioFilename);
 
 	// open scenario
@@ -219,11 +219,11 @@ bool C4Game::OpenScenario()
 		else Log(LoadResStr("IDS_PRC_LOCALONLY"));
 	}
 
-	// add all .c4f-modules to the group set
+	// add all .ocf-modules to the group set
 	// (for savegames, network games, etc.)
 	/*  char szModule[_MAX_PATH+1]; C4Group *pGrp=NULL; int32_t iDefGrpPrio=C4GSPrio_Definition;
 	  for (int32_t cseg=0; SCopySegment(DefinitionFilenames,cseg,szModule,';',_MAX_PATH); cseg++)
-	    if (SEqualNoCase(GetExtension(szModule), "c4f"))
+	    if (SEqualNoCase(GetExtension(szModule), "ocf"))
 	      {
 	      if (!pGrp) pGrp = new C4Group();
 	      if (!pGrp->Open(szModule)) continue;
@@ -3116,7 +3116,7 @@ const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
 		// Get folder name
 		SCopy(szPath,szFoldername,iBackslash);
 		// Open folder
-		if (SEqualNoCase(GetExtension(szFoldername),"c4f"))
+		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
 			if (hGroup.Open(szFoldername))
 			{
 				// Check for contained defs

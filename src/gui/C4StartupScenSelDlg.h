@@ -171,14 +171,14 @@ public:
 		C4MapFolderData *GetMapData() const { return pMapData; }
 	};
 
-	// .c4f subfolder: Read through by group
+	// .ocf subfolder: Read through by group
 	class SubFolder : public Folder
 	{
 	public:
 		SubFolder(Folder *pParent) : Folder(pParent) {}
 		virtual ~SubFolder() {}
 
-		virtual const char *GetDefaultExtension() { return "c4f"; }
+		virtual const char *GetDefaultExtension() { return "ocf"; }
 
 		virtual StdStrBuf GetTypeName() { return StdCopyStrBuf(LoadResStr("IDS_TYPE_FOLDER"), true); }
 

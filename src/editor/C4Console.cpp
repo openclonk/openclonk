@@ -48,7 +48,7 @@
 #include <StdRegistry.h>
 
 #define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
-                                   "*.ocs;*.c4f;Scenario.txt\0" \
+                                   "*.ocs;*.ocf;Scenario.txt\0" \
                                    "\0"
 
 using namespace OpenFileFlags;

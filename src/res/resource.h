@@ -61,7 +61,7 @@
 #define IDI_00_C4X                      4000
 #define IDI_01_OCS                      4001
 #define IDI_02_OCG                      4002
-#define IDI_03_C4F                      4003
+#define IDI_03_OCF                      4003
 #define IDI_04_C4P                      4004
 #define IDI_06_C4D                      4006
 #define IDI_07_C4I                      4007

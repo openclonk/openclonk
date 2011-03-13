@@ -59,7 +59,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	if (fSearchMessage)
 		if (SEqualNoCase(GetExtension(hGroup.GetName()),"c4d")
 		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocs")
-		    || SEqualNoCase(GetExtension(hGroup.GetName()),"c4f"))
+		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocf"))
 		{
 			fThisSearchMessage=true;
 			fSearchMessage=false;
@@ -115,7 +115,7 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 	{
 		SCopy(szPath,szFoldername,iBackslash);
 		// Load from parent folder
-		if (SEqualNoCase(GetExtension(szFoldername),"c4f"))
+		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
 			if ((iDefs=Load(szFoldername,dwLoadWhat,szLanguage,pSoundSystem,fOverload)))
 			{
 				iResult+=iDefs;

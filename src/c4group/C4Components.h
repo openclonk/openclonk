@@ -153,7 +153,7 @@
 #define C4CFN_PNGFiles        "*.png"
 #define C4CFN_BitmapFiles     "*.bmp"
 #define C4CFN_ScenarioFiles   "*.ocs"
-#define C4CFN_FolderFiles     "*.c4f"
+#define C4CFN_FolderFiles     "*.ocf"
 #define C4CFN_QueueFiles      "*.c4q"
 #define C4CFN_AnimationFiles  "*.c4v"
 #define C4CFN_KeyFiles        "*.c4k"

@@ -106,7 +106,7 @@ public:
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize=NULL, int32_t iAppendZeros=0);
 	bool LoadEntryString(const char *szEntryName, StdStrBuf * rBuf);
 	bool LoadEntryString(const StdStrBuf & name, StdStrBuf * Buf) { return LoadEntryString(name.getData(), Buf); }
-	C4Group *RegisterParentFolders(const char *szScenFilename); // register all parent .c4f groups to the given scenario filename and return an open group file of the innermost parent c4f
+	C4Group *RegisterParentFolders(const char *szScenFilename); // register all parent .ocf groups to the given scenario filename and return an open group file of the innermost parent ocf
 
 	static int32_t CheckGroupContents(C4Group &rGroup, int32_t Contents);
 	int32_t GetLastID() { return iIndex; } // return ID assigned to the last added group

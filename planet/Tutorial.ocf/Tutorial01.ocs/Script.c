@@ -37,7 +37,7 @@ protected func Initialize()
 	chest->CreateContents(Firestone)->AddRestoreMode(chest);
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.c4f\\Tutorial01.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.ocf\\Tutorial01.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -45,7 +45,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
-	SetNextMission("Tutorial.c4f\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
+	SetNextMission("Tutorial.ocf\\Tutorial02.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$");
 	// Normal scenario ending by goal library.
 	return false;
 }
