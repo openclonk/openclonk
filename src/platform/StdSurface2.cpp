@@ -839,8 +839,8 @@ bool CSurface::GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY)
 	if ((*ppTexRef)->texLock.pBits)
 	{
 		// But not for the requested pixel
-		RECT & r = (*ppTexRef)->LockSize;
-		if (r.left > rX || r.top > rY || r.right < rX || r.bottom < rY)
+		C4Rect & r = (*ppTexRef)->LockSize;
+		if (r.x > rX || r.y > rY || (r.x + r.Wdt) < rX || (r.y + r.Hgt) < rY)
 			// Unlock, then relock the whole thing
 			(*ppTexRef)->Unlock();
 		else return true;
@@ -1087,8 +1087,8 @@ bool CSurface::SetPixDw(int iX, int iY, DWORD dwClr)
 			return true;
 		}
 		// Otherwise, make sure that the texlock covers the new pixel
-		RECT & r = pTexRef->LockSize;
-		if (r.left > iX || r.top > iY || r.right < iX || r.bottom < iY)
+		C4Rect & r = pTexRef->LockSize;
+		if (r.x > iX || r.y > iY || (r.x + r.Wdt) < iX || (r.y + r.Hgt) < iY)
 		{
 			// Unlock, then relock the whole thing
 			pTexRef->Unlock();
@@ -1217,11 +1217,11 @@ void CSurface::ClearBoxDw(int iX, int iY, int iWdt, int iHgt)
 			int iBlitX=iTexSize*x;
 			int iBlitY=iTexSize*y;
 			// get clearing bounds in texture
-			RECT rtClear;
-			rtClear.left  = Max(iX-iBlitX, 0);
-			rtClear.top   = Max(iY-iBlitY, 0);
-			rtClear.right = Min(iX+iWdt-iBlitX, iTexSize);
-			rtClear.bottom= Min(iY+iHgt-iBlitY, iTexSize);
+			C4Rect rtClear;
+			rtClear.x   = Max(iX-iBlitX, 0);
+			rtClear.y   = Max(iY-iBlitY, 0);
+			rtClear.Wdt = Min(iWdt, iTexSize-(iX-iBlitX));
+			rtClear.Hgt = Min(iHgt, iTexSize-(iY-iBlitY));
 			// is there a base-surface to be cleared first?
 			if (fBaseSfc)
 			{
@@ -1324,8 +1324,8 @@ CTexRef::CTexRef(int iSizeX, int iSizeY, bool fSingle)
 				texLock.Pitch = iSizeX*lpDDraw->byByteCnt;
 				memset(texLock.pBits, 0x00, texLock.Pitch*iSizeY);
 				// Always locked
-				LockSize.left = LockSize.top = 0;
-				LockSize.right = iSizeX; LockSize.bottom = iSizeY;
+				LockSize.x = LockSize.y = 0;
+				LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
 			}
 }
 
@@ -1351,13 +1351,13 @@ CTexRef::~CTexRef()
 	pTexMgr->UnregTex(this);
 }
 
-bool CTexRef::LockForUpdate(RECT & rtUpdate)
+bool CTexRef::LockForUpdate(C4Rect & rtUpdate)
 {
 	// already locked?
 	if (texLock.pBits)
 	{
 		// fully locked
-		if (LockSize.left == 0 && LockSize.right == iSizeX && LockSize.top == 0 && LockSize.bottom == iSizeY)
+		if (LockSize.x == 0 && LockSize.Wdt == iSizeX && LockSize.y == 0 && LockSize.Hgt == iSizeY)
 		{
 			return true;
 		}
@@ -1371,8 +1371,13 @@ bool CTexRef::LockForUpdate(RECT & rtUpdate)
 #ifdef USE_DIRECTX
 	if (pD3D)
 	{
+		RECT r;
+		r.left   = rtUpdate.x;
+		r.top    = rtUpdate.y;
+		r.right  = rtUpdate.x + rtUpdate.Wdt;
+		r.bottom = rtUpdate.y + rtUpdate.Hgt;
 		if (pTex)
-			if (pTex->LockRect(0, &texLock, &rtUpdate, D3DLOCK_DISCARD) == D3D_OK)
+			if (pTex->LockRect(0, &texLock, &r, D3DLOCK_DISCARD) == D3D_OK)
 			{
 				LockSize = rtUpdate;
 				return true;
@@ -1386,9 +1391,8 @@ bool CTexRef::LockForUpdate(RECT & rtUpdate)
 			if (texName)
 			{
 				// prepare texture data
-				texLock.pBits = new unsigned char[
-				  (rtUpdate.right - rtUpdate.left) * (rtUpdate.bottom - rtUpdate.top) * pGL->byByteCnt];
-				texLock.Pitch = (rtUpdate.right - rtUpdate.left) * pGL->byByteCnt;
+				texLock.pBits = new unsigned char[rtUpdate.Wdt * rtUpdate.Hgt * pGL->byByteCnt];
+				texLock.Pitch = rtUpdate.Wdt * pGL->byByteCnt;
 				LockSize = rtUpdate;
 				return true;
 			}
@@ -1406,8 +1410,8 @@ bool CTexRef::Lock()
 {
 	// already locked?
 	if (texLock.pBits) return true;
-	LockSize.right = iSizeX; LockSize.bottom = iSizeY;
-	LockSize.top = LockSize.left = 0;
+	LockSize.Wdt = iSizeX; LockSize.Hgt = iSizeY;
+	LockSize.x = LockSize.y = 0;
 	// lock
 #ifdef USE_DIRECTX
 	if (pD3D)
@@ -1480,7 +1484,7 @@ void CTexRef::Unlock()
 				// reuse the existing texture
 				glBindTexture(GL_TEXTURE_2D, texName);
 				glTexSubImage2D(GL_TEXTURE_2D, 0,
-				                LockSize.left, LockSize.top, LockSize.right - LockSize.left, LockSize.bottom - LockSize.top,
+				                LockSize.x, LockSize.y, LockSize.Wdt, LockSize.Hgt,
 				                GL_BGRA, lpDDraw->byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, texLock.pBits);
 			}
 			delete[] static_cast<unsigned char*>(texLock.pBits); texLock.pBits=NULL;
@@ -1493,7 +1497,7 @@ void CTexRef::Unlock()
 		}
 }
 
-bool CTexRef::ClearRect(RECT &rtClear)
+bool CTexRef::ClearRect(C4Rect &rtClear)
 {
 	// ensure locked
 	if (!LockForUpdate(rtClear)) return false;
@@ -1502,16 +1506,16 @@ bool CTexRef::ClearRect(RECT &rtClear)
 	switch (lpDDraw->byByteCnt)
 	{
 	case 2:
-		for (y=rtClear.top; y<rtClear.bottom; ++y)
+		for (y = rtClear.y; y < rtClear.y + rtClear.Hgt; ++y)
 		{
-			for (int x = rtClear.left; x < rtClear.right; ++x)
+			for (int x = rtClear.x; x < rtClear.x + rtClear.Wdt; ++x)
 				SetPix2(x, y, 0x0000);
 		}
 		break;
 	case 4:
-		for (y=rtClear.top; y<rtClear.bottom; ++y)
+		for (y = rtClear.y; y < rtClear.y + rtClear.Hgt; ++y)
 		{
-			for (int x = rtClear.left; x < rtClear.right; ++x)
+			for (int x = rtClear.x; x < rtClear.x + rtClear.Wdt; ++x)
 				SetPix4(x, y, 0x00000000);
 		}
 		break;

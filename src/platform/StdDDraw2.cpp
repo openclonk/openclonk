@@ -46,11 +46,6 @@ int iGfxEngine=-1;
 // Transformation matrix to convert meshes from Ogre to Clonk coordinate system
 const StdMeshMatrix CStdDDraw::OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
 
-inline void SetRect(RECT &rect, int left, int top, int right, int bottom)
-{
-	rect.left=left; rect.top=top; rect.bottom=bottom; rect.right=right;
-}
-
 inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 {
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);

@@ -24,6 +24,7 @@
 #define INC_StdSurface2
 
 #include <StdColors.h>
+#include <C4Rect.h>
 
 #ifdef USE_DIRECTX
 #include <d3d9.h>
@@ -219,24 +220,24 @@ public:
 	int iSizeX;
 	int iSizeY;
 	bool fIntLock;    // if set, texref is locked internally only
-	RECT LockSize;
+	C4Rect LockSize;
 
 	CTexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
 	~CTexRef();           // release texture
 	bool Lock();          // lock texture
 	// Lock a part of the rect, discarding the content
 	// Note: Calling Lock afterwards without an Unlock first is undefined
-	bool LockForUpdate(RECT &rtUpdate);
+	bool LockForUpdate(C4Rect &rtUpdate);
 	void Unlock();        // unlock texture
-	bool ClearRect(RECT &rtClear); // clear rect in texture to transparent
+	bool ClearRect(C4Rect &rtClear); // clear rect in texture to transparent
 	bool FillBlack(); // fill complete texture in black
 	void SetPix2(int iX, int iY, WORD v)
 	{
-		*((WORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.top) * texLock.Pitch + (iX - LockSize.left) * 2)) = v;
+		*((WORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 2)) = v;
 	}
 	void SetPix4(int iX, int iY, DWORD v)
 	{
-		*((DWORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.top) * texLock.Pitch + (iX - LockSize.left) * 4)) = v;
+		*((DWORD *) (((BYTE *) texLock.pBits) + (iY - LockSize.y) * texLock.Pitch + (iX - LockSize.x) * 4)) = v;
 	}
 };
 
