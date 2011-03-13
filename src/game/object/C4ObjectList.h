@@ -27,6 +27,9 @@
 
 #include <C4Id.h>
 
+// workaround wingdi.h
+#undef GetObject
+
 class C4Object;
 class C4ObjectList;
 class C4ObjectInfo;
