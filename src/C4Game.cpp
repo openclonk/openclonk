@@ -1387,7 +1387,7 @@ bool C4Game::DropFile(const char *szFilename, float iX, float iY)
 {
 	C4ID c_id; C4Def *cdef;
 	// Drop def to create object
-	if (SEqualNoCase(GetExtension(szFilename),"c4d"))
+	if (SEqualNoCase(GetExtension(szFilename),"ocd"))
 	{
 		// Get id from file
 		if ((c_id=DefFileGetID(szFilename)))

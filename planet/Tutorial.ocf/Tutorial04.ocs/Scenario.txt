@@ -6,7 +6,7 @@ MaxPlayer=1
 Difficulty=4
 
 [Definitions]
-Definition1=Objects.c4d
+Definition1=Objects.ocd
 
 [Player1]
 Crew=Clonk=1

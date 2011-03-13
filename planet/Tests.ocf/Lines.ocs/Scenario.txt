@@ -9,7 +9,7 @@ NoInitialize=0
 ForcedGfxMode=1
 
 [Definitions]
-Definition1=Objects.c4d
+Definition1=Objects.ocd
 
 [Game]
 Rules=RSTR=1

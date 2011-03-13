@@ -377,7 +377,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Definition file
-		if (SEqualNoCase(GetExtension(szParameter),"c4d"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocd"))
 		{
 			SAddModule(Game.DefinitionFilenames,szParameter);
 			continue;

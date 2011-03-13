@@ -4,7 +4,7 @@ Version=4,10,0,0
 MinPlayer=2
 
 [Definitions]
-Definition1=Objects.c4d
+Definition1=Objects.ocd
 
 [Game]
 Goals=MELE

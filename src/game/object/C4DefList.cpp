@@ -57,7 +57,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 
 	// This search message
 	if (fSearchMessage)
-		if (SEqualNoCase(GetExtension(hGroup.GetName()),"c4d")
+		if (SEqualNoCase(GetExtension(hGroup.GetName()),"ocd")
 		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocs")
 		    || SEqualNoCase(GetExtension(hGroup.GetName()),"ocf"))
 		{

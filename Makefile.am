@@ -741,7 +741,7 @@ EXTRA_DIST = \
   src/res/Halt.bmp \
   src/res/mouse.bmp \
   src/res/Rectangle.bmp \
-  src/res/c4d.ico \
+  src/res/ocd.ico \
   src/res/c4m.ico \
   src/res/c4x.xpm \
   src/res/fill1.bmp \

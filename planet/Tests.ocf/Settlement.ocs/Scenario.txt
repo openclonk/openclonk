@@ -4,7 +4,7 @@ Title=Settlement
 Version=5,0,0,0
 
 [Definitions]
-Definition1=Objects.c4d
+Definition1=Objects.ocd
 
 [Game]
 Rules=Rule_EnergyNeed=1
