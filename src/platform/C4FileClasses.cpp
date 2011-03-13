@@ -23,6 +23,7 @@
 #include <C4FileClasses.h>
 
 #include <StdRegistry.h>
+#include <winreg.h>
 
 #define C4FileClassContentType "application/vnd.clonk.c4group"
 
