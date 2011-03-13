@@ -63,12 +63,12 @@ bool C4Language::Init()
 	// Clear (to allow clean re-init)
 	Clear();
 
-	// Look for available language packs in Language.c4g          Opening Language.c4g as a group and
+	// Look for available language packs in Language.ocg          Opening Language.ocg as a group and
 	/*C4Group *pPack;                                             the packs as children is no good -
 	char strPackFilename[_MAX_FNAME + 1];                         C4Group simply cannot handle it. So
 	Log("Registering languages...");                              we need to open the pack group files
 	if (PackDirectory.Open(C4CFN_Languages))                      directly...
-	  while (PackDirectory.FindNextEntry("*.c4g", strPackFilename))
+	  while (PackDirectory.FindNextEntry("*.ocg", strPackFilename))
 	  {
 	    pPack = new C4Group();
 	    if (pPack->OpenAsChild(&PackDirectory, strPackFilename))
@@ -83,8 +83,8 @@ bool C4Language::Init()
 	    }
 	  }*/
 
-	// Make sure Language.c4g is unpacked (TODO: This won't work properly if Language.c4g is in system data path)
-	// Assume for now that Language.c4g is either at a writable location or unpacked already.
+	// Make sure Language.ocg is unpacked (TODO: This won't work properly if Language.ocg is in system data path)
+	// Assume for now that Language.ocg is either at a writable location or unpacked already.
 	// TODO: Use all Language.c4gs that we find, and merge them.
 	// TODO: Use gettext instead?
 	StdStrBuf langPath;
@@ -101,16 +101,16 @@ bool C4Language::Init()
 		}
 	}
 
-	// Break if no language.c4g found
+	// Break if no language.ocg found
 	if(iter != Reloc.end())
 	{
-		// Look for available language packs in Language.c4g
+		// Look for available language packs in Language.ocg
 		C4Group *pPack;
 		char strPackFilename[_MAX_FNAME + 1], strEntry[_MAX_FNAME + 1];
 		//Log("Registering languages...");
 		if (PackDirectory.Open(langPath.getData()))
 		{
-			while (PackDirectory.FindNextEntry("*.c4g", strEntry))
+			while (PackDirectory.FindNextEntry("*.ocg", strEntry))
 			{
 				sprintf(strPackFilename, "%s" DirSep "%s", C4CFN_Languages, strEntry);
 				pPack = new C4Group();
@@ -361,7 +361,7 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 void C4Language::InitInfos()
 {
 	C4Group hGroup;
-	// First, look in System.c4g
+	// First, look in System.ocg
 	if (Reloc.Open(hGroup, C4CFN_System))
 	{
 		LoadInfos(hGroup);
@@ -370,7 +370,7 @@ void C4Language::InitInfos()
 	// Now look through the registered packs
 	C4Group *pPack;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
-		// Does it contain a System.c4g child group?
+		// Does it contain a System.ocg child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
 			LoadInfos(hGroup);
@@ -458,7 +458,7 @@ bool C4Language::LoadLanguage(const char *strLanguages)
 bool C4Language::InitStringTable(const char *strCode)
 {
 	C4Group hGroup;
-	// First, look in System.c4g
+	// First, look in System.ocg
 	if (Reloc.Open(hGroup, C4CFN_System))
 	{
 		if (LoadStringTable(hGroup, strCode))
@@ -468,7 +468,7 @@ bool C4Language::InitStringTable(const char *strCode)
 	// Now look through the registered packs
 	C4Group *pPack;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
-		// Does it contain a System.c4g child group?
+		// Does it contain a System.ocg child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
 			if (LoadStringTable(hGroup, strCode))

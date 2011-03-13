@@ -376,8 +376,8 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 	}
 	else
 	{
-		// only allow Extra.c4g-Updates
-		if (!SEqual2(DestPath, "Extra.c4g"))
+		// only allow Extra.ocg-Updates
+		if (!SEqual2(DestPath, "Extra.ocg"))
 			return false;
 	}
 

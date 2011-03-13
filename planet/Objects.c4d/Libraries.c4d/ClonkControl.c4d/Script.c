@@ -5,7 +5,7 @@
 	This object provides handling of the clonk controls including item
 	management, backpack controls and standard throwing behaviour. It
 	should be included into any clonk/crew definition.
-	The controls in System.c4g/PlayerControl.c only provide basic movement
+	The controls in System.ocg/PlayerControl.c only provide basic movement
 	handling, namely the movement left, right, up and down. The rest is
 	handled here:
 	Grabbing, ungrabbing, shifting and pushing vehicles into buildings;

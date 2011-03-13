@@ -2066,7 +2066,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
 
-		// Scenario scripts (and local system.c4g)
+		// Scenario scripts (and local system.ocg)
 		// After defs to get overloading priority
 		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
@@ -2650,7 +2650,7 @@ bool C4Game::LoadScenarioScripts()
 
 bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 {
-	// called for scenario local and definition local System.c4g groups
+	// called for scenario local and definition local System.ocg groups
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
@@ -2797,7 +2797,7 @@ bool C4Game::InitKeyboard()
 
 void C4Game::UpdateLanguage()
 {
-	// Reload System.c4g string table
+	// Reload System.ocg string table
 	MainSysLangStringTable.LoadEx(Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 }
 

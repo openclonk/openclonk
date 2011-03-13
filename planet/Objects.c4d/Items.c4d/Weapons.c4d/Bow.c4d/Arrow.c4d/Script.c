@@ -5,7 +5,7 @@
 	The arrow is the standard ammo for the bow and base object for all other
 	types of arrows. This object is stackable (up to 15) as it is required
 	from the bow.
-	The arrow employs the HitCheck effect (in System.c4g/HitChecks.c) originally
+	The arrow employs the HitCheck effect (in System.ocg/HitChecks.c) originally
 	from Hazard to search for targets during flight.
 */
 

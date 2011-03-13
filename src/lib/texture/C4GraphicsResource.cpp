@@ -20,7 +20,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Loads all standard graphics from Graphics.c4g */
+/* Loads all standard graphics from Graphics.ocg */
 
 #include <C4Include.h>
 #include <C4GraphicsResource.h>
@@ -137,7 +137,7 @@ void C4GraphicsResource::Clear()
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
 
-	// closing the group set will also close the graphics.c4g
+	// closing the group set will also close the graphics.ocg
 	// this is just for games that failed to init
 	// normally, this is done after successful init anyway
 	CloseFiles();
@@ -145,7 +145,7 @@ void C4GraphicsResource::Clear()
 
 bool C4GraphicsResource::InitFonts()
 {
-	// this regards scenario-specific fonts or overloads in Extra.c4g
+	// this regards scenario-specific fonts or overloads in Extra.ocg
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;

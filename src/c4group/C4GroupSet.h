@@ -25,8 +25,8 @@
 // group set priorities
 #define C4GSPrio_Base         0 // lowest priority for global system files
 #define C4GSPrio_Pack         1 // overloads by object packs
-#define C4GSPrio_ExtraRoot    2 // overloads by Extra.c4g root folder
-#define C4GSPrio_Extra        3 // overloads by Extra.c4g
+#define C4GSPrio_ExtraRoot    2 // overloads by Extra.ocg root folder
+#define C4GSPrio_Extra        3 // overloads by Extra.ocg
 #define C4GSPrio_Definition   4 // overloads by definition file - latter defined definition files have higher priority
 #define C4GSPrio_Definition2 99 // highest priority a given definition may have
 #define C4GSPrio_Folder     100 // overloads by local scenario folder - each child folder has higher priority
@@ -34,9 +34,9 @@
 #define C4GSPrio_Scenario   200 // overloads by scenario: highest priority
 
 // group node contents
-#define C4GSCnt_Graphics    1 // contains Graphics.c4g
+#define C4GSCnt_Graphics    1 // contains Graphics.ocg
 #define C4GSCnt_Loaders     2 // contains loader files
-#define C4GSCnt_Material    4 // contains Material.c4g
+#define C4GSCnt_Material    4 // contains Material.ocg
 #define C4GSCnt_Music       8 // contains music
 #define C4GSCnt_Definitions 16 // contains definition files
 #define C4GSCnt_FontDefs    32 // contains font definitions

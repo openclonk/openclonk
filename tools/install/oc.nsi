@@ -105,8 +105,8 @@ Section -Post
 ; Register file types  
   WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
   WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4g" "" "Clonk4.Group"
-  WriteRegStr HKCR ".c4g\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocg" "" "OpenClonk.Group"
+  WriteRegStr HKCR ".ocg\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".c4f" "" "Clonk4.Folder"
   WriteRegStr HKCR ".c4f\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".c4p" "" "Clonk4.Player"
@@ -128,8 +128,8 @@ Section -Post
 ; Register file classes  
   WriteRegStr HKCR "OpenClonk.Scenario" "" "OpenClonk Scenario"
   WriteRegStr HKCR "OpenClonk.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
-  WriteRegStr HKCR "Clonk4.Group" "" "Clonk 4 Group"
-  WriteRegStr HKCR "Clonk4.Group\DefaultIcon" "" "$INSTDIR\Clonk.exe,2"
+  WriteRegStr HKCR "OpenClonk.Group" "" "OpenClonk Group"
+  WriteRegStr HKCR "OpenClonk.Group\DefaultIcon" "" "$INSTDIR\Clonk.exe,2"
   WriteRegStr HKCR "Clonk4.Folder" "" "Clonk 4 Folder"
   WriteRegStr HKCR "Clonk4.Folder\DefaultIcon" "" "$INSTDIR\Clonk.exe,3"
   WriteRegStr HKCR "Clonk4.Player" "" "Clonk 4 Player"
@@ -197,8 +197,8 @@ Section Uninstall
   ; Registry: classes
   DeleteRegKey HKCR ".ocs"
   DeleteRegKey HKCR "OpenClonk.Scenario"
-  DeleteRegKey HKCR ".c4g"
-  DeleteRegKey HKCR "Clonk4.Group"
+  DeleteRegKey HKCR ".ocg"
+  DeleteRegKey HKCR "OpenClonk.Group"
   DeleteRegKey HKCR ".c4f"
   DeleteRegKey HKCR "Clonk4.Folder"
   DeleteRegKey HKCR ".c4p"

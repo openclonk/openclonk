@@ -995,7 +995,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 				// Note that if there is a parent, then it needs to be loaded
 				// already. This currently makes only sense when its defined above
 				// in the same material script file or in a parent definition.
-				// We could later support material scripts in the System.c4g.
+				// We could later support material scripts in the System.ocg.
 				StdCopyStrBuf parent_name;
 				ctx.AdvanceRequired(parent_name, TOKEN_IDTF);
 				ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);

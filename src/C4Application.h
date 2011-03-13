@@ -44,7 +44,7 @@ public:
 	~C4Application();
 	// Flag for restarting the engine at the end
 	bool restartAtEnd;
-	// main System.c4g in working folder
+	// main System.ocg in working folder
 	C4Group SystemGroup;
 	C4MusicSystem MusicSystem;
 	C4SoundSystem SoundSystem;
@@ -58,7 +58,7 @@ public:
 	// Tick timing
 	void GameTick();
 	void Draw();
-	// System.c4g helper funcs
+	// System.ocg helper funcs
 	bool OpenSystemGroup() { return SystemGroup.IsOpen() || SystemGroup.Open(C4CFN_System); }
 	void CloseSystemGroup() { SystemGroup.Close(); }
 	void SetGameTickDelay(int iDelay);

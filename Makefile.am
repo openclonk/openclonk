@@ -693,8 +693,8 @@ EXTRA_DIST = \
   Version.txt \
   CMakeLists.txt \
   config.h.cmake \
-  planet/System.c4g/LanguageUS.txt \
-  planet/System.c4g/LanguageDE.txt \
+  planet/System.ocg/LanguageUS.txt \
+  planet/System.ocg/LanguageDE.txt \
   clonk.anjuta \
   licenses \
   src/netio/NetIO.dsp \
@@ -715,7 +715,7 @@ EXTRA_DIST = \
   src/res/Static_Trans.png \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
-  src/res/c4g.ico \
+  src/res/ocg.ico \
   src/res/ocs.ico \
   src/res/Cursor2.bmp \
   src/res/Game.pal \

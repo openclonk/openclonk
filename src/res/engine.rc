@@ -33,7 +33,7 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 // remains consistent on all systems.
 IDI_00_C4X              ICON    DISCARDABLE     "oc.ico" 
 IDI_01_OCS              ICON    DISCARDABLE     "ocs.ico"
-IDI_02_C4G              ICON    DISCARDABLE     "c4g.ico"
+IDI_02_OCG              ICON    DISCARDABLE     "ocg.ico"
 IDI_03_C4F              ICON    DISCARDABLE     "c4f.ico"
 IDI_04_C4P              ICON    DISCARDABLE     "c4p.ico"
 IDI_06_C4D              ICON    DISCARDABLE     "c4d.ico"

@@ -49,7 +49,7 @@ bool SetC4FileClasses(const char *szEnginePath)
 {
 
 	if (!SetRegFileClass("OpenClonk.Scenario",   ,"ocs", "OpenClonk Scenario",          szEnginePath, 1, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("Clonk4.Group",      "c4g", "Clonk 4 Group",             szEnginePath, 2, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Group",      ,"ocg", "OpenClonk Group",             szEnginePath, 2, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Folder",     "c4f", "Clonk 4 Folder",            szEnginePath, 3, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Player",     "c4p", "Clonk 4 Player",            szEnginePath, 4, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Definition", "c4d", "Clonk 4 Object Definition", szEnginePath, 5, C4FileClassContentType)) return false;

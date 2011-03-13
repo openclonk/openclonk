@@ -427,7 +427,7 @@ void C4PlayerInfoListAttributeConflictResolver::Resolve()
 }
 
 
-/*C4Group g; g.Open("test.c4g");
+/*C4Group g; g.Open("test.ocg");
 C4PlayerInfoList l1, l2, l3;
 l1.Load(g, "in1.txt");
 l2.Load(g, "in2.txt");

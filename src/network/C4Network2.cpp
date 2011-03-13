@@ -537,7 +537,7 @@ bool C4Network2::RetrieveScenario(char *szScenario)
 	    !C4Group_UnpackDirectory(szTempDynamic))
 		return false;
 
-	// unpack Material.c4g if materials need to be merged
+	// unpack Material.ocg if materials need to be merged
 	StdStrBuf MaterialScenario, MaterialDynamic;
 	MaterialScenario.Format("%s" DirSep  C4CFN_Material, szScenario);
 	MaterialDynamic.Format("%s" DirSep  C4CFN_Material, szTempDynamic);

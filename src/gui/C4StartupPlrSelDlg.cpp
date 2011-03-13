@@ -69,7 +69,7 @@ StdStrBuf DateString(int iTime)
 // Fixme: This should use the already open group from C4GraphicsResource
 static bool GetPortrait(char **ppBytes, size_t *ipSize)
 {
-	// select random portrait from Graphics.c4g
+	// select random portrait from Graphics.ocg
 	C4Group GfxGroup;
 	int iCount;
 	StdStrBuf EntryName;

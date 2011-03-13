@@ -27,15 +27,15 @@
 
 #define C4CFN_Engine          "Clonk.exe"
 
-#define C4CFN_Material        "Material.c4g"
-#define C4CFN_Sound           "Sound.c4g"
-#define C4CFN_Graphics        "Graphics.c4g"
-#define C4CFN_System          "System.c4g"
-#define C4CFN_Music           "Music.c4g"
-#define C4CFN_Extra           "Extra.c4g"
-#define C4CFN_Languages       "Language.c4g"
+#define C4CFN_Material        "Material.ocg"
+#define C4CFN_Sound           "Sound.ocg"
+#define C4CFN_Graphics        "Graphics.ocg"
+#define C4CFN_System          "System.ocg"
+#define C4CFN_Music           "Music.ocg"
+#define C4CFN_Extra           "Extra.ocg"
+#define C4CFN_Languages       "Language.ocg"
 
-#define C4CFN_ScenarioSections "Sect*.c4g"
+#define C4CFN_ScenarioSections "Sect*.ocg"
 
 #define C4CFN_Objects         "Objects.c4d"
 
@@ -165,7 +165,7 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.c4g|Music.c4g|*.mid|*.wav|Desc*.rtf|Title.bmp|Title.png|*.c4d|Material.c4g|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.c4d|Script.c|Script*.c|System.c4g"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.bmp|Title.png|*.c4d|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.c4d|Script.c|Script*.c|System.ocg"
 #define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.c4b|MassMover.c4b"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt"

@@ -23,7 +23,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Handles Music.c4g and randomly plays songs */
+/* Handles Music.ocg and randomly plays songs */
 
 #include <C4Include.h>
 #include <C4MusicSystem.h>

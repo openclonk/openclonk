@@ -17,7 +17,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// user-customizable multimedia package Extra.c4g
+// user-customizable multimedia package Extra.ocg
 
 #include <C4Include.h>
 #include <C4Extra.h>

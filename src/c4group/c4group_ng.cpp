@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
 		printf("\n");
-		printf("Examples: c4group pack.c4g -x\n");
+		printf("Examples: c4group pack.ocg -x\n");
 		printf("          c4group update.c4u -g ver1.c4f ver2.c4f New_Version\n");
 		printf("          c4group -i\n");
 	}
