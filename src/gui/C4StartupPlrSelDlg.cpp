@@ -443,7 +443,7 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 	SCopy(szNewName, fn, _MAX_PATH);
 	MakeFilenameFromTitle(fn);
 	if (!*fn) return false;
-	SAppend(".c4i", fn, _MAX_PATH);
+	SAppend(".oci", fn, _MAX_PATH);
 	// check if a rename is due
 	if (!ItemIdentical(fn, GetFilename().getData()))
 	{

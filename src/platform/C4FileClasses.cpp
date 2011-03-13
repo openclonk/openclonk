@@ -53,7 +53,7 @@ bool SetC4FileClasses(const char *szEnginePath)
 	if (!SetRegFileClass("OpenClonk.Folder",     ,"ocf", "OpenClonk Folder",            szEnginePath, 3, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("OpenClonk.Player",     ,"ocp", "OpenClonk Player",            szEnginePath, 4, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("OpenClonk.Definition", ,"ocd", "OpenClonk Object Definition", szEnginePath, 5, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("Clonk4.Object",     "c4i", "Clonk 4 Object Info",       szEnginePath, 6, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Object",     ,"oci", "OpenClonk Object Info",       szEnginePath, 6, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Material",   "c4m", "Clonk 4 Material",          szEnginePath, 7, "text/plain")) return false;
 	if (!SetRegFileClass("Clonk4.Binary",     "c4b", "Clonk 4 Binary",            szEnginePath, 8, "application/octet-stream")) return false;
 	if (!SetRegFileClass("Clonk4.Video",      "c4v", "Clonk 4 Video",             szEnginePath, 9, "video/avi")) return false;

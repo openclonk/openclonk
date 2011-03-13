@@ -722,7 +722,7 @@ EXTRA_DIST = \
   src/res/line1.bmp \
   src/res/Play2.bmp \
   src/res/Brush2.bmp \
-  src/res/c4i.ico \
+  src/res/oci.ico \
   src/res/c4u.ico \
   src/res/Cursor.bmp \
   src/res/Grab.bmp \

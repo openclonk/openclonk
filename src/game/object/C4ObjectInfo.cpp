@@ -71,7 +71,7 @@ bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 {
 
 	// New version
-	if (SEqualNoCase(GetExtension(szEntryname),"c4i"))
+	if (SEqualNoCase(GetExtension(szEntryname),"oci"))
 	{
 		C4Group hChild;
 		if (hChild.OpenAsChild(&hMother,szEntryname))
@@ -171,7 +171,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	char szTempGroup[_MAX_PATH+1];
 	SCopy(Name, szTempGroup, _MAX_PATH);
 	MakeFilenameFromTitle(szTempGroup);
-	SAppend(".c4i",szTempGroup, _MAX_PATH);
+	SAppend(".oci",szTempGroup, _MAX_PATH);
 	if (!SEqualNoCase(Filename, szTempGroup))
 	{
 		if (!Filename[0])
@@ -186,7 +186,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 				while (iLen && Inside(Filename[iLen-1], '0', '9')) --iLen;
 				if (iLen>_MAX_PATH-22) { LogF("Error generating unique filename for %s(%s): Path overflow", Name, hGroup.GetFullName().getData()); break; }
 				snprintf(Filename+iLen, 22, "%d", iFinNum+1);
-				EnforceExtension(Filename, "c4i");
+				EnforceExtension(Filename, "oci");
 			}
 		}
 		else

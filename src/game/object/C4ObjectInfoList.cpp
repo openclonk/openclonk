@@ -65,7 +65,7 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
 	int32_t infn=0;
 	char entryname[256+1];
 
-	// Search all c4i files
+	// Search all oci files
 	hGroup.ResetSearch();
 	while (hGroup.FindNextEntry(C4CFN_ObjectInfoFiles,entryname))
 		if ((ninf=new C4ObjectInfo))
