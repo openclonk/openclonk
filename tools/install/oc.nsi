@@ -121,8 +121,8 @@ Section -Post
   WriteRegStr HKCR ".ocb\Content Type" "" "application/octet-stream"
   WriteRegStr HKCR ".ocv" "" "OpenClonk.Video"
   WriteRegStr HKCR ".ocv\Content Type" "" "video/avi"
-  WriteRegStr HKCR ".c4l" "" "Clonk4.Weblink"
-  WriteRegStr HKCR ".c4l\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocl" "" "OpenClonk.Weblink"
+  WriteRegStr HKCR ".ocl\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".c4u" "" "Clonk4.Update"
   WriteRegStr HKCR ".c4u\Content Type" "" "vnd.clonk.c4group"
 ; Register file classes  
@@ -144,8 +144,8 @@ Section -Post
   WriteRegStr HKCR "OpenClonk.Binary\DefaultIcon" "" "$INSTDIR\Clonk.exe,8"
   WriteRegStr HKCR "OpenClonk.Video" "" "OpenClonk Video"
   WriteRegStr HKCR "OpenClonk.Video\DefaultIcon" "" "$INSTDIR\Clonk.exe,9"
-  WriteRegStr HKCR "Clonk4.Weblink" "" "Clonk 4 Weblink"
-  WriteRegStr HKCR "Clonk4.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
+  WriteRegStr HKCR "OpenClonk.Weblink" "" "OpenClonk Weblink"
+  WriteRegStr HKCR "OpenClonk.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
   WriteRegStr HKCR "Clonk4.Update" "" "Clonk 4 Update"
   WriteRegStr HKCR "Clonk4.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
 ; Register additional file handling
@@ -213,8 +213,8 @@ Section Uninstall
   DeleteRegKey HKCR "OpenClonk.Binary"
   DeleteRegKey HKCR ".ocv"
   DeleteRegKey HKCR "OpenClonk.Video"
-  DeleteRegKey HKCR ".c4l"
-  DeleteRegKey HKCR "Clonk4.Weblink"
+  DeleteRegKey HKCR ".ocl"
+  DeleteRegKey HKCR "OpenClonk.Weblink"
   DeleteRegKey HKCR ".c4u"
   DeleteRegKey HKCR "Clonk4.Update"
   

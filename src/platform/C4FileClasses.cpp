@@ -57,7 +57,7 @@ bool SetC4FileClasses(const char *szEnginePath)
 	if (!SetRegFileClass("OpenClonk.Material",   ,"ocm", "OpenClonk Material",          szEnginePath, 7, "text/plain")) return false;
 	if (!SetRegFileClass("OpenClonk.Binary",     ,"ocb", "OpenClonk Binary",            szEnginePath, 8, "application/octet-stream")) return false;
 	if (!SetRegFileClass("OpenClonk.Video",      ,"ocv", "OpenClonk Video",             szEnginePath, 9, "video/avi")) return false;
-	if (!SetRegFileClass("Clonk4.Weblink",    "c4l", "Clonk 4 Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Weblink",    ,"ocl", "OpenClonk Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
 	if (!SetRegFileClass("Clonk4.Update",     "c4u", "Clonk 4 Update",            szEnginePath, 11, C4FileClassContentType)) return false;
 
 	if (!SetProtocol("clonk", "%s %%1 /Fullscreen", szEnginePath)) return false;

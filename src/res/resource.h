@@ -68,7 +68,7 @@
 #define IDI_08_OCM                      4008
 #define IDI_09_OCB                      4009
 #define IDI_10_OCV                      4010
-#define IDI_11_C4L                      4011
+#define IDI_11_OCL                      4011
 #define IDI_13_C4U                      4013
 #define IDM_FILE_CLOSE                  5003
 #define IDM_FILE_OPEN                   5004
