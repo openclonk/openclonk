@@ -69,7 +69,7 @@ StdStrBuf DateString(int iTime)
 // Fixme: This should use the already open group from C4GraphicsResource
 static bool GetPortrait(char **ppBytes, size_t *ipSize)
 {
-	// select random portrait from Graphics.c4g
+	// select random portrait from Graphics.ocg
 	C4Group GfxGroup;
 	int iCount;
 	StdStrBuf EntryName;
@@ -443,7 +443,7 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 	SCopy(szNewName, fn, _MAX_PATH);
 	MakeFilenameFromTitle(fn);
 	if (!*fn) return false;
-	SAppend(".c4i", fn, _MAX_PATH);
+	SAppend(".oci", fn, _MAX_PATH);
 	// check if a rename is due
 	if (!ItemIdentical(fn, GetFilename().getData()))
 	{
@@ -883,7 +883,7 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 	SReplaceChar(Filename.getMData(), '>', '_');
 	SReplaceChar(Filename.getMData(), '|', '_');
 	if (*Filename.getData() == '.') *Filename.getMData() = '_';
-	Filename.Append(".c4p");
+	Filename.Append(".ocp");
 	StdStrBuf Path(Config.General.UserDataPath); // start at local path
 //  Path.Append(Config.General.PlayerPath);
 	Path.Append(Filename);

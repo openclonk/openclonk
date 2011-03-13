@@ -694,8 +694,8 @@ EXTRA_DIST = \
   Version.txt \
   CMakeLists.txt \
   config.h.cmake \
-  planet/System.c4g/LanguageUS.txt \
-  planet/System.c4g/LanguageDE.txt \
+  planet/System.ocg/LanguageUS.txt \
+  planet/System.ocg/LanguageDE.txt \
   clonk.anjuta \
   licenses \
   src/netio/NetIO.dsp \
@@ -716,40 +716,40 @@ EXTRA_DIST = \
   src/res/Static_Trans.png \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
-  src/res/c4g.ico \
-  src/res/c4s.ico \
+  src/res/ocg.ico \
+  src/res/ocs.ico \
   src/res/Cursor2.bmp \
   src/res/Game.pal \
   src/res/line1.bmp \
   src/res/Play2.bmp \
   src/res/Brush2.bmp \
-  src/res/c4i.ico \
-  src/res/c4u.ico \
+  src/res/oci.ico \
+  src/res/ocu.ico \
   src/res/Cursor.bmp \
   src/res/Grab.bmp \
   src/res/Line.bmp \
   src/res/Play.bmp \
   src/res/Brush.bmp \
   src/res/c4k.ico \
-  src/res/c4v.ico \
+  src/res/ocv.ico \
   src/res/dynamic1.bmp \
   src/res/Halt2.bmp \
   src/res/mouse1.bmp \
   src/res/rect1.bmp \
-  src/res/c4b.ico \
-  src/res/c4l.ico \
+  src/res/ocb.ico \
+  src/res/ocl.ico \
   src/res/c4x.ico \
   src/res/Halt.bmp \
   src/res/mouse.bmp \
   src/res/Rectangle.bmp \
-  src/res/c4d.ico \
-  src/res/c4m.ico \
+  src/res/ocd.ico \
+  src/res/ocm.ico \
   src/res/c4x.xpm \
   src/res/fill1.bmp \
   src/res/ift1.bmp \
   src/res/NoIFT.bmp \
-  src/res/c4f.ico \
-  src/res/c4p.ico \
+  src/res/ocf.ico \
+  src/res/ocp.ico \
   src/res/Fill.bmp \
   src/res/IFT.bmp \
   src/res/picker1.bmp \

@@ -417,7 +417,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (!fSuccess)
 	{
 
-		// Read sounds even if not a valid def (for pure c4d sound folders)
+		// Read sounds even if not a valid def (for pure ocd sound folders)
 		if (dwLoadWhat & C4D_Load_Sounds)
 			if (pSoundSystem)
 				pSoundSystem->LoadEffects(hGroup);

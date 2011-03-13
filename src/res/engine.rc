@@ -32,19 +32,17 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_00_C4X              ICON    DISCARDABLE     "oc.ico" 
-IDI_01_C4S              ICON    DISCARDABLE     "c4s.ico"
-IDI_02_C4G              ICON    DISCARDABLE     "c4g.ico"
-IDI_03_C4F              ICON    DISCARDABLE     "c4f.ico"
-IDI_04_C4P              ICON    DISCARDABLE     "c4p.ico"
-IDI_05_C4X              ICON    DISCARDABLE     "c4x.ico"
-IDI_06_C4D              ICON    DISCARDABLE     "c4d.ico"
-IDI_07_C4I              ICON    DISCARDABLE     "c4i.ico"
-IDI_08_C4M              ICON    DISCARDABLE     "c4m.ico"
-IDI_09_C4B              ICON    DISCARDABLE     "c4b.ico"
-IDI_10_C4V              ICON    DISCARDABLE     "c4v.ico"
-IDI_11_C4L              ICON    DISCARDABLE     "c4l.ico"
-IDI_12_C4K              ICON    DISCARDABLE     "c4k.ico"
-IDI_13_C4U              ICON    DISCARDABLE     "c4u.ico"
+IDI_01_OCS              ICON    DISCARDABLE     "ocs.ico"
+IDI_02_OCG              ICON    DISCARDABLE     "ocg.ico"
+IDI_03_OCF              ICON    DISCARDABLE     "ocf.ico"
+IDI_04_OCP              ICON    DISCARDABLE     "ocp.ico"
+IDI_06_OCD              ICON    DISCARDABLE     "ocd.ico"
+IDI_07_OCI              ICON    DISCARDABLE     "oci.ico"
+IDI_08_OCM              ICON    DISCARDABLE     "ocm.ico"
+IDI_09_OCB              ICON    DISCARDABLE     "ocb.ico"
+IDI_10_OCV              ICON    DISCARDABLE     "ocv.ico"
+IDI_11_OCL              ICON    DISCARDABLE     "ocl.ico"
+IDI_13_OCU              ICON    DISCARDABLE     "ocu.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

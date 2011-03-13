@@ -48,7 +48,7 @@
 #include <StdRegistry.h>
 
 #define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
-                                   "*.c4s;*.c4f;Scenario.txt\0" \
+                                   "*.ocs;*.ocf;Scenario.txt\0" \
                                    "\0"
 
 using namespace OpenFileFlags;
@@ -235,10 +235,10 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	char filename[512+1];
 	SCopy(Game.ScenarioFile.GetName(),filename);
 	if (!FileSelect(filename,512,
-	                "Clonk 4 Scenario\0*.c4s\0\0",
+	                "Clonk 4 Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
-	DefaultExtension(filename,"c4s");
+	DefaultExtension(filename,"ocs");
 	bool fOkay=true;
 	// Close current scenario file
 	if (!Game.ScenarioFile.Close()) fOkay=false;
@@ -289,7 +289,7 @@ bool C4Console::FileOpenWPlrs()
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-	                "Clonk 4 Player\0*.c4p\0\0",
+	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return false;
 	// Compose command line
@@ -451,7 +451,7 @@ void C4Console::PlayerJoin()
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-	                "Clonk 4 Player\0*.c4p\0\0",
+	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return;
 

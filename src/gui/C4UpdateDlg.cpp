@@ -220,7 +220,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		// ASK: What is this? Why should an update program not be found at the top
 		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
-		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.c4u", C4_OS).getData(), strSubGroup))
+		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.ocu", C4_OS).getData(), strSubGroup))
 			// Extract update program from sub group
 			if (SubGroup.OpenAsChild(&UpdateGroup, strSubGroup))
 			{

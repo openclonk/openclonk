@@ -179,7 +179,7 @@ bool C4Game::OpenScenario()
 	if (!ScenarioFilename[0]) { LogFatal(LoadResStr("IDS_PRC_NOC4S")); return false; }
 	LogF(LoadResStr("IDS_PRC_LOADC4S"),ScenarioFilename);
 
-	// get parent folder, if it's c4f
+	// get parent folder, if it's ocf
 	pParentGroup = GroupSet.RegisterParentFolders(ScenarioFilename);
 
 	// open scenario
@@ -226,11 +226,11 @@ bool C4Game::OpenScenario()
 		else Log(LoadResStr("IDS_PRC_LOCALONLY"));
 	}
 
-	// add all .c4f-modules to the group set
+	// add all .ocf-modules to the group set
 	// (for savegames, network games, etc.)
 	/*  char szModule[_MAX_PATH+1]; C4Group *pGrp=NULL; int32_t iDefGrpPrio=C4GSPrio_Definition;
 	  for (int32_t cseg=0; SCopySegment(DefinitionFilenames,cseg,szModule,';',_MAX_PATH); cseg++)
-	    if (SEqualNoCase(GetExtension(szModule), "c4f"))
+	    if (SEqualNoCase(GetExtension(szModule), "ocf"))
 	      {
 	      if (!pGrp) pGrp = new C4Group();
 	      if (!pGrp->Open(szModule)) continue;
@@ -1394,7 +1394,7 @@ bool C4Game::DropFile(const char *szFilename, float iX, float iY)
 {
 	C4ID c_id; C4Def *cdef;
 	// Drop def to create object
-	if (SEqualNoCase(GetExtension(szFilename),"c4d"))
+	if (SEqualNoCase(GetExtension(szFilename),"ocd"))
 	{
 		// Get id from file
 		if ((c_id=DefFileGetID(szFilename)))
@@ -2073,7 +2073,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
 
-		// Scenario scripts (and local system.c4g)
+		// Scenario scripts (and local system.ocg)
 		// After defs to get overloading priority
 		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
@@ -2657,7 +2657,7 @@ bool C4Game::LoadScenarioScripts()
 
 bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 {
-	// called for scenario local and definition local System.c4g groups
+	// called for scenario local and definition local System.ocg groups
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
@@ -2804,7 +2804,7 @@ bool C4Game::InitKeyboard()
 
 void C4Game::UpdateLanguage()
 {
-	// Reload System.c4g string table
+	// Reload System.ocg string table
 	MainSysLangStringTable.LoadEx(Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 }
 
@@ -3123,7 +3123,7 @@ const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
 		// Get folder name
 		SCopy(szPath,szFoldername,iBackslash);
 		// Open folder
-		if (SEqualNoCase(GetExtension(szFoldername),"c4f"))
+		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
 			if (hGroup.Open(szFoldername))
 			{
 				// Check for contained defs

@@ -111,7 +111,7 @@ bool C4PlayerInfoCore::Save(C4Group &hGroup)
 		return false;
 	if (!hGroup.Add(C4CFN_PlayerInfoCore,Source,false,true))
 		return false;
-	hGroup.Delete("C4Player.c4b");
+	hGroup.Delete("C4Player.ocb");
 	return true;
 }
 

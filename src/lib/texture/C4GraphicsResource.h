@@ -18,7 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Loads all standard graphics from Graphics.c4g */
+/* Loads all standard graphics from Graphics.ocg */
 
 #ifndef INC_C4GraphicsResource
 #define INC_C4GraphicsResource
@@ -113,7 +113,7 @@ public:
 
 	bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)
 
-	bool RegisterGlobalGraphics(); // register global Graphics.c4g into own group set
+	bool RegisterGlobalGraphics(); // register global Graphics.ocg into own group set
 	bool RegisterMainGroups();     // register new groups of Game.GroupSet into own group set
 	void CloseFiles();             // free group set
 

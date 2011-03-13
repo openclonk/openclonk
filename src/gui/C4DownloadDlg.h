@@ -16,7 +16,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 // HTTP download dialog; downloads a file
-// (like, e.g., a .c4u update group)
+// (like, e.g., a .ocu update group)
 
 #ifndef INC_C4DownloadDlg
 #define INC_C4DownloadDlg

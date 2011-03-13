@@ -123,7 +123,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 		// Error opening system group - no LogFatal, because it needs language table.
 		// This will *not* use the FatalErrors stack, but this will cause the game
 		// to instantly halt, anyway.
-		const char *szMessage = "Error opening system group file (System.c4g)!";
+		const char *szMessage = "Error opening system group file (System.ocg)!";
 		Log(szMessage);
 		// Fatal error, game cannot start - have player notice
 		MessageDialog(szMessage);
@@ -356,7 +356,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			}
 		}
 		// Scenario file
-		if (SEqualNoCase(GetExtension(szParameter),"c4s"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocs"))
 		{
 			if(IsGlobalPath(szParameter))
 				Game.SetScenarioFilename(szParameter);
@@ -371,7 +371,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Player file
-		if (SEqualNoCase(GetExtension(szParameter),"c4p"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocp"))
 		{
 			if(IsGlobalPath(szParameter))
 				SAddModule(Game.PlayerFilenames, szParameter);
@@ -381,7 +381,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Definition file
-		if (SEqualNoCase(GetExtension(szParameter),"c4d"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocd"))
 		{
 			SAddModule(Game.DefinitionFilenames,szParameter);
 			continue;
@@ -393,7 +393,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Update file
-		if (SEqualNoCase(GetExtension(szParameter),"c4u"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocu"))
 		{
 			Application.IncomingUpdate.Copy(szParameter);
 			continue;
@@ -537,7 +537,7 @@ void C4Application::Clear()
 	// stop timer
 	Remove(pGameTimer);
 	delete pGameTimer; pGameTimer = NULL;
-	// close system group (System.c4g)
+	// close system group (System.ocg)
 	SystemGroup.Close();
 	// Log
 	if (IsResStrTableLoaded()) // Avoid (double and undefined) message on (second?) shutdown...

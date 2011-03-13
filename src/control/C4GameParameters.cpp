@@ -232,9 +232,9 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 			if (*szSegment)
 				CreateByFile(NRT_Definitions, szSegment);
 	}
-	// add System.c4g
+	// add System.ocg
 	CreateByFile(NRT_System, C4CFN_System);
-	// add all instances of Material.c4g, except those inside the scenario file
+	// add all instances of Material.ocg, except those inside the scenario file
 	C4Group *pMatParentGrp = NULL;
 	while ((pMatParentGrp = Game.GroupSet.FindGroup(C4GSCnt_Material, pMatParentGrp)))
 		if (pMatParentGrp != &Game.ScenarioFile)
@@ -242,7 +242,7 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 			StdStrBuf MaterialPath = pMatParentGrp->GetFullName() + DirSep C4CFN_Material;
 			CreateByFile(NRT_Material, (pMatParentGrp->GetFullName() + DirSep C4CFN_Material).getData());
 		}
-	// add global Material.c4g
+	// add global Material.ocg
 	CreateByFile(NRT_Material, C4CFN_Material);
 	// done; success
 	return true;

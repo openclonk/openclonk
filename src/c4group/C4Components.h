@@ -27,17 +27,17 @@
 
 #define C4CFN_Engine          "Clonk.exe"
 
-#define C4CFN_Material        "Material.c4g"
-#define C4CFN_Sound           "Sound.c4g"
-#define C4CFN_Graphics        "Graphics.c4g"
-#define C4CFN_System          "System.c4g"
-#define C4CFN_Music           "Music.c4g"
-#define C4CFN_Extra           "Extra.c4g"
-#define C4CFN_Languages       "Language.c4g"
+#define C4CFN_Material        "Material.ocg"
+#define C4CFN_Sound           "Sound.ocg"
+#define C4CFN_Graphics        "Graphics.ocg"
+#define C4CFN_System          "System.ocg"
+#define C4CFN_Music           "Music.ocg"
+#define C4CFN_Extra           "Extra.ocg"
+#define C4CFN_Languages       "Language.ocg"
 
-#define C4CFN_ScenarioSections "Sect*.c4g"
+#define C4CFN_ScenarioSections "Sect*.ocg"
 
-#define C4CFN_Objects         "Objects.c4d"
+#define C4CFN_Objects         "Objects.ocd"
 
 #define C4CFN_ScenarioCore    "Scenario.txt"
 #define C4CFN_FolderCore      "Folder.txt"
@@ -66,9 +66,9 @@
 #define C4CFN_Author          "Author.txt"
 #define C4CFN_Version         "Version.txt"
 #define C4CFN_Game            "Game.txt"
-#define C4CFN_PXS             "PXS.c4b"
-#define C4CFN_MassMover       "MassMover.c4b"
-#define C4CFN_CtrlRec         "CtrlRec.c4b"
+#define C4CFN_PXS             "PXS.ocb"
+#define C4CFN_MassMover       "MassMover.ocb"
+#define C4CFN_CtrlRec         "CtrlRec.ocb"
 #define C4CFN_CtrlRecText     "CtrlRec.txt"
 #define C4CFN_LogRec          "Record.log"
 #define C4CFN_TexMap          "TexMap.txt"
@@ -128,7 +128,7 @@
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
 
-#define C4CFN_Splash          "Splash.c4v"
+#define C4CFN_Splash          "Splash.ocv"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"
@@ -144,18 +144,18 @@
 #define C4CFN_TempRoundResults "~C4Results.tmp"
 #define C4CFN_TempLeagueInfo  "~league.tmp"
 
-#define C4CFN_DefFiles        "*.c4d"
-#define C4CFN_PlayerFiles     "*.c4p"
-#define C4CFN_MaterialFiles   "*.c4m"
-#define C4CFN_ObjectInfoFiles "*.c4i"
+#define C4CFN_DefFiles        "*.ocd"
+#define C4CFN_PlayerFiles     "*.ocp"
+#define C4CFN_MaterialFiles   "*.ocm"
+#define C4CFN_ObjectInfoFiles "*.oci"
 #define C4CFN_MusicFiles      "*.mid"
 #define C4CFN_SoundFiles      "*.wav|*.ogg"
 #define C4CFN_PNGFiles        "*.png"
 #define C4CFN_BitmapFiles     "*.bmp"
-#define C4CFN_ScenarioFiles   "*.c4s"
-#define C4CFN_FolderFiles     "*.c4f"
+#define C4CFN_ScenarioFiles   "*.ocs"
+#define C4CFN_FolderFiles     "*.ocf"
 #define C4CFN_QueueFiles      "*.c4q"
-#define C4CFN_AnimationFiles  "*.c4v"
+#define C4CFN_AnimationFiles  "*.ocv"
 #define C4CFN_KeyFiles        "*.c4k"
 #define C4CFN_ScriptFiles     "*.c"
 #define C4CFN_ImageFiles      "*.png|*.bmp|*.jpeg|*.jpg"
@@ -165,20 +165,20 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.c4g|Music.c4g|*.mid|*.wav|Desc*.rtf|Title.bmp|Title.png|*.c4d|Material.c4g|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.c4d|Script.c|Script*.c|System.c4g"
-#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.c4b|MassMover.c4b|CtrlRec.c4b|Strings.txt|Objects.txt"
-#define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.c4b|MassMover.c4b"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.bmp|Title.png|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|System.ocg"
+#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt"
+#define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
 #define C4FLS_SectionObjects   "Strings.txt|Objects.txt"
-#define C4FLS_Def       "Particle.txt|DefCore.txt|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|Portrait*.png|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank.png|Desc*.txt|Overlay.png|Title.png|Icon.bmp|Author.txt|Version.txt|*.wav|*.c4d"
-#define C4FLS_Player    "Player.txt|Portrait.png|Portrait.bmp|*.c4i"
+#define C4FLS_Def       "Particle.txt|DefCore.txt|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|Portrait*.png|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank.png|Desc*.txt|Overlay.png|Title.png|Icon.bmp|Author.txt|Version.txt|*.wav|*.ocd"
+#define C4FLS_Player    "Player.txt|Portrait.png|Portrait.bmp|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt|Portrait.png|Portrait.bmp"
-#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.c4s|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
-#define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.c4m"
+#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
+#define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.ocm"
 #define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FontEndeavour12.png|FontEndeavour24.png|FontEndeavour16.png|FontEndeavour10.png|Font*.png"\
             "|*.pal|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Entry.png|Captain.png|Cursor.png|CursorSmall.png|CursorMedium.png|CursorLarge.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Liquid.png"\
             "|GUICaption.png|GUIButton.png|GUIButtonDown.png|GUIButtonHighlight.png|GUIIcons.png|GUIIcons2.png|GUIScroll.png|GUIContext.png|GUISubmenu.png|GUICheckBox.png|GUIBigArrows.png|GUIProgress.png"\
             "|StartupScenSelBG.*|StartupPlrSelBG.*|StartupPlrPropBG.*|StartupNetworkBG.*|StartupAboutBG.*|StartupBigButton.png|StartupBigButtonDown.png|StartupBookScroll.png|StartupContext.png|StartupScenSelIcons.png|StartupScenSelTitleOv.png|StartupDlgPaper.png|StartupOptionIcons.png|StartupTabClip.png|StartupNetGetRef.png|StartupLogo.png"
-#define C4FLS_Objects   "Names*.txt|Desc*.txt|*.c4d"
+#define C4FLS_Objects   "Names*.txt|Desc*.txt|*.ocd"
 #define C4FLS_System    "*.hlp|*.cnt|Language*.txt|*.fon|*.fnt|*.ttf|*.ttc|*.fot|*.otf|Fonts.txt|StringTbl*.txt|*.c|Names.txt"
 #define C4FLS_Music     "Frontend.*|Credits.*"
 

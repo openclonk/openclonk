@@ -540,7 +540,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	return true;
 }
 
-// helper func: Recursive check whether a directory contains a .c4s or .c4f file
+// helper func: Recursive check whether a directory contains a .ocs or .ocf file
 bool DirContainsScenarios(const char *szDir)
 {
 	// create iterator on free store to avoid stack overflow with deeply recursed folders
@@ -1612,7 +1612,7 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	{
 		// get definitions as user selects them
 		StdStrBuf sDefinitions;
-		if (!pStartScen->GetC4S().Definitions.GetModules(&sDefinitions)) sDefinitions.Copy("Objects.c4d");
+		if (!pStartScen->GetC4S().Definitions.GetModules(&sDefinitions)) sDefinitions.Copy("Objects.ocd");
 		if (!C4DefinitionSelDlg::SelectDefinitions(GetScreen(), &sDefinitions))
 			// user aborted during definition selection
 			return false;
@@ -1620,7 +1620,7 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	}
 	else
 		// for no user change, just set default objects. Custom settings will override later anyway
-		SCopy("Objects.c4d", Game.DefinitionFilenames);
+		SCopy("Objects.ocd", Game.DefinitionFilenames);
 	// set other default startup parameters
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;

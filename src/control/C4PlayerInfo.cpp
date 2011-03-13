@@ -1514,7 +1514,7 @@ bool C4PlayerInfoList::RecreatePlayerFiles()
 					if (Game.C4S.Head.Replay)
 					{
 						// replay of resumed savegame: RecreatePlayers saves used player files into the record group in this manner
-						sFilenameInRecord.Format("Recreate-%d.c4p", pInfo->GetID());
+						sFilenameInRecord.Format("Recreate-%d.ocp", pInfo->GetID());
 						szCurrPlrFile = sFilenameInRecord.getData();
 					}
 					else
@@ -1641,7 +1641,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 				if (::Control.isRecord() && szFilename)
 				{
 					StdStrBuf sFilenameInRecord;
-					sFilenameInRecord.Format("Recreate-%d.c4p", pInfo->GetID());
+					sFilenameInRecord.Format("Recreate-%d.ocp", pInfo->GetID());
 					::Control.RecAddFile(szFilename, sFilenameInRecord.getData());
 				}
 				// recreate join directly
@@ -1736,7 +1736,7 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 					if (fSetScriptPlrRefToLocalGroup)
 					{
 						// just compose a unique filename for script player
-						pInfo->SetFilename(FormatString("ScriptPlr-%d.c4p", (int)pInfo->GetID()).getData());
+						pInfo->SetFilename(FormatString("ScriptPlr-%d.ocp", (int)pInfo->GetID()).getData());
 					}
 				}
 			}

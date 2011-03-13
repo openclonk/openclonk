@@ -79,7 +79,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 		GfxR->fctPlayerClr.Surface->SetClr(0xff);
 	InitRefSym(GfxR->fctPlayerClr, LoadResStr("IDS_MENU_NOPLRFILES"), iPlayer);
 	for (DirectoryIterator iter(Config.General.UserDataPath); *iter; ++iter)
-		if (WildcardMatch("*.c4p", *iter))
+		if (WildcardMatch("*.ocp", *iter))
 		{
 			char szFilename[_MAX_PATH+1], szCommand[_MAX_PATH+30+1];
 			SCopy(*iter, szFilename, _MAX_PATH);
@@ -433,7 +433,7 @@ bool C4MainMenu::ActivateSavegame(int32_t iPlayer)
 	RemoveExtension(DirPath);
 	if (LooksLikeInteger(DirPath))
 	{
-		// ScenTitle.c4f\%d.c4s-names (old-style savegames)
+		// ScenTitle.ocf\%d.ocs-names (old-style savegames)
 		// get owning folder
 		if (Game.pParentGroup)
 		{
@@ -464,10 +464,10 @@ bool C4MainMenu::ActivateSavegame(int32_t iPlayer)
 	}
 
 	// New Style 2007:
-	// * scenarios are saved into ScenName.c4f/ScenName123.c4s to keep umlauts out of filenames
+	// * scenarios are saved into ScenName.ocf/ScenName123.ocs to keep umlauts out of filenames
 	// * language titles are stored in folders as title component
 	StdStrBuf strFilename, strTitle;
-	strFilename.Format("%s.c4f%c%s%%d.c4s", ScenName, DirectorySeparator, ScenName);
+	strFilename.Format("%s.ocf%c%s%%d.ocs", ScenName, DirectorySeparator, ScenName);
 	strTitle = Game.ScenarioTitle;
 
 	// Create menu items

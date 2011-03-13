@@ -36,7 +36,7 @@
 
 #define IMMEDIATEREC
 
-#define DEBUGREC_EXTFILE "DbgRec.c4b" // if defined, an external file is used for debugrec writing (replays only)
+#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
 #define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
 
 #ifdef DEBUGREC
@@ -150,7 +150,7 @@ bool C4Record::Start(bool fInitial)
 			Index++;
 
 	// compose record filename
-	sFilename.Format("%s" DirSep "%03i-%s.c4s", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
+	sFilename.Format("%s" DirSep "%03i-%s.ocs", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
 
 	// log
 	StdStrBuf sLog; sLog.Format(LoadResStr("IDS_PRC_RECORDINGTO"),sFilename.getData());
@@ -296,7 +296,7 @@ bool C4Record::AddFile(const char *szLocalFilename, const char *szAddAs, bool fD
 
 		// Special stripping for streaming
 		StdCopyStrBuf szFile(szLocalFilename);
-		if (SEqualNoCase(GetExtension(szAddAs), "c4p"))
+		if (SEqualNoCase(GetExtension(szAddAs), "ocp"))
 		{
 			// Create a copy
 			MakeTempFilename(&szFile);
@@ -1199,7 +1199,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	SCopy(szStream, szRecord, _MAX_PATH);
 	if (GetExtension(szRecord))
 		*(GetExtension(szRecord) - 1) = 0;
-	SAppend(".c4s", szRecord, _MAX_PATH);
+	SAppend(".ocs", szRecord, _MAX_PATH);
 	LogF("Original scenario is %s, creating %s.", szOrigin, szRecord);
 	if (!C4Group_CopyItem(szOrigin, szRecord, false, false))
 		return false;

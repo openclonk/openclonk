@@ -21,7 +21,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Handles Music.c4g and randomly plays songs */
+/* Handles Music.ocg and randomly plays songs */
 
 #ifndef INC_C4MusicSystem
 #define INC_C4MusicSystem

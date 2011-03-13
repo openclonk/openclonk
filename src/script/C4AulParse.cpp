@@ -230,7 +230,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 {
-	// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
+	// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
 	if (Fn && !Fn->Owner->Def && !Fn->Owner->Appends.empty()) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
@@ -3055,7 +3055,7 @@ bool C4AulScript::Parse()
 			}
 			catch (C4AulError *err)
 			{
-				// do not show errors for System.c4g scripts that appear to be pure #appendto scripts
+				// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
 				if (Fn->Owner->Def || Fn->Owner->Appends.empty())
 				{
 					// show
