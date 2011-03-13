@@ -29,6 +29,7 @@
 
 #include <StdRegistry.h>
 #include <C4Config.h>
+#include <C4Rect.h>
 #ifdef USE_GL
 #include <StdGL.h>
 #endif
@@ -169,9 +170,14 @@ void CStdWindow::SetTitle(const char *szToTitle)
 	if (hWindow) SetWindowText(hWindow, szToTitle ? szToTitle : "");
 }
 
-bool CStdWindow::GetSize(RECT * pRect)
+bool CStdWindow::GetSize(C4Rect * pRect)
 {
-	if (!(hWindow && GetClientRect(hWindow,pRect))) return false;
+	RECT r;
+	if (!(hWindow && GetClientRect(hWindow,&r))) return false;
+	pRect->x = r.left;
+	pRect->y = r.top;
+	pRect->Wdt = r.right - r.left;
+	pRect->Hgt = r.bottom - r.top;
 	return true;
 }
 

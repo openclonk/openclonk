@@ -20,6 +20,7 @@
 #include <StdWindow.h>
 #include <C4Version.h>
 #include <C4Application.h>
+#include <C4Rect.h>
 
 #import <Appkit/AppKit.h>
 #import <ClonkWindowController.h>
@@ -102,15 +103,15 @@ void CStdWindow::SetTitle(const char *szToTitle)
 		[controller.window setTitle:[NSString stringWithUTF8String:szToTitle ? szToTitle : ""]];
 }
 
-bool CStdWindow::GetSize(RECT * pRect)
+bool CStdWindow::GetSize(C4Rect * pRect)
 {
 	ClonkWindowController* controller = ctrler;
 	NSView* view = controller.openGLView ? controller.openGLView : controller.window.contentView;
 	NSRect r = [view frame];
-	pRect->top = 0;
-	pRect->left = 0;
-	pRect->right = r.size.width;
-	pRect->bottom = r.size.height;
+	pRect->x = 0;
+	pRect->y = 0;
+	pRect->Wdt = r.size.width;
+	pRect->Hgt = r.size.height;
 	return true;
 }
 

@@ -439,19 +439,19 @@ namespace C4GUI
 	{
 		if (!pDialog)
 			return; // safety
-		RECT r;
+		C4Rect r;
 		GetSize(&r);
 		if (pSurface)
 		{
-			pSurface->Wdt = r.right;
-			pSurface->Hgt = r.bottom;
+			pSurface->Wdt = r.Wdt;
+			pSurface->Hgt = r.Hgt;
 #ifdef USE_GL
 			pGL->PrepareRendering(pSurface);
 			glClear(GL_COLOR_BUFFER_BIT);
 #endif
 		}
 		C4TargetFacet cgo;
-		cgo.Set(NULL, 0, 0, r.right, r.bottom, 0, 0);
+		cgo.Set(NULL, 0, 0, r.Wdt, r.Hgt, 0, 0);
 		pDialog->Draw(cgo);
 	}
 

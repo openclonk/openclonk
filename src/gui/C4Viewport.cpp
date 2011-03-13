@@ -81,7 +81,7 @@ bool C4Viewport::UpdateOutputSize()
 {
 	if (!pWindow) return false;
 	// Output size
-	RECT rect;
+	C4Rect rect;
 
 #ifdef WITH_DEVELOPER_MODE
 	GtkAllocation allocation;
@@ -92,15 +92,15 @@ bool C4Viewport::UpdateOutputSize()
 #endif
 
 	// Use only size of drawing area without scrollbars
-	rect.left = allocation.x;
-	rect.top = allocation.y;
-	rect.right = rect.left + allocation.width;
-	rect.bottom = rect.top + allocation.height;
+	rect.x = allocation.x;
+	rect.y = allocation.y;
+	rect.Wdt = allocation.width;
+	rect.Hgt = allocation.height;
 #else
 	if (!pWindow->GetSize(&rect)) return false;
 #endif
-	OutX=rect.left; OutY=rect.top;
-	ViewWdt=rect.right-rect.left; ViewHgt=rect.bottom-rect.top;
+	OutX=rect.x; OutY=rect.y;
+	ViewWdt=rect.Wdt; ViewHgt=rect.Hgt;
 	// Scroll bars
 	ScrollBarsByViewPosition();
 	// Reset menus

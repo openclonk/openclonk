@@ -226,7 +226,7 @@ CStdWindow::CStdWindow() {}
 CStdWindow::~CStdWindow() {}
 void CStdWindow::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
 void CStdWindow::FlashWindow() {}
-bool CStdWindow::GetSize(RECT*) {return 0;}
+bool CStdWindow::GetSize(C4Rect*) {return 0;}
 CStdWindow* CStdWindow::Init(CStdWindow::WindowKind, CStdApp*, char const*, CStdWindow*, bool) {return this;}
 bool CStdWindow::ReInit(CStdApp*) {return 0;}
 bool CStdWindow::RestorePosition(char const*, char const*, bool) {return 0;}

@@ -31,6 +31,7 @@
 #include <StdBuf.h>
 
 #include <C4Config.h>
+#include <C4Rect.h>
 #include "C4Version.h"
 
 #include "c4x.xpm"
@@ -490,7 +491,7 @@ bool CStdWindow::RestorePosition(const char *, const char *, bool)
 	return true;
 }
 
-bool CStdWindow::GetSize(RECT * pRect)
+bool CStdWindow::GetSize(C4Rect * pRect)
 {
 	Window winDummy;
 	unsigned int borderDummy;
@@ -499,10 +500,10 @@ bool CStdWindow::GetSize(RECT * pRect)
 	unsigned int depth;
 	XGetGeometry(dpy, wnd, &winDummy, &x, &y,
 	             &width, &height, &borderDummy, &depth);
-	pRect->right = width + x;
-	pRect->bottom = height + y;
-	pRect->top = y;
-	pRect->left = x;
+	pRect->Wdt = width;
+	pRect->Hgt = height;
+	pRect->y = y;
+	pRect->x = x;
 	return true;
 }
 

@@ -28,6 +28,7 @@
 #include <StdBuf.h>
 
 #include "C4Version.h"
+#include <C4Rect.h>
 #include <C4Config.h>
 
 /* CStdWindow */
@@ -78,10 +79,10 @@ bool CStdWindow::RestorePosition(const char *, const char *, bool) { return true
 // Window size is automatically managed by CStdApp's display mode management.
 // Just remember the size for others to query.
 
-bool CStdWindow::GetSize(RECT * pRect)
+bool CStdWindow::GetSize(C4Rect * pRect)
 {
-	pRect->left = pRect->top = 0;
-	pRect->right = width, pRect->bottom = height;
+	pRect->x = pRect->y = 0;
+	pRect->Wdt = width, pRect->Hgt = height;
 	return true;
 }
 

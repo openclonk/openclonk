@@ -318,7 +318,7 @@ public:
 
 	bool StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize = true);
 	bool RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden = false);
-	bool GetSize(RECT * pRect);
+	bool GetSize(C4Rect * pRect);
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
