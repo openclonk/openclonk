@@ -188,7 +188,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		switch (e.xbutton.button)
 		{
 		case Button1:
-			if (timeGetTime() - last_left_click < 400)
+			if (GetTime() - last_left_click < 400)
 			{
 				C4GUI::MouseMove(C4MC_Button_LeftDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
@@ -198,7 +198,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			{
 				C4GUI::MouseMove(C4MC_Button_LeftDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
-				last_left_click = timeGetTime();
+				last_left_click = GetTime();
 			}
 			break;
 		case Button2:
@@ -206,7 +206,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		case Button3:
-			if (timeGetTime() - last_right_click < 400)
+			if (GetTime() - last_right_click < 400)
 			{
 				C4GUI::MouseMove(C4MC_Button_RightDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
@@ -216,7 +216,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			{
 				C4GUI::MouseMove(C4MC_Button_RightDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
-				last_right_click = timeGetTime();
+				last_right_click = GetTime();
 			}
 			break;
 		case Button4:
@@ -281,14 +281,14 @@ namespace
 		{
 		case SDL_BUTTON_LEFT:
 			if (e.state == SDL_PRESSED)
-				if (timeGetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+				if (GetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
 				{
 					lastLeftClick = 0;
 					button = C4MC_Button_LeftDouble;
 				}
 				else
 				{
-					lastLeftClick = timeGetTime();
+					lastLeftClick = GetTime();
 					button = C4MC_Button_LeftDown;
 				}
 			else
@@ -296,14 +296,14 @@ namespace
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (e.state == SDL_PRESSED)
-				if (timeGetTime() - lastRightClick < 400)
+				if (GetTime() - lastRightClick < 400)
 				{
 					lastRightClick = 0;
 					button = C4MC_Button_RightDouble;
 				}
 				else
 				{
-					lastRightClick = timeGetTime();
+					lastRightClick = GetTime();
 					button = C4MC_Button_RightDown;
 				}
 			else

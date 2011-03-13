@@ -804,7 +804,7 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 {
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
-	unsigned int Now = timeGetTime();
+	unsigned int Now = GetTime();
 	// Execute
 	if (Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
 	{

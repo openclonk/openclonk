@@ -49,7 +49,7 @@ public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-		iTime = timeGetTime(); iPcks = 0;
+		iTime = GetTime(); iPcks = 0;
 
 #ifdef ASYNC_CONNECT
 		if (!fHost)
@@ -63,10 +63,10 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-		if (timeGetTime() > iTime + 1000)
+		if (GetTime() > iTime + 1000)
 		{
-			cout << iPcks << " packets in " << timeGetTime() - iTime << " ms (" << iPcks * 1000 / (timeGetTime() - iTime) << " per second, " << (iPcks ? (timeGetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-			iTime = timeGetTime(); iPcks = 0;
+			cout << iPcks << " packets in " << GetTime() - iTime << " ms (" << iPcks * 1000 / (GetTime() - iTime) << " per second, " << (iPcks ? (GetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			iTime = GetTime(); iPcks = 0;
 		}
 		if (!rPacket.getStatus())
 		{

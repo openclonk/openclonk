@@ -51,8 +51,8 @@ public:
 	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
 	void StopProfiling(); // stop the profiler and displays results
 	void AbortProfiling() { fProfiling=false; }
-	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = timeGetTime(); }
-	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += timeGetTime() - tDirectExecStart; }
+	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = GetTime(); }
+	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += GetTime() - tDirectExecStart; }
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }

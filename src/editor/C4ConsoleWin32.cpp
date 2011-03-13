@@ -53,6 +53,8 @@
 #include "C4ConsoleGUI.h"
 #include "C4Viewport.h"
 
+#include <C4windowswrapper.h>
+#include <mmsystem.h>
 #include <commdlg.h>
 #include "resource.h"
 

@@ -762,17 +762,3 @@ long InterlockedDecrement(long * var)
 	return --(*var);
 }
 #endif
-
-#ifndef _WIN32
-
-#include <sys/time.h>
-
-unsigned long timeGetTime(void)
-{
-	static time_t sec_offset;
-	timeval tv;
-	gettimeofday(&tv, 0);
-	if (!sec_offset) sec_offset = tv.tv_sec;
-	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
-}
-#endif

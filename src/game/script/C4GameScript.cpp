@@ -1615,7 +1615,7 @@ static long FnGetTime(C4AulContext *)
 {
 	// check network, record, etc
 	if (::Control.SyncMode()) return 0;
-	return timeGetTime();
+	return GetTime();
 }
 
 static C4Value FnSetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Value *strDataName_C4V, C4Value *Data)

@@ -459,6 +459,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4ViewportWindow.cpp
 	src/platform/C4ViewportWindow.h
 	src/platform/C4windowswrapper.h
+	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.h
 	src/platform/StdConfig.cpp
 	src/platform/StdConfig.h
@@ -870,6 +871,7 @@ add_executable(netpuncher
 	src/C4Include.cpp
 	src/lib/StdBuf.cpp
 	src/lib/Standard.cpp
+	src/platform/GetTime.cpp
 	src/platform/StdScheduler.cpp
 	src/platform/StdFile.cpp
 	src/network/C4NetIO.cpp
@@ -893,6 +895,7 @@ add_executable(c4script EXCLUDE_FROM_ALL
 	src/lib/StdMarkup.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
+	src/platform/GetTime.cpp
 	src/platform/StdConfig.cpp
 	src/platform/StdConfig.h
 	src/platform/StdFile.cpp

@@ -708,7 +708,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			switch (e.xbutton.button)
 			{
 			case Button1:
-				if (timeGetTime() - last_left_click < 400)
+				if (GetTime() - last_left_click < 400)
 				{
 					C4GUI::MouseMove(C4MC_Button_LeftDouble,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
@@ -718,7 +718,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 				{
 					C4GUI::MouseMove(C4MC_Button_LeftDown,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-					last_left_click = timeGetTime();
+					last_left_click = GetTime();
 				}
 				break;
 			case Button2:
@@ -726,7 +726,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 			case Button3:
-				if (timeGetTime() - last_right_click < 400)
+				if (GetTime() - last_right_click < 400)
 				{
 					C4GUI::MouseMove(C4MC_Button_RightDouble,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
@@ -736,7 +736,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 				{
 					C4GUI::MouseMove(C4MC_Button_RightDown,
 					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-					last_right_click = timeGetTime();
+					last_right_click = GetTime();
 				}
 				break;
 			case Button4:

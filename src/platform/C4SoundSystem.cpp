@@ -236,7 +236,7 @@ bool C4SoundInstance::Create(C4SoundEffect *pnEffect, bool fLoop, int32_t inVolu
 	// Set effect
 	pEffect = pnEffect;
 	// Set
-	iStarted = timeGetTime();
+	iStarted = GetTime();
 	iVolume = inVolume; iPan = 0; iChannel = -1;
 	iNearInstanceMax = inNearInstanceMax;
 	this->iFalloffDistance = iFalloffDistance;
@@ -254,7 +254,7 @@ bool C4SoundInstance::CheckStart()
 	// already started?
 	if (isStarted()) return true;
 	// don't bother if half the time is up and the sound is not looping
-	if (timeGetTime() > iStarted + pEffect->Length / 2 && !fLooping)
+	if (GetTime() > iStarted + pEffect->Length / 2 && !fLooping)
 		return false;
 	// do near-instances check
 	int32_t iNearInstances = pObj ? pEffect->GetStartedInstanceCount(pObj->GetX(), pObj->GetY(), C4NearSoundRadius)
@@ -274,10 +274,10 @@ bool C4SoundInstance::Start()
 	if (!FSOUND_SetLoopMode(iChannel, fLooping ? FSOUND_LOOP_NORMAL : FSOUND_LOOP_OFF))
 		{ Stop(); return false; }
 	// set position
-	if (timeGetTime() > iStarted + 20)
+	if (GetTime() > iStarted + 20)
 	{
 		assert(pEffect->Length > 0);
-		int32_t iTime = (timeGetTime() - iStarted) % pEffect->Length;
+		int32_t iTime = (GetTime() - iStarted) % pEffect->Length;
 		FSOUND_SetCurrentPosition(iChannel, iTime / 10 * pEffect->SampleRate / 100);
 	}
 #elif defined HAVE_LIBSDL_MIXER
@@ -328,7 +328,7 @@ bool C4SoundInstance::Playing()
 #ifdef HAVE_FMOD
 	if (fLooping) return true;
 	return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
-	       : timeGetTime() < iStarted + pEffect->Length;
+	       : GetTime() < iStarted + pEffect->Length;
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);

@@ -231,7 +231,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 	// draw current video frame
 #ifdef _WIN32
 	// get frame to be drawn
-	time_t iCurrFrameTime = timeGetTime();
+	time_t iCurrFrameTime = GetTime();
 	int32_t iGetFrame;
 	if (!iStartFrameTime) iStartFrameTime = iCurrFrameTime;
 	if (!AVIFile.GetFrameByTime(iCurrFrameTime - iStartFrameTime, &iGetFrame))

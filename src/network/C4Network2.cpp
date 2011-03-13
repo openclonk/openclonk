@@ -1503,7 +1503,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 {
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
-	int32_t iProcess = -1; uint32_t iTimeout = timeGetTime() + iTimeoutLen;
+	int32_t iProcess = -1; uint32_t iTimeout = GetTime() + iTimeoutLen;
 	// wait for ressource
 	while (isEnabled())
 	{
@@ -1535,12 +1535,12 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		if (pRes && pRes->getPresentPercent() != iProcess)
 		{
 			iProcess = pRes->getPresentPercent();
-			iTimeout = timeGetTime() + iTimeoutLen;
+			iTimeout = GetTime() + iTimeoutLen;
 		}
 		else
 		{
 			// if not: check timeout
-			if (timeGetTime() > iTimeout)
+			if (GetTime() > iTimeout)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_NET_ERR_RESTIMEOUT"), szResName).getData());
 				if (pDlg) delete pDlg;
@@ -1577,7 +1577,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		}
 		else
 		{
-			if (!Application.ScheduleProcs(iTimeout - timeGetTime()))
+			if (!Application.ScheduleProcs(iTimeout - GetTime()))
 				{ return NULL; }
 		}
 
@@ -1775,7 +1775,7 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (iLastActivateRequest && timeGetTime() < iLastActivateRequest + C4NetActivationReqInterval)
+	if (iLastActivateRequest && GetTime() < iLastActivateRequest + C4NetActivationReqInterval)
 		return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
@@ -1786,7 +1786,7 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	iLastActivateRequest = timeGetTime();
+	iLastActivateRequest = GetTime();
 }
 
 void C4Network2::DeactivateInactiveClients()

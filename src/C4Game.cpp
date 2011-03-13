@@ -3199,7 +3199,7 @@ void C4Game::SetInitProgress(float fToProgress)
 	if (InitProgress > LastInitProgress)
 	{
 		LastInitProgress=InitProgress;
-		LastInitProgressShowTime=timeGetTime();
+		LastInitProgressShowTime=GetTime();
 		GraphicsSystem.MessageBoard.LogNotify();
 	}
 	// Cheap hack to get the Console window updated while loading

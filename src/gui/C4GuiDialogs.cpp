@@ -364,7 +364,7 @@ namespace C4GUI
 			switch (e.xbutton.button)
 			{
 			case Button1:
-				if (timeGetTime() - last_left_click < 400)
+				if (GetTime() - last_left_click < 400)
 				{
 					::pGUI->MouseInput(C4MC_Button_LeftDouble,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
@@ -374,7 +374,7 @@ namespace C4GUI
 				{
 					::pGUI->MouseInput(C4MC_Button_LeftDown,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = timeGetTime();
+					last_left_click = GetTime();
 				}
 				break;
 			case Button2:
@@ -382,7 +382,7 @@ namespace C4GUI
 				                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
 				break;
 			case Button3:
-				if (timeGetTime() - last_right_click < 400)
+				if (GetTime() - last_right_click < 400)
 				{
 					::pGUI->MouseInput(C4MC_Button_RightDouble,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
@@ -392,7 +392,7 @@ namespace C4GUI
 				{
 					::pGUI->MouseInput(C4MC_Button_RightDown,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = timeGetTime();
+					last_right_click = GetTime();
 				}
 				break;
 			case Button4:

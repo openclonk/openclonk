@@ -123,7 +123,7 @@ public:
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
-		if (query_time < 0) query(timeGetTime());
+		if (query_time < 0) query(GetTime());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
 	virtual int GetNextTick(int Now)

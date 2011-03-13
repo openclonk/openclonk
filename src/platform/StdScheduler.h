@@ -97,12 +97,12 @@ private:
 public:
 	void Set() { iLastTimer = 0; }
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
-	bool Check() { return timeGetTime() >= iLastTimer + iDelay; }
+	bool Check() { return GetTime() >= iLastTimer + iDelay; }
 	bool CheckAndReset()
 	{
 		if (!Check()) return false;
 		// Compensate light drifting
-		uint32_t iTime = timeGetTime();
+		uint32_t iTime = GetTime();
 		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
 		iLastTimer = iTime - Min(iDrift, iDelay / 2);
 		return true;

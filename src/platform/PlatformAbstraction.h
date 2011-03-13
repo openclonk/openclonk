@@ -60,7 +60,6 @@
 #   define NOMINMAX
 #  endif
 #  include <windef.h>
-#  include <mmsystem.h>
 # endif
 #endif
 
@@ -189,8 +188,6 @@ typedef struct
 	int32_t left; int32_t top; int32_t right; int32_t bottom;
 } RECT;
 
-unsigned long timeGetTime(void);
-
 #include <strings.h>
 inline int stricmp(const char *s1, const char *s2)
 {
@@ -225,5 +222,8 @@ bool IsGermanSystem();
 
 // open a weblink in an external browser
 bool OpenURL(const char* szURL);
+
+// Get a monotonically increasing timestamp in milliseconds
+unsigned int GetTime();
 
 #endif // INC_PLATFORMABSTRACTION

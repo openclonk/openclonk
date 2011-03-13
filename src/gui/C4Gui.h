@@ -2449,7 +2449,7 @@ namespace C4GUI
 		int32_t LDownX, LDownY;       // position where left button was pressed last
 		DWORD dwKeys;             // shift, ctrl, etc.
 		bool fActive;
-		time_t tLastMovementTime; // timeGetTime() when the mouse pos changed last
+		time_t tLastMovementTime; // GetTime() when the mouse pos changed last
 
 		// whether last input was done by mouse
 		// set to true whenever mouse pos changes or buttons are pressed
@@ -2480,8 +2480,8 @@ namespace C4GUI
 
 		void SetOwnedMouse(bool fToVal) { fActive=fToVal; }
 
-		void ResetToolTipTime() { tLastMovementTime = timeGetTime(); }
-		bool IsMouseStill() { return timeGetTime()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
+		void ResetToolTipTime() { tLastMovementTime = GetTime(); }
+		bool IsMouseStill() { return GetTime()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
 		void ResetActiveInput() { fActiveInput = false; }
 		bool IsActiveInput() { return fActiveInput; }
 

@@ -975,7 +975,7 @@ void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
 	fProfiling = true;
 	// resets profling times and starts recording the times
 	this->pProfiledScript = pProfiledScript;
-	time_t tNow = timeGetTime();
+	time_t tNow = GetTime();
 	tDirectExecStart = tNow; // in case profiling is started from DirectExec
 	tDirectExecTotal = 0;
 	pProfiledScript->ResetProfilerTimes();
@@ -1008,7 +1008,7 @@ void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 		pCurCtx->dump(Buf);
 	}
 	// Profiler: Safe time to measure difference afterwards
-	if (fProfiling) pCurCtx->tTime = timeGetTime();
+	if (fProfiling) pCurCtx->tTime = GetTime();
 }
 
 void C4AulExec::PopContext()
@@ -1018,7 +1018,7 @@ void C4AulExec::PopContext()
 	// Profiler adding up times
 	if (fProfiling)
 	{
-		time_t dt = timeGetTime() - pCurCtx->tTime;
+		time_t dt = GetTime() - pCurCtx->tTime;
 		if (dt && pCurCtx->Func)
 			pCurCtx->Func->tProfileTime += dt;
 	}
