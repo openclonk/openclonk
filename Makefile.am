@@ -730,7 +730,7 @@ EXTRA_DIST = \
   src/res/Play.bmp \
   src/res/Brush.bmp \
   src/res/c4k.ico \
-  src/res/c4v.ico \
+  src/res/ocv.ico \
   src/res/dynamic1.bmp \
   src/res/Halt2.bmp \
   src/res/mouse1.bmp \

@@ -128,7 +128,7 @@
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
 
-#define C4CFN_Splash          "Splash.c4v"
+#define C4CFN_Splash          "Splash.ocv"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"
@@ -155,7 +155,7 @@
 #define C4CFN_ScenarioFiles   "*.ocs"
 #define C4CFN_FolderFiles     "*.ocf"
 #define C4CFN_QueueFiles      "*.c4q"
-#define C4CFN_AnimationFiles  "*.c4v"
+#define C4CFN_AnimationFiles  "*.ocv"
 #define C4CFN_KeyFiles        "*.c4k"
 #define C4CFN_ScriptFiles     "*.c"
 #define C4CFN_ImageFiles      "*.png|*.bmp|*.jpeg|*.jpg"

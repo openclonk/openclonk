@@ -40,7 +40,7 @@ IDI_06_OCD              ICON    DISCARDABLE     "ocd.ico"
 IDI_07_OCI              ICON    DISCARDABLE     "oci.ico"
 IDI_08_OCM              ICON    DISCARDABLE     "ocm.ico"
 IDI_09_OCB              ICON    DISCARDABLE     "ocb.ico"
-IDI_10_C4V              ICON    DISCARDABLE     "c4v.ico"
+IDI_10_OCV              ICON    DISCARDABLE     "ocv.ico"
 IDI_11_C4L              ICON    DISCARDABLE     "c4l.ico"
 IDI_13_C4U              ICON    DISCARDABLE     "c4u.ico"
 
