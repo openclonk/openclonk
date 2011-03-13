@@ -49,17 +49,17 @@ bool SetProtocol(const char *szProtocol, const char *szCommand, const char *szMo
 bool SetC4FileClasses(const char *szEnginePath)
 {
 
-	if (!SetRegFileClass("OpenClonk.Scenario",   ,"ocs", "OpenClonk Scenario",          szEnginePath, 1, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Group",      ,"ocg", "OpenClonk Group",             szEnginePath, 2, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Folder",     ,"ocf", "OpenClonk Folder",            szEnginePath, 3, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Player",     ,"ocp", "OpenClonk Player",            szEnginePath, 4, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Definition", ,"ocd", "OpenClonk Object Definition", szEnginePath, 5, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Object",     ,"oci", "OpenClonk Object Info",       szEnginePath, 6, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Material",   ,"ocm", "OpenClonk Material",          szEnginePath, 7, "text/plain")) return false;
-	if (!SetRegFileClass("OpenClonk.Binary",     ,"ocb", "OpenClonk Binary",            szEnginePath, 8, "application/octet-stream")) return false;
-	if (!SetRegFileClass("OpenClonk.Video",      ,"ocv", "OpenClonk Video",             szEnginePath, 9, "video/avi")) return false;
-	if (!SetRegFileClass("OpenClonk.Weblink",    ,"ocl", "OpenClonk Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("OpenClonk.Update",     ,"ocu", "OpenClonk Update",            szEnginePath, 11, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Scenario",   "ocs", "OpenClonk Scenario",          szEnginePath, 1, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Group",      "ocg", "OpenClonk Group",             szEnginePath, 2, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Folder",     "ocf", "OpenClonk Folder",            szEnginePath, 3, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Player",     "ocp", "OpenClonk Player",            szEnginePath, 4, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Definition", "ocd", "OpenClonk Object Definition", szEnginePath, 5, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Object",     "oci", "OpenClonk Object Info",       szEnginePath, 6, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Material",   "ocm", "OpenClonk Material",          szEnginePath, 7, "text/plain")) return false;
+	if (!SetRegFileClass("OpenClonk.Binary",     "ocb", "OpenClonk Binary",            szEnginePath, 8, "application/octet-stream")) return false;
+	if (!SetRegFileClass("OpenClonk.Video",      "ocv", "OpenClonk Video",             szEnginePath, 9, "video/avi")) return false;
+	if (!SetRegFileClass("OpenClonk.Weblink",    "ocl", "OpenClonk Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Update",     "ocu", "OpenClonk Update",            szEnginePath, 11, C4FileClassContentType)) return false;
 
 	if (!SetProtocol("clonk", "%s %%1 /Fullscreen", szEnginePath)) return false;
 

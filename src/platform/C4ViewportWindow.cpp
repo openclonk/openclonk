@@ -243,8 +243,8 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
 	WndClass.lpszMenuName  = NULL;
 	WndClass.lpszClassName = C4ViewportClassName;
-	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
-	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
+	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_OCS) );
+	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_OCS) );
 	if (!RegisterClassEx(&WndClass)) return false;
 	// register GUI dialog class
 	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
