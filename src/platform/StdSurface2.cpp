@@ -1217,11 +1217,8 @@ void CSurface::ClearBoxDw(int iX, int iY, int iWdt, int iHgt)
 			int iBlitX=iTexSize*x;
 			int iBlitY=iTexSize*y;
 			// get clearing bounds in texture
-			C4Rect rtClear;
-			rtClear.x   = Max(iX-iBlitX, 0);
-			rtClear.y   = Max(iY-iBlitY, 0);
-			rtClear.Wdt = Min(iWdt, iTexSize-(iX-iBlitX));
-			rtClear.Hgt = Min(iHgt, iTexSize-(iY-iBlitY));
+			C4Rect rtClear = C4Rect(0, 0, pTex->iSizeX, pTex->iSizeY);
+			rtClear.Intersect(C4Rect(iX - iBlitX, iY - iBlitY, iWdt, iHgt));
 			// is there a base-surface to be cleared first?
 			if (fBaseSfc)
 			{
