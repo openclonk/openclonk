@@ -57,8 +57,8 @@ public:
 	C4Game();
 	~C4Game();
 
+	C4GameParameters   &Parameters;
 	C4ClientList       &Clients; // Shortcut
-	C4GameParameters    &Parameters;
 	C4TeamList         &Teams; // Shortcut
 	C4PlayerInfoList   &PlayerInfos; // Shortcut
 	C4PlayerInfoList   &RestorePlayerInfos; // Shortcut

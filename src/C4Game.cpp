@@ -93,9 +93,9 @@ public:
 static C4GameParameters GameParameters;
 static C4RoundResults GameRoundResults;
 
-C4Game::C4Game()
-		: Clients(Parameters.Clients),
+C4Game::C4Game():
 		Parameters(GameParameters),
+		Clients(Parameters.Clients),
 		Teams(Parameters.Teams),
 		PlayerInfos(Parameters.PlayerInfos),
 		RestorePlayerInfos(Parameters.RestorePlayerInfos),
