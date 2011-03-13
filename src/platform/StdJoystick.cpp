@@ -31,7 +31,7 @@ static uint32_t dwStdGamepadMinX = 0;
 static uint32_t dwStdGamepadMaxY = 0;
 static uint32_t dwStdGamepadMinY = 0;
 
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <windowsx.h>
 
 uint32_t POV2Position(DWORD dwPOV, bool fVertical)

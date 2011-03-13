@@ -28,7 +28,7 @@
 #include <stdio.h>
 #ifdef _WIN32
 #include <io.h>
-#include <windows.h>
+#include <C4windowswrapper.h>
 #define vsnprintf _vsnprintf
 #else
 #define O_BINARY 0

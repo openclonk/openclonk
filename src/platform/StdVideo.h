@@ -26,8 +26,7 @@
 #ifdef _WIN32
 #pragma once
 
-#include <StdWindow.h>
-#include <windows.h> // some vfw.h versions do not compile without this
+#include <C4windowswrapper.h> // some vfw.h versions do not compile without this
 #include <mmsystem.h>
 #include <vfw.h>
 #include <io.h>

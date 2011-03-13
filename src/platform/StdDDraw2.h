@@ -28,9 +28,6 @@
 #include <StdFont.h>
 #include <StdBuf.h>
 
-// workaround wingdi.h
-#undef TextOut
-
 // texref-predef
 class CStdDDraw;
 class CTexRef;

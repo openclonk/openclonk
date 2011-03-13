@@ -26,9 +26,6 @@
 #include <StdBuf.h>
 #include <stdio.h>
 #include <map>
-#ifdef _WIN32
-#include <tchar.h>
-#endif
 
 // Font rendering flags
 #define STDFONT_CENTERED    0x0001

@@ -27,7 +27,7 @@
 #include <StdRegistry.h>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <stdio.h>
 
 bool DeleteRegistryValue(const char *szSubKey, const char *szValueName)

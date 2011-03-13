@@ -40,7 +40,7 @@
 #include <unistd.h>
 #endif
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #endif
 #include <errno.h>
 #include <stdlib.h>

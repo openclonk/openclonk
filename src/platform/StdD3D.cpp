@@ -33,7 +33,7 @@
 
 #ifdef USE_DIRECTX
 
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>

@@ -26,13 +26,16 @@
 #include "C4Include.h"
 #include <StdFont.h>
 
-#include <StdWindow.h>
 #include <StdBuf.h>
 #include <StdDDraw2.h>
 #include <StdSurface2.h>
 #include <StdMarkup.h>
 #include <stdexcept>
 #include <string>
+
+#ifdef _WIN32
+#include <C4windowswrapper.h>
+#endif
 
 #ifdef HAVE_FREETYPE
 #include <ft2build.h>

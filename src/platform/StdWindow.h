@@ -40,17 +40,7 @@ const int SEC1_TIMER=1,SEC1_MSEC=1000;
 #endif
 
 #ifdef _WIN32
-#include <wingdi.h>
-#undef RGB
-#undef GetRValue
-#undef GetGValue
-#undef GetBValue
-#undef TextOut
-#undef GetObject
-#undef CreateFont
-#include <winuser.h>
-#undef LoadBitmap
-#undef DrawText
+#include <C4windowswrapper.h>
 #define K_ALT VK_MENU
 #define K_ESCAPE VK_ESCAPE
 #define K_PAUSE VK_PAUSE

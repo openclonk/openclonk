@@ -23,7 +23,7 @@
 #include <sstream>
 #include <time.h>
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <mmsystem.h>
 #else
 #include <arpa/inet.h>

@@ -35,7 +35,7 @@
 #ifdef USE_DIRECTX
 #include <StdD3D.h>
 #endif
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <mmsystem.h>
 #include <stdio.h>
 #include <io.h>

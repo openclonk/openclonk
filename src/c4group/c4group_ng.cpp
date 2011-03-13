@@ -46,7 +46,7 @@
 #include <C4ConfigShareware.h>
 #include <StdRegistry.h>
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #endif
 
 int globalArgC;

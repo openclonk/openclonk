@@ -461,6 +461,7 @@ src/platform/C4VideoPlayback.cpp \
 src/platform/C4VideoPlayback.h \
 src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
+src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.h \
 src/platform/StdAppCommon.cpp \
 src/platform/StdAppCommon.h \

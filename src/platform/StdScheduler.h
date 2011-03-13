@@ -32,6 +32,7 @@
 #define STDSCHEDULER_EVENT_MESSAGE INVALID_HANDLE_VALUE
 struct pollfd;
 #ifndef STDSCHEDULER_USE_EVENTS
+#include <C4windowswrapper.h>
 #include <winsock2.h>
 #endif // STDSCHEDULER_USE_EVENTS
 #else // _WIN32
