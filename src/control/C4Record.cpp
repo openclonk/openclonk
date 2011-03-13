@@ -36,7 +36,7 @@
 
 #define IMMEDIATEREC
 
-#define DEBUGREC_EXTFILE "DbgRec.c4b" // if defined, an external file is used for debugrec writing (replays only)
+#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
 #define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
 
 #ifdef DEBUGREC
