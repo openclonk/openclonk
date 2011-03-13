@@ -1,3 +1,21 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2011  Günther Brammer
+ *
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
+ */
+
 #ifdef _WIN64
 # define WINVER 0x0501
 # define _WIN32_WINDOWS 0x0501

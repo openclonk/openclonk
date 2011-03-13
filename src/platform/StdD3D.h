@@ -30,8 +30,10 @@
 #endif // _MSC_VER
 #endif // _DEBUG
 
+#include <C4windowswrapper.h>
 #include <d3d9.h>
 #include <d3dx9tex.h>
+#undef DrawText
 #include <StdDDraw2.h>
 
 // debug memmgmt on

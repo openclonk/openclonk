@@ -39,31 +39,6 @@
 #define DEPRECATED
 #endif
 
-
-#ifdef _WIN32
-# ifndef _INC_WINDOWS
-#  ifdef _WIN64
-#   define WINVER 0x0501
-#   define _WIN32_WINDOWS 0x0501
-#   define _WIN32_WINNT  0x0501
-#   define _WIN32_IE 0x0501
-#   define _AMD64_ 1
-#  else
-#   define WINVER 0x0500
-#   define _WIN32_WINDOWS 0x0500
-#   define _WIN32_WINNT  0x0501
-#   define _WIN32_IE 0x0501
-#   define _X86_ 1
-#  endif
-#  define WIN32_LEAN_AND_MEAN
-#  ifndef NOMINMAX
-#   define NOMINMAX
-#  endif
-#  include <windef.h>
-# endif
-#endif
-
-
 #ifdef _MSC_VER
 #pragma warning(disable : 4786) // long symbol names
 #pragma warning(disable: 4706)
@@ -176,7 +151,13 @@ namespace std { template<typename T> inline T &move (T &t) { return t; } }
 
 
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+typedef unsigned long DWORD;
+typedef unsigned char  BYTE;
+typedef unsigned short WORD;
+
+#else
 
 // Windows integer types
 typedef uint32_t       DWORD;

@@ -27,7 +27,9 @@
 #include <C4Rect.h>
 
 #ifdef USE_DIRECTX
+#include <C4windowswrapper.h>
 #include <d3d9.h>
+#undef DrawText
 #else
 typedef void* IDirect3DSurface9;
 #endif
