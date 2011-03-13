@@ -42,7 +42,6 @@ IDI_08_C4M              ICON    DISCARDABLE     "c4m.ico"
 IDI_09_C4B              ICON    DISCARDABLE     "c4b.ico"
 IDI_10_C4V              ICON    DISCARDABLE     "c4v.ico"
 IDI_11_C4L              ICON    DISCARDABLE     "c4l.ico"
-IDI_12_C4K              ICON    DISCARDABLE     "c4k.ico"
 IDI_13_C4U              ICON    DISCARDABLE     "c4u.ico"
 
 #ifdef APSTUDIO_INVOKED

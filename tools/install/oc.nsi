@@ -123,8 +123,6 @@ Section -Post
   WriteRegStr HKCR ".c4v\Content Type" "" "video/avi"
   WriteRegStr HKCR ".c4l" "" "Clonk4.Weblink"
   WriteRegStr HKCR ".c4l\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4k" "" "Clonk4.Key"
-  WriteRegStr HKCR ".c4k\Content Type" "" "application/octet-stream"
   WriteRegStr HKCR ".c4u" "" "Clonk4.Update"
   WriteRegStr HKCR ".c4u\Content Type" "" "vnd.clonk.c4group"
 ; Register file classes  
@@ -148,13 +146,9 @@ Section -Post
   WriteRegStr HKCR "Clonk4.Video\DefaultIcon" "" "$INSTDIR\Clonk.exe,9"
   WriteRegStr HKCR "Clonk4.Weblink" "" "Clonk 4 Weblink"
   WriteRegStr HKCR "Clonk4.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
-  WriteRegStr HKCR "Clonk4.Key" "" "Clonk 4 Key"
-  WriteRegStr HKCR "Clonk4.Key\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
   WriteRegStr HKCR "Clonk4.Update" "" "Clonk 4 Update"
-  WriteRegStr HKCR "Clonk4.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,12"
+  WriteRegStr HKCR "Clonk4.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
 ; Register additional file handling
-  WriteRegStr HKCR "Clonk4.Key\Shell\Register" "" "Register"
-  WriteRegStr HKCR "Clonk4.Key\Shell\Register\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
   WriteRegStr HKCR "Clonk4.Update\Shell\Update" "" "Update"
   WriteRegStr HKCR "Clonk4.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
 ; Remove old use of App Paths   
@@ -221,8 +215,6 @@ Section Uninstall
   DeleteRegKey HKCR "Clonk4.Video"
   DeleteRegKey HKCR ".c4l"
   DeleteRegKey HKCR "Clonk4.Weblink"
-  DeleteRegKey HKCR ".c4k"
-  DeleteRegKey HKCR "Clonk4.Key"
   DeleteRegKey HKCR ".c4u"
   DeleteRegKey HKCR "Clonk4.Update"
   

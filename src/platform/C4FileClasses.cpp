@@ -58,15 +58,11 @@ bool SetC4FileClasses(const char *szEnginePath)
 	if (!SetRegFileClass("Clonk4.Binary",     "c4b", "Clonk 4 Binary",            szEnginePath, 8, "application/octet-stream")) return false;
 	if (!SetRegFileClass("Clonk4.Video",      "c4v", "Clonk 4 Video",             szEnginePath, 9, "video/avi")) return false;
 	if (!SetRegFileClass("Clonk4.Weblink",    "c4l", "Clonk 4 Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("Clonk4.Key",        "c4k", "Clonk 4 Key",               szEnginePath, 11, "application/octet-stream")) return false;
-	if (!SetRegFileClass("Clonk4.Update",     "c4u", "Clonk 4 Update",            szEnginePath, 12, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("Clonk4.Update",     "c4u", "Clonk 4 Update",            szEnginePath, 11, C4FileClassContentType)) return false;
 
 	if (!SetProtocol("clonk", "%s %%1 /Fullscreen", szEnginePath)) return false;
 
 	char strCommand[2048];
-	// c4k installation: send to engine
-	sprintf(strCommand, "\"%s\" \"%%1\"", szEnginePath);
-	if (!SetRegShell("Clonk4.Key", "Register", "Register", strCommand)) return false;
 	// c4u application: send to engine
 	sprintf(strCommand, "\"%s\" \"%%1\"", szEnginePath);
 	if (!SetRegShell("Clonk4.Update", "Update", "Update", strCommand, true)) return false;

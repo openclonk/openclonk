@@ -69,7 +69,6 @@
 #define IDI_09_C4B                      4009
 #define IDI_10_C4V                      4010
 #define IDI_11_C4L                      4011
-#define IDI_12_C4K                      4012
 #define IDI_13_C4U                      4013
 #define IDM_FILE_CLOSE                  5003
 #define IDM_FILE_OPEN                   5004
