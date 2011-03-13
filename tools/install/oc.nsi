@@ -123,8 +123,8 @@ Section -Post
   WriteRegStr HKCR ".ocv\Content Type" "" "video/avi"
   WriteRegStr HKCR ".ocl" "" "OpenClonk.Weblink"
   WriteRegStr HKCR ".ocl\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4u" "" "Clonk4.Update"
-  WriteRegStr HKCR ".c4u\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocu" "" "OpenClonk.Update"
+  WriteRegStr HKCR ".ocu\Content Type" "" "vnd.clonk.c4group"
 ; Register file classes  
   WriteRegStr HKCR "OpenClonk.Scenario" "" "OpenClonk Scenario"
   WriteRegStr HKCR "OpenClonk.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
@@ -146,11 +146,11 @@ Section -Post
   WriteRegStr HKCR "OpenClonk.Video\DefaultIcon" "" "$INSTDIR\Clonk.exe,9"
   WriteRegStr HKCR "OpenClonk.Weblink" "" "OpenClonk Weblink"
   WriteRegStr HKCR "OpenClonk.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
-  WriteRegStr HKCR "Clonk4.Update" "" "Clonk 4 Update"
-  WriteRegStr HKCR "Clonk4.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
+  WriteRegStr HKCR "OpenClonk.Update" "" "OpenClonk Update"
+  WriteRegStr HKCR "OpenClonk.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
 ; Register additional file handling
-  WriteRegStr HKCR "Clonk4.Update\Shell\Update" "" "Update"
-  WriteRegStr HKCR "Clonk4.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
+  WriteRegStr HKCR "OpenClonk.Update\Shell\Update" "" "Update"
+  WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
 ; Remove old use of App Paths   
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Clonk.exe"    
 SectionEnd
@@ -215,8 +215,8 @@ Section Uninstall
   DeleteRegKey HKCR "OpenClonk.Video"
   DeleteRegKey HKCR ".ocl"
   DeleteRegKey HKCR "OpenClonk.Weblink"
-  DeleteRegKey HKCR ".c4u"
-  DeleteRegKey HKCR "Clonk4.Update"
+  DeleteRegKey HKCR ".ocu"
+  DeleteRegKey HKCR "OpenClonk.Update"
   
   ; Start menu shortcuts (All Users)
   SetShellVarContext all

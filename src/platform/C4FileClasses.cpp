@@ -58,14 +58,14 @@ bool SetC4FileClasses(const char *szEnginePath)
 	if (!SetRegFileClass("OpenClonk.Binary",     ,"ocb", "OpenClonk Binary",            szEnginePath, 8, "application/octet-stream")) return false;
 	if (!SetRegFileClass("OpenClonk.Video",      ,"ocv", "OpenClonk Video",             szEnginePath, 9, "video/avi")) return false;
 	if (!SetRegFileClass("OpenClonk.Weblink",    ,"ocl", "OpenClonk Weblink",           szEnginePath, 10, C4FileClassContentType)) return false;
-	if (!SetRegFileClass("Clonk4.Update",     "c4u", "Clonk 4 Update",            szEnginePath, 11, C4FileClassContentType)) return false;
+	if (!SetRegFileClass("OpenClonk.Update",     ,"ocu", "OpenClonk Update",            szEnginePath, 11, C4FileClassContentType)) return false;
 
 	if (!SetProtocol("clonk", "%s %%1 /Fullscreen", szEnginePath)) return false;
 
 	char strCommand[2048];
-	// c4u application: send to engine
+	// ocu application: send to engine
 	sprintf(strCommand, "\"%s\" \"%%1\"", szEnginePath);
-	if (!SetRegShell("Clonk4.Update", "Update", "Update", strCommand, true)) return false;
+	if (!SetRegShell("OpenClonk.Update", "Update", "Update", strCommand, true)) return false;
 
 	// kill old App Paths registration
 	DeleteRegistryKey(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Clonk.exe");

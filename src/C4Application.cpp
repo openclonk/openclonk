@@ -389,7 +389,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			continue;
 		}
 		// Update file
-		if (SEqualNoCase(GetExtension(szParameter),"c4u"))
+		if (SEqualNoCase(GetExtension(szParameter),"ocu"))
 		{
 			Application.IncomingUpdate.Copy(szParameter);
 			continue;

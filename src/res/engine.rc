@@ -42,7 +42,7 @@ IDI_08_OCM              ICON    DISCARDABLE     "ocm.ico"
 IDI_09_OCB              ICON    DISCARDABLE     "ocb.ico"
 IDI_10_OCV              ICON    DISCARDABLE     "ocv.ico"
 IDI_11_OCL              ICON    DISCARDABLE     "ocl.ico"
-IDI_13_C4U              ICON    DISCARDABLE     "c4u.ico"
+IDI_13_OCU              ICON    DISCARDABLE     "ocu.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

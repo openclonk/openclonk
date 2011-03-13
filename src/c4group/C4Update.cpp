@@ -115,7 +115,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 
 	// Process binary update group (AutoUpdate.txt found, additional binary files found)
 	if (hGroup.EntryCount(C4CFN_UpdateCore))
-		if (hGroup.EntryCount() - hGroup.EntryCount(C4CFN_UpdateCore) - hGroup.EntryCount("*.c4u") > 0)
+		if (hGroup.EntryCount() - hGroup.EntryCount(C4CFN_UpdateCore) - hGroup.EntryCount("*.ocu") > 0)
 		{
 			// Notice: AutoUpdate.txt is currently not processed...
 			char strEntry[_MAX_FNAME + 1] = "";
@@ -124,8 +124,8 @@ bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 			hGroup.ResetSearch();
 			// Look for binaries
 			while (hGroup.FindNextEntry("*", strEntry))
-				// Accept everything except *.c4u, AutoUpdate.txt, and c4group.exe (which is assumed not to work under Windows)
-				if (!WildcardMatch("*.c4u", strEntry) && !WildcardMatch(C4CFN_UpdateCore, strEntry) && !WildcardMatch("c4group.exe", strEntry))
+				// Accept everything except *.ocu, AutoUpdate.txt, and c4group.exe (which is assumed not to work under Windows)
+				if (!WildcardMatch("*.ocu", strEntry) && !WildcardMatch(C4CFN_UpdateCore, strEntry) && !WildcardMatch("c4group.exe", strEntry))
 					{ strList += strEntry; strList += ";"; }
 			// Extract binaries to current working directory
 			if (!hGroup.Extract(strList.getData()))
@@ -140,14 +140,14 @@ bool C4Group_ApplyUpdate(C4Group &hGroup, unsigned long ParentProcessID)
 				}
 		}
 
-	// Process any child updates (*.c4u)
-	if (hGroup.FindEntry("*.c4u"))
+	// Process any child updates (*.ocu)
+	if (hGroup.FindEntry("*.ocu"))
 	{
 		// Process all children
 		char strEntry[_MAX_FNAME + 1] = "";
 		C4Group hChild;
 		hGroup.ResetSearch();
-		while (hGroup.FindNextEntry("*.c4u", strEntry))
+		while (hGroup.FindNextEntry("*.ocu", strEntry))
 			if (hChild.OpenAsChild(&hGroup, strEntry))
 			{
 				bool ok = C4Group_ApplyUpdate(hChild, 0);
