@@ -65,7 +65,7 @@ namespace {
 #define LOG_STATIC_TEXT(text) write(fd, text, sizeof(text) - 1)
 #define LOG_DYNAMIC_TEXT(...) write(fd, DumpBuffer, LOG_SNPRINTF(DumpBuffer, DumpBufferSize-1, __VA_ARGS__))
 #if OC_MACHINE == OC_MACHINE_X64
-#	if defined(_MSC_VER)
+#	if defined(_MSC_VER) || defined(__MINGW32__)
 #		define POINTER_FORMAT "0x%016Ix"
 #	elif defined(__GNUC__)
 #		define POINTER_FORMAT "0x%016zx"
@@ -73,7 +73,7 @@ namespace {
 #		define POINTER_FORMAT "0x%016p"
 #	endif
 #elif OC_MACHINE == OC_MACHINE_X86
-#	if defined(_MSC_VER)
+#	if defined(_MSC_VER) || defined(__MINGW32__)
 #		define POINTER_FORMAT "0x%08Ix"
 #	elif defined(__GNUC__)
 #		define POINTER_FORMAT "0x%08zx"
