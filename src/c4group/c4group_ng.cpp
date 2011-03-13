@@ -45,6 +45,9 @@
 #include <C4Update.h>
 #include <C4ConfigShareware.h>
 #include <StdRegistry.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 int globalArgC;
 char **globalArgV;
