@@ -65,7 +65,7 @@
 #define IDI_04_OCP                      4004
 #define IDI_06_OCD                      4006
 #define IDI_07_OCI                      4007
-#define IDI_08_C4M                      4008
+#define IDI_08_OCM                      4008
 #define IDI_09_C4B                      4009
 #define IDI_10_C4V                      4010
 #define IDI_11_C4L                      4011

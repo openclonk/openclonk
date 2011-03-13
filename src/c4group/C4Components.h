@@ -146,7 +146,7 @@
 
 #define C4CFN_DefFiles        "*.ocd"
 #define C4CFN_PlayerFiles     "*.ocp"
-#define C4CFN_MaterialFiles   "*.c4m"
+#define C4CFN_MaterialFiles   "*.ocm"
 #define C4CFN_ObjectInfoFiles "*.oci"
 #define C4CFN_MusicFiles      "*.mid"
 #define C4CFN_SoundFiles      "*.wav|*.ogg"
@@ -173,7 +173,7 @@
 #define C4FLS_Player    "Player.txt|Portrait.png|Portrait.bmp|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt|Portrait.png|Portrait.bmp"
 #define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
-#define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.c4m"
+#define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.ocm"
 #define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FontEndeavour12.png|FontEndeavour24.png|FontEndeavour16.png|FontEndeavour10.png|Font*.png"\
             "|*.pal|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Entry.png|Captain.png|Cursor.png|CursorSmall.png|CursorMedium.png|CursorLarge.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png|Liquid.png"\
             "|GUICaption.png|GUIButton.png|GUIButtonDown.png|GUIButtonHighlight.png|GUIIcons.png|GUIIcons2.png|GUIScroll.png|GUIContext.png|GUISubmenu.png|GUICheckBox.png|GUIBigArrows.png|GUIProgress.png"\
