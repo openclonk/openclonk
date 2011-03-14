@@ -98,8 +98,8 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	}
 	// Truncate any additional segments from stored filename
 	SReplaceChar(Filename.getMData(), '|', 0);
-	// skip full path (unknown)
-	FilePath.Clear();
+	// for error message purposes, the first group failed to provide the desired file
+	CopyFilePathFromGroup(*hGroupSet.GetGroup(0));
 	// Not loaded
 	return false;
 }
