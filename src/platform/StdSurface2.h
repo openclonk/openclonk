@@ -26,8 +26,10 @@
 #include <StdColors.h>
 #include <C4Rect.h>
 
-#ifdef USE_DIRECTX
+#ifdef _WIN32
 #include <C4windowswrapper.h>
+#endif
+#ifdef USE_DIRECTX
 #include <d3d9.h>
 #undef DrawText
 #else

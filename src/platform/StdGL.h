@@ -22,6 +22,9 @@
 #if !defined(INC_StdGL) && defined(USE_GL)
 #define INC_StdGL
 
+#ifdef _WIN32
+#include <C4windowswrapper.h>
+#endif
 #include <GL/glew.h>
 
 #if defined(__APPLE__)
