@@ -63,7 +63,7 @@
 {
 	NSString* pathExtension = [[filename pathExtension] lowercaseString];
     
-	NSArray* clonkFileNameExtensions = [NSArray arrayWithObjects:@"c4d", @"c4s", @"c4f", @"c4g", @"c4s", nil];
+	NSArray* clonkFileNameExtensions = [NSArray arrayWithObjects:@"ocd", @"ocs", @"ocf", @"ocg", nil];
 	if ([clonkFileNameExtensions containsObject:pathExtension])
 	{
 		// later decide whether to install or run
