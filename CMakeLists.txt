@@ -783,8 +783,8 @@ if(APPLE)
 
 	list(APPEND OC_BUNDLE_RESOURCES
 		src/res/Clonk.icns
-		src/res/C4D.icns src/res/C4F.icns src/res/C4G.icns src/res/C4K.icns
-		src/res/C4P.icns src/res/C4S.icns src/res/C4U.icns
+		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
+		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
 		src/res/MainMenu.xib
 		src/res/FullscreenWindow.xib
 		src/res/ConsoleGUIWindow.xib

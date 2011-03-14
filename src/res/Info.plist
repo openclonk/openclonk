@@ -9,30 +9,10 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>c4k</string>
+				<string>ocu</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>C4K.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>application/octet-stream</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Clonk Key</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSPersistentStoreTypeKey</key>
-			<string>Binary</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>c4u</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>C4U.icns</string>
+			<string>ocu.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/vnd.clonk.c4group</string>
@@ -49,16 +29,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>c4s</string>
+				<string>ocs</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>C4S.icns</string>
+			<string>ocs.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/vnd.clonk.c4group</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Clonk Scenario</string>
+			<string>OpenClonk Scenario</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
@@ -69,16 +49,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>c4d</string>
+				<string>ocd</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>C4D.icns</string>
+			<string>ocd.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/vnd.clonk.c4group</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Clonk Definition</string>
+			<string>OpenClonk Definition</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
@@ -89,16 +69,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>c4g</string>
+				<string>ocg</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>C4G.icns</string>
+			<string>ocg.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/vnd.clonk.c4group</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Clonk Group</string>
+			<string>OpenClonk Group</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
@@ -129,16 +109,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>c4f</string>
+				<string>ocf</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>C4F.icns</string>
+			<string>ocf.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>application/vnd.clonk.c4group</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Clonk Folder</string>
+			<string>OpenClonk Folder</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
