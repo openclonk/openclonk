@@ -23,9 +23,9 @@
  */
 // IRC client dialog
 
+#include "C4Include.h"
 #include <utility>
 
-#include "C4Include.h"
 #include "C4ChatDlg.h"
 
 #include "C4InputValidation.h"

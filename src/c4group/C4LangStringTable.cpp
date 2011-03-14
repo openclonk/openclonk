@@ -20,9 +20,11 @@
  */
 // Loads StringTbl* and replaces $..$-strings by localized versions
 
+#include "C4Include.h"
+
 #include <utility>
 #include <vector>
-#include "C4Include.h"
+
 #include "C4LangStringTable.h"
 #include "C4InputValidation.h"
 
