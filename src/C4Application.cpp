@@ -350,7 +350,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		char * szParameter = argv[optind++];
 		{ // Strip trailing / that result from tab-completing unpacked c4groups
 			int iLen = SLen(szParameter);
-			if (iLen > 5 && szParameter[iLen-1] == '/' && szParameter[iLen-5] == '.' && szParameter[iLen-4] == 'c' && szParameter[iLen-3] == '4')
+			if (iLen > 5 && szParameter[iLen-1] == '/' && szParameter[iLen-5] == '.' && szParameter[iLen-4] == 'o' && szParameter[iLen-3] == 'c')
 			{
 				szParameter[iLen-1] = '\0';
 			}
