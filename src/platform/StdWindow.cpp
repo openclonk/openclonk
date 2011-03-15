@@ -217,66 +217,6 @@ void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
 #endif
 }
 
-/* CStdTimerProc */
-
-int CStdMultimediaTimerProc::iTimePeriod = 0;
-
-CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
-		uCriticalTimerDelay(28),
-		idCriticalTimer(0),
-		uCriticalTimerResolution(5),
-		Event(true)
-{
-
-	if (!iTimePeriod)
-	{
-		// Get resolution caps
-		TIMECAPS tc;
-		timeGetDevCaps(&tc, sizeof(tc));
-		// Establish minimum resolution
-		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
-		timeBeginPeriod(uCriticalTimerResolution);
-	}
-	iTimePeriod++;
-
-	SetDelay(iDelay);
-
-}
-
-CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
-{
-	if (idCriticalTimer)
-	{
-		timeKillEvent(idCriticalTimer);
-		idCriticalTimer = 0;
-
-		iTimePeriod--;
-		if (!iTimePeriod)
-			timeEndPeriod(uCriticalTimerResolution);
-	}
-}
-
-void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
-{
-
-	// Kill old timer (of any)
-	if (idCriticalTimer)
-		timeKillEvent(idCriticalTimer);
-
-	// Set critical timer
-	idCriticalTimer=timeSetEvent(
-	                  uCriticalTimerDelay,uCriticalTimerResolution,
-	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
-
-}
-
-bool CStdMultimediaTimerProc::CheckAndReset()
-{
-	if (!Check()) return false;
-	Event.Reset();
-	return true;
-}
-
 /* CStdMessageProc */
 
 bool CStdMessageProc::Execute(int iTimeout, pollfd *)

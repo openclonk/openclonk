@@ -150,6 +150,55 @@ public:
 #endif
 };
 
+#ifdef STDSCHEDULER_USE_EVENTS
+class CStdMultimediaTimerProc : public CStdNotifyProc
+{
+public:
+	CStdMultimediaTimerProc(uint32_t iDelay);
+	~CStdMultimediaTimerProc();
+
+private:
+	static int iTimePeriod;
+	uint32_t uCriticalTimerDelay;
+
+	UINT idCriticalTimer,uCriticalTimerResolution;
+	CStdEvent Event;
+	bool Check() { return Event.WaitFor(0); }
+
+public:
+
+	void SetDelay(uint32_t iDelay);
+	void Set() { Event.Set(); }
+	bool CheckAndReset();
+
+	// StdSchedulerProc overrides
+	virtual HANDLE GetEvent() { return Event.GetEvent(); }
+
+};
+
+#elif defined(HAVE_SYS_TIMERFD_H)
+// timer proc using a timerfd
+class CStdMultimediaTimerProc : public StdSchedulerProc
+{
+public:
+	CStdMultimediaTimerProc(uint32_t iDelay);
+	~CStdMultimediaTimerProc();
+
+private:
+	int fd;
+
+public:
+	void Set();
+	void SetDelay(uint32_t inDelay);
+	bool CheckAndReset();
+	// StdSchedulerProc overrides
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
+};
+
+#else
+#define CStdMultimediaTimerProc CStdTimerProc
+#endif
+
 // A simple process scheduler
 class StdScheduler
 {

@@ -369,31 +369,6 @@ public:
 };
 
 #ifdef _WIN32
-class CStdMultimediaTimerProc : public CStdNotifyProc
-{
-public:
-	CStdMultimediaTimerProc(uint32_t iDelay);
-	~CStdMultimediaTimerProc();
-
-private:
-	static int iTimePeriod;
-	uint32_t uCriticalTimerDelay;
-
-	UINT idCriticalTimer,uCriticalTimerResolution;
-	CStdEvent Event;
-
-public:
-
-	void SetDelay(uint32_t iDelay);
-	void Set() { Event.Set(); }
-	bool Check() { return Event.WaitFor(0); }
-	bool CheckAndReset();
-
-	// StdSchedulerProc overrides
-	virtual HANDLE GetEvent() { return Event.GetEvent(); }
-
-};
-
 class CStdMessageProc : public StdSchedulerProc
 {
 public:
@@ -411,8 +386,6 @@ public:
 	virtual HANDLE GetEvent() { return STDSCHEDULER_EVENT_MESSAGE; }
 
 };
-#else
-#define CStdMultimediaTimerProc CStdTimerProc
 #endif
 
 #ifdef USE_CONSOLE

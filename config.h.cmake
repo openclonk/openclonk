@@ -103,6 +103,9 @@
 /* Define to 1 if you have the <sys/syscall.h> header file. */
 #cmakedefine HAVE_SYS_SYSCALL_H 1
 
+/* Define to 1 if you have the <sys/timerfd.h> header file. */
+#cmakedefine HAVE_SYS_TIMERFD_H 1
+
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H 1
 

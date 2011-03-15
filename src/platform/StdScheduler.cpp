@@ -572,3 +572,114 @@ bool CStdNotifyProc::CheckAndReset()
 	return r;
 }
 #endif
+
+/* CStdMultimediaTimerProc */
+#ifdef STDSCHEDULER_USE_EVENTS
+int CStdMultimediaTimerProc::iTimePeriod = 0;
+
+CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
+		uCriticalTimerDelay(28),
+		idCriticalTimer(0),
+		uCriticalTimerResolution(5),
+		Event(true)
+{
+
+	if (!iTimePeriod)
+	{
+		// Get resolution caps
+		TIMECAPS tc;
+		timeGetDevCaps(&tc, sizeof(tc));
+		// Establish minimum resolution
+		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
+		timeBeginPeriod(uCriticalTimerResolution);
+	}
+	iTimePeriod++;
+
+	SetDelay(iDelay);
+
+}
+
+CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
+{
+	if (idCriticalTimer)
+	{
+		timeKillEvent(idCriticalTimer);
+		idCriticalTimer = 0;
+
+		iTimePeriod--;
+		if (!iTimePeriod)
+			timeEndPeriod(uCriticalTimerResolution);
+	}
+}
+
+void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
+{
+
+	// Kill old timer (of any)
+	if (idCriticalTimer)
+		timeKillEvent(idCriticalTimer);
+
+	// Set critical timer
+	idCriticalTimer=timeSetEvent(
+	                  uCriticalTimerDelay,uCriticalTimerResolution,
+	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
+
+}
+
+bool CStdMultimediaTimerProc::CheckAndReset()
+{
+	if (!Check()) return false;
+	Event.Reset();
+	return true;
+}
+
+#elif defined(HAVE_SYS_TIMERFD_H)
+#include <sys/timerfd.h>
+#include <unistd.h>
+#include <fcntl.h>
+CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay)
+{
+	// FIXME: Once linux version 2.6.27 is required, use TFD_NONBLOCK and TFD_CLOEXEC
+	fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	if (fd == -1)
+		Log("timerfd_create failed");
+	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+	fcntl(fd, F_SETFD, FD_CLOEXEC);
+	SetDelay(iDelay);
+}
+
+CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
+{
+	close(fd);
+}
+
+void CStdMultimediaTimerProc::SetDelay(uint32_t inDelay)
+{
+	struct itimerspec nv, ov;
+	nv.it_interval.tv_sec = inDelay / 1000;
+	nv.it_interval.tv_nsec = (inDelay % 1000) * 1000000;
+	nv.it_value = nv.it_interval;
+	timerfd_settime(fd, 0, &nv, &ov);
+}
+
+void CStdMultimediaTimerProc::Set()
+{
+	struct itimerspec nv, ov;
+	timerfd_gettime(fd, &nv);
+	nv.it_value.tv_sec = 0;
+	nv.it_value.tv_nsec = 1;
+	timerfd_settime(fd, 0, &nv, &ov);
+}
+
+bool CStdMultimediaTimerProc::CheckAndReset()
+{
+	uint64_t n;
+	return read(fd, &n, 8) != -1;
+}
+
+void CStdMultimediaTimerProc::GetFDs(std::vector<struct pollfd> & checkfds)
+{
+	pollfd pfd = { fd, POLLIN, 0 };
+	checkfds.push_back(pfd);
+}
+#endif
