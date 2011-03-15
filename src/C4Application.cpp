@@ -423,7 +423,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 	// Default to editor if scenario given, player mode otherwise
 	if (isEditor == 2)
-		isEditor = !!*Game.ScenarioFilename;
+		isEditor = !!*Game.ScenarioFilename && !Config.General.OpenScenarioInGameMode;
 
 	// Determine startup player count
 	Game.StartupPlayerCount = SModuleCount(Game.PlayerFilenames);

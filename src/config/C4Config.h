@@ -43,6 +43,7 @@ public:
 	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
 	char Participants[CFG_MaxString+1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
+	int32_t  OpenScenarioInGameMode; // When the program arguments include a scenario path, open the game regularly
 	char RXFontName[CFG_MaxString+1];
 	int32_t  RXFontSize;
 	char ConfigUserPath[CFG_MaxString + 1];
