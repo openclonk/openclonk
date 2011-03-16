@@ -81,10 +81,6 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	AcquireNumber();
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
-	// assign a unique number for that object
-	iNumber = 1;
-	for (pCheck=*ppEffectList; pCheck; pCheck=pCheck->pNext)
-		if (pCheck->iNumber >= iNumber) iNumber = pCheck->iNumber + 1;
 	// register into object
 	pPrev = *ppEffectList;
 	if (pPrev && Abs(pPrev->iPriority) < iPrio)
@@ -151,7 +147,7 @@ C4Effect * C4Effect::New(C4Object *pForObj, const char *szName, int32_t iPrio, i
 C4Effect::C4Effect(StdCompiler *pComp)
 {
 	// defaults
-	iNumber=iPriority=iTime=iInterval=0;
+	iPriority=iTime=iInterval=0;
 	CommandTarget=NULL;
 	pNext = NULL;
 	// compile
@@ -497,8 +493,6 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// read name
 	pComp->Value(mkStringAdaptMI(Name));
 	pComp->Separator(StdCompiler::SEP_START); // '('
-	// read number
-	pComp->Value(iNumber); pComp->Separator();
 	// read priority
 	pComp->Value(iPriority); pComp->Separator();
 	// read time and intervall

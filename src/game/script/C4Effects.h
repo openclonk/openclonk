@@ -79,7 +79,6 @@ public:
 
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
 	int32_t iTime, iInterval;  // effect time; effect callback intervall
-	int32_t iNumber;            // effect number for addressing
 
 	C4Effect *pNext;        // next effect in linked list
 
