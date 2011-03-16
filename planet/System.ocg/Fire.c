@@ -24,14 +24,6 @@ global func OnFire()
 	return effect.strength;
 }
 
-global func DoFireStrength(int strength)
-{
-	if(!this) return false;
-	var effect=GetEffect("Fire", this);
-	if(!effect) return false;
-	effect.strength = BoundBy(effect.strength + strength, 0, 100);
-}
-
 global func Extinguish(strength)
 {
 	if(!this) return false;
@@ -40,7 +32,9 @@ global func Extinguish(strength)
 	
 	var effect=GetEffect("Fire", this);
 	if(!effect) return false;
-	return EffectCall(nil, effect, "DoFireStrength", -strength);
+	effect.strength = BoundBy(effect.strength - strength, 0, 100);
+	if(effect.strength == 0) RemoveEffect(nil, this, effect);
+	return true;
 }
 
 global func Incinerate(strength, int caused_by, blasted, incinerating_object)
@@ -148,8 +142,10 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	//target->FirePhase=Random(MaxFirePhase);
 	if((target->GetDefCoreVal("Width", "DefCore") * target->GetDefCoreVal("Height", "DefCore")) > 500) target->Sound("Inflame", false, 100);
 	if(target->GetMass() >= 100) target->Sound("Fire", false, 100, 0, true);
-	// Engine script call
-	target->~Incineration(caused_by);
+	
+	// callback
+	target->~Incineration(effect.caused_by);
+	
 	// Done, success
 	return FX_OK;
 }
@@ -158,7 +154,7 @@ global func FxFireTimer(object target, effect, int time)
 {
 	// safety
 	if (!target) return FX_Execute_Kill;
-
+	
 	// get cause
 	//if(!GetPlayerName(effect.caused_by)) effect.caused_by=NO_OWNER;;
 		
