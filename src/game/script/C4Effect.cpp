@@ -238,24 +238,6 @@ C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority
 	return NULL;
 }
 
-C4Effect *C4Effect::Get(int32_t iNumber, bool fIncludeDead, int32_t iMaxPriority)
-{
-	// check all effects
-	C4Effect *pEff = this;
-	do
-		if (pEff->iNumber == iNumber)
-		{
-			if (!pEff->IsDead() || fIncludeDead)
-				if (!iMaxPriority || pEff->iPriority <= iMaxPriority)
-					return pEff;
-			// effect found but denied
-			return NULL;
-		}
-	while ((pEff=pEff->pNext));
-	// nothing found
-	return NULL;
-}
-
 int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 {
 	// count all matching effects

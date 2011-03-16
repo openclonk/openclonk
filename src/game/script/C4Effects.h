@@ -109,7 +109,6 @@ public:
 	bool IsInactiveAndNotDead() { return iPriority<0; } // as the name says
 
 	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
-	C4Effect *Get(int32_t iNumber, bool fIncludeDead, int32_t iMaxPriority=0);    // get effect by number
 	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
 	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
 	C4AulScript *GetCallbackScript(); // get script context for effect callbacks
