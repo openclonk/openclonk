@@ -43,11 +43,11 @@ void C4Effect::AssignCallbackFunctions()
 	C4AulScript *pSrcScript = GetCallbackScript();
 	// compose function names and search them
 	char fn[C4AUL_MAX_Identifier+1];
-	sprintf(fn, PSF_FxStart , Name); pFnStart  = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxStop  , Name); pFnStop   = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxTimer , Name); pFnTimer  = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxEffect, Name); pFnEffect = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxDamage, Name); pFnDamage = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxStart,  GetName()); pFnStart  = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxStop,   GetName()); pFnStop   = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxTimer,  GetName()); pFnTimer  = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxEffect, GetName()); pFnEffect = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxDamage, GetName()); pFnDamage = pSrcScript->GetFuncRecursive(fn);
 }
 
 C4AulScript *C4Effect::GetCallbackScript()
@@ -67,17 +67,15 @@ C4AulScript *C4Effect::GetCallbackScript()
 	return pSrcScript;
 }
 
-C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	C4Effect *pPrev, *pCheck;
 	// assign values
-	SCopy(szName, Name, C4MaxDefString);
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	iInterval = iTimerInterval;
 	iTime = 0;
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
-	AssignCallbackFunctions();
 	AcquireNumber();
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
@@ -97,9 +95,11 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 		pNext = *ppEffectList;
 		*ppEffectList = this;
 	}
+	// Set name and callback functions
+	SetProperty(P_Name, C4VString(szName));
 }
 
-C4Effect * C4Effect::New(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	C4Effect * pEffect = new C4Effect(pForObj, szName, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, rVal1, rVal2, rVal3, rVal4);
 	// ask all effects with higher priority first - except for prio 1 effects, which are considered out of the priority call chain (as per doc)
@@ -110,7 +110,7 @@ C4Effect * C4Effect::New(C4Object *pForObj, const char *szName, int32_t iPrio, i
 	// so the priority is assigned after this call, marking this effect dead before it's definitely valid
 	if (fRemoveUpper && pEffect->pNext)
 	{
-		C4Effect * pEffect2 = pEffect->pNext->Check(pForObj, szName, iPrio, iTimerInterval, rVal1, rVal2, rVal3, rVal4);
+		C4Effect * pEffect2 = pEffect->pNext->Check(pForObj, szName->GetCStr(), iPrio, iTimerInterval, rVal1, rVal2, rVal3, rVal4);
 		if (pEffect2)
 		{
 			// effect denied (iResult = -1), added to an effect (iResult = Number of that effect)
@@ -139,7 +139,7 @@ C4Effect * C4Effect::New(C4Object *pForObj, const char *szName, int32_t iPrio, i
 		pEffect->TempReaddUpperEffects(pForObj, pLastRemovedEffect);
 	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
 	// Update OnFire cache
-	if (!pEffect->IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName))
+	if (!pEffect->IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName->GetCStr()))
 		pForObj->SetOnFire(true);
 	return pEffect;
 }
@@ -221,7 +221,7 @@ C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority
 		// skip effects with too high priority
 		if (iMaxPriority && pEff->iPriority > iMaxPriority) continue;
 		// wildcard compare name
-		const char *szEffectName = pEff->Name;
+		const char *szEffectName = pEff->GetName();
 		if (!SWildcardMatchEx(szEffectName, szName)) continue;
 		// effect name matches
 		// check index
@@ -239,7 +239,7 @@ int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 	// count all matching effects
 	int32_t iCnt=0; C4Effect *pEff = this;
 	do if (!pEff->IsDead())
-			if (!szMask || SWildcardMatchEx(pEff->Name, szMask))
+			if (!szMask || SWildcardMatchEx(pEff->GetName(), szMask))
 				if (!iMaxPriority || pEff->iPriority <= iMaxPriority)
 					++iCnt;
 	while ((pEff = pEff->pNext));
@@ -364,7 +364,7 @@ void C4Effect::Kill(C4Object *pObj)
 	// reactivate other effects
 	TempReaddUpperEffects(pObj, pLastRemovedEffect);
 	// Update OnFire cache
-	if (pObj && WildcardMatch(C4Fx_AnyFire, Name))
+	if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 		if (!Get(C4Fx_AnyFire))
 			pObj->SetOnFire(false);
 }
@@ -388,7 +388,7 @@ void C4Effect::ClearAll(C4Object *pObj, int32_t iClearFlag)
 			iPriority = iPrevPrio;
 		}
 	// Update OnFire cache
-	if (pObj && WildcardMatch(C4Fx_AnyFire, Name) && IsDead())
+	if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()) && IsDead())
 		if (!Get(C4Fx_AnyFire))
 			pObj->SetOnFire(false);
 }
@@ -422,7 +422,7 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1,
 		pSrcScript = &::ScriptEngine;
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
-	sprintf(fn, PSF_FxCustom, Name, szFn);
+	sprintf(fn, PSF_FxCustom, GetName(), szFn);
 	// call it
 	C4AulFunc *pFn = pSrcScript->GetFuncRecursive(fn);
 	if (!pFn) return C4Value();
@@ -459,7 +459,7 @@ void C4Effect::TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Ef
 	{
 		FlipActive();
 		// Update OnFire cache
-		if (pObj && WildcardMatch(C4Fx_AnyFire, Name))
+		if (pObj && WildcardMatch(C4Fx_AnyFire, GetName()))
 			if (!Get(C4Fx_AnyFire))
 				pObj->SetOnFire(false);
 		// temp callbacks only for higher priority effects
@@ -480,7 +480,7 @@ void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
 		{
 			pEff->FlipActive();
 			if (pEff->pFnStart && pEff->iPriority!=1) pEff->pFnStart->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(pEff), C4VInt(C4FxCall_Temp)));
-			if (pObj && WildcardMatch(C4Fx_AnyFire, pEff->Name))
+			if (pObj && WildcardMatch(C4Fx_AnyFire, pEff->GetName()))
 				pObj->SetOnFire(true);
 		}
 		// done?
@@ -491,7 +491,6 @@ void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
 void C4Effect::CompileFunc(StdCompiler *pComp)
 {
 	// read name
-	pComp->Value(mkStringAdaptMI(Name));
 	pComp->Separator(StdCompiler::SEP_START); // '('
 	// read priority
 	pComp->Value(iPriority); pComp->Separator();
@@ -529,7 +528,7 @@ void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
 			case P_Name:
 				if (!to.getStr() || !*to.getStr()->GetCStr())
 					throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
-				SCopy(to.getStr()->GetCStr(), Name, C4MaxName);
+				C4PropListNumbered::SetPropertyByS(k, to);
 				ReAssignCallbackFunctions();
 				return;
 			case P_Priority:
@@ -568,7 +567,7 @@ bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
 	{
 		switch(k - &Strings.P[0])
 		{
-			case P_Name: *pResult = C4VString(Name); return true;
+			case P_Name: return C4PropListNumbered::GetPropertyByS(k, pResult);
 			case P_Priority: *pResult = C4VInt(Abs(iPriority)); return true;
 			case P_Interval: *pResult = C4VInt(iInterval); return true;
 			case P_CommandTarget:

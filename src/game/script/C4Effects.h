@@ -73,7 +73,6 @@
 class C4Effect: public C4PropListNumbered
 {
 public:
-	char Name[C4MaxDefString+1]; // name of effect
 	C4ObjectPtr CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
 	C4ID idCommandTarget;     // ID of command target definition
 
@@ -91,9 +90,10 @@ protected:
 
 	void AssignCallbackFunctions(); // resolve callback function names
 
-	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	C4Effect(const C4Effect &); // unimplemented, do not use
 public:
-	static C4Effect * New(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	C4Effect(StdCompiler *pComp); // ctor: compile
 	~C4Effect();                      // dtor - deletes all following effects
 

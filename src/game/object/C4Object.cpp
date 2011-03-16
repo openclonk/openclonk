@@ -1784,7 +1784,7 @@ StdStrBuf C4Object::GetDataString()
 	{
 		Output.Append(LineFeed);
 		// Effect name
-		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->Name, pEffect->iPriority, pEffect->iInterval);
+		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->GetName(), pEffect->iPriority, pEffect->iInterval);
 	}
 
 	StdStrBuf Output2;
@@ -4875,7 +4875,7 @@ StdStrBuf C4Object::GetInfoString()
 		if (!vInfo) continue;
 		// debug: warn for wrong return types
 		if (vInfo.GetType() != C4V_String)
-			DebugLogF("Effect %s(%d) on object %s (#%d) returned wrong info type %d.", pEff->Name, pEff->Number, GetName(), Number, vInfo.GetType());
+			DebugLogF("Effect %s(#%d) on object %s (#%d) returned wrong info type %d.", pEff->GetName(), pEff->Number, GetName(), Number, vInfo.GetType());
 		// get string val
 		C4String *psInfo = vInfo.getStr(); const char *szEffInfo;
 		if (psInfo && (szEffInfo = psInfo->GetCStr()))

@@ -1963,15 +1963,14 @@ static long FnLoadScenarioSection(C4AulContext *ctx, C4String *pstrSection, long
 static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvpCmdTarget, C4Value *pvidCmdTarget, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
 {
 	// evaluate parameters
-	C4String *psEffectName = pvsEffectName->getStr();
+	C4String *szEffect = pvsEffectName->getStr();
 	C4Object *pTarget = pvpTarget->getObj();
 	long iPrio = pviPrio->getInt(), iTimerInterval = pviTimerInterval->getInt();
 	C4Object *pCmdTarget = pvpCmdTarget->getObj();
 	C4ID idCmdTarget = pvidCmdTarget->getC4ID();
-	const char *szEffect = FnStringPar(psEffectName);
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
-	if (!szEffect || !*szEffect || !iPrio) return C4Value();
+	if (!szEffect || !*szEffect->GetCStr() || !iPrio) return C4Value();
 	// create effect
 	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4);
 	// return effect - may be 0 if he effect has been denied by another effect
