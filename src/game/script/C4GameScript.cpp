@@ -1973,13 +1973,9 @@ static C4Value FnAddEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szEffect || !*szEffect || !iPrio) return C4Value();
 	// create effect
-	int32_t iEffectNumber;
-	new C4Effect(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4, true, iEffectNumber);
+	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4);
 	// return effect - may be 0 if he effect has been denied by another effect
-	// may also be another effect
-	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
-	pEffect = pEffect->Get(iEffectNumber, true);
 	return C4VPropList(pEffect);
 }
 
@@ -2032,7 +2028,10 @@ static C4Value FnCheckEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Va
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
 	// let them check
-	return C4VInt(pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, *pvVal1, *pvVal2, *pvVal3, *pvVal4));
+	C4Effect * r = pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, *pvVal1, *pvVal2, *pvVal3, *pvVal4);
+	if (r == (C4Effect *)C4Fx_Effect_Deny) return C4VInt(C4Fx_Effect_Deny);
+	if (r == (C4Effect *)C4Fx_Effect_Annul) return C4VInt(C4Fx_Effect_Annul);
+	return C4VPropList(r);
 }
 
 static long FnGetEffectCount(C4AulContext *ctx, C4String *psEffectName, C4Object *pTarget, long iMaxPriority)

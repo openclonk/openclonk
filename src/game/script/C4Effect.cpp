@@ -67,13 +67,12 @@ C4AulScript *C4Effect::GetCallbackScript()
 	return pSrcScript;
 }
 
-C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber)
+C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	C4Effect *pPrev, *pCheck;
 	// assign values
 	SCopy(szName, Name, C4MaxDefString);
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
-	riStoredAsNumber = 0;
 	iInterval = iTimerInterval;
 	iTime = 0;
 	CommandTarget = pCmdTarget;
@@ -102,24 +101,27 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 		pNext = *ppEffectList;
 		*ppEffectList = this;
 	}
-	// no calls to be done: finished here
-	if (!fDoCalls) return;
+}
+
+C4Effect * C4Effect::New(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
+{
+	C4Effect * pEffect = new C4Effect(pForObj, szName, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, rVal1, rVal2, rVal3, rVal4);
 	// ask all effects with higher priority first - except for prio 1 effects, which are considered out of the priority call chain (as per doc)
 	bool fRemoveUpper = (iPrio != 1);
 	// note that apart from denying the creation of this effect, higher priority effects may also remove themselves
 	// or do other things with the effect list
 	// (which does not quite make sense, because the effect might be denied by another effect)
 	// so the priority is assigned after this call, marking this effect dead before it's definitely valid
-	if (fRemoveUpper && pNext)
+	if (fRemoveUpper && pEffect->pNext)
 	{
-		int32_t iResult = pNext->Check(pForObj, Name, iPrio, iInterval, rVal1, rVal2, rVal3, rVal4);
-		if (iResult)
+		C4Effect * pEffect2 = pEffect->pNext->Check(pForObj, szName, iPrio, iTimerInterval, rVal1, rVal2, rVal3, rVal4);
+		if (pEffect2)
 		{
 			// effect denied (iResult = -1), added to an effect (iResult = Number of that effect)
 			// or added to an effect that destroyed itself (iResult = -2)
-			if (iResult != C4Fx_Effect_Deny) riStoredAsNumber = iResult;
+			if (pEffect2 != (C4Effect*)C4Fx_Effect_Deny && pEffect2 != (C4Effect*)C4Fx_Effect_Annul) return pEffect2;
 			// effect is still marked dead
-			return;
+			return 0;
 		}
 	}
 	// init effect
@@ -128,23 +130,22 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	// because that would cause a wrong initialization order
 	// (hardly ever causing trouble, however...)
 	C4Effect *pLastRemovedEffect=NULL;
-	if (fRemoveUpper && pNext && pFnStart)
-		TempRemoveUpperEffects(pForObj, false, &pLastRemovedEffect);
+	if (fRemoveUpper && pEffect->pNext && pEffect->pFnStart)
+		pEffect->TempRemoveUpperEffects(pForObj, false, &pLastRemovedEffect);
 	// bad things may happen
-	if (pForObj && !pForObj->Status) return; // this will be invalid!
-	iPriority = iPrio; // validate effect now
-	if (pFnStart)
-		if (pFnStart->Exec(CommandTarget, &C4AulParSet(C4VObj(pForObj), C4VPropList(this), C4VInt(0), rVal1, rVal2, rVal3, rVal4)).getInt() == C4Fx_Start_Deny)
+	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
+	pEffect->iPriority = iPrio; // validate effect now
+	if (pEffect->pFnStart)
+		if (pEffect->pFnStart->Exec(pCmdTarget, &C4AulParSet(C4VObj(pForObj), C4VPropList(pEffect), C4VInt(0), rVal1, rVal2, rVal3, rVal4)).getInt() == C4Fx_Start_Deny)
 			// the effect denied to start: assume it hasn't, and mark it dead
-			SetDead();
-	if (fRemoveUpper && pNext && pFnStart)
-		TempReaddUpperEffects(pForObj, pLastRemovedEffect);
-	if (pForObj && !pForObj->Status) return; // this will be invalid!
+			pEffect->SetDead();
+	if (fRemoveUpper && pEffect->pNext && pEffect->pFnStart)
+		pEffect->TempReaddUpperEffects(pForObj, pLastRemovedEffect);
+	if (pForObj && !pForObj->Status) return 0; // this will be invalid!
 	// Update OnFire cache
-	if (!IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName))
+	if (!pEffect->IsDead() && pForObj && WildcardMatch(C4Fx_AnyFire, szName))
 		pForObj->SetOnFire(true);
-	// this effect has been created; hand back the number
-	riStoredAsNumber = iNumber;
+	return pEffect;
 }
 
 C4Effect::C4Effect(StdCompiler *pComp)
@@ -268,7 +269,7 @@ int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 	return iCnt;
 }
 
-int32_t C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4)
+C4Effect* C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
 	// priority=1: always OK; no callbacks
 	if (iPrio == 1) return 0;
@@ -282,7 +283,7 @@ int32_t C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iP
 			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VPropList(pCheck), C4Value(), rVal1, rVal2, rVal3, rVal4)).getInt();
 			if (iResult == C4Fx_Effect_Deny)
 				// effect denied
-				return C4Fx_Effect_Deny;
+				return (C4Effect*)C4Fx_Effect_Deny;
 			// add to other effect
 			if (iResult == C4Fx_Effect_Annul || iResult == C4Fx_Effect_AnnulCalls)
 			{
@@ -306,11 +307,11 @@ int32_t C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t iP
 		if (iResult == C4Fx_Start_Deny)
 		{
 			pAddToEffect->Kill(pForObj);
-			return C4Fx_Effect_Annul;
+			return (C4Effect*)C4Fx_Effect_Annul;
 		}
 		else
 			// other effect is the target effect number
-			return pAddToEffect->iNumber;
+			return pAddToEffect;
 	}
 	// added to no effect and not denied
 	return 0;
@@ -427,7 +428,7 @@ void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, 
 	while ((pEff = pEff->pNext) && riDamage);
 }
 
-C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, C4Value &rVal5, C4Value &rVal6, C4Value &rVal7)
+C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
 	// def script or global only?
 	C4AulScript *pSrcScript; C4Def *pDef;

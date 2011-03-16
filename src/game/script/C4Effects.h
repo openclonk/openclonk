@@ -92,8 +92,9 @@ protected:
 
 	void AssignCallbackFunctions(); // resolve callback function names
 
+	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 public:
-	C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
+	static C4Effect * New(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	C4Effect(StdCompiler *pComp); // ctor: compile
 	~C4Effect();                      // dtor - deletes all following effects
 
@@ -110,7 +111,7 @@ public:
 	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
 	C4Effect *Get(int32_t iNumber, bool fIncludeDead, int32_t iMaxPriority=0);    // get effect by number
 	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
-	int32_t Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4); // do some effect callbacks
+	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
 	C4AulScript *GetCallbackScript(); // get script context for effect callbacks
 
 	void Execute(C4Object *pObj); // execute all effects
@@ -118,7 +119,7 @@ public:
 	void ClearAll(C4Object *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
 	void DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
 
-	C4Value DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, C4Value &rVal5, C4Value &rVal6, C4Value &rVal7); // custom call
+	C4Value DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
 
 	void ReAssignCallbackFunctions()
 	{ AssignCallbackFunctions(); }
