@@ -529,10 +529,9 @@ namespace
 #ifdef STDSCHEDULER_USE_EVENTS
 CStdNotifyProc::CStdNotifyProc() : Event(true) {}
 void CStdNotifyProc::Notify() { Event.Set(); }
-bool CStdNotifyProc::Check() { return Event.WaitFor(0); }
 bool CStdNotifyProc::CheckAndReset()
 {
-	if (!Check()) return false;
+	if (!Event.WaitFor(0)) return false;
 	Event.Reset();
 	return true;
 }
@@ -549,14 +548,6 @@ void CStdNotifyProc::Notify()
 	char c = 42;
 	if (write(fds[1], &c, 1) == -1)
 		Fail("write failed");
-}
-bool CStdNotifyProc::Check()
-{
-	fd_set fdset;
-	FD_ZERO(&fdset);
-	FD_SET(fds[0], &fdset);
-	timeval to = { 0, 0 };
-	return select(fds[0] + 1, &fdset, NULL, NULL, &to);
 }
 bool CStdNotifyProc::CheckAndReset()
 {

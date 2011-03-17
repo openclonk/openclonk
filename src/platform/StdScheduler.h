@@ -97,10 +97,9 @@ private:
 public:
 	void Set() { iLastTimer = 0; }
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
-	bool Check() { return GetTime() >= iLastTimer + iDelay; }
 	bool CheckAndReset()
 	{
-		if (!Check()) return false;
+		if (GetTime() < iLastTimer + iDelay) return false;
 		// Compensate light drifting
 		uint32_t iTime = GetTime();
 		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
@@ -124,7 +123,6 @@ public:
 
 public:
 	void Notify();
-	bool Check();
 	bool CheckAndReset();
 
 #ifdef STDSCHEDULER_USE_EVENTS
