@@ -49,6 +49,26 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>ocs</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ocs.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/vnd.clonk.c4group</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>OpenClonk Scenario Folder</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<true/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>Binary</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>ocd</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
@@ -153,7 +173,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>${C4XVERBUILD}</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu.nib</string>
 	<key>NSPrincipalClass</key>
