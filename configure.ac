@@ -56,7 +56,7 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
-AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h sys/syscall.h], , , [[ ]])
+AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h], , , [[ ]])
 # Mingw does not ship with multimon.h
 AC_CHECK_HEADERS([multimon.h io.h direct.h share.h], [], [], [[#include <windows.h>]])
 # iconv
@@ -313,11 +313,6 @@ if test $win32 = false; then
   AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
-
-  # inotify syscall workaround
-  AC_CHECK_DECL(SYS_inotify_init,
-  	AC_DEFINE([HAVE_SYSCALL_INOTIFY], 1, [inotify reachable using syscall]),,
-  	[#include <sys/syscall.h>])
 
   # FMod is used for windows only
   AM_CONDITIONAL(USE_FMOD, false)

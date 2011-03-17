@@ -64,7 +64,7 @@ private:
 	bool fStarted;
 	ChangeNotify pCallback;
 
-#if defined(HAVE_SYS_INOTIFY_H) || defined(HAVE_SYS_SYSCALL_H)
+#ifdef HAVE_SYS_INOTIFY_H
 	int fd;
 	std::map<int, const char *> watch_descriptors;
 #elif defined(_WIN32)

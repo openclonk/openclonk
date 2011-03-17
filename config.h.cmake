@@ -85,9 +85,6 @@
 /* Define to 1 if you have the <string.h> header file. */
 #cmakedefine HAVE_STRING_H 1
 
-/* inotify reachable using syscall */
-#cmakedefine HAVE_SYSCALL_INOTIFY 1
-
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 #cmakedefine HAVE_SYS_INOTIFY_H 1
 
@@ -102,9 +99,6 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #cmakedefine HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/syscall.h> header file. */
-#cmakedefine HAVE_SYS_SYSCALL_H 1
 
 /* Define to 1 if you have the <sys/timerfd.h> header file. */
 #cmakedefine HAVE_SYS_TIMERFD_H 1
