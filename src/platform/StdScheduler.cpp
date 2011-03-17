@@ -522,7 +522,7 @@ namespace
 {
 	void Fail(const char* msg)
 	{
-		// TODO: throw std::runtime_error(msg); ?
+		Log(msg);
 	}
 }
 
@@ -536,12 +536,37 @@ bool CStdNotifyProc::CheckAndReset()
 	return true;
 }
 #else // STDSCHEDULER_USE_EVENTS
+#ifdef HAVE_SYS_EVENTFD_H
+#include <sys/eventfd.h>
+
+CStdNotifyProc::CStdNotifyProc()
+{
+	// FIXME: Once linux version 2.6.27 is required, use EFD_NONBLOCK and EFD_CLOEXEC
+	fds[0] = eventfd(0, 0);
+	if (fds[0] == -1)
+		Fail("eventfd failed");
+	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
+	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
+}
+void CStdNotifyProc::Notify()
+{
+	uint64_t n = 1;
+	if (write(fds[0], &n, 8) == -1)
+		Fail("write failed");
+}
+bool CStdNotifyProc::CheckAndReset()
+{
+	uint64_t n;
+	return (read(fds[0], &n, 8) != -1);
+}
+#else
 CStdNotifyProc::CStdNotifyProc()
 {
 	if (pipe(fds) == -1)
 		Fail("pipe failed");
-	// Experimental castration of the pipe.
 	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
+	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
+	fcntl(fds[1], F_SETFD, FD_CLOEXEC);
 }
 void CStdNotifyProc::Notify()
 {
@@ -561,6 +586,12 @@ bool CStdNotifyProc::CheckAndReset()
 			r = true;
 	}
 	return r;
+}
+#endif
+void CStdNotifyProc::GetFDs(std::vector<struct pollfd> & checkfds)
+{
+	pollfd pfd = { fds[0], POLLIN, 0 };
+	checkfds.push_back(pfd);
 }
 #endif
 

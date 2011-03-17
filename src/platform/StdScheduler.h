@@ -139,11 +139,7 @@ private:
 	int fds[2];
 public:
 	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { fds[0], POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
 
 #endif
 };
