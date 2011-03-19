@@ -116,6 +116,7 @@ public:
 	void SetGameTickDelay(uint32_t iDelay);
 
 	virtual bool Execute(int iTimeout, pollfd *);
+	virtual bool IsLowPriority();
 };
 
 class C4ApplicationSec1Timer : protected CStdTimerProc

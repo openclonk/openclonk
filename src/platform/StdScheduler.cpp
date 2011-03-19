@@ -182,12 +182,6 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			if (iTimeout == -1 || iTimeout + Now > iProcTick)
 				iTimeout = Max(iProcTick - Now, 0);
 
-	// We only process timeouts if no other events were processed to make
-	// sure all pending events have been executed before triggering the
-	// next timeout (which might cause a quite lengthy screen redraw).
-	// See also bug #207.
-	bool fProcessTimeouts = true;
-
 #ifdef STDSCHEDULER_USE_EVENTS
 
 	// Collect event handles
@@ -229,59 +223,8 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			fSuccess = false;
 		}
 
-		fProcessTimeouts = false;
 	}
-
-#else
-
-	// Initialize file descriptor sets
-	std::vector<struct pollfd> fds;
-	std::vector<unsigned int> first_fd_for_proc(iProcCnt + 1);
-
-	// Collect file descriptors
-	for (i = 0; i < iProcCnt; i++)
-	{
-		first_fd_for_proc[i] = fds.size();
-		ppProcs[i]->GetFDs(fds);
-	}
-	first_fd_for_proc[iProcCnt] = fds.size();
-
-	// Wait for something to happen
-	int cnt = poll(&fds[0], fds.size(), iTimeout);
-
-	bool fSuccess = true;
-
-	if (cnt > 0)
-	{
-		// Which process?
-		for (i = 0; i < iProcCnt; i++)
-		{
-			// Check intersection
-			for (unsigned int j = first_fd_for_proc[i]; j < first_fd_for_proc[i + 1]; ++j)
-			{
-				if (fds[j].events & fds[j].revents)
-				{
-					if (!ppProcs[i]->Execute(0, &fds[first_fd_for_proc[i]]))
-					{
-						OnError(ppProcs[i]);
-						fSuccess = false;
-					}
-					// leave the loop, the list of procs might have been changed
-					i = iProcCnt;
-					break;
-				}
-			}
-		}
-
-		fProcessTimeouts = false;
-	}
-	else if (cnt < 0)
-	{
-		printf("StdScheduler::Execute: poll failed: %s\n",strerror(errno));
-	}
-#endif
-
-	if (fProcessTimeouts)
+	else
 	{
 		// Execute all processes with timeout
 		Now = GetTime();
@@ -296,6 +239,79 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 				}
 		}
 	}
+
+#else
+
+	// Initialize file descriptor sets
+	std::vector<struct pollfd> fds;
+	std::map<StdSchedulerProc *, std::pair<unsigned int, unsigned int>> fds_for_proc;
+
+	// Collect file descriptors
+	for (i = 0; i < iProcCnt; i++)
+	{
+		unsigned int os = fds.size();
+		ppProcs[i]->GetFDs(fds);
+		if (os != fds.size())
+			fds_for_proc[ppProcs[i]] = std::pair<unsigned int, unsigned int>(os, fds.size());
+	}
+
+	// Wait for something to happen
+	int cnt = poll(&fds[0], fds.size(), iTimeout);
+
+	bool fSuccess = true;
+
+	if (cnt >= 0)
+	{
+		bool any_executed = false;
+		Now = GetTime();
+		// Which process?
+		for (i = 0; i < iProcCnt; i++)
+		{
+			iProcTick = ppProcs[i]->GetNextTick(Now);
+			if (iProcTick >= 0 && iProcTick <= Now)
+			{
+				struct pollfd * pfd = 0;
+				if (fds_for_proc.find(ppProcs[i]) != fds_for_proc.end())
+					pfd = &fds[fds_for_proc[ppProcs[i]].first];
+				if (!ppProcs[i]->Execute(0, pfd))
+				{
+					OnError(ppProcs[i]);
+					fSuccess = false;
+				}
+				any_executed = true;
+				continue;
+			}
+			// no fds?
+			if (fds_for_proc.find(ppProcs[i]) == fds_for_proc.end())
+				continue;
+			// Check intersection
+			unsigned int begin = fds_for_proc[ppProcs[i]].first;
+			unsigned int end = fds_for_proc[ppProcs[i]].second;
+			for (unsigned int j = begin; j < end; ++j)
+			{
+				if (fds[j].events & fds[j].revents)
+				{
+					if (any_executed && ppProcs[i]->IsLowPriority())
+						break;
+					if (!ppProcs[i]->Execute(0, &fds[begin]))
+					{
+						OnError(ppProcs[i]);
+						fSuccess = false;
+					}
+					any_executed = true;
+					// the list of procs might have been changed, but procs must be in both ppProcs and
+					// fds_for_proc to be executed, which prevents execution of any proc not polled this round
+					// or deleted. Some procs might be skipped or executed twice, but that should be save.
+					break;
+				}
+			}
+		}
+	}
+	else if (cnt < 0)
+	{
+		printf("StdScheduler::Execute: poll failed: %s\n",strerror(errno));
+	}
+#endif
 
 	return fSuccess;
 }

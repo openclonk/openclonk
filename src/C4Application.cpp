@@ -821,3 +821,4 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 	return true;
 }
 
+bool  C4ApplicationGameTimer::IsLowPriority() { return true; }

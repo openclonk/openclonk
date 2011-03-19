@@ -82,6 +82,9 @@ public:
 	// Is the process signal currently set?
 	bool IsSignaled();
 
+	// Is this the expensive game tick?
+	virtual bool IsLowPriority() { return false; }
+
 };
 
 // A simple timer proc
