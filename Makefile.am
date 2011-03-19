@@ -464,8 +464,8 @@ src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.h \
+src/platform/StdApp.h \
 src/platform/StdAppCommon.cpp \
-src/platform/StdAppCommon.h \
 src/platform/StdD3D.cpp \
 src/platform/StdD3D.h \
 src/platform/StdD3DShader.cpp \

@@ -461,6 +461,8 @@ set(OC_CLONK_SOURCES
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.h
+	src/platform/StdApp.h
+	src/platform/StdAppCommon.cpp
 	src/platform/StdConfig.cpp
 	src/platform/StdConfig.h
 	src/platform/StdD3D.cpp
@@ -491,8 +493,6 @@ set(OC_CLONK_SOURCES
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
 	src/platform/StdWindow.h
-	src/platform/StdAppCommon.h
-	src/platform/StdAppCommon.cpp
 	src/script/C4Aul.cpp
 	src/script/C4AulExec.h
 	src/script/C4AulExec.cpp

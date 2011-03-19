@@ -22,6 +22,7 @@
 #include <C4Include.h>
 #include <StdGtkWindow.h>
 
+#include <StdApp.h>
 #include "C4Version.h"
 #include "C4Config.h"
 

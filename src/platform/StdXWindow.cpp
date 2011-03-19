@@ -25,6 +25,8 @@
 
 #ifdef USE_X11
 #include <StdWindow.h>
+
+#include <StdApp.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
 #include <StdFile.h>

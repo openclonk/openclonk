@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2007  Alex
  * Copyright (c) 2010  Mortimer
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -15,11 +16,8 @@
  */
 
 #include <C4Include.h>
-#include "StdAppCommon.h"
-
-#ifdef WITH_GLIB
-#include <glib.h>
-#endif
+#include "StdApp.h"
+#include "StdWindow.h"
 
 void CStdApp::Run()
 {
@@ -59,4 +57,13 @@ bool EraseItemSafe(const char *szFilename)
 
 void CStdWindow::PerformUpdate()
 {
+}
+
+void CStdApp::NotifyUserIfInactive()
+{
+#ifdef _WIN32
+		if (!Active && pWindow) pWindow->FlashWindow();
+#else
+		if (pWindow) pWindow->FlashWindow();
+#endif
 }

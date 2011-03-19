@@ -23,8 +23,11 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
+#include <StdSurface2.h>
+
 #include <StdFile.h>
 #include <CStdFile.h>
+#include "StdApp.h"
 #include <StdGL.h>
 #include <StdWindow.h>
 #include <StdRegistry.h>

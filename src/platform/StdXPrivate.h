@@ -24,6 +24,8 @@
 # include <glib.h>
 #endif
 
+#include <StdApp.h>
+
 class CX11Proc: public StdSchedulerProc
 {
 

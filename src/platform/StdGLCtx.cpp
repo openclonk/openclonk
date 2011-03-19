@@ -23,6 +23,8 @@
 
 #include "C4Include.h"
 #include <StdGL.h>
+
+#include <StdApp.h>
 #include <StdSurface2.h>
 #include <StdWindow.h>
 #include <C4Config.h>

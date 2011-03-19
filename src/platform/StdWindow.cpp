@@ -27,6 +27,7 @@
 #include "C4Include.h"
 #include <StdWindow.h>
 
+#include <StdApp.h>
 #include <StdRegistry.h>
 #include <C4Config.h>
 #include <C4Rect.h>

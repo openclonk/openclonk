@@ -23,7 +23,9 @@
 
 /* NewGfx interfaces */
 #include "C4Include.h"
+#include <StdDDraw2.h>
 
+#include "StdApp.h"
 #include <StdWindow.h>
 #include <StdDDraw2.h>
 #include <StdFacet.h>
