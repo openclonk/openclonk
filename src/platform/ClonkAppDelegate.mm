@@ -47,7 +47,8 @@
 	if (self)
 	{
 		NSArray* args = [[NSProcessInfo processInfo] arguments];
-		gatheredArguments = [args copy];
+		gatheredArguments = [[NSMutableArray arrayWithCapacity:[args count]+2] retain];
+		[gatheredArguments addObjectsFromArray:args];
 	}
 	return self;
 }
@@ -97,6 +98,7 @@
 
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
+	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
 	if (!([self argsLookLikeItShouldBeInstallation] && [self installAddOn]))
 	{
 		[NSApp activateIgnoringOtherApps:YES];
@@ -121,8 +123,13 @@
 		[[NSRunLoop currentRunLoop] performSelector:@selector(delayedRun:) target:self argument:self order:0 modes:[NSArray arrayWithObject:NSDefaultRunLoopMode]];
 #endif
 	}
+	else
+	{
+		[NSApp terminate:self];
+	}
 }
 
+#ifdef USE_COCOA
 - (void) delayedRun:(id)sender
 {
 	running = YES;
@@ -132,6 +139,7 @@
 	[self quitAndMaybeRestart];
 	[NSApp terminate:self];
 }
+#endif
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
 {
@@ -177,7 +185,7 @@
 	// not having this check leads to deletion of Clonk folder -.-
 	if (!addonSupplied)
 		return NO;
-	for (int i = 0; i < [gatheredArguments count]; i++)
+	for (unsigned int i = 0; i < [gatheredArguments count]; i++)
 	{
 		NSString* arg = [gatheredArguments objectAtIndex:i];
 		if ([arg hasPrefix:@"-psn"])
@@ -186,23 +194,44 @@
 	return NO;
 }
 
+- (void) infoWithFormat:(NSString*) formatString andArgument:(const char*) arg
+{
+	NSRunInformationalAlertPanel([NSString stringWithCString:LoadResStr("IDS_ADDON_INSTALLTITLE") encoding:NSUTF8StringEncoding],
+								 [NSString stringWithFormat: formatString, arg],
+								 @"OK", nil, nil);
+}
+
+- (void) minimalConfigurationInitialization
+{
+	Config.Init();
+	Config.Load(true);
+	Reloc.Init();
+	Languages.Init();
+	Languages.LoadLanguage(Config.General.LanguageEx);
+}
+
 // Copies the add-on to the clonk directory
 - (BOOL) installAddOn
 {
-	
 	if (!addonSupplied)
 		return NO;
+	
+	// load configuration + localization so LoadResStr can be used
+	[self minimalConfigurationInitialization];
 	
 	// Build destination path.
 	NSString* justFileName = [addonSupplied lastPathComponent];
 	NSString* destPath = [[self clonkDirectory] stringByAppendingPathComponent:justFileName];
-	
 	NSString* formatString;
 	
 	// Already installed?
-	if ([destPath isEqualToString:addonSupplied])
+	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); it++)
 	{
-		return NO; // run scenarios when they are already in the clonk directory
+		if ([addonSupplied hasPrefix:[NSString stringWithCString:(*it).getData() encoding:NSUTF8StringEncoding]])
+		{
+			[gatheredArguments addObject:addonSupplied];
+			return NO; // run scenarios when they are already containd in one of the Reloc directories
+		}
 	}
 	
 	NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -210,14 +239,14 @@
 		// better to throw it into the trash. everything else seems so dangerously destructive
 		[[NSWorkspace sharedWorkspace] performFileOperation:NSWorkspaceRecycleOperation source:[self clonkDirectory] destination:@"" files:[NSArray arrayWithObject:justFileName] tag:0];
 	if ([fileManager copyItemAtPath:addonSupplied toPath:destPath error:NULL])
-		formatString = NSLocalizedString(@"AddOnInstallationSuccess", nil);
+	{
+		formatString = [NSString stringWithCString:LoadResStr("IDS_ADDON_INSTALLSUCCESS") encoding:NSUTF8StringEncoding];
+	}
 	else
-		formatString = NSLocalizedString(@"AddOnInstallationFailure", nil);
-	
-	NSRunInformationalAlertPanel(NSLocalizedString(@"AddOnInstallationTitle", nil),
-								 [NSString stringWithFormat: formatString, [justFileName cStringUsingEncoding:NSASCIIStringEncoding]],
-								 @"OK", nil, nil);
-								 
+	{
+		formatString = [NSString stringWithCString:LoadResStr("IDS_ADDON_INSTALLFAILURE") encoding:NSUTF8StringEncoding];
+	}
+	[self infoWithFormat:formatString andArgument:[justFileName cStringUsingEncoding:NSUTF8StringEncoding]];
 	return YES; // only return NO when the scenario should be run rather than installed
 }
 
