@@ -1,6 +1,7 @@
 /*-- Lorry --*/
 
 #include Library_ItemContainer
+#include Library_CableCar
 
 local content_menu;
 
@@ -24,6 +25,7 @@ protected func Initialize()
 
 	iRotWheels = 0;
 	iTremble = 0;
+	iMovementSpeed = 2;
 }
 
 /*-- Movement --*/
@@ -92,111 +94,6 @@ func TurnWheels()
 		if(iTremble > 2000) iTremble -= 2000;
 		SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
 	}
-}
-
-/* Drive on Rail */
-local pRailTarget;
-local rail_direction; // 2 up the line, 1 down the line, 0 no movement
-local rail_progress;
-local rail_max_prog;
-local rail_destination;
-
-func StartRail(obj)
-{
-  SetPosition(obj->GetX(), obj->GetY());
-  SetAction("OnRail");
-  pRailTarget = obj;
-  rail_direction = 0;
-}
-
-func SetDestination(obj)
-{
-  if(GetType(obj) == C4V_Int)
-  {
-    obj = FindObjects(Find_ID(CableCrossing))[obj];
-  }
-  rail_destination = obj;
-  if(rail_direction == 0)
-    CrossingReached();
-}
-
-func CrossingReached()
-{
-  var target;
-  if(rail_destination != pRailTarget)
-    if(target = pRailTarget->GetNextWaypoint(rail_destination))
-      MoveTo(target);
-}
-
-func MoveTo(obj)
-{
-  if(GetType(obj) == C4V_Int)
-  {
-    obj = FindObjects(Find_ID(CableCrossing))[obj];
-  }
-  var rail = 0;
-  for(var test_rail in FindObjects(Find_Func("IsConnectedTo", pRailTarget)))
-  {
-    if(test_rail->IsConnectedTo(obj))
-    {
-      rail = test_rail;
-      break;
-    }
-  }
-  if(!rail)
-  {
-    Message("No Rail availible!");
-    return;
-  }
-  // Target the first or section action target?
-  if(rail->GetActionTarget(0) == obj)
-  {
-    rail_direction = 1;
-    rail_progress  = 0;
-  }
-  else
-  {
-    rail_direction = 2;
-    rail_progress  = 0;
-  }
-  rail->GetActionTarget(0)->AddActive(0);
-  rail->GetActionTarget(1)->AddActive(0);
-  rail->AddActive(0);
-  rail_max_prog = ObjectDistance(obj, pRailTarget);
-  pRailTarget = rail;
-//  Log("%d %d", rail_max_prog, pRailTarget, rail);
-}
-
-func OnRail()
-{
-  if(rail_direction == 0 || rail_direction == nil) return;
-  var start = 0;
-  var end = 1;
-  if(rail_direction == 1)
-  {
-    start = 1;
-    end = 0;
-  }
-  
-  rail_progress++;
-  if(rail_progress == rail_max_prog)
-  {
-    pRailTarget->GetActionTarget(0)->AddActive(1);
-    pRailTarget->GetActionTarget(1)->AddActive(1);
-    pRailTarget->AddActive(1);
-    pRailTarget = pRailTarget->GetActionTarget(end);
-    SetPosition(pRailTarget->GetX(), pRailTarget->GetY());
-    rail_direction = 0;
-    CrossingReached();
-    return;
-  }
-  
-  var prec = 100;
-  var x = pRailTarget->GetActionTarget(start)->GetX(prec)+
-          (pRailTarget->GetActionTarget(end)->GetX(prec)-pRailTarget->GetActionTarget(start)->GetX(prec))*rail_progress/rail_max_prog;
-  var y = pRailTarget->GetActionTarget(start)->GetY(prec)+
-          (pRailTarget->GetActionTarget(end)->GetY(prec)-pRailTarget->GetActionTarget(start)->GetY(prec))*rail_progress/rail_max_prog;
-  SetPosition(x, y, 1, prec);	  
 }
 
 local ActMap = {

@@ -52,7 +52,7 @@ func Initialize()
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj5, obj7);
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj6, obj7);
 	WaypointsMakeList();
-	lorry->StartRail(obj1);
+	lorry->EngageRail(obj1);
 	lorry->SetDestination(0);
 //	clonk->CreateContents(Javelin);
 //		clonk->CreateContents(DynamiteBox);
