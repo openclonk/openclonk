@@ -1,6 +1,6 @@
 /*--
 	Cable Crossing
-	Author: Randrian
+	Author: Randrian, Clonkonaut
 --*/
 
 /* Global */
@@ -28,7 +28,7 @@ protected func Initialize()
 {
   iRotation = 0;
   SetAction("Wait");
-  SetGraphics(0, GetID(), 1, 1);
+  SetGraphics(0, GetID(), 1, GFXOV_MODE_Base);
   return;
 }
 
@@ -160,14 +160,16 @@ public func AddActive(fRemove)
 private func CheckRailStation()
 {
 	if (IsRailStation())
+	{
 		if (!bStation)
 		{
-			SetGraphics("Station", CableCrossing, GFX_Overlay, GFXOV_MODE_Base);
+			SetGraphics("Station", CableCrossing, 2, GFXOV_MODE_Base);
 			bStation = true;
 		}
+	}
 	else if (bStation)
 	{
-		SetGraphics(nil, CableCrossing, GFX_Overlay);
+		SetGraphics(nil, CableCrossing, 2, GFXOV_MODE_Base);
 		bStation = false;
 	}
 }
