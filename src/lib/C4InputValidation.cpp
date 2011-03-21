@@ -133,16 +133,17 @@ namespace C4InVal
 
 		case VAL_IRCChannel: // IRC channel name
 		{ // needed for the vector
-			std::vector<StdStrBuf> chans;
+			std::vector<StdCopyStrBuf> chans;
 			StdStrBuf SplitPart;
-			while(rsString.SplitAtChar(',', &SplitPart)) // Split
+			StdCopyStrBuf tmp; tmp.Copy(rsString);
+			while(tmp.SplitAtChar(',', &SplitPart)) // Split
 			{
-				chans.push_back(rsString);
-				rsString.Copy(SplitPart);
+				chans.push_back(tmp);
+				tmp.Copy(SplitPart);
 			}
-			chans.push_back(rsString);
+			chans.push_back(tmp);
 			rsString.Clear();
-			for(std::vector<StdStrBuf>::iterator it = chans.begin(); it < chans.end(); ++it) // Reassemble clean
+			for(std::vector<StdCopyStrBuf>::iterator it = chans.begin(); it < chans.end(); ++it) // Reassemble clean
 			{
 				if (it->getLength() > 32) { fValid = false; it->SetLength(32); }
 				else if (it->getLength() < 2) { fValid = false; it->Clear(); }
