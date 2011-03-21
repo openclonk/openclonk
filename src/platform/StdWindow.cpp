@@ -232,7 +232,7 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 			return false;
 		}
 		// Dialog message transfer
-		if (!pApp->DialogMessageHandling(&msg))
+		if (!pApp->pWindow || !pApp->pWindow->Win32DialogMessageHandling(&msg))
 		{
 			TranslateMessage(&msg); DispatchMessage(&msg);
 		}
@@ -420,7 +420,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	if (!fClipboard) return false;
 	bool fSuccess = true;
 	// gain clipboard ownership
-	if (!OpenClipboard(GetWindowHandle())) return false;
+	if (!OpenClipboard(pWindow ? pWindow->hWindow : NULL)) return false;
 	// must empty the global clipboard, so the application clipboard equals the Windows clipboard
 	EmptyClipboard();
 	int size = MultiByteToWideChar(CP_UTF8, 0, text.getData(), text.getSize(), 0, 0);

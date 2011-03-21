@@ -31,10 +31,6 @@
 #include <StdScheduler.h>
 #include <StdSync.h>
 
-#ifdef _WIN32
-const int SEC1_TIMER=1,SEC1_MSEC=1000;
-#endif
-
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
@@ -327,9 +323,9 @@ public:
 public:
 	HWND hWindow;
 	HWND hRenderWindow;
+	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 protected:
 	bool RegisterWindowClass(HINSTANCE hInst);
-	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
 protected:
 	bool FindInfo(int samples, void** info);
@@ -466,10 +462,8 @@ public:
 	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
 	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
 	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
-	HWND GetWindowHandle() { return pWindow ? pWindow->hWindow : NULL; }
 	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
 	HINSTANCE GetInstance() const { return hInstance; }
-	bool DialogMessageHandling(MSG *pMsg) { return pWindow ? pWindow->Win32DialogMessageHandling(pMsg) : false; }
 	bool AssertMainThread()
 	{
 #  ifdef _DEBUG

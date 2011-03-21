@@ -2034,7 +2034,8 @@ void CStdGL::TaskOut()
 	if (!Editor && !Config.Graphics.Windowed)
 	{
 		::ChangeDisplaySettings(NULL, 0);
-		::ShowWindow(Application.GetWindowHandle(), SW_MINIMIZE);
+		if(pMainCtx && pMainCtx->pWindow)
+			::ShowWindow(pMainCtx->pWindow->hWindow, SW_MINIMIZE);
 	}
 #endif
 }
