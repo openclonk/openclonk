@@ -182,6 +182,7 @@ void C4Network2IRCChannel::ClearUsers()
 
 
 // *** C4Network2IRCClient
+// Created statically in C4Application.cpp, refer by &Application.IRCClient
 
 C4Network2IRCClient::C4Network2IRCClient()
 		: fConnecting(false), fConnected(false),
@@ -343,7 +344,26 @@ bool C4Network2IRCClient::Close()
 {
 	// Close network
 	C4NetIOTCP::Close();
-	// Clear channels
+	// Save & Clear channels
+	if(pChannels) // Don't override empty
+	{
+		// It's somewhat weird to loop backward through a singly linked list, but it's necessary to keep the order
+		StdStrBuf chanstr;
+		C4Network2IRCChannel * pChan = pChannels;
+		while(pChan->Next)
+			pChan = pChan->Next;
+		chanstr.Append(pChan->getName());
+		while (pChan != pChannels)
+		{
+			C4Network2IRCChannel * pChanPrev = pChannels;
+			while(pChanPrev->Next != pChan)
+				pChanPrev = pChanPrev->Next;
+			pChan = pChanPrev;
+			chanstr.Append(",");
+			chanstr.Append(pChan->getName());
+		}
+		strncpy(Config.IRC.Channel, chanstr.getData(), sizeof(Config.IRC.Channel)-1);
+	}
 	while (pChannels)
 		DeleteChannel(pChannels);
 	// Clear log
@@ -819,4 +839,3 @@ void C4Network2IRCClient::DeleteChannel(C4Network2IRCChannel *pChannel)
 	// Delete
 	delete pChannel;
 }
-

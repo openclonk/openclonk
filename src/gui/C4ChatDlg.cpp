@@ -530,6 +530,7 @@ void C4ChatControl::OnConnectBtn(C4GUI::Control *btn)
 	if (sChannel.getLength() && C4InVal::ValidateString(sChannel, C4InVal::VAL_IRCChannel))
 	{
 		GetScreen()->ShowErrorMessage(LoadResStr("IDS_ERR_INVALIDCHANNELNAME"));
+		pEdtLoginChannel->SetText(sChannel.getData(), false);
 		GetDlg()->SetFocus(pEdtLoginChannel, false);
 		return;
 	}
@@ -800,6 +801,8 @@ void C4ChatControl::UpdateTitle()
 		sTitle.Take(std::move(sNewTitle));
 		if (pTitleChangeBC) pTitleChangeBC->OnOK(sTitle);
 	}
+	// reload the channel join string from config to fetch C4Network2IRCClient's changes
+	pEdtLoginChannel->SetText(Config.IRC.Channel, false);
 }
 
 bool C4ChatControl::DlgEnter()
@@ -1011,7 +1014,7 @@ void C4ChatDlg::StopChat()
 {
 	if (!pInstance) return;
 	pInstance->Close(false);
-	// 2do: Quit IRC
+	Application.IRCClient.Close();
 }
 
 bool C4ChatDlg::ToggleChat()

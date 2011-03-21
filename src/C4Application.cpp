@@ -537,6 +537,8 @@ void C4Application::Clear()
 	// stop timer
 	Remove(pGameTimer);
 	delete pGameTimer; pGameTimer = NULL;
+	// quit irc
+	IRCClient.Close();
 	// close system group (System.ocg)
 	SystemGroup.Close();
 	// Log

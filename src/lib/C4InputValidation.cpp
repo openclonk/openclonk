@@ -132,11 +132,28 @@ namespace C4InVal
 			break;
 
 		case VAL_IRCChannel: // IRC channel name
-			if (rsString.getLength() > 32) { fValid = false; rsString.SetLength(32); }
-			else if (rsString.getLength() < 2) { fValid = false; rsString.Copy("#clonken"); }
-			else if (*rsString.getData() != '#' && *rsString.getData() != '+') { fValid = false; *rsString.getMData() = '#'; }
-			if (rsString.ReplaceChar(' ', '_')) fValid = false;
+		{ // needed for the vector
+			std::vector<StdStrBuf> chans;
+			StdStrBuf SplitPart;
+			while(rsString.SplitAtChar(',', &SplitPart)) // Split
+			{
+				chans.push_back(rsString);
+				rsString.Copy(SplitPart);
+			}
+			chans.push_back(rsString);
+			rsString.Clear();
+			for(std::vector<StdStrBuf>::iterator it = chans.begin(); it < chans.end(); ++it) // Reassemble clean
+			{
+				if (it->getLength() > 32) { fValid = false; it->SetLength(32); }
+				else if (it->getLength() < 2) { fValid = false; it->Clear(); }
+				else if (*it->getData() != '#' && *it->getData() != '+') { fValid = false; it->InsertChar('#', 0); }
+				if (it->ReplaceChar(' ', '_')) fValid = false;
+				rsString.Append(*it);
+				if(it+1 < chans.end() && it->getLength() > 0) rsString.Append(",");
+			}
+			if(rsString.getLength() < 2) rsString.Copy("#openclonk");
 			break;
+		}
 
 		case VAL_Comment: // comment - just limit length
 			if (rsString.getLength() > C4MaxComment) { fValid = false; rsString.SetLength(C4MaxComment); }
