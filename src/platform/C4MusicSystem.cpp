@@ -28,6 +28,7 @@
 #include <C4Include.h>
 #include <C4MusicSystem.h>
 
+#include <StdWindow.h>
 #include <C4MusicFile.h>
 #include <C4Application.h>
 #include <C4Random.h>
