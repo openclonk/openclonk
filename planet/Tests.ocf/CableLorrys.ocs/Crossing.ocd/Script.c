@@ -21,8 +21,8 @@ global func WaypointsMakeList()
 /* Local */
 
 // State
-public func IsCableCrossing() { return 1; }
-public func IsRailStation() { return GetLength(aPath) == 1; }
+public func IsCableCrossing() { return true; }
+public func IsRailStation() { return bStation; }
 
 protected func Initialize()
 {
@@ -120,6 +120,51 @@ public func AddNeighboursList()
 
 public func GetList() { return aConnectionList; }
 
+/* Station behaviour */
+
+// Prevents the automatic change of the stations status when set to station mode
+local bManualSetting;
+
+// Appears in the bottom interaction bar
+public func IsInteractable() { return true; }
+
+// A clonk wants to change my station status
+public func Interact(object pClonk)
+{
+	// Check ownership
+	if (GetOwner() != NO_OWNER && GetOwner() != pClonk->GetOwner()) return false;
+	// Clonk pushes a cable car?
+	if (pClonk->GetActionTarget() && pClonk->GetActionTarget()->~IsCableCar())
+	{
+		var car = pClonk->GetActionTarget();
+		// Disengage
+		if (car->GetRailTarget() == this)
+		{
+			car->DisengageRail();
+			return true;
+		}
+		// Engage
+		car->EngageRail(this);
+		car->SelectDestination(pClonk, this);
+		return true;
+	}
+	// Change status
+	if (bStation)
+		bManualSetting = false;
+	else
+		bManualSetting = true;
+	CheckRailStation();
+	return true;
+}
+
+public func GetInteractionMetaInfo()
+{
+	if (bStation)
+		return {IconName = "$UnsetStation$", IconID = Icon_UnsetStation, Description = "$UnsetStationDesc$"};
+	else
+		return {IconName = "$SetStation$", IconID = Icon_SetStation, Description = "$SetStationDesc$"};
+}
+
 /* Animation stuff */
 
 local iRotation;
@@ -159,7 +204,7 @@ public func AddActive(fRemove)
 // If not, disable graphics if needed
 private func CheckRailStation()
 {
-	if (IsRailStation())
+	if (GetLength(aPath) == 1 || bManualSetting)
 	{
 		if (!bStation)
 		{
@@ -169,12 +214,11 @@ private func CheckRailStation()
 	}
 	else if (bStation)
 	{
-		SetGraphics(nil, CableCrossing, 2, GFXOV_MODE_Base);
+		SetGraphics(nil, nil, 2, GFXOV_MODE_Base);
 		bStation = false;
 	}
 }
 
-local Name = "$Name$";
 local ActMap = {
 	Active = {
 		Prototype = Action,
@@ -196,3 +240,4 @@ local ActMap = {
 		NextAction = "Wait",
 	},
 };
+local Name = "$Name$";

@@ -44,6 +44,8 @@ func Initialize()
         var obj5 = CreateObject(CableCrossing, 235, 315);
 	var obj6 = CreateObject(CableCrossing, 355, 477);
 	var obj7 = CreateObject(CableCrossing, 317, 339);
+	var obj8 = CreateObject(CableCrossing, 105, 355);
+	var obj9 = CreateObject(CableCrossing, 385, 480);
 	CreateObject(CableLine, 104, 486)->SetConnecteObjects(obj1, obj2);
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj2, obj3);
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj3, obj4);
@@ -51,9 +53,11 @@ func Initialize()
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj3, obj6);
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj5, obj7);
 	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj6, obj7);
+	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj6, obj9);
+	CreateObject(CableLine, 191, 438)->SetConnecteObjects(obj4, obj8);
 	WaypointsMakeList();
-	lorry->EngageRail(obj1);
-	lorry->SetDestination(0);
+//	lorry->EngageRail(obj1);
+//	lorry->SetDestination(0);
 //	clonk->CreateContents(Javelin);
 //		clonk->CreateContents(DynamiteBox);
 //	clonk->CreateContents(GrappleBow);

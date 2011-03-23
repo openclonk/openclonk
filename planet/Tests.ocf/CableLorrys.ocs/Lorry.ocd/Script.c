@@ -28,6 +28,11 @@ protected func Initialize()
 	iMovementSpeed = 2;
 }
 
+private func Disengaged()
+{
+	SetAction("Drive");
+}
+
 /*-- Movement --*/
 
 protected func ContactLeft()
