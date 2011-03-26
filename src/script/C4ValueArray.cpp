@@ -173,13 +173,13 @@ void C4ValueArray::Reset()
 	iSize = 0;
 }
 
-void C4ValueArray::DenumeratePointers()
+void C4ValueArray::Denumerate(C4ValueNumbers * numbers)
 {
 	for (int32_t i = 0; i < iSize; i++)
-		pData[i].DenumeratePointer();
+		pData[i].Denumerate(numbers);
 }
 
-void C4ValueArray::CompileFunc(class StdCompiler *pComp)
+void C4ValueArray::CompileFunc(class StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	int32_t inSize = iSize;
 	// Size. Reset if not found.
@@ -192,7 +192,7 @@ void C4ValueArray::CompileFunc(class StdCompiler *pComp)
 	// Allocate
 	if (pComp->isCompiler()) this->SetSize(inSize);
 	// Values
-	pComp->Value(mkArrayAdapt(pData, iSize, C4Value()));
+	pComp->Value(mkArrayAdaptMap(pData, iSize, C4Value(), mkParAdaptMaker(numbers)));
 }
 
 enum { C4VALUEARRAY_DEBUG = 0 };

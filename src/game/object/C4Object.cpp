@@ -1788,9 +1788,11 @@ StdStrBuf C4Object::GetDataString()
 	}
 
 	StdStrBuf Output2;
+	// FIXME: Make decompile save without this
 	EnumeratePointers();
-	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "Object"), &Output2, "C4Object::GetDataString");
-	DenumeratePointers();
+	C4ValueNumbers numbers;
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(mkParAdapt(*this, &numbers), "Object"), &Output2, "C4Object::GetDataString");
+	Denumerate(&numbers);
 	Output.Append(LineFeed);
 	Output.Append(Output2);
 	return Output;
@@ -2304,7 +2306,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	FinishedDrawing();
 }
 
-void C4Object::CompileFunc(StdCompiler *pComp)
+void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fCompiler = pComp->isCompiler();
 	if (fCompiler)
@@ -2319,15 +2321,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),id.ToString()); return; }
 	}
 
-	// Write the name only if the object has an individual name, use def name as default for reading.
-	// (Info may overwrite later, see C4Player::MakeCrewMember)
-	/*if (pComp->isCompiler())
-	  pComp->Value(mkNamingAdapt(Name, "Name", Def->Name));
-	else if (!Name.isRef())
-	  // Write the name only if the object has an individual name
-	  // 2do: And what about binary compilers?
-	  pComp->Value(mkNamingAdapt(Name, "Name"));*/
-	C4PropListNumbered::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt( mkParAdapt(static_cast<C4PropListNumbered&>(*this), numbers), "Properties"));
 	pComp->Value(mkNamingAdapt( Status,                           "Status",             1                 ));
 	pComp->Value(mkNamingAdapt( toC4CStrBuf(nInfo),               "Info",               ""                ));
 	pComp->Value(mkNamingAdapt( Owner,                            "Owner",              NO_OWNER          ));
@@ -2335,7 +2329,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Controller,                       "Controller",         NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));
-	pComp->Value(mkNamingAdapt( Plane,                              "Plane",                0                 ));
+	pComp->Value(mkNamingAdapt( Plane,                            "Plane",              0                 ));
 
 	pComp->Value(mkNamingAdapt( r,                                "Rotation",           0                 ));
 
@@ -2348,11 +2342,10 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Energy,                           "Energy",             0                 ));
 	pComp->Value(mkNamingAdapt( Alive,                            "Alive",              false             ));
 	pComp->Value(mkNamingAdapt( Breath,                           "Breath",             0                 ));
-	pComp->Value(mkNamingAdapt( Color,                            "Color",              0u                )); // TODO: Convert
-	pComp->Value(mkNamingAdapt( Color,                            "ColorDw",            0u                ));
-	pComp->Value(mkNamingAdapt( fix_x,                            "X",                Fix0                  ));
-	pComp->Value(mkNamingAdapt( fix_y,                            "Y",                Fix0                  ));
-	pComp->Value(mkNamingAdapt( fix_r,                            "FixR",               0                 ));
+	pComp->Value(mkNamingAdapt( Color,                            "Color",              0u                ));
+	pComp->Value(mkNamingAdapt( fix_x,                            "X",                  Fix0              ));
+	pComp->Value(mkNamingAdapt( fix_y,                            "Y",                  Fix0              ));
+	pComp->Value(mkNamingAdapt( fix_r,                            "R",                  Fix0              ));
 	pComp->Value(mkNamingAdapt( xdir,                             "XDir",               0                 ));
 	pComp->Value(mkNamingAdapt( ydir,                             "YDir",               0                 ));
 	pComp->Value(mkNamingAdapt( rdir,                             "RDir",               0                 ));
@@ -2364,21 +2357,21 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
-	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                  ));
+	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                ));
 	pComp->Value(Action);
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component"                             ));
-	pComp->Value(mkNamingAdapt( Contents,                         "Contents"                              ));
+	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
-	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu               ));
+	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
 	pComp->Value(mkNamingAdapt( Layer,                            "Layer",              C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
-	pComp->Value(mkNamingPtrAdapt( pEffects,                      "Effects"                               ));
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), numbers));
 	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
 
 	// Serialize mesh instance if we have a mesh graphics
@@ -2411,7 +2404,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			{
 				// Every command has its own naming environment
 				StdStrBuf Naming = FormatString("Command%d", i);
-				pComp->Value(mkNamingPtrAdapt(pCmd ? pCmd->Next : Command, Naming.getData()));
+				pComp->Value(mkParAdapt(mkNamingPtrAdapt(pCmd ? pCmd->Next : Command, Naming.getData()), numbers));
 				// Last command?
 				pCmd = (pCmd ? pCmd->Next : Command);
 				if (!pCmd)
@@ -2425,7 +2418,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			for (int i = 1; pCmd; i++, pCmd = pCmd->Next)
 			{
 				StdStrBuf Naming = FormatString("Command%d", i);
-				pComp->Value(mkNamingAdapt(*pCmd, Naming.getData()));
+				pComp->Value(mkNamingAdapt(mkParAdapt(*pCmd, numbers), Naming.getData()));
 			}
 		}
 	}
@@ -2494,9 +2487,9 @@ void C4Object::EnumeratePointers()
 	if (pMeshInstance) pMeshInstance->EnumeratePointers();
 }
 
-void C4Object::DenumeratePointers()
+void C4Object::Denumerate(C4ValueNumbers * numbers)
 {
-	C4PropList::DenumeratePointers();
+	C4PropList::Denumerate(numbers);
 	// Standard enumerated pointers
 	Contained.DenumeratePointers();
 	Action.Target.DenumeratePointers();
@@ -2508,10 +2501,10 @@ void C4Object::DenumeratePointers()
 
 	// Commands
 	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)
-		pCom->DenumeratePointers();
+		pCom->Denumerate(numbers);
 
 	// effects
-	if (pEffects) pEffects->DenumeratePointers();
+	if (pEffects) pEffects->Denumerate(numbers);
 
 	// gfx overlays
 	if (pGfxOverlay)

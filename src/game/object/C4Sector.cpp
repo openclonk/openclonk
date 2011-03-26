@@ -45,12 +45,12 @@ void C4LSector::Clear()
 	ClearObjects();
 }
 
-void C4LSector::CompileFunc(StdCompiler *pComp)
+void C4LSector::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	pComp->Value(mkNamingAdapt(mkIntAdapt(x), "x"));
 	pComp->Value(mkNamingAdapt(mkIntAdapt(y), "y"));
-	pComp->Value(mkNamingAdapt(Objects, "Objects"));
-	pComp->Value(mkNamingAdapt(ObjectShapes, "ObjectShapes"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Objects, numbers), "Objects"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ObjectShapes, numbers), "ObjectShapes"));
 }
 
 void C4LSector::ClearObjects()
@@ -216,9 +216,10 @@ int C4LSectors::getShapeSum() const
 
 void C4LSectors::Dump()
 {
+	C4ValueNumbers numbers;
 	LogSilent(DecompileToBuf<StdCompilerINIWrite>(
 	            mkNamingAdapt(
-	              mkArrayAdapt(Sectors, Size),
+	              mkArrayAdaptMap(Sectors, Size, mkParAdaptMaker(&numbers)),
 	              "Sector")).getData());
 }
 

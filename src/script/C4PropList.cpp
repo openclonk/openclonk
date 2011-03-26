@@ -88,7 +88,7 @@ bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
 void C4PropListNumbered::DenumerateAll(int32_t iMaxObjectNumber)
 {
 	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->DenumeratePointers();
+		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->Denumerate(0);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
 	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
 }
@@ -117,10 +117,10 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 	return this;
 }
 
-void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
+void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// reuse C4PropList::CompileFunc(pComp);
-	pComp->Value(mkNamingAdapt(static_cast<C4PropList&>(*this), "Properties"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(static_cast<C4PropList&>(*this), numbers), "Properties"));
 	pComp->Value(mkNamingAdapt(Number, "Number"));
 	if (pComp->isCompiler())
 	{
@@ -133,12 +133,12 @@ void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
 	}
 }
 
-void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp)
+void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	pComp->Value(Number);
 	pComp->Separator();
 	// reuse C4PropList::CompileFunc(pComp);
-	pComp->Value(static_cast<C4PropList&>(*this));
+	pComp->Value(mkParAdapt(static_cast<C4PropList&>(*this), numbers));
 	if (pComp->isCompiler())
 	{
 		if (PropLists.Get(Number))
@@ -173,12 +173,12 @@ C4PropList::C4PropList(C4PropList * prototype):
 #endif
 }
 
-void C4PropList::DenumeratePointers()
+void C4PropList::Denumerate(C4ValueNumbers * numbers)
 {
 	const C4Property * p = Properties.First();
 	while (p)
 	{
-		const_cast<C4Value &>(p->Value).DenumeratePointer();
+		const_cast<C4Value &>(p->Value).Denumerate(numbers);
 		p = Properties.Next(p);
 	}
 	C4Value v;
@@ -217,13 +217,20 @@ bool C4PropList::operator==(const C4PropList &b) const
 	return true;
 }
 
-void C4PropList::CompileFunc(StdCompiler *pComp)
+void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(Properties);
+	pComp->Value(mkParAdapt(Properties, numbers));
+}
+
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar)
+{
+	std::auto_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
+	pComp->Value(mkParAdapt(*temp, rPar));
+	pStruct = temp.release();
 }
 
 template<typename T>
-void C4Set<T>::CompileFunc(StdCompiler *pComp)
+void C4Set<T>::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fNaming = pComp->hasNaming();
 	if (pComp->isCompiler())
@@ -243,7 +250,9 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp)
 			try
 			{
 				T e;
-				pComp->Value(e);
+				// This could use the same technique StdArrayAdapt uses
+				// instead of hardcoding mkParAdapt here
+				pComp->Value(mkParAdapt(e, numbers));
 				Add(e);
 			}
 			catch (StdCompiler::NotFoundException *pEx)
@@ -267,14 +276,14 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp)
 		const T * p = First();
 		while (p)
 		{
-			pComp->Value(*const_cast<T *>(p));
+			pComp->Value(mkParAdapt(*const_cast<T *>(p), numbers));
 			p = Next(p);
 			if (p) pComp->Separator(StdCompiler::SEP_SEP2);
 		}
 	}
 }
 
-void C4Property::CompileFunc(StdCompiler *pComp)
+void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	StdStrBuf s;
 	if (!pComp->isCompiler())
@@ -287,7 +296,7 @@ void C4Property::CompileFunc(StdCompiler *pComp)
 		Key->IncRef();
 	}
 	pComp->Separator(StdCompiler::SEP_SET);
-	pComp->Value(Value);
+	pComp->Value(mkParAdapt(Value, numbers));
 }
 
 void C4PropList::AppendDataString(StdStrBuf * out, const char * delim)

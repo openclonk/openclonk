@@ -118,6 +118,7 @@ class C4TexMapEntry;
 class C4TextureMap;
 class C4Value;
 class C4ValueArray;
+class C4ValueNumbers;
 class C4Viewport;
 class C4ViewportList;
 class C4ViewportWindow;

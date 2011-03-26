@@ -92,13 +92,14 @@ protected:
 
 	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	C4Effect(const C4Effect &); // unimplemented, do not use
+	C4Effect(); // for the StdCompiler
+	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
 public:
 	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
-	C4Effect(StdCompiler *pComp); // ctor: compile
 	~C4Effect();                      // dtor - deletes all following effects
 
 	void EnumeratePointers();  // object pointers to numbers
-	void DenumeratePointers(); // numbers to object pointers
+	void Denumerate(C4ValueNumbers *); // numbers to object pointers
 	void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 
 	void SetDead() { iPriority=0; }      // mark effect to be removed in next execution cycle
@@ -128,7 +129,7 @@ public:
 	}
 	void OnObjectChangedDef(C4Object *pObj);
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	virtual C4Effect * GetEffect() { return this; }
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
@@ -138,9 +139,6 @@ protected:
 	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
 	void TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
 };
-
-// ctor for StdPtrAdapt
-inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4Effect(pComp); }
 
 // fire effect constants
 #define MaxFirePhase        15

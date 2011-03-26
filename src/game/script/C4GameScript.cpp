@@ -1466,10 +1466,11 @@ static C4Value FnGetObjectVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	long iEntryNr = iEntryNr_C4V->getInt();
 
 	// get value
+	C4ValueNumbers numbers;
 	cthr->Obj->EnumeratePointers();
-	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Obj, "Object"));
-	cthr->Obj->DenumeratePointers();
-	retval.DenumeratePointer();
+	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*cthr->Obj, &numbers), "Object"));
+	cthr->Obj->Denumerate(&numbers);
+	retval.Denumerate(&numbers);
 	return retval;
 }
 
@@ -1518,10 +1519,11 @@ static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	C4Player* pPlayer = ::Players.Get(iPlr);
 
 	// get value
+	C4ValueNumbers numbers;
 	pPlayer->EnumeratePointers();
-	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, true), "Player"));
+	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, &numbers), "Player"));
 	pPlayer->DenumeratePointers();
-	retval.DenumeratePointer();
+	retval.Denumerate(&numbers);
 	return retval;
 }
 

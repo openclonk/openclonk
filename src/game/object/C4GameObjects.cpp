@@ -60,7 +60,7 @@ void C4GameObjects::Init(int32_t iWidth, int32_t iHeight)
 }
 
 
-void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
+void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers * numbers)
 {
 	// "Object" section count
 	int32_t iObjCnt = ObjectCount();
@@ -79,11 +79,11 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 		for (C4ObjectLink *pPos = Last; pPos; pPos = pPos->Prev)
 			if (pPos->Obj->Status)
 				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
-					pComp->Value(mkNamingAdapt(*pPos->Obj, "Object"));
+					pComp->Value(mkNamingAdapt(mkParAdapt(*pPos->Obj, numbers), "Object"));
 		for (C4PropListNumbered * const * ppPropList = C4PropListNumbered::PropLists.First(); ppPropList; ppPropList = C4PropListNumbered::PropLists.Next(ppPropList))
 			if ((*ppPropList)->IsScriptPropList())
 			{
-				pComp->Value(mkNamingAdapt(**ppPropList, "PropList"));
+				pComp->Value(mkNamingAdapt(mkParAdapt(**ppPropList, numbers), "PropList"));
 			}
 	}
 	else
@@ -99,7 +99,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 			C4Object *pObj = NULL;
 			try
 			{
-				pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pObj), "Object"));
+				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pObj), numbers), "Object"));
 				C4ObjectList::Add(pObj, stReverse);
 			}
 			catch (StdCompiler::Exception *pExc)
@@ -118,7 +118,7 @@ void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
 			C4PropListScript *pPropList = NULL;
 			try
 			{
-				pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pPropList), "PropList"));
+				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pPropList), numbers), "PropList"));
 			}
 			catch (StdCompiler::Exception *pExc)
 			{
@@ -303,7 +303,7 @@ void C4GameObjects::Clear(bool fClearInactive)
 	LastUsedMarker = 0;
 }
 
-int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
+int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive, C4ValueNumbers * numbers)
 {
 	Clear(!fKeepInactive);
 
@@ -315,9 +315,8 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	// Compile
 	StdStrBuf Name = hGroup.GetFullName() + DirSep C4CFN_ScenarioObjects;
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, false),
-	      Source,
-	      Name.getData()))
+	      mkParAdapt(*this, false, numbers),
+	      Source, Name.getData()))
 		return 0;
 
 	// Process objects
@@ -348,7 +347,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	C4ObjectLink *pInFirst = NULL;
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
-	Denumerate();
+	Denumerate(numbers);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
 	C4PropListNumbered::DenumerateAll(iMaxObjectNumber);
 	// end faking and adjust object numbers
@@ -450,7 +449,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	return ObjectCount();
 }
 
-bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive)
+bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive, C4ValueNumbers * numbers)
 {
 	// Enumerate
 	Enumerate();
@@ -458,20 +457,20 @@ bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive)
 
 	// Decompile objects to buffer
 	StdStrBuf Buffer;
-	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, C4CFN_ScenarioObjects);
+	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame, numbers), &Buffer, C4CFN_ScenarioObjects);
 
 	// Decompile inactives
 	if (fSaveInactive)
 	{
 		StdStrBuf InactiveBuffer;
-		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, C4CFN_ScenarioObjects);
+		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, !fSaveGame, numbers), &InactiveBuffer, C4CFN_ScenarioObjects);
 		Buffer.Append("\r\n");
 		Buffer.Append(InactiveBuffer);
 	}
 
 	// Denumerate
-	InactiveObjects.Denumerate();
-	Denumerate();
+	InactiveObjects.Denumerate(numbers);
+	Denumerate(numbers);
 
 	// Error?
 	if (!fSuccess)

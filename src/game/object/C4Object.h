@@ -237,14 +237,14 @@ public:
 	bool AssignPlrViewRange();
 	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4RegionList *pRegions=NULL,C4DrawTransform* transform=NULL);
 	void Picture2Facet(C4FacetSurface &cgo); // set picture to facet, or create facet in current size and draw if specific states are being needed
-	void DenumeratePointers();
+	virtual void Denumerate(C4ValueNumbers *);
 	void EnumeratePointers();
 	void Default();
 	bool Init(C4PropList *ndef, C4Object *pCreator,
 	          int32_t owner, C4ObjectInfo *info,
 	          int32_t nx, int32_t ny, int32_t nr,
 	          C4Real nxdir, C4Real nydir, C4Real nrdir, int32_t iController);
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void DrawLine(C4TargetFacet &cgo);
 	bool SetPhase(int32_t iPhase);
 	void AssignRemoval(bool fExitContents=false);

@@ -79,7 +79,7 @@ public:
 	{
 		delete[] Table;
 	}
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
 	{
 		for (unsigned int i = 0; i < Capacity; ++i)

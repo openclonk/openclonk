@@ -226,7 +226,7 @@ void C4Player::Execute()
 }
 
 bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName,
-                    const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo)
+                    const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo, C4ValueNumbers * numbers)
 {
 	// safety
 	if (!pInfo)
@@ -336,8 +336,9 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	else
 	{
 		assert(pInfo->IsJoined());
+		assert(numbers);
 		// (compile using DefaultRuntimeData) - also check if compilation returned sane results, i.e. ID assigned
-		if (!LoadRuntimeData(Game.ScenarioFile) || !ID)
+		if (!LoadRuntimeData(Game.ScenarioFile, numbers) || !ID)
 		{
 			// for script players in non-savegames, this is OK - it means they get restored using default values
 			// this happens when the users saves a scenario using the "Save scenario"-option while a script player
@@ -1160,7 +1161,7 @@ void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTa
 	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,true,iData);
 }
 
-void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
+void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	assert(ID);
 
@@ -1203,7 +1204,7 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
-	pComp->Value(mkNamingAdapt(Crew,                "Crew"                  ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
 
@@ -1211,7 +1212,7 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(Control);
 }
 
-bool C4Player::LoadRuntimeData(C4Group &hGroup)
+bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 {
 	const char *pSource;
 	// Use loaded game text component
@@ -1222,7 +1223,7 @@ bool C4Player::LoadRuntimeData(C4Group &hGroup)
 	// Always compile exact. Exact data will not be present for savegame load, so it does not matter
 	assert(ID);
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkNamingAdapt(mkParAdapt(*this, true), FormatString("Player%i", ID).getData()),
+	      mkNamingAdapt(mkParAdapt(*this, numbers), FormatString("Player%i", ID).getData()),
 	      StdStrBuf(pSource),
 	      Game.GameText.GetFilePath()))
 		return false;

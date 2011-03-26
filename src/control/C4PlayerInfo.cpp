@@ -1567,7 +1567,7 @@ bool C4PlayerInfoList::RecreatePlayerFiles()
 	return true;
 }
 
-bool C4PlayerInfoList::RecreatePlayers()
+bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 {
 	// check all player infos
 	for (int32_t i=0; i<iClientCount; ++i)
@@ -1645,7 +1645,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 					::Control.RecAddFile(szFilename, sFilenameInRecord.getData());
 				}
 				// recreate join directly
-				::Players.Join(szFilename, false, idAtClient, szAtClientName, pInfo);
+				::Players.Join(szFilename, false, idAtClient, szAtClientName, pInfo, numbers);
 				// delete temporary files immediately
 				if (pInfo->IsTempFile()) pInfo->DeleteTempFile();
 			}

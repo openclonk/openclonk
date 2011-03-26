@@ -1823,7 +1823,7 @@ void C4Command::Call()
 	// the latest sync losses in 4.62.
 }
 
-void C4Command::CompileFunc(StdCompiler *pComp)
+void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Version
 	int32_t iVersion = 0;
@@ -1839,13 +1839,13 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkEnumAdaptT<uint8_t>(Command, EnumAdaptCommandEntries));
 	pComp->Separator(StdCompiler::SEP_SEP);
 	// Target X/Y
-	pComp->Value(Tx); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkParAdapt(Tx, numbers)); pComp->Separator(StdCompiler::SEP_SEP);
 	pComp->Value(mkIntPackAdapt(Ty)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Target
 	pComp->Value(Target); pComp->Separator(StdCompiler::SEP_SEP);
 	pComp->Value(Target2); pComp->Separator(StdCompiler::SEP_SEP);
 	// Data
-	pComp->Value(Data); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkParAdapt(Data, numbers)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Update interval
 	pComp->Value(mkIntPackAdapt(UpdateInterval)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Flags
@@ -1882,11 +1882,11 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	}
 }
 
-void C4Command::DenumeratePointers()
+void C4Command::Denumerate(C4ValueNumbers * numbers)
 {
 	Target.DenumeratePointers();
 	Target2.DenumeratePointers();
-	Tx.DenumeratePointer();
+	Tx.Denumerate(numbers);
 }
 
 void C4Command::EnumeratePointers()

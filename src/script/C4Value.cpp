@@ -260,12 +260,12 @@ C4Value C4VString(StdStrBuf Str)
 	return C4Value(::Strings.RegString(Str));
 }
 
-void C4Value::DenumeratePointer()
+void C4Value::Denumerate(class C4ValueNumbers * numbers)
 {
 	// array?
 	if (Type == C4V_Array)
 	{
-		Data.Array->DenumeratePointers();
+		Data.Array->Denumerate(numbers);
 		return;
 	}
 	// object types only
@@ -284,7 +284,7 @@ void C4Value::DenumeratePointer()
 	}
 }
 
-void C4Value::CompileFunc(StdCompiler *pComp)
+void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Type
 	bool fCompiler = pComp->isCompiler();
@@ -341,7 +341,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		{
 			assert(Type == C4V_PropList);
 			pComp->Separator(StdCompiler::SEP_START2);
-			pComp->Value(mkPtrAdapt(Data.PropList, false));
+			pComp->Value(mkParAdapt(mkPtrAdapt(Data.PropList, false), numbers));
 			if (fCompiler) Data.PropList->AddRef(this);
 			pComp->Separator(StdCompiler::SEP_END2);
 			break;
@@ -406,7 +406,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 
 	case C4V_Array:
 		pComp->Separator(StdCompiler::SEP_START2);
-		pComp->Value(mkPtrAdapt(Data.Array, false));
+		pComp->Value(mkParAdapt(mkPtrAdapt(Data.Array, false), numbers));
 		if (fCompiler) Data.Array->IncRef();
 		pComp->Separator(StdCompiler::SEP_END2);
 		break;

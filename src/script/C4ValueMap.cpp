@@ -254,14 +254,14 @@ int32_t C4ValueMapData::GetAnzItems()
 	return pNames->iSize;
 }
 
-void C4ValueMapData::DenumeratePointers()
+void C4ValueMapData::Denumerate(C4ValueNumbers * numbers)
 {
 	if (!pNames) return;
 	for (int32_t i = 0; i < pNames->iSize; i++)
-		pData[i].DenumeratePointer();
+		pData[i].Denumerate(numbers);
 }
 
-void C4ValueMapData::CompileFunc(StdCompiler *pComp)
+void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fCompiler = pComp->isCompiler();
 	if (fCompiler) Reset();
@@ -292,7 +292,7 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 			// Separator ('=')
 			pComp->Separator(StdCompiler::SEP_SET);
 			// Value
-			pComp->Value(pValues[i]);
+			pComp->Value(mkParAdapt(pValues[i], numbers));
 		}
 	}
 	catch (...)

@@ -163,7 +163,7 @@ bool C4Game::InitDefs()
 }
 
 
-bool C4Game::OpenScenario()
+bool C4Game::OpenScenario(C4ValueNumbers * numbers)
 {
 
 	// Scenario from record stream
@@ -269,7 +269,7 @@ bool C4Game::OpenScenario()
 	SetInitProgress(4);
 
 	// Compile runtime data
-	if (!CompileRuntimeData(GameText))
+	if (!CompileRuntimeData(GameText, numbers))
 		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	// If scenario is a directory: Watch for changes
@@ -348,6 +348,7 @@ bool C4Game::PreInit()
 
 bool C4Game::Init()
 {
+	C4ValueNumbers numbers;
 	IsRunning = false;
 
 	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
@@ -423,7 +424,7 @@ bool C4Game::Init()
 
 		// open new scenario
 		SCopy(szScenario, ScenarioFilename, _MAX_PATH);
-		if (!OpenScenario()) return false;
+		if (!OpenScenario(&numbers)) return false;
 		TempScenarioFile = true;
 
 		// get everything else
@@ -442,7 +443,7 @@ bool C4Game::Init()
 	{
 
 		// Open scenario
-		if (!OpenScenario())
+		if (!OpenScenario(&numbers))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 		// init extra; needed for loader screen
@@ -471,7 +472,7 @@ bool C4Game::Init()
 		DebugMode = false;
 
 	// Init game
-	if (!InitGame(ScenarioFile, false, true)) return false;
+	if (!InitGame(ScenarioFile, false, true, &numbers)) return false;
 
 	// Network final init
 	if (Network.isEnabled())
@@ -489,7 +490,7 @@ bool C4Game::Init()
 	}
 
 	// Init players
-	if (!InitPlayers()) return false;
+	if (!InitPlayers(&numbers)) return false;
 	SetInitProgress(98);
 
 	// Final init
@@ -1613,7 +1614,7 @@ void C4Game::Ticks()
 	if (pNetworkStatistics) pNetworkStatistics->ExecuteFrame();
 }
 
-bool C4Game::Compile(const char *szSource)
+bool C4Game::Compile(const char *szSource, C4ValueNumbers * numbers)
 {
 	if (!szSource) return true;
 	// C4Game is not defaulted on compilation.
@@ -1621,14 +1622,14 @@ bool C4Game::Compile(const char *szSource)
 	// Doesn't compile players; those will be done later
 	CompileSettings Settings(false, false, true);
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, Settings),
+	      mkParAdapt(*this, Settings, numbers),
 	      StdStrBuf(szSource),
 	      C4CFN_Game))
 		return false;
 	return true;
 }
 
-void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
+void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers * numbers)
 {
 	if (!comp.fScenarioSection && comp.fExact)
 	{
@@ -1658,7 +1659,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->NameEnd();
 	}
 
-	pComp->Value(mkNamingAdapt(mkInsertAdapt(::GameScript, ScriptEngine),                "Script"));
+	pComp->Value(mkNamingAdapt(mkInsertAdapt(::GameScript, mkParAdapt(ScriptEngine, numbers)),                "Script"));
 
 	if (comp.fExact)
 	{
@@ -1667,7 +1668,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
 	}
 
-	pComp->Value(mkNamingAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), "Effects"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), numbers), "Effects"));
 
 	if (!comp.fScenarioSection && comp.fExact)
 	{
@@ -1686,30 +1687,30 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		// Primary player ininitialization (also setting ID) is done by player info list
 		// Won't work this way for binary mode!
 		for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, comp.fExact), FormatString("Player%d", pPlr->ID).getData()));
+			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, numbers), FormatString("Player%d", pPlr->ID).getData()));
 	}
 }
 
 void SetClientPrefix(char *szFilename, const char *szClient);
 
-bool C4Game::Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact)
+bool C4Game::Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact, C4ValueNumbers * numbers)
 {
 	// Decompile (without players for scenario sections)
-	rBuf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact))));
+	rBuf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers)));
 	return true;
 }
 
-bool C4Game::CompileRuntimeData(C4ComponentHost &rGameData)
+bool C4Game::CompileRuntimeData(C4ComponentHost &rGameData, C4ValueNumbers * numbers)
 {
 	// Compile
-	if (!Compile(rGameData.GetData())) return false;
+	if (!Compile(rGameData.GetData(), numbers)) return false;
 	// Music System: Set play list
 	Application.MusicSystem.SetPlayList(PlayList.getData());
 	// Success
 	return true;
 }
 
-bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact)
+bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers * numbers)
 {
 
 	// Enumerate pointers & strings
@@ -1721,15 +1722,15 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fS
 
 	// Decompile
 	StdStrBuf Buf;
-	if (!Decompile(Buf,fSaveSection,fSaveExact))
+	if (!Decompile(Buf,fSaveSection,fSaveExact, numbers))
 		return false;
 
 	// Denumerate pointers, if game is in denumerated state
 	if (PointersDenumerated)
 	{
-		ScriptEngine.DenumerateVariablePointers();
+		ScriptEngine.Denumerate(numbers);
 		Players.DenumeratePointers();
-		if (pGlobalEffects) pGlobalEffects->DenumeratePointers();
+		if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 	}
 
 	// Initial?
@@ -2023,7 +2024,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	return true;
 }
 
-bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
+bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers * numbers)
 {
 	if (!fLoadSection)
 	{
@@ -2140,7 +2141,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	if (!fLoadSection) InitValueOverloads();
 
 	// Load objects
-	int32_t iObjects=Objects.Load(hGroup, fLoadSection);
+	int32_t iObjects=Objects.Load(hGroup, fLoadSection, numbers);
 	if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
 	SetInitProgress(93);
 
@@ -2159,8 +2160,8 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	}
 
 	// Denumerate game data pointers
-	if (!fLoadSection) ScriptEngine.DenumerateVariablePointers();
-	if (!fLoadSection && pGlobalEffects) pGlobalEffects->DenumeratePointers();
+	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
+	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
@@ -2299,7 +2300,7 @@ bool C4Game::LinkScriptEngine()
 }
 
 
-bool C4Game::InitPlayers()
+bool C4Game::InitPlayers(C4ValueNumbers * numbers)
 {
 	int32_t iPlrCnt = 0;
 
@@ -2314,7 +2315,7 @@ bool C4Game::InitPlayers()
 		if (!LocalRestorePlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate the files
-		if (!LocalRestorePlayerInfos.RecreatePlayers())
+		if (!LocalRestorePlayerInfos.RecreatePlayers(numbers))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRNETRECR")); return false; }
 	}
 	else if (RestorePlayerInfos.GetActivePlayerCount(true))
@@ -2333,7 +2334,7 @@ bool C4Game::InitPlayers()
 		if (!PlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate players by joining all players whose joined-flag is already set
-		if (!PlayerInfos.RecreatePlayers())
+		if (!PlayerInfos.RecreatePlayers(numbers))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRSAVERECR")); return false; }
 	}
 
@@ -2842,7 +2843,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	assert(pInfo);
 	C4Player *pPlr;
 	// Join
-	if (!( pPlr = Players.Join(szFilename,true,iAtClient,szAtClientName, pInfo) )) return NULL;
+	if (!( pPlr = Players.Join(szFilename,true,iAtClient,szAtClientName, pInfo, NULL) )) return NULL;
 	// Player final init
 	pPlr->FinalInit(true);
 	// Create player viewport
@@ -3281,8 +3282,9 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		// store objects
 		if (dwFlags & C4S_SAVE_OBJECTS)
 		{
+			C4ValueNumbers numbers;
 			// objects: do not save info objects or inactive objects
-			if (!Objects.Save(*pGrp,false,false))
+			if (!Objects.Save(*pGrp,false,false, &numbers))
 			{
 				DebugLog("LoadScenarioSection: Error saving objects");
 				return false;
@@ -3331,7 +3333,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// determine whether a new sky has to be loaded
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// re-init game in new section
-	if (!InitGame(*pGrp, true, fLoadNewSky))
+	C4ValueNumbers numbers;
+	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
 	{
 		DebugLog("LoadScenarioSection: Error reiniting game");
 		return false;

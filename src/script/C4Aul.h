@@ -550,11 +550,11 @@ public:
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
 
-	bool DenumerateVariablePointers();
+	bool Denumerate(C4ValueNumbers *);
 	void UnLink(); // called when a script is being reloaded (clears string table)
 
 	// Compile scenario script data (without strings and constants)
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 
 	friend class C4AulFunc;
 	friend class C4AulParseState;

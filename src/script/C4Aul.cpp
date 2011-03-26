@@ -499,18 +499,18 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 	return true;
 }
 
-bool C4AulScriptEngine::DenumerateVariablePointers()
+bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
-	GlobalNamed.DenumeratePointers();
+	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
 	return true;
 }
 
-void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
+void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
-	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));
+	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "GlobalNamed", GlobalNamedDefault));
 }
 
 std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)

@@ -505,79 +505,72 @@ bool C4ObjectList::Write(char *szTarget)
 	return true;
 }
 
-void C4ObjectList::Denumerate()
+void C4ObjectList::Denumerate(C4ValueNumbers * numbers)
 {
 	C4ObjectLink *cLnk;
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
-			cLnk->Obj->DenumeratePointers();
+			cLnk->Obj->Denumerate(numbers);
 }
 
-void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSaveRefs, bool fSkipPlayerObjects)
+void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers * numbers)
 {
-	if (fSaveRefs)
+	// "Object" section count
+	int32_t iObjCnt = ObjectCount();
+	pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
+	if (pComp->isDecompiler())
 	{
-		// this mode not supported
-		assert(!fSkipPlayerObjects);
-		// (Re)create list
-		delete pEnumerated; pEnumerated = new std::list<int32_t>();
-		// Decompiling: Build list
-		if (!pComp->isCompiler())
-			for (C4ObjectLink *pPos = First; pPos; pPos = pPos->Next)
-				if (pPos->Obj->Status)
-					pEnumerated->push_back(pPos->Obj->Number);
-		// Compile list
-		pComp->Value(mkSTLContainerAdapt(*pEnumerated, StdCompiler::SEP_SEP2));
-		// Decompiling: Delete list
-		if (!pComp->isCompiler())
-			{ delete pEnumerated; pEnumerated = NULL; }
-		// Compiling: Nothing to do - list will e denumerated later
+		// skipping player objects would screw object counting in non-naming compilers
+		assert(!fSkipPlayerObjects || pComp->hasNaming());
+		// Decompile all objects in reverse order
+		for (C4ObjectLink *pPos = Last; pPos; pPos = pPos->Prev)
+			if (pPos->Obj->Status)
+				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
+					pComp->Value(mkNamingAdapt(mkParAdapt(*pPos->Obj, numbers), "Object"));
 	}
 	else
 	{
-		if (pComp->isDecompiler())
+		// this mode not supported
+		assert(!fSkipPlayerObjects);
+		// Remove previous data
+		Clear();
+		// Load objects, add them to the list.
+		for (int i = 0; i < iObjCnt; i++)
 		{
-			// skipping player objects would screw object counting in non-naming compilers
-			assert(!fSkipPlayerObjects || pComp->hasNaming());
-			// Put object count
-			int32_t iObjCnt = ObjectCount();
-			pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
-			// Decompile all objects in reverse order
-			for (C4ObjectLink *pPos = Last; pPos; pPos = pPos->Prev)
-				if (pPos->Obj->Status)
-					if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
-						pComp->Value(mkNamingAdapt(*pPos->Obj, "Object"));
-		}
-		else
-		{
-			// this mode not supported
-			assert(!fSkipPlayerObjects);
-			// Remove previous data
-			Clear();
-			// Get "Object" section count
-			int32_t iObjCnt;
-			pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
-			// Load objects, add them to the list.
-			for (int i = 0; i < iObjCnt; i++)
+			C4Object *pObj = NULL;
+			try
 			{
-				C4Object *pObj = NULL;
-				try
-				{
-					pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pObj), "Object"));
-					Add(pObj, stReverse);
-				}
-				catch (StdCompiler::Exception *pExc)
-				{
-					// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-					if (!pExc->Pos.getLength())
-						LogF("ERROR: Object loading: %s", pExc->Msg.getData());
-					else
-						LogF("ERROR: Object loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-					delete pExc;
-				}
+				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pObj), numbers), "Object"));
+				Add(pObj, stReverse);
+			}
+			catch (StdCompiler::Exception *pExc)
+			{
+				// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
+				if (!pExc->Pos.getLength())
+					LogF("ERROR: Object loading: %s", pExc->Msg.getData());
+				else
+					LogF("ERROR: Object loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
+				delete pExc;
 			}
 		}
 	}
+}
+
+void C4ObjectList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
+{
+	// (Re)create list
+	delete pEnumerated; pEnumerated = new std::list<int32_t>();
+	// Decompiling: Build list
+	if (!pComp->isCompiler())
+		for (C4ObjectLink *pPos = First; pPos; pPos = pPos->Next)
+			if (pPos->Obj->Status)
+				pEnumerated->push_back(pPos->Obj->Number);
+	// Compile list
+	pComp->Value(mkSTLContainerAdapt(*pEnumerated, StdCompiler::SEP_SEP2));
+	// Decompiling: Delete list
+	if (!pComp->isCompiler())
+		{ delete pEnumerated; pEnumerated = NULL; }
+	// Compiling: Nothing to do - list will be denumerated later
 }
 
 StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs)
@@ -866,10 +859,11 @@ void C4ObjectList::UpdateScriptPointers()
 struct C4ObjectListDumpHelper
 {
 	C4ObjectList *pLst;
+	C4ValueNumbers * numbers;
 
-	void CompileFunc(StdCompiler *pComp) { pComp->Value(mkNamingAdapt(*pLst, "Objects")); }
+	void CompileFunc(StdCompiler *pComp) { pComp->Value(mkNamingAdapt(mkParAdapt(*pLst, numbers), "Objects")); }
 
-	C4ObjectListDumpHelper(C4ObjectList *pLst) : pLst(pLst) {}
+	C4ObjectListDumpHelper(C4ObjectList *pLst, C4ValueNumbers * numbers) : pLst(pLst), numbers(numbers) {}
 	ALLOW_TEMP_TO_REF(C4ObjectListDumpHelper)
 };
 
@@ -881,8 +875,9 @@ bool C4ObjectList::CheckSort(C4ObjectList *pList)
 		if (!cLnk2)
 		{
 			Log("CheckSort failure");
-			LogSilent(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(C4ObjectListDumpHelper(this), "SectorList")).getData());
-			LogSilent(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(C4ObjectListDumpHelper(pList), "MainList")).getData());
+			C4ValueNumbers numbers;
+			LogSilent(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(C4ObjectListDumpHelper(this, &numbers), "SectorList")).getData());
+			LogSilent(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(C4ObjectListDumpHelper(pList, &numbers), "MainList")).getData());
 			return false;
 		}
 		else

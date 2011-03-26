@@ -133,7 +133,7 @@ bool C4PlayerInfoCore::CheckPromotion(C4RankSystem &rRanks)
 
 void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 {
-
+	C4ValueNumbers numbers;
 	pComp->Name("Player");
 	pComp->Value(mkNamingAdapt(toC4CStr(PrefName),"Name",                 "Neuling"));
 	pComp->Value(mkNamingAdapt(toC4CStr(Comment), "Comment",              ""));
@@ -144,7 +144,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RoundsWon,         "RoundsWon",            0));
 	pComp->Value(mkNamingAdapt(RoundsLost,        "RoundsLost",           0));
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,  "TotalPlayingTime",     0));
-	pComp->Value(mkNamingAdapt(ExtraData,         "ExtraData",            C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
 	pComp->Value(mkNamingAdapt(toC4CStr(LeagueName),"LeagueName",         ""));
 	pComp->NameEnd();
 
@@ -302,6 +302,7 @@ bool C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
 
 void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 {
+	C4ValueNumbers numbers;
 	pComp->Value(mkNamingAdapt(id,          "id",               C4ID::None));
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),          "Name",             "Clonk"));
 	pComp->Value(mkNamingAdapt(toC4CStr(DeathMessage),  "DeathMessage",     ""));
@@ -318,7 +319,7 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Birthday,                "Birthday",         0));
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,        "TotalPlayingTime", 0));
 	pComp->Value(mkNamingAdapt(Age,                     "Age",              0));
-	pComp->Value(mkNamingAdapt(ExtraData,               "ExtraData",        C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
 }
 
 bool C4ObjectInfoCore::Compile(const char *szSource)

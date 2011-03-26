@@ -58,7 +58,7 @@ public:
 	C4Player *GetAtClient(const char *szName, int iIndex=0) const;
 	C4Player *GetAtRemoteClient(int iIndex=0) const;
 	C4Player *GetByInfoID(int iInfoID) const;
-	C4Player *Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo);
+	C4Player *Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo, C4ValueNumbers *);
 	bool CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName);
 	bool CtrlJoin(const class C4Network2ResCore &ResCore, int iClientID, int idPlayerInfo);
 	bool FileInUse(const char *szFilename) const;

@@ -148,7 +148,7 @@ public:
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
 	const char *GetTypeInfo();
 
-	void DenumeratePointer();
+	void Denumerate(C4ValueNumbers *);
 
 	StdStrBuf GetDataString() const;
 
@@ -170,7 +170,7 @@ public:
 	}
 
 	// Compilation
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 
 	static inline bool IsNullableType(C4V_Type Type)
 	{ return Type == C4V_Int || Type == C4V_Bool; }
@@ -218,6 +218,10 @@ C4Value C4VString(const char *strString);
 #define C4VTrue C4VBool(true)
 
 extern const C4Value C4VNull;
+
+class C4ValueNumbers
+{
+};
 
 /* These are by far the most often called C4Value functions.
  They also often do redundant checks the compiler should be able to optimize away

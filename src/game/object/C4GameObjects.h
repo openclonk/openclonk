@@ -36,7 +36,7 @@ public:
 	void Init(int32_t iWidth, int32_t iHeight);
 	void Clear(bool fClearInactive); // clear objects
 	void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
-	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects = false);
+	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers *);
 
 public:
 	C4LSectors Sectors; // section object lists
@@ -59,8 +59,8 @@ public:
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
-	int Load(C4Group &hGroup, bool fKeepInactive);
-	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive);
+	int Load(C4Group &hGroup, bool fKeepInactive, C4ValueNumbers *);
+	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive, C4ValueNumbers *);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest);  // call function in all goals/rules/environment objects

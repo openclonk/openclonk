@@ -407,7 +407,7 @@ public:
 	bool LocalJoinUnjoinedPlayersInQueue(); // join all unjoined players to local input queue
 	int32_t GetStartupCount();              // get number of players already joined and to be joined
 	void CreateRestoreInfosForJoinedScriptPlayers(C4PlayerInfoList &rSavegamePlayers); // create matching script player joins for all script playeers in restore info
-	bool RecreatePlayers();                 // directly join all players whose join-flag is set
+	bool RecreatePlayers(C4ValueNumbers *); // directly join all players whose join-flag is set
 	bool RecreatePlayerFiles();             // update player source files
 	bool RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers); // recreate this list from rSavegamePlayers for host/single games; just merge associated infos
 	bool SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fSaveUserPlrs, bool fSaveScriptPlrs, bool fSetUserPlrRefToLocalGroup, bool fSetScriptPlrRefToLocalGroup); // copy all joined players from player list

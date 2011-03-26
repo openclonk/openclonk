@@ -425,6 +425,18 @@ struct StdParameterAdapt
 template <class T, class P>
 inline StdParameterAdapt<T, P> mkParAdapt(T RREF rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
 
+// for mkArrayAdaptMap
+template <class P>
+struct StdParameterAdaptMaker
+{
+	const P Par;
+	StdParameterAdaptMaker(const P &rPar) : Par(rPar) { }
+	template <class T>
+	StdParameterAdapt<T, P> operator ()(T &rObj) const { return StdParameterAdapt<T, P>(rObj, Par); }
+};
+template <class P>
+inline StdParameterAdaptMaker<P> mkParAdaptMaker(const P &rPar) { return StdParameterAdaptMaker<P>(rPar); }
+
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
 template <class T, class P1, class P2>

@@ -144,14 +144,12 @@ C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, i
 	return pEffect;
 }
 
-C4Effect::C4Effect(StdCompiler *pComp)
+C4Effect::C4Effect()
 {
 	// defaults
 	iPriority=iTime=iInterval=0;
 	CommandTarget=NULL;
 	pNext = NULL;
-	// compile
-	pComp->Value(*this);
 }
 
 C4Effect::~C4Effect()
@@ -179,7 +177,7 @@ void C4Effect::EnumeratePointers()
 	while ((pEff=pEff->pNext));
 }
 
-void C4Effect::DenumeratePointers()
+void C4Effect::Denumerate(C4ValueNumbers * numbers)
 {
 	// denum in all effects
 	C4Effect *pEff = this;
@@ -189,7 +187,7 @@ void C4Effect::DenumeratePointers()
 		pEff->CommandTarget.DenumeratePointers();
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
-		pEff->C4PropList::DenumeratePointers();
+		pEff->C4PropList::Denumerate(numbers);
 	}
 	while ((pEff=pEff->pNext));
 }
@@ -488,7 +486,7 @@ void C4Effect::TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect)
 	}
 }
 
-void C4Effect::CompileFunc(StdCompiler *pComp)
+void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// read name
 	pComp->Separator(StdCompiler::SEP_START); // '('
@@ -502,7 +500,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	// read ID
 	pComp->Value(idCommandTarget); pComp->Separator();
 	// proplist
-	C4PropListNumbered::CompileFuncNonames(pComp);
+	C4PropListNumbered::CompileFuncNonames(pComp, numbers);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
 	// is there a next effect?
 	bool fNext = !! pNext;
@@ -515,7 +513,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 		pComp->Value(fNext);
 	if (!fNext) return;
 	// read next
-	pComp->Value(mkPtrAdapt(pNext, false));
+	pComp->Value(mkParAdapt(mkPtrAdaptNoNull(pNext), numbers));
 	// denumeration and callback assignment will be done later
 }
 

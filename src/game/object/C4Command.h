@@ -101,8 +101,8 @@ public:
 	void ClearPointers(C4Object *pObj);
 	void Default();
 	void EnumeratePointers();
-	void DenumeratePointers();
-	void CompileFunc(StdCompiler *pComp);
+	void Denumerate(C4ValueNumbers *);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 protected:
 	void Call();
 	void Home();

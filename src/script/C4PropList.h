@@ -39,7 +39,7 @@ public:
 	C4Property & operator = (const C4Property &o)
 	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
 	~C4Property() { if (Key) Key->DecRef(); }
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;
 	C4Value Value;
 	operator const void * () const { return Key; }
@@ -93,11 +93,11 @@ public:
 	void Freeze() { constant = true; }
 	bool IsFrozen() const { return constant; }
 
-	virtual void DenumeratePointers();
+	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();
 
 	// Every proplist has to be initialized by either Init or CompileFunc.
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void AppendDataString(StdStrBuf * out, const char * delim);
 
 	bool operator==(const C4PropList &b) const;
@@ -113,11 +113,11 @@ private:
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
-
-	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
 public:
 	int32_t Status;
 };
+
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
 
 // Proplists that are created during a game and get saved in a savegame
 // Examples: Objects, Effects, scriptcreated proplists
@@ -126,8 +126,8 @@ class C4PropListNumbered: public C4PropList
 public:
 	int32_t Number;
 	~C4PropListNumbered();
-	void CompileFunc(StdCompiler *pComp);
-	void CompileFuncNonames(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	void CompileFuncNonames(StdCompiler *pComp, C4ValueNumbers *);
 	virtual C4PropListNumbered * GetPropListNumbered();
 	void AcquireNumber();
 

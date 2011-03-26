@@ -251,7 +251,7 @@ public:
 	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);
 protected:
-	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky);
+	bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers *);
 	bool InitGameFinal();
 	bool InitNetworkFromAddress(const char *szAddress);
 	bool InitNetworkFromReference(const C4Network2Reference &Reference);
@@ -261,20 +261,20 @@ protected:
 	bool InitControl();
 	bool InitScriptEngine();
 	bool LinkScriptEngine();
-	bool InitPlayers();
+	bool InitPlayers(C4ValueNumbers *);
 	bool InitRecord();
-	bool OpenScenario();
+	bool OpenScenario(C4ValueNumbers *);
 	bool InitDefs();
 	bool InitMaterialTexture();
 	bool GameOverCheck();
 	bool PlaceInEarth(C4ID id);
-	bool Compile(const char *szSource);
-	bool Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact);
+	bool Compile(const char *szSource, C4ValueNumbers *);
+	bool Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact, C4ValueNumbers *);
 public:
-	void CompileFunc(StdCompiler *pComp, CompileSettings comp);
-	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact);
+	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
+	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4ComponentHost &rGameData);
+	bool CompileRuntimeData(C4ComponentHost &rGameData, C4ValueNumbers *);
 	bool StoreParticipantPlayers();
 	bool RecreatePlayerFiles();
 
