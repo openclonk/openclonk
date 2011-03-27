@@ -37,14 +37,13 @@ enum C4V_Type
 	C4V_Array=6,
 
 	C4V_C4ObjectEnum=9, // enumerated object
-	C4V_C4DefEnum=10 // enumerated object
+	C4V_C4DefEnum=10, // enumerated definition
+	C4V_Enum=11 // enumerated array or proplist
 };
 
 #define C4V_Last (int) C4V_Array
 
 const char* GetC4VName(const C4V_Type Type);
-char GetC4VID(const C4V_Type Type);
-C4V_Type GetC4VFromID(char C4VID);
 
 union C4V_Data
 {
@@ -197,10 +196,6 @@ protected:
 	bool FnCnvObject() const;
 
 	friend class C4PropList;
-	friend class C4AulDefFunc;
-	friend class C4AulExec;
-	friend C4Value C4VInt(int32_t iVal);
-	friend C4Value C4VBool(bool fVal);
 };
 
 // converter
@@ -219,8 +214,21 @@ C4Value C4VString(const char *strString);
 
 extern const C4Value C4VNull;
 
+// C4Values can contain data structures that have to maintain their
+// identity across a save/load. During serialization, these get a number
 class C4ValueNumbers
 {
+public:
+	C4ValueNumbers() {}
+	uint32_t GetNumberForValue(C4Value * v);
+	const C4Value & GetValue(uint32_t);
+	void Denumerate();
+	void CompileFunc(StdCompiler *);
+	void CompileValue(StdCompiler *, C4Value *);
+private:
+	std::list<C4Value *> ValuesToSave;
+	std::vector<C4Value> LoadedValues;
+	std::map<void *, uint32_t> ValueNumbers;
 };
 
 /* These are by far the most often called C4Value functions.

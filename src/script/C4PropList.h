@@ -63,8 +63,9 @@ public:
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
 
-	// Whether this proplist should be saved as a reference to a C4Def
+	// Whether this proplist should be saved as a reference to a C4Def/C4Object
 	virtual bool IsDef() const { return false; }
+	virtual bool IsNumbered() const { return false; }
 	// Whether this proplist is a pure script proplist, not a host object
 	virtual bool IsScriptPropList() { return false; }
 
@@ -126,14 +127,14 @@ class C4PropListNumbered: public C4PropList
 public:
 	int32_t Number;
 	~C4PropListNumbered();
-	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
-	void CompileFuncNonames(StdCompiler *pComp, C4ValueNumbers *);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 	virtual C4PropListNumbered * GetPropListNumbered();
 	void AcquireNumber();
+	virtual bool IsNumbered() const { return true; }
 
 	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
 	static bool CheckPropList(C4PropList *); // sanity check: true when the proplist is in the list and not a stale pointer
-	static void DenumerateAll(int32_t iMaxObjectNumber);
+	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
 protected:
@@ -146,19 +147,12 @@ protected:
 };
 
 // Proplists created by script at runtime
-class C4PropListScript: public C4PropListNumbered
+class C4PropListScript: public C4PropList
 {
 public:
-	C4PropListScript(C4PropList * prototype = 0): C4PropListNumbered(prototype) { }
+	C4PropListScript(C4PropList * prototype = 0): C4PropList(prototype) { }
 	bool IsScriptPropList() { return true; }
 };
 
-// Proplist constants
-class C4PropListAnonScript: public C4PropList
-{
-public:
-	C4PropListAnonScript(C4PropList * prototype = 0): C4PropList(prototype) { }
-	bool IsScriptPropList() { return true; }
-};
 
 #endif // C4PROPLIST_H

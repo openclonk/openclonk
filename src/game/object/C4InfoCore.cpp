@@ -145,6 +145,12 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RoundsLost,        "RoundsLost",           0));
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,  "TotalPlayingTime",     0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(numbers,           "ExtraDataValues"));
+	if (pComp->isCompiler())
+	{
+		numbers.Denumerate();
+		ExtraData.Denumerate(&numbers);
+	}
 	pComp->Value(mkNamingAdapt(toC4CStr(LeagueName),"LeagueName",         ""));
 	pComp->NameEnd();
 
@@ -320,6 +326,12 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,        "TotalPlayingTime", 0));
 	pComp->Value(mkNamingAdapt(Age,                     "Age",              0));
 	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(numbers,                 "ExtraDataValues"));
+	if (pComp->isCompiler())
+	{
+		numbers.Denumerate();
+		ExtraData.Denumerate(&numbers);
+	}
 }
 
 bool C4ObjectInfoCore::Compile(const char *szSource)

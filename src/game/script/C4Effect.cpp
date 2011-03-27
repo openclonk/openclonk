@@ -500,7 +500,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// read ID
 	pComp->Value(idCommandTarget); pComp->Separator();
 	// proplist
-	C4PropListNumbered::CompileFuncNonames(pComp, numbers);
+	C4PropListNumbered::CompileFunc(pComp, numbers);
 	pComp->Separator(StdCompiler::SEP_END); // ')'
 	// is there a next effect?
 	bool fNext = !! pNext;

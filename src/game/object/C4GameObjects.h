@@ -36,7 +36,6 @@ public:
 	void Init(int32_t iWidth, int32_t iHeight);
 	void Clear(bool fClearInactive); // clear objects
 	void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
-	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers *);
 
 public:
 	C4LSectors Sectors; // section object lists

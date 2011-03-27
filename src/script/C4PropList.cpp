@@ -53,14 +53,13 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 
 C4PropList * C4PropList::New(C4PropList * prototype)
 {
-	C4PropListNumbered * r = new C4PropListScript(prototype);
-	r->AcquireNumber();
+	C4PropList * r = new C4PropListScript(prototype);
 	return r;
 }
 
 C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 {
-	C4PropList * r = new C4PropListAnonScript(prototype);
+	C4PropList * r = new C4PropListScript(prototype);
 	return r;
 }
 
@@ -85,10 +84,8 @@ bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
 	return false;
 }
 
-void C4PropListNumbered::DenumerateAll(int32_t iMaxObjectNumber)
+void C4PropListNumbered::SetEnumerationIndex(int32_t iMaxObjectNumber)
 {
-	for (C4PropListNumbered * const * ppPropList = PropLists.First(); ppPropList; ppPropList = PropLists.Next(ppPropList))
-		if ((*ppPropList)->IsScriptPropList()) (*ppPropList)->Denumerate(0);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
 	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
 }
@@ -119,26 +116,9 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	// reuse C4PropList::CompileFunc(pComp);
-	pComp->Value(mkNamingAdapt(mkParAdapt(static_cast<C4PropList&>(*this), numbers), "Properties"));
-	pComp->Value(mkNamingAdapt(Number, "Number"));
-	if (pComp->isCompiler())
-	{
-		if (PropLists.Get(Number))
-		{
-			pComp->excCorrupt("multiple PropLists with Number %d", Number);
-			return;
-		}
-		PropLists.Add(this);
-	}
-}
-
-void C4PropListNumbered::CompileFuncNonames(StdCompiler *pComp, C4ValueNumbers * numbers)
-{
 	pComp->Value(Number);
-	pComp->Separator();
-	// reuse C4PropList::CompileFunc(pComp);
-	pComp->Value(mkParAdapt(static_cast<C4PropList&>(*this), numbers));
+	pComp->Separator(StdCompiler::SEP_SEP2);
+	C4PropList::CompileFunc(pComp, numbers);
 	if (pComp->isCompiler())
 	{
 		if (PropLists.Get(Number))
@@ -219,6 +199,8 @@ bool C4PropList::operator==(const C4PropList &b) const
 
 void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
+	pComp->Value(constant);
+	pComp->Separator(StdCompiler::SEP_SEP2);
 	pComp->Value(mkParAdapt(Properties, numbers));
 }
 
@@ -262,7 +244,7 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 				break;
 			}
 		}
-		while (pComp->Separator(StdCompiler::SEP_SEP2));
+		while (pComp->Separator(StdCompiler::SEP_SEP));
 	}
 	else
 	{
@@ -278,7 +260,7 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		{
 			pComp->Value(mkParAdapt(*const_cast<T *>(p), numbers));
 			p = Next(p);
-			if (p) pComp->Separator(StdCompiler::SEP_SEP2);
+			if (p) pComp->Separator(StdCompiler::SEP_SEP);
 		}
 	}
 }

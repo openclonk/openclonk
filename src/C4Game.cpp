@@ -1674,6 +1674,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(::GameScript);
 		pComp->Value(mkParAdapt(ScriptEngine, numbers));
 	}
+	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 	pComp->NameEnd();
 }
 
@@ -2165,6 +2166,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	// Denumerate game data pointers
 	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
 	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
+	numbers->Denumerate();
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;

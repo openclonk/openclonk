@@ -59,80 +59,6 @@ void C4GameObjects::Init(int32_t iWidth, int32_t iHeight)
 	Sectors.Init(iWidth, iHeight);
 }
 
-
-void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers * numbers)
-{
-	// "Object" section count
-	int32_t iObjCnt = ObjectCount();
-	pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
-	// "Def" section count
-	//int32_t iDefCnt = ::Definitions.GetDefCount();
-	//pComp->Value(mkNamingCountAdapt(iDefCnt, "Def"));
-	// "PropList" section count
-	int32_t iPropListCnt = C4PropListNumbered::PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
-	pComp->Value(mkNamingCountAdapt(iPropListCnt, "PropList"));
-	// skipping player objects would screw object counting in non-naming compilers
-	assert(!fSkipPlayerObjects || pComp->hasNaming());
-	if (pComp->isDecompiler())
-	{
-		// Decompile all objects in reverse order
-		for (C4ObjectLink *pPos = Last; pPos; pPos = pPos->Prev)
-			if (pPos->Obj->Status)
-				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
-					pComp->Value(mkNamingAdapt(mkParAdapt(*pPos->Obj, numbers), "Object"));
-		for (C4PropListNumbered * const * ppPropList = C4PropListNumbered::PropLists.First(); ppPropList; ppPropList = C4PropListNumbered::PropLists.Next(ppPropList))
-			if ((*ppPropList)->IsScriptPropList())
-			{
-				pComp->Value(mkNamingAdapt(mkParAdapt(**ppPropList, numbers), "PropList"));
-			}
-	}
-	else
-	{
-		// this mode not supported
-		assert(!fSkipPlayerObjects);
-		// Remove previous data
-		Clear();
-		//assert(C4PropListNumbered::PropLists.GetSize() == ::Definitions.GetDefCount());
-		// Load objects, add them to the list.
-		for (int i = 0; i < iObjCnt; i++)
-		{
-			C4Object *pObj = NULL;
-			try
-			{
-				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pObj), numbers), "Object"));
-				C4ObjectList::Add(pObj, stReverse);
-			}
-			catch (StdCompiler::Exception *pExc)
-			{
-				// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-				if (!pExc->Pos.getLength())
-					LogF("ERROR: Object loading: %s", pExc->Msg.getData());
-				else
-					LogF("ERROR: Object loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-				delete pExc;
-			}
-		}
-		// Load proplists
-		for (int i = 0; i < iPropListCnt; i++)
-		{
-			C4PropListScript *pPropList = NULL;
-			try
-			{
-				pComp->Value(mkNamingAdapt(mkParAdapt(mkPtrAdaptNoNull(pPropList), numbers), "PropList"));
-			}
-			catch (StdCompiler::Exception *pExc)
-			{
-				// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-				if (!pExc->Pos.getLength())
-					LogF("ERROR: PropList loading: %s", pExc->Msg.getData());
-				else
-					LogF("ERROR: PropList loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-				delete pExc;
-			}
-		}
-	}
-}
-
 bool C4GameObjects::Add(C4Object *nObj)
 {
 	// add inactive objects to the inactive list only
@@ -335,7 +261,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// denumerate pointers
 	Denumerate(numbers);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
-	C4PropListNumbered::DenumerateAll(iMaxObjectNumber);
+	C4PropListNumbered::SetEnumerationIndex(iMaxObjectNumber);
 	// end faking and adjust object numbers
 	if (fObjectNumberCollision)
 	{

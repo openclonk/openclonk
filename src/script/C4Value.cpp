@@ -56,59 +56,6 @@ const char* GetC4VName(const C4V_Type Type)
 	}
 }
 
-char GetC4VID(const C4V_Type Type)
-{
-	switch (Type)
-	{
-	case C4V_Any:
-		return 'A';
-	case C4V_Int:
-		return 'i';
-	case C4V_Bool:
-		return 'b';
-	case C4V_PropList:
-		return 'p';
-	case C4V_C4Object:
-	case C4V_C4ObjectEnum:
-		return 'O';
-	case C4V_String:
-		return 's';
-	case C4V_C4DefEnum:
-		return 'D';
-	case C4V_Array:
-		return 'a';
-	default:
-		assert(false);
-	}
-	return ' ';
-}
-
-C4V_Type GetC4VFromID(const char C4VID)
-{
-	switch (C4VID)
-	{
-	case 'A':
-		return C4V_Any;
-	case 'i':
-		return C4V_Int;
-	case 'b':
-		return C4V_Bool;
-	case 'o':
-		return C4V_C4Object;
-	case 's':
-		return C4V_String;
-	case 'O':
-		return C4V_C4ObjectEnum;
-	case 'D':
-		return C4V_C4DefEnum;
-	case 'a':
-		return C4V_Array;
-	case 'p':
-		return C4V_PropList;
-	}
-	return C4V_Any;
-}
-
 const char* C4Value::GetTypeInfo()
 {
 	return GetC4VName(GetType());
@@ -260,28 +207,110 @@ C4Value C4VString(StdStrBuf Str)
 	return C4Value(::Strings.RegString(Str));
 }
 
+const C4Value & C4ValueNumbers::GetValue(uint32_t n)
+{
+	if (n < LoadedValues.size())
+		return LoadedValues[n];
+	LogF("ERROR: Value number %d is missing.", n);
+	return C4VNull;
+}
+
 void C4Value::Denumerate(class C4ValueNumbers * numbers)
 {
-	// array?
-	if (Type == C4V_Array)
+	switch (Type)
 	{
-		Data.Array->Denumerate(numbers);
-		return;
+	case C4V_Enum:
+		Set(numbers->GetValue(Data.Int)); break;
+	case C4V_Array:
+		Data.Array->Denumerate(numbers); break;
+	case C4V_PropList:
+		// objects and effects are denumerated via the main object list
+		if (!Data.PropList->IsNumbered() && !Data.PropList->IsDef())
+			Data.PropList->Denumerate(numbers);
+		break;
+	case C4V_C4ObjectEnum:
+		{
+			C4PropList *pObj = C4PropListNumbered::GetByNumber(Data.Int);
+			if (pObj)
+				// set
+				SetPropList(pObj);
+			else
+			{
+				// object: invalid value - set to zero
+				LogF("ERROR: Object number %d is missing.", int(Data.Int));
+				Set0();
+			}
+		}
+	default: break;
 	}
-	// object types only
-	if (Type != C4V_C4ObjectEnum) return;
-	// get obj id, search object
-	int iObjID = Data.Int;
-	C4PropList *pObj = C4PropListNumbered::GetByNumber(iObjID);
-	if (pObj)
-		// set
-		SetPropList(pObj);
-	else
+}
+
+void C4ValueNumbers::Denumerate()
+{
+	for (std::vector<C4Value>::iterator i = LoadedValues.begin(); i != LoadedValues.end(); ++i)
+		i->Denumerate(this);
+}
+
+uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
+{
+	// This is only used for C4Values containing pointers
+	// Assume that all pointers have the same size
+	if (ValueNumbers.find(v->_getObj()) == ValueNumbers.end())
 	{
-		// object: invalid value - set to zero
-		LogF("ERROR: Object number %d is missing.", iObjID);
-		Set0();
+		ValuesToSave.push_back(v);
+		ValueNumbers[v->_getObj()] = ValuesToSave.size() - 1;
+		return ValuesToSave.size() - 1;
 	}
+	return ValueNumbers[v->_getObj()];
+}
+
+static char GetC4VID(const C4V_Type Type)
+{
+	switch (Type)
+	{
+	case C4V_Any:
+		return 'n';
+	case C4V_Int:
+		return 'i';
+	case C4V_Bool:
+		return 'b';
+	case C4V_PropList:
+	case C4V_Array:
+	case C4V_Enum:
+		return 'E';
+	case C4V_C4Object:
+	case C4V_C4ObjectEnum:
+		return 'O';
+	case C4V_String:
+		return 's';
+	case C4V_C4DefEnum:
+		return 'D';
+	default:
+		assert(false);
+	}
+	return ' ';
+}
+
+static C4V_Type GetC4VFromID(const char C4VID)
+{
+	switch (C4VID)
+	{
+	case 'n':
+		return C4V_Any;
+	case 'i':
+		return C4V_Int;
+	case 'b':
+		return C4V_Bool;
+	case 's':
+		return C4V_String;
+	case 'O':
+		return C4V_C4ObjectEnum;
+	case 'D':
+		return C4V_C4DefEnum;
+	case 'E':
+		return C4V_Enum;
+	}
+	return C4V_Any;
 }
 
 void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
@@ -293,10 +322,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// Get type
 		assert(Type != C4V_Any || !Data);
 		char cC4VID = GetC4VID(Type);
-		// special case proplists
+		// special cases:
 		if (Type == C4V_PropList && getPropList()->IsDef())
 			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if (Type == C4V_PropList && !getPropList()->IsFrozen())
+		else if (Type == C4V_PropList && getPropList()->IsNumbered())
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
 		// Write
 		pComp->Character(cC4VID);
@@ -314,7 +343,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		catch (StdCompiler::NotFoundException *pExc)
 		{
 			delete pExc;
-			cC4VID = 'A';
+			cC4VID = 'n';
 		}
 		Type = GetC4VFromID(cC4VID);
 	}
@@ -337,29 +366,24 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
 	{
-		if (fCompiler || (Type == C4V_PropList && getPropList()->IsFrozen() && !getPropList()->IsDef()))
-		{
-			assert(Type == C4V_PropList);
-			pComp->Separator(StdCompiler::SEP_START2);
-			pComp->Value(mkParAdapt(mkPtrAdapt(Data.PropList, false), numbers));
-			if (fCompiler) Data.PropList->AddRef(this);
-			pComp->Separator(StdCompiler::SEP_END2);
-			break;
-		}
 		assert(!fCompiler);
 		C4PropList * p = getPropList();
-		if (Type == C4V_PropList && p->IsDef())
+		if (p->IsDef())
 			pComp->Value(p->GetDef()->id);
+		else if (p->IsNumbered())
+		{
+			iTmp = getPropList()->GetPropListNumbered()->Number;
+			pComp->Value(iTmp);
+		}
 		else
 		{
-			assert(getPropList()->GetPropListNumbered());
-			iTmp = getPropList()->GetPropListNumbered()->Number;
+			iTmp = numbers->GetNumberForValue(this);
 			pComp->Value(iTmp);
 		}
 		break;
 	}
 
-	case C4V_C4ObjectEnum:
+	case C4V_C4ObjectEnum: case C4V_Enum:
 		assert(fCompiler);
 		pComp->Value(iTmp); // must be denumerated later
 		Data.Int = iTmp;
@@ -405,10 +429,8 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	}
 
 	case C4V_Array:
-		pComp->Separator(StdCompiler::SEP_START2);
-		pComp->Value(mkParAdapt(mkPtrAdapt(Data.Array, false), numbers));
-		if (fCompiler) Data.Array->IncRef();
-		pComp->Separator(StdCompiler::SEP_END2);
+		iTmp = numbers->GetNumberForValue(this);
+		pComp->Value(iTmp);
 		break;
 
 	case C4V_Any:
@@ -420,6 +442,90 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	default:
 		assert(false);
 		break;
+	}
+}
+
+void C4ValueNumbers::CompileValue(StdCompiler * pComp, C4Value * v)
+{
+	// Type
+	bool fCompiler = pComp->isCompiler();
+	char cC4VID;
+	switch(v->GetType())
+	{
+	case C4V_PropList: cC4VID = 'p'; break;
+	case C4V_Array:    cC4VID = 'a'; break;
+	default: assert(fCompiler); break;
+	}
+	pComp->Character(cC4VID);
+	pComp->Separator(StdCompiler::SEP_START);
+	switch(cC4VID)
+	{
+	case 'p':
+		{
+			C4PropList * p = v->_getPropList();
+			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(p), this));
+			if (fCompiler) v->SetPropList(p);
+		}
+		break;
+	case 'a':
+		{
+			C4ValueArray * a = v->_getArray();
+			pComp->Value(mkParAdapt(mkPtrAdaptNoNull(a), this));
+			if (fCompiler) v->SetArray(a);
+		}
+		break;
+	default:
+		pComp->excCorrupt("Unexpected character '%c'", cC4VID);
+		break;
+	}
+	pComp->Separator(StdCompiler::SEP_END);
+}
+
+void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
+{
+	bool fCompiler = pComp->isCompiler();
+	bool fNaming = pComp->hasNaming();
+	if (fCompiler)
+	{
+		uint32_t iSize;
+		if (!fNaming) pComp->Value(iSize);
+		// Read new
+		do
+		{
+			// No entries left to read?
+			if (!fNaming && !iSize--)
+				break;
+			// Read entries
+			try
+			{
+				LoadedValues.push_back(C4Value());
+				CompileValue(pComp, &LoadedValues.back());
+			}
+			catch (StdCompiler::NotFoundException *pEx)
+			{
+				// No value found: Stop reading loop
+				delete pEx;
+				break;
+			}
+		}
+		while (pComp->Separator(StdCompiler::SEP_SEP));
+	}
+	else
+	{
+		// Note: the list grows during this loop due to nested data structures.
+		// Data structures with loops are fine because the beginning of the loop
+		// will be found in the map and not saved again.
+		// This may still work with the binary compilers due to double-compiling
+		if (!fNaming)
+		{
+			int32_t iSize = ValuesToSave.size();
+			pComp->Value(iSize);
+		}
+		for(std::list<C4Value *>::iterator i = ValuesToSave.begin(); i != ValuesToSave.end(); ++i)
+		{
+			CompileValue(pComp, *i);
+			if (i != ValuesToSave.end()) pComp->Separator(StdCompiler::SEP_SEP);
+		}
 	}
 }
 
