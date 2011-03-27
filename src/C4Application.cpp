@@ -472,7 +472,7 @@ void C4Application::ApplyResolutionConstraints()
 bool C4Application::PreInit()
 {
 	// startup dialog: Only use if no next mission has been provided
-	bool fDoUseStartupDialog = UseStartupDialog && !*Game.ScenarioFilename;
+	bool fDoUseStartupDialog = (UseStartupDialog || isEditor) && !*Game.ScenarioFilename;
 
 	// Startup message board
 	if (!isEditor)
@@ -649,6 +649,7 @@ void C4Application::GameTick()
 			Game.fObserve = false;
 			NextMission.Clear();
 		}
+		break;
 	case C4AS_Game:
 		// Game
 		if (Game.IsRunning)
