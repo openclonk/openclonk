@@ -612,12 +612,6 @@ bool C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
 	return true;
 }
 
-void C4PlayerList::EnumeratePointers()
-{
-	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-		pPlr->EnumeratePointers();
-}
-
 void C4PlayerList::DenumeratePointers()
 {
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)

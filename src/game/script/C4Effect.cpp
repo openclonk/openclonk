@@ -164,19 +164,6 @@ C4Effect::~C4Effect()
 	}
 }
 
-void C4Effect::EnumeratePointers()
-{
-	// enum in all effects
-	C4Effect *pEff = this;
-	do
-	{
-		// command target
-		pEff->CommandTarget.EnumeratePointers();
-		// effect var denumeration: not necessary, because this is done while saving
-	}
-	while ((pEff=pEff->pNext));
-}
-
 void C4Effect::Denumerate(C4ValueNumbers * numbers)
 {
 	// denum in all effects

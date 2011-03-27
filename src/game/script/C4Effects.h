@@ -98,7 +98,6 @@ public:
 	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
 	~C4Effect();                      // dtor - deletes all following effects
 
-	void EnumeratePointers();  // object pointers to numbers
 	void Denumerate(C4ValueNumbers *); // numbers to object pointers
 	void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
 

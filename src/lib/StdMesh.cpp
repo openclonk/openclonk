@@ -1182,22 +1182,6 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 	}
 }
 
-void StdMeshInstance::AnimationNode::EnumeratePointers()
-{
-	SerializableValueProvider* value_provider = NULL;
-	switch(Type)
-	{
-	case LeafNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
-		break;
-	case LinearInterpolationNode:
-		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
-		break;
-	}
-
-	if(value_provider) value_provider->EnumeratePointers();
-}
-
 void StdMeshInstance::AnimationNode::DenumeratePointers()
 {
 	SerializableValueProvider* value_provider = NULL;
@@ -1285,11 +1269,6 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 	if(pComp->isCompiler()) Flags = dwSyncFlags;
 
 	pComp->Value(mkParAdapt(*ChildDenumerator, this));
-}
-
-void StdMeshInstance::AttachedMesh::EnumeratePointers()
-{
-	ChildDenumerator->EnumeratePointers(this);
 }
 
 void StdMeshInstance::AttachedMesh::DenumeratePointers()
@@ -1852,16 +1831,6 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		for(unsigned int i = 0; i < AttachChildren.size(); ++i)
 			pComp->Value(mkNamingAdapt(mkParAdapt(*AttachChildren[i], Factory), "Attached"));
 	}
-}
-
-void StdMeshInstance::EnumeratePointers()
-{
-	for(unsigned int i = 0; i < AnimationNodes.size(); ++i)
-		if(AnimationNodes[i])
-			AnimationNodes[i]->EnumeratePointers();
-
-	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
-		AttachChildren[i]->EnumeratePointers();
 }
 
 void StdMeshInstance::DenumeratePointers()

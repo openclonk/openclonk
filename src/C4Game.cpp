@@ -1713,28 +1713,10 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbe
 
 bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers * numbers)
 {
-
-	// Enumerate pointers & strings
-	if (PointersDenumerated)
-	{
-		::Objects.Enumerate();
-		Players.EnumeratePointers();
-		if (pGlobalEffects) pGlobalEffects->EnumeratePointers();
-	}
-
 	// Decompile
 	StdStrBuf Buf;
 	if (!Decompile(Buf,fSaveSection,fSaveExact, numbers))
 		return false;
-
-	// Denumerate pointers, if game is in denumerated state
-	if (PointersDenumerated)
-	{
-		::Objects.Denumerate(numbers);
-		ScriptEngine.Denumerate(numbers);
-		Players.DenumeratePointers();
-		if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
-	}
 
 	// Initial?
 	if (fInitial && GameText.GetData())
@@ -3090,7 +3072,7 @@ bool C4Game::CheckObjectEnumeration()
 			clnk=clnk->Next;
 	}
 	// Adjust enumeration index
-	if (iMax>C4PropListNumbered::EnumerationIndex) C4PropListNumbered::EnumerationIndex=iMax;
+	C4PropListNumbered::SetEnumerationIndex(iMax);
 	// Done
 	return true;
 }

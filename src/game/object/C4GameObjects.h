@@ -59,7 +59,6 @@ public:
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int PostLoad(bool fKeepInactive, C4ValueNumbers *);
-	void Enumerate();
 	void Denumerate(C4ValueNumbers *);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *

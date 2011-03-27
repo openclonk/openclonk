@@ -24,48 +24,30 @@
 
 #include <limits>
 
-namespace
-{
-	C4ObjectPtr NullEnumerated()
-	{
-		C4ObjectPtr ptr(NULL);
-		ptr.EnumeratePointers();
-		return ptr;
-	}
-}
-
-const C4ObjectPtr C4ObjectPtr::Null(NullEnumerated());
+const C4ObjectPtr C4ObjectPtr::Null(0);
 
 void C4ObjectPtr::CompileFunc(StdCompiler* pComp)
 {
-	// Pointer needs to be enumerated when decompiling
-	assert(pComp->isCompiler() || !fDenumerated);
-
-	assert(data.nptr < std::numeric_limits<int32_t>::max());
-	int32_t nptr = static_cast<int32_t>(data.nptr);
-	pComp->Value(nptr); // TODO: Use mkIntPackAdapt?
-	data.nptr = nptr;
-
-#ifndef NDEBUG
-	// After having read a value the pointer is enumerated
-	if(pComp->isCompiler()) fDenumerated = false;
-#endif
-}
-
-void C4ObjectPtr::EnumeratePointers()
-{
+	// Pointer needs to be denumerated when decompiling
 	assert(fDenumerated);
 
-	data.nptr = data.ptr ? data.ptr->Number : 0;
-
+	int32_t nptr = 0;
+	if (!pComp->isCompiler() && data.ptr)
+		nptr = data.ptr->Number;
+	pComp->Value(nptr);
+	if (pComp->isCompiler())
+	{
+		data.nptr = nptr;
 #ifndef NDEBUG
-	fDenumerated = false;
+		// After having read a value the pointer is enumerated
+		fDenumerated = false;
 #endif
+	}
 }
 
 void C4ObjectPtr::DenumeratePointers()
 {
-	assert(!fDenumerated);
+	assert(!fDenumerated || !data.ptr);
 
 	assert(data.nptr < std::numeric_limits<int32_t>::max());
 	data.ptr = ::Objects.ObjectPointer(static_cast<int32_t>(data.nptr));

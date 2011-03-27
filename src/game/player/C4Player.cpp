@@ -1349,17 +1349,6 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("InitScenarioPlayer(%d,%d)", (int)Number, (int)idTeam).getData()), CDT_Queue);
 }
 
-void C4Player::EnumeratePointers()
-{
-	// Cursor
-	Cursor.EnumeratePointers();
-	// ViewCursor
-	ViewCursor.EnumeratePointers();
-	// messageboard-queries
-	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->CallbackObj.EnumeratePointers();
-}
-
 void C4Player::DenumeratePointers()
 {
 	// Crew

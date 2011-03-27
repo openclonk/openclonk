@@ -361,13 +361,6 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	return ObjectCount();
 }
 
-
-void C4GameObjects::Enumerate()
-{
-	C4ObjectList::Enumerate();
-	InactiveObjects.Enumerate();
-}
-
 void C4GameObjects::Denumerate(C4ValueNumbers * numbers)
 {
 	C4ObjectList::Denumerate(numbers);

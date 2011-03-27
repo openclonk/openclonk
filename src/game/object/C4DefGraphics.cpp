@@ -930,11 +930,6 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) UpdateFacet();
 }
 
-void C4GraphicsOverlay::EnumeratePointers()
-{
-	OverlayObj.EnumeratePointers();
-}
-
 void C4GraphicsOverlay::DenumeratePointers()
 {
 	OverlayObj.DenumeratePointers();

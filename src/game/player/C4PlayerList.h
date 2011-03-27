@@ -42,7 +42,6 @@ public:
 	void Clear();
 	void Execute();
 	void DenumeratePointers();
-	void EnumeratePointers();
 	void ClearPointers(C4Object *pObj);
 	int GetCount() const;
 	int GetCount(C4PlayerType eType) const;

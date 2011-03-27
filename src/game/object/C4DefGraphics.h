@@ -225,7 +225,6 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 	// object pointer management
-	void EnumeratePointers();
 	void DenumeratePointers();
 
 	void SetAsBase(C4DefGraphics *pBaseGfx, DWORD dwBMode) // set in MODE_Base

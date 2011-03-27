@@ -457,15 +457,6 @@ void C4ObjectList::DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCa
 			clnk->Obj->DrawTopFace(cgo, iPlayer);
 }
 
-void C4ObjectList::Enumerate()
-{
-	C4ObjectLink *cLnk;
-	// Enumerate object pointers
-	for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->EnumeratePointers();
-}
-
 bool C4ObjectList::IsContained(C4Object *pObj)
 {
 	C4ObjectLink *cLnk;

@@ -100,7 +100,6 @@ public:
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	void Default();
-	void EnumeratePointers();
 	void Denumerate(C4ValueNumbers *);
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 protected:

@@ -106,11 +106,6 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 	}
 }
 
-void C4MeshDenumerator::EnumeratePointers(StdMeshInstance::AttachedMesh* attach)
-{
-	Object.EnumeratePointers();
-}
-
 void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach)
 {
 	Object.DenumeratePointers();
@@ -1788,11 +1783,10 @@ StdStrBuf C4Object::GetDataString()
 	}
 
 	StdStrBuf Output2;
-	// FIXME: Make decompile save without this
-	EnumeratePointers();
 	C4ValueNumbers numbers;
-	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(mkParAdapt(*this, &numbers), "Object"), &Output2, "C4Object::GetDataString");
-	Denumerate(&numbers);
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(mkInsertAdapt(mkParAdapt(*this, &numbers),
+	                                                                    mkNamingAdapt(numbers, "Values"), false),
+	                                                      "Object"), &Output2, "C4Object::GetDataString");
 	Output.Append(LineFeed);
 	Output.Append(Output2);
 	return Output;
@@ -2323,6 +2317,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	pComp->Value(mkNamingAdapt( mkParAdapt(static_cast<C4PropListNumbered&>(*this), numbers), "Properties"));
 	pComp->Value(mkNamingAdapt( Status,                           "Status",             1                 ));
+	if (Info) nInfo = Info->Name; else nInfo.Clear();
 	pComp->Value(mkNamingAdapt( toC4CStrBuf(nInfo),               "Info",               ""                ));
 	pComp->Value(mkNamingAdapt( Owner,                            "Owner",              NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Timer,                            "Timer",              0                 ));
@@ -2457,34 +2452,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	}
 
-}
-
-void C4Object::EnumeratePointers()
-{
-	// Standard enumerated pointers
-	Contained.EnumeratePointers();
-	Action.Target.EnumeratePointers();
-	Action.Target2.EnumeratePointers();
-	Layer.EnumeratePointers();
-
-	// Info by name
-	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
-	if (Info) nInfo = Info->Name; else nInfo.Clear();
-
-	// Commands
-	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)
-		pCom->EnumeratePointers();
-
-	// effects
-	if (pEffects) pEffects->EnumeratePointers();
-
-	// gfx overlays
-	if (pGfxOverlay)
-		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			pGfxOvrl->EnumeratePointers();
-
-	// mesh instance
-	if (pMeshInstance) pMeshInstance->EnumeratePointers();
 }
 
 void C4Object::Denumerate(C4ValueNumbers * numbers)

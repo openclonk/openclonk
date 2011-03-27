@@ -1889,12 +1889,6 @@ void C4Command::Denumerate(C4ValueNumbers * numbers)
 	Tx.Denumerate(numbers);
 }
 
-void C4Command::EnumeratePointers()
-{
-	Target.EnumeratePointers();
-	Target2.EnumeratePointers();
-}
-
 int32_t C4Command::CallFailed()
 {
 	// No function name or no target object: cannot call fail-function

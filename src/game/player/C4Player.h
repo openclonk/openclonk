@@ -195,7 +195,6 @@ public:
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void DenumeratePointers();
-	void EnumeratePointers();
 	bool LoadRuntimeData(C4Group &hGroup, C4ValueNumbers *);
 	bool ActivateMenuMain();
 	bool ActivateMenuTeamSelection(bool fFromMain);

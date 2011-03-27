@@ -451,7 +451,6 @@ public:
 		}
 
 		virtual void CompileFunc(StdCompiler* pComp);
-		virtual void EnumeratePointers() {}
 		virtual void DenumeratePointers() {}
 	};
 
@@ -485,7 +484,6 @@ public:
 		C4Real GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
 
 		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
-		void EnumeratePointers();
 		void DenumeratePointers();
 
 	protected:
@@ -543,7 +541,6 @@ public:
 			virtual ~Denumerator() {}
 
 			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
-			virtual void EnumeratePointers(AttachedMesh* attach) {}
 			virtual void DenumeratePointers(AttachedMesh* attach) {}
 		};
 
@@ -570,7 +567,6 @@ public:
 		uint32_t GetFlags() const { return Flags; }
 
 		void CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory);
-		void EnumeratePointers();
 		void DenumeratePointers();
 
 	private:
@@ -627,7 +623,6 @@ public:
 	void ReorderFaces(StdMeshMatrix* global_trans);
 
 	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
-	void EnumeratePointers();
 	void DenumeratePointers();
 
 	const StdMesh& Mesh;
