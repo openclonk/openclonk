@@ -919,10 +919,12 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 		break;
 	case C4V_C4Object:
 	case C4V_PropList:
-		if (Parameter.getPropList()->GetPropListNumbered())
-			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetPropListNumbered()->Number);
-		else
+		if (Parameter.getPropList()->GetObject())
+			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
+		else if (Parameter.getPropList()->GetDef())
 			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
+		else
+			throw new C4AulExecError(cthr->Obj, "proplist as parameter to AddMenuItem");
 		break;
 	case C4V_String:
 		// note this breaks if there is '"' in the string.
