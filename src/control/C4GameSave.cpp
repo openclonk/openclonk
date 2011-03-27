@@ -193,16 +193,13 @@ bool C4GameSave::SaveLandscape()
 	return true;
 }
 
-bool C4GameSave::SaveRuntimeData(C4ValueNumbers * numbers)
+bool C4GameSave::SaveRuntimeData()
 {
 	// scenario sections (exact only)
 	if (IsExact()) if (!SaveScenarioSections())
 			{ Log(LoadResStr("IDS_ERR_SAVE_SCENSECTIONS")); return false; }
 	// landscape
 	if (!SaveLandscape()) { Log(LoadResStr("IDS_ERR_SAVE_LANDSCAPE")); return false; }
-	// Objects
-	if (!::Objects.Save((*pSaveGroup),IsExact(),true, numbers))
-		{ Log(LoadResStr("IDS_ERR_SAVE_OBJECTS")); return false; }
 	// Round results
 	if (GetSaveUserPlayers()) if (!Game.RoundResults.Save(*pSaveGroup))
 			{ Log(LoadResStr("IDS_ERR_ERRORSAVINGROUNDRESULTS")); return false; }
@@ -456,7 +453,7 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 	if (!Game.SaveData(*pSaveGroup, false, fInitial, IsExact(), &numbers))
 		{ Log(LoadResStr("IDS_ERR_SAVE_RUNTIMEDATA")); return false; }
 	// save additional runtime data
-	if (GetSaveRuntimeData()) if (!SaveRuntimeData(&numbers)) return false;
+	if (GetSaveRuntimeData()) if (!SaveRuntimeData()) return false;
 	// Desc
 	if (GetSaveDesc())
 		if (!SaveDesc(*pSaveGroup))

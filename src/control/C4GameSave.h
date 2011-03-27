@@ -101,7 +101,7 @@ private:
 	bool SaveCore();             // save C4S core
 	bool SaveScenarioSections(); // save scenario sections
 	bool SaveLandscape();        // save current landscape
-	bool SaveRuntimeData(C4ValueNumbers *); // save any runtime data
+	bool SaveRuntimeData(); // save any runtime data
 public:
 	virtual ~C4GameSave() { Close(); } // dtor: close group
 

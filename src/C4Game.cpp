@@ -163,7 +163,7 @@ bool C4Game::InitDefs()
 }
 
 
-bool C4Game::OpenScenario(C4ValueNumbers * numbers)
+bool C4Game::OpenScenario()
 {
 
 	// Scenario from record stream
@@ -255,9 +255,6 @@ bool C4Game::OpenScenario(C4ValueNumbers * numbers)
 	if (!Title.GetLanguageString(Config.General.LanguageEx, ScenarioTitle))
 		ScenarioTitle.Copy(C4S.Head.Title);
 
-	// Game (runtime data)
-	GameText.Load(ScenarioFile,C4CFN_Game);
-
 	// String tables
 	ScenarioLangStringTable.LoadEx(ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
@@ -267,10 +264,6 @@ bool C4Game::OpenScenario(C4ValueNumbers * numbers)
 			return false;
 
 	SetInitProgress(4);
-
-	// Compile runtime data
-	if (!CompileRuntimeData(GameText, numbers))
-		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	// If scenario is a directory: Watch for changes
 	if (!ScenarioFile.IsPacked() && pFileMonitor)
@@ -424,7 +417,7 @@ bool C4Game::Init()
 
 		// open new scenario
 		SCopy(szScenario, ScenarioFilename, _MAX_PATH);
-		if (!OpenScenario(&numbers)) return false;
+		if (!OpenScenario()) return false;
 		TempScenarioFile = true;
 
 		// get everything else
@@ -443,7 +436,7 @@ bool C4Game::Init()
 	{
 
 		// Open scenario
-		if (!OpenScenario(&numbers))
+		if (!OpenScenario())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 		// init extra; needed for loader screen
@@ -1614,21 +1607,6 @@ void C4Game::Ticks()
 	if (pNetworkStatistics) pNetworkStatistics->ExecuteFrame();
 }
 
-bool C4Game::Compile(const char *szSource, C4ValueNumbers * numbers)
-{
-	if (!szSource) return true;
-	// C4Game is not defaulted on compilation.
-	// Loading of runtime data overrides only certain values.
-	// Doesn't compile players; those will be done later
-	CompileSettings Settings(false, false, true);
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, Settings, numbers),
-	      StdStrBuf(szSource),
-	      C4CFN_Game))
-		return false;
-	return true;
-}
-
 void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers * numbers)
 {
 	if (!comp.fScenarioSection && comp.fExact)
@@ -1659,8 +1637,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->NameEnd();
 	}
 
-	pComp->Value(mkNamingAdapt(mkInsertAdapt(::GameScript, mkParAdapt(ScriptEngine, numbers)),                "Script"));
-
 	if (comp.fExact)
 	{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
@@ -1689,6 +1665,16 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
 			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, numbers), FormatString("Player%d", pPlr->ID).getData()));
 	}
+
+	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
+
+	pComp->Name("Script");
+	if (!comp.fScenarioSection)
+	{
+		pComp->Value(::GameScript);
+		pComp->Value(mkParAdapt(ScriptEngine, numbers));
+	}
+	pComp->NameEnd();
 }
 
 void SetClientPrefix(char *szFilename, const char *szClient);
@@ -1700,12 +1686,26 @@ bool C4Game::Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact, C4Va
 	return true;
 }
 
-bool C4Game::CompileRuntimeData(C4ComponentHost &rGameData, C4ValueNumbers * numbers)
+bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers * numbers)
 {
-	// Compile
-	if (!Compile(rGameData.GetData(), numbers)) return false;
+	::Objects.Clear(!fLoadSection);
+	GameText.Load(hGroup,C4CFN_Game);
+	CompileSettings Settings(fLoadSection, false, true);
+	// C4Game is not defaulted on compilation.
+	// Loading of runtime data overrides only certain values.
+	// Doesn't compile players; those will be done later
+	if (GameText.GetData())
+	{
+		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
+		    mkParAdapt(*this, Settings, numbers),
+		    GameText.GetDataBuf(), C4CFN_Game))
+			return false;
+		// Objects
+		int32_t iObjects=Objects.PostLoad(fLoadSection, numbers);
+		if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
+	}
 	// Music System: Set play list
-	Application.MusicSystem.SetPlayList(PlayList.getData());
+	if (!fLoadSection) Application.MusicSystem.SetPlayList(PlayList.getData());
 	// Success
 	return true;
 }
@@ -1716,6 +1716,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fS
 	// Enumerate pointers & strings
 	if (PointersDenumerated)
 	{
+		::Objects.Enumerate();
 		Players.EnumeratePointers();
 		if (pGlobalEffects) pGlobalEffects->EnumeratePointers();
 	}
@@ -1728,6 +1729,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fS
 	// Denumerate pointers, if game is in denumerated state
 	if (PointersDenumerated)
 	{
+		::Objects.Denumerate(numbers);
 		ScriptEngine.Denumerate(numbers);
 		Players.DenumeratePointers();
 		if (pGlobalEffects) pGlobalEffects->Denumerate(numbers);
@@ -2140,9 +2142,10 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	// definition value overloads
 	if (!fLoadSection) InitValueOverloads();
 
-	// Load objects
-	int32_t iObjects=Objects.Load(hGroup, fLoadSection, numbers);
-	if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
+	// runtime data
+	if (!CompileRuntimeData(hGroup, fLoadSection, numbers))
+		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
+
 	SetInitProgress(93);
 
 	// Load round results
@@ -3284,7 +3287,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		{
 			C4ValueNumbers numbers;
 			// objects: do not save info objects or inactive objects
-			if (!Objects.Save(*pGrp,false,false, &numbers))
+			if (!SaveData(*pGrp,true,false,false, &numbers))
 			{
 				DebugLog("LoadScenarioSection: Error saving objects");
 				return false;

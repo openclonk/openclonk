@@ -303,22 +303,8 @@ void C4GameObjects::Clear(bool fClearInactive)
 	LastUsedMarker = 0;
 }
 
-int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive, C4ValueNumbers * numbers)
+int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 {
-	Clear(!fKeepInactive);
-
-	// Load data component
-	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, &Source))
-		return 0;
-
-	// Compile
-	StdStrBuf Name = hGroup.GetFullName() + DirSep C4CFN_ScenarioObjects;
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, false, numbers),
-	      Source, Name.getData()))
-		return 0;
-
 	// Process objects
 	C4ObjectLink *cLnk;
 	C4Object *pObj;
@@ -449,35 +435,17 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive, C4ValueNumbers * nu
 	return ObjectCount();
 }
 
-bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive, C4ValueNumbers * numbers)
+
+void C4GameObjects::Enumerate()
 {
-	// Enumerate
-	Enumerate();
+	C4ObjectList::Enumerate();
 	InactiveObjects.Enumerate();
+}
 
-	// Decompile objects to buffer
-	StdStrBuf Buffer;
-	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame, numbers), &Buffer, C4CFN_ScenarioObjects);
-
-	// Decompile inactives
-	if (fSaveInactive)
-	{
-		StdStrBuf InactiveBuffer;
-		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, !fSaveGame, numbers), &InactiveBuffer, C4CFN_ScenarioObjects);
-		Buffer.Append("\r\n");
-		Buffer.Append(InactiveBuffer);
-	}
-
-	// Denumerate
+void C4GameObjects::Denumerate(C4ValueNumbers * numbers)
+{
+	C4ObjectList::Denumerate(numbers);
 	InactiveObjects.Denumerate(numbers);
-	Denumerate(numbers);
-
-	// Error?
-	if (!fSuccess)
-		return false;
-
-	// Write
-	return hGroup.Add(C4CFN_ScenarioObjects, Buffer, false, true);
 }
 
 void C4GameObjects::UpdateScriptPointers()

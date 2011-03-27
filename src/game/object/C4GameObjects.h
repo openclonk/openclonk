@@ -59,8 +59,9 @@ public:
 	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
-	int Load(C4Group &hGroup, bool fKeepInactive, C4ValueNumbers *);
-	bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive, C4ValueNumbers *);
+	int PostLoad(bool fKeepInactive, C4ValueNumbers *);
+	void Enumerate();
+	void Denumerate(C4ValueNumbers *);
 
 	void UpdateScriptPointers(); // update pointers to C4AulScript *
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest);  // call function in all goals/rules/environment objects
