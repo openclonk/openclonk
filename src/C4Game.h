@@ -244,7 +244,6 @@ protected:
 	void Ticks();
 	const char *FoldersWithLocalsDefs(const char *szPath);
 	bool CheckObjectEnumeration();
-	bool DefinitionFilenamesFromSaveGame();
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();
 public:

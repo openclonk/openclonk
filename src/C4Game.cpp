@@ -2851,42 +2851,6 @@ void C4Game::FixRandom(int32_t iSeed)
 	FixedRandom(iSeed);
 }
 
-bool C4Game::DefinitionFilenamesFromSaveGame()
-{
-	const char *pSource;
-	char szDefinitionFilenames[20*_MAX_PATH+1];
-	szDefinitionFilenames[0]=0;
-
-	// Use loaded game text component
-	if ((pSource = GameText.GetData()))
-	{
-		const char *szPos;
-		char szLinebuf[30+_MAX_PATH+1];
-		// Search def file name section
-		if ((szPos = SSearch((const char*)pSource,"[DefinitionFiles]")))
-			// Scan lines
-			while (true)
-			{
-				szPos = SAdvanceSpace(szPos);
-				SCopyUntil(szPos,szLinebuf,0x0D,30+_MAX_PATH);
-				szPos += SLen(szLinebuf);
-				// Add definition file name
-				if (SEqual2(szLinebuf,"Definition") && (SCharPos('=',szLinebuf)>-1))
-				{
-					SNewSegment(szDefinitionFilenames);
-					SAppend(szLinebuf+SCharPos('=',szLinebuf)+1,szDefinitionFilenames);
-				}
-				else
-					break;
-			}
-		// Overwrite prior def file name specification
-		if (szDefinitionFilenames[0])
-			{ SCopy(szDefinitionFilenames,DefinitionFilenames); return true; }
-	}
-
-	return false;
-}
-
 bool C4Game::DoGameOver()
 {
 	// Duplication safety

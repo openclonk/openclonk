@@ -169,77 +169,71 @@ C4ObjectList &C4GameObjects::ObjectsAt(int ix, int iy)
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 {
-	C4Object *obj1 = NULL,*obj2 = NULL;
-	DWORD ocf1,ocf2,focf,tocf;
-
-	// AtObject-Check: Checks for first match of obj1 at obj2
-
-	// Checks for this frame
+	C4Object *obj1 = NULL, *obj2 = NULL;
+	DWORD focf,tocf;
 
 	// Reverse area check: Checks for all obj2 at obj1
 
-	focf=tocf=OCF_None;
+	focf = tocf = OCF_None;
 	// High level: Collection, Hit
 	if (!::Game.iTick3)
-		{ focf|=OCF_Collection; tocf|=OCF_Carryable; }
-	focf|=OCF_Alive;      tocf|=OCF_HitSpeed2;
+	{
+		focf |= OCF_Collection; tocf |= OCF_Carryable;
+	}
+	focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
 
-	if (focf && tocf)
-		for (C4ObjectList::iterator iter=begin(); iter != end() && (obj1=*iter); ++iter)
-			if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
-			{
-				unsigned int Marker = ++LastUsedMarker;
-				C4LSector *pSct;
-				for (C4ObjectList *pLst=obj1->Area.FirstObjects(&pSct); pLst; pLst=obj1->Area.NextObjects(pLst, &pSct))
-					for (C4ObjectList::iterator iter2=pLst->begin(); iter2 != pLst->end() && (obj2=*iter2); ++iter2)
-						if (obj2->Status && !obj2->Contained && (obj2!=obj1) && (obj2->OCF & tocf))
-							if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Shape.x),0,obj1->Shape.Wdt-1))
-								if (Inside<int32_t>(obj2->GetY()-(obj1->GetY()+obj1->Shape.y),0,obj1->Shape.Hgt-1))
-									if (obj1->Layer == obj2->Layer)
-									{
-										// handle collision only once
-										if (obj2->Marker == Marker) continue;
-										obj2->Marker = Marker;
-										// Only hit if target is alive and projectile is an object
-										if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
-										{
-											C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
-											C4Real speed = dXDir * dXDir + dYDir * dYDir;
-											// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
-											if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2)
-												if (!obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
-												{
-													int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5 );
-													// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
-													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy);
-													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
-													int tmass=Max<int32_t>(obj1->Mass,50);
-													C4PropList* pActionDef = obj1->GetAction();
-													if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
-														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
-													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
-																						  C4VObj(obj2)));
-													// obj1 might have been tampered with
-													if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-														goto out1;
-													continue;
-												}
-										}
-										// Collection
-										if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable))
-											if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Def->Collection.x),0,obj1->Def->Collection.Wdt-1))
-												if (Inside<int32_t>(obj2->GetY()-(obj1->GetY()+obj1->Def->Collection.y),0,obj1->Def->Collection.Hgt-1))
-												{
-													//if(!pLst->First) BREAKPOINT_HERE;
-													obj1->Collect(obj2);
-													//if(!pLst->First)  BREAKPOINT_HERE;
-													// obj1 might have been tampered with
-													if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-														goto out1;
-												}
-									}
-out1: ;
-			}
+	for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1 = *iter); ++iter)
+		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
+		{
+			unsigned int Marker = ++LastUsedMarker;
+			C4LSector *pSct;
+			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
+				for (C4ObjectList::iterator iter2 = pLst->begin(); iter2 != pLst->end() && (obj2 = *iter2); ++iter2)
+					if ((obj2 != obj1) && obj2->Status && !obj2->Contained && (obj2->OCF & tocf) &&
+					    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Shape.x), 0, obj1->Shape.Wdt - 1) &&
+					    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Shape.y), 0, obj1->Shape.Hgt - 1) &&
+					    obj1->Layer == obj2->Layer)
+					{
+						// handle collision only once
+						if (obj2->Marker == Marker) continue;
+						obj2->Marker = Marker;
+						// Only hit if target is alive and projectile is an object
+						if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
+						{
+							C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
+							C4Real speed = dXDir * dXDir + dYDir * dYDir;
+							// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
+							if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
+							   !obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
+							{
+								int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5);
+								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
+								iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy);
+								obj1->DoEnergy(-iHitEnergy / 5, false, C4FxCall_EngObjHit, obj2->Controller);
+								int tmass = Max<int32_t>(obj1->Mass, 50);
+								C4PropList* pActionDef = obj1->GetAction();
+								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
+									obj1->Fling(obj2->xdir * 50 / tmass, -Abs(obj2->ydir / 2) * 50 / tmass, false);
+								obj1->Call(PSF_CatchBlow, &C4AulParSet(C4VInt(-iHitEnergy / 5), C4VObj(obj2)));
+								// obj1 might have been tampered with
+								if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+									goto out1;
+								continue;
+							}
+						}
+						// Collection
+						if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable) &&
+						    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Def->Collection.x), 0, obj1->Def->Collection.Wdt - 1) &&
+						    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Def->Collection.y), 0, obj1->Def->Collection.Hgt - 1))
+						{
+							obj1->Collect(obj2);
+							// obj1 might have been tampered with
+							if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+								goto out1;
+						}
+					}
+			out1: ;
+		}
 }
 
 C4Object* C4GameObjects::AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude)

@@ -66,8 +66,6 @@ struct C4VCnvFn
 	bool Warn;
 };
 
-template <typename T> struct C4ValueConv;
-
 class C4Value
 {
 public:
@@ -112,8 +110,6 @@ public:
 	C4PropList *_getPropList() const { return Data.PropList; }
 
 	// Template versions
-	template <typename T> inline T Get() { return C4ValueConv<T>::FromC4V(*this); }
-	template <typename T> inline T _Get() { return C4ValueConv<T>::_FromC4V(*this); }
 
 	bool operator ! () const { return !GetData(); }
 	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions

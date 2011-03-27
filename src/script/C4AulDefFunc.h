@@ -55,6 +55,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
                                 C4Value * Par4=0, C4Value * Par5=0, C4Value * Par6=0, C4Value * Par7=0, C4Value * Par8=0, C4Value * Par9=0);
 enum { MaxFnStringParLen=500 };
 
+template <typename T> struct C4ValueConv;
 // Allow parameters to be nil
 template<typename T>
 class Nillable

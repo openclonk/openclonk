@@ -411,9 +411,6 @@ void C4Console::ClearViewportMenu()
 
 void C4Console::UpdateInputCtrl()
 {
-	int cnt;
-	C4AulScriptFunc *pRef;
-
 	ClearInput();
 	// add global and standard functions
 	std::list <char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);

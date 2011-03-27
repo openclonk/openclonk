@@ -486,25 +486,6 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 	return true;
 }
 
-struct C4ModLandscapeMatRec
-{
-	long iMode, iClr1, iClr2;
-};
-
-static DWORD FadeClr(DWORD dwClr1, DWORD dwClr2, BYTE byA1)
-{
-	// darken colors and add them
-	DarkenClrBy(dwClr1, 255-byA1); DarkenClrBy(dwClr2, byA1);
-	return dwClr1+dwClr2;
-}
-
-static void SmoothChars(signed char &r1, signed char &r2)
-{
-	// lower the difference between two numbers
-	signed char d=(r2-r1)/4;
-	r1+=d; r2-=d;
-}
-
 static long FnModulateColor(C4AulContext *cthr, long iClr1, long iClr2)
 {
 	DWORD dwClr1 = iClr1;

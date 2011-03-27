@@ -28,7 +28,6 @@
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H
 
-class C4Def;
 
 class C4Property
 {
