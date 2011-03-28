@@ -650,7 +650,7 @@ public:
 
 	// replace all occurences of one string with another. Return number of replacements.
 	int Replace(const char *szOld, const char *szNew, size_t iStartSearch=0);
-	int ReplaceChar(char cOld, char cNew, size_t iStartSearch=0);
+	int ReplaceChar(char cOld, char cNew);
 
 	// replace the trailing part of a string with something else
 	void ReplaceEnd(size_t iPos, const char *szNewEnd);

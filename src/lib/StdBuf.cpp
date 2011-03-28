@@ -290,7 +290,7 @@ int StdStrBuf::Replace(const char *szOld, const char *szNew, size_t iStartSearch
 	return cnt;
 }
 
-int StdStrBuf::ReplaceChar(char cOld, char cNew, size_t iStartSearch)
+int StdStrBuf::ReplaceChar(char cOld, char cNew)
 {
 	if (isNull()) return 0;
 	char *szPos = getMPtr(0);
