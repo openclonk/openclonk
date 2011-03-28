@@ -1898,8 +1898,8 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			if (pFunc && (Type == PARSER) && size < iMaxCnt)
 			{
 				C4V_Type to = pFunc->GetParType()[size];
-				// pFunc either was the return value from a GetFirstFunc-Call or
-				// pFunc is the only function that could be called, so this loop is superflous
+				// pFunc either is the return value from a GetFirstFunc-Call or
+				// the only function that could be called. When in doubt, don't warn.
 				C4AulFunc * pFunc2 = pFunc;
 				while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
 					if (pFunc2->GetParType()[size] != to) to = C4V_Any;
@@ -1912,7 +1912,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				case AB_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 				case AB_BOOL: from = C4V_Bool; break;
 				case AB_FUNC:
-					if ((a->CPos-1)->Par.f) from = (a->CPos-1)->Par.f->GetRetType(); break;
+					from = (a->CPos-1)->Par.f->GetRetType(); break;
 				case AB_CALL: case AB_CALLFS:
 				{
 					C4String * pName = (a->CPos-1)->Par.s;
