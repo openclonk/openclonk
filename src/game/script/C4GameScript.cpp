@@ -77,25 +77,13 @@ static long FnGetGravity(C4AulContext *cthr)
 
 static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 {
-	PAR(int, iPlr); PAR(string, szCommand); PAR(object, pTarget); PAR(any, Tx); PAR(int, iTy);
+	PAR(int, iPlr); PAR(string, szCommand); PAR(object, pTarget); PAR(int, iTx); PAR(int, iTy);
 	PAR(object, pTarget2); PAR(any, Data);
 	// Player
 	if (!ValidPlr(iPlr) || !szCommand) return C4VFalse;
 	C4Player *pPlr = ::Players.Get(iPlr);
 	// Command
 	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return C4VFalse;
-	// Special: convert iData to szText
-	const char *szText=NULL;
-	int32_t iTx;
-	if (iCommand==C4CMD_Call)
-	{
-		szText=FnStringPar(Data.getStr());
-		iTx=Tx.GetData().Int;
-	}
-	else
-	{
-		iTx=Tx.getInt();
-	}
 	// Set
 	pPlr->ObjectCommand(iCommand, pTarget, iTx, iTy, pTarget2, Data, C4P_Command_Set);
 	// Success
@@ -2739,7 +2727,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 C4ScriptFnDef C4ScriptGameFnMap[]=
 {
 
-	{ "PlayerObjectCommand",  1  ,C4V_Bool     ,{ C4V_Int     ,C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any    ,C4V_Int    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnPlayerObjectCommand },
+	{ "PlayerObjectCommand",  1  ,C4V_Bool     ,{ C4V_Int     ,C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_C4Object,C4V_Any    ,C4V_Int    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnPlayerObjectCommand },
 	{ "FindObject",           1  ,C4V_C4Object ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObject },
 	{ "FindObjects",          1  ,C4V_Array    ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObjects },
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
