@@ -536,7 +536,7 @@ void C4GameControl::PrepareInput()
 	if (Application.pGamePadControl) Application.pGamePadControl->DoAxisInput();
 	// per-player input
 	C4Player *plr; int32_t i=0;
-	while (plr = ::Players.GetLocalByIndex(i++))
+	while ((plr = ::Players.GetLocalByIndex(i++)))
 		plr->Control.PrepareInput();
 }
 

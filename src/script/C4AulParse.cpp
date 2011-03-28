@@ -1074,6 +1074,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 
 		// Prune unneeded Incs / Decs
 		if(eType == AB_STACK && X < 0 && (pCPos1->bccType == AB_Inc || pCPos1->bccType == AB_Dec))
+		{
 			if(C4ScriptOpMap[pCPos1->Par.i].ResultModifier != pCPos1->bccType)
 			{
 				pCPos1->bccType = eType;
@@ -1087,6 +1088,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 				a->RemoveLastBCC();
 				pCPos1--;
 			}
+		}
 
 		// Join VARN_SET + STACK -1 to IVARN (equivalent)
 		if(eType == AB_STACK && X == -1 && pCPos1->bccType == AB_VARN_SET)

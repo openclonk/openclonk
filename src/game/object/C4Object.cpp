@@ -277,10 +277,12 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// Color
 	if (Def->ColorByOwner)
+	{
 		if (ValidPlr(Owner))
 			Color=::Players.Get(Owner)->ColorDw;
 		else
 			Color=0xff; // no-owner color: blue
+	}
 
 	// Shape & face
 	Shape=Def->Shape;
