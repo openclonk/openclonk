@@ -148,7 +148,7 @@ bool C4ParticleDef::Load(C4Group &group)
 			return false;
 		}
 		// set facet, if assigned - otherwise, assume full surface
-		if (GfxFace.Wdt) Gfx.Set(Gfx.Surface, GfxFace.x, GfxFace.y, GfxFace.Wdt, GfxFace.Hgt, GfxFace.tx, GfxFace.ty);
+		if (GfxFace.Wdt) Gfx.Set(Gfx.Surface, GfxFace.x, GfxFace.y, GfxFace.Wdt, GfxFace.Hgt);
 		// set phase num
 		int32_t Q; Gfx.GetPhaseNum(PhasesX, Q);
 		Length = PhasesX * Q;

@@ -63,7 +63,7 @@ class C4ParticleDefCore
 {
 public:
 	StdStrBuf Name;                   // name
-	C4TargetRect GfxFace;             // target rect for graphics; used because stup
+	C4Rect GfxFace;                   // rect for graphics
 	int32_t MaxCount;                 // maximum number of particles that may coexist of this type
 	int32_t MinLifetime, MaxLifetime; // used by exec proc; number of frames this particle can exist
 	int32_t YOff;                     // Y-Offset for Std-particles
