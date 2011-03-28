@@ -607,7 +607,6 @@ bool C4UpdatePackage::Optimize(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 		return true;
 	// try to open target group
 	C4GroupEx ItemGroupTo;
-	char strTempGroup[_MAX_PATH+1]; strTempGroup[0] = 0;
 	if (!ItemGroupTo.OpenAsChild(pGrpTo, strFileName))
 		return true;
 	// update children

@@ -72,7 +72,7 @@ public:
 #ifdef STDSCHEDULER_USE_EVENTS
 	virtual HANDLE GetEvent() { return 0; }
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & FDs) { }
+	virtual void GetFDs(std::vector<struct pollfd> &) { }
 #endif
 
 	// Call Execute() after this time has elapsed
@@ -211,7 +211,7 @@ private:
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
 	{
-	public: virtual bool Execute(int, pollfd * readyfds) { CheckAndReset(); return true; }
+	public: virtual bool Execute(int, pollfd *) { CheckAndReset(); return true; }
 	};
 	NoopNotifyProc Unblocker;
 
@@ -236,7 +236,7 @@ public:
 
 protected:
 	// overridable
-	virtual void OnError(StdSchedulerProc *pProc) { }
+	virtual void OnError(StdSchedulerProc *) { }
 
 private:
 	void Enlarge(int iBy);

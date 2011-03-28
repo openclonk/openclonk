@@ -1654,11 +1654,10 @@ bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 	return true;
 }
 
-bool C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers)
+void C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers)
 {
 	// check all joined infos
 	C4ClientPlayerInfos *pClient; int iClient=0;
-	bool fSuccess = true;
 	while ((pClient = rSavegamePlayers.GetIndexedInfo(iClient++)))
 	{
 		C4PlayerInfo *pInfo; int iInfo = 0;
@@ -1671,13 +1670,10 @@ bool C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlay
 				{
 					LogF(LoadResStr("IDS_PRC_REMOVEPLR"), pInfo->GetName());
 				}
-				else
-					fSuccess = false;
 			}
 			pInfo->SetRemoved();
 		}
 	}
-	return true;
 }
 
 bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fSaveUserPlrs, bool fSaveScriptPlrs, bool fSetUserPlrRefToLocalGroup, bool fSetScriptPlrRefToLocalGroup)

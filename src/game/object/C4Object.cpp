@@ -1591,7 +1591,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 {
 	// Variables
 	C4FacetSurface fctSymbol;
-	C4Player *pPlayer;
 	C4IDList ListItems;
 	// Close any other menu
 	//CloseMenu(true);
@@ -1662,7 +1661,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	case C4MN_Info:
 		// Target by parameter
 		if (!pTarget) break;
-		pPlayer=::Players.Get(pTarget->Owner);
 		// Create symbol & init menu
 		fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,0,1);
 		Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
@@ -3996,8 +3994,6 @@ void C4Object::ExecAction()
 		bool fBroke;
 		fBroke=false;
 		int32_t iConnectX, iConnectY;
-		int32_t iAttachX, iAttachY;
-		iAttachX = iAttachY = 0;
 
 		// Line destruction check: Target missing or incomplete
 		if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;

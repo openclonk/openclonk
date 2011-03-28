@@ -422,7 +422,7 @@ bool C4Group_GetFileCRC(const char *szFilename, uint32_t *pCRC32)
 {
 	if (!pCRC32) return false;
 	// doesn't exist physically?
-	char szPath[_MAX_PATH + 1]; bool fTemporary = false;
+	char szPath[_MAX_PATH + 1];
 	if (FileExists(szFilename))
 		SCopy(szFilename, szPath, _MAX_PATH);
 	else
@@ -431,7 +431,6 @@ bool C4Group_GetFileCRC(const char *szFilename, uint32_t *pCRC32)
 		SCopy(GetFilename(szFilename), szPath, _MAX_PATH);
 		MakeTempFilename(szPath);
 		if (!C4Group_CopyItem(szFilename, szPath)) return false;
-		fTemporary = true;
 	}
 	// open file
 	CStdFile File;
@@ -460,7 +459,7 @@ bool C4Group_GetFileSHA1(const char *szFilename, BYTE *pSHA1)
 {
 	if (!pSHA1) return false;
 	// doesn't exist physically?
-	char szPath[_MAX_PATH + 1]; bool fTemporary = false;
+	char szPath[_MAX_PATH + 1];
 	if (FileExists(szFilename))
 		SCopy(szFilename, szPath, _MAX_PATH);
 	else
@@ -469,7 +468,6 @@ bool C4Group_GetFileSHA1(const char *szFilename, BYTE *pSHA1)
 		SCopy(GetFilename(szFilename), szPath, _MAX_PATH);
 		MakeTempFilename(szPath);
 		if (!C4Group_CopyItem(szFilename, szPath)) return false;
-		fTemporary = true;
 	}
 	// open file
 	CStdFile File;
@@ -1326,7 +1324,7 @@ bool C4Group::RewindFilePtr()
 	// Child group file: pass command to mother
 	if ((Status==GRPF_File) && Mother)
 	{
-		if (!Mother->SetFilePtr2Entry(FileName,this,true)) // Set to group file start
+		if (!Mother->SetFilePtr2Entry(FileName,true)) // Set to group file start
 			return false;
 		if (!Mother->AdvanceFilePtr(EntryOffset,this)) // Advance data offset
 			return false;
@@ -1880,7 +1878,7 @@ bool C4Group::AccessEntry(const char *szWildCard,
 #ifdef _DEBUG
 	szCurrAccessedEntry = fname.getMData();
 #endif
-	bool fResult = SetFilePtr2Entry(fname.getData(), NULL, NeedsToBeAGroup);
+	bool fResult = SetFilePtr2Entry(fname.getData(), NeedsToBeAGroup);
 #ifdef _DEBUG
 	szCurrAccessedEntry = NULL;
 #endif
@@ -1909,7 +1907,7 @@ bool C4Group::AccessNextEntry(const char *szWildCard,
 	return true;
 }
 
-bool C4Group::SetFilePtr2Entry(const char *szName, C4Group *pByChild, bool NeedsToBeAGroup)
+bool C4Group::SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup)
 {
 	switch (Status)
 	{

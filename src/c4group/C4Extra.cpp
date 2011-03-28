@@ -62,14 +62,12 @@ bool C4Extra::Init()
 	// add first definition first, so the priority will be lowest
 	// (according to definition load/overload order)
 	char szSegment[_MAX_PATH+1];
-	bool fAnythingLoaded=false;
 	for (int cseg=0; SCopySegment(Game.DefinitionFilenames,cseg,szSegment,';',_MAX_PATH); cseg++)
 	{
 		for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
 		{
 			if(LoadDef(*ExtraGroups[i], GetFilename(szSegment)))
 			{
-				fAnythingLoaded=true;
 				break;
 			}
 		}

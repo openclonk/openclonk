@@ -164,7 +164,7 @@ namespace C4InVal
 			assert(!"not yet implemented");
 		}
 		// issue warning for invalid adjustments
-		if (!fValid)
+		if (0) if (!fValid)
 		{
 			const char *szOption = "unknown";
 			switch (eOption)
@@ -181,7 +181,7 @@ namespace C4InVal
 			case VAL_IRCChannel:       szOption = "IRC channel";      break;
 			case VAL_Comment:          szOption = "Comment";          break;
 			}
-			//LogF("WARNING: Adjusted invalid user input for \"%s\" to \"%s\"", szOption, rsString.getData());
+			LogF("WARNING: Adjusted invalid user input for \"%s\" to \"%s\"", szOption, rsString.getData());
 		}
 		return !fValid;
 	}

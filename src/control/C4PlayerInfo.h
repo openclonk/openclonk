@@ -411,7 +411,7 @@ public:
 	bool RecreatePlayerFiles();             // update player source files
 	bool RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers); // recreate this list from rSavegamePlayers for host/single games; just merge associated infos
 	bool SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fSaveUserPlrs, bool fSaveScriptPlrs, bool fSetUserPlrRefToLocalGroup, bool fSetScriptPlrRefToLocalGroup); // copy all joined players from player list
-	bool RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers); // remove all savegame players that are not associated to this list from the game
+	void RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers); // remove all savegame players that are not associated to this list from the game
 	int32_t GetFreePlayerSlotCount();       // get number of players that may still join
 	void ResetLeagueProjectedGain(bool fSetUpdated); // reset known projected gains for all players (to be updated by league again)
 

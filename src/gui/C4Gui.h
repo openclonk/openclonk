@@ -420,7 +420,7 @@ namespace C4GUI
 		virtual class DialogWindow* GetDialogWindow() { return NULL; } // return DialogWindow if this element is a dialog
 
 		// for listbox-selection by character input
-		virtual bool CheckNameHotkey(const char * c) { return false; }
+		virtual bool CheckNameHotkey(const char *) { return false; }
 
 	public:
 		virtual Container *GetContainer() { return pParent; } // returns parent for elements; this for containers
@@ -981,7 +981,7 @@ namespace C4GUI
 	private:
 		class C4KeyBinding *pKeyContext;
 	protected:
-		virtual bool CharIn(const char * c) { return false; }         // input: character key pressed - should return false for none-character-inputs
+		virtual bool CharIn(const char *) { return false; }         // input: character key pressed - should return false for none-character-inputs
 		virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click sets focus
 
 		void DisableFocus(); // called when control gets disabled: Make sure it loses focus

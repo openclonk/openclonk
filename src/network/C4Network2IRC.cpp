@@ -720,12 +720,6 @@ void C4Network2IRCClient::OnConnected()
 
 void C4Network2IRCClient::OnMessage(bool fNotice, const char *szSender, const char *szTarget, const char *szText)
 {
-
-	// Find channel, if not private.
-	C4Network2IRCChannel *pChan = NULL;
-	if (!SEqualNoCase(szTarget, Nick.getData()))
-		pChan = getChannel(szTarget);
-
 	// CTCP tagged data?
 	const char X_DELIM = '\001';
 	if (szText[0] == X_DELIM)

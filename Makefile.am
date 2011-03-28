@@ -23,12 +23,9 @@ noinst_LIBRARIES = lib.a
 # Some defines and warning options
 if RECENT_GCC
 GCC_FLAGS = -pipe
-WARNING_FLAGS = -Wall -Wextra -Wno-invalid-offsetof \
--Wredundant-decls -Wendif-labels -Wpointer-arith \
--Wcast-qual -Wcast-align -Wwrite-strings -Winit-self \
--Wsign-promo \
--Wno-parentheses -Wno-unused-parameter -Wno-inline \
--Wno-reorder -Wno-float-equal -Wno-switch
+WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
+-Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
+-Wno-reorder -Wno-unused-parameter
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
 ##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
 else

@@ -103,7 +103,7 @@ bool CSurface8::Create(int iWdt, int iHgt)
 
 bool CSurface8::Read(CStdStream &hGroup)
 {
-	int cnt,lcnt,iLineRest;
+	int cnt,lcnt;
 	CBitmap256Info BitmapInfo;
 	// read bmpinfo-header
 	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
@@ -142,7 +142,6 @@ bool CSurface8::Read(CStdStream &hGroup)
 	int iBufSize=DWordAligned(BitmapInfo.Info.biWidth*BitmapInfo.Info.biBitCount/8);
 	BYTE *pBuf = new BYTE[iBufSize];
 	// Read lines
-	iLineRest = DWordAligned(BitmapInfo.Info.biWidth) - BitmapInfo.Info.biWidth;
 	for (lcnt=Hgt-1; lcnt>=0; lcnt--)
 	{
 		if (!hGroup.Read(pBuf, iBufSize))

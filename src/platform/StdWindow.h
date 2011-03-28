@@ -272,7 +272,7 @@ public:
 	// For example, when the user clicks the little x in the corner or uses Alt-F4
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
-	virtual void CharIn(const char * c) { }
+	virtual void CharIn(const char *) { }
 	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.

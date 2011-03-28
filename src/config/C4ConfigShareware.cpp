@@ -356,7 +356,6 @@ bool C4ConfigShareware::LoadRegistration(const char *keyFile)
 	// Load registration key
 	char* delim = 0;
 	int regKeyLen = 0;
-	int dataLen = 0;
 	FILE* fh = fopen(keyFile, "rb");
 	if (!fh)
 		return HandleError("Cannot open key file.");
@@ -365,7 +364,6 @@ bool C4ConfigShareware::LoadRegistration(const char *keyFile)
 	delim = strstr(RegData, "\r\n\r\n");
 	if (!delim)
 		return HandleError("Invalid key data (no delimiter).");
-	dataLen = delim - RegData;
 
 	// Load public key from memory
 	EVP_PKEY* pubKey = loadPublicKey(Cert_Reg_XOR_Base64, true, true, XOR_Cert_Reg);

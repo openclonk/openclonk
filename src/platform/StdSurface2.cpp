@@ -543,7 +543,7 @@ IDirect3DSurface9 *CSurface::GetSurface()
 
 bool CSurface::ReadBMP(CStdStream &hGroup)
 {
-	int lcnt,iLineRest;
+	int lcnt;
 	CBitmap256Info BitmapInfo;
 	// read bmpinfo-header
 	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
@@ -570,7 +570,6 @@ bool CSurface::ReadBMP(CStdStream &hGroup)
 	int iBufSize=DWordAligned(BitmapInfo.Info.biWidth*BitmapInfo.Info.biBitCount/8);
 	BYTE *pBuf = new BYTE[iBufSize];
 	// Read lines
-	iLineRest = DWordAligned(BitmapInfo.Info.biWidth) - BitmapInfo.Info.biWidth;
 	for (lcnt=Hgt-1; lcnt>=0; lcnt--)
 	{
 		if (!hGroup.Read(pBuf, iBufSize))

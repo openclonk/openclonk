@@ -717,15 +717,14 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	int32_t iButtonHeight = C4GUI_ButtonHgt;
 	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
-	int iIndentX1, iIndentX2, iIndentY1, iIndentY2;
+	int iIndentX1, iIndentY1, iIndentY2;
 	if (fSmall)
 	{
-		iIndentX1=20; iIndentX2=1;
+		iIndentX1=20;
 	}
 	else
 	{
 		iIndentX1 = GetClientRect().Wdt/40;
-		iIndentX2 = iIndentX1/2;
 	}
 	if (fSmall)
 	{

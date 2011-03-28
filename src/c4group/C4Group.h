@@ -302,7 +302,7 @@ protected:
 	              bool fExecutable = false,
 	              bool fBufferIsStdbuf = false);
 	bool AddEntryOnDisk(const char *szFilename, const char *szAddAs=NULL, bool fMove=false);
-	bool SetFilePtr2Entry(const char *szName, C4Group *pByChild=NULL, bool NeedsToBeAGroup = false);
+	bool SetFilePtr2Entry(const char *szName, bool NeedsToBeAGroup = false);
 	bool AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &stdfile);
 	C4GroupEntry *GetEntry(const char *szName);
 	C4GroupEntry *SearchNextEntry(const char *szName);

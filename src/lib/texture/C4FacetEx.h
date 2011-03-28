@@ -77,8 +77,7 @@ public:
 	void Clear() { Face.Clear(); }
 
 	void Set(const C4Facet &cpy) { Clear(); C4Facet::Set(cpy); }
-	void Set(const C4TargetFacet &cpy) { Clear(); C4Facet::Set(cpy); }
-	void Set(SURFACE nsfc, int nx, int ny, int nwdt, int nhgt, int ntx=0, int nty=0)
+	void Set(SURFACE nsfc, int nx, int ny, int nwdt, int nhgt)
 	{ C4Facet::Set(nsfc, nx,ny,nwdt,nhgt); }
 
 	void Grayscale(int32_t iOffset = 0);
