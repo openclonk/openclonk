@@ -315,9 +315,9 @@ protected:
 
 	// handling of own packets
 	void HandleConn(const class C4PacketConn &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
-	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply);
-	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
-	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
+	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, StdStrBuf * szReply);
+	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
+	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
 	void HandleConnRe(const class C4PacketConnRe &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
 	void HandleStatus(const C4Network2Status &nStatus);
 	void HandleStatusAck(const C4Network2Status &nStatus, C4Network2Client *pClient);

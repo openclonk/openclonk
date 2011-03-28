@@ -1082,7 +1082,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	else
 	{
 		if (pClient)
-			if (CheckConn(NewCCore, pConn, pClient, reply.getData()))
+			if (CheckConn(NewCCore, pConn, pClient, &reply))
 			{
 				// accept
 				if (!reply) reply = "connection accepted";
@@ -1090,7 +1090,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 			}
 		// client: host connection?
 		if (!fOK && !isHost() && Status.getState() == GS_Init && !Clients.GetHost())
-			if (HostConnect(NewCCore, pConn, reply.getData()))
+			if (HostConnect(NewCCore, pConn, &reply))
 			{
 				// accept
 				if (!reply) reply = "host connection accepted";
@@ -1106,7 +1106,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 				fWrongPassword = true;
 			}
 			// accept join
-			else if (Join(NewCCore, pConn, reply.getData()))
+			else if (Join(NewCCore, pConn, &reply))
 			{
 				// save core
 				pConn->SetCCore(NewCCore);
@@ -1145,26 +1145,26 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	}
 }
 
-bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply)
+bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, StdStrBuf * szReply)
 {
 	if (!pConn || !pClient) return false;
 	// already connected? (shouldn't happen really)
 	if (pClient->hasConn(pConn))
-		{ szReply = "already connected"; return true; }
+		{ *szReply = "already connected"; return true; }
 	// check core
 	if (CCore.getDiffLevel(pClient->getCore()) > C4ClientCoreDL_IDMatch)
-		{ szReply = "wrong client core"; return false; }
+		{ *szReply = "wrong client core"; return false; }
 	// check address
 	if (pClient->isConnected() && pClient->getMsgConn()->getPeerAddr().sin_addr.s_addr != pConn->getPeerAddr().sin_addr.s_addr)
-		{ szReply = "wrong address"; return false; }
+		{ *szReply = "wrong address"; return false; }
 	// accept
 	return true;
 }
 
-bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
+bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply)
 {
 	if (!pConn) return false;
-	if (!CCore.isHost()) { szReply = "not host"; return false; }
+	if (!CCore.isHost()) { *szReply = "not host"; return false; }
 	// create client class for host
 	// (core is unofficial, see InitClient() -  will be overwritten later in HandleJoinData)
 	C4Client *pClient = Game.Clients.Add(CCore);
@@ -1173,13 +1173,13 @@ bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *
 	return true;
 }
 
-bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
+bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply)
 {
 	if (!pConn) return false;
 	// security
-	if (!isHost()) { szReply = "not host"; return false; }
-	if (!fAllowJoin && !fAllowObserve) { szReply = "join denied"; return false; }
-	if (CCore.getID() != C4ClientIDUnknown) { szReply = "join with set id not allowed"; return false; }
+	if (!isHost()) { *szReply = "not host"; return false; }
+	if (!fAllowJoin && !fAllowObserve) { *szReply = "join denied"; return false; }
+	if (CCore.getID() != C4ClientIDUnknown) { *szReply = "join with set id not allowed"; return false; }
 	// find free client id
 	CCore.SetID(iNextClientID++);
 	// observer?
