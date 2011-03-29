@@ -29,9 +29,9 @@ public func UpdateDraw()
   var yoff = 0;//Sin(angle, 6*prec);
   while(pos < Length)
   {
-    SetGraphics("Line0", GetID(), i*2+1, 1);
+    SetGraphics("Line0", GetID(), i*2+1, GFXOV_MODE_Base);
     SetLineTransform(-angle, xoff+(endX-startX)*pos/Length, yoff+(endY-startY)*pos/Length, 1000, i*2+1, 1);
-    SetGraphics("Line0", GetID(), i*2+2, 1);
+    SetGraphics("Line0", GetID(), i*2+2, GFXOV_MODE_Base);
     SetLineTransform(-angle, -xoff+(endX-startX)*pos/Length, -yoff+(endY-startY)*pos/Length, 1000, i*2+2, 1);
     SetClrModulation(RGB(255,255*pos/Length), i*2+1);
     SetClrModulation(RGB(255,255*pos/Length), i*2+2);
@@ -40,12 +40,49 @@ public func UpdateDraw()
   }
   while(i <= Layers)
   {
-    SetGraphics(nil, GetID(), i*2+1, 0);
-    SetGraphics(nil, GetID(), i*2+2, 0);
+    SetGraphics(nil, GetID(), i*2+1, GFXOV_MODE_Base);
+    SetGraphics(nil, GetID(), i*2+2, GFXOV_MODE_Base);
     i++;
   }
   Layers = i;
-//  Log("Length %d Angle %d %d", Length, angle, i);
+}
+
+protected func UpdateDraw2()
+{
+	// Breaking
+	var Length = ObjectDistance(GetActionTarget(0), GetActionTarget(1));
+	if (GetVertexNum() > 2 || Length > max_distance)
+	{
+		LineBreak();
+		return RemoveObject();
+	}
+
+  prec = 100;
+  prec2 = 1000/prec;
+  SetPosition(GetActionTarget(0)->GetX(), GetActionTarget(0)->GetY());
+  Length *= prec;
+  var pos = 0;
+  var i = 0;
+  var startX = GetActionTarget(0)->GetX(prec), startY = GetActionTarget(0)->GetY(prec), endX = GetActionTarget(1)->GetX(prec), endY = GetActionTarget(1)->GetY(prec);
+  var angle = Angle(startX, startY, endX, endY);
+  var xoff = 0;//Cos(angle, 6*prec);
+  var yoff = 0;//Sin(angle, 6*prec);
+  while(pos < Length)
+  {
+    SetGraphics("Arrange", GetID(), i*2+1, GFXOV_MODE_Base);
+    SetLineTransform(-angle, xoff+(endX-startX)*pos/Length, yoff+(endY-startY)*pos/Length, 1000, i*2+1, 1);
+   // SetGraphics("Line0", GetID(), i*2+2, GFXOV_MODE_Base);
+   // SetLineTransform(-angle, -xoff+(endX-startX)*pos/Length, -yoff+(endY-startY)*pos/Length, 1000, i*2+2, 1);
+    i++;
+    pos += 8*prec-10;
+  }
+  while(i <= Layers)
+  {
+    SetGraphics(nil, GetID(), i*2+1, GFXOV_MODE_Base);
+    SetGraphics(nil, GetID(), i*2+2, GFXOV_MODE_Base);
+    i++;
+  }
+  Layers = i;
 }
 
 local iPhase;
@@ -118,8 +155,9 @@ protected func LineBreak(bool no_msg)
 private func BreakMessage()
 {
 	var line_end = GetActionTarget(0);
-	if (line_end->GetID() != CableReel) 
+	if (line_end->GetID() != CableLorryReel) 
 		line_end = GetActionTarget(1);
+	if (line_end->Contained()) line_end = line_end->Contained();
 
 	line_end->Message("$TxtLinebroke$");
 	return;
@@ -145,7 +183,7 @@ local ActMap = {
 		Name = "Connect",
 		FacetBase = 0,
 		Procedure = DFA_CONNECT,
-//		EndCall = "UpdateDraw",
+		EndCall = "UpdateDraw2",
 		Length = 1,
 		Delay = 1,
 		NextAction = "Connect",
@@ -170,4 +208,4 @@ local ActMap = {
 };
 
 local Name = "$Name$";
-		
+local max_distance = 200;	
