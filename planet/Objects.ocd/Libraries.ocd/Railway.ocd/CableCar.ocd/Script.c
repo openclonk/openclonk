@@ -1,9 +1,9 @@
-/*--
+/**
 	Cable Car
-	Authors: Randrian, Clonkonaut
-
-	This is the basic movement functionality for every vehicles which wants to drive through the railway system
---*/
+	Library object for the cable car.
+	
+	@author Randrian, Clonkonaut
+*/
 
 local iMovementSpeed;
 
@@ -83,7 +83,7 @@ public func ShiftSelection(int direction, object selector)
 	for (var targets in connection_list)
 	{
 		// Is this a valid destination?
-		if (! targets[0]->IsRailStation()) continue;
+		if (! targets[0]->IsCableStation()) continue;
 		// Check ownership
 		if (targets[0]->GetOwner() != effect.var0->GetOwner() && targets[0]->GetOwner() != NO_OWNER) continue;
 		// Save it
