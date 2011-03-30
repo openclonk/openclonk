@@ -308,13 +308,6 @@ static bool FnSmoke(C4AulContext *cthr, long tx, long ty, long level, long dwClr
 	return true;
 }
 
-static bool FnBubble(C4AulContext *cthr, long tx, long ty)
-{
-	if (cthr->Obj) { tx+=cthr->Obj->GetX(); ty+=cthr->Obj->GetY(); }
-	BubbleOut(tx,ty);
-	return true;
-}
-
 static bool FnInsertMaterial(C4AulContext *cthr, long mat, long x, long y, long vx, long vy)
 {
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
@@ -2442,7 +2435,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 		pEngine->AddFunc(pDef->Identifier, pDef);
 //  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 	AddFunc(pEngine, "Smoke", FnSmoke);
-	AddFunc(pEngine, "Bubble", FnBubble);
 
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);

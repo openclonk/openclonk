@@ -150,6 +150,5 @@ protected:
 // some other hardcoded engine effects
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj);
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr=0);
-void BubbleOut(int32_t tx, int32_t ty);
 
 #endif

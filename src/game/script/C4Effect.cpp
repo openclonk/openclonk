@@ -573,6 +573,24 @@ bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
 
 // Some other, internal effects -------------------------------------------------------------
 
+static int32_t GetSmokeLevel()
+{
+	// just use fixed smoke level, smoke uses particles anyway
+	return 150;
+}
+
+static void BubbleOut(int32_t tx, int32_t ty)
+{
+	// No bubbles from nowhere
+	if (!GBackSemiSolid(tx,ty)) return;
+	// User-defined smoke level
+	int32_t SmokeLevel = GetSmokeLevel();
+	// Enough bubbles out there already
+	if (::Objects.ObjectCount(C4ID::Bubble) >= SmokeLevel) return;
+	// Create bubble
+	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
+}
+
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 {
 	// Splash only if there is free space above
@@ -600,24 +618,6 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 	if (amt>=20)
 		StartSoundEffect("Splash2",false,100,pByObj);
 	else if (amt>1) StartSoundEffect("Splash1",false,100,pByObj);
-}
-
-int32_t GetSmokeLevel()
-{
-	// just use fixed smoke level, smoke uses particles anyway
-	return 150;
-}
-
-void BubbleOut(int32_t tx, int32_t ty)
-{
-	// No bubbles from nowhere
-	if (!GBackSemiSolid(tx,ty)) return;
-	// User-defined smoke level
-	int32_t SmokeLevel = GetSmokeLevel();
-	// Enough bubbles out there already
-	if (::Objects.ObjectCount(C4ID::Bubble) >= SmokeLevel) return;
-	// Create bubble
-	Game.CreateObject(C4ID::Bubble,NULL,NO_OWNER,tx,ty);
 }
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
