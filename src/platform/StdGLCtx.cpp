@@ -127,7 +127,7 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 	return result;
 }
 
-static int GetPixelFormatForMS(HDC hDC, unsigned int samples)
+static int GetPixelFormatForMS(HDC hDC, int samples)
 {
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
 	for(unsigned int i = 0; i < vec.size(); ++i)

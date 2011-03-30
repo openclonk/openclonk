@@ -158,9 +158,8 @@ static bool IsWindowsWithUAC()
 	// Determine windows version
 	OSVERSIONINFO ver;
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	bool fWindowsXP = false;
 	if (GetVersionEx((LPOSVERSIONINFO) &ver))
-		return (ver.dwMajorVersion == 6);
+		return (ver.dwMajorVersion >= 6);
 #endif
 	return false;
 }

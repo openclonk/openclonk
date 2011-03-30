@@ -30,7 +30,7 @@ C4Network2HTTPClient HTTPClient;
 C4DownloadDlg::C4DownloadDlg(const char *szDLType) : C4GUI::Dialog(C4GUI_ProgressDlgWdt, 100, FormatString(LoadResStr("IDS_CTL_DL_TITLE"), szDLType).getData(), false), szError(NULL)
 {
 #ifdef HAVE_WINSOCK
-	bool fWinSock = AcquireWinSock();
+	fWinSock = AcquireWinSock();
 #endif
 	// add all elements - will be reposisioned when text is displayed
 	AddElement(pIcon = new C4GUI::Icon(C4Rect(), C4GUI::Ico_NetWait));
