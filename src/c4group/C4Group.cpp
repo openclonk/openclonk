@@ -1370,23 +1370,32 @@ bool C4Group::View(const char *szFiles)
 	ResetSearch();
 	while ((centry=SearchNextEntry(szFiles)))
 	{
+		printf("%*s %8d Bytes",
+		       maxfnlen,
+		       centry->FileName,
+		       centry->Size);
 		// convert centry->Time into time_t for localtime
 		time_t cur_time = centry->Time;
 		tm *pcoretm = localtime(&cur_time);
-		tm coretm = { 0 };
-		if (pcoretm) coretm = *pcoretm; else printf("(invalid timestamp) ");
-		centry->Time = cur_time;
+		if (pcoretm)
+		{
+			tm coretm = *pcoretm;
+			printf(" %02d.%02d.%02d %02d:%02d:%02d",
+			       coretm.tm_mday,coretm.tm_mon+1,coretm.tm_year%100,
+			       coretm.tm_hour,coretm.tm_min,coretm.tm_sec);
+		}
+		else
+		{
+			printf(" (invalid timestamp)");
+		}
 
-		printf("%*s %8d Bytes %02d.%02d.%02d %02d:%02d:%02d %s%08X %s\n",
-		       maxfnlen,
-		       centry->FileName,
-		       centry->Size,
-		       coretm.tm_mday,coretm.tm_mon+1,coretm.tm_year%100,
-		       coretm.tm_hour,coretm.tm_min,coretm.tm_sec,
-		       centry->HasCRC ? ((centry->HasCRC == C4GECS_New) ? "!" : "~") : " ",
-				       centry->HasCRC ? centry->CRC : 0,
-				       centry->ChildGroup ? "(Group)" : (centry->Executable ? "(Executable)" : ""));
-
+		if (centry->HasCRC)
+			printf(" %s%08X", (centry->HasCRC == C4GECS_New) ? "!" : "~", centry->CRC);
+		if (centry->ChildGroup)
+			printf(" (Group)");
+		if (centry->Executable)
+			printf(" (Executable)");
+		printf("\n");
 	}
 	printf("%d Entries, %d Bytes\n",fcount,bcount);
 
