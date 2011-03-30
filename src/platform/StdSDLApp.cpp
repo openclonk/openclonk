@@ -126,7 +126,7 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 		return false;
 
 	static SDL_Rect** modes = 0;
-	static unsigned modeCount = 0;
+	static int modeCount = 0;
 	if (!modes)
 	{
 		modes = SDL_ListModes(NULL, SDL_OPENGL | SDL_FULLSCREEN);
@@ -178,6 +178,7 @@ void CStdApp::RestoreVideoMode()
 // stubs
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
+	return false;
 }
 
 StdStrBuf CStdApp::Paste(bool fClipboard)
