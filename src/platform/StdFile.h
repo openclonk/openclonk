@@ -126,6 +126,7 @@ class DirectoryIterator
 public:
 	DirectoryIterator(const char * dirname);
 	DirectoryIterator();
+	DirectoryIterator & operator = (const DirectoryIterator &);
 	DirectoryIterator(const DirectoryIterator &);
 	~DirectoryIterator();
 

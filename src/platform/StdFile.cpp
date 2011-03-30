@@ -849,6 +849,14 @@ DirectoryIterator::DirectoryIterator(const DirectoryIterator &other)
 {
 	++p->ref;
 }
+
+DirectoryIterator & DirectoryIterator::operator = (const DirectoryIterator & other)
+{
+	p = other.p; iter = other.iter;
+	++p->ref;
+	return *this;
+}
+
 DirectoryIterator::~DirectoryIterator()
 {
 	if (--p->ref == 0)
