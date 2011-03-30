@@ -51,7 +51,7 @@ public:
 	static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data);
 	static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
 	static void OnRealizeStatic(GtkWidget* widget, gpointer user_data);
-	static gboolean OnExposeStatic(GtkWidget* widget, GdkEventExpose* event, gpointer user_data);
+	static gboolean OnExposeStatic(GtkWidget* widget, void *, gpointer user_data);
 	static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data);
 
 	static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);

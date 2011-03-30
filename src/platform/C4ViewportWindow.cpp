@@ -366,8 +366,11 @@ GtkWidget* C4ViewportWindow::InitGUI()
 
 	gtk_drag_dest_set(drawing_area, GTK_DEST_DEFAULT_ALL, drag_drop_entries, 1, GDK_ACTION_COPY);
 	g_signal_connect(G_OBJECT(drawing_area), "drag-data-received", G_CALLBACK(OnDragDataReceivedStatic), this);
+#if GTK_CHECK_VERSION(3,0,0)
+	g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(OnExposeStatic), this);
+#else
 	g_signal_connect(G_OBJECT(drawing_area), "expose-event", G_CALLBACK(OnExposeStatic), this);
-
+#endif
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPressStatic), this);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyReleaseStatic), this);
 	g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollStatic), this);
@@ -490,11 +493,9 @@ void C4ViewportWindow::OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContex
 	g_strfreev(uris);
 }
 
-gboolean C4ViewportWindow::OnExposeStatic(GtkWidget* widget, GdkEventExpose* event, gpointer user_data)
+gboolean C4ViewportWindow::OnExposeStatic(GtkWidget* widget, void *, gpointer user_data)
 {
 	C4Viewport* cvp = static_cast<C4ViewportWindow*>(user_data)->cvp;
-
-	// TODO: Redraw only event->area
 	cvp->Execute();
 	return true;
 }
