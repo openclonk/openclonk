@@ -1281,7 +1281,7 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 	pComp->Value(mkNamingAdapt(mkTransformAdapt(AttachTrans), "AttachTransformation"));
 	
 	uint8_t dwSyncFlags = static_cast<uint8_t>(Flags);
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, AM_Entries), "Flags"));
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, AM_Entries), "Flags", 0u));
 	if(pComp->isCompiler()) Flags = dwSyncFlags;
 
 	pComp->Value(mkParAdapt(*ChildDenumerator, this));
@@ -1813,7 +1813,8 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 				node = nodes.back();
 				nodes.erase(nodes.end()-1);
 
-				AnimationNodes.resize(node->Number+1);
+				if (AnimationNodes.size() <= node->Number)
+					AnimationNodes.resize(node->Number+1);
 				if(AnimationNodes[node->Number] != NULL) pComp->excCorrupt("Duplicate animation node number");
 				AnimationNodes[node->Number] = node;
 

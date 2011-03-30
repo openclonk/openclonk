@@ -903,8 +903,8 @@ struct StdBitfieldAdapt
 					// Remove bits
 					val &= ~pName->Val;
 				}
-			// Anything left is written as number
-			if (val)
+			// Anything left is written as number, or a simple 0 in case no default was used
+			if (val || fFirst)
 			{
 				// Put "|"
 				if (!fFirst) pComp->Separator(StdCompiler::SEP_VLINE);
