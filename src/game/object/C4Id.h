@@ -54,7 +54,7 @@ public:
 	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material
 	DEPRECATED static const C4ID Flag;
 	DEPRECATED static const C4ID Conkit; // Construction kit
-	DEPRECATED static const C4ID Clonk;
+	static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
 	DEPRECATED static const C4ID Melee;
 	DEPRECATED static const C4ID Bubble;
