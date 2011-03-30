@@ -50,6 +50,8 @@ protected:
 
 public:
 	void DoBack(); // back to main menu
+	
+	virtual bool SetSubscreen(const char *szToScreen); // go to specified property sheet
 
 public:
 	void RecreateDialog(bool fFade);
@@ -166,32 +168,62 @@ private:
 	{
 	private:
 		class C4KeyBinding *pKeyListener;
-		C4KeyCode key;
-		bool fGamepad;
-		int32_t iCtrlSet;
+		C4KeyCodeEx key;
+		const class C4PlayerControlAssignment *assignment;
+		const class C4PlayerControlAssignmentSet *assignment_set;
+
+		static StdStrBuf GetDlgMessage(const class C4PlayerControlAssignment *assignment, const class C4PlayerControlAssignmentSet *assignment_set);
+		static C4GUI::Icons GetDlgIcon(const class C4PlayerControlAssignmentSet *assignment_set);
 
 	protected:
 		bool KeyDown(const C4KeyCodeEx &key);
 	public:
-		KeySelDialog(int32_t iKeyID, int32_t iCtrlSet, bool fGamepad);
+		KeySelDialog(const class C4PlayerControlAssignment *assignment, const class C4PlayerControlAssignmentSet *assignment_set);
 		virtual ~KeySelDialog();
 
-		C4KeyCode GetKeyCode() { return key; }
+		C4KeyCodeEx GetKeyCode() { return key; }
 
 	};
 
-	// Clonk-key-button with a label showing its key name beside it
-	class KeySelButton : public C4GUI::IconButton
+	// list box of definable keys
+	class ControlConfigListBox : public C4GUI::ListBox
 	{
 	private:
-		int32_t iKeyID;
-		C4KeyCode key;
-	protected:
-		virtual void DrawElement(C4TargetFacet &cgo);
-		virtual bool IsComponentOutsideClientArea() { return true; }
+		// assignment key label - change key on click
+		class ControlAssignmentLabel : public C4GUI::Label
+		{
+		private:
+			class C4PlayerControlAssignment *assignment; // pointer into assignment set (not owned!)
+			class C4PlayerControlAssignmentSet *assignment_set; // pointer to assignment set (not owned!)
+
+			void UpdateAssignmentString();
+		protected:
+			virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam);
+
+		public:
+			ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds);
+		};
+
+		// item in list box
+		class ListItem : public C4GUI::Window
+		{
+		private:
+			ControlConfigListBox *parent_list;
+			ControlAssignmentLabel *assignment_label;
+
+		public:
+			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set);
+		};
+
+	private:
+		class C4PlayerControlAssignmentSet *set; // assignment set being configured by this box
+
 	public:
-		KeySelButton(int32_t iKeyID, const C4Rect &rcBounds, char cHotkey);
-		void SetKey(C4KeyCode keyTo) { key=keyTo; }
+		ControlConfigListBox(const C4Rect &rcBounds, class C4PlayerControlAssignmentSet *set);
+
+		void SetAssignmentSet(class C4PlayerControlAssignmentSet *new_set);
+
+		static void SetUserKey(class C4PlayerControlAssignmentSet *assignment_set, class C4PlayerControlAssignment *assignment, C4KeyCodeEx &key);
 	};
 
 	// config area to define a keyboard set
@@ -205,6 +237,7 @@ private:
 		class KeySelButton * KeyControlBtns[C4MaxKey];  // buttons to configure individual kbd set buttons
 		C4GamePadOpener *pGamepadOpener; // opened gamepad for configuration
 		C4StartupOptionsDlg *pOptionsDlg;
+		ControlConfigListBox *control_list;
 		class C4GUI::CheckBox *pGUICtrl;
 	public:
 		ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg);
@@ -214,7 +247,6 @@ private:
 		void UpdateCtrlSet();
 
 		void OnCtrlSetBtn(C4GUI::Control *btn);
-		void OnCtrlKeyBtn(C4GUI::Control *btn);
 		void OnResetKeysBtn(C4GUI::Control *btn);
 		void OnGUIGamepadCheckChange(C4GUI::Element *pCheckBox);
 	};

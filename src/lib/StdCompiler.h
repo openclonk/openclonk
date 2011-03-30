@@ -76,6 +76,9 @@ public:
 	// just a numerical value)?
 	virtual bool isVerbose()                      { return hasNaming(); }
 
+	// Is it a registry compiler with special handling for arrays?
+	virtual bool isRegistry()                     { return false; }
+
 	// callback by runtime-write-allowed adaptor used by compilers that may set runtime values only
 	virtual void setRuntimeWritesAllowed(int32_t iChange) { }
 

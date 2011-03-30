@@ -132,6 +132,7 @@ CStdFont &C4StartupGraphics::GetBlackFontByHeight(int32_t iHgt, float *pfZoom)
 
 // statics
 C4Startup::DialogID C4Startup::eLastDlgID = C4Startup::SDID_Main;
+StdCopyStrBuf C4Startup::sSubDialog = StdCopyStrBuf();
 bool C4Startup::fFirstRun = false;
 
 // startup singleton instance
@@ -151,7 +152,7 @@ C4Startup::~C4Startup()
 	delete pCurrDlg;
 }
 
-C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
+C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade, const char *szSubDialog)
 {
 	// can't go back twice, because dialog is not remembered: Always go back to main in this case
 	if (eToDlg == SDID_Back && (fLastDlgWasBack || !pLastDlg)) eToDlg = SDID_Main;
@@ -211,6 +212,8 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 	}
 	// Okay; now using this dialog
 	pCurrDlg = pToDlg;
+	// go to dialog subscreen
+	if (szSubDialog) pCurrDlg->SetSubscreen(szSubDialog);
 	// fade in new dlg
 	if (fFade)
 	{
@@ -263,7 +266,7 @@ void C4Startup::DoStartup()
 	if (pCurrDlg) { delete pCurrDlg; pCurrDlg = NULL; }
 
 	// start with the last dlg that was shown - at first startup main dialog
-	SwitchDialog(eLastDlgID);
+	SwitchDialog(eLastDlgID, true, sSubDialog.getData());
 
 	// show error dlg if restart
 	if (Game.fQuitWithError || GetFatalError())
@@ -351,6 +354,7 @@ void C4Startup::InitStartup()
 
 bool C4Startup::SetStartScreen(const char *szScreen)
 {
+	sSubDialog.Clear();
 	// set dialog ID to be shown to specified value
 	if (SEqualNoCase(szScreen, "main"))
 		eLastDlgID = SDID_Main;
@@ -362,6 +366,12 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 		eLastDlgID = SDID_NetJoin;
 	else if (SEqualNoCase(szScreen, "options"))
 		eLastDlgID = SDID_Options;
+	else if (SEqual2NoCase(szScreen, "options-"))
+	{
+		eLastDlgID = SDID_Options;
+		// subscreen of options
+		sSubDialog.Copy(szScreen+8);
+	}
 	else if (SEqualNoCase(szScreen, "plrsel"))
 		eLastDlgID = SDID_PlrSel;
 	else if (SEqualNoCase(szScreen, "about"))

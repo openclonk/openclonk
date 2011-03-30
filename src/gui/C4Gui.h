@@ -1029,6 +1029,8 @@ namespace C4GUI
 
 	protected:
 		StdStrBuf sText;    // button label
+		CStdFont *pCustomFont;    // custom font (if assigned)
+		DWORD dwCustomFontClr;    // text font color (valid only if pCustomFont)
 		bool fDown;         // if set, button is currently held down
 		bool fMouseOver;    // if set, the mouse hovers over the button
 		char cHotkey;   // hotkey for this button
@@ -1058,6 +1060,7 @@ namespace C4GUI
 		void SetCustomGraphics(DynBarFacet *pCustomGfx, DynBarFacet *pCustomGfxDown)
 		{ this->pCustomGfx = pCustomGfx; this->pCustomGfxDown = pCustomGfxDown; }
 		void SetEnabled(bool fToVal) { fEnabled=fToVal; if (!fEnabled) fDown=false; }
+		void SetFont(CStdFont *pFont, DWORD dwCustomFontClr=C4GUI_CaptionFontClr) { this->pCustomFont = pFont; this->dwCustomFontClr=dwCustomFontClr; }
 	};
 
 	// button using icon image
@@ -2241,6 +2244,11 @@ namespace C4GUI
 	{
 	public: RetryButton(const C4Rect &rtBounds) // ctor
 				: CloseButton(LoadResStr("IDS_BTN_RETRY"), rtBounds, true) {} };
+	// Reset button
+	class ResetButton : public CloseButton
+	{
+	public: ResetButton(const C4Rect &rtBounds) // ctor
+				: CloseButton(LoadResStr("[!]Reset"), rtBounds, true) {} };
 
 	// a simple message dialog
 	class MessageDialog : public Dialog
@@ -2249,7 +2257,7 @@ namespace C4GUI
 		bool fHasOK;
 		int32_t *piConfigDontShowAgainSetting;
 	public:
-		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16,
+		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16, btnReset=32,
 		               btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort
 		             };
 		enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };

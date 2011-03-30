@@ -248,11 +248,10 @@ void C4ConfigGamepad::Reset()
 	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, false));
 }
 
-void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
+void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 {
 #ifndef USE_CONSOLE
-	if (fKeysOnly) return;
-
+	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
 	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
 #endif
@@ -638,7 +637,7 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 }
 void C4ConfigControls::ResetKeys()
 {
-	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, true));
+	UserSets.Clear();
 }
 
 const char* C4Config::AtUserDataRelativePath(const char *szFilename)

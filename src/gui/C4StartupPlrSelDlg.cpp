@@ -1317,8 +1317,8 @@ void C4StartupPlrPropertiesDlg::OnClrSliderBChange(int32_t iNewVal)
 
 void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 {
-	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
-	if (!control_set) control_set = Game.PlayerControlAssignmentSets.GetDefaultSet();
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlUserAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	if (!control_set) control_set = Game.PlayerControlUserAssignmentSets.GetDefaultSet();
 	// update keyboard image of selected control
 	C4Facet fctCtrlPic;
 	if (control_set) fctCtrlPic = control_set->GetPicture();
@@ -1336,11 +1336,11 @@ void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
 {
 	// previous control set in list
-	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
-	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlUserAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	int32_t index = Game.PlayerControlUserAssignmentSets.GetSetIndex(control_set);
 	if (index < 0) index = 0; // defined control set not found - probably an old CR player file
-	if (!index--) index = Game.PlayerControlAssignmentSets.GetSetCount() - 1;
-	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
+	if (!index--) index = Game.PlayerControlUserAssignmentSets.GetSetCount() - 1;
+	control_set = Game.PlayerControlUserAssignmentSets.GetSetByIndex(index);
 	if (control_set) C4P.PrefControl = control_set->GetName();
 	UpdatePlayerControl();
 }
@@ -1348,11 +1348,11 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
 void C4StartupPlrPropertiesDlg::OnCtrlChangeRight(C4GUI::Control *pBtn)
 {
 	// next control set in list
-	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
-	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlUserAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	int32_t index = Game.PlayerControlUserAssignmentSets.GetSetIndex(control_set);
 	if (index < 0) index = 0; // defined control set not found - probably an old CR player file
-	if (++index >= int32_t(Game.PlayerControlAssignmentSets.GetSetCount())) index = 0;
-	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
+	if (++index >= int32_t(Game.PlayerControlUserAssignmentSets.GetSetCount())) index = 0;
+	control_set = Game.PlayerControlUserAssignmentSets.GetSetByIndex(index);
 	if (control_set) C4P.PrefControl = control_set->GetName();
 	UpdatePlayerControl();
 }

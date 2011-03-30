@@ -1458,13 +1458,13 @@ void C4Player::InitControl()
 	{
 		// Preferred control
 		ControlSetName = PrefControl;
-		ControlSet = Game.PlayerControlAssignmentSets.GetSetByName(ControlSetName.getData());
+		ControlSet = Game.PlayerControlUserAssignmentSets.GetSetByName(ControlSetName.getData());
 		// control set unassigned/not known? fallback to some default then (=first defined control set)
-		if (!ControlSet) ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
+		if (!ControlSet) ControlSet = Game.PlayerControlUserAssignmentSets.GetDefaultSet();
 		// gamepad control safety (assuming the default control set is not using gamepad)
 		if (ControlSet && ControlSet->HasGamepad() && !Config.General.GamepadEnabled)
 		{
-			ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
+			ControlSet = Game.PlayerControlUserAssignmentSets.GetDefaultSet();
 		}
 		// Choose next while control taken
 		// TODO

@@ -937,7 +937,7 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 		// Arrays were never allowed, so tell the scripter
 		throw new C4AulExecError(cthr->Obj, "array as parameter to AddMenuItem");
 	default:
-		return C4VBool(false);
+		return false;
 	}
 
 	// own value

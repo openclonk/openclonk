@@ -81,7 +81,7 @@ public:
 	C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 	C4Effect            *pGlobalEffects;
 	C4PlayerControlDefs PlayerControlDefs;
-	C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
+	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
 	C4VideoPlayer       VideoPlayer;
 	C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
@@ -227,6 +227,7 @@ public:
 	bool InitKeyboard(); // register main keyboard input functions
 	void UpdateLanguage();
 	bool InitPlayerControlSettings();
+	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
 
 protected:
 	void Default();

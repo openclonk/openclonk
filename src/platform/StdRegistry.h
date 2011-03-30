@@ -87,6 +87,7 @@ public:
 	// Properties
 	virtual bool hasNaming() { return true; }
 	virtual bool forceWrite() { return true; }
+	virtual bool isRegistry() { return true; }
 
 	// Naming
 	virtual bool Name(const char *szName);
@@ -121,9 +122,12 @@ private:
 	struct Key
 	{
 		StdStrBuf Name;
+		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle;
 		Key *Parent;
 	} *pKey;
+	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last written string. Used for separators within strings.
 
 	// Writing
 	void CreateKey(HKEY hParent = 0);
@@ -144,6 +148,7 @@ public:
 	// Properties
 	virtual bool isCompiler() { return true; }
 	virtual bool hasNaming() { return true; }
+	virtual bool isRegistry() { return true; }
 
 	// Naming
 	virtual bool Name(const char *szName);
@@ -177,11 +182,14 @@ private:
 	struct Key
 	{
 		StdStrBuf Name;
+		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle; // for keys only
 		Key *Parent;
 		bool Virtual;
 		DWORD Type; // for values only
 	} *pKey;
+	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last read string. Used for separators within strings.
 
 	// Reading
 	uint32_t ReadDWord();

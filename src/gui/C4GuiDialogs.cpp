@@ -1178,6 +1178,15 @@ namespace C4GUI
 				//rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus) btnFocus = pBtnNo;
 			}
+			// Reset
+			if (dwButtons & btnReset)
+			{
+				Button *pBtnReset = new ResetButton(rcBtn);
+				AddElement(pBtnReset); //pBtnAbort->SetToolTip("[!]Reset to default");
+				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
+				if (!btnFocus) btnFocus = pBtnReset;
+
+			}
 		}
 		if (btnFocus) SetFocus(btnFocus, false);
 		// resize to actually needed size

@@ -89,6 +89,8 @@ class C4StartupDlg : public C4GUI::FullscreenDialog
 {
 public:
 	C4StartupDlg(const char *szTitle) : C4GUI::FullscreenDialog(szTitle, NULL) {}
+
+	virtual bool SetSubscreen(const char *szToScreen) { return false; } // go to specified subdialog, e.g. a specific property sheet in the options dlg
 };
 
 class C4Startup
@@ -106,6 +108,7 @@ private:
 	bool fInStartup, fLastDlgWasBack;
 	static C4Startup *pInstance; // singleton instance
 	static DialogID eLastDlgID;
+	static StdCopyStrBuf sSubDialog; // subdialog to go into (e.g.: property sheet in options dialog)
 	static bool fFirstRun;
 
 	C4StartupDlg *pLastDlg, *pCurrDlg; // startup dlg that is currently shown, and dialog that was last shown
@@ -113,7 +116,7 @@ private:
 protected:
 	void DoStartup(); // create main dlg
 	void DontStartup(); // close main dlg
-	class C4StartupDlg *SwitchDialog(DialogID eToDlg, bool fFade=true); // do transition to another dialog
+	class C4StartupDlg *SwitchDialog(DialogID eToDlg, bool fFade=true, const char *szSubDialog=NULL); // do transition to another dialog
 
 	friend class C4StartupMainDlg;
 	friend class C4StartupNetDlg;

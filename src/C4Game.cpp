@@ -258,10 +258,6 @@ bool C4Game::OpenScenario()
 	// Game (runtime data)
 	GameText.Load(ScenarioFile,C4CFN_Game);
 
-	// SaveGame definition preset override (not needed with new scenarios that
-	// have def specs in scenario core, keep for downward compatibility)
-	if (C4S.Head.SaveGame) DefinitionFilenamesFromSaveGame();
-
 	// String tables
 	ScenarioLangStringTable.LoadEx(ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
@@ -627,7 +623,8 @@ void C4Game::Clear()
 	KeyboardInput.Clear();
 	SetMusicLevel(100);
 	PlayList.Clear();
-	PlayerControlAssignmentSets.Clear();
+	PlayerControlUserAssignmentSets.Clear();
+	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
 
@@ -2082,6 +2079,10 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
 		PlayerControlDefs.FinalInit();
 
+		// Now that all controls and assignments are known, resolve user overloads on control assignments
+		if (!InitPlayerControlUserSettings()) return false;
+		// (Theoretically, PlayerControlDefaultAssignmentSets could be cleared now. However, the amount of memory used is negligible)
+
 		// Link scripts
 		if (!LinkScriptEngine()) return false;
 		SetInitProgress(58);
@@ -2289,7 +2290,7 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
+		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
 			return false;
 
 	return true;
@@ -2678,8 +2679,8 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 			{
 				// local definitions loaded successfully - merge into global definitions
 				PlayerControlDefs.MergeFrom(PlayerControlFile.GetControlDefs());
-				PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), true);
-				PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
+				PlayerControlDefaultAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), C4PlayerControlAssignmentSet::MM_LowPrio);
+				PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
 			}
 		}
 		// load all scripts in there
@@ -2810,14 +2811,27 @@ void C4Game::UpdateLanguage()
 
 bool C4Game::InitPlayerControlSettings()
 {
+	// Load controls and default control sets
 	C4PlayerControlFile PlayerControlFile;
 	if (!PlayerControlFile.Load(Application.SystemGroup, C4CFN_PlayerControls, &MainSysLangStringTable)) { LogFatal("[!]Error loading player controls"); return false; }
 	PlayerControlDefs = PlayerControlFile.GetControlDefs();
-	PlayerControlAssignmentSets.Clear();
-	PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), false);
-	PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
-	// And overwrites from config
-	//PlayerControlAssignmentSets.MergeFrom(Config.Controls.Assignments);
+	PlayerControlDefaultAssignmentSets.Clear();
+	PlayerControlDefaultAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), C4PlayerControlAssignmentSet::MM_Normal);
+	PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	// Merge w/ config settings into user control sets
+	// User settings will be cleared and re-merged again later after scenario/definition control overloads, but initialization
+	//  is needed already for config dialogs
+	if (!InitPlayerControlUserSettings()) return false;
+	return true;
+}
+
+bool C4Game::InitPlayerControlUserSettings()
+{
+	// Merge config control settings with user settings
+	PlayerControlUserAssignmentSets.Clear();
+	PlayerControlUserAssignmentSets.MergeFrom(PlayerControlDefaultAssignmentSets, C4PlayerControlAssignmentSet::MM_Inherit);
+	PlayerControlUserAssignmentSets.MergeFrom(Config.Controls.UserSets, C4PlayerControlAssignmentSet::MM_ConfigOverload);
+	PlayerControlUserAssignmentSets.ResolveRefs(&PlayerControlDefs);
 	return true;
 }
 

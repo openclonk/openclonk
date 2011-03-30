@@ -184,7 +184,7 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 		{
 			// key was not assigned during compilation - this means it's a regular key (or undefined)
 			// store this as the name
-			sKeyName.Copy(Key.ToString(false, false));
+			UpdateKeyName();
 		}
 		else if (Key.dwShift)
 		{
@@ -194,9 +194,17 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 	}
 	else
 	{
-		// decompiler: Just write the stored key name; regardless of whether it's a key, undefined or a reference
+		// decompiler: If there's a stored key name, just write it. Regardless of whether it's a key, undefined or a reference
+		// IF no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
+		if (!sKeyName) UpdateKeyName();
 		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
 	}
+}
+
+void C4PlayerControlAssignment::KeyComboItem::UpdateKeyName()
+{
+	// update key name from key
+	sKeyName.Copy(Key.ToString(false, false));
 }
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
@@ -219,6 +227,31 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->NameEnd();
 	// newly loaded structures are not resolved
 	if (pComp->isCompiler()) fRefsResolved = false;
+}
+
+void C4PlayerControlAssignment::ResetKeyToInherited()
+{
+	if (inherited_assignment) CopyKeyFrom(*inherited_assignment);
+}
+
+void C4PlayerControlAssignment::SetKey(const C4KeyCodeEx &key)
+{
+	// set as one-key-combo
+	KeyCombo.resize(1);
+	KeyCombo[0].Key = key;
+	KeyCombo[0].Key.fRepeated = false;
+	KeyCombo[0].sKeyName.Clear();
+	fComboIsSequence = false;
+	TriggerKey = key;
+}
+
+void C4PlayerControlAssignment::CopyKeyFrom(const C4PlayerControlAssignment &src_assignment)
+{
+	// just copy key settings; keep control and priorities
+	KeyCombo = src_assignment.KeyCombo;
+	TriggerKey = src_assignment.TriggerKey;
+	fComboIsSequence = src_assignment.fComboIsSequence;
+	if (!src_assignment.fRefsResolved) fRefsResolved = false;
 }
 
 bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs)
@@ -345,10 +378,23 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 
 /* C4PlayerControlAssignmentSet */
 
+void C4PlayerControlAssignmentSet::InitEmptyFromTemplate(const C4PlayerControlAssignmentSet &template_set)
+{
+	// copy all fields except assignments
+	sName.Copy(template_set.sName);
+	sGUIName.Copy(template_set.sGUIName);
+	sParentSetName.Copy(template_set.sParentSetName);
+	has_keyboard = template_set.has_keyboard;
+	has_mouse = template_set.has_mouse;
+	has_gamepad = template_set.has_gamepad;
+}
+
 void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 {
 	if (!pComp->Name("ControlSet")) { pComp->NameEnd(); pComp->excNotFound("ControlSet"); }
 	pComp->Value(mkNamingAdapt(mkParAdapt(sName, StdCompiler::RCT_All), "Name", "None")); // can't do RCT_Idtf because of wildcards
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", "undefined"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sParentSetName, StdCompiler::RCT_Idtf), "Parent", ""));
 	pComp->Value(mkNamingAdapt(has_keyboard, "Keyboard", true));
 	pComp->Value(mkNamingAdapt(has_mouse, "Mouse", true));
 	pComp->Value(mkNamingAdapt(has_gamepad, "Gamepad", false));
@@ -356,7 +402,7 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	pComp->NameEnd();
 }
 
-void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, bool fLowPrio)
+void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, MergeMode merge_mode)
 {
 	// take over all assignments defined in Src
 	for (C4PlayerControlAssignmentVec::const_iterator i = Src.Assignments.begin(); i != Src.Assignments.end(); ++i)
@@ -364,7 +410,7 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 		const C4PlayerControlAssignment &SrcAssignment = *i;
 		bool fIsReleaseKey = !!(SrcAssignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
 		// overwrite same def and release key state
-		if (!fLowPrio && SrcAssignment.IsOverrideAssignments())
+		if (merge_mode != MM_LowPrio && SrcAssignment.IsOverrideAssignments())
 		{
 			// high priority override control clears all previous (very inefficient method...might as well recreate the whole list)
 			bool any_remaining = true;
@@ -384,7 +430,7 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 					}
 			}
 		}
-		else if (fLowPrio)
+		else if (merge_mode == MM_LowPrio || merge_mode == MM_ConfigOverload)
 		{
 			// if this is low priority, another override control kills this
 			bool any_override = false;
@@ -395,6 +441,12 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 					if (fSelfIsReleaseKey == fIsReleaseKey)
 					{
 						any_override = true;
+						// config overloads just change the key of the inherited assignment
+						if (merge_mode == MM_ConfigOverload)
+						{
+							(*j).CopyKeyFrom(SrcAssignment);
+							(*j).SetInherited(false);
+						}
 						break;
 					}
 				}
@@ -402,7 +454,30 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 		}
 		// new def: Append a copy
 		Assignments.push_back(SrcAssignment);
+		// inherited marker
+		if (merge_mode == MM_Inherit)
+		{
+			Assignments.back().SetInherited(true);
+			Assignments.back().SetInheritedAssignment(&SrcAssignment);
+		}
 	}
+}
+
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::CreateAssignmentForControl(const char *control_name)
+{
+	Assignments.push_back(C4PlayerControlAssignment());
+	Assignments.back().SetControlName(control_name);
+	return &Assignments.back();
+}
+
+void C4PlayerControlAssignmentSet::RemoveAssignmentByControlName(const char *control_name)
+{
+	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+		if (SEqual((*i).GetControlName(), control_name))
+		{
+			Assignments.erase(i);
+			return;
+		}
 }
 
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
@@ -417,6 +492,12 @@ bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 	return true;
 }
 
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByIndex(int32_t index)
+{
+	if (index<0 || index>=int32_t(Assignments.size())) return NULL;
+	return &Assignments[index];
+}
+
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlName(const char *szControlName)
 {
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
@@ -427,7 +508,7 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlN
 	return NULL;
 }
 
-C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int control)
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int32_t control)
 {
 	// TODO: Might want to stuff this into a vector indexed by control for faster lookup
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
@@ -509,8 +590,8 @@ C4Facet C4PlayerControlAssignmentSet::GetPicture() const
 	// get image to be drawn to represent this control set
 	// picture per set not implemented yet. So just default to out standard images
 	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(GetGamepadIndex());
+	if (HasMouse()) return ::GraphicsResource.fctMouse; // todo: probably mouse PLUS keyboard?
 	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(0 /* todo*/);
-	if (HasMouse()) return ::GraphicsResource.fctMouse; // mouse only???
 	return C4Facet();
 }
 
@@ -530,10 +611,19 @@ void C4PlayerControlAssignmentSets::Clear()
 
 void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 {
+	if (pComp->isDecompiler() && pComp->isRegistry())
+	{
+		pComp->Default("ControlSets"); // special registry compiler: Clean out everything before
+	}
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE), "ControlSets", AssignmentSetList()));
 }
 
-void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSets &Src, bool fLowPrio)
+bool C4PlayerControlAssignmentSets::operator ==(const C4PlayerControlAssignmentSets &cmp) const
+{
+	return Sets == cmp.Sets;
+}
+
+void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSets &Src, C4PlayerControlAssignmentSet::MergeMode merge_mode)
 {
 	// take over all assignments in known sets and new sets defined in Src
 	for (AssignmentSetList::const_iterator i = Src.Sets.begin(); i != Src.Sets.end(); ++i)
@@ -544,9 +634,14 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 		if (!fIsWildcardSet)
 		{
 			C4PlayerControlAssignmentSet *pPrevSet = GetSetByName(SrcSet.GetName());
+			if (!pPrevSet && merge_mode == C4PlayerControlAssignmentSet::MM_Inherit)
+			{
+				// inherited sets must go through merge procedure to set inherited links
+				pPrevSet = CreateEmptySetByTemplate(SrcSet);
+			}
 			if (pPrevSet)
 			{
-				pPrevSet->MergeFrom(SrcSet, fLowPrio);
+				pPrevSet->MergeFrom(SrcSet, merge_mode);
 			}
 			else
 			{
@@ -562,7 +657,7 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 				C4PlayerControlAssignmentSet &DstSet = *j;
 				if (WildcardMatch(SrcSet.GetName(), DstSet.GetName()))
 				{
-					DstSet.MergeFrom(SrcSet, fLowPrio);
+					DstSet.MergeFrom(SrcSet, merge_mode);
 				}
 			}
 		}
@@ -609,6 +704,23 @@ C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByIndex(int32
 	AssignmentSetList::iterator i = Sets.begin();
 	while (index--) ++i;
 	return &*i;
+}
+
+C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::CreateEmptySetByTemplate(const C4PlayerControlAssignmentSet &template_set)
+{
+	Sets.push_back(C4PlayerControlAssignmentSet());
+	Sets.back().InitEmptyFromTemplate(template_set);
+	return &Sets.back();
+}
+
+void C4PlayerControlAssignmentSets::RemoveSetByName(const char *set_name)
+{
+	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
+		if (SEqual(set_name, (*i).GetName()))
+		{
+			Sets.erase(i);
+			return;
+		}
 }
 
 
