@@ -56,7 +56,7 @@ public:
 	DEPRECATED static const C4ID Conkit; // Construction kit
 	static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
-	DEPRECATED static const C4ID Melee;
+	static const C4ID Melee;
 	DEPRECATED static const C4ID Bubble;
 
 	C4ID(): v(None.v) {}
