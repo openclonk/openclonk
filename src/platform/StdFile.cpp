@@ -845,7 +845,7 @@ DirectoryIterator::DirectoryIterator()
 		: p(new DirectoryIteratorP), iter(p->files.end())
 {}
 DirectoryIterator::DirectoryIterator(const DirectoryIterator &other)
-		: p(other.p), iter(p->files.begin())
+		: p(other.p), iter(other.iter)
 {
 	++p->ref;
 }
