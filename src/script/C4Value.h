@@ -40,8 +40,10 @@ enum C4V_Type
 	C4V_C4DefEnum=10, // enumerated definition
 	C4V_Enum=11 // enumerated array or proplist
 };
-
-#define C4V_Last (int) C4V_Array
+// last C4V_Type that doesn't vanish in Denumerate
+#define C4V_Last ((int) C4V_Array)
+// first C4V_Type that is a pointer
+#define C4V_FirstPointer C4V_PropList
 
 const char* GetC4VName(const C4V_Type Type);
 
@@ -280,7 +282,7 @@ ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
 	assert(nType != C4V_Any || !nData);
 	// Do not add this to the same linked list twice.
-	if (Data == nData && Type == nType) return;
+	if (Data == nData && Type >= C4V_FirstPointer) return;
 
 	C4V_Data oData = Data;
 	C4V_Type oType = Type;
