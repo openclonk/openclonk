@@ -394,16 +394,15 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		assert(fCompiler);
 		C4ID id;
 		pComp->Value(id);
-		Data.PropList = Definitions.ID2Def(id);
-		Type = C4V_PropList;
-		if (!Data.PropList)
+		C4PropList * p = Definitions.ID2Def(id);
+		if (!p)
 		{
-			LogF("ERROR: Definition %s is missing.", id.ToString());
-			Type = C4V_Any;
+			Set0();
+			pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
 		}
 		else
 		{
-			Data.PropList->AddRef(this);
+			SetPropList(p);
 		}
 		break;
 	}
