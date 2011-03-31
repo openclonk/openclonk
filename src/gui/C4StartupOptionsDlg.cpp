@@ -259,13 +259,14 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 	C4KeyCodeEx key(0);
 	if (assignment) key = assignment->GetTriggerKey();
 	SetText(key.ToString(true, true).getData());
+	SetColor((assignment && assignment->IsKeyChanged()) ? C4GUI_CaptionFontClr : C4GUI_InactCaptionFontClr);
 }
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::ControlConfigListBox::ListItem
 
 C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set)
- : C4GUI::Window(), parent_list(parent_list), assignment_label(NULL)
+ : C4GUI::Window(), parent_list(parent_list), assignment_label(NULL), has_extra_spacing(false)
 {
 	int32_t margin = 2;
 	// adding to listbox will size the element horizontally and move to proper position
@@ -273,6 +274,7 @@ C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListB
 	SetBounds(C4Rect(0,0,42,height));
 	parent_list->InsertElement(this, NULL);
 	int32_t name_col_width = GetBounds().Wdt * 2/3;
+	if (assignment && assignment->IsGroupStart()) has_extra_spacing = true;
 	// child elements: two labels for two columns
 	int32_t con = assignment->GetControl();
 	const C4PlayerControlDef *con_def = Game.PlayerControlDefs.GetControlByIndex(con);
@@ -305,8 +307,14 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerC
 		int32_t i=0;
 		while (assignment = set->GetAssignmentByIndex(i++))
 		{
-			ListItem *element = new ListItem(this, assignment, set);
-			AddElement(element);
+			// only show assignments of GUI-named controls
+			int32_t ctrl = assignment->GetControl();
+			const C4PlayerControlDef *def = Game.PlayerControlDefs.GetControlByIndex(ctrl);
+			if (def && def->GetGUIName() && *def->GetGUIName())
+			{
+				ListItem *element = new ListItem(this, assignment, set);
+				AddElement(element);
+			}
 		}
 	}
 }

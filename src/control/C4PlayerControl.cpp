@@ -44,7 +44,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 {
 	if (!pComp->Name("ControlDef")) { pComp->NameEnd(); pComp->excNotFound("ControlDef"); }
 	pComp->Value(mkNamingAdapt(mkParAdapt(sIdentifier, StdCompiler::RCT_Idtf), "Identifier", "None"));
-	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", "undefined"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIDesc, StdCompiler::RCT_All), "GUIDesc", ""));
 	pComp->Value(mkNamingAdapt(fGlobal, "Global", false));
 	pComp->Value(mkNamingAdapt(fIsHoldKey, "Hold", false));
@@ -214,6 +214,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(fComboIsSequence, "ComboIsSequence", false));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
+	pComp->Value(mkNamingAdapt(is_group_start, "Group", false));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] =
 	{
 		{ "Default",      CTM_Default  },
@@ -232,6 +233,14 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 void C4PlayerControlAssignment::ResetKeyToInherited()
 {
 	if (inherited_assignment) CopyKeyFrom(*inherited_assignment);
+}
+
+bool C4PlayerControlAssignment::IsKeyChanged() const
+{
+	// no inherited assignment? Then the key is always custom
+	if (!inherited_assignment) return true;
+	// otherwise, compare
+	return KeyCombo != inherited_assignment->KeyCombo || fComboIsSequence != inherited_assignment->fComboIsSequence;
 }
 
 void C4PlayerControlAssignment::SetKey(const C4KeyCodeEx &key)
@@ -487,9 +496,14 @@ bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 		if (!(*i).IsRefsResolved())
 			if (!(*i).ResolveRefs(this, pDefs))
 				return false;
-	// now sort assignments by priority
-	std::sort(Assignments.begin(), Assignments.end());
 	return true;
+}
+
+void C4PlayerControlAssignmentSet::SortAssignments()
+{
+	// final init: sort assignments by priority
+	// note this screws up sorting for config dialog
+	std::sort(Assignments.begin(), Assignments.end());
 }
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByIndex(int32_t index)
@@ -669,6 +683,12 @@ bool C4PlayerControlAssignmentSets::ResolveRefs(C4PlayerControlDefs *pDefs)
 	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
 		if (!(*i).ResolveRefs(pDefs)) return false;
 	return true;
+}
+
+void C4PlayerControlAssignmentSets::SortAssignments()
+{
+	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
+		(*i).SortAssignments();
 }
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const char *szName)

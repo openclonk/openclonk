@@ -530,12 +530,14 @@
 		[Assignment]
 		Key=Q
 		Control=Backpack
+		Group=1
 	
 		# Menu
 
 		[Assignment]
 		Key=F
 		Control=PlayerMenu
+		Group=1
 		
 		[Assignment]
 		Key=Space
@@ -553,6 +555,7 @@
 		Key=A
 		Priority=50
 		Control=Left
+		Group=1
 
 		[Assignment]
 		Key=D
@@ -580,12 +583,14 @@
 		Key=Space
 		Priority=35
 		Control=Interact
+		Group=1
 		
 		# Crew
 		
 		[Assignment]
 		Key=R
 		Control=PreviousCrew
+		Group=1
 		
 		[Assignment]
 		Key=T
@@ -597,6 +602,7 @@
 		Key=GameMouse1ButtonLeft
 		Priority=100
 		Control=Use
+		Group=1
 		
 		[Assignment]
 		Key=GameMouse1ButtonRight
@@ -621,6 +627,7 @@
 		Key=Mouse1Wheel1Up
 		Priority=100
 		Control=WheelZoomIn
+		Group=1
 		
 		[Assignment]
 		Key=Mouse1Wheel1Down

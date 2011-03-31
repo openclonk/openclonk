@@ -2081,6 +2081,8 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 
 		// Now that all controls and assignments are known, resolve user overloads on control assignments
 		if (!InitPlayerControlUserSettings()) return false;
+		// Sort assignments by priority. Should be done last, because the user should not see this order in the control config dialog
+		PlayerControlDefaultAssignmentSets.SortAssignments();
 		// (Theoretically, PlayerControlDefaultAssignmentSets could be cleared now. However, the amount of memory used is negligible)
 
 		// Link scripts

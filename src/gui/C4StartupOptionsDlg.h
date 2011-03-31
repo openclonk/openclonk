@@ -210,6 +210,9 @@ private:
 		private:
 			ControlConfigListBox *parent_list;
 			ControlAssignmentLabel *assignment_label;
+			bool has_extra_spacing; // if true, add a bit of spacing on top of this item to group elements
+
+			virtual int32_t GetListItemTopSpacing() { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
 
 		public:
 			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set);

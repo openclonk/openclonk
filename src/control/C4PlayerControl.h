@@ -158,6 +158,7 @@ private:
 	int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 	int32_t iPriority;          // higher priority assignments get handled first
 	bool fOverrideAssignments;  // override all other assignments to the same key?
+	bool is_group_start; // true for first assignment in a group (for grouping in control config list box)
 
 	const C4PlayerControlAssignment *inherited_assignment; // valid for assignments that were copied from a parent: source assignment
 	bool is_inherited; // set for assignments that were copied from a parent set without modification
@@ -179,7 +180,7 @@ private:
 	bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 public:
-	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false) {}
+	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), is_group_start(false) {}
 	~C4PlayerControlAssignment() {}
 
 	void CompileFunc(StdCompiler *pComp);
@@ -189,6 +190,7 @@ public:
 	void SetInherited(bool to_val) { is_inherited = to_val; }
 	void SetInheritedAssignment(const C4PlayerControlAssignment *to_val) { inherited_assignment = to_val; }
 	void ResetKeyToInherited();
+	bool IsKeyChanged() const;
 	void SetControlName(const char *control_name) { sControlName.Copy(control_name); }
 	void SetKey(const C4KeyCodeEx &key);
 
@@ -196,6 +198,7 @@ public:
 	bool operator <(const C4PlayerControlAssignment &cmp) const { return iPriority > cmp.iPriority; } // assignments are processed in DESCENDING priority!
 	const char *GetControlName() const { return sControlName.getData(); }
 	int32_t GetControl() const { return iControl; }
+	bool IsGroupStart() const { return is_group_start; }
 	bool IsRefsResolved() const { return fRefsResolved; }
 	bool IsAlwaysUnhandled() const { return !!(iTriggerMode & CTM_AlwaysUnhandled); }
 	int32_t GetTriggerMode() const { return iTriggerMode; }
@@ -228,6 +231,7 @@ public:
 
 	void CompileFunc(StdCompiler *pComp);
 	bool ResolveRefs(C4PlayerControlDefs *pControlDefs); // resolve references between assignments
+	void SortAssignments();
 
 	enum MergeMode { MM_Normal, MM_LowPrio, MM_Inherit, MM_ConfigOverload };
 
@@ -272,6 +276,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 	bool operator ==(const C4PlayerControlAssignmentSets &cmp) const;
 	bool ResolveRefs(C4PlayerControlDefs *pControlDefs); // resolve references between assignments
+	void SortAssignments();
 
 	void MergeFrom(const C4PlayerControlAssignmentSets &Src, C4PlayerControlAssignmentSet::MergeMode merge_mode); // take over all assignments in known sets and new sets defined in Src
 
