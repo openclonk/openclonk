@@ -28,24 +28,38 @@
 
 void C4PropList::AddRef(C4Value *pRef)
 {
+#ifdef _DEBUG
+	C4Value * pVal = FirstRef;
+	while (pVal)
+	{
+		assert(pVal != pRef);
+		pVal = pVal->NextRef;
+	}
+#endif
 	pRef->NextRef = FirstRef;
 	FirstRef = pRef;
 }
 
 void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 {
+	assert(FirstRef);
 	// References to objects never have HasBaseArray set
 	if (pRef == FirstRef)
+	{
 		FirstRef = pNextRef;
+		if (pNextRef) return;
+	}
 	else
 	{
-		C4Value *pVal = FirstRef;
-		while (pVal->NextRef && pVal->NextRef != pRef)
-			pVal = pVal->NextRef;
-		assert(pVal->NextRef);
-		pVal->NextRef = pNextRef;
+		C4Value *pPrev = FirstRef;
+		while (pPrev->NextRef != pRef)
+		{
+			pPrev = pPrev->NextRef;
+			assert(pPrev);
+		}
+		pPrev->NextRef = pNextRef;
+		return;
 	}
-	if (FirstRef) return;
 	// Only pure script proplists are garbage collected here, host proplists
 	// like definitions and effects have their own memory management.
 	if (IsScriptPropList()) delete this;

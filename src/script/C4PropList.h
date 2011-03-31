@@ -108,7 +108,7 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
-	C4Value *FirstRef; // No-Save	
+	C4Value *FirstRef; // No-Save
 
 private:
 	C4Set<C4Property> Properties;
