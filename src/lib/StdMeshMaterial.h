@@ -51,6 +51,7 @@ class StdMeshMaterialTextureLoader
 {
 public:
 	virtual C4Surface* LoadTexture(const char* filename) = 0;
+	virtual ~StdMeshMaterialTextureLoader() {}
 };
 
 class StdMeshMaterialTextureUnit

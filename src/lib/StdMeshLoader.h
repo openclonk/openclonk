@@ -33,6 +33,7 @@ class StdMeshSkeletonLoader
 {
 public:
 	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
+	virtual ~StdMeshSkeletonLoader() {}
 };
 
 class StdMeshLoader

@@ -51,6 +51,7 @@ namespace C4SoundLoaders
 			next = first_loader;
 			first_loader = this;
 		}
+		virtual ~SoundLoader() {}
 		virtual bool ReadInfo(SoundInfo* info, BYTE* data, size_t data_length, uint32_t options = 0) = 0;
 	};
 

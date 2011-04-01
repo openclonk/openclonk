@@ -25,7 +25,7 @@ if RECENT_GCC
 GCC_FLAGS = -pipe
 WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
--Wno-reorder -Wno-unused-parameter
+-Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
 ##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
 else
@@ -691,6 +691,7 @@ endif
 EXTRA_DIST = \
   Version.txt \
   CMakeLists.txt \
+  Makefile.am \
   config.h.cmake \
   planet/System.ocg/LanguageUS.txt \
   planet/System.ocg/LanguageDE.txt \
