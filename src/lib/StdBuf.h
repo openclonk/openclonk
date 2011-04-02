@@ -389,6 +389,14 @@ public:
 	StdCopyBuf(const StdCopyBuf &Buf2, bool fCopy = true)
 			: StdBuf(Buf2.getRef(), fCopy)
 	{ }
+#ifdef HAVE_RVALUE_REF
+	StdCopyBuf(StdBuf RREF Buf2, bool fCopy = false)
+			: StdBuf(std::move(Buf2), fCopy)
+	{ }
+	StdCopyBuf(StdCopyBuf RREF Buf2, bool fCopy = false)
+			: StdBuf(std::move(Buf2), fCopy)
+	{ }
+#endif
 
 	// Set by constant data. Copies data by default.
 	StdCopyBuf(const void *pData, size_t iSize, bool fCopy = true)
@@ -425,10 +433,10 @@ public:
 	// This constructor is important, because the compiler will create one
 	// otherwise, despite having two other constructors to choose from
 	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
-			: StdBuf(std::move(Buf2), fCopy)
+			: StdBuf(Buf2, fCopy)
 	{ }
 	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
-			: StdBuf(Buf2, fCopy)
+			: StdBuf(std::move(Buf2), fCopy)
 	{ }
 #endif
 
@@ -702,11 +710,23 @@ public:
 	StdCopyStrBuf(const StdCopyStrBuf &Buf2, bool fCopy = true)
 			: StdStrBuf(Buf2.getRef(), fCopy)
 	{ }
+#ifdef HAVE_RVALUE_REF
+	StdCopyStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+			: StdStrBuf(std::move(Buf2), fCopy)
+	{ }
+	StdCopyStrBuf(StdCopyStrBuf RREF Buf2, bool fCopy = false)
+			: StdStrBuf(std::move(Buf2), fCopy)
+	{ }
+#endif
 
 	// Set by constant data. Copies data if desired.
 	explicit StdCopyStrBuf(const char *pData, bool fCopy = true)
 			: StdStrBuf(pData, fCopy)
 	{ }
+
+#ifdef _WIN32
+	explicit StdCopyStrBuf(const wchar_t * utf16): StdStrBuf(utf16) {}
+#endif
 
 	StdCopyStrBuf &operator = (const StdStrBuf &Buf2) { Copy(Buf2); return *this; }
 	StdCopyStrBuf &operator = (const StdCopyStrBuf &Buf2) { Copy(Buf2); return *this; }
