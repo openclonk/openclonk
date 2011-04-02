@@ -1,46 +1,69 @@
-/*-- Foundry --*/
+/*--
+	Foundry
+	Authors: Ringwaul, Maikel
+	
+	Melts iron ore to metal, using some sort of fuel.
+--*/
+
+
+#include Library_Producer
 
 public func Initialize()
 {
-	AddEffect("SmeltCheck", this, 1, 12, this);
+	_inherited(...);
+	queue = [[Metal, nil]];
+	return;
 }
 
-local exit_x = -20;
-local exit_y = 16;
+public func CanProduceItem(id item_id)
+{
+	if (item_id == Metal)
+		return true;	
+	return false;
+}
+
+public func NeedsRawMaterial(id rawmat_id)
+{
+	if (rawmat_id == Coal || rawmat_id == Wood || rawmat_id == Ore)
+		return true;
+	return false;
+}
+
+public func IsProducing()
+{
+	if (GetEffect("Smelting", this))
+		return true;
+	return false;
+}
+
+private func Produce(id item_id)
+{
+	// Check if material is available.
+	if (item_id == Metal)
+		if (!FindContents(Ore))
+			return false;
+	// Check if fuel is available, TODO: oil
+	if (ContentsCount(Wood) < 2 &&  !FindContents(Coal))
+		return false;
+	// If already busy, wait a little.
+	if (IsProducing())
+		return false;
+	// Start production.	
+	AddEffect("Smelting",this,1,1,this);
+	Sound("FurnaceStart.ogg");
+	AddEffect("IntSoundDelay",this,1,1,this);
+	return true;
+}
+
 local cast = 0;
 
-public func RejectCollect(id def, object obj)
+protected func Collection()
 {
-	if(obj->GetID() != Ore && obj->~IsFuel() != true) return true;
-	else
-	{
-		Sound("Clonk.ogg");
-		return false;
-	}
+	Sound("Clonk.ogg");
+	return;
 }
 
-public func FoundryEject(object target)
-{
-	target->Exit(-20 + exit_x,exit_y,-1,0);
-	//sound;
-}
-
-public func FxSmeltCheckTimer(object target, int num, int timer)
-{
-	if(ContentsCount(Wood) >= 2 || FindContents(Coal))
-		if(FindContents(Ore))
-		{
-			if(!GetEffect("Smelting",this) && cast == 0)
-			{
-				AddEffect("Smelting",this,1,1,this);
-				Sound("FurnaceStart.ogg");
-				AddEffect("IntSoundDelay",this,1,1,this);
-			}
-			return;
-		}
-}
-
-public func FxSmeltingStart(object target, int num, int temporary)
+public func FxSmeltingStart(object target, num, int temporary)
 {
 	FindContents(Ore)->RemoveObject();
 
@@ -61,7 +84,7 @@ public func FxSmeltingStart(object target, int num, int temporary)
 	}
 }
 
-public func FxSmeltingTimer(object target, int num, int timer)
+public func FxSmeltingTimer(object target, num, int timer)
 {
 	Message(Format("Smelting %d",timer));
 	//Visuals
@@ -98,11 +121,11 @@ public func FxSmeltingTimer(object target, int num, int timer)
 	}
 }
 
-public func FxEjectMetalTimer(object target, int num, int timer)
+public func FxEjectMetalTimer(object target, num, int timer)
 {
 	if(timer > 24)
 	{
-		var metal = CreateObject(Metal, exit_x, exit_y);
+		var metal = CreateObject(Metal, -20, 16);
 		metal->SetSpeed(0,-17);
 		metal->SetR(30 - Random(59));
 		Sound("Pop.ogg");
@@ -111,7 +134,7 @@ public func FxEjectMetalTimer(object target, int num, int timer)
 	}
 }
 
-public func FxIntSoundDelayTimer(object target, int num, int timer)
+public func FxIntSoundDelayTimer(object target, num, int timer)
 {
 	if(timer >= 100)
 	{
