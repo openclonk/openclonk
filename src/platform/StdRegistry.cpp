@@ -30,105 +30,6 @@
 #include <C4windowswrapper.h>
 #include <stdio.h>
 
-bool DeleteRegistryValue(const char *szSubKey, const char *szValueName)
-{
-	return DeleteRegistryValue(HKEY_CURRENT_USER,szSubKey,szValueName);
-}
-
-bool DeleteRegistryValue(HKEY hKey, const char *szSubKey, const char *szValueName)
-{
-	long qerr;
-	HKEY ckey;
-	// Open the key
-	if ((qerr=RegOpenKeyEx(hKey,
-	                       szSubKey,
-	                       0,
-	                       KEY_ALL_ACCESS,
-	                       &ckey
-	                      ))!=ERROR_SUCCESS) return false;
-	// Delete the key
-	if ((qerr=RegDeleteValue(ckey,
-	                         szValueName
-	                        ))!=ERROR_SUCCESS) return false;
-	// Close the key
-	RegCloseKey(ckey);
-	// Success
-	return true;
-}
-
-bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue)
-{
-	return SetRegistryDWord(HKEY_CURRENT_USER,szSubKey,szValueName,dwValue);
-}
-
-bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
-{
-	return GetRegistryDWord(HKEY_CURRENT_USER,szSubKey,szValueName,lpdwValue);
-}
-
-bool GetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
-{
-	long qerr;
-	HKEY ckey;
-	DWORD valtype;
-	DWORD valsize=sizeof(DWORD);
-
-	// Open the key
-	if ((qerr=RegOpenKeyEx(hKey,
-	                       szSubKey,
-	                       0,
-	                       KEY_READ,
-	                       &ckey
-	                      ))!=ERROR_SUCCESS) return false;
-
-	// Get the value
-	if ((qerr=RegQueryValueEx(ckey,
-	                          szValueName,
-	                          NULL,
-	                          &valtype,
-	                          (BYTE*) lpdwValue,
-	                          &valsize
-	                         ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return false; }
-
-	// Close the key
-	RegCloseKey(ckey);
-
-	if (valtype!=REG_DWORD) return false;
-
-	return true;
-}
-
-bool SetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD dwValue)
-{
-	long qerr;
-	HKEY ckey;
-	DWORD disposition;
-	// Open the key
-	if ((qerr=RegCreateKeyEx(hKey,
-	                         szSubKey,
-	                         0,
-	                         "",
-	                         REG_OPTION_NON_VOLATILE,
-	                         KEY_ALL_ACCESS,
-	                         NULL,
-	                         &ckey,
-	                         &disposition
-	                        ))!=ERROR_SUCCESS) return false;
-	// Set the value
-	if ((qerr=RegSetValueEx(ckey,
-	                        szValueName,
-	                        0,
-	                        REG_DWORD,
-	                        (BYTE*) &dwValue,
-	                        sizeof(dwValue)
-	                       ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
-
-	// Close the key
-	RegCloseKey(ckey);
-	// Success
-	return true;
-}
-
 bool GetRegistryString(const char *szSubKey,
                        const char *szValueName,
                        char *sValue, DWORD dwValSize)
@@ -198,7 +99,7 @@ bool SetRegistryString(const char *szSubKey,
 	return true;
 }
 
-bool DeleteRegistryKey(HKEY hKey, const char *szSubKey)
+static bool DeleteRegistryKey(HKEY hKey, const char *szSubKey)
 {
 	HKEY ckey;
 	// Open the key
@@ -217,12 +118,12 @@ bool DeleteRegistryKey(HKEY hKey, const char *szSubKey)
 	return true;
 }
 
-bool DeleteRegistryKey(const char *szSubKey)
+static bool DeleteRegistryKey(const char *szSubKey)
 {
 	return DeleteRegistryKey(HKEY_CURRENT_USER, szSubKey);
 }
 
-bool SetRegClassesRoot(const char *szSubKey,
+static bool SetRegClassesRoot(const char *szSubKey,
                        const char *szValueName,
                        const char *szStringValue)
 {

@@ -133,8 +133,6 @@ src/lib/StdResStr2.cpp \
 src/lib/StdResStr2.h \
 src/network/C4NetIO.cpp \
 src/platform/GetTime.cpp \
-src/platform/StdConfig.cpp \
-src/platform/StdConfig.h \
 src/platform/StdFile.cpp \
 src/platform/StdFile.h \
 src/platform/StdRegistry.cpp \

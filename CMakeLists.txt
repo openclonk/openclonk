@@ -462,8 +462,6 @@ set(OC_CLONK_SOURCES
 	src/platform/PlatformAbstraction.h
 	src/platform/StdApp.h
 	src/platform/StdAppCommon.cpp
-	src/platform/StdConfig.cpp
-	src/platform/StdConfig.h
 	src/platform/StdD3D.cpp
 	src/platform/StdD3D.h
 	src/platform/StdD3DShader.cpp
@@ -896,8 +894,6 @@ add_executable(c4script EXCLUDE_FROM_ALL
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/platform/GetTime.cpp
-	src/platform/StdConfig.cpp
-	src/platform/StdConfig.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
 	src/lib/C4Real.cpp

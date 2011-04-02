@@ -25,12 +25,12 @@
 #ifndef INC_C4Config
 #define INC_C4Config
 
-#include "StdConfig.h"
 #include "C4Constants.h"
 #include "C4InputValidation.h"
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
+enum { CFG_MaxString  = 1024 };
 
 class C4ConfigGeneral
 {
@@ -247,7 +247,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-class C4Config: protected CStdConfig
+class C4Config
 {
 public:
 	C4Config();

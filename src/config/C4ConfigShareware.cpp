@@ -481,7 +481,7 @@ const char* C4ConfigShareware::GetRegistrationData(const char *strField)
 	size_t iValueLen = 256;
 	const char *pFieldEnd = strstr(pKeyField, "\x0d");
 	if (pFieldEnd) iValueLen = pFieldEnd - pKeyField;
-	iValueLen = Min(iValueLen, CFG_MaxString);
+	iValueLen = Min<size_t>(iValueLen, CFG_MaxString);
 	strncpy(strReturnValue, pKeyField, iValueLen); strReturnValue[iValueLen] = 0;
 	return strReturnValue;
 }

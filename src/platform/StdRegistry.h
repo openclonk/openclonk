@@ -26,29 +26,9 @@
 #ifdef _WIN32
 #include "StdCompiler.h"
 #include <C4windowswrapper.h>
-bool DeleteRegistryValue(HKEY hKey, const char *szSubKey,
-                         const char *szValueName);
-bool DeleteRegistryValue(const char *szSubKey, const char *szValueName);
-
-bool GetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD *lpdwValue);
-bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue);
-
-
-bool SetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD dwValue);
-bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue);
-
 
 bool GetRegistryString(const char *szSubKey, const char *szValueName, char *sValue, DWORD dwValSize);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);
-
-bool DeleteRegistryKey(HKEY hKey, const char *szSubKey);
-bool DeleteRegistryKey(const char *szSubKey);
-
-bool SetRegClassesRoot(const char *szSubKey,
-                       const char *szValueName,
-                       const char *szStringValue);
 
 bool SetRegShell(const char *szClassName,
                  const char *szShellName,

@@ -32,7 +32,6 @@
 #include <StdWindow.h>
 #include <StdRegistry.h>
 #include <StdResStr.h>
-#include <StdConfig.h>
 #include <StdSurface2.h>
 #include <StdFacet.h>
 #include <StdDDraw2.h>
