@@ -447,6 +447,15 @@ public:
 
 #ifdef _WIN32
 	explicit StdStrBuf(const wchar_t * utf16);
+	struct wchar_t_holder {
+		wchar_t * p;
+		wchar_t_holder(wchar_t * p): p(p) { }
+		wchar_t_holder(const wchar_t_holder &);
+		~wchar_t_holder() { delete[] p; }
+		operator wchar_t * () { return p; }
+	};
+	wchar_t_holder GetWideChar();
+	StdBuf GetWideCharBuf();
 #endif
 
 	// As previous constructor, but set length manually.

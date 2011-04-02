@@ -16,6 +16,9 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#ifndef INC_C4windowswrapper
+#define INC_C4windowswrapper
+
 #ifdef _WIN64
 # define WINVER 0x0501
 # define _WIN32_WINDOWS 0x0501
@@ -44,3 +47,8 @@
 #undef LoadBitmap
 #undef DrawText
 
+// implemented in StdBuf.cpp
+StdStrBuf::wchar_t_holder GetWideChar(const char * utf8);
+StdBuf GetWideCharBuf(const char * utf8);
+
+#endif // INC_C4windowswrapper
