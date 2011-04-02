@@ -438,7 +438,6 @@ src/network/C4Packet2.cpp \
 src/network/C4PacketBase.h \
 src/platform/Bitmap256.cpp \
 src/platform/Bitmap256.h \
-src/platform/C4FileClasses.h \
 src/platform/C4FileMonitor.cpp \
 src/platform/C4FileMonitor.h \
 src/platform/C4Fonts.cpp \
@@ -532,7 +531,6 @@ thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
 clonk_SOURCES += \
-src/platform/C4FileClasses.cpp \
 src/editor/C4ConsoleWin32.cpp \
 src/platform/C4CrashHandlerWin32.cpp \
 src/res/engine.rc \

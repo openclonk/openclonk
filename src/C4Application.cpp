@@ -35,7 +35,6 @@
 #include "C4GraphicsSystem.h"
 #include "C4GraphicsResource.h"
 #include "C4MessageInput.h"
-#include <C4FileClasses.h>
 #include <C4FullScreen.h>
 #include <C4Language.h>
 #include <C4Console.h>
@@ -183,12 +182,6 @@ bool C4Application::DoInit(int argc, char * argv[])
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	}
-
-#if defined(_WIN32) && !defined(USE_CONSOLE)
-	// Register clonk file classes - notice: under Vista this will only work if we have administrator rights
-	char szModule[_MAX_PATH+1]; GetModuleFileName(NULL, szModule, _MAX_PATH);
-	SetC4FileClasses(szModule);
-#endif
 
 	// Initialize gamepad
 	if (!pGamePadControl && Config.General.GamepadEnabled)

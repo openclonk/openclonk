@@ -325,31 +325,6 @@ bool RemoveRegShell(const char *szClassName,
 	return true;
 }
 
-bool SetRegFileClass(const char *szClassRoot,
-                     const char *szExtension,
-                     const char *szClassName,
-                     const char *szIconPath, int iIconNum,
-                     const char *szContentType)
-{
-	char keyname[100];
-	char iconpath[512];
-	// Create root class entry
-	if (!SetRegClassesRoot(szClassRoot,NULL,szClassName)) return false;
-	// Set root class icon
-	sprintf(keyname,"%s\\DefaultIcon",szClassRoot);
-	sprintf(iconpath,"%s,%d",szIconPath,iIconNum);
-	if (!SetRegClassesRoot(keyname,NULL,iconpath)) return false;
-	// Set extension map entry
-	sprintf(keyname,".%s",szExtension);
-	if (!SetRegClassesRoot(keyname,NULL,szClassRoot)) return false;
-	// Set extension content type
-	sprintf(keyname,".%s",szExtension);
-	if (!SetRegClassesRootString(keyname,"Content Type",szContentType)) return false;
-	// Success
-	return true;
-}
-
-
 //------------------------------ Window Position ------------------------------------------
 
 bool StoreWindowPosition(HWND hwnd,

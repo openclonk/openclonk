@@ -436,7 +436,6 @@ set(OC_CLONK_SOURCES
 	src/network/C4PacketBase.h
 	src/platform/Bitmap256.cpp
 	src/platform/Bitmap256.h
-	src/platform/C4FileClasses.h
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
 	src/platform/C4Fonts.cpp
@@ -526,7 +525,6 @@ if(WIN32)
 		src/platform/StdWindow.cpp
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
-		src/platform/C4FileClasses.cpp
 		src/platform/C4CrashHandlerWin32.cpp
 		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h

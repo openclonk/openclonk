@@ -59,12 +59,6 @@ bool SetRegShell(const char *szClassName,
 bool RemoveRegShell(const char *szClassName,
                     const char *szShellName);
 
-bool SetRegFileClass(const char *szClassRoot,
-                     const char *szExtension,
-                     const char *szClassName,
-                     const char *szIconPath, int iIconNum,
-                     const char *szContentType);
-
 bool StoreWindowPosition(HWND hwnd,
                          const char *szWindowName,
                          const char *szSubKey,
