@@ -237,17 +237,17 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	StdStrBuf strUpdateArgs, strTitle;
 	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
 
-	STARTUPINFO startupInfo;
+	STARTUPINFOW startupInfo;
 	startupInfo.cb = sizeof(startupInfo);
 	startupInfo.lpReserved = NULL;
 	startupInfo.lpDesktop = NULL;
-	startupInfo.lpTitle = "Updating OpenClonk...";
+	startupInfo.lpTitle = L"Updating OpenClonk...";
 	startupInfo.dwFlags = STARTF_USESHOWWINDOW;
 	startupInfo.wShowWindow = SW_SHOW;
 	startupInfo.cbReserved2 = 0;
 	startupInfo.lpReserved2 = NULL;
 	PROCESS_INFORMATION procInfo;
-	BOOL success = CreateProcess(strUpdateProgEx.getData(), strUpdateArgs.getMData(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath, &startupInfo, &procInfo);
+	BOOL success = CreateProcessW(strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, GetWideChar(Config.General.ExePath), &startupInfo, &procInfo);
 	if(!success) return false;
 
 	//int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);

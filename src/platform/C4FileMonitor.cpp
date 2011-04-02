@@ -145,7 +145,7 @@ const DWORD C4FileMonitorNotifies = FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_C
 void C4FileMonitor::AddDirectory(const char *szDir)
 {
 	// Create file handle
-	HANDLE hDir = CreateFile(szDir, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, 0);
+	HANDLE hDir = CreateFileW(GetWideChar(szDir), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, 0);
 	if (hDir == INVALID_HANDLE_VALUE) return;
 	// Create tree watch structure
 	TreeWatch *pWatch = new TreeWatch();

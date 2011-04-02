@@ -576,9 +576,10 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_PROGRAMDIRECTORY"));
 	AddCheckedLocation(strLocation.getData(), Config.General.ExePath);
 #ifdef _WIN32
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), path);
+	wchar_t wpath[MAX_PATH+1];
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), StdStrBuf(path).getData());
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), StdStrBuf(path).getData());
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), StdStrBuf(path).getData());
 #endif
 #ifdef __APPLE__
 	AddCheckedLocation(LoadResStr("IDS_TEXT_HOME"), getenv("HOME"));

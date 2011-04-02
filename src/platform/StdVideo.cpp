@@ -37,9 +37,9 @@ bool AVIOpenOutput(const char *szFilename,
 	AVIFileInit();
 
 	// Create avi file
-	if ( AVIFileOpen(
+	if ( AVIFileOpenW(
 	       ppAviFile,
-	       szFilename,
+	       GetWideChar(szFilename),
 	       OF_CREATE | OF_WRITE,
 	       NULL) != 0)
 	{
@@ -127,9 +127,9 @@ bool AVIOpenGrab(const char *szFilename,
 {
 
 	// Open avi stream
-	if ( AVIStreamOpenFromFile(
+	if ( AVIStreamOpenFromFileW(
 	       ppAviStream,
-	       szFilename,
+	       GetWideChar(szFilename),
 	       streamtypeVIDEO,
 	       0,
 	       OF_READ,
@@ -202,7 +202,7 @@ bool CStdAVIFile::OpenFile(const char *szFilename, HWND hWnd, int32_t iOutBitDep
 	Clear();
 	sFilename.Copy(szFilename);
 	// open the AVI file
-	if (AVIFileOpen(&pAVIFile, szFilename, OF_READ, NULL))
+	if (AVIFileOpenW(&pAVIFile, GetWideChar(szFilename), OF_READ, NULL))
 		return false;
 	if (AVIFileGetStream(pAVIFile, &pStream, streamtypeVIDEO, 0))
 		return false;

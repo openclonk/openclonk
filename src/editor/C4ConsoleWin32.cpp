@@ -771,27 +771,41 @@ void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
 	enum { ArbitraryMaximumLength = 4096 };
-	char buffer[ArbitraryMaximumLength];
-	SCopy(sFilename->getData(), buffer, ArbitraryMaximumLength);
-	OPENFILENAME ofn;
+	wchar_t buffer[ArbitraryMaximumLength];
+	wcsncpy(buffer, sFilename->GetWideChar(), ArbitraryMaximumLength - 1);
+	buffer[ArbitraryMaximumLength - 1] = 0;
+	OPENFILENAMEW ofn;
 	ZeroMem(&ofn,sizeof(ofn));
 	ofn.lStructSize=sizeof(ofn);
 	ofn.hwndOwner=hWindow;
-	ofn.lpstrFilter=szFilter;
+	const char * s = szFilter;
+	while (*s) s = s + strlen(s) + 1;
+	s++;
+	int n = s - szFilter;
+	int len = MultiByteToWideChar(CP_UTF8, 0, szFilter, n, NULL, 0);
+	StdBuf filt;
+	filt.SetSize(len * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, szFilter, n, getMBufPtr<wchar_t>(filt), len );
+	ofn.lpstrFilter=getMBufPtr<wchar_t>(filt);
 	ofn.lpstrFile=buffer;
 	ofn.nMaxFile=ArbitraryMaximumLength;
 	ofn.Flags=dwFlags;
 
 	bool fResult;
-	const char *wd = GetWorkingDirectory();
+	size_t l = GetCurrentDirectoryW(0,0);
+	wchar_t *wd = new wchar_t[l];
+	GetCurrentDirectoryW(l,wd);
 	if (fSave)
-		fResult = !!GetSaveFileName(&ofn);
+		fResult = !!GetSaveFileNameW(&ofn);
 	else
-		fResult = !!GetOpenFileName(&ofn);
+		fResult = !!GetOpenFileNameW(&ofn);
 
 	// Reset working directory to exe path as Windows file dialog might have changed it
-	SetCurrentDirectory(wd);
-	sFilename->Copy(buffer);
+	SetCurrentDirectoryW(wd);
+	delete[] wd;
+	len = WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, NULL, 0, 0, 0);
+	sFilename->SetLength(len - 1);
+	WideCharToMultiByte(CP_UTF8, 0, buffer, ArbitraryMaximumLength, sFilename->getMData(), sFilename->getSize(), 0, 0);
 	return fResult;
 }
 

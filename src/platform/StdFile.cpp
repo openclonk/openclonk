@@ -483,7 +483,7 @@ bool EraseFile(const char *szFilename)
 {
 	//chmod(szFilename,200);
 #ifdef _WIN32
-	SetFileAttributes(szFilename, FILE_ATTRIBUTE_NORMAL);
+	SetFileAttributesW(GetWideChar(szFilename), FILE_ATTRIBUTE_NORMAL);
 #endif
 	// either unlink or remove could be used. Well, stick to ANSI C where possible.
 	if (remove(szFilename))
@@ -528,12 +528,12 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 	// On error, return false
 	return l != -1;
 }
-#endif
 
 bool RenameFile(const char *szFilename, const char *szNewFilename)
 {
 	if (rename(szFilename,szNewFilename) < 0)
 	{
+		if (errno != EXDEV) return false;
 		if (CopyFile(szFilename, szNewFilename, false))
 		{
 			return EraseFile(szFilename);
@@ -542,6 +542,20 @@ bool RenameFile(const char *szFilename, const char *szNewFilename)
 	}
 	return true;
 }
+#else
+
+#undef CopyFile
+bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
+{
+	return CopyFileW(GetWideChar(szSource), GetWideChar(szTarget), FailIfExists);
+}
+
+bool RenameFile(const char *szFilename, const char *szNewFilename)
+{
+	return MoveFileExW(GetWideChar(szFilename), GetWideChar(szNewFilename), MOVEFILE_COPY_ALLOWED);
+}
+
+#endif
 
 bool MakeOriginalFilename(char *szFilename)
 {
@@ -552,7 +566,7 @@ bool MakeOriginalFilename(char *szFilename)
 	if (Inside(SLen(szFilename), 2u, 3u)) if (szFilename[1]==':')
 		{
 			szFilename[2]='\\'; szFilename[3]=0;
-			if (GetDriveType(szFilename) == DRIVE_NO_ROOT_DIR) return false;
+			if (GetDriveTypeW(GetWideChar(szFilename)) == DRIVE_NO_ROOT_DIR) return false;
 			return true;
 		}
 	struct _finddata_t fdt; long shnd;
@@ -581,7 +595,7 @@ const char *GetWorkingDirectory()
 bool SetWorkingDirectory(const char *path)
 {
 #ifdef _WIN32
-	return SetCurrentDirectory(path) != 0;
+	return SetCurrentDirectoryW(GetWideChar(path)) != 0;
 #else
 	return (chdir(path)==0);
 #endif
@@ -591,7 +605,7 @@ bool CreatePath(const std::string &path)
 {
 	assert(!path.empty());
 #ifdef _WIN32
-	if (CreateDirectory(path.c_str(), NULL))
+	if (CreateDirectoryW(GetWideChar(path.c_str()), NULL))
 	{
 		return true;
 	}
@@ -607,11 +621,11 @@ bool CreatePath(const std::string &path)
 		default:
 			// Something major has happened: Log
 		{
-			LPSTR str;
-			if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-			                  NULL, err, 0, (LPSTR)&str, 0, NULL))
+			wchar_t * str;
+			if (FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+			                  NULL, err, 0, (LPWSTR)&str, 0, NULL))
 			{
-				LogF("CreateDirectory failed: %s", str);
+				LogF("CreateDirectory failed: %s", StdStrBuf(str).getData());
 				LocalFree(str);
 			}
 			return false;
@@ -753,7 +767,7 @@ bool EraseDirectory(const char *szDirName)
 	// Remove directory
 	//chmod(szDirName,200);
 #ifdef _WIN32
-	return !!RemoveDirectory(szDirName);
+	return !!RemoveDirectoryW(GetWideChar(szDirName));
 #else
 	return (rmdir(szDirName)==0 || errno == ENOENT);
 #endif
@@ -806,7 +820,7 @@ bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
 	if (!CopyFile(szSource,szTarget,false)) return false;
 	// Reset any attributes if desired
 #ifdef _WIN32
-	if (fResetAttributes) if (!SetFileAttributes(szTarget, FILE_ATTRIBUTE_NORMAL)) return false;
+	if (fResetAttributes) if (!SetFileAttributesW(GetWideChar(szTarget), FILE_ATTRIBUTE_NORMAL)) return false;
 #else
 	if (fResetAttributes) if (chmod(szTarget, S_IRWXU)) return false;
 #endif
@@ -900,8 +914,8 @@ void DirectoryIterator::Read(const char *dirname)
 	std::string search_path(dirname);
 	search_path.push_back(DirectorySeparator);
 #ifdef WIN32
-	WIN32_FIND_DATA file = {0};
-	HANDLE fh = FindFirstFile((search_path + '*').c_str(), &file);
+	WIN32_FIND_DATAW file = {0};
+	HANDLE fh = FindFirstFileW(GetWideChar((search_path + '*').c_str()), &file);
 	if (fh == INVALID_HANDLE_VALUE)
 	{
 		switch (GetLastError())
@@ -920,9 +934,9 @@ void DirectoryIterator::Read(const char *dirname)
 		// ...unless they're . or ..
 		if (file.cFileName[0] == '.' && (file.cFileName[1] == '\0' || (file.cFileName[1] == '.' && file.cFileName[2] == '\0')))
 			continue;
-		p->files.push_back(file.cFileName);
+		p->files.push_back(StdStrBuf(file.cFileName).getData());
 	}
-	while (FindNextFile(fh, &file));
+	while (FindNextFileW(fh, &file));
 	FindClose(fh);
 #else
 	DIR *fh = opendir(dirname);

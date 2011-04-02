@@ -64,12 +64,12 @@ bool C4Viewport::DropFiles(HANDLE hDrop)
 
 	int32_t iFileNum = DragQueryFile((HDROP)hDrop,0xFFFFFFFF,NULL,0);
 	POINT pntPoint;
-	char szFilename[500+1];
+	wchar_t szFilename[500+1];
 	for (int32_t cnt=0; cnt<iFileNum; cnt++)
 	{
-		DragQueryFile((HDROP)hDrop,cnt,szFilename,500);
+		DragQueryFileW((HDROP)hDrop,cnt,szFilename,500);
 		DragQueryPoint((HDROP)hDrop,&pntPoint);
-		DropFile(szFilename, (float)pntPoint.x, (float)pntPoint.y);
+		DropFile(StdStrBuf(szFilename).getData(), (float)pntPoint.x, (float)pntPoint.y);
 	}
 	DragFinish((HDROP)hDrop);
 	return true;

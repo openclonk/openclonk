@@ -529,13 +529,13 @@ int main(int argc, char *argv[])
 		printf("Executing: %s\n", strExecuteAtEnd);
 #ifdef _WIN32
 
-		STARTUPINFO startInfo;
+		STARTUPINFOW startInfo;
 		ZeroMem(&startInfo, sizeof(startInfo));
 		startInfo.cb = sizeof(startInfo);
 
 		PROCESS_INFORMATION procInfo;
 
-		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
+		CreateProcessW(GetWideChar(strExecuteAtEnd), NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
 #else
 		switch (fork())
 		{
