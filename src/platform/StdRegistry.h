@@ -30,10 +30,10 @@
 bool GetRegistryString(const char *szSubKey, const char *szValueName, char *sValue, DWORD dwValSize);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);
 
-bool SetRegShell(const char *szClassName,
-                 const char *szShellName,
-                 const char *szShellCaption,
-                 const char *szCommand,
+bool SetRegShell(const wchar_t *szClassName,
+                 const wchar_t *szShellName,
+                 const wchar_t *szShellCaption,
+                 const wchar_t *szCommand,
                  bool fMakeDefault = false);
 
 bool RemoveRegShell(const char *szClassName,

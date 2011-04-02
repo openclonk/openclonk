@@ -39,15 +39,15 @@ bool GetRegistryString(const char *szSubKey,
 	DWORD valtype;
 
 	// Open the key
-	if ((qerr=RegOpenKeyEx(HKEY_CURRENT_USER,
-	                       szSubKey,
+	if ((qerr=RegOpenKeyExW(HKEY_CURRENT_USER,
+	                       GetWideChar(szSubKey),
 	                       0,
 	                       KEY_READ,
 	                       &ckey
 	                      ))!=ERROR_SUCCESS) return false;
 
 	// Get the value
-	if ((qerr=RegQueryValueEx(ckey,
+	if ((qerr=RegQueryValueExA(ckey,
 	                          szValueName,
 	                          NULL,
 	                          &valtype,
@@ -73,10 +73,10 @@ bool SetRegistryString(const char *szSubKey,
 	DWORD disposition;
 
 	// Open the key
-	if ((qerr=RegCreateKeyEx(HKEY_CURRENT_USER,
-	                         szSubKey,
+	if ((qerr=RegCreateKeyExW(HKEY_CURRENT_USER,
+	                         GetWideChar(szSubKey),
 	                         0,
-	                         "",
+	                         L"",
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
 	                         NULL,
@@ -85,12 +85,13 @@ bool SetRegistryString(const char *szSubKey,
 	                        ))!=ERROR_SUCCESS) return false;
 
 	// Set the value
-	if ((qerr=RegSetValueEx(ckey,
-	                        szValueName,
+	StdBuf v = GetWideCharBuf(szValue);
+	if ((qerr=RegSetValueExW(ckey,
+	                        GetWideChar(szValueName),
 	                        0,
 	                        REG_SZ,
-	                        (BYTE*) szValue,
-	                        SLen(szValue)+1
+	                        getBufPtr<BYTE>(v),
+	                        v.getSize()
 	                       ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
 	// Close the key
@@ -99,33 +100,28 @@ bool SetRegistryString(const char *szSubKey,
 	return true;
 }
 
-static bool DeleteRegistryKey(HKEY hKey, const char *szSubKey)
+static bool DeleteRegistryKey(HKEY hKey, const wchar_t *szSubKey)
 {
 	HKEY ckey;
 	// Open the key
-	if (RegOpenKeyEx(hKey, szSubKey, 0, KEY_ALL_ACCESS, &ckey) != ERROR_SUCCESS) return false;
+	if (RegOpenKeyExW(hKey, szSubKey, 0, KEY_ALL_ACCESS, &ckey) != ERROR_SUCCESS) return false;
 	// Delete all subkeys
-	char strChild[1024 + 1];
-	while (RegEnumKey(ckey, 0, strChild, 1024) == ERROR_SUCCESS)
+	wchar_t strChild[1024 + 1];
+	while (RegEnumKeyW(ckey, 0, strChild, 1024) == ERROR_SUCCESS)
 		if (!DeleteRegistryKey(ckey, strChild))
 			return false;
 	// Close the key
 	RegCloseKey(ckey);
 
 	// Delete the key
-	if (RegDeleteKey(hKey, szSubKey) != ERROR_SUCCESS) return false;
+	if (RegDeleteKeyW(hKey, szSubKey) != ERROR_SUCCESS) return false;
 	// Success
 	return true;
 }
 
-static bool DeleteRegistryKey(const char *szSubKey)
-{
-	return DeleteRegistryKey(HKEY_CURRENT_USER, szSubKey);
-}
-
-static bool SetRegClassesRoot(const char *szSubKey,
-                       const char *szValueName,
-                       const char *szStringValue)
+static bool SetRegClassesRoot(const wchar_t *szSubKey,
+                       const wchar_t *szValueName,
+                       const wchar_t *szStringValue)
 {
 
 	long qerr;
@@ -133,10 +129,10 @@ static bool SetRegClassesRoot(const char *szSubKey,
 	DWORD disposition;
 
 	// Open the key
-	if ((qerr=RegCreateKeyEx(HKEY_CLASSES_ROOT,
+	if ((qerr=RegCreateKeyExW(HKEY_CLASSES_ROOT,
 	                         szSubKey,
 	                         0,
-	                         "",
+	                         L"",
 	                         REG_OPTION_NON_VOLATILE,
 	                         KEY_ALL_ACCESS,
 	                         NULL,
@@ -145,12 +141,12 @@ static bool SetRegClassesRoot(const char *szSubKey,
 	                        ))!=ERROR_SUCCESS) return false;
 
 	// Set the value
-	if ((qerr=RegSetValueEx(ckey,
+	if ((qerr=RegSetValueExW(ckey,
 	                        szValueName,
 	                        0,
 	                        REG_SZ,
-	                        (BYTE*) szStringValue,
-	                        SLen(szStringValue)+1
+	                        (const BYTE*)szStringValue,
+	                        (wcslen(szStringValue) + 1) * sizeof(wchar_t)
 	                       ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
 	// Close the key
@@ -159,59 +155,23 @@ static bool SetRegClassesRoot(const char *szSubKey,
 	return true;
 }
 
-bool SetRegClassesRootString(const char *szSubKey,
-                             const char *szValueName,
-                             const char *szValue)
-{
-
-	long qerr;
-	HKEY ckey;
-	DWORD disposition;
-
-	// Open the key
-	if ((qerr=RegCreateKeyEx(HKEY_CLASSES_ROOT,
-	                         szSubKey,
-	                         0,
-	                         "",
-	                         REG_OPTION_NON_VOLATILE,
-	                         KEY_ALL_ACCESS,
-	                         NULL,
-	                         &ckey,
-	                         &disposition
-	                        ))!=ERROR_SUCCESS) return false;
-
-	// Set the value
-	if ((qerr=RegSetValueEx(ckey,
-	                        szValueName,
-	                        0,
-	                        REG_SZ,
-	                        (BYTE*) szValue,
-	                        SLen(szValue)+1
-	                       ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
-
-	// Close the key
-	RegCloseKey(ckey);
-
-	return true;
-}
-
-bool SetRegShell(const char *szClassName,
-                 const char *szShellName,
-                 const char *szShellCaption,
-                 const char *szCommand,
+bool SetRegShell(const wchar_t *szClassName,
+                 const wchar_t *szShellName,
+                 const wchar_t *szShellCaption,
+                 const wchar_t *szCommand,
                  bool fMakeDefault)
 {
-	char szKeyName[256+1];
+	wchar_t szKeyName[256+1];
 	// Set shell caption
-	sprintf(szKeyName,"%s\\Shell\\%s",szClassName,szShellName);
+	swprintf(szKeyName,L"%s\\Shell\\%s",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
 	// Set shell command
-	sprintf(szKeyName,"%s\\Shell\\%s\\Command",szClassName,szShellName);
+	swprintf(szKeyName,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
-		sprintf(szKeyName, "%s\\Shell", szClassName);
+		swprintf(szKeyName, L"%s\\Shell", szClassName);
 		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
 	}
 	return true;
@@ -220,8 +180,8 @@ bool SetRegShell(const char *szClassName,
 bool RemoveRegShell(const char *szClassName,
                     const char *szShellName)
 {
-	char strKey[256+1];
-	sprintf(strKey, "%s\\Shell\\%s", szClassName, szShellName);
+	wchar_t strKey[256+1];
+	swprintf(strKey, L"%s\\Shell\\%s", GetWideChar(szClassName).p, GetWideChar(szShellName).p);
 	if (!DeleteRegistryKey(HKEY_CLASSES_ROOT, strKey)) return false;
 	return true;
 }
@@ -351,8 +311,8 @@ bool StdCompilerConfigWrite::Default(const char *szName)
 	// Open parent
 	CreateKey();
 	// Remove key/value (failsafe)
-	BOOL hr = DeleteRegistryKey(pKey->Handle, szName);
-	RegDeleteValue(pKey->Handle, szName);
+	DeleteRegistryKey(pKey->Handle, GetWideChar(szName));
+	RegDeleteValueW(pKey->Handle, GetWideChar(szName));
 	// Handled
 	return true;
 }
@@ -429,9 +389,9 @@ void StdCompilerConfigWrite::CreateKey(HKEY hParent)
 	if (pKey->Handle)
 		return;
 	// Open/Create registry key
-	if (RegCreateKeyEx(hParent ? hParent : pKey->Parent->Handle,
-	                   pKey->Name.getData(),
-	                   0, "", REG_OPTION_NON_VOLATILE,
+	if (RegCreateKeyExW(hParent ? hParent : pKey->Parent->Handle,
+	                   pKey->Name.GetWideChar(),
+	                   0, L"", REG_OPTION_NON_VOLATILE,
 	                   KEY_WRITE, NULL,
 	                   &pKey->Handle, NULL) != ERROR_SUCCESS)
 		excCorrupt("Could not create key %s!", pKey->Name.getData());
@@ -440,7 +400,7 @@ void StdCompilerConfigWrite::CreateKey(HKEY hParent)
 void StdCompilerConfigWrite::WriteDWord(uint32_t iVal)
 {
 	// Set the value
-	if (RegSetValueEx(pKey->Parent->Handle, pKey->Name.getData(),
+	if (RegSetValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                  0, REG_DWORD, reinterpret_cast<const BYTE *>(&iVal),
 	                  sizeof(iVal)) != ERROR_SUCCESS)
 		excCorrupt("Could not write key %s!", pKey->Name.getData());
@@ -450,9 +410,9 @@ void StdCompilerConfigWrite::WriteString(const char *szString)
 {
 	// Append or set the value
 	if (LastString.getLength()) LastString.Append(szString); else LastString.Copy(szString);
-	if (RegSetValueEx(pKey->Parent->Handle, pKey->Name.getData(),
-	                  0, REG_SZ, reinterpret_cast<const BYTE *>(LastString.getData()),
-					  LastString.getLength() + 1) != ERROR_SUCCESS)
+	StdBuf v = LastString.GetWideCharBuf();
+	if (RegSetValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
+	                  0, REG_SZ, getBufPtr<BYTE>(v), v.getSize()) != ERROR_SUCCESS)
 		excCorrupt("Could not write key %s!", pKey->Name.getData());
 }
 
@@ -465,7 +425,7 @@ StdCompilerConfigRead::StdCompilerConfigRead(HKEY hRoot, const char *szPath)
 	pKey->Virtual = false;
 	pKey->subindex = 0;
 	// Open root
-	if (RegOpenKeyEx(hRoot, szPath,
+	if (RegOpenKeyExW(hRoot, GetWideChar(szPath),
 	                 0, KEY_READ,
 	                 &pKey->Handle) != ERROR_SUCCESS)
 		pKey->Handle = 0;
@@ -492,13 +452,13 @@ bool StdCompilerConfigRead::Name(const char *szName)
 	bool fFound = true;
 	// Try to open registry key
 	HKEY hSubKey; DWORD dwType = 0;
-	if (RegOpenKeyEx(pKey->Handle, sName.getData(),
+	if (RegOpenKeyExW(pKey->Handle, sName.GetWideChar(),
 	                 0, KEY_READ,
 	                 &hSubKey) != ERROR_SUCCESS)
 	{
 		hSubKey = 0;
 		// Try to query value (exists?)
-		if (RegQueryValueEx(pKey->Handle, sName.getData(),
+		if (RegQueryValueExW(pKey->Handle, sName.GetWideChar(),
 		                    0, &dwType, NULL, NULL) != ERROR_SUCCESS)
 			fFound = false;
 	}
@@ -675,7 +635,7 @@ uint32_t StdCompilerConfigRead::ReadDWord()
 		{ excNotFound("Wrong value type!"); return 0; }
 	// Read
 	uint32_t iVal; DWORD iSize = sizeof(iVal);
-	if (RegQueryValueEx(pKey->Parent->Handle, pKey->Name.getData(),
+	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                    0, NULL,
 	                    reinterpret_cast<LPBYTE>(&iVal),
 	                    &iSize) != ERROR_SUCCESS)
@@ -697,23 +657,23 @@ StdStrBuf StdCompilerConfigRead::ReadString()
 		{ excNotFound("Wrong value type!"); return StdStrBuf(); }
 	// Get size of string
 	DWORD iSize;
-	if (RegQueryValueEx(pKey->Parent->Handle, pKey->Name.getData(),
+	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                    0, NULL,
 	                    NULL,
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
 	// Allocate string
-	StdStrBuf Result; Result.SetLength(iSize - 1);
+	StdBuf Result; Result.SetSize(iSize);
 	// Read
-	if (RegQueryValueEx(pKey->Parent->Handle, pKey->Name.getData(),
+	if (RegQueryValueExW(pKey->Parent->Handle, pKey->Name.GetWideChar(),
 	                    0, NULL,
 	                    reinterpret_cast<BYTE *>(Result.getMData()),
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
 	// Check size
-	if (strlen(Result.getData()) + 1 != iSize)
+	if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize)
 		{ excCorrupt("Wrong size of a string!"); return StdStrBuf(); }
-	return Result;
+	return StdStrBuf(getBufPtr<wchar_t>(Result));
 }
 
 #endif // _WIN32

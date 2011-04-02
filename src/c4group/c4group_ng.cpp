@@ -340,23 +340,23 @@ bool ProcessGroup(const char *FilenamePar)
 int RegisterShellExtensions()
 {
 #ifdef _WIN32
-	char strModule[2048];
-	char strCommand[2048];
+	wchar_t strModule[2048];
+	wchar_t strCommand[2048];
 	char strClass[128];
 	int i;
-	GetModuleFileName(NULL, strModule, 2048);
+	GetModuleFileNameW(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
 	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
 	{
 		// Unpack
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-u\"", strModule);
-		if (!SetRegShell(strClass, "MakeFolder", "C4Group Unpack", strCommand))
+		swprintf(strCommand, L"\"%s\" \"%%1\" \"-u\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"MakeFolder", L"C4Group Unpack", strCommand))
 			return 0;
 		// Explode
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-x\"", strModule);
-		if (!SetRegShell(strClass, "ExplodeFolder", "C4Group Explode", strCommand))
+		swprintf(strCommand, L"\"%s\" \"%%1\" \"-x\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"ExplodeFolder", L"C4Group Explode", strCommand))
 			return 0;
 	}
 	// Directories
@@ -364,8 +364,8 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-p\"", strModule);
-		if (!SetRegShell(strClass, "MakeGroupFile", "C4Group Pack", strCommand))
+		swprintf(strCommand, L"\"%s\" \"%%1\" \"-p\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"MakeGroupFile", L"C4Group Pack", strCommand))
 			return 0;
 	}
 	// Done
@@ -376,10 +376,8 @@ int RegisterShellExtensions()
 int UnregisterShellExtensions()
 {
 #ifdef _WIN32
-	char strModule[2048];
 	char strClass[128];
 	int i;
-	GetModuleFileName(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
