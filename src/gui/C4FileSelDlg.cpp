@@ -564,7 +564,7 @@ void C4PortraitSelDlg::LoaderThread::Execute()
 // C4PortraitSelDlg
 
 C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
-		: C4FileSelDlg(Config.General.ExePath, FormatString(LoadResStr("IDS_MSG_SELECT"), LoadResStr("IDS_TYPE_PORTRAIT")).getData(), pSelCallback, false)
+		: C4FileSelDlg(Config.General.ExePath.getData(), FormatString(LoadResStr("IDS_MSG_SELECT"), LoadResStr("IDS_TYPE_PORTRAIT")).getData(), pSelCallback, false)
 {
 	char path[_MAX_PATH+1];
 	// add common picture locations
@@ -574,7 +574,7 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
 	AddLocation(strLocation.getData(), path);
 	SCopy(Config.General.SystemDataPath, path, _MAX_PATH); TruncateBackslash(path);
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_PROGRAMDIRECTORY"));
-	AddCheckedLocation(strLocation.getData(), Config.General.ExePath);
+	AddCheckedLocation(strLocation.getData(), Config.General.ExePath.getData());
 #ifdef _WIN32
 	wchar_t wpath[MAX_PATH+1];
 	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), StdStrBuf(path).getData());

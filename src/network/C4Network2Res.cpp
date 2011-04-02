@@ -474,7 +474,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 	if (iRecursion >= Config.Network.MaxResSearchRecursion) return false;
 	StdStrBuf sSearchPath; const char *szSearchPath;
 	if (!iRecursion)
-		szSearchPath = Config.General.ExePath;
+		szSearchPath = Config.General.ExePath.getData();
 	else
 	{
 		sSearchPath.Copy(szFilename, SLen(szFilename) - SLen(szFilenameC4));

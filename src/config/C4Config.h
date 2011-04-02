@@ -53,8 +53,8 @@ public:
 	int32_t ScrollSmooth; // view movement smoothing
 	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got corrupted and must be reset
 	// Determined at run-time
-	char ExePath[CFG_MaxString+1];
-	char TempPath[CFG_MaxString+1];
+	StdCopyStrBuf ExePath;
+	StdCopyStrBuf TempPath;
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];

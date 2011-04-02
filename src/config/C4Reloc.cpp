@@ -31,7 +31,7 @@ void C4Reloc::Init()
 	// but for distribution it might make sense to disable it.
 	// TODO: We might also want to add ExePath/planet if it exists, so that we don't
 	// need to run the engine in planet/.
-	AddPath(Config.General.ExePath);
+	AddPath(Config.General.ExePath.getData());
 	AddPath(Config.General.UserDataPath);
 	AddPath(Config.General.SystemDataPath);
 }

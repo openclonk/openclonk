@@ -105,7 +105,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	}
 	// Init C4Group
 	C4Group_SetProcessCallback(&ProcessCallback);
-	C4Group_SetTempPath(Config.General.TempPath);
+	C4Group_SetTempPath(Config.General.TempPath.getData());
 	C4Group_SetSortList(C4CFN_FLS);
 
 	// Open log

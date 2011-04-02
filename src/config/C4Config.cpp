@@ -1,4 +1,3 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: t; c-basic-offset: 2 -*- */
 /*
  * OpenClonk, http://www.openclonk.org
  * Copyright (c) 1998-2000, 2003-2004, 2007-2008  Matthes Bender
@@ -426,33 +425,40 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 {
 #ifdef _WIN32
 	// Exe path
-	if (GetModuleFileName(NULL,ExePath,CFG_MaxString))
-		{ TruncatePath(ExePath); AppendBackslash(ExePath); }
+	wchar_t apath[CFG_MaxString];
+	if (GetModuleFileNameW(NULL,apath,CFG_MaxString))
+	{
+		ExePath = StdStrBuf(apath);
+		TruncatePath(ExePath.getMData());
+		ExePath.SetLength(SLen(ExePath.getMData()));
+		ExePath.AppendBackslash();
+	}
 	// Temp path
-	GetTempPath(CFG_MaxString,TempPath);
-	if (TempPath[0]) AppendBackslash(TempPath);
+	GetTempPathW(CFG_MaxString,apath);
+	TempPath = StdStrBuf(apath);
+	if (TempPath[0]) TempPath.AppendBackslash();
 #elif defined(__linux__)
-	GetParentPath(Application.Location, ExePath);
-	AppendBackslash(ExePath);
+	GetParentPath(Application.Location, &ExePath);
+	ExePath.AppendBackslash();
 	const char * t = getenv("TMPDIR");
 	if (t)
 	{
-		SCopy(t, TempPath, sizeof(TempPath)-2);
-		AppendBackslash(TempPath);
+		TempPath = t;
+		TempPath.AppendBackslash();
 	}
 	else
-		SCopy("/tmp/", TempPath);
+		TempPath = "/tmp/";
 #else
 	// Mac: Just use the working directory as ExePath.
-	SCopy(GetWorkingDirectory(), ExePath);
-	AppendBackslash(ExePath);
-	SCopy("/tmp/", TempPath);
+	ExePath = GetWorkingDirectory();
+	ExePath.AppendBackslash();
+	TempPath = "/tmp/";
 #endif
 	// Force working directory to exe path if desired
 
 #ifndef _DEBUG
 	if (forceWorkingDirectory)
-		SetWorkingDirectory(ExePath);
+		SetWorkingDirectory(ExePath.getData());
 #endif
 
 	// Find system-wide data path
@@ -522,7 +528,7 @@ void C4ConfigGeneral::AdoptOldSettings()
 		ForEachFile(FormatString("%s/%s", Config.AtExePath(Adopt.PlayerPath), C4CFN_PlayerFiles).getData(), &GrabOldPlayerFile);
 		*Adopt.PlayerPath = '\0';
 	}
-	else if (!ItemIdentical(Config.General.ExePath, Config.General.UserDataPath))
+	else if (!ItemIdentical(Config.General.ExePath.getData(), Config.General.UserDataPath))
 	{
 		ForEachFile(Config.AtExePath(C4CFN_PlayerFiles), &GrabOldPlayerFile);
 	}
@@ -532,7 +538,7 @@ static char AtPathFilename[_MAX_PATH+1];
 
 const char* C4Config::AtExePath(const char *szFilename)
 {
-	SCopy(General.ExePath,AtPathFilename,_MAX_PATH);
+	SCopy(General.ExePath.getData(),AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
@@ -553,7 +559,7 @@ const char* C4Config::AtSystemDataPath(const char *szFilename)
 
 const char* C4Config::AtTempPath(const char *szFilename)
 {
-	SCopy(General.TempPath,AtPathFilename,_MAX_PATH);
+	SCopy(General.TempPath.getData(),AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
@@ -575,7 +581,7 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 			AtPathFilename[len-1] = '\0';
 	if (!CreatePath(AtPathFilename))
 	{
-		SCopy(General.ExePath, General.ScreenshotPath, CFG_MaxString-1);
+		SCopy(General.ExePath.getData(), General.ScreenshotPath, CFG_MaxString-1);
 		SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
 	}
 	else
@@ -780,9 +786,9 @@ bool C4Config::RemoveModule(const char *szPath, char *szModules)
 void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 {
 #ifdef _WIN32
-	char buf[_MAX_PATH + 1];
-	ExpandEnvironmentStrings(strPath, buf, _MAX_PATH);
-	SCopy(buf, strPath, iMaxLen);
+	wchar_t buf[_MAX_PATH + 1];
+	ExpandEnvironmentStringsW(GetWideChar(strPath), buf, _MAX_PATH);
+	SCopy(StdStrBuf(buf).getData(), strPath, iMaxLen);
 #else // __linux__ or __APPLE___
 	StdStrBuf home(getenv("HOME"));
 	char* rest;

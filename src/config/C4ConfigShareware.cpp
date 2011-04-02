@@ -324,7 +324,7 @@ bool C4ConfigShareware::LoadRegistration()
 	}
 
 	// Then look in ExePath
-	for (DirectoryIterator i(General.ExePath); *i; ++i)
+	for (DirectoryIterator i(General.ExePath.getData()); *i; ++i)
 		if (WildcardMatch("*.c4k", *i))
 		{
 			if (LoadRegistration(*i))
