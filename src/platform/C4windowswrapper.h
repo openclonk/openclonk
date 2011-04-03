@@ -33,6 +33,7 @@
 # define _X86_ 1
 #endif
 #define WIN32_LEAN_AND_MEAN
+#define UNICODE
 #ifndef NOMINMAX
 # define NOMINMAX
 #endif
