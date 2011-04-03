@@ -56,7 +56,7 @@ namespace
 #include <shellapi.h>
 #include "resource.h"
 
-#define C4ViewportClassName "C4Viewport"
+#define C4ViewportClassName L"C4Viewport"
 #define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
 
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -232,7 +232,7 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	static bool fViewportClassRegistered = false;
 	if (fViewportClassRegistered) return true;
 	// register landscape viewport class
-	WNDCLASSEX WndClass;
+	WNDCLASSEXW WndClass;
 	WndClass.cbSize=sizeof(WNDCLASSEX);
 	WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
 	WndClass.lpfnWndProc   = ViewportWinProc;
@@ -245,7 +245,7 @@ bool C4ViewportWindow::RegisterViewportClass(HINSTANCE hInst)
 	WndClass.lpszClassName = C4ViewportClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_OCS) );
 	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_OCS) );
-	if (!RegisterClassEx(&WndClass)) return false;
+	if (!RegisterClassExW(&WndClass)) return false;
 	// register GUI dialog class
 	return fViewportClassRegistered = C4GUI::Dialog::RegisterWindowClass(hInst);
 }
@@ -831,9 +831,9 @@ CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, CStdApp * pApp, int32_
 #ifdef _WIN32
 	Active = true;
 	// Create window
-	hWindow = CreateWindowEx (
+	hWindow = CreateWindowExW (
 	            WS_EX_ACCEPTFILES,
-	            C4ViewportClassName, Title, C4ViewportWindowStyle,
+	            C4ViewportClassName, GetWideChar(Title), C4ViewportWindowStyle,
 	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
 	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
 	if(!hWindow) return NULL;

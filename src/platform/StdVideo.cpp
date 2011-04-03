@@ -46,7 +46,7 @@ bool AVIOpenOutput(const char *szFilename,
 	}
 
 	// Create stream
-	AVISTREAMINFO avi_info;
+	AVISTREAMINFOW avi_info;
 	RECT frame; frame.left=0; frame.top=0; frame.right=iWidth; frame.bottom=iHeight;
 	avi_info.fccType= streamtypeVIDEO;
 	avi_info.fccHandler= mmioFOURCC('M','S','V','C');
@@ -65,9 +65,9 @@ bool AVIOpenOutput(const char *szFilename,
 	avi_info.rcFrame= frame;
 	avi_info.dwEditCount= 0;
 	avi_info.dwFormatChangeCount= 0;
-	SCopy("MyRecording",avi_info.szName);
+	wcscpy(avi_info.szName, L"MyRecording");
 
-	if ( AVIFileCreateStream(
+	if ( AVIFileCreateStreamW(
 	       *ppAviFile,
 	       ppAviStream,
 	       &avi_info) != 0)

@@ -32,7 +32,7 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
-#define ConsoleDlgClassName "C4GUIdlg"
+#define ConsoleDlgClassName L"C4GUIdlg"
 #define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
 #include "C4Rect.h"

@@ -58,23 +58,24 @@
 #include <commdlg.h>
 #include "resource.h"
 
-#define LoadBitmap LoadBitmapA
+inline StdStrBuf::wchar_t_holder LoadResStrW(const char *id) { return GetWideChar(LoadResStr(id)); }
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText);
 
 bool AddMenuItem(C4ConsoleGUI *console, HMENU hMenu, DWORD dwID, const char *szString, bool fEnabled)
 {
 	if (!console->Active) return false;
-	MENUITEMINFO minfo;
+	MENUITEMINFOW minfo;
 	ZeroMem(&minfo,sizeof(minfo));
 	minfo.cbSize = sizeof(minfo);
 	minfo.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA | MIIM_STATE;
 	minfo.fType = MFT_STRING;
 	minfo.wID = dwID;
-	minfo.dwTypeData = (char*) szString;
-	minfo.cch = SLen(szString);
+	StdBuf td = GetWideCharBuf(szString);
+	minfo.dwTypeData = getMBufPtr<wchar_t>(td);
+	minfo.cch = wcslen(minfo.dwTypeData);
 	if (!fEnabled) minfo.fState|=MFS_GRAYED;
-	return !!InsertMenuItem(hMenu,0,false,&minfo);
+	return !!InsertMenuItemW(hMenu,0,false,&minfo);
 }
 
 class C4ConsoleGUI::State
@@ -135,16 +136,16 @@ public:
 	void CreateBitmaps(CStdApp *application)
 	{
 		HINSTANCE instance = application->GetInstance();
-		hbmMouse=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_MOUSE));
-		hbmMouse2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_MOUSE2));
-		hbmCursor=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_CURSOR));
-		hbmCursor2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_CURSOR2));
-		hbmBrush=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_BRUSH));
-		hbmBrush2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_BRUSH2));
-		hbmPlay=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_PLAY));
-		hbmPlay2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_PLAY2));
-		hbmHalt=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_HALT));
-		hbmHalt2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_HALT2));
+		hbmMouse=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_MOUSE));
+		hbmMouse2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_MOUSE2));
+		hbmCursor=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_CURSOR));
+		hbmCursor2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_CURSOR2));
+		hbmBrush=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_BRUSH));
+		hbmBrush2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_BRUSH2));
+		hbmPlay=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_PLAY));
+		hbmPlay2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_PLAY2));
+		hbmHalt=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_HALT));
+		hbmHalt2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_HALT2));
 	}
 
 	void UpdateMenuText(C4ConsoleGUI &console, HMENU hMenu)
@@ -152,7 +153,7 @@ public:
 		HMENU hSubMenu;
 		if (!console.Active) return;
 		// File
-		ModifyMenu(hMenu,MenuIndexFile,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_FILE"));
+		ModifyMenuW(hMenu,MenuIndexFile,MF_BYPOSITION | MF_STRING,0,LoadResStrW("IDS_MNU_FILE"));
 		hSubMenu = GetSubMenu(hMenu,MenuIndexFile);
 		SetMenuItemText(hSubMenu,IDM_FILE_OPEN,LoadResStr("IDS_MNU_OPEN"));
 		SetMenuItemText(hSubMenu,IDM_FILE_OPENWPLRS,LoadResStr("IDS_MNU_OPENWPLRS"));
@@ -164,11 +165,11 @@ public:
 		SetMenuItemText(hSubMenu,IDM_FILE_CLOSE,LoadResStr("IDS_MNU_CLOSE"));
 		SetMenuItemText(hSubMenu,IDM_FILE_QUIT,LoadResStr("IDS_MNU_QUIT"));
 		// Player
-		ModifyMenu(hMenu,MenuIndexPlayer,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_PLAYER"));
+		ModifyMenuW(hMenu,MenuIndexPlayer,MF_BYPOSITION | MF_STRING,0,LoadResStrW("IDS_MNU_PLAYER"));
 		hSubMenu = GetSubMenu(hMenu,MenuIndexPlayer);
 		SetMenuItemText(hSubMenu,IDM_PLAYER_JOIN,LoadResStr("IDS_MNU_JOIN"));
 		// Viewport
-		ModifyMenu(hMenu,MenuIndexViewport,MF_BYPOSITION | MF_STRING,0,LoadResStr("IDS_MNU_VIEWPORT"));
+		ModifyMenuW(hMenu,MenuIndexViewport,MF_BYPOSITION | MF_STRING,0,LoadResStrW("IDS_MNU_VIEWPORT"));
 		hSubMenu = GetSubMenu(hMenu,MenuIndexViewport);
 		SetMenuItemText(hSubMenu,IDM_VIEWPORT_NEW,LoadResStr("IDS_MNU_NEW"));
 		// Help
@@ -222,10 +223,10 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDOK:
 			// IDC_COMBOINPUT to Console.In()
-			char buffer[16000];
-			GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
+			wchar_t buffer[16000];
+			GetDlgItemTextW(hDlg,IDC_COMBOINPUT,buffer,16000);
 			if (buffer[0])
-				Console.In(buffer);
+				Console.In(StdStrBuf(buffer).getData());
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONHALT:
@@ -353,21 +354,21 @@ public:
 	
 	void LoadBitmaps(HINSTANCE instance)
 	{
-		if (!hbmBrush) hbmBrush=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_BRUSH));
-		if (!hbmLine) hbmLine=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_LINE));
-		if (!hbmRect) hbmRect=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_RECT));
-		if (!hbmFill) hbmFill=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_FILL));
-		if (!hbmPicker) hbmPicker=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_PICKER));
-		if (!hbmBrush2) hbmBrush2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_BRUSH2));
-		if (!hbmLine2) hbmLine2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_LINE2));
-		if (!hbmRect2) hbmRect2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_RECT2));
-		if (!hbmFill2) hbmFill2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_FILL2));
-		if (!hbmPicker2) hbmPicker2=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_PICKER2));
-		if (!hbmIFT) hbmIFT=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_IFT));
-		if (!hbmNoIFT) hbmNoIFT=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_NOIFT));
-		if (!hbmDynamic) hbmDynamic=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_DYNAMIC));
-		if (!hbmStatic) hbmStatic=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_STATIC));
-		if (!hbmExact) hbmExact=(HBITMAP)LoadBitmap(instance,MAKEINTRESOURCE(IDB_EXACT));
+		if (!hbmBrush) hbmBrush=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_BRUSH));
+		if (!hbmLine) hbmLine=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_LINE));
+		if (!hbmRect) hbmRect=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_RECT));
+		if (!hbmFill) hbmFill=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_FILL));
+		if (!hbmPicker) hbmPicker=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_PICKER));
+		if (!hbmBrush2) hbmBrush2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_BRUSH2));
+		if (!hbmLine2) hbmLine2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_LINE2));
+		if (!hbmRect2) hbmRect2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_RECT2));
+		if (!hbmFill2) hbmFill2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_FILL2));
+		if (!hbmPicker2) hbmPicker2=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_PICKER2));
+		if (!hbmIFT) hbmIFT=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_IFT));
+		if (!hbmNoIFT) hbmNoIFT=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_NOIFT));
+		if (!hbmDynamic) hbmDynamic=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_DYNAMIC));
+		if (!hbmStatic) hbmStatic=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_STATIC));
+		if (!hbmExact) hbmExact=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_EXACT));
 	}
 
 	~State()
@@ -548,10 +549,10 @@ INT_PTR CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPar
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDOK:
 			// IDC_COMBOINPUT to Console.EditCursor.In()
-			char buffer[16000];
-			GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
+			wchar_t buffer[16000];
+			GetDlgItemTextW(hDlg,IDC_COMBOINPUT,buffer,16000);
 			if (buffer[0])
-				Console.EditCursor.In(buffer);
+				Console.EditCursor.In(StdStrBuf(buffer).getData());
 			return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDC_BUTTONRELOADDEF:
@@ -700,16 +701,17 @@ void C4ConsoleGUI::Out(const char* message)
 {
 	if (!Active) return;
 	if (!message || !*message) return;
-	int len,len2,lines; char *buffer, *buffer2;
+	int len,len2,lines; wchar_t *buffer, *buffer2;
 	len = 65000;//SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINELENGTH,(WPARAM)0,(LPARAM)0);
-	len2 = len+Min<int32_t>(strlen(message)+2, 5000);
-	buffer = new char [len2];
+	StdBuf messageW = GetWideCharBuf(message);
+	len2 = len+Min<int32_t>(messageW.getSize()/sizeof(wchar_t)+2, 5000);
+	buffer = new wchar_t [len2];
 	buffer[0]=0;
-	GetDlgItemText(hWindow,IDC_EDITOUTPUT,buffer,len);
-	if (buffer[0]) SAppend("\r\n",buffer);
-	SAppend(message,buffer,len2-1);
-	if (strlen(buffer) > 60000) buffer2 = buffer + strlen(buffer) - 60000; else buffer2 = buffer; // max log length: Otherwise, discard beginning
-	SetDlgItemText(hWindow,IDC_EDITOUTPUT,buffer2);
+	GetDlgItemTextW(hWindow,IDC_EDITOUTPUT,buffer,len);
+	if (buffer[0]) wcscat(buffer, L"\r\n");
+	wcsncat(buffer,getBufPtr<wchar_t>(messageW),len2-wcslen(buffer)-1);
+	if (wcslen(buffer) > 60000) buffer2 = buffer + wcslen(buffer) - 60000; else buffer2 = buffer; // max log length: Otherwise, discard beginning
+	SetDlgItemTextW(hWindow,IDC_EDITOUTPUT,buffer2);
 	delete [] buffer;
 	lines = SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_GETLINECOUNT,(WPARAM)0,(LPARAM)0);
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)lines);
@@ -718,7 +720,7 @@ void C4ConsoleGUI::Out(const char* message)
 
 bool C4ConsoleGUI::ClearLog()
 {
-	SetDlgItemText(hWindow,IDC_EDITOUTPUT,"");
+	SetDlgItemTextW(hWindow,IDC_EDITOUTPUT,L"");
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,0);
 	UpdateWindow(hWindow);
 	return true;
@@ -750,13 +752,13 @@ void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& t
 	default:
 		assert(false);
 	}
-	SetDlgItemText(hWindow,dialog_item,text.getData());
+	SetDlgItemTextW(hWindow,dialog_item,text.GetWideChar());
 	UpdateWindow(GetDlgItem(hWindow,dialog_item));
 }
 
 bool C4ConsoleGUI::Message(const char *message, bool query)
 {
-	return (IDOK==MessageBox(hWindow,message,C4ENGINECAPTION,query ? (MB_OKCANCEL | MB_ICONEXCLAMATION) : MB_ICONEXCLAMATION));
+	return (IDOK==MessageBoxW(hWindow,GetWideChar(message),ADDL(C4ENGINECAPTION),query ? (MB_OKCANCEL | MB_ICONEXCLAMATION) : MB_ICONEXCLAMATION));
 }
 
 void C4ConsoleGUI::RecordingEnabled()
@@ -767,7 +769,7 @@ void C4ConsoleGUI::RecordingEnabled()
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 {
 	StdStrBuf strMessage; strMessage.Format("%s %s\n\n%s", C4ENGINECAPTION, C4VERSION, copyright.getData());
-	MessageBox(NULL, strMessage.getData(), C4ENGINECAPTION, MB_ICONINFORMATION | MB_TASKMODAL);
+	MessageBoxW(NULL, strMessage.GetWideChar(), ADDL(C4ENGINECAPTION), MB_ICONINFORMATION | MB_TASKMODAL);
 }
 
 bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
@@ -807,7 +809,7 @@ void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_tex
 
 void C4ConsoleGUI::AddNetMenu()
 {
-	if (!InsertMenu(GetMenu(hWindow),state->MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT_PTR)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
+	if (!InsertMenuW(GetMenu(hWindow),state->MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT_PTR)CreateMenu(),LoadResStrW("IDS_MNU_NET"))) return;
 	state->MenuIndexNet=state->MenuIndexHelp;
 	state->MenuIndexHelp++;
 	DrawMenuBar(hWindow);
@@ -854,11 +856,11 @@ bool C4ConsoleGUI::PropertyDlgOpen()
 	HWND hDialog = CreateDialog(Application.GetInstance(),
 	                       MAKEINTRESOURCE(IDD_PROPERTIES),
 	                       Console.hWindow,
-	                       (DLGPROC) PropertyDlgProc);
+	                       PropertyDlgProc);
 	if (!hDialog) return false;
 	state->hPropertyDlg = hDialog;
 	// Set text
-	SetWindowText(hDialog,LoadResStr("IDS_DLG_PROPERTIES"));
+	SetWindowTextW(hDialog,LoadResStrW("IDS_DLG_PROPERTIES"));
 	// Enable controls
 	EnableWindow( GetDlgItem(hDialog,IDOK), Editing );
 	EnableWindow( GetDlgItem(hDialog,IDC_COMBOINPUT), Editing );
@@ -892,7 +894,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	HWND hDialog = state->hPropertyDlg;
 	if (!hDialog) return;
 	int iLine = SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_GETFIRSTVISIBLELINE,(WPARAM)0,(LPARAM)0);
-	SetDlgItemText(hDialog,IDC_EDITOUTPUT,rSelection.GetDataString().getData());
+	SetDlgItemTextW(hDialog,IDC_EDITOUTPUT,rSelection.GetDataString().GetWideChar());
 	SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)iLine);
 	UpdateWindow(GetDlgItem(hDialog,IDC_EDITOUTPUT));
 
@@ -901,16 +903,16 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	
 	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
 	HWND hCombo = GetDlgItem(state->hPropertyDlg, IDC_COMBOINPUT);
-	char szLastText[500+1];
+	wchar_t szLastText[500+1];
 	// Remember old window text
-	GetWindowText(hCombo, szLastText, 500);
+	GetWindowTextW(hCombo, szLastText, 500);
 	// Clear
 	SendMessage(hCombo, CB_RESETCONTENT, 0, 0);
 
 	SetComboItems(GetDlgItem(state->hPropertyDlg,IDC_COMBOINPUT), functions);
 	
 	// Restore
-	SetWindowText(hCombo, szLastText);
+	SetWindowTextW(hCombo, szLastText);
 }
 
 void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
@@ -945,12 +947,12 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	dlg->state->hDialog = CreateDialog(Application.GetInstance(),
 	                       MAKEINTRESOURCE(IDD_TOOLS),
 	                       Console.hWindow,
-	                       (DLGPROC) ToolsDlgProc);
+	                       ToolsDlgProc);
 	if (!dlg->state->hDialog) return false;
 	// Set text
-	SetWindowText(dlg->state->hDialog,LoadResStr("IDS_DLG_TOOLS"));
-	SetDlgItemText(dlg->state->hDialog,IDC_STATICMATERIAL,LoadResStr("IDS_CTL_MATERIAL"));
-	SetDlgItemText(dlg->state->hDialog,IDC_STATICTEXTURE,LoadResStr("IDS_CTL_TEXTURE"));
+	SetWindowTextW(dlg->state->hDialog,LoadResStrW("IDS_DLG_TOOLS"));
+	SetDlgItemTextW(dlg->state->hDialog,IDC_STATICMATERIAL,LoadResStrW("IDS_CTL_MATERIAL"));
+	SetDlgItemTextW(dlg->state->hDialog,IDC_STATICTEXTURE,LoadResStrW("IDS_CTL_TEXTURE"));
 	// Load bitmaps if necessary
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
@@ -1155,7 +1157,7 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 	SendDlgItemMessage(state->hDialog,IDC_BUTTONMODEEXACT,BM_SETSTATE,(iMode==C4LSC_Exact),0);
 	UpdateWindow(GetDlgItem(state->hDialog,IDC_BUTTONMODEEXACT));
 	// Set dialog caption
-	SetWindowText(state->hDialog,LoadResStr(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
+	SetWindowTextW(state->hDialog,LoadResStrW(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
 }
 
 

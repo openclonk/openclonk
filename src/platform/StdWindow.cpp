@@ -84,9 +84,6 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	return !!RegisterClassExW(&WndClass);
 }
 
-#define ADDL2(s) L##s
-#define ADDL(s) ADDL2(s)
-
 CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
@@ -167,8 +164,7 @@ bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey,
 
 void CStdWindow::SetTitle(const char *szToTitle)
 {
-	// FIXME: use SetWindowTextW here 
-	if (hWindow) SetWindowText(hWindow, szToTitle ? szToTitle : "");
+	if (hWindow) SetWindowTextW(hWindow, szToTitle ? GetWideChar(szToTitle) : L"");
 }
 
 bool CStdWindow::GetSize(C4Rect * pRect)
@@ -307,13 +303,13 @@ static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LP
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// prepare search struct
-	DEVMODE dmode;
+	DEVMODEW dmode;
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
 	StdStrBuf Mon;
 	if (iMonitor)
 		Mon.Format("\\\\.\\Display%d", iMonitor+1);
 	// check if indexed mode exists
-	if (!EnumDisplaySettings(Mon.getData(), iIndex, &dmode)) return false;
+	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode)) return false;
 	// mode exists; return it
 	if (piXRes) *piXRes = dmode.dmPelsWidth;
 	if (piYRes) *piYRes = dmode.dmPelsHeight;
@@ -341,7 +337,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
 	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 	bool fFound=false;
-	DEVMODE dmode;
+	DEVMODEW dmode;
 	// if a monitor is given, search on that instead
 	// get monitor infos
 	GLMonitorInfoEnumCount = iMonitor;
@@ -365,7 +361,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
 	
 	// Get current display settings
-	if (!EnumDisplaySettings(Mon.getData(), ENUM_CURRENT_SETTINGS, &dmode))
+	if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
 		return false;
 	if (!iRefreshRate)
 	{
@@ -375,7 +371,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	int orientation = dmode.dmDisplayOrientation;
 	// enumerate modes
 	int i=0;
-	while (EnumDisplaySettings(Mon.getData(), i++, &dmode))
+	while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
 		// compare enumerated mode with requested settings
 		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation && dmode.dmDisplayFrequency==iRefreshRate)
 		{
@@ -393,8 +389,8 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	}
 	else
 	{
-			dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-		if (ChangeDisplaySettingsEx(iMonitor ? Mon.getData() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+		if (ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 			{
 				return false;
 			}
@@ -412,7 +408,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 
 void CStdApp::MessageDialog(const char * message)
 {
-	MessageBox(0, message, C4ENGINECAPTION, MB_ICONERROR);
+	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
 }
 
 // Clipboard functions

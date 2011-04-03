@@ -51,4 +51,7 @@
 StdStrBuf::wchar_t_holder GetWideChar(const char * utf8);
 StdBuf GetWideCharBuf(const char * utf8);
 
+#define ADDL2(s) L##s
+#define ADDL(s) ADDL2(s)
+
 #endif // INC_C4windowswrapper

@@ -206,9 +206,9 @@ namespace C4GUI
 		if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0)) return false;
 		// create it!
 		if (!Title || !*Title) Title = "???";
-		hWindow = ::CreateWindowEx  (
+		hWindow = ::CreateWindowExW  (
 		            0,
-		            ConsoleDlgClassName, Title,
+		            ConsoleDlgClassName, GetWideChar(Title),
 		            ConsoleDlgWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
 		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
@@ -300,7 +300,7 @@ namespace C4GUI
 	bool Dialog::RegisterWindowClass(HINSTANCE hInst)
 	{
 		// register landscape viewport class
-		WNDCLASSEX WndClass;
+		WNDCLASSEXW WndClass;
 		WndClass.cbSize=sizeof(WNDCLASSEX);
 		WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
 		WndClass.lpfnWndProc   = DialogWinProc;
@@ -313,7 +313,7 @@ namespace C4GUI
 		WndClass.lpszClassName = ConsoleDlgClassName;
 		WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 		WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-		return !!RegisterClassEx(&WndClass);
+		return !!RegisterClassExW(&WndClass);
 	}
 #else
 	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)

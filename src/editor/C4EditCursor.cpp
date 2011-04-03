@@ -340,15 +340,16 @@ bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 {
-	MENUITEMINFO minfo;
+	MENUITEMINFOW minfo;
 	ZeroMem(&minfo,sizeof(minfo));
 	minfo.cbSize = sizeof(minfo);
 	minfo.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 	minfo.fType = MFT_STRING;
 	minfo.wID = id;
-	minfo.dwTypeData = (char*) szText;
-	minfo.cch = SLen(szText);
-	return !!SetMenuItemInfo(hMenu,id,false,&minfo);
+	StdBuf td = GetWideCharBuf(szText);
+	minfo.dwTypeData = getMBufPtr<wchar_t>(td);
+	minfo.cch = wcslen(minfo.dwTypeData);
+	return !!SetMenuItemInfoW(hMenu,id,false,&minfo);
 }
 #endif
 

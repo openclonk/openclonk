@@ -164,7 +164,7 @@ public:
 	RECT MonitorRect;     // output window rect
 protected:
 	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
-	DEVMODE dspMode, OldDspMode;// display mode for fullscreen
+	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
 #else
 #  if defined(USE_X11)
 	Display * dpy;
