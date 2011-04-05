@@ -376,55 +376,8 @@ void StdStrBuf::ToLowerCase()
 
 void StdStrBuf::EnsureUnicode()
 {
-	bool valid = true;
-	int need_continuation_bytes = 0;
-	// Check wether valid UTF-8
-	for (size_t i = 0; i < getSize(); ++i)
-	{
-		unsigned char c = *getPtr(i);
-		// remaining of a code point started before
-		if (need_continuation_bytes)
-		{
-			--need_continuation_bytes;
-			// (10000000-10111111)
-			if (0x80 <= c && c <= 0xBF)
-				continue;
-			else
-			{
-				valid = false;
-				break;
-			}
-		}
-		// ASCII
-		if (c < 0x80)
-			continue;
-		// Two byte sequence (11000010-11011111)
-		// Note: 1100000x is an invalid overlong sequence
-		if (0xC2 <= c && c <= 0xDF)
-		{
-			need_continuation_bytes = 1;
-			continue;
-		}
-		// Three byte sequence (11100000-11101111)
-		if (0xE0 <= c && c <= 0xEF)
-		{
-			need_continuation_bytes = 2;
-			continue;
-			// FIXME: could check for UTF-16 surrogates from a broken utf-16->utf-8 converter here
-		}
-		// Four byte sequence (11110000-11110100)
-		if (0xF0 <= c && c <= 0xF4)
-		{
-			need_continuation_bytes = 3;
-			continue;
-		}
-		valid = false;
-		break;
-	}
-	if (need_continuation_bytes)
-		valid = false;
 	// assume that it's windows-1252 and convert to utf-8
-	if (!valid)
+	if (!IsValidUtf8(getData(), getLength()))
 	{
 		size_t j = 0;
 		StdStrBuf buf;

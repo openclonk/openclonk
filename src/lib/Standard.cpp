@@ -762,3 +762,90 @@ long InterlockedDecrement(long * var)
 	return --(*var);
 }
 #endif
+
+// UTF-8 conformance checking
+namespace
+{
+	static const int utf8_continuation_byte_table[256] =
+	{
+		// How many continuation bytes must follow a byte with this value?
+		// Negative values mean that this byte can never start a valid
+		// UTF-8 sequence.
+		// Note that while the encoding scheme allows more than three
+		// trailing bytes in principle, it is not actually allowed for UTF-8.
+		// Values 0xC0 and 0xC1 can never occur in UTF-8 because they
+		// would mark the beginning of an overlong encoding of characters
+		// below 0x80.
+		// Values 0xF5 to 0xFD are invalid because they can only be used
+		// to encode characters beyond the Unicode range.
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00000000..0b00001111, 0x00..0x0F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00010000..0b00011111, 0x10..0x1F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00100000..0b00101111, 0x20..0x2F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00110000..0b00111111, 0x30..0x3F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01000000..0b01001111, 0x40..0x4F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01010000..0b01011111, 0x50..0x5F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01100000..0b01101111, 0x60..0x6F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01110000..0b01111111, 0x70..0x7F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10000000..0b10001111, 0x80..0x8F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10010000..0b10011111, 0x90..0x9F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10100000..0b10101111, 0xA0..0xAF
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10110000..0b10111111, 0xB0..0xBF
+		-1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11000000..0b11001111, 0xC0..0xCF
+		 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11010000..0b11011111, 0xD0..0xDF
+		 2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  // 0b11100000..0b11101111, 0xE0..0xEF
+		 3,  3,  3,  3,  3, -3, -3, -3, -4, -4, -4, -4, -5, -5, -1, -1   // 0b11110000..0b11111111, 0xF0..0xFF
+	};
+	static const uint32_t utf8_min_char_value[4] =
+	{
+		// Which is the lowest character value that may be encoded
+		// using this many continuation bytes?
+		0, 0x80, 0x800, 0x10000
+	};
+}
+
+bool IsValidUtf8(const char *text, int length)
+{
+	// Intentionally using a C-style cast to always get a uint8_t* from char*;
+	// reinterpret_cast would fail here on platforms that have unsigned char,
+	// while static_cast would fail on platforms with a signed char type
+	const uint8_t *input = (const uint8_t*)(text);
+
+	for (const uint8_t *cursor = input; length < 0 ? *cursor != 0 : cursor - input < length; ++cursor)
+	{
+		int continuation_bytes = utf8_continuation_byte_table[*cursor];
+		if (continuation_bytes < 0)
+			return false;
+		else if (continuation_bytes == 0)
+		{
+			// Standard 7-bit ASCII value (i.e., 1 byte codepoint)
+			continue;
+		}
+		
+		// Compute character value, so we can detect overlong sequences
+		assert((*cursor & 0xC0) == 0xC0);
+		uint32_t value = *cursor;
+		// strip length bits off the start byte
+		value &= (static_cast<uint32_t>(~0U) >> (continuation_bytes + 1));
+		for (int byte = 0; byte < continuation_bytes; ++byte)
+		{
+			// check that this is actually a continuation byte
+			if ((cursor[byte + 1] & 0xC0) != 0x80)
+				return false;
+			// merge continuation byte into value
+			value <<= 6;
+			value |= cursor[byte + 1] & 0x3F;
+		}
+		// make sure this is not overlong
+		if (value < utf8_min_char_value[continuation_bytes])
+			return false;
+		// and also not beyond 0x10FFFF
+		if (value > 0x10FFFF)
+			return false;
+		// and also not a wrongly encoded UTF-16 surrogate half
+		if (value >= 0xD800 && value <= 0xDFFF)
+			return false;
+		cursor += continuation_bytes;
+	}
+	// Looks fine
+	return true;
+}

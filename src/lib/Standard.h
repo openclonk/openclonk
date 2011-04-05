@@ -171,4 +171,7 @@ inline int ssprintf(T &str, const char *fmt, ...)
 	return m;
 }
 
+// Checks a string for conformance with UTF-8
+bool IsValidUtf8(const char *string, int length = -1);
+
 #endif // INC_STANDARD
