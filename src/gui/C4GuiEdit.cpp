@@ -34,6 +34,18 @@ namespace C4GUI
 
 	const char *Edit::CursorRepresentation = "\xC2\xA6"; // U+00A6 BROKEN BAR
 
+	namespace
+	{
+		inline bool IsUtf8ContinuationByte(char c)
+		{
+			return (c & 0xC0) == 0x80;
+		}
+		inline bool IsUtf8StartByte(char c)
+		{
+			return (c & 0xC0) == 0xC0;
+		}
+	}
+
 // ----------------------------------------------------
 // Edit
 
@@ -198,8 +210,11 @@ namespace C4GUI
 		int32_t i = 0;
 		for (int32_t iLastW = 0, w,h; Text[i]; ++i)
 		{
+			int oldi = i;
+			if (IsUtf8StartByte(Text[oldi]))
+				while (IsUtf8ContinuationByte(Text[++i + 1])) /* EMPTY */;
 			char c=Text[i+1]; Text[i+1]=0; pFont->GetTextExtent(Text, w, h, false); Text[i+1]=c;
-			if (w - (w-iLastW)/2 >= iControlXPos) break;
+			if (w - (w-iLastW)/2 >= iControlXPos) return oldi;
 			iLastW = w;
 		}
 		return i;
@@ -404,7 +419,12 @@ namespace C4GUI
 							iMoveLength += iMoveDir;
 						}
 				}
-				else iMoveLength = iMoveDir;
+				else
+				{
+					// Handle UTF-8
+					iMoveLength = iMoveDir;
+					while (IsUtf8ContinuationByte(Text[iCursorPos + iMoveLength])) iMoveLength += Sign(iMoveLength);
+				}
 			}
 			// delete stuff
 			if (op == COP_BACK || op == COP_DELETE)
@@ -415,6 +435,7 @@ namespace C4GUI
 				char *c; for (c = Text+iCursorPos; *c; ++c) *(c+iMoveLength) = *c;
 				// terminate string
 				*(c+iMoveLength) = 0;
+				assert(IsValidUtf8(Text));
 			}
 			else if (fShift)
 			{
