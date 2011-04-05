@@ -325,7 +325,7 @@ public:
 #ifdef USE_GL
 	CStdGLCtx* pGLCtx;
 #endif
-	friend BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	HBITMAP hbmBrush,hbmBrush2;
 	HBITMAP hbmLine,hbmLine2;
 	HBITMAP hbmRect,hbmRect2;
@@ -402,7 +402,7 @@ public:
 };
 
 #include <commctrl.h>
-BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	int32_t iValue;
 	switch (Msg)
