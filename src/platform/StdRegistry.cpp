@@ -671,7 +671,7 @@ StdStrBuf StdCompilerConfigRead::ReadString()
 	                    &iSize) != ERROR_SUCCESS)
 		{ excNotFound("Could not read value %s!", pKey->Name.getData()); return StdStrBuf(); }
 	// Check size
-	if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize)
+	if (wcslen(getBufPtr<wchar_t>(Result)) + 1 != iSize / sizeof(wchar_t))
 		{ excCorrupt("Wrong size of a string!"); return StdStrBuf(); }
 	return StdStrBuf(getBufPtr<wchar_t>(Result));
 }
