@@ -15,8 +15,6 @@ local is_station;
 public func IsCableCrossing() { return true; }
 public func IsCableStation() { return is_station; }
 
-
-
 global func WaypointsMakeList()
 {
 	var iterationLimit = ObjectCount(Find_Func("IsCableCrossing"));
@@ -31,14 +29,6 @@ global func WaypointsMakeList()
 }
 
 /* Local */
-
-
-protected func Initialize()
-{
-	  SetAction("Wait");
-	  SetGraphics(0, GetID(), 1, GFXOV_MODE_Base);
-	  return;
-}
 
 // Every line connected to me
 local aPath;
@@ -221,25 +211,4 @@ private func CheckRailStation()
 	}
 }
 
-local ActMap = {
-	Active = {
-		Prototype = Action,
-		Name = "Active",
-		Procedure = DFA_NONE,
-		Length = 1,
-		Delay = 1,
-		FacetBase = 0,
-		NextAction = "Active",
-		StartCall = "TurnWheel",
-	},
-	Wait = {
-		Prototype = Action,
-		Name = "Wait",
-		Procedure = DFA_NONE,
-		Length = 1,
-		Delay = 0,
-		FacetBase = 0,
-		NextAction = "Wait",
-	},
-};
 local Name = "$Name$";
