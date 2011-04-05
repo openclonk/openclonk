@@ -26,6 +26,7 @@
 #include "C4Include.h"
 #include <StdFont.h>
 
+#include "Standard.h"
 #include <StdBuf.h>
 #include <StdDDraw2.h>
 #include <StdSurface2.h>
@@ -435,15 +436,12 @@ void CStdFont::Clear()
 	id=0;
 }
 
-
-
 /* Text size measurement */
-
-
 bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup)
 {
 	// safety
 	if (!szText) return false;
+	assert(IsValidUtf8(szText));
 	// keep track of each row's size
 	int iRowWdt=0,iWdt=0,iHgt=iLineHgt;
 	// ignore any markup
@@ -858,6 +856,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 
 void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom)
 {
+	assert(IsValidUtf8(szText));
 	CBltTransform bt, *pbt=NULL;
 	// set blit color
 	DWORD dwOldModClr;
