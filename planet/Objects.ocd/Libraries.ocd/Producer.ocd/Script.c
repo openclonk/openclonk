@@ -28,7 +28,7 @@ local queue;
 
 protected func Initialize()
 {
-	local queue = [];
+	queue = [];
 	AddEffect("ProcessQueue", this, 100, 5, this);
 	return _inherited(...);
 }
@@ -51,7 +51,7 @@ public func CanProduceItem(id item_id)
 */
 public func NeedsRawMaterial(id rawmat_id)
 {
-	return false;
+	return false; // Obsolete for now.
 }
 
 private func Produce(id item_id)
@@ -93,6 +93,7 @@ private func ProductionCosts(id item_id)
 */
 public func AddToQueue(id item_id, int amount)
 {
+	// Check if this producer can produce the requested item.
 	if (!CanProduceItem(item_id))
 		return nil;
 	var pos = GetLength(queue);
@@ -106,9 +107,15 @@ public func AddToQueue(id item_id, int amount)
 */
 public func RemoveFromQueue(int pos)
 {
+	var length = GetLength(queue);
+	// Safety, pos out of reach.
+	if (pos > length - 1)
+		return;
 	// From pos onwards queue items should be shift downwards.
 	for (var i = pos; i < GetLength(queue); i++)
-		queue[i-1] = queue[i];
+		queue[i] = queue[i+1];
+	// Reduce queue size by one.
+	SetLength(queue, length - 1);
 	return;
 }
 
@@ -123,7 +130,6 @@ protected func FxProcessQueueStart()
 
 	return 1;
 }
-
 
 protected func FxProcessQueueTimer(object target, proplist effect)
 {
@@ -140,8 +146,12 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	var item_id = to_produce[0];
 	var amount = to_produce[1];
 	// Check raw material need.
-	// TODO
-	
+	if (!CheckMaterial(item_id))
+	{
+		// No material available? request from cable network.
+		RequestMaterial(item_id);
+		return 1;
+	}
 	// Start the item production.
 	if (!Produce(item_id))
 		return 1;
@@ -152,9 +162,53 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	amount--;
 	// If amount is zero, remove item from queue.
 	if (amount <= 0)
+	{
 		RemoveFromQueue(0);
-	
+		return 1;
+	}
+	// Update queue, insert new amount.
+	queue[0] = [item_id, amount];
+	// Done with production checks.
 	return 1;
+}
+
+/**
+	Determines whether there is sufficient material to produce an item.
+*/
+private func CheckMaterial(id item_id)
+{
+	for (var item in ProductionCosts(item_id))
+	{
+		var mat_id = item[0];
+		var mat_cost = item[1];
+		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
+		if (mat_av < mat_cost)
+			return false;
+	}
+	return true;
+}
+
+/**
+	Requests the necessary material from the cable network if available.
+*/
+private func RequestMaterial(id item_id)
+{
+	for (var item in ProductionCosts(item_id))
+	{
+		var mat_id = item[0];
+		var mat_cost = item[1];
+		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
+		if (mat_av < mat_cost)
+			RequestObject(mat_id, mat_cost - mat_av);
+	}
+	return true;
+}
+
+// Must exist if Library_CableStation is not included by either this
+// library or the structure including this library.
+public func RequestObject(id obj_id, int amount)
+{
+	return _inherited(obj_id, amount, ...);
 }
 
 /* Storage */

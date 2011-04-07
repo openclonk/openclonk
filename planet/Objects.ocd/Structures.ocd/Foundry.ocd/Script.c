@@ -7,6 +7,7 @@
 
 
 #include Library_Producer
+#include Library_CableStation
 
 public func Initialize()
 {
@@ -14,6 +15,8 @@ public func Initialize()
 	queue = [[Metal, nil]];
 	return;
 }
+
+/*-- Production --*/
 
 public func CanProduceItem(id item_id)
 {
@@ -53,6 +56,14 @@ private func Produce(id item_id)
 	Sound("FurnaceStart.ogg");
 	AddEffect("IntSoundDelay",this,1,1,this);
 	return true;
+}
+
+private func ProductionCosts(id item_id)
+{
+	if (item_id == Metal)
+		return [[Ore, 1],[Coal, 1]];
+
+	return _inherited(item_id, ...);
 }
 
 local cast = 0;
@@ -128,6 +139,7 @@ public func FxEjectMetalTimer(object target, num, int timer)
 		var metal = CreateObject(Metal, -20, 16);
 		metal->SetSpeed(0,-17);
 		metal->SetR(30 - Random(59));
+		metal->Enter(this);
 		Sound("Pop.ogg");
 		cast = 0;
 		return -1;

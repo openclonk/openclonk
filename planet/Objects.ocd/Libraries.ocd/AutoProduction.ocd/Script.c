@@ -14,7 +14,7 @@ public func ControlCommandAcquire(target, x, y, target2, def)
 	// Search for a building to produce the object
 	if (obj = GetProducerOf (def)) {
 		AddCommand ( "Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
-		obj -> HowToProduce (this, def);
+		obj->~HowToProduce (this, def);
 		return 1;
 	}
 	AddCommand ("Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);

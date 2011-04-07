@@ -2,8 +2,6 @@
 id=ToolsWorkshop
 Version=4,10,0,0
 Category=C4D_Structure
-Timer=20
-TimerCall=CheckBuild
 Width=52
 Height=40
 Offset=-26,-20
