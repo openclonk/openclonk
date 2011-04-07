@@ -26,6 +26,7 @@ protected func Initialize()
 	iRotWheels = 0;
 	iTremble = 0;
 	iMovementSpeed = 2;
+	return _inherited(...);
 }
 
 private func Disengaged()

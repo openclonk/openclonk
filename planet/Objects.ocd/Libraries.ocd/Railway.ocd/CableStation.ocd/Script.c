@@ -72,6 +72,7 @@ protected func Initialize() //
 	const_finaldestination = 0;
 	const_nextwaypoint = 1;
 	const_distance = 2;
+	reserved_list = {};
 	destination_list = [];
 	return _inherited(...);
 }
@@ -475,4 +476,122 @@ private func CheckRailStation()
 		SetGraphics(nil, nil, 2, GFXOV_MODE_Base);
 		is_station = false;
 	}
+}
+
+/*-- Network control --*/
+
+/**
+	Determines whether this station is connected to the specified station.
+	@param station cable station for which to check the connection.
+	@return \c true if there is connection, \c false otherwise.
+*/
+public func IsConnectedToStation(object station)
+{
+
+
+
+}
+
+/*-- Interface for object requests and deliveries --*/
+
+// List to keep track of which objects already have been reserved by cable cars.
+local reserved_list;
+
+/**
+	Requests the cable network to deliver the specified objects.
+	@param obj_id id of the object requested.
+	@param amount amount of requested objects.
+	@return \c true if the requested object is available and added to network queue, \c false otherwise.
+*/
+public func RequestObject(id obj_id, int amount)
+{
+	// TODO: Complete implementation.
+	// Find the most suited cable car for the delivery, i.e. near and small delivery queue.
+	var car = FindObject(Find_Func("IsCableCar"));
+	if (!car)
+		return false;
+	// Only request for a delivery if there is not already an equivalent.
+	if (car->FindDelivery(this, obj_id))
+		return false;		
+	// Let the cable car check the network for the requested objects.
+	// If there are sufficient objects in the network the delivery will be processed.
+	return car->RequestDelivery(this, obj_id, amount);
+}
+
+/**
+	Gives the number of available objects in this station.
+	@param obj_id id of the object.
+	@return the number of available objects of the specific type in this station.
+*/
+public func GetAvailableCount(id obj_id)
+{
+	// Determine number of objects in this station of the specified id.
+	var count = ObjectCount(Find_Container(this), Find_ID(obj_id));
+	// Reduce the count with the number of already reserved objects.
+	if (reserved_list)
+		count -= reserved_list[Format("%i",obj_id)];
+	//Log("Available count requested for {{%i}} result: %d", obj_id, count);
+	return count;
+}
+
+/**
+	Let's the cable car reserve specific objects which are to be collected later on.
+	
+*/
+public func ReserveObjects(id obj_id, int amount)
+{
+	// Only do so if enough objects are available.
+	if (GetAvailableCount(obj_id) < amount)
+		return false;
+	// Add amount of objects to reserved list.
+	if (reserved_list[Format("%i",obj_id)] == nil)
+		reserved_list[Format("%i",obj_id)] = amount;
+	else
+		reserved_list[Format("%i",obj_id)] += amount;
+	return true;
+}
+
+
+/**
+	Called from the cable car to transfer objects from the car into the station.
+
+*/
+public func TransferIntoStation(object car, id obj_id, int amount)
+{
+	var cnt = 0;
+	for (var obj in FindObjects(Find_Container(car), Find_ID(obj_id)))
+	{
+		// Transfer object.
+		obj->Exit();
+		obj->Enter(this);
+		// Increase count and abort if amount has been reached.
+		if (++cnt >= amount)
+			break;		
+	}
+	// Visually display transfer.
+	//CreateObject(CableStationTransfer)->ShowTransferOut(obj_id, cnt);
+	Message("Transfered %d {{%i}} into station", cnt, obj_id);
+	return;
+}
+
+/**
+	Called from the cable car to transfer objects from the station into the car.
+
+*/
+public func TransferFromStation(object car, id obj_id, int amount)
+{
+	var cnt = 0;
+	for (var obj in FindObjects(Find_Container(this), Find_ID(obj_id)))
+	{
+		// Transfer object.
+		obj->Exit();
+		obj->Enter(car);
+		// Increase count and abort if amount has been reached.
+		if (++cnt >= amount)
+			break;		
+	}
+	// Visually display transfer.
+	//CreateObject(CableStationTransfer)->ShowTransferIn(obj_id, cnt);
+	Message("Transfered %d {{%i}} into car", cnt, obj_id);
+	return;
 }

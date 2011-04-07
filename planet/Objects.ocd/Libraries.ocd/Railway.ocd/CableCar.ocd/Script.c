@@ -2,7 +2,7 @@
 	Cable Car
 	Library object for the cable car.
 	
-	@author Randrian, Clonkonaut
+	@author Randrian, Clonkonaut, Maikel
 */
 
 local iMovementSpeed;
@@ -12,6 +12,13 @@ local rail_direction; // 2 up the line, 1 down the line, 0 no movement
 local rail_progress;
 local rail_max_prog;
 local rail_destination;
+
+protected func Initialize()
+{
+	delivery_queue = [];
+	AddEffect("ProcessDeliveryQueue", this, 100, 5, this);
+	return _inherited(...);
+}
 
 public func IsCableCar() { return true; }
 
@@ -173,10 +180,14 @@ public func AbortSelection(object selector)
 
 private func CrossingReached()
 {
-  var target;
-  if(rail_destination != pRailTarget)
-    if(target = pRailTarget->GetNextWaypoint(rail_destination))
-      MoveTo(target);
+	// Callback to the delivery interface.
+	if (pRailTarget->~IsCableStation())
+		OnStationReached(pRailTarget);
+	var target;
+	if(rail_destination != pRailTarget)
+		if(target = pRailTarget->GetNextWaypoint(rail_destination))
+			MoveTo(target);
+	return;
 }
 
 private func MoveTo(dest)
@@ -248,3 +259,167 @@ protected func OnRail()
 			(pRailTarget->GetActionTarget(end)->GetY(prec)-pRailTarget->GetActionTarget(start)->GetY(prec))*rail_progress/rail_max_prog;
 	SetPosition(x, y, 1, prec);
 }
+
+
+/*-- Network movement --*/
+
+protected func Find_InNetwork(object station)
+{
+
+	return;
+}
+
+
+
+
+
+
+/*-- Delivery queue --*/
+
+local delivery_queue;
+
+protected func FxProcessDeliveryQueueStart()
+{
+
+	return 1;
+}
+
+protected func FxProcessDeliveryQueueTimer(object target, proplist effect)
+{
+	if (!pRailTarget)
+		return 1;
+	//LogDeliveryQueue();
+	// Retrieve first request for objects from delivery queue.
+	var request = delivery_queue[0];
+	if (!request)
+		return 1;
+	// Check whether the requested contents are in this car.
+	if (ObjectCount(Find_Container(this), Find_ID(request.ObjID)) < request.Amount)
+	{
+		// Not a sufficient amount of the requested objects, try to retrieve from other stations.
+		// TODO: is station in network, find closest.
+		if (!effect.Station)
+		for (var station in FindObjects(Find_Func("IsCableStation")))
+		{
+			// Check every station in network.
+			// TODO: Move request down if not fulfillable.
+			if (station->GetAvailableCount(request.ObjID) >= request.Amount)
+			{
+				//station->ReserveObjects(request.ObjID, request.Amount);
+				//Log("Cable car %v moving to station %v for loading.", this, station);
+				SetDestination(station);
+				effect.Station = station;
+				break;		
+			}
+		}
+	}
+	else
+	{
+		// Sufficient amount of requested objects, deliver at station.
+		SetDestination(request.Station);
+		effect.Station = nil;	
+	}
+	return 1;
+}
+
+/**
+	Removes the specified request from the delivery queue.
+*/
+private func RemoveFromQueue(proplist request)
+{
+	var remove = false;
+	var length = GetLength(delivery_queue);
+	for (var i = 0; i < length; i++)
+	{
+		// Request found.
+		if (request == delivery_queue[i])
+			remove = true;
+		// Move trailing requests up by one.
+		if (remove)
+			delivery_queue[i] = delivery_queue[i+1];
+	}
+	// Request found, reduce size by one.
+	if (remove)
+		SetLength(delivery_queue, length - 1);
+	return;
+}
+
+/**
+	Called from the movement section whenever a crossing of type station has been reached.
+*/
+private func OnStationReached(object station)
+{
+	Log("Station %v reached: Try loading and unloading.", station);
+	// Check deliveries which need objects from the current station.
+	for (var request in delivery_queue)
+	{
+		// Don't load from the station which requests.
+		if (station == request.Station)
+			continue;
+		var car_cnt = ObjectCount(Find_Container(this), Find_ID(request.ObjID));
+		if (request.Amount > car_cnt)
+		{
+			var req_cnt = request.Amount - car_cnt;
+			var av_cnt = station->GetAvailableCount(request.ObjID);
+			req_cnt = Min(req_cnt, av_cnt);
+			if (req_cnt > 0)
+				station->TransferFromStation(this, request.ObjID, req_cnt);			
+		}	
+	}
+	
+	// Check deliveries which need to unload at current station.
+	for (var request in delivery_queue)
+	{
+		if (request.Station == station)
+		{
+			// Check if the requested objects are available in this car.
+			if (ObjectCount(Find_Container(this), Find_ID(request.ObjID)) >= request.Amount)
+			{
+				station->TransferIntoStation(this, request.ObjID, request.Amount);	
+				// Remove request from queue. FIXME
+				RemoveFromQueue(request);
+			}
+		}
+	}
+	return;
+}
+
+/**	
+	Request this car for a delivery to a station.
+
+*/
+public func RequestDelivery(object station, id obj_id, int amount)
+{
+	// Check connection to station.
+	
+	// Check availability of delivery.
+	
+	// Add request to delivery queue.
+	var request = {Station = station, ObjID = obj_id, Amount = amount};
+	delivery_queue[GetLength(delivery_queue)] = request;
+	return true;
+}
+
+/** 
+	Looks for a delivery in the delivery queue.
+
+*/
+public func FindDelivery(object station, id obj_id)
+{
+	for (var request in delivery_queue)
+		if (request.Station == station && request.ObjID == obj_id)
+			return request;
+	return;
+}
+
+// For debug purposes
+public func LogDeliveryQueue()
+{
+	Log("===Delivery queue of %v===", this);
+	for (var request in delivery_queue)
+	{
+		Log("* Delivery %v: %d {{%i}} to station %v", request, request.Amount, request.ObjID, request.Station);
+	}
+	return;
+}
+

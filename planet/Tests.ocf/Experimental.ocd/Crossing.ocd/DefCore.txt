@@ -16,3 +16,4 @@ Picture=0,0,20,20
 Exclusive=1
 BlastIncinerate=50
 Construction=1
+Collection=-10,-10,20,20
