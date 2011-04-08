@@ -82,7 +82,7 @@ public:
 	void PlayerJoin();
 	void ViewportNew();
 	void HelpAbout();
-	bool FileSelect(char *sFilename, int iSize, const char *szFilter, DWORD dwFlags, bool fSave=false);
+	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
 	bool SaveGame(bool fSaveGame);
 	bool FileSaveAs(bool fSaveGame);
 	bool FileSave(bool fSaveGame);

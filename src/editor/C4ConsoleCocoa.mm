@@ -118,7 +118,7 @@ void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
 	[ctrler(this).window setRepresentedFilename:[NSString stringWithUTF8String:file_name]];
 }
 
-bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
 	NSSavePanel* savePanel = fSave ? [NSSavePanel savePanel] : [NSOpenPanel openPanel];
 	if (!fSave)
@@ -128,7 +128,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 	}
 	if ([savePanel runModal] == NSFileHandlingPanelOKButton && [[savePanel URL] isFileURL])
 	{
-		strncpy(sFilename, [[savePanel URL].path cStringUsingEncoding:NSUTF8StringEncoding], iSize);
+		sFilename->Copy([[savePanel URL].path cStringUsingEncoding:NSUTF8StringEncoding]);
 		return true;
 	}
 	else

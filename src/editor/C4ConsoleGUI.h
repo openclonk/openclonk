@@ -105,7 +105,7 @@ public:
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
 	void SetCaptionToFileName(const char* file_name);
 	void SetCaption(const char *caption);
-	bool FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave);
+	bool FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave);
 	void AddMenuItemForPlayer(C4Player  *player, StdStrBuf& player_text);
 	void AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled);
 	void ClearViewportMenu();

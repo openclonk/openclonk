@@ -772,17 +772,18 @@ void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf &copyright)
 	MessageBoxW(NULL, strMessage.GetWideChar(), ADDL(C4ENGINECAPTION), MB_ICONINFORMATION | MB_TASKMODAL);
 }
 
-bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
+	enum { ArbitraryMaximumLength = 4096 };
+	char buffer[ArbitraryMaximumLength];
+	SCopy(sFilename->getData(), buffer, ArbitraryMaximumLength);
 	OPENFILENAME ofn;
 	ZeroMem(&ofn,sizeof(ofn));
 	ofn.lStructSize=sizeof(ofn);
 	ofn.hwndOwner=hWindow;
 	ofn.lpstrFilter=szFilter;
-	ofn.lpstrFile=sFilename;
-	ofn.nMaxFile=iSize;
-	ofn.nFileOffset= GetFilename(sFilename) - sFilename;
-	ofn.nFileExtension= GetExtension(sFilename) - sFilename;
+	ofn.lpstrFile=buffer;
+	ofn.nMaxFile=ArbitraryMaximumLength;
 	ofn.Flags=dwFlags;
 
 	bool fResult;
@@ -794,6 +795,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectory(wd);
+	sFilename->Copy(buffer);
 	return fResult;
 }
 

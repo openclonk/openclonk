@@ -232,20 +232,20 @@ bool C4Console::FileSave(bool fSaveGame)
 bool C4Console::FileSaveAs(bool fSaveGame)
 {
 	// Do save-as dialog
-	char filename[512+1];
-	SCopy(Game.ScenarioFile.GetName(),filename);
-	if (!FileSelect(filename,512,
+	StdStrBuf filename;
+	filename.Copy(Game.ScenarioFile.GetName());
+	if (!FileSelect(&filename,
 	                "Clonk 4 Scenario\0*.ocs\0\0",
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
-	DefaultExtension(filename,"ocs");
+	DefaultExtension(&filename,"ocs");
 	bool fOkay=true;
 	// Close current scenario file
 	if (!Game.ScenarioFile.Close()) fOkay=false;
 	// Copy current scenario file to target
-	if (!C4Group_CopyItem(Game.ScenarioFilename,filename)) fOkay=false;
+	if (!C4Group_CopyItem(Game.ScenarioFilename,filename.getData())) fOkay=false;
 	// Open new scenario file
-	SCopy(filename,Game.ScenarioFilename);
+	SCopy(filename.getData(),Game.ScenarioFilename);
 
 	SetCaption(GetFilename(Game.ScenarioFilename));
 	if (!Game.ScenarioFile.Open(Game.ScenarioFilename)) fOkay=false;
@@ -267,40 +267,40 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 bool C4Console::FileOpen()
 {
 	// Get scenario file name
-	char c4sfile[512+1]="";
-	if (!FileSelect(c4sfile,512,
+	StdStrBuf c4sfile ("");
+	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	Application.ClearCommandLine();
 	// Open game
-	Application.OpenGame(c4sfile);
+	Application.OpenGame(c4sfile.getData());
 	return true;
 }
 
 bool C4Console::FileOpenWPlrs()
 {
 	// Get scenario file name
-	char c4sfile[512+1]="";
-	if (!FileSelect(c4sfile,512,
+	StdStrBuf c4sfile ("");
+	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	// Get player file name(s)
-	char c4pfile[4096+1]="";
-	if (!FileSelect(c4pfile,4096,
+	StdStrBuf c4pfile ("");
+	if (!FileSelect(&c4pfile,
 	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return false;
 	// Compose command line
 	Application.ClearCommandLine();
-	if (DirectoryExists(c4pfile)) // Multiplayer
+	if (DirectoryExists(c4pfile.getData())) // Multiplayer
 	{
-		const char *cptr = c4pfile + SLen(c4pfile) + 1;
+		const char *cptr = c4pfile.getData() + SLen(c4pfile.getData()) + 1;
 		while (*cptr)
 		{
 			char c4pfile2[512 + 1] = "";
-			SAppend(c4pfile, c4pfile2, 512);
+			SAppend(c4pfile.getData(), c4pfile2, 512);
 			SAppend(DirSep, c4pfile2, 512);
 			SAppend(cptr, c4pfile2, 512);
 			SAddModule(Game.PlayerFilenames, c4pfile2);
@@ -309,10 +309,10 @@ bool C4Console::FileOpenWPlrs()
 	}
 	else // Single player
 	{
-		SAddModule(Game.PlayerFilenames, c4pfile);
+		SAddModule(Game.PlayerFilenames, c4pfile.getData());
 	}
 	// Open game
-	Application.OpenGame(c4sfile);
+	Application.OpenGame(c4sfile.getData());
 	return true;
 }
 
@@ -323,9 +323,9 @@ bool C4Console::FileClose()
 	return true;
 }
 
-bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4Console::FileSelect(StdStrBuf * sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
-	return C4ConsoleGUI::FileSelect(sFilename, iSize, szFilter, dwFlags, fSave);
+	return C4ConsoleGUI::FileSelect(sFilename, szFilter, dwFlags, fSave);
 }
 
 bool C4Console::FileRecord()
@@ -444,44 +444,31 @@ void C4Console::UpdateMenus()
 
 void C4Console::PlayerJoin()
 {
-
 	// Get player file name(s)
-	char c4pfile[4096+1]="";
-	if (!FileSelect(c4pfile,4096,
+	StdStrBuf c4pfile ("");
+	if (!FileSelect(&c4pfile,
 	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
 	               )) return;
 
-	// Compose player file list
-	char c4plist[6000]="";
 	// Multiple players
-	if (DirectoryExists(c4pfile))
+	if (DirectoryExists(c4pfile.getData()))
 	{
-		const char *cptr = c4pfile+SLen(c4pfile)+1;
+		const char *cptr = c4pfile.getData() + SLen(c4pfile.getData()) + 1;
 		while (*cptr)
 		{
-			SNewSegment(c4plist);
-			SAppend(c4pfile,c4plist); SAppend(DirSep ,c4plist); SAppend(cptr,c4plist);
+			StdStrBuf f;
+			f.Copy(c4pfile.getData());
+			f.AppendBackslash(); f.Append(cptr);
 			cptr += SLen(cptr)+1;
+			::Players.JoinNew(f.getData());
 		}
 	}
 	// Single player
 	else
 	{
-		SAppend(c4pfile,c4plist);
+		::Players.JoinNew(c4pfile.getData());
 	}
-
-	// Join players (via network/ctrl queue)
-	char szPlayerFilename[_MAX_PATH+1];
-	for (int iPar=0; SCopySegment(c4plist,iPar,szPlayerFilename,';',_MAX_PATH); iPar++)
-		if (szPlayerFilename[0])
-		{
-			if (::Network.isEnabled())
-				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
-			else
-				::Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
-		}
-
 }
 
 void C4Console::UpdateNetMenu()
@@ -583,7 +570,7 @@ CStdWindow * C4ConsoleGUI::CreateConsoleWindow(CStdApp*) {return 0;}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
-bool C4ConsoleGUI::FileSelect(char*, int, char const*, unsigned int, bool) {return 0;}
+bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, unsigned int, bool) {return 0;}
 bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
 bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}

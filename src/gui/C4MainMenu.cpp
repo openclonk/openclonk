@@ -709,11 +709,8 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// not in league or replay mode
 		if (Game.Parameters.isLeague() || Game.C4S.Head.Replay) return false;
 		// join player
-		if (::Network.isEnabled())
-			// 2do: not for observers and such?
-			::Network.Players.JoinLocalPlayer(szCommand+11, true);
-		else
-			::Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+		// 2do: not for observers and such?
+		Players.JoinNew(szCommand+11);
 		return true;
 	}
 	// SetHostility

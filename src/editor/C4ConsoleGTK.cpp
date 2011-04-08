@@ -665,16 +665,16 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(fSave ? "Save file..." : "Load file...", GTK_WINDOW(window), fSave ? GTK_FILE_CHOOSER_ACTION_SAVE : GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, fSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 
 	// TODO: Set dialog modal?
 
-	if (g_path_is_absolute(sFilename) )
-		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), sFilename);
+	if (g_path_is_absolute(sFilename->getData()) )
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), sFilename->getData());
 	else if (fSave)
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sFilename);
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sFilename->getData());
 
 	// Install file filter
 	while (*szFilter)
@@ -749,7 +749,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 	{
 		// Just the file name without multiselect
 		char* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		SCopy(filename, sFilename, iSize);
+		sFilename->Copy(filename);
 		g_free(filename);
 	}
 	else
@@ -757,10 +757,8 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 		// Otherwise its the folder followed by the file names,
 		// separated by '\0'-bytes
 		char* folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
-		int len = SLen(folder);
 
-		if (iSize > 0) SCopy(folder, sFilename, Min(len + 1, iSize));
-		iSize -= (len + 1); sFilename += (len + 1);
+		sFilename->Copy(folder);
 		g_free(folder);
 
 		GSList* files = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
@@ -769,16 +767,14 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 			const char* file = static_cast<const char*>(item->data);
 			char* basefile = g_path_get_basename(file);
 
-			int len = SLen(basefile);
-			if (iSize > 0) SCopy(basefile, sFilename, Min(len + 1, iSize));
-			iSize -= (len + 1); sFilename += (len + 1);
+			sFilename->AppendChar('\0');
+			sFilename->Append(basefile);
 
 			g_free(basefile);
 			g_free(item->data);
 		}
 
 		// End of list
-		*sFilename = '\0';
 		g_slist_free(files);
 	}
 
