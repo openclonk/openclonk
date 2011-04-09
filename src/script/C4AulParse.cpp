@@ -825,10 +825,9 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
 	case AB_CARRAY: return "CARRAY";  // constant: array
 	case AB_NIL: return "NIL";    // constant: nil
-	case AB_ARRAY: return "ARRAY";    // semi-constant: array
-	case AB_DUP: return "DUP";    // constant: nil
-	case AB_PROPLIST: return "PROPLIST";    // semi-constant: array
-	case AB_IPROPLIST: return "IPROPLIST";
+	case AB_NEW_ARRAY: return "NEW_ARRAY";    // semi-constant: array
+	case AB_DUP: return "DUP";    // duplicate value from stack
+	case AB_NEW_PROPLIST: return "NEW_PROPLIST";    // create a new proplist
 	case AB_IVARN: return "IVARN";    // initialization of named var
 	case AB_JUMP: return "JUMP";    // jump
 	case AB_JUMPAND: return "JUMPAND";
@@ -956,7 +955,6 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_STRING:
 	case AB_CPROPLIST:
 	case AB_CARRAY:
-	case AB_PROPLIST:
 	case AB_NIL:
 	case AB_VARN:
 	case AB_PARN:
@@ -1026,12 +1024,14 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_STACK:
 		return X;
 
-	case AB_ARRAY:
+	case AB_NEW_ARRAY:
 		return -X+1;
+
+	case AB_NEW_PROPLIST:
+		return -X * 2 + 1;
 
 	case AB_ARRAYA_SET:
 	case AB_ARRAY_SLICE:
-	case AB_IPROPLIST:
 		return -2;
 
 	case AB_ARRAY_SLICE_SET:
@@ -1910,8 +1910,8 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				{
 				case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 				case AB_STRING: from = C4V_String; break;
-				case AB_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
-				case AB_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
+				case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
+				case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 				case AB_BOOL: from = C4V_Bool; break;
 				case AB_FUNC:
 					from = (a->CPos-1)->Par.f->GetRetType(); break;
@@ -2016,13 +2016,13 @@ void C4AulParseState::Parse_Array()
 		}
 	while (!fDone);
 	// add terminator
-	AddBCC(AB_ARRAY, size);
+	AddBCC(AB_NEW_ARRAY, size);
 }
 
 void C4AulParseState::Parse_PropList()
 {
-	AddBCC(AB_PROPLIST);
 	Shift();
+	int size = 0;
 	// insert block in byte code
 	while (TokenType != ATT_BLCLOSE)
 	{
@@ -2043,12 +2043,13 @@ void C4AulParseState::Parse_PropList()
 			UnexpectedToken("':' or '='");
 		Shift();
 		Parse_Expression();
-		AddBCC(AB_IPROPLIST);
+		++size;
 		if (TokenType == ATT_COMMA)
 			Shift();
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 	}
+	AddBCC(AB_NEW_PROPLIST, size);
 	Shift();
 }
 
@@ -3133,7 +3134,7 @@ bool C4AulScript::Parse()
 				case AB_STRING:
 					fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
 				case AB_DEBUG: case AB_NIL: case AB_RETURN:
-				case AB_PROPLIST: case AB_IPROPLIST: case AB_PAR:
+				case AB_PAR:
 				case AB_ARRAYA: case AB_ARRAY_SLICE: case AB_ERR:
 				case AB_EOFN: case AB_EOF:
 					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;

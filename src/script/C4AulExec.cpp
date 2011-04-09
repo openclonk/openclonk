@@ -420,7 +420,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PopValue();
 				break;
 			}
-			case AB_ARRAY:
+			case AB_NEW_ARRAY:
 			{
 				// Create array
 				C4ValueArray *pArray = new C4ValueArray(pCPos->Par.i);
@@ -430,31 +430,21 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					(*pArray)[i] = pCurVal[i - pCPos->Par.i + 1];
 
 				// Push array
-				if (pCPos->Par.i > 0)
-				{
-					PopValues(pCPos->Par.i - 1);
-					pCurVal->SetArray(pArray);
-				}
-				else
-					PushArray(pArray);
+				PopValues(pCPos->Par.i);
+				PushArray(pArray);
 
 				break;
 			}
 
-			case AB_PROPLIST:
+			case AB_NEW_PROPLIST:
 			{
-				PushPropList(C4PropList::New());
-				break;
-			}
-			case AB_IPROPLIST:
-			{
-				C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
-				if (!pPropSet->ConvertTo(C4V_PropList))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: proplist expected, got %s", pPropSet->GetTypeName()).getData());
-				if (!pKey->ConvertTo(C4V_String))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("internal error: string expected, got %s", pPropSet->GetTypeName()).getData());
-				pPropSet->_getPropList()->SetPropertyByS(pKey->_getStr(), *pValue);
-				PopValues(2);
+				C4PropList * pPropList = C4PropList::New();
+
+				for (int i = 0; i < pCPos->Par.i; i++)
+					pPropList->SetPropertyByS(pCurVal[-2 * i - 1]._getStr(), pCurVal[-2 * i]);
+
+				PopValues(pCPos->Par.i * 2);
+				PushPropList(pPropList);
 				break;
 			}
 

@@ -32,26 +32,9 @@
 #include <string>
 #include <vector>
 
-class C4Def;
-class C4DefList;
-
-// class predefs
-class C4AulError;
-class C4AulFunc;
-class C4AulScriptFunc;
-class C4AulDefFunc;
-class C4AulScript;
-class C4AulScriptEngine;
-class C4AulDebug;
-class C4LangStringTable;
-
-struct C4AulContext;
-struct C4AulBCC;
-
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
 #define C4AUL_MAX_Par         10  // max number of parameters
-#define C4AUL_MAX_Var         10  // max number of func local vars
 
 // generic C4Aul error class
 class C4AulError
@@ -170,10 +153,9 @@ enum C4AulBCCType
 	AB_CPROPLIST, // constant: proplist
 	AB_CARRAY,  // constant: array
 	AB_NIL,     // constant: nil
-	AB_ARRAY,   // semi-constant: array
+	AB_NEW_ARRAY,   // semi-constant: array
 	AB_DUP,     // duplicate value from stack
-	AB_PROPLIST, // create a new proplist
-	AB_IPROPLIST, // set a property of a proplist
+	AB_NEW_PROPLIST, // create a new proplist
 	AB_IVARN,   // initialization of named var
 	AB_JUMP,    // jump
 	AB_JUMPAND, // jump if zero, else pop the stack
