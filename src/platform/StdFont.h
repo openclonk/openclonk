@@ -147,6 +147,4 @@ public:
 	{ pCustomImages = pHandler; }
 };
 
-const char * GetCharsetCodeName(const char * strCharset);
-
 #endif // INC_STDFONT

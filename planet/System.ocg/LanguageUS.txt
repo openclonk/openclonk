@@ -1,7 +1,6 @@
 IDS_LANG_NAME=English
 IDS_LANG_INFO=Original language pack by RedWolf Design.
 IDS_LANG_FALLBACK=
-IDS_LANG_CHARSET=UTF-8
 IDS_BTN_ACCEPT=Accept
 IDS_BTN_ACTIVATE=Activate
 IDS_BTN_BACK=Back

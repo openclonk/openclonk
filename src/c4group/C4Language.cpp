@@ -392,11 +392,6 @@ void C4Language::LoadInfos(C4Group &hGroup)
 			// Load language string table
 			if (hGroup.LoadEntry(strEntry, &strTable, 0, 1))
 			{
-				if (!SEqual(GetResStr("IDS_LANG_CHARSET", strTable), "UTF-8"))
-				{
-					LogF("Translation %s is not in UTF-8, skipped", GetResStr("IDS_LANG_NAME", strTable));
-					continue;
-				}
 				// New language info
 				C4LanguageInfo *pInfo = new C4LanguageInfo;
 				// Get language code by entry name

@@ -943,27 +943,3 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	else
 		lpDDraw->DeactivateBlitModulation();
 }
-
-// The internal clonk charset is one of the windows charsets
-// But to save the used one to the configuration, a string is used
-// So we need to convert this string to the iconv name for iconv
-const char * GetCharsetCodeName(const char *strCharset)
-{
-	// Match charset name to WinGDI codes
-	if (SEqualNoCase(strCharset, "SHIFTJIS"))    return "CP932";
-	if (SEqualNoCase(strCharset, "HANGUL"))      return "CP949";
-	if (SEqualNoCase(strCharset, "JOHAB"))       return "CP1361";
-	if (SEqualNoCase(strCharset, "CHINESEBIG5")) return "CP950";
-	if (SEqualNoCase(strCharset, "GREEK"))       return "CP1253";
-	if (SEqualNoCase(strCharset, "TURKISH"))     return "CP1254";
-	if (SEqualNoCase(strCharset, "VIETNAMESE"))  return "CP1258";
-	if (SEqualNoCase(strCharset, "HEBREW"))      return "CP1255";
-	if (SEqualNoCase(strCharset, "ARABIC"))      return "CP1256";
-	if (SEqualNoCase(strCharset, "BALTIC"))      return "CP1257";
-	if (SEqualNoCase(strCharset, "RUSSIAN"))     return "CP1251";
-	if (SEqualNoCase(strCharset, "THAI"))        return "CP874";
-	if (SEqualNoCase(strCharset, "EASTEUROPE"))  return "CP1250";
-	if (SEqualNoCase(strCharset, "UTF-8"))       return "UTF-8";
-	// Default
-	return "CP1252";
-}
