@@ -100,24 +100,21 @@ private:
 
 	bool PopValue()
 	{
-		if (LocalValueStackSize() < 1)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
+		assert (LocalValueStackSize() >= 1);
 		(pCurVal--)->Set0();
 		return true;
 	}
 
 	void PopValues(int n)
 	{
-		if (LocalValueStackSize() < n)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
+		assert (LocalValueStackSize() >= n);
 		while (n--)
 			(pCurVal--)->Set0();
 	}
 
 	void PopValuesUntil(C4Value *pUntilVal)
 	{
-		if (pUntilVal < Values - 1)
-			throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow");
+		assert (pUntilVal >= Values - 1);
 		while (pCurVal > pUntilVal)
 			(pCurVal--)->Set0();
 	}
