@@ -784,7 +784,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_GLOBALN: return "GLOBALN";  // a named global
 	case AB_GLOBALN_SET: return "GLOBALN_SET";
 	case AB_PAR: return "PAR";      // Par statement
-	case AB_PAR_SET: return "PAR_SET";
 	case AB_FUNC: return "FUNC";    // function
 
 	case AB_PARN_CONTEXT: return "AB_PARN_CONTEXT";
@@ -1006,7 +1005,6 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_LOCALN_SET:
 	case AB_PROP:
 	case AB_GLOBALN_SET:
-	case AB_PAR_SET:
 	case AB_Inc:
 	case AB_Dec:
 	case AB_BitNot:
@@ -1139,7 +1137,6 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	{
 	case AB_ARRAYA: Setter.bccType = AB_ARRAYA_SET; break;
 	case AB_ARRAY_SLICE: Setter.bccType = AB_ARRAY_SLICE_SET; break;
-	case AB_PAR: Setter.bccType = AB_PAR_SET; break;
 	case AB_PARN: Setter.bccType = AB_PARN_SET; break;
 	case AB_VARN: Setter.bccType = AB_VARN_SET; break;
 	case AB_LOCALN:
@@ -1151,13 +1148,8 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
 		break;
 	case AB_GLOBALN: Setter.bccType = AB_GLOBALN_SET; break;
-	case AB_CALL:
-	case AB_FUNC:
-		// Huge hacks would required to make this work. EffectVar should get the Var treatment
-		// and become a BCC of its own anyway.
-		throw new C4AulParseError(this, "Setting a call result does not work, sorry!");
 	default: 
-		throw new C4AulParseError(this, "assignment not possible for this value!");
+		throw new C4AulParseError(this, "assignment to a constant");
 	}
 	// Remove value BCC
 	RemoveLastBCC();

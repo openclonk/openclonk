@@ -191,11 +191,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushValue(pCurVal[-pCPos->Par.i+1]);
 				break;
 
-			case AB_EOFN:
+			case AB_EOF: case AB_EOFN:
 				throw new C4AulExecError(pCurCtx->Obj, "internal error: function didn't return");
 
 			case AB_ERR:
-				throw new C4AulExecError(pCurCtx->Obj, "syntax error: see previous parser error for details");
+				throw new C4AulExecError(pCurCtx->Obj, "syntax error: see above for details");
 
 			case AB_PARN:
 				PushValue(pCurCtx->Pars[pCPos->Par.i]);
@@ -770,9 +770,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (pDebug) pDebug->DebugStep(pCPos);
 #endif
 				break;
-
-			default:
-				assert(false);
 			}
 
 			// Continue
