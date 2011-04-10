@@ -68,83 +68,22 @@ bool C4Value::FnCnvObject() const
 	if (Data.PropList->GetObject()) return true;
 	return false;
 }
-// Type conversion table
-#define CnvOK        C4VCnvFn::CnvOK, false           // allow conversion by same value
-#define CnvOK0       C4VCnvFn::CnvOK0, true
-#define CnvError     C4VCnvFn::CnvError, true
-#define CnvObject    C4VCnvFn::CnvObject, false
 
-C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
+
+bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 {
-	{ // C4V_Any - is always 0, convertible to everything
-		{ CnvOK   }, // any        same
-		{ CnvOK   }, // int
-		{ CnvOK   }, // Bool
-		{ CnvOK   }, // PropList
-		{ CnvOK   }, // C4Object
-		{ CnvOK   }, // String
-		{ CnvOK   }, // Array
-	},
-	{ // C4V_Int
-		{ CnvOK   }, // any
-		{ CnvOK   }, // int        same
-		{ CnvOK   }, // Bool
-		{ CnvOK0  }, // PropList   only if 0
-		{ CnvOK0  }, // C4Object   only if 0
-		{ CnvOK0  }, // String     only if 0
-		{ CnvOK0  }, // Array      only if 0
-	},
-	{ // C4V_Bool
-		{ CnvOK   }, // any
-		{ CnvOK   }, // int        might be used
-		{ CnvOK   }, // Bool       same
-		{ CnvError  }, // PropList   NEVER!
-		{ CnvError  }, // C4Object   NEVER!
-		{ CnvError  }, // String     NEVER!
-		{ CnvError  }, // Array      NEVER!
-	},
-	{ // C4V_PropList
-		{ CnvOK   }, // any
-		{ CnvError  }, // int        NEVER!
-		{ CnvOK   }, // Bool
-		{ CnvOK   }, // PropList   same
-		{ CnvObject }, // C4Object
-		{ CnvError  }, // String     NEVER!
-		{ CnvError  }, // Array      NEVER!
-	},
-	{ // C4V_Object
-		{ CnvOK   }, // any
-		{ CnvError  }, // int        NEVER!
-		{ CnvOK   }, // Bool
-		{ CnvOK   }, // PropList
-		{ CnvOK   }, // C4Object   same
-		{ CnvError  }, // String     NEVER!
-		{ CnvError  }, // Array      NEVER!
-	},
-	{ // C4V_String
-		{ CnvOK   }, // any
-		{ CnvError  }, // int        NEVER!
-		{ CnvOK   }, // Bool
-		{ CnvError  }, // PropList   NEVER!
-		{ CnvError  }, // C4Object   NEVER!
-		{ CnvOK   }, // String     same
-		{ CnvError  }, // Array      NEVER!
-	},
-	{ // C4V_Array
-		{ CnvOK   }, // any
-		{ CnvError  }, // int        NEVER!
-		{ CnvOK   }, // Bool
-		{ CnvError  }, // PropList   NEVER!
-		{ CnvError  }, // C4Object   NEVER!
-		{ CnvError  }, // String     NEVER!
-		{ CnvOK   }, // Array      same
+	switch (vtToType)
+	{
+	case C4V_Any:      return false;
+	case C4V_Int:      return Type != C4V_Int && Type != C4V_Any && Type != C4V_Bool;
+	case C4V_Bool:     return false;
+	case C4V_PropList: return Type != C4V_PropList && Type != C4V_C4Object && Type != C4V_Any;
+	case C4V_C4Object: return Type != C4V_C4Object && Type != C4V_PropList && Type != C4V_Any;
+	case C4V_String:   return Type != C4V_String && Type != C4V_Any;
+	case C4V_Array:    return Type != C4V_Array && Type != C4V_Any;
+	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
-};
-
-#undef CnvOK
-#undef CnvOK0
-#undef CnvError
-#undef CnvObject
+}
 
 // Humanreadable debug output
 StdStrBuf C4Value::GetDataString() const

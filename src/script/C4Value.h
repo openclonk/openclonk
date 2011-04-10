@@ -60,13 +60,6 @@ union C4V_Data
 	C4V_Data &operator = (void *p) { Obj = reinterpret_cast<C4Object *>(p); return *this; }
 };
 
-// converter function, used in converter table
-struct C4VCnvFn
-{
-	enum { CnvOK, CnvOK0, CnvError, CnvObject } Function;
-	bool Warn;
-};
-
 class C4Value
 {
 public:
@@ -153,22 +146,21 @@ public:
 
 	StdStrBuf GetDataString() const;
 
-	inline bool ConvertTo(C4V_Type vtToType) const // convert to dest type
+	ALWAYS_INLINE bool ConvertTo(C4V_Type vtToType) const // convert to dest type
 	{
-		switch (C4ScriptCnvMap[Type][vtToType].Function)
+		switch (vtToType)
 		{
-		case C4VCnvFn::CnvOK: return true;
-		case C4VCnvFn::CnvOK0: return !*this;
-		case C4VCnvFn::CnvError: return false;
-		case C4VCnvFn::CnvObject: return FnCnvObject();
+		case C4V_Any:      return true;
+		case C4V_Int:      return Type == C4V_Int || Type == C4V_Any || Type == C4V_Bool;
+		case C4V_Bool:     return true;
+		case C4V_PropList: return Type == C4V_PropList || Type == C4V_C4Object || Type == C4V_Any || (Type == C4V_Int && !*this);
+		case C4V_C4Object: return Type == C4V_C4Object || (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Any || (Type == C4V_Int && !*this);
+		case C4V_String:   return Type == C4V_String || Type == C4V_Any || (Type == C4V_Int && !*this);
+		case C4V_Array:    return Type == C4V_Array || Type == C4V_Any || (Type == C4V_Int && !*this);
+		default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 		}
-		assert(!"C4Value::ConvertTo: Invalid conversion function specified");
-		return false;
 	}
-	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
-	{
-		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
-	}
+	static bool WarnAboutConversion(C4V_Type Type, C4V_Type vtToType);
 
 	// Compilation
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
@@ -194,7 +186,6 @@ protected:
 	void AddDataRef();
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef);
 
-	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	bool FnCnvObject() const;
 	void LogDeletedObjectWarning(C4PropList *);
 
