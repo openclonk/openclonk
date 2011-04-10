@@ -29,6 +29,7 @@
 
 #include <C4Aul.h>
 
+#include <C4AulDebug.h>
 #include <C4Def.h>
 #include <C4Game.h>
 #include <C4Log.h>
@@ -1615,7 +1616,8 @@ void C4AulParseState::Parse_Function()
 			C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
 			if (!CPos || CPos->bccType != AB_RETURN || fJump)
 			{
-				AddBCC(AB_DEBUG);
+				if (C4AulDebug::GetDebugger())
+					AddBCC(AB_DEBUG);
 				AddBCC(AB_NIL);
 				AddBCC(AB_RETURN);
 			}
@@ -1657,7 +1659,8 @@ void C4AulParseState::Parse_Block()
 
 void C4AulParseState::Parse_Statement()
 {
-	AddBCC(AB_DEBUG);
+	if (C4AulDebug::GetDebugger())
+		AddBCC(AB_DEBUG);
 	switch (TokenType)
 	{
 		// do we have a block start?
