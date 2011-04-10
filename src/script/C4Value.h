@@ -115,7 +115,7 @@ public:
 	bool operator ! () const { return !GetData(); }
 	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions
 
-	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
+	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }

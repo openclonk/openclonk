@@ -32,9 +32,6 @@ public:
 	{ }
 
 private:
-	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
-	C4Value Values[MAX_VALUE_STACK];
-
 	C4AulScriptContext *pCurCtx;
 	C4Value *pCurVal;
 
@@ -42,6 +39,9 @@ private:
 	bool fProfiling;
 	time_t tDirectExecStart, tDirectExecTotal; // profiler time for DirectExec
 	C4AulScript *pProfiledScript;
+
+	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
+	C4Value Values[MAX_VALUE_STACK];
 
 public:
 	C4Value Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
@@ -64,8 +64,20 @@ private:
 
 	void CheckOverflow(int iCnt)
 	{
-		if (ValueStackSize() + iCnt > MAX_VALUE_STACK)
+		if (pCurVal - Values >= MAX_VALUE_STACK - iCnt)
 			throw new C4AulExecError(pCurCtx->Obj, "value stack overflow, probably due to too deep recursion");
+	}
+
+	void PushInt(int32_t i)
+	{
+		CheckOverflow(1);
+		(++pCurVal)->SetInt(i);
+	}
+
+	void PushBool(bool b)
+	{
+		CheckOverflow(1);
+		(++pCurVal)->SetBool(b);
 	}
 
 	void PushString(C4String * Str)

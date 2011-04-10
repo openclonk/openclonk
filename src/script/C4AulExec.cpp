@@ -164,11 +164,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			switch (pCPos->bccType)
 			{
 			case AB_INT:
-				PushValue(C4VInt(pCPos->Par.i));
+				PushInt(pCPos->Par.i);
 				break;
 
 			case AB_BOOL:
-				PushValue(C4VBool(!! pCPos->Par.i));
+				PushBool(!!pCPos->Par.i);
 				break;
 
 			case AB_STRING:
