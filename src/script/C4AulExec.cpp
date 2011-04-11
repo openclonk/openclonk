@@ -648,7 +648,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPars = pCurVal - pFunc->GetParCount() + 1;
 				// Save current position
 				pCurCtx->CPos = pCPos;
-				assert(pCurCtx->Func->GetCode() < pCPos);
+				assert(pCurCtx->Func->GetCode() <= pCPos);
 				// Do the call
 				C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
 				if (pJump)
