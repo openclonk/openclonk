@@ -12,7 +12,7 @@ protected func Initialize()
 {
 	  SetAction("Wait");
 	  SetGraphics(0, GetID(), 1, GFXOV_MODE_Base);
-	  return;
+	  return _inherited(...);
 }
 
 protected func TurnWheel()

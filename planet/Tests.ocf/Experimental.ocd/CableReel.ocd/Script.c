@@ -42,7 +42,7 @@ protected func ControlUse(object clonk, int x, int y)
 			Sound("Connect");
 			line->SetAction("Wait");
 			line->UpdateDraw();
-			WaypointsMakeList();
+			obj->AddCableConnection(line);
 			clonk->Message("$TxtConnect$", obj->GetName());
 			//RemoveObject();
 			return true;

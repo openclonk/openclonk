@@ -77,7 +77,7 @@ public func ShiftSelection(int direction, object selector)
 	if (!effect) return false;
 
 	var destinations = [];
-	var connection_list = effect.var3.aConnectionList;
+	var connection_list = effect.var3->GetDestinations();
 
 	// Get every possible destination
 	for (var targets in connection_list)

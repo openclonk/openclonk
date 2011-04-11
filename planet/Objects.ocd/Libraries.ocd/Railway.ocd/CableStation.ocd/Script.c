@@ -7,14 +7,42 @@
 	@author Randrian, Clonkonaut, Maikel
 */
 
+local is_station;
+
+local foobar;
+public func foo()
+{
+	Log("foo: %v", this);
+	var obj = FindObject(Find_ID(GetID()), Find_Exclude(this));
+	var arraybar = obj->Getfoo();
+	arraybar[GetLength(arraybar)] = "Test";
+	obj->Logfoo();
+}
+
+public func Getfoo()
+{
+	foobar = [];
+	Log("Getfoo: %v, %v", this, foobar);
+	return foobar[:];
+}
+
+public func Logfoo()
+{
+	Log("Logfoo: %v, %v", this, foobar);
+}
 
 /*-- State --*/
 
-local is_station;
-
+/** This object is a cable crossing
+* E.g. checked by whatever object wants to connect a cable (so it does not mean there is a cable connected!)
+*/
 public func IsCableCrossing() { return true; }
+/** Returns whether or not this object is a cable station
+* A station is a possible (i.e. selectable) destination for cable cars (whereas normal crossings do not appear in the destination selection process)
+*/
 public func IsCableStation() { return is_station; }
 
+/*
 global func WaypointsMakeList()
 {
 	var iterationLimit = ObjectCount(Find_Func("IsCableCrossing"));
@@ -27,38 +55,277 @@ global func WaypointsMakeList()
 		for(var obj in FindObjects(Find_Func("IsCableCrossing")))
 			obj->AddNeighboursList();
 }
+*/
 
 /* Local */
 
-// Every line connected to me
-local aPath;
 // Stores the next crossing (waypoint) to take when advancing to a certain final point
-// Scheme: [Desired final point, Next waypoint to take, Distance (not airline!) until final point]
-local aConnectionList;
+// Scheme (2D array): [Desired final point, Next waypoint to take, Distance (not airline!) until final point]
+local destination_list;
+// According to this scheme, some constants for easy reading
+local const_finaldestination; // :D
+local const_nextwaypoint;
+local const_distance;
+
+protected func Initialize() // 
+{
+	const_finaldestination = 0;
+	const_nextwaypoint = 1;
+	const_distance = 2;
+	destination_list = [];
+	return _inherited(...);
+}
 
 /* Pathfinding for cable cars */
 
-// Returns the waypoint to take next for the desired final point pEnd
-public func GetNextWaypoint(object pEnd)
+/** Returns the waypoint to take next for the desired final point \a end
+* @param end The final destination for the information is queried
+*/
+public func GetNextWaypoint(object end)
 {
-  if(!aConnectionList) return;
-	for(var item in aConnectionList)
-		if(item[0] == pEnd)
-			return item[1];
-	return false;
+  if(!destination_list) return nil;
+	for(var item in destination_list)
+		if(item[const_finaldestination] == end)
+			return item[const_nextwaypoint];
+	return nil;
 }
 
-// Returns the distance (not airline!) for the desired final point pEnd
-public func GetLengthToTarget(object pEnd)
+/** Returns the actual traveling distance for the desired final point \a end
+* This is not the airline distance but the length of all cables to take via traveling
+* @param end The final destination for the information is queried
+*/
+public func GetLengthToTarget(object end)
 {
-	for(var item in aConnectionList)
-		if(item[0] == pEnd)
-			return item[2];
-	return false;
+	if (!destination_list) return nil;
+	for(var item in destination_list)
+		if(item[const_finaldestination] == end)
+			return item[const_distance];
+	return nil;
+}
+
+/** Returns the destination array
+*/
+public func GetDestinations()
+{
+	return destination_list[:];
 }
 
 /* Set up pathfinding information */
 
+/** Adds a new connection via the cable \a cable to this crossing
+* Does nothing if the other connected objects of the cable is not a cable crossing
+* @param cable The newly connected cable
+*/
+public func AddCableConnection(object cable)
+{
+	// Failsafe
+	if (!cable || ! cable->~IsCableLine())
+		return false;
+	// Line setup finished?
+	var other_crossing = cable->GetOtherConnection(this);
+	if (! other_crossing->~IsCableCrossing())
+		return false;
+	// Acquire destinations of the other crossing, all these are now in reach
+	AddCableDestinations(other_crossing->GetDestinations(), other_crossing);
+	// Send own destinations, now in reach for the other one
+	other_crossing->AddCableDestinations(destination_list[:], this);
+	// Awesome, more power to the network!
+	CheckRailStation();
+	return true;
+}
+/** Removes a connection via the cable \a cable from this crossing
+* Does nothing if the other connected objects of the cable is not a cable crossing
+* @param cable The broken cable
+*/
+/*public func RemoveCableConnection(object cable)
+{
+	// Failsafe
+	if (!cable || ! cable->~IsCableLine())
+		return false;
+	// Get other connection
+	var other_crossing = cable->GetOtherConnection(this);
+	if (! other_crossing->~IsCableCrossing())
+		return false;
+	// Remove all connections
+	RemoveCableDestinations(crossing);
+	// Sad, less power to the network...
+	CheckRailStation();
+	return true;
+}*/
+
+/** Adds a whole list of destinations to the crossing
+* @param new_list The new destination list, formated like a crossing's normal destination list
+* @param crossing The crossing where this list comes from
+*/
+public func AddCableDestinations(array new_list, object crossing)
+{
+	// Append crossing to the list
+	if (crossing)
+	{
+		new_list[GetLength(new_list)] = [crossing, crossing];
+		// This value is to be added to every distance
+		var distance_add = ObjectDistance(crossing);
+	}
+	else
+		return false; // Does not compute
+	// Check every new destination
+	for (var list_item in new_list)
+	{
+		// Destination is this
+		if (list_item[const_finaldestination] == this) continue;
+		// Check whether the destination is already in reach
+		var handled = false;
+		for (var i = 0, destination = false; i < GetLength(destination_list); i++)
+		{
+			destination = destination_list[i];
+			if (destination[const_finaldestination] == list_item[const_finaldestination])
+			{
+				// Already known destination, check whether the new path is shorter
+				handled = true;
+				if (destination[const_distance] > list_item[const_distance] + distance_add)
+				{
+					// It is shorter, replace, route through crossing
+					destination_list[i] = [list_item[const_finaldestination], crossing, list_item[const_distance] + distance_add];
+					// Inform the destination
+					list_item[const_finaldestination]->UpdateCableDestination(this, crossing, distance_add);
+				}
+			}
+		}
+		// Destination is replaced or to be dismissed (because the new path would be longer), do nothing
+		if (handled) continue;
+		// Destination is a new one, add to the list
+		destination_list[GetLength(destination_list)] = [list_item[const_finaldestination], crossing, list_item[const_distance] + distance_add];
+		// Add me to the new destination (the way to me is the same than to crossing)
+		if (list_item[const_finaldestination] != crossing)
+			list_item[const_finaldestination]->AddCableDestination(this, crossing, distance_add);
+	}
+	CheckRailStation();
+	return true;
+}
+
+/** Adds a single destination \a new_destination. The link is \a crossing; \a crossing should already be known, otherwise it returns false.
+* @param new_destination The destination to add
+* @param crossing The crossing which links to the new destination
+* @param distance_add The distance between crossing and new_destination
+*/
+public func AddCableDestination(object new_destination, object crossing, int distance_add)
+{
+	// Failsafe
+	if (!new_destination || !crossing) return false;
+	if (new_destination == this) return false;
+	// Find the entry of crossing to get the next waypoint and the distance
+	var crossing_item;
+	for (var list_item in destination_list)
+	{
+		if (list_item[const_finaldestination] == crossing)
+		{
+			crossing_item = list_item;
+			break;
+		}
+	}
+	// Failsafe²
+	if (!crossing_item) return false;
+	// Save the new destination
+	destination_list[GetLength(destination_list)] = [new_destination, crossing_item[const_nextwaypoint], crossing_item[const_distance] + distance_add];
+	CheckRailStation();
+	return true;
+}
+
+/** Updates the path to \a known_destination via \a crossing (e.g. because the path is shorter through \a crossing)
+* @param known_destination The destination to update
+* @param crossing The crossing which links to the destination
+* @param distance_add The distance between crossing and known_destination
+*/
+public func UpdateCableDestination(object known_destination, object crossing, int distance_add)
+{
+	// Failsafe
+	if (!known_destination || !crossing) return false;
+	if (known_destination == crossing) return false;
+	// Find the entries of crossing and known_destination
+	var crossing_item, destination_item, i = 0;
+	for (var list_item in destination_list)
+	{
+		if (list_item[const_finaldestination] == crossing)
+			crossing_item = list_item;
+		if (list_item[const_finaldestination] == known_destination)
+			destination_item = i;
+		i++;
+	}
+	// Failsafe²
+	if (!crossing_item || !destination_item) return false;
+	// Save the updated path
+	destination_list[destination_item][const_nextwaypoint] = crossing_item[const_nextwaypoint];
+	destination_list[destination_item][const_distance] = crossing_item[const_distance] + distance_add;
+	CheckRailStation();
+	return true;
+}
+
+/** Removes the path to \a crossing and furthermore to every waypoint in reach through \a crossing but first tries to find alternate routes
+* @param crossing The now probably unavailable crossing
+*/
+/*public func RemoveCableDestinations(object crossing)
+{
+	// Find the entry of crossing where crossing is the final destination
+	for (var i = 0; i < GetLength(destination_list; i++)
+	{
+		if (destination_list[i][const_finaldestination] == crossing)
+			break;
+	}
+	if (i >= GetLength(destination_list) return false; // entry not found
+	// Remove the entry
+	destination_list[i] = nil;
+	// Inform every connected waypoint
+	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
+	{
+		if (! connection->~IsCableLine()) continue;
+		var other_crossing = connection->GetOtherConnection(this);
+		if (! other_crossing->~IsCableCrossing()) continue;
+		other_crossing->RemoveCableDestination(crossing, this);
+	}
+}*/
+
+/** Removes the destination \a to_remove, but only if the saved path leads through \a crossing
+* If the route does not lead through crossing this checks whether the route is still intact
+* @param to_remove The destination to remove
+* @param crossing The crossing which linked to the old destination
+*/
+/*public func RemoveCableDestination(object to_remove, object crossing)
+{
+	// Find the entry of to_remove
+	for (var i = 0; i < GetLength(destination_list); i++)
+	{
+		if (destination_list[i][const_finaldestination] == to_remove)
+			break;
+	}
+	if (i >= GetLength(destination_list)) return false; // entry not found
+	// Check if the path leads through crossing
+	if (destination_list[i][const_nextwaypoint] == crossing)
+	{
+		// Remove the entry
+		destination_list[i] = nil;
+		// Inform every connected waypoint
+		for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
+		{
+			if (! connection->~IsCableLine()) continue;
+			var other_crossing = connection->GetOtherConnection(this);
+			if (! other_crossing->~IsCableCrossing()) continue;
+			if (other_crossing == crossing) continue;
+			other_crossing->RemoveCableDestination(crossing, this);
+		}
+	}
+	else // It does not lead through crossing, check route
+	{
+		var waypoint = this;
+		while(waypoint && waypoint != to_remove)
+			waypoint = waypoint->GetNextWaypoint(to_remove);
+		if (!waypoint) // This means that the path vanished anyway
+			return RemoveCableDestination(to_remove, destination_list[i][const_nextwaypoint]);
+		// We found an alternate route!
+	}
+	
+}*/
+
+/*
 // Resets aPath, adds every connected line, reset aConnectionList
 public func ResetList()
 {
@@ -115,8 +382,7 @@ public func AddNeighboursList()
 	// I want to check now whether I'm a railway station, upgrading me to awesome engaging point
 	CheckRailStation();
 }
-
-public func GetList() { return aConnectionList; }
+*/
 
 /* Station behaviour */
 
@@ -196,7 +462,7 @@ public func AddActive(fRemove)
 // If not, disable graphics if needed
 private func CheckRailStation()
 {
-	if (GetLength(aPath) == 1 || bManualSetting)
+	if (GetLength(FindObjects(Find_Func("IsConnectedTo", this))) == 1 || bManualSetting)
 	{
 		if (!is_station)
 		{
@@ -210,5 +476,3 @@ private func CheckRailStation()
 		is_station = false;
 	}
 }
-
-local Name = "$Name$";

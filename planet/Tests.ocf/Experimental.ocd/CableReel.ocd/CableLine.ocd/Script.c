@@ -112,7 +112,7 @@ func SetLineTransform(int r, int xoff, int yoff, int length, int layer, int Mirr
 // Returns true if this object is a functioning power line.
 public func IsCableLine()
 {
-	return GetAction() == "Connect";
+	return GetAction() == "Wait" || GetAction() == "Active";
 }
 
 public func GetOtherConnection(object obj)
@@ -137,11 +137,12 @@ public func GetConnectedObject(object obj)
 	return;
 }
 
-public func SetConnecteObjects(obj1, obj2)
+public func SetConnectedObjects(obj1, obj2)
 {
   SetActionTargets(obj1, obj2);
   UpdateDraw();
   SetAction("Wait");
+  obj1->AddCableConnection(this);
 }
 
 protected func LineBreak(bool no_msg)
