@@ -50,7 +50,7 @@ public func SetDestination(dest)
 {
   if(GetType(dest) == C4V_Int)
   {
-    dest = FindObjects(Find_ID(CableCrossing))[dest];
+    dest = FindObjects(Find_Func("IsCableCrossing"))[dest];
   }
   rail_destination = dest;
   if(rail_direction == 0)
@@ -194,7 +194,7 @@ private func MoveTo(dest)
 {
 	if(GetType(dest) == C4V_Int)
 	{
-		dest = FindObjects(Find_ID(CableCrossing))[dest];
+		dest = FindObjects(Find_Func("IsCableCrossing"))[dest];
 	}
 	var rail = 0;
 	for(var test_rail in FindObjects(Find_Func("IsConnectedTo", pRailTarget)))

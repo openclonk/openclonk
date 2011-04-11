@@ -345,7 +345,7 @@ public func AddNeighboursToList()
 	var obj;
 	for(var i = 0; i < GetLength(aPath); i++)
 	{
-		obj = aPath[i]->GetOtherConnection(this);//EffectVar(0,this(),aPath[i]);
+		obj = aPath[i]->~GetOtherConnection(this);//EffectVar(0,this(),aPath[i]);
 		aConnectionList[i] = [obj, obj, ObjectDistance(obj)];
 	}
 }
@@ -357,7 +357,7 @@ public func AddNeighboursList()
 	var newList, obj, dist, pEnd;
 	for(var i = 0; i < GetLength(aPath); i++)
 	{
-		obj = aPath[i]->GetOtherConnection(this);
+		obj = aPath[i]->~GetOtherConnection(this);
 		dist = ObjectDistance(obj);
 		// Get aConnectionList from the next waypoint in line
 		newList = obj->GetList();
@@ -467,7 +467,7 @@ private func CheckRailStation()
 	{
 		if (!is_station)
 		{
-			SetGraphics("Station", CableCrossing, 2, GFXOV_MODE_Base);
+			SetGraphics("Station", Library_CableStation, 2, GFXOV_MODE_Base);
 			is_station = true;
 		}
 	}

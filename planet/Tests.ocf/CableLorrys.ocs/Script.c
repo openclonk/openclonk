@@ -21,7 +21,6 @@ protected func Initialize()
 	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross7, cross4);
 	//CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross4, cross2);
 	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross1, tools);
-	WaypointsMakeList();
 	
 	cross1->CreateContents(Ore, 5);
 	cross2->CreateContents(Coal, 8);

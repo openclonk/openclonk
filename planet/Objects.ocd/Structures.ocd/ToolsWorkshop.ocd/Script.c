@@ -49,18 +49,16 @@ private func Produce(id item_id)
 	if (IsProducing())
 		return false;
 	// Start production.	
-	var effect = AddEffect("Producing", this, 100, 1, this, nil, item_id);
+	AddEffect("Producing", this, 100, 1, this, nil, item_id);
 	return true;
 }
 
 // Production effect: effect.ItemID is the item under production.
 protected func FxProducingStart(object target, proplist effect, int temp, id item_id)
 {
-	Log("%v", temp);
 	if (temp)
 		return 1;
 	effect.ItemID = item_id;
-	Log("%v", effect.ItemID);
 	// Remove raw materials, then commence production.
 	var costs = ProductionCosts(item_id);
 	for (var mat in costs)
@@ -71,7 +69,6 @@ protected func FxProducingStart(object target, proplist effect, int temp, id ite
 
 protected func FxProducingTimer(object target, proplist effect, int time)
 {
-	Log("I am Producing%v", time);
 	// Production already done?
 	if (time > 150) // Replace me with something sensible.
 		return -1;
@@ -125,7 +122,6 @@ protected func SelectProduction(id item_id)
 
 private func Smoking()
 {
-	if (GetPhase()%3) return 1;
 	if (Random(6)) Smoke(+16,-14,16);
 	if (Random(8)) Smoke(10,-14,15+Random(3));
 	return 1;
