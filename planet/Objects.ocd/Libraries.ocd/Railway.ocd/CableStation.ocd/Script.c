@@ -9,28 +9,6 @@
 
 local is_station;
 
-local foobar;
-public func foo()
-{
-	Log("foo: %v", this);
-	var obj = FindObject(Find_ID(GetID()), Find_Exclude(this));
-	var arraybar = obj->Getfoo();
-	arraybar[GetLength(arraybar)] = "Test";
-	obj->Logfoo();
-}
-
-public func Getfoo()
-{
-	foobar = [];
-	Log("Getfoo: %v, %v", this, foobar);
-	return foobar[:];
-}
-
-public func Logfoo()
-{
-	Log("Logfoo: %v, %v", this, foobar);
-}
-
 /*-- State --*/
 
 /** This object is a cable crossing
@@ -138,7 +116,7 @@ public func AddCableConnection(object cable)
 * Does nothing if the other connected objects of the cable is not a cable crossing
 * @param cable The broken cable
 */
-/*public func RemoveCableConnection(object cable)
+public func RemoveCableConnection(object cable)
 {
 	// Failsafe
 	if (!cable || ! cable->~IsCableLine())
@@ -148,11 +126,11 @@ public func AddCableConnection(object cable)
 	if (! other_crossing->~IsCableCrossing())
 		return false;
 	// Remove all connections
-	RemoveCableDestinations(crossing);
+	RemoveCableDestinations(other_crossing);
 	// Sad, less power to the network...
 	CheckRailStation();
 	return true;
-}*/
+}
 
 /** Adds a whole list of destinations to the crossing
 * @param new_list The new destination list, formated like a crossing's normal destination list
@@ -264,15 +242,15 @@ public func UpdateCableDestination(object known_destination, object crossing, in
 /** Removes the path to \a crossing and furthermore to every waypoint in reach through \a crossing but first tries to find alternate routes
 * @param crossing The now probably unavailable crossing
 */
-/*public func RemoveCableDestinations(object crossing)
+public func RemoveCableDestinations(object crossing)
 {
 	// Find the entry of crossing where crossing is the final destination
-	for (var i = 0; i < GetLength(destination_list; i++)
+	for (var i = 0; i < GetLength(destination_list); i++)
 	{
 		if (destination_list[i][const_finaldestination] == crossing)
 			break;
 	}
-	if (i >= GetLength(destination_list) return false; // entry not found
+	if (i >= GetLength(destination_list)) return false; // entry not found
 	// Remove the entry
 	destination_list[i] = nil;
 	// Inform every connected waypoint
@@ -283,14 +261,14 @@ public func UpdateCableDestination(object known_destination, object crossing, in
 		if (! other_crossing->~IsCableCrossing()) continue;
 		other_crossing->RemoveCableDestination(crossing, this);
 	}
-}*/
+}
 
 /** Removes the destination \a to_remove, but only if the saved path leads through \a crossing
 * If the route does not lead through crossing this checks whether the route is still intact
 * @param to_remove The destination to remove
 * @param crossing The crossing which linked to the old destination
 */
-/*public func RemoveCableDestination(object to_remove, object crossing)
+public func RemoveCableDestination(object to_remove, object crossing)
 {
 	// Find the entry of to_remove
 	for (var i = 0; i < GetLength(destination_list); i++)
@@ -324,7 +302,7 @@ public func UpdateCableDestination(object known_destination, object crossing, in
 		// We found an alternate route!
 	}
 	
-}*/
+}
 
 /*
 // Resets aPath, adds every connected line, reset aConnectionList
