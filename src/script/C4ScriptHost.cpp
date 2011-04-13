@@ -26,7 +26,6 @@
 #include <C4Include.h>
 #include <C4ScriptHost.h>
 
-#include <C4Console.h>
 #include <C4ObjectCom.h>
 #include <C4Object.h>
 #include <C4Game.h>
