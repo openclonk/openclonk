@@ -258,7 +258,10 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 #ifdef _DEBUG
 		assert(C4PropList::PropLists.Has(Data.PropList));
 		if (!Data.PropList->Status)
-			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
+		{
+			LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName());
+			AulExec.LogCallStack();
+		}
 #endif
 		Data.PropList->AddRef(this);
 		break;
