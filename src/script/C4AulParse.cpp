@@ -715,6 +715,7 @@ C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 					case '"':  SPos ++; strbuf.push_back('"');  break;
 					case '\\': SPos ++; strbuf.push_back('\\'); break;
 					case 'n': SPos ++; strbuf.push_back('\n'); break;
+					case 't': SPos ++; strbuf.push_back('\t'); break;
 					case 'x':
 					{
 						++SPos;
