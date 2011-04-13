@@ -434,7 +434,7 @@ protected:
 	StdStrBuf Script; // script
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
-	C4AulBCC *CPos;  // compiled script (/pos)
+	C4AulBCC * LastCode;
 	C4AulScriptState State; // script state
 	bool Preparsing; // set while preparse
 	bool Resolving; // set while include-resolving, to catch circular includes
@@ -465,8 +465,9 @@ protected:
 
 	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
 
-	int GetCodePos() const { return CPos - &Code[0]; }
+	int GetCodePos() const { return Code.size(); }
 	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
+	C4AulBCC *GetLastCode() { return LastCode; }
 };
 
 // holds all C4AulScripts

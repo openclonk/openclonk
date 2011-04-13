@@ -155,7 +155,7 @@ C4AulScript::C4AulScript()
 	State = ASS_NONE;
 	Script = NULL;
 	Code.clear();
-	CPos = NULL;
+	LastCode = NULL;
 	IncludesResolved = false;
 
 	// defaults

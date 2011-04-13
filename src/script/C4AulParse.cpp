@@ -825,17 +825,16 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	bcc.Par.X = X;
 	Code.push_back(bcc);
 	PosForCode.push_back(SPos);
+	LastCode = &Code.back();
 
-	CPos = &Code.back();
 	switch (eType)
 	{
 	case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
 	/* case AB_LOCALN_SET/AB_PROP_SET: -- expected to already have a reference upon creation, see MakeSetter */
-		CPos->Par.s->IncRef();
+		bcc.Par.s->IncRef();
 		break;
 	default: break;
 	}
-	CPos++;
 }
 
 void C4AulScript::RemoveLastBCC()
@@ -850,7 +849,10 @@ void C4AulScript::RemoveLastBCC()
 	}
 	Code.pop_back();
 	PosForCode.pop_back();
-	CPos--;
+	if (Code.size())
+		LastCode = &Code.back();
+	else
+		LastCode = NULL;
 }
 
 void C4AulScript::ClearCode()
@@ -1026,10 +1028,10 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 	}
 
 	// Join checks only if it's not a jump target
-	if (!fJump && a->CPos > &a->Code[0])
+	if (!fJump && a->GetLastCode())
 	{
 		// Join together stack operations
-		C4AulBCC *pCPos1 = a->CPos - 1;
+		C4AulBCC *pCPos1 = a->GetLastCode();
 		if(eType == AB_STACK && pCPos1->bccType == AB_STACK &&
 			(X <= 0 || pCPos1->Par.i >= 0))
 		{
@@ -1090,7 +1092,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 void C4AulParseState::RemoveLastBCC()
 {
 	// Security: This is unsafe on anything that might get optimized away
-	C4AulBCC *pBCC = a->CPos-1;
+	C4AulBCC *pBCC = a->GetLastCode();
 	assert(pBCC->bccType != AB_STACK);
 	// Correct stack
 	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.X);
@@ -1101,18 +1103,18 @@ void C4AulParseState::RemoveLastBCC()
 C4V_Type C4AulParseState::GetLastRetType(C4V_Type to)
 {
 	C4V_Type from;
-	switch ((a->CPos-1)->bccType)
+	switch (a->GetLastCode()->bccType)
 	{
-	case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
+	case AB_INT: from = Config.Developer.ExtraWarnings || a->GetLastCode()->Par.i ? C4V_Int : C4V_Any; break;
 	case AB_STRING: from = C4V_String; break;
 	case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 	case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 	case AB_BOOL: from = C4V_Bool; break;
 	case AB_FUNC:
-		from = (a->CPos-1)->Par.f->GetRetType(); break;
+		from = a->GetLastCode()->Par.f->GetRetType(); break;
 	case AB_CALL: case AB_CALLFS:
 	{
-		C4String * pName = (a->CPos-1)->Par.s;
+		C4String * pName = a->GetLastCode()->Par.s;
 		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName->GetCStr());
 		bool allwarn = true;
 		from = C4V_Any;
@@ -1143,7 +1145,7 @@ C4V_Type C4AulParseState::GetLastRetType(C4V_Type to)
 C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 {
 	if(Type != PARSER) { C4AulBCC Dummy; Dummy.bccType = AB_ERR; return Dummy; }
-	C4AulBCC Value = *(a->CPos - 1), Setter = Value;
+	C4AulBCC Value = *(a->GetLastCode()), Setter = Value;
 	// Check type
 	switch (Value.bccType)
 	{
@@ -1317,7 +1319,7 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContex
 	// (relative position to code start; code pointer may change while
 	//  parsing)
 	assert(Fn->GetCodeOwner() == this);
-	Fn->CodePos = CPos - &Code[0];
+	Fn->CodePos = Code.size();
 	// parse
 	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
@@ -1627,7 +1629,7 @@ void C4AulParseState::Parse_Function()
 		case ATT_BLCLOSE:
 		{
 			// all ok, insert a return
-			C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
+			C4AulBCC * CPos = a->GetLastCode();
 			if (!CPos || CPos->bccType != AB_RETURN || fJump)
 			{
 				if (C4AulDebug::GetDebugger())
@@ -2468,9 +2470,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			break;
 		// negate constant?
 		if (Type == PARSER && SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
-			if ((a->CPos - 1)->bccType == AB_INT)
+			if (a->GetLastCode()->bccType == AB_INT)
 			{
-				(a->CPos - 1)->Par.i = -(a->CPos - 1)->Par.i;
+				a->GetLastCode()->Par.i = - a->GetLastCode()->Par.i;
 				break;
 			}
 		// changer? make a setter BCC, leave value for operator
@@ -3072,13 +3074,12 @@ bool C4AulScript::Parse()
 				}
 				delete err;
 				// make all jumps that don't have their destination yet jump here
-				// intptr_t to make it work on 64bit
-				for (int i = Fn->CodePos; i < CPos - &Code[0]; i++)
+				for (unsigned int i = Fn->CodePos; i < Code.size(); i++)
 				{
 					C4AulBCC *pBCC = &Code[i];
 					if (IsJump(pBCC->bccType))
 						if (!pBCC->Par.i)
-							pBCC->Par.i = CPos - &Code[0] - i;
+							pBCC->Par.i = Code.size() - i;
 				}
 				// add an error chunk
 				AddBCC(AB_ERR);
