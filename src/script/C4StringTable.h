@@ -70,8 +70,7 @@ public:
 	template<typename H> static unsigned int Hash(H);
 	template<typename H> static bool Equals(T, H);
 	static bool Equals(T a, T b) { return a == b; }
-	// FIXME: Profile for initial size
-	C4Set(): Capacity(16), Size(0), Table(new T[Capacity])
+	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
 	{
 		Clear();
 	}
@@ -108,8 +107,7 @@ public:
 	unsigned int GetSize() const { return Size; }
 	T * Add(T e)
 	{
-		// FIXME: Profile for load factor
-		if (Size > Capacity / 2)
+		if (Capacity - Size < Max(2u, Capacity / 4))
 		{
 			unsigned int OCapacity = Capacity;
 			Capacity *= 2;
