@@ -190,7 +190,10 @@ global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
 	{
 		obj->DoEnergy(-dmg, (flags & ProjectileHit_exact_damage), damage_type, GetController());
 		if(!obj) return;
-		obj->~CatchBlow(-dmg, this);
+		
+		var true_dmg=dmg;
+		if(flags & ProjectileHit_exact_damage) true_dmg/=1000;
+		obj->~CatchBlow(-true_dmg, this);
 	}
 	else
 	{
