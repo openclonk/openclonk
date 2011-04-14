@@ -23,6 +23,7 @@
 #include <C4Include.h>
 #include <C4Value.h>
 
+#include <C4AulExec.h>
 #include <C4DefList.h>
 #include <C4StringTable.h>
 #include <C4ValueArray.h>
@@ -577,4 +578,10 @@ C4ID C4Value::getC4ID() const
 	C4Def * d = p->GetDef();
 	if (!d) return C4ID::None;
 	return d->id;
+}
+
+void C4Value::LogDeletedObjectWarning(C4PropList * p)
+{
+	LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(p), p->GetName());
+	AulExec.LogCallStack();
 }

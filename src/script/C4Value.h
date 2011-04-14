@@ -196,6 +196,7 @@ protected:
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	bool FnCnvObject() const;
+	void LogDeletedObjectWarning(C4PropList *);
 
 	friend class C4PropList;
 };
@@ -259,8 +260,7 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 		assert(C4PropList::PropLists.Has(Data.PropList));
 		if (!Data.PropList->Status)
 		{
-			LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName());
-			AulExec.LogCallStack();
+			LogDeletedObjectWarning(Data.PropList);
 		}
 #endif
 		Data.PropList->AddRef(this);

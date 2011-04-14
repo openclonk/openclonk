@@ -20,6 +20,8 @@
 #ifndef C4AULEXEC_H
 #define C4AULEXEC_H
 
+#include <C4Aul.h>
+
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
 

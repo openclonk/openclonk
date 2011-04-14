@@ -21,9 +21,6 @@
 #include <C4Include.h>
 #include <C4StringTable.h>
 
-#include <C4Group.h>
-#include <C4Components.h>
-//#include <C4Aul.h>
 
 // *** C4Set
 template<> template<>
