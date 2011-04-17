@@ -200,7 +200,6 @@ struct C4AulScriptContext : public C4AulContext
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
-	int ParCnt() const { return Vars - Pars; }
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
 };
@@ -265,19 +264,22 @@ public:
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
+	int ParCount;
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL),
+			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ParCount(0),
 			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+		ParNamed.Reset(); // safety :)
 	} // constructor
 
 	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
+	virtual int GetParCount() { return ParCount; }
 	virtual C4V_Type *GetParType() { return ParType; }
 	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)

@@ -25,6 +25,17 @@
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
 
+/*
+ The Stack layout is as follows:
+ first parameter
+ ...
+ last parameter
+ first named var
+ ...
+ last named var
+ temporary values
+ */
+
 class C4AulExec
 {
 

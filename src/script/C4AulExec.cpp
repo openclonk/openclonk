@@ -105,12 +105,15 @@ void C4AulExec::LogCallStack()
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 {
-
 	// Push parameters
 	C4Value *pPars = pCurVal + 1;
 	if (pnPars)
 		for (int i = 0; i < C4AUL_MAX_Par; i++)
 			PushValue(pnPars[i]);
+	if (pCurVal + 1 - pPars > pSFunc->GetParCount())
+		PopValues(pCurVal + 1 - pPars - pSFunc->GetParCount());
+	else
+		PushNullVals(pSFunc->GetParCount() - (pCurVal + 1 - pPars));
 
 	// Derive definition context from function owner (legacy)
 	C4Def *pDef = pObj ? pObj->Def : pSFunc->Owner->Def;
@@ -640,7 +643,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!pCurVal->ConvertTo(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected", pCurVal->GetTypeName()).getData());
 				// Push reference to parameter on the stack
-				if (pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->ParCnt())
+				if (pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->Func->GetParCount())
 					pCurVal->Set(pCurCtx->Pars[pCurVal->_getInt()]);
 				else
 					pCurVal->Set0();
@@ -733,6 +736,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				pCurCtx->CPos = pCPos;
 				assert(pCurCtx->Func->GetCode() < pCPos);
 
+				// adjust parameter count
+				if (pCurVal + 1 - pPars > pFunc->GetParCount())
+					PopValues(pCurVal + 1 - pPars - pFunc->GetParCount());
+				else
+					PushNullVals(pFunc->GetParCount() - (pCurVal + 1 - pPars));
+
 				// Call function
 				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
 				if (pNewCPos)
@@ -789,7 +798,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj, C4Def *pDef)
 {
-
 	// No object given? Use current context
 	if (!pObj && !pDef)
 	{

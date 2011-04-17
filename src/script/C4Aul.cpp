@@ -397,6 +397,7 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;
+	ParCount = FromFunc.ParCount;
 	pOrgScript = FromFunc.pOrgScript;
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];

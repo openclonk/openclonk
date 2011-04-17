@@ -1523,7 +1523,6 @@ void C4AulParseState::Parse_FuncHead()
 			UnexpectedToken("'('");
 		Shift();
 		// get pars
-		Fn->ParNamed.Reset(); // safety :)
 		int cpar = 0;
 		while (1)
 		{
@@ -1558,6 +1557,7 @@ void C4AulParseState::Parse_FuncHead()
 			else
 			{
 				Fn->ParNamed.AddName(Idtf);
+				++Fn->ParCount;
 				Shift();
 			}
 			// end of params?
@@ -1891,12 +1891,14 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		}
 		case ATT_LDOTS:
 		{
+			// functions using ... always take as many parameters as possible
+			Fn->ParCount = C4AUL_MAX_Par;
 			Shift();
 			// Push all unnamed parameters of the current function as parameters
 			int i = Fn->ParNamed.iSize;
 			while (size < iMaxCnt && i < C4AUL_MAX_Par)
 			{
-				AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + C4AUL_MAX_Par));
+				AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
 				++i;
 				++size;
 			}
@@ -2258,7 +2260,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		if (Fn->ParNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_DUP, 1 + Fn->ParNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize + C4AUL_MAX_Par));
+			AddBCC(AB_DUP, 1 + Fn->ParNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize + Fn->GetParCount()));
 			Shift();
 		}
 		// check for variable (var)
@@ -2330,6 +2332,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		}
 		else if (SEqual(Idtf, C4AUL_Par))
 		{
+			// functions using Par() always take as many parameters as possible
+			Fn->ParCount = C4AUL_MAX_Par;
 			// and for Par
 			Shift();
 			Parse_Params(1, C4AUL_Par);
