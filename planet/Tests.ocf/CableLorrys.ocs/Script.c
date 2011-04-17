@@ -1,68 +1,123 @@
-/* Lorry Test */
+/*--
+	Cable Network
+	Authors: Randrian, Clonkonaut, Maikel
+	
+	This scenario's sole purpose is to test the cable system.
+	A premade settlement is available for the developer to
+	test all aspects of cable networks.
+--*/
+
 
 protected func Initialize()
 {
-	var foundry = CreateObject(Foundry, 360, 475);
-	var tools = CreateObject(ToolsWorkshop, 50, 495);
-	var cross1 = CreateObject(CableCrossing, 90, 495);
-	var cross2 = CreateObject(CableCrossing, 175, 445);
-	var cross3 = CreateObject(CableCrossing, 240, 425);
-	var cross4 = CreateObject(CableCrossing, 161, 369);
-    var cross5 = CreateObject(CableCrossing, 235, 315);
-	var cross6 = CreateObject(CableCrossing, 317, 339);
-	var cross7 = CreateObject(CableCrossing, 105, 355);
-	CreateObject(CableLine, 104, 486)->SetConnectedObjects(cross1, cross2);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross2, cross3);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross3, foundry);
-	//CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross3, cross4);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross4, cross5);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross5, cross6);
-	//CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross6, foundry);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross7, cross4);
-	//CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross4, cross2);
-	CreateObject(CableLine, 191, 438)->SetConnectedObjects(cross1, tools);
+	// Forest on the left side of the map, with sawmill.
+	for (var i = 0; i < 20; i++)
+		PlaceVegetation(Tree_Coniferous, 0, 200, 180, 300, 1000 * RandomX(60, 90));
+	var sawmill = CreateObject(CableCrossing, 190, 390); // TODO: Replace with sawmill
+	sawmill->CreateContents(Wood, 10); //TODO: remove if sawmill exists
 	
-	cross1->CreateContents(Ore, 5);
-	cross2->CreateContents(Coal, 8);
-	cross3->CreateContents(Wood, 4);
+	// Foundry to produce metal in the middle of the map.
+	var foundry = CreateObject(Foundry, 490, 390);
+	var car = foundry->CreateObject(CableLorry);
+	car->EngageRail(foundry);
 	
-	var lorry = cross2->CreateObject(CableLorry);
-	lorry->EngageRail(cross2);
-	//lorry->SetDestination(foundry);
-	//foundry->RequestObject(Ore, 5);
-	//foundry->RequestObject(Coal, 5);
+	// Chest near the foundry with necessary tools for the player.
+	var chest = CreateObject(Chest, 530, 390);
+	chest->CreateContents(Dynamite, 4);
+	chest->CreateContents(Shovel, 2);
+	chest->CreateContents(Hammer, 2);
+	chest->CreateContents(CableLorryReel, 2);
 	
-	tools->AddToQueue(Shovel, 2);
-	tools->AddToQueue(Pickaxe, 1);
+	// Tool workshop on the little mountain.
+	var tools = CreateObject(ToolsWorkshop, 540, 260);
+	
+	// Crossing on island, connected to sawmill, foundry and tool workshop.
+	var cross_isle1 = CreateObject(CableCrossing, 320, 390);
+	var cross_isle2 = CreateObject(CableCrossing, 360, 390);
+	var cross_tools1 = CreateObject(CableCrossing, 450, 290);
+	CreateObject(CableLine)->SetConnectedObjects(cross_isle1, sawmill);
+	CreateObject(CableLine)->SetConnectedObjects(cross_isle1, cross_isle2);
+	CreateObject(CableLine)->SetConnectedObjects(cross_isle2, foundry);
+	CreateObject(CableLine)->SetConnectedObjects(cross_isle2, cross_tools1);
+	CreateObject(CableLine)->SetConnectedObjects(cross_tools1, tools);
+	
+	// Wooden cabin on the granite.
+	var cabin = CreateObject(WoodenCabin, 850, 360);
+	
+	// Crossings from foundry into the mines.
+	var cross_foundry1 = CreateObject(CableCrossing, 560, 390);
+	var cross_foundry2 = CreateObject(CableCrossing, 600, 420);
+	var cross_mine = CreateObject(CableCrossing, 630, 490);
+	CreateObject(CableLine)->SetConnectedObjects(foundry, cross_foundry1);
+	CreateObject(CableLine)->SetConnectedObjects(cross_foundry1, cross_foundry2);
+	CreateObject(CableLine)->SetConnectedObjects(cross_foundry2, cross_mine);
+	
+	// Crossings from tool workshop to cabin.
+	var cross_tools2 = CreateObject(CableCrossing, 610, 260);
+	var cross_tools3 = CreateObject(CableCrossing, 670, 310);
+	var cross_cabin1 = CreateObject(CableCrossing, 760, 360);
+	CreateObject(CableLine)->SetConnectedObjects(tools, cross_tools2);
+	CreateObject(CableLine)->SetConnectedObjects(cross_tools2, cross_tools3);
+	CreateObject(CableLine)->SetConnectedObjects(cross_tools3, cross_cabin1);
+	
+	// Crossing from cabin to mines.
+	var cross_minecabin = CreateObject(CableCrossing, 690, 420);
+	CreateObject(CableLine)->SetConnectedObjects(cross_cabin1, cross_minecabin);
+	CreateObject(CableLine)->SetConnectedObjects(cross_minecabin, cross_mine);
+	
+	// Crossings from mine central to ore mine.
+	var cross_ore1 = CreateObject(CableCrossing, 550, 550);
+	var cross_ore2 = CreateObject(CableCrossing, 470, 620);
+	var cross_ore3 = CreateObject(CableCrossing, 370, 650);
+	var cross_ore4 = CreateObject(CableCrossing, 250, 600);
+	var cross_ore5 = CreateObject(CableCrossing, 200, 570);
+	CreateObject(CableLine)->SetConnectedObjects(cross_mine, cross_ore1);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore1, cross_ore2);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore2, cross_ore3);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore3, cross_ore4);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore4, cross_ore5);
+	
+	// A departure into the sulphur mine.
+	var cross_sulph1 = CreateObject(CableCrossing, 290, 670);
+	var cross_sulph2 = CreateObject(CableCrossing, 250, 700);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore3, cross_sulph1);
+	CreateObject(CableLine)->SetConnectedObjects(cross_sulph1, cross_sulph2);
+	
+	// A departure into the coal mine.
+	var cross_coal1 = CreateObject(CableCrossing, 470, 710);
+	CreateObject(CableLine)->SetConnectedObjects(cross_ore3, cross_coal1);
+	
+	// Some resources are already available in the mines.
+	cross_ore5->CreateContents(Ore, 10);
+	cross_coal1->CreateContents(Coal, 10);
+	cross_sulph2->CreateContents(Sulphur, 10);	
 
+	// Initial message for the user.
 	Log("Give the lorry commands with SetDestination(target);");
 	Log("target can be the number of the crossing or a pointer to the crossing");
-	Log("Activate all crossings to stations and watch.");
+	Log("The network already has been set up, Activate the producers to stations and watch.");
 	return;
 }
 
- func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
+protected func InitializePlayer(int plr)
 {
-	JoinPlayer(iPlr);
+	JoinPlayer(plr);
 	return;
 }
 
- func RelaunchPlayer(int iPlr)
+protected func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, 0, 0, iPlr);
-	clonk->MakeCrewMember(iPlr);
-	SetCursor(iPlr,clonk);
-	JoinPlayer(iPlr);
+	var clonk = CreateObject(Clonk, 0, 0, plr);
+	clonk->MakeCrewMember(plr);
+	SetCursor(plr, clonk);
+	JoinPlayer(plr);
 	return;
 }
 
- func JoinPlayer(int iPlr)
+private func JoinPlayer(int plr)
 {
-	var clonk = GetCrew(iPlr);
+	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	clonk->SetPosition(50, 490);
-	clonk->CreateContents(CableLorryReel);
-	clonk->CreateContents(Hammer);
-	SetPlrKnowledge(0, CableCrossing);
+	clonk->SetPosition(510, 370);
 	return;
 }
