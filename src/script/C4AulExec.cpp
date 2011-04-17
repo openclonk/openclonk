@@ -112,10 +112,6 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 		for (int i = 0; i < C4AUL_MAX_Par; i++)
 			PushValue(pnPars[i]);
 
-	// Push variables
-	C4Value *pVars = pCurVal + 1;
-	PushNullVals(pSFunc->VarNamed.iSize);
-
 	// Derive definition context from function owner (legacy)
 	C4Def *pDef = pObj ? pObj->Def : pSFunc->Owner->Def;
 
@@ -130,7 +126,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 	ctx.Def = pDef;
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
-	ctx.Vars = pVars;
+	ctx.Vars = pCurVal + 1;
 	ctx.Func = pSFunc;
 	ctx.TemporaryScript = fTemporaryScript;
 	ctx.CPos = NULL;
@@ -815,11 +811,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();
 	if (pSFunc)
 	{
-
-		// Push variables
-		C4Value *pVars = pCurVal + 1;
-		PushNullVals(pSFunc->VarNamed.iSize);
-
 		// Check context
 		assert(!pSFunc->Owner->Def || pDef == pSFunc->Owner->Def);
 
@@ -830,7 +821,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.Caller = pCurCtx;
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
-		ctx.Vars = pVars;
+		ctx.Vars = pCurVal + 1;
 		ctx.Func = pSFunc;
 		ctx.TemporaryScript = false;
 		ctx.CPos = NULL;

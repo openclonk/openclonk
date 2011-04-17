@@ -1619,10 +1619,13 @@ void C4AulParseState::Parse_Desc()
 
 void C4AulParseState::Parse_Function()
 {
+	// Push variables
+	if (Fn->VarNamed.iSize)
+		AddBCC(AB_STACK, Fn->VarNamed.iSize);
 	iStack = 0;
 	Done = false;
 	while (!Done) switch (TokenType)
-		{
+	{
 			// a block end?
 		case ATT_BLCLOSE:
 		{
@@ -1651,7 +1654,7 @@ void C4AulParseState::Parse_Function()
 			Parse_Statement();
 			assert(!iStack);
 		}
-		}
+	}
 }
 
 void C4AulParseState::Parse_Block()
