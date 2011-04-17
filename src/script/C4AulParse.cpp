@@ -1477,110 +1477,107 @@ void C4AulParseState::Parse_FuncHead()
 	else if (SEqual(Idtf, C4AUL_Public)) { Acc = AA_PUBLIC; Shift(); }
 	else if (SEqual(Idtf, C4AUL_Global)) { Acc = AA_GLOBAL; Shift(); }
 	// check for func declaration
-	if (SEqual(Idtf, C4AUL_Func))
+	if (!SEqual(Idtf, C4AUL_Func))
+		throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
+	Shift();
+	// get next token, must be func name
+	if (TokenType != ATT_IDTF)
+		UnexpectedToken("function name");
+	// check: symbol already in use?
+	switch (Acc)
 	{
-		Shift();
-		// get next token, must be func name
-		if (TokenType != ATT_IDTF)
-			UnexpectedToken("function name");
-		// check: symbol already in use?
-		switch (Acc)
+	case AA_PRIVATE:
+	case AA_PROTECTED:
+	case AA_PUBLIC:
+		if (a->LocalNamed.GetItemNr(Idtf) != -1)
+			throw new C4AulParseError(this, "function definition: name already in use (local variable)");
+		if (a->Def)
+			break;
+		// func in global context: fallthru
+	case AA_GLOBAL:
+		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
+			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
+		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
+			Error("function definition: name already in use (global constant)", 0);
+	}
+	// create script fn
+	if (Acc == AA_GLOBAL)
+	{
+		// global func
+		Fn = new C4AulScriptFunc(a->Engine, Idtf);
+		C4AulFunc *FnLink = new C4AulFunc(a, NULL);
+		FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
+		Acc = AA_PUBLIC;
+	}
+	else
+	{
+		// normal, local func
+		Fn = new C4AulScriptFunc(a, Idtf);
+	}
+	// set up func (in the case we got an error)
+	Fn->Script = SPos; // temporary
+	Fn->Access = Acc; Fn->pOrgScript = a;
+	Shift();
+	// expect an opening bracket now
+	if (TokenType != ATT_BOPEN)
+		UnexpectedToken("'('");
+	Shift();
+	// get pars
+	int cpar = 0;
+	while (1)
+	{
+		// closing bracket?
+		if (TokenType == ATT_BCLOSE)
 		{
-		case AA_PRIVATE:
-		case AA_PROTECTED:
-		case AA_PUBLIC:
-			if (a->LocalNamed.GetItemNr(Idtf) != -1)
-				throw new C4AulParseError(this, "function definition: name already in use (local variable)");
-			if (a->Def)
-				break;
-			// func in global context: fallthru
-		case AA_GLOBAL:
-			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-				throw new C4AulParseError(this, "function definition: name already in use (global variable)");
-			if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
-				Error("function definition: name already in use (global constant)", 0);
+			Fn->Script = SPos;
+			Shift();
+			// end of params
+			break;
 		}
-		// create script fn
-		if (Acc == AA_GLOBAL)
+		// too many parameters?
+		if (cpar >= C4AUL_MAX_Par)
+			throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
+		// must be a name or type now
+		if (TokenType != ATT_IDTF)
 		{
-			// global func
-			Fn = new C4AulScriptFunc(a->Engine, Idtf);
-			C4AulFunc *FnLink = new C4AulFunc(a, NULL);
-			FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
-			Acc = AA_PUBLIC;
+			UnexpectedToken("parameter or closing bracket");
+		}
+		// type identifier?
+		if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
+		if (TokenType != ATT_IDTF)
+		{
+			UnexpectedToken("parameter name");
 		}
 		else
 		{
-			// normal, local func
-			Fn = new C4AulScriptFunc(a, Idtf);
-		}
-		// set up func (in the case we got an error)
-		Fn->Script = SPos; // temporary
-		Fn->Access = Acc; Fn->pOrgScript = a;
-		Shift();
-		// expect an opening bracket now
-		if (TokenType != ATT_BOPEN)
-			UnexpectedToken("'('");
-		Shift();
-		// get pars
-		int cpar = 0;
-		while (1)
-		{
-			// closing bracket?
-			if (TokenType == ATT_BCLOSE)
-			{
-				Fn->Script = SPos;
-				Shift();
-				// end of params
-				break;
-			}
-			// too many parameters?
-			if (cpar >= C4AUL_MAX_Par)
-				throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
-			// must be a name or type now
-			if (TokenType != ATT_IDTF)
-			{
-				UnexpectedToken("parameter or closing bracket");
-			}
-			// type identifier?
-			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
-			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
-			if (TokenType != ATT_IDTF)
-			{
-				UnexpectedToken("parameter name");
-			}
-			else
-			{
-				Fn->ParNamed.AddName(Idtf);
-				++Fn->ParCount;
-				Shift();
-			}
-			// end of params?
-			if (TokenType == ATT_BCLOSE)
-			{
-				Fn->Script = SPos;
-				Shift();
-				break;
-			}
-			// must be a comma now
-			if (TokenType != ATT_COMMA)
-				UnexpectedToken("comma or closing bracket");
+			Fn->ParNamed.AddName(Idtf);
+			++Fn->ParCount;
 			Shift();
-			cpar++;
 		}
-		Fn->Script = SPos;
-		Match(ATT_BLOPEN);
-		Parse_Desc();
-		Parse_Function();
-		Match(ATT_BLCLOSE);
-		return;
+		// end of params?
+		if (TokenType == ATT_BCLOSE)
+		{
+			Fn->Script = SPos;
+			Shift();
+			break;
+		}
+		// must be a comma now
+		if (TokenType != ATT_COMMA)
+			UnexpectedToken("comma or closing bracket");
+		Shift();
+		cpar++;
 	}
-	throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
+	Fn->Script = SPos;
+	Match(ATT_BLOPEN);
+	Parse_Desc();
+	Parse_Function();
+	Match(ATT_BLCLOSE);
 }
 
 void C4AulParseState::Parse_Desc()
