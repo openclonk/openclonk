@@ -135,9 +135,8 @@ protected func CreateConstructionSite(id structure_id)
 	return true;
 }
 
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(20,1,0,1),def);

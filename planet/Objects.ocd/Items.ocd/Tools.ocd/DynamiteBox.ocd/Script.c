@@ -154,6 +154,9 @@ func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 			if(aWires[i]) aWires[i]->SetColorWarning(0);
 }
 
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 }

@@ -140,9 +140,8 @@ public func Dust(object target)
 	}
 }
 
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(135, 0, 0, 1),Trans_Rotate(30, 0, 1, 0)),def);

@@ -221,9 +221,8 @@ public func Reset(clonk)
 	RemoveEffect("IntPickaxe", clonk);
 }
 
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
 
 local Collectible = 1;
 local Name = "$Name$";

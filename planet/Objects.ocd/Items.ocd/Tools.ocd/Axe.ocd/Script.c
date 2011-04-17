@@ -21,9 +21,8 @@ public func ControlUse(object pByClonk, int iX, int iY)
 	return 1;
 }
 
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
 
 local Collectible = 1;
 local Name = "$Name$";
