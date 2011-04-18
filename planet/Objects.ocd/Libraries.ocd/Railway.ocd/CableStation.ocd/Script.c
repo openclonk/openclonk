@@ -463,7 +463,25 @@ private func CheckRailStation()
 	@param station cable station for which to check the connection.
 	@return \c true if there is connection, \c false otherwise.
 */
-public func IsConnectedToStation(object station)
+public func IsInNetwork(object station)
+{
+	if (station == this)
+		return true;
+	return !!GetNextWaypoint(station);
+}
+
+// FindObject wrapper to find a cable car able to reach the specified station.
+private func Find_CableCar(object station)
+{
+	if (!station)
+		station = this;
+	var car = [C4FO_Func, "IsCableCar"];
+	var network = [C4FO_Func, "IsInNetwork", station];		
+	return [C4FO_And, car, network];
+}
+
+// Would be nice to have some sorting function to determine which car is best available.
+private func Sort_Network(object station)
 {
 
 
@@ -485,7 +503,7 @@ public func RequestObject(id obj_id, int amount)
 {
 	// TODO: Complete implementation.
 	// Find the most suited cable car for the delivery, i.e. near and small delivery queue.
-	var car = FindObject(Find_Func("IsCableCar"));
+	var car = FindObject(Find_CableCar());
 	if (!car)
 		return false;
 	// Only request for a delivery if there is not already an equivalent.

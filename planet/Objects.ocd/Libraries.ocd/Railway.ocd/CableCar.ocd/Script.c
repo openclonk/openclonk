@@ -261,18 +261,32 @@ protected func OnRail()
 }
 
 
-/*-- Network movement --*/
+/*-- Network control --*/
 
-protected func Find_InNetwork(object station)
+/**
+	Returns whether this lorry can reach the specified station.
+*/
+public func IsInNetwork(object station)
 {
-
-	return;
+	var at_station = pRailTarget;
+	if (at_station->~IsCableLine())
+		at_station = at_station->GetActionTarget(0); // TODO: Traveling to which?
+	if (!at_station)
+		return false;
+	return !!at_station->IsInNetwork(station);
 }
 
 
-
-
-
+// FindObject wrapper to find a station which this cable car can reach.
+private func Find_CableStation()
+{
+	var at_station = pRailTarget;
+	if (at_station->~IsCableLine())
+		at_station = at_station->GetActionTarget(0); // TODO: Travelling to which?
+	var station = [C4FO_Func, "IsCableStation"];
+	var network = [C4FO_Func, "IsInNetwork", at_station];		
+	return [C4FO_And, station, network];
+}
 
 /*-- Delivery queue --*/
 
@@ -299,7 +313,7 @@ protected func FxProcessDeliveryQueueTimer(object target, proplist effect)
 		// Not a sufficient amount of the requested objects, try to retrieve from other stations.
 		// TODO: is station in network, find closest.
 		if (!effect.Station)
-		for (var station in FindObjects(Find_Func("IsCableStation")))
+		for (var station in FindObjects(Find_CableStation()))
 		{
 			// Check every station in network.
 			// TODO: Move request down if not fulfillable.
@@ -376,7 +390,7 @@ private func OnStationReached(object station)
 			if (ObjectCount(Find_Container(this), Find_ID(request.ObjID)) >= request.Amount)
 			{
 				station->TransferIntoStation(this, request.ObjID, request.Amount);	
-				// Remove request from queue. FIXME
+				// Remove request from queue.
 				RemoveFromQueue(request);
 			}
 		}
@@ -385,14 +399,19 @@ private func OnStationReached(object station)
 }
 
 /**	
-	Request this car for a delivery to a station.
+	Request this car for a delivery to the specified station.
 
 */
 public func RequestDelivery(object station, id obj_id, int amount)
 {
 	// Check connection to station.
-	
+	if (!IsInNetwork(station))
+		return false;	
 	// Check availability of delivery.
+	
+	
+	
+	
 	
 	// Add request to delivery queue.
 	var request = {Station = station, ObjID = obj_id, Amount = amount};
