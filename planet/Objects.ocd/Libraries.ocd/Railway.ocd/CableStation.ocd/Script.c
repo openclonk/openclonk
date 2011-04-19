@@ -101,7 +101,7 @@ public func AddCableConnection(object cable)
 	if (!cable || ! cable->~IsCableLine())
 		return false;
 	// Line setup finished?
-	var other_crossing = cable->GetOtherConnection(this);
+	var other_crossing = cable->~GetOtherConnection(this);
 	if (! other_crossing->~IsCableCrossing())
 		return false;
 	// Acquire destinations of the other crossing, all these are now in reach
@@ -122,7 +122,7 @@ public func RemoveCableConnection(object cable)
 	if (!cable || ! cable->~IsCableLine())
 		return false;
 	// Get other connection
-	var other_crossing = cable->GetOtherConnection(this);
+	var other_crossing = cable->~GetOtherConnection(this);
 	if (! other_crossing->~IsCableCrossing())
 		return false;
 	// Remove all connections
@@ -257,7 +257,7 @@ public func RemoveCableDestinations(object crossing)
 	for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 	{
 		if (! connection->~IsCableLine()) continue;
-		var other_crossing = connection->GetOtherConnection(this);
+		var other_crossing = connection->~GetOtherConnection(this);
 		if (! other_crossing->~IsCableCrossing()) continue;
 		other_crossing->RemoveCableDestination(crossing, this);
 	}
@@ -286,7 +286,7 @@ public func RemoveCableDestination(object to_remove, object crossing)
 		for (var connection in FindObjects(Find_Func("IsConnectedTo", this)))
 		{
 			if (! connection->~IsCableLine()) continue;
-			var other_crossing = connection->GetOtherConnection(this);
+			var other_crossing = connection->~GetOtherConnection(this);
 			if (! other_crossing->~IsCableCrossing()) continue;
 			if (other_crossing == crossing) continue;
 			other_crossing->RemoveCableDestination(crossing, this);
