@@ -540,10 +540,10 @@ public func ReserveObjects(id obj_id, int amount)
 	if (GetAvailableCount(obj_id) < amount)
 		return false;
 	// Add amount of objects to reserved list.
-	if (reserved_list[Format("%i",obj_id)] == nil)
-		reserved_list[Format("%i",obj_id)] = amount;
-	else
-		reserved_list[Format("%i",obj_id)] += amount;
+	//if (reserved_list[Format("%i",obj_id)] == nil)
+	//	reserved_list[Format("%i",obj_id)] = amount;
+	//else
+	//	reserved_list[Format("%i",obj_id)] += amount;
 	return true;
 }
 

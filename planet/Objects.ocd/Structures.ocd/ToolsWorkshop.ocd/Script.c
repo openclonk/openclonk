@@ -104,7 +104,7 @@ private func MenuProduction(object clonk)
 	var i = 0, know_id;
 	while (know_id = GetPlrKnowledge(clonk->GetOwner(), nil, i, C4D_Object))
 	{
-		Log("%v,%v", know_id,know_id->~IsToolProduct());
+		//Log("%v,%v", know_id,know_id->~IsToolProduct());
 		if (know_id->~IsToolProduct())
 			clonk->AddMenuItem("$Construction$: %s", "SelectProduction", know_id, 0, clonk);
 		i++;
@@ -114,6 +114,7 @@ private func MenuProduction(object clonk)
 
 protected func SelectProduction(id item_id)
 {
+	Message("Item {{%i}} selected", item_id);
 	// Add production to queue.
 	AddToQueue(item_id, 1);
 	return;

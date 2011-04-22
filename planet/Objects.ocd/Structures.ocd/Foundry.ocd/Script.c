@@ -12,7 +12,7 @@
 public func Initialize()
 {
 	_inherited(...);
-	queue = [[Metal, nil]];
+	//queue = [[Metal, nil]];
 	return;
 }
 

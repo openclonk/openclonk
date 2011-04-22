@@ -90,7 +90,10 @@ protected func Initialize()
 	// Some resources are already available in the mines.
 	cross_ore5->CreateContents(Ore, 10);
 	cross_coal1->CreateContents(Coal, 10);
-	cross_sulph2->CreateContents(Sulphur, 10);	
+	cross_sulph2->CreateContents(Sulphur, 10);
+	
+	// Structures to cable stations, shouldn't this be automatic?
+	// TODO: implement a method.
 
 	// Initial message for the user.
 	Log("Give the lorry commands with SetDestination(target);");
@@ -101,6 +104,8 @@ protected func Initialize()
 
 protected func InitializePlayer(int plr)
 {
+	// No FOW here.
+	SetFoW(false, plr);
 	JoinPlayer(plr);
 	return;
 }

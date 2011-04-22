@@ -313,19 +313,26 @@ protected func FxProcessDeliveryQueueTimer(object target, proplist effect)
 		// Not a sufficient amount of the requested objects, try to retrieve from other stations.
 		// TODO: is station in network, find closest.
 		if (!effect.Station)
-		for (var station in FindObjects(Find_CableStation()))
-		{
-			// Check every station in network.
-			// TODO: Move request down if not fulfillable.
-			if (station->GetAvailableCount(request.ObjID) >= request.Amount)
+			for (var station in FindObjects(Find_CableStation(), Find_Exclude(request.Station)))
 			{
-				//station->ReserveObjects(request.ObjID, request.Amount);
-				//Log("Cable car %v moving to station %v for loading.", this, station);
-				SetDestination(station);
-				effect.Station = station;
-				break;		
+				// Check every station in network.
+				// TODO: Move request down if not fulfillable.
+				if (station->GetAvailableCount(request.ObjID) >= request.Amount)
+				{
+					//station->ReserveObjects(request.ObjID, request.Amount);
+					//Log("Cable car %v moving to station %v for loading.", this, station);
+					SetDestination(station);
+					effect.Station = station;
+					break;		
+				}
 			}
+		// Request can't be handled, remove to back of queue.
+		if (!effect.Station)
+		{
+			RemoveFromQueue(request); // Rather hacky this, but whatever.
+			delivery_queue[GetLength(delivery_queue)] = request;			
 		}
+		
 	}
 	else
 	{
@@ -370,10 +377,11 @@ private func OnStationReached(object station)
 		// Don't load from the station which requests.
 		if (station == request.Station)
 			continue;
-		var car_cnt = ObjectCount(Find_Container(this), Find_ID(request.ObjID));
-		if (request.Amount > car_cnt)
+		// Compensate for contents already in the car, not used already for another delivery.
+		//var car_cnt = ObjectCount(Find_Container(this), Find_ID(request.ObjID));
+		if (request.Amount > 0)
 		{
-			var req_cnt = request.Amount - car_cnt;
+			var req_cnt = request.Amount;
 			var av_cnt = station->GetAvailableCount(request.ObjID);
 			req_cnt = Min(req_cnt, av_cnt);
 			if (req_cnt > 0)
@@ -400,19 +408,29 @@ private func OnStationReached(object station)
 
 /**	
 	Request this car for a delivery to the specified station.
-
+	@param station the place where the objects should be delivered.
+	@param obj_id id of the requested objects.
+	@param amount amount of the requested objects.
+	@return \c true if the request can be processed, \c false otherwise.
 */
 public func RequestDelivery(object station, id obj_id, int amount)
 {
+	//Log("CableCar: RequestDelivery, station %v, obj {{%i}}, amount %d", station, obj_id, amount);
 	// Check connection to station.
 	if (!IsInNetwork(station))
 		return false;	
 	// Check availability of delivery.
-	
-	
-	
-	
-	
+	var avl_amount = 0;
+	for (var load_station in FindObjects(Find_CableStation()))
+		avl_amount += load_station->GetAvailableCount(obj_id);
+	// If not enough available, try to find a producer.
+	if (avl_amount < amount)
+	{
+		var producer = FindObject(Find_CableStation(), Find_Func("CanProduceItem", obj_id));
+		if (!producer)
+			return false;
+		producer->AddToQueue(obj_id, amount - avl_amount);		
+	}	
 	// Add request to delivery queue.
 	var request = {Station = station, ObjID = obj_id, Amount = amount};
 	delivery_queue[GetLength(delivery_queue)] = request;
@@ -439,6 +457,8 @@ public func LogDeliveryQueue()
 	{
 		Log("* Delivery %v: %d {{%i}} to station %v", request, request.Amount, request.ObjID, request.Station);
 	}
+	var station = GetEffect("ProcessDeliveryQueue", this).Station;
+	Log("In Process: Delivery %v: %d {{%i}} from station %v to station %v", request, request.Amount, request.ObjID, station, request.Station);
 	return;
 }
 
