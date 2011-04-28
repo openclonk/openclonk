@@ -106,10 +106,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_ActivateEntrance    "~ActivateEntrance" // pByObject
 #define PSF_Activate            "~Activate" // pByObject
 #define PSF_LiftTop             "~LiftTop"
-#define PSF_Control             "~Control%s"  // pByObject
-#define PSF_ContainedControl    "~Contained%s"  // pByObject
-#define PSF_ControlUpdate       "~ControlUpdate" // pByObject, iComs
-#define PSF_ContainedControlUpdate "~ContainedUpdate" // pByObject, iComs
 #define PSF_Contact             "~Contact%s"
 #define PSF_ControlCommand      "~ControlCommand" // szCommand, pTarget, iTx, iTy
 #define PSF_ControlCommandFinished "~ControlCommandFinished" // szCommand, pTarget, iTx, iTy, pTarget2, iData
