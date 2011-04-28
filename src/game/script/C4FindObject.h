@@ -145,11 +145,12 @@ public:
 	virtual ~C4FindObjectOr();
 private:
 	int32_t iCnt;
-	C4FindObject **ppConds;
+	C4FindObject **ppConds; bool fUseShapes;
 	C4Rect Bounds; bool fHasBounds;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual C4Rect *GetBounds() { return fHasBounds ? &Bounds : NULL; }
+	virtual bool UseShapes() { return fUseShapes; }
 	virtual bool IsEnsured();
 	virtual bool IsImpossible() { return !iCnt; }
 };

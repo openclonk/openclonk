@@ -448,22 +448,18 @@ C4FindObjectAnd::C4FindObjectAnd(int32_t inCnt, C4FindObject **ppConds, bool fFr
 		C4Rect *pChildBounds = ppConds[i]->GetBounds();
 		if (pChildBounds)
 		{
+			if (!fHasBounds)
+			{
+				fUseShapes = ppConds[i]->UseShapes();
+				Bounds = *pChildBounds;
+				fHasBounds = true;
+			}
 			// some objects might be in an rect and at a point not in that rect
-			// so do not intersect an atpoint bound with an rect bound
-			fUseShapes = ppConds[i]->UseShapes();
-			if (fUseShapes)
-			{
-				Bounds = *pChildBounds;
-				fHasBounds = true;
-				break;
-			}
-			if (fHasBounds)
+			// so do not intersect shapes bounds with rects bound
+			else if (fUseShapes == ppConds[i]->UseShapes())
 				Bounds.Intersect(*pChildBounds);
-			else
-			{
-				Bounds = *pChildBounds;
-				fHasBounds = true;
-			}
+			// simply use a larger rect than strictly necessary,
+			// the objects will be filtered out later
 		}
 	}
 }
@@ -514,15 +510,15 @@ C4FindObjectOr::C4FindObjectOr(int32_t inCnt, C4FindObject **ppConds)
 	{
 		C4Rect *pChildBounds = ppConds[i]->GetBounds();
 		if (!pChildBounds) { fHasBounds = false; break; }
-		// Do not optimize atpoint: It could lead to having to search multiple
-		// sectors. An object's shape can be in multiple sectors. We do not want
-		// to find the same object twice.
-		if (ppConds[i]->UseShapes())
+		// With objects that have a position outside their shape, mixing
+		// shape bounds with rect bounds results in no bounds
+		if (fHasBounds && fUseShapes != ppConds[i]->UseShapes())
 			{ fHasBounds = false; break; }
 		if (fHasBounds)
 			Bounds.Add(*pChildBounds);
 		else
 		{
+			fUseShapes = ppConds[i]->UseShapes();
 			Bounds = *pChildBounds;
 			fHasBounds = true;
 		}
