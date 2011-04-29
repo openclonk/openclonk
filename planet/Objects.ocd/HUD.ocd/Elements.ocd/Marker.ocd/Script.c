@@ -51,7 +51,7 @@ protected func Construction()
 	SetObjDrawTransform(1000,0,-225*100,0,1000,0,1);
 }
 
-public func SetVisual( picture)
+public func SetVisual(picture, altpicture)
 {
 	if(!picture)
 	{
@@ -85,7 +85,10 @@ public func SetVisual( picture)
 			}
 		}
 		else
+		if(!altpicture)
 			SetGraphics(nil,picture,10,GFXOV_MODE_IngamePicture);
+		else
+			SetGraphics(altpicture,picture,10,GFXOV_MODE_IngamePicture);
 		
 		SetName(picture->GetName());
 	}

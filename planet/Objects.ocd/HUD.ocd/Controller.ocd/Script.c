@@ -146,7 +146,7 @@ public func GetFreeMarkerPosition()
 }
 
 
-global func AddHUDMarker(int player, picture, string text, int duration, bool urgent, object inform)
+global func AddHUDMarker(int player, picture, string altpicture, string text, int duration, bool urgent, object inform)
 {
 	var number = 0;
 	var padding = GUI_Marker->GetDefHeight()+5;
@@ -154,7 +154,7 @@ global func AddHUDMarker(int player, picture, string text, int duration, bool ur
 	number = hud->GetFreeMarkerPosition();
 	hud.markers[number] = CreateObject(GUI_Marker,0,0,player);
 	hud.markers[number] -> SetPosition(5+(GUI_Marker->GetDefWidth()/2),-240-(GUI_Marker->GetDefHeight()/2) - number*padding);
-	hud.markers[number] -> SetVisual(picture);
+	hud.markers[number] -> SetVisual(picture, altpicture);
 	if(inform) hud.markers[number].toInform = inform;
 	if(duration) AddEffect("IntRemoveMarker",hud.markers[number],100,duration,hud.markers[number]);
 	if(urgent) AddEffect("IntUrgentMarker",hud.markers[number],100,2,hud.markers[number]);
