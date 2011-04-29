@@ -252,9 +252,6 @@ public:
 	bool Save(C4Group &hGroup, bool fSaveSection=false);
 	void CompileFunc(StdCompiler *pComp, bool fSection);
 	int32_t GetMinPlayer(); // will try to determine the minimum player count for this scenario
-protected:
-	bool Compile(const char *szSource, bool fLoadSection=false);
-	bool Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection=false);
 };
 
 class C4ScenarioSection;

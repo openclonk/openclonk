@@ -89,23 +89,25 @@ void C4Scenario::Default()
 
 bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection)
 {
-	char *pSource;
-	// Load
-	if (!hGroup.LoadEntry(C4CFN_ScenarioCore,&pSource,NULL,1)) return false;
-	// Compile
-	if (!Compile(pSource, fLoadSection))  { delete [] pSource; return false; }
-	delete [] pSource;
-	// Success
+	StdStrBuf Buf;
+	if (!hGroup.LoadEntryString(C4CFN_ScenarioCore,&Buf)) return false;
+	if (!fLoadSection) Default();
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), Buf, C4CFN_ScenarioCore))
+		{ return false; }
 	return true;
 }
 
 bool C4Scenario::Save(C4Group &hGroup, bool fSaveSection)
 {
-	char *Buffer; int32_t BufferSize;
-	if (!Decompile(&Buffer,&BufferSize, fSaveSection))
-		return false;
-	if (!hGroup.Add(C4CFN_ScenarioCore,Buffer,BufferSize,false,true))
-		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
+	StdStrBuf Buf;
+	try
+	{
+		Buf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, fSaveSection)));
+	}
+	catch (StdCompiler::Exception *)
+		{ return false; }
+	if (!hGroup.Add(C4CFN_ScenarioCore,Buf,false,true))
+		{ return false; }
 	return true;
 }
 
@@ -385,27 +387,6 @@ void C4SRealism::Default()
 	LandscapePushPull=0;
 	LandscapeInsertThrust=0;
 	ValueOverloads.Default();
-}
-
-bool C4Scenario::Compile(const char *szSource, bool fLoadSection)
-{
-	if (!fLoadSection) Default();
-	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), StdStrBuf(szSource), C4CFN_ScenarioCore);
-}
-
-bool C4Scenario::Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection)
-{
-	try
-	{
-		// Decompile
-		StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, fSaveSection));
-		// Return
-		*ppOutput = Buf.GrabPointer();
-		*ipSize = Buf.getSize();
-	}
-	catch (StdCompiler::Exception *)
-		{ return false; }
-	return true;
 }
 
 void C4Scenario::Clear()
