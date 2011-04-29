@@ -13,12 +13,14 @@ local wealth;
 local deco;
 local tubes;
 local markers;
+local backpack;
 
 protected func Construction()
 {
 	actionbar = CreateArray();
 	tubes = CreateArray();
 	markers = CreateArray();
+	backpack = CreateArray();
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
@@ -62,9 +64,9 @@ protected func Construction()
 		bt->SetSize(48000);
 		//bt->SetObject(this->GetItem(2+i),0,2+i,0);
 		bt->SetObjDrawTransform(1,0,0,0,1,0,0);
-		AddEffect("UpdateBackpack",bt,1,1,nil,nil);		
-		tubes[GetLength(tubes)] = bt;
+		backpack[GetLength(backpack)] = bt;
 	}
+	AddEffect("UpdateBackpack",this,1,1,nil,nil);		
 	
 
 	
@@ -163,13 +165,18 @@ global func AddHUDMarker(int player, picture, string text, int duration, bool ur
 
 
 global func FxUpdateBackpackTimer(target) { 
-	target->SetAmount(0);  
-	target->SetSymbol(GetCrew(target->GetOwner())->GetItem(target->GetExtraData())); 
-	target->SetGraphics(nil,nil,9);
-	target->SetGraphics(nil,nil,10);
-	target->SetGraphics(nil,nil,11);
-	target->SetGraphics(nil,nil,12);
+	if(!target) return -1;
+	if(!GetCursor(target->GetOwner())) return 1;
+	for(var i=0; i<GetLength(target.backpack); i++)
+	{
+		target.backpack[i]->SetAmount(0);  
+		target.backpack[i]->SetSymbol(GetCursor(target->GetOwner())->GetItem(target.backpack[i]->GetExtraData())); 
+		target.backpack[i]->SetGraphics(nil,nil,9);
+		target.backpack[i]->SetGraphics(nil,nil,10);
+		target.backpack[i]->SetGraphics(nil,nil,11);
+		target.backpack[i]->SetGraphics(nil,nil,12);
 	}
+}
 
 protected func OnWealthChanged(int plr)
 {

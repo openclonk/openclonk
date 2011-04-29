@@ -211,8 +211,8 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show inventory slots.
 	if (index == 9)
 	{
-		TutArrowShowGUIPos(32 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 40);
-		TutArrowShowGUIPos(32 + 12 + 3 * GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 40);
+		TutArrowShowGUIPos(248 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
+		TutArrowShowGUIPos(341 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
 	}
 	return;
 }
