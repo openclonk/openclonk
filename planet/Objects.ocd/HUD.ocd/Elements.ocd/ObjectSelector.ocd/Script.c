@@ -11,7 +11,7 @@
 	but rely on the clonk to update their status.
 
 	This object works only for crew members that included the standard clonk
-	controls (see Libraries.ocd/ClonkControl.ocd)
+	controls (see Libraries.c4d/ClonkControl.c4d)
 	
 */
 
@@ -57,6 +57,12 @@ protected func Destruction()
 {
 	if(subselector)
 		subselector->RemoveObject();
+}
+
+public func ShowsItem()
+{
+	if(myobject)	return true;
+	else			return false;	
 }
 
 public func MouseSelectionAlt(int plr)
@@ -281,6 +287,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	
 	if(!myobject)
 	{
+		SetGraphics("None");
 		SetGraphics(nil,nil,1);
 		SetName(Format("$TxtSlot$",pos+1));
 		this["MouseDragImage"] = nil;
@@ -289,6 +296,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	}
 	else
 	{
+		SetGraphics();
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, myobject);
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		this["MouseDragImage"] = myobject;
@@ -299,7 +307,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 			if(!subselector)
 			{
 				subselector = CreateObject(GUI_ExtraSlot,0,0,GetOwner());
-				subselector->SetPosition(GetX()+16,GetY()+16);
+				subselector->SetPosition(GetX()+24,GetY()+24);
 			}
 			subselector->SetContainer(myobject);
 			subselector->SetCrew(crew);
@@ -322,6 +330,10 @@ public func SetObject(object obj, int type, int pos, int hot)
 	ShowHotkey();
 	UpdateSelectionStatus();
 }
+
+public func ShowSelector() { this["Visibility"] = VIS_Owner; }
+public func HideSelector() { this["Visibility"] = VIS_None;  }
+
 
 public func FxIntRemoveGuardStop(object target, effect, int reason, bool temp)
 {
@@ -354,8 +366,8 @@ public func ShowHotkey()
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
-		SetClrModulation(RGB(160,0,0),12);
+		SetObjDrawTransform(300,0,14500,0,300,-32000, 12);
+		SetClrModulation(RGB(255,230,180),12);
 	}
 }
 

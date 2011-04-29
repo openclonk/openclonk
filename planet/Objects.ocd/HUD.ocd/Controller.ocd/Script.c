@@ -1,19 +1,25 @@
 /*
 	Per-Player Controller (HUD)
-	Author: Newton
+	Author: Newton, Mimmo
 
 	Creates and removes the crew selectors as well as reorders them and
 	manages when a crew changes it's controller. Responsible for taking
 	care of the action (inventory) bar.
+	
 */
 
 local actionbar;
 local wealth;
+local deco;
+local tubes;
+local markers;
 
 protected func Construction()
 {
 	actionbar = CreateArray();
-
+	tubes = CreateArray();
+	markers = CreateArray();
+	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
 	{
@@ -28,11 +34,142 @@ protected func Construction()
 	// reorder the crew selectors
 	ReorderCrewSelectors();
 	
+	// background decoration
+	deco =  CreateObject(GUI_Background,0,0,this->GetOwner());
+	deco -> SetPosition(1,-1);
+	deco->SetControllerObject(this);
+	
 	// wealth display
 	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
 	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
+	
+	// breathtube
+	MakeBreathTube();
+	
+	// healthtube
+	MakeHealthTube();
+	
+	// manatube
+	// MakeManaTube();
+	
+	// backpack display
+	for(var i=0; i<5; i++)
+	{
+		var bt = CreateObject(GUI_RingMenu_Icon,0,0,this->GetOwner());
+		bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43));	
+		bt->SetExtraData(i+2);
+		bt->SetSize(48000);
+		//bt->SetObject(this->GetItem(2+i),0,2+i,0);
+		bt->SetObjDrawTransform(1,0,0,0,1,0,0);
+		AddEffect("UpdateBackpack",bt,1,1,nil,nil);		
+		tubes[GetLength(tubes)] = bt;
+	}
+	
+
+	
 }
+protected func OnWealthChanged(int plr)
+{
+	if(plr != GetOwner()) return;
+	if(wealth) wealth->Update();
+}
+
+
+protected func MakeHealthTube()
+{
+	var btube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
+	btube->SetPosition(1,-1);
+	btube->MakeBot();
+	var tube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
+	tube->SetPosition(1,-1);
+	tube->SetAction("Swirl");
+	var ftube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
+	ftube->SetPosition(1,-1);
+	ftube->MakeTop();
+	tube->Update();
+	AddEffect("Update",tube,100,1,tube);
+	
+	tubes[GetLength(tubes)] = btube;
+	tubes[GetLength(tubes)] =  tube;
+	tubes[GetLength(tubes)] = ftube;
+
+}
+
+protected func MakeBreathTube()
+{
+	var tube = CreateObject(GUI_BreathTube,0,0,this->GetOwner());
+	tube->SetPosition(1,-1);
+	tube->SetAction("Swirl");
+	var ftube = CreateObject(GUI_BreathTube,0,0,this->GetOwner());
+	ftube->SetPosition(1,-1);
+	ftube->MakeTop();
+	//tube->SetTubes(btube,ftube);
+	tube->SetTubes(ftube);
+	tube->Update();
+	AddEffect("Update",tube,100,1,tube);
+
+	tubes[GetLength(tubes)] =  tube;
+	tubes[GetLength(tubes)] = ftube;
+}
+
+/*
+protected func MakeManaTube()
+{
+	var tube = CreateObject(GUI_ManaTube,0,0,this->GetOwner());
+	tube->SetPosition(1,-1);
+	tube->SetAction("Swirl");
+	var ftube = CreateObject(GUI_ManaTube,0,0,this->GetOwner());
+	ftube->SetPosition(1,-1);
+	ftube->MakeTop();
+	//tube->SetTubes(btube,ftube);
+	tube->SetTubes(ftube);
+	tube->Update();
+	AddEffect("Update",tube,100,1,tube);
+	
+	tubes[GetLength(tubes)] =  tube;
+	tubes[GetLength(tubes)] = ftube;
+
+}
+*/
+
+
+public func GetFreeMarkerPosition()
+{	
+	for(var i=0; i < GetLength(markers); i++)
+	{
+		if(!markers[i]) return i;	
+	}
+	return GetLength(markers);
+}
+
+
+global func AddHUDMarker(int player, picture, string text, int duration, bool urgent, object inform)
+{
+	var number = 0;
+	var padding = GUI_Marker->GetDefHeight()+5;
+	var hud = FindObject(Find_ID(GUI_Controller),Find_Owner(player));
+	number = hud->GetFreeMarkerPosition();
+	hud.markers[number] = CreateObject(GUI_Marker,0,0,player);
+	hud.markers[number] -> SetPosition(5+(GUI_Marker->GetDefWidth()/2),-240-(GUI_Marker->GetDefHeight()/2) - number*padding);
+	hud.markers[number] -> SetVisual(picture);
+	if(inform) hud.markers[number].toInform = inform;
+	if(duration) AddEffect("IntRemoveMarker",hud.markers[number],100,duration,hud.markers[number]);
+	if(urgent) AddEffect("IntUrgentMarker",hud.markers[number],100,2,hud.markers[number]);
+	if(text) hud.markers[number]->SetName(text);
+	
+	return hud.markers[number];
+}
+
+
+global func FxUpdateBackpackTimer(target) { 
+	target->SetAmount(0);  
+	target->SetSymbol(GetCrew(target->GetOwner())->GetItem(target->GetExtraData())); 
+	target->SetGraphics(nil,nil,9);
+	target->SetGraphics(nil,nil,10);
+	target->SetGraphics(nil,nil,11);
+	target->SetGraphics(nil,nil,12);
+	}
 
 protected func OnWealthChanged(int plr)
 {
@@ -130,9 +267,30 @@ public func Destruction()
 				actionbar[i]->RemoveObject();
 		}
 	}
+	
+	if(tubes)
+	{
+		for(var i=0; i<GetLength(tubes); ++i)
+		{
+			if(tubes[i])
+				tubes[i]->RemoveObject();
+		}
+	}
+	
+	if(markers)
+	{
+		for(var i=0; i<GetLength(markers); ++i)
+		{
+			if(markers[i])
+				markers[i]->RemoveObject();
+		}
+	}
+	
 	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
 	if(HUDgoal)
 		HUDgoal->RemoveObject();
+	if(deco)
+		deco->RemoveObject();
 }
 
 public func OnCrewDisabled(object clonk)
@@ -161,6 +319,9 @@ public func OnCrewSelection(object clonk, bool deselect)
 		// fill actionbar
 		// inventory
 		var i;
+	//	var deco = CreateObject(GUI_ObjectSelector_Background,0,0,clonk->GetOwner());
+	//	deco->SetPosition(337,-38);
+		
 		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
 			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
@@ -279,8 +440,8 @@ public func OnSlotObjectChanged(int slot)
 
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
 {
-	var size = GUI_ObjectSelector->GetDefWidth();
-	var spacing = 12 + size;
+	//var size = GUI_ObjectSelector->GetDefWidth();
+	var spacing = deco.padding;
 
 	// don't forget the spacings between inventory - vehicle,structure
 	var extra = 0;
@@ -292,8 +453,23 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	{
 		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
 	}
-	
-	bt->SetPosition(64 + pos * spacing + extra, -16 - size/2);
+
+		if(pos==0)
+		{ 
+			bt->SetGraphics("None");
+			bt->SetPosition(288, -48);
+		}	
+		else if(pos==1) 
+		{
+			bt->SetPosition(381, -48);
+			bt->SetGraphics("None");
+		}
+		else
+		{
+			bt->SetCon(90);
+			bt->SetPosition(491 + (pos-2) * spacing, -45);
+		}
+
 	
 	bt->SetCrew(forClonk);
 	bt->SetObject(interaction,actiontype,pos,hotkey);
@@ -312,6 +488,17 @@ private func ClearButtons(int start)
 		if(actionbar[j])
 			actionbar[j]->Clear();
 	}
+	if(deco->GetSlotNumber() != -1)
+	if(deco->GetSlotNumber() != GetRealActionbarLength(actionbar))
+		deco->SlideTo(GetRealActionbarLength(actionbar) );
+}
+
+private func GetRealActionbarLength()
+{
+	var i=0;
+	for(var j = 2; j < GetLength(actionbar); ++j)
+		if(actionbar[j]->ShowsItem())	i++;
+	return i;
 }
 
 public func ClearButtonMessages()
@@ -327,13 +514,13 @@ public func ClearButtonMessages()
 public func ControlHotkey(int hotindex)
 {
 	if(!actionbar[hotindex]) return false;
-	var clonk = actionbar[hotindex]->GetCrew();
-	if(!clonk) return false;
-	hotindex += clonk->HandObjects();
-	if(!actionbar[hotindex]) return false;
-	// only if it is not already used
-	actionbar[hotindex]->~MouseSelection(GetOwner());
-	return true;
+    var clonk = actionbar[hotindex]->GetCrew();
+   	if(!clonk) return false;
+    hotindex += clonk->HandObjects();
+   	if(!actionbar[hotindex]) return false;
+   	// only if it is not already used
+  	actionbar[hotindex]->~MouseSelection(GetOwner());
+   	return true;
 }
 
 private func CreateSelectorFor(object clonk)
@@ -343,6 +530,8 @@ private func CreateSelectorFor(object clonk)
 		clonk->SetSelector(selector);
 		return selector;
 }
+
+
 
 public func ReorderCrewSelectors(object leaveout)
 {
@@ -365,3 +554,4 @@ public func ReorderCrewSelectors(object leaveout)
 		j++;
 	}
 }
+
