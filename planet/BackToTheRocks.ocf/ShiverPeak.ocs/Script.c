@@ -52,8 +52,8 @@ protected func Initialize()
 	time->SetTime(900);
 
 	// Clouds
-	for (var i = 0; i < 30; i++)
-		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
+//	for (var i = 0; i < 30; i++)
+//		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
 	// Snow
 	AddEffect("Snowfall", 0, 1, 2);
 	//Wind
