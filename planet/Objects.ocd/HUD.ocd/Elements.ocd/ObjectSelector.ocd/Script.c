@@ -367,7 +367,7 @@ public func ShowHotkey()
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
 		SetObjDrawTransform(300,0,14500,0,300,-32000, 12);
-		SetClrModulation(RGB(255,230,180),12);
+		SetClrModulation(RGB(160,0,0),12);
 	}
 }
 
