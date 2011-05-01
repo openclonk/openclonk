@@ -36,9 +36,7 @@ bool C4Group_CopyEntry(C4Group *pFrom, C4Group *pTo, const char *strItemName)
 	char *pData; size_t iSize;
 	if (!pFrom->LoadEntry(strItemName, &pData, &iSize))
 		return false;
-	// write entry (keep time)
-	int iEntryTime = pFrom->EntryTime(strItemName);
-	if (!pTo->Add(strItemName, pData, iSize, false, true, iEntryTime))
+	if (!pTo->Add(strItemName, pData, iSize, false, true))
 		return false;
 	return true;
 }
@@ -194,14 +192,10 @@ public:
 		// overwrite entries field
 		int Entries = Head.Entries;
 		Head.Entries = pHdr->Entries;
-		// overwrite creation field
-		int Creation = Head.Creation;
-		if (fLax) Head.Creation = pHdr->Creation;
 		// compare
 		bool fIdentical = !memcmp(&Head, pHdr, sizeof(C4GroupHeader));
 		// restore field values
 		Head.Entries = Entries;
-		Head.Creation = Creation;
 		// okay
 		return fIdentical;
 	}
@@ -211,19 +205,17 @@ public:
 	{
 		C4GroupEntryCore *pCore = ((C4GroupEx &)rByGrp).GetEntry(szEntry);
 		// copy core
-		memcpy(&SavedCore.Time, &pCore->Time, (char *)&SavedCore + sizeof(SavedCore) - (char *)&SavedCore.Time);
+		SavedCore.HasCRC = pCore->HasCRC;
+		SavedCore.CRC = pCore->CRC;
+		SavedCore.Executable = pCore->Executable;
 	}
 	void SetSavedEntryCore(const char *szEntry)
 	{
 		C4GroupEntryCore *pCore = GetEntry(szEntry);
 		// copy core
-		memcpy(&pCore->Time, &SavedCore.Time, (char *)&SavedCore + sizeof(SavedCore) - (char *)&SavedCore.Time);
-	}
-
-	void SetEntryTime(const char *szEntry, int iEntryTime)
-	{
-		C4GroupEntryCore *pCore = GetEntry(szEntry);
-		if (pCore) pCore->Time = iEntryTime;
+		pCore->HasCRC = SavedCore.HasCRC;
+		pCore->CRC = SavedCore.CRC;
+		pCore->Executable = SavedCore.Executable;
 	}
 
 	void SetNoSort(const char *szEntry)
@@ -577,11 +569,9 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 		char strSortList[32767] = "";
 		for (int i = 0; SCopySegment(pData, i, strItemName, '|', _MAX_FNAME); i++)
 		{
-			// get time (if given)
+			// strip checksum/time (if given)
 			char *pTime = strchr(strItemName, '=');
-			if (pTime) *pTime++ = '\0';
-			// set
-			if (pTime) pGrpTo->SetEntryTime(strItemName, atoi(pTime));
+			if (pTime) *pTime = '\0';
 			// update EntryCRC32. This will make updates to old groups invalid
 			// however, it's needed so updates will update the EntryCRC of *unchanged* files correctly
 			pGrpTo->EntryCRC32(strItemName);
@@ -727,7 +717,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	//           in the base group)
 
 	// compare headers
-	if (!pGrp1 || pGrp1->GetCreation() != pGrp2->GetCreation())
+	if (!pGrp1 || pGrp1->EntryCRC32() != pGrp2->EntryCRC32())
 		*fModified = true;
 	// set header
 	pUpGrp->SetHead(*pGrp2);
@@ -740,7 +730,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	{
 		// add to entry list
 		if (!!EntryList) EntryList.AppendChar('|');
-		EntryList.AppendFormat("%s=%d", strItemName, pGrp2->EntryTime(strItemName));
+		EntryList.AppendFormat("%s=%d", strItemName, pGrp2->EntryCRC32(strItemName));
 		// no modification detected yet? then check order
 		if (!*fModified)
 		{
@@ -778,8 +768,8 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			extern const char ** C4Group_SortList;
 			UpdGroup.SortByList(C4Group_SortList, ChildGrp2.GetName());
 			UpdGroup.Close(false);
-			// check entry times
-			if (!pGrp1 || (pGrp1->EntryTime(strItemName) != pGrp2->EntryTime(strItemName)))
+			// check entry crcs
+			if (!pGrp1 || (pGrp1->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName)))
 				Modified = true;
 			// add group (if modified)
 			if (fSuccess && Modified)
@@ -818,8 +808,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 				pUpGrp->SaveEntryCore(*pGrp2, strItemName);
 
 				// already in update grp?
-				if (pUpGrp->EntryTime(strItemName) != pGrp2->EntryTime(strItemName) ||
-				    pUpGrp->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
+				if (pUpGrp->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
 				    pUpGrp->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName))
 				{
 					// copy it

@@ -60,9 +60,7 @@ extern int iC4GroupRewindFilePtrNoWarn;
 
 const int C4GroupFileVer1=1, C4GroupFileVer2=2;
 
-const int C4GroupMaxMaker    = 30,
-                               C4GroupMaxPassword = 30,
-                                                    C4GroupMaxError    = 100;
+const int C4GroupMaxError = 100;
 
 const int32_t C4GroupSwapThreshold = 10 * 1024 * 1024;
 
@@ -81,7 +79,6 @@ bool C4Group_PackDirectoryTo(const char *szFilename, const char *szFilenameTo);
 bool C4Group_PackDirectory(const char *szFilename);
 bool C4Group_UnpackDirectory(const char *szFilename);
 bool C4Group_ExplodeDirectory(const char *szFilename);
-int C4Group_GetCreation(const char *szFilename);
 bool C4Group_SetOriginal(const char *szFilename, bool fOriginal);
 bool C4Group_ReadFile(const char *szFilename, char **pData, size_t *iSize);
 bool C4Group_GetFileCRC(const char *szFilename, uint32_t *pCRC32);
@@ -101,18 +98,14 @@ public:
 	char id[24+4];
 	int Ver1,Ver2;
 	int Entries;
-	char pad1[C4GroupMaxMaker+2];
-	char pad2[C4GroupMaxPassword+2];
-	int Creation;
-	int pad3;
-	BYTE pad4[92];
+	char reserved[164];
 public:
 	void Init();
 };
 
 const char C4GECS_None = 0,
-                         C4GECS_Old = 1,
-                                      C4GECS_New = 2;
+           C4GECS_Old = 1,
+           C4GECS_New = 2;
 
 class C4GroupEntryCore
 {
@@ -121,8 +114,8 @@ public:
 public:
 	char FileName[260];
 	int32_t Packed,ChildGroup;
-	int32_t Size, __Unused, Offset;
-	uint32_t Time;
+	int32_t Size, reserved1, Offset;
+	int32_t reserved2;
 	char HasCRC; unsigned int CRC;
 	char Executable;
 	BYTE fbuf[26];
@@ -154,8 +147,8 @@ public:
 };
 
 const int GRPF_Inactive=0,
-                        GRPF_File=1,
-                                  GRPF_Folder=2;
+          GRPF_File=1,
+          GRPF_Folder=2;
 
 class C4Group: public CStdStream
 {
@@ -194,7 +187,6 @@ protected:
 	bool NoSort; // If this flag is set, all entries will be marked NoSort in AddEntry
 
 public:
-
 	bool Open(const char *szGroupName, bool fCreate=false);
 	bool Close();
 	bool Save(bool fReOpen);
@@ -202,9 +194,9 @@ public:
 	bool OpenChild(const char* strEntry);
 	bool OpenMother();
 	bool Add(const char *szFile, const char *szAddAs);
-	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
-	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
-	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, int iTime = 0, bool fExecutable = false);
+	bool Add(const char *szName, void *pBuffer, int iSize, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
+	bool Add(const char *szName, StdBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
+	bool Add(const char *szName, StdStrBuf &pBuffer, bool fChild = false, bool fHoldBuffer = false, bool fExecutable = false);
 	bool Merge(const char *szFolders);
 	bool Move(const char *szFile, const char *szAddAs);
 	bool Extract(const char *szFiles, const char *szExtractTo=NULL, const char *szExclude=NULL);
@@ -262,9 +254,7 @@ public:
 	int EntryCount(const char *szWildCard=NULL);
 	size_t EntrySize(const char *szWildCard=NULL);
 	size_t AccessedEntrySize() { return iCurrFileSize; } // retrieve size of last accessed entry
-	int EntryTime(const char *szFilename);
 	unsigned int EntryCRC32(const char *szWildCard=NULL);
-	int GetCreation();
 	int GetStatus();
 	inline bool IsOpen() { return Status != GRPF_Inactive; }
 	C4Group *GetMother();
@@ -292,7 +282,6 @@ protected:
 	              bool childgroup,
 	              const char *fname,
 	              long size,
-	              time_t time,
 	              char cCRC,
 	              unsigned int iCRC,
 	              const char *entryname = NULL,

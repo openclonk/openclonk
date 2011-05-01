@@ -381,9 +381,8 @@ bool C4Def::Load(C4Group &hGroup,
 	if (Game.pFileMonitor && !SEqual(hGroup.GetFullName().getData(),Filename) && !hGroup.IsPacked())
 		AddFileMonitoring = true;
 
-	// Store filename, maker, creation
+	// Store filename
 	SCopy(hGroup.GetFullName().getData(),Filename);
-	Creation = hGroup.GetCreation();
 
 	// Verbose log filename
 	if (Config.Graphics.VerboseObjectLoading>=3)

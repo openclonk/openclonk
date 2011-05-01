@@ -120,14 +120,6 @@ bool C4Group_IsGroup(const char *szFilename)
 	return false;
 }
 
-int C4Group_GetCreation(const char *szFilename)
-{
-	int iResult = -1;
-	C4Group hGroup;
-	if (hGroup.Open(szFilename)) { iResult=hGroup.GetCreation(); hGroup.Close(); }
-	return iResult;
-	}
-
 bool C4Group_CopyItem(const char *szSource, const char *szTarget1, bool fNoSort, bool fResetAttributes)
 {
 	// Parameter check
@@ -521,8 +513,7 @@ void C4GroupHeader::Init()
 	SCopy(C4GroupFileID,id,sizeof(id)-1);
 	Ver1=C4GroupFileVer1; Ver2=C4GroupFileVer2;
 	Entries=0;
-	SCopy("New C4Group",pad1,C4GroupMaxMaker);
-	pad2[0]=0;
+	std::memset(reserved, '\0', sizeof(reserved));
 }
 
 C4GroupEntryCore::C4GroupEntryCore()
@@ -559,7 +550,6 @@ void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 	if (!stat(DiskPath, &buf))
 	{
 		Size = buf.st_size;
-		Time = buf.st_mtime;
 	}
 	else
 		Size = 0;
@@ -745,7 +735,7 @@ bool C4Group::OpenRealGrpFile()
 		C4InVal::ValidateFilename(const_cast<char *>(entryname.getData()),entryname.getLength());
 		EntryOffset+=sizeof(C4GroupEntryCore);
 		if (!AddEntry(C4GRES_InGroup,!!corebuf.ChildGroup,
-		              corebuf.FileName,corebuf.Size,corebuf.Time,
+		              corebuf.FileName,corebuf.Size,
 		              corebuf.HasCRC,corebuf.CRC,entryname.getData(),
 		              NULL, false, false,
 		              !!corebuf.Executable))
@@ -759,7 +749,6 @@ bool C4Group::AddEntry(int status,
                        bool childgroup,
                        const char *fname,
                        long size,
-                       time_t time,
                        char cCRC,
                        unsigned int iCRC,
                        const char *entryname,
@@ -826,7 +815,6 @@ bool C4Group::AddEntry(int status,
 	if (entryname) SCopy(entryname,nentry->FileName,_MAX_FNAME);
 	else SCopy(GetFilename(fname),nentry->FileName,_MAX_FNAME);
 	nentry->Size=size;
-	nentry->Time = time + C4Group_AssumeTimeOffset;
 	nentry->ChildGroup=childgroup;
 	nentry->Offset=0;
 	nentry->HasCRC=cCRC;
@@ -892,9 +880,6 @@ bool C4Group::Close()
 	// Set new version
 	Head.Ver1=C4GroupFileVer1;
 	Head.Ver2=C4GroupFileVer2;
-
-	// Creation stamp
-	Head.Creation = time(NULL);
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
@@ -1363,8 +1348,7 @@ bool C4Group::View(const char *szFiles)
 		bcount+=centry->Size;
 		maxfnlen=Max<int>(maxfnlen, static_cast<int>(SLen(centry->FileName)));
 	}
-	printf("Creation: %i\nVersion: %d.%d  CRC: %u (%X)\n",
-	       Head.Creation,
+	printf("Version: %d.%d  CRC: %u (%X)\n",
 	       Head.Ver1,Head.Ver2,
 	       crc, crc);
 	ResetSearch();
@@ -1374,20 +1358,6 @@ bool C4Group::View(const char *szFiles)
 		       maxfnlen,
 		       centry->FileName,
 		       centry->Size);
-		// convert centry->Time into time_t for localtime
-		time_t cur_time = centry->Time;
-		tm *pcoretm = localtime(&cur_time);
-		if (pcoretm)
-		{
-			tm coretm = *pcoretm;
-			printf(" %02d.%02d.%02d %02d:%02d:%02d",
-			       coretm.tm_mday,coretm.tm_mon+1,coretm.tm_year%100,
-			       coretm.tm_hour,coretm.tm_min,coretm.tm_sec);
-		}
-		else
-		{
-			printf(" (invalid timestamp)");
-		}
 
 		if (centry->HasCRC)
 			printf(" %s%08X", (centry->HasCRC == C4GECS_New) ? "!" : "~", centry->CRC);
@@ -1481,7 +1451,6 @@ bool C4Group::AddEntryOnDisk(const char *szFilename,
 	                fIsGroup,
 	                szFilename,
 	                iSize,
-	                FileTime(szFilename),
 	                false, 0,
 	                szAddAs,
 	                NULL,
@@ -1739,18 +1708,6 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 			return Error("Extract: Cannot erase temporary file");
 		if (!RenameItem(szTempFName,szTargetFName))
 			return Error("Extract: Cannot rename temporary file");
-		// Set output file time
-#ifdef _WIN32
-		_utimbuf tftime;
-		tftime.actime=pEntry->Time;
-		tftime.modtime=pEntry->Time;
-		_utime(szTargetFName,&tftime);
-#else
-		utimbuf tftime;
-		tftime.actime=pEntry->Time;
-		tftime.modtime=pEntry->Time;
-		utime(szTargetFName,&tftime);
-#endif
 		break;
 	case GRPF_Folder: // Copy item from folder to target
 		char szPath[_MAX_FNAME+1];
@@ -1856,7 +1813,7 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Entry reading error"); }
 		EntryOffset+=sizeof(C4GroupEntryCore);
 		if (!AddEntry(C4GRES_InGroup,!!corebuf.ChildGroup,
-		              corebuf.FileName,corebuf.Size,corebuf.Time,
+		              corebuf.FileName,corebuf.Size,
 		              corebuf.HasCRC, corebuf.CRC,
 		              NULL, NULL, false, false,
 		              !!corebuf.Executable))
@@ -1961,13 +1918,12 @@ bool C4Group::FindNextEntry(const char *szWildCard,
 	return true;
 }
 
-bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, bool fHoldBuffer, int iTime, bool fExecutable)
+bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, bool fHoldBuffer, bool fExecutable)
 {
 	return AddEntry(C4GRES_InMemory,
 	                fChild,
 	                szName,
 	                iSize,
-	                iTime ? iTime : time(NULL),
 	                false,
 	                0,
 	                szName,
@@ -1977,13 +1933,12 @@ bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, boo
 	                fExecutable);
 }
 
-bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool fHoldBuffer, int iTime, bool fExecutable)
+bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool fHoldBuffer, bool fExecutable)
 {
 	if (!AddEntry(C4GRES_InMemory,
 	              fChild,
 	              szName,
 	              pBuffer.getSize(),
-	              iTime ? iTime : time(NULL),
 	              false,
 	              0,
 	              szName,
@@ -1997,13 +1952,12 @@ bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool fHoldBu
 	return true;
 }
 
-bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool fHoldBuffer, int iTime, bool fExecutable)
+bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool fHoldBuffer, bool fExecutable)
 {
 	if (!AddEntry(C4GRES_InMemory,
 	              fChild,
 	              szName,
 	              pBuffer.getLength(),
-	              iTime ? iTime : time(NULL),
 	              false,
 	              0,
 	              szName,
@@ -2061,24 +2015,6 @@ unsigned int C4Group::EntryCRC32(const char *szWildCard)
 	}
 	// return
 	return iCRC;
-}
-
-int C4Group::EntryTime(const char *szFilename)
-{
-	int iTime = 0;
-	switch (Status)
-	{
-	case GRPF_File:
-		C4GroupEntry *pEntry; pEntry = GetEntry(szFilename);
-		if (pEntry) iTime = pEntry->Time;
-		break;
-	case GRPF_Folder:
-		char szPath[_MAX_FNAME+1];
-		sprintf(szPath,"%s%c%s",FileName,DirectorySeparator,szFilename);
-		iTime = FileTime(szPath);
-		break;
-	}
-	return iTime;
 }
 
 bool C4Group::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize, int iAppendZeros)
@@ -2213,11 +2149,6 @@ bool C4Group::CloseExclusiveMother()
 		return true;
 	}
 	return false;
-}
-
-int C4Group::GetCreation()
-{
-	return Head.Creation;
 }
 
 bool C4Group::SortByList(const char **ppSortList, const char *szFilename)
@@ -2437,19 +2368,13 @@ void C4Group::PrintInternals(const char *szIndent)
 	printf("%sHead.Ver1: %d\n", szIndent, Head.Ver1);
 	printf("%sHead.Ver2: %d\n", szIndent, Head.Ver2);
 	printf("%sHead.Entries: %d\n", szIndent, Head.Entries);
-	//printf("%sHead.Maker: '%s'\n", szIndent, Head.Maker);
-	//printf("Head.Password: '%s'\n", szIndent, Head.Password);
-	printf("%sHead.Creation: %d\n", szIndent, Head.Creation);
-	//printf("%sHead.Original: %d\n", szIndent, Head.Original);
 	for (C4GroupEntry * p = FirstEntry; p; p = p->Next)
 	{
 		printf("%sEntry '%s':\n", szIndent, p->FileName);
 		printf("%s  Packed: %d\n", szIndent, p->Packed);
 		printf("%s  ChildGroup: %d\n", szIndent, p->ChildGroup);
 		printf("%s  Size: %d\n", szIndent, p->Size);
-		printf("%s  __Unused: %d\n", szIndent, p->__Unused);
 		printf("%s  Offset: %d\n", szIndent, p->Offset);
-		printf("%s  Time: %d\n", szIndent, p->Time);
 		printf("%s  HasCRC: %d\n", szIndent, p->HasCRC);
 		printf("%s  CRC: %08X\n", szIndent, p->CRC);
 		if (p->ChildGroup)
