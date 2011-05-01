@@ -137,7 +137,54 @@ bool IsIdentifier(char cChar)
 	return false;
 }
 
+static bool IsNumber(char c, int base)
+{
+	return (c >= '0' && c <= '9' && c < ('0' + base)) ||
+	       (c >= 'a' && c <= 'z' && c < ('a' + base - 10)) ||
+	       (c >= 'A' && c <= 'Z' && c < ('A' + base - 10));
+}
+
+static int ToNumber(char c)
+{
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'z') return 10 + c - 'a';
+	if (c >= 'A' && c <= 'Z') return 10 + c - 'A';
+	assert(false);
+	return 0;
+}
+
 //------------------------------- Strings ------------------------------------------------
+
+int32_t StrToI32(const char *s, int base, const char **scan_end)
+{
+	int sign = 1;
+	int32_t result = 0;
+	if (*s == '-')
+	{
+		sign = -1;
+		s++;
+	}
+	else if (*s == '+')
+	{
+		s++;
+	}
+	while (IsNumber(*s,base))
+	{
+		int value = ToNumber(*s++);
+		assert (value < base && value >= 0);
+		result *= base;
+		result += value;
+	}
+	if (scan_end != 0L) *scan_end = s;
+	if (result < 0)
+	{
+		//overflow
+		// we need 2147483648 (2^31) to be -2147483648 in order for -2147483648 to work
+		//result = INT_MAX;
+	}
+	result *= sign;
+	return result;
+}
 
 void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 {
