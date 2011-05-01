@@ -190,6 +190,7 @@ private:
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	void AddBCC(C4AulBCCType eType, intptr_t X = 0);
 	void RemoveLastBCC();
+	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
 
 	C4AulBCC MakeSetter(bool fLeaveValue = false); // Prepares to generate a setter for the last value that was generated
 
@@ -1143,6 +1144,48 @@ void C4AulParseState::RemoveLastBCC()
 	a->RemoveLastBCC();
 }
 
+C4V_Type C4AulParseState::GetLastRetType(C4V_Type to)
+{
+	C4V_Type from;
+	switch ((a->CPos-1)->bccType)
+	{
+	case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
+	case AB_STRING: from = C4V_String; break;
+	case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
+	case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
+	case AB_BOOL: from = C4V_Bool; break;
+	case AB_FUNC:
+		from = (a->CPos-1)->Par.f->GetRetType(); break;
+	case AB_CALL: case AB_CALLFS:
+	{
+		C4String * pName = (a->CPos-1)->Par.s;
+		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName->GetCStr());
+		bool allwarn = true;
+		from = C4V_Any;
+		while (pFunc2 && allwarn)
+		{
+			from = pFunc2->GetRetType();
+			if (!C4Value::WarnAboutConversion(from, to))
+			{
+				allwarn = false;
+				from = C4V_Any;
+			}
+			pFunc2 = a->Engine->GetNextSNFunc(pFunc2);
+		}
+		break;
+	}
+	case AB_Inc: case AB_Dec: case AB_BitNot: case AB_Neg:
+	case AB_Pow: case AB_Div: case AB_Mul: case AB_Mod: case AB_Sub: case AB_Sum:
+	case AB_LeftShift: case AB_RightShift: case AB_BitAnd: case AB_BitXOr: case AB_BitOr:
+		from = C4V_Int; break;
+	case AB_Not: case AB_LessThan: case AB_LessThanEqual: case AB_GreaterThan: case AB_GreaterThanEqual: case AB_Equal: case AB_NotEqual:
+		from = C4V_Bool; break;
+	default:
+		from = C4V_Any; break;
+	}
+	return from;
+}
+
 C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 {
 	if(Type != PARSER) { C4AulBCC Dummy; Dummy.bccType = AB_ERR; return Dummy; }
@@ -1914,37 +1957,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				C4AulFunc * pFunc2 = pFunc;
 				while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
 					if (pFunc2->GetParType()[size] != to) to = C4V_Any;
-				C4V_Type from;
-				switch ((a->CPos-1)->bccType)
-				{
-				case AB_INT: from = Config.Developer.ExtraWarnings || (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
-				case AB_STRING: from = C4V_String; break;
-				case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
-				case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
-				case AB_BOOL: from = C4V_Bool; break;
-				case AB_FUNC:
-					from = (a->CPos-1)->Par.f->GetRetType(); break;
-				case AB_CALL: case AB_CALLFS:
-				{
-					C4String * pName = (a->CPos-1)->Par.s;
-					C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName->GetCStr());
-					bool allwarn = true;
-					from = C4V_Any;
-					while (pFunc2 && allwarn)
-					{
-						from = pFunc2->GetRetType();
-						if (!C4Value::WarnAboutConversion(from, to))
-						{
-							allwarn = false;
-							from = C4V_Any;
-						}
-						pFunc2 = a->Engine->GetNextSNFunc(pFunc2);
-					}
-					break;
-				}
-				default:
-					from = C4V_Any; break;
-				}
+				C4V_Type from = GetLastRetType(to);
 				if (C4Value::WarnAboutConversion(from, to))
 				{
 					Warn(FormatString("parameter %d of call to %s is %s instead of %s", size, sWarn, GetC4VName(from), GetC4VName(to)).getData(), NULL);
@@ -2483,6 +2496,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		Shift();
 		// generate code for the following expression
 		Parse_Expression(C4ScriptOpMap[OpID].Priority);
+		C4V_Type to = C4ScriptOpMap[OpID].Type1;
+		C4V_Type from = GetLastRetType(to);
+		if (C4Value::WarnAboutConversion(from, to))
+		{
+			Warn(FormatString("operator \"%s\" gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+		}
 		// ignore?
 		if (SEqual(C4ScriptOpMap[OpID].Identifier, "+"))
 			break;
@@ -2609,9 +2628,21 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			}
 			else
 			{
+				C4V_Type to = C4ScriptOpMap[OpID].Type1;
+				C4V_Type from = GetLastRetType(to);
+				if (C4Value::WarnAboutConversion(from, to))
+				{
+					Warn(FormatString("operator \"%s\" left side gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+				}
 				// expect second parameter for operator
 				if (!C4ScriptOpMap[OpID].NoSecondStatement)
 					Parse_Expression(C4ScriptOpMap[OpID].Priority);
+				to = C4ScriptOpMap[OpID].Type2;
+				from = GetLastRetType(to);
+				if (C4Value::WarnAboutConversion(from, to))
+				{
+					Warn(FormatString("operator \"%s\" right side gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+				}
 				// write byte code
 				AddBCC(C4ScriptOpMap[OpID].Code, OpID);
 				// write setter and mofidier
