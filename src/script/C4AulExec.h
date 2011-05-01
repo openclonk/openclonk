@@ -150,28 +150,28 @@ private:
 		       : pCurVal - Values + 1;
 	}
 
-	void CheckOpPars(int iOpID)
+	ALWAYS_INLINE void CheckOpPars(C4V_Type Type1, C4V_Type Type2, const char * opname)
 	{
 		// Get parameters
 		C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 
 		// Typecheck parameters
-		if (!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
+		if (!pPar1->ConvertTo(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" left side got %s, but expected %s",
-			                                      C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
-		if (!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
+			                                      opname, pPar1->GetTypeInfo(), GetC4VName(Type1)).getData());
+		if (!pPar2->ConvertTo(Type2))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" right side got %s, but expected %s",
-			                                      C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
+			                                      opname, pPar2->GetTypeInfo(), GetC4VName(Type2)).getData());
 	}
-	void CheckOpPar(int iOpID)
+	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
-		if (!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
+		if (!pCurVal->ConvertTo(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\": got %s, but expected %s",
-			                                      C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
+			                                      opname, pCurVal->GetTypeInfo(), GetC4VName(Type1)).getData());
 	}
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)

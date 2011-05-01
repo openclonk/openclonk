@@ -259,29 +259,28 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				
 			// prefix
 			case AB_BitNot: // ~
-				CheckOpPar(pCPos->Par.i);
+				CheckOpPar(C4V_Int, "~");
 				pCurVal->SetInt(~pCurVal->_getInt());
 				break;
 			case AB_Not:  // !
-				CheckOpPar(pCPos->Par.i);
-				pCurVal->SetBool(!pCurVal->_getBool());
+				pCurVal->SetBool(!pCurVal->getBool());
 				break;
 			case AB_Neg:  // -
-				CheckOpPar(pCPos->Par.i);
+				CheckOpPar(C4V_Int, "-");
 				pCurVal->SetInt(-pCurVal->_getInt());
 				break;
 			case AB_Inc: // ++
-				CheckOpPar(pCPos->Par.i);
-				(*pCurVal)++;
+				CheckOpPar(C4V_Int, "++");
+				++(*pCurVal);
 				break;
 			case AB_Dec: // --
-				CheckOpPar(pCPos->Par.i);
-				(*pCurVal)--;
+				CheckOpPar(C4V_Int, "--");
+				--(*pCurVal);
 				break;
-				// postfix
+			// postfix
 			case AB_Pow:  // **
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "**");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(Pow(pPar1->_getInt(), pPar2->_getInt()));
 				PopValue();
@@ -289,7 +288,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Div:  // /
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "/");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (!pPar2->_getInt())
 					throw new C4AulExecError(pCurCtx->Obj, "division by zero");
@@ -299,7 +298,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Mul:  // *
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "*");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() * pPar2->_getInt());
 				PopValue();
@@ -307,7 +306,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Mod:  // %
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "%");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (pPar2->_getInt())
 					pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
@@ -318,7 +317,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Sub:  // -
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "-");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() - pPar2->_getInt());
 				PopValue();
@@ -326,7 +325,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Sum:  // +
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "+");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() + pPar2->_getInt());
 				PopValue();
@@ -334,7 +333,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_LeftShift:  // <<
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "<<");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() << pPar2->_getInt());
 				PopValue();
@@ -342,7 +341,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_RightShift: // >>
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, ">>");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() >> pPar2->_getInt());
 				PopValue();
@@ -350,7 +349,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_LessThan: // <
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "<");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(pPar1->_getInt() < pPar2->_getInt());
 				PopValue();
@@ -358,7 +357,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_LessThanEqual:  // <=
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "<=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(pPar1->_getInt() <= pPar2->_getInt());
 				PopValue();
@@ -366,7 +365,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_GreaterThan:  // >
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, ">");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(pPar1->_getInt() > pPar2->_getInt());
 				PopValue();
@@ -374,7 +373,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_GreaterThanEqual: // >=
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, ">=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
 				PopValue();
@@ -382,7 +381,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_Equal:  // ==
 			{
-				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(*pPar1 == *pPar2);
 				PopValue();
@@ -390,7 +388,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_NotEqual: // !=
 			{
-				CheckOpPars(pCPos->Par.i);
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(*pPar1 != *pPar2);
 				PopValue();
@@ -398,7 +395,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_BitAnd: // &
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "&");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() & pPar2->_getInt());
 				PopValue();
@@ -406,7 +403,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_BitXOr: // ^
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "^");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() ^ pPar2->_getInt());
 				PopValue();
@@ -414,12 +411,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_BitOr:  // |
 			{
-				CheckOpPars(pCPos->Par.i);
+				CheckOpPars(C4V_Int, C4V_Int, "|");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetInt(pPar1->_getInt() | pPar2->_getInt());
 				PopValue();
 				break;
 			}
+
 			case AB_NEW_ARRAY:
 			{
 				// Create array

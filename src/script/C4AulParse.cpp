@@ -404,8 +404,21 @@ bool C4AulParseState::AdvanceSpaces()
 }
 
 //=========================== C4Script Operator Map ===================================
+struct C4ScriptOpDef
+{
+	unsigned short Priority;
+	const char* Identifier;
+	C4AulBCCType Code;
+	C4AulBCCType ResultModifier; // code to apply to result after it was calculated
+	bool Postfix;
+	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
+	bool NoSecondStatement; // no second statement expected (++/-- postfix)
+	C4V_Type RetType; // type returned. ignored by C4V
+	C4V_Type Type1;
+	C4V_Type Type2;
+};
 
-C4ScriptOpDef C4ScriptOpMap[] =
+static C4ScriptOpDef C4ScriptOpMap[] =
 {
 	// priority                              postfix
 	// |  identifier                         |  changer

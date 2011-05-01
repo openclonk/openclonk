@@ -169,25 +169,6 @@ enum C4AulBCCType
 	AB_EOF      // end of file
 };
 
-
-// ** a definition of an operator
-// there are two classes of operators, the postfix-operators (+,-,&,...) and the
-// prefix-operators (mainly !,~,...).
-struct C4ScriptOpDef
-{
-	unsigned short Priority;
-	const char* Identifier;
-	C4AulBCCType Code;
-	C4AulBCCType ResultModifier; // code to apply to result after it was calculated
-	bool Postfix;
-	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
-	bool NoSecondStatement; // no second statement expected (++/-- postfix)
-	C4V_Type RetType; // type returned. ignored by C4V
-	C4V_Type Type1;
-	C4V_Type Type2;
-};
-extern C4ScriptOpDef C4ScriptOpMap[];
-
 // byte code chunk
 struct C4AulBCC
 {
