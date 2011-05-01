@@ -1614,7 +1614,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Name("Game");
 		pComp->Value(mkNamingAdapt(Time,                  "Time",                  0));
 		pComp->Value(mkNamingAdapt(FrameCounter,          "Frame",                 0));
-//    pComp->Value(mkNamingAdapt(Control.ControlRate,   "ControlRate",           0));
 		pComp->Value(mkNamingAdapt(Control.ControlTick,   "ControlTick",           0));
 		pComp->Value(mkNamingAdapt(Control.SyncRate,      "SyncRate",              C4SyncCheckRate));
 		pComp->Value(mkNamingAdapt(iTick2,                "Tick2",                 0));
@@ -1678,15 +1677,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	pComp->NameEnd();
 }
 
-void SetClientPrefix(char *szFilename, const char *szClient);
-
-bool C4Game::Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact, C4ValueNumbers * numbers)
-{
-	// Decompile (without players for scenario sections)
-	rBuf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers)));
-	return true;
-}
-
 bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers * numbers)
 {
 	::Objects.Clear(!fLoadSection);
@@ -1713,22 +1703,9 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbe
 
 bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers * numbers)
 {
-	// Decompile
 	StdStrBuf Buf;
-	if (!Decompile(Buf,fSaveSection,fSaveExact, numbers))
-		return false;
-
-	// Initial?
-	if (fInitial && GameText.GetData())
-	{
-		// HACK: Reinsert player sections, if any.
-		const char *pPlayerSections = strstr(GameText.GetData(), "[Player");
-		if (pPlayerSections)
-		{
-			Buf.Append("\r\n\r\n");
-			Buf.Append(pPlayerSections);
-		}
-	}
+	// Decompile (without players for scenario sections)
+	Buf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers)));
 
 	// Empty? All default; just remove from group then
 	if (!Buf.getLength())

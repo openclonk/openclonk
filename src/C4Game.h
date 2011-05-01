@@ -268,8 +268,6 @@ protected:
 	bool InitMaterialTexture();
 	bool GameOverCheck();
 	bool PlaceInEarth(C4ID id);
-	bool Compile(const char *szSource, C4ValueNumbers *);
-	bool Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact, C4ValueNumbers *);
 public:
 	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
 	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers *);

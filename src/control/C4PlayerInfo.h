@@ -382,20 +382,9 @@ public:
 	void RemoveInfo(C4ClientPlayerInfos **ppRemoveInfo) // remove client info given by direct ptr into list
 	{ *ppRemoveInfo = ppClients[--iClientCount]; /* maybe redundant self-assignment; no vector shrink */ }
 
-private:
-#pragma pack(1)
-	enum { C4PlrInfoFileVer = 2 };
-	struct FileHeader
-	{
-		uint32_t iVersion; // ==C4PlrInfoFileVer
-		int32_t iCount;            // number of player info packets
-		int32_t iIDCounter;        // counter for unique IDs
-	};
-#pragma pack()
 public:
 	bool Load(C4Group &hGroup, const char *szFromFile, class C4LangStringTable *pLang=NULL); // clear self and load from group file
 	bool Save(C4Group &hGroup, const char *szToFile); // save to group file
-	bool LoadFromGameText(const char *pSource); // load from Game.txt (old-style savegames)
 
 	// external ID counter manipulation used by C4Game
 	void SetIDCounter(int32_t idNewCounter) { iLastPlayerID = idNewCounter; }

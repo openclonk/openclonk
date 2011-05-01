@@ -387,17 +387,6 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 		// in any mode, the final player restoration will be done in InitPlayers()
 		// dropping any players that could not be restored
 	}
-	else if (pScenario->Head.SaveGame)
-	{
-		// maybe there should be a player info file? (old-style savegame)
-		if (szGameText)
-		{
-			// then recreate the player infos to be restored from game text
-			RestorePlayerInfos.LoadFromGameText(szGameText);
-			// transfer counter
-			PlayerInfos.SetIDCounter(RestorePlayerInfos.GetIDCounter());
-		}
-	}
 
 	// Load teams
 	if (!Teams.Load(hGroup, pScenario, pLang))
