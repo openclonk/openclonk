@@ -242,7 +242,6 @@ public:
 	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 	virtual void UnLink() { OverloadedBy = NULL; }
 
-	C4AulFunc *GetLocalSFunc(const char *szIdtf); // find script function in own scope
 protected:
 	void DestroyLinked(); // destroys linked functions
 

@@ -124,18 +124,6 @@ void C4AulFunc::DestroyLinked()
 		delete LinkedTo;
 }
 
-C4AulFunc *C4AulFunc::GetLocalSFunc(const char *szIdtf)
-{
-	// owner is engine, i.e. this is a global func?
-	if (Owner == Owner->Engine && LinkedTo)
-	{
-		// then search linked scope first
-		if (C4AulFunc *pFn = LinkedTo->Owner->GetSFunc(szIdtf)) return pFn;
-	}
-	// search local owner list
-	return Owner->GetSFunc(szIdtf);
-}
-
 StdStrBuf C4AulScriptFunc::GetFullName()
 {
 	// "lost" function?
