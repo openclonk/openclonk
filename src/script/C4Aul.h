@@ -103,8 +103,9 @@ enum C4AulBCCType
 	AB_PROP_SET,
 	AB_ARRAY_SLICE, // array slicing
 	AB_ARRAY_SLICE_SET,
-	AB_VARN,    // a named var
-	AB_VARN_SET,
+	AB_DUP,     // duplicate value from stack
+	AB_STACK_SET, // copy top of stack to stack
+	AB_POP_TO,   // pop top of stack to stack
 	AB_PARN,    // a named parameter
 	AB_PARN_SET,
 	AB_LOCALN,  // a property of this
@@ -153,9 +154,7 @@ enum C4AulBCCType
 	AB_CARRAY,  // constant: array
 	AB_NIL,     // constant: nil
 	AB_NEW_ARRAY,   // semi-constant: array
-	AB_DUP,     // duplicate value from stack
 	AB_NEW_PROPLIST, // create a new proplist
-	AB_IVARN,   // initialization of named var
 	AB_JUMP,    // jump
 	AB_JUMPAND, // jump if zero, else pop the stack
 	AB_JUMPOR,  // jump if not zero, else pop the stack

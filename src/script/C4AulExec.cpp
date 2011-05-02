@@ -188,7 +188,14 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_DUP:
-				PushValue(pCurVal[-pCPos->Par.i+1]);
+				PushValue(pCurVal[pCPos->Par.i]);
+				break;
+			case AB_STACK_SET:
+				pCurVal[pCPos->Par.i] = pCurVal[0];
+				break;
+			case AB_POP_TO:
+				pCurVal[pCPos->Par.i] = pCurVal[0];
+				PopValue();
 				break;
 
 			case AB_EOF: case AB_EOFN:
@@ -210,13 +217,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 			case AB_VARN_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Vars[pCPos->Par.i]);
-				break;
-
-			case AB_VARN:
-				PushValue(pCurCtx->Vars[pCPos->Par.i]);
-				break;
-			case AB_VARN_SET:
-				pCurCtx->Vars[pCPos->Par.i] = pCurVal[0];
 				break;
 
 			case AB_LOCALN:
@@ -681,11 +681,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				fJump = true;
 				break;
 			}
-
-			case AB_IVARN:
-				pCurCtx->Vars[pCPos->Par.i] = pCurVal[0];
-				PopValue();
-				break;
 
 			case AB_CALL:
 			case AB_CALLFS:

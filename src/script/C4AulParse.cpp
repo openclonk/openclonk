@@ -751,8 +751,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_PROP_SET: return "PROP_SET";
 	case AB_ARRAY_SLICE: return "ARRAY_SLICE";
 	case AB_ARRAY_SLICE_SET: return "ARRAY_SLICE_SET";
-	case AB_VARN: return "VARN";    // a named var
-	case AB_VARN_SET: return "VARN_SET";
+	case AB_STACK_SET: return "STACK_SET";
 	case AB_PARN: return "PARN";    // a named parameter
 	case AB_PARN_SET: return "PARN_SET";
 	case AB_LOCALN: return "LOCALN";  // a named local
@@ -803,7 +802,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_NEW_ARRAY: return "NEW_ARRAY";    // semi-constant: array
 	case AB_DUP: return "DUP";    // duplicate value from stack
 	case AB_NEW_PROPLIST: return "NEW_PROPLIST";    // create a new proplist
-	case AB_IVARN: return "IVARN";    // initialization of named var
+	case AB_POP_TO: return "POP_TO";    // initialization of named var
 	case AB_JUMP: return "JUMP";    // jump
 	case AB_JUMPAND: return "JUMPAND";
 	case AB_JUMPOR: return "JUMPOR";
@@ -931,7 +930,6 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_CPROPLIST:
 	case AB_CARRAY:
 	case AB_NIL:
-	case AB_VARN:
 	case AB_PARN:
 	case AB_PARN_CONTEXT:
 	case AB_VARN_CONTEXT:
@@ -961,7 +959,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_ARRAYA:
 	case AB_CONDN:
 	case AB_COND:
-	case AB_IVARN:
+	case AB_POP_TO:
 	case AB_RETURN:
 		// JUMPAND/JUMPOR are special: They either jump over instructions adding one to the stack
 		// or decrement the stack. Thus, for stack counting purposes, they decrement.
@@ -976,7 +974,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_CALLFS:
 		return -C4AUL_MAX_Par;
 
-	case AB_VARN_SET:
+	case AB_STACK_SET:
 	case AB_PARN_SET:
 	case AB_LOCALN_SET:
 	case AB_PROP:
@@ -1064,10 +1062,10 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			}
 		}
 
-		// Join VARN_SET + STACK -1 to IVARN (equivalent)
-		if(eType == AB_STACK && X == -1 && pCPos1->bccType == AB_VARN_SET)
+		// Join STACK_SET + STACK -1 to POP_TO (equivalent)
+		if(eType == AB_STACK && X == -1 && pCPos1->bccType == AB_STACK_SET)
 		{
-			pCPos1->bccType = AB_IVARN;
+			pCPos1->bccType = AB_POP_TO;
 			return;
 		}
 
@@ -1156,7 +1154,11 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	case AB_ARRAYA: Setter.bccType = AB_ARRAYA_SET; break;
 	case AB_ARRAY_SLICE: Setter.bccType = AB_ARRAY_SLICE_SET; break;
 	case AB_PARN: Setter.bccType = AB_PARN_SET; break;
-	case AB_VARN: Setter.bccType = AB_VARN_SET; break;
+	case AB_DUP:
+		Setter.bccType = AB_STACK_SET;
+		// the setter additionally has the new value on the stack
+		--Setter.Par.i;
+		break;
 	case AB_LOCALN:
 		Setter.bccType = AB_LOCALN_SET;
 		Setter.Par.s->IncRef(); // so string isn't dropped by RemoveLastBCC, see also C4AulScript::AddBCC
@@ -1178,7 +1180,7 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 		// (all push one value on the stack as result, so we have -(N-1) parameters)
 		int iParCount = -GetStackValue(Value.bccType, Value.Par.X) + 1;
 		for(int i = 0; i < iParCount; i++)
-			AddBCC(AB_DUP, iParCount);
+			AddBCC(AB_DUP, 1 - iParCount);
 		// Finally re-add original BCC
 		AddBCC(Value.bccType, Value.Par.X);
 	}
@@ -2265,7 +2267,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		else if (Fn->VarNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_VARN, Fn->VarNamed.GetItemNr(Idtf));
+			AddBCC(AB_DUP, 1 + Fn->VarNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize));
 			Shift();
 		}
 		else if (ContextToExecIn && (ndx = ContextToExecIn->Func->ParNamed.GetItemNr(Idtf)) != -1)
@@ -2719,7 +2721,7 @@ void C4AulParseState::Parse_Var()
 			// insert initialization in byte code
 			Shift();
 			Parse_Expression();
-			AddBCC(AB_IVARN, iVarID);
+			AddBCC(AB_POP_TO, 1 + iVarID - (iStack + Fn->VarNamed.iSize));
 		}
 		switch (TokenType)
 		{
