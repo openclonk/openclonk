@@ -471,13 +471,6 @@ static C4ScriptOpDef C4ScriptOpMap[] =
 	{ 0, NULL,  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Any,    C4V_Any}
 };
 
-static C4V_Type GetOperatorRetType(C4AulBCCType Code)
-{
-	for (int i = 0; C4ScriptOpMap[i].Identifier; i++)
-		if (C4ScriptOpMap[i].Code == Code)
-			return C4ScriptOpMap[i].RetType;
-}
-
 int C4AulParseState::GetOperator(const char* pScript)
 {
 	// return value:
@@ -1861,26 +1854,22 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 	// so it's a regular function; force "("
 	Match(ATT_BOPEN);
 	bool fDone = false;
-	do
-		switch (TokenType)
-		{
+	do switch (TokenType)
+	{
 		case ATT_BCLOSE:
 		{
 			Shift();
-			// () -> size 0, (*,) -> size 2, (*,*,) -> size 3
 			if (size > 0)
 			{
 				if (sWarn && Config.Developer.ExtraWarnings)
 					Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
-				AddBCC(AB_NIL);
-				++size;
 			}
 			fDone = true;
 			break;
 		}
 		case ATT_COMMA:
 		{
-			// got no parameter before a ","? then push a 0-constant
+			// got no parameter before a ","
 			if (sWarn && Config.Developer.ExtraWarnings)
 				Warn(FormatString("parameter %d of call to %s is empty", size, sWarn).getData(), NULL);
 			AddBCC(AB_NIL);
@@ -1936,7 +1925,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			else UnexpectedToken("',' or ')'");
 			break;
 		}
-		}
+	}
 	while (!fDone);
 	// too many parameters?
 	if (sWarn && size > iMaxCnt && Type == PARSER)
@@ -2672,7 +2661,8 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF) throw new C4AulParseError(this, "expecting func name after '->'");
 			// search a function with the given name
-			if (!(pFunc = a->Engine->GetFirstFunc(Idtf)))
+			pFunc = a->Engine->GetFirstFunc(Idtf);
+			if (!pFunc)
 			{
 				// not failsafe?
 				if (eCallType != AB_CALLFS && Type == PARSER)
@@ -2759,7 +2749,6 @@ void C4AulParseState::Parse_Local()
 		{
 			if (!a->Def)
 				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
-			// Parse numbers beginning with + or - as a number, not operator+number
 			Shift();
 			// register as constant
 			if (Type == PREPARSER)
