@@ -6,7 +6,7 @@
   <func>
     <title>SetPlrExtraData</title>
     <category>Player</category>
-    <version>4.9.1.0 GWE</version>
+    <version>4.9.1.0 GWE<extversion>5.2 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -28,7 +28,7 @@
       </params>
     </syntax>
     <desc>With this function additional data can be saved in player's file. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
-    <remark>No objects or strings may be saved.</remark>
+    <remark>No objects or arrays may be saved.</remark>
     <remark>Because all scenarios use the same storage, the name for the data should be prefixed with the scenario name or your developer id.</remark>
     <examples>
       <example>

@@ -1605,10 +1605,11 @@ static C4Value FnSetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Val
 	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
 	// valid player? (for great nullpointer prevention)
 	if (!ValidPlr(iPlayer)) return C4Value();
-	// do not allow data type C4V_String or C4V_C4Object
+	// do not allow data type C4V_Array or C4V_C4Object
 	if (Data->GetType() != C4V_Any &&
 	    Data->GetType() != C4V_Int &&
-	    Data->GetType() != C4V_Bool) return C4VNull;
+	    Data->GetType() != C4V_Bool &&
+	    Data->GetType() != C4V_String) return C4VNull;
 	// get pointer on player...
 	C4Player* pPlayer = ::Players.Get(iPlayer);
 	// no name list created yet?
