@@ -752,8 +752,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_ARRAY_SLICE: return "ARRAY_SLICE";
 	case AB_ARRAY_SLICE_SET: return "ARRAY_SLICE_SET";
 	case AB_STACK_SET: return "STACK_SET";
-	case AB_PARN: return "PARN";    // a named parameter
-	case AB_PARN_SET: return "PARN_SET";
 	case AB_LOCALN: return "LOCALN";  // a named local
 	case AB_LOCALN_SET: return "LOCALN_SET";
 	case AB_GLOBALN: return "GLOBALN";  // a named global
@@ -930,7 +928,6 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_CPROPLIST:
 	case AB_CARRAY:
 	case AB_NIL:
-	case AB_PARN:
 	case AB_PARN_CONTEXT:
 	case AB_VARN_CONTEXT:
 	case AB_LOCALN:
@@ -975,7 +972,6 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 		return -C4AUL_MAX_Par;
 
 	case AB_STACK_SET:
-	case AB_PARN_SET:
 	case AB_LOCALN_SET:
 	case AB_PROP:
 	case AB_GLOBALN_SET:
@@ -1153,7 +1149,6 @@ C4AulBCC C4AulParseState::MakeSetter(bool fLeaveValue)
 	{
 	case AB_ARRAYA: Setter.bccType = AB_ARRAYA_SET; break;
 	case AB_ARRAY_SLICE: Setter.bccType = AB_ARRAY_SLICE_SET; break;
-	case AB_PARN: Setter.bccType = AB_PARN_SET; break;
 	case AB_DUP:
 		Setter.bccType = AB_STACK_SET;
 		// the setter additionally has the new value on the stack
@@ -1898,7 +1893,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			int i = Fn->ParNamed.iSize;
 			while (size < iMaxCnt && i < C4AUL_MAX_Par)
 			{
-				AddBCC(AB_PARN, i);
+				AddBCC(AB_DUP, 1 + i - (iStack + Fn->VarNamed.iSize + C4AUL_MAX_Par));
 				++i;
 				++size;
 			}
@@ -2260,7 +2255,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		if (Fn->ParNamed.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_PARN, Fn->ParNamed.GetItemNr(Idtf));
+			AddBCC(AB_DUP, 1 + Fn->ParNamed.GetItemNr(Idtf) - (iStack + Fn->VarNamed.iSize + C4AUL_MAX_Par));
 			Shift();
 		}
 		// check for variable (var)

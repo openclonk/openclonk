@@ -204,13 +204,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_ERR:
 				throw new C4AulExecError(pCurCtx->Obj, "syntax error: see above for details");
 
-			case AB_PARN:
-				PushValue(pCurCtx->Pars[pCPos->Par.i]);
-				break;
-			case AB_PARN_SET:
-				pCurCtx->Pars[pCPos->Par.i] = pCurVal[0];
-				break;
-
 			case AB_PARN_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
 				break;

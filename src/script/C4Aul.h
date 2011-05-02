@@ -106,8 +106,6 @@ enum C4AulBCCType
 	AB_DUP,     // duplicate value from stack
 	AB_STACK_SET, // copy top of stack to stack
 	AB_POP_TO,   // pop top of stack to stack
-	AB_PARN,    // a named parameter
-	AB_PARN_SET,
 	AB_LOCALN,  // a property of this
 	AB_LOCALN_SET,
 	AB_GLOBALN, // a named global
