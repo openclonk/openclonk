@@ -502,7 +502,8 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(LocalOnly,               "LocalOnly",             false));
 	pComp->Value(mkNamingAdapt(AllowUserChange,         "AllowUserChange",       false));
-	for (int32_t i = 0; i < C4S_MaxDefinitions; i++)
+	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Definition[0]), "Definition1", "Objects.ocd"));
+	for (int32_t i = 1; i < C4S_MaxDefinitions; i++)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Definition[i]), FormatString("Definition%i", i+1).getData(), ""));
 	pComp->Value(mkNamingAdapt(SkipDefs,                "SkipDefs",              C4IDList()));
 }
