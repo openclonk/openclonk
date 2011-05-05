@@ -86,9 +86,8 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 }
 
 // Humanreadable debug output
-StdStrBuf C4Value::GetDataString() const
+StdStrBuf C4Value::GetDataString(int depth) const
 {
-
 	// ouput by type info
 	switch (GetType())
 	{
@@ -99,29 +98,35 @@ StdStrBuf C4Value::GetDataString() const
 	case C4V_C4Object:
 	case C4V_PropList:
 	{
-		// obj exists?
-		if (!C4PropListNumbered::CheckPropList(Data.PropList))
-			return FormatString("%ld", static_cast<long>(Data.Int));
-		else if (Data.PropList && Data.PropList->GetPropListNumbered())
-			if (Data.PropList->Status == C4OS_NORMAL)
-				return FormatString("%s #%d", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
+		StdStrBuf DataString;
+		DataString = "{";
+		if (Data.PropList->GetObject())
+		{
+			if (Data.Obj->Status == C4OS_NORMAL)
+				DataString.AppendFormat("#%d, ", Data.Obj->Number);
 			else
-				return FormatString("{%s #%d}", Data.PropList->GetName(), Data.PropList->GetPropListNumbered()->Number);
-		else if (Data.PropList)
-			return FormatString("{}");
-		else
-			return StdStrBuf("0"); // (impossible)
+				DataString.AppendFormat("(#%d), ", Data.Obj->Number);
+		}
+		else if (Data.PropList->GetDef())
+			DataString.AppendFormat("%s, ", Data.PropList->GetDef()->id.ToString());
+		Data.PropList->AppendDataString(&DataString, ", ", depth);
+		DataString.AppendChar('}');
+		return DataString;
 	}
 	case C4V_String:
 		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
 	{
+		if (depth > 2 && Data.Array->GetSize())
+		{
+			return StdStrBuf("[...]");
+		}
 		StdStrBuf DataString;
 		DataString = "[";
 		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
 		{
 			if (i) DataString.Append(", ");
-			DataString.Append(static_cast<const StdStrBuf &>(Data.Array->GetItem(i).GetDataString()));
+			DataString.Append(std::move(Data.Array->GetItem(i).GetDataString(depth + 1)));
 		}
 		DataString.AppendChar(']');
 		return DataString;

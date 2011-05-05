@@ -295,15 +295,20 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Value, numbers));
 }
 
-void C4PropList::AppendDataString(StdStrBuf * out, const char * delim)
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth)
 {
 	StdStrBuf & DataString = *out;
+	if (depth > 2 && Properties.GetSize())
+	{
+		DataString.Append("...");
+		return;
+	}
 	const C4Property * p = Properties.First();
 	while (p)
 	{
 		DataString.Append(p->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append(p->Value.GetDataString());
+		DataString.Append(p->Value.GetDataString(depth + 1));
 		p = Properties.Next(p);
 		if (p) DataString.Append(delim);
 	}
