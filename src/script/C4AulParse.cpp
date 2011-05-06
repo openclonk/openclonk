@@ -960,13 +960,22 @@ int C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 	// Join checks only if it's not a jump target
 	if (!fJump && a->GetLastCode())
 	{
-		// Join together stack operations
 		C4AulBCC *pCPos1 = a->GetLastCode();
+
+		// Skip noop stack operation
+		if(eType == AB_STACK && X == 0)
+		{
+			return a->GetCodePos() - 1;
+		}
+
+		// Join together stack operations
 		if(eType == AB_STACK && pCPos1->bccType == AB_STACK &&
 			(X <= 0 || pCPos1->Par.i >= 0))
 		{
 			pCPos1->Par.i += X;
-			// Empty? Remove it.
+			// Empty? Remove it. This relies on the parser not issuing
+			// multiple negative stack operations consecutively, as
+			// that could result in removing a jump target bytecode.
 			if (!pCPos1->Par.i)
 				a->RemoveLastBCC();
 			return a->GetCodePos() - 1;
