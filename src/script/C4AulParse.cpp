@@ -3005,25 +3005,42 @@ bool C4AulScript::Parse()
 			if (!Fn)
 				continue;
 			fprintf(stderr, "%s:\n", Fn->GetName());
+			std::map<C4AulBCC *, int> labels;
+			int labeln = 0;
+			for (C4AulBCC *pBCC = Fn->GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
+			{
+				switch (pBCC->bccType)
+				{
+				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_CONDN: case AB_COND:
+					labels[pBCC + pBCC->Par.i] = ++labeln; break;
+				default: break;
+				}
+			}
 			for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
 			{
 				C4AulBCCType eType = pBCC->bccType;
+				if (labels.find(pBCC) != labels.end())
+					fprintf(stderr, "%d:\n", labels[pBCC]);
 				fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
 				switch (eType)
 				{
 				case AB_FUNC:
 					fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
-				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
+				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
 					fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
 				case AB_STRING:
 					fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
 				case AB_DEBUG: case AB_NIL: case AB_RETURN:
 				case AB_PAR:
-				case AB_ARRAYA: case AB_ARRAY_SLICE: case AB_ERR:
-				case AB_EOFN: case AB_EOF:
+				case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
+				case AB_ERR: case AB_EOFN: case AB_EOF:
 					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+				case AB_CARRAY: case AB_CPROPLIST:
+					fprintf(stderr, "\t%p\n", reinterpret_cast<void *>(pBCC->Par.X)); break;
+				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_CONDN: case AB_COND:
+					fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
 				default:
-					fprintf(stderr, "\t%ld\n", static_cast<long>(pBCC->Par.X)); break;
+					fprintf(stderr, "\t%d\n", pBCC->Par.i); break;
 				}
 				if (eType == AB_EOFN) break;
 			}
