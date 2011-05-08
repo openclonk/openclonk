@@ -734,7 +734,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
-				assert(pCurCtx->Func->GetCode() < pCPos);
+				assert(pCurCtx->Func->GetCode() <= pCPos);
 
 				// adjust parameter count
 				if (pCurVal + 1 - pPars > pFunc->GetParCount())
@@ -772,7 +772,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 		// Show
 		if(!e->shown) e->show();
 		// Save current position
-		assert(pCurCtx->Func->GetCode() < pCPos);
+		assert(pCurCtx->Func->GetCode() <= pCPos);
 		pCurCtx->CPos = pCPos;
 		// Unwind stack
 		C4Value *pUntil = NULL;
