@@ -670,6 +670,7 @@ void C4Network2::Clear()
 	delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
 	iLastOwnVoting = 0;
+	Votes.Clear();
 	// don't clear fPasswordNeeded here, it's needed by InitClient
 }
 
@@ -2526,7 +2527,7 @@ void C4Network2::Vote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 		if (time(NULL) < (time_t) (iLastOwnVoting + C4NetMinVotingInterval))
 		{
 			Log(LoadResStr("IDS_TEXT_YOUCANONLYSTARTONEVOTINGE"));
-			if (eType == VT_Kick || eType == VT_Cancel)
+			if ((eType == VT_Kick && iData == Game.Clients.getLocalID()) || eType == VT_Cancel)
 				OpenSurrenderDialog(eType, iData);
 			return;
 		}
@@ -2599,7 +2600,8 @@ void C4Network2::EndVote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 			pVoteDialog = NULL;
 		}
 	// Did we try to kick ourself? Ask if we'd like to surrender
-	if (!fApprove && (eType == VT_Kick || eType == VT_Cancel) && iOrigin == Game.Clients.getLocalID())
+	bool fCancelVote = (eType == VT_Kick && iData == Game.Clients.getLocalID()) || eType == VT_Cancel;
+	if (!fApprove && fCancelVote && iOrigin == Game.Clients.getLocalID())
 		OpenSurrenderDialog(eType, iData);
 	// Check if the dialog should be opened
 	OpenVoteDialog();
