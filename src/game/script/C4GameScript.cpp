@@ -1606,7 +1606,7 @@ static C4Value FnSetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Val
 	// valid player? (for great nullpointer prevention)
 	if (!ValidPlr(iPlayer)) return C4Value();
 	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data->GetType() != C4V_Any &&
+	if (Data->GetType() != C4V_Nil &&
 	    Data->GetType() != C4V_Int &&
 	    Data->GetType() != C4V_Bool &&
 	    Data->GetType() != C4V_String) return C4VNull;
@@ -2711,7 +2711,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
 	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
 
-	{ NULL, C4V_Any, 0}
+	{ NULL, C4V_Nil, 0}
 };
 
 #define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
@@ -2753,6 +2753,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
 	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
 
-	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
+	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 
 };

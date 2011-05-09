@@ -249,7 +249,7 @@ static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, 
 	// valid crew with info? (for great nullpointer prevention)
 	if (!cthr->Obj->Info) return C4Value();
 	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data->GetType() != C4V_Any &&
+	if (Data->GetType() != C4V_Nil &&
 	    Data->GetType() != C4V_Int &&
 	    Data->GetType() != C4V_Bool &&
 	    Data->GetType() != C4V_String) return C4VNull;
@@ -933,7 +933,7 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 		SCopy(Parameter.getStr()->GetCStr(), parameter + 1, sizeof(command)-3);
 		SAppendChar('"', command);
 		break;
-	case C4V_Any:
+	case C4V_Nil:
 		SCopy("nil", parameter);
 		break;
 	case C4V_Array:
@@ -2398,7 +2398,7 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
 
-	{ NULL, C4V_Any, 0}
+	{ NULL, C4V_Nil, 0}
 };
 
 #define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
@@ -2414,7 +2414,7 @@ C4ScriptFnDef C4ScriptObjectFnMap[]=
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
 
-	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
+	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 };
 
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine)

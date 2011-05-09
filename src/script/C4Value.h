@@ -28,7 +28,7 @@
 // C4Value type
 enum C4V_Type
 {
-	C4V_Any=0,         // nil
+	C4V_Nil=0,         // nil
 	C4V_Int=1,
 	C4V_Bool=2,
 	C4V_PropList=3,
@@ -36,13 +36,14 @@ enum C4V_Type
 	C4V_String=5,
 	C4V_Array=6,
 
+	C4V_Any=8, // for typechecks
 	C4V_C4ObjectEnum=9, // enumerated object
 	C4V_C4DefEnum=10, // enumerated definition
 	C4V_Enum=11 // enumerated array or proplist
 };
 // last C4V_Type that doesn't vanish in Denumerate
 #define C4V_Last ((int) C4V_Array)
-// first C4V_Type that is a pointer
+// a C4V_Type >= C4V_FirstPointer and <= C4V_Last is a pointer
 #define C4V_FirstPointer C4V_PropList
 
 const char* GetC4VName(const C4V_Type Type);
@@ -64,7 +65,7 @@ class C4Value
 {
 public:
 
-	C4Value() : Type(C4V_Any), NextRef(NULL) { Data.Obj = 0; }
+	C4Value() : Type(C4V_Nil), NextRef(NULL) { Data.Obj = 0; }
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type), NextRef(NULL)
 	{ AddDataRef(); }
@@ -73,13 +74,13 @@ public:
 	{ Data.Int = data; }
 	explicit C4Value(int32_t data): Type(C4V_Int), NextRef(NULL)
 	{ Data.Int = data; }
-	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), NextRef(NULL)
+	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Nil), NextRef(NULL)
 	{ Data.Obj = pObj; AddDataRef(); }
-	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), NextRef(NULL)
+	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil), NextRef(NULL)
 	{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Any), NextRef(NULL)
+	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Nil), NextRef(NULL)
 	{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4PropList *p): Type(p ? C4V_PropList : C4V_Any), NextRef(NULL)
+	explicit C4Value(C4PropList *p): Type(p ? C4V_PropList : C4V_Nil), NextRef(NULL)
 	{ Data.PropList = p; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue) { Set(nValue); return *this; }
@@ -150,13 +151,14 @@ public:
 	{
 		switch (vtToType)
 		{
-		case C4V_Any:      return true;
-		case C4V_Int:      return Type == C4V_Int || Type == C4V_Any || Type == C4V_Bool;
+		case C4V_Nil:      return Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Int:      return Type == C4V_Int || Type == C4V_Nil || Type == C4V_Bool;
 		case C4V_Bool:     return true;
-		case C4V_PropList: return Type == C4V_PropList || Type == C4V_C4Object || Type == C4V_Any || (Type == C4V_Int && !*this);
-		case C4V_C4Object: return Type == C4V_C4Object || (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Any || (Type == C4V_Int && !*this);
-		case C4V_String:   return Type == C4V_String || Type == C4V_Any || (Type == C4V_Int && !*this);
-		case C4V_Array:    return Type == C4V_Array || Type == C4V_Any || (Type == C4V_Int && !*this);
+		case C4V_PropList: return Type == C4V_PropList || Type == C4V_C4Object || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_C4Object: return Type == C4V_C4Object || (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_String:   return Type == C4V_String || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Array:    return Type == C4V_Array || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Any:      return true;
 		default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 		}
 	}
@@ -164,13 +166,14 @@ public:
 	{
 		switch (vtToType)
 		{
-		case C4V_Any:      return true;
+		case C4V_Nil:      return Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Int:      return Type == C4V_Int || Type == C4V_Bool;
-		case C4V_Bool:     return Type != C4V_Any;
+		case C4V_Bool:     return Type != C4V_Nil;
 		case C4V_PropList: return Type == C4V_PropList || Type == C4V_C4Object;
 		case C4V_C4Object: return Type == C4V_C4Object || (Type == C4V_PropList && FnCnvObject());
 		case C4V_String:   return Type == C4V_String;
 		case C4V_Array:    return Type == C4V_Array;
+		case C4V_Any:      return Type != C4V_Nil;
 		default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 		}
 	}
@@ -193,7 +196,7 @@ protected:
 	C4V_Type Type;
 
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL)
-	{ Type = (nData || IsNullableType(nType) ? nType : C4V_Any); AddDataRef(); }
+	{ Type = (nData || IsNullableType(nType) ? nType : C4V_Nil); AddDataRef(); }
 
 	void Set(C4V_Data nData, C4V_Type nType);
 
@@ -249,7 +252,8 @@ private:
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {
-	assert(Type != C4V_Any || !Data);
+	assert(Type <= C4V_Last);
+	assert(Type != C4V_Nil || !Data);
 	switch (Type)
 	{
 	case C4V_Array: Data.Array->IncRef(); break;
@@ -276,6 +280,8 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 
 ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
 {
+	assert(Type <= C4V_Last);
+	assert(Type != C4V_Nil || !Data);
 	// clean up
 	switch (Type)
 	{
@@ -288,7 +294,6 @@ ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pN
 
 ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
-	assert(nType != C4V_Any || !nData);
 	// Do not add this to the same linked list twice.
 	if (Data == nData && Type >= C4V_FirstPointer) return;
 
@@ -298,7 +303,7 @@ ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 
 	// change
 	Data = nData;
-	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
+	Type = nData || IsNullableType(nType) ? nType : C4V_Nil;
 
 	// hold new data & clean up old
 	AddDataRef();
@@ -312,7 +317,7 @@ ALWAYS_INLINE void C4Value::Set0()
 
 	// change
 	Data.Obj = 0;
-	Type = C4V_Any;
+	Type = C4V_Nil;
 
 	// clean up (save even if Data was 0 before)
 	DelDataRef(oData, oType, NextRef);

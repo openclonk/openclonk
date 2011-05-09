@@ -185,7 +185,7 @@ C4PropList::~C4PropList()
 	while (FirstRef)
 	{
 		// Manually kill references so DelRef doesn't destroy us again
-		FirstRef->Data = 0; FirstRef->Type = C4V_Any;
+		FirstRef->Data = 0; FirstRef->Type = C4V_Nil;
 		C4Value *ref = FirstRef;
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;

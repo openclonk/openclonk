@@ -468,7 +468,7 @@ static C4ScriptOpDef C4ScriptOpMap[] =
 	{ 2, "|=",  AB_BitOr,           AB_ERR,  1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 2, "^=",  AB_BitXOr,          AB_ERR,  1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
  	
-	{ 0, NULL,  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Any,    C4V_Any}
+	{ 0, NULL,  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Nil,  C4V_Nil,    C4V_Nil}
 };
 
 int C4AulParseState::GetOperator(const char* pScript)
@@ -2389,8 +2389,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					// store as direct constant
 					switch (val.GetType())
 					{
-					case C4V_Int:    AddBCC(AB_INT,    val.GetData().Int); break;
-					case C4V_Bool:   AddBCC(AB_BOOL,   val.GetData().Int); break;
+					case C4V_Nil:  AddBCC(AB_NIL,  0); break;
+					case C4V_Int:  AddBCC(AB_INT,  val.GetData().Int); break;
+					case C4V_Bool: AddBCC(AB_BOOL, val.GetData().Int); break;
 					case C4V_String:
 						AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 						break;
@@ -2400,18 +2401,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					case C4V_Array:
 						AddBCC(AB_CARRAY, reinterpret_cast<intptr_t>(val._getArray()));
 						break;
-					case C4V_Any:
-						// any: allow zero
-						if (!val.GetData())
-						{
-							AddBCC(AB_NIL, 0);
-							break;
-						}
-						// otherwise: fall through to error
 					default:
-					{
 						throw new C4AulParseError(this,FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
-					}
 					}
 					Shift();
 				}

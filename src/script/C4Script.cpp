@@ -597,7 +597,7 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
-	{ "C4V_Any"                ,C4V_Int,          C4V_Any},
+	{ "C4V_Nil"                ,C4V_Int,          C4V_Nil},
 	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
 	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
 	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
@@ -610,7 +610,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver3"               ,C4V_Int,          C4XVER3},
 	{ "C4X_Ver4"               ,C4V_Int,          C4XVER4},
 
-	{ NULL, C4V_Any, 0}
+	{ NULL, C4V_Nil, 0}
 };
 
 #define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
@@ -633,7 +633,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 
 	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
 
-	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
+	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 
 };
 

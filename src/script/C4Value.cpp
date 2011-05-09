@@ -38,7 +38,7 @@ const char* GetC4VName(const C4V_Type Type)
 {
 	switch (Type)
 	{
-	case C4V_Any:
+	case C4V_Nil:
 		return "nil";
 	case C4V_Int:
 		return "int";
@@ -52,6 +52,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_PropList:
 		return "proplist";
+	case C4V_Any:
+		return "any";
 	default:
 		return "!Fehler!";
 	}
@@ -74,13 +76,14 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 {
 	switch (vtToType)
 	{
-	case C4V_Any:      return false;
-	case C4V_Int:      return Type != C4V_Int && Type != C4V_Any && Type != C4V_Bool;
+	case C4V_Nil:      return Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Int:      return Type != C4V_Int && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
 	case C4V_Bool:     return false;
-	case C4V_PropList: return Type != C4V_PropList && Type != C4V_C4Object && Type != C4V_Any;
-	case C4V_C4Object: return Type != C4V_C4Object && Type != C4V_PropList && Type != C4V_Any;
-	case C4V_String:   return Type != C4V_String && Type != C4V_Any;
-	case C4V_Array:    return Type != C4V_Array && Type != C4V_Any;
+	case C4V_PropList: return Type != C4V_PropList && Type != C4V_C4Object && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_C4Object: return Type != C4V_C4Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Array:    return Type != C4V_Array && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Any:      return false;
 	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
 }
@@ -131,7 +134,7 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		DataString.AppendChar(']');
 		return DataString;
 	}
-	case C4V_Any:
+	case C4V_Nil:
 		return StdStrBuf("nil");
 	default:
 		return StdStrBuf("-unknown type- ");
@@ -213,7 +216,7 @@ static char GetC4VID(const C4V_Type Type)
 {
 	switch (Type)
 	{
-	case C4V_Any:
+	case C4V_Nil:
 		return 'n';
 	case C4V_Int:
 		return 'i';
@@ -241,7 +244,7 @@ static C4V_Type GetC4VFromID(const char C4VID)
 	switch (C4VID)
 	{
 	case 'n':
-		return C4V_Any;
+		return C4V_Nil;
 	case 'i':
 		return C4V_Int;
 	case 'b':
@@ -265,7 +268,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	if (!fCompiler)
 	{
 		// Get type
-		assert(Type != C4V_Any || !Data);
+		assert(Type != C4V_Nil || !Data);
 		char cC4VID = GetC4VID(Type);
 		// special cases:
 		if (Type == C4V_PropList && getPropList()->IsDef())
@@ -361,13 +364,13 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		if (fCompiler)
 		{
 			C4String *pString = ::Strings.RegString(s);
+			Data.Str = pString;
 			if (pString)
 			{
-				Data.Str = pString;
 				pString->IncRef();
 			}
 			else
-				Type = C4V_Any;
+				Type = C4V_Nil;
 		}
 		break;
 	}
@@ -377,13 +380,15 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		pComp->Value(iTmp);
 		break;
 
-	case C4V_Any:
+	case C4V_Nil:
 		assert(!Data);
 		// doesn't have a value, so nothing to store
 		break;
 
-		// shouldn't happen
+	case C4V_Any:
+		// corrupt save
 	default:
+		// shouldn't happen
 		assert(false);
 		break;
 	}
