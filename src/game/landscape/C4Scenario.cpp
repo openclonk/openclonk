@@ -460,11 +460,21 @@ void C4SDefinitions::SetModules(const char *szList, const char *szRelativeToPath
 		SGetModule(szList,cnt,Definition[cnt],_MAX_PATH);
 		// Make relative path
 		if (szRelativeToPath && *szRelativeToPath)
-			if (SEqualNoCase(Definition[cnt],szRelativeToPath,SLen(szRelativeToPath)))
-				SCopy(Definition[cnt]+SLen(szRelativeToPath),Definition[cnt]);
+		{
+			if (GetRelativePathS(Definition[cnt],szRelativeToPath) != Definition[cnt])
+			{
+				SCopy(GetRelativePathS(Definition[cnt],szRelativeToPath),Definition[cnt]);
+				continue;
+			}
+		}
 		if (szRelativeToPath2 && *szRelativeToPath2)
-			if (SEqualNoCase(Definition[cnt],szRelativeToPath2,SLen(szRelativeToPath2)))
-				SCopy(Definition[cnt]+SLen(szRelativeToPath2),Definition[cnt]);
+		{
+			if (GetRelativePathS(Definition[cnt],szRelativeToPath2) != Definition[cnt])
+			{
+				SCopy(GetRelativePathS(Definition[cnt],szRelativeToPath2),Definition[cnt]);
+				continue;
+			}
+		}
 	}
 
 }
