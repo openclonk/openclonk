@@ -35,6 +35,9 @@
 #define C4CFN_Extra           "Extra.ocg"
 #define C4CFN_Languages       "Language.ocg"
 
+#define C4CFN_Savegames       "Savegames.ocf"
+#define C4CFN_Records         "Records.ocf"
+
 #define C4CFN_ScenarioSections "Sect*.ocg"
 
 #define C4CFN_Objects         "Objects.ocd"

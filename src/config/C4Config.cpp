@@ -67,8 +67,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	// assimilate old data
 	pComp->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 
-	pComp->Value(mkNamingAdapt(SaveGameFolder,      "SaveGameFolder",     "Savegames.ocf", false, true));
-	pComp->Value(mkNamingAdapt(SaveDemoFolder,      "SaveDemoFolder",     "Records.ocf",   false, true  ));
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));

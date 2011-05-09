@@ -129,11 +129,11 @@ bool C4Record::Start(bool fInitial)
 	if (fRecording) return false;
 
 	// create demos folder
-	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData()), LoadResStr("IDS_GAME_RECORDSTITLE")))
+	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(C4CFN_Records), LoadResStr("IDS_GAME_RECORDSTITLE")))
 		return false;
 
 	// various infos
-	StdStrBuf sDemoFolder; sDemoFolder.Ref(Config.General.SaveDemoFolder);
+	StdStrBuf sDemoFolder(C4CFN_Records);
 	char sScenName[_MAX_FNAME+ 1]; SCopy(GetFilenameOnly(Game.Parameters.Scenario.getFile()), sScenName, _MAX_FNAME);
 
 	// remove trailing numbers from scenario name (e.g. from savegames) - could we perhaps use C4S.Head.Origin instead...?
@@ -145,7 +145,7 @@ bool C4Record::Start(bool fInitial)
 
 	// determine index (by total number of records)
 	Index = 1;
-	for (DirectoryIterator i(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData())); *i; ++i)
+	for (DirectoryIterator i(Config.AtUserDataPath(C4CFN_Records)); *i; ++i)
 		if (WildcardMatch(C4CFN_ScenarioFiles, *i))
 			Index++;
 

@@ -45,8 +45,6 @@ public:
 	char RXFontName[CFG_MaxString+1];
 	int32_t  RXFontSize;
 	char ConfigUserPath[CFG_MaxString + 1];
-	StdStrBuf SaveGameFolder;
-	StdStrBuf SaveDemoFolder;
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
 	int32_t FPS;
