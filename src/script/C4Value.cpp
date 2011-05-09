@@ -120,7 +120,7 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
 	{
-		if (depth > 2 && Data.Array->GetSize())
+		if (depth <= 0 && Data.Array->GetSize())
 		{
 			return StdStrBuf("[...]");
 		}
@@ -129,7 +129,7 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
 		{
 			if (i) DataString.Append(", ");
-			DataString.Append(std::move(Data.Array->GetItem(i).GetDataString(depth + 1)));
+			DataString.Append(std::move(Data.Array->GetItem(i).GetDataString(depth - 1)));
 		}
 		DataString.AppendChar(']');
 		return DataString;

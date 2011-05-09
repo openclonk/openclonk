@@ -90,7 +90,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			case 'v':
 			{
 				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
-				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString()));
+				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString(10)));
 				cpFormat+=SLen(szField);
 				break;
 			}

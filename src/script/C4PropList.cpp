@@ -298,7 +298,7 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth)
 {
 	StdStrBuf & DataString = *out;
-	if (depth > 2 && Properties.GetSize())
+	if (depth <= 0 && Properties.GetSize())
 	{
 		DataString.Append("...");
 		return;
@@ -308,7 +308,7 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 	{
 		DataString.Append(p->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append(p->Value.GetDataString(depth + 1));
+		DataString.Append(p->Value.GetDataString(depth - 1));
 		p = Properties.Next(p);
 		if (p) DataString.Append(delim);
 	}

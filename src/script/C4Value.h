@@ -145,7 +145,7 @@ public:
 
 	void Denumerate(C4ValueNumbers *);
 
-	StdStrBuf GetDataString(int depth = 0) const;
+	StdStrBuf GetDataString(int depth = 1) const;
 
 	ALWAYS_INLINE bool ConvertTo(C4V_Type vtToType) const // convert to dest type
 	{
