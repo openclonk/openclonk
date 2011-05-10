@@ -1,5 +1,5 @@
 [Particle]
-Name=PlaneSmoke
+Name=EngineSmoke
 MaxCount=800
 InitFn=StdInit
 ExecFn=StdExec
