@@ -199,7 +199,7 @@ func UpdateClonkBuyMenus()
 			aClonkBuyList[iIndex-1] = 0;
 			continue;
 		}
-		OpenBuyMenu(pClonk, nil, pClonk->GetMenuSelection(), 1);
+		OpenBuyMenu(pClonk, nil, pClonk->GetMenuSelection());
 	}
 }
 
@@ -253,7 +253,7 @@ func DoBuy(id idDef, int iForPlr, int iPayPlr, object pClonk, bool bRight, bool 
 	if(pObj->GetOCF() & OCF_Collectible) pClonk->Collect(pObj);
 	// is right clicked? then buy another object
 	if(bRight)
-		DoBuy(idDef, iForPlr, iPayPlr, pClonk, bRight, iValue, 1);
+		DoBuy(idDef, iForPlr, iPayPlr, pClonk, bRight, false);
 	return pObj;
 }
 

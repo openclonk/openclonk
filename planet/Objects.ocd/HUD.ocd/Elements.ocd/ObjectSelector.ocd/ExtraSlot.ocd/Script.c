@@ -124,7 +124,7 @@ public func FxIntRemoveGuardStop(object target, effect, int reason, bool temp)
 {
 	if(reason == 3)
 		if(target == myobject)
-			SetObject(nil,0);
+			SetObject(nil);
 }
 
 public func Update()

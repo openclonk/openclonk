@@ -80,8 +80,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount(one)-1)) return;
-	if (!Inside(two,0,MaxContentsCount(two)-1)) return;
+	if (!Inside(one,0,MaxContentsCount()-1)) return;
+	if (!Inside(two,0,MaxContentsCount()-1)) return;
 
 	// switch them around
 	var temp = inventory[one];
