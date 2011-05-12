@@ -112,6 +112,8 @@
 /* Define to 1 if you have the `vasprintf' function. */
 #cmakedefine HAVE_VASPRINTF 1
 
+#cmakedefine HAVE_VFW32
+
 /* Define to 1 if you have the <X11/extensions/xf86vmode.h> header file. */
 #cmakedefine HAVE_X11_EXTENSIONS_XF86VMODE_H 1
 

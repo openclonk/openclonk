@@ -22,6 +22,7 @@
 
 #include "C4Include.h"
 #ifdef _WIN32
+#ifdef HAVE_VFW32
 
 #include <StdVideo.h>
 #include <StdSurface2.h>
@@ -330,5 +331,24 @@ void CStdAVIFile::CloseAudioStream()
 	if (pAudioInfo) { delete [] pAudioInfo; pAudioInfo = NULL; }
 	iAudioBufferLength = 0;
 }
+
+#else //HAVE_VFW32
+#include <StdVideo.h>
+#include <StdSurface2.h>
+bool AVIOpenOutput(const char *, PAVIFILE *, PAVISTREAM *, int, int) { return false; }
+bool AVICloseOutput(PAVIFILE *, PAVISTREAM *) { return true; }
+bool AVIPutFrame(PAVISTREAM, long, void *, long, void *, long) { return false; }
+bool AVIOpenGrab(const char *, PAVISTREAM *, PGETFRAME *, int &, int &, int &, int &, int &) { return false; }
+void AVICloseGrab(PAVISTREAM *, PGETFRAME *) { }
+CStdAVIFile::CStdAVIFile() { }
+CStdAVIFile::~CStdAVIFile() { }
+void CStdAVIFile::Clear() { }
+bool CStdAVIFile::OpenFile(const char *, HWND, int32_t) { return false; }
+bool CStdAVIFile::GetFrameByTime(time_t, int32_t *) { return false; }
+bool CStdAVIFile::GrabFrame(int32_t, CSurface *) const { return false; }
+bool CStdAVIFile::OpenAudioStream() { return false; }
+BYTE *CStdAVIFile::GetAudioStreamData(size_t *) { return NULL; }
+void CStdAVIFile::CloseAudioStream() { }
+#endif // HAVE_VFW32
 
 #endif // _WIN32

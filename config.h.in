@@ -114,6 +114,9 @@
 /* Define to 1 if you have the `vasprintf' function. */
 #undef HAVE_VASPRINTF
 
+/* */
+#undef HAVE_VFW32
+
 /* Define to 1 if you have the <X11/extensions/xf86vmode.h> header file. */
 #undef HAVE_X11_EXTENSIONS_XF86VMODE_H
 
@@ -166,7 +169,7 @@
 /* DirectX graphics */
 #undef USE_DIRECTX
 
-/* Wether FMOD shall be used */
+/* Whether FMOD shall be used */
 #undef USE_FMOD
 
 /* OpenGL graphics */

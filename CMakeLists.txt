@@ -1055,8 +1055,11 @@ if(NOT HAVE_GETOPT_H)
 	add_subdirectory(thirdparty/getopt)
 	target_link_libraries(clonk getopt)
 elseif(MINGW)
-	# Link libiberty which contains getopt with mingw
-	target_link_libraries(clonk iberty)
+	# Link libiberty which my contain getopt with mingw
+	FINDLIB(iberty_LIBRARIES iberty)
+	if(iberty_LIBRARIES)
+		target_link_libraries(clonk iberty)
+	endif()
 endif()
 
 CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
@@ -1126,12 +1129,13 @@ if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
 	# So just pretend that everything is fine
 	FINDLIB(VFW32_LIBRARIES vfw32)
+	FINDLIB(wavifil32_LIBRARIES wavifil32)
 	if (VFW32_LIBRARIES)
 		target_link_libraries(clonk vfw32)
-	else()
-		# Mingw64 has the AviStream* and _DrawDibDraw* symbols in
-		# other library files
+		set(HAVE_VFW32 TRUE)
+	elseif(wavifil32_LIBRARIES)
 		target_link_libraries(clonk wavifil32 msvfw32)
+		set(HAVE_VFW32 TRUE)
 	endif()
 
 	target_link_libraries(clonk ws2_32 winmm)

@@ -318,14 +318,19 @@ if test $win32 = false; then
   AM_CONDITIONAL(USE_FMOD, false)
 else
   # Windows
-  for WIN32LIB in gdi32 comdlg32 winmm ws2_32 vfw32
+  for WIN32LIB in gdi32 comdlg32 winmm ws2_32
   do
     AC_CHECK_LIB([$WIN32LIB], main, [CLONK_LIBS="-l$WIN32LIB $CLONK_LIBS"], [AC_MSG_ERROR([$WIN32LIB not found.])])
   done
 
+  AC_CHECK_LIB([vfw32], main, [
+    CLONK_LIBS="-lvfw32 $CLONK_LIBS"
+    AC_DEFINE([HAVE_VFW32], 1, [ ])
+    ], [])
+
   # FMod (Library comes with standard)
   if test "$enable_sound" = yes; then
-    AC_DEFINE([USE_FMOD], 1, [Wether FMOD shall be used])
+    AC_DEFINE([USE_FMOD], 1, [Whether FMOD shall be used])
   fi
   AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
 
