@@ -5,4 +5,3 @@ Width=64
 Height=54
 Offset=-32,-27
 Category=C4D_Vehicle
-MaxUserSelect=1

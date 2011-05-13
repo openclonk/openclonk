@@ -5,4 +5,3 @@ Width=42
 Height=28
 Offset=-21,-28
 Category=C4D_StaticBack
-MaxUserSelect=1

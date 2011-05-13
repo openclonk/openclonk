@@ -22,7 +22,7 @@ func ControlUse(object clonk, int x, int y)
 	// fire fireball
 	var angle = Angle(0,0,x,y);
 	Exit();
-	Launch(angle,120,clonk,this);
+	Launch(angle,120,clonk);
 	SetDivert(sx,sy,ex,ey);
 	
 	return true;
