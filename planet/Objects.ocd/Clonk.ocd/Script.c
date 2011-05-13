@@ -1855,7 +1855,7 @@ func StartPushing()
 {
 //	if(GetEffect("IntTumble", this)) return;
 	// Close eyes
-	PlayAnimation("Push", 5, Anim_AbsX(0, 0, GetAnimationLength("Push"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation("Push", 5, Anim_AbsX(0, 0, GetAnimationLength("Push"), 20), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
