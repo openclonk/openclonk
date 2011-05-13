@@ -37,6 +37,8 @@ protected func Construction()
 
 	AddEffect("IntTurn", this, 1, 1, this);
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
+
+	AttachBackpack();
 }
 
 
@@ -429,6 +431,27 @@ func SetMeshTransformation(array transformation, int layer)
 	}
 	SetProperty("MeshTransformation", all_transformations);
 }
+
+/* Backpack */
+
+local backpack;
+
+func AttachBackpack()
+{
+	//Places a backpack onto the clonk
+	backpack = AttachMesh(BackpackGraphic, "skeleton_body", "main", Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Scale(600), Trans_Translate(0,5000,0)));
+}
+
+func RemoveBackpack()
+{
+	if(backpack)
+	{
+		DetachMesh(backpack);
+		backpack = nil;
+	}
+	else return false;
+}
+
 
 /* Turn */
 local iTurnAction;
