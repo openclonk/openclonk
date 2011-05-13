@@ -2,7 +2,10 @@
 	Airship
 	Ringwaul
 	
-	Asdasdasd
+	Lighter-than-air travel and transport vehicle.
+	The airship uses several objects to function; the base control/collision object,
+	an attached graphics object (due to engine limitations with solidmasks),
+	and a hitbox for the balloon.
 --*/
 
 local throttle;
@@ -15,9 +18,11 @@ local ytarget;
 local xthrottle;
 local ythrottle;
 
+//Attached modules
 local graphic;
 local hitbox;
 
+//Graphic module variables for animation
 local animdir;
 local turnanim;
 
@@ -28,16 +33,17 @@ protected func Initialize()
 	xtarget = 0;
 	ytarget = 0;
 
-	//CreateGraphic
+	//Create 3D Graphic
 	graphic = CreateObject(Airship_Graphic);
 		graphic->SetAction("Attach", this);
 		graphic->SetAirshipParent(this);
 
-	//CreateHitbox
+	//Create Hitbox
 	hitbox = CreateObject(Airship_Hitbox);
 		hitbox->SetAction("Attach", this);
 		hitbox->SetAirshipParent(this);
 
+	//The airship starts facing left; so default to that value
 	animdir = -1;
 
 	//Start the Airship behaviour
@@ -49,15 +55,8 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	//Cancel effect if there is no graphic.
 	if(!graphic) return -1;
 
-//	if(!AirshipPilot() && !GBackLiquid(0,25) && !GetContact(-1))
-//		//AddEffect("NoPilotFall",this,1,1,this);
-//		ytarget = 8;
-
-//	if(AirshipPilot() && !throttle)
-//		ytarget = 0;
-
 	//Is the engine running?
-	if(Abs(xthrottle) >= 1 || Abs(ythrottle) >= 1)
+	if(Abs(xthrottle) == 1 || Abs(ythrottle) == 1)
 	{
 		//Turn the propeller
 		graphic->AnimationForward();
@@ -80,6 +79,12 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	if(!GetContact(-1))
 		xtarget = xtarget + GetWind()/10;
 
+	//Fall down if there is no water below nor pilot
+	if(!AirshipPilot() && !GBackLiquid(0,26) && !GetContact(-1))
+	{
+		ytarget = 10;
+	}
+
 	//Rise in water
 	if(GBackLiquid(0,25)) ytarget = -10;
 	if(GBackLiquid(0,25) && !GBackLiquid(0,24) && ytarget > 1) ytarget = 0;
@@ -89,7 +94,6 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	{
 		xthrottle = 0;
 		ythrottle = 0;
-		if(!GBackLiquid(0,25)) ytarget = 10;
 	}
 
 	//x target speed
@@ -107,23 +111,23 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	}
 
 	//Turn the airship right
-	if(animdir == -1 && GetXDir() > 1)
+	if(animdir == -1 && GetXDir() > 1 && xthrottle == 1)
 	{
 		turnanim = graphic->PlayAnimation("TurnRight", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnRight"), 36, ANIM_Remove), Anim_Const(1000));
 		animdir = 1;
 	}
 
 	//turn the airship left
-	if(animdir == 1 && GetXDir() < -1)
+	if(animdir == 1 && GetXDir() < -1 && xthrottle == -1)
 	{
 		turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnLeft"), 36, ANIM_Remove), Anim_Const(1000));
 		animdir = -1;
 	}
 
-	//debug
-	if(!AirshipPilot()) Message(Format("^ 3^|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir()));
+	//fun debug output stuff
+/*	if(!AirshipPilot()) Message(Format("^ 3^|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir()));
 	else
-	Message(Format("o _o|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir()));
+	Message(Format("o _o|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir())); */
 }
 
 /* -- Control Inputs -- */
@@ -157,7 +161,8 @@ func ControlStop(object clonk, int control)
 
 private func AirshipPilot()
 {
-	var clonk = FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive),Find_InRect(-19,0,35,25));
+	//Looks for a clonk within the Gondola
+	var clonk = FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive),Find_InRect(-19,0,35,20));
 	if(clonk)
 		return clonk;
 	else
@@ -172,7 +177,7 @@ func AirshipDeath()
 	//First let's create the burnt airship
 	var burntairship = CreateObject(Airship_Burnt,0,27); //27 pixels down to align ruin with original
 
-	//Now let's copy it's animation, and hold it there
+	//Now let's copy it's animation, and hold it there (Currently not working? I'll fix it shortly...)
 	var animspot;
 	animspot = graphic->GetAnimationPosition(turnanim);
 	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot), Anim_Const(1000));

@@ -1,8 +1,8 @@
 [DefCore]
 id=Airship_Hitbox
 Version=4,10,0,0
-Width=64
+Width=42
 Height=28
-Offset=-32,-28
+Offset=-21,-28
 Category=C4D_StaticBack
 MaxUserSelect=1
