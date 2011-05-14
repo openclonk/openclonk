@@ -439,7 +439,8 @@ local backpack;
 func AttachBackpack()
 {
 	//Places a backpack onto the clonk
-	backpack = AttachMesh(BackpackGraphic, "skeleton_body", "main", Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Scale(600), Trans_Translate(0,5000,0)));
+	backpack = AttachMesh(BackpackGraphic, "skeleton_body", "main",       
+	                      Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Scale(900,700,400), Trans_Translate(0,4000,1000)));
 }
 
 func RemoveBackpack()
