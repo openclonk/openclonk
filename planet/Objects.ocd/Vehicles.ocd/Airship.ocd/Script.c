@@ -65,8 +65,8 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 		var i = 20;
 		var colour = 240;
 			if(animdir == 1) i = -25; //Is the airship facing right?
-		if(graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... looks bad
-			CreateParticle("EngineSmoke", i, 18,0,0,RandomX(20,40),RGB(colour,colour,colour));
+		if(graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
+			CreateParticle("EngineSmoke", i, 18,0,0,RandomX(20,40),RGBa(colour,colour,colour,colour));
 	}
 
 	//Control proxy
@@ -177,7 +177,7 @@ func AirshipDeath()
 	//First let's create the burnt airship
 	var burntairship = CreateObject(Airship_Burnt,0,27); //27 pixels down to align ruin with original
 
-	//Now let's copy it's animation, and hold it there (Currently not working? I'll fix it shortly...)
+	//Now let's copy it's animation, and hold it there
 	var animspot;
 	animspot = graphic->GetAnimationPosition(turnanim);
 	if(turnanim == -1) burntairship->PlayAnimation("TurnLeft", 10, Anim_Const(animspot), Anim_Const(1000));
