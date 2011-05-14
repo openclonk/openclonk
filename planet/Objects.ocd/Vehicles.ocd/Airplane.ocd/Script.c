@@ -257,13 +257,22 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 	}
 }
 
-public func RollPlane(int rolldir)
+public func RollPlane(int rolldir, bool instant)
 {
 	if(dir != rolldir)
 	{
-		PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), 36, ANIM_Remove), Anim_Const(1000));
+		var i = 36;
+		if(instant) i = 1;
+		PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Remove), Anim_Const(1000));
 		dir = rolldir;
 	}
+}
+
+//Quick command for scenario designers. The plane starts facing right instead of left.
+public func FaceRight()
+{
+	SetR(90);
+	RollPlane(1,true);
 }
 
 public func IsProjectileTarget(target,shooter) { return true; }
