@@ -551,6 +551,7 @@ src/platform/ClonkOpenGLView.h \
 src/platform/ClonkOpenGLView.mm \
 src/platform/CocoaKeycodeMap.h \
 src/editor/C4ConsoleCocoa.mm \
+src/platform/ClonkMainMenuActions.h \
 src/platform/ClonkMainMenuActions.mm
 endif
 if SDL_MAIN_LOOP
@@ -695,6 +696,7 @@ EXTRA_DIST = \
   licenses \
   src/netio/NetIO.dsp \
   src/netpuncher/Puncher.dsp \
+  src/res/MainMenu.xib \
   src/res/Brush_Trans.png \
   src/res/Cursor_Trans.png \
   src/res/Dynamic_Trans.png \
