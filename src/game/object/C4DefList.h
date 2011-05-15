@@ -53,15 +53,6 @@ public:
 	             DWORD dwLoadWhat, const char *szLanguage,
 	             C4SoundSystem *pSoundSystem = NULL,
 	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadFolderLocal(const char *szPath,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadForScenario(const char *szScenario,
-	                        const char *szSpecified,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
 	C4Def *GetByPath(const char *szPath);
