@@ -161,22 +161,11 @@ void C4Console::UpdateStatusBars()
 	}
 }
 
-bool C4Console::SaveGame(bool fSaveGame)
+bool C4Console::SaveGame(bool fSaveGame, const char * path)
 {
 	// Network hosts only
 	if (::Network.isEnabled() && !::Network.isHost())
 		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }
-
-
-	// Can't save to child groups
-	if (Game.ScenarioFile.GetMother())
-	{
-		StdStrBuf str;
-		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
-		           GetFilename(Game.ScenarioFile.GetName()));
-		Message(str.getData());
-		return false;
-	}
 
 	// Save game to open scenario file
 	bool fOkay=true;
@@ -187,15 +176,9 @@ bool C4Console::SaveGame(bool fSaveGame)
 		pGameSave = new C4GameSaveSavegame();
 	else
 		pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
-	if (!pGameSave->Save(Game.ScenarioFile, false))
+	if (!pGameSave->Save(path))
 		{ Out("Game::Save failed"); fOkay=false; }
 	delete pGameSave;
-
-	// Close and reopen scenario file to fix file changes
-	if (!Game.ScenarioFile.Close())
-		{ Out("ScenarioFile::Close failed"); fOkay=false; }
-	if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
-		{ Out("ScenarioFile::Open failed"); fOkay=false; }
 
 	Console.SetCursor(C4ConsoleGUI::CURSOR_Normal);
 
@@ -218,8 +201,18 @@ bool C4Console::SaveGame(bool fSaveGame)
 
 bool C4Console::FileSave()
 {
+	// Can't save to child groups
+	if (Game.ScenarioFile.GetMother())
+	{
+		StdStrBuf str;
+		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
+		           GetFilename(Game.ScenarioFile.GetName()));
+		Message(str.getData());
+		return false;
+	}
+
 	// Save game
-	return SaveGame(Game.C4S.Head.SaveGame);
+	return SaveGame(Game.C4S.Head.SaveGame, Game.ScenarioFilename);
 }
 
 bool C4Console::FileSaveAs(bool fSaveGame)
@@ -238,17 +231,14 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	// Copy current scenario file to target
 	if (!C4Group_CopyItem(Game.ScenarioFilename,filename.getData())) fOkay=false;
 	// Open new scenario file
-	SCopy(filename.getData(),Game.ScenarioFilename);
-
-	SetCaption(GetFilename(Game.ScenarioFilename));
-	if (!Game.ScenarioFile.Open(Game.ScenarioFilename)) fOkay=false;
-	// Failure message
-	if (!fOkay)
+	if (!fSaveGame)
 	{
-		Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData()); return false;
+		SCopy(filename.getData(),Game.ScenarioFilename);
+
+		SetCaption(GetFilename(Game.ScenarioFilename));
 	}
 	// Save game
-	return SaveGame(fSaveGame);
+	return SaveGame(fSaveGame, filename.getData());
 }
 
 bool C4Console::Message(const char *szMessage, bool fQuery)
