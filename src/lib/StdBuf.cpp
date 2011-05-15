@@ -137,6 +137,8 @@ StdStrBuf::StdStrBuf(const wchar_t * utf16)
 }
 StdStrBuf::wchar_t_holder StdStrBuf::GetWideChar()
 {
+	if (!getSize()) return StdStrBuf::wchar_t_holder(NULL);
+
 	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), NULL, 0);
 	wchar_t * p = new wchar_t[len];
 	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), p, len);
