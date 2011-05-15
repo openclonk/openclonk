@@ -363,17 +363,13 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	// Get current display settings
 	if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
 		return false;
-	if (!iRefreshRate)
-	{
-		// Default to current
-		iRefreshRate = dmode.dmDisplayFrequency;
-	}
 	int orientation = dmode.dmDisplayOrientation;
 	// enumerate modes
 	int i=0;
 	while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
 		// compare enumerated mode with requested settings
-		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation && dmode.dmDisplayFrequency==iRefreshRate)
+		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
+			&& (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
 		{
 			fFound=true;
 			dspMode=dmode;
@@ -389,7 +385,9 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	}
 	else
 	{
-		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+		if (iRefreshRate != 0)
+			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
 		if (ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 			{
 				return false;
