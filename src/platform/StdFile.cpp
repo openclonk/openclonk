@@ -95,7 +95,7 @@ const char *GetC4Filename(const char *szPath)
 	{
 		if (*pPos==DirectorySeparator || *pPos=='/')
 		{
-			if (pPos >= szPath+4 && SEqual2NoCase(pPos-4, ".c4")) return pFilename;
+			if (pPos >= szPath+4 && SEqual2NoCase(pPos-4, ".oc")) return pFilename;
 			pFilename = pPos+1;
 		}
 	}
