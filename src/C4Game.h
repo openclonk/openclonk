@@ -243,7 +243,6 @@ protected:
 	void DeleteObjects(bool fDeleteInactive);
 	void ExecObjects();
 	void Ticks();
-	const char *FoldersWithLocalsDefs(const char *szPath);
 	bool CheckObjectEnumeration();
 	bool LoadScenarioComponents();
 	bool LoadScenarioScripts();

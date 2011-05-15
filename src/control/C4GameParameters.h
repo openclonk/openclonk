@@ -81,7 +81,7 @@ public:
 	C4GameRes *iterRes(C4GameRes *pLast, C4Network2ResType eType = NRT_Null);
 
 	void Clear();
-	bool Load(const char *szDefinitionFilenames); // host: create res cores by definition filenames
+	bool Load(C4Group &hGroup, C4Scenario *pScenario, const char * szDefinitionFilenames); // host: create res cores by definition filenames
 
 	C4GameRes *CreateByFile(C4Network2ResType eType, const char *szFile);
 	C4GameRes *CreateByNetRes(C4Network2Res::Ref pNetRes);
@@ -95,6 +95,7 @@ public:
 
 protected:
 	void Add(C4GameRes *pRes);
+	void LoadFoldersWithLocalDefs(const char *szPath);
 };
 
 class C4GameParameters

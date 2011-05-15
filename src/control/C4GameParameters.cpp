@@ -219,7 +219,36 @@ void C4GameResList::Clear()
 	iResCount = iResCapacity = 0;
 }
 
-bool C4GameResList::Load(const char *szDefinitionFilenames)
+void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
+{
+	// Scan path for folder names
+	int32_t cnt,iBackslash;
+	char szFoldername[_MAX_PATH+1];
+	C4Group hGroup;
+	for (cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)
+	{
+		// Get folder name
+		SCopy(szPath,szFoldername,iBackslash);
+		// Open folder
+		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
+			if (hGroup.Open(szFoldername))
+			{
+				// Check for contained defs
+				// do not, however, add them to the group set:
+				//   parent folders are added by OpenScenario already!
+				int32_t iContents;
+				if ((iContents = Game.GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions)))
+				{
+					// Add folder to list
+					CreateByFile(NRT_Definitions, szFoldername);
+				}
+				// Close folder
+				hGroup.Close();
+			}
+	}
+}
+
+bool C4GameResList::Load(C4Group &hGroup, C4Scenario *pScenario, const char * szDefinitionFilenames)
 {
 	// clear any prev
 	Clear();
@@ -232,6 +261,9 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 			if (*szSegment)
 				CreateByFile(NRT_Definitions, szSegment);
 	}
+
+	LoadFoldersWithLocalDefs(pScenario->Head.Origin ? pScenario->Head.Origin.getData() : hGroup.GetFullName().getData());
+
 	// add System.ocg
 	CreateByFile(NRT_System, C4CFN_System);
 	// add all instances of Material.ocg, except those inside the scenario file
@@ -368,7 +400,7 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 	Scenario.SetFile(NRT_Scenario, hGroup.GetFullName().getData());
 
 	// Additional game resources
-	if (!GameRes.Load(DefinitionFilenames))
+	if (!GameRes.Load(hGroup, pScenario, DefinitionFilenames))
 		return false;
 
 	// Player infos (replays only)

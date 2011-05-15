@@ -242,9 +242,6 @@ bool C4Game::OpenScenario()
 	      }
 	  if (pGrp) delete pGrp;*/
 
-	// Scan folder local definitions
-	SAddModules(DefinitionFilenames,FoldersWithLocalsDefs(ScenarioFilename));
-
 	// Check mission access
 	if (C4S.Head.MissionAccess[0])
 		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
@@ -3052,40 +3049,6 @@ bool C4Game::CheckObjectEnumeration()
 	C4PropListNumbered::SetEnumerationIndex(iMax);
 	// Done
 	return true;
-}
-
-const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
-{
-	static char szDefs[10*_MAX_PATH+1];
-	szDefs[0]=0;
-
-	// Scan path for folder names
-	int32_t cnt,iBackslash;
-	char szFoldername[_MAX_PATH+1];
-	C4Group hGroup;
-	for (cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)
-	{
-		// Get folder name
-		SCopy(szPath,szFoldername,iBackslash);
-		// Open folder
-		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
-			if (hGroup.Open(szFoldername))
-			{
-				// Check for contained defs
-				// do not, however, add them to the group set:
-				//   parent folders are added by OpenScenario already!
-				int32_t iContents;
-				if ((iContents = GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions)))
-				{
-					// Add folder to list
-					SNewSegment(szDefs); SAppend(szFoldername,szDefs);
-				}
-				// Close folder
-				hGroup.Close();
-			}
-	}
-
-	return szDefs;
 }
 
 void C4Game::InitValueOverloads()
