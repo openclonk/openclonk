@@ -64,7 +64,6 @@ IDS_CNS_NAMES=Namen
 IDS_CNS_NEWPLRVIEWPORT=Neu für %s
 IDS_CNS_NOCHILDSAVE=%s befindet sich in einem Rundenordner.\nSzenarien können nicht in geschlossenen Gruppendateien gespeichert werden.
 IDS_CNS_NOFULLSCREENPLRS=Im Vollbildmodus kann nur gestartet werden, wenn Spieler am Spiel teilnehmen.
-IDS_CNS_NOGAMEOVERSCEN=Ein Spiel sollte nicht über die Datei des ursprünglichen Szenarios gespeichert werden.
 IDS_CNS_NOMATDEF=Zeichnen nicht möglich, da die angegebene\nMaterial-Textur-Kombination '%s-%s'\nnicht in der geladenen Texturtabelle definiert ist.
 IDS_CNS_NONETEDIT=Bei Wiedergabe einer Aufnahme kann nicht editiert werden.
 IDS_CNS_NOOBJECT=Kein Objekt ausgewählt.

@@ -85,7 +85,7 @@ public:
 	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
 	bool SaveGame(bool fSaveGame);
 	bool FileSaveAs(bool fSaveGame);
-	bool FileSave(bool fSaveGame);
+	bool FileSave();
 	bool FileOpen();
 	bool FileOpenWPlrs();
 	bool FileCommand();

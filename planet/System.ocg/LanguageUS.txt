@@ -64,7 +64,6 @@ IDS_CNS_NAMES=Names
 IDS_CNS_NEWPLRVIEWPORT=New for %s
 IDS_CNS_NOCHILDSAVE=%s is located in a group folder.\nScenarios cannot be saved in closed group folders.
 IDS_CNS_NOFULLSCREENPLRS=Fullscreen mode requires at least one participating player.
-IDS_CNS_NOGAMEOVERSCEN=You should not overwrite the original scenario file with a save game.
 IDS_CNS_NOMATDEF=Cannot draw because selected\nmaterial-texture combination '%s-%s'\nis not defined in the texture table.
 IDS_CNS_NONETEDIT=No editing while replaying.
 IDS_CNS_NOOBJECT=No selected objects.

@@ -216,17 +216,10 @@ bool C4Console::SaveGame(bool fSaveGame)
 	return fOkay;
 }
 
-bool C4Console::FileSave(bool fSaveGame)
+bool C4Console::FileSave()
 {
-	// Don't quicksave games over scenarios
-	if (fSaveGame)
-		if (!Game.C4S.Head.SaveGame)
-		{
-			Message(LoadResStr("IDS_CNS_NOGAMEOVERSCEN"));
-			return false;
-		}
 	// Save game
-	return SaveGame(fSaveGame);
+	return SaveGame(Game.C4S.Head.SaveGame);
 }
 
 bool C4Console::FileSaveAs(bool fSaveGame)

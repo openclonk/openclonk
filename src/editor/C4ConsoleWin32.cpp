@@ -252,7 +252,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDM_FILE_SAVEAS: Console.FileSaveAs(false);  return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case IDM_FILE_SAVE: Console.FileSave(false);  return true;
+		case IDM_FILE_SAVE: Console.FileSave();  return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case IDM_FILE_SAVEGAMEAS: Console.FileSaveAs(true); return true;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -52,7 +52,7 @@
 
 - (IBAction) saveScenario:(id)sender
 {
-	Console.FileSave(false);
+	Console.FileSave();
 }
 
 - (IBAction) saveScenarioAs:(id)sender

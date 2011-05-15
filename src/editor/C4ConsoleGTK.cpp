@@ -1522,7 +1522,7 @@ void C4ConsoleGUI::State::OnFileOpenWPlrs(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnFileSave(GtkWidget* item, gpointer data)
 {
-	Console.FileSave(false);
+	Console.FileSave();
 }
 
 void C4ConsoleGUI::State::OnFileSaveAs(GtkWidget* item, gpointer data)
