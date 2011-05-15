@@ -5,7 +5,6 @@
 - (IBAction) openScenario:(id)sender;
 - (IBAction) openScenarioWithPlayers:(id)sender;
 - (IBAction) closeScenario:(id)sender;
-- (IBAction) saveGame:(id)sender;
 - (IBAction) saveGameAs:(id)sender;
 - (IBAction) saveScenario:(id)sender;
 - (IBAction) saveScenarioAs:(id)sender;

@@ -1115,14 +1115,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">saveGame:</string>
-						<reference key="source" ref="898186092"/>
-						<reference key="destination" ref="544691877"/>
-					</object>
-					<int key="connectionID">530</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">saveGameAs:</string>
 						<reference key="source" ref="898186092"/>
 						<reference key="destination" ref="481564305"/>

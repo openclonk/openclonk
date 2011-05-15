@@ -76,7 +76,6 @@
 #define IDM_FILE_QUIT                   5006
 #define IDM_FILE_SAVE                   5007
 #define IDM_FILE_SAVEAS                 5008
-#define IDM_FILE_SAVEGAME               5009
 #define IDM_FILE_SAVEGAMEAS             5010
 #define IDM_HELP_ABOUT                  5011
 #define IDM_PLAYER_JOIN                 5012

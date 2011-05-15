@@ -44,10 +44,6 @@
 	[consoleController.window setRepresentedFilename:@""];
 }
 
-- (IBAction) saveGame:(id)sender
-{
-	Console.FileSave(true);
-}
 
 - (IBAction) saveGameAs:(id)sender
 {
@@ -165,7 +161,6 @@
 	{
 		@selector(saveScenario:),
 		@selector(saveScenarioAs:),
-		@selector(saveGame:),
 		@selector(saveGameAs:),
 		@selector(record:),
 		@selector(closeScenario:),

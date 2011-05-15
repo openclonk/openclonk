@@ -131,7 +131,6 @@ public:
 	GtkWidget* fileOpenWithPlayers;
 	GtkWidget* fileSave;
 	GtkWidget* fileSaveAs;
-	GtkWidget* fileSaveGame;
 	GtkWidget* fileSaveGameAs;
 	GtkWidget* fileRecord;
 	GtkWidget* fileClose;
@@ -207,7 +206,6 @@ public:
 	static void OnFileOpenWPlrs(GtkWidget* item, gpointer data);
 	static void OnFileSave(GtkWidget* item, gpointer data);
 	static void OnFileSaveAs(GtkWidget* item, gpointer data);
-	static void OnFileSaveGame(GtkWidget* item, gpointer data);
 	static void OnFileSaveGameAs(GtkWidget* item, gpointer data);
 	static void OnFileRecord(GtkWidget* item, gpointer data);
 	static void OnFileClose(GtkWidget* item, gpointer data);
@@ -452,8 +450,6 @@ void C4ConsoleGUI::State::InitGUI()
 	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-	fileSaveGame = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAME"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGame);
 
 	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
@@ -508,7 +504,6 @@ void C4ConsoleGUI::State::InitGUI()
 	g_signal_connect(G_OBJECT(fileOpenWithPlayers), "activate", G_CALLBACK(OnFileOpenWPlrs), this);
 	g_signal_connect(G_OBJECT(fileSave), "activate", G_CALLBACK(OnFileSave), this);
 	g_signal_connect(G_OBJECT(fileSaveAs), "activate", G_CALLBACK(OnFileSaveAs), this);
-	g_signal_connect(G_OBJECT(fileSaveGame), "activate", G_CALLBACK(OnFileSaveGame), this);
 	g_signal_connect(G_OBJECT(fileSaveGameAs), "activate", G_CALLBACK(OnFileSaveGameAs), this);
 	g_signal_connect(G_OBJECT(fileRecord), "activate", G_CALLBACK(OnFileRecord), this);
 	g_signal_connect(G_OBJECT(fileClose), "activate", G_CALLBACK(OnFileClose), this);
@@ -541,7 +536,6 @@ void C4ConsoleGUI::State::Clear()
 	fileOpenWithPlayers = NULL;
 	fileSave = NULL;
 	fileSaveAs = NULL;
-	fileSaveGame = NULL;
 	fileSaveGameAs = NULL;
 	fileRecord = NULL;
 	fileClose = NULL;
@@ -958,7 +952,6 @@ void C4ConsoleGUI::State::DoEnableControls(bool fEnable)
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
 	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && ::Control.IsRuntimeRecordPossible());
-	gtk_widget_set_sensitive(fileSaveGame, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSave, fEnable);
 	gtk_widget_set_sensitive(fileSaveAs, fEnable);
@@ -1535,11 +1528,6 @@ void C4ConsoleGUI::State::OnFileSave(GtkWidget* item, gpointer data)
 void C4ConsoleGUI::State::OnFileSaveAs(GtkWidget* item, gpointer data)
 {
 	Console.FileSaveAs(false);
-}
-
-void C4ConsoleGUI::State::OnFileSaveGame(GtkWidget* item, gpointer data)
-{
-	Console.FileSave(true);
 }
 
 void C4ConsoleGUI::State::OnFileSaveGameAs(GtkWidget* item, gpointer data)
