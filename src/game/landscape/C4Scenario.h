@@ -99,14 +99,14 @@ class C4SDefinitions
 public:
 	bool LocalOnly;
 	bool AllowUserChange;
-	char Definition[C4S_MaxDefinitions][_MAX_PATH+1];
 	C4IDList SkipDefs;
-public:
 	void SetModules(const char *szList, const char *szRelativeToPath=NULL, const char *szRelativeToPath2=NULL);
 	bool GetModules(StdStrBuf *psOutModules) const;
-	bool AssertModules(const char *szPath=NULL, char *sMissing=NULL);
 	void Default();
 	void CompileFunc(StdCompiler *pComp);
+
+private:
+	char Definition[C4S_MaxDefinitions][_MAX_PATH+1];
 };
 
 

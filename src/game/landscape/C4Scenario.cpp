@@ -469,35 +469,6 @@ void C4SDefinitions::SetModules(const char *szList, const char *szRelativeToPath
 
 }
 
-bool C4SDefinitions::AssertModules(const char *szPath, char *sMissing)
-{
-	// Local only
-	if (LocalOnly) return true;
-
-	// Check all listed modules for availability
-	bool fAllAvailable=true;
-	char szModule[_MAX_PATH+1];
-	if (sMissing) sMissing[0]=0;
-	// Check all definition files
-	for (int32_t cnt=0; cnt<C4S_MaxDefinitions; cnt++)
-		if (Definition[cnt][0])
-		{
-			// Compose filename using path specified by caller
-			szModule[0]=0;
-			if (szPath) SCopy(szPath,szModule); if (szModule[0]) AppendBackslash(szModule);
-			SAppend(Definition[cnt],szModule);
-			// Missing
-			if (!C4Group_IsGroup(szModule))
-			{
-				// Add to list
-				if (sMissing) { SNewSegment(sMissing,", "); SAppend(Definition[cnt],sMissing); }
-				fAllAvailable=false;
-			}
-		}
-
-	return fAllAvailable;
-}
-
 void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(LocalOnly,               "LocalOnly",             false));
