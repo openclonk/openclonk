@@ -872,7 +872,7 @@ bool IsValidUtf8(const char *text, int length)
 		assert((*cursor & 0xC0) == 0xC0);
 		uint32_t value = *cursor;
 		// strip length bits off the start byte
-		value &= (static_cast<uint32_t>(~0U) >> (continuation_bytes + 1));
+		value &= (0xFF >> (continuation_bytes + 1));
 		for (int byte = 0; byte < continuation_bytes; ++byte)
 		{
 			// check that this is actually a continuation byte
