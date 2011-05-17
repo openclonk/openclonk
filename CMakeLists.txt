@@ -1179,6 +1179,16 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	endif()
 endif()
 
+# GTest
+include(FindGTest)
+if(GTEST_FOUND)
+	include_directories(${GTEST_INCLUDE_DIRS})
+	add_executable(tests EXCLUDE_FROM_ALL
+		tests/UnicodeHandlingTest.cpp
+		tests/main.cpp
+	)
+	target_link_libraries(tests ${GTEST_LIBRARIES})
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
