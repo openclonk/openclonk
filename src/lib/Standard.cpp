@@ -867,6 +867,11 @@ bool IsValidUtf8(const char *text, int length)
 			// Standard 7-bit ASCII value (i.e., 1 byte codepoint)
 			continue;
 		}
+		else if (length >= 0 && cursor - input + continuation_bytes >= length)
+		{
+			// Too few remaining bytes
+			return false;
+		}
 		
 		// Compute character value, so we can detect overlong sequences
 		assert((*cursor & 0xC0) == 0xC0);
