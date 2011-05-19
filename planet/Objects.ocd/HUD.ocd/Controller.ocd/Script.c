@@ -495,8 +495,8 @@ private func ClearButtons(int start)
 		if(actionbar[j])
 			actionbar[j]->Clear();
 	}
-	if(deco->GetSlotNumber() != -1)
-	if(deco->GetSlotNumber() != GetRealActionbarLength())
+	//if(deco->GetSlotNumber() != -1)
+	//if(deco->GetSlotNumber() != GetRealActionbarLength())
 		deco->SlideTo(GetRealActionbarLength());
 }
 

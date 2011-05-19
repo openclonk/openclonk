@@ -45,10 +45,14 @@ func SetControllerObject(object p) { parent=p; }
 func SlideTo(int number)
 {
 	if(number*5 == current) return false;
-	desired=number*5;
-	for(var i = 2; i<GetLength(parent.actionbar); i++)
-		parent.actionbar[i]->HideSelector();
-	if(!GetEffect("BackDecoSlider",this)) AddEffect("BackDecoSlider",this,100,1,this);
+	current=number*5;
+	//for(var i = 2; i<GetLength(parent.actionbar); i++)
+	//	parent.actionbar[i]->HideSelector();
+	SetObjDrawTransform(4000 + current*padding*2,0,0,0,1000,118*1000,1);
+
+	for(var i=5; i<20; i++)
+		SetObjDrawTransform(1000,0,(352 + ((padding/5)*current) - (i-5) * padding) * 1000,0,1000,115*1000,i);
+	//if(!GetEffect("BackDecoSlider",this)) AddEffect("BackDecoSlider",this,100,1,this);
 }
 
 
