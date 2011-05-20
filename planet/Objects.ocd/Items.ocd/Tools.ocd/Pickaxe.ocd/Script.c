@@ -43,7 +43,7 @@ private func Hit()
 	return 1;
 }
 
-static const Pickaxe_SwingTime = 60;
+static const Pickaxe_SwingTime = 40;
 
 func ControlUseStart(object clonk, int ix, int iy)
 {
