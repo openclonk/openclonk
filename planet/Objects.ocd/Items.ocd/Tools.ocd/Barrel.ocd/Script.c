@@ -31,7 +31,7 @@ private func Hit()
 	if(iVolume >= 1 && Closed == false) {
 		if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain) != szLiquid) return 0;
 		EmptyBarrel(GetR());
-		Sound(" "); //water splash sound should be added when available -Ringwaul
+		Sound("Splash1");
 	}
 }
 
