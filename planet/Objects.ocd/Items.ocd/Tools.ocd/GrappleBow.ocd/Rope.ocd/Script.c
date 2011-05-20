@@ -195,6 +195,7 @@ func UpdateLines()
 		if(i == 1)
 		{
 			segments[i]->SetGraphics(nil, GrappleHook);
+			segments[i].MeshTransformation = Trans_Mul(Trans_Translate(1500,0,0),Trans_Scale(1500));
 			point[0] += -Cos(diffangle, 15*Rope_Precision/10)+Sin(diffangle, 4*Rope_Precision);
 			point[1] += -Cos(diffangle, 4*Rope_Precision)-Sin(diffangle, 15*Rope_Precision/10);
 			length = 1000;
