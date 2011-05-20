@@ -1,2 +1,2 @@
 Name=Ballon
-Description=Drücke während Du fällst [Benutzen], um deinen Fall abzubremsen.
+Description=Benutze den Ballon um deinen Fall abzubremsen.

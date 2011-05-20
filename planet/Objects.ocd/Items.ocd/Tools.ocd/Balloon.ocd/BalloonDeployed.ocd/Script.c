@@ -20,12 +20,6 @@ protected func Initialize()
 	}
 }
 
-public func ControlUseStart(object clonk, int ix, int iy)
-{
-	//reroute Control commands to clonk's inventory
-	return false;
-}
-
 private func Deflate()
 {
 	if(GetAction() != "Deflate") SetAction("Deflate");
@@ -45,8 +39,6 @@ private func Pack()
 	rider->SetSpeed(GetXDir(),GetYDir());
 	rider->SetComDir(COMD_Down);
 }
-
-func HoldingEnabled() { return true; }
 
 func ControlLeft()
 {
@@ -96,7 +88,7 @@ private func FxFloatTimer(object target, effect, int time)
 
 	//Control
 	SetXDir(GetXDir() + idir);
-	Message(Format("%d",idir));
+	//Message(Format("%d",idir));
 
 	if(GetContact(-1)) //Has any vertex hit? Then deflate.
 	{
