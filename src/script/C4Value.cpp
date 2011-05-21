@@ -244,6 +244,7 @@ static C4V_Type GetC4VFromID(const char C4VID)
 	switch (C4VID)
 	{
 	case 'n':
+	case 'A': // compat with OC 5.1
 		return C4V_Nil;
 	case 'i':
 		return C4V_Int;
