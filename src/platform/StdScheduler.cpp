@@ -244,7 +244,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 
 	// Initialize file descriptor sets
 	std::vector<struct pollfd> fds;
-	std::map<StdSchedulerProc *, std::pair<unsigned int, unsigned int>> fds_for_proc;
+	std::map<StdSchedulerProc *, std::pair<unsigned int, unsigned int> > fds_for_proc;
 
 	// Collect file descriptors
 	for (i = 0; i < iProcCnt; i++)

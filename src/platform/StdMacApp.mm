@@ -27,6 +27,8 @@
 #include <StdWindow.h>
 #include <string>
 
+#include "StdApp.h"
+
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];

@@ -731,6 +731,8 @@ SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
 include(FindJPEG)
 include(FindPNG)
 include(FindZLIB)
+include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+
 find_package("Boost" 1.40.0)
 if(NOT Boost_INCLUDE_DIR)
 	message(SEND_ERROR "Could not find the Boost C++ Libraries")
