@@ -294,6 +294,11 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			cC4VID = 'n';
 		}
 		Type = GetC4VFromID(cC4VID);
+		if (Type == C4V_Any)
+		{
+			Type = C4V_Nil;
+			pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
+		}
 	}
 	// Data
 	int32_t iTmp;
@@ -385,8 +390,6 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// doesn't have a value, so nothing to store
 		break;
 
-	case C4V_Any:
-		// corrupt save
 	default:
 		// shouldn't happen
 		assert(false);
