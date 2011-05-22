@@ -1856,10 +1856,10 @@ bool C4Group::AccessEntry(const char *szWildCard,
 
 bool C4Group::AccessNextEntry(const char *szWildCard,
                               size_t *iSize, char *sFileName,
-                              bool *fChild)
+                              bool fStartAtFilename)
 {
 	char fname[_MAX_FNAME+1];
-	if (!FindNextEntry(szWildCard,fname,&iCurrFileSize,fChild)) return false;
+	if (!FindNextEntry(szWildCard,fname,&iCurrFileSize,fStartAtFilename)) return false;
 #ifdef _DEBUG
 	szCurrAccessedEntry = fname;
 #endif

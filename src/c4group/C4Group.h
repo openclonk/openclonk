@@ -212,7 +212,7 @@ public:
 	                 bool NeedsToBeAGroup = false);
 	bool AccessNextEntry(const char *szWildCard,
 	                     size_t *iSize=NULL, char *sFileName=NULL,
-	                     bool *fChild=NULL);
+	                     bool fStartAtFilename=false);
 	bool LoadEntry(const char *szEntryName, char **lpbpBuf,
 	               size_t *ipSize=NULL, int iAppendZeros=0);
 	bool LoadEntry(const char *szEntryName, StdBuf * Buf);
