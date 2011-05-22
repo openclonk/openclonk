@@ -220,3 +220,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 2;
 local Rebuy = true;
+local Plane = 275;
