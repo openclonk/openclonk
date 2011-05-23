@@ -196,6 +196,9 @@ set(OC_CLONK_SOURCES
 	src/game/C4Physics.h
 	src/game/landscape/C4Landscape.cpp
 	src/game/landscape/C4Landscape.h
+	src/game/landscape/C4LandscapeRender.cpp
+	src/game/landscape/C4LandscapeRenderClassic.cpp
+	src/game/landscape/C4LandscapeRender.h
 	src/game/landscape/C4Map.cpp
 	src/game/landscape/C4MapCreatorS2.cpp
 	src/game/landscape/C4MapCreatorS2.h

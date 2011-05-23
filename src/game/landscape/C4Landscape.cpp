@@ -56,9 +56,6 @@
 #include <StdSurface8.h>
 #include <StdPNG.h>
 
-const int C4LS_MaxLightDistY = 8;
-const int C4LS_MaxLightDistX = 1;
-
 C4Landscape::C4Landscape()
 {
 	Default();
@@ -285,7 +282,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	// clear sky
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
-	delete Surface32; Surface32=NULL;
+	delete pLandscapeRender; pLandscapeRender=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
 	// clear initial landscape
@@ -307,20 +304,13 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 {
 	if (Modulation) lpDDraw->ActivateBlitModulation(Modulation);
-	// do relights
-	DoRelights();
 	// blit landscape
 	if (::GraphicsSystem.ShowSolidMask)
 		lpDDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
-	else
+	else if(pLandscapeRender)
 	{
-		const CSurface * Surfaces[C4M_MaxTexIndex];
-		if (Config.Graphics.HighResLandscape)
-			for (int i = 0; i < C4M_MaxTexIndex; ++i)
-				Surfaces[i] = ::TextureMap.GetEntry(i)->GetPattern().getSurface();
-		lpDDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
-		                                 cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt,
-		                                 Config.Graphics.HighResLandscape ? Surfaces : 0);
+		DoRelights();
+		pLandscapeRender->Draw(cgo);
 	}
 	if (Modulation) lpDDraw->DeactivateBlitModulation();
 }
@@ -401,7 +391,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	iMapWdt=BoundBy<int32_t>(iMapWdt,0,iMapWidth-iMapX); iMapHgt=BoundBy<int32_t>(iMapHgt,0,iMapHeight-iMapY);
 	// get chunk size
 	iChunkWidth=MapZoom; iChunkHeight=MapZoom;
-	Surface32->Lock();
 	// Scan map lines
 	for (iY=iMapY; iY<iMapY+iMapHgt; iY++)
 	{
@@ -448,7 +437,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 				}
 		}
 	}
-	Surface32->Unlock();
 }
 
 bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage)
@@ -486,27 +474,14 @@ bool C4Landscape::TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int
 	return true;
 }
 
-bool C4Landscape::SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
-{
-	if (!Surface32->Lock()) return false;
-	// newgfx: simply blit the sky in realtime...
-	Surface32->ClearBoxDw(iToX, iToY, iToWdt, iToHgt);
-	Surface8->ClearBox8Only(iToX, iToY, iToWdt, iToHgt);
-	// unlock
-	Surface32->Unlock();
-	// Done
-	return true;
-}
-
 bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
 {
 
-	// Sky background segment
-	SkyToLandscape(iToX, iToY, iToWdt, iToHgt, iOffX, iOffY);
+	// Clear surface
+	Surface8->ClearBox8Only(iToX, iToY, iToWdt, iToHgt);
 
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
-	Surface32->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	lpDDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
@@ -520,7 +495,6 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 	// remove clipper
 	Surface8->NoClip();
-	Surface32->NoClip();
 
 	// success
 	return true;
@@ -528,7 +502,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY)
 {
-	assert(Surface8); assert(Surface32);
+	assert(Surface8);
 	// Clip to map/landscape segment
 	int iMapWidth,iMapHeight,iLandscapeWidth,iLandscapeHeight;
 	// Get map & landscape size
@@ -547,11 +521,9 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	To.Wdt = iMapWdt*MapZoom;
 	To.Hgt = iMapHgt*MapZoom;
 
-	Surface32->Lock();
 	PrepareChange(To);
 	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
-	Surface32->Unlock();
 	return true;
 }
 
@@ -746,27 +718,41 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// Scan settings
 	ScanSpeed=BoundBy(Width/500,2,15);
 
-	// create it
-	if (!Game.C4S.Landscape.ExactLandscape)
+	// map to big surface and sectionize it
+	// (not for shaders though - they require continous textures)
+	// Create landscape surface
+	Surface8 = new CSurface8();
+	if (!Surface8->Create(Width, Height) || !Mat2Pal())
 	{
-		// map to big surface and sectionize it
-		// Create landscape surface
-		Surface32 = new CSurface();
-		Surface8 = new CSurface8();
-		if (!Surface32->Create(Width, Height, true, false, lpDDraw->IsShaderific() ? 0 : 64)
-		    || !Surface8->Create(Width, Height)
-		    || !Mat2Pal())
-		{
-			delete Surface8; delete Surface32;
-			Surface8 = 0; Surface32 = 0;
-			return false;
-		}
-
-		// Map to landscape
-		if (!MapToLandscape()) return false;
+		delete Surface8; Surface8 = 0;
+		return false;
 	}
-	Game.SetInitProgress(87);
 
+	// Map to landscape
+	if (!MapToLandscape()) return false;
+	Game.SetInitProgress(84);
+
+	// Create renderer
+	pLandscapeRender = NULL;
+#ifdef USE_GL
+	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
+		pLandscapeRender = new C4LandscapeRenderGL();
+#endif
+#ifndef USE_CONSOLE
+	if (!pLandscapeRender)
+		pLandscapeRender = new C4LandscapeRenderClassic();
+#endif
+
+	if(pLandscapeRender)
+	{
+		// Initialize renderer
+		if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
+			return false;
+
+		// Write landscape data
+		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
+		Game.SetInitProgress(87);
+	}
 #ifdef DEBUGREC
 	AddDbgRec(RCT_Block, "|---LS---|", 11);
 	AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
@@ -793,6 +779,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// and not creating the map
 	Game.FixRandom(Game.RandomSeed);
 
+
 	// Success
 	rfLoaded=true;
 	return true;
@@ -812,21 +799,18 @@ bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 	if (npix == _GetPix(x, y))
 		return true;
 	// note for relight
-	C4Rect CheckRect(x - 2 * C4LS_MaxLightDistX, y - 2 * C4LS_MaxLightDistY, 4 * C4LS_MaxLightDistX + 1, 4 * C4LS_MaxLightDistY + 1);
-	for (int32_t i = 0; i < C4LS_MaxRelights; i++)
-		if (!Relights[i].Wdt || Relights[i].Overlap(CheckRect) || i + 1 >= C4LS_MaxRelights)
-		{
-			Relights[i].Add(C4Rect(x,y,1,1));
-			break;
-		}
+	if(pLandscapeRender)
+	{
+		C4Rect CheckRect = pLandscapeRender->GetAffectedRect(C4Rect(x, y, 1, 1));
+		for (int32_t i = 0; i < C4LS_MaxRelights; i++)
+			if (!Relights[i].Wdt || Relights[i].Overlap(CheckRect) || i + 1 >= C4LS_MaxRelights)
+			{
+				Relights[i].Add(CheckRect);
+				break;
+			}
+	}
 	// set pixel
 	return _SetPix(x, y, npix);
-}
-
-bool C4Landscape::SetPixDw(int32_t x, int32_t y, DWORD dwPix)
-{
-	// set in surface
-	return Surface32->SetPixDw(x, y, dwPix);
 }
 
 bool C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
@@ -1514,13 +1498,7 @@ bool C4Landscape::SaveInternal(C4Group &hGroup)
 	if (!hGroup.Move( szTempLandscape, C4CFN_Landscape ))
 		return false;
 
-	SCopy(Config.AtTempPath(C4CFN_TempLandscapePNG), szTempLandscape);
-	MakeTempFilename(szTempLandscape);
-	if (!Surface32->SavePNG(szTempLandscape, true, false, false))
-		return false;
-	if (!hGroup.Move( szTempLandscape, C4CFN_LandscapePNG ))
-		return false;
-
+	// Save map
 	if (fMapChanged && Map)
 		if (!SaveMap(hGroup))
 			return false;
@@ -1608,29 +1586,10 @@ bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 	int iWidth, iHeight;
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
-	Surface32 = new CSurface(Width, Height);
 	// adjust pal
 	if (!Mat2Pal()) return false;
-	// load the 32bit-surface, too
-	size_t iSize;
-	if (hGroup.AccessEntry(C4CFN_LandscapePNG, &iSize))
-	{
-		CPNGFile png;
-		BYTE *pPNG = new BYTE [iSize];
-		hGroup.Read(pPNG, iSize);
-		bool fSuccess = png.Load(pPNG, iSize);
-		delete [] pPNG;
-		if (fSuccess)
-			fSuccess = !!Surface32->Lock();
-		if (fSuccess)
-		{
-			for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-					Surface32->SetPixDw(x, y, png.GetPix(x, y));
-			Surface32->Unlock();
-		}
-	}
 	// no PNG: convert old-style landscapes
-	else if (!Game.C4S.Landscape.NewStyleLandscape)
+	if (!Game.C4S.Landscape.NewStyleLandscape)
 	{
 		// convert all pixels
 		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
@@ -1705,7 +1664,7 @@ void C4Landscape::Default()
 {
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
-	Surface32=NULL;
+	pLandscapeRender=NULL;
 	Map=NULL;
 	Width=Height=0;
 	MapWidth=MapHeight=MapZoom=0;
@@ -2576,115 +2535,25 @@ inline DWORD DarkenClr1_4(DWORD &dwDst) // make it 3/4 as bright, slightly viole
 
 bool C4Landscape::DoRelights()
 {
+	if (!pLandscapeRender) return true;
 	for (int32_t i = 0; i < C4LS_MaxRelights; i++)
 	{
 		if (!Relights[i].Wdt)
 			break;
-		C4Rect SolidMaskRect = Relights[i];
-		SolidMaskRect.x -= 2 * C4LS_MaxLightDistX; SolidMaskRect.y -= 2 * C4LS_MaxLightDistY;
-		SolidMaskRect.Wdt += 4 * C4LS_MaxLightDistX; SolidMaskRect.Hgt += 4 * C4LS_MaxLightDistY;
+		// Remove all solid masks in the (twice!) extended region around the change
+		C4Rect SolidMaskRect = pLandscapeRender->GetAffectedRect(Relights[i]);
 		C4SolidMask * pSolid;
 		for (pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
-		{
 			pSolid->RemoveTemporary(SolidMaskRect);
-		}
-		Relight(Relights[i]);
+		// Perform the update
+		pLandscapeRender->Update(Relights[i], this);
 		// Restore Solidmasks
 		for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
-		{
 			pSolid->PutTemporary(SolidMaskRect);
-		}
-		Relights[i].Default();
 		C4SolidMask::CheckConsistency();
+		// Clear slot
+		Relights[i].Default();
 	}
-	return true;
-}
-
-bool C4Landscape::Relight(C4Rect To)
-{
-	// Enlarge to relight pixels surrounding a changed one
-	To.x -= C4LS_MaxLightDistX; To.y -= C4LS_MaxLightDistY;
-	To.Wdt += 2 * C4LS_MaxLightDistX; To.Hgt += 2 * C4LS_MaxLightDistY;
-	// Apply lighting
-	return ApplyLighting(To);
-}
-
-bool C4Landscape::ApplyLighting(C4Rect To)
-{
-	// clip to landscape size
-	To.Intersect(C4Rect(0,0,GBackWdt,GBackHgt));
-	// everything clipped?
-	if (To.Wdt<=0 || To.Hgt<=0) return true;
-	if (!Surface32->Lock()) return false;
-
-	// We clear the affected region here because ClearBoxDw allocates the
-	// main memory buffer for the box, so that only that box needs to be
-	// sent to the gpu, and not the whole texture, or every pixel
-	// separately. It's an important optimization.
-	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
-
-	if (lpDDraw->IsShaderific() && Config.Graphics.HighResLandscape)
-	{
-		for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
-			for (int32_t iY=To.y; iY<To.y+To.Hgt; ++iY)
-				Surface32->SetPixDw(iX, iY, _GetPix(iX, iY));
-	}
-	else
-		// do lightning
-		for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
-		{
-			int AboveDensity = 0, BelowDensity = 0;
-			for (int i = 1; i <= 8; ++i)
-			{
-				AboveDensity += GetPlacement(iX, To.y - i - 1);
-				BelowDensity += GetPlacement(iX, To.y + i - 1);
-			}
-			for (int32_t iY=To.y; iY<To.y+To.Hgt; ++iY)
-			{
-				AboveDensity -= GetPlacement(iX, iY - 9);
-				AboveDensity += GetPlacement(iX, iY - 1);
-				BelowDensity -= GetPlacement(iX, iY);
-				BelowDensity += GetPlacement(iX, iY + 8);
-				BYTE pix = _GetPix(iX, iY);
-				// Sky
-				if (!pix)
-				{
-					Surface32->SetPixDw(iX, iY, 0x00ffffff);
-					continue;
-				}
-				// get density
-				int iOwnDens = Pix2Place[pix];
-				if (!iOwnDens) continue;
-				iOwnDens *= 2;
-				iOwnDens += GetPlacement(iX + 1, iY) + GetPlacement(iX - 1, iY);
-				iOwnDens /= 4;
-				// get texture map entry for pixel
-				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(PixCol2Tex(pix));
-				assert(pTex);
-				// get texture contents
-				DWORD dwBackClr;
-				if (pTex) dwBackClr = pTex->GetPattern().PatternClr(iX, iY);
-				// get density of surrounding materials
-				int iCompareDens = AboveDensity / 8;
-				if (iOwnDens > iCompareDens)
-				{
-					// apply light
-					LightenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
-				}
-				else if (iOwnDens < iCompareDens && iOwnDens < 30)
-				{
-					DarkenClrBy(dwBackClr, Min(30, 2 * (iCompareDens - iOwnDens)));
-				}
-				iCompareDens = BelowDensity / 8;
-				if (iOwnDens > iCompareDens)
-				{
-					DarkenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
-				}
-				Surface32->SetPixDw(iX, iY, dwBackClr);
-			}
-		}
-	Surface32->Unlock();
-	// done
 	return true;
 }
 
@@ -2911,8 +2780,8 @@ void C4Landscape::PrepareChange(C4Rect BoundingBox)
 {
 	// move solidmasks out of the way
 	C4Rect SolidMaskRect = BoundingBox;
-	SolidMaskRect.x -= 2 * C4LS_MaxLightDistX; SolidMaskRect.y -= 2 * C4LS_MaxLightDistY;
-	SolidMaskRect.Wdt += 4 * C4LS_MaxLightDistX; SolidMaskRect.Hgt += 4 * C4LS_MaxLightDistY;
+	if (pLandscapeRender)
+		SolidMaskRect = pLandscapeRender->GetAffectedRect(pLandscapeRender->GetAffectedRect(SolidMaskRect));
 	for (C4SolidMask * pSolid = C4SolidMask::Last; pSolid; pSolid = pSolid->Prev)
 	{
 		pSolid->RemoveTemporary(SolidMaskRect);
@@ -2922,19 +2791,20 @@ void C4Landscape::PrepareChange(C4Rect BoundingBox)
 
 void C4Landscape::FinishChange(C4Rect BoundingBox)
 {
-	// relight
-	Relight(BoundingBox);
+	// update render
+	if(pLandscapeRender)
+		pLandscapeRender->Update(BoundingBox, this);
 	UpdateMatCnt(BoundingBox, true);
 	// Restore Solidmasks
 	C4Rect SolidMaskRect = BoundingBox;
-	SolidMaskRect.x -= 2 * C4LS_MaxLightDistX; SolidMaskRect.y -= 2 * C4LS_MaxLightDistY;
-	SolidMaskRect.Wdt += 4 * C4LS_MaxLightDistX; SolidMaskRect.Hgt += 4 * C4LS_MaxLightDistY;
+	if (pLandscapeRender)
+		SolidMaskRect = pLandscapeRender->GetAffectedRect(pLandscapeRender->GetAffectedRect(SolidMaskRect));
 	for (C4SolidMask * pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 	{
 		pSolid->Repair(SolidMaskRect);
 	}
-	UpdatePixCnt(BoundingBox);
 	C4SolidMask::CheckConsistency();
+	UpdatePixCnt(BoundingBox);
 }
 
 void C4Landscape::UpdatePixCnt(const C4Rect &Rect, bool fCheck)

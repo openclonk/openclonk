@@ -97,6 +97,7 @@ public:
 	C4Texture * GetTexture(const char *szTexture);
 	bool CheckTexture(const char *szTexture); // return whether texture exists
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
+	int32_t GetTextureIndex(const char *pTexName);
 protected:
 	bool AddTexture(const char *szTexture, CSurface * sfcSurface);
 };

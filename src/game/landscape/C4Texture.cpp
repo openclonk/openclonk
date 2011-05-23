@@ -287,7 +287,7 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 	char texname[256+1];
 	C4Surface *ctex;
 	size_t binlen;
-	// newgfx: load PNG-textures first
+
 	hGroup.ResetSearch();
 	while (hGroup.AccessNextEntry("*",&binlen,texname))
 	{
@@ -306,6 +306,7 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 			delete ctex;
 		}
 	}
+
 	return texnum;
 }
 
@@ -379,6 +380,16 @@ C4Texture * C4TextureMap::GetTexture(const char *szTexture)
 		if (SEqualNoCase(pTexture->Name,szTexture))
 			return pTexture;
 	return NULL;
+}
+
+int32_t C4TextureMap::GetTextureIndex(const char *szName)
+{
+	C4Texture *pTexture;
+	int32_t i=0;
+	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next, i++)
+		if (SEqualNoCase(pTexture->Name,szName))
+			return i;
+	return -1;
 }
 
 bool C4TextureMap::CheckTexture(const char *szTexture)

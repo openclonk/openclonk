@@ -57,8 +57,10 @@ public:
 	void Normalize()
 	{ if (Wdt < 0) { x+=Wdt+1; Wdt=-Wdt; } if (Hgt < 0) { y+=Hgt+1; Hgt=-Hgt; } }
 
+	void Enlarge(int32_t iByX, int32_t iByY)
+	{ x -= iByX; y -= iByY; Wdt += 2*iByX; Hgt += 2*iByY; }
 	void Enlarge(int32_t iBy)
-	{ x -= iBy; y -= iBy; Wdt += 2*iBy; Hgt += 2*iBy; }
+	{ Enlarge(iBy, iBy); }
 
 	int32_t GetMiddleX() { return x+Wdt/2; }
 	int32_t GetMiddleY() { return y+Hgt/2; }

@@ -27,6 +27,7 @@
 
 #include "C4Sky.h"
 #include "C4Shape.h"
+#include "C4LandscapeRender.h"
 
 #include <StdSurface8.h>
 #include <C4Material.h>
@@ -76,8 +77,8 @@ public:
 	bool fMapChanged;
 	BYTE *pInitial; // Initial landscape after creation - used for diff
 protected:
-	CSurface * Surface32;
 	CSurface8 * Surface8;
+	C4LandscapeRender *pLandscapeRender;
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
 	uint8_t *PixCnt;
@@ -115,7 +116,6 @@ public:
 	bool ApplyDiff(C4Group &hGroup);
 	bool SetMode(int32_t iMode);
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
-	bool SetPixDw(int32_t x, int32_t y, DWORD dwPix); // set pixel how it is visible only
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
 	bool CheckInstability(int32_t tx, int32_t ty);
@@ -135,10 +135,6 @@ public:
 	inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
 	{
 		return Surface8->_GetPix(x,y);
-	}
-	inline DWORD _GetPixDw(int32_t x, int32_t y, bool fApplyModulation) // get landscape pixel (bounds not checked)
-	{
-		return Surface32->GetPixDw(x, y, fApplyModulation);
 	}
 	inline BYTE GetPix(int32_t x, int32_t y) // get landscape pixel (bounds checked)
 	{
