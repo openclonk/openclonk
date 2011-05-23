@@ -396,7 +396,6 @@ public:
 		       && !(Category & C4D_StaticBack)
 		       && (ComparisonPlane < GetPlane())
 		       && !Contained
-		       && (!pActionDef || pActionDef->GetPropertyP(P_Procedure) != DFA_FLOAT)
 		       ;
 	}
 
