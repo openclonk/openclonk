@@ -1,5 +1,5 @@
 
-#version 130
+#version 110
 
 // Input textures
 uniform sampler2D landscapeTex[1];
@@ -20,7 +20,6 @@ const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
 // Our input and output
 in vec4 gl_TexCoord[];
-out vec4 gl_FragColor;
 
 void main()
 {
@@ -34,42 +33,42 @@ void main()
 	vec2 centerCoo = (floor(pixelCoo) + vec2(0.5, 0.5)) / resolution;
 
 	// our pixel color (with and without interpolation)
-	vec4 lpx = texture(landscapeTex[0], centerCoo);
-	vec4 rlpx = texture(landscapeTex[0], gl_TexCoord[0].st);
+	vec4 lpx = texture2D(landscapeTex[0], centerCoo);
+	vec4 rlpx = texture2D(landscapeTex[0], gl_TexCoord[0].st);
 	
 	// gen2 other coordinate calculation (TODO: scaler map)
-	vec2 otherCoo = centerCoo + fullStep * round(normalize(mod(pixelCoo, vec2(1.0, 1.0)) - vec2(0.5, 0.5)));
-	vec4 lopx = texture(landscapeTex[0], otherCoo);
+	vec2 otherCoo = centerCoo + fullStep * floor(normalize(mod(pixelCoo, vec2(1.0, 1.0)) - vec2(0.5, 0.5)) + vec2(0.5, 0.5));
+	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
 	
-	if(texture(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == lpx.r)
 		scalerCoo += scalerStepX;
-	if(texture(landscapeTex[0], centerCoo             - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo             - fullStepY).r == lpx.r)
 		scalerCoo += 2.0 * scalerStepX;
-	if(texture(landscapeTex[0], centerCoo + fullStepX - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX - fullStepY).r == lpx.r)
 		scalerCoo += 4.0 * scalerStepX;
 		
-	if(texture(landscapeTex[0], centerCoo - fullStepX            ).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX            ).r == lpx.r)
 		scalerCoo += scalerStepY;
-	if(texture(landscapeTex[0], centerCoo + fullStepX            ).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX            ).r == lpx.r)
 		scalerCoo += 2.0 * scalerStepY;
 	
-	if(texture(landscapeTex[0], centerCoo - fullStepX + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX + fullStepY).r == lpx.r)
 		scalerCoo += 4.0 * scalerStepY;
-	if(texture(landscapeTex[0], centerCoo             + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo             + fullStepY).r == lpx.r)
 		scalerCoo += 8.0 * scalerStepY;
-	if(texture(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
 		scalerCoo += 16.0 * scalerStepY;
 
-	vec4 spx = textureLod(scalerTex, scalerCoo, 0.0);
+	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
 
 	// Material pixel
 	float mix = matTexMap[int(lpx.r * 255.0)];
-	vec4 mpx = texture(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), mix));
+	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), mix));
 	float omix = matTexMap[int(lopx.r * 255.0)];
-	vec4 ompx = texture(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omix));
+	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omix));
 	
 	// Brightness
 	vec2 normal = (1.5 * rlpx.yz - vec2(1.0, 1.0));

@@ -356,7 +356,7 @@ bool C4LandscapeRenderGL::InitShaders()
 	}
 
 	// Create trivial fragment shader
-	const char *szVert = "void main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
+	const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
 	hVert = CreateShader(GL_VERTEX_SHADER_ARB, "Vertex shader", szVert);
     hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "Fragment shader", LandscapeShader.getData());
 	if(!hFrag || !hVert) return false;
