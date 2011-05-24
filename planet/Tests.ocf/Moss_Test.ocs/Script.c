@@ -4,8 +4,9 @@ func Initialize()
 {
 
 
-	CreateObject(Moss,280,380);
-	CreateObject(Moss,166,166);
+	CreateObject(Moss_Lichen,280,380);
+	CreateObject(Moss_Lichen,166,166)->GetY();
+	CreateObject(Firestone,166,166);
 	Log("Try /fast 10 for faster growing!");
 	
 }
