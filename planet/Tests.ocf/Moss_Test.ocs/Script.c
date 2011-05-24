@@ -5,8 +5,9 @@ func Initialize()
 
 
 	CreateObject(Moss_Lichen,280,380);
-	CreateObject(Moss_Lichen,166,166)->GetY();
-	CreateObject(Firestone,166,166);
+	CreateObject(Moss_Lichen,166,166);
+	CreateObject(Moss,470,220);
+
 	Log("Try /fast 10 for faster growing!");
 	
 }
@@ -34,10 +35,9 @@ func Initialize()
 	clonk->SetPosition(150, 100);
 //	clonk->CreateContents(Javelin);
 //		clonk->CreateContents(DynamiteBox);
-	clonk->CreateContents(Bow);
-	clonk->Collect(CreateObject(Arrow));
+	clonk->CreateContents(Sword);
 	clonk->CreateContents(Firestone);
-		clonk->CreateContents(Shovel);
+	clonk->CreateContents(Shovel);
 	clonk->CreateContents(GrappleBow);
 	return;
 	

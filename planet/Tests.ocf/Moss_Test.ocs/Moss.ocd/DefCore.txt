@@ -10,12 +10,12 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=75,75
-Value=4
-Mass=9
+Value=5
+Mass=5
 Components=Wood=2;
 Rotate=1
 ContactIncinerate=1
-BlastIncinerate=5
+BlastIncinerate=1
 Rotate=1
 Float=1
 Collectible=1
