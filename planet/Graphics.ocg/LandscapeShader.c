@@ -18,9 +18,6 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = vec2(0.0, 0.0) + scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
-// Our input and output
-in vec4 gl_TexCoord[];
-
 void main()
 {
 	// full pixel steps in the landscape texture (depends on landscape resolution)
