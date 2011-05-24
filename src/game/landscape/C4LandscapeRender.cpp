@@ -144,10 +144,20 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 			{}
 		if(!(pSurface = pTex->Surface32))
 			{}
-		else if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-			LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", pTexs->GetTexture(i), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
 		else if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
 			Log("   gl: Halp! Material texture is fragmented!");
+		else if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
+		{
+			LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", pTexs->GetTexture(i), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+			int32_t *texdata = reinterpret_cast<int32_t*>(p);
+			pSurface->ppTex[0]->Lock();
+			for (int y = 0; y < iTexHgt; ++y)
+				for (int x = 0; x < iTexWdt; ++x)
+					*texdata++ = *reinterpret_cast<int32_t*>(pSurface->ppTex[0]->texLock.pBits + pSurface->ppTex[0]->texLock.Pitch * (y % pSurface->Hgt) + pSurface->byBytesPP * (x % pSurface->Wdt));
+					// *texdata++ = !!((y ^ x) & 64) ? 0xFFFFFF00 : 0xFF000000;
+			pSurface->ppTex[0]->Unlock();
+			continue;
+		}
 		else
 		{
 			memcpy(p, pSurface->ppTex[0]->texLock.pBits, iTexSize);
