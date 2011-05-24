@@ -68,13 +68,14 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 		const C4TexMapEntry *pEntry = pTexs->GetEntry(PixCol2Tex(BYTE(pix)));
 		if(!pEntry->GetTextureName())
 		{
-			MatTexMap[pix] = 0.5 / (iTexCount - 1);
+			// Texture zero is transparent
+			MatTexMap[pix] = 0.5 / iTexCount;
 			continue;
 		}
 		// Assign texture
 		int32_t iTexIndex = pTexs->GetTextureIndex(pEntry->GetTextureName());
 		if(iTexIndex < 0) iTexIndex = 0;
-		MatTexMap[pix] = (float(iTexIndex) + 0.5) / (iTexCount - 1);
+		MatTexMap[pix] = (float(iTexIndex) + 1.5) / iTexCount;
 	}
 
 	// Build texture, er, texture
@@ -134,15 +135,15 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	const int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
 	const int iBytesPP = pRefSfc->byBytesPP;
 	const int iTexSize = iTexWdt * iTexHgt * iBytesPP;
-	const int iSize = iTexSize * iTexCount;
+	const int iSize = iTexSize * (iTexCount + 1);
 	char *pData = new char [iSize];
 	for(int i = 0; i < iTexCount; i++)
 	{
 		char *p = pData + i * iTexSize;
 		C4Texture *pTex; CSurface *pSurface;
-		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(i))))
+		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(i-1))))
 			{}
-		if(!(pSurface = pTex->Surface32))
+		else if(!(pSurface = pTex->Surface32))
 			{}
 		else if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
 			Log("   gl: Halp! Material texture is fragmented!");
@@ -160,7 +161,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		}
 		else
 		{
+			pSurface->ppTex[0]->Lock();
 			memcpy(p, pSurface->ppTex[0]->texLock.pBits, iTexSize);
+			pSurface->ppTex[0]->Unlock();
 			continue;
 		}
 		memset(p, 0, iTexSize);
@@ -527,10 +530,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		glUniform1ivARB(hLandscapeUnit, C4LR_SurfaceCount, iLandscapeUnits);
 	}
 
-	// get current blitting offset in texture
-	int iBlitX=0;
-	int iBlitY=0;
-
 	// set up blit data as rect
 	FLOAT_RECT fTexBlt, tTexBlt;
 	float fx = float(cgo.TargetX), fy = float(cgo.TargetY);
@@ -574,9 +573,15 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	//for (int i=0; i<4; ++i)
 	//	DwTo4UB(dwModClr | dwModMask, Vtx[i].color);
 
+	// Blend it
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
 	// Blit
 	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
 	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisable(GL_BLEND);
 
 	// Remove shader
 	glUseProgramObjectARB(0);
