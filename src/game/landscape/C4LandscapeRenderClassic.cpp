@@ -21,7 +21,7 @@ bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMa
 {
 	// Create surface
 	Surface32 = new CSurface();
-	if(!Surface32->Create(iWidth, iHeight, false, false, 256))
+	if(!Surface32->Create(iWidth, iHeight))
 		return false;
 	// Safe back info
 	this->iWidth = iWidth;
