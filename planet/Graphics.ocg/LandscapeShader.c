@@ -59,7 +59,7 @@ void main()
 	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
 		scalerCoo += 16.0 * scalerStepY;
 
-	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
+	vec4 spx = texture2D(scalerTex, scalerCoo, 0.0);
 
 	// Material pixel
 	float mix = matTexMap[int(lpx.r * 255.0)];
