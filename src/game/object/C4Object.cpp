@@ -340,12 +340,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pEffects->ClearAll(this, C4FxCall_RemoveClear);
 		// Effect-callback might actually have deleted the object already
 		if (!Status) return;
-		// ...or just deleted the effects
-		if (pEffects)
-		{
-			delete pEffects;
-			pEffects = NULL;
-		}
 	}
 	// remove particles
 	if (FrontParticles) FrontParticles.Clear();
