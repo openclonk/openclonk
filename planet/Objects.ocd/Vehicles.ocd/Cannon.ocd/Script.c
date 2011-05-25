@@ -165,16 +165,17 @@ public func ControlUseStop(object clonk, int ix, int iy)
 	if (projectile)
 	{
 		DoFire(projectile, clonk, Angle(0,0,ix,iy));
-		var powder = Contents(0)->Contents(0);
-		if(powder)
+		var powder = Contents(0)->PowderCount();
+		if(powder >= 1)
 		{
+			var powderkeg = Contents(0);
 			//If there is a powder keg, take powder from it
-			powder->RemoveObject();
+			powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
 			DoFire(projectile, clonk, Angle(0,0,ix,iy));
 			AddEffect("IntCooldown",this,1,1,this);
-			if(Contents(0)->ContentsCount() == 0)
+			if(powderkeg->PowderCount() == 0)
 			{
-				Contents(0)->RemoveObject();
+				powderkeg->RemoveObject();
 				CreateObject(Barrel);
 			}
 		}

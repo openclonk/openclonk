@@ -96,16 +96,6 @@ public func ControlUse(object clonk, int iX, int iY)
 	return 1;
 }
 
-protected func RejectCollect(id objid, object obj)
-{
-	if(objid != Blackpowder || iVolume > 1) return true;
-}
-
-protected func Collection(object obj, bool put)
-{
-	ChangeDef(PowderKeg);
-}
-
 public func IsToolProduct() { return 1; }
 
 local Collectible = 1;

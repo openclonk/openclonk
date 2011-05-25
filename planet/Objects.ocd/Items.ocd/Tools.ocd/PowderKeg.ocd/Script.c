@@ -5,6 +5,7 @@
 	A barrel filled with black powder.
 --*/
 
+local count;
 local oldcount;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
@@ -18,31 +19,41 @@ protected func Initialize()
 
 protected func Construction()
 {
-	oldcount = ContentsCount();
-	CreateContents(Blackpowder,12);
+	oldcount = count;
+	count = 12;
 	AddEffect("Update",this,1,1,this);
 }
 
 protected func MaxContentsCount() {	return 12;	}
 
+func PowderCount()
+{
+	return count;
+}
+
+func SetPowderCount(int newcount)
+{
+	count = newcount;
+}
+
 public func FxUpdateTimer(object target, effect, int timer)
 {
-	if(ContentsCount() != oldcount)
+	if(count != oldcount)
 		UpdatePicture();
-	if(ContentsCount() == 0)
+	if(count == 0)
 	{
 		ChangeDef(Barrel);
 		return -1;
 	}
-	oldcount = ContentsCount();
+	oldcount = count;
 	return 1;
 }
 
 private func UpdatePicture()
 {
 	//modified script from Stackable.ocd
-	var one = ContentsCount() % 10;
-	var ten = (ContentsCount() / 10) % 10;
+	var one = count % 10;
+	var ten = (count / 10) % 10;
 	
 	var s = 400;
 	var yoffs = 14000;
@@ -72,7 +83,7 @@ public func FxFuseTimer(object target, effect, int timer)
 	if(timer > 90)
 	{
 		//17-32 explosion radius
-		var radius = Sqrt(64 * (4 + ContentsCount()));
+		var radius = Sqrt(64 * (4 + count));
 		Explode(radius);
 	}
 }
