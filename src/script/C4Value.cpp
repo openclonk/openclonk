@@ -535,6 +535,9 @@ C4ID C4Value::getC4ID() const
 
 void C4Value::LogDeletedObjectWarning(C4PropList * p)
 {
-	LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(p), p->GetName());
+	if (p->GetPropListNumbered())
+		LogF("Warning: using deleted object (#%d) (%s)!", p->GetPropListNumbered()->Number, p->GetName());
+	else
+		LogF("Warning: using deleted proplist %p (%s)!", static_cast<void*>(p), p->GetName());
 	AulExec.LogCallStack();
 }

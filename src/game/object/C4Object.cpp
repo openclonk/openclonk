@@ -749,7 +749,7 @@ void C4Object::SetOCF()
 	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
-		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
+		{ LogF("Warning: contained in deleted object (#%d) (%s)!", Contained->Number, Contained->GetName()); }
 #endif
 	// OCF_Normal: The OCF is never zero
 	OCF=OCF_Normal;

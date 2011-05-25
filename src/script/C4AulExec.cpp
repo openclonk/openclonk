@@ -79,7 +79,12 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		Dump.Append(Func->Owner->ScriptName);
 	// Context
 	if (Obj)
-		Dump.AppendFormat(" (obj %s)", C4VObj(Obj).GetDataString().getData());
+	{
+		if (Obj->Status == C4OS_NORMAL)
+			Dump.AppendFormat(" (obj #%d)", Obj->Number);
+		else
+			Dump.AppendFormat(" (obj (#%d))", Obj->Number);
+	}
 	else if (Func->Owner->Def != NULL)
 		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
