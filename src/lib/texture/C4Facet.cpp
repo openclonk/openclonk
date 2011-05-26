@@ -304,7 +304,7 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 	}
 }
 
-void C4Facet::DrawX(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iSectionX, int32_t iSectionY) const
+void C4Facet::DrawX(SURFACE sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iSectionX, int32_t iSectionY) const
 {
 	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 	lpDDraw->Blit(Surface,

@@ -253,14 +253,14 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 		cgo.Surface->Lock();
 #endif
 
-	// First pass: draw old-style PXS (lines/pixels)
-	int32_t cgox=cgo.X-cgo.TargetX, cgoy=cgo.Y-cgo.TargetY;
+	// First pass: draw simple PXS (lines/pixels)
+	float cgox = cgo.X - cgo.TargetX, cgoy = cgo.Y - cgo.TargetY;
 	unsigned int cnt;
-	for (cnt=0; cnt<PXSMaxChunk; cnt++)
+	for (cnt=0; cnt < PXSMaxChunk; cnt++)
 		if (Chunk[cnt] && iChunkPXS[cnt])
 		{
 			C4PXS *pxp = Chunk[cnt];
-			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
+			for (unsigned int cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 				{
 					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
@@ -271,8 +271,8 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 					if (fixtoi(pxp->xdir) || fixtoi(pxp->ydir))
 					{
 						// lines for stuff that goes whooosh!
-						int len = fixtoi(Abs(pxp->xdir)+Abs(pxp->ydir));
-						dwMatClr = uint32_t(Max<int>(dwMatClr>>24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr&0xffffff);
+						int len = fixtoi(Abs(pxp->xdir) + Abs(pxp->ydir));
+						dwMatClr = uint32_t(Max<int>(dwMatClr >> 24, 195 - (195 - (dwMatClr >> 24)) / len)) << 24 | (dwMatClr & 0xffffff);
 						lpDDraw->DrawLineDw(cgo.Surface,
 						                              fixtof(pxp->x - pxp->xdir) + cgox, fixtof(pxp->y - pxp->ydir) + cgoy,
 						                              fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy,
@@ -280,7 +280,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 					}
 					else
 						// single pixels for slow stuff
-						lpDDraw->DrawPix(cgo.Surface, fixtof(pxp->x)+cgox, fixtof(pxp->y)+cgoy, dwMatClr);
+						lpDDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
 				}
 		}
 
@@ -294,28 +294,28 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	if (!Config.Graphics.PXSGfx)
 		return;
 
-	// Second pass: draw new-style PXS (graphics)
-	for (cnt=0; cnt<PXSMaxChunk; cnt++)
+	// Second pass: draw sprites
+	for (cnt=0; cnt < PXSMaxChunk; cnt++)
 		if (Chunk[cnt] && iChunkPXS[cnt])
 		{
 			C4PXS *pxp = Chunk[cnt];
-			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
+			for (unsigned int cnt2 = 0; cnt2 < PXSChunkSize; cnt2++, pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 				{
-					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
+					C4Material * pMat = &::MaterialMap.Map[pxp->Mat];
 					if (!pMat->PXSFace.Surface)
 						continue;
-					// new-style: graphics
 					int32_t pnx, pny;
 					pMat->PXSFace.GetPhaseNum(pnx, pny);
-					int32_t fcWdt=pMat->PXSFace.Wdt; int32_t fcWdtH=Max(fcWdt/3, 1);
+					int32_t fcWdt = pMat->PXSFace.Wdt; //int32_t fcWdtH = Max(fcWdt / 3, 1);
 					// calculate draw width and tile to use (random-ish)
-					int32_t z=1 + ((cnt2/Max<int32_t>(pnx*pny, 1))^341) % pMat->PXSGfxSize;
-					pny=(cnt2/pnx)%pny; pnx=cnt2%pnx;
+					uint32_t size = (1103515245 * (cnt * PXSChunkSize + cnt2) + 12345) >> 3;
+					float z = pMat->PXSGfxSize * (0.625f + 0.05f * int(size % 16));
+					pny = (cnt2 / pnx) % pny; pnx = cnt2 % pnx;
 					// draw
-					lpDDraw->ActivateBlitModulation(Min((fcWdtH-z)*16, 255)<<24 | 0xffffff);
-					pMat->PXSFace.DrawX(cgo.Surface, fixtoi(pxp->x)+cgox+z*pMat->PXSGfxRt.tx/fcWdt, fixtoi(pxp->y)+cgoy+z*pMat->PXSGfxRt.ty/fcWdt, z, z*pMat->PXSFace.Hgt/fcWdt, pnx, pny);
-					lpDDraw->DeactivateBlitModulation();
+					pMat->PXSFace.DrawX(cgo.Surface,
+					                    fixtof(pxp->x) + cgox + z * pMat->PXSGfxRt.tx / fcWdt, fixtof(pxp->y) + cgoy + z * pMat->PXSGfxRt.ty / fcWdt,
+					                    z, z * pMat->PXSFace.Hgt / fcWdt, pnx, pny);
 				}
 		}
 

@@ -134,7 +134,7 @@ public:
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
 	void DrawTile(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 	void DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx); // draw energy level using graphics
-	void DrawX(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
+	void DrawX(SURFACE sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
 	void DrawXFloat(SURFACE sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
 	void DrawValue(C4Facet &cgo, int32_t iValue, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center);
 	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
