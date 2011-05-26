@@ -575,13 +575,11 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 
 	// Blend it
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	glEnable(GL_BLEND); // FIXME: needed?
 
 	// Blit
 	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
 	glDrawArrays(GL_QUADS, 0, 4);
-
-	glDisable(GL_BLEND);
 
 	// Remove shader
 	glUseProgramObjectARB(0);
