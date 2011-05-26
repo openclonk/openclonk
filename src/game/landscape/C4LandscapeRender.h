@@ -21,6 +21,9 @@ const int C4LR_BytesPerPx = 3;
 const int C4LR_BytesPerSurface = 4;
 const int C4LR_SurfaceCount = (C4LR_ByteCount + C4LR_BytesPerSurface - 1) / C4LR_BytesPerSurface;
 
+// How many mip-map levels should be used at maximum?
+const int C4LR_MipMapCount = 4;
+
 class C4Landscape; class C4TextureMap;
 
 class C4LandscapeRender
@@ -74,7 +77,7 @@ private:
 	// Texture count
 	int32_t iTexCount;
 	// 3D material textures
-	GLuint hMaterialTexture;
+	GLuint hMaterialTexture[C4LR_MipMapCount];
 	// material map
 	GLfloat MatTexMap[256];
 

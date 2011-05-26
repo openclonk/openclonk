@@ -25,11 +25,11 @@ C4LandscapeRenderGL::C4LandscapeRenderGL()
 	hVert(0), hFrag(0), hProg(0),
 	hLandscapeUnit(0), hScalerUnit(0), hMaterialUnit(0),
 	hResolutionUniform(0), hMatTexMapUniform(0),
-	iTexCount(0),
-	hMaterialTexture(0)
+	iTexCount(0)
 {
 	ZeroMem(MatTexMap, sizeof(MatTexMap));
 	ZeroMem(Surfaces, sizeof(Surfaces));
+	ZeroMem(hMaterialTexture, sizeof(hMaterialTexture));
 }
 
 C4LandscapeRenderGL::~C4LandscapeRenderGL()
@@ -107,13 +107,17 @@ void C4LandscapeRenderGL::Clear()
 	ClearShaders();
 
 	// free textures
-	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	int i;
+	for (i = 0; i < C4LR_SurfaceCount; i++)
 	{
 		delete Surfaces[i];
 		Surfaces[i] = NULL;
 	}
-	glDeleteObjectARB(hMaterialTexture);
-	hMaterialTexture = 0;
+	for (i = 0; i < C4LR_MipMapCount; i++)
+	{
+		glDeleteObjectARB(hMaterialTexture[i]);
+		hMaterialTexture[i] = 0;
+	}
 
 	LandscapeShader.Clear();
 	LandscapeShaderPath.Clear();
@@ -132,14 +136,14 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		return false;
 	
 	// Compose together data of all textures
-	const int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
+	int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
 	const int iBytesPP = pRefSfc->byBytesPP;
 	const int iTexSize = iTexWdt * iTexHgt * iBytesPP;
 	const int iSize = iTexSize * (iTexCount + 1);
-	char *pData = new char [iSize];
+	BYTE *pData = new BYTE [iSize];
 	for(int i = 0; i < iTexCount; i++)
 	{
-		char *p = pData + i * iTexSize;
+		BYTE *p = pData + i * iTexSize;
 		C4Texture *pTex; CSurface *pSurface;
 		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(i-1))))
 			{}
@@ -147,23 +151,18 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 			{}
 		else if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
 			Log("   gl: Halp! Material texture is fragmented!");
-		else if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-		{
-			LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", pTexs->GetTexture(i), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
-			int32_t *texdata = reinterpret_cast<int32_t*>(p);
-			pSurface->ppTex[0]->Lock();
-			for (int y = 0; y < iTexHgt; ++y)
-				for (int x = 0; x < iTexWdt; ++x)
-					*texdata++ = *reinterpret_cast<int32_t*>(pSurface->ppTex[0]->texLock.pBits + pSurface->ppTex[0]->texLock.Pitch * (y % pSurface->Hgt) + pSurface->byBytesPP * (x % pSurface->Wdt));
-					// *texdata++ = !!((y ^ x) & 64) ? 0xFFFFFF00 : 0xFF000000;
-			pSurface->ppTex[0]->Unlock();
-			continue;
-		}
 		else
 		{
-			pSurface->ppTex[0]->Lock();
-			memcpy(p, pSurface->ppTex[0]->texLock.pBits, iTexSize);
-			pSurface->ppTex[0]->Unlock();
+			// Size recheck
+			if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
+				LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", pTexs->GetTexture(i), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+			// Copy bytes
+			DWORD *texdata = reinterpret_cast<DWORD *>(p);
+			pSurface->Lock();
+			for (int y = 0; y < iTexHgt; ++y)
+				for (int x = 0; x < iTexWdt; ++x)
+					*texdata++ = pSurface->GetPixDw(x % pSurface->Wdt, y % pSurface->Hgt, false);
+			pSurface->Unlock();
 			continue;
 		}
 		memset(p, 0, iTexSize);
@@ -171,28 +170,73 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Clear error error(s?)
 	while(glGetError()) {}
-
-	// Alloc a 3D texture
-	glEnable(GL_TEXTURE_3D);
-	glGenTextures(1, &hMaterialTexture);
-	glBindTexture(GL_TEXTURE_3D, hMaterialTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
-	// We fully expect to tile these
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	int iMMLevels = 3;
+	while(iTexWdt <= (1 >> iMMLevels) || iTexHgt <= (1 >> iMMLevels))
+		iMMLevels--;
+	
+	// Alloc 3D textures
+	glEnable(GL_TEXTURE_3D);
+	glGenTextures(iMMLevels, hMaterialTexture);
+	
+	// Generate textures (mipmaps too!)
+	BYTE *pLastData = new BYTE [iSize / 4];
+	for(int iMMLevel = 0; iMMLevel < C4LR_MipMapCount; iMMLevel++)
+	{
+		
+		// Scale the texture down for mip-mapping
+		if(iMMLevel) {
+			BYTE *pOut = pData;
+			BYTE *pIn[4] = { 
+				pLastData, pLastData + iBytesPP, 
+				pLastData + iBytesPP * iTexWdt, pLastData + iBytesPP * iTexWdt + iBytesPP
+			};
+			for (int i = 0; i <= iTexCount; ++i)
+				for (int y = 0; y < iTexHgt / 2; ++y)
+				{
+					for (int x = 0; x < iTexWdt / 2; ++x)
+					{
+						for (int j = 0; j < iBytesPP; j++)
+						{
+							unsigned int s = 0;
+							s += *pIn[0]++; s += *pIn[1]++; s += *pIn[2]++; s += *pIn[3]++; 
+							*pOut++ = BYTE(s / 4);
+						}
+						pIn[0] += iBytesPP; pIn[1] += iBytesPP; pIn[2] += iBytesPP; pIn[3] += iBytesPP;
+					}
+					pIn[0] += iBytesPP * iTexWdt; pIn[1] += iBytesPP * iTexWdt;
+					pIn[2] += iBytesPP * iTexWdt; pIn[3] += iBytesPP * iTexWdt;
+				}
+			iTexWdt /= 2; iTexHgt /= 2;
+		}
 
-	// Make it happen!
-	glTexImage3D(GL_TEXTURE_3D, 0, 4, iTexWdt, iTexHgt, iTexCount, 0, GL_BGRA,
-		iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
-		pData);
-	glDisable(GL_TEXTURE_3D);
+		// Select texture
+		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMMLevel]);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+		// We fully expect to tile these
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		// Make it happen!
+		glTexImage3D(GL_TEXTURE_3D, 0, 4, iTexWdt, iTexHgt, iTexCount + 1, 0, GL_BGRA,
+					iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
+					pData);
+	   
+		// Exchange buffers
+		BYTE *tmp = pLastData;
+		pLastData = pData;
+		pData = tmp;
+
+	}
+	
 	// Dispose of data
 	delete [] pData;
-
+	delete [] pLastData;
+	glDisable(GL_TEXTURE_3D);
+	
 	// Check whether we were successful
 	if(int err = glGetError())
 	{
@@ -504,7 +548,12 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		glActiveTexture(GL_TEXTURE0 + iUnit);
 		iUnit++;
 		glEnable(GL_TEXTURE_3D);
-		glBindTexture(GL_TEXTURE_3D, hMaterialTexture);
+
+		// Decide which mip-map level to use
+		double z = 2.0; int iMM = 0;
+		while(pGL->Zoom < z && iMM + 1 <C4LR_MipMapCount)
+			{ z /= 2; iMM++; } 
+		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
 	}
 	if(hLandscapeUnit >= 0)
 	{
