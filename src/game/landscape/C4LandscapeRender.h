@@ -76,8 +76,10 @@ private:
 
 	// Texture count
 	int32_t iTexCount;
-	// 3D material textures
+	// 3D texture of material textures
 	GLuint hMaterialTexture[C4LR_MipMapCount];
+	// depth of material texture in layers
+	int32_t iMaterialTextureDepth;
 	// material map
 	GLfloat MatTexMap[256];
 

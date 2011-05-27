@@ -61,23 +61,6 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	while(pTexs->GetTexture(iTexCount))
 		iTexCount++;
 
-	// Build material-texture map (depth parameter where to find appropriate texture)
-	for(int pix = 0; pix < 256; pix++)
-	{
-		// Look up indexed entry
-		const C4TexMapEntry *pEntry = pTexs->GetEntry(PixCol2Tex(BYTE(pix)));
-		if(!pEntry->GetTextureName())
-		{
-			// Texture zero is transparent
-			MatTexMap[pix] = 0.5 / iTexCount;
-			continue;
-		}
-		// Assign texture
-		int32_t iTexIndex = pTexs->GetTextureIndex(pEntry->GetTextureName());
-		if(iTexIndex < 0) iTexIndex = 0;
-		MatTexMap[pix] = (float(iTexIndex) + 1.5) / iTexCount;
-	}
-
 	// Build texture, er, texture
 	if (!InitMaterialTexture(pTexs))
 	{
@@ -97,6 +80,23 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	{
 		LogFatal("[!] Could not initialize landscape shader!");
 		return false;
+	}
+
+	// Build material-texture map (depth parameter where to find appropriate texture)
+	for(int pix = 0; pix < 256; pix++)
+	{
+		// Look up indexed entry
+		const C4TexMapEntry *pEntry = pTexs->GetEntry(PixCol2Tex(BYTE(pix)));
+		if(!pEntry->GetTextureName())
+		{
+			// Textures over iTexCount are transparent
+			MatTexMap[pix] = (float(iTexCount) + 0.5) / iMaterialTextureDepth;
+			continue;
+		}
+		// Assign texture
+		int32_t iTexIndex = pTexs->GetTextureIndex(pEntry->GetTextureName());
+		if(iTexIndex < 0) iTexIndex = 0;
+		MatTexMap[pix] = (float(iTexIndex) + 0.5) / iMaterialTextureDepth;
 	}
 
 	return true;
@@ -127,6 +127,13 @@ void C4LandscapeRenderGL::Clear()
 bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 {
 
+	// Determine depth to use. Lowest power of 2 that can contain
+	// all textures plus sky (= empty). Might have more complicated
+	// mappings in future.
+	iMaterialTextureDepth = 1;
+	while(iMaterialTextureDepth < iTexCount + 1)
+		iMaterialTextureDepth <<= 1;
+
 	// Find first (actual) texture
 	int iRefTexIx = 0; C4Texture *pRefTex; CSurface *pRefSfc = NULL;
 	for(; pRefTex = pTexs->GetTexture(pTexs->GetTexture(iRefTexIx)); iRefTexIx++)
@@ -139,13 +146,13 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
 	const int iBytesPP = pRefSfc->byBytesPP;
 	const int iTexSize = iTexWdt * iTexHgt * iBytesPP;
-	const int iSize = iTexSize * (iTexCount + 1);
+	const int iSize = iTexSize * iMaterialTextureDepth;
 	BYTE *pData = new BYTE [iSize];
-	for(int i = 0; i < iTexCount; i++)
+	for(int i = 0; i < iMaterialTextureDepth; i++)
 	{
 		BYTE *p = pData + i * iTexSize;
 		C4Texture *pTex; CSurface *pSurface;
-		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(i-1))))
+		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(i))))
 			{}
 		else if(!(pSurface = pTex->Surface32))
 			{}
@@ -221,7 +228,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		// Make it happen!
-		glTexImage3D(GL_TEXTURE_3D, 0, 4, iTexWdt, iTexHgt, iTexCount + 1, 0, GL_BGRA,
+		glTexImage3D(GL_TEXTURE_3D, 0, 4, iTexWdt, iTexHgt, iMaterialTextureDepth, 0, GL_BGRA,
 					iBytesPP == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV,
 					pData);
 	   
