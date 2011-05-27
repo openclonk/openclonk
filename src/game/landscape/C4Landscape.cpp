@@ -1252,8 +1252,21 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
 		omat = GetMat(tx, ty);
 
+	// Check surroundings for inspiration for texture to use
+	int n = 0; int pix = -1;
+	if(tx > 0 && _GetMat(tx-1, ty) == mat)
+		if(!Random(++n)) pix = _GetPix(tx-1, ty) % IFT;
+	if(ty > 0 && _GetMat(tx, ty-1) == mat)
+		if(!Random(++n)) pix = _GetPix(tx, ty-1) % IFT;
+	if(tx+1 < Width && _GetMat(tx+1, ty) == mat)
+		if(!Random(++n)) pix = _GetPix(tx+1, ty) % IFT;
+	if(ty+1 < Height && _GetMat(tx, ty+1) == mat)
+		if(!Random(++n)) pix = _GetPix(tx, ty+1) % IFT;
+	if(pix < 0)
+		pix = Mat2PixColDefault(mat);
+
 	// Insert dead material
-	SetPix(tx,ty,Mat2PixColDefault(mat)+GBackIFT(tx,ty));
+	SetPix(tx,ty,pix+GBackIFT(tx,ty));
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
