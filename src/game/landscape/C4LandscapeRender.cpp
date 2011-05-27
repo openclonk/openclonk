@@ -199,8 +199,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 						for (int j = 0; j < iBytesPP; j++)
 						{
 							unsigned int s = 0;
-							s += *pIn[0]++; s += *pIn[1]++; s += *pIn[2]++; s += *pIn[3]++; 
-							*pOut++ = BYTE(s / 4);
+							s += *pIn[0]++; s += 3 * *pIn[1]++; s += 3 * *pIn[2]++; s += *pIn[3]++; 
+							*pOut++ = BYTE(s / 8);
 						}
 						pIn[0] += iBytesPP; pIn[1] += iBytesPP; pIn[2] += iBytesPP; pIn[3] += iBytesPP;
 					}
