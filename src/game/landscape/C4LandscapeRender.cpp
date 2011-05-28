@@ -240,7 +240,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 				pLastData, pLastData + iBytesPP, 
 				pLastData + iBytesPP * iTexWdt, pLastData + iBytesPP * iTexWdt + iBytesPP
 			};
-			for (int i = 0; i <= iTexCountP; ++i)
+			for (int i = 0; i < iMaterialTextureDepth; ++i)
 				for (int y = 0; y < iTexHgt / 2; ++y)
 				{
 					for (int x = 0; x < iTexWdt / 2; ++x)
