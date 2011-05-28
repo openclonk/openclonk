@@ -14,6 +14,22 @@ enum C4LR_Byte {
 	C4LR_ByteCount
 };
 
+// Uniform data we give the shader (constants from its viewpoint)
+// Don't forget to update GetUniformName when introducing new uniforms!
+enum C4LR_Uniforms
+{
+	C4LRU_LandscapeTex,
+	C4LRU_ScalerTex,
+	C4LRU_MaterialTex,
+
+	C4LRU_Resolution,
+	C4LRU_MatMap,
+	C4LRU_MatMapTex,
+	C4LRU_MaterialDepth,
+
+	C4LRU_Count
+};
+
 // How much data we want to store per landscape pixel
 const int C4LR_BytesPerPx = 3;
 
@@ -71,8 +87,7 @@ private:
 	// shaders
 	GLhandleARB hVert, hFrag, hProg;
 	// shader variables
-	GLhandleARB hLandscapeUnit, hScalerUnit, hMaterialUnit;
-	GLhandleARB hResolutionUniform, hMatTexMapUniform;
+	GLhandleARB hUniforms[C4LRU_Count];
 
 	// Texture count
 	int32_t iTexCount;
@@ -80,8 +95,6 @@ private:
 	GLuint hMaterialTexture[C4LR_MipMapCount];
 	// depth of material texture in layers
 	int32_t iMaterialTextureDepth;
-	// material map
-	GLfloat MatTexMap[256];
 
 	// scaler image
 	C4FacetSurface fctScaler;
@@ -95,6 +108,8 @@ public:
 
 	virtual void Draw(const C4TargetFacet &cgo);
 
+	void RefreshShaders();
+
 private:
 	bool InitMaterialTexture(C4TextureMap *pMap);
 	bool LoadShaders(C4GroupSet *pGraphics);
@@ -106,6 +121,8 @@ private:
 
 	bool InitShaders();
 	void ClearShaders();
+
+	void BuildMatMap(GLfloat *pFMap, GLubyte *pIMap);
 };
 #endif
 
