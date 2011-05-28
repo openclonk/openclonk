@@ -43,10 +43,6 @@ void main()
 	// our pixel color (with and without interpolation)
 	vec4 lpx = texture2D(landscapeTex[0], centerCoo);
 	vec4 rlpx = texture2D(landscapeTex[0], gl_TexCoord[0].st);
-	
-	// gen2 other coordinate calculation (TODO: scaler map)
-	vec2 otherCoo = centerCoo + fullStep * floor(normalize(mod(pixelCoo, vec2(1.0, 1.0)) - vec2(0.5, 0.5)) + vec2(0.5, 0.5));
-	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
@@ -72,6 +68,10 @@ void main()
 
 	vec4 spx = texture2D(scalerTex, scalerCoo);
 
+	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
+	vec2 otherCoo = centerCoo + fullStep * (vec2(-1.0, -1.0) + spx.gb * 255.0 / 64.0);
+	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
+	
 	// Get material pixels
 	float mi = queryMatMap(int(lpx.r * 255.0));
 	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), mi));
@@ -79,10 +79,11 @@ void main()
 	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omi));
 	
 	// Brightness
-	vec2 normal = (1.5 * rlpx.yz - vec2(1.0, 1.0));
+	vec2 normal = (1.7 * mix(rlpx.yz, lpx.yz, spx.a) - vec2(1.0, 1.0));
+	vec2 normal2 = (1.7 * lopx.yz - vec2(1.0, 1.0));
 	float ambientBright = 1.0;
 	float bright = ambientBright * (1.0 + dot(normal, vec2(0.0, -1.0)));
-	float bright2 = ambientBright;
+	float bright2 = ambientBright * (1.0 + dot(normal2, vec2(0.0, -1.0)));
 
 	gl_FragColor = mix(
 		vec4(bright2 * ompx.rgb, ompx.a),

@@ -541,7 +541,77 @@ bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
 	C4Group *pGroup = pGroups->FindEntry(C4CFN_LandscapeScaler);
 	if(!pGroup) return false;
 	// Load scaler from group
-	return fctScaler.Load(*pGroup, C4CFN_LandscapeScaler);
+	if(!fctScaler.Load(*pGroup, C4CFN_LandscapeScaler))
+		return false;
+	// Check size
+	const int iOrigWdt = 8 * 3, iOrigHgt = 4 * 8 * 3;
+	const int iFactor = fctScaler.Wdt / iOrigWdt;
+	if(fctScaler.Wdt != iFactor * iOrigWdt || fctScaler.Hgt != iFactor * iOrigHgt)
+	{
+		LogF("  gl: Unexpected scaler size - should be multiple of %dx%d!", iOrigWdt, iOrigHgt);
+		return false;
+	}
+	// Walk through all lookups we have in the texture and decide where
+	// to look for the "other" pixel. This might not be unique later on,
+	// so it is a good idea to have a proper priority order here.
+	fctScaler.Surface->Lock();
+	for(int i = 0; i < 8 * 4 * 8; i++) {
+		int ox = 0, oy = 0;
+		// Highest priority: horizontal
+		if(!(i & 8)) {
+			ox = -1; oy = 0;
+		} else if(!(i & 16)) {
+			ox = 1; oy = 0;
+		}
+		// Second highest: vertical
+		else if(!(i & 2)) {
+			ox = 0; oy = -1;
+		} else if(!(i & 64)) {
+			ox = 0; oy = 1;
+		}
+		// Then the two diagonals
+		else if(!(i & 1)) {
+			ox = -1; oy = -1;
+		} else if(!(i & 128)) {
+			ox = 1; oy = 1;
+		} else if(!(i & 4)) {
+			ox = 1; oy = -1;
+		} else if(!(i & 32)) {
+			ox = 0; oy = 1;
+		} else {
+			assert(i == 255);
+		}
+		// Decide in which quadrants we will not interpolated normals.
+		// It doesn't make sense when there's another material in that
+		// general direction, as then the bias of that will factor into
+		// the interpolation, giving bright borders on dark shading,
+		// and vice-versa.
+		bool noNormals[4] = {
+			!(i & 1) || !(i & 2) || !(i & 8),  // left-top
+			!(i & 2) || !(i & 4) || !(i & 16), // right-top
+			!(i & 8) || !(i & 32) || !(i & 64), // left-bottom
+			!(i & 16) || !(i & 64) || !(i & 128), // right-bottom
+		};
+		// Set blue and green components to relative coordinates of
+		// "other" pixel, and alpha to mix param for normals
+		const int x0 = (i % 8) * 3 * iFactor;
+		const int y0 = (i / 8) * 3 * iFactor;
+		int y, x;
+		for(y = y0; y < y0 + 3 * iFactor; y++)
+			for(x = x0; x < x0 + 3 * iFactor; x++)
+			{
+				DWORD pix = fctScaler.Surface->GetPixDw(x, y, false);
+				BYTE val = GetRedValue(pix);
+				BYTE bx = 64 * (ox + 1);
+				BYTE by = 64 * (oy + 1);
+				int nni = 0;
+				if(2 * (x - x0) >= 3 * iFactor) nni++;
+				if(2 * (y - y0) >= 3 * iFactor) nni+=2;
+				BYTE bn = (noNormals[nni] ? 255 : 1);
+				fctScaler.Surface->SetPixDw(x, y, RGBA(val, bx, by, bn));
+			}
+	}
+	return fctScaler.Surface->Unlock();
 }
 
 void C4LandscapeRenderGL::RefreshShaders()
