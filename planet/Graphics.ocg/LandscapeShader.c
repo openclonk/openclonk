@@ -79,11 +79,11 @@ void main()
 	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omi));
 	
 	// Brightness
-	vec2 normal = (1.7 * mix(rlpx.yz, lpx.yz, spx.a) - vec2(1.0, 1.0));
-	vec2 normal2 = (1.7 * lopx.yz - vec2(1.0, 1.0));
-	float ambientBright = 1.0;
-	float bright = ambientBright * (1.0 + dot(normal, vec2(0.0, -1.0)));
-	float bright2 = ambientBright * (1.0 + dot(normal2, vec2(0.0, -1.0)));
+	float ambientBright = 1.0, shadeBright = 0.8;	
+	vec2 normal = (2.0 * mix(rlpx.yz, lpx.yz, spx.a) - vec2(1.0, 1.0));
+	vec2 normal2 = (2.0 * lopx.yz - vec2(1.0, 1.0));
+	float bright = ambientBright + shadeBright * dot(normal, vec2(0.0, -1.0));
+	float bright2 = ambientBright + shadeBright * dot(normal2, vec2(0.0, -1.0));
 
 	gl_FragColor = mix(
 		vec4(bright2 * ompx.rgb, ompx.a),
