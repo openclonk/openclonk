@@ -20,6 +20,11 @@ const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
 const vec2 scalerOffset = vec2(0.0, 0.0) + scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
+#ifdef NO_TEXTURE_LOD_IN_FRAGMENT
+#define texture1DLod(t,c,l) texture1D(t,c)
+#define texture2DLod(t,c,l) texture2D(t,c)
+#endif
+
 float queryMatMap(int pix)
 {
 #ifdef BROKEN_ARRAYS_WORKAROUND
@@ -66,7 +71,9 @@ void main()
 	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
 		scalerCoo += 16.0 * scalerStepY;
 
-	vec4 spx = texture2D(scalerTex, scalerCoo);
+	// Note: scalerCoo will jump around a lot, causing some GPUs to apparantly get confused with
+	//       the level-of-detail calculation. We therefore try to disable LOD.
+	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
 
 	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
 	vec2 otherCoo = centerCoo + fullStep * (vec2(-1.0, -1.0) + spx.gb * 255.0 / 64.0);

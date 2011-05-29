@@ -34,6 +34,7 @@ const int C4LR_BiasDistanceY = 8;
 // Workarounds to try if shader fails to compile
 const char *C4LR_ShaderWorkarounds[] = {
 	"",
+	"#define NO_TEXTURE_LOD_IN_FRAGMENT\n",
 	"#define BROKEN_ARRAYS_WORKAROUND\n",
 };
 const int C4LR_ShaderWorkaroundCount = sizeof(C4LR_ShaderWorkarounds) / sizeof(*C4LR_ShaderWorkarounds);
