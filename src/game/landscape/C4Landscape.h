@@ -6,6 +6,7 @@
  * Copyright (c) 2005-2007  Peter Wortmann
  * Copyright (c) 2006-2007, 2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011 Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -33,18 +34,18 @@
 #include <C4Material.h>
 
 const uint8_t GBM = 128,
-                    GBM_ColNum = 64,
-                                 IFT = 0x80,
-                                       IFTOld = GBM_ColNum;
+              GBM_ColNum = 64,
+              IFT = 0x80,
+              IFTOld = GBM_ColNum;
 
 const uint8_t CSkyDef1=104,CSkyDef2=123;
 
 const int32_t C4MaxMaterial = 125;
 
 const int32_t C4LSC_Undefined = 0,
-                                C4LSC_Dynamic = 1,
-                                                C4LSC_Static = 2,
-                                                               C4LSC_Exact = 3;
+              C4LSC_Dynamic = 1,
+              C4LSC_Static = 2,
+              C4LSC_Exact = 3;
 
 const int32_t C4LS_MaxRelights = 50;
 
@@ -131,6 +132,7 @@ public:
 	bool DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
 	bool DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT);
 	bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT, bool fDrawBridge);
+	bool DrawPolygon(int *vtcs, int length, const char *szMaterial, bool bIFT, bool fDrawBridge);
 	CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
 	inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
 	{

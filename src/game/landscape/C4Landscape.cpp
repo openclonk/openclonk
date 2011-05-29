@@ -8,6 +8,7 @@
  * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2011 Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -2482,8 +2483,10 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
 	return conv_map;
 }
 
-bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool fIFT, bool fDrawBridge)
+bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, bool fIFT, bool fDrawBridge)
 {
+	if(length < 6) return false;
+	if(length % 2 == 1) return false;
 	// get texture
 	int32_t iMatTex = ::TextureMap.GetIndexMatTex(szMaterial);
 	if (!iMatTex) return false;
@@ -2494,22 +2497,28 @@ bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		int32_t iMat = GetPixMat(iMatTex);
 		conversion_map = GetBridgeMatConversion(iMat);
 	}
-	// prepate pixel count update
-	C4Rect BoundingBox(iX1, iY1, 1, 1);
-	BoundingBox.Add(C4Rect(iX2, iY2, 1, 1));
-	BoundingBox.Add(C4Rect(iX3, iY3, 1, 1));
-	BoundingBox.Add(C4Rect(iX4, iY4, 1, 1));
+	// prepare pixel count update
+	C4Rect BoundingBox(vtcs[0],vtcs[1],vtcs[2],vtcs[3]);
+	for(int32_t i=5; i < length; i+=2)
+	{
+		BoundingBox.Add(C4Rect(vtcs[i-3],vtcs[i-2],vtcs[i-1],vtcs[i]));
+	}
+	// draw polygon
+	PrepareChange(BoundingBox);
+	Surface8->Polygon(length/2,vtcs,MatTex2PixCol(iMatTex) + (fIFT ? IFT : 0), conversion_map);
+	FinishChange(BoundingBox);
+	return true;
+}
+
+bool C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool fIFT, bool fDrawBridge)
+{
 	// set vertices
-	int vtcs[8];
+	int32_t vtcs[8];
 	vtcs[0] = iX1; vtcs[1] = iY1;
 	vtcs[2] = iX2; vtcs[3] = iY2;
 	vtcs[4] = iX3; vtcs[5] = iY3;
 	vtcs[6] = iX4; vtcs[7] = iY4;
-	// draw quad
-	PrepareChange(BoundingBox);
-	Surface8->Polygon(4,vtcs,MatTex2PixCol(iMatTex) + (fIFT ? IFT : 0), conversion_map);
-	FinishChange(BoundingBox);
-	return true;
+	return DrawPolygon(vtcs, 8, szMaterial, fIFT, fDrawBridge);
 }
 
 BYTE C4Landscape::GetMapIndex(int32_t iX, int32_t iY)
