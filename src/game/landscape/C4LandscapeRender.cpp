@@ -602,7 +602,7 @@ bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
 			for(x = x0; x < x0 + 3 * iFactor; x++)
 			{
 				DWORD pix = fctScaler.Surface->GetPixDw(x, y, false);
-				BYTE val = GetBlueValue(pix);
+				BYTE val = GetGreenValue(pix);
 				if(val >= 250) val = 255;
 				BYTE bx = 64 * (ox + 1);
 				BYTE by = 64 * (oy + 1);
