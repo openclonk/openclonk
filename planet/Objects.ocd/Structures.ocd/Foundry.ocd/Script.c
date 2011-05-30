@@ -9,11 +9,11 @@
 #include Library_Producer
 #include Library_CableStation
 
-public func Initialize()
+public func Construction()
 {
-	_inherited(...);
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
 	//queue = [[Metal, nil]];
-	return;
+	return _inherited(...);;
 }
 
 /*-- Production --*/

@@ -9,10 +9,11 @@ public func GetGeneratorPriority() { return 128; }
 
 local iFuelAmount;
 
-func Initialize()
+func Construction()
 {
+	SetProperty("MeshTransformation",Trans_Rotate(25,0,1,0));
 	iFuelAmount = 0;
-	return _inherited();
+	return _inherited(...);
 }
 
 func ContentsCheck()
