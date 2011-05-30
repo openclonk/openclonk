@@ -823,7 +823,7 @@ std::vector<int32_t> C4Landscape::GetRoundPolygon(int32_t x, int32_t y, int32_t 
 std::vector<int32_t> C4Landscape::GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const
 {
 	std::vector<int32_t> vertices;
-	vertices.reserve(8);
+	vertices.resize(8);
 
 	vertices[0] = tx;      vertices[1] = ty;
 	vertices[2] = tx;      vertices[3] = ty+hgt;
