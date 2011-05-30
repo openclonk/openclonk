@@ -66,7 +66,7 @@ public:
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
 	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
-	int32_t BlastMatCount[C4MaxMaterial]; // SyncClearance-NoSave //
+	
 	bool NoScan; // ExecuteScan() disabled
 	int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
 	int32_t LeftOpen,RightOpen,TopOpen,BottomOpen;
@@ -91,18 +91,13 @@ public:
 	void Synchronize();
 	void Draw(C4TargetFacet &cgo, int32_t iPlayer=-1);
 	void ScenarioInit();
-	void ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt);
+
 	void ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt, int32_t iOfDensity);
 	void ClearMatCount();
-	void ClearBlastMatCount();
 	void ScanSideOpen();
-	void CheckInstabilityRange(int32_t tx, int32_t ty);
-	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-	void DigFree(int32_t tx, int32_t ty, int32_t rad, bool fRequest=false, C4Object *pByObj=NULL);
-	void DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, bool fRequest=false, C4Object *pByObj=NULL);
-	void DigFreeMat(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mat);
-	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, int32_t iByPlayer);
+
 	void DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
+
 	void RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt);
 	void FindMatTop(int32_t mat, int32_t &x, int32_t &y);
 	BYTE GetMapIndex(int32_t iX, int32_t iY);
@@ -119,8 +114,6 @@ public:
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
-	bool CheckInstability(int32_t tx, int32_t ty);
-	bool ClearPix(int32_t tx, int32_t ty);
 	bool InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx = 0, int32_t vy = 0);
 	bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
 	bool FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
@@ -192,9 +185,7 @@ public:
 	inline int32_t GetPixDensity(BYTE byPix) { return Pix2Dens[byPix]; }
 	bool _PathFree(int32_t x, int32_t y, int32_t x2, int32_t y2); // quickly checks wether there *might* be pixel in the path.
 	int32_t GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t iMat, int32_t iMax);
-	int32_t DigFreePix(int32_t tx, int32_t ty);
-	int32_t ShakeFreePix(int32_t tx, int32_t ty);
-	int32_t BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t iBlastSize);
+
 	int32_t AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t hgt);
 	int32_t ExtractMaterial(int32_t fx, int32_t fy);
 	bool DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2
@@ -230,11 +221,6 @@ protected:
 	bool Relight(C4Rect To);
 	bool ApplyLighting(C4Rect To);
 	bool Mat2Pal(); // assign material colors to landscape palette
-	void DigFreeSinglePix(int32_t x, int32_t y, int32_t dx, int32_t dy)
-	{
-		if (GetDensity(x, y) > GetDensity(x + dx, y + dy))
-			DigFreePix(x, y);
-	}
 	void UpdatePixCnt(const class C4Rect &Rect, bool fCheck = false);
 	void UpdateMatCnt(C4Rect Rect, bool fPlus);
 	void PrepareChange(C4Rect BoundingBox);
@@ -243,6 +229,37 @@ protected:
 	uint8_t *GetBridgeMatConversion(int for_material);
 	bool SaveInternal(C4Group &hGroup);
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
+
+public:
+	void ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
+	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
+
+	void DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL);
+	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER);
+
+	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
+	void DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL);
+	void DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL);
+	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
+	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
+
+	void CheckInstabilityRange(int32_t tx, int32_t ty);
+	bool CheckInstability(int32_t tx, int32_t ty);
+
+	bool ClearPix(int32_t tx, int32_t ty);	// also used by mass mover (corrode)
+
+private:
+	std::vector<int32_t> GetRoundPolygon(int32_t x, int32_t y, int32_t size, int32_t smoothness) const;
+	std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const;
+	C4Rect getBoundingBox(int *vtcs, int length) const;
+
+	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list);
+	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by);
+
+	bool DigFreePix(int32_t tx, int32_t ty);
+	bool BlastFreePix(int32_t tx, int32_t ty);
+	bool ShakeFreePix(int32_t tx, int32_t ty);
+
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
 	bool DebugSave(const char *szFilename);

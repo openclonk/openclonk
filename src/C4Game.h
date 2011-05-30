@@ -5,6 +5,7 @@
  * Copyright (c) 2001-2002, 2004-2005, 2008-2009  Sven Eberhardt
  * Copyright (c) 2004, 2006  Peter Wortmann
  * Copyright (c) 2005, 2009  Günther Brammer
+ * Copyright (c) 2011 Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -214,7 +215,6 @@ public:
 	                 int32_t iOwner=ANY_OWNER);*/
 	int32_t ObjectCount(C4ID id);
 	void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
-	void BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController=NO_OWNER);
 	C4Object *PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);
 	C4Object *PlaceAnimal(C4ID idAnimal);
 

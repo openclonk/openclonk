@@ -116,7 +116,6 @@ void C4MaterialCore::Clear()
 	BlastFree = 0;
 	Dig2Object = C4ID::None;
 	Dig2ObjectRatio = 0;
-	Dig2ObjectOnRequestOnly = 0;
 	Blast2Object = C4ID::None;
 	Blast2ObjectRatio = 0;
 	Blast2PXSRatio = 0;
@@ -167,7 +166,6 @@ bool C4MaterialCore::Load(C4Group &hGroup,
 			Placement=30;
 			if (!DigFree) Placement+=20;
 			if (!BlastFree) Placement+=10;
-			if (!Dig2ObjectOnRequestOnly) Placement+=10;
 		}
 		else if (DensityLiquid(Density))
 			Placement=10;
@@ -190,7 +188,6 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Blast2Object,"Blast2Object",     C4ID::None                  ));
 	pComp->Value(mkNamingAdapt(Dig2Object,  "Dig2Object",         C4ID::None                  ));
 	pComp->Value(mkNamingAdapt(Dig2ObjectRatio,         "Dig2ObjectRatio",    0                 ));
-	pComp->Value(mkNamingAdapt(Dig2ObjectOnRequestOnly, "Dig2ObjectRequest",  0                 ));
 	pComp->Value(mkNamingAdapt(Blast2ObjectRatio,       "Blast2ObjectRatio",  0                 ));
 	pComp->Value(mkNamingAdapt(Blast2PXSRatio,          "Blast2PXSRatio",     0                 ));
 	pComp->Value(mkNamingAdapt(Instable,                "Instable",           0                 ));

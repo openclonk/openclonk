@@ -7,7 +7,7 @@
  * Copyright (c) 2001  Michael Käser
  * Copyright (c) 2004-2005, 2007-2010  Armin Burgmeier
  * Copyright (c) 2004-2010  Günther Brammer
- * Copyright (c) 2009-2011  Tobias Zwick
+ * Copyright (c) 2009-2010  Tobias Zwick
  * Copyright (c) 2009-2010  Randrian
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -393,13 +393,7 @@ static C4Void FnBlastFree(C4AulContext *cthr, long iX, long iY, long iLevel, Nil
 {
 	if (iCausedBy.IsNil() && cthr->Obj) iCausedBy = cthr->Obj->Controller;
 
-	if (cthr->Obj)
-	{
-		iX += cthr->Obj->GetX();
-		iY += cthr->Obj->GetY();
-	}
-	int grade = BoundBy<int>((iLevel/10)-1,1,3);
-	::Landscape.BlastFree(iX, iY, iLevel, grade, iCausedBy);
+	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, cthr->Obj);
 	return C4Void();
 }
 
@@ -1012,30 +1006,21 @@ static C4Void FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 	return C4Void();
 }
 
-static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad, bool fRequest)
+static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad)
 {
-	::Landscape.DigFree(x,y,rad,fRequest,cthr->Obj);
+	::Landscape.DigFree(x,y,rad,cthr->Obj);
 	return C4Void();
 }
 
-static C4Void FnDigFreeMat(C4AulContext *cthr, long x, long y, long wdt, long hgt, long mat)
+static C4Void FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt)
 {
-	::Landscape.DigFreeMat(x, y, wdt, hgt, mat);
+	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,cthr->Obj);
 	return C4Void();
 }
 
-static C4Void FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, bool fRequest)
+static C4Void FnClearFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt)
 {
-	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,fRequest,cthr->Obj);
-	return C4Void();
-}
-
-static C4Void FnFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, long iFreeDensity)
-{
-	if (iFreeDensity)
-		::Landscape.ClearRectDensity(iX,iY,iWdt,iHgt,iFreeDensity);
-	else
-		::Landscape.ClearRect(iX,iY,iWdt,iHgt);
+	::Landscape.ClearFreeRect(iX,iY,iWdt,iHgt);
 	return C4Void();
 }
 
@@ -1855,30 +1840,13 @@ static bool FnSetLandscapePixel(C4AulContext* ctx, long iX, long iY, long dwValu
 }
 
 static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
-                     DMQ_Sub = 1, // draw w/ tunnel IFT
-                     DMQ_Bridge = 2; // draw only over materials you can bridge over
+                               DMQ_Sub = 1, // draw w/ tunnel IFT
+                                         DMQ_Bridge = 2; // draw only over materials you can bridge over
 
 static bool FnDrawMaterialQuad(C4AulContext* ctx, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, int draw_mode)
 {
 	const char *szMat = FnStringPar(szMaterial);
 	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
-}
-
-static bool FnDrawMaterialPolygon(C4AulContext* ctx, C4String *szMaterial, C4ValueArray *pArray, int draw_mode)
-{
-	if(pArray->GetSize() < 6)
-		throw new C4AulExecError(ctx->Obj, "func \"DrawMaterialPolygon\" par 0 array must have at least 6 entries");
-	if(pArray->GetSize() % 2 == 1)
-		throw new C4AulExecError(ctx->Obj, "func \"DrawMaterialPolygon\" par 0 array must have an even count of entries");
-
-	const char *szMat = FnStringPar(szMaterial);
-	std::vector<int> vertices;
-	vertices.reserve(pArray->GetSize());
-	for(int i=0; i < pArray->GetSize(); ++i)
-	{
-		vertices[i] = pArray->GetItem(i).getInt();
-	}
-	return !! ::Landscape.DrawPolygon(&vertices[0], vertices.size(), szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
 }
 
 static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
@@ -2483,9 +2451,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetTemperature", FnSetTemperature);
 	AddFunc(pEngine, "ShakeFree", FnShakeFree);
 	AddFunc(pEngine, "DigFree", FnDigFree);
-	AddFunc(pEngine, "DigFreeMat", FnDigFreeMat);
-	AddFunc(pEngine, "FreeRect", FnFreeRect);
 	AddFunc(pEngine, "DigFreeRect", FnDigFreeRect);
+	AddFunc(pEngine, "ClearFreeRect", FnClearFreeRect);
 	AddFunc(pEngine, "Hostile", FnHostile);
 	AddFunc(pEngine, "SetHostility", FnSetHostility);
 	AddFunc(pEngine, "PlaceVegetation", FnPlaceVegetation);
@@ -2561,7 +2528,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FrameCounter", FnFrameCounter);
 	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
-	AddFunc(pEngine, "DrawMaterialPolygon", FnDrawMaterialPolygon);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
 	AddFunc(pEngine, "AddMsgBoardCmd", FnAddMsgBoardCmd);
 	AddFunc(pEngine, "SetGameSpeed", FnSetGameSpeed, false);

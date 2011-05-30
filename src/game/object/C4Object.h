@@ -205,8 +205,6 @@ public:
 	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
 	int32_t GetPlane() { return Plane; }
 	int32_t GetAudible();
-	void DigOutMaterialCast(bool fRequest);
-	void AddMaterialContents(int32_t iMaterial, int32_t iAmount);
 	void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL);
 	void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL)
 	{ SetCommand(iCommand, pTarget, C4VInt(iTx), iTy, pTarget2, fControl, iData, iRetries, szText); }

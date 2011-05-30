@@ -2855,30 +2855,6 @@ bool C4Object::ExecuteCommand()
 	return true;
 }
 
-void C4Object::AddMaterialContents(int32_t iMaterial, int32_t iAmount)
-{
-	// Create contents list if necessary
-	if (!MaterialContents) MaterialContents = new C4MaterialList;
-	// Add amount
-	MaterialContents->Add(iMaterial,iAmount);
-}
-
-void C4Object::DigOutMaterialCast(bool fRequest)
-{
-	// Check material contents for sufficient object cast amounts
-	if (!MaterialContents) return;
-	for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
-		if (MaterialContents->Amount[iMaterial])
-			if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID::None)
-				if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
-					if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
-						if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
-						{
-							Game.CreateObject(::MaterialMap.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
-							MaterialContents->Amount[iMaterial]=0;
-						}
-}
-
 void C4Object::Resort()
 {
 	// Flag resort

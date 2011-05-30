@@ -56,6 +56,7 @@
 #include <C4Record.h>
 #include <StdSurface8.h>
 #include <StdPNG.h>
+#include <C4MaterialList.h>
 
 C4Landscape::C4Landscape()
 {
@@ -354,7 +355,7 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, in
 	vtcs[12]=tx+wdt+ChunkyRandom(cro,rx/2); vtcs[13]=ty-ChunkyRandom(cro,rx/2*top_rough);
 	vtcs[14]=tx+wdt/2; vtcs[15]=ty-ChunkyRandom(cro,rx*top_rough);
 
-	Surface8->Polygon(8,vtcs,mcol);
+	ForPolygon(vtcs,8,NULL,NULL,mcol);
 }
 
 void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, BYTE flip, int32_t cro)
@@ -372,7 +373,7 @@ void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t 
 	else
 		{ vtcs[6]=tx+wdt/2; vtcs[7]=ty+hgt/3; }
 
-	Surface8->Polygon(4,vtcs,mcol);
+	ForPolygon(vtcs,4,NULL,NULL,mcol);
 }
 
 void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture, int32_t iOffX, int32_t iOffY)
@@ -595,197 +596,6 @@ static CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
 	return pSfc;
 }
 
-bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame)
-{
-	// set map seed, if not pre-assigned
-	if (!MapSeed) MapSeed=Random(3133700);
-
-	// increase max map size, since developers might set a greater one here
-	Game.C4S.Landscape.MapWdt.Max=10000;
-	Game.C4S.Landscape.MapHgt.Max=10000;
-
-	// map and landscape must be initialized with fixed random, so runtime joining clients may recreate it
-	// with same seed
-	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
-	// and not creating the map
-	// this, however, would cause syncloss to DebugRecs
-	C4DebugRecOff DBGRECOFF(!!Game.C4S.Landscape.ExactLandscape);
-
-	Game.FixRandom(Game.RandomSeed);
-
-	// map is like it's loaded for regular gamestart
-	// but it's changed and would have to be saved if a new section is loaded
-	fMapChanged = fOverloadCurrent;
-
-	// don't change landscape mode in runtime joins
-	bool fLandscapeModeSet = (Mode != C4LSC_Undefined);
-
-	Game.SetInitProgress(60);
-	// create map if necessary
-	if (!Game.C4S.Landscape.ExactLandscape)
-	{
-		CSurface8 * sfcMap=NULL;
-		// Static map from scenario
-		if (hGroup.AccessEntry(C4CFN_Map))
-			if ((sfcMap=GroupReadSurface8(hGroup)))
-				if (!fLandscapeModeSet) Mode=C4LSC_Static;
-
-		// allow C4CFN_Landscape as map for downwards compatibility
-		if (!sfcMap)
-			if (hGroup.AccessEntry(C4CFN_Landscape))
-				if ((sfcMap=GroupReadSurface8(hGroup)))
-				{
-					if (!fLandscapeModeSet) Mode=C4LSC_Static;
-					fMapChanged = true;
-				}
-
-		// dynamic map from file
-		if (!sfcMap)
-			if ((sfcMap=CreateMapS2(hGroup)))
-				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
-
-		// Dynamic map by scenario
-		if (!sfcMap && !fOverloadCurrent)
-			if ((sfcMap=CreateMap()))
-				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
-
-
-		// No map failure
-		if (!sfcMap)
-		{
-			// no problem if only overloading
-			if (!fOverloadCurrent) return false;
-			if (fLoadSky) if (!Sky.Init(fSavegame)) return false;
-			return true;
-		}
-
-#ifdef DEBUGREC
-		AddDbgRec(RCT_Block, "|---MAP---|", 12);
-		AddDbgRec(RCT_Map, sfcMap->Bits, sfcMap->Pitch*sfcMap->Hgt);
-#endif
-
-		// Store map size and calculate map zoom
-		int iWdt, iHgt;
-		sfcMap->GetSurfaceSize(iWdt,iHgt);
-		MapWidth = iWdt; MapHeight = iHgt;
-		MapZoom = Game.C4S.Landscape.MapZoom.Evaluate();
-
-		// Calculate landscape size
-		Width = MapZoom * MapWidth;
-		Height = MapZoom * MapHeight;
-		Width = Max<int32_t>(Width,100);
-		Height = Max<int32_t>(Height,100);
-//    Width = (Width/8)*8;
-
-		// if overloading, clear current landscape (and sections, etc.)
-		// must clear, of course, before new sky is eventually read
-		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
-
-		// assign new map
-		Map = sfcMap;
-
-		// Sky (might need to know landscape height)
-		if (fLoadSky)
-		{
-			Game.SetInitProgress(70);
-			if (!Sky.Init(fSavegame)) return false;
-		}
-	}
-
-	// Exact landscape from scenario (no map or exact recreation)
-	else /* if (Game.C4S.Landscape.ExactLandscape) */
-	{
-		C4DebugRecOff DBGRECOFF;
-		// if overloading, clear current
-		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
-		// load it
-		if (!fLandscapeModeSet) Mode=C4LSC_Exact;
-		rfLoaded=true;
-		if (!Load(hGroup, fLoadSky, fSavegame)) return false;
-	}
-
-	// Make pixel maps
-	UpdatePixMaps();
-
-	// progress
-	Game.SetInitProgress(80);
-
-	// mark as new-style
-	Game.C4S.Landscape.NewStyleLandscape = 2;
-
-	// copy noscan-var
-	NoScan=Game.C4S.Landscape.NoScan!=0;
-
-	// Scan settings
-	ScanSpeed=BoundBy(Width/500,2,15);
-
-	// map to big surface and sectionize it
-	// (not for shaders though - they require continous textures)
-	// Create landscape surface
-	Surface8 = new CSurface8();
-	if (!Surface8->Create(Width, Height) || !Mat2Pal())
-	{
-		delete Surface8; Surface8 = 0;
-		return false;
-	}
-
-	// Map to landscape
-	if (!MapToLandscape()) return false;
-	Game.SetInitProgress(84);
-
-	// Create renderer
-	pLandscapeRender = NULL;
-#ifdef USE_GL
-	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
-		pLandscapeRender = new C4LandscapeRenderGL();
-#endif
-#ifndef USE_CONSOLE
-	if (!pLandscapeRender)
-		pLandscapeRender = new C4LandscapeRenderClassic();
-#endif
-
-	if(pLandscapeRender)
-	{
-		// Initialize renderer
-		if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
-			return false;
-
-		// Write landscape data
-		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
-		Game.SetInitProgress(87);
-	}
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "|---LS---|", 11);
-	AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
-#endif
-
-
-	// Create pixel count array
-	// We will use 15x17 blocks so the pixel count can't get over 255.
-	int32_t PixCntWidth = (Width + 16) / 17;
-	PixCntPitch = (Height + 14) / 15;
-	PixCnt = new uint8_t [PixCntWidth * PixCntPitch];
-	UpdatePixCnt(C4Rect(0, 0, Width, Height));
-	ClearMatCount();
-	UpdateMatCnt(C4Rect(0,0,Width,Height), true);
-
-	// Save initial landscape
-	if (!SaveInitial())
-		return false;
-
-	// Load diff, if existant
-	ApplyDiff(hGroup);
-
-	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
-	// and not creating the map
-	Game.FixRandom(Game.RandomSeed);
-
-
-	// Success
-	rfLoaded=true;
-	return true;
-}
-
 bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 {
 #ifdef DEBUGREC
@@ -966,152 +776,407 @@ int32_t C4Landscape::GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t i
 	return iMax;
 }
 
-int32_t C4Landscape::DigFreePix(int32_t tx, int32_t ty)
+std::vector<int32_t> C4Landscape::GetRoundPolygon(int32_t x, int32_t y, int32_t size, int32_t smoothness) const
 {
-	int32_t mat=GetMat(tx,ty);
-	if (mat!=MNone)
-		if (::MaterialMap.Map[mat].DigFree)
-			ClearPix(tx,ty);
-	CheckInstabilityRange(tx,ty);
-	return mat;
-}
+	/*
+	So what is this? It's basically a circle with the radius 'size'. The radius
+	is adjusted by two sin/cos waves. The random lies in the phase of the sin/cos
+	and in the factor the wave is added to the normal circle shape. smoothness from
+	0 to 100. 0 gives an exagerated 'explosion' shape while 100 is almost a circle
+	*/
 
-int32_t C4Landscape::ShakeFreePix(int32_t tx, int32_t ty)
-{
-	int32_t mat=GetMat(tx,ty);
-	if (mat!=MNone)
-		if (::MaterialMap.Map[mat].DigFree)
-		{
-			ClearPix(tx,ty);
-			::PXS.Create(mat,itofix(tx),itofix(ty));
-		}
-	CheckInstabilityRange(tx,ty);
-	return mat;
-}
+	if(smoothness > 100) smoothness = 100;
+	if(smoothness < 0) smoothness = 0;
+	if(size <= 0) size = 1;
 
-int32_t C4Landscape::BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t iBlastSize)
-{
-	int32_t mat=GetMat(tx,ty);
-	if (MatValid(mat))
+	// vertex count of the polygon
+	int32_t count = 2*size/3 + 6;
+
+	std::vector<int32_t> vertices;
+	vertices.reserve(count*2);
+
+	// varying phase of the sin/cos waves
+	C4Real begin = itofix(360)*Random(100)/100;
+	C4Real begin2 = itofix(360)*Random(100)/100;
+
+	// parameters:
+	// the bigger the factor, the smaller the divergence from a circle
+	C4Real anticircle = itofix(3)+smoothness/16*smoothness/16;
+	// the bigger the factor the more random is the divergence from the circle
+	int random = 80*(200-smoothness);
+
+	for(int i=0; i < count; ++i)
 	{
-		// Blast Shift
-		if (::MaterialMap.Map[mat].BlastShiftTo)
-		{
-			// blast free amount; always blast if 100% is to be blasted away
-			//if (Random(BlastMatCount[mat]) < iBlastSize * grade / 6)
-			SetPix(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
-		}
-		// Blast Free
-		if (::MaterialMap.Map[mat].BlastFree) ClearPix(tx,ty);
+		C4Real angle = itofix(360)*i/count;
+
+		C4Real currsize = itofix(size);
+		currsize += Sin(angle*3 + begin + itofix(Random(random))/100) * size/anticircle;		// +sin
+		currsize += Cos(angle*5 + begin2 + itofix(Random(random))/100) * size/anticircle/2;	// +cos
+
+		vertices.push_back(x+fixtoi(Sin(angle)*currsize));
+		vertices.push_back(y-fixtoi(Cos(angle)*currsize));
 	}
 
-	CheckInstabilityRange(tx,ty);
-
-	return mat;
+	return vertices;
 }
 
-void C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, bool fRequest, C4Object *pByObj)
+std::vector<int32_t> C4Landscape::GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const
 {
-	int32_t ycnt,xcnt,iLineWidth = 0,iLineY,iMaterial;
-	// Dig free
-	for (ycnt=-rad; ycnt<rad; ycnt++)
-	{
-		iLineWidth= (int32_t) sqrt(double(rad*rad-ycnt*ycnt));
-		iLineY=ty+ycnt;
-		for (xcnt=-iLineWidth; xcnt<iLineWidth+(iLineWidth==0); xcnt++)
-			if (MatValid(iMaterial=DigFreePix(tx+xcnt,iLineY)))
-				if (pByObj) pByObj->AddMaterialContents(iMaterial,1);
-		// Clear single pixels - left and right
-		DigFreeSinglePix(tx - iLineWidth - 1, iLineY, -1, 0);
-		DigFreeSinglePix(tx + iLineWidth+(iLineWidth==0), iLineY, +1, 0);
-	}
-	// Clear single pixels - up and down
-	DigFreeSinglePix(tx, ty - rad - 1, 0, -1);
-	for (xcnt=-iLineWidth; xcnt<iLineWidth+(iLineWidth==0); xcnt++)
-		DigFreeSinglePix(tx + xcnt, ty + rad, 0, +1);
-	// Dig out material cast
-	if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+	std::vector<int32_t> vertices;
+	vertices.reserve(8);
+
+	vertices[0] = tx;      vertices[1] = ty;
+	vertices[2] = tx;      vertices[3] = ty+hgt;
+	vertices[4] = tx+wdt;  vertices[5] = ty+hgt;
+	vertices[6] = tx+wdt;  vertices[7] = ty;
+
+	return vertices;
 }
 
-void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, bool fRequest, C4Object *pByObj)
+void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
 {
-	// Dig free pixels
-	int32_t cx,cy,iMaterial;
-	for (cx=tx; cx<tx+wdt; cx++)
-		for (cy=ty; cy<ty+hgt; cy++)
-			if (MatValid(iMaterial=DigFreePix(cx,cy)))
-				if (pByObj) pByObj->AddMaterialContents(iMaterial,1);
-	// Clear single pixels
+	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
+	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ClearPix);
+}
 
-	// Dig out material cast
-	if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object)
+{
+	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
+	DigFreeShape(&vertices[0],vertices.size(),by_object);
+}
+
+void C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object)
+{
+	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,80));
+	DigFreeShape(&vertices[0],vertices.size(),by_object);
+}
+
+void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object)
+{
+	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,25));
+	BlastFreeShape(&vertices[0],vertices.size(),by_object,caused_by);
 }
 
 void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 {
-	int32_t ycnt,xcnt,lwdt,dpy;
-	// Shake free pixels
-	for (ycnt=rad-1; ycnt>=-rad; ycnt--)
-	{
-		lwdt= (int32_t) sqrt(double(rad*rad-ycnt*ycnt));
-		dpy=ty+ycnt;
-		for (xcnt=-lwdt; xcnt<lwdt+(lwdt==0); xcnt++)
-			ShakeFreePix(tx+xcnt,dpy);
-	}
+	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,40));
+	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ShakeFreePix);
 }
 
-void C4Landscape::DigFreeMat(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mat)
+/* Polygon drawing code extracted from ALLEGRO by Shawn Hargreaves */
+
+struct CPolyEdge          // An edge for the polygon drawer
 {
-	int32_t cx,cy;
-	if (MatValid(mat))
-		for (cx=tx; cx<tx+wdt; cx++)
-			for (cy=ty; cy<ty+hgt; cy++)
-				if (GetMat(cx,cy)==mat)
-					DigFreePix(cx,cy);
+	int y;                  // Current (starting at the top) y position
+	int bottom;             // bottom y position of this edge
+	int x;                  // Fixed point x position
+	int dx;                 // Fixed point x gradient
+	int w;                  // Width of line segment
+	struct CPolyEdge *prev; // Doubly linked list
+	struct CPolyEdge *next;
+};
+
+#define POLYGON_FIX_SHIFT     16
+
+static void fill_edge_structure(CPolyEdge *edge, int *i1, int *i2)
+{
+	if (i2[1] < i1[1]) // Swap
+		{ int *t=i1; i1=i2; i2=t; }
+	edge->y = i1[1];
+	edge->bottom = i2[1] - 1;
+	edge->dx = ((i2[0] - i1[0]) << POLYGON_FIX_SHIFT) / (i2[1] - i1[1]);
+	edge->x = (i1[0] << POLYGON_FIX_SHIFT) + (1<<(POLYGON_FIX_SHIFT-1)) - 1;
+	edge->prev = NULL;
+	edge->next = NULL;
+	if (edge->dx < 0)
+		edge->x += Min<int>(edge->dx+(1<<POLYGON_FIX_SHIFT), 0);
+	edge->w = Max<int>(Abs(edge->dx)-(1<<POLYGON_FIX_SHIFT), 0);
 }
 
-void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, int32_t iByPlayer)
+static CPolyEdge *add_edge(CPolyEdge *list, CPolyEdge *edge, int sort_by_x)
 {
-	int32_t ycnt,xcnt,lwdt,dpy,mat,cnt;
-
-	// Reset material count
-	ClearBlastMatCount();
-
-	// Blast free pixels
-	// count pixel before, so BlastShiftTo can be evaluated
-	for (ycnt=-rad; ycnt<=rad; ycnt++)
+	CPolyEdge *pos = list;
+	CPolyEdge *prev = NULL;
+	if (sort_by_x)
 	{
-		lwdt= (int32_t) sqrt(double(rad*rad-ycnt*ycnt)); dpy=ty+ycnt;
-		for (xcnt=-lwdt; xcnt<lwdt+(lwdt==0); xcnt++)
-			if (MatValid(mat=GetMat(tx+xcnt,dpy)))
-				BlastMatCount[mat]++;
+		while ((pos) && (pos->x+pos->w/2 < edge->x+edge->w/2))
+			{ prev = pos; pos = pos->next; }
 	}
-	// blast pixels
-	int32_t iBlastSize = rad*rad*6283/2000; // rad^2 * pi
-	for (ycnt=-rad; ycnt<=rad; ycnt++)
+	else
 	{
-		lwdt= (int32_t) sqrt(double(rad*rad-ycnt*ycnt)); dpy=ty+ycnt;
-		for (xcnt=-lwdt; xcnt<lwdt+(lwdt==0); xcnt++)
-			BlastFreePix(tx+xcnt,dpy,grade,iBlastSize);
+		while ((pos) && (pos->y < edge->y))
+			{ prev = pos; pos = pos->next; }
 	}
+	edge->next = pos;
+	edge->prev = prev;
+	if (pos) pos->prev = edge;
+	if (prev) { prev->next = edge; return list; }
+	else return edge;
+}
 
-	// Evaluate material count
-	for (cnt=0; cnt< ::MaterialMap.Num; cnt++)
-		if (BlastMatCount[cnt])
+static CPolyEdge *remove_edge(CPolyEdge *list, CPolyEdge *edge)
+{
+	if (edge->next) edge->next->prev = edge->prev;
+	if (edge->prev) { edge->prev->next = edge->next; return list; }
+	else return edge->next;
+}
+
+// Global polygon quick buffer
+const int QuickPolyBufSize = 20;
+CPolyEdge QuickPolyBuf[QuickPolyBufSize];
+
+void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
+														 C4MaterialList *mats_count, int col, uint8_t *conversion_table)
+{
+	// Variables for polygon drawer
+	int c,x1,x2,y;
+	int top = INT_MAX;
+	int bottom = INT_MIN;
+	int *i1, *i2;
+	CPolyEdge *edge, *next_edge, *edgebuf;
+	CPolyEdge *active_edges = NULL;
+	CPolyEdge *inactive_edges = NULL;
+	bool use_qpb=false;
+
+	// Poly Buf
+	if (length<=QuickPolyBufSize)
+		{ edgebuf=QuickPolyBuf; use_qpb=true; }
+	else if (!(edgebuf = new CPolyEdge [length])) { return; }
+
+	// Fill the edge table
+	edge = edgebuf;
+	i1 = vtcs;
+	i2 = vtcs + (length-1) * 2;
+	for (c=0; c<length; c++)
+	{
+		if (i1[1] != i2[1])
 		{
+			fill_edge_structure(edge, i1, i2);
+			if (edge->bottom >= edge->y)
+			{
+				if (edge->y < top)  top = edge->y;
+				if (edge->bottom > bottom) bottom = edge->bottom;
+				inactive_edges = add_edge(inactive_edges, edge, false);
+				edge++;
+			}
+		}
+		i2 = i1; i1 += 2;
+	}
 
-			if (::MaterialMap.Map[cnt].Blast2Object != C4ID::None)
-				if (::MaterialMap.Map[cnt].Blast2ObjectRatio != 0)
-					Game.BlastCastObjects(::MaterialMap.Map[cnt].Blast2Object,NULL,
-					                      BlastMatCount[cnt]/::MaterialMap.Map[cnt].Blast2ObjectRatio,
-					                      tx,ty,iByPlayer);
-
-			if (::MaterialMap.Map[cnt].Blast2PXSRatio != 0)
-				::PXS.Cast(cnt,
-				           BlastMatCount[cnt]/::MaterialMap.Map[cnt].Blast2PXSRatio,
-				           tx,ty,60);
+	// For each scanline in the polygon...
+	for (c=top; c<=bottom; c++)
+	{
+		// Check for newly active edges
+		edge = inactive_edges;
+		while ((edge) && (edge->y == c))
+		{
+			next_edge = edge->next;
+			inactive_edges = remove_edge(inactive_edges, edge);
+			active_edges = add_edge(active_edges, edge, true);
+			edge = next_edge;
 		}
 
+		// Draw horizontal line segments
+		edge = active_edges;
+		while ((edge) && (edge->next))
+		{
+			x1=edge->x>>POLYGON_FIX_SHIFT;
+			x2=(edge->next->x+edge->next->w)>>POLYGON_FIX_SHIFT;
+			y=c;
+			// Fix coordinates
+			if (x1>x2) Swap(x1,x2);
+			// Set line
+			if (conversion_table)
+				for (int xcnt=x2-x1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+			else if(col)
+				for (int xcnt=x2-x1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
+			else
+				for (int xcnt=x2-x1; xcnt>=0; xcnt--)
+				{
+					int32_t mat = GetMat(x1+xcnt,y);
+					if((this->*fnCallback)(x1+xcnt,y))
+						if(mats_count)
+							mats_count->Add(mat,1);
+				}
+			edge = edge->next->next;
+		}
+
+		// Update edges, sorting and removing dead ones
+		edge = active_edges;
+		while (edge)
+		{
+			next_edge = edge->next;
+			if (c >= edge->bottom)
+			{
+				active_edges = remove_edge(active_edges, edge);
+			}
+			else
+			{
+				edge->x += edge->dx;
+				while ((edge->prev) && (edge->x+edge->w/2 < edge->prev->x+edge->prev->w/2))
+				{
+					if (edge->next) edge->next->prev = edge->prev;
+					edge->prev->next = edge->next;
+					edge->next = edge->prev;
+					edge->prev = edge->prev->prev;
+					edge->next->prev = edge;
+					if (edge->prev) edge->prev->next = edge;
+					else active_edges = edge;
+				}
+			}
+			edge = next_edge;
+		}
+	}
+
+	// Clear scratch memory
+	if (!use_qpb) delete [] edgebuf;
+}
+
+void C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
+{
+	C4Rect BoundingBox = getBoundingBox(vtcs,length);
+
+	if(by_object)
+	{
+		if(!by_object->MaterialContents)
+			by_object->MaterialContents = new C4MaterialList;
+		ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,by_object->MaterialContents);
+	}
+	else
+		ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,NULL);
+
+	// create objects from the material
+	if(!::Game.iTick5)
+	{
+		if(by_object)
+			if(by_object->MaterialContents)
+			{
+				int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetBottom();
+				DigMaterial2Objects(tx,ty,by_object->MaterialContents);
+			}
+	}
+}
+
+void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player)
+{
+	C4MaterialList *MaterialContents = NULL;
+
+	C4Rect BoundingBox = getBoundingBox(vtcs,length);
+
+	if(by_object)
+	{
+		if(!by_object->MaterialContents)
+			by_object->MaterialContents = new C4MaterialList;
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents);
+	}
+	else
+	{
+		MaterialContents = new C4MaterialList;
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,MaterialContents);
+	}
+
+	// create objects from the material
+	C4MaterialList *mat_list = NULL;
+	if(by_object)
+		mat_list = by_object->MaterialContents;
+	else
+		mat_list = MaterialContents;
+
+	int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetMiddleY();
+	BlastMaterial2Objects(tx,ty,mat_list,by_player);
+
+	if(MaterialContents) delete MaterialContents;
+}
+
+void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by)
+{
+	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
+	{
+		if (mat_list->Amount[mat])
+		{
+			if (::MaterialMap.Map[mat].Blast2PXSRatio != 0)
+					::PXS.Cast(mat,
+										 mat_list->Amount[mat]/::MaterialMap.Map[mat].Blast2PXSRatio,
+										 tx,ty,60);
+
+			if (::MaterialMap.Map[mat].Blast2Object != C4ID::None)
+				if (::MaterialMap.Map[mat].Blast2ObjectRatio != 0)
+				{
+					int32_t amount = mat_list->Amount[mat]/::MaterialMap.Map[mat].Blast2ObjectRatio;
+					Game.CastObjects(::MaterialMap.Map[mat].Blast2Object, NULL, amount, 30, tx, ty, NO_OWNER, caused_by);
+					mat_list->Amount[mat] = 0;
+				}
+		}
+	}
+}
+
+void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list)
+{
+	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
+	{
+		if (mat_list->Amount[mat])
+		{
+			if (::MaterialMap.Map[mat].Dig2Object != C4ID::None)
+				if (::MaterialMap.Map[mat].Dig2ObjectRatio != 0)
+					if (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
+					{
+						int32_t amount = mat_list->Amount[mat]/::MaterialMap.Map[mat].Dig2ObjectRatio;
+						Game.CastObjects(::MaterialMap.Map[mat].Dig2Object, NULL, amount, 0, tx, ty);
+						mat_list->Amount[mat] = 0;
+					}
+		}
+	}
+}
+
+bool C4Landscape::DigFreePix(int32_t tx, int32_t ty)
+{
+	int32_t mat = GetMat(tx,ty);
+	if (MatValid(mat))
+		if (::MaterialMap.Map[mat].DigFree)
+		{
+			ClearPix(tx,ty);
+			// check for instable materials to start moving by the cleared space
+			CheckInstabilityRange(tx,ty);
+			return true;
+		}
+	return false;
+}
+
+bool C4Landscape::BlastFreePix(int32_t tx, int32_t ty)
+{
+	int32_t mat = GetMat(tx,ty);
+	if (MatValid(mat))
+	{
+		// for blast, either shift to different material or blast free
+		if (::MaterialMap.Map[mat].BlastFree)
+		{
+			ClearPix(tx,ty);
+			// check for instable materials to start moving by the cleared space
+			CheckInstabilityRange(tx,ty);
+			return true;
+		}
+		else
+			if (::MaterialMap.Map[mat].BlastShiftTo)
+				SetPix(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
+	}
+	return false;
+}
+
+bool C4Landscape::ShakeFreePix(int32_t tx, int32_t ty)
+{
+	int32_t mat=GetMat(tx,ty);
+	if (MatValid(mat))
+	{
+		if (::MaterialMap.Map[mat].DigFree)
+		{
+			ClearPix(tx,ty);
+			::PXS.Create(mat,itofix(tx),itofix(ty));
+			// check for instable materials to start moving by the cleared space
+			CheckInstabilityRange(tx,ty);
+			return true;
+		}
+	}
+	return false;
 }
 
 void C4Landscape::DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt)
@@ -1487,6 +1552,202 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 	return false;
 }
 
+
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* +++++++++++++++++++++++++   Save, Init and load   +++++++++++++++++++++++ */
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame)
+{
+	// set map seed, if not pre-assigned
+	if (!MapSeed) MapSeed=Random(3133700);
+
+	// increase max map size, since developers might set a greater one here
+	Game.C4S.Landscape.MapWdt.Max=10000;
+	Game.C4S.Landscape.MapHgt.Max=10000;
+
+	// map and landscape must be initialized with fixed random, so runtime joining clients may recreate it
+	// with same seed
+	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
+	// and not creating the map
+	// this, however, would cause syncloss to DebugRecs
+	C4DebugRecOff DBGRECOFF(!!Game.C4S.Landscape.ExactLandscape);
+
+	Game.FixRandom(Game.RandomSeed);
+
+	// map is like it's loaded for regular gamestart
+	// but it's changed and would have to be saved if a new section is loaded
+	fMapChanged = fOverloadCurrent;
+
+	// don't change landscape mode in runtime joins
+	bool fLandscapeModeSet = (Mode != C4LSC_Undefined);
+
+	Game.SetInitProgress(60);
+	// create map if necessary
+	if (!Game.C4S.Landscape.ExactLandscape)
+	{
+		CSurface8 * sfcMap=NULL;
+		// Static map from scenario
+		if (hGroup.AccessEntry(C4CFN_Map))
+			if ((sfcMap=GroupReadSurface8(hGroup)))
+				if (!fLandscapeModeSet) Mode=C4LSC_Static;
+
+		// allow C4CFN_Landscape as map for downwards compatibility
+		if (!sfcMap)
+			if (hGroup.AccessEntry(C4CFN_Landscape))
+				if ((sfcMap=GroupReadSurface8(hGroup)))
+				{
+					if (!fLandscapeModeSet) Mode=C4LSC_Static;
+					fMapChanged = true;
+				}
+
+		// dynamic map from file
+		if (!sfcMap)
+			if ((sfcMap=CreateMapS2(hGroup)))
+				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
+
+		// Dynamic map by scenario
+		if (!sfcMap && !fOverloadCurrent)
+			if ((sfcMap=CreateMap()))
+				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
+
+
+		// No map failure
+		if (!sfcMap)
+		{
+			// no problem if only overloading
+			if (!fOverloadCurrent) return false;
+			if (fLoadSky) if (!Sky.Init(fSavegame)) return false;
+			return true;
+		}
+
+#ifdef DEBUGREC
+		AddDbgRec(RCT_Block, "|---MAP---|", 12);
+		AddDbgRec(RCT_Map, sfcMap->Bits, sfcMap->Pitch*sfcMap->Hgt);
+#endif
+
+		// Store map size and calculate map zoom
+		int iWdt, iHgt;
+		sfcMap->GetSurfaceSize(iWdt,iHgt);
+		MapWidth = iWdt; MapHeight = iHgt;
+		MapZoom = Game.C4S.Landscape.MapZoom.Evaluate();
+
+		// Calculate landscape size
+		Width = MapZoom * MapWidth;
+		Height = MapZoom * MapHeight;
+		Width = Max<int32_t>(Width,100);
+		Height = Max<int32_t>(Height,100);
+//    Width = (Width/8)*8;
+
+		// if overloading, clear current landscape (and sections, etc.)
+		// must clear, of course, before new sky is eventually read
+		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
+
+		// assign new map
+		Map = sfcMap;
+
+		// Sky (might need to know landscape height)
+		if (fLoadSky)
+		{
+			Game.SetInitProgress(70);
+			if (!Sky.Init(fSavegame)) return false;
+		}
+	}
+
+	// Exact landscape from scenario (no map or exact recreation)
+	else /* if (Game.C4S.Landscape.ExactLandscape) */
+	{
+		C4DebugRecOff DBGRECOFF;
+		// if overloading, clear current
+		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
+		// load it
+		if (!fLandscapeModeSet) Mode=C4LSC_Exact;
+		rfLoaded=true;
+		if (!Load(hGroup, fLoadSky, fSavegame)) return false;
+	}
+
+	// Make pixel maps
+	UpdatePixMaps();
+
+	// progress
+	Game.SetInitProgress(80);
+
+	// mark as new-style
+	Game.C4S.Landscape.NewStyleLandscape = 2;
+
+	// copy noscan-var
+	NoScan=Game.C4S.Landscape.NoScan!=0;
+
+	// Scan settings
+	ScanSpeed=BoundBy(Width/500,2,15);
+
+	// map to big surface and sectionize it
+	// (not for shaders though - they require continous textures)
+	// Create landscape surface
+	Surface8 = new CSurface8();
+	if (!Surface8->Create(Width, Height) || !Mat2Pal())
+	{
+		delete Surface8; Surface8 = 0;
+		return false;
+	}
+
+	// Map to landscape
+	if (!MapToLandscape()) return false;
+	Game.SetInitProgress(84);
+
+	// Create renderer
+	pLandscapeRender = NULL;
+#ifdef USE_GL
+	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
+		pLandscapeRender = new C4LandscapeRenderGL();
+#endif
+#ifndef USE_CONSOLE
+	if (!pLandscapeRender)
+		pLandscapeRender = new C4LandscapeRenderClassic();
+#endif
+
+	if(pLandscapeRender)
+	{
+		// Initialize renderer
+		if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
+			return false;
+
+		// Write landscape data
+		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
+		Game.SetInitProgress(87);
+	}
+#ifdef DEBUGREC
+	AddDbgRec(RCT_Block, "|---LS---|", 11);
+	AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
+#endif
+
+
+	// Create pixel count array
+	// We will use 15x17 blocks so the pixel count can't get over 255.
+	int32_t PixCntWidth = (Width + 16) / 17;
+	PixCntPitch = (Height + 14) / 15;
+	PixCnt = new uint8_t [PixCntWidth * PixCntPitch];
+	UpdatePixCnt(C4Rect(0, 0, Width, Height));
+	ClearMatCount();
+	UpdateMatCnt(C4Rect(0,0,Width,Height), true);
+
+	// Save initial landscape
+	if (!SaveInitial())
+		return false;
+
+	// Load diff, if existant
+	ApplyDiff(hGroup);
+
+	// after map/landscape creation, the seed must be fixed again, so there's no difference between clients creating
+	// and not creating the map
+	Game.FixRandom(Game.RandomSeed);
+
+
+	// Success
+	rfLoaded=true;
+	return true;
+}
+
 bool C4Landscape::Save(C4Group &hGroup)
 {
 	C4SolidMask::RemoveSolidMasks();
@@ -1683,7 +1944,6 @@ void C4Landscape::Default()
 	Width=Height=0;
 	MapWidth=MapHeight=MapZoom=0;
 	ClearMatCount();
-	ClearBlastMatCount();
 	ScanX=0;
 	ScanSpeed=2;
 	LeftOpen=RightOpen=TopOpen=BottomOpen=0;
@@ -1699,23 +1959,27 @@ void C4Landscape::Default()
 	}
 }
 
-void C4Landscape::ClearBlastMatCount()
-{
-	for (int32_t cnt=0; cnt<C4MaxMaterial; cnt++) BlastMatCount[cnt]=0;
-}
-
 void C4Landscape::ClearMatCount()
 {
-	for (int32_t cnt=0; cnt<C4MaxMaterial; cnt++) { MatCount[cnt]=0; EffectiveMatCount[cnt]=0;}
+	for (int32_t cnt=0; cnt<C4MaxMaterial; cnt++)
+	{
+		MatCount[cnt]=0;
+		EffectiveMatCount[cnt]=0;
+	}
 }
 
 void C4Landscape::Synchronize()
 {
 	ScanX=0;
-	ClearBlastMatCount();
 }
 
-bool AboveSemiSolid(int32_t &rx, int32_t &ry) // Nearest free above semi solid
+
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+/* +++++++++++++++ Searching for features in the landscape +++++++++++++++++ */
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+// Nearest free above semi solid
+bool AboveSemiSolid(int32_t &rx, int32_t &ry) 
 {
 	int32_t cy1=ry,cy2=ry;
 	bool UseUpwardsNextFree=false,UseDownwardsNextSolid=false;
@@ -1741,7 +2005,8 @@ bool AboveSemiSolid(int32_t &rx, int32_t &ry) // Nearest free above semi solid
 	return false;
 }
 
-bool AboveSolid(int32_t &rx, int32_t &ry) // Nearest free directly above solid
+// Nearest free directly above solid
+bool AboveSolid(int32_t &rx, int32_t &ry) 
 {
 	int32_t cy1=ry,cy2=ry;
 
@@ -1764,7 +2029,8 @@ bool AboveSolid(int32_t &rx, int32_t &ry) // Nearest free directly above solid
 	return false;
 }
 
-bool SemiAboveSolid(int32_t &rx, int32_t &ry) // Nearest free/semi above solid
+// Nearest free/semi above solid
+bool SemiAboveSolid(int32_t &rx, int32_t &ry) 
 {
 	int32_t cy1=ry,cy2=ry;
 
@@ -1814,10 +2080,8 @@ bool FindLiquidHeight(int32_t cx, int32_t &ry, int32_t hgt)
 	return false;
 }
 
-// Starting from rx/ry, searches for a width
-// of solid ground. Returns bottom center
-// of surface space found.
-
+// Starting from rx/ry, searches for a width of solid ground.
+// Returns bottom center of surface space found.
 bool FindSolidGround(int32_t &rx, int32_t &ry, int32_t width)
 {
 	bool fFound=false;
@@ -1914,12 +2178,8 @@ bool FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height)
 	return false;
 }
 
-
-// FindLevelGround: Starting from rx/ry, searches for a width
-//                  of solid ground. Extreme distances may not
-//                  exceed hrange.
-//                  Returns bottom center of surface found.
-
+// Starting from rx/ry, searches for a width of solid ground. Extreme distances
+// may not exceed hrange. Returns bottom center of surface found.
 bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange)
 {
 	bool fFound=false;
@@ -1968,12 +2228,8 @@ bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange)
 	return fFound;
 }
 
-
-
-// Starting from rx/ry, searches for a width of solid level
-// ground with structure clearance (category).
-// Returns bottom center of surface found.
-
+// Starting from rx/ry, searches for a width of solid level ground with
+// structure clearance (category). Returns bottom center of surface found.
 bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt,
                      int32_t Plane, int32_t hrange)
 {
@@ -2040,7 +2296,6 @@ bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt,
 }
 
 // Returns false on any solid pix in path.
-
 bool PathFreePix(int32_t x, int32_t y, int32_t par)
 {
 	return !GBackSolid(x,y);
@@ -2078,7 +2333,7 @@ int32_t TrajectoryDistance(int32_t iFx, int32_t iFy, C4Real iXDir, C4Real iYDir,
 }
 
 const int32_t C4LSC_Throwing_MaxVertical = 50,
-    C4LSC_Throwing_MaxHorizontal = 60;
+              C4LSC_Throwing_MaxHorizontal = 60;
 
 bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, int32_t iHeight, int32_t &rX, int32_t &rY)
 {
@@ -2112,7 +2367,7 @@ bool FindThrowingPosition(int32_t iTx, int32_t iTy, C4Real fXDir, C4Real fYDir, 
 }
 
 const int32_t C4LSC_Closest_MaxRange = 200,
-                                       C4LSC_Closest_Step     = 10;
+              C4LSC_Closest_Step     = 10;
 
 bool FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2,
                      int32_t iExcludeAngle1, int32_t iExcludeAngle2)
@@ -2171,6 +2426,8 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 	return true;
 }
 
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
 int32_t PixCol2Mat(BYTE pixc)
 {
 	// Get texture
@@ -2180,37 +2437,6 @@ int32_t PixCol2Mat(BYTE pixc)
 	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
 	// Return material
 	return pTex ? pTex->GetMaterialIndex() : MNone;
-}
-
-void C4Landscape::ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt)
-{
-	for (int32_t y=iTy; y<iTy+iHgt; y++)
-	{
-		for (int32_t x=iTx; x<iTx+iWdt; x++) ClearPix(x,y);
-	}
-}
-
-void C4Landscape::ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt, int32_t iOfDensity)
-{
-	int32_t iMinDensity = iOfDensity, iMaxDensity = iOfDensity;
-	switch (iOfDensity)
-	{
-	case C4M_Vehicle: iMaxDensity = 1000; break;
-	case C4M_Solid: iMaxDensity = C4M_Vehicle-1; break;
-		//case C4M_SemiSolid: iMaxDensity = C4M_Vehicle-1; break; - SemiSolid equals Liquid...
-	case C4M_Liquid: iMaxDensity = C4M_Solid-1; break;
-	case C4M_Background: iMaxDensity = C4M_Liquid-1; break;
-	default: break; // min=max as given
-	}
-
-	for (int32_t y=iTy; y<iTy+iHgt; y++)
-	{
-		for (int32_t x=iTx; x<iTx+iWdt; x++)
-		{
-			if (Inside(GetDensity(x, y), iMinDensity, iMaxDensity))
-				ClearPix(x,y);
-		}
-	}
 }
 
 bool C4Landscape::SaveMap(C4Group &hGroup)
@@ -2483,6 +2709,16 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
 	return conv_map;
 }
 
+C4Rect C4Landscape::getBoundingBox(int *vtcs, int length) const
+{
+	C4Rect BoundingBox(vtcs[0],vtcs[1],vtcs[2]-vtcs[0]+1,vtcs[3]-vtcs[1]+1);
+	for(int32_t i=5; i < length; i+=2)
+	{
+		BoundingBox.Add(C4Rect(vtcs[i-3],vtcs[i-2],vtcs[i-1]-vtcs[i-3]+1,vtcs[i]-vtcs[i-2]+1));
+	}
+	return BoundingBox;
+}
+
 bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, bool fIFT, bool fDrawBridge)
 {
 	if(length < 6) return false;
@@ -2498,14 +2734,10 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 		conversion_map = GetBridgeMatConversion(iMat);
 	}
 	// prepare pixel count update
-	C4Rect BoundingBox(vtcs[0],vtcs[1],vtcs[2],vtcs[3]);
-	for(int32_t i=5; i < length; i+=2)
-	{
-		BoundingBox.Add(C4Rect(vtcs[i-3],vtcs[i-2],vtcs[i-1],vtcs[i]));
-	}
+	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 	// draw polygon
 	PrepareChange(BoundingBox);
-	Surface8->Polygon(length/2,vtcs,MatTex2PixCol(iMatTex) + (fIFT ? IFT : 0), conversion_map);
+	ForPolygon(vtcs,length/2,NULL,NULL,MatTex2PixCol(iMatTex) + (fIFT ? IFT : 0), conversion_map);
 	FinishChange(BoundingBox);
 	return true;
 }

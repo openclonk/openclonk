@@ -6,6 +6,7 @@
  * Copyright (c) 2005, 2007  Peter Wortmann
  * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2011  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -92,7 +93,6 @@ public:
 	int32_t  BlastFree;
 	C4ID Dig2Object;
 	int32_t  Dig2ObjectRatio;
-	int32_t  Dig2ObjectOnRequestOnly;
 	C4ID Blast2Object;
 	int32_t  Blast2ObjectRatio;
 	int32_t  Blast2PXSRatio;
@@ -193,17 +193,15 @@ protected:
 extern C4MaterialMap MaterialMap;
 
 const int32_t C4M_Flat    = 0,
-                            C4M_TopFlat = 1,
-                                          C4M_Smooth  = 2,
-                                                        C4M_Rough   = 3,
-
-                                                                      // Material Density Levels
-
-                                                                      C4M_Vehicle   = 100,
-                                                                                      C4M_Solid     = 50,
-                                                                                                      C4M_SemiSolid = 25,
-                                                                                                                      C4M_Liquid    = 25,
-                                                                                                                                      C4M_Background= 0;
+              C4M_TopFlat = 1,
+              C4M_Smooth  = 2,
+              C4M_Rough   = 3,
+              // Material Density Levels
+              C4M_Vehicle   = 100,
+              C4M_Solid     = 50,
+              C4M_SemiSolid = 25,
+              C4M_Liquid    = 25,
+              C4M_Background= 0;
 
 const int32_t MNone = -1;
 

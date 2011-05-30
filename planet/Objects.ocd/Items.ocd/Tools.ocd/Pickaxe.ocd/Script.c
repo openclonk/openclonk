@@ -10,8 +10,6 @@ local maxreach;
 local swingtime;
 local using;
 
-local picked_materials;
-
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarrySpecial(clonk) { if(using == 1) return "pos_hand2"; }
@@ -20,10 +18,6 @@ public func GetCarryTransform()
 	return Trans_Rotate(-90, 0, 1, 0);
 }
 
-//TODO: The pick should probably have an internal array that
-//keeps the data of how much of which material has been dug.
-//I wouldn't have a clue how to do this, so if anyone else 
-//wants to make that, good luck! :) - Ringwaul
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(40, 0, 0, 1),Trans_Rotate(150, 0, 1, 0), Trans_Scale(900), Trans_Translate(600, 400, 1000)),def);
@@ -32,9 +26,8 @@ func Definition(def) {
 protected func Initialize()
 {
 	//maxreach is the length of the pick from the clonk's hand
-	maxreach=16;
+	maxreach=12;
 	swingtime=0;
-	picked_materials = CreatePropList();
 }
 
 private func Hit()
@@ -107,42 +100,29 @@ protected func DoSwing(object clonk, int ix, int iy)
 
 		var mat = GetMaterial(x2,y2);
 		var tex = GetTexture(x2,y2);
-
-		if(GetMaterialVal("DigFree","Material",mat)==0)
-		{
-			Sound("Clang*");
-		}
-
+		
+		// special effects
 		if(GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
 			var a = 80;
 			CreateParticle("Dust",x2,y2,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),DoRGBaValue(clr,-255+a,0));
 		}
-		
-		//special effects
-		if(GetMaterialVal("DigFree","Material",mat)==0)
+		else
+		{
 			CastParticles("Spark",RandomX(3,9),35,x2*9/10,y2*9/10,10,30,RGB(255,255,150),RGB(255,255,200));
+			Sound("Clang*");
+		}
 
-		//dig out resources too! Don't just remove landscape pixels
-		var x_obj = clonk->GetX()-GetX(), y_obj = clonk->GetY()+10-GetY();
-		for(var i = -10; i < 10; i++)
-			for(var j = -10; j < 10; j++)
-				if(Distance(0,0,i*10,j*10) <= 90)
-					PickPixel(i+x, j+y, x_obj, y_obj);
-
-		//stops resources from launching into clonk while mining
-//		for(var resources in FindObjects(Find_Distance(7,x,y), Find_Category(C4D_Object), Find_Not(Find_OCF(OCF_Alive))))
-//			resources->SetSpeed();
+		// dig out resources too! Don't just remove landscape pixels
+		BlastFree(GetX()+x2,GetY()+y2,5,GetController());
 	}
-//	else
-//		Message("Hit nothing"); //for debug
 }
 
 func FxIntPickaxeTimer(clonk, effect, time)
 {
 	++swingtime;
-	if(swingtime >= Pickaxe_SwingTime) //Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
+	if(swingtime >= Pickaxe_SwingTime) // Waits three seconds for animation to run (we could have a clonk swing his pick 3 times)
 	{
 		DoSwing(clonk,x,y);
 		swingtime = 0;
@@ -159,50 +139,6 @@ func FxIntPickaxeTimer(clonk, effect, time)
 	angle = BoundBy(angle,65,300);
 	clonk->SetXDir(Sin(angle,+speed),100);
 	clonk->SetYDir(Cos(angle,-speed),100);
-}
-
-func PickPixel(int x, int y, int x_obj, int y_obj)
-{
-	if(!x_obj) x_obj = x;
-	if(!y_obj) y_obj = y;
-	
-	var mat = GetMaterial(x,y);
-
-	// Has the material do be converted instead of blasted?
-	var shift = GetMaterialVal("BlastShiftTo", "Material", mat);
-	if(shift != nil && shift != "")
-	{
-		x += GetX(); y += GetY();
-		DrawMaterialQuad(shift, x,y,    x,y,   x,y+1,    x,y+1,  1);
-		return;
-	}
-
-	// If material can't be blasted stop here
-	if(!GetMaterialVal("BlastFree", "Material", mat)) return;
-
-	// Remember name for prolist access
-	var mat_name = MaterialName(mat);
-	
-	// Remove the pixel
-	FreeRect(GetX()+x,GetY()+y,1,1);
-
-	// Count pixels
-	if(picked_materials[mat_name] == nil) picked_materials[mat_name] = 1;
-	else picked_materials[mat_name]++;
-
-	// Create freed objects from blast or dig
-	var amount = GetMaterialVal("Blast2ObjectRatio", "Material", mat);
-	var def = GetMaterialVal("Blast2Object", "Material", mat);
-	if(!amount && !GetMaterialVal("Dig2ObjectRequest", "Material", mat))
-	{
-		amount = GetMaterialVal("Dig2ObjectRatio", "Material", mat);
-		def = GetMaterialVal("Dig2Object", "Material", mat);
-	}
-	if(amount && picked_materials[mat_name] >= amount)
-	{
-		CreateObject(def, x_obj, y_obj);
-		picked_materials[mat_name] -= amount;
-	}
 }
 
 protected func ControlUseCancel(object clonk, int ix, int iy)

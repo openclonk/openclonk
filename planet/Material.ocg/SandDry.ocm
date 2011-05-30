@@ -7,7 +7,6 @@ DigFree=1
 BlastFree=1
 Dig2Object=Sand
 Dig2ObjectRatio=200
-Dig2ObjectRequest=1
 Blast2PXSRatio=10
 Instable=1
 MaxAirSpeed=75

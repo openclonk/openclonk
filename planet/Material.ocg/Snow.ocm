@@ -24,7 +24,6 @@ PXSGfx=Snow
 PXSGfxRt=0,0,16,16,-8,-8
 Dig2Object=Snow
 Dig2ObjectRatio=400
-Dig2ObjectRequest=0
 
 [Reaction]
 Type=Convert

@@ -11,6 +11,7 @@
  * Copyright (c) 2009  David Dormagen
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011 Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -1427,18 +1428,6 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 		             tx,ty,Random(360),
 		             C4REAL10(Random(2*level+1)-level),
 		             C4REAL10(Random(2*level+1)-level),
-		             itofix(Random(3)+1), iController);
-	}
-}
-
-void C4Game::BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController)
-{
-	int32_t cnt;
-	for (cnt=0; cnt<num; cnt++)
-	{
-		CreateObject(id,pCreator,NO_OWNER,
-		             tx,ty,Random(360),
-		             C4REAL10(Random(61)-30), C4REAL10(Random(61)-40),
 		             itofix(Random(3)+1), iController);
 	}
 }
