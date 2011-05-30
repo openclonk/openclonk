@@ -21,7 +21,8 @@ bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMa
 {
 	// Create surface
 	Surface32 = new CSurface();
-	if(!Surface32->Create(iWidth, iHeight,false,false,64))
+	// without shaders, the FoW is only as detailed as the landscape has tiles.
+	if(!Surface32->Create(iWidth, iHeight,false,false,lpDDraw->IsShaderific() ? 0 : 64))
 		return false;
 	// Safe back info
 	this->iWidth = iWidth;
