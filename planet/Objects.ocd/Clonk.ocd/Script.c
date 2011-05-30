@@ -1283,8 +1283,10 @@ func NameComDir(comdir)
 
 func StartJump()
 {
-	// TODO: Tweak animation speed
-	PlayAnimation("Jump", 5, Anim_Linear(0, 0, GetAnimationLength("Jump"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	if(Abs(GetXDir()) >= 1)
+	PlayAnimation("Jump", 5, Anim_Linear(0, 0, GetAnimationLength("Jump"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	else
+		PlayAnimation("JumpUp", 5, Anim_Linear(0, 0, GetAnimationLength("JumpUp"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
@@ -1292,9 +1294,13 @@ func StartJump()
 	//Dive jump
 	var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
 			if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
-				PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));;
-	if(!GetEffect("Fall", this))
-		AddEffect("Fall",this,1,1,this);
+			{
+				PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				return 1;
+			}
+
+		if(!GetEffect("Fall", this))
+			AddEffect("Fall",this,1,1,this);
 }
 
 func FxFallEffect(string new_name, object target)
@@ -1307,7 +1313,7 @@ func FxFallTimer(object target, effect, int timer)
 {
 	if(GetYDir() > 55 && GetAction() == "Jump")
 	{
-		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		return -1;
 	}
 	if(GetAction() != "Jump")
