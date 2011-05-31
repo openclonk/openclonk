@@ -11,7 +11,6 @@ local iFuelAmount;
 
 func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(25,0,1,0));
 	iFuelAmount = 0;
 	return _inherited(...);
 }
@@ -87,3 +86,6 @@ Work = {
 };
 local Name = "$Name$";
 
+func Definition(def) {
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(25,0,1,0), Trans_Scale(625)), def);
+}
