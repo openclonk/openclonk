@@ -102,7 +102,10 @@ protected func CatchBlow()
 	
 protected func Hurt()
 {
-	Sound("Hurt*");
+	if(gender == 0)
+		Sound("Hurt*");
+	else
+		Sound("FHurt*"); //female 'ouch' sounds TODO :/
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -132,7 +135,11 @@ protected func Death(int killed_by)
 	if (GetAlive())
 		return;
 	
-	Sound("Die");
+	if(gender == 0)
+		Sound("Die");
+	else
+		Sound("FDie");
+
 	DeathAnnounce();
 	// If the last crewmember died, do another broadcast.
 	if (!GetCrew(GetOwner()))
@@ -1983,6 +1990,27 @@ func QueryCatchBlow(object obj)
 	}
 	if(r) return r;
 	return _inherited(obj, ...);
+}
+
+local gender;
+
+func SetSkin(int skin)
+{
+	//Adventurer
+	if(skin == 0)
+	{	SetGraphics();
+		gender = 0;	}
+
+	//Steampunk
+	if(skin == 1)
+	{	SetGraphics(nil, Skin_Steampunk);
+		gender = 1; }
+
+	RemoveBackpack(); //add a backpack
+	AttachBackpack();
+	SetAction("Jump"); //refreshes animation
+
+	return skin;
 }
 
 /* Act Map */
