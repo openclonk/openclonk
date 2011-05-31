@@ -1283,10 +1283,16 @@ func NameComDir(comdir)
 
 func StartJump()
 {
+	//which leg to kick off with?
+	var side = "R";
+	if(Random(2)) side = "L";
+
 	if(Abs(GetXDir()) >= 1)
-	PlayAnimation("Jump", 5, Anim_Linear(0, 0, GetAnimationLength("Jump"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation(Format("Jump.%s",side), 5, Anim_Linear(0, 0, GetAnimationLength("Jump.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	else
-		PlayAnimation("JumpUp", 5, Anim_Linear(0, 0, GetAnimationLength("JumpUp"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	{
+		PlayAnimation(Format("JumpUp.%s", side), 5, Anim_Linear(0, 0, GetAnimationLength("JumpUp.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
@@ -1311,9 +1317,19 @@ func FxFallEffect(string new_name, object target)
 
 func FxFallTimer(object target, effect, int timer)
 {
+	//falling off ledges without jumping results in fall animation
+	if(timer == 2 && GetYDir() > 1)
+	{
+		PlayAnimation("FallShort", 5, Anim_Linear(0, 0, GetAnimationLength("FallShort"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
+	if(timer == 2 && GetYDir() < 1)
+	{
+		Sound("Rustle*.ogg");
+	}
+
 	if(GetYDir() > 55 && GetAction() == "Jump")
 	{
-		PlayAnimation("Fall", 5, Anim_Linear(0, 0, GetAnimationLength("Fall"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		PlayAnimation("FallLong", 5, Anim_Linear(0, 0, GetAnimationLength("FallLong"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		return -1;
 	}
 	if(GetAction() != "Jump")
@@ -1642,16 +1658,73 @@ func Hit(int iXSpeed, int iYSpeed)
 {
 	if(iYSpeed < 450) return;
 	if(GetAction() != "Walk") return;
+
+	//Roll :D
+	if(GetComDir() == COMD_Right && GetDir() == 1 || GetComDir() == COMD_Left && GetDir() == 0)
+	{
+		if(Abs(iXSpeed) > 130 && iYSpeed <= 80 * 10)
+			SetAction("Roll");
+		else
+			DoKneel();
+	}
+	else
+	{
+		DoKneel();
+	}
+}
+
+func DoKneel()
+{
 	var iKneelDownSpeed = 18;
+
 	SetXDir(0);
 	SetAction("Kneel");
+	Sound("RustleLand.ogg");
 	PlayAnimation("KneelDown", 5, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
 	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
+	return 1;
 }
 
 func EndKneel()
 {
-	SetAction("Walk");
+	if(GetAction() != "Roll") SetAction("Walk");
+}
+
+local rolllength;
+local rolldir;
+
+//rollp
+func StartRoll()
+{	
+	Sound("Roll.ogg");
+	if(GetDir() == 1) rolldir = 1;
+	else
+		rolldir = -1;
+
+	rolllength = 25;
+	PlayAnimation("KneelRoll", 5, Anim_Linear(0, 0, 1500, rolllength, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	AddEffect("Rolling", this, 1, 1, this);
+}
+
+func FxRollingTimer(object target, int num, int timer)
+{
+	if(GetContact(-1)) SetXDir(25 * rolldir);
+
+	//Hacky fun
+	var i = 3;
+	while(GBackSolid(rolldir, 9) && i != 0)
+	{
+		SetPosition(GetX(),GetY() - 1);
+		i--;
+	}
+
+	if(timer > rolllength)
+	{
+		SetAction("Walk");
+		rolldir = nil;
+		return -1;
+	}
 }
 
 func StartDigging()
@@ -1962,6 +2035,22 @@ Kneel = {
 	Wdt = 8,
 	Hgt = 20,
 //	StartCall = "StartKneel",
+	InLiquidAction = "Swim",
+},
+Roll = {
+	Prototype = Action,
+	Name = "Roll",
+	Procedure = DFA_NONE,
+	Directions = 2,
+	FlipDir = 0,
+	Length = 1,
+	Delay = 0,
+	X = 0,
+	Y = 0,
+	Wdt = 8,
+	Hgt = 20,
+	StartCall = "StartRoll",
+	NextAction = "Walk",
 	InLiquidAction = "Swim",
 },
 Scale = {
