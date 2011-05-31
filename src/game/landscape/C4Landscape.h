@@ -194,7 +194,6 @@ public:
 	bool SetModulation(DWORD dwWithClr) // adjust the way the landscape is blitted
 	{ Modulation=dwWithClr; return true; }
 	DWORD GetModulation() { return Modulation; }
-	void DiscardMap(); // discard map if present
 	bool PostInitMap();   // do script callbacks of MapCreatorS2 in finished landscape
 	bool ReplaceMapColor(BYTE iOldIndex, BYTE iNewIndex); // find every occurance of iOldIndex in map; replace it by new index
 	bool SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fInsert); // change color index of map texture, or insert a new one
@@ -254,7 +253,7 @@ private:
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list);
-	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by);
+	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str);
 
 	bool DigFreePix(int32_t tx, int32_t ty);
 	bool BlastFreePix(int32_t tx, int32_t ty);
