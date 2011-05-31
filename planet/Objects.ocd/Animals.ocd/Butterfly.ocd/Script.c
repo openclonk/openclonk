@@ -1,6 +1,6 @@
 /*
 	Butterfly
-	Author: Randrian
+	Author: Randrian/Ringwaul
 
 	A small fluttering being.
 */
@@ -10,14 +10,22 @@ func Construction()
 	StartGrowth(15);
 }
 
+local flightanim;
+local rotanim;
+
 protected func Initialize()
 {
-	// TODO: Fix mesh extents?
-	SetObjDrawTransform(20000,0,0,0,20000,-160000);
-
+	flightanim = PlayAnimation("Fly", 5, Anim_Linear(0,0, GetAnimationLength("Fly"), 10, ANIM_Loop), Anim_Const(1000));
+	rotanim = PlayAnimation("Rotate", 5, Anim_Const(1), Anim_Const(1000));
+	AddEffect("ButterflyTurn", this, 1, 1, this);
 	SetAction("Fly");
 	MoveToTarget();
 	return 1;
+}
+
+func FxButterflyTurnTimer(object target, int num, int timer)
+{
+	TurnButterfly();
 }
 	
 /* TimerCall */
@@ -35,22 +43,22 @@ private func Activity()
 
 /* Movement */
 
-private func Flying()
+func TurnButterfly()
 {
-	// Change direction
-	if (GetXDir() > 0) SetDir(DIR_Right);
-	else SetDir(DIR_Left);
-	// Change action
+	var angle = Normalize(Angle(0,0,GetXDir(), GetYDir()));
+	SetAnimationPosition(rotanim, Anim_Const(angle * 10));
+	return;
+}
+
+private func FlyingStart()
+{
+	TurnButterfly();
 	if (!Random(3)) SetAction("Flutter");
 	return 1;
 }
 	
 private func Fluttering()
 {
-	// Change direction
-	if (GetXDir() > 0) SetDir(DIR_Right);
-	else SetDir(DIR_Left);
-	// Change action
 	if (!Random(7)) SetAction("Fly");
 	return 1;
 }
@@ -113,8 +121,7 @@ Fly = {
 	Wdt = 24,
 	Hgt = 24,
 	NextAction = "Fly",
-	StartCall = "Flying",
-	Animation = "Fly",
+	StartCall = "FlyingStart",
 },
 Flutter = {
 	Prototype = Action,
