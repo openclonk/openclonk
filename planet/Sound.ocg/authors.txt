@@ -38,3 +38,4 @@ Dynamicell      - Structures/Foundry*
 Traveler        - Structures/Foundry/Pop
 Mirors_					- Sizzle
 Stickinthemud   - Clonk
+pwausc1			- Rustle*/Roll
