@@ -117,7 +117,7 @@ private:
 
 	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
 	int GetObjectStatus(GLhandleARB hObj, GLenum type);
-	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode);
+	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, const char *szWorkaround);
 
 	bool InitShaders();
 	void ClearShaders();

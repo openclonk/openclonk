@@ -447,25 +447,25 @@ int C4LandscapeRenderGL::GetObjectStatus(GLhandleARB hObj, GLenum type)
 	return iStatus;
 }
 
-GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode)
+GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, const char *szWorkaround)
 {
-	// Try all workarounds until one works
-	for(int iWorkaround = 0; iWorkaround < C4LR_ShaderWorkaroundCount; iWorkaround++)
-	{
-		// Build code
-		const char *szCodes[2] = { C4LR_ShaderWorkarounds[iWorkaround], szCode };
-		GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
-		glShaderSourceARB(hShader, 2, szCodes, 0);
-		glCompileShaderARB(hShader);
+	// Create shader
+	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
 
-		// Dump any information to log
-		DumpInfoLog(szWhat, hShader);
+	// Build code
+	const char *szCodes[2] = { szWorkaround, szCode };
+	glShaderSourceARB(hShader, 2, szCodes, 0);
+	glCompileShaderARB(hShader);
 
-		// Success?
-		if(GetObjectStatus(hShader, GL_OBJECT_COMPILE_STATUS_ARB) == 1)
-			return hShader;
-	}
+	// Dump any information to log
+	DumpInfoLog(szWhat, hShader);
+
+	// Success?
+	if(GetObjectStatus(hShader, GL_OBJECT_COMPILE_STATUS_ARB) == 1)
+		return hShader;
+
 	// Did not work :/
+	glDeleteObjectARB(hShader);
 	return 0;
 }
 
@@ -482,25 +482,39 @@ bool C4LandscapeRenderGL::InitShaders()
 		return false;
 	}
 
-	// Create trivial fragment shader
-	const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
-	hVert = CreateShader(GL_VERTEX_SHADER_ARB, "Vertex shader", szVert);
-    hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "Fragment shader", LandscapeShader.getData());
-	if(!hFrag || !hVert) return false;
-
-	// Link program
-	hProg = glCreateProgramObjectARB();
-    glAttachObjectARB(hProg, hVert);
-    glAttachObjectARB(hProg, hFrag);
-    glLinkProgramARB(hProg);
-
-	// Link successful?
-	DumpInfoLog("Shader program", hProg);
-	if(GetObjectStatus(hProg, GL_OBJECT_LINK_STATUS_ARB) != 1)
+	// Try all workarounds until one works
+	for(int iWorkaround = 0; iWorkaround < C4LR_ShaderWorkaroundCount; iWorkaround++)
 	{
-		ClearShaders();
-		return false;
+		// Create trivial fragment shader
+		const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
+		const char *szWorkaround = C4LR_ShaderWorkarounds[iWorkaround];
+		hVert = CreateShader(GL_VERTEX_SHADER_ARB, "Vertex shader", szVert, szWorkaround);
+		hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "Fragment shader", LandscapeShader.getData(), szWorkaround);
+		if(!hFrag || !hVert)
+			continue;
+
+		// Link program
+		hProg = glCreateProgramObjectARB();
+		glAttachObjectARB(hProg, hVert);
+		glAttachObjectARB(hProg, hFrag);
+		glLinkProgramARB(hProg);
+
+		// Link successful?
+		DumpInfoLog("Shader program", hProg);
+		if(GetObjectStatus(hProg, GL_OBJECT_LINK_STATUS_ARB) == 1)
+			break;
+
+		// Clear up
+		glDetachObjectARB(hProg, hVert);
+		glDetachObjectARB(hProg, hFrag);
+		glDeleteObjectARB(hVert);
+		glDeleteObjectARB(hFrag);
+		glDeleteObjectARB(hProg);
+		hProg = hVert = hFrag = 0;
 	}
+	
+	// Did not get it to work?
+	if(!hProg) return false;
 
 	// Get uniform locations. Note this is expected to fail for a few of them
 	// because the respective uniforms got optimized out!
@@ -521,8 +535,8 @@ void C4LandscapeRenderGL::ClearShaders()
 	if (!hProg) return;
 
 	// Need to be detached, then deleted
-	glDetachShader(hProg, hFrag);
-	glDetachShader(hProg, hVert);
+	glDetachObjectARB(hProg, hFrag);
+	glDetachObjectARB(hProg, hVert);
 	glDeleteObjectARB(hFrag);
 	glDeleteObjectARB(hVert);
 	glDeleteObjectARB(hProg);
