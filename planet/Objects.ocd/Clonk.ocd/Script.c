@@ -1709,14 +1709,14 @@ func StartRoll()
 	else
 		rolldir = -1;
 
-	rolllength = 25;
+	rolllength = 22;
 	PlayAnimation("KneelRoll", 5, Anim_Linear(0, 0, 1500, rolllength, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	AddEffect("Rolling", this, 1, 1, this);
 }
 
 func FxRollingTimer(object target, int num, int timer)
 {
-	if(GetContact(-1)) SetXDir(25 * rolldir);
+	if(GetContact(-1)) SetXDir(23 * rolldir);
 
 	//Hacky fun
 	var i = 3;
