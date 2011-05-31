@@ -61,10 +61,17 @@ private func StartUsage(object clonk)
 	}
 
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
+
+	var handLR;
+	if(clonk->GetItemPos(this) == 0)
+		handLR = "R";
+	if(clonk->GetItemPos(this) == 1)
+		handLR = "L";
+
 	clonk->UpdateAttach();
-	clonk->ReplaceAction("Stand", ["ShieldStandUp.L", "ShieldStandDown.L", 500]);
-	clonk->ReplaceAction("Walk", ["ShieldWalkUp.L", "ShieldWalkDown.L", 500]);
-	clonk->ReplaceAction("Run", ["ShieldWalkUp.L", "ShieldWalkDown.L", 500]);
+	clonk->ReplaceAction("Stand", [Format("ShieldStandUp.%s",handLR), Format("ShieldStandDown.%s",handLR), 500]);
+	clonk->ReplaceAction("Walk", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), 500]);
+	clonk->ReplaceAction("Run", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), 500]);
 
 	StartWeaponHitCheckEffect(clonk, -1, 1);
 	
@@ -111,9 +118,15 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	var weight = 0;
 	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
 
-	clonk->ReplaceAction("Stand", ["ShieldStandUp.L", "ShieldStandDown.L", weight]);
-	clonk->ReplaceAction("Walk", ["ShieldWalkUp.L", "ShieldWalkDown.L", weight]);
-	clonk->ReplaceAction("Run", ["ShieldWalkUp.L", "ShieldWalkDown.L", weight]);
+	var handLR;
+	if(clonk->GetItemPos(this) == 0)
+		handLR = "R";
+	if(clonk->GetItemPos(this) == 1)
+		handLR = "L";
+
+	clonk->ReplaceAction("Stand", [Format("ShieldStandUp.%s",handLR), Format("ShieldStandDown.%s",handLR), weight]);
+	clonk->ReplaceAction("Walk", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), weight]);
+	clonk->ReplaceAction("Run", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), weight]);
 
 	if(!GetEffect("IntShieldSuspend", clonk))
 	{
