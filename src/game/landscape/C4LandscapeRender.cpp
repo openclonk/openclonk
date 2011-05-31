@@ -163,9 +163,24 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 			break;
 	if(!pRefSfc)
 		return false;
-	
-	// Compose together data of all textures
+
+	// Get size for our textures. We might be limited by hardware
 	int iTexWdt = pRefSfc->Wdt, iTexHgt = pRefSfc->Hgt;
+	GLint iMaxTexSize;
+	glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &iMaxTexSize);
+	if (iTexWdt > iMaxTexSize || iTexHgt > iMaxTexSize)
+	{
+		iTexWdt = Min(iTexWdt, iMaxTexSize);
+		iTexHgt = Min(iTexHgt, iMaxTexSize);
+		LogF("   gl: Material textures too large, GPU only supports %dx%d! Cropping might occur!", iMaxTexSize, iMaxTexSize);
+	}
+	if(iMaterialTextureDepth >= iMaxTexSize)
+	{
+		LogF("   gl: Too many material textures! GPU only supports 3D texture depth of %d!", iMaxTexSize);
+		return false;
+	}
+
+	// Compose together data of all textures
 	const int iBytesPP = pRefSfc->byBytesPP;
 	const int iTexSize = iTexWdt * iTexHgt * iBytesPP;
 	const int iSize = iTexSize * iMaterialTextureDepth;
@@ -290,7 +305,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	// Check whether we were successful
 	if(int err = glGetError())
 	{
-		LogF("  gl: Could not load textures (error %d)", err);
+		LogF("   gl: Could not load textures (error %d)", err);
 		return false;
 	}
 	return true;
