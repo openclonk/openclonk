@@ -3,10 +3,8 @@ Icon=26
 Title=CableLorries
 Version=4,10
 Difficulty=10
-Access=1
 MaxPlayer=8
 NoInitialize=0
-ForcedGfxMode=1
 
 [Definitions]
 Definition1=Objects.ocd

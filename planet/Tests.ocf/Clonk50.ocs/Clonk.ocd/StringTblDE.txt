@@ -1,8 +1,0 @@
-CtxConstructionDesc=Bauauftrag
-CtxConstructionMaterial=Baumaterial
-CtxHomeDesc=Zurück zur Basis
-CtxRelease=Entlassen
-CtxChop=Fällen
-CtrlMenuDesc=Menü
-TxtDescend=Abspringen
-TxtEnergysupply=Energieversorgung
