@@ -918,6 +918,7 @@ add_executable(c4script EXCLUDE_FROM_ALL
 	src/c4group/C4GroupSet.cpp
 	src/c4group/C4ComponentHost.cpp
 	src/c4group/C4LangStringTable.cpp
+	src/C4Include.cpp
 )
 
 target_link_libraries(clonk
