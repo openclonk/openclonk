@@ -33,7 +33,7 @@ protected func Initialize()
 	
 	// Script player as opponent.
 	SetMaxPlayer(2);
-	CreateScriptPlayer("Opponent", RGB(40,30,20), nil, CSPF_FixedAttributes);
+	CreateScriptPlayer("$NameOpponent$", RGB(40,30,20), nil, CSPF_FixedAttributes);
 	
 	// Second section: gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);

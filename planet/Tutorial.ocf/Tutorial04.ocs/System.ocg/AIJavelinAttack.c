@@ -48,7 +48,7 @@ public func AI_CanHitTarget(object target)
 
 protected func AI_JavelinAttack(object clonk, int x, int y, object target)
 {
-	clonk->AI_Log("Javelin attack on %v", target);
+	clonk->AI_Log("Javelin attack on %s", target->GetName());
 	
 	// Throw a javelin.
 	AddEffect("AI_JavelinAim", clonk, 100, 1, this, nil, target);

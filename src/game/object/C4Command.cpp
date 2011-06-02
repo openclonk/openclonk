@@ -324,7 +324,7 @@ void C4Command::MoveTo()
 	if (cObj->OCF & OCF_CrewMember) // || cObj->Def->Pathfinder ? (Sven2)
 	{
 		// Range by size
-		iTargetRange=cObj->Shape.Wdt/5;
+		iTargetRange=cObj->Shape.Wdt/2;
 		// Easier range if waypoint
 		if (fWaypoint)
 			if (cObj->GetProcedure()!=DFA_SCALE)

@@ -16,7 +16,7 @@ public func AI_CanHitTarget(object target)
 protected func AI_MusketAttack(object clonk, int x, int y, object target)
 {
 	clonk->FinishCommand(false, 1);
-	clonk->AI_Log("Musket attack on %v", target);
+	clonk->AI_Log("Musket attack on %s", target->GetName());
 	// Check for lead shot.
 	var shot = FindObject(Find_Container(this), Find_ID(LeadShot));
 	if (!shot)

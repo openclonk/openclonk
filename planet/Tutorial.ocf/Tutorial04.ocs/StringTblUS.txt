@@ -12,3 +12,6 @@ MsgTutOpenGate=No challenge at all, right? Grab the spin wheel and press [Up] to
 MsgTutTwoEnemies=There are two enemies occupying that tower. Evade or block their ranged attacks and make it into the tower to attack them from behind.
 MsgTutMoveOn=Well done! Open the gate with the wheel in tower, and move on to the last enemy.
 MsgTutLastEnemy=The last enemy is over there, he is equipped with sword and shield. Eliminate him to complete this tutorial.
+
+#Opponent Name
+NameOpponent=Tutorial Opponent

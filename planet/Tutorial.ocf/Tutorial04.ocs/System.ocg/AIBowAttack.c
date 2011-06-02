@@ -50,7 +50,7 @@ public func AI_CanHitTarget(object target)
 
 protected func AI_BowAttack(object clonk, int x, int y, object target)
 {
-	clonk->AI_Log("Bow attack on %v", target);
+	clonk->AI_Log("Bow attack on %s", target->GetName());
 	// Check for arrows.
 	var arrows = FindObject(Find_Container(this), Find_ID(Arrow));
 	if (!arrows)

@@ -5,14 +5,14 @@
 protected func AI_RangedAttack(object clonk, int x, int y, object target)
 {
 	clonk->AI_LogCommandStack();
-	clonk->AI_Log("Ranged attack on %v", target);
+	clonk->AI_Log("Ranged attack on %s", target->GetName());
 	// target in range?
 	if (ObjectDistance(clonk, target) > 600 || target->Contained())
-		return clonk->AI_Log("Target %v out of range", target);
+		return clonk->AI_Log("Target %s out of range", target->GetName());
 		
 	// target still alive?
 	if (!(target->GetOCF() & OCF_Alive))
-		return clonk->AI_Log("Target %v has died", target);
+		return clonk->AI_Log("Target %s has died", target->GetName());
 		
 	// Look for ranged weapon in contents.
 	for (var weapon in FindObjects(Find_Container(clonk), Find_Func("AI_IsRangedWeapon"), Find_Func("AI_CanHitTarget", target)))
@@ -20,7 +20,7 @@ protected func AI_RangedAttack(object clonk, int x, int y, object target)
 		// Check if weapon is loaded.
 		if (weapon->~AI_IsLoaded())
 		{
-			clonk->AI_Log("Use ranged weapon %v", weapon);
+			clonk->AI_Log("Use ranged weapon %s", weapon->GetName());
 			clonk->AppendCommand("Call", weapon, nil, nil, target, nil, weapon->AI_CommandString()); //add+finish
 			return;
 		}		
