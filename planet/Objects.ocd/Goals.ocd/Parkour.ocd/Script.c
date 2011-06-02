@@ -12,7 +12,6 @@
 		
 	TODO:
 		* Update CP Graphics -> looks satisfactory atm but cpu intensive.
-		* Add significant message under goal, done.
 --*/
 
 
@@ -51,6 +50,9 @@ protected func Initialize()
 
 public func SetStartpoint(int x, int y)
 {
+	// Safety, x and y inside landscape bounds.
+	x = BoundBy(x, 0, LandscapeWidth());
+	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Start));
 	if (!cp)	
 		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
@@ -63,6 +65,9 @@ public func SetStartpoint(int x, int y)
 
 public func SetFinishpoint(int x, int y, bool team)
 {
+	// Safety, x and y inside landscape bounds.
+	x = BoundBy(x, 0, LandscapeWidth());
+	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Finish));
 	if (!cp)	
 		cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
@@ -79,6 +84,9 @@ public func SetFinishpoint(int x, int y, bool team)
 
 public func AddCheckpoint(int x, int y, int mode)
 {
+	// Safety, x and y inside landscape bounds.
+	x = BoundBy(x, 0, LandscapeWidth());
+	y = BoundBy(y, 0, LandscapeHeight());
 	var cp = CreateObject(ParkourCheckpoint, x, y, NO_OWNER);
 	cp->SetPosition(x, y);
 	cp->SetCPMode(mode);
