@@ -162,3 +162,45 @@ TEST(UnicodeHandlingTest, RejectsInvalidMultiByteUtf8)
 	EXPECT_FALSE(::IsValidUtf8("\xE2\x84"));
 	EXPECT_FALSE(::IsValidUtf8("\xF0\x9F\x94\x87", 3)); // U+1F507 SPEAKER WITH CANCELLATION STROKE
 }
+
+#include "lib/StdBuf.h"
+#include "lib/StdBuf.cpp"
+#ifdef _WIN32
+size_t FileSize(int) { return 0; }
+TEST(UnicodeHandlingTest, WideStringConversion)
+{
+	wchar_t *wide_strings[] = {
+		L"\xD835\xDD07\xD835\xDD22\xD835\xDD2F",
+		L"\xD835\xDD0E\xD835\xDD29\xD835\xDD1E\xD835\xDD32\xD835\xDD30",
+		NULL
+	};
+	for (wchar_t **wide_string = wide_strings; *wide_string; ++wide_string)
+	{
+		StdStrBuf wide_string_buf(*wide_string);
+		EXPECT_STREQ(*wide_string, wide_string_buf.GetWideChar()) << "Conversion wchar_t*=>StdStrBuf=>wchar_t* isn't lossless";
+	}
+}
+#endif
+
+#ifdef _WIN32
+#include "platform/StdRegistry.h"
+#include "platform/StdRegistry.cpp"
+char StdCompiler::SeparatorToChar(enum StdCompiler::Sep) { return ' '; }
+TEST(UnicodeHandlingTest, RegistryAccess)
+{
+	wchar_t *wide_strings[] = {
+		L"\xD835\xDD07\xD835\xDD22\xD835\xDD2F",
+		L"\xD835\xDD0E\xD835\xDD29\xD835\xDD1E\xD835\xDD32\xD835\xDD30",
+		NULL
+	};
+
+	const char *key = "SOFTWARE\\OpenClonk Project\\OpenClonk\\Testing";
+	for (wchar_t **wide_string = wide_strings; *wide_string; ++wide_string)
+	{
+		ASSERT_TRUE(SetRegistryString(key, "WideCharTest", StdStrBuf(*wide_string).getData()));
+		char buffer[256];
+		ASSERT_TRUE(GetRegistryString(key, "WideCharTest", buffer, sizeof(buffer)/sizeof(*buffer)));
+		EXPECT_STREQ(*wide_string, StdStrBuf(buffer).GetWideChar()) << "Registry read-back returned wrong value";
+	}
+}
+#endif
