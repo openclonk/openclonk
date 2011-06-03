@@ -245,7 +245,9 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 		sm.Vertices = ReadSubmeshGeometry(geo);
 
 		// Read bone assignments
-		BOOST_FOREACH(const Ogre::Mesh::BoneAssignment &ba, csm.boneAssignments)
+		std::vector<Ogre::Mesh::BoneAssignment> &boneAssignments = (csm.hasSharedVertices ? cmesh.boneAssignments : csm.boneAssignments);
+		assert(!csm.hasSharedVertices || csm.boneAssignments.empty());
+		BOOST_FOREACH(const Ogre::Mesh::BoneAssignment &ba, boneAssignments)
 		{
 			if (ba.vertex >= sm.GetNumVertices())
 				throw Ogre::Mesh::VertexNotFound();

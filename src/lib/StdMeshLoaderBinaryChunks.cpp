@@ -129,6 +129,12 @@ namespace Ogre
 					delete chunk;
 					break;
 				case CID_Mesh_Bone_Assignment:
+					// Collect bone assignments
+					{
+					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
+					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
+					break;
+					}
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Mesh chunk", chunk->GetType());
 					// Fall through
