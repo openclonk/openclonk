@@ -869,7 +869,7 @@ add_executable(c4group
 	src/C4Include.cpp
 )
 
-add_executable(netpuncher
+add_executable(netpuncher EXCLUDE_FROM_ALL
 	src/C4Include.cpp
 	src/lib/StdBuf.cpp
 	src/lib/Standard.cpp
@@ -880,7 +880,7 @@ add_executable(netpuncher
 	src/netpuncher/main.cpp
 )
 
-add_executable(c4script EXCLUDE_FROM_ALL
+add_executable(c4script
 	src/c4group/C4Group.cpp
 	src/c4group/C4Group.h
 	src/c4group/CStdFile.cpp
