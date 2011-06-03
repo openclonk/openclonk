@@ -1294,12 +1294,22 @@ func StartJump()
 	var side = "R";
 	if(Random(2)) side = "L";
 
+	//Normal forward jump
 	if(Abs(GetXDir()) >= 1)
 	PlayAnimation(Format("Jump.%s",side), 5, Anim_Linear(0, 0, GetAnimationLength("Jump.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	else
+	//Walk kick jump
+	if(GetEffect("WallKick",this))
+	{
+		var side = "L";
+		if(GetDir() == DIR_Left) side = "R";
+		PlayAnimation(Format("JumpWall.%s", side), 5, Anim_Linear(0, 0, GetAnimationLength("JumpWall.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
+	//Upwards jump
+	else if(GetXDir() == 0)
 	{
 		PlayAnimation(Format("JumpUp.%s", side), 5, Anim_Linear(0, 0, GetAnimationLength("JumpUp.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
+
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
@@ -1314,6 +1324,7 @@ func StartJump()
 
 		if(!GetEffect("Fall", this))
 			AddEffect("Fall",this,1,1,this);
+		RemoveEffect("WallKick",this);
 }
 
 func FxFallEffect(string new_name, object target)

@@ -293,7 +293,8 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		{
 			if(proc == "WALK" && GetComDir() == COMD_Up)
 				SetComDir(COMD_None);
-			return this->ObjectCommand("Jump");
+			if(proc == "WALK")
+				return this->ObjectCommand("Jump");
 		}
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
 		{
@@ -301,6 +302,13 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
+			//Wall kick
+			if (ctrl == CON_Left && GetDir() == DIR_Right && GetComDir() == COMD_Up)
+				return this->ObjectCommand("Jump");
+			if (ctrl == CON_Right && GetDir() == DIR_Left && GetComDir() == COMD_Up)
+				return this->ObjectCommand("Jump");
+
+			//Let go of wall
 			if (ctrl == CON_Left && GetDir() == DIR_Right) return this->ObjectComLetGo(-10);
 			if (ctrl == CON_Right && GetDir() == DIR_Left) return this->ObjectComLetGo(+10);
 		}

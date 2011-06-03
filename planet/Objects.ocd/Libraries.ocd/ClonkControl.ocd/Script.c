@@ -1394,19 +1394,56 @@ public func ControlJump()
 	{
 		ydir = this.JumpSpeed;
 	}
-	else if (InLiquid())
+	
+	if (InLiquid())
 	{
 		if (!GBackSemiSolid(0,-5))
 			ydir = BoundBy(this.JumpSpeed * 3 / 5, 240, 380);
-	}		
+	}
+
+	if (GetProcedure() == "SCALE")
+	{
+		ydir = this.JumpSpeed/2;
+	}
 	
 	if (ydir && !Stuck())
 	{
 		SetPosition(GetX(),GetY()-1);
-		SetAction("Jump");
-		SetYDir(-ydir * GetCon(), 100 * 100);
-		return true;
+
+		//Wall kick
+		if(GetProcedure() == "SCALE")
+		{
+			AddEffect("WallKick",this,1);
+			SetAction("Jump");
+
+			var xdir;
+			if(GetDir() == DIR_Right)
+			{
+				xdir = -1;
+				SetDir(DIR_Left);
+			}
+			else if(GetDir() == DIR_Left)
+			{
+				xdir = 1;
+				SetDir(DIR_Right);
+			}
+
+			SetYDir(-ydir * GetCon(), 100 * 100);
+			SetXDir(xdir * 17);
+			return true;
+		}
+		//Normal jump
+		else
+		{
+			SetAction("Jump");
+			SetYDir(-ydir * GetCon(), 100 * 100);
+			return true;
+		}
 	}
 	return false;
 }
 
+func FxIsWallKickStart(object target, int num, bool temp)
+{
+	return 1;
+}
