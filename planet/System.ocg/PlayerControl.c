@@ -296,9 +296,10 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 			if(proc == "WALK")
 				return this->ObjectCommand("Jump");
 		}
-		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) // Let go from scaling a wall
+		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) //Water jump
 		{
 			if (ctrl == CON_Up) return false;
+			else if(ctrl == CON_Jump) this->ObjectCommand("Jump");
 		}
 		if (proc == "SCALE") // Let go from scaling a wall
 		{
