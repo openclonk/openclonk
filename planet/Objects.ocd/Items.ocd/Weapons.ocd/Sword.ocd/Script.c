@@ -45,13 +45,8 @@ public func ControlUse(object clonk, int x, int y)
 	}
 	var rand = Random(2)+1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
-	if(clonk->GetAction() == "Jump")
-	{
-		rand = 1;
-		if(clonk->GetYDir() < -5) rand = 2;
-		animation = Format("SwordJump%d.%s",rand,arm);
-	}
 	var animation_sword = Format("Strike%d", rand);
+	var downwards_stab = false;
 	
 	// figure out the kind of attack to use
 	var length=15;
@@ -65,12 +60,8 @@ public func ControlUse(object clonk, int x, int y)
 	} else
 	if(clonk->IsJumping())
 	{
-		//if(clonk->GetYDir() < 0) length=20;
-		//else length=GetJumpLength(clonk);
-		//length=40;
 		
-		if(!slow)
-		if(!GetEffect("DelayTranslateVelocity", clonk))
+		if(!slow && !GetEffect("DelayTranslateVelocity", clonk))
 		{
 			//TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300, 1);
 			var a=Angle(0, 0, x,y);
@@ -79,15 +70,34 @@ public func ControlUse(object clonk, int x, int y)
 				clonk->SetXDir(Sin(a, 60));
 				clonk->SetYDir(-Cos(a, 60));
 				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
-				animation = Format("SwordJump3.%s",arm);
+				
+				// modified animation
+				length = 50;
+				animation = Format("SwordSlash1.%s", arm);
+				downwards_stab = true;
+				if(GetEffect("Fall", clonk)) RemoveEffect("Fall", clonk);
 			}
+		}
+		else
+		{
+			rand = 1;
+			if(clonk->GetYDir() < -5) rand = 2;
+			animation = Format("SwordJump%d.%s",rand,arm);
 		}
 	}
 	//else return true;*/
 	if(!clonk->IsWalking() && !clonk->IsJumping()) return true;
 
-	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
-	PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+	if(!downwards_stab)
+	{
+		PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+		PlayAnimation(animation_sword, 10, Anim_Linear(0, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+	}
+	else
+	{
+		PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, (clonk->GetAnimationLength(animation)*3)/4, 5, ANIM_Hold), Anim_Const(1000));
+		PlayAnimation(animation_sword, 10, Anim_Linear(GetAnimationLength(animation_sword)/2, 0, GetAnimationLength(animation_sword), length, ANIM_Remove), Anim_Const(1000));
+	}
 	clonk->UpdateAttach();
 	
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
@@ -105,6 +115,11 @@ func OnWeaponHitCheckStop(clonk)
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
 	//if(GetEffect("DelayTranslateVelocity", clonk))
 	//	RemoveEffect("DelayTranslateVelocity", clonk);
+	if(clonk->IsJumping())
+	{
+		if(!GetEffect("Fall", clonk))
+			AddEffect("Fall",clonk,1,1,clonk);
+	}
 	return;
 }
 

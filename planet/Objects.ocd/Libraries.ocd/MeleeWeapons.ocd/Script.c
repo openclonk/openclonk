@@ -14,6 +14,12 @@ local iAnimStrike;*/
 //local hWeaponMesh;
 local hWeaponAnimStrike;
 
+func Construction()
+{
+	hWeaponAnimStrike = nil;
+	return _inherited(...);
+}
+
 func CheckStrike()
 {
 	return _inherited(...);
@@ -254,14 +260,14 @@ func GetStrikeAnimation()
 
 func StopWeaponAnimation(pTarget)
 {
-	if(!hWeaponAnimStrike) return;
+	if(hWeaponAnimStrike == nil) return;
 	pTarget->StopAnimation(hWeaponAnimStrike);
-	hWeaponAnimStrike = 0;
+	hWeaponAnimStrike = nil;
 }
 
 func PlayWeaponAnimation(pTarget)
 {
-	if(hWeaponAnimStrike) StopWeaponAnimation(pTarget);
+	if(hWeaponAnimStrike != nil) StopWeaponAnimation(pTarget);
 	hWeaponAnimStrike = pTarget->PlayAnimation(...);
 }
 
