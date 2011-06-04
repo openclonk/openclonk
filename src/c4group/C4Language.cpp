@@ -261,19 +261,21 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 {
 	// Build a group set containing the provided group and
 	// alternative groups for cross-loading from a language pack
+	char strRelativePath[_MAX_PATH + 1];
 	char strTargetLocation[_MAX_PATH + 1];
 	char strPackPath[_MAX_PATH + 1];
 	char strPackGroupLocation[_MAX_PATH + 1];
 	char strAdvance[_MAX_PATH + 1];
 
 	// Store wanted target location
-	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strTargetLocation, _MAX_PATH);
+	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strRelativePath, _MAX_PATH);
+	SCopy(strRelativePath, strTargetLocation, _MAX_PATH);
 
 	// Adjust location by scenario origin
 	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "ocs"))
 	{
-		const char *szScenarioRelativePath = GetRelativePathS(strTargetLocation, Config.AtRelativePath(Game.ScenarioFilename));
-		if (szScenarioRelativePath != strTargetLocation)
+		const char *szScenarioRelativePath = GetRelativePathS(strRelativePath, Config.AtRelativePath(Game.ScenarioFilename));
+		if (szScenarioRelativePath != strRelativePath)
 		{
 			// this is a path within the scenario! Change to origin.
 			size_t iRestPathLen = SLen(szScenarioRelativePath);
