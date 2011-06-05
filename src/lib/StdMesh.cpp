@@ -1774,6 +1774,10 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		assert(AnimationStack.empty());
 		BoneTransformsDirty = true;
 
+		bool valid;
+		pComp->Value(mkNamingAdapt(valid, "Valid"));
+		if(!valid) pComp->excCorrupt("Mesh instance is invalid");
+
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
 
@@ -1819,6 +1823,13 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 	}
 	else
 	{
+		// Write something to make sure that the parent
+		// named section ([Mesh] or [ChildInstance]) is written.
+		// StdCompilerIni does not make a difference between
+		// non-existing and empty named sections.
+		bool valid = true;
+		pComp->Value(mkNamingAdapt(valid, "Valid"));
+
 		int32_t iAnimCnt = AnimationStack.size();
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
 

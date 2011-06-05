@@ -633,7 +633,7 @@ protected:
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
 	bool ExecuteAnimationNode(AnimationNode* node);
 
-	FaceOrdering CurrentFaceOrdering;
+	FaceOrdering CurrentFaceOrdering; // NoSave
 
 	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number
