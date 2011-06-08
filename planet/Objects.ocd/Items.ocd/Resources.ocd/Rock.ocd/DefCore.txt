@@ -8,7 +8,7 @@ Offset=-4,-4
 Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
-VertexFriction=20
+VertexFriction=40,40,40
 Value=1
 Mass=10
 Components=Rock=1
