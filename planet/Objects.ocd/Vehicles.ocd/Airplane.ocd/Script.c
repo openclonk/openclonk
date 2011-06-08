@@ -314,6 +314,7 @@ public func ActivateEntrance(object clonk)
 	if(cnt == 0)
 	{
 		clonk->Enter(this);
+		clonk->SetAction("Walk");
 		PlaneMount(clonk);
 	}
 }
