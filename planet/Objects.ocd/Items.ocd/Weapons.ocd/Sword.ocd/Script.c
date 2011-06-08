@@ -16,7 +16,14 @@ public func Initialize()
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarrySpecial(clonk) { return carry_bone; }
-public func GetCarryTransform() { return Trans_Rotate(90, 0, 1, 0); }
+public func GetCarryTransform()
+{
+	var act = Contained()->GetAction();
+	if(act != "Walk" && act != "Jump")
+		return Trans_Mul(Trans_Translate(0,4500,0), Trans_Rotate(90,0,1,0), Trans_Rotate(180,0,0,1) );
+
+	return Trans_Rotate(90, 0, 1, 0);
+}
 
 
 public func IsTool() { return 1; }
@@ -60,6 +67,9 @@ public func ControlUse(object clonk, int x, int y)
 	} else
 	if(clonk->IsJumping())
 	{
+		rand = 1;
+		if(clonk->GetYDir() < -5) rand = 2;
+		animation = Format("SwordJump%d.%s",rand,arm);
 		
 		if(!slow && !GetEffect("DelayTranslateVelocity", clonk))
 		{
@@ -77,12 +87,6 @@ public func ControlUse(object clonk, int x, int y)
 				downwards_stab = true;
 				if(GetEffect("Fall", clonk)) RemoveEffect("Fall", clonk);
 			}
-		}
-		else
-		{
-			rand = 1;
-			if(clonk->GetYDir() < -5) rand = 2;
-			animation = Format("SwordJump%d.%s",rand,arm);
 		}
 	}
 	//else return true;*/
@@ -211,7 +215,7 @@ func CheckStrike(iTime)
 						x=1;
 						p="Slice1";
 					} 
-					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
+//					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
 				}
 				
 				// sound and done. We can only hit one target
