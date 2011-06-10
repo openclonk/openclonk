@@ -96,7 +96,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_Ejection            "~Ejection" // pObject
 #define PSF_Entrance            "~Entrance" // pContainer
 #define PSF_Departure           "~Departure" // pContainer
-#define PSF_Completion          "~Completion"
 #define PSF_Purchase            "~Purchase" // iPlayer, pBuyObj
 #define PSF_Sale                "~Sale" // iPlayer
 #define PSF_Damage              "~Damage" // iChange, iCausedBy

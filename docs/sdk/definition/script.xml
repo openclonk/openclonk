@@ -58,11 +58,6 @@
           <col></col>
           <col>When the object is completed (<emlink href="script/fn/GetCon.html">Con</emlink> >= 100).</col>
         </row>
-        <row id="Completion">
-          <literal_col>Completion</literal_col>
-          <col></col>
-          <col>Obsolete. Same as Initialze.</col>
-        </row>
         <row id="Construction">
           <literal_col>Construction</literal_col>
           <col>object by_object</col>

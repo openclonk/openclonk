@@ -1318,10 +1318,7 @@ void C4Object::DoCon(int32_t iChange)
 
 	// Completion (after bottom GetY()-adjust for correct position)
 	if (!fWasFull && (Con>=FullCon))
-	{
-		Call(PSF_Completion);
 		Call(PSF_Initialize);
-	}
 
 	// Con Zero Removal
 	if (Con<=0)

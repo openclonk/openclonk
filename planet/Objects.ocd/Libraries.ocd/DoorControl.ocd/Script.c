@@ -43,10 +43,10 @@ private func DoorClosed()
 	return 1;
 }
 
-protected func Completion()
+protected func Initialize()
 {
 	SetEntrance(0);
-	return _inherited();
+	return _inherited(...);
 }
 
 func Ejection(obj)
