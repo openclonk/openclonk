@@ -1,0 +1,2 @@
+Name=Planke
+Description=War mein Teil einer Hängebrücke.

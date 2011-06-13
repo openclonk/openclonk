@@ -9,7 +9,7 @@ func Initialize()
   if(!Double)
   {
     Double = CreateObject(GetID());
-    Double.Plane = 1555;
+    Double.Plane = 600;
     Double->SetAction("Attach", this);
     Double->SetGraphics("Foreground", GetID());
   }

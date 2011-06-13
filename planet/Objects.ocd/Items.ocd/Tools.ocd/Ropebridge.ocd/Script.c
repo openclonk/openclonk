@@ -34,9 +34,10 @@ public func UpdateSegmentOverlays()
       segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
       segments[i]->SetGraphics("Line", GetID(), 8, 1);
     }
-    segments[i]->SetSolidMask(6,0,7,3,-3,9);
+    segments[i]->SetSolidMask(6,0,7,3,-5,9);
 		if(i > 1 && i < GetLength(segments)-1)
     {
+      segments[i].Plank = 1;
 			segments[i]->SetGraphics("Segment", GetID(), 6, 1);
       segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
     }
@@ -82,6 +83,11 @@ func FxIntHangTimer()
     particles[i][2] = [0,segments[i]->~GetLoadWeight()];
 }
 
+func SetFragile()
+{
+  for(var i = 0; i < ParticleCount; i++)
+    segments[i].fragile = 1;
+}
 
 /* --------------------- Callbacks form the rope ---------------------- */
 
@@ -90,6 +96,7 @@ private func CreateSegment(int index, object previous)
 {
 	var segment;
 	segment = CreateObject(Ropebridge_Segment);
+  segment->SetMaster(this);
 	return segment;
 }
 
@@ -157,7 +164,8 @@ func UpdateLines()
 		var end   = GetRopeConnetPosition(i, 0, 1, angle, oldangle);
     var end1 = start;
     DrawRopeLine(start, end, i, 2);
-    DrawRopeLine2(start, end, i, 6);
+    if(segments[i].Plank)
+      DrawRopeLine2(start, end, i, 6);
     
 		// Draw the right line
 		var start = GetRopeConnetPosition(i, 1, 0, angle, oldangle);

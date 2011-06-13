@@ -1,0 +1,2 @@
+Name=Plank
+Description=Was once part of a ropebridge.

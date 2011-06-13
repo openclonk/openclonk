@@ -13,7 +13,9 @@ func Initialize()
   var Anchor2 = CreateObject(Ropebridge_Post, 602, 538);
   Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
   Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
-  CreateObject(Ropebridge, 515, 547)->MakeBridge(Anchor1, Anchor2);
+  var bridge = CreateObject(Ropebridge, 515, 547);
+  bridge->MakeBridge(Anchor1, Anchor2);
+  bridge->SetFragile();
   
   var Anchor1 = CreateObject(Ropebridge_Post, 266, 435+6);
   var Anchor2 = CreateObject(Ropebridge_Post, 346, 473+6);
@@ -33,6 +35,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 {
 	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
+  clonk->SetGraphics(nil, Skin_Steampunk);
 	SetCursor(iPlr,clonk);
 	JoinPlayer(iPlr);
 	return;
