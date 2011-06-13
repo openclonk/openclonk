@@ -1,7 +1,7 @@
 [DefCore]
 id=Ropebridge_Post
 Version=4,10,0,0
-Category=C4D_Building
+Category=C4D_Structure
 Picture=20,0,64,64
 Width=12
 Height=16
