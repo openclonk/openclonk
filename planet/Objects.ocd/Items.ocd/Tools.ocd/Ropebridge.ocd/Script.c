@@ -24,13 +24,14 @@ public func UpdateSegmentOverlays()
 {
 	for(var i = 1; i < GetLength(segments); i++)
 	{
+    segments[i]->CreateDouble();
 		segments[i]->SetGraphics("Line", GetID(), 2, 1);
 		segments[i]->SetGraphics("Line", GetID(), 3, 1);
-    segments[i]->SetGraphics("Line", GetID(), 4, 1);
+    segments[i].Double->SetGraphics("Line", GetID(), 4, 1);
     segments[i]->SetGraphics("Line", GetID(), 5, 1);
     if(i>1)
     {
-      segments[i]->SetGraphics("Line", GetID(), 7, 1);
+      segments[i].Double->SetGraphics("Line", GetID(), 7, 1);
       segments[i]->SetGraphics("Line", GetID(), 8, 1);
     }
     segments[i]->SetSolidMask(6,0,7,3,-3,9);
@@ -39,7 +40,19 @@ public func UpdateSegmentOverlays()
 			segments[i]->SetGraphics("Segment", GetID(), 6, 1);
       segments[i]->SetClrModulation(HSL(255,0,128+Random(128)), 6);
     }
+    if(i%2 == 0)
+    {
+      var color = RGB(200,200,200);
+      segments[i]->SetClrModulation(color, 2);
+      segments[i]->SetClrModulation(color, 3);
+      segments[i].Double->SetClrModulation(color, 4);
+      segments[i]->SetClrModulation(color, 5);
+      segments[i].Double->SetClrModulation(color, 7);
+      segments[i]->SetClrModulation(color, 8);
+    }
 	}
+	segments[0]->CreateDouble();
+  segments[-1]->CreateDouble();
 	segments[1]->SetSolidMask();
   segments[-1]->SetSolidMask();
   segments[1]->SetGraphics(nil, nil,6);
@@ -100,7 +113,11 @@ func DrawRopeLine(start, end, i, int index)
   var point = Vec_Add(start, Vec_Div(diff, 2));
   var length = Vec_Length(diff)*1000/Ladder_Precision/8+100;
 
-  SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000+2000, length, index);
+  if(index != 4 && index != 7)
+  SetLineTransform(segments[i], -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, length, index);
+  else if(segments[i].Double)
+    SetLineTransform(segments[i].Double, -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, length, index);
+    
 }
 
 func DrawRopeLine2(start, end, i, int index)
@@ -109,7 +126,7 @@ func DrawRopeLine2(start, end, i, int index)
   var diffangle = Vec_Angle(diff, [0,0]);
   var point = Vec_Add(start, Vec_Div(diff, 2));
 
-  SetLineTransform(segments[i], -diffangle, point[0]*10-GetPartX(i)*1000,point[1]*10-GetPartY(i)*1000+2000, 1000, 6);
+  SetLineTransform(segments[i], -diffangle, point[0]*10-particles[i][0][0]*10,point[1]*10-particles[i][0][1]*10+2000, 1000, 6);
 }
 
 func UpdateLines()
@@ -119,7 +136,9 @@ func UpdateLines()
 	for(var i=1; i < ParticleCount; i++)
 	{
 		// Update the Position of the Segment
-		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
+		segments[i]->SetPosition(particles[i][0][0], particles[i][0][1], 0, Rope_Precision);
+    if(segments[i].Double)
+    segments[i].Double->SetPosition(particles[i][0][0], particles[i][0][1], 0, Rope_Precision);
 
 		// Calculate the angle to the previous segment
 		var angle;
@@ -129,8 +148,8 @@ func UpdateLines()
 		// Otherwise the drawing order would be wrong an we would get lines over segments
 		
 		// Draw the segment as an overlay for the following segment (only the last segment has two graphics (its and the previous)
-		if(i > 1 && i < GetLength(segments)-1)
-			SetLineTransform(segments[i], -oldangle, particles[i-1][0][0]*10-GetPartX(i)*1000,particles[i-1][0][1]*10-GetPartY(i)*1000, 1000, 6, MirrorSegments );
+/*		if(i > 1 && i < GetLength(segments)-1)
+			SetLineTransform(segments[i], -oldangle, particles[i-1][0][0]*10-GetPartX(i)*1000,particles[i-1][0][1]*10-GetPartY(i)*1000, 1000, 6, MirrorSegments );*/
 
     segments[i]->SetR(90+angle);
 		// Draw the left line
@@ -175,17 +194,6 @@ func UpdateLines()
       start[1]+=000;
       end[1]-=800;
       DrawRopeLine(start, end, i, 8);
-    }
-    
-    if(i%2 == 0)
-    {
-      var color = RGB(200,200,200);
-      segments[i]->SetClrModulation(color, 2);
-      segments[i]->SetClrModulation(color, 3);
-      segments[i]->SetClrModulation(color, 4);
-      segments[i]->SetClrModulation(color, 5);
-      segments[i]->SetClrModulation(color, 7);
-      segments[i]->SetClrModulation(color, 8);
     }
 
 		// Remember the angle

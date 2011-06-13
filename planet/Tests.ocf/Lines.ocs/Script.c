@@ -12,11 +12,13 @@ func Initialize()
   var Anchor1 = CreateObject(Ropebridge_Post, 515, 547);
   var Anchor2 = CreateObject(Ropebridge_Post, 602, 538);
   Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
+  Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
   CreateObject(Ropebridge, 515, 547)->MakeBridge(Anchor1, Anchor2);
   
   var Anchor1 = CreateObject(Ropebridge_Post, 266, 435+6);
   var Anchor2 = CreateObject(Ropebridge_Post, 346, 473+6);
   Anchor2->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
+  Anchor2.Double->SetObjDrawTransform(-1000, 0, 0, 0, 1000);
   CreateObject(Ropebridge, 515, 547)->MakeBridge(Anchor1, Anchor2);
 //	CreateObject(Ropeladder, 197, 432)->MakeBridge(Rock1, Rock2);
 }

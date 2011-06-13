@@ -12,3 +12,23 @@ func GetLoadWeight()
     weight += obj->GetMass();
   return weight;
 }
+
+local Double;
+
+func CreateDouble()
+{
+  if(!Double)
+  {
+    Double = CreateObject(GetID());
+    Double.Plane = 1555;
+    //Double->SetAction("Attach", this);
+  }
+}
+
+local ActMap = {
+Attach = {
+  Prototype = Action,
+  Name = "Attach",
+  Procedure = DFA_ATTACH
+},
+};
