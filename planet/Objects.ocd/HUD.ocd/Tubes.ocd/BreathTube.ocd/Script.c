@@ -27,7 +27,9 @@ public func Update()
 	if(!GetCursor(GetOwner())) return 1;
 	if(GetCursor(GetOwner()) != crew)
 	{
-		crew = GetCursor(GetOwner());	
+		crew = GetCursor(GetOwner());
+		if(!crew->GetMaxBreath())
+			return 1;	
 		current = GetCursor(GetOwner())->GetBreath();	
 		if(current != crew->GetMaxBreath())
 			for(var i=0; i<11; i++)

@@ -35,6 +35,8 @@ public func Update()
 	if(GetCursor(GetOwner()) != crew)
 	{
 		crew = GetCursor(GetOwner());
+		if(!crew->GetMaxEnergy())
+			return 1;
 		current = GetCursor(GetOwner())->GetEnergy();
 		var r = - 210 - ((( current * 1000) / crew->GetMaxEnergy()) * 69) / 100; 
 		var fsin=Sin(r, 1000,10), fcos=Cos(r, 1000,10);
