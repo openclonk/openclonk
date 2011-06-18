@@ -5,6 +5,22 @@
 		Some useful helper functions.
 --*/
 
+// the shortest direction (left/right) to turn from one angle to another
+// (for example for homing projectiles or aiming)
+global func GetTurnDirection(int from, int to)
+{
+	 var dir;
+	 if(to < from)dir=to-from;
+	 else dir=from-to;
+
+	 var dif=360-from+to;
+	 var dif2=360-to+from;
+	 if(dif < 180)dir=+dif;
+	 else
+	 if(dif2 < 180)dir=-dif2;
+	 
+	 return dir;
+}
 
 global func MessageWindow(string msg, int for_plr, id icon, string caption)
 {
