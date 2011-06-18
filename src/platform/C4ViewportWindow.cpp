@@ -64,7 +64,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	// Determine viewport
 	C4Viewport *cvp;
 	if (!(cvp=::Viewports.GetViewport(hwnd)))
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 
 	// Process message
 	switch (uMsg)
@@ -222,7 +222,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 	}
 
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }
 
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
