@@ -5,10 +5,8 @@ func Initialize()
 
 	DrawMaterialQuad("Tunnel",1378,1327-5,1860,1327-5,1860,1330,1387,1330,1);
 	for(var i = 1380; i<=1800; i+=28)
-	{
-		CreateObject(Blackpowder,i,1328,-1);
-	
-	}
+		CreateObject(Dynamite,i,1328);
+
 	Sound("BirdsLoop.ogg",true,100,nil,+1);
 	CreateObject(Environment_Clouds);
 	
@@ -38,11 +36,10 @@ func Initialize()
 	
 	
 	//Items
-	CreateObject(Blackpowder,1904,878,-1);
-	CreateObject(Blackpowder,1905,878,-1);
-	CreateObject(Blackpowder,1906,878,-1);
-	
-	CreateObject(Blackpowder,2568,918,-1);
+	CreateObject(Dynamite,1904,878);
+	CreateObject(Dynamite,1905,878);
+	CreateObject(Dynamite,1906,878);
+	CreateObject(Dynamite,2568,918);
 	
 
 	PlaceEdges();

@@ -34,8 +34,8 @@ protected func Initialize()
 
 protected func ControlUse(object pClonk, iX, iY)
 {
-	if(CheckCanUse(pClonk) == false) return 1;
-
+	if (pClonk->GetProcedure() == "ATTACH")
+		return true;
 	if(!GetEffect("JarReload",this))
 	{
 		if(!GBackLiquid())
@@ -163,12 +163,6 @@ private func FireWeapon(object pClonk,iX,iY)
 			obj->SetYDir((y) + cosspeed);
 		}
 	}
-}
-
-private func CheckCanUse(object pClonk)
-{
-	if(pClonk->GetProcedure() == "ATTACH") return false;
-	else true;
 }
 
 local Name = "$Name$";
