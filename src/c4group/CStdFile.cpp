@@ -63,7 +63,15 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 	// Open standard file
 	else if (fCompressed)
 	{
-		if (!(hgzFile=gzopen(Name,"wb1"))) return false;
+#ifdef _WIN32
+		int mode = _S_IREAD|_S_IWRITE;
+		int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
+#else
+		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+		int flags = O_CREAT|O_WRONLY|O_TRUNC;
+#endif
+		int fd = open(Name, flags, mode);
+		if (!(hgzFile = gzdopen(fd,"wb1"))) return false;
 	}
 	else
 	{
@@ -83,7 +91,7 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 		}
 		else
 		{
-			if (!(hFile=fopen(Name,"wb"))) return false;
+			if (!(hFile = fopen(Name,"wb"))) return false;
 		}
 	}
 	// Reset buffer
@@ -100,7 +108,17 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 	ModeWrite=false;
 	// Open standard file
 	if (fCompressed)
-		{ if (!(hgzFile=gzopen(Name,"rb"))) return false; }
+	{
+#ifdef _WIN32
+		int mode = _S_IREAD|_S_IWRITE;
+		int flags = _O_BINARY|_O_RDONLY;
+#else
+		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+		int flags = O_RDONLY;
+#endif
+		int fd = open(Name, flags, mode);
+		if (!(hgzFile = gzdopen(fd,"rb"))) return false;
+	}
 	else
 		{ if (!(hFile=fopen(Name,"rb"))) return false; }
 	// Reset buffer
@@ -245,11 +263,7 @@ bool CStdFile::Rewind()
 	if (ModeWrite) return false;
 	ClearBuffer();
 	if (hFile) rewind(hFile);
-	if (hgzFile)
-	{
-		if (gzclose(hgzFile)!=Z_OK) { hgzFile=NULL; return false; }
-		if (!(hgzFile=gzopen(Name,"rb"))) return false;
-	}
+	if (hgzFile) gzrewind(hgzFile);
 	return true;
 }
 
@@ -278,9 +292,17 @@ bool CStdFile::Advance(int iOffset)
 int UncompressedFileSize(const char *szFilename)
 {
 	int rd,rval=0;
-	BYTE buf[16384];
+	BYTE buf[1024];
+#ifdef _WIN32
+	int mode = _S_IREAD|_S_IWRITE;
+	int flags = _O_BINARY|_O_RDONLY;
+#else
+	mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+	int flags = O_RDONLY;
+#endif
+	int fd = open(szFilename, flags, mode);
 	gzFile hFile;
-	if (!(hFile = gzopen(szFilename,"rb"))) return 0;
+	if (!(hFile = gzdopen(fd,"rb"))) return 0;
 	do
 	{
 		rd = gzread(hFile,&buf,sizeof(buf));
