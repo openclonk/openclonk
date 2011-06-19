@@ -76,7 +76,7 @@ void main()
 	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
 
 	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
-	vec2 otherCoo = centerCoo + fullStep * (vec2(-1.0, -1.0) + spx.gb * 255.0 / 64.0);
+	vec2 otherCoo = centerCoo + fullStep * floor(vec2(-0.5, -0.5) + spx.gb * 255.0 / 64.0);
 	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 	
 	// Get material pixels

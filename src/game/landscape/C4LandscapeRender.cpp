@@ -585,62 +585,77 @@ bool C4LandscapeRenderGL::LoadScaler(C4GroupSet *pGroups)
 	// to look for the "other" pixel. This might not be unique later on,
 	// so it is a good idea to have a proper priority order here.
 	fctScaler.Surface->Lock();
-	for(int i = 0; i < 8 * 4 * 8; i++) {
-		int ox = 0, oy = 0;
-		// Highest priority: horizontal
-		if(!(i & 8)) {
-			ox = -1; oy = 0;
-		} else if(!(i & 16)) {
-			ox = 1; oy = 0;
+	int i;
+	for (i = 0; i < 8 * 4 * 8; i++) {
+		// Decode from ID what pixels are expected to be set in this case
+		enum Px      { NW,  N, NE,  W,  E, SW, S, SE, X };
+		int p_x[9] = { -1,  0,  1, -1,  1, -1, 0, 1,  0 };
+		int p_y[9] = { -1, -1, -1,  0,  0,  1, 1, 1,  0 };
+		bool pxAt[X];
+		for(int j = 0; j < X; j++)
+			pxAt[j] = !!(i & (1 << j));
+		// Oc = octant borders. Set up arrays to get righthand border
+		// of an octant, in a way that we can easily rotate further.
+		enum Oc { NWW, NEE, SWW, SEE, NNW, NNE, SSW, SSE };
+		int p2a[8] = { 5, 6, 7, 4, 0, 3, 2, 1 };
+		Oc a2o[8] = { SEE, SSE, SSW, SWW, NWW, NNW, NNE, NEE };
+		// Decide in which octant we want to interpolate towards
+		// which pixel. Pick the nearest unset pixel using a special
+		// priority order.
+		Px opx[8] = { X,X,X,X,X,X,X,X };
+		#define INTERPOLATE(x,da) do { \
+			int y = a2o[(8+p2a[x]+(da)) % 8];\
+			if (!pxAt[x] && opx[y] == X) opx[y] = x; \
+		} while(false)
+		for(int j = 0; j < 4; j++) {
+			// vertical
+			INTERPOLATE(N, j); INTERPOLATE(N, -j-1);
+			INTERPOLATE(S, j); INTERPOLATE(S, -j-1);
+			// horizontal
+			INTERPOLATE(W, j); INTERPOLATE(W, -j-1);
+			INTERPOLATE(E, j); INTERPOLATE(E, -j-1);
+			// diagonals
+			INTERPOLATE(NW, j); INTERPOLATE(NW, -j-1);
+			INTERPOLATE(SW, j); INTERPOLATE(SW, -j-1);
+			INTERPOLATE(NE, j); INTERPOLATE(NE, -j-1);
+			INTERPOLATE(SE, j); INTERPOLATE(SE, -j-1);			
 		}
-		// Second highest: vertical
-		else if(!(i & 2)) {
-			ox = 0; oy = -1;
-		} else if(!(i & 64)) {
-			ox = 0; oy = 1;
-		}
-		// Then the two diagonals
-		else if(!(i & 1)) {
-			ox = -1; oy = -1;
-		} else if(!(i & 128)) {
-			ox = 1; oy = 1;
-		} else if(!(i & 4)) {
-			ox = 1; oy = -1;
-		} else if(!(i & 32)) {
-			ox = 0; oy = 1;
-		} else {
-			assert(i == 255);
-		}
-		// Decide in which quadrants we will not interpolated normals.
+		// Decide in which octants we will not interpolate normals.
 		// It doesn't make sense when there's another material in that
 		// general direction, as then the bias of that will factor into
 		// the interpolation, giving bright borders on dark shading,
 		// and vice-versa.
-		bool noNormals[4] = {
-			!(i & 1) || !(i & 2) || !(i & 8),  // left-top
-			!(i & 2) || !(i & 4) || !(i & 16), // right-top
-			!(i & 8) || !(i & 32) || !(i & 64), // left-bottom
-			!(i & 16) || !(i & 64) || !(i & 128), // right-bottom
-		};
+		bool noNormals[8];
+		noNormals[NNW] = noNormals[NWW] = !pxAt[W] || !pxAt[NW] || !pxAt[N];
+		noNormals[NNE] = noNormals[NEE] = !pxAt[E] || !pxAt[NE] || !pxAt[N];
+		noNormals[SSW] = noNormals[SWW] = !pxAt[W] || !pxAt[SW] || !pxAt[S];
+		noNormals[SSE] = noNormals[SEE] = !pxAt[E] || !pxAt[SE] || !pxAt[S];
 		// Set blue and green components to relative coordinates of
 		// "other" pixel, and alpha to mix param for normals
 		const int x0 = (i % 8) * 3 * iFactor;
 		const int y0 = (i / 8) * 3 * iFactor;
+		const int iPxs = 3 * iFactor;
 		int y, x;
-		for(y = y0; y < y0 + 3 * iFactor; y++)
-			for(x = x0; x < x0 + 3 * iFactor; x++)
+
+		for(y = 0; y < iPxs; y++)
+		{
+			for(x = 0; x < iPxs; x++)
 			{
-				DWORD pix = fctScaler.Surface->GetPixDw(x, y, false);
+				// Find out in which octagon we are
+				int oct = 0;
+				if(2 * x >= iPxs) oct+=1;
+				if(2 * y >= iPxs) oct+=2;
+				if((x >= y) != (x >= iPxs - y)) oct+=4;
+				// Get pixel, do processing
+				DWORD pix = fctScaler.Surface->GetPixDw(x0+x, y0+y, false);
 				BYTE val = GetGreenValue(pix);
 				if(val >= 250) val = 255;
-				BYTE bx = 64 * (ox + 1);
-				BYTE by = 64 * (oy + 1);
-				int nni = 0;
-				if(2 * (x - x0) >= 3 * iFactor) nni++;
-				if(2 * (y - y0) >= 3 * iFactor) nni+=2;
-				BYTE bn = (noNormals[nni] ? 255 : 1);
-				fctScaler.Surface->SetPixDw(x, y, RGBA(val, bx, by, bn));
+				BYTE bx = 64 * (p_x[opx[oct]] + 1);
+				BYTE by = 64 * (p_y[opx[oct]] + 1);
+				BYTE bn = (noNormals[oct] ? 255 : 1);
+				fctScaler.Surface->SetPixDw(x0+x, y0+y, RGBA(val, bx, by, bn));
 			}
+		}
 	}
 	return fctScaler.Surface->Unlock();
 }
