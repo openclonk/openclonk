@@ -332,12 +332,11 @@ void C4MusicSystem::LoadDir(const char *szPath)
 
 void C4MusicSystem::LoadMoreMusic()
 {
-	BYTE *szMoreMusic;
-	CStdFile MoreMusicFile;
+	StdStrBuf MoreMusicFile;
 	// load MoreMusic.txt
-	if (!MoreMusicFile.Load(Config.AtUserDataPath(C4CFN_MoreMusic), &szMoreMusic, NULL, 1)) return;
+	if (!MoreMusicFile.LoadFromFile(Config.AtUserDataPath(C4CFN_MoreMusic))) return;
 	// read contents
-	char *pPos = reinterpret_cast<char *>(szMoreMusic);
+	char *pPos = MoreMusicFile.getMData();
 	while (pPos && *pPos)
 	{
 		// get line
@@ -361,7 +360,6 @@ void C4MusicSystem::LoadMoreMusic()
 		// try to load file(s)
 		LoadDir(pLine);
 	}
-	delete [] szMoreMusic;
 }
 
 void C4MusicSystem::ClearSongs()

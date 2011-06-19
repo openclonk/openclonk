@@ -68,13 +68,6 @@ public:
 	bool WriteString(const char *szStr);
 	bool Rewind();
 	bool Advance(int iOffset);
-	// Single line commands
-	bool Load(const char *szFileName, BYTE **lpbpBuf,
-	          int *ipSize=NULL, int iAppendZeros=0,
-	          bool fCompressed = false);
-	bool Save(const char *szFileName, const BYTE *bpBuf,
-	          int iSize,
-	          bool fCompressed = false);
 	// flush contents to disk
 	inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
 	size_t AccessedEntrySize();

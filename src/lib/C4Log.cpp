@@ -275,10 +275,10 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 {
 	if (!iLength) { rsOut.Clear(); return true; }
 	// read section from log file
-	CStdFile LogFileRead;
-	char *szBuf, *szBufOrig; size_t iSize; // size exclusing terminator
-	if (!LogFileRead.Load(sLogFileName.getData(), (BYTE **)&szBuf, (int *) &iSize, 1)) return false;
-	szBufOrig = szBuf;
+	StdStrBuf BufOrig;
+	if (!BufOrig.LoadFromFile(sLogFileName.getData())) return false;
+	char *szBuf = BufOrig.getMData();
+	size_t iSize = BufOrig.getSize(); // size excluding terminator
 	// reduce to desired buffer section
 	if (iStart > iSize) iStart = iSize;
 	if (iStart + iLength > iSize) iLength = iSize - iStart;
@@ -306,8 +306,6 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 	}
 	// done; create string buffer from data
 	rsOut.Copy(szBuf, szPosWrite - szBuf);
-	// old buf no longer used
-	delete [] szBufOrig;
 	// done, success
 	return true;
 }

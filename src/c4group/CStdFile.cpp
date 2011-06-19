@@ -275,31 +275,6 @@ bool CStdFile::Advance(int iOffset)
 	return true;
 }
 
-bool CStdFile::Save(const char *szFilename, const BYTE *bpBuf,
-                    int iSize, bool fCompressed)
-{
-	if (!bpBuf || (iSize<1)) return false;
-	if (!Create(szFilename,fCompressed)) return false;
-	if (!Write(bpBuf,iSize)) return false;
-	if (!Close()) return false;
-	return true;
-}
-
-bool CStdFile::Load(const char *szFilename, BYTE **lpbpBuf,
-                    int *ipSize, int iAppendZeros,
-                    bool fCompressed)
-{
-	int iSize = fCompressed ? UncompressedFileSize(szFilename) : FileSize(szFilename);
-	if (!lpbpBuf || (iSize<1)) return false;
-	if (!Open(szFilename,fCompressed)) return false;
-	if (!(*lpbpBuf = new BYTE [iSize+iAppendZeros])) return false;
-	if (!Read(*lpbpBuf,iSize)) { delete [] *lpbpBuf; return false; }
-	if (iAppendZeros) ZeroMem( (*lpbpBuf)+iSize, iAppendZeros );
-	if (ipSize) *ipSize=iSize;
-	Close();
-	return true;
-}
-
 int UncompressedFileSize(const char *szFilename)
 {
 	int rd,rval=0;
