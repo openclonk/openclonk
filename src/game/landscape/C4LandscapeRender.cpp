@@ -754,21 +754,21 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	glUseProgramObjectARB(hProg);
 
 	// Bind data
-	if (hUniforms[C4LRU_Resolution] != -1)
+	if (hUniforms[C4LRU_Resolution] != GLhandleARB(-1))
 		glUniform2fARB(hUniforms[C4LRU_Resolution], iWidth, iHeight);
-	if (hUniforms[C4LRU_MatMap] != -1)
+	if (hUniforms[C4LRU_MatMap] != GLhandleARB(-1))
 	{
 		GLfloat MatMap[256];
 		BuildMatMap(MatMap, NULL);
 		glUniform1fvARB(hUniforms[C4LRU_MatMap], 256, MatMap);
 	}
-	if (hUniforms[C4LRU_MaterialDepth] != -1)
+	if (hUniforms[C4LRU_MaterialDepth] != GLhandleARB(-1))
 		glUniform1iARB(hUniforms[C4LRU_MaterialDepth], iMaterialTextureDepth);
 
 	// Setup facilities for texture unit allocation (gimme local functions...)
 	int iUnit = 0; int iUnitMap[32]; ZeroMem(iUnitMap, sizeof(iUnitMap));
 	#define ALLOC_UNIT(hUniform, iType) do { \
-		if(hUniform != -1) glUniform1iARB(hUniform, iUnit); \
+		if(hUniform != GLhandleARB(-1)) glUniform1iARB(hUniform, iUnit); \
 		glActiveTexture(GL_TEXTURE0 + iUnit); \
 		iUnitMap[iUnit] = iType; \
 		glEnable(iType); \
@@ -777,7 +777,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	} while(false)
 
 	// Start binding textures
-	if(hUniforms[C4LRU_ScalerTex] != -1)
+	if(hUniforms[C4LRU_ScalerTex] != GLhandleARB(-1))
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_ScalerTex], GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
@@ -786,7 +786,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(hUniforms[C4LRU_MaterialTex] != -1)
+	if(hUniforms[C4LRU_MaterialTex] != GLhandleARB(-1))
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_MaterialTex], GL_TEXTURE_3D);
 
@@ -798,13 +798,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	if(hUniforms[C4LRU_LandscapeTex] != -1)
+	if(hUniforms[C4LRU_LandscapeTex] != GLhandleARB(-1))
 	{
 		GLint iLandscapeUnits[C4LR_SurfaceCount];
 		for(int i = 0; i < C4LR_SurfaceCount; i++)
 		{
 			iLandscapeUnits[i] = iUnit;
-			ALLOC_UNIT(-1, GL_TEXTURE_2D);
+			ALLOC_UNIT(GLhandleARB(-1), GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, Surfaces[i]->ppTex[0]->texName);
 			if (pGL->Zoom != 1.0)
 			{
@@ -819,7 +819,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		}
 		glUniform1ivARB(hUniforms[C4LRU_LandscapeTex], C4LR_SurfaceCount, iLandscapeUnits);
 	}
-	if(hUniforms[C4LRU_MatMapTex] != -1)
+	if(hUniforms[C4LRU_MatMapTex] != GLhandleARB(-1))
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_MatMapTex], GL_TEXTURE_1D);
 		GLubyte MatMap[256];
