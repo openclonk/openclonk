@@ -161,7 +161,7 @@ void C4Console::UpdateStatusBars()
 	}
 }
 
-bool C4Console::SaveGame(bool fSaveGame, const char * path)
+bool C4Console::SaveGame(const char * path)
 {
 	// Network hosts only
 	if (::Network.isEnabled() && !::Network.isHost())
@@ -169,38 +169,40 @@ bool C4Console::SaveGame(bool fSaveGame, const char * path)
 
 	// Save game to open scenario file
 	bool fOkay=true;
-	Console.SetCursor(C4ConsoleGUI::CURSOR_Wait);
+	SetCursor(C4ConsoleGUI::CURSOR_Wait);
 
-	C4GameSave *pGameSave;
-	if (fSaveGame)
-		pGameSave = new C4GameSaveSavegame();
-	else
-		pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
+	C4GameSave *pGameSave = new C4GameSaveSavegame();
 	if (!pGameSave->Save(path))
-		{ Out("Game::Save failed"); fOkay=false; }
+		{ Out("Save failed"); fOkay=false; }
 	delete pGameSave;
 
-	Console.SetCursor(C4ConsoleGUI::CURSOR_Normal);
-
-	// Initialize/script notification
-	if (Game.fScriptCreatedObjects)
-		if (!fSaveGame)
-		{
-			StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
-			str += LoadResStr("IDS_CNS_WARNDOUBLE");
-			Message(str.getData());
-			Game.fScriptCreatedObjects=false;
-		}
+	SetCursor(C4ConsoleGUI::CURSOR_Normal);
 
 	// Status report
 	if (!fOkay) Message(LoadResStr("IDS_CNS_SAVERROR"));
-	else Out(LoadResStr(fSaveGame ? "IDS_CNS_GAMESAVED" : "IDS_CNS_SCENARIOSAVED"));
+	else Out(LoadResStr("IDS_CNS_GAMESAVED"));
 
 	return fOkay;
 }
 
-bool C4Console::FileSave()
+bool C4Console::SaveScenario(const char * path)
 {
+	// Network hosts only
+	if (::Network.isEnabled() && !::Network.isHost())
+		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }
+
+	// Open new scenario file
+	if (path)
+	{
+		SCopy(path, Game.ScenarioFilename);
+		SetCaption(GetFilename(Game.ScenarioFilename));
+		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
+		{
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData());
+			return false;
+		}
+	}
+
 	// Can't save to child groups
 	if (Game.ScenarioFile.GetMother())
 	{
@@ -211,8 +213,44 @@ bool C4Console::FileSave()
 		return false;
 	}
 
+	// Save game to open scenario file
+	SetCursor(C4ConsoleGUI::CURSOR_Wait);
+
+	bool fOkay=true;
+	C4GameSave *pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
+	if (!pGameSave->Save(Game.ScenarioFile, false))
+		{ Out("Game::Save failed"); fOkay=false; }
+	delete pGameSave;
+
+	// Close and reopen scenario file to fix file changes
+	if (!Game.ScenarioFile.Close())
+		{ Out("ScenarioFile::Close failed"); fOkay=false; }
+	if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
+		{ Out("ScenarioFile::Open failed"); fOkay=false; }
+
+	SetCursor(C4ConsoleGUI::CURSOR_Normal);
+
+	// Initialize/script notification
+	if (Game.fScriptCreatedObjects)
+	{
+		StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
+		str += LoadResStr("IDS_CNS_WARNDOUBLE");
+		Message(str.getData());
+		Game.fScriptCreatedObjects=false;
+	}
+
+	// Status report
+	if (!fOkay) Message(LoadResStr("IDS_CNS_SAVERROR"));
+	else Out(LoadResStr("IDS_CNS_SCENARIOSAVED"));
+
+	return fOkay;
+}
+
+bool C4Console::FileSave()
+{
 	// Save game
-	return SaveGame(Game.C4S.Head.SaveGame, Game.ScenarioFilename);
+	// FIXME: What about editing a savegame inplace? (Game.C4S.Head.SaveGame)
+	return SaveScenario(NULL);
 }
 
 bool C4Console::FileSaveAs(bool fSaveGame)
@@ -230,15 +268,11 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	if (!Game.ScenarioFile.Close()) fOkay=false;
 	// Copy current scenario file to target
 	if (!C4Group_CopyItem(Game.ScenarioFilename,filename.getData())) fOkay=false;
-	// Open new scenario file
-	if (!fSaveGame)
-	{
-		SCopy(filename.getData(),Game.ScenarioFilename);
-
-		SetCaption(GetFilename(Game.ScenarioFilename));
-	}
-	// Save game
-	return SaveGame(fSaveGame, filename.getData());
+	if (fSaveGame)
+		// Save game
+		return SaveGame(filename.getData());
+	else
+		return SaveScenario(filename.getData());
 }
 
 bool C4Console::Message(const char *szMessage, bool fQuery)

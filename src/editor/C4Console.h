@@ -83,7 +83,8 @@ public:
 	void ViewportNew();
 	void HelpAbout();
 	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
-	bool SaveGame(bool fSaveGame, const char * path);
+	bool SaveGame(const char * path);
+	bool SaveScenario(const char * path);
 	bool FileSaveAs(bool fSaveGame);
 	bool FileSave();
 	bool FileOpen();
