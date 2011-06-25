@@ -185,7 +185,7 @@ msgid "Map Generator"
 msgstr "Kartengenerator"
 
 #: sdk/content.xml.in:122(emlink)
-#: sdk/material/c4m.xml:348(col)
+#: sdk/material/ocm.xml:348(col)
 msgid "Materials"
 msgstr "Materialien"
 
@@ -231,7 +231,7 @@ msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.gif
 #: sdk/script/fn/ClearScheduleCall.xml:8(category)
 #: sdk/script/fn/Call.xml:8(category)
 #: sdk/script/fn/C4Id.xml:8(category)
-#: sdk/material/c4m.xml:322(col)
+#: sdk/material/ocm.xml:322(col)
 msgid "Script"
 msgstr "Script"
 
@@ -375,9 +375,9 @@ msgstr "Operator"
 #: sdk/playercontrols.xml:142(col)
 #: sdk/playercontrols.xml:173(col)
 #: sdk/particle/index.xml:32(col)
-#: sdk/material/c4m.xml:16(col)
-#: sdk/material/c4m.xml:235(col)
-#: sdk/material/c4m.xml:404(col)
+#: sdk/material/ocm.xml:16(col)
+#: sdk/material/ocm.xml:235(col)
+#: sdk/material/ocm.xml:404(col)
 #: sdk/folder/foldermap.xml:16(col)
 #: sdk/folder/foldermap.xml:46(col)
 #: sdk/folder/foldermap.xml:71(col)
@@ -1058,7 +1058,7 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/scenario/Teams.xml:93(col)
 #: sdk/scenario/Teams.xml:99(col)
 #: sdk/scenario/Teams.xml:111(col)
-#: sdk/material/c4m.xml:299(col)
+#: sdk/material/ocm.xml:299(col)
 #: sdk/definition/cnat.xml:18(col)
 msgid "0"
 msgstr "0"
@@ -1094,7 +1094,7 @@ msgstr "0"
 #: sdk/scenario/basefunc.xml:19(col)
 #: sdk/scenario/basefunc.xml:24(col)
 #: sdk/scenario/Teams.xml:22(col)
-#: sdk/material/c4m.xml:304(col)
+#: sdk/material/ocm.xml:304(col)
 #: sdk/definition/cnat.xml:19(col)
 #: sdk/definition/cnat.xml:24(col)
 msgid "1"
@@ -2336,8 +2336,8 @@ msgid "Increases or decreases the number of sounds running in a continuous loop.
 msgstr "Erhöht oder verringert die Anzahl der in einer Endlosschleife laufenden Sounds. Bei +1 wird dieser Sound unendlich oft abgespielt bis diese Funktion noch einmal mit -1 aufgerufen wird. Bei 0 wird der Sound normal abgespielt."
 
 #: sdk/script/fn/Sound.xml:44(desc)
-msgid "Plays a sound. The specified sound file has to be available in the group Sound.c4g, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports."
-msgstr "Spielt einen Sound ab. Die entsprechende Sounddatei muss in der Gruppendatei Sound.c4g, in der aktiven Szenariodatei oder in einer geladenen Objektdefinition vorhanden sein. Bei lokalen Aufrufen werden Geräusche abhängig von der aktuellen Position des aufrufenden Objekts abgespielt."
+msgid "Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports."
+msgstr "Spielt einen Sound ab. Die entsprechende Sounddatei muss in der Gruppendatei Sound.ocg, in der aktiven Szenariodatei oder in einer geladenen Objektdefinition vorhanden sein. Bei lokalen Aufrufen werden Geräusche abhängig von der aktuellen Position des aufrufenden Objekts abgespielt."
 
 #: sdk/script/fn/Sound.xml:48(text)
 msgid "Plays an 'applause' sound next to the first found wooden hut at half volume."
@@ -2553,7 +2553,7 @@ msgstr "Objektscript: Das Objekt stößt eine Rauchwolke aus."
 #: sdk/script/fn/SetSkyAdjust.xml:8(category)
 #: sdk/script/fn/GetSkyColor.xml:8(category)
 #: sdk/script/fn/GetSkyAdjust.xml:8(category)
-#: sdk/material/c4m.xml:371(col)
+#: sdk/material/ocm.xml:371(col)
 msgid "Sky"
 msgstr "Himmel"
 
@@ -2986,9 +2986,9 @@ msgstr "Index des Vertex."
 #: sdk/playercontrols.xml:140(col)
 #: sdk/playercontrols.xml:172(col)
 #: sdk/particle/index.xml:30(col)
-#: sdk/material/c4m.xml:14(col)
-#: sdk/material/c4m.xml:233(col)
-#: sdk/material/c4m.xml:294(col)
+#: sdk/material/ocm.xml:14(col)
+#: sdk/material/ocm.xml:233(col)
+#: sdk/material/ocm.xml:294(col)
 #: sdk/folder/foldermap.xml:14(col)
 #: sdk/folder/foldermap.xml:44(col)
 #: sdk/definition/defcore.xml:14(col)
@@ -3768,7 +3768,7 @@ msgstr "PHYS_Temporary"
 #: sdk/script/Effects.xml:547(col)
 #: sdk/scenario/basefunc.xml:25(col)
 #: sdk/scenario/basefunc.xml:30(col)
-#: sdk/material/c4m.xml:309(col)
+#: sdk/material/ocm.xml:309(col)
 #: sdk/definition/cnat.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
 msgid "2"
@@ -3923,7 +3923,7 @@ msgstr "GFX_BLIT_ClrSfc_Mod2"
 
 #: sdk/script/fn/SetObjectBlitMode.xml:54(col)
 #: sdk/scenario/basefunc.xml:37(col)
-#: sdk/material/c4m.xml:431(col)
+#: sdk/material/ocm.xml:431(col)
 #: sdk/definition/cnat.xml:37(col)
 msgid "8"
 msgstr "8"
@@ -4343,8 +4343,8 @@ msgid "Some knight will be displayed with a shield, additively drawn onto the cl
 msgstr "Es wird bei irgendeinem Ritter ein Schild auf die Grafik gesetzt, und additiv gezeichnet."
 
 #: sdk/script/fn/SetGraphics.xml:129(emlink)
-msgid "Object definitions (c4d)"
-msgstr "Objektdefinitionen (c4d)"
+msgid "Object definitions (ocd)"
+msgstr "Objektdefinitionen (ocd)"
 
 #: sdk/script/fn/SetGamma.xml:16(desc)
 msgid "Adjusting darker colors. Default <placeholder-1/>(0,0,0) for no adjustment."
@@ -4406,7 +4406,7 @@ msgstr "Zaubereffekte"
 
 #: sdk/script/fn/SetGamma.xml:72(col)
 #: sdk/script/fn/GetSystemTime.xml:57(col)
-#: sdk/material/c4m.xml:425(col)
+#: sdk/material/ocm.xml:425(col)
 msgid "7"
 msgstr "7"
 
@@ -4683,7 +4683,7 @@ msgid "target"
 msgstr "target"
 
 #: sdk/script/fn/SetCommand.xml:64(col)
-#: sdk/material/c4m.xml:408(col)
+#: sdk/material/ocm.xml:408(col)
 msgid "x, y"
 msgstr "x, y"
 
@@ -5309,8 +5309,8 @@ msgid "Calls a function after a specified delay."
 msgstr "Ruft eine Funktion nach einer angegebenen Verzögerung auf."
 
 #: sdk/script/fn/ScheduleCall.xml:40(remark)
-msgid "This function is implemented in System.c4g using the <emlink href=\"script/Effects.html\">effect</emlink> \"IntScheduleCall\" in function <placeholder-1/>."
-msgstr "Diese Funktion wird in der System.c4g durch einen <emlink href=\"script/Effects.html\">Effekt</emlink> \"IntScheduleCall\" und die Funktion <placeholder-1/> realisiert."
+msgid "This function is implemented in System.ocg using the <emlink href=\"script/Effects.html\">effect</emlink> \"IntScheduleCall\" in function <placeholder-1/>."
+msgstr "Diese Funktion wird in der System.ocg durch einen <emlink href=\"script/Effects.html\">Effekt</emlink> \"IntScheduleCall\" und die Funktion <placeholder-1/> realisiert."
 
 #: sdk/script/fn/ScheduleCall.xml:44(text)
 msgid "Calls the function \"Redefine\" in a clonk with a delay of 500 ticks and passes \"MCLK\" as additional parameter. This will cause the clonk to change into a magician after 500 frames unless the call is cancelled earlier using <placeholder-1/>."
@@ -5329,8 +5329,8 @@ msgid "Executes a specified script command after a specified delay."
 msgstr "Führt einen bestimmes Script mit Verzögerung aus."
 
 #: sdk/script/fn/Schedule.xml:36(remark)
-msgid "This function is implemented in System.c4g using the <emlink href=\"script/Effects.html\">effect</emlink> \"IntSchedule\" in function <placeholder-1/>."
-msgstr "Diese Funktion wird in der System.c4g durch einen <emlink href=\"script/Effects.html\">Effekt</emlink> \"IntSchedule\" und die Funktion <placeholder-1/> realisiert."
+msgid "This function is implemented in System.ocg using the <emlink href=\"script/Effects.html\">effect</emlink> \"IntSchedule\" in function <placeholder-1/>."
+msgstr "Diese Funktion wird in der System.ocg durch einen <emlink href=\"script/Effects.html\">Effekt</emlink> \"IntSchedule\" und die Funktion <placeholder-1/> realisiert."
 
 #: sdk/script/fn/Schedule.xml:37(remark)
 msgid "Accordingly, the specified script can be a single command only. It may not contain multiple commands separated by \";\"."
@@ -5553,8 +5553,8 @@ msgstr "Da es in Clonk keinen Float-Datentyp gibt können die umgerechneten Wert
 
 #: sdk/script/fn/RGB2HSL.xml:42(text)
 #: sdk/script/fn/HSL2RGB.xml:42(text)
-msgid "Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.c4g group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen."
-msgstr "Erzeugt in jedem Clonk einen Effekt der die Farbe der Clonks Regenbogenartig variieren lässt.<br/>Zum ausprobieren den Script am besten in einen Szenarienlokale System.c4g Ordner kopieren<br/>Der Hue-Wert wird hier mit Absicht mit jeweils um 2 erhöht, da der geringe Fehler bei der Umrechnung sonst wirksam wird und gar nichts geschieht."
+msgid "Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.ocg group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen."
+msgstr "Erzeugt in jedem Clonk einen Effekt der die Farbe der Clonks Regenbogenartig variieren lässt.<br/>Zum ausprobieren den Script am besten in einen Szenarienlokale System.ocg Ordner kopieren<br/>Der Hue-Wert wird hier mit Absicht mit jeweils um 2 erhöht, da der geringe Fehler bei der Umrechnung sonst wirksam wird und gar nichts geschieht."
 
 #: sdk/script/fn/RGB.xml:30(desc)
 msgid "Composes a 32 bit color value from the three base colors. Range 0-255 for all parameters."
@@ -6167,8 +6167,8 @@ msgid "If 1, the specified track will be looped forever."
 msgstr "Wenn 1, wird das angegebene Musikstück andauernd abgespielt."
 
 #: sdk/script/fn/Music.xml:29(desc)
-msgid "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.c4g will be used."
-msgstr "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.c4g genutzt."
+msgid "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.ocg will be used."
+msgstr "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.ocg genutzt."
 
 #: sdk/script/fn/Min.xml:16(desc)
 #: sdk/script/fn/Max.xml:16(desc)
@@ -6824,8 +6824,8 @@ msgstr "Achtung! Die abgefragten Werte können teilweise nicht sync-sicher sein 
 #: sdk/script/fn/GetPlayerVal.xml:40(remark)
 #: sdk/script/fn/GetObjectVal.xml:33(remark)
 #: sdk/script/fn/GetObjectInfoCoreVal.xml:33(remark)
-msgid "Most useful applications for entry are already implemented in System.c4g/GetXVal.c."
-msgstr "Die meisten Möglichkeiten für Werte von entry sind bereits in System.c4g/GetXVal.c vordefiniert"
+msgid "Most useful applications for entry are already implemented in System.ocg/GetXVal.c."
+msgstr "Die meisten Möglichkeiten für Werte von entry sind bereits in System.ocg/GetXVal.c vordefiniert"
 
 #: sdk/script/fn/GetScenarioVal.xml:38(text)
 msgid "Displays the scenario title."
@@ -7237,11 +7237,11 @@ msgid "see <placeholder-1/>"
 msgstr "siehe <placeholder-1/>"
 
 #: sdk/script/fn/GetObjectInfoCoreVal.xml:32(desc)
-msgid "The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension c4i. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore."
-msgstr "Bei dem InfoCore handelt es sich um die Informationen eines CrewMembers, die in dem Spieler gespeichert werden (*.c4i). Dementsprechend gibt GetObjectInfoCoreVal einen Eigenschaftswert eines Crewmembers nach Namen in einer c4i-Datei zurück"
+msgid "The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension oci. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore."
+msgstr "Bei dem InfoCore handelt es sich um die Informationen eines CrewMembers, die in dem Spieler gespeichert werden (*.oci). Dementsprechend gibt GetObjectInfoCoreVal einen Eigenschaftswert eines Crewmembers nach Namen in einer oci-Datei zurück"
 
 #: sdk/script/fn/GetObjectInfoCoreVal.xml:37(text)
-msgid "Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.c4g (see remark).<br/> The above code responds to:"
+msgid "Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.ocg (see remark).<br/> The above code responds to:"
 msgstr "Ermittelt die Erfahrung eines Objekts (Objekt muss Crewmember sein!). GetObjCoreExperience ist dabei eine globale Funktion aus GetXVal.c (siehe Anmerkung).<br/> Obiger Code entspricht:"
 
 #: sdk/script/fn/GetObjectBlitMode.xml:17(desc)
@@ -7337,8 +7337,8 @@ msgid "Number of the material of which to retrieve an entry."
 msgstr "Nummer des Materials, von dem der Eintrag abgefragt werden soll. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen."
 
 #: sdk/script/fn/GetMaterialVal.xml:38(desc)
-msgid "Returns the property value of a material definition by its name in the <emlink href=\"material/c4m.html\">material file</emlink>."
-msgstr "Gibt einen Eigenschaftswert einer Materialdefinition nach seinem Namen in der <emlink href=\"material/c4m.html\">Materialdatei</emlink> zurück."
+msgid "Returns the property value of a material definition by its name in the <emlink href=\"material/ocm.html\">material file</emlink>."
+msgstr "Gibt einen Eigenschaftswert einer Materialdefinition nach seinem Namen in der <emlink href=\"material/ocm.html\">Materialdatei</emlink> zurück."
 
 #: sdk/script/fn/GetMaterialVal.xml:42(text)
 msgid "Tests whether the landscape on the right of the calling clonk can be blasted away."
@@ -8110,10 +8110,10 @@ msgstr "s"
 #: sdk/playercontrols.xml:132(col)
 #: sdk/playercontrols.xml:146(col)
 #: sdk/playercontrols.xml:156(col)
-#: sdk/material/c4m.xml:239(col)
-#: sdk/material/c4m.xml:244(col)
-#: sdk/material/c4m.xml:249(col)
-#: sdk/material/c4m.xml:279(col)
+#: sdk/material/ocm.xml:239(col)
+#: sdk/material/ocm.xml:244(col)
+#: sdk/material/ocm.xml:249(col)
+#: sdk/material/ocm.xml:279(col)
 #: sdk/folder/foldermap.xml:50(col)
 #: sdk/folder/foldermap.xml:55(col)
 #: sdk/folder/foldermap.xml:75(col)
@@ -9678,7 +9678,7 @@ msgid "Creates some sparks."
 msgstr "Verschleudert einige Funken."
 
 #: sdk/script/fn/CastPXS.xml:16(desc)
-#: sdk/material/c4m.xml:351(col)
+#: sdk/material/ocm.xml:351(col)
 msgid "Material name"
 msgstr "Materialname"
 
@@ -10413,10 +10413,10 @@ msgstr "base_mode"
 #: sdk/script/fn/AddCommand.xml:70(col)
 #: sdk/scenario/Teams.xml:84(col)
 #: sdk/particle/index.xml:35(col)
-#: sdk/material/c4m.xml:19(col)
-#: sdk/material/c4m.xml:293(col)
-#: sdk/material/c4m.xml:318(col)
-#: sdk/material/c4m.xml:347(col)
+#: sdk/material/ocm.xml:19(col)
+#: sdk/material/ocm.xml:293(col)
+#: sdk/material/ocm.xml:318(col)
+#: sdk/material/ocm.xml:347(col)
 #: sdk/definition/properties.xml:24(col)
 msgid "Name"
 msgstr "Name"
@@ -10630,43 +10630,43 @@ msgstr "Beispiel"
 #: sdk/particle/index.xml:141(col)
 #: sdk/particle/index.xml:146(col)
 #: sdk/particle/index.xml:156(col)
-#: sdk/material/c4m.xml:30(col)
-#: sdk/material/c4m.xml:35(col)
-#: sdk/material/c4m.xml:40(col)
-#: sdk/material/c4m.xml:45(col)
-#: sdk/material/c4m.xml:50(col)
-#: sdk/material/c4m.xml:55(col)
-#: sdk/material/c4m.xml:70(col)
-#: sdk/material/c4m.xml:75(col)
-#: sdk/material/c4m.xml:80(col)
-#: sdk/material/c4m.xml:85(col)
-#: sdk/material/c4m.xml:90(col)
-#: sdk/material/c4m.xml:95(col)
-#: sdk/material/c4m.xml:100(col)
-#: sdk/material/c4m.xml:105(col)
-#: sdk/material/c4m.xml:110(col)
-#: sdk/material/c4m.xml:115(col)
-#: sdk/material/c4m.xml:120(col)
-#: sdk/material/c4m.xml:125(col)
-#: sdk/material/c4m.xml:130(col)
-#: sdk/material/c4m.xml:135(col)
-#: sdk/material/c4m.xml:140(col)
-#: sdk/material/c4m.xml:160(col)
-#: sdk/material/c4m.xml:165(col)
-#: sdk/material/c4m.xml:175(col)
-#: sdk/material/c4m.xml:180(col)
-#: sdk/material/c4m.xml:190(col)
-#: sdk/material/c4m.xml:200(col)
-#: sdk/material/c4m.xml:210(col)
-#: sdk/material/c4m.xml:254(col)
-#: sdk/material/c4m.xml:274(col)
-#: sdk/material/c4m.xml:284(col)
-#: sdk/material/c4m.xml:409(col)
-#: sdk/material/c4m.xml:415(col)
-#: sdk/material/c4m.xml:421(col)
-#: sdk/material/c4m.xml:427(col)
-#: sdk/material/c4m.xml:433(col)
-#: sdk/material/c4m.xml:439(col)
+#: sdk/material/ocm.xml:30(col)
+#: sdk/material/ocm.xml:35(col)
+#: sdk/material/ocm.xml:40(col)
+#: sdk/material/ocm.xml:45(col)
+#: sdk/material/ocm.xml:50(col)
+#: sdk/material/ocm.xml:55(col)
+#: sdk/material/ocm.xml:70(col)
+#: sdk/material/ocm.xml:75(col)
+#: sdk/material/ocm.xml:80(col)
+#: sdk/material/ocm.xml:85(col)
+#: sdk/material/ocm.xml:90(col)
+#: sdk/material/ocm.xml:95(col)
+#: sdk/material/ocm.xml:100(col)
+#: sdk/material/ocm.xml:105(col)
+#: sdk/material/ocm.xml:110(col)
+#: sdk/material/ocm.xml:115(col)
+#: sdk/material/ocm.xml:120(col)
+#: sdk/material/ocm.xml:125(col)
+#: sdk/material/ocm.xml:130(col)
+#: sdk/material/ocm.xml:135(col)
+#: sdk/material/ocm.xml:140(col)
+#: sdk/material/ocm.xml:160(col)
+#: sdk/material/ocm.xml:165(col)
+#: sdk/material/ocm.xml:175(col)
+#: sdk/material/ocm.xml:180(col)
+#: sdk/material/ocm.xml:190(col)
+#: sdk/material/ocm.xml:200(col)
+#: sdk/material/ocm.xml:210(col)
+#: sdk/material/ocm.xml:254(col)
+#: sdk/material/ocm.xml:274(col)
+#: sdk/material/ocm.xml:284(col)
+#: sdk/material/ocm.xml:409(col)
+#: sdk/material/ocm.xml:415(col)
+#: sdk/material/ocm.xml:421(col)
+#: sdk/material/ocm.xml:427(col)
+#: sdk/material/ocm.xml:433(col)
+#: sdk/material/ocm.xml:439(col)
 #: sdk/folder/foldermap.xml:25(col)
 #: sdk/folder/foldermap.xml:30(col)
 #: sdk/folder/foldermap.xml:35(col)
@@ -10785,9 +10785,9 @@ msgstr "Eine ganze Zahl im Bereich von -2.147.483.648 bis +2.147.483.647."
 #: sdk/playercontrols.xml:62(col)
 #: sdk/playercontrols.xml:72(col)
 #: sdk/playercontrols.xml:151(col)
-#: sdk/material/c4m.xml:259(col)
-#: sdk/material/c4m.xml:264(col)
-#: sdk/material/c4m.xml:269(col)
+#: sdk/material/ocm.xml:259(col)
+#: sdk/material/ocm.xml:264(col)
+#: sdk/material/ocm.xml:269(col)
 #: sdk/folder/foldermap.xml:130(col)
 #: sdk/definition/actmap.xml:89(col)
 msgid "Boolean"
@@ -10798,8 +10798,8 @@ msgid "\"true\" (value <code>true</code>) or \"false\" (value <code>false</code>
 msgstr "\"wahr\" (Wert <code>true</code>) oder \"falsch\" (Wert <code>false</code>). Wird von vielen Kontrollstrukturen wie <placeholder-1/> und <placeholder-2/> als Parameter erwartet."
 
 #: sdk/script/Typechecks.xml:32(col)
-#: sdk/material/c4m.xml:60(col)
-#: sdk/material/c4m.xml:65(col)
+#: sdk/material/ocm.xml:60(col)
+#: sdk/material/ocm.xml:65(col)
 #: sdk/definition/defcore.xml:20(col)
 msgid "definition id"
 msgstr "Definitions-ID"
@@ -11163,8 +11163,8 @@ msgid "GetObjectInfoCoreVal"
 msgstr "GetObjectInfoCoreVal"
 
 #: sdk/script/GetXXVal.xml:37(col)
-msgid "*.c4i (in player files)"
-msgstr "*.c4i (in Spielerdateien)"
+msgid "*.oci (in player files)"
+msgstr "*.oci (in Spielerdateien)"
 
 #: sdk/script/GetXXVal.xml:40(col)
 msgid "GetScenarioVal"
@@ -11204,8 +11204,8 @@ msgid "If <code>nil</code> is given for obj/definition in a call to GetObjectVal
 msgstr "Wird GetObjectVal für obj/definition jeweils 0 zurückgegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen."
 
 #: sdk/script/GetXXVal.xml:55(text)
-msgid "There is a number of additional wrapper functions located in System.c4g/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>(\"Width\", 0, -obj-)</code>)."
-msgstr "Die Zusatzfunktionen GetXVal.c (in System.c4g) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal(\"Width\", 0, -obj-)</code>)."
+msgid "There is a number of additional wrapper functions located in System.ocg/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>(\"Width\", 0, -obj-)</code>)."
+msgstr "Die Zusatzfunktionen GetXVal.c (in System.ocg) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal(\"Width\", 0, -obj-)</code>)."
 
 #: sdk/script/Funcs.xml:9(text)
 msgid "A script function represents a length of script code which can be called (or executed) from the engine or from other places in script. Basically, all scripting of a scenario or object is organized in functions."
@@ -12259,9 +12259,9 @@ msgstr "Sektion [Head]"
 #: sdk/playercontrols.xml:127(col)
 #: sdk/playercontrols.xml:141(col)
 #: sdk/particle/index.xml:31(col)
-#: sdk/material/c4m.xml:15(col)
-#: sdk/material/c4m.xml:234(col)
-#: sdk/material/c4m.xml:403(col)
+#: sdk/material/ocm.xml:15(col)
+#: sdk/material/ocm.xml:234(col)
+#: sdk/material/ocm.xml:403(col)
 #: sdk/folder/foldermap.xml:15(col)
 #: sdk/folder/foldermap.xml:45(col)
 #: sdk/folder/foldermap.xml:70(col)
@@ -12314,7 +12314,7 @@ msgstr "Version"
 #: sdk/scenario/scenario.xml:375(col)
 #: sdk/scenario/scenario.xml:380(col)
 #: sdk/scenario/scenario.xml:385(col)
-#: sdk/material/c4m.xml:220(col)
+#: sdk/material/ocm.xml:220(col)
 #: sdk/folder/foldermap.xml:20(col)
 #: sdk/folder/foldermap.xml:60(col)
 #: sdk/folder/foldermap.xml:90(col)
@@ -12549,12 +12549,12 @@ msgid "0-100. Amount of buried objects."
 msgstr "0-100. Menge Erdreich-Objekte."
 
 #: sdk/scenario/scenario.xml:211(col)
-msgid "Sky texture from Graphics.c4g (without filename extension)"
-msgstr "Himmeltextur wie in der Graphics.c4g vorhanden (ohne Dateierweiterung)."
+msgid "Sky texture from Graphics.ocg (without filename extension)"
+msgstr "Himmeltextur wie in der Graphics.ocg vorhanden (ohne Dateierweiterung)."
 
 #: sdk/scenario/scenario.xml:215(col)
 #: sdk/particle/index.xml:76(col)
-#: sdk/material/c4m.xml:195(col)
+#: sdk/material/ocm.xml:195(col)
 #: sdk/definition/defcore.xml:90(col)
 #: sdk/definition/defcore.xml:95(col)
 #: sdk/definition/actmap.xml:74(col)
@@ -12774,8 +12774,8 @@ msgid "String(s)"
 msgstr "Zeichenfolge(n)"
 
 #: sdk/scenario/scenario.xml:431(col)
-msgid "With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled."
-msgstr "Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (c4d) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert."
+msgid "With Definition<em>x</em> entries you can specify which object definition packs (ocd) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled."
+msgstr "Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (ocd) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert."
 
 #: sdk/scenario/scenario.xml:434(col)
 msgid "SkipDefs"
@@ -12791,8 +12791,8 @@ msgstr "Szenarien sind die Spielwelten, die der Spieler im Menüsystem auswähle
 
 #: sdk/scenario/index.xml:10(h)
 #: sdk/folder/index.xml:10(h)
-msgid "Scenario Components (c4s)"
-msgstr "Szenario-Komponenten (C4S)"
+msgid "Scenario Components (ocs)"
+msgstr "Szenario-Komponenten (OCS)"
 
 #: sdk/scenario/index.xml:14(text)
 msgid "Contains most scenario settings."
@@ -12921,8 +12921,8 @@ msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>MatMa
 msgstr "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>MatMap.txt"
 
 #: sdk/scenario/index.xml:67(text)
-msgid "Stores the material table used in this scenario. The materials listed here are used by the exact landscape and have to be available in the loaded Material.c4g group."
-msgstr "Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.c4g vorhanden sein."
+msgid "Stores the material table used in this scenario. The materials listed here are used by the exact landscape and have to be available in the loaded Material.ocg group."
+msgstr "Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.ocg vorhanden sein."
 
 #: sdk/scenario/index.xml:69(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Objects.txt"
@@ -12934,8 +12934,8 @@ msgstr "Diese Komponente wird von der Engine erzeugt und enthält die Laufzeitob
 
 #: sdk/scenario/index.xml:73(emlink)
 #: sdk/folder/index.xml:48(emlink)
-msgid "Material.c4g"
-msgstr "Material.c4g"
+msgid "Material.ocg"
+msgstr "Material.ocg"
 
 #: sdk/scenario/index.xml:75(text)
 msgid "Scenarios can contain local material definition groups. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
@@ -12943,12 +12943,12 @@ msgstr "Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <
 
 #: sdk/scenario/index.xml:77(dt)
 #: sdk/folder/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Graphics.c4g"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Graphics.c4g"
+msgid "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Graphics.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Graphics.ocg"
 
 #: sdk/scenario/index.xml:79(text)
-msgid "Scenarios can overload individual entries of the global Graphics.c4g group. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
-msgstr "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.c4g überladen. Es gelten die <a href=\"#UeberladungenC4S\">Überladungsregeln</a>."
+msgid "Scenarios can overload individual entries of the global Graphics.ocg group. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
+msgstr "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Es gelten die <a href=\"#UeberladungenC4S\">Überladungsregeln</a>."
 
 #: sdk/scenario/index.xml:81(dt)
 #: sdk/definition/index.xml:72(dt)
@@ -12969,8 +12969,8 @@ msgstr "Wenn das Szenario lokale Musikdateien enthält, werden diese während de
 
 #: sdk/scenario/index.xml:89(dt)
 #: sdk/folder/index.xml:56(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Music.c4g"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Music.c4g"
+msgid "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Music.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.gif\" width=\"16\"/>Music.ocg"
 
 #: sdk/scenario/index.xml:91(text)
 msgid "Local music files can also be combines in a local music group."
@@ -12979,16 +12979,16 @@ msgstr "Lokale Musikstücke können auch in dieser lokalen Gruppendatei abgelegt
 #: sdk/scenario/index.xml:93(emlink)
 #: sdk/folder/index.xml:60(emlink)
 #: sdk/cmdline.xml:107(dt)
-msgid "*.c4d"
-msgstr "*.c4d"
+msgid "*.ocd"
+msgstr "*.ocd"
 
 #: sdk/scenario/index.xml:95(text)
 msgid "Scenarios can contain local object definitions which are then available in that scenario only."
 msgstr "Szenarien können lokale Objektdefinitionen enthalten, die dann nur im entsprechenden Szenario verfügbar sind."
 
 #: sdk/scenario/index.xml:96(text)
-msgid "The engine will also search all parent folders (c4f) of the scenario for additional local object definitions. In this way, a scenario folder can contain object definitions which are then available in all its contents scenarios."
-msgstr "Die Engine durchsucht auch alle übergeordneten Rundenordner (c4f) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind."
+msgid "The engine will also search all parent folders (ocf) of the scenario for additional local object definitions. In this way, a scenario folder can contain object definitions which are then available in all its contents scenarios."
+msgstr "Die Engine durchsucht auch alle übergeordneten Rundenordner (ocf) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind."
 
 #: sdk/scenario/index.xml:98(dt)
 #: sdk/definition/index.xml:56(dt)
@@ -13026,8 +13026,8 @@ msgid "Overloading Rules"
 msgstr "Überladungsregeln"
 
 #: sdk/scenario/index.xml:112(text)
-msgid "Various system components (graphics, loader screens, materials, music, or objects) can be overloaded in scenarios. In doing this, parent scenario folders (c4f) are searched. Also, components located in child groups will always overload the same components located in parent groups."
-msgstr "Diverse Systemkomponenten (Graphics, Loader, Material, Musik und Objekte) können in Szenarien überladen werden. Dabei werden auch übergeordnete Rundenordner (C4F) durchsucht. Hierbei steigt die Überladungspriorität mit der Ordnertiefe. Bei einem Szenario, das sich in die Ordnerstruktur Ordner.c4f\\Unterordner.c4f\\Szenario.c4s einordnet, würden Komponenten aus Unterordner.c4f also gleiche Komponenten aus Ordner.c4f überladen (respektive Szenario.c4f Komponenten aus Unterordner.c4f und Ordner.c4f)."
+msgid "Various system components (graphics, loader screens, materials, music, or objects) can be overloaded in scenarios. In doing this, parent scenario folders (ocf) are searched. Also, components located in child groups will always overload the same components located in parent groups."
+msgstr "Diverse Systemkomponenten (Graphics, Loader, Material, Musik und Objekte) können in Szenarien überladen werden. Dabei werden auch übergeordnete Rundenordner (OCF) durchsucht. Hierbei steigt die Überladungspriorität mit der Ordnertiefe. Bei einem Szenario, das sich in die Ordnerstruktur Ordner.ocf\\Unterordner.ocf\\Szenario.ocs einordnet, würden Komponenten aus Unterordner.ocf also gleiche Komponenten aus Ordner.ocf überladen (respektive Szenario.ocf Komponenten aus Unterordner.ocf und Ordner.ocf)."
 
 #: sdk/scenario/basefunc.xml:6(title)
 #: sdk/scenario/basefunc.xml:7(h)
@@ -13228,7 +13228,7 @@ msgstr "Muss angegeben werden!"
 #: sdk/particle/index.xml:61(col)
 #: sdk/particle/index.xml:66(col)
 #: sdk/particle/index.xml:71(col)
-#: sdk/material/c4m.xml:215(col)
+#: sdk/material/ocm.xml:215(col)
 #: sdk/definition/defcore.xml:30(col)
 #: sdk/definition/defcore.xml:45(col)
 #: sdk/definition/actmap.xml:104(col)
@@ -13252,7 +13252,7 @@ msgid "If not 0, all members of this team use the corresponding [PlayerX] sectio
 msgstr "Wenn ungleich 0, wird für alle Mitglieder dieses Teams die entsprechende [PlayerX]-Sektion der <emlink href=\"scenario/scenario.html#SektionenPlayer1Player2Player3Player4\">Scenario.txt</emlink> für die Startparameter verwendet. 0 für automatische Vergabe unabhängig von den Teams."
 
 #: sdk/scenario/Teams.xml:96(col)
-#: sdk/material/c4m.xml:24(col)
+#: sdk/material/ocm.xml:24(col)
 msgid "Color"
 msgstr "Color"
 
@@ -13337,8 +13337,8 @@ msgid "mat"
 msgstr "mat"
 
 #: sdk/scenario/MapCreatorS2.xml:39(col)
-msgid "Material. The material must be defined in the active Material.c4g. Default is Sky."
-msgstr "Material. Das Material muss in der entsprechenden Material.c4g definiert sein. Standard ist Himmel."
+msgid "Material. The material must be defined in the active Material.ocg. Default is Sky."
+msgstr "Material. Das Material muss in der entsprechenden Material.ocg definiert sein. Standard ist Himmel."
 
 #: sdk/scenario/MapCreatorS2.xml:42(col)
 msgid "tex"
@@ -13972,8 +13972,8 @@ msgid "PlayerControls.txt"
 msgstr "PlayerControls.txt"
 
 #: sdk/playercontrols.xml:11(text)
-msgid "All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.c4g folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.c4g folder**."
-msgstr "Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.c4g. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.c4g hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**."
+msgid "All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder**."
+msgstr "Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.ocg. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.ocg hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**."
 
 #: sdk/playercontrols.xml:12(text)
 msgid "Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**."
@@ -14257,16 +14257,16 @@ msgid "Particles are lightweight objects which are not synchronized in a network
 msgstr "Partikel sind abgespeckte Objekte, die im Netzwerk nicht synchronisationsrelevant sind. Das heißt einerseits, dass man Partikel relativ problemlos in größeren Mengen erstellen kann, um interessante Effekte zu erzielen. Andererseits existieren nur sehr wenige Möglichkeiten, un das Verhalten von Partikeln zu steuern. Wenn die Möglichkeiten von Partikeln also für einen Effekt nicht ausreichen, sollten stattdessen reguläre Objekte verwenden, mit denen sich alle durch Partikel darstellbaren Effekte auch erzielen lassen."
 
 #: sdk/particle/index.xml:10(text)
-msgid "If a particle is defined in a c4d group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles."
-msgstr "Wenn ein Partikel in einer c4d-Datei definiert ist, wird ein ebenfalls in dieser Gruppendatei vorhandenes Objekt nicht geladen. Im veralteten Grafiksystem konnte man so ein alternatives Objekt anbieten, das im neuen Grafiksystem nicht geladen wird."
+msgid "If a particle is defined in a ocd group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles."
+msgstr "Wenn ein Partikel in einer ocd-Datei definiert ist, wird ein ebenfalls in dieser Gruppendatei vorhandenes Objekt nicht geladen. Im veralteten Grafiksystem konnte man so ein alternatives Objekt anbieten, das im neuen Grafiksystem nicht geladen wird."
 
 #: sdk/particle/index.xml:11(text)
 msgid "Particles are not stored in savegames and are designed for temporary visual effects only."
 msgstr "Partikel werden nicht in Spielständen gespeichert, da sie nur für kurzzeitige Effekte gedacht sind."
 
 #: sdk/particle/index.xml:12(h)
-msgid "Particle Components (c4d)"
-msgstr "Partikel-Komponenten (C4D)"
+msgid "Particle Components (ocd)"
+msgstr "Partikel-Komponenten (OCD)"
 
 #: sdk/particle/index.xml:14(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Particle.txt"
@@ -14434,7 +14434,7 @@ msgid "Effects of gravity. At 0 the particle is not affected by gravity, at 100 
 msgstr "Gravitationsauswirkung. Bei 0 wird das Partikel gar nicht von der Gravitation beschleunigt, bei 100 normal. Negative Werte sind ebenfalls möglich."
 
 #: sdk/particle/index.xml:120(col)
-#: sdk/material/c4m.xml:104(col)
+#: sdk/material/ocm.xml:104(col)
 msgid "WindDrift"
 msgstr "WindDrift"
 
@@ -14643,8 +14643,8 @@ msgid "Using material definitions you can specify looks and behaviour of the lan
 msgstr "Mit Materialdefinitionen können Aussehen und Funktion der Materialien, aus denen eine Clonk-Landschaft besteht, bestimmt werden. In der Landschaft eines Szenarios können maximal 125 verschiedene Materialien verwendet werden."
 
 #: sdk/material/index.xml:10(h)
-msgid "Material Definition Components (Material.c4g)"
-msgstr "Materialdefinitions-Komponenten (Material.c4g)"
+msgid "Material Definition Components (Material.ocg)"
+msgstr "Materialdefinitions-Komponenten (Material.ocg)"
 
 #: sdk/material/index.xml:12(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>TexMap.txt"
@@ -14663,8 +14663,8 @@ msgid "If a custom map fails with the message 'texture n undefined' you should d
 msgstr "Wenn eine selbstgemalte Landkarte von der Engine mit der Meldung \"Landkarte: Textur n nicht definiert.\" abgelehnt wird, kann dies durch definieren der Textur n in der TexMap behoben werden. Grundsätzlich sollte man ein palettenfähiges Grafikprogramm (MS Paint gehört nicht dazu) oder den Entwicklermodus der Engine verwenden, um solche Probleme zu vermeiden."
 
 #: sdk/material/index.xml:18(emlink)
-msgid "*.c4m"
-msgstr "*.c4m"
+msgid "*.ocm"
+msgstr "*.ocm"
 
 #: sdk/material/index.xml:20(text)
 msgid "The engine will accept up to 125 material definitions at a time. C4M files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available."
@@ -14702,612 +14702,612 @@ msgstr "Material mit Textur und Mengenangabe:"
 msgid "Multiple material definitions:"
 msgstr "Mehrfache Materialien:"
 
-#: sdk/material/c4m.xml:6(title)
-#: sdk/material/c4m.xml:7(h)
-msgid "Material Definitions (c4m)"
-msgstr "Materialdefinitionen (C4M)"
+#: sdk/material/ocm.xml:6(title)
+#: sdk/material/ocm.xml:7(h)
+msgid "Material Definitions (ocm)"
+msgstr "Materialdefinitionen (OCM)"
 
-#: sdk/material/c4m.xml:9(text)
+#: sdk/material/ocm.xml:9(text)
 msgid "Material definitions determine looks and behaviour of landscape materials."
 msgstr "In Materialdefinitionen wird Aussehen und Verhalten von Materialien festgelegt."
 
-#: sdk/material/c4m.xml:12(caption)
+#: sdk/material/ocm.xml:12(caption)
 msgid "Section [Material]"
 msgstr "Sektion [Material]"
 
-#: sdk/material/c4m.xml:20(col)
-#: sdk/material/c4m.xml:145(col)
-#: sdk/material/c4m.xml:150(col)
-#: sdk/material/c4m.xml:155(col)
-#: sdk/material/c4m.xml:170(col)
-#: sdk/material/c4m.xml:185(col)
-#: sdk/material/c4m.xml:205(col)
+#: sdk/material/ocm.xml:20(col)
+#: sdk/material/ocm.xml:145(col)
+#: sdk/material/ocm.xml:150(col)
+#: sdk/material/ocm.xml:155(col)
+#: sdk/material/ocm.xml:170(col)
+#: sdk/material/ocm.xml:185(col)
+#: sdk/material/ocm.xml:205(col)
 #: sdk/definition/defcore.xml:255(col)
 msgid "String (max. 15)"
 msgstr "Zeichenfolge (max. 15)"
 
-#: sdk/material/c4m.xml:21(col)
+#: sdk/material/ocm.xml:21(col)
 msgid "Name of material."
 msgstr "Name des Materials."
 
-#: sdk/material/c4m.xml:25(col)
+#: sdk/material/ocm.xml:25(col)
 msgid "3 x 3 integers"
 msgstr "3 x 3 Integer"
 
-#: sdk/material/c4m.xml:26(col)
+#: sdk/material/ocm.xml:26(col)
 msgid "The three component colors of the material as RGB RGB RGB (each 0-255)."
 msgstr "Die drei Farben des Materials als R,G,B, R,G,B, R,G,B (jeweils 0-255)."
 
-#: sdk/material/c4m.xml:29(col)
+#: sdk/material/ocm.xml:29(col)
 msgid "ColorAnimation"
 msgstr "ColorAnimation"
 
-#: sdk/material/c4m.xml:31(col)
+#: sdk/material/ocm.xml:31(col)
 msgid "0 oder 1. Color animation."
 msgstr "0 oder 1. Farbanimation."
 
-#: sdk/material/c4m.xml:34(col)
+#: sdk/material/ocm.xml:34(col)
 msgid "Shape"
 msgstr "Shape"
 
-#: sdk/material/c4m.xml:36(col)
+#: sdk/material/ocm.xml:36(col)
 msgid "Shape of surface: 0 smooth, 1 smooth on top, 2 semi rough, 3 rough."
 msgstr "Landschaftsform: 0 glatt, 1 oben glatt, 2 halbrauh, 3 komplett rauh."
 
-#: sdk/material/c4m.xml:39(col)
+#: sdk/material/ocm.xml:39(col)
 msgid "Density"
 msgstr "Density"
 
-#: sdk/material/c4m.xml:41(col)
+#: sdk/material/ocm.xml:41(col)
 msgid "Density: 50 solid, 25 liquid (other values not allowed)."
 msgstr "Dichte: 50 fest, 25 flüssig (andere Werte nicht zulässig)."
 
-#: sdk/material/c4m.xml:44(col)
+#: sdk/material/ocm.xml:44(col)
 msgid "Friction"
 msgstr "Friction"
 
-#: sdk/material/c4m.xml:46(col)
+#: sdk/material/ocm.xml:46(col)
 msgid "0-100. Friction."
 msgstr "0-100. Reibung."
 
-#: sdk/material/c4m.xml:49(col)
+#: sdk/material/ocm.xml:49(col)
 msgid "DigFree"
 msgstr "DigFree"
 
-#: sdk/material/c4m.xml:51(col)
+#: sdk/material/ocm.xml:51(col)
 msgid "0 oder 1. Determines wether the material can be dug into."
 msgstr "0 oder 1. Bestimmt, ob das Material freigegraben werden kann."
 
-#: sdk/material/c4m.xml:54(col)
+#: sdk/material/ocm.xml:54(col)
 msgid "BlastFree"
 msgstr "BlastFree"
 
-#: sdk/material/c4m.xml:56(col)
+#: sdk/material/ocm.xml:56(col)
 msgid "0 oder 1. Determines whether the material can be blasted away."
 msgstr "0 oder 1. Bestimmt, ob das Material freigesprengt werden kann."
 
-#: sdk/material/c4m.xml:59(col)
+#: sdk/material/ocm.xml:59(col)
 msgid "Blast2Object"
 msgstr "Blast2Object"
 
-#: sdk/material/c4m.xml:61(col)
+#: sdk/material/ocm.xml:61(col)
 msgid "Type of objects created by blasting this material."
 msgstr "Freigesprengte Objekte."
 
-#: sdk/material/c4m.xml:64(col)
+#: sdk/material/ocm.xml:64(col)
 msgid "Dig2Object"
 msgstr "Dig2Object"
 
-#: sdk/material/c4m.xml:66(col)
+#: sdk/material/ocm.xml:66(col)
 msgid "Type of objects dug out from this material."
 msgstr "Freigegrabene Objekte."
 
-#: sdk/material/c4m.xml:69(col)
+#: sdk/material/ocm.xml:69(col)
 msgid "Dig2ObjectRatio"
 msgstr "Dig2ObjectRatio"
 
-#: sdk/material/c4m.xml:71(col)
+#: sdk/material/ocm.xml:71(col)
 msgid "ca. 100-500. Mass ratio when digging out objects."
 msgstr "ca. 100-500. Massenverhältnis beim Freigraben."
 
-#: sdk/material/c4m.xml:74(col)
+#: sdk/material/ocm.xml:74(col)
 msgid "Dig2ObjectRequest"
 msgstr "Dig2ObjectRequest"
 
-#: sdk/material/c4m.xml:76(col)
+#: sdk/material/ocm.xml:76(col)
 msgid "0 or 1. If 1, objects are only dug out on request."
 msgstr "0 oder 1. Wenn 1, werden Objekte nur auf Wunsch freigegraben."
 
-#: sdk/material/c4m.xml:79(col)
+#: sdk/material/ocm.xml:79(col)
 msgid "Blast2ObjectRatio"
 msgstr "Blast2ObjectRatio"
 
-#: sdk/material/c4m.xml:81(col)
+#: sdk/material/ocm.xml:81(col)
 msgid "ca. 100-500. Mass ratio when blasting free objects."
 msgstr "ca. 100-500. Massenverhältnis beim Freisprengen."
 
-#: sdk/material/c4m.xml:84(col)
+#: sdk/material/ocm.xml:84(col)
 msgid "Blast2PXSRatio"
 msgstr "Blast2PXSRatio"
 
-#: sdk/material/c4m.xml:86(col)
+#: sdk/material/ocm.xml:86(col)
 msgid "Mass ratio when material pixels are blasted free."
 msgstr "Massenverhältnis beim Freisprengen von Kleinmaterial."
 
-#: sdk/material/c4m.xml:89(col)
+#: sdk/material/ocm.xml:89(col)
 msgid "Instable"
 msgstr "Instable"
 
-#: sdk/material/c4m.xml:91(col)
+#: sdk/material/ocm.xml:91(col)
 msgid "0 oder 1. Stability."
 msgstr "0 oder 1. Stabilität."
 
-#: sdk/material/c4m.xml:94(col)
+#: sdk/material/ocm.xml:94(col)
 msgid "MaxAirSpeed"
 msgstr "MaxAirSpeed"
 
-#: sdk/material/c4m.xml:96(col)
+#: sdk/material/ocm.xml:96(col)
 msgid "ca. 10-100. Maximum falling speed."
 msgstr "ca. 10-100. Fallgeschwindigkeit."
 
-#: sdk/material/c4m.xml:99(col)
+#: sdk/material/ocm.xml:99(col)
 msgid "MaxSlide"
 msgstr "MaxSlide"
 
-#: sdk/material/c4m.xml:101(col)
+#: sdk/material/ocm.xml:101(col)
 msgid "Maximum side offset when sliding."
 msgstr "Rutschreichweite."
 
-#: sdk/material/c4m.xml:106(col)
+#: sdk/material/ocm.xml:106(col)
 msgid "Horizontal drift by wind."
 msgstr "Abtrieb durch Wind."
 
-#: sdk/material/c4m.xml:109(col)
-#: sdk/material/c4m.xml:383(col)
+#: sdk/material/ocm.xml:109(col)
+#: sdk/material/ocm.xml:383(col)
 msgid "Inflammable"
 msgstr "Inflammable"
 
-#: sdk/material/c4m.xml:111(col)
+#: sdk/material/ocm.xml:111(col)
 msgid "Inflammability."
 msgstr "Entzündbarkeit."
 
-#: sdk/material/c4m.xml:114(col)
-#: sdk/material/c4m.xml:375(col)
+#: sdk/material/ocm.xml:114(col)
+#: sdk/material/ocm.xml:375(col)
 msgid "Incindiary"
 msgstr "Incindiary"
 
-#: sdk/material/c4m.xml:116(col)
+#: sdk/material/ocm.xml:116(col)
 msgid "This material incinerates objects."
 msgstr "Entzündung durch dieses Material."
 
-#: sdk/material/c4m.xml:119(col)
-#: sdk/material/c4m.xml:334(col)
-#: sdk/material/c4m.xml:391(col)
+#: sdk/material/ocm.xml:119(col)
+#: sdk/material/ocm.xml:334(col)
+#: sdk/material/ocm.xml:391(col)
 msgid "Corrode"
 msgstr "Corrode"
 
-#: sdk/material/c4m.xml:121(col)
+#: sdk/material/ocm.xml:121(col)
 msgid "This material corrodes other materials."
 msgstr "Verätzung durch dieses Material."
 
-#: sdk/material/c4m.xml:124(col)
-#: sdk/material/c4m.xml:387(col)
+#: sdk/material/ocm.xml:124(col)
+#: sdk/material/ocm.xml:387(col)
 msgid "Corrosive"
 msgstr "Corrosive"
 
-#: sdk/material/c4m.xml:126(col)
+#: sdk/material/ocm.xml:126(col)
 msgid "This material can be corroded."
 msgstr "Ätzbarkeit."
 
-#: sdk/material/c4m.xml:129(col)
-#: sdk/material/c4m.xml:379(col)
+#: sdk/material/ocm.xml:129(col)
+#: sdk/material/ocm.xml:379(col)
 msgid "Extinguisher"
 msgstr "Extinguisher"
 
-#: sdk/material/c4m.xml:131(col)
+#: sdk/material/ocm.xml:131(col)
 msgid "This material will extinguish burning objects."
 msgstr "Feuerlöschkraft."
 
-#: sdk/material/c4m.xml:134(col)
+#: sdk/material/ocm.xml:134(col)
 msgid "Soil"
 msgstr "Soil"
 
-#: sdk/material/c4m.xml:136(col)
+#: sdk/material/ocm.xml:136(col)
 msgid "Plants grow on this material."
 msgstr "Nährboden für Pflanzen."
 
-#: sdk/material/c4m.xml:139(col)
+#: sdk/material/ocm.xml:139(col)
 msgid "TempConvStrength"
 msgstr "TempConvStrength"
 
-#: sdk/material/c4m.xml:141(col)
+#: sdk/material/ocm.xml:141(col)
 msgid "Strength of temperature conversion."
 msgstr "Stärke der Temperaturumwandlung."
 
-#: sdk/material/c4m.xml:144(col)
+#: sdk/material/ocm.xml:144(col)
 msgid "BlastShiftTo"
 msgstr "BlastShiftTo"
 
-#: sdk/material/c4m.xml:146(col)
+#: sdk/material/ocm.xml:146(col)
 msgid "Material changes into another material when blasted."
 msgstr "Materialverwandlung bei Sprengung."
 
-#: sdk/material/c4m.xml:149(col)
+#: sdk/material/ocm.xml:149(col)
 msgid "InMatConvert"
 msgstr "InMatConvert"
 
-#: sdk/material/c4m.xml:151(col)
+#: sdk/material/ocm.xml:151(col)
 msgid "Entering this material the material will change into..."
 msgstr "In diesem Material verwandelt sich das Material..."
 
-#: sdk/material/c4m.xml:154(col)
+#: sdk/material/ocm.xml:154(col)
 msgid "InMatConvertTo"
 msgstr "InMatConvertTo"
 
-#: sdk/material/c4m.xml:156(col)
+#: sdk/material/ocm.xml:156(col)
 msgid "...this material..."
 msgstr "...in dieses Material..."
 
-#: sdk/material/c4m.xml:159(col)
+#: sdk/material/ocm.xml:159(col)
 msgid "InMatConvertDepth"
 msgstr "InMatConvertDepth"
 
-#: sdk/material/c4m.xml:161(col)
+#: sdk/material/ocm.xml:161(col)
 msgid "...when at the given depth."
 msgstr "...wenn das Materialpixel zur angegebenen Tiefe im angegebenen Material ist. Ab CE."
 
-#: sdk/material/c4m.xml:164(col)
+#: sdk/material/ocm.xml:164(col)
 msgid "AboveTempConvert"
 msgstr "AboveTempConvert"
 
-#: sdk/material/c4m.xml:166(col)
+#: sdk/material/ocm.xml:166(col)
 msgid "Above this temperature the material will change into..."
 msgstr "Oberhalb dieser Temperatur verwandelt sich das Material..."
 
-#: sdk/material/c4m.xml:169(col)
+#: sdk/material/ocm.xml:169(col)
 msgid "AboveTempConvertTo"
 msgstr "AboveTempConvertTo"
 
-#: sdk/material/c4m.xml:171(col)
-#: sdk/material/c4m.xml:186(col)
+#: sdk/material/ocm.xml:171(col)
+#: sdk/material/ocm.xml:186(col)
 msgid "...this material."
 msgstr "...in dieses Material."
 
-#: sdk/material/c4m.xml:174(col)
+#: sdk/material/ocm.xml:174(col)
 msgid "AboveTempConvertDir"
 msgstr "AboveTempConvertDir"
 
-#: sdk/material/c4m.xml:176(col)
-#: sdk/material/c4m.xml:191(col)
+#: sdk/material/ocm.xml:176(col)
+#: sdk/material/ocm.xml:191(col)
 msgid "Direction of temperature conversion: 0 bottom up, 1 top down"
 msgstr "Richtung der Umwandlung: von oben nach unten (0), von unten nach oben (1)"
 
-#: sdk/material/c4m.xml:179(col)
+#: sdk/material/ocm.xml:179(col)
 msgid "BelowTempConvert"
 msgstr "BelowTempConvert"
 
-#: sdk/material/c4m.xml:181(col)
+#: sdk/material/ocm.xml:181(col)
 msgid "Below this temperature the material will change into..."
 msgstr "Unterhalb dieser Temperatur verwandelt sich das Material..."
 
-#: sdk/material/c4m.xml:184(col)
+#: sdk/material/ocm.xml:184(col)
 msgid "BelowTempConvertTo"
 msgstr "BelowTempConvertTo"
 
-#: sdk/material/c4m.xml:189(col)
+#: sdk/material/ocm.xml:189(col)
 msgid "BelowTempConvertDir"
 msgstr "BelowTempConvertDir"
 
-#: sdk/material/c4m.xml:194(col)
+#: sdk/material/ocm.xml:194(col)
 msgid "Alpha"
 msgstr "Alpha"
 
-#: sdk/material/c4m.xml:196(col)
+#: sdk/material/ocm.xml:196(col)
 msgid "Transparency of the three material colors."
 msgstr "Durchsichtigkeit für die drei Materialfarben ober- und unterirdisch."
 
-#: sdk/material/c4m.xml:199(col)
+#: sdk/material/ocm.xml:199(col)
 msgid "Placement"
 msgstr "Placement"
 
-#: sdk/material/c4m.xml:201(col)
+#: sdk/material/ocm.xml:201(col)
 msgid "0-100. This Value is used for lighting of the landscape and is usually determined automatically from the other material values."
 msgstr "0-100. Dieser Wert wird für die Nachbeleuchtung der Landschaft verwendet, und wird normalerweise automatisch aus den anderen Materialwerten berechnet."
 
-#: sdk/material/c4m.xml:204(col)
+#: sdk/material/ocm.xml:204(col)
 msgid "TextureOverlay"
 msgstr "TextureOverlay"
 
-#: sdk/material/c4m.xml:206(col)
+#: sdk/material/ocm.xml:206(col)
 msgid "Standard texture for this material used by the landscape generator."
 msgstr "Standardtextur für dieses Material, die vom Landschaftsgenerator zusätzlich benutzt wird."
 
-#: sdk/material/c4m.xml:209(col)
+#: sdk/material/ocm.xml:209(col)
 msgid "OverlayType"
 msgstr "OverlayType"
 
-#: sdk/material/c4m.xml:211(col)
+#: sdk/material/ocm.xml:211(col)
 msgid "Bit mask for texture calculation on this material. Bit 0 (1): exact (no zoom), bit 1 (2): no texture, bit 2 (4): extra large zoom, bit 3 (8): calculate texture based on gray scale."
 msgstr "Bitmaske für die Berechnung der Textur auf dem Material. Bit 0 (1): Exakt (kein Zoom), Bit 1 (2): Keine Textur, Bit 2 (4): Extragroß gezoomt, Bit 3 (8): Textur auf Graustufen aufrechnen."
 
-#: sdk/material/c4m.xml:214(col)
+#: sdk/material/ocm.xml:214(col)
 msgid "PXSGfx"
 msgstr "PXSGfx"
 
-#: sdk/material/c4m.xml:216(col)
+#: sdk/material/ocm.xml:216(col)
 msgid "Graphics used for loose material pixels. This graphic should be available as material texture."
 msgstr "Grafik für lose Materialpixel. Die Grafik sollte als Materialtextur geladen sein."
 
-#: sdk/material/c4m.xml:219(col)
+#: sdk/material/ocm.xml:219(col)
 msgid "PXSGfxRt"
 msgstr "PXSGfxRt"
 
-#: sdk/material/c4m.xml:221(col)
+#: sdk/material/ocm.xml:221(col)
 msgid "Target rectangle for the graphics of loose material pixels. Additional phases on the right and below the specified rectangle will be used. The rectangle should always start in the top left corner and use the complete texture size."
 msgstr "Zielrechteck auf die Grafik für lose Materialpixel. Es werden weitere Phasen rechts und unterhalb der angegebenen Grafik benutzt. Die Grafik sollte immer oben links beginnen, und die gesamte Texturgröße einnehmen."
 
-#: sdk/material/c4m.xml:227(h)
+#: sdk/material/ocm.xml:227(h)
 msgid "User defined reaction"
 msgstr "Benutzerdefinierte Reaktionen"
 
-#: sdk/material/c4m.xml:228(text)
+#: sdk/material/ocm.xml:228(text)
 msgid "In addition to default reactions, every material can define custom reactions which are executed when the material passes another material as a free pixel (e.g. precipitation or particles after explosios) or by material movement (e.g. when a lake floods a tunnel)."
 msgstr "Zusätzlich zu den Standardroutinen kann jedes Material ab CR weitere Reaktionen definieren, die ausgeführt werden, wenn das Material durch lose Pixel (z.B. Regen oder Explosionsstreuung) oder Materialbewegung (z.B. beim Angraben eines Sees) auf ein anderes Material trifft:"
 
-#: sdk/material/c4m.xml:231(caption)
-msgid "In the .c4m-file: Any number of sections [Reaction]"
-msgstr "In der .c4m-Datei: Beliebig viele Sektionen [Reaction]"
+#: sdk/material/ocm.xml:231(caption)
+msgid "In the .ocm-file: Any number of sections [Reaction]"
+msgstr "In der .ocm-Datei: Beliebig viele Sektionen [Reaction]"
 
-#: sdk/material/c4m.xml:240(col)
-msgid "Type of reaction that should happen. See <emlink href=\"material/c4m.html#ReactTypes\">Table</emlink>."
-msgstr "Art der Reaktion, die stattfinden soll. Siehe <emlink href=\"material/c4m.html#ReactTypes\">Tabelle</emlink>."
+#: sdk/material/ocm.xml:240(col)
+msgid "Type of reaction that should happen. See <emlink href=\"material/ocm.html#ReactTypes\">Table</emlink>."
+msgstr "Art der Reaktion, die stattfinden soll. Siehe <emlink href=\"material/ocm.html#ReactTypes\">Tabelle</emlink>."
 
-#: sdk/material/c4m.xml:245(col)
-msgid "Target material, with which the loose material reacts. See <emlink href=\"material/c4m.html#TargetSpecs\">material specifications</emlink>."
-msgstr "Zielmaterial, mit dem das lose Material reagiert. Siehe <emlink href=\"material/c4m.html#TargetSpecs\">Materialspezifikationen</emlink>."
+#: sdk/material/ocm.xml:245(col)
+msgid "Target material, with which the loose material reacts. See <emlink href=\"material/ocm.html#TargetSpecs\">material specifications</emlink>."
+msgstr "Zielmaterial, mit dem das lose Material reagiert. Siehe <emlink href=\"material/ocm.html#TargetSpecs\">Materialspezifikationen</emlink>."
 
-#: sdk/material/c4m.xml:250(col)
+#: sdk/material/ocm.xml:250(col)
 msgid "Reaction type script only: Name of the script function, which determines the behaviour."
 msgstr "Nur für Reaktionstyp Script: Name der Scriptfunktion, die das Verhalten bestimmt."
 
-#: sdk/material/c4m.xml:255(col)
-msgid "Bitmask, determining in which situation the reaction is to be executed. Bit indices are the <emlink href=\"material/c4m.html#ReactEvents\">reaction events</emlink>. Default value -1 for all events."
-msgstr "Bitmaske, die angibt, in welcher Situation die Reaktion stattfindet. Bitindizes sind die <emlink href=\"material/c4m.html#ReactEvents\">Reaktionsereignisse</emlink>. Standardwert -1 für alle Ereignisse."
+#: sdk/material/ocm.xml:255(col)
+msgid "Bitmask, determining in which situation the reaction is to be executed. Bit indices are the <emlink href=\"material/ocm.html#ReactEvents\">reaction events</emlink>. Default value -1 for all events."
+msgstr "Bitmaske, die angibt, in welcher Situation die Reaktion stattfindet. Bitindizes sind die <emlink href=\"material/ocm.html#ReactEvents\">Reaktionsereignisse</emlink>. Standardwert -1 für alle Ereignisse."
 
-#: sdk/material/c4m.xml:260(col)
+#: sdk/material/ocm.xml:260(col)
 msgid "Usually, the reaction defines what happens when loose material of the definition, in which the reaction is defined, hits solid material of the type specified in TargetSpec. If Reverse is set, this definition is swapped."
 msgstr "Normalerweise gibt die Reaktion an, was mit losem Material der Definition, in der die Reaktion definiert ist, passiert, wenn es auf festes Material vom in TargetSpec angegebenen Typ trifft. Ist Reverse gesetzt, so wird die Definition umgekehrt."
 
-#: sdk/material/c4m.xml:265(col)
+#: sdk/material/ocm.xml:265(col)
 msgid "If true, the reaction will be defined for all other materials (including \"Sky\"), which do not fulfill the condition in TargetSpec."
 msgstr "Wenn wahr, wird die Reaktion für alle anderen Materialien (inklusive \"Sky\"), die die Bedingung in TargetSpec nicht erfüllen, verwendet."
 
-#: sdk/material/c4m.xml:270(col)
+#: sdk/material/ocm.xml:270(col)
 msgid "If true, the standard behaviour (Bouncing off the ground and sliding according to MaxSlide) will be executed before the call is done."
 msgstr "Wenn wahr, wird vor dem Aufruf der Reaktion das Standardverhalten (Sprenkeln am Boden und Abrutschen nach MaxSlide) ausgeführt."
 
-#: sdk/material/c4m.xml:275(col)
+#: sdk/material/ocm.xml:275(col)
 msgid "Reaction type Convert only: Depth in target material required for conversion."
 msgstr "Nur für Reaktionstyp Convert: Tiefe im Zielmaterial, ab der Material umgewandelt wird."
 
-#: sdk/material/c4m.xml:280(col)
+#: sdk/material/ocm.xml:280(col)
 msgid "Reaction type Convert only: Material, into which the loose material is converted. If sky is specified, the material will vanish."
 msgstr "Nur für Reaktionstyp Convert: Material, in das umgewandelt wird. Bei Angabe von Sky wird das Material vernichtet."
 
-#: sdk/material/c4m.xml:285(col)
+#: sdk/material/ocm.xml:285(col)
 msgid "Reaction type Corrode only: Chance of corrosion."
 msgstr "Nur für Reaktionstyp Corrode: Chance darauf, dass verätzt wird."
 
-#: sdk/material/c4m.xml:291(caption)
+#: sdk/material/ocm.xml:291(caption)
 msgid "Reaction events"
 msgstr "Reaktionsereignisse"
 
-#: sdk/material/c4m.xml:295(col)
+#: sdk/material/ocm.xml:295(col)
 msgid "Event"
 msgstr "Ereignis"
 
-#: sdk/material/c4m.xml:298(col)
+#: sdk/material/ocm.xml:298(col)
 msgid "MEE_PXSPos"
 msgstr "MEE_PXSPos"
 
-#: sdk/material/c4m.xml:300(col)
+#: sdk/material/ocm.xml:300(col)
 msgid "Check before each movement frame of a loose material pixel against its background material"
 msgstr "Check vor jedem Bewegungsframe eines losen Materialpixels gegen das Hintergrundmaterial"
 
-#: sdk/material/c4m.xml:303(col)
+#: sdk/material/ocm.xml:303(col)
 msgid "MEE_PXSMove"
 msgstr "MEE_PXSMove"
 
-#: sdk/material/c4m.xml:305(col)
+#: sdk/material/ocm.xml:305(col)
 msgid "Check against each pixel that a loose material pixel passes during its movemvent"
 msgstr "Check gegen jedes Pixel, das ein loses Materialpixel in seiner Bewegung berührt"
 
-#: sdk/material/c4m.xml:308(col)
+#: sdk/material/ocm.xml:308(col)
 msgid "MEE_MassMove"
 msgstr "MEE_MassMove"
 
-#: sdk/material/c4m.xml:310(col)
+#: sdk/material/ocm.xml:310(col)
 msgid "During larger material movements (e.g. when a lake is flooded into a tunnel): Check of the moving material against the material over which it's moving"
 msgstr "Bei größeren Materialbewegungen (z.B. angegrabener See):Check des bewegten Materials gegen das Material, über das es sich bewegt"
 
-#: sdk/material/c4m.xml:316(caption)
+#: sdk/material/ocm.xml:316(caption)
 msgid "Reaction types"
 msgstr "Reaktionstypen"
 
-#: sdk/material/c4m.xml:319(col)
+#: sdk/material/ocm.xml:319(col)
 #: sdk/definition/procedures.xml:14(col)
 msgid "Behaviour"
 msgstr "Verhalten"
 
-#: sdk/material/c4m.xml:323(col)
+#: sdk/material/ocm.xml:323(col)
 msgid "For each collision, the script function specified in ScriptFunc is called."
 msgstr "Für jedes Aufeinandertreffen wird die in ScriptFunc angegebene Scriptfunktion aufgerufen."
 
-#: sdk/material/c4m.xml:326(col)
+#: sdk/material/ocm.xml:326(col)
 msgid "Convert"
 msgstr "Convert"
 
-#: sdk/material/c4m.xml:327(col)
+#: sdk/material/ocm.xml:327(col)
 msgid "The material is converted into another. Comparable to the behaviour of snow in water."
 msgstr "Das Material wird in ein anderes umgewandelt. Vergleichbar mit dem Verhalten von Schnee in Wasser."
 
-#: sdk/material/c4m.xml:330(col)
+#: sdk/material/ocm.xml:330(col)
 msgid "Poof"
 msgstr "Poof"
 
-#: sdk/material/c4m.xml:331(col)
+#: sdk/material/ocm.xml:331(col)
 msgid "Both the loose and the solid material are removed. Additionally, there's a 1:3 chance of creating a small smoke cloud, and a 1:3 chance that the sound \"Pshshsh\" is played. Comparable to the behaviour of water in lava."
 msgstr "Sowohl das lose als auch das feste Material werden entfernt. Außerdem werden wird mit Chance 1:3 eine kleine Rauchwolke erzeugt und mit Chance 1:3 der Sound \"Pshshsh\" abgespielt. Vergleichbar mit dem Verhalten von Wasser in Lava."
 
-#: sdk/material/c4m.xml:335(col)
+#: sdk/material/ocm.xml:335(col)
 msgid "The loose material corrodes the target material at the chance CorrosionRate, and vanishes itself if it does so. If corrosion is performed, a small smoke cloud is created at a chance of 1:5, and the sound \"Corrode\" is played at a chance of 1:20. Comparable with the behaviour of acid on earth."
 msgstr "Das lose Material ätzt das Zielmaterial mit Chance CorrosionRate weg und entfernt sich dabei selber. Wenn geätzt wird, wird mit Chance 1:5 eine kleine Rauchwolke erzeugt und mit Chance 1:20 der Sound \"Corrode\" abgespielt. Vergleichbar mit dem Verhalten von Säure auf Erde."
 
-#: sdk/material/c4m.xml:338(col)
+#: sdk/material/ocm.xml:338(col)
 msgid "Insert"
 msgstr "Insert"
 
-#: sdk/material/c4m.xml:339(col)
+#: sdk/material/ocm.xml:339(col)
 msgid "The loose material is inserted as solid material. Comparable to the behaviour of any material that hits a material of equal or higher density."
 msgstr "Das lose Material wird als festes Material eingefügt. Vergleichbar mit dem Verhalten aller Materialien, wenn sie auf ein Material gleicher oder höherer Dichte treffen."
 
-#: sdk/material/c4m.xml:345(caption)
+#: sdk/material/ocm.xml:345(caption)
 msgid "Material specifications"
 msgstr "Materialspezifikationen"
 
-#: sdk/material/c4m.xml:352(col)
+#: sdk/material/ocm.xml:352(col)
 msgid "If the specification equals the name of an existing material, this material will be used."
 msgstr "Entsprcht die Spezifikation direkt dem Namen eines anderen Materials, wird dieses benutzt."
 
-#: sdk/material/c4m.xml:355(col)
+#: sdk/material/ocm.xml:355(col)
 msgid "All"
 msgstr "All"
 
-#: sdk/material/c4m.xml:356(col)
+#: sdk/material/ocm.xml:356(col)
 msgid "All materials, including \"Sky\""
 msgstr "Alle Materialien inklusive \"Sky\""
 
-#: sdk/material/c4m.xml:359(col)
+#: sdk/material/ocm.xml:359(col)
 msgid "Solid"
 msgstr "Solid"
 
-#: sdk/material/c4m.xml:360(col)
+#: sdk/material/ocm.xml:360(col)
 msgid "All solid materials"
 msgstr "Alle festen Materialien"
 
-#: sdk/material/c4m.xml:363(col)
+#: sdk/material/ocm.xml:363(col)
 msgid "SemiSolid"
 msgstr "SemiSolid"
 
-#: sdk/material/c4m.xml:364(col)
+#: sdk/material/ocm.xml:364(col)
 msgid "All solid and liquid materials"
 msgstr "Alle festen und flüssigen Materialien"
 
-#: sdk/material/c4m.xml:367(col)
+#: sdk/material/ocm.xml:367(col)
 msgid "Background"
 msgstr "Background"
 
-#: sdk/material/c4m.xml:368(col)
+#: sdk/material/ocm.xml:368(col)
 msgid "All background materials, including \"Sky\""
 msgstr "Alle Hintergrundmaterialien, inklusive \"Sky\""
 
-#: sdk/material/c4m.xml:372(col)
+#: sdk/material/ocm.xml:372(col)
 msgid "The background material."
 msgstr "Das Hintergrundmaterial."
 
-#: sdk/material/c4m.xml:376(col)
+#: sdk/material/ocm.xml:376(col)
 msgid "All materials to be incinerated."
 msgstr "Alle anzündenden Materialien."
 
-#: sdk/material/c4m.xml:380(col)
+#: sdk/material/ocm.xml:380(col)
 msgid "All extinguishing materials."
 msgstr "Alle feuerlöschenden Materialien."
 
-#: sdk/material/c4m.xml:384(col)
+#: sdk/material/ocm.xml:384(col)
 msgid "All flammable materials."
 msgstr "Alle entzündbaren Materialien."
 
-#: sdk/material/c4m.xml:388(col)
+#: sdk/material/ocm.xml:388(col)
 msgid "All materials which can be corroded."
 msgstr "Alle verätzbaren Materialien."
 
-#: sdk/material/c4m.xml:392(col)
+#: sdk/material/ocm.xml:392(col)
 msgid "All corrosive materials."
 msgstr "Alle ätzenden Materialien."
 
-#: sdk/material/c4m.xml:396(h)
+#: sdk/material/ocm.xml:396(h)
 msgid "Reaction type 'Script'"
 msgstr "Reaktionstyp 'Script'"
 
-#: sdk/material/c4m.xml:401(col)
+#: sdk/material/ocm.xml:401(col)
 msgid "Parameter number(s)"
 msgstr "Parameternummer(n)"
 
-#: sdk/material/c4m.xml:402(col)
+#: sdk/material/ocm.xml:402(col)
 msgid "Name(s)"
 msgstr "Name(n)"
 
-#: sdk/material/c4m.xml:407(col)
+#: sdk/material/ocm.xml:407(col)
 msgid "1,2"
 msgstr "1,2"
 
-#: sdk/material/c4m.xml:410(col)
+#: sdk/material/ocm.xml:410(col)
 msgid "Position of the loose material. The parameters may be modified in order to move the material pixel."
 msgstr "Position des losen Materials. Die Parameter können verändert werden, um das Materialpixel zu verschieben."
 
-#: sdk/material/c4m.xml:413(col)
+#: sdk/material/ocm.xml:413(col)
 msgid "3,4"
 msgstr "3,4"
 
-#: sdk/material/c4m.xml:414(col)
+#: sdk/material/ocm.xml:414(col)
 msgid "landscape_x, landscape_y"
 msgstr "landscape_x, landscape_y"
 
-#: sdk/material/c4m.xml:416(col)
+#: sdk/material/ocm.xml:416(col)
 msgid "Position in the landscape, on which the material hits."
 msgstr "Position in der Landschaft, auf die das Material trifft."
 
-#: sdk/material/c4m.xml:419(col)
+#: sdk/material/ocm.xml:419(col)
 msgid "5,6"
 msgstr "5,6"
 
-#: sdk/material/c4m.xml:420(col)
+#: sdk/material/ocm.xml:420(col)
 msgid "xdir, ydir"
 msgstr "xdir, ydir"
 
-#: sdk/material/c4m.xml:422(col)
+#: sdk/material/ocm.xml:422(col)
 msgid "Speed (in 1/100px) of the movement of the material. May be modified in order to change the material speed. Not for MassMover."
 msgstr "Geschwindigkeit (in 1/100px) der Bewegung des Materials. Kann geändert werden, um die Geschwindigkeit des Materialpixels zu beeinflussen. Nicht für MassMover."
 
-#: sdk/material/c4m.xml:426(col)
+#: sdk/material/ocm.xml:426(col)
 msgid "pxs_material"
 msgstr "pxs_material"
 
-#: sdk/material/c4m.xml:428(col)
+#: sdk/material/ocm.xml:428(col)
 msgid "Material number of the loose material. Useful if the same reaction function is used for multiple materials"
 msgstr "Materialnummer des losen Materials. Nützlich, wenn die gleiche Funktion für Reaktionen mehrerer Materialen verwendet wird"
 
-#: sdk/material/c4m.xml:432(col)
+#: sdk/material/ocm.xml:432(col)
 msgid "landscape_material"
 msgstr "landscape_material"
 
-#: sdk/material/c4m.xml:434(col)
+#: sdk/material/ocm.xml:434(col)
 msgid "Material number of the solid material."
 msgstr "Materialnummer des festen Materials."
 
-#: sdk/material/c4m.xml:437(col)
+#: sdk/material/ocm.xml:437(col)
 msgid "9"
 msgstr "9"
 
-#: sdk/material/c4m.xml:438(col)
+#: sdk/material/ocm.xml:438(col)
 msgid "event"
 msgstr "event"
 
-#: sdk/material/c4m.xml:440(col)
-msgid "See <emlink href=\"material/c4m.html#ReactEvents\">Reaction events</emlink>."
-msgstr "Siehe <emlink href=\"material/c4m.html#ReactEvents\">Reaktionsereignisse</emlink>."
+#: sdk/material/ocm.xml:440(col)
+msgid "See <emlink href=\"material/ocm.html#ReactEvents\">Reaction events</emlink>."
+msgstr "Siehe <emlink href=\"material/ocm.html#ReactEvents\">Reaktionsereignisse</emlink>."
 
-#: sdk/material/c4m.xml:397(text)
+#: sdk/material/ocm.xml:397(text)
 msgid "This resource-intensive method can be used to define the material behaviour freely. The script function should be defined globally and have the following parameters: <placeholder-1/> The return value of the function should be either 1 for removal or 0 for keeping the loose material."
 msgstr "Mit dieser sehr rechenintensiven Methode kann das Materialveralten frei bestimmt werden. Die Scriptfunktion sollte global deklariert haben und folgende Parameter besitzen: <placeholder-1/> Der Rückgabewert der Funktion sollte entweder 1 für Entfernen oder 0 für Erhalten des losen Materials sein."
 
@@ -15453,16 +15453,16 @@ msgstr "In Rundenordner werden mehrere Szenarien zusammengefasst. Rundenordner e
 
 #: sdk/folder/index.xml:12(emlink)
 #: sdk/cmdline.xml:103(dt)
-msgid "*.c4s"
-msgstr "*.c4s"
+msgid "*.ocs"
+msgstr "*.ocs"
 
 #: sdk/folder/index.xml:14(text)
 msgid "Scenario folders can contain any number of scenarios."
 msgstr "Rundenordner können beliebig viele Szenarien enthalten, die in diesem Ordner ausgewählt werden können."
 
 #: sdk/folder/index.xml:16(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.gif\" width=\"16\"/>*.c4f"
-msgstr "<img height=\"16\" src=\"../../images/icon_scenario_folder.gif\" width=\"16\"/>*.c4f"
+msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.gif\" width=\"16\"/>*.ocf"
+msgstr "<img height=\"16\" src=\"../../images/icon_scenario_folder.gif\" width=\"16\"/>*.ocf"
 
 #: sdk/folder/index.xml:18(text)
 msgid "Scenario folders can also contain other scenario folders."
@@ -15495,20 +15495,20 @@ msgid "Scenario folders can contain local loader screens. Also see <emlink href=
 msgstr "Rundenordner können lokale Ladebildschirme enthalten. Siehe auch <emlink href=\"scenario/index.html\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:50(text)
-msgid "Scenario folders can contain local material definitions. Also see <emlink href=\"scenario/index.html#Materialc4g\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
-msgstr "Rundenordner können lokale Materialdefinitionen enthalten. Siehe auch <emlink href=\"scenario/index.html#Materialc4g\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
+msgid "Scenario folders can contain local material definitions. Also see <emlink href=\"scenario/index.html#Materialocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+msgstr "Rundenordner können lokale Materialdefinitionen enthalten. Siehe auch <emlink href=\"scenario/index.html#Materialocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:54(text)
-msgid "Scenario folders can overload individual entries of the global Graphics.c4g group. See <emlink href=\"#UeberladungenC4S\">overloading rules</emlink>."
-msgstr "Rundenordner können einzelne Grafiken aus der systemglobalen Graphics.c4g überladen. Siehe auch <emlink href=\"scenario/index.html#Graphicsc4g\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
+msgid "Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href=\"#UeberladungenC4S\">overloading rules</emlink>."
+msgstr "Rundenordner können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Siehe auch <emlink href=\"scenario/index.html#Graphicsocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:58(text)
-msgid "Scenario folders can contain local music files. Also see <emlink href=\"scenario/index.html#Musicc4g\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
-msgstr "Rundenordner können eigene Musik für alle Szenarien bereitstellen. Siehe auch <emlink href=\"scenario/index.html#Musicc4g\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
+msgid "Scenario folders can contain local music files. Also see <emlink href=\"scenario/index.html#Musicocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+msgstr "Rundenordner können eigene Musik für alle Szenarien bereitstellen. Siehe auch <emlink href=\"scenario/index.html#Musicocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:62(text)
-msgid "Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href=\"scenario/index.html#c4d\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
-msgstr "Rundenordner können lokale Objektdefinitionen enthalten, die dann in allen Szenarien des Ordners verfügbar sind. Siehe auch <emlink href=\"scenario/index.html#c4d\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
+msgid "Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href=\"scenario/index.html#ocd\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+msgstr "Rundenordner können lokale Objektdefinitionen enthalten, die dann in allen Szenarien des Ordners verfügbar sind. Siehe auch <emlink href=\"scenario/index.html#ocd\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/foldermap.xml:9(text)
 msgid "From CR, scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples."
@@ -15583,8 +15583,8 @@ msgid "Any number of sections [Scenario]"
 msgstr "Beliebig viele Sektionen [Scenario]"
 
 #: sdk/folder/foldermap.xml:76(col)
-msgid "Scenario file (including .c4s extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <placeholder-1/>) is displayed."
-msgstr "Szenariendatei (inklusive Endung .c4s), für die mit dieser Sektion ein Knopf erstellt wird. Für jedes Szenario im Rundenordner sollte eine [Scenario]-Sektion erstellt werden. Es werden grundsätzlich nur die Knöpfe angezeigt, für die der Benutzer MissionAccess (siehe <placeholder-1/>) freigeschaltet hat."
+msgid "Scenario file (including .ocs extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <placeholder-1/>) is displayed."
+msgstr "Szenariendatei (inklusive Endung .ocs), für die mit dieser Sektion ein Knopf erstellt wird. Für jedes Szenario im Rundenordner sollte eine [Scenario]-Sektion erstellt werden. Es werden grundsätzlich nur die Knöpfe angezeigt, für die der Benutzer MissionAccess (siehe <placeholder-1/>) freigeschaltet hat."
 
 #: sdk/folder/foldermap.xml:81(col)
 msgid "Image to be displayed if the scenario is not selected. The image file should be available in the scenario folder."
@@ -15697,31 +15697,31 @@ msgid "The game data of clonk is stored in compressed group files which each con
 msgstr "Die Spieldaten von Clonk sind in komprimierten Gruppendateien zusammen gefasst, die jeweils einzelne Komponenten oder weitere Gruppendateien enthalten:"
 
 #: sdk/files.xml:10(dt)
-msgid "<img height=\"16\" src=\"../images/icon_player.gif\" width=\"16\"/>Player Files (c4p)"
-msgstr "<img height=\"16\" src=\"../images/icon_player.gif\" width=\"16\"/>Spielerdateien (c4p)"
+msgid "<img height=\"16\" src=\"../images/icon_player.gif\" width=\"16\"/>Player Files (ocp)"
+msgstr "<img height=\"16\" src=\"../images/icon_player.gif\" width=\"16\"/>Spielerdateien (ocp)"
 
 #: sdk/files.xml:12(text)
 msgid "Player files contain personal settings, gained score and information about the crew. It may also contain a portrait file."
 msgstr "In einer Spielerdatei werden die persönlichen Einstellungen eines Spielers, seine erspielten Punkte, Informationen zu seiner Stammcrew und gegebenenfalls sein Portrait gespeichert."
 
 #: sdk/files.xml:14(emlink)
-msgid "Scenarios (c4s)"
-msgstr "Szenarien (c4s)"
+msgid "Scenarios (ocs)"
+msgstr "Szenarien (ocs)"
 
 #: sdk/files.xml:16(text)
 msgid "Scenario files consist of an information core and additional components, such as a landscape, title image, description texts, sky graphics, a script, local object definitions, etc."
 msgstr "Szenariodateien setzen sich aus einem Informationskern und weiteren Komponenten, wie einer Landkarte, Titelbild und Beschreibungstexten, einer Himmelsgrafik, einem Script und lokalen Objektdefinitionen zusammen."
 
 #: sdk/files.xml:18(emlink)
-msgid "Object Definitions (c4d)"
-msgstr "Objektdefinitionen (c4d)"
+msgid "Object Definitions (ocd)"
+msgstr "Objektdefinitionen (ocd)"
 
 #: sdk/files.xml:20(text)
 msgid "Object definitions contain an information core, graphic elements, action tables, script, and descriptive text. Also, <emlink href=\"particle/index.html\">particles</emlink> are stored in object definition folders."
 msgstr "Objektdefinitionen enthalten einen Informationskern, Grafikelemente, eine Aktivitätstabelle, Scripte und Beschreibungstexte. Auch <emlink href=\"particle/index.html\">Partikel</emlink> werden in Objektordnern angelegt."
 
 #: sdk/files.xml:22(emlink)
-msgid "Scenario Folders (c4f)"
+msgid "Scenario Folders (ocf)"
 msgstr "Rundenordner"
 
 #: sdk/files.xml:24(text)
@@ -15729,8 +15729,8 @@ msgid "Scenarios are grouped in scenario folders."
 msgstr "Szenarien können in Rundenordnern zusammen gefasst werden."
 
 #: sdk/files.xml:26(dt)
-msgid "<img height=\"16\" src=\"../images/icon_system.gif\" width=\"16\"/>System Data (c4g)"
-msgstr "<img height=\"16\" src=\"../images/icon_system.gif\" width=\"16\"/>Systemdaten (c4g)"
+msgid "<img height=\"16\" src=\"../images/icon_system.gif\" width=\"16\"/>System Data (ocg)"
+msgstr "<img height=\"16\" src=\"../images/icon_system.gif\" width=\"16\"/>Systemdaten (ocg)"
 
 #: sdk/files.xml:28(text)
 msgid "Graphics, sound, and music of the original game are grouped in these folders and should not be modified."
@@ -16613,7 +16613,7 @@ msgstr "Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekt
 
 #: sdk/definition/meshes.xml:10(text)
 msgid "The exporter normally creates a mesh file (*.mesh or *.mesh.xml), a skeleton file (*.skeleton or *.skeleton.xml) if the mesh contains bones, a material script (*.material) and potentially used textures. To use the mesh as a Clonk object all generated files need to be copied into the <emlink href=\"definition/index.html\">object definition</emlink> and the mesh file needs to be renamed to Graphics.mesh or Graphics.mesh.xml, respectively. Textures are supported in PNG, JPG and BMP format."
-msgstr "Der Exporter erzeugt in der Regel eine Mesh-Datei (*.mesh oder *.mesh.xml), falls das Mesh Bones enthält eine Skelett-Datei (*.skeleton oder *.skeleton.xml), ein Materialskript (*.material) und eventuell verwendete Texturen. Um das Mesh für ein Clonk-Objekt zu verwenden müssen alle erzeugten Dateien in die <emlink href=\"definition/index.html\">Objektdefinition</emlink> (*.c4d) kopiert werden und die Mesh-Datei muss in Graphics.mesh bzw. Graphics.mesh.xml umbenannt werden. Texturen werden im PNG-, JPG- und BMP-Format unterstützt."
+msgstr "Der Exporter erzeugt in der Regel eine Mesh-Datei (*.mesh oder *.mesh.xml), falls das Mesh Bones enthält eine Skelett-Datei (*.skeleton oder *.skeleton.xml), ein Materialskript (*.material) und eventuell verwendete Texturen. Um das Mesh für ein Clonk-Objekt zu verwenden müssen alle erzeugten Dateien in die <emlink href=\"definition/index.html\">Objektdefinition</emlink> (*.ocd) kopiert werden und die Mesh-Datei muss in Graphics.mesh bzw. Graphics.mesh.xml umbenannt werden. Texturen werden im PNG-, JPG- und BMP-Format unterstützt."
 
 #: sdk/definition/meshes.xml:11(text)
 msgid "The mesh is not automatically scaled to the shape (i.e. the width and height values specified in <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>) of the object. Instead one unit in the modeling tool corresponds to one pixel in Clonk. This simplifies using the same magnitude of object sizes for all objects which is especially helpful for attaching meshes (see below). Also pay attention to the coordinate frame: The X axis in the mesh coordinate frame points out of the screen in Clonk, the Y axis points to the right and the Z axis points upwards."
@@ -16704,8 +16704,8 @@ msgid "Object definitions are used for all game objects in clonk: fire monsters,
 msgstr "Mit Objektdefinitionen werden alle in Clonk vorkommenden Spielobjekte - vom Feuermonsterei über Holzhütten bis zum Clonk selber - definiert. Eine Objektdefinition ist eine Gruppendatei, die sich aus folgenden Komponenten zusammen setzt:"
 
 #: sdk/definition/index.xml:10(h)
-msgid "Object Definition Components (c4d)"
-msgstr "Objektdefinitions-Komponenten (C4D)"
+msgid "Object Definition Components (ocd)"
+msgstr "Objektdefinitions-Komponenten (OCD)"
 
 #: sdk/definition/index.xml:14(text)
 msgid "Object properties."
@@ -16798,14 +16798,14 @@ msgstr "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Rank
 
 #: sdk/definition/index.xml:66(text)
 msgid "For object definitions defining a clonk type you can specify custom rank names for this clonk type here. The rank names will then also replace rank names of existing crew members of this type. The file should contain a simple text list of names of maximum 30 characters each. For an example see the knight in the Knights pack. By using the approriate language codes you can create language dependent sets of rank names."
-msgstr "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.c4d. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
+msgstr "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.ocd. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
 
 #: sdk/definition/index.xml:68(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png/Rank.bmp"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png/Rank.bmp"
 
 #: sdk/definition/index.xml:70(text)
-msgid "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.c4g. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
+msgid "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.ocg. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
 msgstr "Für Clonktypen können außerdem spezifische Rangsymbole definiert werden, die dann im Spiel anstelle der Standardsymbole benutzt werden. Ein Rangsymbol muss immer so breit wie hoch sein, und es sollten ausreichend Symbole für alle Ränge vorhanden sein. Bei höheren Rängen als der Anzahl vorhandener Rangsymbole wird von vorne begonnen und ein Stern daneben gezeichnet."
 
 #: sdk/definition/index.xml:74(text)
@@ -16813,12 +16813,12 @@ msgid "Object local sounds. As these are always loaded and not dynamically unloa
 msgstr "Objektlokale Sounds. Da diese statisch geladen und nicht wie szenariolokale Sounds dynamisch entladen werden, sollten objektlokale Sounds möglichst klein sein."
 
 #: sdk/definition/index.xml:76(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_object_definition.gif\" width=\"16\"/>*.c4d"
-msgstr "<img height=\"16\" src=\"../../images/icon_object_definition.gif\" width=\"16\"/>*.c4d"
+msgid "<img height=\"16\" src=\"../../images/icon_object_definition.gif\" width=\"16\"/>*.ocd"
+msgstr "<img height=\"16\" src=\"../../images/icon_object_definition.gif\" width=\"16\"/>*.ocd"
 
 #: sdk/definition/index.xml:78(text)
-msgid "The engine will also search all valid c4d subdirectories for additional object definitions. Object definitions should be grouped by category."
-msgstr "Die Engine durchsucht alle gültigen c4d-Unterverzeichnisse nach weiteren Definitionen. Objektdefinitionen sollten so in sinnvollen Gruppierungen zusammen gefasst werden."
+msgid "The engine will also search all valid ocd subdirectories for additional object definitions. Object definitions should be grouped by category."
+msgstr "Die Engine durchsucht alle gültigen ocd-Unterverzeichnisse nach weiteren Definitionen. Objektdefinitionen sollten so in sinnvollen Gruppierungen zusammen gefasst werden."
 
 #: sdk/definition/index.xml:82(text)
 msgid "This component is not processed by the engine. Here the author can store additional information he wants to share with other developers."
@@ -17258,8 +17258,8 @@ msgid "Note:"
 msgstr "Hinweis:"
 
 #: sdk/definition/defcore.xml:511(text)
-msgid "When a crew member is created, it gets an own physical section in it's Objectinfo (c4i). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects."
-msgstr "Sobald ein Mannschaftsmitglied erschaffen wird, wird für dieses eine eigenständige Physical-Sektion erschaffen, die zusammen mit dem Mannschaftsmitglied in der Objektinfo (c4i) gespeichert wird. Jedes Mannschaftsmitglied behält seine eigene Physical-Sektion, da hier alle individuellen Veränderungen (z.B. erweiterte Fähigkeiten durch Beförderung) vorgenommen werden. Die Physical-Sektion der Objektdefinition wird also nur bei der Erschaffung des Objekts verwendet und nicht etwa bei ChangeDef."
+msgid "When a crew member is created, it gets an own physical section in it's Objectinfo (oci). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects."
+msgstr "Sobald ein Mannschaftsmitglied erschaffen wird, wird für dieses eine eigenständige Physical-Sektion erschaffen, die zusammen mit dem Mannschaftsmitglied in der Objektinfo (oci) gespeichert wird. Jedes Mannschaftsmitglied behält seine eigene Physical-Sektion, da hier alle individuellen Veränderungen (z.B. erweiterte Fähigkeiten durch Beförderung) vorgenommen werden. Die Physical-Sektion der Objektdefinition wird also nur bei der Erschaffung des Objekts verwendet und nicht etwa bei ChangeDef."
 
 #: sdk/definition/cnat.xml:8(text)
 msgid "In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the CNAT bit <em>left</em>. If that object has <emlink href=\"definition/defcore.html\">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:"
@@ -17678,8 +17678,8 @@ msgid "<img src=\"../images/icon_em_play.gif\" width=\"16\" height=\"16\"/> Play
 msgstr "<img src=\"../images/icon_em_play.gif\" width=\"16\" height=\"16\"/> Spielen: die Maussteuerung gilt jeweils nur im ersten Sichtfenster des entsprechenden Spielers. Die Tastatursteuerung aller Spieler gilt, wenn ein beliebiges Sichtfenster aktiviert ist."
 
 #: sdk/console.xml:12(text)
-msgid "<img src=\"../images/icon_em_edit.gif\" width=\"16\" height=\"16\"/>Edit objects: Objects may be edited and moved around by mouse. Additional editing options are available by right-clicking on objects in a viewport.In order to create new objects, object definitions (c4d) may be drag &amp; dropped from the menu system or an Explorer window into a viewport of the engine. Objects may be put into other objects by dragging them onto the target object while holding down the control key."
-msgstr "<img src=\"../images/icon_em_edit.gif\" width=\"16\" height=\"16\"/> Editieren: Objekte können mit der Maus bearbeitet und verschoben werden. Weitere Bearbeitungsoptionen durch das Kontextmenü über die rechte Maustaste. Um neue Objekte zu erzeugen, die entsprechende Objektdefinition (c4d) per Drag 'n' Drop aus dem Menüsystem in ein Sichtfenster der Engine ziehen. Objekte können in anderen Objekten abgelegt werden, indem sie bei gehaltener Ctrl-Taste auf das entsprechende Zielobjekt gezogen werden."
+msgid "<img src=\"../images/icon_em_edit.gif\" width=\"16\" height=\"16\"/>Edit objects: Objects may be edited and moved around by mouse. Additional editing options are available by right-clicking on objects in a viewport.In order to create new objects, object definitions (ocd) may be drag &amp; dropped from the menu system or an Explorer window into a viewport of the engine. Objects may be put into other objects by dragging them onto the target object while holding down the control key."
+msgstr "<img src=\"../images/icon_em_edit.gif\" width=\"16\" height=\"16\"/> Editieren: Objekte können mit der Maus bearbeitet und verschoben werden. Weitere Bearbeitungsoptionen durch das Kontextmenü über die rechte Maustaste. Um neue Objekte zu erzeugen, die entsprechende Objektdefinition (ocd) per Drag 'n' Drop aus dem Menüsystem in ein Sichtfenster der Engine ziehen. Objekte können in anderen Objekten abgelegt werden, indem sie bei gehaltener Ctrl-Taste auf das entsprechende Zielobjekt gezogen werden."
 
 #: sdk/console.xml:13(text)
 msgid "<img src=\"../images/icon_em_brush.gif\" width=\"16\" height=\"16\"/>Draw: Landscape drawing tools may be configured by right-clicking in a viewport and selecting 'tools'."
@@ -17778,8 +17778,8 @@ msgid "/console"
 msgstr "/console"
 
 #: sdk/cmdline.xml:15(text)
-msgid "Starts in console mode (also called developer mode or windowed mode). In console mode, scenarios can be edited and saved. The game will also start in console mode if a scenario (*.c4s) and no /fullscreen is specified."
-msgstr "Startet im Konsolenmodus (auch Entwicklermodus oder Fenstermodus genannt). Im Konsolenmodus können Szenarien bearbeitet und abgespeichert werden. Das Spiel startet auch standardgemäß im Konsolenmodus, wenn ein Szenario (*.c4s) als Parameter angegeben und kein /fullscreen gesetzt ist."
+msgid "Starts in console mode (also called developer mode or windowed mode). In console mode, scenarios can be edited and saved. The game will also start in console mode if a scenario (*.ocs) and no /fullscreen is specified."
+msgstr "Startet im Konsolenmodus (auch Entwicklermodus oder Fenstermodus genannt). Im Konsolenmodus können Szenarien bearbeitet und abgespeichert werden. Das Spiel startet auch standardgemäß im Konsolenmodus, wenn ein Szenario (*.ocs) als Parameter angegeben und kein /fullscreen gesetzt ist."
 
 #: sdk/cmdline.xml:17(dt)
 msgid "/fullscreen"
@@ -17882,8 +17882,8 @@ msgid "/join:&lt;<em>Address</em>&gt;"
 msgstr "/join:&lt;<em>Adresse</em>&gt;"
 
 #: sdk/cmdline.xml:69(text)
-msgid "Searches for a network game on the specified address and joins it. No local scenario (*.c4s) should be specified. Implies /network."
-msgstr "Sucht ein Netzwerkspiel auf der angegebenen Adresse und tritt dort bei. Es sollte kein lokales Szenario (*.c4s) angegeben werden. Impliziert /network."
+msgid "Searches for a network game on the specified address and joins it. No local scenario (*.ocs) should be specified. Implies /network."
+msgstr "Sucht ein Netzwerkspiel auf der angegebenen Adresse und tritt dort bei. Es sollte kein lokales Szenario (*.ocs) angegeben werden. Impliziert /network."
 
 #: sdk/cmdline.xml:71(dt)
 msgid "clonk://&lt;<em>Address</em>&gt;/"
@@ -17938,8 +17938,8 @@ msgid "/recdump:&lt;<em>Filename</em>&gt;"
 msgstr "/recdump:&lt;<em>Dateiname</em>&gt;"
 
 #: sdk/cmdline.xml:97(text)
-msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.c4f\\Record001.c4s /recdump:CtrlRec.txt)."
-msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.c4f\\Record001.c4s /recdump:CtrlRec.txt)."
+msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf\\Record001.ocs /recdump:CtrlRec.txt)."
+msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.ocf\\Record001.ocs /recdump:CtrlRec.txt)."
 
 #: sdk/cmdline.xml:99(dt)
 msgid "/startup:&lt;<em>Name</em>&gt;"
@@ -17950,28 +17950,28 @@ msgid "Only for fullscreen startup menu: Instead of the main menu, one of the su
 msgstr "Nur für Vollbild-Startmenü: Statt des Hauptmenüs wird direkt eines der Untermenüs angezeigt. Mögliche Werte für &lt;<em>Name</em>&gt; sind <em>main</em> (Hauptmenü), <em>scen</em> (Szenarienauswahl), <em>netscen</em> (Szenarienauswahl für Netzwerkspiel), <em>net</em> (Netzwerk/Internet-Spieleliste), <em>options</em> (Optionsmenü), <em>plrsel</em> (Spielerauswahl) und <em>about</em> (Credits)."
 
 #: sdk/cmdline.xml:105(text)
-msgid "If a scenario is specified (File extension .c4s), it will be started directly."
-msgstr "Bei Angabe eines Szenarios (Dateiendung .c4s) wird dieses direkt gestartet."
+msgid "If a scenario is specified (File extension .ocs), it will be started directly."
+msgstr "Bei Angabe eines Szenarios (Dateiendung .ocs) wird dieses direkt gestartet."
 
 #: sdk/cmdline.xml:109(text)
-msgid "If the started scenario does not specify any required definitions (File extension .c4d), and no definitions are supplied in the registry, definitions can be specified via command line."
-msgstr "Wenn das gestartete Szenario keine Objektdefinitionen (Dateiendung .c4d) vorgibt, und keine Definitionen über die Registry angegeben werden, können sie über die Kommandozeile übergeben werden."
+msgid "If the started scenario does not specify any required definitions (File extension .ocd), and no definitions are supplied in the registry, definitions can be specified via command line."
+msgstr "Wenn das gestartete Szenario keine Objektdefinitionen (Dateiendung .ocd) vorgibt, und keine Definitionen über die Registry angegeben werden, können sie über die Kommandozeile übergeben werden."
 
 #: sdk/cmdline.xml:111(dt)
-msgid "*.c4p"
-msgstr "*.c4p"
+msgid "*.ocp"
+msgstr "*.ocp"
 
 #: sdk/cmdline.xml:113(text)
-msgid "Player files (File extension .c4p) can be specified in the command line. If no player files are given, the registry values are used. By specifying a non-existant player (like doesnotexist.c4p), the game can be started without players (e.g. in order to just edit landscapes in developer mode)."
-msgstr "Spielerdateien (Dateiendung .c4p) können in der Kommandozeile angegeben werden. Wenn keine Spielerdateien in der Kommandozeile stehen, werden die in der Registrierung gespeicherten, zuletzt aktivierten Spieler benutzt. Durch Angabe eines nichtexistenten Spielers (z.B. gibtsnicht.c4p) kann verhindert werden, dass die in der Registrierung aktivierten Spieler beitreten (z.B. zum Bearbeiten einer Landschaft im Entwicklermodus)."
+msgid "Player files (File extension .ocp) can be specified in the command line. If no player files are given, the registry values are used. By specifying a non-existant player (like doesnotexist.ocp), the game can be started without players (e.g. in order to just edit landscapes in developer mode)."
+msgstr "Spielerdateien (Dateiendung .ocp) können in der Kommandozeile angegeben werden. Wenn keine Spielerdateien in der Kommandozeile stehen, werden die in der Registrierung gespeicherten, zuletzt aktivierten Spieler benutzt. Durch Angabe eines nichtexistenten Spielers (z.B. gibtsnicht.ocp) kann verhindert werden, dass die in der Registrierung aktivierten Spieler beitreten (z.B. zum Bearbeiten einer Landschaft im Entwicklermodus)."
 
 #: sdk/cmdline.xml:115(dt)
-msgid "*.c4u"
-msgstr "*.c4u"
+msgid "*.ocu"
+msgstr "*.ocu"
 
 #: sdk/cmdline.xml:117(text)
-msgid "If the filename of an update package (extension .c4u) is passed to the engine, then the program will attempt to apply that update package to the local installation."
-msgstr "Wird ein Update-Paket (Dateiendung .c4u) als Parameter an die Engine übergeben, so wird die Engine versuchen, dieses Update auf die lokale Spielinstallation anzuwenden."
+msgid "If the filename of an update package (extension .ocu) is passed to the engine, then the program will attempt to apply that update package to the local installation."
+msgstr "Wird ein Update-Paket (Dateiendung .ocu) als Parameter an die Engine übergeben, so wird die Engine versuchen, dieses Update auf die lokale Spielinstallation anzuwenden."
 
 #: sdk/cmdline.xml:122(h)
 msgid "Editor.exe (Windows only)"
@@ -18162,8 +18162,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Increases the physical property of an object by train_by. This function will train permanent physicals as well as temporary and temporarily stacked physicals. This function can be used e.g. to enhance magic capabilities after casting spells."
 #~ msgstr "Erhöht den Wert der physischen Eigenschaft des aufrufenden Objekts um den in train_by angegebenen Wert. Mit diesem Aufruf werden sowohl die permanenten, als auch temporäre und temporär gestapelte Physicals trainiert. Dieser Befehl kann beispielsweise genutzt werden, um nach einem Zauber die Magiephysical zu trainieren."
 
-#~ msgid "Example from System.c4g: improves the sorcerer's magic physical value after each successfull spell. It is ensured that the physical value will not surpass the maximum limit specified in MaxMagicPhysical() of the definition."
-#~ msgstr "Beispiel aus der System.c4g: Trainiert bei einem erfolgreichen Zauber die Magiephsical des Zauberers. Dabei wird sicher gestellt, dass der zaubernde Clonk nicht über das durch die Funktion MaxMagicPhysical() in seiner Definition angegebene Limit trainiert werden kann."
+#~ msgid "Example from System.ocg: improves the sorcerer's magic physical value after each successfull spell. It is ensured that the physical value will not surpass the maximum limit specified in MaxMagicPhysical() of the definition."
+#~ msgstr "Beispiel aus der System.ocg: Trainiert bei einem erfolgreichen Zauber die Magiephsical des Zauberers. Dabei wird sicher gestellt, dass der zaubernde Clonk nicht über das durch die Funktion MaxMagicPhysical() in seiner Definition angegebene Limit trainiert werden kann."
 
 #~ msgid "X coordinate of the starting position. Always global."
 #~ msgstr "X-Koordinate der Startposition. Immer global."
@@ -18451,16 +18451,16 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgstr "Sortierkriterium: Ermöglicht das Sortieren nach mehreren Kriterien. Das erste Kriterium hat höchste Priorität."
 
 #, fuzzy
-#~ msgid "Object Definiotns (c4d)"
-#~ msgstr "Objektdefinitionen (c4d)"
+#~ msgid "Object Definiotns (ocd)"
+#~ msgstr "Objektdefinitionen (ocd)"
 
 #, fuzzy
-#~ msgid "Objektdefinitionen (c4d)"
-#~ msgstr "Objektdefinitionen (c4d)"
+#~ msgid "Objektdefinitionen (ocd)"
+#~ msgstr "Objektdefinitionen (ocd)"
 
 #, fuzzy
-#~ msgid "Rundenordner (c4f)"
-#~ msgstr "Rundenordner (c4f)"
+#~ msgid "Rundenordner (ocf)"
+#~ msgstr "Rundenordner (ocf)"
 
 #~ msgid "VertexFriction"
 #~ msgstr "VertexFriction"

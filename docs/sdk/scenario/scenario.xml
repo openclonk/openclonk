@@ -208,7 +208,7 @@
       <row>
         <literal_col>Sky</literal_col>
         <col>String</col>
-        <col>Sky texture from Graphics.c4g (without filename extension)</col>
+        <col>Sky texture from Graphics.ocg (without filename extension)</col>
       </row>
       <row>
         <literal_col>SkyFade</literal_col>
@@ -428,7 +428,7 @@
       <row>
         <col>Definition1 to 9</col>
         <col>String(s)</col>
-        <col>With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled.</col>
+        <col>With Definition<em>x</em> entries you can specify which object definition packs (ocd) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled.</col>
       </row>
       <row>
         <col>SkipDefs</col>

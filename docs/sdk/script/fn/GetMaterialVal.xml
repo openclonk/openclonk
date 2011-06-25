@@ -35,7 +35,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the property value of a material definition by its name in the <emlink href="material/c4m.html">material file</emlink>.</desc>
+    <desc>Returns the property value of a material definition by its name in the <emlink href="material/ocm.html">material file</emlink>.</desc>
     <examples>
       <example>
         <code>GetMaterialVal(&quot;BlastFree&quot;, &quot;Material&quot;, <funclink>GetMaterial</funclink>(20, 0))</code>

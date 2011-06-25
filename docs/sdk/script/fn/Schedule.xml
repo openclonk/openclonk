@@ -33,7 +33,7 @@
       </params>
     </syntax>
     <desc>Executes a specified script command after a specified delay.</desc>
-    <remark>This function is implemented in System.c4g using the <emlink href="script/Effects.html">effect</emlink> "IntSchedule" in function <funclink>eval</funclink>.</remark>
+    <remark>This function is implemented in System.ocg using the <emlink href="script/Effects.html">effect</emlink> "IntSchedule" in function <funclink>eval</funclink>.</remark>
     <remark>Accordingly, the specified script can be a single command only. It may not contain multiple commands separated by ";".</remark>
     <examples>
       <example>

@@ -30,7 +30,7 @@
       </params>
     </syntax>
     <desc>Returns the property value of an object by its name in the Objects.txt.</desc>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <text>see <funclink>GetDefCoreVal</funclink></text>

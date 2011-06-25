@@ -8,7 +8,7 @@
   <part>
     <text>Since OC the engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
     <h id="ControlFiles">PlayerControls.txt</h>
-    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.c4g folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.c4g folder**.</text>
+    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder**.</text>
     <text>Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**.</text>
     <part>
       <h id="ControlDefs">Section [ControlDefs]</h>

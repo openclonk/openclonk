@@ -3,8 +3,8 @@
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-  <title>Material Definitions (c4m)</title>
-  <h id="c4m">Material Definitions (c4m)</h>
+  <title>Material Definitions (ocm)</title>
+  <h id="ocm">Material Definitions (ocm)</h>
   <part>
     <text>Material definitions determine looks and behaviour of landscape materials.</text>
     <text>
@@ -228,7 +228,7 @@
     <text>In addition to default reactions, every material can define custom reactions which are executed when the material passes another material as a free pixel (e.g. precipitation or particles after explosios) or by material movement (e.g. when a lake floods a tunnel).</text>
     <text>
       <table>
-        <caption id="SektionReaction">In the .c4m-file: Any number of sections [Reaction]</caption>
+        <caption id="SektionReaction">In the .ocm-file: Any number of sections [Reaction]</caption>
         <rowh>
           <col>Value</col>
           <col>Data type</col>
@@ -237,12 +237,12 @@
         <row>
           <literal_col>Type</literal_col>
           <col>String</col>
-          <col>Type of reaction that should happen. See <emlink href="material/c4m.html#ReactTypes">Table</emlink>.</col>
+          <col>Type of reaction that should happen. See <emlink href="material/ocm.html#ReactTypes">Table</emlink>.</col>
         </row>
         <row>
           <literal_col>TargetSpec</literal_col>
           <col>String</col>
-          <col>Target material, with which the loose material reacts. See <emlink href="material/c4m.html#TargetSpecs">material specifications</emlink>.</col>
+          <col>Target material, with which the loose material reacts. See <emlink href="material/ocm.html#TargetSpecs">material specifications</emlink>.</col>
         </row>
         <row>
           <literal_col>ScriptFunc</literal_col>
@@ -252,7 +252,7 @@
         <row>
           <literal_col>ExecMask</literal_col>
           <col>Integer</col>
-          <col>Bitmask, determining in which situation the reaction is to be executed. Bit indices are the <emlink href="material/c4m.html#ReactEvents">reaction events</emlink>. Default value -1 for all events.</col>
+          <col>Bitmask, determining in which situation the reaction is to be executed. Bit indices are the <emlink href="material/ocm.html#ReactEvents">reaction events</emlink>. Default value -1 for all events.</col>
         </row>
         <row>
           <literal_col>Reverse</literal_col>
@@ -437,7 +437,7 @@
           <col>9</col>
           <col>event</col>
           <col>Integer</col>
-          <col>See <emlink href="material/c4m.html#ReactEvents">Reaction events</emlink>.</col>
+          <col>See <emlink href="material/ocm.html#ReactEvents">Reaction events</emlink>.</col>
         </row>
       </table>
  The return value of the function should be either 1 for removal or 0 for keeping the loose material.

@@ -80,8 +80,8 @@
 		<param name="Name" value="Materials">
 		<param name="Name" value="Material Definitions">
 		<param name="Local" value="sdk\material\index.html">
-		<param name="Name" value="Material Definitions (C4M)">
-		<param name="Local" value="sdk\material\c4m.html">
+		<param name="Name" value="Material Definitions (OCM)">
+		<param name="Local" value="sdk\material\ocm.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Map Generator">

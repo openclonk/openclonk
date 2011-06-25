@@ -37,7 +37,7 @@
     </syntax>
     <desc>Retrieves properties of a player by way of the name under which they are stored in the Game.txt component of a savegame.</desc>
     <remark>Warning: the retrieved values may not be synchronization safe, meaning they may differ from computer to computer in a network game. Using these values may cause sync loss in a network game.</remark>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <code><funclink>Log</funclink>(&quot;Spieler %d hat %d Objekte!&quot;, player, GetPlrObjectsOwned(player));</code>

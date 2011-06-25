@@ -126,7 +126,7 @@
       </example>
     </examples>
     <related>
-      <emlink href="definition/index.html#Graphicsex">Object definitions (c4d)</emlink>
+      <emlink href="definition/index.html#Graphicsex">Object definitions (ocd)</emlink>
       <funclink>SetPicture</funclink>
       <funclink>SetObjDrawTransform</funclink>
       <funclink>SetObjectBlitMode</funclink>

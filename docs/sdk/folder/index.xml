@@ -7,13 +7,13 @@
   <h id="Folders">Scenario Folder</h>
   <part>
     <text>Scenario folders are used to group a number of scenarios. Scenario folders are displayed with a book icon in the startup screen which can then be opened to list contained scenarios.</text>
-    <h id="Components">Scenario Components (c4s)</h>
+    <h id="Components">Scenario Components (ocs)</h>
     <dl>
-      <dt id="c4s"><img height="16" src="../../images/icon_scenario.gif" width="16"/><emlink href="scenario/index.html">*.c4s</emlink></dt>
+      <dt id="ocs"><img height="16" src="../../images/icon_scenario.gif" width="16"/><emlink href="scenario/index.html">*.ocs</emlink></dt>
       <dd>
         <text>Scenario folders can contain any number of scenarios.</text>
       </dd>
-      <dt id="c4f"><img height="16" src="../../images/icon_scenario_folder.gif" width="16"/>*.c4f</dt>
+      <dt id="ocf"><img height="16" src="../../images/icon_scenario_folder.gif" width="16"/>*.ocf</dt>
       <dd>
         <text>Scenario folders can also contain other scenario folders.</text>
       </dd>
@@ -43,23 +43,23 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       </dd>
       <dt id="Loader"><img height="16" src="../../images/icon_image.gif" width="16"/>Loader*.png/Loader*.bmp</dt>
       <dd>
-        <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+        <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="Materialc4g"><img height="16" src="../../images/icon_system.gif" width="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
+      <dt id="Materialocg"><img height="16" src="../../images/icon_system.gif" width="16"/><emlink href="material/index.html">Material.ocg</emlink></dt>
       <dd>
-        <text>Scenario folders can contain local material definitions. Also see <emlink href="scenario/index.html#Materialc4g">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+        <text>Scenario folders can contain local material definitions. Also see <emlink href="scenario/index.html#Materialocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="Graphicsc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Graphics.c4g</dt>
+      <dt id="Graphicsocg"><img height="16" src="../../images/icon_system.gif" width="16"/>Graphics.ocg</dt>
       <dd>
-        <text>Scenario folders can overload individual entries of the global Graphics.c4g group. See <emlink href="#UeberladungenC4S">overloading rules</emlink>.</text>
+        <text>Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href="#UeberladungenOCS">overloading rules</emlink>.</text>
       </dd>
-      <dt id="Musicc4g"><img height="16" src="../../images/icon_system.gif" width="16"/>Music.c4g</dt>
+      <dt id="Musicocg"><img height="16" src="../../images/icon_system.gif" width="16"/>Music.ocg</dt>
       <dd>
-        <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicc4g">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+        <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="c4d"><img height="16" src="../../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
+      <dt id="ocd"><img height="16" src="../../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">*.ocd</emlink></dt>
       <dd>
-        <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#c4d">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenC4S">overloading rules</emlink> apply.</text>
+        <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#ocd">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
       <dt id="Infotxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Info.txt</dt>
       <dd>

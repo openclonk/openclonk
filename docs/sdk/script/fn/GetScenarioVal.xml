@@ -31,7 +31,7 @@
     </syntax>
     <desc>Returns the property value of the scenario by its name and section in the <emlink href="scenario/scenario.html">Scenario.txt</emlink>.</desc>
     <remark>Warning: the retrieved values may differ from computer to computer and thus cause synchronization problems in network games.</remark>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <code><funclink>Log</funclink>(&quot;You are playing \&quot;%s\&quot;!&quot;, GetScenTitle());</code>

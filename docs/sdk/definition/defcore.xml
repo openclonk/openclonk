@@ -508,7 +508,7 @@
       </table>
     </text>
     <h>Note:</h>
-    <text>When a crew member is created, it gets an own physical section in it's Objectinfo (c4i). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects.</text>
+    <text>When a crew member is created, it gets an own physical section in it's Objectinfo (oci). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects.</text>
   </part>
   <author>Sven2</author><date>2002-04</date>
 </doc>

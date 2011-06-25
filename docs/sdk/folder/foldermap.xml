@@ -73,7 +73,7 @@
         <row>
           <literal_col>File</literal_col>
           <col>String</col>
-          <col>Scenario file (including .c4s extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <funclink>GainMissionAccess</funclink>) is displayed.</col>
+          <col>Scenario file (including .ocs extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <funclink>GainMissionAccess</funclink>) is displayed.</col>
         </row>
         <row>
           <literal_col>BaseImage</literal_col>

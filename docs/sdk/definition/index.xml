@@ -7,7 +7,7 @@
   <h id="Objektdefinitionen">Object Definitions</h>
   <part>
     <text>Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:</text>
-    <h id="ObjektdefinitionsKomponentenC4D">Object Definition Components (c4d)</h>
+    <h id="ObjektdefinitionsKomponentenOCD">Object Definition Components (ocd)</h>
     <dl>
       <dt><img height="16" src="../../images/icon_text.gif" width="16"/><emlink href="definition/defcore.html">DefCore.txt</emlink></dt>
       <dd>
@@ -67,15 +67,15 @@
       </dd>
       <dt id="Rankbmppng"><img height="16" src="../../images/icon_image.gif" width="16"/>Rank.png/Rank.bmp</dt>
       <dd>
-        <text>You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.c4g. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol.</text>
+        <text>You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.ocg. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol.</text>
       </dd>
       <dt id="wav"><img height="16" src="../../images/icon_sound.gif" width="16"/>*.wav</dt>
       <dd>
         <text>Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only.</text>
       </dd>
-      <dt id="c4d"><img height="16" src="../../images/icon_object_definition.gif" width="16"/>*.c4d</dt>
+      <dt id="ocd"><img height="16" src="../../images/icon_object_definition.gif" width="16"/>*.ocd</dt>
       <dd>
-        <text>The engine will also search all valid c4d subdirectories for additional object definitions. Object definitions should be grouped by category.</text>
+        <text>The engine will also search all valid ocd subdirectories for additional object definitions. Object definitions should be grouped by category.</text>
       </dd>
       <dt id="Infotxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Info.txt</dt>
       <dd>

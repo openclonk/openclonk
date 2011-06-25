@@ -7,9 +7,9 @@
   <h id="Partikel">Particle</h>
   <part>
     <text>Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead.</text>
-    <text>If a particle is defined in a c4d group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles.</text>
+    <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles.</text>
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
-    <h id="PartikelKomponentenC4D">Particle Components (c4d)</h>
+    <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
       <dt><img height="16" src="../../images/icon_text.gif" width="16"/>Particle.txt</dt>
       <dd>

@@ -37,7 +37,7 @@
       </params>
     </syntax>
     <desc>Calls a function after a specified delay.</desc>
-    <remark>This function is implemented in System.c4g using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
+    <remark>This function is implemented in System.ocg using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
     <examples>
       <example>
         <code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;, 500, 0, MCLK);</code>

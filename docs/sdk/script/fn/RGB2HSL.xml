@@ -39,7 +39,7 @@ func FxVariateHueTimer() {
   <funclink>SetColorDw</funclink>(rgb);
 }
 </code>
-        <text>Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.c4g group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen.</text>
+        <text>Creates an effect which will colorize every clonk in the game, running through the colors of the rainbow.<br/>To test this effects, best copy this function into a script contained in a scenario local System.ocg group.<br/>The hue value is deliberately increased by 2 in this sample, else rounding errors might cause nothing to happen.</text>
       </example>
     </examples>
     <related>

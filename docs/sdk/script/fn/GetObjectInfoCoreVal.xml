@@ -29,12 +29,12 @@
         </param>
       </params>
     </syntax>
-    <desc>The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension c4i. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore.</desc>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <desc>The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension oci. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore.</desc>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <code>var exp = obj-&gt;GetObjCoreExperience();</code>
-        <text>Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.c4g (see remark).<br/> The above code responds to:</text>
+        <text>Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.ocg (see remark).<br/> The above code responds to:</text>
         <code>var exp = obj-&gt;GetObjectInfoCoreVal(&quot;Experience&quot;, &quot;ObjectInfo&quot;);</code>
       </example>
     </examples>

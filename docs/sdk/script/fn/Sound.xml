@@ -41,7 +41,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Plays a sound. The specified sound file has to be available in the group Sound.c4g, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
+    <desc>Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
     <examples>
       <example>
         <code><funclink>FindObject</funclink>(HUT2)-&gt;Sound(&quot;Applause&quot;, false, 50);</code>

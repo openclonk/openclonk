@@ -36,7 +36,7 @@
           <row>
             <col>mat</col>
             <col>Material</col>
-            <col>Material. The material must be defined in the active Material.c4g. Default is Sky.</col>
+            <col>Material. The material must be defined in the active Material.ocg. Default is Sky.</col>
           </row>
           <row>
             <col>tex</col>
