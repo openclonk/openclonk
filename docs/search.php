@@ -111,7 +111,6 @@ if ($lang == 'de') {
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.html">Einleitung</a></li>
 <li><a href="sdk/content.html">Inhalt</a></li>
 <li><a href="search.php">Suche</a></li>
 <li><a href="sdk/console.html">Engine</a></li>
@@ -126,7 +125,6 @@ HEADER;
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.html">Introduction</a></li>
 <li><a href="sdk/content.html">Contents</a></li>
 <li><a href="search.php">Search</a></li>
 <li><a href="sdk/console.html">Engine</a></li>

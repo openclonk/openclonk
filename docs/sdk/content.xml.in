@@ -60,8 +60,6 @@
 	Developer mode
 	<ul id='brn1'>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
-		<emlink href="index.html">Introduction</emlink></li>
-		<li><img src='../images/bullet_sheet.gif' alt='-' />
 		<emlink href="console.html">Engine</emlink></li>
 		<li><img src='../images/bullet_sheet.gif' alt='-' />
 		<emlink href="cmdline.html">Command Line Parameters</emlink></li>

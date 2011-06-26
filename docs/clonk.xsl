@@ -386,13 +386,6 @@
 
   <xsl:template name="nav"><xsl:if test="$webnotes">
     <ul class="nav">
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'index.html'" />
-        <xsl:with-param name="text"><xsl:choose>
-          <xsl:when test='lang("en")'>Introduction</xsl:when>
-          <xsl:otherwise>Einleitung</xsl:otherwise>
-        </xsl:choose></xsl:with-param>
-      </xsl:call-template></li>
       <li><a>
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />sdk/content.html</xsl:attribute>
         <xsl:choose>
@@ -433,10 +426,6 @@
         <xsl:when test='lang("en")'><a href='javascript:switchLanguage()'><img src='/deco/dco_de_sml.gif' alt='German' border='0'/></a></xsl:when>
         <xsl:otherwise><a href='javascript:switchLanguage()'><img src='/deco/dco_en_sml.gif' alt='English' border='0'/></a></xsl:otherwise>
       </xsl:choose></li>
-      <!--<li><a><xsl:attribute name="href">index.xml</xsl:attribute>.</a></li>
-      <xsl:if test="starts-with($relpath, '../..')">
-        <li><a><xsl:attribute name="href">../index.xml</xsl:attribute>..</a></li>
-      </xsl:if>-->
     </ul>
   </xsl:if></xsl:template>
   

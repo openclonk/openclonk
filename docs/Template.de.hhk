@@ -58,9 +58,6 @@
 		<param name="Local" value="sdk\script\Strict.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Entwicklermodus">
-		<param name="Name" value="Clonk Entwicklermodus">
-		<param name="Local" value="sdk\index.html">
 		<param name="Name" value="Die Engine im Entwicklermodus">
 		<param name="Local" value="sdk\console.html">
 		<param name="Name" value="Kommandozeilenparameter">

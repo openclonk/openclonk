@@ -2,7 +2,7 @@
 Compatibility=1.1 or later
 Compiled file=Developer.chm
 Contents file=Output.hhc
-Default topic=sdk\index.html
+Default topic=sdk\content.html
 Display compile progress=No
 Full-text search=Yes
 Index file=Output.hhk
@@ -11,7 +11,6 @@ Title=Clonk Developer Mode
 
 
 [FILES]
-images\cpem.gif
 images\icon_em_brush.gif
 images\icon_em_dynamic.gif
 images\icon_em_edit.gif
