@@ -36,7 +36,7 @@ GCC_FLAGS =
 WARNING_FLAGS = -Wall
 endif
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS) -DOC_SYSTEM_DATA_DIR=\"${datadir}/openclonk\"
+AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS)
 
 AM_CFLAGS = -Wall $(GCC_FLAGS)
 
@@ -687,13 +687,34 @@ c4script_LDADD = \
   $(OPENSSL_LIBS) \
   $(Z_LIBS)
 
-if WIN32
-c4script_LDADD += -lwinmm
-endif
+dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt licenses/OpenSSL.txt Credits.txt
+
+c4groups = \
+  Graphics.ocg \
+  Material.ocg \
+  Music.ocg \
+  Sound.ocg \
+  System.ocg \
+  Objects.ocd \
+  BackToTheRocks.ocf \
+  Tests.ocf \
+  Tutorial.ocf
+
+CLEANFILES += $(c4groups)
+pkgdata_DATA = $(c4groups)
+AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
+
+%.ocg: planet/%.ocg c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
+%.ocd: planet/%.ocd c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
+%.ocf: planet/%.ocf c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
 
 ## other stuff
 
 EXTRA_DIST = \
+  planet \
   Version.txt \
   CMakeLists.txt \
   Makefile.am \
@@ -704,59 +725,88 @@ EXTRA_DIST = \
   licenses \
   src/netio/NetIO.dsp \
   src/netpuncher/Puncher.dsp \
-  src/res/MainMenu.xib \
-  src/res/Brush_Trans.png \
-  src/res/Cursor_Trans.png \
-  src/res/Dynamic_Trans.png \
-  src/res/Exact_Trans.png \
-  src/res/Fill_Trans.png \
-  src/res/Halt_Trans.png \
-  src/res/Ift_Trans.png \
-  src/res/Line_Trans.png \
-  src/res/Mouse_Trans.png \
-  src/res/NoIft_Trans.png \
-  src/res/Picker_Trans.png \
-  src/res/Play_Trans.png \
-  src/res/Rect_Trans.png \
-  src/res/Static_Trans.png \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
-  src/res/ocg.ico \
-  src/res/ocs.ico \
-  src/res/Cursor2.bmp \
-  src/res/Game.pal \
-  src/res/line1.bmp \
-  src/res/Play2.bmp \
   src/res/Brush2.bmp \
-  src/res/oci.ico \
-  src/res/ocu.ico \
-  src/res/Cursor.bmp \
-  src/res/Grab.bmp \
-  src/res/Line.bmp \
-  src/res/Play.bmp \
   src/res/Brush.bmp \
-  src/res/c4k.ico \
-  src/res/ocv.ico \
-  src/res/dynamic1.bmp \
-  src/res/Halt2.bmp \
-  src/res/mouse1.bmp \
-  src/res/rect1.bmp \
-  src/res/ocb.ico \
-  src/res/ocl.ico \
-  src/res/c4x.ico \
-  src/res/Halt.bmp \
-  src/res/mouse.bmp \
-  src/res/Rectangle.bmp \
-  src/res/ocd.ico \
-  src/res/ocm.ico \
+  src/res/Brush.h \
+  src/res/Brush_Trans.png \
+  src/res/C4K.icns \
+  src/res/C4P.icns \
   src/res/c4x.xpm \
+  src/res/Clonk.icns \
+  src/res/ClonkWindow.xib \
+  src/res/ConsoleGUIWindow.xib \
+  src/res/ConsoleWindow.xib \
+  src/res/Cursor2.bmp \
+  src/res/Cursor.bmp \
+  src/res/Cursor.h \
+  src/res/Cursor_Trans.png \
+  src/res/dynamic1.bmp \
+  src/res/Dynamic.h \
+  src/res/Dynamic_Trans.png \
+  src/res/Exact.h \
+  src/res/Exact_Trans.png \
   src/res/fill1.bmp \
-  src/res/ift1.bmp \
-  src/res/NoIFT.bmp \
-  src/res/ocf.ico \
-  src/res/ocp.ico \
   src/res/Fill.bmp \
+  src/res/Fill.h \
+  src/res/Fill_Trans.png \
+  src/res/FullscreenWindow.xib \
+  src/res/Game.pal \
+  src/res/Grab.bmp \
+  src/res/Halt2.bmp \
+  src/res/Halt.bmp \
+  src/res/Halt.h \
+  src/res/Halt_Trans.png \
+  src/res/ift1.bmp \
   src/res/IFT.bmp \
+  src/res/Ift.h \
+  src/res/Ift_Trans.png \
+  src/res/Info.plist \
+  src/res/line1.bmp \
+  src/res/Line.bmp \
+  src/res/Line.h \
+  src/res/Line_Trans.png \
+  src/res/MainMenu.xib \
+  src/res/mouse1.bmp \
+  src/res/mouse.bmp \
+  src/res/Mouse.h \
+  src/res/Mouse_Trans.png \
+  src/res/NoIFT.bmp \
+  src/res/NoIft.h \
+  src/res/NoIft_Trans.png \
+  src/res/ocb.ico \
+  src/res/ocd.icns \
+  src/res/ocd.ico \
+  src/res/ocf.icns \
+  src/res/ocf.ico \
+  src/res/ocg.icns \
+  src/res/ocg.ico \
+  src/res/oc.ico \
+  src/res/oci.ico \
+  src/res/ocl.ico \
+  src/res/ocm.ico \
+  src/res/ocp.ico \
+  src/res/ocs.icns \
+  src/res/ocs.ico \
+  src/res/ocu.icns \
+  src/res/ocu.ico \
+  src/res/ocv.ico \
   src/res/picker1.bmp \
-  src/res/static1.bmp
-
+  src/res/Picker.h \
+  src/res/Picker_Trans.png \
+  src/res/Play2.bmp \
+  src/res/Play.bmp \
+  src/res/Play.h \
+  src/res/Play_Trans.png \
+  src/res/rect1.bmp \
+  src/res/Rectangle.bmp \
+  src/res/Rect.h \
+  src/res/Rect_Trans.png \
+  src/res/static1.bmp \
+  src/res/Static.h \
+  src/res/Static_Trans.png \
+  src/res/English.lproj/InfoPlist.strings \
+  src/res/English.lproj/Localizable.strings \
+  src/res/German.lproj/Localizable.strings \
+  src/res/SDLMain.nib/objects.nib

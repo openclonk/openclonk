@@ -30,7 +30,7 @@ AC_CANONICAL_HOST
 dnl foreign to tell automake to shut up,
 dnl and subdir-objects because it makes the Makefile smaller.
 dnl no-define because PACKAGE and VERSION are not used
-AM_INIT_AUTOMAKE([foreign nostdinc no-define 1.10])
+AM_INIT_AUTOMAKE([foreign tar-ustar nostdinc no-define 1.10])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_PROG_CXX
