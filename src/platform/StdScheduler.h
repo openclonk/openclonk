@@ -122,13 +122,12 @@ class CStdNotifyProc : public StdSchedulerProc
 {
 public:
 	CStdNotifyProc();
-	~CStdNotifyProc() { }
 
-public:
 	void Notify();
 	bool CheckAndReset();
 
 #ifdef STDSCHEDULER_USE_EVENTS
+	~CStdNotifyProc() { }
 
 	// StdSchedulerProc override
 	virtual HANDLE GetEvent() { return Event.GetEvent(); }
@@ -137,12 +136,13 @@ private:
 	CStdEvent Event;
 
 #else // STDSCHEDULER_USE_EVENTS
+	~CStdNotifyProc();
+
+	// StdSchedulerProc override
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
 
 private:
 	int fds[2];
-public:
-	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
 
 #endif
 };

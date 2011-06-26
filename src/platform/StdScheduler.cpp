@@ -564,6 +564,10 @@ CStdNotifyProc::CStdNotifyProc()
 	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
 	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
 }
+CStdNotifyProc::~CStdNotifyProc()
+{
+	close(fds[0]);
+}
 void CStdNotifyProc::Notify()
 {
 	uint64_t n = 1;
@@ -583,6 +587,11 @@ CStdNotifyProc::CStdNotifyProc()
 	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
 	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
 	fcntl(fds[1], F_SETFD, FD_CLOEXEC);
+}
+CStdNotifyProc::~CStdNotifyProc()
+{
+	close(fds[0]);
+	close(fds[1]);
 }
 void CStdNotifyProc::Notify()
 {
