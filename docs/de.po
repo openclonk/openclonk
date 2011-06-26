@@ -12811,37 +12811,37 @@ msgstr "Enthält Teameinstellungen für Mehrspielerszenarien. Ab 4.9.6.0 CR."
 #: sdk/scenario/index.xml:20(dt)
 #: sdk/folder/index.xml:20(dt)
 #: sdk/definition/index.xml:40(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Title.png/Title.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Title.png/Title.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Title.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Title.png"
 
 #: sdk/scenario/index.xml:22(text)
 msgid "The title picture of the scenario in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well."
 msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt."
 
 #: sdk/scenario/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Icon.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Icon.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Icon.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Icon.png"
 
 #: sdk/scenario/index.xml:26(text)
-msgid "The icon of the scenario in the menu. Windows bmp with 256 colors, 16x16 pixel, RGB 255,0,255 is treated as transparent."
-msgstr "Das Icon des Szenarios als unkomprimiertes Windows Bitmap mit 256 Farben. Größe 16x16 Pixel. Die Farbe RGB 255/0/255 (Lila) wird transparent angezeigt."
+msgid "The icon of the scenario in png format. Size: 24x24 pixel."
+msgstr "Das Icon des Szenarios im Format PNG. Größe 24x24 Pixel."
 
 #: sdk/scenario/index.xml:28(dt)
 #: sdk/folder/index.xml:44(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Loader*.png/Loader*.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Loader*.png/Loader*.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Loader*.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Loader*.png"
 
 #: sdk/scenario/index.xml:30(text)
 msgid "Loader screen to be displayed while the scenario is loading. If multiple files are present (Loader1.png, Loader2.png, Loader3.png...), one is selected randomly. You can optionally specify which loader to use in Scenario.txt. Loader image files located in parent scenario folders are also used."
 msgstr "Eine Grafik, die beim Start der Runde angezeigt wird. Sind mehrere Dateien vorhanden (Loader1.png, Loader2.png, Loader3.png...), wird per Zufall eine ausgewählt, wobei über eine optional im Scenario.txt vorhandene Loader-Spezifikation die Auswahl noch weiter vorgegeben werden kann. Beim veralteten BMP-Format mit 256 Farben müssen die Farben Schwarz bei Palettenindex 16 und Weiß bei Index 31 vorhanden sein, damit Meldungen beim Startvorgang korrekt angezeigt werden können. Auch Loader-Grafiken aus einem übergeordneten Ordner werden geladen."
 
 #: sdk/scenario/index.xml:32(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Sky.png/Sky.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Sky.png/Sky.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Sky.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Sky.png"
 
 #: sdk/scenario/index.xml:34(text)
-msgid "The sky background image. Sky graphics should either be tileable or match the exact landscape size. Notice that you cannot know the exact landscape size with dynamic maps which may increase with the number of participants."
-msgstr "Das Himmels-Hintergrundbild. Himmelsgrafiken sollten exakt kachelfähig sein oder die exakte Größe der Landschaft während der Runde haben (bei dynamischen Karten nicht vorhersehbar, bei statischen Karten die Größe des Landkartenbitmaps multipliziert mit dem Vergrößerungsfaktor). Beim veralteten BMP-Format mit 256 Farben dürfen in diesem Bitmap nur die ersten zwanzig Farben benutzt werden."
+msgid "The sky background image. Sky graphics should either be tileable or big enough that it won't even tile if the player zooms out very far."
+msgstr "Das Himmels-Hintergrundbild. Himmelsgrafiken sollten kachelbar sein oder so groß dass sie selbst nicht gekachelt dargestellt werden wenn der Spieler weit herauszoomt."
 
 #: sdk/scenario/index.xml:36(dt)
 #: sdk/folder/index.xml:28(dt)
@@ -12889,12 +12889,12 @@ msgid "The scenario script."
 msgstr "Das Szenarioscript."
 
 #: sdk/scenario/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Landscape.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Landscape.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Map.bmp"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Map.bmp"
 
 #: sdk/scenario/index.xml:54(text)
-msgid "Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Landscape.bmp correspond to materials and textures as defined in <emlink href=\"material/index.html#TexMaptxt\">TexMap.txt</emlink>."
-msgstr "Statische Landkarten werden um den in Scenario.txt enthaltenen Faktor MapZoom auf die tatsächliche Spiellandschaft vergrößert. Die in Landscape.bmp enthaltenen Farbindizes entsprechen den in <emlink href=\"material/index.html#TexMaptxt\">TexMap.txt</emlink> zugeordneten Materialien und Texturen."
+msgid "Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Map.bmp correspond to materials and textures as defined in <emlink href=\"material/index.html#TexMaptxt\">TexMap.txt</emlink>."
+msgstr "Statische Landkarten werden um den in Scenario.txt enthaltenen Faktor MapZoom auf die tatsächliche Spiellandschaft vergrößert. Die in Map.bmp enthaltenen Farbindizes entsprechen den in <emlink href=\"material/index.html#TexMaptxt\">TexMap.txt</emlink> zugeordneten Materialien und Texturen."
 
 #: sdk/scenario/index.xml:55(text)
 msgid "Exact landscapes represent the actual in-game landscape saved to a bitmap file. The bitmap color indices (128-191 and 192-255, 3 colors per material) correspond directly to the material pixels used in the scenario. The current material list is stored in MatMap.txt."
@@ -12951,9 +12951,12 @@ msgid "Scenarios can overload individual entries of the global Graphics.ocg grou
 msgstr "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Es gelten die <a href=\"#UeberladungenC4S\">Überladungsregeln</a>."
 
 #: sdk/scenario/index.xml:81(dt)
-#: sdk/definition/index.xml:72(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_sound.gif\" width=\"16\"/>*.wav"
 msgstr "<img height=\"16\" src=\"../../images/icon_sound.gif\" width=\"16\"/>*.wav"
+
+#: sdk/definition/index.xml:72(dt)
+msgid "<img height=\"16\" src=\"../../images/icon_sound.gif\" width=\"16\"/>*.wav/*.ogg"
+msgstr "<img height=\"16\" src=\"../../images/icon_sound.gif\" width=\"16\"/>*.wav/*.ogg"
 
 #: sdk/scenario/index.xml:83(text)
 msgid "Scenarios can contain any number of sound files. These can be played back by script during the game. Scenario local sounds are loaded dynamically on demand which might cause delays with large scenario files."
@@ -13018,8 +13021,8 @@ msgstr "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Auth
 
 #: sdk/scenario/index.xml:108(text)
 #: sdk/folder/index.xml:70(text)
-msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios."
-msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht."
+msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time."
+msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird."
 
 #: sdk/scenario/index.xml:111(h)
 msgid "Overloading Rules"
@@ -14287,7 +14290,7 @@ msgstr "Partikelgrafik."
 
 #: sdk/particle/index.xml:21(text)
 msgid "The particle definition can also contain the known components of <emlink href=\"definition/index.html\">object definitions</emlink> for describing the particle (e.g. Title.png, DescDE/US.txt, etc.)"
-msgstr "Zusätzlich dazu sind natürlich auch alle von <emlink href=\"definition/index.html\">Objektdefinitionen</emlink> bekannten Elemente für das Frontend verfügbar (also z.B. Title.bmp, DescDE/US.txt, etc.)"
+msgstr "Zusätzlich dazu sind natürlich auch alle von <emlink href=\"definition/index.html\">Objektdefinitionen</emlink> bekannten Elemente für das Frontend verfügbar (also z.B. Title.png, DescDE/US.txt, etc.)"
 
 #: sdk/particle/index.xml:24(h)
 msgid "Particle.txt"
@@ -15437,8 +15440,8 @@ msgid "Scenario folders can also contain other scenario folders."
 msgstr "Rundenordner lassen sich auch schachteln."
 
 #: sdk/folder/index.xml:22(text)
-msgid "The title picture of the scenario folder in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well."
-msgstr "Das Titelbild des Rundenordners im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt."
+msgid "The title picture of the scenario folder in png format. Size: 200x150 pixel."
+msgstr "Das Titelbild des Rundenordners im Format PNG. Größe: 200x150 Pixel."
 
 #: sdk/folder/index.xml:24(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Icon.bmp/Icon.png"
@@ -16691,14 +16694,6 @@ msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Ove
 msgid "The part of the object's graphics which is to be colored in the player color (see ColorByOwner in DefCore.txt) can also be defined using a separate graphics file. In this way you can also use the color blue in the object's graphics for effects other than player color and antialiasing of the player color sections becomes possible. In Overlay.png gray scales should be used instead of blue color."
 msgstr "Der Teil der Objektgrafik, der mit der Spielerfarbe (ColorByOwner, siehe DefCore.txt) eingefärbt werden soll, kann auch als separate Grafik angelegt werden. Auf diese Weise kann die sonst vergebene Farbe Blau in der Graphics.png frei benutzt werden, und es ist auch Antialiasing an den zu verfärbenden Rändern möglich. In der Overlay.png sollten nur Graustufen verwendet werden."
 
-#: sdk/definition/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics.bmp"
-
-#: sdk/definition/index.xml:26(text)
-msgid "The bmp format for graphics elements is obsolete but still supported. In a 256 color bitmap (8 bit) only the predefined colors 15 through 103 of the fixed Clonk color palette may be used."
-msgstr "Das BMP-Format für Grafikelemente ist veraltet, wird aber weiterhin unterstützt. In einem 256 Farb-Bitmap (8 Bit) dürfen nur die Farben 16 bis 103 der festen Clonk-Palette verwendet werden (siehe Originalobjekte)."
-
 #: sdk/definition/index.xml:28(emlink)
 msgid "Graphics.mesh"
 msgstr "Graphics.mesh"
@@ -16716,16 +16711,12 @@ msgid "Skeleton files contain bones and animations for a 3D model. They are usua
 msgstr "Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden."
 
 #: sdk/definition/index.xml:36(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics*.png/Overlay*.png/Graphics*.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics*.png/Overlay*.png/Graphics*.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics*.png/Overlay*.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Graphics*.png/Overlay*.png"
 
 #: sdk/definition/index.xml:38(text)
 msgid "Objects can also contain alternative sets of graphics which can be selected ingame using the script command <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>(). The name corresponds to the file name portion following \"Graphics\". The matching overlay is automatically selected. For more information see <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
 msgstr "Objekte können auch alternative Grafiksätze bereitstellen, die während des Spiels mit Hilfe des Scriptbefehls <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>() zugewiesen werden können. Der Name der Grafik entspricht dabei dem Dateinamensteil zwischen \"Graphics\" und der Dateiendung; das entsprechende Overlay wird automatisch mit verwendet. Für Beispiele siehe <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
-
-#: sdk/definition/index.xml:42(text)
-msgid "Object definitions can contain an additional title image (as scenarios do). This will be displayed in the menu system instead of the picture section of the object definition. Recommended size: 150x150 pixels, as long as your image is actually worth it."
-msgstr "Objektdefinitionen können ein zusätzliches Titelbild enthalten (ähnlich Szenarien). Dieses wird im Menüsystem anstelle des Pictures der Objektdefinition angezeigt. Empfohlene Größe: 150x150 Pixel, sofern die vorhandene Titelgrafik dies hergibt. Für Titelbilder wird ebenfalls das veraltete BMP-Format mit 256 Farben weiterhin unterstützt."
 
 #: sdk/definition/index.xml:44(emlink)
 msgid "*.material"
@@ -16748,18 +16739,6 @@ msgstr "Reaktionstyp 'Script'"
 msgid "Table for activities."
 msgstr "Tabelle für Objektaktivitäten."
 
-#: sdk/definition/index.xml:58(text)
-msgid "Multilingual name table (see Title.txt in scenarios)."
-msgstr "Mehrsprachige Namenstabelle (siehe Title.txt bei Szenarien)."
-
-#: sdk/definition/index.xml:60(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Desc*.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Desc*.txt"
-
-#: sdk/definition/index.xml:62(text)
-msgid "Short description. For multilingual descriptions see scenario descriptions."
-msgstr "Kurzbeschreibung. Für sprachliche Unterscheidung siehe Szenario-Beschreibungstexte."
-
 #: sdk/definition/index.xml:64(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Rank.txt/Rank*.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.gif\" width=\"16\"/>Rank.txt/Rank*.txt"
@@ -16769,8 +16748,8 @@ msgid "For object definitions defining a clonk type you can specify custom rank 
 msgstr "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.ocd. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
 
 #: sdk/definition/index.xml:68(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png/Rank.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png/Rank.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.gif\" width=\"16\"/>Rank.png"
 
 #: sdk/definition/index.xml:70(text)
 msgid "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.ocg. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
@@ -16801,16 +16780,8 @@ msgid "Object Identification"
 msgstr "Objekt-Identifikation"
 
 #: sdk/definition/index.xml:90(text)
-msgid "Object definitions are identified by an id which consists of four characters (e.g. C4ID). Original objects use four characters: ABCD or ABC1."
-msgstr "Objektdefinitionen werden über ein ID identifiziert, das sich aus vier Zeichen zusammen setzt (z.B. C4ID). Nur Originalobjekte von RedWolf Design nutzen hierbei alle vier Zeichen: ABCD oder ABC1."
-
-#: sdk/definition/index.xml:91(text)
-msgid "Local object definitions which are only available in one scenario should use the id format _ABC."
-msgstr "Lokale Objektdefinitionen, die nur als Teil eines Szenarios verbreitet werden, erhalten IDs vom Format _ABC."
-
-#: sdk/definition/index.xml:92(text)
-msgid "Object definitions created by community players but publicly released should use the format AB3C of which the first two characters should identify the object and the second two (one digit and one character) should identify the developer. This is to avoid id conflicts with other developers."
-msgstr "Von Spielern erstellte Objektdefinitionen, die auch einzeln veröffentlicht werden, sollten das Format AB3C nutzen, wobei nur die ersten beiden Zeichen frei vergeben werden können und die letzten beiden Zeichen (1 Ziffer und 1 Buchstabe) das Entwickler-ID des Spielers darstellen, welches frei wählbar ist, wobei allerdings Überschneidungen mit bereits von anderen Entwicklern benutzten IDs vermieden werden sollten."
+msgid "Object definitions are identified by an id which consists of any number of characters (e.g. Clonk)."
+msgstr "Objektdefinitionen werden über ein ID identifiziert, das sich aus beliebig vielen Zeichen zusammen setzt (z.B. Clonk)."
 
 #: sdk/definition/defcore.xml:9(text)
 msgid "The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id. Also see <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">object and developer identification</emlink>."

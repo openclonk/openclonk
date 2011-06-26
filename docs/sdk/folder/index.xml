@@ -21,7 +21,7 @@
       <dd>
         <text>The title picture of the scenario folder in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well.</text>
       </dd>
-      <dt id="Iconbmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.bmp/Icon.png</dt>
+      <dt id="Icon"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.bmp/Icon.png</dt>
       <dd>
         <text>The icon of a scenario folder which is to be displayed instead of the book icon. BMP format (obsolete): 16x16 pixels, color RGB 255 0 255 (purple) is transparent. PNG format: 24x24 pixels, alpha channel is used for transparency.</text>
       </dd>

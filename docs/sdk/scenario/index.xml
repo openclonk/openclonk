@@ -17,21 +17,21 @@
       <dd>
         <text>Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR.</text>
       </dd>
-      <dt id="Title"><img height="16" src="../../images/icon_image.gif" width="16"/>Title.png/Title.bmp</dt>
+      <dt id="Title"><img height="16" src="../../images/icon_image.gif" width="16"/>Title.png</dt>
       <dd>
-        <text>The title picture of the scenario in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well.</text>
+        <text>The title picture of the scenario in png format. Size: 200x150 pixel.</text>
       </dd>
-      <dt id="Iconbmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.bmp</dt>
+      <dt id="Icon"><img height="16" src="../../images/icon_image.gif" width="16"/>Icon.png</dt>
       <dd>
-        <text>The icon of the scenario in the menu. Windows bmp with 256 colors, 16x16 pixel, RGB 255,0,255 is treated as transparent.</text>
+        <text>The icon of the scenario in png format. Size: 24x24 pixel.</text>
       </dd>
-      <dt id="Loader"><img height="16" src="../../images/icon_image.gif" width="16"/>Loader*.png/Loader*.bmp</dt>
+      <dt id="Loader"><img height="16" src="../../images/icon_image.gif" width="16"/>Loader*.png</dt>
       <dd>
         <text>Loader screen to be displayed while the scenario is loading. If multiple files are present (Loader1.png, Loader2.png, Loader3.png...), one is selected randomly. You can optionally specify which loader to use in Scenario.txt. Loader image files located in parent scenario folders are also used.</text>
       </dd>
-      <dt id="Sky"><img height="16" src="../../images/icon_image.gif" width="16"/>Sky.png/Sky.bmp</dt>
+      <dt id="Sky"><img height="16" src="../../images/icon_image.gif" width="16"/>Sky.png</dt>
       <dd>
-        <text>The sky background image. Sky graphics should either be tileable or match the exact landscape size. Notice that you cannot know the exact landscape size with dynamic maps which may increase with the number of participants.</text>
+        <text>The sky background image. Sky graphics should either be tileable or big enough that it won't even tile if the player zooms out very far.</text>
       </dd>
       <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.gif" width="16"/>Desc*.rtf</dt>
       <dd>
@@ -49,9 +49,9 @@ US:Attack of the Killer Wipfs</code>        <text>Important: No quotation marks 
       <dd>
         <text>The scenario script.</text>
       </dd>
-      <dt id="Landscapebmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Landscape.bmp</dt>
+      <dt id="Landscapebmp"><img height="16" src="../../images/icon_image.gif" width="16"/>Map.bmp</dt>
       <dd>
-        <text>Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Landscape.bmp correspond to materials and textures as defined in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink>.</text>
+        <text>Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Map.bmp correspond to materials and textures as defined in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink>.</text>
         <text>Exact landscapes represent the actual in-game landscape saved to a bitmap file. The bitmap color indices (128-191 and 192-255, 3 colors per material) correspond directly to the material pixels used in the scenario. The current material list is stored in MatMap.txt.</text>
       </dd>
       <dt id="Landscapepng"><img height="16" src="../../images/icon_image.gif" width="16"/>Landscape.png</dt>
@@ -105,7 +105,7 @@ US:Attack of the Killer Wipfs</code>        <text>Important: No quotation marks 
       </dd>
       <dt id="Authortxt"><img height="16" src="../../images/icon_text.gif" width="16"/>Author.txt</dt>
       <dd>
-        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios.</text>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time.</text>
       </dd>
     </dl>
     <h id="UeberladungenOCS">Overloading Rules</h>
