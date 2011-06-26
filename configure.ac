@@ -234,6 +234,11 @@ AC_CHECK_LIB(z, deflate, [
   AC_MSG_ERROR([libz not found.])
 ])
 
+# Check for librt
+AC_CHECK_LIB(rt, clock_gettime, [
+  LDADD="-lrt $LDADD"
+], [])
+
 # Check for libfreetype
 if test $enable_console = no; then
   if test "$cross_compiling" = no; then
@@ -334,10 +339,12 @@ if test $win32 = false; then
   AM_CONDITIONAL(USE_FMOD, false)
 else
   # Windows
-  for WIN32LIB in gdi32 comdlg32 winmm ws2_32
+  for WIN32LIB in gdi32 comdlg32 ws2_32
   do
     AC_CHECK_LIB([$WIN32LIB], main, [CLONK_LIBS="-l$WIN32LIB $CLONK_LIBS"], [AC_MSG_ERROR([$WIN32LIB not found.])])
   done
+
+  AC_CHECK_LIB([winmm], main, [LDADD="-lwinmm $LDADD"], [AC_MSG_ERROR([winmm not found.])])
 
   AC_CHECK_LIB([vfw32], main, [
     CLONK_LIBS="-lvfw32 $CLONK_LIBS"
@@ -357,6 +364,7 @@ else
   fi
 fi
 
+AC_SUBST(LDADD)
 AC_SUBST(CLONK_LIBS)
 AC_SUBST(Z_LIBS)
 

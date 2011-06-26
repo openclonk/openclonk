@@ -30,15 +30,14 @@ unsigned int GetTime()
 
 #else
 
-#include <sys/time.h>
+#include <time.h>
 
 unsigned int GetTime()
 {
-	static time_t sec_offset;
-	timeval tv;
-	gettimeofday(&tv, 0);
-	if (!sec_offset) sec_offset = tv.tv_sec;
-	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
+	timespec tv;
+	clock_gettime(CLOCK_MONOTONIC, &tv);
+	static time_t sec_offset = tv.tv_sec;
+	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_nsec / 1000000;
 }
 
 #endif

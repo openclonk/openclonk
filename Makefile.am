@@ -591,6 +591,7 @@ endif
 
 clonk_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(GTK_LIBS) \
   $(OPENAL_LIBS) \
@@ -635,6 +636,7 @@ endif
 
 c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -647,6 +649,7 @@ src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
@@ -658,10 +661,11 @@ src/netpuncher/main.cpp
 
 puncher_LDADD = \
   lib.a \
+  $(LDADD) \
   $(PTHREAD_LIBS)
 
 if WIN32
-puncher_LDADD += -lwinmm -lws2_32
+puncher_LDADD += -lws2_32
 endif
 
 ## tstc4netio
@@ -672,11 +676,12 @@ src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 if WIN32
-tstc4netio_LDADD += -lwinmm -lws2_32
+tstc4netio_LDADD += -lws2_32
 endif
 
 ## c4script shell
@@ -703,6 +708,7 @@ src/c4group/C4LangStringTable.cpp
 
 c4script_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS)
 
 if WIN32
