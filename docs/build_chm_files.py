@@ -153,15 +153,15 @@ def printcontents3(f, _):
     ihack = [1000]
     def folder(name):
         i = str(ihack[0])
-        f.write("<li><img id='tgl" + i + "' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(" + i + ")' ondblclick='ta(" + i + ")' />\n" +
+        f.write("<li><img id='tgl" + i + "' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(" + i + ")' ondblclick='ta(" + i + ")' />\n" +
             name + "\n" +
             "<ul id='brn" + i + "' class='invisi'>\n")
         ihack[0] = ihack[0] + 1
     def sheet(url, name):
-        f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
+        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
             "<emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
     def sheetE(url, name):
-        f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
+        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
             "<emlink href='" + url[4:] + "'>" + name + "</emlink> (erweitert)</li>\n")
     folder("Funktionen nach Kategorie")
     cats = parser.cats.keys()

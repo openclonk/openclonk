@@ -92,7 +92,7 @@ $lang = basename(dirname(__FILE__));
 <style>
 ul {
 list-style-position: inside;
-list-style-image: url(images/bullet_sheet.gif);
+list-style-image: url(images/bullet_sheet.png);
 }
 ul a {
 color: navy;  
