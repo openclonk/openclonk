@@ -2,6 +2,7 @@ local Name = "$Name$";
 local Description = "$Description$";
 
 local fade;
+local color;
 
 local ActMap = {
 Fly = {
@@ -19,7 +20,8 @@ public func Initialize()
 {
 	this.Plane=1545;
 	fade = 0;
-	SetClrModulation(RGBa(255, 255, 255, fade));
+	color = GetPlayerColor(GetOwner());
+	SetClrModulation(color|RGBa(0,0,0,fade));
 	SetAction("Fly");
 	return true;
 }
@@ -100,12 +102,12 @@ func FxFadeInTimer(target, effect, time)
 {
 	if(fade == 255) return -1;
 	fade = BoundBy(fade+3, 0, 255);
-	SetClrModulation(RGBa(255,255,255,fade));
+	SetClrModulation(color|RGBa(0,0,0,fade));
 }
 
 func FxFadeOutTimer(target, effect, time)
 {
 	if(fade == 0) return -1;
 	fade = BoundBy(fade-3, 0, 255);
-	SetClrModulation(RGBa(255,255,255,fade));
+	SetClrModulation(color|RGBa(0,0,0,fade));
 }
