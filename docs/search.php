@@ -88,7 +88,7 @@ $lang = basename(dirname(__FILE__));
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" type="text/css" href="doku.css">
 <link rel="stylesheet" type="text/css" href="http://www.openclonk.org/header/header.css">
-<title><?php echo $lang == 'de' ? 'Entwicklermodus' : 'Developer Mode' ?></title>
+<title>OpenClonk <?php echo $lang == 'de' ? 'Referenz' : 'Reference' ?></title>
 <style>
 ul {
 list-style-position: inside;
@@ -107,44 +107,21 @@ text-decoration: none;
 <body>
 <?php
 if ($lang == 'de') {
-	readfile("http://www.openclonk.org/header/header.php?p=docs");
-	echo <<<HEADER
-<div id="content">
-<ul class="nav">
-<li><a href="sdk/content.html">Inhalt</a></li>
-<li><a href="search.php">Suche</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Kommandozeile</a></li>
-<li><a href="sdk/files.html">Spieldaten</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
-</ul>
-<h1>Suche nach Scriptfunktionen</h1>
-HEADER;
+	readfile("http://www.openclonk.org/header/header.php?p=docsde");
 } else {
 	readfile("http://www.openclonk.org/header/header.php?p=docs");
-	echo <<<HEADER
-<div id="content">
-<ul class="nav">
-<li><a href="sdk/content.html">Contents</a></li>
-<li><a href="search.php">Search</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Command Line</a></li>
-<li><a href="sdk/files.html">Game Data</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
-</ul>
-<h1>Search for Script Functions</h1>
-HEADER;
 }
-?>
+-?>
+<h1><?php print ($lang == 'de' ? 'Suche' : 'Search'); ?></h1>
+<div id="content">
 <div class="text">
 <form action="search.php" method="get">
 <?php
-echo $lang == 'de' ? '<b>Suchbegriff:</b>' : '<b>Search term:</b>';
 echo '&nbsp;<input type="text" name="search"';
 if (isset($_GET['search'])) echo ' value="' . htmlspecialchars($_GET['search']) . '"';
 echo '> ';
-echo '<input type="submit" name="func" value="' . ($lang == 'de' ? 'Funktionssuche' : 'Search for function') . '"> ';
-echo '<input type="submit" name="fulltext" value="' . ($lang == 'de' ? 'Volltextsuche' : 'Fulltext') . '">';
+echo '<input type="submit" name="func" value="' . ($lang == 'de' ? 'Suche' : 'Search') . '"> ';
+echo '<input type="submit" name="fulltext" value="' . ($lang == 'de' ? 'Volltext' : 'Fulltext') . '">';
 ?>
 </form>
 <?php
