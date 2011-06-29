@@ -77,9 +77,11 @@
       <xsl:call-template name="head" />
       <body>
       <xsl:call-template name="header" />
+      <xsl:if test="$webnotes">
       <div id="iframe"><iframe>
         <xsl:attribute name="src"><xsl:value-of select="$relpath" />sdk/content<xsl:value-of select="$fileext" /></xsl:attribute>
       </iframe></div>
+      </xsl:if>
       <div id="content">
         <xsl:apply-templates />
       </div>
@@ -221,7 +223,7 @@
   <xsl:template match="doc/h">
     <h1><xsl:apply-templates select="@id|node()" /></h1>
   </xsl:template>
-  <xsl:template match="doc/part/h">
+  <xsl:template match="doc/part/h|toc/h">
     <h2><xsl:apply-templates select="@id|node()" /></h2>
   </xsl:template>
   <xsl:template match="doc/part/part/h">

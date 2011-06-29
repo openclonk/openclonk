@@ -166,17 +166,40 @@
 <script>
 <![CDATA[
 	(function() {
+		if (parent == window) return;
+		var l = parent.location.pathname;
 		var as = document.getElementsByTagName("a");
 		var i = 0, a;
-		var l = parent.location.pathname;
+		var firsta;
 		while (a = as[i++]) {
 			if (a.pathname.indexOf(l) != -1) {
+				if (!firsta) {
+					firsta = a;
+				}
 				var p = a.parentNode.parentNode;
 				while (p.tagName == "UL") {
-					tb(p.id.slice(3));
+					if (p.style.display == 'none' || p.className == 'invisi') tb(p.id.slice(3));
 					p = p.parentNode.parentNode;
 				}
 			}
+		}
+		if (!firsta) return;
+		var el = firsta.parentNode.parentNode.parentNode;
+		var y0 = 0;
+		while (el) {
+			y0 += el.offsetTop;
+			el = el.offsetParent;
+		}
+		var y1 = 0;
+		el = firsta;
+		while (el) {
+			y1 += el.offsetTop;
+			el = el.offsetParent;
+		}
+		if (y0 < y1 - innerHeight + firsta.offsetHeight * 2) {
+			window.scrollTo(0, y1 - innerHeight / 2);
+		} else {
+			window.scrollTo(0, y0);
 		}
 	})();
 ]]>
