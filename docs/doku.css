@@ -11,6 +11,19 @@ body {
 	line-height: 1.6em;
 }
 
+body > #iframe {
+	position: absolute; top: 145px; width: 270px; border: 0; bottom: 0; overflow: auto;
+	height: auto;
+	display: block;
+}
+
+body > #iframe > iframe {
+	border: 0; overflow: auto;
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
 .text, pre.code, ul, ol, dl {
 	margin: 8px 0 12px 0;
 }
@@ -23,6 +36,7 @@ div.fnsyntax {
 #content {
 	padding: 0 1em;
 	margin: 0 auto;
+	position: absolute; top: 145px; left: 270px; right: 0; bottom: 0; overflow: auto;
 }
 
 div.example {

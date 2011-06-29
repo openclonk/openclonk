@@ -72,27 +72,26 @@
     (<xsl:choose><xsl:when test='lang("de")'>veraltet</xsl:when><xsl:otherwise>deprecated</xsl:otherwise></xsl:choose>)
   </xsl:template>
 
-  <xsl:template match="funcs">
+  <xsl:template match="doc|funcs">
     <html>
       <xsl:call-template name="head" />
       <body>
       <xsl:call-template name="header" />
+      <div id="iframe"><iframe>
+        <xsl:attribute name="src"><xsl:value-of select="$relpath" />sdk/content<xsl:value-of select="$fileext" /></xsl:attribute>
+      </iframe></div>
       <div id="content">
-        <xsl:for-each select="func">
-          <xsl:apply-templates select="." />
-        </xsl:for-each>
-        <xsl:apply-templates select="author" />
+        <xsl:apply-templates />
       </div>
       </body>
     </html>
   </xsl:template>
   
-  <xsl:template match="doc">
+  <xsl:template match="toc">
     <html>
       <xsl:call-template name="head" />
       <body>
-      <xsl:call-template name="header" />
-      <div id="content">
+      <div id="toc">
         <xsl:apply-templates />
       </div>
       </body>
@@ -289,6 +288,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
+      <xsl:if test="/toc">
+        <xsl:attribute name="target">_top</xsl:attribute>
+      </xsl:if>
       <xsl:value-of select="$text" />
     </a>
   </xsl:template>

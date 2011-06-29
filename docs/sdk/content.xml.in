@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!-- <!DOCTYPE doc SYSTEM "../clonk.dtd"> -->
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
-<doc>
+<toc>
 <title>Contents</title>
 <script>
 <![CDATA[
@@ -163,4 +163,22 @@
 	</li>
 </ul>
 </part>
-</doc>
+<script>
+<![CDATA[
+	(function() {
+		var as = document.getElementsByTagName("a");
+		var i = 0, a;
+		var l = parent.location.pathname;
+		while (a = as[i++]) {
+			if (a.pathname.indexOf(l) != -1) {
+				var p = a.parentNode.parentNode;
+				while (p.tagName == "UL") {
+					tb(p.id.slice(3));
+					p = p.parentNode.parentNode;
+				}
+			}
+		}
+	})();
+]]>
+</script>
+</toc>
