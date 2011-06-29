@@ -112,8 +112,9 @@ if ($lang == 'de') {
 	readfile("http://www.openclonk.org/header/header.php?p=docs");
 }
 -?>
-<h1><?php print ($lang == 'de' ? 'Suche' : 'Search'); ?></h1>
+<div id="iframe"><iframe src="sdk/content.html"></iframe></div>
 <div id="content">
+<h1><?php print ($lang == 'de' ? 'Suche' : 'Search'); ?></h1>
 <div class="text">
 <form action="search.php" method="get">
 <?php
