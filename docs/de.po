@@ -9,18 +9,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-07 21:09+0100\n"
+"POT-Creation-Date: 2011-06-29 16:20+0200\n"
 "PO-Revision-Date: 2010-11-24 22:17+0100\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
-"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: German\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sdk/content.xml.in:5(title)
-#: sdk/content.xml.in:55(h)
+#: sdk/content.xml.in:54(h1)
 #: sdk/script/fn/ShiftContents.xml:9(subcat)
 #: sdk/script/fn/ScrollContents.xml:9(subcat)
 #: sdk/script/fn/GrabContents.xml:9(subcat)
@@ -31,44 +31,37 @@ msgstr ""
 msgid "Contents"
 msgstr "Inhalt"
 
-#: sdk/content.xml.in:63(emlink)
-#: sdk/script/index.xml:9(h)
-#: sdk/script/ScriptPlayers.xml:9(h)
-#: sdk/script/Effects.xml:10(h)
-msgid "Introduction"
-msgstr "Einleitung"
-
-#: sdk/content.xml.in:65(emlink)
+#: sdk/content.xml.in:62(emlink)
 #: sdk/console.xml:7(h)
 msgid "Engine"
 msgstr "Engine"
 
-#: sdk/content.xml.in:67(emlink)
+#: sdk/content.xml.in:64(emlink)
 #: sdk/cmdline.xml:6(title)
 #: sdk/cmdline.xml:7(h)
 msgid "Command Line Parameters"
 msgstr "Kommandozeilenparameter"
 
-#: sdk/content.xml.in:58(li)
+#: sdk/content.xml.in:57(li)
 msgid "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Developer mode <placeholder-1/>"
 msgstr "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Entwicklermodus <placeholder-1/>"
 
-#: sdk/content.xml.in:72(emlink)
+#: sdk/content.xml.in:69(emlink)
 msgid "Game content"
 msgstr "Spielinhalt"
 
-#: sdk/content.xml.in:76(emlink)
+#: sdk/content.xml.in:73(emlink)
 #: sdk/definition/index.xml:6(title)
 #: sdk/definition/index.xml:7(h)
 msgid "Object Definitions"
 msgstr "Objektdefinitionen"
 
-#: sdk/content.xml.in:80(emlink)
+#: sdk/content.xml.in:77(emlink)
 #: sdk/definition/defcore.xml:7(h)
 msgid "DefCore"
 msgstr "DefCore"
 
-#: sdk/content.xml.in:83(emlink)
+#: sdk/content.xml.in:80(emlink)
 #: sdk/script/fn/SetCategory.xml:9(subcat)
 #: sdk/script/fn/GetCategory.xml:9(subcat)
 #: sdk/script/fn/C4D_Vehicle.xml:9(subcat)
@@ -85,7 +78,7 @@ msgstr "DefCore"
 msgid "Category"
 msgstr "Kategorie"
 
-#: sdk/content.xml.in:85(emlink)
+#: sdk/content.xml.in:82(emlink)
 #: sdk/script/fn/OCF_Rotate.xml:9(subcat)
 #: sdk/script/fn/OCF_Prey.xml:9(subcat)
 #: sdk/script/fn/OCF_OnFire.xml:9(subcat)
@@ -117,7 +110,7 @@ msgstr "Kategorie"
 msgid "OCF"
 msgstr "OCF"
 
-#: sdk/content.xml.in:87(emlink)
+#: sdk/content.xml.in:84(emlink)
 #: sdk/script/fn/VerticesStuck.xml:9(subcat)
 #: sdk/script/fn/SetVertexXY.xml:9(subcat)
 #: sdk/script/fn/SetVertex.xml:9(subcat)
@@ -130,31 +123,31 @@ msgstr "OCF"
 msgid "Vertices"
 msgstr "Vertices"
 
-#: sdk/content.xml.in:89(emlink)
+#: sdk/content.xml.in:86(emlink)
 #: sdk/definition/cnat.xml:6(title)
 #: sdk/definition/cnat.xml:7(h)
 msgid "CNAT - Contact Attachment"
 msgstr "CNAT - Contact Attachment"
 
-#: sdk/content.xml.in:94(emlink)
+#: sdk/content.xml.in:91(emlink)
 #: sdk/definition/script.xml:21(h)
 #: sdk/definition/actmap.xml:6(title)
 #: sdk/definition/actmap.xml:7(h)
 msgid "ActMap"
 msgstr "ActMap"
 
-#: sdk/content.xml.in:97(emlink)
+#: sdk/content.xml.in:94(emlink)
 #: sdk/definition/procedures.xml:6(title)
 #: sdk/definition/procedures.xml:7(h)
 msgid "Procedures"
 msgstr "Prozeduren"
 
-#: sdk/content.xml.in:101(emlink)
-#: sdk/content.xml.in:117(emlink)
+#: sdk/content.xml.in:98(emlink)
+#: sdk/content.xml.in:114(emlink)
 msgid "Scripts"
 msgstr "Scripte"
 
-#: sdk/content.xml.in:103(emlink)
+#: sdk/content.xml.in:100(emlink)
 #: sdk/script/fn/SetProperty.xml:9(subcat)
 #: sdk/script/fn/GetProperty.xml:9(subcat)
 #: sdk/particle/index.xml:161(h)
@@ -164,44 +157,44 @@ msgstr "Scripte"
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: sdk/content.xml.in:105(emlink)
+#: sdk/content.xml.in:102(emlink)
 msgid "Particles"
 msgstr "Partikel"
 
-#: sdk/content.xml.in:110(emlink)
+#: sdk/content.xml.in:107(emlink)
 #: sdk/scenario/index.xml:6(title)
 #: sdk/scenario/index.xml:7(h)
 msgid "Scenarios"
 msgstr "Szenarien"
 
-#: sdk/content.xml.in:113(emlink)
+#: sdk/content.xml.in:110(emlink)
 msgid "Scenario"
 msgstr "Szenario"
 
-#: sdk/content.xml.in:115(emlink)
+#: sdk/content.xml.in:112(emlink)
 #: sdk/scenario/MapCreatorS2.xml:6(title)
 #: sdk/scenario/MapCreatorS2.xml:7(h)
 msgid "Map Generator"
 msgstr "Kartengenerator"
 
-#: sdk/content.xml.in:122(emlink)
+#: sdk/content.xml.in:119(emlink)
 #: sdk/material/ocm.xml:348(col)
 msgid "Materials"
 msgstr "Materialien"
 
-#: sdk/content.xml.in:125(emlink)
+#: sdk/content.xml.in:122(emlink)
 msgid "Definitions"
 msgstr "Definitionen"
 
-#: sdk/content.xml.in:133(emlink)
+#: sdk/content.xml.in:130(emlink)
 msgid "Internationalization"
 msgstr "Sprachanpassung"
 
-#: sdk/content.xml.in:128(li)
+#: sdk/content.xml.in:125(li)
 msgid "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Internationalization <placeholder-1/>"
 msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Sprachanpassung <placeholder-1/>"
 
-#: sdk/content.xml.in:140(emlink)
+#: sdk/content.xml.in:137(emlink)
 #: sdk/script/index.xml:6(title)
 #: sdk/script/index.xml:7(h)
 #: sdk/script/fn/while.xml:8(category)
@@ -235,7 +228,7 @@ msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png
 msgid "Script"
 msgstr "Script"
 
-#: sdk/content.xml.in:143(emlink)
+#: sdk/content.xml.in:140(emlink)
 #: sdk/script/index.xml:16(h)
 #: sdk/script/index.xml:37(emlink)
 #: sdk/script/Funcs.xml:6(title)
@@ -243,33 +236,33 @@ msgstr "Script"
 msgid "Functions"
 msgstr "Funktionen"
 
-#: sdk/content.xml.in:145(emlink)
+#: sdk/content.xml.in:142(emlink)
 msgid "Function Call"
 msgstr "Funktionsaufruf"
 
-#: sdk/content.xml.in:147(emlink)
+#: sdk/content.xml.in:144(emlink)
 #: sdk/script/index.xml:39(emlink)
 #: sdk/script/Typechecks.xml:6(title)
 #: sdk/script/Typechecks.xml:7(h)
 msgid "Data Types"
 msgstr "Datentypen"
 
-#: sdk/content.xml.in:149(emlink)
+#: sdk/content.xml.in:146(emlink)
 #: sdk/script/fn/IsRef.xml:8(category)
 #: sdk/script/fn/GetType.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:8(category)
+#: sdk/script/fn/C4V_PropList.xml:8(category)
+#: sdk/script/fn/C4V_Nil.xml:8(category)
 #: sdk/script/fn/C4V_Int.xml:8(category)
 #: sdk/script/fn/C4V_C4Object.xml:8(category)
-#: sdk/script/fn/C4V_C4ID.xml:8(category)
 #: sdk/script/fn/C4V_Bool.xml:8(category)
 #: sdk/script/fn/C4V_Array.xml:8(category)
-#: sdk/script/fn/C4V_Any.xml:8(category)
 #: sdk/script/NamedVar.xml:6(title)
 #: sdk/script/NamedVar.xml:7(h)
 msgid "Variables"
 msgstr "Variablen"
 
-#: sdk/content.xml.in:151(emlink)
+#: sdk/content.xml.in:148(emlink)
 #: sdk/script/operatoren.xml:6(title)
 #: sdk/script/operatoren.xml:7(h)
 #: sdk/script/fn/if.xml:31(emlink)
@@ -277,24 +270,24 @@ msgstr "Variablen"
 msgid "Operators"
 msgstr "Operatoren"
 
-#: sdk/content.xml.in:153(emlink)
+#: sdk/content.xml.in:150(emlink)
 #: sdk/script/Funcs.xml:41(emlink)
 #: sdk/script/Funcs.xml:107(emlink)
 msgid "for"
 msgstr "for"
 
-#: sdk/content.xml.in:155(emlink)
+#: sdk/content.xml.in:152(emlink)
 #: sdk/script/index.xml:43(emlink)
 msgid "Loop Control"
 msgstr "Befehle zur Schleifenkontrolle"
 
-#: sdk/content.xml.in:157(emlink)
+#: sdk/content.xml.in:154(emlink)
 #: sdk/script/AppendTo.xml:6(title)
 #: sdk/script/AppendTo.xml:7(h)
 msgid "#appendto"
 msgstr "#appendto"
 
-#: sdk/content.xml.in:159(emlink)
+#: sdk/content.xml.in:156(emlink)
 #: sdk/script/index.xml:45(emlink)
 #: sdk/script/fn/Sound.xml:8(category)
 #: sdk/script/fn/Smoke.xml:9(subcat)
@@ -310,12 +303,12 @@ msgstr "#appendto"
 msgid "Effects"
 msgstr "Effekte"
 
-#: sdk/content.xml.in:161(emlink)
+#: sdk/content.xml.in:158(emlink)
 #: sdk/script/index.xml:46(emlink)
 msgid "Querying Game Data"
 msgstr "Abfrage von Spieldaten"
 
-#: sdk/content.xml.in:163(emlink)
+#: sdk/content.xml.in:160(emlink)
 msgid "Script Players"
 msgstr "Scriptspieler"
 
@@ -1041,7 +1034,6 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/script/fn/SetPhysical.xml:37(col)
 #: sdk/script/fn/SetGraphics.xml:45(col)
 #: sdk/script/fn/SetGamma.xml:44(col)
-#: sdk/script/fn/GetSystemTime.xml:29(col)
 #: sdk/script/fn/GetRGBaValue.xml:33(col)
 #: sdk/script/fn/GetPhysical.xml:32(col)
 #: sdk/script/fn/CustomMessage.xml:71(col)
@@ -1079,7 +1071,6 @@ msgstr "0"
 #: sdk/script/fn/SetObjectBlitMode.xml:39(col)
 #: sdk/script/fn/SetGraphics.xml:50(col)
 #: sdk/script/fn/SetGamma.xml:48(col)
-#: sdk/script/fn/GetSystemTime.xml:33(col)
 #: sdk/script/fn/GetRGBaValue.xml:37(col)
 #: sdk/script/fn/GetPlayerType.xml:30(col)
 #: sdk/script/fn/GetPhysical.xml:37(col)
@@ -1203,6 +1194,12 @@ msgstr "Mathematisch entspricht der Operator &lt;&lt; der Multiplikation mit <co
 #: sdk/script/operatoren.xml:594(text)
 msgid "Using these operators you can put together masks (1 &lt;&lt; bit-no.) and mix or take apart <placeholder-1/> color values."
 msgstr "Mit den Operatoren können vor allem Masken erstellt (1 &lt;&lt; BitNr), und <placeholder-1/>-Farbwerte zusammengesetzt und auseinandergenommen werden."
+
+#: sdk/script/index.xml:9(h)
+#: sdk/script/ScriptPlayers.xml:9(h)
+#: sdk/script/Effects.xml:10(h)
+msgid "Introduction"
+msgstr "Einleitung"
 
 #: sdk/script/index.xml:10(text)
 msgid "Clonk supports its own scripting language: C4Script."
@@ -1624,7 +1621,6 @@ msgid "Stores the ID of the calling object in the thread local variable myid."
 msgstr "Speichert die ID des aufrufenden Objekts in der threadlokalen Variable myid."
 
 #: sdk/script/fn/return.xml:16(desc)
-#: sdk/script/fn/GetSystemTime.xml:26(col)
 #: sdk/script/fn/GetRGBaValue.xml:30(col)
 msgid "Return value"
 msgstr "Rückgabewert"
@@ -1842,12 +1838,12 @@ msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für de
 #: sdk/script/fn/COMD_DownLeft.xml:13(remark)
 #: sdk/script/fn/COMD_Down.xml:13(remark)
 #: sdk/script/fn/C4V_String.xml:12(remark)
+#: sdk/script/fn/C4V_PropList.xml:12(remark)
+#: sdk/script/fn/C4V_Nil.xml:12(remark)
 #: sdk/script/fn/C4V_Int.xml:12(remark)
 #: sdk/script/fn/C4V_C4Object.xml:12(remark)
-#: sdk/script/fn/C4V_C4ID.xml:12(remark)
 #: sdk/script/fn/C4V_Bool.xml:12(remark)
 #: sdk/script/fn/C4V_Array.xml:12(remark)
-#: sdk/script/fn/C4V_Any.xml:12(remark)
 #: sdk/script/fn/C4D_Vehicle.xml:13(remark)
 #: sdk/script/fn/C4D_Structure.xml:13(remark)
 #: sdk/script/fn/C4D_StaticBack.xml:13(remark)
@@ -3558,7 +3554,8 @@ msgstr "Mithilfe dieses Befehls können beliebige, scriptdefinierte Werte unter 
 
 #: sdk/script/fn/SetPlrExtraData.xml:31(remark)
 #: sdk/script/fn/SetCrewExtraData.xml:26(remark)
-msgid "No objects or strings may be saved."
+#, fuzzy
+msgid "No objects or arrays may be saved."
 msgstr "Es dürfen keine Objektpointer oder Zeichenfolgen (Strings) gespeichert werden."
 
 #: sdk/script/fn/SetPlrExtraData.xml:32(remark)
@@ -3755,7 +3752,6 @@ msgstr "PHYS_Temporary"
 #: sdk/script/fn/SetObjectBlitMode.xml:44(col)
 #: sdk/script/fn/SetGraphics.xml:55(col)
 #: sdk/script/fn/SetGamma.xml:52(col)
-#: sdk/script/fn/GetSystemTime.xml:37(col)
 #: sdk/script/fn/GetRGBaValue.xml:41(col)
 #: sdk/script/fn/GetPlayerType.xml:35(col)
 #: sdk/script/fn/GetPhysical.xml:42(col)
@@ -3785,7 +3781,6 @@ msgstr "PHYS_StackTemporary"
 #: sdk/script/fn/SetPhysical.xml:52(col)
 #: sdk/script/fn/SetGraphics.xml:60(col)
 #: sdk/script/fn/SetGamma.xml:56(col)
-#: sdk/script/fn/GetSystemTime.xml:41(col)
 #: sdk/script/fn/GetRGBaValue.xml:45(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:56(col)
 #: sdk/script/fn/CreateMenu.xml:52(col)
@@ -3903,7 +3898,6 @@ msgstr "GFX_BLIT_ClrSfc_OwnClr"
 #: sdk/script/fn/SetObjectBlitMode.xml:49(col)
 #: sdk/script/fn/SetGraphics.xml:65(col)
 #: sdk/script/fn/SetGamma.xml:60(col)
-#: sdk/script/fn/GetSystemTime.xml:45(col)
 #: sdk/script/fn/CreateMenu.xml:57(col)
 #: sdk/script/Effects.xml:501(col)
 #: sdk/scenario/basefunc.xml:31(col)
@@ -4271,7 +4265,6 @@ msgstr "GFXOV_MODE_Object"
 
 #: sdk/script/fn/SetGraphics.xml:70(col)
 #: sdk/script/fn/SetGamma.xml:64(col)
-#: sdk/script/fn/GetSystemTime.xml:49(col)
 #: sdk/script/fn/CreateMenu.xml:62(col)
 #: sdk/scenario/basefunc.xml:48(col)
 #: sdk/definition/cnat.xml:48(col)
@@ -4288,7 +4281,6 @@ msgstr "GFXOV_MODE_ExtraGraphics"
 
 #: sdk/script/fn/SetGraphics.xml:75(col)
 #: sdk/script/fn/SetGamma.xml:68(col)
-#: sdk/script/fn/GetSystemTime.xml:53(col)
 #: sdk/definition/cnat.xml:54(col)
 msgid "6"
 msgstr "6"
@@ -4405,7 +4397,6 @@ msgid "Magic Effects"
 msgstr "Zaubereffekte"
 
 #: sdk/script/fn/SetGamma.xml:72(col)
-#: sdk/script/fn/GetSystemTime.xml:57(col)
 #: sdk/material/ocm.xml:425(col)
 msgid "7"
 msgstr "7"
@@ -6615,7 +6606,6 @@ msgid "Returns the data type of a passed value."
 msgstr "Gibt den Typ des übergebenen Werts zurück."
 
 #: sdk/script/fn/GetTime.xml:8(category)
-#: sdk/script/fn/GetSystemTime.xml:8(category)
 #: sdk/script/fn/GetMissionAccess.xml:8(category)
 #: sdk/script/fn/GainMissionAccess.xml:8(category)
 msgid "System"
@@ -6626,7 +6616,6 @@ msgid "Returns the time passed since operating system start. Can be used for exa
 msgstr "Gibt die Zeit seit Windowsstart in Millisekunden zurück. Kann zur genauen Zeitmessung verwendet werden."
 
 #: sdk/script/fn/GetTime.xml:12(remark)
-#: sdk/script/fn/GetSystemTime.xml:63(remark)
 msgid "As operating system times will vary on different computers, this function will always return 0 in a network game or playback to avoid synchronization errors."
 msgstr "Da die Zeiten bei unterschiedlichen Computern variieren können, gibt diese Funktion, um eine Syncunsicherheit zu vermeiden, beim Netzwerkspiel und bei Filmaufnahmen 0 zurück."
 
@@ -6692,54 +6681,6 @@ msgstr "Die Farbe wird so gewählt, dass der Spielername auf dunklem Untergrund 
 #: sdk/script/fn/GetTaggedPlayerName.xml:29(text)
 msgid "Object script: When activated, a message will be shown which draws attention to the player."
 msgstr "Objektscript: Beim Aktivieren wird eine Meldung ausgegeben, die den Spieler verpetzt."
-
-#: sdk/script/fn/GetSystemTime.xml:16(desc)
-msgid "What to return (see remarks)."
-msgstr "Was genau zurückgegeben werden soll (siehe Anmerkung)"
-
-#: sdk/script/fn/GetSystemTime.xml:20(desc)
-msgid "Returns current system time."
-msgstr "Gibt die momentane Uhrzeit zurück."
-
-#: sdk/script/fn/GetSystemTime.xml:25(col)
-msgid "what"
-msgstr "what"
-
-#: sdk/script/fn/GetSystemTime.xml:30(col)
-msgid "Year"
-msgstr "Jahr"
-
-#: sdk/script/fn/GetSystemTime.xml:34(col)
-msgid "Month (1 = January, 2 = February, etc.)"
-msgstr "Monat (1 = Januar, 2 = Februar usw.)"
-
-#: sdk/script/fn/GetSystemTime.xml:38(col)
-msgid "Day of the wekk (0 = Sunday, 1 = Monday, etc.)"
-msgstr "Wochentag (0 = Sonntag, 1 = Montag usw.)"
-
-#: sdk/script/fn/GetSystemTime.xml:42(col)
-msgid "Day"
-msgstr "Tag"
-
-#: sdk/script/fn/GetSystemTime.xml:46(col)
-msgid "Hour"
-msgstr "Stunde"
-
-#: sdk/script/fn/GetSystemTime.xml:50(col)
-msgid "Minute"
-msgstr "Minute"
-
-#: sdk/script/fn/GetSystemTime.xml:54(col)
-msgid "Second"
-msgstr "Sekunde"
-
-#: sdk/script/fn/GetSystemTime.xml:58(col)
-msgid "Millisecond"
-msgstr "Millisekunde"
-
-#: sdk/script/fn/GetSystemTime.xml:21(remark)
-msgid "The function will return a value depending on what has been requested: <placeholder-1/>"
-msgstr "Je nach Wert von what gibt GetSystemTime die folgende Angabe zurück: <placeholder-1/>"
 
 #: sdk/script/fn/GetSkyColor.xml:16(desc)
 msgid "Color index in the Clonk palette."
@@ -9496,7 +9437,8 @@ msgid "Returns the container object in which this object is contained. Returns n
 msgstr "Liefert das Objekt, in dem sich das aufrufende Objekt befindet, oder nil, wenn es in keinem anderen Objekt enthalten ist."
 
 #: sdk/script/fn/Construction.xml:17(desc)
-msgid "Object that created the new object. 0 if createt global (Scenarioscript,...)."
+#, fuzzy
+msgid "Object that created the new object. 0 if created in a global context (Scenarioscript,...)."
 msgstr "Objekt welches das neu erstellte Objekt erzeugt hat. 0 wenn es global (Szenarioscript,...) erstellt wurde."
 
 #: sdk/script/fn/Construction.xml:21(desc)
@@ -9815,6 +9757,26 @@ msgstr "Datentyp: Zeichenkette."
 msgid "Writes x to the log if it is a string."
 msgstr "Gibt x im Log aus, wenn es eine Zeichenkette ist."
 
+#: sdk/script/fn/C4V_PropList.xml:11(desc)
+#, fuzzy
+msgid "Data type: Proplist."
+msgstr "Datentyp: id."
+
+#: sdk/script/fn/C4V_PropList.xml:16(text)
+#, fuzzy
+msgid "Sets the property <code>\"foo\"</code> of <code>x</code> to <code>bar</code> if <code>x</code> is a proplist."
+msgstr "Setzt die Eigenschaft <code>key</code> von <code>object</code> auf <code>value</code>. Die Eigenschaft muss vorher nicht existiert haben."
+
+#: sdk/script/fn/C4V_Nil.xml:11(desc)
+#, fuzzy
+msgid "Data type: nil."
+msgstr "Datentyp: id."
+
+#: sdk/script/fn/C4V_Nil.xml:16(text)
+#, fuzzy
+msgid "Cancels the function if the data type of the first parameter is nil."
+msgstr "Bricht die Funktion ab, wenn der Datentyp des ersten Parameters unbekannt ist."
+
 #: sdk/script/fn/C4V_Int.xml:11(desc)
 msgid "Data type: integer."
 msgstr "Datentyp: Ganzzahl."
@@ -9831,14 +9793,6 @@ msgstr "Datentyp: Objektzeiger."
 msgid "Writes the name of x to the log if it is an object."
 msgstr "Gibt den Namen von x im Log aus, wenn es ein Objekt ist."
 
-#: sdk/script/fn/C4V_C4ID.xml:11(desc)
-msgid "Data type: id."
-msgstr "Datentyp: id."
-
-#: sdk/script/fn/C4V_C4ID.xml:16(text)
-msgid "Writes x to the log if it is an id."
-msgstr "Gibt x im Log aus, wenn es eine ID ist."
-
 #: sdk/script/fn/C4V_Bool.xml:11(desc)
 msgid "Data type: boolean value (true or false)."
 msgstr "Datentyp: Boolscher Wert (1 oder 0)."
@@ -9854,14 +9808,6 @@ msgstr "Datentyp: Array."
 #: sdk/script/fn/C4V_Array.xml:16(text)
 msgid "Saves a new, empty array in x if it is not already an array."
 msgstr "Speichert ein neues, leeres Array in x wenn es noch kein Array ist."
-
-#: sdk/script/fn/C4V_Any.xml:11(desc)
-msgid "Data type: unknown data type."
-msgstr "Datentyp: Unbekannter Datentyp."
-
-#: sdk/script/fn/C4V_Any.xml:16(text)
-msgid "Cancels the function if the data type of the first parameter is unknown."
-msgstr "Bricht die Funktion ab, wenn der Datentyp des ersten Parameters unbekannt ist."
 
 #: sdk/script/fn/C4Id.xml:17(desc)
 msgid "String to be converted into an id."
@@ -12809,17 +12755,18 @@ msgid "Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR."
 msgstr "Enthält Teameinstellungen für Mehrspielerszenarien. Ab 4.9.6.0 CR."
 
 #: sdk/scenario/index.xml:20(dt)
-#: sdk/folder/index.xml:20(dt)
-#: sdk/definition/index.xml:40(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Title.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
 
 #: sdk/scenario/index.xml:22(text)
-msgid "The title picture of the scenario in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well."
-msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt."
+#, fuzzy
+msgid "The title picture of the scenario in png format. Size: 200x150 pixel."
+msgstr "Das Titelbild des Rundenordners im Format PNG. Größe: 200x150 Pixel."
 
 #: sdk/scenario/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Icon.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
 
 #: sdk/scenario/index.xml:26(text)
@@ -12827,8 +12774,8 @@ msgid "The icon of the scenario in png format. Size: 24x24 pixel."
 msgstr "Das Icon des Szenarios im Format PNG. Größe 24x24 Pixel."
 
 #: sdk/scenario/index.xml:28(dt)
-#: sdk/folder/index.xml:44(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Loader*.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
 
 #: sdk/scenario/index.xml:30(text)
@@ -12836,7 +12783,8 @@ msgid "Loader screen to be displayed while the scenario is loading. If multiple 
 msgstr "Eine Grafik, die beim Start der Runde angezeigt wird. Sind mehrere Dateien vorhanden (Loader1.png, Loader2.png, Loader3.png...), wird per Zufall eine ausgewählt, wobei über eine optional im Scenario.txt vorhandene Loader-Spezifikation die Auswahl noch weiter vorgegeben werden kann. Beim veralteten BMP-Format mit 256 Farben müssen die Farben Schwarz bei Palettenindex 16 und Weiß bei Index 31 vorhanden sein, damit Meldungen beim Startvorgang korrekt angezeigt werden können. Auch Loader-Grafiken aus einem übergeordneten Ordner werden geladen."
 
 #: sdk/scenario/index.xml:32(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Sky.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"
 
 #: sdk/scenario/index.xml:34(text)
@@ -12845,7 +12793,8 @@ msgstr "Das Himmels-Hintergrundbild. Himmelsgrafiken sollten kachelbar sein oder
 
 #: sdk/scenario/index.xml:36(dt)
 #: sdk/folder/index.xml:28(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Desc*.rtf"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Desc*.rtf"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Desc*.rtf"
 
 #: sdk/scenario/index.xml:38(text)
@@ -12865,7 +12814,8 @@ msgstr "Diese Datei erstellt man am besten mit dem zu Windows gehörenden WordPa
 
 #: sdk/scenario/index.xml:42(dt)
 #: sdk/folder/index.xml:34(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Title.txt"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Title.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Title.txt"
 
 #: sdk/scenario/index.xml:44(text)
@@ -12880,7 +12830,7 @@ msgid "Important: No quotation marks and special characters should be used."
 msgstr "Wichtig: Es sollten keine Anführungszeichen oder Sonderzeichen verwendet werden."
 
 #: sdk/scenario/index.xml:48(emlink)
-#: sdk/definition/index.xml:48(emlink)
+#: sdk/definition/index.xml:40(emlink)
 msgid "Script.c"
 msgstr "Script.c"
 
@@ -12889,7 +12839,8 @@ msgid "The scenario script."
 msgstr "Das Szenarioscript."
 
 #: sdk/scenario/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Map.bmp"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Map.bmp"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Map.bmp"
 
 #: sdk/scenario/index.xml:54(text)
@@ -12901,7 +12852,8 @@ msgid "Exact landscapes represent the actual in-game landscape saved to a bitmap
 msgstr "Exakte Landkarten (ExactLandscape) geben die tatsächliche Spiellandschaft wieder. Die Farbindizes in Landscape.bmp (128-191 und 192-255, jeweils 3 Farben pro Material) repräsentieren direkt die für das Szenario festgelegten Materialien. Die aktuelle Materialanordnung wird in MatMap.txt festgehalten."
 
 #: sdk/scenario/index.xml:57(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Landscape.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Landscape.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Landscape.png"
 
 #: sdk/scenario/index.xml:59(text)
@@ -12917,7 +12869,8 @@ msgid "Advanced scenario designers can use this component to define highly compl
 msgstr "Besonders fortgeschrittene Spieler können über diese Datei komplexe Zufallslandschaften definieren. Dafür sind allerdings mathematisches und logisches Verständnis sowie viel Geduld unumgänglich."
 
 #: sdk/scenario/index.xml:65(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>MatMap.txt"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> MatMap.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>MatMap.txt"
 
 #: sdk/scenario/index.xml:67(text)
@@ -12925,7 +12878,8 @@ msgid "Stores the material table used in this scenario. The materials listed her
 msgstr "Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.ocg vorhanden sein."
 
 #: sdk/scenario/index.xml:69(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Objects.txt"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Objects.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Objects.txt"
 
 #: sdk/scenario/index.xml:71(text)
@@ -12938,32 +12892,32 @@ msgid "Material.ocg"
 msgstr "Material.ocg"
 
 #: sdk/scenario/index.xml:75(text)
-msgid "Scenarios can contain local material definition groups. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
+#, fuzzy
+msgid "Scenarios can contain local material definition groups. See <a href=\"#UeberladungenOCS\">overloading rules</a>."
 msgstr "Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <a href=\"#UeberladungenC4S\">Überladungsregeln</a>."
 
 #: sdk/scenario/index.xml:77(dt)
-#: sdk/folder/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Graphics.ocg"
 msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
 
 #: sdk/scenario/index.xml:79(text)
-msgid "Scenarios can overload individual entries of the global Graphics.ocg group. See <a href=\"#UeberladungenC4S\">overloading rules</a>."
+#, fuzzy
+msgid "Scenarios can overload individual entries of the global Graphics.ocg group. See <a href=\"#UeberladungenOCS\">overloading rules</a>."
 msgstr "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Es gelten die <a href=\"#UeberladungenC4S\">Überladungsregeln</a>."
 
 #: sdk/scenario/index.xml:81(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav"
 msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav"
-
-#: sdk/definition/index.xml:72(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav/*.ogg"
-msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav/*.ogg"
 
 #: sdk/scenario/index.xml:83(text)
 msgid "Scenarios can contain any number of sound files. These can be played back by script during the game. Scenario local sounds are loaded dynamically on demand which might cause delays with large scenario files."
 msgstr "Szenarien können beliebig lokale Sounds enthalten. Diese können per Script während des Spiels abgespielt werden. Szenariolokale Sounds werden dynamisch und erst bei Bedarf geladen, was bei großen Szenariodateien zu Verzögerungen führen kann."
 
 #: sdk/scenario/index.xml:85(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/>*.mid/*.ogg"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/> *.mid/*.ogg"
 msgstr "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/>*.mid/*.ogg"
 
 #: sdk/scenario/index.xml:87(text)
@@ -12971,8 +12925,8 @@ msgid "If the scenario contains music files, these can be played back during the
 msgstr "Wenn das Szenario lokale Musikdateien enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href=\"script/fn/Music.html\">Music</emlink>()."
 
 #: sdk/scenario/index.xml:89(dt)
-#: sdk/folder/index.xml:56(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Music.ocg"
 msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
 
 #: sdk/scenario/index.xml:91(text)
@@ -12994,8 +12948,8 @@ msgid "The engine will also search all parent folders (ocf) of the scenario for 
 msgstr "Die Engine durchsucht auch alle übergeordneten Rundenordner (ocf) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind."
 
 #: sdk/scenario/index.xml:98(dt)
-#: sdk/definition/index.xml:56(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Names.txt"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Names.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Names.txt"
 
 #: sdk/scenario/index.xml:100(text)
@@ -13004,8 +12958,9 @@ msgstr "Diese Namen werden für während der Runde neu erzeugte Clonks verwendet
 
 #: sdk/scenario/index.xml:102(dt)
 #: sdk/folder/index.xml:64(dt)
-#: sdk/definition/index.xml:80(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
+#: sdk/definition/index.xml:64(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Info.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
 
 #: sdk/scenario/index.xml:104(text)
@@ -13015,12 +12970,12 @@ msgstr "Hier kann der Autor zusätzliche Informationen über den Entwicklungssta
 
 #: sdk/scenario/index.xml:106(dt)
 #: sdk/folder/index.xml:68(dt)
-#: sdk/definition/index.xml:84(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
+#: sdk/definition/index.xml:68(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Author.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
 
 #: sdk/scenario/index.xml:108(text)
-#: sdk/folder/index.xml:70(text)
 msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time."
 msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird."
 
@@ -13607,7 +13562,6 @@ msgstr "Ein Pixel gilt als erfüllt, wenn er innerhalb des durch die im overlay 
 msgid "Multiple layers can be combined using operators. This are evaluated from top to bottom and only the bottom most result of the chain is drawn. In a group (grp) the child layers are taken into the calculation but not actually drawn. Operators are | (OR), &amp; (AND), ^ (XOR)."
 msgstr "Mehrere Ebenen können mit Operatoren verbunden werden. Diese werden von oben nach unten ausgewertet, und es wird nur das unterste Glied der Operatorkette ggf gezeichnet. Bei einer Gruppe (grp) werden zusätzlich die untergeordneten Ebenen in die Auswertung mit einbezogen und nicht gezeichnet. Definierte Operatoren sind | (oder), &amp; (und) und ^ (exklusiv oder)."
 
-
 #: sdk/playercontrols.xml:6(title)
 #: sdk/playercontrols.xml:7(h)
 msgid "Player controls"
@@ -13919,7 +13873,8 @@ msgid "Particle Components (ocd)"
 msgstr "Partikel-Komponenten (OCD)"
 
 #: sdk/particle/index.xml:14(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Particle.txt"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Particle.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Particle.txt"
 
 #: sdk/particle/index.xml:16(text)
@@ -13928,7 +13883,8 @@ msgstr "Partikeleigenschaften."
 
 #: sdk/particle/index.xml:18(dt)
 #: sdk/definition/index.xml:16(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics.png"
 
 #: sdk/particle/index.xml:20(text)
@@ -14287,70 +14243,6 @@ msgstr "Kontrolle"
 #: sdk/particle/index.xml:220(text)
 msgid "External control of particles is very limited and only allows creation, global offset, and global removal. This is necessary as particles are not synchronized on computers throughout a network game and any deviation in particle handling would cause sync loss. Particles are created using <placeholder-1/>."
 msgstr "Die externe Kontrolle von Partikeln beschränkt sich auf wenige Funktionen zur Erzeugung, Gesamtverschiebung und Gesamtzerstörung. Das muss so sein, da Partikel nicht syncrelevant sind, und damit so gut wie gar nicht vom Script aus abfragbar sein können (ansonsten würden unterschiedliche Effektmengen im Netzwerk zu Desyncs führen). Partikel werden mit <placeholder-1/> erschaffen."
-
-#: sdk/material/index.xml:9(text)
-msgid "Using material definitions you can specify looks and behaviour of the landscape materials."
-msgstr "Mit Materialdefinitionen können Aussehen und Funktion der Materialien, aus denen eine Clonk-Landschaft besteht, bestimmt werden. In der Landschaft eines Szenarios können maximal 125 verschiedene Materialien verwendet werden."
-
-#: sdk/material/index.xml:10(h)
-msgid "Material Definition Components (Material.ocg)"
-msgstr "Materialdefinitions-Komponenten (Material.ocg)"
-
-#: sdk/material/index.xml:12(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>TexMap.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>TexMap.txt"
-
-#: sdk/material/index.xml:14(text)
-msgid "Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'."
-msgstr "Zuordnungstabelle für Farbindizes in statischen und komplexen dynamischen Landkarten. Den Farben 0-127 kann eine Material-Textur-Referenz zugewiesen werden. Die Farben 128-255 stehen für die gleiche Reihe von Materialien in unterirdischem Zustand."
-
-#: sdk/material/index.xml:15(text)
-msgid "The engine will draw materials with a higher index above those with a lower index so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. This is also the reason why there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials."
-msgstr "Die Engine zeichnet dabei Materialien mit höherem Index über solche mit niedrigeren, so dass bei der Standardtabelle die runde Erde das eckige Wasser überschreibt, weil letzteres einen niedrigeren Index hat. Einen noch höheren Index haben die Resourcen, damit sie nach außen gewölbt sind, und nicht die Wölbung der Erde in sie hineinragt, was etwas seltsam aussähe. Die Reihenfolge ist auch der Grund, weshalb einzelne Goldpixel einer statischen Landkarte nach dem Zoomen mehr Platz einnehmen als das dem Pixel entsprechende Quadrat, während ein einzelnes Wasserpixel oft von der umgebenden Erde komplett übermalt wird."
-
-#: sdk/material/index.xml:16(text)
-msgid "If a custom map fails with the message 'texture n undefined' you should define the specified texture in the TexMap. You should always use a paint program capable of editing indexed color palettes without modifying the palette (MS Paint is not suited for this)."
-msgstr "Wenn eine selbstgemalte Landkarte von der Engine mit der Meldung \"Landkarte: Textur n nicht definiert.\" abgelehnt wird, kann dies durch definieren der Textur n in der TexMap behoben werden. Grundsätzlich sollte man ein palettenfähiges Grafikprogramm (MS Paint gehört nicht dazu) oder den Entwicklermodus der Engine verwenden, um solche Probleme zu vermeiden."
-
-#: sdk/material/index.xml:18(emlink)
-msgid "*.ocm"
-msgstr "*.ocm"
-
-#: sdk/material/index.xml:20(text)
-msgid "The engine will accept up to 125 material definitions at a time. C4M files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available."
-msgstr "Die Engine akzeptiert bis zu 125 Materialdefinitionen gleichzeitig. C4M-Dateien sind einfache Textdateien. Die Materialien Vehicle, Tunnel, Water, Snow, Granite, Sand und Earth müssen immer vorhanden sein."
-
-#: sdk/material/index.xml:22(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>*.png/*.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>*.png/*.bmp"
-
-#: sdk/material/index.xml:24(text)
-msgid "There can be any number of textures in PNG or uncompressed Windows BMP format (with 256 colors) in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.) With the old BMP format only the first three colors of the texture bitmap may be used as to these the three material colors are applied."
-msgstr "Es können beliebig viele Texturen im Format PNG oder als unkomprimierte Windows-Bitmaps (mit 256 Farben) in einer Materialgruppe abgelegt werden. Breite und Höhe eines jeden Bitmaps müssen Zweierpotenzen sein (also 16, 32, 64, 128, 256, etc.) Im veralteten BMP-Format dürfen nur die ersten drei Farben des Textur-Bitmaps verwendet werden (Farbindex 0-2). Die Farbgebung ist irrelevant, da die Texturen im Spiel mit den Farben des jeweiligen Materials kombiniert werden."
-
-#: sdk/material/index.xml:27(h)
-msgid "Material-Texture-References"
-msgstr "Material-Textur-Referenzen"
-
-#: sdk/material/index.xml:28(text)
-msgid "At numerous places in scenario definitions materials are specified with additional information on texture and amounts."
-msgstr "An zahlreichen Stellen in Szenario-Definitionen werden Materialien (ggf. mit Textur- und Mengenangaben) bestimmt."
-
-#: sdk/material/index.xml:32(col)
-msgid "Simple material specification (using the default texture):"
-msgstr "Einfache Materialangabe (mit Vorgabetextur):"
-
-#: sdk/material/index.xml:36(col)
-msgid "Material using an specified texture:"
-msgstr "Material mit bestimmter Textur:"
-
-#: sdk/material/index.xml:40(col)
-msgid "Material and texture with specified amount:"
-msgstr "Material mit Textur und Mengenangabe:"
-
-#: sdk/material/index.xml:44(col)
-msgid "Multiple material definitions:"
-msgstr "Mehrfache Materialien:"
 
 #: sdk/material/ocm.xml:6(title)
 #: sdk/material/ocm.xml:7(h)
@@ -14961,6 +14853,73 @@ msgstr "Siehe <emlink href=\"material/ocm.html#ReactEvents\">Reaktionsereignisse
 msgid "This resource-intensive method can be used to define the material behaviour freely. The script function should be defined globally and have the following parameters: <placeholder-1/> The return value of the function should be either 1 for removal or 0 for keeping the loose material."
 msgstr "Mit dieser sehr rechenintensiven Methode kann das Materialveralten frei bestimmt werden. Die Scriptfunktion sollte global deklariert haben und folgende Parameter besitzen: <placeholder-1/> Der Rückgabewert der Funktion sollte entweder 1 für Entfernen oder 0 für Erhalten des losen Materials sein."
 
+#: sdk/material/index.xml:9(text)
+msgid "Using material definitions you can specify looks and behaviour of the landscape materials."
+msgstr "Mit Materialdefinitionen können Aussehen und Funktion der Materialien, aus denen eine Clonk-Landschaft besteht, bestimmt werden. In der Landschaft eines Szenarios können maximal 125 verschiedene Materialien verwendet werden."
+
+#: sdk/material/index.xml:10(h)
+msgid "Material Definition Components (Material.ocg)"
+msgstr "Materialdefinitions-Komponenten (Material.ocg)"
+
+#: sdk/material/index.xml:12(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> TexMap.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>TexMap.txt"
+
+#: sdk/material/index.xml:14(text)
+msgid "Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'."
+msgstr "Zuordnungstabelle für Farbindizes in statischen und komplexen dynamischen Landkarten. Den Farben 0-127 kann eine Material-Textur-Referenz zugewiesen werden. Die Farben 128-255 stehen für die gleiche Reihe von Materialien in unterirdischem Zustand."
+
+#: sdk/material/index.xml:15(text)
+msgid "The engine will draw materials with a higher index above those with a lower index so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. This is also the reason why there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials."
+msgstr "Die Engine zeichnet dabei Materialien mit höherem Index über solche mit niedrigeren, so dass bei der Standardtabelle die runde Erde das eckige Wasser überschreibt, weil letzteres einen niedrigeren Index hat. Einen noch höheren Index haben die Resourcen, damit sie nach außen gewölbt sind, und nicht die Wölbung der Erde in sie hineinragt, was etwas seltsam aussähe. Die Reihenfolge ist auch der Grund, weshalb einzelne Goldpixel einer statischen Landkarte nach dem Zoomen mehr Platz einnehmen als das dem Pixel entsprechende Quadrat, während ein einzelnes Wasserpixel oft von der umgebenden Erde komplett übermalt wird."
+
+#: sdk/material/index.xml:16(text)
+msgid "If a custom map fails with the message 'texture n undefined' you should define the specified texture in the TexMap. You should always use a paint program capable of editing indexed color palettes without modifying the palette (MS Paint is not suited for this)."
+msgstr "Wenn eine selbstgemalte Landkarte von der Engine mit der Meldung \"Landkarte: Textur n nicht definiert.\" abgelehnt wird, kann dies durch definieren der Textur n in der TexMap behoben werden. Grundsätzlich sollte man ein palettenfähiges Grafikprogramm (MS Paint gehört nicht dazu) oder den Entwicklermodus der Engine verwenden, um solche Probleme zu vermeiden."
+
+#: sdk/material/index.xml:18(emlink)
+msgid "*.ocm"
+msgstr "*.ocm"
+
+#: sdk/material/index.xml:20(text)
+#, fuzzy
+msgid "The engine will accept up to 125 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available."
+msgstr "Die Engine akzeptiert bis zu 125 Materialdefinitionen gleichzeitig. C4M-Dateien sind einfache Textdateien. Die Materialien Vehicle, Tunnel, Water, Snow, Granite, Sand und Earth müssen immer vorhanden sein."
+
+#: sdk/material/index.xml:22(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> *.png/*.bmp"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>*.png/*.bmp"
+
+#: sdk/material/index.xml:24(text)
+msgid "There can be any number of textures in PNG or uncompressed Windows BMP format (with 256 colors) in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.) With the old BMP format only the first three colors of the texture bitmap may be used as to these the three material colors are applied."
+msgstr "Es können beliebig viele Texturen im Format PNG oder als unkomprimierte Windows-Bitmaps (mit 256 Farben) in einer Materialgruppe abgelegt werden. Breite und Höhe eines jeden Bitmaps müssen Zweierpotenzen sein (also 16, 32, 64, 128, 256, etc.) Im veralteten BMP-Format dürfen nur die ersten drei Farben des Textur-Bitmaps verwendet werden (Farbindex 0-2). Die Farbgebung ist irrelevant, da die Texturen im Spiel mit den Farben des jeweiligen Materials kombiniert werden."
+
+#: sdk/material/index.xml:27(h)
+msgid "Material-Texture-References"
+msgstr "Material-Textur-Referenzen"
+
+#: sdk/material/index.xml:28(text)
+msgid "At numerous places in scenario definitions materials are specified with additional information on texture and amounts."
+msgstr "An zahlreichen Stellen in Szenario-Definitionen werden Materialien (ggf. mit Textur- und Mengenangaben) bestimmt."
+
+#: sdk/material/index.xml:32(col)
+msgid "Simple material specification (using the default texture):"
+msgstr "Einfache Materialangabe (mit Vorgabetextur):"
+
+#: sdk/material/index.xml:36(col)
+msgid "Material using an specified texture:"
+msgstr "Material mit bestimmter Textur:"
+
+#: sdk/material/index.xml:40(col)
+msgid "Material and texture with specified amount:"
+msgstr "Material mit Textur und Mengenangabe:"
+
+#: sdk/material/index.xml:44(col)
+msgid "Multiple material definitions:"
+msgstr "Mehrfache Materialien:"
+
 #: sdk/lang.xml:6(title)
 #: sdk/lang.xml:7(h)
 msgid "Localization"
@@ -15027,8 +14986,8 @@ msgid "The reference in the script is composed of a name for the string (string-
 msgstr "Der Verweis im Script besteht aus einem Namen für den zu verwendenden String (String-ID), der mit Dollarzeichen (\"$\") als ein solcher Stringtabellenverweis gekennzeichnet ist. <br/> Beispiel:"
 
 #: sdk/lang.xml:38(emlink)
-#: sdk/definition/script.xml:367(emlink)
-#: sdk/definition/script.xml:370(emlink)
+#: sdk/definition/script.xml:362(emlink)
+#: sdk/definition/script.xml:365(emlink)
 msgid "Message"
 msgstr "Message"
 
@@ -15079,19 +15038,27 @@ msgid "Scenario folders can contain any number of scenarios."
 msgstr "Rundenordner können beliebig viele Szenarien enthalten, die in diesem Ordner ausgewählt werden können."
 
 #: sdk/folder/index.xml:16(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/>*.ocf"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/> *.ocf"
 msgstr "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/>*.ocf"
 
 #: sdk/folder/index.xml:18(text)
 msgid "Scenario folders can also contain other scenario folders."
 msgstr "Rundenordner lassen sich auch schachteln."
 
+#: sdk/folder/index.xml:20(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Title.png/Title.bmp"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
+
 #: sdk/folder/index.xml:22(text)
-msgid "The title picture of the scenario folder in png format. Size: 200x150 pixel."
-msgstr "Das Titelbild des Rundenordners im Format PNG. Größe: 200x150 Pixel."
+#, fuzzy
+msgid "The title picture of the scenario folder in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well."
+msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt."
 
 #: sdk/folder/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.bmp/Icon.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Icon.bmp/Icon.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.bmp/Icon.png"
 
 #: sdk/folder/index.xml:26(text)
@@ -15108,25 +15075,48 @@ msgstr "FolderMap.txt"
 msgid "From CR, scenario folders can also contain graphical folder maps for the selection of scenarios."
 msgstr "Ab CR können Rundenordner Auswahlkarten für die enthaltenen Szenarien anbieten."
 
+#: sdk/folder/index.xml:44(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Loader*.png/Loader*.bmp"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
+
 #: sdk/folder/index.xml:46(text)
-msgid "Scenario folders can contain local loader screens. Also see <emlink href=\"scenario/index.html\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+#, fuzzy
+msgid "Scenario folders can contain local loader screens. Also see <emlink href=\"scenario/index.html\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können lokale Ladebildschirme enthalten. Siehe auch <emlink href=\"scenario/index.html\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:50(text)
-msgid "Scenario folders can contain local material definitions. Also see <emlink href=\"scenario/index.html#Materialocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+#, fuzzy
+msgid "Scenario folders can contain local material definitions. Also see <emlink href=\"scenario/index.html#Materialocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können lokale Materialdefinitionen enthalten. Siehe auch <emlink href=\"scenario/index.html#Materialocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
+#: sdk/folder/index.xml:52(dt)
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
+
 #: sdk/folder/index.xml:54(text)
-msgid "Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href=\"#UeberladungenC4S\">overloading rules</emlink>."
+#, fuzzy
+msgid "Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href=\"#UeberladungenOCS\">overloading rules</emlink>."
 msgstr "Rundenordner können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Siehe auch <emlink href=\"scenario/index.html#Graphicsocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
+#: sdk/folder/index.xml:56(dt)
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
+
 #: sdk/folder/index.xml:58(text)
-msgid "Scenario folders can contain local music files. Also see <emlink href=\"scenario/index.html#Musicocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+#, fuzzy
+msgid "Scenario folders can contain local music files. Also see <emlink href=\"scenario/index.html#Musicocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können eigene Musik für alle Szenarien bereitstellen. Siehe auch <emlink href=\"scenario/index.html#Musicocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
 
 #: sdk/folder/index.xml:62(text)
-msgid "Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href=\"scenario/index.html#ocd\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenC4S\">overloading rules</emlink> apply."
+#, fuzzy
+msgid "Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href=\"scenario/index.html#ocd\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können lokale Objektdefinitionen enthalten, die dann in allen Szenarien des Ordners verfügbar sind. Siehe auch <emlink href=\"scenario/index.html#ocd\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenC4S\">Überladungsregeln</emlink>."
+
+#: sdk/folder/index.xml:70(text)
+#, fuzzy
+msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios."
+msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht."
 
 #: sdk/folder/foldermap.xml:9(text)
 msgid "From CR, scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples."
@@ -15315,7 +15305,8 @@ msgid "The game data of clonk is stored in compressed group files which each con
 msgstr "Die Spieldaten von Clonk sind in komprimierten Gruppendateien zusammen gefasst, die jeweils einzelne Komponenten oder weitere Gruppendateien enthalten:"
 
 #: sdk/files.xml:10(dt)
-msgid "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/>Player Files (ocp)"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/> Player Files (ocp)"
 msgstr "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/>Spielerdateien (ocp)"
 
 #: sdk/files.xml:12(text)
@@ -15347,7 +15338,8 @@ msgid "Scenarios are grouped in scenario folders."
 msgstr "Szenarien können in Rundenordnern zusammen gefasst werden."
 
 #: sdk/files.xml:26(dt)
-msgid "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/>System Data (ocg)"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/> System Data (ocg)"
 msgstr "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/>Systemdaten (ocg)"
 
 #: sdk/files.xml:28(text)
@@ -15384,9 +15376,9 @@ msgid "CreateContents"
 msgstr "CreateContents"
 
 #: sdk/definition/script.xml:15(emlink)
-#: sdk/definition/script.xml:354(emlink)
-#: sdk/definition/script.xml:355(emlink)
-#: sdk/definition/script.xml:372(emlink)
+#: sdk/definition/script.xml:349(emlink)
+#: sdk/definition/script.xml:350(emlink)
+#: sdk/definition/script.xml:367(emlink)
 msgid "return"
 msgstr "return"
 
@@ -15466,363 +15458,359 @@ msgstr "Parameter"
 msgid "When the object is completed (<emlink href=\"script/fn/GetCon.html\">Con</emlink> &gt;= 100)."
 msgstr "Wenn das Objekt fertiggestellt wird (<emlink href=\"script/fn/GetCon.html\">Con</emlink> größer gleich 100)."
 
-#: sdk/definition/script.xml:64(col)
-msgid "Obsolete. Same as Initialze."
-msgstr "Veraltet. Wie Initialize."
-
-#: sdk/definition/script.xml:68(col)
-#: sdk/definition/script.xml:138(col)
+#: sdk/definition/script.xml:63(col)
+#: sdk/definition/script.xml:133(col)
+#: sdk/definition/script.xml:143(col)
 #: sdk/definition/script.xml:148(col)
-#: sdk/definition/script.xml:153(col)
-#: sdk/definition/script.xml:298(col)
+#: sdk/definition/script.xml:293(col)
 msgid "object by_object"
 msgstr "object by_object"
 
-#: sdk/definition/script.xml:69(col)
+#: sdk/definition/script.xml:64(col)
 msgid "When the object is created. The parameter is a pointer to the object the script of which has created this object. Also see <emlink href=\"script/fn/Construction.html\">Construction</emlink>"
 msgstr "Wenn das Objekt erzeugt wird. Als Parameter wird das Objekt übergeben, in dem das erzeugende Script steht. Siehe auch <emlink href=\"script/fn/Construction.html\">Construction</emlink>"
 
-#: sdk/definition/script.xml:74(col)
+#: sdk/definition/script.xml:69(col)
 msgid "When the object is removed."
 msgstr "Wenn das Objekt gelöscht wird."
 
-#: sdk/definition/script.xml:79(col)
+#: sdk/definition/script.xml:74(col)
 msgid "When the object collides with the landscape or is collected at high velocity (&gt;=15)."
 msgstr "Wenn das Objekt bei hoher Geschwindigkeit (&gt;= 15) mit der Landschaft kollidiert oder aufgenommen wird (Collection)"
 
-#: sdk/definition/script.xml:84(col)
+#: sdk/definition/script.xml:79(col)
 msgid "Like Hit, with speeds &gt;= 20 (see <emlink href=\"script/fn/OCF_HitSpeed2.html\">OCF_HitSpeed2</emlink>)."
 msgstr "Wie Hit, bei Geschwindigkeiten &gt;= 20 (siehe <emlink href=\"script/fn/OCF_HitSpeed2.html\">OCF_HitSpeed2</emlink>)."
 
-#: sdk/definition/script.xml:89(col)
+#: sdk/definition/script.xml:84(col)
 msgid "Like Hit, with speeds &gt;= 60 (see <emlink href=\"script/fn/OCF_HitSpeed3.html\">OCF_HitSpeed3</emlink>)."
 msgstr "Wie Hit, bei Geschwindigkeiten &gt;= 60 (siehe <emlink href=\"script/fn/OCF_HitSpeed3.html\">OCF_HitSpeed3</emlink>)."
 
-#: sdk/definition/script.xml:93(col)
+#: sdk/definition/script.xml:88(col)
 msgid "object target, bool grab"
 msgstr "object target, bool grab"
 
-#: sdk/definition/script.xml:94(col)
+#: sdk/definition/script.xml:89(col)
 msgid "When the object grabs or lets go of another object."
 msgstr "Wenn das Objekt ein anderes Objekt anfasst oder loslässt."
 
-#: sdk/definition/script.xml:98(col)
+#: sdk/definition/script.xml:93(col)
 msgid "object by_object, bool grab"
 msgstr "object by_object, bool grab"
 
-#: sdk/definition/script.xml:99(col)
+#: sdk/definition/script.xml:94(col)
 msgid "When the object is grabbed or let go by another object. Since 4.9.8.4."
 msgstr "Wenn das Objekt durch ein anderes Objekt angefasst oder losgelassen wird. Ab 4.9.8.4."
 
-#: sdk/definition/script.xml:103(col)
+#: sdk/definition/script.xml:98(col)
 msgid "object target"
 msgstr "object target"
 
-#: sdk/definition/script.xml:104(col)
+#: sdk/definition/script.xml:99(col)
 msgid "When the object takes another object from a container."
 msgstr "Wenn das Objekt ein Objekt aus einem anderen Objekt herausnimmt."
 
-#: sdk/definition/script.xml:109(col)
+#: sdk/definition/script.xml:104(col)
 msgid "When the object puts another object into a container."
 msgstr "Wenn das Objekt ein Objekt in einem anderen Objekt ablegt."
 
-#: sdk/definition/script.xml:113(col)
+#: sdk/definition/script.xml:108(col)
 msgid "int change, int by_player"
 msgstr "int change, int by_player"
 
-#: sdk/definition/script.xml:114(col)
+#: sdk/definition/script.xml:109(col)
 msgid "When the object is damage."
 msgstr "Wenn das Objekt beschädigt wird."
 
-#: sdk/definition/script.xml:119(col)
+#: sdk/definition/script.xml:114(col)
 msgid "When a living being surfaces after having used up more than half of its breath."
 msgstr "Wenn das Lebewesen nach dem Auftauchen mehr als die Hälfte seiner Atemkapazität auffüllt."
 
+#: sdk/definition/script.xml:118(col)
 #: sdk/definition/script.xml:123(col)
-#: sdk/definition/script.xml:128(col)
+#: sdk/definition/script.xml:313(col)
 #: sdk/definition/script.xml:318(col)
-#: sdk/definition/script.xml:323(col)
 msgid "int by_player"
 msgstr "int by_player"
 
-#: sdk/definition/script.xml:124(col)
+#: sdk/definition/script.xml:119(col)
 msgid "When the object is incinerated. Notice: with objects changing their definition via BurnTo, this call is made to the burned version!"
 msgstr "Wenn das Objekt entzündet wird. Achtung: Bei Objekten, die ihre Definition mit BurnTo ändern, findet der Aufruf im verbrannten Objekt statt!"
 
-#: sdk/definition/script.xml:129(col)
+#: sdk/definition/script.xml:124(col)
 msgid "When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration. From CE."
 msgstr "Wenn das Objekt in einer löschenden Flüssigkeit gesprengt, und damit nicht angezündet wird. Aufruf analog zu Incineration. Ab CE."
 
-#: sdk/definition/script.xml:134(col)
+#: sdk/definition/script.xml:129(col)
 msgid "When a living being dies."
 msgstr "Wenn ein Lebwesen stirbt."
 
-#: sdk/definition/script.xml:139(col)
+#: sdk/definition/script.xml:134(col)
 msgid "Activation by double dig. Only applies to collected items or directly controlled crew objects. Called after internal handling of the double dig command has been completed (e.g. chopping of trees etc.)"
 msgstr "Aktivierung durch einen Doppelklick auf Graben. Nur getragene Objekte und direkt spielergesteuerte Objekte. Wird aufgerufen, nachdem die interne Befehlskette (z.B. Bäume fällen) abgearbeitet wurde."
 
-#: sdk/definition/script.xml:144(col)
+#: sdk/definition/script.xml:139(col)
 msgid "When the object collides with the landscape. See <emlink href=\"definition/cnat.html\">CNAT - Contact Attachment</emlink>."
 msgstr "Wenn das Objekt die Landschaft berührt. Siehe <emlink href=\"definition/cnat.html\">CNAT - Contact Attachment</emlink>."
 
-#: sdk/definition/script.xml:149(col)
+#: sdk/definition/script.xml:144(col)
 msgid "When the object is controlled from the outside. See <a href=\"#Control-Funktionen\">Control Functions</a>."
 msgstr "Wenn das Objekt von außen gesteuert wird. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
 
-#: sdk/definition/script.xml:154(col)
+#: sdk/definition/script.xml:149(col)
 msgid "When the object is controlled from the inside. See <a href=\"#Control-Funktionen\">Control Functions</a>."
 msgstr "Wenn das Objekt von innen gesteuert wird. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
 
-#: sdk/definition/script.xml:158(col)
+#: sdk/definition/script.xml:153(col)
 msgid "string command, object target, int x, int y, object target2, int data, object command_object"
 msgstr "string command, object target, int x, int y, object target2, int data, object command_object"
 
-#: sdk/definition/script.xml:159(col)
+#: sdk/definition/script.xml:154(col)
 msgid "When the object has received a command to be independently executed. See <a href=\"#Control-Funktionen\">Control functions</a>."
 msgstr "Wenn dem Objekt durch den Spieler ein selbständig auszuführender Befehl gegeben wurde. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
 
-#: sdk/definition/script.xml:163(col)
+#: sdk/definition/script.xml:158(col)
 msgid "string command, object target, int x, int y, object target2, any Data"
 msgstr "string command, object target, int x, int y, object target2, any Data"
 
-#: sdk/definition/script.xml:164(col)
+#: sdk/definition/script.xml:159(col)
 msgid "When the object has completed a command or execution of a command has failed."
 msgstr "Wenn das Objekt einen selbständigen auszuführenden Befehl vollendet hat oder die Ausführung des Befehls fehlgeschlagen ist."
 
-#: sdk/definition/script.xml:168(col)
+#: sdk/definition/script.xml:163(col)
 msgid "object obj, int x, int y"
 msgstr "object obj, int x, int y"
 
-#: sdk/definition/script.xml:169(col)
+#: sdk/definition/script.xml:164(col)
 msgid "When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning true. Also see <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 msgstr "Wenn ein durch die Wegfindungsroutine gesteuertes Objekt (obj) die Transferzone dieses Objekts zum Zielpunkt x/y passieren möchte. Die Transferfunktion kann dem Objekt entsprechende Kommandos geben und sollte bei erfolgreicher Bearbeitung TRUE zurückliefern. Siehe auch <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 
-#: sdk/definition/script.xml:174(col)
+#: sdk/definition/script.xml:169(col)
 msgid "When an object is loaded from a savegame or network synchronization is performed. Objects with a transfer zone should reset the zone in this call. Also see <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 msgstr "Wenn ein Objekt geladen oder synchronisiert wird. Objekte mit einer TransferZone sollten diese bei jedem Aufruf von UpdateTransferZone neu setzen. Siehe auch <emlink href=\"script/fn/SetTransferZone.html\">SetTransferZone</emlink>()."
 
-#: sdk/definition/script.xml:178(col)
+#: sdk/definition/script.xml:173(col)
 msgid "int selection, object menu_object"
 msgstr "int selection, object menu_object"
 
-#: sdk/definition/script.xml:179(col)
+#: sdk/definition/script.xml:174(col)
 msgid "When the player wants to close a user defined object menu. Return value true will keep the menu open."
 msgstr "Wird in einem Objekt aufgerufen, wenn der Spieler ein benutzerdefiniertes Menu schließen will. Bei Rückgabewert TRUE bleibt das Menu geöffnet."
 
-#: sdk/definition/script.xml:184(col)
+#: sdk/definition/script.xml:179(col)
 msgid "Only in game goal objects. A return value true indicates that this goal is fulfilled."
 msgstr "Nur bei Spielziel-Objekten. Bei Rückgabewert TRUE ist das Spielziel erfüllt."
 
-#: sdk/definition/script.xml:188(col)
+#: sdk/definition/script.xml:183(col)
 msgid "id target"
 msgstr "id target"
 
-#: sdk/definition/script.xml:189(col)
+#: sdk/definition/script.xml:184(col)
 msgid "When a new inventory object is selected. See <a href=\"#Control-Funktionen\">Control Functions</a>."
 msgstr "Wenn ein neues Inhaltsobjekt angewählt wird. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
 
-#: sdk/definition/script.xml:193(col)
-#: sdk/definition/script.xml:283(col)
-#: sdk/definition/script.xml:293(col)
+#: sdk/definition/script.xml:188(col)
+#: sdk/definition/script.xml:278(col)
+#: sdk/definition/script.xml:288(col)
 msgid "object container"
 msgstr "object container"
 
-#: sdk/definition/script.xml:194(col)
+#: sdk/definition/script.xml:189(col)
 msgid "When the object is selected in an inventory change. If you are processing this event, the function should play its own selection sound."
 msgstr "Wenn das Objekt durch einen Inventarwechsel ausgewählt wird. Wenn die Funktion abgefangen wird, sollte ein eigener Auswahlsound abgespielt werden."
 
-#: sdk/definition/script.xml:198(col)
+#: sdk/definition/script.xml:193(col)
 msgid "int level, object by"
 msgstr "int level, object by"
 
-#: sdk/definition/script.xml:199(col)
+#: sdk/definition/script.xml:194(col)
 msgid "When the object is hit or punched by another object."
 msgstr "Wenn das Objekt von einem anderen Objekt geschlagen oder getroffen wird."
 
-#: sdk/definition/script.xml:203(col)
+#: sdk/definition/script.xml:198(col)
 msgid "object by"
 msgstr "object by"
 
-#: sdk/definition/script.xml:204(col)
+#: sdk/definition/script.xml:199(col)
 msgid "Called before the object is hit or punched by another object. By returning true, QueryCatchBlow can reject physical blows."
 msgstr "Bevor das Objekt von einem anderen Objekt geschlagen oder getroffen wird. Wenn QueryCatchBlow TRUE zurückgibt, können damit physikalische Treffer abgefangen werden."
 
-#: sdk/definition/script.xml:208(col)
+#: sdk/definition/script.xml:203(col)
 msgid "int cause"
 msgstr "int cause"
 
-#: sdk/definition/script.xml:209(col)
+#: sdk/definition/script.xml:204(col)
 msgid "When a line object is broken. cause: 0 by movement, 1 because of a missing or incomplete target object."
 msgstr "Wenn ein Leitungsobjekt unterbrochen wird. cause: 0 durch Bewegung, 1 durch fehlendes oder unvollständiges Zielobjekt."
 
-#: sdk/definition/script.xml:213(col)
+#: sdk/definition/script.xml:208(col)
 msgid "id material_definition, int amount"
 msgstr "id material_definition, int amount"
 
-#: sdk/definition/script.xml:214(col)
+#: sdk/definition/script.xml:209(col)
 msgid "When the object is building another object and building material is required. The parameters are the type and amount of the first needed material. If this function returns true, no material message is displayed above the object."
 msgstr "Wenn das Objekt ein anderes Objekt baut und noch Baumaterial benötigt wird. Parameter sind Typ und Menge des ersten noch benötigten Baustoffs. Durch Rückgabewert TRUE kann die Textmeldung über fehlendes Material abgefangen werden."
 
-#: sdk/definition/script.xml:219(col)
+#: sdk/definition/script.xml:214(col)
 msgid "When the object is in an ATTACH action and has lost its action target. At this time, the object's action has already been reset."
 msgstr "Wenn das Objekt eine ATTACH-Aktivität besessen hatte, aber das Actiontarget verloren hat. Die Aktivität ist beim Aufruf bereits zurückgesetzt."
 
-#: sdk/definition/script.xml:223(col)
+#: sdk/definition/script.xml:218(col)
 msgid "bool deselect, bool cursor_only"
 msgstr "bool deselect, bool cursor_only"
 
-#: sdk/definition/script.xml:224(col)
+#: sdk/definition/script.xml:219(col)
 msgid "When crew selection is changed. cursor_only specifies whether only that crew member has been selected which is also the cursor."
 msgstr "Bei Änderung der Crewauswahl. cursor_only gibt an, ob nur das Mannschaftsmitglied angewählt wurde, welches den Cursor hat."
 
-#: sdk/definition/script.xml:228(col)
+#: sdk/definition/script.xml:223(col)
 msgid "object for_collection_of_object"
 msgstr "object for_collection_of_object"
 
-#: sdk/definition/script.xml:229(col)
+#: sdk/definition/script.xml:224(col)
 msgid "Called to determine the least needed inventory object when a clonk tries to collect a new object and his inventory is full. The function should return the object to be dropped to gain space, or 0 if none."
 msgstr "Zur Ermittlung des am wenigsten gebrauchten Objekts, wenn der Clonk versucht, ein neues aufzunehmen. Die Funktion sollte das abzulegende Objekt zurückliefern, oder 0 für keins."
 
-#: sdk/definition/script.xml:233(col)
+#: sdk/definition/script.xml:228(col)
 msgid "int index, object menu_object"
 msgstr "int index, object menu_object"
 
-#: sdk/definition/script.xml:234(col)
+#: sdk/definition/script.xml:229(col)
 msgid "When an object menu entry is selected."
 msgstr "Wenn ein Menueintrag ausgewählt wurde."
 
+#: sdk/definition/script.xml:233(col)
 #: sdk/definition/script.xml:238(col)
-#: sdk/definition/script.xml:243(col)
 msgid "object in_base, int for_player"
 msgstr "object in_base, int for_player"
 
-#: sdk/definition/script.xml:239(col)
+#: sdk/definition/script.xml:234(col)
 msgid "Calculates the value of an object. Also see <emlink href=\"script/fn/GetValue.html\">GetValue</emlink>()."
 msgstr "Ermittelt den Wert eines Objekts. Siehe auch <emlink href=\"script/fn/GetValue.html\">GetValue</emlink>()."
 
-#: sdk/definition/script.xml:244(col)
+#: sdk/definition/script.xml:239(col)
 msgid "Calculates the value of an object type available to buy. Also see <emlink href=\"script/fn/GetValue.html\">GetValue</emlink>()."
 msgstr "Ermittelt den Wert eines (noch nicht gekauften) Objekttyps. Siehe auch <emlink href=\"script/fn/GetValue.html\">GetValue</emlink>()."
 
-#: sdk/definition/script.xml:248(col)
+#: sdk/definition/script.xml:243(col)
 msgid "id item, int value"
 msgstr "id item, int value"
 
-#: sdk/definition/script.xml:249(col)
+#: sdk/definition/script.xml:244(col)
 msgid "Returns the buying price of the object type."
 msgstr "Rückgabewert ist Einkaufspreis des Objekttyps."
 
-#: sdk/definition/script.xml:253(col)
+#: sdk/definition/script.xml:248(col)
 msgid "object obj, int object_value"
 msgstr "object obj, int object_value"
 
-#: sdk/definition/script.xml:254(col)
+#: sdk/definition/script.xml:249(col)
 msgid "Returns the selling price of the object type."
 msgstr "Rückgabewert ist Verkaufspreis des Objekttyps."
 
-#: sdk/definition/script.xml:259(col)
+#: sdk/definition/script.xml:254(col)
 msgid "When an object with LIFT action lifts its action target to the height specified in its DefCore or above."
 msgstr "Wenn das Objekt bei einer LIFT-Aktivität ein anderes Objekt höher angehoben hat als in der DefCore angegeben."
 
-#: sdk/definition/script.xml:264(col)
+#: sdk/definition/script.xml:259(col)
 msgid "When the action target of the object's PUSH or LIFT action is stuck."
 msgstr "Wird aufgerufen, wenn das Ziel einer PUSH- oder LIFT-Aktivität festhängt."
 
-#: sdk/definition/script.xml:269(col)
+#: sdk/definition/script.xml:264(col)
 msgid "When the action target of the object's PUSH or PULL action is lost."
 msgstr "Wenn das Ziel einer PUSH- oder PULL-Aktion verloren geht."
 
-#: sdk/definition/script.xml:273(col)
+#: sdk/definition/script.xml:268(col)
 msgid "object obj, bool put"
 msgstr "object obj, bool put"
 
-#: sdk/definition/script.xml:274(col)
+#: sdk/definition/script.xml:269(col)
 msgid "When the object has collected another object (obj) (by ingame collection or grabbing and getting)."
 msgstr "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (nur durch einsammeln oder anfassen und ablegen)."
 
-#: sdk/definition/script.xml:278(col)
-#: sdk/definition/script.xml:288(col)
+#: sdk/definition/script.xml:273(col)
+#: sdk/definition/script.xml:283(col)
 msgid "object obj"
 msgstr "object obj"
 
-#: sdk/definition/script.xml:279(col)
+#: sdk/definition/script.xml:274(col)
 msgid "When the object has collected another object (obj) (in all cases, even in script controlled collection or entering)."
 msgstr "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (immer, auch durch Scriptbefehl Enter)"
 
-#: sdk/definition/script.xml:284(col)
+#: sdk/definition/script.xml:279(col)
 msgid "When this object has left another object (container)."
 msgstr "Wenn das Objekt ein anderes Objekt (container) verlassen hat."
 
-#: sdk/definition/script.xml:289(col)
+#: sdk/definition/script.xml:284(col)
 msgid "When another object (obj) has left the contents of this object (also see script command Exit)."
 msgstr "Wenn ein Objekt (obj) dieses Objekt verlassen hat (auch durch Scriptbefehl Exit)."
 
-#: sdk/definition/script.xml:294(col)
+#: sdk/definition/script.xml:289(col)
 msgid "When the object has entered another object (container)."
 msgstr "Wenn das Objekt ein anderes Objekt (container) betreten hat."
 
-#: sdk/definition/script.xml:299(col)
+#: sdk/definition/script.xml:294(col)
 msgid "When another object is trying to enter this object through the entrance."
 msgstr "Wenn ein anderes Objekt versucht, das Objekt durch Entrance zu betreten."
 
-#: sdk/definition/script.xml:303(col)
+#: sdk/definition/script.xml:298(col)
 msgid "id def, object obj"
 msgstr "id def, object obj"
 
-#: sdk/definition/script.xml:304(col)
+#: sdk/definition/script.xml:299(col)
 msgid "Called before Collection. If RejectCollect returns true, the collection of the other object is prevented."
 msgstr "Wird vor Collection aufgerufen. Wenn RejectCollect TRUE zurückgibt, kann damit die Aufnahme des anderen Objekts verhindert werden."
 
-#: sdk/definition/script.xml:308(col)
+#: sdk/definition/script.xml:303(col)
 msgid "object into_object"
 msgstr "object into_object"
 
-#: sdk/definition/script.xml:309(col)
+#: sdk/definition/script.xml:304(col)
 msgid "Called before Entrance. If RejectEntrance returns true, then entrance of the other object is prevented."
 msgstr "Wird vor Entrance aufgerufen. Wenn RejectEntrance TRUE zurückgibt, kann damit das Hineinversetzen in das andere Objekt verhindert werden."
 
-#: sdk/definition/script.xml:313(col)
-#: sdk/definition/script.xml:333(col)
+#: sdk/definition/script.xml:308(col)
+#: sdk/definition/script.xml:328(col)
 msgid "int player"
 msgstr "int player"
 
-#: sdk/definition/script.xml:314(col)
+#: sdk/definition/script.xml:309(col)
 msgid "Called in game goals, rules, or environment objects after the joining of a new player and before the corresponding call in the scenario script."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten nach der Platzierung eines beitretenden Spielers, und vor dem entsprechenden Aufruf im Szenarioscript."
 
-#: sdk/definition/script.xml:319(col)
+#: sdk/definition/script.xml:314(col)
 msgid "When the object is sold. Should return 0 or the id of the object type which is actually added to the player's homebase material."
 msgstr "Wenn das Objekt verkauft wird. Rückgabewert 0 oder die ID des Objekts, welches dem Heimatbasismaterial hinzugefügt wird."
 
-#: sdk/definition/script.xml:324(col)
+#: sdk/definition/script.xml:319(col)
 msgid "When the object is sold."
 msgstr "Wenn das Objekt verkauft wird. Ab CE."
 
-#: sdk/definition/script.xml:328(col)
+#: sdk/definition/script.xml:323(col)
 msgid "int by_player, object buy_object"
 msgstr "int by_player, object buy_object"
 
-#: sdk/definition/script.xml:329(col)
+#: sdk/definition/script.xml:324(col)
 msgid "When the object is bought."
 msgstr "Wenn das Objekt gekauft wird. Ab CE."
 
-#: sdk/definition/script.xml:334(col)
+#: sdk/definition/script.xml:329(col)
 msgid "When the objet is added to the crew of a player."
 msgstr "Wenn das Objekt der Crew eines Spielers hinzugefügt wird. Ab CE 4.95.2."
 
-#: sdk/definition/script.xml:338(col)
+#: sdk/definition/script.xml:333(col)
 msgid "int player, int new_team"
 msgstr "int player, int new_team"
 
-#: sdk/definition/script.xml:339(col)
+#: sdk/definition/script.xml:334(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <placeholder-1/>). From 4.9.6.0 CR."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch TRUE zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden. Ab 4.9.6.0 CR."
 
-#: sdk/definition/script.xml:343(col)
+#: sdk/definition/script.xml:338(col)
 msgid "int player, int new_team, int old_team"
 msgstr "int player, int new_team, int old_team"
 
-#: sdk/definition/script.xml:344(col)
+#: sdk/definition/script.xml:339(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>). Since 4.9.6.0 CR."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <placeholder-1/>). Ab 4.9.6.0 CR."
 
@@ -15830,72 +15818,72 @@ msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. W
 msgid "The engine calls the following functions is objects at the given time. <placeholder-1/>"
 msgstr "Die Engine ruft zu Zeiten die folgenden Funktionen in Objektscripten auf. <placeholder-1/>"
 
-#: sdk/definition/script.xml:349(h)
+#: sdk/definition/script.xml:344(h)
 msgid "Control Functions"
 msgstr "Control-Funktionen"
 
-#: sdk/definition/script.xml:350(text)
+#: sdk/definition/script.xml:345(text)
 msgid "At every player command (left, right, up, down dig, throw, special) the engine calls the corresponding control function in the script of the currently controlled object of the player. If the function is defined and returns true, the internal handling of the player command is skipped. If the function is not defined or returns false, internal processing is done."
 msgstr "Die Engine ruft bei jedem Spielerkommando (Left, Up, Right, Down, Dig, Throw, Special) im Script eines spielergesteuerten Objekts die entsprechende Control-Funktion auf, wenn diese vorhanden ist. Gibt die aufgerufene Control-Funktion 1 zurück, so wird die interne Bearbeitung des Spielerkommandos übersprungen. Ist die Funktion nicht vorhanden oder gibt 0 zurück, findet die interne Bearbeitung des Spielerkommandos statt."
 
-#: sdk/definition/script.xml:353(emlink)
-#: sdk/definition/script.xml:366(emlink)
+#: sdk/definition/script.xml:348(emlink)
+#: sdk/definition/script.xml:361(emlink)
 msgid "if"
 msgstr "if"
 
-#: sdk/definition/script.xml:353(emlink)
+#: sdk/definition/script.xml:348(emlink)
 msgid "FindContents"
 msgstr "FindContents"
 
-#: sdk/definition/script.xml:354(emlink)
+#: sdk/definition/script.xml:349(emlink)
 msgid "SetAction"
 msgstr "SetAction"
 
-#: sdk/definition/script.xml:358(text)
+#: sdk/definition/script.xml:353(text)
 msgid "If a clonk with this script is carrying a spear and the player hits the throw button, the clonk performs a special throw action. In this case, however, the command is not passed to the other selected clonks as usual. If the clonk does not carry a spear, the function returns 0 and the regular throwing action is performed."
 msgstr "Trägt ein Clonk mit diesem Script einen Speer, so führt er seine eigene spezielle Wurf-Aktion aus, sobald der Spieler das Werfen-Kommando gibt (in diesem Fall wird das Werfen-Kommando jedoch nicht wie üblich an alle weiteren ausgewählten Mannschaftsmitglieder weitergegeben). Trägt er keinen Speer, gibt die Funktion 0 zurück und die normale interne Wurf-Aktion wird ausgeführt."
 
-#: sdk/definition/script.xml:359(text)
+#: sdk/definition/script.xml:354(text)
 msgid "Control functions are also transferred to grabbed (indirectly controlled) objects."
 msgstr "Control-Funktionen werden außerdem an angefasste (indirekt gesteuerte) Objekte weitergeleitet."
 
-#: sdk/definition/script.xml:360(text)
+#: sdk/definition/script.xml:355(text)
 msgid "Single and double clicks: for each player command the engine will first call the simple variant of the control function (e.g. ControlDown) and then the more specific variant (i.e. ControlDownSingle or ControlDownDouble). When overloading control functions you should pay attention to catch the correct variant to overload."
 msgstr "Einzelklicks und Doppelklicks: Die Engine ruft bei jedem Spielerkommando zunächst die einfache Variante der Control-Funktion auf (z.B. ControlDown) und anschließend die spezifizierte Variante (also ControlDownSingle bzw. ControlDownDouble). Beim Überladen von Control-Funktionen ist dementsprechend darauf zu achten, dass auch die richtige Variante abgefangen wird."
 
-#: sdk/definition/script.xml:361(text)
+#: sdk/definition/script.xml:356(text)
 msgid "ContainedControl: if a directly controlled object is contained in another object (container) the basic commands down (exit), throw (put), up (buy at base), dig (sell at base) are evaluated internally first. Then the command is passed to the container for special handling there. Exception: the commands ControlSpecial, ControlSpecial2, and ControlWheepUp/Down are only direct commands and are not passed to the container."
 msgstr "ContainedControl: Befindet sich das direkt spielergesteuerte Objekt in einem anderen Objekt (Behälter), so werden zunächst die Standardkommandos Down (Verlassen), Throw (Ablegen), Up (Kaufen, in Basisgebäude) und Dig (Verkaufen, in Basisgebäude) ausgewertet. Anschließend wird die Steuerung als Contained-Funktion an den Behälter weitergegeben. Ausnahme: die Spezialkommandos ControlSpecial, ControlSpecial2 und ControlWheelUp/Down sind nur für die direkte Steuerung gedacht und werden nicht an den Behälter umgeleitet."
 
-#: sdk/definition/script.xml:362(text)
+#: sdk/definition/script.xml:357(text)
 msgid "ControlCommnd: the engine also performs <a href=\"#ObjektCallsderEngine\">object calls</a> for independently executed commands which have been given directly by the player (i.e. by mouse control)."
 msgstr "ControlCommand: die Engine führt auch <a href=\"#ObjektCallsderEngine\">Objekt-Calls</a> für selbständig auszuführende Befehle (Commands) aus, die direkt durch den Spieler gegeben wurden (z.B. durch Maussteuerung)."
 
-#: sdk/definition/script.xml:375(text)
+#: sdk/definition/script.xml:370(text)
 msgid "By returning true the command can be intercepted and internal handling can be prevented. \"command_object\" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href=\"definition/defcore.html\">DefCore</emlink>). The script command <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> does not cause ControlCommand calls."
 msgstr "Durch Rückgabe des Werts 1 kann der Befehl abgefangen und die interne Verarbeitung verhindert werden. \"command_object\" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden soll, auch wenn der Aufruf von einem enthaltenen Objekt kommt (siehe VehicleControl in der <emlink href=\"definition/defcore.html\">DefCore</emlink>). Der Script-Befehl <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> verursacht keinen ControlCommand-Aufruf."
 
-#: sdk/definition/script.xml:376(text)
+#: sdk/definition/script.xml:371(text)
 msgid "ControlCommand calls are also transferred to grabbed objects or objects controlled from the inside if these have the VehicleControl flag set. This transferred call is made after the ControlCommand call to the clonk, but before internal handling. So the vehicle, too, has the opportunity to intercept and overload the command."
 msgstr "ControlCommand-Aufrufe werden an angefasste oder von innen gesteuerte Fahrzeuge weitergeleitet, wenn diese ein entsprechendes VehicleControl-Flag besitzen. Diese Weiterleitung wird nach dem ControlCommand-Aufruf des Clonk-Scripts durchgeführt, aber noch vor der internen Verarbeitung, so dass auch das gesteuerte Fahrzeug bei Bedarf den Befehl auswerten und abfangen (überladen) kann."
 
-#: sdk/definition/script.xml:377(text)
+#: sdk/definition/script.xml:372(text)
 msgid "ControlWheelUp and ControlWheelDown are generated by the mouse wheel (and only when not in an object menu). If they are not overloaded, they will cause ShiftContents commands. That in return could be intercepted in ControlContents."
 msgstr "ControlWheelUp und ControlWheelDown werden durch Mausraddrehungen außerhalb von Menüs aufgerufen. Wenn sie nicht überladen sind, führen sie einen ShiftContents-Befehl durch. Dessen Auswirkungen können wiederum durch ControlContents abgefangen werden."
 
-#: sdk/definition/script.xml:378(text)
+#: sdk/definition/script.xml:373(text)
 msgid "ControlContents is called when an inventory change is made by direct mouse click, mouse wheel rotation, or a ShiftContents script command (e.g. in ControlSpecial or ControlSpecial2). Here you can perform special actions such as the arming of weapons or custom inventory sounds. If the function is intercepted with a return value true, the inventory change is prevented. Otherwise, the first object with the given id moves to the front of the inventory and a Selection call is made to the newly selected object. If the latter call is not overloaded, the sound effect \"Grab\" is played for the container object."
 msgstr "ControlContents wird aufgerufen, wenn durch das Mausrad, direktes Anklicken mit der Maus oder einen ShiftContents-Befehl im Script (zum Beispiel bei ControlSpecial oder ControlSpecial2) ein Inventarwechsel stattgefunden hat. Hier können zum Beispiel Aktionen wie das Ablegen von Waffen bei entsprechenden Clonks, oder eigene Inventarwechseldsounds, ausgeführt werden. Wird die Funktion mit einem Rückgabewert ungleich 0 abgefangen, wird der Inventarwechsel unterdrückt. Ansonsten rückt das Objekt mit dem entsprechenden, im ersten Parameter übergebenen ID nach vorne und es wird ein Selection-Call an das neue, erste Inhaltsobjekt ausgeführt. Wird dieser nicht abgefangen, wird der Soundeffekt \"Grab\" beim inventarwechselnden Objekt abgespielt."
 
-#: sdk/definition/script.xml:379(h)
+#: sdk/definition/script.xml:374(h)
 msgid "Context Functions"
 msgstr "Context-Funktionen"
 
-#: sdk/definition/script.xml:380(text)
+#: sdk/definition/script.xml:375(text)
 msgid "Context functions (Context_ in object scripts) are displayed as entries in the context menu of the object. When calling a context function, the engine will pass a pointer to the calling object as the first parameter (with crew members this is always the object itself). Context functions should always have a valid function description and be declared pubic."
 msgstr "Context-Funktionen in Objektscripten (Context_) erscheinen im Spiel im Kontextmenü des Objekts. Die Engine übergibt beim Aufruf einen Zeiger auf das aufrufende Objekt als ersten Parameter (bei Mannschaftsmitgliedern immer das Objekt selbst). Context-Funktionen sollten immer eine gültige Funktionsbeschreibung haben und müssen public sein."
 
-#: sdk/definition/script.xml:388(text)
+#: sdk/definition/script.xml:383(text)
 msgid "If the condition field is used, the context function is only displayed as a menu entry if the script function defined by the condition field (in this case HasKnowledge) is found in the object's script and returns true. The menu object is passed as the first parameter to the condition function."
 msgstr "Über das Condition-Feld kann bestimmt werden, dass die Funktion nur dann im Kontextmenü auftaucht, wenn die entsprechende Funktion (hier HasKnowledge) im Objektscript vorhanden ist und einen positiven Wert zurückliefert. Das Menüobjekt wird als erster Parameter an die Condition-Funktion übergeben."
 
@@ -16334,99 +16322,111 @@ msgid "Graphics of the object. Base graphics, animation phases and a picture for
 msgstr "Grafikelemente des Objekts. Basisgrafik, Animationsphasen sowie ein Bild zur Anzeige in Menüs werden in einer 32-Bit-Bilddatei mit Transparenz (Alpha-Kanal) abgelegt (Format PNG, Farbtiefe 32 Bit RGBA, nicht interlaced)."
 
 #: sdk/definition/index.xml:20(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Overlay.png"
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Overlay.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Overlay.png"
 
 #: sdk/definition/index.xml:22(text)
 msgid "The part of the object's graphics which is to be colored in the player color (see ColorByOwner in DefCore.txt) can also be defined using a separate graphics file. In this way you can also use the color blue in the object's graphics for effects other than player color and antialiasing of the player color sections becomes possible. In Overlay.png gray scales should be used instead of blue color."
 msgstr "Der Teil der Objektgrafik, der mit der Spielerfarbe (ColorByOwner, siehe DefCore.txt) eingefärbt werden soll, kann auch als separate Grafik angelegt werden. Auf diese Weise kann die sonst vergebene Farbe Blau in der Graphics.png frei benutzt werden, und es ist auch Antialiasing an den zu verfärbenden Rändern möglich. In der Overlay.png sollten nur Graustufen verwendet werden."
 
-#: sdk/definition/index.xml:28(emlink)
+#: sdk/definition/index.xml:24(emlink)
 msgid "Graphics.mesh"
 msgstr "Graphics.mesh"
 
-#: sdk/definition/index.xml:30(text)
+#: sdk/definition/index.xml:26(text)
 msgid "Since OC a 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object."
 msgstr "Ab OC kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein."
 
-#: sdk/definition/index.xml:32(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/>*.skeleton"
+#: sdk/definition/index.xml:28(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/> *.skeleton"
 msgstr "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/>*.skeleton"
 
-#: sdk/definition/index.xml:34(text)
+#: sdk/definition/index.xml:30(text)
 msgid "Skeleton files contain bones and animations for a 3D model. They are usually created by the exporter if bones and/or animations are used for the mesh."
 msgstr "Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden."
 
-#: sdk/definition/index.xml:36(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics*.png/Overlay*.png"
+#: sdk/definition/index.xml:32(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics*.png/Overlay*.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics*.png/Overlay*.png"
 
-#: sdk/definition/index.xml:38(text)
+#: sdk/definition/index.xml:34(text)
 msgid "Objects can also contain alternative sets of graphics which can be selected ingame using the script command <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>(). The name corresponds to the file name portion following \"Graphics\". The matching overlay is automatically selected. For more information see <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
 msgstr "Objekte können auch alternative Grafiksätze bereitstellen, die während des Spiels mit Hilfe des Scriptbefehls <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>() zugewiesen werden können. Der Name der Grafik entspricht dabei dem Dateinamensteil zwischen \"Graphics\" und der Dateiendung; das entsprechende Overlay wird automatisch mit verwendet. Für Beispiele siehe <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
 
-#: sdk/definition/index.xml:44(emlink)
+#: sdk/definition/index.xml:36(emlink)
 msgid "*.material"
 msgstr "*.material"
 
-#: sdk/definition/index.xml:46(text)
+#: sdk/definition/index.xml:38(text)
 msgid "OGRE material scripts are simple text files which contain information about the material of a 3D model. Each model is assigned a material which specifies how it is rendered. Normally these scripts are being generated by the exporter, but they can also be hand-edited afterwards (using a text editor) to apply additional effects."
 msgstr "OGRE Materialskripte sind einfache Textdateien die Informationen über das Material eines 3D-Modells beinhalten. Jedem Modell ist ein Material zugeordnet, das sein Erscheinen festlegt. In der Regel werden diese Skripte auch vom Exporter generiert, sie können aber für zusätzliche Effekte auch einfach mit einem Texteditor nachträglich bearbeitet werden."
 
-#: sdk/definition/index.xml:50(text)
+#: sdk/definition/index.xml:42(text)
 msgid "The object script. See <emlink href=\"script/index.html\">script documentation</emlink> and <emlink href=\"lang.html\">localization</emlink>."
 msgstr "Das Objektscript. Siehe <emlink href=\"script/index.html\">Script-Dokumentation</emlink> und <emlink href=\"lang.html\">Sprachanpassung</emlink>."
 
-#: sdk/definition/index.xml:52(emlink)
+#: sdk/definition/index.xml:44(emlink)
 #, fuzzy
 msgid "ActMap in the Script.c"
 msgstr "Reaktionstyp 'Script'"
 
-#: sdk/definition/index.xml:54(text)
+#: sdk/definition/index.xml:46(text)
 msgid "Table for activities."
 msgstr "Tabelle für Objektaktivitäten."
 
-#: sdk/definition/index.xml:64(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Rank.txt/Rank*.txt"
+#: sdk/definition/index.xml:48(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Rank.txt/Rank*.txt"
 msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Rank.txt/Rank*.txt"
 
-#: sdk/definition/index.xml:66(text)
+#: sdk/definition/index.xml:50(text)
 msgid "For object definitions defining a clonk type you can specify custom rank names for this clonk type here. The rank names will then also replace rank names of existing crew members of this type. The file should contain a simple text list of names of maximum 30 characters each. For an example see the knight in the Knights pack. By using the approriate language codes you can create language dependent sets of rank names."
 msgstr "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.ocd. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
 
-#: sdk/definition/index.xml:68(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Rank.png"
+#: sdk/definition/index.xml:52(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Rank.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Rank.png"
 
-#: sdk/definition/index.xml:70(text)
+#: sdk/definition/index.xml:54(text)
 msgid "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.ocg. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
 msgstr "Für Clonktypen können außerdem spezifische Rangsymbole definiert werden, die dann im Spiel anstelle der Standardsymbole benutzt werden. Ein Rangsymbol muss immer so breit wie hoch sein, und es sollten ausreichend Symbole für alle Ränge vorhanden sein. Bei höheren Rängen als der Anzahl vorhandener Rangsymbole wird von vorne begonnen und ein Stern daneben gezeichnet."
 
-#: sdk/definition/index.xml:74(text)
+#: sdk/definition/index.xml:56(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav/*.ogg"
+msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav/*.ogg"
+
+#: sdk/definition/index.xml:58(text)
 msgid "Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only."
 msgstr "Objektlokale Sounds. Da diese statisch geladen und nicht wie szenariolokale Sounds dynamisch entladen werden, sollten objektlokale Sounds möglichst klein sein."
 
-#: sdk/definition/index.xml:76(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/>*.ocd"
+#: sdk/definition/index.xml:60(dt)
+#, fuzzy
+msgid "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/> *.ocd"
 msgstr "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/>*.ocd"
 
-#: sdk/definition/index.xml:78(text)
+#: sdk/definition/index.xml:62(text)
 msgid "The engine will also search all valid ocd subdirectories for additional object definitions. Object definitions should be grouped by category."
 msgstr "Die Engine durchsucht alle gültigen ocd-Unterverzeichnisse nach weiteren Definitionen. Objektdefinitionen sollten so in sinnvollen Gruppierungen zusammen gefasst werden."
 
-#: sdk/definition/index.xml:82(text)
+#: sdk/definition/index.xml:66(text)
 msgid "This component is not processed by the engine. Here the author can store additional information he wants to share with other developers."
 msgstr "Diese Komponente wird nicht von der Engine verarbeitet. Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seines Objekts, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte."
 
-#: sdk/definition/index.xml:86(text)
-msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the group was edited by RedWolf Design. This feature is mainly used for contest scenarios."
-msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht."
+#: sdk/definition/index.xml:70(text)
+#, fuzzy
+msgid "Should contain the name of the author in format \"Firstname Lastname (Nick)\" and is used to maintain the name of the original author, if the group file is edited by another developer at a later point in time."
+msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird."
 
-#: sdk/definition/index.xml:89(h)
+#: sdk/definition/index.xml:73(h)
 msgid "Object Identification"
 msgstr "Objekt-Identifikation"
 
-#: sdk/definition/index.xml:90(text)
+#: sdk/definition/index.xml:74(text)
 msgid "Object definitions are identified by an id which consists of any number of characters (e.g. Clonk)."
 msgstr "Objektdefinitionen werden über ein ID identifiziert, das sich aus beliebig vielen Zeichen zusammen setzt (z.B. Clonk)."
 
@@ -17574,6 +17574,57 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:127(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
+#~ msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
+
+#~ msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
+#~ msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
+
+#~ msgid "What to return (see remarks)."
+#~ msgstr "Was genau zurückgegeben werden soll (siehe Anmerkung)"
+
+#~ msgid "Returns current system time."
+#~ msgstr "Gibt die momentane Uhrzeit zurück."
+
+#~ msgid "what"
+#~ msgstr "what"
+
+#~ msgid "Year"
+#~ msgstr "Jahr"
+
+#~ msgid "Month (1 = January, 2 = February, etc.)"
+#~ msgstr "Monat (1 = Januar, 2 = Februar usw.)"
+
+#~ msgid "Day of the wekk (0 = Sunday, 1 = Monday, etc.)"
+#~ msgstr "Wochentag (0 = Sonntag, 1 = Montag usw.)"
+
+#~ msgid "Day"
+#~ msgstr "Tag"
+
+#~ msgid "Hour"
+#~ msgstr "Stunde"
+
+#~ msgid "Minute"
+#~ msgstr "Minute"
+
+#~ msgid "Second"
+#~ msgstr "Sekunde"
+
+#~ msgid "Millisecond"
+#~ msgstr "Millisekunde"
+
+#~ msgid "The function will return a value depending on what has been requested: <placeholder-1/>"
+#~ msgstr "Je nach Wert von what gibt GetSystemTime die folgende Angabe zurück: <placeholder-1/>"
+
+#~ msgid "Writes x to the log if it is an id."
+#~ msgstr "Gibt x im Log aus, wenn es eine ID ist."
+
+#~ msgid "Data type: unknown data type."
+#~ msgstr "Datentyp: Unbekannter Datentyp."
+
+#~ msgid "Obsolete. Same as Initialze."
+#~ msgstr "Veraltet. Wie Initialize."
 
 #~ msgid "Category of the definition."
 #~ msgstr "Die Kategorie, in der die gesuchte Definition ist."
