@@ -27,6 +27,8 @@ clonk.xsl also uses it to match the processing for it. -->
 					<option  value="blog">blog</option>
 					<option selected="selected" value="functions">c4script function list</option>
 					<option value="docs">c4script reference</option>
+					<option value="functionsDE">c4script function list (DE)</option>
+					<option value="docsDE">c4script reference (DE)</option>
 					<option  value="bugtrack">bugtracker</option>
 					<option  value="forum">forum</option>
 					<option  value="hg">hg changelog</option>
@@ -37,6 +39,17 @@ clonk.xsl also uses it to match the processing for it. -->
 				<input type='submit' class="nav_searchButton" id="searchButton" value="Go" title="Search" />
 			</div></form>
 		</div>
+	
+	<div style="float:right">
+		<ul>
+			<li>
+				<a href="http://docs.openclonk.org/en/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/gb.png"/></a>
+			</li>
+			<li>
+				<a href="http://docs.openclonk.org/de/sdk/" target="_top"><img src="http://forum.openclonk.org/flags/de.png"/></a>
+			</li>
+		</ul>
+	</div>
 	
 	<ul>
 	<li><!--[if lt IE 9]><span><![endif]--><a href="http://www.openclonk.org/">Home</a><!--[if lt IE 9]></span><![endif]-->	<ul>
