@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -11,46 +12,40 @@
       <params>
         <param>
           <type>string</type>
-          <name>strEntry</name>
-          <desc>Name des abzufragenden Eintrags</desc>
+          <name>entry</name>
+          <desc>Name of the entry to be retrieved.</desc>
         </param>
         <param>
           <type>string</type>
-          <name>strSection</name>
-          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
-          <optional/>
+          <name>section</name>
+          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iMaterial</name>
-          <desc>Nummer des Materials, von dem der Eintrag abgefragt werden soll. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
-          <optional/>
+          <name>material</name>
+          <desc>Number of the material of which to retrieve an entry.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iEntryNr</name>
-          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
-          <optional/>
+          <name>entry_number</name>
+          <desc>Index of the value to be retrieved if an entry contains multiple values.</desc>
+          <optional />
         </param>
       </params>
     </syntax>
-
-    <desc>Gibt einen Eigenschaftswert einer Materialdefinition nach seinem Namen in der <emlink href="material/c4m.html">Materialdatei</emlink>
-          zurück.</desc>
-
+    <desc>Returns the property value of a material definition by its name in the <emlink href="material/ocm.html">material file</emlink>.</desc>
     <examples>
       <example>
-        <code>GetMaterialVal("BlastFree", "Material", <funclink>GetMaterial</funclink>(20, 0))</code>
-        <text>Überprüft, ob das Material rechts vom aufrufenden Objekt sprengbar ist.</text>
+        <code>GetMaterialVal(&quot;BlastFree&quot;, &quot;Material&quot;, <funclink>GetMaterial</funclink>(20, 0))</code>
+        <text>Tests whether the landscape on the right of the calling clonk can be blasted away.</text>
       </example>
     </examples>
-
-
     <related>
       <funclink>GetMaterial</funclink>
       <funclink>Material</funclink>
     </related>
-
   </func>
-  <author>PeterW</author><date>Juni 2003</date>
+  <author>PeterW</author><date>2003-06</date>
 </funcs>

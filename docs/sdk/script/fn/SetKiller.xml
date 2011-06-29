@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetKiller</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>new_killer</name>
+          <desc>Player number of the new killer. -1 for no owner.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Sets the killer of the calling object.</desc>
+    <remark>See <funclink>GetKiller</funclink> for details.</remark>
+    <related>
+      <funclink>GetKiller</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2007-04</date>
+</funcs>

@@ -1,0 +1,17 @@
+[Particle]
+Name=MagicFire
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+CollisionFn=Die
+DrawFn=Std
+Face=0,0,128,128,-64,-64
+Delay=0
+Repeats=1
+GravityAcc=-4
+VertexCount=1
+VertexY=64
+AlphaFade=18
+Additive=1
+RByV=0
+Attach=0

@@ -11,6 +11,9 @@
 /* with new magic. Reads files with old or new magic. Does not   */
 /* accept uncompressed (transparent) files.                      */
 
+#define _POSIX_C_SOURCE 1 /* for fdopen() */
+#define _BSD_SOURCE       /* for vsnprintf */
+
 #include <stdio.h>
 
 #include "zutil.h"
@@ -104,7 +107,7 @@ local gzFile gz_open (path, mode, fd)
     int err;
     int level = Z_DEFAULT_COMPRESSION; /* compression level */
     int strategy = Z_DEFAULT_STRATEGY; /* compression strategy */
-    char *p = (char*)mode;
+    const char *p = mode;
     gz_stream *s;
     char fmode[80]; /* copy of mode, without the compression level */
     char *m = fmode;
@@ -580,7 +583,7 @@ int ZEXPORT gzwrite (file, buf, len)
 
     if (s == NULL || s->mode != 'w') return Z_STREAM_ERROR;
 
-    s->stream.next_in = (Bytef*)buf;
+    s->stream.next_in = *(Bytef**)(void*)&buf;
     s->stream.avail_in = len;
 
     while (s->stream.avail_in != 0) {
@@ -709,7 +712,7 @@ int ZEXPORT gzputs(file, s)
     gzFile file;
     const char *s;
 {
-    return gzwrite(file, (char*)s, (unsigned)strlen(s));
+    return gzwrite(file, s, (unsigned)strlen(s));
 }
 
 

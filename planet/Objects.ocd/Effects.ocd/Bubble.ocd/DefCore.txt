@@ -1,0 +1,13 @@
+[DefCore]
+id=Fx_Bubble
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=2
+Height=2
+Offset=0,-1
+Vertices=1
+VertexFriction=1
+Mass=1
+Oversize=1
+Float=1
+StretchGrowth=1

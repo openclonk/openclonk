@@ -1,20 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>ScrollContents</title>
-    <category>Objekte</category>
-    <subcat>Inhalt</subcat>
+    <category>Objects</category>
+    <subcat>Contents</subcat>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>object</rtype>
-    </syntax>
-    <desc>Rotiert den Inhalt des aufrufenden Objekts. Dabei wird immer genau ein Objekt weiter gescrollt (im Gegensatz zu <funclink>ShiftContents</funclink>). Es wird außerdem kein ControlContents aufgerufen. <br/>
-          Zurückgegeben wird ein Pointer auf das Objekt, das sich nach der Rotation am Anfang der Inhaltsliste befindet.</desc>
-    <related>
-      <funclink>ShiftContents</funclink>
-    </related>
+    <syntax><rtype>object</rtype></syntax>
+    <desc>Shifts the contents of an object. This will always shift by exactly one object (as opposed to <funclink>ShiftContents</funclink>). No call to ControlContents is made. Returns a pointer to the object at the front of the contents list after the shift.</desc>
+    <related><funclink>ShiftContents</funclink></related>
   </func>
-  <author>PeterW</author><date>Februar 2003</date>
+  <author>PeterW</author><date>2003-02</date>
 </funcs>

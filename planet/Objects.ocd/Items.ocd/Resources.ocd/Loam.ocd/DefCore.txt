@@ -1,0 +1,16 @@
+[DefCore]
+id=Loam
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Picture=0,0,8,8
+Vertices=2
+VertexX=0,0
+VertexY=3,-3
+VertexFriction=40,40
+Value=5
+Mass=10
+Components=Earth=2;
+Rotate=1

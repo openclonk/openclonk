@@ -2,8 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2005-2010  Sven Eberhardt
+ * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,6 +29,9 @@
 #include <C4Log.h>
 #include <C4Network2Stats.h>
 #include <C4MouseControl.h>
+#include <C4GamePadCon.h>
+#include <C4PlayerList.h>
+#include <C4Player.h>
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)
@@ -37,9 +40,9 @@
 // *** C4GameControl
 
 C4GameControl::C4GameControl()
-	: Network(this)
+		: Network(this)
 {
-  Default();
+	Default();
 }
 
 C4GameControl::~C4GameControl()
@@ -59,7 +62,7 @@ bool C4GameControl::InitLocal(C4Client *pLocal)
 bool C4GameControl::InitNetwork(C4Client *pLocal)
 {
 	// network should already be initialized (by C4Network2)
-	if(!Network.IsEnabled())
+	if (!Network.IsEnabled())
 		return false;
 	// set mode
 	eMode = CM_Network; fPreInit = fInitComplete = true;
@@ -74,7 +77,7 @@ bool C4GameControl::InitReplay(C4Group &rGroup)
 {
 	// open replay
 	pPlayback = new C4Playback();
-	if(!pPlayback->Open(rGroup))
+	if (!pPlayback->Open(rGroup))
 	{
 		LogFatal(LoadResStr("IDS_ERR_REPLAYREAD"));
 		delete pPlayback; pPlayback = NULL;
@@ -99,18 +102,18 @@ void C4GameControl::ChangeToLocal()
 	// remove all non-local clients
 	Game.Clients.RemoveRemote();
 	// activate local client
-	if(Game.Clients.getLocal())
+	if (Game.Clients.getLocal())
 		Game.Clients.getLocal()->SetActivated(true);
 
 	// network: clear network
-	if(eMode == CM_Network)
-		{
+	if (eMode == CM_Network)
+	{
 		Network.Clear();
-		if(::Network.isEnabled())
+		if (::Network.isEnabled())
 			::Network.Clear();
-		}
+	}
 	// replay: close playback
-	else if(eMode == CM_Replay)
+	else if (eMode == CM_Replay)
 		{ delete pPlayback; pPlayback = NULL; }
 
 	// we're now managing our own player info list; make sure counter works
@@ -120,38 +123,38 @@ void C4GameControl::ChangeToLocal()
 	// (otherwise, clients start game when host disconnected!)
 	if (!C4GameOverDlg::IsShown()) Game.HaltCount = 0;
 
-  // set status
+	// set status
 	eMode = CM_Local; fHost = true;
 	ControlRate = 1;
 }
 
 void C4GameControl::OnGameSynchronizing()
-	{
+{
 	// start record if desired
 	if (fRecordNeeded)
-		{
+	{
 		fRecordNeeded = false;
 		StartRecord(false, false);
-		}
 	}
+}
 
 bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 	// already recording?
-	if(pRecord) StopRecord();
+	if (pRecord) StopRecord();
 	// start
 	pRecord = new C4Record();
-	if(!pRecord->Start(fInitial))
+	if (!pRecord->Start(fInitial))
 	{
 		delete pRecord; pRecord = NULL;
 		return false;
 	}
 	// streaming
-	if(fStreaming)
+	if (fStreaming)
 	{
-		if(!pRecord->StartStreaming(fInitial) ||
-			 !::Network.StartStreaming(pRecord))
+		if (!pRecord->StartStreaming(fInitial) ||
+		    !::Network.StartStreaming(pRecord))
 		{
 			delete pRecord; pRecord = NULL;
 			return false;
@@ -166,28 +169,28 @@ bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 
 void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 {
-	if(pRecord)
+	if (pRecord)
 	{
 		::Network.FinishStreaming();
-    pRecord->Stop(pRecordName, pRecordSHA1);
+		pRecord->Stop(pRecordName, pRecordSHA1);
 		// just delete
 		delete pRecord; pRecord = NULL;
 	}
 }
 
 void C4GameControl::RequestRuntimeRecord()
-	{
+{
 	if (!IsRuntimeRecordPossible()) return; // cannot record
-  fRecordNeeded = true;
+	fRecordNeeded = true;
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
 #ifndef DEBUGREC
 	::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
 #endif
-	}
+}
 
 bool C4GameControl::IsRuntimeRecordPossible() const
-	{
+{
 	// already requested?
 	if (fRecordNeeded) return false;
 	// not from replay
@@ -196,49 +199,49 @@ bool C4GameControl::IsRuntimeRecordPossible() const
 	if (isRecord()) return false;
 	// Record OK
 	return true;
-	}
+}
 
 bool C4GameControl::RecAddFile(const char *szLocalFilename, const char *szAddAs)
-	{
+{
 	if (!isRecord() || !pRecord) return false;
 	return pRecord->AddFile(szLocalFilename, szAddAs);
-	}
+}
 
 void C4GameControl::Clear()
 {
 	StopRecord();
 	ChangeToLocal();
-  Default();
+	Default();
 }
 
 void C4GameControl::Default()
 {
 	Input.Clear();
-  Network.Clear();
+	Network.Clear();
 	eMode = CM_None;
 	fHost = fPreInit = fInitComplete = false;
 	iClientID = C4ClientIDUnknown;
 	pRecord = NULL;
 	pPlayback = NULL;
-  SyncChecks.Clear();
+	SyncChecks.Clear();
 	ControlRate = BoundBy<int>(Config.Network.ControlRate, 1, C4MaxControlRate);
-  ControlTick = 0;
-  SyncRate = C4SyncCheckRate;
-  DoSync = false;
+	ControlTick = 0;
+	SyncRate = C4SyncCheckRate;
+	DoSync = false;
 	fRecordNeeded = false;
 	pExecutingControl = NULL;
 }
 
 bool C4GameControl::Prepare()
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 
 	// Prepare control, return true if everything is ready for GameGo.
 	bool is_input_prepared = false;
 
-	switch(eMode)
+	switch (eMode)
 	{
-	// full steam ahead
+		// full steam ahead
 	case CM_Local: case CM_Replay:
 		return true;
 
@@ -247,11 +250,11 @@ bool C4GameControl::Prepare()
 		Network.Execute();
 
 		// deactivated and got control: request activate
-		if(Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
+		if (Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
 			::Network.RequestActivate();
 
 		// needs input?
-		while(Network.CtrlNeeded(Game.FrameCounter))
+		while (Network.CtrlNeeded(Game.FrameCounter))
 		{
 			if (!is_input_prepared && Game.Clients.getLocal()->isActivated())
 			{
@@ -264,7 +267,7 @@ bool C4GameControl::Prepare()
 		}
 
 		// control tick?
-		if(Game.FrameCounter % ControlRate)
+		if (Game.FrameCounter % ControlRate)
 			return true;
 
 		// check GameGo
@@ -278,38 +281,38 @@ void C4GameControl::Execute()
 {
 	// Execute all available control
 
-  assert(fInitComplete);
+	assert(fInitComplete);
 
 	// control tick? replay must always be executed.
-	if(!isReplay() && Game.FrameCounter % ControlRate)
+	if (!isReplay() && Game.FrameCounter % ControlRate)
 		return;
 
 	// Get control
 	C4Control Control;
-	if(eMode == CM_Local)
+	if (eMode == CM_Local)
 	{
 		// control = input
 		PrepareInput(); // add per-controlframe input
 		Control.Take(Input);
 	}
-	if(eMode == CM_Network)
+	if (eMode == CM_Network)
 	{
 		// control = network input
-		if(!Network.GetControl(&Control, ControlTick))
+		if (!Network.GetControl(&Control, ControlTick))
 		{
 			LogFatal("Network: could not retrieve control from C4GameControlNetwork!");
 			return;
 		}
 	}
-	if(eMode == CM_Replay)
+	if (eMode == CM_Replay)
 	{
-		if(!pPlayback) { ChangeToLocal(); return; }
+		if (!pPlayback) { ChangeToLocal(); return; }
 		// control = replay data
 		pPlayback->ExecuteControl(&Control, Game.FrameCounter);
 	}
 
 	// Record: Save ctrl
-	if(pRecord)
+	if (pRecord)
 		pRecord->Rec(Control, Game.FrameCounter);
 
 	// debug: recheck PreExecute
@@ -328,32 +331,32 @@ void C4GameControl::Execute()
 
 void C4GameControl::Ticks()
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 
-	if(!(Game.FrameCounter % ControlRate))
+	if (!(Game.FrameCounter % ControlRate))
 		ControlTick++;
-	if(!(Game.FrameCounter % SyncRate))
+	if (!(Game.FrameCounter % SyncRate))
 		DoSync = true;
 
 	// calc next tick without waiting for timer? (catchup cases)
-	if(eMode == CM_Network)
-		if(Network.CtrlOverflow(ControlTick))
+	if (eMode == CM_Network)
+		if (Network.CtrlOverflow(ControlTick))
 		{
 			Game.GameGo = true;
-			if(Network.GetBehind(ControlTick) >= 25)
-				if(Game.FrameCounter % ((Network.GetBehind(ControlTick) + 15) / 20))
+			if (Network.GetBehind(ControlTick) >= 25)
+				if (Game.FrameCounter % ((Network.GetBehind(ControlTick) + 15) / 20))
 					Game.DoSkipFrame = true;
 		}
 }
 
 bool C4GameControl::CtrlTickReached(int32_t iTick)
 {
-  // 1. control tick reached?
-  if(ControlTick < iTick) return false;
+	// 1. control tick reached?
+	if (ControlTick < iTick) return false;
 	// 2. control tick?
-	if(Game.FrameCounter % ControlRate) return false;
-  // ok then
-  return true;
+	if (Game.FrameCounter % ControlRate) return false;
+	// ok then
+	return true;
 }
 
 int32_t C4GameControl::getCtrlTick(int32_t iFrame) const
@@ -372,14 +375,14 @@ int32_t C4GameControl::getNextControlTick() const
 void C4GameControl::AdjustControlRate(int32_t iBy)
 {
 	// control host only
-	if(isCtrlHost())
+	if (isCtrlHost())
 		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_ControlRate, iBy), CDT_Decide);
 }
 
 void C4GameControl::SetActivated(bool fnActivated)
 {
 	fActivated = fnActivated;
-	if(eMode == CM_Network)
+	if (eMode == CM_Network)
 		Network.SetActivated(fnActivated);
 }
 
@@ -387,18 +390,18 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 {
 	assert(fPreInit);
 
-  // check if the control can be executed
-	if(eDelivery == CDT_Direct || eDelivery == CDT_Private)
+	// check if the control can be executed
+	if (eDelivery == CDT_Direct || eDelivery == CDT_Private)
 		assert(!pPkt->Sync());
-	if(!fInitComplete)
+	if (!fInitComplete)
 		assert(pPkt->Lobby());
 
 	// decide control type
-	if(eDelivery == CDT_Decide)
+	if (eDelivery == CDT_Decide)
 		eDelivery = DecideControlDelivery();
 
-  // queue?
-  if(eDelivery == CDT_Queue)
+	// queue?
+	if (eDelivery == CDT_Queue)
 	{
 		// add, will be executed/sent later
 		Input.Add(eCtrlType, pPkt);
@@ -406,7 +409,7 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 	}
 
 	// Network?
-	if(isNetwork())
+	if (isNetwork())
 	{
 		Network.DoInput(eCtrlType, pPkt, eDelivery);
 	}
@@ -424,7 +427,7 @@ void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t
 #ifdef DEBUGREC
 	if (DoNoDebugRec>0) return;
 	// record data
-	if(pRecord)
+	if (pRecord)
 	{
 		//C4PktDebugRec dr(eType, );
 		pRecord->Rec(Game.FrameCounter, StdBuf(pData, iSize), eType);
@@ -438,7 +441,7 @@ void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t
 C4ControlDeliveryType C4GameControl::DecideControlDelivery()
 {
 	// network
-	if(eMode == CM_Network)
+	if (eMode == CM_Network)
 		return Network.DecideControlDelivery();
 	// use direct
 	return CDT_Direct;
@@ -446,66 +449,66 @@ C4ControlDeliveryType C4GameControl::DecideControlDelivery()
 
 void C4GameControl::DoSyncCheck()
 {
-  // only once
-  if(!DoSync) return;
-  DoSync = false;
+	// only once
+	if (!DoSync) return;
+	DoSync = false;
 	// create sync check
 	C4ControlSyncCheck *pSyncCheck = new C4ControlSyncCheck();
 	pSyncCheck->Set();
 	// host?
-	if(fHost)
+	if (fHost)
 		// add sync check to control queue or send it directly if the queue isn't active
 		DoInput(CID_SyncCheck, pSyncCheck, fActivated ? CDT_Queue : CDT_Direct);
 	else
-		{
+	{
 		// already have sync check?
 		C4ControlSyncCheck* pSyncCheck2 = GetSyncCheck(Game.FrameCounter);
-		if(!pSyncCheck2)
+		if (!pSyncCheck2)
 			// add to sync check array
 			SyncChecks.Add(CID_SyncCheck, pSyncCheck);
 		else
-			{
+		{
 			// check
 			pSyncCheck->Execute();
 			delete pSyncCheck;
-			}
 		}
+	}
 	// remove old
 	RemoveOldSyncChecks();
 }
 
 void C4GameControl::ExecControl(const C4Control &rCtrl)
 {
-  // nothing to do?
-  if(!rCtrl.firstPkt()) return;
-  // execute it
-  if(!rCtrl.PreExecute()) Log("Control: PreExecute failed for sync control!");
-  rCtrl.Execute();
-  // record
-  if(pRecord)
-    pRecord->Rec(rCtrl, Game.FrameCounter);
+	// nothing to do?
+	if (!rCtrl.firstPkt()) return;
+	// execute it
+	if (!rCtrl.PreExecute()) Log("Control: PreExecute failed for sync control!");
+	rCtrl.Execute();
+	// record
+	if (pRecord)
+		pRecord->Rec(rCtrl, Game.FrameCounter);
 }
 
 void C4GameControl::ExecControlPacket(C4PacketType eCtrlType, C4ControlPacket *pPkt)
 {
 	// execute it
-	if(!pPkt->PreExecute()) Log("Control: PreExecute failed for direct control!");
+	if (!pPkt->PreExecute()) Log("Control: PreExecute failed for direct control!");
 	pPkt->Execute();
 	// record it
-	if(pRecord)
+	if (pRecord)
 		pRecord->Rec(eCtrlType, pPkt, Game.FrameCounter);
 }
 
 C4ControlSyncCheck *C4GameControl::GetSyncCheck(int32_t iTick)
 {
-	for(C4IDPacket *pPkt = SyncChecks.firstPkt(); pPkt; pPkt = SyncChecks.nextPkt(pPkt))
+	for (C4IDPacket *pPkt = SyncChecks.firstPkt(); pPkt; pPkt = SyncChecks.nextPkt(pPkt))
 	{
 		// should be a sync check
-		if(pPkt->getPktType() != CID_SyncCheck) continue;
+		if (pPkt->getPktType() != CID_SyncCheck) continue;
 		// get sync check
 		C4ControlSyncCheck *pCheck = static_cast<C4ControlSyncCheck *>(pPkt->getPkt());
 		// packet that's searched for?
-		if(pCheck->getFrame() == iTick)
+		if (pCheck->getFrame() == iTick)
 			return pCheck;
 	}
 	return NULL;
@@ -514,14 +517,14 @@ C4ControlSyncCheck *C4GameControl::GetSyncCheck(int32_t iTick)
 void C4GameControl::RemoveOldSyncChecks()
 {
 	C4IDPacket *pNext;
-	for(C4IDPacket *pPkt = SyncChecks.firstPkt(); pPkt; pPkt = pNext)
+	for (C4IDPacket *pPkt = SyncChecks.firstPkt(); pPkt; pPkt = pNext)
 	{
 		pNext = SyncChecks.nextPkt(pPkt);
 		// should be a sync check
-		if(pPkt->getPktType() != CID_SyncCheck) continue;
+		if (pPkt->getPktType() != CID_SyncCheck) continue;
 		// remove?
 		C4ControlSyncCheck *pCheck = static_cast<C4ControlSyncCheck *>(pPkt->getPkt());
-		if(pCheck->getFrame() < Game.FrameCounter - C4SyncCheckMaxKeep)
+		if (pCheck->getFrame() < Game.FrameCounter - C4SyncCheckMaxKeep)
 			SyncChecks.Delete(pPkt);
 	}
 }
@@ -530,6 +533,11 @@ void C4GameControl::PrepareInput()
 {
 	// add per-controlframe input
 	::MouseControl.DoMoveInput();
+	if (Application.pGamePadControl) Application.pGamePadControl->DoAxisInput();
+	// per-player input
+	C4Player *plr; int32_t i=0;
+	while ((plr = ::Players.GetLocalByIndex(i++)))
+		plr->Control.PrepareInput();
 }
 
 C4GameControl Control;

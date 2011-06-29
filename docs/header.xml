@@ -1,0 +1,71 @@
+<!-- this needs to be valid xml for clonk.xsl to work.
+Unfortunately, xml documents can only have one root, so there needs to be a dummy element.
+header is an appropiate html element, so it's arbitrarily chosen.
+clonk.xsl also uses it to match the processing for it. -->
+<header>
+	<!-- header -->
+	<div id="nav_header">
+		
+		<!-- logo -->
+		<div id="nav_logo">
+			<a href="http://wiki.openclonk.org/"><img src="http://www.openclonk.org/header/logo.png" alt="OpenClonk"/></a>
+		</div>
+
+	</div>
+
+
+	<!-- Navigation Menu -->
+	<div id="nav_navigation">
+	
+		<!-- search -->
+		<div id="nav_search">
+		
+		<form action="http://www.openclonk.org/header/search.php" id="searchform" method="get"><div>
+				search <input id="searchInput" name="s" type="text" value="" /> in the
+				<select name="p">
+
+					<option  value="blog">blog</option>
+					<option selected="selected" value="functions">c4script function list</option>
+					<option value="docs">c4script reference</option>
+					<option  value="bugtrack">bugtracker</option>
+					<option  value="forum">forum</option>
+					<option  value="hg">hg changelog</option>
+
+					<option  value="hg-resources">hg resources changelog</option>
+					<option  value="wiki">website</option>
+				</select>
+				<input type='submit' class="nav_searchButton" id="searchButton" value="Go" title="Search" />
+			</div></form>
+		</div>
+	
+	<ul>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://www.openclonk.org/">Home</a><!--[if lt IE 9]></span><![endif]-->	<ul>
+
+		<li><a href="http://wiki.openclonk.org/w/FAQ">FAQ</a></li>
+		<li><a href="http://wiki.openclonk.org/w/About">About</a></li>
+	</ul>
+	</li>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://www.openclonk.org/w/download">Download</a><!--[if lt IE 9]></span><![endif]-->	<ul>
+		<li><a href="http://www.openclonk.org/download">Latest Release</a></li>
+		<li><a href="http://www.openclonk.org/nightly-builds">Nightly builds</a></li>
+	</ul>
+	</li>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://forum.openclonk.org/">Forum</a><!--[if lt IE 9]></span><![endif]--></li>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://wiki.openclonk.org/w/Development">Development</a><!--[if lt IE 9]></span><![endif]-->	<ul>
+		<li><a href="http://bugs.openclonk.org">Bugtracker</a></li>
+
+		<li><a href="http://hg.openclonk.org/openclonk/">Repository</a></li>
+		<li><a href="http://hg.openclonk.org/openclonk-resources/">Resource Repository</a></li>
+	</ul>
+	</li>
+	<li><a class="current" href="http://wiki.openclonk.org/w/C4Script_Documentation">Documentation</a>	<ul>
+		<li><a href="http://docs.openclonk.org/en/sdk/">C4Script reference</a></li>
+
+	</ul>
+	</li>
+	<li><!--[if lt IE 9]><span><![endif]--><a href="http://blog.openclonk.org/">Blog</a><!--[if lt IE 9]></span><![endif]--></li>
+	</ul>
+
+	</div>
+
+</header>

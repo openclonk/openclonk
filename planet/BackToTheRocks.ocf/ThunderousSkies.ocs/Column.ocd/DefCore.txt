@@ -1,0 +1,17 @@
+[DefCore]
+id=Column
+Version=4,10,0,0
+Category=C4D_Structure
+Width=20
+Height=50
+Offset=-10,-50
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=50
+Value=45
+Mass=90
+Components=Rock=7;
+Construction=1
+Rotate=1
+Float=1

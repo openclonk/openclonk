@@ -56,11 +56,11 @@ function SearchDir($path) {
 			else {
 				// HTML-Dokument auslesen
 				$doc = new DOMDocument();
-				$doc->loadHTMLFile($path.$file);
+				@$doc->loadHTMLFile($path.$file);
 				$divs = $doc->getElementsByTagName('div');
 				foreach($divs as $div) {
 					if(strpos($div->getAttribute('class'), 'text') !== false) {
-						if(preg_match("/\b" . htmlspecialchars($_GET['search']) . "\b/i", strip_tags($div->nodeValue))) {
+						if(strpos(strip_tags($div->nodeValue),htmlspecialchars($_GET['search'])) !== false) {
 							$dirname = basename(rtrim($path, '/'));
 							if(!isset($result[$dirname]))
 								$result[$dirname] = array();
@@ -92,7 +92,7 @@ $lang = basename(dirname(__FILE__));
 <style>
 ul {
 list-style-position: inside;
-list-style-image: url(images/bullet_sheet.gif);
+list-style-image: url(images/bullet_sheet.png);
 }
 ul a {
 color: navy;  
@@ -107,32 +107,30 @@ text-decoration: none;
 <body>
 <?php
 if ($lang == 'de') {
-	getprint("http://www.openclonk.org/header/header.php?p=docsde");
+	readfile("http://www.openclonk.org/header/header.php?p=docs");
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.php">Einleitung</a></li>
-<li><a href="content.php">Inhalt</a></li>
+<li><a href="sdk/content.html">Inhalt</a></li>
 <li><a href="search.php">Suche</a></li>
-<li><a href="sdk/console.php">Engine</a></li>
-<li><a href="sdk/cmdline.php">Kommandozeile</a></li>
-<li><a href="sdk/files.php">Spieldaten</a></li>
-<li><a href="sdk/script/index.php">Script</a></li>
+<li><a href="sdk/console.html">Engine</a></li>
+<li><a href="sdk/cmdline.html">Kommandozeile</a></li>
+<li><a href="sdk/files.html">Spieldaten</a></li>
+<li><a href="sdk/script/index.html">Script</a></li>
 </ul>
 <h1>Suche nach Scriptfunktionen</h1>
 HEADER;
 } else {
-	getprint("http://www.openclonk.org/header/header.php?p=docs");
+	readfile("http://www.openclonk.org/header/header.php?p=docs");
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.php">Introduction</a></li>
-<li><a href="content.php">Contents</a></li>
+<li><a href="sdk/content.html">Contents</a></li>
 <li><a href="search.php">Search</a></li>
-<li><a href="sdk/console.php">Engine</a></li>
-<li><a href="sdk/cmdline.php">Command Line</a></li>
-<li><a href="sdk/files.php">Game Data</a></li>
-<li><a href="sdk/script/index.php">Script</a></li>
+<li><a href="sdk/console.html">Engine</a></li>
+<li><a href="sdk/cmdline.html">Command Line</a></li>
+<li><a href="sdk/files.html">Game Data</a></li>
+<li><a href="sdk/script/index.html">Script</a></li>
 </ul>
 <h1>Search for Script Functions</h1>
 HEADER;

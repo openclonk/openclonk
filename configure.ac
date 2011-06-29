@@ -14,8 +14,8 @@ dnl OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
-AC_COPYRIGHT([©2005-2009 Günther Brammer])
+AC_INIT(clonk, 5)
+AC_COPYRIGHT([©2005-2010 Günther Brammer])
 AC_CONFIG_SRCDIR([/src/C4Game.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
@@ -56,13 +56,27 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
-AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h execinfo.h sys/inotify.h sys/syscall.h], , , [[ ]])
+AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h], , , [[ ]])
 # Mingw does not ship with multimon.h
 AC_CHECK_HEADERS([multimon.h io.h direct.h share.h], [], [], [[#include <windows.h>]])
 # iconv
 AX_ICONV
 # vasprintf is a GNU extension
 AC_CHECK_FUNCS(vasprintf)
+# so is execinfo.h - and some systems have the header despite the functions not being in the c library
+AC_CHECK_HEADER(execinfo.h)
+if test "x$ac_cv_header_execinfo_h" = xyes; then
+  AC_CHECK_FUNC(backtrace, [], [
+    AC_CHECK_LIB(execinfo, backtrace, [
+      CLONK_LIBS="-lexecinfo $CLONK_LIBS"
+    ], [
+      ac_cv_header_execinfo_h=no
+    ])
+  ])
+fi
+if test "x$ac_cv_header_execinfo_h" = xyes; then
+  AC_DEFINE(HAVE_EXECINFO_H, 1, [The backtrace function is declared in execinfo.h and works])
+fi
 
 AC_ARG_ENABLE([debug],
   [AC_HELP_STRING([--enable-debug], [debugging options [default=no]])],
@@ -89,18 +103,52 @@ AC_ARG_ENABLE([sound],
   , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
 # GTK+
-GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
+GTK2_REQUIRED="glib-2.0 >= 2.8 gtk+-2.0 >= 2.8"
+GTK3_REQUIRED="glib-2.0 >= 2.27.5 gtk+-3.0 >= 2.99.0"
+PKG_PROG_PKG_CONFIG
+AC_MSG_CHECKING([which gtk+ version to compile against])
 AC_ARG_WITH([gtk],
-  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
-  , [PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])])
-AS_IF([test $with_gtk = yes],[
+  [AS_HELP_STRING([--with-gtk=2.0|3.0],[which gtk+ version to compile against [default: auto]])],
+  [case "$with_gtk" in
+     2.0|3.0) ;;
+     no) ;;
+     *) AC_MSG_ERROR([invalid gtk version specified]) ;;
+   esac],
+  [AS_IF([test $enable_console = no],
+    [PKG_CHECK_EXISTS([$GTK3_REQUIRED],
+      [with_gtk=3.0],
+      [PKG_CHECK_EXISTS([$GTK2_REQUIRED],
+        [with_gtk=2.0],
+        [with_gtk=no])])],
+    [with_gtk=no])])
+AC_MSG_RESULT([$with_gtk])
+AS_IF([test $with_gtk != no],[
+  case "$with_gtk" in
+  2.0) GTK_REQUIRED="$GTK2_REQUIRED"
+       ;;
+  3.0) GTK_REQUIRED="$GTK3_REQUIRED"
+       ;;
+  esac
   PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
-  DEVELOPER_MODE=true
 ])
-AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk = yes])
+AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk != no])
 
+# OpenAL
+AC_ARG_WITH([openal],
+  [AC_HELP_STRING([--with-openal],[compile with openal support [default=no]])],
+  , [with_openal=no])
+if test $with_openal = yes; then
+  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal])
+  AC_DEFINE([USE_OPEN_AL], 1, [OpenAL sound])
+  if test $enable_sound = no; then
+    AC_MSG_ERROR([--with-openal cannot be used with --disable-sound.])
+  fi
+fi
+
+# SDL
+with_sdl_mixer=no
 AC_ARG_WITH([sdl],
   AS_HELP_STRING([--with-sdl], [Use SDL @<:@default=yes (no for win32)@:>@]),
   , [if test $win32 = true; then with_sdl=no; else if test $enable_console = yes; then with_sdl=no; else with_sdl=yes; fi fi])
@@ -112,11 +160,12 @@ if test $with_sdl = yes; then
     [AC_MSG_ERROR([libSDL not found.])])
   AC_SUBST(SDL_CFLAGS)
   AC_SUBST(SDL_LIBS)
-  if test $enable_sound = yes; then
+  if test $enable_sound = yes && test $with_openal = no; then
     # Check for SDL_mixer library
     AC_CHECK_LIB(SDL_mixer, Mix_OpenAudio,
       [AC_DEFINE(HAVE_LIBSDL_MIXER,1,[Define to 1 if you have SDL_mixer.])
-      SDL_LIBS="-lSDL_mixer $SDL_LIBS"],
+      SDL_LIBS="-lSDL_mixer $SDL_LIBS"
+      with_sdl_mixer=yes],
       [AC_MSG_ERROR([SDL_mixer not found.])],
       [$SDL_LIBS])
   fi
@@ -153,10 +202,18 @@ else
   VL_LIB_READLINE
 fi
 
+# Check for boost
+AX_BOOST_BASE([1.40.0], [], [
+  AC_MSG_ERROR([Boost not found.])
+])
+
+# OpenSSL
+AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
+  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
+
 # Check for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, [
   CLONK_LIBS="-ljpeg $CLONK_LIBS"
-  with_internal_libjpeg=no
 ], [
   AC_MSG_ERROR([libjpeg not found.])
 ])
@@ -164,7 +221,6 @@ AC_CHECK_LIB(jpeg, jpeg_read_header, [
 # Check for libpng
 AC_CHECK_LIB(png, png_read_image, [
   CLONK_LIBS="-lpng $CLONK_LIBS"
-  with_internal_libpng=no
 ], [
   AC_MSG_ERROR([libpng not found.])
 ], [-lz])
@@ -245,9 +301,12 @@ if test "$with_directx" = yes; then
   AC_DEFINE([USE_DIRECTX], 1, [DirectX graphics])
 fi
 
-# OpenSSL
-AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
-  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
+AC_ARG_WITH([automatic-update],
+  [AC_HELP_STRING([--with-automatic-update],[enable support for automatic engine updates [default=yes]])],
+  , [with_automatic_update="yes"])
+if test "$with_automatic_update" = "yes"; then
+  AC_DEFINE([WITH_AUTOMATIC_UPDATE], 1, [Enable automatic update system])
+fi
 
 if test $win32 = false; then
   # pthread
@@ -255,23 +314,23 @@ if test $win32 = false; then
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
 
-  # inotify syscall workaround
-  AC_CHECK_DECL(SYS_inotify_init,
-  	AC_DEFINE([HAVE_SYSCALL_INOTIFY], 1, [inotify reachable using syscall]),,
-  	[#include <sys/syscall.h>])
-
   # FMod is used for windows only
   AM_CONDITIONAL(USE_FMOD, false)
 else
   # Windows
-  for WIN32LIB in gdi32 comdlg32 winmm ws2_32 vfw32
+  for WIN32LIB in gdi32 comdlg32 winmm ws2_32
   do
     AC_CHECK_LIB([$WIN32LIB], main, [CLONK_LIBS="-l$WIN32LIB $CLONK_LIBS"], [AC_MSG_ERROR([$WIN32LIB not found.])])
   done
 
+  AC_CHECK_LIB([vfw32], main, [
+    CLONK_LIBS="-lvfw32 $CLONK_LIBS"
+    AC_DEFINE([HAVE_VFW32], 1, [ ])
+    ], [])
+
   # FMod (Library comes with standard)
   if test "$enable_sound" = yes; then
-    AC_DEFINE([USE_FMOD], 1, [Wether FMOD shall be used])
+    AC_DEFINE([USE_FMOD], 1, [Whether FMOD shall be used])
   fi
   AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
 
@@ -306,6 +365,8 @@ echo "Configuration:
   DirectX:	$with_directx
   OpenGL:	$with_gl
   Sound:	$enable_sound
+  SDL_Mixer:	$with_sdl_mixer
+  OpenAL:	$with_openal
   GTK+: 	$with_gtk
   X11:  	$have_x"
 

@@ -1,23 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Jump</title>
-    <category>Objekte</category>
-    <subcat>Bewegung</subcat>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>bool</rtype>
-    </syntax>
-    <desc>Veranlasst das Objekt dazu, zu springen. Dabei gelten sämtliche Beschränkungen, die auch bei Ansteuerung über die Tastatur gelten:
-          Das Objekt kann nur springen, wenn es gerade steht (seine Action die Procedure "WALK" hat).<br />
-          Im Wasser wird die Action "Dive" aktiviert.<br />
-          Die Funktion gibt zurück, ob die Aktion erfolgreich durchgeführt wurde.
-          </desc>
-    <related>
-      <funclink>SetCommand</funclink>
-    </related>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Makes an object jump. The same limitations apply as they would with a keyboard controlled jump: the object can jump only from the WALK activity or SWIM activity (jumping from the latter will cause a dive jump).<br/>Returns whether the jump was successfully initiated.</desc>
+    <related><funclink>SetCommand</funclink></related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

@@ -1,0 +1,12 @@
+[Particle]
+Name=Flash
+MaxCount=6200
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,64,64,-32,-32
+Delay=0
+Repeats=1
+Reverse=0
+AlphaFade=48
+Additive=1

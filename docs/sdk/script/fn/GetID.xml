@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetID</title>
-		<category>Objekte</category>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>id</rtype>
-		</syntax>
-		<desc>Gibt die ID des aufrufenden Objekts zurück.</desc>
-		<examples>
-			<example>
-				<code><funclink>CreateObject</funclink>(GetID())</code>
-				<text>Erstellt ein Duplikat des aufrufenden Objekts.</text>
-			</example>
-		</examples>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+  <func>
+    <title>GetID</title>
+    <category>Objects</category>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>id</rtype></syntax>
+    <desc>Returns the object definition id of an object.</desc>
+    <examples>
+      <example>
+        <code><funclink>CreateObject</funclink>(GetID())</code>
+        <text>Creates a duplicate of the calling object.</text>
+      </example>
+    </examples>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

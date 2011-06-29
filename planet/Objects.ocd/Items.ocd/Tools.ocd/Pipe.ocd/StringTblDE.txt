@@ -1,0 +1,7 @@
+Name=Rohr
+Description=Press [Use] in front of a liquid pump to create a source or drain pipe.
+
+MsgNoNewPipe=Cannot create a new pipe here.
+MsgCreatedSource=Connected source pipe.
+MsgCreatedDrain=Connected drain pipe.
+MsgHasPipes=No new connection available.

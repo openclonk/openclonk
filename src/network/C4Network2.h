@@ -4,6 +4,7 @@
  * Copyright (c) 2004-2007  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
  * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -35,19 +36,19 @@ class C4PacketJoinData;
 
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,
-							C4NetStdPortUDP = 11113,
-							C4NetStdPortDiscovery = 11114,
-							C4NetStdPortRefServer = 11111,
-							C4NetStdPortPuncher = 11115,
-              C4NetStdPortHTTP = 80;
+                                C4NetStdPortUDP = 11113,
+                                                  C4NetStdPortDiscovery = 11114,
+                                                                          C4NetStdPortRefServer = 11111,
+                                                                                                  C4NetStdPortPuncher = 11115,
+                                                                                                                        C4NetStdPortHTTP = 80;
 
 // ressource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
 const int C4NetActivationReqInterval = 5000, // (ms)
-          C4NetMaxBehind4Activation = 20, // (ticks)
-          C4NetDeactivationDelay = 500; // (ticks)
+                                       C4NetMaxBehind4Activation = 20, // (ticks)
+                                                                   C4NetDeactivationDelay = 500; // (ticks)
 
 // client chase
 const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
@@ -67,11 +68,11 @@ const int C4NetStreamingInterval = 30; // (s)
 
 enum C4NetGameState
 {
-	GS_None,		// network not active
-	GS_Init,		// connecting to host, waiting for join data
-	GS_Lobby,		// lobby mode
-	GS_Pause,		// game paused
-	GS_Go			// game running
+	GS_None,    // network not active
+	GS_Init,    // connecting to host, waiting for join data
+	GS_Lobby,   // lobby mode
+	GS_Pause,   // game paused
+	GS_Go     // game running
 };
 
 class C4Network2Status : public C4PacketBase
@@ -85,17 +86,17 @@ protected:
 	int32_t iTargetCtrlTick;
 
 public:
-	C4NetGameState	getState()			      const { return eState; }
-	int32_t					getCtrlMode()					const { return iCtrlMode; }
-	int32_t					getTargetCtrlTick()		const { return iTargetCtrlTick; }
-	const char		 *getStateName()				const;
-  const char     *getDescription()			const;
+	C4NetGameState  getState()            const { return eState; }
+	int32_t         getCtrlMode()         const { return iCtrlMode; }
+	int32_t         getTargetCtrlTick()   const { return iTargetCtrlTick; }
+	const char     *getStateName()        const;
+	const char     *getDescription()      const;
 
-	bool						isEnabled()			const { return eState != GS_None; }
-	bool						isLobbyActive()	const { return eState == GS_Lobby; }
-	bool						isPastLobby()	  const { return eState  > GS_Lobby; }
-	bool						isPaused()			const { return eState == GS_Pause; }
-	bool						isRunning()			const { return eState == GS_Go; }
+	bool            isEnabled()     const { return eState != GS_None; }
+	bool            isLobbyActive() const { return eState == GS_Lobby; }
+	bool            isPastLobby()   const { return eState  > GS_Lobby; }
+	bool            isPaused()      const { return eState == GS_Pause; }
+	bool            isRunning()     const { return eState == GS_Go; }
 
 	void Set(C4NetGameState eState, int32_t iTargetCtrlTick);
 	void SetCtrlMode(int32_t iCtrlMode);
@@ -165,16 +166,16 @@ protected:
 	// chase
 	uint32_t iLastChaseTargetUpdate;
 
-  // activation
-  uint32_t iLastActivateRequest;
+	// activation
+	uint32_t iLastActivateRequest;
 
-  // reference
-  uint32_t iLastReferenceUpdate;
+	// reference
+	uint32_t iLastReferenceUpdate;
 	uint32_t iLastLeagueUpdate, iLeagueUpdateDelay;
 	bool fLeagueEndSent;
 
-  // league
-  class C4LeagueClient *pLeagueClient;
+	// league
+	class C4LeagueClient *pLeagueClient;
 
 	// game password
 	StdStrBuf sPassword;
@@ -204,15 +205,15 @@ protected:
 public:
 
 	// data access
-	bool isEnabled()		const { return Status.isEnabled(); }
+	bool isEnabled()    const { return Status.isEnabled(); }
 	bool isLobbyActive()const { return Status.isLobbyActive(); }
 	bool isPastLobby()  const { return Status.isPastLobby(); }
-	bool isRunning()		const { return Status.isRunning() && isStatusAck(); }
-	bool isPaused()			const { return Status.isPaused() && isStatusAck(); }
-	bool isPausing()		const { return Status.isPaused() && !fStatusAck; }
-	bool isHost()				const { return fHost; }
-	bool isStatusAck()	const { return fStatusAck; }
-	bool isFrozen()			const;
+	bool isRunning()    const { return Status.isRunning() && isStatusAck(); }
+	bool isPaused()     const { return Status.isPaused() && isStatusAck(); }
+	bool isPausing()    const { return Status.isPaused() && !fStatusAck; }
+	bool isHost()       const { return fHost; }
+	bool isStatusAck()  const { return fStatusAck; }
+	bool isFrozen()     const;
 
 	bool isJoinAllowed() const { return fAllowJoin; }
 	bool isObservingAllowed() const { return fAllowObserve; }
@@ -231,7 +232,7 @@ public:
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
 	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
-  bool InitHostRessources();
+	bool InitHostRessources();
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -253,7 +254,7 @@ public:
 	bool ToggleClientListDlg();
 	void AllowJoin(bool fAllow);
 	void SetAllowObserve(bool fAllow);
-  void SetCtrlMode(int32_t iCtrlMode);
+	void SetCtrlMode(int32_t iCtrlMode);
 	void SetPassword(const char *szToPassword);
 	StdStrBuf QueryClientPassword(); // ask client for a password; empty if user canceled
 
@@ -269,17 +270,17 @@ public:
 	// status
 	void DrawStatus(C4TargetFacet &cgo);
 
-  // client activation
-  void RequestActivate();
-  void DeactivateInactiveClients(); // host
+	// client activation
+	void RequestActivate();
+	void DeactivateInactiveClients(); // host
 
-  // league
-  void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	// league
+	void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
 	void LeagueSignupDisable(); // if "internet game" button is switched off in lobby: Remove from league server
 	bool LeagueSignupEnable();  // if "internet game" button is switched on in lobby: (re)Add to league server
 	void InvalidateReference(); // forces a recreation and re-send of the game reference in the next execution cycle
-  bool LeaguePlrAuth(C4PlayerInfo *pInfo); // client: get authentication for a player from the league server
-  bool LeaguePlrAuthCheck(C4PlayerInfo *pInfo); // host: check AUID of player info with league server
+	bool LeaguePlrAuth(C4PlayerInfo *pInfo); // client: get authentication for a player from the league server
+	bool LeaguePlrAuthCheck(C4PlayerInfo *pInfo); // host: check AUID of player info with league server
 	void LeagueNotifyDisconnect(int32_t iClientID, enum C4LeagueDisconnectReason eReason); //
 	void LeagueWaitNotBusy(); // block until league serveris no longer busy. Process update reply if last message was an update
 	void LeagueSurrender(); // forfeit in league - just fake a disconnect
@@ -314,9 +315,9 @@ protected:
 
 	// handling of own packets
 	void HandleConn(const class C4PacketConn &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
-	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply);
-	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
-	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
+	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, StdStrBuf * szReply);
+	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
+	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
 	void HandleConnRe(const class C4PacketConnRe &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
 	void HandleStatus(const C4Network2Status &nStatus);
 	void HandleStatusAck(const C4Network2Status &nStatus, C4Network2Client *pClient);
@@ -411,15 +412,15 @@ public:
 	C4GameParameters Parameters;
 
 public:
-	const int32_t					 &getClientID()				const { return iClientID; }
-	const C4Network2ResCore&getDynamicCore()		const { return Dynamic; }
-	const C4Network2Status &getStatus()					const { return GameStatus; }
-	int32_t									getStartCtrlTick()	const { return iStartCtrlTick; }
+	const int32_t          &getClientID()       const { return iClientID; }
+	const C4Network2ResCore&getDynamicCore()    const { return Dynamic; }
+	const C4Network2Status &getStatus()         const { return GameStatus; }
+	int32_t                 getStartCtrlTick()  const { return iStartCtrlTick; }
 
 	void SetClientID(int32_t inClientID) { iClientID = inClientID; }
 	void SetGameStatus(const C4Network2Status &Status) { GameStatus = Status; }
 	void SetDynamicCore(const C4Network2ResCore &Core) { Dynamic = Core; }
-	void SetStartCtrlTick(int32_t iTick)							 { iStartCtrlTick = iTick; }
+	void SetStartCtrlTick(int32_t iTick)               { iStartCtrlTick = iTick; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };
@@ -427,13 +428,13 @@ public:
 class C4PacketActivateReq : public C4PacketBase
 {
 public:
-  C4PacketActivateReq(int32_t iTick = -1) : iTick(iTick) { }
+	C4PacketActivateReq(int32_t iTick = -1) : iTick(iTick) { }
 
 protected:
-  int32_t iTick;
+	int32_t iTick;
 
 public:
-  int32_t getTick() const { return iTick; }
+	int32_t getTick() const { return iTick; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };

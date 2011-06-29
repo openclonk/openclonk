@@ -1,0 +1,20 @@
+# Dialogue options
+MsgNextTutorial=&Nächste Lernrunde
+MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgRepeatRound=&Lernrunde wiederholen
+MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
+
+# Tutorial messages
+MsgTutIntro0=Willkommen bei OpenClonk!
+MsgTutIntro1=Dies ist dein Clonk.
+MsgTutIntro2=Das Ziel der Lernrunde ist, mit deinem Clonk durch die Höhle an den rechten Kartenrand zu kommen. Das Spielziel wird in jeder Runde in der oberen rechten Ecke des Bildschirms angezeigt.
+MsgTutIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen linken Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
+MsgTutMovement=Clonks werden durch die WASD Tasten gesteuert. Drücke [A] oder [D], um nach links oder rechts zu gehen. Mit [W] springst du.
+MsgTutScale=Hier musst du an der Wand hochklettern, um weiterzukommen. Dein Clonk fängt automatisch an zu klettern, wenn du gegen eine Wand läufst oder springst. Dann kannst du mit [W] hoch- und [S] runterklettern.
+MsgTutHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst du normal nach links oder rechts hangeln. Um schließlich loszulassen, drücke [S].
+MsgTutSwim=Im Wasser kannst du in jede Richtung schwimmen. Wenn du untertauchst, hält dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertringt er.
+MsgTutDig=Hier brauchst du eine Schaufel um hindurchzugraben. Was ist das da unter Wasser?
+MsgTutTools=Das Inventar deines Clonks in der unteren linken Bildschirmecke zeigt nun die Schaufel. Ist sie in der linken Hand (linker Slot), benutzt du sie mit der linken Maustaste. Ist sie in der rechten Hand (rechter Slot), mit der rechten Maustaste.||Ein Klick mit der rechten Maustaste auf die Schaufel im Inventar zeigt eine kurze Beschreibung an, wie sie funktioniert.
+MsgTutChest=Um hier weiterzukommen, musst du eine Lehmbrücke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drücke die [Leertaste], um die Truhe zu öffnen. Sobald der Inhalt der Truhe angezeigt wird, kannst du ihn in die Hand nehmen. || Wählst du den Lehmklumpen mit der linken Maustaste aus, nimmst du ihn in die linke Hand. Wählst du ihn mit der rechten Maustaste aus, nimmst du ihn in die rechte Hand.
+MsgTutLoam=Um eine Lehmbrücke zu bauen, halte die Maustaste gedrückt. Die Konstruktion funktioniert wie das Graben, nur statt einem Tunnel wird eine Lehmbrücke gebaut.
+MsgTutFlint=Oh, was ist das? Der Höhlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um dir einen Weg freizusprengen (ziele und werfe mit der Maus). Wenn du beide einsammeln willst, könntest du die Schaufel vorher in deinen Rucksack tun.||Drücke [Q], um deinen Rucksack zu öffnen. In diesem Menü kannst du Gegenstände im Rucksack auf die selbe Weise verstauen oder in die Hand nehmen, wie mit der Truhe. 

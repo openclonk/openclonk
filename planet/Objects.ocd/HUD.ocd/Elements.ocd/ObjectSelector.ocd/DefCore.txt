@@ -1,0 +1,8 @@
+[DefCore]
+id=GUI_ObjectSelector
+Version=4,10,0,0
+Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax | C4D_MouseSelect
+Width=80
+Height=80
+Offset=-40,-40
+StretchGrowth=1

@@ -1,0 +1,16 @@
+[DefCore]
+id=Arrow
+Version=4,10,0,0
+Category=C4D_Object
+Width=4
+Height=15
+Offset=-2,-7
+Vertices=3
+VertexY=-6,6,0
+VertexFriction=120,120,120
+Value=15
+Mass=8
+Components=Wood=3
+Picture=4,0,21,21
+Rotate=1
+Float=1

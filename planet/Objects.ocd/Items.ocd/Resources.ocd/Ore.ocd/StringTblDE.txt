@@ -1,0 +1,2 @@
+Name=Eisenerz
+Description=Rohmaterial für Metallproduktion in der Schmelze.

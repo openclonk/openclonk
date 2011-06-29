@@ -1,0 +1,17 @@
+[DefCore]
+id=Axe
+Version=4,10,0,0
+Category=C4D_Object
+Width=10
+Height=9
+Offset=-5,-5
+Vertices=2
+VertexX=-4,3
+VertexY=3,-3
+VertexFriction=50,50
+Picture=10,0,64,64
+Value=15
+Mass=20
+Components=Wood=1;Metal=1;
+Rotate=1
+ 

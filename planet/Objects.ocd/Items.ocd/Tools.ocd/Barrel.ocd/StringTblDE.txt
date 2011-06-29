@@ -1,0 +1,2 @@
+Name=Holzfass
+Description=In einem Holzfass können Flüssigkeiten transportiert werden.

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetAttachBones</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>Number of the attached mesh. The return value of <funclink>AttachMesh</funclink> provides such a number.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>parent_bone</name>
+          <desc>Bone of the calling object at which to attach the mesh.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>string</type>
+          <name>child_bone</name>
+          <desc>Bone of the object to be attached.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>If a mesh was previously attached to another mesh then this function can be used to change one or both of the bones at which they are attached. To only change a single bone the other parameter can be set to <code>nil</code>.</desc>
+    <examples>
+      <example>
+        <code>func FxIntCarryBowStart(object target, effect)
+{
+	effect.mesh = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
+	effect.inhand1 = true;
+}
+
+func FxIntCarryBowTimer(object target, effect)
+{
+	<funclink>if</funclink>(effect.inhand1)
+		target-&gt;<funclink>SetAttachBones</funclink>(effect.mesh, &quot;pos_hand2&quot;, nil);
+	else
+		target-&gt;<funclink>SetAttachBones</funclink>(effect.mesh, &quot;pos_hand1&quot;, nil);
+	effect.inhand1 = !effect.inhand1;
+}</code>
+        <text>Script for an <emlink href="script/Effects.html">effect</emlink>: Initially the clonk carries a bow and for each timer call the bow is switched from its left hand to its right hand or vice versa.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AttachMesh</funclink>
+      <funclink>DetachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007, 2009  Peter Wortmann
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,103 +21,111 @@
 
 #include "StdScheduler.h"
 #include "StdSync.h"
-#include "StdWindow.h"
+#include <boost/function.hpp>
 
 // Event types
 enum C4InteractiveEventType
-	{
+{
 	Ev_None = 0,
 
-  Ev_Log,
-  Ev_LogSilent,
-  Ev_LogFatal,
+	Ev_Function,
 
-  Ev_FileChange,
+	Ev_Log,
+	Ev_LogSilent,
+	Ev_LogFatal,
 
-  Ev_HTTP_Response,
+	Ev_FileChange,
 
-  Ev_IRC_Message,
+	Ev_HTTP_Response,
+
+	Ev_IRC_Message,
 
 	Ev_Net_Conn,
 	Ev_Net_Disconn,
 	Ev_Net_Packet,
 
-  Ev_Last = Ev_Net_Packet
-	};
+	Ev_Last = Ev_Net_Packet
+};
 
 class C4InteractiveThreadNotifyProc : public CStdNotifyProc
-	{
-	private:
-		class C4InteractiveThread *pNotify;
-	public:
-		void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
-		virtual bool Execute(int iTimeout, pollfd * readyfds);
-	};
+{
+private:
+	class C4InteractiveThread *pNotify;
+public:
+	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
+	virtual bool Execute(int iTimeout, pollfd * readyfds);
+};
 
-// Collects StdSchedulerProc objects and executes them in a seperate thread
+// Collects StdSchedulerProc objects and executes them in a separate thread
 // Provides an event queue for the procs to communicate with the main thread
 class C4InteractiveThread
-  {
-  public:
-    C4InteractiveThread();
-    ~C4InteractiveThread();
+{
+public:
+	C4InteractiveThread();
+	~C4InteractiveThread();
 
-    // Event callback interface
-    class Callback
-      {
-      public:
-        virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
-        virtual ~Callback() { }
-      };
+	// Event callback interface
+	class Callback
+	{
+	public:
+		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
+		virtual ~Callback() { }
+	};
 
-  private:
+private:
 
-    // the thread itself
-    StdSchedulerThread Scheduler;
+	// the thread itself
+	StdSchedulerThread Scheduler;
 
-	  // event queue (signals to main thread)
-	  struct Event
-	  {
-		  C4InteractiveEventType Type;
-		  void *Data;
+	// event queue (signals to main thread)
+	struct Event
+	{
+		C4InteractiveEventType Type;
+		void *Data;
 #ifdef _DEBUG
-      int Time;
+		int Time;
 #endif
-		  Event *Next;
-	  };
-	  Event *pFirstEvent, *pLastEvent;
-	  CStdCSec EventPushCSec, EventPopCSec;
+		Event *Next;
+	};
+	Event *pFirstEvent, *pLastEvent;
+	CStdCSec EventPushCSec, EventPopCSec;
 
-    // callback objects for events of special types
-    Callback *pCallbacks[Ev_Last + 1];
+	// callback objects for events of special types
+	Callback *pCallbacks[Ev_Last + 1];
 
-		// proc that is added to the main thread to receive messages from our thread
-		C4InteractiveThreadNotifyProc NotifyProc;
+	// proc that is added to the main thread to receive messages from our thread
+	C4InteractiveThreadNotifyProc NotifyProc;
 
-  public:
+public:
 
-    // process management
-	  bool AddProc(StdSchedulerProc *pProc);
-	  void RemoveProc(StdSchedulerProc *pProc);
+	// process management
+	bool AddProc(StdSchedulerProc *pProc);
+	void RemoveProc(StdSchedulerProc *pProc);
 
-    // event queue
-	  bool PushEvent(C4InteractiveEventType eEventType, void *pData = NULL);
-    void ProcessEvents(); // by main thread
+	// event queue
+	bool PushEvent(C4InteractiveEventType eEventType, void *pData = NULL);
+	void ProcessEvents(); // by main thread
 
-	  // special events
-	  bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	  bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	  bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	// special events
+	bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
-    // event handlers
-    void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
-      { pCallbacks[eEvent] = pnNetworkCallback; }
-    void ClearCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
-      { if(pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = NULL; }
+	template<typename Functor>
+	bool ThreadPostAsync(Functor function)
+	{
+		return PushEvent(Ev_Function, new boost::function<void ()>(function));
+	}
 
-  private:
-	  bool PopEvent(C4InteractiveEventType *pEventType, void **ppData); // by main thread
+	// event handlers
+	void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
+	{ pCallbacks[eEvent] = pnNetworkCallback; }
+	void ClearCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
+	{ if (pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = NULL; }
 
-  };
+private:
+	bool PopEvent(C4InteractiveEventType *pEventType, void **ppData); // by main thread
+
+};
 
 #endif // C4INTERACTIVETHREAD_H

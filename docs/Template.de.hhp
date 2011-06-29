@@ -1,0 +1,39 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=Entwickler.chm
+Contents file=Output.hhc
+Default topic=sdk\conent.html
+Display compile progress=No
+Full-text search=Yes
+Index file=Output.hhk
+Language=0x407 Deutsch (Standard)
+Title=Clonk Entwicklermodus
+
+
+[FILES]
+images\icon_em_brush.gif
+images\icon_em_dynamic.gif
+images\icon_em_edit.gif
+images\icon_em_exact.gif
+images\icon_em_eyedrop.gif
+images\icon_em_fill.gif
+images\icon_em_line.gif
+images\icon_em_play.gif
+images\icon_em_rect.gif
+images\icon_em_sky.gif
+images\icon_em_static.gif
+images\icon_em_tunnel.gif
+images\icon_image.png
+images\icon_material.png
+images\icon_music.png
+images\icon_object_definition.png
+images\icon_player.png
+images\icon_scenario.png
+images\icon_scenario_folder.png
+images\icon_sound.png
+images\icon_system.png
+images\icon_text.png
+images\icons_em_play.gif
+
+[INFOTYPES]
+

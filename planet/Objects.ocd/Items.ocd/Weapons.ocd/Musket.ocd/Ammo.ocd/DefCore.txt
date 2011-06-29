@@ -1,0 +1,15 @@
+[DefCore]
+id=LeadShot
+Version=4,9,10,10
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,-3,3
+VertexY=0,1,1
+VertexFriction=50
+Picture=8,0,8,8
+Value=10
+Mass=5
+Components=Metal=1;Blackpowder=1;

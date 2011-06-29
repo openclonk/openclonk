@@ -1,0 +1,5 @@
+TxtControl=Steuerung
+TxtLorryisfull=Lore ist|voll.
+TxtLoadUp=Einladen
+Name=Lore
+Description=Erleichtert den Transport größerer Materialmengen. Fasst bis zu 50 Objekte.

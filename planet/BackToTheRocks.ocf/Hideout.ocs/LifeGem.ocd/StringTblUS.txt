@@ -1,0 +1,2 @@
+Name=Life Gem
+Description=Activate to heal the Clonk. Taking damage will cancel the healing effect.

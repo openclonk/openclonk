@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
@@ -8,20 +9,17 @@
     <version>4.9.6.0 CR</version>
     <syntax>
       <rtype>int</rtype>
-      <params>
-      </params>
+      <params />
     </syntax>
-    <desc>
-    Liefert die Anzahl der Teams, die momentan im Spiel sind.
-    </desc>
-    <remark>Da Spieler zur Laufzeit hinzukommen oder entfernt werden können, kann es vorkommen, dass "Lücken" in der Teamindizierung entstehen (d.h., dass zum Beispiel Team 2 existiert, aber Team 1 nicht mehr) - GetTeamCount liefert unabhängig davon aber nicht den Index des letzten Teams+1, sondern die tatsächliche Teamanzahl zurück. Um alle Teams durchzugehen, benötigt man daher eine spezielle Schleife. Es reicht nicht, einfach von 0 bis GetTeamCount()-1 hochzuzählen! Siehe das Beispiel zu <funclink>GetTeamByIndex</funclink>.</remark>
-	<related>
-		<emlink href="scenario/Teams.html">Teams</emlink>
-		<funclink>GetTeamColor</funclink>
-		<funclink>GetTeamName</funclink>
-		<funclink>GetPlayerTeam</funclink>
-		<funclink>GetTeamByIndex</funclink>
-	</related>
+    <desc>Returns the number of teams currently in the game.</desc>
+    <remark>As players may join and leave a game at runtime, there can be "gaps" in player indexing, meaning player numbers may skip certain values. GetPlayerCount returns the actual number of players, not the index of the last player plus one. To process all joined players you need special handling (see example) - you cannot simply run from index 0 to GetPlayerCount() - 1. See the example for <funclink>GetTeamByIndex</funclink>.</remark>
+    <related>
+      <emlink href="scenario/Teams.html">Teams</emlink>
+      <funclink>GetTeamColor</funclink>
+      <funclink>GetTeamName</funclink>
+      <funclink>GetPlayerTeam</funclink>
+      <funclink>GetTeamByIndex</funclink>
+    </related>
   </func>
-  <author>Clonkonaut</author><date>April 2008</date>
+  <author>Clonkonaut</author><date>2008-04</date>
 </funcs>

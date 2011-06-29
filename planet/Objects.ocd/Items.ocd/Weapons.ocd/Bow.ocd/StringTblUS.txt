@@ -1,0 +1,2 @@
+Name=Bow
+Description=Aim and shoot with [Use]. The bow needs arrows as ammunition.

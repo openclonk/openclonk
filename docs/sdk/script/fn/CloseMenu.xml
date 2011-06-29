@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>CloseMenu</title>
-		<category>Objekte</category><subcat>Menü</subcat>
-		<version>4.9.1.0 GWE</version>
-		<syntax>
-			<rtype>bool</rtype>
-		</syntax>
-		<desc>Schließt das Menü des aufrufenden Objekts.</desc>
-		<examples>
-			<example>
-				<code><funclink>Contained</funclink>()->CloseMenu();</code>
-				<text>Schließt das Menü des eigenen Behälters.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>CreateMenu</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>November 2001</date>
+  <func>
+    <title>CloseMenu</title>
+    <category>Objects</category>
+    <subcat>Menu</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Closes the menu of the calling object.</desc>
+    <examples>
+      <example>
+        <code><funclink>Contained</funclink>()-&gt;CloseMenu();</code>
+        <text>Closes the container's menu.</text>
+      </example>
+    </examples>
+    <related><funclink>CreateMenu</funclink></related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

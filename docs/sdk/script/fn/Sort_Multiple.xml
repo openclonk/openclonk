@@ -1,23 +1,32 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Sort_Multiple</title>
-		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.10.0.0 OC</version>
-		<syntax>
-			<rtype>array</rtype>
-			<params>
-				<param><type>array</type><name>Criteria</name><desc>Sortierkriterium in Form einer Sort_*-Funktion</desc></param>
-				<param><type></type><name>...</name><desc>Weitere Sortierkriterien in Form von Sort_*-Funktionen</desc><optional /></param>
-			</params>
-		</syntax>
-		<desc>Sortierkriterium: Ermöglicht das Sortieren nach mehreren Kriterien. Das erste Kriterium hat höchste Priorität.</desc>
-		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
-		<related>
-			<funclink>FindObjects</funclink>
-		</related>
-	</func>
-	<author>Newton</author><date>Juli 2009</date>
+  <func>
+    <title>Sort_Multiple</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>Criteria</name>
+          <desc>Sort criterion in the form of a Sort_* function</desc>
+        </param>
+        <param>
+          <type/>
+          <name>...</name>
+          <desc>Additional search criteria in the form of Sort_* functions</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Sort criterion: ErmÃ¶glicht das Sortieren nach mehreren Kriterien. Das erste Kriterium hat hÃ¶chste PrioritÃ¤t.</desc>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink></related>
+  </func>
+  <author>Newton</author><date>2009-07</date>
 </funcs>

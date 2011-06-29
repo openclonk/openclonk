@@ -1,0 +1,2 @@
+Name=Keule
+Description=Mit der Keule lassen sich heranfliegende Dinge und Clonks wegschlagen. Zielen und Schlagen mit [Benutzen].

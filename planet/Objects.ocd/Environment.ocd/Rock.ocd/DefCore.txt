@@ -1,0 +1,16 @@
+[DefCore]
+id=BigRock
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=40
+Height=40
+Offset=-20,-20
+Vertices=2
+VertexX=0,0
+VertexY=0,3
+VertexCNAT=3,4
+Mass=1
+StretchGrowth=1
+Oversize=1
+Float=1
+

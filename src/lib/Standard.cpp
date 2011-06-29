@@ -5,6 +5,8 @@
  * Copyright (c) 2002, 2004, 2007-2008  Sven Eberhardt
  * Copyright (c) 2004-2005  Peter Wortmann
  * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,23 +24,14 @@
 /* All kinds of valuable helpers */
 
 #include "C4Include.h"
-#include <Standard.h>
-#if defined(HAVE_PTHREAD) && defined(C4ENGINE)
-// c4group is single-threaded
 #include <StdSync.h>
-#endif
 
-#ifdef _WIN32
-#include <shellapi.h>
-#endif
-
-#include <math.h>
 #include <sys/timeb.h>
 
 //------------------------------------- Basics ----------------------------------------
 
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
-	{
+{
 	int64_t dx = int64_t(iX1)-iX2, dy = int64_t(iY1)-iY2;
 	int64_t d2 = dx*dx+dy*dy;
 	if (d2 < 0) return -1;
@@ -46,22 +39,21 @@ int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
 	if (int64_t(dist)*dist < d2) ++dist;
 	if (int64_t(dist)*dist > d2) --dist;
 	return dist;
-	}
+}
 
 int Angle(int iX1, int iY1, int iX2, int iY2)
-	{
-	const double pi = 3.141592654;
-	int iAngle = (int) ( 180.0 * atan2( float(Abs(iY1-iY2)), float(Abs(iX1-iX2)) ) / pi );
+{
+	int iAngle = (int) ( 180.0 * atan2( float(Abs(iY1-iY2)), float(Abs(iX1-iX2)) ) / M_PI );
 	if (iX2>iX1 )
-		{	if (iY2<iY1) iAngle = 90-iAngle; else iAngle = 90+iAngle;	}
+		{ if (iY2<iY1) iAngle = 90-iAngle; else iAngle = 90+iAngle; }
 	else
-		{ if (iY2<iY1) iAngle = 270+iAngle;	else iAngle = 270-iAngle;	}
+		{ if (iY2<iY1) iAngle = 270+iAngle; else iAngle = 270-iAngle; }
 	return iAngle;
-	}
+}
 
 /* Fast integer exponentiation */
 int Pow(int base, int exponent)
-	{
+{
 	if (exponent < 0) return 0;
 
 	int result = 1;
@@ -70,429 +62,479 @@ int Pow(int base, int exponent)
 	exponent >>= 1;
 
 	while (exponent)
-		{
+	{
 		base *= base;
 		if (exponent & 1) result *= base;
 		exponent >>= 1;
-		}
+	}
 
 	return result;
-	}
+}
 
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar,
-						 int32_t *lastx, int32_t *lasty)
-  {
-  int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
-  if (Abs(x2-x1)<Abs(y2-y1))
-    {
-    if (y1>y2) { Swap(x1,x2); Swap(y1,y2); }
-    xincr=(x2>x1) ? 1 : -1;
-    dy=y2-y1; dx=Abs(x2-x1);
-    d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=x1; y=y1;
-    if (!fnCallback(x,y,iPar))
-			{ if (lastx) *lastx=x; if (lasty) *lasty=y;
-				return false; }
-    for (y=y1+1; y<=y2; ++y)
-      {
-      if (d>=0) { x+=xincr; d+=aincr; }
-      else d+=bincr;
-      if (!fnCallback(x,y,iPar))
-				{ if (lastx) *lastx=x; if (lasty) *lasty=y;
-					return false; }
-      }
-    }
-  else
-    {
-    if (x1>x2) { Swap(x1,x2); Swap(y1,y2); }
-    yincr=(y2>y1) ? 1 : -1;
-    dx=x2-x1; dy=Abs(y2-y1);
-    d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=x1; y=y1;
-    if (!fnCallback(x,y,iPar))
-			{ if (lastx) *lastx=x; if (lasty) *lasty=y;
-				return false; }
-    for (x=x1+1; x<=x2; ++x)
-      {
-      if (d>=0)	{ y+=yincr; d+=aincr; }
-      else d+=bincr;
-      if (!fnCallback(x,y,iPar))
-				{ if (lastx) *lastx=x; if (lasty) *lasty=y;
-					return false; }
-      }
-    }
-  return true;
-  }
+             int32_t *lastx, int32_t *lasty)
+{
+	int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
+	if (Abs(x2-x1)<Abs(y2-y1))
+	{
+		if (y1>y2) { Swap(x1,x2); Swap(y1,y2); }
+		xincr=(x2>x1) ? 1 : -1;
+		dy=y2-y1; dx=Abs(x2-x1);
+		d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=x1; y=y1;
+		if (!fnCallback(x,y,iPar))
+		{
+			if (lastx) *lastx=x; if (lasty) *lasty=y;
+			return false;
+		}
+		for (y=y1+1; y<=y2; ++y)
+		{
+			if (d>=0) { x+=xincr; d+=aincr; }
+			else d+=bincr;
+			if (!fnCallback(x,y,iPar))
+			{
+				if (lastx) *lastx=x; if (lasty) *lasty=y;
+				return false;
+			}
+		}
+	}
+	else
+	{
+		if (x1>x2) { Swap(x1,x2); Swap(y1,y2); }
+		yincr=(y2>y1) ? 1 : -1;
+		dx=x2-x1; dy=Abs(y2-y1);
+		d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=x1; y=y1;
+		if (!fnCallback(x,y,iPar))
+		{
+			if (lastx) *lastx=x; if (lasty) *lasty=y;
+			return false;
+		}
+		for (x=x1+1; x<=x2; ++x)
+		{
+			if (d>=0) { y+=yincr; d+=aincr; }
+			else d+=bincr;
+			if (!fnCallback(x,y,iPar))
+			{
+				if (lastx) *lastx=x; if (lasty) *lasty=y;
+				return false;
+			}
+		}
+	}
+	return true;
+}
 
 //--------------------------------- Characters ------------------------------------------
 
 bool IsIdentifier(char cChar)
-	{
-  if (Inside(cChar,'A','Z')) return true;
-  if (Inside(cChar,'a','z')) return true;
-  if (Inside(cChar,'0','9')) return true;
-  if (cChar=='_') return true;
-  if (cChar=='~') return true;
-  if (cChar=='+') return true;
-  if (cChar=='-') return true;
+{
+	if (Inside(cChar,'A','Z')) return true;
+	if (Inside(cChar,'a','z')) return true;
+	if (Inside(cChar,'0','9')) return true;
+	if (cChar=='_') return true;
+	if (cChar=='~') return true;
+	if (cChar=='+') return true;
+	if (cChar=='-') return true;
 	return false;
-	}
+}
+
+static bool IsNumber(char c, int base)
+{
+	return (c >= '0' && c <= '9' && c < ('0' + base)) ||
+	       (c >= 'a' && c <= 'z' && c < ('a' + base - 10)) ||
+	       (c >= 'A' && c <= 'Z' && c < ('A' + base - 10));
+}
+
+static int ToNumber(char c)
+{
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'z') return 10 + c - 'a';
+	if (c >= 'A' && c <= 'Z') return 10 + c - 'A';
+	assert(false);
+	return 0;
+}
 
 //------------------------------- Strings ------------------------------------------------
 
-void SCopyL(const char *szSource, char *sTarget, int iMaxL)
-  {
-  if (szSource == sTarget) return;
-  if (!sTarget) return; *sTarget=0; if (!szSource) return;
-  while (*szSource && (iMaxL>0))
-    { *sTarget=*szSource; iMaxL--; szSource++; sTarget++; }
-  *sTarget=0;
-  }
+int32_t StrToI32(const char *s, int base, const char **scan_end)
+{
+	int sign = 1;
+	int32_t result = 0;
+	if (*s == '-')
+	{
+		sign = -1;
+		s++;
+	}
+	else if (*s == '+')
+	{
+		s++;
+	}
+	while (IsNumber(*s,base))
+	{
+		int value = ToNumber(*s++);
+		assert (value < base && value >= 0);
+		result *= base;
+		result += value;
+	}
+	if (scan_end != 0L) *scan_end = s;
+	if (result < 0)
+	{
+		//overflow
+		// we need 2147483648 (2^31) to be -2147483648 in order for -2147483648 to work
+		//result = INT_MAX;
+	}
+	result *= sign;
+	return result;
+}
 
-void SCopy(const char *szSource, char *sTarget, int iMaxL)
-  {
-  if (szSource == sTarget) return;
-	if (iMaxL==-1)
-		{
+void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
+{
+	if (szSource == sTarget) return;
+	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	while (*szSource && (iMaxL>0))
+		{ *sTarget=*szSource; iMaxL--; szSource++; sTarget++; }
+	*sTarget=0;
+}
+
+void SCopy(const char *szSource, char *sTarget)
+{
+	if (szSource == sTarget) return;
 		if (!sTarget) return; *sTarget=0; if (!szSource) return;
 		strcpy(sTarget,szSource);
-		}
-	else
-		SCopyL(szSource,sTarget,iMaxL);
-  }
+}
 
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL, int iIndex)
-  {
-  if (szSource == sTarget) return;
-  if (!sTarget) return; *sTarget=0; if (!szSource) return;
-  while ( *szSource && ((*szSource!=cUntil) || (iIndex>0)) && (iMaxL!=0) )
-    { *sTarget=*szSource; if (*szSource==cUntil) iIndex--; szSource++; sTarget++; iMaxL--; }
-  *sTarget=0;
-  }
+{
+	if (szSource == sTarget) return;
+	if (!sTarget) return; *sTarget=0; if (!szSource) return;
+	while ( *szSource && ((*szSource!=cUntil) || (iIndex>0)) && (iMaxL!=0) )
+		{ *sTarget=*szSource; if (*szSource==cUntil) iIndex--; szSource++; sTarget++; iMaxL--; }
+	*sTarget=0;
+}
 
 void SCopyUntil(const char *szSource, char *sTarget, const char * sUntil, size_t iMaxL)
-	{
+{
 	size_t n = Min(strcspn(szSource, sUntil), iMaxL - 1);
 	strncpy(sTarget, szSource, n);
 	sTarget[n] = 0;
-	}
+}
 
 bool SEqualUntil(const char *szStr1, const char *szStr2, char cWild)
-  {
-  if (!szStr1 || !szStr2) return false;
-  while (*szStr1 || *szStr2)
-    {
-    if ((*szStr1==cWild) || (*szStr2==cWild)) return true;
-    if (*szStr1!=*szStr2) return false;
-    szStr1++; szStr2++;
-    }
-  return true;
-  }
+{
+	if (!szStr1 || !szStr2) return false;
+	while (*szStr1 || *szStr2)
+	{
+		if ((*szStr1==cWild) || (*szStr2==cWild)) return true;
+		if (*szStr1!=*szStr2) return false;
+		szStr1++; szStr2++;
+	}
+	return true;
+}
 
 // Beginning of string 1 needs to match string 2.
 
 bool SEqual2(const char *szStr1, const char *szStr2)
-  {
-  if (!szStr1 || !szStr2) return false;
-  while (*szStr1 && *szStr2)
-    if (*szStr1++ != *szStr2++) return false;
-  if (*szStr2) return false; // Str1 is shorter
-  return true;
-  }
+{
+	if (!szStr1 || !szStr2) return false;
+	while (*szStr1 && *szStr2)
+		if (*szStr1++ != *szStr2++) return false;
+	if (*szStr2) return false; // Str1 is shorter
+	return true;
+}
 
 bool SEqualNoCase(const char *szStr1, const char *szStr2, int iLen)
-  {
-  if (!szStr1 || !szStr2) return false;
+{
+	if (!szStr1 || !szStr2) return false;
 	if (iLen==0) return true;
-  while (*szStr1 && *szStr2)
-		{
+	while (*szStr1 && *szStr2)
+	{
 		if ( CharCapital(*szStr1++) != CharCapital(*szStr2++)) return false;
 		if (iLen>0) { iLen--; if (iLen==0) return true; }
-		}
-  if (*szStr1 || *szStr2) return false;
-  return true;
-  }
+	}
+	if (*szStr1 || *szStr2) return false;
+	return true;
+}
 
 bool SEqual2NoCase(const char *szStr1, const char *szStr2, int iLen)
-  {
-  if (!szStr1 || !szStr2) return false;
+{
+	if (!szStr1 || !szStr2) return false;
 	if (iLen==0) return true;
-  while (*szStr1 && *szStr2)
-		{
+	while (*szStr1 && *szStr2)
+	{
 		if ( CharCapital(*szStr1++) != CharCapital(*szStr2++)) return false;
 		if (iLen>0) { iLen--; if (iLen==0) return true; }
-		}
+	}
 	if (*szStr2) return false; // Str1 is shorter
-  return true;
-  }
+	return true;
+}
 
 int SCharPos(char cTarget, const char *szInStr, int iIndex)
-  {
-  const char *cpos;
-  int ccpos;
-  if (!szInStr) return -1;
-  for (cpos=szInStr,ccpos=0; *cpos; cpos++,ccpos++)
-    if (*cpos==cTarget)
-			{
+{
+	const char *cpos;
+	int ccpos;
+	if (!szInStr) return -1;
+	for (cpos=szInStr,ccpos=0; *cpos; cpos++,ccpos++)
+		if (*cpos==cTarget)
+		{
 			if (iIndex==0) return ccpos;
 			else iIndex--;
-			}
-  return -1;
-  }
+		}
+	return -1;
+}
 
 int SCharLastPos(char cTarget, const char *szInStr)
-  {
-  const char *cpos;
-  int ccpos,lcpos;
-  if (!szInStr) return -1;
-  for (cpos=szInStr,ccpos=0,lcpos=-1; *cpos; cpos++,ccpos++)
-    if (*cpos==cTarget) lcpos=ccpos;
-  return lcpos;
-  }
+{
+	const char *cpos;
+	int ccpos,lcpos;
+	if (!szInStr) return -1;
+	for (cpos=szInStr,ccpos=0,lcpos=-1; *cpos; cpos++,ccpos++)
+		if (*cpos==cTarget) lcpos=ccpos;
+	return lcpos;
+}
 
 void SAppend(const char *szSource, char *szTarget, int iMaxL)
-  {
+{
 	if (iMaxL == -1)
 		SCopy(szSource, szTarget + SLen(szTarget));
 	else
 		SCopy(szSource, szTarget + SLen(szTarget), iMaxL - SLen(szTarget));
-  }
+}
 
 void SAppendChar(char cChar, char *szStr)
-	{
+{
 	if (!szStr) return;
 	char *cPos;
 	for (cPos=szStr; *cPos; cPos++) {}
 	*cPos=cChar; *(cPos+1)=0;
-	}
+}
 
 bool SCopySegment(const char *szString, int iSegment, char *sTarget,
                   char cSeparator, int iMaxL, bool fSkipWhitespace)
-  {
+{
 	// Advance to indexed segment
-  while (iSegment>0)
-    {
-    if (SCharPos(cSeparator,szString) == -1)
+	while (iSegment>0)
+	{
+		if (SCharPos(cSeparator,szString) == -1)
 			{ sTarget[0]=0; return false; }
-    szString += SCharPos(cSeparator,szString)+1;
-    iSegment--;
-    }
+		szString += SCharPos(cSeparator,szString)+1;
+		iSegment--;
+	}
 	// Advance whitespace
 	if (fSkipWhitespace)
 		szString = SAdvanceSpace(szString);
 	// Copy segment contents
-  SCopyUntil(szString,sTarget,cSeparator,iMaxL);
-  return true;
-  }
+	SCopyUntil(szString,sTarget,cSeparator,iMaxL);
+	return true;
+}
 
 bool SCopySegmentEx(const char *szString, int iSegment, char *sTarget,
-                  char cSep1, char cSep2, int iMaxL, bool fSkipWhitespace)
-  {
+                    char cSep1, char cSep2, int iMaxL, bool fSkipWhitespace)
+{
 	// Advance to indexed segment
-  while (iSegment>0)
-    {
-		// use the seperator that's closer
+	while (iSegment>0)
+	{
+		// use the separator that's closer
 		int iPos1 = SCharPos(cSep1,szString), iPos2 = SCharPos(cSep2,szString);
-    if (iPos1 == -1)
+		if (iPos1 == -1)
 			if (iPos2 == -1)
 				{ sTarget[0]=0; return false; }
 			else
 				iPos1=iPos2;
 		else if (iPos2 != -1 && iPos2 < iPos1)
 			iPos1 = iPos2;
-    szString += iPos1+1;
-    iSegment--;
-    }
+		szString += iPos1+1;
+		iSegment--;
+	}
 	// Advance whitespace
 	if (fSkipWhitespace)
 		szString = SAdvanceSpace(szString);
-	// Copy segment contents; use seperator that's closer
+	// Copy segment contents; use separator that's closer
 	int iPos1 = SCharPos(cSep1,szString), iPos2 = SCharPos(cSep2,szString);
 	if (iPos2 != -1 && (iPos2 < iPos1 || iPos1 == -1)) cSep1 = cSep2;
-  SCopyUntil(szString,sTarget,cSep1,iMaxL);
-  return true;
-  }
+	SCopyUntil(szString,sTarget,cSep1,iMaxL);
+	return true;
+}
 
 
 bool SCopyNamedSegment(const char *szString, const char *szName, char *sTarget,
-		                   char cSeparator, char cNameSeparator, int iMaxL)
-  {
+                       char cSeparator, char cNameSeparator, int iMaxL)
+{
 	// Advance to named segment
-  while (!( SEqual2(szString,szName) && (szString[SLen(szName)]==cNameSeparator) ))
-    {
-    if (SCharPos(cSeparator,szString)==-1) { sTarget[0]=0; return false; } // No more segments
-    szString += SCharPos(cSeparator,szString)+1;
-    }
+	while (!( SEqual2(szString,szName) && (szString[SLen(szName)]==cNameSeparator) ))
+	{
+		if (SCharPos(cSeparator,szString)==-1) { sTarget[0]=0; return false; } // No more segments
+		szString += SCharPos(cSeparator,szString)+1;
+	}
 	// Copy segment contents
-  SCopyUntil(szString+SLen(szName)+1,sTarget,cSeparator,iMaxL);
-  return true;
-  }
+	SCopyUntil(szString+SLen(szName)+1,sTarget,cSeparator,iMaxL);
+	return true;
+}
 
-int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
-  {
-  int iResult=0;
+unsigned int SCharCount(char cTarget, const char *szInStr, const char *cpUntil)
+{
+	unsigned int iResult=0;
 	// Scan string
-  while (*szInStr)
-    {
+	while (*szInStr)
+	{
 		// End position reached (end character is not included)
 		if (szInStr==cpUntil) return iResult;
 		// Character found
-    if (*szInStr==cTarget) iResult++;
+		if (*szInStr==cTarget) iResult++;
 		// Advance
-    szInStr++;
-    }
+		szInStr++;
+	}
 	// Done
-  return iResult;
-  }
+	return iResult;
+}
 
-int SCharCountEx(const char *szString, const char *szCharList)
-	{
-	int iResult = 0;
+unsigned int SCharCountEx(const char *szString, const char *szCharList)
+{
+	unsigned int iResult = 0;
 	while ( *szCharList )
-		{
+	{
 		iResult += SCharCount( *szCharList, szString );
 		szCharList++;
-		}
-	return iResult;
 	}
+	return iResult;
+}
 
 void SReplaceChar(char *str, char fc, char tc)
-  {
-  while (str && *str)
-    { if (*str==fc) *str=tc; str++; }
-  }
+{
+	while (str && *str)
+		{ if (*str==fc) *str=tc; str++; }
+}
 
 void SCapitalize(char *str)
-  {
-  while (str && *str)
-    {
+{
+	while (str && *str)
+	{
 		*str=CharCapital(*str);
-    str++;
-    }
-  }
+		str++;
+	}
+}
 
 const char *SSearchIdentifier(const char *szString, const char *szIndex)
-	{
+{
 	// Does not check whether szIndex itself is an identifier.
 	// Just checks for space in front and back.
-  const char *cscr;
-  int indexlen,match=0;
+	const char *cscr;
+	size_t indexlen,match=0;
 	bool frontok=true;
-  if (!szString || !szIndex) return NULL;
-  indexlen=SLen(szIndex);
-  for (cscr=szString; cscr && *cscr; cscr++)
-    {
+	if (!szString || !szIndex) return NULL;
+	indexlen=SLen(szIndex);
+	for (cscr=szString; cscr && *cscr; cscr++)
+	{
 		// Match length
 		if (*cscr==szIndex[match]) match++;
-    else match=0;
-    // String is matched, front and back ok?
+		else match=0;
+		// String is matched, front and back ok?
 		if (match>=indexlen)
 			if (frontok)
 				if (!IsIdentifier(*(cscr+1)))
 					return cscr+1;
-    // Currently no match, check for frontok
+		// Currently no match, check for frontok
 		if (match==0)
-			{
+		{
 			if (IsIdentifier(*cscr)) frontok=false;
 			else frontok=true;
-			}
 		}
-  return NULL;
 	}
+	return NULL;
+}
 
 const char *SSearch(const char *szString, const char *szIndex)
-  {
-  const char *cscr;
-  int indexlen,match=0;
-  if (!szString || !szIndex) return NULL;
-  indexlen=SLen(szIndex);
-  for (cscr=szString; cscr && *cscr; cscr++)
-    {
-    if (*cscr==szIndex[match]) match++;
-    else match=0;
-    if (match>=indexlen) return cscr+1;
-    }
-  return NULL;
-  }
+{
+	const char *cscr;
+	size_t indexlen,match=0;
+	if (!szString || !szIndex) return NULL;
+	indexlen=SLen(szIndex);
+	for (cscr=szString; cscr && *cscr; cscr++)
+	{
+		if (*cscr==szIndex[match]) match++;
+		else match=0;
+		if (match>=indexlen) return cscr+1;
+	}
+	return NULL;
+}
 
 const char *SSearchNoCase(const char *szString, const char *szIndex)
-  {
-  const char *cscr;
-  int indexlen,match=0;
-  if (!szString || !szIndex) return NULL;
-  indexlen=SLen(szIndex);
-  for (cscr=szString; cscr && *cscr; cscr++)
-    {
-    if (CharCapital(*cscr)==CharCapital(szIndex[match])) match++;
-    else match=0;
-    if (match>=indexlen) return cscr+1;
-    }
-  return NULL;
-  }
+{
+	const char *cscr;
+	size_t indexlen,match=0;
+	if (!szString || !szIndex) return NULL;
+	indexlen=SLen(szIndex);
+	for (cscr=szString; cscr && *cscr; cscr++)
+	{
+		if (CharCapital(*cscr)==CharCapital(szIndex[match])) match++;
+		else match=0;
+		if (match>=indexlen) return cscr+1;
+	}
+	return NULL;
+}
 
 void SWordWrap(char *szText, char cSpace, char cSepa, int iMaxLine)
-  {
-  if (!szText) return;
-  // Scan string
-  char *cPos,*cpLastSpace=NULL;
-  int iLineRun=0;
-  for (cPos=szText; *cPos; cPos++)
-    {
+{
+	if (!szText) return;
+	// Scan string
+	char *cPos,*cpLastSpace=NULL;
+	int iLineRun=0;
+	for (cPos=szText; *cPos; cPos++)
+	{
 		// Store last space
-    if (*cPos==cSpace) cpLastSpace=cPos;
+		if (*cPos==cSpace) cpLastSpace=cPos;
 		// Separator encountered: reset line run
 		if (*cPos==cSepa) iLineRun=0;
 		// Need a break, insert at last space
-    if (iLineRun>=iMaxLine)
-      if (cpLastSpace)
-        { *cpLastSpace=cSepa; iLineRun=cPos - cpLastSpace; }
+		if (iLineRun>=iMaxLine)
+			if (cpLastSpace)
+				{ *cpLastSpace=cSepa; iLineRun=cPos - cpLastSpace; }
 		// Line run
-    iLineRun++;
-    }
-  }
+		iLineRun++;
+	}
+}
 
 const char *SAdvanceSpace(const char *szSPos)
-  {
-  if (!szSPos) return NULL;
-  while (IsWhiteSpace(*szSPos)) szSPos++;
-  return szSPos;
-  }
+{
+	if (!szSPos) return NULL;
+	while (IsWhiteSpace(*szSPos)) szSPos++;
+	return szSPos;
+}
 
 const char *SRewindSpace(const char *szSPos, const char *pBegin)
-  {
-  if (!szSPos || !pBegin) return NULL;
-  while (IsWhiteSpace(*szSPos))
-		{
+{
+	if (!szSPos || !pBegin) return NULL;
+	while (IsWhiteSpace(*szSPos))
+	{
 		szSPos--;
 		if (szSPos<pBegin) return NULL;
-		}
-  return szSPos;
-  }
+	}
+	return szSPos;
+}
 
 const char *SAdvancePast(const char *szSPos, char cPast)
-  {
-  if (!szSPos) return NULL;
-  while (*szSPos)
-    {
-    if (*szSPos==cPast) { szSPos++; break; }
-    szSPos++;
-    }
-  return szSPos;
-  }
+{
+	if (!szSPos) return NULL;
+	while (*szSPos)
+	{
+		if (*szSPos==cPast) { szSPos++; break; }
+		szSPos++;
+	}
+	return szSPos;
+}
 
 void SCopyIdentifier(const char *szSource, char *sTarget, int iMaxL)
-  {
-  if (!szSource || !sTarget) return;
-  while (IsIdentifier(*szSource))
-		{
+{
+	if (!szSource || !sTarget) return;
+	while (IsIdentifier(*szSource))
+	{
 		if (iMaxL==1) { *sTarget++ = *szSource++; break; }
 		iMaxL--;
 		*sTarget++ = *szSource++;
-		}
-  *sTarget=0;
-  }
+	}
+	*sTarget=0;
+}
 
 int SClearFrontBack(char *szString, char cClear)
-	{
+{
 	int cleared=0;
 	char *cpos;
 	if (!szString) return 0;
@@ -501,74 +543,74 @@ int SClearFrontBack(char *szString, char cClear)
 	if (cpos!=szString) memmove(szString, cpos, SLen(cpos) + 1);
 	for (cpos=szString+SLen(szString)-1; (cpos>szString) && (*cpos==cClear); cpos--,cleared++)
 		*cpos=0x00;
-  return cleared;
-	}
+	return cleared;
+}
 
 void SNewSegment(char *szStr, const char *szSepa)
-	{
+{
 	if (szStr[0]) SAppend(szSepa,szStr);
-	}
+}
 
 int SGetLine(const char *szText, const char *cpPosition)
-	{
+{
 	if (!szText || !cpPosition) return 0;
 	int iLines = 0;
 	while (*szText && (szText<cpPosition))
-		{
+	{
 		if (*szText == 0x0A) iLines++;
 		szText++;
-		}
-	return iLines;
 	}
+	return iLines;
+}
 
 int SLineGetCharacters(const char *szText, const char *cpPosition)
-	{
+{
 	if (!szText || !cpPosition) return 0;
 	int iChars = 0;
 	while (*szText && (szText<cpPosition))
-		{
+	{
 		if (*szText == 0x0A) iChars = 0;
 		iChars++;
 		szText++;
-		}
-	return iChars;
 	}
+	return iChars;
+}
 
 void SRemoveComments(char *szScript)
-	{
+{
 	const char *pScriptCont;
 	if (!szScript) return;
 	while (*szScript)
-		{
+	{
 		// Advance to next slash
 		while (*szScript && (*szScript!='/')) szScript++;
 		if (!(*szScript)) return; // No more comments
 		// Line comment
 		if (szScript[1]=='/')
-			{
+		{
 			if ((pScriptCont = SSearch(szScript+2,LineFeed)))
 				SCopy(pScriptCont-SLen(LineFeed),szScript);
 			else
 				szScript[0]=0;
-			}
+		}
 		// Block comment
 		else if (szScript[1]=='*')
-			{
+		{
 			if ((pScriptCont = SSearch(szScript+2,"*/")))
 				SCopy(pScriptCont,szScript);
 			else
 				szScript[0]=0;
-			}
+		}
 		// No comment
 		else
-			{
+		{
 			szScript++;
-			}
 		}
 	}
+}
 
 bool SCopyPrecedingIdentifier(const char *pBegin, const char *pIdentifier, char *sTarget, int iSize)
-	{
+{
 	// Safety
 	if (!pIdentifier || !sTarget || !pBegin) return false;
 	// Empty default
@@ -579,15 +621,15 @@ bool SCopyPrecedingIdentifier(const char *pBegin, const char *pIdentifier, char 
 	const char *cPos;
 	if (!(cPos = SRewindSpace(pIdentifier-1,pBegin))) return false;
 	// Rewind to beginning of identifier
-  while ((cPos>pBegin) && IsIdentifier(cPos[-1])) cPos--;
+	while ((cPos>pBegin) && IsIdentifier(cPos[-1])) cPos--;
 	// Copy identifier
 	SCopyIdentifier(cPos,sTarget,iSize);
 	// Success
 	return true;
-	}
+}
 
 const char *SSearchFunction(const char *szString, const char *szIndex)
-	{
+{
 	// Safety
 	if (!szString || !szIndex) return NULL;
 	// Ignore failsafe
@@ -597,10 +639,10 @@ const char *SSearchFunction(const char *szString, const char *szIndex)
 	SCopy(szIndex,szDeclaration,256); SAppendChar(':',szDeclaration);
 	// Search identifier
 	return SSearchIdentifier(szString,szDeclaration);
-	}
+}
 
 void SInsert(char *szString, const char *szInsert, int iPosition, int iMaxLen)
-	{
+{
 	// Safety
 	if (!szString || !szInsert || !szInsert[0]) return;
 	size_t insertlen = strlen(szInsert);
@@ -609,52 +651,52 @@ void SInsert(char *szString, const char *szInsert, int iPosition, int iMaxLen)
 	memmove (szString + iPosition + insertlen, szString + iPosition, SLen(szString+  iPosition) + 1);
 	// Copy insertion
 	MemCopy( szInsert, szString+iPosition, SLen(szInsert) );
-	}
+}
 
 void SDelete(char *szString, int iLen, int iPosition)
-	{
+{
 	// Safety
 	if (!szString) return;
 	// Move down string remainder
 	MemCopy( szString+iPosition+iLen, szString+iPosition, SLen(szString+iPosition+iLen)+1 );
-	}
+}
 
 bool SCopyEnclosed(const char *szSource, char cOpen, char cClose, char *sTarget, int iSize)
-	{
+{
 	int iPos,iLen;
 	if (!szSource || !sTarget) return false;
 	if ((iPos = SCharPos(cOpen,szSource)) < 0) return false;
 	if ((iLen = SCharPos(cClose,szSource+iPos+1)) < 0) return false;
 	SCopy(szSource+iPos+1,sTarget,Min(iLen,iSize));
 	return true;
-	}
+}
 
 bool SGetModule(const char *szList, int iIndex, char *sTarget, int iSize)
-	{
+{
 	if (!szList || !sTarget) return false;
 	if (!SCopySegment(szList,iIndex,sTarget,';',iSize)) return false;
 	SClearFrontBack(sTarget);
 	return true;
-	}
+}
 
 bool SIsModule(const char *szList, const char *szString, int *ipIndex, bool fCaseSensitive)
-	{
+{
 	char szModule[1024+1];
 	// Compare all modules
 	for (int iMod=0; SGetModule(szList,iMod,szModule,1024); iMod++)
 		if (fCaseSensitive ? SEqual(szString,szModule) : SEqualNoCase(szString,szModule))
-			{
+		{
 			// Provide index if desired
 			if (ipIndex) *ipIndex = iMod;
 			// Found
 			return true;
-			}
+		}
 	// Not found
 	return false;
-	}
+}
 
 bool SAddModule(char *szList, const char *szModule, bool fCaseSensitive)
-	{
+{
 	// Safety / no empties
 	if (!szList || !szModule || !szModule[0]) return false;
 	// Already a module?
@@ -664,10 +706,10 @@ bool SAddModule(char *szList, const char *szModule, bool fCaseSensitive)
 	SAppend(szModule,szList);
 	// Success
 	return true;
-	}
+}
 
 bool SAddModules(char *szList, const char *szModules, bool fCaseSensitive)
-	{
+{
 	// Safety / no empties
 	if (!szList || !szModules || !szModules[0]) return false;
 	// Add modules
@@ -676,10 +718,10 @@ bool SAddModules(char *szList, const char *szModules, bool fCaseSensitive)
 		SAddModule(szList,szModule,fCaseSensitive);
 	// Success
 	return true;
-	}
+}
 
 bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive)
-	{
+{
 	int iMod,iPos,iLen;
 	// Not a module
 	if (!SIsModule(szList,szModule,&iMod,fCaseSensitive)) return false;
@@ -693,10 +735,10 @@ bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive)
 	SDelete(szList,iLen,iPos);
 	// Success
 	return true;
-	}
+}
 
 bool SRemoveModules(char *szList, const char *szModules, bool fCaseSensitive)
-	{
+{
 	// Safety / no empties
 	if (!szList || !szModules || !szModules[0]) return false;
 	// Remove modules
@@ -705,121 +747,224 @@ bool SRemoveModules(char *szList, const char *szModules, bool fCaseSensitive)
 		SRemoveModule(szList,szModule,fCaseSensitive);
 	// Success
 	return true;
-	}
+}
 
 int SModuleCount(const char *szList)
-	{
+{
 	if (!szList) return 0;
 	int iCount = 0;
 	bool fNewModule = true;
 	while (*szList)
-		{
+	{
 		switch (*szList)
-			{
-			case ' ': break;
-			case ';': fNewModule=true; break;
-			default: if (fNewModule) iCount++; fNewModule=false; break;
-			}
-		szList++;
+		{
+		case ' ': break;
+		case ';': fNewModule=true; break;
+		default: if (fNewModule) iCount++; fNewModule=false; break;
 		}
-	return iCount;
+		szList++;
 	}
+	return iCount;
+}
 
 bool SWildcardMatchEx(const char *szString, const char *szWildcard)
-  {
-	// safety
-	if(!szString || !szWildcard) return false;
-  // match char-wise
-  const char *pWild = szWildcard, *pPos = szString;
-  const char *pLWild = NULL, *pLPos = NULL; // backtracking
-  while(*pWild || pLWild)
-    // string wildcard?
-    if(*pWild == '*')
-      { pLWild = ++pWild; pLPos = pPos; }
-    // nothing left to match?
-    else if(!*pPos)
-      break;
-    // equal or one-character-wildcard? proceed
-    else if(*pWild == '?' || *pWild == *pPos)
-      { pWild++; pPos++; }
-    // backtrack possible?
-    else if(pLPos)
-      { pWild = pLWild; pPos = ++pLPos; }
-    // match failed
-    else
-      return false;
-  // match complete if both strings are fully matched
-  return !*pWild && !*pPos;
-  }
-
-const char* SGetParameter(const char *strCommandLine, int iParameter, char *strTarget, int iSize, bool *pWasQuoted)
 {
-	// Safeties
-	if (iParameter < 0) return NULL;
-	// Parse command line which may contain spaced or quoted parameters
-	static char strParameter[2048 + 1];
-	const char* c = strCommandLine;
-	bool fQuoted;
-	while (c && *c)
-	{
-		// Quoted parameter
-		if ((fQuoted = (*c == '"')))
-		{
-			SCopyUntil(++c, strParameter, '"', 2048);
-			c += SLen(strParameter);
-			if (*c == '"') c++;
-		}
-		// Spaced parameter
+	// safety
+	if (!szString || !szWildcard) return false;
+	// match char-wise
+	const char *pWild = szWildcard, *pPos = szString;
+	const char *pLWild = NULL, *pLPos = NULL; // backtracking
+	while (*pWild || pLWild)
+		// string wildcard?
+		if (*pWild == '*')
+			{ pLWild = ++pWild; pLPos = pPos; }
+	// nothing left to match?
+		else if (!*pPos)
+			break;
+	// equal or one-character-wildcard? proceed
+		else if (*pWild == '?' || *pWild == *pPos)
+			{ pWild++; pPos++; }
+	// backtrack possible?
+		else if (pLPos)
+			{ pWild = pLWild; pPos = ++pLPos; }
+	// match failed
 		else
-		{
-			bool fWrongQuote = (SCharPos('"', c) > -1) && (SCharPos('"', c) < SCharPos(' ', c));
-			SCopyUntil(c, strParameter, fWrongQuote ? '"' : ' ', 2048);
-			c += Max(SLen(strParameter), 1);
-		}
-		// Process (non-empty) parameter
-		if (strParameter[0])
-		{
-			// Success
-			if (iParameter == 0)
-			{
-				if (strTarget) SCopy(strParameter, strTarget, iSize);
-				if (pWasQuoted) *pWasQuoted = fQuoted;
-				return strParameter;
-			}
-			// Continue
-			else
-				iParameter--;
-		}
-	}
-	// Not found
-	return NULL;
+			return false;
+	// match complete if both strings are fully matched
+	return !*pWild && !*pPos;
 }
 
 /* Some part of the Winapi */
 
-#if defined(HAVE_PTHREAD) && defined(C4ENGINE) && defined(NEED_FALLBACK_ATOMIC_FUNCS)
+#ifdef NEED_FALLBACK_ATOMIC_FUNCS
 static CStdCSec SomeMutex;
 long InterlockedIncrement(long * var)
-	{
+{
 	CStdLock Lock(&SomeMutex);
 	return ++(*var);
-	}
+}
 long InterlockedDecrement(long * var)
-	{
+{
 	CStdLock Lock(&SomeMutex);
 	return --(*var);
-	}
-#endif
-
-#ifndef _WIN32
-
-#include <sys/time.h>
-
-unsigned long timeGetTime(void) {
-  static time_t sec_offset;
-  timeval tv;
-  gettimeofday(&tv, 0);
-  if (!sec_offset) sec_offset = tv.tv_sec;
-  return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
 }
 #endif
+
+// UTF-8 conformance checking
+namespace
+{
+	static const int utf8_continuation_byte_table[256] =
+	{
+		// How many continuation bytes must follow a byte with this value?
+		// Negative values mean that this byte can never start a valid
+		// UTF-8 sequence.
+		// Note that while the encoding scheme allows more than three
+		// trailing bytes in principle, it is not actually allowed for UTF-8.
+		// Values 0xC0 and 0xC1 can never occur in UTF-8 because they
+		// would mark the beginning of an overlong encoding of characters
+		// below 0x80.
+		// Values 0xF5 to 0xFD are invalid because they can only be used
+		// to encode characters beyond the Unicode range.
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00000000..0b00001111, 0x00..0x0F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00010000..0b00011111, 0x10..0x1F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00100000..0b00101111, 0x20..0x2F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00110000..0b00111111, 0x30..0x3F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01000000..0b01001111, 0x40..0x4F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01010000..0b01011111, 0x50..0x5F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01100000..0b01101111, 0x60..0x6F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01110000..0b01111111, 0x70..0x7F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10000000..0b10001111, 0x80..0x8F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10010000..0b10011111, 0x90..0x9F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10100000..0b10101111, 0xA0..0xAF
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10110000..0b10111111, 0xB0..0xBF
+		-1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11000000..0b11001111, 0xC0..0xCF
+		 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11010000..0b11011111, 0xD0..0xDF
+		 2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  // 0b11100000..0b11101111, 0xE0..0xEF
+		 3,  3,  3,  3,  3, -3, -3, -3, -4, -4, -4, -4, -5, -5, -1, -1   // 0b11110000..0b11111111, 0xF0..0xFF
+	};
+	static const uint32_t utf8_min_char_value[4] =
+	{
+		// Which is the lowest character value that may be encoded
+		// using this many continuation bytes?
+		0, 0x80, 0x800, 0x10000
+	};
+}
+
+bool IsValidUtf8(const char *text, int length)
+{
+	// Intentionally using a C-style cast to always get a uint8_t* from char*;
+	// reinterpret_cast would fail here on platforms that have unsigned char,
+	// while static_cast would fail on platforms with a signed char type
+	const uint8_t *input = (const uint8_t*)(text);
+
+	for (const uint8_t *cursor = input; length < 0 ? *cursor != 0 : cursor - input < length; ++cursor)
+	{
+		int continuation_bytes = utf8_continuation_byte_table[*cursor];
+		if (continuation_bytes < 0)
+			return false;
+		else if (continuation_bytes == 0)
+		{
+			// Standard 7-bit ASCII value (i.e., 1 byte codepoint)
+			continue;
+		}
+		else if (length >= 0 && cursor - input + continuation_bytes >= length)
+		{
+			// Too few remaining bytes
+			return false;
+		}
+		
+		// Compute character value, so we can detect overlong sequences
+		assert((*cursor & 0xC0) == 0xC0);
+		uint32_t value = *cursor;
+		// strip length bits off the start byte
+		value &= (0xFF >> (continuation_bytes + 1));
+		for (int byte = 0; byte < continuation_bytes; ++byte)
+		{
+			// check that this is actually a continuation byte
+			if ((cursor[byte + 1] & 0xC0) != 0x80)
+				return false;
+			// merge continuation byte into value
+			value <<= 6;
+			value |= cursor[byte + 1] & 0x3F;
+		}
+		// make sure this is not overlong
+		if (value < utf8_min_char_value[continuation_bytes])
+			return false;
+		// and also not beyond 0x10FFFF
+		if (value > 0x10FFFF)
+			return false;
+		// and also not a wrongly encoded UTF-16 surrogate half
+		if (value >= 0xD800 && value <= 0xDFFF)
+			return false;
+		cursor += continuation_bytes;
+	}
+	// Looks fine
+	return true;
+}
+
+// UTF-8 iteration
+uint32_t GetNextUTF8Character(const char **pszString)
+{
+	// assume the current character is UTF8 already (i.e., highest bit set)
+	const char *szString = *pszString;
+	unsigned char c = *szString++;
+	uint32_t dwResult = '?';
+	assert(c>127);
+	if (c>191 && c<224)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&31)<<6) | (c2&63); // two char code
+	}
+	else if (c >= 224 && c <= 239)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
+	}
+	else if (c >= 240 && c <= 247)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c4 = *szString++;
+		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
+	}
+	*pszString = szString;
+	return dwResult;
+}
+
+int GetCharacterCount(const char * s)
+{
+	int l = 0;
+	while (*s)
+	{
+		unsigned char c = *s;
+		if (c < 128 || c > 247)
+		{
+			++l;
+			s += 1;
+		}
+		else if (c > 191 && c < 224)
+		{
+			++l;
+			s += 2;
+		}
+		else if (c >= 224 && c <= 239)
+		{
+			++l;
+			s += 3;
+		}
+		else if (c >= 240 && c <= 247)
+		{
+			++l;
+			s += 4;
+		}
+		else assert(false);
+	}
+	return l;
+}

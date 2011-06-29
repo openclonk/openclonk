@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,21 +24,28 @@
 #ifndef INC_C4Prototypes
 #define INC_C4Prototypes
 
+// class declarations
 class C4Action;
-class C4AList;
+struct C4AulContext;
 class C4AulDefFunc;
 class C4AulFunc;
 class C4AulScript;
 class C4AulScriptEngine;
 class C4AulScriptFunc;
+struct C4AulParSet;
+class C4ClientList;
 class C4ClientPlayerInfos;
 class C4Command;
 class C4Config;
 class C4Console;
+class C4Control;
 class C4Def;
 class C4DefList;
+class C4DefGraphics;
+class C4Effect;
 class C4Facet;
 class C4FacetSurface;
+class C4FileMonitor;
 class C4Game;
 class C4GameMessage;
 class C4GameMessageList;
@@ -44,15 +53,19 @@ class C4GameOptionsList;
 class C4GamePadControl;
 class C4GamePadOpener;
 class C4GamePadOpener;
+class C4GameParameters;
 class C4GameResList;
+class C4GameSec1Timer;
 class C4Graph;
 class C4GraphicsSystem;
 class C4Group;
 class C4Group;
 class C4GroupSet;
 class C4IDList;
+class C4KeyboardInput;
 class C4LChunk;
 class C4League;
+class C4LoaderScreen;
 class C4LSector;
 class C4LSectors;
 class C4MassMover;
@@ -67,6 +80,9 @@ class C4NameList;
 class C4Network;
 class C4NetworkClient;
 class C4NetworkClientList;
+class C4Network2IRCClient;
+class C4Network2Stats;
+class C4Network2Reference;
 class C4Object;
 class C4ObjectInfo;
 class C4ObjectInfoCore;
@@ -93,13 +109,19 @@ class C4RoundResults;
 class C4Scenario;
 class C4SoundSystem;
 class C4Stream;
+class C4String;
 class C4Surface;
 class C4SVal;
 class C4TargetFacet;
 class C4TeamList;
 class C4TexMapEntry;
 class C4TextureMap;
+class C4Value;
+class C4ValueArray;
+class C4ValueNumbers;
 class C4Viewport;
+class C4ViewportList;
+class C4ViewportWindow;
 class CStdFont;
 class CStdStream;
 class CStdVectorFont;
@@ -110,8 +132,20 @@ class StdMeshBone;
 class StdMeshInstance;
 class StdMeshMaterial;
 class StdMeshSkeletonLoader;
+class CTexRef;
+class CTexMgr;
+class CPattern;
+class CStdDDraw;
+class CBlitRememberer;
+class CStdApp;
+class CStdWindow;
+class CSurface;
 
-namespace C4GUI { class Screen; }
+namespace C4GUI
+{
+	class Screen;
+	class Dialog;
+}
 typedef C4GUI::Screen C4GUIScreen;
 
 #endif // INC_C4Prototypes

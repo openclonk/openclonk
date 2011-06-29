@@ -1,0 +1,7 @@
+[DefCore]
+id=TutorialFlag
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=30
+Height=40
+Offset=-15,-20

@@ -1,0 +1,8 @@
+[DefCore]
+id=KingOfTheHill_Star
+Version=4,10,0,0
+Category=C4D_StaticBack | C4D_IgnoreFoW
+Width=30
+Height=30
+Offset=-7,-7
+Rotate=1

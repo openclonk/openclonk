@@ -1,0 +1,2 @@
+Name=Chunk of gold
+Description=A very prized find, indeed!

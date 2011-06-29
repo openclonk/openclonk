@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetAttachTransform</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>Number of the attached mesh whose transformation is to be changed. The return value of <funclink>AttachMesh</funclink> provides such a number.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>transformation</name>
+          <desc>New transformation to be applied on the attached mesh in its own frame of reference. The array should consist of 12 integer entries which make up a 3x4 matrix in which each vaule is given in promille (1000 = 100%). These matrices can be created via <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> and <funclink>Trans_Scale</funclink> or they can be combined via <funclink>Trans_Mul</funclink>.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>If a mesh was previously attached to another one via <funclink>AttachMesh</funclink> then the transformation of the attached mesh can be changed using this function.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetAttachTransformation</funclink>(attach_number, <funclink>Trans_Identity</funclink>());</code>
+        <text>Resets the transformation of the attached mesh with number <code>attach_number</code>. It is assumed that there is a variable named <code>attach_number</code> containing a valid number such as returned by <funclink>AttachMesh</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>AttachMesh</funclink>
+      <funclink>DetachMesh</funclink>
+      <funclink>SetAttachBones</funclink>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>Trans_Mul</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

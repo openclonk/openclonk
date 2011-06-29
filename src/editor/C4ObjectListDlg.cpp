@@ -2,7 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2007  Armin Burgmeier
- * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2007, 2009  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -30,8 +31,6 @@
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
-#include <gtk/gtknotebook.h>
-#include <gtk/gtklabel.h>
 
 
 /* Some boilerplate GObject defines. 'klass' is used instead of 'class', because 'class' is a C++ keyword */
@@ -253,7 +252,7 @@ c4_list_iter_children (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIte
 // Return true if 'parent' has children.
 static gboolean
 c4_list_iter_has_child (GtkTreeModel *tree_model,
-                            GtkTreeIter  *parent)
+                        GtkTreeIter  *parent)
 {
 	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, false);
 	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
@@ -424,7 +423,7 @@ c4_list_get_value (GtkTreeModel * tree_model, GtkTreeIter * iter, gint column, G
 	g_value_init (value, G_TYPE_POINTER);
 	g_value_set_pointer(value, pObj);
 
-//	g_value_set_string(value, pObj->GetName());
+//  g_value_set_string(value, pObj->GetName());
 }
 
 // Wrapper around g_object_new.
@@ -494,7 +493,7 @@ c4_list_get_type (void)
 		};
 
 		c4_list_type = g_type_register_static (G_TYPE_OBJECT, "C4List",
-			&c4_list_info, (GTypeFlags)0);
+		                                       &c4_list_info, (GTypeFlags)0);
 
 		/* register the GtkTreeModel interface with the type system */
 		static const GInterfaceInfo tree_model_info =
@@ -626,6 +625,12 @@ void C4ObjectListDlg::OnDestroy(GtkWidget* widget, C4ObjectListDlg* dlg)
 	dlg->treeview = 0;
 }
 
+void C4ObjectListDlg::OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg)
+{
+	Console.EditCursor.SetMode(C4CNS_ModeEdit);
+	Console.EditCursor.OpenPropTools();
+}
+
 void C4ObjectListDlg::OnSelectionChanged(GtkTreeSelection* selection, C4ObjectListDlg* dlg)
 {
 	if (dlg->updating_selection) return;
@@ -676,10 +681,10 @@ void C4ObjectListDlg::Update(C4ObjectList &rSelection)
 }
 
 C4ObjectListDlg::C4ObjectListDlg():
-	window(0),
-	treeview(0),
-	model(0),
-	updating_selection(false)
+		window(0),
+		treeview(0),
+		model(0),
+		updating_selection(false)
 {
 }
 
@@ -698,7 +703,7 @@ static void name_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	g_object_set(G_OBJECT(renderer), "text", object->GetName(), (gpointer)NULL);
 }
 
-#define ICON_SIZE 24
+enum { ICON_SIZE = 24 };
 
 static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* model, GtkTreeIter* iter, gpointer data)
 {
@@ -707,34 +712,34 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	// Icons for objects with ColorByOwner are cached by object, others by Def
 	// FIXME: Invalidate cache when objects change color, and redraw.
 	gpointer key = object->Def;
-	if(object->Def->ColorByOwner) key = object;
+	if (object->Def->ColorByOwner) key = object;
 
 	GHashTable* table = static_cast<GHashTable*>(data);
 	GdkPixbuf* pixbuf = GDK_PIXBUF(g_hash_table_lookup(table, key));
 
-	if(pixbuf == NULL)
+	if (pixbuf == NULL)
 	{
 		/* Not yet cached, create from Graphics */
 		CSurface* surface = object->Def->Graphics.Bmp.Bitmap;
-		if(object->Def->Graphics.Bmp.BitmapClr) surface = object->Def->Graphics.Bmp.BitmapClr;
+		if (object->Def->Graphics.Bmp.BitmapClr) surface = object->Def->Graphics.Bmp.BitmapClr;
 
 		const C4Rect& picture = object->Def->PictureRect;
 		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, picture.Wdt, picture.Hgt);
 		guchar* pixels = gdk_pixbuf_get_pixels(pixbuf);
 		surface->Lock();
-		for(int y = 0; y < picture.Hgt; ++ y) for(int x = 0; x < picture.Wdt; ++ x)
-		{
-			DWORD dw = surface->GetPixDw(picture.x + x, picture.y + y, true);
-			*pixels = (dw >> 16) & 0xff; ++ pixels;
-			*pixels = (dw >> 8 ) & 0xff; ++ pixels;
-			*pixels = (dw      ) & 0xff; ++ pixels;
-			*pixels = 0xff - ((dw >> 24) & 0xff); ++ pixels;
-		}
+		for (int y = 0; y < picture.Hgt; ++ y) for (int x = 0; x < picture.Wdt; ++ x)
+			{
+				DWORD dw = surface->GetPixDw(picture.x + x, picture.y + y, true);
+				*pixels = (dw >> 16) & 0xff; ++ pixels;
+				*pixels = (dw >> 8 ) & 0xff; ++ pixels;
+				*pixels = (dw      ) & 0xff; ++ pixels;
+				*pixels = 0xff - ((dw >> 24) & 0xff); ++ pixels;
+			}
 		surface->Unlock();
 
 		// Scale down to ICON_SIZE, keeping aspect ratio
 		guint dest_width, dest_height;
-		if(picture.Wdt >= picture.Hgt)
+		if (picture.Wdt >= picture.Hgt)
 		{
 			double factor = static_cast<double>(picture.Hgt) / static_cast<double>(picture.Wdt);
 			dest_width = ICON_SIZE;
@@ -757,12 +762,10 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	g_object_set(G_OBJECT(renderer), "pixbuf", pixbuf, NULL);
 }
 
-#undef ICON_SIZE
-
 void C4ObjectListDlg::Open()
 {
 	// Create Window if necessary
-	if(window == NULL)
+	if (window == NULL)
 	{
 		// The Windows
 		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -790,13 +793,15 @@ void C4ObjectListDlg::Open()
 
 		g_object_unref(model); /* destroy store automatically with view */
 
+		g_signal_connect(G_OBJECT(treeview), "row-activated", G_CALLBACK(OnRowActivated), this);
+
 		GtkTreeViewColumn * col = gtk_tree_view_column_new();
 		GtkCellRenderer * renderer;
-
+#if 0
 		renderer = gtk_cell_renderer_pixbuf_new();
 		gtk_tree_view_column_pack_start(col, renderer, false);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, icon_cell_data_func, g_hash_table_new_full(NULL, NULL, NULL, (GDestroyNotify)g_object_unref), (GDestroyNotify)g_hash_table_unref);
-
+#endif
 		renderer = gtk_cell_renderer_text_new();
 		gtk_tree_view_column_pack_start(col, renderer, true);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, name_cell_data_func, NULL, NULL);
@@ -819,6 +824,10 @@ void C4ObjectListDlg::Open()
 		gtk_container_add(GTK_CONTAINER(window), vbox);
 
 		gtk_widget_show_all(window);
+	}
+	else
+	{
+		gtk_window_present_with_time(GTK_WINDOW(window), gtk_get_current_event_time());
 	}
 }
 

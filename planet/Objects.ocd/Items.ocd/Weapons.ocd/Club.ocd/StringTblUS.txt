@@ -1,0 +1,2 @@
+Name=Club
+Description=With the club, you can bat away stuff, including clonks. Aim and bat with [Use].

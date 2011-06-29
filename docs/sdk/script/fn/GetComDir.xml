@@ -1,22 +1,21 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-        <func>
-                <title>GetComDir</title>
-                <category>Objekte</category><subcat>Bewegung</subcat>
-                <version>4.6.5.0 CP</version>
-                <syntax>
-                        <rtype>int</rtype>
-                </syntax>
-                <desc>Liefert die aktuelle Befehlsrichtung des aufrufenden Objekts. Diese gibt die momentane, beabsichtigte Bewegungsrichtung an. Die Auswirkung dieser Richtung hängt von der <emlink href="definition/procedures.html">Prozedur</emlink> der aktuellen <emlink href="definition/actmap.html">Aktivität</emlink> ab.</desc>
-                <related>
-      <emlink href="definition/procedures.html">Prozedur</emlink>
+  <func>
+    <title>GetComDir</title>
+    <category>Objects</category>
+    <subcat>Movement</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the current command direction of an object. This indicates the object's current intended heading. The exact evaluation of the command direction depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current <emlink href="definition/actmap.html">activity</emlink>.</desc>
+    <related>
+      <emlink href="definition/procedures.html">Procedure</emlink>
       <funclink>SetComDir</funclink>
       <funclink>GetDir</funclink>
       <funclink>GetProcedure</funclink>
-                </related>
-        </func>
-        <author>Cucaracha</author><date>Mai 2002</date>
+    </related>
+  </func>
+  <author>Cucaracha</author><date>2002-05</date>
 </funcs>
-

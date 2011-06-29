@@ -1,0 +1,2 @@
+Name=Erreiche die Flagge
+Description=Wenn all deine Clonks die Flagge erreicht haben, hast du diese Runde geschafft.

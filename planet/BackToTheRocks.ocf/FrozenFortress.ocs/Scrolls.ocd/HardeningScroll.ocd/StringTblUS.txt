@@ -1,0 +1,2 @@
+Name=Hardening Scroll
+Description=Transform nearby snow into ice.

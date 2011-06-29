@@ -1,0 +1,8 @@
+[DefCore]
+id=GrappleRope
+Version=4,10,0,0
+Category=C4D_StaticBack
+Vertices=2
+Width=2
+Height=12
+Offset=-1,-6

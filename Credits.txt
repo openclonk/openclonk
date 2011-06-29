@@ -1,0 +1,27 @@
+<Engine Development>
+Armin Burgmeier (Clonk-Karl)
+Günther Brammer (Günther)
+Nicolas Hake (Isilkor)
+Sven Eberhardt (Sven2)
+Peter Wortmann (PeterW)
+
+<Content, Art and Scripting>
+Maikel de Vries (Maikel)
+Tobias Zwick (Newton)
+Richard Gerum (Randrian)
+Charles Spurrill (Ringwaul)
+David Dormagen (Zapper)
+Timo Stabbert (Mimmo)
+Alexander Semeniuk (AlteredARMOR)
+
+<Web>
+-Admin
+Tobias Zwick (Newton)
+-C4DT Eclipse plugin
+Martin Plicht (Mortimer)
+-C4Masterserver
+Benedict Etzel (B_E)
+
+<Thanks to Contributors>
+Benjamin Herr (Loriel), Martin Plicht (Mortimer), Caesar, Manuel Riecke (Spell), Carl-Philip Hänsch (Carli), Asmageddon, Florian Graier (Nachtfalter), Merten Ehmig (pluto), Marky (Mark Haßelbusch), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Matthias Rottländer (Matthi), Faby, Checkmaty, Felix Wagner (Clonkonaut), TomyLobo, Stan, Gurkenglas, Clonkine
+RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source. 

@@ -1,4 +1,0 @@
-TxtControl=Steuerung
-TxtLorryisfull=Lore ist|voll.
-TxtLoadUp=Einladen
-Name=Lore

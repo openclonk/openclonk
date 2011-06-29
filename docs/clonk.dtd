@@ -39,12 +39,15 @@
   <!ELEMENT caption (#PCDATA)>
     <!ATTLIST caption
       id ID #IMPLIED>
-  <!ELEMENT row   (#PCDATA | col)*>
+  <!ELEMENT row   (#PCDATA | col | literal_col)*>
     <!ATTLIST row
       id ID #IMPLIED>
-  <!ELEMENT rowh  (#PCDATA | col)*>
+  <!ELEMENT rowh  (#PCDATA | col | literal_col)*>
   <!ELEMENT col   (#PCDATA | %text;)*>
     <!ATTLIST col
+      colspan CDATA #IMPLIED>
+  <!ELEMENT literal_col   (#PCDATA | %text;)*>
+    <!ATTLIST literal_col
       colspan CDATA #IMPLIED>
   <!ELEMENT bitmask (#PCDATA)>
 

@@ -1,0 +1,3 @@
+Name=Strickleiter
+Description=Drücke [Benutzen], um die Strickleiter wieder reinzuziehen.
+GrabLadder=Leiter reinziehen

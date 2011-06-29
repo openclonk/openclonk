@@ -29,31 +29,36 @@
 bool IsKeyDown(int iKey);
 
 class C4FullScreen: public CStdWindow
-	{
-	public:
-		C4MainMenu *pMenu;
-	public:
-		C4FullScreen();
-		~C4FullScreen();
-		void Execute();
-		bool Restart();
-		bool ViewportCheck();
-		bool OpenGame(const char *szCmdLine);
-		bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
-		bool ActivateMenuMain();
-		bool MenuCommand(const char *szCommand);
-		void CloseMenu();
-		bool MenuKeyControl(BYTE byCom); // direct keyboard callback
-		// User requests close
-		virtual void Close();
-		virtual void CharIn(const char * c);
+{
+public:
+	C4MainMenu *pMenu;
+public:
+	C4FullScreen();
+	~C4FullScreen();
+	void Execute();
+	bool Restart();
+	bool ViewportCheck();
+	bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
+	bool ActivateMenuMain();
+	bool MenuCommand(const char *szCommand);
+	void CloseMenu();
+	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
+	using CStdWindow::Init;
+	virtual CStdWindow * Init(CStdApp * pApp);
+	// User requests close
+	virtual void Close();
+	virtual void Clear();
+	virtual void CharIn(const char * c);
 #ifdef USE_X11
-		virtual void HandleMessage (XEvent &e);
-#elif USE_SDL_MAINLOOP
-		virtual void HandleMessage (SDL_Event &e);
+	virtual void HandleMessage (XEvent &e);
+#elif defined(USE_SDL_MAINLOOP)
+	virtual void HandleMessage (SDL_Event &e);
+#elif defined(USE_COCOA)
+	virtual void HandleMessage (/*NSEvent*/void* event);
 #endif
-	};
+	virtual void PerformUpdate();
+};
 
-extern C4FullScreen		FullScreen;
+extern C4FullScreen   FullScreen;
 
 #endif

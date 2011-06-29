@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Incinerate</title>
-    <category>Objekte</category>
+    <category>Objects</category>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>bool</rtype>
-    </syntax>
-    <desc>Zündet das aufrufende Objekt an. In dem jeweiligen Objekt wird ggf. Incineration() aufgerufen</desc>
+    <syntax><rtype>bool</rtype></syntax>
+    <desc>Incinerates the specified object. This may cause an Incineration() call in the object.</desc>
     <related>
       <funclink>OnFire</funclink>
       <funclink>OCF_OnFire</funclink>
       <funclink>Extinguish</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>PeterW</author><date>2001-11</date>
 </funcs>

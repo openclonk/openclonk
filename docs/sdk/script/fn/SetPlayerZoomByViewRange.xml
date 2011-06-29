@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetPlayerZoomByViewRange</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose zoom or zoom limits are to be adjusted. NO_OWNER for all players.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>range_x</name>
+          <desc>Horizontal range that should be covered by the zoom. Zero to use range_y only. If both range_x and range_y are zero, a default range is assumed for range_x.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>range_y</name>
+          <desc>Vertical range that should be covered by the zoom. Zero to use range_x only. If both range_x and range_y are nonzero, the number that yields the smaller zoom is used.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>flags</name>
+          <desc>Flags controlling function behaviour:
+            <table>
+              <rowh>
+                <col>Flag</col>
+                <col>Description</col>
+              </rowh>
+              <row>
+                <literal_col>PLRZOOM_Direct</literal_col>
+                <col>The zoom does not scroll slowly towards the new value, but is set directly.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_NoIncrease</literal_col>
+                <col>The new zoom ranges are only to be set if they are smaller than the current values.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_NoDecrease</literal_col>
+                <col>The new zoom ranges are only to be set if they are greater than the current values.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_LimitMin</literal_col>
+                <col>Set the minimum limit for zooming. The player cannot zoom out further than this.</col>
+              </row>
+              <row>
+                <literal_col>PLRZOOM_LimitMax</literal_col>
+                <col>Set the maximum limit for zooming. The player cannot zoom in further than this.</col>
+              </row>
+            </table>
+          </desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
+    <examples>
+      <example>
+        <code>func InitializePlayer(int plr)
+{
+  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMin);
+  SetPlayerZoomByViewRange(plr, 1000, 0, PLRZOOM_LimitMax);
+  <funclink>SetPlayerViewLock</funclink>(plr, true);
+  return true;
+}</code>
+        <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlayerViewLock</funclink>
+      <funclink>SetPlrView</funclink>
+      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetFoW</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2010-09</date>
+</funcs>

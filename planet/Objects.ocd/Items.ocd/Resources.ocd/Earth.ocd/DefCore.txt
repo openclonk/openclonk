@@ -1,0 +1,15 @@
+[DefCore]
+id=Earth
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,3,-3
+VertexY=3,-2,-2
+VertexFriction=100
+Mass=12
+Components=Earth=1
+Fragile=1
+Rotate=1

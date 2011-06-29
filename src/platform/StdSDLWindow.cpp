@@ -2,6 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006  Julian Raschke
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Peter Wortmann
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,7 +20,7 @@
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
 
-#include <Standard.h>
+#include <C4Include.h>
 #include <StdWindow.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
@@ -26,34 +28,49 @@
 #include <StdBuf.h>
 
 #include "C4Version.h"
-
-#include "MacUtility.h"
+#include <C4Rect.h>
+#include <C4Config.h>
 
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false)
+		Active(false), pSurface(0)
 {
 }
 
-CStdWindow::~CStdWindow () {
+CStdWindow::~CStdWindow ()
+{
 	Clear();
 }
 
-// Only set title.
-// FIXME: Read from application bundle on the Mac.
-
-CStdWindow * CStdWindow::Init(CStdApp * pApp) {
-	return Init(pApp, C4ENGINENAME);
-}
-
-CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor) {
+CStdWindow * CStdWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+{
 	Active = true;
-    SetTitle(Title);
+	// SDL doesn't support multiple monitors.
+	if (!SDL_SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
+	{
+		Log(SDL_GetError());
+		return 0;
+	}
+	SDL_ShowCursor(HideCursor ? SDL_DISABLE : SDL_ENABLE);
+	SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
+	SetTitle(Title);
 	return this;
 }
 
+bool CStdWindow::ReInit(CStdApp* pApp)
+{
+	// TODO: How do we enable multisampling with SDL?
+	// Maybe re-call SDL_SetVideoMode?
+	return false;
+}
+
 void CStdWindow::Clear() {}
+
+void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+{
+	// TODO: Enumerate multi samples
+}
 
 bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
 
@@ -62,21 +79,28 @@ bool CStdWindow::RestorePosition(const char *, const char *, bool) { return true
 // Window size is automatically managed by CStdApp's display mode management.
 // Just remember the size for others to query.
 
-bool CStdWindow::GetSize(RECT * pRect) {
- 	pRect->left = pRect->top = 0;
-	pRect->right = width, pRect->bottom = height;
+bool CStdWindow::GetSize(C4Rect * pRect)
+{
+	pRect->x = pRect->y = 0;
+	pRect->Wdt = width, pRect->Hgt = height;
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int X, unsigned int Y) {
+void CStdWindow::SetSize(unsigned int X, unsigned int Y)
+{
 	width = X, height = Y;
 }
 
-void CStdWindow::SetTitle(const char * Title) {
+void CStdWindow::SetTitle(const char * Title)
+{
 	SDL_WM_SetCaption(Title, 0);
 }
 
+// For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
-void CStdWindow::FlashWindow() {
+
+void CStdWindow::FlashWindow()
+{
 }
+
 #endif

@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2005, 2007  Sven Eberhardt
  * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -19,9 +20,11 @@
  */
 // Loads StringTbl* and replaces $..$-strings by localized versions
 
+#include "C4Include.h"
+
 #include <utility>
 #include <vector>
-#include "C4Include.h"
+
 #include "C4LangStringTable.h"
 #include "C4InputValidation.h"
 
@@ -49,7 +52,7 @@ std::string C4LangStringTable::Translate(const std::string &text) const
 void C4LangStringTable::PopulateStringTable() const
 {
 	assert(strings.empty());
-	
+
 	strings.clear();
 	std::string key, value;
 
@@ -70,7 +73,7 @@ void C4LangStringTable::PopulateStringTable() const
 			else if (*data == '\0' || *data == '\n' || *data == '\r')
 			{
 				if (!key.empty() && key[0]!='#')
-					LogF("%s: string table entry without a value: \"%s\"", GetFilePath()[0] ? GetFilePath() : "<unknown>", key.c_str());
+					LogF("%s: string table entry without a value: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", key.c_str());
 				key.clear();
 			}
 			else
@@ -91,36 +94,37 @@ void C4LangStringTable::PopulateStringTable() const
 				value.push_back(*data);
 			}
 		}
-	} while (*data++);
+	}
+	while (*data++);
 }
 
-void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget, const char *szParentFilePath)
-	{
+void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget)
+{
 	if (!rBuf.getLength())
-		{
+	{
 		return;
-		}
+	}
 	// grab char ptr from buf
 	const char *Data = rBuf.getData();
 
 	// Find Replace Positions
 	int iScriptLen = SLen(Data);
 	struct RP { const char *Pos; std::string String; unsigned int Len; RP *Next; } *pRPList = NULL, *pRPListEnd = NULL;
-	for(const char *pPos = SSearch(Data, "$"); pPos; pPos = SSearch(pPos, "$"))
+	for (const char *pPos = SSearch(Data, "$"); pPos; pPos = SSearch(pPos, "$"))
 	{
 		// Get name
 		char szStringName[C4MaxName + 1];
 		SCopyUntil(pPos, szStringName, '$', C4MaxName); pPos += SLen(szStringName) + 1;
-		if(*(pPos-1) != '$') continue;
+		if (*(pPos-1) != '$') continue;
 		// valid?
 		//for(const char *pPos2 = szStringName; *pPos2; pPos2++)
-		//	if(!IsIdentifier(*pPos2))
-		//		break;
+		//  if(!IsIdentifier(*pPos2))
+		//    break;
 		const char *pPos2 = szStringName;
 		while (*pPos2)
-			if(!IsIdentifier(*(pPos2++)))
+			if (!IsIdentifier(*(pPos2++)))
 				break;
-		if(*pPos2) continue;
+		if (*pPos2) continue;
 		// check termination
 		try
 		{
@@ -138,7 +142,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 		}
 		catch (NoSuchTranslation &)
 		{
-			LogF("%s: string table entry not found: \"%s\"", GetFilePath()[0] ? GetFilePath() : "<unknown>", szStringName);
+			LogF("%s: string table entry not found: \"%s\"", GetFilePath() ? GetFilePath() : "<unknown>", szStringName);
 		}
 	}
 	// Alloc new Buffer
@@ -148,7 +152,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 	pNewBuf = sNewBuf.getMData();
 	// Copy data
 	const char *pRPos = Data; char *pWPos = pNewBuf;
-	for(RP *pRPPos = pRPList; pRPPos; pRPPos = pRPPos->Next)
+	for (RP *pRPPos = pRPList; pRPPos; pRPPos = pRPPos->Next)
 	{
 		// copy preceding string data
 		SCopy(pRPos, pWPos, pRPPos->Pos - pRPos);
@@ -162,7 +166,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 	}
 	SCopy(pRPos, pWPos);
 
-	while(pRPList)
+	while (pRPList)
 	{
 		RP *pRP = pRPList;
 		pRPList = pRP->Next;
@@ -172,9 +176,9 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 	// assign this buf
 	rTarget.Clear();
 	rTarget.Take(std::move(sNewBuf));
-	}
+}
 
 void C4LangStringTable::ReplaceStrings(StdStrBuf &rBuf)
-	{
-	ReplaceStrings(rBuf, rBuf, 0);
-	}
+{
+	ReplaceStrings(rBuf, rBuf);
+}

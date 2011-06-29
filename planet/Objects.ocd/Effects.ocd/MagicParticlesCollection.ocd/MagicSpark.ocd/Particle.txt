@@ -1,0 +1,17 @@
+[Particle]
+Name=MagicSpark
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+CollisionFn=Die
+DrawFn=Std
+Face=0,0,32,32,-16,-16
+Delay=0
+Repeats=1
+GravityAcc=-4
+VertexCount=1
+VertexY=16
+AlphaFade=12
+Additive=1
+RByV=1
+Attach=0

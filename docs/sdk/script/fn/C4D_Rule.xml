@@ -1,27 +1,27 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>C4D_Rule</title>
-		<category>Objekte</category><subcat>Kategorie</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Objektkategorie: Spielregeln</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
-		<examples>
-			<example>
-<code>for(var obj in <funclink>FindObjects</funclink>(<funclink>Find_Category</funclink>(C4D_Rule)))
+  <func>
+    <title>C4D_Rule</title>
+    <category>Objects</category>
+    <subcat>Category</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Object category: rule object.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
+    <examples>
+      <example>
+        <code>for(var obj in <funclink>FindObjects</funclink>(<funclink>Find_Category</funclink>(C4D_Rule)))
   <funclink>RemoveObject</funclink>(obj);</code>
-				<text>Entfernt alle Spielregeln. :-)</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetCategory</funclink>
-			<funclink>SetCategory</funclink>
-		</related>
-	</func>
-	<author>jwk</author><date>April 2002</date>
+        <text>Removes all rules. :-)</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCategory</funclink>
+      <funclink>SetCategory</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>2002-04</date>
 </funcs>

@@ -265,15 +265,17 @@ def isFinalNode(node):
     return 0
 
 def isSwallowNode(node):
+    if not node.name:
+        return 0
     if node.name in swallow_tags:
         return 1
-    if node.parent and ((node.parent.name + '/' + node.name) in swallow_tags):
+    if node.parent and node.parent.name and ((node.parent.name + '/' + node.name) in swallow_tags):
         return 1
     return 0
 
 def ignoreNode(node):
     if automatic:
-        if node.type in ('dtd', 'comment'):
+        if node.type in ('dtd', 'comment', 'cdata'):
             return 1
         else:
             return 0
@@ -282,7 +284,7 @@ def ignoreNode(node):
             return 0
         if isSwallowNode(node):
             return 0
-        if node.name in ignored_tags or node.type in ('dtd', 'comment'):
+        if node.name in ignored_tags or node.type in ('dtd', 'comment', 'cdata'):
             return 1
         return 0
 

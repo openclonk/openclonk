@@ -1,1 +1,0 @@
-The basic context menu entries.

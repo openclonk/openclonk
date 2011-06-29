@@ -1,0 +1,8 @@
+[DefCore]
+id=CloudEffect
+Version=4,10,0,0
+Category=C4D_Vehicle|C4D_Parallax
+Width=10
+Height=10
+Offset=-5,-5
+

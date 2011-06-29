@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -17,13 +18,13 @@
 
 /* Global interdependent objects */
 
-#include "C4Include.h"
+#include <C4Include.h>
 #include "C4Application.h"
 #include "C4Console.h"
 #include "C4FullScreen.h"
 #include "C4MouseControl.h"
 #include "C4GameObjects.h"
-#include "C4Def.h"
+#include <C4DefList.h>
 #include "C4Game.h"
 #include "C4Network2.h"
 

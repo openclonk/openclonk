@@ -1,0 +1,16 @@
+[DefCore]
+id=DynamiteBox
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,64,64
+Value=16
+Mass=30
+Components=Wood=1;Metal=1;Coal=2;Sulphur=3
+Rotate=1

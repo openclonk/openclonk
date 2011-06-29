@@ -1,0 +1,15 @@
+[DefCore]
+id=Balloon
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=4
+VertexX=0,0,-3,3
+VertexY=-3,3,0,0
+VertexFriction=50,50,50,50
+Value=10
+Mass=15
+Components=Balloon=1
+Rotate=1

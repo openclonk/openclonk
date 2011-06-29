@@ -1,0 +1,15 @@
+[DefCore]
+id=Igniter
+Version=4,10,0,0
+Category=C4D_Object
+Width=4
+Height=6
+Offset=-2,0
+Vertices=2
+VertexY=1,5
+VertexFriction=120,120,120
+Value=15
+Mass=15
+Picture=4,0,21,21
+Rotate=1
+Float=1

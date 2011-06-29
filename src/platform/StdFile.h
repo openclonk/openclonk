@@ -5,6 +5,7 @@
  * Copyright (c) 2002  Peter Wortmann
  * Copyright (c) 2004-2005  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
+ * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +25,6 @@
 #ifndef STDFILE_INCLUDED
 #define STDFILE_INCLUDED
 
-#include <Standard.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -44,14 +44,14 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
 #endif
 
 #ifdef _WIN32
+#define DirSep "\\"
 #define DirectorySeparator '\\'
 #define AltDirectorySeparator '/'
 #else
+#define DirSep "/"
 #define DirectorySeparator '/'
 #define AltDirectorySeparator '\\'
-#define DIRECTORYSEPARATORS "/"
 #endif
-#define Wildcard '*'
 
 /** Create a directory and all of its parents.
  * \p[in] path Directory to create
@@ -126,6 +126,7 @@ class DirectoryIterator
 public:
 	DirectoryIterator(const char * dirname);
 	DirectoryIterator();
+	DirectoryIterator & operator = (const DirectoryIterator &);
 	DirectoryIterator(const DirectoryIterator &);
 	~DirectoryIterator();
 

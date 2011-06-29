@@ -1,0 +1,18 @@
+[Teams]
+TeamColors=true
+
+	[Team]
+	id=1
+	Name=$NameLeft$
+	Color=2589897
+	#IconSpec=Ice
+	MaxPlayer=4
+
+	[Team]
+	id=2
+	Name=$NameRight$
+	Color=13291733
+	#IconSpec=Snow
+	MaxPlayer=4
+
+

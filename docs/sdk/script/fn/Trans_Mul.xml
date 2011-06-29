@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Trans_Mul</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>first</name>
+          <desc>First matrix as returned by <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> or <funclink>Trans_Scale</funclink>.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>second</name>
+          <desc>Second matrix.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>...</name>
+          <desc>An arbitrary number of other matrices.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Multiplies two or more 3x4 transformation matrices in the given order. This way the effects of more than one transformation can be combined. The result can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;PictureTransformation&quot;] = <funclink>Trans_Mul</funclink>(<funclink>Trans_Translate</funclink>(7000), <funclink>Trans_Rotate</funclink>(20, 0, 1, 0));</code>
+        <text>Rotates the picture graphics of the calling object by 20 degrees around the Y axis and afterwards displaces it by 7 units into Z direction towards the camera.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

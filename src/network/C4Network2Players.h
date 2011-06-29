@@ -39,49 +39,49 @@ class C4Network2Players;
 
 // network player management
 class C4Network2Players
-	{
-	private:
-		class C4PlayerInfoList &rInfoList;  // list of player infos - points to Game.PlayerInfos
+{
+private:
+	class C4PlayerInfoList &rInfoList;  // list of player infos - points to Game.PlayerInfos
 
-	public:
-		C4Network2Players();     // ctor
-		~C4Network2Players() { } // dtor
+public:
+	C4Network2Players();     // ctor
+	~C4Network2Players() { } // dtor
 
-		void Init();            // add local players; add player file ressources - should be called with net connections initialized
-		void Clear();           // clear all player infos
-		bool JoinLocalPlayer(const char *szLocalPlayerFilename, bool fAdd); // join a local player (to game or lobby) - sends to host/and or schedules for queue
+	void Init();            // add local players; add player file ressources - should be called with net connections initialized
+	void Clear();           // clear all player infos
+	bool JoinLocalPlayer(const char *szLocalPlayerFilename, bool fAdd); // join a local player (to game or lobby) - sends to host/and or schedules for queue
 
-	public:
-		void SendUpdatedPlayers(); // send all player infos with updated flags to all clients (host only!)
-		void ResetUpdatedPlayers(); // resets all update-flags (host only!)
+public:
+	void SendUpdatedPlayers(); // send all player infos with updated flags to all clients (host only!)
+	void ResetUpdatedPlayers(); // resets all update-flags (host only!)
 
-	private:
-		void UpdateSavegameAssignments(class C4ClientPlayerInfos *pNewInfo); // resolve any savegame assignment conflicts of unjoined players; sets update-flags (host only!)
+private:
+	void UpdateSavegameAssignments(class C4ClientPlayerInfos *pNewInfo); // resolve any savegame assignment conflicts of unjoined players; sets update-flags (host only!)
 
-		// add join-packet for given client players to control queue (host only!)
-		// if fSendInfo is true, the given info packet is sent via queue, too, and all players in it are marked as joined
-		void JoinUnjoinedPlayersInControlQueue(class C4ClientPlayerInfos *pNewPacket);
-	public:
-		// callbacks from network system
-		void HandlePacket(char cStatus, const C4PacketBase *pPacket, class C4Network2IOConnection *pConn);
-		void OnClientPart(class C4Client *pPartClient); // called when a client disconnects - deletes all player infos and removes all players
-		void OnStatusGoReached();                         // called when game starts, or continues from pause mode: send any unsent player joins
+	// add join-packet for given client players to control queue (host only!)
+	// if fSendInfo is true, the given info packet is sent via queue, too, and all players in it are marked as joined
+	void JoinUnjoinedPlayersInControlQueue(class C4ClientPlayerInfos *pNewPacket);
+public:
+	// callbacks from network system
+	void HandlePacket(char cStatus, const C4PacketBase *pPacket, class C4Network2IOConnection *pConn);
+	void OnClientPart(class C4Client *pPartClient); // called when a client disconnects - deletes all player infos and removes all players
+	void OnStatusGoReached();                         // called when game starts, or continues from pause mode: send any unsent player joins
 
-		// request (client) or directly process (host) an update to existing player infos
-		// calls HandlePlayerInfoUpdRequest on host
-		void RequestPlayerInfoUpdate(const class C4ClientPlayerInfos &rRequest);
+	// request (client) or directly process (host) an update to existing player infos
+	// calls HandlePlayerInfoUpdRequest on host
+	void RequestPlayerInfoUpdate(const class C4ClientPlayerInfos &rRequest);
 
-		// player info packet received; handle it (CID_PlayerInfo, host and clients)
-		void HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoPacket);
+	// player info packet received; handle it (CID_PlayerInfo, host and clients)
+	void HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoPacket);
 
-		// player join request received; handle it (PID_PlayerInfoUpdReq, host only)
-		// adjusts the player data (colors, etc.), and creates update packets/controls
-		void HandlePlayerInfoUpdRequest(const class C4ClientPlayerInfos *pInfoPacket, bool fByHost);
+	// player join request received; handle it (PID_PlayerInfoUpdReq, host only)
+	// adjusts the player data (colors, etc.), and creates update packets/controls
+	void HandlePlayerInfoUpdRequest(const class C4ClientPlayerInfos *pInfoPacket, bool fByHost);
 
-		// some query fns
-		C4ClientPlayerInfos *GetLocalPlayerInfoPacket() const; // get player info packet for local client (created in Init())
-		C4ClientPlayerInfos *GetIndexedPlayerInfoPacket(int iIndex);  // get player info packet by index
-		DWORD GetClientChatColor(int idForClient, bool fLobby) const;
-	};
+	// some query fns
+	C4ClientPlayerInfos *GetLocalPlayerInfoPacket() const; // get player info packet for local client (created in Init())
+	C4ClientPlayerInfos *GetIndexedPlayerInfoPacket(int iIndex);  // get player info packet by index
+	DWORD GetClientChatColor(int idForClient, bool fLobby) const;
+};
 
 #endif // INC_C4Network2Players

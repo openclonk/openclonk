@@ -1,0 +1,12 @@
+[DefCore]
+id=CrystalShield
+Version=4,10,0,0
+Category=C4D_Structure|C4D_StaticBack
+Width=8
+Height=7
+Offset=-4,-4
+SolidMask=0,9,8,3,0,1
+Value=10
+Mass=10
+Rotate=1
+

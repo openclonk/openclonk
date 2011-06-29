@@ -1,0 +1,2 @@
+Name=Wind-Schriftrolle
+Description=Erzeuge einen Sturm, um deine Gegner wegzublasen.

@@ -1,0 +1,206 @@
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2010  Tobias Zwick
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ *
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
+ */
+
+/* All the ifdefs in one place (Hah, I wish) */
+
+#ifndef INC_PLATFORMABSTRACTION
+#define INC_PLATFORMABSTRACTION
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif // HAVE_CONFIG_H
+
+#ifdef _MSC_VER
+#define DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define DEPRECATED __attribute__((deprecated))
+#else
+#define DEPRECATED
+#endif
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4786) // long symbol names
+#pragma warning(disable: 4706)
+#pragma warning(disable: 4239)
+#pragma warning(disable: 4521) // multiple copy constructors specified
+// Get non-standard <cmath> constants (M_PI etc.)
+#	define _USE_MATH_DEFINES
+#endif
+
+
+
+// C++0x nullptr
+#ifdef HAVE_NULLPTR
+#undef NULL
+#define NULL nullptr
+#endif
+
+
+
+// Integer dataypes
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#elif defined(_MSC_VER)
+#include <cstddef>
+typedef signed __int8 int8_t;
+typedef signed __int16 int16_t;
+typedef signed __int32 int32_t;
+typedef signed __int64 int64_t;
+typedef unsigned __int8 uint8_t;
+typedef unsigned __int16 uint16_t;
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int64 uint64_t;
+// Copied from newer stddef.h
+#ifndef _INTPTR_T_DEFINED
+#ifdef  _WIN64
+typedef __int64 intptr_t;
+#else
+typedef __int32 intptr_t;
+#endif
+#define _INTPTR_T_DEFINED
+#endif
+#else
+#error Could not find integer datatypes!
+#endif
+
+
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#else
+typedef ptrdiff_t ssize_t;
+#endif
+
+
+
+#ifndef HAVE_STATIC_ASSERT
+#include <boost/static_assert.hpp>
+#ifndef BOOST_HAS_STATIC_ASSERT
+#define static_assert(x, y) BOOST_STATIC_ASSERT(x)
+#endif
+#endif
+
+
+
+#if defined(__GNUC__)
+// Allow checks for correct printf-usage
+#define GNUC_FORMAT_ATTRIBUTE __attribute__ ((format (printf, 1, 2)))
+#define GNUC_FORMAT_ATTRIBUTE_O __attribute__ ((format (printf, 2, 3)))
+#define ALWAYS_INLINE inline __attribute__ ((always_inline))
+#define NORETURN __attribute__ ((noreturn))
+#else
+#define GNUC_FORMAT_ATTRIBUTE
+#define GNUC_FORMAT_ATTRIBUTE_O
+#define ALWAYS_INLINE __forceinline
+#define NORETURN
+#endif
+
+
+
+// Temporary-To-Reference-Fix
+#if defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
+#define ALLOW_TEMP_TO_REF(ClassName) operator ClassName & () { return *this; }
+#else
+#define ALLOW_TEMP_TO_REF(ClassName)
+#endif
+
+#ifdef HAVE_RVALUE_REF
+# define RREF &&
+#else
+# define RREF &
+namespace std { template<typename T> inline T &move (T &t) { return t; } }
+#endif
+
+
+
+#if defined(_DEBUG) && defined(_MSC_VER)
+// use inline assembler to invoke the "breakpoint exception"
+#  define BREAKPOINT_HERE __debugbreak()
+#elif defined(_DEBUG) && defined(__GNUC__)
+#  define BREAKPOINT_HERE asm volatile("int $3")
+#elif defined(_DEBUG) && defined(HAVE_SIGNAL_H)
+#  include <signal.h>
+#  if defined(SIGTRAP)
+#    define BREAKPOINT_HERE raise(SIGTRAP);
+#  else
+#    define BREAKPOINT_HERE
+#  endif
+#else
+#  define BREAKPOINT_HERE
+#endif
+
+
+
+#ifdef _WIN32
+
+typedef unsigned long DWORD;
+typedef unsigned char  BYTE;
+typedef unsigned short WORD;
+
+#else
+
+// Windows integer types
+typedef uint32_t       DWORD;
+typedef uint8_t        BYTE;
+typedef uint16_t       WORD;
+
+#include <strings.h>
+inline int stricmp(const char *s1, const char *s2)
+{
+	return strcasecmp(s1, s2);
+}
+
+#endif //_WIN32
+
+
+
+#ifdef _WIN64
+#define C4_OS "win-x86_64"
+#elif defined(_WIN32)
+#define C4_OS "win-x86"
+#elif defined(__linux__)
+#if defined(__x86_64__)
+#define C4_OS "linux-x86_64"
+#else
+#define C4_OS "linux-x86"
+#endif
+#elif defined(__APPLE__)
+#define C4_OS "mac-x86"
+#else
+#define C4_OS "unknown";
+#endif
+
+// delete item to the recycle bin
+bool EraseItemSafe(const char *szFilename);
+
+// Check whether the OS is "German"
+bool IsGermanSystem();
+
+// open a weblink in an external browser
+bool OpenURL(const char* szURL);
+
+// Get a monotonically increasing timestamp in milliseconds
+unsigned int GetTime();
+
+#endif // INC_PLATFORMABSTRACTION

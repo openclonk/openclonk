@@ -1,1 +1,0 @@
-Enthält die wesentlichen Kontextmenüeinträge.

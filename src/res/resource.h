@@ -59,29 +59,23 @@
 #define IDD_PROPERTIES                  3002
 #define IDD_TOOLS                       3003
 #define IDI_00_C4X                      4000
-#define IDI_01_C4S                      4001
-#define IDI_02_C4G                      4002
-#define IDI_03_C4F                      4003
-#define IDI_04_C4P                      4004
-#define IDI_05_C4X                      4005
-#define IDI_06_C4D                      4006
-#define IDI_07_C4I                      4007
-#define IDI_08_C4M                      4008
-#define IDI_09_C4B                      4009
-#define IDI_10_C4V                      4010
-#define IDI_11_C4L                      4011
-#define IDI_12_C4K                      4012
-#define IDI_13_C4U                      4013
-#define IDM_COMPONENTS_INFO             5000
-#define IDM_COMPONENTS_SCRIPT           5001
-#define IDM_COMPONENTS_TITLE            5002
+#define IDI_01_OCS                      4001
+#define IDI_02_OCG                      4002
+#define IDI_03_OCF                      4003
+#define IDI_04_OCP                      4004
+#define IDI_06_OCD                      4006
+#define IDI_07_OCI                      4007
+#define IDI_08_OCM                      4008
+#define IDI_09_OCB                      4009
+#define IDI_10_OCV                      4010
+#define IDI_11_OCL                      4011
+#define IDI_13_OCU                      4013
 #define IDM_FILE_CLOSE                  5003
 #define IDM_FILE_OPEN                   5004
 #define IDM_FILE_OPENWPLRS              5005
 #define IDM_FILE_QUIT                   5006
 #define IDM_FILE_SAVE                   5007
 #define IDM_FILE_SAVEAS                 5008
-#define IDM_FILE_SAVEGAME               5009
 #define IDM_FILE_SAVEGAMEAS             5010
 #define IDM_HELP_ABOUT                  5011
 #define IDM_PLAYER_JOIN                 5012
@@ -93,6 +87,7 @@
 #define IDR_CONSOLEMENU                 6000
 #define IDR_CONTEXTMENUS                6001
 #define IDM_FILE_RECORD                 40041
+#define IDR_HGREVISION                  7000
 
 // Next default values for new objects
 //

@@ -1,0 +1,16 @@
+[Particle]
+Name=Straw
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+CollisionFn=Die
+DrawFn=Std
+Face=0,0,32,32,-16,-16
+Delay=0
+Repeats=1
+GravityAcc=100
+VertexCount=1
+VertexY=50
+AlphaFade=0
+RByV=1
+Attach=1

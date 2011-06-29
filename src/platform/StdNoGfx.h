@@ -29,7 +29,6 @@ public:
 	CStdNoGfx();
 	virtual ~CStdNoGfx();
 public:
-	virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL) { return true; }
 	virtual bool BeginScene() { return true; }
 	virtual void EndScene() { }
 	virtual int GetEngine() { return GFXENGN_NOGFX; }
@@ -37,7 +36,7 @@ public:
 	virtual void TaskIn() { }
 	virtual bool UpdateClipper() { return true; }
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
-	virtual bool PrepareMaterial(StdMeshMaterial& mesh) { return true; }
+	virtual bool PrepareMaterial(StdMeshMaterial& mesh);
 	virtual bool PrepareRendering(SURFACE) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformBlt(CBltData &, CTexRef *, DWORD, bool, bool) { }

@@ -1,0 +1,16 @@
+[Material]
+Name=Coal
+Shape=3
+Density=50
+Friction=75
+DigFree=1
+BlastFree=1
+Blast2Object=Coal
+Dig2Object=Coal
+Dig2ObjectRatio=300
+Blast2ObjectRatio=300
+MaxAirSpeed=100
+MaxSlide=1
+Placement=40
+TextureOverlay=coal
+OverlayType=8

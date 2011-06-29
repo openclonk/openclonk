@@ -1,116 +1,116 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
-<title>Teams.txt</title>
-
-<h id="Scenariotxt">Teams.txt</h>
-<text>Über die Teams.txt kann für Mehrspielerszenarien definiert werden, in welchen Fraktionen die Spieler zusammen oder gegeneinander spielen. Ab 4.9.6.0 CR.</text>
-
-<text><table>
-	<caption id="SektionTeams">Sektion [Teams]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-		<col>Standardwert</col>
-	</rowh>
-	<row>
-		<col>Active</col>
-		<col>Integer</col>
-		<col>0 oder 1. Wenn 0, existieren keine Teams und es wird davon ausgegangen, dass auch keine zur Laufzeit gebildet werden können. Das heißt zum Beispiel, dass den Spielern kein Verfeindungsmenü zur Verfügung steht.</col>
-		<col>1</col>
-	</row>
-	<row>
-		<col>AllowHostilityChange</col>
-		<col>Integer</col>
-		<col>0 oder 1. Wenn 1, können sich Spieler zur Laufzeit verbünden und verfeinden.</col>
-		<col>0 bei vorhandener und 1 bei nicht vorhandener Teams.txt und aktivierter Meleespielregel.</col>
-	</row>
-	<row>
-		<col>AllowTeamSwitch</col>
-		<col>Integer</col>
-		<col>0 oder 1. Wenn 1, können Spieler zur Laufzeit ein anderes Team wählen.</col>
-		<col>0</col>
-	</row>
-	<row>
-		<col>AutoGenerateTeams</col>
-		<col>Integer</col>
-		<col>0 oder 1. Wenn 1, können sich Spieler zur Laufzeit verbünden und verfeinden.</col>
-		<col>0 bei vorhandenen Teams. 1 wenn keine [Team]-Sektionen existieren.</col>
-	</row>
-	<row>
-		<col>TeamDistribution</col>
-		<col>Identifikator</col>
-		<col>Verteilung der Spieler auf die Teams. Mögliche Werte sind Free (Freie Auswahl), Host (Der Host wählt in der Lobby), Random (Zufällige Verteilung) oder RandomInv (Zufällige, für die Spieler in der Lobby unsichtbare Verteilung).</col>
-		<col>Free</col>
-	</row>
-	<row>
-		<col>TeamColors</col>
-		<col>Integer</col>
-		<col>0 oder 1. Bei 1 haben alle Spieler eines Teams die gleiche Farbe.</col>
-		<col>0</col>
-	</row>
-	<row>
-		<col>MaxScriptPlayers</col>
-		<col>Integer</col>
-		<col>Maximale Zahl der Scriptspieler, die der Host in Netzwerkspielen in der Lobby aktivieren kann. Dabei zählen schon beigetretene Scriptspieler mit.</col>
-		<col>0</col>
-	</row>
-	<row>
-		<col>ScriptPlayerNames</col>
-		<col>String</col>
-		<col>Durch "|" getrennte Liste von Namen, die an in der Lobby beitretende Scriptspieler vergeben werden. Sind keine Namen angegeben, heißen alle Scriptspieler "Computer".</col>
-		<col>Computer</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionTeam">Beliebig viele Sektionen [Team]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-		<col>Standardwert</col>
-	</rowh>
-	<row>
-		<col>id</col>
-		<col>Integer</col>
-		<col>Identifikator: Eine eindeutige Zahl größer als 0, die im Szenarienscript zur Identifikation des Teams benutzt werden kann. Normalerweise kann man die Team-IDs einfach mit sequentiell von 1 aufsteigend durchnummerieren.</col>
-		<col>Muss angegeben werden!</col>
-	</row>
-	<row>
-		<col>Name</col>
-		<col>Zeichenfole (max 30)</col>
-		<col>Name für das Team. Es können wie in Scripten auch lokalisierte Zeichenketten wie $TeamRight$ benutzt werden. Siehe <emlink href="lang.html#Teamstxt">Sprachanpassung</emlink>.</col>
-		<col></col>
-	</row>
-	<row>
-		<col>PlrStartIndex</col>
-		<col>Integer</col>
-		<col>Wenn ungleich 0, wird für alle Mitglieder dieses Teams die entsprechende [PlayerX]-Sektion der <emlink href="scenario/scenario.html#SektionenPlayer1Player2Player3Player4">Scenario.txt</emlink> für die Startparameter verwendet. 0 für automatische Vergabe unabhängig von den Teams.</col>
-		<col>0</col>
-	</row>
-	<row>
-		<col>Color</col>
-		<col>Integer</col>
-		<col>32 Bit RGB-Wert, der die Teamfarbe angibt. Die Teamfarbe wird statt der Spielerfarbe benutzt, wenn TeamColors angegeben ist.</col>
-		<col>0</col>
-	</row>
-	<row>
-		<col>IconSpec</col>
-		<col>String</col>
-		<col>Spezifikation für das Teamicon für Beitritt im nicht-Netzwerk oder zur Laufzeit.</col>
-		<col></col>
-	</row>
-	<row>
-		<col>MaxPlayer</col>
-		<col>Integer</col>
-		<col>Maximale Anzahl der Spieler, die diesem Team beitreten dürfen. 0 für endlos.</col>
-		<col>0</col>
-	</row>
-</table></text>
-
-<author>Sven2</author><date>Juni 2006</date>
-
+  <title>Teams.txt</title>
+  <h id="Scenariotxt">Teams.txt</h>
+  <text>Via the Teams.txt component you can specify in which way groups of players play with or against together in multiplayer melees. From 4.9.6.0 CR.</text>
+  <text>
+    <table>
+      <caption id="SektionTeams">Section [Teams]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>Active</col>
+        <col>Integer</col>
+        <col>0 or 1. If 0, no teams exist and it is assumed that no teams can be formed at runtime. This also means that no hostility options will be available in the player menu.</col>
+        <col>1</col>
+      </row>
+      <row>
+        <col>AllowHostilityChange</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, players can declare hostility or alliance at runtime.</col>
+        <col>0 if Teams.txt is present. 1 if Teams.txt is not present but the melee rule is active.</col>
+      </row>
+      <row>
+        <col>AllowTeamSwitch</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, players can choose a different team at runtime.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>AutoGenerateTeams</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, players can declare hostility or alliance at runtime.</col>
+        <col>0 is there are team sections present. 1 if there are none.</col>
+      </row>
+      <row>
+        <col>TeamDistribution</col>
+        <col>Identifier</col>
+        <col>Player distribution to the teams. Possible values are: Free (free choice), Host (the host chooses during lobby), Random (random distribution) or RandomInv (random distribution, but not displayed during lobby).</col>
+        <col>Free</col>
+      </row>
+      <row>
+        <col>TeamColors</col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, all players of a team are assigned the same color.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>MaxScriptPlayers</col>
+        <col>Integer</col>
+        <col>Maximum number of script players which the host can activate in the lobby of network games. This includes script players that have already joined.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>ScriptPlayerNames</col>
+        <col>String</col>
+        <col>A list of names separated by "|" which are assigned to script players joinging in the lobby. If no list of names is provided, all script players are called "Computer".</col>
+        <col>Computer</col>
+      </row>
+    </table>
+  </text>
+  <text>
+    <table>
+      <caption id="SektionTeam">Any number of sections [Team]</caption>
+      <rowh>
+        <col>Value</col>
+        <col>Data type</col>
+        <col>Description</col>
+        <col>Default value</col>
+      </rowh>
+      <row>
+        <col>id</col>
+        <col>Integer</col>
+        <col>Identifier: a unique number greater than 0 which can be used to identify a team in scenario scripts. Usually you can simply use ascending numerical values as team identifiers.</col>
+        <col>Must be specified!</col>
+      </row>
+      <row>
+        <col>Name</col>
+        <col>String (max. 30 chars)</col>
+        <col>Team name. You can also specify localized strings such as $TeamRight$. See <emlink href="lang.html#Teamstxt">Localization</emlink>.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>PlrStartIndex</col>
+        <col>Integer</col>
+        <col>If not 0, all members of this team use the corresponding [PlayerX] section in <emlink href="scenario/scenario.html#SektionenPlayer1Player2Player3Player4">Scenario.txt</emlink> for starting conditions. If 0, starting conditions are assigned automatically and independent of team membership.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>Color</col>
+        <col>Integer</col>
+        <col>32 bit RGB value of the team color. The team color is used instead of the player color if TeamColors is set.</col>
+        <col>0</col>
+      </row>
+      <row>
+        <col>IconSpec</col>
+        <col>String</col>
+        <col>Specifies a team icon for runtime joins or non-network games.</col>
+        <col></col>
+      </row>
+      <row>
+        <col>MaxPlayer</col>
+        <col>Integer</col>
+        <col>Maximum number of players who may join this team. 0 for infinite.</col>
+        <col>0</col>
+      </row>
+    </table>
+  </text>
+  <author>Sven2</author><date>2006-06</date>
 </doc>

@@ -1,0 +1,8 @@
+[DefCore]
+id=GUI_ExtraSlot
+Version=4,10,0,0
+Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax | C4D_MouseSelect
+Width=32
+Height=32
+Offset=-16,-16
+StretchGrowth=1

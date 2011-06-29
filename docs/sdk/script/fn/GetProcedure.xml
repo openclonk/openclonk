@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetProcedure</title>
-    <category>Objekte</category><subcat>Aktivität</subcat>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
     <version>4.9.1.0 GWE</version>
-    <syntax>
-      <rtype>string</rtype>
-    </syntax>
-    <desc>Gibt die Prozedur der gegenwärtigen Aktivität des aufrufenden Objekts zurück (z.B. FLOAT, ATTACH, etc.). Bei einer NONE-Prozedur oder keiner Aktivität wird nil zurückgegeben.</desc>
-    <related>
-      <funclink>GetAction</funclink>
-    </related>
+    <syntax><rtype>string</rtype></syntax>
+    <desc>Returns the procedure of the current activity of an object (e.g. FLOAT, ATTACH, WALK). If the procedure is NONE or the object has no activity set the return value is nil.</desc>
+    <related><funclink>GetAction</funclink></related>
   </func>
-  <author>Sven2</author><date>November 2001</date>
+  <author>Sven2</author><date>2001-11</date>
 </funcs>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Trans_Scale</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>sx</name>
+          <desc>Magnification factor in X direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>sy</name>
+          <desc>Magnification factor in Y direction.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>sz</name>
+          <desc>Magnification factor in Z direction.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a 3x4 scaling matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <remark>If both <code>sy</code> and <code>sz</code> are not given or are given as 0 then the factor <code>sx</code> is used for all three axes. A value of 1000 does not cause any change, smaller values shrink the graphics, larger values enlarge it. Negative values can be used to mirror the graphics with respect to the corresponding axis.</remark>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;PictureTransformation&quot;] = <funclink>Trans_Scale</funclink>(2000);</code>
+        <text>Doubles the picture graphics of the calling object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Mul</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

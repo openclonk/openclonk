@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 2010  Mortimer
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,7 +27,13 @@
 #include <C4InteractiveThread.h>
 #include <map>
 
-class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback {
+#ifdef __APPLE__
+#import <CoreFoundation/CoreFoundation.h>
+#import <CoreServices/CoreServices.h>
+#endif
+
+class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback
+{
 
 public:
 
@@ -37,7 +44,6 @@ public:
 
 	void StartMonitoring();
 	void AddDirectory(const char *szDir);
-	void AddTree(const char *szDir);
 	//void Remove(const char * file);
 
 	// StdSchedulerProc:
@@ -58,7 +64,7 @@ private:
 	bool fStarted;
 	ChangeNotify pCallback;
 
-#if defined(HAVE_SYS_INOTIFY_H) || defined(HAVE_SYS_SYSCALL_H)
+#ifdef HAVE_SYS_INOTIFY_H
 	int fd;
 	std::map<int, const char *> watch_descriptors;
 #elif defined(_WIN32)
@@ -66,16 +72,22 @@ private:
 	HANDLE hEvent;
 
 	struct TreeWatch
-		{
+	{
 		HANDLE hDir;
 		StdCopyStrBuf DirName;
 		OVERLAPPED ov;
 		char Buffer[1024];
 		TreeWatch *Next;
-		};
+	};
 	TreeWatch *pWatches;
 
 	void HandleNotify(const char *szDir, const struct _FILE_NOTIFY_INFORMATION *pNotify);
+#elif defined(__APPLE__)
+	FSEventStreamRef eventStream;
+	FSEventStreamContext context;
+	CFMutableArrayRef watchedDirectories;
+	void StartStream();
+	void StopStream();
 #endif
 };
 

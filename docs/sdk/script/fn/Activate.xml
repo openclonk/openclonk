@@ -1,19 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>Activate</title>
-		<category>Callbacks</category>
-		<subcat>Objekte</subcat>
-		<version>4.6.5.0 CP</version>
-		<syntax>
-			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>obj</name><desc>Mannschaftsmitglied, welches das Objekt aktiviert hat.</desc></param>
-			</params>
-		</syntax>
-		<desc>Wenn ein Spieler Doppelgraben drückt, wird zunächst "ControlDigDouble" im Clonk aufgerufen. Gibt dieses false zurück oder existiert nicht, und der Clonk läuft, schwimmt oder gräbt, wird im ersten Inhaltsobjekt Activate aufgerufen. Wenn dieses nicht existiert oder false zurückgibt, wird zuerst versucht, einen Baum zu fällen oder eine Leitung abzunehmen. Danach wird Activate im Clonk selbst aufgerufen.</desc>
-	</func>
-	<author>Günther</author><date>Juni 2005</date>
+  <func>
+    <title>Activate</title>
+    <category>Callbacks</category>
+    <subcat>Objects</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Crew member which has activated the object.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>When a player hits 'double dig' on the keyboard, first "ControlDigDouble" is called in the clonk. If this is not defined or returns false and the clonk is currently walking, swimming, or digging, the function "Activate" is called in the first contents object. If this is not defined or returns false, the engine will look for a tree to fell or a line to disconnect. If no such thing occurs, "Activate" is called in the clonk.</desc>
+  </func>
+  <author>GÃ¼nther</author><date>2005-06</date>
 </funcs>

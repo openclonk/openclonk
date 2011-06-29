@@ -1,0 +1,2 @@
+Name=Windkrug
+Description=Drücke [Benutzen], um zu zielen und einen Windstoß in diese Richtung zu abzugeben, der Dich in die andere Richtung drückt.

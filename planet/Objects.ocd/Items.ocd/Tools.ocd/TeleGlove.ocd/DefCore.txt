@@ -1,0 +1,16 @@
+[DefCore]
+id=TeleGlove
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,-3,3
+VertexY=-3,2,2
+VertexFriction=40,40,40
+Picture=0,0,8,8
+Value=20
+Mass=7
+Components=Metal=2;Crystal=2;
+Rotate=1

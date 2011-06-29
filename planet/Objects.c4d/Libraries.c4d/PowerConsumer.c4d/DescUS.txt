@@ -1,2 +1,0 @@
-This script should be included by all power consumers.
-

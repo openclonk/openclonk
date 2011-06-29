@@ -1,0 +1,14 @@
+[DefCore]
+id=SpinWheel
+Version=4,10,0,0
+Category=C4D_Structure
+Width=16
+Height=16
+Offset=-8,-8
+Vertices=3
+VertexX=-4,4,0
+VertexY=8,8,0
+VertexFriction=100,100,100
+Value=20
+Mass=1000
+Components=Wood=3;Metal=1;

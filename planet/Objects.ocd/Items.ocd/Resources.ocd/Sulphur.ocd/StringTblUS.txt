@@ -1,0 +1,2 @@
+Name=Sulphur
+Description=Material for various explosives.

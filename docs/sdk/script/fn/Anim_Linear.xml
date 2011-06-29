@@ -1,57 +1,50 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>Anim_Linear</title>
-    <category>Animationen</category>
+    <category>Animations</category>
     <version>4.10.0.0 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
         <param>
           <type>int</type>
-          <name>iPosition</name>
-          <desc>Startwert. Sollte innerhalb des von iBegin und iEnd aufgespannten Intervalls liegen.</desc>
+          <name>position</name>
+          <desc>Start value. Should be inside the interval given by begin and end.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iBegin</name>
-          <desc>Beginn des Intervalls.</desc>
+          <name>begin</name>
+          <desc>Start of the interval.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iEnd</name>
-          <desc>Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so steigt der Wert mit der Zeit an, andernfalls nimmt er ab.</desc>
+          <name>end</name>
+          <desc>End of the interval. If end is larger than begin then the value increases linearily with time, otherwise it decreases.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iLength</name>
-          <desc>Anzahl Frames die ein Durchspielen von iBegin bis iEnd dauert.</desc>
-	</param>
+          <name>length</name>
+          <desc>Number of frames for the animation to be played from begin to end.</desc>
+        </param>
         <param>
           <type>int</type>
-          <name>iEnding</name>
-	  <desc>Bestimmt, was nach dem Erreichen von iEnd geschieht. Folgende Möglichkeiten existieren:
-	      <table>
-                <rowh><col>Konstante</col><col>Wert</col><col>Beschreibung</col></rowh>
-                <row><col>ANIM_Loop</col><col>0</col><col>Der Wert wird nach dem Erreichen von iEnd wieder auf iBegin gesetzt und der Durchgang beginnt von neuem.</col></row>
-                <row><col>ANIM_Hold</col><col>1</col><col>Nach Erreichen von iEnd bleibt der Wert konstant auf iEnd.</col></row>
-		<row><col>ANIM_Remove</col><col>2</col><col>Nach Erreichen von iEnd wird die zugehörige Animation entfernt wie wenn zum entsprechenden Zeitpunkt <funclink>StopAnimation</funclink> aufgerufen würde. Bei Kombinationsknoten wird der Kindknoten mit der kleineren Gewichtung entfernt.</col></row>
-	     </table>
-	   </desc>
-	</param>
+          <name>on_ending</name>
+          <desc>
+            Specifies what happens once end is reached. There are the following possibilities:
+          </desc>
+        </param>
       </params>
     </syntax>
-
-    <desc>Der Wert nimmt linear mit der Zeit (in Frames) zu oder ab (je nachdem ob iEnd größer oder kleiner als iBegin ist). Anfangs beträgt der Wert iPosition und läuft dann Richtung iEnd. Ein Durchgang von iBegin bis nach iEnd dauert iLength Frames. Wenn iPosition von iBegin abweicht dann wird iEnd bereits früher erreicht sein. iEnding bestimmt, was passiert, wenn das Ende erreicht ist.</desc>
-
-    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
-
+    <desc>The value increases or decreases (depending on whether end is smaller or larger than begin) linearily in time (in frames). Initially the value is set to position and it is moving towards end. One cycle from begin to end lasts for length frames. If position and begin are not the same then end will be reached earlier already. on_ending specifies what happens once the end is reached.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code>var start = 0;
-var end = <funclink>GetAnimationLength</funclink>("Turn");
+var end = <funclink>GetAnimationLength</funclink>(&quot;Turn&quot;);
 if(<funclink>GetWind</funclink>() &lt; 0)
 {
   start = end;
@@ -62,10 +55,9 @@ if(<funclink>GetWind</funclink>() != 0)
   <funclink>SetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5), <funclink>Anim_Linear</funclink>(<funclink>GetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5)), start, end, 7200/<funclink>GetWind</funclink>(), ANIM_Loop));
 else
   <funclink>SetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5), <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(<funclink>GetRootAnimation</funclink>(5))));</code>
-	<text>Setzt die Geschwindigkeit mit der die Animation im Slot 5 abgespielt wird abhängig von der Windgeschwindigkeit. Weht der Wind nach links so wird die Animation rückwärts abgespielt. Es wäre auch möglich die Position jeden Frame mit <funclink>Anim_Const</funclink> zu setzen, bei der Lösung mit <funclink>Anim_Linear</funclink> reicht es aber aus wenn die Funktion nur alle paar Frames aufgerufen wird, da sich das Windrad in der Zwischenzeit mit konstanter Geschwindigkeit weiter dreht (es wird also die Näherung gemacht, dass die Windgeschwindigkeit für kleine Zeitintervalle konstant ist).</text>
+        <text>Sets the speed with which the animation in slot 5 is played depending on the wind speed. If the wind blows to the left then the animation is played backwards. Another possibility would be to set the position each frame using <funclink>Anim_Const</funclink>, however with the solution using <funclink>Anim_Linear</funclink> it is enough to call the function every couple of frames since the windmill continues to turn with contstant speed between calls (in other words, it is assumed that the wind speed will not change much for small time intervals).</text>
       </example>
     </examples>
-
     <related>
       <funclink>PlayAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
@@ -80,5 +72,5 @@ else
       <funclink>Anim_Action</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>Januar 2010</date>
+  <author>Clonk-Karl</author><date>2010-01</date>
 </funcs>

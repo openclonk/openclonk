@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetPlayerViewLock</title>
+    <category>Player</category>
+    <subcat>View</subcat>
+    <version>OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player whose view lock is to be turned on or off. NO_OWNER for all players.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>locked</name>
+          <desc>If the view is to be locked (true) or unlocked (false).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map.</desc>
+    <examples>
+      <example>
+        <code>func InitializePlayer(int plr)
+{
+  <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMin);
+  <funclink>SetPlayerZoomByViewRange</funclink>(plr, 1000, 0, PLRZOOM_LimitMax);
+  SetPlayerViewLock(plr, true);
+  return true;
+}</code>
+        <text>Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetPlrView</funclink>
+      <funclink>SetPlrViewRange</funclink>
+      <funclink>SetFoW</funclink>
+      <funclink>SetPlayerZoomByViewRange</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2010-09</date>
+</funcs>

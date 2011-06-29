@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-	<func>
-		<title>GetDefBottom</title>
-		<category>Objekte</category><subcat>Status</subcat>
-		<version>4.9.1.0 GWE<extversion>4.9.1.0 GWE</extversion></version>
-		<syntax>
-			<rtype>int</rtype>
-		</syntax>
-		<desc>Fragt die Unterkante des aufrufenden Objekts ab. Diese entspricht Y-Position + DefCore-OffsetY + DefCore-Height. Eine eventuelle Drehung wird hier nicht mit eingerechnet.</desc>
-		<examples>
-			<example>
-				<code><funclink>Contents</funclink>()-><funclink>Exit</funclink>(0, GetDefBottom()-<funclink>GetY</funclink>());</code>
-				<text>Befördert das erste Inhaltsobjekt aus dem ausrufenden Objekt heraus an seine mittlere Unterkante.</text>
-			</example>
-		</examples>
-		<related>
-			<funclink>GetY</funclink>
-		</related>
-	</func>
-	<author>Sven2</author><date>April 2002</date>
+  <func>
+    <title>GetDefBottom</title>
+    <category>Objects</category>
+    <subcat>Status</subcat>
+    <version>4.9.1.0 GWE<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Determines the lower limit of an object. This corresponds to y position + DefCore OffsetY + DefCore Height. Object rotation is not taken into consideration.</desc>
+    <examples>
+      <example>
+        <code><funclink>Contents</funclink>()-&gt;<funclink>Exit</funclink>(0, GetDefBottom()-<funclink>GetY</funclink>());</code>
+        <text>Exits the first contained object to the container's bottom center.</text>
+      </example>
+    </examples>
+    <related><funclink>GetY</funclink></related>
+  </func>
+  <author>Sven2</author><date>2002-04</date>
 </funcs>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DetachMesh</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>attach_number</name>
+          <desc>Number of the mesh to detach. <funclink>AttachMesh</funclink> returns such a number.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>If a mesh was previously attached to another one via <funclink>AttachMesh</funclink> then it can be detached again using this function.</desc>
+    <examples>
+      <example>
+        <code>func FxIntCarryBowStart(object target, effect)
+{
+	effect.mesh = target-&gt;<funclink>AttachMesh</funclink>(Bow, &quot;pos_hand1&quot;, &quot;main&quot;);
+}
+
+func FxIntCarryBowStop(object target, effect)
+{
+	target-&gt;<funclink>DetachMesh</funclink>(effect.mesh);
+}</code>
+        <text>Script for an <emlink href="script/Effects.html">effect</emlink>: The effect target carries a bow as long as the effect remains active.</text>
+      </example>
+    </examples>
+    <related><funclink>AttachMesh</funclink></related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

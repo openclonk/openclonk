@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2004  Matthes Bender
- * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,40 +23,36 @@
 #define INC_C4ComponentHost
 
 #include "C4GroupSet.h"
+#include <C4Language.h>
 
 class C4ComponentHost
+{
+public:
+	C4ComponentHost() { }
+	virtual ~C4ComponentHost() { Clear(); }
+	const char *GetFilePath() const { return FilePath.getData(); }
+	void Clear() { Data.Clear(); OnLoad(); }
+	const char *GetData() const { return Data.getData(); }
+	const StdStrBuf & GetDataBuf() const { return Data; }
+	size_t GetDataSize() const { return Data.getLength(); }
+	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
+	bool LoadEx(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL)
 	{
-	public:
-		C4ComponentHost();
-		virtual ~C4ComponentHost();
-		const char *GetFilePath() const { return FilePath; }
-		void Default();
-		void Clear();
-		void Open();
-		const char *GetData() const { return Data.getData(); }
-		size_t GetDataSize() const { return Data.getLength(); }
-		virtual void Close();
-		bool Load(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		bool Load(const char *szName, C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
-		bool LoadEx(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		bool LoadAppend(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		bool Set(const char *szData);
-		bool Save(C4Group &hGroup);
-		bool GetLanguageString(const char *szLanguage, class StdStrBuf &rTarget);
-		bool SetLanguageString(const char *szLanguage, const char *szString);
-		void TrimSpaces();
-	protected:
-		StdCopyStrBuf Data;
-		bool Modified;
-		char Name[_MAX_FNAME+1];
-		char Filename[_MAX_FNAME+1];
-		char FilePath[_MAX_PATH+1];
-		void CopyFilePathFromGroup(const C4Group &hGroup);
-#ifdef _WIN32
-		HWND hDialog;
-		void InitDialog(HWND hDlg);
-	friend BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
-#endif
-	};
+		C4GroupSet hGroups = Languages.GetPackGroups(hGroup);
+		return Load(hGroups, szFilename, szLanguage);
+	}
+	bool GetLanguageString(const char *szLanguage, class StdStrBuf &rTarget);
+protected:
+	// The component host's Data has changed. This callback can be used by
+	// derived classes to reload internal structures.
+	virtual void OnLoad() {}
+
+	StdCopyStrBuf Data;
+	StdCopyStrBuf Filename;
+	StdCopyStrBuf FilePath;
+	void CopyFilePathFromGroup(const C4Group &hGroup);
+	void FinishLoad(const StdStrBuf &, C4Group &hGroup);
+};
 
 #endif

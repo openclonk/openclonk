@@ -1,4 +1,0 @@
-TxtMovement=Bewegen
-TxtDrop=Gegenstand fallen lassen
-TxtDig=Graben
-TxtLeave=Zurückverwandeln

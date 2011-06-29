@@ -23,7 +23,7 @@
 
 #include <StdWindow.h>
 
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 
 class CStdGtkWindow: public CStdWindow
 {
@@ -34,7 +34,8 @@ public:
 	virtual void Clear();
 
 	using CStdWindow::Init;
-	virtual CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual bool ReInit(CStdApp* pApp);
 
 	GtkWidget* window;
 protected:

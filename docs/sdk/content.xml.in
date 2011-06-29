@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- <!DOCTYPE doc SYSTEM "../clonk.dtd"> -->
+<?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
+<doc>
+<title>Contents</title>
+<script>
+<![CDATA[
+	// Javascript aus mwForum, www.mwforum.org
+	function tb(listId) {
+		var branch = document.getElementById('brn' + listId);
+		var toggle = document.getElementById('tgl' + listId);
+		if (!branch || !toggle) return;
+		if (branch.style.display != 'none' && branch.className!='invisi') {
+			branch.style.display = 'none';
+			toggle.src = '../images/bullet_folder.png';
+			toggle.title = 'Zweig expandieren';
+			toggle.alt = '+';
+		} else {
+			branch.style.display = '';
+			toggle.src = '../images/bullet_folder_open.png';
+			toggle.title = 'Zweig zusammenklappen';
+			toggle.alt = '-';
+		}
+		branch.className='';
+		return true;
+	}
+
+	function ta(listId) {
+		var branch = document.getElementById('brn' + listId);
+		var divs = document.getElementsByTagName('ul');
+		var display = '', img = 'bullet_folder_open.png';
+		if (branch.style.display != 'none' && branch.className!='invisi') {
+			display = 'none';
+			img = 'bullet_folder.png';
+		}
+		for (var i=0; i < divs.length; i++) {
+			if (divs[i].id.indexOf('brn') == 0) {
+				divs[i].style.display = display;
+				divs[i].className='';
+			}
+		}
+		var imgs = document.getElementsByTagName('img');
+		for (var i=0; i < imgs.length; i++) {
+			if (imgs[i].id.indexOf('tgl') == 0) imgs[i].src = '../images/' + img;
+		}
+		return true;
+	}
+	
+	// Alle als anfaenglich geschlossen markierten Listitems unsichtbar machen
+	// Beim Laden sind sie sichtbar, damit die Seite ohne Javascript benutzbar ist
+	document.body.className = 'toggleinvisi';
+]]>
+</script>
+
+<h>Contents</h>
+<part>
+<ul class="contents">
+	<li>
+	<img id='tgl1' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(1)' ondblclick='ta(1)' />
+	Developer mode
+	<ul id='brn1'>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="console.html">Engine</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="cmdline.html">Command Line Parameters</emlink></li>
+	</ul>
+	</li>
+	<li>
+	<img id='tgl2' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(2)' ondblclick='ta(2)' />
+	<emlink href="files.html">Game content</emlink>
+	<ul id='brn2'>
+		<li>
+		<img id='tgl3' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(3)' ondblclick='ta(3)' />
+		<emlink href="definition/index.html">Object Definitions</emlink>
+		<ul id='brn3' class='invisi'>
+			<li>
+			<img id='tgl4' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(4)' ondblclick='ta(4)' />
+			<emlink href="definition/defcore.html">DefCore</emlink>
+			<ul id='brn4' class='invisi'>
+				<li><img src='../images/bullet_sheet.png' alt='-' />
+				<emlink href="definition/category.html">Category</emlink></li>
+				<li><img src='../images/bullet_sheet.png' alt='-' />
+				<emlink href="definition/ocf.html">OCF</emlink></li>
+				<li><img src='../images/bullet_sheet.png' alt='-' />
+				<emlink href="definition/vertices.html">Vertices</emlink></li>
+				<li><img src='../images/bullet_sheet.png' alt='-' />
+				<emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink></li>
+			</ul>
+			</li>
+			<li>
+			<img id='tgl5' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(5)' ondblclick='ta(5)' />
+			<emlink href="definition/actmap.html">ActMap</emlink>
+			<ul id='brn5' class='invisi'>
+				<li><img src='../images/bullet_sheet.png' alt='-' />
+				<emlink href="definition/procedures.html">Procedures</emlink></li>
+			</ul>
+			</li>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="definition/script.html">Scripts</emlink></li>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="definition/properties.html">Properties</emlink></li>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="particle/index.html">Particles</emlink></li>
+		</ul>
+		</li>
+		<li>
+		<img id='tgl6' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(6)' ondblclick='ta(6)' />
+		<emlink href="scenario/index.html">Scenarios</emlink>
+		<ul id='brn6' class='invisi'>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="scenario/scenario.html">Scenario</emlink></li>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="scenario/script.html">Scripts</emlink></li>
+		</ul>
+		</li>
+		<li>
+		<img id='tgl7' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(7)' ondblclick='ta(7)' />
+		<emlink href="material/index.html">Materials</emlink>
+		<ul id='brn7' class='invisi'>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="material/ocm.html">Definitions</emlink></li>
+		</ul>
+		</li>
+		<li>
+		<img id='tgl8' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(8)' ondblclick='ta(8)' />
+		Internationalization
+		<ul id='brn8' class='invisi'>
+			<li><img src='../images/bullet_sheet.png' alt='-' />
+			<emlink href="lang.html">Internationalization</emlink></li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<img id='tgl9' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(9)' ondblclick='ta(9)' />
+	<emlink href="script/index.html">Script</emlink>
+	<ul id='brn9'>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/Funcs.html">Functions</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/FuncCall.html">Function Call</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/Typechecks.html">Data Types</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/NamedVar.html">Variables</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/operatoren.html">Operators</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/for.html">for</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/BreakContinue.html">Loop Control</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/AppendTo.html">#appendto</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/Effects.html">Effects</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
+		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
+<!-- Insert Functions here -->
+	</ul>
+	</li>
+</ul>
+</part>
+</doc>

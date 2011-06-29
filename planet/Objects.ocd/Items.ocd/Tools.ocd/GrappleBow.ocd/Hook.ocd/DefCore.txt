@@ -1,0 +1,15 @@
+[DefCore]
+id=GrappleHook
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=5
+Height=6
+Offset=-3,0
+Vertices=7
+VertexX=0,0,0,0,0,0,0
+VertexY=3,0,0,0,0,0,0
+VertexFriction=120,120,120,120,120,120,120
+Value=8
+Mass=8
+Rotate=1
+NoStabilize=1

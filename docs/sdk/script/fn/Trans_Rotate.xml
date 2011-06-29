@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Trans_Rotate</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>angle</name>
+          <desc>Rotation angle. When looking into the same direction as the rotation axis then positive angles do anti-clockwise rotation and negative angles do clockwise rotation.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>rx</name>
+          <desc>X coordinate of the rotation axis.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>ry</name>
+          <desc>Y coordinate of the rotation axis.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>rz</name>
+          <desc>Z coordinate of the rotation axis.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a 3x4 rotation matrix around the axis given by the vector (<code>rx</code>, <code>ry</code>, <code>rz</code>) by <code>angle</code> degrees. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;PictureTransformation&quot;] = <funclink>Trans_Rotate</funclink>(20, 0, 1, 0);</code>
+        <text>Rotates the picture graphics of the calling object by 20 degrees around the Y axis.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>Trans_Mul</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

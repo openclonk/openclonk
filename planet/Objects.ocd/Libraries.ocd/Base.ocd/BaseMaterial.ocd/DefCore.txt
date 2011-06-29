@@ -1,0 +1,7 @@
+[DefCore]
+id=BaseMaterial
+Version=4,10,0,0
+Category=C4D_StaticBack
+Picture=0,0,64,64
+TimerCall=ExecHomeBaseProduction
+Timer=2100

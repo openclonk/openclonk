@@ -1,16 +1,29 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+/*
+ * OpenClonk, http://www.openclonk.org
+ *
+ * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2005  GÃ¼nther Brammer
- * Copyright (c) 2006  Peter Wortmann
+ * 
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
+#include <C4Include.h>
 #include <C4NetIO.h>
 
 #include <iostream>
 #include <sstream>
 #include <time.h>
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <mmsystem.h>
 #else
 #include <arpa/inet.h>
@@ -31,18 +44,18 @@ char DummyData[1024 * 1024];
 
 class MyCBClass : public C4NetIOMan
 {
-  unsigned int iTime, iPcks;
+	unsigned int iTime, iPcks;
 public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-    iTime = timeGetTime(); iPcks = 0;
+		iTime = GetTime(); iPcks = 0;
 
 #ifdef ASYNC_CONNECT
-		if(!fHost)
+		if (!fHost)
 		{
-      DummyData[0] = 0;
-      if(!pNetIO->Send(C4NetIOPacket(DummyData, iSize, true, addr)))
+			DummyData[0] = 0;
+			if (!pNetIO->Send(C4NetIOPacket(DummyData, iSize, true, addr)))
 				cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
 		}
 #endif
@@ -50,30 +63,33 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-    if(timeGetTime() > iTime + 1000) {
-      cout << iPcks << " packets in " << timeGetTime() - iTime << " ms (" << iPcks * 1000 / (timeGetTime() - iTime) << " per second, " << (iPcks ? (timeGetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-      iTime = timeGetTime(); iPcks = 0;
-    }
-    if(!rPacket.getStatus())
-    {
-      // dummys
-      DummyData[0] = 1;
-      C4NetIOPacket Dummy(DummyData, iSize, true, rPacket.getAddr());
-      for(int i = 0; i < iCnt; i++) {
-        if(!pNetIO->Send(Dummy))
-				  cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
-      }
-      // pong
-      pNetIO->Send(rPacket);
-      iPcks++;
-    }
+		if (GetTime() > iTime + 1000)
+		{
+			cout << iPcks << " packets in " << GetTime() - iTime << " ms (" << iPcks * 1000 / (GetTime() - iTime) << " per second, " << (iPcks ? (GetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			iTime = GetTime(); iPcks = 0;
+		}
+		if (!rPacket.getStatus())
+		{
+			// dummys
+			DummyData[0] = 1;
+			C4NetIOPacket Dummy(DummyData, iSize, true, rPacket.getAddr());
+			for (int i = 0; i < iCnt; i++)
+			{
+				if (!pNetIO->Send(Dummy))
+					cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
+			}
+			// pong
+			pNetIO->Send(rPacket);
+			iPcks++;
+		}
 		// cout << "got " << rPacket.GetSize() << " bytes of data (" << int(*rPacket.GetData()) << ")" << endl;
 	}
 	virtual void OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const char *szReason)
 	{
 		cout << "client from " << inet_ntoa(addr.sin_addr) << " disconnected (" << szReason << ")" << endl;
 	}
-	virtual void OnError(const char *strError, C4NetIO *pNetIO) {
+	virtual void OnError(const char *strError, C4NetIO *pNetIO)
+	{
 		cout << "network error: " << strError << endl;
 	};
 };
@@ -82,7 +98,7 @@ int main(int argc, char * argv[])
 {
 
 	int i;
-	for(i = 0; i < sizeof(DummyData); i++)
+	for (i = 0; i < sizeof(DummyData); i++)
 		DummyData[i] = 'A' + i % 100;
 
 	srand(time(NULL));
@@ -118,15 +134,18 @@ int main(int argc, char * argv[])
 		{
 			fHost = true;
 			if (!iPort) iPort = 11111;
-		} else if ((n = arg.find("--port=")) != -1)
+		}
+		else if ((n = arg.find("--port=")) != -1)
 		{
 			std::istringstream stream(std::string(arg.begin() + n + sizeof("--port="), arg.end()));
 			stream >> iPort;
-		} else if ((n = arg.find("--size=")) != -1)
+		}
+		else if ((n = arg.find("--size=")) != -1)
 		{
 			std::istringstream stream(std::string(arg.begin() + n + sizeof("--size="), arg.end()));
 			stream >> iSize;
-		} else
+		}
+		else
 		{
 			if (!ResolveAddress(argv[i], &addr, 11111)) cout << "Fehler in ResolveAddress(" << argv[i] << ")" << std::endl;
 			if (!iPort) iPort = 11112;
@@ -141,12 +160,12 @@ int main(int argc, char * argv[])
 		cout << "Server? (j/n)";
 		char cChoice;
 		do
-		  cin >> cChoice;
-		while(tolower(cChoice) != 'n' && tolower(cChoice) != 'j');
+			cin >> cChoice;
+		while (tolower(cChoice) != 'n' && tolower(cChoice) != 'j');
 
 		fHost = (tolower(cChoice) == 'j');
 
-		if(cChoice == 'J' || cChoice == 'N')
+		if (cChoice == 'J' || cChoice == 'N')
 		{
 			iPort = (cChoice == 'J' ? 11111 : 11112);
 			iCnt = 0;
@@ -160,18 +179,18 @@ int main(int argc, char * argv[])
 			cout << "Dummys?";
 			do
 				cin >> iCnt;
-			while(iCnt < 0);
+			while (iCnt < 0);
 
-			cout << "Größe?";
+			cout << "GrÃ¶ÃŸe?";
 			do
 				cin >> iSize;
-			while(iSize < 1 || iSize > 1024);
+			while (iSize < 1 || iSize > 1024);
 		}
 		if (!fHost)
 		{
 			char szAddr[1024];
 			int iDPort;
-			if(cChoice == 'N')
+			if (cChoice == 'N')
 			{
 				strcpy(szAddr, "127.0.0.1");
 				iDPort = 11111;
@@ -191,7 +210,7 @@ int main(int argc, char * argv[])
 	}
 	cout << "\nC4NetIO Init...";
 
-	if(!NetIO.Init(iPort))
+	if (!NetIO.Init(iPort))
 	{
 		cout << " Fehler: " << NetIO.GetError() << endl;
 		return 0;
@@ -200,12 +219,12 @@ int main(int argc, char * argv[])
 	cout << " ok" << endl;
 
 
-	if(fHost)
+	if (fHost)
 	{
 
 		cout << "   Broadcast...";
 		C4NetIO::addr_t addr;
-		if(!NetIO.InitBroadcast(&addr))
+		if (!NetIO.InitBroadcast(&addr))
 		{
 			cout << " Fehler: " << NetIO.GetError() << endl;
 			return 0;
@@ -215,7 +234,7 @@ int main(int argc, char * argv[])
 
 		cout << "   Thread...";
 
-		if(!CBClass.Start())
+		if (!CBClass.Start())
 		{
 			cout << " Fehler!" << endl;
 			return 0;
@@ -230,7 +249,7 @@ int main(int argc, char * argv[])
 	{
 		cout << "   Thread...";
 
-		if(!CBClass.Start())
+		if (!CBClass.Start())
 		{
 			cout << " Fehler!" << endl;
 			return 0;
@@ -242,21 +261,21 @@ int main(int argc, char * argv[])
 #ifdef ASYNC_CONNECT
 		NetIO.Connect(addr);
 #else
-		if(!fHost)
+		if (!fHost)
 		{
 			int iBufLen = 5000;
 			char *pBuf = new char [iBufLen];
-			for(int i = 0; i < 10; i++)
+			for (int i = 0; i < 10; i++)
 			{
 				*pBuf = i;
-				if(!pNetIO->Send(C4NetIOPacket(pBuf, iBufLen, true, addr)))
+				if (!pNetIO->Send(C4NetIOPacket(pBuf, iBufLen, true, addr)))
 					cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
 			}
 		}
 #endif
 	}
 
-	while(std::cin.get() == 10);
+	while (std::cin.get() == 10);
 
 	CBClass.Stop();
 	NetIO.Close();

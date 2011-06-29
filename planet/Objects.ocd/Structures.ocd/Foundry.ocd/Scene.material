@@ -1,0 +1,56 @@
+material Metal
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 1.500000 1.500000 1.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			scene_blend alpha_blend
+			texture_unit
+			{
+				texture MoltenMetal.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material MetalFlow : Metal
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				scroll_anim 0 -1
+			}
+		}
+	}
+}
+
+material Foundry
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Foundry.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Properties</title>
+  <h id="Properties">Properties</h>
+  <part>
+    <text>Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href="definition/index.html#Objektdefinitionen">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href="definition/script.html#Objektscripte">Definition's script</emlink>:</text>
+    <code>local Name = "$Name$";
+local ActMap = {
+Stand = {
+	Prototype = Action,
+        Name = "Stand",
+        Length = 1,
+        NextAction = "Stand"
+},
+};
+</code>
+    <text>
+      <table>
+        <caption id="PropertiesTable">Properties</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col><code>Prototype</code></col>
+          <col>proplist</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Name</code></col>
+          <col>string</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Collectible</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Touchable</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>ActMap</code></col>
+          <col>proplist</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Visibility</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>LineColors</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>LineAttach</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>PictureTransformation</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>MeshTransformation</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>MouseDragImage</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Animation</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>Action</code></col>
+          <col>proplist</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>BreatheWater</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>CorrosionResist</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>MaxEnergy</code></col>
+          <col>int</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>MaxBreath</code></col>
+          <col>int</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>ThrowSpeed</code></col>
+          <col>int</col>
+          <col></col>
+        </row>
+        <row id="Parallaxity">
+          <col><code>Parallaxity</code></col>
+          <col>[int, int]</col>
+          <col>The Objects's major Z-Position. See <funclink>C4D_Parallax</funclink>.</col>
+        </row>
+        <row id="Plane">
+          <col><code>Plane</code></col>
+          <col>int</col>
+          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it.</col>
+        </row>
+      </table>
+    </text>
+  </part>
+  <author>Günther</author><date>2011</date>
+</doc>

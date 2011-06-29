@@ -149,6 +149,56 @@ def printcontents2(f, _):
         f.write('        </UL>\n')
     f.write('      </UL>\n')
 
+def printcontents3(f, _):
+    ihack = [1000]
+    def folder(name):
+        i = str(ihack[0])
+        f.write("<li><img id='tgl" + i + "' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(" + i + ")' ondblclick='ta(" + i + ")' />\n" +
+            name + "\n" +
+            "<ul id='brn" + i + "' class='invisi'>\n")
+        ihack[0] = ihack[0] + 1
+    def sheet(url, name):
+        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
+            "<emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
+    def sheetE(url, name):
+        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
+            "<emlink href='" + url[4:] + "'>" + name + "</emlink> (erweitert)</li>\n")
+    folder("Funktionen nach Kategorie")
+    cats = parser.cats.keys()
+    cats.sort()
+    for cat in cats:
+        folder(_(cat))
+        subcats = parser.subcats[cat].keys()
+        subcats.sort()
+        for subcat in subcats:
+            folder(_(subcat))
+            titles = parser.subcats[cat][subcat].keys()
+            titles.sort()
+            for title in titles:
+                sheet(parser.subcats[cat][subcat][title] + '#' + _(title), _(title))
+            f.write('</ul></li>\n')
+        titles = parser.cats[cat].keys()
+        titles.sort()
+        for title in titles:
+            sheet(parser.cats[cat][title] + '#' + _(title), _(title))
+        f.write('</ul></li>\n')
+    f.write('</ul></li>\n')
+    folder("Funktionen nach Version")
+    versions = parser.versions.keys()
+    versions.sort()
+    for version in versions:
+        folder(_(version))
+        titles = parser.versions[version].keys()
+        titles.sort()
+        for title in titles:
+            sheet(parser.versions[version][title] + '#' + _(title), _(title))
+        titles = parser.extversions[version].keys()
+        titles.sort()
+        for title in titles:
+            sheetE(parser.extversions[version][title] + '#' + _(title), _(title))
+        f.write('</ul></li>\n')
+    f.write('</ul></li>\n')
+
 parser = Clonkparser()
 reader = xml.sax.make_parser()
 reader.setContentHandler(parser)
@@ -165,26 +215,35 @@ if 0:
         reader.parse(filename)
     experimental.Result()
 
-mofile = open("en.mo", "rb")
+mofile = open("de.mo", "rb")
 gt = gettext.GNUTranslations(mofile)
 
-_ = lambda s: s.encode('iso-8859-1')
-for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
-               (file("chm/en/Output.hhc", "w"), file("Template.en.hhc", "r"))):
-    for line in fin:
-        if line.find("<!-- Insert Functions here 1-->") != -1:
-            printcontents1(f, _)
-        elif line.find("<!-- Insert Functions here 2-->") != -1:
-            printcontents2(f, _)
-        else:
-            f.write(line)
-    f.close()
-    fin.close()
-    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
+#_ = lambda s: s.encode('iso-8859-1')
+#for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
+#               (file("chm/en/Output.hhc", "w"), file("Template.en.hhc", "r"))):
+#    for line in fin:
+#        if line.find("<!-- Insert Functions here 1-->") != -1:
+#            printcontents1(f, _)
+#        elif line.find("<!-- Insert Functions here 2-->") != -1:
+#            printcontents2(f, _)
+#        else:
+#            f.write(line)
+#    f.close()
+#    fin.close()
+#    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
 
+_ = lambda s: s.encode('utf-8')
+f, fin = (file("sdk/content.xml", "w"), file("sdk/content.xml.in", "r"))
+for line in fin:
+    if line.find("<!-- Insert Functions here -->") != -1:
+        printcontents3(f, _)
+    else:
+        f.write(line)
+f.close()
+fin.close()
 
-for f, fin in ((file("chm/de/Output.hhp", "w"), file("Template.hhp", "r")),
-               (file("chm/en/Output.hhp", "w"), file("Template.en.hhp", "r"))):
+for f, fin in ((file("chm/en/Output.hhp", "w"), file("Template.hhp", "r")),
+               (file("chm/de/Output.hhp", "w"), file("Template.de.hhp", "r"))):
     for line in fin:
         if line.find("[INFOTYPES]") != -1:
             for filename in sys.argv[1:]:
@@ -194,8 +253,8 @@ for f, fin in ((file("chm/de/Output.hhp", "w"), file("Template.hhp", "r")),
     fin.close()
 
 _ = lambda s: s.encode('iso-8859-1')
-for f, fin in ((file("chm/de/Output.hhk", "w"), file("Template.hhk", "r")),
-               (file("chm/en/Output.hhk", "w"), file("Template.en.hhk", "r"))):
+for f, fin in ((file("chm/en/Output.hhk", "w"), file("Template.hhk", "r")),
+               (file("chm/de/Output.hhk", "w"), file("Template.de.hhk", "r"))):
     for line in fin:
         if line.find("</UL>") != -1:
             for title, filename in parser.files.iteritems():

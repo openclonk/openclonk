@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Trans_Identity</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax><rtype>array</rtype></syntax>
+    <desc>Returns a 3x4 identity matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;MeshTransformation&quot;] = <funclink>Trans_Identity</funclink>();</code>
+        <text>Resets the MeshTransformation for the calling object.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Translate</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>Trans_Mul</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -39,13 +40,15 @@ public:
 	// do replacement in buffer
 	// if any replacement is done, the buffer will be realloced
 	void ReplaceStrings(StdStrBuf &rBuf);
-	void ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget, const char *szParentFilePath = NULL);
+	void ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget);
 
 	class NoSuchTranslation : public std::runtime_error
 	{
 	public:
 		NoSuchTranslation(const std::string &text) : std::runtime_error("No such translation: \"" + text + "\"") {}
 	};
+protected:
+	virtual void OnLoad() { strings.clear(); } // Make sure we re-populate when the string table is reloaded
 };
 
 #endif // INC_C4LangStringTable

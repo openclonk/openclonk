@@ -1,0 +1,2 @@
+Name=Pyre Gem
+Description=Creates a slowly expanding explosion on impact.

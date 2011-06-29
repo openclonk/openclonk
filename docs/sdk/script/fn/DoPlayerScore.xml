@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoPlayerScore</title>
+    <category>Player</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Number of the player whose score you want to change.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>change</name>
+          <desc>Change of score (positive or negative).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the player score of a player.</desc>
+    <examples>
+      <example>
+        <code>DoScore(0, -100);</code>
+        <text>Deducts 100 points from this player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlayerScore</funclink>
+      <funclink>GetPlayerScoreGain</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>2001-11</date>
+  <author>Sven2</author><date>2010-04</date>
+</funcs>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Trans_Translate</title>
+    <category>Arithmetics</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>dx</name>
+          <desc>Displacement in X direction</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>dy</name>
+          <desc>Displacement in Y direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>dz</name>
+          <desc>Displacement in Z direction.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns a 3x4 translation matrix. It can be used as a transformation for <funclink>AttachMesh</funclink> or for the "PictureTransformation" or "MeshTransformation" properties (see <emlink href="definition/meshes.html#Picture">Meshes</emlink>).</desc>
+    <remark>A value of 1000 for <code>dx</code>, <code>dy</code> or <code>dz</code> displaces the graphics by one unit to the right, to the bottom or to the front, respectively. For negative values displacement goes into the opposite direction. For graphics that are rendered directly in the game (such as the one influenced by the "MeshTransformation" property) one unit in X or Y corresponds to one pixel. All parameter values are given in one-tenth of a percent (1000 = 100%) since there are no floating point numbers in Clonk.</remark>
+    <examples>
+      <example>
+        <code><funclink>this</funclink>[&quot;PictureTransformation&quot;] = <funclink>Trans_Translate</funclink>(0, 0, 7000);</code>
+        <text>Displaces the picture graphics of the calling object by 7 units towards the camera. This causes it to be displayed larger because of the perspective projection.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Trans_Identity</funclink>
+      <funclink>Trans_Rotate</funclink>
+      <funclink>Trans_Scale</funclink>
+      <funclink>Trans_Mul</funclink>
+      <funclink>AttachMesh</funclink>
+      <funclink>SetAttachTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

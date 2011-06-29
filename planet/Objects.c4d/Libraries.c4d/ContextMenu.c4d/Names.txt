@@ -1,2 +1,0 @@
-DE:Kontextmenü
-US:Context menu

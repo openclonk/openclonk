@@ -1,0 +1,2 @@
+Name=Pickaxe
+Description=Hold the [Use]-key to slowly mine into rock formations.

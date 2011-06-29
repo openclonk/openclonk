@@ -1,0 +1,6 @@
+[Material]
+Name=BrickSoft
+Shape=0
+Density=50
+Placement=60
+TextureOverlay=brick1

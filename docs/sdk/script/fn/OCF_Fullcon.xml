@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>OCF_Fullcon</title>
-    <category>Objekte</category><subcat>OCF</subcat>
+    <category>Objects</category>
+    <subcat>OCF</subcat>
     <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Object character flag: Zu mindestens 100% fertig gebautes Objekt. Das Objekt ist also zum Beispiel keine Baustelle, bzw. als Lebwesen ist es mindestens voll ausgewachsen.</desc>
-		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
-    <remark>Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href="definition/ocf.html">Object character flags</emlink>.</remark>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Object character flag: object is 100% complete, i.e. the object is not a construction site or growing animal.</desc>
+    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
+    <remark>For more information and examples regarding these constants see <emlink href="definition/ocf.html">object character flags</emlink>.</remark>
     <related>
       <funclink>GetOCF</funclink>
       <funclink>FindObject</funclink>
@@ -22,5 +22,5 @@
       <funclink>SetCon</funclink>
     </related>
   </func>
-  <author>Sven2</author><date>Mai 2002</date>
+  <author>Sven2</author><date>2002-05</date>
 </funcs>

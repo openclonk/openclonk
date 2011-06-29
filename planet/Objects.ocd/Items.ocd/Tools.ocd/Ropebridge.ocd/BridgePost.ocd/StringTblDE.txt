@@ -1,0 +1,2 @@
+Name=Hängebrücke
+Description=Hält die Hängebrücke

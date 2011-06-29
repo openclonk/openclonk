@@ -1,0 +1,13 @@
+[DefCore]
+id=Fireglobe
+Category=C4D_Object
+Width=10
+Height=10
+Offset=-5,-5
+Vertices=1
+VertexY=0
+VertexFriction=100
+Picture=0,0,10,10
+Value=8
+Mass=1
+Rotate=1

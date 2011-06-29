@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -22,6 +23,7 @@
 #define INC_C4MeshAnimation
 
 #include "StdMesh.h"
+#include "C4ObjectPtr.h"
 
 class C4Action;
 class C4Object;
@@ -53,207 +55,238 @@ enum C4AnimationEnding
 };
 
 // Keep a constant value
-class C4ValueProviderConst: public StdMeshInstance::ValueProvider
+class C4ValueProviderConst: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderConst(float value);
+	C4ValueProviderConst() {}
+	C4ValueProviderConst(C4Real value);
 	virtual bool Execute();
 };
 
 // Interpolate linearly in time between two values
-class C4ValueProviderLinear: public StdMeshInstance::ValueProvider
+class C4ValueProviderLinear: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderLinear(float pos, float begin, float end, unsigned int length, C4AnimationEnding ending);
+	C4ValueProviderLinear(): Begin(Fix0), End(Fix0), Length(0), Ending(ANIM_Loop), LastTick(0) {}
+	C4ValueProviderLinear(C4Real pos, C4Real begin, C4Real end, int32_t length, C4AnimationEnding ending);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
 private:
-	const float Begin;
-	const float End;
-	const unsigned int Length;
-	const C4AnimationEnding Ending;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
+	C4AnimationEnding Ending;
 
 	int32_t LastTick;
 };
 
-class C4ValueProviderX: public StdMeshInstance::ValueProvider
+class C4ValueProviderX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderX(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
-
-	float LastX;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
 };
 
-class C4ValueProviderY: public StdMeshInstance::ValueProvider
+class C4ValueProviderY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderY(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
-
-	float LastY;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
 };
 
-class C4ValueProviderAbsX: public StdMeshInstance::ValueProvider
+class C4ValueProviderAbsX: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsX(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderAbsX(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
-
-	float LastX;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
 };
 
-class C4ValueProviderAbsY: public StdMeshInstance::ValueProvider
+class C4ValueProviderAbsY: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAbsY(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderAbsY(): Object(NULL), Begin(Fix0), End(Fix0), Length(0) {}
+	C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
-
-	float LastY;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	int32_t Length;
 };
 
-class C4ValueProviderXDir: public StdMeshInstance::ValueProvider
+class C4ValueProviderXDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderXDir(const C4Object* object, float begin, float end, FIXED max_xdir);
+	C4ValueProviderXDir(): Object(NULL), Begin(Fix0), End(Fix0), MaxXDir(Fix0) {}
+	C4ValueProviderXDir(C4Object* object, C4Real begin, C4Real end, C4Real max_xdir);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED MaxXDir;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real MaxXDir;
 };
 
-class C4ValueProviderYDir: public StdMeshInstance::ValueProvider
+class C4ValueProviderYDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderYDir(const C4Object* object, float begin, float end, FIXED max_ydir);
+	C4ValueProviderYDir(): Object(NULL), Begin(Fix0), End(Fix0), MaxYDir(Fix0) {}
+	C4ValueProviderYDir(C4Object* object, C4Real begin, C4Real end, C4Real max_ydir);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED MaxYDir;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real MaxYDir;
 };
 
-class C4ValueProviderRDir: public StdMeshInstance::ValueProvider
+class C4ValueProviderRDir: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderRDir(const C4Object* object, float begin, float end, FIXED max_rdir);
+	C4ValueProviderRDir(): Object(NULL), Begin(Fix0), End(Fix0), MaxRDir(Fix0) {}
+	C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real end, C4Real max_rdir);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED MaxRDir;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real MaxRDir;
 };
 
-class C4ValueProviderCosR: public StdMeshInstance::ValueProvider
+class C4ValueProviderCosR: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderCosR(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderCosR(): Object(NULL), Begin(Fix0), End(Fix0), Offset(Fix0) {}
+	C4ValueProviderCosR(C4Object* object, C4Real begin, C4Real end, C4Real offset);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED Offset;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real Offset;
 };
 
-class C4ValueProviderSinR: public StdMeshInstance::ValueProvider
+class C4ValueProviderSinR: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderSinR(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderSinR(): Object(NULL), Begin(Fix0), End(Fix0), Offset(Fix0) {}
+	C4ValueProviderSinR(C4Object* object, C4Real begin, C4Real end, C4Real offset);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED Offset;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real Offset;
 };
 
-class C4ValueProviderCosV: public StdMeshInstance::ValueProvider
+class C4ValueProviderCosV: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderCosV(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderCosV(): Object(NULL), Begin(Fix0), End(Fix0), Offset(Fix0) {}
+	C4ValueProviderCosV(C4Object* object, C4Real begin, C4Real end, C4Real offset);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED Offset;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real Offset;
 };
 
-class C4ValueProviderSinV: public StdMeshInstance::ValueProvider
+class C4ValueProviderSinV: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderSinV(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderSinV(): Object(NULL), Begin(Fix0), End(Fix0), Offset(Fix0) {}
+	C4ValueProviderSinV(C4Object* object, C4Real begin, C4Real end, C4Real offset);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const FIXED Offset;
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
+	C4Real Offset;
 };
 
-class C4ValueProviderAction: public StdMeshInstance::ValueProvider
+class C4ValueProviderAction: public StdMeshInstance::SerializableValueProvider
 {
 public:
-	C4ValueProviderAction(const C4Object* object);
+	C4ValueProviderAction(): Object(NULL) {}
+	C4ValueProviderAction(C4Object* object);
 	virtual bool Execute();
 
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
 private:
-	const C4Action& Action;
+	C4ObjectPtr Object;
 };
 
-// Reference another value (which is convertible to float), and optionally scale it
+// Reference another value (which is convertible to C4Real), and optionally scale it
 template<typename SourceT>
 class C4ValueProviderRef: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderRef(const SourceT& ref, float scale):
-		Ref(ref), Scale(scale) {}
+	C4ValueProviderRef(const SourceT& ref, C4Real scale):
+			Ref(ref), Scale(scale) {}
 
 	virtual bool Execute()
 	{
-		Value = static_cast<float>(Ref) * Scale;
+		Value = Scale * Ref;
 		return true;
 	}
 
 private:
 	const SourceT& Ref;
-	float Scale;
+	C4Real Scale;
 };
 
 StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data);

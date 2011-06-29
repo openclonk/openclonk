@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetMeshMaterial</title>
+    <category>Objects</category>
+    <subcat>Display</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>material</name>
+          <desc>Name of the material to set. It needs to be loaded at engine startup, i.e. it needs to be defined in a *.material file being located in an object that was loaded.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>submesh</name>
+          <desc>If the mesh is composed of multiple submeshes then this parameter can be used to specify the submesh whose material is to be changed.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Changes the material of the calling object's mesh at runtime.</desc>
+    <examples>
+      <example>
+        <code><funclink>SetMeshMaterial</funclink>(&quot;Clonk_Body_EyesClosed&quot;);
+<funclink>Schedule</funclink>(&quot;SetMeshMaterial(\&quot;Clonk_Body\&quot;)&quot;, 5);</code>
+        <text>Makes a clonk blink.</text>
+      </example>
+    </examples>
+    <related><funclink>GetMeshMaterial</funclink></related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-04</date>
+</funcs>

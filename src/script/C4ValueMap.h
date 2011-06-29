@@ -72,9 +72,9 @@ public:
 	C4Value& operator [] (int32_t iNr) { return *GetItem(iNr); }
 	C4Value& operator [] (const char *strName) { return *GetItem(strName); }
 
-	void DenumeratePointers();
+	void Denumerate(C4ValueNumbers *);
 
-  void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 
 private:
 
@@ -124,6 +124,9 @@ public:
 	// (= nr of value in "child" data lists)
 	// returns -1 if no item with given name exists
 	int32_t GetItemNr(const char *strName);
+
+	// get name by index; awway bounds not checked
+	const char *GetItemUnsafe(int32_t idx) const { return pNames[idx]; }
 
 	void Reset();
 

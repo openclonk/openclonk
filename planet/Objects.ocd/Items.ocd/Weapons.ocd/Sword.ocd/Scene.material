@@ -1,0 +1,44 @@
+material Sword2
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.702745 0.702745 0.702745 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Sword2.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material Swoosh
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			scene_blend src_alpha one_minus_src_alpha
+
+			ambient 1.500000 1.500000 1.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 8.750000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Swoosh.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

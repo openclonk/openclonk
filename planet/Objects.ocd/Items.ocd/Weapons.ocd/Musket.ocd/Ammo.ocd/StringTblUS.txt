@@ -1,0 +1,2 @@
+Name=Lead shot
+Description=Ammunition for the musket.

@@ -1,0 +1,2 @@
+Name=Pulverfass
+Description=Munition für die Kanone.

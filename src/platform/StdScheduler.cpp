@@ -1,10 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2009  Peter Wortmann
  * Copyright (c) 2006-2007, 2009  Günther Brammer
+ * Copyright (c) 2006-2009  Peter Wortmann
  * Copyright (c) 2008  Sven Eberhardt
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +22,8 @@
  */
 #include "C4Include.h"
 #include "StdScheduler.h"
+
+#include <StdWindow.h>
 #include <stdio.h>
 
 #include <assert.h>
@@ -57,20 +61,20 @@ static int pipe(int *phandles)
 bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 {
 	// Infinite?
-	if(iTimeout < 0)
-		for(;;)
-			if(!Execute())
+	if (iTimeout < 0)
+		for (;;)
+			if (!Execute())
 				return false;
 	// Calculate endpoint
-	unsigned int iStopTime = timeGetTime() + iTimeout;
-	for(;;)
+	unsigned int iStopTime = GetTime() + iTimeout;
+	for (;;)
 	{
 		// Call execute with given timeout
-		if(!Execute(Max(iTimeout, 0)))
+		if (!Execute(Max(iTimeout, 0)))
 			return false;
 		// Calculate timeout
-		unsigned int iTime = timeGetTime();
-		if(iTime >= iStopTime)
+		unsigned int iTime = GetTime();
+		if (iTime >= iStopTime)
 			break;
 		iTimeout = int(iStopTime - iTime);
 	}
@@ -85,7 +89,7 @@ bool StdSchedulerProc::IsSignaled()
 	return GetEvent() && WaitForSingleObject(GetEvent(), 0) == WAIT_OBJECT_0;
 #else
 	// Initialize file descriptor sets
-  	std::vector<struct pollfd> fds;
+	std::vector<struct pollfd> fds;
 
 	// Get file descriptors
 	GetFDs(fds);
@@ -98,7 +102,7 @@ bool StdSchedulerProc::IsSignaled()
 // *** StdScheduler
 
 StdScheduler::StdScheduler()
-	: ppProcs(NULL), iProcCnt(0), iProcCapacity(0)
+		: ppProcs(NULL), iProcCnt(0), iProcCapacity(0)
 {
 #ifdef STDSCHEDULER_USE_EVENTS
 	pEventHandles = NULL;
@@ -115,8 +119,8 @@ StdScheduler::~StdScheduler()
 
 int StdScheduler::getProc(StdSchedulerProc *pProc)
 {
-	for(int i = 0; i < iProcCnt; i++)
-		if(ppProcs[i] == pProc)
+	for (int i = 0; i < iProcCnt; i++)
+		if (ppProcs[i] == pProc)
 			return i;
 	return -1;
 }
@@ -139,16 +143,16 @@ void StdScheduler::Set(StdSchedulerProc **ppnProcs, int inProcCnt)
 	Enlarge(inProcCnt - iProcCapacity);
 	// Copy new
 	iProcCnt = inProcCnt;
-	for(int i = 0; i < iProcCnt; i++)
+	for (int i = 0; i < iProcCnt; i++)
 		ppProcs[i] = ppnProcs[i];
 }
 
 void StdScheduler::Add(StdSchedulerProc *pProc)
 {
 	// Alrady in list?
-	if(hasProc(pProc)) return;
+	if (hasProc(pProc)) return;
 	// Enlarge
-	if(iProcCnt >= iProcCapacity) Enlarge(10);
+	if (iProcCnt >= iProcCapacity) Enlarge(10);
 	// Add
 	ppProcs[iProcCnt] = pProc;
 	iProcCnt++;
@@ -159,9 +163,9 @@ void StdScheduler::Remove(StdSchedulerProc *pProc)
 	// Search
 	int iPos = getProc(pProc);
 	// Not found?
-	if(iPos < 0 || iPos >= iProcCnt) return;
+	if (iPos < 0 || iPos >= iProcCnt) return;
 	// Remove
-	for(int i = iPos + 1; i < iProcCnt; i++)
+	for (int i = iPos + 1; i < iProcCnt; i++)
 		ppProcs[i-1] = ppProcs[i];
 	iProcCnt--;
 }
@@ -169,13 +173,13 @@ void StdScheduler::Remove(StdSchedulerProc *pProc)
 bool StdScheduler::ScheduleProcs(int iTimeout)
 {
 	// Needs at least one process to work properly
-	if(!iProcCnt) return false;
+	if (!iProcCnt) return false;
 
 	// Get timeout
-	int i; int iProcTick; int Now = timeGetTime();
-	for(i = 0; i < iProcCnt; i++)
-		if((iProcTick = ppProcs[i]->GetNextTick(Now)) >= 0)
-			if(iTimeout == -1 || iTimeout + Now > iProcTick)
+	int i; int iProcTick; int Now = GetTime();
+	for (i = 0; i < iProcCnt; i++)
+		if ((iProcTick = ppProcs[i]->GetNextTick(Now)) >= 0)
+			if (iTimeout == -1 || iTimeout + Now > iProcTick)
 				iTimeout = Max(iProcTick - Now, 0);
 
 #ifdef STDSCHEDULER_USE_EVENTS
@@ -183,9 +187,10 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Collect event handles
 	int iEventCnt = 0; HANDLE hEvent;
 	StdSchedulerProc *pMessageProc = NULL;
-	for(i = 0; i < iProcCnt; i++)
-		if(hEvent = ppProcs[i]->GetEvent())
-			if(hEvent == STDSCHEDULER_EVENT_MESSAGE)
+	for (i = 0; i < iProcCnt; i++)
+		if ( (hEvent = ppProcs[i]->GetEvent()) )
+		{
+			if (hEvent == STDSCHEDULER_EVENT_MESSAGE)
 				pMessageProc = ppProcs[i];
 			else
 			{
@@ -193,10 +198,11 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 				ppEventProcs[iEventCnt] = ppProcs[i];
 				iEventCnt++;
 			}
+		}
 
 	// Wait for something to happen
 	DWORD ret; DWORD dwMsec = iTimeout < 0 ? INFINITE : iTimeout;
-	if(pMessageProc)
+	if (pMessageProc)
 		ret = MsgWaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec, QS_ALLINPUT);
 	else
 		ret = WaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec);
@@ -204,75 +210,108 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	bool fSuccess = true;
 
 	// Event?
-	if(ret != WAIT_TIMEOUT)
-		{
+	if (ret != WAIT_TIMEOUT)
+	{
 		// Which event?
 		int iEventNr = ret - WAIT_OBJECT_0;
 
 		// Execute the signaled process
 		StdSchedulerProc *pProc = iEventNr < iEventCnt ? ppEventProcs[iEventNr] : pMessageProc;
-		if(!pProc->Execute(0))
-			{
+		if (!pProc->Execute(0))
+		{
 			OnError(pProc);
 			fSuccess = false;
-			}
 		}
+
+	}
+	else
+	{
+		// Execute all processes with timeout
+		Now = GetTime();
+		for (i = 0; i < iProcCnt; i++)
+		{
+			iProcTick = ppProcs[i]->GetNextTick(Now);
+			if (iProcTick >= 0 && iProcTick <= Now)
+				if (!ppProcs[i]->Execute(0))
+				{
+					OnError(ppProcs[i]);
+					fSuccess = false;
+				}
+		}
+	}
 
 #else
 
 	// Initialize file descriptor sets
 	std::vector<struct pollfd> fds;
+	std::map<StdSchedulerProc *, std::pair<unsigned int, unsigned int> > fds_for_proc;
 
 	// Collect file descriptors
-	for(i = 0; i < iProcCnt; i++)
+	for (i = 0; i < iProcCnt; i++)
+	{
+		unsigned int os = fds.size();
 		ppProcs[i]->GetFDs(fds);
+		if (os != fds.size())
+			fds_for_proc[ppProcs[i]] = std::pair<unsigned int, unsigned int>(os, fds.size());
+	}
 
 	// Wait for something to happen
 	int cnt = poll(&fds[0], fds.size(), iTimeout);
 
 	bool fSuccess = true;
 
-	if(cnt > 0)
+	if (cnt >= 0)
 	{
+		bool any_executed = false;
+		Now = GetTime();
 		// Which process?
-		std::vector<struct pollfd> test_fds;
-		test_fds.reserve(fds.size());
-		for(i = 0; i < iProcCnt; i++)
+		for (i = 0; i < iProcCnt; i++)
 		{
-			// Get FDs for this process alone
-			int prev_fds = test_fds.size();
-			ppProcs[i]->GetFDs(test_fds);
-
-			// Check intersection
-			for (unsigned int j = prev_fds; j < test_fds.size(); ++j) if (fds[j].events & fds[j].revents)
+			iProcTick = ppProcs[i]->GetNextTick(Now);
+			if (iProcTick >= 0 && iProcTick <= Now)
 			{
-				if(!ppProcs[i]->Execute(0))
+				struct pollfd * pfd = 0;
+				if (fds_for_proc.find(ppProcs[i]) != fds_for_proc.end())
+					pfd = &fds[fds_for_proc[ppProcs[i]].first];
+				if (!ppProcs[i]->Execute(0, pfd))
 				{
 					OnError(ppProcs[i]);
 					fSuccess = false;
 				}
-				break;
+				any_executed = true;
+				continue;
+			}
+			// no fds?
+			if (fds_for_proc.find(ppProcs[i]) == fds_for_proc.end())
+				continue;
+			// Check intersection
+			unsigned int begin = fds_for_proc[ppProcs[i]].first;
+			unsigned int end = fds_for_proc[ppProcs[i]].second;
+			for (unsigned int j = begin; j < end; ++j)
+			{
+				if (fds[j].events & fds[j].revents)
+				{
+					if (any_executed && ppProcs[i]->IsLowPriority())
+						break;
+					if (!ppProcs[i]->Execute(0, &fds[begin]))
+					{
+						OnError(ppProcs[i]);
+						fSuccess = false;
+					}
+					any_executed = true;
+					// the list of procs might have been changed, but procs must be in both ppProcs and
+					// fds_for_proc to be executed, which prevents execution of any proc not polled this round
+					// or deleted. Some procs might be skipped or executed twice, but that should be save.
+					break;
+				}
 			}
 		}
 	}
 	else if (cnt < 0)
 	{
-		printf("StdScheduler::Execute: poll failed %s\n",strerror(errno));
+		printf("StdScheduler::Execute: poll failed: %s\n",strerror(errno));
 	}
 #endif
-
-	// Execute all processes with timeout
-	Now = timeGetTime();
-	for(i = 0; i < iProcCnt; i++)
-	{
-		iProcTick = ppProcs[i]->GetNextTick(Now);
-		if(iProcTick >= 0 && iProcTick <= Now)
-			if(!ppProcs[i]->Execute(0))
-			{
-				OnError(ppProcs[i]);
-				fSuccess = false;
-			}
-	}
 
 	return fSuccess;
 }
@@ -288,7 +327,7 @@ void StdScheduler::Enlarge(int iBy)
 	// Realloc
 	StdSchedulerProc **ppnProcs = new StdSchedulerProc *[iProcCapacity];
 	// Set data
-	for(int i = 0; i < iProcCnt; i++)
+	for (int i = 0; i < iProcCnt; i++)
 		ppnProcs[i] = ppProcs[i];
 	delete[] ppProcs;
 	ppProcs = ppnProcs;
@@ -302,7 +341,7 @@ void StdScheduler::Enlarge(int iBy)
 // *** StdSchedulerThread
 
 StdSchedulerThread::StdSchedulerThread()
-	: fThread(false)
+		: fThread(false)
 {
 
 }
@@ -315,7 +354,7 @@ StdSchedulerThread::~StdSchedulerThread()
 void StdSchedulerThread::Clear()
 {
 	// Stop thread
-	if(fThread) Stop();
+	if (fThread) Stop();
 	// Clear scheduler
 	StdScheduler::Clear();
 }
@@ -324,39 +363,39 @@ void StdSchedulerThread::Set(StdSchedulerProc **ppProcs, int iProcCnt)
 {
 	// Thread is running? Stop it first
 	bool fGotThread = fThread;
-	if(fGotThread) Stop();
+	if (fGotThread) Stop();
 	// Set
 	StdScheduler::Set(ppProcs, iProcCnt);
 	// Restart
-	if(fGotThread) Start();
+	if (fGotThread) Start();
 }
 
 void StdSchedulerThread::Add(StdSchedulerProc *pProc)
 {
 	// Thread is running? Stop it first
 	bool fGotThread = fThread;
-	if(fGotThread) Stop();
+	if (fGotThread) Stop();
 	// Set
 	StdScheduler::Add(pProc);
 	// Restart
-	if(fGotThread) Start();
+	if (fGotThread) Start();
 }
 
 void StdSchedulerThread::Remove(StdSchedulerProc *pProc)
 {
 	// Thread is running? Stop it first
 	bool fGotThread = fThread;
-	if(fGotThread) Stop();
+	if (fGotThread) Stop();
 	// Set
-  StdScheduler::Remove(pProc);
+	StdScheduler::Remove(pProc);
 	// Restart
-	if(fGotThread) Start();
+	if (fGotThread) Start();
 }
 
 bool StdSchedulerThread::Start()
 {
 	// already running? stop
-	if(fThread) Stop();
+	if (fThread) Stop();
 	// begin thread
 	fRunThreadRun = true;
 #ifdef HAVE_WINTHREAD
@@ -372,7 +411,7 @@ bool StdSchedulerThread::Start()
 void StdSchedulerThread::Stop()
 {
 	// Not running?
-	if(!fThread) return;
+	if (!fThread) return;
 	// Set flag
 	fRunThreadRun = false;
 	// Unblock
@@ -380,7 +419,7 @@ void StdSchedulerThread::Stop()
 #ifdef HAVE_WINTHREAD
 	// Wait for thread to terminate itself
 	HANDLE hThread = reinterpret_cast<HANDLE>(iThread);
-	if(WaitForSingleObject(hThread, 10000) == WAIT_TIMEOUT)
+	if (WaitForSingleObject(hThread, 10000) == WAIT_TIMEOUT)
 		// ... or kill it in case it refuses to do so
 		TerminateThread(hThread, -1);
 #elif defined(HAVE_PTHREAD)
@@ -410,7 +449,7 @@ void *StdSchedulerThread::_ThreadFunc(void *pPar)
 unsigned int StdSchedulerThread::ThreadFunc()
 {
 	// Keep calling Execute until someone gets fed up and calls StopThread()
-	while(fRunThreadRun)
+	while (fRunThreadRun)
 		ScheduleProcs();
 	return(0);
 }
@@ -425,7 +464,7 @@ StdThread::StdThread() : fStarted(false), fStopSignaled(false)
 bool StdThread::Start()
 {
 	// already running? stop
-	if(fStarted) Stop();
+	if (fStarted) Stop();
 	// begin thread
 	fStopSignaled = false;
 #ifdef HAVE_WINTHREAD
@@ -441,7 +480,7 @@ bool StdThread::Start()
 void StdThread::SignalStop()
 {
 	// Not running?
-	if(!fStarted) return;
+	if (!fStarted) return;
 	// Set flag
 	fStopSignaled = true;
 }
@@ -449,13 +488,13 @@ void StdThread::SignalStop()
 void StdThread::Stop()
 {
 	// Not running?
-	if(!fStarted) return;
+	if (!fStarted) return;
 	// Set flag
 	fStopSignaled = true;
 #ifdef HAVE_WINTHREAD
 	// Wait for thread to terminate itself
 	HANDLE hThread = reinterpret_cast<HANDLE>(iThread);
-	if(WaitForSingleObject(hThread, 10000) == WAIT_TIMEOUT)
+	if (WaitForSingleObject(hThread, 10000) == WAIT_TIMEOUT)
 		// ... or kill him in case he refuses to do so
 		TerminateThread(hThread, -1);
 #elif defined(HAVE_PTHREAD)
@@ -485,7 +524,7 @@ void *StdThread::_ThreadFunc(void *pPar)
 unsigned int StdThread::ThreadFunc()
 {
 	// Keep calling Execute until someone gets fed up and calls Stop()
-	while(!IsStopSignaled())
+	while (!IsStopSignaled())
 		Execute();
 	return(0);
 }
@@ -495,55 +534,190 @@ bool StdThread::IsStopSignaled()
 	return fStopSignaled;
 }
 
-namespace {
-	void Fail(const char* msg) {
-		// TODO: throw std::runtime_error(msg); ?
+namespace
+{
+	void Fail(const char* msg)
+	{
+		Log(msg);
 	}
 }
 
 #ifdef STDSCHEDULER_USE_EVENTS
 CStdNotifyProc::CStdNotifyProc() : Event(true) {}
 void CStdNotifyProc::Notify() { Event.Set(); }
-bool CStdNotifyProc::Check() { return Event.WaitFor(0); }
 bool CStdNotifyProc::CheckAndReset()
-	{
-	if(!Check()) return false;
+{
+	if (!Event.WaitFor(0)) return false;
 	Event.Reset();
 	return true;
-	}
+}
 #else // STDSCHEDULER_USE_EVENTS
+#ifdef HAVE_SYS_EVENTFD_H
+#include <sys/eventfd.h>
+
 CStdNotifyProc::CStdNotifyProc()
-	{
-	if(pipe(fds) == -1)
-		Fail("pipe failed");
-	// Experimental castration of the pipe.
+{
+	// FIXME: Once linux version 2.6.27 is required, use EFD_NONBLOCK and EFD_CLOEXEC
+	fds[0] = eventfd(0, 0);
+	if (fds[0] == -1)
+		Fail("eventfd failed");
 	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
-	}
+	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
+}
 void CStdNotifyProc::Notify()
-	{
-	char c = 42;
-	if(write(fds[1], &c, 1) == -1)
+{
+	uint64_t n = 1;
+	if (write(fds[0], &n, 8) == -1)
 		Fail("write failed");
-	}
-bool CStdNotifyProc::Check()
-	{
-	fd_set fdset;
-	FD_ZERO(&fdset);
-	FD_SET(fds[0], &fdset);
-	timeval to = { 0, 0 };
-	return select(fds[0] + 1, &fdset, NULL, NULL, &to);
-	}
+}
 bool CStdNotifyProc::CheckAndReset()
-	{
+{
+	uint64_t n;
+	return (read(fds[0], &n, 8) != -1);
+}
+#else
+CStdNotifyProc::CStdNotifyProc()
+{
+	if (pipe(fds) == -1)
+		Fail("pipe failed");
+	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
+	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
+	fcntl(fds[1], F_SETFD, FD_CLOEXEC);
+}
+void CStdNotifyProc::Notify()
+{
+	char c = 42;
+	if (write(fds[1], &c, 1) == -1)
+		Fail("write failed");
+}
+bool CStdNotifyProc::CheckAndReset()
+{
 	bool r = false;
-	while(1)
-		{
+	while (1)
+	{
 		char c;
 		if (read(fds[0], &c, 1) <= 0)
 			break;
 		else
 			r = true;
-		}
-	return r;
 	}
+	return r;
+}
+#endif
+void CStdNotifyProc::GetFDs(std::vector<struct pollfd> & checkfds)
+{
+	pollfd pfd = { fds[0], POLLIN, 0 };
+	checkfds.push_back(pfd);
+}
+#endif
+
+/* CStdMultimediaTimerProc */
+#ifdef STDSCHEDULER_USE_EVENTS
+int CStdMultimediaTimerProc::iTimePeriod = 0;
+
+CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
+		uCriticalTimerDelay(28),
+		idCriticalTimer(0),
+		uCriticalTimerResolution(5),
+		Event(true)
+{
+
+	if (!iTimePeriod)
+	{
+		// Get resolution caps
+		TIMECAPS tc;
+		timeGetDevCaps(&tc, sizeof(tc));
+		// Establish minimum resolution
+		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
+		timeBeginPeriod(uCriticalTimerResolution);
+	}
+	iTimePeriod++;
+
+	SetDelay(iDelay);
+
+}
+
+CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
+{
+	if (idCriticalTimer)
+	{
+		timeKillEvent(idCriticalTimer);
+		idCriticalTimer = 0;
+
+		iTimePeriod--;
+		if (!iTimePeriod)
+			timeEndPeriod(uCriticalTimerResolution);
+	}
+}
+
+void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
+{
+
+	// Kill old timer (of any)
+	if (idCriticalTimer)
+		timeKillEvent(idCriticalTimer);
+
+	// Set critical timer
+	idCriticalTimer=timeSetEvent(
+	                  uCriticalTimerDelay,uCriticalTimerResolution,
+	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
+
+}
+
+bool CStdMultimediaTimerProc::CheckAndReset()
+{
+	if (!Check()) return false;
+	Event.Reset();
+	return true;
+}
+
+#elif defined(HAVE_SYS_TIMERFD_H)
+#include <sys/timerfd.h>
+#include <unistd.h>
+#include <fcntl.h>
+CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay)
+{
+	// FIXME: Once linux version 2.6.27 is required, use TFD_NONBLOCK and TFD_CLOEXEC
+	fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	if (fd == -1)
+		Log("timerfd_create failed");
+	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+	fcntl(fd, F_SETFD, FD_CLOEXEC);
+	SetDelay(iDelay);
+}
+
+CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
+{
+	close(fd);
+}
+
+void CStdMultimediaTimerProc::SetDelay(uint32_t inDelay)
+{
+	struct itimerspec nv, ov;
+	nv.it_interval.tv_sec = inDelay / 1000;
+	nv.it_interval.tv_nsec = (inDelay % 1000) * 1000000;
+	nv.it_value = nv.it_interval;
+	timerfd_settime(fd, 0, &nv, &ov);
+}
+
+void CStdMultimediaTimerProc::Set()
+{
+	struct itimerspec nv, ov;
+	timerfd_gettime(fd, &nv);
+	nv.it_value.tv_sec = 0;
+	nv.it_value.tv_nsec = 1;
+	timerfd_settime(fd, 0, &nv, &ov);
+}
+
+bool CStdMultimediaTimerProc::CheckAndReset()
+{
+	uint64_t n;
+	return read(fd, &n, 8) != -1;
+}
+
+void CStdMultimediaTimerProc::GetFDs(std::vector<struct pollfd> & checkfds)
+{
+	pollfd pfd = { fd, POLLIN, 0 };
+	checkfds.push_back(pfd);
+}
 #endif

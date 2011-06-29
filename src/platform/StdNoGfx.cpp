@@ -17,27 +17,30 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdNoGfx.h>
+#include <StdMeshMaterial.h>
 
 CStdNoGfx::CStdNoGfx()
-	{
+{
 	Default();
-	}
+}
 
 CStdNoGfx::~CStdNoGfx()
-	{
-	delete lpPrimary; lpPrimary = NULL;
+{
 	Clear();
-	}
+}
 
 bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
-	{
+{
 	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
-	// Create dummy surface
-	lpPrimary = lpBack = new CSurface();
-	MaxTexSize = 64;
+	MaxTexSize = 2147483647;
 	return true;
-	}
+}
+
+bool CStdNoGfx::PrepareMaterial(StdMeshMaterial& mesh)
+{
+   	mesh.BestTechniqueIndex=0; return true;
+}
+

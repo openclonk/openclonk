@@ -1,0 +1,16 @@
+If not stated otherwise, the textures are licensed under the
+CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
+
+Author				  Work(s)
+===============================================================================
+
+Newton				- coal, earth, earth_dry, gold, ice3, ore,
+					  rock, rocked_cracked, sand_rough, sulphur, tunnel, water, 
+MimmoO				- ice2, brick
+Nachtfalter			- acid, lava_red
+Dustin Senos		- earth_rough
+Andrew McConnochie	- granite
+John Talbot			- snow1
+					  source: http://www.flickr.com/photos/laserstars/2322517542/
+					  license: CC-BY 2.0
+Redwolf Design GmbH	- snow, lava
