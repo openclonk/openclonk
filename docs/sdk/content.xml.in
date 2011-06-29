@@ -51,7 +51,6 @@
 	document.body.className = 'toggleinvisi';
 ]]>
 </script>
-
 <h>Contents</h>
 <part>
 <ul class="contents">
@@ -59,9 +58,9 @@
 	<img id='tgl1' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(1)' ondblclick='ta(1)' />
 	Developer mode
 	<ul id='brn1'>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<li><img src='../images/bullet_sheet.png' alt='-' /> 
 		<emlink href="console.html">Engine</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
+		<li><img src='../images/bullet_sheet.png' alt='-' /> 
 		<emlink href="cmdline.html">Command Line Parameters</emlink></li>
 	</ul>
 	</li>
