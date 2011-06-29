@@ -21,7 +21,7 @@ stylesheet = clonk.xsl
 sdk-dirs := $(shell find sdk -name '.*' -prune -o -type d -print)
 
 # misc
-extra-files := $(sort $(wildcard *.css *.php *.js images/*.*) sdk/.htaccess)
+extra-files := $(sort $(wildcard *.css *.php *.js images/*.*))
 extra-files-chm := $(sort $(wildcard *.css *.js images/*.*))
 
 # find all *.xml files recursively in sdk/
