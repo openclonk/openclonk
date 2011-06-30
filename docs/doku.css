@@ -25,12 +25,10 @@ body {
 }
 
 #toc {
-	margin: 10px;
+	padding-left: 1em;
 }
 
 #toc h2 {
-	margin-top: 0px;
-	padding-top: 0px;
 	margin-bottom: 10px;
 }
 
@@ -41,6 +39,9 @@ body {
 div.fnsyntax {
 	text-indent: -1em;
 	margin-left: 1em;
+}
+
+#toc {
 }
 
 #content {
@@ -181,6 +182,7 @@ ul.contents li a {
 }
 ul.contents img {
 	vertical-align: middle;
+	margin-right: 4px;
 }
 ul.contents a {
 	color: navy; 
@@ -210,7 +212,7 @@ ul.contents ul li:not(:last-child)::after {
 .collapseimg {
 	cursor: pointer;
 }
-.toggleinvisi .invisi {
+.toggleinvisi li.invisi > ul {
 	display: none;
 }
 

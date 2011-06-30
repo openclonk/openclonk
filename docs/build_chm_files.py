@@ -150,20 +150,13 @@ def printcontents2(f, _):
     f.write('      </UL>\n')
 
 def printcontents3(f, _):
-    ihack = [1000]
     def folder(name):
-        i = str(ihack[0])
-        f.write("<li><img id='tgl" + i + "' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(" + i + ")' ondblclick='ta(" + i + ")' />\n" +
-            name + "\n" +
-            "<ul id='brn" + i + "' class='invisi'>\n")
-        ihack[0] = ihack[0] + 1
+        f.write("<li>" + name + "\n<ul>\n")
     def sheet(url, name):
-        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
-            "<emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
+        f.write("<li><emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
     def sheetE(url, name):
-        f.write("<li><img src='../images/bullet_sheet.png' alt='' />\n" +
-            "<emlink href='" + url[4:] + "'>" + name + "</emlink> (erweitert)</li>\n")
-    folder("Funktionen nach Kategorie")
+        f.write("<li><emlink href='" + url[4:] + "'>" + name + "</emlink> (extended)</li>\n")
+    folder("Functions by Category")
     cats = parser.cats.keys()
     cats.sort()
     for cat in cats:
@@ -183,7 +176,7 @@ def printcontents3(f, _):
             sheet(parser.cats[cat][title] + '#' + _(title), _(title))
         f.write('</ul></li>\n')
     f.write('</ul></li>\n')
-    folder("Funktionen nach Version")
+    folder("Functions by Version")
     versions = parser.versions.keys()
     versions.sort()
     for version in versions:

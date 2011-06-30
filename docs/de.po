@@ -3,24 +3,24 @@
 # PeterW <Peter.Wortmann@gmx.de>
 # Sven2 <sven2@goldwipf.de>
 # Armin Burgmeier <armin@arbur.net>, 2010.
-# Günther Brammer <gbrammer@gmx.de>, 2009, 2010.
+# Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-29 16:20+0200\n"
-"PO-Revision-Date: 2010-11-24 22:17+0100\n"
+"POT-Creation-Date: 2011-06-30 18:47+0200\n"
+"PO-Revision-Date: 2011-06-30 18:38+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
+"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: German\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sdk/content.xml.in:5(title)
-#: sdk/content.xml.in:54(h1)
+#: sdk/content.xml.in:54(h)
 #: sdk/script/fn/ShiftContents.xml:9(subcat)
 #: sdk/script/fn/ScrollContents.xml:9(subcat)
 #: sdk/script/fn/GrabContents.xml:9(subcat)
@@ -31,37 +31,37 @@ msgstr ""
 msgid "Contents"
 msgstr "Inhalt"
 
-#: sdk/content.xml.in:62(emlink)
+#: sdk/content.xml.in:59(emlink)
 #: sdk/console.xml:7(h)
 msgid "Engine"
 msgstr "Engine"
 
-#: sdk/content.xml.in:64(emlink)
+#: sdk/content.xml.in:60(emlink)
 #: sdk/cmdline.xml:6(title)
 #: sdk/cmdline.xml:7(h)
 msgid "Command Line Parameters"
 msgstr "Kommandozeilenparameter"
 
 #: sdk/content.xml.in:57(li)
-msgid "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Developer mode <placeholder-1/>"
-msgstr "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Entwicklermodus <placeholder-1/>"
+msgid "Developer Mode <placeholder-1/>"
+msgstr "Entwicklermodus <placeholder-1/>"
 
-#: sdk/content.xml.in:69(emlink)
+#: sdk/content.xml.in:63(emlink)
 msgid "Game content"
 msgstr "Spielinhalt"
 
-#: sdk/content.xml.in:73(emlink)
+#: sdk/content.xml.in:65(emlink)
 #: sdk/definition/index.xml:6(title)
 #: sdk/definition/index.xml:7(h)
 msgid "Object Definitions"
 msgstr "Objektdefinitionen"
 
-#: sdk/content.xml.in:77(emlink)
+#: sdk/content.xml.in:67(emlink)
 #: sdk/definition/defcore.xml:7(h)
 msgid "DefCore"
 msgstr "DefCore"
 
-#: sdk/content.xml.in:80(emlink)
+#: sdk/content.xml.in:69(emlink)
 #: sdk/script/fn/SetCategory.xml:9(subcat)
 #: sdk/script/fn/GetCategory.xml:9(subcat)
 #: sdk/script/fn/C4D_Vehicle.xml:9(subcat)
@@ -78,7 +78,7 @@ msgstr "DefCore"
 msgid "Category"
 msgstr "Kategorie"
 
-#: sdk/content.xml.in:82(emlink)
+#: sdk/content.xml.in:70(emlink)
 #: sdk/script/fn/OCF_Rotate.xml:9(subcat)
 #: sdk/script/fn/OCF_Prey.xml:9(subcat)
 #: sdk/script/fn/OCF_OnFire.xml:9(subcat)
@@ -110,7 +110,7 @@ msgstr "Kategorie"
 msgid "OCF"
 msgstr "OCF"
 
-#: sdk/content.xml.in:84(emlink)
+#: sdk/content.xml.in:71(emlink)
 #: sdk/script/fn/VerticesStuck.xml:9(subcat)
 #: sdk/script/fn/SetVertexXY.xml:9(subcat)
 #: sdk/script/fn/SetVertex.xml:9(subcat)
@@ -123,31 +123,31 @@ msgstr "OCF"
 msgid "Vertices"
 msgstr "Vertices"
 
-#: sdk/content.xml.in:86(emlink)
+#: sdk/content.xml.in:72(emlink)
 #: sdk/definition/cnat.xml:6(title)
 #: sdk/definition/cnat.xml:7(h)
 msgid "CNAT - Contact Attachment"
 msgstr "CNAT - Contact Attachment"
 
-#: sdk/content.xml.in:91(emlink)
+#: sdk/content.xml.in:75(emlink)
 #: sdk/definition/script.xml:21(h)
 #: sdk/definition/actmap.xml:6(title)
 #: sdk/definition/actmap.xml:7(h)
 msgid "ActMap"
 msgstr "ActMap"
 
-#: sdk/content.xml.in:94(emlink)
+#: sdk/content.xml.in:77(emlink)
 #: sdk/definition/procedures.xml:6(title)
 #: sdk/definition/procedures.xml:7(h)
 msgid "Procedures"
 msgstr "Prozeduren"
 
-#: sdk/content.xml.in:98(emlink)
-#: sdk/content.xml.in:114(emlink)
+#: sdk/content.xml.in:80(emlink)
+#: sdk/content.xml.in:89(emlink)
 msgid "Scripts"
 msgstr "Scripte"
 
-#: sdk/content.xml.in:100(emlink)
+#: sdk/content.xml.in:81(emlink)
 #: sdk/script/fn/SetProperty.xml:9(subcat)
 #: sdk/script/fn/GetProperty.xml:9(subcat)
 #: sdk/particle/index.xml:161(h)
@@ -157,44 +157,44 @@ msgstr "Scripte"
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: sdk/content.xml.in:102(emlink)
+#: sdk/content.xml.in:82(emlink)
 msgid "Particles"
 msgstr "Partikel"
 
-#: sdk/content.xml.in:107(emlink)
+#: sdk/content.xml.in:85(emlink)
 #: sdk/scenario/index.xml:6(title)
 #: sdk/scenario/index.xml:7(h)
 msgid "Scenarios"
 msgstr "Szenarien"
 
-#: sdk/content.xml.in:110(emlink)
+#: sdk/content.xml.in:87(emlink)
 msgid "Scenario"
 msgstr "Szenario"
 
-#: sdk/content.xml.in:112(emlink)
+#: sdk/content.xml.in:88(emlink)
 #: sdk/scenario/MapCreatorS2.xml:6(title)
 #: sdk/scenario/MapCreatorS2.xml:7(h)
 msgid "Map Generator"
 msgstr "Kartengenerator"
 
-#: sdk/content.xml.in:119(emlink)
+#: sdk/content.xml.in:92(emlink)
 #: sdk/material/ocm.xml:348(col)
 msgid "Materials"
 msgstr "Materialien"
 
-#: sdk/content.xml.in:122(emlink)
+#: sdk/content.xml.in:94(emlink)
 msgid "Definitions"
 msgstr "Definitionen"
 
-#: sdk/content.xml.in:130(emlink)
+#: sdk/content.xml.in:99(emlink)
 msgid "Internationalization"
 msgstr "Sprachanpassung"
 
-#: sdk/content.xml.in:125(li)
-msgid "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Internationalization <placeholder-1/>"
-msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Sprachanpassung <placeholder-1/>"
+#: sdk/content.xml.in:97(li)
+msgid "Internationalization <placeholder-1/>"
+msgstr "Sprachanpassung <placeholder-1/>"
 
-#: sdk/content.xml.in:137(emlink)
+#: sdk/content.xml.in:104(emlink)
 #: sdk/script/index.xml:6(title)
 #: sdk/script/index.xml:7(h)
 #: sdk/script/fn/while.xml:8(category)
@@ -228,7 +228,7 @@ msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png
 msgid "Script"
 msgstr "Script"
 
-#: sdk/content.xml.in:140(emlink)
+#: sdk/content.xml.in:106(emlink)
 #: sdk/script/index.xml:16(h)
 #: sdk/script/index.xml:37(emlink)
 #: sdk/script/Funcs.xml:6(title)
@@ -236,18 +236,18 @@ msgstr "Script"
 msgid "Functions"
 msgstr "Funktionen"
 
-#: sdk/content.xml.in:142(emlink)
+#: sdk/content.xml.in:107(emlink)
 msgid "Function Call"
 msgstr "Funktionsaufruf"
 
-#: sdk/content.xml.in:144(emlink)
+#: sdk/content.xml.in:108(emlink)
 #: sdk/script/index.xml:39(emlink)
 #: sdk/script/Typechecks.xml:6(title)
 #: sdk/script/Typechecks.xml:7(h)
 msgid "Data Types"
 msgstr "Datentypen"
 
-#: sdk/content.xml.in:146(emlink)
+#: sdk/content.xml.in:109(emlink)
 #: sdk/script/fn/IsRef.xml:8(category)
 #: sdk/script/fn/GetType.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:8(category)
@@ -262,7 +262,7 @@ msgstr "Datentypen"
 msgid "Variables"
 msgstr "Variablen"
 
-#: sdk/content.xml.in:148(emlink)
+#: sdk/content.xml.in:110(emlink)
 #: sdk/script/operatoren.xml:6(title)
 #: sdk/script/operatoren.xml:7(h)
 #: sdk/script/fn/if.xml:31(emlink)
@@ -270,24 +270,24 @@ msgstr "Variablen"
 msgid "Operators"
 msgstr "Operatoren"
 
-#: sdk/content.xml.in:150(emlink)
+#: sdk/content.xml.in:111(emlink)
 #: sdk/script/Funcs.xml:41(emlink)
 #: sdk/script/Funcs.xml:107(emlink)
 msgid "for"
 msgstr "for"
 
-#: sdk/content.xml.in:152(emlink)
+#: sdk/content.xml.in:112(emlink)
 #: sdk/script/index.xml:43(emlink)
 msgid "Loop Control"
 msgstr "Befehle zur Schleifenkontrolle"
 
-#: sdk/content.xml.in:154(emlink)
+#: sdk/content.xml.in:113(emlink)
 #: sdk/script/AppendTo.xml:6(title)
 #: sdk/script/AppendTo.xml:7(h)
 msgid "#appendto"
 msgstr "#appendto"
 
-#: sdk/content.xml.in:156(emlink)
+#: sdk/content.xml.in:114(emlink)
 #: sdk/script/index.xml:45(emlink)
 #: sdk/script/fn/Sound.xml:8(category)
 #: sdk/script/fn/Smoke.xml:9(subcat)
@@ -303,12 +303,12 @@ msgstr "#appendto"
 msgid "Effects"
 msgstr "Effekte"
 
-#: sdk/content.xml.in:158(emlink)
+#: sdk/content.xml.in:115(emlink)
 #: sdk/script/index.xml:46(emlink)
 msgid "Querying Game Data"
 msgstr "Abfrage von Spieldaten"
 
-#: sdk/content.xml.in:160(emlink)
+#: sdk/content.xml.in:116(emlink)
 msgid "Script Players"
 msgstr "Scriptspieler"
 
@@ -316,6 +316,14 @@ msgstr "Scriptspieler"
 #: extra-strings.xml:5(text)
 msgid "extended"
 msgstr "erweitert"
+
+#: extra-strings.xml:6(li)
+msgid "Functions by Category <placeholder-1/>"
+msgstr "Funktionen nach Kategorie <placeholder-1/>"
+
+#: extra-strings.xml:8(li)
+msgid "Functions by Version <placeholder-1/>"
+msgstr "Funktionen nach Version <placeholder-1/>"
 
 #: sdk/script/operatoren.xml:9(text)
 msgid "C4Script nowadays supports most operators known from other programming languages (C/C++ style) or mathematics."
@@ -1716,8 +1724,8 @@ msgid "String to compare."
 msgstr "String, der überprüft werden soll."
 
 #: sdk/script/fn/WildcardMatch.xml:26(desc)
-msgid "Returns whether to strings are equal. The comparison is case sensitive and wildcards are supported."
-msgstr "Prüft, ob zwei Strings gleich sind. Die Prüfung ist case-sensitiv, außerdem können Wildcards benutzt werden."
+msgid "Returns whether two strings are equal. The comparison is case sensitive and wildcards are supported."
+msgstr "Prüft, ob zwei Strings gleich sind. Die Prüfung beachtet Groß- und Kleinschreibung, außerdem können Wildcards benutzt werden."
 
 #: sdk/script/fn/WildcardMatch.xml:27(remark)
 msgid "A * can represent any number of unknown characters (including none). A ? represents exactly one unknown character."
@@ -1769,8 +1777,8 @@ msgid "Returns the number of stuck vertices of *obj"
 msgstr "Liefert die Anzahl feststeckender Vertices von *obj"
 
 #: sdk/script/fn/VerticesStuck.xml:27(text)
-msgid "Removes obj if one if its vertices is stuck."
-msgstr "Entfernt obj wenn einer seiner Vertices feststeckt"
+msgid "Removes obj if two or more of its vertices are stuck."
+msgstr "Entfernt obj wenn zwei oder mehr seiner Vertices feststecken."
 
 #: sdk/script/fn/VIS_Owner.xml:9(subcat)
 #: sdk/script/fn/VIS_None.xml:9(subcat)
@@ -1789,83 +1797,15 @@ msgstr "Sichtbarkeit"
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for its owner."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für den Besitzer sichtbar."
 
-#: sdk/script/fn/VIS_Owner.xml:13(remark)
-#: sdk/script/fn/VIS_None.xml:13(remark)
-#: sdk/script/fn/VIS_Local.xml:13(remark)
-#: sdk/script/fn/VIS_God.xml:13(remark)
-#: sdk/script/fn/VIS_Enemies.xml:13(remark)
-#: sdk/script/fn/VIS_Allies.xml:13(remark)
-#: sdk/script/fn/VIS_All.xml:13(remark)
-#: sdk/script/fn/SkyPar_Keep.xml:12(remark)
-#: sdk/script/fn/OCF_Rotate.xml:13(remark)
-#: sdk/script/fn/OCF_Prey.xml:13(remark)
-#: sdk/script/fn/OCF_OnFire.xml:13(remark)
-#: sdk/script/fn/OCF_NotContained.xml:13(remark)
-#: sdk/script/fn/OCF_Living.xml:13(remark)
-#: sdk/script/fn/OCF_Inflammable.xml:13(remark)
-#: sdk/script/fn/OCF_InSolid.xml:13(remark)
-#: sdk/script/fn/OCF_InLiquid.xml:13(remark)
-#: sdk/script/fn/OCF_InFree.xml:13(remark)
-#: sdk/script/fn/OCF_HitSpeed4.xml:13(remark)
-#: sdk/script/fn/OCF_HitSpeed3.xml:13(remark)
-#: sdk/script/fn/OCF_HitSpeed2.xml:13(remark)
-#: sdk/script/fn/OCF_HitSpeed1.xml:13(remark)
-#: sdk/script/fn/OCF_Grab.xml:13(remark)
-#: sdk/script/fn/OCF_Fullcon.xml:13(remark)
-#: sdk/script/fn/OCF_Exclusive.xml:13(remark)
-#: sdk/script/fn/OCF_Entrance.xml:13(remark)
-#: sdk/script/fn/OCF_Edible.xml:13(remark)
-#: sdk/script/fn/OCF_CrewMember.xml:13(remark)
-#: sdk/script/fn/OCF_Container.xml:13(remark)
-#: sdk/script/fn/OCF_Construct.xml:13(remark)
-#: sdk/script/fn/OCF_Collection.xml:13(remark)
-#: sdk/script/fn/OCF_Collectible.xml:13(remark)
-#: sdk/script/fn/OCF_Chop.xml:13(remark)
-#: sdk/script/fn/OCF_Available.xml:13(remark)
-#: sdk/script/fn/OCF_AttractLightning.xml:13(remark)
-#: sdk/script/fn/OCF_Alive.xml:13(remark)
-#: sdk/script/fn/NO_OWNER.xml:12(remark)
-#: sdk/script/fn/DIR_Right.xml:13(remark)
-#: sdk/script/fn/DIR_Left.xml:13(remark)
-#: sdk/script/fn/COMD_UpRight.xml:13(remark)
-#: sdk/script/fn/COMD_UpLeft.xml:13(remark)
-#: sdk/script/fn/COMD_Up.xml:13(remark)
-#: sdk/script/fn/COMD_Stop.xml:13(remark)
-#: sdk/script/fn/COMD_Right.xml:13(remark)
-#: sdk/script/fn/COMD_None.xml:13(remark)
-#: sdk/script/fn/COMD_Left.xml:13(remark)
-#: sdk/script/fn/COMD_DownRight.xml:13(remark)
-#: sdk/script/fn/COMD_DownLeft.xml:13(remark)
-#: sdk/script/fn/COMD_Down.xml:13(remark)
-#: sdk/script/fn/C4V_String.xml:12(remark)
-#: sdk/script/fn/C4V_PropList.xml:12(remark)
-#: sdk/script/fn/C4V_Nil.xml:12(remark)
-#: sdk/script/fn/C4V_Int.xml:12(remark)
-#: sdk/script/fn/C4V_C4Object.xml:12(remark)
-#: sdk/script/fn/C4V_Bool.xml:12(remark)
-#: sdk/script/fn/C4V_Array.xml:12(remark)
-#: sdk/script/fn/C4D_Vehicle.xml:13(remark)
-#: sdk/script/fn/C4D_Structure.xml:13(remark)
-#: sdk/script/fn/C4D_StaticBack.xml:13(remark)
-#: sdk/script/fn/C4D_Rule.xml:13(remark)
-#: sdk/script/fn/C4D_Parallax.xml:13(remark)
-#: sdk/script/fn/C4D_Object.xml:13(remark)
-#: sdk/script/fn/C4D_Living.xml:13(remark)
-#: sdk/script/fn/C4D_Goal.xml:13(remark)
-#: sdk/script/fn/C4D_Background.xml:13(remark)
-#: sdk/script/fn/C4D_All.xml:13(remark)
-msgid "This value is also defined as a constant. Thus the parameter brackets can be omitted."
-msgstr "Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden."
-
-#: sdk/script/fn/VIS_Owner.xml:17(text)
-msgid "Makes all selected clonks visible for their owners only."
-msgstr "Macht alle gesteuerten Clonks nur noch für ihre Besitzer sichtbar."
+#: sdk/script/fn/VIS_Owner.xml:16(text)
+msgid "Makes all clonks that are in a crew visible for their owners only."
+msgstr "Macht alle Clonks in Crews nur noch für ihre Besitzer sichtbar."
 
 #: sdk/script/fn/VIS_None.xml:12(desc)
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is not visible for anybody."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für niemanden sichtbar."
 
-#: sdk/script/fn/VIS_None.xml:17(text)
+#: sdk/script/fn/VIS_None.xml:16(text)
 msgid "Makes all wipfs invisible."
 msgstr "Macht alle Wipfe unsichtbar."
 
@@ -1873,15 +1813,15 @@ msgstr "Macht alle Wipfe unsichtbar."
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object's visibility depends on the values in the object's indexed local variables. Each local variable may contain bits for 32 players in a bit mask."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Die Sichtbarkeit eines Objekts richtet sich jeweils nach den unbenannten, lokalen Variablen in diesem Objekt. Dabei können in jeder lokalen Variable 32 Spieler in einer Bitmaske festgelegt werden."
 
-#: sdk/script/fn/VIS_Local.xml:17(text)
+#: sdk/script/fn/VIS_Local.xml:16(text)
 msgid "The calling object is only visible for players 0 and 3."
 msgstr "Das aufrufende Objekt ist nur noch für Spieler 0 und Spieler 3 sichtbar"
 
-#: sdk/script/fn/VIS_Local.xml:21(text)
+#: sdk/script/fn/VIS_Local.xml:20(text)
 msgid "The calling object is only visible for player 33."
 msgstr "Das aufrufende Objekt ist nur noch für Spieler 33 sichtbar"
 
-#: sdk/script/fn/VIS_Local.xml:25(text)
+#: sdk/script/fn/VIS_Local.xml:24(text)
 msgid "The calling object will be visible to its owner only (same as <placeholder-1/>)."
 msgstr "Das aufrufende Objekt ist nur noch von seinem Besitzer sichtbar (entspricht <placeholder-1/>)"
 
@@ -1889,15 +1829,15 @@ msgstr "Das aufrufende Objekt ist nur noch von seinem Besitzer sichtbar (entspri
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is only visible in general viewports (editor or observer viewports)."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist nur im allgemeinen Viewport (Sichtfenster im Entwicklermodus oder Spielfläche im Netzwerk ohne Spieler) sichtbar."
 
-#: sdk/script/fn/VIS_God.xml:17(text)
-msgid "A gold idol is now only visible in general viewports."
-msgstr "Eine Goldstatue ist nur noch im allgemeinen Viewport sichtbar."
+#: sdk/script/fn/VIS_God.xml:16(text)
+msgid "A chest is now only visible in general viewports."
+msgstr "Eine Truhe ist nur noch in allgemeinen Viewports sichtbar."
 
 #: sdk/script/fn/VIS_Enemies.xml:12(desc)
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all enemires of the owner."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle Feinde des Besitzers sichtbar."
 
-#: sdk/script/fn/VIS_Enemies.xml:18(text)
+#: sdk/script/fn/VIS_Enemies.xml:17(text)
 msgid "All banners are only visible for the individual enemies of their owners."
 msgstr "Alle Banner sind nur noch für die jeweiligen Gegner der besitzenden Spieler sichtbar."
 
@@ -1905,7 +1845,7 @@ msgstr "Alle Banner sind nur noch für die jeweiligen Gegner der besitzenden Spi
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all allies of the owner."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle Verbündeten des Besitzers sichtbar."
 
-#: sdk/script/fn/VIS_Allies.xml:17(text)
+#: sdk/script/fn/VIS_Allies.xml:16(text)
 msgid "Makes all selected clonks visible to their owners or their allies only."
 msgstr "Macht alle gesteuerten Clonks nur noch für ihre Besitzer und deren Verbündete sichtbar."
 
@@ -1913,7 +1853,7 @@ msgstr "Macht alle gesteuerten Clonks nur noch für ihre Besitzer und deren Verb
 msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all. This is the default value 0 and kann logically not be combined with other VIS_x values."
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle sichtbar. Dieser Wert entspricht 0, und kann logischerweise nicht mit anderen VIS_x-Werten kombiniert werden."
 
-#: sdk/script/fn/VIS_All.xml:17(text)
+#: sdk/script/fn/VIS_All.xml:16(text)
 msgid "Makes all objects visible."
 msgstr "Macht alle Objekte sichtbar."
 
@@ -1925,9 +1865,17 @@ msgstr "Zeichenkette, die übersetzt werden soll"
 msgid "Looks up a text in <emlink href=\"lang.html\">StringTbl??.txt</emlink> of the calling script and returns its translation."
 msgstr "Schlägt einen Text in der <emlink href=\"lang.html\">StringTbl??.txt</emlink> des aufrufenden Skripts nach, und gibt die Übersetzung zurück."
 
-#: sdk/script/fn/Translate.xml:25(text)
-msgid "Displays \"Ich benötige ein besseres Beispiel\" for German users."
-msgstr "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
+#: sdk/script/fn/Translate.xml:24(text)
+msgid "Assuming the StringTblUS.txt of a clonk looks like this:"
+msgstr "Angenommen, die StringTblUS.txt eines Clonks sieht so aus:"
+
+#: sdk/script/fn/Translate.xml:29(text)
+msgid "With Translate(), the string id that should be displayed can be constructed during runtime:"
+msgstr "Mit Translate() kann die anzuzeigende String-ID zur Laufzeit konstruiert werden:"
+
+#: sdk/script/fn/Translate.xml:34(text)
+msgid "When the clonk catches fire, the engine calls Incineration() in the clonk and in this example, one of the four above messages is displayed at random."
+msgstr "Wenn der Clonk anfängt zu brennen, die Engine ruft Incineration() im Clonk auf. In diesem Beispiel wird eine der obigen vier Nachrichten zufällig angezeigt."
 
 #: sdk/script/fn/Trans_Translate.xml:8(category)
 #: sdk/script/fn/Trans_Scale.xml:8(category)
@@ -2164,15 +2112,16 @@ msgstr "Mit dem Scriptprofiler lässt sich messen, wie viel Rechenzeit die Scrip
 msgid "The script profiler is used by first entering <placeholder-1/> e.g. at the script command line when running the engine in developer mode. After a while, <placeholder-2/> is entered and the result is printed to the log, e.g. as follows:"
 msgstr "Zunächst wird der Profiler gestartet, indem man irgendwo <placeholder-1/> ausführt - zum Beispiel im Konsolenfenster, wenn die Engine im Entwicklermodus gestartet wird. Nach einer Weile Spiel führt man dann <placeholder-2/> aus, und erhält zum Beispiel folgende Ausgabe im Log:"
 
-#: sdk/script/fn/StopScriptProfiler.xml:35(text)
-msgid "This output shows that explosions are the parts which are taking longest to execute. \"global Explode\" ist the globally defined script function Explode(). In second place is the impact function of the Superflint, SFLN::Hit. Notice that all execution times of a script function always include the execution time of all subroutines or functions called therein. The time taken in Explode is thus also included in SFLN::Hit. Functions calling themselves recursively will add to the execution time in the same way."
+#: sdk/script/fn/StopScriptProfiler.xml:27(text)
+#, fuzzy
+msgid "This output shows that explosions are the parts which are taking longest to execute. \"global Explode\" ist the globally defined script function Explode(). In second place is the impact function of the Superflint, Firestone::Hit. Notice that all execution times of a script function always include the execution time of all subroutines or functions called therein. The time taken in Explode is thus also included in Firestone::Hit. Functions calling themselves recursively will add to the execution time in the same way."
 msgstr "In dieser Ausgabe sieht man, dass die größte Scriptbremse Explosionen sind. \"global Explode\" ist die Funktion Explode, die irgendwo global im Script definiert ist. Auf Platz zwei steht die Auftrefffunktion vom Superflint (SFLN::Hit). Hierbei ist zu beachten, dass alle Unteraufrufe von Scriptfunktionen auch immer mit einbezogen werden. Die rechenintesiven Explode-Aufrufe schlagen also sowohl in \"global Explode\", als auch in \"SFLN::Hit\" zu Buche. Rekursiv sich selbst aufrufende Funktionen zählen sich entsprechend auch für jede Rekursion doppelt."
 
-#: sdk/script/fn/StopScriptProfiler.xml:36(text)
+#: sdk/script/fn/StopScriptProfiler.xml:28(text)
 msgid "\"game DeployPlayer\" is a call in the scenario script. \"Direct exec\" is the sum of all scripts compiled and executed at run time. This may include <placeholder-1/> or menu callbacks."
 msgstr "\"game DeployPlayer\" ist ein Aufruf im Szenarienscript. \"Direct exec\" ist die Summe aller zur Laufzeit kompiliierten und ausgeführten Scripte. Das sind zum Beispiel <placeholder-1/> oder Menü-Callbacks."
 
-#: sdk/script/fn/StopScriptProfiler.xml:37(text)
+#: sdk/script/fn/StopScriptProfiler.xml:29(text)
 msgid "Notice that scripting functions may not be the only parts causing program execution to slow down. If an object creates large numbers of particles, this can also slow down the game without causing extra scripting execution time. Large numbers of objects would cause similar delays."
 msgstr "Es ist zu beachten, dass rechenintensive Scripte nicht die einzigen Bremsen im Spiel sind. Wenn ein Objekt zum Beispiel sehr viele Partikel erzeugt, kann dies das Spiel bremsen, ohne in der Scriptengine aufzutauchen. Ein anderes Beispiel wäre das Erzeugen von sehr vielen Objekten."
 
@@ -2262,28 +2211,14 @@ msgstr "Berechnet den Abstand zwischen zwei Objekten nach dem Satz des Pythagora
 msgid "32 bit color value"
 msgstr "32Bit-Farbwert"
 
-#: sdk/script/fn/SplitRGBaValue.xml:21(desc)
-msgid "[opt] variable in which the red value is to be stored"
-msgstr "[opt] Variable, in der der Rotanteil gespeichert werden soll"
-
-#: sdk/script/fn/SplitRGBaValue.xml:26(desc)
-msgid "[opt] variable in which the green value is to be stored"
-msgstr "[opt] Variable, in der der Grünanteil gespeichert werden soll"
-
-#: sdk/script/fn/SplitRGBaValue.xml:31(desc)
-msgid "[opt] variable in which the blue value is to be stored"
-msgstr "[opt] Variable, in der der Blauanteil gespeichert werden soll"
-
-#: sdk/script/fn/SplitRGBaValue.xml:36(desc)
-msgid "[opt] variable in which the alpha value is to be stored"
-msgstr "[opt] Variable, in der der Alpha-Wert gespeichert werden soll"
-
-#: sdk/script/fn/SplitRGBaValue.xml:40(desc)
-msgid "Writes the red, green, blue, and alpha values of a 32 bit color value to the specified variables."
+#: sdk/script/fn/SplitRGBaValue.xml:20(desc)
+#, fuzzy
+msgid "Returns an array with the red, green, blue, and alpha values of the specified 32 bit color value: [red, green, blue, alpha]"
 msgstr "Zerstückelt den 32Bit-Farbwert und schreibt die einzelnen Farbwerte in die jeweiligen angegeben Variablen."
 
-#: sdk/script/fn/SplitRGBaValue.xml:47(text)
-msgid "Displays the three color values of the currently selected clonk above the clonk's head."
+#: sdk/script/fn/SplitRGBaValue.xml:26(text)
+#, fuzzy
+msgid "Displays the four color values of the currently selected clonk above the clonk's head."
 msgstr "Schreibt die 3 Farbwerte des aktuell ausgewählten Clonks als Text über den Clonk"
 
 #: sdk/script/fn/Split2Components.xml:9(subcat)
@@ -2294,21 +2229,18 @@ msgstr "Schreibt die 3 Farbwerte des aktuell ausgewählten Clonks als Text über
 msgid "Existence"
 msgstr "Existenz"
 
-#: sdk/script/fn/Split2Components.xml:17(desc)
-msgid "Object to be split. Can be 0 in local calls."
-msgstr "Objekt, das zerlegt werden soll. 0 bei lokalem Aufruf."
-
-#: sdk/script/fn/Split2Components.xml:22(desc)
+#: sdk/script/fn/Split2Components.xml:14(desc)
 msgid "Splits an object into its components. The new component objects will be created with random rotation and a low speed in random direction at the position at which the object was located. The original object is removed. If the original object was contained, the new component objects will be created in the original container."
 msgstr "Zerlegt ein Objekt in seine Bestandteile. Die Bestandteile werden in zufälliger Drehung und mit geringer Geschwindigkeit in zufälliger Richtung an der Stelle erzeugt, an der sich das Objekt befand. Das Objekt wird anschließend vernichtet. Wenn sich das Objekt in einem Behälter befand, werden auch die Komponenten nach der Erschaffung in den Behälter versetzt."
 
-#: sdk/script/fn/Split2Components.xml:23(remark)
+#: sdk/script/fn/Split2Components.xml:15(remark)
 #: sdk/script/fn/Explode.xml:34(remark)
 msgid "See notice for <placeholder-1/>."
 msgstr "Siehe Hinweis zu <placeholder-1/>."
 
-#: sdk/script/fn/Split2Components.xml:33(text)
-msgid "Script for a clonk: He splits the first object he carries on double dig."
+#: sdk/script/fn/Split2Components.xml:25(text)
+#, fuzzy
+msgid "Script for a tool: It splits the first object it finds at it's position on usage."
 msgstr "Script für einen Clonk: Auf Doppelgraben zerlegt er das erste Objekt, das er trägt."
 
 #: sdk/script/fn/Sound.xml:16(desc)
@@ -2336,7 +2268,8 @@ msgid "Plays a sound. The specified sound file has to be available in the group 
 msgstr "Spielt einen Sound ab. Die entsprechende Sounddatei muss in der Gruppendatei Sound.ocg, in der aktiven Szenariodatei oder in einer geladenen Objektdefinition vorhanden sein. Bei lokalen Aufrufen werden Geräusche abhängig von der aktuellen Position des aufrufenden Objekts abgespielt."
 
 #: sdk/script/fn/Sound.xml:48(text)
-msgid "Plays an 'applause' sound next to the first found wooden hut at half volume."
+#, fuzzy
+msgid "Plays a 'Fanfare' sound next to the first found wind generator at half volume."
 msgstr "Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halber Lautstärke ab."
 
 #: sdk/script/fn/Sort_Value.xml:9(subcat)
@@ -2438,7 +2371,8 @@ msgid "Additional search criteria in the form of Sort_* functions"
 msgstr "Weitere Sortierkriterien in Form von Sort_*-Funktionen"
 
 #: sdk/script/fn/Sort_Multiple.xml:27(desc)
-msgid "Sort criterion: Ermöglicht das Sortieren nach mehreren Kriterien. Das erste Kriterium hat höchste Priorität."
+#, fuzzy
+msgid "Sort criterion: Makes it possible to sort with several criterions. The first criterion has the highest priority."
 msgstr "Sort criterion: Allows to sort for multiple criteria. The first criterion has highest priority."
 
 #: sdk/script/fn/Sort_Mass.xml:12(desc)
@@ -2647,20 +2581,17 @@ msgstr "Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen is
 msgid "Menu"
 msgstr "Menü"
 
-#: sdk/script/fn/ShowInfo.xml:17(desc)
-msgid "Object for which to display information. If unspecified, the calling object will be used."
-msgstr "Objekt, zu dem Informationen angezeigt werden sollen. Bei 0 wird das aufrufende Objekt verwendet."
-
-#: sdk/script/fn/ShowInfo.xml:22(desc)
+#: sdk/script/fn/ShowInfo.xml:14(desc)
 msgid "Displays the description text of an object in a popup window (a menu window)."
 msgstr "Zeigt die Beschreibung eines Objekts in einem kleinen Informationsfenster (intern ein Menü) beim aufrufenden Objekt an."
 
-#: sdk/script/fn/ShowInfo.xml:23(remark)
+#: sdk/script/fn/ShowInfo.xml:15(remark)
 msgid "The information window's background will be the definition image of the obect."
 msgstr "Die Informationsbox wird mit dem Bild des Objekts hinterlegt."
 
-#: sdk/script/fn/ShowInfo.xml:31(text)
-msgid "A feature for a special clonk: pressing the 'special' key will display the description of the first inventory item in a popup window. If the clonk does not carry any objects, the clonk's own description will be displayed."
+#: sdk/script/fn/ShowInfo.xml:23(text)
+#, fuzzy
+msgid "A feature for a special clonk: pressing a (to be defined) 'special' key will display the description of the first inventory item in a popup window."
 msgstr "Funktion für einen Spezialclonk: Auf Druck auf die Spezialtaste zeigt er die Beschreibung zum ersten Inhaltsobjekt in einem kleinen Fenster an. Trägt der Clonk kein Objekt, wird seine eigene Beschreibung angezeigt."
 
 #: sdk/script/fn/ShiftContents.xml:17(desc)
@@ -2686,14 +2617,6 @@ msgstr "Der Befehl ruft im Behälter ControlContents auf, womit die Umsortierung
 #: sdk/script/fn/ShiftContents.xml:36(remark)
 msgid "Notice: nowadays the function ShiftContents will also play the selection sound. To avoid double playback, object scripts should take this into consideration and not play their own selection sound or move the sound playback to the ControlContents function, as seen below."
 msgstr "Achtung: Durch das neue ControlContents-System, das ein variableres Interface für die Inventarauswahl bilden soll, ruft wie beschrieben auch ShiftContents den Auswahlsound hervor. Um Dopplungen zu vermeiden, sollten Objektscripte entsprechend angepasst werden, und beim Inventarwechsel keinen eigenen Sound mehr abspielen, bzw. diesen wie im Beispiel weiter unten nach ControlContents verlagern."
-
-#: sdk/script/fn/ShiftContents.xml:45(text)
-msgid "Part of an object script. Moves the contents of an object on special key 1."
-msgstr "Teil eines Objektscripts. Verschiebt die Inhaltsobjekte eines Objekts auf Spezialtaste 1."
-
-#: sdk/script/fn/ShiftContents.xml:54(text)
-msgid "Through this object script selecting a new inventory item will play a \"Ding\" sound."
-msgstr "Durch dieses Objektscript verursacht das Auswählen eines anderen Gegenstandes im Inventar einen Ding-Sound."
 
 #: sdk/script/fn/ShakeObjects.xml:16(desc)
 msgid "X center position of the circular area to be shaken. Always global."
@@ -2772,7 +2695,6 @@ msgid "Vertical speed divided by precision."
 msgstr "Vertikale Gechwindigkeit geteilt durch precision."
 
 #: sdk/script/fn/SetYDir.xml:27(desc)
-#: sdk/script/fn/SetSpeed.xml:38(desc)
 msgid "Sets the vertical speed of the object."
 msgstr "Setzt die vertikale Geschwindigkeit des Objekts."
 
@@ -2805,8 +2727,8 @@ msgid "Temporarily sets the global wind velocity and direction."
 msgstr "Setzt die globale Windrichtung und -stärke."
 
 #: sdk/script/fn/SetWind.xml:38(text)
-msgid "Blowing clonk"
-msgstr "Pusteclonk"
+msgid "The wind always blows into the direction the cannon is pushed towards."
+msgstr ""
 
 #: sdk/script/fn/SetWealth.xml:8(category)
 #: sdk/script/fn/SetViewOffset.xml:8(category)
@@ -3110,6 +3032,11 @@ msgstr "Schockfrostet die Landschaft."
 msgid "Target object. Can be 0 in local calls."
 msgstr "Zielobjekt. Bei lokalem Aufruf Null."
 
+#: sdk/script/fn/SetSpeed.xml:38(desc)
+#, fuzzy
+msgid "Sets the speed of the object."
+msgstr "Setzt die vertikale Geschwindigkeit des Objekts."
+
 #: sdk/script/fn/SetSolidMask.xml:17(desc)
 msgid "X position of the top left corner of the new SolidMask rectangle within the definition graphic."
 msgstr "X-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik"
@@ -3228,7 +3155,8 @@ msgid "In various situations the engine will reset the object's shape to the def
 msgstr "Die Engine aktualisiert in diversen Fällen das Objektrechteck, wobei es die Definitionswerte zurückkopiert (und damit eventuelle, durch SetShape gesetzte Objektrechtecke verwirft). Die ist beispielsweise beim Ändern der Objektrotation, aber auch beim Neuladen der Spielstände der Fall. Die Funktion sollte also besser nur bei statischen, relativ unveränderten Objekten verwendet werden, und das Shape muss jeweils in einem Synchronisationsaufruf wie UpdateTransferZone neu gesetzt werden."
 
 #: sdk/script/fn/SetShape.xml:40(text)
-msgid "Enlarges the area or distance from which you can fell a tree."
+#, fuzzy
+msgid "Enlarges the area or distance from which you can chop down one coniferous tree."
 msgstr "Sorgt dafür, dass man einen Baum aus der Landschaft auch aus größerer Distanz fällen kann."
 
 #: sdk/script/fn/SetSeason.xml:17(desc)
@@ -3798,7 +3726,8 @@ msgid "Like PHYS_Temporary, but the previous physical-value will be backed up an
 msgstr "Wie PHYS_Temporary, jedoch wird zusätzlich der vorherige Physical-Wert gesichert und kann einzeln mit einem <placeholder-1/>-Aufruf wiederhergestellt werden."
 
 #: sdk/script/fn/SetPhysical.xml:27(desc)
-msgid "Physical attribute change mode (symbolical constants):<br/><placeholder-1/><br/>"
+#, fuzzy
+msgid "Physical attribute change mode:<br/><placeholder-1/><br/>"
 msgstr "Änderungsmodus (symbolische Konstanten):<br/><placeholder-1/><br/>"
 
 #: sdk/script/fn/SetPhysical.xml:62(desc)
@@ -4019,27 +3948,27 @@ msgstr "Dreht den höchstrangigsten Clonk des ersten Spielers um, so dass er auf
 msgid "Reduces the image of the object by 50% and moves the bottom edge of the reduced image to the bottom edge of the object: if you use this to reduce the image of a tree, the reduced tree will not float in mid-air but will properly rest with its roots on the ground)."
 msgstr "Verkleinert die Grafik um 50% verschiebt die Unterkante der verkleinerten Grafik an die Unterkante des Objektes: Ein so verkleinerter Baum würde nicht in der Luft schweben (weil Grafik zentriert), sondern seine Wurzel da haben wo sie auch vorher war."
 
-#: sdk/script/fn/SetName.xml:19(desc)
+#: sdk/script/fn/SetName.xml:17(desc)
 msgid "New name. If nil, the object's name is reset to the definition value or the original crew member's name."
 msgstr "Neuer Name. Wenn nil, wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt."
 
-#: sdk/script/fn/SetName.xml:24(desc)
+#: sdk/script/fn/SetName.xml:22(desc)
 msgid "For crew members only: if true, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file."
 msgstr "Nur für Crewobjekte: Wenn wahr, wird der Name permanent in der Infosektion des Spielers geändert. Namen dürfen jeweils nur einmal pro Spielerdatei vorkommen."
 
-#: sdk/script/fn/SetName.xml:30(desc)
+#: sdk/script/fn/SetName.xml:28(desc)
 msgid "Determines what should happen if a clonk of the same name already exists in the player's crew. If false, the function call will fail. If true, a unique name is created by appending a number."
 msgstr "Steuert das Verhalten, falls ein Clonk mit dem angegebenen Namen schon in der Stammcrew des Spielers existiert: Wenn unwahr, schlägt die Funktion in diesem Fall fehl. Wenn wahr, wird ein neuer Name durch Anhängen einer Zahl erzeugt."
 
-#: sdk/script/fn/SetName.xml:35(desc)
+#: sdk/script/fn/SetName.xml:33(desc)
 msgid "Changes name of an object or a definition for the duration of the round."
 msgstr "Ändert für eine Runde den Namen eines Objekts oder einer Definition."
 
-#: sdk/script/fn/SetName.xml:44(text)
+#: sdk/script/fn/SetName.xml:41(text)
 msgid "Scenario script: the highest ranking clonks of joining players get different names in this round."
 msgstr "Szenarioscript: Die höchstrangigen Clonks neu beitretender Spieler heißen in dieser Runde anders."
 
-#: sdk/script/fn/SetName.xml:51(text)
+#: sdk/script/fn/SetName.xml:48(text)
 msgid "Scenario script: In this round, wood will be called \"Baumstamm\"."
 msgstr "Szenarioscript: Holz wird in dieser Runde Baumstamm genannt."
 
@@ -4146,9 +4075,8 @@ msgid "Sets the killer of the calling object."
 msgstr "Ändert den steuernden Spieler des aufrufenden Objekts."
 
 #: sdk/script/fn/SetKiller.xml:22(remark)
-#, fuzzy
 msgid "See <placeholder-1/> for details."
-msgstr "Siehe <placeholder-1/>."
+msgstr "Siehe <placeholder-1/> für Details."
 
 #: sdk/script/fn/SetHostility.xml:16(desc)
 msgid "Player whose hostility towards another player you want to change."
@@ -5920,62 +5848,62 @@ msgstr "Wandelt eine Objektnummer in einen Objektpointer um."
 msgid "Object character flag: object can be rotated."
 msgstr "Object character flag: Objekt ist drehbar."
 
-#: sdk/script/fn/OCF_Rotate.xml:14(remark)
-#: sdk/script/fn/OCF_Prey.xml:14(remark)
-#: sdk/script/fn/OCF_OnFire.xml:14(remark)
-#: sdk/script/fn/OCF_NotContained.xml:14(remark)
-#: sdk/script/fn/OCF_Living.xml:14(remark)
-#: sdk/script/fn/OCF_Inflammable.xml:14(remark)
-#: sdk/script/fn/OCF_InSolid.xml:14(remark)
-#: sdk/script/fn/OCF_InLiquid.xml:14(remark)
-#: sdk/script/fn/OCF_InFree.xml:14(remark)
-#: sdk/script/fn/OCF_HitSpeed4.xml:14(remark)
-#: sdk/script/fn/OCF_HitSpeed3.xml:14(remark)
-#: sdk/script/fn/OCF_HitSpeed2.xml:14(remark)
-#: sdk/script/fn/OCF_HitSpeed1.xml:14(remark)
-#: sdk/script/fn/OCF_Grab.xml:14(remark)
-#: sdk/script/fn/OCF_Fullcon.xml:14(remark)
-#: sdk/script/fn/OCF_Exclusive.xml:14(remark)
-#: sdk/script/fn/OCF_Entrance.xml:14(remark)
-#: sdk/script/fn/OCF_Edible.xml:14(remark)
-#: sdk/script/fn/OCF_Container.xml:14(remark)
-#: sdk/script/fn/OCF_Construct.xml:14(remark)
-#: sdk/script/fn/OCF_Collection.xml:14(remark)
-#: sdk/script/fn/OCF_Collectible.xml:14(remark)
-#: sdk/script/fn/OCF_Chop.xml:14(remark)
-#: sdk/script/fn/OCF_Available.xml:14(remark)
-#: sdk/script/fn/OCF_AttractLightning.xml:14(remark)
-#: sdk/script/fn/OCF_Alive.xml:14(remark)
+#: sdk/script/fn/OCF_Rotate.xml:13(remark)
+#: sdk/script/fn/OCF_Prey.xml:13(remark)
+#: sdk/script/fn/OCF_OnFire.xml:13(remark)
+#: sdk/script/fn/OCF_NotContained.xml:13(remark)
+#: sdk/script/fn/OCF_Living.xml:13(remark)
+#: sdk/script/fn/OCF_Inflammable.xml:13(remark)
+#: sdk/script/fn/OCF_InSolid.xml:13(remark)
+#: sdk/script/fn/OCF_InLiquid.xml:13(remark)
+#: sdk/script/fn/OCF_InFree.xml:13(remark)
+#: sdk/script/fn/OCF_HitSpeed4.xml:13(remark)
+#: sdk/script/fn/OCF_HitSpeed3.xml:13(remark)
+#: sdk/script/fn/OCF_HitSpeed2.xml:13(remark)
+#: sdk/script/fn/OCF_HitSpeed1.xml:13(remark)
+#: sdk/script/fn/OCF_Grab.xml:13(remark)
+#: sdk/script/fn/OCF_Fullcon.xml:13(remark)
+#: sdk/script/fn/OCF_Exclusive.xml:13(remark)
+#: sdk/script/fn/OCF_Entrance.xml:13(remark)
+#: sdk/script/fn/OCF_Edible.xml:13(remark)
+#: sdk/script/fn/OCF_Container.xml:13(remark)
+#: sdk/script/fn/OCF_Construct.xml:13(remark)
+#: sdk/script/fn/OCF_Collection.xml:13(remark)
+#: sdk/script/fn/OCF_Collectible.xml:13(remark)
+#: sdk/script/fn/OCF_Chop.xml:13(remark)
+#: sdk/script/fn/OCF_Available.xml:13(remark)
+#: sdk/script/fn/OCF_AttractLightning.xml:13(remark)
+#: sdk/script/fn/OCF_Alive.xml:13(remark)
 msgid "For more information and examples regarding these constants see <emlink href=\"definition/ocf.html\">object character flags</emlink>."
 msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href=\"definition/ocf.html\">Object character flags</emlink>."
 
-#: sdk/script/fn/OCF_Rotate.xml:18(emlink)
-#: sdk/script/fn/OCF_Prey.xml:18(emlink)
-#: sdk/script/fn/OCF_OnFire.xml:18(emlink)
-#: sdk/script/fn/OCF_NotContained.xml:19(emlink)
-#: sdk/script/fn/OCF_Living.xml:18(emlink)
-#: sdk/script/fn/OCF_Inflammable.xml:18(emlink)
-#: sdk/script/fn/OCF_InSolid.xml:18(emlink)
-#: sdk/script/fn/OCF_InLiquid.xml:18(emlink)
-#: sdk/script/fn/OCF_InFree.xml:18(emlink)
-#: sdk/script/fn/OCF_HitSpeed4.xml:18(emlink)
-#: sdk/script/fn/OCF_HitSpeed3.xml:18(emlink)
-#: sdk/script/fn/OCF_HitSpeed2.xml:18(emlink)
-#: sdk/script/fn/OCF_HitSpeed1.xml:18(emlink)
-#: sdk/script/fn/OCF_Grab.xml:18(emlink)
-#: sdk/script/fn/OCF_Fullcon.xml:18(emlink)
-#: sdk/script/fn/OCF_Exclusive.xml:18(emlink)
-#: sdk/script/fn/OCF_Entrance.xml:18(emlink)
-#: sdk/script/fn/OCF_Edible.xml:18(emlink)
-#: sdk/script/fn/OCF_CrewMember.xml:32(emlink)
-#: sdk/script/fn/OCF_Container.xml:18(emlink)
-#: sdk/script/fn/OCF_Construct.xml:18(emlink)
-#: sdk/script/fn/OCF_Collection.xml:18(emlink)
-#: sdk/script/fn/OCF_Collectible.xml:18(emlink)
-#: sdk/script/fn/OCF_Chop.xml:18(emlink)
-#: sdk/script/fn/OCF_Available.xml:18(emlink)
-#: sdk/script/fn/OCF_AttractLightning.xml:18(emlink)
-#: sdk/script/fn/OCF_Alive.xml:18(emlink)
+#: sdk/script/fn/OCF_Rotate.xml:17(emlink)
+#: sdk/script/fn/OCF_Prey.xml:17(emlink)
+#: sdk/script/fn/OCF_OnFire.xml:17(emlink)
+#: sdk/script/fn/OCF_NotContained.xml:18(emlink)
+#: sdk/script/fn/OCF_Living.xml:17(emlink)
+#: sdk/script/fn/OCF_Inflammable.xml:17(emlink)
+#: sdk/script/fn/OCF_InSolid.xml:17(emlink)
+#: sdk/script/fn/OCF_InLiquid.xml:17(emlink)
+#: sdk/script/fn/OCF_InFree.xml:17(emlink)
+#: sdk/script/fn/OCF_HitSpeed4.xml:17(emlink)
+#: sdk/script/fn/OCF_HitSpeed3.xml:17(emlink)
+#: sdk/script/fn/OCF_HitSpeed2.xml:17(emlink)
+#: sdk/script/fn/OCF_HitSpeed1.xml:17(emlink)
+#: sdk/script/fn/OCF_Grab.xml:17(emlink)
+#: sdk/script/fn/OCF_Fullcon.xml:17(emlink)
+#: sdk/script/fn/OCF_Exclusive.xml:17(emlink)
+#: sdk/script/fn/OCF_Entrance.xml:17(emlink)
+#: sdk/script/fn/OCF_Edible.xml:17(emlink)
+#: sdk/script/fn/OCF_CrewMember.xml:31(emlink)
+#: sdk/script/fn/OCF_Container.xml:17(emlink)
+#: sdk/script/fn/OCF_Construct.xml:17(emlink)
+#: sdk/script/fn/OCF_Collection.xml:17(emlink)
+#: sdk/script/fn/OCF_Collectible.xml:17(emlink)
+#: sdk/script/fn/OCF_Chop.xml:17(emlink)
+#: sdk/script/fn/OCF_Available.xml:17(emlink)
+#: sdk/script/fn/OCF_AttractLightning.xml:17(emlink)
+#: sdk/script/fn/OCF_Alive.xml:17(emlink)
 #: sdk/script/fn/Find_OCF.xml:35(emlink)
 #: sdk/definition/ocf.xml:6(title)
 msgid "Object character flags"
@@ -6053,43 +5981,43 @@ msgstr "Object character flag: Essbares Objekt. Dieses Flag wird durch den <emli
 msgid "Object character flag: the object can be made a crew member or already is a crew member, meaning the corresponding DefCore flag is set and the object is alive."
 msgstr "Object character flag: Das Objekt kann theoretisch zu einer Crew hinzugefügt werden oder gehört schon zu einer Crew. Das heißt, es hat den ensprechenden DefCore-Eintrag gesetzt, und lebt."
 
-#: sdk/script/fn/OCF_CrewMember.xml:17(li)
+#: sdk/script/fn/OCF_CrewMember.xml:16(li)
 msgid "Will use pathfinding even if the PathFinder value in DefCore is not set."
 msgstr "Es sucht auch ohne PathFinder=1 in der DefCore mit dem PathFinder"
 
-#: sdk/script/fn/OCF_CrewMember.xml:18(li)
+#: sdk/script/fn/OCF_CrewMember.xml:17(li)
 msgid "Uses internal pathfinding optimizations adjusted for the size of a clonk."
 msgstr "Es benutzt einige PathFinder-interne Optimierungen, die auf die Größe eines Clonks zugeschnitten sind"
 
-#: sdk/script/fn/OCF_CrewMember.xml:19(li)
+#: sdk/script/fn/OCF_CrewMember.xml:18(li)
 msgid "Will use modified jumping (also short jumps) even if the PathFinder value in DefCore is not set."
 msgstr "Er benutzt auch ohne PathFinder=1 die veränderten Sprungmethoden (z.B. kurze Sprünge)"
 
-#: sdk/script/fn/OCF_CrewMember.xml:20(li)
+#: sdk/script/fn/OCF_CrewMember.xml:19(li)
 msgid "Can be attacked via the Attack command."
 msgstr "Er kann durch das Attack-Command angegriffen werden"
 
-#: sdk/script/fn/OCF_CrewMember.xml:21(li)
+#: sdk/script/fn/OCF_CrewMember.xml:20(li)
 msgid "Failed commands will produce failure messages and xFailed calls in the command target."
 msgstr "Es werden Fehlernachrichten durch fehlgeschlagene Commands ausgegeben und %sFailed-Calls im Zielobjekt des Kommandos getätigt"
 
-#: sdk/script/fn/OCF_CrewMember.xml:22(li)
+#: sdk/script/fn/OCF_CrewMember.xml:21(li)
 msgid "Will automatically add Acquire commands if a BUILD action requires material. BuildNeedsMaterial calls are not made."
 msgstr "Es wird automatisch ein Acquire-Command gesetzt, wenn bei einer BUILD-Action Material fehlt - dafür wird kein BuildNeedsMaterial aufgerufen"
 
-#: sdk/script/fn/OCF_CrewMember.xml:23(li)
+#: sdk/script/fn/OCF_CrewMember.xml:22(li)
 msgid "Right mouse clicks will show Context* script functions as menu entries if the controller is the owner."
 msgstr "Beim Rechtsklick mit der Maus werden Context*-Scriptfunktionen nur dann angezeigt, wenn der Besitzer gleich ist"
 
-#: sdk/script/fn/OCF_CrewMember.xml:24(li)
+#: sdk/script/fn/OCF_CrewMember.xml:23(li)
 msgid "The object name is displayed if seen by another allied player and enabled in the options."
 msgstr "Der Objektname wird angezeigt, wenn die Spielernummer nicht gleich und nicht -1 ist, die Spieler verbündet sind, und das Feature in den Optionen aktiviert ist"
 
-#: sdk/script/fn/OCF_CrewMember.xml:25(li)
+#: sdk/script/fn/OCF_CrewMember.xml:24(li)
 msgid "The object can not be sold."
 msgstr "Das Objekt kann nicht verkauft werden"
 
-#: sdk/script/fn/OCF_CrewMember.xml:14(remark)
+#: sdk/script/fn/OCF_CrewMember.xml:13(remark)
 msgid "For more information and examples on the use of these constants see <emlink href=\"definition/ocf.html\">object character flags</emlink>.<br/> Objects with the OCF_CrewMember are handled specially in various ways:<br/><placeholder-1/>"
 msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href=\"definition/ocf.html\">Object character flags</emlink>.<br/> Objekte, die das OCF_CrewMember-Flag gesetzt haben, bekommen von der Engine außerdem einige Sonderbehandlungen:<br/><placeholder-1/>"
 
@@ -6129,7 +6057,7 @@ msgstr "Object character flag: Lebendes Lebewesen."
 msgid "Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <placeholder-1/> or <placeholder-2/>."
 msgstr "Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <placeholder-1/> verwendet werden, um einen neutralen Spieler anzugeben."
 
-#: sdk/script/fn/NO_OWNER.xml:16(text)
+#: sdk/script/fn/NO_OWNER.xml:15(text)
 msgid "Creates a flint owned by no one."
 msgstr "Erzeugt einen besitzerlosen Feuerstein."
 
@@ -6145,15 +6073,15 @@ msgstr "Setzt die Lautstärke, mit der die Hintergrundmusik abgespielt wird (sie
 msgid "Script for an object which will fade out background music: the \"Timer\" function will decrease the volume step by step until it is 0. Then the music will be turned off and the helper object deleted."
 msgstr "Script eines Musik-Fadeout-Objekts. Die Musiklautstärke wird in der Funktion \"Timer\" bei jedem Aufruf ein Stück reduziert, bis die Lautstärke 0 ist. Dann wird die Musik deaktiviert und das Objekt gelöscht."
 
-#: sdk/script/fn/Music.xml:18(desc)
+#: sdk/script/fn/Music.xml:16(desc)
 msgid "Filename of the music track. The file extension must be specified. If unspecified or 0, music playback will be interrupted."
 msgstr "Dateiame des Musikstückes. Die Endung muss mit angegeben werden. Wird der Parameter weggelassen oder 0 übergeben, so wird die Musikwiedergabe unterbrochen."
 
-#: sdk/script/fn/Music.xml:24(desc)
+#: sdk/script/fn/Music.xml:22(desc)
 msgid "If 1, the specified track will be looped forever."
 msgstr "Wenn 1, wird das angegebene Musikstück andauernd abgespielt."
 
-#: sdk/script/fn/Music.xml:29(desc)
+#: sdk/script/fn/Music.xml:27(desc)
 msgid "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.ocg will be used."
 msgstr "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.ocg genutzt."
 
@@ -6332,7 +6260,8 @@ msgid "Returns the height of the landscape in pixels."
 msgstr "Gibt die Höhe der Landschaft in Pixel zurück."
 
 #: sdk/script/fn/Kill.xml:17(desc)
-msgid "If set, the object will be killed, even if an effect tries to prevent this."
+#, fuzzy
+msgid "If set, the object will be killed, even if an effect tries to prevent this. ."
 msgstr "Wenn gesetzt, wird das Objekt auch dann getötet, wenn ein Effekt das zu unterbrechen versucht."
 
 #: sdk/script/fn/Kill.xml:22(desc)
@@ -6525,7 +6454,8 @@ msgid "Returns the x position of the calling object."
 msgstr "Liefert die X-Position des aufrufenden Objekts."
 
 #: sdk/script/fn/GetWind.xml:27(desc)
-msgid "Whether to retrieve the global wind value."
+#, fuzzy
+msgid "Whether to retrieve the global wind value. ."
 msgstr "Ob der globale Wind abgefragt werden soll."
 
 #: sdk/script/fn/GetWind.xml:32(desc)
@@ -7659,19 +7589,19 @@ msgstr "Liefert Objektkomponenten."
 msgid "Creates all components which are still missing in the calling object (e.g. in a construction site) in front of the object."
 msgstr "Erzeugt alle Komponenten, die dem aufrufenden Objekt noch fehlen (z.B. bei einer Baustelle), direkt vor selbigem."
 
-#: sdk/script/fn/GetCommand.xml:21(desc)
+#: sdk/script/fn/GetCommand.xml:18(desc)
 msgid "Data to be returned. Unspecified or 0: Name, 1: Target, 2: TargetX, 3: TargetY, 4: Target2, 5: Data"
 msgstr "Information, die zurückgegeben werden soll. 0 oder kA: Name, 1: Target, 2: TargetX, 3: TargetY, 4: Target2, 5: Data"
 
-#: sdk/script/fn/GetCommand.xml:27(desc)
+#: sdk/script/fn/GetCommand.xml:24(desc)
 msgid "Number of the command. 0 is the currently active command, other values are the following (super-level) commands."
 msgstr "Nummer des Kommandos. 0 steht für das momentan aktive, 1 für das danach auszuführende usw."
 
-#: sdk/script/fn/GetCommand.xml:31(desc)
+#: sdk/script/fn/GetCommand.xml:28(desc)
 msgid "Returns information on a current command of an object. If the object does not have any commands set, 0 is returned for all queries."
 msgstr "Gibt Informationen über ein Kommando des aufrufenden Objekts zurück. Führt das Objekt momentan keine Aktion aus, so wird (bei jedem Wert von element) 0 zurückgegeben."
 
-#: sdk/script/fn/GetCommand.xml:39(text)
+#: sdk/script/fn/GetCommand.xml:36(text)
 msgid "If the object has been commanded to enter the home base, this script will warp the object there directly."
 msgstr "Dieser Script beamt das Objekt, falls sein Kommando ist, in seine Basis zu gehen (Kommando \"Enter\"), sofort dorthin. Dies würde z.B. dazu führen, dass man mit der Maussteuerung den Clonk direkt in seine Heimatbasis beamen könnte, indem man den Eingang anklickt."
 
@@ -9013,7 +8943,7 @@ msgstr "Gibt eine Botschaft a la \"[name] ist von uns gegangen\" über dem aufru
 msgid "Constant for <placeholder-1/>/<placeholder-2/>: direction right"
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>: Richtung nach rechts"
 
-#: sdk/script/fn/DIR_Right.xml:18(text)
+#: sdk/script/fn/DIR_Right.xml:17(text)
 msgid "The selected clonk stops and looks to the right."
 msgstr "Der ausgewählte Clonk hält an und schaut nach rechts."
 
@@ -9021,7 +8951,7 @@ msgstr "Der ausgewählte Clonk hält an und schaut nach rechts."
 msgid "Constant for <placeholder-1/>/<placeholder-2/>: direction left"
 msgstr "Konstante für <placeholder-1/>/<placeholder-2/>: Richtung nach links"
 
-#: sdk/script/fn/DIR_Left.xml:18(text)
+#: sdk/script/fn/DIR_Left.xml:17(text)
 msgid "The selected clonk stops and looks to the left."
 msgstr "Der ausgewählte Clonk hält an und schaut nach links."
 
@@ -9697,14 +9627,14 @@ msgstr "Ruft die lokale Funktion function auf. Wird \"~\" vor den Funktionsnamen
 msgid "Movement direction: diagonally up and to the right. For more information see <placeholder-1/>."
 msgstr "Bewegungsrichtung: Schräg nach oben rechts. Für weitere Hinweise siehe <placeholder-1/>."
 
-#: sdk/script/fn/COMD_UpRight.xml:17(text)
-#: sdk/script/fn/COMD_UpLeft.xml:17(text)
-#: sdk/script/fn/COMD_Up.xml:17(text)
-#: sdk/script/fn/COMD_Right.xml:17(text)
-#: sdk/script/fn/COMD_Left.xml:17(text)
-#: sdk/script/fn/COMD_DownRight.xml:17(text)
-#: sdk/script/fn/COMD_DownLeft.xml:17(text)
-#: sdk/script/fn/COMD_Down.xml:17(text)
+#: sdk/script/fn/COMD_UpRight.xml:16(text)
+#: sdk/script/fn/COMD_UpLeft.xml:16(text)
+#: sdk/script/fn/COMD_Up.xml:16(text)
+#: sdk/script/fn/COMD_Right.xml:16(text)
+#: sdk/script/fn/COMD_Left.xml:16(text)
+#: sdk/script/fn/COMD_DownRight.xml:16(text)
+#: sdk/script/fn/COMD_DownLeft.xml:16(text)
+#: sdk/script/fn/COMD_Down.xml:16(text)
 msgid "Changes the fligt direction of a blimp."
 msgstr "Ändert die Flugrichtung eines Luftschiffes."
 
@@ -9724,16 +9654,16 @@ msgstr "Bewegungsrichtung: Hoch. Für weitere Hinweise siehe <placeholder-1/>."
 msgid "Movement direction: stop. For more information see <placeholder-1/>."
 msgstr "Bewegungsrichtung: Anhalten. Für weitere Hinweise siehe <placeholder-1/>."
 
-#: sdk/script/fn/COMD_Stop.xml:14(remark)
+#: sdk/script/fn/COMD_Stop.xml:13(remark)
 msgid "<placeholder-1/> and COMD_Stop are identical and have the value 0."
 msgstr "<placeholder-1/> und COMD_Stop sind identisch und haben den Wert 0."
 
-#: sdk/script/fn/COMD_Stop.xml:18(text)
-#: sdk/script/fn/COMD_None.xml:18(text)
+#: sdk/script/fn/COMD_Stop.xml:17(text)
+#: sdk/script/fn/COMD_None.xml:17(text)
 msgid "Makes the currently selected clonk of the first player stop."
 msgstr "Lässt den aktuell ausgewählten Clonk des ersten Spielers anhalten."
 
-#: sdk/script/fn/COMD_None.xml:14(remark)
+#: sdk/script/fn/COMD_None.xml:13(remark)
 msgid "COMD_None and <placeholder-1/> are identical and have the value 0."
 msgstr "COMD_None und <placeholder-1/> sind identisch und haben den Wert 0."
 
@@ -9749,26 +9679,24 @@ msgstr "Bewegungsrichtung: Schräg nach unten links. Für weitere Hinweise siehe
 msgid "Data type: string."
 msgstr "Datentyp: Zeichenkette."
 
-#: sdk/script/fn/C4V_String.xml:16(text)
+#: sdk/script/fn/C4V_String.xml:15(text)
 msgid "Writes x to the log if it is a string."
 msgstr "Gibt x im Log aus, wenn es eine Zeichenkette ist."
 
 #: sdk/script/fn/C4V_PropList.xml:11(desc)
-#, fuzzy
 msgid "Data type: Proplist."
-msgstr "Datentyp: id."
+msgstr "Datentyp: Proplist."
 
-#: sdk/script/fn/C4V_PropList.xml:16(text)
+#: sdk/script/fn/C4V_PropList.xml:15(text)
 #, fuzzy
 msgid "Sets the property <code>\"foo\"</code> of <code>x</code> to <code>bar</code> if <code>x</code> is a proplist."
 msgstr "Setzt die Eigenschaft <code>key</code> von <code>object</code> auf <code>value</code>. Die Eigenschaft muss vorher nicht existiert haben."
 
 #: sdk/script/fn/C4V_Nil.xml:11(desc)
-#, fuzzy
 msgid "Data type: nil."
-msgstr "Datentyp: id."
+msgstr "Datentyp: nil."
 
-#: sdk/script/fn/C4V_Nil.xml:16(text)
+#: sdk/script/fn/C4V_Nil.xml:15(text)
 #, fuzzy
 msgid "Cancels the function if the data type of the first parameter is nil."
 msgstr "Bricht die Funktion ab, wenn der Datentyp des ersten Parameters unbekannt ist."
@@ -9777,7 +9705,7 @@ msgstr "Bricht die Funktion ab, wenn der Datentyp des ersten Parameters unbekann
 msgid "Data type: integer."
 msgstr "Datentyp: Ganzzahl."
 
-#: sdk/script/fn/C4V_Int.xml:16(text)
+#: sdk/script/fn/C4V_Int.xml:15(text)
 msgid "Writes x to the log if it is an integer."
 msgstr "Gibt x im Log aus, wenn es eine Ganzzahl ist."
 
@@ -9785,7 +9713,7 @@ msgstr "Gibt x im Log aus, wenn es eine Ganzzahl ist."
 msgid "Data type: object pointer."
 msgstr "Datentyp: Objektzeiger."
 
-#: sdk/script/fn/C4V_C4Object.xml:16(text)
+#: sdk/script/fn/C4V_C4Object.xml:15(text)
 msgid "Writes the name of x to the log if it is an object."
 msgstr "Gibt den Namen von x im Log aus, wenn es ein Objekt ist."
 
@@ -9793,7 +9721,7 @@ msgstr "Gibt den Namen von x im Log aus, wenn es ein Objekt ist."
 msgid "Data type: boolean value (true or false)."
 msgstr "Datentyp: Boolscher Wert (1 oder 0)."
 
-#: sdk/script/fn/C4V_Bool.xml:16(text)
+#: sdk/script/fn/C4V_Bool.xml:15(text)
 msgid "Writes x to the log if it is a boolean value."
 msgstr "Gibt x im Log aus, wenn es ein boolscher Wert ist."
 
@@ -9801,7 +9729,7 @@ msgstr "Gibt x im Log aus, wenn es ein boolscher Wert ist."
 msgid "Data type: array."
 msgstr "Datentyp: Array."
 
-#: sdk/script/fn/C4V_Array.xml:16(text)
+#: sdk/script/fn/C4V_Array.xml:15(text)
 msgid "Saves a new, empty array in x if it is not already an array."
 msgstr "Speichert ein neues, leeres Array in x wenn es noch kein Array ist."
 
@@ -9821,7 +9749,7 @@ msgstr "Gibt die ID 'Rock' zurück."
 msgid "Object category: vehicle."
 msgstr "Objektkategorie: Fahrzeug."
 
-#: sdk/script/fn/C4D_Vehicle.xml:17(text)
+#: sdk/script/fn/C4D_Vehicle.xml:16(text)
 msgid "Returns the first vehicle type that the first player can build."
 msgstr "Liefert das erste Fahrzeug zurück, das der 1. Spieler bauen kann, z.B. BALN."
 
@@ -9829,7 +9757,7 @@ msgstr "Liefert das erste Fahrzeug zurück, das der 1. Spieler bauen kann, z.B. 
 msgid "Object category: building."
 msgstr "Objektkategorie: Gebäude."
 
-#: sdk/script/fn/C4D_Structure.xml:17(text)
+#: sdk/script/fn/C4D_Structure.xml:16(text)
 msgid "Returns the first building type that the first player can build."
 msgstr "Liefert das erste Gebäude zurück, das der 1. Spieler bauen kann."
 
@@ -9837,7 +9765,7 @@ msgstr "Liefert das erste Gebäude zurück, das der 1. Spieler bauen kann."
 msgid "Object category: immovable background object."
 msgstr "Objektkategorie: Unbewegliche Hintergrundobjekte."
 
-#: sdk/script/fn/C4D_StaticBack.xml:17(text)
+#: sdk/script/fn/C4D_StaticBack.xml:16(text)
 msgid "Makes the object into a background object. This is used with castle parts so after completion other objects can be built in front."
 msgstr "Macht das Objekt zu einem Hintergrundsobjekt. Wird bei Burgteilen verwendet, damit davor gebaut werden kann."
 
@@ -9845,7 +9773,7 @@ msgstr "Macht das Objekt zu einem Hintergrundsobjekt. Wird bei Burgteilen verwen
 msgid "Object category: rule object."
 msgstr "Objektkategorie: Spielregeln"
 
-#: sdk/script/fn/C4D_Rule.xml:18(text)
+#: sdk/script/fn/C4D_Rule.xml:17(text)
 msgid "Removes all rules. :-)"
 msgstr "Entfernt alle Spielregeln. :-)"
 
@@ -9854,11 +9782,11 @@ msgstr "Entfernt alle Spielregeln. :-)"
 msgid "Object category: the object moves parallax with respect to the landscape. This means that the apparent object position changes depending on the scroll position of the viewport. This can be used to have objects apparently moving in the far background or to create status overlays.<br/>Parallax deviation from the normal location is specified in percent and stored in an array in the <emlink href=\"definition/properties.html#Parallaxity\"><code>Parallaxity</code> property</emlink> of the object (<code>Parallaxity[0]</code> for horizontal, <code>Parallaxity[1]</code> for vertical deviation). This means for normal location these two values should be 100. A value of 0 will lock the object to the viewport. For parallax background object use values between 0 and 100. Object positions can also be negative values. Those objects will then be aligned with the right or bottom edge of the screen respectively."
 msgstr "Objektkategorie: Bewegt sich parallax zum Rest der Landschaft. Das bedeutet, dass sich die scheinbare Objektposition je nach Scrollposition des Viewports ändert. Damit können beispielsweise Objekte scheinbar in den Hintergrund geschoben, oder Statusanzeigen realisiert werden.<br/> Die parallaxe Verschiebung wird dabei prozentual zum Normalverhalten in den ersten beiden indizierten, lokalen Variablen (siehe <placeholder-1/>()) des Objekts angegeben (Local(0) und Local(1) jeweils für die horizontale respektive vertikale Verschiebung). Das heißt, um das Normalverhalten zu erzielen, müssen diese Werte jeweils auf 100 gesetzt werden. Stehen sie auf 0, gleicht die Objektposition der Sichtfensterposition. Für Hintergrundparallaxität werden also gewöhnlich Werte zwischen 0 und 100 gewählt.<br/> Um Objekte direkt am Sichtfenster des Spielers zu positionieren, um so zum Beispiel Statusanzeigen zu realisieren, können Local(0) und Local(1) auf 0 gesetzt werden. Die Objektposition ist dann immer relativ zur oberen linken Ecke des Sichtfensters. Es können für die Position solcher Objekte auch negative Werte angegeben werden: Diese werden dann jeweils vom rechten bzw. unteren Rand des Sichtfensters gerechnet. Auf diese Weise lassen sich Statusanzeigen auch am rechten oder unteren Rand der Sichtfenster platzieren."
 
-#: sdk/script/fn/C4D_Parallax.xml:16(emlink)
+#: sdk/script/fn/C4D_Parallax.xml:15(emlink)
 msgid "Plane"
-msgstr ""
+msgstr "Plane"
 
-#: sdk/script/fn/C4D_Parallax.xml:20(text)
+#: sdk/script/fn/C4D_Parallax.xml:19(text)
 msgid "Moves the calling object into the background and adds horizontal parallaxity."
 msgstr "Versetzt das aufrufende Objekt in den Hintergrund, und gibt ihm horizontale Parallaxität."
 
@@ -9866,7 +9794,7 @@ msgstr "Versetzt das aufrufende Objekt in den Hintergrund, und gibt ihm horizont
 msgid "Object category: small item."
 msgstr "Objektkategorie: kleines Objekt."
 
-#: sdk/script/fn/C4D_Object.xml:17(text)
+#: sdk/script/fn/C4D_Object.xml:16(text)
 msgid "Returns the id of the first loaded definition. Similar scripting is used in the research lab to list researchable object."
 msgstr "Liefert die id des ersten geladenen Objekts zurück. Ein ähnlicher Code wird vom Forschungslabor benutzt, um die erforschbaren Objekte aufzulisten."
 
@@ -9874,7 +9802,7 @@ msgstr "Liefert die id des ersten geladenen Objekts zurück. Ein ähnlicher Code
 msgid "Object category: living being."
 msgstr "Objektkategorie: Lebewesen."
 
-#: sdk/script/fn/C4D_Living.xml:17(text)
+#: sdk/script/fn/C4D_Living.xml:16(text)
 msgid "Returns the first type of living beings which can be built by player 1 - usually none."
 msgstr "Liefert das erste Lebewesen zurück, das der 1. Spieler bauen kann, also normalerweise 0."
 
@@ -9882,7 +9810,7 @@ msgstr "Liefert das erste Lebewesen zurück, das der 1. Spieler bauen kann, also
 msgid "Object category: game goal."
 msgstr "Objektkategorie: Spielziele"
 
-#: sdk/script/fn/C4D_Goal.xml:20(text)
+#: sdk/script/fn/C4D_Goal.xml:19(text)
 msgid "Removes all game goals."
 msgstr "Entfernt alle Spielziele."
 
@@ -9890,11 +9818,11 @@ msgstr "Entfernt alle Spielziele."
 msgid "Object category: object is drawn behind the landscape. Useful for effects like clouds or celestial bodies."
 msgstr "Objektkategorie: Wird hinter der Landschaft gezeichnet. Nützlich beispielsweise für Effektobjekte wie Wolken oder Himmelskörper."
 
-#: sdk/script/fn/C4D_Background.xml:14(remark)
+#: sdk/script/fn/C4D_Background.xml:13(remark)
 msgid "This category does not work in the old 8 bit graphics system."
 msgstr "Diese Kategorie funktioniert nicht im 8Bit-Grafiksystem."
 
-#: sdk/script/fn/C4D_Background.xml:18(text)
+#: sdk/script/fn/C4D_Background.xml:17(text)
 msgid "Move the calling object into the background."
 msgstr "Versetzt das aufrufende Objekt in den Hintergrund."
 
@@ -10910,7 +10838,8 @@ msgid "<code>0</code> can be converted into anything. In that case it behaves th
 msgstr "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 
 #: sdk/script/ScriptPlayers.xml:10(text)
-msgid "It is possible to create non-humans players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users."
+#, fuzzy
+msgid "It is possible to create non-human players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users."
 msgstr "Es ist möglich, Spieler auch per Script beitreten zu lassen. Solche Spieler verhalten sich wie normale Spieler. Sie besitzen eine Crew, ein Konto, Heimatbasismaterial, ein Team, Baupläne, etc. Einziger Unterschied ist, dass sie von keinem Spieler gesteuert werden und auf keinem Rechner ein Sichtfenster für diese Spieler geöffnet wird."
 
 #: sdk/script/ScriptPlayers.xml:11(text)
@@ -15890,27 +15819,23 @@ msgstr ""
 #: sdk/definition/properties.xml:30(col)
 #: sdk/definition/properties.xml:50(col)
 #: sdk/definition/properties.xml:90(col)
-#, fuzzy
 msgid "proplist"
-msgstr "Proplisten"
+msgstr "proplist"
 
 #: sdk/definition/properties.xml:35(col)
-#, fuzzy
 msgid "string"
-msgstr "Zeichenkette"
+msgstr "string"
 
 #: sdk/definition/properties.xml:105(col)
 #: sdk/definition/properties.xml:110(col)
 #: sdk/definition/properties.xml:115(col)
 #: sdk/definition/properties.xml:125(col)
-#, fuzzy
 msgid "int"
-msgstr "Bit"
+msgstr "int"
 
 #: sdk/definition/properties.xml:120(col)
-#, fuzzy
 msgid "[int, int]"
-msgstr "int, int"
+msgstr "[int, int]"
 
 #: sdk/definition/properties.xml:121(col)
 #, fuzzy
@@ -15932,9 +15857,8 @@ msgid "CNAT"
 msgstr "CNAT"
 
 #: sdk/definition/procedures.xml:18(col)
-#, fuzzy
 msgid "nil"
-msgstr "Animals"
+msgstr "nil"
 
 #: sdk/definition/procedures.xml:19(col)
 msgid "No procedure"
@@ -16200,9 +16124,8 @@ msgid "The following OCFs are defined in C4Script:"
 msgstr "Es sind folgende OCFs im Script definiert:"
 
 #: sdk/definition/ocf.xml:17(text)
-#, fuzzy
 msgid "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>"
-msgstr "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>, <placeholder-28/>, <placeholder-29/>, <placeholder-30/>, <placeholder-31/>"
+msgstr "<placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/>, <placeholder-10/>, <placeholder-11/>, <placeholder-12/>, <placeholder-13/>, <placeholder-14/>, <placeholder-15/>, <placeholder-16/>, <placeholder-17/>, <placeholder-18/>, <placeholder-19/>, <placeholder-20/>, <placeholder-21/>, <placeholder-22/>, <placeholder-23/>, <placeholder-24/>, <placeholder-25/>, <placeholder-26/>, <placeholder-27/>"
 
 #: sdk/definition/meshes.xml:6(title)
 #: sdk/definition/meshes.xml:7(h)
@@ -17571,6 +17494,216 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 
+#~ msgid "this"
+#~ msgstr "this"
+
+#~ msgid "VIS_Owner"
+#~ msgstr "VIS_Owner"
+
+#~ msgid "VIS_None"
+#~ msgstr "VIS_None"
+
+#~ msgid "VIS_Local"
+#~ msgstr "VIS_Local"
+
+#~ msgid "VIS_God"
+#~ msgstr "VIS_God"
+
+#~ msgid "VIS_Enemies"
+#~ msgstr "VIS_Enemies"
+
+#~ msgid "VIS_Allies"
+#~ msgstr "VIS_Allies"
+
+#~ msgid "VIS_All"
+#~ msgstr "VIS_All"
+
+#~ msgid "SkyPar_Keep"
+#~ msgstr "SkyPar_Keep"
+
+#~ msgid "OCF_Rotate"
+#~ msgstr "OCF_Rotate"
+
+#~ msgid "OCF_Prey"
+#~ msgstr "OCF_Prey"
+
+#~ msgid "OCF_OnFire"
+#~ msgstr "OCF_OnFire"
+
+#~ msgid "OCF_NotContained"
+#~ msgstr "OCF_NotContained"
+
+#~ msgid "OCF_Living"
+#~ msgstr "OCF_Living"
+
+#~ msgid "OCF_Inflammable"
+#~ msgstr "OCF_Inflammable"
+
+#~ msgid "OCF_InSolid"
+#~ msgstr "OCF_InSolid"
+
+#~ msgid "OCF_InLiquid"
+#~ msgstr "OCF_InLiquid"
+
+#~ msgid "OCF_InFree"
+#~ msgstr "OCF_InFree"
+
+#~ msgid "OCF_HitSpeed4"
+#~ msgstr "OCF_HitSpeed4"
+
+#~ msgid "OCF_HitSpeed3"
+#~ msgstr "OCF_HitSpeed3"
+
+#~ msgid "OCF_HitSpeed2"
+#~ msgstr "OCF_HitSpeed2"
+
+#~ msgid "OCF_HitSpeed1"
+#~ msgstr "OCF_HitSpeed1"
+
+#~ msgid "OCF_Grab"
+#~ msgstr "OCF_Grab"
+
+#~ msgid "OCF_Fullcon"
+#~ msgstr "OCF_Fullcon"
+
+#~ msgid "OCF_Exclusive"
+#~ msgstr "OCF_Exclusive"
+
+#~ msgid "OCF_Entrance"
+#~ msgstr "OCF_Entrance"
+
+#~ msgid "OCF_Edible"
+#~ msgstr "OCF_Edible"
+
+#~ msgid "OCF_CrewMember"
+#~ msgstr "OCF_CrewMember"
+
+#~ msgid "OCF_Container"
+#~ msgstr "OCF_Container"
+
+#~ msgid "OCF_Construct"
+#~ msgstr "OCF_Construct"
+
+#~ msgid "OCF_Collection"
+#~ msgstr "OCF_Collection"
+
+#~ msgid "OCF_Collectible"
+#~ msgstr "OCF_Collectible"
+
+#~ msgid "OCF_Chop"
+#~ msgstr "OCF_Chop"
+
+#~ msgid "OCF_Available"
+#~ msgstr "OCF_Available"
+
+#~ msgid "OCF_AttractLightning"
+#~ msgstr "OCF_AttractLightning"
+
+#~ msgid "OCF_Alive"
+#~ msgstr "OCF_Alive"
+
+#~ msgid "NO_OWNER"
+#~ msgstr "NO_OWNER"
+
+#~ msgid "DIR_Right"
+#~ msgstr "DIR_Right"
+
+#~ msgid "DIR_Left"
+#~ msgstr "DIR_Left"
+
+#~ msgid "COMD_UpRight"
+#~ msgstr "COMD_UpRight"
+
+#~ msgid "COMD_UpLeft"
+#~ msgstr "COMD_UpLeft"
+
+#~ msgid "COMD_Up"
+#~ msgstr "COMD_Up"
+
+#~ msgid "COMD_Stop"
+#~ msgstr "COMD_Stop"
+
+#~ msgid "COMD_Right"
+#~ msgstr "COMD_Right"
+
+#~ msgid "COMD_None"
+#~ msgstr "COMD_None"
+
+#~ msgid "COMD_Left"
+#~ msgstr "COMD_Left"
+
+#~ msgid "COMD_DownRight"
+#~ msgstr "COMD_DownRight"
+
+#~ msgid "COMD_DownLeft"
+#~ msgstr "COMD_DownLeft"
+
+#~ msgid "COMD_Down"
+#~ msgstr "COMD_Down"
+
+#~ msgid "C4V_String"
+#~ msgstr "C4V_String"
+
+#~ msgid "C4V_PropList"
+#~ msgstr "C4V_PropList"
+
+#~ msgid "C4V_Nil"
+#~ msgstr "C4V_Nil"
+
+#~ msgid "C4V_Int"
+#~ msgstr "C4V_Int"
+
+#~ msgid "C4V_C4Object"
+#~ msgstr "C4V_C4Object"
+
+#~ msgid "C4V_Bool"
+#~ msgstr "C4V_Bool"
+
+#~ msgid "C4V_Array"
+#~ msgstr "C4V_Array"
+
+#~ msgid "C4D_All"
+#~ msgstr "C4D_All"
+
+#~ msgid "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Developer mode <placeholder-1/>"
+#~ msgstr "<img id=\"tgl1\" class=\"collapseimg\" src=\"../images/bullet_folder_open.png\" alt=\"-\" onclick=\"tb(1)\" ondblclick=\"ta(1)\"/> Entwicklermodus <placeholder-1/>"
+
+#~ msgid "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Internationalization <placeholder-1/>"
+#~ msgstr "<img id=\"tgl8\" class=\"collapseimg\" src=\"../images/bullet_folder.png\" alt=\"-\" onclick=\"tb(8)\" ondblclick=\"ta(8)\"/> Sprachanpassung <placeholder-1/>"
+
+#~ msgid "This value is also defined as a constant. Thus the parameter brackets can be omitted."
+#~ msgstr "Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden."
+
+#~ msgid "Displays \"Ich benötige ein besseres Beispiel\" for German users."
+#~ msgstr "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
+
+#~ msgid "[opt] variable in which the red value is to be stored"
+#~ msgstr "[opt] Variable, in der der Rotanteil gespeichert werden soll"
+
+#~ msgid "[opt] variable in which the green value is to be stored"
+#~ msgstr "[opt] Variable, in der der Grünanteil gespeichert werden soll"
+
+#~ msgid "[opt] variable in which the blue value is to be stored"
+#~ msgstr "[opt] Variable, in der der Blauanteil gespeichert werden soll"
+
+#~ msgid "[opt] variable in which the alpha value is to be stored"
+#~ msgstr "[opt] Variable, in der der Alpha-Wert gespeichert werden soll"
+
+#~ msgid "Object to be split. Can be 0 in local calls."
+#~ msgstr "Objekt, das zerlegt werden soll. 0 bei lokalem Aufruf."
+
+#~ msgid "Object for which to display information. If unspecified, the calling object will be used."
+#~ msgstr "Objekt, zu dem Informationen angezeigt werden sollen. Bei 0 wird das aufrufende Objekt verwendet."
+
+#~ msgid "Part of an object script. Moves the contents of an object on special key 1."
+#~ msgstr "Teil eines Objektscripts. Verschiebt die Inhaltsobjekte eines Objekts auf Spezialtaste 1."
+
+#~ msgid "Through this object script selecting a new inventory item will play a \"Ding\" sound."
+#~ msgstr "Durch dieses Objektscript verursacht das Auswählen eines anderen Gegenstandes im Inventar einen Ding-Sound."
+
+#~ msgid "Blowing clonk"
+#~ msgstr "Pusteclonk"
+
 #~ msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
 #~ msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
 
@@ -18101,9 +18234,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "StartCall"
 #~ msgstr "StartCall"
 
-#~ msgid "Rotate"
-#~ msgstr "Rotate"
-
 #~ msgid "InverseSpec"
 #~ msgstr "InverseSpec"
 
@@ -18146,9 +18276,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Depth"
 #~ msgstr "Depth"
 
-#~ msgid "CrewMember"
-#~ msgstr "CrewMember"
-
 #~ msgid "NoBurnDecay"
 #~ msgstr "NoBurnDecay"
 
@@ -18175,9 +18302,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Oversize"
 #~ msgstr "Oversize"
-
-#~ msgid "Edible"
-#~ msgstr "Edible"
 
 #~ msgid "EndCall"
 #~ msgstr "EndCall"
@@ -18233,9 +18357,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "OnMenuSelection"
 #~ msgstr "OnMenuSelection"
 
-#~ msgid "AttractLightning"
-#~ msgstr "AttractLightning"
-
 #~ msgid "VertexCNAT"
 #~ msgstr "VertexCNAT"
 
@@ -18244,9 +18365,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Gravity"
 #~ msgstr "Gravity"
-
-#~ msgid "Grab"
-#~ msgstr "Grab"
 
 #~ msgid "AutoScanSideOpen"
 #~ msgstr "AutoScanSideOpen"
@@ -18353,9 +18471,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Drop"
 #~ msgstr "Drop"
 
-#~ msgid "Entrance"
-#~ msgstr "Entrance"
-
 #~ msgid "TopFace"
 #~ msgstr "TopFace"
 
@@ -18397,9 +18512,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "ScriptFunc"
 #~ msgstr "ScriptFunc"
-
-#~ msgid "Prey"
-#~ msgstr "Prey"
 
 #~ msgid "Fragile"
 #~ msgstr "Fragile"
@@ -18479,9 +18591,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "RepeatDelay"
 #~ msgstr "RepeatDelay"
 
-#~ msgid "Collectible"
-#~ msgstr "Collectible"
-
 #~ msgid "Mass"
 #~ msgstr "Mass"
 
@@ -18508,9 +18617,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Picture"
 #~ msgstr "Picture"
-
-#~ msgid "None"
-#~ msgstr "None"
 
 #~ msgid "NoBurnDamage"
 #~ msgstr "NoBurnDamage"
@@ -18547,9 +18653,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Wealth"
 #~ msgstr "Wealth"
-
-#~ msgid "Liquid"
-#~ msgstr "Liquid"
 
 #~ msgid "CorrosionResist"
 #~ msgstr "CorrosionResist"
@@ -18598,9 +18701,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "TopOpen"
 #~ msgstr "TopOpen"
-
-#~ msgid "ClosedContainer"
-#~ msgstr "ClosedContainer"
 
 #~ msgid "UprightAttach"
 #~ msgstr "UprightAttach"
@@ -18659,9 +18759,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Energy"
 #~ msgstr "Energy"
 
-#~ msgid "Construct"
-#~ msgstr "Construct"
-
 #~ msgid "Exit"
 #~ msgstr "Exit"
 
@@ -18674,14 +18771,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Base"
 #~ msgstr "Base"
 
-#~ msgid "Chop"
-#~ msgstr "Chop"
-
 #~ msgid "Period"
 #~ msgstr "Period"
-
-#~ msgid "Collection"
-#~ msgstr "Collection"
 
 #~ msgid "CorrosionRate"
 #~ msgstr "CorrosionRate"
@@ -18718,9 +18809,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "IncinerationEx"
 #~ msgstr "IncinerationEx"
-
-#~ msgid "Exclusive"
-#~ msgstr "Exclusive"
 
 #~ msgid "MapPlayerExtend"
 #~ msgstr "MapPlayerExtend"
@@ -18814,6 +18902,3 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Phase"
 #~ msgstr "Phase"
-
-#~ msgid "Contained_"
-#~ msgstr "Contained_"

@@ -233,6 +233,36 @@
     <h4><xsl:apply-templates select="@id|node()" /></h4>
   </xsl:template>
 
+  <!-- content.xml -->
+  <xsl:template match="toc//li">
+    <xsl:copy>
+      <xsl:choose><xsl:when test="ul">
+        <xsl:if test="ancestor::ul/ancestor::ul/ancestor::ul">
+          <xsl:attribute name="class">invisi</xsl:attribute>
+        </xsl:if>
+        <img class='collapseimg'>
+          <xsl:attribute name="src">../images/<xsl:choose>
+            <xsl:when test="ancestor::ul/ancestor::ul/ancestor::ul">bullet_folder.png</xsl:when>
+            <xsl:otherwise>bullet_folder_open.png</xsl:otherwise>
+          </xsl:choose></xsl:attribute>
+          <xsl:attribute name="alt"><xsl:choose>
+            <xsl:when test="ancestor::ul/ancestor::ul/ancestor::ul">+</xsl:when>
+            <xsl:otherwise>-</xsl:otherwise>
+          </xsl:choose></xsl:attribute>
+          <xsl:attribute name="id">tgl<xsl:number level="any" count="ul"/></xsl:attribute>
+          <xsl:attribute name="onclick">tb(<xsl:number level="any" count="ul"/>)</xsl:attribute>
+          <xsl:attribute name="ondblclick">ta(<xsl:number level="any" count="ul"/>)</xsl:attribute>
+        </img>
+      </xsl:when><xsl:otherwise>
+        <img src='../images/bullet_sheet.png' alt='' />
+      </xsl:otherwise></xsl:choose>
+      <xsl:for-each select="@*">
+        <xsl:copy />
+      </xsl:for-each>
+      <xsl:apply-templates />
+    </xsl:copy>
+  </xsl:template>
+
   <!-- copy some HTML elements literally -->
   <xsl:template match="img|a|em|strong|br|code/i|code/b|ul|li">
     <xsl:copy>

@@ -7,41 +7,41 @@
 <![CDATA[
 	// Javascript aus mwForum, www.mwforum.org
 	function tb(listId) {
-		var branch = document.getElementById('brn' + listId);
 		var toggle = document.getElementById('tgl' + listId);
+		var branch = toggle.parentNode;
 		if (!branch || !toggle) return;
-		if (branch.style.display != 'none' && branch.className!='invisi') {
-			branch.style.display = 'none';
+		if (branch.className != 'invisi') {
+			branch.className = 'invisi';
 			toggle.src = '../images/bullet_folder.png';
 			toggle.title = 'Zweig expandieren';
 			toggle.alt = '+';
 		} else {
-			branch.style.display = '';
+			branch.className = '';
 			toggle.src = '../images/bullet_folder_open.png';
 			toggle.title = 'Zweig zusammenklappen';
 			toggle.alt = '-';
 		}
-		branch.className='';
 		return true;
 	}
 
 	function ta(listId) {
-		var branch = document.getElementById('brn' + listId);
-		var divs = document.getElementsByTagName('ul');
-		var display = '', img = 'bullet_folder_open.png';
-		if (branch.style.display != 'none' && branch.className!='invisi') {
-			display = 'none';
+		var branch = document.getElementById('tgl' + listId).parentNode;
+		var cls = '', img = 'bullet_folder_open.png', alt = '-';
+		if (branch.className != 'invisi') {
+			cls = 'invisi';
 			img = 'bullet_folder.png';
+			alt = '+';
 		}
+		var divs = document.getElementsByTagName('ul');
 		for (var i=0; i < divs.length; i++) {
-			if (divs[i].id.indexOf('brn') == 0) {
-				divs[i].style.display = display;
-				divs[i].className='';
-			}
+			divs[i].parentNode.className = cls;
 		}
 		var imgs = document.getElementsByTagName('img');
 		for (var i=0; i < imgs.length; i++) {
-			if (imgs[i].id.indexOf('tgl') == 0) imgs[i].src = '../images/' + img;
+			if (imgs[i].id.indexOf('tgl') == 0) {
+				imgs[i].src = '../images/' + img;
+				imgs[i].alt = alt;
+			}
 		}
 		return true;
 	}
@@ -54,110 +54,66 @@
 <h>Contents</h>
 <part>
 <ul class="contents">
-	<li>
-	<img id='tgl1' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(1)' ondblclick='ta(1)' />
-	Developer mode
-	<ul id='brn1'>
-		<li><img src='../images/bullet_sheet.png' alt='-' /> 
-		<emlink href="console.html">Engine</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' /> 
-		<emlink href="cmdline.html">Command Line Parameters</emlink></li>
+	<li>Developer Mode
+	<ul>
+		<li><emlink href="console.html">Engine</emlink></li>
+		<li><emlink href="cmdline.html">Command Line Parameters</emlink></li>
 	</ul>
 	</li>
-	<li>
-	<img id='tgl2' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(2)' ondblclick='ta(2)' />
-	<emlink href="files.html">Game content</emlink>
-	<ul id='brn2'>
-		<li>
-		<img id='tgl3' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(3)' ondblclick='ta(3)' />
-		<emlink href="definition/index.html">Object Definitions</emlink>
-		<ul id='brn3' class='invisi'>
-			<li>
-			<img id='tgl4' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(4)' ondblclick='ta(4)' />
-			<emlink href="definition/defcore.html">DefCore</emlink>
-			<ul id='brn4' class='invisi'>
-				<li><img src='../images/bullet_sheet.png' alt='-' />
-				<emlink href="definition/category.html">Category</emlink></li>
-				<li><img src='../images/bullet_sheet.png' alt='-' />
-				<emlink href="definition/ocf.html">OCF</emlink></li>
-				<li><img src='../images/bullet_sheet.png' alt='-' />
-				<emlink href="definition/vertices.html">Vertices</emlink></li>
-				<li><img src='../images/bullet_sheet.png' alt='-' />
-				<emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink></li>
+	<li><emlink href="files.html">Game content</emlink>
+	<ul>
+		<li><emlink href="definition/index.html">Object Definitions</emlink>
+		<ul>
+			<li><emlink href="definition/defcore.html">DefCore</emlink>
+			<ul>
+				<li><emlink href="definition/category.html">Category</emlink></li>
+				<li><emlink href="definition/ocf.html">OCF</emlink></li>
+				<li><emlink href="definition/vertices.html">Vertices</emlink></li>
+				<li><emlink href="definition/cnat.html">CNAT - Contact Attachment</emlink></li>
 			</ul>
 			</li>
-			<li>
-			<img id='tgl5' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(5)' ondblclick='ta(5)' />
-			<emlink href="definition/actmap.html">ActMap</emlink>
-			<ul id='brn5' class='invisi'>
-				<li><img src='../images/bullet_sheet.png' alt='-' />
-				<emlink href="definition/procedures.html">Procedures</emlink></li>
+			<li><emlink href="definition/actmap.html">ActMap</emlink>
+			<ul>
+				<li><emlink href="definition/procedures.html">Procedures</emlink></li>
 			</ul>
 			</li>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="definition/script.html">Scripts</emlink></li>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="definition/properties.html">Properties</emlink></li>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="particle/index.html">Particles</emlink></li>
+			<li><emlink href="definition/script.html">Scripts</emlink></li>
+			<li><emlink href="definition/properties.html">Properties</emlink></li>
+			<li><emlink href="particle/index.html">Particles</emlink></li>
 		</ul>
 		</li>
-		<li>
-		<img id='tgl6' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(6)' ondblclick='ta(6)' />
-		<emlink href="scenario/index.html">Scenarios</emlink>
-		<ul id='brn6' class='invisi'>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="scenario/scenario.html">Scenario</emlink></li>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="scenario/script.html">Scripts</emlink></li>
+		<li><emlink href="scenario/index.html">Scenarios</emlink>
+		<ul>
+			<li><emlink href="scenario/scenario.html">Scenario</emlink></li>
+			<li><emlink href="scenario/MapCreatorS2.html">Map Generator</emlink></li>
+			<li><emlink href="scenario/script.html">Scripts</emlink></li>
 		</ul>
 		</li>
-		<li>
-		<img id='tgl7' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(7)' ondblclick='ta(7)' />
-		<emlink href="material/index.html">Materials</emlink>
-		<ul id='brn7' class='invisi'>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="material/ocm.html">Definitions</emlink></li>
+		<li><emlink href="material/index.html">Materials</emlink>
+		<ul>
+			<li><emlink href="material/ocm.html">Definitions</emlink></li>
 		</ul>
 		</li>
-		<li>
-		<img id='tgl8' class='collapseimg' src='../images/bullet_folder.png' alt='-' onclick='tb(8)' ondblclick='ta(8)' />
-		Internationalization
-		<ul id='brn8' class='invisi'>
-			<li><img src='../images/bullet_sheet.png' alt='-' />
-			<emlink href="lang.html">Internationalization</emlink></li>
+		<li>Internationalization
+		<ul>
+			<li><emlink href="lang.html">Internationalization</emlink></li>
 		</ul>
 		</li>
 	</ul>
 	</li>
-	<li>
-	<img id='tgl9' class='collapseimg' src='../images/bullet_folder_open.png' alt='-' onclick='tb(9)' ondblclick='ta(9)' />
-	<emlink href="script/index.html">Script</emlink>
-	<ul id='brn9'>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/Funcs.html">Functions</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/FuncCall.html">Function Call</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/Typechecks.html">Data Types</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/NamedVar.html">Variables</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/operatoren.html">Operators</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/for.html">for</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/BreakContinue.html">Loop Control</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/AppendTo.html">#appendto</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/Effects.html">Effects</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
-		<li><img src='../images/bullet_sheet.png' alt='-' />
-		<emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
+	<li><emlink href="script/index.html">Script</emlink>
+	<ul>
+		<li><emlink href="script/Funcs.html">Functions</emlink></li>
+		<li><emlink href="script/FuncCall.html">Function Call</emlink></li>
+		<li><emlink href="script/Typechecks.html">Data Types</emlink></li>
+		<li><emlink href="script/NamedVar.html">Variables</emlink></li>
+		<li><emlink href="script/operatoren.html">Operators</emlink></li>
+		<li><emlink href="script/for.html">for</emlink></li>
+		<li><emlink href="script/BreakContinue.html">Loop Control</emlink></li>
+		<li><emlink href="script/AppendTo.html">#appendto</emlink></li>
+		<li><emlink href="script/Effects.html">Effects</emlink></li>
+		<li><emlink href="script/GetXXVal.html">Querying Game Data</emlink></li>
+		<li><emlink href="script/ScriptPlayers.html">Script Players</emlink></li>
 <!-- Insert Functions here -->
 	</ul>
 	</li>
@@ -176,9 +132,12 @@
 				if (!firsta) {
 					firsta = a;
 				}
+				if (a.parentNode.tagName == "LI") {
+					if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
+				}
 				var p = a.parentNode.parentNode;
 				while (p.tagName == "UL") {
-					if (p.style.display == 'none' || p.className == 'invisi') tb(p.id.slice(3));
+					if (p.parentNode.className == 'invisi') tb(p.parentNode.firstElementChild.id.slice(3));
 					p = p.parentNode.parentNode;
 				}
 			}
