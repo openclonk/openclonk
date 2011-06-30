@@ -91,7 +91,7 @@
         <row id="Grabbed">
           <literal_col>Grabbed</literal_col>
           <col>object by_object, bool grab</col>
-          <col>When the object is grabbed or let go by another object. Since 4.9.8.4.</col>
+          <col>When the object is grabbed or let go by another object.</col>
         </row>
         <row id="Get">
           <literal_col>Get</literal_col>
@@ -121,7 +121,7 @@
         <row id="IncinerationEx">
           <literal_col>IncinerationEx</literal_col>
           <col>int by_player</col>
-          <col>When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration. From CE.</col>
+          <col>When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration.</col>
         </row>
         <row id="Death">
           <literal_col>Death</literal_col>
@@ -331,12 +331,12 @@
         <row id="RejectTeamSwitch">
           <literal_col>RejectTeamSwitch</literal_col>
           <col>int player, int new_team</col>
-          <col>Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <funclink>SetPlayerTeam</funclink>). From 4.9.6.0 CR.</col>
+          <col>Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <funclink>SetPlayerTeam</funclink>).</col>
         </row>
         <row id="OnTeamSwitch">
           <literal_col>OnTeamSwitch</literal_col>
           <col>int player, int new_team, int old_team</col>
-          <col>Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <funclink>SetPlayerTeam</funclink>). Since 4.9.6.0 CR.</col>
+          <col>Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <funclink>SetPlayerTeam</funclink>).</col>
         </row>
       </table>
 

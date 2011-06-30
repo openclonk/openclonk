@@ -15,7 +15,7 @@
       </dd>
       <dt id="Teamstxt"><img height="16" src="../../images/icon_text.png" width="16"/> <emlink href="scenario/Teams.html">Teams.txt</emlink></dt>
       <dd>
-        <text>Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR.</text>
+        <text>Contains the Teamsettings for multiplayer scenarios.</text>
       </dd>
       <dt id="Title"><img height="16" src="../../images/icon_image.png" width="16"/> Title.png</dt>
       <dd>

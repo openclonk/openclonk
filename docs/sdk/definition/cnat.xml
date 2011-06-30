@@ -48,13 +48,13 @@
         <col>5</col>
         <col>32</col>
         <col>CNAT_MultiAttach</col>
-        <col>Special flag: new attachment behaviour for objects with the same direction value at several vertices (from version 4.95.4).</col>
+        <col>Special flag: new attachment behaviour for objects with the same direction value at several vertices.</col>
       </row>
       <row>
         <col>6</col>
         <col>64</col>
         <col>CNAT_NoCollision</col>
-        <col>Extra flag: non-colliding vertex (from version 4.95.4)</col>
+        <col>Extra flag: non-colliding vertex</col>
       </row>
       <bitmask>CNAT</bitmask>
     </table>

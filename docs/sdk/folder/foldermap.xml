@@ -6,7 +6,7 @@
   <title>FolderMap.txt</title>
   <h id="FolderMaptxt">FolderMap.txt</h>
   <part>
-    <text>From CR, scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
+    <text>Scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
     <text>
       <table>
         <caption id="SektionFolderMap">Section [FolderMap]</caption>

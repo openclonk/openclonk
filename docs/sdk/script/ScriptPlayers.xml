@@ -7,7 +7,7 @@
   <h>Script Player</h>
   <part>
     <h id="Intro">Introduction</h>
-    <text>From CR 4.9.7.8 it is possible to create non-humans players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users.</text>
+    <text>It is possible to create non-human players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users.</text>
     <text>Script players can be used to create AI controlled opponent teams in special scenarios.</text>
     <h id="Runtime">Runtime join</h>
     <text>For creating an AI player at run time - e.g. a new deathmatch opponent - you can use <funclink>CreateScriptPlayer</funclink>. This call will be followed (possibly with a little delay) by a InitializePlayer callback for the new player.</text>

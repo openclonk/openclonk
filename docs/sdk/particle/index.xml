@@ -109,7 +109,7 @@
         <row>
           <col>RByV</col>
           <col>Integer</col>
-          <col>0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied (from 4.9.8.0).</col>
+          <col>0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied.</col>
         </row>
         <row>
           <col>GravityAcc</col>
@@ -119,7 +119,7 @@
         <row>
           <col>WindDrift</col>
           <col>Integer</col>
-          <col>Horizontal drift by wind. Same as the material property of the same name. Since CR 4.9.8.4.</col>
+          <col>Horizontal drift by wind. Same as the material property of the same name.</col>
         </row>
         <row>
           <col>VertexCount</col>
@@ -154,7 +154,7 @@
         <row>
           <col>Attach</col>
           <col>Integer</col>
-          <col>0 or 1. If 1 the particle is moving relative to its target object's position. From CE 4.95.4.</col>
+          <col>0 or 1. If 1 the particle is moving relative to its target object's position.</col>
         </row>
       </table>
     </text>

@@ -67,7 +67,7 @@
         </row>
         <row>
           <col>C4D_IgnoreFoW</col>
-          <col>Object is drawn above fog of war. Useful for creating status displays or gui elements using objects. From CR.</col>
+          <col>Object is drawn above fog of war. Useful for creating status displays or gui elements using objects.</col>
         </row>
       </table>
     </text>

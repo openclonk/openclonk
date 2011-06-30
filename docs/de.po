@@ -3056,7 +3056,7 @@ msgstr "Wert, auf den gesetzt werden soll."
 
 #: sdk/script/fn/SetVertex.xml:57(desc)
 msgid "Special vertex mode. If 1 or 2 the new value will be stored in the last 25 vertices and copied from there during the next shape update. Using this parameter, script changed vertices will be kept during stretch or rotation operations. With value 2, vertices will be updated immediately, not only with the next shape update."
-msgstr "Wenn 1 oder 2, wird der Wert in den hinteren 25 Vertices gesetzt und aus diesen beim nächsten Shape-Update kopiert. Mit diesem Parameter kann dafür gesorgt werden, dass benutzerdefinierte Vertices auch bei rotierten Objekten erhalten bleiben. Bei Wert 2 werden die gegenwärtigen Objektvertices auch gleich aktualisiert. Ab CE."
+msgstr "Wenn 1 oder 2, wird der Wert in den hinteren 25 Vertices gesetzt und aus diesen beim nächsten Shape-Update kopiert. Mit diesem Parameter kann dafür gesorgt werden, dass benutzerdefinierte Vertices auch bei rotierten Objekten erhalten bleiben. Bei Wert 2 werden die gegenwärtigen Objektvertices auch gleich aktualisiert."
 
 #: sdk/script/fn/SetVertex.xml:62(desc)
 msgid "Sets the offset coordinates of a given object vertex (see<emlink href=\"definition/defcore.html\">DefCore.txt</emlink>). Coordinates are relative to the object center."
@@ -3373,7 +3373,7 @@ msgstr "Neue Y-Position für das Objekt"
 
 #: sdk/script/fn/SetPosition.xml:27(desc)
 msgid "Only applies to objects using the BorderBound flag. Ensures that the position is always within the limits specified by the object."
-msgstr "Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist. (Ab CR)"
+msgstr "Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist."
 
 #: sdk/script/fn/SetPosition.xml:32(desc)
 msgid "Moves the object to the specified position. This will set the exact pixel position and any internal sub-pixel offsets will be reset."
@@ -3794,12 +3794,12 @@ msgid "3"
 msgstr "3"
 
 #: sdk/script/fn/SetPhysical.xml:53(col)
-msgid "Like PHYS_Temporary, but the previous physical-value will be backed up and can be restored by calling <placeholder-1/>. Since CR."
-msgstr "Wie PHYS_Temporary, jedoch wird zusätzlich der vorherige Physical-Wert gesichert und kann einzeln mit einem <placeholder-1/>-Aufruf wiederhergestellt werden. Ab CR."
+msgid "Like PHYS_Temporary, but the previous physical-value will be backed up and can be restored by calling <placeholder-1/>."
+msgstr "Wie PHYS_Temporary, jedoch wird zusätzlich der vorherige Physical-Wert gesichert und kann einzeln mit einem <placeholder-1/>-Aufruf wiederhergestellt werden."
 
 #: sdk/script/fn/SetPhysical.xml:27(desc)
-msgid "Physical attribute change mode (symbolical constants since CR):<br/><placeholder-1/><br/>"
-msgstr "Änderungsmodus (symbolische Konstanten ab CR):<br/><placeholder-1/><br/>"
+msgid "Physical attribute change mode (symbolical constants):<br/><placeholder-1/><br/>"
+msgstr "Änderungsmodus (symbolische Konstanten):<br/><placeholder-1/><br/>"
 
 #: sdk/script/fn/SetPhysical.xml:62(desc)
 msgid "Changes the physical properties of the object. With this, the values from the Physical section of the <emlink href=\"definition/DefCore.html\">DefCore.txt</emlink> can be permanently or temporarily adapted."
@@ -3864,8 +3864,8 @@ msgid "New drawing mode (values see below). If 0 the object is reset to its defi
 msgstr "Neuer Zeichenmodus (mögliche Werte siehe unten) - bei 0 wird das Objekt auf seinen Definitions-Blitmodus zurückgesetzt. Ansonsten wird Bit 8 (benutzerdefinierter Farbwert) implizit gesetzt."
 
 #: sdk/script/fn/SetObjectBlitMode.xml:23(desc)
-msgid "If specified, this will change the blit mode of the graphics overlay instead. The overlay must have been created using <placeholder-1/> first. From CR."
-msgstr "Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein. Ab CR."
+msgid "If specified, this will change the blit mode of the graphics overlay instead. The overlay must have been created using <placeholder-1/> first."
+msgstr "Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein."
 
 #: sdk/script/fn/SetObjectBlitMode.xml:28(desc)
 msgid "Changes the drawing mode of the object. The possible values correspond to the BlitMode value in the DefCore (see notice). This function returns the previously set blit mode."
@@ -3960,8 +3960,8 @@ msgid "256"
 msgstr "256"
 
 #: sdk/script/fn/SetObjectBlitMode.xml:70(col)
-msgid "Only for overlays: the blit mode of the base surface is used when drawing this overlay. From CR."
-msgstr "Nur für Overlays: Es wird der Blitmodus verwendet, den auch das Basisobjekt benutzt, auf das dieses Overlay gezeichnet wird. Ab CR."
+msgid "Only for overlays: the blit mode of the base surface is used when drawing this overlay."
+msgstr "Nur für Overlays: Es wird der Blitmodus verwendet, den auch das Basisobjekt benutzt, auf das dieses Overlay gezeichnet wird."
 
 #: sdk/script/fn/SetObjectBlitMode.xml:102(text)
 msgid "Part of a scenario script: colors the selected clonk of the first player bright green for a while.<br/>To handle the timing properly, it would be better to use an <emlink href=\"script/Effects.html\">effect</emlink> in order to avoid conflicts with other scripts that might change the color at the same time."
@@ -4024,20 +4024,16 @@ msgid "New name. If nil, the object's name is reset to the definition value or t
 msgstr "Neuer Name. Wenn nil, wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt."
 
 #: sdk/script/fn/SetName.xml:24(desc)
-msgid "For crew members only: if true, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file. From CR."
-msgstr "Nur für Crewobjekte: Wenn wahr, wird der Name permanent in der Infosektion des Spielers geändert. Namen dürfen jeweils nur einmal pro Spielerdatei vorkommen. Ab CR."
+msgid "For crew members only: if true, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file."
+msgstr "Nur für Crewobjekte: Wenn wahr, wird der Name permanent in der Infosektion des Spielers geändert. Namen dürfen jeweils nur einmal pro Spielerdatei vorkommen."
 
 #: sdk/script/fn/SetName.xml:30(desc)
-msgid "Determines what should happen if a clonk of the same name already exists in the player's crew. If false, the function call will fail. If true, a unique name is created by appending a number. From CR."
-msgstr "Steuert das Verhalten, falls ein Clonk mit dem angegebenen Namen schon in der Stammcrew des Spielers existiert: Wenn unwahr, schlägt die Funktion in diesem Fall fehl. Wenn wahr, wird ein neuer Name durch Anhängen einer Zahl erzeugt. Ab CR."
+msgid "Determines what should happen if a clonk of the same name already exists in the player's crew. If false, the function call will fail. If true, a unique name is created by appending a number."
+msgstr "Steuert das Verhalten, falls ein Clonk mit dem angegebenen Namen schon in der Stammcrew des Spielers existiert: Wenn unwahr, schlägt die Funktion in diesem Fall fehl. Wenn wahr, wird ein neuer Name durch Anhängen einer Zahl erzeugt."
 
 #: sdk/script/fn/SetName.xml:35(desc)
 msgid "Changes name of an object or a definition for the duration of the round."
 msgstr "Ändert für eine Runde den Namen eines Objekts oder einer Definition."
-
-#: sdk/script/fn/SetName.xml:36(remark)
-msgid "Before CE, a call of this function for a crew member woud result in a permanent name change in the player file and a call for a normal object would rename all objects of the same type."
-msgstr "Vor Clonk Endeavour bewirkte ein Aufruf für ein Mannschaftsmitglied noch eine permanente Änderung in der Spielerdatei und ein Aufruf für ein normales Objekt eine Änderung für alle Objekte der gleichen Definition."
 
 #: sdk/script/fn/SetName.xml:44(text)
 msgid "Scenario script: the highest ranking clonks of joining players get different names in this round."
@@ -4171,8 +4167,8 @@ msgid "If not 0, the hostility messages in the message board will be suppressed.
 msgstr "Wenn ungleich 0, erscheint keine Verfeindungsnachricht im Messageboard. Im ersten Frame des Spieles wird auch ohne diesen Parameter nie eine Nachricht ausgegeben."
 
 #: sdk/script/fn/SetHostility.xml:36(desc)
-msgid "If not 0, the callbacks RejectHostilityChange and OnHostilityChange are not executed. From CR."
-msgstr "Wenn ungleich 0, werden die Callbacks RejectHostilityChange und OnHostilityChange nicht ausgeführt. Ab CR."
+msgid "If not 0, the callbacks RejectHostilityChange and OnHostilityChange are not executed."
+msgstr "Wenn ungleich 0, werden die Callbacks RejectHostilityChange und OnHostilityChange nicht ausgeführt."
 
 #: sdk/script/fn/SetHostility.xml:40(desc)
 msgid "Sets bilateral friendship of two players."
@@ -4240,8 +4236,8 @@ msgid "GFXOV_MODE_Action"
 msgstr "GFXOV_MODE_Action"
 
 #: sdk/script/fn/SetGraphics.xml:56(col)
-msgid "The actiity of the specified object definition. From CR."
-msgstr "Die Aktivität der angegebenen Objektdefinition. Ab CR."
+msgid "The actiity of the specified object definition."
+msgstr "Die Aktivität der angegebenen Objektdefinition."
 
 #: sdk/script/fn/SetGraphics.xml:59(col)
 msgid "GFXOV_MODE_Picture"
@@ -4256,8 +4252,8 @@ msgid "GFXOV_MODE_IngamePicture"
 msgstr "GFXOV_MODE_IngamePicture"
 
 #: sdk/script/fn/SetGraphics.xml:66(col)
-msgid "Overlays the picture graphics of the source definition over the shape of the target object. From CR."
-msgstr "Legt die Picture-Grafik der Quelldefinition über das Shape des Zielobjektes. Ab CR."
+msgid "Overlays the picture graphics of the source definition over the shape of the target object."
+msgstr "Legt die Picture-Grafik der Quelldefinition über das Shape des Zielobjektes."
 
 #: sdk/script/fn/SetGraphics.xml:69(col)
 msgid "GFXOV_MODE_Object"
@@ -4272,8 +4268,8 @@ msgid "5"
 msgstr "5"
 
 #: sdk/script/fn/SetGraphics.xml:71(col)
-msgid "Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself! From CR."
-msgstr "Legt die aktuelle Objektgrafik inklusive aller Overlays von pOverlayObject über das Objekt. Achtung: Ein Objekt darf sich nicht rekursiv über sich selbst als Overlay legen. Ab CR."
+msgid "Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself!"
+msgstr "Legt die aktuelle Objektgrafik inklusive aller Overlays von pOverlayObject über das Objekt. Achtung: Ein Objekt darf sich nicht rekursiv über sich selbst als Overlay legen."
 
 #: sdk/script/fn/SetGraphics.xml:74(col)
 msgid "GFXOV_MODE_ExtraGraphics"
@@ -4286,24 +4282,24 @@ msgid "6"
 msgstr "6"
 
 #: sdk/script/fn/SetGraphics.xml:76(col)
-msgid "Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj. Since CR."
-msgstr "Benutzt die angegebene Grafik als Quellgrafik, um das Objekt erneut zu zeichnen. Die Quellkoordinaten sind die gleichen wie die, die auch beim Zeichnen von obj verwendet wurden. Ab CR."
+msgid "Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj."
+msgstr "Benutzt die angegebene Grafik als Quellgrafik, um das Objekt erneut zu zeichnen. Die Quellkoordinaten sind die gleichen wie die, die auch beim Zeichnen von obj verwendet wurden."
 
 #: sdk/script/fn/SetGraphics.xml:35(desc)
 msgid "Only in conjunction with overlay parameter: specifies how the overlay is to be drawn. The following constants are allowed: <placeholder-1/>"
 msgstr "Nur beachtet bei angegebenem overlay: Gibt an, wie das Overlay gezeichnet wird. Folgende Konstanten sind möglich: <placeholder-1/>"
 
 #: sdk/script/fn/SetGraphics.xml:86(desc)
-msgid "Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href=\"definition/actmap.html\">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible. Since CR."
-msgstr "Nur für overlay_mode==GFXOV_MODE_Action: Aktivität in der Definition source_definition, dessen Grafik über das Zielobjekt gelegt werden soll. Diese Aktivität muss in der <emlink href=\"definition/actmap.html\">ActMap.txt</emlink> der Quelldefinition definiert sein. Achtung: Die Länge dieser Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich. Ab CR."
+msgid "Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href=\"definition/actmap.html\">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible."
+msgstr "Nur für overlay_mode==GFXOV_MODE_Action: Aktivität in der Definition source_definition, dessen Grafik über das Zielobjekt gelegt werden soll. Diese Aktivität muss in der <emlink href=\"definition/actmap.html\">ActMap.txt</emlink> der Quelldefinition definiert sein. Achtung: Die Länge dieser Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich."
 
 #: sdk/script/fn/SetGraphics.xml:92(desc)
 msgid "Blit mode of the overlayed graphics (e.g. additive). Siehe <placeholder-1/>"
 msgstr "Blitmodus der überlegten Grafik (z.B. additiv). Siehe <placeholder-1/>"
 
 #: sdk/script/fn/SetGraphics.xml:98(desc)
-msgid "Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object. Since CR."
-msgstr "Nur für overlay_mode==GFXOV_MODE_Object: Objekt, dessen Grafik über das Zielobjekt gelegt werden soll. Ab CR."
+msgid "Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object."
+msgstr "Nur für overlay_mode==GFXOV_MODE_Object: Objekt, dessen Grafik über das Zielobjekt gelegt werden soll."
 
 #: sdk/script/fn/SetGraphics.xml:103(desc)
 msgid "Changes the graphics of the object. This affects the display of the given object everywhere in the game: in the landscape, in menus, or on control buttons."
@@ -4485,7 +4481,7 @@ msgstr "Anzuwählendes Objekt"
 
 #: sdk/script/fn/SetCursor.xml:26(desc)
 msgid "If not 0, no cursor arrow is drawn when the object is selected."
-msgstr "Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE."
+msgstr "Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt."
 
 #: sdk/script/fn/SetCursor.xml:31(desc)
 msgid "Sets the control cursor of a player to the specified object and selects this object for player control. Returns false if the target object is currently deactivated by <placeholder-1/>."
@@ -4856,8 +4852,8 @@ msgid "Collect the target object, dig it out if necessary."
 msgstr "Zielobjekt einsammeln (ggf. ausgraben)."
 
 #: sdk/script/fn/SetCommand.xml:219(col)
-msgid "Get the specified number of objects from the target object. From 4.9.8.3."
-msgstr "Anzahl Objekte von Objekttyp aus Zielobjekt holen. Ab 4.9.8.3."
+msgid "Get the specified number of objects from the target object."
+msgstr "Anzahl Objekte von Objekttyp aus Zielobjekt holen."
 
 #: sdk/script/fn/SetCommand.xml:224(col)
 msgid "Offset"
@@ -4909,8 +4905,8 @@ msgid "Put the first inventory object into the target object."
 msgstr "Erstes getragenes Objekt im Zielobjekt ablegen."
 
 #: sdk/script/fn/SetCommand.xml:307(col)
-msgid "Put the specified number of inventory objects into the target object. From 4.9.8.3."
-msgstr "Die angegebene Anzahl getragener Objekte im Zielobjekt ablegen. Ab 4.9.8.3."
+msgid "Put the specified number of inventory objects into the target object."
+msgstr "Die angegebene Anzahl getragener Objekte im Zielobjekt ablegen."
 
 #: sdk/script/fn/SetCommand.xml:315(col)
 msgid "Collect the target object and put it into the secondary target object."
@@ -4921,8 +4917,8 @@ msgid "Put the inventory object of the specified type into the target object."
 msgstr "Getragenes Objekt von Objekttyp im Zielobjekt ablegen."
 
 #: sdk/script/fn/SetCommand.xml:331(col)
-msgid "Put the specified number of inventory objects of the specified type into the target object. From 4.9.8.3."
-msgstr "Die angegebene Anzahl getragener Objekte von Objekttyp im Zielobjekt ablegen. Ab 4.9.8.3."
+msgid "Put the specified number of inventory objects of the specified type into the target object."
+msgstr "Die angegebene Anzahl getragener Objekte von Objekttyp im Zielobjekt ablegen."
 
 #: sdk/script/fn/SetCommand.xml:337(col)
 #: sdk/script/fn/SetCommand.xml:345(col)
@@ -5006,8 +5002,8 @@ msgid "Color value to be modulated with."
 msgstr "Neue Farbe, mit der moduliert wird."
 
 #: sdk/script/fn/SetClrModulation.xml:22(desc)
-msgid "If specified, sets the color modulation of the graphics overlay instead. The overlay must have been created using <placeholder-1/> first. From CR."
-msgstr "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein. Ab CR."
+msgid "If specified, sets the color modulation of the graphics overlay instead. The overlay must have been created using <placeholder-1/> first."
+msgstr "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein."
 
 #: sdk/script/fn/SetClrModulation.xml:27(desc)
 msgid "Changes the color modulation of an object. This is a color value which is multiplied with the object color. <placeholder-1/>(255,0,0) will only let the red part of the color show. <placeholder-2/>(255,255,255,128) will make all color half transparent (unless alpha addition is disabled in the graphics options)."
@@ -5336,7 +5332,7 @@ msgid "Gives one unit of money per frame to the first player for 100 frames. Not
 msgstr "Gibt dem ersten Spieler 100 Ticks lang jeden Tick 1 Goldstück. Man beachte dass wenn der erste Spieler stirbt, der Geldregen auf den nächsten Spieler übergeht, da bei jeder Ausführung das Ziel neu bestimmt wird."
 
 #: sdk/script/fn/ResetPhysical.xml:17(desc)
-msgid "If nonzero, this string should specify the name of a physical attribute of which a previous value has been stored using <placeholder-1/> in PHYS_StackTemporary-mode. The specified physical is reset to its previous value and the previous value is removed from the temporary physical stack. If the stack is empty - i.e., ResetPhysical has been called for all respective calls to <placeholder-2/> in PHYS_StackTemporary-mode, the temporary physicals will automatically be reset. If this parameter is zero, all temporary physicals are reset and any temporary physical values deleted form the stack. See <placeholder-3/> for an example using this parameter. Since CR."
+msgid "If nonzero, this string should specify the name of a physical attribute of which a previous value has been stored using <placeholder-1/> in PHYS_StackTemporary-mode. The specified physical is reset to its previous value and the previous value is removed from the temporary physical stack. If the stack is empty - i.e., ResetPhysical has been called for all respective calls to <placeholder-2/> in PHYS_StackTemporary-mode, the temporary physicals will automatically be reset. If this parameter is zero, all temporary physicals are reset and any temporary physical values deleted form the stack. See <placeholder-3/> for an example using this parameter."
 msgstr "Sollte, wenn angegeben, der Name einer Physical sein, die zuvor mit <placeholder-1/> im Modus PHYS_StackTemporary gesetzt wurde. Es wird dann diese Physical auf den alten Wert, den sie vor dem temporären Setzen hatte, zurückgesetzt und die temporäre Änderung vom Stapel entfernt. Ist der Stapel leer - das heißt, wenn für alle <placeholder-2/>-Aufrufe mit PHYS_StackTemporary-Parameter entsprechende ResetPhysical-Aufrufe mit sPhys-Parameter getätigt wurden, werden die temporären Physicals wieder gelöscht. Ist der Parameter 0 oder nicht angegeben, werden die temporären Physicals immer zurückgesetzt und alle temporären Zwischenwerte vom Stapel gelöscht. Für ein Beispiel zu diesem Parameter siehe <placeholder-3/>."
 
 #: sdk/script/fn/ResetPhysical.xml:22(desc)
@@ -6336,8 +6332,8 @@ msgid "Returns the height of the landscape in pixels."
 msgstr "Gibt die Höhe der Landschaft in Pixel zurück."
 
 #: sdk/script/fn/Kill.xml:17(desc)
-msgid "If set, the object will be killed, even if an effect tries to prevent this. From CE."
-msgstr "Wenn gesetzt, wird das Objekt auch dann getötet, wenn ein Effekt das zu unterbrechen versucht. Ab CE."
+msgid "If set, the object will be killed, even if an effect tries to prevent this."
+msgstr "Wenn gesetzt, wird das Objekt auch dann getötet, wenn ein Effekt das zu unterbrechen versucht."
 
 #: sdk/script/fn/Kill.xml:22(desc)
 msgid "Kills an object. Applies to living beings only."
@@ -6529,8 +6525,8 @@ msgid "Returns the x position of the calling object."
 msgstr "Liefert die X-Position des aufrufenden Objekts."
 
 #: sdk/script/fn/GetWind.xml:27(desc)
-msgid "Whether to retrieve the global wind value. From CE."
-msgstr "Ob der globale Wind abgefragt werden soll. Ab CE."
+msgid "Whether to retrieve the global wind value."
+msgstr "Ob der globale Wind abgefragt werden soll."
 
 #: sdk/script/fn/GetWind.xml:32(desc)
 msgid "Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is true, the global wind value is returned."
@@ -7098,7 +7094,7 @@ msgstr "Wenn angegeben, wird der indizierte Spieler des angegebenen Typs zurück
 
 #: sdk/script/fn/GetPlayerByIndex.xml:26(desc)
 msgid "Returns the indicated player number. This function guarantees that for values from 0 to GetPlayerCount()-1 a valid player number will be returned (notice that there may be \"gaps\" between player numbers in case some players have left the game). This makes it easier to process all players in a loop."
-msgstr "Gibt die indizierte Spielernummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetPlayerCount()-1, dass eine gültige Spielernummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass \"Löcher\" unbelegter Spielernummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Spielernummern durchgeht. Ab 4.9.6.0 CR."
+msgstr "Gibt die indizierte Spielernummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetPlayerCount()-1, dass eine gültige Spielernummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass \"Löcher\" unbelegter Spielernummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Spielernummern durchgeht."
 
 #: sdk/script/fn/GetPlayerByIndex.xml:36(text)
 msgid "Eliminates all human players but excludes script players."
@@ -7121,8 +7117,8 @@ msgid "The temporary properties are queried if they exist."
 msgstr "Die temporären Eigenschaften werden abgefragt, wenn sie existieren."
 
 #: sdk/script/fn/GetPhysical.xml:22(desc)
-msgid "Change mode (symbolical constants since CR):<br/><placeholder-1/>"
-msgstr "Änderungsmodus (symbolische Konstanten ab CR):<br/><placeholder-1/>"
+msgid "Change mode:<br/><placeholder-1/>"
+msgstr "Änderungsmodus:<br/><placeholder-1/>"
 
 #: sdk/script/fn/GetPhysical.xml:51(desc)
 msgid "Returns physical properties of the object or the definition in the calling context"
@@ -7186,8 +7182,8 @@ msgid "Determines the experience of a crewmember. GetObjCoreExperience is a glob
 msgstr "Ermittelt die Erfahrung eines Objekts (Objekt muss Crewmember sein!). GetObjCoreExperience ist dabei eine globale Funktion aus GetXVal.c (siehe Anmerkung).<br/> Obiger Code entspricht:"
 
 #: sdk/script/fn/GetObjectBlitMode.xml:17(desc)
-msgid "If specified, the blit mode of the graphics overlay is returned instead. The overlay must have been previously set using <placeholder-1/>. From CR."
-msgstr "Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein. Ab CR."
+msgid "If specified, the blit mode of the graphics overlay is returned instead. The overlay must have been previously set using <placeholder-1/>."
+msgstr "Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein."
 
 #: sdk/script/fn/GetObjectBlitMode.xml:22(desc)
 msgid "Returns the current blit mode of an object."
@@ -7697,8 +7693,8 @@ msgid "Colors caller like the current object."
 msgstr "Färbt caller so ein wie das aktuelle Objekt."
 
 #: sdk/script/fn/GetClrModulation.xml:17(desc)
-msgid "If specified, the color modulation of the overlay is returned instead. The overlay must be set using <placeholder-1/> first. From CR."
-msgstr "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein. Ab CR."
+msgid "If specified, the color modulation of the overlay is returned instead. The overlay must be set using <placeholder-1/> first."
+msgstr "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein."
 
 #: sdk/script/fn/GetClrModulation.xml:22(desc)
 msgid "Determines the color modulation of an object. This is a color value which is multiplied (or added, according to BlitMode) with the object graphics. For more information see <placeholder-1/>()."
@@ -8456,8 +8452,8 @@ msgid "Explosion level. This determines the amount of explosion damage caused an
 msgstr "Explosionsstärke. Die Explosionsstärke bestimmt das Ausmaß des Explosionsschadens sowie die akustische Gestaltung. Bis Stärke 29 einschließlich wird Blast1 abgespielt, von Stärke 30 bis stärke 39 einschließlich Blast2, und bei Werten darüber Blast3."
 
 #: sdk/script/fn/Explode.xml:22(desc)
-msgid "If specified, an object of this type is created instead of a particle. It is assumed that the newly created object will perform the explosion effect. From CR 4.9.6.0."
-msgstr "Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt. Ab 4.9.6.0 CR"
+msgid "If specified, an object of this type is created instead of a particle. It is assumed that the newly created object will perform the explosion effect."
+msgstr "Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt."
 
 #: sdk/script/fn/Explode.xml:28(desc)
 msgid "Type of particle to be created instead of the normal explosion particle."
@@ -9298,7 +9294,7 @@ msgstr "Komponenten und Magiewert"
 
 #: sdk/script/fn/CreateMenu.xml:27(desc)
 msgid "Additional information to be displayed about the currently selected entry. C4MN_ values are now also defined as constants: <placeholder-1/>"
-msgstr "Zusätzliche Information im Menü über das jeweils markierte Objekt. Die angegebenen C4MN_*-Konstanten sind seit 4.9.5.0 CE ebenfalls definiert und sollten statt der numerischen Werte verwendet werden: <placeholder-1/>"
+msgstr "Zusätzliche Information im Menü über das jeweils markierte Objekt. Die angegebenen C4MN_*-Konstanten sind ebenfalls definiert und sollten statt der numerischen Werte verwendet werden: <placeholder-1/>"
 
 #: sdk/script/fn/CreateMenu.xml:73(desc)
 msgid "Text to be displayed if the menu is empty."
@@ -9353,8 +9349,8 @@ msgid "Can be combined with C4MN_Style_Dialog: all entries with an icon are draw
 msgstr "Kann mit C4MN_Style_Dialog kombiniert werden: Alle Einträge mit Icon im Dialogmenü bekommen die gleiche Höhe."
 
 #: sdk/script/fn/CreateMenu.xml:83(desc)
-msgid "Appearance of the menu. The following constants are defined (from CR): <placeholder-1/>"
-msgstr "Aussehen des Menüs. Folgende Konstanten sind ab CR definiert: <placeholder-1/>"
+msgid "Appearance of the menu. The following constants are defined: <placeholder-1/>"
+msgstr "Aussehen des Menüs. Folgende Konstanten sind definiert: <placeholder-1/>"
 
 #: sdk/script/fn/CreateMenu.xml:123(desc)
 msgid "The menu stays open after an entry has been selected."
@@ -9856,7 +9852,7 @@ msgstr "Entfernt alle Spielregeln. :-)"
 #: sdk/script/fn/C4D_Parallax.xml:12(desc)
 #, fuzzy
 msgid "Object category: the object moves parallax with respect to the landscape. This means that the apparent object position changes depending on the scroll position of the viewport. This can be used to have objects apparently moving in the far background or to create status overlays.<br/>Parallax deviation from the normal location is specified in percent and stored in an array in the <emlink href=\"definition/properties.html#Parallaxity\"><code>Parallaxity</code> property</emlink> of the object (<code>Parallaxity[0]</code> for horizontal, <code>Parallaxity[1]</code> for vertical deviation). This means for normal location these two values should be 100. A value of 0 will lock the object to the viewport. For parallax background object use values between 0 and 100. Object positions can also be negative values. Those objects will then be aligned with the right or bottom edge of the screen respectively."
-msgstr "Objektkategorie: Bewegt sich parallax zum Rest der Landschaft. Das bedeutet, dass sich die scheinbare Objektposition je nach Scrollposition des Viewports ändert. Damit können beispielsweise Objekte scheinbar in den Hintergrund geschoben, oder Statusanzeigen realisiert werden.<br/> Die parallaxe Verschiebung wird dabei prozentual zum Normalverhalten in den ersten beiden indizierten, lokalen Variablen (siehe <placeholder-1/>()) des Objekts angegeben (Local(0) und Local(1) jeweils für die horizontale respektive vertikale Verschiebung). Das heißt, um das Normalverhalten zu erzielen, müssen diese Werte jeweils auf 100 gesetzt werden. Stehen sie auf 0, gleicht die Objektposition der Sichtfensterposition. Für Hintergrundparallaxität werden also gewöhnlich Werte zwischen 0 und 100 gewählt.<br/> Um Objekte direkt am Sichtfenster des Spielers zu positionieren, um so zum Beispiel Statusanzeigen zu realisieren, können Local(0) und Local(1) auf 0 gesetzt werden. Die Objektposition ist dann immer relativ zur oberen linken Ecke des Sichtfensters. Ab CR können für die Position solcher Objekte auch negative Werte angegeben werden: Diese werden dann jeweils vom rechten bzw. unteren Rand des Sichtfensters gerechnet. Auf diese Weise lassen sich Statusanzeigen auch am rechten oder unteren Rand der Sichtfenster platzieren."
+msgstr "Objektkategorie: Bewegt sich parallax zum Rest der Landschaft. Das bedeutet, dass sich die scheinbare Objektposition je nach Scrollposition des Viewports ändert. Damit können beispielsweise Objekte scheinbar in den Hintergrund geschoben, oder Statusanzeigen realisiert werden.<br/> Die parallaxe Verschiebung wird dabei prozentual zum Normalverhalten in den ersten beiden indizierten, lokalen Variablen (siehe <placeholder-1/>()) des Objekts angegeben (Local(0) und Local(1) jeweils für die horizontale respektive vertikale Verschiebung). Das heißt, um das Normalverhalten zu erzielen, müssen diese Werte jeweils auf 100 gesetzt werden. Stehen sie auf 0, gleicht die Objektposition der Sichtfensterposition. Für Hintergrundparallaxität werden also gewöhnlich Werte zwischen 0 und 100 gewählt.<br/> Um Objekte direkt am Sichtfenster des Spielers zu positionieren, um so zum Beispiel Statusanzeigen zu realisieren, können Local(0) und Local(1) auf 0 gesetzt werden. Die Objektposition ist dann immer relativ zur oberen linken Ecke des Sichtfensters. Es können für die Position solcher Objekte auch negative Werte angegeben werden: Diese werden dann jeweils vom rechten bzw. unteren Rand des Sichtfensters gerechnet. Auf diese Weise lassen sich Statusanzeigen auch am rechten oder unteren Rand der Sichtfenster platzieren."
 
 #: sdk/script/fn/C4D_Parallax.xml:16(emlink)
 msgid "Plane"
@@ -10283,8 +10279,8 @@ msgid "Description text of the new menu entry."
 msgstr "Beschreibungstext des neuen Menüeintrags"
 
 #: sdk/script/fn/AddMenuItem.xml:47(desc)
-msgid "Extra parameter for special behaviour of the menu entry.<br/> Lower 7 bits (0-127): menu symbol.<br/> 0: normal<br/> 1: rank symbol. With symbol specified, the Rank.png component of that definition will be used. count indicates the rank<br/> 2: picture facet, shifted to the right by XPar1 times the facet width. This is used to include multiple menu symbols in a single definition.<br/> 3: XPar1 specifies an object to be drawn with the rank symbol. If the object has no info section (and thus no rank), there will be an empty entry in context menus. From CE.<br/> 4: XPar1 specifies an object to be drawn. From CE.<br/> Bit 8 (128): XPar2 is used as object value and overrides the normal object value. Also see extra in <placeholder-1/>"
-msgstr "Zusatzparameter für das Verhalten des Menüeintrags.<br/> Untere 7 Bits (0-127): Menüsymbol.<br/> 0: Normal<br/> 1: Rangsymbol. Bei angegebenem symbol wird ggf. die Rank.png der Definition genutzt. count gibt die Ranghöhe an<br/> 2: Picturefacet, das um XPar1-fache Picturebreite nach rechts verschoben ist. Damit lassen sich mehrere Menüsymbole innerhalb einer Definition unterbringen.<br/> 3: XPar1 gibt ein Objekt an, dessen Picture-Grafik mit Rang gezeichnet wird. Hat das Objekt keine Infosektion (und dmait keinen Rang), so wird in Kontextmenüs dennoch ein entsprechender Leerraum gelassen. Ab CE.<br/> 4: XPar1 gibt ein Objekt an, dessen Picture-Grafik gezeichnet wird. Ab CE.<br/> Bit 8 (128): XPar2 wird als Wertangabe benutzt, und überschreibt die Standardangabe (Wert der Definition symbol). Siehe auch extra von <placeholder-1/>"
+msgid "Extra parameter for special behaviour of the menu entry.<br/> Lower 7 bits (0-127): menu symbol.<br/> 0: normal<br/> 1: rank symbol. With symbol specified, the Rank.png component of that definition will be used. count indicates the rank<br/> 2: picture facet, shifted to the right by XPar1 times the facet width. This is used to include multiple menu symbols in a single definition.<br/> 3: XPar1 specifies an object to be drawn with the rank symbol. If the object has no info section (and thus no rank), there will be an empty entry in context menus.<br/> 4: XPar1 specifies an object to be drawn.<br/> Bit 8 (128): XPar2 is used as object value and overrides the normal object value. Also see extra in <placeholder-1/>"
+msgstr "Zusatzparameter für das Verhalten des Menüeintrags.<br/> Untere 7 Bits (0-127): Menüsymbol.<br/> 0: Normal<br/> 1: Rangsymbol. Bei angegebenem symbol wird ggf. die Rank.png der Definition genutzt. count gibt die Ranghöhe an<br/> 2: Picturefacet, das um XPar1-fache Picturebreite nach rechts verschoben ist. Damit lassen sich mehrere Menüsymbole innerhalb einer Definition unterbringen.<br/> 3: XPar1 gibt ein Objekt an, dessen Picture-Grafik mit Rang gezeichnet wird. Hat das Objekt keine Infosektion (und dmait keinen Rang), so wird in Kontextmenüs dennoch ein entsprechender Leerraum gelassen.<br/> 4: XPar1 gibt ein Objekt an, dessen Picture-Grafik gezeichnet wird.<br/> Bit 8 (128): XPar2 wird als Wertangabe benutzt, und überschreibt die Standardangabe (Wert der Definition symbol). Siehe auch extra von <placeholder-1/>"
 
 #: sdk/script/fn/AddMenuItem.xml:53(desc)
 msgid "First additional parameter for extra."
@@ -10914,8 +10910,8 @@ msgid "<code>0</code> can be converted into anything. In that case it behaves th
 msgstr "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 
 #: sdk/script/ScriptPlayers.xml:10(text)
-msgid "From CR 4.9.7.8 it is possible to create non-humans players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users."
-msgstr "Ab CR Build 265 ist es möglich, Spieler auch per Script beitreten zu lassen. Solche Spieler verhalten sich wie normale Spieler. Sie besitzen eine Crew, ein Konto, Heimatbasismaterial, ein Team, Baupläne, etc. Einziger Unterschied ist, dass sie von keinem Spieler gesteuert werden und auf keinem Rechner ein Sichtfenster für diese Spieler geöffnet wird."
+msgid "It is possible to create non-humans players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users."
+msgstr "Es ist möglich, Spieler auch per Script beitreten zu lassen. Solche Spieler verhalten sich wie normale Spieler. Sie besitzen eine Crew, ein Konto, Heimatbasismaterial, ein Team, Baupläne, etc. Einziger Unterschied ist, dass sie von keinem Spieler gesteuert werden und auf keinem Rechner ein Sichtfenster für diese Spieler geöffnet wird."
 
 #: sdk/script/ScriptPlayers.xml:11(text)
 msgid "Script players can be used to create AI controlled opponent teams in special scenarios."
@@ -11406,7 +11402,7 @@ msgstr "Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe d
 #: sdk/script/Effects.xml:9(text)
 #, fuzzy
 msgid "Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration."
-msgstr "Ab CE ist es möglich, an jedes Objekt variable Mengen an Zusatzeffekten zu binden ohne dafür zusätzliche Objekte zu benötigen. Dieses System ist besonders für Zauber interessant."
+msgstr "Es ist möglich, an jedes Objekt variable Mengen an Zusatzeffekten zu binden ohne dafür zusätzliche Objekte zu benötigen. Dieses System ist besonders für Zauber interessant."
 
 #: sdk/script/Effects.xml:11(text)
 #, fuzzy
@@ -12609,7 +12605,7 @@ msgstr "0 bis 2. Bei 1 bewegt sich der Himmel mit dem Wind, bei 2 ist er halbpar
 
 #: sdk/scenario/scenario.xml:331(col)
 msgid "Granularity of the Fog of War. Default: 64. Warning: smaller values will improve the looks of the FoW but will also severely increase processing times."
-msgstr "Größe der Blöcke, in denen der Kriegsnebel (Fog of War) berechnet wird. Standardwert 64. Achtung: Kleinere Werte verbessern zwar die Darstellung des Kriegsnebels, erhöhen aber auch die benötigte Rechenleistung bei hohen Bildschirmauflösungen. Ab CR."
+msgstr "Größe der Blöcke, in denen der Kriegsnebel (Fog of War) berechnet wird. Standardwert 64. Achtung: Kleinere Werte verbessern zwar die Darstellung des Kriegsnebels, erhöhen aber auch die benötigte Rechenleistung bei hohen Bildschirmauflösungen."
 
 #: sdk/scenario/scenario.xml:337(caption)
 msgid "Section [Animals]"
@@ -12751,8 +12747,8 @@ msgid "Teams.txt"
 msgstr "Teams.txt"
 
 #: sdk/scenario/index.xml:18(text)
-msgid "Contains the Teamsettings for multiplayer scenarios. Since 4.9.6.0 CR."
-msgstr "Enthält Teameinstellungen für Mehrspielerszenarien. Ab 4.9.6.0 CR."
+msgid "Contains the Teamsettings for multiplayer scenarios."
+msgstr "Enthält Teameinstellungen für Mehrspielerszenarien."
 
 #: sdk/scenario/index.xml:20(dt)
 #, fuzzy
@@ -13070,8 +13066,8 @@ msgid "All bits set: the default behaviour."
 msgstr "Alle Bits gesetzt: Standardverhalten für Basis."
 
 #: sdk/scenario/Teams.xml:8(text)
-msgid "Via the Teams.txt component you can specify in which way groups of players play with or against together in multiplayer melees. From 4.9.6.0 CR."
-msgstr "Über die Teams.txt kann für Mehrspielerszenarien definiert werden, in welchen Fraktionen die Spieler zusammen oder gegeneinander spielen. Ab 4.9.6.0 CR."
+msgid "Via the Teams.txt component you can specify in which way groups of players play with or against together in multiplayer melees."
+msgstr "Über die Teams.txt kann für Mehrspielerszenarien definiert werden, in welchen Fraktionen die Spieler zusammen oder gegeneinander spielen."
 
 #: sdk/scenario/Teams.xml:11(caption)
 msgid "Section [Teams]"
@@ -13260,7 +13256,7 @@ msgstr "Attribute haben grundsätzlich die Form"
 
 #: sdk/scenario/MapCreatorS2.xml:20(text)
 msgid "Attributes can be defined in any order within the object. They can optionally have % or px as unit and can be specified as single value or range of values (val1 - val2). In case of a duplicate assignment the last value is evaluated."
-msgstr "und können in beliebiger Reihenfolge im Objekt definiert werden. Sie können dabei optional % oder px als Einheit haben, und als Konstante oder Wertbereich (Zahl1 - Zahl2) angegeben werden (Ab CE). Bei Doppelten Zuweisungen gilt das zuletzt definierte."
+msgstr "und können in beliebiger Reihenfolge im Objekt definiert werden. Sie können dabei optional % oder px als Einheit haben, und als Konstante oder Wertbereich (Zahl1 - Zahl2) angegeben werden. Bei Doppelten Zuweisungen gilt das zuletzt definierte."
 
 #: sdk/scenario/MapCreatorS2.xml:21(text)
 msgid "In addition to attributes there can be nested sub-objects which can be combined using operators:"
@@ -13568,8 +13564,8 @@ msgid "Player controls"
 msgstr "Spielersteuerung"
 
 #: sdk/playercontrols.xml:9(text)
-msgid "Since OC the engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences."
-msgstr "Ab OC erlaubt die Engine, Steuerungskommandos fuer Spieler komplett frei zu definieren. Eigene Tastaturkommandos koennen hinzugefuegt oder veraendert werden. Alle unterstuetzten Eingabegeraete wie Maus, Tastatur und Gamepads koennen frei belegt werden und Kommandos koennen aus beliebigen Tastenkombinationen oder Sequenzen bestehen."
+msgid "The engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences."
+msgstr "OC erlaubt die Engine, Steuerungskommandos fuer Spieler komplett frei zu definieren. Eigene Tastaturkommandos koennen hinzugefuegt oder veraendert werden. Alle unterstuetzten Eingabegeraete wie Maus, Tastatur und Gamepads koennen frei belegt werden und Kommandos koennen aus beliebigen Tastenkombinationen oder Sequenzen bestehen."
 
 #: sdk/playercontrols.xml:10(h)
 msgid "PlayerControls.txt"
@@ -14028,8 +14024,8 @@ msgid "RByV"
 msgstr "RByV"
 
 #: sdk/particle/index.xml:112(col)
-msgid "0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied (from 4.9.8.0)."
-msgstr "0 bis 3. 0 für keine Partikel-Drehung. Bei 1 dreht sich das Partikel nach Bewegungsrichtung; vorne ist dabei oben. Bei 2 dienen die Geschwindigkeitparameter nur der Ausrichtung; das Partikel bewegt sich nicht. Bei 3 dreht sich das Partikel zufällig (ab 4.9.8.0)."
+msgid "0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied."
+msgstr "0 bis 3. 0 für keine Partikel-Drehung. Bei 1 dreht sich das Partikel nach Bewegungsrichtung; vorne ist dabei oben. Bei 2 dienen die Geschwindigkeitparameter nur der Ausrichtung; das Partikel bewegt sich nicht. Bei 3 dreht sich das Partikel zufällig."
 
 #: sdk/particle/index.xml:115(col)
 msgid "GravityAcc"
@@ -14045,8 +14041,8 @@ msgid "WindDrift"
 msgstr "WindDrift"
 
 #: sdk/particle/index.xml:122(col)
-msgid "Horizontal drift by wind. Same as the material property of the same name. Since CR 4.9.8.4."
-msgstr "Abtrieb durch Wind. Wie die gleichnamige Materialeigenschaft. Ab CR 4.9.8.4."
+msgid "Horizontal drift by wind. Same as the material property of the same name."
+msgstr "Abtrieb durch Wind. Wie die gleichnamige Materialeigenschaft."
 
 #: sdk/particle/index.xml:125(col)
 msgid "VertexCount"
@@ -14101,8 +14097,8 @@ msgid "Attach"
 msgstr "Attach"
 
 #: sdk/particle/index.xml:157(col)
-msgid "0 or 1. If 1 the particle is moving relative to its target object's position. From CE 4.95.4."
-msgstr "0 oder 1. Bei 1 bewegt sich das Partikel bei angegebenem Zielobjekt relativ zu diesem. Ab 4.95.4."
+msgid "0 or 1. If 1 the particle is moving relative to its target object's position."
+msgstr "0 oder 1. Bei 1 bewegt sich das Partikel bei angegebenem Zielobjekt relativ zu diesem."
 
 #: sdk/particle/index.xml:162(text)
 msgid "Each particle has a position (x, y), horizontal and vertical impulse (xdir and ydir), life time (life), and two extra parameters (a and b). These are initialized by script and then processed by the <a href=\"#funcs\">particle functions</a>. For more information see <a href=\"#funcs\">particle functions</a> and <a href=\"#drawfuncs\">drawing functions</a>."
@@ -14496,7 +14492,7 @@ msgstr "InMatConvertDepth"
 
 #: sdk/material/ocm.xml:161(col)
 msgid "...when at the given depth."
-msgstr "...wenn das Materialpixel zur angegebenen Tiefe im angegebenen Material ist. Ab CE."
+msgstr "...wenn das Materialpixel zur angegebenen Tiefe im angegebenen Material ist."
 
 #: sdk/material/ocm.xml:164(col)
 msgid "AboveTempConvert"
@@ -14594,7 +14590,7 @@ msgstr "Benutzerdefinierte Reaktionen"
 
 #: sdk/material/ocm.xml:228(text)
 msgid "In addition to default reactions, every material can define custom reactions which are executed when the material passes another material as a free pixel (e.g. precipitation or particles after explosios) or by material movement (e.g. when a lake floods a tunnel)."
-msgstr "Zusätzlich zu den Standardroutinen kann jedes Material ab CR weitere Reaktionen definieren, die ausgeführt werden, wenn das Material durch lose Pixel (z.B. Regen oder Explosionsstreuung) oder Materialbewegung (z.B. beim Angraben eines Sees) auf ein anderes Material trifft:"
+msgstr "Zusätzlich zu den Standardroutinen kann jedes Material weitere Reaktionen definieren, die ausgeführt werden, wenn das Material durch lose Pixel (z.B. Regen oder Explosionsstreuung) oder Materialbewegung (z.B. beim Angraben eines Sees) auf ein anderes Material trifft:"
 
 #: sdk/material/ocm.xml:231(caption)
 msgid "In the .ocm-file: Any number of sections [Reaction]"
@@ -15072,8 +15068,8 @@ msgid "FolderMap.txt"
 msgstr "FolderMap.txt"
 
 #: sdk/folder/index.xml:42(text)
-msgid "From CR, scenario folders can also contain graphical folder maps for the selection of scenarios."
-msgstr "Ab CR können Rundenordner Auswahlkarten für die enthaltenen Szenarien anbieten."
+msgid "Scenario folders can also contain graphical folder maps for the selection of scenarios."
+msgstr "Rundenordner können Auswahlkarten für die enthaltenen Szenarien anbieten."
 
 #: sdk/folder/index.xml:44(dt)
 #, fuzzy
@@ -15119,8 +15115,8 @@ msgid "Should contain the name of the author in format \"Firstname Lastname (Nic
 msgstr "Sollte den Namen des Autors im Format \"Vorname Nachname (Nick)\" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht."
 
 #: sdk/folder/foldermap.xml:9(text)
-msgid "From CR, scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples."
-msgstr "Ab CR können Rundenordner Auswahlkarten für die enthaltenen Szenarien anbieten. Diese Karten werden nur in der Szenarienauswahl im Spiel und nicht im Entwicklerfrontend (Editor) angezeigt. Für ein Beispiel siehe das Westernpack von RedWolf Design."
+msgid "Scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples."
+msgstr "Rundenordner können Auswahlkarten für die enthaltenen Szenarien anbieten. Diese Karten werden nur in der Szenarienauswahl im Spiel und nicht im Entwicklerfrontend (Editor) angezeigt. Für ein Beispiel siehe das Westernpack von RedWolf Design."
 
 #: sdk/folder/foldermap.xml:12(caption)
 msgid "Section [FolderMap]"
@@ -15499,8 +15495,8 @@ msgid "object by_object, bool grab"
 msgstr "object by_object, bool grab"
 
 #: sdk/definition/script.xml:94(col)
-msgid "When the object is grabbed or let go by another object. Since 4.9.8.4."
-msgstr "Wenn das Objekt durch ein anderes Objekt angefasst oder losgelassen wird. Ab 4.9.8.4."
+msgid "When the object is grabbed or let go by another object."
+msgstr "Wenn das Objekt durch ein anderes Objekt angefasst oder losgelassen wird."
 
 #: sdk/definition/script.xml:98(col)
 msgid "object target"
@@ -15538,8 +15534,8 @@ msgid "When the object is incinerated. Notice: with objects changing their defin
 msgstr "Wenn das Objekt entzündet wird. Achtung: Bei Objekten, die ihre Definition mit BurnTo ändern, findet der Aufruf im verbrannten Objekt statt!"
 
 #: sdk/definition/script.xml:124(col)
-msgid "When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration. From CE."
-msgstr "Wenn das Objekt in einer löschenden Flüssigkeit gesprengt, und damit nicht angezündet wird. Aufruf analog zu Incineration. Ab CE."
+msgid "When the object is incinerated in and immediately extinguished by a surrounding liquid. Otherwise as Incineration."
+msgstr "Wenn das Objekt in einer löschenden Flüssigkeit gesprengt, und damit nicht angezündet wird. Aufruf analog zu Incineration."
 
 #: sdk/definition/script.xml:129(col)
 msgid "When a living being dies."
@@ -15784,7 +15780,7 @@ msgstr "Wenn das Objekt verkauft wird. Rückgabewert 0 oder die ID des Objekts, 
 
 #: sdk/definition/script.xml:319(col)
 msgid "When the object is sold."
-msgstr "Wenn das Objekt verkauft wird. Ab CE."
+msgstr "Wenn das Objekt verkauft wird."
 
 #: sdk/definition/script.xml:323(col)
 msgid "int by_player, object buy_object"
@@ -15792,27 +15788,27 @@ msgstr "int by_player, object buy_object"
 
 #: sdk/definition/script.xml:324(col)
 msgid "When the object is bought."
-msgstr "Wenn das Objekt gekauft wird. Ab CE."
+msgstr "Wenn das Objekt gekauft wird."
 
 #: sdk/definition/script.xml:329(col)
 msgid "When the objet is added to the crew of a player."
-msgstr "Wenn das Objekt der Crew eines Spielers hinzugefügt wird. Ab CE 4.95.2."
+msgstr "Wenn das Objekt der Crew eines Spielers hinzugefügt wird."
 
 #: sdk/definition/script.xml:333(col)
 msgid "int player, int new_team"
 msgstr "int player, int new_team"
 
 #: sdk/definition/script.xml:334(col)
-msgid "Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <placeholder-1/>). From 4.9.6.0 CR."
-msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch TRUE zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden. Ab 4.9.6.0 CR."
+msgid "Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <placeholder-1/>)."
+msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch TRUE zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden."
 
 #: sdk/definition/script.xml:338(col)
 msgid "int player, int new_team, int old_team"
 msgstr "int player, int new_team, int old_team"
 
 #: sdk/definition/script.xml:339(col)
-msgid "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>). Since 4.9.6.0 CR."
-msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <placeholder-1/>). Ab 4.9.6.0 CR."
+msgid "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>)."
+msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <placeholder-1/>)."
 
 #: sdk/definition/script.xml:48(text)
 msgid "The engine calls the following functions is objects at the given time. <placeholder-1/>"
@@ -16145,7 +16141,7 @@ msgstr "Festhalten"
 
 #: sdk/definition/procedures.xml:104(col)
 msgid "Adjusts object position at vertex a to the position of vertex b of the <emlink href=\"script/fn/SetAction.html\">target object</emlink>. a and b are the two low bytes of <emlink href=\"script/fn/SetActionData.html\">ActionData</emlink> (see <emlink href=\"script/fn/SetActionData.html\">SetActionData</emlink> for an example)."
-msgstr "Richtet Objektposition Vertex a an Vertex b des <emlink href=\"script/fn/SetAction.html\">Zielobjekts</emlink> aus. a und b sind die beiden niederwertigen Bytes von <emlink href=\"script/fn/SetActionData.html\">ActionData</emlink> (Siehe <emlink href=\"script/fn/SetActionData.html\">SetActionData</emlink> für Beispiel). Erweitert ab CE."
+msgstr "Richtet Objektposition Vertex a an Vertex b des <emlink href=\"script/fn/SetAction.html\">Zielobjekts</emlink> aus. a und b sind die beiden niederwertigen Bytes von <emlink href=\"script/fn/SetActionData.html\">ActionData</emlink> (Siehe <emlink href=\"script/fn/SetActionData.html\">SetActionData</emlink> für Beispiel)."
 
 #: sdk/definition/procedures.xml:108(col)
 msgid "CONNECT"
@@ -16214,8 +16210,8 @@ msgid "Meshes"
 msgstr "Meshes"
 
 #: sdk/definition/meshes.xml:9(text)
-msgid "Since OC it is possible to directly use 3D models (meshes) as object graphics. To do so they need to be in OGRE format. For most modeling tools there exist exporter tools, a list can be found on the <a href=\"http://www.ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Both the OGRE binary format (*.mesh) and the OGRE XML format(*.mesh.xml) are supported, however it is recommended to always use the binary format whenever possible since it is smaller in size and can be loaded more quickly by the engine. The tool <a href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> can convert between the two formats."
-msgstr "Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Dazu müssen sie im OGRE-Format vorliegen. Für gängige Modellierungstools gibt es entsprechende Exporter, eine Liste befindet sich auf dem <a href=\"http://www.ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Es werden sowohl das OGRE-Binär-Format (*.mesh) als auch das OGRE-XML-Format (*.mesh.xml) unterstützt, jedoch wird empfohlen wann immer möglich das Binärformat zu verwenden, da es eine kleinere Dateigröße hat und schneller von der Engine geladen werden kann. Das Tool <a href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> kann zwischen beiden Formaten umwandeln."
+msgid "It is possible to directly use 3D models (meshes) as object graphics. To do so they need to be in OGRE format. For most modeling tools there exist exporter tools, a list can be found on the <a href=\"http://www.ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Both the OGRE binary format (*.mesh) and the OGRE XML format(*.mesh.xml) are supported, however it is recommended to always use the binary format whenever possible since it is smaller in size and can be loaded more quickly by the engine. The tool <a href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> can convert between the two formats."
+msgstr "Es ist möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Dazu müssen sie im OGRE-Format vorliegen. Für gängige Modellierungstools gibt es entsprechende Exporter, eine Liste befindet sich auf dem <a href=\"http://www.ogre3d.org/wiki/index.php/Exporters\">OGRE Wiki</a>. Es werden sowohl das OGRE-Binär-Format (*.mesh) als auch das OGRE-XML-Format (*.mesh.xml) unterstützt, jedoch wird empfohlen wann immer möglich das Binärformat zu verwenden, da es eine kleinere Dateigröße hat und schneller von der Engine geladen werden kann. Das Tool <a href=\"http://www.ogre3d.org/wiki/index.php/OgreXmlConverter\">OgreXMLConverter</a> kann zwischen beiden Formaten umwandeln."
 
 #: sdk/definition/meshes.xml:10(text)
 msgid "The exporter normally creates a mesh file (*.mesh or *.mesh.xml), a skeleton file (*.skeleton or *.skeleton.xml) if the mesh contains bones, a material script (*.material) and potentially used textures. To use the mesh as a Clonk object all generated files need to be copied into the <emlink href=\"definition/index.html\">object definition</emlink> and the mesh file needs to be renamed to Graphics.mesh or Graphics.mesh.xml, respectively. Textures are supported in PNG, JPG and BMP format."
@@ -16335,8 +16331,8 @@ msgid "Graphics.mesh"
 msgstr "Graphics.mesh"
 
 #: sdk/definition/index.xml:26(text)
-msgid "Since OC a 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object."
-msgstr "Ab OC kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein."
+msgid "A 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object."
+msgstr "Es kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein."
 
 #: sdk/definition/index.xml:28(dt)
 #, fuzzy
@@ -16692,7 +16688,7 @@ msgstr "Bitmaske: Bit 0 (Wert 1) das Objekt kann durch Anfassen von außen und/o
 
 #: sdk/definition/defcore.xml:321(col)
 msgid "1 - 10. Determines search depth of the pathfinder algorithm (default 1). Warning: higher values may slow down the game. By setting this value you can also enable non-CrewMember objects to use pathfinding when executing commands."
-msgstr "1 - 10. Beeinflusst die Suchtiefe des Wegfindungsalgorithmus (Standard: 1). Vorsicht: hohe Werte sind sehr rechenintensiv. Mit diesem Wert setzen auch Objekte ohne CrewMember-Wert bei der Ausführung von Kommandos (z.B. MoveTo) den internen Wegfindungsalgorithmus ein. Erweitert ab 4.95.4."
+msgstr "1 - 10. Beeinflusst die Suchtiefe des Wegfindungsalgorithmus (Standard: 1). Vorsicht: hohe Werte sind sehr rechenintensiv. Mit diesem Wert setzen auch Objekte ohne CrewMember-Wert bei der Ausführung von Kommandos (z.B. MoveTo) den internen Wegfindungsalgorithmus ein."
 
 #: sdk/definition/defcore.xml:326(col)
 msgid "0 or 1. If 1, the object's contents is not added to the object's total mass. This can be used to prevent small container objects from turning into killer throwing items."
@@ -16747,20 +16743,20 @@ msgid "If an object with Action procedure \"<emlink href=\"definition/procedures
 msgstr "Wird ein Objekt bei einer Action mit der Procedure \"<emlink href=\"definition/procedures.html\">LIFT</emlink>\" mehr als die angegebene Höhe über der Objektmitte angehoben, wird die Funktion LiftTop im Script aufgerufen."
 
 #: sdk/definition/defcore.xml:391(col)
-msgid "0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees. From 4.95.4."
-msgstr "0 Eingang ist nur bei aufgerichtetem Objekt geöffnet, 1 Eingang ist immer geöffnet, 2-360 Eingang ist innerhalb des entsprechenden Bereichs geöffnet. Ab 4.95.4."
+msgid "0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees."
+msgstr "0 Eingang ist nur bei aufgerichtetem Objekt geöffnet, 1 Eingang ist immer geöffnet, 2-360 Eingang ist innerhalb des entsprechenden Bereichs geöffnet."
 
 #: sdk/definition/defcore.xml:396(col)
-msgid "Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5. From 4.95.4."
-msgstr "Maximale Distanz, mit der ein Bewegungskommando einen Zielpunkt treffen muss, damit das Bewegungskommando als erfüllt gilt. Vorgabewert 5. Ab 4.95.4."
+msgid "Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5."
+msgstr "Maximale Distanz, mit der ein Bewegungskommando einen Zielpunkt treffen muss, damit das Bewegungskommando als erfüllt gilt. Vorgabewert 5."
 
 #: sdk/definition/defcore.xml:401(col)
-msgid "0 or 1. If 1 the object's pathfinding will ignore any transfer zones. From 4.95.4."
-msgstr "0 oder 1. Bei 1 berücksichtigt die Wegfindung des Objekts keine Transferzonen an Gebäuden. Ab 4.95.4."
+msgid "0 or 1. If 1 the object's pathfinding will ignore any transfer zones."
+msgstr "0 oder 1. Bei 1 berücksichtigt die Wegfindung des Objekts keine Transferzonen an Gebäuden."
 
 #: sdk/definition/defcore.xml:406(col)
-msgid "0 or 1. If 1, the building's context menu will open automatically upon entry. From 4.9.7.7."
-msgstr "0 oder 1. Bei 1 wird für dieses Gebäude beim Betreten automatisch das Kontextmenü geöffnet. Ab 4.9.7.7."
+msgid "0 or 1. If 1, the building's context menu will open automatically upon entry."
+msgstr "0 oder 1. Bei 1 wird für dieses Gebäude beim Betreten automatisch das Kontextmenü geöffnet."
 
 #: sdk/definition/defcore.xml:412(caption)
 msgid "Section [Physical]"
@@ -16888,8 +16884,8 @@ msgid "CNAT_MultiAttach"
 msgstr "CNAT_MultiAttach"
 
 #: sdk/definition/cnat.xml:51(col)
-msgid "Special flag: new attachment behaviour for objects with the same direction value at several vertices (from version 4.95.4)."
-msgstr "Zusatz-Flag: neues Attachment-Verhalten für Objekte mit gleicher Richtung an mehreren Vertices (ab Version 4.95.4)"
+msgid "Special flag: new attachment behaviour for objects with the same direction value at several vertices."
+msgstr "Zusatz-Flag: neues Attachment-Verhalten für Objekte mit gleicher Richtung an mehreren Vertices."
 
 #: sdk/definition/cnat.xml:55(col)
 msgid "64"
@@ -16900,8 +16896,8 @@ msgid "CNAT_NoCollision"
 msgstr "CNAT_NoCollision"
 
 #: sdk/definition/cnat.xml:57(col)
-msgid "Extra flag: non-colliding vertex (from version 4.95.4)"
-msgstr "Zusatz-Flag: kollisionsfreier Vertex (ab Version 4.95.4)"
+msgid "Extra flag: non-colliding vertex"
+msgstr "Zusatz-Flag: kollisionsfreier Vertex"
 
 #: sdk/definition/category.xml:6(title)
 #: sdk/definition/category.xml:7(h)
@@ -17021,8 +17017,8 @@ msgid "C4D_IgnoreFoW"
 msgstr "C4D_IgnoreFoW"
 
 #: sdk/definition/category.xml:70(col)
-msgid "Object is drawn above fog of war. Useful for creating status displays or gui elements using objects. From CR."
-msgstr "Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente. Ab CR."
+msgid "Object is drawn above fog of war. Useful for creating status displays or gui elements using objects."
+msgstr "Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente."
 
 #: sdk/definition/category.xml:79(text)
 msgid "Category for a rule."
@@ -17244,8 +17240,8 @@ msgid "Area that is dug free during this action. If 1, the area covered by the o
 msgstr "Freigraben während dieser Aktion. Objektrechteck 1, sonst Kreisradius."
 
 #: sdk/definition/actmap.xml:145(col)
-msgid "Since OC. Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href=\"definition/animations.html\">Animationen</emlink> for further documentation on animations."
-msgstr "Ab OC. Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink> für weitergehende Dokumentation zu Animationen."
+msgid Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href=\"definition/animations.html\">Animationen</emlink> for further documentation on animations."
+msgstr "Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink> für weitergehende Dokumentation zu Animationen."
 
 #: sdk/console.xml:6(title)
 msgid "The engine in developer mode"
@@ -17859,8 +17855,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Change of magic value (positive or negative)."
 #~ msgstr "Veränderung des Magiewertes; positiv oder negativ"
 
-#~ msgid "If true, the function will also transfer magical energy partially instead of failing. In this case, the function will only fail if the magical energy is not changed at all. Since CR."
-#~ msgstr "Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR."
+#~ msgid "If true, the function will also transfer magical energy partially instead of failing. In this case, the function will only fail if the magical energy is not changed at all."
+#~ msgstr "Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde."
 
 #~ msgid "Adjusts the magic value of an object. The change is only performed as a whole - if the specified change would pass the upper or lower physical limit of the object, it is not performed and the function returns false. The effect is that with only one call you can make a change and check whether the change is even possible."
 #~ msgstr "Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung change nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist."

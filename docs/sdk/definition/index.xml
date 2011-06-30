@@ -23,7 +23,7 @@
       </dd>
       <dt id="Graphicsmesh"><img height="16" src="../../images/icon_ogre_mesh.png" width="16"/> <emlink href="definition/meshes.html">Graphics.mesh</emlink></dt>
       <dd>
-        <text>Since OC a 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object.</text>
+        <text>A 3D model can be used as an object's graphics instead of a bitmap in BMP or PNG format. It needs to be provided in OGRE format. There are exporters for most 3D modeling tools. All files that are required by the mesh (especially material scripts, textures and skeletons) need also to be present in the object.</text>
       </dd>
       <dt id="Graphicsskeleton"><img height="16" src="../../images/icon_ogre_mesh.png" width="16"/> *.skeleton</dt>
       <dd>

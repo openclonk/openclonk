@@ -39,7 +39,7 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       </dd>
       <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/> <emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
       <dd>
-        <text>From CR, scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
+        <text>Scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
       </dd>
       <dt id="Loader"><img height="16" src="../../images/icon_image.png" width="16"/> Loader*.png/Loader*.bmp</dt>
       <dd>

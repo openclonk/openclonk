@@ -142,7 +142,7 @@
       <row>
         <literal_col>Animation</literal_col>
         <col>String</col>
-        <col>Since OC. Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animationen</emlink> for further documentation on animations.</col>
+        <col>Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animationen</emlink> for further documentation on animations.</col>
       </row>
     </table>
   </text>

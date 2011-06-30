@@ -388,22 +388,22 @@
         <row>
           <literal_col>RotatedEntrance</literal_col>
           <col>Integer</col>
-          <col>0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees. From 4.95.4.</col>
+          <col>0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees.</col>
         </row>
         <row>
           <literal_col>MoveToRange</literal_col>
           <col>Integer</col>
-          <col>Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5. From 4.95.4.</col>
+          <col>Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5.</col>
         </row>
         <row>
           <literal_col>NoTransferZones</literal_col>
           <col>Integer</col>
-          <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones. From 4.95.4.</col>
+          <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
         </row>
         <row>
           <literal_col>AutoContextMenu</literal_col>
           <col>Integer</col>
-          <col>0 or 1. If 1, the building's context menu will open automatically upon entry. From 4.9.7.7.</col>
+          <col>0 or 1. If 1, the building's context menu will open automatically upon entry.</col>
         </row>
       </table>
     </text>
