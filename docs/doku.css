@@ -11,17 +11,27 @@ body {
 	line-height: 1.6em;
 }
 
-body > #iframe {
+#iframe {
 	position: absolute; top: 145px; width: 270px; border: 0; bottom: 0; overflow: auto;
 	height: auto;
 	display: block;
 }
 
-body > #iframe > iframe {
+#iframe > iframe {
 	border: 0; overflow: auto;
 	height: 100%;
 	width: 100%;
 	display: block;
+}
+
+#toc {
+	margin: 10px;
+}
+
+#toc h2 {
+	margin-top: 0px;
+	padding-top: 0px;
+	margin-bottom: 10px;
 }
 
 .text, pre.code, ul, ol, dl {
