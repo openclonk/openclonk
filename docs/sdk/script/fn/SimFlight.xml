@@ -64,11 +64,11 @@
     <desc>Simulates the motion of a falling object with a given starting position and initial speed. The returned array will contain [int x_final, int y_final, int xdir_final, int ydir_final, int time_passed]. <br/> If the projected trajectory encounters a material of the specified density, the simulation will stop and time_passed will be non-negative. Otherwise, time_passed will be negative.</desc>
     <examples>
       <example>
-        <code>if (<funclink>GetAction</funclink>()eq&quot;Jump&quot;)
+        <code>if (<funclink>GetAction</funclink>() == &quot;Jump&quot;)
 {
 	var end = SimFlight()
 	if (end[3] &gt;= 80)
-		<funclink>Message</funclink>(&quot;Oh oh, das wird ein harter Aufprall!&quot;);
+		<funclink>Message</funclink>(&quot;Oh oh, this will be a rough impact!&quot;);
 }</code>
         <text>If the calling clonk is situated in mid-air and it appears that he will hit the ground at high speed, he will call out.</text>
       </example>

@@ -20,6 +20,7 @@
       <funclink>GetContact</funclink>
       <funclink>GetVertex</funclink>
       <funclink>GetMaterial</funclink>
+      <funclink>VerticesStuck</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2002-08</date>

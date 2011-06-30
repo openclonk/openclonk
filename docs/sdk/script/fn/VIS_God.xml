@@ -13,8 +13,8 @@
     <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code>SetVisibility(VIS_God, FindObject(Find_ID(GIDL)));</code>
-        <text>A gold idol is now only visible in general viewports.</text>
+        <code>SetVisibility(VIS_God, FindObject(Find_ID(Chest)));</code>
+        <text>A chest is now only visible in general viewports.</text>
       </example>
     </examples>
     <related>

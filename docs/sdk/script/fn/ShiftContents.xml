@@ -34,26 +34,6 @@
     <desc>Resorts the contained objects so the next object with a differing ID will be in front. The most common application for this command is inventory selection.</desc>
     <remark>This command calls the function "ControlContents" in the container object which can be used to overload the selection process. If the function ControlContents does not exist in the container object or returns 0, the function "Selection" will be called in the newly selected inventory object. If the function Selection does not exist in the contained object or returns 0, the engine will play the "Grab" sound effect for the container object (default behaviour for inventory selection). See also <emlink href="definition/script.html">object scripts</emlink>.</remark>
     <remark>Notice: nowadays the function ShiftContents will also play the selection sound. To avoid double playback, object scripts should take this into consideration and not play their own selection sound or move the sound playback to the ControlContents function, as seen below.</remark>
-    <examples>
-      <example>
-        <code>protected func ControlSpecial()
-  {
-  [Inventarwechsel]
-  ShiftContents();
-  <funclink>return</funclink> 1;
-  }</code>
-        <text>Part of an object script. Moves the contents of an object on special key 1.</text>
-      </example>
-      <example>
-        <code>protected func ControlContents(target_id)
-  {
-  if (!ShiftContents(false, target_id)) <funclink>return</funclink> 1;
-  <funclink>Sound</funclink>(&quot;Ding&quot;);
-  <funclink>return</funclink> 1;
-  }</code>
-        <text>Through this object script selecting a new inventory item will play a "Ding" sound.</text>
-      </example>
-    </examples>
     <related>
       <funclink>ScrollContents</funclink>
     </related>

@@ -14,7 +14,7 @@
     <examples>
       <example>
         <code>for(var obj in FindObjects(Find_OCF(<funclink>OCF_CrewMember</funclink>))) SetVisibility(VIS_Owner, obj);</code>
-        <text>Makes all selected clonks visible for their owners only.</text>
+        <text>Makes all clonks that are in a crew visible for their owners only.</text>
       </example>
     </examples>
     <related>

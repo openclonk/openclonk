@@ -35,7 +35,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets the vertical speed of the object.</desc>
+    <desc>Sets the speed of the object.</desc>
     <related>
       <funclink>GetXDir</funclink>
       <funclink>GetYDir</funclink>

@@ -13,7 +13,7 @@
     <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code>for(var obj in FindObjects(Find_ID(WIPF))) SetVisibility(VIS_None, obj);</code>
+        <code>for(var obj in FindObjects(Find_ID(Wipf))) SetVisibility(VIS_None, obj);</code>
         <text>Makes all wipfs invisible.</text>
       </example>
     </examples>

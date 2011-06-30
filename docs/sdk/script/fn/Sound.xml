@@ -44,8 +44,8 @@
     <desc>Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(HUT2)-&gt;Sound(&quot;Applause&quot;, false, 50);</code>
-        <text>Plays an 'applause' sound next to the first found wooden hut at half volume.</text>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(WindGenerator))-&gt;Sound(&quot;Fanfare&quot;, false, 50);</code>
+        <text>Plays a 'Fanfare' sound next to the first found wind generator at half volume.</text>
       </example>
     </examples>
     <related><funclink>Music</funclink></related>
