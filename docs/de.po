@@ -17240,7 +17240,7 @@ msgid "Area that is dug free during this action. If 1, the area covered by the o
 msgstr "Freigraben während dieser Aktion. Objektrechteck 1, sonst Kreisradius."
 
 #: sdk/definition/actmap.xml:145(col)
-msgid Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href=\"definition/animations.html\">Animationen</emlink> for further documentation on animations."
+msgid "Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href=\"definition/animations.html\">Animationen</emlink> for further documentation on animations."
 msgstr "Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink> für weitergehende Dokumentation zu Animationen."
 
 #: sdk/console.xml:6(title)

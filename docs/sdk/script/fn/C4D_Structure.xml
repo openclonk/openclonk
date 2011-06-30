@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>C4D_Structure</title>
     <category>Objects</category>
     <subcat>Category</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int </rtype></syntax>
     <desc>Object category: building.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code><funclink>GetPlrKnowledge</funclink>(0, 0, 0, C4D_Structure);</code>
@@ -21,6 +20,6 @@
       <funclink>GetCategory</funclink>
       <funclink>SetCategory</funclink>
     </related>
-  </func>
+  </const>
   <author>jwk</author><date>2002-04</date>
 </funcs>

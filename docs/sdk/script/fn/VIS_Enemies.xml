@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>VIS_Enemies</title>
     <category>Objects</category>
     <subcat>Visibility</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Constant for <funclink>GetVisibility</funclink>/<funclink>SetVisibility</funclink>. The object is visible for all enemires of the owner.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code>for(var obj in FindObjects(Find_ID(Flagpole))) SetVisibility(VIS_Enemies | VIS_God, obj);
@@ -28,6 +27,6 @@
       <funclink>VIS_God</funclink>
       <funclink>VIS_Local</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2001-11</date>
 </funcs>

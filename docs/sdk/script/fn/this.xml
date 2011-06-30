@@ -3,7 +3,7 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>this</title>
     <category>Objects</category>
     <version>5.1 OC</version>
@@ -17,6 +17,6 @@ myid = this-&gt;<funclink>GetID</funclink>();</code>
         <text>Stores the ID of the calling object in the thread local variable myid.</text>
       </example>
     </examples>
-  </func>
+  </const>
   <author>jwk</author><date>2002-04</date>
 </funcs>

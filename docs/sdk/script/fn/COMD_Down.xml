@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>COMD_Down</title>
     <category>Objects</category>
     <subcat>Movement</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Movement direction: up. For more information see <funclink>SetComDir</funclink>.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code><funclink>SetComDir</funclink>(COMD_Up, <funclink>FindObject</funclink>(BLMP));</code>
@@ -21,6 +20,6 @@
       <funclink>GetComDir</funclink>
       <funclink>SetComDir</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-04</date>
 </funcs>

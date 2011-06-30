@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>DIR_Right</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Constant for <funclink>SetDir</funclink>/<funclink>GetDir</funclink>: direction right</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code><funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>(), <funclink>GetCursor</funclink>();
@@ -23,6 +22,6 @@
       <funclink>GetDir</funclink>
       <funclink>SetDir</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2001-11</date>
 </funcs>

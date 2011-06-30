@@ -40,7 +40,7 @@
   <xsl:template match="script">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
-  <xsl:template match="func" mode="head">
+  <xsl:template match="func|const" mode="head">
     <xsl:apply-templates mode="head" />
   </xsl:template>
   <xsl:template match="*" mode="head" />
@@ -100,7 +100,7 @@
     </html>
   </xsl:template>
 	
-  <xsl:template match="func">
+  <xsl:template match="func|const">
     <h1>
       <xsl:attribute name="id"><xsl:value-of select="title" /></xsl:attribute>
       <xsl:value-of select="title" /><xsl:apply-templates select="deprecated" />
@@ -154,7 +154,7 @@
       <span class="type"><xsl:apply-templates select="rtype" /></span>
       <xsl:if test="not(contains(rtype[1],'&amp;'))"><xsl:text>&#160;</xsl:text></xsl:if>
       <xsl:value-of select="../title" />
-      (<xsl:apply-templates select="params" />);
+			<xsl:if test="parent::func">(<xsl:apply-templates select="params" />);</xsl:if>
     </div>
   </xsl:template>
 

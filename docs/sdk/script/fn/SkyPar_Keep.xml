@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>SkyPar_Keep</title>
     <category>Sky</category>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Constant for <funclink>SetSkyParallax</funclink>.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <related><funclink>SetSkyParallax</funclink></related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-04</date>
 </funcs>
