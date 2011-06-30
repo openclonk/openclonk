@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-30 18:47+0200\n"
-"PO-Revision-Date: 2011-06-30 18:38+0200\n"
+"POT-Creation-Date: 2011-06-30 20:10+0200\n"
+"PO-Revision-Date: 2011-06-30 20:09+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
@@ -12860,7 +12860,7 @@ msgstr "Lokale Musikstücke können auch in dieser lokalen Gruppendatei abgelegt
 
 #: sdk/scenario/index.xml:93(emlink)
 #: sdk/folder/index.xml:60(emlink)
-#: sdk/cmdline.xml:107(dt)
+#: sdk/cmdline.xml:95(dt)
 msgid "*.ocd"
 msgstr "*.ocd"
 
@@ -14954,7 +14954,7 @@ msgid "Scenario folders are used to group a number of scenarios. Scenario folder
 msgstr "In Rundenordner werden mehrere Szenarien zusammengefasst. Rundenordner erscheinen in der Szenarienauswahl als Buch, das geöffnet werden kann um die enthaltenen Szenarien zu starten."
 
 #: sdk/folder/index.xml:12(emlink)
-#: sdk/cmdline.xml:103(dt)
+#: sdk/cmdline.xml:91(dt)
 msgid "*.ocs"
 msgstr "*.ocs"
 
@@ -17279,220 +17279,217 @@ msgid "The engine. The main program of the game. Without startup parameters, the
 msgstr "Die Engine. Das eigentliche Hauptprogramm des Spiels. Ohne Parameter startet das Spiel im Vollbildmodus (Spielermodus) und zeigt das Startmenü an. Folgende Parameter sind zusätzlich möglich:"
 
 #: sdk/cmdline.xml:13(dt)
-msgid "/console"
-msgstr "/console"
+msgid "--editor"
+msgstr "--editor"
 
 #: sdk/cmdline.xml:15(text)
-msgid "Starts in console mode (also called developer mode or windowed mode). In console mode, scenarios can be edited and saved. The game will also start in console mode if a scenario (*.ocs) and no /fullscreen is specified."
-msgstr "Startet im Konsolenmodus (auch Entwicklermodus oder Fenstermodus genannt). Im Konsolenmodus können Szenarien bearbeitet und abgespeichert werden. Das Spiel startet auch standardgemäß im Konsolenmodus, wenn ein Szenario (*.ocs) als Parameter angegeben und kein /fullscreen gesetzt ist."
+msgid "Starts in editor mode (also called developer mode or windowed mode). In editor mode, scenarios can be edited and saved. The game will also start in editor mode if a scenario (*.ocs) and no --fullscreen is specified."
+msgstr "Startet im Editormodus (auch Entwicklermodus oder Fenstermodus genannt). Im Editormodus können Szenarien bearbeitet und abgespeichert werden. Das Spiel startet auch im Editormodus, wenn ein Szenario (*.ocs) als Parameter ohne --fullscreen angegeben wird."
 
 #: sdk/cmdline.xml:17(dt)
-msgid "/fullscreen"
-msgstr "/fullscreen"
+msgid "--fullscreen"
+msgstr "--fullscreen"
 
 #: sdk/cmdline.xml:19(text)
 msgid "Starts in fullscreen mode (also called player mode). If no scenario and no direct join adress is given, the startup menu is shown."
 msgstr "Startet im Vollbildmodus (auch Spielermodus genannt). Wenn kein Szenario und keine Direktbeitritt-Adresse angegeben ist, wird das Startmenü angezeigt."
 
 #: sdk/cmdline.xml:21(dt)
-msgid "/config:Filename"
-msgstr "/config:Filename"
+msgid "--config=Filename"
+msgstr "--config=Filename"
 
 #: sdk/cmdline.xml:23(text)
 msgid "Loads and saves the configuration from the specified file instead of the default configuration file or the Windows registry."
 msgstr "Lädt die als Filename angegebene Konfiguirationsdatei (wenn vorhanden) und schreibt beim Beenden in diese."
 
 #: sdk/cmdline.xml:25(dt)
-msgid "/record"
-msgstr "/record"
+msgid "--record"
+msgstr "--record"
 
 #: sdk/cmdline.xml:27(text)
 msgid "The round is recorded."
 msgstr "Die Runde wird aufgenommen."
 
 #: sdk/cmdline.xml:29(dt)
-msgid "/network, /nonetwork"
-msgstr "/network bzw. /nonetwork"
+msgid "--network, --nonetwork"
+msgstr "--network, --nonetwork"
 
 #: sdk/cmdline.xml:31(text)
 msgid "Activates or deactivates network mode."
 msgstr "Aktiviert bzw. deaktiviert den Netzwerkmodus."
 
 #: sdk/cmdline.xml:33(dt)
-msgid "/signup, /nosignup"
-msgstr "/signup bzw. /nosignup"
+msgid "--signup, --nosignup"
+msgstr "--signup, --nosignup"
 
 #: sdk/cmdline.xml:35(text)
 msgid "Activates or deactivates online signup of the game as public internet game. This value is stored in the configuration."
 msgstr "Aktiviert bzw. deaktiviert die Anmeldung des Spiels als Internetspiel. Dieser Wert wird in der Konfiguration gespeichert."
 
-#: sdk/cmdline.xml:38(text)
-msgid "/signup implies /network. /nosignup implies /noleague."
-msgstr "/signup impliziert /network. /nosignup impliziert /noleague."
+#: sdk/cmdline.xml:36(text)
+msgid "--signup implies --network. --nosignup implies --noleague."
+msgstr "--signup impliziert --network. --nosignup impliziert --noleague."
 
-#: sdk/cmdline.xml:40(dt)
-msgid "/league, /noleague"
-msgstr "/league bzw. /noleague"
+#: sdk/cmdline.xml:38(dt)
+msgid "--league, --noleague"
+msgstr "--league, --noleague"
 
-#: sdk/cmdline.xml:42(text)
+#: sdk/cmdline.xml:40(text)
 msgid "Activates or deactivates online signup of the game as league game. This value is stored in the configuration."
 msgstr "Aktiviert bzw. deaktiviert die Anmeldung des Spiels als Ligaspiel. Dieser Wert wird in der Konfiguration gespeichert."
 
+#: sdk/cmdline.xml:41(text)
+msgid "--league implies --network and --signup."
+msgstr "--league impliziert --network und --signup."
+
+#: sdk/cmdline.xml:43(dt)
+msgid "--runtimejoin, --noruntimejoin"
+msgstr "--runtimejoin, --noruntimejoin"
+
 #: sdk/cmdline.xml:45(text)
-msgid "/league implies /network and /signup."
-msgstr "/league impliziert /network und /signup."
-
-#: sdk/cmdline.xml:47(dt)
-msgid "/runtimejoin, /noruntimejoin"
-msgstr "/runtimejoin bzw. /noruntimejoin"
-
-#: sdk/cmdline.xml:49(text)
 msgid "Activates or deactivates runtime join. This setting will be stored in the configuration."
 msgstr "Aktiviert bzw. deaktiviert den Laufzeitbeitritt. Dieser Wert wird in der Konfiguration gespeichert."
 
+#: sdk/cmdline.xml:47(dt)
+msgid "--lobby[=<em>time</em>]"
+msgstr "--lobby[=<em>Zeit</em>]"
+
+#: sdk/cmdline.xml:49(text)
+msgid "Activates the lobby before a network game is started. The lobby is the waiting- and chat screen. The lobby is on by default for all network games. Implies --network. If you specify a time (e.g. --lobby=120) the lobby will start with a countdown, automatically launching the game after (in this case) 120 seconds."
+msgstr "Aktiviert vor dem Start eines Netzwerkspieles die Lobby, das heißt den Wartebildschirm mit Chat vor dem Spielstart. Standardmäßig aktiv für alle Netzwerkspiele. Impliziert --network. Bei angegebener Zeit (z.B. --lobby=120) startet die Lobby im Countdown, so dass im Beispiel das Spiel automatisch nach 120 Sekunden gestartet wird."
+
 #: sdk/cmdline.xml:51(dt)
-msgid "/regjoinonly"
-msgstr "/regjoinonly"
+msgid "--observe"
+msgstr "--observe"
 
 #: sdk/cmdline.xml:53(text)
-msgid "Prevents any unregistered client from joining games hosted on this computer (<em>always</em> active in dedicated server engines)."
-msgstr "Bewirkt, dass nur Clients mit registrierter Version in Netzwerkspielen beitreten können (in Dedicated-Server-Engine <em>immer</em> aktiv)."
+msgid "For network games: The client joins as observer (without players). Implies --network."
+msgstr "Für Netzwerkspiele: tritt als Zuschauer (ohne Spieler) bei. Impliziert --network."
 
 #: sdk/cmdline.xml:55(dt)
-msgid "/faircrew, /trainedcrew"
-msgstr "/faircrew bzw. /trainedcrew"
+msgid "--join=&lt;<em>Address</em>&gt;"
+msgstr "--join=&lt;<em>Addresse</em>&gt;"
 
 #: sdk/cmdline.xml:57(text)
-msgid "Activates or deactivates fair crew. With fair crew, all clonks start with the same physical properties. With trained crew, clonks start with their individually stored, trained physical value. This value is stored in the configuration."
-msgstr "Aktiviert bzw. deaktiviert faire Crew. Bei fairer Crew starten alle Clonks mit gleichen physischen Eigenschaften. Bei trainierter Crew starten Clonks mit ihren individuell trainierten physischen Eigenschaften. Dieser Wert wird in der Konfiguration gespeichert."
+msgid "Searches for a network game on the specified address and joins it. No local scenario (*.ocs) should be specified. Implies --network."
+msgstr "Sucht ein Netzwerkspiel auf der angegebenen Adresse und tritt dort bei. Es sollte kein lokales Szenario (*.ocs) angegeben werden. Impliziert --network."
 
 #: sdk/cmdline.xml:59(dt)
-msgid "/lobby[:time]"
-msgstr "/lobby[:time]"
-
-#: sdk/cmdline.xml:61(text)
-msgid "Activates the lobby before a network game is started. The lobby is the waiting- and chat screen. The lobby is on by default for all network games. Implies /network. If you specify a time (e.g. /lobby:120) the lobby will start with a countdown, automatically launching the game after (in this case) 120 seconds."
-msgstr "Aktiviert vor dem Start eines Netzwerkspieles die Lobby, das heißt den Wartebildschirm mit Chat vor dem Spielstart. Standardgemäß aktiv für alle Netzwerkspiele. Impliziert /network. Bei angegebener Zeit (z.B. /lobby:120) startet die Lobby im Countdown, so dass im Beispiel das Spiel automatisch nach 120 Sekunden gestartet wird."
-
-#: sdk/cmdline.xml:63(dt)
-msgid "/observe"
-msgstr "/observe"
-
-#: sdk/cmdline.xml:65(text)
-msgid "For network games: The client joins as observer (without players). Implies /network."
-msgstr "Für Netzwerkspiele: tritt als Zuschauer (ohne Spieler) bei. Impliziert /network."
-
-#: sdk/cmdline.xml:67(dt)
-msgid "/join:&lt;<em>Address</em>&gt;"
-msgstr "/join:&lt;<em>Adresse</em>&gt;"
-
-#: sdk/cmdline.xml:69(text)
-msgid "Searches for a network game on the specified address and joins it. No local scenario (*.ocs) should be specified. Implies /network."
-msgstr "Sucht ein Netzwerkspiel auf der angegebenen Adresse und tritt dort bei. Es sollte kein lokales Szenario (*.ocs) angegeben werden. Impliziert /network."
-
-#: sdk/cmdline.xml:71(dt)
 msgid "clonk://&lt;<em>Address</em>&gt;/"
 msgstr "clonk://&lt;<em>Adresse</em>&gt;/"
 
-#: sdk/cmdline.xml:73(text)
-msgid "Same as /join if an address is specified. If \"update\" is specified as an address, this will cause the engine to perform an update check instead."
-msgstr "Bei Angabe einer Adresse gleich /join. Wird \"update\" als Adresse übergeben, sucht die Engine beim Start nach verfügbaren Updates."
+#: sdk/cmdline.xml:61(text)
+msgid "Same as --join if an address is specified. If \"update\" is specified as an address, this will cause the engine to perform an update check instead."
+msgstr "Bei Angabe einer Adresse gleich --join. Wird \"update\" als Adresse übergeben, sucht die Engine beim Start nach verfügbaren Updates."
 
-#: sdk/cmdline.xml:75(dt)
-msgid "/tcpport:&lt;<em>Port Number</em>&gt;"
-msgstr "/tcpport:&lt;<em>Portnummer</em>&gt;"
+#: sdk/cmdline.xml:63(dt)
+msgid "--tcpport=&lt;<em>Port Number</em>&gt;"
+msgstr "--tcpport=&lt;<em>Portnummer</em>&gt;"
 
-#: sdk/cmdline.xml:77(text)
+#: sdk/cmdline.xml:65(text)
 msgid "Sets the TCP port number for client connections in network games. This setting will be stored in the configuration. If -1 is specified, TCP is disabled and all connections are created using UDP."
 msgstr "Setzt die TCP-Portnummer für Clientverbindungen in Netzwerkspielen. Dieser Wert wird in der Konfiguration gespeichert. Bei Portnummer -1 werden TCP-Verbindungen deaktiviert, und Netzwerkdaten nur über UDP gesendet."
 
-#: sdk/cmdline.xml:79(dt)
-msgid "/udpport:&lt;<em>Port Number</em>&gt;"
-msgstr "/udpport:&lt;<em>Portnummer</em>&gt;"
+#: sdk/cmdline.xml:67(dt)
+msgid "--udpport=&lt;<em>Port Number</em>&gt;"
+msgstr "--udpport=&lt;<em>Portnummer</em>&gt;"
 
-#: sdk/cmdline.xml:81(text)
+#: sdk/cmdline.xml:69(text)
 msgid "Sets the UDP port number for client connections in network games. This setting will be stored in the configuration. If -1 is specified, UDP is disabled and all connections are created using TCP."
 msgstr "Setzt die UDP-Portnummer für Clientverbindungen in Netzwerkspielen. Dieser Wert wird in der Konfiguration gespeichert. Bei Portnummer -1 werden UDP-Verbindungen deaktiviert, und Netzwerkdaten nur über TCP gesendet."
 
-#: sdk/cmdline.xml:83(dt)
-msgid "/pass:&lt;<em>Password</em>&gt;"
-msgstr "/pass:&lt;<em>Passwort</em>&gt;"
+#: sdk/cmdline.xml:71(dt)
+msgid "--pass=&lt;<em>Password</em>&gt;"
+msgstr "--pass=&lt;<em>Passwort</em>&gt;"
 
-#: sdk/cmdline.xml:85(text)
+#: sdk/cmdline.xml:73(text)
 msgid "For network hosts: sets the join password to the specified value. If &lt;<em>Password</em>&gt; is left empty, no password is set."
 msgstr "Nur Netzwerk-Host: setzt das Beitrittspasswort auf den angegebenen Wert. Wird &lt;<em>Passwort</em>&gt; leer gelassen, wird kein Passwort gesetzt."
 
-#: sdk/cmdline.xml:87(dt)
-msgid "/comment:&lt;<em>Comment</em>&gt;"
-msgstr "/comment:&lt;<em>Kommentar</em>&gt;"
+#: sdk/cmdline.xml:75(dt)
+msgid "--comment=&lt;<em>Comment</em>&gt;"
+msgstr "--comment=&lt;<em>Kommentar</em>&gt;"
 
-#: sdk/cmdline.xml:89(text)
+#: sdk/cmdline.xml:77(text)
 msgid "For network hosts: sets the network game comment. This setting will be stored in the configuration."
 msgstr "Nur Netzwerk-Host: setzt den Beschreibungstext des Netzwerkspiels. Dieser Wert wird in der Konfiguration gespeichert."
 
-#: sdk/cmdline.xml:91(dt)
-msgid "/update"
-msgstr "/update"
+#: sdk/cmdline.xml:79(dt)
+msgid "--update"
+msgstr "--update"
 
-#: sdk/cmdline.xml:93(text)
+#: sdk/cmdline.xml:81(text)
 msgid "Performs an update check at program start."
 msgstr "Prüft beim Programmstart auf verfügbare Updates."
 
-#: sdk/cmdline.xml:95(dt)
-msgid "/recdump:&lt;<em>Filename</em>&gt;"
-msgstr "/recdump:&lt;<em>Dateiname</em>&gt;"
+#: sdk/cmdline.xml:83(dt)
+msgid "--recdump=&lt;<em>Filename</em>&gt;"
+msgstr "--recdump=&lt;<em>Dateiname</em>&gt;"
 
-#: sdk/cmdline.xml:97(text)
-msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf\\Record001.ocs /recdump:CtrlRec.txt)."
-msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.ocf\\Record001.ocs /recdump:CtrlRec.txt)."
+#: sdk/cmdline.xml:85(text)
+msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt)."
+msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.ocf/Record001.ocs --recdump=CtrlRec.txt)."
 
-#: sdk/cmdline.xml:99(dt)
-msgid "/startup:&lt;<em>Name</em>&gt;"
-msgstr "/startup:&lt;<em>Name</em>&gt;"
+#: sdk/cmdline.xml:87(dt)
+msgid "--startup=&lt;<em>Name</em>&gt;"
+msgstr "--startup=&lt;<em>Name</em>&gt;"
 
-#: sdk/cmdline.xml:101(text)
+#: sdk/cmdline.xml:89(text)
 msgid "Only for fullscreen startup menu: Instead of the main menu, one of the submenus is shown directly. Possible values for &lt;<em>Name</em>&gt; are <em>main</em> (Main menu), <em>scen</em> (Scenario selection), <em>netscen</em> (Scenario selection for a new network game), <em>net</em> (Network/Internet game list), <em>options</em> (Options menu) und <em>plrsel</em> (Player selection)."
 msgstr "Nur für Vollbild-Startmenü: Statt des Hauptmenüs wird direkt eines der Untermenüs angezeigt. Mögliche Werte für &lt;<em>Name</em>&gt; sind <em>main</em> (Hauptmenü), <em>scen</em> (Szenarienauswahl), <em>netscen</em> (Szenarienauswahl für Netzwerkspiel), <em>net</em> (Netzwerk/Internet-Spieleliste), <em>options</em> (Optionsmenü), <em>plrsel</em> (Spielerauswahl) und <em>about</em> (Credits)."
 
-#: sdk/cmdline.xml:105(text)
+#: sdk/cmdline.xml:93(text)
 msgid "If a scenario is specified (File extension .ocs), it will be started directly."
 msgstr "Bei Angabe eines Szenarios (Dateiendung .ocs) wird dieses direkt gestartet."
 
-#: sdk/cmdline.xml:109(text)
+#: sdk/cmdline.xml:97(text)
 msgid "If the started scenario does not specify any required definitions (File extension .ocd), and no definitions are supplied in the registry, definitions can be specified via command line."
 msgstr "Wenn das gestartete Szenario keine Objektdefinitionen (Dateiendung .ocd) vorgibt, und keine Definitionen über die Registry angegeben werden, können sie über die Kommandozeile übergeben werden."
 
-#: sdk/cmdline.xml:111(dt)
+#: sdk/cmdline.xml:99(dt)
 msgid "*.ocp"
 msgstr "*.ocp"
 
-#: sdk/cmdline.xml:113(text)
-msgid "Player files (File extension .ocp) can be specified in the command line. If no player files are given, the registry values are used. By specifying a non-existant player (like doesnotexist.ocp), the game can be started without players (e.g. in order to just edit landscapes in developer mode)."
-msgstr "Spielerdateien (Dateiendung .ocp) können in der Kommandozeile angegeben werden. Wenn keine Spielerdateien in der Kommandozeile stehen, werden die in der Registrierung gespeicherten, zuletzt aktivierten Spieler benutzt. Durch Angabe eines nichtexistenten Spielers (z.B. gibtsnicht.ocp) kann verhindert werden, dass die in der Registrierung aktivierten Spieler beitreten (z.B. zum Bearbeiten einer Landschaft im Entwicklermodus)."
+#: sdk/cmdline.xml:101(text)
+msgid "Player files (File extension .ocp) can be specified in the command line. If no player files are given, the config values are used. By specifying a non-existant player (like doesnotexist.ocp), the game can be started without players (e.g. in order to just edit landscapes in developer mode)."
+msgstr "Spielerdateien (Dateiendung .ocp) können in der Kommandozeile angegeben werden. Wenn keine Spielerdateien in der Kommandozeile stehen, werden die in der Konfiguration gespeicherten, zuletzt aktivierten Spieler benutzt. Durch Angabe eines nichtexistenten Spielers (z.B. gibtsnicht.ocp) kann verhindert werden, dass die in der Registrierung aktivierten Spieler beitreten (z.B. zum Bearbeiten einer Landschaft im Entwicklermodus)."
 
-#: sdk/cmdline.xml:115(dt)
+#: sdk/cmdline.xml:103(dt)
 msgid "*.ocu"
 msgstr "*.ocu"
 
-#: sdk/cmdline.xml:117(text)
+#: sdk/cmdline.xml:105(text)
 msgid "If the filename of an update package (extension .ocu) is passed to the engine, then the program will attempt to apply that update package to the local installation."
 msgstr "Wird ein Update-Paket (Dateiendung .ocu) als Parameter an die Engine übergeben, so wird die Engine versuchen, dieses Update auf die lokale Spielinstallation anzuwenden."
 
-#: sdk/cmdline.xml:122(h)
-msgid "Editor.exe (Windows only)"
-msgstr "Editor.exe (nur Windows)"
-
-#: sdk/cmdline.xml:123(text)
-msgid "The editor for accessing group files and developing of game extensions. The editor does not have any command line parameters."
-msgstr "Der Editor zum Bearbeiten von Gruppendateien und Entwickeln eigener Spielerweiterungen. Der Editor hat keine Parameter."
-
-#: sdk/cmdline.xml:126(h)
+#: sdk/cmdline.xml:110(h)
 msgid "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 
-#: sdk/cmdline.xml:127(text)
+#: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "/console"
+#~ msgstr "/console"
+
+#~ msgid "/regjoinonly"
+#~ msgstr "/regjoinonly"
+
+#~ msgid "Prevents any unregistered client from joining games hosted on this computer (<em>always</em> active in dedicated server engines)."
+#~ msgstr "Bewirkt, dass nur Clients mit registrierter Version in Netzwerkspielen beitreten können (in Dedicated-Server-Engine <em>immer</em> aktiv)."
+
+#~ msgid "/faircrew, /trainedcrew"
+#~ msgstr "/faircrew bzw. /trainedcrew"
+
+#~ msgid "Activates or deactivates fair crew. With fair crew, all clonks start with the same physical properties. With trained crew, clonks start with their individually stored, trained physical value. This value is stored in the configuration."
+#~ msgstr "Aktiviert bzw. deaktiviert faire Crew. Bei fairer Crew starten alle Clonks mit gleichen physischen Eigenschaften. Bei trainierter Crew starten Clonks mit ihren individuell trainierten physischen Eigenschaften. Dieser Wert wird in der Konfiguration gespeichert."
+
+#~ msgid "Editor.exe (Windows only)"
+#~ msgstr "Editor.exe (nur Windows)"
+
+#~ msgid "The editor for accessing group files and developing of game extensions. The editor does not have any command line parameters."
+#~ msgstr "Der Editor zum Bearbeiten von Gruppendateien und Entwickeln eigener Spielerweiterungen. Der Editor hat keine Parameter."
 
 #~ msgid "this"
 #~ msgstr "this"
