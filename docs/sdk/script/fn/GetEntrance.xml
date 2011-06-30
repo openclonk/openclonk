@@ -6,7 +6,7 @@
   <func>
     <title>GetEntrance</title>
     <category>Objects</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Returns the current entrance status of an object. TRUE if entering the object is currently allowed or FALSE if it is disallowed.</desc>
     <examples>

@@ -6,7 +6,7 @@
   <func>
     <title>ScriptCounter</title>
     <category>Script</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Prints the current value of the scenario script counter.</desc>
     <examples>

@@ -7,7 +7,7 @@
     <title>SetCrewEnabled</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>

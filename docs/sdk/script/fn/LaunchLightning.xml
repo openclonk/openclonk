@@ -7,7 +7,7 @@
     <title>LaunchLightning</title>
     <category>Environment</category>
     <subcat>Weather</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <version>OC 5.1</version>
     <syntax>
       <rtype>bool</rtype>
       <params>

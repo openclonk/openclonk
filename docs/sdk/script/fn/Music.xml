@@ -6,8 +6,7 @@
   <func>
     <title>Music</title>
     <category>Music</category>
-    <version>4.6.5.0 CP
-    <extversion>4.9.1.0 GWE</extversion>
+    <version>5.1 OC</extversion>
   </version>
     <syntax>
       <rtype>int</rtype>

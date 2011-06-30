@@ -7,7 +7,7 @@
     <title>Sort_Random</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax><rtype>array</rtype></syntax>
     <desc>Sort criterion: Sorts the found objects randomly.</desc>
     <remark>Sort_Random should not be used together with <placeholder-1/> to find a random, matching object. Instead the first object of a <placeholder-2/> search with a SortRandom parameter can be used for instance.</remark>

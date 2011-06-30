@@ -7,14 +7,14 @@
     <title>Kill</title>
     <category>Objects</category>
     <subcat>Living Beings</subcat>
-    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>bool</type>
           <name>forced</name>
-          <desc>If set, the object will be killed, even if an effect tries to prevent this. From CE.</desc>
+          <desc>If set, the object will be killed, even if an effect tries to prevent this. .</desc>
           <optional />
         </param>
       </params>

@@ -6,7 +6,7 @@
   <func>
     <title>CastPXS</title>
     <category>Landscape</category>
-    <version>4.6.5.0 CP <extversion>4.10.0.0 OC</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>

@@ -6,7 +6,7 @@
   <func>
     <title>IsNetwork</title>
     <category>Global</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Returns whether the current game is a network game.</desc>
     <examples>

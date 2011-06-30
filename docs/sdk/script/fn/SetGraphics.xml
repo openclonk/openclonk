@@ -7,7 +7,7 @@
     <title>SetGraphics</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -53,7 +53,7 @@
               <row>
                 <col>GFXOV_MODE_Action</col>
                 <col>2</col>
-                <col>The actiity of the specified object definition. From CR.</col>
+                <col>The actiity of the specified object definition.</col>
               </row>
               <row>
                 <col>GFXOV_MODE_Picture</col>
@@ -63,17 +63,17 @@
               <row>
                 <col>GFXOV_MODE_IngamePicture</col>
                 <col>4</col>
-                <col>Overlays the picture graphics of the source definition over the shape of the target object. From CR.</col>
+                <col>Overlays the picture graphics of the source definition over the shape of the target object.</col>
               </row>
               <row>
                 <col>GFXOV_MODE_Object</col>
                 <col>5</col>
-                <col>Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself! From CR.</col>
+                <col>Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself!</col>
               </row>
               <row>
                 <col>GFXOV_MODE_ExtraGraphics</col>
                 <col>6</col>
-                <col>Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj. Since CR.</col>
+                <col>Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj.</col>
               </row>
             </table>
 
@@ -83,7 +83,7 @@
         <param>
           <type>string</type>
           <name>action</name>
-          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible. Since CR.</desc>
+          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible.</desc>
           <optional />
         </param>
         <param>
@@ -95,7 +95,7 @@
         <param>
           <type>object</type>
           <name>overlay_object</name>
-          <desc>Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object. Since CR.</desc>
+          <desc>Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object.</desc>
           <optional />
         </param>
       </params>

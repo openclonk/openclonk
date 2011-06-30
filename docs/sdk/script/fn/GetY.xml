@@ -7,7 +7,7 @@
     <title>GetY</title>
     <category>Objects</category>
     <subcat>Position</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the y position of the calling object.</desc>
     <related>

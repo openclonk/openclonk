@@ -6,7 +6,7 @@
   <func>
     <title>C4V_Array</title>
     <category>Variables</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Data type: array.</desc>
     <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>

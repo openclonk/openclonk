@@ -7,7 +7,7 @@
     <title>OCF_Available</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: this object can theoretically be acquired by a clonk, meaning it is either uncontained or in a container to which the clonk can have access.</desc>
     <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>

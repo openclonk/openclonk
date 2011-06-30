@@ -7,14 +7,14 @@
     <title>GetObjectBlitMode</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
           <name>overlay_id</name>
-          <desc>If specified, the blit mode of the graphics overlay is returned instead. The overlay must have been previously set using <funclink>SetGraphics</funclink>. From CR.</desc>
+          <desc>If specified, the blit mode of the graphics overlay is returned instead. The overlay must have been previously set using <funclink>SetGraphics</funclink>.</desc>
           <optional />
         </param>
       </params>
