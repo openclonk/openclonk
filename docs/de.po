@@ -4,14 +4,15 @@
 # Sven2 <sven2@goldwipf.de>
 # Armin Burgmeier <armin@arbur.net>, 2010.
 # Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011.
+# Benedict Etzel <benedict.etzel@gmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-30 20:10+0200\n"
-"PO-Revision-Date: 2011-06-30 20:09+0200\n"
-"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
+"PO-Revision-Date: 2011-07-01 15:00+0100\n"
+"Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
 "MIME-Version: 1.0\n"
@@ -2524,19 +2525,19 @@ msgstr "Bewegung"
 
 #: sdk/script/fn/SimFlight.xml:17(desc)
 msgid "X offset of the starting position. (NOT optional if used in nil object context)"
-msgstr ""
+msgstr "X-Versatz der Startposition. (NICHT optional wenn ohne Objektkontext aufgerufen wird)"
 
 #: sdk/script/fn/SimFlight.xml:23(desc)
 msgid "Y offset of the starting position. (NOT optional if used in nil object context)"
-msgstr ""
+msgstr "Y-Versatz der Startposition. (NICHT optional wenn ohne Objektkontext aufgerufen wird)"
 
 #: sdk/script/fn/SimFlight.xml:29(desc)
 msgid "Initial horizontal speed. If not specified this will default to the object's horizontal speed. (NOT optional if used in nil object context)"
-msgstr ""
+msgstr "Initiale horizontale Geschwindigkeit. Falls nicht gesetzt, wird die horizontale Geschwindigkeit des Objekts angenommen. (NICHT optional wenn ohne Objektkontext aufgerufen wird)"
 
 #: sdk/script/fn/SimFlight.xml:35(desc)
 msgid "Initial vertical speed. If not specified this will default to the object's vertical speed. (NOT optional if used in nil object context)"
-msgstr ""
+msgstr "Initiale vertikale Geschwindigkeit. Falls nicht gesetzt, wird die vertikale Geschwindigkeit des Objekts angenommen. (NICHT optional wenn ohne Objektkontext aufgerufen wird)"
 
 #: sdk/script/fn/SimFlight.xml:41(desc)
 msgid "Mininum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material)."
@@ -2563,7 +2564,7 @@ msgstr "Genauigkeit. Keine Angabe oder Null entspricht 10."
 
 #: sdk/script/fn/SimFlight.xml:64(desc)
 msgid "Simulates the motion of a falling object with a given starting position and initial speed. The returned array will contain [int x_final, int y_final, int xdir_final, int ydir_final, int time_passed]. <br/> If the projected trajectory encounters a material of the specified density, the simulation will stop and time_passed will be non-negative. Otherwise, time_passed will be negative."
-msgstr ""
+msgstr "Simuliert die Bewegung eines fallenden Objekts mit einer gegebenen Startposition und initialier Geschwindigkeit. Das zurückgegebene Array enthält [int x_final, int y_final, int xdir_final, int ydir_final, int time_passed]. <br/> Falls die projektierte Flugbahn ein Material der angegebenen Dichte trifft wird die Simulation gestoppt und time_passed wird nicht negativ. Ansonsten wird time_passed negativ."
 
 #: sdk/script/fn/SimFlight.xml:73(text)
 msgid "If the calling clonk is situated in mid-air and it appears that he will hit the ground at high speed, he will call out."
@@ -2728,7 +2729,7 @@ msgstr "Setzt die globale Windrichtung und -stärke."
 
 #: sdk/script/fn/SetWind.xml:38(text)
 msgid "The wind always blows into the direction the cannon is pushed towards."
-msgstr ""
+msgstr "Der Wind bläst immer in die Richtung in die die Kanone geschoben wird."
 
 #: sdk/script/fn/SetWealth.xml:8(category)
 #: sdk/script/fn/SetViewOffset.xml:8(category)
@@ -3496,15 +3497,15 @@ msgstr "Die erste Funktion speichert periodisch das Vermögen unter dem Namen \"
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:17(desc)
 msgid "Player whose zoom or zoom limits are to be adjusted. NO_OWNER for all players."
-msgstr ""
+msgstr "Spieler, dessen Zoom oder Zoomgrenzen angepasst werden sollen. NO_OWNER für alle Spieler."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:22(desc)
 msgid "Horizontal range that should be covered by the zoom. Zero to use range_y only. If both range_x and range_y are zero, a default range is assumed for range_x."
-msgstr ""
+msgstr "Horizontale Entfernung die vom Zoom abgedeckt wird. Null um nur range_y zu benutzen. Falls range_x und range_y null sind, wird eine vorgegebene Entfernung für range_x angenommen."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:27(desc)
 msgid "Vertical range that should be covered by the zoom. Zero to use range_x only. If both range_x and range_y are nonzero, the number that yields the smaller zoom is used."
-msgstr ""
+msgstr "Vertikale Entfernung die vom Zoom abgedeckt wird. Null um nur range_x zu benutzen. Falls range_x und range_y ungleich null sind, wird die Zahl genutzt die den kleineren Zoom."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:35(col)
 #: sdk/script/fn/AttachMesh.xml:42(col)
@@ -3513,23 +3514,23 @@ msgstr "Wert"
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:40(col)
 msgid "The zoom does not scroll slowly towards the new value, but is set directly."
-msgstr ""
+msgstr "Der Zoom scrollt nicht sanft zum neuen Wert, sondern wird direkt gesetzt."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:44(col)
 msgid "The new zoom ranges are only to be set if they are smaller than the current values."
-msgstr ""
+msgstr "Die neuen Zoomwerte sollen nur gesetzt werden, wenn sie kleiner als die aktuellen Werte sind."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:48(col)
 msgid "The new zoom ranges are only to be set if they are greater than the current values."
-msgstr ""
+msgstr "Die neuen Zoomwerte sollen nur gesetzt werden, wenn sie größer als die aktuellen Werte sind."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:52(col)
 msgid "Set the minimum limit for zooming. The player cannot zoom out further than this."
-msgstr ""
+msgstr "Setzt das minimale Grenze für den Zoom. Der Spieler kann nicht weiter herauszoomen als dieser Wert."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:56(col)
 msgid "Set the maximum limit for zooming. The player cannot zoom in further than this."
-msgstr ""
+msgstr "Setzt das maximale Grenze für den Zoom. Der Spieler kann nicht weiter hineinzoomen als dieser Wert."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:32(desc)
 #, fuzzy
@@ -3539,20 +3540,20 @@ msgstr "Es sind folgende Kommandos definiert: <placeholder-1/>"
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:63(desc)
 #: sdk/script/fn/SetPlayerViewLock.xml:26(desc)
 msgid "Disabled or enabled locked view for one or all players. If the view is locked, the player cannot scroll around to explore the map."
-msgstr ""
+msgstr "Deaktiviert oder aktiviert gesperrte Sicht für einen oder alle Spieler. Falls die Sicht gesperrt wird kann der Spieler nicht umherscrollen um die Karte zu erkunden."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:73(text)
 #: sdk/script/fn/SetPlayerViewLock.xml:36(text)
 msgid "Code for a scenario script: Players can see exactly 1000 pixels wide around their Clonk and cannot scroll further."
-msgstr ""
+msgstr "Code für ein Szenarioscript: Spieler sehen genau 1000 Pixel weit um ihren Clonk und können nicht weiterscrollen."
 
 #: sdk/script/fn/SetPlayerViewLock.xml:17(desc)
 msgid "Player whose view lock is to be turned on or off. NO_OWNER for all players."
-msgstr ""
+msgstr "Spieler, dessen Sichtsperre aktiviert oder deaktiviert werden soll. NO_OWNER für alle Spieler."
 
 #: sdk/script/fn/SetPlayerViewLock.xml:22(desc)
 msgid "If the view is to be locked (true) or unlocked (false)."
-msgstr ""
+msgstr "Ob die Sicht gesperrt (true) oder entsperrt (false) werden soll."
 
 #: sdk/script/fn/SetPlayerTeam.xml:16(desc)
 msgid "Player number of the player whose team assignment you want to change."
@@ -10707,12 +10708,12 @@ msgid "The type of <code>nil</code>. When used as a function parameter type, the
 msgstr "Der Typ von <code>nil</code>. Wenn als Parametertyp für eine Funktion benutzt wird die Typüberprüfung nicht vorgenommen."
 
 #. <text>Additionally, there are two special types:</text>
-#.     <text>
-#.       <ul>
-#.         <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
-#.         <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
-#.       </ul>
-#.     </text>
+#. <text>
+#. <ul>
+#. <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
+#. <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
+#. </ul>
+#. </text>
 #: sdk/script/Typechecks.xml:75(h)
 msgid "Arrays"
 msgstr "Arrays"
@@ -11196,33 +11197,33 @@ msgid "If the function does not return a value, an implicit <code>return nil;</c
 msgstr "Wenn die Funktion keinen Wert explizit zurückliefert gibt sie automatisch <code>nil</code> zurück."
 
 #. <h id="Aufrufb">Permissions</h>
-#.     <part>
-#.       <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
-#.       <text>
-#.         <table>
-#.           <row>
-#.             <col><code>public</code></col>
-#.             <col>may be called from the engine or any other script (default)</col>
-#.           </row>
-#.           <row>
-#.             <col><code>protected</code></col>
-#.             <col>may only be called from the engine or from within the same object script</col>
-#.           </row>
-#.           <row>
-#.             <col><code>private</code></col>
-#.             <col>may only be called from the same object script</col>
-#.           </row>
-#.         </table>
-#.       </text>
-#.       <text>The calling permissions are expected before the <code>func</code> marker:</text>
-#.       <code>private func PrivateFunktion()
+#. <part>
+#. <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
+#. <text>
+#. <table>
+#. <row>
+#. <col><code>public</code></col>
+#. <col>may be called from the engine or any other script (default)</col>
+#. </row>
+#. <row>
+#. <col><code>protected</code></col>
+#. <col>may only be called from the engine or from within the same object script</col>
+#. </row>
+#. <row>
+#. <col><code>private</code></col>
+#. <col>may only be called from the same object script</col>
+#. </row>
+#. </table>
+#. </text>
+#. <text>The calling permissions are expected before the <code>func</code> marker:</text>
+#. <code>private func PrivateFunktion()
 #. {
-#.   // Diese Funktion darf nur im selben Script aufgerufen werden!
+#. // Diese Funktion darf nur im selben Script aufgerufen werden!
 #. }</code>
-#.       <text>Calling this function from another object script will cause an error.</text>
-#.       <h>Remark</h>
-#.       <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink> functions.</text>
-#.     </part>
+#. <text>Calling this function from another object script will cause an error.</text>
+#. <h>Remark</h>
+#. <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink> functions.</text>
+#. </part>
 #: sdk/script/Funcs.xml:99(h)
 msgid "Global Functions"
 msgstr "Globale Funktionen"
