@@ -103,7 +103,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_IncinerationEx      "~IncinerationEx" // iCausedBy
 #define PSF_Death               "~Death" // iCausedBy
 #define PSF_ActivateEntrance    "~ActivateEntrance" // pByObject
-#define PSF_Activate            "~Activate" // pByObject
 #define PSF_LiftTop             "~LiftTop"
 #define PSF_Contact             "~Contact%s"
 #define PSF_ControlCommand      "~ControlCommand" // szCommand, pTarget, iTx, iTy

@@ -367,18 +367,6 @@ bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 	return true;
 }
 
-void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DFA_SWIM
-{
-	// Contents activation (first contents object only)
-	if (cObj->Contents.GetObject())
-		if (!! cObj->Contents.GetObject()->Call(PSF_Activate,&C4AulParSet(C4VObj(cObj))))
-			return;
-
-	// Own activation call
-	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
-
-}
-
 bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
 {
 	// No object specified, first from contents

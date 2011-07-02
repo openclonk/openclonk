@@ -71,7 +71,6 @@ bool ObjectComTake(C4Object *cObj); // carlo
 bool ObjectComTake2(C4Object *cObj); // carlo
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t iPunch=0);
 bool ObjectComCancelAttach(C4Object *cObj);
-void ObjectComDigDouble(C4Object *cObj);
 void ObjectComStopDig(C4Object *cObj);
 
 #endif
