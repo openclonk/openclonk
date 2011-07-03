@@ -66,36 +66,33 @@
     <remark>If a function name is specified for command, the following parameters are passed: <code>symbol, parameter, bRight[, value]</code> with bRight indicating whether the menu entry was selected with [Special2] or the right mouse button. value is passed only if bit 8 is set in extra and specifies the displayed (overridden) object value of the menu entry.</remark>
     <examples>
       <example>
-        <code>/* Wird bei Doppelklick auf Graben aufgerufen */
-func Activate()
+        <code>
+func ControlUse()
 {
-	// Lokales Menü mit lokalen Kommandos erzeugen
+	// Create local menu with local commandos
 	CreateMenu(GetID());
-	// Menüeinträge erzeugen
-	AddMenuItem(&quot;Hallo sagen&quot;, &quot;SayHello&quot;, 0);
-	AddMenuItem(&quot;Zaubern&quot;, &quot;DoMagic&quot;, 0);
-	AddMenuItem(&quot;Objekt erzeugen: %s&quot;, &quot;CreateItem&quot;, Rock);
-	AddMenuItem(&quot;Objekt erzeugen: %s&quot;, &quot;CreateItem&quot;, Firestone);
+	// Create menu items
+	AddMenuItem(&quot;Say hello&quot;, &quot;SayHello&quot;);
+	AddMenuItem(&quot;Do magic&quot;, &quot;DoMagic&quot;);
+	AddMenuItem(&quot;Create an object: %s&quot;, &quot;CreateItem&quot;, Rock);
+	AddMenuItem(&quot;Create another object: %s&quot;, &quot;CreateItem&quot;, Firestone);
 }
 
-/* Diese Kommados werden vom Menü aufgerufen */
 func SayHello()
 {
-	Message(&quot;Hallo&quot;);
+	Message(&quot;Hello&quot;,this);
 }
 
 func DoMagic()
 {
 	Sound(&quot;Magic*&quot;);
-	CreateObject(MLGT,0,0)-&gt;~Activate(this);
 }
 
 func CreateItem(id item)
 {
-	Sound(&quot;Magic*&quot;);
 	CreateContents(item);
 }</code>
-        <text>Menu for a special clonk.</text>
+        <text>Menu for a special item.</text>
       </example>
     </examples>
     <related>

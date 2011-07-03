@@ -9540,8 +9540,8 @@ msgstr "Priorität für den Effekt. Es werden Fx*Effect-Callbacks bei allen Effe
 
 #: sdk/script/fn/CheckEffect.xml:34(desc)
 #: sdk/script/fn/AddEffect.xml:33(desc)
-msgid "Interval for the timer calls. With 0, no timer calls are made and the effect stays on permanently until it is deleted by other calls."
-msgstr "Intervall, in dem Timer-Aufrufe getätigt werden. Bei 0 werden keine Timer-Aufrufe durchgeführt, und der Effekt bleibt permanent bis er durch anderwertige Aufrufe entfernt wird."
+msgid "Interval for the timer calls. With nil, no timer calls are made and the effect stays on permanently until it is deleted by other calls."
+msgstr "Intervall, in dem Timer-Aufrufe getätigt werden. Bei nil werden keine Timer-Aufrufe durchgeführt, und der Effekt bleibt permanent bis er durch anderwertige Aufrufe entfernt wird."
 
 #: sdk/script/fn/CheckEffect.xml:40(desc)
 msgid "First extra parameter to be passed to the effect callback."
@@ -9919,8 +9919,8 @@ msgid "Number of the player who pays for the object."
 msgstr "Nummer des Spielers, der den Kauf bezahlt"
 
 #: sdk/script/fn/Buy.xml:32(desc)
-msgid "Target object in which the new object is placed."
-msgstr "Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird"
+msgid "Target object in which the new object is placed. This parameter can be left out if the calling object is the base."
+msgstr "Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird. Dieser Parameter kann ausgelassen werden wenn das aufrufende Objekt eine Basis ist."
 
 #: sdk/script/fn/Buy.xml:38(desc)
 msgid "If not 0, failure messages such as \"Buying not possible\" are displayed, e.g. if there is not enough money."
@@ -9975,12 +9975,12 @@ msgid "Container of the objects to be blasted."
 msgstr "Objekt, in dem die zu sprengenden Objekte enthalten sind."
 
 #: sdk/script/fn/BlastObjects.xml:36(desc)
-msgid "Number of the player who has caused the damage"
-msgstr "Spielernummer des Spielers, der der Verursacher des Schaden ist."
+msgid "Number of the player who has caused the damage. If not specified, the the controller of the calling object is considered to have caused the damage in local calls."
+msgstr "Spielernummer des Spielers, der der Verursacher des Schaden ist. Wenn nicht angegeben, gilt bei lokalen Aufrufen der Schaden als vom Controller des aufrufenden Objekts verursacht."
 
 #: sdk/script/fn/BlastObjects.xml:40(desc)
-msgid "Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects. In local calls, the controller of the calling object is considered to have caused the damage."
-msgstr "Fügt allen Objekten an angegebener Position Explosionsschaden zu. x und y sind immer globale Koordinaten. Wenn ein container angegeben ist, wird der Schaden nur den Objekten zugefügt, die in container enthalten sind. Explosionsschaden kann zur Entzündung führen oder auch Lebewesen wegschleudern. Bei lokalen Aufrufen gilt der Schaden als vom Controller des aufrufenden Objekts verursacht."
+msgid "Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects."
+msgstr "Fügt allen Objekten an angegebener Position Explosionsschaden zu. x und y sind immer globale Koordinaten. Wenn ein container angegeben ist, wird der Schaden nur den Objekten zugefügt, die in container enthalten sind. Explosionsschaden kann zur Entzündung führen oder auch Lebewesen wegschleudern."
 
 #: sdk/script/fn/BlastObjects.xml:44(text)
 msgid "The calling object causes explosion damage of level 60 to its contents."
@@ -10311,8 +10311,8 @@ msgid "Menu for a special clonk."
 msgstr "Menü für einen Spezialclonk."
 
 #: sdk/script/fn/AddEffect.xml:21(desc)
-msgid "Target object for the effect. If 0, a global effect is created."
-msgstr "Zielobjekt für den Effekt. Bei 0 wird der Effekt global erzeugt."
+msgid "Target object for the effect. If nil, a global effect is created."
+msgstr "Zielobjekt für den Effekt. Bei nil wird der Effekt global erzeugt."
 
 #: sdk/script/fn/AddEffect.xml:27(desc)
 msgid "Effect priority. Must be greater than zero."
@@ -10324,8 +10324,8 @@ msgid "Command target. If specified, all callbacks are executed in this object. 
 msgstr "Befehlsziel. Wenn angegeben, werden alle Callbacks in diesem Objekt ausgeführt. Ansonsten finden diese Callbacks grundsätzlich ohne Objektkontext statt. Wenn das Befehlszielobjekt gelöscht wird, werden alle verbundenen Effekte ohne weitere Callbacks ebenfalls gelöscht. Falls das Befehlsziel seine Definition ändert, sollten verbundene Effekte mit <placeholder-1/> ihre Funktionen neu zuweisen lassen."
 
 #: sdk/script/fn/AddEffect.xml:45(desc)
-msgid "Definition in which callbacks are to be executed if no command target object is specified. If both command_target and command_target_id are 0, callbacks are made globally. For this, the Fx* must also be declared globally or they must be engine functions."
-msgstr "Definition, in der bei nicht angegebenem Befehlsziel-Objekt Callbacks ausgeführt werden. Sind sowohl command_target als auch command_target_id 0, werden die Aufrufe global durchgeführt. Das heißt, die Fx*-Funktionen müssen als global deklariert sein, oder Enginefunktionen sein."
+msgid "Definition in which callbacks are to be executed if no command target object is specified. If both command_target and command_target_id are nil, callbacks are made globally. For this, the Fx* must also be declared globally or they must be engine functions."
+msgstr "Definition, in der bei nicht angegebenem Befehlsziel-Objekt Callbacks ausgeführt werden. Sind sowohl command_target als auch command_target_id nil, werden die Aufrufe global durchgeführt. Das heißt, die Fx*-Funktionen müssen als global deklariert sein, oder Enginefunktionen sein."
 
 #: sdk/script/fn/AddEffect.xml:51(desc)
 msgid "First extra parameter to be passed to Fx*Start and Fx*Effect callbacks."
@@ -10458,7 +10458,7 @@ msgid "When a player hits 'double dig' on the keyboard, first \"ControlDigDouble
 msgstr "Wenn ein Spieler Doppelgraben drückt, wird zunächst \"ControlDigDouble\" im Clonk aufgerufen. Gibt dieses false zurück oder existiert nicht, und der Clonk läuft, schwimmt oder gräbt, wird im ersten Inhaltsobjekt Activate aufgerufen. Wenn dieses nicht existiert oder false zurückgibt, wird zuerst versucht, einen Baum zu fällen oder eine Leitung abzunehmen. Danach wird Activate im Clonk selbst aufgerufen."
 
 #: sdk/script/fn/ActIdle.xml:12(desc)
-msgid "Checks whether an object is currently performing the specified activity."
+msgid "Checks whether an object is currently performing an activity."
 msgstr "Prüft, ob das aufrufende Objekt eine Aktivität ausführt."
 
 #: sdk/script/fn/ActIdle.xml:17(text)

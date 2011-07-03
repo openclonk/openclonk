@@ -29,7 +29,7 @@
         <param>
           <type>object</type>
           <name>to_base</name>
-          <desc>Target object in which the new object is placed.</desc>
+          <desc>Target object in which the new object is placed. This parameter can be left out if the calling object is the base.</desc>
           <optional />
         </param>
         <param>

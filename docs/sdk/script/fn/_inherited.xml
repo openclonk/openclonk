@@ -20,9 +20,7 @@
     <desc>Calls the overloaded function. A function will overload another function if it is declared in the same scope with the same name. As opposed to <funclink>inherited</funclink>, this method is also failsafe, meaning it will not cause an error if the original function doesn't really exist.</desc>
     <examples>
       <example>
-        <code>
-
-#appendto Clonk
+        <code>#appendto Clonk
 
 func Initialize()
 {

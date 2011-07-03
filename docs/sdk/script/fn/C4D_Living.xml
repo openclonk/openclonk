@@ -12,7 +12,7 @@
     <desc>Object category: living being.</desc>
     <examples>
       <example>
-        <code><funclink>GetPlrKnowledge</funclink>(0, 0, 0, C4D_Living( ));</code>
+        <code><funclink>GetPlrKnowledge</funclink>(0, nil, 0, C4D_Living);</code>
         <text>Returns the first type of living beings which can be built by player 1 - usually none.</text>
       </example>
     </examples>

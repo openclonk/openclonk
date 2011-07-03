@@ -13,7 +13,7 @@
     <remark>This category does not work in the old 8 bit graphics system.</remark>
     <examples>
       <example>
-        <code><funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Background());</code>
+        <code><funclink>SetCategory</funclink>(<funclink>GetCategory</funclink>() | C4D_Background);</code>
         <text>Move the calling object into the background.</text>
       </example>
     </examples>

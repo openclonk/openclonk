@@ -23,12 +23,6 @@
       </params>
     </syntax>
     <desc>Calculates arc sine of value/radius, or x = arcsin(value/radius). This corresponds to sin(x) = value/radius. This function is used to calculate an angle from horizontal and vertical offsets. However, in most cases <funclink>Angle</funclink>() does what you need.</desc>
-    <examples>
-      <example>
-        <code><funclink>Log</funclink>(&quot;Zielwinkel: %d Grad&quot;, ArcSin(<funclink>Abs</funclink>(<funclink>GetY</funclink>(target)-<funclink>GetY</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>
-        <text>Returns the target angle from the object to the target.</text>
-      </example>
-    </examples>
     <related>
       <funclink>Angle</funclink>
       <funclink>ArcCos</funclink>

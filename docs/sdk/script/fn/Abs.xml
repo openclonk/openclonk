@@ -20,8 +20,8 @@
     <desc>Returns the absolute value of the given parameter, ignoring the sign of the value.</desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Aktuelle Fluggeschwindigkeit: %d Clonks/min&quot;, Abs(<funclink>GetXDir</funclink>(<funclink>FindObject</funclink>(BLMP))));</code>
-        <text>Prints the absolute velocity of a blimp.</text>
+        <code>Abs(-12) == Abs(12) == 12</code>
+        <text>This expression is true.</text>
       </example>
     </examples>
   </func>
