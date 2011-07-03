@@ -1,10 +1,6 @@
 
 #version 110
 
-#ifndef NO_INTEGER_TEXTURES
-#extension GL_EXT_gpu_shader4 : require
-#endif
-
 // Input textures
 uniform sampler2D landscapeTex[1];
 uniform sampler2D scalerTex;
