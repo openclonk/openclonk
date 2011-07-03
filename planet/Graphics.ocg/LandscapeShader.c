@@ -1,6 +1,10 @@
 
 #version 110
 
+#ifndef NO_INTEGER_TEXTURES
+#extension GL_EXT_gpu_shader4 : require
+#endif
+
 // Input textures
 uniform sampler2D landscapeTex[1];
 uniform sampler2D scalerTex;
@@ -10,8 +14,11 @@ uniform sampler3D materialTex;
 uniform vec2 resolution;
 
 // Texture map
-uniform float matMap[256];
+#ifdef BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;
+#else
+uniform float matMap[256];
+#endif
 uniform int materialDepth;
 
 // Expected parameters for the scaler
@@ -25,10 +32,16 @@ const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 #define texture2DLod(t,c,l) texture2D(t,c)
 #endif
 
+// Converts the pixel range 0.0..1.0 into the integer range 0..255
+int f2i(float x) {
+	return int(x * 255.9);
+}
+
 float queryMatMap(int pix)
 {
 #ifdef BROKEN_ARRAYS_WORKAROUND
-	return texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r * 255.0 / float(materialDepth) + 0.5 / float(materialDepth);
+	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
+	return (float(idx) + 0.5) / float(materialDepth);
 #else
 	return matMap[pix];
 #endif
@@ -80,9 +93,9 @@ void main()
 	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 	
 	// Get material pixels
-	float mi = queryMatMap(int(lpx.r * 255.0));
+	float mi = queryMatMap(f2i(lpx.r));
 	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), mi));
-	float omi = queryMatMap(int(lopx.r * 255.0));
+	float omi = queryMatMap(f2i(lopx.r));
 	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omi));
 	
 	// Brightness
