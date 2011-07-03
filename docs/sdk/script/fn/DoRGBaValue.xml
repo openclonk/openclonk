@@ -56,7 +56,7 @@
     <remark>This function does not ensure maximum or minimum limits of color values.</remark>
     <examples>
       <example>
-        <code>SetColorDw(DoRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),-20,1),<funclink>GetCursor</funclink>());</code>
+        <code><funclink>GetCursor</funclink>()-&gt;SetColor(DoRGBaValue(<funclink>GetCursor</funclink>()-&gt;<funclink>GetColor</funclink>(),-20,1));</code>
         <text>Reduces the red part of the currently selected clonk by 20.</text>
       </example>
     </examples>

@@ -36,7 +36,7 @@
     <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwiese global.</desc>
     <examples>
       <example>
-        <code>CreateObject(WIPF, 100,100, <funclink>NO_OWNER</funclink>);</code>
+        <code>CreateObject(Wipf, 100,100, <funclink>NO_OWNER</funclink>);</code>
         <text>Creates a wipf at coordinates 100/100 with no owner.</text>
       </example>
     </examples>

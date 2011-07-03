@@ -17,15 +17,9 @@
           <desc>Player whose visibility to determine.</desc>
           <optional />
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object of which to retrieve the visibility. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
-    <desc>Checks whether the given object is visible for the given player.</desc>
+    <desc>Checks whether this object is visible for the given player.</desc>
     <related>
       <funclink>SetVisibility</funclink>
       <funclink>GetVisibility</funclink>

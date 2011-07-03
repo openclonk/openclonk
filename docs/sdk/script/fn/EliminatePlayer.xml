@@ -20,7 +20,7 @@
     <desc>Eliminates a player. The round counts as 'lost' for all eliminated players.</desc>
     <examples>
       <example>
-        <code>if (!<funclink>FindObject</funclink>(Find_ID(FLAG), Find_Owner(0))) EliminatePlayer(0);</code>
+        <code>if (!<funclink>FindObject</funclink>(Find_ID(Flag), Find_Owner(0))) EliminatePlayer(0);</code>
         <text>The first player is eliminated if he has no more flags.</text>
       </example>
     </examples>

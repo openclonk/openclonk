@@ -12,10 +12,8 @@
     <desc>Object category: game goal.</desc>
     <examples>
       <example>
-        <code>var obj;
-while (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
-  if (<funclink>GetCategory</funclink>(obj) &amp; C4D_Goal)
-    <funclink>RemoveObject</funclink>(obj);</code>
+        <code>for(var obj in<funclink>FindObjects</funclink>(<funclink>Find_Category</funclink>(C4D_Goal)))
+    <funclink>  obj->RemoveObject</funclink);</code>
         <text>Removes all game goals.</text>
       </example>
     </examples>

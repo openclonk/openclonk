@@ -63,7 +63,7 @@
     <remark>This function returns 0 if the particle function was not found. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
     <examples>
       <example>
-        <code>CreateParticle(&quot;Blast&quot;, 0,0, 0,0, 100, <funclink>RGBa</funclink>(128,128,255,0));</code>
+        <code>CreateParticle(&quot;Blast&quot;, 0,0, 0,0, 100, <funclink>RGB</funclink>(128,128,255));</code>
         <text>Creates a blue explosion at the position of the calling object.</text>
       </example>
     </examples>

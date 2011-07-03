@@ -21,7 +21,7 @@
     <desc>Changes the breath value of an object.</desc>
     <examples>
       <example>
-        <code>GetCursor()->DoBreath(GetCursor().MaxBreath / 2);</code>
+        <code>GetCursor()-&gt;DoBreath(GetCursor().MaxBreath / 2);</code>
         <text>Gives 50% more breath to the selected clonk of the first player.</text>
       </example>
     </examples>

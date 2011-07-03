@@ -12,7 +12,7 @@
     <desc>Object category: vehicle.</desc>
     <examples>
       <example>
-        <code><funclink>GetPlrKnowledge</funclink>(0, 0, 0, C4D_Vehicle);</code>
+        <code><funclink>GetPlrKnowledge</funclink>(0, nil, 0, C4D_Vehicle);</code>
         <text>Returns the first vehicle type that the first player can build.</text>
       </example>
     </examples>

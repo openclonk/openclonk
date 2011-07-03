@@ -13,7 +13,7 @@
     <remark>COMD_None and <funclink>COMD_Stop</funclink> are identical and have the value 0.</remark>
     <examples>
       <example>
-        <code><funclink>SetComDir</funclink>(COMD_None, <funclink>GetCursor</funclink>());</code>
+        <code><funclink>GetCursor</funclink>(0)-&gt;<funclink>SetComDir</funclink>(COMD_None);</code>
         <text>Makes the currently selected clonk of the first player stop.</text>
       </example>
     </examples>

@@ -12,7 +12,7 @@
     <desc>Object category: small item.</desc>
     <examples>
       <example>
-        <code><funclink>GetDefinition</funclink>(0, C4D_Object( ));</code>
+        <code><funclink>GetDefinition</funclink>(0, C4D_Object);</code>
         <text>Returns the id of the first loaded definition. Similar scripting is used in the research lab to list researchable object.</text>
       </example>
     </examples>
