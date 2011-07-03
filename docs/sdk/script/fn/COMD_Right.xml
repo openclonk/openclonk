@@ -12,8 +12,8 @@
     <desc>Movement direction: up. For more information see <funclink>SetComDir</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>SetComDir</funclink>(COMD_Right, <funclink>FindObject</funclink>(Find_ID(BLMP)));</code>
-        <text>Changes the fligt direction of a blimp.</text>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Airship))-&gt;<funclink>SetComDir</funclink>(COMD_Right);</code>
+        <text>Changes the flight direction of a blimp.</text>
       </example>
     </examples>
     <related>

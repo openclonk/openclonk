@@ -99,8 +99,8 @@
         <text>Shows the message "This is madness!" for player 0 only with the word "madness" being written in italic.</text>
       </example>
       <example>
-        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, 0, NO_OWNER, 100,100, 0, MD69, &quot;Portrait:Clonk::00ff00::1);</code>
-        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition MD69 needs to be loaded.</text>
+        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, 0, NO_OWNER, 100,100, 0, GUI_MenuDeco, &quot;Portrait:Clonk::00ff00::1);</code>
+        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition GUI_MenuDeco needs to be loaded.</text>
       </example>
     </examples>
     <related>

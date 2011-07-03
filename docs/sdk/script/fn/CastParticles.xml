@@ -67,7 +67,7 @@
     <remark>This function returns 0 if the particle function was not found. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
     <examples>
       <example>
-        <code>CastParticles(&quot;FSpark&quot;, 10,100, 0,0, 100, 200, <funclink>RGBa</funclink>(128,128,255,0), <funclink>RGBa</funclink>(255,255,255,127));</code>
+        <code>CastParticles(&quot;MagicSpark&quot;, 10,100, 0,0, 100, 200, <funclink>RGBa</funclink>(128,128,255,0), <funclink>RGBa</funclink>(255,255,255,127));</code>
         <text>Creates some sparks.</text>
       </example>
     </examples>

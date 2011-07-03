@@ -12,8 +12,8 @@
     <desc>Constant for <funclink>SetDir</funclink>/<funclink>GetDir</funclink>: direction right</desc>
     <examples>
       <example>
-        <code><funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>(), <funclink>GetCursor</funclink>();
-<funclink>SetDir</funclink>(DIR_Right(), <funclink>GetCursor</funclink>());</code>
+        <code><funclink>GetCursor</funclink>()-&gt;<funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>());
+<funclink>GetCursor</funclink>()-&gt;<funclink>SetDir</funclink>(DIR_Right);</code>
         <text>The selected clonk stops and looks to the right.</text>
       </example>
     </examples>

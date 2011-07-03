@@ -6545,7 +6545,6 @@ msgid "Player of which to retrieve the visibility. Can be 0 in local calls."
 msgstr "Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf."
 
 #: sdk/script/fn/GetVisibility.xml:23(desc)
-#: sdk/script/fn/CheckVisibility.xml:23(desc)
 msgid "Object of which to retrieve the visibility. Can be 0 in local calls."
 msgstr "Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf."
 
@@ -8222,8 +8221,8 @@ msgid "<strong>Warning:</strong> never use this with a function which might have
 msgstr "<strong>Achtung:</strong> Niemals mit einer Funktion verwenden, die Seiteneffekte hat. Wenn nicht sichergestellt ist, dass die Funktion harmlos ist, muss auf Find_Func verzichtet werden. Stattdessen kann die Funktion mit einer Schleife über die gefundenen Objekte aufgerufen werden."
 
 #: sdk/script/fn/Find_Func.xml:33(text)
-msgid "Returns all clonks of any types (including Hydroclonks, Mages...)"
-msgstr "Liefert alles zurück, was ein Clonk ist (also auch Hydroclonks, Magier...)."
+msgid "Returns all clonks of any types (all clonks that return true on the call IsClonk)."
+msgstr "Liefert alles zurück, was ein Clonk ist (alle Clonks die auf den Call IsClonk true zurückgeben)."
 
 #: sdk/script/fn/Find_Exclude.xml:17(desc)
 msgid "Object to be excluded. This will be the calling object if unspecified or 0."
@@ -8378,16 +8377,16 @@ msgid "id of the desired building type."
 msgstr "ID des gewünschten Gebäudetyps"
 
 #: sdk/script/fn/FindConstructionSite.xml:21(desc)
-msgid "Number of the variable in which the global x position of the site is to be stored. This variable should first be initialized with the x position for the start of the search."
-msgstr "Variablennummer, in der die globale X-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine X-Position für den Start der Suche enthalten."
+msgid "Designated x-position of the construction site. Always global coordinates."
+msgstr "Gewünschte X-Position der Baustelle. Immer globale Koordinaten."
 
 #: sdk/script/fn/FindConstructionSite.xml:26(desc)
-msgid "Number of the variable in which the global y position of the site is to be stored. This variable should first be initialized with the y position for the start of the search."
-msgstr "Variablennummer, in der die globale Y-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine Y-Position für den Start der Suche enthalten."
+msgid "Designated y-position of the construction site. Always global coordinates."
+msgstr "Gewünschte Y-Position der Baustelle. Immer globale Koordinaten."
 
 #: sdk/script/fn/FindConstructionSite.xml:30(desc)
-msgid "Searches for a suitable construction site for a building of the specified type, starting at position <placeholder-1/>(var_num_x)/<placeholder-2/>(var_num_y). If a site is found, the coordinates are stored in the two specified variables and the function returns true. Otherwise, the function returns false."
-msgstr "Sucht einen Bauplatz für ein Gebäude, ausgehend von <placeholder-1/>(var_num_x)/<placeholder-2/>(var_num_y). Wenn ein Bauplatz gefunden wird, wird er in den entsprechenden Variablen abgelegt, und es wird TRUE zurückgegeben. Ansonsten ist der Rückgabewert FALSE."
+msgid "Searches for a suitable construction site for a building of the specified type, starting at the specified position. If a site is found, the coordinates are returned in the array [x,y]. Otherwise, the function returns nil."
+msgstr "Sucht einen Bauplatz für ein Gebäude, ausgehend von der angegebenen Position. Wenn ein Bauplatz gefunden wird, wird die Position als das Array [x,y] zurückgegeben. Ansonsten ist der Rückgabewert nil."
 
 #: sdk/script/fn/FindConstructionSite.xml:36(text)
 msgid "Searches a construction site for a hut, starting at the local position. If a site is found, construction is started."
@@ -8512,8 +8511,8 @@ msgid "Moves an object into the contents of another object. This call invokes no
 msgstr "Versetzt das aufrufende Objekt in ein anderes hinein. Bei diesem Vorgang wird weder RejectCollect, noch Collection oder ActivateEntrance im Zielobjekt aufgerufen. Dafür aber RejectEntrance und Entrance im Objekt, das hineinversetzt werden soll."
 
 #: sdk/script/fn/Enter.xml:25(text)
-msgid "The selected clonk is moved into the first found hut."
-msgstr "Der ausgewählte Clonk des ersten Spielers wird in die erstbeste Hütte versetzt."
+msgid "All gold chunks in the landscape are moved into the first clonk of the first player."
+msgstr "Alle Goldklumpen in der Landschaft werden in den ersten Clonk des ersten Spielers versetzt."
 
 #: sdk/script/fn/EliminatePlayer.xml:16(desc)
 msgid "Number of the player to be eliminated."
@@ -9397,12 +9396,12 @@ msgid "Should be used instead of <placeholder-1/> to create a building or constr
 msgstr "Sollte statt <placeholder-1/> benutzt werden, wenn ein Gebäude oder eine Baustelle erzeugt werden soll. Bei lokalen Aufrufen dieser Funktion wird die angegebene Position zu Offset-Koordinaten zum aufrufenden Objekt. Wenn check_site 1 ist, wird die Baustelle vorher auf ihre Eignung überprüft. Ist die Position ungeeignet (z.B. durch unebenen Untergrund oder andere Gebäude), wird beim aufrufenden Objekt eine entsprechende Meldung ausgegeben und die Funktion gibt 0 zurück."
 
 #: sdk/script/fn/CreateConstruction.xml:55(text)
-msgid "Creates a compete hut at position 150/100 for player 1 and adjusts the landscape to the building."
-msgstr "Erschafft eine fertige Holzhütte bei den Koordinaten 150/100 für Spieler 1 und passt die Landschaft an das Gebäude an."
+msgid "Creates a complete wind generator at position 150/100 for player 1 and adjusts the landscape to the building."
+msgstr "Erschafft einen fertigen Windgenerator bei den Koordinaten 150/100 für Spieler 1 und passt die Landschaft an das Gebäude an."
 
 #: sdk/script/fn/CreateConstruction.xml:59(text)
-msgid "Creates a hut construction site at position 200/100 with no owner, also adjusting the landscape."
-msgstr "Errichtet eine zu 30% fertiggestellte Holzhütte bei den Koordinaten 200/100 ohne Besitzer wobei hier die Landschaft ebenfalls angepasst wird."
+msgid "Creates a steam engine construction site finished by 30% at position 200/100 with no owner, also adjusting the landscape."
+msgstr "Errichtet eine zu 30% fertiggestellte Dampfmaschine bei den Koordinaten 200/100 ohne Besitzer wobei hier die Landschaft ebenfalls angepasst wird."
 
 #: sdk/script/fn/CreateArray.xml:17(desc)
 msgid "Length of the new array."
@@ -9449,10 +9448,6 @@ msgstr "Wird bei der Erzeugung eines Objekts aufgerufen."
 msgid "Creates an object of the specified type in the contents of the calling object. The object is composed from components which must be available inside the object. Otherwise, a message is displayed listing missing components. This function causes the callback BuildNeedsMaterial which can be used to intercept the message and perform custom actions for acquiring the necessary material."
 msgstr "Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts. Das Objekt wird aus seinen Komponenten zusammen gesetzt, die im aufrufenden Objekt enthalten sein müssen. Andernfalls wird eine Meldung ausgegeben, welche Objekte noch benötigt werden. Auch ComposeContents produziert den Engine Objekt-Call BuildNeedsMaterial, durch den die Meldung über noch benötigtes Material ausgewertet und abgefangen werden kann."
 
-#: sdk/script/fn/ComposeContents.xml:25(text)
-msgid "Composes a steam engine in the closest hut if the necessary material is available."
-msgstr "Setzt in einer Hütte eine Dampfmaschine zusammen, wenn die Materialien dazu vorhanden sind."
-
 #: sdk/script/fn/ComponentAll.xml:17(desc)
 msgid "id of the expected component."
 msgstr "ID der erwarteten Components."
@@ -9470,8 +9465,8 @@ msgid "Collects an object. This function performs the same events as they occur 
 msgstr "Sammelt ein Objekt auf. Der Befehl führt dieselben Funktionen aus, als wäre das Objekt durch den normalen Collection-Bereich des Objekts eingesammelt worden (z.B. RejectCollect, Prüfung auf Flagge/Flagge abnehmbar, Hit-Aufruf bei OCF_HitSpeed2, usw.). Die einzigen Unterschiede sind, dass keine Prüfung der Position von item auf den Entrance-Bereich von target/this() gemacht wird, und dass item nicht auf OCF_Carryable geprüft wird.<br/>Mit diesem Befehl lässt sich beispielsweise das Aufnehmen von Objekten aus Containern heraus realisieren. Wenn die Aufnahme fehlschlug (Beispielsweise durch den RejectCollect-Aufruf oder weil der Container voll war), gibt die Funktion 0 zurück. Ansonsten 1."
 
 #: sdk/script/fn/Collect.xml:31(text)
-msgid "With keyboard command Dig the first inventory object is passed to the selected clonk."
-msgstr "Auf Graben wird das erste Inhaltsobjekt an den ausgewählten Clonk übergeben."
+msgid "With contained use the first inventory object is passed to the selected clonk."
+msgstr "Mit contained use wird das erste Inhaltsobjekt an den ausgewählten Clonk übergeben."
 
 #: sdk/script/fn/CloseMenu.xml:12(desc)
 msgid "Closes the menu of the calling object."
@@ -9522,8 +9517,8 @@ msgid "Player whose visibility to determine."
 msgstr "Spieler für den die Sichtbarkeit abgefragt wird."
 
 #: sdk/script/fn/CheckVisibility.xml:28(desc)
-msgid "Checks whether the given object is visible for the given player."
-msgstr "Prüft ob das angegebene Objekt für den angegebenen Spieler sichtbar ist."
+msgid "Checks whether this object is visible for the given player."
+msgstr "Prüft ob dieses Objekt für den angegebenen Spieler sichtbar ist."
 
 #: sdk/script/fn/CheckEffect.xml:16(desc)
 #: sdk/script/fn/AddEffect.xml:16(desc)
@@ -9580,8 +9575,8 @@ msgid "Warning: if an object applies ChangeDef to itself, the executed object sc
 msgstr "Achtung! Wendet der Script eines Objekts ChangeDef auf sich selbst an, passt der Script nach der Definitionsänderung nicht mehr zum Objekt. Deshalb sollte in diesem Fall nach ChangeDef weder eine lokale Funktion aufgerufen (stattdessen <placeholder-1/>()-&gt;Funktion(...) benutzen) noch auf eine lokale benannte Variable zugegriffen werden (selbst wenn eine gleichnamige in der Zieldefinition existiert)."
 
 #: sdk/script/fn/ChangeDef.xml:27(text)
-msgid "Changes the selected clonk of the first player into a monster."
-msgstr "Verwandelt den ausgewählten Clonk des ersten Spielers in ein Monster."
+msgid "Changes the selected clonk of the first player into a wipf."
+msgstr "Verwandelt den ausgewählten Clonk des ersten Spielers in ein Wipf."
 
 #: sdk/script/fn/CastParticles.xml:16(desc)
 msgid "Name of the particle type."
@@ -9709,7 +9704,7 @@ msgstr "Bewegungsrichtung: Schräg nach oben rechts. Für weitere Hinweise siehe
 #: sdk/script/fn/COMD_DownRight.xml:17(text)
 #: sdk/script/fn/COMD_DownLeft.xml:17(text)
 #: sdk/script/fn/COMD_Down.xml:17(text)
-msgid "Changes the fligt direction of a blimp."
+msgid "Changes the flight direction of an airship."
 msgstr "Ändert die Flugrichtung eines Luftschiffes."
 
 #: sdk/script/fn/COMD_UpLeft.xml:12(desc)

@@ -12,7 +12,7 @@
     <desc>Extinguishes a burning object.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_OnFire</funclink>())-&gt;Extinguish();</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_OnFire</funclink>()))-&gt;Extinguish();</code>
         <text>Extinguishes some found burning object.</text>
       </example>
     </examples>

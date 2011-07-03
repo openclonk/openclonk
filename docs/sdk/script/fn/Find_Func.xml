@@ -30,7 +30,7 @@
     <examples>
       <example>
         <code><funclink>FindObjects</funclink>(<funclink>Find_Func</funclink>(&quot;IsClonk&quot;))</code>
-        <text>Returns all clonks of any types (including Hydroclonks, Mages...)</text>
+        <text>Returns all clonks of any types (all clonks that return true on the call IsClonk).</text>
       </example>
     </examples>
     <related><funclink>FindObjects</funclink></related>

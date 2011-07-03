@@ -25,7 +25,7 @@
     <desc>Cancels function calls which has been scheduled by <funclink>ScheduleCall</funclink>. All scheduled calls to the specified function will be cancelled.</desc>
     <examples>
       <example>
-        <code>ClearScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;);</code>
+        <code>ClearScheduleCall(<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)), &quot;Redefine&quot;);</code>
         <text>Cancels all scheduled calls to the function "Redefine" for the first clonk.</text>
       </example>
     </examples>
