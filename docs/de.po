@@ -3079,8 +3079,8 @@ msgid "Scroll mode. 0 standard; 1 wind moves with the wind."
 msgstr "Scrollmodus. 0 ist Standard; bei 1 bewegt sich der Himmel mit dem Wind."
 
 #: sdk/script/fn/SetSkyParallax.xml:21(desc)
-msgid "Horizontal parallaxity. At value 10 the sky is linked to the landscape; at higher values the sky will be parallax to the landscape; at 0 the previous value is kept."
-msgstr "Parallaxität in X-Richtung. Bei 10 ist der Himmel fest mit der Landschaft, mit größeren Werten beginnt die Parallaxität. Bei 0 wird der vorherige Wert beibehalten."
+msgid "Horizontal parallaxity. With a value of 10 the sky is fixed to the landscape and thus appears to be on the same level as the landscape itself. Higher values will let the sky appear further away from the viewer."
+msgstr "Parallaxität in X-Richtung. Bei 10 ist der Himmel fest an der Landschaft und erscheint daher auf dem selben Level wie die Landschaft selber. Größere Werte lassen den Himmel weiter vom Betrachter weg erscheinen."
 
 #: sdk/script/fn/SetSkyParallax.xml:26(desc)
 msgid "Vertical parallaxity."
@@ -3107,12 +3107,16 @@ msgid "Changes parallaxity and scroll speed of the sky."
 msgstr "Verändert Parallaxität und Scrollgeschwindigkeit des Himmels."
 
 #: sdk/script/fn/SetSkyParallax.xml:51(remark)
-msgid "If you specify <placeholder-1/>() for one of the parameters, the previously set value will be kept."
-msgstr "Wird für einen der Parameter <placeholder-1/>() angegeben, wird der vorherige Wert beibehalten."
+msgid "If you specify nil for one of the parameters or leave it out, the previous value will be kept."
+msgstr "Wird für einen der Parameter nil angegeben bzw. selbiger ausgelassen, wird der vorherige Wert beibehalten."
 
 #: sdk/script/fn/SetSkyParallax.xml:55(text)
 msgid "Sets the sky to parallax and moving with the wind."
 msgstr "Setzt den Himmel auf parallax und mit dem Wind bewegend."
+
+#: sdk/script/fn/SetSkyParallax.xml:58(text)
+msgid "Scrolls the sky constantly to the right, keeping the previously set parallaxity."
+msgstr "Scrollt den Himmel konstant nach rechts. Die anderen vorher gesetzten Werte werden beibehalten."
 
 #: sdk/script/fn/SetSkyAdjust.xml:16(desc)
 #: sdk/script/fn/SetMatAdjust.xml:16(desc)

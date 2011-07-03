@@ -1734,19 +1734,17 @@ static bool FnClearParticles(C4AulContext *cthr, C4String *szName, C4Object *pOb
 	return true;
 }
 
-#define SkyPar_KEEP -163764
-
-static bool FnSetSkyParallax(C4AulContext* ctx, long iMode, long iParX, long iParY, long iXDir, long iYDir, long iX, long iY)
+static bool FnSetSkyParallax(C4AulContext* ctx, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
 {
-	// set all parameters that aren't SkyPar_KEEP
-	if (iMode != SkyPar_KEEP)
+	// set all parameters that aren't nil
+	if (!iMode.IsNil())
 		if (Inside<long>(iMode, 0, 1)) ::Landscape.Sky.ParallaxMode = iMode;
-	if (iParX != SkyPar_KEEP && iParX) ::Landscape.Sky.ParX = iParX;
-	if (iParY != SkyPar_KEEP && iParY) ::Landscape.Sky.ParY = iParY;
-	if (iXDir != SkyPar_KEEP) ::Landscape.Sky.xdir = itofix(iXDir);
-	if (iYDir != SkyPar_KEEP) ::Landscape.Sky.ydir = itofix(iYDir);
-	if (iX != SkyPar_KEEP) ::Landscape.Sky.x = itofix(iX);
-	if (iY != SkyPar_KEEP) ::Landscape.Sky.y = itofix(iY);
+	if (!iParX.IsNil() && iParX) ::Landscape.Sky.ParX = iParX;
+	if (!iParY.IsNil() && iParY) ::Landscape.Sky.ParY = iParY;
+	if (!iXDir.IsNil()) ::Landscape.Sky.xdir = itofix(iXDir);
+	if (!iYDir.IsNil()) ::Landscape.Sky.ydir = itofix(iYDir);
+	if (!iX.IsNil()) ::Landscape.Sky.x = itofix(iX);
+	if (!iY.IsNil()) ::Landscape.Sky.y = itofix(iY);
 	// success
 	return true;
 }
@@ -2578,8 +2576,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 
 C4ScriptConstDef C4ScriptGameConstMap[]=
 {
-	{ "SkyPar_Keep"            ,C4V_Int,          SkyPar_KEEP},
-
 	{ "FX_OK"                     ,C4V_Int,      C4Fx_OK                    }, // generic standard behaviour for all effect callbacks
 	{ "FX_Effect_Deny"            ,C4V_Int,      C4Fx_Effect_Deny           }, // delete effect
 	{ "FX_Effect_Annul"           ,C4V_Int,      C4Fx_Effect_Annul          }, // delete effect, because it has annulled a countereffect
