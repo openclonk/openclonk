@@ -104,6 +104,11 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	// Coordinates are always supplied globally, convert to local coordinates.
 	var l_x = x - GetX(), l_y = y - GetY();
 	
+	// caused by: if not specified, controller of calling object
+	if(cause_plr == nil)
+		if(this)
+			cause_plr = GetController();
+	
 	// In a container?
 	if (container)
 	{
