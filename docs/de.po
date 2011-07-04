@@ -920,7 +920,7 @@ msgstr "Die Operatoren &amp;&amp; und ||"
 
 #: sdk/script/operatoren.xml:297(text)
 msgid "These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:"
-msgstr "Diese beiden Operatoren haben (ab <emlink href=\"script/Strict.html\"> 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
+msgstr "Diese beiden Operatoren haben eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
 
 #: sdk/script/operatoren.xml:299(text)
 msgid "Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:"
@@ -18197,9 +18197,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "By using #appendto you can avoid various object definition overloads."
 #~ msgstr "Durch Verwendung von #appendto können zahlreiche Objektüberladungen vermieden werden."
-
-#~ msgid "#strict"
-#~ msgstr "#strict"
 
 #~ msgid "Returns the description of an object or of an object definition. Descriptions are stored in the Desc**.txt files of an object definition group."
 #~ msgstr "Gibt die Beschreibung eines Objekts oder einer Objektdefinition zurück. Die Beschreibung wird in Objektdefinitionen in der Desc**.txt angegeben."

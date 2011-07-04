@@ -9,12 +9,7 @@
 		<param name="Name" value="#appendto">
 		<param name="Name" value="#appendto">
 		<param name="Local" value="sdk\script\AppendTo.html">
-		</OBJECT>
-	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="#strict">
-		<param name="Name" value="#strict">
-		<param name="Local" value="sdk\script\Strict.html">
-		</OBJECT>
+		</OBJECT>s
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="ActMap.txt">
 		<param name="Name" value="ActMap.txt">
@@ -54,8 +49,6 @@
 		<param name="Name" value="Direktiven">
 		<param name="Name" value="#appendto">
 		<param name="Local" value="sdk\script\AppendTo.html">
-		<param name="Name" value="#strict">
-		<param name="Local" value="sdk\script\Strict.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Die Engine im Entwicklermodus">
