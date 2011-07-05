@@ -2973,7 +2973,7 @@ void C4AulParseState::Parse_Const()
 		if (TokenType != ATT_SET)
 			UnexpectedToken("'='");
 		// expect value. Theoretically, something like C4AulScript::ExecOperator could be used here
-		// this would allow for definitions like "static const OCF_Edible = 1<<23"
+		// this would allow for definitions like "static const OCF_CrewMember = 1<<20"
 		// However, such stuff should better be generalized, so the preparser (and parser)
 		// can evaluate any constant expression, including functions with constant retval (e.g. Sqrt)
 		// So allow only simple constants for now.

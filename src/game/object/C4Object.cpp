@@ -817,9 +817,6 @@ void C4Object::SetOCF()
 	// OCF_NotContained
 	if (!Contained)
 		OCF|=OCF_NotContained;
-	// OCF_Edible
-	if (Def->Edible)
-		OCF|=OCF_Edible;
 	// OCF_InLiquid
 	if (InLiquid)
 		if (!Contained)
@@ -862,7 +859,7 @@ void C4Object::UpdateOCF()
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
-	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
+	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Grab | OCF_FullCon
 	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Alive
 	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up

@@ -142,7 +142,6 @@ public:
 	int32_t IncompleteActivity;
 	int32_t Placement;
 	int32_t Prey;
-	int32_t Edible;
 	int32_t AttractLightning;
 	int32_t Oversize;
 	int32_t Fragile;

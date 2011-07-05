@@ -116,13 +116,12 @@ const uint32_t
 	OCF_AttractLightning = 1<<18,
 	OCF_NotContained = 1<<19,
 	OCF_CrewMember = 1<<20,
-	OCF_Edible = 1<<21,
-	OCF_InLiquid = 1<<22,
-	OCF_InSolid = 1<<23,
-	OCF_InFree = 1<<24,
-	OCF_Available = 1<<25,
-	OCF_Container = 1<<26,
-	OCF_Alive = 1<<27;
+	OCF_InLiquid = 1<<21,
+	OCF_InSolid = 1<<22,
+	OCF_InFree = 1<<23,
+	OCF_Available = 1<<24,
+	OCF_Container = 1<<25,
+	OCF_Alive = 1<<26;
 
 //================================== Contact / Attachment ==============================================
 

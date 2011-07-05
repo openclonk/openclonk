@@ -97,7 +97,6 @@ msgstr "Kategorie"
 #: sdk/script/fn/OCF_Fullcon.xml:9(subcat)
 #: sdk/script/fn/OCF_Exclusive.xml:9(subcat)
 #: sdk/script/fn/OCF_Entrance.xml:9(subcat)
-#: sdk/script/fn/OCF_Edible.xml:9(subcat)
 #: sdk/script/fn/OCF_CrewMember.xml:9(subcat)
 #: sdk/script/fn/OCF_Container.xml:9(subcat)
 #: sdk/script/fn/OCF_Construct.xml:9(subcat)
@@ -1458,7 +1457,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/OCF_Fullcon.xml:8(category)
 #: sdk/script/fn/OCF_Exclusive.xml:8(category)
 #: sdk/script/fn/OCF_Entrance.xml:8(category)
-#: sdk/script/fn/OCF_Edible.xml:8(category)
 #: sdk/script/fn/OCF_CrewMember.xml:8(category)
 #: sdk/script/fn/OCF_Container.xml:8(category)
 #: sdk/script/fn/OCF_Construct.xml:8(category)
@@ -5870,7 +5868,6 @@ msgstr "Object character flag: Objekt ist drehbar."
 #: sdk/script/fn/OCF_Fullcon.xml:13(remark)
 #: sdk/script/fn/OCF_Exclusive.xml:13(remark)
 #: sdk/script/fn/OCF_Entrance.xml:13(remark)
-#: sdk/script/fn/OCF_Edible.xml:13(remark)
 #: sdk/script/fn/OCF_Container.xml:13(remark)
 #: sdk/script/fn/OCF_Construct.xml:13(remark)
 #: sdk/script/fn/OCF_Collection.xml:13(remark)
@@ -5899,7 +5896,6 @@ msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten
 #: sdk/script/fn/OCF_Fullcon.xml:17(emlink)
 #: sdk/script/fn/OCF_Exclusive.xml:17(emlink)
 #: sdk/script/fn/OCF_Entrance.xml:17(emlink)
-#: sdk/script/fn/OCF_Edible.xml:17(emlink)
 #: sdk/script/fn/OCF_CrewMember.xml:31(emlink)
 #: sdk/script/fn/OCF_Container.xml:17(emlink)
 #: sdk/script/fn/OCF_Construct.xml:17(emlink)
@@ -5977,10 +5973,6 @@ msgstr "Object character flag: Das Objekt blockiert (versteckt) dahinter befindl
 #: sdk/script/fn/OCF_Entrance.xml:12(desc)
 msgid "Object character flag: The object has an active entrance area. For this there must be a defined entrance area (see <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>), the object must be complete and not rotated too far."
 msgstr "Object character flag: Das Objekt bestizt einen aktiven Eingangsbereich. Dies ist der Fall, wenn ein Eingangsbereich definiert ist (siehe <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>), das Objekt fertig gebaut und nicht verdreht ist."
-
-#: sdk/script/fn/OCF_Edible.xml:12(desc)
-msgid "Object character flag: Edible object. This flag is set by <emlink href=\"definition/defcore.html\">DefCore</emlink> entry \"Edible\"."
-msgstr "Object character flag: Essbares Objekt. Dieses Flag wird durch den <emlink href=\"definition/defcore.html\">DefCore</emlink>-Eintrag \"Edible\" gesetzt."
 
 #: sdk/script/fn/OCF_CrewMember.xml:12(desc)
 msgid "Object character flag: the object can be made a crew member or already is a crew member, meaning the corresponding DefCore flag is set and the object is alive."
@@ -16501,10 +16493,6 @@ msgstr "0 oder 1. Bei 1 kann das Objekt nicht verkauft werden."
 msgid "0 or 1. Determines whether the object is prey for certain animals."
 msgstr "0 oder 1. Legt fest, ob das Objekt ein Beutelebewesen ist."
 
-#: sdk/definition/defcore.xml:186(col)
-msgid "0 or 1. Determines whether the object is edible."
-msgstr "0 oder 1. Legt fest, ob das Objekt essbar ist (noch nicht unterstützt)."
-
 #: sdk/definition/defcore.xml:191(col)
 msgid "0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href=\"script/fn/MakeCrewMember\">MakeCrewMember</emlink>."
 msgstr "0 oder 1. Wenn 1, wird das Objekt beim Kauf der Mannschaft hinzugefügt. Mit CreateObject erzeugte CrewMember-Objekte müssen mit <emlink href=\"script/fn/MakeCrewMember\">MakeCrewMember</emlink> der Mannschaft eines Spielers hinzugefügt werden."
@@ -17568,9 +17556,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "OCF_Entrance"
 #~ msgstr "OCF_Entrance"
-
-#~ msgid "OCF_Edible"
-#~ msgstr "OCF_Edible"
 
 #~ msgid "OCF_CrewMember"
 #~ msgstr "OCF_CrewMember"

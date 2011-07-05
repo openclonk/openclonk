@@ -2282,7 +2282,6 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "OCF_AttractLightning"   ,C4V_Int,          OCF_AttractLightning},
 	{ "OCF_NotContained"       ,C4V_Int,          OCF_NotContained},
 	{ "OCF_CrewMember"         ,C4V_Int,          OCF_CrewMember},
-	{ "OCF_Edible"             ,C4V_Int,          OCF_Edible},
 	{ "OCF_InLiquid"           ,C4V_Int,          OCF_InLiquid},
 	{ "OCF_InSolid"            ,C4V_Int,          OCF_InSolid},
 	{ "OCF_InFree"             ,C4V_Int,          OCF_InFree},
