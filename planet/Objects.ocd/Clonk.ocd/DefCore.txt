@@ -15,7 +15,6 @@ Mass=50
 Picture=192,100,32,40
 Collection=-8,-10,16,27
 ContactIncinerate=1
-Prey=1
 CrewMember=1
 NoGet=1
 Float=-2

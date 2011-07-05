@@ -26,8 +26,7 @@ global func GetDefBlastIncinerate() { return GetDefCoreVal("BlastIncinerate", "D
 global func GetDefBurnTo()      { return GetDefCoreVal("BurnTo", "DefCore"); }
 global func GetDefBase()        { return GetDefCoreVal("Base", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
-global func GetDefPrey()        { return GetDefCoreVal("Prey", "DefCore"); }
-global func GetDefCrewMember()  { return GetDefCoreVal("Prey", "DefCore"); }
+global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }
 global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
 global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }
 global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }

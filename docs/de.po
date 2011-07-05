@@ -81,7 +81,6 @@ msgstr "Kategorie"
 
 #: sdk/content.xml.in:70(emlink)
 #: sdk/script/fn/OCF_Rotate.xml:9(subcat)
-#: sdk/script/fn/OCF_Prey.xml:9(subcat)
 #: sdk/script/fn/OCF_OnFire.xml:9(subcat)
 #: sdk/script/fn/OCF_NotContained.xml:9(subcat)
 #: sdk/script/fn/OCF_Living.xml:9(subcat)
@@ -1441,7 +1440,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/ObjectCount.xml:8(category)
 #: sdk/script/fn/Object.xml:8(category)
 #: sdk/script/fn/OCF_Rotate.xml:8(category)
-#: sdk/script/fn/OCF_Prey.xml:8(category)
 #: sdk/script/fn/OCF_OnFire.xml:8(category)
 #: sdk/script/fn/OCF_NotContained.xml:8(category)
 #: sdk/script/fn/OCF_Living.xml:8(category)
@@ -5852,7 +5850,6 @@ msgid "Object character flag: object can be rotated."
 msgstr "Object character flag: Objekt ist drehbar."
 
 #: sdk/script/fn/OCF_Rotate.xml:13(remark)
-#: sdk/script/fn/OCF_Prey.xml:13(remark)
 #: sdk/script/fn/OCF_OnFire.xml:13(remark)
 #: sdk/script/fn/OCF_NotContained.xml:13(remark)
 #: sdk/script/fn/OCF_Living.xml:13(remark)
@@ -5880,7 +5877,6 @@ msgid "For more information and examples regarding these constants see <emlink h
 msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href=\"definition/ocf.html\">Object character flags</emlink>."
 
 #: sdk/script/fn/OCF_Rotate.xml:17(emlink)
-#: sdk/script/fn/OCF_Prey.xml:17(emlink)
 #: sdk/script/fn/OCF_OnFire.xml:17(emlink)
 #: sdk/script/fn/OCF_NotContained.xml:18(emlink)
 #: sdk/script/fn/OCF_Living.xml:17(emlink)
@@ -5909,10 +5905,6 @@ msgstr "Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten
 #: sdk/definition/ocf.xml:6(title)
 msgid "Object character flags"
 msgstr "Object character flags"
-
-#: sdk/script/fn/OCF_Prey.xml:12(desc)
-msgid "Object character flag: prey for certain animals (usual prey are wipfs, clonks etc.)"
-msgstr "Object character flag: Beutetier, wie zum Beispiel Wipfe, Clonks, etc."
 
 #: sdk/script/fn/OCF_OnFire.xml:12(desc)
 msgid "Object character flag: a burning object."
@@ -16489,10 +16481,6 @@ msgstr "0 oder 1. Legt fest, ob das Objekt Heimatbasis sein kann."
 msgid "0 or 1. If 1 the object is a line and exhibits special behaviour."
 msgstr "0 oder 1. Bei 1 kann das Objekt nicht verkauft werden."
 
-#: sdk/definition/defcore.xml:181(col)
-msgid "0 or 1. Determines whether the object is prey for certain animals."
-msgstr "0 oder 1. Legt fest, ob das Objekt ein Beutelebewesen ist."
-
 #: sdk/definition/defcore.xml:191(col)
 msgid "0 or 1. If 1, the object is added to the player's crew upon purchase. Objects created using CreateObject have to be added to a player's crew manually using <emlink href=\"script/fn/MakeCrewMember\">MakeCrewMember</emlink>."
 msgstr "0 oder 1. Wenn 1, wird das Objekt beim Kauf der Mannschaft hinzugefügt. Mit CreateObject erzeugte CrewMember-Objekte müssen mit <emlink href=\"script/fn/MakeCrewMember\">MakeCrewMember</emlink> der Mannschaft eines Spielers hinzugefügt werden."
@@ -17508,9 +17496,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "OCF_Rotate"
 #~ msgstr "OCF_Rotate"
-
-#~ msgid "OCF_Prey"
-#~ msgstr "OCF_Prey"
 
 #~ msgid "OCF_OnFire"
 #~ msgstr "OCF_OnFire"

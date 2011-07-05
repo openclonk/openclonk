@@ -77,7 +77,6 @@ void C4Def::DefaultDefCore()
 	NoBurnDecay=0;
 	IncompleteActivity=0;
 	Placement=0;
-	Prey=0;
 	AttractLightning=0;
 	Oversize=0;
 	Fragile=0;
@@ -249,7 +248,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BurnTurnTo,                    "BurnTo",             C4ID::None        ));
 	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
-	pComp->Value(mkNamingAdapt(Prey,                          "Prey",               0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
