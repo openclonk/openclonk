@@ -20,6 +20,7 @@ protected func Initialize()
 	DoCon(Random(75));
 
 	SetAction("Fly");
+	SetComDir(COMD_None);
 	SetPhase(RandomX(1,16));
 
 	//Push low flying clouds up to proper height
@@ -159,6 +160,7 @@ Fly = {
 	Procedure = DFA_FLOAT,
 	Speed = 20,
 	Accel = 16,
+	Decel = 16,
 	X = 0,
 	Y = 0,
 	Wdt = 512,

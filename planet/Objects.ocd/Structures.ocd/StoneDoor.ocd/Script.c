@@ -3,6 +3,7 @@
 protected func Initialize()
 {
 	SetAction("Door");
+	SetComDir(COMD_None);
 	return;
 }
 

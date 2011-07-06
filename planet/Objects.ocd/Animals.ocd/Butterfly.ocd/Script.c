@@ -19,6 +19,7 @@ protected func Initialize()
 	rotanim = PlayAnimation("Rotate", 5, Anim_Const(1), Anim_Const(1000));
 	AddEffect("ButterflyTurn", this, 1, 1, this);
 	SetAction("Fly");
+	SetComDir(COMD_None);
 	MoveToTarget();
 	return 1;
 }
@@ -53,13 +54,21 @@ func TurnButterfly()
 private func FlyingStart()
 {
 	TurnButterfly();
-	if (!Random(3)) SetAction("Flutter");
+	if (!Random(3))
+	{
+		SetAction("Flutter");
+		SetComDir(COMD_None);
+	}
 	return 1;
 }
 	
 private func Fluttering()
 {
-	if (!Random(7)) SetAction("Fly");
+	if (!Random(7))
+	{
+		SetAction("Fly");
+		SetComDir(COMD_None);
+	}
 	return 1;
 }
 
@@ -112,6 +121,7 @@ Fly = {
 	Procedure = DFA_FLOAT,
 	Speed = 200,
 	Accel = 16,
+	Decel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 1,
@@ -129,6 +139,7 @@ Flutter = {
 	Procedure = DFA_FLOAT,
 	Speed = 200,
 	Accel = 16,
+	Decel = 16,
 	Directions = 2,
 	FlipDir = 1,
 	Length = 11,

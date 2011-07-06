@@ -37,7 +37,7 @@ void C4Action::Default()
 	//pActionDef = 0;
 	Dir=DIR_None;
 	DrawDir=Dir;
-	ComDir=COMD_None;
+	ComDir=COMD_Stop;
 	Time=0;
 	Data=0;
 	Target=Target2=NULL;
@@ -53,7 +53,7 @@ void C4Action::CompileFunc(StdCompiler *pComp)
 	// Note: Compiled directly into "Object"-categories, so beware of name clashes (see C4Object::CompileFunc)
 	// FIXME pComp->Value(mkNamingAdapt( toC4CStr(Name),            "Action",             ""                ));
 	pComp->Value(mkNamingAdapt( Dir,                      "Dir",                DIR_None          ));
-	pComp->Value(mkNamingAdapt( ComDir,                   "ComDir",             COMD_None         ));
+	pComp->Value(mkNamingAdapt( ComDir,                   "ComDir",             COMD_Stop         ));
 	pComp->Value(mkNamingAdapt( Time,                     "ActionTime",         0                 ));
 	pComp->Value(mkNamingAdapt( Data,                     "ActionData",         0                 ));
 	pComp->Value(mkNamingAdapt( Phase,                    "Phase",              0                 ));

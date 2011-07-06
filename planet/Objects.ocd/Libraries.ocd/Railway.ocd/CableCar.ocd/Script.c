@@ -32,6 +32,7 @@ public func EngageRail(object pRailpoint)
 	SetSpeed(0,0);
 	SetR(0);
 	SetAction("OnRail");
+	SetComDir(COMD_None);
 	pRailTarget = pRailpoint;
 	rail_direction = 0;
 }

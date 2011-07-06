@@ -44,7 +44,10 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	}
 	
 	if(GetAction() != "Fly")
+	{
 		SetAction("Fly");
+		SetComDir(COMD_None);
+	}
 		
 	fuel--;
 }
@@ -90,6 +93,7 @@ func Launch(int angle)
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
 	SetAction("Fly");
+	SetComDir(COMD_None);
 	
 	Exit();
 	AddEffect("Flight",this,150,1,this,this);

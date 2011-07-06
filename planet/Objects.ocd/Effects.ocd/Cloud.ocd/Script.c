@@ -3,6 +3,7 @@
 func Initialize()
 {
 	SetAction("Fly");
+	SetComDir(COMD_None);
 }
 
 func Show(int clr, int layer, int size,bool diffuse)
@@ -45,6 +46,7 @@ Fly = {
 	Procedure = DFA_FLOAT,
 	Speed = 1000,
 	Accel = 16,
+	Decel = 16,
 	NextAction = "Hold"
 },
 };

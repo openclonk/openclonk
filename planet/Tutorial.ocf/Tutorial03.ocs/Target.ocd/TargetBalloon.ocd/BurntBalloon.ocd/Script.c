@@ -8,6 +8,7 @@ protected func Initialize()
 {
 	SetRDir(-2+Random(4));
 	SetAction("Fall");
+	SetComDir(COMD_None);
 	AddEffect("Fade",this,1,1,this);
 }
 

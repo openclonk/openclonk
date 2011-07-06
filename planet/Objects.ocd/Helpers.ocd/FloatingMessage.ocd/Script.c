@@ -66,6 +66,7 @@ func Update()
 public func Initialize()
 {
 	SetAction("Float");
+	SetComDir(COMD_None);
 	SetSpeed(0, -20);
 	alpha=255;
 	return true;

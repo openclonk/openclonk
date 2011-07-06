@@ -47,7 +47,10 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	}
 	
 	if(GetAction() != "Fly")
+	{
 		SetAction("Fly");
+		SetComDir(COMD_None);
+	}
 		
 	fuel--;
 }

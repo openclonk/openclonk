@@ -10,6 +10,7 @@ protected func Initialize()
 	ry=40;
 	rx=0;
 	SetAction("Moving");
+	SetComDir(COMD_None);
 	SetPosition(ox,oy);
 	size=4;
 	AddEffect("MovingAround",this,100,1,this,this->GetID());

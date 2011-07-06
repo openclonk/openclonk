@@ -121,6 +121,7 @@ Travel = {
 	Procedure = DFA_FLOAT,
 	Speed = 100000,
 	Accel = 16,
+	Decel = 16,
 	NextAction = "Travel",
 	Length = 1,
 	Delay = 1,

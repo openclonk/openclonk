@@ -3680,12 +3680,12 @@ void C4Object::ExecAction()
 		case COMD_Left:                   xdir-=accel; break;
 		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
 		case COMD_Stop:
-			if (xdir<0) xdir+=accel;
-			if (xdir>0) xdir-=accel;
-			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
-			if (ydir<0) ydir+=accel;
-			if (ydir>0) ydir-=accel;
-			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
 			break;
 		}
 
@@ -3698,9 +3698,12 @@ void C4Object::ExecAction()
 			else { ObjectActionWalk(this); return; }
 		}
 
-		// xdir/ydir bounds
-		if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
-		if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		// xdir/ydir bounds, don't apply if COMD_None
+		if (Action.ComDir != COMD_None)
+		{
+			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
+			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		}
 		// Surface dir bound
 		if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1)) if (ydir<0) ydir=0;
 		// Dir, Phase, Attach
@@ -3902,12 +3905,12 @@ void C4Object::ExecAction()
 		case COMD_Left:                   xdir-=accel; break;
 		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
 		case COMD_Stop:
-			if (xdir<0) xdir+=accel;
-			if (xdir>0) xdir-=accel;
-			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
-			if (ydir<0) ydir+=accel;
-			if (ydir>0) ydir-=accel;
-			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
 			break;
 		}
 		// xdir/ydir bounds, don't apply if COMD_None

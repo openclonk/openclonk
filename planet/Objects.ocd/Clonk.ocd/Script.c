@@ -2155,6 +2155,7 @@ Swim = {
 	Procedure = DFA_SWIM,
 	Speed = 96,
 	Accel = 7,
+	Decel = 9,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,

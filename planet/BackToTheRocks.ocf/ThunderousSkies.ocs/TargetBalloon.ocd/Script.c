@@ -11,6 +11,7 @@ protected func Initialize()
 {
 	ysin = 0;
 	SetAction("Float");
+	SetComDir(COMD_None);
 	AddEffect("Float",this,1,1,this);
 }
 

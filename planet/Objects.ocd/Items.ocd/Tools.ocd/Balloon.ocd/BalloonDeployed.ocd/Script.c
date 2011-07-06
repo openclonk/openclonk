@@ -9,6 +9,7 @@ protected func Initialize()
 	idir = 0;
 	dir = 0;
 	SetAction("Inflate");
+	SetComDir(COMD_None);
 	AddEffect("Float",this,1,1,this);
 
 	//Special Effects
@@ -22,7 +23,11 @@ protected func Initialize()
 
 private func Deflate()
 {
-	if(GetAction() != "Deflate") SetAction("Deflate");
+	if(GetAction() != "Deflate")
+	{
+		SetAction("Deflate");
+		SetComDir(COMD_None);
+	}
 	Schedule("Pack()",20); //EndCall doesn't work. >:(
 }
 

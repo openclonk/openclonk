@@ -29,6 +29,7 @@ local turnanim;
 protected func Initialize()
 {
 	SetAction("Fly");
+	SetComDir(COMD_None);
 	throttle = 0;
 	xtarget = 0;
 	ytarget = 0;

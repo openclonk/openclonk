@@ -23,6 +23,7 @@ public func Initialize()
 	color = GetPlayerColor(GetOwner());
 	SetClrModulation(color|RGBa(0,0,0,fade));
 	SetAction("Fly");
+	SetComDir(COMD_None);
 	return true;
 }
 
