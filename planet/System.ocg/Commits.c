@@ -319,28 +319,13 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 	return false;
 }
 
-global func ComDirTransform(int comdir, int tocomdir)
-{
-	if (comdir == tocomdir)
-		return comdir;
-	if (comdir == COMD_Stop)
-		return tocomdir;
-	if (comdir == (tocomdir + 3) % 8 + 1)
-		return COMD_Stop;
-	if (Inside(comdir, tocomdir + 1, tocomdir + 3))
-		return comdir - 1;
-	if (Inside(comdir, tocomdir - 1, tocomdir - 3))
-		return comdir + 1;
-	if (Inside(comdir, tocomdir - 7, tocomdir - 5))
-		return (comdir + 6) % 8 + 1;
-	return comdir % 8 + 1;
-}
-
 global func ComDirLike(int comdir1, int comdir2)
 {
 	if (comdir1 == comdir2)
 		return true;
 	if (comdir1 == COMD_Stop || comdir2 == COMD_Stop)
+		return false;
+	if (comdir1 == COMD_None || comdir2 == COMD_None)
 		return false;
 	if (comdir1 % 8 + 1 == comdir2)
 		return true;

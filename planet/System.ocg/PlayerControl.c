@@ -292,7 +292,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 		if (ctrl == CON_Jump)
 		{
 			if(proc == "WALK" && GetComDir() == COMD_Up)
-				SetComDir(COMD_None);
+				SetComDir(COMD_Stop);
 			if(proc == "WALK")
 				return this->ObjectCommand("Jump");
 		}
@@ -435,7 +435,7 @@ global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, in
 	if (GetPlayerControlState(plr, con_down))	++y;
 	// Creating an array here for every keypress/release
 	// Would be so cool to have this static const. Guenther?
-	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_None, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];
+	var dir_coms = [COMD_UpLeft, COMD_Up, COMD_UpRight, COMD_Left, COMD_Stop, COMD_Right, COMD_DownLeft, COMD_Down, COMD_DownRight];
 	return dir_coms[y*3+x+4];
 }
 

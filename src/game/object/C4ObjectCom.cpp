@@ -537,25 +537,6 @@ void ObjectComStopDig(C4Object *cObj)
 			cObj->ClearCommand(cObj->Command);
 }
 
-int32_t Coms2ComDir(int32_t iComs)
-{
-	// This is possible because COM_Left - COM_Down are < 32
-	static int32_t DirComs = (1 << COM_Left) | (1 << COM_Right) | (1 << COM_Up) | (1 << COM_Down);
-	switch (iComs & DirComs)
-	{
-	case (1 << COM_Up):                      return COMD_Up;
-	case (1 << COM_Up) | (1 << COM_Right):   return COMD_UpRight;
-	case (1 << COM_Right):                   return COMD_Right;
-	case (1 << COM_Down) | (1 << COM_Right): return COMD_DownRight;
-	case (1 << COM_Down):                    return COMD_Down;
-	case (1 << COM_Down) | (1 << COM_Left):  return COMD_DownLeft;
-	case (1 << COM_Left):                    return COMD_Left;
-	case (1 << COM_Up) | (1 << COM_Left):    return COMD_UpLeft;
-		// up, right and left could be interpreted as COMD_Up etc., but that's too complicated for now
-	default:                                 return COMD_Stop;
-	}
-}
-
 bool ComDirLike(int32_t iComDir, int32_t iSample)
 {
 	if (iComDir == iSample) return true;

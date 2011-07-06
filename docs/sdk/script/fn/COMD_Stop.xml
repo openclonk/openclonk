@@ -9,8 +9,7 @@
     <subcat>Movement</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Movement direction: stop. For more information see <funclink>SetComDir</funclink>.</desc>
-    <remark><funclink>COMD_None</funclink> and COMD_Stop are identical and have the value 0.</remark>
+    <desc>Movement direction: stop, hence end current motion. For more information see <funclink>SetComDir</funclink>.</desc>
     <examples>
       <example>
         <code><funclink>GetCursor</funclink>()-&gt;<funclink>SetComDir</funclink>(COMD_None);</code>

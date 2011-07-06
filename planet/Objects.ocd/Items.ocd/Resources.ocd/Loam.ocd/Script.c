@@ -34,7 +34,7 @@ func ControlUseStart(object clonk, int x, int y)
 
 	// Gfx
 	clonk->SetAction("Bridge");
-	clonk->SetComDir(COMD_None);
+	clonk->SetComDir(COMD_Stop);
 	clonk->SetXDir(0);
 	clonk->SetYDir(0);
 	last_x = BoundBy(x,-0,0)+GetX(); last_y = clonk->GetDefBottom()+3;

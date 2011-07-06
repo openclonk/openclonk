@@ -9,12 +9,13 @@
     <subcat>Movement</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Movement direction: stop. For more information see <funclink>SetComDir</funclink>.</desc>
-    <remark>COMD_None and <funclink>COMD_Stop</funclink> are identical and have the value 0.</remark>
+    <desc>Movement direction: keep current motion. For more information see <funclink>SetComDir</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;<funclink>SetComDir</funclink>(COMD_None);</code>
-        <text>Makes the currently selected clonk of the first player stop.</text>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetAction</funclink>("Fly");
+		FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetComDir</funclink>(COMD_None);
+		FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetSpeed</funclink>(20, 30);</code>
+        <text>This code will let a butterfly fly in an alternative direction than the predefined ones for the FLOAT procedure</text>
       </example>
     </examples>
     <related>

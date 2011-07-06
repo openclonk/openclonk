@@ -1271,21 +1271,6 @@ func FxIntScaleStop(target, effect, reason, tmp)
 	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);*/
 }
 
-// This is just for test... TODO RemoveMe
-func NameComDir(comdir)
-{
-	if(comdir == COMD_Stop) return "COMD_Stop";
-	if(comdir == COMD_Up) return "COMD_Up";
-	if(comdir == COMD_UpRight) return "COMD_UpRight";
-	if(comdir == COMD_UpLeft) return "COMD_UpLeft";
-	if(comdir == COMD_Right) return "COMD_Right";
-	if(comdir == COMD_Left) return "COMD_Left";
-	if(comdir == COMD_Down) return "COMD_Down";
-	if(comdir == COMD_DownRight) return "COMD_DownRight";
-	if(comdir == COMD_DownLeft) return "COMD_DownLeft";
-	if(comdir == COMD_None) return "COMD_None";
-}
-
 /* Jump */
 
 func StartJump()

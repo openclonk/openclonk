@@ -3910,9 +3910,12 @@ void C4Object::ExecAction()
 			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
 			break;
 		}
-		// xdir/ydir bounds
-		if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
-		if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		// xdir/ydir bounds, don't apply if COMD_None
+		if (Action.ComDir != COMD_None)
+		{
+			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
+			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		}
 
 		Mobile=1;
 		break;

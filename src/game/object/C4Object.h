@@ -53,7 +53,7 @@
    but will try to slow down according to it's current Action. ComDir values
    circle clockwise from COMD_Up 1 through COMD_UpLeft 8. */
 
-#define COMD_None       0
+#define COMD_None       -1
 #define COMD_Stop       0
 #define COMD_Up         1
 #define COMD_UpRight    2

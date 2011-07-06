@@ -65,7 +65,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 		if (can_dig)
 		{
 			clonk->SetAction("Dig");
-			clonk->SetComDir(COMD_None);
+			clonk->SetComDir(COMD_Stop);
 			if (is_scaling)
 			{
 				// speed boost when Clonk started digging from scaling, so we don't drop down

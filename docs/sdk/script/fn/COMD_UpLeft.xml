@@ -12,7 +12,7 @@
     <desc>Movement direction: diagonally up and to the left. For more information see <funclink>SetComDir</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Airship))-&gt;<funclink>SetComDir</funclink>(COMD_Up);</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Airship))-&gt;<funclink>SetComDir</funclink>(COMD_UpLeft);</code>
         <text>Changes the flight direction of a blimp.</text>
       </example>
     </examples>
