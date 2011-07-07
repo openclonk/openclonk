@@ -25,8 +25,11 @@
       <example>
         <code>global func SetObjAlpha(byAlpha, obj)
   {
-  var dwClrMod=obj-&gt;GetClrModulation();
-  <funclink>if</funclink> (!dwClrMod) dwClrMod = byAlpha&lt;&lt;24; else dwClrMod = dwClrMod &amp; 16777215 | byAlpha&lt;&lt;24;
+  var dwClrMod = obj-&gt;GetClrModulation();
+  <funclink>if</funclink> (!dwClrMod)
+		dwClrMod = byAlpha &lt;&lt; 24;
+	else
+		dwClrMod = dwClrMod &amp; <funclink>RGB(255,255,255)</funclink> | byAlpha &lt;&lt; 24;
   <funclink>return</funclink>(obj-&gt;<funclink>SetClrModulation</funclink>(dwClrMod));
   }</code>
         <text>Global function: only sets the alpha value of the color modulation of an object.</text>

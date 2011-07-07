@@ -24,7 +24,7 @@
         <param>
           <type>bool</type>
           <name>global</name>
-          <desc>Whether to retrieve the global wind value. .</desc>
+          <desc>Whether to retrieve the global wind value.</desc>
           <optional />
         </param>
       </params>

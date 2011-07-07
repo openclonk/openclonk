@@ -51,7 +51,7 @@
     <desc>Returns physical properties of the object or the definition in the calling context</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (<funclink>GetCursor</funclink>()-&gt;GetPhysical(&quot;Magic&quot;)) <funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;Ich kann zaubern!&quot;);</code>
+        <code><funclink>if</funclink> (<funclink>GetCursor</funclink>()-&gt;GetPhysical(&quot;Magic&quot;)) <funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;I can do magic!&quot;);</code>
         <text>The selected clonk is happy if he's currently able to accept magical energy.</text>
       </example>
     </examples>

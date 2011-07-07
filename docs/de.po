@@ -2177,7 +2177,7 @@ msgstr "Siehe die <emlink href=\"definition/animations.html\">Animations-Dokumen
 
 #: sdk/script/fn/StopAnimation.xml:25(text)
 #: sdk/script/fn/GetRootAnimation.xml:25(text)
-msgid "Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards."
+msgid "Removes all animations in slot 5 so that it does not contain any animations anymore afterwards."
 msgstr "Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält."
 
 #: sdk/script/fn/StartScriptProfiler.xml:16(desc)
@@ -6444,7 +6444,7 @@ msgstr "Liefert die X-Position des aufrufenden Objekts."
 
 #: sdk/script/fn/GetWind.xml:27(desc)
 #, fuzzy
-msgid "Whether to retrieve the global wind value. ."
+msgid "Whether to retrieve the global wind value."
 msgstr "Ob der globale Wind abgefragt werden soll."
 
 #: sdk/script/fn/GetWind.xml:32(desc)
@@ -6481,11 +6481,11 @@ msgstr "Liefert eine Koordinate des indizierten Vertex (siehe <emlink href=\"def
 
 #: sdk/script/fn/GetValue.xml:17(desc)
 msgid "Home base in which to buy. If the CalcValue function is defined in obj, the return value of CalcValue is used."
-msgstr "Basis, in der gekauft wird. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben."
+msgstr "Basis, in der gekauft wird. Falls in diesem Objekt ein CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben."
 
 #: sdk/script/fn/GetValue.xml:23(desc)
 msgid "Player to whom the value applies. If the CalcValue function is defined in obj, the return value of CalcValue is used in this case also."
-msgstr "Spieler, für den der Wert gilt. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben."
+msgstr "Spieler, für den der Wert gilt. Falls in diesem Objekt ein CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben."
 
 #: sdk/script/fn/GetValue.xml:28(desc)
 msgid "Determines the value of an object. With idDef specified, the standard value of the original object definition is returned, otherwise the current value of the specified object (obj) or the calling object if obj is 0.<br/>An object's value is determined as follows: with pObj specified it is first checked whether the CalcValue function is defined in the object's script and if so, it is evaluated. Otherwise, the definition value is used (see below). The resulting value is then reduced according to the object's completion.<br/>Dead animals or clonks always have value 0.<br/>The definition value is determined as follows: if the function CalcDefValue is defined in the definition script, it is evaluated. Otherwise, the value overload from Scenario.txt is used, if present. Otherwise, the standard value from DefCore is used."
@@ -6534,7 +6534,7 @@ msgid "As operating system times will vary on different computers, this function
 msgstr "Da die Zeiten bei unterschiedlichen Computern variieren können, gibt diese Funktion, um eine Syncunsicherheit zu vermeiden, beim Netzwerkspiel und bei Filmaufnahmen 0 zurück."
 
 #: sdk/script/fn/GetTime.xml:23(text)
-msgid "This function checks the performance of the function \"<placeholder-1/>\". To do this, it executes the function 100 times and calculates the processinf time using GetTime()."
+msgid "This function checks the performance of the function \"<placeholder-1/>\". To do this, it executes the function 100 times and calculates the time the process took using GetTime()."
 msgstr "Diese Funktion prüft die Performance der Funktion \"<placeholder-1/>\". Dabei wird die Funktion 100-mal aufgerufen und die verbrauchte Zeit mittels GetTime() gemessen."
 
 #: sdk/script/fn/GetTemperature.xml:12(desc)
@@ -6593,8 +6593,8 @@ msgid "The markup color is chosen so the player name will be readable on black b
 msgstr "Die Farbe wird so gewählt, dass der Spielername auf dunklem Untergrund lesbar ist. Dunkle Spielerfarben werden dazu aufgehellt."
 
 #: sdk/script/fn/GetTaggedPlayerName.xml:29(text)
-msgid "Object script: When activated, a message will be shown which draws attention to the player."
-msgstr "Objektscript: Beim Aktivieren wird eine Meldung ausgegeben, die den Spieler verpetzt."
+msgid "Object script for a valuable \"golden crown\". If it is collected by a clonk, a message is displayed in the log that draws attention to the player that collected it."
+msgstr "Objektscript für eine wertvolle \"goldene Krone\". Wenn sie von einem Clonk eingesammelt wird, wird eine Meldung im Log ausgegeben die den Spieler verpetzt."
 
 #: sdk/script/fn/GetSkyColor.xml:16(desc)
 msgid "Color index in the Clonk palette."
@@ -6613,8 +6613,8 @@ msgid "If not 0, the secondary sky color is returned as specified in SetSkyAdjus
 msgstr "Wenn ungleich 0, wird die in SetSkyAdjust angegebene Zweitfarbe zurückgegeben."
 
 #: sdk/script/fn/GetSkyAdjust.xml:20(desc)
-msgid "Returns the sky modulation as set by <placeholder-1/>. For more information see <placeholder-2/>."
-msgstr "Gibt die mit <placeholder-1/> gesetzte Himmelsmodulation zurück. Für weitere Informationen siehe <placeholder-2/>"
+msgid "Returns the sky modulation as set by <placeholder-1/>."
+msgstr "Gibt die mit <placeholder-1/> gesetzte Himmelsmodulation zurück."
 
 #: sdk/script/fn/GetSkyAdjust.xml:24(text)
 msgid "Ensures that the sky is drawn without any transparency (thoroughly covering any background color)."
@@ -6727,8 +6727,8 @@ msgid "Requested property."
 msgstr "Abzufragende Eigenschaft."
 
 #: sdk/script/fn/GetProperty.xml:23(desc)
-msgid "Object to request property from, zero in local calls."
-msgstr "Objekt, das untersucht wird. Null bei lokalem Aufruf."
+msgid "Object to request property from, can be nil in local calls."
+msgstr "Objekt, das untersucht wird. Nil für lokale Aufrufe."
 
 #: sdk/script/fn/GetProperty.xml:28(desc)
 msgid "Returns the property <code>key</code> of <code>object</code>."
@@ -6811,8 +6811,8 @@ msgid "Determines magic spell knowledge of a player."
 msgstr "Stellt das Magiewissen eines bestimmten Spielers fest."
 
 #: sdk/script/fn/GetPlrMagic.xml:36(text)
-msgid "If player 0 knows the lightning spell (MGLT), a message is displayed."
-msgstr "Wenn Spieler 0 Blitze zaubern (MLGT) kann, wird eine entsprechende Botschaft ausgegeben."
+msgid "If player 0 knows the lightning spell, a message is displayed."
+msgstr "Wenn Spieler 0 Blitze zaubern kann, wird eine entsprechende Botschaft ausgegeben."
 
 #: sdk/script/fn/GetPlrMagic.xml:44(text)
 msgid "Returns the id of the fifth spell of the first player."
@@ -6836,8 +6836,8 @@ msgid "With id specified the function returns true if the player has the constru
 msgstr "Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Bauplan der entsprechenden Kategorie des Spielers."
 
 #: sdk/script/fn/GetPlrKnowledge.xml:43(text)
-msgid "Displays a message if the first player has the construction plan for bamboo huts."
-msgstr "Gibt einen Text aus, falls der erste Spieler sich im Besitz des Bauplanes für Bambushütten befindet."
+msgid "Displays a message if the first player has the construction plan for wind generators."
+msgstr "Gibt einen Text aus, falls der erste Spieler sich im Besitz des Bauplanes für Windgeneratoren befindet."
 
 #: sdk/script/fn/GetPlrExtraData.xml:25(desc)
 msgid "This commands retrieves extra data stored in the player file by <placeholder-1/>."
@@ -6947,8 +6947,8 @@ msgid "Returns a player's score."
 msgstr "Liefert die Punkte die player hat."
 
 #: sdk/script/fn/GetPlayerName.xml:20(desc)
-msgid "Returns the name of a player. If the specified player number is invalid, 0 is returned. Thus this function can also be used to determine whether a player of a given number exists."
-msgstr "Liefert den Namen eines Spielers. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist."
+msgid "Returns the name of a player. If the specified player number is invalid, nil is returned. Thus this function can also be used to determine whether a player of a given number exists."
+msgstr "Liefert den Namen eines Spielers. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird nil zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist."
 
 #: sdk/script/fn/GetPlayerName.xml:30(text)
 msgid "Object script: when activated, the clonk asks what the player is doing."
@@ -6979,8 +6979,8 @@ msgid "In network games, player IDs are being assigned in the lobby phase. Becau
 msgstr "Spieler-IDs werden in Netzwerkspielen schon in der Lobby zugewiesen. Da Lobbyspieler noch im Nachhinein entfernt oder Netzwerkclients vor dem eigentlichen Start ihre Verbindung verlieren können, ist auch bei Spieler-IDs nicht garantiert, dass beim Spielstart alle IDs von 1 bis <placeholder-1/>() belegt sind."
 
 #: sdk/script/fn/GetPlayerID.xml:45(text)
-msgid "Saves the scores and names of all players in a list when they are eliminated. Once the round is over, this list is displayed as a message. Using player-IDs instead of player numbers as list indices guarantuees that rejoining players will not overwrite scores of previous players."
-msgstr "Speichert die Punkte und Namen aller Spieler bei ihrer Eliminierung in einer globalen Liste. Wenn die Runde vorbei ist, wird diese Liste als Nachricht ausgegeben. Da die Liste mit Spieler-IDs statt Spielernummern indiziert wird, ist sicher gestellt, dass neu beitretende Spieler keine Punkte ehemaliger Spieler überschreiben."
+msgid "Saves the scores and names of all players in a list when they are eliminated. Once the round is over, this list is displayed in the log. Using player-IDs instead of player numbers as list indices guarantuees that rejoining players will not overwrite scores of previous players."
+msgstr "Speichert die Punkte und Namen aller Spieler bei ihrer Eliminierung in einer globalen Liste. Wenn die Runde vorbei ist, wird diese Liste im Log ausgegeben. Da die Liste mit Spieler-IDs statt Spielernummern indiziert wird, ist sicher gestellt, dass neu beitretende Spieler keine Punkte ehemaliger Spieler überschreiben."
 
 #: sdk/script/fn/GetPlayerCount.xml:16(desc)
 msgid "If specified, only the number of players of the specified type is returned. For a list of all player types see <placeholder-1/>."
@@ -7212,8 +7212,8 @@ msgid "A returns value of -1 indicates that no valid result could yet be determi
 msgstr "Ein Rückgabewert -1 bedeutet, daß noch kein gültiger Wert ermittelt werden konnte. Er kann nicht ermittelt werden, wenn nicht mindestens 500 Frames seit Rundenbeginn vergangen sind, oder NoScan in den Szenarieneigenschaften aktiviert ist. Pixel werden nur alle 500 Frames gezählt, d.h. in diesem Zeitraum gibt die Funktion immer den selben Wert zurück."
 
 #: sdk/script/fn/GetMaterialCount.xml:36(text)
-msgid "Script taken from goldmine game goal (GLDM)."
-msgstr "Auszug aus dem Goldminen-Spielzielobjekt (GLDM)."
+msgid "A script for a goldmine goame goal."
+msgstr "Auszug aus einem Goldminen-Spielzielobjekt."
 
 #: sdk/script/fn/GetMaterial.xml:17(desc)
 msgid "X coordinate at which to check the material. Offset in local calls."
@@ -7240,7 +7240,7 @@ msgid "Returns the mass of the calling objects (including the mass of all its co
 msgstr "Liefert die Masse des aufrufenden Objekts (inklusive aller Inhaltsobjekte) oder der aufrufenden Definition."
 
 #: sdk/script/fn/GetMass.xml:25(text)
-msgid "Twiggy"
+msgid "Anorexic"
 msgstr "Magersucht"
 
 #: sdk/script/fn/GetLength.xml:17(desc)
@@ -7318,12 +7318,12 @@ msgid "With id specified, the function returns the number of objects of that typ
 msgstr "Bei angegebenen id gibt die Funktion die Menge der Objekte zurück, die der Spieler in seiner Heimatbasis kaufen kann. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der kaufbaren Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs verfügbar sind."
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:42(text)
-msgid "Returns the number of flint stones the first player can buy."
+msgid "Returns the number of fire stones the first player can buy."
 msgstr "Meldet die Anzahl Feuersteine, die sich der Erste Spieler kaufen kann (sofern er das benötigte Geld hat)"
 
 #: sdk/script/fn/GetHomebaseMaterial.xml:45(text)
 msgid "Gives the notice \"The third buyable vehicle of this player is a ...\""
-msgstr "Meldet z.B. \"Das dritte kaufbare Fahrzeug des Spielers ist XBOW\""
+msgstr "Gibt die Nachricht \"The third buyable vehicle of this player is a ...\" aus"
 
 #: sdk/script/fn/GetHiRank.xml:21(desc)
 msgid "Returns the highest ranking active clonk of a player."
@@ -7350,12 +7350,12 @@ msgid "Extreme claustrophobia: if the entrance is blocked, commit suicide."
 msgstr "Extreme Klaustrophobie: Bei geschlossener Tür Selbstmord begehen."
 
 #: sdk/script/fn/GetEnergy.xml:11(desc)
-msgid "Returns the current energy value of an object. 100% representing the maximum physical value of 100,000. Also see DefCore section [Physical]. obj can be 0 in local calls."
+msgid "Returns the current energy value of an object. 100% representing the maximum physical value of 100,000. Also see DefCore section [Physical]."
 msgstr "Liefert den aktuellen Energiewert des aufrufenden Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical]."
 
 #: sdk/script/fn/GetEnergy.xml:12(remark)
 #, fuzzy
-msgid "\"Energy\" signifies life energy in living beings."
+msgid "For living beings, \"energy\" stands for health, in buildings it stands for electrical charge."
 msgstr "\"Energy\" ist bei Lebewesen deren Lebensenergie und bei Gebäuden die im Objekt vorhandene elektrische Energie."
 
 #: sdk/script/fn/GetEffectCount.xml:16(desc)
@@ -7494,7 +7494,7 @@ msgid "Returns the number of crew members of a player."
 msgstr "Liefert die Anzahl der Mannschaftsmitglieder eines Spielers zurück."
 
 #: sdk/script/fn/GetCrewCount.xml:25(text)
-msgid "Keeps killing Kills the highest ranking clonk of the first player until the player has only three clonks left."
+msgid "Keeps killing the highest ranking clonk of the first player until the player has only three clonks left."
 msgstr "Tötet die höchstrangigen Clonks des ersten Spielers, bis er nur noch drei oder weniger Clonks hat."
 
 #: sdk/script/fn/GetCrew.xml:17(desc)
@@ -7538,8 +7538,8 @@ msgid "Determines on which side individual or all vertices of an object are touc
 msgstr "Ermittelt, in welche Richtungen einzelne oder alle Vertices des aufrufenden Objekts feste Landschaft berühren. Die Richtungen werden als Bitmaske von <emlink href=\"definition/cnat.html\">CNAT-Werten</emlink> übergeben bzw. von der Funktion zurückgegeben."
 
 #: sdk/script/fn/GetContact.xml:36(text)
-msgid "Script for a jumping pill: if you activate it with double dig, the clonk jumps if he is standing on the ground."
-msgstr "Script für eine Hüpfpille: Wenn man sie mit Doppelgraben aktiviert, hüpft der Clonk, falls er auf dem Boden steht."
+msgid "Script for a jumping pill: if you use it, the clonk jumps if he is standing on the ground."
+msgstr "Script für eine Hüpfpille: Wenn man sie benutzt, hüpft der Clonk, falls er auf dem Boden steht."
 
 #: sdk/script/fn/GetContact.xml:43(emlink)
 msgid "Contact Attachment"
@@ -7607,8 +7607,8 @@ msgid "Gets the RGB color value of the ColorByOwner areas of an object. These ar
 msgstr "Fragt den RGB-Farbwert der Färbung der ColorByOwner-Flächen des aufrufenden Objekts ab. Diese werden beispielsweise durch <placeholder-1/> oder <placeholder-2/> gesetzt."
 
 #: sdk/script/fn/GetColor.xml:16(text)
-msgid "Colors caller like the current object."
-msgstr "Färbt caller so ein wie das aktuelle Objekt."
+msgid "Colors otherclonk like the current object."
+msgstr "Färbt otherclonk so ein wie das aktuelle Objekt."
 
 #: sdk/script/fn/GetClrModulation.xml:17(desc)
 msgid "If specified, the color modulation of the overlay is returned instead. The overlay must be set using <placeholder-1/> first."
@@ -7728,8 +7728,8 @@ msgid "Returns whether the calling object is still alive."
 msgstr "Gibt zurück, ob das aufrufende Objekt noch am Leben ist."
 
 #: sdk/script/fn/GetAlive.xml:16(text)
-msgid "Eliminates the first player if the first found magiclonk was killed. Warning: in real application check for the existence of the player first."
-msgstr "Eliminiert den ersten Spieler, wenn der erste Zauberclonk getötet wurde. Achtung: In einem echten Skript würde zuvor die Existenz des ersten Spielers geprüft."
+msgid "Eliminates the first player if the first found object with the ID \"MagicWipf\" was killed. Warning: in real application check for the existence of the player first."
+msgstr "Eliminiert den ersten Spieler, wenn das erste Objekt mit der ID \"MagicWipf\" getötet wurde. Achtung: In einem echten Skript würde zuvor die Existenz des ersten Spielers geprüft."
 
 #: sdk/script/fn/GetActionTarget.xml:17(desc)
 msgid "0 for target, or 1 for target2"
@@ -7752,8 +7752,8 @@ msgid "Returns the time (in frames) that the object is already executing this sa
 msgstr "Liefert den Zeitraum in Frames, die das aufrufende Objekt bereits die aktuelle Aktivität ausgeführt hat."
 
 #: sdk/script/fn/GetActTime.xml:34(text)
-msgid "From the foundry: after 150 frames the metal is complete."
-msgstr "Auszug aus dem Hochofen-Script. Nach 150 Frames ist das Metall fertiggebacken."
+msgid "This could be the callback for the StartCall of a bomb's \"Fuse\" action. If the action goes on for less than 370 frames, only a countdown message is displayed and a sound played. If 370 or more frames have passed, the bomb explodes."
+msgstr "Dies könnte der Callback vom StartCall der \"Fuse\"-Aktion einer Bombe sein. Solange die Aktion für weniger als 370 Frames ausgeführt wird, wird nur eine Countdown-Nachricht über der Bombe angezeigt und ein Sound abgespielt. Wenn die Aktion für 370 oder mehr Frames ausgeführt wird, explodiert die Bombe."
 
 #: sdk/script/fn/GetActMapVal.xml:21(desc)
 msgid "Name of the activity of which to get an entry."
@@ -7831,32 +7831,32 @@ msgid "Checks whether there is solid matter at the specified position in the lan
 msgstr "Überprüft ob sich an angegebener Position in der Landschaft feste Materie befindet. Also alles wo Objekte nicht durchkönnen."
 
 #: sdk/script/fn/GBackSolid.xml:31(text)
-msgid "This snippet of script moves a rock upwards so it rests on top of solid matter."
-msgstr "Dieses kleine Stückchen Script versetzt einen Stein an die Oberfläche oder auf den Grund eines Sees."
+msgid "Moves an object to the surface or to the ground of a lake."
+msgstr "Versetzt ein Objekt an die Oberfläche oder auf den Grund eines Sees."
 
 #: sdk/script/fn/GBackSky.xml:26(desc)
 msgid "Checks whether there is sky at the specified position in the landscape."
 msgstr "Überprüft ob sich an angegebener Position in der Landschaft Himmel befindet."
 
 #: sdk/script/fn/GBackSky.xml:31(text)
-msgid "Moves a rock into fresh air."
-msgstr "Versetzt einen Stein an die frische Luft."
+msgid "Moves an object into fresh air."
+msgstr "Versetzt ein Objekt an die frische Luft."
 
 #: sdk/script/fn/GBackSemiSolid.xml:26(desc)
 msgid "Checks whether there is solid matter or liquid at the specified position in the landscape."
 msgstr "Überprüft ob sich an angegebener Position in der Landschaft feste Materie oder Flüssigkeit befindet. Also alles außer Himmel und Tunnel."
 
 #: sdk/script/fn/GBackSemiSolid.xml:31(text)
-msgid "This script moves a rock to the surface."
-msgstr "Dieses kleine Stückchen Script versetzt einen Stein an die Oberfläche."
+msgid "This script moves the object to the surface."
+msgstr "Dieses kleine Stückchen Script versetzt das Objekt an die Oberfläche."
 
 #: sdk/script/fn/GBackLiquid.xml:26(desc)
 msgid "Checks whether there is liquid at the specified position in the landscape."
 msgstr "Überprüft ob sich an angegebener Position in der Landschaft Flüssigkeit befindet."
 
 #: sdk/script/fn/GBackLiquid.xml:31(text)
-msgid "If this rock is underwater it explodes."
-msgstr "Wenn der Stein unterhalb von Wasser ist, explodiert er."
+msgid "If the object is underwater it explodes."
+msgstr "Wenn das Object im Wasser ist, explodiert es."
 
 #: sdk/script/fn/FreeRect.xml:16(desc)
 msgid "Left limit of the rectangle"

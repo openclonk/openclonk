@@ -12,7 +12,7 @@
     <desc>Determines the owner of the calling object.</desc>
     <examples>
       <example>
-        <code><funclink>Message</funclink>(&quot;Ich gehöre %s!&quot;, <funclink>GetPlayerName</funclink>(GetOwner()))</code>
+        <code><funclink>Message</funclink>(&quot;Ich am owned by %s!&quot;, <funclink>GetPlayerName</funclink>(GetOwner()))</code>
         <text>Displays the owner of the calling object above the object.</text>
       </example>
     </examples>

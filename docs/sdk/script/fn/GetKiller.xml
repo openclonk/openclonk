@@ -23,10 +23,10 @@
         <code>protected func Death()
 {
 	var killer = GetKiller();
-	if (killer == <funclink>GetController</funclink>()) <funclink>Message</funclink>(&quot;%s hat sich selbst umgebracht.&quot;, <funclink>GetName</funclink>());
-	else if (killer &gt; NO_OWNER) <funclink>Message</funclink>(&quot;%s wurde von %s geplättet!&quot;, <funclink>GetName</funclink>(), <funclink>GetPlayerName</funclink>(killer));
+	if (killer == <funclink>GetController</funclink>()) <funclink>Message</funclink>(&quot;%s killed himself, hah!&quot;, <funclink>GetName</funclink>());
+	else if (killer != NO_OWNER) <funclink>Message</funclink>(&quot;%s was killed by %s!&quot;, <funclink>GetName</funclink>(), <funclink>GetPlayerName</funclink>(killer));
 	else <funclink>DeathAnnounce</funclink>();
-	<funclink>return</funclink>(true);
+	<funclink>return</funclink> true;
 }</code>
         <text>Script for the death of a Clonk: Customized death messages which show the murderer are shown.</text>
       </example>

@@ -19,21 +19,6 @@
       </params>
     </syntax>
     <desc>Returns the still needed construction materials of an object.</desc>
-    <examples>
-      <example>
-        <code>/* Wird von der Bau-Action des Clonks aufgerufen */
-private func Building()
-{
-  /* benötigtes Baumaterial abfragen */
-  var need_mat_text=GetNeededMatStr(<funclink>GetActionTarget</funclink>());
-  /* Ausgeben */
-  <funclink>Message</funclink>(&quot;%s&quot;,need_mat_text);
-  return(1);
-}
-				</code>
-        <text>Talking builder.</text>
-      </example>
-    </examples>
     <related>
       <funclink>GetComponent</funclink>
       <funclink>GetCon</funclink>
