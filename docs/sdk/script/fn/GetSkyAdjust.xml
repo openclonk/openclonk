@@ -20,7 +20,7 @@
     <desc>Returns the sky modulation as set by <funclink>SetSkyAdjust</funclink>. For more information see <funclink>SetSkyAdjust</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; 16777215);</code>
+        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; <funclink>RGB(255,255,255)</funclink>);</code>
         <text>Ensures that the sky is drawn without any transparency (thoroughly covering any background color).</text>
       </example>
     </examples>

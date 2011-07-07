@@ -20,15 +20,16 @@
     <desc>Returns the id of the indicated definition from the list of definitions as currently loaded by the engine.</desc>
     <examples>
       <example>
-        <code>
-var index = 0, weapon_def, weapon_list = [];
+        <code>var index = 0, weapon_def, weapon_list = [];
 while (weapon_def = GetDefinition(index))
 {
-	if (weapon_def->~IsPlaneWeapon())
+	if (weapon_def->~IsWeapon())
 		weapon_list[GetLength(weapon_list)] = weapon_def;
 	index++;
 }
-spawn_weapon = weapon_list[Random(GetLength(weapon_list))];</code>
+var spawn_weapon = weapon_list[<funclink>Random</funclink>(<funclink>GetLength</funclink>(weapon_list))];
+<funclink>CreateObject</funclink>(spawn_weapon,<funclink>AbsX</funclink>(<funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())),0);</code>
+				<text>Searches through all loaded definitions and all those which return true on call of the function "IsWeapon" are put into an array. After that, a random item of these defintions is selected to spawn at a random position in the landscape.</text>
       </example>
     </examples>
     <related>

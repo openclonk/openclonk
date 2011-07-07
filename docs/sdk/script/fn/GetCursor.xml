@@ -25,7 +25,7 @@
         <text>Selects the player's highest ranking clonk if currently no other clonk is selected.</text>
       </example>
       <example>
-        <code>GetCursor(0)-&gt;<funclink>Message</funclink>(&quot;Hurra!&quot;);</code>
+        <code>GetCursor(0)-&gt;<funclink>Message</funclink>(&quot;Hooray!&quot;);</code>
         <text>Displays a message above the currently selected clonk of the first player.</text>
       </example>
     </examples>

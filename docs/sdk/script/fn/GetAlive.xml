@@ -12,8 +12,8 @@
     <desc>Returns whether the calling object is still alive.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(MCLK))-&gt;GetAlive()) <funclink>EliminatePlayer</funclink>(0);</code>
-        <text>Eliminates the first player if the first found magiclonk was killed. Warning: in real application check for the existence of the player first.</text>
+        <code><funclink>if</funclink>(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(MagicWipf))-&gt;GetAlive()) <funclink>EliminatePlayer</funclink>(0);</code>
+        <text>Eliminates the first player if the first found object with the ID "MagicWipf" was killed. Warning: in real application check for the existence of the player first.</text>
       </example>
     </examples>
     <related><funclink>Kill</funclink></related>

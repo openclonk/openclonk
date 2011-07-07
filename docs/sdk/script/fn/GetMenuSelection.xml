@@ -12,7 +12,7 @@
     <desc>Determines the currently selected menu entry of the currently open menu of an object, or nil if no menu is open.</desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Aktuelle Auswahl: Punkt %d...&quot;, <funclink>GetCursor</funclink>(0)-&gt;GetMenuSelection();</code>
+        <code><funclink>Log</funclink>(&quot;Current selection: entry %d...&quot;, <funclink>GetCursor</funclink>(0)-&gt;GetMenuSelection();</code>
         <text>Writes to the log which menu entry the player has currently selected.</text>
       </example>
     </examples>

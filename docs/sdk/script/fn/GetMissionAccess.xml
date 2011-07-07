@@ -24,7 +24,7 @@
         <code><funclink>if</funclink> (!GetMissionAccess(&quot;DasWarHarteArbeit&quot;))
 {
   <funclink>GainMissionAccess</funclink>(&quot;DasWarHarteArbeit&quot;);
-  <funclink>Message</funclink>(&quot;Glückwunsch, du bist hier zum ersten Mal!&quot;);
+  <funclink>Message</funclink>(&quot;Congratulations, you are here for the first time!&quot;);
 }</code>
         <text>Displays a message if the mission access password "DasWarHarteArbeit" was not yet gained and then gives this mission access.</text>
       </example>

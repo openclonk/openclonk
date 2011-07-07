@@ -39,21 +39,21 @@
     <desc>Retrieves a certain effect. If an effect cannot be found the return value is nil.</desc>
     <examples>
       <example>
-        <code>var obj, i, effect;
-// Alle Objekte durchsuchen
-<funclink>for</funclink> (obj in <funclink>FindObject</funclink>(Find_And()))
-  {
-  // Von Effektzahl abwärts zählen, da Effekte entfernt werden
+        <code>var i, effect;
+// Search all objects
+<funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(Find_And()))
+{
+  // Count down from the effect count because effects are being removed
   i = <funclink>GetEffectCount</funclink>(0, obj);
   <funclink>while</funclink> (i--)
     <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, obj, i))
       <funclink>RemoveEffect</funclink>(0, obj, effect);
-  }
-// Globale Effekte entfernen
+}
+// remove global effects
 i = <funclink>GetEffectCount</funclink>();
 <funclink>while</funclink> (i--)
-  <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, 0, i))
-    <funclink>RemoveEffect</funclink>(0, 0, effect);</code>
+  <funclink>if</funclink> (effect = GetEffect(&quot;*Spell&quot;, nil, i))
+    <funclink>RemoveEffect</funclink>(0, nil, effect);</code>
         <text>Removes all magic effects from all objects and the global list.</text>
       </example>
     </examples>

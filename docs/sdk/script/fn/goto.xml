@@ -21,18 +21,18 @@
     <examples>
       <example>
         <code>
-protected func Initialize()
-  {
-  // Scriptcounter starten
+func Initialize()
+{
+  // Start script counter
   <funclink>ScriptGo</funclink>(1);
-  }
+}
 
-protected func Script100()
-  {
-  // Flints erzeugen
+func Script10()
+{
+  // Create firestones
   <funclink>CastObjects</funclink>(Firestone,10,200, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 20);
-  goto(90);
-  }</code>
+  goto(0);
+}</code>
         <text>A scenario script: a typical flint rain. Every 100 Frames 10 flints are created.</text>
       </example>
     </examples>

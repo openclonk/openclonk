@@ -50,7 +50,7 @@
     </desc>
     <examples>
       <example>
-        <code>GetRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),2);</code>
+        <code>GetRGBaValue(<funclink>GetColor</funclink>(<funclink>GetCursor</funclink>()),2);</code>
         <text>Returns the green fraction of the currently selected clonk.</text>
       </example>
     </examples>

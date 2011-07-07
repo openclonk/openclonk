@@ -37,15 +37,15 @@
         <text>Determines the width an object.</text>
       </example>
       <example>
-        <code><funclink>Log</funclink>(&quot; Eine Werkstatt benötigt folgendes Material:&quot;);
+        <code><funclink>Log</funclink>(&quot; A tools workshop requires the following material:&quot;);
 
 for(var i = 0;; i++)
 {
-  var id = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, WRKS, i*2);
+  var id = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, ToolsWorkshop, i*2);
   if(!id) break;
-  var cnt = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, WRKS, i*2+1);
+  var cnt = GetDefCoreVal(&quot;Components&quot;, &quot;DefCore&quot;, ToolsWorkshop, i*2+1);
 
-  <funclink>Log</funclink>(&quot;%d x %s&quot;, cnt, <funclink>GetName</funclink>(0, id));
+  <funclink>Log</funclink>(&quot;%d x %s&quot;, cnt, id-&gt;<funclink>GetName</funclink>());
 }</code>
         <text>Determines the necessary components for construction of a workshop.<br/>The loop will run until GetDefCoreVal returns id 0 which means the end of the list.</text>
       </example>

@@ -14,13 +14,13 @@
       <example>
         <code>func TestCos()
 {
-	if(<funclink>IsNetwork</funclink>()) <funclink>return</funclink>(<funclink>Log</funclink>(&quot;TestCos funktioniert im Netzwerk nicht!&quot;));
+	if(<funclink>IsNetwork</funclink>()) <funclink>return</funclink>(<funclink>Log</funclink>(&quot;TestCos doesn't work in a network game!&quot;));
 	var start_time = GetTime();
-	for(var i = 0; i &lt; 100; i++) var x = <funclink>Cos</funclink>(i, 100);
+	for(var i = 0; i &lt; 100; i++) <funclink>Cos</funclink>(i, 100);
 	var time = GetTime() - start_time;
-	<funclink>Log</funclink>(&quot;Ein Cos-Aufruf benötigt: %d.%02d ms&quot;, time / 100, time % 100);
+	<funclink>Log</funclink>(&quot;A call to Cos takes %d.%02d ms&quot;, time / 100, time % 100);
 }</code>
-        <text>This function checks the performance of the function "<funclink>Cos</funclink>". To do this, it executes the function 100 times and calculates the processinf time using GetTime().</text>
+        <text>This function checks the performance of the function "<funclink>Cos</funclink>". To do this, it executes the function 100 times and calculates the time the process took using GetTime().</text>
       </example>
     </examples>
   </func>

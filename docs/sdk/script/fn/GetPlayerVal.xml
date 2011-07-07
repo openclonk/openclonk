@@ -40,7 +40,7 @@
     <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Spieler %d hat %d Objekte!&quot;, player, GetPlrObjectsOwned(player));</code>
+        <code><funclink>Log</funclink>(&quot;Player %d has %d objects!&quot;, player, GetPlrObjectsOwned(player));</code>
         <text>Writes the number of objects owned by this player into the log file.</text>
       </example>
     </examples>
