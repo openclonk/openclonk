@@ -220,8 +220,16 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		
 	// Movement.
 	if (fxnum.var0)
-		if (rope && time%2 == 0)
-			rope->DoLength(-1);
+		if (rope)
+    {
+      var iSpeed = 10-Cos(target->GetAnimationPosition(fxnum.Climb)*360*2/target->GetAnimationLength("RopeClimb")-45, 10);
+      fxnum.speedCounter += iSpeed;
+      if(fxnum.speedCounter > 20)
+      {
+        rope->DoLength(-1);
+        fxnum.speedCounter -= 20;
+      }
+    }
 	if (fxnum.var1)
 		if (rope)
 			rope->DoLength(+1);
@@ -251,14 +259,17 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 			if(!target->GetHandAction())
 				target->SetHandAction(-1);
 		}
-		target->SetObjDrawTransform(1000, 0, 3000*(1-2*target->GetDir()), 0, 1000);
+/*		target->SetObjDrawTransform(1000, 0, 3000, 0, 1000);
+    if(target->GetDir())
+      SetObjDrawTransform(1000, 0, -3000, 0, 1000);*/
 
 		if(fxnum.var0)
 		{
 			if(fxnum.var4 != 2)
 			{
 				fxnum.var4 = 2;
-				target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+				fxnum.Climb = target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+        fxnum.speedCounter = 0;
 			}
 		}
 		else if(fxnum.var1)
@@ -290,12 +301,19 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		}
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();
-		target->SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(angle,0,0,1), Trans_Translate(-off[0],-off[1]+10000)), 2);
+//    off = [0,0];
+    var pos = rope->GetClonkPos();
+    //target->SetPosition(pos[0], pos[1], nil, Rope_Precision);
+    target.MyAngle = angle;
+    //angle = 0;
+		target->SetMeshTransformation(Trans_Translate(-off[0]*10+3000*(1-2*target->GetDir()),-off[1]*10), 2);
+    target->SetMeshTransformation(Trans_RotX(angle,500,11000),3);//-6000,12000), 3);
 	}
 	else if(fxnum.var4)
 	{
 		target->SetMeshTransformation(0, 2);
-		target->SetObjDrawTransform(1000, 0, 0, 0, 1000);
+    target->SetMeshTransformation(0, 3);
+//		target->SetObjDrawTransform(1000, 0, 0, 0, 1000);
 		target->StopAnimation(target->GetRootAnimation(10));
 		if(!target->GetHandAction())
 				target->SetHandAction(0);
@@ -307,13 +325,19 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	return FX_OK;
 }
 
+global func Trans_RotX(int rotation, int ox, int oy)
+{
+  return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation,0,0,1), Trans_Translate(ox, oy));
+}
+
 public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 {
 	if(tmp) return;
 	target->SetTurnType(0);
 	target->SetMeshTransformation(0, 2);
+  target->SetMeshTransformation(0, 3);
 	target->StopAnimation(target->GetRootAnimation(10));
-	target->SetObjDrawTransform();
+//	target->SetObjDrawTransform();
 	if(!target->GetHandAction())
 		target->SetHandAction(0);
 	
