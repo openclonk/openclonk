@@ -109,18 +109,22 @@ void C4PlayerControlDefs::UpdateInternalCons()
 
 void C4PlayerControlDefs::Clear()
 {
+	clear_previous = false;
 	Defs.clear();
 	UpdateInternalCons();
 }
 
 void C4PlayerControlDefs::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Defs, StdCompiler::SEP_NONE), "ControlDefs", DefVecImpl()));
+	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
+	pComp->Value(mkSTLContainerAdapt(Defs, StdCompiler::SEP_NONE));
 	if (pComp->isCompiler()) UpdateInternalCons();
 }
 
 void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
 {
+	// Clear previous defs if specified in merge set
+	if (Src.clear_previous) Defs.clear();
 	// copy all defs from source file; overwrite defs of same name if found
 	for (DefVecImpl::const_iterator i = Src.Defs.begin(); i != Src.Defs.end(); ++i)
 	{
@@ -629,16 +633,19 @@ void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 	{
 		pComp->Default("ControlSets"); // special registry compiler: Clean out everything before
 	}
-	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE), "ControlSets", AssignmentSetList()));
+	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
+	pComp->Value(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE));
 }
 
 bool C4PlayerControlAssignmentSets::operator ==(const C4PlayerControlAssignmentSets &cmp) const
 {
-	return Sets == cmp.Sets;
+	return Sets == cmp.Sets && clear_previous == cmp.clear_previous;
 }
 
 void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSets &Src, C4PlayerControlAssignmentSet::MergeMode merge_mode)
 {
+	// if source set is flagged to clear previous, do this!
+	if (Src.clear_previous) Sets.clear();
 	// take over all assignments in known sets and new sets defined in Src
 	for (AssignmentSetList::const_iterator i = Src.Sets.begin(); i != Src.Sets.end(); ++i)
 	{
@@ -748,8 +755,8 @@ void C4PlayerControlAssignmentSets::RemoveSetByName(const char *set_name)
 
 void C4PlayerControlFile::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(ControlDefs);
-	pComp->Value(AssignmentSets);
+	pComp->Value(mkNamingAdapt(ControlDefs, "ControlDefs", C4PlayerControlDefs()));
+	pComp->Value(mkNamingAdapt(AssignmentSets, "ControlSets", C4PlayerControlAssignmentSets()));
 }
 
 bool C4PlayerControlFile::Load(C4Group &hGroup, const char *szFilename, C4LangStringTable *pLang)

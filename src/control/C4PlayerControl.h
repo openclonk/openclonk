@@ -93,6 +93,7 @@ class C4PlayerControlDefs
 private:
 	typedef std::vector<C4PlayerControlDef> DefVecImpl;
 	DefVecImpl Defs;
+	bool clear_previous; // if set is merged, all previous control defs are cleared - use 
 
 public:
 	struct CInternalCons
@@ -104,7 +105,7 @@ public:
 	void UpdateInternalCons();
 
 public:
-	C4PlayerControlDefs() {}
+	C4PlayerControlDefs() : clear_previous(false) {}
 	~C4PlayerControlDefs() {}
 	void Clear();
 
@@ -117,7 +118,7 @@ public:
 	int32_t GetControlIndexByIdentifier(const char *szIdentifier) const; // return CON_None for not found
 	size_t GetCount() const { return Defs.size(); }
 
-	bool operator ==(const C4PlayerControlDefs &cmp) const { return Defs == cmp.Defs; }
+	bool operator ==(const C4PlayerControlDefs &cmp) const { return Defs == cmp.Defs && clear_previous == cmp.clear_previous; }
 };
 
 struct C4PlayerControlRecentKey
@@ -267,9 +268,10 @@ class C4PlayerControlAssignmentSets
 private:
 	typedef std::list<C4PlayerControlAssignmentSet> AssignmentSetList;
 	AssignmentSetList Sets;
+	bool clear_previous;
 
 public:
-	C4PlayerControlAssignmentSets() {}
+	C4PlayerControlAssignmentSets() : clear_previous(false) {}
 	~C4PlayerControlAssignmentSets() {}
 	void Clear();
 
