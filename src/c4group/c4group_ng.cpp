@@ -340,8 +340,8 @@ bool ProcessGroup(const char *FilenamePar)
 int RegisterShellExtensions()
 {
 #ifdef _WIN32
-	wchar_t strModule[2048];
-	wchar_t strCommand[2048];
+	wchar_t strModule[2048+1];
+	wchar_t strCommand[2048+1];
 	char strClass[128];
 	int i;
 	GetModuleFileNameW(NULL, strModule, 2048);
@@ -351,11 +351,11 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
 	{
 		// Unpack
-		swprintf(strCommand, L"\"%s\" \"%%1\" \"-u\"", strModule);
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-u\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"MakeFolder", L"C4Group Unpack", strCommand))
 			return 0;
 		// Explode
-		swprintf(strCommand, L"\"%s\" \"%%1\" \"-x\"", strModule);
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-x\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"ExplodeFolder", L"C4Group Explode", strCommand))
 			return 0;
 	}
@@ -364,7 +364,7 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
-		swprintf(strCommand, L"\"%s\" \"%%1\" \"-p\"", strModule);
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"MakeGroupFile", L"C4Group Pack", strCommand))
 			return 0;
 	}
