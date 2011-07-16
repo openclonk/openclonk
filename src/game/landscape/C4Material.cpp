@@ -91,6 +91,129 @@ void C4MaterialReaction::ResolveScriptFuncs(const char *szMatName)
 		pScriptFunc = NULL;
 }
 
+// -------------------------------------- C4MaterialShape
+
+C4MaterialShape::C4MaterialShape() : prepared_for_zoom(0)
+{
+	wdt = hgt = overlap_left = overlap_top = overlap_right = overlap_bottom = 0;
+	max_poly_width=max_poly_height=0;
+}
+
+bool C4MaterialShape::Load(C4Group &group, const char *filename)
+{
+	// Material shapes: Currently, shapes are loaded as a list polygons derived from vectorizing a binary image
+	// In the future, vectorization of the image could be put directly into the engine (if we get a free* library to do it)
+	// load file contents into buffer
+	StdStrBuf source;
+	if (!group.LoadEntryString(filename,&source)) return false;
+	// parse buffer
+	StdStrBuf name = group.GetFullName() + DirSep + filename;
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, source, name.getData())) return false;
+	// Compute shape centers/mins/maxs and maximum overlap
+	max_poly_width=max_poly_height=0;
+	overlap_left=0; overlap_top=0; overlap_right=0; overlap_bottom=0;
+	for (PolyVec::iterator i = polys.begin(); i != polys.end(); ++i)
+	{
+		int32_t n = 0; Pt center(0,0), min(0,0), max(0,0);
+		for (Poly::iterator j = i->begin(); j != i->end(); ++j)
+		{
+			center.x += j->x; center.y += j->y;
+			if (n++)
+			{
+				min.x = Min(min.x, j->x); max.x = Max(max.x, j->x);
+				min.y = Min(min.y, j->y); max.y = Max(max.y, j->y);
+			}
+			else
+			{
+				min = max = *j;
+			}
+			if (j ->x<- overlap_left     ) overlap_left   =- j ->x;
+			if (j ->y<- overlap_top      ) overlap_top    =- j ->y;
+			if (j ->x> wdt+overlap_right ) overlap_right  =  j ->x- wdt;
+			if (j ->y> hgt+overlap_bottom) overlap_bottom =  j ->y- hgt;
+		}
+		center.x /= n; center.y /= n;
+		i->center = center; i->min = min; i->max = max;
+		max_poly_width  = Max(max_poly_width , max.x-min.x);
+		max_poly_height = Max(max_poly_height, max.y-min.y);
+	}
+	// Overlap data not calculated yet
+	prepared_for_zoom = 0;
+	return true;
+}
+
+void C4MaterialShape::CompileFunc(StdCompiler *comp)
+{
+	if (comp->Name("Shape"))
+	{
+		comp->Value(mkNamingAdapt(wdt, "Width"));
+		comp->Value(mkNamingAdapt(hgt, "Height"));
+		comp->Value(mkNamingAdapt(mkSTLContainerAdapt(polys, StdCompiler::SEP_SEP2), "Shape"));
+		comp->NameEnd();
+	}
+}
+
+bool C4MaterialShape::DoPrepareForZoom(int32_t zoom)
+{
+	// calculate map pixel overlaps from polygons
+	// only works if shape size is a multiple of the map zoom!
+	if ((wdt % zoom) || (hgt % zoom)) return false;
+	for (PolyVec::iterator i = polys.begin(); i != polys.end(); ++i)
+		i->PrepareForZoom(zoom);
+	// done; mark cache for zoom
+	prepared_for_zoom = zoom;
+	return true;
+}
+
+void C4MaterialShape::Poly::CompileFunc(StdCompiler *comp)
+{
+	comp->Value(mkSTLContainerAdapt(*this, StdCompiler::SEP_SEP));
+}
+
+void C4MaterialShape::Poly::PrepareForZoom(int32_t zoom)
+{
+	overlaps.clear();
+	// center is always contained and always first in list (for IFT)
+	Pt center_map(center.x/zoom, center.y/zoom);
+	overlaps.push_back(center_map);
+	// walk from min to max; check if center or some corner point is in poly and add if this is the case
+	for (int32_t y=min.y/zoom; y<=max.y/zoom; ++y)
+		for (int32_t x=min.x/zoom; x<=max.x/zoom; ++x)
+			if (x != center_map.x || y != center_map.y)
+				for (int32_t ty=0; ty<=zoom; ty += 3)
+					for (int32_t tx=0; tx<=zoom; tx += 3)
+						if (IsPtContained(x*zoom+tx,y*zoom+ty))
+						{
+							overlaps.push_back(Pt(x,y));
+							tx=zoom+1; break;
+						}
+}
+
+bool C4MaterialShape::Poly::IsPtContained(int32_t x, int32_t y) const
+{
+	// point is contained if it crosses an off number of borders
+	int crossings = 0;
+	for (size_t i=0; i<size(); ++i)
+	{
+		Pt pt1 = (*this)[i];
+		Pt pt2 = (*this)[(i+1)%size()];
+		if ((pt1.y<y) != (pt2.y<y)) // crossing vertically?
+		{
+			// does line pt1-pt2 intersecti line (x,y)-(inf,y)?
+			crossings += ((pt1.x-(pt1.y-y)*(pt2.x-pt1.x)/(pt2.y-pt1.y))>x);
+		}
+	}
+	return (crossings % 2)==1;
+}
+
+void C4MaterialShape::Pt::CompileFunc(StdCompiler *comp)
+{
+	comp->Value(x);
+	comp->Separator();
+	comp->Value(y);
+}
+
+
 // -------------------------------------- C4MaterialCore
 
 C4MaterialCore::C4MaterialCore()
@@ -110,6 +233,7 @@ void C4MaterialCore::Clear()
 	sAboveTempConvertTo.Clear();
 	*Name='\0';
 	MapChunkType = 0;
+	ShapeTexture.Clear();
 	Density = 0;
 	Friction = 0;
 	DigFree = 0;
@@ -181,6 +305,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),          "Name",               ""                ));
 	pComp->Value(mkNamingAdapt(ColorAnimation,          "ColorAnimation",     0                 ));
 	pComp->Value(mkNamingAdapt(MapChunkType,            "Shape",              0                 ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ShapeTexture, StdCompiler::RCT_All),"ShapeTexture",     ""                ));
 	pComp->Value(mkNamingAdapt(Density,                 "Density",            0                 ));
 	pComp->Value(mkNamingAdapt(Friction,                "Friction",           0                 ));
 	pComp->Value(mkNamingAdapt(DigFree,                 "DigFree",            0                 ));
@@ -235,6 +360,7 @@ C4Material::C4Material()
 	InMatConvertTo=MNone;
 	BelowTempConvertTo=0;
 	AboveTempConvertTo=0;
+	CustomShape = NULL;
 }
 
 void C4Material::UpdateScriptPointers()
@@ -262,6 +388,7 @@ void C4MaterialMap::Clear()
 {
 	if (Map) delete [] Map; Map=NULL; Num=0;
 	delete [] ppReactionMap; ppReactionMap = NULL;
+	Shapes.clear();
 }
 
 int32_t C4MaterialMap::Load(C4Group &hGroup)
@@ -297,6 +424,21 @@ int32_t C4MaterialMap::Load(C4Group &hGroup)
 
 	// set material number
 	Num+=cnt;
+
+	// Load material shapes
+	hGroup.ResetSearch();
+	while (hGroup.FindNextEntry(C4CFN_MaterialShapeFiles,entryname))
+	{
+		C4MaterialShape shape;
+		if (shape.Load(hGroup, entryname))
+		{
+			Shapes[StdCopyStrBuf(entryname)] = shape;
+		}
+		else
+		{
+			DebugLogF("Error loading material shape %s from %s.", entryname, hGroup.GetFullName().getData());
+		}
+	}
 
 	return cnt;
 }
@@ -355,6 +497,8 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 			SetMatReaction(iMatPXS, iMatLS, pReaction);
 		}
 	}
+	// reset max shape size
+	max_shape_width=max_shape_height=0;
 	// material-specific initialization
 	int32_t cnt;
 	for (cnt=0; cnt<Num; cnt++)
@@ -386,6 +530,24 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 			if ((Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData())))
 				if ((sfcTexture=Texture->Surface32))
 					Map[cnt].PXSFace.Set(sfcTexture, Map[cnt].PXSGfxRt.x, Map[cnt].PXSGfxRt.y, Map[cnt].PXSGfxRt.Wdt, Map[cnt].PXSGfxRt.Hgt);
+		// init shape
+		if (Map[cnt].ShapeTexture.getLength())
+		{
+			C4MaterialShape *shape = GetShapeByName(Map[cnt].ShapeTexture.getData());
+			Map[cnt].CustomShape = shape;
+			if (!shape)
+			{
+				DebugLogF("Custom shape texture (%s) for material %s not found!", Map[cnt].ShapeTexture.getData(), Map[cnt].Name);
+			}
+			else
+			{
+				// adjust max shape overlap
+				max_shape_width  = Max(max_shape_width , shape->max_poly_width);
+				max_shape_height = Max(max_shape_height, shape->max_poly_height);
+			}
+		}
+		else
+			Map[cnt].CustomShape = NULL;
 		// evaluate reactions for that material
 		for (unsigned int iRCnt = 0; iRCnt < pMat->CustomReactionList.size(); ++iRCnt)
 		{
@@ -575,6 +737,7 @@ void C4MaterialMap::Default()
 	Num=0;
 	Map=NULL;
 	ppReactionMap=NULL;
+	max_shape_width=max_shape_height=0;
 }
 
 C4MaterialReaction *C4MaterialMap::GetReaction(int32_t iPXSMat, int32_t iLandscapeMat)
@@ -855,6 +1018,13 @@ void C4MaterialMap::UpdateScriptPointers()
 {
 	// update in all materials
 	for (int32_t i=0; i<Num; ++i) Map[i].UpdateScriptPointers();
+}
+
+C4MaterialShape *C4MaterialMap::GetShapeByName(const char *name)
+{
+	C4MaterialShapeMap::iterator i = Shapes.find(StdCopyStrBuf(name));
+	if (i == Shapes.end()) return NULL;
+	return &(i->second);
 }
 
 

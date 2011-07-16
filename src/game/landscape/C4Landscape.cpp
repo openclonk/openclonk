@@ -1585,6 +1585,8 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, in
 	case C4M_Rough:
 		top_rough = 1; side_rough = 2;
 		break;
+	case C4M_None: // no drawing
+		return;
 	}
 	int vtcs[16];
 	int32_t rx=Max(wdt/2,1);
@@ -1619,6 +1621,64 @@ void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t 
 	ForPolygon(vtcs,4,NULL,NULL,mcol);
 }
 
+void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t off_x, int32_t off_y, int32_t mcol)
+{
+	// put poly into plain int array format; add offset and send to polygon drawing proc
+	size_t n = poly.size(), i = 0;
+	int *vtcs = new int[n*2];
+	for (C4MaterialShape::Poly::const_iterator j=poly.begin(); j!=poly.end(); ++j)
+	{
+		vtcs[i++] = j->x + off_x;
+		vtcs[i++] = j->y + off_y;
+	}
+	ForPolygon(vtcs,n,NULL,NULL,mcol);
+	// done
+	delete [] vtcs;
+}
+
+void C4Landscape::DrawCustomShape(CSurface8 * sfcMap, C4MaterialShape *shape, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture, int32_t mcol, int32_t iOffX, int32_t iOffY)
+{
+	// Prepare shape for map zoom
+	if (!shape->PrepareForZoom(MapZoom))
+	{
+		DebugLogF("ERROR: Cannot apply texture index %d: Material shape size not a multiple of map zoom!", (int)mcol);
+		return;
+	}
+	// Get affected range of shapes
+	// range in pixels
+	int32_t x0 = iMapX*MapZoom, y0 = iMapY*MapZoom;
+	int32_t x1 = x0 + iMapWdt*MapZoom, y1 = y0 + iMapHgt*MapZoom;
+	// range in shape blocks
+	x0 = (x0-shape->overlap_right +shape->wdt) / shape->wdt - 1;
+	y0 = (y0-shape->overlap_bottom+shape->hgt) / shape->hgt - 1;
+	x1 = (x1+shape->overlap_left  +shape->wdt) / shape->wdt - 1;
+	y1 = (y1+shape->overlap_top   +shape->hgt) / shape->hgt - 1;
+	BYTE iIFT = 0;
+	// paint from all affected shape blocks
+	for (int32_t y=y0; y<=y1; ++y)
+		for (int32_t x=x0; x<=x1; ++x)
+		{
+			int32_t x_map = x*shape->wdt/MapZoom, y_map = y*shape->hgt/MapZoom;
+			for (C4MaterialShape::PolyVec::const_iterator i = shape->polys.begin(); i!=shape->polys.end(); ++i)
+			{
+				const C4MaterialShape::Poly &p = *i;
+				// does this shape block overlap any map pixels of our material
+				for (C4MaterialShape::PtVec::const_iterator j=p.overlaps.begin(); j!=p.overlaps.end(); ++j)
+				{
+					BYTE pix;
+					if (((pix=sfcMap->GetPix(x_map+j->x, y_map+j->y)) & 127) == iTexture)
+					{
+						// first pixel in overlap list determines IFT
+						iIFT = pix & IFT;
+						// draw this poly!
+						DrawCustomShapePoly(p, x_map*MapZoom+iOffX, y_map*MapZoom+iOffY, iIFT + mcol);
+						break;
+					}
+				}
+			}
+		}
+}
+
 void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture, int32_t iOffX, int32_t iOffY)
 {
 	int32_t iX,iY,iChunkWidth,iChunkHeight,iToX,iToY;
@@ -1637,51 +1697,56 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	// get chunk size
 	iChunkWidth=MapZoom; iChunkHeight=MapZoom;
 	// Scan map lines
-	for (iY=iMapY; iY<iMapY+iMapHgt; iY++)
+	if (pMaterial->MapChunkType != C4M_None)
 	{
-		// Landscape target coordinate vertical
-		iToY=iY*iChunkHeight+iOffY;
-		// Scan map line
-		for (iX=iMapX; iX<iMapX+iMapWdt; iX++)
+		for (iY=iMapY; iY<iMapY+iMapHgt; iY++)
 		{
-			// Map scan line start
-			byMapPixel=sfcMap->GetPix(iX, iY);
-			// Map scan line pixel below
-			byMapPixelBelow = sfcMap->GetPix(iX, iY + 1);
-			// Landscape target coordinate horizontal
-			iToX=iX*iChunkWidth+iOffX;
-			// Here's a chunk of the texture-material to zoom
-			if ((byMapPixel & 127) == iTexture)
+			// Landscape target coordinate vertical
+			iToY=iY*iChunkHeight+iOffY;
+			// Scan map line
+			for (iX=iMapX; iX<iMapX+iMapWdt; iX++)
 			{
-				// Determine IFT
-				iIFT=0; if (byMapPixel>=128) iIFT=IFT;
-				// Draw chunk
-				DrawChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,pMaterial->MapChunkType,(iX<<2)+iY);
-			}
-			// Other chunk, check for slope smoothers
-			else
-				// Smooth chunk & same texture-material below
-				if ((iChunkType==C4M_Smooth) && (iY<iMapHeight-1) && ((byMapPixelBelow & 127)==iTexture))
+				// Map scan line start
+				byMapPixel=sfcMap->_GetPix(iX, iY);
+				// Map scan line pixel below
+				byMapPixelBelow = sfcMap->GetPix(iX, iY + 1);
+				// Landscape target coordinate horizontal
+				iToX=iX*iChunkWidth+iOffX;
+				// Here's a chunk of the texture-material to zoom
+				if ((byMapPixel & 127) == iTexture)
 				{
-					// Same texture-material on left
-					if ((iX>0) && ((sfcMap->GetPix(iX-1, iY) & 127)==iTexture))
-					{
-						// Determine IFT
-						iIFT=0; if (sfcMap->GetPix(iX-1, iY) >= 128) iIFT=IFT;
-						// Draw smoother
-						DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,0,(iX<<2)+iY);
-					}
-					// Same texture-material on right
-					if ((iX<iMapWidth-1) && ((sfcMap->GetPix(iX+1, iY) & 127)==iTexture))
-					{
-						// Determine IFT
-						iIFT=0; if (sfcMap->GetPix(iX+1, iY) >= 128) iIFT=IFT;
-						// Draw smoother
-						DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,1,(iX<<2)+iY);
-					}
+					// Determine IFT
+					iIFT=0; if (byMapPixel>=128) iIFT=IFT;
+					// Draw chunk
+					DrawChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,pMaterial->MapChunkType,(iX<<2)+iY);
 				}
+				// Other chunk, check for slope smoothers
+				else
+					// Smooth chunk & same texture-material below
+					if ((iChunkType==C4M_Smooth) && (iY<iMapHeight-1) && ((byMapPixelBelow & 127)==iTexture))
+					{
+						// Same texture-material on left
+						if ((iX>0) && ((sfcMap->GetPix(iX-1, iY) & 127)==iTexture))
+						{
+							// Determine IFT
+							iIFT=0; if (sfcMap->GetPix(iX-1, iY) >= 128) iIFT=IFT;
+							// Draw smoother
+							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,0,(iX<<2)+iY);
+						}
+						// Same texture-material on right
+						if ((iX<iMapWidth-1) && ((sfcMap->GetPix(iX+1, iY) & 127)==iTexture))
+						{
+							// Determine IFT
+							iIFT=0; if (sfcMap->GetPix(iX+1, iY) >= 128) iIFT=IFT;
+							// Draw smoother
+							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,1,(iX<<2)+iY);
+						}
+					}
+			}
 		}
 	}
+	// Draw custom shapes on top of regular materials
+	if (pMaterial->CustomShape) DrawCustomShape(sfcMap, pMaterial->CustomShape, iMapX, iMapY, iMapWdt, iMapHgt, iTexture, byColor, iOffX, iOffY);
 }
 
 bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage)
@@ -1730,7 +1795,10 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	lpDDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
-	iMapX-=2; iMapY-=2; iMapWdt+=4; iMapHgt+=4;
+	iMapX-=2+MaterialMap.max_shape_width/MapZoom;
+	iMapY-=2+MaterialMap.max_shape_height/MapZoom;
+	iMapWdt+=4+MaterialMap.max_shape_width/MapZoom*2;
+	iMapHgt+=4+MaterialMap.max_shape_height/MapZoom*2;
 
 	// Determine texture usage in map segment
 	DWORD dwTexUsage[C4M_MaxTexIndex];
@@ -2592,6 +2660,17 @@ bool C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture
 bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
 {
 	BYTE byCol;
+	// Get map color index by material-texture
+	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
+	// Get material shape size
+	int32_t mat = PixCol2Mat(byCol);
+	int32_t shape_wdt=0, shape_hgt=0;
+	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	{
+		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
+		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+	}
+	// Draw
 	switch (Mode)
 	{
 		// Dynamic: ignore
@@ -2599,20 +2678,16 @@ bool C4Landscape::DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *
 		break;
 		// Static: draw to map by material-texture-index, chunk-o-zoom to landscape
 	case C4LSC_Static:
-		// Get map color index by material-texture
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
 		if (iRadius==1) { if (Map) Map->SetPix(iX/MapZoom,iY/MapZoom,byCol); }
 		else Map->Circle(iX/MapZoom,iY/MapZoom,iRadius,byCol);
 		// Update landscape
-		MapToLandscape(Map,iX/MapZoom-iRadius-1,iY/MapZoom-iRadius-1,2*iRadius+2,2*iRadius+2);
+		MapToLandscape(Map,iX/MapZoom-iRadius-1-shape_wdt,iY/MapZoom-iRadius-1-shape_hgt,2*iRadius+2+shape_wdt*2,2*iRadius+2+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case C4LSC_Exact:
-		// Set texture pattern & get material color
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
 		C4Rect BoundingBox(iX-iGrade-1, iY-iGrade-1, iGrade*2+2, iGrade*2+2);
 		// Draw to landscape
 		PrepareChange(BoundingBox);
@@ -2640,6 +2715,17 @@ bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius)
 
 bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT)
 {
+	// Get map color index by material-texture
+	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,DrawLineCol)) return false;
+	// Get material shape size
+	int32_t mat = PixCol2Mat(DrawLineCol);
+	int32_t shape_wdt=0, shape_hgt=0;
+	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	{
+		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
+		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+	}
+	// Draw
 	switch (Mode)
 	{
 		// Dynamic: ignore
@@ -2647,8 +2733,6 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		break;
 		// Static: draw to map by material-texture-index, chunk-o-zoom to landscape
 	case C4LSC_Static:
-		// Get map color index by material-texture
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,DrawLineCol)) return false;
 		// Draw to map
 		int32_t iRadius; iRadius=Max<int32_t>(2*iGrade/MapZoom,1);
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
@@ -2657,13 +2741,12 @@ bool C4Landscape::DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, i
 		int32_t iUpX,iUpY,iUpWdt,iUpHgt;
 		iUpX=Min(iX1,iX2)-iRadius-1; iUpY=Min(iY1,iY2)-iRadius-1;
 		iUpWdt=Abs(iX2-iX1)+2*iRadius+2; iUpHgt=Abs(iY2-iY1)+2*iRadius+2;
-		MapToLandscape(Map,iUpX,iUpY,iUpWdt,iUpHgt);
+		MapToLandscape(Map,iUpX-shape_wdt,iUpY-shape_hgt,iUpWdt+shape_wdt*2,iUpHgt+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case C4LSC_Exact:
 		// Set texture pattern & get material color
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,DrawLineCol)) return false;
 		C4Rect BoundingBox(iX1 - iGrade, iY1 - iGrade, iGrade*2+1, iGrade*2+1);
 		BoundingBox.Add(C4Rect(iX2 - iGrade, iY2 - iGrade, iGrade*2+1, iGrade*2+1));
 		// Draw to landscape
@@ -2681,6 +2764,17 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 	int32_t iX0=Min(iX1, iX2); int32_t iY0=Min(iY1, iY2);
 	iX2=Max(iX1, iX2); iY2=Max(iY1, iY2); iX1=iX0; iY1=iY0;
 	BYTE byCol;
+	// Get map color index by material-texture
+	if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
+	// Get material shape size
+	int32_t mat = PixCol2Mat(byCol);
+	int32_t shape_wdt=0, shape_hgt=0;
+	if (mat>=0 && MaterialMap.Map[mat].CustomShape)
+	{
+		shape_wdt = MaterialMap.Map[mat].CustomShape->max_poly_width/MapZoom;
+		shape_hgt = MaterialMap.Map[mat].CustomShape->max_poly_height/MapZoom;
+	}
+	// Draw
 	switch (Mode)
 	{
 		// Dynamic: ignore
@@ -2688,19 +2782,15 @@ bool C4Landscape::DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, in
 		break;
 		// Static: draw to map by material-texture-index, chunk-o-zoom to landscape
 	case C4LSC_Static:
-		// Get map color index by material-texture
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
 		// Draw to map
 		iX1/=MapZoom; iY1/=MapZoom; iX2/=MapZoom; iY2/=MapZoom;
 		Map->Box(iX1,iY1,iX2,iY2,byCol);
 		// Update landscape
-		MapToLandscape(Map,iX1-1,iY1-1,iX2-iX1+3,iY2-iY1+3);
+		MapToLandscape(Map,iX1-1-shape_wdt,iY1-1-shape_hgt,iX2-iX1+3+shape_wdt*2,iY2-iY1+3+shape_hgt*2);
 		SetMapChanged();
 		break;
 		// Exact: draw directly to landscape by color & pattern
 	case C4LSC_Exact:
-		// Set texture pattern & get material color
-		if (!GetMapColorIndex(szMaterial,szTexture,fIFT,byCol)) return false;
 		C4Rect BoundingBox(iX1, iY1, iX2 - iX1+1, iY2 - iY1+1);
 		// Draw to landscape
 		PrepareChange(BoundingBox);
