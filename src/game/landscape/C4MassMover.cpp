@@ -219,11 +219,11 @@ bool C4MassMoverSet::Save(C4Group &hGroup)
 
 bool C4MassMoverSet::Load(C4Group &hGroup)
 {
+	// clear previous
+	Clear(); Default();
 	size_t iBinSize,iMoverSize=sizeof(C4MassMover);
 	if (!hGroup.AccessEntry(C4CFN_MassMover,&iBinSize)) return false;
 	if ((iBinSize % iMoverSize)!=0) return false;
-	// clear previous
-	Clear(); Default();
 	// load new
 	Count = iBinSize / iMoverSize;
 	if (!hGroup.Read(Set,iBinSize)) return false;
