@@ -203,4 +203,9 @@ bool OpenURL(const char* szURL);
 // Get a monotonically increasing timestamp in milliseconds
 unsigned int GetTime();
 
+// Windows swprintf: MinGw vs MSVC
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define swprintf snwprintf
+#endif
+
 #endif // INC_PLATFORMABSTRACTION
