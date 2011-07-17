@@ -195,6 +195,10 @@ bool C4GameSave::SaveLandscape()
 
 bool C4GameSave::SaveRuntimeData()
 {
+	// Game.txt data (general runtime data and objects)
+	C4ValueNumbers numbers;
+	if (!Game.SaveData(*pSaveGroup, false, fInitial, IsExact(), &numbers))
+		{ Log(LoadResStr("IDS_ERR_SAVE_RUNTIMEDATA")); return false; }
 	// scenario sections (exact only)
 	if (IsExact()) if (!SaveScenarioSections())
 			{ Log(LoadResStr("IDS_ERR_SAVE_SCENSECTIONS")); return false; }
@@ -229,8 +233,6 @@ bool C4GameSave::SaveRuntimeData()
 	else
 	{
 		// non-exact runtime data: remove any exact files
-		// No Game.txt
-		pSaveGroup->Delete(C4CFN_Game);
 		// No player files
 		pSaveGroup->Delete(C4CFN_PlayerInfos);
 		pSaveGroup->Delete(C4CFN_SavePlayerInfos);
@@ -448,10 +450,6 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 		pSaveGroup->Delete(C4CFN_Titles);
 		pSaveGroup->Delete(C4CFN_Info);
 	}
-	// Always save Game.txt; even for saved scenarios, because global effects need to be saved
-	C4ValueNumbers numbers;
-	if (!Game.SaveData(*pSaveGroup, false, fInitial, IsExact(), &numbers))
-		{ Log(LoadResStr("IDS_ERR_SAVE_RUNTIMEDATA")); return false; }
 	// save additional runtime data
 	if (GetSaveRuntimeData()) if (!SaveRuntimeData()) return false;
 	// Desc

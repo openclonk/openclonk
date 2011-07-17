@@ -61,6 +61,7 @@ enum C4RecordChunkType // record file chunk type
 	// Streaming
 	RCT_File   = 0x30,  // file data
 	// DEBUGREC
+	RCT_DbgFrame= 0x81,  // frame start in Game::Execute
 	RCT_Block   = 0x82,  // point in Game::Execute
 	RCT_SetPix  = 0x83,  // set landscape pixel
 	RCT_ExecObj = 0x84,  // exec object

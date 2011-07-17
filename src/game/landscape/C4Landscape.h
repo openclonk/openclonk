@@ -129,6 +129,9 @@ public:
 	CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
 	inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
 	{
+#ifdef _DEBUG
+		if (x<0 || y<0 || x>=Width || y>=Height) { BREAKPOINT_HERE; }
+#endif
 		return Surface8->_GetPix(x,y);
 	}
 	inline BYTE GetPix(int32_t x, int32_t y) // get landscape pixel (bounds checked)

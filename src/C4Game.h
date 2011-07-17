@@ -271,7 +271,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers *);
 	bool SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers *);
 protected:
-	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers *);
+	bool CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers *, bool exact);
 	bool StoreParticipantPlayers();
 	bool RecreatePlayerFiles();
 

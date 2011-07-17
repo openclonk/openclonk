@@ -727,7 +727,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 #ifdef DEBUGREC
 	// debugrec
-	AddDbgRec(RCT_Frame, &FrameCounter, sizeof(int32_t));
+	AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
 #endif
 
 	// Game
@@ -1664,11 +1664,11 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	pComp->NameEnd();
 }
 
-bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers * numbers)
+bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers * numbers, bool exact)
 {
 	::Objects.Clear(!fLoadSection);
 	GameText.Load(hGroup,C4CFN_Game);
-	CompileSettings Settings(fLoadSection, false, true);
+	CompileSettings Settings(fLoadSection, false, exact);
 	// C4Game is not defaulted on compilation.
 	// Loading of runtime data overrides only certain values.
 	// Doesn't compile players; those will be done later
@@ -2090,7 +2090,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection) InitValueOverloads();
 
 	// runtime data
-	if (!CompileRuntimeData(hGroup, fLoadSection, numbers))
+	if (!CompileRuntimeData(hGroup, fLoadSection, numbers, C4S.Head.SaveGame))
 		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	SetInitProgress(93);

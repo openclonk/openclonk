@@ -36,8 +36,8 @@
 
 #define IMMEDIATEREC
 
-#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
-#define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
+//#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
+//#define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
 
 #ifdef DEBUGREC
 #ifdef DEBUGREC_EXTFILE
@@ -207,7 +207,7 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 
 	// write last entry and close
 	C4RecordChunkHead Head;
-	Head.iFrm = Game.FrameCounter+37;
+	Head.iFrm = 37;
 	Head.Type = RCT_End;
 	CtrlRec.Write(&Head, sizeof(Head));
 	CtrlRec.Close();
@@ -545,7 +545,7 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 		StdBuf Chunk = pUseBuf->getPart(iPos, pUseBuf->getSize() - iPos);
 		// Create entry
 		C4RecordChunk c;
-		c.Frame = (iFrame += pHead->iFrm);
+		c.Frame = (iFrame + pHead->iFrm);
 		c.Type = pHead->Type;
 		// Unpack data
 		try
@@ -602,6 +602,7 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 		}
 		// Add to list
 		chunks.push_back(c); c.pPkt = NULL;
+		iFrame = c.Frame;
 	}
 	while (!fFinished);
 	// erase everything but the trailing part from sequential buffer
@@ -614,6 +615,8 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 			sequentialBuffer.Move(iPos, sequentialBuffer.getSize() - iPos);
 			sequentialBuffer.Shrink(iPos);
 		}
+		// remember frame
+		iLastSequentialFrame = iFrame;
 	}
 	return true;
 }
@@ -1070,7 +1073,9 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 			DebugRecError(FormatString("Playback type %x, this type %x", currChunk->Type, eType).getData());
 			return;
 		}
-		PktInReplay = *currChunk->pDbg;
+		if (currChunk->pDbg)
+			PktInReplay = *currChunk->pDbg;
+
 		fHasPacketFromHead = true;
 	}
 #endif // DEBUGREC_EXTFILE
