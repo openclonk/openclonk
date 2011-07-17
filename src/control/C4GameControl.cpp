@@ -429,8 +429,8 @@ void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t
 	// record data
 	if (pRecord)
 	{
-		//C4PktDebugRec dr(eType, );
-		pRecord->Rec(Game.FrameCounter, StdBuf(pData, iSize), eType);
+		C4PktDebugRec dr(eType, StdBuf(pData, iSize));
+		pRecord->Rec(Game.FrameCounter, DecompileToBuf<StdCompilerBinWrite>(dr), eType);
 	}
 	// check against playback
 	if (pPlayback)
