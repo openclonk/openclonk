@@ -1193,6 +1193,11 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	if (!MapToLandscape()) return false;
 	Game.SetInitProgress(84);
 
+#ifdef DEBUGREC
+	AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
+	AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
+#endif
+
 	// Create renderer
 	pLandscapeRender = NULL;
 #ifdef USE_GL
