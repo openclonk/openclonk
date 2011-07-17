@@ -27,7 +27,7 @@
     <desc>Removes all objects which are found using the search criteria.</desc>
     <examples>
       <example>
-        <code>RemoveAll(<funclink>Find_ID</funclink>(WIPF));</code>
+        <code>RemoveAll(<funclink>Find_ID</funclink>(Wipf));</code>
         <text>All wipfs will be removed.</text>
       </example>
     </examples>

@@ -97,7 +97,7 @@
         <text>Create 20 chunks of loam in earth within the coordinates 100,0 and 200,LandscapeHeight().</text>
       </example>
       <example>
-        <code>PlaceObjects(FISH,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
+        <code>PlaceObjects(Fish,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
         <text>Creates a total of 10 fishes in all liquids found in the upper half of the landscape.</text>
       </example>
     </examples>

@@ -21,11 +21,6 @@
     <remark>In old times, this was the only method to access function parameters. The new script style allows naming of parameters which makes declaration and access much more convenient.</remark>
     <examples>
       <example>
-        <code>private Multiply3:
-  <funclink>return</funclink>(Par() * Par(1) * Par(2));</code>
-        <text>A function Multiply3, which multiplies its three parameters.</text>
-      </example>
-      <example>
         <code>private func Multiply3(v1, v2, v3)
 {
   return(v1 * v2 * v3);

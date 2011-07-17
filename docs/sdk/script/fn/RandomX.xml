@@ -31,7 +31,7 @@
         <text>Sets horizontal speed of the object to a random value between -20 and +20.</text>
       </example>
       <example>
-        <code><funclink>Message</funclink>(&quot;Daniel hat %d Brötchen!&quot;, RandomX(42,23));</code>
+        <code><funclink>Message</funclink>(&quot;Daniel has %d bread rolls!&quot;, RandomX(42,23));</code>
         <text>Returns the number of Daniel's random bread rolls. This may be a value from 23 to 42.</text>
       </example>
     </examples>

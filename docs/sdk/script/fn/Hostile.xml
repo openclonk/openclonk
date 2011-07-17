@@ -31,7 +31,10 @@
     <desc>Determines whether two players are enemies. Two players will be opposed if at least one of them has declared hostility towards the other.</desc>
     <examples>
       <example>
-        <code>protected RejectEntrance: <funclink>return</funclink>(!<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(<funclink>Par</funclink>())));</code>
+        <code>protected func RejectEntrance(object other)
+{
+	<funclink>return</funclink> !<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(other));
+}</code>
         <text>The object can only be collected by friendly players.</text>
       </example>
     </examples>

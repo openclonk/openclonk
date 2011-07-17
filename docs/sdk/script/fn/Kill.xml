@@ -22,7 +22,7 @@
     <desc>Kills an object. Applies to living beings only.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_Alive</funclink>())-&gt;Kill();</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>()))-&gt;Kill();</code>
         <text>Kills a living being.</text>
       </example>
     </examples>

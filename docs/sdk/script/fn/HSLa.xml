@@ -35,8 +35,8 @@
     <desc>Creates a 32 bit color value from four parameters. Range is 0-255 for all parameters.</desc>
     <examples>
       <example>
-        <code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,192),<funclink>FindObject</funclink>(TRE1));</code>
-        <text>Colors a randomly chosen tree white and somewhat transparent.</text>
+        <code><funclink>SetClrModulation</funclink>(HSLa(128,255,128,40));</code>
+        <text>Colors this object in a somewhat transparent and spooky green.</text>
       </example>
     </examples>
     <related>

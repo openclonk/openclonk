@@ -34,7 +34,7 @@
         <text>Makes a ruddy sky.</text>
       </example>
       <example>
-        <code><funclink>SetColorDw</funclink>(HSL(<funclink>Random</funclink>(256),255,127),<funclink>GetHiRank</funclink>(0));</code>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;<funclink>SetColor</funclink>(HSL(<funclink>Random</funclink>(256),255,127));</code>
         <text>Colors the highest ranking clonk of the first player in a strong, random color.</text>
       </example>
     </examples>

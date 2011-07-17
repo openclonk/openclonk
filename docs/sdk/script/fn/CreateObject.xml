@@ -29,7 +29,8 @@
         <param>
           <type>int</type>
           <name>owner</name>
-          <desc>Owner of the new object (valid player number or <funclink>NO_OWNER</funclink> for no-owner).</desc>
+          <desc>Owner of the new object. Either a valid player number or <funclink>NO_OWNER</funclink> for no owner. If not specified the owner is the controller (see <funclink>GetController</funclink>) of the calling object or NO_OWNER if the call is made without object context.</desc>
+		  <optional />
         </param>
       </params>
     </syntax>

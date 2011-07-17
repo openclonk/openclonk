@@ -20,7 +20,7 @@
     <desc>Ends the current function and returns a value to the caller.</desc>
     <examples>
       <example>
-        <code>private func Division( dividend, divisor )
+        <code>private func Division( int dividend, int divisor )
 {
 	return dividend / divisor;
 }

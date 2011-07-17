@@ -31,7 +31,8 @@
     <desc>Displays a message in the viewport of the specified player. Message formatting is done accoring to <funclink>Message</funclink>.</desc>
     <examples>
       <example>
-        <code>var cursor=<funclink>GetCursor</funclink>(0); cursor-&gt;PlayerMessage(0, &quot;Hallo, ich bin %s!&quot;, <funclink>GetName</funclink>(cursor));</code>
+        <code>var cursor=<funclink>GetCursor</funclink>(0);
+cursor-&gt;PlayerMessage(0, &quot;Hello, I am %s!&quot;, <funclink>GetName</funclink>(cursor));</code>
         <text>Tells the name of the selected clonk to the owner of the clonk only.</text>
       </example>
     </examples>

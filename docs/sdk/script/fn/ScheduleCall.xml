@@ -40,8 +40,8 @@
     <remark>This function is implemented in System.ocg using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
     <examples>
       <example>
-        <code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;, 500, 0, MCLK);</code>
-        <text>Calls the function "Redefine" in a clonk with a delay of 500 ticks and passes "MCLK" as additional parameter. This will cause the clonk to change into a magician after 500 frames unless the call is cancelled earlier using <funclink>ClearScheduleCall</funclink>.</text>
+        <code>ScheduleCall(this, &quot;Explode&quot;, 500, 0, 50);</code>
+        <text>Calls the function "Explode" in this object with a delay of 500 ticks and passes 50 as additional parameter. This will cause the object to explode with a strength of 50 after 500 frames unless the call is cancelled earlier using <funclink>ClearScheduleCall</funclink>.</text>
       </example>
     </examples>
     <related>
