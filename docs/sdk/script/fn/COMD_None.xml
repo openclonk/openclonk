@@ -13,8 +13,8 @@
     <examples>
       <example>
         <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetAction</funclink>("Fly");
-		FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetComDir</funclink>(COMD_None);
-		FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetSpeed</funclink>(20, 30);</code>
+		<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetComDir</funclink>(COMD_None);
+		<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(ButterFly))-&gt;<funclink>SetSpeed</funclink>(20, 30);</code>
         <text>This code will let a butterfly fly in an alternative direction than the predefined ones for the FLOAT procedure</text>
       </example>
     </examples>
