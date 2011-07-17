@@ -155,7 +155,7 @@ struct C4RCRandom
 struct C4RCCreateObj
 {
 	int oei;
-	int id;
+	char id[32+1];
 	int x,y,ownr;
 };
 
