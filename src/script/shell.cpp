@@ -27,6 +27,7 @@
 #include <C4GameObjects.h>
 #include <C4Material.h>
 #include <C4Reloc.h>
+#include <C4Record.h>
 
 bool Log(const char *msg)
 {
@@ -109,6 +110,7 @@ bool C4Reloc::Open(C4Group&, char const*) const {return false;}
 void C4LSector::Clear() {}
 void C4Def::IncludeDefinition(C4Def*) {}
 bool EraseItemSafe(const char *szFilename) {return false;}
+void AddDbgRec(C4RecordChunkType, const void *, int) {}
 
 int main(int argc, const char * argv[])
 {

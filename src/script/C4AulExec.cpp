@@ -859,36 +859,33 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		CallCtx.Caller = pCurCtx;
 
 #ifdef DEBUGREC_SCRIPT
-		if (Game.FrameCounter >= DEBUGREC_START_FRAME)
+		StdStrBuf sCallText;
+		if (pObj)
+			sCallText.AppendFormat("Object(%d): ", pObj->Number);
+		sCallText.Append(pFunc->Name);
+		sCallText.AppendChar('(');
+		for (int i=0; i<C4AUL_MAX_Par; ++i)
 		{
-			StdStrBuf sCallText;
-			if (pObj)
-				sCallText.AppendFormat("Object(%d): ", pObj->Number);
-			sCallText.Append(pFunc->Name);
-			sCallText.AppendChar('(');
-			for (int i=0; i<C4AUL_MAX_Par; ++i)
+			if (i) sCallText.AppendChar(',');
+			C4Value &rV = pPars[i];
+			if (rV.GetType() == C4V_String)
 			{
-				if (i) sCallText.AppendChar(',');
-				C4Value &rV = pPars[i];
-				if (rV.GetType() == C4V_String)
-				{
-					C4String *s = rV.getStr();
-					if (!s)
-						sCallText.Append("(Snull)");
-					else
-					{
-						sCallText.Append("\"");
-						sCallText.Append(s->GetData());
-						sCallText.Append("\"");
-					}
-				}
+				C4String *s = rV.getStr();
+				if (!s)
+					sCallText.Append("(Snull)");
 				else
-					sCallText.Append(rV.GetDataString());
+				{
+					sCallText.Append("\"");
+					sCallText.Append(s->GetData());
+					sCallText.Append("\"");
+				}
 			}
-			sCallText.AppendChar(')');
-			sCallText.AppendChar(';');
-			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
+			else
+				sCallText.Append(rV.GetDataString());
 		}
+		sCallText.AppendChar(')');
+		sCallText.AppendChar(';');
+		AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 #endif
 
 		// Execute
