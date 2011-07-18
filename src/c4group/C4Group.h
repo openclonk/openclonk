@@ -239,7 +239,7 @@ public:
 	                   size_t *iSize=NULL,
 	                   bool fStartAtFilename=false)
 	{
-		StdStrBuf name(sFileName);
+		StdStrBuf name(fStartAtFilename ? sFileName : "");
 		bool r = FindNextEntry(szWildCard, &name, iSize, fStartAtFilename);
 		if(sFileName) SCopy(name.getData(),sFileName);
 		return r;

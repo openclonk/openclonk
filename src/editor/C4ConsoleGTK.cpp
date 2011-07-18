@@ -560,6 +560,8 @@ void C4ConsoleGUI::State::Clear()
 	handlerModePlay = 0;
 	handlerModeEdit = 0;
 	handlerModeDraw = 0;
+
+	propertydlg = 0;
 }
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
