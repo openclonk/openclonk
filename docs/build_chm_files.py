@@ -21,6 +21,7 @@ class Clonkparser(xml.sax.handler.ContentHandler):
         self.subcats = { }
         self.versions = { }
         self.extversions = { }
+        self.funcs = { }
         self.files = { }
     def setfilename(self, filename):
         self.filename = filename
@@ -34,15 +35,19 @@ class Clonkparser(xml.sax.handler.ContentHandler):
         self.cur = ""
         self.curcat = ""
         self.title = ""
+        self.func = 0
         self.state = None
     def startElement(self, name, attr):
         # subcat inside category?
         if self.state == 'category' and self.cur != "":
             self._setcurcat(self.cur)
+        # is func
+        if name == 'funcs':
+            self.func = 1
         self.cur = ""
         self.state = name
     def characters(self, content):
-        if self.state in ['category', 'subcat', 'version', 'extversion', 'title']:
+        if self.state in ['category', 'subcat', 'version', 'extversion', 'title', 'funcs']:
             self.cur += content
     def endElement(self, name):
         self.cur = self.cur.strip()
@@ -78,9 +83,13 @@ class Clonkparser(xml.sax.handler.ContentHandler):
                 if self.cur not in self.versions:
                     self.versions[self.cur] = { }
                 self.extversions[self.cur][self.title] = self.htmlfilename
+        elif name == 'funcs':
+            self.func = 0
         elif name == 'title':
             self.title = self.cur
             self.files[self.title] = self.htmlfilename
+            if self.func == 1:
+                self.funcs[self.title] = self.htmlfilename
 
         self.cur = ""
         self.state = None
@@ -176,20 +185,26 @@ def printcontents3(f, _):
             sheet(parser.cats[cat][title] + '#' + _(title), _(title))
         f.write('</ul></li>\n')
     f.write('</ul></li>\n')
-    folder("Functions by Version")
-    versions = parser.versions.keys()
-    versions.sort()
-    for version in versions:
-        folder(_(version))
-        titles = parser.versions[version].keys()
-        titles.sort()
-        for title in titles:
-            sheet(parser.versions[version][title] + '#' + _(title), _(title))
-        titles = parser.extversions[version].keys()
-        titles.sort()
-        for title in titles:
-            sheetE(parser.extversions[version][title] + '#' + _(title), _(title))
-        f.write('</ul></li>\n')
+    # folder("Functions by Version")
+    # versions = parser.versions.keys()
+    # versions.sort()
+    # for version in versions:
+        # folder(_(version))
+        # titles = parser.versions[version].keys()
+        # titles.sort()
+        # for title in titles:
+            # sheet(parser.versions[version][title] + '#' + _(title), _(title))
+        # titles = parser.extversions[version].keys()
+        # titles.sort()
+        # for title in titles:
+            # sheetE(parser.extversions[version][title] + '#' + _(title), _(title))
+        # f.write('</ul></li>\n')
+    # f.write('</ul></li>\n')
+    folder("All functions")
+    funcs = parser.funcs.keys()
+    funcs.sort()
+    for func in funcs:
+        sheet(parser.funcs[func] + '#' + _(func), _(func))
     f.write('</ul></li>\n')
 
 parser = Clonkparser()
