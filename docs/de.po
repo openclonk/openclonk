@@ -6241,6 +6241,10 @@ msgstr "Prüft, ob Value eine Referenz ist."
 msgid "Returns whether the current game is a network game."
 msgstr "Prüft, ob das aktuelle Spiel ein Netzwerkspiel ist."
 
+#: sdk/script/fn/IsNetwork.xml:20(desc)
+msgid "Displays a sly message based on telltale signs: If there two players in the game and it is not a network game, the round must be played locally on splitscreen only. Probably a friend came over? Also, the first player usually belongs to the person who installed the game."
+msgstr "Gibt eine verschmitzte Nachricht anhand von einigen Anzeichen aus: Wenn genau zwei Spieler im Spiel sind und dies kein Netzwerkspiel ist, muss die aktuelle Runde im split screen gespielt werden. Vielleicht ist ein Freund vorbeigekommen? Der erste Spieler gehört normalerweise zu der Person die das Spiel installiert hat."
+
 #: sdk/script/fn/Inside.xml:16(desc)
 msgid "Input value"
 msgstr "Eingabewert"
