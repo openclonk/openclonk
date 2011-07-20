@@ -83,7 +83,7 @@
         <param>
           <type>string</type>
           <name>action</name>
-          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible.</desc>
+          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible.</desc>
           <optional />
         </param>
         <param>
