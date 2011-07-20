@@ -135,7 +135,7 @@
     <h id="order">Element Order</h>
     <text>AccessGfx images drawn under the scenario selection buttons. Selection buttons appear in the order in which they are specified in the file. Thus you should specifiy sections in a meaningful order, from left to right and top to bottom as this will affect the tab stepping sequence when controlling the dialog with the keyboard or gamepad. Also, you should take care not to overlap any buttons.</text>
     <h id="background">Background image</h>
-    <text>If the scenario folder contains a folder map, an image file of name FolderMap.png/.jpg/.jpeg/.bmp is expected. The recommended size of this image depends on the screen resolution of the end user:</text>
+    <text>If the scenario folder contains a folder map, an image file of name FolderMap.png/.jpg/.jpeg is expected. The recommended size of this image depends on the screen resolution of the end user:</text>
     <text>
       <table>
         <rowh>

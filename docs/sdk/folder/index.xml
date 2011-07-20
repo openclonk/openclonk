@@ -17,13 +17,13 @@
       <dd>
         <text>Scenario folders can also contain other scenario folders.</text>
       </dd>
-      <dt id="Title"><img height="16" src="../../images/icon_image.png" width="16"/> Title.png/Title.bmp</dt>
+      <dt id="Title"><img height="16" src="../../images/icon_image.png" width="16"/>Title.png</dt>
       <dd>
-        <text>The title picture of the scenario folder in png format. Size: 200x150 pixel. The older bmp format with 256 colors is still supported as well.</text>
+        <text>The title picture of the scenario folder in png format. Size: 200x150 pixel.</text>
       </dd>
-      <dt id="Icon"><img height="16" src="../../images/icon_image.png" width="16"/> Icon.bmp/Icon.png</dt>
+      <dt id="Icon"><img height="16" src="../../images/icon_image.png" width="16"/>Icon.png</dt>
       <dd>
-        <text>The icon of a scenario folder which is to be displayed instead of the book icon. BMP format (obsolete): 16x16 pixels, color RGB 255 0 255 (purple) is transparent. PNG format: 24x24 pixels, alpha channel is used for transparency.</text>
+        <text>The icon of a scenario folder which is to be displayed instead of the book icon. 24x24 pixels, alpha channel is used for transparency.</text>
       </dd>
       <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.png" width="16"/> Desc*.rtf</dt>
       <dd>
@@ -41,7 +41,7 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       <dd>
         <text>Scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
       </dd>
-      <dt id="Loader"><img height="16" src="../../images/icon_image.png" width="16"/> Loader*.png/Loader*.bmp</dt>
+      <dt id="Loader"><img height="16" src="../../images/icon_image.png" width="16"/>Loader*.png</dt>
       <dd>
         <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>

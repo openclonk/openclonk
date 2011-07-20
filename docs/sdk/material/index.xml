@@ -19,19 +19,15 @@
       <dd>
         <text>The engine will accept up to 125 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
       </dd>
-      <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/> *.png/*.bmp</dt>
+      <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/> *.png</dt>
       <dd>
-        <text>There can be any number of textures in PNG or uncompressed Windows BMP format (with 256 colors) in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.) With the old BMP format only the first three colors of the texture bitmap may be used as to these the three material colors are applied.</text>
+        <text>There can be any number of textures in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.).</text>
       </dd>
     </dl>
     <h id="MaterialTexturReferenzen">Material-Texture-References</h>
     <text>At numerous places in scenario definitions materials are specified with additional information on texture and amounts.</text>
     <text>
       <table>
-        <row>
-          <col>Simple material specification (using the default texture):</col>
-          <col><code>Earth</code></col>
-        </row>
         <row>
           <col>Material using an specified texture:</col>
           <col><code>Earth-Rough</code></col>
@@ -42,7 +38,7 @@
         </row>
         <row>
           <col>Multiple material definitions:</col>
-          <col><code>Earth-Smooth=10; Rock-Rough=5; Gold=2</code></col>
+          <col><code>Earth-Smooth=10; Rock-Rough=5</code></col>
         </row>
       </table>
     </text>
