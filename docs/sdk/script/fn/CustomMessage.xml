@@ -24,7 +24,7 @@
         <param>
           <type>int</type>
           <name>plr</name>
-          <desc>Player number for which the message should be displayed. NO_OWNER will display the message globally.</desc>
+          <desc>Player number for which the message should be displayed. <code>NO_OWNER</code> will display the message globally.</desc>
         </param>
         <param>
           <type>int</type>

@@ -14,7 +14,7 @@
         <param>
           <type>int</type>
           <name>new_killer</name>
-          <desc>Player number of the new killer. -1 for no owner.</desc>
+          <desc>Player number of the new killer. <code>NO_OWNER</code> for no owner.</desc>
         </param>
       </params>
     </syntax>

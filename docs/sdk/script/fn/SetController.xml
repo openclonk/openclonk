@@ -14,7 +14,7 @@
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player number of the new controller. NO_OWNER for no controller.</desc>
+          <desc>Player number of the new controller. <code>NO_OWNER</code> for no controller.</desc>
         </param>
       </params>
     </syntax>
