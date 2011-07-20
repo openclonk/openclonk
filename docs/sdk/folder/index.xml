@@ -67,7 +67,7 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       </dd>
       <dt id="Authortxt"><img height="16" src="../../images/icon_text.png" width="16"/> Author.txt</dt>
       <dd>
-        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time. The name stored here is only displayed, however, if the scenario was edited by RedWolf Design. This feature is mainly used for contest scenarios.</text>
+        <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time.</text>
       </dd>
     </dl>
   </part>

@@ -12,7 +12,6 @@
     <code>func Initialize()
 {
   <emlink href="script/fn/CreateContents.html">CreateContents</emlink>(Rock);
-  <emlink href="script/fn/return.html">return</emlink>(1);
 }  
 </code>
     <text>An object with this script will be given a rock right after it has been created. The Initialize function is called only when the object has reached full size (a building only when its construction has been completed and a living being only when it is fully grown).</text>
