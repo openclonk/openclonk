@@ -538,38 +538,6 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 	}
 	effect.var4 = iRot;
 	return;
-	// Check wether the clonk wants to turn (Not when he wants to stop)
-	if(effect.var0 != GetDirection())
-	{
-		if(effect.var0 == COMD_Right)
-		{
-			SetAnimationPosition(iTurnAction,  Anim_Linear(GetAnimationLength("TurnRoot120"), GetAnimationLength("TurnRoot120"), 0, CLONK_TurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction2, Anim_Linear(GetAnimationLength("TurnRoot180"), GetAnimationLength("TurnRoot180"), 0, CLONK_TurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction3, Anim_Linear(GetAnimationLength("TurnRoot240"), GetAnimationLength("TurnRoot240"), 0, CLONK_TurnTime, ANIM_Hold));
-		}
-		else
-		{
-			SetAnimationPosition(iTurnAction,  Anim_Linear(0, 0, GetAnimationLength("TurnRoot120"), CLONK_TurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction2, Anim_Linear(0, 0, GetAnimationLength("TurnRoot180"), CLONK_TurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction3, Anim_Linear(0, 0, GetAnimationLength("TurnRoot240"), CLONK_TurnTime, ANIM_Hold));
-		}
-		// Save new ComDir
-		effect.var0 = GetDirection();
-		effect.var1 = CLONK_TurnTime;
-		// Notify effects
-		ResetAnimationEffects();
-	}
-	// Turning
-	if(effect.var1)
-	{
-		effect.var1--;
-		if(effect.var1 == 0)
-		{
-			SetAnimationPosition(iTurnAction,  Anim_Const(GetAnimationLength("TurnRoot120")*(GetDirection()==COMD_Right)));
-			SetAnimationPosition(iTurnAction2, Anim_Const(GetAnimationLength("TurnRoot180")*(GetDirection()==COMD_Right)));
-			SetAnimationPosition(iTurnAction3, Anim_Const(GetAnimationLength("TurnRoot240")*(GetDirection()==COMD_Right)));
-		}
-	}
 }
 
 public func GetTurnPhase()
@@ -605,21 +573,7 @@ func SetTurnType(iIndex, iSpecial)
 		iLastTurn = iIndex;
 		if(iTurnSpecial) return;
 	}
-//	GetEffect("IntTurn", this).var0 = -1;
 	return;
-	if(iIndex == 0)
-	{
-		SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),1000,0,10,ANIM_Hold));
-	}
-	if(iIndex == 1)
-	{
-		SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),0,1000,10,ANIM_Hold));
-		SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),1000,0,10,ANIM_Hold));
-	}
-	if(iIndex == 2)
-	{
-		SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),0,1000,10,ANIM_Hold));
-	}
 }
 
 // For test purpose
@@ -1156,7 +1110,7 @@ func CheckPosition(int off_x, int off_y)
 }
 
 func CheckScaleTop()
-{
+{//return false;
 	// Test whether the clonk has reached a top corner
 	if(GBackSolid(-8+16*GetDir(),-8)) return false;
 	if(!CheckPosition(-7*(-1+2*GetDir()),-17)) return false;
@@ -1170,47 +1124,35 @@ func FxIntScaleStart(target, effect, tmp)
 	effect.var0 = 0;
 }
 
-func FxIntScaleTimer(target, effect, time)
+func FxIntScaleTimer(target, number, time)
 {
 	if(GetAction() != "Scale") return;
 	// When the clonk reaches the top play an extra animation
-/*	if(CheckScaleTop())
+	if(CheckScaleTop())
 	{
 		// If the animation is not already set
+		var dist = 0;
+		while(!GBackSolid(-8+16*GetDir(),dist-8) && dist < 10) dist++;
+		dist *= 100;
+		dist += GetY(100)-GetY()*100;
 		if(number.var0 != 1)
 		{
-			var dist = 0;
-			while(!GBackSolid(-8+16*GetDir(),dist-8) && dist < 7) dist++;
-			number.var1 = PlayAnimation("ScaleTop", 5, Anim_Linear(GetAnimationLength("ScaleTop")*dist/10,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			number.var1 = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.var0 = 1;
 			number.var2 = COMD_Up;
 		}
+		this.dist = dist;
+		SetAnimationPosition(number.var1, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000));
 		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
 		var pos = GetAnimationPosition(number.var1);
-		var percent = pos*1000/GetAnimationLength("ScaleTop");
-		SetObjDrawTransform(1000, 0, 3*(-1+2*GetDir())*percent, 0, 1000, 3*percent);
-		// If the Comdir has changed...
-		if(number.var2 != GetComDir())
-		{
-			// Go on if the user has stopped. Stopping here doesn't look good
-			if(GetComDir() == COMD_Stop || GetComDir() == -1)
-			{
-				SetComDir(number.var2);
-				number.var3 = 1;
-			}
-			// Or adjust the animation to the turn of direction
-			else
-			{
-				number.var3 = 0;
-				var anim = Anim_Linear(pos,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold);
-				if(ComDirLike(GetComDir(), COMD_Down))
-					anim = Anim_Linear(pos,0, GetAnimationLength("ScaleTop"),-20, ANIM_Hold);
-				SetAnimationPosition(number.var1, anim);
-				number.var2 = GetComDir();
-			}
-		}
+		//var percent = pos*1000/GetAnimationLength("ScaleTop");
+		var offset_list = [[0,0], [0,-1], [-1,-2], [-2,-3], [-2,-5], [-2,-7], [-4,-8], [-6,-10], [-7,-9], [-8,-8]];
+		var offset = offset_list[dist/100-1];
+		var rot = 0;
+		if(dist/100-1 > 5) rot = 5*dist/100-25;
+		SetScaleRotation(0, -offset[0]*(-1+2*GetDir())*1000, offset[1]*1000, -rot*(-1+2*GetDir()), 0, 1);
 	}
-	else if(!GBackSolid(-6+14*GetDir(), 6))
+	else if(!GBackSolid(-10+20*GetDir(), 8))
 	{
 		if(number.var0 != 2)
 		{
@@ -1218,15 +1160,14 @@ func FxIntScaleTimer(target, effect, time)
 			number.var1 = PlayAnimation("ScaleHands" , 5, Anim_Y(pos, GetAnimationLength("ScaleHands"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.var4 = PlayAnimation("ScaleHands2", 5, Anim_Y(pos, GetAnimationLength("ScaleHands2"), 0, 15), Anim_Const(1000), number.var1);
 			number.var4++;
-//			SetAnimationWeight(number.var4, Anim_Const(Cos(time, 1000)));
 			number.var0 = 2;
 		}
 		SetAnimationWeight(number.var4, Anim_Const(Cos(time*2, 500)+500));
+		SetScaleRotation(0);
 	}
 	// If not play the normal scale animation
 	else if(number.var0 != 0)
 	{
-		SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
 		if(number.var3)
 		{
 			SetComDir(COMD_Stop);
@@ -1236,39 +1177,66 @@ func FxIntScaleTimer(target, effect, time)
 		if(number.var0 == 2) pos = GetAnimationPosition(number.var1);
 		number.var1 = PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		number.var0 = 0;
+		SetScaleRotation(0);
 	}
 	if(number.var0 == 0)
 	{
 		var x, x2;
 		var y = -7, y2 = 8;
+		var dir = -1+2*GetDir();
 		for(x = 0; x < 10; x++)
-			if(GBackSolid(x*(-1+2*GetDir()), y)) break;
+			if(GBackSolid(x*dir, y)) break;
 		for(x2 = 0; x2 < 10; x2++)
-			if(GBackSolid(x2*(-1+2*GetDir()), y2)) break;
-		var angle = Angle(x2, y2, x, y)*(+1-2*GetDir());
-		var mid = (x+x2)*1000/2 - 5000;
-		SetScaleRotation(angle, mid*(-1+2*GetDir()));
-	}*/
+			if(GBackSolid(x2*dir, y2)) break;
+		var angle = Angle(x2, y2, x, y)*dir;
+		var mid = (x+x2)*1000/2 - 5000 - this.Off;
+		this.TestAngle = angle;
+		this.TestMid = mid;
+		SetScaleRotation(angle, mid*dir);
+	}
 }
-/*
-func SetScaleRotation (int r, int xoff, int yoff) {
-	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-	// set matrix values
-	SetObjDrawTransform (
-		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
-	);
-}*/
 
-func FxIntScaleStop(target, effect, reason, tmp)
+func FxIntScaleRotTimer(target, eff, time)
+{
+	eff.oldR += BoundBy(eff.r-eff.oldR, -3, 3);
+	eff.oldX += BoundBy(eff.xoff-eff.oldX, -500, 500);
+	eff.oldY += BoundBy(eff.yoff-eff.oldY, -500, 500);
+	var turnx = -1000;
+	var turny = 10000;
+	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), 1);
+}
+
+func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, int instant) {
+	if(r < -180) r += 360;
+	if(r > 180) r -= 360;
+	// set matrix values
+	var turnx = -1000;
+	var turny = 10000;
+	if(instant)
+	{
+		RemoveEffect("IntScaleRot", this);
+		SetMeshTransformation(Trans_Mul(Trans_Translate(xoff-turnx, yoff-turny), Trans_Rotate(r,0,0,1), Trans_Translate(turnx, turny), Trans_Rotate(rotZ, 0, 1, 0)), 1);
+	}
+	else
+	{
+		if(!GetEffect("IntScaleRot", this))
+			AddEffect("IntScaleRot", this, 1, 1, this);
+		GetEffect("IntScaleRot", this).r = r;
+		GetEffect("IntScaleRot", this).xoff = xoff;
+		GetEffect("IntScaleRot", this).yoff = yoff;
+	}
+}
+
+func FxIntScaleStop(target, number, reason, tmp)
 {
 	if(tmp) return;
-/*	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
-	if(number.var0 == 1) PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
+	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
+/*	if(number.var0 == 1) PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
 	// Finally stop if the user has scheduled a stop
-	if(number.var3) SetComDir(COMD_Stop);
+	if(number.var3) SetComDir(COMD_Stop);*/
 	// and reset the transform
-	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);*/
+	SetScaleRotation(0);
+//	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
 }
 
 /* Jump */

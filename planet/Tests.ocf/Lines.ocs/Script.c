@@ -142,14 +142,14 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
-	clonk->SetPosition(502, 538);
-    clonk->SetGraphics(nil, Skin_Steampunk);
-//	clonk->CreateContents(Musket);
-//	clonk->CreateContents(LeadShot);
+//	clonk->SetPosition(502, 538);
+ //   clonk->SetGraphics(nil, Skin_Steampunk);
+	clonk->CreateContents(Musket);
+	clonk->CreateContents(LeadShot);
 //	clonk->CreateContents(Javelin);
 //		clonk->CreateContents(DynamiteBox);
 	clonk->CreateContents(GrappleBow);
-//	clonk->CreateContents(Bow);
-//	clonk->Collect(CreateObject(Arrow));
+	clonk->CreateContents(Bow);
+	clonk->Collect(CreateObject(Arrow));
 	return;
 }
