@@ -1511,7 +1511,8 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 			{
 				var particle_name = "WaveLeft";
 				if( GetDir() == 1 ) particle_name = "WaveRight";
-				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, RGB(255,255,255), this, 1);
+				var color = GetAverageTextureColor(GetTexture(0, 0));
+				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, color, this, 1);
 			}
 			Sound("Splash*");
 		}
