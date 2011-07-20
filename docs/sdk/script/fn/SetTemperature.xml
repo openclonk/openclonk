@@ -21,8 +21,7 @@
     <desc>Sets the global temperature.</desc>
     <examples>
       <example>
-        <code>SetTemperature(-100);
-				</code>
+        <code>SetTemperature(-100);</code>
         <text>Shock freezes the landscape.</text>
       </example>
     </examples>

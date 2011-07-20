@@ -14,11 +14,11 @@
         <param>
           <type>bool</type>
           <name>alive</name>
-          <desc>0 = dead; alive otherwise.</desc>
+          <desc>false = dead; alive otherwise.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Determines whether an object is alive.</desc>
+    <desc>Sets whether an object is alive.</desc>
     <related>
       <funclink>Kill</funclink>
       <funclink>GetAlive</funclink>

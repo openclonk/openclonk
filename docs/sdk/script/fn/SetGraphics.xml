@@ -104,25 +104,17 @@
     <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.bmp/-.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">the ActMap</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(Rock)-&gt;SetGraphics(nil, Gold);</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))-&gt;SetGraphics(nil, Gold);</code>
         <text>Gives a randomly chosen rock in the landscape the appearance of gold.</text>
       </example>
       <example>
-        <code><funclink>FindObject</funclink>(KNIG)-&gt;SetGraphics(&quot;Armored&quot;);</code>
-        <text>Gives the most recently created knight the appearance of a knight in armor, using the files GraphicsArmored.png and OverlayArmored.png found in the knight definition file.</text>
-      </example>
-      <example>
-        <code>var obj; <funclink>while</funclink> (obj = <funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj)) obj-&gt;SetGraphics();</code>
+        <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_And</funclink>())) obj-&gt;SetGraphics();</code>
         <text>Restores the original graphics for all objects in the game.</text>
       </example>
       <example>
         <code>SetGraphics(nil, Clonk, GFX_Overlay, GFXOV_MODE_Picture);
-<funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0, <funclink>this</funclink>(), GFX_Overlay);</code>
+<funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0,GFX_Overlay);</code>
         <text>An object script: the calling object will have a small clonk image superimposed on its picture.</text>
-      </example>
-      <example>
-        <code><funclink>FindObject</funclink>(KNIG)-&gt;SetGraphics(nil, SHIA, GFX_Overlay, GFXOV_MODE_Base, 0, GFX_BLIT_Additive);</code>
-        <text>Some knight will be displayed with a shield, additively drawn onto the clonk.</text>
       </example>
     </examples>
     <related>

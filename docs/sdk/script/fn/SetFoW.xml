@@ -30,7 +30,7 @@
 <funclink>for</funclink> (var plrnum = <funclink>GetPlayerCount</funclink> (); plrnum; i++)
   if (<funclink>GetPlayerName</funclink> (i)) {
     plrnum--;
-    SetFoW (0, i);
+    SetFoW (false, i);
   }</code>
         <text>Deactivates fog of war for all players.</text>
       </example>

@@ -25,10 +25,6 @@
 clonk-&gt;SetComDir(<funclink>COMD_None</funclink>);
 clonk-&gt;<funclink>SetCommand</funclink>(&quot;&quot;);</code>
         <text>Tells the highest ranking clonk of the first player to stop. Any current activity will be stopped.</text>
-        <code>var clonk = <funclink>GetCursor</funclink>(0);
-<funclink>clonk-&gt;SetAction</funclink>(&quot;Dig&quot;);
-clonk-&gt;SetComDir(<funclink>COMD_DownRight</funclink>);</code>
-        <text>Makes the currently selected clonk of the first player dig towards the lower right.</text>
       </example>
     </examples>
     <related>

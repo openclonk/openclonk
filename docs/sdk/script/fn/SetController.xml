@@ -14,14 +14,14 @@
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player number of the new controller. -1 for no controller.</desc>
+          <desc>Player number of the new controller. NO_OWNER for no controller.</desc>
         </param>
       </params>
     </syntax>
     <desc>Changes the controller of the calling object.</desc>
     <examples>
       <example>
-        <code>protected func Entrance(container) { SetController(container-&gt;<funclink>GetController</funclink>()); }</code>
+        <code>protected func Entrance(object container) { SetController(container-&gt;<funclink>GetController</funclink>()); }</code>
         <text>This object changes its controller when it is collected.</text>
       </example>
     </examples>

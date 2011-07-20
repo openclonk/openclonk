@@ -28,6 +28,12 @@
           <desc>Second target object for the action.</desc>
           <optional />
         </param>
+        <param>
+          <type>bool</type>
+          <name>force</name>
+          <desc>If true, changes the action even if the action defined NoOtherAction=1.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Sets the activity of the calling object. Also see <emlink href="definition/actmap.html">the ActMap</emlink>.</desc>

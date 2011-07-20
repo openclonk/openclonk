@@ -21,8 +21,7 @@
     <desc>Sets the season.</desc>
     <examples>
       <example>
-        <code>SetSeason(50);
-				</code>
+        <code>SetSeason(50);</code>
         <text>Mid-summer.</text>
       </example>
     </examples>

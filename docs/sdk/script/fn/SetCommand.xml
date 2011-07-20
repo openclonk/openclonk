@@ -399,7 +399,7 @@
     </remark>
     <examples>
       <example>
-        <code>SetCommand(&quot;Attack&quot;, <funclink>FindObject</funclink>(Find_ID(Clonk),Sort_Distance(0,0)), 0, 0, 0, 0, 10);</code>
+        <code>SetCommand(&quot;Attack&quot;, <funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk),<funclink>Sort_Distance</funclink>(0,0)), 0, 0, 0, 0, 10);</code>
         <text>This script gives the clonk the order to attack the closest clonk of player 1. If the command fails (e.g. due to unsuccessful pathfinding), retry 10 times.</text>
       </example>
     </examples>

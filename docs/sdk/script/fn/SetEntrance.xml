@@ -11,13 +11,13 @@
       <rtype>void</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>bool</type>
           <name>status</name>
-          <desc>0 = closed; 1 = open</desc>
+          <desc>false = closed; true = open</desc>
         </param>
       </params>
     </syntax>
-    <desc>Enables or disables entering or leaving a building. Local call only.</desc>
+    <desc>Enables or disables the possibility to enter or leave this building.</desc>
     <related><funclink>GetEntrance</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

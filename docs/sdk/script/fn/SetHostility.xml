@@ -40,7 +40,7 @@
     <desc>Sets bilateral friendship of two players.</desc>
     <examples>
       <example>
-        <code>SetHostility(0,1,1); SetHostility(1,0,1);</code>
+        <code>SetHostility(0,1,true,true); SetHostility(1,0,true,true);</code>
         <text>Makes the first two players enemies without causing a message.</text>
       </example>
     </examples>

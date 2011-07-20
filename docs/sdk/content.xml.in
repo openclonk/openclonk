@@ -129,9 +129,9 @@
 		var firsta;
 		while (a = as[i++]) {
 			if (a.pathname.indexOf(l) != -1) {
-				if (!firsta) {
+				//if (!firsta) {
 					firsta = a;
-				}
+				//}
 				if (a.parentNode.tagName == "LI") {
 					if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
 				}

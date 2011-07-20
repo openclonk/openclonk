@@ -24,7 +24,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Changes the color modulation of an object. This is a color value which is multiplied with the object color. <funclink>RGB</funclink>(255,0,0) will only let the red part of the color show. <funclink>RGBa</funclink>(255,255,255,128) will make all color half transparent (unless alpha addition is disabled in the graphics options).</desc>
+    <desc>Changes the color modulation of an object. This is a color value which is multiplied with the object color. <funclink>RGB</funclink>(255,0,0) will only let the red part of the color show. <funclink>RGBa</funclink>(255,255,255,128) will make all color half transparent.</desc>
     <examples>
       <example>
         <code><funclink>GetCursor</funclink>()-&gt;SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128));</code>

@@ -17,7 +17,7 @@
         </param>
         <param>
           <type>int</type>
-          <name>dwBackClr</name>
+          <name>backgroundColor</name>
           <desc>Background color. If the alpha byte in colorMod is not 0, this color will be used as background color behind the sky. In this way you can create lighter or more desaturated skies.</desc>
         </param>
       </params>

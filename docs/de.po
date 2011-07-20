@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-17 19:31+0200\n"
+"POT-Creation-Date: 2011-07-20 15:42+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -414,7 +414,6 @@ msgstr "15"
 
 #: sdk/script/operatoren.xml:24(col)
 #: sdk/script/operatoren.xml:66(col)
-#: sdk/script/fn/SetPlrMagic.xml:34(emlink)
 msgid "++"
 msgstr "++"
 
@@ -438,7 +437,6 @@ msgstr "Referenz, Referenz"
 
 #: sdk/script/operatoren.xml:31(col)
 #: sdk/script/operatoren.xml:73(col)
-#: sdk/script/fn/SetPlrMagic.xml:36(emlink)
 msgid "--"
 msgstr "--"
 
@@ -818,8 +816,6 @@ msgid "Decreases the preeceding variable by the following value."
 msgstr "vermindert den Wert der vorangestellten Variable um den nachgestellten Wert"
 
 #: sdk/script/operatoren.xml:248(col)
-#: sdk/script/fn/SetPlrMagic.xml:33(emlink)
-#: sdk/script/fn/SetPlrMagic.xml:34(emlink)
 msgid "="
 msgstr "="
 
@@ -1385,7 +1381,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/SetR.xml:8(category)
 #: sdk/script/fn/SetProperty.xml:8(category)
 #: sdk/script/fn/SetPosition.xml:8(category)
-#: sdk/script/fn/SetPortrait.xml:8(category)
 #: sdk/script/fn/SetPicture.xml:8(category)
 #: sdk/script/fn/SetPhysical.xml:8(category)
 #: sdk/script/fn/SetPhase.xml:8(category)
@@ -1477,7 +1472,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/GetR.xml:8(category)
 #: sdk/script/fn/GetProperty.xml:8(category)
 #: sdk/script/fn/GetProcedure.xml:8(category)
-#: sdk/script/fn/GetPortrait.xml:8(category)
 #: sdk/script/fn/GetPhysical.xml:8(category)
 #: sdk/script/fn/GetPhase.xml:8(category)
 #: sdk/script/fn/GetOwner.xml:8(category)
@@ -1737,7 +1731,6 @@ msgid "Checks whether the name of the calling object contains \"purz\" (no matte
 msgstr "Prüft, ob der Name des aufrufenden Objekts \"purz\" enthält (wo ist egal)."
 
 #: sdk/script/fn/VerticesStuck.xml:17(desc)
-#: sdk/script/fn/SetVertexXY.xml:32(desc)
 #: sdk/script/fn/SetCommand.xml:79(col)
 #: sdk/script/fn/SetCommand.xml:89(col)
 #: sdk/script/fn/SetCommand.xml:97(col)
@@ -2831,17 +2824,17 @@ msgstr "Gewünschte X-Position des Vertices"
 msgid "Desired Y offset of the vertex."
 msgstr "Gewünschte Y-Position des Vertices"
 
-#: sdk/script/fn/SetVertexXY.xml:37(desc)
+#: sdk/script/fn/SetVertexXY.xml:31(desc)
 msgid "Sets both X and Y position of a vertex."
 msgstr "Setzt X und Y eines Vertices zugleich"
 
-#: sdk/script/fn/SetVertexXY.xml:38(remark)
+#: sdk/script/fn/SetVertexXY.xml:32(remark)
 #: sdk/script/fn/RemoveVertex.xml:22(remark)
 #: sdk/script/fn/AddVertex.xml:27(remark)
 msgid "Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected."
 msgstr "Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden alle Vertices wieder auf die Definitionswerte zurückgesetzt."
 
-#: sdk/script/fn/SetVertexXY.xml:42(text)
+#: sdk/script/fn/SetVertexXY.xml:36(text)
 msgid "Sets the third vertex of the first clonk of the first player to -5/-10."
 msgstr "Setzt die Position des 3. Vertices des ersten Clonks des ersten Spielers auf -5/-10"
 
@@ -2851,7 +2844,6 @@ msgid "Index of the vertex to be changed."
 msgstr "Index des Vertex."
 
 #: sdk/script/fn/SetVertex.xml:26(col)
-#: sdk/script/fn/SetPortrait.xml:21(col)
 #: sdk/script/fn/SetPhysical.xml:32(col)
 #: sdk/script/fn/SetObjectBlitMode.xml:34(col)
 #: sdk/script/fn/SetGraphics.xml:40(col)
@@ -2890,7 +2882,6 @@ msgid "Value"
 msgstr "Wert"
 
 #: sdk/script/fn/SetVertex.xml:27(col)
-#: sdk/script/fn/SetPortrait.xml:22(col)
 #: sdk/script/fn/SetPhysical.xml:33(col)
 #: sdk/script/fn/SetObjectBlitMode.xml:35(col)
 #: sdk/script/fn/GetVertex.xml:26(col)
@@ -2998,7 +2989,7 @@ msgstr "Temperatur von -100 bis 100."
 msgid "Sets the global temperature."
 msgstr "Setzt die globale Temperatur."
 
-#: sdk/script/fn/SetTemperature.xml:26(text)
+#: sdk/script/fn/SetTemperature.xml:25(text)
 msgid "Shock freezes the landscape."
 msgstr "Schockfrostet die Landschaft."
 
@@ -3152,7 +3143,7 @@ msgstr "Jahreszeit von 0 (Frühling) bis 100 (Winter)."
 msgid "Sets the season."
 msgstr "Setzt die Jahreszeit."
 
-#: sdk/script/fn/SetSeason.xml:26(text)
+#: sdk/script/fn/SetSeason.xml:25(text)
 msgid "Mid-summer."
 msgstr "Mittsommer."
 
@@ -3292,80 +3283,6 @@ msgstr "Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, das
 msgid "Moves the object to the specified position. This will set the exact pixel position and any internal sub-pixel offsets will be reset."
 msgstr "Verschiebt das aufrufende Objekt an die angegebene Position. Dabei wird das Objekt an die exakte Pixelposition gesetzt, und eventuelle, interne Verschiebungen um Pixelbruchteile werden verworfen."
 
-#: sdk/script/fn/SetPortrait.xml:9(subcat)
-#: sdk/script/fn/SetPicture.xml:9(subcat)
-#: sdk/script/fn/SetObjectBlitMode.xml:9(subcat)
-#: sdk/script/fn/SetObjDrawTransform.xml:9(subcat)
-#: sdk/script/fn/SetMeshMaterial.xml:9(subcat)
-#: sdk/script/fn/SetGraphics.xml:9(subcat)
-#: sdk/script/fn/SetColor.xml:9(subcat)
-#: sdk/script/fn/SetClrModulation.xml:9(subcat)
-#: sdk/script/fn/SetAttachTransform.xml:9(subcat)
-#: sdk/script/fn/SetAttachBones.xml:9(subcat)
-#: sdk/script/fn/GetUnusedOverlayID.xml:9(subcat)
-#: sdk/script/fn/GetPortrait.xml:9(subcat)
-#: sdk/script/fn/GetObjectBlitMode.xml:9(subcat)
-#: sdk/script/fn/GetMeshMaterial.xml:9(subcat)
-#: sdk/script/fn/GetColor.xml:9(subcat)
-#: sdk/script/fn/GetClrModulation.xml:9(subcat)
-#: sdk/script/fn/DetachMesh.xml:9(subcat)
-#: sdk/script/fn/AttachMesh.xml:9(subcat)
-msgid "Display"
-msgstr "Darstellung"
-
-#: sdk/script/fn/SetPortrait.xml:25(col)
-msgid "\"none\""
-msgstr "\"none\""
-
-#: sdk/script/fn/SetPortrait.xml:26(col)
-msgid "Portrait will be removed."
-msgstr "Portrait wird entfernt."
-
-#: sdk/script/fn/SetPortrait.xml:29(col)
-msgid "\"random\""
-msgstr "\"random\""
-
-#: sdk/script/fn/SetPortrait.xml:30(col)
-msgid "A random portrait will be selected from all available portraits."
-msgstr "Aus den vorhandenen Portraits wird eines zufällig ausgewählt."
-
-#: sdk/script/fn/SetPortrait.xml:33(col)
-msgid "\"custom\""
-msgstr "\"custom\""
-
-#: sdk/script/fn/SetPortrait.xml:34(col)
-msgid "The portrait will be set to the object's individually stored portrait, if available."
-msgstr "Das Portrait wird auf das individuelle Portrait des Objekts, sofern vorhanden, geändert."
-
-#: sdk/script/fn/SetPortrait.xml:17(desc)
-msgid "Name of the portrait to be set. This will load the image file \"PortraitX.png\" (X being replaced with the specified name). This parameter can handle the following special values: <placeholder-1/>"
-msgstr "Name des zu setzenden Portraits. Dabei wird die Datei \"PortraitX.png\" benutzt (wobei X der Name ist). Dieser Parameter kann die folgenden Spezialwerte annehmen: <placeholder-1/>"
-
-#: sdk/script/fn/SetPortrait.xml:43(desc)
-msgid "Definition from which you want to load the portrait. If not specified, the portrait will be loaded from the definition of the object."
-msgstr "Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird."
-
-#: sdk/script/fn/SetPortrait.xml:49(desc)
-msgid "If 'true' the new portrait setting will be stored in the player file and used in future rounds. Otherwise the portrait setting will be discarded at the end of the round."
-msgstr "Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde."
-
-#: sdk/script/fn/SetPortrait.xml:55(desc)
-msgid "Copies the image of the new portrait to the player file and sets the portrait to \"custom\". In this way, the portrait will still be available even if the definition from which it was originally loaded is not available in a given round. On the other hand, with this setting it is impossible to determine from which source the portrait was originally loaded."
-msgstr "Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf \"custom\". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt."
-
-#: sdk/script/fn/SetPortrait.xml:60(desc)
-msgid "Changes the portrait of the crew member at runtime."
-msgstr "Ändert das Portrait des aufrufenden Crew-Mitglieds während des Spiels."
-
-#: sdk/script/fn/SetPortrait.xml:64(text)
-msgid "Assigns a random portrait to the clonk."
-msgstr "Weist einem Clonk ein zufälliges Portrait zu."
-
-#: sdk/script/fn/SetPortrait.xml:68(text)
-#: sdk/script/fn/GetPortrait.xml:40(text)
-msgid "Restores the default portrait of a clonk in case it was changed by a SetPortrait call."
-msgstr "Stellt das Standardportrait eines Clonkes wieder her, falls es zwischenzeitlich durch andere SetPortrait-Aufrufe geändert wurde."
-
 #: sdk/script/fn/SetPlrViewRange.xml:17(desc)
 msgid "View distance in pixels."
 msgstr "Sichtweite in Pixel."
@@ -3378,7 +3295,7 @@ msgstr "Setzt die Sichtweite des aufrufenden Objekts."
 msgid "Due to the fuzzyness of the fog of war this will only be an approximation."
 msgstr "Aufgrund der Ungenauigkeit des Kriegsnebels wird die Sichtweite nur ungenaue Auswirkungen haben."
 
-#: sdk/script/fn/SetPlrViewRange.xml:35(text)
+#: sdk/script/fn/SetPlrViewRange.xml:31(text)
 msgid "Confused the acid phile with the eye drops, did ya?"
 msgstr "Mit Augentropfen verwechseltes Säureglas."
 
@@ -3394,7 +3311,7 @@ msgstr "Objekt, auf das die Sicht gesetzt werden soll."
 msgid "Centers a player's view to the specified object. The view will follow this object until the next player command."
 msgstr "Zentriert das Sichtfenster eines Spielers auf ein Objekt. Die Sicht folgt dem Objekt bis zum nächsten Spielerkommando."
 
-#: sdk/script/fn/SetPlrView.xml:62(text)
+#: sdk/script/fn/SetPlrView.xml:60(text)
 msgid "Automatic watch tower: if an enemy clonk gets near the tower the player's view will be set to the attacker. Also, a sound is played and a message is popped up while the enemy is in range."
 msgstr "Automatischer Wachturm: gelangt ein gegnerischer Clonk in die Nähe des Gebäudes, so wird die Sicht des Gebäudebesitzers auf den Angreifer gelenkt. Außerdem wird, solange er sich in der Umgebung des Gebäudes befindet, ständig ein Sound gespielt und eine Nachricht über den Gebäude ausgegeben."
 
@@ -3413,15 +3330,6 @@ msgstr "Ob der Zauber entfernt werden soll"
 #: sdk/script/fn/SetPlrMagic.xml:30(desc)
 msgid "Adds or removes a magic spell to or from the list of available spells of a player."
 msgstr "Fügt einen Zauber der Liste der verfügbaren Zauber eines Spielers hinzu oder entfernt einen Zauber aus der Liste."
-
-#: sdk/script/fn/SetPlrMagic.xml:33(emlink)
-#: sdk/script/fn/SetPlrMagic.xml:34(emlink)
-msgid "var"
-msgstr "var"
-
-#: sdk/script/fn/SetPlrMagic.xml:40(text)
-msgid "Makes the Healing spell available to all players."
-msgstr "Gibt allen Spielern den Heilzauber."
 
 #: sdk/script/fn/SetPlrKnowledge.xml:16(desc)
 msgid "Player which receives the construction plan."
@@ -3474,9 +3382,9 @@ msgstr "Es dürfen keine Objektpointer oder Zeichenfolgen (Strings) gespeichert 
 msgid "Because all scenarios use the same storage, the name for the data should be prefixed with the scenario name or your developer id."
 msgstr "Da die Namen des ExtraData über Szenariogrenzen hinweg gültig sind, sollte man dem Namen einen Prefix hinzufügen, um Doppelbenutzungen zu vermeiden (\"MySzen_MyName\")."
 
-#: sdk/script/fn/SetPlrExtraData.xml:45(text)
-msgid "The first function periodically saves the wealth with the name \"MySzen_Wealth\" in the player's file. If the round is restarted, the wealth is restored in Initialize."
-msgstr "Die erste Funktion speichert periodisch das Vermögen unter dem Namen \"MySzen_Wealth\" in dem entspr. Spieler ab. Wird die Runde nun neu gestartet und das Objekt erstellt, so wird das Vermögen der Spieler in Initialize wiederhergestellt."
+#: sdk/script/fn/SetPlrExtraData.xml:47(text)
+msgid "The first function saves the wealth with the name \"MySzen_Wealth\" into the player's file. It should be called on periodically or on the end of the round. If the round is restarted, the wealth is restored in Initialize."
+msgstr "Die erste Funktion speichert das Vermögen unter dem Namen \"MySzen_Wealth\" in dem entsprechendem Spieler ab. Sie sollte periodisch aufgerufen werden oder am Ende der Runde. Wird die Runde nun neu gestartet und das Objekt erstellt, so wird das Vermögen der Spieler in Initialize wiederhergestellt."
 
 #: sdk/script/fn/SetPlayerZoomByViewRange.xml:17(desc)
 msgid "Player whose zoom or zoom limits are to be adjusted. NO_OWNER for all players."
@@ -3592,6 +3500,25 @@ msgstr "Durch Aufruf von SetPlayList wird die Musik nicht aktiviert, wenn sie vo
 #: sdk/script/fn/SetPlayList.xml:23(remark)
 msgid "<code>SetPlayList(\"*.*\")</code> is not identical to <code>SetPlayList()</code>. The former activates all music, the latter only those not starting with \"@\", the standard behavior."
 msgstr "Der Aufruf 'SetPlayList(\"*.*\")' ist nicht identisch mit 'SetPlayList()'. Wird 'SetPlayList(\"*.*\")' aufgerufen, so werden wirklich alle Musikstücke aktiviert, auch diejenigen, die mittels eines \"@\" im Namen von der Standard-PlayList ausgenommen wurden. 'SetPlayList()' aktiviert diese Musikstücke dagegen nicht."
+
+#: sdk/script/fn/SetPicture.xml:9(subcat)
+#: sdk/script/fn/SetObjectBlitMode.xml:9(subcat)
+#: sdk/script/fn/SetObjDrawTransform.xml:9(subcat)
+#: sdk/script/fn/SetMeshMaterial.xml:9(subcat)
+#: sdk/script/fn/SetGraphics.xml:9(subcat)
+#: sdk/script/fn/SetColor.xml:9(subcat)
+#: sdk/script/fn/SetClrModulation.xml:9(subcat)
+#: sdk/script/fn/SetAttachTransform.xml:9(subcat)
+#: sdk/script/fn/SetAttachBones.xml:9(subcat)
+#: sdk/script/fn/GetUnusedOverlayID.xml:9(subcat)
+#: sdk/script/fn/GetObjectBlitMode.xml:9(subcat)
+#: sdk/script/fn/GetMeshMaterial.xml:9(subcat)
+#: sdk/script/fn/GetColor.xml:9(subcat)
+#: sdk/script/fn/GetClrModulation.xml:9(subcat)
+#: sdk/script/fn/DetachMesh.xml:9(subcat)
+#: sdk/script/fn/AttachMesh.xml:9(subcat)
+msgid "Display"
+msgstr "Darstellung"
 
 #: sdk/script/fn/SetPicture.xml:17(desc)
 msgid "X position of the top left corner of the new graphics rectangle."
@@ -3718,15 +3645,15 @@ msgstr "Änderungsmodus (symbolische Konstanten):<br/><placeholder-1/><br/>"
 msgid "Changes the physical properties of the object. With this, the values from the Physical section of the <emlink href=\"definition/DefCore.html\">DefCore.txt</emlink> can be permanently or temporarily adapted."
 msgstr "Ändert die physischen Eigenschaften des aufrufenden Objekts. Hiermit können die in der Physical-Sektion der <emlink href=\"definition/DefCore.html\">DefCore.txt</emlink> angegebenen Werte temporär oder permanent angepasst werden."
 
-#: sdk/script/fn/SetPhysical.xml:72(text)
-msgid "Script for a magic pill: the eating clonk will temporarily gain magic energy."
-msgstr "Script für eine Magiepille: Der essende Clonk bekommt temporär Zauberenergie."
+#: sdk/script/fn/SetPhysical.xml:71(text)
+msgid "Steroids - The clonk gains a ridiculous amount of energy for this round on eating."
+msgstr "Steroide - Der Clonk bekommt durch das Essen eine absurde Menge von Energie für diese Runde.."
 
-#: sdk/script/fn/SetPhysical.xml:86(text)
+#: sdk/script/fn/SetPhysical.xml:85(text)
 msgid "Script of an effect named JumpBoost: If created on a Clonk, it can jump higher until the effect is deleted again. Using PHYS_StackTemporary and <placeholder-1/> in this manner ensures that multiple effects written in this style can be combined without causing unwanted behaviour when one effect wears off while another remains."
 msgstr "Script für einen Effekt namens JumpBoost: Wenn auf ein Objekt angewendet, kann es bis zum Löschen des Effektes höher springen. Die Kombination von PHYS_StackTemporary beim Setzen und Angabe der geänderten Physical in <placeholder-1/> sorgt dafür, dass sich mehrere solcher Effekte problemlos kombinieren lassen."
 
-#: sdk/script/fn/SetPhysical.xml:90(emlink)
+#: sdk/script/fn/SetPhysical.xml:89(emlink)
 msgid "DefCore.txt, [Physical]"
 msgstr "DefCore.txt, [Physical]"
 
@@ -3876,7 +3803,7 @@ msgstr "256"
 msgid "Only for overlays: the blit mode of the base surface is used when drawing this overlay."
 msgstr "Nur für Overlays: Es wird der Blitmodus verwendet, den auch das Basisobjekt benutzt, auf das dieses Overlay gezeichnet wird."
 
-#: sdk/script/fn/SetObjectBlitMode.xml:102(text)
+#: sdk/script/fn/SetObjectBlitMode.xml:99(text)
 msgid "Part of a scenario script: colors the selected clonk of the first player bright green for a while.<br/>To handle the timing properly, it would be better to use an <emlink href=\"script/Effects.html\">effect</emlink> in order to avoid conflicts with other scripts that might change the color at the same time."
 msgstr "Teil eines Szenarioscripts: Färbt den ausgewählten Clonk des ersten Spielers für eine Weile teilweise leuchtend grün.<br/> Für einen solchen Effekt in aufwändigeren Szenarien oder in allgemein verwendbaren Objekten sollte an solcher Stelle natürlich ein <emlink href=\"script/Effects.html\">Effekt</emlink> verwendet werden, um beispielsweise Komplikationen mit verfärbenden Zaubern zu vermeiden."
 
@@ -4106,8 +4033,8 @@ msgid "New gravity: value -300 til 300 (in percent)"
 msgstr "Neue Schwerkraft: Werte -300 bis 300 (in Prozent)"
 
 #: sdk/script/fn/SetGravity.xml:20(desc)
-msgid "Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick² (increasing YDir by 2 per Tick with precision=10)."
-msgstr "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick² (Zunahme der YDir um 2 pro Tick bei precision=10)"
+msgid "Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10)."
+msgstr "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick. (Zunahme der YDir um 2 pro Tick bei precision=10)"
 
 #: sdk/script/fn/SetGraphics.xml:17(desc)
 msgid "Name of the graphic to be set. If 0, the default graphic (Graphics.png or bmp) is set."
@@ -4227,22 +4154,14 @@ msgid "Gives a randomly chosen rock in the landscape the appearance of gold."
 msgstr "Gibt einem zufälligen Stein aus der Landschaft die Grafik des Goldes."
 
 #: sdk/script/fn/SetGraphics.xml:112(text)
-msgid "Gives the most recently created knight the appearance of a knight in armor, using the files GraphicsArmored.png and OverlayArmored.png found in the knight definition file."
-msgstr "Gibt dem zuletzt erstellten Ritter im Spiel das Aussehen eines rüstungstragenden Ritters. Dazu werden die Dateien GraphicsArmored.png und OverlayArmored.png aus der Ritter-Gruppendatei für die Darstellung verwendet."
-
-#: sdk/script/fn/SetGraphics.xml:116(text)
 msgid "Restores the original graphics for all objects in the game."
 msgstr "Gibt allen Objekten im Spiel ihre Ursprungsgrafiken zurück."
 
-#: sdk/script/fn/SetGraphics.xml:121(text)
+#: sdk/script/fn/SetGraphics.xml:117(text)
 msgid "An object script: the calling object will have a small clonk image superimposed on its picture."
 msgstr "Objektscript: Das aufrufende Objekt bekommt ein verkleinertes Clonk-Bild auf die Picture-Grafik gedruckt."
 
-#: sdk/script/fn/SetGraphics.xml:125(text)
-msgid "Some knight will be displayed with a shield, additively drawn onto the clonk."
-msgstr "Es wird bei irgendeinem Ritter ein Schild auf die Grafik gesetzt, und additiv gezeichnet."
-
-#: sdk/script/fn/SetGraphics.xml:129(emlink)
+#: sdk/script/fn/SetGraphics.xml:121(emlink)
 msgid "Object definitions (ocd)"
 msgstr "Objektdefinitionen (ocd)"
 
@@ -4321,11 +4240,11 @@ msgstr "Gibt dem Spiel einen leichten Blauschimmer"
 msgid "Game speed in FPS (frames per second). If this parameter is omitted or 0, the default game speed of 38 FPS is used."
 msgstr "Spielgeschwindigkeit in FPS (Frames per Second). Wird der Parameter nicht angegeben oder 0 übergeben, so wird die Standard-Spielgeschwindigkeit (38 FPS) gewählt."
 
-#: sdk/script/fn/SetGameSpeed.xml:20(desc)
+#: sdk/script/fn/SetGameSpeed.xml:21(desc)
 msgid "Sets game speed."
 msgstr "Setzt die Spielgeschwindigkeit."
 
-#: sdk/script/fn/SetGameSpeed.xml:24(text)
+#: sdk/script/fn/SetGameSpeed.xml:25(text)
 msgid "The game runs in slow motion."
 msgstr "Das Spiel läuft in Zeitlupe."
 
@@ -4354,20 +4273,20 @@ msgid "Sets film playback view to the specified player."
 msgstr "Setzt die Sicht in Filmwiedergaben auf den angegebenen Spieler."
 
 #: sdk/script/fn/SetFilmView.xml:28(text)
-msgid "This scenario script sets the playback view of the recorded round to the player with the name \"Kamera\"."
-msgstr "Dieses Szenarioscript setzt die Sicht in der Wiedergabe der aufgenommenen Runde auf den Spieler mit dem Namen \"Kamera\"."
+msgid "This scenario script sets the playback view of the recorded round to the player with the name \"Camera\"."
+msgstr "Dieses Szenarioscript setzt die Sicht in der Wiedergabe der aufgenommenen Runde auf den Spieler mit dem Namen \"Camera\"."
 
 #: sdk/script/fn/SetEntrance.xml:16(desc)
-msgid "0 = closed; 1 = open"
-msgstr "0 = Geschlossen; 1 = Offen"
+msgid "false = closed; true = open"
+msgstr "false = Geschlossen; true = Offen"
 
 #: sdk/script/fn/SetEntrance.xml:20(desc)
-msgid "Enables or disables entering or leaving a building. Local call only."
-msgstr "Ermöglicht bzw. verhindert das Betreten eines Gebäudes. Nur lokale Aufrufe."
+msgid "Enables or disables the possibility to enter or leave this building."
+msgstr "Ermöglicht bzw. verhindert das Betreten dieses Gebäudes."
 
 #: sdk/script/fn/SetDir.xml:17(desc)
-msgid "New direction. Predefined values: <placeholder-1/>() / <placeholder-2/>()"
-msgstr "Aktionsrichtung. Vordefinierte Werte: <placeholder-1/>() / <placeholder-2/>()"
+msgid "New direction. Predefined values: <placeholder-1/> / <placeholder-2/>"
+msgstr "Aktionsrichtung. Vordefinierte Werte: <placeholder-1/> / <placeholder-2/>"
 
 #: sdk/script/fn/SetDir.xml:21(desc)
 msgid "Sets the direction of the object."
@@ -4379,7 +4298,7 @@ msgstr "SetDir beeinflusst nur die grafische Darstellung das Objekts; für Verä
 
 #: sdk/script/fn/SetDir.xml:23(remark)
 #, fuzzy
-msgid "If the object's action has more than two directions (see <emlink href=\"definition/actmap.html\">the ActMap</emlink>), you can also use values other than just <placeholder-1/>() and <placeholder-2/>()."
+msgid "If the object's action has more than two directions (see <emlink href=\"definition/actmap.html\">the ActMap</emlink>), you can also use values other than just <placeholder-1/> and <placeholder-2/>."
 msgstr "Wenn bei der Aktion mehr als zwei Richtungen angegeben werden (siehe <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>), dürfen auch andere Werte als <placeholder-1/>() und <placeholder-2/>() übergeben werden."
 
 #: sdk/script/fn/SetCursor.xml:16(desc)
@@ -4438,10 +4357,6 @@ msgstr "Mithilfe dieses Befehls können beliebige, scriptdefinierte Werte unter 
 msgid "Because all scripts use the same storage in the crew member, the name for the data should be prefixed with the scenario or object name or your developer id."
 msgstr "Da die Namen des ExtraData über Szenariogrenzen hinweg gültig sind, sollte man dem Namen einen Prefix hinzufügen, um Doppelbenutzungen zu vermeiden (\"MySzen_MyName\" or \"MYID_MyName\" für Objektpakete)."
 
-#: sdk/script/fn/SetCrewExtraData.xml:49(text)
-msgid "A script for a special clonk: the clonk can make himself invisible through the Special 1 key. The set invisibility is maintained even beyond game end and is reapplied when this clonk is used in a new round."
-msgstr "Script für einen Spezialclonk: Der Clonk kann sich auf Taste Spezial unsichtbar und wieder sichtbar machen. Diese Unsichtbarkeit bleibt auch erhalten, wenn man das Szenario beendet und ein anderes Szenario mit diesem Clonk startet."
-
 #: sdk/script/fn/SetCrewEnabled.xml:17(desc)
 msgid "Specifies whether the crew member is to be activated or deactivated."
 msgstr "Gibt an, ob das Mannschaftsmitglied aktiviert oder deaktiviert werden soll."
@@ -4455,7 +4370,7 @@ msgid "Deactivates the selected clonk of the first player."
 msgstr "Deaktiviert den ausgewählten Clonk des ersten Spielers."
 
 #: sdk/script/fn/SetController.xml:17(desc)
-msgid "Player number of the new controller. -1 for no controller."
+msgid "Player number of the new controller. NO_OWNER for no controller."
 msgstr "Spielernummer des neuen, steuernden Spielers. NO_OWNER für keinen Spieler."
 
 #: sdk/script/fn/SetController.xml:21(desc)
@@ -4895,12 +4810,7 @@ msgstr "Setzt die Befehlsrichtung des aufrufenden Objekts (siehe <placeholder-1/
 msgid "Tells the highest ranking clonk of the first player to stop. Any current activity will be stopped."
 msgstr "Gibt dem höchstrangigsten Clonk von Spieler 1 den Befehl, stehen zu bleiben. Vorhandene Kommandos werden gelöscht."
 
-#: sdk/script/fn/SetComDir.xml:31(text)
-#, fuzzy
-msgid "Makes the currently selected clonk of the first player dig towards the lower right."
-msgstr "Lässt den aktuell ausgewählten Clonk des ersten Spielers anhalten."
-
-#: sdk/script/fn/SetComDir.xml:35(emlink)
+#: sdk/script/fn/SetComDir.xml:31(emlink)
 #: sdk/script/fn/GetComDir.xml:14(emlink)
 #: sdk/definition/procedures.xml:12(col)
 msgid "Procedure"
@@ -4927,8 +4837,8 @@ msgid "If specified, sets the color modulation of the graphics overlay instead. 
 msgstr "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein."
 
 #: sdk/script/fn/SetClrModulation.xml:27(desc)
-msgid "Changes the color modulation of an object. This is a color value which is multiplied with the object color. <placeholder-1/>(255,0,0) will only let the red part of the color show. <placeholder-2/>(255,255,255,128) will make all color half transparent (unless alpha addition is disabled in the graphics options)."
-msgstr "Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <placeholder-1/>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <placeholder-2/>(255,255,255,128) würde die Grafik halbtransparent machen (sofern Alphaaddition nicht in den Grafikoptionen deaktiviert ist)."
+msgid "Changes the color modulation of an object. This is a color value which is multiplied with the object color. <placeholder-1/>(255,0,0) will only let the red part of the color show. <placeholder-2/>(255,255,255,128) will make all color half transparent."
+msgstr "Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <placeholder-1/>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <placeholder-2/>(255,255,255,128) würde die Grafik halbtransparent machen."
 
 #: sdk/script/fn/SetClrModulation.xml:31(text)
 msgid "Colors the selected clonk of the first player slightly blue and makes him half transparent."
@@ -5065,11 +4975,11 @@ msgid "Living Beings"
 msgstr "Lebewesen"
 
 #: sdk/script/fn/SetAlive.xml:17(desc)
-msgid "0 = dead; alive otherwise."
-msgstr "0 = Tot; ansonsten lebendig"
+msgid "false = dead; alive otherwise."
+msgstr "false = Tot; ansonsten lebendig"
 
 #: sdk/script/fn/SetAlive.xml:21(desc)
-msgid "Determines whether an object is alive."
+msgid "Sets whether an object is alive."
 msgstr "Legt fest, ob ein Objekt lebt."
 
 #: sdk/script/fn/SetActionTargets.xml:17(desc)
@@ -5097,12 +5007,8 @@ msgid "Sets the extra data for the current action. The application of the extra 
 msgstr "Setzt den Zusatzparameter für die aktuell ausgeführte Aktivitäts-Prozedur. Die Auswirkung dieses Parameters hängt von der gesetzten Prozedur ab. Siehe dazu auch <emlink href=\"definition/procedures.html\">ActMap-Prozeduren</emlink>."
 
 #: sdk/script/fn/SetActionData.xml:30(text)
-msgid "Script for a special clonk: with key Special 2 he will build a vertical gold bridge."
-msgstr "Scriptfunktion für einen Spezialclonk: Auf Spezial 2 baut er eine senkrechte Goldbrücke."
-
-#: sdk/script/fn/SetActionData.xml:34(text)
-msgid "Adjusts the attaching vertex of the windmill wheel so that the wheel's third vertex will attach to the second vertex of the windmill scaffolding."
-msgstr "Verschiebt den Aufhängepunkt eines Windrades so, dass der dritte Vertex vom Windrad am zweiten Vertex des Gerüstes klebt."
+msgid "Script for a special item: lets the clonk build a vertical gold bridge."
+msgstr "Script für ein speziellen Gegenstand: Lässt den Clonk eine vertikale Goldbrücke bauen."
 
 #: sdk/script/fn/SetAction.xml:17(desc)
 msgid "New action to be set. \"ActIdle\" or \"Idle\" will clear any action."
@@ -5116,20 +5022,24 @@ msgstr "Erstes Zielobjekt für die Aktivität"
 msgid "Second target object for the action."
 msgstr "Zweites Zielobjekt für die Aktivität"
 
-#: sdk/script/fn/SetAction.xml:33(desc)
+#: sdk/script/fn/SetAction.xml:34(desc)
+msgid "If true, changes the action even if the action defined NoOtherAction=1."
+msgstr "Wenn true wir die Aktion selbst dann geändert wenn in der momentanten Aktion NoOtherAction=1 gesetzt ist."
+
+#: sdk/script/fn/SetAction.xml:39(desc)
 #, fuzzy
 msgid "Sets the activity of the calling object. Also see <emlink href=\"definition/actmap.html\">the ActMap</emlink>."
 msgstr "Setzt die Aktivität des aufrufenden Objekts. Siehe auch <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
 
-#: sdk/script/fn/SetAction.xml:34(remark)
+#: sdk/script/fn/SetAction.xml:40(remark)
 msgid "If target1 or target2 is omitted or 0, the previously set action target(s) will be preserved. To effectively clear action targets, use <placeholder-1/>."
 msgstr "Wird target1 bzw. target2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <placeholder-1/> benutzt werden."
 
-#: sdk/script/fn/SetAction.xml:35(remark)
+#: sdk/script/fn/SetAction.xml:41(remark)
 msgid "The StartCall of the defined action is called during the execution of SetAction. So if the StartCall should happen to delete the object you must not access the object in any way following the call to SetAction!"
 msgstr "Der StartCall der Aktivität wird während der Ausführung von SetAction aufgerufen. Wenn dieser also zum Beispiel das Objekt löscht, darf die aufrufende Funktion danach nichts mehr mit dem Objekt machen!"
 
-#: sdk/script/fn/SetAction.xml:39(text)
+#: sdk/script/fn/SetAction.xml:45(text)
 msgid "The calling clonk will pretend death."
 msgstr "Der aufrufende Clonk wird scheintot."
 
@@ -6241,7 +6151,7 @@ msgstr "Prüft, ob Value eine Referenz ist."
 msgid "Returns whether the current game is a network game."
 msgstr "Prüft, ob das aktuelle Spiel ein Netzwerkspiel ist."
 
-#: sdk/script/fn/IsNetwork.xml:20(desc)
+#: sdk/script/fn/IsNetwork.xml:20(text)
 msgid "Displays a sly message based on telltale signs: If there two players in the game and it is not a network game, the round must be played locally on splitscreen only. Probably a friend came over? Also, the first player usually belongs to the person who installed the game."
 msgstr "Gibt eine verschmitzte Nachricht anhand von einigen Anzeichen aus: Wenn genau zwei Spieler im Spiel sind und dies kein Netzwerkspiel ist, muss die aktuelle Runde im split screen gespielt werden. Vielleicht ist ein Freund vorbeigekommen? Der erste Spieler gehört normalerweise zu der Person die das Spiel installiert hat."
 
@@ -6698,26 +6608,6 @@ msgstr "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
 #: sdk/script/fn/GetProcedure.xml:12(desc)
 msgid "Returns the procedure of the current activity of an object (e.g. FLOAT, ATTACH, WALK). If the procedure is NONE or the object has no activity set the return value is nil."
 msgstr "Gibt die Prozedur der gegenwärtigen Aktivität des aufrufenden Objekts zurück (z.B. FLOAT, ATTACH, etc.). Bei einer NONE-Prozedur oder keiner Aktivität wird nil zurückgegeben."
-
-#: sdk/script/fn/GetPortrait.xml:17(desc)
-msgid "If true, the function returns the id of the definition from which the portrait was taken. Otherwise, the name of the portrait."
-msgstr "Wenn TRUE gibt die Funktion die ID der Definition zurück, aus der das Portrait stammt. Andernfalls wird der Name des Portraits zurückgegeben."
-
-#: sdk/script/fn/GetPortrait.xml:23(desc)
-msgid "If true, the function returns the values of the object's permanent portrait. Otherwise, the values of the currently used portrait which might be temporary."
-msgstr "Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits zurück, sonst die des momentan verwendeten."
-
-#: sdk/script/fn/GetPortrait.xml:28(desc)
-msgid "Retrieves name or id of the portrait of a crew member."
-msgstr "Fragt Name oder ID des Portraits des aufrufenden Crew-Mitglieds ab."
-
-#: sdk/script/fn/GetPortrait.xml:29(remark)
-msgid "If the crew member has an individually stored portrait, the function returns \"custom\" and the id NONE. Also see the table and description of the fCopyGfx parameter in <placeholder-1/>"
-msgstr "Hat das Crew-Mitglied ein individuelles Portrait, so gibt die Funktion \"custom\" bzw. die ID NONE zurück. Siehe dazu auch die Tabelle und die Beschreibung des fCopyGfx-Parameters von <placeholder-1/>"
-
-#: sdk/script/fn/GetPortrait.xml:35(text)
-msgid "Assigns a random portrait to this clonk if the name of the current portrait is not just an index (i.e. \"1\", \"2\", \"3\") but a full portrait name (i.e. \"Armored1\", \"Armored2\")."
-msgstr "Weist dem aufrufenden Clonk ein zufälliges Portrait zu, wenn der Name des momentanen Portraits nicht aus nur einem Zeichen besteht (zum Beispiel wenn die Portraits mit \"1\", \"2\", \"3\" etc. durchnummeriert sind), sondern länger ist (beispielsweise \"Armored1\" oder \"Armored2\")."
 
 #: sdk/script/fn/GetPlrViewMode.xml:17(desc)
 msgid "Number of the player whose view mode you want to determine."
@@ -17374,6 +17264,82 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Gives the most recently created knight the appearance of a knight in armor, using the files GraphicsArmored.png and OverlayArmored.png found in the knight definition file."
+#~ msgstr "Gibt dem zuletzt erstellten Ritter im Spiel das Aussehen eines rüstungstragenden Ritters. Dazu werden die Dateien GraphicsArmored.png und OverlayArmored.png aus der Ritter-Gruppendatei für die Darstellung verwendet."
+
+#~ msgid "Some knight will be displayed with a shield, additively drawn onto the clonk."
+#~ msgstr "Es wird bei irgendeinem Ritter ein Schild auf die Grafik gesetzt, und additiv gezeichnet."
+
+#~ msgid "A script for a special clonk: the clonk can make himself invisible through the Special 1 key. The set invisibility is maintained even beyond game end and is reapplied when this clonk is used in a new round."
+#~ msgstr "Script für einen Spezialclonk: Der Clonk kann sich auf Taste Spezial unsichtbar und wieder sichtbar machen. Diese Unsichtbarkeit bleibt auch erhalten, wenn man das Szenario beendet und ein anderes Szenario mit diesem Clonk startet."
+
+#~ msgid "Adjusts the attaching vertex of the windmill wheel so that the wheel's third vertex will attach to the second vertex of the windmill scaffolding."
+#~ msgstr "Verschiebt den Aufhängepunkt eines Windrades so, dass der dritte Vertex vom Windrad am zweiten Vertex des Gerüstes klebt."
+
+#~ msgid "\"none\""
+#~ msgstr "\"none\""
+
+#~ msgid "Portrait will be removed."
+#~ msgstr "Portrait wird entfernt."
+
+#~ msgid "\"random\""
+#~ msgstr "\"random\""
+
+#~ msgid "A random portrait will be selected from all available portraits."
+#~ msgstr "Aus den vorhandenen Portraits wird eines zufällig ausgewählt."
+
+#~ msgid "\"custom\""
+#~ msgstr "\"custom\""
+
+#~ msgid "The portrait will be set to the object's individually stored portrait, if available."
+#~ msgstr "Das Portrait wird auf das individuelle Portrait des Objekts, sofern vorhanden, geändert."
+
+#~ msgid "Name of the portrait to be set. This will load the image file \"PortraitX.png\" (X being replaced with the specified name). This parameter can handle the following special values: <placeholder-1/>"
+#~ msgstr "Name des zu setzenden Portraits. Dabei wird die Datei \"PortraitX.png\" benutzt (wobei X der Name ist). Dieser Parameter kann die folgenden Spezialwerte annehmen: <placeholder-1/>"
+
+#~ msgid "Definition from which you want to load the portrait. If not specified, the portrait will be loaded from the definition of the object."
+#~ msgstr "Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird."
+
+#~ msgid "If 'true' the new portrait setting will be stored in the player file and used in future rounds. Otherwise the portrait setting will be discarded at the end of the round."
+#~ msgstr "Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde."
+
+#~ msgid "Copies the image of the new portrait to the player file and sets the portrait to \"custom\". In this way, the portrait will still be available even if the definition from which it was originally loaded is not available in a given round. On the other hand, with this setting it is impossible to determine from which source the portrait was originally loaded."
+#~ msgstr "Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf \"custom\". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt."
+
+#~ msgid "Changes the portrait of the crew member at runtime."
+#~ msgstr "Ändert das Portrait des aufrufenden Crew-Mitglieds während des Spiels."
+
+#~ msgid "Assigns a random portrait to the clonk."
+#~ msgstr "Weist einem Clonk ein zufälliges Portrait zu."
+
+#~ msgid "Restores the default portrait of a clonk in case it was changed by a SetPortrait call."
+#~ msgstr "Stellt das Standardportrait eines Clonkes wieder her, falls es zwischenzeitlich durch andere SetPortrait-Aufrufe geändert wurde."
+
+#~ msgid "var"
+#~ msgstr "var"
+
+#~ msgid "Makes the Healing spell available to all players."
+#~ msgstr "Gibt allen Spielern den Heilzauber."
+
+#, fuzzy
+#~ msgid "Makes the currently selected clonk of the first player dig towards the lower right."
+#~ msgstr "Lässt den aktuell ausgewählten Clonk des ersten Spielers anhalten."
+
+#~ msgid "If true, the function returns the id of the definition from which the portrait was taken. Otherwise, the name of the portrait."
+#~ msgstr "Wenn TRUE gibt die Funktion die ID der Definition zurück, aus der das Portrait stammt. Andernfalls wird der Name des Portraits zurückgegeben."
+
+#~ msgid "If true, the function returns the values of the object's permanent portrait. Otherwise, the values of the currently used portrait which might be temporary."
+#~ msgstr "Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits zurück, sonst die des momentan verwendeten."
+
+#~ msgid "Retrieves name or id of the portrait of a crew member."
+#~ msgstr "Fragt Name oder ID des Portraits des aufrufenden Crew-Mitglieds ab."
+
+#~ msgid "If the crew member has an individually stored portrait, the function returns \"custom\" and the id NONE. Also see the table and description of the fCopyGfx parameter in <placeholder-1/>"
+#~ msgstr "Hat das Crew-Mitglied ein individuelles Portrait, so gibt die Funktion \"custom\" bzw. die ID NONE zurück. Siehe dazu auch die Tabelle und die Beschreibung des fCopyGfx-Parameters von <placeholder-1/>"
+
+#~ msgid "Assigns a random portrait to this clonk if the name of the current portrait is not just an index (i.e. \"1\", \"2\", \"3\") but a full portrait name (i.e. \"Armored1\", \"Armored2\")."
+#~ msgstr "Weist dem aufrufenden Clonk ein zufälliges Portrait zu, wenn der Name des momentanen Portraits nicht aus nur einem Zeichen besteht (zum Beispiel wenn die Portraits mit \"1\", \"2\", \"3\" etc. durchnummeriert sind), sondern länger ist (beispielsweise \"Armored1\" oder \"Armored2\")."
 
 #~ msgid "Constant for <placeholder-1/>."
 #~ msgstr "Konstante für <placeholder-1/>."

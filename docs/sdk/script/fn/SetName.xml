@@ -34,17 +34,17 @@
     <examples>
       <example>
         <code>protected func InitializePlayer(player)
-  {
-  <funclink>GetHiRank</funclink>(player)-&gt;SetName(&quot;Strunzmuffel&quot;);
-  <funclink>return</funclink> 1;
-  }</code>
+{
+	<funclink>GetHiRank</funclink>(player)-&gt;SetName(&quot;Strunzmuffel&quot;);
+	<funclink>return</funclink> 1;
+}</code>
         <text>Scenario script: the highest ranking clonks of joining players get different names in this round.</text>
       </example>
       <example>
         <code>protected func Initialize()
 {
-  Wood-&gt;SetName(&quot;Baumstamm&quot;);
-  }</code>
+	Wood-&gt;SetName(&quot;Baumstamm&quot;);
+}</code>
         <text>Scenario script: In this round, wood will be called "Baumstamm".</text>
       </example>
     </examples>
