@@ -31,7 +31,7 @@
           <type>int</type>
           <name>timer</name>
           <optional />
-          <desc>Interval for the timer calls. With 0, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
+          <desc>Interval for the timer calls. With nil, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
         </param>
         <param>
           <type>any</type>
