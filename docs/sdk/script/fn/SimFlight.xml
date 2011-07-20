@@ -50,7 +50,7 @@
         <param>
           <type>int</type>
           <name>iterations</name>
-          <desc>Number of simulated frames for which the projection runs. If not specified or nonpositive the simultion will run indefinitely until material or the limits of the landscape are encountered.</desc>
+          <desc>Number of simulated frames for which the projection runs. If not specified or nonpositive the simulation will run indefinitely until material or the limits of the landscape are encountered.</desc>
           <optional />
         </param>
         <param>

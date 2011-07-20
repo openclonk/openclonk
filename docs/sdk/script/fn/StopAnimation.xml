@@ -22,7 +22,7 @@
     <examples>
       <example>
         <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
-        <text>Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards.</text>
+        <text>Removes all animations in slot 5 so that it does not contain any animations anymore afterwards.</text>
       </example>
     </examples>
     <related><funclink>PlayAnimation</funclink></related>
