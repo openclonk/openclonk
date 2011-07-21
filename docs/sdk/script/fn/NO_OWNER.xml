@@ -8,7 +8,7 @@
     <category>Player</category>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <funclink>CreateObject</funclink> or <placeholder-2/>.</desc>
+    <desc>Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <funclink>CreateObject</funclink>.</desc>
     <examples>
       <example>
         <code><funclink>CreateObject</funclink>(Firestone, 100,100, NO_OWNER);</code>

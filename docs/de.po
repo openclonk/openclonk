@@ -5887,7 +5887,7 @@ msgid "Object character flag: live living being."
 msgstr "Object character flag: Lebendes Lebewesen."
 
 #: sdk/script/fn/NO_OWNER.xml:11(desc)
-msgid "Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <placeholder-1/> or <placeholder-2/>."
+msgid "Player number: no player. This constant can be used to indicate 'no ownership' in cases such as <placeholder-1/>."
 msgstr "Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <placeholder-1/> verwendet werden, um einen neutralen Spieler anzugeben."
 
 #: sdk/script/fn/NO_OWNER.xml:15(text)
