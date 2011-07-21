@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-21 00:59+0200\n"
+"POT-Creation-Date: 2011-07-21 02:44+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -193,7 +193,11 @@ msgstr "Definitionen"
 msgid "Internationalization"
 msgstr "Sprachanpassung"
 
-#: sdk/content.xml.in:101(emlink)
+#: sdk/content.xml.in:99(emlink)
+msgid "Controls"
+msgstr "Steuerung"
+
+#: sdk/content.xml.in:102(emlink)
 #: sdk/script/index.xml:6(title)
 #: sdk/script/index.xml:7(h)
 #: sdk/script/fn/while.xml:8(category)
@@ -227,7 +231,7 @@ msgstr "Sprachanpassung"
 msgid "Script"
 msgstr "Script"
 
-#: sdk/content.xml.in:103(emlink)
+#: sdk/content.xml.in:104(emlink)
 #: sdk/script/index.xml:16(h)
 #: sdk/script/index.xml:37(emlink)
 #: sdk/script/Funcs.xml:6(title)
@@ -235,18 +239,18 @@ msgstr "Script"
 msgid "Functions"
 msgstr "Funktionen"
 
-#: sdk/content.xml.in:104(emlink)
+#: sdk/content.xml.in:105(emlink)
 msgid "Function Call"
 msgstr "Funktionsaufruf"
 
-#: sdk/content.xml.in:105(emlink)
+#: sdk/content.xml.in:106(emlink)
 #: sdk/script/index.xml:39(emlink)
 #: sdk/script/Typechecks.xml:6(title)
 #: sdk/script/Typechecks.xml:7(h)
 msgid "Data Types"
 msgstr "Datentypen"
 
-#: sdk/content.xml.in:106(emlink)
+#: sdk/content.xml.in:107(emlink)
 #: sdk/script/fn/IsRef.xml:8(category)
 #: sdk/script/fn/GetType.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:8(category)
@@ -261,7 +265,7 @@ msgstr "Datentypen"
 msgid "Variables"
 msgstr "Variablen"
 
-#: sdk/content.xml.in:107(emlink)
+#: sdk/content.xml.in:108(emlink)
 #: sdk/script/operatoren.xml:6(title)
 #: sdk/script/operatoren.xml:7(h)
 #: sdk/script/fn/if.xml:31(emlink)
@@ -269,24 +273,24 @@ msgstr "Variablen"
 msgid "Operators"
 msgstr "Operatoren"
 
-#: sdk/content.xml.in:108(emlink)
+#: sdk/content.xml.in:109(emlink)
 #: sdk/script/Funcs.xml:41(emlink)
 #: sdk/script/Funcs.xml:107(emlink)
 msgid "for"
 msgstr "for"
 
-#: sdk/content.xml.in:109(emlink)
+#: sdk/content.xml.in:110(emlink)
 #: sdk/script/index.xml:43(emlink)
 msgid "Loop Control"
 msgstr "Befehle zur Schleifenkontrolle"
 
-#: sdk/content.xml.in:110(emlink)
+#: sdk/content.xml.in:111(emlink)
 #: sdk/script/AppendTo.xml:6(title)
 #: sdk/script/AppendTo.xml:7(h)
 msgid "#appendto"
 msgstr "#appendto"
 
-#: sdk/content.xml.in:111(emlink)
+#: sdk/content.xml.in:112(emlink)
 #: sdk/script/index.xml:45(emlink)
 #: sdk/script/fn/Sound.xml:8(category)
 #: sdk/script/fn/Smoke.xml:9(subcat)
@@ -302,12 +306,12 @@ msgstr "#appendto"
 msgid "Effects"
 msgstr "Effekte"
 
-#: sdk/content.xml.in:112(emlink)
+#: sdk/content.xml.in:113(emlink)
 #: sdk/script/index.xml:46(emlink)
 msgid "Querying Game Data"
 msgstr "Abfrage von Spieldaten"
 
-#: sdk/content.xml.in:113(emlink)
+#: sdk/content.xml.in:114(emlink)
 msgid "Script Players"
 msgstr "Scriptspieler"
 
@@ -12383,8 +12387,8 @@ msgstr "Teams.txt"
 msgid "Contains the Teamsettings for multiplayer scenarios."
 msgstr "Enthält Teameinstellungen für Mehrspielerszenarien."
 
-#: sdk/folder/index.xml:20(dt)
 #: sdk/scenario/index.xml:20(dt)
+#: sdk/folder/index.xml:20(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
 
@@ -12392,8 +12396,8 @@ msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Tit
 msgid "The title picture of the scenario in png format. Size: 200x150 pixel."
 msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel."
 
-#: sdk/folder/index.xml:24(dt)
 #: sdk/scenario/index.xml:24(dt)
+#: sdk/folder/index.xml:24(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
 
@@ -12401,8 +12405,8 @@ msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Ico
 msgid "The icon of the scenario in png format. Size: 24x24 pixel."
 msgstr "Das Icon des Szenarios im Format PNG. Größe 24x24 Pixel."
 
-#: sdk/folder/index.xml:44(dt)
 #: sdk/scenario/index.xml:28(dt)
+#: sdk/folder/index.xml:44(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
 
@@ -12516,8 +12520,8 @@ msgstr "Material.ocg"
 msgid "Scenarios can contain local material definition groups. See <a href=\"#UeberladungenOCS\">overloading rules</a>."
 msgstr "Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <a href=\"#UeberladungenOCS\">Überladungsregeln</a>."
 
-#: sdk/folder/index.xml:52(dt)
 #: sdk/scenario/index.xml:77(dt)
+#: sdk/folder/index.xml:52(dt)
 msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
 msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
 
