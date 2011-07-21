@@ -12383,33 +12383,36 @@ msgstr "Teams.txt"
 msgid "Contains the Teamsettings for multiplayer scenarios."
 msgstr "Enthält Teameinstellungen für Mehrspielerszenarien."
 
+#: sdk/folder/index.xml:20(dt)
 #: sdk/scenario/index.xml:20(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Title.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
 msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
 
 #: sdk/scenario/index.xml:22(text)
 msgid "The title picture of the scenario in png format. Size: 200x150 pixel."
 msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel."
 
+#: sdk/folder/index.xml:24(dt)
 #: sdk/scenario/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Icon.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Icon.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
 
 #: sdk/scenario/index.xml:26(text)
 msgid "The icon of the scenario in png format. Size: 24x24 pixel."
 msgstr "Das Icon des Szenarios im Format PNG. Größe 24x24 Pixel."
 
+#: sdk/folder/index.xml:44(dt)
 #: sdk/scenario/index.xml:28(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Loader*.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Loader*.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
 
 #: sdk/scenario/index.xml:30(text)
 msgid "Loader screen to be displayed while the scenario is loading. If multiple files are present (Loader1.png, Loader2.png, Loader3.png...), one is selected randomly. You can optionally specify which loader to use in Scenario.txt. Loader image files located in parent scenario folders are also used."
 msgstr "Eine Grafik, die beim Start der Runde angezeigt wird. Sind mehrere Dateien vorhanden (Loader1.png, Loader2.png, Loader3.png...), wird per Zufall eine ausgewählt, wobei über eine optional im Scenario.txt vorhandene Loader-Spezifikation die Auswahl noch weiter vorgegeben werden kann. Beim veralteten BMP-Format mit 256 Farben müssen die Farben Schwarz bei Palettenindex 16 und Weiß bei Index 31 vorhanden sein, damit Meldungen beim Startvorgang korrekt angezeigt werden können. Auch Loader-Grafiken aus einem übergeordneten Ordner werden geladen."
 
 #: sdk/scenario/index.xml:32(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Sky.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Sky.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"
 
 #: sdk/scenario/index.xml:34(text)
 msgid "The sky background image. Sky graphics should either be tileable or big enough that it won't even tile if the player zooms out very far."
@@ -12417,8 +12420,8 @@ msgstr "Das Himmels-Hintergrundbild. Himmelsgrafiken sollten kachelbar sein oder
 
 #: sdk/scenario/index.xml:36(dt)
 #: sdk/folder/index.xml:28(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Desc*.rtf"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Desc*.rtf"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Desc*.rtf"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Desc*.rtf"
 
 #: sdk/scenario/index.xml:38(text)
 #: sdk/folder/index.xml:30(text)
@@ -12437,8 +12440,8 @@ msgstr "Diese Datei erstellt man am besten mit dem zu Windows gehörenden WordPa
 
 #: sdk/scenario/index.xml:42(dt)
 #: sdk/folder/index.xml:34(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Title.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Title.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Title.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Title.txt"
 
 #: sdk/scenario/index.xml:44(text)
 #: sdk/folder/index.xml:36(text)
@@ -12461,8 +12464,8 @@ msgid "The scenario script."
 msgstr "Das Szenarioscript."
 
 #: sdk/scenario/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Map.bmp"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Map.bmp"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Map.bmp"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Map.bmp"
 
 #: sdk/scenario/index.xml:54(text)
 msgid "Static landscapes are stretched by factor MapZoom defined in Scenario.txt to the size of the actual landscape in the game. The colors used in Map.bmp correspond to materials and textures as defined in <emlink href=\"material/index.html#TexMaptxt\">TexMap.txt</emlink>."
@@ -12473,8 +12476,8 @@ msgid "Exact landscapes represent the actual in-game landscape saved to a bitmap
 msgstr "Exakte Landkarten (ExactLandscape) geben die tatsächliche Spiellandschaft wieder. Die Farbindizes in Landscape.bmp (128-191 und 192-255, jeweils 3 Farben pro Material) repräsentieren direkt die für das Szenario festgelegten Materialien. Die aktuelle Materialanordnung wird in MatMap.txt festgehalten."
 
 #: sdk/scenario/index.xml:57(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Landscape.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Landscape.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Landscape.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Landscape.png"
 
 #: sdk/scenario/index.xml:59(text)
 msgid "Full size map for exact landscapes. This is mainly used in savegames to store the exact terrain including transparent materials and their texture. Exact landscapes consume an extreme amount of memory and should not be used for regularly distributed scenarios."
@@ -12489,16 +12492,16 @@ msgid "Advanced scenario designers can use this component to define highly compl
 msgstr "Besonders fortgeschrittene Spieler können über diese Datei komplexe Zufallslandschaften definieren. Dafür sind allerdings mathematisches und logisches Verständnis sowie viel Geduld unumgänglich."
 
 #: sdk/scenario/index.xml:65(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> MatMap.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> MatMap.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>MatMap.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>MatMap.txt"
 
 #: sdk/scenario/index.xml:67(text)
 msgid "Stores the material table used in this scenario. The materials listed here are used by the exact landscape and have to be available in the loaded Material.ocg group."
 msgstr "Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.ocg vorhanden sein."
 
 #: sdk/scenario/index.xml:69(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Objects.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Objects.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Objects.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Objects.txt"
 
 #: sdk/scenario/index.xml:71(text)
 msgid "This component is generated by the engine and stores runtime object data of a savegame."
@@ -12513,33 +12516,35 @@ msgstr "Material.ocg"
 msgid "Scenarios can contain local material definition groups. See <a href=\"#UeberladungenOCS\">overloading rules</a>."
 msgstr "Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <a href=\"#UeberladungenOCS\">Überladungsregeln</a>."
 
+#: sdk/folder/index.xml:52(dt)
 #: sdk/scenario/index.xml:77(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Graphics.ocg"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Graphics.ocg"
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
 
 #: sdk/scenario/index.xml:79(text)
 msgid "Scenarios can overload individual entries of the global Graphics.ocg group. See <a href=\"#UeberladungenOCS\">overloading rules</a>."
 msgstr "Szenarien können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Es gelten die <a href=\"#UeberladungenOCS\">Überladungsregeln</a>."
 
 #: sdk/scenario/index.xml:81(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav"
-msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav"
+msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav"
+msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav"
 
 #: sdk/scenario/index.xml:83(text)
 msgid "Scenarios can contain any number of sound files. These can be played back by script during the game. Scenario local sounds are loaded dynamically on demand which might cause delays with large scenario files."
 msgstr "Szenarien können beliebig lokale Sounds enthalten. Diese können per Script während des Spiels abgespielt werden. Szenariolokale Sounds werden dynamisch und erst bei Bedarf geladen, was bei großen Szenariodateien zu Verzögerungen führen kann."
 
 #: sdk/scenario/index.xml:85(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/> *.mid/*.ogg"
-msgstr "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/> *.mid/*.ogg"
+msgid "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/>*.mid/*.ogg"
+msgstr "<img height=\"16\" src=\"../../images/icon_music.png\" width=\"16\"/>*.mid/*.ogg"
 
 #: sdk/scenario/index.xml:87(text)
 msgid "If the scenario contains music files, these can be played back during the game in random order. Also see script command <emlink href=\"script/fn/Music.html\">Music</emlink>()."
 msgstr "Wenn das Szenario lokale Musikdateien enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href=\"script/fn/Music.html\">Music</emlink>()."
 
 #: sdk/scenario/index.xml:89(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Music.ocg"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/> Music.ocg"
+#: sdk/folder/index.xml:56(dt)
+msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
+msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
 
 #: sdk/scenario/index.xml:91(text)
 msgid "Local music files can also be combines in a local music group."
@@ -12560,8 +12565,8 @@ msgid "The engine will also search all parent folders (ocf) of the scenario for 
 msgstr "Die Engine durchsucht auch alle übergeordneten Rundenordner (ocf) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind."
 
 #: sdk/scenario/index.xml:98(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Names.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Names.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Names.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Names.txt"
 
 #: sdk/scenario/index.xml:100(text)
 msgid "These names are used for clonks created in this scenario."
@@ -12570,8 +12575,8 @@ msgstr "Diese Namen werden für während der Runde neu erzeugte Clonks verwendet
 #: sdk/scenario/index.xml:102(dt)
 #: sdk/folder/index.xml:64(dt)
 #: sdk/definition/index.xml:64(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Info.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Info.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
 
 #: sdk/scenario/index.xml:104(text)
 #: sdk/folder/index.xml:66(text)
@@ -12581,8 +12586,8 @@ msgstr "Hier kann der Autor zusätzliche Informationen über den Entwicklungssta
 #: sdk/scenario/index.xml:106(dt)
 #: sdk/folder/index.xml:68(dt)
 #: sdk/definition/index.xml:68(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Author.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Author.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
 
 #: sdk/scenario/index.xml:108(text)
 #: sdk/folder/index.xml:70(text)
@@ -13401,8 +13406,8 @@ msgid "Particle Components (ocd)"
 msgstr "Partikel-Komponenten (OCD)"
 
 #: sdk/particle/index.xml:14(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Particle.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Particle.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Particle.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Particle.txt"
 
 #: sdk/particle/index.xml:16(text)
 msgid "Particle properties."
@@ -13410,8 +13415,8 @@ msgstr "Partikeleigenschaften."
 
 #: sdk/particle/index.xml:18(dt)
 #: sdk/definition/index.xml:16(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics.png"
 
 #: sdk/particle/index.xml:20(text)
 msgid "Particle graphics."
@@ -14388,8 +14393,8 @@ msgid "Material Definition Components (Material.ocg)"
 msgstr "Materialdefinitions-Komponenten (Material.ocg)"
 
 #: sdk/material/index.xml:12(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> TexMap.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> TexMap.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>TexMap.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>TexMap.txt"
 
 #: sdk/material/index.xml:14(text)
 msgid "Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'."
@@ -14412,8 +14417,8 @@ msgid "The engine will accept up to 125 material definitions at a time. OCM file
 msgstr "Die Engine akzeptiert bis zu 125 Materialdefinitionen gleichzeitig. OCM-Dateien sind einfache Textdateien. Die Materialien Vehicle, Tunnel, Water, Snow, Granite, Sand und Earth müssen immer vorhanden sein."
 
 #: sdk/material/index.xml:22(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> *.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> *.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>*.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>*.png"
 
 #: sdk/material/index.xml:24(text)
 msgid "There can be any number of textures in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.)."
@@ -14549,24 +14554,16 @@ msgid "Scenario folders can contain any number of scenarios."
 msgstr "Rundenordner können beliebig viele Szenarien enthalten, die in diesem Ordner ausgewählt werden können."
 
 #: sdk/folder/index.xml:16(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/> *.ocf"
-msgstr "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/> *.ocf"
+msgid "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/>*.ocf"
+msgstr "<img height=\"16\" src=\"../../images/icon_scenario_folder.png\" width=\"16\"/>*.ocf"
 
 #: sdk/folder/index.xml:18(text)
 msgid "Scenario folders can also contain other scenario folders."
 msgstr "Rundenordner lassen sich auch schachteln."
 
-#: sdk/folder/index.xml:20(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Title.png"
-
 #: sdk/folder/index.xml:22(text)
 msgid "The title picture of the scenario folder in png format. Size: 200x150 pixel."
 msgstr "Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel."
-
-#: sdk/folder/index.xml:24(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Icon.png"
 
 #: sdk/folder/index.xml:26(text)
 msgid "The icon of a scenario folder which is to be displayed instead of the book icon. 24x24 pixels, alpha channel is used for transparency."
@@ -14582,10 +14579,6 @@ msgstr "FolderMap.txt"
 msgid "Scenario folders can also contain graphical folder maps for the selection of scenarios."
 msgstr "Rundenordner können Auswahlkarten für die enthaltenen Szenarien anbieten."
 
-#: sdk/folder/index.xml:44(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Loader*.png"
-
 #: sdk/folder/index.xml:46(text)
 msgid "Scenario folders can contain local loader screens. Also see <emlink href=\"scenario/index.html\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können lokale Ladebildschirme enthalten. Siehe auch <emlink href=\"scenario/index.html\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenOCS\">Überladungsregeln</emlink>."
@@ -14594,17 +14587,9 @@ msgstr "Rundenordner können lokale Ladebildschirme enthalten. Siehe auch <emlin
 msgid "Scenario folders can contain local material definitions. Also see <emlink href=\"scenario/index.html#Materialocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
 msgstr "Rundenordner können lokale Materialdefinitionen enthalten. Siehe auch <emlink href=\"scenario/index.html#Materialocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenOCS\">Überladungsregeln</emlink>."
 
-#: sdk/folder/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Graphics.ocg"
-
 #: sdk/folder/index.xml:54(text)
 msgid "Scenario folders can overload individual entries of the global Graphics.ocg group. See <emlink href=\"#UeberladungenOCS\">overloading rules</emlink>."
 msgstr "Rundenordner können einzelne Grafiken aus der systemglobalen Graphics.ocg überladen. Siehe auch <emlink href=\"scenario/index.html#Graphicsocg\">Szenarien</emlink>. Es gelten die <emlink href=\"scenario/index.html#UeberladungenOCS\">Überladungsregeln</emlink>."
-
-#: sdk/folder/index.xml:56(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
-msgstr "<img height=\"16\" src=\"../../images/icon_system.png\" width=\"16\"/>Music.ocg"
 
 #: sdk/folder/index.xml:58(text)
 msgid "Scenario folders can contain local music files. Also see <emlink href=\"scenario/index.html#Musicocg\">scenarios</emlink>. The <emlink href=\"scenario/index.html#UeberladungenOCS\">overloading rules</emlink> apply."
@@ -14801,8 +14786,8 @@ msgid "The game data of clonk is stored in compressed group files which each con
 msgstr "Die Spieldaten von Clonk sind in komprimierten Gruppendateien zusammen gefasst, die jeweils einzelne Komponenten oder weitere Gruppendateien enthalten:"
 
 #: sdk/files.xml:10(dt)
-msgid "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/> Player Files (ocp)"
-msgstr "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/> Spielerdateien (ocp)"
+msgid "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/>Player Files (ocp)"
+msgstr "<img height=\"16\" src=\"../images/icon_player.png\" width=\"16\"/>Spielerdateien (ocp)"
 
 #: sdk/files.xml:12(text)
 msgid "Player files contain personal settings, gained score and information about the crew. It may also contain a portrait file."
@@ -14833,8 +14818,8 @@ msgid "Scenarios are grouped in scenario folders."
 msgstr "Szenarien können in Rundenordnern zusammen gefasst werden."
 
 #: sdk/files.xml:26(dt)
-msgid "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/> System Data (ocg)"
-msgstr "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/> Systemdaten (ocg)"
+msgid "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/>System Data (ocg)"
+msgstr "<img height=\"16\" src=\"../images/icon_system.png\" width=\"16\"/>Systemdaten (ocg)"
 
 #: sdk/files.xml:28(text)
 msgid "Graphics, sound, and music of the original game are grouped in these folders and should not be modified."
@@ -15795,8 +15780,8 @@ msgid "Graphics of the object. Base graphics, animation phases and a picture for
 msgstr "Grafikelemente des Objekts. Basisgrafik, Animationsphasen sowie ein Bild zur Anzeige in Menüs werden in einer 32-Bit-Bilddatei mit Transparenz (Alpha-Kanal) abgelegt (Format PNG, Farbtiefe 32 Bit RGBA, nicht interlaced)."
 
 #: sdk/definition/index.xml:20(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Overlay.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Overlay.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Overlay.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Overlay.png"
 
 #: sdk/definition/index.xml:22(text)
 msgid "The part of the object's graphics which is to be colored in the player color (see ColorByOwner in DefCore.txt) can also be defined using a separate graphics file. In this way you can also use the color blue in the object's graphics for effects other than player color and antialiasing of the player color sections becomes possible. In Overlay.png gray scales should be used instead of blue color."
@@ -15811,16 +15796,16 @@ msgid "A 3D model can be used as an object's graphics instead of a bitmap in BMP
 msgstr "Es kann statt einer Grafik im BMP- oder PNG-Format auch ein 3D-Modell verwendet werden. Dieses muss im OGRE-Format vorliegen. Für die meisten 3D-Programme existieren entsprechende Exporter. Alle Dateien die von dem Mesh benötigt werden (insb. Materialskripte, Texturen und Skelette) müssen ebenfalls im Objekt vorhanden sein."
 
 #: sdk/definition/index.xml:28(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/> *.skeleton"
-msgstr "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/> *.skeleton"
+msgid "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/>*.skeleton"
+msgstr "<img height=\"16\" src=\"../../images/icon_ogre_mesh.png\" width=\"16\"/>*.skeleton"
 
 #: sdk/definition/index.xml:30(text)
 msgid "Skeleton files contain bones and animations for a 3D model. They are usually created by the exporter if bones and/or animations are used for the mesh."
 msgstr "Skeleton-Dateien enthalten Bones und Animationen für ein 3D-Modell. Sie werden in der Regel vom Exporter generiert wenn Bones und/oder Animationen verwendet werden."
 
 #: sdk/definition/index.xml:32(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics*.png/Overlay*.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Graphics*.png/Overlay*.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics*.png/Overlay*.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Graphics*.png/Overlay*.png"
 
 #: sdk/definition/index.xml:34(text)
 msgid "Objects can also contain alternative sets of graphics which can be selected ingame using the script command <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>(). The name corresponds to the file name portion following \"Graphics\". The matching overlay is automatically selected. For more information see <emlink href=\"script/fn/SetGraphics.html\">SetGraphics</emlink>()."
@@ -15847,32 +15832,32 @@ msgid "Table for activities."
 msgstr "Tabelle für Objektaktivitäten."
 
 #: sdk/definition/index.xml:48(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Rank.txt/Rank*.txt"
-msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/> Rank.txt/Rank*.txt"
+msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Rank.txt/Rank*.txt"
+msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Rank.txt/Rank*.txt"
 
 #: sdk/definition/index.xml:50(text)
 msgid "For object definitions defining a clonk type you can specify custom rank names for this clonk type here. The rank names will then also replace rank names of existing crew members of this type. The file should contain a simple text list of names of maximum 30 characters each. For an example see the knight in the Knights pack. By using the approriate language codes you can create language dependent sets of rank names."
 msgstr "Für Objektdefinitionen, die einen Clonktyp definieren, können hier spezifische Rangnamen für diesen Clonktyp angegeben werden. Die Rangnamen werden dann auch innerhalb schon existierender Mannschaftsmitglieder auf die angegebenen geändert. Die Rangnamen sollten in einer einfachen Liste untereinander stehen, und maximal 30 Zeichen Länge besitzen. Für ein Beispiel siehe zum Beispiel den Ritter in Knights.ocd. Durch Einfügen des entsprechenden Sprachcodes ist es möglich, Rangnamen für verschiedene Sprachen zu definieren."
 
 #: sdk/definition/index.xml:52(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Rank.png"
-msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/> Rank.png"
+msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Rank.png"
+msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Rank.png"
 
 #: sdk/definition/index.xml:54(text)
 msgid "You can also define custom rank symbols for clonk types which are then displayed in the game instead of the standard symbols from Graphics.ocg. A rank symbol should always be square and there should be enough many symbols for all ranks. For ranks exceeding the last symbol, the list is repeated from the front and a star is added to the symbol."
 msgstr "Für Clonktypen können außerdem spezifische Rangsymbole definiert werden, die dann im Spiel anstelle der Standardsymbole benutzt werden. Ein Rangsymbol muss immer so breit wie hoch sein, und es sollten ausreichend Symbole für alle Ränge vorhanden sein. Bei höheren Rängen als der Anzahl vorhandener Rangsymbole wird von vorne begonnen und ein Stern daneben gezeichnet."
 
 #: sdk/definition/index.xml:56(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav/*.ogg"
-msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/> *.wav/*.ogg"
+msgid "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav/*.ogg"
+msgstr "<img height=\"16\" src=\"../../images/icon_sound.png\" width=\"16\"/>*.wav/*.ogg"
 
 #: sdk/definition/index.xml:58(text)
 msgid "Object local sounds. As these are always loaded and not dynamically unloaded as are scenario sounds you should use these sparingly and with small sound files only."
 msgstr "Objektlokale Sounds. Da diese statisch geladen und nicht wie szenariolokale Sounds dynamisch entladen werden, sollten objektlokale Sounds möglichst klein sein."
 
 #: sdk/definition/index.xml:60(dt)
-msgid "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/> *.ocd"
-msgstr "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/> *.ocd"
+msgid "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/>*.ocd"
+msgstr "<img height=\"16\" src=\"../../images/icon_object_definition.png\" width=\"16\"/>*.ocd"
 
 #: sdk/definition/index.xml:62(text)
 msgid "The engine will also search all valid ocd subdirectories for additional object definitions. Object definitions should be grouped by category."
@@ -17304,12 +17289,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Blowing clonk"
 #~ msgstr "Pusteclonk"
-
-#~ msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
-#~ msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Info.txt"
-
-#~ msgid "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
-#~ msgstr "<img height=\"16\" src=\"../../images/icon_text.png\" width=\"16\"/>Author.txt"
 
 #~ msgid "What to return (see remarks)."
 #~ msgstr "Was genau zurückgegeben werden soll (siehe Anmerkung)"

@@ -9,11 +9,11 @@
     <text>Scenario folders are used to group a number of scenarios. Scenario folders are displayed with a book icon in the startup screen which can then be opened to list contained scenarios.</text>
     <h id="Components">Scenario Components (ocs)</h>
     <dl>
-      <dt id="ocs"><img height="16" src="../../images/icon_scenario.png" width="16"/> <emlink href="scenario/index.html">*.ocs</emlink></dt>
+      <dt id="ocs"><img height="16" src="../../images/icon_scenario.png" width="16"/><emlink href="scenario/index.html">*.ocs</emlink></dt>
       <dd>
         <text>Scenario folders can contain any number of scenarios.</text>
       </dd>
-      <dt id="ocf"><img height="16" src="../../images/icon_scenario_folder.png" width="16"/> *.ocf</dt>
+      <dt id="ocf"><img height="16" src="../../images/icon_scenario_folder.png" width="16"/>*.ocf</dt>
       <dd>
         <text>Scenario folders can also contain other scenario folders.</text>
       </dd>
@@ -25,19 +25,19 @@
       <dd>
         <text>The icon of a scenario folder which is to be displayed instead of the book icon. 24x24 pixels, alpha channel is used for transparency.</text>
       </dd>
-      <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.png" width="16"/> Desc*.rtf</dt>
+      <dt id="Desc__rtf"><img height="16" src="../../images/icon_text.png" width="16"/>Desc*.rtf</dt>
       <dd>
         <text>The description text of the scenario in rich text format (rtf). '__' is to be replaced by the two digit language code, e.g. DE for German and US for American English. Multiple descriptions for several languages can be contained in a scenario file of which the game will automatically load the one appropriate for the configured language.</text>
         <text>The font of the description text is set internally on display. The character size in the file should be 10pt for headings and 8pt for text. Images or other rtf tags are ignored.</text>
         <text>It is recommended to edit this file using a small scale rtf editor such as WordPad.exe in Windows and not a full-blown word processor such as Word as these will stuff kilobytes of unneeded extra information into the rtf file.</text>
       </dd>
-      <dt id="Titletxt"><img height="16" src="../../images/icon_text.png" width="16"/> Title.txt</dt>
+      <dt id="Titletxt"><img height="16" src="../../images/icon_text.png" width="16"/>Title.txt</dt>
       <dd>
         <text>By default, the title of a scenario is set when renaming the scenario in the menu system and stored in section [Head] of Scenario.txt. The file name of the scenario group file may differ. For language dependent titles you should create a Title.txt component with the appropriate contents:</text>
         <code>DE:Meine Rundensammlung
 US:My scenario collection</code>        <text>Important: No quotation marks and special characters should be used.</text>
       </dd>
-      <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/> <emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
+      <dt id="FolderMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/><emlink href="folder/foldermap.html">FolderMap.txt</emlink></dt>
       <dd>
         <text>Scenario folders can also contain graphical folder maps for the selection of scenarios.</text>
       </dd>
@@ -45,7 +45,7 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       <dd>
         <text>Scenario folders can contain local loader screens. Also see <emlink href="scenario/index.html">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="Materialocg"><img height="16" src="../../images/icon_system.png" width="16"/> <emlink href="material/index.html">Material.ocg</emlink></dt>
+      <dt id="Materialocg"><img height="16" src="../../images/icon_system.png" width="16"/><emlink href="material/index.html">Material.ocg</emlink></dt>
       <dd>
         <text>Scenario folders can contain local material definitions. Also see <emlink href="scenario/index.html#Materialocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
@@ -57,15 +57,15 @@ US:My scenario collection</code>        <text>Important: No quotation marks and 
       <dd>
         <text>Scenario folders can contain local music files. Also see <emlink href="scenario/index.html#Musicocg">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="ocd"><img height="16" src="../../images/icon_object_definition.png" width="16"/> <emlink href="definition/index.html">*.ocd</emlink></dt>
+      <dt id="ocd"><img height="16" src="../../images/icon_object_definition.png" width="16"/><emlink href="definition/index.html">*.ocd</emlink></dt>
       <dd>
         <text>Scenario folders can contain object definitions, which will then be available in all scenarios contained in the folder.Also see <emlink href="scenario/index.html#ocd">scenarios</emlink>. The <emlink href="scenario/index.html#UeberladungenOCS">overloading rules</emlink> apply.</text>
       </dd>
-      <dt id="Infotxt"><img height="16" src="../../images/icon_text.png" width="16"/> Info.txt</dt>
+      <dt id="Infotxt"><img height="16" src="../../images/icon_text.png" width="16"/>Info.txt</dt>
       <dd>
         <text>Here an author can store additional information about the development of his scenario, his email address, or other information he wants to share with other developers.</text>
       </dd>
-      <dt id="Authortxt"><img height="16" src="../../images/icon_text.png" width="16"/> Author.txt</dt>
+      <dt id="Authortxt"><img height="16" src="../../images/icon_text.png" width="16"/>Author.txt</dt>
       <dd>
         <text>Should contain the name of the author in format "Firstname Lastname (Nick)" and is used to maintain the name of the original author, if the scenario group file is edited by another developer at a later point in time.</text>
       </dd>

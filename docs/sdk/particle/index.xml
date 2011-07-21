@@ -11,11 +11,11 @@
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
     <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
-      <dt><img height="16" src="../../images/icon_text.png" width="16"/> Particle.txt</dt>
+      <dt><img height="16" src="../../images/icon_text.png" width="16"/>Particle.txt</dt>
       <dd>
         <text>Particle properties.</text>
       </dd>
-      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/> Graphics.png</dt>
+      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png</dt>
       <dd>
         <text>Particle graphics.</text>
         <text>The particle definition can also contain the known components of <emlink href="definition/index.html">object definitions</emlink> for describing the particle (e.g. Title.png, DescDE/US.txt, etc.)</text>
