@@ -11,67 +11,67 @@
     <part>
       <text>If the function to be called was declared in the same script as the calling script it this is considered a "local call". The function can be called directly by its function name only.</text>
       <h>Example:</h>
-      <code>func TestFunktion()
+      <code>func TestFunction()
 {
-  <funclink>Log</funclink>(&quot;Die Test-Funktion wurde aufgerufen!&quot;);
+  <funclink>Log</funclink>(&quot;The test function has been called!&quot;);
 }
 
-func Aufruf()
+func MyCall()
 {
-  TestFunktion();
+  TestFunction();
 }</code>
-      <text>When function Aufruf() is executed, it will also call the function TestFunktion() which will output a message to the log.</text>
+      <text>When function MyCall() is executed, it will also call the function TestFunction() which will output a message to the log.</text>
     </part>
     <h>Calling a function in another object</h>
     <part>
       <text>To call a function in another object you have to specify that object first, then the function name.</text>
       <h>Example:</h>
-      <text>Script Object A (ID AAAA):</text>
+      <text>Script Object A (ID TestObjectA):</text>
       <code>func Activate()
 {
-  <funclink>Log</funclink>(&quot;Activate wurde in Objekt A aufgerufen!&quot;);
+  <funclink>Log</funclink>(&quot;Activate has been called in Object A!&quot;);
   <funclink>Explode</funclink>(20);
 }</code>
       <text>Script Object B:</text>
       <code>func Activate()
 {
-  var obj = <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(AAAA), <funclink>Sort_Distance</funclink>());
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(TestObjectA), <funclink>Sort_Distance</funclink>());
   obj-&gt;Activate();
 }	</code>
-      <text>The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a reference to this object in the variable "obj". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case).</text>
-      <text>Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found.</text>
+      <text>The function Activate() in the script of object B will first search for the closest object of type A (definition ID TestObjectA) and store a reference to this object in the variable "obj". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case).</text>
+      <text>Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found. To prevent this, first check whether obj is not <code>nil</code> before calling Activate().</text>
       <h>Remarks</h>
       <text>You don't <i>have</i> to store the object pointer in a variable as done in this example. You could also continue calling the function directly on the search result as in this case:</text>
       <code>func Activate()
 {
-  <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(AAAA), <funclink>Sort_Distance</funclink>())-&gt;Activate();
+  <funclink>FindObject</funclink>(<funclink>Find_Id</funclink>(TestObjectA), <funclink>Sort_Distance</funclink>())-&gt;Activate();
 }</code>
     </part>
     <h>Indirect call of script functions</h>
     <part>
       <text>In some cases you may want somebody else to call a script function that you have specified. The engine function <funclink>Call</funclink> can do such "indirect" calls. You simply pass the function name of the function to be called as string.</text>
       <h>Example:</h>
-      <code>func TestFunktion()
+      <code>func TestFunction()
 {
-  <funclink>Log</funclink>(&quot;Die Test-Funktion wurde aufgerufen!&quot;);
+  <funclink>Log</funclink>(&quot;The test-function has been called!&quot;);
 }
 	
-func Aufruf()
+func MyCall()
 {
-  <funclink>Call</funclink>(&quot;TestFunktion&quot;);
+  <funclink>Call</funclink>(&quot;TestFunction&quot;);
 }</code>
       <text>With indirect calls you can "decide" at runtime which function to call as is done in the following example:</text>
-      <code>func TestFunktion()
+      <code>func TestFunction()
 {
-  <funclink>Call</funclink>(<funclink>Format</funclink>(&quot;Aufruf%d&quot;, <funclink>Random</funclink>(3)));
+  <funclink>Call</funclink>(<funclink>Format</funclink>(&quot;MyCall%d&quot;, <funclink>Random</funclink>(3)));
 }
 
-func Aufruf0() { <funclink>Log</funclink>(&quot;Die erste Funktion wurde aufgerufen!&quot;); }
-func Aufruf1() { <funclink>Log</funclink>(&quot;Die zweite Funktion wurde aufgerufen!&quot;); }
-func Aufruf2() { <funclink>Log</funclink>(&quot;Die dritte Funktion wurde aufgerufen!&quot;); }</code>
-      <text>In TestFunktion() a <em>random</em> function is called (using <funclink>Random</funclink> and <funclink>Format</funclink> one of the three strings "Aufruf1", "Aufruf2", and "Aufruf3" is randomly composed and passed to <code>Call</code>).</text>
+func MyCall0() { <funclink>Log</funclink>(&quot;Die erste Funktion wurde aufgerufen!&quot;); }
+func MyCall1() { <funclink>Log</funclink>(&quot;Die zweite Funktion wurde aufgerufen!&quot;); }
+func MyCall2() { <funclink>Log</funclink>(&quot;Die dritte Funktion wurde aufgerufen!&quot;); }</code>
+      <text>In TestFunction() a <em>random</em> function is called (using <funclink>Random</funclink> and <funclink>Format</funclink> one of the three strings "MyCall1", "MyCall2", and "MyCall3" is randomly composed and passed to <code>Call</code>).</text>
       <text>This process has to be done with indirect calls as only at runtime we can know which function is to be called.</text>
-      <text>There are also some other methods of indirect calls. See <funclink>GameCall</funclink>. Also see <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink>. They allow for bypassing the <emlink href="script/Funcs.html#Aufrufb">calling permission</emlink> and only exist as indirect calls.</text>
+      <text>There are also some other methods of indirect calls. See <funclink>GameCall</funclink>. Also see <funclink>PrivateCall</funclink>. They allow for bypassing the <emlink href="script/Funcs.html#Aufrufb">calling permission</emlink> and only exist as indirect calls.</text>
     </part>
   </part>
   <author>PeterW</author><date>2003-05</date>

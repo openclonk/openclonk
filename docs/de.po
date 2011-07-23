@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-21 02:44+0200\n"
+"POT-Creation-Date: 2011-07-23 22:07+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -233,7 +233,7 @@ msgstr "Script"
 
 #: sdk/content.xml.in:104(emlink)
 #: sdk/script/index.xml:16(h)
-#: sdk/script/index.xml:37(emlink)
+#: sdk/script/index.xml:38(emlink)
 #: sdk/script/Funcs.xml:6(title)
 #: sdk/script/Funcs.xml:7(h)
 msgid "Functions"
@@ -244,7 +244,7 @@ msgid "Function Call"
 msgstr "Funktionsaufruf"
 
 #: sdk/content.xml.in:106(emlink)
-#: sdk/script/index.xml:39(emlink)
+#: sdk/script/index.xml:40(emlink)
 #: sdk/script/Typechecks.xml:6(title)
 #: sdk/script/Typechecks.xml:7(h)
 msgid "Data Types"
@@ -275,12 +275,12 @@ msgstr "Operatoren"
 
 #: sdk/content.xml.in:109(emlink)
 #: sdk/script/Funcs.xml:41(emlink)
-#: sdk/script/Funcs.xml:107(emlink)
+#: sdk/script/Funcs.xml:103(emlink)
 msgid "for"
 msgstr "for"
 
 #: sdk/content.xml.in:110(emlink)
-#: sdk/script/index.xml:43(emlink)
+#: sdk/script/index.xml:44(emlink)
 msgid "Loop Control"
 msgstr "Befehle zur Schleifenkontrolle"
 
@@ -291,7 +291,7 @@ msgid "#appendto"
 msgstr "#appendto"
 
 #: sdk/content.xml.in:112(emlink)
-#: sdk/script/index.xml:45(emlink)
+#: sdk/script/index.xml:46(emlink)
 #: sdk/script/fn/Sound.xml:8(category)
 #: sdk/script/fn/Smoke.xml:9(subcat)
 #: sdk/script/fn/RemoveEffect.xml:8(category)
@@ -307,7 +307,7 @@ msgid "Effects"
 msgstr "Effekte"
 
 #: sdk/content.xml.in:113(emlink)
-#: sdk/script/index.xml:46(emlink)
+#: sdk/script/index.xml:47(emlink)
 msgid "Querying Game Data"
 msgstr "Abfrage von Spieldaten"
 
@@ -940,7 +940,7 @@ msgstr "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren
 #: sdk/script/ScriptPlayers.xml:14(text)
 #: sdk/script/NamedVar.xml:40(h)
 #: sdk/script/Funcs.xml:58(h)
-#: sdk/script/Funcs.xml:103(h)
+#: sdk/script/Funcs.xml:99(h)
 #: sdk/script/FuncCall.xml:13(h)
 #: sdk/script/FuncCall.xml:28(h)
 #: sdk/script/FuncCall.xml:53(h)
@@ -1225,53 +1225,49 @@ msgstr "Fehlermeldungen lassen sich durch Aktivieren des Debugmodus in den Optio
 msgid "As in other programming languages you can define <emlink href=\"script/Funcs.html\">functions</emlink> in C4Script:"
 msgstr "Ähnlich wie in anderen Sprachen können in C4Script <emlink href=\"script/Funcs.html\">Funktionen</emlink> deklariert werden:"
 
-#: sdk/script/index.xml:25(text)
-msgid "Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol."
-msgstr "Unmittelbar nach dem Funktionsnamen kann in eckigen Klammern eine Beschreibung der Funktion folgen, die in mehreren durch | getrennten Feldern einen kurzen Beschreibungstext und eine Bildreferenz (id der Definition, deren Bild verwendet werden soll) enthalten kann."
-
-#: sdk/script/index.xml:26(h)
+#: sdk/script/index.xml:24(h)
 msgid "Variables/Parameters"
 msgstr "Variablen/Parameter"
 
-#: sdk/script/index.xml:27(text)
+#: sdk/script/index.xml:25(text)
 msgid "Variables can hold values of type <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> or <code>object</code>. Any parameter not directly specified in a function call will hold the default value <code>nil</code>. Functions can have a maximum of ten parameters."
 msgstr "Variablen können Werte der Typen <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> oder <code>object</code> enthalten. Für alle in Funktionsaufrufen ausgelassenen Parameter gilt grundsätzlich der Vorgabewert <code>nil</code>. Funktionen akzeptieren maximal zehn Parameter."
 
-#: sdk/script/index.xml:28(h)
+#: sdk/script/index.xml:26(h)
 msgid "Comments"
 msgstr "Kommentare"
 
-#: sdk/script/index.xml:29(text)
+#: sdk/script/index.xml:27(text)
 msgid "Scripts may contain code comments in C-style. Comment text will be completely ignored when the script is compiled for execution."
 msgstr "Scripte können Kommentare im C-Stil enthalten. Kommentare werden beim Laden des Script herausgefiltert und komplett ignoriert."
 
-#: sdk/script/index.xml:36(h)
+#: sdk/script/index.xml:37(h)
 msgid "Additional Information"
 msgstr "Weitere Informationen"
 
-#: sdk/script/index.xml:38(emlink)
+#: sdk/script/index.xml:39(emlink)
 #: sdk/script/FuncCall.xml:6(title)
 #: sdk/script/FuncCall.xml:7(h)
 msgid "Calling Script Functions"
 msgstr "Aufruf von Scriptfunktionen"
 
-#: sdk/script/index.xml:40(emlink)
+#: sdk/script/index.xml:41(emlink)
 msgid "Variables and their Scope"
 msgstr "Variablen und ihre Geltungsbereiche"
 
-#: sdk/script/index.xml:41(emlink)
+#: sdk/script/index.xml:42(emlink)
 msgid "Operators: +, -, = etc. in C4Script"
 msgstr "Operatoren: +, -, = etc. in C4Script"
 
-#: sdk/script/index.xml:42(emlink)
+#: sdk/script/index.xml:43(emlink)
 msgid "for Loop"
 msgstr "Die for-Schleife"
 
-#: sdk/script/index.xml:44(emlink)
+#: sdk/script/index.xml:45(emlink)
 msgid "#appendto: for appending code to existing scripts"
 msgstr "#appendto: Zum nachträglichen Erweitern fremder Scripte"
 
-#: sdk/script/index.xml:47(emlink)
+#: sdk/script/index.xml:48(emlink)
 msgid "Script Player (i.e. AI player)"
 msgstr "Scriptspieler (z.B. KI-Spieler)"
 
@@ -10800,8 +10796,8 @@ msgid "If <code>nil</code> is given for obj/definition in a call to GetObjectVal
 msgstr "Wird in GetObjectVal für obj/definition jeweils <code>nil</code> angegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen."
 
 #: sdk/script/GetXXVal.xml:55(text)
-msgid "There is a number of additional wrapper functions located in System.ocg/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>(\"Width\", 0, -obj-)</code>)."
-msgstr "Die Zusatzfunktionen GetXVal.c (in System.ocg) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal(\"Width\", 0, -obj-)</code>)."
+msgid "There is a number of additional wrapper functions located in System.ocg/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>(\"Width\", 0)</code>)."
+msgstr "Die Zusatzfunktionen GetXVal.c (in System.ocg) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal(\"Width\", 0)</code>)."
 
 #: sdk/script/Funcs.xml:9(text)
 msgid "A script function represents a length of script code which can be called (or executed) from the engine or from other places in script. Basically, all scripting of a scenario or object is organized in functions."
@@ -10825,40 +10821,40 @@ msgid "A simple function declaration could look like the following:"
 msgstr "Eine einfache Funktionsdeklaration könnte z.B. folgendermaßen aussehen:"
 
 #: sdk/script/Funcs.xml:18(text)
-msgid "A function script is delimited by { } brackets. Preceding this script block is the <b>function declaration</b>. The declaration starts with \"<code>func</code>\", followed by the <b>function name</b> (here: \"MeineFunktion\"). In the ( ) brackets following the function name the <b>function parameters</b> can be declared (see below)."
-msgstr "Das Script der Funktion steht in einem sogenannten Block (der Bereich zwischen '{' und '}' ). Vor diesem Block steht die <b>Funktionsdeklaration</b>. Diese beginnt mit \"<code>func</code>\", gefolgt von dem <b>Funktionsnamen</b> (hier: \"MeineFunktion\"). In der Klammer nach dem Funktionsnamen können <b>Funktionsparameter</b> definiert werden (s.u.)."
+msgid "A function script is delimited by { } brackets. Preceding this script block is the <b>function declaration</b>. The declaration starts with \"<code>func</code>\", followed by the <b>function name</b> (here: \"MyFunction\"). In the ( ) brackets following the function name the <b>function parameters</b> can be declared (see below)."
+msgstr "Das Script der Funktion steht in einem sogenannten Block (der Bereich zwischen '{' und '}' ). Vor diesem Block steht die <b>Funktionsdeklaration</b>. Diese beginnt mit \"<code>func</code>\", gefolgt von dem <b>Funktionsnamen</b> (hier: \"MyFunction\"). In der Klammer nach dem Funktionsnamen können <b>Funktionsparameter</b> definiert werden (s.u.)."
 
 #: sdk/script/Funcs.xml:19(text)
-msgid "When calling this function the message \"Meine Funktion wurde aufgerufen!\" is displayed."
-msgstr "Beim Aufruf der Funktion wird die Meldung \"Meine Funktion wurde aufgerufen!\" ausgegeben."
+msgid "When calling this function the message \"My function has been called!\" is displayed."
+msgstr "Beim Aufruf der Funktion wird die Meldung \"My function has been called!\" ausgegeben."
 
 #: sdk/script/Funcs.xml:24(text)
-msgid "Here, a parameter with the name \"zahl\" of type \"int\" is declared. When this function is called with a parameter, \"zahl\" will contain the value passed. In this example, the passed value is displayed within a message."
-msgstr "Hier wurde ein Parameter mit dem Namen \"zahl\" vom Typ \"int\" definiert. Wird beim Aufruf der Funktion ein Parameter angegeben, so erhält \"zahl\" den übergebenen Wert. Der übergebene Wert wird in diesem Fall in einer entsprechenden Nachricht ausgegeben."
+msgid "Here, a parameter with the name \"number\" of type \"int\" is declared. When this function is called with a parameter, \"number\" will contain the value passed. In this example, the passed value is displayed within a message."
+msgstr "Hier wurde ein Parameter mit dem Namen \"number\" vom Typ \"int\" definiert. Wird beim Aufruf der Funktion ein Parameter angegeben, so erhält \"number\" den übergebenen Wert. Der übergebene Wert wird in diesem Fall in einer entsprechenden Nachricht ausgegeben."
 
 #: sdk/script/Funcs.xml:25(text)
-msgid "A call to the function \"ZeigeZahl\" could look like the following:"
-msgstr "Ein Aufruf der Funktion \"ZeigeZahl\" könnte z.B. folgendermaßen aussehen:"
+msgid "A call to the function \"ShowNumber\" could look like the following:"
+msgstr "Ein Aufruf der Funktion \"ShowNumber\" könnte z.B. folgendermaßen aussehen:"
 
 #: sdk/script/Funcs.xml:27(text)
-msgid "Performing this call example will have the message \"ZeigeZahl wurde mit dem Parameter 42 aufgerufen!\" displayed."
-msgstr "Durch die Ausführung dieses Aufrufes würde die Nachricht \"ZeigeZahl wurde mit dem Parameter 42 aufgerufen!\" erzeugt."
+msgid "Performing this call example will have the message \"ShowNumber has been called with parameter 42!\" displayed."
+msgstr "Durch die Ausführung dieses Aufrufes würde die Nachricht \"ShowNumber has been called with parameter 42!\" erzeugt."
 
 #: sdk/script/Funcs.xml:28(text)
 msgid "In this example, multiple parameters are declared:"
 msgstr "Es ist auch erlaubt, mehrere Parameter zu definieren. Dazu ein Beispiel:"
 
 #: sdk/script/Funcs.xml:33(text)
-msgid "There are four parameters with the names \"zahl1\" through \"zahl4\", separated by comma."
-msgstr "In diesem Fall wurden vier Parameter benannt. Ihnen wurden die Namen \"zahl1\" bis \"zahl4\" zugewiesen (die Parameternamen werden jeweils durch Kommata getrennt)."
+msgid "There are four parameters with the names \"number1\" through \"number4\", separated by comma."
+msgstr "In diesem Fall wurden vier Parameter benannt. Ihnen wurden die Namen \"number1\" bis \"number4\" zugewiesen (die Parameternamen werden jeweils durch Kommata getrennt)."
 
 #: sdk/script/Funcs.xml:34(text)
 msgid "The message displays the sum of the four values passed. The call"
 msgstr "In der Nachricht wird dann jeweils die Summe der vier übergebenen Zahlen ausgegeben. Der Funktionsaufruf"
 
 #: sdk/script/Funcs.xml:36(text)
-msgid "will result in the message \"Die Summe der ersten 4 Parameter ist 10.\"."
-msgstr "führt also zu der Nachricht \"Die Summe der ersten 4 Parameter ist 10.\"."
+msgid "will result in the message \"The sum of the first four parameters is 10.\"."
+msgstr "führt also zu der Nachricht \"The sum of the first four parameters is 10.\"."
 
 #: sdk/script/Funcs.xml:37(h)
 msgid "Parameter Types"
@@ -10873,8 +10869,8 @@ msgid "This functions creates a given number of a given type of objects inside t
 msgstr "Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href=\"script/Typechecks.html\">Datentypen</emlink>)."
 
 #: sdk/script/Funcs.xml:46(text)
-msgid "Making a call such as <code>TypParameterFunktion(1, Clonk, \"Text\", 5)</code> would cause a type checking error."
-msgstr "Ein Aufruf wie <code>TypParameterFunktion(1, Clonk, \"Text\", 5)</code> hier würde also einen Typfehler auslösen."
+msgid "Making a call such as <code>TypeParameterFunction(1, Clonk, \"Text\", 5)</code> would cause a type checking error."
+msgstr "Ein Aufruf wie <code>TypeParameterFunction(1, Clonk, \"Text\", 5)</code> hier würde also einen Typfehler auslösen."
 
 #: sdk/script/Funcs.xml:47(h)
 msgid "Default Parameters"
@@ -10890,7 +10886,7 @@ msgstr "Die folgenden Aufrufe der obigen Funktion sind also völlig legal:"
 
 #: sdk/script/Funcs.xml:52(text)
 msgid "In the first call, there are fewer parameters passed to the function than specified in the function declaration. The 'missing' parameters will simply contain <code>nil</code>."
-msgstr "Beim ersten Aufruf wurden weniger Parameter übergeben, als in ZeigeSumme deklariert wurden. Die \"überschüssigen\" Parameter in ZeigeSumme erhalten nun einfach <code>nil</code>, die Meldung lautet entsprechend \"Die Summe der ersten 4 Parameter ist 3.\" (=1+2+0+0)."
+msgstr "Beim ersten Aufruf wurden weniger Parameter übergeben, als in ShowSum deklariert wurden. Die \"überschüssigen\" Parameter in ShowSum erhalten nun einfach <code>nil</code>, die Meldung lautet entsprechend \"The sum of the first four parameters is 3.\" (=1+2+0+0)."
 
 #: sdk/script/Funcs.xml:53(text)
 msgid "If you leave out a parameter it will be the same as passing <code>nil</code>."
@@ -10898,7 +10894,7 @@ msgstr "Wird ein Parameter nicht übergeben, so ist das mit der Übergabe von <c
 
 #: sdk/script/Funcs.xml:54(text)
 msgid "In the second call, on the other hand, there are <em>more</em> parameters passed than specified. These are simply not used during function execution. However, a function is still able to access these extra parameters even if they weren't declared in the function declaration: to do this, you can use the <placeholder-1/>() function."
-msgstr "Umgekehrt wurden beim zweiten Aufruf <em>mehr</em> Parameter übergeben als in ZeigeSumme definiert wurden. Der 5. und 6. Parameter werden nun keinem Parameter in ZeigeSumme zugewiesen. Sie können allerdings noch mittels der Funktion <placeholder-1/>() abgefragt werden [Par(4) und Par(5)]. Da die letzten beiden Parameter von ZeigeSumme also nicht ausgewertet werden können, wird hier \"nur\" die Meldung \"Die Summe der ersten 4 Parameter ist 10.\" ausgegeben."
+msgstr "Umgekehrt wurden beim zweiten Aufruf <em>mehr</em> Parameter übergeben als in ShowSum definiert wurden. Der 5. und 6. Parameter werden nun keinem Parameter in ShowSum zugewiesen. Sie können allerdings noch mittels der Funktion <placeholder-1/>() abgefragt werden [Par(4) und Par(5)]. Da die letzten beiden Parameter von ShowSum also nicht ausgewertet werden können, wird hier \"nur\" die Meldung \"The sum of the first four parameters is 10.\" ausgegeben."
 
 #: sdk/script/Funcs.xml:55(h)
 msgid "Return Values"
@@ -10913,72 +10909,76 @@ msgid "Here the difference of the two passed parameters is calculated and the re
 msgstr "Hier wird die Differenz der ersten beiden Parameter bestimmt und das Ergebnis \"zurückgegeben\". Eine andere Scriptfunktion könnte nun diese Funktion benutzen, um die Differenz zweier Zahlen zu berechnen:"
 
 #: sdk/script/Funcs.xml:68(text)
-msgid "The call \"ZeigeDifferenz(5, 2)\" will produce the message \"Die Differenz zwischen 5 und 2 beträgt 3!\"."
-msgstr "Der Aufruf \"ZeigeDifferenz(5, 2)\" würde also die Meldung \"Die Differenz zwischen 5 und 2 beträgt 3!\" erzeugen."
+msgid "The call \"ShowDifference(5, 2)\" will produce the message \"The difference between 5 and 2 is 3!\"."
+msgstr "Der Aufruf \"ShowDifference(5, 2)\" würde also die Meldung \"The difference between 5 and 2 is 3!\" erzeugen."
 
 #: sdk/script/Funcs.xml:69(text)
 msgid "If the function does not return a value, an implicit <code>return nil;</code> is implied."
 msgstr "Wenn die Funktion keinen Wert explizit zurückliefert gibt sie automatisch <code>nil</code> zurück."
 
-#. <h id="Aufrufb">Permissions</h>
-#.     <part>
-#.       <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
-#.       <text>
-#.         <table>
-#.           <row>
-#.             <col><code>public</code></col>
-#.             <col>may be called from the engine or any other script (default)</col>
-#.           </row>
-#.           <row>
-#.             <col><code>protected</code></col>
-#.             <col>may only be called from the engine or from within the same object script</col>
-#.           </row>
-#.           <row>
-#.             <col><code>private</code></col>
-#.             <col>may only be called from the same object script</col>
-#.           </row>
-#.         </table>
-#.       </text>
-#.       <text>The calling permissions are expected before the <code>func</code> marker:</text>
-#.       <code>private func PrivateFunktion()
-#. {
-#.   // Diese Funktion darf nur im selben Script aufgerufen werden!
-#. }</code>
-#.       <text>Calling this function from another object script will cause an error.</text>
-#.       <h>Remark</h>
-#.       <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> and <funclink>ProtectedCall</funclink> functions.</text>
-#.     </part>
-#: sdk/script/Funcs.xml:99(h)
+#: sdk/script/Funcs.xml:71(h)
+msgid "Permissions"
+msgstr "Aufrufberechtigungen"
+
+#: sdk/script/Funcs.xml:73(text)
+msgid "A function can have one of three levels of \"calling permission\". This will determine from where the function may be called:"
+msgstr "Für jede Funktion kann eine \"Aufrufberechtigung\" festgelegt werden, die bestimmt, von wo die Funktion aufgerufen werden darf. Hier gibt es drei verschiedene Stufen:"
+
+#: sdk/script/Funcs.xml:78(col)
+msgid "may be called from the engine or any other script (default)"
+msgstr "darf von überall aufgerufen werden, auch aus anderen Scripten (Standard)"
+
+#: sdk/script/Funcs.xml:82(col)
+msgid "may only be called from the same object script"
+msgstr "darf nur aus dem eigenen Script aufgerufen werden"
+
+#: sdk/script/Funcs.xml:86(text)
+msgid "The calling permissions are expected before the <code>func</code> marker:"
+msgstr "Die Aufrufberechtigung wird jeweils direkt vor \"<code>func</code>\" geschrieben:"
+
+#: sdk/script/Funcs.xml:91(text)
+msgid "Calling this function from another object script will cause an error."
+msgstr "Wird diese Funktion nun von einem externen Script aufgerufen, so gibt die Engine einen Fehler aus."
+
+#: sdk/script/Funcs.xml:92(h)
+msgid "Remark"
+msgstr "Anmerkung"
+
+#: sdk/script/Funcs.xml:93(text)
+msgid "As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <placeholder-1/> function."
+msgstr "Da es in manchen Fällen notwendig erscheint, auch eine geschützte Funktion aus einem fremden Script aufzurufen, kann die Aufrufbeschränkung mittels <placeholder-1/> umgangen werden."
+
+#: sdk/script/Funcs.xml:95(h)
 msgid "Global Functions"
 msgstr "Globale Funktionen"
 
-#: sdk/script/Funcs.xml:101(text)
+#: sdk/script/Funcs.xml:97(text)
 msgid "A function is declared globally by placing the \"<code>global</code>\" keyword before the <code>func</code> marker."
 msgstr "Eine Funktion wird <code>global</code> definiert, indem \"<code>global</code>\" vor \"<code>func</code>\" gestellt wird."
 
-#: sdk/script/Funcs.xml:102(text)
+#: sdk/script/Funcs.xml:98(text)
 msgid "A <code>global</code> function can be called from any script. Its scope corresponds to that of the predefined engine functions. Global script functions can also be used to overload predefined engine functions in order to change their behaviour."
 msgstr "Eine als <code>global</code> definierte Funktion kann aus jedem Script aufgerufen werden. Ihr Gültigkeitsbereich stimmt mit denen der Engine-Funktionen überein. Sie können damit auch verwendet werden, um Engine-Funktionen zu überladen und ihre Funktionsweise zu modifizieren."
 
-#: sdk/script/Funcs.xml:111(text)
+#: sdk/script/Funcs.xml:107(text)
 msgid "This script redefines the engine function <placeholder-1/> while adding a new parameter declaration at the end of the parameter list which now allows to create multiple objects. Notice that <placeholder-2/> within this function refers to the overloaded engine function <placeholder-3/>."
 msgstr "Definiert die Engine-Funktion <placeholder-1/> neu. Dabei wird sie um einen neuen Parameter count erweitert, der es erlaubt, mehrere Objekte zu erzeugen. Man beachte, dass <placeholder-2/> innerhalb dieser Funktion der durch sie überladenen Engine-Funktion <placeholder-3/> entspricht!"
 
-#: sdk/script/Funcs.xml:112(h)
+#: sdk/script/Funcs.xml:108(h)
 msgid "Attention!"
 msgstr "Achtung!"
 
-#: sdk/script/Funcs.xml:113(text)
+#: sdk/script/Funcs.xml:109(text)
 msgid "A global script function is executed with the context of the calling function. This means in particular that <placeholder-1/> is the calling object (if the global function was called from an object local scope), or <code>nil</code> (if called from a scenario script). Because of this, a global function may not use any object local variables or try to call any object local function. The following object script is illegal:"
 msgstr "Eine globale Skriptfunktion übernimmt den Kontext der aufrufenden Funktion. Das bedeutet insbesondere, dass <placeholder-1/> das aufrufende Objekt ist (natürlich nur, wenn die Funktion auch aus einem Objekt aufgerufen wurde), oder <code>nil</code> (wenn aus einem Szenarioscript aufgerufen). Deshalb darf in einer globalen Funktion auch keine objektlokale Variable verwendet werden und auch keine andere lokale Funktion aufgerufen oder lokale Variablen verändert werden! Das folgende Objektscript ist also nicht zulässig:"
 
-#: sdk/script/Funcs.xml:125(text)
+#: sdk/script/Funcs.xml:121(text)
 msgid "Both attempts to access the object local elements will fail. This is understandable because the globally declared function may have been called from any script, even from a scenario script or the script of another object. It will thus not know the declared variable or object function. As the calling context can't be safely known, the engine will throw an error."
 msgstr "Beide Versuche, auf objektlokale Elemente zuzugreifen, schlagen fehl. Das ist leicht einsichtig, da GlobalFunktion() ja aus jedem beliebigen Script, also auch aus dem Szenarioscript oder aus dem Script eines anderen Objekts aufgerufen werden kann. Dieses Script besitzt dann höchstwahrscheinlich auch keine Variable \"number\" oder Funktion \"ObjectFunktion\", die benutzt werden könnte. Da die Engine dies beim Vararbeiten des Scripts nicht sicherstellen kann, wird ein Fehler ausgelöst."
 
-#: sdk/script/Funcs.xml:126(text)
-msgid "Notice: to call an object local function from a different context, use the syntax \"<code>this()-&gt;function(...)</code>\". This will execute the function in the specified object's context and only cause an error if the function really isn't available."
-msgstr "Anmerkung: Soll eine lokale Funktion in einem fremden Kontext aufgerufen werden, so sollte \"<code>this()-&gt;Funktion(...)</code>\" verwendet werden. Dann gibt es nur einen Fehler, wenn die Funktion auch wirklich nicht im Objekt existiert."
+#: sdk/script/Funcs.xml:122(text)
+msgid "Notice: to call an object local function from a different context, use the syntax \"<code>this-&gt;function(...)</code>\". This will execute the function in the specified object's context and only cause an error if the function really isn't available."
+msgstr "Anmerkung: Soll eine lokale Funktion in einem fremden Kontext aufgerufen werden, so sollte \"<code>this-&gt;Funktion(...)</code>\" verwendet werden. Dann gibt es nur einen Fehler, wenn die Funktion auch wirklich nicht im Objekt existiert."
 
 #: sdk/script/FuncCall.xml:9(text)
 msgid "By calling a script function you will execute that function's code. The calling script may pass parameter values to the function and receive a return value from the function."
@@ -10993,8 +10993,8 @@ msgid "If the function to be called was declared in the same script as the calli
 msgstr "Befindet sich die Funktion, die aufgerufen werden soll, im selben Script wie die aufrufende Funktion, so ist dies ein \"lokaler\" Funktionsaufruf. Dabei wird die Funktion direkt über ihren Namen aufgerufen."
 
 #: sdk/script/FuncCall.xml:23(text)
-msgid "When function Aufruf() is executed, it will also call the function TestFunktion() which will output a message to the log."
-msgstr "Wird hier die Funktion Aufruf() ausgeführt, so wird die Funktion TestFunktion() aufgerufen, welche eine entsprechende Nachricht ins Log ausgibt."
+msgid "When function MyCall() is executed, it will also call the function TestFunction() which will output a message to the log."
+msgstr "Wird hier die Funktion MyCall() ausgeführt, so wird die Funktion TestFunction() aufgerufen, welche eine entsprechende Nachricht ins Log ausgibt."
 
 #: sdk/script/FuncCall.xml:25(h)
 msgid "Calling a function in another object"
@@ -11005,20 +11005,20 @@ msgid "To call a function in another object you have to specify that object firs
 msgstr "Will man eine Funktion im Script eines anderen Objekts aufrufen, so reicht der Name nicht aus, um einen Aufruf ausführen zu können. Es muss zusätzlich das Objekt angegeben werden, in dem die aufzurufende Funktion steht."
 
 #: sdk/script/FuncCall.xml:29(text)
-msgid "Script Object A (ID AAAA):"
-msgstr "Script Objekt A (ID AAAA):"
+msgid "Script Object A (ID TestObjectA):"
+msgstr "Script Objekt A (ID TestObjectA):"
 
 #: sdk/script/FuncCall.xml:35(text)
 msgid "Script Object B:"
 msgstr "Script Objekt B:"
 
 #: sdk/script/FuncCall.xml:41(text)
-msgid "The function Activate() in the script of object B will first search for the closest object of type A (definition ID AAAA) and store a reference to this object in the variable \"obj\". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case)."
-msgstr "Der Script der Funktion Activate() in Objekt B sucht sich als erstes das nächstliegende Objekt vom Typ A (also mit der ID AAAA) und speichert es in der Veriable obj. Danach wird die Funktion Activate() im Script von diesem Objekt aufgerufen. Dazu wird zuerst das aufzurufende Objekt angegeben, gefolgt von dem Pfeil, der einen Objektaufruf markiert. Danach folgt der Funktionsname der aufzurufenden Funktion nebst der Parameterliste (in diesem Fall werden keine Parameter übergeben)."
+msgid "The function Activate() in the script of object B will first search for the closest object of type A (definition ID TestObjectA) and store a reference to this object in the variable \"obj\". Then the function Activate() is called in the script of object A. To do this we first specifiy the variable containing the pointer to the object, followed by an arrow, then the function name including the parameter list (no parameters in this case)."
+msgstr "Der Script der Funktion Activate() in Objekt B sucht sich als erstes das nächstliegende Objekt vom Typ A (also mit der ID TestObjectA) und speichert es in der Veriable obj. Danach wird die Funktion Activate() im Script von diesem Objekt aufgerufen. Dazu wird zuerst das aufzurufende Objekt angegeben, gefolgt von dem Pfeil, der einen Objektaufruf markiert. Danach folgt der Funktionsname der aufzurufenden Funktion nebst der Parameterliste (in diesem Fall werden keine Parameter übergeben)."
 
 #: sdk/script/FuncCall.xml:42(text)
-msgid "Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found."
-msgstr "Es wird also durch den Aufruf von Activate() in Objekt B bewirkt, dass das nächstliegende Objekt vom Typ A in die Luft gejagt wird. Es handelt sich also im Beispiel um eine Art sehr primitiver Fernsteuerung für Objekt A (Der Aufruf erzeugt z.B. einen Fehler, wenn kein Objekt A existiert)."
+msgid "Calling Activate() in object B will cause the closest object of type A to be blown up. You may consider this a very primitive type of remote control. By the way, this script will cause an error if no object of type A can be found. To prevent this, first check whether obj is not <code>nil</code> before calling Activate()."
+msgstr "Es wird also durch den Aufruf von Activate() in Objekt B bewirkt, dass das nächstliegende Objekt vom Typ A in die Luft gejagt wird. Es handelt sich also im Beispiel um eine Art sehr primitiver Fernsteuerung für Objekt A. Der Aufruf erzeugt jedoch einen Fehler, wenn kein Objekt A existiert. Um dies zu vermeiden, sollte vor dem Aufruf von Activate() geprüft werden dass obj nicht <code>nil</code> ist."
 
 #: sdk/script/FuncCall.xml:43(h)
 msgid "Remarks"
@@ -11041,16 +11041,16 @@ msgid "With indirect calls you can \"decide\" at runtime which function to call 
 msgstr "Mit Call ist es ist möglich, zur Laufzeit zu entscheiden, welche Funktion aufgerufen werden soll. Eine Anwendung soll das folgende Beispiel deutlich machen:"
 
 #: sdk/script/FuncCall.xml:72(text)
-msgid "In TestFunktion() a <em>random</em> function is called (using <placeholder-1/> and <placeholder-2/> one of the three strings \"Aufruf1\", \"Aufruf2\", and \"Aufruf3\" is randomly composed and passed to <code>Call</code>)."
-msgstr "Hier wird in TestFunktion() eine <em>zufällige</em> Funktion aufgerufen (mittels <placeholder-1/> und <placeholder-2/> wird zufällig einer der drei Strings \"Aufruf1\", \"Aufruf2\" oder \"Aufruf3\" an Call übergeben)."
+msgid "In TestFunction() a <em>random</em> function is called (using <placeholder-1/> and <placeholder-2/> one of the three strings \"MyCall1\", \"MyCall2\", and \"MyCall3\" is randomly composed and passed to <code>Call</code>)."
+msgstr "Hier wird in TestFunction() eine <em>zufällige</em> Funktion aufgerufen (mittels <placeholder-1/> und <placeholder-2/> wird zufällig einer der drei Strings \"MyCall1\", \"MyCall2\" oder \"MyCall3\" an Call übergeben)."
 
 #: sdk/script/FuncCall.xml:73(text)
 msgid "This process has to be done with indirect calls as only at runtime we can know which function is to be called."
-msgstr "Call muss hier verwendet werden, da erst zur Laufzeit bestimmt wird, welche Funktion aufgerufen wird. Außerdem wird bei jeder Ausführung von TestFunktion() eine andere Scriptfunktion ausgewählt, die aufgerufen wird. Dies wäre mit einem direkten Aufruf nicht möglich."
+msgstr "Call muss hier verwendet werden, da erst zur Laufzeit bestimmt wird, welche Funktion aufgerufen wird. Außerdem wird bei jeder Ausführung von TestFunction() eine andere Scriptfunktion ausgewählt, die aufgerufen wird. Dies wäre mit einem direkten Aufruf nicht möglich."
 
 #: sdk/script/FuncCall.xml:74(text)
-msgid "There are also some other methods of indirect calls. See <placeholder-1/>. Also see <placeholder-2/> and <placeholder-3/>. They allow for bypassing the <emlink href=\"script/Funcs.html#Aufrufb\">calling permission</emlink> and only exist as indirect calls."
-msgstr "Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe dazu <placeholder-1/>. Besondere Beachtung verdienen außerdem noch <placeholder-2/> und <placeholder-3/>. Sie ermöglichen die Umgehung der <emlink href=\"script/Funcs.html#Aufrufb\">Aufrufbeschränkung</emlink> und existieren nur in der \"Indirekt-Aufruf-Version\"."
+msgid "There are also some other methods of indirect calls. See <placeholder-1/>. Also see <placeholder-2/>. They allow for bypassing the <emlink href=\"script/Funcs.html#Aufrufb\">calling permission</emlink> and only exist as indirect calls."
+msgstr "Außer Call können auch andere Zugriffsarten indirekt erfolgen, siehe dazu <placeholder-1/>. Besondere Beachtung verdient außerdem noch <placeholder-2/>. Sie ermöglichen die Umgehung der <emlink href=\"script/Funcs.html#Aufrufb\">Aufrufbeschränkung</emlink> und existieren nur in der \"Indirekt-Aufruf-Version\"."
 
 #: sdk/script/Effects.xml:9(text)
 msgid "Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration."
@@ -16991,6 +16991,9 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 
+#~ msgid "Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol."
+#~ msgstr "Unmittelbar nach dem Funktionsnamen kann in eckigen Klammern eine Beschreibung der Funktion folgen, die in mehreren durch | getrennten Feldern einen kurzen Beschreibungstext und eine Bildreferenz (id der Definition, deren Bild verwendet werden soll) enthalten kann."
+
 #~ msgid "Internationalization <placeholder-1/>"
 #~ msgstr "Sprachanpassung <placeholder-1/>"
 
@@ -17702,29 +17705,8 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "<code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator \"<code>=</code>\"). See also <emlink href=\"script/Funcs.html#referenzen\">Reference parameters</emlink>."
 #~ msgstr "<code>&amp;</code>: Der Wert ist eine Referenz - z.B. auf eine Variable. Er verhält sich genau wie der Zielwert, kann aber gesetzt werden (z.B. mit dem Operator \"<code>=</code>\"). Siehe auch <emlink href=\"script/Funcs.html#referenzen\">Referenzparameter</emlink>."
 
-#~ msgid "Permissions"
-#~ msgstr "Aufrufberechtigungen"
-
-#~ msgid "A function can have one of three levels of \"calling permission\". This will determine from where the function may be called:"
-#~ msgstr "Für jede Funktion kann eine \"Aufrufberechtigung\" festgelegt werden, die bestimmt, von wo die Funktion aufgerufen werden darf. Hier gibt es drei verschiedene Stufen:"
-
-#~ msgid "may be called from the engine or any other script (default)"
-#~ msgstr "darf von überall aufgerufen werden, auch aus anderen Scripten (Standard)"
-
 #~ msgid "may only be called from the engine or from within the same object script"
 #~ msgstr "darf nur aus dem eigenen Script und von der Engine aufgerufen werden"
-
-#~ msgid "may only be called from the same object script"
-#~ msgstr "darf nur aus dem eigenen Script aufgerufen werden"
-
-#~ msgid "The calling permissions are expected before the <code>func</code> marker:"
-#~ msgstr "Die Aufrufberechtigung wird jeweils direkt vor \"<code>func</code>\" geschrieben:"
-
-#~ msgid "Calling this function from another object script will cause an error."
-#~ msgstr "Wird diese Funktion nun von einem externen Script aufgerufen, so gibt die Engine einen Fehler aus."
-
-#~ msgid "As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <placeholder-1/> and <placeholder-2/> functions."
-#~ msgstr "Da es in manchen Fällen notwendig erscheint, auch eine geschützte Funktion aus einem fremden Script aufzurufen, kann die Aufrufbeschränkung mittels <placeholder-1/> bzw. <placeholder-2/> umgangen werden."
 
 #~ msgid "References"
 #~ msgstr "Referenzen"

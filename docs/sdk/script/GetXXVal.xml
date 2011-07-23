@@ -52,7 +52,7 @@
     </text>
     <text>The property to be accessed is referenced through its name and section, if applicable (if no value is given for the section, all sections will be searched for the property). If a matching property was not found or does not correspond to a valid C4Script data type (e.g. ID lists) the result is <code>nil</code>.</text>
     <text>If <code>nil</code> is given for obj/definition in a call to GetObjectVal, the object or the definition of the object from which the call was made is used.</text>
-    <text>There is a number of additional wrapper functions located in System.ocg/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>("Width", 0, -obj-)</code>).</text>
+    <text>There is a number of additional wrapper functions located in System.ocg/GetXVal.c. These functions allow for easy access to various common Get*Val functions (e.g. <code>GetObjWidth()</code> for <code><i>GetObjectVal</i>("Width", 0)</code>).</text>
   </part>
   <author>Peter</author><date>2001-11</date>
 </doc>

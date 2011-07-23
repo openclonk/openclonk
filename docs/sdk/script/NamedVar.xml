@@ -56,7 +56,7 @@ protected func Timer()
   if(!--time_to_live)
   {
     <funclink>RemoveObject</funclink>();
-    <funclink>return</funclink>();
+    <funclink>return</funclink>;
   }
 
   var obj = <funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk), <funclink>Sort_Distance</funclink>());
@@ -64,7 +64,7 @@ protected func Timer()
   if(<funclink>ObjectDistance</funclink>(obj) &lt; 20)
     <funclink>DoDamage</funclink>(-10, obj);
 
-  <funclink>return</funclink>();
+  <funclink>return</funclink>;
 }</code>
     <h>Addendum:</h>
     <text>

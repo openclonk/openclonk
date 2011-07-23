@@ -37,7 +37,7 @@
           <col><code>string</code></col>
           <col>String</col>
           <col>Any text.</col>
-          <col><code>&quot;Dies ist ein Text!&quot;</code></col>
+          <col><code>&quot;This is a text!&quot;</code></col>
         </row>
         <row>
           <col><code>array</code></col>
@@ -92,8 +92,8 @@
       <h>Example 2</h>
       <code>func RandomID()
 {
-  var a = [Clonk, WIPF, BIRD, HUT1];
-  return (a[<funclink>Random</funclink>(4)]);
+  var a = [Clonk, Wipf, Bird];
+  return (a[<funclink>Random</funclink>(3)]);
 }</code>
       <text>This function randomly chooses one out of four ids and returns it.</text>
       <h>Example 3</h>
