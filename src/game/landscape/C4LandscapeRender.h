@@ -10,6 +10,7 @@ enum C4LR_Byte {
 	C4LR_Material,
 	C4LR_BiasX,
 	C4LR_BiasY,
+	C4LR_Scaler,
 
 	C4LR_ByteCount
 };

@@ -36,6 +36,7 @@ const char *C4LR_ShaderWorkarounds[] = {
 	"",
 	"#define NO_TEXTURE_LOD_IN_FRAGMENT\n",
 	"#define BROKEN_ARRAYS_WORKAROUND\n",
+	"#define SCALER_IN_GPU\n",
 };
 const int C4LR_ShaderWorkaroundCount = sizeof(C4LR_ShaderWorkarounds) / sizeof(*C4LR_ShaderWorkarounds);
 
@@ -369,7 +370,9 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 		for(x = 0; x < To.Wdt; x++) {
 
 			// Biases
+			int iPix = pSource->_GetPix(To.x+x, To.y+y);
 			int iPlac = pSource->_GetPlacement(To.x+x, To.y+y);
+			int iMat = pSource->_GetMat(To.x+x, To.y+y);
 			int iHBias = Max(0, iPlac * (C4LR_BiasDistanceY-1) - iRight) -
 			             Max(0, iPlac * (C4LR_BiasDistanceY-1) - iLeft);
 			int iVBias = Max(0, iPlac * (C4LR_BiasDistanceY-1) - pDown[x]) -
@@ -381,13 +384,37 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			int iHBiasScaled = BoundBy(iHBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceX + 128, 0, 255);
 			int iVBiasScaled = BoundBy(iVBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceY + 128, 0, 255);
 
+			// Get scaler
+			int iScaler = 0;
+			if(To.y+y > 0) {
+				if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y-1) == iMat)
+					iScaler += 1;
+				if(pSource->_GetMat(To.x+x, To.y+y-1) == iMat)
+					iScaler += 2;
+				if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y-1) == iMat)
+					iScaler += 4;
+			}
+			if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y) == iMat)
+				iScaler += 8;
+			if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y) == iMat)
+				iScaler += 16;
+			if(To.y+y < iHeight-1) {
+				if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y+1) == iMat)
+					iScaler += 32;
+				if(pSource->_GetMat(To.x+x, To.y+y+1) == iMat)
+					iScaler += 64;
+				if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y+1) == iMat)
+					iScaler += 128;
+			}
+
 			// Collect data to save per pixel
 			unsigned char data[C4LR_SurfaceCount * 4];
 			memset(data, 0, sizeof(data));
 
-			data[C4LR_Material] = pSource->_GetPix(To.x+x, To.y+y);
+			data[C4LR_Material] = iPix;
 			data[C4LR_BiasX] = iHBiasScaled;
 			data[C4LR_BiasY] = iVBiasScaled;
+			data[C4LR_Scaler] = iScaler;
 
 			for(int i = 0; i < C4LR_SurfaceCount; i++)
 				TexRefs[i]->SetPix4(To.x+x, To.y+y, 
@@ -754,6 +781,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_ScalerTex], GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}

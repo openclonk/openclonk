@@ -20,7 +20,7 @@ uniform int materialDepth;
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
 const vec2 scalerStepY = vec2(0.0, 1.0 / 32.0);
-const vec2 scalerOffset = vec2(0.0, 0.0) + scalerStepX / 3.0 + scalerStepY / 3.0;
+const vec2 scalerOffset = scalerStepX / 3.0 + scalerStepY / 3.0;
 const vec2 scalerPixel = vec2(scalerStepX.x, scalerStepY.y) / 3.0;
 
 #ifdef NO_TEXTURE_LOD_IN_FRAGMENT
@@ -61,6 +61,7 @@ void main()
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
 	
+#ifdef SCALER_IN_GPU
 	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == lpx.r)
 		scalerCoo += scalerStepX;
 	if(texture2D(landscapeTex[0], centerCoo             - fullStepY).r == lpx.r)
@@ -80,6 +81,13 @@ void main()
 	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
 		scalerCoo += 16.0 * scalerStepY;
 
+#else
+
+	scalerCoo.x += px.a * 255.0 / 8.0;
+	scalerCoo.y += floor(lpx.a * 255.0 / 8.0) / 32.0;
+
+#endif
+
 	// Note: scalerCoo will jump around a lot, causing some GPUs to apparantly get confused with
 	//       the level-of-detail calculation. We therefore try to disable LOD.
 	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
@@ -90,9 +98,9 @@ void main()
 	
 	// Get material pixels
 	float mi = queryMatMap(f2i(lpx.r));
-	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), mi));
+	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), mi));
 	float omi = queryMatMap(f2i(lopx.r));
-	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(3.0, 3.0), omi));
+	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), omi));
 	
 	// Brightness
 	float ambientBright = 1.0, shadeBright = 0.8;	
