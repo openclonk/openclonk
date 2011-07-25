@@ -1137,7 +1137,7 @@ func FxIntScaleTimer(target, number, time)
 		dist += GetY(100)-GetY()*100;
 		if(number.var0 != 1)
 		{
-			number.var1 = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000,0, GetAnimationLength("ScaleTop"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			number.var1 = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.var0 = 1;
 			number.var2 = COMD_Up;
 		}
