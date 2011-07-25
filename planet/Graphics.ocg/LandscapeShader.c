@@ -83,7 +83,7 @@ void main()
 
 #else
 
-	scalerCoo.x += px.a * 255.0 / 8.0;
+	scalerCoo.x += mod(lpx.a * 255.0, 8.0) / 8.0;
 	scalerCoo.y += floor(lpx.a * 255.0 / 8.0) / 32.0;
 
 #endif
