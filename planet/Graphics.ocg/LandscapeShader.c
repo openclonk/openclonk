@@ -83,9 +83,10 @@ void main()
 
 #else
 
-	scalerCoo.x += mod(lpx.a * 255.0, 8.0) / 8.0;
-	scalerCoo.y += floor(lpx.a * 255.0 / 8.0) / 32.0;
-
+	int iScaler = f2i(lpx.a), iRow = iScaler / 8;
+	scalerCoo.x += float(iScaler - iRow * 8) / 8.0;
+	scalerCoo.y += float(iScaler / 8) / 32.0;
+	
 #endif
 
 	// Note: scalerCoo will jump around a lot, causing some GPUs to apparantly get confused with
