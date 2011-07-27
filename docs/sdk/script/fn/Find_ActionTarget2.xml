@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>Find_ActionTarget</title>
+    <title>Find_ActionTarget2</title>
     <category>Objects</category>
     <subcat>Search</subcat>
     <version>5.1 OC</version>
@@ -18,9 +18,9 @@
         </param>
       </params>
     </syntax>
-    <desc>Search criterion: finds all objects that have the specified first action target.</desc>
+    <desc>Search criterion: finds all objects that have the specified second action target.</desc>
     <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
-    <related><funclink>FindObjects</funclink><funclink>Find_ActionTarget2</funclink><funclink>Find_ActionTargets</funclink></related>
+    <related><funclink>FindObjects</funclink><funclink>Find_ActionTarget</funclink><funclink>Find_ActionTargets</funclink></related>
   </func>
-  <author>Clonkonaut</author><date>2006-07</date>
+  <author>PeterW</author><date>2011</date>
 </funcs>
