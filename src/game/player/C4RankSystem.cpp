@@ -49,12 +49,14 @@ int C4RankSystem::Init(const char *szRegister,
 	// Check registry for present rank names and set defaults
 #ifdef _WIN32
 	int crank=0;
-	char rankname[C4MaxName+1],keyname[30];
+	char keyname[30];
+	StdCopyStrBuf rankname;
 	bool Checking=true;
 	while (Checking)
 	{
 		sprintf(keyname,"Rank%03d",crank+1);
-		if (GetRegistryString(Register,keyname,rankname,C4MaxName+1))
+		rankname = GetRegistryString(Register,keyname);
+		if (!rankname.isNull())
 		{
 			// Rank present
 			crank++;
@@ -62,8 +64,9 @@ int C4RankSystem::Init(const char *szRegister,
 		else
 		{
 			// Rank not defined, check for default
-			if (SCopySegment(szDefRanks,crank,rankname,'|',C4MaxName)
-			    && SetRegistryString(Register,keyname,rankname))
+			rankname.AppendChars('\0', C4MaxName);
+			if (SCopySegment(szDefRanks,crank,rankname.getMData(),'|',C4MaxName)
+			    && SetRegistryString(Register,keyname,rankname.getData()))
 				crank++;
 			else
 				Checking=false;
@@ -219,9 +222,11 @@ StdStrBuf C4RankSystem::GetRankName(int iRank, bool fReturnLastIfOver)
 	while (iRank>=0)
 	{
 		char keyname[30];
+		StdCopyStrBuf rankname;
 		sprintf(keyname,"Rank%03d",iRank+1);
-		if (GetRegistryString(Register,keyname,RankName,C4MaxName+1))
-			return StdStrBuf(RankName);
+		rankname = GetRegistryString(Register,keyname);
+		if (!rankname.isNull())
+			return rankname;
 		if (!fReturnLastIfOver) return StdStrBuf();
 		--iRank;
 	}
@@ -245,9 +250,9 @@ int C4RankSystem::RankByExperience(int iExp)
 bool C4RankSystem::Check(int iRank, const char  *szDefRankName)
 {
 #ifdef _WIN32
-	char rankname[C4MaxName+1],keyname[30];
+	char keyname[30];
 	sprintf(keyname,"Rank%03d",iRank);
-	if (GetRegistryString(Register,keyname,rankname,C4MaxName+1))
+	if (!GetRegistryString(Register,keyname).isNull())
 		return false;
 	if (!szDefRankName || (SLen(szDefRankName)>C4MaxName))
 		return false;

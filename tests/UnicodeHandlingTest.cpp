@@ -198,8 +198,8 @@ TEST(UnicodeHandlingTest, RegistryAccess)
 	for (wchar_t **wide_string = wide_strings; *wide_string; ++wide_string)
 	{
 		ASSERT_TRUE(SetRegistryString(key, "WideCharTest", StdStrBuf(*wide_string).getData()));
-		char buffer[256];
-		ASSERT_TRUE(GetRegistryString(key, "WideCharTest", buffer, sizeof(buffer)/sizeof(*buffer)));
+		StdCopyStrBuf buffer;
+		ASSERT_TRUE(!(buffer = GetRegistryString(key, "WideCharTest")).isNull());
 		EXPECT_STREQ(*wide_string, StdStrBuf(buffer).GetWideChar()) << "Registry read-back returned wrong value";
 	}
 }

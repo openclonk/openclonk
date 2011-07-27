@@ -30,37 +30,42 @@
 #include <C4windowswrapper.h>
 #include <stdio.h>
 
-bool GetRegistryString(const char *szSubKey,
-                       const char *szValueName,
-                       char *sValue, DWORD dwValSize)
+StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName)
 {
-	long qerr;
 	HKEY ckey;
-	DWORD valtype;
 
 	// Open the key
-	if ((qerr=RegOpenKeyExW(HKEY_CURRENT_USER,
-	                       GetWideChar(szSubKey),
-	                       0,
-	                       KEY_READ,
-	                       &ckey
-	                      ))!=ERROR_SUCCESS) return false;
+	if (RegOpenKeyExW(HKEY_CURRENT_USER, GetWideChar(szSubKey), 0, KEY_READ, &ckey)!=ERROR_SUCCESS)
+		return StdCopyStrBuf();
 
 	// Get the value
-	if ((qerr=RegQueryValueExA(ckey,
-	                          szValueName,
-	                          NULL,
-	                          &valtype,
-	                          (BYTE*) sValue,
-	                          &dwValSize
-	                         ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return false; }
-
-	// Close the key
-	RegCloseKey(ckey);
-
-	if (valtype!=REG_SZ) return false;
-
-	return true;
+	DWORD dwValSize = 128;
+	BYTE *sValue = new BYTE[dwValSize];
+	while(true)
+	{
+		DWORD valtype;
+		switch(RegQueryValueExW(ckey, GetWideChar(szValueName), NULL, &valtype,
+			sValue, &dwValSize))
+		{
+		case ERROR_SUCCESS:
+			RegCloseKey(ckey);
+			if (valtype == REG_SZ)
+			{
+				StdCopyStrBuf nrv(reinterpret_cast<wchar_t*>(sValue));
+				delete[] sValue;
+				return nrv;
+			} else {
+		default:
+				delete[] sValue;
+				return StdCopyStrBuf();
+			}
+			break;
+		case ERROR_MORE_DATA:
+			delete[] sValue;
+			sValue = new BYTE[dwValSize];
+			break;
+		}
+	}
 }
 
 bool SetRegistryString(const char *szSubKey,
@@ -210,20 +215,21 @@ bool RestoreWindowPosition(HWND hwnd,
                            const char *szSubKey,
                            bool fHidden)
 {
-	char regstr[100],buffer2[5];
+	char buffer2[5];
 	int x,y,wdt,hgt;
 	bool fSetSize=true;
+	StdCopyStrBuf regstr = GetRegistryString(szSubKey,szWindowName);
 	// No position stored: cannot restore
-	if (!GetRegistryString(szSubKey,szWindowName,regstr,100))
+	if (regstr.isNull())
 		return false;
-	if (SEqual(regstr,"Maximized"))
+	if (regstr == "Maximized")
 		return !!ShowWindow(hwnd,SW_MAXIMIZE | SW_NORMAL);
-	if (SEqual(regstr,"Minimized"))
+	if (regstr == "Minimized")
 		return !!ShowWindow(hwnd,SW_MINIMIZE | SW_NORMAL);
-	SCopySegment(regstr,0,buffer2,',',4); sscanf(buffer2,"%i",&x);
-	SCopySegment(regstr,1,buffer2,',',4); sscanf(buffer2,"%i",&y);
-	if (SCopySegment(regstr,2,buffer2,',',4)) sscanf(buffer2,"%i",&wdt); else fSetSize=false;
-	if (SCopySegment(regstr,3,buffer2,',',4)) sscanf(buffer2,"%i",&hgt); else fSetSize=false;
+	SCopySegment(regstr.getData(),0,buffer2,',',4); sscanf(buffer2,"%i",&x);
+	SCopySegment(regstr.getData(),1,buffer2,',',4); sscanf(buffer2,"%i",&y);
+	if (SCopySegment(regstr.getData(),2,buffer2,',',4)) sscanf(buffer2,"%i",&wdt); else fSetSize=false;
+	if (SCopySegment(regstr.getData(),3,buffer2,',',4)) sscanf(buffer2,"%i",&hgt); else fSetSize=false;
 	if (!fSetSize)
 	{
 		RECT winpos; if (!GetWindowRect(hwnd,&winpos)) return false;

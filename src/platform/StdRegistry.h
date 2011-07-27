@@ -27,7 +27,7 @@
 #include "StdCompiler.h"
 #include <C4windowswrapper.h>
 
-bool GetRegistryString(const char *szSubKey, const char *szValueName, char *sValue, DWORD dwValSize);
+StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);
 
 bool SetRegShell(const wchar_t *szClassName,
