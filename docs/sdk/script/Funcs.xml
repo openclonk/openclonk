@@ -102,7 +102,7 @@ ShowSum(1, 2, 3, 4, 5, 6);</code>
   var obj;
   <emlink href="for.html">for</emlink>(var i = 0; i &lt; count; i++)
     obj = <funclink>inherited</funclink>(id, obj);
-  return(obj);
+  return obj;
 }</code>
       <text>This script redefines the engine function <funclink>CreateContents</funclink> while adding a new parameter declaration at the end of the parameter list which now allows to create multiple objects. Notice that <funclink>inherited</funclink> within this function refers to the overloaded engine function <funclink>CreateContents</funclink>.</text>
       <h>Attention!</h>

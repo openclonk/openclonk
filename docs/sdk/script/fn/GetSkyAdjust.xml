@@ -13,7 +13,7 @@
         <param>
           <type>bool</type>
           <name>back_color</name>
-          <desc>If not 0, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
+          <desc>If not <code>false</code>, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
         </param>
       </params>
     </syntax>

@@ -19,7 +19,7 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object in which to access effects. If 0, the global effects are accessed.</desc>
+          <desc>Target object in which to access effects. If <code>nil</code>, the global effects are accessed.</desc>
           <optional />
         </param>
         <param>
@@ -36,7 +36,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Retrieves a certain effect. If an effect cannot be found the return value is nil.</desc>
+    <desc>Retrieves a certain effect. If an effect cannot be found the return value is <code>nil</code>.</desc>
     <examples>
       <example>
         <code>var i, effect;

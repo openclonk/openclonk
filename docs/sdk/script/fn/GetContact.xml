@@ -19,7 +19,7 @@
         <param>
           <type>int</type>
           <name>dwCNAT</name>
-          <desc>Bit mask of CNAT values which determine which directions to check. If 0, all directions are checked.</desc>
+          <desc>Bit mask of CNAT values which determine which directions to check. If not specified, all directions are checked.</desc>
           <optional />
         </param>
       </params>

@@ -14,7 +14,7 @@
         <param>
           <type>string</type>
           <name>gfx_name</name>
-          <desc>Name of the graphic to be set. If 0, the default graphic is set.</desc>
+          <desc>Name of the graphic to be set. If <code>nil</code>, the default graphic is set.</desc>
           <optional />
         </param>
         <param>

@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the name of a player. If the specified player number is invalid, nil is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
+    <desc>Returns the name of a player. If the specified player number is invalid, <code>nil</code> is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
     <related>
       <funclink>GetTaggedPlayerName</funclink>
       <funclink>GetPlayerByName</funclink>

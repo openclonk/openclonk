@@ -160,7 +160,7 @@
         <row id="ControlTransfer">
           <literal_col>ControlTransfer</literal_col>
           <col>object obj, int x, int y</col>
-          <col>When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning true. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
+          <col>When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning <code>true</code>. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
         </row>
         <row id="UpdateTransferZone">
           <literal_col>UpdateTransferZone</literal_col>
@@ -170,12 +170,12 @@
         <row id="MenuQueryCancel">
           <literal_col>MenuQueryCancel</literal_col>
           <col>int selection, object menu_object</col>
-          <col>When the player wants to close a user defined object menu. Return value true will keep the menu open.</col>
+          <col>When the player wants to close a user defined object menu. Return value <code>true</code> will keep the menu open.</col>
         </row>
         <row id="IsFulfilled">
           <literal_col>IsFulfilled</literal_col>
           <col></col>
-          <col>Only in game goal objects. A return value true indicates that this goal is fulfilled.</col>
+          <col>Only in game goal objects. A return value <code>true</code> indicates that this goal is fulfilled.</col>
         </row>
         <row id="ControlContents">
           <literal_col>ControlContents</literal_col>
@@ -195,7 +195,7 @@
         <row id="QueryCatchBlow">
           <literal_col>QueryCatchBlow</literal_col>
           <col>object by</col>
-          <col>Called before the object is hit or punched by another object. By returning true, QueryCatchBlow can reject physical blows.</col>
+          <col>Called before the object is hit or punched by another object. By returning <code>true</code>, QueryCatchBlow can reject physical blows.</col>
         </row>
         <row id="LineBreak">
           <literal_col>LineBreak</literal_col>
@@ -205,7 +205,7 @@
         <row id="BuildNeedsMaterial">
           <literal_col>BuildNeedsMaterial</literal_col>
           <col>id material_definition, int amount</col>
-          <col>When the object is building another object and building material is required. The parameters are the type and amount of the first needed material. If this function returns true, no material message is displayed above the object.</col>
+          <col>When the object is building another object and building material is required. The parameters are the type and amount of the first needed material. If this function returns <code>true</code>, no material message is displayed above the object.</col>
         </row>
         <row id="AttachTargetLost">
           <literal_col>AttachTargetLost</literal_col>
@@ -220,7 +220,7 @@
         <row id="GetObject2Drop">
           <literal_col>GetObject2Drop</literal_col>
           <col>object for_collection_of_object</col>
-          <col>Called to determine the least needed inventory object when a clonk tries to collect a new object and his inventory is full. The function should return the object to be dropped to gain space, or 0 if none.</col>
+          <col>Called to determine the least needed inventory object when a clonk tries to collect a new object and his inventory is full. The function should return the object to be dropped to gain space, or <code>nil</code> if none.</col>
         </row>
         <row id="OnMenuSelection">
           <literal_col>OnMenuSelection</literal_col>
@@ -295,12 +295,12 @@
         <row id="RejectCollect">
           <literal_col>RejectCollect</literal_col>
           <col>id def, object obj</col>
-          <col>Called before Collection. If RejectCollect returns true, the collection of the other object is prevented.</col>
+          <col>Called before Collection. If RejectCollect returns <code>true</code>, the collection of the other object is prevented.</col>
         </row>
         <row id="RejectEntrance">
           <literal_col>RejectEntrance</literal_col>
           <col>object into_object</col>
-          <col>Called before Entrance. If RejectEntrance returns true, then entrance of the other object is prevented.</col>
+          <col>Called before Entrance. If RejectEntrance returns <code>true</code>, then entrance of the other object is prevented.</col>
         </row>
         <row id="InitializePlayer">
           <literal_col>InitializePlayer</literal_col>
@@ -310,7 +310,7 @@
         <row id="SellTo">
           <literal_col>SellTo</literal_col>
           <col>int by_player</col>
-          <col>When the object is sold. Should return 0 or the id of the object type which is actually added to the player's homebase material.</col>
+          <col>When the object is sold. Should return <code>nil</code> or the id of the object type which is actually added to the player's homebase material.</col>
         </row>
         <row id="Sale">
           <literal_col>Sale</literal_col>
@@ -330,7 +330,7 @@
         <row id="RejectTeamSwitch">
           <literal_col>RejectTeamSwitch</literal_col>
           <col>int player, int new_team</col>
-          <col>Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns true, the team switch of a player can be prevented (see <funclink>SetPlayerTeam</funclink>).</col>
+          <col>Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns <code>true</code>, the team switch of a player can be prevented (see <funclink>SetPlayerTeam</funclink>).</col>
         </row>
         <row id="OnTeamSwitch">
           <literal_col>OnTeamSwitch</literal_col>
@@ -341,12 +341,12 @@
 
     </text>
     <h id="Control-Funktionen">Control Functions</h>
-    <text>At every player command (left, right, up, down dig, throw, special) the engine calls the corresponding control function in the script of the currently controlled object of the player. If the function is defined and returns true, the internal handling of the player command is skipped. If the function is not defined or returns false, internal processing is done.</text>
+    <text>At every player command (left, right, up, down dig, throw, special) the engine calls the corresponding control function in the script of the currently controlled object of the player. If the function is defined and returns <code>true</code>, the internal handling of the player command is skipped. If the function is not defined or returns <code>false</code>, internal processing is done.</text>
     <code>func ControlThrow()
 {
   <emlink href="script/fn/if.html">if</emlink> (<emlink href="script/fn/FindContents.html">FindContents</emlink>(SPER)) 
     <emlink href="script/fn/return.html">return</emlink>(<emlink href="script/fn/SetAction.html">SetAction</emlink>(&quot;ThrowSpear&quot;));
-  <emlink href="script/fn/return.html">return</emlink>(0);
+  <emlink href="script/fn/return.html">return</emlink> 0;
 }
 </code>
     <text>If a clonk with this script is carrying a spear and the player hits the throw button, the clonk performs a special throw action. In this case, however, the command is not passed to the other selected clonks as usual. If the clonk does not carry a spear, the function returns 0 and the regular throwing action is performed.</text>
@@ -366,10 +366,10 @@
   <emlink href="script/fn/return.html">return</emlink>(0);
 }  
 </code>
-    <text>By returning true the command can be intercepted and internal handling can be prevented. "command_object" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href="definition/defcore.html">DefCore</emlink>). The script command <emlink href="script/fn/SetCommand.html">SetCommand</emlink> does not cause ControlCommand calls.</text>
+    <text>By returning <code>true</code> the command can be intercepted and internal handling can be prevented. "command_object" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href="definition/defcore.html">DefCore</emlink>). The script command <emlink href="script/fn/SetCommand.html">SetCommand</emlink> does not cause ControlCommand calls.</text>
     <text>ControlCommand calls are also transferred to grabbed objects or objects controlled from the inside if these have the VehicleControl flag set. This transferred call is made after the ControlCommand call to the clonk, but before internal handling. So the vehicle, too, has the opportunity to intercept and overload the command.</text>
     <text>ControlWheelUp and ControlWheelDown are generated by the mouse wheel (and only when not in an object menu). If they are not overloaded, they will cause ShiftContents commands. That in return could be intercepted in ControlContents.</text>
-    <text>ControlContents is called when an inventory change is made by direct mouse click, mouse wheel rotation, or a ShiftContents script command (e.g. in ControlSpecial or ControlSpecial2). Here you can perform special actions such as the arming of weapons or custom inventory sounds. If the function is intercepted with a return value true, the inventory change is prevented. Otherwise, the first object with the given id moves to the front of the inventory and a Selection call is made to the newly selected object. If the latter call is not overloaded, the sound effect "Grab" is played for the container object.</text>
+    <text>ControlContents is called when an inventory change is made by direct mouse click, mouse wheel rotation, or a ShiftContents script command (e.g. in ControlSpecial or ControlSpecial2). Here you can perform special actions such as the arming of weapons or custom inventory sounds. If the function is intercepted with a return value <code>true</code>, the inventory change is prevented. Otherwise, the first object with the given id moves to the front of the inventory and a Selection call is made to the newly selected object. If the latter call is not overloaded, the sound effect "Grab" is played for the container object.</text>
     <h id="Context-Funktionen">Context Functions</h>
     <text>Context functions (Context_ in object scripts) are displayed as entries in the context menu of the object. When calling a context function, the engine will pass a pointer to the calling object as the first parameter (with crew members this is always the object itself). Context functions should always have a valid function description and be declared pubic.</text>
     <code>public func ContextConstruction(object caller)
@@ -379,7 +379,7 @@
   return true;
 }  
 </code>
-    <text>If the condition field is used, the context function is only displayed as a menu entry if the script function defined by the condition field (in this case HasKnowledge) is found in the object's script and returns true. The menu object is passed as the first parameter to the condition function.</text>
+    <text>If the condition field is used, the context function is only displayed as a menu entry if the script function defined by the condition field (in this case HasKnowledge) is found in the object's script and returns <code>true</code>. The menu object is passed as the first parameter to the condition function.</text>
   </part>
   <author>sulai</author><date>2003-11</date>
   <author>Sven2</author><date>2004-02</date>

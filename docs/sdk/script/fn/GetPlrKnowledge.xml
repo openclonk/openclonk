@@ -17,25 +17,25 @@
         </param>
         <param>
           <type>id</type>
-          <name>id</name>
-          <desc>If specified, the function returns true, if the player has the construction plan of the specified object.</desc>
+          <name>type</name>
+          <desc>If specified, the function returns <code>true</code>, if the player has the construction plan of the specified object.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Specify only if id is not 0.</desc>
+          <desc>If <code>type</code> is not specified, this is the index of the construction plan from the list of construction plans.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>category</name>
-          <desc>Specify only if id is not 0.</desc>
+          <desc>If <code>type</code> is not specified, this narrows down the category of the construction plans.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>With id specified the function returns true if the player has the construction plan of the specified object. In this case index and category are ignored. If id is 0, the function returns the indicated construction plan of the specified category.</desc>
+    <desc>With <code>type</code> specified the function returns <code>true</code> if the player has the construction plan of the specified object. In this case <code>index</code> and <code>category</code> are ignored. Otherwise, the function returns the indicated construction plan of the specified category.</desc>
     <examples>
       <example>
         <code><funclink>if</funclink>(GetPlrKnowledge(0,WindGenerator))

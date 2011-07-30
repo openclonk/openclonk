@@ -13,7 +13,7 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object of the effect the of which you want to access variables. 0 for global effects.</desc>
+          <desc>Target object of the effect the of which you want to access variables. <code>nil</code> for global effects.</desc>
           <optional />
         </param>
         <param>

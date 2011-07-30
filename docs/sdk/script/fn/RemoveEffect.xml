@@ -19,7 +19,7 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object from which to remove an effect. If 0, the global effects list will be searched.</desc>
+          <desc>Target object from which to remove an effect. If <code>nil</code>, the global effects list will be searched.</desc>
           <optional />
         </param>
         <param>
@@ -32,7 +32,7 @@
           <type>bool</type>
           <name>no_calls</name>
           <optional />
-          <desc>If not 0, no Stop calls will be made.</desc>
+          <desc>If not <code>false</code>, no Stop calls will be made.</desc>
         </param>
       </params>
     </syntax>

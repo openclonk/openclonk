@@ -19,7 +19,7 @@
         <param>
           <type>bool</type>
           <name>exact</name>
-          <desc>If true, change is applied to the exact energy value (0 to value of Physical "Energy").</desc>
+          <desc>If <code>true</code>, change is applied to the exact energy value (0 to value of Physical "Energy").</desc>
           <optional />
         </param>
         <param>

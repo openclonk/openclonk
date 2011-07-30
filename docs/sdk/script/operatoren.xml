@@ -294,7 +294,7 @@ while(<strong>++somevar</strong> &lt; 10)
       </part>
       <h id="andor">The Operators &amp;&amp; and ||</h>
       <part>
-        <text>These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:</text>
+        <text>These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be <code>false</code>, regardless of the result of Explode:</text>
         <code>0 &amp;&amp; Explode(20);</code>
         <text>Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:</text>
         <code>CreateObject(Knight,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>

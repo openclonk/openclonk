@@ -48,7 +48,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Should be used instead of <funclink>CreateObject</funclink> to create a building or construction site. In local calls the specified position will be an offset to the position of the calling object. If check_site is 1, the site is checked for suitability before creating the object. If the site is not suitable (e.g. rough ground or not enough space), a message is displayed above the calling object and the function returns 0.</desc>
+    <desc>Should be used instead of <funclink>CreateObject</funclink> to create a building or construction site. In local calls the specified position will be an offset to the position of the calling object. If check_site is 1, the site is checked for suitability before creating the object. If the site is not suitable (e.g. rough ground or not enough space), a message is displayed above the calling object and the function returns <code>nil</code>.</desc>
     <examples>
       <example>
         <code>CreateConstruction(WindGenerator, 150,100,  0,100,1 );</code>

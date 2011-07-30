@@ -44,7 +44,7 @@
         <param>
           <type>bool</type>
           <name>do_gamma</name>
-          <desc>If true, the lightning will cause a screen flash for all players.</desc>
+          <desc>If <code>true</code>, the lightning will cause a screen flash for all players.</desc>
         </param>
       </params>
     </syntax>

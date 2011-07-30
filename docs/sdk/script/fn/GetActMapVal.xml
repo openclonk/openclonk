@@ -24,7 +24,7 @@
         <param>
           <type>id</type>
           <name>definition</name>
-          <desc>Object definition of which to get action data. If 0, the definition of the calling object is used.</desc>
+          <desc>Object definition of which to get action data. If not specified, the definition of the calling object is used.</desc>
           <optional />
         </param>
         <param>

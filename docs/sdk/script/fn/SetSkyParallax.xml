@@ -54,7 +54,7 @@
       </params>
     </syntax>
     <desc>Changes parallaxity and scroll speed of the sky.</desc>
-    <remark>If you specify nil for one of the parameters or leave it out, the previous value will be kept.</remark>
+    <remark>If you specify <code>nil</code> for one of the parameters or leave it out, the previous value will be kept.</remark>
     <examples>
       <example>
         <code>SetSkyParallax(1, 20,20, 0,0, nil, nil);</code>

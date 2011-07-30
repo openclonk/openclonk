@@ -13,13 +13,13 @@
         <param>
           <type>string</type>
           <name>mask</name>
-          <desc>Search mask for effect names. You can use '*' or '?' wildcards or specify an effect name directly. If 0, all effects are counted.</desc>
+          <desc>Search mask for effect names. You can use '*' or '?' wildcards or specify an effect name directly. If unspecified, all effects are counted.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object the effects of which you want to count. If 0, the global effects will be counted.</desc>
+          <desc>Target object the effects of which you want to count. If unspecified, the global effects will be counted.</desc>
           <optional />
         </param>
         <param>

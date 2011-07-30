@@ -18,7 +18,7 @@
         <param>
           <type>bool</type>
           <name>reverse</name>
-          <desc>If true, sorting will be done in descendnig order. Otherwise ascending order.</desc>
+          <desc>If <code>true</code>, sorting will be done in descendnig order. Otherwise ascending order.</desc>
           <optional />
         </param>
       </params>

@@ -19,7 +19,7 @@
         <param>
           <type>object</type>
           <name>command_object</name>
-          <desc>Object to receive the menu command (see <funclink>AddMenuItem</funclink>). Can be 0 in local calls.</desc>
+          <desc>Object to receive the menu command (see <funclink>AddMenuItem</funclink>). Can be <code>nil</code> in local calls.</desc>
         </param>
         <param>
           <type>int</type>

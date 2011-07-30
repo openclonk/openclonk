@@ -16,12 +16,6 @@
           <name>dwVisibility</name>
           <desc>Bit mask defining the new visibility.<br/> Either <funclink>VIS_All</funclink> or <funclink>VIS_None</funclink> or a bit mask of <funclink>VIS_Owner</funclink>, <funclink>VIS_Allies</funclink>, <funclink>VIS_Enemies</funclink>, <funclink>VIS_God</funclink>, and <funclink>VIS_Local</funclink>.</desc>
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object the visibility of which is to be changed. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
     <desc>Changes the visibility of an object. Objects can be made invisible for any group of players by providing a bit mask in dwVisibility.</desc>

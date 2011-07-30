@@ -23,7 +23,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the indicated crew member of a player. For an invalid index nil is returned.</desc>
+    <desc>Returns the indicated crew member of a player. For an invalid index <code>nil</code> is returned.</desc>
     <examples>
       <example>
         <code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>

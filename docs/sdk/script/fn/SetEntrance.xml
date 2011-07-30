@@ -13,7 +13,7 @@
         <param>
           <type>bool</type>
           <name>status</name>
-          <desc>false = closed; true = open</desc>
+          <desc><code>false</code> = closed; <code>true</code> = open</desc>
         </param>
       </params>
     </syntax>

@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the name of a player, including color markup using the player color. If the specified player number is invalid, nil is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
+    <desc>Returns the name of a player, including color markup using the player color. If the specified player number is invalid, <code>nil</code> is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
     <remark>The markup color is chosen so the player name will be readable on black background. Dark player names are brightened up.</remark>
     <examples>
       <example>

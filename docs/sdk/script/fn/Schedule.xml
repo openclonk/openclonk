@@ -28,7 +28,7 @@
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object in which the call is to be made. Can be 0 in local calls.</desc>
+          <desc>Object in which the call is to be made. Can be <code>nil</code> in local calls.</desc>
         </param>
       </params>
     </syntax>

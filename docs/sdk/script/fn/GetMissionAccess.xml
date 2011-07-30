@@ -18,7 +18,7 @@
       </params>
     </syntax>
     <desc>Determines whether the player already has the specified mission access password.</desc>
-    <remark>In a network game, this function always returns 0. Otherwise differing local values might cause synchronization problems.</remark>
+    <remark>In a network game, this function always returns <code>false</code>. Otherwise differing local values might cause synchronization problems.</remark>
     <examples>
       <example>
         <code><funclink>if</funclink> (!GetMissionAccess(&quot;DasWarHarteArbeit&quot;))

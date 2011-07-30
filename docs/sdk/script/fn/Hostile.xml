@@ -23,7 +23,7 @@
         <param>
           <type>bool</type>
           <name>check_one_way</name>
-          <desc>If true, checks only if player1 is hostile towards player2 but not in reverse.</desc>
+          <desc>If <code>true</code>, checks only if player1 is hostile towards player2 but not in reverse.</desc>
           <optional />
         </param>
       </params>

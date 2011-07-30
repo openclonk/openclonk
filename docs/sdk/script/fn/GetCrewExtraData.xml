@@ -11,11 +11,6 @@
       <rtype>any</rtype>
       <params>
         <param>
-          <type>object</type>
-          <name>crew</name>
-          <desc>Object to get the extra data from. Can be 0 at local call.</desc>
-        </param>
-        <param>
           <type>string</type>
           <name>data_name</name>
           <desc>Name for the data.</desc>

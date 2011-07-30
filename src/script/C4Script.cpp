@@ -406,16 +406,16 @@ static C4Void FnSetLength(C4AulContext *cthr, C4ValueArray *pArray, int iNewSize
 	return C4Void();
 }
 
-static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
+static Nillable<long> FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 {
 	const char *szText = FnStringPar(pString);
-	if (!szText) return 0;
+	if (!szText) return C4Void();
 	// C4Strings are UTF-8 encoded, so decode to get the indicated character
 	uint32_t c = GetNextCharacter(&szText);
 	for (int i = 0; i < iIndex; ++i)
 	{
 		c = GetNextCharacter(&szText);
-		if (!c) return 0;
+		if (!c) return C4Void();
 	}
 	return c;
 }

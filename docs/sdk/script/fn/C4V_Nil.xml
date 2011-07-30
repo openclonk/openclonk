@@ -11,8 +11,8 @@
     <desc>Data type: nil.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (<funclink>GetType</funclink>(<funclink>Par</funclink>()) == C4V_Nil) return();</code>
-        <text>Cancels the function if the data type of the first parameter is nil.</text>
+        <code><funclink>if</funclink> (<funclink>GetType</funclink>(<funclink>Par</funclink>()) == C4V_Nil) return;</code>
+        <text>Cancels the function if the data type of the first parameter is <code>nil</code>.</text>
       </example>
     </examples>
     <related><funclink>GetType</funclink></related>

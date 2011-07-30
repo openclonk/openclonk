@@ -14,7 +14,7 @@
         <param>
           <type>int</type>
           <name>dwNewBlitMod</name>
-          <desc>New drawing mode (values see below). If 0 the object is reset to its definition blit mode. Otherwise bit 8 (user defined color value) is set implicitly.</desc>
+          <desc>New drawing mode (values see below). If 0 or unspecified, the object is reset to its definition blit mode. Otherwise bit 8 (user defined color value) is set implicitly.</desc>
           <optional />
         </param>
         <param>

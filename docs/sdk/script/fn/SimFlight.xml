@@ -14,37 +14,37 @@
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X offset of the starting position. (NOT optional if used in nil object context)</desc>
+          <desc>X offset of the starting position. (NOT optional if used in <code>nil</code> object context)</desc>
 		  <optional />
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y offset of the starting position. (NOT optional if used in nil object context)</desc>
+          <desc>Y offset of the starting position. (NOT optional if used in <code>nil</code> object context)</desc>
 		  <optional />
         </param>
         <param>
           <type>int</type>
           <name>xdir</name>
-          <desc>Initial horizontal speed. If not specified this will default to the object's horizontal speed. (NOT optional if used in nil object context)</desc>
+          <desc>Initial horizontal speed. If not specified this will default to the object's horizontal speed. (NOT optional if used in <code>nil</code> object context)</desc>
 		  <optional />
         </param>
         <param>
           <type>int</type>
           <name>ydir</name>
-          <desc>Initial vertical speed. If not specified this will default to the object's vertical speed. (NOT optional if used in nil object context)</desc>
+          <desc>Initial vertical speed. If not specified this will default to the object's vertical speed. (NOT optional if used in <code>nil</code> object context)</desc>
 		  <optional />
         </param>
         <param>
           <type>int</type>
           <name>min_density</name>
-          <desc>Mininum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 50 (solid material).</desc>
+          <desc>Minimum density of the material which will stop the projected trajectory. If not specified this will default to value 50 (solid material).</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>max_density</name>
-          <desc>Maximum density of the material which will stop the projected trajectory. If not specified or 0 this will default to value 100.</desc>
+          <desc>Maximum density of the material which will stop the projected trajectory. If not specified this will default to value 100.</desc>
           <optional />
         </param>
         <param>
@@ -56,7 +56,7 @@
         <param>
           <type>int</type>
           <name>precision</name>
-          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <desc>Precision. Default 10 if not specified.</desc>
           <optional />
         </param>
       </params>

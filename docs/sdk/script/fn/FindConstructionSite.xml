@@ -27,7 +27,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Searches for a suitable construction site for a building of the specified type, starting at the specified position. If a site is found, the coordinates are returned in the array [x,y]. Otherwise, the function returns nil.</desc>
+    <desc>Searches for a suitable construction site for a building of the specified type, starting at the specified position. If a site is found, the coordinates are returned in the array [x,y]. Otherwise, the function returns <code>nil</code>.</desc>
     <examples>
       <example>
         <code>var xy;

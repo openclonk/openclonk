@@ -29,7 +29,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Calls a function in a script without object context. <funclink>this</funclink> returns 0 in this case (comparable to scenario scripts).</desc>
+    <desc>Calls a function in a script without object context. <funclink>this</funclink> returns <funclink>nil</funclink> in this case (comparable to scenario scripts).</desc>
     <related>
       <funclink>GameCall</funclink>
     </related>

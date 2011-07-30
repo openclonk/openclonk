@@ -22,15 +22,9 @@
           <desc>Vertical speed divided by precision.</desc>
         </param>
         <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Target object. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
-        <param>
           <type>int</type>
           <name>precision</name>
-          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <desc>Precision. Default 10 if not specified.</desc>
           <optional />
         </param>
       </params>

@@ -24,13 +24,13 @@
         <param>
           <type>int</type>
           <name>volume</name>
-          <desc>0-100: volume for playback of the sound. A volume value of nil means playback at 100.</desc>
+          <desc>0-100: volume for playback of the sound. A volume value of <code>nil</code> means playback at 100.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If nil (or not specified), the sound will be played for all players.</desc>
+          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If <code>nil</code> (or not specified), the sound will be played for all players.</desc>
           <optional />
         </param>
         <param>

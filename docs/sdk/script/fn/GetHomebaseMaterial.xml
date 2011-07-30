@@ -35,7 +35,7 @@
         </param>
       </params>
     </syntax>
-    <desc>With id specified, the function returns the number of objects of that type which the player can buy at his home base. In this case index and category are ignored. If id is 0, the function returns the id of the indicated type of objects of the specified category buyable at the players home base. This will return object types which are generally buyable, even if currently no object of that type is available.</desc>
+    <desc>With id specified, the function returns the number of objects of that type which the player can buy at his home base. In this case index and category are ignored. If id is not specified, the function returns the id of the indicated type of objects of the specified category buyable at the players home base. This will return object types which are generally buyable, even if currently no object of that type is available.</desc>
     <examples>
       <example>
         <code><funclink>Log</funclink>(&quot;Player %s can buy %d firestones!&quot;,<funclink>GetPlayerName</funclink>(0), GetHomebaseMaterial(0,Firestone));</code>

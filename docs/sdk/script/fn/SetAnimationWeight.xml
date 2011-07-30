@@ -22,7 +22,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets a new weight for the given animation. Returns true if the new AVP was set or false if there is no such animation with the given number or the refernced node is an animation node.</desc>
+    <desc>Sets a new weight for the given animation. Returns <code>true</code> if the new AVP was set or <code>false</code> if there is no such animation with the given number or the refernced node is an animation node.</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>

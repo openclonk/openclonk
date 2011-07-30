@@ -13,7 +13,7 @@
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object in which to call the function. Can be 0 in local calls.</desc>
+          <desc>Object in which to call the function. Can be <code>nil</code> in local calls.</desc>
         </param>
         <param>
           <type>string</type>

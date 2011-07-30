@@ -24,7 +24,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Calls function in the scenario script. If the function is not defined in the scenario script, this call returns 0 and does not cause an error.</desc>
+    <desc>Calls function in the scenario script. If the function is not defined in the scenario script, this call returns <code>nil</code> and does not cause an error.</desc>
     <examples>
       <example>
         <code>GameCall(&quot;InitializePlayer&quot;,0);</code>

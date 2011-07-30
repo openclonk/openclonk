@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>If condition is true the following command or block of code will be executed.</desc>
+    <desc>If condition is <code>true</code> the following command or block of code will be executed.</desc>
     <examples>
       <example>
         <code>while(<funclink>FindObject</funclink>()) <funclink>RemoveObject</funclink>(<funclink>FindObject</funclink>());</code>

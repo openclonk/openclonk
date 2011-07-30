@@ -58,7 +58,7 @@
         <param>
           <type>bool</type>
           <name>sub</name>
-          <desc>If true, the material will be drawn as 'underground'.</desc>
+          <desc>If <code>true</code>, the material will be drawn as 'underground'.</desc>
         </param>
       </params>
     </syntax>

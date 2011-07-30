@@ -14,7 +14,7 @@
         <param>
           <type>int</type>
           <name>precision</name>
-          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <desc>Precision. Default 10 if not specified.</desc>
           <optional />
         </param>
       </params>

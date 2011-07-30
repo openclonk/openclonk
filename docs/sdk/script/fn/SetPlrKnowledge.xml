@@ -23,7 +23,7 @@
         <param>
           <type>bool</type>
           <name>remove</name>
-          <desc>If not 0, the plan will be removed from the players knowledge.</desc>
+          <desc>If not <code>false</code>, the plan will be removed from the players knowledge.</desc>
           <optional />
         </param>
       </params>

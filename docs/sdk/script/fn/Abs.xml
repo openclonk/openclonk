@@ -21,7 +21,7 @@
     <examples>
       <example>
         <code>Abs(-12) == Abs(12) == 12</code>
-        <text>This expression is true.</text>
+        <text>This expression is <code>true</code>.</text>
       </example>
     </examples>
   </func>

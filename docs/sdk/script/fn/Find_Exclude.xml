@@ -14,7 +14,7 @@
         <param>
           <type>object</type>
           <name>exclude</name>
-          <desc>Object to be excluded. This will be the calling object if unspecified or 0.</desc>
+          <desc>Object to be excluded. This will be the calling object if unspecified or <code>nil</code>.</desc>
         </param>
       </params>
     </syntax>

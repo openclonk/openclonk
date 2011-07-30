@@ -29,7 +29,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is true, the global wind value is returned.</desc>
+    <desc>Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is <code>true</code>, the global wind value is returned.</desc>
     <related><funclink>SetWind</funclink></related>
   </func>
   <author>Cucaracha</author><date>2002-05</date>

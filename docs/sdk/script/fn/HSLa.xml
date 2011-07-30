@@ -23,12 +23,12 @@
         <param>
           <type>int</type>
           <name>byL</name>
-          <desc>Brightniss of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
+          <desc>Brightness of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
         </param>
         <param>
           <type>int</type>
           <name>byA</name>
-          <desc>Transparency of the color.</desc>
+          <desc>Opacity of the color.</desc>
         </param>
       </params>
     </syntax>

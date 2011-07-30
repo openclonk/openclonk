@@ -25,7 +25,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns information on a current command of an object. If the object does not have any commands set, 0 is returned for all queries.</desc>
+    <desc>Returns information on a current command of an object. If the object does not have any commands set, <code>nil</code> is returned for all queries.</desc>
     <examples>
       <example>
         <code>func Timer()

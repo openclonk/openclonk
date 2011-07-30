@@ -51,7 +51,7 @@
         </row>
         <row>
           <col>C4D_Parallax</col>
-          <col>Object moves parallax according to Local 0 and 1. For more information see <funclink>C4D_Parallax</funclink>.</col>
+          <col>Object moves parallax according to the Parallaxity property. For more information see <funclink>C4D_Parallax</funclink>.</col>
         </row>
         <row>
           <col>C4D_MouseSelect</col>

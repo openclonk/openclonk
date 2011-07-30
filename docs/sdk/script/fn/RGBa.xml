@@ -28,7 +28,7 @@
         <param>
           <type>int</type>
           <name>byA</name>
-          <desc>Transparency</desc>
+          <desc>Opacity</desc>
         </param>
       </params>
     </syntax>

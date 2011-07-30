@@ -13,7 +13,7 @@
         <param>
           <type>string</type>
           <name>song_name</name>
-          <desc>Filename of the music track. The file extension must be specified. If unspecified or 0, music playback will be interrupted.</desc>
+          <desc>Filename of the music track. The file extension must be specified. If unspecified, music playback will be interrupted.</desc>
           <optional />
         </param>
         <param>

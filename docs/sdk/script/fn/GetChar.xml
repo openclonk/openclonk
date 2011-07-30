@@ -19,7 +19,7 @@
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Position of the character. The first character is at position 0. If the specified position is outside the string, 0 is returned.</desc>
+          <desc>Position of the character. The first character is at position 0. If the specified position is outside the string, <code>nil</code> is returned.</desc>
         </param>
       </params>
     </syntax>

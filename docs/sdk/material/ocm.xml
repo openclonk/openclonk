@@ -21,11 +21,6 @@
           <col>Name of material.</col>
         </row>
         <row>
-          <col>Color</col>
-          <col>3 x 3 integers</col>
-          <col>The three component colors of the material as RGB RGB RGB (each 0-255).</col>
-        </row>
-        <row>
           <col>ColorAnimation</col>
           <col>Integer</col>
           <col>0 oder 1. Color animation.</col>

@@ -13,7 +13,7 @@
         <param>
           <type>string</type>
           <name>playlist</name>
-          <desc>List of pieces of music to be played. The individual file names are separated with semicolons (";"). Wildcards are expanded. When 0, the standard playlist is restored.</desc>
+          <desc>List of pieces of music to be played. The individual file names are separated with semicolons (";"). Wildcards are expanded.  If the parameter is left out, the standard playlist is restored.</desc>
           <optional />
         </param>
       </params>

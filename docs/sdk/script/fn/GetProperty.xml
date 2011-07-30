@@ -20,7 +20,7 @@
         <param>
           <type>proplist</type>
           <name>object</name>
-          <desc>Object to request property from, zero in local calls.</desc>
+          <desc>Object to request property from, <code>nil</code> in local calls.</desc>
           <optional />
         </param>
       </params>

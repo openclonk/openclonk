@@ -14,7 +14,7 @@
         <param>
           <type>object</type>
           <name>need_mat_object</name>
-          <desc>Object whose construction material need is queried. Can be 0 in local calls.</desc>
+          <desc>Object whose construction material need is queried. Can be <code>nil</code> in local calls.</desc>
         </param>
       </params>
     </syntax>

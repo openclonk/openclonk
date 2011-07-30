@@ -1804,14 +1804,14 @@ static bool SumPathLength(int32_t iX, int32_t iY, intptr_t iTransferTarget, intp
 	return true;
 }
 
-static long FnGetPathLength(C4AulContext* ctx, long iFromX, long iFromY, long iToX, long iToY)
+static Nillable<long> FnGetPathLength(C4AulContext* ctx, long iFromX, long iFromY, long iToX, long iToY)
 {
 	PathInfo PathInfo;
 	PathInfo.ilx = iFromX;
 	PathInfo.ily = iFromY;
 	PathInfo.ilen = 0;
 	if (!Game.PathFinder.Find(iFromX, iFromY, iToX, iToY, &SumPathLength, (intptr_t) &PathInfo))
-		return 0;
+		return C4Void();
 	return PathInfo.ilen + Distance(PathInfo.ilx, PathInfo.ily, iToX, iToY);
 }
 
@@ -2242,7 +2242,7 @@ static bool FnPlayVideo(C4AulContext *ctx, C4String *pFilename)
 	return Game.VideoPlayer.PlayVideo(pFilename->GetCStr());
 }
 
-static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, long iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4String *sPortrait, long dwFlags, long iHSize)
+static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4String *sPortrait, long dwFlags, long iHSize)
 {
 	// safeties
 	if (!pMsg) return false;
@@ -2250,6 +2250,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 	const char *szMsg = pMsg->GetCStr();
 	if (!szMsg) return false;
 	if (idDeco && !C4Id2Def(idDeco)) return false;
+	if (iOwner.IsNil()) iOwner = NO_OWNER;
 	// only one positioning flag per direction allowed
 	uint32_t hpos = dwFlags & (C4GM_Left | C4GM_HCenter | C4GM_Right);
 	uint32_t vpos = dwFlags & (C4GM_Top | C4GM_VCenter | C4GM_Bottom);

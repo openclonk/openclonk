@@ -18,7 +18,7 @@
         <param>
           <type>object</type>
           <name>target</name>
-          <desc>Target object for the effect. If nil, a global effect is created.</desc>
+          <desc>Target object for the effect. If <code>nil</code>, a global effect is created.</desc>
           <optional />
         </param>
         <param>
@@ -30,7 +30,7 @@
           <type>int</type>
           <name>timer</name>
           <optional />
-          <desc>Interval for the timer calls. With nil, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
+          <desc>Interval for the timer calls. With <code>nil</code>, no timer calls are made and the effect stays on permanently until it is deleted by other calls.</desc>
         </param>
         <param>
           <type>object</type>
@@ -42,7 +42,7 @@
           <type>id </type>
           <name>command_target_id</name>
           <optional />
-          <desc>Definition in which callbacks are to be executed if no command target object is specified. If both command_target and command_target_id are nil, callbacks are made globally. For this, the Fx* must also be declared globally or they must be engine functions.</desc>
+          <desc>Definition in which callbacks are to be executed if no command target object is specified. If both command_target and command_target_id are <code>nil</code>, callbacks are made globally. For this, the Fx* must also be declared globally or they must be engine functions.</desc>
         </param>
         <param>
           <type>any</type>
@@ -70,7 +70,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably nil.</desc>
+    <desc>Creates an effect. Returns the effect if successful or <code>nil</code> if not (e.g. because the effect was rejected). If the effect was accepted by another effect which is deleting itself within the same call, the return value is probably <code>nil</code>.</desc>
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>

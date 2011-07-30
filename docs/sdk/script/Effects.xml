@@ -63,7 +63,7 @@ func Activate(object caster, object caster2)
   if (caster2) caster = caster2;
 
   // start effect
-  <funclink>AddEffect</funclink>(&quot;InvisPSpell&quot;, caster, 200, 1111, 0, GetID());
+  <funclink>AddEffect</funclink>(&quot;InvisPSpell&quot;, caster, 200, 1111, nil, GetID());
   // done - the spell object is not needed anymore
   <funclink>RemoveObject</funclink>();
   return true;
@@ -109,7 +109,7 @@ func Activate(object caster, object caster2)
   if (caster2) caster = caster2;
 
   // start effect
-  <funclink>AddEffect</funclink>(&quot;BanBurnPSpell&quot;, caster, 180, 1111, 0, GetID());
+  <funclink>AddEffect</funclink>(&quot;BanBurnPSpell&quot;, caster, 180, 1111, nil, GetID());
   
   // done - the spell object is not needed anymore
   <funclink>RemoveObject</funclink>();
@@ -214,7 +214,7 @@ func Activate(object caster, object caster2)
   if (caster2) caster = caster2;
 
   // start effect 
-  <funclink>AddEffect</funclink>(&quot;ReincarnationPSpell&quot;, caster, 180, 0, 0, GetID());
+  <funclink>AddEffect</funclink>(&quot;ReincarnationPSpell&quot;, caster, 180, 0, nil, GetID());
   
   // done - the spell object is not needed anymore
   <funclink>RemoveObject</funclink>();
@@ -247,7 +247,7 @@ func FxReincarnationPSpellStop(object target, proplist effect, int reason, bool 
 }</code>
     <text>This effect reanimates the clonk as many times as he has cast the reanimation spell.</text>
     <h id="GlobalEffects">Global Effects</h>
-    <text>Global effects are effects that are not bound to any target object. With global effects, too, priorities are observed and temporary Add/Remove calls might be necessary to ensure order. Simply imagine all global effects are attached to an imaginary object. Global effects are accessed whenever you specify 0 for the target object.</text>
+    <text>Global effects are effects that are not bound to any target object. With global effects, too, priorities are observed and temporary Add/Remove calls might be necessary to ensure order. Simply imagine all global effects are attached to an imaginary object. Global effects are accessed whenever you specify <code>nil</code> for the target object.</text>
     <text>This can be used to make changes to gravity, sky color, etc. Here's an example for a spell that temporarily reduces gravity and then resets the original value:</text>
     <code>/* Gravitation spell */
 
@@ -257,7 +257,7 @@ func FxReincarnationPSpellStop(object target, proplist effect, int reason, bool 
 func Activate(object caster, object caster2)
 {
   // start global effect
-  <funclink>AddEffect</funclink>(&quot;GravChangeUSpell&quot;, 0, 150, 37, 0, GetID(), -10);
+  <funclink>AddEffect</funclink>(&quot;GravChangeUSpell&quot;, nil, 150, 37, nil, GetID(), -10);
   // done - the spell object is not needed anymore
   <funclink>RemoveObject</funclink>();
   return true;
@@ -307,7 +307,7 @@ func FxGravChangeUSpellStop(object target, proplist effect)
 
   return true;
 }</code>
-    <text><code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <funclink>EffectCall</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
+    <text><code>target</code> will be <code>nil</code> in all these effect calls. You should still pass this parameter to calls such as <funclink>EffectCall</funclink>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed.</text>
     <h id="AddEffects">Adding Effects</h>
     <text>In the previous example, several gravitational effects were combined so that the gravity change lasts longer if the spell is casted multiple times. Adding these effects cannot be done in the Effect callback because the gravitation effect might always be prevented by another effect with higher priority (e.g. a no-spells-whatsoever-effect). Through the special Fx*Add callback you can achieve the desired result more easily, or at least in a more structured fashion.</text>
     <code>[...]
@@ -352,7 +352,7 @@ func Activate(object caster, object caster2)
 {
   // check effect
   var result;
-  if (result = <funclink>CheckEffect</funclink>(&quot;EarthquakeNSpell&quot;, 0, 150))
+  if (result = <funclink>CheckEffect</funclink>(&quot;EarthquakeNSpell&quot;, nil, 150))
   {
     <funclink>RemoveObject</funclink>();
     return result != -1;
@@ -377,7 +377,7 @@ func CastlePartDestruction()
   if (basement) basement-&gt;<funclink>RemoveObject</funclink>();
   // Global temporary effect, if not already there
   if (!<funclink>GetEffect</funclink>(&quot;IntCPW2CastleChange&quot;))
-  	<funclink>AddEffect</funclink>(&quot;IntCPW2CastleChange&quot;, 0, 1, 2, 0, CPW2);
+  	<funclink>AddEffect</funclink>(&quot;IntCPW2CastleChange&quot;, nil, 1, 2, nil, CPW2);
   return true;
 }
 

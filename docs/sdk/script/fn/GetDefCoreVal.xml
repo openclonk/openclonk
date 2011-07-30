@@ -18,7 +18,7 @@
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
           <optional />
         </param>
         <param>
@@ -47,7 +47,7 @@ for(var i = 0;; i++)
 
   <funclink>Log</funclink>(&quot;%d x %s&quot;, cnt, id-&gt;<funclink>GetName</funclink>());
 }</code>
-        <text>Determines the necessary components for construction of a workshop.<br/>The loop will run until GetDefCoreVal returns id 0 which means the end of the list.</text>
+        <text>Determines the necessary components for construction of a workshop.<br/>The loop will run until GetDefCoreVal returns id <code>nil</code> which means the end of the list.</text>
       </example>
     </examples>
     <related>

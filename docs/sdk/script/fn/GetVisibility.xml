@@ -17,12 +17,6 @@
           <desc>Player of which to retrieve the visibility. Can be 0 in local calls.</desc>
           <optional />
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object of which to retrieve the visibility. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
     <desc>Returns the current visibility of an object. Also see <funclink>SetVisibility</funclink>.</desc>

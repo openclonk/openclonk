@@ -18,7 +18,7 @@
         <param>
           <type>id</type>
           <name>id</name>
-          <desc>With id specified the function returns true, if the specified player knows the specified spell. In this case index is ignored.</desc>
+          <desc>With id specified the function returns <code>true</code>, if the specified player knows the specified spell. In this case index is ignored.</desc>
         </param>
         <param>
           <type>int</type>

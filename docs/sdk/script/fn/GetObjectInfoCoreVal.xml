@@ -18,7 +18,7 @@
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
           <optional />
         </param>
         <param>

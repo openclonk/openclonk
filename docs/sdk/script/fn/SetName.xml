@@ -14,18 +14,18 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>New name. If nil, the object's name is reset to the definition value or the original crew member's name.</desc>
+          <desc>New name. If <code>nil</code>, the object's name is reset to the definition value or the original crew member's name.</desc>
         </param>
         <param>
           <type>bool</type>
           <name>set_permanent</name>
-          <desc>For crew members only: if true, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file.</desc>
+          <desc>For crew members only: if <code>true</code>, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file.</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
           <name>make_valid_if_exists</name>
-          <desc>Determines what should happen if a clonk of the same name already exists in the player's crew. If false, the function call will fail. If true, a unique name is created by appending a number.</desc>
+          <desc>Determines what should happen if a clonk of the same name already exists in the player's crew. If <code>false</code>, the function call will fail. If <code>true</code>, a unique name is created by appending a number.</desc>
           <optional />
         </param>
       </params>

@@ -23,7 +23,7 @@
       <example>
         <code>private func Multiply3(v1, v2, v3)
 {
-  return(v1 * v2 * v3);
+  return v1 * v2 * v3;
 }</code>
         <text>The same function with new style syntax.</text>
         <code>private func MultiplyX(cnt)
@@ -31,7 +31,7 @@
   var x = 1;
   for(var i = 0; i &lt; cnt; i++)
     x *= Par(i + 1);
-  return(x);
+  return x;
 }</code>
         <text>An example for mixed use of named and indexed parameters: this function can multiply up to 0 numbers. The first parameter is the count of following parameters to be multiplied (e.g. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)</text>
       </example>
