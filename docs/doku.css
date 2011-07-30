@@ -33,7 +33,7 @@ body {
 }
 
 .text, pre.code, ul, ol, dl {
-	margin: 8px 0 12px 0;
+	margin: 0;
 }
 /* indent the parameters of the function if it's broken into multiple lines*/
 div.fnsyntax {
@@ -84,20 +84,21 @@ h1 {
 
 h2 {
 	font-weight: normal;
-	font-size: 150%;
+	font-size: 140%;
 	margin: 0;
 	padding: 0;
-	margin-top: 0.8em;
+	margin-top: 0.6em;
+	margin-bottom: 0.2em;
 	padding: .35em .1em 0 0;
-	border-bottom: 3px solid #eee;
+	border-bottom: 1px solid #eee;
 }
 
 h3, table caption, dt {
 	text-align: left;
 	font-weight: bold;
-	font-size:110%;
+	font-size:100%;
 	margin: 0;
-	margin-top:1.5em;
+	margin-top:0.6em;
 	padding:0;
 }
 
