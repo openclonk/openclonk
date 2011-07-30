@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-23 22:07+0200\n"
+"POT-Creation-Date: 2011-07-30 19:18+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -345,7 +345,7 @@ msgid "The following operators are supported:"
 msgstr "Folgende Operatoren werden unterstützt:"
 
 #: sdk/script/operatoren.xml:16(col)
-#: sdk/script/Effects.xml:159(col)
+#: sdk/script/Effects.xml:155(col)
 msgid "Priority"
 msgstr "Priorität"
 
@@ -1040,8 +1040,8 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/script/fn/CreateMenu.xml:37(col)
 #: sdk/script/fn/CreateMenu.xml:93(col)
 #: sdk/script/fn/AddCommand.xml:76(col)
-#: sdk/script/Effects.xml:485(col)
-#: sdk/script/Effects.xml:537(col)
+#: sdk/script/Effects.xml:479(col)
+#: sdk/script/Effects.xml:531(col)
 #: sdk/scenario/Teams.xml:34(col)
 #: sdk/scenario/Teams.xml:52(col)
 #: sdk/scenario/Teams.xml:58(col)
@@ -1077,9 +1077,9 @@ msgstr "0"
 #: sdk/script/fn/CreateMenu.xml:42(col)
 #: sdk/script/fn/CreateMenu.xml:98(col)
 #: sdk/script/fn/AddCommand.xml:97(col)
-#: sdk/script/Effects.xml:203(col)
-#: sdk/script/Effects.xml:489(col)
-#: sdk/script/Effects.xml:542(col)
+#: sdk/script/Effects.xml:199(col)
+#: sdk/script/Effects.xml:483(col)
+#: sdk/script/Effects.xml:536(col)
 #: sdk/scenario/Teams.xml:22(col)
 #: sdk/material/ocm.xml:304(col)
 #: sdk/definition/cnat.xml:19(col)
@@ -1510,6 +1510,7 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/FinishCommand.xml:8(category)
 #: sdk/script/fn/Find_Owner.xml:8(category)
 #: sdk/script/fn/Find_Or.xml:8(category)
+#: sdk/script/fn/Find_OnLine.xml:8(category)
 #: sdk/script/fn/Find_OCF.xml:8(category)
 #: sdk/script/fn/Find_Not.xml:8(category)
 #: sdk/script/fn/Find_NoContainer.xml:8(category)
@@ -1525,6 +1526,8 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/Find_AnyContainer.xml:8(category)
 #: sdk/script/fn/Find_And.xml:8(category)
 #: sdk/script/fn/Find_Allied.xml:8(category)
+#: sdk/script/fn/Find_ActionTargets.xml:8(category)
+#: sdk/script/fn/Find_ActionTarget2.xml:8(category)
 #: sdk/script/fn/Find_ActionTarget.xml:8(category)
 #: sdk/script/fn/Find_Action.xml:8(category)
 #: sdk/script/fn/FindOtherContents.xml:8(category)
@@ -2255,6 +2258,7 @@ msgstr "Spielt einen 'Fanfare'-Sound bei dem ersten gefundenen Windgenerator in 
 #: sdk/script/fn/ObjectCount.xml:9(subcat)
 #: sdk/script/fn/Find_Owner.xml:9(subcat)
 #: sdk/script/fn/Find_Or.xml:9(subcat)
+#: sdk/script/fn/Find_OnLine.xml:9(subcat)
 #: sdk/script/fn/Find_OCF.xml:9(subcat)
 #: sdk/script/fn/Find_Not.xml:9(subcat)
 #: sdk/script/fn/Find_NoContainer.xml:9(subcat)
@@ -2270,6 +2274,8 @@ msgstr "Spielt einen 'Fanfare'-Sound bei dem ersten gefundenen Windgenerator in 
 #: sdk/script/fn/Find_AnyContainer.xml:9(subcat)
 #: sdk/script/fn/Find_And.xml:9(subcat)
 #: sdk/script/fn/Find_Allied.xml:9(subcat)
+#: sdk/script/fn/Find_ActionTargets.xml:9(subcat)
+#: sdk/script/fn/Find_ActionTarget2.xml:9(subcat)
 #: sdk/script/fn/Find_ActionTarget.xml:9(subcat)
 #: sdk/script/fn/Find_Action.xml:9(subcat)
 #: sdk/script/fn/FindOtherContents.xml:9(subcat)
@@ -2294,6 +2300,7 @@ msgstr "Sortierkriterium: Sortiert die gefundenen Objekte nach ihrem Wert. Die w
 #: sdk/script/fn/Sort_Distance.xml:29(remark)
 #: sdk/script/fn/Find_Owner.xml:22(remark)
 #: sdk/script/fn/Find_Or.xml:28(remark)
+#: sdk/script/fn/Find_OnLine.xml:38(remark)
 #: sdk/script/fn/Find_OCF.xml:22(remark)
 #: sdk/script/fn/Find_Not.xml:22(remark)
 #: sdk/script/fn/Find_NoContainer.xml:13(remark)
@@ -2309,6 +2316,8 @@ msgstr "Sortierkriterium: Sortiert die gefundenen Objekte nach ihrem Wert. Die w
 #: sdk/script/fn/Find_AnyContainer.xml:13(remark)
 #: sdk/script/fn/Find_And.xml:29(remark)
 #: sdk/script/fn/Find_Allied.xml:22(remark)
+#: sdk/script/fn/Find_ActionTargets.xml:28(remark)
+#: sdk/script/fn/Find_ActionTarget2.xml:22(remark)
 #: sdk/script/fn/Find_ActionTarget.xml:22(remark)
 #: sdk/script/fn/Find_Action.xml:22(remark)
 msgid "For additional information on the use of this function see <placeholder-1/>."
@@ -2873,9 +2882,9 @@ msgstr "Wert"
 #: sdk/script/fn/GetVertex.xml:26(col)
 #: sdk/script/fn/GetPhysical.xml:28(col)
 #: sdk/script/fn/Format.xml:31(col)
-#: sdk/script/Effects.xml:422(col)
-#: sdk/script/Effects.xml:482(col)
-#: sdk/script/Effects.xml:533(col)
+#: sdk/script/Effects.xml:416(col)
+#: sdk/script/Effects.xml:476(col)
+#: sdk/script/Effects.xml:527(col)
 msgid "Meaning"
 msgstr "Bedeutung"
 
@@ -3581,8 +3590,8 @@ msgstr "PHYS_Temporary"
 #: sdk/script/fn/CreateMenu.xml:47(col)
 #: sdk/script/fn/CreateMenu.xml:103(col)
 #: sdk/script/fn/AddCommand.xml:90(col)
-#: sdk/script/Effects.xml:493(col)
-#: sdk/script/Effects.xml:547(col)
+#: sdk/script/Effects.xml:487(col)
+#: sdk/script/Effects.xml:541(col)
 #: sdk/material/ocm.xml:309(col)
 #: sdk/definition/cnat.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
@@ -3605,8 +3614,8 @@ msgstr "PHYS_StackTemporary"
 #: sdk/script/fn/CreateMenu.xml:52(col)
 #: sdk/script/fn/CreateMenu.xml:108(col)
 #: sdk/script/fn/AddCommand.xml:83(col)
-#: sdk/script/Effects.xml:497(col)
-#: sdk/script/Effects.xml:552(col)
+#: sdk/script/Effects.xml:491(col)
+#: sdk/script/Effects.xml:546(col)
 #: sdk/definition/cnat.xml:36(col)
 msgid "3"
 msgstr "3"
@@ -3717,7 +3726,7 @@ msgstr "GFX_BLIT_ClrSfc_OwnClr"
 #: sdk/script/fn/SetGraphics.xml:65(col)
 #: sdk/script/fn/SetGamma.xml:60(col)
 #: sdk/script/fn/CreateMenu.xml:57(col)
-#: sdk/script/Effects.xml:501(col)
+#: sdk/script/Effects.xml:495(col)
 #: sdk/definition/cnat.xml:31(col)
 #: sdk/definition/cnat.xml:42(col)
 msgid "4"
@@ -4023,7 +4032,7 @@ msgstr "Index der zu setzenden Overlaygrafik. Muss wenn angegeben größer 0 sei
 
 #: sdk/script/fn/SetGraphics.xml:41(col)
 #: sdk/script/fn/CreateMenu.xml:33(col)
-#: sdk/script/Effects.xml:158(col)
+#: sdk/script/Effects.xml:154(col)
 msgid "Effect"
 msgstr "Effekt"
 
@@ -5174,26 +5183,22 @@ msgid "Target object from which to remove an effect. If 0, the global effects li
 msgstr "Zielobjekt, in dem ein Effekt gelöscht werden sollen. Bei 0 wird die globale Effektliste durchsucht."
 
 #: sdk/script/fn/RemoveEffect.xml:28(desc)
-msgid "Effect index. If name is given then if there are more effects matching the search mask the one with the given index is refered to. If name is not given then the effect with the correspoding effect number will be changed. For indices it is guaranteed that, in contrast to effect numbers, they start at 0 and count up to the number of effects"
-msgstr "Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden."
+msgid "The effect. Instead to search by name, the effect can be directly removed if this parameter is given."
+msgstr "Der Effekt. Statt nach dem Namen zu suchen, kann der Effekt direkt entfernt werden wenn dieser Parameter angegeben ist."
 
 #: sdk/script/fn/RemoveEffect.xml:35(desc)
 msgid "If not 0, no Stop calls will be made."
 msgstr "Wenn ungleich 0, werden keine Stop-Aufrufe durchgeführt."
 
-#: sdk/script/fn/RemoveEffect.xml:41(desc)
-msgid "New timer interval. If -1, the previous value will be kept. Otherwise, this call will also reset effect time."
-msgstr "Neues Timer-Intervall. Bei -1 wird der alte Wert beibehalten; ansonsten wird bei diesem Aufruf auch die Effektzeit zurückgesetzt."
-
-#: sdk/script/fn/RemoveEffect.xml:45(desc)
+#: sdk/script/fn/RemoveEffect.xml:39(desc)
 msgid "Deletes an effect."
 msgstr "Löscht einen Effekt"
 
-#: sdk/script/fn/RemoveEffect.xml:46(remark)
-msgid "See <placeholder-1/> for an example. Warning: if an effect is meant to delete itself using this function, only use target and index, not name!"
-msgstr "Beispiel siehe <placeholder-1/>. Achtung: Wenn sich ein Effekt mit dieser Funktion selbst löschen soll, wird nur target und index angegeben, nicht name!"
+#: sdk/script/fn/RemoveEffect.xml:40(remark)
+msgid "See <placeholder-1/> for an example. Warning: if an effect is meant to delete itself using this function, only use effect, not name!"
+msgstr "Beispiel siehe <placeholder-1/>. Achtung: Wenn sich ein Effekt mit dieser Funktion selbst löschen soll, wird nur effect angegeben, nicht name!"
 
-#: sdk/script/fn/RemoveEffect.xml:48(emlink)
+#: sdk/script/fn/RemoveEffect.xml:42(emlink)
 #: sdk/script/fn/GetEffectCount.xml:36(emlink)
 #: sdk/script/fn/GetEffect.xml:61(emlink)
 #: sdk/script/fn/EffectCall.xml:39(emlink)
@@ -7831,6 +7836,36 @@ msgstr "Suchkriterium: sucht alle Objekte die dem angegebenen Spieler gehören."
 msgid "Search criterion: finds all objects fulfilling at least one of the specified search criteria."
 msgstr "Suchkriterium: sucht alle Objekte, auf die mindestens eines der angegebenen Suchkriterien zutrifft."
 
+#: sdk/script/fn/Find_OnLine.xml:17(desc)
+#: sdk/script/fn/Find_AtPoint.xml:17(desc)
+msgid "X coordinate of the starting point. Relative to the calling object's center in local calls."
+msgstr "X-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
+
+#: sdk/script/fn/Find_OnLine.xml:22(desc)
+#: sdk/script/fn/Find_AtPoint.xml:22(desc)
+msgid "Y coordinate of the starting point. Relative to the calling object's center in local calls."
+msgstr "Y-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
+
+#: sdk/script/fn/Find_OnLine.xml:27(desc)
+msgid "X coordinate of the end point. Relative to the calling object's center in local calls."
+msgstr "X-Position des Endpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
+
+#: sdk/script/fn/Find_OnLine.xml:32(desc)
+msgid "Y coordinate of the end point. Relative to the calling object's center in local calls."
+msgstr "Y-Position des Endpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
+
+#: sdk/script/fn/Find_OnLine.xml:36(desc)
+msgid "Search criterion: finds all objects which overlap a line going from one point to the other."
+msgstr "Suchkriterium: findet alle Objekte, deren Grafikbereich (Shape) die angegebene Linie überlappt."
+
+#: sdk/script/fn/Find_OnLine.xml:37(remark)
+msgid "This is equivalent to checking <placeholder-1/> for each point on the line."
+msgstr "Dies ist äquivalent dazu, für jeden Punkt auf der Linie <placeholder-1/> zu prüfen."
+
+#: sdk/script/fn/Find_OnLine.xml:43(text)
+msgid "Railgun: Kills everything that's on the same height right of the executing object."
+msgstr "Railgun: Tötet alles was auf der selben Höhe rechts von dem aufrufenden Objekt ist."
+
 #: sdk/script/fn/Find_OCF.xml:17(desc)
 msgid "Object character flag of the objects to find."
 msgstr "Object-Character-Flag der zu suchenden Objekte"
@@ -7947,14 +7982,6 @@ msgstr "Gibt eine Liste aller im Spiel befindlichen Gebäude zurück."
 msgid "Returns all active goal and rule objects. Notice that categories can be combined using \"|\". This will find all objects which fulfill at least one of the categories."
 msgstr "Liefert alle aktiven Spielregeln und Spielziele zurück. Man beachte, dass sich die Kategorien mit \"|\" kombinieren lassen. In diesem Fall trifft das Kriterium auf alle Objekte zu, bei denen <em>mindestens eine</em> gesetzte Kategorie übereinstimmt."
 
-#: sdk/script/fn/Find_AtPoint.xml:17(desc)
-msgid "X coordinate of the starting point. Relative to the calling object's center in local calls."
-msgstr "X-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
-
-#: sdk/script/fn/Find_AtPoint.xml:22(desc)
-msgid "Y coordinate of the starting point. Relative to the calling object's center in local calls."
-msgstr "Y-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf."
-
 #: sdk/script/fn/Find_AtPoint.xml:26(desc)
 msgid "Search criterion: finds all objects which overlap the specified coordinate point."
 msgstr "Suchkriterium: sucht alle Objekte, deren Grafikbereich (Shape) den angegebenen Punkt überlappt."
@@ -7979,13 +8006,34 @@ msgstr "Spielernummer, dessen Verbündete Besitzer der zu suchenden Objekte sein
 msgid "Search criterion: finds all objects owned by friends of the specified player."
 msgstr "Suchkriterium: sucht alle Objekte die Spielern gehören, die mit dem angegebenen Spieler verbündet sind."
 
+#: sdk/script/fn/Find_ActionTargets.xml:17(desc)
+msgid "First action target of the objects to be found."
+msgstr "Erstes Aktionsziel von Objekten, nach denen gesucht werden soll"
+
+#: sdk/script/fn/Find_ActionTargets.xml:22(desc)
+msgid "Second action target of the objects to be found."
+msgstr "Zweites Aktionsziel von Objekten, nach denen gesucht werden soll"
+
+#: sdk/script/fn/Find_ActionTargets.xml:26(desc)
+msgid "Search criterion: finds all objects that have the specified action targets."
+msgstr "Suchkriterium: findet alle Objekte mit den angegebenen Aktionszielen."
+
+#: sdk/script/fn/Find_ActionTargets.xml:27(remark)
+msgid "Equivalent to <code><placeholder-1/>(<placeholder-2/>(action_target1), <placeholder-3/>(action_target2))</code>, but faster."
+msgstr "Äquivalent zu <code><placeholder-1/>(<placeholder-2/>(action_target1), <placeholder-3/>(action_target2))</code>, aber schneller."
+
+#: sdk/script/fn/Find_ActionTarget2.xml:17(desc)
 #: sdk/script/fn/Find_ActionTarget.xml:17(desc)
 msgid "Action target of the objects to be found."
 msgstr "Aktionsziel von Objekten, nach denen gesucht werden soll"
 
+#: sdk/script/fn/Find_ActionTarget2.xml:21(desc)
+msgid "Search criterion: finds all objects that have the specified second action target."
+msgstr "Suchkriterium: findet alle Objekte mit dem entsprechenden zweiten Aktionsziel."
+
 #: sdk/script/fn/Find_ActionTarget.xml:21(desc)
 msgid "Search criterion: finds all objects that have the specified first action target."
-msgstr "Suchkriterium: sucht alle Objekte mit dem entsprechenden ersten Aktionsziel."
+msgstr "Suchkriterium: findet alle Objekte mit dem entsprechenden ersten Aktionsziel."
 
 #: sdk/script/fn/Find_Action.xml:17(desc)
 msgid "Current action of the objects to be found."
@@ -8210,8 +8258,8 @@ msgid "Target object of the effect the of which you want to access variables. 0 
 msgstr "Zielobjekt des Effektes, auf dessen Variablenspeicher zugegriffen wird. 0 für globale Effekte."
 
 #: sdk/script/fn/EffectCall.xml:22(desc)
-msgid "Effect number. Effect numbers are passed to effect callback functions, they are the return values of <placeholder-1/> and can be determined from an effect name via <placeholder-2/>."
-msgstr "Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <placeholder-1/> und lassen sich über <placeholder-2/> aus dem Effektnamen herausfinden."
+msgid "The effect."
+msgstr "Der Effekt."
 
 #: sdk/script/fn/EffectCall.xml:27(desc)
 msgid "Function to be called. The prefix 'Fx' is automatically prepended to the function name. Do not include 'Fx' in the parameter."
@@ -8222,8 +8270,8 @@ msgid "Additional parameters"
 msgstr "Zusätzliche Aufrufparameter"
 
 #: sdk/script/fn/EffectCall.xml:36(desc)
-msgid "Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect index. The remaining parameters can be freely chosen."
-msgstr "Führt einen Funktionsaufruf im angegebenen Effekt durch. Der Aufruf erhält den Befehlskontext des Effektes, und die ersten beiden Aufrufparameter sind immer Zielobjekt und Effektindex. Die weiteren Parameter können frei gewählt werden."
+msgid "Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect. The remaining parameters can be freely chosen."
+msgstr "Führt einen Funktionsaufruf im angegebenen Effekt durch. Der Aufruf erhält den Befehlskontext des Effektes, und die ersten beiden Aufrufparameter sind immer Zielobjekt und Effekt. Die weiteren Parameter können frei gewählt werden."
 
 #: sdk/script/fn/EffectCall.xml:37(remark)
 #: sdk/script/fn/CheckEffect.xml:63(remark)
@@ -10581,39 +10629,39 @@ msgstr "Beitritt zur Laufzeit"
 msgid "For creating an AI player at run time - e.g. a new deathmatch opponent - you can use <placeholder-1/>. This call will be followed (possibly with a little delay) by a InitializePlayer callback for the new player."
 msgstr "Fürs Erstellen einer KI zur Laufzeit - zum Beispiel als Gegner im Deathmatch - dient <placeholder-1/>. Daraufhin erfolgt (unter Umständen verzögert, weil es sich um einen Spielerbeitritt handelt!) ein InitializePlayer-Aufruf für diesen Scriptspieler. Da der Aufruf verzögert ist, sollte die eigentliche KI-Initialisierung in diesem Aufruf passieren."
 
-#: sdk/script/ScriptPlayers.xml:47(text)
+#: sdk/script/ScriptPlayers.xml:45(text)
 msgid "This script for a sample rule object allows the user to create AI opponents at runtime. Also, it will order all clonks of the AI players to attack. Notice: this sample script only handles those clonks automatically created through the scenario settings. Additional clonks placed by specialized scripting are not handled."
 msgstr "Dieses Beispielscript für ein Regelobjekt erlaubt dem Spieler, zur Laufzeit KI-Gegner zu erstellen. Außerdem sorgt es dafür, dass alle Clonks dieses KI-Gegners angreifen. Achtung: Das Beispiel übernimmt die Kontrolle nur für alle Clonks, die der Spieler zu Spielbeginn nach Szenarienvorgaben erhalten hat. Wenn ein Szenarienscript zum Beispiel noch andere Clonks erstellen würde, würden diese nicht gesteuert."
 
-#: sdk/script/ScriptPlayers.xml:48(text)
+#: sdk/script/ScriptPlayers.xml:46(text)
 msgid "For internet games you can set MaxScriptPlayers in <emlink href=\"scenario/Teams.html\">Teams.txt</emlink> to a value greater than 0. This will enable the option to have script players join in the game lobby."
 msgstr "Für Internetspiele kann man auch MaxScriptPlayers in der <emlink href=\"scenario/Teams.html\">Teams.txt</emlink> auf einen Wert &gt;0 setzen. Dann bekommt man in der Lobby die Option, Scriptspieler zu aktivieren. Diese Spieler treten auch wie gewöhnliche Spieler bei, und man sollte auch hier in InitializePlayer entsprechend das KI-Kontrollobjekt erstellen. Das obige Beispiel würde also auch sofort mit in der Lobby aktivierten KI-Spielern funktionieren."
 
-#: sdk/script/ScriptPlayers.xml:49(h)
+#: sdk/script/ScriptPlayers.xml:47(h)
 msgid "Default join"
 msgstr "Beitritt als Vorgabe"
 
-#: sdk/script/ScriptPlayers.xml:50(text)
+#: sdk/script/ScriptPlayers.xml:48(text)
 msgid "If scripted players should be present in the scenario right from the beginning (comparable to objects created via Objects.txt) then you should create them via the SavePlayerInfos.txt component:"
 msgstr "Wenn ein Szenario schon von Anfang an einen Scriptspieler beinhalten soll - zum Beispiel weil Objekte in der Objects.txt in dessen Besitz sein sollen, oder weil in Initialize Objekte für diesen Spieler erzeugt werden, dann sollte man diesen wie in einem Savegame definieren. Also eine SavePlayerInfos.txt wie diese anlegen:"
 
-#: sdk/script/ScriptPlayers.xml:68(text)
+#: sdk/script/ScriptPlayers.xml:66(text)
 msgid "This method effectively performs a player restore, similar to a regular player restore in a savegame resume. Consequently, no InitializePlayer is called for this player and no startup material or crew is created. A crew for this player should be created in the scenario script. Alternatively, a crew may be present in the Objects.txt. Otherwise, the script player will be eliminated shortly after game start."
 msgstr "Dies führt eine Spieler-Wiederherstellung durch, analog zur Wiederherstellung nach einem Savegame. Es wird also kein InitializePlayer für diesen Spieler aufgerufen. Das Szenarienscript sollte in der Initialisierung die Crew für diesen Spieler erstellen, oder es sollte eine entsprechende Crew in der Objects.txt vorhanden sein. Ansonsten wird der Scriptspieler sofort zum Spielbeginn eliminiert."
 
-#: sdk/script/ScriptPlayers.xml:69(text)
+#: sdk/script/ScriptPlayers.xml:67(text)
 msgid "Contrary to regular players, script players are saved if you perform \"Save as scenario\" in developer mode. This way, you can automatically generate the correct SavePlayerInfos.txt and an according crew in the Objects.txt of the scenario. In order to do this, simply execute <placeholder-1/> from the console and create some Clonks for the newly created script player. Then save the game as scenario. The script player Clonks will automatically be restored with the correct owner and in the crew of the script player."
 msgstr "Scriptspieler werden im Gegensatz zu regulären Spielern ebenfalls gespeichert, wenn man in der Konsole \"Speichern als Szenario\" wählt. Auf diese Weise kann man sich die richtige SavePlayerInfos.txt automatisch anlegen lassen. Dazu sollte einfach im Entwicklermodus manuell <placeholder-1/> aufgerufen und dann Clonks für diesen Scriptspieler verteilt werden. Speichert man dann als Szenario, wird der Scriptspieler mitgespeichert und steht beim Starten wieder zur Verfügung."
 
-#: sdk/script/ScriptPlayers.xml:70(h)
+#: sdk/script/ScriptPlayers.xml:68(h)
 msgid "Specialized Players"
 msgstr "Spezialisierte Spieler"
 
-#: sdk/script/ScriptPlayers.xml:71(text)
+#: sdk/script/ScriptPlayers.xml:69(text)
 msgid "Sometimes it can be desirable to create a script player at runtime, but still execute a specialized initialization instead of the default crew and base material creation. For example, a Hazard deathmatch scenario may provide a specialized alien enemy."
 msgstr "Manchmal kann es sinnvoll sein, einen Scriptspieler erst zur Laufzeit zu erstellen aber trotzdem eine spezielle Initialisierung durchzuführen. Zum Beispiel sollte ein spezieller Alien-Gegner in einem Hazard-Deathmatch keine Hazardclonks erhalten."
 
-#: sdk/script/ScriptPlayers.xml:72(text)
+#: sdk/script/ScriptPlayers.xml:70(text)
 msgid "By passing a parameter to <placeholder-1/>, scenario initialization can be prevented, i.e. no creation of start materials, no setting of player parameters such as homebase material by the according presets and no InitializePlayer-calls are done. Instead, a single CreateScriptPlayer-callback is done to the definition passed as idExtraData. Example:"
 msgstr "Mit einem Parameter an <placeholder-1/> lassen sich die szenarienspezifische Initialisierung, das heißt das Erzeugen des Startmaterials, das Setzen der Startparameter nach Vorgaben und auch alle InitializePlayer-Aufrufe unterbinden. Stattdessen erfolgt nur ein InitializeScriptPlayer-Definitionsaufruf in der angegebenen Definition. Dazu ein Beispiel:"
 
@@ -11064,661 +11112,661 @@ msgstr "Effekte sind, grob gesehen, dynamische Timer mit Eigenschaften, die sich
 msgid "Here an example of implementing an invisibility spell without effects:"
 msgstr "Dazu ein Beispiel eines Unsichtbarkeitszaubers ohne Effekte:"
 
-#: sdk/script/Effects.xml:54(text)
+#: sdk/script/Effects.xml:51(text)
 msgid "The magic spell object exists until the spell has ended and then makes the clonk visible again. Also, if the spell object is deleted for other reasons (e.g. a scenario section change), the clonk is made visible in the Destruction callback (if this wasn't so, the clonk would remain invisible for ever). Also there is a Timer (defined in the DefCore) called every second. Notice you couldn't just have a single timer call to mark the end of the spell because timer intervals are marked in the engine beginning with the start of the round and you wouldn't know at what point within an engine timer interval the spell would start."
 msgstr "Das Zauberobjekt bleibt hier einfach so lange erhalten, bis die Zeit abgelaufen ist, und macht den Clonk dann wieder sichtbar. Die Sichtbarmachung im Destruction-Callback macht das Objekt auch wieder sichtbar, wenn das Objekt aus irgendwelchen Gründen (z.B. Wechsel der Szenariensektion) entfernt wurde - ansonsten bliebe der Clonk in dem Fall auf ewig unsichtbar. Außerdem wird ein Timer verwendet, bei dem davon ausgegangen wird, dass er in der DefCore definiert ist und jede Sekunde aufgerufen wird. Ein Timer mit einem Intervall in der Dauer der Unsichtbarkeit wäre übrigens nicht möglich gewesen, da die Objekt-Timer je nach Spielzeit an unterschielichen Zeiten im Intervall beginnen können. Um den Timer zu sparen, hätte man also eine Aktivität definieren müssen."
 
-#: sdk/script/Effects.xml:55(text)
+#: sdk/script/Effects.xml:52(text)
 msgid "However, there are some problems with this implementation: for example, the magician can not cast a second invisibility spell while he's already invisible - the second spell would have practically no effect, because the end of the first spell would make the clonk visible again. The spell script would have to do some special handling for this case - but not only for multiple invisibility spells, but also for any other spell or script that might affect visibility or coloration of the clonk. Even if this spell would remember the previous value e.g. for coloration it could not handle a situation in which other scripts change the color of their own in the middle of the spell. The same problems occur when multiple scripts modify temporary clonk physcials such as jumping, walking speed, fight strength or visibility range, energy, magic energy etc. Using effects, these conflicts can be avoided."
 msgstr "Dieses Script hat allerdings auch einige Probleme: Beispielsweise kann der Zauberer keinen weiteren Unsichtbarkeitszauber sprechen, während er unsichtbar ist. Der zweite Zauber wäre praktisch wirkungslos, weil der erste Zauber bei seinem Ablauf schon den Clonk sichtbar macht. Der Zauber müsste also eine Spezialbehandlung für diesen Fall einführen - aber nicht nur für diesen, sondern für alle anderen Zauber, die Sichtbarkeit oder Färbung des Clonks verändern. Zwar berechnet das Script eine vorherige Verfärbung mit ein, betrachtet aber nicht den Fall, dass ein anderer Effekt diese zwischenzeitlich ändern könnte. Dieselben Probleme ergäben sich, wenn mehrere Effekte auf Clonk-Physicals (Sprunghöhe, Laufgeschwindigkeit, Kampfstärke, usw.), Sichtradius, Energie, Zauberenergie oder sonstigen Status einwirken. Über Effekte kann dies umgangen werden."
 
-#: sdk/script/Effects.xml:56(h)
+#: sdk/script/Effects.xml:53(h)
 msgid "Application"
 msgstr "Anwendung"
 
-#: sdk/script/Effects.xml:57(text)
+#: sdk/script/Effects.xml:54(text)
 msgid "Effects are created using <placeholder-1/> and removed with <placeholder-2/>. If an effect was successfully created, the callback Fx*Start is made (* is replaced with the effect name). Depending on the parameters, there can also be an Fx*Timer call for continuous activity such as casting sparks, adjusting energy etc. Finally, when the effect is deleted, the callback Fx*Stop is made. Now, the invisibility spell implemented using effects:"
 msgstr "Effekte werden mit der Scriptfunktion <placeholder-1/> erstellt und analog mit <placeholder-2/> entfernt. Wenn ein Effekt erfolgreich zum Objekt hinzugefügt wurde, wird der Callback Fx*Start aufgerufen (* steht dabei für den Effektnamen). Je nach Parametern kann dann ein periodischer Aufruf von Fx*Timer erfolgen, in dem der Effekt Partikel sprühen, Lebensenergie abziehen oder sonstige Dinge tun kann. Schließlich erfolgt, wenn der Effekt entfernt wird, ein Aufruf Fx*Stop, durchgeführt, in dem sich der Effekt entfernen sollte. Als Beispiel hier der oben beschriebene Unsichtbarkeitszauber mit Effekten:"
 
-#: sdk/script/Effects.xml:96(text)
+#: sdk/script/Effects.xml:93(text)
 msgid "In this case, the magic spell object only starts the effect, then deletes itself immediately. The engine ensures that there are no conflicts with multiple effects modifying the visibility: effects are stored in a stack which ensures that effects are always removed in the opposite order of their addition. For this, there are a couple of extra Start and Stop calls to be made which are explained in detail later."
 msgstr "Hier startet das Zauberobjekt nur noch den Effekt, und entfernt sich dann. Die Engine sorgt dafür, dass keine Probleme bei der Sichtbarkeit auftreten: Effekte werden in einem Stapel angelegt, der sicher stellt, dass jeder Effekte immer in der umgekehrten Reihenfolge entfernt werden, in der sie hinzugefügt wurden. Dazu sind ein paar zusätzliche Start- und Stop-Aufrufe notwendig, auf die später noch eingegangen wird."
 
-#: sdk/script/Effects.xml:97(text)
+#: sdk/script/Effects.xml:94(text)
 msgid "This effects does not have a timer function. It does, however, define a timer interval of 1111 which will invoke the standard timer function after 1111 frames which will delete the effect. Alternatively, you could define a timer function as such:"
 msgstr "Der Effekt hat außerdem keinen Timer-Aufruf, aber trotzdem ein angegebenes TimerIntervall von 1111. Das sorgt dafür, dass mit dem ersten Aufruf nach 1111 Frames der Standard-Timer ausgelöst wird, der den Effekt löscht. Alternativ hätte man auch eine Timerfunktion definieren können:"
 
-#: sdk/script/Effects.xml:103(text)
+#: sdk/script/Effects.xml:100(text)
 msgid "To store the previous status of the target object, properties of the effect are used. This is necessary because in this case the effect callbacks do not have any object script context. So you cannot access any object local variables in the effect callbacks - remember that the magic spell object which has created the effect is already deleted. If you require an object context in the effect callbacks you can specify one in <placeholder-1/>(). In that case, effect callbacks would be in object local context and the effect would automatically be deleted if the target object is destroyed."
 msgstr "Zum Speichern der vorherigen Statuswerte des Effektziels werden die Eigenschaften des Effekts verwendet. Dies ist nötig, da die Effekt-Callbacks in diesem Fall keinen Befehlskontext haben. Es können also keine objektlokalen Variablen verwendet werden - das Zauberobjekt wurde schließlich gelöscht. Falls ein Objektkontext benötigt wird, kann man diesen auch an <placeholder-1/>() übergeben. Die Aufrufe sind dann objektlokal, und der Effekt wird automatisch gelöscht, wenn das Befehlszielobjekt gelöscht wurde."
 
-#: sdk/script/Effects.xml:104(h)
+#: sdk/script/Effects.xml:101(h)
 #: sdk/playercontrols.xml:357(h)
 msgid "Priorities"
 msgstr "Prioritäten"
 
-#: sdk/script/Effects.xml:105(text)
+#: sdk/script/Effects.xml:102(text)
 msgid "When creating an effect you always specify a priority value which determines the effect order. The engine ensures that effects with lower priority are added before effects with a higher priority - even if this means deleting an existing effect of higher priority. So if one effect colors the clonk green and another colors the clonk red, the result will be that of the effect with higher priority. If two effects have the same priority, the order is undefined. However, it is guaranteed that effects added later always notify the Fx*Effect callback of the same priority."
 msgstr "Beim Erstellen eines Effektes wird immer eine Priorität mit angegeben, die die Überladungsreihenfolge der Effekte angibt. Die Engine garantiert dabei, dass Effekte mit niedriger Priorität immer vor Effekten mit hoher Priorität hinzugefügt werden - notfalls durch temporäres Entfernen von Effekten mit höherer Priorität. Wenn also ein Effekt einen Clonk grün färbt, und ein anderer rot, so wird das Ergebnis das des Effektes mit höherer Priorität sein, da dieser Effekt zuletzt angewendet wurde. Haben zwei Effekte die gleiche Priorität, ist die Reihenfolge nicht definiert. Es ist jedoch garantiert, dass später zugewiesene Effekte stets an den Fx*Effect-Callback gleicher Priorität mit übergeben werden."
 
-#: sdk/script/Effects.xml:106(text)
+#: sdk/script/Effects.xml:103(text)
 msgid "In the case of the red and green color, one effect could also determine the previous coloring and then mix a result using ModulateColor. But priorities also have another function: an effect of higher priority can prevent the addition of other effects of lower priority. This is done through the Fx*Effect callback. If any existing effect reacts to this callback with the return value -1, the new effect is not added (the same applies to the Start callback of the effect itself). Here an example:"
 msgstr "Im Falle der Grün-/Rotfärbung von Clonks sollte ein Effekt natürlich möglichst die vorherige Färbung abfragen, und dann zum Beispiel mit ModulateColor mischen. Die Prioritäten haben allerdings noch eine weitere Funktion: Ein Effekt mit hoher Priorität kann das Hinzufügen anderer Effekte mit niedrigerer Priorität verhindern. Dazu dient der Callback Fx*Effect. Gibt irgendein Effekt als Reaktion auf diesen Callback -1 zurück, wird der neue Effekt nicht hinzugefügt (dasselbe gilt für den Start-Callback beim Effekt selber). Dazu ein Beispiel:"
 
-#: sdk/script/Effects.xml:137(text)
+#: sdk/script/Effects.xml:133(text)
 msgid "This effect makes the clonk fire-proof for 30 seconds. The effect is implemented without any Timer or Stop callbacks as the complete functionality is achieved by simply blocking other effects which might have \"Fire\" as part of their name. This especially applies to the engine internal fire which has exactly the name \"Fire\". Of course, you could still add a Timer callback for graphic effects so the player can see that his clonk is immune. Also, you could create special visual effects when preventing incineration in FxBanBurnPSpellEffect. For the like:"
 msgstr "Dieser Zauber macht den Clonk für 30 Sekunden gegen Feuer immun. Der Effekt kommt ohne Timer- und Stop-Callbacks aus, da die gesamte Funktionalität schon im Abblocken aller Effekte besteht, die \"Fire\" als Teilzeichenkette enthalten. Dies gilt insbesondere auch für das engineinterne Feuer, das genau den Effektnamen \"Fire\" hat. Man könnte hier natürlich trotzdem einen Timer für grafische Effekte hinzufügen, damit der Spieler sieht, dass er gerade nicht brennen kann. Außerdem könnte beim Abblocken eines Feuers in FxBanBurnPSpellEffect zusätzliche Effekte ausführen, wie zum Beispiel:"
 
-#: sdk/script/Effects.xml:153(text)
+#: sdk/script/Effects.xml:149(text)
 msgid "This would even delete all burning objects which would otherwise incinerate the target object. The type check for var3 avoids possible conflicts with other \"Fire\" effects that might have differing parameters. Obviously, conflict situations like this should be avoided at all cost."
 msgstr "Dies würde sogar alle brennenden Objekte löschen, die das Zielobjekt ansonsten anzünden würden. Der Typecheck für var3 ist enthalten, weil sich andere Effekte ebenfalls Fire in den Namen setzen und andere Parameter haben könnten. Es ist offensichtlich, dass man dies vermeiden sollte, weil Funktionen wie die obige dann im ungünstigsten Fall ein völlig anderes Objekt löschen könnten."
 
-#: sdk/script/Effects.xml:154(text)
+#: sdk/script/Effects.xml:150(text)
 msgid "The following table contains general guidelines for priorities in effects of the original pack:"
 msgstr "Die folgende Tabelle enthält grobe Richtlinien für Prioritäten von Originalpackeffekten:"
 
-#: sdk/script/Effects.xml:162(col)
+#: sdk/script/Effects.xml:158(col)
 msgid "Short special effects"
 msgstr "Kurzer Spezialeffekt"
 
-#: sdk/script/Effects.xml:163(col)
+#: sdk/script/Effects.xml:159(col)
 msgid "300-350"
 msgstr "300-350"
 
-#: sdk/script/Effects.xml:166(col)
+#: sdk/script/Effects.xml:162(col)
 msgid "Effects which cannot be banned"
 msgstr "Nicht bannbare Effekte"
 
-#: sdk/script/Effects.xml:167(col)
+#: sdk/script/Effects.xml:163(col)
 msgid "250-300"
 msgstr "250-300"
 
-#: sdk/script/Effects.xml:170(col)
+#: sdk/script/Effects.xml:166(col)
 msgid "Magic ban spell"
 msgstr "Magie-Bannzauber"
 
-#: sdk/script/Effects.xml:171(col)
+#: sdk/script/Effects.xml:167(col)
 msgid "200-250"
 msgstr "200-250"
 
-#: sdk/script/Effects.xml:174(col)
+#: sdk/script/Effects.xml:170(col)
 msgid "Permanent magic ban spell"
 msgstr "Andauernde Magie-Bannzauber"
 
-#: sdk/script/Effects.xml:175(col)
+#: sdk/script/Effects.xml:171(col)
 msgid "180-200"
 msgstr "180-200"
 
-#: sdk/script/Effects.xml:178(col)
+#: sdk/script/Effects.xml:174(col)
 msgid "Short term, benevolent magic effects"
 msgstr "Kurzfristige, positive Zaubereffekte"
 
-#: sdk/script/Effects.xml:179(col)
+#: sdk/script/Effects.xml:175(col)
 msgid "150-180"
 msgstr "150-180"
 
-#: sdk/script/Effects.xml:182(col)
+#: sdk/script/Effects.xml:178(col)
 msgid "Short term, malevolent magic effects"
 msgstr "Kurzfristige, negative Zaubereffekte"
 
-#: sdk/script/Effects.xml:183(col)
+#: sdk/script/Effects.xml:179(col)
 msgid "120-150"
 msgstr "120-150"
 
-#: sdk/script/Effects.xml:186(col)
+#: sdk/script/Effects.xml:182(col)
 msgid "Normal Effects"
 msgstr "Normale Effekte"
 
-#: sdk/script/Effects.xml:187(col)
+#: sdk/script/Effects.xml:183(col)
 msgid "100-120"
 msgstr "100-120"
 
-#: sdk/script/Effects.xml:190(col)
+#: sdk/script/Effects.xml:186(col)
 msgid "Fire as used by the engine"
 msgstr "Engineinternes Feuer"
 
-#: sdk/script/Effects.xml:191(col)
+#: sdk/script/Effects.xml:187(col)
 msgid "100"
 msgstr "100"
 
-#: sdk/script/Effects.xml:194(col)
+#: sdk/script/Effects.xml:190(col)
 msgid "Permanent magic effects"
 msgstr "Permanente Zaubereffekte"
 
-#: sdk/script/Effects.xml:195(col)
+#: sdk/script/Effects.xml:191(col)
 msgid "50-100"
 msgstr "50-100"
 
-#: sdk/script/Effects.xml:198(col)
+#: sdk/script/Effects.xml:194(col)
 msgid "Permanent other effects"
 msgstr "Permanente, sonstige Effekte"
 
-#: sdk/script/Effects.xml:199(col)
+#: sdk/script/Effects.xml:195(col)
 msgid "20-50"
 msgstr "20-50"
 
-#: sdk/script/Effects.xml:202(col)
+#: sdk/script/Effects.xml:198(col)
 msgid "Internal effects, data storage etc."
 msgstr "Interne Effekte als Datenspeicher, etc."
 
-#: sdk/script/Effects.xml:207(text)
+#: sdk/script/Effects.xml:203(text)
 msgid "Generally, effect priorities should be chosen by dependency: if one effect should prevent another it needs a higher priority to do this (even if it is a permanent effect). Short term effects should have a higher priority than long term effects so that short term changes in the object are visible on top of long term effects."
 msgstr "Allgemein richten sich Effekte natürlich erst einmal nach den Abhängigkeiten: Wenn ein Effekt einen anderen verhindern soll, braucht der verhindernde Effekt höhere Priorität (Selbst wenn es ein permanenter Effekt ist). Dann sollten kurzfristige Effekte gegenüber den längerfristigen eine höhere Priorität bekommen, damit die kurzfristigen Statusänderungen bei demselben Statuselement gegenüber den langfristigen Statuselementen eher zu sehen sind."
 
-#: sdk/script/Effects.xml:208(text)
+#: sdk/script/Effects.xml:204(text)
 msgid "The engine internal fire is of priority 100. So a magic fire which also uses the properties of the engine fire should have a slightly higher priority and should call the respective FxFire* functions within its callbacks. For proper functioning all effect callback (i.e. Start, Timer, and Stop) should be forwarded as each might depend on the action of the others. If this is not possible in your case, you should reimplement the complete fire functionality by script."
 msgstr "Das engineinterne Feuer liegt natürlich fest bei 100. Ein magisches Feuer, das die Eigenschaften des engineinternen Feuers auch benutzt, sollte entsprechend leicht darüber liegen, und in allen seinen Callbacks die entsprechenden FxFire*-Aufrufe mit aufrufen. Dabei sollten stets alle Callbacks (also Start, Timer und Stop) weitergeleitet werden, da diese voneinander abhängen und sich diese Abhängigkeiten auch in verschiedenen Engineversionen verschieben können. Wenn das nicht geht, sollte das Verhalten besser gleich komplett per Script emuliert werden."
 
-#: sdk/script/Effects.xml:209(text)
+#: sdk/script/Effects.xml:205(text)
 msgid "Effects with priority 1 are a special case: Other effects are never temporarily removed for them and they are never temporarily removed themselves."
 msgstr "Effekte mit Priorität 1 sind ein Spezialfall: Für sie werden nie andere Effekte temporär entfernt und sie selber werden ebenfalls nie temporär entfernt."
 
-#: sdk/script/Effects.xml:210(h)
+#: sdk/script/Effects.xml:206(h)
 msgid "Special Add/Remove Calls"
 msgstr "Spezielle Add/Remove-Aufrufe"
 
-#: sdk/script/Effects.xml:211(text)
+#: sdk/script/Effects.xml:207(text)
 msgid "For the engine to ensure that effects are always removed in opposite order, it might in some cases be necessary to temporarily remove and later re-add existing effects. In these situations, the scripter should obviously take care to remove any object changes and reapply them after re-adding so that other effects will behave accordingly."
 msgstr "Damit die Engine sicherstellen kann, dass Effekte immer in umgekehrter Reihenfolge entfernt werden, wie sie hinzugefügt wurden, müssen zuweilen Effekte temporär entfernt und wieder hinzugefügt werden. In diesen Aufrufen sollte der Scripter natürlich alle Statuszustände löschen und wiederherstellen, damit sich die anderen Effekte danach ausrichten können. Aktionen, die nur einmal beim Starten oder enden des Effektes ausgeführt werden sollen. Dazu gehört zum Beispiel das Löschen des Zielobjektes beim letzten Beispielscript, oder auch Soundeffekte."
 
-#: sdk/script/Effects.xml:212(text)
+#: sdk/script/Effects.xml:208(text)
 msgid "Effects are also removed when the target object is deleted or dies - the cause for the removal is passed in the reason parameter to the Remove function of the effect. This can be used e.g. to reanimate a clonk immediately upon his death:"
 msgstr "Effekte werden auch dann entfernt, wenn das Zielobjekt entfernt wird oder stirbt - der Grund wird im reason-Parameter an die Remove-Funktion der Effekte übergeben. Auf diese Weise kann man beispielsweise dafür sorgen, dass ein Clonk nach dem Sterben sofort wiederbelebt wird:"
 
-#: sdk/script/Effects.xml:250(text)
+#: sdk/script/Effects.xml:248(text)
 msgid "This effect reanimates the clonk as many times as he has cast the reanimation spell."
 msgstr "Dieser Effekt belebt den Clonk beim Tod so oft wieder, wie er den Zauber gesprochen hat."
 
-#: sdk/script/Effects.xml:251(h)
+#: sdk/script/Effects.xml:249(h)
 msgid "Global Effects"
 msgstr "Globale Effekte"
 
-#: sdk/script/Effects.xml:252(text)
+#: sdk/script/Effects.xml:250(text)
 msgid "Global effects are effects that are not bound to any target object. With global effects, too, priorities are observed and temporary Add/Remove calls might be necessary to ensure order. Simply imagine all global effects are attached to an imaginary object. Global effects are accessed whenever you specify 0 for the target object."
 msgstr "Globale Effekte sind einfach Effekte, die an kein Zielobjekt gebunden sind. Innerhalb der globalen Effekte werden aber trotzdem Prioritäten beachtet und temporäre Add/Remove-Aufrufe durchgeführt. Man kann sich vorstellen, dass alle globalen Effekte an einem imaginären, globalen Objekt hängen. Globale Effekte werden entsprechend immer angesprochen, indem man an die Effektfunktionen als Zielobjekt 0 übergibt."
 
-#: sdk/script/Effects.xml:253(text)
+#: sdk/script/Effects.xml:251(text)
 msgid "This can be used to make changes to gravity, sky color, etc. Here's an example for a spell that temporarily reduces gravity and then resets the original value:"
 msgstr "Hiermit lassen sich zum Beispiel Änderungen an der Gravitation, Himmelsfärbung, etc. durchführen. Ein Beispiel für einen Zauber, der die Gravitation reduziert und mit der Zeit wieder an den regulären Wert anpasst:"
 
-#: sdk/script/Effects.xml:318(text)
+#: sdk/script/Effects.xml:310(text)
 msgid "<code>target</code> will be 0 in all these effect calls. You should still pass this parameter to calls such as <placeholder-1/>() for then it is also possible to attach effects to the magician or perhaps a magic tower. In this case, gravity would automatically be reset as soon as the magician dies or the magic tower is destroyed."
 msgstr "<code>target</code> wird hier in allen Effektaufrufen 0 sein. Trotzdem sollte der Parameter immer an Aufrufe wie <placeholder-1/>() übergeben werden, da es dann auch möglich ist, den Effekt an den Zauberer oder ggf. den Zauberturm zu binden. In diesem Fall würde die Gravitation automatisch zurückgesetzt, sobald der Zauberer stirbt oder der Turm gelöscht wird."
 
-#: sdk/script/Effects.xml:319(h)
+#: sdk/script/Effects.xml:311(h)
 msgid "Adding Effects"
 msgstr "Zusammenfassen von Effekten"
 
-#: sdk/script/Effects.xml:320(text)
+#: sdk/script/Effects.xml:312(text)
 msgid "In the previous example, several gravitational effects were combined so that the gravity change lasts longer if the spell is casted multiple times. Adding these effects cannot be done in the Effect callback because the gravitation effect might always be prevented by another effect with higher priority (e.g. a no-spells-whatsoever-effect). Through the special Fx*Add callback you can achieve the desired result more easily, or at least in a more structured fashion."
 msgstr "Im letzten Beispiel wurden mehrere Gravitationseffekte zusammen gefasst, so dass die Änderung der Gravitation länger andauert, wenn mehrmals gezaubert wurde. Die Zusammenfassung durfte nicht im Effect-Callback passieren, da der Gravitationseffekt immer noch von einem Effekt mit höherer Priorität (beispielsweise ein keine-globalen-Zauber-erlauben-Effekt) abgelehnt werden könnte. Über den speziellen Fx*Add-Callback kann man dasselbe Ergebnis aber auch einfacher (oder zumindest übersichtlicher) erreichen:"
 
-#: sdk/script/Effects.xml:340(text)
+#: sdk/script/Effects.xml:330(text)
 msgid "Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all."
 msgstr "Die Rückgabe von -3 an den Fx*Effect-Callback, sorgt dafür, dass der Fx*Add-Callback für den neuen Effekt ausgeführt wird. Der neue Effekt wird dabei nicht erzeugt, und die entsprechende AddEffect-Funktion gibt die Effektnummer des Effektes zurück, der den neuen Effekt übernommen hat. Die Methode hat gegenüber der weiter oben verwendeten also den Vorteil, dass der Rückgabewert von AddEffect benutzt werden kann, um festzustellen, ob der Effekt überhaupt erzeugt werden konnte."
 
-#: sdk/script/Effects.xml:341(h)
+#: sdk/script/Effects.xml:331(h)
 msgid "User Defined Properties"
 msgstr "Benutzerdefinierte Eigenschaften"
 
-#: sdk/script/Effects.xml:342(text)
+#: sdk/script/Effects.xml:332(text)
 msgid "Effects can be easily classified by name. In this way, e.g. all magic spell effects can easily be found through the respective wildcard string. If, however, you want to create user-defined properties which also apply to existing effects you can do this by defining additional effect functions:"
 msgstr "Viele Klassifizierungen von Effekten können einfach über den Namen geregelt werden. Auf diese Weise können beispielsweise schnell alle Zaubereffekte über Wildcards gesucht und entfernt werden. Falls man aber zum Beispiel eigene Eigenschaften definieren will, die auch für existierende Effekte gelten, kann man zusätzliche Effektfunktionen definieren:"
 
-#: sdk/script/Effects.xml:356(text)
+#: sdk/script/Effects.xml:346(text)
 msgid "Using <placeholder-1/>() you can of course also call functions in the effect, e.g. to extend certain effects."
 msgstr "Über <placeholder-1/>() können natürlich auch Funktionen im Effekt ausgelöst werden; beispielsweise um bestimmte Effekte zu verlängern."
 
-#: sdk/script/Effects.xml:357(h)
+#: sdk/script/Effects.xml:347(h)
 msgid "Blind Effects"
 msgstr "Blindeffekte"
 
-#: sdk/script/Effects.xml:358(text)
+#: sdk/script/Effects.xml:348(text)
 msgid "Sometimes effects only need to be created in order to produce the respective callbacks in other effects - for example with magic spells which don't have any animation or long term effects but which nonetheless might be blocked by other effects. Example for the earthquake spell:"
 msgstr "Manchmal müsste ein Effekt nur erzeugt werden, um die entsprechenden Callbacks in anderen Effekten auszuführen - beispielsweise bei Zaubern, die keine längere Animation benötigen, aber trotzdem durch andere Effekte blockiert können werden sollen. Ein Beispiel ist der Erdbebenzauber:"
 
-#: sdk/script/Effects.xml:374(text)
+#: sdk/script/Effects.xml:370(text)
 msgid "The return value of <placeholder-1/>() is -1 if the effect was rejected and a positive value or -2 if the effect was accepted. In both cases the effect itself should not be executed, but in the latter case the Activate function may signal success by returning 1."
 msgstr "Der Rückgabewert von <placeholder-1/>() ist -1 wenn der Effekt abgelehnt, und positiv oder -2 wenn er aufgenommen wurde. In beiden Fällen sollte der Effekt selber nicht ausgeführt werden; aber in letzterem Fall kann die Activate-Funktion Erfolg signalisieren und 1 zurückgeben."
 
-#: sdk/script/Effects.xml:375(h)
+#: sdk/script/Effects.xml:371(h)
 msgid "Extended Possibilities"
 msgstr "Erweiterte Möglichkeiten"
 
-#: sdk/script/Effects.xml:376(text)
+#: sdk/script/Effects.xml:372(text)
 msgid "As every effect has its own data storage, effects are also a way of attaching external data to objects without having to change the object definition for that. Also, simple calls can be delayed, e.g. for one frame after destruction of the object as is done at one place in the Knights pack:"
 msgstr "Da jeder Effekt seinen eigenen Datenspeicher hat, ist dies eine Möglichkeit, extern Daten an Objekte zu binden, ohne dabei die Definitionen verändern zu müssen. Außerdem können so einfache Aufrufe verzögert durchgeführt werden - beispielsweise erst ein Frame nach der Zerstörung eines Objekts, wie an einer Stelle im Ritterpack:"
 
-#: sdk/script/Effects.xml:398(text)
+#: sdk/script/Effects.xml:392(text)
 msgid "For this application, the effect name should start with \"Int\" (especially if working with global callbacks) followed by the id of the object to avoid any kind of name conflict with other effects."
 msgstr "Bei derartigen Effekten sollte der Name mit \"Int\" beginnen; insbesondere falls sie mit globalem Callback erzeugt werden, sollte darauf die ID des Objekts folgen, um Namenskollisionen zu vermeiden."
 
-#: sdk/script/Effects.xml:399(text)
+#: sdk/script/Effects.xml:393(text)
 msgid "Also, certain action can be taken at the death of an object without having to modify that object's definition. A scenario script might contain:"
 msgstr "Zudem können bestimmte Aktionen beim Tod von Lebewesen ausgeführt werden, ohne dafür gleich eine neue Objektdefinition zu benötigen. In einem Szenarioscript kann beispielsweise stehen:"
 
-#: sdk/script/Effects.xml:415(text)
+#: sdk/script/Effects.xml:409(text)
 msgid "All wipfs present at the beginning of the scenario will explode on death!"
 msgstr "Alle Wipfe, die von Anfang an im Szenario waren, explodieren beim Tod."
 
-#: sdk/script/Effects.xml:416(h)
+#: sdk/script/Effects.xml:410(h)
 msgid "Naming"
 msgstr "Benennung"
 
-#: sdk/script/Effects.xml:417(text)
+#: sdk/script/Effects.xml:411(text)
 msgid "So that effects might properly recognize and manipulate each other you should stick to the following naming scheme (\"*abc\" means endings, \"abc*\" means prefixes, and \"*abc*\" means string parts which might occur anywhere in the name)."
 msgstr "Damit sich Effekte untereinander erkennen und manipulieren können, sollten folgende Benennungsschemata verwendet werden (\"*abc\" steht für Endungen, \"abc*\" für Namensanfänge und \"*abc*\" für Zeichenketten, die irgendwo im Namen vorkommen sollten."
 
-#: sdk/script/Effects.xml:421(col)
+#: sdk/script/Effects.xml:415(col)
 msgid "Name section"
 msgstr "Namensteil"
 
-#: sdk/script/Effects.xml:425(col)
+#: sdk/script/Effects.xml:419(col)
 msgid "*Spell"
 msgstr "*Spell"
 
-#: sdk/script/Effects.xml:426(col)
+#: sdk/script/Effects.xml:420(col)
 msgid "Magic effect"
 msgstr "Magischer Effekt"
 
-#: sdk/script/Effects.xml:429(col)
+#: sdk/script/Effects.xml:423(col)
 msgid "*PSpell"
 msgstr "*PSpell"
 
-#: sdk/script/Effects.xml:430(col)
+#: sdk/script/Effects.xml:424(col)
 msgid "Benevolent magic effect"
 msgstr "Für das Zielobjekt positiver, magischer Effekt"
 
-#: sdk/script/Effects.xml:433(col)
+#: sdk/script/Effects.xml:427(col)
 msgid "*NSpell"
 msgstr "*NSpell"
 
-#: sdk/script/Effects.xml:434(col)
+#: sdk/script/Effects.xml:428(col)
 msgid "Malevolent magic effect"
 msgstr "Für das Zielobjekt negativer, magischer Effekt"
 
-#: sdk/script/Effects.xml:437(col)
+#: sdk/script/Effects.xml:431(col)
 msgid "*USpell"
 msgstr "*USpell"
 
-#: sdk/script/Effects.xml:438(col)
+#: sdk/script/Effects.xml:432(col)
 msgid "Neutral magic effect"
 msgstr "Neutraler, magischer Effekt"
 
-#: sdk/script/Effects.xml:441(col)
+#: sdk/script/Effects.xml:435(col)
 msgid "*Fire*"
 msgstr "*Fire*"
 
-#: sdk/script/Effects.xml:442(col)
+#: sdk/script/Effects.xml:436(col)
 msgid "Fire effect - the function <placeholder-1/>() removes all effects of this name"
 msgstr "Feuereffekt - die Funktion <placeholder-1/>() entfernt alle Effekte dieser Maske."
 
-#: sdk/script/Effects.xml:445(col)
+#: sdk/script/Effects.xml:439(col)
 msgid "*Curse*"
 msgstr "*Curse*"
 
-#: sdk/script/Effects.xml:446(col)
+#: sdk/script/Effects.xml:440(col)
 msgid "Curse"
 msgstr "Fluch"
 
-#: sdk/script/Effects.xml:449(col)
+#: sdk/script/Effects.xml:443(col)
 msgid "*Ban*"
 msgstr "*Ban*"
 
-#: sdk/script/Effects.xml:450(col)
+#: sdk/script/Effects.xml:444(col)
 msgid "Effect preventing other effects (e.g. fire proofness or immunity)"
 msgstr "Effekt, der andere Effekte bannt (z.B. Feuer- oder Zauberimmunität)"
 
-#: sdk/script/Effects.xml:453(col)
+#: sdk/script/Effects.xml:447(col)
 msgid "Int*"
 msgstr "Int*"
 
-#: sdk/script/Effects.xml:454(col)
+#: sdk/script/Effects.xml:448(col)
 msgid "Internal effect (data storage etc.)"
 msgstr "Interner Effekt (Variablenspeicher, etc.)"
 
-#: sdk/script/Effects.xml:457(col)
+#: sdk/script/Effects.xml:451(col)
 msgid "*Potion"
 msgstr "*Potion"
 
-#: sdk/script/Effects.xml:458(col)
+#: sdk/script/Effects.xml:452(col)
 msgid "Magic potion"
 msgstr "Zaubertrank"
 
-#: sdk/script/Effects.xml:462(text)
+#: sdk/script/Effects.xml:456(text)
 msgid "Warning: as function names may not be more than 100 characters in length (and you will lose oversight eventually), you should not stuff too much information into the effect name. Effect names are case sensitive. Also, you should avoid using any of these identifiers in your effect names if your effect doesn't have anything to do with them."
 msgstr "Achtung: Da Funktionsnamen maximal 100 Zeichen lang sein dürfen (und irgendwann auch die Übersicht verloren geht), sollte man nicht endlos Statusinformationen in den Namen packen. Alle Effektfunktionen unterscheiden zwischen Groß- und Kleinschreibung. Umgekehrt sollte man vermeiden, die entsprechenden Zeichenketten im Effektnamen vorkommen zu lassen, wenn sie nichts mit den jeweiligen Bedeutungen zu tun haben."
 
-#: sdk/script/Effects.xml:463(h)
+#: sdk/script/Effects.xml:457(h)
 msgid "Properties Reference"
 msgstr "Eigenschaften-Referenz"
 
-#: sdk/script/Effects.xml:464(text)
+#: sdk/script/Effects.xml:458(text)
 msgid "Effects have a number of standard properties: Name, Priority, Interval, CommandTarget and Time. Name, Interval and Time can be changed, Priority and CommandTarget are read-only. CommandTarget returns either the command object or command definition, depending on which is used."
 msgstr "Effekte haben einige Standardeigenschaften: Name, Priority, Interval, CommantTarget und Time. Name, Interval und Time kann geändert werden, Priority und CommandTarget nicht. CommandTarget gibt entweder das Befehlsziel zurück, das kann entweder ein Objekt sein oder eine Definition, je nachdem wie das beim Hinzufügen des Effektes festgelegt wurde."
 
-#: sdk/script/Effects.xml:465(h)
+#: sdk/script/Effects.xml:459(h)
 msgid "Callback Reference"
 msgstr "Callback-Referenz"
 
-#: sdk/script/Effects.xml:467(text)
+#: sdk/script/Effects.xml:461(text)
 msgid "The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name."
 msgstr "Folgenge Callbacks werden von der Engine ausgeführt, und sollten - je nach Bedarf - im Script implementiert werden. * steht jeweils für den Effektnamen."
 
-#: sdk/script/Effects.xml:468(h)
+#: sdk/script/Effects.xml:462(h)
 msgid "Fx*Start"
 msgstr "Fx*Start"
 
-#: sdk/script/Effects.xml:470(text)
+#: sdk/script/Effects.xml:464(text)
 msgid "Called at the start of the effect. target is the target object of the effect. <code>effect</code> is the effect itself. <code>effect</code> can be used to manipulate the effect, for example with <code>effect.Interval=newinterval</code>."
 msgstr "Wird beim Start des Effektes aufgerufen. target gibt das Zielobjekt des Effektes an. <code>effect</code> ist der Effekt selbst. <code>effect</code> kann benutzt werden um den Effekt zu manipulieren, zum Beispiel mit <code>effect.Interval=newinterval</code>."
 
-#: sdk/script/Effects.xml:471(text)
+#: sdk/script/Effects.xml:465(text)
 msgid "In normal operation the parameter temporary is 0. It is 1 if the effect is re-added after having been temporarily removed and 2 if the effect was temporarily removed and is now to be deleted (in this case a Remove call will follow)."
 msgstr "Der Parameter temporary ist 0 beim normalen Hinzufügen des Effektes, 1 wenn der Effekt nur hinzugefügt wird, weil er vorher temporär entfernt wurde, und 2 wenn der Effekt hinzugefügt wird, weil er zuvor temporär entfernt wurde aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-Aufruf)."
 
-#: sdk/script/Effects.xml:472(text)
+#: sdk/script/Effects.xml:466(text)
 msgid "If temporary is 0, var1 to var4 are the additional parameters passed to <placeholder-1/>()."
 msgstr "Wenn temporary 0 ist, entsprechen die Werte var1 bis var4 den übergebenen Parametern an <placeholder-1/>()."
 
-#: sdk/script/Effects.xml:473(text)
+#: sdk/script/Effects.xml:467(text)
 msgid "If temporary is 0 and this callback returns -1 the effect is not created and the corrsponding <placeholder-1/>() call returns 0."
 msgstr "Wenn temporary 0 ist und dieser Callback -1 zurückgibt, wird der Effekt nicht erzeugt und der zugehörige <placeholder-1/>()-Aufruf gibt 0 zurück."
 
-#: sdk/script/Effects.xml:474(h)
+#: sdk/script/Effects.xml:468(h)
 msgid "Fx*Stop"
 msgstr "Fx*Stop"
 
-#: sdk/script/Effects.xml:476(text)
+#: sdk/script/Effects.xml:470(text)
 msgid "When the effect is temporarily or permanently removed. target again is the target object and <code>effect</code> the effect itself."
 msgstr "Aufruf, wenn der Effekt temporär oder permanent entfernt wird. target ist wieder das Effekt-Zielobjekt und <code>effect</code>, der Effekt selbst."
 
-#: sdk/script/Effects.xml:477(text)
+#: sdk/script/Effects.xml:471(text)
 msgid "reason contains the cause of the removal and can be one of the following values:"
 msgstr "reason gibt den Grund für das Entfernen des Effektes an, und kann einer der folgenden Werte sein:"
 
-#: sdk/script/Effects.xml:481(col)
+#: sdk/script/Effects.xml:475(col)
 msgid "reason"
 msgstr "reason"
 
-#: sdk/script/Effects.xml:486(col)
+#: sdk/script/Effects.xml:480(col)
 msgid "Normal removal"
 msgstr "Effekt wird regulär entfernt"
 
-#: sdk/script/Effects.xml:490(col)
+#: sdk/script/Effects.xml:484(col)
 msgid "Temporary removal (temporary is 1)."
 msgstr "Effekt wird nur temporär entfernt. temporary ist in dem Fall 1."
 
-#: sdk/script/Effects.xml:494(col)
+#: sdk/script/Effects.xml:488(col)
 msgid "Not used"
 msgstr "nicht verwendet"
 
-#: sdk/script/Effects.xml:498(col)
+#: sdk/script/Effects.xml:492(col)
 msgid "The target object has been deleted"
 msgstr "Effekt wird entfernt, weil das Objekt gelöscht wird"
 
-#: sdk/script/Effects.xml:502(col)
+#: sdk/script/Effects.xml:496(col)
 msgid "The target object has died"
 msgstr "Effekt wird entfernt, weil das Objekt stirbt"
 
-#: sdk/script/Effects.xml:506(text)
+#: sdk/script/Effects.xml:500(text)
 msgid "The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted."
 msgstr "Wenn der Effekt nicht gelöscht werden soll, kann in der Funktion -1 zurückgegeben werden, um das Löschen zu verhindern. Bei temporären Aufrufen oder wenn das Zielobjekt gelöscht wird, bringt dies natürlich nichts."
 
-#: sdk/script/Effects.xml:507(h)
+#: sdk/script/Effects.xml:501(h)
 msgid "Fx*Timer"
 msgstr "Fx*Timer"
 
-#: sdk/script/Effects.xml:509(text)
+#: sdk/script/Effects.xml:503(text)
 msgid "Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual."
 msgstr "Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall angegeben wurde. target und <code>effect</code> spezifizieren auch hier Zielobjekt und Effekt."
 
-#: sdk/script/Effects.xml:510(text)
+#: sdk/script/Effects.xml:504(text)
 msgid "time specifies how long the effect has now been active. This might alternatively be determined using effect.Time."
 msgstr "time gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch über effect.Time herausfinden."
 
-#: sdk/script/Effects.xml:511(text)
+#: sdk/script/Effects.xml:505(text)
 msgid "If this function is not implemented or returns -1, the effect will be deleted after this call."
 msgstr "Ein Rückgabewert von -1 bedeutet, dass der Effekt nach dem Aufruf gelöscht wird. Dasselbe passiert, wenn die Funktion nicht implementiert wird."
 
-#: sdk/script/Effects.xml:512(h)
+#: sdk/script/Effects.xml:506(h)
 msgid "Fx*Effect"
 msgstr "Fx*Effect"
 
-#: sdk/script/Effects.xml:514(text)
+#: sdk/script/Effects.xml:508(text)
 msgid "A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>effect</code> is the effect being called."
 msgstr "Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu demselben Objekt (target) hinzugefügt werden soll. new_name gibt den Namen des neuen Effektes an; <code>effect</code> ist der Effekt bei dem angefragt wird."
 
-#: sdk/script/Effects.xml:515(text)
-msgid "Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set. The new_num can however be used to request information via <placeholder-1/>(). In calls made by <placeholder-2/>() new_num is always 0."
-msgstr "Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert. Der new_num-Parameter kann aber verwendet werden, um mit <placeholder-1/>() Informationen über den Effekt abzufragen. Bei Aufrufen durch die <placeholder-2/>()-Funktion ist new_num 0."
+#: sdk/script/Effects.xml:509(text)
+msgid "Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set."
+msgstr "Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert."
 
-#: sdk/script/Effects.xml:516(text)
+#: sdk/script/Effects.xml:510(text)
 msgid "This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback."
 msgstr "Die Funktion sollte -1 zurückgeben, wenn sie den neuen Effekt ablehnt. Da der Effekt auch noch von einem anderen Effekt abgelehnt werden kann, sollte dieser Callback nicht dazu verwendet werden, um beispielsweise Effekte zusammenzufassen (siehe Beispiel zum Gravitationszauber). Überhaupt sollte es möglichst vermieden werden, in diesem Aufruf die Effektliste zu manipulieren."
 
-#: sdk/script/Effects.xml:517(text)
+#: sdk/script/Effects.xml:511(text)
 msgid "Return -2 or -3 to accept the new effect. As long as the new effect is not rejected by any other effect, the Fx*Add call is then made to the accepting effect, the new effect is not actually created, and the calling AddEffect function returns the effect index of the accepting effect. The return value -3 will also temporarily remove all higher prioriy effects just before the Fx*Add callback and re-add them later."
 msgstr "Ein Rückgabewert von -2 oder -3 sollte angegeben werden, wenn der Effekt übernommen wird. Sofern der Effekt dann von keinem anderen Effekt abgelehnt wurde (über Rückgabewert -1), wird ein Fx*Add-Aufruf an den übernehmenden Effekt gesendet, der neue Effekt selber entfernt, und die aufrufende AddEffect-Funktion erhält als Rückgabewert die Nummer des übernehmenden Effektes. Rückgabewert -3 bedeutet dabei im Gegensatz zu -2, dass vor dem Fx*Add-Aufruf alle Effekte mit höherer Priorität temporär entfernt, und nach dem Aufruf dieselben wieder temporär hinzugefügt werden."
 
-#: sdk/script/Effects.xml:518(text)
+#: sdk/script/Effects.xml:512(text)
 msgid "var1 bis var4 are the parameters passed to <placeholder-1/>()"
 msgstr "var1 bis var4 sind die Parameter, die an die <placeholder-1/>()-Funktion übergeben wurden."
 
-#: sdk/script/Effects.xml:519(h)
+#: sdk/script/Effects.xml:513(h)
 msgid "Fx*Add"
 msgstr "Fx*Add"
 
-#: sdk/script/Effects.xml:521(text)
+#: sdk/script/Effects.xml:515(text)
 msgid "Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. <code>effect</code> identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects)."
 msgstr "Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-Callback hin -2 oder -3 zurückgegeben hat. <code>effect</code> gibt den Effektes an, zu dem hinzugefügt wird; target das Zielobjekt (0 bei globalen Effekten)."
 
-#: sdk/script/Effects.xml:522(text)
+#: sdk/script/Effects.xml:516(text)
 msgid "new_timer is the timer interval of the new effect; var1 to var4 are the parameters from AddEffect. Notice: in temporary calls, these parameters are not available - here they will be 0."
 msgstr "new_timer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann 0."
 
-#: sdk/script/Effects.xml:523(text)
+#: sdk/script/Effects.xml:517(text)
 msgid "If -1 is returned, the accepting effect is deleted also. Logically, the calling AddEffect function will then return -2."
 msgstr "Wird -1 zurückgegeben, wird auch der übernehmende Effekt entfernt. Logischerweise gibt die erzeugende AddEffect-Funktion dann -2 zurück."
 
-#: sdk/script/Effects.xml:524(h)
+#: sdk/script/Effects.xml:518(h)
 msgid "Fx*Damage"
 msgstr "Fx*Damage"
 
-#: sdk/script/Effects.xml:526(text)
+#: sdk/script/Effects.xml:520(text)
 msgid "Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change."
 msgstr "Jeder Effekt erhält diesen Callback, wann immer sich der Energie- oder Schadenswert des Zielobjektes ändert. Falls die Funktion definiert wird, sollte der Rückgabewert dabei die erlaubte Änderung angeben."
 
-#: sdk/script/Effects.xml:527(text)
+#: sdk/script/Effects.xml:521(text)
 msgid "This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:"
 msgstr "Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber umgekehrt. cause gibt den geänderten Wert und den Grund an:"
 
-#: sdk/script/Effects.xml:531(col)
+#: sdk/script/Effects.xml:525(col)
 msgid "Script constant"
 msgstr "Scriptkonstante"
 
-#: sdk/script/Effects.xml:532(col)
+#: sdk/script/Effects.xml:526(col)
 msgid "cause"
 msgstr "cause"
 
-#: sdk/script/Effects.xml:536(col)
+#: sdk/script/Effects.xml:530(col)
 msgid "FX_Call_DmgScript"
 msgstr "FX_Call_DmgScript"
 
-#: sdk/script/Effects.xml:538(col)
+#: sdk/script/Effects.xml:532(col)
 msgid "Damage by script call <placeholder-1/>()"
 msgstr "Schaden durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:541(col)
+#: sdk/script/Effects.xml:535(col)
 msgid "FX_Call_DmgBlast"
 msgstr "FX_Call_DmgBlast"
 
-#: sdk/script/Effects.xml:543(col)
+#: sdk/script/Effects.xml:537(col)
 msgid "Damage by explosion"
 msgstr "Schaden durch Explosion"
 
-#: sdk/script/Effects.xml:546(col)
+#: sdk/script/Effects.xml:540(col)
 msgid "FX_Call_DmgFire"
 msgstr "FX_Call_DmgFire"
 
-#: sdk/script/Effects.xml:548(col)
+#: sdk/script/Effects.xml:542(col)
 msgid "Damage by fire"
 msgstr "Schaden durch Feuer"
 
-#: sdk/script/Effects.xml:551(col)
+#: sdk/script/Effects.xml:545(col)
 msgid "FX_Call_DmgChop"
 msgstr "FX_Call_DmgChop"
 
-#: sdk/script/Effects.xml:553(col)
+#: sdk/script/Effects.xml:547(col)
 msgid "Damage by chopping (only trees)"
 msgstr "Schaden durch Fällen (nur Bäume)"
 
-#: sdk/script/Effects.xml:556(col)
+#: sdk/script/Effects.xml:550(col)
 msgid "FX_Call_EngScript"
 msgstr "FX_Call_EngScript"
 
-#: sdk/script/Effects.xml:557(col)
+#: sdk/script/Effects.xml:551(col)
 #: sdk/definition/cnat.xml:49(col)
 msgid "32"
 msgstr "32"
 
-#: sdk/script/Effects.xml:558(col)
+#: sdk/script/Effects.xml:552(col)
 msgid "Energy value change by script call <placeholder-1/>()"
 msgstr "Energieänderung durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:561(col)
+#: sdk/script/Effects.xml:555(col)
 msgid "FX_Call_EngBlast"
 msgstr "FX_Call_EngBlast"
 
-#: sdk/script/Effects.xml:562(col)
+#: sdk/script/Effects.xml:556(col)
 msgid "33"
 msgstr "33"
 
-#: sdk/script/Effects.xml:563(col)
+#: sdk/script/Effects.xml:557(col)
 msgid "Energy loss by explosion"
 msgstr "Energieverlust durch Explosion"
 
-#: sdk/script/Effects.xml:566(col)
+#: sdk/script/Effects.xml:560(col)
 msgid "FX_Call_EngObjHit"
 msgstr "FX_Call_EngObjHit"
 
-#: sdk/script/Effects.xml:567(col)
+#: sdk/script/Effects.xml:561(col)
 msgid "34"
 msgstr "34"
 
-#: sdk/script/Effects.xml:568(col)
+#: sdk/script/Effects.xml:562(col)
 msgid "Energy loss by object hit"
 msgstr "Energieverlust durch Objekttreffer"
 
-#: sdk/script/Effects.xml:571(col)
+#: sdk/script/Effects.xml:565(col)
 msgid "FX_Call_EngFire"
 msgstr "FX_Call_EngFire"
 
-#: sdk/script/Effects.xml:572(col)
+#: sdk/script/Effects.xml:566(col)
 msgid "35"
 msgstr "35"
 
-#: sdk/script/Effects.xml:573(col)
+#: sdk/script/Effects.xml:567(col)
 msgid "Energy loss by fire"
 msgstr "Energieverlust durch Feuer"
 
-#: sdk/script/Effects.xml:576(col)
+#: sdk/script/Effects.xml:570(col)
 msgid "FX_Call_EngBaseRefresh"
 msgstr "FX_Call_EngBaseRefresh"
 
-#: sdk/script/Effects.xml:577(col)
+#: sdk/script/Effects.xml:571(col)
 msgid "36"
 msgstr "36"
 
-#: sdk/script/Effects.xml:578(col)
+#: sdk/script/Effects.xml:572(col)
 msgid "Energy recharge at the home base"
 msgstr "Energieaufnahme in der Basis - auch Abgabe und Kauf der Basis, wenn die Basis ein Lebewesen ist"
 
-#: sdk/script/Effects.xml:581(col)
+#: sdk/script/Effects.xml:575(col)
 msgid "FX_Call_EngAsphyxiation"
 msgstr "FX_Call_EngAsphyxiation"
 
-#: sdk/script/Effects.xml:582(col)
+#: sdk/script/Effects.xml:576(col)
 msgid "37"
 msgstr "37"
 
-#: sdk/script/Effects.xml:583(col)
+#: sdk/script/Effects.xml:577(col)
 msgid "Energy loss by suffocation"
 msgstr "Energieverlust durch Ersticken"
 
-#: sdk/script/Effects.xml:586(col)
+#: sdk/script/Effects.xml:580(col)
 msgid "FX_Call_EngCorrosion"
 msgstr "FX_Call_EngCorrosion"
 
-#: sdk/script/Effects.xml:587(col)
+#: sdk/script/Effects.xml:581(col)
 msgid "38"
 msgstr "38"
 
-#: sdk/script/Effects.xml:588(col)
+#: sdk/script/Effects.xml:582(col)
 msgid "Energy loss through acid"
 msgstr "Energieverlust durch Säure"
 
-#: sdk/script/Effects.xml:591(col)
+#: sdk/script/Effects.xml:585(col)
 msgid "FX_Call_EngStruct"
 msgstr "FX_Call_EngStruct"
 
-#: sdk/script/Effects.xml:592(col)
+#: sdk/script/Effects.xml:586(col)
 msgid "39"
 msgstr "39"
 
-#: sdk/script/Effects.xml:593(col)
+#: sdk/script/Effects.xml:587(col)
 msgid "Energy loss of buildings (only \"living\" buildings)"
 msgstr "Energieverlust von Gebäuden (Nur lebende Gebäude)"
 
-#: sdk/script/Effects.xml:596(col)
+#: sdk/script/Effects.xml:590(col)
 msgid "FX_Call_EngGetPunched"
 msgstr "FX_Call_EngGetPunched"
 
-#: sdk/script/Effects.xml:597(col)
+#: sdk/script/Effects.xml:591(col)
 msgid "40"
 msgstr "40"
 
-#: sdk/script/Effects.xml:598(col)
+#: sdk/script/Effects.xml:592(col)
 msgid "Energy loss through clonk-to-clonk battle"
 msgstr "Energieverlust im Clonk-zu-Clonk-Kampf"
 
-#: sdk/script/Effects.xml:602(text)
+#: sdk/script/Effects.xml:596(text)
 msgid "Generally, the expression \"cause &amp; 32\" can be used to determine whether the energy or damage values were changed."
 msgstr "Allgemein kann der Ausdruck \"cause &amp; 32\" verwendet werden, um festzustellen, ob Energie oder Schadenswert verändert wurden."
 
-#: sdk/script/Effects.xml:603(text)
+#: sdk/script/Effects.xml:597(text)
 msgid "Using this callback, damage to an object can be prevented, lessened, or increased. You could deduct magic energy instead, transfer damage to other objects, or something similar."
 msgstr "Über diesen Callback kann zum Beispiel Schaden an einem Objekt verhindert, abgeschwächt oder verstärkt werden; man kann Lebensschaden zunächst nur von der Zauberenergie abziehen, gleichmäßig auf verbundene Clonks verteilen und so weiter."
 
-#: sdk/script/Effects.xml:605(h)
+#: sdk/script/Effects.xml:599(h)
 msgid "Function Reference"
 msgstr "Funktions-Referenz"
 
-#: sdk/script/Effects.xml:606(text)
+#: sdk/script/Effects.xml:600(text)
 msgid "There are the following functions for manipulation of effects:"
 msgstr "Es gibt folgende Funktionen sind zum Manipulieren und Abfragen von Effekten:"
 
-#: sdk/script/Effects.xml:609(li)
+#: sdk/script/Effects.xml:603(li)
 msgid "<placeholder-1/>() - for effect creation"
 msgstr "<placeholder-1/>() - zum Erzeugen von Effekten"
 
-#: sdk/script/Effects.xml:610(li)
+#: sdk/script/Effects.xml:604(li)
 msgid "<placeholder-1/>() - for effect removal"
 msgstr "<placeholder-1/>() - zum Entfernen von Effekten"
 
-#: sdk/script/Effects.xml:611(li)
+#: sdk/script/Effects.xml:605(li)
 msgid "<placeholder-1/>() - to search for effects"
 msgstr "<placeholder-1/>() - zum Suchen nach Effekten"
 
-#: sdk/script/Effects.xml:612(li)
+#: sdk/script/Effects.xml:606(li)
 msgid "<placeholder-1/>() - for effect counting"
 msgstr "<placeholder-1/>() - um Effekte zu zählen"
 
-#: sdk/script/Effects.xml:613(li)
+#: sdk/script/Effects.xml:607(li)
 msgid "<placeholder-1/>() - for user defined calls in effects"
 msgstr "<placeholder-1/>() - für Benutzeraufrufe in Effekten"
 
-#: sdk/script/Effects.xml:614(li)
+#: sdk/script/Effects.xml:608(li)
 msgid "<placeholder-1/>() - to cause effects callbacks without actually creating an effect"
 msgstr "<placeholder-1/>() - um Effekt-Callbacks auszuführen, ohne den Effekt selber zu erstellen"
 
@@ -16990,6 +17038,15 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Effect index. If name is given then if there are more effects matching the search mask the one with the given index is refered to. If name is not given then the effect with the correspoding effect number will be changed. For indices it is guaranteed that, in contrast to effect numbers, they start at 0 and count up to the number of effects"
+#~ msgstr "Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden."
+
+#~ msgid "New timer interval. If -1, the previous value will be kept. Otherwise, this call will also reset effect time."
+#~ msgstr "Neues Timer-Intervall. Bei -1 wird der alte Wert beibehalten; ansonsten wird bei diesem Aufruf auch die Effektzeit zurückgesetzt."
+
+#~ msgid "Effect number. Effect numbers are passed to effect callback functions, they are the return values of <placeholder-1/> and can be determined from an effect name via <placeholder-2/>."
+#~ msgstr "Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <placeholder-1/> und lassen sich über <placeholder-2/> aus dem Effektnamen herausfinden."
 
 #~ msgid "Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol."
 #~ msgstr "Unmittelbar nach dem Funktionsnamen kann in eckigen Klammern eine Beschreibung der Funktion folgen, die in mehreren durch | getrennten Feldern einen kurzen Beschreibungstext und eine Bildreferenz (id der Definition, deren Bild verwendet werden soll) enthalten kann."

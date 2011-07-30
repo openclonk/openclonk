@@ -17,9 +17,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
-          <name>number</name>
-          <desc>Effect number. Effect numbers are passed to effect callback functions, they are the return values of <funclink>AddEffect</funclink> and can be determined from an effect name via <funclink>GetEffect</funclink>.</desc>
+          <type>proplist</type>
+          <name>effect</name>
+          <desc>The effect.</desc>
         </param>
         <param>
           <type>string</type>
@@ -33,7 +33,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect index. The remaining parameters can be freely chosen.</desc>
+    <desc>Makes a function call in the specified effect. The call is made within the context of the effect. The first two parameters are always the target object and the effect. The remaining parameters can be freely chosen.</desc>
     <remark>For examples and more information see the <emlink href="script/Effects.html">effects documentation</emlink>.</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>

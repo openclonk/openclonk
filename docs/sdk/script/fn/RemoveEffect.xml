@@ -23,9 +23,9 @@
           <optional />
         </param>
         <param>
-          <type>int</type>
-          <name>index</name>
-          <desc>Effect index. If name is given then if there are more effects matching the search mask the one with the given index is refered to. If name is not given then the effect with the correspoding effect number will be changed. For indices it is guaranteed that, in contrast to effect numbers, they start at 0 and count up to the number of effects</desc>
+          <type>proplist</type>
+          <name>effect</name>
+          <desc>The effect. Instead to search by name, the effect can be directly removed if this parameter is given.</desc>
           <optional />
         </param>
         <param>
@@ -34,16 +34,10 @@
           <optional />
           <desc>If not 0, no Stop calls will be made.</desc>
         </param>
-        <param>
-          <type>int</type>
-          <name>new_timer</name>
-          <optional />
-          <desc>New timer interval. If -1, the previous value will be kept. Otherwise, this call will also reset effect time.</desc>
-        </param>
       </params>
     </syntax>
     <desc>Deletes an effect.</desc>
-    <remark>See <funclink>GetEffect</funclink> for an example. Warning: if an effect is meant to delete itself using this function, only use target and index, not name!</remark>
+    <remark>See <funclink>GetEffect</funclink> for an example. Warning: if an effect is meant to delete itself using this function, only use effect, not name!</remark>
     <related>
       <emlink href="script/Effects.html">Effects Documentation</emlink>
       <funclink>AddEffect</funclink>
@@ -54,4 +48,5 @@
     </related>
   </func>
   <author>Sven2</author><date>2004-03</date>
+  <author>Newton</author><date>2011-07</date>
 </funcs>
