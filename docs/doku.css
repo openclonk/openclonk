@@ -33,6 +33,8 @@ body {
 }
 
 .text, pre.code, ul, ol, dl {
+	padding-top: 5px;
+	padding-bottom: 5px;
 	margin: 0;
 }
 /* indent the parameters of the function if it's broken into multiple lines*/

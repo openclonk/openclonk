@@ -6,8 +6,70 @@
   <title>Scenario Scripts</title>
   <h id="SzenarioScripte">Scenario Scripts</h>
   <part>
-    <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
-    <h id="Callbacks">Callbacks in Scenario Scripts</h>
+     <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
+    <h id="Callbacks">Callbacks overview</h>
+	<text>The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. With the functions <funclink>GameCall</funclink> and <funclink>GameCallEx</funclink>, callbacks to the scenario script can be made from scripts.</text>
+	<text>
+      <table>
+        <rowh>
+          <col>Function</col>
+          <col>Parameter</col>
+          <col>Description</col>
+        </rowh>
+        <row id="Initialize">
+          <literal_col>Initialize</literal_col>
+          <col></col>
+          <col>Called when the round is started.</col>
+        </row>
+		
+        <row id="InitializePlayer">
+          <literal_col>InitializePlayer</literal_col>
+          <col>int player, int x, int y, object base, int team, id extra_data</col>
+          <col>Called after when a new player joins the game. At this point, the clonks, materials, structures etc. are already placed at the position given in the <emlink href="scenario/scenario.html#SektionenPlayer1Player2Player3Player4">Scenario.txt</emlink>. <code>x</code> and <code>y</code> specify the starting position of the player, <code>base</code> is the player's base (if any), <code>team</code> denotes the team of the player. For <code>extra_data</code>, see <funclink>CreateScriptPlayer</funclink></col>
+        </row>
+        <row id="RemovePlayer">
+          <literal_col>RemovePlayer</literal_col>
+          <col>int player, int team</col>
+          <col>Called when a player is removed from the game.</col>
+        </row>
+		
+        <row id="RejectHostilityChange">
+          <literal_col>RejectHostilityChange</literal_col>
+          <col>int player1, int player2, bool hostile</col>
+          <col>When the hostility of two players is about to be changed, this function is called first. If it returns true, the hostility is not changed. See <funclink>SetHostility</funclink>.</col>
+        </row>
+        <row id="OnHostilityChange">
+          <literal_col>OnHostilityChange</literal_col>
+          <col>int player1, int player2, bool hostile, bool old_hostility</col>
+          <col>Called after the hostility of two players has been changed. See <funclink>SetHostility</funclink>.</col>
+        </row>
+		
+        <row id="RejectTeamSwitch">
+          <literal_col>RejectTeamSwitch</literal_col>
+          <col>int player, int new_team</col>
+          <col>When the team of a player is about to be changed, this function is called first. If it returns true, the team of the player is not switched. See <funclink>SetPlayerTeam</funclink></col>
+        </row>
+        <row id="OnTeamSwitch">
+          <literal_col>OnTeamSwitch</literal_col>
+          <col>int player, int new_team, int old_team</col>
+          <col>Called after the team of a player has been changed. See <funclink>SetPlayerTeam</funclink>.</col>
+        </row>
+		
+        <row id="OnGameOver">
+          <literal_col>OnGameOver</literal_col>
+          <col></col>
+          <col>Called if a round is ended through the game by player elimination, fulfillment of all goals (as defined in the <emlink href="scenario/scenario.html#SektionGame">Scenario.txt</emlink>) or by the script command <funclink>GameOver</funclink>. It will not be called if the round was aborted.</col>
+        </row>
+
+        <row id="OnWealthChanged">
+          <literal_col>OnWealthChanged</literal_col>
+          <col>int player</col>
+          <col>Called when the wealth of a player has changed.</col>
+        </row>
+      </table>
+	</text>
+
+    <h id="Sequential">Sequential scripting</h>
     <text>At the start of each round, before the players have joined, the engine calls the function "Initialize" in the scenario script, if defined. Within this function a scenario can perform special object placement or start the scenario scripting sequence.</text>
     <code>func Initialize()
 {
@@ -28,13 +90,6 @@
   <funclink>Sound</funclink>(&quot;Ding&quot;);
   // The first clonk of the player starts at a random position in the landscape
   <funclink>GetCrew</funclink>(player,0)-&gt;<funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()));
-}</code>
-    <text>When a player leaves a round, the function RemovePlayer is called.</text>
-    <text>If a round is ended through the game i.e. by player elimination, fulfillment of all goals as defined in Scenario.txt <emlink href="scenario/scenario.html#SektionGame">section [Game]</emlink>), or by the script command GameOver, the engine will call the function OnGameOver in the scenario script. This will not be called if the round was aborted.</text>
-    <code>func OnGameOver()
-{
-  <funclink>Sound</funclink>(&quot;Trumpet&quot;);
-  <funclink>Log</funclink>(&quot;Wealth of player 1: %d&quot;, <funclink>GetWealth</funclink>(0));
 }</code>
   </part>
   <author>Sven2</author><date>2002-04</date>
