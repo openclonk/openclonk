@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-31 01:20+0200\n"
+"POT-Creation-Date: 2011-07-31 21:04+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -220,6 +220,7 @@ msgstr "Steuerung"
 #: sdk/script/fn/Par.xml:8(category)
 #: sdk/script/fn/GetLength.xml:8(category)
 #: sdk/script/fn/GetChar.xml:8(category)
+#: sdk/script/fn/GameCallEx.xml:8(category)
 #: sdk/script/fn/GameCall.xml:8(category)
 #: sdk/script/fn/Format.xml:8(category)
 #: sdk/script/fn/DefinitionCall.xml:8(category)
@@ -361,6 +362,7 @@ msgstr "Operator"
 #: sdk/script/fn/CreateScriptPlayer.xml:38(col)
 #: sdk/script/fn/AttachMesh.xml:43(col)
 #: sdk/script/fn/AddCommand.xml:71(col)
+#: sdk/scenario/script.xml:17(col)
 #: sdk/scenario/scenario.xml:16(col)
 #: sdk/scenario/scenario.xml:96(col)
 #: sdk/scenario/scenario.xml:126(col)
@@ -4164,6 +4166,7 @@ msgstr "ramp_index"
 #: sdk/script/fn/SetGamma.xml:41(col)
 #: sdk/script/NamedVar.xml:21(col)
 #: sdk/script/GetXXVal.xml:24(col)
+#: sdk/scenario/script.xml:15(col)
 #: sdk/definition/script.xml:51(col)
 #: sdk/definition/animations.xml:24(col)
 msgid "Function"
@@ -5068,12 +5071,12 @@ msgid "Name of the function to call."
 msgstr "Name der Funktion, die aufgerufen werden soll."
 
 #: sdk/script/fn/ScheduleCall.xml:26(desc)
-#: sdk/script/fn/Schedule.xml:21(desc)
+#: sdk/script/fn/Schedule.xml:26(desc)
 msgid "Delay after which the first call is made. If repeat is greather than 1, this is also the delay inbetween subsequent calls."
 msgstr "Zeit, bis die Funktion zum ersten Mal aufgerufen werden soll. Wenn repeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Aufrufen."
 
 #: sdk/script/fn/ScheduleCall.xml:31(desc)
-#: sdk/script/fn/Schedule.xml:26(desc)
+#: sdk/script/fn/Schedule.xml:31(desc)
 msgid "Number of calls. If 0 or not specified, the call is made exactly once."
 msgstr "Anzahl der Aufrufe. Wenn 0 oder nicht angegeben wird die Funktion genau ein mal aufgerufen."
 
@@ -5094,12 +5097,12 @@ msgid "Calls the function \"Explode\" in this object with a delay of 500 ticks a
 msgstr "Ruft in diesem Objekt die Funktion \"Explode\" mit 500 Ticks Verzögerung auf und übergibt als Parameter 50. Dadurch explodiert das Objekt nach 500 Frames mit einer Stärke von 50, sofern der Aufruf nicht durch <placeholder-1/> vorher abgebrochen wird."
 
 #: sdk/script/fn/Schedule.xml:16(desc)
+msgid "Object in which the call is to be made. Can be <code>nil</code> for no object context."
+msgstr "Objekt, in dem das Script ausgeführt werden soll. <code>nil</code> für ohne Objektkontext."
+
+#: sdk/script/fn/Schedule.xml:21(desc)
 msgid "Script to be executed."
 msgstr "Auszuführendes Script"
-
-#: sdk/script/fn/Schedule.xml:31(desc)
-msgid "Object in which the call is to be made. <code>nil</code> for no object context."
-msgstr "Objekt, in dem das Script ausgeführt werden soll. <code>nil</code> für ohne Objektkontext."
 
 #: sdk/script/fn/Schedule.xml:35(desc)
 msgid "Executes a specified script command after a specified delay."
@@ -5373,6 +5376,7 @@ msgstr "Schlägt obj."
 
 #: sdk/script/fn/ProtectedCall.xml:9(subcat)
 #: sdk/script/fn/PrivateCall.xml:9(subcat)
+#: sdk/script/fn/GameCallEx.xml:9(subcat)
 #: sdk/script/fn/GameCall.xml:9(subcat)
 #: sdk/script/fn/DefinitionCall.xml:9(subcat)
 #: sdk/script/fn/Call.xml:9(subcat)
@@ -6913,11 +6917,7 @@ msgstr "Liefert das Object-Character-Flag des aufrufenden Objekts. Dieser Wert b
 msgid "Masochist"
 msgstr "Masochist"
 
-#: sdk/script/fn/GetNeededMatStr.xml:17(desc)
-msgid "Object whose construction material need is queried. Can be <code>nil</code> in local calls."
-msgstr "Objekt, dessen Baumaterialsbedarf abgefragt wird. <code>nil</code> bei lokalem Aufruf."
-
-#: sdk/script/fn/GetNeededMatStr.xml:21(desc)
+#: sdk/script/fn/GetNeededMatStr.xml:14(desc)
 msgid "Returns the still needed construction materials of an object."
 msgstr "Liefert die noch benötigten Baumaterialien des Objekts"
 
@@ -7544,13 +7544,26 @@ msgstr "Beendet die Runde. Die Runde wird für alle überlebenden Spieler als ge
 msgid "Ends the round if no more rocks are present."
 msgstr "Beendet die Runde, falls keine Steine da sind."
 
-#: sdk/script/fn/GameCall.xml:17(desc)
-msgid "Name of the scenario script function."
-msgstr "Name der Funktion im Szenario-Script"
+#: sdk/script/fn/GameCallEx.xml:17(desc)
+msgid "Name of the script function."
+msgstr "Name der Scriptfunktion"
 
+#: sdk/script/fn/GameCallEx.xml:22(desc)
 #: sdk/script/fn/GameCall.xml:22(desc)
 msgid "Up to nine parameters which are passed to the scenario script function."
 msgstr "Bis zu neun Parameter, die an die Funktion im Szenario-Script übergeben werden"
+
+#: sdk/script/fn/GameCallEx.xml:27(desc)
+msgid "Makes a broadcast call to the scenario script, all goals, rules and environment objects. This is what the engine does when it makes a scenario callback, see <emlink href=\"scenario/script.html#Callbacks\">scenario script callbacks</emlink>."
+msgstr "Macht einen Broadcast-Aufruf an das Szenarioscript, alle Spielziele, -regeln und Umweltobjekte. Dies ist das gleiche was die Engine macht wenn sie einen Szenario-Callback macht. Siehe <emlink href=\"scenario/script.html#Callbacks\">Szenario Script Callbacks</emlink>."
+
+#: sdk/script/fn/GameCallEx.xml:31(text)
+msgid "Causes the scenario script and all goals, rules and environment objects to re-execute intialization for the first player. This is what is done on the normal initialization of a player."
+msgstr "Lässt das Szenarioscript, alle Spielziele, -regeln und Umweltobjekte nochmal die Initialisierung für den ersten Spieler ausführen. Dies ist was normalerweise bei der Initialisierung eines Spielers gemacht wird."
+
+#: sdk/script/fn/GameCall.xml:17(desc)
+msgid "Name of the scenario script function."
+msgstr "Name der Funktion im Szenario-Script"
 
 #: sdk/script/fn/GameCall.xml:27(desc)
 msgid "Calls function in the scenario script. If the function is not defined in the scenario script, this call returns <code>nil</code> and does not cause an error."
@@ -11824,32 +11837,105 @@ msgid "Scenario scripts can control a general mission sequence or define specifi
 msgstr "In Szenarioscripten kann ein globaler Handlungsablauf und szenarienspezifische Besonderheiten wie Rejoins oder spezielle Spielerplatzierungen festgelegt werden. Für eine Beschreibung der Scriptsprache C4Script siehe <emlink href=\"script/index.html\">C4Script</emlink>-Dokumentation."
 
 #: sdk/scenario/script.xml:10(h)
-msgid "Callbacks in Scenario Scripts"
-msgstr "Callbacks in Szenarioscripten"
+msgid "Callbacks overview"
+msgstr "Callbacks Übersicht"
 
 #: sdk/scenario/script.xml:11(text)
+msgid "The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. With the functions <placeholder-1/> and <placeholder-2/>, callbacks to the scenario script can be made from scripts."
+msgstr "Die folgenden Callbacks werden an das Szenarioscript gemacht. Alle Callbacks außer <code>Initialize</code> die an das Szenarioscript gemacht werden, werden ebenfalls an alle Spielziele, -regeln und Umweltobjekte im Spiel gemacht. Mit den Funktionen <placeholder-1/> und <placeholder-2/> können Callbacks an das Szenarioscript von anderen Skripten aus gemacht werden."
+
+#: sdk/scenario/script.xml:16(col)
+#: sdk/definition/script.xml:52(col)
+msgid "Parameter"
+msgstr "Parameter"
+
+#: sdk/scenario/script.xml:22(col)
+msgid "Called when the round is started."
+msgstr "Wird bei Start der Runde aufgerufen."
+
+#: sdk/scenario/script.xml:27(col)
+msgid "int player, int x, int y, object base, int team, id extra_data"
+msgstr "int player, int x, int y, object base, int team, id extra_data"
+
+#: sdk/scenario/script.xml:28(col)
+msgid "Called after when a new player joins the game. At this point, the clonks, materials, structures etc. are already placed at the position given in the <emlink href=\"scenario/scenario.html#SektionenPlayer1Player2Player3Player4\">Scenario.txt</emlink>. <code>x</code> and <code>y</code> specify the starting position of the player, <code>base</code> is the player's base (if any), <code>team</code> denotes the team of the player. For <code>extra_data</code>, see <placeholder-1/>"
+msgstr "Wird aufgerufen nachdem ein neuer Spieler das Spiel beigetreten ist. An dieser Stelle sind bereits die Clonks, Materialien, Gebäude usw. and der in der <emlink href=\"scenario/scenario.html#SektionenPlayer1Player2Player3Player4\">Scenario.txt</emlink> angegebenen Stelle platziert. <code>x</code> und <code>y</code> geben die Startposition des Spielers an, <code>base</code> ist die Basis des Spielers (falls er eine hat), <code>team</code> ist das Team des Spielers. Wegen <code>extra_data</code>, siehe <placeholder-1/>"
+
+#: sdk/scenario/script.xml:32(col)
+msgid "int player, int team"
+msgstr "int player, int team"
+
+#: sdk/scenario/script.xml:33(col)
+msgid "Called when a player is removed from the game."
+msgstr "Wird aufgerufen wenn ein Spieler vom Spiel entfernt wird."
+
+#: sdk/scenario/script.xml:38(col)
+msgid "int player1, int player2, bool hostile"
+msgstr "int player1, int player2, bool hostile"
+
+#: sdk/scenario/script.xml:39(col)
+msgid "When the hostility of two players is about to be changed, this function is called first. If it returns true, the hostility is not changed. See <placeholder-1/>."
+msgstr "Wenn die Verfeindung von zwei Spielern geändert werden soll, wird diese Funktion zuerst aufgerufen. Wenn sie true zurückgibt, wird die Verfeindung nicht geändert. Siehe <placeholder-1/>."
+
+#: sdk/scenario/script.xml:43(col)
+msgid "int player1, int player2, bool hostile, bool old_hostility"
+msgstr "int player1, int player2, bool hostile, bool old_hostility"
+
+#: sdk/scenario/script.xml:44(col)
+msgid "Called after the hostility of two players has been changed. See <placeholder-1/>."
+msgstr "Wird aufgerufen wenn die Verfeindung zweier Spieler geändert wird. Siehe <placeholder-1/>."
+
+#: sdk/scenario/script.xml:49(col)
+#: sdk/definition/script.xml:332(col)
+msgid "int player, int new_team"
+msgstr "int player, int new_team"
+
+#: sdk/scenario/script.xml:50(col)
+msgid "When the team of a player is about to be changed, this function is called first. If it returns true, the team of the player is not switched. See <placeholder-1/>"
+msgstr "Wenn das Team eines Spielers geändert werden soll, wird diese Funktion zuerst aufgerufen. Wenn sie true zurückgibt, wird das Team des Spielers nicht geändert. Siehe <placeholder-1/>"
+
+#: sdk/scenario/script.xml:54(col)
+#: sdk/definition/script.xml:337(col)
+msgid "int player, int new_team, int old_team"
+msgstr "int player, int new_team, int old_team"
+
+#: sdk/scenario/script.xml:55(col)
+msgid "Called after the team of a player has been changed. See <placeholder-1/>."
+msgstr "Wird aufgerufen nachdem das Teamzugehörigkeit eines Spielers geändert wurde. Siehe <placeholder-1/>"
+
+#: sdk/scenario/script.xml:61(col)
+msgid "Called if a round is ended through the game by player elimination, fulfillment of all goals (as defined in the <emlink href=\"scenario/scenario.html#SektionGame\">Scenario.txt</emlink>) or by the script command <placeholder-1/>. It will not be called if the round was aborted."
+msgstr "Wird eine Runde durch Spielziele wie Spielereliminierung, Materialabbau, usw. (wie  in der <emlink href=\"scenario/scenario.html#SektionGame\">Scenario.txt</emlink> definiert) oder durch den Scriptbefehl <placeholder-1/> beendet (also nicht bei abgebrochenen Runden), wird diese Funktion aufgerufen."
+
+#: sdk/scenario/script.xml:66(col)
+#: sdk/definition/script.xml:307(col)
+#: sdk/definition/script.xml:327(col)
+msgid "int player"
+msgstr "int player"
+
+#: sdk/scenario/script.xml:67(col)
+msgid "Called when the wealth of a player has changed."
+msgstr "Wird aufgerufen wenn das Vermögen des Spielers geändert wurde."
+
+#: sdk/scenario/script.xml:72(h)
+msgid "Sequential scripting"
+msgstr "Fortlaufende Scriptausführung"
+
+#: sdk/scenario/script.xml:73(text)
 msgid "At the start of each round, before the players have joined, the engine calls the function \"Initialize\" in the scenario script, if defined. Within this function a scenario can perform special object placement or start the scenario scripting sequence."
 msgstr "Beim Start der Runde (Und VOR dem Beitritt der Spieler!) ruft die Engine, wenn vorhanden, die Funktion \"Initialize\" im Script des Szenarios auf. Innerhalb dieser Funktion können z.B. Objekte erzeugt werden, die beim Start der Runde vorhanden sein sollen. Außerdem kann die fortlaufende Scriptausführung gestartet werden."
 
-#: sdk/scenario/script.xml:18(text)
+#: sdk/scenario/script.xml:80(text)
 msgid "Sequential scripting: at the start of a round the internal script counter is set to 0. If sequential scripting has been started with ScriptGo, the counter is increased by one every ten frames and the corresponding script function is called in the scenario script, if defined."
 msgstr "Fortlaufende Scriptausführung: zu Beginn der Runde steht der interne Sciptzähler auf 0. Wurde mit ScriptGo die Scriptausführung aktiviert, so erhöht die Engine im Lauf der Runde in jedem zehnten Frame (Bild) den Scriptzähler um 1 und ruft, wenn vorhanden, die dazugehörige Script-Funktion im Szenario-Script auf."
 
-#: sdk/scenario/script.xml:23(text)
+#: sdk/scenario/script.xml:85(text)
 msgid "The script counter can also be manually adjusted using <placeholder-1/>() to jump to certain counter positions."
 msgstr "Der Scriptzähler kann mit dem Befehl <placeholder-1/>() auch manuell auf einen bestimmten Wert gesetzt werden."
 
-#: sdk/scenario/script.xml:24(text)
+#: sdk/scenario/script.xml:86(text)
 msgid "After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement."
 msgstr "Nach der Platzierung eines beitretenden Spielers ruft die Engine, wenn vorhanden, die Funktion InitializePlayer im Scenario-Script für diesen Spieler auf. Die Funktion wird aufgerufen, nachdem die in Scenario.txt beschriebenen Startkonditionen (Positionierung und Platzierung von Mannschaft, Gebäude, Fahrzeuge, Material) verarbeitet wurden. Mit dieser Funktion können weitere spielerabhängige Startkonditionen geschaffen werden."
-
-#: sdk/scenario/script.xml:32(text)
-msgid "When a player leaves a round, the function RemovePlayer is called."
-msgstr "Analog dazu ruft die Engine die Funktion RemovePlayer auf, wenn ein Spieler die Runde verlässt."
-
-#: sdk/scenario/script.xml:33(text)
-msgid "If a round is ended through the game i.e. by player elimination, fulfillment of all goals as defined in Scenario.txt <emlink href=\"scenario/scenario.html#SektionGame\">section [Game]</emlink>), or by the script command GameOver, the engine will call the function OnGameOver in the scenario script. This will not be called if the round was aborted."
-msgstr "Wird eine Runde durch szenariobedingte Spielziele wie Spielereliminierung, Materialabbau, usw. (siehe Scenario.txt <emlink href=\"scenario/scenario.html#SektionGame\">Sektion [Game]</emlink>) oder durch den Scriptbefehl GameOver beendet (also nicht bei abgebrochenen Runden), ruft die Engine im Szenario-Script die Funktion OnGameOver auf."
 
 #: sdk/scenario/scenario.xml:8(text)
 msgid "In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href=\"scenario/script.html\">script</emlink>."
@@ -14536,8 +14622,6 @@ msgid "Sets the name of the object definition. See <emlink href=\"definition/pro
 msgstr "Setzt den Namen einer Objektdefinition. Siehe <emlink href=\"definition/properties.html\">properties</emlink>. An die Stelle des Platzhalters NameGPS wird der Text aus der String-Tabelle eingefügt. <br/> Ein weiteres Beispiel:"
 
 #: sdk/lang.xml:35(emlink)
-#: sdk/definition/script.xml:361(emlink)
-#: sdk/definition/script.xml:364(emlink)
 msgid "Message"
 msgstr "Nachricht"
 
@@ -14956,10 +15040,6 @@ msgstr "Funktionen ohne besondere Deklaration gelten als public. Wer sich also u
 msgid "Object calls made by the engine"
 msgstr "Objekt-Calls der Engine"
 
-#: sdk/definition/script.xml:52(col)
-msgid "Parameter"
-msgstr "Parameter"
-
 #: sdk/definition/script.xml:58(col)
 msgid "When the object is completed (<emlink href=\"script/fn/GetCon.html\">Con</emlink> &gt;= 100)."
 msgstr "Wenn das Objekt fertiggestellt wird (<emlink href=\"script/fn/GetCon.html\">Con</emlink> größer gleich 100)."
@@ -15275,11 +15355,6 @@ msgstr "object into_object"
 msgid "Called before Entrance. If RejectEntrance returns <code>true</code>, then entrance of the other object is prevented."
 msgstr "Wird vor Entrance aufgerufen. Wenn RejectEntrance <code>true</code> zurückgibt, kann damit das Hineinversetzen in das andere Objekt verhindert werden."
 
-#: sdk/definition/script.xml:307(col)
-#: sdk/definition/script.xml:327(col)
-msgid "int player"
-msgstr "int player"
-
 #: sdk/definition/script.xml:308(col)
 msgid "Called in game goals, rules, or environment objects after the joining of a new player and before the corresponding call in the scenario script."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten nach der Platzierung eines beitretenden Spielers, und vor dem entsprechenden Aufruf im Szenarioscript."
@@ -15304,17 +15379,9 @@ msgstr "Wenn das Objekt gekauft wird."
 msgid "When the objet is added to the crew of a player."
 msgstr "Wenn das Objekt der Crew eines Spielers hinzugefügt wird."
 
-#: sdk/definition/script.xml:332(col)
-msgid "int player, int new_team"
-msgstr "int player, int new_team"
-
 #: sdk/definition/script.xml:333(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns <code>true</code>, the team switch of a player can be prevented (see <placeholder-1/>)."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch <code>true</code> zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden."
-
-#: sdk/definition/script.xml:337(col)
-msgid "int player, int new_team, int old_team"
-msgstr "int player, int new_team, int old_team"
 
 #: sdk/definition/script.xml:338(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>)."
@@ -15323,81 +15390,6 @@ msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. W
 #: sdk/definition/script.xml:47(text)
 msgid "The engine calls the following functions is objects at the given time. <placeholder-1/>"
 msgstr "Die Engine ruft zu Zeiten die folgenden Funktionen in Objektscripten auf. <placeholder-1/>"
-
-#: sdk/definition/script.xml:343(h)
-msgid "Control Functions"
-msgstr "Control-Funktionen"
-
-#: sdk/definition/script.xml:344(text)
-msgid "At every player command (left, right, up, down dig, throw, special) the engine calls the corresponding control function in the script of the currently controlled object of the player. If the function is defined and returns <code>true</code>, the internal handling of the player command is skipped. If the function is not defined or returns <code>false</code>, internal processing is done."
-msgstr "Die Engine ruft bei jedem Spielerkommando (Left, Up, Right, Down, Dig, Throw, Special) im Script eines spielergesteuerten Objekts die entsprechende Control-Funktion auf, wenn diese vorhanden ist. Gibt die aufgerufene Control-Funktion 1 zurück, so wird die interne Bearbeitung des Spielerkommandos übersprungen. Ist die Funktion nicht vorhanden oder gibt 0 zurück, findet die interne Bearbeitung des Spielerkommandos statt."
-
-#: sdk/definition/script.xml:347(emlink)
-#: sdk/definition/script.xml:360(emlink)
-msgid "if"
-msgstr "if"
-
-#: sdk/definition/script.xml:347(emlink)
-msgid "FindContents"
-msgstr "FindContents"
-
-#: sdk/definition/script.xml:348(emlink)
-#: sdk/definition/script.xml:349(emlink)
-#: sdk/definition/script.xml:366(emlink)
-msgid "return"
-msgstr "return"
-
-#: sdk/definition/script.xml:348(emlink)
-msgid "SetAction"
-msgstr "SetAction"
-
-#: sdk/definition/script.xml:352(text)
-msgid "If a clonk with this script is carrying a spear and the player hits the throw button, the clonk performs a special throw action. In this case, however, the command is not passed to the other selected clonks as usual. If the clonk does not carry a spear, the function returns 0 and the regular throwing action is performed."
-msgstr "Trägt ein Clonk mit diesem Script einen Speer, so führt er seine eigene spezielle Wurf-Aktion aus, sobald der Spieler das Werfen-Kommando gibt (in diesem Fall wird das Werfen-Kommando jedoch nicht wie üblich an alle weiteren ausgewählten Mannschaftsmitglieder weitergegeben). Trägt er keinen Speer, gibt die Funktion 0 zurück und die normale interne Wurf-Aktion wird ausgeführt."
-
-#: sdk/definition/script.xml:353(text)
-msgid "Control functions are also transferred to grabbed (indirectly controlled) objects."
-msgstr "Control-Funktionen werden außerdem an angefasste (indirekt gesteuerte) Objekte weitergeleitet."
-
-#: sdk/definition/script.xml:354(text)
-msgid "Single and double clicks: for each player command the engine will first call the simple variant of the control function (e.g. ControlDown) and then the more specific variant (i.e. ControlDownSingle or ControlDownDouble). When overloading control functions you should pay attention to catch the correct variant to overload."
-msgstr "Einzelklicks und Doppelklicks: Die Engine ruft bei jedem Spielerkommando zunächst die einfache Variante der Control-Funktion auf (z.B. ControlDown) und anschließend die spezifizierte Variante (also ControlDownSingle bzw. ControlDownDouble). Beim Überladen von Control-Funktionen ist dementsprechend darauf zu achten, dass auch die richtige Variante abgefangen wird."
-
-#: sdk/definition/script.xml:355(text)
-msgid "ContainedControl: if a directly controlled object is contained in another object (container) the basic commands down (exit), throw (put), up (buy at base), dig (sell at base) are evaluated internally first. Then the command is passed to the container for special handling there. Exception: the commands ControlSpecial, ControlSpecial2, and ControlWheepUp/Down are only direct commands and are not passed to the container."
-msgstr "ContainedControl: Befindet sich das direkt spielergesteuerte Objekt in einem anderen Objekt (Behälter), so werden zunächst die Standardkommandos Down (Verlassen), Throw (Ablegen), Up (Kaufen, in Basisgebäude) und Dig (Verkaufen, in Basisgebäude) ausgewertet. Anschließend wird die Steuerung als Contained-Funktion an den Behälter weitergegeben. Ausnahme: die Spezialkommandos ControlSpecial, ControlSpecial2 und ControlWheelUp/Down sind nur für die direkte Steuerung gedacht und werden nicht an den Behälter umgeleitet."
-
-#: sdk/definition/script.xml:356(text)
-msgid "ControlCommnd: the engine also performs <a href=\"#ObjektCallsderEngine\">object calls</a> for independently executed commands which have been given directly by the player (i.e. by mouse control)."
-msgstr "ControlCommand: die Engine führt auch <a href=\"#ObjektCallsderEngine\">Objekt-Calls</a> für selbständig auszuführende Befehle (Commands) aus, die direkt durch den Spieler gegeben wurden (z.B. durch Maussteuerung)."
-
-#: sdk/definition/script.xml:369(text)
-msgid "By returning <code>true</code> the command can be intercepted and internal handling can be prevented. \"command_object\" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href=\"definition/defcore.html\">DefCore</emlink>). The script command <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> does not cause ControlCommand calls."
-msgstr "Durch Rückgabe des Werts 1 kann der Befehl abgefangen und die interne Verarbeitung verhindert werden. \"command_object\" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden soll, auch wenn der Aufruf von einem enthaltenen Objekt kommt (siehe VehicleControl in der <emlink href=\"definition/defcore.html\">DefCore</emlink>). Der Script-Befehl <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> verursacht keinen ControlCommand-Aufruf."
-
-#: sdk/definition/script.xml:370(text)
-msgid "ControlCommand calls are also transferred to grabbed objects or objects controlled from the inside if these have the VehicleControl flag set. This transferred call is made after the ControlCommand call to the clonk, but before internal handling. So the vehicle, too, has the opportunity to intercept and overload the command."
-msgstr "ControlCommand-Aufrufe werden an angefasste oder von innen gesteuerte Fahrzeuge weitergeleitet, wenn diese ein entsprechendes VehicleControl-Flag besitzen. Diese Weiterleitung wird nach dem ControlCommand-Aufruf des Clonk-Scripts durchgeführt, aber noch vor der internen Verarbeitung, so dass auch das gesteuerte Fahrzeug bei Bedarf den Befehl auswerten und abfangen (überladen) kann."
-
-#: sdk/definition/script.xml:371(text)
-msgid "ControlWheelUp and ControlWheelDown are generated by the mouse wheel (and only when not in an object menu). If they are not overloaded, they will cause ShiftContents commands. That in return could be intercepted in ControlContents."
-msgstr "ControlWheelUp und ControlWheelDown werden durch Mausraddrehungen außerhalb von Menüs aufgerufen. Wenn sie nicht überladen sind, führen sie einen ShiftContents-Befehl durch. Dessen Auswirkungen können wiederum durch ControlContents abgefangen werden."
-
-#: sdk/definition/script.xml:372(text)
-msgid "ControlContents is called when an inventory change is made by direct mouse click, mouse wheel rotation, or a ShiftContents script command (e.g. in ControlSpecial or ControlSpecial2). Here you can perform special actions such as the arming of weapons or custom inventory sounds. If the function is intercepted with a return value <code>true</code>, the inventory change is prevented. Otherwise, the first object with the given id moves to the front of the inventory and a Selection call is made to the newly selected object. If the latter call is not overloaded, the sound effect \"Grab\" is played for the container object."
-msgstr "ControlContents wird aufgerufen, wenn durch das Mausrad, direktes Anklicken mit der Maus oder einen ShiftContents-Befehl im Script (zum Beispiel bei ControlSpecial oder ControlSpecial2) ein Inventarwechsel stattgefunden hat. Hier können zum Beispiel Aktionen wie das Ablegen von Waffen bei entsprechenden Clonks, oder eigene Inventarwechseldsounds, ausgeführt werden. Wird die Funktion mit einem Rückgabewert ungleich 0 abgefangen, wird der Inventarwechsel unterdrückt. Ansonsten rückt das Objekt mit dem entsprechenden, im ersten Parameter übergebenen ID nach vorne und es wird ein Selection-Call an das neue, erste Inhaltsobjekt ausgeführt. Wird dieser nicht abgefangen, wird der Soundeffekt \"Grab\" beim inventarwechselnden Objekt abgespielt."
-
-#: sdk/definition/script.xml:373(h)
-msgid "Context Functions"
-msgstr "Context-Funktionen"
-
-#: sdk/definition/script.xml:374(text)
-msgid "Context functions (Context_ in object scripts) are displayed as entries in the context menu of the object. When calling a context function, the engine will pass a pointer to the calling object as the first parameter (with crew members this is always the object itself). Context functions should always have a valid function description and be declared pubic."
-msgstr "Context-Funktionen in Objektscripten (Context_) erscheinen im Spiel im Kontextmenü des Objekts. Die Engine übergibt beim Aufruf einen Zeiger auf das aufrufende Objekt als ersten Parameter (bei Mannschaftsmitgliedern immer das Objekt selbst). Context-Funktionen sollten immer eine gültige Funktionsbeschreibung haben und müssen public sein."
-
-#: sdk/definition/script.xml:382(text)
-msgid "If the condition field is used, the context function is only displayed as a menu entry if the script function defined by the condition field (in this case HasKnowledge) is found in the object's script and returns <code>true</code>. The menu object is passed as the first parameter to the condition function."
-msgstr "Über das Condition-Feld kann bestimmt werden, dass die Funktion nur dann im Kontextmenü auftaucht, wenn die entsprechende Funktion (hier HasKnowledge) im Objektscript vorhanden ist und einen positiven Wert zurückliefert. Das Menüobjekt wird als erster Parameter an die Condition-Funktion übergeben."
 
 #: sdk/definition/properties.xml:9(text)
 msgid "Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href=\"definition/index.html#Objektdefinitionen\">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href=\"definition/script.html#Objektscripte\">Definition's script</emlink>:"
@@ -17020,6 +17012,69 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Object whose construction material need is queried. Can be <code>nil</code> in local calls."
+#~ msgstr "Objekt, dessen Baumaterialsbedarf abgefragt wird. <code>nil</code> bei lokalem Aufruf."
+
+#~ msgid "Callbacks in Scenario Scripts"
+#~ msgstr "Callbacks in Szenarioscripten"
+
+#~ msgid "When a player leaves a round, the function RemovePlayer is called."
+#~ msgstr "Analog dazu ruft die Engine die Funktion RemovePlayer auf, wenn ein Spieler die Runde verlässt."
+
+#~ msgid "Control Functions"
+#~ msgstr "Control-Funktionen"
+
+#~ msgid "At every player command (left, right, up, down dig, throw, special) the engine calls the corresponding control function in the script of the currently controlled object of the player. If the function is defined and returns <code>true</code>, the internal handling of the player command is skipped. If the function is not defined or returns <code>false</code>, internal processing is done."
+#~ msgstr "Die Engine ruft bei jedem Spielerkommando (Left, Up, Right, Down, Dig, Throw, Special) im Script eines spielergesteuerten Objekts die entsprechende Control-Funktion auf, wenn diese vorhanden ist. Gibt die aufgerufene Control-Funktion 1 zurück, so wird die interne Bearbeitung des Spielerkommandos übersprungen. Ist die Funktion nicht vorhanden oder gibt 0 zurück, findet die interne Bearbeitung des Spielerkommandos statt."
+
+#~ msgid "if"
+#~ msgstr "if"
+
+#~ msgid "FindContents"
+#~ msgstr "FindContents"
+
+#~ msgid "return"
+#~ msgstr "return"
+
+#~ msgid "SetAction"
+#~ msgstr "SetAction"
+
+#~ msgid "If a clonk with this script is carrying a spear and the player hits the throw button, the clonk performs a special throw action. In this case, however, the command is not passed to the other selected clonks as usual. If the clonk does not carry a spear, the function returns 0 and the regular throwing action is performed."
+#~ msgstr "Trägt ein Clonk mit diesem Script einen Speer, so führt er seine eigene spezielle Wurf-Aktion aus, sobald der Spieler das Werfen-Kommando gibt (in diesem Fall wird das Werfen-Kommando jedoch nicht wie üblich an alle weiteren ausgewählten Mannschaftsmitglieder weitergegeben). Trägt er keinen Speer, gibt die Funktion 0 zurück und die normale interne Wurf-Aktion wird ausgeführt."
+
+#~ msgid "Control functions are also transferred to grabbed (indirectly controlled) objects."
+#~ msgstr "Control-Funktionen werden außerdem an angefasste (indirekt gesteuerte) Objekte weitergeleitet."
+
+#~ msgid "Single and double clicks: for each player command the engine will first call the simple variant of the control function (e.g. ControlDown) and then the more specific variant (i.e. ControlDownSingle or ControlDownDouble). When overloading control functions you should pay attention to catch the correct variant to overload."
+#~ msgstr "Einzelklicks und Doppelklicks: Die Engine ruft bei jedem Spielerkommando zunächst die einfache Variante der Control-Funktion auf (z.B. ControlDown) und anschließend die spezifizierte Variante (also ControlDownSingle bzw. ControlDownDouble). Beim Überladen von Control-Funktionen ist dementsprechend darauf zu achten, dass auch die richtige Variante abgefangen wird."
+
+#~ msgid "ContainedControl: if a directly controlled object is contained in another object (container) the basic commands down (exit), throw (put), up (buy at base), dig (sell at base) are evaluated internally first. Then the command is passed to the container for special handling there. Exception: the commands ControlSpecial, ControlSpecial2, and ControlWheepUp/Down are only direct commands and are not passed to the container."
+#~ msgstr "ContainedControl: Befindet sich das direkt spielergesteuerte Objekt in einem anderen Objekt (Behälter), so werden zunächst die Standardkommandos Down (Verlassen), Throw (Ablegen), Up (Kaufen, in Basisgebäude) und Dig (Verkaufen, in Basisgebäude) ausgewertet. Anschließend wird die Steuerung als Contained-Funktion an den Behälter weitergegeben. Ausnahme: die Spezialkommandos ControlSpecial, ControlSpecial2 und ControlWheelUp/Down sind nur für die direkte Steuerung gedacht und werden nicht an den Behälter umgeleitet."
+
+#~ msgid "ControlCommnd: the engine also performs <a href=\"#ObjektCallsderEngine\">object calls</a> for independently executed commands which have been given directly by the player (i.e. by mouse control)."
+#~ msgstr "ControlCommand: die Engine führt auch <a href=\"#ObjektCallsderEngine\">Objekt-Calls</a> für selbständig auszuführende Befehle (Commands) aus, die direkt durch den Spieler gegeben wurden (z.B. durch Maussteuerung)."
+
+#~ msgid "By returning <code>true</code> the command can be intercepted and internal handling can be prevented. \"command_object\" is always the object receiving the command, even if the call was transferred by a contained object (see VehicleControl in <emlink href=\"definition/defcore.html\">DefCore</emlink>). The script command <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> does not cause ControlCommand calls."
+#~ msgstr "Durch Rückgabe des Werts 1 kann der Befehl abgefangen und die interne Verarbeitung verhindert werden. \"command_object\" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden soll, auch wenn der Aufruf von einem enthaltenen Objekt kommt (siehe VehicleControl in der <emlink href=\"definition/defcore.html\">DefCore</emlink>). Der Script-Befehl <emlink href=\"script/fn/SetCommand.html\">SetCommand</emlink> verursacht keinen ControlCommand-Aufruf."
+
+#~ msgid "ControlCommand calls are also transferred to grabbed objects or objects controlled from the inside if these have the VehicleControl flag set. This transferred call is made after the ControlCommand call to the clonk, but before internal handling. So the vehicle, too, has the opportunity to intercept and overload the command."
+#~ msgstr "ControlCommand-Aufrufe werden an angefasste oder von innen gesteuerte Fahrzeuge weitergeleitet, wenn diese ein entsprechendes VehicleControl-Flag besitzen. Diese Weiterleitung wird nach dem ControlCommand-Aufruf des Clonk-Scripts durchgeführt, aber noch vor der internen Verarbeitung, so dass auch das gesteuerte Fahrzeug bei Bedarf den Befehl auswerten und abfangen (überladen) kann."
+
+#~ msgid "ControlWheelUp and ControlWheelDown are generated by the mouse wheel (and only when not in an object menu). If they are not overloaded, they will cause ShiftContents commands. That in return could be intercepted in ControlContents."
+#~ msgstr "ControlWheelUp und ControlWheelDown werden durch Mausraddrehungen außerhalb von Menüs aufgerufen. Wenn sie nicht überladen sind, führen sie einen ShiftContents-Befehl durch. Dessen Auswirkungen können wiederum durch ControlContents abgefangen werden."
+
+#~ msgid "ControlContents is called when an inventory change is made by direct mouse click, mouse wheel rotation, or a ShiftContents script command (e.g. in ControlSpecial or ControlSpecial2). Here you can perform special actions such as the arming of weapons or custom inventory sounds. If the function is intercepted with a return value <code>true</code>, the inventory change is prevented. Otherwise, the first object with the given id moves to the front of the inventory and a Selection call is made to the newly selected object. If the latter call is not overloaded, the sound effect \"Grab\" is played for the container object."
+#~ msgstr "ControlContents wird aufgerufen, wenn durch das Mausrad, direktes Anklicken mit der Maus oder einen ShiftContents-Befehl im Script (zum Beispiel bei ControlSpecial oder ControlSpecial2) ein Inventarwechsel stattgefunden hat. Hier können zum Beispiel Aktionen wie das Ablegen von Waffen bei entsprechenden Clonks, oder eigene Inventarwechseldsounds, ausgeführt werden. Wird die Funktion mit einem Rückgabewert ungleich 0 abgefangen, wird der Inventarwechsel unterdrückt. Ansonsten rückt das Objekt mit dem entsprechenden, im ersten Parameter übergebenen ID nach vorne und es wird ein Selection-Call an das neue, erste Inhaltsobjekt ausgeführt. Wird dieser nicht abgefangen, wird der Soundeffekt \"Grab\" beim inventarwechselnden Objekt abgespielt."
+
+#~ msgid "Context Functions"
+#~ msgstr "Context-Funktionen"
+
+#~ msgid "Context functions (Context_ in object scripts) are displayed as entries in the context menu of the object. When calling a context function, the engine will pass a pointer to the calling object as the first parameter (with crew members this is always the object itself). Context functions should always have a valid function description and be declared pubic."
+#~ msgstr "Context-Funktionen in Objektscripten (Context_) erscheinen im Spiel im Kontextmenü des Objekts. Die Engine übergibt beim Aufruf einen Zeiger auf das aufrufende Objekt als ersten Parameter (bei Mannschaftsmitgliedern immer das Objekt selbst). Context-Funktionen sollten immer eine gültige Funktionsbeschreibung haben und müssen public sein."
+
+#~ msgid "If the condition field is used, the context function is only displayed as a menu entry if the script function defined by the condition field (in this case HasKnowledge) is found in the object's script and returns <code>true</code>. The menu object is passed as the first parameter to the condition function."
+#~ msgstr "Über das Condition-Feld kann bestimmt werden, dass die Funktion nur dann im Kontextmenü auftaucht, wenn die entsprechende Funktion (hier HasKnowledge) im Objektscript vorhanden ist und einen positiven Wert zurückliefert. Das Menüobjekt wird als erster Parameter an die Condition-Funktion übergeben."
 
 #~ msgid "Object the visibility of which is to be changed. Can be 0 in local calls."
 #~ msgstr "Objekt, dessen Sichtbarkeit geändert werden soll. 0 bei lokalem Aufruf."
