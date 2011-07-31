@@ -11,7 +11,7 @@ static const RGBA_GREEN = 2;
 static const RGBA_BLUE = 3;
 
 global func HSL(int h, int s, int l)  { return HSL2RGB(RGB(h, s, l)); }
-global func HSLa(int h, int s, int l, int a) { return  HSL2RGB(RGB(h, s, l)) | (a & 255) << 24; }
+global func HSLa(int h, int s, int l, int a) { return  HSL2RGB(RGB(h, s, l)) ^ ~(a & 255) << 24; }
 
 global func RGB(int r, int g, int b) { return (255 << 24) | (r & 255) << 16 | (g & 255) << 8 | (b & 255); }
 global func RGBa (int r, int g, int b, int a) { return (a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | (b & 255); }
