@@ -17,17 +17,17 @@ public func ControlUse(object pClonk)
 global func FxThunderStrikeStart(pTarget, effect, iTemp, owner, x)
 {
 	if(iTemp) return;
-	effect.var0=owner;
-	effect.var1=x;
+	effect.owner=owner;
+	effect.x=x;
 }
 global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 {
-	var move = effect.var1;
+	var move = effect.x;
 
 	if(iEffectTime>36)
 	{
 
-	var owner = effect.var0;
+	var owner = effect.owner;
 	var x=0;
 	var wdt = 18;
 	var y = [];

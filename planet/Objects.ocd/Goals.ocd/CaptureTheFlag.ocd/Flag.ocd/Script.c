@@ -80,10 +80,10 @@ protected func FxFlagCarriedStart(object target, effect, int temp)
 	ReducePhysicals(target, effect);
 	if (temp == 0)
 	{
-		effect.var1=target->GetX();
-		effect.var2=target->GetY();
+		effect.x=target->GetX();
+		effect.y=target->GetY();
 		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
-		effect.var0 = target->AttachMesh(this, "pos_back1", "main", trans);
+		effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
 		this.Visibility = VIS_None;
 	}
 	return 1;
@@ -94,16 +94,16 @@ protected func FxFlagCarriedTimer(object target, effect)
 {
 	var controller = target->GetController();
 	var ctrl_team = GetPlayerTeam(controller);
-	var x = effect.var1;
-	var y = effect.var2;
+	var x = effect.x;
+	var y = effect.y;
 	var newx = target->GetX();
 	var newy = target->GetY();
 	// Draw partical line following the flag.
 	if (Distance(x, y, newx, newy) > 2)
 	{
 		DrawParticleLine("FlagTracer",AbsX(x),AbsY(y),AbsX(newx),AbsY(newy),4,30-Random(4),GetTeamColor(this->GetTeam()) | 255 <<24,GetTeamColor(this->GetTeam()) | 255 <<24);
-		effect.var1=newx;
-		effect.var2=newy;
+		effect.x=newx;
+		effect.y=newy;
 	}
 	// Search for nearby base to drop flag and score a point.
 	var base = FindObject(Find_ID(Goal_FlagBase), Find_Func("FindTeam", ctrl_team), Find_Distance(20));
@@ -133,7 +133,7 @@ protected func FxFlagCarriedStop(object target, effect, int reason, bool temp)
 	}
 	if (target)
 	{	
-		target->DetachMesh(effect.var0);
+		target->DetachMesh(effect.mesh_id);
 	}
 	// Prevent beaming flag for 3 seconds.
 	AddEffect("FlagReturnDelay", this, 100, 36 * 3, this);
@@ -143,7 +143,7 @@ protected func FxFlagCarriedStop(object target, effect, int reason, bool temp)
 // Reduces physicals by 80%.
 private func ReducePhysicals(object clonk, effect)
 {
-	effect.var3 = clonk.JumpSpeed;
+	effect.clonk_jumpspeed = clonk.JumpSpeed;
 	clonk.JumpSpeed = clonk.JumpSpeed * 8 / 10;
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
@@ -154,7 +154,7 @@ private func ReducePhysicals(object clonk, effect)
 // Resets physicals.
 private func ResetPhysicals(object clonk, effect)
 {
-	clonk.JumpSpeed = effect.var3;
+	clonk.JumpSpeed = effect.clonk_jumpspeed;
 	var phys = ["Walk", "Scale", "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PopActionSpeed(phys[i]);

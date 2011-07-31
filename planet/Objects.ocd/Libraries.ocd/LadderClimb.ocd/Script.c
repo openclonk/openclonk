@@ -98,11 +98,11 @@ func FxIntSearchLadderStop(target, effect, reason, tmp)
 func FxIntClimbControlStart(target, effect, tmp, ladder)
 {
 	if (tmp) return;
-	effect.var0 = ladder;
+	effect.ladder = ladder;
 	SetXDir(0);
 	SetYDir(0);
 	SetComDir(COMD_Stop);
-	effect.var2 = 0; // odd or even segment?
+	effect.odd = 0; // odd or even segment?
 	SetHandAction(1);
 	SetTurnType(1);
 }
@@ -114,14 +114,14 @@ func LadderStep(target, effect, fUp)
 {
 	if (fUp == 1)
 	{
-		effect.var1 += 10;
-		if (effect.var1 > 100)
+		effect.pos += 10;
+		if (effect.pos > 100)
 		{
-			effect.var1 = 0;
-			effect.var0 = effect.var0->GetNextLadder();
-			effect.var2 = !effect.var2;
+			effect.pos = 0;
+			effect.ladder = effect.ladder->GetNextLadder();
+			effect.odd = !effect.odd;
 		}
-		if (effect.var0 == nil)
+		if (effect.ladder == nil)
 		{
 			var contact = GetContact(-1);
 			if (contact & CNAT_Left || contact & CNAT_Right)
@@ -138,14 +138,14 @@ func LadderStep(target, effect, fUp)
 	}
 	else
 	{
-		effect.var1 -= 10;
-		if(effect.var1 < 0)
+		effect.pos -= 10;
+		if(effect.pos < 0)
 		{
-			effect.var1 = 100;
-			effect.var0 = effect.var0->GetPreviousLadder();
-			effect.var2 = !effect.var2;
+			effect.pos = 100;
+			effect.ladder = effect.ladder->GetPreviousLadder();
+			effect.odd = !effect.odd;
 		}
-		if (effect.var0 == nil)
+		if (effect.ladder == nil)
 		{
 			var contact = GetContact(-1);
 			if (contact & CNAT_Left || contact & CNAT_Right)
@@ -158,15 +158,15 @@ func LadderStep(target, effect, fUp)
 			return 0;
 		}
 	}
-	if (effect.var0 == nil) return 0;
+	if (effect.ladder == nil) return 0;
 	return true;
 }
 
 func FxIntClimbControlTimer(target, effect, time)
 {
 	if (GetAction() != "Climb" || Contained()) return -1;
-	if(effect.var0 && effect.var0->CanNotBeClimbed(1)) effect.var0 = 0;
-	if(!effect.var0)
+	if(effect.ladder && effect.ladder->CanNotBeClimbed(1)) effect.ladder = nil;
+	if(!effect.ladder)
 	{
 		no_ladder_counter = 5;
 		SetAction("Jump");
@@ -198,10 +198,10 @@ func FxIntClimbControlTimer(target, effect, time)
 		}
 		return -1;
 	}
-	var data = effect.var0->GetLadderData();
+	var data = effect.ladder->GetLadderData();
 	var startx = data[0], starty = data[1], endx = data[2], endy = data[3], angle = data[4];
-	var x = startx + (endx-startx)*effect.var1/100+5000-100*GetTurnPhase();
-	var y = starty + (endy-starty)*effect.var1/100;
+	var x = startx + (endx-startx)*effect.pos/100+5000-100*GetTurnPhase();
+	var y = starty + (endy-starty)*effect.pos/100;
 	var lx = LadderToLandscapeCoordinates(x);
 	var ly = LadderToLandscapeCoordinates(y);
 	var old_x = GetX(), old_y = GetY();
@@ -209,7 +209,7 @@ func FxIntClimbControlTimer(target, effect, time)
 		return -1;
 	SetPosition(lx, ly);
 	SetXDir(0); SetYDir(0);
-	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//effect.var2);
+	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//effect.odd);
 	if (Stuck())
 	{
 		var dir = -1;
@@ -238,7 +238,7 @@ func FxIntClimbControlTimer(target, effect, time)
 			SetDir(0);
 		}
 	}
-	else effect.var0->~OnLadderClimb(this);
+	else effect.ladder->~OnLadderClimb(this);
 	// Make the animation synchron with movement TODO: this only makes the feet synchronous for the arms the animation has to be adapted
 	var animation = GetRootAnimation(5);
 	if (animation != nil)
@@ -246,7 +246,7 @@ func FxIntClimbControlTimer(target, effect, time)
 		if (GetAnimationName(animation) != nil)
 		{
 			var length = GetAnimationLength(GetAnimationName(animation));
-			var pos = effect.var1*length/200+length/2*effect.var2;
+			var pos = effect.pos*length/200+length/2*effect.odd;
 			//pos = BoundBy(pos, 1, length-1);
 			SetAnimationPosition(animation, Anim_Const(pos));
 		}

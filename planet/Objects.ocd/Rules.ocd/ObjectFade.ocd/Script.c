@@ -49,10 +49,10 @@ protected func Timer()
 
 public func FxIntFadeOutStart(object target, effect) 
 {
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
-	effect.var3 = target->GetClrModulation() & 0x00ffffff; //Safe pure rgb
-	effect.var4 = target->GetClrModulation() >> 24 & 255; //Safe alpha
+	effect.x = target->GetX();
+	effect.y = target->GetY();
+	effect.color = target->GetClrModulation() & 0x00ffffff; //Safe pure rgb
+	effect.alpha = target->GetClrModulation() >> 24 & 255; //Safe alpha
 }
 
 public func FxIntFadeOutTimer(object target, effect, int time) 
@@ -60,7 +60,7 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 	if (time < fade_time * 2/3) 
 		return;
 
-	if (!(target->Contained()) && effect.var0 == target->GetX() && effect.var1 == target->GetY())
+	if (!(target->Contained()) && effect.x == target->GetX() && effect.y == target->GetY())
 	{
 		if(time >= fade_time) 
 		{
@@ -70,11 +70,11 @@ public func FxIntFadeOutTimer(object target, effect, int time)
 	}
 	else 
 	{
-		target->SetClrModulation(effect.var4 << 24 | effect.var3);
+		target->SetClrModulation(effect.alpha << 24 | effect.color);
 		return -1;
 	}
 
-	target->SetClrModulation(((fade_time - time) * effect.var4 / (fade_time/3)) << 24 | effect.var3);
+	target->SetClrModulation(((fade_time - time) * effect.alpha / (fade_time/3)) << 24 | effect.color);
 	return 1;
 }
 

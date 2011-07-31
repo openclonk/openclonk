@@ -9,27 +9,19 @@
 		HitObject(object target) in the projectile.
 --*/
 
-
-// EffectVars:
-// 0 - old X-Position
-// 1 - old Y-Position
-// 2 - shooter (Object that shot the projectile)
-// 4 - live? If true, the shooter can be hit by the projectile
-// 5 - never hit the shooter. True or false
-
-global func FxHitCheckStart(object target, effect, int temp, object by_obj, bool never_shooter)
+global func FxHitCheckStart(object target, proplist effect, int temp, object by_obj, bool never_shooter)
 {
 	if (temp)
 		return;
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	effect.var2 = by_obj;
-	effect.var4 = false;
-	effect.var5 = never_shooter;
+	effect.shooter = by_obj;
+	effect.live = false;
+	effect.never_shooter = never_shooter;
 	
 	// C4D_Object has a hitcheck too -> change to vehicle to supress that.
 	if (target->GetCategory() & C4D_Object)
@@ -37,7 +29,7 @@ global func FxHitCheckStart(object target, effect, int temp, object by_obj, bool
 	return;
 }
 
-global func FxHitCheckStop(object target, effect, int reason, bool temp)
+global func FxHitCheckStop(object target, proplist effect, int reason, bool temp)
 {
 	if (temp)
 		return;
@@ -46,7 +38,7 @@ global func FxHitCheckStop(object target, effect, int reason, bool temp)
 	return;
 }
 
-global func FxHitCheckDoCheck(object target, effect)
+global func FxHitCheckDoCheck(object target, proplist effect)
 {
 	var obj;
 	// rather search in front of the projectile, since a hit might delete the effect,
@@ -57,8 +49,8 @@ global func FxHitCheckDoCheck(object target, effect)
 	var newy = target->GetY() + target->GetYDir() / 10;
 	var dist = Distance(oldx, oldy, newx, newy);
 	
-	var shooter = effect.var2;
-	var live = effect.var4;
+	var shooter = effect.shooter;
+	var live = effect.live;
 	
 	if (live)
 		shooter = target;
@@ -100,21 +92,21 @@ global func FxHitCheckEffect(string newname)
 	return;
 }
 
-global func FxHitCheckAdd(object target, effect, string neweffectname, int newtimer, by_obj, never_shooter)
+global func FxHitCheckAdd(object target, proplist effect, string neweffectname, int newtimer, by_obj, never_shooter)
 {
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 	if (!by_obj)
 		by_obj = target;
 	if (by_obj->Contained())
 		by_obj = by_obj->Contained();
-	effect.var2 = by_obj;
-	effect.var4 = false;
-	effect.var5 = never_shooter;
+	effect.shooter = by_obj;
+	effect.live = false;
+	effect.never_shooter = never_shooter;
 	return;
 }
 
-global func FxHitCheckTimer(object target, effect, int time)
+global func FxHitCheckTimer(object target, proplist effect, int time)
 {
 	EffectCall(target, effect, "DoCheck");
 	// It could be that it hit something and removed itself. thus check if target is still there.
@@ -122,11 +114,11 @@ global func FxHitCheckTimer(object target, effect, int time)
 	if (!target)
 		return -1;
 	
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
-	var live = effect.var4;
-	var never_shooter = effect.var5;
-	var shooter = effect.var2;
+	effect.x = target->GetX();
+	effect.y = target->GetY();
+	var live = effect.live;
+	var never_shooter = effect.never_shooter;
+	var shooter = effect.shooter;
 
 	// The projectile will be only switched to "live", meaning that it can hit the
 	// shooter himself when the shot exited the shape of the shooter one time.
@@ -145,7 +137,7 @@ global func FxHitCheckTimer(object target, effect, int time)
 			}
 			// Otherwise, the shot will be live.
 			if (ready)
-				effect.var4 = true;
+				effect.live = true;
 		}
 	}
 	return;

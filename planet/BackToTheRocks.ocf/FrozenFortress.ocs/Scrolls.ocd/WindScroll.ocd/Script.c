@@ -18,20 +18,20 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxWindScrollStormStart(pTarget, effect, iTemp, angle, x, y)
 {
 	if(iTemp) return;
-	effect.var0=Sin(angle,32);
-	effect.var1=-Cos(angle,32);
-	effect.var2=x+Sin(angle,43);
-	effect.var3=y-Cos(angle,43);
+	effect.xdir=Sin(angle,32);
+	effect.ydir=-Cos(angle,32);
+	effect.x=x+Sin(angle,43);
+	effect.y=y-Cos(angle,43);
 
 	
 }
 
 public func FxWindScrollStormTimer(pTarget, effect, iEffectTime)
 {
-	var xdir=effect.var0;
-	var ydir=effect.var1;
-	var x=effect.var2;
-	var y=effect.var3;
+	var xdir=effect.xdir;
+	var ydir=effect.ydir;
+	var x=effect.x;
+	var y=effect.y;
 	
 	if(iEffectTime<36)
 	{

@@ -96,11 +96,11 @@ public func Launch(int angle, int str, object shooter)
 public func SetDivert(int x1, int y1, int x2, int y2)
 {
 	var inflight = GetEffect("InFlight",this);
-	inflight.var2 = x1;
-	inflight.var3 = y1;
-	inflight.var4 = x2;
-	inflight.var5 = y2;
-	inflight.var6 = true;
+	inflight.ax = x1;
+	inflight.ay = y1;
+	inflight.bx = x2;
+	inflight.by = y2;
+	inflight.freeflight = true;
 }
 
 public func HitObject(object obj)
@@ -118,23 +118,23 @@ public func Hit()
 public func FxInFlightStart(object target, effect, int temp)
 {
 	if(temp) return;
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 }
 
 public func FxInFlightTimer(object target, effect, int time)
 {
-	var oldx = effect.var0;
-	var oldy = effect.var1;
+	var oldx = effect.x;
+	var oldy = effect.y;
 	var newx = target->GetX();
 	var newy = target->GetY();
 
-	if(effect.var6)
+	if(effect.freeflight)
 	{
-		var ax = effect.var2;
-		var ay = effect.var3;
-		var bx = effect.var4;
-		var by = effect.var5;
+		var ax = effect.ax;
+		var ay = effect.ay;
+		var bx = effect.bx;
+		var by = effect.by;
 		
 		var pos = Intersect(oldx, oldy, newx, newy, ax, ay, bx, by);
 		if (pos != nil)
@@ -144,12 +144,12 @@ public func FxInFlightTimer(object target, effect, int time)
 			target->SetXDir(Sin(angle,speed));
 			target->SetYDir(-Cos(angle, speed));
 			
-			effect.var6 = false;
+			effect.freeflight = false;
 		}
 	}
 	
-	effect.var0 = newx;
-	effect.var1 = newy;
+	effect.x = newx;
+	effect.y = newy;
 }
 
 // Returns nil or coordinates of intersection.

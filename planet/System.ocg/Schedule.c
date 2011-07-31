@@ -18,17 +18,17 @@ global func Schedule(string script, int interval, int repeats, object obj)
 	if (!effect)
 		return false;
 	// Set variables.
-	effect.var0 = script;
-	effect.var1 = repeats;
+	effect.script = script;
+	effect.repeats = repeats;
 	return true;
 }
 
 global func FxIntScheduleTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
-	var done = --effect.var1 <= 0;
+	var done = --effect.repeats <= 0;
 	// Execute.
-	eval(effect.var0);
+	eval(effect.script);
 	return -done;
 }
 
@@ -46,7 +46,7 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 		return false;
 	// Set variables.
 	effect.function = function;
-	effect.var1 = repeats;
+	effect.repeats = repeats;
 	effect.par = [par0, par1, par2, par3, par4];
 	return true;
 }
@@ -54,7 +54,7 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 global func FxIntScheduleCallTimer(object obj, effect)
 {
 	// Just a specific number of repeats.
-	var done = --effect.var1 <= 0;
+	var done = --effect.repeats <= 0;
 	// Execute.
 	Call(effect.function, effect.par[0], effect.par[1], effect.par[2], effect.par[3], effect.par[4]);
 	return -done;

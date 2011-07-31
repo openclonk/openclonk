@@ -22,22 +22,22 @@ public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 	if(iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	effect.var0=owner;
-	effect.var1=angle;
-	effect.var2=x;
-	effect.var3=y;
+	effect.owner=owner;
+	effect.angle=angle;
+	effect.x=x;
+	effect.y=y;
 }
 
 public func FxFireballTimer(pTarget, effect, iEffectTime)
 {
-	var angle=effect.var1;
-	var x=effect.var2;
-	var y=effect.var3;
+	var angle=effect.angle;
+	var x=effect.x;
+	var y=effect.y;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
 	 		FindObject(
-	 		Find_Hostile(effect.var0),
+	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
 	 		Find_Distance(16,x,y)
@@ -57,8 +57,8 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 		angle+=Sin(iEffectTime*30,18);
 		x+=Sin(angle, 6);
 		y+=-Cos(angle, 6);
-		effect.var2=x;
-		effect.var3=y;
+		effect.x=x;
+		effect.y=y;
 		for(var i=0;i<6;++i)
 		{
 			var c=HSL(Random(50), 200+Random(25), Random(100));

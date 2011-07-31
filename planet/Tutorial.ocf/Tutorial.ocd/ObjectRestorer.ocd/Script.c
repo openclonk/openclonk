@@ -18,38 +18,30 @@ public func SetRestoreObject(object to_restore, object to_container, int to_x, i
 {
 	to_restore->Enter(this);
 	var effect = AddEffect("Restore", this, 100, 1, this);
-	effect.var0 = to_restore;
-	effect.var1 = to_container;
-	effect.var2 = to_x;
-	effect.var3 = to_y;
-	effect.var4 = ctrl_string;
+	effect.to_restore = to_restore;
+	effect.to_container = to_container;
+	effect.to_x = to_x;
+	effect.to_y = to_y;
+	effect.ctrl_string = ctrl_string;
 	return;
 }
 
-// Restore effect.
-// Effectvar 0: Object to restore.
-// Effectvar 1: Container to which must be restored.
-// Effectvar 2: x-coordinate to which must be restored.
-// Effectvar 3: y-coordinate to which must be restored.
-// Effectvar 4: Effect which must be reinstated after restoring.
-// Effectvar 5: x-coordinate from which is restored.
-// Effectvar 6: y-coordinate from which is restored.
 protected func FxRestoreStart(object target, effect, int temporary)
 {
-	effect.var5 = target->GetX();
-	effect.var6 = target->GetY();
+	effect.init_x = target->GetX();
+	effect.init_y = target->GetY();
 	return 1;
 }
 
 protected func FxRestoreTimer(object target, effect, int time)
 {
 	// Remove effect if there is nothing to restore.
-	if (!effect.var0)
+	if (!effect.to_restore)
 		return -1;
 	// Get coordinates.
-	var init_x = effect.var5;
-	var init_y = effect.var6;
-	var to_container = effect.var1;
+	var init_x = effect.init_x;
+	var init_y = effect.init_y;
+	var to_container = effect.to_container;
 	if (to_container)
 	{
 		var to_x = to_container->GetX();
@@ -57,13 +49,13 @@ protected func FxRestoreTimer(object target, effect, int time)
 	}
 	else
 	{
-		var to_x = effect.var2;
-		var to_y = effect.var3;
+		var to_x = effect.to_x;
+		var to_y = effect.to_y;
 	}
 	// Are the coordinates specified now, if not remove effect.
 	if (to_x == nil || to_y == nil)
 	{
-		effect.var0->RemoveObject();
+		effect.to_restore->RemoveObject();
 		return -1;		
 	}
 	// Move to the object with a weighed sin-wave centered around the halfway point.
@@ -95,11 +87,11 @@ protected func FxRestoreTimer(object target, effect, int time)
 
 protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 {
-	var to_restore = effect.var0;
-	var to_container = effect.var1;
-	var to_x = effect.var2;
-	var to_y = effect.var3;
-	var ctrl_string = effect.var4;
+	var to_restore = effect.to_restore;
+	var to_container = effect.to_container;
+	var to_x = effect.to_x;
+	var to_y = effect.to_y;
+	var ctrl_string = effect.ctrl_string;
 	// Only if there is something to restore.
 	if (to_restore)
 	{			
@@ -115,9 +107,9 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 			if (ctrl_string)
 			{
 				var new_effect = AddEffect(ctrl_string, to_restore, 100, 10);
-				new_effect.var0 = to_container;
-				new_effect.var1 = to_x;
-				new_effect.var2 = to_y;
+				new_effect.to_container = to_container;
+				new_effect.to_x = to_x;
+				new_effect.to_y = to_y;
 			}
 			else
 				to_restore->AddRestoreMode(to_container, to_x, to_y);
@@ -150,9 +142,9 @@ global func AddRestoreMode(object to_container, int to_x, int to_y)
 	if (!this)
 		return;
 	var effect = AddEffect("RestoreMode", this, 100);
-	effect.var0 = to_container;
-	effect.var1 = to_x;
-	effect.var2 = to_y;
+	effect.to_container = to_container;
+	effect.to_x = to_x;
+	effect.to_y = to_y;
 	return;
 }
 
@@ -168,9 +160,9 @@ global func FxRestoreModeStop(object target, effect, int reason, bool  temporary
 		var x = BoundBy(target->GetX(), 0, LandscapeWidth());
 		var y = BoundBy(target->GetY(), 0, LandscapeHeight());
 		restorer->SetPosition(x, y);
-		var to_container = effect.var0;
-		var to_x = effect.var1;
-		var to_y = effect.var2;
+		var to_container = effect.to_container;
+		var to_x = effect.to_x;
+		var to_y = effect.to_y;
 		var restored = CreateObject(target->GetID(), 0, 0, target->GetOwner());
 		restorer->SetRestoreObject(restored, to_container, to_x, to_y);
 	}

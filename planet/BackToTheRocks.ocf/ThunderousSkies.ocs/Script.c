@@ -60,17 +60,17 @@ global func FxLifestealDamage(object target, effect, int damage, int cause, int 
 global func FxLifedrainStart(object target, effect, int temporary,damage)
 {
 	if(temporary) return 1;
-	effect.var0=damage/10;
+	effect.drain=damage/10;
 }
 global func FxLifedrainAdd(object target, effect, string new_name, int new_timer, damage)
 {
-	effect.var0+=damage/10;
+	effect.drain+=damage/10;
 }
 global func FxLifedrainTimer(object target, effect, int timer)
 {
-	if(effect.var0>0) return -1;
+	if(effect.drain>0) return -1;
 	target->DoEnergy(+100,1,0,-1);
-	effect.var0+=10;
+	effect.drain+=10;
 }
 global func FxBlessTheKingTimer(object target, effect, int timer)
 {
@@ -97,10 +97,11 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 		var r=Random(360);
 		var clr=RGBa(30,100-Random(50),255-Random(160),230+Random(20));
 		var str=0;
-		if(GetEffect("Lifedrain",king))
+		var lifedrain = GetEffect("Lifedrain",king);
+		if(lifedrain)
 		{
-			clr=RGBa(BoundBy(-GetEffect("Lifedrain",king).var0,30,225)+Random(20),160-(BoundBy(-GetEffect("Lifedrain",king).var0/2,10,100))-Random(50),230-BoundBy(-GetEffect("Lifedrain",king).var0,30,225)+Random(20), 230+Random(20));
-			var str=Random(BoundBy(-GetEffect("Lifedrain",king).var0/10,2,6));
+			clr=RGBa(BoundBy(-lifedrain.drain,30,225)+Random(20),160-(BoundBy(-lifedrain.drain/2,10,100))-Random(50),230-BoundBy(-lifedrain.drain,30,225)+Random(20), 230+Random(20));
+			var str=Random(BoundBy(-lifedrain.drain/10,2,6));
 		}
 		CreateParticle("AirIntake",king->GetX()+Sin(r,6-Random(5)),king->GetY()-Cos(r,6-Random(5)),Sin(r + 90,8+Random(4)+str),-Cos(r +90,8+Random(4)+str),20+Random(30) +str*str,clr);
 		CreateParticle("AirIntake",king->GetX()+Sin(r + 180,6-Random(5)),king->GetY()-Cos(r+180,6-Random(5)),Sin(r + 90,8+Random(4)+str),-Cos(r +90,8+Random(4)+str),20+Random(30)+str*str,clr);

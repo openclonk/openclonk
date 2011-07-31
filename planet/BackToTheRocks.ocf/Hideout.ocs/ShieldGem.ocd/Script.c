@@ -43,14 +43,14 @@ global func FxGemShieldCreationStart(object target, effect, int temporary, x, y,
 {
 	if (temporary) 
 		return 1;
-	effect.var0=x;
+	effect.x=x;
 	effect.var1=y;
 	effect.var2=e;	
 }
 global func FxGemShieldCreationTimer(object target, effect, int time)
 {
 	if(time > 26) return -1;
-	var x=effect.var0;
+	var x=effect.x;
 	var y=effect.var1;
 	var e=effect.var2;
 	var clr=RGB(122+Random(20),18+Random(10),90+Random(20));

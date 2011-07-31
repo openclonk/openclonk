@@ -73,25 +73,25 @@ private func FxEnergyNeedStart(object target, effect, int temp)
 	// Start showing energy need symbol.
 	target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
 	target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-	effect.var0 = true; // Effect is showing symbol.
+	effect.show_symbol = true; // Effect is showing symbol.
 	return 1;
 }
 
 private func FxEnergyNeedTimer(object target, effect, int time)
 {
 	// Alternate showing of the symbol: timer interval of AddEffect determines alternation time.
-	if (effect.var0) // Effect was showing symbol.
+	if (effect.show_symbol) // Effect was showing symbol.
 	{
 		// Do not show symbol.
 		target->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
-		effect.var0 = false;
+		effect.show_symbol = false;
 	}
 	else // Effect was not showing symbol.
 	{
 		// Do show symbol.
 		target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
 		target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-		effect.var0 = true;
+		effect.show_symbol = true;
 	}
 	return 1;
 }

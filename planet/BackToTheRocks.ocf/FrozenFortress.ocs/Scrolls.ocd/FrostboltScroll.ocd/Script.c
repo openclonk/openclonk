@@ -22,34 +22,34 @@ public func FxFrostboltStart(pTarget, effect, iTemp, owner, angle, x, y)
 	if(iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	effect.var0=owner;
-	effect.var1=angle;
-	effect.var2=x;
-	effect.var3=y;
+	effect.owner=owner;
+	effect.angle=angle;
+	effect.x=x;
+	effect.y=y;
 }
 
 public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 {	
-	var angle=effect.var1;
-	var x=effect.var2;
-	var y=effect.var3;
+	var angle=effect.angle;
+	var x=effect.x;
+	var y=effect.y;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
 	 		FindObject(
-	 		Find_Hostile(effect.var0),
+	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
 	 		Find_Distance(16,x,y)
 	 		)
 	 	)
 	{
-		CreateObject(Dynamite,x,y,effect.var0)->BlueExplode();
+		CreateObject(Dynamite,x,y,effect.owner)->BlueExplode();
 		CreateObject(Star,x,y,-1)->Sound("glass.ogg");
 		for(var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
-			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.var0, nil);
+			DoBlueExplosion(x+Sin(i*6 ,r),y-Cos(i*6 ,r), 2+Random(3), nil, effect.owner, nil);
 			}
 		return -1;
 	}	
@@ -61,8 +61,8 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		angle+=Sin(iEffectTime*50,2)*8;
 		x+=Sin(angle, 9);
 		y+=-Cos(angle, 9);
-		effect.var2=x;
-		effect.var3=y;
+		effect.x=x;
+		effect.y=y;
 		for(var i=0;i<6;++i)
 		{
 			var c=HSL(128+Random(40), 200+Random(25), Random(100));

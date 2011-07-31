@@ -22,17 +22,17 @@ public func FxFireballStart(pTarget, effect, iTemp, owner, angle, x, y)
 	if(iTemp) return;
 	x+=Sin(angle, 10)+RandomX(-1, 1);
 	y+=-Cos(angle, 10)+RandomX(-1, 1);
-	effect.var0=owner;
-	effect.var1=angle;
-	effect.var2=x;
-	effect.var3=y;
+	effect.owner=owner;
+	effect.angle=angle;
+	effect.x=x;
+	effect.y=y;
 }
 
 public func FxFireballTimer(pTarget, effect, iEffectTime)
 {
-	var angle=effect.var1;
-	var x=effect.var2;
-	var y=effect.var3;
+	var angle=effect.angle;
+	var x=effect.x;
+	var y=effect.y;
 
 	if	(	iEffectTime>67  ||
 	 		GBackSolid(x,y) ||
@@ -40,19 +40,19 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 	 		Find_Distance(16,x,y),
 	 		Find_ID(TargetBalloon)) ||
 	 		FindObject(
-	 		Find_Hostile(effect.var0),
+	 		Find_Hostile(effect.owner),
 	 		Find_OCF(OCF_Alive),
 	 		Find_NoContainer(),
 	 		Find_Distance(16,x,y)
 	 		)
 	 	)
 	{
-		CreateObject(Dynamite,x,y,effect.var0)->Explode(14);
-		for(var i=0; i<=3;i++) CreateObject(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.var0)->Explode(6+Random(4));
+		CreateObject(Dynamite,x,y,effect.owner)->Explode(14);
+		for(var i=0; i<=3;i++) CreateObject(Dynamite,x+Sin(i*120 +x,13),y-Cos(i*120 +x,13),effect.owner)->Explode(6+Random(4));
 		var obj=FindObject(Find_Distance(22,x,y),Find_ID(TargetBalloon));
 		if(obj)
 		{
-			var arw=CreateObject(Arrow,0,0,effect.var0);
+			var arw=CreateObject(Arrow,0,0,effect.owner);
 			obj->OnProjectileHit(arw);
 			arw->RemoveObject();
 		} 
@@ -67,8 +67,8 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 		angle+=Sin(iEffectTime*30,18);
 		x+=Sin(angle, 6);
 		y+=-Cos(angle, 6);
-		effect.var2=x;
-		effect.var3=y;
+		effect.x=x;
+		effect.y=y;
 		for(var i=0;i<6;++i)
 		{
 			var c=HSL(Random(50), 200+Random(25), Random(100));

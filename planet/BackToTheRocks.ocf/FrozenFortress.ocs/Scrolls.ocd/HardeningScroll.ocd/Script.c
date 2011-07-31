@@ -18,20 +18,18 @@ public func ControlUse(object pClonk, int ix, int iy)
 public func FxHardeningSpellStart(pTarget, effect, iTemp, angle, x, y)
 {
 	if(iTemp) return;
-	effect.var0=Sin(angle,4);
-	effect.var1=-Cos(angle,4);
-	effect.var2=x;
-	effect.var3=y;
-	effect.var4=0;
-	
+	effect.xdir=Sin(angle,4);
+	effect.ydir=-Cos(angle,4);
+	effect.x=x;
+	effect.y=y;
 }
 
 public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 {
-	var xdir = effect.var0;
-	var ydir = effect.var1;
-	var x = effect.var2;
-	var y = effect.var3;
+	var xdir = effect.xdir;
+	var ydir = effect.ydir;
+	var x = effect.x;
+	var y = effect.y;
 	for(var i=0; i<4; i++)
 	{
 		var r = Random(360);
@@ -41,26 +39,24 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 	}
 	if(!GBackSolid(x,y))
 	{
-		effect.var2+=effect.var0;
-		effect.var3+=effect.var1;
+		effect.x+=effect.xdir;
+		effect.y+=effect.ydir;
 		return 1;
 	}
 	for(var i=0; i<5; i++)
 	{
 		var r = Random(360);
 		var d = Random(8) + Random(6) + Random(6) + Random(6)+Random(3);
-		x= Sin(r,d) + effect.var2;
-		y = -Cos(r,d) + effect.var3;
+		x= Sin(r,d) + effect.x;
+		y = -Cos(r,d) + effect.y;
 		if(GetMaterial(x,y) == Material("Snow"))
 		{
 			DrawMaterialQuad("Ice",x,y,x+1,y,x+1,y+1,x,y+1);
 			CreateParticle("Air",x ,y ,xdir/3 ,ydir/3 ,35);
 		}
 	}
-	if(iEffectTime > 360 || effect.var4 > 500) { return -1; }
+	if(iEffectTime > 360) { return -1; }
 
-
-	
 }
 
 local Name = "$Name$";

@@ -37,10 +37,10 @@ public func FinishedAiming(object clonk, int angle)
 
 public func FxExplosiveArrowTimer(pTarget, effect, iEffectTime)
 {
-	CastParticles("Spark",1,20,pTarget->GetX()-GetX(),pTarget->GetY()-GetY(),8+(effect.var0/2),12+(effect.var0/2),RGB(255,200,0),RGB(255,255,150));
-	effect.var0++;
-	if(!pTarget->GetXDir() && !pTarget->GetYDir()) effect.var0 = Max(effect.var0,65);
-	if(effect.var0>90) pTarget->Explode(15+Random(7));
+	CastParticles("Spark",1,20,pTarget->GetX()-GetX(),pTarget->GetY()-GetY(),8+(effect.timer/2),12+(effect.timer/2),RGB(255,200,0),RGB(255,255,150));
+	effect.timer++;
+	if(!pTarget->GetXDir() && !pTarget->GetYDir()) effect.timer = Max(effect.timer,65);
+	if(effect.timer>90) pTarget->Explode(15+Random(7));
 	
 }
 

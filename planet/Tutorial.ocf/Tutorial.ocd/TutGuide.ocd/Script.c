@@ -93,7 +93,7 @@ public func MouseSelection(int plr)
 	var effect = GetEffect("MessageShown", this, nil, 0);
 	if (effect)
 	{
-		if (effect.var0 == index)
+		if (effect.show_index == index)
 			return ClearGuideMessage();
 		else
 			RemoveEffect("MessageShown", this);
@@ -120,7 +120,7 @@ private func GuideMessage(int show_index)
 	// Message as regular one, don't stop the player.
 	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
-	effect.var0 = show_index;
+	effect.show_index = show_index;
 	// Messages with @ in front are shown infinetely long.
 	if(GetChar(message, 0) == GetChar("@", 0))
 		effect.var1 = true;

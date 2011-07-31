@@ -40,8 +40,8 @@ func FxGemHealingTimer(target, effect, effect_time)
 	target->DoEnergy(500, true);
 	var xoff=RandomX(-5,5);
 	for(var fac=-1; fac <= 1;fac+=2)CreateParticle("Magic", AbsX(target->GetX()) + fac * xoff, AbsY(target->GetY()) + RandomX(-8,8), 0, -2, 40, RGB(255,200,200), target, Random(2));
-	if(!Random(10)) effect.var0=!effect.var0;
-	if(effect.var0)
+	if(!Random(10)) effect.switcher=!effect.switcher;
+	if(effect.switcher)
 		CreateParticle("MagicSpark", AbsX(target->GetX()) + RandomX(-3,3), AbsY(target->GetY()) + RandomX(-0,8), 0, -2, 30, RGBa(255,55,55, 50), target, Random(2));
 }
 

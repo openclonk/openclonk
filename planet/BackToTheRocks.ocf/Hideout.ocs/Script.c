@@ -134,8 +134,8 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 	if (temporary) 
 		return 1;
 		
-	effect.var0=supply;
-	if(effect.var0) 
+	effect.supply_type=supply;
+	if(effect.supply_type) 
 		var w_list = [Firestone, Dynamite, Ropeladder, ShieldGem];
 	else
 		var w_list = [Bow, Sword, Javelin, PyreGem];
@@ -145,7 +145,7 @@ global func FxFillBaseChestStart(object target, effect, int temporary, bool supp
 }
 global func FxFillBaseChestTimer(object target, effect)
 {
-	if(effect.var0)
+	if(effect.supply_type)
 	{ 
 		var w_list = [Firestone, Dynamite, Shovel, Loam, Ropeladder, SlowGem, ShieldGem];
 		var maxcount = [2,2,1,2,1,2,1];
@@ -250,9 +250,9 @@ protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
 
 global func FxNotTooLongTimer(object target, effect)
 {	if (!(target->Contained())) return 1;
-	if (target->Contained()->GetID() == Clonk) effect.var0++;
-	if (effect.var0 > 40) return target->RemoveObject();
-	else if (effect.var0 > 35) target->Message("@<c ff%x%x>%d",(41-effect.var0)*50,(41-effect.var0)*50,41-effect.var0);
+	if (target->Contained()->GetID() == Clonk) effect.inClonk_time++;
+	if (effect.inClonk_time > 40) return target->RemoveObject();
+	else if (effect.inClonk_time > 35) target->Message("@<c ff%x%x>%d",(41-effect.inClonk_time)*50,(41-effect.inClonk_time)*50,41-effect.inClonk_time);
 }
 
 func OnClonkDeath(object clonk, int killed_by)

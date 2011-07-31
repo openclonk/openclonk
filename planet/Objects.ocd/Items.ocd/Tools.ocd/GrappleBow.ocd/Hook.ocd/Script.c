@@ -111,13 +111,13 @@ public func Hit(x, y)
 public func FxInFlightStart(object target, effect, int temp)
 {
 	if(temp) return;
-	effect.var0 = target->GetX();
-	effect.var1 = target->GetY();
+	effect.x = target->GetX();
+	effect.y = target->GetY();
 }
 public func FxInFlightTimer(object target, effect, int time)
 {
-	var oldx = effect.var0;
-	var oldy = effect.var1;
+	var oldx = effect.x;
+	var oldy = effect.y;
 	var newx = GetX();
 	var newy = GetY();
 	
@@ -126,18 +126,18 @@ public func FxInFlightTimer(object target, effect, int time)
 	if(oldx == newx && oldy == newy)
 	{
 		// but we give the arrow 5 frames to speed up again
-		effect.var2++;
-		if(effect.var2 >= 10)
+		effect.countdown++;
+		if(effect.countdown >= 10)
 			return Hit();
 	}
 	else
-		effect.var2 = 0;
+		effect.countdown = 0;
 
 	// rotate arrow according to speed
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	SetRDir(anglediff/2);
-	effect.var0 = newx;
-	effect.var1 = newy;
+	effect.x = newx;
+	effect.y = newy;
 	return;
 }
 
@@ -174,21 +174,21 @@ public func FxIntGrappleControlControl(object target, fxnum, ctrl, x,y,strength,
 
 	if(ctrl == CON_Right)
 	{
-		fxnum.var3 = !release;
+		fxnum.mv_right = !release;
 	}
 	if(ctrl == CON_Left)
 	{
-		fxnum.var2 = !release;
+		fxnum.mv_left = !release;
 	}
 	if(ctrl == CON_Up)
 	{
-		fxnum.var0 = !release;
+		fxnum.mv_up = !release;
 		if(target->GetAction() == "Jump" && !release && pull)
 			rope->ConnectPull();
 	}
 	if(ctrl == CON_Down)
 	{
-		fxnum.var1 = !release;
+		fxnum.mv_down = !release;
 	}
 	
 	// never swallow the control
@@ -208,18 +208,9 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	// Also cancel if the clonk is contained
 	if (target->Contained())
 		return -1;
-
-	// EffectVars:
-	// 0 - movement up
-	// 1 - movement down
-	// 2 - movement left
-	// 3 - movement right
-	// 4 -
-	// 5 -
-	// 6 -
 		
 	// Movement.
-	if (fxnum.var0)
+	if (fxnum.mv_up)
 		if (rope)
     {
       var iSpeed = 10-Cos(target->GetAnimationPosition(fxnum.Climb)*360*2/target->GetAnimationLength("RopeClimb")-45, 10);
@@ -230,14 +221,14 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
         fxnum.speedCounter -= 20;
       }
     }
-	if (fxnum.var1)
+	if (fxnum.mv_down)
 		if (rope)
 			rope->DoLength(+1);
-	if (fxnum.var2)
+	if (fxnum.mv_left)
 	{
 		rope->DoSpeed(-10);
 	}
-	if (fxnum.var3)
+	if (fxnum.mv_right)
 	{
 		rope->DoSpeed(+10);
 	}
@@ -253,7 +244,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	
 	if(target->GetAction() == "Jump" && rope->PullObjects() && !fxnum.var6)
 	{
-		if(!fxnum.var4)
+		if(!fxnum.ani_mode)
 		{
 			target->SetTurnType(1);
 			if(!target->GetHandAction())
@@ -263,40 +254,40 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
     if(target->GetDir())
       SetObjDrawTransform(1000, 0, -3000, 0, 1000);*/
 
-		if(fxnum.var0)
+		if(fxnum.mv_up)
 		{
-			if(fxnum.var4 != 2)
+			if(fxnum.ani_mode != 2)
 			{
-				fxnum.var4 = 2;
+				fxnum.ani_mode = 2;
 				fxnum.Climb = target->PlayAnimation("RopeClimb", 10, Anim_Linear(target->GetAnimationLength("RopeClimb")/2, 0, target->GetAnimationLength("RopeClimb"), 35), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
         fxnum.speedCounter = 0;
 			}
 		}
-		else if(fxnum.var1)
+		else if(fxnum.mv_down)
 		{
-			if(fxnum.var4 != 3)
+			if(fxnum.ani_mode != 3)
 			{
-				fxnum.var4 = 3;
+				fxnum.ani_mode = 3;
 				target->PlayAnimation("RopeDown", 10, Anim_Const(0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			}
 		}
-		else if(fxnum.var2 || fxnum.var3)
+		else if(fxnum.mv_left || fxnum.mv_right)
 		{
 			var start = target->GetAnimationLength("RopeSwing")/2;
 			var length = target->GetAnimationLength("RopeSwing");
 			var dir = 0;
-			if( (fxnum.var2 && !target->GetDir())
-				|| (!fxnum.var2 && target->GetDir())
+			if( (fxnum.mv_left && !target->GetDir())
+				|| (!fxnum.mv_left && target->GetDir())
 				) dir = 1;
-			if(fxnum.var4 != 4+dir)
+			if(fxnum.ani_mode != 4+dir)
 			{
 				iSwingAnimation = target->PlayAnimation("RopeSwing", 10, Anim_Linear(start, length*dir, length*(!dir), 35, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-				fxnum.var4 = 4+dir;
+				fxnum.ani_mode = 4+dir;
 			}
 		}
-		else if(fxnum.var4 != 1)
+		else if(fxnum.ani_mode != 1)
 		{
-			fxnum.var4 = 1;
+			fxnum.ani_mode = 1;
 			target->PlayAnimation("OnRope", 10, Anim_Linear(0, 0, target->GetAnimationLength("OnRope"), 35*2, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		}
 		var angle = rope->GetClonkAngle();
@@ -309,7 +300,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		target->SetMeshTransformation(Trans_Translate(-off[0]*10+3000*(1-2*target->GetDir()),-off[1]*10), 2);
     target->SetMeshTransformation(Trans_RotX(angle,500,11000),3);//-6000,12000), 3);
 	}
-	else if(fxnum.var4)
+	else if(fxnum.ani_mode)
 	{
 		target->SetMeshTransformation(0, 2);
     target->SetMeshTransformation(0, 3);
@@ -317,7 +308,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		target->StopAnimation(target->GetRootAnimation(10));
 		if(!target->GetHandAction())
 				target->SetHandAction(0);
-		fxnum.var4 = 0;
+		fxnum.ani_mode = 0;
 	}
 
 	if(fxnum.var6) fxnum.var6--;

@@ -101,7 +101,7 @@ public func DuringShoot(object clonk, int angle)
 func FxDuringClubShootControlStart(target, effect, temp, p1)
 {
 	if(temp) return;
-	effect.var0=p1;
+	effect.angle=p1;
 }
 
 func FxDuringClubShootControlStop(target, effect, reason, temp)
@@ -114,13 +114,13 @@ func FxDuringClubShootControlTimer(target, effect, effect_time)
 {
 	if(effect_time > 16) return -1;
 	if(!this) return -1;
-	this->DoStrike(target, effect.var0);
+	this->DoStrike(target, effect.angle);
 }
 
 // you are not going to be hit by objects you fling away
 func FxDuringClubShootControlQueryCatchBlow(object target, effect, object obj)
 {
-	this->DoStrike(target, effect.var0);
+	this->DoStrike(target, effect.angle);
 	var en=Format("CannotBeHitTwiceBy%d", this->ObjectNumber());
 	if(GetEffect(en, obj)) return true;
 	return false;
