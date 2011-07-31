@@ -32,6 +32,7 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	
 	// remove after some time
 	SetAction("Travel");
+	SetComDir(COMD_None);
 
 	//Smush vertexes into one point
 	SquishVertices(true);
