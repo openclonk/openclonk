@@ -6,7 +6,7 @@
   <title>DefCore.txt</title>
   <h id="DefCoretxt">DefCore</h>
   <part>
-    <text>The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id. Also see <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">object and developer identification</emlink>.</text>
+    <text>The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id.</text>
     <text>
       <table>
         <caption id="SektionDefCore">Section [DefCore]</caption>
