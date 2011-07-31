@@ -118,7 +118,6 @@ void C4DefScriptHost::AfterLink()
 	SFn_CalcValue       = GetSFunc(PSF_CalcValue      , AA_PROTECTED);
 	SFn_SellTo          = GetSFunc(PSF_SellTo         , AA_PROTECTED);
 	SFn_ControlTransfer = GetSFunc(PSF_ControlTransfer, AA_PROTECTED);
-	SFn_CustomComponents = GetSFunc(PSF_GetCustomComponents, AA_PROTECTED);
 	if (Def)
 	{
 		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;

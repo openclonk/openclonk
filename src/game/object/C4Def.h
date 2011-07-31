@@ -230,13 +230,11 @@ protected:
 	bool LoadPortraits(C4Group &hGroup);
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();
-private:
-	C4ValueArray *GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance=NULL);
 public:
 	// return def components - may be overloaded by script callback
-	int32_t GetComponentCount(C4ID idComponent, C4Object *pBuilder=NULL);
-	C4ID GetIndexedComponent(int32_t idx, C4Object *pBuilder=NULL);
-	void GetComponents(C4IDList *pOutList, C4Object *pObjInstance=NULL, C4Object *pBuilder=NULL);
+	int32_t GetComponentCount(C4ID idComponent);
+	C4ID GetIndexedComponent(int32_t idx);
+	void GetComponents(C4IDList *pOutList, C4Object *pObjInstance=NULL);
 
 	void IncludeDefinition(C4Def *pIncludeDef); // inherit components from other definition
 	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains

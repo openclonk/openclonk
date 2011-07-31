@@ -71,7 +71,7 @@ C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
 	if (idID)
 	{
 		C4Def *pDef = C4Id2Def(idID);
-		if (pDef) pDef->GetComponents(&Components, NULL, pMenu ? pMenu->GetParentObject(): NULL);
+		if (pDef) pDef->GetComponents(&Components, NULL);
 	}
 }
 

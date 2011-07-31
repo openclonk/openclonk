@@ -2611,7 +2611,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	C4Def *pDef = C4Id2Def(id); if (!pDef) return NULL;
 	// get needed contents
 	C4IDList NeededComponents;
-	pDef->GetComponents(&NeededComponents, NULL, this);
+	pDef->GetComponents(&NeededComponents, NULL);
 	// Check for sufficient components
 	StdStrBuf Needs; Needs.Format(LoadResStr("IDS_CON_BUILDMATNEED"),pDef->GetName());
 	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
@@ -4880,14 +4880,14 @@ void C4Object::UpdateScriptPointers()
 		pEffects->ReAssignAllCallbackFunctions();
 }
 
-StdStrBuf C4Object::GetNeededMatStr(C4Object *pBuilder)
+StdStrBuf C4Object::GetNeededMatStr()
 {
 	C4Def* pComponent;
 	int32_t cnt, ncnt;
 	StdStrBuf NeededMats;
 
 	C4IDList NeededComponents;
-	Def->GetComponents(&NeededComponents, NULL, pBuilder);
+	Def->GetComponents(&NeededComponents, NULL);
 
 	C4ID idComponent;
 

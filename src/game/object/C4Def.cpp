@@ -654,96 +654,25 @@ bool C4Def::LoadPortraits(C4Group &hGroup)
 	return true;
 }
 
-C4ValueArray *C4Def::GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance)
+int32_t C4Def::GetComponentCount(C4ID idComponent)
 {
-	// return custom components array if script function is defined and returns an array
-	if (Script.SFn_CustomComponents)
-	{
-		C4AulParSet pars(C4VObj(pBuilder));
-		*pvArrayHolder = Script.SFn_CustomComponents->Exec(pObjInstance, &pars);
-		return pvArrayHolder->getArray();
-	}
-	return NULL;
-}
-
-int32_t C4Def::GetComponentCount(C4ID idComponent, C4Object *pBuilder)
-{
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder);
-	if (pArray)
-	{
-		int32_t iCount = 0;
-		for (int32_t i=0; i<pArray->GetSize(); ++i)
-			if (pArray->GetItem(i).getC4ID() == idComponent)
-				++iCount;
-		return iCount;
-	}
-	// no valid script overload: Assume definition components
 	return Component.GetIDCount(idComponent);
 }
 
-C4ID C4Def::GetIndexedComponent(int32_t idx, C4Object *pBuilder)
+C4ID C4Def::GetIndexedComponent(int32_t idx)
 {
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder);
-	if (pArray)
-	{
-		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		if (!pArray->GetSize()) return C4ID::None;
-		C4ID idLast = pArray->GetItem(0).getC4ID();
-		if (!idx) return idLast;
-		for (int32_t i=1; i<pArray->GetSize(); ++i)
-		{
-			C4ID idCurr = pArray->GetItem(i).getC4ID();
-			if (idCurr != idLast)
-			{
-				if (!--idx) return (idCurr);
-				idLast = idCurr;
-			}
-		}
-		// index out of bounds
-		return C4ID::None;
-	}
-	// no valid script overload: Assume definition components
 	return Component.GetID(idx);
 }
 
-void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance, C4Object *pBuilder)
+void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance)
 {
 	assert(pOutList);
 	assert(!pOutList->GetNumberOfIDs());
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder, pObjInstance);
-	if (pArray)
-	{
-		// transform array into IDList
-		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		C4ID idLast; int32_t iCount = 0;
-		for (int32_t i=0; i<pArray->GetSize(); ++i)
-		{
-			C4ID idCurr = pArray->GetItem(i).getC4ID();
-			if (!idCurr) continue;
-			if (i && idCurr != idLast)
-			{
-				pOutList->SetIDCount(idLast, iCount, true);
-				iCount = 0;
-			}
-			idLast = idCurr;
-			++iCount;
-		}
-		if (iCount) pOutList->SetIDCount(idLast, iCount, true);
-	}
+	// no valid script overload: Assume object or definition components
+	if (pObjInstance)
+		*pOutList = pObjInstance->Component;
 	else
-	{
-		// no valid script overload: Assume object or definition components
-		if (pObjInstance)
-			*pOutList = pObjInstance->Component;
-		else
-			*pOutList = Component;
-	}
+		*pOutList = Component;
 }
 
 void C4Def::IncludeDefinition(C4Def *pIncludeDef)

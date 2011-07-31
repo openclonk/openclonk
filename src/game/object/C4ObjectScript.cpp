@@ -1247,7 +1247,7 @@ static bool FnComponentAll(C4AulObjectContext *cthr, C4ID c_id)
 {
 	long cnt;
 	C4IDList Components;
-	cthr->Obj->Def->GetComponents(&Components, cthr->Obj, cthr->Obj);
+	cthr->Obj->Def->GetComponents(&Components, cthr->Obj);
 	for (cnt=0; Components.GetID(cnt); cnt++)
 		if (Components.GetID(cnt)!=c_id)
 			if (Components.GetCount(cnt)>0)

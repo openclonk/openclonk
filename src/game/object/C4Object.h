@@ -397,7 +397,7 @@ public:
 		       ;
 	}
 
-	StdStrBuf GetNeededMatStr(C4Object *pBuilder);
+	StdStrBuf GetNeededMatStr();
 
 	// This function is used for:
 	// -Objects to be removed when a player is removed

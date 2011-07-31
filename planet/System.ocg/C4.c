@@ -39,9 +39,9 @@ global func GetActMapVal(string entry, string action, id def, int num)
 	return GetProperty(entry, GetProperty(action, def));
 }
 
-global func ShowNeededMaterial(object of_obj)
+global func ShowNeededMaterial()
 {
-	MessageWindow(GetNeededMatStr(of_obj), GetOwner(), nil, of_obj->GetName());
+	MessageWindow(GetNeededMatStr(), GetOwner(), nil, GetName());
 	return true;
 }
 

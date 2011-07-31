@@ -127,7 +127,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
 #define PSF_FireMode            "~FireMode"
 #define PSF_FrameDecoration     "~FrameDecoration%s"
-#define PSF_GetCustomComponents "~GetCustomComponents" // C4Object *pBuilder
 #define PSF_CalcBuyValue        "~CalcBuyValue" // C4ID idItem, int iDefValue
 #define PSF_CalcSellValue       "~CalcSellValue" // C4Object *pObj, int iObjValue
 #define PSF_OnJoinCrew          "~Recruitment" // int Player

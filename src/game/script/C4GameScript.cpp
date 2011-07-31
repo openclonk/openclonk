@@ -731,9 +731,9 @@ static C4Value FnGetComponent_C4V(C4AulContext *cthr, C4Value* idComponent_C4V, 
 		// Get def
 		C4Def *pDef=C4Id2Def(idDef); if (!pDef) return C4Value();
 		// Component count
-		if (idComponent) return C4VInt(pDef->GetComponentCount(idComponent, cthr->Obj));
+		if (idComponent) return C4VInt(pDef->GetComponentCount(idComponent));
 		// Indexed component
-		return C4VPropList(C4Id2Def(pDef->GetIndexedComponent(iIndex, cthr->Obj)));
+		return C4VPropList(C4Id2Def(pDef->GetIndexedComponent(iIndex)));
 	}
 	// Object component
 	else
@@ -1542,11 +1542,11 @@ static C4String *FnMaterialName(C4AulContext* cthr, long iMat)
 	return String(::MaterialMap.Map[iMat].Name);
 }
 
-static C4String *FnGetNeededMatStr(C4AulContext* cthr, C4Object *pObj)
+static C4String *FnGetNeededMatStr(C4AulContext* cthr)
 {
 	// local/safety
-	if (!pObj) if (!(pObj=cthr->Obj)) return NULL;
-	return String(pObj->GetNeededMatStr(cthr->Obj).getData());
+	if (!cthr->Obj) throw new NeedObjectContext("GetNeededMatStr");
+	return String(cthr->Obj->GetNeededMatStr().getData());
 }
 
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)

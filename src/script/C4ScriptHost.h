@@ -56,8 +56,8 @@ protected:
 class C4DefScriptHost : public C4ScriptHost
 {
 public:
-	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL; }
-	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = SFn_CustomComponents = NULL; C4ScriptHost::Clear(); }
+	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
+	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 protected:
@@ -66,7 +66,6 @@ public:
 	C4AulScriptFunc *SFn_CalcValue; // get object value
 	C4AulScriptFunc *SFn_SellTo; // player par(0) sold the object
 	C4AulScriptFunc *SFn_ControlTransfer; // object par(0) tries to get to par(1)/par(2)
-	C4AulScriptFunc *SFn_CustomComponents; // PSF_GetCustomComponents
 };
 
 
