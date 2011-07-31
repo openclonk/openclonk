@@ -11,6 +11,11 @@
       <rtype>bool</rtype>
       <params>
         <param>
+          <type>object</type>
+          <name>obj</name>
+          <desc>Object in which the call is to be made. Can be <code>nil</code> for no object context.</desc>
+        </param>
+        <param>
           <type>string</type>
           <name>script</name>
           <desc>Script to be executed.</desc>
@@ -24,11 +29,6 @@
           <type>int</type>
           <name>repeat</name>
           <desc>Number of calls. If 0 or not specified, the call is made exactly once.</desc>
-        </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object in which the call is to be made. Can be <code>nil</code> in local calls.</desc>
         </param>
       </params>
     </syntax>

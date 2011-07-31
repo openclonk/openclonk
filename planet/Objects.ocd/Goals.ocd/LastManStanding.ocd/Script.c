@@ -92,7 +92,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
 	SortScoreboard(Scoreboard_Relaunch->GetRelaunchCol(), true);
 	DoScoreboardShow(1, plr + 1);
-	Schedule(Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
+	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	return; // _inherited(plr, killer, ...);
 }
 

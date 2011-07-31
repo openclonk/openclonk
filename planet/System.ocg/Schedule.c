@@ -6,13 +6,15 @@
 --*/
 
 // Executes a script repetitively with delay.
-global func Schedule(string script, int interval, int repeats, object obj)
+global func Schedule(object obj, string script, int interval, int repeats)
 {
 	// Defaults.
 	if (!repeats)
 		repeats = 1;
-	if (!obj)
-		obj = this;
+	// in CR, it was possible to leave out obj in local calls.
+	//	In OC, obj=nil means schedule without object context
+	//if (!obj)
+	//	obj = this;
 	// Create effect.
 	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
 	if (!effect)
@@ -38,8 +40,10 @@ global func ScheduleCall(object obj, string function, int interval, int repeats,
 	// Defaults.
 	if (!repeats)
 		repeats = 1;
-	if (!obj)
-		obj = this;
+	// in CR, it was possible to leave out obj in local calls.
+	//	In OC, obj=nil means schedule without object context
+	//if (!obj)
+	//	obj = this;
 	// Create effect.
 	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
 	if (!effect)

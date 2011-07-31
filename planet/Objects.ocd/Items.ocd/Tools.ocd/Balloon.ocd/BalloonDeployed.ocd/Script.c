@@ -28,7 +28,7 @@ private func Deflate()
 		SetAction("Deflate");
 		SetComDir(COMD_None);
 	}
-	Schedule("Pack()",20); //EndCall doesn't work. >:(
+	Schedule(this,"Pack()",20); //EndCall doesn't work. >:(
 }
 
 private func DeflateEffect()

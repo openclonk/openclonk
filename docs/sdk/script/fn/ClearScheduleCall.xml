@@ -13,7 +13,7 @@
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object for which to cancel scheduled function calls. Can be 0 for the calling object.</desc>
+          <desc>Object for which to cancel scheduled function calls. <code>nil</code> for scheduled calls without object context.</desc>
         </param>
         <param>
           <type>string</type>

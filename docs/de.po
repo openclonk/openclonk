@@ -5060,8 +5060,8 @@ msgid "Converts an object definition id into a number which can be used as index
 msgstr "Wandelt eine Objektdefinitions-ID in eine Zahl um, die als Spaltenidentifikator für <placeholder-1/> verwendet werden kann. Diese Funktion ist dann interessant, wenn ein Objekt auf das Scoreboard zugreifen will, aber dabei sicher stellen muss, dass es nicht dieselbe ID wie ein anderes Objekt verwendet."
 
 #: sdk/script/fn/ScheduleCall.xml:16(desc)
-msgid "Object in which to call the function. Can be <code>nil</code> in local calls."
-msgstr "Objekt, in dem die Funktion aufgerufen werden soll. <code>nil</code> für lokalen Aufruf."
+msgid "Object in which to call the function. <code>nil</code> for no object context."
+msgstr "Objekt, in dem die Funktion aufgerufen werden soll. <code>nil</code> für ohne Objektkontext."
 
 #: sdk/script/fn/ScheduleCall.xml:21(desc)
 msgid "Name of the function to call."
@@ -5098,8 +5098,8 @@ msgid "Script to be executed."
 msgstr "Auszuführendes Script"
 
 #: sdk/script/fn/Schedule.xml:31(desc)
-msgid "Object in which the call is to be made. Can be <code>nil</code> in local calls."
-msgstr "Objekt, in dem das Script ausgeführt werden soll. <code>nil</code> für lokalen Aufruf."
+msgid "Object in which the call is to be made. <code>nil</code> for no object context."
+msgstr "Objekt, in dem das Script ausgeführt werden soll. <code>nil</code> für ohne Objektkontext."
 
 #: sdk/script/fn/Schedule.xml:35(desc)
 msgid "Executes a specified script command after a specified delay."
@@ -9185,8 +9185,8 @@ msgid "Closes the container's menu."
 msgstr "Schließt das Menü des eigenen Behälters."
 
 #: sdk/script/fn/ClearScheduleCall.xml:16(desc)
-msgid "Object for which to cancel scheduled function calls. Can be 0 for the calling object."
-msgstr "Objekt, für das verzögerte Funktionsaufrufe abgebrochen werden sollen. 0 für aufrufendes Objekt."
+msgid "Object for which to cancel scheduled function calls. <code>nil</code> for scheduled calls without object context."
+msgstr "Objekt, für das verzögerte Funktionsaufrufe abgebrochen werden sollen. <code>nil</code> für verzögerte Funktionsaufrufe ohne Objektkontext"
 
 #: sdk/script/fn/ClearScheduleCall.xml:21(desc)
 msgid "Name of the scheduled function."

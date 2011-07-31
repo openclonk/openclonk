@@ -50,7 +50,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	SortScoreboard(Scoreboard_Death->GetDeathCol(), true);
 	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
 	DoScoreboardShow(1, plr + 1);
-	Schedule(Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
+	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	NotifyHUD();
 	return; // _inherited(plr, killer, ...);
 }
