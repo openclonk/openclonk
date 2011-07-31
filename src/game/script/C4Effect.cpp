@@ -243,7 +243,7 @@ C4Effect* C4Effect::Check(C4Object *pForObj, const char *szCheckEffect, int32_t 
 	{
 		if (!pCheck->IsDead() && pCheck->pFnEffect && pCheck->iPriority >= iPrio)
 		{
-			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VPropList(pCheck), C4Value(), rVal1, rVal2, rVal3, rVal4)).getInt();
+			int32_t iResult = pCheck->pFnEffect->Exec(pCheck->CommandTarget, &C4AulParSet(C4VString(szCheckEffect), C4VObj(pForObj), C4VPropList(pCheck), rVal1, rVal2, rVal3, rVal4)).getInt();
 			if (iResult == C4Fx_Effect_Deny)
 				// effect denied
 				return (C4Effect*)C4Fx_Effect_Deny;

@@ -133,7 +133,7 @@ func FxBanBurnPSpellEffect(string new_name)
     <text>This effect makes the clonk fire-proof for 30 seconds. The effect is implemented without any Timer or Stop callbacks as the complete functionality is achieved by simply blocking other effects which might have "Fire" as part of their name. This especially applies to the engine internal fire which has exactly the name "Fire". Of course, you could still add a Timer callback for graphic effects so the player can see that his clonk is immune. Also, you could create special visual effects when preventing incineration in FxBanBurnPSpellEffect. For the like:</text>
     <code>[...]
 
-func FxBanBurnPSpellEffect(string new_name, object target, proplist effect, reserved, var1, var2, var3)
+func FxBanBurnPSpellEffect(string new_name, object target, proplist effect, var1, var2, var3)
 {
   // only handle fire
   if (!<funclink>WildcardMatch</funclink>(new_name, &quot;*Fire*&quot;)) return 0;
@@ -504,7 +504,7 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <text>time specifies how long the effect has now been active. This might alternatively be determined using effect.Time.</text>
       <text>If this function is not implemented or returns -1, the effect will be deleted after this call.</text>
       <h>Fx*Effect</h>
-      <text><code>int Fx*Effect (string new_name, object target, proplist effect, reserved, any var1, any var2, any var3, any var4);</code></text>
+      <text><code>int Fx*Effect (string new_name, object target, proplist effect, any var1, any var2, any var3, any var4);</code></text>
       <text>A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>effect</code> is the effect being called.</text>
       <text>Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set.</text>
       <text>This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback.</text>
