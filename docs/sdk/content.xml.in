@@ -122,6 +122,9 @@
 	(function() {
 		if (parent == window) return;
 		var l = parent.location.pathname;
+		// recognize index file as such
+		if(l.charAt(l.length-1) == "/") l += "index";
+		
 		var as = document.getElementsByTagName("a");
 		var i = 0, a;
 		var firsta;
