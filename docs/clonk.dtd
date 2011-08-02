@@ -31,8 +31,9 @@
         <!ATTLIST emlink href CDATA #REQUIRED>
   <!ELEMENT author         (#PCDATA)>
   <!ELEMENT date           (#PCDATA)>
-<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img)*)>
-  <!ELEMENT part (h | text | part | code | dl)*>
+  <!ELEMENT search         EMPTY>
+<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img | search)*)>
+  <!ELEMENT part (h | text | part | code | dl | search)*>
 
 <!ELEMENT br EMPTY>
 

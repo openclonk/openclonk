@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-02 15:12+0200\n"
+"POT-Creation-Date: 2011-08-02 16:15+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -33,9 +33,8 @@ msgid "Contents"
 msgstr "Inhalt"
 
 #: sdk/content.xml.in:57(emlink)
-#, fuzzy
 msgid "Developer Mode"
-msgstr "Entwickler"
+msgstr "Entwicklermodus"
 
 #: sdk/content.xml.in:59(emlink)
 #: sdk/console.xml:7(h)
@@ -14636,26 +14635,28 @@ msgstr "Hier würden also z.B. die Nachricht \"Your position is: 252 / 352\" erz
 
 #: sdk/index.xml:6(title)
 #: sdk/index.xml:7(h)
-#, fuzzy
 msgid "OpenClonk Documentation"
-msgstr "Effekte-Dokumentation"
+msgstr "OpenClonk Dokumentation"
 
-#: sdk/index.xml:9(text)
-msgid "<img src=\"../images/cpem.gif\" width=\"52\" height=\"52\"/>Welcome to the developer documentation for the creation of custom game content."
-msgstr ""
+#: sdk/index.xml:10(text)
+msgid "Welcome to the developer documentation for the creation of custom game content. This documentation includes a thorough reference of the game data and its file hierarchy. <br/> Also included is a script reference which explains the syntax and semantics of Clonk's own scripting language - C4Script. In the script reference, all functions, constants and callbacks that are available for the scripter are documented with example usages."
+msgstr "Willkommen in der Entwickler-Dokumentation für die Erstellung von eigenem Spielinhalt. Diese Dokumentation beinhaltet eine vollständige Referenz der Spieldaten und ihrer Verzeichnisstruktur. <br/> Außerdem enthalten ist eine Script-Referenz welche die Syntax und die Semantik von Clonks eigener Scriptsprache C4Script erklärt. In der Script-Referenz sind alle Funktionen, Kontanten und Callbacks die dem Scripter zur Verfügung stehen mit Beispielen dokumentiert."
 
-#: sdk/index.xml:11(h)
-msgid "Where to start?"
-msgstr ""
+#: sdk/index.xml:13(h)
+msgid "Get started"
+msgstr "Leg los"
 
-#: sdk/index.xml:12(text)
-msgid "here and there <emlink href=\"files.html\">Game data</emlink> - <emlink href=\"script/index.html\">C4Script</emlink> - The complete game content is scripted in Clonk's own scripting language - C4Script."
-msgstr ""
+#: sdk/index.xml:14(text)
+msgid "<emlink href=\"files.html\">Game data</emlink> - Get an overview over the game data needed for the creation of custom game content."
+msgstr "<emlink href=\"files.html\">Spieldaten</emlink> - Verschaffe Dir einen Überblick über die Spieldaten die für die Erstellung von eigenem Spielinhalt benötigt werden."
+
+#: sdk/index.xml:15(text)
+msgid "<emlink href=\"script/index.html\">C4Script</emlink> - View the introduction to the script language C4Script."
+msgstr "<emlink href=\"script/index.html\">C4Script</emlink> - Schaue Dir die Einführung in die Scriptsprache C4Script an."
 
 #: sdk/index.xml:16(h)
-#, fuzzy
 msgid "Search the documentation"
-msgstr "Effekte-Dokumentation"
+msgstr "Suche in der Dokumentation"
 
 #: sdk/folder/index.xml:6(title)
 #: sdk/folder/index.xml:7(h)

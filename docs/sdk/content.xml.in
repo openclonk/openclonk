@@ -54,7 +54,7 @@
 <h>Contents</h>
 <part>
 <ul class="contents">
-	<li>Developer Mode
+	<li><emlink href="index.html">Developer Mode</emlink>
 	<ul>
 		<li><emlink href="console.html">Engine</emlink></li>
 		<li><emlink href="cmdline.html">Command Line Parameters</emlink></li>

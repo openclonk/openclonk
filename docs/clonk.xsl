@@ -361,6 +361,13 @@
     <caption><xsl:apply-templates select="@id|node()" /></caption>
   </xsl:template>
 
+  <xsl:template match="search">
+    <form action="../search.php" method="get">
+      <input name="search" type="text"></input> 
+      <input type="submit" name="fulltext" value="Go"></input>
+    </form>
+  </xsl:template>
+  
   <xsl:template match="table/bitmask">
     <xsl:value-of select="." />:
     <input id="input" onKeyUp="Calc();" name="input" type="text">
