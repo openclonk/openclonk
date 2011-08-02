@@ -141,9 +141,6 @@ protected func Death(int killed_by)
 		Sound("FDie");
 
 	DeathAnnounce();
-	// If the last crewmember died, do another broadcast.
-	if (!GetCrew(GetOwner()))
-		GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
 	return;
 }
 

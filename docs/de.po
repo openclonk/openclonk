@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-01 00:19+0200\n"
+"POT-Creation-Date: 2011-08-02 15:12+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
@@ -32,6 +32,11 @@ msgstr ""
 msgid "Contents"
 msgstr "Inhalt"
 
+#: sdk/content.xml.in:57(emlink)
+#, fuzzy
+msgid "Developer Mode"
+msgstr "Entwickler"
+
 #: sdk/content.xml.in:59(emlink)
 #: sdk/console.xml:7(h)
 msgid "Engine"
@@ -42,10 +47,6 @@ msgstr "Engine"
 #: sdk/cmdline.xml:7(h)
 msgid "Command Line Parameters"
 msgstr "Kommandozeilenparameter"
-
-#: sdk/content.xml.in:57(li)
-msgid "Developer Mode <placeholder-1/>"
-msgstr "Entwicklermodus <placeholder-1/>"
 
 #: sdk/content.xml.in:63(emlink)
 msgid "Game content"
@@ -11865,78 +11866,86 @@ msgid "Called after when a new player joins the game. At this point, the clonks,
 msgstr "Wird aufgerufen nachdem ein neuer Spieler das Spiel beigetreten ist. An dieser Stelle sind bereits die Clonks, Materialien, Gebäude usw. and der in der <emlink href=\"scenario/scenario.html#SektionenPlayer1Player2Player3Player4\">Scenario.txt</emlink> angegebenen Stelle platziert. <code>x</code> und <code>y</code> geben die Startposition des Spielers an, <code>base</code> ist die Basis des Spielers (falls er eine hat), <code>team</code> ist das Team des Spielers. Wegen <code>extra_data</code>, siehe <placeholder-1/>"
 
 #: sdk/scenario/script.xml:32(col)
+msgid "int player, int killed_by_player"
+msgstr "int player, int killed_by_player"
+
+#: sdk/scenario/script.xml:33(col)
+msgid "Called when a player is about to be eliminated because his last crew member died."
+msgstr "Wird aufgerufen bevor ein Spieler eliminiert wird weil alle seine Mannschaftsmitglieder gestorben sind."
+
+#: sdk/scenario/script.xml:37(col)
 msgid "int player, int team"
 msgstr "int player, int team"
 
-#: sdk/scenario/script.xml:33(col)
+#: sdk/scenario/script.xml:38(col)
 msgid "Called when a player is removed from the game."
 msgstr "Wird aufgerufen wenn ein Spieler vom Spiel entfernt wird."
 
-#: sdk/scenario/script.xml:38(col)
+#: sdk/scenario/script.xml:43(col)
 msgid "int player1, int player2, bool hostile"
 msgstr "int player1, int player2, bool hostile"
 
-#: sdk/scenario/script.xml:39(col)
+#: sdk/scenario/script.xml:44(col)
 msgid "When the hostility of two players is about to be changed, this function is called first. If it returns true, the hostility is not changed. See <placeholder-1/>."
 msgstr "Wenn die Verfeindung von zwei Spielern geändert werden soll, wird diese Funktion zuerst aufgerufen. Wenn sie true zurückgibt, wird die Verfeindung nicht geändert. Siehe <placeholder-1/>."
 
-#: sdk/scenario/script.xml:43(col)
+#: sdk/scenario/script.xml:48(col)
 msgid "int player1, int player2, bool hostile, bool old_hostility"
 msgstr "int player1, int player2, bool hostile, bool old_hostility"
 
-#: sdk/scenario/script.xml:44(col)
+#: sdk/scenario/script.xml:49(col)
 msgid "Called after the hostility of two players has been changed. See <placeholder-1/>."
 msgstr "Wird aufgerufen wenn die Verfeindung zweier Spieler geändert wird. Siehe <placeholder-1/>."
 
-#: sdk/scenario/script.xml:49(col)
+#: sdk/scenario/script.xml:54(col)
 #: sdk/definition/script.xml:332(col)
 msgid "int player, int new_team"
 msgstr "int player, int new_team"
 
-#: sdk/scenario/script.xml:50(col)
+#: sdk/scenario/script.xml:55(col)
 msgid "When the team of a player is about to be changed, this function is called first. If it returns true, the team of the player is not switched. See <placeholder-1/>"
 msgstr "Wenn das Team eines Spielers geändert werden soll, wird diese Funktion zuerst aufgerufen. Wenn sie true zurückgibt, wird das Team des Spielers nicht geändert. Siehe <placeholder-1/>"
 
-#: sdk/scenario/script.xml:54(col)
+#: sdk/scenario/script.xml:59(col)
 #: sdk/definition/script.xml:337(col)
 msgid "int player, int new_team, int old_team"
 msgstr "int player, int new_team, int old_team"
 
-#: sdk/scenario/script.xml:55(col)
+#: sdk/scenario/script.xml:60(col)
 msgid "Called after the team of a player has been changed. See <placeholder-1/>."
 msgstr "Wird aufgerufen nachdem das Teamzugehörigkeit eines Spielers geändert wurde. Siehe <placeholder-1/>"
 
-#: sdk/scenario/script.xml:61(col)
+#: sdk/scenario/script.xml:66(col)
 msgid "Called if a round is ended through the game by player elimination, fulfillment of all goals (as defined in the <emlink href=\"scenario/scenario.html#SektionGame\">Scenario.txt</emlink>) or by the script command <placeholder-1/>. It will not be called if the round was aborted."
 msgstr "Wird eine Runde durch Spielziele wie Spielereliminierung, Materialabbau, usw. (wie  in der <emlink href=\"scenario/scenario.html#SektionGame\">Scenario.txt</emlink> definiert) oder durch den Scriptbefehl <placeholder-1/> beendet (also nicht bei abgebrochenen Runden), wird diese Funktion aufgerufen."
 
-#: sdk/scenario/script.xml:66(col)
+#: sdk/scenario/script.xml:71(col)
 #: sdk/definition/script.xml:307(col)
 #: sdk/definition/script.xml:327(col)
 msgid "int player"
 msgstr "int player"
 
-#: sdk/scenario/script.xml:67(col)
+#: sdk/scenario/script.xml:72(col)
 msgid "Called when the wealth of a player has changed."
 msgstr "Wird aufgerufen wenn das Vermögen des Spielers geändert wurde."
 
-#: sdk/scenario/script.xml:72(h)
+#: sdk/scenario/script.xml:77(h)
 msgid "Sequential scripting"
 msgstr "Fortlaufende Scriptausführung"
 
-#: sdk/scenario/script.xml:73(text)
+#: sdk/scenario/script.xml:78(text)
 msgid "At the start of each round, before the players have joined, the engine calls the function \"Initialize\" in the scenario script, if defined. Within this function a scenario can perform special object placement or start the scenario scripting sequence."
 msgstr "Beim Start der Runde (Und VOR dem Beitritt der Spieler!) ruft die Engine, wenn vorhanden, die Funktion \"Initialize\" im Script des Szenarios auf. Innerhalb dieser Funktion können z.B. Objekte erzeugt werden, die beim Start der Runde vorhanden sein sollen. Außerdem kann die fortlaufende Scriptausführung gestartet werden."
 
-#: sdk/scenario/script.xml:80(text)
+#: sdk/scenario/script.xml:85(text)
 msgid "Sequential scripting: at the start of a round the internal script counter is set to 0. If sequential scripting has been started with ScriptGo, the counter is increased by one every ten frames and the corresponding script function is called in the scenario script, if defined."
 msgstr "Fortlaufende Scriptausführung: zu Beginn der Runde steht der interne Sciptzähler auf 0. Wurde mit ScriptGo die Scriptausführung aktiviert, so erhöht die Engine im Lauf der Runde in jedem zehnten Frame (Bild) den Scriptzähler um 1 und ruft, wenn vorhanden, die dazugehörige Script-Funktion im Szenario-Script auf."
 
-#: sdk/scenario/script.xml:85(text)
+#: sdk/scenario/script.xml:90(text)
 msgid "The script counter can also be manually adjusted using <placeholder-1/>() to jump to certain counter positions."
 msgstr "Der Scriptzähler kann mit dem Befehl <placeholder-1/>() auch manuell auf einen bestimmten Wert gesetzt werden."
 
-#: sdk/scenario/script.xml:86(text)
+#: sdk/scenario/script.xml:91(text)
 msgid "After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement."
 msgstr "Nach der Platzierung eines beitretenden Spielers ruft die Engine, wenn vorhanden, die Funktion InitializePlayer im Scenario-Script für diesen Spieler auf. Die Funktion wird aufgerufen, nachdem die in Scenario.txt beschriebenen Startkonditionen (Positionierung und Platzierung von Mannschaft, Gebäude, Fahrzeuge, Material) verarbeitet wurden. Mit dieser Funktion können weitere spielerabhängige Startkonditionen geschaffen werden."
 
@@ -14625,6 +14634,29 @@ msgstr "Zur Vollständigkeit - eine passende StringTblUS.txt:"
 msgid "This would yield the message \"Your position is: 252 / 352\", if English language were selected."
 msgstr "Hier würden also z.B. die Nachricht \"Your position is: 252 / 352\" erzeugt, wenn Englisch als Sprache eingestellt ist."
 
+#: sdk/index.xml:6(title)
+#: sdk/index.xml:7(h)
+#, fuzzy
+msgid "OpenClonk Documentation"
+msgstr "Effekte-Dokumentation"
+
+#: sdk/index.xml:9(text)
+msgid "<img src=\"../images/cpem.gif\" width=\"52\" height=\"52\"/>Welcome to the developer documentation for the creation of custom game content."
+msgstr ""
+
+#: sdk/index.xml:11(h)
+msgid "Where to start?"
+msgstr ""
+
+#: sdk/index.xml:12(text)
+msgid "here and there <emlink href=\"files.html\">Game data</emlink> - <emlink href=\"script/index.html\">C4Script</emlink> - The complete game content is scripted in Clonk's own scripting language - C4Script."
+msgstr ""
+
+#: sdk/index.xml:16(h)
+#, fuzzy
+msgid "Search the documentation"
+msgstr "Effekte-Dokumentation"
+
 #: sdk/folder/index.xml:6(title)
 #: sdk/folder/index.xml:7(h)
 msgid "Scenario Folder"
@@ -17004,6 +17036,9 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Developer Mode <placeholder-1/>"
+#~ msgstr "Entwicklermodus <placeholder-1/>"
 
 #~ msgid "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"
 #~ msgstr "<img height=\"16\" src=\"../../images/icon_image.png\" width=\"16\"/>Sky.png"

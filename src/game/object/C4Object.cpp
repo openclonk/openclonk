@@ -1124,6 +1124,14 @@ void C4Object::AssignDeath(bool fForced)
 	// Whats worse: Having the OCF change because of some unrelated script-call like
 	// SetCategory, or slightly breaking compatibility?
 	SetOCF();
+
+	// Engine broadcast: relaunch player (in CR, this was called from clonk script.
+	// Now, it is done for every crew member)
+	if(pPlr)
+		if(!pPlr->Crew.ObjectCount())
+			::GameScript.GRBroadcast(PSF_RelaunchPlayer,
+			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer)));
+			
 }
 
 bool C4Object::ChangeDef(C4ID idNew)
