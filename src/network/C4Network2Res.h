@@ -29,12 +29,12 @@
 const uint32_t C4NetResChunkSize = 10U * 1024U;
 
 const int32_t C4NetResDiscoverTimeout = 10, // (s)
-                                        C4NetResDiscoverInterval = 1, // (s)
-                                                                   C4NetResStatusInterval = 1, // (s)
-                                                                                            C4NetResMaxLoad = 5,
-                                                                                                              C4NetResLoadTimeout = 60, // (s)
-                                                                                                                                    C4NetResDeleteTime = 60, // (s)
-                                                                                                                                                         C4NetResMaxBigicon = 20; // maximum size, in KB, of bigicon
+              C4NetResDiscoverInterval = 1, // (s)
+              C4NetResStatusInterval = 1, // (s)
+              C4NetResMaxLoad = 5,
+              C4NetResLoadTimeout = 60, // (s)
+              C4NetResDeleteTime = 60, // (s)
+              C4NetResMaxBigicon = 20; // maximum size, in KB, of bigicon
 
 const int32_t C4NetResIDAnonymous = -2;
 

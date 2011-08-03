@@ -27,9 +27,9 @@
 
 // constants
 const int32_t C4ControlBacklog = 100, // (ctrl ticks)
-                                 C4ClientIDAll = C4ClientIDUnknown,
-                                                 C4ControlOverflowLimit = 3, // (ctrl ticks)
-                                                                          C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
+              C4ClientIDAll = C4ClientIDUnknown,
+              C4ControlOverflowLimit = 3, // (ctrl ticks)
+              C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
 
 const uint32_t C4ControlRequestInterval = 2000; // (ms)
 

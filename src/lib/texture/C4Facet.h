@@ -28,17 +28,17 @@
 
 const int32_t C4FCT_None   = 0,
 
-                             C4FCT_Left   = 1,
-                                            C4FCT_Right  = 2,
-                                                           C4FCT_Top    = 4,
-                                                                          C4FCT_Bottom = 8,
-                                                                                         C4FCT_Center = 16,
+              C4FCT_Left   = 1,
+              C4FCT_Right  = 2,
+              C4FCT_Top    = 4,
+              C4FCT_Bottom = 8,
+              C4FCT_Center = 16,
 
-                                                                                                        C4FCT_Alignment = C4FCT_Left | C4FCT_Right | C4FCT_Top | C4FCT_Bottom | C4FCT_Center,
+              C4FCT_Alignment = C4FCT_Left | C4FCT_Right | C4FCT_Top | C4FCT_Bottom | C4FCT_Center,
 
-                                                                                                                          C4FCT_Half   = 32,
-                                                                                                                                         C4FCT_Double = 64,
-                                                                                                                                                        C4FCT_Triple = 128;
+              C4FCT_Half   = 32,
+              C4FCT_Double = 64,
+              C4FCT_Triple = 128;
 
 // tuple of two integers
 struct C4Vec2D

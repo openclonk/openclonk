@@ -749,11 +749,12 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	// calc metrics
 	CStdFont &rFont = ::GraphicsResource.MiniFont;
 	int       YAxisWdt       = 5,
-	                           XAxisHgt       = 15;
+	          XAxisHgt       = 15;
+			  
 	const int AxisArrowLen   = 6,
-	                           AxisMarkerLen  = 5,
-	                                            AxisArrowThickness = 3,
-	                                                                 AxisArrowIndent=  2; // margin between axis arrow and last value
+	          AxisMarkerLen  = 5,
+	          AxisArrowThickness = 3,
+	          AxisArrowIndent=  2; // margin between axis arrow and last value
 	int32_t       YAxisMinStepHgt, XAxisMinStepWdt;
 	// get value range
 	int iMinTime = pDisplayGraph->GetStartTime();

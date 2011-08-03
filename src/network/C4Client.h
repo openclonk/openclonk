@@ -26,14 +26,14 @@
 
 // special ids
 const int32_t C4ClientIDUnknown = -1,
-                                  C4ClientIDHost = 0,
-                                                   C4ClientIDStart = 1;
+              C4ClientIDHost = 0,
+              C4ClientIDStart = 1;
 
 // client core difference levels
 const int32_t C4ClientCoreDL_None = 0,      // identical
-                                    C4ClientCoreDL_IDMatch = 1,   // status change
-                                                             C4ClientCoreDL_IDChange = 2,  // identification changed (host only!)
-                                                                                       C4ClientCoreDL_Different = 3; // really different
+              C4ClientCoreDL_IDMatch = 1,   // status change
+              C4ClientCoreDL_IDChange = 2,  // identification changed (host only!)
+              C4ClientCoreDL_Different = 3; // really different
 
 class C4ClientCore : public C4PacketBase
 {

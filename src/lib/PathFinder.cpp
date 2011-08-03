@@ -24,21 +24,21 @@
 #include <PathFinder.h>
 
 const int PF_Direction_Left  = -1,
-                               PF_Direction_Right = +1,
+          PF_Direction_Right = +1,
 
-                                                    PF_Ray_Launch      = 0,
-                                                                         PF_Ray_Crawl       = 1,
-                                                                                              PF_Ray_Still       = 2,
-                                                                                                                   PF_Ray_Failure     = 3,
-                                                                                                                                        PF_Ray_Deleted     = 4,
+          PF_Ray_Launch      = 0,
+          PF_Ray_Crawl       = 1,
+          PF_Ray_Still       = 2,
+          PF_Ray_Failure     = 3,
+          PF_Ray_Deleted     = 4,
 
-                                                                                                                                                             PF_Crawl_NoAttach  = 0,
-                                                                                                                                                                                  PF_Crawl_Top       = 1,
-                                                                                                                                                                                                       PF_Crawl_Right     = 2,
-                                                                                                                                                                                                                            PF_Crawl_Bottom    = 3,
-                                                                                                                                                                                                                                                 PF_Crawl_Left      = 4,
+          PF_Crawl_NoAttach  = 0,
+          PF_Crawl_Top       = 1,
+          PF_Crawl_Right     = 2,
+          PF_Crawl_Bottom    = 3,
+          PF_Crawl_Left      = 4,
 
-                                                                                                                                                                                                                                                                      PF_Draw_Rate       = 10;
+          PF_Draw_Rate       = 10;
 
 //------------------------------- CPathFinderRay ---------------------------------------------
 

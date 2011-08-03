@@ -1334,9 +1334,9 @@ void C4ToolsDlg::State::UpdatePreview()
 	if (GTK_WIDGET_SENSITIVE(preview))
 #endif
 		lpDDraw->DrawPatternedCircle( sfcPreview,
-		                                        iPrvWdt/2,iPrvHgt/2,
-		                                        dlg->Grade,
-		                                        bCol, Pattern, *::Landscape.GetPal());
+		                              iPrvWdt/2,iPrvHgt/2,
+		                              dlg->Grade,
+		                              bCol, Pattern, *::Landscape.GetPal());
 
 	// TODO: Can we optimize this?
 	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);

@@ -860,15 +860,15 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4Def *pDef, C4Object *pComma
 }
 
 const int C4MN_Add_ImgRank     =   1,
-                                   C4MN_Add_ImgIndexed  =   2,
-                                                            C4MN_Add_ImgObjRank  =   3,
-                                                                                     C4MN_Add_ImgObject   =   4,
-                                                                                                              C4MN_Add_ImgTextSpec =   5,
-                                                                                                                                       C4MN_Add_ImgColor    =   6,
-                                                                                                                                                                C4MN_Add_MaxImage    = 127, // mask for param which decides what to draw as the menu symbol
-                                                                                                                                                                                       C4MN_Add_PassValue   = 128,
-                                                                                                                                                                                                              C4MN_Add_ForceCount  = 256,
-                                                                                                                                                                                                                                     C4MN_Add_ForceNoDesc = 512;
+          C4MN_Add_ImgIndexed  =   2,
+          C4MN_Add_ImgObjRank  =   3,
+          C4MN_Add_ImgObject   =   4,
+          C4MN_Add_ImgTextSpec =   5,
+          C4MN_Add_ImgColor    =   6,
+          C4MN_Add_MaxImage    = 127, // mask for param which decides what to draw as the menu symbol
+          C4MN_Add_PassValue   = 128,
+          C4MN_Add_ForceCount  = 256,
+          C4MN_Add_ForceNoDesc = 512;
 
 #ifndef _MSC_VER
 #define _snprintf snprintf

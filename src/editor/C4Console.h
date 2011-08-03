@@ -33,8 +33,8 @@
 #include <StdWindow.h>
 
 const int C4CNS_ModePlay = 0,
-                           C4CNS_ModeEdit = 1,
-                                            C4CNS_ModeDraw = 2;
+          C4CNS_ModeEdit = 1,
+          C4CNS_ModeDraw = 2;
 
 #define IDM_NET_CLIENT1   10000
 #define IDM_NET_CLIENT2   10100

@@ -1077,9 +1077,9 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	}
 	if (IsWindowEnabled(GetDlgItem(state->hDialog,IDC_PREVIEW)))
 		lpDDraw->DrawPatternedCircle( sfcPreview,
-		                                        iPrvWdt/2,iPrvHgt/2,
-		                                        Grade,
-		                                        bCol, Pattern, *::Landscape.GetPal());
+		                              iPrvWdt/2,iPrvHgt/2,
+		                              Grade,
+		                              bCol, Pattern, *::Landscape.GetPal());
 
 	//Application.DDraw->AttachPrimaryPalette(sfcPreview);
 

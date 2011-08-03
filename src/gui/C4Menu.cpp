@@ -39,12 +39,12 @@
 #include <C4GameControl.h>
 
 const int32_t     C4MN_DefInfoWdt     = 270, // default width of info windows
-                                        C4MN_DlgWdt         = 270, // default width of dialog windows
-                                                              C4MN_DlgLines       = 5,  // default number of text lines visible in a dialog window
-                                                                                    C4MN_DlgLineMargin  = 5,  // px distance between text items
-                                                                                                          C4MN_DlgOptionLineMargin = 3,  // px distance between dialog option items
-                                                                                                                                     C4MN_DlgPortraitWdt = 64, // size of portrait
-                                                                                                                                                           C4MN_DlgPortraitIndent = 5; // space between portrait and text
+                  C4MN_DlgWdt         = 270, // default width of dialog windows
+                  C4MN_DlgLines       = 5,  // default number of text lines visible in a dialog window
+                  C4MN_DlgLineMargin  = 5,  // px distance between text items
+                  C4MN_DlgOptionLineMargin = 3,  // px distance between dialog option items
+                  C4MN_DlgPortraitWdt = 64, // size of portrait
+                  C4MN_DlgPortraitIndent = 5; // space between portrait and text
 
 const int32_t C4MN_InfoCaption_Delay = 90;
 

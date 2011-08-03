@@ -31,10 +31,10 @@ enum C4Network2IOProtocol
 };
 
 const int C4NetTimer                = 500,  // ms
-                                      C4NetPingFreq             = 1000, // ms
-                                                                  C4NetStatisticsFreq       = 1000, // ms
-                                                                                              C4NetAcceptTimeout        = 10,   // s
-                                                                                                                          C4NetPingTimeout          = 30000;// ms
+          C4NetPingFreq             = 1000, // ms
+          C4NetStatisticsFreq       = 1000, // ms
+          C4NetAcceptTimeout        = 10,   // s
+          C4NetPingTimeout          = 30000;// ms
 
 // client count
 const int C4NetMaxClients = 256;
