@@ -384,27 +384,51 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			int iHBiasScaled = BoundBy(iHBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceX + 128, 0, 255);
 			int iVBiasScaled = BoundBy(iVBias * 127 / iMaxPlacDiff / C4LR_BiasDistanceY + 128, 0, 255);
 
-			// Get scaler
-			int iScaler = 0;
+			// Visit our neighbours
+			int iNeighbours[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 			if(To.y+y > 0) {
-				if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y-1) == iMat)
-					iScaler += 1;
-				if(pSource->_GetMat(To.x+x, To.y+y-1) == iMat)
-					iScaler += 2;
-				if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y-1) == iMat)
-					iScaler += 4;
+				if(To.x+x > 0)
+					iNeighbours[0] = pSource->_GetPix(To.x+x-1, To.y+y-1);
+				iNeighbours[1] = pSource->_GetPix(To.x+x, To.y+y-1);
+				if(To.x+x < iWidth-1)
+					iNeighbours[2] = pSource->_GetPix(To.x+x+1, To.y+y-1);
 			}
-			if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y) == iMat)
-				iScaler += 8;
-			if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y) == iMat)
-				iScaler += 16;
-			if(To.y+y < iHeight-1) {
-				if(To.x+x > 0 && pSource->_GetMat(To.x+x-1, To.y+y+1) == iMat)
-					iScaler += 32;
-				if(pSource->_GetMat(To.x+x, To.y+y+1) == iMat)
-					iScaler += 64;
-				if(To.x+x < iWidth-1 && pSource->_GetMat(To.x+x+1, To.y+y+1) == iMat)
-					iScaler += 128;
+			if(To.x+x > 0)
+				iNeighbours[3] = pSource->_GetPix(To.x+x-1, To.y+y);
+			if(To.x+x < iWidth-1)
+				iNeighbours[4] = pSource->_GetPix(To.x+x+1, To.y+y);
+			if(To.y+y+1 < iHeight-1) {
+				if(To.x+x > 0)
+					iNeighbours[5] = pSource->_GetPix(To.x+x-1, To.y+y+1);
+				iNeighbours[6] = pSource->_GetPix(To.x+x, To.y+y+1);
+				if(To.x+x < iWidth-1)
+					iNeighbours[7] = pSource->_GetPix(To.x+x+1, To.y+y+1);
+			}
+
+			// Look for highest-placement material in our surroundings
+			int iMaxPix = iPix, iMaxPlace = iPlac, i;
+			for(i = 0; i < 8; i++) {
+				int iTempPlace = MatPlacement(PixCol2Mat(iNeighbours[i]));
+				if(iTempPlace > iMaxPlace || (iTempPlace == iMaxPlace && iNeighbours[i] > iMaxPix) ) {
+					iMaxPix = iNeighbours[i]; iMaxPlace = iTempPlace;
+				}
+			}
+
+			// Scaler calculation depends on whether this is the highest-placement material around
+			int iScaler = 0;
+			if(iMaxPix == iPix) {
+
+				// If yes, we consider all other materials as "other"
+				for(i = 0; i < 8; i++)
+					if(iNeighbours[i] == iPix)
+						iScaler += (1<<i);
+
+			} else {
+
+				// Otherwise, we *only* consider the highest-placement material as "other"
+				for(i = 0; i < 8; i++)
+					if(iNeighbours[i] != iMaxPix)
+						iScaler += (1<<i);
 			}
 
 			// Collect data to save per pixel
