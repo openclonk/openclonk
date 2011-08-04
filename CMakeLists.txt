@@ -1049,7 +1049,6 @@ endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(clonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
-	#c4script is rarely compiled and
 endif()
 
 ############################################################################
