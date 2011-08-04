@@ -1536,7 +1536,7 @@ void C4StartupPlrPropertiesDlg::UpdateBigIcon()
 	else if (!fClearBigIcon && pForPlayer)
 	{
 		C4Group PlrGroup;
-		if (PlrGroup.Open(pForPlayer->GetFilename().getData()))
+		if (PlrGroup.Open(Config.AtUserDataPath(pForPlayer->GetFilename().getData())))
 		{
 			if (PlrGroup.FindEntry(C4CFN_BigIcon))
 			{
