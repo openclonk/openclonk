@@ -108,9 +108,9 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrI
 		// Look for scaled images
 		const size_t base_length = std::strlen(strBasename);
 		char strExtension[128 + 1]; SCopy(GetExtension(szFilename), strExtension, 128);
-		char scaled_name[_MAX_PATH+1];
 		if (strExtension[0])
 		{
+			char scaled_name[_MAX_PATH+1];
 			std::string wildcard(strBasename);
 			wildcard += ".*.";
 			wildcard += strExtension;
@@ -121,14 +121,15 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrI
 				{
 					int scale = -1;
 					if (sscanf(scaled_name + base_length + 1, "%d", &scale) == 1)
-						max_scale = std::max(scale, max_scale);
+						if (scale > max_scale)
+						{
+							ScaleToSet = max_scale;
+							max_scale = scale;
+							strFilename.Copy(scaled_name);
+							szFilename = strFilename.getData();
+						}
 				}
 				while (hGroup.FindNextEntry(wildcard.c_str(), scaled_name));
-			}
-			if (max_scale > -1)
-			{
-				ScaleToSet = max_scale;
-				szFilename = scaled_name;
 			}
 		}
 	}
