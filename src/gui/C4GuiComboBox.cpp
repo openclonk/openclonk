@@ -186,7 +186,7 @@ namespace C4GUI
 		if ((HasDrawFocus() || iOpenMenu || fMouseOver) && !fReadOnly)
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+			::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 			lpDDraw->ResetBlitMode();
 		}
 	}

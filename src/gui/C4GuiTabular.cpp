@@ -74,7 +74,7 @@ namespace C4GUI
 		if (fFocus)
 		{
 			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, (fLarge ? x : x - iTxtWdt/2)+5, y+3, (fLarge ? iMaxWdt : iTxtWdt)-10, iTxtHgt-6);
+			::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, (fLarge ? x : x - iTxtWdt/2)+5, y+3, (fLarge ? iMaxWdt : iTxtWdt)-10, iTxtHgt-6);
 			lpDDraw->ResetBlitMode();
 		}
 		if (!(pfctClip && pfctIcon))

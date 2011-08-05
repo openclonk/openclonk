@@ -128,6 +128,7 @@ void C4GraphicsResource::Clear()
 	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
 	barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
 	fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
+	fctButtonHighlightRound.Clear();
 	fctSubmenu.Clear();
 	fctCheckbox.Clear();
 	fctBigArrows.Clear();
@@ -200,6 +201,7 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(sfcButtonD, "GUIButtonDown", Files, idSfcButtonD)) return false;
 	barButtonD.SetHorizontal(sfcButtonD);
 	if (!LoadFile(fctButtonHighlight, "GUIButtonHighlight", Files)) return false;
+	if (!LoadFile(fctButtonHighlightRound, "GUIButtonHighlightRound", Files)) return false;
 	if (!LoadFile(fctIcons, "GUIIcons", Files)) return false;
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
 	if (!LoadFile(fctIconsEx, "GUIIcons2", Files)) return false;

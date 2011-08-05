@@ -221,7 +221,7 @@ namespace C4GUI
 		if (fEnabled) if (fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// draw the icon
@@ -231,7 +231,7 @@ namespace C4GUI
 		if (fEnabled) if (fDown || fHighlight)
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// some icon buttons have captions. draw caption below button
@@ -275,7 +275,7 @@ namespace C4GUI
 		if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
 				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
+				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
 				lpDDraw->ResetBlitMode();
 			}
 		// draw the arrow - down if pressed

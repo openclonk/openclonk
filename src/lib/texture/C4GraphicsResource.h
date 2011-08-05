@@ -83,6 +83,7 @@ public:
 
 	C4GUI::DynBarFacet barCaption, barButton, barButtonD;
 	C4FacetID fctButtonHighlight;
+	C4FacetID fctButtonHighlightRound;
 	C4FacetID fctIcons, fctIconsEx;
 	C4FacetID fctSubmenu;
 	C4FacetID fctCheckbox;
