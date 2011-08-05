@@ -241,7 +241,7 @@ public:
 	{
 		StdStrBuf name(fStartAtFilename ? sFileName : "");
 		bool r = FindNextEntry(szWildCard, &name, iSize, fStartAtFilename);
-		if(sFileName) SCopy(name.getData(),sFileName);
+		if (r && sFileName) SCopy(name.getData(),sFileName);
 		return r;
 	}
 	bool Read(void *pBuffer, size_t iSize);
