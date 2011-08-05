@@ -94,7 +94,6 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	iResChangeSwitchTime = 12;
 	// However, some people need more time
 	// Those can be identified by their configuration settings
-	if (Config.Graphics.SaveDefaultPortraits) iResChangeSwitchTime += 2;
 	if (SEqualNoCase(Config.GetRegistrationData("Nick"), "flgr")) iResChangeSwitchTime *= 10;
 	// get positions
 	C4GUI::ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);

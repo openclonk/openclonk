@@ -8775,8 +8775,8 @@ msgid "ID of the object definition which is used for decoration of the message. 
 msgstr "ID der Objektdefinition, die für Dekoration der Nachricht verwendet wird. Wenn angegeben, wird die Nachricht von einem Rahmen umgeben. Nur gültig bei angegebenem Portrait."
 
 #: sdk/script/fn/CustomMessage.xml:57(desc)
-msgid "Picture specification for a picture to the left of the message within the decoration frame."
-msgstr "Bildspezifikation für ein Bild links neben der Nachricht im Dekorationsrahmen."
+msgid "Definition or object to take the graphics from as a portrait."
+msgstr "Definition oder Objekt dessen Grafik als Portrait benutzt werden soll."
 
 #: sdk/script/fn/CustomMessage.xml:67(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:36(col)
@@ -8833,8 +8833,8 @@ msgid "Shows the message \"This is madness!\" for player 0 only with the word \"
 msgstr "Gibt die Nachricht \"This is madness!\" nur für Spieler 0 aus, wobei das Wort \"madness\" in kursiver Schrift angezeigt wird."
 
 #: sdk/script/fn/CustomMessage.xml:104(text)
-msgid "Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition GUI_MenuDeco needs to be loaded."
-msgstr "Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein grünes Clonk-Portrait angezeigt. Es muss die Dekorationsdefinition GUI_MenuDeco geladen sein."
+msgid "Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a clonk picture will be shown. The decoration definition GUI_MenuDeco needs to be loaded."
+msgstr "Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein Clonk-Titelbild wird angezeigt. Es muss die Dekorationsdefinition GUI_MenuDeco geladen sein."
 
 #: sdk/script/fn/CreateScriptPlayer.xml:16(desc)
 msgid "Name for the script player. Required."

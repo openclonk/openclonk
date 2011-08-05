@@ -66,11 +66,12 @@ protected:
 	C4Object *Target;
 	StdCopyStrBuf Text;
 	C4GameMessage *Next;
-	C4ID DecoID; StdStrBuf PortraitDef;
+	C4ID DecoID;
+	C4PropList *PictureDef; // can be either a definition or object
 	C4GUI::FrameDecoration *pFrameDeco;
 	uint32_t dwFlags;
 protected:
-	void Init(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwCol, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int width);
+	void Init(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwCol, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int width);
 	void Append(const char *szText, bool fNoDuplicates = false);
 	bool Execute();
 	const char *WordWrap(int32_t iMaxWidth);
@@ -95,8 +96,8 @@ public:
 	void ClearPlayers(int32_t iPlayer, int32_t dwPositioningFlags);
 	void ClearPointers(C4Object *pObj);
 	void UpdateDef(C4ID idUpdDef); // called after reloaddef
-	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, const char *szPortraitDef=NULL, uint32_t dwFlags=0u, int32_t width=0);
-	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, const char *szPortraitDef=NULL, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX = -1, int32_t iY = -1, uint32_t dwClr = 0xffFFFFFF, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
+	bool New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID=C4ID::None, C4PropList *pSrc=NULL, uint32_t dwFlags=0u, int32_t width=0);
 	bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t bCol, bool fNoDuplicates = false);
 };
 

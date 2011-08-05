@@ -60,7 +60,6 @@ public func Activate(int plr)
 	}
 	// Otherwise open a new message.
 	AddEffect("GoalMessage", this, 100, 0, this);
-	var portrait_def = Format("%i", GetID());
 	var message;
 	if (IsFulfilled())
 	{
@@ -80,7 +79,7 @@ public func Activate(int plr)
 			message = Format("%s%s", message, add_msg);
 		}
 	}
-	CustomMessage(message, nil, plr, 0, 16 + 64, 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
+	CustomMessage(message, nil, plr, 0, 16 + 64, 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
 	return;
 }
 

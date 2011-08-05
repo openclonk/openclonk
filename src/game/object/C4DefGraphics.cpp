@@ -249,37 +249,6 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 		if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
 			return false;
 	}
-	// load portrait graphics
-	iWildcardPos = SCharPos('*', C4CFN_Portraits);
-	hGroup.ResetSearch();
-	*Filename=0;
-	while (hGroup.FindNextEntry(C4CFN_Portraits, Filename, NULL, !!*Filename))
-	{
-		// get graphics name
-		char GrpName[_MAX_PATH+1];
-		SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
-		RemoveExtension(GrpName);
-		// clip to max length
-		GrpName[C4MaxName]=0;
-		// determine file type (bmp or png)
-		char OverlayFn[_MAX_PATH+1]; *OverlayFn=0;
-		if (!SEqualNoCase(GetExtension(Filename), "png")) continue;
-		// create overlay-filename for PNGs
-		if (fColorByOwner)
-		{
-			// PortraitX.png -> OverlayX.png
-			SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
-			OverlayFn[iOverlayWildcardPos]=0;
-			SAppend(Filename + iWildcardPos, OverlayFn);
-			EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
-		}
-		// create new graphics
-		pLastGraphics->pNext = new C4PortraitGraphics(pDef, GrpName);
-		pLastGraphics = pLastGraphics->pNext;
-		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, Filename, *OverlayFn ? OverlayFn : NULL, fColorByOwner))
-			return false;
-	}
 	// done, success
 	return true;
 }
@@ -291,17 +260,6 @@ C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 	// search additional graphics
 	for (C4AdditionalDefGraphics *pGrp = pNext; pGrp; pGrp=pGrp->pNext)
 		if (SEqualNoCase(pGrp->GetName(), szGrpName)) return pGrp;
-	// nothing found
-	return NULL;
-}
-
-C4PortraitGraphics *C4PortraitGraphics::Get(const char *szGrpName)
-{
-	// no group or empty string: no gfx
-	if (!szGrpName || !szGrpName[0]) return NULL;
-	// search self and additional graphics
-	for (C4AdditionalDefGraphics *pGrp = this; pGrp; pGrp=pGrp->GetNext())
-		if (SEqualNoCase(pGrp->GetName(), szGrpName)) return pGrp->IsPortrait();
 	// nothing found
 	return NULL;
 }
@@ -373,21 +331,6 @@ C4AdditionalDefGraphics::C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szN
 	SCopy(szName, Name, C4MaxName);
 }
 
-C4PortraitGraphics *C4PortraitGraphics::GetByIndex(int32_t iIndex)
-{
-	// start from this portrait
-	C4DefGraphics *pResult = this;
-	while (iIndex--)
-	{
-		// get next indexed
-		pResult = pResult->GetNext(); if (!pResult) return NULL;
-		// skip non-portraits
-		if (!pResult->IsPortrait()) ++iIndex;
-	}
-	// return portrait
-	return pResult->IsPortrait();
-}
-
 C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics)
 {
 	// assign graphics + def
@@ -453,24 +396,6 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							if (!pDeco->UpdateGfx())
 								pObj->Menu->SetFrameDeco(NULL);
 				}
-		// check all object infos for portraits
-		for (C4Player *pPlr = ::Players.First; pPlr; pPlr=pPlr->Next)
-			for (C4ObjectInfo *pInfo = pPlr->CrewInfoList.GetFirst(); pInfo; pInfo=pInfo->Next)
-			{
-				if (pInfo->Portrait.GetGfx() == pGraphicsPtr)
-				{
-					// portrait found: try to re-set by new name
-					if (!pInfo->SetPortrait(Name, pDef, false, false))
-						// not found: no portrait then
-						pInfo->ClearPortrait(false);
-				}
-				if (pInfo->pNewPortrait && pInfo->pNewPortrait->GetGfx() == pGraphicsPtr)
-				{
-					// portrait found as new portrait: simply reset (no complex handling for EM crew changes necessary)
-					delete pInfo->pNewPortrait;
-					pInfo->pNewPortrait = NULL;
-				}
-			}
 		// done; reset field to indicate finished update
 		pGraphicsPtr = NULL;
 	}
@@ -517,129 +442,6 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 	// check next graphics
 	if (pNext) pNext->AssignRemoval();
 }
-
-
-
-bool C4Portrait::Load(C4Group &rGrp, const char *szFilenamePNG, const char *szOverlayPNG)
-{
-	// clear previous
-	Clear();
-	// create new gfx
-	pGfxPortrait = new C4DefGraphics();
-	// load
-	if (!pGfxPortrait->LoadBitmap(rGrp, szFilenamePNG, szOverlayPNG, true))
-	{
-		// load failure
-		delete pGfxPortrait; pGfxPortrait=NULL;
-		return false;
-	}
-	// assign owned gfx
-	fGraphicsOwned = true;
-	// done, success
-	return true;
-}
-
-bool C4Portrait::Link(C4DefGraphics *pGfxPortrait)
-{
-	// clear previous
-	Clear();
-	// simply assign ptr
-	this->pGfxPortrait = pGfxPortrait;
-	// done, success
-	return true;
-}
-
-bool C4Portrait::SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN)
-{
-	// safety
-	if (!pGfxPortrait || !szFilename || pGfxPortrait->Type != C4DefGraphics::TYPE_Bitmap || !pGfxPortrait->Bmp.Bitmap) return false;
-	// save files
-	if (pGfxPortrait->fColorBitmapAutoCreated)
-	{
-		// auto-created ColorByOwner: save file with blue shades to be read by frontend
-		if (!pGfxPortrait->GetBitmap(0xff)->SavePNG(rGroup, szFilename)) return false;
-	}
-	else
-	{
-		// save regular baseface
-		if (!pGfxPortrait->Bmp.Bitmap->SavePNG(rGroup, szFilename)) return false;
-		// save Overlay
-		if (pGfxPortrait->Bmp.BitmapClr && szOverlayFN)
-			if (!pGfxPortrait->Bmp.BitmapClr->SavePNG(rGroup, szOverlayFN, true, false, true)) return false;
-	}
-	// done, success
-	return true;
-}
-
-bool C4Portrait::CopyFrom(C4DefGraphics &rCopyGfx)
-{
-	// clear previous
-	Clear();
-	// gfx copy
-	pGfxPortrait = new C4DefGraphics();
-	if (!pGfxPortrait->CopyGraphicsFrom(rCopyGfx))
-		{ Clear(); return false; }
-	// mark as own gfx
-	fGraphicsOwned = true;
-	// done, success
-	return true;
-}
-
-bool C4Portrait::CopyFrom(C4Portrait &rCopy)
-{
-	// clear previous
-	Clear();
-	if ((fGraphicsOwned=rCopy.fGraphicsOwned))
-	{
-		// gfx copy
-		pGfxPortrait = new C4DefGraphics();
-		if (!pGfxPortrait->CopyGraphicsFrom(*rCopy.GetGfx()))
-			{ Clear(); return false; }
-	}
-	else
-	{
-		// simple link
-		pGfxPortrait = rCopy.GetGfx();
-	}
-	// done, success
-	return true;
-}
-
-const char *C4Portrait::EvaluatePortraitString(const char *szPortrait, C4ID &rIDOut, C4ID idDefaultID, uint32_t *pdwClrOut)
-{
-	// examine portrait string
-	const char *delim_pos;
-	if ((delim_pos = SSearch(szPortrait, "::")))
-	{
-		// C4ID::PortraitName or C4ID::dwClr::PortraitName
-		StdStrBuf portrait_id;
-		portrait_id.Copy(szPortrait, delim_pos-szPortrait-2);
-		rIDOut = C4ID(portrait_id.getData());
-		// color specified?
-		szPortrait = delim_pos;
-		delim_pos = SSearch(szPortrait, "::");
-		if (delim_pos)
-		{
-			char buf[7];
-			// delim_pos-szPortrait-2 results in long on 64bit,
-			// so the template needs to be specialised
-			SCopy(szPortrait, buf, Min<ptrdiff_t>(6, delim_pos-szPortrait-2));
-			if (pdwClrOut) sscanf(buf, "%x", pdwClrOut);
-			szPortrait = delim_pos;
-		}
-		// return last part of string
-		return szPortrait;
-	}
-	else
-	{
-		// PortraitName. ID is info ID
-		rIDOut = idDefaultID;
-		return szPortrait;
-	}
-}
-
-
-
 
 // ---------------------------------------------------------------------------
 // C4GraphicsOverlay: graphics overlay used to attach additional graphics to objects

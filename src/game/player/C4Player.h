@@ -185,7 +185,7 @@ public:
 	bool Save();
 	bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny);
 	bool MakeCrewMember(C4Object *pObj, bool fForceInfo=true, bool fDoCalls=true);
-	bool Load(const char *szFilename, bool fSavegame, bool fLoadPortraits);
+	bool Load(const char *szFilename, bool fSavegame);
 	static bool Strip(const char *szFilename, bool fAggressive);
 	bool Message(const char *szMsg);
 	bool ObjectInCrew(C4Object *tobj);

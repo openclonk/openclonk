@@ -289,7 +289,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		if (!fIconSet)
 		{
 			// no custom icon: create default by player color
-			pIcon->GetMFacet().Create(C4GUI_IconWdt,C4GUI_IconHgt);
+			pIcon->GetMFacet().Create(64,64); // the bigicon is bigger than the normal 40x40 icon
 			::GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), true, dwPlayerClr);
 		}
 		fIconSet = true;

@@ -47,21 +47,17 @@ private:
 		C4GUI::Icon *pIcon;    // item icon
 	private:
 		class C4KeyBinding *pKeyCheck; // space activates/deactivates selected player
-		C4FacetSurface fctPortrait, fctPortraitBase;    // big portrait
 		StdStrBuf Filename;       // file info was loaded from
 
 	public:
 		ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement=NULL, bool fActivated=false);
+		const C4FacetSurface &GetIconFacet() const { return pIcon->GetFacet(); }
 		virtual ~ListItem();
 
 	protected:
 		virtual C4GUI::ContextMenu *ContextMenu() = 0;
 		C4GUI::ContextMenu *ContextMenu(C4GUI::Element *pEl, int32_t iX, int32_t iY)
 		{ return ContextMenu(); }
-
-		void LoadPortrait(C4Group &rGrp, bool fUseDefault);
-		void CreateColoredPortrait();
-		void SetDefaultPortrait();
 
 		virtual void UpdateOwnPos(); // recalculate item positioning
 		bool KeyCheck() { pCheck->ToggleCheck(true); return true; }
@@ -74,7 +70,6 @@ private:
 
 	public:
 		ListItem *GetNext() const { return static_cast<ListItem *>(BaseClass::GetNext()); }
-		const C4Facet &GetPortrait() const { return fctPortrait; }
 		virtual uint32_t GetColorDw() const = 0; // get drawing color for portrait
 		bool IsActivated() const { return pCheck->GetChecked(); }
 		void SetActivated(bool fToVal) { pCheck->SetChecked(fToVal); }
@@ -83,7 +78,6 @@ private:
 		const StdStrBuf &GetFilename() const { return Filename; }
 		virtual StdStrBuf GetDelWarning() = 0;
 		void GrabIcon(C4FacetSurface &rFromFacet);
-		void GrabPortrait(C4FacetSurface *pFromFacet);
 
 		virtual bool CheckNameHotkey(const char * c); // return whether this item can be selected by entering given char
 
@@ -170,7 +164,6 @@ private:
 	class C4KeyBinding *pKeyBack, *pKeyProperties, *pKeyCrew, *pKeyDelete, *pKeyRename, *pKeyNew;
 	class C4GUI::ListBox *pPlrListBox;
 	C4GUI::TextWindow *pSelectionInfo;
-	class C4GUI::Picture *pPortraitPict;
 	Mode eMode;
 
 	// in crew mode:
@@ -254,8 +247,8 @@ protected:
 	C4GUI::Label *ctrl_name_lbl;
 	C4PlayerInfoCore C4P; // player info core copy currently being edited
 	C4FacetSurface fctOldBigIcon;
-	C4FacetSurface fctNewPicture, fctNewBigIcon; // if assigned, save new picture/bigicon
-	bool fClearPicture, fClearBigIcon; // if true, delete current picture/bigicon
+	C4FacetSurface fctNewBigIcon; // if assigned, save new picture/bigicon
+	bool fClearBigIcon; // if true, delete current picture/bigicon
 	virtual const char *GetID() { return "PlrPropertiesDlg"; }
 
 	void DrawElement(C4TargetFacet &cgo);
@@ -283,7 +276,7 @@ private:
 	void UpdateBigIcon();
 
 	bool SetNewPicture(C4Surface &srcSfc, C4FacetSurface *trgFct, int32_t iMaxSize, bool fColorize);
-	void SetNewPicture(const char *szFromFilename, bool fSetPicture, bool fSetBigIcon); // set new picture/bigicon by loading and scaling if necessary. If szFromFilename==NULL, clear picture/bigicon
+	void SetNewPicture(const char *szFromFilename); // set new bigicon by loading and scaling if necessary. If szFromFilename==NULL, clear bigicon
 
 public:
 	C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerListItem * pForPlayer, C4StartupPlrSelDlg *pMainDlg);

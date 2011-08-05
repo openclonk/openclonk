@@ -786,8 +786,6 @@ void C4ControlJoinPlayer::Strip()
 		C4Group Grp;
 		if (!Grp.Open(PlayerFilename.getData()))
 			{ EraseFile(PlayerFilename.getData()); return; }
-		// remove portrais
-		Grp.Delete(C4CFN_Portraits, true);
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
 		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))

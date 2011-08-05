@@ -91,31 +91,13 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 			// Load player info
 			C4PlayerInfoCore C4P;
 			if (!C4P.Load(hGroup)) { hGroup.Close(); continue; }
-			// Load custom portrait
-			C4FacetSurface fctPortrait;
-			//if (Config.Graphics.ShowPortraits)
-			//  if (!fctPortrait.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, true))
-			//    if (!fctPortrait.Load(hGroup, C4CFN_Portrait, C4FCT_Full, C4FCT_Full, false, true))
-			//      fctPortrait.Load(hGroup, C4CFN_Portrait_Old, C4FCT_Full, C4FCT_Full, false, true);
 			// Close group
 			hGroup.Close();
 			// Add player item
 			sprintf(szCommand, "JoinPlayer:%s", szFilename);
 			StdStrBuf sItemText;
 			sItemText.Format(LoadResStr("IDS_MENU_NEWPLAYER"), C4P.PrefName);
-			// No custom portrait: use default player image
-			if (!fctPortrait.Surface)
-			{
-				fctPortrait.Create(C4SymbolSize, C4SymbolSize);
-				GfxR->fctPlayerClr.DrawClr(fctPortrait, true, 0xff);
-			}
-			// Create color overlay for portrait
-			C4FacetSurface fctPortraitClr;
-			fctPortraitClr.CreateClrByOwner(fctPortrait.Surface);
-			// Create menu symbol from colored portrait
 			C4FacetSurface fctSymbol;
-			fctSymbol.Create(C4SymbolSize, C4SymbolSize);
-			fctPortraitClr.DrawClr(fctSymbol, true, C4P.PrefColorDw);
 			// Add menu item
 			Add(sItemText.getData(), fctSymbol, szCommand);
 			// Reset symbol facet (menu holds on to the surface)

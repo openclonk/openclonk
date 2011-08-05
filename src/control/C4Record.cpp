@@ -1101,7 +1101,6 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 	{
 		StdStrBuf sErr;
 		sErr.Format("DbgRecPkt Type %s, size %d", GetRecordChunkTypeName(eType), iSize);
-		int i;
 		sErr.Append(" Replay: ");
 		StdBuf replay(PktInReplay.getData(), PktInReplay.getSize());
 		sErr.Append(GetDbgRecPktData(eType, replay));

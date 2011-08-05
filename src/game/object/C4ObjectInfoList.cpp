@@ -59,7 +59,7 @@ void C4ObjectInfoList::Clear()
 	}
 }
 
-int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
+int32_t C4ObjectInfoList::Load(C4Group &hGroup)
 {
 	C4ObjectInfo *ninf;
 	int32_t infn=0;
@@ -70,7 +70,7 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
 	while (hGroup.FindNextEntry(C4CFN_ObjectInfoFiles,entryname))
 		if ((ninf=new C4ObjectInfo))
 		{
-			if (ninf->Load(hGroup,entryname,fLoadPortraits))  { Add(ninf); infn++; }
+			if (ninf->Load(hGroup,entryname))  { Add(ninf); infn++; }
 			else delete ninf;
 		}
 
@@ -87,7 +87,7 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
 	{
 		C4Group ItemGroup;
 		if (ItemGroup.OpenAsChild(&hGroup, entryname))
-			Load(ItemGroup, fLoadPortraits);
+			Load(ItemGroup);
 	}
 
 	return infn;
@@ -173,9 +173,6 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	pInfo->Birthday=time(NULL);
 	// Make valid names
 	MakeValidName(pInfo->Name);
-	// Add new portrait (permanently w/o copying file)
-	if (Config.Graphics.AddNewCrewPortraits)
-		pInfo->SetRandomPortrait(C4ID::None, true, false);
 	// Add
 	Add(pInfo);
 	++iNumCreated;

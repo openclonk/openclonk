@@ -248,11 +248,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	if (szFilename)
 	{
 		// Load core & crew info list
-		// do not load portraits for remote players
-		// this will prevent portraits from being shown for "remotely controlled"-Clonks of other players
-		bool fLoadPortraits = (AtClient==C4ClientIDUnknown) || SEqualNoCase(AtClientName, Game.Clients.getLocalName());
-		// fLoadPortraits = true
-		if (!Load(szFilename, !fScenarioInit, fLoadPortraits)) return false;
+		if (!Load(szFilename, !fScenarioInit)) return false;
 	}
 	else
 	{
@@ -971,7 +967,7 @@ void C4Player::Default()
 	ViewLock = false;
 }
 
-bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
+bool C4Player::Load(const char *szFilename, bool fSavegame)
 {
 	C4Group hGroup;
 	// Open group
@@ -984,7 +980,7 @@ bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 	// Load BigIcon
 	if (hGroup.FindEntry(C4CFN_BigIcon)) BigIcon.Load(hGroup, C4CFN_BigIcon);
 	// Load crew info list
-	CrewInfoList.Load(hGroup, fLoadPortraits);
+	CrewInfoList.Load(hGroup);
 	// Close group
 	hGroup.Close();
 	// Success
@@ -1000,8 +996,6 @@ bool C4Player::Strip(const char *szFilename, bool fAggressive)
 	// Which type of stripping?
 	if (!fAggressive)
 	{
-		// remove portrais
-		Grp.Delete(C4CFN_Portraits, true);
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
 		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))
@@ -1014,7 +1008,7 @@ bool C4Player::Strip(const char *szFilename, bool fAggressive)
 		// Load info core and crew info list
 		C4PlayerInfoCore PlrInfoCore;
 		C4ObjectInfoList CrewInfoList;
-		if (!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp, false))
+		if (!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp))
 			return false;
 		// Strip crew info list (remove object infos that are invalid for this scenario)
 		CrewInfoList.Strip(::Definitions);

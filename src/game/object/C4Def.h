@@ -202,8 +202,6 @@ public:
 	C4FacetSurface *pRankSymbols; bool fRankSymbolsOwned;
 	int32_t iNumRankSymbols;    // number of rank symbols available, if loaded
 	C4DefGraphics Graphics; // base graphics. points to additional graphics
-	int32_t PortraitCount;
-	C4PortraitGraphics *Portraits; // Portraits (linked list of C4AdditionalDefGraphics)
 
 protected:
 	C4Facet MainFace;
@@ -227,7 +225,6 @@ public:
 	virtual C4Def * GetDef() { return this; }
 	virtual bool IsDef() const { return true; }
 protected:
-	bool LoadPortraits(C4Group &hGroup);
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();
 public:

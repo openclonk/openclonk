@@ -62,12 +62,9 @@ void C4ObjectInfo::Default()
 	Filename[0]=0;
 	Next=NULL;
 	pDef = NULL;
-	Portrait.Default();
-	pNewPortrait = NULL;
-	pCustomPortrait = NULL;
 }
 
-bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait)
+bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname)
 {
 
 	// New version
@@ -76,7 +73,7 @@ bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 		C4Group hChild;
 		if (hChild.OpenAsChild(&hMother,szEntryname))
 		{
-			if (!C4ObjectInfo::Load(hChild, fLoadPortrait))
+			if (!C4ObjectInfo::Load(hChild))
 				{ hChild.Close(); return false; }
 			// resolve definition, if possible
 			// only works in game, but is not needed in frontend or startup editing anyway
@@ -89,79 +86,12 @@ bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 	return false;
 }
 
-bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
+bool C4ObjectInfo::Load(C4Group &hGroup)
 {
 	// Store group file name
 	SCopy(GetFilename(hGroup.GetName()),Filename,_MAX_FNAME);
 	// Load core
 	if (!C4ObjectInfoCore::Load(hGroup)) return false;
-	// Load portrait - always try linking, even if fLoadPortrait is false (doesn't cost mem anyway)
-	// evaluate portrait string in info
-	bool fPortraitFileChecked=false;
-	if (*PortraitFile)
-	{
-		// custom portrait?
-		if (SEqual(PortraitFile, C4Portrait_Custom))
-		{
-			// try to load it
-			if (pCustomPortrait) delete pCustomPortrait;
-			pCustomPortrait = new C4Portrait();
-			if (pCustomPortrait->Load(hGroup, C4CFN_Portrait, C4CFN_PortraitOverlay))
-			{
-				// link portrait to custom portrait
-				Portrait.Link(pCustomPortrait->GetGfx());
-			}
-			else
-			{
-				// load failure: reset portrait info
-				*PortraitFile=0;
-				delete pCustomPortrait; pCustomPortrait=NULL;
-				// do not try to load a custom portrait again
-				fPortraitFileChecked = true;
-			}
-		}
-		else if (SEqual(PortraitFile, C4Portrait_None))
-		{
-			// no portrait
-			// nothing to be done here :D
-		}
-		else
-		{
-			// get portrait by info string
-			const char *szPortraitName; C4ID idPortraitID;
-			szPortraitName = C4Portrait::EvaluatePortraitString(PortraitFile, idPortraitID, id, NULL);
-			// get portrait def
-			C4Def *pPortraitDef = ::Definitions.ID2Def(idPortraitID);
-			// def found?
-			if (pPortraitDef && pPortraitDef->Portraits)
-			{
-				// find portrait by name
-				C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);
-				C4PortraitGraphics *pPortraitGfx = pDefPortraitGfx ? pDefPortraitGfx->IsPortrait() : NULL;
-				// link if found
-				if (pPortraitGfx)
-					Portrait.Link(pPortraitGfx);
-				else
-				{
-					// portrait not found? Either the specification has been deleted (bad), or this is some scenario with custom portraits
-					// assume the latter, and temp-assign a random portrait for the duration of this round
-					if (Config.Graphics.AddNewCrewPortraits) SetRandomPortrait(C4ID::None, false, false);
-				}
-			}
-		}
-	}
-	// portrait not defined or invalid (custom w/o file or invalid file)
-	// assign a new one (local players only)
-	if (!*PortraitFile && fLoadPortrait)
-	{
-		// try to load a custom portrait
-		if (!fPortraitFileChecked && Portrait.Load(hGroup, C4CFN_Portrait, C4CFN_PortraitOverlay))
-			// assign it as custom portrait
-			SCopy(C4Portrait_Custom, PortraitFile);
-		else if (Config.Graphics.AddNewCrewPortraits)
-			// assign a new random crew portrait
-			SetRandomPortrait(C4ID::None, true, false);
-	}
 	return true;
 }
 
@@ -208,53 +138,6 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	C4Group hTemp;
 	if (!hTemp.OpenAsChild(&hGroup, Filename, false, true))
 		return false;
-	// New portrait present, or old portrait not saved yet (old player begin updated)?
-	if (!fStoreTiny && Config.Graphics.SaveDefaultPortraits) if (pNewPortrait || (Config.Graphics.AddNewCrewPortraits && Portrait.GetGfx() && !hTemp.FindEntry(C4CFN_Portrait)))
-		{
-			C4Portrait *pSavePortrait = pNewPortrait ? pNewPortrait : &Portrait;
-			C4DefGraphics *pPortraitGfx;
-			// save new
-			if (pSavePortrait->GetGfx()) pSavePortrait->SavePNG(hTemp, C4CFN_Portrait, C4CFN_PortraitOverlay);
-			// save spec
-			if (pNewPortrait)
-			{
-				// owned portrait?
-				if (pNewPortrait->IsOwnedGfx())
-					// use saved portrait
-					SCopy(C4Portrait_Custom, PortraitFile);
-				else
-				{
-					if ((pPortraitGfx = pNewPortrait->GetGfx()) && pPortraitGfx->pDef)
-					{
-						// same ID: save portrait name only
-						if (pPortraitGfx->pDef->id == id)
-							SCopy(pPortraitGfx->GetName(), PortraitFile);
-						else
-						{
-							// different ID (crosslinked portrait)
-							SCopy(pPortraitGfx->pDef->id.ToString(), PortraitFile);
-							SAppend("::", PortraitFile);
-							SAppend(pPortraitGfx->GetName(), PortraitFile);
-						}
-					}
-					else
-						// No portrait
-						SCopy(C4Portrait_None, PortraitFile);
-				}
-			}
-			// portrait synced
-		}
-
-	// delete default portraits if they are not desired
-	if (!fStoreTiny && !Config.Graphics.SaveDefaultPortraits && hTemp.FindEntry(C4CFN_Portrait))
-	{
-		if (!SEqual(PortraitFile, C4Portrait_Custom))
-		{
-			hTemp.Delete(C4CFN_Portrait);
-			hTemp.Delete(C4CFN_PortraitOverlay);
-		}
-	}
-
 	// custom rank image present?
 	if (pDefs && !fStoreTiny)
 	{
@@ -294,9 +177,6 @@ void C4ObjectInfo::Evaluate()
 
 void C4ObjectInfo::Clear()
 {
-	Portrait.Clear();
-	if (pNewPortrait) { delete pNewPortrait; pNewPortrait=NULL; }
-	if (pCustomPortrait) { delete pCustomPortrait; pCustomPortrait=NULL; }
 	pDef=NULL;
 }
 
@@ -329,79 +209,3 @@ void C4ObjectInfo::SetBirthday()
 {
 	Birthday=time(NULL);
 }
-
-
-
-bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, bool fCopyFile)
-{
-	// No source def specified: use own def
-	if (!idSourceDef)
-		idSourceDef = id;
-	// Get source def
-	C4Def* pPortraitDef = ::Definitions.ID2Def(idSourceDef);
-	// Portrait source def not loaded: do not assign a portrait now, so the clonk can get
-	// the correct portrait later when the source def is available (assuming this clonk is
-	// not going to be used in this round anyway)
-	if (!pPortraitDef)
-		return false;
-	// Portrait def is loaded but does not have any portraits
-	if (!pPortraitDef->PortraitCount)
-	{
-		// Then use Clonk portraits (2do: base on include chains in latter case)?
-		pPortraitDef = ::Definitions.ID2Def(C4ID::Clonk);
-		// Assign permanently, assuming it is some kind of normal clonk here...
-		fAssignPermanently=true;
-		fCopyFile=false;
-		// No Clonk loaded or no portraits present? forget it, then
-		if (!pPortraitDef || !pPortraitDef->PortraitCount) return false;
-	}
-	// shouldn't happen if PortraitCount is != 0
-	if (!pPortraitDef->Portraits) return false;
-	// set a random portrait (note: not net synced!)
-	return SetPortrait(pPortraitDef->Portraits->GetByIndex(SafeRandom(pPortraitDef->PortraitCount)), fAssignPermanently, fCopyFile);
-}
-
-bool C4ObjectInfo::SetPortrait(const char *szPortraitName, C4Def *pSourceDef, bool fAssignPermanently, bool fCopyFile)
-{
-	// safety
-	if (!szPortraitName || !pSourceDef || !pSourceDef->Portraits) return false;
-	// Special case: custom portrait
-	if (SEqual(szPortraitName, C4Portrait_Custom))
-		// does the info really have a custom portrait?
-		if (pCustomPortrait)
-			// set the custom portrait - we're just re-linking the custom portrait (fAssignPermanently or fCopyFile have nothing to do here)
-			return Portrait.Link(pCustomPortrait->GetGfx());
-	// set desired portrait
-	return SetPortrait(pSourceDef->Portraits->Get(szPortraitName), fAssignPermanently, fCopyFile);
-}
-
-bool C4ObjectInfo::SetPortrait(C4PortraitGraphics *pNewPortraitGfx, bool fAssignPermanently, bool fCopyFile)
-{
-	// safety
-	if (!pNewPortraitGfx) return false;
-	// assign portrait
-	if (fCopyFile) Portrait.CopyFrom(*pNewPortraitGfx); else Portrait.Link(pNewPortraitGfx);
-	// store permanently?
-	if (fAssignPermanently)
-	{
-		if (!pNewPortrait) pNewPortrait = new C4Portrait();
-		pNewPortrait->CopyFrom(Portrait);
-	}
-	// done, success
-	return true;
-}
-
-bool C4ObjectInfo::ClearPortrait(bool fPermanently)
-{
-	// no portrait
-	Portrait.Clear();
-	// clear new portrait; do not delete class (because empty class means no-portrait-as-new-setting)
-	if (fPermanently)
-	{
-		if (pNewPortrait) pNewPortrait->Clear();
-		else pNewPortrait = new C4Portrait();
-	}
-	// done, success
-	return true;
-}
-

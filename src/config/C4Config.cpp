@@ -80,7 +80,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RXFontSize,          "FontSize",           14,            false, true));
 	pComp->Value(mkNamingAdapt(GamepadEnabled,      "GamepadEnabled",     true           ));
 	pComp->Value(mkNamingAdapt(FirstStart,          "FirstStart",         true           ));
-	pComp->Value(mkNamingAdapt(UserPortraitsWritten,"UserPortraitsWritten",false         ));
 	pComp->Value(mkNamingAdapt(ConfigResetSafety,   "ConfigResetSafety",  static_cast<int32_t>(ConfigResetSafetyVal) ));
 }
 
@@ -99,8 +98,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
-	pComp->Value(mkNamingAdapt(AddNewCrewPortraits,   "AddNewCrewPortraits",  0             ,false, true));
-	pComp->Value(mkNamingAdapt(SaveDefaultPortraits,  "SaveDefaultPortraits", 0             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
 	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     0             ,false, true));
@@ -158,7 +155,6 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PortDiscovery,           "PortDiscovery",        C4NetStdPortDiscovery ,false, true));
 	pComp->Value(mkNamingAdapt(PortRefServer,           "PortRefServer",        C4NetStdPortRefServer ,false, true));
 	pComp->Value(mkNamingAdapt(ControlMode,             "ControlMode",          0             ));
-	pComp->Value(mkNamingAdapt(SendPortraits,           "SendPortraits",        0             ,false, true));
 	pComp->Value(mkNamingAdapt(Nick,                    "Nick",                 ""            ,false, true));
 	pComp->Value(mkNamingAdapt(MaxLoadFileSize,         "MaxLoadFileSize",      5*1024*1024   ,false, true));
 

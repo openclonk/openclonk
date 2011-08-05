@@ -60,7 +60,6 @@ public:
 	char ScreenshotPath[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
-	bool UserPortraitsWritten; // set when default portraits have been copied to the UserPath (this is only done once)
 
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
@@ -89,8 +88,6 @@ class C4ConfigGraphics
 {
 public:
 	int32_t SplitscreenDividers;
-	int32_t AddNewCrewPortraits;
-	int32_t SaveDefaultPortraits;
 	int32_t ShowStartupMessages;
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
@@ -156,7 +153,6 @@ public:
 	int32_t MasterReferencePeriod;
 	int32_t LeagueServerSignUp;
 	int32_t UseAlternateServer;
-	int32_t SendPortraits;
 	int32_t PortTCP,PortUDP,PortDiscovery,PortRefServer;
 	int32_t ControlMode;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Nick;

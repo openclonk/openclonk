@@ -30,16 +30,11 @@
 #include "C4InputValidation.h"
 #include "C4Id.h"
 
-#define C4Portrait_None   "none"
-#define C4Portrait_Random "random"
-#define C4Portrait_Custom "custom"
-
 class C4Def;
 
 // defintion graphics
 class C4AdditionalDefGraphics;
 class C4DefGraphicsPtrBackup;
-class C4PortraitGraphics;
 
 class C4DefGraphics
 {
@@ -88,7 +83,6 @@ public:
 	virtual const char *GetName() { return NULL; } // return name to be stored in safe game files
 
 	C4AdditionalDefGraphics *GetNext() { return pNext; }
-	virtual C4PortraitGraphics *IsPortrait() { return NULL; }
 
 	void DrawClr(C4Facet &cgo, bool fAspect=true, DWORD dwClr=0); // set surface color and draw
 
@@ -106,18 +100,6 @@ protected:
 public:
 	C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szName);  // ctor
 	virtual const char *GetName() { return Name; }
-};
-
-// portrait graphics within object definition
-class C4PortraitGraphics : public C4AdditionalDefGraphics
-{
-public:
-	C4PortraitGraphics(C4Def *pOwnDef, const char *szName)  // ctor
-			: C4AdditionalDefGraphics(pOwnDef, szName) { }
-
-	virtual C4PortraitGraphics *IsPortrait() { return this; }
-	C4PortraitGraphics *GetByIndex(int32_t iIndex);
-	C4PortraitGraphics *Get(const char *szGrpName); // get portrait graphics by name
 };
 
 // backup class holding dead graphics pointers and names
@@ -149,32 +131,6 @@ public:
 	bool operator == (C4DefGraphics *pDef2) { return pDefGraphics == pDef2; }
 	void operator = (C4DefGraphics *pDef2) { pDefGraphics = pDef2; }
 	ALLOW_TEMP_TO_REF(C4DefGraphicsAdapt)
-};
-
-// portrait link class
-class C4Portrait
-{
-protected:
-	C4DefGraphics *pGfxPortrait; // the portrait graphics
-	bool fGraphicsOwned;         // if true, the portrait graphics are owned (and deleted upon destruction)
-
-public:
-	C4Portrait() : pGfxPortrait(NULL), fGraphicsOwned(false) {} // ctor
-	~C4Portrait() { if (fGraphicsOwned) delete pGfxPortrait; }  // dtor
-	void Default() { pGfxPortrait=NULL; fGraphicsOwned=false; }
-	void Clear() { if (fGraphicsOwned) { delete pGfxPortrait; fGraphicsOwned=false; } pGfxPortrait=NULL; }
-
-	bool CopyFrom(C4DefGraphics &rCopyGfx); // copy portrait from graphics
-	bool CopyFrom(C4Portrait &rCopy); // copy portrait
-
-	bool Load(C4Group &rGrp, const char *szFilenamePNG, const char *szOverlayPNG); // load own portrait from group
-	bool Link(C4DefGraphics *pGfxPortrait);        // link with a present portrait surface
-	bool SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN); // store portrait gfx to file (including overlay)
-
-	C4DefGraphics *GetGfx() { return pGfxPortrait; }
-	bool IsOwnedGfx() { return fGraphicsOwned; }         // return if it's a custom portrait
-
-	static const char *EvaluatePortraitString(const char *szPortrait, C4ID &rIDOut, C4ID idDefaultID, uint32_t *pdwClrOut); // get portrait source and def from string
 };
 
 // graphics overlay used to attach additional graphics to objects

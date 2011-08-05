@@ -201,7 +201,6 @@ void C4ObjectInfoCore::Default(C4ID n_id,
 	sNextRankName.Clear();
 	NextRankExp=0;
 	DeathMessage[0]='\0';
-	*PortraitFile=0;
 	Age=0;
 	ExtraData.Reset();
 
@@ -312,7 +311,6 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(id,          "id",               C4ID::None));
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),          "Name",             "Clonk"));
 	pComp->Value(mkNamingAdapt(toC4CStr(DeathMessage),  "DeathMessage",     ""));
-	pComp->Value(mkNamingAdapt(toC4CStr(PortraitFile),  "PortraitFile",     ""));
 	pComp->Value(mkNamingAdapt(Rank,                    "Rank",             0));
 	pComp->Value(mkNamingAdapt(sRankName,               "RankName",         "Clonk"));
 	pComp->Value(mkNamingAdapt(sNextRankName,           "NextRankName",     ""));

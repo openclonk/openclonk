@@ -1701,77 +1701,6 @@ static bool FnSetObjDrawTransform2(C4AulObjectContext *ctx, long iA, long iB, lo
 	return true;
 }
 
-static bool FnSetPortrait(C4AulObjectContext *ctx, C4String *pstrPortrait, C4ID idSourceDef, bool fPermanent, bool fCopyGfx)
-{
-	// safety
-	const char *szPortrait;
-	if (!pstrPortrait || !*(szPortrait=FnStringPar(pstrPortrait))) return false;
-	C4Object *pTarget = ctx->Obj;
-	if (!pTarget->Status || !pTarget->Info) return false;
-	// special case: clear portrait
-	if (SEqual(szPortrait, C4Portrait_None)) return pTarget->Info->ClearPortrait(!!fPermanent);
-	// get source def for portrait
-	C4Def *pSourceDef;
-	if (idSourceDef) pSourceDef = ::Definitions.ID2Def(idSourceDef); else pSourceDef=pTarget->Def;
-	if (!pSourceDef) return false;
-	// special case: random portrait
-	if (SEqual(szPortrait, C4Portrait_Random)) return pTarget->Info->SetRandomPortrait(pSourceDef->id, !!fPermanent, !!fCopyGfx);
-	// try to set portrait
-	return pTarget->Info->SetPortrait(szPortrait, pSourceDef, !!fPermanent, !!fCopyGfx);
-}
-
-static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfGetPermanent)
-{
-	// get parameters
-	C4Object *pObj = ctx->Obj; bool fGetID = pvfGetID->getBool(); bool fGetPermanent = pvfGetPermanent->getBool();
-	// check valid object with info section
-	if (!pObj)
-		throw new NeedObjectContext("GetPortrait");
-	if (!pObj->Status || !pObj->Info) return C4Value();
-	// get portrait to examine
-	C4Portrait *pPortrait;
-	if (fGetPermanent)
-	{
-		// permanent: new portrait assigned?
-		if (!(pPortrait=pObj->Info->pNewPortrait))
-		{
-			// custom portrait?
-			if (pObj->Info->pCustomPortrait)
-			{
-				if (fGetID) return C4Value();
-				else return C4VString(C4Portrait_Custom);
-			}
-			// portrait string from info?
-			const char *szPortrait = pObj->Info->PortraitFile;
-			// no portrait string: portrait undefined ("none" would mean no portrait)
-			if (!*szPortrait) return C4Value();
-			// evaluate portrait string
-			C4ID idPortraitSource;
-			szPortrait = C4Portrait::EvaluatePortraitString(szPortrait, idPortraitSource, pObj->Info->id, NULL);
-			// return desired value
-			if (fGetID)
-				return idPortraitSource ? C4VPropList(C4Id2Def(idPortraitSource)) : C4Value();
-			else
-				return szPortrait ? C4VString(szPortrait) : C4Value();
-		}
-	}
-	else
-		// get current portrait
-		pPortrait = &(pObj->Info->Portrait);
-	// get portrait graphics
-	C4DefGraphics *pPortraitGfx = pPortrait->GetGfx();
-	// no portrait?
-	if (!pPortraitGfx) return C4Value();
-	// get def or name
-	if (fGetID)
-		return (pPortraitGfx->pDef ? C4VPropList(pPortraitGfx->pDef) : C4Value());
-	else
-	{
-		const char *szPortraitName = pPortraitGfx->GetName();
-		return C4VString(szPortraitName ? szPortraitName : C4Portrait_Custom);
-	}
-}
-
 static bool FnSetObjectStatus(C4AulObjectContext *ctx, long iNewStatus, bool fClearPointers)
 {
 	// local call / safety
@@ -2408,7 +2337,6 @@ C4ScriptFnDef C4ScriptObjectFnMap[]=
 	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
 	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
-	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
 
@@ -2538,7 +2466,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetShape", FnSetShape);
 	AddFunc(pEngine, "SetObjDrawTransform", FnSetObjDrawTransform);
 	AddFunc(pEngine, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
-	AddFunc(pEngine, "SetPortrait", FnSetPortrait);
 	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
 	AddFunc(pEngine, "GetObjectStatus", FnGetObjectStatus, false);
 	AddFunc(pEngine, "AdjustWalkRotation", FnAdjustWalkRotation, false);

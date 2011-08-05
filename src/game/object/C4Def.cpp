@@ -340,8 +340,6 @@ void C4Def::Default()
 	pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	iNumRankSymbols=1;
-	PortraitCount = 0;
-	Portraits = NULL;
 }
 
 C4Def::~C4Def()
@@ -361,8 +359,6 @@ void C4Def::Clear()
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 
-	PortraitCount = 0;
-	Portraits = NULL;
 	C4PropList::Clear();
 }
 
@@ -425,14 +421,6 @@ bool C4Def::Load(C4Group &hGroup,
 		if (!Graphics.Load(hGroup, !!ColorByOwner))
 		{
 			DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
-			return false;
-		}
-
-	// Read portraits
-	if (dwLoadWhat & C4D_Load_Bitmap)
-		if (!LoadPortraits(hGroup))
-		{
-			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 			return false;
 		}
 
@@ -636,22 +624,6 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 
 void C4Def::Synchronize()
 {
-}
-
-bool C4Def::LoadPortraits(C4Group &hGroup)
-{
-	// reset any previous portraits
-	Portraits = NULL; PortraitCount = 0;
-	// search for portraits within def graphics
-	for (C4DefGraphics *pGfx = &Graphics; pGfx; pGfx=pGfx->GetNext())
-		if (pGfx->IsPortrait())
-		{
-			// assign first portrait
-			if (!Portraits) Portraits = pGfx->IsPortrait();
-			// count
-			++PortraitCount;
-		}
-	return true;
 }
 
 int32_t C4Def::GetComponentCount(C4ID idComponent)

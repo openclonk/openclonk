@@ -49,7 +49,6 @@ public:
 	int32_t  Birthday,TotalPlayingTime;
 	int32_t  Age;
 	char DeathMessage[C4MaxDeathMsg+1];
-	char PortraitFile[C4MaxName+2+4+1]; // used portrait
 	C4ValueMapData ExtraData;
 	bool NoSave; // set for _XYZ-CrewMembers
 public:

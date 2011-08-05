@@ -115,10 +115,8 @@ private func GuideMessage(int show_index)
 	var message = messages[show_index];
 	if (!message)
 		return false;
-	// Guide portrait.
-	var portrait_def = "Portrait:TutorialGuide::00ff00::1";
 	// Message as regular one, don't stop the player.
-	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, portrait_def, MSG_HCenter);
+	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
 	effect.show_index = show_index;
 	// Messages with @ in front are shown infinetely long.
