@@ -1399,7 +1399,7 @@ void C4StartupPlrPropertiesDlg::OnClosed(bool fOK)
 				if (fClearPicture || fClearBigIcon || fctNewPicture.Surface || fctNewBigIcon.Surface)
 				{
 					C4Group PlrGroup;
-					if (PlrGroup.Open(Filename.getData()))
+					if (PlrGroup.Open(Config.AtUserDataPath(Filename.getData())))
 					{
 						if (fClearPicture || fctNewPicture.Surface) PlrGroup.Delete(C4CFN_Portrait);
 						if (fClearBigIcon || fctNewBigIcon.Surface) PlrGroup.Delete(C4CFN_BigIcon);
@@ -1421,7 +1421,7 @@ void C4StartupPlrPropertiesDlg::OnClosed(bool fOK)
 			else
 			{
 				// NewPlayer: Open new player group
-				if (PlrGroup.Open(Filename.getData(), true))
+				if (PlrGroup.Open(Config.AtUserDataPath(Filename.getData()), true))
 				{
 					// Do not overwrite (should have been caught earlier anyway)
 					if (PlrGroup.FindEntry(C4CFN_PlayerInfoCore)) return;
