@@ -329,9 +329,13 @@ StdStrBuf C4StartupPlrSelDlg::PlayerListItem::GetDelWarning()
 bool C4StartupPlrSelDlg::PlayerListItem::MoveFilename(const char *szToFilename)
 {
 	// anything to do?
-	if (ItemIdentical(Config.AtUserDataPath(GetFilename().getData()), szToFilename)) return true;
+	if (ItemIdentical(GetFilename().getData(), szToFilename)) return true;
 	// do it
-	if (!MoveItem(GetFilename().getData(), szToFilename)) return false;
+	StdStrBuf PathFrom(Config.General.UserDataPath);
+	PathFrom.Append(GetFilename());
+	StdStrBuf PathTo(Config.General.UserDataPath);
+	PathTo.Append(szToFilename);
+	if (!MoveItem(PathFrom.getData(), PathTo.getData())) return false;
 	// reflect change in class
 	SetFilename(StdStrBuf(szToFilename));
 	return true;
@@ -886,16 +890,16 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 	if (*Filename.getData() == '.') *Filename.getMData() = '_';
 	Filename.Append(".ocp");
 	StdStrBuf Path(Config.General.UserDataPath); // start at local path
-//  Path.Append(Config.General.PlayerPath);
+
 	Path.Append(Filename);
 	// validity check: Must not exist yet if renamed
 	if (!pPrevFilename || !ItemIdentical(Path.getData(), Config.AtUserDataPath(pPrevFilename->getData()))) if (ItemExists(Path.getData()))
-		{
-			C4GUI::Screen::GetScreenS()->ShowMessage(FormatString(LoadResStr("IDS_ERR_PLRNAME_TAKEN"),
-			    Playername.getData()).getData(), "", C4GUI::Ico_Error);
-			return false;
-		}
-	Filename.Take(std::move(Path));
+	{
+		C4GUI::Screen::GetScreenS()->ShowMessage(FormatString(LoadResStr("IDS_ERR_PLRNAME_TAKEN"),
+		    Playername.getData()).getData(), "", C4GUI::Ico_Error);
+		return false;
+	}
+
 	return true;
 }
 
