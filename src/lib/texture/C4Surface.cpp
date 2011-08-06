@@ -123,8 +123,8 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool, bool fNoErrI
 					if (sscanf(scaled_name + base_length + 1, "%d", &scale) == 1)
 						if (scale > max_scale)
 						{
-							ScaleToSet = max_scale;
 							max_scale = scale;
+							ScaleToSet = max_scale;
 							strFilename.Copy(scaled_name);
 							szFilename = strFilename.getData();
 						}
