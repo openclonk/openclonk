@@ -133,6 +133,7 @@ namespace Ogre
 					{
 					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
 					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
+					delete chunk;
 					break;
 					}
 				default:
