@@ -1,3 +1,6 @@
+# Copyright (c) 2005-2011  Günther Brammer
+# Copyright (c) 2009  Armin Burgmeier
+# Copyright (c) 2010-2011  Nicolas Hake
 # Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
 
 # Permission to use, copy, modify, and/or distribute this software for any
